@@ -6,6 +6,9 @@ Bot solving Zebra Puzzles
 
 
 
+![Linked with type nodes](https://github.com/agutikov/ein-bot/blob/master/linked.svg?raw=true)
+
+
 
 
 

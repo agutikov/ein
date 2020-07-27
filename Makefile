@@ -1,15 +1,21 @@
 
 FORMAT=svg
 
-DOT_FILES=$(wildcard *.dot)
-IMAGES=$(DOT_FILES:%.dot=%.$(FORMAT))
+FDP_FILES=clustered.dot
+FDP_IMAGES=$(FDP_FILES:%.dot=%.$(FORMAT))
+
+DOT_FILES=linked.dot
+DOT_IMAGES=$(DOT_FILES:%.dot=%.$(FORMAT))
 
 
-all: $(IMAGES)
+all: $(FDP_IMAGES) $(DOT_IMAGES)
 
 
-$(IMAGES): %.svg: %.dot
+$(FDP_IMAGES): %.svg: %.dot
 	fdp -T$(FORMAT) $^ > $@
+
+$(DOT_IMAGES): %.svg: %.dot
+	dot -T$(FORMAT) $^ > $@
 
 
 .PHONY: clean

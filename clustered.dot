@@ -41,7 +41,7 @@ digraph G {
     Ukrainian -> Tea;
     Tea -> Ukrainian;
 
-    Green -> Ivory [label="to the right of" style=dotted];
+    Green -> Ivory [label=<<font color="red">to the right of</font>> style=dotted color="red"];
 
     Old_Gold -> Snail;
     Snail -> Old_Gold;
@@ -55,11 +55,11 @@ digraph G {
     Norwegian -> House_1;
     House_1 -> Norwegian;
 
-    Chesterfields -> Fox [label="next to" style=dashed];
-    Fox -> Chesterfields [label="next to" style=dashed];
+    Chesterfields -> Fox [label="next to" style=dashed color="blue"];
+    Fox -> Chesterfields [label="next to" style=dashed color="blue"];
 
-    Kools -> Hourse [label="next to" style=dashed];
-    Hourse -> Kools [label="next to" style=dashed];
+    Kools -> Hourse [label="next to" style=dashed color="blue"];
+    Hourse -> Kools [label="next to" style=dashed color="blue"];
 
     Lucky_Strike -> Juice;
     Juice -> Lucky_Strike;
@@ -67,6 +67,6 @@ digraph G {
     Japanese -> Parlament;
     Parlament -> Japanese;
 
-    Norwegian -> Blue [label="next to" style=dashed];
-    Blue -> Norwegian [label="next to" style=dashed];
+    Norwegian -> Blue [label="next to" style=dashed color="blue"];
+    Blue -> Norwegian [label="next to" style=dashed color="blue"];
 }
