@@ -1,0 +1,72 @@
+digraph G {
+    subgraph cluster_house {
+        House_1, House_2, House_3, House_4, House_5 [shape=box];
+        label="House";
+    }
+
+    subgraph cluster_color {
+        Ivory, Yellow, Red, Green, Blue;
+        label="Color";
+    }
+
+    subgraph cluster_nation {
+        Englishman, Spaniard, Ukrainian, Japanese, Norwegian;
+        label="Nationality";
+    }
+
+    subgraph cluster_pet {
+        Dog, Hourse, Snail, Fox, Zebra;
+        label="Pet";
+    }
+
+    subgraph cluster_cigarette {
+        Old_Gold, Chesterfields, Lucky_Strike, Kools, Parlament;
+        label="Cigarette";
+    }
+
+    subgraph cluster_drink {
+        Coffee, Milk, Tea, Juice, Water;
+        label="Drink";
+    }
+
+    Englishman -> Red;
+    Red -> Englishman;
+
+    Spaniard -> Dog;
+    Dog -> Spaniard;
+
+    Coffee -> Green;
+    Green -> Coffee;
+
+    Ukrainian -> Tea;
+    Tea -> Ukrainian;
+
+    Green -> Ivory [label="to the right of" style=dotted];
+
+    Old_Gold -> Snail;
+    Snail -> Old_Gold;
+
+    Kools -> Yellow;
+    Yellow -> Kools;
+
+    Milk -> House_3;
+    House_3 -> Milk;
+
+    Norwegian -> House_1;
+    House_1 -> Norwegian;
+
+    Chesterfields -> Fox [label="next to" style=dashed];
+    Fox -> Chesterfields [label="next to" style=dashed];
+
+    Kools -> Hourse [label="next to" style=dashed];
+    Hourse -> Kools [label="next to" style=dashed];
+
+    Lucky_Strike -> Juice;
+    Juice -> Lucky_Strike;
+
+    Japanese -> Parlament;
+    Parlament -> Japanese;
+
+    Norwegian -> Blue [label="next to" style=dashed];
+    Blue -> Norwegian [label="next to" style=dashed];
+}
