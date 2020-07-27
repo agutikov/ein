@@ -29,8 +29,11 @@ Apriori relations.
 Grouping by links to "type" nodes and simplified bi-directional links.
 ![Linked with type nodes](https://github.com/agutikov/ein-bot/blob/master/linked.svg?raw=true)
 
+Constraints.
 
-Constraint of number of attributes of the same type.
+1) Each object node has only one link with type node.
+
+2) Constraint of number of attributes of the same type.
 For any Object instance of Type_1 for any Type != Type_1 there can be only one Path from Object to Type.
 ![House color constraint](https://github.com/agutikov/ein-bot/blob/master/single_attribute_constraint.svg?raw=true)
 
@@ -39,12 +42,13 @@ For any Object instance of Type_1 for any Type != Type_1 there can be only one P
 
 Inference.
 
-Triangle or transitive inference rule.
+Triangle inference rule.
 ![House color constraint](https://github.com/agutikov/ein-bot/blob/master/inference_triangle.svg?raw=true)
 
 
-
+Square inference rule.
 ![House color constraint](https://github.com/agutikov/ein-bot/blob/master/inference_square.svg?raw=true)
+![House color constraint](https://github.com/agutikov/ein-bot/blob/master/inference_square_2.svg?raw=true)
 
 
 

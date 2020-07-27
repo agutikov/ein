@@ -6,8 +6,6 @@ digraph G {
     House -> House_1;
     House -> House_2;
 
-    House_1 -> House_2 [dir=forward label="right" color="red"];
-
     House_1 -> House_2 [label="next" style=dashed color="blue"];
 
     Nationality -> Norwegian;
