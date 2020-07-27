@@ -4,7 +4,8 @@ FORMAT=svg
 FDP_FILES=clustered.dot apriori_relations.dot
 FDP_IMAGES=$(FDP_FILES:%.dot=%.$(FORMAT))
 
-DOT_FILES=linked.dot link_type.dot link_label.dot link_type_2.dot multiple_link_types.dot 
+DOT_FILES=linked.dot link_type.dot link_label.dot link_type_2.dot \
+multiple_link_types.dot single_attribute_constraint.dot
 DOT_IMAGES=$(DOT_FILES:%.dot=%.$(FORMAT))
 
 
