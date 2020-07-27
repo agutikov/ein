@@ -62,10 +62,10 @@ It contains state on previous step and an added link that satisfies constraints 
 
 ### Generation of hypothesis.
 
-Select object node of some Type_1.
-Select another Type_2.
-Generate a set of links from given node to all objects of Type_2.
-Apply constraints - if object of Type_2 already has a link with object of Type_1 - then drop this hypothetic link.
+1. Select object node of some Type_1.
+2. Select another Type_2.
+3. Generate a set of links from given node to all objects of Type_2.
+4. Apply constraints - if object of Type_2 already has a link with object of Type_1 - then drop this hypothetic link.
 Set of links are set of hypothesis.
 
 ![House color constraint](https://github.com/agutikov/ein-bot/blob/master/files/hgen.svg?raw=true)
@@ -75,8 +75,8 @@ Set of links are set of hypothesis.
 ### Testing of hypothesis.
 
 Testing of hypothesis is application of contraints after infrence.
-Apply inference - infer all possible links.
-Apply constraints after each inferred link.
+1. Apply inference - infer all possible links.
+2. Apply constraints after each inferred link.
 If constraint is not satisfied - then test failed - then hypothesis is wrong.
 
 
@@ -97,9 +97,9 @@ So if there is more than one hypothesis that pass testing - then there is ambigu
 
 Ambiguity can be solved by multilevel hypothesis.
 For each true hypothesis - generate another set of hypothesis and verify them.
-If no hypothesis of next level is true - then initial hypothesis failed.
-If only one hypothesis of next level is true - then initial hypothesis is true.
-If there is ambiguity on next level (more than one hypothesis passed testing) - then go one level deeper.
+- If no hypothesis of next level is true - then initial hypothesis failed.
+- If only one hypothesis of next level is true - then initial hypothesis is true.
+- If there is ambiguity on next level (more than one hypothesis passed testing) - then go one level deeper.
 
 Objects that has new links after previous step of hypothesis generation and inference
 are good starting objects for next level hypothesis generation. 
@@ -108,6 +108,7 @@ are good starting objects for next level hypothesis generation.
 ### Ambiguity.
 
 Finally - if no more hypothesis can be generated - then problem conditions are ambiguous and there is more than one solution.
+
 Btw - it's normal for problems with multiple solutions.
 
 
