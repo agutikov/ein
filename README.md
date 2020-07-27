@@ -39,7 +39,7 @@ Constraint of number of attributes of the same type.
 For any Object instance of Type_1 for any Type != Type_1 there can be only one Path from Object to Type.
 ![House color constraint](https://github.com/agutikov/ein-bot/blob/master/files/single_attribute_constraint.svg?raw=true)
 
-
+This case - both constraints are equal - every node can have only one link of every possible type.
 
 
 ## Inference.
@@ -52,7 +52,7 @@ For any Object instance of Type_1 for any Type != Type_1 there can be only one P
 Applicable (in this case) for spatial relations: right and next.
 ![House color constraint](https://github.com/agutikov/ein-bot/blob/master/files/inference_square.svg?raw=true)
 ![House color constraint](https://github.com/agutikov/ein-bot/blob/master/files/inference_square_2.svg?raw=true)
-
+This kind of relations are possible between objects of the same type.
 
 ## Hypothesis.
 
@@ -140,13 +140,6 @@ while (not solved(s)):
 ```
 
 
-## TODO
-
-dump state in dot
-
-
-
-trace reasoning in natural language
 
 
 

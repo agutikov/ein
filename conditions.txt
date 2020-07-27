@@ -1,0 +1,100 @@
+
+House_1 is House
+House_2 is House
+House_3 is House
+House_4 is House
+House_5 is House
+
+House_1 to the left of House_2
+House_2 to the left of House_3
+House_3 to the left of House_4
+House_4 to the left of House_5
+
+House_2 to the right of House_1
+House_3 to the right of House_2
+House_4 to the right of House_3
+House_5 to the right of House_4
+
+House_1 is next to House_2
+House_2 is next to House_3
+House_3 is next to House_4
+House_4 is next to House_5
+
+House_2 is next to House_1
+House_3 is next to House_2
+House_4 is next to House_3
+House_5 is next to House_4
+
+
+Ivory is Color
+Yellow is Color
+Red is Color
+Green is Color
+Blue is Color
+
+Englishman is Nationality
+Spaniard is Nationality
+Ukrainian is Nationality
+Japanese is Nationality
+Norwegian is Nationality
+
+Dog is Pet
+Hourse is Pet
+Snail is Pet
+Fox is Pet
+Zebra is Pet
+
+Old_Gold is Cigarette
+Chesterfields is Cigarette
+Lucky_Strike is Cigarette
+Kools is Cigarette
+Parlament is Cigarette
+
+Coffee is Drink
+Milk is Drink
+Tea is Drink
+Juice is Drink
+Water is Drink
+
+Englishman lives in the house of color Red
+Red is color of the house where lives Englishman
+
+Spaniard has a Dog
+Dog is a pet of Spaniard
+
+Coffee is drunk in the house of color Green
+Green is color of the house where lives one who drinks Coffee
+
+Ukrainian drinks Tea
+Tee is drunk by Ukrainian
+
+Green to the right of Ivory
+Ivory to the left of Green
+
+Old_Gold smoker has a Snail
+Snail is a pet of one who smokes Old_Gold
+
+Kools is smoked by one who lives in the house of color Yellow
+Yellow is color of the house where lives one who smokes Kools
+
+Milk is drunk in House_3
+House_3 is a house where lives one who drinks Milk
+
+Norwegian lives in House_1
+House_1 is a house where lives Norwegian
+
+Chesterfields is next to Fox
+Fox is next to Chesterfields
+
+Kools is next to Hourse
+Hourse is next to Kools
+
+Lucky_Strike smoker drinks Juice
+Juice is drunk by one who smokes Lucky_Strike
+
+Japanese smokes Parlament
+Parlament is smoked by Japanese
+
+Norwegian lives in the house of color Blue
+Blue is color of the house where lives Norwegian
+
