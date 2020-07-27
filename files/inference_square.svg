@@ -74,7 +74,7 @@
 <!-- House_1&#45;&gt;House_2 -->
 <g id="edge3" class="edge">
 <title>House_1&#45;&gt;House_2</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M118.3,-86.8C118.3,-72.05 118.3,-50.92 118.3,-36.18"/>
+<path fill="none" stroke="blue" d="M118.3,-86.8C118.3,-72.05 118.3,-50.92 118.3,-36.18"/>
 <text text-anchor="middle" x="134.3" y="-57.8" font-family="Times,serif" font-size="14.00">next</text>
 </g>
 <!-- Norwegian&#45;&gt;House_1 -->
@@ -85,7 +85,7 @@
 <!-- Norwegian&#45;&gt;Blue -->
 <g id="edge7" class="edge">
 <title>Norwegian&#45;&gt;Blue</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M171.76,-174.21C182.06,-159.11 197.08,-137.09 207.25,-122.18"/>
+<path fill="none" stroke="blue" d="M171.76,-174.21C182.06,-159.11 197.08,-137.09 207.25,-122.18"/>
 <text text-anchor="middle" x="208.3" y="-144.8" font-family="Times,serif" font-size="14.00">next</text>
 </g>
 <!-- Blue&#45;&gt;House_2 -->

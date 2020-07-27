@@ -42,4 +42,40 @@ digraph G {
     Drink -> Tea;
     Drink -> Juice;
     Drink -> Water;
+
+    Englishman -> Red;
+
+    Spaniard -> Dog;
+
+    Coffee -> Green;
+
+    Ukrainian -> Tea;
+
+    Ivory -> Green [dir=forward label="right" color="red"];
+
+    Old_Gold -> Snail;
+
+    Kools -> Yellow;
+
+    Milk -> House_Middle;
+
+    Norwegian -> House_First;
+
+    Chesterfields -> Fox [label="next" color="blue"];
+
+    Kools -> Hourse [label="next" color="blue"];
+
+    Lucky_Strike -> Juice;
+
+    Japanese -> Parlament;
+
+    Norwegian -> Blue [label="next" color="blue"];
+
+    House_A -> Blue;
+
+    House_First -> Yellow [style=dashed color="grey"];
+    House_First -> Red [style=dashed color="grey"];
+    House_First -> Green [style=dashed color="grey"];
+    House_First -> Ivory [style=dashed color="grey"];
+
 }

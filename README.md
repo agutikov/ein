@@ -68,6 +68,9 @@ Generate a set of links from given node to all objects of Type_2.
 Apply constraints - if object of Type_2 already has a link with object of Type_1 - then drop this hypothetic link.
 Set of links are set of hypothesis.
 
+![House color constraint](https://github.com/agutikov/ein-bot/blob/master/files/hgen.svg?raw=true)
+
+
 
 ### Testing of hypothesis.
 
@@ -75,6 +78,14 @@ Testing of hypothesis is application of contraints after infrence.
 Apply inference - infer all possible links.
 Apply constraints after each inferred link.
 If constraint is not satisfied - then test failed - then hypothesis is wrong.
+
+
+![House color constraint](https://github.com/agutikov/ein-bot/blob/master/files/htest_1.svg?raw=true)
+
+
+How to define constraint of existance of Ivory house to the left of Green one?
+
+
 
 
 ### Verification of hypothesis.

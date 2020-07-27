@@ -385,7 +385,7 @@
 <!-- House_First&#45;&gt;House_A -->
 <g id="edge10" class="edge">
 <title>House_First&#45;&gt;House_A</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M162.16,-371.85C153.49,-366.65 145.32,-359.81 140.34,-351 131,-334.44 134.34,-312.11 138.49,-296.95"/>
+<path fill="none" stroke="blue" d="M162.16,-371.85C153.49,-366.65 145.32,-359.81 140.34,-351 131,-334.44 134.34,-312.11 138.49,-296.95"/>
 <text text-anchor="middle" x="156.34" y="-329.3" font-family="Times,serif" font-size="14.00">next</text>
 </g>
 <!-- House_A&#45;&gt;House_Middle -->
@@ -398,7 +398,7 @@
 <!-- House_A&#45;&gt;House_Middle -->
 <g id="edge11" class="edge">
 <title>House_A&#45;&gt;House_Middle</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M163.43,-262.18C169.39,-256.56 175.63,-249.91 180.34,-243 187.24,-232.89 192.55,-220.15 196.1,-210.07"/>
+<path fill="none" stroke="blue" d="M163.43,-262.18C169.39,-256.56 175.63,-249.91 180.34,-243 187.24,-232.89 192.55,-220.15 196.1,-210.07"/>
 <text text-anchor="middle" x="204.34" y="-231.8" font-family="Times,serif" font-size="14.00">next</text>
 </g>
 <!-- House_Middle&#45;&gt;House_1 -->
@@ -411,7 +411,7 @@
 <!-- House_Middle&#45;&gt;House_1 -->
 <g id="edge12" class="edge">
 <title>House_Middle&#45;&gt;House_1</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M193.92,-173.95C188.86,-163.63 181.43,-150.63 172.34,-141 164.85,-133.06 155.23,-126.03 146.24,-120.39"/>
+<path fill="none" stroke="blue" d="M193.92,-173.95C188.86,-163.63 181.43,-150.63 172.34,-141 164.85,-133.06 155.23,-126.03 146.24,-120.39"/>
 <text text-anchor="middle" x="198.34" y="-144.8" font-family="Times,serif" font-size="14.00">next</text>
 </g>
 <!-- House_1&#45;&gt;House_Last -->
@@ -424,7 +424,7 @@
 <!-- House_1&#45;&gt;House_Last -->
 <g id="edge13" class="edge">
 <title>House_1&#45;&gt;House_Last</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M85.9,-91.43C76.24,-86.06 66.84,-78.73 61.34,-69 55.79,-59.16 56.65,-46.42 58.84,-36.26"/>
+<path fill="none" stroke="blue" d="M85.9,-91.43C76.24,-86.06 66.84,-78.73 61.34,-69 55.79,-59.16 56.65,-46.42 58.84,-36.26"/>
 <text text-anchor="middle" x="77.34" y="-57.8" font-family="Times,serif" font-size="14.00">next</text>
 </g>
 <!-- Ivory&#45;&gt;Green -->
@@ -462,7 +462,7 @@
 <!-- Norwegian&#45;&gt;Blue -->
 <g id="edge52" class="edge">
 <title>Norwegian&#45;&gt;Blue</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M328.62,-455.8C334.03,-440.95 341.81,-419.64 347.19,-404.89"/>
+<path fill="none" stroke="blue" d="M328.62,-455.8C334.03,-440.95 341.81,-419.64 347.19,-404.89"/>
 <text text-anchor="middle" x="355.34" y="-426.8" font-family="Times,serif" font-size="14.00">next</text>
 </g>
 <!-- Old_Gold&#45;&gt;Snail -->
@@ -473,7 +473,7 @@
 <!-- Chesterfields&#45;&gt;Fox -->
 <g id="edge48" class="edge">
 <title>Chesterfields&#45;&gt;Fox</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M1537.33,-455.8C1536.46,-441.05 1535.22,-419.92 1534.35,-405.18"/>
+<path fill="none" stroke="blue" d="M1537.33,-455.8C1536.46,-441.05 1535.22,-419.92 1534.35,-405.18"/>
 <text text-anchor="middle" x="1551.34" y="-426.8" font-family="Times,serif" font-size="14.00">next</text>
 </g>
 <!-- Lucky_Strike&#45;&gt;Juice -->
@@ -489,7 +489,7 @@
 <!-- Kools&#45;&gt;Hourse -->
 <g id="edge49" class="edge">
 <title>Kools&#45;&gt;Hourse</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M1341.56,-455.8C1342.6,-441.05 1344.09,-419.92 1345.13,-405.18"/>
+<path fill="none" stroke="blue" d="M1341.56,-455.8C1342.6,-441.05 1344.09,-419.92 1345.13,-405.18"/>
 <text text-anchor="middle" x="1359.34" y="-426.8" font-family="Times,serif" font-size="14.00">next</text>
 </g>
 <!-- Coffee&#45;&gt;Green -->

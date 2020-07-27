@@ -10,6 +10,7 @@ digraph G {
     House -> House_Last;
 
     House_First -> House_A -> House_Middle -> House_1 -> House_Last [dir=forward label="right" color="red"];
+    House_Last -> House_1 -> House_Middle -> House_A -> House_First [dir=forward label="left" color="yellow"];
 
     House_First -> House_A -> House_Middle -> House_1 -> House_Last [label="next" color="blue"];
 
@@ -52,6 +53,7 @@ digraph G {
     Ukrainian -> Tea;
 
     Ivory -> Green [dir=forward label="right" color="red"];
+    Green -> Ivory [dir=forward label="left" color="yellow"];
 
     Old_Gold -> Snail;
 
@@ -70,4 +72,15 @@ digraph G {
     Japanese -> Parlament;
 
     Norwegian -> Blue [label="next" color="blue"];
+
+    House_A -> Blue;
+
+    House_First -> Red [style="dashed,bold" color="grey"];
+    House_First -> Yellow [style="dashed,bold" color="grey"];
+    House_First -> Green [style="dashed,bold" color="grey"];
+    House_First -> Ivory [style="dashed,bold" color="grey"];
+
+    House_First -> Englishman [style="dashed,bold" color="red"];
+    House_A -> Green [style="dashed,bold" color="red"];
+
 }

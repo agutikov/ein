@@ -7,7 +7,8 @@ FDP_IMAGES=$(FDP_FILES:%.dot=%.$(FORMAT))
 
 DOT_FILES=linked.dot link_type.dot link_label.dot link_type_2.dot \
 multiple_link_types.dot single_attribute_constraint.dot \
-inference_triangle.dot inference_square.dot inference_square_2.dot
+inference_triangle.dot inference_square.dot inference_square_2.dot \
+hgen.dot htest_1.dot
 
 DOT_IMAGES=$(DOT_FILES:%.dot=%.$(FORMAT))
 
