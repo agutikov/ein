@@ -1,0 +1,11 @@
+digraph G {
+    edge [dir=none];
+
+    Pet, Cigarette [style=filled];
+
+    Pet -> Snail;
+
+    Cigarette -> Old_Gold;
+
+    Old_Gold -> Snail;
+}

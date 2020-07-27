@@ -1,0 +1,12 @@
+digraph G {
+    Pet, Cigarette [style=filled];
+
+    Pet -> Snail [label="is type of"];
+    Snail -> Pet [label="is instance of"];
+
+    Cigarette -> Old_Gold [label="is type of"];
+    Old_Gold -> Cigarette [label="is instance of"];
+
+    Old_Gold -> Snail [label="owns"];
+    Snail -> Old_Gold [label="smokes"];
+}
