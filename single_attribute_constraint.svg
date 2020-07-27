@@ -100,7 +100,7 @@
 <!-- House_First&#45;&gt;Yellow -->
 <g id="edge9" class="edge">
 <title>House_First&#45;&gt;Yellow</title>
-<path fill="none" stroke="green" d="M253.03,-73.98C226.18,-61.37 188.25,-43.55 162.92,-31.65"/>
+<path fill="none" stroke="green" stroke-width="2" d="M253.03,-73.98C226.18,-61.37 188.25,-43.55 162.92,-31.65"/>
 </g>
 <!-- House_First&#45;&gt;Ivory -->
 <g id="edge10" class="edge">

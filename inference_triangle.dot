@@ -1,0 +1,17 @@
+digraph G {
+    edge [dir=none];
+
+    House, Color, Cigarette [style=filled];
+
+    House -> House_1;
+
+    Cigarette -> Kools;
+
+    Color -> Yellow;
+
+    House_1 -> Yellow;
+
+    Yellow -> Kools;
+
+    Kools -> House_1 [style=bold, color="green"];
+}

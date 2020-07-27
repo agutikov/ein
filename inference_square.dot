@@ -1,0 +1,23 @@
+digraph G {
+    edge [dir=none];
+
+    House, Color, Nationality [style=filled];
+
+    House -> House_1;
+    House -> House_2;
+
+    House_1 -> House_2 [dir=forward label="right" color="red"];
+
+    House_1 -> House_2 [label="next" style=dashed color="blue"];
+
+    Nationality -> Norwegian;
+
+    Color -> Blue;
+
+    Norwegian -> House_1;
+
+    Norwegian -> Blue [label="next" style=dashed color="blue"];
+
+    Blue -> House_2 [style=bold, color="green"];
+
+}

@@ -13,7 +13,7 @@ digraph G {
 
     House_First -> Red [style=dashed, color="red"];
     House_First -> Green [style=dashed, color="red"];
-    House_First -> Yellow [color="green"];
+    House_First -> Yellow [style=bold, color="green"];
     House_First -> Ivory [style=dashed, color="red"];
     House_First -> Blue [style=dashed, color="red"];
 }

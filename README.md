@@ -39,8 +39,12 @@ For any Object instance of Type_1 for any Type != Type_1 there can be only one P
 
 Inference.
 
+Triangle or transitive inference rule.
+![House color constraint](https://github.com/agutikov/ein-bot/blob/master/inference_triangle.svg?raw=true)
 
 
+
+![House color constraint](https://github.com/agutikov/ein-bot/blob/master/inference_square.svg?raw=true)
 
 
 
