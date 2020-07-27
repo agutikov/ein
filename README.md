@@ -17,7 +17,13 @@ Arrow is "labled" by type of source and destination (this case - only destinatio
 ![Link label example](https://github.com/agutikov/ein-bot/blob/master/link_label.svg?raw=true)
 
 Multiple types of arrows between two objects.
+House_2 is to the right of House_1.
+And both are next to another one.
 ![Multiple link types](https://github.com/agutikov/ein-bot/blob/master/multiple_link_types.svg?raw=true)
+
+
+Apriori relations.
+![Apriori relations](https://github.com/agutikov/ein-bot/blob/master/apriori_relations.svg?raw=true)
 
 
 Grouping by links to "type" nodes and simplified bi-directional links.

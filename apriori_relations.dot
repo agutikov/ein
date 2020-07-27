@@ -1,0 +1,45 @@
+digraph G {
+    edge [dir=none];
+
+    House, Color, Nationality, Pet, Cigarette, Drink [style=filled];
+
+    House -> House_First;
+    House -> House_A;
+    House -> House_Middle;
+    House -> House_1;
+    House -> House_Last;
+
+    House_First -> House_A -> House_Middle -> House_1 -> House_Last [dir=forward label="right" color="red"];
+
+    House_First -> House_A -> House_Middle -> House_1 -> House_Last [label="next" style=dashed color="blue"];
+
+    Color -> Ivory;
+    Color -> Yellow;
+    Color -> Red;
+    Color -> Green;
+    Color -> Blue;
+
+    Nationality -> Englishman;
+    Nationality -> Spaniard;
+    Nationality -> Ukrainian;
+    Nationality -> Japanese;
+    Nationality -> Norwegian;
+
+    Pet -> Dog;
+    Pet -> Hourse;
+    Pet -> Snail;
+    Pet -> Fox;
+    Pet -> Zebra;
+
+    Cigarette -> Old_Gold;
+    Cigarette -> Chesterfields;
+    Cigarette -> Lucky_Strike;
+    Cigarette -> Kools;
+    Cigarette -> Parlament;
+
+    Drink -> Coffee;
+    Drink -> Milk;
+    Drink -> Tea;
+    Drink -> Juice;
+    Drink -> Water;
+}
