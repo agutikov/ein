@@ -1,16 +1,14 @@
 digraph G {
-    edge [dir=none];
-
     House, Color, Nationality [style=filled];
 
-    House -> House_1;
-    House -> House_2;
+    House_1 -> House;
+    House_2 -> House;
 
     House_1 -> House_2 [label="next" color="blue"];
 
-    Nationality -> Norwegian;
+    Norwegian -> Nationality;
 
-    Color -> Blue;
+    Blue -> Color;
 
     Norwegian -> House_1;
 
