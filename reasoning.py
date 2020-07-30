@@ -48,19 +48,19 @@ class state:
 
 
     def objects(self):
-        s = self
-        while s is not None:
-            for obj_name, obj in s._objects.items():
-                yield obj_name, obj
-            s = s._base
+        if self._base is not None:
+            yield from self._base.objects()
+
+        for obj_name, obj in self._objects.items():
+            yield obj_name, obj
 
 
     def relations(self):
-        s = self
-        while s is not None:
-            for rel_name, rel in s._relations.items():
-                yield rel_name, rel
-            s = s._base
+        if self._base is not None:
+            yield from self._base.relations()
+
+        for rel_name, rel in self._relations.items():
+            yield rel_name, rel
 
 
     def get_obj(self, name):
@@ -84,7 +84,7 @@ class state:
     def flatten(self):
         s = state()
 
-        for obj_name in self.objects():
+        for obj_name, _ in self.objects():
             s.obj(obj_name)
 
         for rel_name, rel in self.relations():
@@ -108,7 +108,7 @@ class state:
         if self._base is not None:
             s = self._base.dump(level-1)
 
-        s += f'level {level}\n'
+        s += f'\n# Level {level}\n\n'
 
         for obj_name in self._objects:
             s += obj_name + '\n'
@@ -166,11 +166,14 @@ class state:
 
 
     def obj(self, name):
+        # Add/Insert new Object
+
         return self._objects.setdefault(name, {})
 
 
-
     def rel(self, src, rel, dst):
+        # Add new Relation
+
         r = self._relations.setdefault(rel, {})
         r.setdefault(src, set()).add(dst)
         
@@ -206,11 +209,14 @@ class state:
 
     def ends(self, rel_selector):
         s = self.select_rel(rel_selector)
-        return [obj_name for obj_name, obj in s.objects.items() if len(obj) == 0]
+        return [obj_name for obj_name, obj in s._objects.items() if len(obj) == 0]
 
 
     def obj_type(self, obj_name, type_rel_name):
-        types = self._objects[obj_name].get(type_rel_name, set())
+        obj = self.get_obj(obj_name)
+        if obj is None:
+            return None
+        types = obj.get(type_rel_name, set())
         if len(types) == 1:
             return next(iter(types))
         return None
@@ -218,7 +224,7 @@ class state:
 
     def rel_types(self, type_rel_name):
         types = {}
-        for rel_name, rel in self._relations.items():
+        for rel_name, rel in self.relations():
             if rel_name != type_rel_name:
                 for src_name, dst_set in rel.items():
                     for dst_name in dst_set:
@@ -235,7 +241,7 @@ class state:
         # Return dict of object -> relations that violate the rule.
         comp = str_comparator(rel_pattern)
         violations = {}
-        for obj_name, obj in self._objects.items():
+        for obj_name, obj in self.flatten()._objects.items():
             for rel_name, rel in obj.items():
                 if comp(rel_name) and len(rel) > 1:
                     violations.setdefault(obj_name, {})[rel_name] = deepcopy(rel)
@@ -264,10 +270,24 @@ s.loadf(sys.argv[1])
 #pprint(s.verify_single_rel_constraint('next'))
 
 
+s = snapshot(s)
+
+s.rel('Snail', 'is', 'Tea')
+
+
+print(s.dot())
+
+
 
 
 #TODO:
-# 4) state versioning
-# 5) inference
-# 6) hypothesis: generate, test, verify, multilevel
-# 7) delete obj or relation and versioning
+# 3) generate pics in README from text files
+# 4) next step in README - replace different relation types with just 'is' - look at object 'Snail' as 'House with Snail' - triangle rule become trivial
+# 4.1) reformulate constraints with End objects and 'is' relation
+# 4.2) restrict adding of any relation to End object - keep them ends
+# 4.3) all operations are with 'is' relations
+# 4.4) do smoething with left|right and next relation and square rule
+# 5) TESTS (with versioning)
+# 6) inference
+# 7) hypothesis: generate, test, verify, multilevel
+# 8) delete obj or relation and versioning
