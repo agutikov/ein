@@ -31,15 +31,68 @@ def str_comparator(pattern):
         raise Exception(f'Ivalid string comparator pattern: "{pattern}"')
 
 
+def snapshot(s):
+    return state(s)
+
+
 class state:
 
-    def __init__(self):
+    def __init__(self, base=None):
+        self._base = base
 
         # relation name -> dict of src object names -> set of dst object names
-        self.relations = {}
+        self._relations = {}
 
         # src object name -> dict of relation name -> set of dst object names
-        self.objects = {}
+        self._objects = {}
+
+
+    def objects(self):
+        s = self
+        while s is not None:
+            for obj_name, obj in s._objects.items():
+                yield obj_name, obj
+            s = s._base
+
+
+    def relations(self):
+        s = self
+        while s is not None:
+            for rel_name, rel in s._relations.items():
+                yield rel_name, rel
+            s = s._base
+
+
+    def get_obj(self, name):
+        s = self
+        while s is not None:
+            obj = s._objects.get(name, None)
+            if obj is not None:
+                return obj
+            s = s._base
+
+
+    def get_rel(self, name):
+        s = self
+        while s is not None:
+            rel = s._relations.get(name, None)
+            if rel is not None:
+                return rel
+            s = s._base
+
+
+    def flatten(self):
+        s = state()
+
+        for obj_name in self.objects():
+            s.obj(obj_name)
+
+        for rel_name, rel in self.relations():
+            for src_name, dst_set in rel.items():
+                for dst_name in dst_set:
+                    s.rel(src_name, rel_name, dst_name)
+
+        return s
 
 
     #TODO: Replace set of dst object names with single object name -> automatic constraint checking during adding of new relation
@@ -49,12 +102,18 @@ class state:
         pass #TODO
 
 
-    def dump(self):
+    def dump(self, level=0):
         s = ''
-        for obj_name in self.objects:
+
+        if self._base is not None:
+            s = self._base.dump(level-1)
+
+        s += f'level {level}\n'
+
+        for obj_name in self._objects:
             s += obj_name + '\n'
 
-        for rel_name, rel in self.relations.items():
+        for rel_name, rel in self._relations.items():
             for src_name, dst_set in rel.items():
                 for dst_name in dst_set:
                     s += src_name + ' ' + rel_name + ' ' + dst_name + '\n'
@@ -62,13 +121,15 @@ class state:
 
 
     def dot(self, colorfull=True):
+        s = self.flatten()
+
         dot = 'digraph G {\n'
-        for obj_name in self.objects:
+        for obj_name in s._objects:
             dot += f'  {obj_name};\n'
 
-        colors = {rel_name: hash_color(rel_name) for rel_name in self.relations}
+        colors = {rel_name: hash_color(rel_name) for rel_name in s._relations}
 
-        for rel_name, rel in self.relations.items():
+        for rel_name, rel in s._relations.items():
             for src_name, dst_set in rel.items():
                 for dst_name in dst_set:
                     if colorfull:
@@ -105,17 +166,18 @@ class state:
 
 
     def obj(self, name):
-        return self.objects.setdefault(name, {})
+        return self._objects.setdefault(name, {})
+
 
 
     def rel(self, src, rel, dst):
-        r = self.relations.setdefault(rel, {})
+        r = self._relations.setdefault(rel, {})
         r.setdefault(src, set()).add(dst)
         
-        s = self.objects.setdefault(src, {})
+        s = self._objects.setdefault(src, {})
         s.setdefault(rel, set()).add(dst)
         
-        d = self.objects.setdefault(dst, {})
+        d = self._objects.setdefault(dst, {})
 
         return s, r, d
 
@@ -129,15 +191,15 @@ class state:
         comp = str_comparator(rel_pattern)
         s = state()
 
-        for rel_name, rel in self.relations.items():
+        for rel_name, rel in self.relations():
             if comp(rel_name) != exclude:
                 for src_name, dst_set in rel.items():
                     for dst_name in dst_set:
                         s.rel(src_name, rel_name, dst_name)
 
         if preserve_objs:
-            for obj in self.objects:
-                s.obj(obj)
+            for obj_name, _ in self.objects():
+                s.obj(obj_name)
 
         return s
 
@@ -146,9 +208,9 @@ class state:
         s = self.select_rel(rel_selector)
         return [obj_name for obj_name, obj in s.objects.items() if len(obj) == 0]
 
-    
+
     def obj_type(self, obj_name, type_rel_name):
-        types = self.objects[obj_name].get(type_rel_name, set())
+        types = self._objects[obj_name].get(type_rel_name, set())
         if len(types) == 1:
             return next(iter(types))
         return None
@@ -156,7 +218,7 @@ class state:
 
     def rel_types(self, type_rel_name):
         types = {}
-        for rel_name, rel in self.relations.items():
+        for rel_name, rel in self._relations.items():
             if rel_name != type_rel_name:
                 for src_name, dst_set in rel.items():
                     for dst_name in dst_set:
@@ -173,7 +235,7 @@ class state:
         # Return dict of object -> relations that violate the rule.
         comp = str_comparator(rel_pattern)
         violations = {}
-        for obj_name, obj in self.objects.items():
+        for obj_name, obj in self._objects.items():
             for rel_name, rel in obj.items():
                 if comp(rel_name) and len(rel) > 1:
                     violations.setdefault(obj_name, {})[rel_name] = deepcopy(rel)
@@ -208,3 +270,4 @@ s.loadf(sys.argv[1])
 # 4) state versioning
 # 5) inference
 # 6) hypothesis: generate, test, verify, multilevel
+# 7) delete obj or relation and versioning
