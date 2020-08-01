@@ -24,7 +24,7 @@ def str_comparator(pattern):
     elif isinstance(pattern, str):
         r = re.compile(pattern)
         return lambda x: r.search(x) is not None
-    elif isinstance(pattern, list):
+    elif isinstance(pattern, list) or isinstance(pattern, set) or isinstance(pattern, tuple):
         str_set = set(pattern)
         return lambda x: x in str_set
     else:
@@ -36,6 +36,11 @@ def snapshot(s):
 
 
 class state:
+    pass
+    #TODO
+
+
+class versioned_state:
 
     def __init__(self, base=None):
         self._base = base
@@ -212,14 +217,21 @@ class state:
         return [obj_name for obj_name, obj in s._objects.items() if len(obj) == 0]
 
 
-    def obj_type(self, obj_name, type_rel_name):
-        obj = self.get_obj(obj_name)
+    def not_ends(self, rel_selector):
+        s = self.select_rel(rel_selector)
+        return [obj_name for obj_name, obj in s._objects.items() if len(obj) != 0]
+
+
+    def obj_types(self, obj_name, rel_pattern):
+        comp = str_comparator(rel_pattern)
+        ends = set(self.ends(rel_pattern))
+        obj = self.get_obj(obj_name) #TODO: Call get_obj() only on flattened state.
         if obj is None:
-            return None
-        types = obj.get(type_rel_name, set())
-        if len(types) == 1:
-            return next(iter(types))
-        return None
+            return []
+        for rel_name, rel in obj:
+            if comp(rel_name):
+                return list(ends.intersection(set(rel)))
+        return []
 
 
     def rel_types(self, type_rel_name):
@@ -237,14 +249,19 @@ class state:
 
 
     def verify_single_rel_constraint(self, rel_pattern=None):
-        # Verify single relation constraint.
+        # Verify single relation constraints:
+        # - Each object has one and only one arrow to end object (single type).
+        # - Each object has not more that one path to any end object (single value of every attribute).
         # Return dict of object -> relations that violate the rule.
+        not_ends = set(self.not_ends(rel_pattern))
         comp = str_comparator(rel_pattern)
-        violations = {}
-        for obj_name, obj in self.flatten()._objects.items():
-            for rel_name, rel in obj.items():
-                if comp(rel_name) and len(rel) > 1:
-                    violations.setdefault(obj_name, {})[rel_name] = deepcopy(rel)
+        violations = ({}, {})
+
+        for obj_name in not_ends:
+            if len(self.obj_types(obj_name, rel_pattern)) != 1:
+                violations[0][obj_name] = {rel_name: deepcopy(rel) for rel_name, rel in }
+            #TODO
+
         return violations
 
 
@@ -275,19 +292,23 @@ s = snapshot(s)
 s.rel('Snail', 'is', 'Tea')
 
 
-print(s.dot())
+pprint(s.ends(['is']))
+
+pprint(s.verify_single_rel_constraint(['is']))
 
 
 
 
 #TODO:
-# 3) generate pics in README from text files
-# 4) next step in README - replace different relation types with just 'is' - look at object 'Snail' as 'House with Snail' - triangle rule become trivial
+# 3) Use flattened state for <read> ops like get_obj() or obj_types() or constraint cheking, and <write> ops on top level slice.
+# 3.1) cache flattened state on top level, state class and versioned_state class
+
 # 4.1) reformulate constraints with End objects and 'is' relation
 # 4.2) restrict adding of any relation to End object - keep them ends
 # 4.3) all operations are with 'is' relations
 # 4.4) do smoething with left|right and next relation and square rule
 # 5) TESTS (with versioning)
-# 6) inference
+# 6) inference - trianlge rule
 # 7) hypothesis: generate, test, verify, multilevel
+# 7.1) square rule is a restriction for hypothesis.
 # 8) delete obj or relation and versioning
