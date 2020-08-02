@@ -21,6 +21,8 @@ def hash_color(s):
 def str_comparator(pattern):
     if pattern is None:
         return lambda x: True
+    elif pattern is callable:
+        return lambda x: pattern(x)
     elif isinstance(pattern, str):
         r = re.compile(pattern)
         return lambda x: r.search(x) is not None
@@ -31,73 +33,13 @@ def str_comparator(pattern):
         raise Exception(f'Ivalid string comparator pattern: "{pattern}"')
 
 
-def snapshot(s):
-    return state(s)
-
-
 class state:
-    pass
-    #TODO
-
-
-class versioned_state:
-
-    def __init__(self, base=None):
-        self._base = base
-
+    def __init__(self):
         # relation name -> dict of src object names -> set of dst object names
-        self._relations = {}
+        self.relations = {}
 
         # src object name -> dict of relation name -> set of dst object names
-        self._objects = {}
-
-
-    def objects(self):
-        if self._base is not None:
-            yield from self._base.objects()
-
-        for obj_name, obj in self._objects.items():
-            yield obj_name, obj
-
-
-    def relations(self):
-        if self._base is not None:
-            yield from self._base.relations()
-
-        for rel_name, rel in self._relations.items():
-            yield rel_name, rel
-
-
-    def get_obj(self, name):
-        s = self
-        while s is not None:
-            obj = s._objects.get(name, None)
-            if obj is not None:
-                return obj
-            s = s._base
-
-
-    def get_rel(self, name):
-        s = self
-        while s is not None:
-            rel = s._relations.get(name, None)
-            if rel is not None:
-                return rel
-            s = s._base
-
-
-    def flatten(self):
-        s = state()
-
-        for obj_name, _ in self.objects():
-            s.obj(obj_name)
-
-        for rel_name, rel in self.relations():
-            for src_name, dst_set in rel.items():
-                for dst_name in dst_set:
-                    s.rel(src_name, rel_name, dst_name)
-
-        return s
+        self.objects = {}
 
 
     #TODO: Replace set of dst object names with single object name -> automatic constraint checking during adding of new relation
@@ -107,18 +49,13 @@ class versioned_state:
         pass #TODO
 
 
-    def dump(self, level=0):
+    def dump(self):
         s = ''
 
-        if self._base is not None:
-            s = self._base.dump(level-1)
-
-        s += f'\n# Level {level}\n\n'
-
-        for obj_name in self._objects:
+        for obj_name in self.objects:
             s += obj_name + '\n'
 
-        for rel_name, rel in self._relations.items():
+        for rel_name, rel in self.relations.items():
             for src_name, dst_set in rel.items():
                 for dst_name in dst_set:
                     s += src_name + ' ' + rel_name + ' ' + dst_name + '\n'
@@ -126,15 +63,13 @@ class versioned_state:
 
 
     def dot(self, colorfull=True):
-        s = self.flatten()
-
         dot = 'digraph G {\n'
-        for obj_name in s._objects:
+        for obj_name in s.objects:
             dot += f'  {obj_name};\n'
 
-        colors = {rel_name: hash_color(rel_name) for rel_name in s._relations}
+        colors = {rel_name: hash_color(rel_name) for rel_name in s.relations}
 
-        for rel_name, rel in s._relations.items():
+        for rel_name, rel in s.relations.items():
             for src_name, dst_set in rel.items():
                 for dst_name in dst_set:
                     if colorfull:
@@ -177,7 +112,7 @@ class versioned_state:
 
 
     def rel(self, src, rel, dst):
-        # Add new Relation
+        # Add new Relation with source and destination Objects
 
         r = self._relations.setdefault(rel, {})
         r.setdefault(src, set()).add(dst)
@@ -199,14 +134,14 @@ class versioned_state:
         comp = str_comparator(rel_pattern)
         s = state()
 
-        for rel_name, rel in self.relations():
+        for rel_name, rel in self.relations:
             if comp(rel_name) != exclude:
                 for src_name, dst_set in rel.items():
                     for dst_name in dst_set:
                         s.rel(src_name, rel_name, dst_name)
 
         if preserve_objs:
-            for obj_name, _ in self.objects():
+            for obj_name, _ in self.objects:
                 s.obj(obj_name)
 
         return s
@@ -225,7 +160,7 @@ class versioned_state:
     def obj_types(self, obj_name, rel_pattern):
         comp = str_comparator(rel_pattern)
         ends = set(self.ends(rel_pattern))
-        obj = self.get_obj(obj_name) #TODO: Call get_obj() only on flattened state.
+        obj = self.objects.get(obj_name, None)
         if obj is None:
             return []
         for rel_name, rel in obj:
@@ -236,7 +171,7 @@ class versioned_state:
 
     def rel_types(self, type_rel_name):
         types = {}
-        for rel_name, rel in self.relations():
+        for rel_name, rel in self.relations:
             if rel_name != type_rel_name:
                 for src_name, dst_set in rel.items():
                     for dst_name in dst_set:
@@ -263,6 +198,51 @@ class versioned_state:
             #TODO
 
         return violations
+
+
+
+
+
+
+class versioned_state:
+
+    def __init__(self, base=None):
+        self._base = base
+        self._readonly = False
+        if base is not None:
+            self._level = base._level + 1
+            base._readonly = True
+            self._state = deepcopy(base._state)
+        else:
+            self._level = 0
+            self._state = state()
+        self._addings = state()
+        self._deletes = state()
+
+
+    def inc_version(self):
+        return versioned_state(self)
+
+
+    def dump(self, level=0):
+        s = ''
+
+        if self._base is not None:
+            s = self._base.dump(level-1)
+
+        s += f'\n# Level {level}\n\n'
+
+        #TODO
+
+        return s
+
+
+    def dot(self, colorfull=True):
+        #TODO
+        dot = ''
+        return dot
+
+
 
 
 
@@ -302,13 +282,16 @@ pprint(s.verify_single_rel_constraint(['is']))
 #TODO:
 # 3) Use flattened state for <read> ops like get_obj() or obj_types() or constraint cheking, and <write> ops on top level slice.
 # 3.1) cache flattened state on top level, state class and versioned_state class
+# 3.2) delete obj or relation and versioning
+# 3.3) TESTS (with versioning)
+
 
 # 4.1) reformulate constraints with End objects and 'is' relation
 # 4.2) restrict adding of any relation to End object - keep them ends
 # 4.3) all operations are with 'is' relations
 # 4.4) do smoething with left|right and next relation and square rule
-# 5) TESTS (with versioning)
+
 # 6) inference - trianlge rule
+
 # 7) hypothesis: generate, test, verify, multilevel
 # 7.1) square rule is a restriction for hypothesis.
-# 8) delete obj or relation and versioning
