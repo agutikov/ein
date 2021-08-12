@@ -1,0 +1,6 @@
+[submodule "smt/CVC4"]
+	path = smt/CVC4
+	url = https://github.com/CVC4/CVC4.git
+[submodule "nlp/link-grammar"]
+	path = nlp/link-grammar
+	url = https://github.com/opencog/link-grammar.git
