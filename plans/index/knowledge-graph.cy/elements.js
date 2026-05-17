@@ -1,0 +1,6699 @@
+window.cyElements = [
+  {
+    "data": {
+      "id": "cluster_01",
+      "label": "01 — LLM & Constrained Generation",
+      "fill": "#f4f8ff",
+      "border": "#3a5fb0",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_01_internals",
+      "label": "Inference internals",
+      "fill": "#f6f6f6",
+      "border": "#5577cc",
+      "depth": 1,
+      "parent": "cluster_01"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_01_gbnf",
+      "label": "Grammar-constrained decoding",
+      "fill": "#f6f6f6",
+      "border": "#5577cc",
+      "depth": 1,
+      "parent": "cluster_01"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_01_crf",
+      "label": "Constrained reasoning frameworks",
+      "fill": "#f6f6f6",
+      "border": "#5577cc",
+      "depth": 1,
+      "parent": "cluster_01"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_01_neurosym",
+      "label": "Neuro-symbolic / verifier-guided",
+      "fill": "#f6f6f6",
+      "border": "#5577cc",
+      "depth": 1,
+      "parent": "cluster_01"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_01_layers",
+      "label": "Three levels of constraint",
+      "fill": "#f6f6f6",
+      "border": "#5577cc",
+      "depth": 1,
+      "parent": "cluster_01"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_02",
+      "label": "02 — Solvers: CSP / SAT / SMT / CP / LP / Logic",
+      "fill": "#fff7f0",
+      "border": "#b06030",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_02_problems",
+      "label": "Problem classes",
+      "fill": "#f6f6f6",
+      "border": "#cc8855",
+      "depth": 1,
+      "parent": "cluster_02"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_02_sat",
+      "label": "SAT solvers",
+      "fill": "#f6f6f6",
+      "border": "#cc8855",
+      "depth": 1,
+      "parent": "cluster_02"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_02_smt",
+      "label": "SMT solvers",
+      "fill": "#f6f6f6",
+      "border": "#cc8855",
+      "depth": 1,
+      "parent": "cluster_02"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_02_cp",
+      "label": "CP / MIP / OR",
+      "fill": "#f6f6f6",
+      "border": "#cc8855",
+      "depth": 1,
+      "parent": "cluster_02"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_02_asp",
+      "label": "ASP systems",
+      "fill": "#f6f6f6",
+      "border": "#cc8855",
+      "depth": 1,
+      "parent": "cluster_02"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_02_logic",
+      "label": "Logic programming",
+      "fill": "#f6f6f6",
+      "border": "#cc8855",
+      "depth": 1,
+      "parent": "cluster_02"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_02_propag",
+      "label": "Constraint propagation / consistency",
+      "fill": "#f6f6f6",
+      "border": "#cc8855",
+      "depth": 1,
+      "parent": "cluster_02"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_02_analysis",
+      "label": "Analysis on top of a model",
+      "fill": "#f6f6f6",
+      "border": "#cc8855",
+      "depth": 1,
+      "parent": "cluster_02"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_03",
+      "label": "03 — Theorem Proving & Formal Methods",
+      "fill": "#f5fff0",
+      "border": "#2f7030",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_03_itp",
+      "label": "Interactive theorem provers (ITP)",
+      "fill": "#f6f6f6",
+      "border": "#4f9050",
+      "depth": 1,
+      "parent": "cluster_03"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_03_atp",
+      "label": "Automated theorem provers (ATP)",
+      "fill": "#f6f6f6",
+      "border": "#4f9050",
+      "depth": 1,
+      "parent": "cluster_03"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_03_foundations",
+      "label": "Foundations",
+      "fill": "#f6f6f6",
+      "border": "#4f9050",
+      "depth": 1,
+      "parent": "cluster_03"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_03_proofstruct",
+      "label": "Proof structures",
+      "fill": "#f6f6f6",
+      "border": "#4f9050",
+      "depth": 1,
+      "parent": "cluster_03"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_03_verif",
+      "label": "Verified software & formal methods",
+      "fill": "#f6f6f6",
+      "border": "#4f9050",
+      "depth": 1,
+      "parent": "cluster_03"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_04",
+      "label": "04 — Programming Languages",
+      "fill": "#fff0f5",
+      "border": "#aa3070",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_04_lisp",
+      "label": "S-expression / Lisp family",
+      "fill": "#f6f6f6",
+      "border": "#cc70a0",
+      "depth": 1,
+      "parent": "cluster_04"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_04_func",
+      "label": "Functional / typed-functional",
+      "fill": "#f6f6f6",
+      "border": "#cc70a0",
+      "depth": 1,
+      "parent": "cluster_04"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_04_scientific",
+      "label": "Numerical / scientific hosts",
+      "fill": "#f6f6f6",
+      "border": "#cc70a0",
+      "depth": 1,
+      "parent": "cluster_04"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_04_systems",
+      "label": "Systems / native",
+      "fill": "#f6f6f6",
+      "border": "#cc70a0",
+      "depth": 1,
+      "parent": "cluster_04"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_04_web",
+      "label": "Web / JS ecosystem",
+      "fill": "#f6f6f6",
+      "border": "#cc70a0",
+      "depth": 1,
+      "parent": "cluster_04"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_04_niche",
+      "label": "Niche / categorical / experimental",
+      "fill": "#f6f6f6",
+      "border": "#cc70a0",
+      "depth": 1,
+      "parent": "cluster_04"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_05",
+      "label": "05 — Category Theory & Compositional Formalisms",
+      "fill": "#f5f0ff",
+      "border": "#5538a8",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_05_core",
+      "label": "Core concepts",
+      "fill": "#f6f6f6",
+      "border": "#7a55cc",
+      "depth": 1,
+      "parent": "cluster_05"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_05_notation",
+      "label": "Notation / diagram languages",
+      "fill": "#f6f6f6",
+      "border": "#7a55cc",
+      "depth": 1,
+      "parent": "cluster_05"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_05_string",
+      "label": "String diagrams / process theories",
+      "fill": "#f6f6f6",
+      "border": "#7a55cc",
+      "depth": 1,
+      "parent": "cluster_05"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_05_libs",
+      "label": "Categorical software & libraries",
+      "fill": "#f6f6f6",
+      "border": "#7a55cc",
+      "depth": 1,
+      "parent": "cluster_05"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_05_rewrite",
+      "label": "Graph rewriting as categorical op",
+      "fill": "#f6f6f6",
+      "border": "#7a55cc",
+      "depth": 1,
+      "parent": "cluster_05"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_06",
+      "label": "06 — Graphs & Rewrite Systems",
+      "fill": "#f0fbff",
+      "border": "#306090",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_06_basic",
+      "label": "Basic graph kinds",
+      "fill": "#f6f6f6",
+      "border": "#5588bb",
+      "depth": 1,
+      "parent": "cluster_06"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_06_equiv",
+      "label": "Equivalence machinery",
+      "fill": "#f6f6f6",
+      "border": "#5588bb",
+      "depth": 1,
+      "parent": "cluster_06"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_06_egraph",
+      "label": "E-graphs & equality saturation",
+      "fill": "#f6f6f6",
+      "border": "#5588bb",
+      "depth": 1,
+      "parent": "cluster_06"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_06_rewrite",
+      "label": "Term & graph rewriting",
+      "fill": "#f6f6f6",
+      "border": "#5588bb",
+      "depth": 1,
+      "parent": "cluster_06"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_06_automata",
+      "label": "Automata & state graphs",
+      "fill": "#f6f6f6",
+      "border": "#5588bb",
+      "depth": 1,
+      "parent": "cluster_06"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_06_compilergraphs",
+      "label": "Compiler-side graphs",
+      "fill": "#f6f6f6",
+      "border": "#5588bb",
+      "depth": 1,
+      "parent": "cluster_06"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_06_kg",
+      "label": "Knowledge-graph / symbolic AI",
+      "fill": "#f6f6f6",
+      "border": "#5588bb",
+      "depth": 1,
+      "parent": "cluster_06"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_07",
+      "label": "07 — Static Analysis & Compiler Technology",
+      "fill": "#fdfff0",
+      "border": "#909030",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_07_ai",
+      "label": "Abstract interpretation",
+      "fill": "#f6f6f6",
+      "border": "#aaaa55",
+      "depth": 1,
+      "parent": "cluster_07"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_07_domains",
+      "label": "Abstract domains",
+      "fill": "#f6f6f6",
+      "border": "#aaaa55",
+      "depth": 1,
+      "parent": "cluster_07"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_07_analysers",
+      "label": "Production analysers",
+      "fill": "#f6f6f6",
+      "border": "#aaaa55",
+      "depth": 1,
+      "parent": "cluster_07"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_07_symex",
+      "label": "Symbolic execution & MC",
+      "fill": "#f6f6f6",
+      "border": "#aaaa55",
+      "depth": 1,
+      "parent": "cluster_07"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_07_ir",
+      "label": "Compiler IRs",
+      "fill": "#f6f6f6",
+      "border": "#aaaa55",
+      "depth": 1,
+      "parent": "cluster_07"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_07_eqsatcompilers",
+      "label": "Equality saturation in compilers",
+      "fill": "#f6f6f6",
+      "border": "#aaaa55",
+      "depth": 1,
+      "parent": "cluster_07"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_07_synth",
+      "label": "Synthesis & verified opt.",
+      "fill": "#f6f6f6",
+      "border": "#aaaa55",
+      "depth": 1,
+      "parent": "cluster_07"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_08",
+      "label": "08 — Diagramming & Visualisation Libraries",
+      "fill": "#fff0f0",
+      "border": "#aa3030",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_08_general",
+      "label": "General-purpose graph viz (web)",
+      "fill": "#f6f6f6",
+      "border": "#cc6060",
+      "depth": 1,
+      "parent": "cluster_08"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_08_nodeeditors",
+      "label": "Node editors / visual programming",
+      "fill": "#f6f6f6",
+      "border": "#cc6060",
+      "depth": 1,
+      "parent": "cluster_08"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_08_native",
+      "label": "Native / C++ editors",
+      "fill": "#f6f6f6",
+      "border": "#cc6060",
+      "depth": 1,
+      "parent": "cluster_08"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_08_cad",
+      "label": "Technical / CAD-style editors",
+      "fill": "#f6f6f6",
+      "border": "#cc6060",
+      "depth": 1,
+      "parent": "cluster_08"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_08_canvas",
+      "label": "Low-level canvas / drawing",
+      "fill": "#f6f6f6",
+      "border": "#cc6060",
+      "depth": 1,
+      "parent": "cluster_08"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_08_layout",
+      "label": "Layout engines",
+      "fill": "#f6f6f6",
+      "border": "#cc6060",
+      "depth": 1,
+      "parent": "cluster_08"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_08_workflow",
+      "label": "Workflow / pipeline apps",
+      "fill": "#f6f6f6",
+      "border": "#cc6060",
+      "depth": 1,
+      "parent": "cluster_08"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_09",
+      "label": "09 — Cognitive Architectures & Neuro-symbolic AI",
+      "fill": "#fff0fb",
+      "border": "#8030a0",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_09_opencog",
+      "label": "OpenCog stack",
+      "fill": "#f6f6f6",
+      "border": "#aa55cc",
+      "depth": 1,
+      "parent": "cluster_09"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_09_tms",
+      "label": "Truth maintenance",
+      "fill": "#f6f6f6",
+      "border": "#aa55cc",
+      "depth": 1,
+      "parent": "cluster_09"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_09_neurosym",
+      "label": "Neuro-symbolic landscape",
+      "fill": "#f6f6f6",
+      "border": "#aa55cc",
+      "depth": 1,
+      "parent": "cluster_09"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_09_adj",
+      "label": "Adjacent graph+cognition",
+      "fill": "#f6f6f6",
+      "border": "#aa55cc",
+      "depth": 1,
+      "parent": "cluster_09"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_09_buzz",
+      "label": "Cognitive-arch buzzwords",
+      "fill": "#f6f6f6",
+      "border": "#aa55cc",
+      "depth": 1,
+      "parent": "cluster_09"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_10",
+      "label": "10 — NLP & Semantic Representation",
+      "fill": "#f0fff5",
+      "border": "#306060",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_10_pipeline",
+      "label": "NLP→solver pipeline stages",
+      "fill": "#f6f6f6",
+      "border": "#558888",
+      "depth": 1,
+      "parent": "cluster_10"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_10_semreps",
+      "label": "Semantic-representation devices",
+      "fill": "#f6f6f6",
+      "border": "#558888",
+      "depth": 1,
+      "parent": "cluster_10"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_10_llmext",
+      "label": "LLM-driven extraction",
+      "fill": "#f6f6f6",
+      "border": "#558888",
+      "depth": 1,
+      "parent": "cluster_10"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_10_tasks",
+      "label": "Three task classes on the IR",
+      "fill": "#f6f6f6",
+      "border": "#558888",
+      "depth": 1,
+      "parent": "cluster_10"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_11",
+      "label": "11 — Search & Optimisation Algorithms",
+      "fill": "#f0f5ff",
+      "border": "#404090",
+      "depth": 0
+    },
+    "classes": "cluster cluster-d0"
+  },
+  {
+    "data": {
+      "id": "cluster_11_tree",
+      "label": "Tree / state-space search",
+      "fill": "#f6f6f6",
+      "border": "#6060aa",
+      "depth": 1,
+      "parent": "cluster_11"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_11_mcts",
+      "label": "Monte-Carlo / heuristic-guided",
+      "fill": "#f6f6f6",
+      "border": "#6060aa",
+      "depth": 1,
+      "parent": "cluster_11"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_11_propag",
+      "label": "Constraint propagation",
+      "fill": "#f6f6f6",
+      "border": "#6060aa",
+      "depth": 1,
+      "parent": "cluster_11"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_11_eqrewrite",
+      "label": "Equality / rewrite-based",
+      "fill": "#f6f6f6",
+      "border": "#6060aa",
+      "depth": 1,
+      "parent": "cluster_11"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_11_continuous",
+      "label": "Numerical / continuous",
+      "fill": "#f6f6f6",
+      "border": "#6060aa",
+      "depth": 1,
+      "parent": "cluster_11"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_11_evo",
+      "label": "Evolutionary / stochastic",
+      "fill": "#f6f6f6",
+      "border": "#6060aa",
+      "depth": 1,
+      "parent": "cluster_11"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "cluster_11_synth",
+      "label": "Program-synthesis-shaped",
+      "fill": "#f6f6f6",
+      "border": "#6060aa",
+      "depth": 1,
+      "parent": "cluster_11"
+    },
+    "classes": "cluster cluster-d1"
+  },
+  {
+    "data": {
+      "id": "Logit",
+      "label": "Logit",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_internals"
+    }
+  },
+  {
+    "data": {
+      "id": "Softmax",
+      "label": "Softmax",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_internals"
+    }
+  },
+  {
+    "data": {
+      "id": "Temperature",
+      "label": "Temperature /\ntop-k / top-p",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_01_internals"
+    }
+  },
+  {
+    "data": {
+      "id": "Tokenization",
+      "label": "Tokenization /\nvocabulary",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_internals"
+    }
+  },
+  {
+    "data": {
+      "id": "BPE",
+      "label": "Byte-Pair\nEncoding (BPE)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_internals"
+    }
+  },
+  {
+    "data": {
+      "id": "llamacpp",
+      "label": "llama.cpp",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_01_internals"
+    }
+  },
+  {
+    "data": {
+      "id": "NucleusPaper",
+      "label": "Holtzman 2019\n(nucleus sampling)",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_01_internals"
+    }
+  },
+  {
+    "data": {
+      "id": "GBNF",
+      "label": "GBNF\n(GGML BNF)",
+      "kind": "standard",
+      "dotShape": "tab",
+      "dotFill": "lightgrey",
+      "parent": "cluster_01_gbnf"
+    }
+  },
+  {
+    "data": {
+      "id": "BNF",
+      "label": "BNF",
+      "kind": "standard",
+      "dotShape": "tab",
+      "dotFill": "lightgrey",
+      "parent": "cluster_01_gbnf"
+    }
+  },
+  {
+    "data": {
+      "id": "EBNF",
+      "label": "EBNF",
+      "kind": "standard",
+      "dotShape": "tab",
+      "dotFill": "lightgrey",
+      "parent": "cluster_01_gbnf"
+    }
+  },
+  {
+    "data": {
+      "id": "ParserGuidedDec",
+      "label": "Parser-guided\ndecoding",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_01_gbnf"
+    }
+  },
+  {
+    "data": {
+      "id": "HybridScratchpad",
+      "label": "Hybrid\nscratchpad pattern",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_gbnf"
+    }
+  },
+  {
+    "data": {
+      "id": "ConstOfT",
+      "label": "Const-of-Thought\n(Const-o-T)",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_01_crf"
+    }
+  },
+  {
+    "data": {
+      "id": "GCR",
+      "label": "GCR — Graph-\nConstrained Reasoning",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_01_crf"
+    }
+  },
+  {
+    "data": {
+      "id": "CRANE",
+      "label": "CRANE",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_01_crf"
+    }
+  },
+  {
+    "data": {
+      "id": "SGR",
+      "label": "Schema-Guided\nReasoning (SGR)",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_01_crf"
+    }
+  },
+  {
+    "data": {
+      "id": "KGTrie",
+      "label": "KG-Trie",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_01_crf"
+    }
+  },
+  {
+    "data": {
+      "id": "Pydantic",
+      "label": "Pydantic",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_01_crf"
+    }
+  },
+  {
+    "data": {
+      "id": "NeuroSymAI",
+      "label": "Neuro-symbolic AI",
+      "kind": "cog_arch",
+      "dotShape": "doubleoctagon",
+      "dotFill": "lightcoral",
+      "parent": "cluster_01_neurosym"
+    }
+  },
+  {
+    "data": {
+      "id": "VerifierGuided",
+      "label": "Verifier-guided /\nproof-constrained inference",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_neurosym"
+    }
+  },
+  {
+    "data": {
+      "id": "SelfModLang",
+      "label": "Self-modifying\nconstraint languages",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_neurosym"
+    }
+  },
+  {
+    "data": {
+      "id": "ToolCalling",
+      "label": "Tool-calling /\nstructured output",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_neurosym"
+    }
+  },
+  {
+    "data": {
+      "id": "LayerSyntax",
+      "label": "Syntax layer\n(token-local)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_layers"
+    }
+  },
+  {
+    "data": {
+      "id": "LayerSemantic",
+      "label": "Semantic admissibility\n(state-space)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_layers"
+    }
+  },
+  {
+    "data": {
+      "id": "LayerGlobal",
+      "label": "Global validity\n(whole proof)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_01_layers"
+    }
+  },
+  {
+    "data": {
+      "id": "CSP",
+      "label": "CSP",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_02_problems"
+    }
+  },
+  {
+    "data": {
+      "id": "SAT",
+      "label": "Boolean SAT",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_02_problems"
+    }
+  },
+  {
+    "data": {
+      "id": "SMT",
+      "label": "SMT",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_02_problems"
+    }
+  },
+  {
+    "data": {
+      "id": "CP",
+      "label": "Constraint\nProgramming",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_02_problems"
+    }
+  },
+  {
+    "data": {
+      "id": "LP",
+      "label": "Linear\nProgramming",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_02_problems"
+    }
+  },
+  {
+    "data": {
+      "id": "MILP",
+      "label": "MILP / MIP",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_02_problems"
+    }
+  },
+  {
+    "data": {
+      "id": "ASP",
+      "label": "Answer-Set\nProgramming",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_02_problems"
+    }
+  },
+  {
+    "data": {
+      "id": "LogicProg",
+      "label": "Logic\nProgramming",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_02_problems"
+    }
+  },
+  {
+    "data": {
+      "id": "MiniSAT",
+      "label": "MiniSAT",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_sat"
+    }
+  },
+  {
+    "data": {
+      "id": "Glucose",
+      "label": "Glucose",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_sat"
+    }
+  },
+  {
+    "data": {
+      "id": "CaDiCaL",
+      "label": "CaDiCaL",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_sat"
+    }
+  },
+  {
+    "data": {
+      "id": "Kissat",
+      "label": "Kissat",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_sat"
+    }
+  },
+  {
+    "data": {
+      "id": "CDCL_02",
+      "label": "CDCL",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_02_sat"
+    }
+  },
+  {
+    "data": {
+      "id": "DPLL_02",
+      "label": "DPLL",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_02_sat"
+    }
+  },
+  {
+    "data": {
+      "id": "ImplGraph",
+      "label": "Implication\ngraph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_02_sat"
+    }
+  },
+  {
+    "data": {
+      "id": "ClauseVarBipartite",
+      "label": "Clause–variable\nbipartite graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_02_sat"
+    }
+  },
+  {
+    "data": {
+      "id": "Z3",
+      "label": "Z3",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_smt"
+    }
+  },
+  {
+    "data": {
+      "id": "CVC5",
+      "label": "CVC5",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_smt"
+    }
+  },
+  {
+    "data": {
+      "id": "Yices",
+      "label": "Yices",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_smt"
+    }
+  },
+  {
+    "data": {
+      "id": "SMTLIB",
+      "label": "SMT-LIB",
+      "kind": "standard",
+      "dotShape": "tab",
+      "dotFill": "lightgrey",
+      "parent": "cluster_02_smt"
+    }
+  },
+  {
+    "data": {
+      "id": "CongrClos",
+      "label": "Congruence\nclosure",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_02_smt"
+    }
+  },
+  {
+    "data": {
+      "id": "MiniZinc",
+      "label": "MiniZinc",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_02_cp"
+    }
+  },
+  {
+    "data": {
+      "id": "Essence",
+      "label": "Essence /\nConjure",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_02_cp"
+    }
+  },
+  {
+    "data": {
+      "id": "ORTools",
+      "label": "OR-Tools",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_cp"
+    }
+  },
+  {
+    "data": {
+      "id": "Gurobi",
+      "label": "Gurobi",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_cp"
+    }
+  },
+  {
+    "data": {
+      "id": "CPLEX",
+      "label": "CPLEX",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_cp"
+    }
+  },
+  {
+    "data": {
+      "id": "SCIP",
+      "label": "SCIP",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_cp"
+    }
+  },
+  {
+    "data": {
+      "id": "CPSAT",
+      "label": "CP-SAT",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_cp"
+    }
+  },
+  {
+    "data": {
+      "id": "Clingo",
+      "label": "Clingo",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_asp"
+    }
+  },
+  {
+    "data": {
+      "id": "DLV",
+      "label": "DLV",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_02_asp"
+    }
+  },
+  {
+    "data": {
+      "id": "SWIProlog",
+      "label": "SWI-Prolog",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_02_logic"
+    }
+  },
+  {
+    "data": {
+      "id": "Datalog",
+      "label": "Datalog",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_02_logic"
+    }
+  },
+  {
+    "data": {
+      "id": "Mercury",
+      "label": "Mercury",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_02_logic"
+    }
+  },
+  {
+    "data": {
+      "id": "miniKanren",
+      "label": "miniKanren",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_02_logic"
+    }
+  },
+  {
+    "data": {
+      "id": "CLPFD",
+      "label": "CLP(FD)",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_02_logic"
+    }
+  },
+  {
+    "data": {
+      "id": "AllDifferent",
+      "label": "All-different /\nglobal constraints",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_02_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "ArcConsistency",
+      "label": "Arc consistency\n(AC-3 / AC-4)",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_02_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "PathConsistency",
+      "label": "Path consistency",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_02_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "Backtracking_02",
+      "label": "Backtracking /\nhypothesis testing",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_02_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "AllenAlgebra",
+      "label": "Allen interval\nalgebra",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_02_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "RCC",
+      "label": "Region\nConnection\nCalculus",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_02_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "ModelEnum",
+      "label": "Model enumeration /\nbackbone analysis",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_02_analysis"
+    }
+  },
+  {
+    "data": {
+      "id": "UnsatCore",
+      "label": "Unsat core /\nMUS",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_02_analysis"
+    }
+  },
+  {
+    "data": {
+      "id": "ConstraintHypergraph",
+      "label": "Constraint\nhypergraph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_02_analysis"
+    }
+  },
+  {
+    "data": {
+      "id": "Lean",
+      "label": "Lean / mathlib",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_03_itp"
+    }
+  },
+  {
+    "data": {
+      "id": "Coq",
+      "label": "Coq",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_03_itp"
+    }
+  },
+  {
+    "data": {
+      "id": "Isabelle",
+      "label": "Isabelle /\nIsabelle/HOL",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_itp"
+    }
+  },
+  {
+    "data": {
+      "id": "Agda",
+      "label": "Agda",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_03_itp"
+    }
+  },
+  {
+    "data": {
+      "id": "Idris",
+      "label": "Idris",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_03_itp"
+    }
+  },
+  {
+    "data": {
+      "id": "ACL2",
+      "label": "ACL2",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_itp"
+    }
+  },
+  {
+    "data": {
+      "id": "Vampire",
+      "label": "Vampire",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_atp"
+    }
+  },
+  {
+    "data": {
+      "id": "EProver",
+      "label": "E",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_atp"
+    }
+  },
+  {
+    "data": {
+      "id": "Prover9",
+      "label": "Prover9 /\nMace4",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_atp"
+    }
+  },
+  {
+    "data": {
+      "id": "CurryHoward",
+      "label": "Curry–Howard\ncorrespondence",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_03_foundations"
+    }
+  },
+  {
+    "data": {
+      "id": "DepTypes",
+      "label": "Dependent types",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_03_foundations"
+    }
+  },
+  {
+    "data": {
+      "id": "TypeTheory",
+      "label": "Type theory\n(Martin-Löf, CIC)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_03_foundations"
+    }
+  },
+  {
+    "data": {
+      "id": "HoTT",
+      "label": "HoTT",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_03_foundations"
+    }
+  },
+  {
+    "data": {
+      "id": "HindleyMilner",
+      "label": "Hindley–Milner\ntype inference",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_03_foundations"
+    }
+  },
+  {
+    "data": {
+      "id": "ProofTree",
+      "label": "Proof tree",
+      "kind": "proof",
+      "dotShape": "component",
+      "dotFill": "wheat",
+      "parent": "cluster_03_proofstruct"
+    }
+  },
+  {
+    "data": {
+      "id": "ProofDAG",
+      "label": "Proof DAG",
+      "kind": "proof",
+      "dotShape": "component",
+      "dotFill": "wheat",
+      "parent": "cluster_03_proofstruct"
+    }
+  },
+  {
+    "data": {
+      "id": "TheoremDepGraph",
+      "label": "Theorem→lemma\ndependency graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_03_proofstruct"
+    }
+  },
+  {
+    "data": {
+      "id": "Tableau",
+      "label": "Tableau method",
+      "kind": "proof",
+      "dotShape": "component",
+      "dotFill": "wheat",
+      "parent": "cluster_03_proofstruct"
+    }
+  },
+  {
+    "data": {
+      "id": "NaturalDeduction",
+      "label": "Natural\ndeduction",
+      "kind": "proof",
+      "dotShape": "component",
+      "dotFill": "wheat",
+      "parent": "cluster_03_proofstruct"
+    }
+  },
+  {
+    "data": {
+      "id": "Resolution",
+      "label": "Resolution",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_03_proofstruct"
+    }
+  },
+  {
+    "data": {
+      "id": "ReductioAbsurdum",
+      "label": "Reductio ad\nabsurdum",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_03_proofstruct"
+    }
+  },
+  {
+    "data": {
+      "id": "KFramework",
+      "label": "K Framework",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_verif"
+    }
+  },
+  {
+    "data": {
+      "id": "PLTRedex",
+      "label": "PLT Redex",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_verif"
+    }
+  },
+  {
+    "data": {
+      "id": "Astree_03",
+      "label": "Astrée",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_verif"
+    }
+  },
+  {
+    "data": {
+      "id": "Infer_03",
+      "label": "Infer",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_verif"
+    }
+  },
+  {
+    "data": {
+      "id": "FramaC_03",
+      "label": "Frama-C",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_03_verif"
+    }
+  },
+  {
+    "data": {
+      "id": "Lisp",
+      "label": "Lisp /\nCommon Lisp /\nScheme",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_lisp"
+    }
+  },
+  {
+    "data": {
+      "id": "Racket",
+      "label": "Racket",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_lisp"
+    }
+  },
+  {
+    "data": {
+      "id": "Clojure",
+      "label": "Clojure",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_lisp"
+    }
+  },
+  {
+    "data": {
+      "id": "SMTLIB_lang",
+      "label": "SMT-LIB\n(as Lisp DSL)",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_lisp"
+    }
+  },
+  {
+    "data": {
+      "id": "Haskell",
+      "label": "Haskell",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_func"
+    }
+  },
+  {
+    "data": {
+      "id": "GHC",
+      "label": "GHC — STG /\nG-machine",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_04_func"
+    }
+  },
+  {
+    "data": {
+      "id": "Scala",
+      "label": "Scala",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_func"
+    }
+  },
+  {
+    "data": {
+      "id": "OCaml",
+      "label": "OCaml",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_func"
+    }
+  },
+  {
+    "data": {
+      "id": "Julia",
+      "label": "Julia",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_scientific"
+    }
+  },
+  {
+    "data": {
+      "id": "CatlabJL",
+      "label": "Catlab.jl",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_04_scientific"
+    }
+  },
+  {
+    "data": {
+      "id": "Python",
+      "label": "Python",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_scientific"
+    }
+  },
+  {
+    "data": {
+      "id": "DisCoPy_04",
+      "label": "DisCoPy",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_04_scientific"
+    }
+  },
+  {
+    "data": {
+      "id": "CPP",
+      "label": "C++",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_systems"
+    }
+  },
+  {
+    "data": {
+      "id": "Rust",
+      "label": "Rust",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_systems"
+    }
+  },
+  {
+    "data": {
+      "id": "CLang",
+      "label": "C",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_systems"
+    }
+  },
+  {
+    "data": {
+      "id": "JavaScript",
+      "label": "JavaScript /\nTypeScript",
+      "kind": "language",
+      "dotShape": "cylinder",
+      "dotFill": "pink",
+      "parent": "cluster_04_web"
+    }
+  },
+  {
+    "data": {
+      "id": "React",
+      "label": "React",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_04_web"
+    }
+  },
+  {
+    "data": {
+      "id": "Globular_04",
+      "label": "Globular",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_04_niche"
+    }
+  },
+  {
+    "data": {
+      "id": "HomotopyIO_04",
+      "label": "Homotopy.io",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_04_niche"
+    }
+  },
+  {
+    "data": {
+      "id": "Quantomatic_04",
+      "label": "Quantomatic",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_04_niche"
+    }
+  },
+  {
+    "data": {
+      "id": "Category",
+      "label": "Category\n(obj+morph)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_core"
+    }
+  },
+  {
+    "data": {
+      "id": "Functor",
+      "label": "Functor",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_core"
+    }
+  },
+  {
+    "data": {
+      "id": "NatTrans",
+      "label": "Natural\ntransformation",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_core"
+    }
+  },
+  {
+    "data": {
+      "id": "CommDiag",
+      "label": "Commutative\ndiagram",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_core"
+    }
+  },
+  {
+    "data": {
+      "id": "MonoidalCat",
+      "label": "Monoidal\ncategory",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_core"
+    }
+  },
+  {
+    "data": {
+      "id": "HigherCat",
+      "label": "Higher categories\n(2-/n-)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_core"
+    }
+  },
+  {
+    "data": {
+      "id": "AdhesiveCat",
+      "label": "Adhesive\ncategories",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_core"
+    }
+  },
+  {
+    "data": {
+      "id": "CTLimits",
+      "label": "Limits, pullbacks,\nmonomorphisms",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_core"
+    }
+  },
+  {
+    "data": {
+      "id": "TikZcd",
+      "label": "TikZ-cd",
+      "kind": "notation",
+      "dotShape": "parallelogram",
+      "dotFill": "lightcyan",
+      "parent": "cluster_05_notation"
+    }
+  },
+  {
+    "data": {
+      "id": "Quiver",
+      "label": "Quiver",
+      "kind": "notation",
+      "dotShape": "parallelogram",
+      "dotFill": "lightcyan",
+      "parent": "cluster_05_notation"
+    }
+  },
+  {
+    "data": {
+      "id": "Xymatrix",
+      "label": "xymatrix",
+      "kind": "notation",
+      "dotShape": "parallelogram",
+      "dotFill": "lightcyan",
+      "parent": "cluster_05_notation"
+    }
+  },
+  {
+    "data": {
+      "id": "Mermaid",
+      "label": "Mermaid",
+      "kind": "notation",
+      "dotShape": "parallelogram",
+      "dotFill": "lightcyan",
+      "parent": "cluster_05_notation"
+    }
+  },
+  {
+    "data": {
+      "id": "PlantUML",
+      "label": "PlantUML",
+      "kind": "notation",
+      "dotShape": "parallelogram",
+      "dotFill": "lightcyan",
+      "parent": "cluster_05_notation"
+    }
+  },
+  {
+    "data": {
+      "id": "GraphvizDOT",
+      "label": "Graphviz / DOT",
+      "kind": "notation",
+      "dotShape": "parallelogram",
+      "dotFill": "lightcyan",
+      "parent": "cluster_05_notation"
+    }
+  },
+  {
+    "data": {
+      "id": "DisCoPy",
+      "label": "DisCoPy",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_05_string"
+    }
+  },
+  {
+    "data": {
+      "id": "Quantomatic",
+      "label": "Quantomatic",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_05_string"
+    }
+  },
+  {
+    "data": {
+      "id": "Globular",
+      "label": "Globular",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_05_string"
+    }
+  },
+  {
+    "data": {
+      "id": "HomotopyIO",
+      "label": "Homotopy.io",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_05_string"
+    }
+  },
+  {
+    "data": {
+      "id": "CatlabJL_05",
+      "label": "Catlab.jl",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_05_libs"
+    }
+  },
+  {
+    "data": {
+      "id": "AlgebraicJulia",
+      "label": "AlgebraicJulia\necosystem",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_05_libs"
+    }
+  },
+  {
+    "data": {
+      "id": "HaskellAsCT",
+      "label": "Haskell as\n'CT language'",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_libs"
+    }
+  },
+  {
+    "data": {
+      "id": "LeanMathlibCT",
+      "label": "Lean /\nmathlib category_theory",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_05_libs"
+    }
+  },
+  {
+    "data": {
+      "id": "DPO",
+      "label": "Double-pushout\n(DPO) rewriting",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_05_rewrite"
+    }
+  },
+  {
+    "data": {
+      "id": "SPO",
+      "label": "Single-pushout\n(SPO) rewriting",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_05_rewrite"
+    }
+  },
+  {
+    "data": {
+      "id": "TermRewriteCT",
+      "label": "Term rewriting\n(categorical)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_rewrite"
+    }
+  },
+  {
+    "data": {
+      "id": "OperadicDSL",
+      "label": "Operadic DSLs",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_05_rewrite"
+    }
+  },
+  {
+    "data": {
+      "id": "DirGraph",
+      "label": "Directed graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_basic"
+    }
+  },
+  {
+    "data": {
+      "id": "DAG",
+      "label": "DAG",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_basic"
+    }
+  },
+  {
+    "data": {
+      "id": "Hypergraph",
+      "label": "Hypergraph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_basic"
+    }
+  },
+  {
+    "data": {
+      "id": "Bipartite",
+      "label": "Bipartite graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_basic"
+    }
+  },
+  {
+    "data": {
+      "id": "TermGraph",
+      "label": "Term graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_basic"
+    }
+  },
+  {
+    "data": {
+      "id": "KnowledgeGraph",
+      "label": "Knowledge graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_basic"
+    }
+  },
+  {
+    "data": {
+      "id": "FactorGraph",
+      "label": "Factor graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_basic"
+    }
+  },
+  {
+    "data": {
+      "id": "BayesNet",
+      "label": "Bayesian network",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_basic"
+    }
+  },
+  {
+    "data": {
+      "id": "FlowNet",
+      "label": "Flow network",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_basic"
+    }
+  },
+  {
+    "data": {
+      "id": "UnionFind",
+      "label": "Union-find /\ndisjoint-set",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_06_equiv"
+    }
+  },
+  {
+    "data": {
+      "id": "CongrClos06",
+      "label": "Congruence closure",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_06_equiv"
+    }
+  },
+  {
+    "data": {
+      "id": "EquivRel",
+      "label": "Equivalence relation /\nquotient structure",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_06_equiv"
+    }
+  },
+  {
+    "data": {
+      "id": "EGraph",
+      "label": "E-graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "EClass",
+      "label": "E-class",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "ENode",
+      "label": "E-node",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "EqSat",
+      "label": "Equality saturation",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "Egg",
+      "label": "egg (Rust)",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "Herbie",
+      "label": "Herbie",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "Tensat",
+      "label": "Tensat",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "Diospyros",
+      "label": "Diospyros",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "SPORES",
+      "label": "SPORES",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "EggPaper",
+      "label": "\"egg\" paper\n(POPL 2021)",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_06_egraph"
+    }
+  },
+  {
+    "data": {
+      "id": "TermRewriting",
+      "label": "Term rewriting",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_06_rewrite"
+    }
+  },
+  {
+    "data": {
+      "id": "GraphRewriting",
+      "label": "Graph rewriting",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_06_rewrite"
+    }
+  },
+  {
+    "data": {
+      "id": "CategoricalRewriting",
+      "label": "Categorical\nrewriting",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_06_rewrite"
+    }
+  },
+  {
+    "data": {
+      "id": "DFA",
+      "label": "DFA",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_automata"
+    }
+  },
+  {
+    "data": {
+      "id": "NFA",
+      "label": "NFA",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_automata"
+    }
+  },
+  {
+    "data": {
+      "id": "PDA",
+      "label": "Pushdown\nautomaton",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_automata"
+    }
+  },
+  {
+    "data": {
+      "id": "Buchi",
+      "label": "Büchi automaton",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_automata"
+    }
+  },
+  {
+    "data": {
+      "id": "Kripke",
+      "label": "Kripke structure",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_automata"
+    }
+  },
+  {
+    "data": {
+      "id": "ModelChecking_06",
+      "label": "Model checking",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_06_automata"
+    }
+  },
+  {
+    "data": {
+      "id": "CFG",
+      "label": "Control flow\ngraph (CFG)",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_compilergraphs"
+    }
+  },
+  {
+    "data": {
+      "id": "Dataflow",
+      "label": "Dataflow graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_compilergraphs"
+    }
+  },
+  {
+    "data": {
+      "id": "SSA_06",
+      "label": "SSA",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_compilergraphs"
+    }
+  },
+  {
+    "data": {
+      "id": "PDG",
+      "label": "Program / data\ndependence graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_compilergraphs"
+    }
+  },
+  {
+    "data": {
+      "id": "TensorComputeGraph",
+      "label": "Tensor compute\ngraph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_compilergraphs"
+    }
+  },
+  {
+    "data": {
+      "id": "GraphReduction",
+      "label": "Graph reduction\n(STG / G-machine)",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_06_compilergraphs"
+    }
+  },
+  {
+    "data": {
+      "id": "RDF",
+      "label": "RDF",
+      "kind": "standard",
+      "dotShape": "tab",
+      "dotFill": "lightgrey",
+      "parent": "cluster_06_kg"
+    }
+  },
+  {
+    "data": {
+      "id": "OWL",
+      "label": "OWL",
+      "kind": "standard",
+      "dotShape": "tab",
+      "dotFill": "lightgrey",
+      "parent": "cluster_06_kg"
+    }
+  },
+  {
+    "data": {
+      "id": "AtomSpace_06",
+      "label": "AtomSpace",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_06_kg"
+    }
+  },
+  {
+    "data": {
+      "id": "GNN",
+      "label": "Graph Neural\nNetworks",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_06_kg"
+    }
+  },
+  {
+    "data": {
+      "id": "Neo4j",
+      "label": "Neo4j",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_06_kg"
+    }
+  },
+  {
+    "data": {
+      "id": "AbstractInterp",
+      "label": "Abstract\ninterpretation",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_07_ai"
+    }
+  },
+  {
+    "data": {
+      "id": "CousotPaper",
+      "label": "Cousot & Cousot\n1977",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_07_ai"
+    }
+  },
+  {
+    "data": {
+      "id": "Lattice",
+      "label": "Lattice",
+      "kind": "domain",
+      "dotShape": "septagon",
+      "dotFill": "thistle",
+      "parent": "cluster_07_ai"
+    }
+  },
+  {
+    "data": {
+      "id": "GaloisConn",
+      "label": "Galois connection",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_07_ai"
+    }
+  },
+  {
+    "data": {
+      "id": "FixedPoint",
+      "label": "Fixed point\n(Knaster–Tarski)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_07_ai"
+    }
+  },
+  {
+    "data": {
+      "id": "Widening",
+      "label": "Widening /\nnarrowing",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_07_ai"
+    }
+  },
+  {
+    "data": {
+      "id": "SignDomain",
+      "label": "Sign domain",
+      "kind": "domain",
+      "dotShape": "septagon",
+      "dotFill": "thistle",
+      "parent": "cluster_07_domains"
+    }
+  },
+  {
+    "data": {
+      "id": "IntervalDomain",
+      "label": "Interval domain",
+      "kind": "domain",
+      "dotShape": "septagon",
+      "dotFill": "thistle",
+      "parent": "cluster_07_domains"
+    }
+  },
+  {
+    "data": {
+      "id": "OctagonDomain",
+      "label": "Octagon domain",
+      "kind": "domain",
+      "dotShape": "septagon",
+      "dotFill": "thistle",
+      "parent": "cluster_07_domains"
+    }
+  },
+  {
+    "data": {
+      "id": "PolyhedraDomain",
+      "label": "Polyhedra domain",
+      "kind": "domain",
+      "dotShape": "septagon",
+      "dotFill": "thistle",
+      "parent": "cluster_07_domains"
+    }
+  },
+  {
+    "data": {
+      "id": "Astree",
+      "label": "Astrée",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_analysers"
+    }
+  },
+  {
+    "data": {
+      "id": "Infer",
+      "label": "Infer",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_analysers"
+    }
+  },
+  {
+    "data": {
+      "id": "FramaC",
+      "label": "Frama-C",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_analysers"
+    }
+  },
+  {
+    "data": {
+      "id": "Airbus",
+      "label": "Airbus\n(Astrée user)",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_07_analysers"
+    }
+  },
+  {
+    "data": {
+      "id": "SymExec",
+      "label": "Symbolic\nexecution",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_07_symex"
+    }
+  },
+  {
+    "data": {
+      "id": "KLEE",
+      "label": "KLEE",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_symex"
+    }
+  },
+  {
+    "data": {
+      "id": "Angr",
+      "label": "angr",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_symex"
+    }
+  },
+  {
+    "data": {
+      "id": "SymExecGraph",
+      "label": "Symbolic execution\ngraph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_07_symex"
+    }
+  },
+  {
+    "data": {
+      "id": "ModelChecking",
+      "label": "Model checking",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_07_symex"
+    }
+  },
+  {
+    "data": {
+      "id": "TaintAnalysis",
+      "label": "Taint analysis",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_07_symex"
+    }
+  },
+  {
+    "data": {
+      "id": "MLIR",
+      "label": "MLIR",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_ir"
+    }
+  },
+  {
+    "data": {
+      "id": "LLVMIR",
+      "label": "LLVM IR",
+      "kind": "standard",
+      "dotShape": "tab",
+      "dotFill": "lightgrey",
+      "parent": "cluster_07_ir"
+    }
+  },
+  {
+    "data": {
+      "id": "SSA_07",
+      "label": "SSA",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_07_ir"
+    }
+  },
+  {
+    "data": {
+      "id": "Tensat_07",
+      "label": "Tensat",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_eqsatcompilers"
+    }
+  },
+  {
+    "data": {
+      "id": "Diospyros_07",
+      "label": "Diospyros",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_eqsatcompilers"
+    }
+  },
+  {
+    "data": {
+      "id": "Herbie_07",
+      "label": "Herbie",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_eqsatcompilers"
+    }
+  },
+  {
+    "data": {
+      "id": "SPORES_07",
+      "label": "SPORES",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_eqsatcompilers"
+    }
+  },
+  {
+    "data": {
+      "id": "MLIRplusEqSat",
+      "label": "MLIR + equality\nsaturation",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_07_eqsatcompilers"
+    }
+  },
+  {
+    "data": {
+      "id": "ProgramSynthesis",
+      "label": "Program synthesis",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_07_synth"
+    }
+  },
+  {
+    "data": {
+      "id": "Superopt",
+      "label": "Superoptimisation",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_07_synth"
+    }
+  },
+  {
+    "data": {
+      "id": "VerifiedOpt",
+      "label": "Verified\noptimisers",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_07_synth"
+    }
+  },
+  {
+    "data": {
+      "id": "CompCert",
+      "label": "CompCert",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_07_synth"
+    }
+  },
+  {
+    "data": {
+      "id": "CytoscapeJS",
+      "label": "Cytoscape.js",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_general"
+    }
+  },
+  {
+    "data": {
+      "id": "ReactFlow",
+      "label": "React Flow",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_general"
+    }
+  },
+  {
+    "data": {
+      "id": "JointJS",
+      "label": "JointJS",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_general"
+    }
+  },
+  {
+    "data": {
+      "id": "AntVX6",
+      "label": "AntV X6",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_general"
+    }
+  },
+  {
+    "data": {
+      "id": "VisNetwork",
+      "label": "vis-network",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_general"
+    }
+  },
+  {
+    "data": {
+      "id": "SigmaJS",
+      "label": "Sigma.js",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_general"
+    }
+  },
+  {
+    "data": {
+      "id": "ECharts",
+      "label": "Apache ECharts",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_general"
+    }
+  },
+  {
+    "data": {
+      "id": "ReteJS",
+      "label": "Rete.js",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_nodeeditors"
+    }
+  },
+  {
+    "data": {
+      "id": "Drawflow",
+      "label": "Drawflow",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_nodeeditors"
+    }
+  },
+  {
+    "data": {
+      "id": "LiteGraphJS",
+      "label": "LiteGraph.js",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_nodeeditors"
+    }
+  },
+  {
+    "data": {
+      "id": "ImNodes",
+      "label": "ImNodes",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_native"
+    }
+  },
+  {
+    "data": {
+      "id": "ImguiNodeEditor",
+      "label": "imgui-node-editor",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_native"
+    }
+  },
+  {
+    "data": {
+      "id": "DearImGui",
+      "label": "Dear ImGui",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_native"
+    }
+  },
+  {
+    "data": {
+      "id": "Graphviz_08",
+      "label": "Graphviz",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_native"
+    }
+  },
+  {
+    "data": {
+      "id": "OGDF",
+      "label": "OGDF",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_native"
+    }
+  },
+  {
+    "data": {
+      "id": "GoJS",
+      "label": "GoJS",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_cad"
+    }
+  },
+  {
+    "data": {
+      "id": "mxGraph",
+      "label": "mxGraph",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_cad"
+    }
+  },
+  {
+    "data": {
+      "id": "DrawIO",
+      "label": "draw.io /\ndiagrams.net",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_cad"
+    }
+  },
+  {
+    "data": {
+      "id": "Excalidraw",
+      "label": "Excalidraw",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_cad"
+    }
+  },
+  {
+    "data": {
+      "id": "Konva",
+      "label": "Konva",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_canvas"
+    }
+  },
+  {
+    "data": {
+      "id": "FabricJS",
+      "label": "Fabric.js",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_canvas"
+    }
+  },
+  {
+    "data": {
+      "id": "ELK",
+      "label": "ELK",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_layout"
+    }
+  },
+  {
+    "data": {
+      "id": "Dagre",
+      "label": "Dagre",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_layout"
+    }
+  },
+  {
+    "data": {
+      "id": "Cola",
+      "label": "Cola",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_layout"
+    }
+  },
+  {
+    "data": {
+      "id": "n8n",
+      "label": "n8n",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_workflow"
+    }
+  },
+  {
+    "data": {
+      "id": "NodeRED",
+      "label": "Node-RED",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_workflow"
+    }
+  },
+  {
+    "data": {
+      "id": "LangFlow",
+      "label": "LangFlow",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_workflow"
+    }
+  },
+  {
+    "data": {
+      "id": "UnrealBlueprint",
+      "label": "Unreal\nBlueprint",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_workflow"
+    }
+  },
+  {
+    "data": {
+      "id": "Grafana",
+      "label": "Grafana",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_08_workflow"
+    }
+  },
+  {
+    "data": {
+      "id": "OpenCog",
+      "label": "OpenCog",
+      "kind": "cog_arch",
+      "dotShape": "doubleoctagon",
+      "dotFill": "lightcoral",
+      "parent": "cluster_09_opencog"
+    }
+  },
+  {
+    "data": {
+      "id": "AtomSpace",
+      "label": "AtomSpace",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_09_opencog"
+    }
+  },
+  {
+    "data": {
+      "id": "PLN",
+      "label": "PLN —\nProbabilistic\nLogic Networks",
+      "kind": "cog_arch",
+      "dotShape": "doubleoctagon",
+      "dotFill": "lightcoral",
+      "parent": "cluster_09_opencog"
+    }
+  },
+  {
+    "data": {
+      "id": "MOSES",
+      "label": "MOSES",
+      "kind": "cog_arch",
+      "dotShape": "doubleoctagon",
+      "dotFill": "lightcoral",
+      "parent": "cluster_09_opencog"
+    }
+  },
+  {
+    "data": {
+      "id": "ConceptualBlending",
+      "label": "Conceptual\nblending",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_opencog"
+    }
+  },
+  {
+    "data": {
+      "id": "ECAN",
+      "label": "Attention allocation\n(ECAN)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_opencog"
+    }
+  },
+  {
+    "data": {
+      "id": "PatternMatcher",
+      "label": "Pattern matcher",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_09_opencog"
+    }
+  },
+  {
+    "data": {
+      "id": "TMS",
+      "label": "TMS",
+      "kind": "cog_arch",
+      "dotShape": "doubleoctagon",
+      "dotFill": "lightcoral",
+      "parent": "cluster_09_tms"
+    }
+  },
+  {
+    "data": {
+      "id": "ATMS",
+      "label": "ATMS\n(de Kleer 1986)",
+      "kind": "cog_arch",
+      "dotShape": "doubleoctagon",
+      "dotFill": "lightcoral",
+      "parent": "cluster_09_tms"
+    }
+  },
+  {
+    "data": {
+      "id": "NeuroSymAI_09",
+      "label": "Neuro-symbolic AI",
+      "kind": "cog_arch",
+      "dotShape": "doubleoctagon",
+      "dotFill": "lightcoral",
+      "parent": "cluster_09_neurosym"
+    }
+  },
+  {
+    "data": {
+      "id": "LLMAsPolicy",
+      "label": "LLM as policy over\nproof / reasoning graph",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_neurosym"
+    }
+  },
+  {
+    "data": {
+      "id": "GCR_09",
+      "label": "GCR",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_09_neurosym"
+    }
+  },
+  {
+    "data": {
+      "id": "KGAI",
+      "label": "Knowledge-graph AI /\nRetrieval",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_neurosym"
+    }
+  },
+  {
+    "data": {
+      "id": "DifferentiableReasoning",
+      "label": "Differentiable\nreasoning",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_neurosym"
+    }
+  },
+  {
+    "data": {
+      "id": "LangGraph",
+      "label": "LangGraph",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_09_adj"
+    }
+  },
+  {
+    "data": {
+      "id": "LangChain",
+      "label": "LangChain",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_09_adj"
+    }
+  },
+  {
+    "data": {
+      "id": "LlamaIndex",
+      "label": "LlamaIndex",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_09_adj"
+    }
+  },
+  {
+    "data": {
+      "id": "ReteAlgo",
+      "label": "Rete algorithm",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_09_adj"
+    }
+  },
+  {
+    "data": {
+      "id": "CLIPS",
+      "label": "CLIPS / Drools",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_09_adj"
+    }
+  },
+  {
+    "data": {
+      "id": "EinBot",
+      "label": "ein-bot itself\n(this repo)",
+      "kind": "cog_arch",
+      "dotShape": "doubleoctagon",
+      "dotFill": "lightcoral",
+      "parent": "cluster_09_adj"
+    }
+  },
+  {
+    "data": {
+      "id": "AGI",
+      "label": "AGI architecture",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_buzz"
+    }
+  },
+  {
+    "data": {
+      "id": "CogOS",
+      "label": "Hypergraph\ncognitive OS",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_buzz"
+    }
+  },
+  {
+    "data": {
+      "id": "SymProbAGI",
+      "label": "Symbolic probabilistic\ngraph-rewriting AGI",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_buzz"
+    }
+  },
+  {
+    "data": {
+      "id": "ReflectiveInterp",
+      "label": "Reflective interpreters /\nmeta-circular eval",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_buzz"
+    }
+  },
+  {
+    "data": {
+      "id": "CompositionalCog",
+      "label": "Compositional\ncognition",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_buzz"
+    }
+  },
+  {
+    "data": {
+      "id": "ActiveKG",
+      "label": "Active /\ninferential KG",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_09_buzz"
+    }
+  },
+  {
+    "data": {
+      "id": "ProofStateGraph",
+      "label": "Proof state graph",
+      "kind": "proof",
+      "dotShape": "component",
+      "dotFill": "wheat",
+      "parent": "cluster_09_buzz"
+    }
+  },
+  {
+    "data": {
+      "id": "NL",
+      "label": "Natural language\n(input)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_10_pipeline"
+    }
+  },
+  {
+    "data": {
+      "id": "SyntacticParse",
+      "label": "Syntactic /\nsemantic parse",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_10_pipeline"
+    }
+  },
+  {
+    "data": {
+      "id": "EntityExtract",
+      "label": "Entity extraction",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_10_pipeline"
+    }
+  },
+  {
+    "data": {
+      "id": "TypedOntology",
+      "label": "Typed ontology",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_10_pipeline"
+    }
+  },
+  {
+    "data": {
+      "id": "ConstrHGraphIR",
+      "label": "Constraint\nhypergraph IR\n(with provenance)",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_10_pipeline"
+    }
+  },
+  {
+    "data": {
+      "id": "Normalisation",
+      "label": "Normalisation +\ntypechecking",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_10_pipeline"
+    }
+  },
+  {
+    "data": {
+      "id": "BackendCompiler",
+      "label": "Backend compiler",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_10_pipeline"
+    }
+  },
+  {
+    "data": {
+      "id": "ExplanationGraph",
+      "label": "Explanation graph",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_10_pipeline"
+    }
+  },
+  {
+    "data": {
+      "id": "SemRoleLabel",
+      "label": "Semantic role\nlabelling / frames",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_10_semreps"
+    }
+  },
+  {
+    "data": {
+      "id": "FrameNet",
+      "label": "FrameNet",
+      "kind": "software",
+      "dotShape": "box3d",
+      "dotFill": "palegreen",
+      "parent": "cluster_10_semreps"
+    }
+  },
+  {
+    "data": {
+      "id": "AMR",
+      "label": "AMR\n(Abstract Meaning\nRepresentation)",
+      "kind": "data_structure",
+      "dotShape": "folder",
+      "dotFill": "plum1",
+      "parent": "cluster_10_semreps"
+    }
+  },
+  {
+    "data": {
+      "id": "NER",
+      "label": "NER / entity\nrecognition",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_10_semreps"
+    }
+  },
+  {
+    "data": {
+      "id": "CorefRes",
+      "label": "Coreference\nresolution",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_10_semreps"
+    }
+  },
+  {
+    "data": {
+      "id": "SemParsing",
+      "label": "Semantic parsing",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_10_semreps"
+    }
+  },
+  {
+    "data": {
+      "id": "LLMExtract",
+      "label": "LLM extracts\nstructured facts",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_10_llmext"
+    }
+  },
+  {
+    "data": {
+      "id": "SchemaGuidedExtract",
+      "label": "Schema-guided\nextraction (Pydantic/SGR)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_10_llmext"
+    }
+  },
+  {
+    "data": {
+      "id": "GBNF_10",
+      "label": "GBNF\nshaping output",
+      "kind": "standard",
+      "dotShape": "tab",
+      "dotFill": "lightgrey",
+      "parent": "cluster_10_llmext"
+    }
+  },
+  {
+    "data": {
+      "id": "TaskFindSolution",
+      "label": "A. Find a\nsolution",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_10_tasks"
+    }
+  },
+  {
+    "data": {
+      "id": "TaskFindAmbig",
+      "label": "B. Find ambiguity /\ngaps",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_10_tasks"
+    }
+  },
+  {
+    "data": {
+      "id": "TaskFindContrad",
+      "label": "C. Find\ncontradictions",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_10_tasks"
+    }
+  },
+  {
+    "data": {
+      "id": "Backtracking",
+      "label": "Backtracking",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_tree"
+    }
+  },
+  {
+    "data": {
+      "id": "AndOrTrees",
+      "label": "AND/OR trees",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_tree"
+    }
+  },
+  {
+    "data": {
+      "id": "BnB",
+      "label": "Branch-and-bound",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_tree"
+    }
+  },
+  {
+    "data": {
+      "id": "IterDeepen",
+      "label": "Iterative deepening",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_tree"
+    }
+  },
+  {
+    "data": {
+      "id": "DPLL",
+      "label": "DPLL",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_tree"
+    }
+  },
+  {
+    "data": {
+      "id": "CDCL",
+      "label": "CDCL",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_tree"
+    }
+  },
+  {
+    "data": {
+      "id": "HypothesisBranching",
+      "label": "Hypothesis branching\nwith rollback",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_tree"
+    }
+  },
+  {
+    "data": {
+      "id": "MCTS",
+      "label": "MCTS",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_mcts"
+    }
+  },
+  {
+    "data": {
+      "id": "UCB",
+      "label": "UCB1 / UCT",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_mcts"
+    }
+  },
+  {
+    "data": {
+      "id": "AlphaZeroGuided",
+      "label": "AlphaZero-style\nguided proof search",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_11_mcts"
+    }
+  },
+  {
+    "data": {
+      "id": "AlphaZeroPaper",
+      "label": "AlphaZero paper",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_11_mcts"
+    }
+  },
+  {
+    "data": {
+      "id": "AC3",
+      "label": "AC-3 / AC-4",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "PathCons",
+      "label": "Path consistency",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "UnitProp",
+      "label": "Unit propagation\n(BCP)",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "BackboneEnum",
+      "label": "Backbone / model\nenumeration",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "UnsatCore_11",
+      "label": "Unsat core / MUS",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_propag"
+    }
+  },
+  {
+    "data": {
+      "id": "EqSat_11",
+      "label": "Equality saturation",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_eqrewrite"
+    }
+  },
+  {
+    "data": {
+      "id": "Superopt_11",
+      "label": "Superoptimisation",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_eqrewrite"
+    }
+  },
+  {
+    "data": {
+      "id": "LP_11",
+      "label": "LP / MILP",
+      "kind": "problem_class",
+      "dotShape": "diamond",
+      "dotFill": "gold",
+      "parent": "cluster_11_continuous"
+    }
+  },
+  {
+    "data": {
+      "id": "ConvexOpt",
+      "label": "Convex\noptimisation",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_11_continuous"
+    }
+  },
+  {
+    "data": {
+      "id": "BoydBook",
+      "label": "Boyd &\nVandenberghe",
+      "kind": "paper",
+      "dotShape": "note",
+      "dotFill": "peachpuff",
+      "parent": "cluster_11_continuous"
+    }
+  },
+  {
+    "data": {
+      "id": "EvoAlgo",
+      "label": "Evolutionary algorithms /\ngenetic programming",
+      "kind": "algorithm",
+      "dotShape": "hexagon",
+      "dotFill": "khaki1",
+      "parent": "cluster_11_evo"
+    }
+  },
+  {
+    "data": {
+      "id": "MOSES_11",
+      "label": "MOSES",
+      "kind": "cog_arch",
+      "dotShape": "doubleoctagon",
+      "dotFill": "lightcoral",
+      "parent": "cluster_11_evo"
+    }
+  },
+  {
+    "data": {
+      "id": "ProbInference",
+      "label": "Probabilistic\ninference\n(belief prop., MCMC)",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_11_evo"
+    }
+  },
+  {
+    "data": {
+      "id": "ComponentSynth",
+      "label": "Component-based\nsynthesis",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_11_synth"
+    }
+  },
+  {
+    "data": {
+      "id": "SketchSynth",
+      "label": "Sketch-based\nsynthesis",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_11_synth"
+    }
+  },
+  {
+    "data": {
+      "id": "RefinementSynth",
+      "label": "Refinement-type /\ntype-directed synthesis",
+      "kind": "concept",
+      "dotShape": "ellipse",
+      "dotFill": "lightblue",
+      "parent": "cluster_11_synth"
+    }
+  },
+  {
+    "data": {
+      "id": "e0000",
+      "source": "Logit",
+      "target": "Softmax",
+      "label": "→ p(token)",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0001",
+      "source": "Logit",
+      "target": "Temperature",
+      "label": "reshape",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0002",
+      "source": "GBNF",
+      "target": "BNF",
+      "label": "derives from",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0003",
+      "source": "GBNF",
+      "target": "EBNF",
+      "label": "derives from",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0004",
+      "source": "GBNF",
+      "target": "ParserGuidedDec",
+      "label": "instance of",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0005",
+      "source": "ParserGuidedDec",
+      "target": "Logit",
+      "label": "masks",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0006",
+      "source": "HybridScratchpad",
+      "target": "CRANE",
+      "label": "formalised as",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0007",
+      "source": "GCR",
+      "target": "KGTrie",
+      "label": "indexed by",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0008",
+      "source": "SGR",
+      "target": "Pydantic",
+      "label": "canonical substrate",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0009",
+      "source": "GBNF",
+      "target": "LayerSyntax",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0010",
+      "source": "KGTrie",
+      "target": "LayerSemantic",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0011",
+      "source": "VerifierGuided",
+      "target": "LayerGlobal",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0012",
+      "source": "llamacpp",
+      "target": "GBNF",
+      "label": "hosts",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0013",
+      "source": "Tokenization",
+      "target": "BPE",
+      "label": "e.g.",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0014",
+      "source": "SAT",
+      "target": "SMT",
+      "label": "extended by",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0015",
+      "source": "CSP",
+      "target": "CP",
+      "label": "modelled by",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0016",
+      "source": "LP",
+      "target": "MILP",
+      "label": "+integer vars",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0017",
+      "source": "DPLL_02",
+      "target": "CDCL_02",
+      "label": "ancestor of",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0018",
+      "source": "MiniSAT",
+      "target": "Glucose",
+      "label": "lineage",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0019",
+      "source": "Glucose",
+      "target": "CaDiCaL",
+      "label": "lineage",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0020",
+      "source": "CaDiCaL",
+      "target": "Kissat",
+      "label": "lineage",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0021",
+      "source": "CDCL_02",
+      "target": "ImplGraph",
+      "label": "analyses",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0022",
+      "source": "SAT",
+      "target": "ClauseVarBipartite",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0023",
+      "source": "Z3",
+      "target": "SMTLIB",
+      "label": "reads",
+      "eStyle": "dashed",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0024",
+      "source": "CVC5",
+      "target": "SMTLIB",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0025",
+      "source": "Yices",
+      "target": "SMTLIB",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0026",
+      "source": "SMT",
+      "target": "CongrClos",
+      "label": "uses",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0027",
+      "source": "ORTools",
+      "target": "CPSAT",
+      "label": "contains",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0028",
+      "source": "CPSAT",
+      "target": "CP",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0029",
+      "source": "CPSAT",
+      "target": "SAT",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0030",
+      "source": "ArcConsistency",
+      "target": "PathConsistency",
+      "label": "strengthens",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0031",
+      "source": "SWIProlog",
+      "target": "CLPFD",
+      "label": "hosts",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0032",
+      "source": "SWIProlog",
+      "target": "LogicProg",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0033",
+      "source": "Datalog",
+      "target": "LogicProg",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0034",
+      "source": "Clingo",
+      "target": "ASP",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0035",
+      "source": "DLV",
+      "target": "ASP",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0036",
+      "source": "Lean",
+      "target": "DepTypes",
+      "label": "implements",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0037",
+      "source": "Coq",
+      "target": "DepTypes",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0038",
+      "source": "Agda",
+      "target": "DepTypes",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0039",
+      "source": "Idris",
+      "target": "DepTypes",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0040",
+      "source": "DepTypes",
+      "target": "TypeTheory",
+      "label": "subset",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0041",
+      "source": "TypeTheory",
+      "target": "HoTT",
+      "label": "extended by",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0042",
+      "source": "CurryHoward",
+      "target": "TypeTheory",
+      "label": "motivates",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0043",
+      "source": "ProofTree",
+      "target": "ProofDAG",
+      "label": "sharing makes",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0044",
+      "source": "Tableau",
+      "target": "ReductioAbsurdum",
+      "label": "based on",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0045",
+      "source": "Prover9",
+      "target": "Resolution",
+      "label": "used by",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0046",
+      "source": "Vampire",
+      "target": "Resolution",
+      "label": "used by",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0047",
+      "source": "EProver",
+      "target": "Resolution",
+      "label": "used by",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0048",
+      "source": "ACL2",
+      "target": "NaturalDeduction",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0049",
+      "source": "Lisp",
+      "target": "Racket",
+      "label": "dialect",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0050",
+      "source": "Lisp",
+      "target": "Clojure",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0051",
+      "source": "Lisp",
+      "target": "SMTLIB_lang",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0052",
+      "source": "Haskell",
+      "target": "GHC",
+      "label": "compiled by",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0053",
+      "source": "Julia",
+      "target": "CatlabJL",
+      "label": "hosts",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0054",
+      "source": "Python",
+      "target": "DisCoPy_04",
+      "label": "hosts",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0055",
+      "source": "JavaScript",
+      "target": "React",
+      "label": "hosts",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0056",
+      "source": "Category",
+      "target": "Functor",
+      "label": "map of",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0057",
+      "source": "Functor",
+      "target": "NatTrans",
+      "label": "map of",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0058",
+      "source": "Category",
+      "target": "CommDiag",
+      "label": "depicted by",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0059",
+      "source": "MonoidalCat",
+      "target": "DisCoPy",
+      "label": "modelled in",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0060",
+      "source": "HigherCat",
+      "target": "Globular",
+      "label": "implemented in",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0061",
+      "source": "HigherCat",
+      "target": "HomotopyIO",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0062",
+      "source": "AdhesiveCat",
+      "target": "DPO",
+      "label": "ambient for",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0063",
+      "source": "DPO",
+      "target": "SPO",
+      "label": "variant",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0064",
+      "source": "CatlabJL_05",
+      "target": "AlgebraicJulia",
+      "label": "anchor of",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0065",
+      "source": "DirGraph",
+      "target": "DAG",
+      "label": "acyclic",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0066",
+      "source": "DAG",
+      "target": "Hypergraph",
+      "label": "",
+      "eStyle": "invis",
+      "eColor": "grey40",
+      "invis": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0067",
+      "source": "TermGraph",
+      "target": "DAG",
+      "label": "shared-subterm",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0068",
+      "source": "EGraph",
+      "target": "EClass",
+      "label": "contains",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0069",
+      "source": "EClass",
+      "target": "ENode",
+      "label": "contains",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0070",
+      "source": "EGraph",
+      "target": "EqSat",
+      "label": "enables",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0071",
+      "source": "Egg",
+      "target": "EGraph",
+      "label": "impl of",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0072",
+      "source": "EqSat",
+      "target": "Herbie",
+      "label": "used in",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0073",
+      "source": "EqSat",
+      "target": "Tensat",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0074",
+      "source": "EqSat",
+      "target": "Diospyros",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0075",
+      "source": "EqSat",
+      "target": "SPORES",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0076",
+      "source": "EggPaper",
+      "target": "Egg",
+      "label": "describes",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0077",
+      "source": "UnionFind",
+      "target": "CongrClos06",
+      "label": "powers",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0078",
+      "source": "UnionFind",
+      "target": "EGraph",
+      "label": "powers",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0079",
+      "source": "DFA",
+      "target": "NFA",
+      "label": "determinise of",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0080",
+      "source": "NFA",
+      "target": "PDA",
+      "label": "+stack",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0081",
+      "source": "Kripke",
+      "target": "ModelChecking_06",
+      "label": "state model for",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0082",
+      "source": "AbstractInterp",
+      "target": "Lattice",
+      "label": "uses",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0083",
+      "source": "AbstractInterp",
+      "target": "GaloisConn",
+      "label": "grounded in",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0084",
+      "source": "AbstractInterp",
+      "target": "FixedPoint",
+      "label": "computes",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0085",
+      "source": "FixedPoint",
+      "target": "Widening",
+      "label": "forced via",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0086",
+      "source": "AbstractInterp",
+      "target": "SignDomain",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0087",
+      "source": "AbstractInterp",
+      "target": "IntervalDomain",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0088",
+      "source": "AbstractInterp",
+      "target": "OctagonDomain",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0089",
+      "source": "AbstractInterp",
+      "target": "PolyhedraDomain",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0090",
+      "source": "AbstractInterp",
+      "target": "Astree",
+      "label": "impl in",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0091",
+      "source": "Astree",
+      "target": "Airbus",
+      "label": "used by",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0092",
+      "source": "SymExec",
+      "target": "KLEE",
+      "label": "impl in",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0093",
+      "source": "SymExec",
+      "target": "Angr",
+      "label": "impl in",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0094",
+      "source": "SymExec",
+      "target": "SymExecGraph",
+      "label": "produces",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0095",
+      "source": "MLIR",
+      "target": "SSA_07",
+      "label": "dialects on",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0096",
+      "source": "LLVMIR",
+      "target": "SSA_07",
+      "label": "based on",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0097",
+      "source": "MLIR",
+      "target": "MLIRplusEqSat",
+      "label": "research arm",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0098",
+      "source": "ProgramSynthesis",
+      "target": "Superopt",
+      "label": "kind of",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0099",
+      "source": "VerifiedOpt",
+      "target": "CompCert",
+      "label": "exemplar",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0100",
+      "source": "CousotPaper",
+      "target": "AbstractInterp",
+      "label": "founds",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0101",
+      "source": "ImNodes",
+      "target": "DearImGui",
+      "label": "extends",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0102",
+      "source": "ImguiNodeEditor",
+      "target": "DearImGui",
+      "label": "extends",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0103",
+      "source": "mxGraph",
+      "target": "DrawIO",
+      "label": "powers",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0104",
+      "source": "ReactFlow",
+      "target": "ELK",
+      "label": "commonly paired",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0105",
+      "source": "CytoscapeJS",
+      "target": "Dagre",
+      "label": "ships with",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0106",
+      "source": "ReactFlow",
+      "target": "Konva",
+      "label": "overlay combo",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0107",
+      "source": "OpenCog",
+      "target": "AtomSpace",
+      "label": "substrate",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0108",
+      "source": "OpenCog",
+      "target": "PLN",
+      "label": "contains",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0109",
+      "source": "OpenCog",
+      "target": "MOSES",
+      "label": "contains",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0110",
+      "source": "OpenCog",
+      "target": "ConceptualBlending",
+      "label": "contains",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0111",
+      "source": "OpenCog",
+      "target": "ECAN",
+      "label": "contains",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0112",
+      "source": "OpenCog",
+      "target": "PatternMatcher",
+      "label": "contains",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0113",
+      "source": "TMS",
+      "target": "ATMS",
+      "label": "extended to",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0114",
+      "source": "ATMS",
+      "target": "LLMAsPolicy",
+      "label": "",
+      "eStyle": "invis",
+      "eColor": "grey40",
+      "invis": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0115",
+      "source": "LangGraph",
+      "target": "LangChain",
+      "label": "part of",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0116",
+      "source": "ReteAlgo",
+      "target": "CLIPS",
+      "label": "behind",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0117",
+      "source": "NL",
+      "target": "SyntacticParse",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0"
+    }
+  },
+  {
+    "data": {
+      "id": "e0118",
+      "source": "SyntacticParse",
+      "target": "EntityExtract",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0"
+    }
+  },
+  {
+    "data": {
+      "id": "e0119",
+      "source": "EntityExtract",
+      "target": "TypedOntology",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0"
+    }
+  },
+  {
+    "data": {
+      "id": "e0120",
+      "source": "TypedOntology",
+      "target": "ConstrHGraphIR",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0"
+    }
+  },
+  {
+    "data": {
+      "id": "e0121",
+      "source": "ConstrHGraphIR",
+      "target": "Normalisation",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0"
+    }
+  },
+  {
+    "data": {
+      "id": "e0122",
+      "source": "Normalisation",
+      "target": "BackendCompiler",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0"
+    }
+  },
+  {
+    "data": {
+      "id": "e0123",
+      "source": "BackendCompiler",
+      "target": "ExplanationGraph",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0"
+    }
+  },
+  {
+    "data": {
+      "id": "e0124",
+      "source": "SemRoleLabel",
+      "target": "FrameNet",
+      "label": "e.g.",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0125",
+      "source": "LLMExtract",
+      "target": "SchemaGuidedExtract",
+      "label": "forces structure",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0126",
+      "source": "SchemaGuidedExtract",
+      "target": "GBNF_10",
+      "label": "via",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0127",
+      "source": "LLMExtract",
+      "target": "ConstrHGraphIR",
+      "label": "feeds",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0"
+    }
+  },
+  {
+    "data": {
+      "id": "e0128",
+      "source": "ConstrHGraphIR",
+      "target": "TaskFindSolution",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0129",
+      "source": "ConstrHGraphIR",
+      "target": "TaskFindAmbig",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0130",
+      "source": "ConstrHGraphIR",
+      "target": "TaskFindContrad",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0131",
+      "source": "Backtracking",
+      "target": "DPLL",
+      "label": "ancestor",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0132",
+      "source": "DPLL",
+      "target": "CDCL",
+      "label": "extended by",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0133",
+      "source": "CDCL",
+      "target": "HypothesisBranching",
+      "label": "≅",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0134",
+      "source": "MCTS",
+      "target": "UCB",
+      "label": "uses",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0135",
+      "source": "MCTS",
+      "target": "AlphaZeroGuided",
+      "label": "enables",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0136",
+      "source": "AlphaZeroPaper",
+      "target": "AlphaZeroGuided",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple"
+    }
+  },
+  {
+    "data": {
+      "id": "e0137",
+      "source": "UnitProp",
+      "target": "CDCL",
+      "label": "inner loop of",
+      "eStyle": "dotted",
+      "eColor": "red"
+    }
+  },
+  {
+    "data": {
+      "id": "e0138",
+      "source": "AC3",
+      "target": "PathCons",
+      "label": "strengthened by",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0139",
+      "source": "EvoAlgo",
+      "target": "MOSES_11",
+      "label": "instance",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0140",
+      "source": "BoydBook",
+      "target": "ConvexOpt",
+      "label": "reference",
+      "eStyle": "solid",
+      "eColor": "grey40"
+    }
+  },
+  {
+    "data": {
+      "id": "e0141",
+      "source": "UnionFind",
+      "target": "HindleyMilner",
+      "label": "powers",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0142",
+      "source": "GraphRewriting",
+      "target": "DPO",
+      "label": "formalised by",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0143",
+      "source": "GraphReduction",
+      "target": "GHC",
+      "label": "run by",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0144",
+      "source": "GCR",
+      "target": "KnowledgeGraph",
+      "label": "constrains\npaths in",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0145",
+      "source": "VerifierGuided",
+      "target": "Z3",
+      "label": "symbolic\nverifier",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0146",
+      "source": "VerifierGuided",
+      "target": "SMT",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0147",
+      "source": "NeuroSymAI",
+      "target": "SAT",
+      "label": "symbolic\nsearch",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0148",
+      "source": "NeuroSymAI",
+      "target": "SMT",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0149",
+      "source": "KGTrie",
+      "target": "KnowledgeGraph",
+      "label": "trie over",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0150",
+      "source": "NeuroSymAI",
+      "target": "NeuroSymAI_09",
+      "label": "alias",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0151",
+      "source": "ConstOfT",
+      "target": "MCTS",
+      "label": "uses",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0152",
+      "source": "GCR",
+      "target": "GCR_09",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0153",
+      "source": "CRANE",
+      "target": "LLMAsPolicy",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0154",
+      "source": "SMTLIB_lang",
+      "target": "SMTLIB",
+      "label": "same\nstandard",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0155",
+      "source": "HybridScratchpad",
+      "target": "miniKanren",
+      "label": "clean IR\nexemplar",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0156",
+      "source": "Resolution",
+      "target": "SAT",
+      "label": "proof\nsystem",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0157",
+      "source": "Z3",
+      "target": "SymExec",
+      "label": "discharges\nfor",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0158",
+      "source": "SMT",
+      "target": "SymExec",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0159",
+      "source": "ImplGraph",
+      "target": "DirGraph",
+      "label": "kind of",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0160",
+      "source": "CongrClos",
+      "target": "CongrClos06",
+      "label": "same\nconcept",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0161",
+      "source": "CongrClos06",
+      "target": "EGraph",
+      "label": "cousin of",
+      "eStyle": "dashed",
+      "eColor": "blue"
+    }
+  },
+  {
+    "data": {
+      "id": "e0162",
+      "source": "ClauseVarBipartite",
+      "target": "Bipartite",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0163",
+      "source": "ConstraintHypergraph",
+      "target": "Hypergraph",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0164",
+      "source": "ConstraintHypergraph",
+      "target": "ConstrHGraphIR",
+      "label": "same\nstructure",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0165",
+      "source": "CDCL_02",
+      "target": "CDCL",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0166",
+      "source": "DPLL_02",
+      "target": "DPLL",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0167",
+      "source": "Backtracking_02",
+      "target": "Backtracking",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0168",
+      "source": "ArcConsistency",
+      "target": "AC3",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0169",
+      "source": "PathConsistency",
+      "target": "PathCons",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0170",
+      "source": "ModelEnum",
+      "target": "BackboneEnum",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0171",
+      "source": "UnsatCore",
+      "target": "UnsatCore_11",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0172",
+      "source": "Lean",
+      "target": "LeanMathlibCT",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0173",
+      "source": "DepTypes",
+      "target": "CurryHoward",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue"
+    }
+  },
+  {
+    "data": {
+      "id": "e0174",
+      "source": "NaturalDeduction",
+      "target": "Category",
+      "label": "composition\nas inference",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0175",
+      "source": "ProofDAG",
+      "target": "DAG",
+      "label": "is a",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0176",
+      "source": "TheoremDepGraph",
+      "target": "DAG",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0177",
+      "source": "ModelChecking",
+      "target": "ModelChecking_06",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0178",
+      "source": "HindleyMilner",
+      "target": "UnionFind",
+      "label": "internally\nunifies via",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0179",
+      "source": "Resolution",
+      "target": "SWIProlog",
+      "label": "executed by",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0180",
+      "source": "Astree_03",
+      "target": "Astree",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0181",
+      "source": "Infer_03",
+      "target": "Infer",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0182",
+      "source": "FramaC_03",
+      "target": "FramaC",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0183",
+      "source": "HindleyMilner",
+      "target": "AbstractInterp",
+      "label": "kind of",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0184",
+      "source": "AlphaZeroGuided",
+      "target": "ProofDAG",
+      "label": "searches\nover",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0185",
+      "source": "Haskell",
+      "target": "HaskellAsCT",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0186",
+      "source": "Julia",
+      "target": "CatlabJL_05",
+      "label": "hosts",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0187",
+      "source": "Rust",
+      "target": "Egg",
+      "label": "hosts",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0188",
+      "source": "CPP",
+      "target": "llamacpp",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0189",
+      "source": "CPP",
+      "target": "ORTools",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0190",
+      "source": "CPP",
+      "target": "DearImGui",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0191",
+      "source": "CPP",
+      "target": "OGDF",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0192",
+      "source": "Python",
+      "target": "Pydantic",
+      "label": "hosts",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0193",
+      "source": "Python",
+      "target": "DisCoPy",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0194",
+      "source": "JavaScript",
+      "target": "CytoscapeJS",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0195",
+      "source": "JavaScript",
+      "target": "ReactFlow",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0196",
+      "source": "JavaScript",
+      "target": "SigmaJS",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0197",
+      "source": "JavaScript",
+      "target": "JointJS",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0198",
+      "source": "JavaScript",
+      "target": "AntVX6",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0199",
+      "source": "JavaScript",
+      "target": "Konva",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0200",
+      "source": "JavaScript",
+      "target": "FabricJS",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0201",
+      "source": "DPO",
+      "target": "GraphRewriting",
+      "label": "categorical\nfoundation",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0202",
+      "source": "SPO",
+      "target": "GraphRewriting",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0203",
+      "source": "TermRewriteCT",
+      "target": "TermRewriting",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0204",
+      "source": "CategoricalRewriting",
+      "target": "EqSat",
+      "label": "ancestor of",
+      "eStyle": "dashed",
+      "eColor": "blue"
+    }
+  },
+  {
+    "data": {
+      "id": "e0205",
+      "source": "GraphvizDOT",
+      "target": "Graphviz_08",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0206",
+      "source": "EGraph",
+      "target": "MLIRplusEqSat",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0207",
+      "source": "Tensat",
+      "target": "Tensat_07",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0208",
+      "source": "Diospyros",
+      "target": "Diospyros_07",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0209",
+      "source": "Herbie",
+      "target": "Herbie_07",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0210",
+      "source": "SPORES",
+      "target": "SPORES_07",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0211",
+      "source": "SSA_06",
+      "target": "SSA_07",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0212",
+      "source": "CFG",
+      "target": "SymExec",
+      "label": "traversed by",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0213",
+      "source": "AtomSpace_06",
+      "target": "AtomSpace",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0214",
+      "source": "KnowledgeGraph",
+      "target": "KGAI",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0215",
+      "source": "Hypergraph",
+      "target": "AtomSpace",
+      "label": "typed\nhypergraph",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0216",
+      "source": "Hypergraph",
+      "target": "ConstrHGraphIR",
+      "label": "shape of",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0217",
+      "source": "ProofStateGraph",
+      "target": "ProofDAG",
+      "label": "generalises",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0218",
+      "source": "Superopt",
+      "target": "Superopt_11",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0219",
+      "source": "EqSat",
+      "target": "EqSat_11",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0220",
+      "source": "ReactFlow",
+      "target": "KnowledgeGraph",
+      "label": "visualises",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0221",
+      "source": "CytoscapeJS",
+      "target": "KnowledgeGraph",
+      "label": "visualises",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0222",
+      "source": "SigmaJS",
+      "target": "KnowledgeGraph",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0223",
+      "source": "LangFlow",
+      "target": "LangGraph",
+      "label": "analogue of",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0224",
+      "source": "ATMS",
+      "target": "CDCL",
+      "label": "structurally\nsame loop",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0225",
+      "source": "ATMS",
+      "target": "HypothesisBranching",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0226",
+      "source": "EinBot",
+      "target": "HypothesisBranching",
+      "label": "implements",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0227",
+      "source": "EinBot",
+      "target": "ConstrHGraphIR",
+      "label": "typed relational\nhypergraph",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0228",
+      "source": "EinBot",
+      "target": "AtomSpace",
+      "label": "kin to",
+      "eStyle": "dashed",
+      "eColor": "blue"
+    }
+  },
+  {
+    "data": {
+      "id": "e0229",
+      "source": "EinBot",
+      "target": "ATMS",
+      "label": "kin to",
+      "eStyle": "dashed",
+      "eColor": "blue"
+    }
+  },
+  {
+    "data": {
+      "id": "e0230",
+      "source": "EinBot",
+      "target": "NaturalDeduction",
+      "label": "trace goal",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0231",
+      "source": "EinBot",
+      "target": "Tableau",
+      "label": "trace goal",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0232",
+      "source": "MOSES",
+      "target": "MOSES_11",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0233",
+      "source": "BackendCompiler",
+      "target": "MiniZinc",
+      "label": "emits",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0234",
+      "source": "BackendCompiler",
+      "target": "Z3",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0235",
+      "source": "BackendCompiler",
+      "target": "Clingo",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0236",
+      "source": "BackendCompiler",
+      "target": "CLPFD",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0237",
+      "source": "BackendCompiler",
+      "target": "CPSAT",
+      "label": "",
+      "eStyle": "solid",
+      "eColor": "darkgreen",
+      "penwidth": "2.0",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0238",
+      "source": "TaskFindContrad",
+      "target": "UnsatCore",
+      "label": "needs",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0239",
+      "source": "TaskFindAmbig",
+      "target": "ModelEnum",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0240",
+      "source": "SemParsing",
+      "target": "Functor",
+      "label": "categorical\nview",
+      "eStyle": "dashed",
+      "eColor": "blue",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0241",
+      "source": "GBNF_10",
+      "target": "GBNF",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0242",
+      "source": "SchemaGuidedExtract",
+      "target": "SGR",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0243",
+      "source": "LeanMathlibCT",
+      "target": "Lean",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0244",
+      "source": "HaskellAsCT",
+      "target": "Haskell",
+      "label": "",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0245",
+      "source": "UnitProp",
+      "target": "CDCL_02",
+      "label": "inner loop",
+      "eStyle": "dotted",
+      "eColor": "red",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0246",
+      "source": "BackboneEnum",
+      "target": "ModelEnum",
+      "label": "",
+      "eStyle": "dashed",
+      "eColor": "purple",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0247",
+      "source": "DirGraph",
+      "target": "DAG",
+      "label": "+ sharing",
+      "eStyle": "bold",
+      "eColor": "grey30"
+    }
+  },
+  {
+    "data": {
+      "id": "e0248",
+      "source": "DAG",
+      "target": "EGraph",
+      "label": "+ equivalence",
+      "eStyle": "bold",
+      "eColor": "grey30"
+    }
+  },
+  {
+    "data": {
+      "id": "e0249",
+      "source": "EGraph",
+      "target": "Category",
+      "label": "+ composition\nlaws",
+      "eStyle": "bold",
+      "eColor": "grey30",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0250",
+      "source": "LogicProg",
+      "target": "CSP",
+      "label": "",
+      "eStyle": "bold",
+      "eColor": "darkgreen"
+    }
+  },
+  {
+    "data": {
+      "id": "e0251",
+      "source": "CSP",
+      "target": "Backtracking",
+      "label": "",
+      "eStyle": "bold",
+      "eColor": "darkgreen",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0252",
+      "source": "Backtracking",
+      "target": "ProofDAG",
+      "label": "",
+      "eStyle": "bold",
+      "eColor": "darkgreen",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0253",
+      "source": "ProofDAG",
+      "target": "LP",
+      "label": "→ optimisation",
+      "eStyle": "bold",
+      "eColor": "darkgreen",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0254",
+      "source": "LP",
+      "target": "ProgramSynthesis",
+      "label": "",
+      "eStyle": "bold",
+      "eColor": "darkgreen",
+      "cross": 1
+    }
+  },
+  {
+    "data": {
+      "id": "e0255",
+      "source": "ProgramSynthesis",
+      "target": "VerifiedOpt",
+      "label": "",
+      "eStyle": "bold",
+      "eColor": "darkgreen"
+    }
+  }
+];

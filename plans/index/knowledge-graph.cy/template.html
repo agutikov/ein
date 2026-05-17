@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>plans/index — Knowledge Graph</title>
+
+  <!-- Cytoscape core + fcose compound-graph layout (CDN) -->
+  <script src="https://unpkg.com/cytoscape@3/dist/cytoscape.min.js"></script>
+  <script src="https://unpkg.com/layout-base@2/layout-base.js"></script>
+  <script src="https://unpkg.com/cose-base@2/cose-base.js"></script>
+  <script src="https://unpkg.com/cytoscape-fcose@2/cytoscape-fcose.js"></script>
+
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0;
+                 font-family: Helvetica, Arial, sans-serif; }
+    body { display: flex; flex-direction: column; }
+    #toolbar {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      background: #f4f4f4;
+      border-bottom: 1px solid #cccccc;
+      font-size: 12px;
+      display: flex; gap: 12px; align-items: center;
+    }
+    #toolbar select, #toolbar button { font-size: 12px; }
+    #toolbar .legend { margin-left: auto; color: #555; }
+    #cy { flex: 1 1 auto; min-height: 0; }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <label>layout
+      <select id="layout-select">
+        <option value="fcose" selected>fcose (compound spring)</option>
+        <option value="cose">cose (built-in)</option>
+        <option value="concentric">concentric</option>
+        <option value="grid">grid</option>
+        <option value="circle">circle</option>
+        <option value="breadthfirst">breadthfirst</option>
+      </select>
+    </label>
+    <button id="run-layout">re-run layout</button>
+    <button id="fit">fit</button>
+    <label><input type="checkbox" id="hide-cross" /> hide cross-cluster edges</label>
+    <span class="legend" id="counts"></span>
+  </div>
+  <div id="cy"></div>
+
+  <!-- Graph data — elements + style. In the built single-file
+       output these are inlined; in the source template they are
+       loaded as sibling files for live editing. -->
+  <!-- INJECT:elements.js -->
+  <script src="elements.js"></script>
+  <!-- /INJECT:elements.js -->
+  <!-- INJECT:style.js -->
+  <script src="style.js"></script>
+  <!-- /INJECT:style.js -->
+
+  <script>
+    if (window.cytoscape && window.cytoscapeFcose) {
+      cytoscape.use(window.cytoscapeFcose);
+    }
+
+    const LAYOUTS = {
+      fcose: {
+        name: 'fcose',
+        quality: 'default',
+        randomize: true,
+        animate: false,
+        fit: true,
+        padding: 30,
+        nodeSeparation: 90,
+        idealEdgeLength: 110,
+        nodeRepulsion: 6500,
+        gravity: 0.25,
+        gravityRangeCompound: 1.5,
+        gravityCompound: 1.0,
+        nestingFactor: 0.1,
+        numIter: 2500,
+        tile: true,
+        packComponents: true
+      },
+      cose: {
+        name: 'cose',
+        animate: false, fit: true, padding: 30,
+        nodeRepulsion: 400000, idealEdgeLength: 120,
+        edgeElasticity: 100, nestingFactor: 1.2,
+        gravity: 80, numIter: 2000
+      },
+      concentric: { name: 'concentric', animate: false, fit: true, padding: 30 },
+      grid:       { name: 'grid',       animate: false, fit: true, padding: 30 },
+      circle:     { name: 'circle',     animate: false, fit: true, padding: 30 },
+      breadthfirst:{name: 'breadthfirst',animate: false, fit: true, padding: 30,
+                    directed: true, spacingFactor: 1.1 }
+    };
+
+    const cy = cytoscape({
+      container: document.getElementById('cy'),
+      elements: window.cyElements || [],
+      style:    window.cyStyle    || [],
+      layout:   LAYOUTS.fcose,
+      wheelSensitivity: 0.2
+    });
+
+    const counts = document.getElementById('counts');
+    counts.textContent =
+      cy.nodes(':parent').length + ' clusters · ' +
+      cy.nodes().not(':parent').length + ' nodes · ' +
+      cy.edges().length + ' edges';
+
+    document.getElementById('run-layout').addEventListener('click', () => {
+      const name = document.getElementById('layout-select').value;
+      cy.layout(LAYOUTS[name]).run();
+    });
+    document.getElementById('layout-select').addEventListener('change', e => {
+      cy.layout(LAYOUTS[e.target.value]).run();
+    });
+    document.getElementById('fit').addEventListener('click', () => cy.fit(30));
+    document.getElementById('hide-cross').addEventListener('change', e => {
+      cy.edges('[?cross]').style('display', e.target.checked ? 'none' : 'element');
+    });
+
+    // Click a node → log its data (handy when exploring a 200+ node graph).
+    cy.on('tap', 'node', evt => console.log(evt.target.data()));
+  </script>
+</body>
+</html>
