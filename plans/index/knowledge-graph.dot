@@ -1,0 +1,1073 @@
+// =====================================================================
+// Knowledge graph of plans/index/ topics — every item mentioned across
+// 01-llm-constrained-generation.md … 11-search-optimization-algorithms.md
+//
+// Multilevel grouping:
+//   * 11 top-level clusters (one per index file)
+//   * Each top-level cluster contains 2–6 nested sub-clusters
+//     (mirroring the section headings inside the file)
+//
+// Visual encoding (shape + colour):
+//   * ellipse        / lightblue   — abstract concept / theoretical notion
+//   * hexagon        / khaki1      — algorithm
+//   * box3d          / palegreen   — software, tool, library, system
+//   * note           / peachpuff   — paper, named framework, publication
+//   * cylinder       / pink        — programming language
+//   * folder         / plum1       — data structure / IR / graph kind
+//   * tab            / lightgrey   — standard, format, spec
+//   * diamond        / gold        — problem class
+//   * doubleoctagon  / lightcoral  — cognitive / agent architecture
+//   * parallelogram  / lightcyan   — diagram language / notation / DSL
+//   * component      / wheat       — proof structure
+//   * septagon       / thistle     — abstract domain / lattice
+//
+// Edges:
+//   * solid black            — "lives-in / contains / is-an-instance-of"
+//                              (kept implicit through clusters; only used
+//                              where an item belongs to two siblings).
+//   * dashed blue            — conceptual cross-link between clusters
+//   * dotted red             — "is the substrate / implementation of"
+//   * bold green             — pipeline flow (NL → IR → solver → proof)
+//   * dashed purple          — "alias / sibling / very close cousin of"
+// =====================================================================
+
+digraph KnowledgeGraph {
+    graph [ rankdir=LR, compound=true, splines=polyline, overlap=false,
+            clusterrank=local,
+            fontname="Helvetica", fontsize=11, nodesep=0.45, ranksep=1.1,
+            bgcolor="white", labelloc="t",
+            label="ein-bot / plans/index — Knowledge Graph of all topics" ];
+    node  [ fontname="Helvetica", fontsize=10, style="filled" ];
+    edge  [ fontname="Helvetica", fontsize=9, color="grey40" ];
+
+    // ----- Reusable style macros via node defaults inside sub-clusters
+    // (Graphviz has no real macros; styles are applied per-node.)
+
+    // =================================================================
+    // 01 — LLM & Constrained Generation
+    // =================================================================
+    subgraph cluster_01 {
+        label="01 — LLM & Constrained Generation";
+        style="rounded,filled"; fillcolor="#f4f8ff"; color="#3a5fb0";
+        fontsize=14; fontcolor="#1f3a78";
+
+        subgraph cluster_01_internals {
+            label="Inference internals"; style="dashed"; color="#5577cc";
+            Logit       [shape=ellipse, fillcolor=lightblue, label="Logit"];
+            Softmax     [shape=ellipse, fillcolor=lightblue, label="Softmax"];
+            Temperature [shape=hexagon, fillcolor=khaki1,  label="Temperature /\ntop-k / top-p"];
+            Tokenization[shape=ellipse, fillcolor=lightblue, label="Tokenization /\nvocabulary"];
+            BPE         [shape=ellipse, fillcolor=lightblue, label="Byte-Pair\nEncoding (BPE)"];
+            llamacpp    [shape=box3d,   fillcolor=palegreen, label="llama.cpp"];
+            NucleusPaper[shape=note,    fillcolor=peachpuff, label="Holtzman 2019\n(nucleus sampling)"];
+        }
+
+        subgraph cluster_01_gbnf {
+            label="Grammar-constrained decoding"; style="dashed"; color="#5577cc";
+            GBNF             [shape=tab, fillcolor=lightgrey, label="GBNF\n(GGML BNF)"];
+            BNF              [shape=tab, fillcolor=lightgrey, label="BNF"];
+            EBNF             [shape=tab, fillcolor=lightgrey, label="EBNF"];
+            ParserGuidedDec  [shape=hexagon, fillcolor=khaki1, label="Parser-guided\ndecoding"];
+            HybridScratchpad [shape=ellipse, fillcolor=lightblue, label="Hybrid\nscratchpad pattern"];
+        }
+
+        subgraph cluster_01_crf {
+            label="Constrained reasoning frameworks"; style="dashed"; color="#5577cc";
+            ConstOfT [shape=note, fillcolor=peachpuff, label="Const-of-Thought\n(Const-o-T)"];
+            GCR      [shape=note, fillcolor=peachpuff, label="GCR — Graph-\nConstrained Reasoning"];
+            CRANE    [shape=note, fillcolor=peachpuff, label="CRANE"];
+            SGR      [shape=note, fillcolor=peachpuff, label="Schema-Guided\nReasoning (SGR)"];
+            KGTrie   [shape=folder, fillcolor=plum1, label="KG-Trie"];
+            Pydantic [shape=box3d, fillcolor=palegreen, label="Pydantic"];
+        }
+
+        subgraph cluster_01_neurosym {
+            label="Neuro-symbolic / verifier-guided"; style="dashed"; color="#5577cc";
+            NeuroSymAI       [shape=doubleoctagon, fillcolor=lightcoral, label="Neuro-symbolic AI"];
+            VerifierGuided   [shape=ellipse, fillcolor=lightblue, label="Verifier-guided /\nproof-constrained inference"];
+            SelfModLang      [shape=ellipse, fillcolor=lightblue, label="Self-modifying\nconstraint languages"];
+            ToolCalling      [shape=ellipse, fillcolor=lightblue, label="Tool-calling /\nstructured output"];
+        }
+
+        subgraph cluster_01_layers {
+            label="Three levels of constraint"; style="dashed"; color="#5577cc";
+            LayerSyntax    [shape=ellipse, fillcolor=lightblue, label="Syntax layer\n(token-local)"];
+            LayerSemantic  [shape=ellipse, fillcolor=lightblue, label="Semantic admissibility\n(state-space)"];
+            LayerGlobal    [shape=ellipse, fillcolor=lightblue, label="Global validity\n(whole proof)"];
+        }
+
+        // Internal edges (within 01)
+        Logit -> Softmax [label="→ p(token)"];
+        Logit -> Temperature [label="reshape"];
+        GBNF -> BNF [label="derives from", style=dashed, color=purple];
+        GBNF -> EBNF [label="derives from", style=dashed, color=purple];
+        GBNF -> ParserGuidedDec [label="instance of", style=dashed, color=purple];
+        ParserGuidedDec -> Logit [label="masks", color=red, style=dotted];
+        HybridScratchpad -> CRANE [label="formalised as", style=dashed, color=purple];
+        GCR -> KGTrie [label="indexed by"];
+        SGR -> Pydantic [label="canonical substrate"];
+        GBNF -> LayerSyntax [style=dotted, color=red];
+        KGTrie -> LayerSemantic [style=dotted, color=red];
+        VerifierGuided -> LayerGlobal [style=dotted, color=red];
+        llamacpp -> GBNF [label="hosts"];
+        Tokenization -> BPE [label="e.g."];
+    }
+
+    // =================================================================
+    // 02 — Solvers (CSP / SAT / SMT / CP / LP / Logic programming)
+    // =================================================================
+    subgraph cluster_02 {
+        label="02 — Solvers: CSP / SAT / SMT / CP / LP / Logic";
+        style="rounded,filled"; fillcolor="#fff7f0"; color="#b06030";
+        fontsize=14; fontcolor="#783a1f";
+
+        subgraph cluster_02_problems {
+            label="Problem classes"; style="dashed"; color="#cc8855";
+            CSP   [shape=diamond, fillcolor=gold, label="CSP"];
+            SAT   [shape=diamond, fillcolor=gold, label="Boolean SAT"];
+            SMT   [shape=diamond, fillcolor=gold, label="SMT"];
+            CP    [shape=diamond, fillcolor=gold, label="Constraint\nProgramming"];
+            LP    [shape=diamond, fillcolor=gold, label="Linear\nProgramming"];
+            MILP  [shape=diamond, fillcolor=gold, label="MILP / MIP"];
+            ASP   [shape=diamond, fillcolor=gold, label="Answer-Set\nProgramming"];
+            LogicProg [shape=diamond, fillcolor=gold, label="Logic\nProgramming"];
+        }
+
+        subgraph cluster_02_sat {
+            label="SAT solvers"; style="dashed"; color="#cc8855";
+            MiniSAT [shape=box3d, fillcolor=palegreen, label="MiniSAT"];
+            Glucose [shape=box3d, fillcolor=palegreen, label="Glucose"];
+            CaDiCaL [shape=box3d, fillcolor=palegreen, label="CaDiCaL"];
+            Kissat  [shape=box3d, fillcolor=palegreen, label="Kissat"];
+            CDCL_02 [shape=hexagon, fillcolor=khaki1, label="CDCL"];
+            DPLL_02 [shape=hexagon, fillcolor=khaki1, label="DPLL"];
+            ImplGraph [shape=folder, fillcolor=plum1, label="Implication\ngraph"];
+            ClauseVarBipartite [shape=folder, fillcolor=plum1, label="Clause–variable\nbipartite graph"];
+        }
+
+        subgraph cluster_02_smt {
+            label="SMT solvers"; style="dashed"; color="#cc8855";
+            Z3       [shape=box3d, fillcolor=palegreen, label="Z3"];
+            CVC5     [shape=box3d, fillcolor=palegreen, label="CVC5"];
+            Yices    [shape=box3d, fillcolor=palegreen, label="Yices"];
+            SMTLIB   [shape=tab, fillcolor=lightgrey, label="SMT-LIB"];
+            CongrClos[shape=hexagon, fillcolor=khaki1, label="Congruence\nclosure"];
+        }
+
+        subgraph cluster_02_cp {
+            label="CP / MIP / OR"; style="dashed"; color="#cc8855";
+            MiniZinc  [shape=cylinder, fillcolor=pink, label="MiniZinc"];
+            Essence   [shape=cylinder, fillcolor=pink, label="Essence /\nConjure"];
+            ORTools   [shape=box3d,   fillcolor=palegreen, label="OR-Tools"];
+            Gurobi    [shape=box3d,   fillcolor=palegreen, label="Gurobi"];
+            CPLEX     [shape=box3d,   fillcolor=palegreen, label="CPLEX"];
+            SCIP      [shape=box3d,   fillcolor=palegreen, label="SCIP"];
+            CPSAT     [shape=box3d,   fillcolor=palegreen, label="CP-SAT"];
+        }
+
+        subgraph cluster_02_asp {
+            label="ASP systems"; style="dashed"; color="#cc8855";
+            Clingo [shape=box3d, fillcolor=palegreen, label="Clingo"];
+            DLV    [shape=box3d, fillcolor=palegreen, label="DLV"];
+        }
+
+        subgraph cluster_02_logic {
+            label="Logic programming"; style="dashed"; color="#cc8855";
+            SWIProlog  [shape=cylinder, fillcolor=pink, label="SWI-Prolog"];
+            Datalog    [shape=cylinder, fillcolor=pink, label="Datalog"];
+            Mercury    [shape=cylinder, fillcolor=pink, label="Mercury"];
+            miniKanren [shape=cylinder, fillcolor=pink, label="miniKanren"];
+            CLPFD      [shape=cylinder, fillcolor=pink, label="CLP(FD)"];
+        }
+
+        subgraph cluster_02_propag {
+            label="Constraint propagation / consistency"; style="dashed"; color="#cc8855";
+            AllDifferent  [shape=ellipse, fillcolor=lightblue, label="All-different /\nglobal constraints"];
+            ArcConsistency[shape=hexagon, fillcolor=khaki1, label="Arc consistency\n(AC-3 / AC-4)"];
+            PathConsistency[shape=hexagon, fillcolor=khaki1, label="Path consistency"];
+            Backtracking_02[shape=hexagon, fillcolor=khaki1, label="Backtracking /\nhypothesis testing"];
+            AllenAlgebra  [shape=ellipse, fillcolor=lightblue, label="Allen interval\nalgebra"];
+            RCC           [shape=ellipse, fillcolor=lightblue, label="Region\nConnection\nCalculus"];
+        }
+
+        subgraph cluster_02_analysis {
+            label="Analysis on top of a model"; style="dashed"; color="#cc8855";
+            ModelEnum   [shape=hexagon, fillcolor=khaki1, label="Model enumeration /\nbackbone analysis"];
+            UnsatCore   [shape=hexagon, fillcolor=khaki1, label="Unsat core /\nMUS"];
+            ConstraintHypergraph [shape=folder, fillcolor=plum1, label="Constraint\nhypergraph"];
+        }
+
+        // Internal edges
+        SAT -> SMT [label="extended by", style=dashed, color=purple];
+        CSP -> CP  [label="modelled by", style=dashed, color=purple];
+        LP  -> MILP [label="+integer vars"];
+        DPLL_02 -> CDCL_02 [label="ancestor of", style=dashed, color=purple];
+        MiniSAT -> Glucose -> CaDiCaL -> Kissat [label="lineage", style=dashed, color=purple];
+        CDCL_02 -> ImplGraph [label="analyses"];
+        SAT -> ClauseVarBipartite [style=dotted, color=red];
+        Z3 -> SMTLIB [label="reads", style=dashed];
+        CVC5 -> SMTLIB [style=dashed];
+        Yices -> SMTLIB [style=dashed];
+        SMT -> CongrClos [label="uses", style=dotted, color=red];
+        ORTools -> CPSAT [label="contains"];
+        CPSAT -> CP [style=dotted, color=red];
+        CPSAT -> SAT [style=dotted, color=red];
+        ArcConsistency -> PathConsistency [label="strengthens", style=dashed, color=purple];
+        SWIProlog -> CLPFD [label="hosts"];
+        SWIProlog -> LogicProg [style=dotted, color=red];
+        Datalog -> LogicProg [style=dotted, color=red];
+        Clingo -> ASP [style=dotted, color=red];
+        DLV -> ASP [style=dotted, color=red];
+    }
+
+    // =================================================================
+    // 03 — Theorem Proving & Formal Methods
+    // =================================================================
+    subgraph cluster_03 {
+        label="03 — Theorem Proving & Formal Methods";
+        style="rounded,filled"; fillcolor="#f5fff0"; color="#2f7030";
+        fontsize=14; fontcolor="#1f5018";
+
+        subgraph cluster_03_itp {
+            label="Interactive theorem provers (ITP)"; style="dashed"; color="#4f9050";
+            Lean      [shape=cylinder, fillcolor=pink, label="Lean / mathlib"];
+            Coq       [shape=cylinder, fillcolor=pink, label="Coq"];
+            Isabelle  [shape=box3d,   fillcolor=palegreen, label="Isabelle /\nIsabelle/HOL"];
+            Agda      [shape=cylinder, fillcolor=pink, label="Agda"];
+            Idris     [shape=cylinder, fillcolor=pink, label="Idris"];
+            ACL2      [shape=box3d,   fillcolor=palegreen, label="ACL2"];
+        }
+
+        subgraph cluster_03_atp {
+            label="Automated theorem provers (ATP)"; style="dashed"; color="#4f9050";
+            Vampire   [shape=box3d, fillcolor=palegreen, label="Vampire"];
+            EProver   [shape=box3d, fillcolor=palegreen, label="E"];
+            Prover9   [shape=box3d, fillcolor=palegreen, label="Prover9 /\nMace4"];
+        }
+
+        subgraph cluster_03_foundations {
+            label="Foundations"; style="dashed"; color="#4f9050";
+            CurryHoward [shape=ellipse, fillcolor=lightblue, label="Curry–Howard\ncorrespondence"];
+            DepTypes    [shape=ellipse, fillcolor=lightblue, label="Dependent types"];
+            TypeTheory  [shape=ellipse, fillcolor=lightblue, label="Type theory\n(Martin-Löf, CIC)"];
+            HoTT        [shape=ellipse, fillcolor=lightblue, label="HoTT"];
+            HindleyMilner[shape=hexagon, fillcolor=khaki1, label="Hindley–Milner\ntype inference"];
+        }
+
+        subgraph cluster_03_proofstruct {
+            label="Proof structures"; style="dashed"; color="#4f9050";
+            ProofTree   [shape=component, fillcolor=wheat, label="Proof tree"];
+            ProofDAG    [shape=component, fillcolor=wheat, label="Proof DAG"];
+            TheoremDepGraph [shape=folder, fillcolor=plum1, label="Theorem→lemma\ndependency graph"];
+            Tableau     [shape=component, fillcolor=wheat, label="Tableau method"];
+            NaturalDeduction [shape=component, fillcolor=wheat, label="Natural\ndeduction"];
+            Resolution  [shape=hexagon, fillcolor=khaki1, label="Resolution"];
+            ReductioAbsurdum [shape=ellipse, fillcolor=lightblue, label="Reductio ad\nabsurdum"];
+        }
+
+        subgraph cluster_03_verif {
+            label="Verified software & formal methods"; style="dashed"; color="#4f9050";
+            KFramework [shape=box3d, fillcolor=palegreen, label="K Framework"];
+            PLTRedex   [shape=box3d, fillcolor=palegreen, label="PLT Redex"];
+            Astree_03  [shape=box3d, fillcolor=palegreen, label="Astrée"];
+            Infer_03   [shape=box3d, fillcolor=palegreen, label="Infer"];
+            FramaC_03  [shape=box3d, fillcolor=palegreen, label="Frama-C"];
+        }
+
+        // Internal edges
+        Lean -> DepTypes [label="implements", style=dotted, color=red];
+        Coq  -> DepTypes [style=dotted, color=red];
+        Agda -> DepTypes [style=dotted, color=red];
+        Idris-> DepTypes [style=dotted, color=red];
+        DepTypes -> TypeTheory [label="subset"];
+        TypeTheory -> HoTT [label="extended by"];
+        CurryHoward -> TypeTheory [label="motivates"];
+        ProofTree -> ProofDAG [label="sharing makes", style=dashed, color=purple];
+        Tableau -> ReductioAbsurdum [label="based on"];
+        Resolution -> Prover9 [label="used by", dir=back, style=dotted, color=red];
+        Resolution -> Vampire [label="used by", dir=back, style=dotted, color=red];
+        Resolution -> EProver [label="used by", dir=back, style=dotted, color=red];
+        ACL2 -> NaturalDeduction [style=dotted, color=red];
+    }
+
+    // =================================================================
+    // 04 — Programming Languages
+    // =================================================================
+    subgraph cluster_04 {
+        label="04 — Programming Languages";
+        style="rounded,filled"; fillcolor="#fff0f5"; color="#aa3070";
+        fontsize=14; fontcolor="#762048";
+
+        subgraph cluster_04_lisp {
+            label="S-expression / Lisp family"; style="dashed"; color="#cc70a0";
+            Lisp     [shape=cylinder, fillcolor=pink, label="Lisp /\nCommon Lisp /\nScheme"];
+            Racket   [shape=cylinder, fillcolor=pink, label="Racket"];
+            Clojure  [shape=cylinder, fillcolor=pink, label="Clojure"];
+            SMTLIB_lang [shape=cylinder, fillcolor=pink, label="SMT-LIB\n(as Lisp DSL)"];
+        }
+
+        subgraph cluster_04_func {
+            label="Functional / typed-functional"; style="dashed"; color="#cc70a0";
+            Haskell [shape=cylinder, fillcolor=pink, label="Haskell"];
+            GHC     [shape=box3d, fillcolor=palegreen, label="GHC — STG /\nG-machine"];
+            Scala   [shape=cylinder, fillcolor=pink, label="Scala"];
+            OCaml   [shape=cylinder, fillcolor=pink, label="OCaml"];
+        }
+
+        subgraph cluster_04_scientific {
+            label="Numerical / scientific hosts"; style="dashed"; color="#cc70a0";
+            Julia    [shape=cylinder, fillcolor=pink, label="Julia"];
+            CatlabJL [shape=box3d, fillcolor=palegreen, label="Catlab.jl"];
+            Python   [shape=cylinder, fillcolor=pink, label="Python"];
+            DisCoPy_04 [shape=box3d, fillcolor=palegreen, label="DisCoPy"];
+        }
+
+        subgraph cluster_04_systems {
+            label="Systems / native"; style="dashed"; color="#cc70a0";
+            CPP    [shape=cylinder, fillcolor=pink, label="C++"];
+            Rust   [shape=cylinder, fillcolor=pink, label="Rust"];
+            CLang  [shape=cylinder, fillcolor=pink, label="C"];
+        }
+
+        subgraph cluster_04_web {
+            label="Web / JS ecosystem"; style="dashed"; color="#cc70a0";
+            JavaScript [shape=cylinder, fillcolor=pink, label="JavaScript /\nTypeScript"];
+            React      [shape=box3d,   fillcolor=palegreen, label="React"];
+        }
+
+        subgraph cluster_04_niche {
+            label="Niche / categorical / experimental"; style="dashed"; color="#cc70a0";
+            Globular_04   [shape=box3d, fillcolor=palegreen, label="Globular"];
+            HomotopyIO_04 [shape=box3d, fillcolor=palegreen, label="Homotopy.io"];
+            Quantomatic_04[shape=box3d, fillcolor=palegreen, label="Quantomatic"];
+        }
+
+        // Internal edges
+        Lisp -> Racket [label="dialect", style=dashed, color=purple];
+        Lisp -> Clojure [style=dashed, color=purple];
+        Lisp -> SMTLIB_lang [style=dashed, color=purple];
+        Haskell -> GHC [label="compiled by"];
+        Julia -> CatlabJL [label="hosts"];
+        Python -> DisCoPy_04 [label="hosts"];
+        JavaScript -> React [label="hosts"];
+    }
+
+    // =================================================================
+    // 05 — Category Theory
+    // =================================================================
+    subgraph cluster_05 {
+        label="05 — Category Theory & Compositional Formalisms";
+        style="rounded,filled"; fillcolor="#f5f0ff"; color="#5538a8";
+        fontsize=14; fontcolor="#3a217a";
+
+        subgraph cluster_05_core {
+            label="Core concepts"; style="dashed"; color="#7a55cc";
+            Category    [shape=ellipse, fillcolor=lightblue, label="Category\n(obj+morph)"];
+            Functor     [shape=ellipse, fillcolor=lightblue, label="Functor"];
+            NatTrans    [shape=ellipse, fillcolor=lightblue, label="Natural\ntransformation"];
+            CommDiag    [shape=ellipse, fillcolor=lightblue, label="Commutative\ndiagram"];
+            MonoidalCat [shape=ellipse, fillcolor=lightblue, label="Monoidal\ncategory"];
+            HigherCat   [shape=ellipse, fillcolor=lightblue, label="Higher categories\n(2-/n-)"];
+            AdhesiveCat [shape=ellipse, fillcolor=lightblue, label="Adhesive\ncategories"];
+            CTLimits    [shape=ellipse, fillcolor=lightblue, label="Limits, pullbacks,\nmonomorphisms"];
+        }
+
+        subgraph cluster_05_notation {
+            label="Notation / diagram languages"; style="dashed"; color="#7a55cc";
+            TikZcd    [shape=parallelogram, fillcolor=lightcyan, label="TikZ-cd"];
+            Quiver    [shape=parallelogram, fillcolor=lightcyan, label="Quiver"];
+            Xymatrix  [shape=parallelogram, fillcolor=lightcyan, label="xymatrix"];
+            Mermaid   [shape=parallelogram, fillcolor=lightcyan, label="Mermaid"];
+            PlantUML  [shape=parallelogram, fillcolor=lightcyan, label="PlantUML"];
+            GraphvizDOT [shape=parallelogram, fillcolor=lightcyan, label="Graphviz / DOT"];
+        }
+
+        subgraph cluster_05_string {
+            label="String diagrams / process theories"; style="dashed"; color="#7a55cc";
+            DisCoPy     [shape=box3d, fillcolor=palegreen, label="DisCoPy"];
+            Quantomatic [shape=box3d, fillcolor=palegreen, label="Quantomatic"];
+            Globular    [shape=box3d, fillcolor=palegreen, label="Globular"];
+            HomotopyIO  [shape=box3d, fillcolor=palegreen, label="Homotopy.io"];
+        }
+
+        subgraph cluster_05_libs {
+            label="Categorical software & libraries"; style="dashed"; color="#7a55cc";
+            CatlabJL_05 [shape=box3d, fillcolor=palegreen, label="Catlab.jl"];
+            AlgebraicJulia [shape=box3d, fillcolor=palegreen, label="AlgebraicJulia\necosystem"];
+            HaskellAsCT [shape=ellipse, fillcolor=lightblue, label="Haskell as\n'CT language'"];
+            LeanMathlibCT [shape=box3d, fillcolor=palegreen, label="Lean /\nmathlib category_theory"];
+        }
+
+        subgraph cluster_05_rewrite {
+            label="Graph rewriting as categorical op"; style="dashed"; color="#7a55cc";
+            DPO [shape=hexagon, fillcolor=khaki1, label="Double-pushout\n(DPO) rewriting"];
+            SPO [shape=hexagon, fillcolor=khaki1, label="Single-pushout\n(SPO) rewriting"];
+            TermRewriteCT [shape=ellipse, fillcolor=lightblue, label="Term rewriting\n(categorical)"];
+            OperadicDSL [shape=ellipse, fillcolor=lightblue, label="Operadic DSLs"];
+        }
+
+        // Internal edges
+        Category -> Functor [label="map of"];
+        Functor -> NatTrans [label="map of"];
+        Category -> CommDiag [label="depicted by"];
+        MonoidalCat -> DisCoPy [label="modelled in", style=dotted, color=red];
+        HigherCat -> Globular [label="implemented in", style=dotted, color=red];
+        HigherCat -> HomotopyIO [style=dotted, color=red];
+        AdhesiveCat -> DPO [label="ambient for"];
+        DPO -> SPO [label="variant", style=dashed, color=purple];
+        CatlabJL_05 -> AlgebraicJulia [label="anchor of"];
+    }
+
+    // =================================================================
+    // 06 — Graphs & Rewrite Systems
+    // =================================================================
+    subgraph cluster_06 {
+        label="06 — Graphs & Rewrite Systems";
+        style="rounded,filled"; fillcolor="#f0fbff"; color="#306090";
+        fontsize=14; fontcolor="#1f4878";
+
+        subgraph cluster_06_basic {
+            label="Basic graph kinds"; style="dashed"; color="#5588bb";
+            DirGraph   [shape=folder, fillcolor=plum1, label="Directed graph"];
+            DAG        [shape=folder, fillcolor=plum1, label="DAG"];
+            Hypergraph [shape=folder, fillcolor=plum1, label="Hypergraph"];
+            Bipartite  [shape=folder, fillcolor=plum1, label="Bipartite graph"];
+            TermGraph  [shape=folder, fillcolor=plum1, label="Term graph"];
+            KnowledgeGraph [shape=folder, fillcolor=plum1, label="Knowledge graph"];
+            FactorGraph[shape=folder, fillcolor=plum1, label="Factor graph"];
+            BayesNet   [shape=folder, fillcolor=plum1, label="Bayesian network"];
+            FlowNet    [shape=folder, fillcolor=plum1, label="Flow network"];
+        }
+
+        subgraph cluster_06_equiv {
+            label="Equivalence machinery"; style="dashed"; color="#5588bb";
+            UnionFind  [shape=hexagon, fillcolor=khaki1, label="Union-find /\ndisjoint-set"];
+            CongrClos06[shape=hexagon, fillcolor=khaki1, label="Congruence closure"];
+            EquivRel   [shape=ellipse, fillcolor=lightblue, label="Equivalence relation /\nquotient structure"];
+        }
+
+        subgraph cluster_06_egraph {
+            label="E-graphs & equality saturation"; style="dashed"; color="#5588bb";
+            EGraph     [shape=folder, fillcolor=plum1, label="E-graph"];
+            EClass     [shape=folder, fillcolor=plum1, label="E-class"];
+            ENode      [shape=folder, fillcolor=plum1, label="E-node"];
+            EqSat      [shape=hexagon, fillcolor=khaki1, label="Equality saturation"];
+            Egg        [shape=box3d, fillcolor=palegreen, label="egg (Rust)"];
+            Herbie     [shape=box3d, fillcolor=palegreen, label="Herbie"];
+            Tensat     [shape=box3d, fillcolor=palegreen, label="Tensat"];
+            Diospyros  [shape=box3d, fillcolor=palegreen, label="Diospyros"];
+            SPORES     [shape=box3d, fillcolor=palegreen, label="SPORES"];
+            EggPaper   [shape=note, fillcolor=peachpuff, label="\"egg\" paper\n(POPL 2021)"];
+        }
+
+        subgraph cluster_06_rewrite {
+            label="Term & graph rewriting"; style="dashed"; color="#5588bb";
+            TermRewriting [shape=hexagon, fillcolor=khaki1, label="Term rewriting"];
+            GraphRewriting[shape=hexagon, fillcolor=khaki1, label="Graph rewriting"];
+            CategoricalRewriting [shape=ellipse, fillcolor=lightblue, label="Categorical\nrewriting"];
+        }
+
+        subgraph cluster_06_automata {
+            label="Automata & state graphs"; style="dashed"; color="#5588bb";
+            DFA  [shape=folder, fillcolor=plum1, label="DFA"];
+            NFA  [shape=folder, fillcolor=plum1, label="NFA"];
+            PDA  [shape=folder, fillcolor=plum1, label="Pushdown\nautomaton"];
+            Buchi[shape=folder, fillcolor=plum1, label="Büchi automaton"];
+            Kripke[shape=folder, fillcolor=plum1, label="Kripke structure"];
+            ModelChecking_06 [shape=hexagon, fillcolor=khaki1, label="Model checking"];
+        }
+
+        subgraph cluster_06_compilergraphs {
+            label="Compiler-side graphs"; style="dashed"; color="#5588bb";
+            CFG [shape=folder, fillcolor=plum1, label="Control flow\ngraph (CFG)"];
+            Dataflow [shape=folder, fillcolor=plum1, label="Dataflow graph"];
+            SSA_06 [shape=folder, fillcolor=plum1, label="SSA"];
+            PDG [shape=folder, fillcolor=plum1, label="Program / data\ndependence graph"];
+            TensorComputeGraph [shape=folder, fillcolor=plum1, label="Tensor compute\ngraph"];
+            GraphReduction [shape=hexagon, fillcolor=khaki1, label="Graph reduction\n(STG / G-machine)"];
+        }
+
+        subgraph cluster_06_kg {
+            label="Knowledge-graph / symbolic AI"; style="dashed"; color="#5588bb";
+            RDF   [shape=tab, fillcolor=lightgrey, label="RDF"];
+            OWL   [shape=tab, fillcolor=lightgrey, label="OWL"];
+            AtomSpace_06 [shape=folder, fillcolor=plum1, label="AtomSpace"];
+            GNN   [shape=ellipse, fillcolor=lightblue, label="Graph Neural\nNetworks"];
+            Neo4j [shape=box3d, fillcolor=palegreen, label="Neo4j"];
+        }
+
+        // Internal edges
+        DirGraph -> DAG [label="acyclic"];
+        DAG -> Hypergraph [style=invis];
+        TermGraph -> DAG [label="shared-subterm"];
+        EGraph -> EClass [label="contains"];
+        EClass -> ENode [label="contains"];
+        EGraph -> EqSat [label="enables", style=dotted, color=red];
+        Egg -> EGraph [label="impl of", style=dotted, color=red];
+        EqSat -> Herbie [label="used in", style=dotted, color=red];
+        EqSat -> Tensat [style=dotted, color=red];
+        EqSat -> Diospyros [style=dotted, color=red];
+        EqSat -> SPORES [style=dotted, color=red];
+        EggPaper -> Egg [label="describes", style=dashed, color=purple];
+        UnionFind -> CongrClos06 [label="powers"];
+        UnionFind -> EGraph [label="powers"];
+        DFA -> NFA [label="determinise of", style=dashed, color=purple];
+        NFA -> PDA [label="+stack"];
+        Kripke -> ModelChecking_06 [label="state model for"];
+        // (GraphRewriting->DPO and GraphReduction->GHC are cross-cluster
+        //  edges, declared in the cross-cluster section below.)
+    }
+
+    // =================================================================
+    // 07 — Static Analysis & Compiler Tech
+    // =================================================================
+    subgraph cluster_07 {
+        label="07 — Static Analysis & Compiler Technology";
+        style="rounded,filled"; fillcolor="#fdfff0"; color="#909030";
+        fontsize=14; fontcolor="#787020";
+
+        subgraph cluster_07_ai {
+            label="Abstract interpretation"; style="dashed"; color="#aaaa55";
+            AbstractInterp [shape=ellipse, fillcolor=lightblue, label="Abstract\ninterpretation"];
+            CousotPaper [shape=note, fillcolor=peachpuff, label="Cousot & Cousot\n1977"];
+            Lattice  [shape=septagon, fillcolor=thistle, label="Lattice"];
+            GaloisConn [shape=ellipse, fillcolor=lightblue, label="Galois connection"];
+            FixedPoint [shape=ellipse, fillcolor=lightblue, label="Fixed point\n(Knaster–Tarski)"];
+            Widening [shape=hexagon, fillcolor=khaki1, label="Widening /\nnarrowing"];
+        }
+
+        subgraph cluster_07_domains {
+            label="Abstract domains"; style="dashed"; color="#aaaa55";
+            SignDomain    [shape=septagon, fillcolor=thistle, label="Sign domain"];
+            IntervalDomain[shape=septagon, fillcolor=thistle, label="Interval domain"];
+            OctagonDomain [shape=septagon, fillcolor=thistle, label="Octagon domain"];
+            PolyhedraDomain[shape=septagon, fillcolor=thistle, label="Polyhedra domain"];
+        }
+
+        subgraph cluster_07_analysers {
+            label="Production analysers"; style="dashed"; color="#aaaa55";
+            Astree [shape=box3d, fillcolor=palegreen, label="Astrée"];
+            Infer  [shape=box3d, fillcolor=palegreen, label="Infer"];
+            FramaC [shape=box3d, fillcolor=palegreen, label="Frama-C"];
+            Airbus [shape=note, fillcolor=peachpuff, label="Airbus\n(Astrée user)"];
+        }
+
+        subgraph cluster_07_symex {
+            label="Symbolic execution & MC"; style="dashed"; color="#aaaa55";
+            SymExec   [shape=hexagon, fillcolor=khaki1, label="Symbolic\nexecution"];
+            KLEE      [shape=box3d,   fillcolor=palegreen, label="KLEE"];
+            Angr      [shape=box3d,   fillcolor=palegreen, label="angr"];
+            SymExecGraph [shape=folder, fillcolor=plum1, label="Symbolic execution\ngraph"];
+            ModelChecking [shape=hexagon, fillcolor=khaki1, label="Model checking"];
+            TaintAnalysis [shape=hexagon, fillcolor=khaki1, label="Taint analysis"];
+        }
+
+        subgraph cluster_07_ir {
+            label="Compiler IRs"; style="dashed"; color="#aaaa55";
+            MLIR  [shape=box3d, fillcolor=palegreen, label="MLIR"];
+            LLVMIR[shape=tab, fillcolor=lightgrey, label="LLVM IR"];
+            SSA_07[shape=folder, fillcolor=plum1, label="SSA"];
+        }
+
+        subgraph cluster_07_eqsatcompilers {
+            label="Equality saturation in compilers"; style="dashed"; color="#aaaa55";
+            Tensat_07    [shape=box3d, fillcolor=palegreen, label="Tensat"];
+            Diospyros_07 [shape=box3d, fillcolor=palegreen, label="Diospyros"];
+            Herbie_07    [shape=box3d, fillcolor=palegreen, label="Herbie"];
+            SPORES_07    [shape=box3d, fillcolor=palegreen, label="SPORES"];
+            MLIRplusEqSat[shape=ellipse, fillcolor=lightblue, label="MLIR + equality\nsaturation"];
+        }
+
+        subgraph cluster_07_synth {
+            label="Synthesis & verified opt."; style="dashed"; color="#aaaa55";
+            ProgramSynthesis [shape=ellipse, fillcolor=lightblue, label="Program synthesis"];
+            Superopt         [shape=hexagon, fillcolor=khaki1, label="Superoptimisation"];
+            VerifiedOpt      [shape=ellipse, fillcolor=lightblue, label="Verified\noptimisers"];
+            CompCert         [shape=box3d, fillcolor=palegreen, label="CompCert"];
+        }
+
+        // Internal edges
+        AbstractInterp -> Lattice [label="uses"];
+        AbstractInterp -> GaloisConn [label="grounded in"];
+        AbstractInterp -> FixedPoint [label="computes"];
+        FixedPoint -> Widening [label="forced via"];
+        AbstractInterp -> SignDomain [style=dotted, color=red];
+        AbstractInterp -> IntervalDomain [style=dotted, color=red];
+        AbstractInterp -> OctagonDomain [style=dotted, color=red];
+        AbstractInterp -> PolyhedraDomain [style=dotted, color=red];
+        AbstractInterp -> Astree [label="impl in", style=dotted, color=red];
+        Astree -> Airbus [label="used by"];
+        SymExec -> KLEE [label="impl in"];
+        SymExec -> Angr [label="impl in"];
+        SymExec -> SymExecGraph [label="produces"];
+        MLIR -> SSA_07 [label="dialects on"];
+        LLVMIR -> SSA_07 [label="based on"];
+        MLIR -> MLIRplusEqSat [label="research arm"];
+        ProgramSynthesis -> Superopt [label="kind of"];
+        VerifiedOpt -> CompCert [label="exemplar"];
+        CousotPaper -> AbstractInterp [label="founds", style=dashed, color=purple];
+    }
+
+    // =================================================================
+    // 08 — Diagramming & Visualisation Libraries
+    // =================================================================
+    subgraph cluster_08 {
+        label="08 — Diagramming & Visualisation Libraries";
+        style="rounded,filled"; fillcolor="#fff0f0"; color="#aa3030";
+        fontsize=14; fontcolor="#762020";
+
+        subgraph cluster_08_general {
+            label="General-purpose graph viz (web)"; style="dashed"; color="#cc6060";
+            CytoscapeJS [shape=box3d, fillcolor=palegreen, label="Cytoscape.js"];
+            ReactFlow   [shape=box3d, fillcolor=palegreen, label="React Flow"];
+            JointJS     [shape=box3d, fillcolor=palegreen, label="JointJS"];
+            AntVX6      [shape=box3d, fillcolor=palegreen, label="AntV X6"];
+            VisNetwork  [shape=box3d, fillcolor=palegreen, label="vis-network"];
+            SigmaJS     [shape=box3d, fillcolor=palegreen, label="Sigma.js"];
+            ECharts     [shape=box3d, fillcolor=palegreen, label="Apache ECharts"];
+        }
+
+        subgraph cluster_08_nodeeditors {
+            label="Node editors / visual programming"; style="dashed"; color="#cc6060";
+            ReteJS    [shape=box3d, fillcolor=palegreen, label="Rete.js"];
+            Drawflow  [shape=box3d, fillcolor=palegreen, label="Drawflow"];
+            LiteGraphJS [shape=box3d, fillcolor=palegreen, label="LiteGraph.js"];
+        }
+
+        subgraph cluster_08_native {
+            label="Native / C++ editors"; style="dashed"; color="#cc6060";
+            ImNodes [shape=box3d, fillcolor=palegreen, label="ImNodes"];
+            ImguiNodeEditor [shape=box3d, fillcolor=palegreen, label="imgui-node-editor"];
+            DearImGui [shape=box3d, fillcolor=palegreen, label="Dear ImGui"];
+            Graphviz_08 [shape=box3d, fillcolor=palegreen, label="Graphviz"];
+            OGDF [shape=box3d, fillcolor=palegreen, label="OGDF"];
+        }
+
+        subgraph cluster_08_cad {
+            label="Technical / CAD-style editors"; style="dashed"; color="#cc6060";
+            GoJS [shape=box3d, fillcolor=palegreen, label="GoJS"];
+            mxGraph [shape=box3d, fillcolor=palegreen, label="mxGraph"];
+            DrawIO [shape=box3d, fillcolor=palegreen, label="draw.io /\ndiagrams.net"];
+            Excalidraw [shape=box3d, fillcolor=palegreen, label="Excalidraw"];
+        }
+
+        subgraph cluster_08_canvas {
+            label="Low-level canvas / drawing"; style="dashed"; color="#cc6060";
+            Konva [shape=box3d, fillcolor=palegreen, label="Konva"];
+            FabricJS [shape=box3d, fillcolor=palegreen, label="Fabric.js"];
+        }
+
+        subgraph cluster_08_layout {
+            label="Layout engines"; style="dashed"; color="#cc6060";
+            ELK [shape=box3d, fillcolor=palegreen, label="ELK"];
+            Dagre [shape=box3d, fillcolor=palegreen, label="Dagre"];
+            Cola [shape=box3d, fillcolor=palegreen, label="Cola"];
+        }
+
+        subgraph cluster_08_workflow {
+            label="Workflow / pipeline apps"; style="dashed"; color="#cc6060";
+            n8n [shape=box3d, fillcolor=palegreen, label="n8n"];
+            NodeRED [shape=box3d, fillcolor=palegreen, label="Node-RED"];
+            LangFlow [shape=box3d, fillcolor=palegreen, label="LangFlow"];
+            UnrealBlueprint [shape=box3d, fillcolor=palegreen, label="Unreal\nBlueprint"];
+            Grafana [shape=box3d, fillcolor=palegreen, label="Grafana"];
+        }
+
+        // Internal edges
+        ImNodes -> DearImGui [label="extends"];
+        ImguiNodeEditor -> DearImGui [label="extends"];
+        mxGraph -> DrawIO [label="powers"];
+        ReactFlow -> ELK [label="commonly paired"];
+        CytoscapeJS -> Dagre [label="ships with"];
+        ReactFlow -> Konva [label="overlay combo", style=dashed, color=purple];
+    }
+
+    // =================================================================
+    // 09 — Cognitive Architectures & Neuro-symbolic AI
+    // =================================================================
+    subgraph cluster_09 {
+        label="09 — Cognitive Architectures & Neuro-symbolic AI";
+        style="rounded,filled"; fillcolor="#fff0fb"; color="#8030a0";
+        fontsize=14; fontcolor="#5a2078";
+
+        subgraph cluster_09_opencog {
+            label="OpenCog stack"; style="dashed"; color="#aa55cc";
+            OpenCog   [shape=doubleoctagon, fillcolor=lightcoral, label="OpenCog"];
+            AtomSpace [shape=folder, fillcolor=plum1, label="AtomSpace"];
+            PLN       [shape=doubleoctagon, fillcolor=lightcoral, label="PLN —\nProbabilistic\nLogic Networks"];
+            MOSES     [shape=doubleoctagon, fillcolor=lightcoral, label="MOSES"];
+            ConceptualBlending [shape=ellipse, fillcolor=lightblue, label="Conceptual\nblending"];
+            ECAN      [shape=ellipse, fillcolor=lightblue, label="Attention allocation\n(ECAN)"];
+            PatternMatcher [shape=hexagon, fillcolor=khaki1, label="Pattern matcher"];
+        }
+
+        subgraph cluster_09_tms {
+            label="Truth maintenance"; style="dashed"; color="#aa55cc";
+            TMS  [shape=doubleoctagon, fillcolor=lightcoral, label="TMS"];
+            ATMS [shape=doubleoctagon, fillcolor=lightcoral, label="ATMS\n(de Kleer 1986)"];
+        }
+
+        subgraph cluster_09_neurosym {
+            label="Neuro-symbolic landscape"; style="dashed"; color="#aa55cc";
+            NeuroSymAI_09 [shape=doubleoctagon, fillcolor=lightcoral, label="Neuro-symbolic AI"];
+            LLMAsPolicy   [shape=ellipse, fillcolor=lightblue, label="LLM as policy over\nproof / reasoning graph"];
+            GCR_09        [shape=note, fillcolor=peachpuff, label="GCR"];
+            KGAI          [shape=ellipse, fillcolor=lightblue, label="Knowledge-graph AI /\nRetrieval"];
+            DifferentiableReasoning [shape=ellipse, fillcolor=lightblue, label="Differentiable\nreasoning"];
+        }
+
+        subgraph cluster_09_adj {
+            label="Adjacent graph+cognition"; style="dashed"; color="#aa55cc";
+            LangGraph  [shape=box3d, fillcolor=palegreen, label="LangGraph"];
+            LangChain  [shape=box3d, fillcolor=palegreen, label="LangChain"];
+            LlamaIndex [shape=box3d, fillcolor=palegreen, label="LlamaIndex"];
+            ReteAlgo   [shape=hexagon, fillcolor=khaki1, label="Rete algorithm"];
+            CLIPS      [shape=box3d, fillcolor=palegreen, label="CLIPS / Drools"];
+            EinBot     [shape=doubleoctagon, fillcolor=lightcoral, label="ein-bot itself\n(this repo)"];
+        }
+
+        subgraph cluster_09_buzz {
+            label="Cognitive-arch buzzwords"; style="dashed"; color="#aa55cc";
+            AGI [shape=ellipse, fillcolor=lightblue, label="AGI architecture"];
+            CogOS [shape=ellipse, fillcolor=lightblue, label="Hypergraph\ncognitive OS"];
+            SymProbAGI [shape=ellipse, fillcolor=lightblue, label="Symbolic probabilistic\ngraph-rewriting AGI"];
+            ReflectiveInterp [shape=ellipse, fillcolor=lightblue, label="Reflective interpreters /\nmeta-circular eval"];
+            CompositionalCog [shape=ellipse, fillcolor=lightblue, label="Compositional\ncognition"];
+            ActiveKG [shape=ellipse, fillcolor=lightblue, label="Active /\ninferential KG"];
+            ProofStateGraph [shape=component, fillcolor=wheat, label="Proof state graph"];
+        }
+
+        // Internal edges
+        OpenCog -> AtomSpace [label="substrate"];
+        OpenCog -> PLN [label="contains"];
+        OpenCog -> MOSES [label="contains"];
+        OpenCog -> ConceptualBlending [label="contains"];
+        OpenCog -> ECAN [label="contains"];
+        OpenCog -> PatternMatcher [label="contains"];
+        TMS -> ATMS [label="extended to", style=dashed, color=purple];
+        ATMS -> LLMAsPolicy [style=invis];
+        LangGraph -> LangChain [label="part of"];
+        ReteAlgo -> CLIPS [label="behind"];
+    }
+
+    // =================================================================
+    // 10 — NLP & Semantic Parsing
+    // =================================================================
+    subgraph cluster_10 {
+        label="10 — NLP & Semantic Representation";
+        style="rounded,filled"; fillcolor="#f0fff5"; color="#306060";
+        fontsize=14; fontcolor="#1f4848";
+
+        subgraph cluster_10_pipeline {
+            label="NLP→solver pipeline stages"; style="dashed"; color="#558888";
+            NL          [shape=ellipse, fillcolor=lightblue, label="Natural language\n(input)"];
+            SyntacticParse [shape=hexagon, fillcolor=khaki1, label="Syntactic /\nsemantic parse"];
+            EntityExtract  [shape=hexagon, fillcolor=khaki1, label="Entity extraction"];
+            TypedOntology  [shape=folder, fillcolor=plum1, label="Typed ontology"];
+            ConstrHGraphIR [shape=folder, fillcolor=plum1, label="Constraint\nhypergraph IR\n(with provenance)"];
+            Normalisation  [shape=hexagon, fillcolor=khaki1, label="Normalisation +\ntypechecking"];
+            BackendCompiler[shape=hexagon, fillcolor=khaki1, label="Backend compiler"];
+            ExplanationGraph[shape=folder, fillcolor=plum1, label="Explanation graph"];
+        }
+
+        subgraph cluster_10_semreps {
+            label="Semantic-representation devices"; style="dashed"; color="#558888";
+            SemRoleLabel  [shape=ellipse, fillcolor=lightblue, label="Semantic role\nlabelling / frames"];
+            FrameNet      [shape=box3d, fillcolor=palegreen, label="FrameNet"];
+            AMR           [shape=folder, fillcolor=plum1, label="AMR\n(Abstract Meaning\nRepresentation)"];
+            NER           [shape=hexagon, fillcolor=khaki1, label="NER / entity\nrecognition"];
+            CorefRes      [shape=hexagon, fillcolor=khaki1, label="Coreference\nresolution"];
+            SemParsing    [shape=hexagon, fillcolor=khaki1, label="Semantic parsing"];
+        }
+
+        subgraph cluster_10_llmext {
+            label="LLM-driven extraction"; style="dashed"; color="#558888";
+            LLMExtract     [shape=ellipse, fillcolor=lightblue, label="LLM extracts\nstructured facts"];
+            SchemaGuidedExtract [shape=ellipse, fillcolor=lightblue, label="Schema-guided\nextraction (Pydantic/SGR)"];
+            GBNF_10        [shape=tab, fillcolor=lightgrey, label="GBNF\nshaping output"];
+        }
+
+        subgraph cluster_10_tasks {
+            label="Three task classes on the IR"; style="dashed"; color="#558888";
+            TaskFindSolution  [shape=diamond, fillcolor=gold, label="A. Find a\nsolution"];
+            TaskFindAmbig     [shape=diamond, fillcolor=gold, label="B. Find ambiguity /\ngaps"];
+            TaskFindContrad   [shape=diamond, fillcolor=gold, label="C. Find\ncontradictions"];
+        }
+
+        // Internal edges — pipeline flow
+        NL -> SyntacticParse [color="darkgreen", penwidth=2.0];
+        SyntacticParse -> EntityExtract [color="darkgreen", penwidth=2.0];
+        EntityExtract -> TypedOntology [color="darkgreen", penwidth=2.0];
+        TypedOntology -> ConstrHGraphIR [color="darkgreen", penwidth=2.0];
+        ConstrHGraphIR -> Normalisation [color="darkgreen", penwidth=2.0];
+        Normalisation -> BackendCompiler [color="darkgreen", penwidth=2.0];
+        BackendCompiler -> ExplanationGraph [color="darkgreen", penwidth=2.0];
+        SemRoleLabel -> FrameNet [label="e.g."];
+        LLMExtract -> SchemaGuidedExtract [label="forces structure"];
+        SchemaGuidedExtract -> GBNF_10 [label="via", style=dashed, color=purple];
+        LLMExtract -> ConstrHGraphIR [label="feeds", color="darkgreen", penwidth=2.0];
+        ConstrHGraphIR -> TaskFindSolution [style=dotted, color=red];
+        ConstrHGraphIR -> TaskFindAmbig [style=dotted, color=red];
+        ConstrHGraphIR -> TaskFindContrad [style=dotted, color=red];
+    }
+
+    // =================================================================
+    // 11 — Search & Optimisation Algorithms
+    // =================================================================
+    subgraph cluster_11 {
+        label="11 — Search & Optimisation Algorithms";
+        style="rounded,filled"; fillcolor="#f0f5ff"; color="#404090";
+        fontsize=14; fontcolor="#2f307a";
+
+        subgraph cluster_11_tree {
+            label="Tree / state-space search"; style="dashed"; color="#6060aa";
+            Backtracking [shape=hexagon, fillcolor=khaki1, label="Backtracking"];
+            AndOrTrees   [shape=hexagon, fillcolor=khaki1, label="AND/OR trees"];
+            BnB          [shape=hexagon, fillcolor=khaki1, label="Branch-and-bound"];
+            IterDeepen   [shape=hexagon, fillcolor=khaki1, label="Iterative deepening"];
+            DPLL         [shape=hexagon, fillcolor=khaki1, label="DPLL"];
+            CDCL         [shape=hexagon, fillcolor=khaki1, label="CDCL"];
+            HypothesisBranching [shape=hexagon, fillcolor=khaki1, label="Hypothesis branching\nwith rollback"];
+        }
+
+        subgraph cluster_11_mcts {
+            label="Monte-Carlo / heuristic-guided"; style="dashed"; color="#6060aa";
+            MCTS     [shape=hexagon, fillcolor=khaki1, label="MCTS"];
+            UCB      [shape=hexagon, fillcolor=khaki1, label="UCB1 / UCT"];
+            AlphaZeroGuided [shape=ellipse, fillcolor=lightblue, label="AlphaZero-style\nguided proof search"];
+            AlphaZeroPaper [shape=note, fillcolor=peachpuff, label="AlphaZero paper"];
+        }
+
+        subgraph cluster_11_propag {
+            label="Constraint propagation"; style="dashed"; color="#6060aa";
+            AC3 [shape=hexagon, fillcolor=khaki1, label="AC-3 / AC-4"];
+            PathCons [shape=hexagon, fillcolor=khaki1, label="Path consistency"];
+            UnitProp [shape=hexagon, fillcolor=khaki1, label="Unit propagation\n(BCP)"];
+            BackboneEnum [shape=hexagon, fillcolor=khaki1, label="Backbone / model\nenumeration"];
+            UnsatCore_11 [shape=hexagon, fillcolor=khaki1, label="Unsat core / MUS"];
+        }
+
+        subgraph cluster_11_eqrewrite {
+            label="Equality / rewrite-based"; style="dashed"; color="#6060aa";
+            EqSat_11 [shape=hexagon, fillcolor=khaki1, label="Equality saturation"];
+            Superopt_11 [shape=hexagon, fillcolor=khaki1, label="Superoptimisation"];
+        }
+
+        subgraph cluster_11_continuous {
+            label="Numerical / continuous"; style="dashed"; color="#6060aa";
+            LP_11 [shape=diamond, fillcolor=gold, label="LP / MILP"];
+            ConvexOpt [shape=ellipse, fillcolor=lightblue, label="Convex\noptimisation"];
+            BoydBook [shape=note, fillcolor=peachpuff, label="Boyd &\nVandenberghe"];
+        }
+
+        subgraph cluster_11_evo {
+            label="Evolutionary / stochastic"; style="dashed"; color="#6060aa";
+            EvoAlgo [shape=hexagon, fillcolor=khaki1, label="Evolutionary algorithms /\ngenetic programming"];
+            MOSES_11 [shape=doubleoctagon, fillcolor=lightcoral, label="MOSES"];
+            ProbInference [shape=ellipse, fillcolor=lightblue, label="Probabilistic\ninference\n(belief prop., MCMC)"];
+        }
+
+        subgraph cluster_11_synth {
+            label="Program-synthesis-shaped"; style="dashed"; color="#6060aa";
+            ComponentSynth [shape=ellipse, fillcolor=lightblue, label="Component-based\nsynthesis"];
+            SketchSynth    [shape=ellipse, fillcolor=lightblue, label="Sketch-based\nsynthesis"];
+            RefinementSynth[shape=ellipse, fillcolor=lightblue, label="Refinement-type /\ntype-directed synthesis"];
+        }
+
+        // Internal edges
+        Backtracking -> DPLL [label="ancestor"];
+        DPLL -> CDCL [label="extended by"];
+        CDCL -> HypothesisBranching [label="≅", style=dashed, color=purple];
+        MCTS -> UCB [label="uses"];
+        MCTS -> AlphaZeroGuided [label="enables"];
+        AlphaZeroPaper -> AlphaZeroGuided [style=dashed, color=purple];
+        UnitProp -> CDCL [label="inner loop of", style=dotted, color=red];
+        AC3 -> PathCons [label="strengthened by"];
+        EvoAlgo -> MOSES_11 [label="instance"];
+        BoydBook -> ConvexOpt [label="reference"];
+    }
+
+    // =================================================================
+    // CROSS-CLUSTER LINK ARCS — logical / conceptual connections
+    // (dashed blue = concept link, dotted red = substrate/impl,
+    //  dashed purple = sibling/alias, bold green = pipeline)
+    //
+    // All edges below are constraint=false so they decorate without
+    // pulling clusters into each other (avoids cluster overlap).
+    // =================================================================
+
+    edge [constraint=false];
+
+    // --- 06 ↔ 03/04/05 : cross-cluster intra-section edges relocated here ---
+    UnionFind -> HindleyMilner    [style=dotted, color=red,   label="powers"];
+    GraphRewriting -> DPO         [style=dotted, color=red,   label="formalised by"];
+    GraphReduction -> GHC         [style=dotted, color=red,   label="run by"];
+
+    // --- 01 ↔ 02 : grammar/verifier ↔ solvers ---
+    GCR        -> KnowledgeGraph   [style=dashed, color=blue,  label="constrains\npaths in"];
+    VerifierGuided -> Z3           [style=dashed, color=blue,  label="symbolic\nverifier"];
+    VerifierGuided -> SMT          [style=dashed, color=blue];
+    NeuroSymAI -> SAT              [style=dashed, color=blue,  label="symbolic\nsearch"];
+    NeuroSymAI -> SMT              [style=dashed, color=blue];
+
+    // --- 01 ↔ 06 : KG-Trie / GCR ↔ knowledge graphs ---
+    KGTrie -> KnowledgeGraph       [style=dashed, color=blue,  label="trie over"];
+
+    // --- 01 ↔ 09 : LLM as policy / neurosymbolic ---
+    NeuroSymAI -> NeuroSymAI_09    [style=dashed, color=purple, label="alias"];
+    ConstOfT -> MCTS               [style=dashed, color=blue,   label="uses"];
+    GCR -> GCR_09                  [style=dashed, color=purple];
+    CRANE -> LLMAsPolicy           [style=dashed, color=blue];
+
+    // --- 01 ↔ 04 : Lisp / SMT-LIB as LLM-emit IR ---
+    SMTLIB_lang -> SMTLIB          [style=dashed, color=purple, label="same\nstandard"];
+    HybridScratchpad -> miniKanren [style=dashed, color=blue,   label="clean IR\nexemplar"];
+
+    // --- 02 ↔ 03 : SAT/SMT ↔ ATPs/ITPs ---
+    Resolution -> SAT              [style=dashed, color=blue,  label="proof\nsystem"];
+    Z3 -> SymExec                  [style=dashed, color=blue,  label="discharges\nfor"];
+    SMT -> SymExec                 [style=dashed, color=blue];
+
+    // --- 02 ↔ 06 : implication graph, congruence closure, e-graphs ---
+    ImplGraph -> DirGraph          [style=dotted, color=red,   label="kind of"];
+    CongrClos -> CongrClos06       [style=dashed, color=purple, label="same\nconcept"];
+    CongrClos06 -> EGraph          [style=dashed, color=blue,   label="cousin of"];
+    ClauseVarBipartite -> Bipartite [style=dotted, color=red];
+    ConstraintHypergraph -> Hypergraph [style=dotted, color=red];
+    ConstraintHypergraph -> ConstrHGraphIR [style=dashed, color=purple, label="same\nstructure"];
+
+    // --- 02 ↔ 11 : solver search algos ---
+    CDCL_02 -> CDCL                [style=dashed, color=purple];
+    DPLL_02 -> DPLL                [style=dashed, color=purple];
+    Backtracking_02 -> Backtracking[style=dashed, color=purple];
+    ArcConsistency -> AC3          [style=dashed, color=purple];
+    PathConsistency -> PathCons    [style=dashed, color=purple];
+    ModelEnum -> BackboneEnum      [style=dashed, color=purple];
+    UnsatCore -> UnsatCore_11      [style=dashed, color=purple];
+
+    // --- 03 ↔ 05 : CT formalises proofs / triangle = composition ---
+    Lean -> LeanMathlibCT          [style=dashed, color=purple];
+    DepTypes -> CurryHoward        [style=dashed, color=blue];
+    NaturalDeduction -> Category   [style=dashed, color=blue,  label="composition\nas inference"];
+    ProofDAG -> DAG                [style=dotted, color=red,   label="is a"];
+    TheoremDepGraph -> DAG         [style=dotted, color=red];
+
+    // --- 03 ↔ 06 : proof graphs, automata, model checking ---
+    ModelChecking -> ModelChecking_06 [style=dashed, color=purple];
+    HindleyMilner -> UnionFind       [style=dashed, color=blue,  label="internally\nunifies via"];
+    Resolution -> SWIProlog          [style=dashed, color=blue,  label="executed by"];
+
+    // --- 03 ↔ 07 : verified compilers / abstract interp ---
+    Astree_03 -> Astree            [style=dashed, color=purple];
+    Infer_03  -> Infer             [style=dashed, color=purple];
+    FramaC_03 -> FramaC            [style=dashed, color=purple];
+    HindleyMilner -> AbstractInterp[style=dashed, color=blue,  label="kind of"];
+
+    // --- 03 ↔ 11 : MCTS / AlphaZero-style proof search ---
+    AlphaZeroGuided -> ProofDAG    [style=dashed, color=blue,  label="searches\nover"];
+
+    // --- 04 ↔ 05/07 : Haskell/Julia/Lean as CT/IR hosts ---
+    Haskell -> HaskellAsCT         [style=dashed, color=purple];
+    Julia -> CatlabJL_05           [style=dotted, color=red,   label="hosts"];
+    Rust -> Egg                    [style=dotted, color=red,   label="hosts"];
+    CPP -> llamacpp                [style=dotted, color=red];
+    CPP -> ORTools                 [style=dotted, color=red];
+    CPP -> DearImGui               [style=dotted, color=red];
+    CPP -> OGDF                    [style=dotted, color=red];
+    Python -> Pydantic             [style=dotted, color=red,   label="hosts"];
+    Python -> DisCoPy              [style=dotted, color=red];
+    JavaScript -> CytoscapeJS      [style=dotted, color=red];
+    JavaScript -> ReactFlow        [style=dotted, color=red];
+    JavaScript -> SigmaJS          [style=dotted, color=red];
+    JavaScript -> JointJS          [style=dotted, color=red];
+    JavaScript -> AntVX6           [style=dotted, color=red];
+    JavaScript -> Konva            [style=dotted, color=red];
+    JavaScript -> FabricJS         [style=dotted, color=red];
+
+    // --- 05 ↔ 06 : DPO/SPO, term rewriting, e-graphs ---
+    DPO -> GraphRewriting          [style=dashed, color=blue,  label="categorical\nfoundation"];
+    SPO -> GraphRewriting          [style=dashed, color=blue];
+    TermRewriteCT -> TermRewriting [style=dashed, color=purple];
+    CategoricalRewriting -> EqSat  [style=dashed, color=blue,  label="ancestor of"];
+
+    // --- 05 ↔ 08 : diagram tools ---
+    GraphvizDOT -> Graphviz_08     [style=dashed, color=purple];
+
+    // --- 06 ↔ 07 : compiler graphs, e-graphs in MLIR, SSA ---
+    EGraph -> MLIRplusEqSat        [style=dashed, color=blue];
+    Tensat -> Tensat_07            [style=dashed, color=purple];
+    Diospyros -> Diospyros_07      [style=dashed, color=purple];
+    Herbie -> Herbie_07            [style=dashed, color=purple];
+    SPORES -> SPORES_07            [style=dashed, color=purple];
+    SSA_06 -> SSA_07               [style=dashed, color=purple];
+    CFG -> SymExec                 [style=dashed, color=blue,  label="traversed by"];
+
+    // --- 06 ↔ 09 : AtomSpace, KG ---
+    AtomSpace_06 -> AtomSpace      [style=dashed, color=purple];
+    KnowledgeGraph -> KGAI         [style=dashed, color=blue];
+    Hypergraph -> AtomSpace        [style=dotted, color=red,  label="typed\nhypergraph"];
+
+    // --- 06 ↔ 10 : hypergraph IR target ---
+    Hypergraph -> ConstrHGraphIR   [style=dotted, color=red,  label="shape of"];
+    ProofStateGraph -> ProofDAG    [style=dashed, color=blue, label="generalises"];
+
+    // --- 07 ↔ 11 : equality sat & superopt ---
+    Superopt -> Superopt_11        [style=dashed, color=purple];
+    EqSat -> EqSat_11              [style=dashed, color=purple];
+
+    // --- 08 ↔ 06/10 : diagram libs as KG visualisers ---
+    ReactFlow -> KnowledgeGraph    [style=dashed, color=blue,  label="visualises"];
+    CytoscapeJS -> KnowledgeGraph  [style=dashed, color=blue,  label="visualises"];
+    SigmaJS -> KnowledgeGraph      [style=dashed, color=blue];
+    LangFlow -> LangGraph          [style=dashed, color=blue,  label="analogue of"];
+
+    // --- 09 ↔ 02 / 11 : TMS, CDCL, hypothesis branching ---
+    ATMS -> CDCL                   [style=dashed, color=blue,  label="structurally\nsame loop"];
+    ATMS -> HypothesisBranching    [style=dashed, color=blue];
+    EinBot -> HypothesisBranching  [style=dashed, color=blue,  label="implements"];
+    EinBot -> ConstrHGraphIR       [style=dashed, color=blue,  label="typed relational\nhypergraph"];
+    EinBot -> AtomSpace            [style=dashed, color=blue,  label="kin to"];
+    EinBot -> ATMS                 [style=dashed, color=blue,  label="kin to"];
+    EinBot -> NaturalDeduction     [style=dashed, color=blue,  label="trace goal"];
+    EinBot -> Tableau              [style=dashed, color=blue,  label="trace goal"];
+
+    // --- 09 ↔ 11 : MOSES / evolutionary ---
+    MOSES -> MOSES_11              [style=dashed, color=purple];
+
+    // --- 10 ↔ 02 : compile to solvers (pipeline) ---
+    BackendCompiler -> MiniZinc    [color="darkgreen", penwidth=2.0, label="emits"];
+    BackendCompiler -> Z3          [color="darkgreen", penwidth=2.0];
+    BackendCompiler -> Clingo      [color="darkgreen", penwidth=2.0];
+    BackendCompiler -> CLPFD       [color="darkgreen", penwidth=2.0];
+    BackendCompiler -> CPSAT       [color="darkgreen", penwidth=2.0];
+    TaskFindContrad -> UnsatCore   [style=dashed, color=blue,  label="needs"];
+    TaskFindAmbig -> ModelEnum     [style=dashed, color=blue];
+
+    // --- 10 ↔ 05 : NL→IR as functor ---
+    SemParsing -> Functor          [style=dashed, color=blue,  label="categorical\nview"];
+
+    // --- 10 ↔ 01 : LLM extraction & GBNF ---
+    GBNF_10 -> GBNF                [style=dashed, color=purple];
+    SchemaGuidedExtract -> SGR     [style=dashed, color=purple];
+
+    // --- 05 ↔ 04 : Lean / Catlab / Haskell ---
+    LeanMathlibCT -> Lean          [style=dotted, color=red];
+    HaskellAsCT -> Haskell         [style=dotted, color=red];
+
+    // --- 11 ↔ 02 / 06 : unit propagation ↔ BCP / arc-consistency ↔ AC-3 ---
+    UnitProp -> CDCL_02            [style=dotted, color=red,   label="inner loop"];
+    BackboneEnum -> ModelEnum      [style=dashed, color=purple];
+
+    // --- "Three representational tiers" ladder (06 §10) ---
+    DirGraph -> DAG                [color="grey30", style=bold, label="+ sharing"];
+    DAG -> EGraph                  [color="grey30", style=bold, label="+ equivalence"];
+    EGraph -> Category             [color="grey30", style=bold, label="+ composition\nlaws"];
+
+    // --- "Conceptual structure" pipeline (02 §9) ---
+    LogicProg -> CSP               [color="darkgreen", style=bold];
+    CSP -> Backtracking            [color="darkgreen", style=bold];
+    Backtracking -> ProofDAG       [color="darkgreen", style=bold];
+    ProofDAG -> LP                 [color="darkgreen", style=bold, label="→ optimisation"];
+    LP -> ProgramSynthesis         [color="darkgreen", style=bold];
+    ProgramSynthesis -> VerifiedOpt[color="darkgreen", style=bold];
+}

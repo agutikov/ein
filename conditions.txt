@@ -5,25 +5,25 @@ House_3 is House
 House_4 is House
 House_5 is House
 
-House_1 left House_2
-House_2 left House_3
-House_3 left House_4
-House_4 left House_5
+House_1 left_to House_2
+House_2 left_to House_3
+House_3 left_to House_4
+House_4 left_to House_5
 
-House_2 right House_1
-House_3 right House_2
-House_4 right House_3
-House_5 right House_4
+House_2 right_to House_1
+House_3 right_to House_2
+House_4 right_to House_3
+House_5 right_to House_4
 
-House_1 next House_2
-House_2 next House_3
-House_3 next House_4
-House_4 next House_5
+House_1 next_to House_2
+House_2 next_to House_3
+House_3 next_to House_4
+House_4 next_to House_5
 
-House_2 next House_1
-House_3 next House_2
-House_4 next House_3
-House_5 next House_4
+House_2 next_to House_1
+House_3 next_to House_2
+House_4 next_to House_3
+House_5 next_to House_4
 
 
 Ivory is Color
@@ -68,8 +68,8 @@ Green is Coffee
 Ukrainian is Tea
 Tee is Ukrainian
 
-Green left Ivory
-Ivory right Green
+Green left_to Ivory
+Ivory right_to Green
 
 Old_Gold is Snail
 Snail is Old_Gold
@@ -83,11 +83,11 @@ House_3 is Milk
 Norwegian is House_1
 House_1 is Norwegian
 
-Chesterfields next Fox
-Fox next Chesterfields
+Chesterfields next_to Fox
+Fox next_to Chesterfields
 
-Kools next Hourse
-Hourse next Kools
+Kools next_to Hourse
+Hourse next_to Kools
 
 Lucky_Strike is Juice
 Juice is Lucky_Strike
@@ -95,6 +95,6 @@ Juice is Lucky_Strike
 Japanese is Parlament
 Parlament is Japanese
 
-Norwegian next Blue
-Blue next Norwegian
+Norwegian next_to Blue
+Blue next_to Norwegian
 

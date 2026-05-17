@@ -1,0 +1,318 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NumberKnowledgeGraph</title>
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <style>
+    html, body, #cy {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="cy"></div>
+
+  <script>
+    const elements = [
+      // -------------------------
+      // CLUSTERS BY NUMERIC VALUE
+      // -------------------------
+      { data: { id: 'cluster_val_0',  label: 'value 0' } },
+      { data: { id: 'cluster_val_1',  label: 'value 1' } },
+      { data: { id: 'cluster_val_2',  label: 'value 2' } },
+      { data: { id: 'cluster_val_3',  label: 'value 3' } },
+      { data: { id: 'cluster_val_4',  label: 'value 4' } },
+      { data: { id: 'cluster_val_5',  label: 'value 5' } },
+      { data: { id: 'cluster_val_6',  label: 'value 6' } },
+      { data: { id: 'cluster_val_9',  label: 'value 9' } },
+      { data: { id: 'cluster_val_10', label: 'value 10' } },
+      { data: { id: 'cluster_val_11', label: 'value 11' } },
+      { data: { id: 'cluster_val_12', label: 'value 12' } },
+      { data: { id: 'cluster_val_22', label: 'value 22' } },
+      { data: { id: 'cluster_val_72', label: 'value 72' } },
+      { data: { id: 'cluster_val_bit0', label: 'bit index 0' } },
+
+      // -------------------------
+      // NODES
+      // -------------------------
+
+      // numbers
+      { data: { id: 'n10', label: '10\n0001010', parent: 'cluster_val_10', kind: 'number' } },
+      { data: { id: 'n12', label: '12\n0001100', parent: 'cluster_val_12', kind: 'number' } },
+      { data: { id: 'n22', label: '22\n0010110', parent: 'cluster_val_22', kind: 'number' } },
+      { data: { id: 'n72', label: '72\n1001000', parent: 'cluster_val_72', kind: 'number' } },
+
+      // prime factors
+      { data: { id: 'p2',  label: 'prime 2',  parent: 'cluster_val_2',  kind: 'prime' } },
+      { data: { id: 'p3',  label: 'prime 3',  parent: 'cluster_val_3',  kind: 'prime' } },
+      { data: { id: 'p5',  label: 'prime 5',  parent: 'cluster_val_5',  kind: 'prime' } },
+      { data: { id: 'p11', label: 'prime 11', parent: 'cluster_val_11', kind: 'prime' } },
+
+      // digit sums
+      { data: { id: 's1', label: 'Σ=1', parent: 'cluster_val_1', kind: 'sum' } },
+      { data: { id: 's3', label: 'Σ=3', parent: 'cluster_val_3', kind: 'sum' } },
+      { data: { id: 's4', label: 'Σ=4', parent: 'cluster_val_4', kind: 'sum' } },
+      { data: { id: 's9', label: 'Σ=9', parent: 'cluster_val_9', kind: 'sum' } },
+
+      // hamming
+      { data: { id: 'h2', label: 'H=2', parent: 'cluster_val_2', kind: 'hamming' } },
+      { data: { id: 'h3', label: 'H=3', parent: 'cluster_val_3', kind: 'hamming' } },
+      { data: { id: 'h4', label: 'H=4', parent: 'cluster_val_4', kind: 'hamming' } },
+
+      // gcd
+      { data: { id: 'g2',  label: 'gcd=2',  parent: 'cluster_val_2',  kind: 'gcd' } },
+      { data: { id: 'g12', label: 'gcd=12', parent: 'cluster_val_12', kind: 'gcd' } },
+
+      // mod 3
+      { data: { id: 'm0', label: 'mod3 = 0', parent: 'cluster_val_0', kind: 'mod' } },
+      { data: { id: 'm1', label: 'mod3 = 1', parent: 'cluster_val_1', kind: 'mod' } },
+
+      // divisor counts
+      { data: { id: 't4',  label: 'τ(n)=4',  parent: 'cluster_val_4',  kind: 'tau' } },
+      { data: { id: 't6',  label: 'τ(n)=6',  parent: 'cluster_val_6',  kind: 'tau' } },
+      { data: { id: 't12', label: 'τ(n)=12', parent: 'cluster_val_12', kind: 'tau' } },
+
+      // bits
+      { data: { id: 'b6', label: 'bit6', parent: 'cluster_val_6', kind: 'bit' } },
+      { data: { id: 'b5', label: 'bit5', parent: 'cluster_val_5', kind: 'bit' } },
+      { data: { id: 'b4', label: 'bit4', parent: 'cluster_val_4', kind: 'bit' } },
+      { data: { id: 'b3', label: 'bit3', parent: 'cluster_val_3', kind: 'bit' } },
+      { data: { id: 'b2', label: 'bit2', parent: 'cluster_val_2', kind: 'bit' } },
+      { data: { id: 'b1', label: 'bit1', parent: 'cluster_val_1', kind: 'bit' } },
+      { data: { id: 'b0', label: 'bit0', parent: 'cluster_val_bit0', kind: 'bit' } },
+
+      // -------------------------
+      // EDGES: EXACTLY AS IN DOT
+      // -------------------------
+
+      // factorization
+      { data: { id: 'e1',  source: 'n10', target: 'p2',  label: 'has factor' } },
+      { data: { id: 'e2',  source: 'n10', target: 'p5',  label: 'has factor' } },
+
+      { data: { id: 'e3',  source: 'n12', target: 'p2',  label: 'has factor' } },
+      { data: { id: 'e4',  source: 'n12', target: 'p3',  label: 'has factor' } },
+
+      { data: { id: 'e5',  source: 'n22', target: 'p2',  label: 'has factor' } },
+      { data: { id: 'e6',  source: 'n22', target: 'p11', label: 'has factor' } },
+
+      { data: { id: 'e7',  source: 'n72', target: 'p2',  label: 'has factor' } },
+      { data: { id: 'e8',  source: 'n72', target: 'p3',  label: 'has factor' } },
+
+      // digit sums
+      { data: { id: 'e9',  source: 'n10', target: 's1', label: 'digit sum' } },
+      { data: { id: 'e10', source: 'n12', target: 's3', label: 'digit sum' } },
+      { data: { id: 'e11', source: 'n22', target: 's4', label: 'digit sum' } },
+      { data: { id: 'e12', source: 'n72', target: 's9', label: 'digit sum' } },
+
+      // mod 3
+      { data: { id: 'e13', source: 'n10', target: 'm1', label: 'mod 3' } },
+      { data: { id: 'e14', source: 'n22', target: 'm1', label: 'mod 3' } },
+
+      { data: { id: 'e15', source: 'n12', target: 'm0', label: 'mod 3' } },
+      { data: { id: 'e16', source: 'n72', target: 'm0', label: 'mod 3' } },
+
+      // divisor counts
+      { data: { id: 'e17', source: 'n10', target: 't4',  label: 'divisors' } },
+      { data: { id: 'e18', source: 'n22', target: 't4',  label: 'divisors' } },
+      { data: { id: 'e19', source: 'n12', target: 't6',  label: 'divisors' } },
+      { data: { id: 'e20', source: 'n72', target: 't12', label: 'divisors' } },
+
+      // bit positions
+      { data: { id: 'e21', source: 'n10', target: 'b3', label: '1-bit' } },
+      { data: { id: 'e22', source: 'n10', target: 'b1', label: '1-bit' } },
+
+      { data: { id: 'e23', source: 'n12', target: 'b3', label: '1-bit' } },
+      { data: { id: 'e24', source: 'n12', target: 'b2', label: '1-bit' } },
+
+      { data: { id: 'e25', source: 'n22', target: 'b4', label: '1-bit' } },
+      { data: { id: 'e26', source: 'n22', target: 'b2', label: '1-bit' } },
+      { data: { id: 'e27', source: 'n22', target: 'b1', label: '1-bit' } },
+
+      { data: { id: 'e28', source: 'n72', target: 'b6', label: '1-bit' } },
+      { data: { id: 'e29', source: 'n72', target: 'b3', label: '1-bit' } },
+
+      // hamming nodes
+      { data: { id: 'e30', source: 'n10', target: 'h2', label: 'distance' } },
+      { data: { id: 'e31', source: 'h2',  target: 'n12', label: '' } },
+
+      { data: { id: 'e32', source: 'n10', target: 'h2', label: 'distance' } },
+      { data: { id: 'e33', source: 'h2',  target: 'n22', label: '' } },
+
+      { data: { id: 'e34', source: 'n10', target: 'h3', label: 'distance' } },
+      { data: { id: 'e35', source: 'h3',  target: 'n72', label: '' } },
+
+      { data: { id: 'e36', source: 'n12', target: 'h4', label: 'distance' } },
+      { data: { id: 'e37', source: 'h4',  target: 'n22', label: '' } },
+
+      { data: { id: 'e38', source: 'n12', target: 'h4', label: 'distance' } },
+      { data: { id: 'e39', source: 'h4',  target: 'n72', label: '' } },
+
+      { data: { id: 'e40', source: 'n22', target: 'h4', label: 'distance' } },
+      { data: { id: 'e41', source: 'h4',  target: 'n72', label: '' } },
+
+      // gcd nodes
+      { data: { id: 'e42', source: 'n10', target: 'g2',  label: 'pair gcd' } },
+      { data: { id: 'e43', source: 'g2',  target: 'n12', label: '' } },
+
+      { data: { id: 'e44', source: 'n10', target: 'g2',  label: 'pair gcd' } },
+      { data: { id: 'e45', source: 'g2',  target: 'n22', label: '' } },
+
+      { data: { id: 'e46', source: 'n10', target: 'g2',  label: 'pair gcd' } },
+      { data: { id: 'e47', source: 'g2',  target: 'n72', label: '' } },
+
+      { data: { id: 'e48', source: 'n12', target: 'g2',  label: 'pair gcd' } },
+      { data: { id: 'e49', source: 'g2',  target: 'n22', label: '' } },
+
+      { data: { id: 'e50', source: 'n22', target: 'g2',  label: 'pair gcd' } },
+      { data: { id: 'e51', source: 'g2',  target: 'n72', label: '' } },
+
+      { data: { id: 'e52', source: 'n12', target: 'g12', label: 'pair gcd' } },
+      { data: { id: 'e53', source: 'g12', target: 'n72', label: '' } }
+    ];
+
+    const cy = cytoscape({
+      container: document.getElementById('cy'),
+      elements,
+
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'label': 'data(label)',
+            'text-wrap': 'wrap',
+            'text-max-width': 100,
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'font-family': 'Helvetica, Arial, sans-serif',
+            'font-size': 12,
+            'color': '#222',
+            'background-color': '#f8f8f8',
+            'border-width': 1,
+            'border-color': '#666',
+            'width': 48,
+            'height': 48
+          }
+        },
+        {
+          selector: ':parent',
+          style: {
+            'shape': 'round-rectangle',
+            'background-color': '#fafafa',
+            'background-opacity': 0.22,
+            'border-width': 1,
+            'border-color': '#cccccc',
+            'padding': '18px',
+            'text-valign': 'top',
+            'text-halign': 'center',
+            'font-size': 12
+          }
+        },
+        {
+          selector: 'node[kind = "number"]',
+          style: {
+            'shape': 'round-rectangle',
+            'background-color': '#d0e7ff',
+            'border-color': '#5b8db8',
+            'width': 74,
+            'height': 52
+          }
+        },
+        {
+          selector: 'node[kind = "prime"]',
+          style: {
+            'shape': 'ellipse',
+            'background-color': '#e8ffe8',
+            'border-color': '#6aa56a'
+          }
+        },
+        {
+          selector: 'node[kind = "sum"]',
+          style: {
+            'shape': 'diamond',
+            'background-color': '#fff4cc',
+            'border-color': '#c9a227'
+          }
+        },
+        {
+          selector: 'node[kind = "hamming"]',
+          style: {
+            'shape': 'hexagon',
+            'background-color': '#ffd6d6',
+            'border-color': '#c97b7b'
+          }
+        },
+        {
+          selector: 'node[kind = "gcd"]',
+          style: {
+            'shape': 'round-rectangle',
+            'background-color': '#e0ccff',
+            'border-color': '#8c6ac9'
+          }
+        },
+        {
+          selector: 'node[kind = "mod"]',
+          style: {
+            'shape': 'round-rectangle',
+            'background-color': '#d9f2ff',
+            'border-color': '#5aa6c9'
+          }
+        },
+        {
+          selector: 'node[kind = "tau"]',
+          style: {
+            'shape': 'round-rectangle',
+            'background-color': '#ffe6cc',
+            'border-color': '#c98d5a'
+          }
+        },
+        {
+          selector: 'node[kind = "bit"]',
+          style: {
+            'shape': 'ellipse',
+            'background-color': '#f0f0f0',
+            'border-color': '#888888',
+            'width': 42,
+            'height': 42
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'label': 'data(label)',
+            'font-size': 10,
+            'font-family': 'Helvetica, Arial, sans-serif',
+            'color': '#444',
+            'line-color': '#666666',
+            'target-arrow-color': '#666666',
+            'curve-style': 'bezier',
+            'width': 1.5,
+            'target-arrow-shape': 'triangle',
+            'text-background-color': '#ffffff',
+            'text-background-opacity': 0.8,
+            'text-background-padding': 2
+          }
+        }
+      ],
+
+      layout: {
+        name: 'cose',
+        animate: false,
+        fit: true,
+        padding: 30,
+        nodeRepulsion: 400000,
+        idealEdgeLength: 120,
+        edgeElasticity: 100,
+        nestingFactor: 0.8,
+        gravity: 80,
+        numIter: 2000,
+        initialTemp: 200,
+        coolingFactor: 0.95,
+        minTemp: 1.0
+      }
+    });
+  </script>
+</body>
+</html>
