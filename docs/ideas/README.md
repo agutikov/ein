@@ -2,7 +2,7 @@
 
 The user's own ideas, intuitions, and open questions — distinct from
 the assistant's elaborations or the external systems catalogued in
-`plans/index/`.
+`docs/index/`.
 
 Each file records:
 - the **idea** in 1–3 sentences,

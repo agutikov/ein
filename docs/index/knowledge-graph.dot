@@ -1,5 +1,5 @@
 // =====================================================================
-// Knowledge graph of plans/index/ topics — every item mentioned across
+// Knowledge graph of docs/index/ topics — every item mentioned across
 // 01-llm-constrained-generation.md … 11-search-optimization-algorithms.md
 //
 // Multilevel grouping:
@@ -36,7 +36,7 @@ digraph KnowledgeGraph {
             clusterrank=local,
             fontname="Helvetica", fontsize=11, nodesep=0.45, ranksep=1.1,
             bgcolor="white", labelloc="t",
-            label="ein-bot / plans/index — Knowledge Graph of all topics" ];
+            label="ein-bot / docs/index — Knowledge Graph of all topics" ];
     node  [ fontname="Helvetica", fontsize=10, style="filled" ];
     edge  [ fontname="Helvetica", fontsize=9, color="grey40" ];
 

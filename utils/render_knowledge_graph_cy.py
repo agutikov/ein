@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Render plans/index/knowledge-graph.dot into a Cytoscape.js view.
+Render docs/index/knowledge-graph.dot into a Cytoscape.js view.
 
-Produces, under plans/index/knowledge-graph.cy/ :
+Produces, under docs/index/knowledge-graph.cy/ :
 
     elements.js   window.cyElements = [ … ]    — compound nodes + leaf nodes + edges
     style.js      window.cyStyle    = [ … ]    — Cytoscape style array
@@ -21,8 +21,8 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SRC_DOT   = REPO_ROOT / "plans" / "index" / "knowledge-graph.dot"
-OUT_DIR   = REPO_ROOT / "plans" / "index" / "knowledge-graph.cy"
+SRC_DOT   = REPO_ROOT / "docs" / "index" / "knowledge-graph.dot"
+OUT_DIR   = REPO_ROOT / "docs" / "index" / "knowledge-graph.cy"
 TEMPLATE  = OUT_DIR / "template.html"
 
 # ---------------------------------------------------------------------------

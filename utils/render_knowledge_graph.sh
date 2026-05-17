@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Render plans/index/knowledge-graph.dot into SVG (or another Graphviz
+# Render docs/index/knowledge-graph.dot into SVG (or another Graphviz
 # format), choosing between several layout engines.
 #
 # Usage:
@@ -14,7 +14,7 @@
 # Args (positional, all optional):
 #   $1  format         (svg | png | pdf | ...)              default: svg
 #   $2  engine         (dot | fdp | sfdp | osage | all)     default: dot
-#   $3  output path    (ignored when engine=all)            default: plans/index/knowledge-graph.<fmt>
+#   $3  output path    (ignored when engine=all)            default: docs/index/knowledge-graph.<fmt>
 #
 # Engine notes:
 #   * dot    — hierarchical; current primary view.
@@ -36,7 +36,7 @@ ENGINE="${2:-dot}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-SRC="${REPO_ROOT}/plans/index/knowledge-graph.dot"
+SRC="${REPO_ROOT}/docs/index/knowledge-graph.dot"
 
 if [[ ! -f "${SRC}" ]]; then
     echo "error: source DOT file not found: ${SRC}" >&2
@@ -86,12 +86,12 @@ render_one() {
 
 if [[ "${ENGINE}" == "all" ]]; then
     for e in dot fdp sfdp osage; do
-        out="${REPO_ROOT}/plans/index/knowledge-graph.${e}.${FMT}"
+        out="${REPO_ROOT}/docs/index/knowledge-graph.${e}.${FMT}"
         # Keep going if one engine fails — others may still work.
         render_one "${e}" "${out}" || echo "  ↳ ${e} failed, continuing." >&2
         echo
     done
 else
-    OUT="${3:-${REPO_ROOT}/plans/index/knowledge-graph.${FMT}}"
+    OUT="${3:-${REPO_ROOT}/docs/index/knowledge-graph.${FMT}}"
     render_one "${ENGINE}" "${OUT}"
 fi
