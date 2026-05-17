@@ -1,0 +1,124 @@
+# Plans
+
+Forward-looking roadmap for ein-bot. The 2021 proof-of-concept
+(`docs/PoC/`) is preserved unchanged; the cleaned-up package skeleton
+(`src/ein_bot/`) just unblocks the work — the actual *implementation*
+of the design lives here.
+
+The companion research notes (no implementation steps, no schedule)
+stay in [`docs/ideas/`](../docs/ideas/). Plans cross-link to those
+ideas where they originate; they do not duplicate them.
+
+## Schema
+
+Four-level hierarchy, mirroring [`/home/user/work/acva/plans/`](../../acva/plans/):
+
+```
+Milestone  →  Phase  →  Stage  →  Task
+   (M)         (P)       (S)       (T)
+```
+
+| level     | id form     | granularity        | artefact                                        |
+|-----------|-------------|--------------------|-------------------------------------------------|
+| Milestone | `M<n>`      | months             | directory with `README.md` + `open_questions.md` |
+| Phase     | `P<m>.<p>`  | weeks              | sub-directory                                    |
+| Stage     | `S<m>.<p>.<s>` | ≤ 1 week         | one Markdown file (`s<m>.<p>.<s>_<title>.md`)    |
+| Task      | `T<m>.<p>.<s>.<t>` | hours to ~2 days | section inside the stage file                   |
+
+A *task* is the unit of execution: a self-contained feature, an
+investigation that ends in a written decision, or a measured
+experiment. Tasks are listed under `## Tasks` inside their stage file
+and use a stable id.
+
+## Layout
+
+```
+plans/
+├── README.md                         this file (schema + index)
+├── open_questions.md                 cross-milestone questions; sticky Q ids
+├── ideas.md                          rolling scratchpad
+├── m1_core_graph_reasoning/          MVP — the PoC, done properly
+│   ├── README.md                     milestone overview (goal, phases, acceptance)
+│   ├── open_questions.md             milestone-scoped questions
+│   ├── p1.1_ir_language/
+│   │   ├── README.md
+│   │   ├── s1.1.1_grammar_design.md
+│   │   ├── s1.1.2_parser_serialiser.md
+│   │   └── s1.1.3_round_trip_tests.md
+│   ├── p1.2_typed_hypergraph/        …
+│   ├── p1.3_inference_rules/         …
+│   ├── p1.4_constraints/             …
+│   ├── p1.5_hypothesis_loop/         …
+│   ├── p1.6_rendering_and_trace/     …
+│   └── p1.7_bootstrapping_zebra/     …
+├── m2_nl_to_ir/                      NL → IR — link-grammar / GBNF / llama.cpp
+│   ├── README.md
+│   ├── open_questions.md
+│   └── p2.1_investigations/ …
+├── m3_smt_integration/               graph engine → SMT slice; explanation recovery
+│   ├── README.md
+│   ├── open_questions.md
+│   └── p3.1_ir_to_smt_lib/ …
+└── followups/                        parking lot — neither MVP-blocking nor scheduled
+    ├── README.md
+    ├── f1_categorical_formulation.md
+    ├── f2_self_modifying_language.md
+    ├── f3_three_task_classes_first_class.md
+    └── f4_cross_cutting.md
+```
+
+Stage files have a stable shape:
+
+```markdown
+# S<m>.<p>.<s> — <title>
+
+**Phase:** P<m>.<p> (<title>)
+**Estimate:** N days
+**Depends on:** ...
+**Implements idea:** [<idea>](../../../docs/ideas/<file>.md)
+
+## Context
+...
+
+## Acceptance
+- ...
+
+## Tasks
+
+### Task T<m>.<p>.<s>.<n> — <title>
+...
+```
+
+## Status
+
+| milestone | depth        | status   | rough estimate |
+|-----------|--------------|----------|----------------|
+| [M1](m1_core_graph_reasoning/README.md) | full (stages-as-files) | **active** — MVP scope | ~3 months |
+| [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |
+| [M3](m3_smt_integration/README.md)      | sketch (one stage per phase) | planned | ~1 month after M2 |
+| [followups](followups/README.md)        | theme files only | parking lot | unscheduled |
+
+## Glossary
+
+| term              | meaning                                                                 |
+|-------------------|-------------------------------------------------------------------------|
+| **IR**            | the project's S-expression intermediate representation (designed in P1.1) |
+| **graph engine**  | the typed-hypergraph reasoner of M1 (the project's "core")              |
+| **trace**         | a markdown + DOT log of the reasoning steps that produced an answer     |
+| **ontology layer** | types, instances, value domains, a-priori inter-type relations           |
+| **fact layer**    | the relations stated by the problem text                                |
+| **reasoning layer** | derived relations, rejected hypotheses, hypothesis branches            |
+| **task class**    | A=solve, B=gaps, C=contradictions (per [idea 03](../docs/ideas/03-three-task-classes.md)) |
+| **PoC**           | the 2021 single-file proof of concept under `docs/PoC/`                |
+
+## How to use this directory
+
+- **When starting on a stage**: read the parent phase's `README.md`,
+  then the stage file; tasks inside should be executable from the
+  given context plus the linked idea note.
+- **When parking a question**: add it to the nearest-scope
+  `open_questions.md` with a fresh `Q<n>` id (don't reuse).
+- **When a stage is done**: append `**Status:** done — <date>` under
+  the heading. Don't delete; the trail is the project's memory.
+- **When the plan changes**: edit in place. Plans are living
+  documents; commit history is the audit trail.
