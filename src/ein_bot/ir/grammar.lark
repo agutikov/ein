@@ -1,0 +1,99 @@
+// ein-bot IR — kernel grammar
+// Designed in S1.1.1 T1.1.1.1 + T1.1.1.2.
+// See plans/m1_core_graph_reasoning/p1.1_ir_language/s1.1.1_grammar_design.md
+//
+// LEVEL B — structurally typed kernel, generic interiors.
+//
+// Enforced by the grammar:
+//   1. Top level: exactly 5 reserved heads
+//      ontology · facts · rules · query · trace
+//   2. Inside (ontology …): only type · instance · relation · a-priori
+//   3. Inside (facts …):    only = · rel · hrel · constraint
+//   4. Inside (trace …):    only step · branch-open · branch-close ·
+//                           contradiction · symmetry-class
+//   5. :keyword value pair alternation — KEYWORD is never a value,
+//      never appears twice in a row.
+//   6. Heads of generic expression lists (inside kw_pair values,
+//      including pattern bodies) must be SYMBOL, WILDCARD, or "=" —
+//      NEVER VAR or KEYWORD. Catches (?var :key :key) and (:foo :bar).
+//
+// Deferred to the semantic validator (S1.1.2):
+//   · which keywords are required per form (:match/:assert/:why in
+//     rules; :rule/:using/:derives in steps; :mode/:goal in query)
+//   · the named structural-predicate registry (A.4 closure)
+//   · arity rules, ground-vs-pattern, type-checking of instance args,
+//     unbound-variable checks, etc.
+//
+// This is the source of truth for the kernel shape. M2's GBNF for
+// constrained LLM decoding is derived from this file by a Lark→GBNF
+// translator (utils/lark_to_gbnf.py, planned for M2.P2.3).
+
+start: form*
+
+?form: ontology_form
+     | facts_form
+     | rules_form
+     | query_form
+     | trace_form
+
+// ═══════════ Ontology ═══════════
+ontology_form: "(" "ontology" ontology_decl* ")"
+?ontology_decl: type_decl | instance_decl | relation_decl | apriori_decl
+type_decl:     "(" "type" SYMBOL [SYMBOL] ")"
+instance_decl: "(" "instance" SYMBOL SYMBOL ")"
+relation_decl: "(" "relation" SYMBOL SYMBOL SYMBOL kw_pair* ")"
+apriori_decl:  "(" "a-priori" SYMBOL SYMBOL SYMBOL kw_pair* ")"
+
+// ═══════════ Facts ═══════════
+facts_form: "(" "facts" fact_decl* ")"
+?fact_decl: eq_fact | rel_fact | hrel_fact | constraint_fact
+eq_fact:         "(" "=" value value kw_pair* ")"
+rel_fact:        "(" "rel" SYMBOL value value kw_pair* ")"
+hrel_fact:       "(" "hrel" SYMBOL value value value+ kw_pair* ")"
+constraint_fact: "(" "constraint" SYMBOL value* kw_pair* ")"
+
+// ═══════════ Rules ═══════════
+rules_form: "(" "rules" rule_decl* ")"
+rule_decl: "(" "rule" SYMBOL kw_pair+ ")"
+
+// ═══════════ Query ═══════════
+query_form: "(" "query" kw_pair+ ")"
+
+// ═══════════ Trace ═══════════
+trace_form: "(" "trace" trace_event* ")"
+?trace_event: step_decl
+            | branch_open
+            | branch_close
+            | contradiction_decl
+            | symmetry_decl
+step_decl:          "(" "step" SYMBOL kw_pair* ")"
+branch_open:        "(" "branch-open" SYMBOL kw_pair* ")"
+branch_close:       "(" "branch-close" SYMBOL kw_pair* ")"
+contradiction_decl: "(" "contradiction" SYMBOL kw_pair* ")"
+symmetry_decl:      "(" "symmetry-class" SYMBOL kw_pair* ")"
+
+// ═══════════ Value sub-language (interior of kw_pair) ═══════════
+// Values never include KEYWORD — that's what enforces :kw value pair
+// alternation. List heads in the pattern interior are restricted to
+// SYMBOL / WILDCARD / "=" so VAR / KEYWORD can never be a head.
+kw_pair: KEYWORD value
+?value: generic_list | SYMBOL | VAR | WILDCARD | INT | RANGE | STRING
+generic_list: "(" ")"
+            | "(" list_head list_item* ")"
+?list_head: SYMBOL | WILDCARD | "="
+?list_item: value | kw_pair
+
+// ═══════════ Terminals ═══════════
+SYMBOL:   /[A-Za-z][A-Za-z0-9_-]*/
+VAR:      /\?[a-z][A-Za-z0-9_-]*/
+KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
+WILDCARD: "_"
+RANGE:    /[0-9]+\.\.([0-9]+|\*)/
+INT:      /-?[0-9]+/
+STRING:   /"([^"\\]|\\.)*"/
+
+LINE_COMMENT:  /;[^\n]*/
+BLOCK_COMMENT: /#\|[\s\S]*?\|#/
+%ignore LINE_COMMENT
+%ignore BLOCK_COMMENT
+%ignore /\s+/

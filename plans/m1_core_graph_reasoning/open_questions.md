@@ -16,6 +16,7 @@ Milestone-scoped. Cross-milestone questions live in
 | Q18 | Provenance granularity — per-edge, per-step, or per-derivation-DAG?                   | P1.2 S1.2.3        |
 | Q19 | Hypothesis branching — eager (every choice) vs lazy (only when saturation stalls)?    | P1.5 S1.5.1        |
 | Q20 | Trace reordering — engine order, planner-pass reorder, or human-template fitting?     | P1.6 S1.6.4        |
+| Q21 | IR ↔ DOT structural isomorphism — bidirectional, layout-free                          | S1.1.1 T1.1.1.6    |
 
 ---
 
@@ -127,3 +128,42 @@ Per [idea 08 §Why this is a hard problem — Ordering](../../docs/ideas/08-huma
 that runs a planner pass clustering by entity. Defer full
 human-template fitting to M2 (where an LLM surface generator is
 available). Decided in P1.6 S1.6.4.
+
+## Q21 — IR ↔ DOT structural isomorphism
+
+Surfaced in S1.1.1 design (2026-05-18). The EBNF ↔ railroad-diagram
+move: two surface representations of one structure. The IR is the
+textual view; a documented subset of DOT is the graphical view.
+Meaning lives in their shared structure, not in either surface.
+
+**Options:**
+
+- **A** — One-way: `ir → dot` only, DOT is for human inspection.
+- **B** — One-way with a documented schema: `ir → dot` is total and
+  deterministic in structure, `dot → ir` left aspirational.
+- **C** — Bidirectional: both `ir → dot` and `dot → ir` are
+  deliverables; the project's DOT *subset* and the IR are
+  inter-convertible up to layout.
+
+**Working answer**: C. `ir → dot` is mandatory and blocks S1.1.2;
+`dot → ir` is required but does not block P1.1 — it lands in P1.2
+alongside the typed-hypergraph data model. Only graph *structure* is
+fixed by the schema; layout (positions, rank, unspecified style
+choices) is free — `random_layout` is permitted.
+
+Pulls forward:
+
+- Each kernel form has a fixed DOT shape — §Rendering in `docs/ir.md`
+  (S1.1.1 T1.1.1.6).
+- Hyperedges render Levi/bipartite — anchors
+  [Q1](../open_questions.md#q1)'s typed-hypergraph + equality-class-ID
+  answer visually.
+- Rule rendering: 3 modes (side-by-side / DPO span / overlay),
+  configurable; `rules.ein` defaults to side-by-side, traces default
+  to overlay.
+- Trace rendering: 3 views (per-step / aggregate / derivation-DAG),
+  configurable; default per-step (matches M1 acceptance §2).
+- Branch rendering: tree-of-states for the search-tree view,
+  sub-clusters per branch for per-state snapshots.
+
+Decided in S1.1.1 T1.1.1.6.

@@ -24,6 +24,7 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=1.21",
+    "lark>=1.1",
 ]
 
 [project.optional-dependencies]
@@ -45,6 +46,9 @@ Repository = "https://github.com/agutikov/ein-bot"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"ein_bot.ir" = ["*.lark"]
 
 # ---------------------------------------------------------------------------
 # pytest
