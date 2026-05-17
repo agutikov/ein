@@ -1,0 +1,86 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ein-bot"
+version = "0.0.1"
+description = "Graph-based Zebra-puzzle reasoner — research / learn project"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Aleksei Gutikov", email = "gutikoff@gmail.com" }]
+requires-python = ">=3.10"
+keywords = ["zebra-puzzle", "graph", "constraint", "reasoning", "neuro-symbolic"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "numpy>=1.21",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+    "pytest-cov>=4",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+ein-bot = "ein_bot.cli:main"
+
+[project.urls]
+Repository = "https://github.com/agutikov/ein-bot"
+
+# ---------------------------------------------------------------------------
+# Packaging
+# ---------------------------------------------------------------------------
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers"
+filterwarnings = ["error"]
+
+# ---------------------------------------------------------------------------
+# ruff
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+extend-exclude = [
+    "nlp",            # vendored submodule (link-grammar + scratch scripts)
+    "smt",            # vendored submodule (CVC4 + scratch scripts)
+    "docs",           # PoC + index/ideas notes; reasoning.py is archived & known-broken
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # bugbear
+    "UP",   # pyupgrade
+    "N",    # pep8-naming
+    "RUF",  # ruff-specific
+]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["N802"]

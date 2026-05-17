@@ -15,6 +15,7 @@ Usage:  utils/render_knowledge_graph_cy.py
 """
 from __future__ import annotations
 
+import itertools
 import json
 import re
 import sys
@@ -270,7 +271,7 @@ class DotParser:
                 attrs = self._read_attr_list()
                 merged = dict(self.edge_defaults)
                 merged.update(attrs)
-                for s, t in zip(chain, chain[1:]):
+                for s, t in itertools.pairwise(chain):
                     self.edges.append(
                         {"source": s, "target": t, "attrs": dict(merged)})
                 self._skip_ws()

@@ -1,1 +1,19 @@
+# Python
 *.pyc
+__pycache__/
+*.egg-info/
+*.egg
+
+# Test / lint caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Build / dist
+build/
+dist/
+
+# Virtualenvs
+.venv/
+venv/
