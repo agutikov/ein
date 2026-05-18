@@ -54,6 +54,26 @@ the provenance records are non-optional — they're what makes the
   view** with fused entity identity by `kb.to_dot()` (S1.2.4),
   reverse by `from_dot` (this phase).
 
+## Load-bearing decisions
+
+These are stated up front so downstream stages and reviewers know
+what the data model commits to (rationale in S1.2.1):
+
+1. **Types and relations are first-class entities** — not derived
+   labels on facts. The KB exposes them as objects with identity and
+   back-references.
+2. **Rules are graph rewrites** — `:match` / `:assert` are typed
+   `Pattern` objects (structural only here; matching lives in P1.3).
+3. **No syntactic typed-vars (`?a:T`)** — variables are typed by
+   premises in `:match` (e.g. `(is-a ?a T)`). See
+   [F4 Q35](../../followups/f4_cross_cutting.md#variable-typing-via-match-is-a-var-type-q35).
+4. **Ontology IR sub-head split** is a *syntax* question parked at
+   [M1 Q22](../open_questions.md). The data model is robust to either
+   form (loader normalises).
+5. **What has types** — only `Instance` (one type each). Vars and
+   relations are typed *structurally* (via patterns, via signature)
+   not as a slot on the entity.
+
 ## Connections
 
 - [Idea 02](../../../docs/ideas/02-graph-as-formal-substrate.md) —
@@ -64,3 +84,6 @@ the provenance records are non-optional — they're what makes the
   equality-class hooks reserved (e-graph promotion later).
 - [Idea 03](../../../docs/ideas/03-three-task-classes.md) — provenance is
   the substrate for the contradictions task class.
+- [F4 Q34 / Q35 / Q36](../../followups/f4_cross_cutting.md) —
+  algebraic-property cartesian product, typed vars, rule polymorphism;
+  the data model is the seam those followups extend.

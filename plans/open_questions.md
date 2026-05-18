@@ -25,6 +25,15 @@ file it keeps its id; do not reuse a closed id.
 | Q12 | Which CT reading does the design commit to (A free / B schema / C functor)? | [followups F1](followups/f1_categorical_formulation.md) |
 | Q13 | Self-modifying constraint language — feasibility + bounded problem      | [followups F2](followups/f2_self_modifying_language.md) |
 | Q14 | Rule learning source — hand-written, library, LLM-suggested, or learned from walkthroughs? | [followups F4](followups/f4_cross_cutting.md) |
+| Q22 | Ontology IR — three sub-heads (relations / definitions / types-and-objects)? | [M1](m1_core_graph_reasoning/open_questions.md) |
+| Q23 | What carries an explicit type slot in the data model?                         | [M1](m1_core_graph_reasoning/open_questions.md) |
+| Q24 | `:where` clause semantics in `sibling-exclusive`                              | [M1](m1_core_graph_reasoning/open_questions.md) |
+| Q25 | Cardinality + ordinality rules with vars — IR shape                          | [M1](m1_core_graph_reasoning/open_questions.md) |
+| Q34 | Algebraic properties beyond symmetric/transitive + 2^7 cartesian product | [followups F4](followups/f4_cross_cutting.md) |
+| Q35 | Variable typing via `(is-a ?var Type)` patterns                              | [followups F4](followups/f4_cross_cutting.md) |
+| Q36 | Relation inheritance / rule polymorphism                                      | [followups F4](followups/f4_cross_cutting.md) |
+| Q37 | Induction — rules from facts                                                  | [followups F4](followups/f4_cross_cutting.md) |
+| Q38 | LLM as fact/relation/type/rule extractor                                      | [followups F4](followups/f4_cross_cutting.md) |
 
 ---
 

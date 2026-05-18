@@ -34,6 +34,9 @@ corresponding rule in the registry.
   per rule family (≥ 20 tests).
 - Running saturation on the Zebra `fact` layer fires all ten rules
   at least once across the trace.
+- Rule library has a public face: 30 demo problems under
+  `examples/rule_demos/` (3 per rule, NL + ein + SVG) catalogued in
+  `docs/rules/demos.md`. See S1.3.2 T1.3.2.12.
 
 ## Connections
 

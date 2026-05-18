@@ -104,6 +104,30 @@ These get locked in here; later milestones inherit them.
   (resolves [M1 Q4](open_questions.md)).
 - **Trace ordering** (engine order vs reordering pass) — P1.6 S1.6.4.
 
+## Design rules-of-thumb (load-bearing across all M1 phases)
+
+These are the user-stated principles that constrain the whole
+milestone's design. Stated here so reviewers don't have to chase
+them through individual stage files.
+
+| principle                                       | where it surfaces                                                                          |
+|-------------------------------------------------|--------------------------------------------------------------------------------------------|
+| Types and relations are **first-class** objects | P1.2 S1.2.1 (entity model); not derived labels on facts                                    |
+| Rules are **graph rewrites**                    | P1.3 S1.3.1 (DSL); typed `Pattern` objects with `:match` / `:assert`                       |
+| Vars are typed by **premises**, not syntax      | F4 Q35; `(is-a ?var T)` in `:match` rather than `?var:T` sugar                            |
+| **Generic > syntactic** when both work          | rule families parametrised over relations, not duplicated per relation (P1.3 S1.3.2)       |
+| Syntax should be **as protective as possible**  | P1.1 (grammar rejects malformed IR); P1.2 (loader rejects undeclared types/relations)      |
+| Inheritance is **transitive `is-a` propagation**| F4 Q36; collapses "instance-of vs subtype-of" in the unified `is-a` model (zebra2.ein)     |
+| Property tags are **rule-application facts**    | `(symmetric R)`, `(square-fwd R)` etc. — not kw-pairs on the relation declaration          |
+| Composable typed-vars (`?a:T`) — **postponed**  | F4 Q35; pattern language already expresses this                                            |
+
+These principles compose: "types and relations are graph nodes
+participating in rules" + "rules are graph rewrites" + "property
+tags are facts" produces a self-hosting system where the rule
+library is operated on by the same machinery as the puzzle facts.
+The unrealised next step is F1 (categorical formulation) which
+makes this self-hosting structure formal.
+
 ## Risks
 
 - **Trace fidelity drift**: the engine may saturate efficiently but

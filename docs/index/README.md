@@ -52,6 +52,11 @@ its most-natural primary file; cross-references point to the others.
     MCTS, CDCL, DPLL, backtracking, AND/OR trees, branch-and-bound,
     evolutionary search, AlphaZero-style guided proof search,
     program synthesis, superoptimization.
+12. [Reasoning Benchmarks](12-llm-and-reasoning-benchmarks.md) —
+    BIG-Bench, MMLU, ARC / ARC-AGI, GPQA, FOLIO, ProofWriter, LogiQA,
+    ReClor, GSM8K, MATH, AIME, miniF2F / LeanDojo, ALFWorld, WebArena;
+    plus architectures (ReAct, ToT, GoT, PAL, NeuroSAT, …) and the
+    LLM-vs-solver split.
 
 ## Conventions
 

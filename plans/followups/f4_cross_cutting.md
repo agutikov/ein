@@ -17,9 +17,11 @@ to their own followup file when they grow.
 | Q31 | LLM as policy over the reasoning graph (M1.P1.5 search-tree choice)         |
 | Q32 | 2-D / N-D spatial — when do we need beyond M1.P1.4's 1-D position lattice?  |
 | Q33 | Reasoning-graph differential rendering for live agents                      |
-| Q34 | Algebraic properties beyond symmetric/transitive (reflexivity, antisymmetry, …) |
+| Q34 | Algebraic properties beyond symmetric/transitive + 2^7 cartesian product   |
 | Q35 | Variable typing via `:match (is-a ?var Type)` — pattern, not syntax          |
 | Q36 | Relation inheritance / rule polymorphism — `(subtype-of instance-of subtype-of)` |
+| Q37 | Induction — facts → rules over relations; rules learned from fact patterns  |
+| Q38 | LLM as fact/relation/type/rule extractor — per-word/per-role question schemas |
 
 ---
 
@@ -89,7 +91,9 @@ Connection: M1.P1.6, the existing
 [`docs/index/knowledge-graph.cy/`](../../docs/index/knowledge-graph.cy/)
 Cytoscape view as a template.
 
-## Algebraic properties beyond symmetric/transitive (Q34)
+## Algebraic properties beyond symmetric/transitive — and the 2^7 cartesian product (Q34)
+
+### Properties beyond the M1 core
 
 M1's `co-located` is mathematically reflexive (an equivalence
 relation), but the `reflexive` rule was dropped from
@@ -119,17 +123,127 @@ these, the rule library needs three pieces working together:
    *signature homogeneity* — `(?rel ?a ?a)` only makes sense when
    `?a`'s type fits every position of `?rel`'s signature.
 
-**Promotion trigger**: a puzzle/domain where a property beyond
-`symmetric`/`transitive` drives the solution. Likely candidates:
-proof-graph theorem proving (reflexive equality / congruence),
-Sudoku variants with explicit `≠` (irreflexive), scheduling with
-precedence (antisymmetric `≤`), 2-D spatial puzzles (Q32) where
-adjacency is more than 1-D `next-to`.
+### The 2^7 cartesian product as a design tool
+
+The project's existing seven rule-property tags
+(`reflexive`, `symmetric`, `transitive`, `asymmetric`,
+`exclusive`, `spatial-fwd`, `spatial-bwd`) generate 128 combinations.
+Most are degenerate, inconsistent, or pointless, but a handful name
+operationally important kinds of relation:
+
+| profile                                       | structure produced              | example                                |
+|-----------------------------------------------|---------------------------------|----------------------------------------|
+| reflexive + symmetric + transitive            | equivalence classes             | `same-color-as`, `co-located` (treated as equivalence) |
+| reflexive + transitive + antisymmetric        | partial order                   | `is-a`, `part-of`, `before-or-equal`  |
+| transitive + asymmetric                       | strict order                    | `before`, `proper-subtype-of`, `ancestor-of` |
+| symmetric + asymmetric                        | INCONSISTENT (degenerates to self-loops or empty) | — |
+| spatial-fwd + spatial-bwd                     | bundled projection rule         | Zebra `right-of` over `co-located`    |
+| transitive only                               | path / reachability closure     | generic graph-rewrite closure          |
+| symmetric only                                | undirected graph                | `next-to`                              |
+| reflexive only                                | self-edge closure (usually triv.)| — (trivial on most relations)         |
+
+A clean way to expose this in the system: a `(relation-profile …)`
+declaration that pre-classifies the 128 combinations into
+`valid / inconsistent / degenerate / domain-specific / redundant`
+buckets, used as a *design-time linter* rather than as runtime
+logic.
+
+```lisp
+(relation-profile is-a
+  :reflexive    true
+  :transitive   true
+  :antisymmetric true
+  :role classification)
+
+(relation-profile co-located
+  :symmetric    true
+  :transitive   true
+  :role equivalence)
+
+(relation-profile right-of
+  :transitive   true
+  :asymmetric   true
+  :spatial-fwd  true
+  :spatial-bwd  true
+  :role spatial-order)
+```
+
+Note: `spatial-fwd` / `spatial-bwd` are not intrinsic algebraic
+properties (unlike `symmetric` / `transitive`) — they are
+*interaction rules* between a relation and `co-located`:
+
+```text
+R + co-located + R  ⇒  co-located
+```
+
+So they classify a *relation bundle*, not just a relation. This is
+the conceptual content of the PoC's square rule, already
+implemented in zebra.ein but worth naming.
+
+### Minimal rule set — minimal for *what*?
+
+The user (2026-05-18) asked whether one should search for the
+*minimal* rule set. There is no single answer — different minima
+optimise different things:
+
+1. **Minimal semantic basis** — fewest primitives from which others
+   derive. `equivalence = reflexive + symmetric + transitive`;
+   `partial order = reflexive + transitive + antisymmetric`;
+   `strict order = transitive + asymmetric`.
+2. **Minimal for solving Zebra** — the smallest set of rules that
+   reproduces the solution. The current `zebra.ein` set
+   (`symmetric`, `transitive`, `implies`, `square-fwd`, `square-bwd`,
+   `type-exclusivity`) is close — possibly missing one or two for
+   richer puzzles.
+3. **Minimal for explanation-completeness** — fewest rules such that
+   every human-walkthrough step (idea 08) has a named firing. May be
+   larger than (2) because human walkthroughs name moves that the
+   engine could collapse.
+4. **Minimal implementation complexity** — fewest AST nodes in the
+   rule set. Favours generic over per-relation rules.
+5. **Minimal trace complexity** — fewest derived intermediate facts.
+   May conflict with (4) — generic rules can over-derive.
+
+The M1 acceptance target is (3) for Zebra (explanation-complete on
+the human walkthrough). The other minima are *measurement* targets
+for benchmarking against alternative rule sets.
+
+### Categorical / OOP-collapse framing
+
+The deeper observation in the user's note (2026-05-18): with this
+machinery, OOP-style inheritance, typing, constraint propagation,
+and rule activation become *the same phenomenon* — edge propagation
+over structured graphs. Inheritance is just transitive `is-a`
+propagation; "having a type" is being on the receiving end of an
+`is-a` edge; "behaviour" is additional edges derivable from the
+type via inheritance rules.
+
+| OOP concept       | graph-native form                          |
+|-------------------|--------------------------------------------|
+| class             | a graph node                               |
+| inheritance       | transitive `is-a` propagation              |
+| instance-of       | a kind of `is-a` (often collapsed)         |
+| method / property | another relation; inheritable via the rule above |
+| virtual method    | property lookup via traversal              |
+
+This formalisation overlaps F1 (categorical formulation): types =
+objects, relations = morphisms, inheritance = morphism composition
+/ preorder, rules = rewrite morphisms. See
+[F1](f1_categorical_formulation.md) for the categorical thread.
+
+### Promotion trigger
+
+A puzzle/domain where a property beyond `symmetric`/`transitive`
+drives the solution. Likely candidates: proof-graph theorem proving
+(reflexive equality / congruence), Sudoku variants with explicit
+`≠` (irreflexive), scheduling with precedence (antisymmetric `≤`),
+2-D spatial puzzles ([Q32](#2-d--n-d-spatial-q32)) where adjacency
+is more than 1-D `next-to`.
 
 Connection: [idea 06](../../docs/ideas/06-inference-rules-completeness.md)
 §rule families, [M1 P1.3 S1.3.1](../m1_core_graph_reasoning/p1.3_inference_rules/)
 (rule presentation language), [`docs/ir.md` §3 predicate
-registry](../../docs/ir.md).
+registry](../../docs/ir.md), [F1](f1_categorical_formulation.md).
 
 ## Variable typing via `:match (is-a ?var Type)` (Q35)
 
@@ -245,6 +359,74 @@ Connection: [f1_categorical_formulation.md](f1_categorical_formulation.md),
 different inheritance-like relations *and* a non-trivial rule that
 only applies to one of them. Until then, zebra2's unified `is-a`
 sidesteps the issue.
+
+## Induction — rules from facts (Q37)
+
+User direction (2026-05-18): if rules are first-class graph objects
+and facts are also graph objects, can the engine *learn* new rules
+by spotting regularities in the fact set? Two specific phrasings:
+
+1. **Facts → rules on relations** — observe that `(R a b)` and
+   `(R b c)` and `(R a c)` co-occur many times → induce
+   `(transitive R)` as a property-application fact.
+2. **Rules induced from facts directly** — observe `(R a b) ∧ (S b
+   c) ⇒ (T a c)` patterns occurring → propose the explicit rule.
+
+This is a generalisation of [Q14](#rule-learning-from-human-walkthroughs-q14)
+(rule learning from human walkthroughs): Q14 is supervised (the
+human trace is the supervision); Q37 is unsupervised (just look at
+the fact set for regularities).
+
+**Why hard:** spurious patterns. Two facts that happen to be
+symmetric in Zebra do not mean `(symmetric R)` is intended; the
+user could trivially break the regularity by adding a third fact.
+A confidence threshold + a human-in-the-loop ratification step
+would be the natural shape.
+
+**Why interesting:** complements F2 (self-modifying language) —
+the LLM proposes; the induction engine validates against a corpus
+of facts. The induced rule library is then a measurement target
+for [Q34's "minimal rule set"](#algebraic-properties-beyond-symmetric-transitive--and-the-2-7-cartesian-product-q34).
+
+Connection: [docs/ideas/01](../../docs/ideas/01-self-modifying-constraint-language.md),
+[Q14](#rule-learning-from-human-walkthroughs-q14).
+
+## LLM as fact/relation/type/rule extractor (Q38)
+
+User direction (2026-05-18): "how can an LLM produce facts,
+relations, types, and rules?" Proposal: drive the LLM with a
+*per-word, per-role* schema of questions:
+
+- For nouns (in subject role): is this an `Instance`? if so, what
+  `Type` does it belong to? does the surrounding text introduce a
+  new `Type`?
+- For verbs (in predicate role): does this name a `Relation`? if
+  so, what are its argument types? is it a known relation or a new
+  one?
+- For pre-/post-modifiers: do they introduce property facts on a
+  relation (e.g. "always", "symmetric") or constrain a value?
+- For determiners and quantifiers: do they correspond to
+  cardinality constraints? exclusivity?
+
+The output is a structured stream of `(type …)`, `(instance …)`,
+`(relation …)`, `(rel …)`, `(rule …)` IR forms — a constrained
+generation problem (cf. [idea 01](../../docs/ideas/01-self-modifying-constraint-language.md)).
+
+This is the M2 territory ([NL → IR](../m2_nl_to_ir/README.md)) — at
+F4 here only as the *cross-cutting research question*. The concrete
+implementation lands in [M2 P2.4 (NL → IR pipeline)](../m2_nl_to_ir/p2.4_nl_to_ir_pipeline/);
+the *schema of question lists per word-class / per-role* is the
+parked design problem.
+
+Why F4 not M2: the *catalogue* of questions to ask, and *how
+ein-bot's IR vocabulary maps to natural-language constructions*, is
+prior to picking an LLM or a GBNF — and outlives any specific
+M2 implementation choice. It is the *rosetta stone* between the
+two surfaces.
+
+Connection: [M2 P2.4](../m2_nl_to_ir/p2.4_nl_to_ir_pipeline/),
+[idea 01](../../docs/ideas/01-self-modifying-constraint-language.md),
+[docs/index/10 NLP & semantic parsing](../../docs/index/10-nlp-semantic-parsing.md).
 
 ---
 

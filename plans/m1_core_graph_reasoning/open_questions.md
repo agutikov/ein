@@ -17,6 +17,10 @@ Milestone-scoped. Cross-milestone questions live in
 | Q19 | Hypothesis branching — eager (every choice) vs lazy (only when saturation stalls)?    | P1.5 S1.5.1        |
 | Q20 | Trace reordering — engine order, planner-pass reorder, or human-template fitting?     | P1.6 S1.6.4        |
 | Q21 | IR ↔ DOT structural isomorphism — bidirectional, layout-free                          | S1.1.1 T1.1.1.6    |
+| Q22 | Ontology IR — three sub-heads (relation-decls / relation-defs / types-and-objects)?   | P1.1 (revisit) or P1.2 |
+| Q23 | What carries an explicit type slot — only `Instance`, or also vars / relations?       | P1.2 S1.2.1 (decided) |
+| Q24 | `:where` clause in `sibling-exclusive` — what does it mean, and should it stay?       | P1.3 S1.3.1        |
+| Q25 | Cardinality + ordinality rules with vars — IR shape, graph representation             | P1.3 S1.3.2        |
 
 ---
 
@@ -210,3 +214,120 @@ Pulls forward:
   sub-clusters per branch for per-state snapshots.
 
 Decided in S1.1.1 T1.1.1.6.
+
+## Q22 — Ontology IR sub-head split
+
+Currently one `(ontology …)` block holds: type declarations,
+instance declarations, relation signatures, rule-application facts
+(`(symmetric R)` etc.), and structural facts (e.g. the four
+`(right-of House_{i+1} House_i)` in zebra.ein). The KB loader
+(P1.2 S1.2.1 T1.2.1.4) already routes these to different slots
+internally.
+
+The user proposed (2026-05-18) splitting the `(ontology …)` block
+*syntactically* into three sub-heads:
+
+```lisp
+(ontology
+  (relations
+    (relation co-located (Attribute Attribute))
+    (relation right-of   (Attribute Attribute))
+    …)
+  (definitions               ;; rules + rule-application facts
+    (symmetric co-located)
+    (transitive co-located)
+    (square-fwd right-of)
+    …)
+  (types-and-objects
+    (type Attribute) …
+    (instance Norwegian Nationality) …
+    (instance House_1 House) …))
+```
+
+Justification (user's): "rules are separate head — good. Ontology
+can be split into: relations declarations, relations definitions
+(via rules), types looks secondary as produced by a relation, so
+types and objects go into 3rd separate ontology sub-head."
+
+**Working answer:** *parked*. The data model is already split
+internally; the syntactic re-org is a cosmetic IR change that does
+not affect P1.2's data-model decisions. Revisit during P1.7
+authoring when the larger Zebra IR is being read by multiple
+people — readability may justify the split there.
+
+**Counter-argument:** the current flat (ontology …) block reads
+fine for Zebra-scale puzzles (one page). Premature factoring; wait
+for an instance where it bites.
+
+## Q23 — What carries an explicit type slot
+
+Direct question raised 2026-05-18: which entities in the data model
+have a `type` slot?
+
+**Working answer** (locked in P1.2 S1.2.1):
+- `Instance.type` — yes, exactly one. Every instance belongs to one
+  declared type (no multi-typing in M1).
+- `Var` — *no* explicit slot. Variables are typed *structurally* by
+  the premises that bind them (`(is-a ?var T)` etc.); see
+  [F4 Q35](../followups/f4_cross_cutting.md#variable-typing-via-match-is-a-var-type-q35).
+- `Relation` — *no* explicit slot, but has a `signature: tuple[Type,
+  …]` that says what types its arguments can be. Not the same as
+  "the relation has a type" in the OOP sense.
+- `Type` / `Rule` / `Fact` — no type slot. (Types form a hierarchy
+  via `parent`; rules and facts are not themselves typed.)
+
+This consciously aligns with the unified `is-a` model of
+zebra2.ein: types are graph nodes, "having a type" is "being on the
+receiving end of an `is-a` / `instance-of` edge". The slot exists
+only as a fast-access cache on `Instance`.
+
+**Multi-typing** (user's question): out of M1 scope. If an instance
+must be of two types, declare an intermediate intersection type or
+use additional `(is-a)` facts in the unified model. Revisit if the
+need is real.
+
+## Q24 — `:where` clause in `sibling-exclusive`
+
+Surfaced 2026-05-18. The clause appears in some early rule sketches
+but is *not* documented in the rule DSL spec (P1.3 S1.3.1). The
+options:
+
+- **A** — `:where` is a top-level rule clause holding side
+  conditions evaluated against the matcher's bindings (similar to
+  Prolog cut + guard). Currently used inline inside `(and …)`
+  patterns; pulling it to top-level is a cosmetic move.
+- **B** — `:where` is the same as `(and … :where p …)` inline form,
+  just a sugar; nothing to add to the DSL.
+- **C** — delete the keyword everywhere; require all side
+  conditions to be ordinary pattern premises.
+
+**Working answer:** B — it's syntactic sugar for the inline
+`:where` predicate inside an `(and …)`. Document in P1.3 S1.3.1
+DSL spec; do not promote to top-level keyword. Locks when the DSL
+is written down.
+
+## Q25 — Cardinality and ordinality rules with vars
+
+The rule library has `global-cardinality` (`exactly-n X V N`,
+T1.3.2.8) — counting facts with a value. The user (2026-05-18)
+asked whether **ordinality rules** (less-than, position-of, between)
+should be first-class IR forms or derived from `(rel ?r ?a ?b)`
+patterns over a chosen relation.
+
+**Options:**
+
+- **A** — first-class `(less-than ?a ?b)` form + a dedicated rule
+  family. Tight coupling to the position lattice (P1.4 S1.4.2).
+- **B** — derived from `right-of` / `before` etc. via the existing
+  square + transitivity rules. No new IR forms; everything reduces
+  to the generic relation machinery.
+- **C** — half-and-half: keep ordinality as a *named property* (a
+  rule-application fact `(ordinal ?R)`) that activates a small
+  bundle of derived rules.
+
+**Working answer:** B for Zebra. Ordinality questions ("is house 3
+to the right of house 1?") reduce to transitive closure over
+`right-of`. C may be needed for Sudoku-style puzzles where ordinal
+position matters arithmetically. Revisit in P1.3 S1.3.2 with the
+demo-problem set — if the cardinality/ordinality demos need an
+ordinal-specific rule, promote to a named family.

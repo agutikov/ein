@@ -48,6 +48,13 @@ These are seeds for further work, not specifications.
    Goal isn't "find an answer" — it's reproducing the step-by-step
    elimination / contradiction-by-cases reasoning a human writes out.
 
+9. [Puzzles beyond Zebra](09-puzzles-beyond-zebra.md)
+   A catalogue of classical logic puzzles (Knights & Knaves, muddy
+   children, hat puzzles, Tower of Hanoi, paradoxes, …) and what each
+   one stresses that Zebra does not — the *capability map* the engine
+   should grow into. Companion benchmarks file:
+   [`docs/index/12`](../index/12-llm-and-reasoning-benchmarks.md).
+
 ## Cross-cutting observations
 
 These are not standalone ideas but recurring framings worth keeping
