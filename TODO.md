@@ -1,15 +1,21 @@
 
 
 
-btw
-next-to is not square-fwd & squeare-bwd
-because next could be to the right and to the left
-there is only disjunctive conclusion from next-to -> right-of, not implication
 
 
 
-inheritance instance-of and subtype-of
+
+
+
+
+
+
+---
+
+inheritance via instance-of and subtype-of relations
 propagates relations among objects
+where is our inheritance rule btw?
+
 if we use relations as types
 inheritance of relations - means inheritance of rules, propagation of rules
 (subtype-of instance-of subtype-of) ;; instance-of inherits rules of subtype-of

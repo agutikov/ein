@@ -100,8 +100,6 @@
   (implies right-of next-to)
   (square-fwd right-of)
   (square-bwd right-of)
-  (square-fwd next-to)
-  (square-bwd next-to)
   (right-of House_2 House_1 :source "condition (1)")
   (right-of House_3 House_2 :source "condition (1)")
   (right-of House_4 House_3 :source "condition (1)")

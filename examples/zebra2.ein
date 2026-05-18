@@ -86,6 +86,12 @@
     :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
     :priority 3)
 
+  ;; Square applies ONLY to *directional* (asymmetric) spatial
+  ;; relations like `right-of`. For symmetric relations like
+  ;; `next-to`, the would-be conclusion is disjunctive (B is at
+  ;; *some* neighbour of X, often two candidates) and belongs to
+  ;; hypothesis branching — not a positive rule firing.
+
   (rule square-fwd (?R)
     :match  (and (?R ?a ?b)
                  (?R ?x ?y)
@@ -176,8 +182,10 @@
   (implies    right-of next-to)
   (square-fwd right-of)
   (square-bwd right-of)
-  (square-fwd next-to)
-  (square-bwd next-to)
+  ;; NOTE: square does NOT apply to next-to. next-to is symmetric;
+  ;; its conclusion is disjunctive (B is at *some* neighbour of X,
+  ;; possibly two candidates) and belongs to hypothesis branching,
+  ;; not to a positive rule firing.
 
   ;; ── Condition (1) "five houses in a row" — pairwise spatial.
   (right-of House_2 House_1 :source "condition (1)")

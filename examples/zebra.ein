@@ -40,10 +40,13 @@
 ;;;   · `all-different` is NOT a kernel primitive — pairwise
 ;;;     distinctness within a category is derived by `type-exclusivity`
 ;;;     from the `(instance X T)` facts.
-;;;   · The PoC's *square rule* (right/next propagation across
+;;;   · The PoC's *square rule* (right-of propagation across
 ;;;     co-located) is expressed declaratively as `square-fwd` /
 ;;;     `square-bwd` rules + rule-application facts — no `:spatial-via`
-;;;     kw-pair, no hardcoded Python projection.
+;;;     kw-pair, no hardcoded Python projection. Square applies ONLY
+;;;     to directional (asymmetric) spatial relations: `right-of`
+;;;     yes, `next-to` no. For `next-to` the would-be conclusion is
+;;;     disjunctive — see the Future-work note below.
 ;;;
 ;;; Future-work notes:
 ;;;   · The converse "next-to ⟹ (right-of a b) ∨ (right-of b a)" is a
@@ -93,9 +96,19 @@
   ;; ──
   ;; ── Forward: bridge is the left side (?a↔?x), infer the right
   ;; ── side (?b↔?y). Backward: bridge is the right side, infer the
-  ;; ── left. Both must exist for non-symmetric R (right-of); for
-  ;; ── symmetric R (next-to) the forward rule plus the symmetric
-  ;; ── closure suffices, but we mark both for uniformity.
+  ;; ── left. Both directions are needed because right-of is NOT
+  ;; ── symmetric — given (right-of A B) we cannot rebind to
+  ;; ── (right-of B A) via symmetric closure.
+  ;; ──
+  ;; ── **Restriction**: square applies ONLY to *directional* spatial
+  ;; ── relations like `right-of`. For symmetric (non-directional)
+  ;; ── relations like `next-to`, the rule's conclusion is genuinely
+  ;; ── disjunctive: given (next-to A B), (next-to X Y), and
+  ;; ── (co-located A X), B is co-located with *some* neighbour of X,
+  ;; ── which may or may not be Y — X can have two neighbours. The
+  ;; ── disjunctive conclusion belongs to hypothesis branching
+  ;; ── (P1.5), not to a positive rule firing. Hence we do NOT
+  ;; ── declare (square-fwd next-to) or (square-bwd next-to) below.
 
   (rule square-fwd (?R)
     :match  (and (?R ?a ?b)
@@ -168,8 +181,10 @@
   (implies    right-of next-to)
   (square-fwd right-of)
   (square-bwd right-of)
-  (square-fwd next-to)
-  (square-bwd next-to)
+  ;; NOTE: square does NOT apply to next-to. next-to is symmetric
+  ;; and its disjunctive conclusion ("B is at *some* neighbour of X")
+  ;; needs hypothesis branching, not a positive rule firing. See
+  ;; the §rules block design note above.
   ;; `type-exclusivity` is non-generic — fires for every type
   ;; automatically; no per-type application fact needed.
 
