@@ -21,6 +21,8 @@ from ein_bot.ir import (
 
 REPO = Path(__file__).resolve().parent.parent
 ZEBRA = REPO / "examples" / "zebra.ein"
+ZEBRA2 = REPO / "examples" / "zebra2.ein"
+EXAMPLE_FILES = [ZEBRA, ZEBRA2]
 
 
 # ═══════════ Lowering: terminals ═══════════
@@ -237,48 +239,49 @@ def test_roundtrip(src: str) -> None:
     assert ast1 == ast2, f"roundtrip diverged:\n--src--\n{src}\n--dump--\n{text}"
 
 
-def test_roundtrip_zebra():
-    """Full Zebra puzzle survives dump∘parse without loss."""
-    src = ZEBRA.read_text(encoding="utf-8")
-    ast1 = parse(src, filename=str(ZEBRA))
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=lambda p: p.name)
+def test_roundtrip_example(path):
+    """Each bundled example survives dump∘parse without loss."""
+    src = path.read_text(encoding="utf-8")
+    ast1 = parse(src, filename=str(path))
     text = dump_canonical(ast1)
     ast2 = parse(text)
     assert ast1 == ast2
 
 
-def test_dump_stable():
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=lambda p: p.name)
+def test_dump_stable(path):
     """dump∘parse∘dump∘parse == dump∘parse — printer is a fixed point."""
-    src = ZEBRA.read_text(encoding="utf-8")
+    src = path.read_text(encoding="utf-8")
     t1 = dump_canonical(parse(src))
     t2 = dump_canonical(parse(t1))
     assert t1 == t2
 
 
-GOLDEN = REPO / "tests" / "golden" / "zebra.golden"
-
-
-def test_golden_zebra():
-    """Snapshot: dump_canonical(parse(zebra.ein)) matches tests/golden/zebra.golden.
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=lambda p: p.name)
+def test_golden_example(path):
+    """Snapshot: dump_canonical(parse(<example>)) matches tests/golden/<example>.golden.
 
     Catches IR drift across phases (a change in grammar, AST shape,
     or dumper output trips this; refresh the golden if the change is
     intentional with:
         python3 -c "from pathlib import Path; from ein_bot.ir import \\
             parse, dump_canonical; \\
-            Path('tests/golden/zebra.golden').write_text( \\
-                dump_canonical(parse(Path('examples/zebra.ein').read_text())))"
+            stem = 'zebra'  # or 'zebra2' \\
+            Path(f'tests/golden/{stem}.golden').write_text( \\
+                dump_canonical(parse(Path(f'examples/{stem}.ein').read_text())))"
     """
-    src = ZEBRA.read_text(encoding="utf-8")
+    src = path.read_text(encoding="utf-8")
+    golden = REPO / "tests" / "golden" / f"{path.stem}.golden"
     got = dump_canonical(parse(src))
-    expected = GOLDEN.read_text(encoding="utf-8")
+    expected = golden.read_text(encoding="utf-8")
     if got != expected:
-        # Compact diff to make failures readable.
         import difflib
         diff = "".join(difflib.unified_diff(
             expected.splitlines(keepends=True),
             got.splitlines(keepends=True),
-            fromfile="zebra.golden",
-            tofile="dump_canonical(parse(zebra.ein))",
+            fromfile=golden.name,
+            tofile=f"dump_canonical(parse({path.name}))",
         ))
         raise AssertionError(f"golden snapshot drift:\n{diff}")
 

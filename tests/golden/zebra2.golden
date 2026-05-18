@@ -1,0 +1,128 @@
+(rules
+  (rule
+    symmetric
+    (?rel)
+    :match (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why "{?rel} is symmetric: {?a} ↔ {?b}."
+    :priority 1)
+  (rule
+    transitive
+    (?rel)
+    :match (and (?rel ?a ?b) (?rel ?b ?c) :where (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+    :priority 5)
+  (rule
+    implies
+    (?p ?q)
+    :match (?p ?a ?b)
+    :assert (?q ?a ?b)
+    :why "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+    :priority 3)
+  (rule
+    square-fwd
+    (?R)
+    :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
+    :assert (co-located ?b ?y)
+    :why "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
+    :priority 8)
+  (rule
+    square-bwd
+    (?R)
+    :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
+    :assert (co-located ?a ?x)
+    :why "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
+    :priority 8)
+  (rule
+    asymmetric
+    (?rel)
+    :match (and (?rel ?a ?b) :where (neq ?a ?b))
+    :assert (not (?rel ?b ?a))
+    :why "{?rel} is asymmetric: from {?a} →{?rel}→ {?b}, ¬({?b} →{?rel}→ {?a})."
+    :priority 1)
+  (rule
+    sibling-exclusive
+    (?rel)
+    :match (and (?rel ?a ?P) (?rel ?b ?P) :where (neq ?a ?b))
+    :assert (not (co-located ?a ?b))
+    :why "{?a} and {?b} share parent {?P} under {?rel} — exclusive slots."
+    :priority 10))
+
+(ontology
+  (relation is-a (T T))
+  (relation co-located (T T))
+  (relation right-of (T T))
+  (relation next-to (T T))
+  (is-a Attribute T)
+  (is-a House Attribute)
+  (is-a Color Attribute)
+  (is-a Nationality Attribute)
+  (is-a Pet Attribute)
+  (is-a Cigarette Attribute)
+  (is-a Drink Attribute)
+  (is-a House_1 House)
+  (is-a House_2 House)
+  (is-a House_3 House)
+  (is-a House_4 House)
+  (is-a House_5 House)
+  (is-a Red Color)
+  (is-a Green Color)
+  (is-a Ivory Color)
+  (is-a Yellow Color)
+  (is-a Blue Color)
+  (is-a Englishman Nationality)
+  (is-a Spaniard Nationality)
+  (is-a Ukrainian Nationality)
+  (is-a Norwegian Nationality)
+  (is-a Japanese Nationality)
+  (is-a Dog Pet)
+  (is-a Snail Pet)
+  (is-a Fox Pet)
+  (is-a Horse Pet)
+  (is-a Zebra Pet)
+  (is-a Old_Gold Cigarette)
+  (is-a Kools Cigarette)
+  (is-a Chesterfields Cigarette)
+  (is-a Lucky_Strike Cigarette)
+  (is-a Parliament Cigarette)
+  (is-a Coffee Drink)
+  (is-a Tea Drink)
+  (is-a Milk Drink)
+  (is-a Juice Drink)
+  (is-a Water Drink)
+  (transitive is-a)
+  (asymmetric is-a)
+  (sibling-exclusive is-a)
+  (symmetric co-located)
+  (transitive co-located)
+  (symmetric next-to)
+  (implies right-of next-to)
+  (square-fwd right-of)
+  (square-bwd right-of)
+  (square-fwd next-to)
+  (square-bwd next-to)
+  (right-of House_2 House_1 :source "condition (1)")
+  (right-of House_3 House_2 :source "condition (1)")
+  (right-of House_4 House_3 :source "condition (1)")
+  (right-of House_5 House_4 :source "condition (1)"))
+
+(facts
+  (co-located Englishman Red :source "condition (2)")
+  (co-located Spaniard Dog :source "condition (3)")
+  (co-located Coffee Green :source "condition (4)")
+  (co-located Ukrainian Tea :source "condition (5)")
+  (right-of Green Ivory :source "condition (6)")
+  (co-located Old_Gold Snail :source "condition (7)")
+  (co-located Kools Yellow :source "condition (8)")
+  (co-located Milk House_3 :source "condition (9)")
+  (co-located Norwegian House_1 :source "condition (10)")
+  (next-to Chesterfields Fox :source "condition (11)")
+  (next-to Kools Horse :source "condition (12)")
+  (co-located Lucky_Strike Juice :source "condition (13)")
+  (co-located Japanese Parliament :source "condition (14)")
+  (next-to Norwegian Blue :source "condition (15)"))
+
+(query
+  :mode solve
+  :goal (and (co-located ?water-drinker Water) (co-located ?zebra-owner Zebra)))

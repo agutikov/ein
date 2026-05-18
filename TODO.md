@@ -1,24 +1,19 @@
 
 
 
+btw
+next-to is not square-fwd & squeare-bwd
+because next could be to the right and to the left
+there is only disjunctive conclusion from next-to -> right-of, not implication
 
 
 
-`instance` is a relation `instance-of` (see Dot diagrams)
-so it has it's own properties-rules?
-but it's an embedded relation with hardcoded rules?
-
-is `type` a relation?
-What is the difference between: (type A B) and (instance A B) ?
-Anyway it's a inheritance tree, instances are leaves, but does it matter?
-
-if so is type-exclusivity applicable to Attribute type?
-We getting something like forbidden multi-type
-
-How can be instantiation defined - when any supertype variable/node can be replaced with subtype/instance.
-
-
-
+inheritance instance-of and subtype-of
+propagates relations among objects
+if we use relations as types
+inheritance of relations - means inheritance of rules, propagation of rules
+(subtype-of instance-of subtype-of) ;; instance-of inherits rules of subtype-of
+Does it make sense?
 
 
 ---

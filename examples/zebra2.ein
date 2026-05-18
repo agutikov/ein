@@ -1,0 +1,225 @@
+;;; ein-bot — Zebra puzzle (Einstein's puzzle), alternative encoding.
+;;;
+;;; This is `zebra.ein` with the type/instance split collapsed into a
+;;; single inheritance relation `is-a`. zebra.ein keeps the kernel
+;;; primitives `(type …)` and `(instance …)`; zebra2.ein keeps neither
+;;; and uses an ordinary declared relation throughout.
+;;;
+;;; Both files solve the same puzzle and remain valid IR; the grammar
+;;; supports both formulations. The two coexist while we evaluate
+;;; which model the engine prefers.
+;;;
+;;; ── The `is-a` model ──────────────────────────────────────────
+;;;
+;;; A single binary relation `is-a` carries the entire inheritance
+;;; tree. Both type-of-type edges and instance-of-type edges look the
+;;; same syntactically — "leaves are instances" is a structural fact,
+;;; not a syntactic distinction.
+;;;
+;;; Properties:
+;;;   · **transitive** — A is-a B ∧ B is-a C ⟹ A is-a C.
+;;;   · **asymmetric** for distinct nodes — A is-a B ∧ A ≠ B ⟹
+;;;     ¬(B is-a A). (Reflexive A is-a A is allowed but not
+;;;     materialised.)
+;;;
+;;; ── `T` as the root ───────────────────────────────────────────
+;;;
+;;; `T` is the **maximal element** of the is-a tree. Every node
+;;; satisfies `is-a* X T` (directly or via transitive closure). The
+;;; name T = ⊤ (top, terminus). This is hardcoded by convention in
+;;; this file: the type signature of `is-a` is `(T T)`, and the
+;;; top-level subtype `Attribute` directly is-a T.
+;;;
+;;; ── Future investigation ──────────────────────────────────────
+;;;
+;;; Hypothesis worth exploring: every asymmetric transitive relation
+;;; in this style may want its own "T" — a unique maximal element
+;;; above every member of the relation. In category-theory terms,
+;;; T is the **terminal object** (limit of the empty diagram) of the
+;;; partial order viewed as a category: a unique morphism from every
+;;; object up to T. The dual — a unique **initial object** ⊥ below
+;;; everything — would be the colimit. For is-a, ⊥ corresponds to
+;;; the impossible / empty type (`Nothing` in some type theories,
+;;; `Void` / `⊥` elsewhere).
+;;;
+;;; Open question: do other asymmetric-transitive relations (e.g.
+;;; `contains`, `precedes`, a temporal `before`, a part-of meronymic
+;;; hierarchy) inherit the same shape — a unique top, a unique
+;;; bottom, transitive closure, sibling-exclusivity at each level?
+;;; If so, that's a *categorical* property of the family and may want
+;;; a meta-rule (`(has-terminal R T)`, `(has-initial R B)`) the
+;;; engine can exploit uniformly. Parked for post-M1 design work.
+;;;
+;;; ── Trade-offs vs zebra.ein ───────────────────────────────────
+;;;
+;;;   + One inheritance relation instead of two grammar primitives.
+;;;   + `type-exclusivity` generalises to `sibling-exclusive`,
+;;;     applying uniformly to House⊥Color (sibling types) AND
+;;;     Norwegian⊥Spaniard (sibling instances).
+;;;   + Maps cleanly to AtomSpace / RDF / OWL idioms.
+;;;   − Visual rendering (box vs oval) loses its syntactic marker;
+;;;     leaves must be detected from tree structure.
+;;;   − The DOT renderer's `instance_form`-specific shape rules
+;;;     don't fire — every is-a edge looks the same until S1.2.4
+;;;     adds the KB-aware unified renderer.
+
+(rules
+  ;; ── Property-rules carried over from zebra.ein. ──
+
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+    :priority 1)
+
+  (rule transitive (?rel)
+    :match  (and (?rel ?a ?b)
+                 (?rel ?b ?c)
+                 :where (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+    :priority 5)
+
+  (rule implies (?p ?q)
+    :match  (?p ?a ?b)
+    :assert (?q ?a ?b)
+    :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+    :priority 3)
+
+  (rule square-fwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?a ?x))
+    :assert (co-located ?b ?y)
+    :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
+    :priority 8)
+
+  (rule square-bwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?b ?y))
+    :assert (co-located ?a ?x)
+    :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
+    :priority 8)
+
+  ;; ── New: `asymmetric` rule. Gated by neq so self-loops (?a = ?b)
+  ;; ── don't yield a (?rel ?a ?a) → ¬(?rel ?a ?a) contradiction.
+  ;; ── Activates via the `(asymmetric is-a)` rule-application fact.
+
+  (rule asymmetric (?rel)
+    :match  (and (?rel ?a ?b)
+                 :where (neq ?a ?b))
+    :assert (not (?rel ?b ?a))
+    :why    "{?rel} is asymmetric: from {?a} →{?rel}→ {?b}, ¬({?b} →{?rel}→ {?a})."
+    :priority 1)
+
+  ;; ── New: `sibling-exclusive`. Generalises `type-exclusivity` from
+  ;; ── the zebra.ein formulation: parameterised on the inheritance
+  ;; ── relation. Fires uniformly for type-siblings (House⊥Color
+  ;; ── under Attribute) AND instance-siblings (Norwegian⊥Spaniard
+  ;; ── under Nationality). The co-located negative conclusion is
+  ;; ── still hardcoded here; could be parameterised in a future
+  ;; ── 2-param variant if other exclusivity domains arrive.
+
+  (rule sibling-exclusive (?rel)
+    :match  (and (?rel ?a ?P)
+                 (?rel ?b ?P)
+                 :where (neq ?a ?b))
+    :assert (not (co-located ?a ?b))
+    :why    "{?a} and {?b} share parent {?P} under {?rel} — exclusive slots."
+    :priority 10))
+
+(ontology
+  ;; ── Relation signatures. `is-a` connects any node to any node;
+  ;; ── we type both endpoints as T (the catch-all root).
+  (relation is-a       (T T))
+  (relation co-located (T T))
+  (relation right-of   (T T))
+  (relation next-to    (T T))
+
+  ;; ── Inheritance tree, rooted at T. Both subtype-of and instance-of
+  ;; ── edges are expressed by the same `is-a` relation; the visual
+  ;; ── distinction (boxes vs ovals) disappears in this formulation
+  ;; ── until the KB-aware renderer (S1.2.4) reintroduces it
+  ;; ── structurally.
+  (is-a Attribute   T)
+  (is-a House       Attribute)
+  (is-a Color       Attribute)
+  (is-a Nationality Attribute)
+  (is-a Pet         Attribute)
+  (is-a Cigarette   Attribute)
+  (is-a Drink       Attribute)
+
+  ;; Leaves (formerly instance facts).
+  (is-a House_1 House) (is-a House_2 House) (is-a House_3 House)
+  (is-a House_4 House) (is-a House_5 House)
+  (is-a Red    Color)  (is-a Green Color)  (is-a Ivory Color)
+  (is-a Yellow Color)  (is-a Blue  Color)
+  (is-a Englishman Nationality) (is-a Spaniard  Nationality)
+  (is-a Ukrainian  Nationality) (is-a Norwegian Nationality)
+  (is-a Japanese   Nationality)
+  (is-a Dog   Pet)   (is-a Snail Pet) (is-a Fox Pet)
+  (is-a Horse Pet)   (is-a Zebra Pet)
+  (is-a Old_Gold      Cigarette) (is-a Kools        Cigarette)
+  (is-a Chesterfields Cigarette) (is-a Lucky_Strike Cigarette)
+  (is-a Parliament    Cigarette)
+  (is-a Coffee Drink) (is-a Tea   Drink) (is-a Milk Drink)
+  (is-a Juice  Drink) (is-a Water Drink)
+
+  ;; ── Rule-application facts (implicit context for the engine).
+  (transitive        is-a)
+  (asymmetric        is-a)
+  (sibling-exclusive is-a)
+  (symmetric  co-located)
+  (transitive co-located)
+  (symmetric  next-to)
+  (implies    right-of next-to)
+  (square-fwd right-of)
+  (square-bwd right-of)
+  (square-fwd next-to)
+  (square-bwd next-to)
+
+  ;; ── Condition (1) "five houses in a row" — pairwise spatial.
+  (right-of House_2 House_1 :source "condition (1)")
+  (right-of House_3 House_2 :source "condition (1)")
+  (right-of House_4 House_3 :source "condition (1)")
+  (right-of House_5 House_4 :source "condition (1)"))
+
+(facts
+  ;; (2) The Englishman lives in the red house.
+  (co-located Englishman Red       :source "condition (2)")
+  ;; (3) The Spaniard owns the dog.
+  (co-located Spaniard Dog         :source "condition (3)")
+  ;; (4) Coffee is drunk in the green house.
+  (co-located Coffee Green         :source "condition (4)")
+  ;; (5) The Ukrainian drinks tea.
+  (co-located Ukrainian Tea        :source "condition (5)")
+  ;; (6) The green house is immediately right of the ivory house.
+  (right-of   Green Ivory          :source "condition (6)")
+  ;; (7) The Old Gold smoker owns snails.
+  (co-located Old_Gold Snail       :source "condition (7)")
+  ;; (8) Kools are smoked in the yellow house.
+  (co-located Kools Yellow         :source "condition (8)")
+  ;; (9) Milk is drunk in the middle house.
+  (co-located Milk House_3         :source "condition (9)")
+  ;; (10) The Norwegian lives in the first house.
+  (co-located Norwegian House_1    :source "condition (10)")
+  ;; (11) Chesterfields is smoked next to the house with the fox.
+  (next-to    Chesterfields Fox    :source "condition (11)")
+  ;; (12) Kools is smoked next to the house with the horse.
+  (next-to    Kools Horse          :source "condition (12)")
+  ;; (13) The Lucky Strike smoker drinks orange juice.
+  (co-located Lucky_Strike Juice   :source "condition (13)")
+  ;; (14) The Japanese smokes Parliaments.
+  (co-located Japanese Parliament  :source "condition (14)")
+  ;; (15) The Norwegian lives next to the blue house.
+  (next-to    Norwegian Blue       :source "condition (15)"))
+
+(query
+  :mode solve
+  :goal (and (co-located ?water-drinker Water)
+             (co-located ?zebra-owner   Zebra)))
+
+;; Expected solution (as IR facts):
+;;   (co-located Water Norwegian)
+;;   (co-located Zebra Japanese)

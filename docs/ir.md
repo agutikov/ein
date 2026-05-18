@@ -426,6 +426,14 @@ The complete puzzle — 15 conditions + ten rule families — lives in
 [`examples/zebra.ein`](../examples/zebra.ein) (created alongside this
 spec; see [M1 acceptance §1-2](../plans/m1_core_graph_reasoning/README.md)).
 
+An **alternative encoding** lives in
+[`examples/zebra2.ein`](../examples/zebra2.ein), exploring whether
+`type` and `instance` collapse into a single transitive asymmetric
+`is-a` relation rooted at a hardcoded `T` ("top"). Both files solve
+the same puzzle; the grammar accepts either. Trade-offs and the
+categorical motivation (T as terminal object / limit of the order
+viewed as a category) are documented in `zebra2.ein`'s header.
+
 ---
 
 ## §6 Rendering — IR ↔ DOT
