@@ -5,14 +5,13 @@
 
 
 
-:spatial-via SpatialAttribute - hides logic into hardcoded implementation in Python, what I don't want to
 
-Maybe right-of and next-to are non-reflexive, that is property of spatial relations?
-How PoC square rule could be formulated?
+Update S1.2.1 data model
+Data model is not SForm and Graph+Node+Edge
+Data model is: Rule, Relation, Type, instance and cross-references between and interaction
+for example: how to get all relations for the rule, all rules for relation, all rules for type, etc...
 
 
-I want to have all reserved words in grammar
-e.g. instance is a reserved word - no definition in zebra.ein, only usage
 
 
 

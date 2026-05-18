@@ -14,33 +14,47 @@
 ;;; reference rule names (e.g. `symmetric`, `transitive`, `implies`).
 ;;;
 ;;; Design notes:
-;;;   · Facts are generic `(NAME args*)`. The head is the relation
-;;;     name (e.g. `co-located`), a meta-relation (`instance`,
-;;;     `symmetric`, `implies`), or any registered head. No
-;;;     `relation`/`constraint` wrappers.
-;;;   · `instance` lives in (facts …) — assertions about specific
-;;;     entities, not schema.
-;;;   · Property applications are facts: `(symmetric co-located)` says
-;;;     "the symmetric rule applies to the co-located relation."
-;;;     Drops the prop-list from relation decls.
+;;;   · Three knowledge layers (per `plans/README.md` glossary):
+;;;       (ontology  …) — IMPLICIT assumptions: schema, instance
+;;;                       enumerations, rule-application meta-facts,
+;;;                       structural facts derived from background
+;;;                       context (e.g. condition (1) "five in a row").
+;;;       (facts     …) — EXPLICIT problem statements: the numbered
+;;;                       puzzle conditions (2)-(15), each annotated
+;;;                       with `:source "condition (N)"`.
+;;;       (reasoning …) — DERIVED facts the engine produces at runtime.
+;;;                       Empty at authoring time; populated by solve.
+;;;   · `instance` is a kernel reserved word (shape: arity 2).
+;;;     `co-located`, `right-of`, `next-to` are domain relations
+;;;     declared via `(relation …)`.
+;;;   · Rule-application facts (`(symmetric co-located)` etc.) are
+;;;     IMPLICIT — the puzzle text never says "co-located is
+;;;     symmetric"; the solver supplies it from context. Hence they
+;;;     live in (ontology …), not (facts …).
+;;;   · Condition (1) "five houses in a row" is materialised in
+;;;     ontology as four `(right-of House_{i+1} House_i)` facts;
+;;;     `(implies right-of next-to)` + `(symmetric next-to)` derive
+;;;     the eight next-to pairs for free. The `:source "condition (1)"`
+;;;     points at the explicit origin even though the pairwise
+;;;     consequences are reader-supplied.
 ;;;   · `all-different` is NOT a kernel primitive — pairwise
 ;;;     distinctness within a category is derived by `type-exclusivity`
 ;;;     from the `(instance X T)` facts.
-;;;   · Rule parameter lists are mandatory: `()` for non-generic
-;;;     rules, `(?p1 ?p2 …)` for generic.
+;;;   · The PoC's *square rule* (right/next propagation across
+;;;     co-located) is expressed declaratively as `square-fwd` /
+;;;     `square-bwd` rules + rule-application facts — no `:spatial-via`
+;;;     kw-pair, no hardcoded Python projection.
 ;;;
 ;;; Future-work notes:
 ;;;   · The converse "next-to ⟹ (right-of a b) ∨ (right-of b a)" is a
 ;;;     disjunctive conclusion — handled by hypothesis branching
 ;;;     (P1.5), not by a generic rule in this file.
 ;;;   · Reflexivity (and other trivial-on-Zebra algebraic properties)
-;;;     parked in plans/followups/f4_cross_cutting.md Q34 — relevant
-;;;     for richer problem classes (proof-graph reasoning, partial
-;;;     orders, irreflexive inequalities, …).
+;;;     parked in plans/followups/f4_cross_cutting.md Q34.
 
 (rules
   ;; ── Generic property-rules. Each applies to relations listed via
-  ;; ── property-application facts (e.g. `(symmetric co-located)`).
+  ;; ── property-application facts in the ontology block.
 
   (rule symmetric (?rel)
     :match  (?rel ?a ?b)
@@ -67,6 +81,38 @@
     :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
     :priority 3)
 
+  ;; ── PoC's "square rule" — declarative formulation. The rule
+  ;; ── fires for every relation marked `(square-fwd …)` /
+  ;; ── `(square-bwd …)`. Together they project the spatial
+  ;; ── relation R across the co-located bridge:
+  ;; ──
+  ;; ──   ?x  ──R──▶ ?y       (the spatial leg)
+  ;; ──   ▲           ▲
+  ;; ──   │ co-loc    │ co-loc (one is bridge, the other inferred)
+  ;; ──   ?a  ──R──▶ ?b       (the attribute leg)
+  ;; ──
+  ;; ── Forward: bridge is the left side (?a↔?x), infer the right
+  ;; ── side (?b↔?y). Backward: bridge is the right side, infer the
+  ;; ── left. Both must exist for non-symmetric R (right-of); for
+  ;; ── symmetric R (next-to) the forward rule plus the symmetric
+  ;; ── closure suffices, but we mark both for uniformity.
+
+  (rule square-fwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?a ?x))
+    :assert (co-located ?b ?y)
+    :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
+    :priority 8)
+
+  (rule square-bwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?b ?y))
+    :assert (co-located ?a ?x)
+    :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
+    :priority 8)
+
   ;; ── Non-generic rule: fires universally over all (instance ?a ?T)
   ;; ── pairs. ?T is a free variable of :match, NOT a parameter, so the
   ;; ── parameter list is empty `()`.
@@ -80,25 +126,19 @@
     :priority 10))
 
 (ontology
-  ;; Attribute hierarchy. `SpatialAttribute` carves out the attributes
-  ;; with intrinsic position (only `House` for Zebra).
+  ;; ── Type schema. Flat attribute hierarchy. ──
   (type Attribute)
-  (type SpatialAttribute Attribute)
-  (type House       SpatialAttribute)
+  (type House       Attribute)
   (type Color       Attribute)
   (type Nationality Attribute)
   (type Pet         Attribute)
   (type Cigarette   Attribute)
   (type Drink       Attribute)
 
-  ;; Relation signatures. Properties are NOT declared here — they
-  ;; live in (facts …) as property-application facts.
-  (relation co-located (Attribute Attribute))
-  (relation right-of   (Attribute Attribute) :spatial-via SpatialAttribute)
-  (relation next-to    (Attribute Attribute) :spatial-via SpatialAttribute))
-
-(facts
-  ;; ── Instance facts (formerly in the ontology). ──
+  ;; ── Instance enumeration. Implicit: the puzzle text mentions each
+  ;; ── attribute (Norwegian, Red, House_1, …) without literally saying
+  ;; ── "Norwegian is a Nationality"; the reader supplies the typing
+  ;; ── from context. Hence ontology, not facts.
   (instance House_1 House) (instance House_2 House) (instance House_3 House)
   (instance House_4 House) (instance House_5 House)
   (instance Red    Color) (instance Green Color) (instance Ivory Color)
@@ -114,18 +154,38 @@
   (instance Coffee Drink) (instance Tea   Drink) (instance Milk Drink)
   (instance Juice  Drink) (instance Water Drink)
 
-  ;; ── Rule-application facts (apply rules to relations). ──
+  ;; ── Relation signatures. Properties (incl. spatial-ness) live
+  ;; ── below as rule-application facts, not as kw-pairs here.
+  (relation co-located (Attribute Attribute))
+  (relation right-of   (Attribute Attribute))
+  (relation next-to    (Attribute Attribute))
+
+  ;; ── Rule-application facts. Implicit: the puzzle never says
+  ;; ── "co-located is symmetric" — that's universal context.
   (symmetric  co-located)
   (transitive co-located)
   (symmetric  next-to)
   (implies    right-of next-to)
+  (square-fwd right-of)
+  (square-bwd right-of)
+  (square-fwd next-to)
+  (square-bwd next-to)
   ;; `type-exclusivity` is non-generic — fires for every type
   ;; automatically; no per-type application fact needed.
 
-  ;; ── Puzzle conditions. ──
+  ;; ── Condition (1) "five houses in a row" — pairwise immediate-
+  ;; ── right-of facts. The cardinality statement IS explicit, but
+  ;; ── the pairwise consequences are reader-supplied; hence here
+  ;; ── (with `:source` pointing at the originating condition).
+  (right-of House_2 House_1 :source "condition (1)")
+  (right-of House_3 House_2 :source "condition (1)")
+  (right-of House_4 House_3 :source "condition (1)")
+  (right-of House_5 House_4 :source "condition (1)"))
 
-  ;; condition (1) — "There are five houses." — structural (encoded
-  ;; in the five `(instance House_i House)` facts above).
+(facts
+  ;; The 14 numbered puzzle conditions. Each is a direct rendering of
+  ;; one sentence of the problem text. Condition (1) lives in ontology
+  ;; (above) as four pairwise spatial facts.
 
   ;; (2) The Englishman lives in the red house.
   (co-located Englishman Red       :source "condition (2)")

@@ -104,6 +104,9 @@ class _ToAST(Transformer):
     def facts_form(self, items: list) -> SForm:
         return self._topform("facts", items)
 
+    def reasoning_form(self, items: list) -> SForm:
+        return self._topform("reasoning", items)
+
     def rules_form(self, items: list) -> SForm:
         return self._topform("rules", items)
 
@@ -146,6 +149,25 @@ class _ToAST(Transformer):
         head, *rest = items
         assert isinstance(head, Atom)
         return SForm(head=head, args=tuple(rest))
+
+    # ── Kernel meta-primitives (shape-pinned) ─────────────────
+    # Each reserved-word form gets a synthetic Atom head matching the
+    # literal. The grammar guarantees arity / arg shape; the validator
+    # (deferred) will check arg types and contextual constraints.
+    def instance_form(self, items: list) -> SForm:
+        return SForm(head=Atom(name="instance"), args=tuple(items))
+
+    def not_form(self, items: list) -> SForm:
+        return SForm(head=Atom(name="not"), args=tuple(items))
+
+    def neq_form(self, items: list) -> SForm:
+        return SForm(head=Atom(name="neq"), args=tuple(items))
+
+    def and_form(self, items: list) -> SForm:
+        return SForm(head=Atom(name="and"), args=tuple(items))
+
+    def or_form(self, items: list) -> SForm:
+        return SForm(head=Atom(name="or"), args=tuple(items))
 
     # ── Rules ──────────────────────────────────────────────────
     def rule_decl(self, items: list) -> SForm:

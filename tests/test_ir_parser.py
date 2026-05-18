@@ -101,6 +101,82 @@ def test_facts_meta_relation():
     _ok("(facts (all-different House_1 House_2 House_3 House_4 House_5))")
 
 
+# ═══════════ Reserved kernel meta-primitives ═══════════
+# `instance`, `not`, `and`, `or`, `neq` are shape-pinned: they have
+# fixed arity and a dedicated grammar rule. Domain relations stay
+# generic SYMBOL-headed.
+
+def test_instance_fact_arity_2():
+    _ok("(facts (instance Norwegian Nationality))")
+
+
+def test_instance_with_kwargs():
+    _ok('(facts (instance Norwegian Nationality :source "(8)"))')
+
+
+def test_instance_in_pattern():
+    """`(instance ?a ?T)` works in :match patterns too."""
+    _ok("""
+    (rules
+      (rule type-exclusivity ()
+        :match (and (instance ?a ?T) (instance ?b ?T) :where (neq ?a ?b))
+        :assert (not (co-located ?a ?b))))
+    """)
+
+
+def test_reject_instance_arity_1():
+    """`(instance X)` is missing the type arg — instance_form rejects;
+    generic_fact can't take over because `instance` is reserved."""
+    _bad("(facts (instance Norwegian))")
+
+
+def test_reject_instance_arity_3():
+    """`(instance X Y Z)` is too many positional args."""
+    _bad("(facts (instance Norwegian Nationality Spaniard))")
+
+
+def test_reject_and_at_fact_level():
+    """`(and …)` is a pattern combinator, not a fact."""
+    _bad("(facts (and a b))")
+
+
+def test_reject_or_at_fact_level():
+    _bad("(facts (or a b))")
+
+
+def test_reject_neq_at_fact_level():
+    """`(neq …)` is a `:where` predicate, not a fact."""
+    _bad("(facts (neq a b))")
+
+
+def test_not_fact():
+    """`(not X)` IS a permitted fact form (negative assertion)."""
+    _ok("(facts (not (co-located Spaniard Coffee)))")
+
+
+def test_reject_not_arity_2():
+    """`not` is unary."""
+    _bad("(facts (not a b))")
+
+
+def test_reject_neq_arity_1():
+    _bad("""
+    (rules (rule x () :match (and (?r ?a ?b) :where (neq ?a)) :assert ?a))
+    """)
+
+
+def test_and_or_neq_in_pattern():
+    """All three appear inside :match patterns."""
+    _ok("""
+    (rules
+      (rule x ()
+        :match  (and (?r ?a ?b)
+                     (or (drinks ?a Tea) (drinks ?a Milk))
+                     :where (neq ?a ?b))
+        :assert ?a))
+    """)
+
+
 # ═══════════ Rules ═══════════
 
 def test_rules_empty():
@@ -232,15 +308,30 @@ def test_block_comment():
 
 # ═══════════ Multiple top-level forms ═══════════
 
-def test_all_five_top_level_forms():
+def test_all_six_top_level_forms():
     tree = _ok("""
     (ontology (type Person))
     (facts (lives-in a b))
+    (reasoning (lives-in c d :rule symmetric :using (s1)))
     (rules (rule x () :match a :assert b))
     (query :mode solve :goal X)
     (trace)
     """)
-    assert len(tree.children) == 5
+    assert len(tree.children) == 6
+
+
+def test_reasoning_block_empty():
+    """The reasoning block can be empty (engine hasn't run yet)."""
+    _ok("(reasoning)")
+
+
+def test_reasoning_with_derived_facts():
+    """Derived facts use `:rule` / `:using` provenance instead of `:source`."""
+    _ok("""
+    (reasoning
+      (co-located Blue House_2 :rule square-fwd :using (c10 c15))
+      (not (co-located Norwegian House_2) :rule type-exclusivity :using (c10)))
+    """)
 
 
 # ═══════════ Rejection: structural errors ═══════════
@@ -283,14 +374,21 @@ def test_reject_keyword_followed_by_keyword():
     _bad("(query :mode :solve :goal X)")
 
 
-def test_reject_unknown_ontology_head():
-    """Ontology accepts only `type`, `relation`, `a-priori`."""
-    _bad("(ontology (foo Person))")
+def test_ontology_accepts_implicit_facts():
+    """Ontology holds implicit assumptions in addition to schema:
+    instance enumerations and rule-application facts both live here."""
+    _ok("""
+    (ontology
+      (type Nationality)
+      (instance Norwegian Nationality)
+      (symmetric co-located)
+      (implies right-of next-to))
+    """)
 
 
-def test_reject_instance_in_ontology():
-    """`instance` was moved to facts."""
-    _bad("(ontology (instance Norwegian Nationality))")
+def test_reject_keyword_as_ontology_decl():
+    """A bare KEYWORD at ontology-decl position is still rejected."""
+    _bad("(ontology :foo bar)")
 
 
 def test_reject_unknown_trace_head():

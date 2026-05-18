@@ -45,33 +45,58 @@ only; the grammar accepts either.
 
 ## §2 Top-level forms
 
-The kernel has **5 reserved heads**. Anything else at the top level
-fails to parse.
+The kernel has **6 reserved heads**. Anything else at the top level
+fails to parse. Three of them — `ontology`, `facts`, `reasoning` —
+are the *three knowledge layers* from `plans/README.md` glossary; the
+block name carries the **provenance** of the contained items.
 
-| head        | role                                       | reserved sub-form heads                              |
-|-------------|--------------------------------------------|------------------------------------------------------|
-| `ontology`  | types, instances, declared relations       | `type` · `instance` · `relation` · `a-priori`        |
-| `facts`     | ground knowledge stated by the problem     | `=` (reserved) + any `(<name> args*)` generic form    |
-| `rules`     | inference rule definitions                 | `rule`                                               |
-| `query`     | what to ask the engine                     | keyword-args only (`:mode`, `:goal`)                 |
-| `trace`     | engine output — derivation log + branches  | `step` · `branch-open` · `branch-close` · `contradiction` · `symmetry-class` |
+| head        | layer / role                                                 | reserved sub-form heads                              |
+|-------------|--------------------------------------------------------------|------------------------------------------------------|
+| `ontology`  | **implicit** assumptions: schema + reader-supplied context   | `type` · `relation` · `a-priori` · any fact form     |
+| `facts`     | **explicit** problem statements (numbered conditions)        | `=` · `instance` · `not` + generic `(NAME args*)`    |
+| `reasoning` | **derived** facts — engine working memory after a solve      | same as `facts`; provenance is `:rule` / `:using`    |
+| `rules`     | inference-rule definitions (meta over ontology + facts)      | `rule`                                               |
+| `query`     | what to ask the engine                                       | keyword-args only (`:mode`, `:goal`)                 |
+| `trace`     | engine output — derivation log + branches                    | `step` · `branch-open` · `branch-close` · `contradiction` · `symmetry-class` |
 
-### Ontology — pure schema
+### Ontology — schema + implicit assumptions
 
 ```lisp
 (ontology
+  ;; Schema —
   (type <Name> [<Parent>])                         ; declare a type, optional parent
   (relation <name> (<T1> <T2> [<T3> ...])          ; relation signature, arity ≥ 2
     [:cardinality <RANGE>] [...])                   ; optional metadata kw-pairs
   (a-priori <name> (<T1> <T2> [...])               ; structural / spatial relation
-    :pattern <pattern>))
+    :pattern <pattern>)
+
+  ;; Implicit assumptions —
+  (instance <Ent> <Type>)                          ; instance enumeration
+  (<rule-name> <relation> ...)                     ; rule-application meta-facts
+  (<relation> <args> ... [:source "..."])           ; pairwise structural facts derived
+                                                    ;   from background context
+  )
 ```
 
-The ontology declares **types** and **relation signatures**. It does
-*not* declare instances (those are facts) or relation properties
-(those are property-application facts). Keeping the ontology pure-schema
-makes "facts" the single home for contingent assertions about
-specific entities.
+The ontology accepts **two populations**:
+
+1. **Schema** — `type`, `relation`, `a-priori`. Describes the universe
+   of discourse.
+2. **Implicit-but-true assertions** — anything the puzzle treats as
+   background truth without literally stating it. Three recurring
+   shapes: instance enumeration, rule-application meta-facts, and
+   pairwise structural facts derived from a cardinality / ordering
+   statement.
+
+The split between *ontology* and *facts* is **by provenance**: did the
+puzzle's text say it, or did the reader supply it from context? An
+explicit numbered condition goes in `facts` with `:source "(N)"`; a
+reader-supplied assumption goes in `ontology`.
+
+Rule-application facts (`(symmetric co-located)`, `(implies right-of
+next-to)`) live in `ontology` because the puzzle text never says
+"co-located is symmetric" — that's universal context. They are the
+*meta* of the relation, while `rules` is the meta of the *engine*.
 
 Example:
 
@@ -79,31 +104,71 @@ Example:
 (ontology
   (type Attribute)
   (type House Attribute) (type Color Attribute)
-  (relation has-color  (House Color)        :cardinality 1..1)
-  (relation co-located (Attribute Attribute)))
+  (relation co-located (Attribute Attribute))
+  (instance Norwegian Nationality)
+  (instance House_1 House)
+  (symmetric  co-located)
+  (transitive co-located)
+  (right-of House_2 House_1 :source "condition (1)"))   ; from "five in a row"
 ```
 
-### Facts — generic `(NAME args*)`
+### Facts — `(NAME args*)`, with reserved heads
 
 ```lisp
 (facts
-  (= <expr> <expr> [:source <STRING>])                ; equality fact (reserved head)
-  (<name> <arg>* [:source <STRING>] [<kw> <val>]*))   ; any other fact
+  (= <expr> <expr> :source <STRING>)                  ; equality condition   (reserved)
+  (instance <Ent> <Type> :source <STRING>)            ; instance assertion   (reserved, arity 2)
+  (not <expr> :source <STRING>)                       ; negative condition   (reserved, arity 1)
+  (<name> <arg>* :source <STRING>))                   ; relation condition
 ```
 
-Facts are generic. The head is the relation name, a meta-relation
-name (`instance`, `symmetric`, `implies`), or any registered head.
-`=` is the one reserved head; everything else parses as a
-generic `(SYMBOL value*)` form. `:source` carries the original
-problem sentence — used by the trace renderer.
+The `facts` block holds **explicit problem statements** — one entry
+per numbered puzzle condition, each annotated with
+`:source "condition (N)"`. Implicit assumptions (instance enumerations,
+rule-application meta-facts, structural facts derived from background
+context) live in `(ontology …)` instead.
 
-Three kinds of facts share the same shape:
+Three heads are **shape-pinned reserved words** at the grammar level:
+`=`, `instance`, `not`. Wrong arity is a parse error, not a validator
+error. `and`, `or`, `neq` are also reserved kernel meta-primitives
+but they belong inside `:match` patterns / `:where` clauses, not at
+the fact level — the grammar rejects them in `(facts …)`.
+
+Domain relations (`co-located`, `lives-in`, `next-to`) stay generic
+`(SYMBOL value*)` and are open-world: anyone can introduce a new
+relation by declaring it in the ontology and using it in facts.
+
+Three kinds of facts share the same syntactic family at the explicit-
+condition level:
 
 | kind | example | semantics |
 |---|---|---|
-| **instance** | `(instance Norwegian Nationality)` | "Norwegian is a Nationality" — assertion about a specific entity |
-| **relation instance** | `(lives-in Norwegian House_1 :source "(10)")` | the relation `lives-in` holds between Norwegian and House_1 |
-| **rule application** | `(symmetric co-located)`, `(implies right-of next-to)` | meta-fact: applies a generic rule to specific relations |
+| **relation instance** | `(co-located Englishman Red :source "(2)")` | a relation holds between specific entities |
+| **equality**          | `(= (color House_1) Red :source "(?)")` | equational form |
+| **negative**          | `(not (drinks Spaniard Coffee) :source "(?)")` | the wrapped fact does *not* hold |
+
+`all-different` is **not** a kernel primitive; pairwise distinctness
+within a category is derived by `type-exclusivity` from the
+`(instance X T)` facts. Genuinely puzzle-specific structural shapes
+(parity, budget, …) just take their own head: `(budget-total X Y)`.
+
+### Reasoning — derived facts (engine working memory)
+
+```lisp
+(reasoning
+  (<name> <arg>* :rule <RuleName> :using (<premise-id>+))
+  (not <expr>   :rule <RuleName> :using (<premise-id>+))
+  ...)
+```
+
+The `reasoning` block holds facts the engine has *derived* at runtime.
+Same syntactic shapes as `(facts …)`; the provenance kw-pair is
+`:rule` (which rule fired) + `:using` (which premises it consumed),
+instead of `:source` (which puzzle condition originated it).
+
+Hand-authored puzzle files typically leave this block empty — it's
+populated by the engine after `solve`. The block is parseable IR, so
+engine dumps round-trip through `parse` / `dump`.
 
 `all-different` is **not** a kernel primitive; pairwise distinctness
 within a category is derived by `type-exclusivity` from the
@@ -207,9 +272,12 @@ structure under different views.
 
 ## §3 Pattern sub-language
 
-`:match` and `:assert` clauses use an embedded pattern language. The
-grammar treats pattern interiors as generic expression lists; the
-validator (S1.1.2) enforces well-formedness against the rules below.
+`:match` and `:assert` clauses use an embedded pattern language.
+**Kernel meta-primitives** (`and`, `or`, `not`, `neq`, `instance`)
+are shape-pinned in the grammar — wrong arity is a parse error, not a
+validator error. Relation patterns (`(?r ?a ?b)`, `(co-located ?a ?b)`)
+stay generic at the grammar level; the validator (S1.1.2) enforces
+well-formedness against the rules below.
 
 ### Closure
 
@@ -217,26 +285,33 @@ The pattern language is **positive conjunctive** + `:where` filters +
 a registry of **named structural predicates** (the rewrite-DSL + named
 fallback from [Q4](../plans/m1_core_graph_reasoning/open_questions.md#q4)).
 
-| construct                | example                                | meaning                                         |
-|--------------------------|----------------------------------------|-------------------------------------------------|
-| variables                | `?a`, `?house`                          | bound by the match; reused across sub-clauses   |
-| ground atoms             | `Red`, `House_1`                        | match literally                                 |
-| relation pattern         | `(?r ?a ?b [?c …])`                     | VAR head binds the relation name; args bind positions |
-| named relation pattern   | `(co-located ?a ?b)`                    | match a specific relation's instances                  |
-| head wildcard            | `(_ ?a ?b)`                             | match any binary list head                      |
-| conjunction              | `(and <p1> <p2> …)`                     | conjunctive match                               |
-| equality                 | `(= ?a ?b)`                             | bind / match equality                           |
-| `:where` filter          | `:where (transitive ?r) (neq ?a ?b)`    | type / inequality / structural-predicate filters |
-| named structural pred.   | `(unique-remaining ?slot ?type)`        | aggregate-style premise; in §Predicate registry |
+| construct                | example                                | reserved? | meaning                                         |
+|--------------------------|----------------------------------------|-----------|-------------------------------------------------|
+| variables                | `?a`, `?house`                          | —         | bound by the match; reused across sub-clauses   |
+| ground atoms             | `Red`, `House_1`                        | —         | match literally                                 |
+| relation pattern         | `(?r ?a ?b [?c …])`                     | —         | VAR head binds the relation name; args bind positions |
+| named relation pattern   | `(co-located ?a ?b)`                    | —         | match a specific relation's instances                  |
+| head wildcard            | `(_ ?a ?b)`                             | —         | match any binary list head                      |
+| **conjunction**          | `(and <p1> <p2> …)`                     | ✓ AND    | conjunctive match (kernel primitive)             |
+| **disjunction**          | `(or  <p1> <p2> …)`                     | ✓ OR     | disjunctive match (grammar-reserved; engine semantics in P1.3) |
+| **negation**             | `(not <p>)`                             | ✓ NOT    | wrapped premise must not hold                    |
+| **equality**             | `(= ?a ?b)`                             | ✓ EQ     | bind / match equality                            |
+| **instance check**       | `(instance ?a ?T)`                      | ✓ INSTANCE | instance-of pattern                            |
+| `:where` filter          | `:where (transitive ?r) (neq ?a ?b)`    | NEQ inside | type / inequality / structural-predicate filters |
+| named structural pred.   | `(unique-remaining ?slot ?type)`        | —         | aggregate-style premise; in §Predicate registry  |
+
+The ✓-marked heads have dedicated grammar rules with fixed arities;
+typos like `(instnce ?a ?T)` or `(neq ?a)` are caught at parse time.
 
 ### What is NOT in the pattern language
 
-- **Disjunction `(or …)`** — write two rules instead.
 - **Negation-as-failure outside `:where`** — at premise level, use a
   named structural predicate (`no-remaining-option`,
   `forbidden-by-exclusion`) so the trace planner can name the firing.
-- **Universal quantifiers / aggregates as expressions** — same: lift
-  to named structural predicates.
+  `(not <p>)` is permitted as an *assertion* (rule conclusion) but
+  acts as a positive negative fact, not as failure-to-prove.
+- **Universal quantifiers / aggregates as expressions** — lift to
+  named structural predicates.
 
 The line is governed by trace fidelity: anything the matcher can see,
 the trace planner can name. Opaque Python fallbacks would render as
@@ -325,20 +400,21 @@ relations explicitly tagged.
     :why    "{?rel} is transitive."))
 
 (ontology
+  ;; Schema
   (type Attribute)
   (type House Attribute) (type Color Attribute) (type Nationality Attribute)
   (relation co-located (Attribute Attribute))
   (relation right-of   (Attribute Attribute))
-  (a-priori position   (House House) :pattern (right-of ?a ?b)))
-
-(facts
-  ;; instances
+  (a-priori position   (House House) :pattern (right-of ?a ?b))
+  ;; Implicit: instance enumeration
   (instance House_1 House) (instance House_2 House) (instance House_3 House)
   (instance Red Color) (instance Green Color) (instance Ivory Color)
   (instance Norwegian Nationality) (instance Englishman Nationality)
-  ;; rule applications
-  (transitive co-located)
-  ;; conditions
+  ;; Implicit: rule-application meta-facts
+  (transitive co-located))
+
+(facts
+  ;; Explicit puzzle conditions only.
   (co-located Englishman Red    :source "condition (2)")
   (right-of   Green Ivory       :source "condition (6)")
   (co-located Norwegian House_1 :source "condition (10)"))

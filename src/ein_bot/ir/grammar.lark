@@ -5,25 +5,45 @@
 // LEVEL B — structurally typed kernel, generic interiors.
 //
 // Enforced by the grammar:
-//   1. Top level: exactly 5 reserved heads
-//      ontology · facts · rules · query · trace
-//   2. Inside (ontology …): only schema — type · relation · a-priori
-//   3. Inside (facts …):    `=` (special) plus generic (NAME args*) forms
-//   4. Inside (trace …):    only step · branch-open · branch-close ·
+//   1. Top level: exactly 6 reserved heads
+//      ontology · facts · reasoning · rules · query · trace
+//   2. Inside (ontology …): schema (type · relation · a-priori) PLUS
+//                           any fact shape — the ontology layer
+//                           holds implicit assumptions (instance
+//                           enumerations, rule-application facts,
+//                           structural facts derived from background
+//                           context). Per plans/README.md glossary.
+//   3. Inside (facts …):    explicit problem statements only —
+//                           `=`, `instance`, `not`, plus generic
+//                           (NAME args*) forms for relation
+//                           assertions. Each carries `:source "(N)"`
+//                           pointing at the puzzle condition.
+//   4. Inside (reasoning …): derived facts the engine has inferred
+//                           at runtime. Same fact shapes as (facts);
+//                           provenance is `:rule` / `:using` instead
+//                           of `:source`. Authors usually leave this
+//                           block empty; the engine dumps it after a
+//                           solve.
+//   5. Inside (trace …):    only step · branch-open · branch-close ·
 //                           contradiction · symmetry-class
-//   5. :keyword value pair alternation — KEYWORD is never a value,
+//   6. :keyword value pair alternation — KEYWORD is never a value,
 //      never appears twice in a row.
-//   6. Heads of expression lists (inside values and patterns) must be
+//   7. Heads of expression lists (inside values and patterns) must be
 //      SYMBOL, VAR, WILDCARD, or "=" — never KEYWORD. (?var :key :key)
 //      still fails via the kw_pair production, not via head restriction.
+//   8. **Kernel meta-primitives are reserved words** (shape-pinned):
+//      · `instance` — (instance ENT TYPE [kw_pair*]) — fact and pattern
+//      · `not`      — (not EXPR)                     — negation
+//      · `and`      — (and EXPR+ [kw_pair*])         — conjunction
+//      · `or`       — (or  EXPR+ [kw_pair*])         — disjunction
+//      · `neq`      — (neq A B)                      — distinctness predicate
+//      These never match SYMBOL — a typo like `(instnce Norwegian
+//      Nationality)` is a parse-time error, not a validator error.
+//      `(symmetric R)`, `(transitive R)` etc. stay generic because
+//      they ARE declared (as rules) in the puzzle file.
 //
-// Facts are generic. The keyword in head position names the relation
-// (`(co-located A B)`), the meta-relation (`(instance N T)`,
-// `(symmetric R)`), or anything the validator recognises. Property
-// declarations move from relation prop-lists into rule-application
-// facts: `(symmetric co-located)`, `(implies right-of next-to)`.
-// `instance` moves from ontology to facts — it's an assertion about
-// specific entities, not a schema item.
+// Domain-relation heads (`co-located`, `lives-in`, …) stay generic:
+// they are declared via `(relation …)` in the ontology.
 //
 // Rule parameter lists are MANDATORY: `()` for non-generic rules,
 // `(?p1 ?p2 …)` for generic rules.
@@ -43,23 +63,31 @@ start: form*
 
 ?form: ontology_form
      | facts_form
+     | reasoning_form
      | rules_form
      | query_form
      | trace_form
 
-// ═══════════ Ontology (schema only) ═══════════
+// ═══════════ Ontology (schema + implicit assumptions) ═══════════
 ontology_form: "(" "ontology" ontology_decl* ")"
 ?ontology_decl: type_decl | relation_decl | apriori_decl
+              | fact_form
 type_decl:     "(" "type" SYMBOL [SYMBOL] ")"
 relation_decl: "(" "relation" SYMBOL relation_sig kw_pair* ")"
 apriori_decl:  "(" "a-priori" SYMBOL relation_sig kw_pair* ")"
 relation_sig:   "(" SYMBOL+ ")"
 
-// ═══════════ Facts (generic NAME args) ═══════════
+// ═══════════ Facts (explicit problem statements) ═══════════
+// `fact_form` is shared with (ontology …) and (reasoning …); the
+// block name carries the provenance distinction (explicit / implicit
+// / derived).
 facts_form: "(" "facts" fact_form* ")"
-?fact_form: eq_fact | generic_fact
+?fact_form: eq_fact | instance_form | not_form | generic_fact
 eq_fact:      "(" EQ value value kw_pair* ")"
 generic_fact: "(" SYMBOL value* kw_pair* ")"
+
+// ═══════════ Reasoning (derived facts; engine working memory) ═══════════
+reasoning_form: "(" "reasoning" fact_form* ")"
 
 // ═══════════ Rules ═══════════
 rules_form: "(" "rules" rule_decl* ")"
@@ -86,15 +114,42 @@ symmetry_decl:      "(" "symmetry-class" SYMBOL kw_pair* ")"
 // Values never include KEYWORD — that's what enforces :kw value pair
 // alternation. List heads in the pattern interior are restricted to
 // SYMBOL / WILDCARD / "=" so VAR / KEYWORD can never be a head.
+//
+// Reserved-word forms (instance · not · and · or · neq) are matched
+// BEFORE generic_list — their literal heads beat SYMBOL at the lexer
+// (anonymous string literals have higher priority than the SYMBOL
+// regex), so the generic_list alternative cannot match them.
 kw_pair: KEYWORD value
-?value: generic_list | SYMBOL | VAR | WILDCARD | INT | RANGE | STRING
+?value: instance_form
+      | not_form
+      | and_form
+      | or_form
+      | neq_form
+      | generic_list
+      | SYMBOL | VAR | WILDCARD | INT | RANGE | STRING
 generic_list: "(" ")"
             | "(" list_head list_item* ")"
 ?list_head: SYMBOL | VAR | WILDCARD | EQ
 ?list_item: value | kw_pair
 
+// ═══════════ Kernel meta-primitives (shape-pinned) ═══════════
+// `not` accepts trailing kw_pairs so derived-fact provenance (e.g.
+// `:rule type-exclusivity :using (c10)`) attaches naturally inside
+// (reasoning …). In :match / :assert positions the validator will
+// reject unwanted kw_pairs.
+instance_form: "(" "instance" value value kw_pair* ")"
+not_form:      "(" "not" value kw_pair* ")"
+neq_form:      "(" "neq" value value ")"
+and_form:      "(" "and" value+ kw_pair* ")"
+or_form:       "(" "or" value+ kw_pair* ")"
+
 // ═══════════ Terminals ═══════════
-SYMBOL:   /[A-Za-z][A-Za-z0-9_-]*/
+// SYMBOL excludes the kernel-primitive reserved words via a negative
+// lookahead with a word boundary — `(neq …)` is reserved, but
+// `neq_test` is still a valid SYMBOL. This is what gives us
+// parse-time rejection of `(instance Norwegian)` (wrong arity)
+// instead of silently parsing it as generic_fact.
+SYMBOL:   /(?!(?:instance|not|and|or|neq)\b)[A-Za-z][A-Za-z0-9_-]*/
 VAR:      /\?[A-Za-z][A-Za-z0-9_-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
 WILDCARD: "_"

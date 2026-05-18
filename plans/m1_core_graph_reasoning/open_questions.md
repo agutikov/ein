@@ -12,7 +12,7 @@ Milestone-scoped. Cross-milestone questions live in
 | Q6  | Symmetry breaking — before or after trace generation?                                 | P1.5 S1.5.3        |
 | Q15 | Forward-chaining queue vs priority by cheapness vs random rule ordering               | P1.3 S1.3.3        |
 | Q16 | Are rules universal, or per-puzzle?                                                   | P1.3 + P1.7        |
-| Q17 | Spatial-relation formalisation — Allen, RCC, or ad-hoc 1-D interval?                  | P1.4 S1.4.2        |
+| Q17 | Spatial-relation formalisation — Allen, RCC, or ad-hoc 1-D interval?                  | S1.1.1 (2026-05-18) — declarative square rule |
 | Q18 | Provenance granularity — per-edge, per-step, or per-derivation-DAG?                   | P1.2 S1.2.3        |
 | Q19 | Hypothesis branching — eager (every choice) vs lazy (only when saturation stalls)?    | P1.5 S1.5.1        |
 | Q20 | Trace reordering — engine order, planner-pass reorder, or human-template fitting?     | P1.6 S1.6.4        |
@@ -35,9 +35,13 @@ Per [idea 06 §Open sub-questions point 1](../../docs/ideas/06-inference-rules-c
   loses the "graph rewrite" intuition.
 
 **Working answer**: B — a small DSL where each rule is
-`(rule <name> :match <pattern> :assert <conclusion> :why <reason-template>)`
-with a Python-callable fallback for the cases where a pattern can't
-express what we need (initially: the spatial constraint of P1.4).
+`(rule <name> :match <pattern> :assert <conclusion> :why <reason-template>)`.
+The original sketch carved out a Python-callable fallback for "cases
+where a pattern can't express what we need", citing the spatial
+constraint of P1.4 as the trigger; the declarative square rule
+(see [Q17](#q17--spatial-relation-formalisation)) removes that
+trigger. Keep the Python fallback latent as an *escape hatch* for
+future problem classes, but Zebra ships without using it.
 Locked in P1.3 S1.3.1.
 
 ## Q5 — What "enough" means
@@ -80,10 +84,17 @@ Per [idea 06 §Open sub-questions point 4](../../docs/ideas/06-inference-rules-c
 
 **Working answer**: ship with a *universal core* (composition,
 equality, exclusivity, exhaustion, hypothesis-contradiction,
-arc-consistency, cardinality, forced-unique) + a *spatial bundle*
-loaded when the IR declares a `spatial` ontology. Zebra triggers
-both. New problem classes can ship their own bundles via P1.3's DSL.
-Decided in P1.3 + P1.7.
+arc-consistency, cardinality, forced-unique). Problem-specific
+rules — including the *square rule* (formerly the "spatial bundle"
+loaded by Python on `:spatial-via`) — are now ordinary rule
+declarations + property-application facts inside the puzzle's `.ein`
+file. No bundle-loading mechanism; the IR is the only configuration
+surface. New problem classes write their own rules in their own
+files, same as Zebra. Decided in P1.3 + P1.7.
+
+The `:spatial-via SpatialAttribute` kw-pair was the original
+mechanism for the spatial bundle; resolved on 2026-05-18 by the
+declarative answer to [Q17](#q17--spatial-relation-formalisation).
 
 ## Q17 — Spatial-relation formalisation
 
@@ -96,11 +107,43 @@ The PoC's 2021 open question
 - RCC (region connection calculus).
 - Ad-hoc 1-D position lattice with `pos(x) ∈ {1..N}` and integer
   arithmetic on `pos`.
+- **Declarative graph-only:** materialise the spatial structure as
+  pairwise `(right-of House_{i+1} House_i)` facts; reuse the PoC's
+  *square rule* (now `square-fwd` / `square-bwd` rules + property
+  facts) to project spatial relations across `co-located`. No
+  integer arithmetic; no position lattice; no `:spatial-via` Python
+  hardcode.
 
-**Working answer**: ad-hoc 1-D position lattice for M1 — it covers
-Zebra's `next_to`, `right_of`, `immediately_right_of` cleanly and
-maps trivially to the SMT integer encoding in M3. Allen is overkill
-for one dimension. Decided in P1.4 S1.4.2.
+**Working answer**: the declarative graph-only formulation. Decided
+2026-05-18 in this conversation; locks the answer for Zebra. Pulls
+Q17 forward from P1.4 to S1.1.1.
+
+Implementation already shipped in `examples/zebra.ein`:
+
+- Drop the `SpatialAttribute` type and the `:spatial-via` kw-pair on
+  `right-of` / `next-to`.
+- Add `square-fwd` and `square-bwd` rules (gated by
+  `(square-fwd ?R)` / `(square-bwd ?R)` rule-application facts on
+  `right-of` and `next-to`).
+- Materialise condition (1) "five houses in a row" as four
+  `(right-of House_{i+1} House_i)` facts; `(implies right-of next-to)`
+  + `(symmetric next-to)` derive the eight next-to pairs.
+
+Trade-offs:
+
+- *For:* IR-native, no Python fallback. The trace renderer reads each
+  spatial step as a square-rule firing — fully visible to
+  [idea 08](../../docs/ideas/08-human-style-deductive-trace.md).
+  M3's SMT translation maps `square-fwd` / `square-bwd` to two
+  universally-quantified clauses with no integer theory required.
+- *Against:* problems with continuous or multi-dimensional spatial
+  structure (Allen, RCC) will need a different formulation. Revisit
+  for those problem classes; for Zebra-class puzzles the graph-only
+  answer is sufficient.
+
+P1.4 S1.4.2 keeps the *open question for richer problem classes*
+(when does the graph-only answer break?) but no longer ships an
+integer-arithmetic spatial encoding for Zebra.
 
 ## Q18 — Provenance granularity
 

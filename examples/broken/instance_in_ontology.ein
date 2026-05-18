@@ -1,5 +1,7 @@
-;; Should fail: `instance` was moved from ontology to facts.
-;; Ontology accepts only `type`, `relation`, `a-priori`.
+;; Should fail: `instance` arity is exactly 2 (Ent, Type); 1 arg fails.
+;; (As of 2026-05-18, ontology DOES accept implicit fact shapes
+;; including `instance` — see plans/m1/.../open_questions.md. This
+;; file now exercises arity enforcement, not block-level rejection.)
 (ontology
   (type Nationality)
-  (instance Norwegian Nationality))
+  (instance Norwegian))
