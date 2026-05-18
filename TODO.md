@@ -5,7 +5,14 @@
 
 
 
+:spatial-via SpatialAttribute - hides logic into hardcoded implementation in Python, what I don't want to
 
+Maybe right-of and next-to are non-reflexive, that is property of spatial relations?
+How PoC square rule could be formulated?
+
+
+I want to have all reserved words in grammar
+e.g. instance is a reserved word - no definition in zebra.ein, only usage
 
 
 

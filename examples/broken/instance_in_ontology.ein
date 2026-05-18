@@ -1,0 +1,5 @@
+;; Should fail: `instance` was moved from ontology to facts.
+;; Ontology accepts only `type`, `relation`, `a-priori`.
+(ontology
+  (type Nationality)
+  (instance Norwegian Nationality))

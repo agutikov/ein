@@ -58,7 +58,7 @@ relation_sig:   "(" SYMBOL+ ")"
 // ═══════════ Facts (generic NAME args) ═══════════
 facts_form: "(" "facts" fact_form* ")"
 ?fact_form: eq_fact | generic_fact
-eq_fact:      "(" "=" value value kw_pair* ")"
+eq_fact:      "(" EQ value value kw_pair* ")"
 generic_fact: "(" SYMBOL value* kw_pair* ")"
 
 // ═══════════ Rules ═══════════
@@ -90,7 +90,7 @@ kw_pair: KEYWORD value
 ?value: generic_list | SYMBOL | VAR | WILDCARD | INT | RANGE | STRING
 generic_list: "(" ")"
             | "(" list_head list_item* ")"
-?list_head: SYMBOL | VAR | WILDCARD | "="
+?list_head: SYMBOL | VAR | WILDCARD | EQ
 ?list_item: value | kw_pair
 
 // ═══════════ Terminals ═══════════
@@ -98,6 +98,7 @@ SYMBOL:   /[A-Za-z][A-Za-z0-9_-]*/
 VAR:      /\?[A-Za-z][A-Za-z0-9_-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
 WILDCARD: "_"
+EQ:       "="
 RANGE:    /[0-9]+\.\.([0-9]+|\*)/
 INT:      /-?[0-9]+/
 STRING:   /"([^"\\]|\\.)*"/

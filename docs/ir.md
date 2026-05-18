@@ -360,9 +360,11 @@ a fixed DOT shape. Only **graph structure** is fixed by this schema;
 layout (positions, rank, unspecified style choices) is free —
 `random_layout` is permitted.
 
-Render is mandatory (`ein_bot.ir.to_dot`, S1.1.2); reverse parse
-(`ein_bot.ir.from_dot`) is required for Q21 completeness but lands
-in P1.2 alongside the typed-hypergraph data model.
+Render is mandatory (`ein_bot.ir.to_dot`,
+[S1.1.4](../plans/m1_core_graph_reasoning/p1.1_ir_language/s1.1.4_ir_to_dot.md));
+reverse parse (`ein_bot.ir.from_dot`) is required for Q21
+completeness but lands in P1.2 alongside the typed-hypergraph data
+model.
 
 ### Node-shape legend
 

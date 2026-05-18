@@ -25,6 +25,7 @@ intermediate.
 | S1.1.1  | Grammar design              | 3-4 days  |
 | S1.1.2  | Parser + serialiser         | 3-4 days  |
 | S1.1.3  | Round-trip tests + golden   | 1-2 days  |
+| S1.1.4  | `ein_bot.ir.to_dot` renderer | 2-3 days |
 
 ## Acceptance
 

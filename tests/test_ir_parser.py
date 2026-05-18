@@ -10,18 +10,18 @@ The kernel is Level B with generic-facts:
 import pytest
 from lark.exceptions import LarkError
 
-from ein_bot.ir import parse
+from ein_bot.ir import IRParseError, parse_tree
 
 
 def _ok(text: str):
-    tree = parse(text)
+    tree = parse_tree(text)
     assert tree is not None
     return tree
 
 
 def _bad(text: str):
-    with pytest.raises(LarkError):
-        parse(text)
+    with pytest.raises((LarkError, IRParseError)):
+        parse_tree(text)
 
 
 # ═══════════ Ontology (schema only) ═══════════
@@ -338,6 +338,6 @@ def test_examples_zebra_parses():
     repo_root = Path(__file__).resolve().parent.parent
     zebra = repo_root / "examples" / "zebra.ein"
     assert zebra.exists(), f"missing: {zebra}"
-    tree = parse(zebra.read_text(encoding="utf-8"))
+    tree = parse_tree(zebra.read_text(encoding="utf-8"))
     # 4 top-level forms: rules, ontology, facts, query.
     assert len(tree.children) == 4

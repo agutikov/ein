@@ -1,0 +1,3 @@
+;; Should fail: :solve is a KEYWORD, never a value — kw-pair
+;; alternation enforces :kw value :kw value …
+(query :mode :solve :goal X)
