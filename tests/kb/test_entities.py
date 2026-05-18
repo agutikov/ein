@@ -1,0 +1,205 @@
+"""Unit tests for kb.entities — frozen dataclasses + back-pointer access.
+
+These tests exercise the entity API *standalone* (no IR involved) so
+they pin the structural contract independently of the loader. The
+loader-driven cross-reference tests live in `test_store.py`.
+"""
+from __future__ import annotations
+
+from ein_bot.kb import (
+    Fact,
+    Instance,
+    KnowledgeBase,
+    Layer,
+    Pattern,
+    Relation,
+    Rule,
+    Type,
+)
+from ein_bot.kb.entities import _attach, _detach
+
+# ── Identity & equality ────────────────────────────────────────────
+
+
+def test_type_identity_by_name():
+    a = Type(name="House")
+    b = Type(name="House")
+    assert a == b
+    assert hash(a) == hash(b)
+
+
+def test_type_identity_independent_of_parent_for_eq():
+    # parent_name IS part of the data tuple, so two Types with
+    # different parents are NOT equal — that's by design (the parent
+    # is part of the type declaration).
+    a = Type(name="House", parent_name="Attribute")
+    b = Type(name="House", parent_name=None)
+    assert a != b
+
+
+def test_instance_identity_by_name_only():
+    a = Instance(name="Norwegian", type_name="Nationality")
+    b = Instance(name="Norwegian", type_name="Nationality")
+    assert a == b
+    assert hash(a) == hash(b)
+
+
+def test_relation_identity_by_name_and_signature():
+    a = Relation(name="co-located", signature=("Attribute", "Attribute"))
+    b = Relation(name="co-located", signature=("Attribute", "Attribute"))
+    assert a == b
+
+
+def test_fact_identity_by_relation_and_args_not_layer_or_source():
+    a = Fact(relation_name="co-located", args=("A", "B"), layer=Layer.FACT, source="(2)")
+    b = Fact(relation_name="co-located", args=("A", "B"), layer=Layer.ONTOLOGY)
+    assert a == b
+
+
+def test_rule_identity_by_name_only():
+    a = Rule(name="symmetric", params=("rel",))
+    b = Rule(name="symmetric", params=("rel",))
+    assert a == b
+
+
+# ── Detached entities return empty cross-refs ──────────────────────
+
+
+def test_detached_type_has_no_relations():
+    t = Type(name="House")
+    assert t.parent is None
+    assert t.children == ()
+    assert list(t.ancestors()) == []
+    assert t.instances == ()
+    assert t.rules == ()
+
+
+def test_detached_instance_has_no_type_or_facts():
+    inst = Instance(name="Norwegian", type_name="Nationality")
+    assert inst.type is None
+    assert inst.facts == ()
+
+
+def test_detached_relation_has_no_rules_or_facts():
+    rel = Relation(name="co-located", signature=("Attribute", "Attribute"))
+    assert rel.facts == ()
+    assert rel.rules == ()
+    assert rel.properties == ()
+    assert rel.signature_types == ()
+
+
+def test_detached_rule_has_no_applications():
+    r = Rule(name="symmetric", params=("rel",))
+    assert r.applications == ()
+    assert r.relations == ()
+    assert r.types == ()
+
+
+def test_detached_fact_args_pass_through():
+    f = Fact(relation_name="co-located", args=("A", "B"), layer=Layer.FACT)
+    assert f.relation is None
+    assert f.arg_entities == ("A", "B")
+    assert f.is_rule_application is False
+    assert f.applied_rule is None
+
+
+# ── _attach / _detach mechanics ────────────────────────────────────
+
+
+def test_attach_does_not_break_equality():
+    kb = KnowledgeBase()
+    a = Type(name="House")
+    b = Type(name="House")
+    _attach(a, kb)
+    # b is detached; eq is by data, not by _kb.
+    assert a == b
+    assert hash(a) == hash(b)
+
+
+def test_attach_can_be_undone():
+    kb = KnowledgeBase()
+    t = Type(name="House")
+    _attach(t, kb)
+    assert t._kb is kb
+    _detach(t)
+    assert t._kb is None
+
+
+def test_attach_does_not_affect_repr_compare_hash():
+    # _kb is excluded from compare/hash/repr.
+    kb = KnowledgeBase()
+    a = Type(name="House", parent_name="Attribute")
+    b = Type(name="House", parent_name="Attribute")
+    _attach(a, kb)
+    assert repr(a) == repr(b)
+    assert hash(a) == hash(b)
+
+
+# ── Layer enum coverage ────────────────────────────────────────────
+
+
+def test_layer_values_distinct():
+    assert {Layer.ONTOLOGY, Layer.FACT, Layer.REASONING} == set(Layer)
+    # str roundtrip
+    assert Layer.ONTOLOGY.value == "ontology"
+    assert Layer.FACT.value == "fact"
+    assert Layer.REASONING.value == "reasoning"
+
+
+# ── Pattern structural extraction ──────────────────────────────────
+
+
+def test_pattern_extracts_variables():
+    from ein_bot.ir import parse
+    # Use a simple match clause: (co-located ?a ?b)
+    forms = parse(
+        '(rules (rule r () :match (co-located ?a ?b) '
+        ':assert (co-located ?b ?a) :why "x"))'
+    )
+    rule = forms[0].args[0]
+    match_node = next(
+        kw.value for kw in rule.args
+        if hasattr(kw, "key") and kw.key.name == "match"
+    )
+    p = Pattern.from_ir(match_node)
+    assert p.variables == ("a", "b")
+    assert p.relation_names == ("co-located",)
+    assert p.type_names == ()
+    assert p.has_instance_pattern is False
+
+
+def test_pattern_recognises_instance_form():
+    from ein_bot.ir import parse
+    forms = parse(
+        "(rules (rule r () :match (and (instance ?a House) (co-located ?a ?b)) "
+        ":assert (instance ?b Nationality) :why \"\"))"
+    )
+    rule = forms[0].args[0]
+    match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
+    p = Pattern.from_ir(match_node)
+    assert p.has_instance_pattern is True
+    assert "House" in p.type_names
+    assert "co-located" in p.relation_names
+    assert set(p.variables) == {"a", "b"}
+
+
+def test_pattern_dedupes_variables():
+    from ein_bot.ir import parse
+    forms = parse(
+        "(rules (rule r () :match (and (co-located ?a ?b) (co-located ?b ?a)) "
+        ":assert (= ?a ?b) :why \"\"))"
+    )
+    rule = forms[0].args[0]
+    match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
+    p = Pattern.from_ir(match_node)
+    assert p.variables == ("a", "b")
+    assert "co-located" in p.relation_names
+
+
+def test_pattern_iter_yields_variables():
+    from ein_bot.ir import parse
+    forms = parse("(rules (rule r () :match (rel ?x ?y ?z) :assert (rel ?z ?y ?x) :why \"\"))")
+    rule = forms[0].args[0]
+    match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
+    p = Pattern.from_ir(match_node)
+    assert list(p) == ["x", "y", "z"]
