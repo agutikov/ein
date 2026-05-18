@@ -16,7 +16,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from . import State, load_file
-from .ir import IRParseError, dump_canonical, parse
+from .ir import IRParseError, dump_canonical, parse, to_dot
 
 
 def _cmd_ir_parse(args: argparse.Namespace) -> int:
@@ -37,6 +37,19 @@ def _cmd_ir_lint(args: argparse.Namespace) -> int:
     except IRParseError as e:
         print(e, file=sys.stderr)
         return 1
+    return 0
+
+
+def _cmd_ir_dot(args: argparse.Namespace) -> int:
+    path = Path(args.file)
+    try:
+        nodes = parse(path.read_text(encoding="utf-8"), filename=str(path))
+    except IRParseError as e:
+        print(e, file=sys.stderr)
+        return 1
+    sys.stdout.write(to_dot(nodes, rule_mode=args.rule_mode,
+                            trace_view=args.trace_view))
+    sys.stdout.write("\n")
     return 0
 
 
@@ -68,6 +81,14 @@ def _build_parser() -> argparse.ArgumentParser:
     ir_lint = ir_sub.add_parser("lint", help="parse-only check; non-zero on error")
     ir_lint.add_argument("file")
     ir_lint.set_defaults(func=_cmd_ir_lint)
+
+    ir_dot = ir_sub.add_parser("dot", help="render parsed IR as DOT (per docs/ir.md §6)")
+    ir_dot.add_argument("file")
+    ir_dot.add_argument("--rule-mode", choices=["a", "c"], default="c",
+                        help="rule rendering: 'a' side-by-side, 'c' overlay (default)")
+    ir_dot.add_argument("--trace-view", choices=["a", "b", "c"], default="a",
+                        help="trace view: 'a' per-step (default), 'b' aggregate, 'c' DAG")
+    ir_dot.set_defaults(func=_cmd_ir_dot)
 
     # legacy ...
     legacy = sub.add_parser(

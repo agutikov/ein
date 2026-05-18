@@ -60,6 +60,29 @@ def test_ir_lint_failure(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
     assert "broken.ein:" in err
 
 
+def test_ir_dot_zebra(capsys: pytest.CaptureFixture[str]):
+    """`ein-bot ir dot examples/zebra.ein` exits 0 and emits non-empty DOT."""
+    repo_root = Path(__file__).resolve().parent.parent
+    zebra = repo_root / "examples" / "zebra.ein"
+    rc = main(["ir", "dot", str(zebra)])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "digraph" in out
+    # At least the three signature shapes should appear in zebra:
+    assert "shape=octagon" in out
+    assert "shape=oval" in out
+    assert "shape=box" in out
+
+
+def test_ir_dot_failure(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
+    bad = tmp_path / "broken.ein"
+    bad.write_text("(unclosed\n")
+    rc = main(["ir", "dot", str(bad)])
+    assert rc == 1
+    err = capsys.readouterr().err
+    assert "broken.ein:" in err
+
+
 @pytest.mark.parametrize("name", [
     "unclosed_paren.ein",
     "keyword_as_value.ein",
