@@ -156,11 +156,12 @@ def test_loc_excluded_from_equality():
 # ═══════════ Round-trip ═══════════
 
 ROUNDTRIP_CASES = [
+    # ── Original baseline cases ──
     "(ontology)",
     "(ontology (type Person) (type Engineer Person))",
     "(facts (= (color House_1) Red))",
     "(facts (lives-in Norwegian House_1 :source \"condition (10)\"))",
-    "(facts (symmetric co-located) (implies right-of next-to))",
+    "(ontology (symmetric co-located) (implies right-of next-to))",
     "(rules (rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)"
     " :why \"sym\"))",
     "(rules (rule t () :match (and (?r ?a ?b) (?r ?b ?c)"
@@ -170,6 +171,61 @@ ROUNDTRIP_CASES = [
     " :derives (lives-in Norwegian House_1)))",
     "(trace (branch-open s3 :on (lives-in Englishman ?h)"
     " :choices (a b c)))",
+    # ── Edge cases (S1.1.3 T1.1.3.3, 2026-05-18) ──
+    # String escapes
+    '(facts (lives-in a b :source "tab\\there"))',
+    '(facts (lives-in a b :source "newline\\nhere"))',
+    '(facts (lives-in a b :source "quote\\"inside"))',
+    '(facts (lives-in a b :source "back\\\\slash"))',
+    '(facts (lives-in a b :source ""))',           # empty string
+    '(facts (lives-in a b :source "unicode é·»→"))',
+    # Range edge cases
+    "(ontology (relation r (A B) :cardinality 0..0))",
+    "(ontology (relation r (A B) :cardinality 0..*))",
+    "(ontology (relation r (A B) :cardinality 9999..*))",
+    # Deep nesting
+    "(rules (rule deep () :match (and (and (and (and (rel ?a ?b)))))"
+    " :assert ?a :why \"d\"))",
+    # Variable / wildcard heads
+    "(rules (rule var-head (?r) :match (?r ?a ?b) :assert ?a :why \"v\"))",
+    "(rules (rule wild () :match (_ ?a ?b) :assert ?a :why \"w\"))",
+    "(rules (rule mixed (?r ?s) :match (?r ?a (?s ?b ?c)) :assert ?a"
+    " :why \"m\"))",
+    # Empty bodies
+    "(facts)",
+    "(rules)",
+    "(reasoning)",
+    "(trace)",
+    "(ontology (type T))",
+    "(rules (rule x () :match a :assert b :why \"x\"))",
+    # Kw-pair ordering — same form, kw-pairs swapped
+    "(rules (rule p () :match a :assert b :priority 1 :why \"p\"))",
+    "(rules (rule p () :match a :priority 1 :assert b :why \"p\"))",
+    "(rules (rule p () :why \"p\" :match a :assert b :priority 1))",
+    # Equality patterns / facts
+    "(facts (= a b))",
+    "(facts (= (color House_1) Red))",
+    "(rules (rule eq () :match (= ?a ?b) :assert ?a :why \"e\"))",
+    # Negation
+    "(facts (not (lives-in Spaniard Coffee)))",
+    "(facts (not (not (lives-in a b))))",
+    "(rules (rule n () :match (rel ?a ?b) :assert (not (rel ?b ?a))"
+    " :why \"n\"))",
+    "(reasoning (not (co-located N H) :rule type-exclusivity"
+    " :using (s1)))",
+    # Mixed kernel primitives
+    "(rules (rule mix () :match (and (or (rel ?a ?b) (rel ?b ?a))"
+    " (not (rel ?a ?a)) :where (neq ?a ?b)) :assert ?a :why \"mx\"))",
+    # Reasoning provenance
+    "(reasoning (co-located Blue House_2 :rule square-fwd"
+    " :using (c10 c15)))",
+    # Numbers (positive, negative, zero)
+    "(ontology (relation r (A B) :priority 0))",
+    "(ontology (relation r (A B) :priority -7))",
+    "(ontology (relation r (A B) :priority 9999))",
+    # Instance as fact + as pattern
+    "(ontology (instance Norwegian Nationality))",
+    "(rules (rule i () :match (instance ?a ?T) :assert ?a :why \"i\"))",
 ]
 
 
@@ -196,6 +252,35 @@ def test_dump_stable():
     t1 = dump_canonical(parse(src))
     t2 = dump_canonical(parse(t1))
     assert t1 == t2
+
+
+GOLDEN = REPO / "tests" / "golden" / "zebra.golden"
+
+
+def test_golden_zebra():
+    """Snapshot: dump_canonical(parse(zebra.ein)) matches tests/golden/zebra.golden.
+
+    Catches IR drift across phases (a change in grammar, AST shape,
+    or dumper output trips this; refresh the golden if the change is
+    intentional with:
+        python3 -c "from pathlib import Path; from ein_bot.ir import \\
+            parse, dump_canonical; \\
+            Path('tests/golden/zebra.golden').write_text( \\
+                dump_canonical(parse(Path('examples/zebra.ein').read_text())))"
+    """
+    src = ZEBRA.read_text(encoding="utf-8")
+    got = dump_canonical(parse(src))
+    expected = GOLDEN.read_text(encoding="utf-8")
+    if got != expected:
+        # Compact diff to make failures readable.
+        import difflib
+        diff = "".join(difflib.unified_diff(
+            expected.splitlines(keepends=True),
+            got.splitlines(keepends=True),
+            fromfile="zebra.golden",
+            tofile="dump_canonical(parse(zebra.ein))",
+        ))
+        raise AssertionError(f"golden snapshot drift:\n{diff}")
 
 
 def test_dump_compact_one_line():

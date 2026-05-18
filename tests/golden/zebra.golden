@@ -1,0 +1,117 @@
+(rules
+  (rule
+    symmetric
+    (?rel)
+    :match (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why "{?rel} is symmetric: {?a} ↔ {?b}."
+    :priority 1)
+  (rule
+    transitive
+    (?rel)
+    :match (and (?rel ?a ?b) (?rel ?b ?c) :where (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+    :priority 5)
+  (rule
+    implies
+    (?p ?q)
+    :match (?p ?a ?b)
+    :assert (?q ?a ?b)
+    :why "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+    :priority 3)
+  (rule
+    square-fwd
+    (?R)
+    :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
+    :assert (co-located ?b ?y)
+    :why "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
+    :priority 8)
+  (rule
+    square-bwd
+    (?R)
+    :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
+    :assert (co-located ?a ?x)
+    :why "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
+    :priority 8)
+  (rule
+    type-exclusivity
+    ()
+    :match (and (instance ?a ?T) (instance ?b ?T) :where (neq ?a ?b))
+    :assert (not (co-located ?a ?b))
+    :why "{?a} and {?b} are distinct instances of {?T} — distinct slots."
+    :priority 10))
+
+(ontology
+  (type Attribute)
+  (type House Attribute)
+  (type Color Attribute)
+  (type Nationality Attribute)
+  (type Pet Attribute)
+  (type Cigarette Attribute)
+  (type Drink Attribute)
+  (instance House_1 House)
+  (instance House_2 House)
+  (instance House_3 House)
+  (instance House_4 House)
+  (instance House_5 House)
+  (instance Red Color)
+  (instance Green Color)
+  (instance Ivory Color)
+  (instance Yellow Color)
+  (instance Blue Color)
+  (instance Englishman Nationality)
+  (instance Spaniard Nationality)
+  (instance Ukrainian Nationality)
+  (instance Norwegian Nationality)
+  (instance Japanese Nationality)
+  (instance Dog Pet)
+  (instance Snail Pet)
+  (instance Fox Pet)
+  (instance Horse Pet)
+  (instance Zebra Pet)
+  (instance Old_Gold Cigarette)
+  (instance Kools Cigarette)
+  (instance Chesterfields Cigarette)
+  (instance Lucky_Strike Cigarette)
+  (instance Parliament Cigarette)
+  (instance Coffee Drink)
+  (instance Tea Drink)
+  (instance Milk Drink)
+  (instance Juice Drink)
+  (instance Water Drink)
+  (relation co-located (Attribute Attribute))
+  (relation right-of (Attribute Attribute))
+  (relation next-to (Attribute Attribute))
+  (symmetric co-located)
+  (transitive co-located)
+  (symmetric next-to)
+  (implies right-of next-to)
+  (square-fwd right-of)
+  (square-bwd right-of)
+  (square-fwd next-to)
+  (square-bwd next-to)
+  (right-of House_2 House_1 :source "condition (1)")
+  (right-of House_3 House_2 :source "condition (1)")
+  (right-of House_4 House_3 :source "condition (1)")
+  (right-of House_5 House_4 :source "condition (1)"))
+
+(facts
+  (co-located Englishman Red :source "condition (2)")
+  (co-located Spaniard Dog :source "condition (3)")
+  (co-located Coffee Green :source "condition (4)")
+  (co-located Ukrainian Tea :source "condition (5)")
+  (right-of Green Ivory :source "condition (6)")
+  (co-located Old_Gold Snail :source "condition (7)")
+  (co-located Kools Yellow :source "condition (8)")
+  (co-located Milk House_3 :source "condition (9)")
+  (co-located Norwegian House_1 :source "condition (10)")
+  (next-to Chesterfields Fox :source "condition (11)")
+  (next-to Kools Horse :source "condition (12)")
+  (co-located Lucky_Strike Juice :source "condition (13)")
+  (co-located Japanese Parliament :source "condition (14)")
+  (next-to Norwegian Blue :source "condition (15)"))
+
+(query
+  :mode solve
+  :goal (and (co-located ?water-drinker Water) (co-located ?zebra-owner Zebra)))
