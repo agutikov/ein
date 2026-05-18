@@ -6,21 +6,11 @@
 
 
 
-Update S1.2.1 data model
-Data model is not SForm and Graph+Node+Edge
-Data model is: Rule, Relation, Type, instance and cross-references between and interaction
-for example: how to get all relations for the rule, all rules for relation, all rules for type, etc...
-
-
-
-
-
 
 ---
 
-cardinality
-
-ordinality
+cardinality and ordinality rules
+with variables and graph representation
 
 
 
