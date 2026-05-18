@@ -11,7 +11,7 @@
 #
 # After install:
 #   source .venv/bin/activate
-#   ein-bot tests/data/conditions.txt --no-color | head
+#   ein-bot ir parse examples/zebra.ein | head
 #   pytest
 
 set -euo pipefail
@@ -55,6 +55,6 @@ python -m pip install --quiet -e "${SCRIPT_DIR}[dev]"
 echo
 echo "done."
 echo "  activate:   source .venv/bin/activate"
-echo "  cli:        ein-bot tests/data/conditions.txt --no-color | head"
+echo "  cli:        ein-bot ir parse examples/zebra.ein | head"
 echo "  tests:      pytest"
 echo "  lint:       ruff check ."

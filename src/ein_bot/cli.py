@@ -4,7 +4,7 @@ Subcommands:
 
     ein-bot ir parse <file>     # parse IR, dump canonical text to stdout
     ein-bot ir lint  <file>     # parse-only; exit non-zero on errors
-    ein-bot legacy   <file>     # 2021 PoC: load conditions file, emit DOT
+    ein-bot ir dot   <file>     # render parsed IR as DOT (per docs/ir.md §6)
 
 Invoked via the ``ein-bot`` console script or ``python -m ein_bot.cli``.
 """
@@ -15,7 +15,6 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from . import State, load_file
 from .ir import IRParseError, dump_canonical, parse, to_dot
 
 
@@ -53,16 +52,6 @@ def _cmd_ir_dot(args: argparse.Namespace) -> int:
     return 0
 
 
-def _cmd_legacy(args: argparse.Namespace) -> int:
-    state = State()
-    load_file(state, args.conditions)
-    if args.dump:
-        sys.stdout.write(state.dump())
-    else:
-        sys.stdout.write(state.dot(colorfull=not args.no_color))
-    return 0
-
-
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="ein-bot",
@@ -70,7 +59,6 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    # ir ...
     ir = sub.add_parser("ir", help="IR utilities")
     ir_sub = ir.add_subparsers(dest="ir_cmd", required=True)
 
@@ -89,18 +77,6 @@ def _build_parser() -> argparse.ArgumentParser:
     ir_dot.add_argument("--trace-view", choices=["a", "b", "c"], default="a",
                         help="trace view: 'a' per-step (default), 'b' aggregate, 'c' DAG")
     ir_dot.set_defaults(func=_cmd_ir_dot)
-
-    # legacy ...
-    legacy = sub.add_parser(
-        "legacy",
-        help="2021 PoC: load conditions file, emit DOT or dumped text",
-    )
-    legacy.add_argument("conditions", help="path to a conditions file")
-    legacy.add_argument("--no-color", action="store_true",
-                        help="emit plain DOT (no HTML-coloured labels)")
-    legacy.add_argument("--dump", action="store_true",
-                        help="dump the round-tripped text instead of DOT")
-    legacy.set_defaults(func=_cmd_legacy)
 
     return p
 

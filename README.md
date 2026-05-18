@@ -13,23 +13,27 @@ modernised in light of neuro-symbolic and constrained-reasoning research.
 
 | path                 | what's in it                                                                 |
 |----------------------|------------------------------------------------------------------------------|
-| `src/ein_bot/`       | the package — `State`, `VersionedState`, parser, DOT rendering, CLI          |
-| `tests/`             | pytest suite + `tests/data/conditions.txt` (Zebra-puzzle fixture)            |
+| `src/ein_bot/ir/`    | the IR — Lark grammar, typed AST, parser, dump, DOT renderer                 |
+| `src/ein_bot/cli.py` | console script: `ein-bot ir parse | lint | dot`                              |
+| `examples/zebra.ein` | the Zebra puzzle as IR (the smoke-test fixture)                              |
+| `examples/broken/`   | curated parse-failure fixtures (file:line:col error messages)                |
+| `tests/`             | pytest suite (~200 tests)                                                    |
+| `plans/`             | milestone / phase / stage roadmap (M1 active)                                |
+| `docs/ir.md`         | IR kernel spec (lexical, top-level forms, patterns, examples, rendering)     |
+| `docs/PoC/`          | 2021 proof-of-concept — original `reasoning.py` archived                     |
+| `docs/index/`        | "awesome-list" catalogue of external tech across 11 topic files + knowledge graph |
+| `docs/ideas/`        | ideas extracted from research notes (8 files)                                |
 | `utils/`             | renderers for the knowledge graph (Graphviz + Cytoscape)                     |
-| `docs/PoC/`          | 2021 proof-of-concept — graph encoding, inference rules, hypothesis testing, plus the original `reasoning.py` archived ([README](docs/PoC/README.md)) |
-| `docs/index/`        | "awesome-list" catalogue of external tech across 11 topic files + a knowledge graph |
-| `docs/ideas/`        | ideas extracted from research notes (8 files)                 |
 | `nlp/`, `smt/`       | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)       |
-| `pyproject.toml`     | PEP 621 metadata; deps `numpy`; dev extras `pytest`, `pytest-cov`, `ruff`    |
+| `pyproject.toml`     | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff` |
 | `venv_install.sh`    | bootstrap: create `.venv/` and install the project editable with dev extras  |
 | `AGENTS.md`          | guidance for AI coding agents (`CLAUDE.md` is a symlink to it)               |
 | `TODO.md`            | live worklist                                                                |
 
 ## Quickstart — Python CLI
 
-The package installs a console script `ein-bot` that reads a *conditions
-file* (whitespace-delimited `obj rel obj` triples, plus bare object
-declarations) and prints either a DOT graph or the round-tripped text.
+The package installs a console script `ein-bot` with three subcommands
+on the IR.
 
 ### Install
 
@@ -46,50 +50,61 @@ The script needs Python ≥ 3.10. It's safe to re-run — an existing
 ### Usage
 
 ```sh
-ein-bot CONDITIONS_PATH [--no-color] [--dump]
+ein-bot ir parse <file>                              # canonical re-dump
+ein-bot ir lint  <file>                              # parse-only check
+ein-bot ir dot   <file> [--rule-mode=a|c] [--trace-view=a|b|c]
 ```
 
-| flag         | effect                                                       |
-|--------------|--------------------------------------------------------------|
-| *(default)*  | print a Graphviz `digraph` with HTML-coloured edge labels (one colour per relation, CRC-hashed for stability) |
-| `--no-color` | print plain DOT (no `<font>` tags) — useful for piping into `dot` / `fdp` |
-| `--dump`     | print the canonical text form instead of DOT (round-trippable through `parse()`) |
+| subcommand    | effect                                                       |
+|---------------|--------------------------------------------------------------|
+| `ir parse`    | parse the file and emit the canonical text form to stdout (round-trippable through `dump_canonical`) |
+| `ir lint`     | parse-only check; non-zero exit + `file:line:col` on stderr if malformed |
+| `ir dot`      | render the parsed IR as a Graphviz `digraph` per `docs/ir.md` §6 |
+| `--rule-mode` | `a` side-by-side LHS/RHS clusters, `c` (default) overlay with dashed RHS |
+| `--trace-view` | `a` (default) per-step, `b` aggregate, `c` derivation DAG    |
 
 ### Examples
 
 ```sh
-# render the bundled Zebra puzzle as an SVG
-ein-bot tests/data/conditions.txt --no-color | dot -Tsvg -o /tmp/zebra.svg
+# round-trip the bundled Zebra puzzle through the canonical printer
+ein-bot ir parse examples/zebra.ein | head -20
 
-# inspect the round-tripped text form
-ein-bot tests/data/conditions.txt --dump | head
+# render it as an SVG
+ein-bot ir dot examples/zebra.ein | dot -Tsvg -o /tmp/zebra.svg
 
-# from Python
+# from Python — typed AST
 python -c '
-from ein_bot import State, load_file
-s = State()
-load_file(s, "tests/data/conditions.txt")
-print(len(s.objects), "objects,",
-      sum(len(d) for r in s.relations.values() for d in r.values()), "edges")
+from pathlib import Path
+from ein_bot.ir import parse, dump_canonical
+forms = parse(Path("examples/zebra.ein").read_text())
+print(len(forms), "top-level forms")
+for f in forms:
+    print(" ", f.head.name, "→", len(f.args), "children")
 '
 ```
 
-### Conditions file format
+### IR file format
 
-```
-# blank lines are skipped
+S-expression intermediate representation; the grammar is
+`src/ein_bot/ir/grammar.lark` and the spec is
+[`docs/ir.md`](docs/ir.md). Six top-level forms:
 
-Alice                       # bare object declaration
-Bob is Person               # 3-token relation:  src REL dst
-Carol moves toward Dan      # ≥3 tokens — middle tokens form a single relation
-```
+| head          | role (block name == provenance layer)                                |
+|---------------|----------------------------------------------------------------------|
+| `ontology`    | **implicit** assumptions: schema + reader-supplied context           |
+| `facts`       | **explicit** problem statements (numbered conditions, `:source "(N)"`) |
+| `reasoning`   | **derived** facts — engine working memory after a solve               |
+| `rules`       | inference-rule definitions                                            |
+| `query`       | what to ask the engine (`:mode` solve/gaps/contradictions)            |
+| `trace`       | engine output — derivation log + branches                             |
 
-A line with exactly two tokens is rejected with `ValueError`.
+Kernel meta-primitives (`=`, `instance`, `not`, `and`, `or`, `neq`)
+are shape-pinned reserved words: wrong arity is a parse error.
 
 ### Development loop
 
 ```sh
-pytest -q                  # run the 39-test suite
+pytest -q                  # ~200 tests
 ruff check .               # lint
 ruff check . --fix         # auto-fix what's safe
 ```
@@ -110,8 +125,11 @@ python utils/render_knowledge_graph_cy.py
 
 ## Status
 
-The PoC has been split out of a single `reasoning.py` into a proper
-package + pytest suite (this is the *refactor* step). The deep rewrite
-(full hypothesis/inference engine, neuro-symbolic NL→IR pipeline) is
-tracked in [`TODO.md`](TODO.md); see [`AGENTS.md`](AGENTS.md) for
-context aimed at coding agents.
+M1 P1.1 (IR language) is complete: grammar, typed AST, parser/dump,
+golden snapshot tests, DOT renderer. Next up is P1.2 — the entity-
+typed knowledge base (`Type`/`Relation`/`Rule`/`Instance`/`Fact` with
+cross-references). The original single-file PoC
+([`docs/PoC/reasoning.py`](docs/PoC/reasoning.py)) is preserved for
+reference. The deep rewrite is tracked in
+[`plans/`](plans/README.md); see [`AGENTS.md`](AGENTS.md) for context
+aimed at coding agents.

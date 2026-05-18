@@ -1,12 +1,10 @@
-"""ein-bot — graph-based Zebra-puzzle reasoner (PoC refactor).
+"""ein-bot — graph-based reasoner for Zebra-style logic puzzles.
 
-This package is the cleaned-up successor to the 2021 single-file
-``reasoning.py`` (archived under ``docs/PoC/``). The deep redesign is
-tracked separately in ``TODO.md`` and the ``docs/ideas/`` files.
+The package is being rewritten around the IR + entity-typed knowledge
+base described under `plans/m1_core_graph_reasoning/`. P1.1 (IR
+language) is done: parse / dump / DOT rendering live in
+``ein_bot.ir``. P1.2 (entity data model) will introduce
+``ein_bot.kb``. The 2021 single-file PoC is archived under
+``docs/PoC/`` for reference.
 """
-from .parser import load_file, load_into, parse
-from .state import State
-from .versioned import VersionedState
-
-__all__ = ["State", "VersionedState", "load_file", "load_into", "parse"]
 __version__ = "0.0.1"
