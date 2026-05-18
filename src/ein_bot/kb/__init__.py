@@ -24,10 +24,18 @@ from .entities import Fact, Instance, Layer, Relation, Rule, Type
 from .from_ir import KBLoadError, load
 from .pattern import Pattern
 from .store import EqClasses, KnowledgeBase, Query
+from .views import (
+    FactView,
+    instance_name,
+    logical_instances,
+    logical_types,
+    type_name,
+)
 
 __all__ = [
     "EqClasses",
     "Fact",
+    "FactView",
     "Instance",
     "KBLoadError",
     "KnowledgeBase",
@@ -37,5 +45,9 @@ __all__ = [
     "Relation",
     "Rule",
     "Type",
+    "instance_name",
     "load",
+    "logical_instances",
+    "logical_types",
+    "type_name",
 ]

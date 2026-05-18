@@ -103,6 +103,13 @@ These get locked in here; later milestones inherit them.
 - **Rule presentation language** — P1.3 S1.3.1
   (resolves [M1 Q4](open_questions.md)).
 - **Trace ordering** (engine order vs reordering pass) — P1.6 S1.6.4.
+- **IR encoding** (classic `(type …)` / `(instance …)` *vs* unified
+  `is-a`) — **explicitly deferred to P1.7 S1.7.2 T1.7.2.5**.
+  Both `examples/zebra.ein` and `examples/zebra2.ein` stay valid
+  through every stage of M1; the data model is encoding-agnostic
+  (no auto-promotion); the rule registry covers both. The final call
+  is made when we have the trace, renderer, and rule-firing
+  measurements to compare.
 
 ## Design rules-of-thumb (load-bearing across all M1 phases)
 

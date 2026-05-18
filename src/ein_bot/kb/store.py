@@ -22,9 +22,12 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .entities import Fact, Instance, Layer, Relation, Rule, Type, _attach
+
+if TYPE_CHECKING:
+    from .views import FactView
 
 # ── Equality-class hooks (T1.2.1.6 placeholder) ───────────────────
 
@@ -318,6 +321,91 @@ class KnowledgeBase:
     def facts_in_layer(self, layer: Layer) -> tuple[Fact, ...]:
         """All facts in a given layer."""
         return tuple(f for f in self.facts if f.layer == layer)
+
+    # ── Layer views — S1.2.2 T1.2.2.2 ─────────────────────────────
+
+    def ontology(self) -> FactView:
+        """Read-only view of `ONTOLOGY`-layer facts."""
+        from .views import FactView
+        return FactView(self.facts_in_layer(Layer.ONTOLOGY), self, "ontology")
+
+    def fact_layer(self) -> FactView:
+        """Read-only view of `FACT`-layer facts.
+
+        Named `fact_layer` (not `facts`) to avoid collision with the
+        registry attribute :attr:`facts`.
+        """
+        from .views import FactView
+        return FactView(self.facts_in_layer(Layer.FACT), self, "fact")
+
+    def reasoning(self) -> FactView:
+        """Read-only view of `REASONING`-layer facts."""
+        from .views import FactView
+        return FactView(self.facts_in_layer(Layer.REASONING), self, "reasoning")
+
+    def all_layers(self) -> FactView:
+        """Read-only view of every fact across layers."""
+        from .views import FactView
+        return FactView(tuple(self.facts), self, "all")
+
+    # ── Fork — S1.2.2 T1.2.2.3 ────────────────────────────────────
+
+    def fork(self) -> KnowledgeBase:
+        """Create a branch for hypothesis exploration.
+
+        Shares the immutable populations (`types`, `instances`,
+        `relations`, `rules`, `query`) **by reference**. The
+        :attr:`facts` list and the reverse indexes are shallow-copied
+        so the fork can append :class:`Layer.REASONING` facts and
+        rebuild its own incremental indexes without leaking into the
+        parent.
+
+        Caveat about entity back-pointers: shared entities keep their
+        ``_kb`` pointing at the **original** KB. This means
+        ``norwegian.facts`` returns the original KB's facts, NOT the
+        fork's view. For fork-scoped queries use
+        ``fork.all_layers().about(norwegian)`` or the explicit
+        indexes on the fork (``fork._facts_by_instance[name]``). This
+        is intentional: hypothesis branches rarely introduce new
+        entities, only new derived facts; the entity API tells you
+        the root state, the fork view tells you the branch state.
+
+        Cost: O(|facts|) for the shallow copies — bounded by Zebra-
+        scale at ~50-200 facts. The plan's "O(|reasoning|)" target is
+        relaxed to "O(|facts|) with O(1) per fact" because the indexes
+        partition by relation/instance, and shallow-copying a dict
+        is constant per entry; if hypothesis branching ever becomes a
+        hot path (P1.5 profiling), revisit with a copy-on-write
+        wrapper.
+        """
+        new = KnowledgeBase()
+        # Share immutable populations by reference.
+        new.types = self.types
+        new.instances = self.instances
+        new.relations = self.relations
+        new.rules = self.rules
+        new.query = self.query
+        # Equality classes: fork its own state (the parent's classes
+        # remain reachable via the union-find roots that were created
+        # before the fork).
+        new.classes = EqClasses()
+        new.classes._parent = dict(self.classes._parent)
+        # Facts list: copy so appends to the fork don't touch parent.
+        new.facts = list(self.facts)
+        # Reverse indexes: shallow-copy the dicts (values stay shared;
+        # mutations replace whole entries via dict-merge in
+        # `_index_fact`).
+        new._types_by_parent = dict(self._types_by_parent)
+        new._instances_by_type = dict(self._instances_by_type)
+        new._facts_by_relation = dict(self._facts_by_relation)
+        new._facts_by_instance = dict(self._facts_by_instance)
+        new._rules_by_relation = dict(self._rules_by_relation)
+        new._rules_by_type = dict(self._rules_by_type)
+        new._rule_apps_by_rule = dict(self._rule_apps_by_rule)
+        new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
+        return new
+
+    # ── Dunder ────────────────────────────────────────────────────
 
     def __len__(self) -> int:
         """Total node count: types + instances + relations + rules + facts."""
