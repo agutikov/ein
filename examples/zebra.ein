@@ -1,0 +1,166 @@
+;;; ein-bot — Zebra puzzle (Einstein's puzzle) in IR form.
+;;;
+;;; Setup: five houses in a row. Each house has a colour, occupant
+;;; nationality, drink, cigarette brand, and pet. Each attribute
+;;; appears exactly once across the five positions.
+;;;
+;;; Question: Who drinks water? Who owns the zebra?
+;;; Answer:   Norwegian drinks Water; Japanese owns Zebra.
+;;;
+;;; M1 S1.1.1 acceptance smoke test. See docs/ir.md.
+;;;
+;;; File order: rules → ontology → facts → query.
+;;; Rules come first because the ontology declarations and the facts
+;;; reference rule names (e.g. `symmetric`, `transitive`, `implies`).
+;;;
+;;; Design notes:
+;;;   · Facts are generic `(NAME args*)`. The head is the relation
+;;;     name (e.g. `co-located`), a meta-relation (`instance`,
+;;;     `symmetric`, `implies`), or any registered head. No
+;;;     `relation`/`constraint` wrappers.
+;;;   · `instance` lives in (facts …) — assertions about specific
+;;;     entities, not schema.
+;;;   · Property applications are facts: `(symmetric co-located)` says
+;;;     "the symmetric rule applies to the co-located relation."
+;;;     Drops the prop-list from relation decls.
+;;;   · `all-different` is NOT a kernel primitive — pairwise
+;;;     distinctness within a category is derived by `type-exclusivity`
+;;;     from the `(instance X T)` facts.
+;;;   · Rule parameter lists are mandatory: `()` for non-generic
+;;;     rules, `(?p1 ?p2 …)` for generic.
+;;;
+;;; Future-work notes:
+;;;   · The converse "next-to ⟹ (right-of a b) ∨ (right-of b a)" is a
+;;;     disjunctive conclusion — handled by hypothesis branching
+;;;     (P1.5), not by a generic rule in this file.
+;;;   · Reflexivity (and other trivial-on-Zebra algebraic properties)
+;;;     parked in plans/followups/f4_cross_cutting.md Q34 — relevant
+;;;     for richer problem classes (proof-graph reasoning, partial
+;;;     orders, irreflexive inequalities, …).
+
+(rules
+  ;; ── Generic property-rules. Each applies to relations listed via
+  ;; ── property-application facts (e.g. `(symmetric co-located)`).
+
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+    :priority 1)
+
+  (rule transitive (?rel)
+    :match  (and (?rel ?a ?b)
+                 (?rel ?b ?c)
+                 :where (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+    :priority 5)
+
+  ;; Reflexivity is dropped — see plans/followups/f4_cross_cutting.md Q34.
+  ;; `co-located` is mathematically reflexive but materialising self-edges
+  ;; adds no inference power for Zebra-class puzzles.
+
+  ;; Generic implication: any (?p ?a ?b) fact also asserts (?q ?a ?b).
+  (rule implies (?p ?q)
+    :match  (?p ?a ?b)
+    :assert (?q ?a ?b)
+    :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+    :priority 3)
+
+  ;; ── Non-generic rule: fires universally over all (instance ?a ?T)
+  ;; ── pairs. ?T is a free variable of :match, NOT a parameter, so the
+  ;; ── parameter list is empty `()`.
+
+  (rule type-exclusivity ()
+    :match  (and (instance ?a ?T)
+                 (instance ?b ?T)
+                 :where (neq ?a ?b))
+    :assert (not (co-located ?a ?b))
+    :why    "{?a} and {?b} are distinct instances of {?T} — distinct slots."
+    :priority 10))
+
+(ontology
+  ;; Attribute hierarchy. `SpatialAttribute` carves out the attributes
+  ;; with intrinsic position (only `House` for Zebra).
+  (type Attribute)
+  (type SpatialAttribute Attribute)
+  (type House       SpatialAttribute)
+  (type Color       Attribute)
+  (type Nationality Attribute)
+  (type Pet         Attribute)
+  (type Cigarette   Attribute)
+  (type Drink       Attribute)
+
+  ;; Relation signatures. Properties are NOT declared here — they
+  ;; live in (facts …) as property-application facts.
+  (relation co-located (Attribute Attribute))
+  (relation right-of   (Attribute Attribute) :spatial-via SpatialAttribute)
+  (relation next-to    (Attribute Attribute) :spatial-via SpatialAttribute))
+
+(facts
+  ;; ── Instance facts (formerly in the ontology). ──
+  (instance House_1 House) (instance House_2 House) (instance House_3 House)
+  (instance House_4 House) (instance House_5 House)
+  (instance Red    Color) (instance Green Color) (instance Ivory Color)
+  (instance Yellow Color) (instance Blue  Color)
+  (instance Englishman Nationality) (instance Spaniard  Nationality)
+  (instance Ukrainian  Nationality) (instance Norwegian Nationality)
+  (instance Japanese   Nationality)
+  (instance Dog   Pet)   (instance Snail Pet) (instance Fox Pet)
+  (instance Horse Pet)   (instance Zebra Pet)
+  (instance Old_Gold      Cigarette) (instance Kools        Cigarette)
+  (instance Chesterfields Cigarette) (instance Lucky_Strike Cigarette)
+  (instance Parliament    Cigarette)
+  (instance Coffee Drink) (instance Tea   Drink) (instance Milk Drink)
+  (instance Juice  Drink) (instance Water Drink)
+
+  ;; ── Rule-application facts (apply rules to relations). ──
+  (symmetric  co-located)
+  (transitive co-located)
+  (symmetric  next-to)
+  (implies    right-of next-to)
+  ;; `type-exclusivity` is non-generic — fires for every type
+  ;; automatically; no per-type application fact needed.
+
+  ;; ── Puzzle conditions. ──
+
+  ;; condition (1) — "There are five houses." — structural (encoded
+  ;; in the five `(instance House_i House)` facts above).
+
+  ;; (2) The Englishman lives in the red house.
+  (co-located Englishman Red       :source "condition (2)")
+  ;; (3) The Spaniard owns the dog.
+  (co-located Spaniard Dog         :source "condition (3)")
+  ;; (4) Coffee is drunk in the green house.
+  (co-located Coffee Green         :source "condition (4)")
+  ;; (5) The Ukrainian drinks tea.
+  (co-located Ukrainian Tea        :source "condition (5)")
+  ;; (6) The green house is immediately right of the ivory house.
+  (right-of   Green Ivory          :source "condition (6)")
+  ;; (7) The Old Gold smoker owns snails.
+  (co-located Old_Gold Snail       :source "condition (7)")
+  ;; (8) Kools are smoked in the yellow house.
+  (co-located Kools Yellow         :source "condition (8)")
+  ;; (9) Milk is drunk in the middle house.
+  (co-located Milk House_3         :source "condition (9)")
+  ;; (10) The Norwegian lives in the first house.
+  (co-located Norwegian House_1    :source "condition (10)")
+  ;; (11) Chesterfields is smoked next to the house with the fox.
+  (next-to    Chesterfields Fox    :source "condition (11)")
+  ;; (12) Kools is smoked next to the house with the horse.
+  (next-to    Kools Horse          :source "condition (12)")
+  ;; (13) The Lucky Strike smoker drinks orange juice.
+  (co-located Lucky_Strike Juice   :source "condition (13)")
+  ;; (14) The Japanese smokes Parliaments.
+  (co-located Japanese Parliament  :source "condition (14)")
+  ;; (15) The Norwegian lives next to the blue house.
+  (next-to    Norwegian Blue       :source "condition (15)"))
+
+(query
+  :mode solve
+  :goal (and (co-located ?water-drinker Water)
+             (co-located ?zebra-owner   Zebra)))
+
+;; Expected solution (as IR facts):
+;;   (co-located Water Norwegian)
+;;   (co-located Zebra Japanese)

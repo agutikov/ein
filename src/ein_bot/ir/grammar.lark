@@ -7,15 +7,26 @@
 // Enforced by the grammar:
 //   1. Top level: exactly 5 reserved heads
 //      ontology · facts · rules · query · trace
-//   2. Inside (ontology …): only type · instance · relation · a-priori
-//   3. Inside (facts …):    only = · rel · hrel · constraint
+//   2. Inside (ontology …): only schema — type · relation · a-priori
+//   3. Inside (facts …):    `=` (special) plus generic (NAME args*) forms
 //   4. Inside (trace …):    only step · branch-open · branch-close ·
 //                           contradiction · symmetry-class
 //   5. :keyword value pair alternation — KEYWORD is never a value,
 //      never appears twice in a row.
-//   6. Heads of generic expression lists (inside kw_pair values,
-//      including pattern bodies) must be SYMBOL, WILDCARD, or "=" —
-//      NEVER VAR or KEYWORD. Catches (?var :key :key) and (:foo :bar).
+//   6. Heads of expression lists (inside values and patterns) must be
+//      SYMBOL, VAR, WILDCARD, or "=" — never KEYWORD. (?var :key :key)
+//      still fails via the kw_pair production, not via head restriction.
+//
+// Facts are generic. The keyword in head position names the relation
+// (`(co-located A B)`), the meta-relation (`(instance N T)`,
+// `(symmetric R)`), or anything the validator recognises. Property
+// declarations move from relation prop-lists into rule-application
+// facts: `(symmetric co-located)`, `(implies right-of next-to)`.
+// `instance` moves from ontology to facts — it's an assertion about
+// specific entities, not a schema item.
+//
+// Rule parameter lists are MANDATORY: `()` for non-generic rules,
+// `(?p1 ?p2 …)` for generic rules.
 //
 // Deferred to the semantic validator (S1.1.2):
 //   · which keywords are required per form (:match/:assert/:why in
@@ -36,25 +47,24 @@ start: form*
      | query_form
      | trace_form
 
-// ═══════════ Ontology ═══════════
+// ═══════════ Ontology (schema only) ═══════════
 ontology_form: "(" "ontology" ontology_decl* ")"
-?ontology_decl: type_decl | instance_decl | relation_decl | apriori_decl
+?ontology_decl: type_decl | relation_decl | apriori_decl
 type_decl:     "(" "type" SYMBOL [SYMBOL] ")"
-instance_decl: "(" "instance" SYMBOL SYMBOL ")"
-relation_decl: "(" "relation" SYMBOL SYMBOL SYMBOL kw_pair* ")"
-apriori_decl:  "(" "a-priori" SYMBOL SYMBOL SYMBOL kw_pair* ")"
+relation_decl: "(" "relation" SYMBOL relation_sig kw_pair* ")"
+apriori_decl:  "(" "a-priori" SYMBOL relation_sig kw_pair* ")"
+relation_sig:   "(" SYMBOL+ ")"
 
-// ═══════════ Facts ═══════════
-facts_form: "(" "facts" fact_decl* ")"
-?fact_decl: eq_fact | rel_fact | hrel_fact | constraint_fact
-eq_fact:         "(" "=" value value kw_pair* ")"
-rel_fact:        "(" "rel" SYMBOL value value kw_pair* ")"
-hrel_fact:       "(" "hrel" SYMBOL value value value+ kw_pair* ")"
-constraint_fact: "(" "constraint" SYMBOL value* kw_pair* ")"
+// ═══════════ Facts (generic NAME args) ═══════════
+facts_form: "(" "facts" fact_form* ")"
+?fact_form: eq_fact | generic_fact
+eq_fact:      "(" "=" value value kw_pair* ")"
+generic_fact: "(" SYMBOL value* kw_pair* ")"
 
 // ═══════════ Rules ═══════════
 rules_form: "(" "rules" rule_decl* ")"
-rule_decl: "(" "rule" SYMBOL kw_pair+ ")"
+rule_decl: "(" "rule" SYMBOL rule_params kw_pair+ ")"
+rule_params: "(" VAR* ")"
 
 // ═══════════ Query ═══════════
 query_form: "(" "query" kw_pair+ ")"
@@ -80,12 +90,12 @@ kw_pair: KEYWORD value
 ?value: generic_list | SYMBOL | VAR | WILDCARD | INT | RANGE | STRING
 generic_list: "(" ")"
             | "(" list_head list_item* ")"
-?list_head: SYMBOL | WILDCARD | "="
+?list_head: SYMBOL | VAR | WILDCARD | "="
 ?list_item: value | kw_pair
 
 // ═══════════ Terminals ═══════════
 SYMBOL:   /[A-Za-z][A-Za-z0-9_-]*/
-VAR:      /\?[a-z][A-Za-z0-9_-]*/
+VAR:      /\?[A-Za-z][A-Za-z0-9_-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
 WILDCARD: "_"
 RANGE:    /[0-9]+\.\.([0-9]+|\*)/

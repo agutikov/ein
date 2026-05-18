@@ -17,6 +17,7 @@ to their own followup file when they grow.
 | Q31 | LLM as policy over the reasoning graph (M1.P1.5 search-tree choice)         |
 | Q32 | 2-D / N-D spatial — when do we need beyond M1.P1.4's 1-D position lattice?  |
 | Q33 | Reasoning-graph differential rendering for live agents                      |
+| Q34 | Algebraic properties beyond symmetric/transitive (reflexivity, antisymmetry, …) |
 
 ---
 
@@ -85,6 +86,48 @@ a Cytoscape.js page driven by the trace IR.
 Connection: M1.P1.6, the existing
 [`docs/index/knowledge-graph.cy/`](../../docs/index/knowledge-graph.cy/)
 Cytoscape view as a template.
+
+## Algebraic properties beyond symmetric/transitive (Q34)
+
+M1's `co-located` is mathematically reflexive (an equivalence
+relation), but the `reflexive` rule was dropped from
+[`examples/zebra.ein`](../../examples/zebra.ein) — every attribute
+would generate a trivial self-edge `(co-located X X)` with no
+inference payoff on Zebra-class puzzles. The engine can answer
+"is X co-located with X?" at query time without materialising.
+
+The general theme: algebraic properties that are trivial on Zebra
+may become operationally important on richer problem classes:
+
+- **Reflexivity** — congruence reasoning over proof terms
+  (`(equal X X)` as a base case).
+- **Antisymmetry** — partial orders (`x ≤ y ∧ y ≤ x ⇒ x = y`).
+- **Irreflexivity** — strict orders / `≠` over a finite domain.
+- **Totality / connex** — linear orders.
+- **Asymmetry** — precedence constraints in scheduling.
+
+When the engine encounters a problem whose solution walks one of
+these, the rule library needs three pieces working together:
+
+1. The property tag (e.g. `(reflexive co-located)` as a
+   property-application fact).
+2. The generic rule consuming the tag (the dropped
+   `(rule reflexive (?rel) …)`).
+3. A structural predicate like `(in-domain ?rel ?T)` that checks
+   *signature homogeneity* — `(?rel ?a ?a)` only makes sense when
+   `?a`'s type fits every position of `?rel`'s signature.
+
+**Promotion trigger**: a puzzle/domain where a property beyond
+`symmetric`/`transitive` drives the solution. Likely candidates:
+proof-graph theorem proving (reflexive equality / congruence),
+Sudoku variants with explicit `≠` (irreflexive), scheduling with
+precedence (antisymmetric `≤`), 2-D spatial puzzles (Q32) where
+adjacency is more than 1-D `next-to`.
+
+Connection: [idea 06](../../docs/ideas/06-inference-rules-completeness.md)
+§rule families, [M1 P1.3 S1.3.1](../m1_core_graph_reasoning/p1.3_inference_rules/)
+(rule presentation language), [`docs/ir.md` §3 predicate
+registry](../../docs/ir.md).
 
 ---
 
