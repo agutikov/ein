@@ -112,13 +112,17 @@ them through individual stage files.
 
 | principle                                       | where it surfaces                                                                          |
 |-------------------------------------------------|--------------------------------------------------------------------------------------------|
-| Types and relations are **first-class** objects | P1.2 S1.2.1 (entity model); not derived labels on facts                                    |
+| **Graph is canonical; entity API is derived**   | P1.2 S1.2.1; objects/types/relations all nodes; Levi-bipartite hyperedges; compact view is a render |
+| **Graph is static; rules+inference are dynamic**| P1.2 (static KB) vs P1.3+P1.5 (firings + branching) — storage ≠ computation                |
+| Types and relations are **first-class** nodes   | P1.2 S1.2.1 (entity model); not derived labels on facts                                    |
+| Rules can be **higher-order**                   | params can range over relations (`?rel`); M1 covers first-order + relation-parameter form  |
 | Rules are **graph rewrites**                    | P1.3 S1.3.1 (DSL); typed `Pattern` objects with `:match` / `:assert`                       |
 | Vars are typed by **premises**, not syntax      | F4 Q35; `(is-a ?var T)` in `:match` rather than `?var:T` sugar                            |
 | **Generic > syntactic** when both work          | rule families parametrised over relations, not duplicated per relation (P1.3 S1.3.2)       |
 | Syntax should be **as protective as possible**  | P1.1 (grammar rejects malformed IR); P1.2 (loader rejects undeclared types/relations)      |
 | Inheritance is **transitive `is-a` propagation**| F4 Q36; collapses "instance-of vs subtype-of" in the unified `is-a` model (zebra2.ein)     |
 | Property tags are **rule-application facts**    | `(symmetric R)`, `(square-fwd R)` etc. — not kw-pairs on the relation declaration          |
+| **Compound/virtual node kinds — open class**    | M1 ships base only; arch open for sets, projections, groups, top/bottom (M1 Q26)           |
 | Composable typed-vars (`?a:T`) — **postponed**  | F4 Q35; pattern language already expresses this                                            |
 
 These principles compose: "types and relations are graph nodes

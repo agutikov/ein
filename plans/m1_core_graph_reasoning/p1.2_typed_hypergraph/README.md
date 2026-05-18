@@ -59,18 +59,38 @@ the provenance records are non-optional — they're what makes the
 These are stated up front so downstream stages and reviewers know
 what the data model commits to (rationale in S1.2.1):
 
-1. **Types and relations are first-class entities** — not derived
-   labels on facts. The KB exposes them as objects with identity and
-   back-references.
-2. **Rules are graph rewrites** — `:match` / `:assert` are typed
+1. **The graph is the data model — entity API is derived.** Objects,
+   types, AND relations are all nodes; non-binary facts are Levi-
+   bipartite hyperedge nodes. The compact rendering
+   `(Red)-is-a->(Color)` is one *view*; canonical is `(Red)<-1-(is-a)-2->(Color)`.
+   Cross-references like `Instance.type` are cached lookups, not a
+   competing schema.
+2. **Graph is static; rules + inference are the engine.** Reasoning
+   happens by rule firings (P1.3) over the KB, not by mutating the
+   data model.
+3. **Rules can be higher-order.** Parameters can range over
+   relations (`(rule symmetric (?rel) :match (?rel ?a ?b))`) — `?rel`
+   binds to a Relation node. M1 covers first-order *and* the
+   relation-parameter form (already in zebra.ein); deeper
+   higher-order forms (rules over rules, predicate over predicate)
+   ride [F4 Q36](../../followups/f4_cross_cutting.md#relation-inheritance--rule-polymorphism-q36).
+4. **Types and relations are first-class node kinds** — not derived
+   labels on facts.
+5. **Rules are graph rewrites** — `:match` / `:assert` are typed
    `Pattern` objects (structural only here; matching lives in P1.3).
-3. **No syntactic typed-vars (`?a:T`)** — variables are typed by
+6. **No syntactic typed-vars (`?a:T`)** — variables are typed by
    premises in `:match` (e.g. `(is-a ?a T)`). See
    [F4 Q35](../../followups/f4_cross_cutting.md#variable-typing-via-match-is-a-var-type-q35).
-4. **Ontology IR sub-head split** is a *syntax* question parked at
+7. **Compound / virtual node kinds — open class.** M1 ships the base
+   set (Type, Instance, Relation, Rule, Fact). Future higher-order
+   rules may need sets of relations, projections over argument-slot N,
+   top/bottom of a relation subgraph, criterion-selected groups.
+   Architecture must accept them without rework — see
+   [M1 Q26](../open_questions.md#q26--compound--virtual-node-kinds-for-higher-order-rules).
+8. **Ontology IR sub-head split** is a *syntax* question parked at
    [M1 Q22](../open_questions.md). The data model is robust to either
    form (loader normalises).
-5. **What has types** — only `Instance` (one type each). Vars and
+9. **What has types** — only `Instance` (one type each). Vars and
    relations are typed *structurally* (via patterns, via signature)
    not as a slot on the entity.
 

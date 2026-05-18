@@ -21,6 +21,7 @@ Milestone-scoped. Cross-milestone questions live in
 | Q23 | What carries an explicit type slot — only `Instance`, or also vars / relations?       | P1.2 S1.2.1 (decided) |
 | Q24 | `:where` clause in `sibling-exclusive` — what does it mean, and should it stay?       | P1.3 S1.3.1        |
 | Q25 | Cardinality + ordinality rules with vars — IR shape, graph representation             | P1.3 S1.3.2        |
+| Q26 | Compound / virtual node kinds for higher-order rules (sets, projections, groups, top/bottom) | P1.2 leaves the seam; concrete kinds parked for followups |
 
 ---
 
@@ -331,3 +332,47 @@ to the right of house 1?") reduce to transitive closure over
 position matters arithmetically. Revisit in P1.3 S1.3.2 with the
 demo-problem set — if the cardinality/ordinality demos need an
 ordinal-specific rule, promote to a named family.
+
+## Q26 — Compound / virtual node kinds for higher-order rules
+
+User direction (2026-05-18, before P1.2 begins): the data model
+should support not only the base kinds (Type, Instance, Relation,
+Rule, Fact) but eventually a class of *compound* / *virtual* node
+kinds that higher-order rules will need. Examples:
+
+- **Relation-set-of-object** — the set of all relations involving a
+  given object.
+- **Slot-projection** — all objects connected to argument-slot N of
+  a given relation (e.g. "all 'subjects' of `is-a`").
+- **Top / bottom of relation subgraph** — the maximal / minimal
+  element under a relation (when applicable, e.g. `is-a` lattice).
+- **Criterion-selected group** — objects matching a graph pattern
+  predicate (e.g. zebra.ein's three middle houses = those with
+  exactly two `next-to` neighbours).
+- "*Who knows what else…*" — open class.
+
+These are not pre-stored entities; they are *computed-on-demand
+subgraphs* materialised when a higher-order rule binds a parameter
+to one.
+
+**Options:**
+
+- **A** — Implement nothing in M1. Concrete kinds land as needed in
+  followups; P1.2 just doesn't foreclose them.
+- **B** — Reserve a `VirtualNode` base class / kind tag in the data
+  model. M1 doesn't subclass it; the type hierarchy exists for
+  later extension.
+- **C** — Implement one (say, slot-projection) as a worked example
+  in M1; defer the rest.
+
+**Working answer:** A — *don't foreclose*. P1.2 ships the base
+entity kinds (Type, Instance, Relation, Rule, Fact); the store and
+the index design must accept new kinds without rework, but no
+specific kind is implemented in M1. When the first higher-order
+rule actually *needs* one (likely in F4 promotion work), promote
+the kind to a concrete entity at that time. Documented for design
+review; concrete promotion happens followup-by-followup.
+
+Connection: [feedback memory `graph-canonical`](.) — graph is the
+canonical data model, entity API is a derived view; this open
+question is the *future-proofing* corollary.
