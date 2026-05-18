@@ -35,6 +35,7 @@ the provenance records are non-optional — they're what makes the
 | S1.2.1  | Data model — Rule · Relation · Type · Instance · Fact + cross-refs | 4-5 days |
 | S1.2.2  | Three layers as views                              | 2-3 days |
 | S1.2.3  | Per-fact provenance + derivation-DAG queries       | 3-4 days |
+| S1.2.4  | Unified graph rendering of the KB                  | 3-4 days |
 
 ## Acceptance
 
@@ -49,7 +50,9 @@ the provenance records are non-optional — they're what makes the
 - `kb.derivation_dag(fact)` returns the recoverable provenance DAG;
   `kb.unsat_core(facts)` returns the minimal source-fact frontier.
 - DOT export of each view returns syntactically-valid Graphviz —
-  forward by `to_dot` (S1.1.4), reverse by `from_dot` (this phase).
+  per-form forward by `to_dot` (S1.1.4), the PoC-style **unified
+  view** with fused entity identity by `kb.to_dot()` (S1.2.4),
+  reverse by `from_dot` (this phase).
 
 ## Connections
 

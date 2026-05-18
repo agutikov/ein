@@ -4,6 +4,20 @@
 
 
 
+`instance` is a relation `instance-of` (see Dot diagrams)
+so it has it's own properties-rules?
+but it's an embedded relation with hardcoded rules?
+
+is `type` a relation?
+What is the difference between: (type A B) and (instance A B) ?
+Anyway it's a inheritance tree, instances are leaves, but does it matter?
+
+if so is type-exclusivity applicable to Attribute type?
+We getting something like forbidden multi-type
+
+How can be instantiation defined - when any supertype variable/node can be replaced with subtype/instance.
+
+
 
 
 
@@ -24,7 +38,7 @@ Type system - relation type, rule type, ...
 
 ---
 
-type-exclusivity is a property of `instance` or of `co-located`?
+type-exclusivity is a property of `instance` or of `co-located`, or of both?
 
 
 
@@ -32,7 +46,9 @@ type-exclusivity is a property of `instance` or of `co-located`?
 
 ideas:
 
-- induction: facts -> rules on relations
+- induction: 
+    - facts -> rules on relations
+    - induce rules from facts ???
 
 
 

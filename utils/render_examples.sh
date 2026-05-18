@@ -5,9 +5,7 @@
 # For each input file, the script invokes `ein-bot ir dot` with every
 # combination of --rule-mode (a, c) × --trace-view (a, b, c) — six
 # variants per file — splits the multi-digraph output into one DOT
-# file per top-level form / rule, renders each through Graphviz, AND
-# emits a combined `_all.svg` per variant via `gvpack` showing every
-# form + every rule on the same page.
+# file per top-level form / rule, and renders each through Graphviz.
 #
 # Layout engines per form (per docs/ir.md §6 hints + readability):
 #   ontology → fdp   (force-directed; clusters and instances spread)
@@ -16,7 +14,14 @@
 #   query    → dot
 #   rule_*   → dot
 #   trace    → dot
-#   _all     → neato -n2 (uses gvpack-assigned positions verbatim)
+#
+# The **PoC-style unified "everything-on-one-page" view** is not
+# generated here — it requires the KB's cross-entity identity to fuse
+# `Norwegian` (instance) with `Norwegian` (in a fact) into one node.
+# That lands in S1.2.4 (see
+# plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.4_graph_representation.md).
+# gvpack-based packing was tried and rejected — it stacks independent
+# graphs side-by-side rather than merging them.
 #
 # Usage:
 #   utils/render_examples.sh                  # default output: build/dot/
@@ -26,8 +31,6 @@
 # Layout of output:
 #   <out>/<example>/rule-<rm>_trace-<tv>/NN_<digraph-name>.dot
 #   <out>/<example>/rule-<rm>_trace-<tv>/NN_<digraph-name>.svg
-#   <out>/<example>/rule-<rm>_trace-<tv>/_all.dot         (gvpack-merged)
-#   <out>/<example>/rule-<rm>_trace-<tv>/_all.svg         (combined render)
 #
 # Environment overrides:
 #   EINBOT     — command to invoke (default: `ein-bot` if on PATH,
@@ -61,7 +64,7 @@ else
     EIN_CMD=( python3 -m ein_bot.cli )
 fi
 
-for tool in dot fdp gvpack neato; do
+for tool in dot fdp; do
     if ! command -v "${tool}" >/dev/null 2>&1; then
         echo "error: graphviz '${tool}' not in PATH" >&2
         exit 1
@@ -135,54 +138,6 @@ render_each() {
     shopt -u nullglob
 }
 
-# render_combined <dir>
-#
-# Pre-layout every NN_<name>.dot in <dir> with its preferred engine
-# (writing intermediate .gv files), pack them with gvpack into a
-# single graph, then re-render through neato -n2 (use existing
-# positions) for every requested format. Outputs `_all.<fmt>` and
-# leaves `_all.dot` as the merged source.
-render_combined() {
-    local dir="$1"
-    shopt -s nullglob
-    local layouts=()
-    local d engine gv
-    for d in "${dir}"/[0-9][0-9]_*.dot; do
-        engine=$(engine_for "${d}")
-        gv="${d%.dot}.gv"
-        if ! "${engine}" "${d}" -o "${gv}" 2>/dev/null; then
-            echo "    warn: ${engine} layout failed on ${d}" >&2
-            continue
-        fi
-        layouts+=( "${gv}" )
-    done
-
-    if (( ${#layouts[@]} == 0 )); then
-        shopt -u nullglob
-        return
-    fi
-
-    local all_dot="${dir}/_all.dot"
-    if ! gvpack -array_3 "${layouts[@]}" > "${all_dot}" 2>/dev/null; then
-        echo "    warn: gvpack failed in ${dir}" >&2
-        rm -f "${layouts[@]}"
-        shopt -u nullglob
-        return
-    fi
-
-    local fmt out
-    for fmt in ${FORMATS}; do
-        out="${dir}/_all.${fmt}"
-        if ! neato -n2 "-T${fmt}" "${all_dot}" -o "${out}" 2>/dev/null; then
-            echo "    warn: neato -n2 -T${fmt} failed on ${all_dot}" >&2
-        fi
-    done
-
-    # Clean intermediate per-form .gv files; keep _all.dot for inspection.
-    rm -f "${layouts[@]}"
-    shopt -u nullglob
-}
-
 shopt -s nullglob
 ein_files=( "${EXAMPLES_DIR}"/*.ein )
 shopt -u nullglob
@@ -194,7 +149,6 @@ fi
 
 total_dots=0
 total_imgs=0
-total_combined=0
 for ein in "${ein_files[@]}"; do
     base="$(basename "${ein}" .ein)"
     echo "==> ${ein}"
@@ -213,22 +167,18 @@ for ein in "${ein_files[@]}"; do
                 | split_dot_stream "${out}"
 
             render_each "${out}"
-            render_combined "${out}"
 
             shopt -s nullglob
             n_dot=$( ls "${out}"/[0-9][0-9]_*.dot 2>/dev/null | wc -l )
             n_img=$( ls "${out}"/[0-9][0-9]_*.${FORMATS%% *} 2>/dev/null | wc -l )
-            n_all=$( ls "${out}"/_all.${FORMATS%% *} 2>/dev/null | wc -l )
             shopt -u nullglob
             total_dots=$((total_dots + n_dot))
             total_imgs=$((total_imgs + n_img))
-            total_combined=$((total_combined + n_all))
-            printf "    %-22s %2d dot, %2d %s + %d combined\n" \
-                "${variant}" "${n_dot}" "${n_img}" "${FORMATS%% *}" "${n_all}"
+            printf "    %-22s %2d dot, %2d %s\n" \
+                "${variant}" "${n_dot}" "${n_img}" "${FORMATS%% *}"
         done
     done
 done
 
 echo
-echo "done — ${total_dots} per-form DOT files, ${total_imgs} per-form renders,"
-echo "       ${total_combined} combined _all renders under ${OUT_DIR}"
+echo "done — ${total_dots} per-form DOT files, ${total_imgs} per-form renders under ${OUT_DIR}"
