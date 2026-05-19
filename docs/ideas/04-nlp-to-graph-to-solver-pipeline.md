@@ -171,6 +171,12 @@ Connection: [`docs/index/10-nlp-semantic-parsing.md`](../index/10-nlp-semantic-p
 for semantic-frame parsing (which produces the same type
 disambiguation as a by-product).
 
+TODO: ontology induction
+Use rule that is inverse of inheritance - generalization or something.
+Brief example: French drinks coffee, French is a human, coffee is a drink, so humans can drink drinks.
+What's the difference between deduction and induction of the ontology?
+
+
 ## Connections (context, not answers)
 
 - NLP layer recipes (semantic frames, AMR, NER, coreference):

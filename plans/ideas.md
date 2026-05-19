@@ -15,49 +15,43 @@ mattered?".
 
 ## Live entries
 
-### P1.2b audit — does the ein-model unification justify a new phase?
-
-Added 2026-05-19, from the user's `# ein model` thoughts in TODO.md.
-
-The reflexive ein-model unification — instance-of-instance, types-as-
-relation-holders, the "no copies" + "everything is a node" framing
-— landed as new kernel documentation in
-[`docs/kernel/ir/01-ein-graph/03_ein_model.md`](../docs/kernel/ir/01-ein-graph/03_ein_model.md)
-+ [`04_jack_drinks_coffee.md`](../docs/kernel/ir/01-ein-graph/04_jack_drinks_coffee.md).
-The implementation already supports the model (all S1.2.x stages
-shipped), but two open design questions surfaced:
-
-- [Q27 — Relation declaration body form](m1_core_graph_reasoning/open_questions.md#q27--relation-body-form)
-- [Q28 — Empty parens `()` semantics](m1_core_graph_reasoning/open_questions.md#q28--empty-parens-node-semantics)
-
-User question: *"maybe introduce P1.2b phase that contains IR model,
-language, implementation and docs update"*.
-
-**Audit checklist** — does the unification trigger a P1.2b phase, or
-does the docs-only embedding suffice?
-
-- [ ] Does any of S1.2.1-S1.2.4's *acceptance* fail under the
-      reflexive framing? — *Answer: no; the existing tests cover the
-      reflexive model implicitly (e.g. `Relation.rule` returns the
-      Rule node when a relation name matches a rule).*
-- [ ] Are there new entity / index shapes needed? — *Answer: not
-      for M1. F5 (rules-as-data) would need them; M1 doesn't.*
-- [ ] Are there new grammar primitives needed? — *Answer: no; Q27
-      defers form (a) as future sugar, Q28 punts `()` semantics.*
-- [ ] Are there docs gaps the new files don't cover? — *Answer: TBD
-      — a second-pass review of `01_kb.md` to harmonise with the new
-      03_ein_model.md may be useful but not blocking.*
-
-**Working answer:** *no P1.2b needed today*. The docs reorganisation
-captures the model; the implementation already supports it; the two
-open Qs (Q27/Q28) are parked, not blocking. Revisit if M1 acceptance
-(P1.7) reveals a gap.
-
-If promoted: would be a small (3-5 day) phase covering a kb-internal
-audit + a docs-harmony pass + Q27/Q28 decisions.
+> *(none — promote new entries from raw notes / TODO.md here.)*
 
 ---
 
 ## Promoted / pruned
 
-> *(append entries here when removing them from "Live")*
+### P1.2b audit — closed 2026-05-19, verdict: no phase needed
+
+Audited the ein-model unification
+([`03_ein_model.md`](../docs/kernel/ir/01-ein-graph/03_ein_model.md)
++ [`04_jack_drinks_coffee.md`](../docs/kernel/ir/01-ein-graph/04_jack_drinks_coffee.md))
+against the existing P1.2 stages.
+
+- [x] **S1.2.1-S1.2.4 acceptance under reflexive framing** — *all 4
+      stages pass.* Numeric counts (types=7, instances=30, declared
+      rels=3, total rels=9 incl. open-world `instance`, rules=6,
+      facts=54) and cross-refs hold; 144 kb tests green. The
+      kernel meta-primitive `instance` was already called out as an
+      auto-vivified relation in S1.2.1's acceptance — the reflexive
+      framing was anticipated.
+- [x] **New entity / index shapes** — *none needed for M1.* The
+      reflexive claims are all expressible at the graph level today
+      (`Fact` with head=`instance` and `Relation` auto-vivification
+      cover it). The partial entity-level homoiconicity — e.g.
+      `(instance instance instance)` doesn't get a special structural
+      marker — is fine for M1; F5 (rules-as-data) is where it would
+      matter.
+- [x] **New grammar primitives** — *none needed.* Q27 (body-form
+      sugar) and Q28 (`()` semantics) are parked as future seams; the
+      current grammar handles both encodings (zebra.ein + zebra2.ein).
+- [x] **Docs gaps** — *three docs-hygiene fixes applied, no
+      architectural gaps:* (1) added forward-pointer
+      `01_kb.md` → `03_ein_model.md` in the See-also; (2) updated
+      S1.2.4 acceptance to point at the moved
+      `04_dot_rendering.md`; (3) closed the "flagged for the user's
+      review" prompt in `03_ein_model.md` §8 with a link back here.
+
+**Verdict:** *no P1.2b needed.* The kernel-docs reorg + existing
+P1.2 implementation jointly cover the unified model. Q27/Q28 remain
+parked; revisit if P1.7 acceptance reveals a gap.

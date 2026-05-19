@@ -305,14 +305,14 @@ implementation phase (P1.2b):
 | `()` empty paren has engine semantics | Q28 — no decision; grammar parses `@empty` as a no-op atom    |
 | declaration body form (a) is sugar  | Q27 — not lifted yet                                          |
 
-**P1.2b audit** (flagged for the user's review): the unified
-reflexive model in this document does NOT immediately require new
-implementation in M1. The existing P1.2 (S1.2.1–S1.2.4) data model
-covers it. The question is whether the *documentation reorganisation*
-captures the model coherently enough that the next phases (P1.3
-rules, P1.5 hypothesis, P1.6 trace) can build on it without
-re-discovering pieces. Recorded in [plans/ideas.md](../../../../plans/ideas.md)
-as a live entry.
+**P1.2b audit** (closed 2026-05-19): the unified reflexive model
+in this document does NOT require new implementation in M1. The
+existing P1.2 (S1.2.1–S1.2.4) data model covers it; all 144 kb tests
+pass; no acceptance criteria fail; no new entity / index / grammar
+shapes are needed. Q27 (body-form sugar) and Q28 (`()` semantics)
+remain parked as future-work seams, not blockers. Audit trail and
+verdict in [plans/ideas.md](../../../../plans/ideas.md) → *Promoted /
+pruned*.
 
 ## See also
 
