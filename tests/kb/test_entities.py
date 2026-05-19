@@ -208,3 +208,95 @@ def test_pattern_iter_yields_variables():
     match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
     p = Pattern.from_ir(match_node)
     assert list(p) == ["x", "y", "z"]
+
+
+# ── Nested-fact args — relational nodes (Q40 Option A) ────────────
+
+
+def test_fact_args_admit_nested_fact():
+    inner = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
+    outer = Fact(relation_name="hypothesis", args=(inner,))
+    assert outer.args == (inner,)
+    assert isinstance(outer.args[0], Fact)
+
+
+def test_nested_fact_equality_propagates():
+    a_inner = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
+    b_inner = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
+    a = Fact(relation_name="hypothesis", args=(a_inner,))
+    b = Fact(relation_name="hypothesis", args=(b_inner,))
+    assert a == b
+    assert hash(a) == hash(b)
+
+
+def test_nested_fact_distinct_inner_makes_outer_unequal():
+    a = Fact(
+        relation_name="hypothesis",
+        args=(Fact(relation_name="co-located", args=("Norwegian", "House_2")),),
+    )
+    b = Fact(
+        relation_name="hypothesis",
+        args=(Fact(relation_name="co-located", args=("Norwegian", "House_3")),),
+    )
+    assert a != b
+    assert hash(a) != hash(b)
+
+
+def test_nested_fact_layer_excluded_from_identity():
+    # As with non-nested facts: layer/provenance is metadata, not part
+    # of identity. Two outer facts with nested facts in different
+    # layers are still equal.
+    from ein_bot.kb import Provenance
+    inner_fact = Fact(
+        relation_name="co-located", args=("Norwegian", "House_2"),
+        layer=Layer.FACT,
+    )
+    inner_reasoning = Fact(
+        relation_name="co-located", args=("Norwegian", "House_2"),
+        layer=Layer.REASONING,
+        provenance=Provenance.from_hypothesis(branch=42),
+    )
+    a = Fact(relation_name="hypothesis", args=(inner_fact,))
+    b = Fact(relation_name="hypothesis", args=(inner_reasoning,))
+    assert a == b
+    assert hash(a) == hash(b)
+
+
+def test_nested_fact_arg_entities_returns_fact_as_is():
+    inner = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
+    outer = Fact(relation_name="hypothesis", args=(inner,))
+    # Detached entities still produce arg_entities via the str/int
+    # passthrough; a Fact arg is returned as-is.
+    ents = outer.arg_entities
+    assert ents == (inner,)
+    assert isinstance(ents[0], Fact)
+
+
+def test_nested_fact_two_levels_deep():
+    # (?outer (?mid (?inner a b))) — chain of three relational nodes.
+    innermost = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
+    mid = Fact(relation_name="hypothesis", args=(innermost,))
+    outer = Fact(relation_name="contradiction-under", args=(mid,))
+    # Identity tuple cascades:
+    twin = Fact(
+        relation_name="contradiction-under",
+        args=(Fact(relation_name="hypothesis",
+                   args=(Fact(relation_name="co-located",
+                              args=("Norwegian", "House_2")),)),),
+    )
+    assert outer == twin
+    assert hash(outer) == hash(twin)
+
+
+def test_nested_fact_set_membership():
+    # Sets need hashing; nested-fact Facts must work in sets.
+    f1 = Fact(
+        relation_name="hypothesis",
+        args=(Fact(relation_name="co-located", args=("Norwegian", "House_2")),),
+    )
+    f2 = Fact(
+        relation_name="hypothesis",
+        args=(Fact(relation_name="co-located", args=("Norwegian", "House_2")),),
+    )
+    s = {f1}
+    assert f2 in s

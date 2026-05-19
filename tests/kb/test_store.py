@@ -356,3 +356,63 @@ def test_kb_len_is_node_total(zebra_kb):
         + len(zebra_kb.facts)
     )
     assert len(zebra_kb) == expected
+
+
+# ═══════════════════════ Nested-fact args (Q40) ════════════════════
+
+
+class TestNestedFactArgsThroughLoader:
+    """Loader builds nested ``Fact`` instances for nested SForm args.
+
+    Kernel-aligned per ``docs/kernel/ir/01-ein-graph/03_ein_model.md``
+    §3 — relational nodes (parenthesised forms) are a first-class
+    flavour of node and can appear as arguments to other facts.
+    Q40 Option A relies on this for the synthetic
+    ``(hypothesis (co-located Norwegian House_2))`` facts emitted
+    at fork time.
+    """
+
+    def test_loader_constructs_nested_fact_in_args(self):
+        from ein_bot.ir import parse
+        forms = parse(
+            "(facts "
+            "  (hypothesis (co-located Norwegian House_2)))"
+        )
+        kb = KnowledgeBase.from_ir(forms)
+        # The outer fact is registered (top-level).
+        outer = next(f for f in kb.facts if f.relation_name == "hypothesis")
+        # Its first arg is a Fact, not a string.
+        assert len(outer.args) == 1
+        assert isinstance(outer.args[0], Fact)
+        inner = outer.args[0]
+        assert inner.relation_name == "co-located"
+        assert inner.args == ("Norwegian", "House_2")
+
+    def test_nested_fact_equality_across_loads(self):
+        """Two separate loads with identical IR produce equal nested facts."""
+        from ein_bot.ir import parse
+        src = "(facts (hypothesis (co-located Norwegian House_2)))"
+        kb1 = KnowledgeBase.from_ir(parse(src))
+        kb2 = KnowledgeBase.from_ir(parse(src))
+        f1 = next(f for f in kb1.facts if f.relation_name == "hypothesis")
+        f2 = next(f for f in kb2.facts if f.relation_name == "hypothesis")
+        assert f1 == f2
+        assert hash(f1) == hash(f2)
+        assert f1.args[0] == f2.args[0]
+
+    def test_two_levels_of_nesting_through_loader(self):
+        from ein_bot.ir import parse
+        forms = parse(
+            "(facts "
+            "  (contradiction-under "
+            "    (hypothesis (co-located Norwegian House_2))))"
+        )
+        kb = KnowledgeBase.from_ir(forms)
+        outer = next(f for f in kb.facts if f.relation_name == "contradiction-under")
+        assert isinstance(outer.args[0], Fact)
+        mid = outer.args[0]
+        assert mid.relation_name == "hypothesis"
+        assert isinstance(mid.args[0], Fact)
+        innermost = mid.args[0]
+        assert innermost.relation_name == "co-located"
+        assert innermost.args == ("Norwegian", "House_2")

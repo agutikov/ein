@@ -156,18 +156,30 @@ arguments. The proposition.
 ```python
 Fact(
     relation_name: str,
-    args:          tuple[str | int, ...],   # argument identities
-    layer:         Layer,                    # ONTOLOGY | FACT | REASONING
-    provenance:    Provenance | None,        # where this fact came from
-    raw:           IRNode | None,            # original IR node (metadata)
+    args:          tuple[str | int | Fact, ...],   # argument identities (admits relational-node args)
+    layer:         Layer,                          # ONTOLOGY | FACT | REASONING
+    provenance:    Provenance | None,              # where this fact came from
+    raw:           IRNode | None,                  # original IR node (metadata)
     loc:           Loc | None,
     _kb:           KnowledgeBase | None,
 )
 ```
 
-Arguments are stored as **names** (string identities), with `int`
-allowed for numeric literals. Resolution to typed entities happens
-on demand via `fact.arg_entities`.
+Arguments admit three shapes, matching the kernel ein model's
+**named** vs **relational** node duality
+([`../01-ein-graph/03_ein_model.md` §3](../01-ein-graph/03_ein_model.md)):
+
+- `str` — a named node (name of an Instance / Relation / Type).
+- `int` — a numeric literal.
+- `Fact` — a **relational node** embedded as an argument
+  (e.g. `(hypothesis (co-located Norwegian House_2))`). The nested
+  `Fact` participates in identity recursively: two outer facts are
+  equal iff their `(relation_name, args)` tuples compare equal
+  element-wise, with nested `Fact` instances cascading via their
+  own `__eq__`.
+
+Resolution to typed entities happens on demand via
+`fact.arg_entities`; nested `Fact` args are returned as-is.
 
 Cross-references:
 - `f.relation` → `Relation | None` — the relation entity this fact
@@ -304,13 +316,16 @@ return empty tuples / `None`.
    Instance:   (name,)
    Relation:   (name, signature)
    Rule:       (name,)
-   Fact:       (relation_name, args)
+   Fact:       (relation_name, args)        — recursive: args may contain Fact
    Pattern:    (expr,)   — by structural IR equality
    Provenance: (all data fields except `loc`)
 ```
 
 Two entities are equal iff their identity tuples are equal — `loc`,
-layer, provenance, and back-pointers never affect equality.
+layer, provenance, and back-pointers never affect equality. For
+nested-fact args, equality cascades pointwise: outer Facts are
+equal iff their nested Fact args are equal (which they are iff
+*their* `(relation_name, args)` match, recursively).
 
 ## See also
 

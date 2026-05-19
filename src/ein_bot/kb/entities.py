@@ -280,13 +280,25 @@ class Fact:
     "same" fact for de-duplication; the loader keeps the first
     occurrence's metadata).
 
-    `args` are stored as a tuple of strings (names of instances /
-    relations / types — depending on context) or :class:`int`.
+    Args admit three shapes — matching the kernel ein model's
+    *named* vs *relational* node duality
+    (``docs/kernel/ir/01-ein-graph/03_ein_model.md`` §3):
+
+    - ``str`` — a named node (name of an Instance / Relation / Type).
+    - ``int`` — a numeric literal.
+    - ``Fact`` — a **relational node** embedded as an argument
+      (e.g. ``(hypothesis (co-located Norwegian House_2))``). The
+      nested ``Fact`` participates in identity recursively: two outer
+      facts are equal iff their ``(relation_name, args)`` tuples
+      compare equal element-wise, with nested ``Fact`` instances
+      cascading via their own ``__eq__``.
+
     Resolution to a typed `Instance` / `Relation` happens through the
-    KB at access time via :attr:`arg_entities`.
+    KB at access time via :attr:`arg_entities`. Nested ``Fact`` args
+    are returned as-is (they're already entities).
     """
     relation_name: str
-    args: tuple[str | int, ...]
+    args: tuple[str | int | Fact, ...]
     layer: Layer = field(default=Layer.FACT, compare=False, hash=False)
     provenance: Provenance | None = field(default=None, compare=False, hash=False, repr=False)
     raw: IRNode | None = field(default=None, compare=False, hash=False, repr=False)
@@ -341,16 +353,21 @@ class Fact:
         return self._kb.relations.get(self.relation_name)
 
     @property
-    def arg_entities(self) -> tuple[Instance | Relation | Type | str | int, ...]:
+    def arg_entities(self) -> tuple[Instance | Relation | Type | Fact | str | int, ...]:
         """Resolve each arg to its KB entity, or leave as raw string/int.
 
-        Falls back to the raw arg when no matching entity is found
-        (lets the loader stay tolerant of open-world references).
+        Nested ``Fact`` args are returned as-is (they're already
+        entity-shaped). String / int args fall back to the raw value
+        when no matching entity is found, so the loader stays
+        tolerant of open-world references.
         """
         if self._kb is None:
             return self.args
         out: list = []
         for a in self.args:
+            if isinstance(a, Fact):
+                out.append(a)
+                continue
             if isinstance(a, int):
                 out.append(a)
                 continue

@@ -84,25 +84,39 @@ def _atomic_value(node: IRNode) -> str | int | None:
     return None
 
 
-def _fact_args(args: tuple[IRNode, ...]) -> tuple[str | int, ...]:
-    """Drop kw-pairs; flatten remaining args to string/int identities.
+def _fact_args(args: tuple[IRNode, ...]) -> tuple[str | int | Fact, ...]:
+    """Drop kw-pairs; build args admitting nested-fact (relational-node) values.
 
-    Nested SForms (rare in fact arg positions, but the grammar allows
-    them inside generic values) collapse to their dumped head name —
-    this is best-effort; structural inspection lives on `Fact.raw`.
+    Kernel-aligned with ``docs/kernel/ir/01-ein-graph/03_ein_model.md``
+    §3 — args can be named nodes (``str`` / ``int``) or **relational
+    nodes** (nested ``Fact`` instances). A nested SForm in arg
+    position becomes a ``Fact`` with the corresponding head /
+    args, recursively. The nested Fact is unregistered (``_kb=None``,
+    ``layer=Layer.FACT``); identity by ``(relation_name, args)`` is
+    sufficient for equality with any registered fact of the same
+    shape.
     """
-    out: list[str | int] = []
+    out: list[str | int | Fact] = []
     for a in args:
         if isinstance(a, KwPair):
             continue
         v = _atomic_value(a)
-        if v is None and isinstance(a, SForm):
-            # Recursive: use head atom name as placeholder; the raw
-            # SForm is preserved on the Fact.raw field for deep
-            # inspection.
-            v = _atom_name(a.head) or "<nested>"
         if v is not None:
             out.append(v)
+            continue
+        if isinstance(a, SForm):
+            head = _atom_name(a.head)
+            if head is None:
+                # Head isn't a bare atom — fall back to its dumped form.
+                head = "<nested>"
+            nested = Fact(
+                relation_name=head,
+                args=_fact_args(a.args),
+                layer=Layer.FACT,
+                raw=a,
+                loc=a.loc,
+            )
+            out.append(nested)
     return tuple(out)
 
 
