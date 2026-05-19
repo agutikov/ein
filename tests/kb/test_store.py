@@ -325,11 +325,12 @@ class TestIncrementalIndex:
           (instance A T)
           (relation r (T T)))
         """
+        from ein_bot.kb import Provenance
         kb = KnowledgeBase.from_ir(parse(text))
         # Add a reasoning-layer fact incrementally.
         f = Fact(
             relation_name="r", args=("A", "B"), layer=Layer.REASONING,
-            rule_name="my-rule",
+            provenance=Provenance.from_rule(rule="my-rule"),
         )
         kb.add_fact(f)
         kb._index_fact(kb.facts[-1])

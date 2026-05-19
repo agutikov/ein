@@ -50,8 +50,13 @@ def test_relation_identity_by_name_and_signature():
     assert a == b
 
 
-def test_fact_identity_by_relation_and_args_not_layer_or_source():
-    a = Fact(relation_name="co-located", args=("A", "B"), layer=Layer.FACT, source="(2)")
+def test_fact_identity_by_relation_and_args_not_layer_or_provenance():
+    from ein_bot.kb import Provenance
+    a = Fact(
+        relation_name="co-located", args=("A", "B"),
+        layer=Layer.FACT,
+        provenance=Provenance.from_source("(2)"),
+    )
     b = Fact(relation_name="co-located", args=("A", "B"), layer=Layer.ONTOLOGY)
     assert a == b
 

@@ -21,12 +21,14 @@ the in-memory store.
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from .entities import Fact, Instance, Layer, Relation, Rule, Type, _attach
 
 if TYPE_CHECKING:
+    from .provenance import DerivationDAG
     from .views import FactView
 
 # ── Equality-class hooks (T1.2.1.6 placeholder) ───────────────────
@@ -347,6 +349,46 @@ class KnowledgeBase:
         """Read-only view of every fact across layers."""
         from .views import FactView
         return FactView(tuple(self.facts), self, "all")
+
+    # ── Provenance + derivation DAG — S1.2.3 ──────────────────────
+
+    def _fact_by_id(
+        self, relation_name: str, args: tuple,
+    ) -> Fact | None:
+        """Look up a fact by its identity tuple — O(deg(relation))."""
+        for f in self._facts_by_relation.get(relation_name, ()):
+            if f.args == args:
+                return f
+        return None
+
+    def derivation_dag(self, fact: Fact) -> DerivationDAG:
+        """Build the derivation DAG rooted at `fact`.
+
+        BFS over ``fact.provenance.premises_raw``, resolving each id
+        to a Fact via :meth:`_fact_by_id` and recursing into
+        ``rule``-kind facts only. ``source``- and ``hypothesis``-kind
+        facts terminate the recursion.
+
+        Cycles are broken at re-visit (the revisited fact appears as a
+        node but is not re-expanded).
+        """
+        from .provenance import build_derivation_dag
+        return build_derivation_dag(fact, self._fact_by_id)
+
+    def unsat_core(self, conflicting: Iterable[Fact]) -> set[Fact]:
+        """Minimal source-kind frontier across a set of conflicting facts.
+
+        For each conflicting fact, walk its derivation DAG and
+        accumulate the source-kind terminals. The union is the
+        minimal set of *given* facts that, jointly, derive the
+        conflict; it's what the *contradictions* task class returns
+        to the user (idea 03).
+        """
+        core: set[Fact] = set()
+        for f in conflicting:
+            dag = self.derivation_dag(f)
+            core.update(dag.sources)
+        return core
 
     # ── Fork — S1.2.2 T1.2.2.3 ────────────────────────────────────
 

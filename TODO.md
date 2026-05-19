@@ -11,10 +11,33 @@
 ;;   plans/raw/ was a working scratchpad — gone after the embedding above.
 
 
+expand /docs/ir.md into kernel documentation
 
+Motivation: /docs/ir.md is symbolic language description first, must be graph-first
+graph represents the semantic better
+lets make a M1 kernel documentation
 
+/docs/ir.md -mostly-goes-to-> /docs/kernel/ir/03-ein-lang/
 
+/docs/kernel/ir/01-ein-graph/ - graph-only description
+- 01_kb.md
+    - knowledge base
+    - no ein language or Python
+    - 2 representations:
+        - compact: instances, types, 2-relations as named arrows
+        - detailed: objects-nodes, relation-nodes
+- 02_rules.md
+    - graph rewriting rules 
+    - 3 types of rules description
+    - no ein language or Python
 
+/docs/kernel/ir/02-data-model/ - Python, in-memory data model, types
+
+/docs/kernel/ir/03-ein-lang/ - language
+
+/docs/kernel/inference/ - stub before P1.3
+
+/docs/kernel/REAME.md
 
 
 

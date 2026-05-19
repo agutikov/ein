@@ -157,7 +157,20 @@ and [idea 08](../../docs/ideas/08-human-style-deductive-trace.md).
 
 **Working answer**: per-derived-edge provenance — each edge carries
 a tuple `(rule, premise_edges, source_or_rule_id)`. The full
-derivation DAG is recoverable by transitive closure. Decided in P1.2 S1.2.3.
+derivation DAG is recoverable by transitive closure.
+
+**Decided** in P1.2 S1.2.3 (2026-05-19): implemented as the
+`Provenance` dataclass (`kind in {'source', 'rule', 'hypothesis',
+'rejected'}` + the discriminator-specific fields). Each `Fact`
+carries an optional `provenance: Provenance | None`. The full DAG
+is built by `KnowledgeBase.derivation_dag(fact)` via BFS over
+`provenance.premises_raw`. `KnowledgeBase.unsat_core(facts)` returns
+the minimal source-kind frontier — the input to the *contradictions*
+task class.
+
+IR-level round-trip of `:using` is deferred (the current grammar
+doesn't accept headless lists of compact-form fact refs) — see
+S1.2.3 T1.2.3.4.
 
 ## Q19 — Hypothesis branching strategy
 

@@ -23,6 +23,7 @@ Public API:
 from .entities import Fact, Instance, Layer, Relation, Rule, Type
 from .from_ir import KBLoadError, load
 from .pattern import Pattern
+from .provenance import DerivationDAG, Provenance
 from .store import EqClasses, KnowledgeBase, Query
 from .views import (
     FactView,
@@ -33,6 +34,7 @@ from .views import (
 )
 
 __all__ = [
+    "DerivationDAG",
     "EqClasses",
     "Fact",
     "FactView",
@@ -41,6 +43,7 @@ __all__ = [
     "KnowledgeBase",
     "Layer",
     "Pattern",
+    "Provenance",
     "Query",
     "Relation",
     "Rule",

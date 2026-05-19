@@ -132,6 +132,7 @@ class TestFork:
         assert not zebra_kb.classes.equivalent("Norwegian", "Japanese")
 
     def test_fork_reasoning_isolation(self, zebra_kb):
+        from ein_bot.kb import Provenance
         # Add a derived fact to the fork; parent's reasoning view
         # must NOT see it.
         fork = zebra_kb.fork()
@@ -139,7 +140,7 @@ class TestFork:
             relation_name="co-located",
             args=("Norwegian", "Water"),
             layer=Layer.REASONING,
-            rule_name="hypothetical",
+            provenance=Provenance.from_rule(rule="hypothetical"),
         )
         fork.add_fact(derived)
         fork._index_fact(fork.facts[-1])
@@ -155,13 +156,14 @@ class TestFork:
         view methods. This is intentional — entity API == root state;
         view API == branch state.
         """
+        from ein_bot.kb import Provenance
         fork = zebra_kb.fork()
         norwegian = zebra_kb.instances["Norwegian"]
         derived = Fact(
             relation_name="co-located",
             args=("Norwegian", "Water"),
             layer=Layer.REASONING,
-            rule_name="hypothetical",
+            provenance=Provenance.from_rule(rule="hypothetical"),
         )
         fork.add_fact(derived)
         fork._index_fact(fork.facts[-1])

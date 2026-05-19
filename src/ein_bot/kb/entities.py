@@ -32,6 +32,7 @@ from ein_bot.ir.types import IRNode, Loc
 
 if TYPE_CHECKING:
     from .pattern import Pattern
+    from .provenance import Provenance
     from .store import KnowledgeBase
 
 
@@ -287,12 +288,51 @@ class Fact:
     relation_name: str
     args: tuple[str | int, ...]
     layer: Layer = field(default=Layer.FACT, compare=False, hash=False)
-    source: str | None = field(default=None, compare=False, hash=False, repr=False)
-    rule_name: str | None = field(default=None, compare=False, hash=False, repr=False)
-    using: tuple[str, ...] = field(default=(), compare=False, hash=False, repr=False)
+    provenance: Provenance | None = field(default=None, compare=False, hash=False, repr=False)
     raw: IRNode | None = field(default=None, compare=False, hash=False, repr=False)
     loc: Loc | None = field(default=None, compare=False, hash=False, repr=False)
     _kb: KnowledgeBase | None = field(default=None, compare=False, hash=False, repr=False)
+
+    # ── Backward-compat shorthand properties ──────────────────────
+    #
+    # The pre-S1.2.3 Fact had flat `source` / `rule_name` / `using`
+    # fields; these read through to the Provenance object so existing
+    # callers (FactView.by_source, test_store, …) keep working.
+
+    @property
+    def source(self) -> str | None:
+        """The `:source` sentence iff provenance is kind='source'."""
+        if self.provenance is None or self.provenance.kind != "source":
+            return None
+        return self.provenance.source
+
+    @property
+    def rule_name(self) -> str | None:
+        """The rule name iff provenance is kind='rule'."""
+        if self.provenance is None or self.provenance.kind != "rule":
+            return None
+        return self.provenance.rule
+
+    @property
+    def using(self) -> tuple[tuple[str, tuple[str | int, ...]], ...]:
+        """The raw fact-id premises (rel, args), iff kind='rule'."""
+        if self.provenance is None or self.provenance.kind != "rule":
+            return ()
+        return self.provenance.premises_raw
+
+    @property
+    def premises(self) -> tuple[Fact, ...]:
+        """Resolved premise facts (rule-kind only). Empty otherwise."""
+        if (self.provenance is None
+                or self.provenance.kind != "rule"
+                or self._kb is None):
+            return ()
+        out: list[Fact] = []
+        for rid in self.provenance.premises_raw:
+            f = self._kb._fact_by_id(*rid)
+            if f is not None:
+                out.append(f)
+        return tuple(out)
 
     @property
     def relation(self) -> Relation | None:

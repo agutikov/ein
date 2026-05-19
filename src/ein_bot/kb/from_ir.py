@@ -39,6 +39,7 @@ from ein_bot.ir.types import Atom, Int, IRNode, KwPair, Range, SForm, String, Va
 
 from .entities import Fact, Instance, Layer, Relation, Rule, Type
 from .pattern import Pattern
+from .provenance import Provenance
 from .store import KnowledgeBase, Query
 
 
@@ -264,12 +265,44 @@ def _ingest_facts(
         rule_name = (
             _atom_name(kws.get("rule")) if "rule" in kws else None
         )
+
+        # `:using` carries a list of (rel args) compact forms — each
+        # one is an SForm whose head is a relation name and whose
+        # args are the fact's args. Extract as (rel, args) fact-id
+        # tuples for the Provenance.premises_raw field.
+        #
+        # **IR round-trip caveat** (S1.2.3 T1.2.3.4 deferred): the
+        # current grammar (P1.1) doesn't accept a headless list as a
+        # kw-pair value, so `:using ((rel a b) (rel c d))` doesn't
+        # parse. The atom-id form `:using (c10 c15)` parses but to a
+        # different shape (SForm with c10 as head, c15 as arg) and
+        # would need an atom-id → Fact resolver. Both forms wait on
+        # P1.1; until then, rule-kind provenance is populated by the
+        # engine via direct `Provenance.from_rule()` construction —
+        # which DOES work, just not round-trip through IR yet.
         using_node = kws.get("using")
-        using: tuple[str, ...] = ()
+        premises_raw: tuple = ()
         if isinstance(using_node, SForm):
-            using = tuple(
-                a.name for a in using_node.args if isinstance(a, Atom)
+            ids: list = []
+            for inner in using_node.args:
+                if not isinstance(inner, SForm) or not isinstance(inner.head, Atom):
+                    continue
+                ids.append((inner.head.name, _fact_args(inner.args)))
+            premises_raw = tuple(ids)
+
+        # Build the Provenance object — exactly one of source / rule
+        # populates a kind; ONTOLOGY layer with no annotation gets a
+        # source-kind record with source=None (the IR location alone
+        # marks the origin).
+        provenance: Provenance | None
+        if rule_name is not None:
+            provenance = Provenance.from_rule(
+                rule=rule_name, premises_raw=premises_raw, loc=child.loc,
             )
+        elif source is not None or layer in (Layer.FACT, Layer.ONTOLOGY):
+            provenance = Provenance.from_source(source=source, loc=child.loc)
+        else:
+            provenance = None
 
         # Auto-vivify undeclared relations (open-world).
         if head_name not in kb.relations:
@@ -282,9 +315,7 @@ def _ingest_facts(
             relation_name=head_name,
             args=args_tuple,
             layer=layer,
-            source=source,
-            rule_name=rule_name,
-            using=using,
+            provenance=provenance,
             raw=child,
             loc=child.loc,
         ))
@@ -350,6 +381,16 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
 
     # Index rebuild.
     kb.rebuild_indexes()
+
+    # Provenance cycle check — load-time validator. User-authored
+    # reasoning blocks can produce circular `:using` chains, which
+    # would break derivation-DAG traversal; reject them up-front
+    # with a clear message.
+    from .provenance import detect_provenance_cycles
+    cycles = detect_provenance_cycles(kb.facts, kb._fact_by_id)
+    if cycles:
+        path = " -> ".join(f"({r} {' '.join(map(str, a))})" for r, a in cycles[0])
+        errors.append(f"derivation cycle: {path}")
 
     if errors:
         raise KBLoadError("; ".join(errors))
