@@ -51,10 +51,13 @@ Concretely, M1 ships:
 | P1.5  | Hypothesis loop + ATMS branching       | 2 wk     | [`p1.5_hypothesis_loop/`](p1.5_hypothesis_loop/) |
 | P1.6  | Rendering + markdown trace             | 1-2 wk   | [`p1.6_rendering_and_trace/`](p1.6_rendering_and_trace/) |
 | P1.7  | Bootstrapping — Zebra end-to-end       | 1-2 wk   | [`p1.7_bootstrapping_zebra/`](p1.7_bootstrapping_zebra/) |
+| P1.8  | Ein-lang modules + imports (placeholder, scope TBD) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) |
 
 Phases run roughly sequentially. P1.6 can start as soon as P1.2 is
 in (the renderer only needs the data model); P1.7 is the integration
-phase and gates "M1 done".
+phase and gates "M1 done". **P1.8 is a placeholder** owning Q30
+(universal rule library + import mechanism) — deferred from the
+P1.3 review (2026-05-20); does NOT gate M1 acceptance.
 
 ## Acceptance
 

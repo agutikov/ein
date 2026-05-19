@@ -32,11 +32,20 @@ file it keeps its id; do not reuse a closed id.
 | Q26 | Compound / virtual node kinds for higher-order rules (sets, projections, …)  | [M1](m1_core_graph_reasoning/open_questions.md) |
 | Q27 | Relation declaration body form — bundled body vs separate property facts     | [M1](m1_core_graph_reasoning/open_questions.md) |
 | Q28 | Empty parens `()` — placeholder, ⊥, ⊤, or forbidden?                          | [M1](m1_core_graph_reasoning/open_questions.md) |
+| Q29 | Pattern: walker vs cached executable program — compile unit?                  | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
+| Q30 | Universal rule library + import mechanism — does `examples/rules.ein` exist?  | [M1](m1_core_graph_reasoning/open_questions.md) — deferred to P1.8 (2026-05-20) |
+| Q31 | `:why` template substitution language — `{?var}` or Python `{var}`?           | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
+| Q32 | `:where` semantics — sugar, top-level, or drop entirely?                      | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
+| Q33 | Predicate primitives — minimal set for M1                                     | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
 | Q34 | Algebraic properties beyond symmetric/transitive + 2^7 cartesian product | [followups F4](followups/f4_cross_cutting.md) |
 | Q35 | Variable typing via `(is-a ?var Type)` patterns                              | [followups F4](followups/f4_cross_cutting.md) |
 | Q36 | Relation inheritance / rule polymorphism                                      | [followups F4](followups/f4_cross_cutting.md) |
 | Q37 | Induction — rules from facts                                                  | [followups F4](followups/f4_cross_cutting.md) |
 | Q38 | LLM as fact/relation/type/rule extractor                                      | [followups F4](followups/f4_cross_cutting.md) |
+| Q39 | Module path — `src/ein_bot/inference/` vs `src/ein_bot/rules/inference/`?     | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
+| Q40 | `(hypothesis ?h)` / `(contradiction-under ?h)` rule premises — Provenance map? | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
+| Q41 | Rule priority — scale (100/200/…) and placement (per-rule vs config)          | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
+| Q42 | P1.3 scope — path (a) narrow vs (b) all 10 with deferred                       | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
 
 ---
 

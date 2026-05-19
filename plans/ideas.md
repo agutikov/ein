@@ -15,7 +15,82 @@ mattered?".
 
 ## Live entries
 
-> *(none — promote new entries from raw notes / TODO.md here.)*
+### P1.4 constraints — collapse into "rules with `(not …)` in `:assert`"?
+
+Added 2026-05-20, from a side observation during S1.3.0's Q29
+resolution.
+
+**Observation:** constraint-style reasoning may reduce entirely to
+the existing rule mechanism — no separate constraint abstraction
+needed.
+
+The chain of reasoning:
+
+- A *constraint* in CSP terms = "this proposition must be true".
+- A *rule* with `:assert (not X)` produces a negative fact when its
+  `:match` clause fires.
+- M1's KB is **append-only** (P1.2): facts are never deleted; new
+  facts arrive on top.
+- If both `X` and `(not X)` appear in the same KB state, the engine
+  has a **contradiction signal**. The branch fails; P1.5's
+  hypothesis loop retracts it.
+
+So a "constraint" in P1.4's sense = "a rule whose conclusion is a
+negative fact". Constraint violation = `X ∧ (not X)` co-existing.
+
+**Worked example — zebra.ein already ships this pattern:**
+
+```lisp
+(rule type-exclusivity ()
+  :match  (and (instance ?a ?T)
+               (instance ?b ?T)
+               (neq ?a ?b))
+  :assert (not (co-located ?a ?b))
+  :why    "{?a} and {?b} share type {?T}, can't co-locate.")
+```
+
+Reads as "two distinct instances of the same type cannot
+co-locate" — a constraint, expressed as a rule. The engine asserts
+`(not (co-located ?a ?b))`; on branches where `(co-located ?a ?b)`
+later gets derived, the contradiction surfaces.
+
+**Implications for P1.4:**
+
+- P1.4 may not need new core machinery. Its content shrinks to:
+  - A **contradiction detector**: scan for `(X, (not X))` pairs in
+    the same layer/branch (one pass; cheap).
+  - The **negative-fact representation**: how `(not X)` is stored
+    as a `Fact` (likely `(rel="not", args=(positive-fact-id,))`).
+  - **Interaction with P1.5**: the hypothesis loop reads
+    contradictions from the detector to decide branch retraction.
+- Q5 ("explanation completeness on Zebra") is satisfied by the 6
+  zebra.ein rules — `type-exclusivity` is the only
+  constraint-style rule, and it's already covered.
+- **P1.4 might merge into P1.3** — the detector is a small
+  addition to the saturator. Worth revisiting once P1.3 ships.
+
+**What this does NOT cover:**
+
+- Arithmetic / linear / interval constraints (not in M1 scope —
+  Q33 deferred numeric reasoning to followups).
+- Global constraints (`allDifferent`, cardinality) — also followup
+  territory.
+- Constraints over compound node kinds (Q26-deferred).
+
+For graph-only Zebra-class constraints, the unification holds.
+
+**Cross-links:**
+- [S1.3.0 §F (scope reconsideration)](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#f-scope-reconsideration)
+- [Q40 — hypothesis-rule premises](m1_core_graph_reasoning/open_questions.md) (P1.5)
+- [Idea 03 — three task classes](../docs/ideas/03-three-task-classes.md) — "contradictions" task class consumes exactly this signal
+- [Q33 resolution](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13) — `not` is a structural wrapper handled by matcher/asserter
+
+**Action:** revisit P1.4 README + S1.4.x stages with this lens.
+Don't immediately collapse the phase — confirm there's no
+non-graph constraint type in M1 scope (there shouldn't be after
+Q33). If the unification holds end-to-end, propose either
+"merge P1.4 into P1.3" or "shrink P1.4 to detector + negative-fact
+representation only".
 
 ---
 

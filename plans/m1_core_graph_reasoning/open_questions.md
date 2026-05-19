@@ -24,6 +24,15 @@ Milestone-scoped. Cross-milestone questions live in
 | Q26 | Compound / virtual node kinds for higher-order rules (sets, projections, groups, top/bottom) | P1.2 leaves the seam; concrete kinds parked for followups |
 | Q27 | Relation declaration body form — bundle properties inside `(relation R (T T) (transitive …))` vs separate property-application facts? | M1 ships form (b); form (a) parked as future sugar |
 | Q28 | Empty parens `()` — placeholder, ⊥, ⊤, or forbidden?                  | M1 grammar parses as `@empty` no-op; engine semantics TBD |
+| Q29 | Pattern: walker vs cached executable program — compile unit?           | P1.3 S1.3.1 (resolved 2026-05-20) — option B, per-(rule, activator-binding) compile |
+| Q30 | Universal rule library + import mechanism — does `examples/rules.ein` exist? | Deferred to P1.8 (2026-05-20); P1.3 assumes inline rules per puzzle |
+| Q31 | `:why` template substitution language — `{?var}` or Python `{var}`?    | P1.3 S1.3.1 (resolved 2026-05-20) — `{?var}` (zebra.ein convention) |
+| Q32 | `:where` semantics — sugar, top-level, or drop entirely?               | P1.3 S1.3.1 (resolved 2026-05-20) — drop; ship predicate registry |
+| Q33 | Predicate primitives — minimal set for M1                              | P1.3 S1.3.1 (resolved 2026-05-20) — `eq` + `neq` only; rest → followups |
+| Q39 | Module path — `src/ein_bot/inference/` vs `src/ein_bot/rules/inference/`? | P1.3 (resolved 2026-05-20) — flat `inference/` |
+| Q40 | `(hypothesis ?h)` / `(contradiction-under ?h)` rule premises — map to shipped `Provenance`? | P1.3 S1.3.2 + P1.5 (resolved 2026-05-20) — Option A: synthetic facts + `Fact.args` widening |
+| Q41 | Rule priority — scale and placement                                    | P1.3 S1.3.3 (resolved 2026-05-20) — 100/200/300/900 banded, per-rule, lower-first |
+| Q42 | P1.3 scope — path (a) narrow vs (b) all 10 with deferred                | P1.3 (resolved 2026-05-20 by Q33 cascade) — path (a), 6 rules |
 
 ---
 
@@ -455,3 +464,288 @@ most likely choice because:
 - ⊥ and ⊤ are better served by explicit named atoms (`T` in
   zebra2.ein is already the convention).
 - *Forbidden* would require grammar work and offers no upside.
+
+## Q29 — Pattern: walker vs cached executable program
+
+Surfaced 2026-05-19 during the P1.3 review. P1.2 ships
+`kb.Pattern` as a structural lift of the rule's `:match` / `:assert`
+IR clause — `expr: IRNode` plus pre-computed metadata (variables,
+relation_names, type_names, has_instance_pattern). The original
+P1.3 plan proposed a *separate* `Pattern` AST inside `rules/`.
+
+**Options:**
+
+- **A — Walker**: matcher walks `kb.Pattern.expr` directly,
+  dispatching on `IRNode` subtype each step.
+- **B — Cached executable program** in `inference/`: lazy compile
+  to opcodes (`Scan`, `Join`, `Guard`), cached by `Pattern.expr`
+  identity.
+- **C — Extend `kb.Pattern`** with a `compiled` field.
+
+**Resolved 2026-05-20** — option **B**, with the **compile unit
+being per (rule, activator-binding) pair** (not per `Pattern`
+alone). The activator fact (e.g. `(transitive co-located)`) binds
+the rule's parameter list *before* matching begins; the compiler
+substitutes the parameters and bakes concrete relation names into
+the program. Cache key: `(rule.name, activator.args)`. Zebra.ein
+has 6 activators → 6 compiled programs.
+
+Option A rejected: a walker re-discovers the activator binding on
+every match attempt — wrong granularity for activator-driven T2
+polymorphism. Option C rejected: contaminates kb with engine state
+(inverts the kb → inference dependency direction).
+
+Full analysis:
+[`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q29](p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
+
+## Q30 — Universal rule library + import mechanism
+
+Surfaced 2026-05-19 during the P1.3 review.
+
+**Options:**
+
+- (a) `examples/rules.ein` is a universal library every puzzle
+  imports.
+- (b) rules are always inline in the puzzle's `.ein` file (current
+  zebra.ein).
+- (c) hybrid — a kernel core auto-loaded, puzzles can extend.
+
+**Deferred to P1.8** (user direction 2026-05-20). The universal
+rule library question entangles with an *import / include*
+mechanism in the IR language (how one `.ein` file references rules
+in another), which is too large for P1.3 to resolve and not on the
+M1-acceptance critical path. P1.8 — a new M1 phase, name + slot
+TBD — will design the library + import mechanism and decide
+between (a) / (b) / (c).
+
+For P1.3: assume zebra.ein-style **inline rules per puzzle**
+(option b's de-facto form).
+
+Full context:
+[`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q30](p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
+
+## Q31 — `:why` template substitution language
+
+Surfaced 2026-05-19 during the P1.3 review. Zebra.ein uses
+`{?rel}` (ein-var style, `?` prefix). The original P1.3 plan used
+`{r}` / `{p0}` (Python format).
+
+**Resolved 2026-05-20** — adopt the `{?var}` notation. The `?` is
+*part of the reference*, not a prefix that's stripped; `?var` is
+simultaneously the node name and the var name. Inside the `:why`
+string, `{?rel}` substitutes to the bound node name (e.g.
+`co-located`), `{?a}` to the bound argument (e.g. `Norwegian`),
+etc. The `?` is preserved through binding — there is no separate
+"bare var name" form.
+
+Grammar: the template tokeniser scans for `{` … `}` delimited
+sequences whose body starts with `?` followed by a var-name. Any
+`{x}` *without* a leading `?` is a literal `{x}` (not substituted).
+
+Full context:
+[`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q31](p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
+
+## Q32 — `:where` semantics
+
+Surfaced 2026-05-19 during the P1.3 review. Q24's working answer
+was "`:where` is sugar for inline `(and …)` premise"; zebra.ein's
+`transitive` rule uses `:where (neq ?a ?c)` *as a top-level
+keyword inside `(and …)`* — already a top-level construct.
+
+**Resolved 2026-05-20** — **drop `:where`; ship a built-in
+predicate registry** (`inference/predicates.py`). All four
+candidate benefits of `:where` over canonical `(and …)` (guard-
+vs-generator distinction, prevent auto-vivification, readability,
+future-proofing) dissolve once a predicate registry exists; the
+registry is strictly more general.
+
+Concrete:
+- `inference/predicates.py` — initial set `eq`, `neq` (per Q33).
+- Loader (`kb/from_ir.py`) consults registry before auto-
+  vivifying unknown heads.
+- Matcher dispatches premises via `(head ∈ registry)` → guard,
+  else fact-scan.
+- Migration: rewrite zebra.ein's `transitive` rule from
+  `:where (neq ?a ?c)` → positional `(neq ?a ?c)`.
+
+Closes Q24 retroactively (the "sugar" framing was effectively
+saying "drop the keyword once registry exists").
+
+Full context:
+[`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q32](p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
+
+## Q33 — Predicate primitives — minimal set for M1
+
+Surfaced 2026-05-19 during the P1.3 review. The original P1.3 plan
+listed `forall`, `exists`, `count`, `single`, `the`, `\` (set
+diff), `in`, variadic `?xs...` as needed primitives for T1.3.2.3
+/ .4 / .8 / .9.
+
+**Resolved 2026-05-20** (user direction): M1 ships **only the
+minimal predicate set** required for the current 6 rules.
+
+### M1 built-in predicate registry
+
+```python
+predicates = {
+    "eq":  lambda b, args: resolve(args[0], b) == resolve(args[1], b),
+    "neq": lambda b, args: resolve(args[0], b) != resolve(args[1], b),
+}
+```
+
+Two binary predicates. That's it.
+
+### What's not a predicate (and why)
+
+- `(rel ?a ?b)` pattern matching — matcher's core operation;
+  existence check is pattern matching itself.
+- `(not (rel ?a ?b))` — structural wrapper (matcher: negation as
+  failure; asserter: negative fact assertion). Not a registry entry.
+- `forall ?x P(?x)` — already `:match (P(?x))`; the clause is
+  implicitly universally quantified.
+- `exists ?x P(?x)` — already `:assert (P(?x))`; adding a fact IS
+  the existential.
+- `single ?x P(?x)` — derivable: `(and P(?x) (not (and P(?y) (neq ?y ?x))))`.
+
+### Deferred to followups (not P1.4, not P1.7)
+
+- Variadic args `?xs...`
+- Numeric predicates: `lt`, `gt`, `le`, `ge`
+- Set operations + aggregation: `count`, `member`, `in`, set diff
+- Domain primitives: `dom`, `functional`
+
+A future F-numbered followup adjacent to F4 owns these.
+
+Full context:
+[`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q33](p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
+
+## Q39 — Module path
+
+Surfaced 2026-05-19 during the P1.3 review. The kernel docs at
+`docs/kernel/inference/` point at `src/ein_bot/inference/`; the
+original P1.3 plan used `src/ein_bot/rules/`.
+
+**Resolved 2026-05-20** — **flat `src/ein_bot/inference/`**
+(option A). All M1 engine artifacts (matcher, firing, engine
+driver, predicate registry, compiler) sit at this one level. Tests
+at `tests/inference/`.
+
+KB and its `kb.rules` (rule *definitions*) stay in
+`src/ein_bot/kb/` — rule definitions are *data*; matching /
+saturation is *engine*.
+
+Promotion to nested `rules/inference/` (option B) when a second
+non-engine file appears at the rule-language layer — likely Q30 /
+P1.8 (universal rule library lands `rules/library/…`) or F5
+(rules-as-data lands rule synthesis machinery). Migration is a
+mechanical `git mv` + import-fix sweep; no design rework.
+
+Full context:
+[`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q39](p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
+
+## Q40 — Hypothesis-rule premises
+
+Surfaced 2026-05-19 during the P1.3 review. The original P1.3
+plan's T1.3.2.5 sketched:
+
+```lisp
+(rule hypothesis-contradiction
+  :match  (and (hypothesis ?h) (contradiction-under ?h))
+  :assert (not ?h)
+  ...)
+```
+
+The premises `(hypothesis ?h)` and `(contradiction-under ?h)`
+don't correspond to any fact in the shipped data model — P1.2's
+`Provenance` carries `kind='hypothesis' | 'rejected'` on the fact
+itself, not as a separate fact.
+
+**Options:**
+
+- **A — Synthetic facts**: engine emits `(hypothesis <fact>)` and
+  `(contradiction-under <fact>)` as auto-vivified relations; the
+  matcher dispatches normally.
+- **B — Engine procedure**: hypothesis-contradiction is a special
+  engine procedure that doesn't go through the matcher.
+
+**Resolved 2026-05-20** — option **A**. The kernel ein model
+(`docs/kernel/ir/01-ein-graph/03_ein_model.md` §3) already says
+facts can have **relational nodes** as args — `(hypothesis
+(co-located Norwegian House_2))` is just a fact whose first arg
+is a relational node. This is *not* a compound-node-kind promotion
+(Q26 is about virtual / computed kinds; different concern); it's
+the kernel's existing node-as-arg duality.
+
+Required work:
+- **`Fact.args` widening**: `tuple[str | int | Fact, ...]`. Small
+  P1.2 patch.
+- **Loader recursion** for nested SForms in args.
+- **Matcher extension** for nested-fact patterns (Q29 compile pass
+  treats SForm args as sub-patterns; runtime unifier recurses).
+- **Engine emission**: P1.5's fork procedure emits `(hypothesis
+  <fact>)`; the contradiction detector emits `(contradiction-under
+  <fact>)`.
+
+Pays F5 (rules-as-data) amortisation for free — fact-as-arg is the
+precondition for rules-as-facts.
+
+Promotes T1.3.2.5 (`hypothesis-contradiction`) back into the M1
+core (was deferred under §F path (a) before Q40 resolution).
+
+Full context:
+[`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q40](p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
+
+## Q41 — Rule priority — scale and placement
+
+Surfaced 2026-05-19 during the P1.3 review. Zebra.ein uses 1/3/5/8
+priorities inside each rule definition. The original P1.3 plan
+used 100/200/300/900 in a static config table.
+
+**Resolved 2026-05-20** — adopt the **100/200/300/900 banded
+scale** from the original P1.3 plan; keep zebra.ein's **per-rule
+placement** (priority lives inside the `(rule …)` form, not in an
+engine config table); **lower fires first**.
+
+### Bands
+
+| band       | priority | what fires here                                                  |
+|------------|---------:|------------------------------------------------------------------|
+| propagate  | 100      | cheap, structural propagation — symmetric, inverse, implies      |
+| derive     | 200      | composition / join — transitive, square-fwd, square-bwd          |
+| eliminate  | 300      | exclusion / narrowing — type-exclusivity                          |
+| hypothesis | 900      | reserved for hypothesis-contradiction (P1.5)                      |
+
+Within-band fine-grained ordering (e.g., 110 / 120) is open and
+per-puzzle.
+
+### Zebra.ein migration
+
+`symmetric` 1→100, `implies` 3→100, `transitive` 5→200, `square-fwd`
+8→200, `square-bwd` 8→200, `type-exclusivity` 10→300.
+
+Full context:
+[`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q41](p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
+
+## Q42 — P1.3 scope — path (a) vs (b)
+
+Surfaced 2026-05-19 during the P1.3 review. Two paths:
+
+- (a) Narrow P1.3 to the 6 zebra.ein rules + a seam for the other 4.
+- (b) Keep all 10 with 4 marked `:blocked-by`.
+
+**Resolved 2026-05-20 by Q33 cascade** — **path (a)**. Q33's
+resolution (M1 ships only `eq` + `neq` predicates; all numeric /
+set / variadic primitives → followups) makes the 4 deferred rules
+structurally unshippable in M1. Path (b)'s `:blocked-by`
+placeholders would be misleading — they'd point at followups, not
+P1.4 / P1.7.
+
+M1 core = 6 zebra.ein rules: `symmetric`, `transitive`, `implies`,
+`square-fwd`, `square-bwd`, `type-exclusivity`. Plus
+`hypothesis-contradiction` promoted in by Q40 = **7 rules total**.
+
+The 4 deferred rules (T1.3.2.3 / .4 / .6 / .8 in the original
+plan) land in a future followup phase adjacent to F4.
+
+Full context:
+[`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q42](p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
