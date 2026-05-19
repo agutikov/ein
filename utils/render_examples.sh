@@ -15,13 +15,12 @@
 #   rule_*   → dot
 #   trace    → dot
 #
-# The **PoC-style unified "everything-on-one-page" view** is not
-# generated here — it requires the KB's cross-entity identity to fuse
-# `Norwegian` (instance) with `Norwegian` (in a fact) into one node.
-# That lands in S1.2.4 (see
-# plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.4_graph_representation.md).
-# gvpack-based packing was tried and rejected — it stacks independent
-# graphs side-by-side rather than merging them.
+# The **PoC-style unified "everything-on-one-page" view** is generated
+# by `ein-bot kb dot` (S1.2.4) — one unified DOT per example,
+# rendered through fdp (force-directed) for the PoC aesthetic. Output
+# files: `<out>/<example>/_unified.dot` + `.svg`. gvpack-based packing
+# was tried and rejected — it stacks independent graphs side-by-side
+# rather than merging them.
 #
 # Usage:
 #   utils/render_examples.sh                  # default output: build/dot/
@@ -149,6 +148,7 @@ fi
 
 total_dots=0
 total_imgs=0
+total_unified=0
 for ein in "${ein_files[@]}"; do
     base="$(basename "${ein}" .ein)"
     echo "==> ${ein}"
@@ -178,7 +178,28 @@ for ein in "${ein_files[@]}"; do
                 "${variant}" "${n_dot}" "${n_img}" "${FORMATS%% *}"
         done
     done
+
+    # ── Unified KB view (S1.2.4) — one DOT per example, all layers,
+    #    rendered with `fdp` to match the PoC's aesthetic. ──
+    unified_dir="${OUT_DIR}/${base}"
+    mkdir -p "${unified_dir}"
+    unified_dot="${unified_dir}/_unified.dot"
+    if "${EIN_CMD[@]}" kb dot "${ein}" > "${unified_dot}" 2>/dev/null; then
+        for fmt in ${FORMATS}; do
+            unified_out="${unified_dir}/_unified.${fmt}"
+            if fdp "-T${fmt}" "${unified_dot}" -o "${unified_out}" 2>/dev/null; then
+                total_unified=$((total_unified + 1))
+                printf "    %-22s 1 dot, 1 %s (unified KB view, fdp)\n" \
+                    "_unified" "${fmt}"
+            else
+                echo "    warn: fdp -T${fmt} failed on ${unified_dot}" >&2
+            fi
+        done
+    else
+        echo "    warn: 'kb dot' failed on ${ein}; skipping unified view" >&2
+    fi
 done
 
 echo
-echo "done — ${total_dots} per-form DOT files, ${total_imgs} per-form renders under ${OUT_DIR}"
+echo "done — ${total_dots} per-form DOT files, ${total_imgs} per-form renders,"
+echo "       ${total_unified} unified-KB renders under ${OUT_DIR}"

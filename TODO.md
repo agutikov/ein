@@ -11,7 +11,7 @@
 ;;   plans/raw/ was a working scratchpad — gone after the embedding above.
 
 
-some generalization thoughts
+# some generalization thoughts
 continue improving ein graph model and language
 
 
@@ -141,20 +141,23 @@ How we would live with many different meanings of `relation`?
 
 ---
 
-Ontology head Is a context for facts head
-Need to not mix facts head and facts as set of fact objects
+# Ontology
+
+Ontology is a context for facts
+Need to differentiate facts head and facts as set of fact objects, which may be placed in the ontology also
 In NL problem statement ontology is implicit
 For IR ontology has to be deduced "by common sense" from facts. 
 For example Norvegian as noun could be a Human, a Nationality, a Language. "Norvegian lives in yellow house" languages and nationalities do not live in houses, but human do. 
-So Norvegian here is Human.
-
+So Norvegian here is a Human.
 
 
 ---
 
-Type system is based on rules:
-- inheritance
-- substitution
+# Type systems induced by relations
+
+Type system is based on:
+- inheritance rule
+- substitution rule
 Relation is-a produce a type hierarchy or classification.
 
 There could be different hyerarchy or another structure produces by another relation.
@@ -171,7 +174,9 @@ It wouldn't be so popular as `type`, but could be:
 
 ---
 
-add glossary to docs/
+# glossary
+
+add glossary to docs/ for some complex terms exmplanation and references
 - homoiconic
 - reflexive
 - ...
@@ -179,12 +184,12 @@ add glossary to docs/
 ---
 
 
-Self-modification ideas:
-1) self modifiable language via GBNF modification
-2) operate IR rules as data, as graph nodes - objects and relations
-3) read, understand and modify own harness code
+# Self-modification ideas
 
+F2: self modifiable language via GBNF modification
+F5: operate IR rules as data, as graph nodes - objects and relations
+F6: read, understand and modify own harness code
 
-
+docs/ideas/10-generic-self-modification.md - refer to 3 followups
 
 

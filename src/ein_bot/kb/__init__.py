@@ -24,6 +24,7 @@ from .entities import Fact, Instance, Layer, Relation, Rule, Type
 from .from_ir import KBLoadError, load
 from .pattern import Pattern
 from .provenance import DerivationDAG, Provenance
+from .render import to_dot
 from .store import EqClasses, KnowledgeBase, Query
 from .views import (
     FactView,
@@ -52,5 +53,6 @@ __all__ = [
     "load",
     "logical_instances",
     "logical_types",
+    "to_dot",
     "type_name",
 ]

@@ -375,6 +375,18 @@ class KnowledgeBase:
         from .provenance import build_derivation_dag
         return build_derivation_dag(fact, self._fact_by_id)
 
+    # ── Unified DOT rendering — S1.2.4 ────────────────────────────
+
+    def to_dot(self, **kwargs) -> str:
+        """Render the KB as a unified Graphviz ``digraph`` string.
+
+        Delegates to :func:`ein_bot.kb.render.to_dot`. Keyword args
+        forwarded — see that function for ``layers`` / ``colour_by`` /
+        ``include_types`` / ``include_instances`` / ``name``.
+        """
+        from .render import to_dot
+        return to_dot(self, **kwargs)
+
     def unsat_core(self, conflicting: Iterable[Fact]) -> set[Fact]:
         """Minimal source-kind frontier across a set of conflicting facts.
 

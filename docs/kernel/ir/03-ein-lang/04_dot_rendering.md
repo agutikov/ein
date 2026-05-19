@@ -140,13 +140,134 @@ digraph derivation {
 
 ## Unified KB view (S1.2.4)
 
-When the renderer has the full `KnowledgeBase` (not just a
-single-form AST), it produces a **unified graph** where node identity
-is fused across forms — `Norwegian` (instance) appears once and
-participates in its is-a edge, its co-located facts, and any derived
-edges. See
+When the renderer has the full :class:`KnowledgeBase` (not just a
+single-form AST), it produces a **unified graph** where node
+identity is fused across forms — `Norwegian` (instance) appears
+**once** and participates in:
+
+- its `is-a` edge to `Nationality` (ontology layer),
+- its `(co-located Norwegian House_1)` fact edge (fact layer),
+- any derived edges that mention it (reasoning layer).
+
+This is the PoC's *linked.svg* aesthetic — all the entity types on
+one canvas, related by labelled arrows, coloured by relation. See
 [S1.2.4](../../../../plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.4_graph_representation.md)
-for the design.
+for the design plan; the implementation is
+[`src/ein_bot/kb/render.py`](../../../../src/ein_bot/kb/render.py).
+
+### Schema
+
+| graph element                       | DOT shape / style                              |
+|-------------------------------------|------------------------------------------------|
+| `Type` (or logical type)            | `shape=box`                                    |
+| `Instance` (or logical instance)    | `shape=oval`                                   |
+| Binary `Fact(rel, a, b)`            | direct edge `a → b [label=rel ...]`            |
+| n-ary `Fact` (arity ≠ 2)            | `shape=octagon` Levi node + n slot-edges       |
+| Instance-of (type-edge)             | `style=dashed, arrowhead=empty, label="is-a"`  |
+| `is-a` fact (zebra2 encoding)       | same as instance-of (dashed empty arrow)        |
+| ONTOLOGY-layer fact                 | `style=solid`, plain                            |
+| FACT-layer fact                     | `style=solid`, label includes `(N)` short source id |
+| REASONING-layer fact                | `style=dashed`, label includes `by <rule-name>` |
+| per-relation colour (default)       | SHA1(`rel.name`) mod palette                    |
+| per-layer colour (opt-in)           | ontology grey, fact black, reasoning blue       |
+
+**Suppressed by default**:
+
+- **Rule-application meta-facts** like `(symmetric co-located)` —
+  they're meta, not data. (Their structural effect — making the
+  `symmetric` rule fire on `co-located` — is visible in the
+  derivation DAG, not in the unified KB view.)
+- **`instance` kernel facts** — the `(instance Norwegian Nationality)`
+  proposition is already shown as a dashed type-edge derived from
+  `Instance.type_name`. Including it again as a labelled `instance`
+  edge would duplicate.
+- **`not`-headed facts** with collapsed arg structure — current
+  loader limitation (S1.2.3 T1.2.3.4 deferral). Revisit when the
+  loader preserves nested SForm args.
+
+### Worked Zebra fragment
+
+For the proposition *"The Norwegian lives in the first house"*
+(condition (10)) the unified renderer produces:
+
+```dot
+digraph zebra_unified_fragment {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // types
+  "Nationality" [shape=box, label="Nationality"];
+  "House"       [shape=box, label="House"];
+  "Attribute"   [shape=box, label="Attribute"];
+
+  // instances
+  "Norwegian" [shape=oval, label="Norwegian"];
+  "House_1"   [shape=oval, label="House_1"];
+
+  // type edges (instance-of)
+  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
+  "House_1"   -> "House"       [style=dashed, arrowhead=empty, label="is-a"];
+  "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
+  "House"       -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
+
+  // fact-layer edges (note short-source id "(10)" + per-relation colour)
+  "Norwegian" -> "House_1" [
+    label="co-located (10)",
+    color="#1f77b4", fontcolor="#1f77b4",
+    style=solid,
+  ];
+}
+```
+
+(The actual `co-located` colour is whatever
+``SHA1("co-located") mod palette`` picks — stable across runs.)
+
+A reasoning-layer derivation `(co-located Japanese Zebra :rule
+forced-by-unique-position)` would render as a dashed edge:
+
+```dot
+digraph reasoning_edge_example {
+  "Japanese" [shape=oval];
+  "Zebra"    [shape=oval];
+  "Japanese" -> "Zebra" [
+    label="co-located by forced-by-unique-position",
+    color="#1f77b4", fontcolor="#1f77b4",
+    style=dashed,
+  ];
+}
+```
+
+### CLI
+
+```sh
+ein-bot kb dot examples/zebra.ein                              # all layers
+ein-bot kb dot examples/zebra.ein --layers=ontology,fact       # no reasoning
+ein-bot kb dot examples/zebra.ein --colour-by=layer            # 3 layer colours
+ein-bot kb dot examples/zebra.ein --no-instances                # types-only
+```
+
+`utils/render_examples.sh` produces `_unified.dot` + `_unified.svg`
+per example, rendered with `fdp` (force-directed) for the PoC's
+spread-out aesthetic.
+
+### Encoding-agnostic
+
+The renderer uses :func:`logical_types` / :func:`logical_instances`
+(S1.2.2) to pick node shapes — so `zebra2.ein` (unified `is-a`
+encoding) renders to the same visual shape as `zebra.ein` (classic
+`(type …)` / `(instance …)` encoding), even though
+``zebra2_kb.types`` and ``zebra2_kb.instances`` are empty. `is-a`
+facts get the type-edge styling rather than the regular coloured-
+arrow styling.
+
+### PoC comparison (T1.2.4.5 — deferred)
+
+The PoC's *linked.svg* is the visual target. Side-by-side
+comparison images live under [`docs/PoC/`](../../../PoC/); a
+checklist of deliberate divergences (new reasoning-layer dashed
+styling, per-relation colour-palette change) lands when the
+renderer's output is reviewed visually.
 
 ## Reverse parse (`from_dot`)
 
