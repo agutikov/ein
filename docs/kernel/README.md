@@ -1,0 +1,81 @@
+# ein-bot kernel — documentation
+
+The **kernel** is the part of ein-bot that's locked down by M1: the
+graph it reasons over, the data structures that hold the graph in
+memory, the surface language users write, and (placeholder, P1.3)
+the inference engine that fires rules.
+
+Everything above the kernel — NL → IR (M2), SMT slice (M3), the
+self-modifying constraint language (followup F2) — *consumes* the
+kernel. Everything below — the Python implementation in
+`src/ein_bot/` — *implements* the kernel. This tree is the contract
+between them.
+
+## Reading order
+
+The four sub-trees layer on each other:
+
+1. **[`ir/01-ein-graph/`](ir/01-ein-graph/)** — the **semantics**.
+   What ein-bot *reasons about*: nodes, edges, hyperedges, rewrite
+   rules. No syntax, no Python — pure graph theory tailored to the
+   project's needs. Read this first to understand what the system
+   thinks in.
+
+2. **[`ir/02-data-model/`](ir/02-data-model/)** — the **in-memory
+   representation**. The Python dataclasses (`Type`, `Instance`,
+   `Relation`, `Rule`, `Fact`, `Pattern`, `Provenance`, …) that hold
+   the graph; the `KnowledgeBase` store with its registries, reverse
+   indexes, layer views, hypothesis forks, derivation DAGs. Maps the
+   semantics in (1) onto concrete code shapes.
+
+3. **[`ir/03-ein-lang/`](ir/03-ein-lang/)** — the **surface
+   syntax**. The S-expression IR that users author and the engine
+   dumps. Lexical rules, six top-level forms (`ontology`, `facts`,
+   `reasoning`, `rules`, `query`, `trace`), the pattern sub-language,
+   worked examples, and DOT rendering. Most of the historical
+   `docs/ir.md` lives here.
+
+4. **[`inference/`](inference/)** — the **rule firing engine**.
+   Stub before P1.3. Becomes the pattern matcher, saturation loop,
+   hypothesis branching, contradiction analysis, and trace
+   generation. The substrate is the data model (2); the language to
+   define rules is (3); the engine is described here.
+
+The order is also the order of **conceptual precedence**: the graph
+is canonical (see [feedback memory `graph-canonical`](../../../.claude/projects/-home-user-work-ein-bot/memory/feedback_graph_canonical.md)
+in your local memory store) — the data model and the syntax are
+*views* of it, the engine *transforms* it.
+
+## What's M1 vs later milestones
+
+This tree describes the **M1 kernel** — what's locked down for the
+Zebra-acceptance milestone.
+
+- `01-ein-graph` is stable: graph + 3 rule families.
+- `02-data-model` is stable through M1; F4 promotion targets
+  (compound node kinds, e-graph) are noted at the seams.
+- `03-ein-lang` is stable; the IR-encoding final call (classic
+  `(type …)`/`(instance …)` vs unified `is-a`) is **explicitly
+  deferred to P1.7 S1.7.2** — both encodings stay valid through every
+  M1 stage.
+- `inference/` is a stub. The full design lands when P1.3 ships.
+
+## Cross-references
+
+- Plans roadmap: [`plans/m1_core_graph_reasoning/`](../../plans/m1_core_graph_reasoning/).
+- Ideas (the user's framing of the project's *goals*): [`docs/ideas/`](../ideas/).
+- External tech index: [`docs/index/`](../index/).
+- PoC (the 2021 prototype, preserved): [`docs/PoC/`](../PoC/).
+- Source of truth for parsing: [`src/ein_bot/ir/grammar.lark`](../../src/ein_bot/ir/grammar.lark).
+- Source of truth for the KB: [`src/ein_bot/kb/`](../../src/ein_bot/kb/).
+
+## Conventions
+
+- All ein code blocks use ```` ```lisp ```` (the IR is an
+  S-expression dialect). Graphviz dumps use ```` ```dot ````.
+- ASCII / box-art diagrams sit alongside DOT examples for inline
+  reading.
+- File numbers (`01_`, `02_`, …) indicate intended reading order
+  within a directory; they're stable.
+- Cross-references inside the kernel tree use relative paths that
+  resolve regardless of repo root.

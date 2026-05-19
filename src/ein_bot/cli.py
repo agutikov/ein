@@ -4,7 +4,7 @@ Subcommands:
 
     ein-bot ir parse <file>     # parse IR, dump canonical text to stdout
     ein-bot ir lint  <file>     # parse-only; exit non-zero on errors
-    ein-bot ir dot   <file>     # render parsed IR as DOT (per docs/ir.md §6)
+    ein-bot ir dot   <file>     # render parsed IR as DOT (per docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
 
 Invoked via the ``ein-bot`` console script or ``python -m ein_bot.cli``.
 """
@@ -70,7 +70,10 @@ def _build_parser() -> argparse.ArgumentParser:
     ir_lint.add_argument("file")
     ir_lint.set_defaults(func=_cmd_ir_lint)
 
-    ir_dot = ir_sub.add_parser("dot", help="render parsed IR as DOT (per docs/ir.md §6)")
+    ir_dot = ir_sub.add_parser(
+        "dot",
+        help="render parsed IR as DOT (per docs/kernel/ir/03-ein-lang/04_dot_rendering.md)",
+    )
     ir_dot.add_argument("file")
     ir_dot.add_argument("--rule-mode", choices=["a", "c"], default="c",
                         help="rule rendering: 'a' side-by-side, 'c' overlay (default)")

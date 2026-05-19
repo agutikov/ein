@@ -11,18 +11,28 @@ neuro-symbolic / constrained-reasoning research.
 
 ## Where things live
 
+- **`docs/kernel/`** — **canonical M1 kernel documentation**: graph
+  semantics (`ir/01-ein-graph/`), Python data model (`ir/02-data-model/`),
+  surface S-expression language (`ir/03-ein-lang/`, mostly what used
+  to be `docs/ir.md`), inference engine (`inference/`, stub before P1.3).
+  Start here for any "what does ein-bot reason about / how" question.
+  See [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
+- **`docs/ir.md`** — thin redirect into `docs/kernel/`; kept so stable
+  cross-references resolve.
 - **`docs/PoC/`** — original 2021 PoC. README explains the graph encoding,
   the *triangle* and *square* inference rules, and the hypothesis-testing
   loop. Treat as historical reference; don't modify unless explicitly
   asked.
 - **`docs/index/`** — catalogue of external tech relevant to the rewrite
   (LLM constrained generation, CSP/SAT/SMT, theorem proving, category
-  theory, graphs & rewrite systems, …). 11 thematic files + a knowledge
-  graph (`knowledge-graph.dot` → SVGs and a Cytoscape.js page).
-- **`docs/ideas/`** — the user's *own* ideas (8 files); each preserves
+  theory, graphs & rewrite systems, reasoning benchmarks, …). 12
+  thematic files + a knowledge graph (`knowledge-graph.dot` → SVGs
+  and a Cytoscape.js page).
+- **`docs/ideas/`** — the user's *own* ideas (9 files); each preserves
   user quotes and open questions. Authoritative on intent.
-- **`reasoning.py`** — current single-file implementation. Scheduled for
-  a full rewrite into a proper Python project; see `TODO.md`.
+- **`src/ein_bot/`** — Python package implementing the kernel. IR
+  parser + dumper under `ir/`; KB store + entities + provenance under
+  `kb/`. The 2021 `reasoning.py` is archived under `docs/PoC/`.
 - **`utils/`** — renderers (`render_knowledge_graph.sh` for Graphviz,
   `render_knowledge_graph_cy.py` for Cytoscape).
 - **`nlp/`, `smt/`** — scratch areas with submodules

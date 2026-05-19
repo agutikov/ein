@@ -19,10 +19,11 @@ modernised in light of neuro-symbolic and constrained-reasoning research.
 | `examples/broken/`   | curated parse-failure fixtures (file:line:col error messages)                |
 | `tests/`             | pytest suite (~200 tests)                                                    |
 | `plans/`             | milestone / phase / stage roadmap (M1 active)                                |
-| `docs/ir.md`         | IR kernel spec (lexical, top-level forms, patterns, examples, rendering)     |
+| `docs/kernel/`       | kernel documentation — graph semantics, data model, surface language, inference engine |
+| `docs/ir.md`         | thin redirect into `docs/kernel/` (kept for stable cross-references)         |
 | `docs/PoC/`          | 2021 proof-of-concept — original `reasoning.py` archived                     |
-| `docs/index/`        | "awesome-list" catalogue of external tech across 11 topic files + knowledge graph |
-| `docs/ideas/`        | ideas extracted from research notes (8 files)                                |
+| `docs/index/`        | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph |
+| `docs/ideas/`        | ideas extracted from research notes (9 files)                                |
 | `utils/`             | renderers for the knowledge graph (Graphviz + Cytoscape)                     |
 | `nlp/`, `smt/`       | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)       |
 | `pyproject.toml`     | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff` |
@@ -59,7 +60,7 @@ ein-bot ir dot   <file> [--rule-mode=a|c] [--trace-view=a|b|c]
 |---------------|--------------------------------------------------------------|
 | `ir parse`    | parse the file and emit the canonical text form to stdout (round-trippable through `dump_canonical`) |
 | `ir lint`     | parse-only check; non-zero exit + `file:line:col` on stderr if malformed |
-| `ir dot`      | render the parsed IR as a Graphviz `digraph` per `docs/ir.md` §6 |
+| `ir dot`      | render the parsed IR as a Graphviz `digraph` per [`docs/kernel/ir/03-ein-lang/04_dot_rendering.md`](docs/kernel/ir/03-ein-lang/04_dot_rendering.md) |
 | `--rule-mode` | `a` side-by-side LHS/RHS clusters, `c` (default) overlay with dashed RHS |
 | `--trace-view` | `a` (default) per-step, `b` aggregate, `c` derivation DAG    |
 
@@ -87,7 +88,9 @@ for f in forms:
 
 S-expression intermediate representation; the grammar is
 `src/ein_bot/ir/grammar.lark` and the spec is
-[`docs/ir.md`](docs/ir.md). Six top-level forms:
+[`docs/kernel/`](docs/kernel/) (graph semantics, data model, surface
+language, inference engine — split per
+[`docs/kernel/README.md`](docs/kernel/README.md)). Six top-level forms:
 
 | head          | role (block name == provenance layer)                                |
 |---------------|----------------------------------------------------------------------|
