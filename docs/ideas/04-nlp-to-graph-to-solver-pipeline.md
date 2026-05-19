@@ -111,6 +111,66 @@ explanation graph  ──→  human-readable trace
 4. **When (if ever) is direct LLM → constraint emission acceptable?**
    For toy problems only? Never?
 
+## Ontology deduction by common sense
+
+User direction (2026-05-19): when a puzzle is stated in NL, the
+**ontology is implicit** — it has to be deduced "by common sense"
+from the facts. The IR explicitly carries an ontology block, but the
+NL frontend must build it from the puzzle text without an explicit
+declaration.
+
+> *"Norwegian as a noun could be a Human, a Nationality, a Language.
+> 'Norwegian lives in yellow house' — languages and nationalities
+> don't live in houses, but humans do. So Norwegian here is a
+> Human."*
+
+This is the **constraint-driven disambiguation** pattern: the
+predicate (`lives-in`) has a type signature (`Human × House`); when
+the subject is polysemous (`Norwegian = Human ∨ Nationality ∨
+Language`), the predicate's signature selects which sense.
+
+In ein-lang terms, this maps onto:
+
+```lisp
+(ontology
+  (relation lives-in (Human House))
+  (instance Norwegian Human))     ; deduced — `Norwegian` constrained by lives-in
+(facts
+  (lives-in Norwegian YellowHouse :source "(N)"))
+```
+
+The deduction is *forward-chaining* over the predicate registry: each
+fact's relation signature narrows the candidate types for its
+arguments. If the narrowing collapses to a unique type — assign it;
+if multiple types remain — branch (the ambiguity-detection
+sub-machinery from idea 03 / idea 05).
+
+**Implementation hint (M2 P2.4)**: the NL frontend emits *typed*
+JSON per sentence with the type filled by the predicate signature:
+
+```json
+{ "relation": "lives-in",
+  "left":  { "value": "Norwegian", "type": "Human"     },
+  "right": { "value": "YellowHouse", "type": "House"   },
+  "source": "(N)" }
+```
+
+…and the loader treats the `type` field as an `(instance Norwegian
+Human)` ontology fact. This sidesteps a separate "ontology induction"
+stage by piggy-backing on the relation signatures that already exist
+in any well-formed predicate registry.
+
+**Why this matters as a kernel observation**: the engine's *fact
+layer* is what the puzzle text *says*; the *ontology layer* is what
+the puzzle reader *brings*. The NL→IR pipeline must produce both —
+the engine on its own can't reason without the ontology. Idea 09's
+benchmarks all-but-confirm this: every reasoning benchmark that
+involves NL puts ontology induction as the implicit first step.
+
+Connection: [`docs/index/10-nlp-semantic-parsing.md`](../index/10-nlp-semantic-parsing.md)
+for semantic-frame parsing (which produces the same type
+disambiguation as a by-product).
+
 ## Connections (context, not answers)
 
 - NLP layer recipes (semantic frames, AMR, NER, coreference):

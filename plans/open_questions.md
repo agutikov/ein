@@ -30,6 +30,8 @@ file it keeps its id; do not reuse a closed id.
 | Q24 | `:where` clause semantics in `sibling-exclusive`                              | [M1](m1_core_graph_reasoning/open_questions.md) |
 | Q25 | Cardinality + ordinality rules with vars — IR shape                          | [M1](m1_core_graph_reasoning/open_questions.md) |
 | Q26 | Compound / virtual node kinds for higher-order rules (sets, projections, …)  | [M1](m1_core_graph_reasoning/open_questions.md) |
+| Q27 | Relation declaration body form — bundled body vs separate property facts     | [M1](m1_core_graph_reasoning/open_questions.md) |
+| Q28 | Empty parens `()` — placeholder, ⊥, ⊤, or forbidden?                          | [M1](m1_core_graph_reasoning/open_questions.md) |
 | Q34 | Algebraic properties beyond symmetric/transitive + 2^7 cartesian product | [followups F4](followups/f4_cross_cutting.md) |
 | Q35 | Variable typing via `(is-a ?var Type)` patterns                              | [followups F4](followups/f4_cross_cutting.md) |
 | Q36 | Relation inheritance / rule polymorphism                                      | [followups F4](followups/f4_cross_cutting.md) |

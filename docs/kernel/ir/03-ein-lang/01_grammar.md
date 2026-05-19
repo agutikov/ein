@@ -88,6 +88,19 @@ next-to)`) live in `ontology` because the puzzle text never says
 "co-located is symmetric" — that's universal context. They are the
 *meta* of the relation, while `rules` is the meta of the *engine*.
 
+**Facts-block-head vs facts-as-objects.** The `(facts …)` block-head
+identifies "this block contains *explicit* facts"; the same fact
+*shapes* (`(NAME args*)`, `(instance …)`, `(not …)`, `(= …)`) can
+also appear inside `(ontology …)` and `(reasoning …)` — there the
+provenance differs (implicit / derived) but the structural shape is
+identical. The loader normalises: fact identity is `(relation_name,
+args)`, layer records origin. See
+[`../02-data-model/01_entities.md` §1.5](../02-data-model/01_entities.md)
+and [`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md` §Ontology
+deduction by common sense](../../../ideas/04-nlp-to-graph-to-solver-pipeline.md)
+for how the NL frontend distinguishes the two populations from
+context.
+
 Example:
 
 ```lisp

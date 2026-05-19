@@ -3,6 +3,11 @@
 **Theme owner:** the user.
 **Trigger:** M2 (LLM infra + GBNF for IR) is complete and stable.
 
+This is **rung 1** of the three-rung self-modification ladder — see
+[`docs/ideas/10-generic-self-modification.md`](../../docs/ideas/10-generic-self-modification.md)
+for the umbrella view alongside [F5 (rules as data)](f5_rules_as_data.md)
+and [F6 (modify own harness)](f6_modify_own_harness.md).
+
 ## What this is
 
 Per [`docs/ideas/01-self-modifying-constraint-language.md`](../../docs/ideas/01-self-modifying-constraint-language.md):

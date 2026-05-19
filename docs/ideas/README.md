@@ -55,6 +55,13 @@ These are seeds for further work, not specifications.
    should grow into. Companion benchmarks file:
    [`docs/index/12`](../index/12-llm-and-reasoning-benchmarks.md).
 
+10. [Generic self-modification — three rungs](10-generic-self-modification.md)
+    Three rungs of a ladder: grammar (F2), rules (F5), harness (F6).
+    Why the M1 kernel's shape is chosen so these followups could be
+    added without rework. The unifying view of [F2](../../plans/followups/f2_self_modifying_language.md),
+    [F5](../../plans/followups/f5_rules_as_data.md),
+    [F6](../../plans/followups/f6_modify_own_harness.md).
+
 ## Cross-cutting observations
 
 These are not standalone ideas but recurring framings worth keeping

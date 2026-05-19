@@ -208,6 +208,43 @@ The M1 acceptance target is (3) for Zebra (explanation-complete on
 the human walkthrough). The other minima are *measurement* targets
 for benchmarking against alternative rule sets.
 
+### Type systems induced by relations — not just `is-a`
+
+User direction (2026-05-19): the type system is defined by **two
+rules** — *inheritance* and *substitution* — over `is-a` edges. But
+`is-a` is just one example. Other relations induce **other
+structures** that are equally interesting per domain:
+
+| relation     | structure produced       | analogue in computing                 |
+|--------------|--------------------------|----------------------------------------|
+| `is-a`       | classification hierarchy | OOP type system                        |
+| `part-of`    | mereology / containment  | composition; ASTs                      |
+| `contains`   | nesting forest           | filesystem, scoping                    |
+| `before`     | temporal order           | scheduling, version history            |
+| `depends-on` | dependency DAG           | build systems, package managers        |
+| `subsumes`   | subsumption order        | description-logic concept hierarchy    |
+
+Each induces its own propagation rules; some look like type systems
+in disguise (`subsumes` is essentially DL's `is-a`), some look like
+graph-flow problems (`depends-on` topological sort). A unifying
+observation: any **transitive + antisymmetric (or asymmetric)**
+relation induces a partial-order-like structure on its participants,
+and the substitutability / inheritance pattern carries over.
+
+This is the *generalisation knob* on the rule-property cartesian
+product: pick a profile of properties, instantiate the corresponding
+generic rules ((`transitive R`), (`asymmetric R`), …), and you get a
+new domain-specific "type-like" structure for free. The M1 rule
+library already supports this for `is-a` in zebra2 (`(transitive
+is-a) (asymmetric is-a) (sibling-exclusive is-a)`); other relations
+slot in by adding their own property facts.
+
+**Practical hint for puzzle authors:** when modelling a non-`is-a`
+relation that has hierarchical semantics, prefer reusing the generic
+property-rules over inventing new ones. If the relation is
+`transitive + asymmetric`, you get a hierarchy without writing any
+new rules — the substitution semantics carries over by analogy.
+
 ### Categorical / OOP-collapse framing
 
 The deeper observation in the user's note (2026-05-18): with this

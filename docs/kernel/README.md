@@ -62,6 +62,9 @@ Zebra-acceptance milestone.
 
 ## Cross-references
 
+- **Glossary**: [`glossary.md`](glossary.md) — definitions for terms
+  this tree uses with technical meaning (homoiconic, Levi-bipartite,
+  T1/T2/T3 rules, ATMS, e-graph, encoding-agnostic, …).
 - Plans roadmap: [`plans/m1_core_graph_reasoning/`](../../plans/m1_core_graph_reasoning/).
 - Ideas (the user's framing of the project's *goals*): [`docs/ideas/`](../ideas/).
 - External tech index: [`docs/index/`](../index/).

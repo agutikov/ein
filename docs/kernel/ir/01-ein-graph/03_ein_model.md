@@ -1,0 +1,329 @@
+# Ein model — reflexive node algebra
+
+This file extends [`01_kb.md`](01_kb.md) with the user's *reflexive*
+framing of the ein model — the observation that every "kind of
+thing" in the KB (object, type, relation, rule, fact, instance) is
+itself a graph node, and that the *instance-of* relation is itself
+an instance of itself.
+
+It is the substrate from which the surface S-expression language
+([`../03-ein-lang/`](../03-ein-lang/)) and the Python data model
+([`../02-data-model/`](../02-data-model/)) are derived.
+
+> **No language, no Python here.** Pure graph-algebraic claims.
+
+---
+
+## 1. Reflexive instance-of-instance
+
+Recall the five "kinds" of node from
+[`01_kb.md` §1](01_kb.md): object, type, relation, rule, fact. The
+user's framing collapses them into one self-instantiating algebra:
+
+```text
+   instance of a type      is an object
+   instance of a relation  is a fact
+
+   relation                is a type   (relations have instances = facts)
+   fact                    is an object (facts are nodes)
+   relation                is an object (relations are nodes)
+   type                    is an object (types are nodes)
+
+   instance                is a relation   (it relates a leaf to a type)
+   instance                is a fact       (an instance assertion is a proposition)
+   instance                is an instance of instance   (homoiconic root)
+```
+
+The last line is the **fixed point** — `instance` itself participates
+in the very relation it names. Stated plainly: the proposition *"X is
+an instance of T"* is itself an *instance* of the *instance*
+relation. Reading the seven lines top to bottom: nothing in the
+language is exempt from being treated as data.
+
+This is the project's **homoiconic root**. It pays off in three
+ways:
+
+1. **Rules can match rules** (followup [F5](../../../../plans/followups/f5_rules_as_data.md)).
+2. **Traces can match traces** ([Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21)
+   — the trace IR is the input IR).
+3. **The grammar can mutate itself** (followup [F2](../../../../plans/followups/f2_self_modifying_language.md))
+   without changing what *kind* of object the grammar is.
+
+## 2. The four foundational terms
+
+The user-stated definitions, nailed down to avoid future drift:
+
+| term     | definition                                                                  |
+|----------|-----------------------------------------------------------------------------|
+| **node** | a vertex in the graph. Has identity. Comes in two flavours (see §3).         |
+| **arrow** *(= link, arc, pointer, reference)* | a directed edge from one node to another. The four English terms are synonymous — pick one for any given context. |
+| **object** | a node pointed at by some arrow. Usually a *sink* — it doesn't point out itself. |
+| **relation** | a node *containing two or more outbound arrows*. Three sub-readings depending on context — see §4. |
+
+**Identity rule** (load-bearing): **no copies**. A graph node is
+either:
+
+- a **named object** with a *single, globally-unique name* — two
+  occurrences of the same name across the KB refer to the **same
+  node**; TODO: here global means within context bounds, e.g. reasoning branches
+- a **relation** with an *ordered list of links* — two relations
+  with the same head + arg-list are the same node;
+- a **`?variable`** with *local* (per-rule, per-pattern) uniqueness;
+- a **`:keyword`** — positional-shorthand marker; not a node, but a
+  slot-name on a relation.
+
+The Python data model encodes this in `Fact.__eq__` (by `(rel,
+args)` tuple) and in `Instance.__eq__` (by `name`); see
+[`../02-data-model/01_entities.md` §1.5](../02-data-model/01_entities.md).
+
+## 3. Two flavours of node
+
+Every node is *either*:
+
+| flavour      | example                | notation in ein-lang  |
+|--------------|------------------------|------------------------|
+| **named**    | `Norwegian`, `House_1` | bare atom              |
+| **relational** | `(co-located Norwegian House_1)` | parenthesised list |
+
+The relational form is **just a node with N outgoing slot-edges to
+its arguments**. Notably:
+
+- `(Name)` — a one-element list with an atom head, often a free
+  declaration node (e.g. `(Norwegian)` could appear as a declaration
+  before any relation involves it).
+- `(Name1 Name2)` — a two-slot node, with two arrows to the named
+  nodes. Already a relation (in the graph-structural sense).
+- `(rel1 objA objB)` — a three-slot node: arrows to `rel1`, `objA`,
+  `objB`. The 3-hrel; the head's role is conventionally "which
+  relation declaration this fact instantiates", but graph-
+  structurally it's just another slot.
+
+Two outgoing arrows from the **same relational node** to the **same
+target node** are *valid* and *meaningful*:
+
+```dot
+digraph two_slots_one_target {
+  rankdir=LR;
+  rel  [shape=octagon, label="(T T)"];
+  T    [shape=box, label="T"];
+  rel -> T [label="slot #1"];
+  rel -> T [label="slot #2"];
+}
+```
+
+That's how `(relation R (T T))` works — both argument slots point at
+the same type `T`. The two arrows are *distinguished by slot
+number*, not by target.
+
+## 4. The "relation" problem — disambiguation
+
+The word "relation" carries **three** distinct meanings in ein-bot.
+The four-term table above defines the **graph-structural** meaning;
+the others are *uses* of it:
+
+| sub-meaning             | example                       | which kind of node               |
+|-------------------------|-------------------------------|-----------------------------------|
+| **relation-as-type**    | `(relation co-located (T T))` | declaration node                  |
+| **relation instance** = **fact** | `(co-located Norwegian Red)` | proposition node          |
+| **multi-arrow node** (colloquial) | any `(A B C)`        | bare graph-structural sense       |
+
+The Python data model picks one term per use:
+
+- `Relation` entity ⟺ relation-as-type (the declaration).
+- `Fact` entity ⟺ relation instance.
+- "node with ≥ 2 outgoing arrows" — has no Python entity; it's the
+  *category* the first two are subcases of.
+
+In informal discussion, **prefer the precise term** (`Relation
+declaration`, `Fact`, or `node-with-arrows`). When "relation" alone
+is unambiguous from context, fine; otherwise default to one of the
+three precise terms.
+
+## 5. Types as common-relation holders
+
+> *"Types are nodes that hold relations common for multiple instance
+> nodes. So an instance of a type, an object, inherits the relations
+> of a type."* — user, 2026-05-19
+
+In graph terms: a **type** is a node `T` such that one or more
+relations have `T` in their signature (specifically: in an argument
+slot that other instance nodes also occupy). The "type system" is
+the **closure of `is-a` propagation** over those signatures.
+
+Worked example — the *Jack drinks coffee* fragment (full doc:
+[`04_jack_drinks_coffee.md`](04_jack_drinks_coffee.md)):
+
+```text
+   (can-drink Human Drink)   ← declaration node: relates two types
+   (is-a Jack Human)         ← Jack is an instance of Human
+   (is-a Coffee Drink)       ← Coffee is an instance of Drink
+
+   ⇒ inherited                  (can-drink Jack Drink)
+   ⇒ inherited + instantiated   (can-drink Jack Coffee)
+```
+
+`Human` and `Drink` are *types* because each:
+
+1. Has at least one `is-a` instance below them.
+2. Appears in a relation declaration (`can-drink`) whose *meaning*
+   carries over to those instances.
+
+The full inheritance flow is the subject of
+[`02_rules.md` §2](02_rules.md) — relation polymorphism (T2 rules)
+mechanises this propagation.
+
+**is-subtype vs is-instance.** Both look like is-a, but they carry
+different propagation semantics:
+
+| edge kind   | example                  | what propagates                     |
+|-------------|--------------------------|-------------------------------------|
+| **is-subtype** | `Dog is-a Mammal`     | the *relations* of `Mammal` lift to `Dog` |
+| **is-instance** | `Rex is-a Dog`       | the *propositions* about `Dog` apply to `Rex` |
+
+In zebra2.ein's unified `is-a` encoding, these are *the same edge*
+(the engine doesn't distinguish them syntactically); the
+distinction emerges from whether the target is a *leaf* (instance)
+or an *internal node* (subtype) of the is-a forest.
+
+The IR-encoding final call ([P1.7 T1.7.2.5](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.2_dynamic_vs_hardcoded.md))
+will decide whether to keep the distinction syntactic (classic
+`zebra.ein`) or collapse it (unified `zebra2.ein`).
+
+## 6. Reserved relation names
+
+Some relation names are *kernel-defined*; the engine has built-in
+behaviour for them and they may not be redefined by user code:
+
+| name         | role                                                            |
+|--------------|-----------------------------------------------------------------|
+| `relation`   | declares a relation-type node (`(relation co-located (T T))`).  |
+| `rule`       | declares a rewriting rule (head of `(rule …)` in `(rules …)`).  |
+| `is-a`       | the inheritance/instantiation edge (in zebra2-style encoding).  |
+| `instance`   | the explicit instance-of-type edge (in zebra.ein-style encoding). |
+| `type`       | declares a type-node (in zebra.ein-style encoding).               |
+
+`is-a`, `instance`, `type` are *not strictly* reserved in the
+grammar today — both encodings are valid IR (the IR-encoding
+decision is P1.7). But their *engine semantics* are reserved: the
+loader recognises them and builds Type/Instance entities accordingly.
+
+## 7. Open design seams
+
+Three design choices remain explicitly **open** in the M1 kernel
+model. Each has a parked open question; each closes when there's a
+puzzle whose semantics force the call.
+
+### 7.1 The `()` node — empty parens
+
+```text
+   ()   ← what does this mean?
+```
+
+Candidates:
+
+- **Placeholder / hole** — a marker that "something belongs here but
+  hasn't been determined yet". Useful in partially-derived facts.
+- **Global singleton `⊥` (bottom)** — the impossible / empty type.
+  Useful for negative-fact representation.
+- **Global singleton `⊤` (top)** — the universal type that
+  everything is-a. (zebra2.ein already uses an explicit `T` atom for
+  this; an unnamed `()` would be the equivalent.)
+- **Forbidden** — `()` is a parse error and there's no syntactic
+  hole notation.
+
+Parked at [M1 Q28](../../../../plans/m1_core_graph_reasoning/open_questions.md#q28--empty-parens-node-semantics).
+The grammar currently parses `()` as a placeholder atom `@empty`
+(see [`src/ein_bot/ir/grammar.lark`](../../../../src/ein_bot/ir/grammar.lark));
+no engine semantics are attached.
+
+### 7.2 Relation body — implementation vs property-fact form
+
+```lisp
+;; (a) declaration with body — bundles properties into the relation
+(relation is-a (A B) (transitive asymmetric sibling-exclusive))
+
+;; (b) declaration + separate property-application facts (M1 style)
+(relation is-a T T)       ;; can remove parenthesized group for args - no other atoms goes after
+(transitive        is-a)
+(asymmetric        is-a)
+(sibling-exclusive is-a)
+```
+
+Both encodings would mean the same thing semantically (the same rule
+firings, the same closure). The trade-offs:
+
+| dimension                  | (a) body form                            | (b) property-fact form                |
+|----------------------------|-------------------------------------------|----------------------------------------|
+| local readability          | strong — all properties in one place      | weaker — properties scattered          |
+| graph structure            | nested — properties hidden inside `(…)`   | flat — each property a first-class fact |
+| can rules match properties | requires unpacking the body               | yes (matching property-application facts) |
+| can rules modify properties | requires rewriting the declaration       | yes (asserting new property facts in REASONING) |
+| zebra2/zebra1 consistency  | needs a body-form spec across both        | M1's existing form; no new spec needed |
+
+M1 ships **form (b)**: properties are first-class graph nodes
+(property-application facts), and rules can both match them
+([T2 rule activation](02_rules.md)) and (in F5) modify them.
+
+Parked at [M1 Q27](../../../../plans/m1_core_graph_reasoning/open_questions.md#q27--relation-body-form).
+Form (a) is admitted as a possible *future syntactic sugar* that
+desugars into form (b) at load time.
+
+### 7.3 The "many meanings of relation" disambiguation
+
+Already discussed in §4; flagged here as a *style-guide* open seam
+because the same disambiguation question recurs whenever a new
+section uses "relation" without context.
+
+Working rule: in kernel docs, prefer `Relation` (capitalised, ⟺ the
+declaration entity), `Fact` (⟺ the instance), or "node with N
+arrows" (the colloquial sense), in that priority. Lower-case
+"relation" without qualification is *only* permitted when the
+context is unambiguous.
+
+## 8. Where this lives in code (M1 state)
+
+The reflexive observations in this file are mostly **already true
+of the M1 implementation** — they're recognised here as the *unifying
+view*, not as new work.
+
+| claim                          | already implemented                                              |
+|--------------------------------|------------------------------------------------------------------|
+| no copies — globally unique names | `KnowledgeBase.add_*` is idempotent on name; `Fact` identity by `(rel, args)` |
+| relations are first-class nodes | `Relation` is an entity (S1.2.1); `Fact.relation` resolves to it |
+| facts are first-class nodes    | `Fact` is an entity                                              |
+| types are first-class nodes    | `Type` is an entity                                              |
+| rules are first-class nodes    | `Rule` is an entity; `Pattern` lifts `:match`/`:assert`            |
+| property-application is a fact | open-world relation auto-vivification + `_rule_apps_by_rule` index |
+| trace is same IR as input      | `(trace …)` reuses the parser ([Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21)) |
+
+What's **not yet** implemented and what *might* warrant a follow-up
+implementation phase (P1.2b):
+
+| claim                              | open                                                          |
+|------------------------------------|---------------------------------------------------------------|
+| `(rule …)` can produce `(rule …)`   | F5 (rules-as-data); P1.3 matcher needs an extension           |
+| `()` empty paren has engine semantics | Q28 — no decision; grammar parses `@empty` as a no-op atom    |
+| declaration body form (a) is sugar  | Q27 — not lifted yet                                          |
+
+**P1.2b audit** (flagged for the user's review): the unified
+reflexive model in this document does NOT immediately require new
+implementation in M1. The existing P1.2 (S1.2.1–S1.2.4) data model
+covers it. The question is whether the *documentation reorganisation*
+captures the model coherently enough that the next phases (P1.3
+rules, P1.5 hypothesis, P1.6 trace) can build on it without
+re-discovering pieces. Recorded in [plans/ideas.md](../../../../plans/ideas.md)
+as a live entry.
+
+## See also
+
+- [`01_kb.md`](01_kb.md) — the five-node-kind model this extends.
+- [`02_rules.md`](02_rules.md) — the rule-rewriting story over the
+  reflexive substrate.
+- [`04_jack_drinks_coffee.md`](04_jack_drinks_coffee.md) — the
+  worked example illustrating type-as-relation-holder.
+- [Idea 02](../../../ideas/02-graph-as-formal-substrate.md) — graph
+  is the formal substrate.
+- [Idea 10](../../../ideas/10-generic-self-modification.md) — what
+  the reflexive root unlocks (F2 / F5 / F6).
+- [F4 Q34](../../../../plans/followups/f4_cross_cutting.md) — the
+  rule-property cartesian product.

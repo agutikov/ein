@@ -14,9 +14,14 @@ strikes.
 | F   | Title                                              | Trigger                                                                        |
 |-----|----------------------------------------------------|--------------------------------------------------------------------------------|
 | F1  | [Categorical formulation](f1_categorical_formulation.md)         | when M1 stabilises and the engine's rule set is fixed — formalise post-hoc      |
-| F2  | [Self-modifying constraint language](f2_self_modifying_language.md) | after M2 GBNF infra is in place; when interest in protocol-evolution research returns |
+| F2  | [Self-modifying constraint language](f2_self_modifying_language.md) | rung 1 of self-modification: grammar evolves via LLM ↔ harness loop          |
 | F3  | [Three task classes as first-class operations](f3_three_task_classes_first_class.md) | once M1.P1.5 ships the mode-selection skeleton; surface to users               |
 | F4  | [Cross-cutting](f4_cross_cutting.md)                              | rule-learning, versioned grammars, LLM-as-policy, scope-creep ideas             |
+| F5  | [Operate IR rules as data](f5_rules_as_data.md)                   | rung 2 of self-modification: rules rewrite rules, induce rules from facts     |
+| F6  | [Modify own harness code](f6_modify_own_harness.md)               | rung 3 of self-modification: engine emits patches to its own Python source    |
+
+The three self-modification followups (F2 / F5 / F6) share a unifying
+view: [`docs/ideas/10-generic-self-modification.md`](../../docs/ideas/10-generic-self-modification.md).
 
 ## Working agreement
 

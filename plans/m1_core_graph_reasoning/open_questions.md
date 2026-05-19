@@ -22,6 +22,8 @@ Milestone-scoped. Cross-milestone questions live in
 | Q24 | `:where` clause in `sibling-exclusive` — what does it mean, and should it stay?       | P1.3 S1.3.1        |
 | Q25 | Cardinality + ordinality rules with vars — IR shape, graph representation             | P1.3 S1.3.2        |
 | Q26 | Compound / virtual node kinds for higher-order rules (sets, projections, groups, top/bottom) | P1.2 leaves the seam; concrete kinds parked for followups |
+| Q27 | Relation declaration body form — bundle properties inside `(relation R (T T) (transitive …))` vs separate property-application facts? | M1 ships form (b); form (a) parked as future sugar |
+| Q28 | Empty parens `()` — placeholder, ⊥, ⊤, or forbidden?                  | M1 grammar parses as `@empty` no-op; engine semantics TBD |
 
 ---
 
@@ -389,3 +391,67 @@ review; concrete promotion happens followup-by-followup.
 Connection: [feedback memory `graph-canonical`](.) — graph is the
 canonical data model, entity API is a derived view; this open
 question is the *future-proofing* corollary.
+
+## Q27 — Relation body form
+
+User direction (2026-05-19): two equivalent forms for declaring a
+relation along with its algebraic properties:
+
+```lisp
+;; Form (a) — body bundled into the declaration
+(relation is-a (A B) (transitive asymmetric sibling-exclusive))
+
+;; Form (b) — declaration + separate property-application facts (M1)
+(relation is-a (T T))
+(transitive        is-a)
+(asymmetric        is-a)
+(sibling-exclusive is-a)
+```
+
+Semantically equivalent. Which form, and why? See
+[`docs/kernel/ir/01-ein-graph/03_ein_model.md` §7.2](../../docs/kernel/ir/01-ein-graph/03_ein_model.md)
+for the full trade-off table.
+
+**Working answer:** ship form **(b)** in M1 (already the de-facto
+form in zebra.ein / zebra2.ein). Form (a) is admitted as a *future
+syntactic sugar* that desugars into form (b) at load time; it does
+NOT need first-class engine support. The desugaring lands when
+authoring readability becomes a pain point (probably P1.7+ when
+non-zebra puzzles arrive).
+
+Trade-off rationale (from `03_ein_model.md` §7.2):
+- Form (b) makes property-application facts *first-class graph
+  nodes*, so rules (T2 + F5) can match and modify them.
+- Form (a) is more readable in the small but hides the property
+  facts inside a nested form; rules wanting to match them would need
+  unpacking.
+- Choosing (b) aligns with the "everything is a node" principle
+  ([feedback memory `graph-canonical`](.)).
+
+## Q28 — Empty parens `()` node semantics
+
+User direction (2026-05-19): the grammar accepts `()` as a parenth-
+esised form; what does it *mean*?
+
+Candidates:
+- **Placeholder / hole** — "something belongs here but is
+  undetermined". Useful in partially-derived facts.
+- **Global singleton ⊥ (bottom)** — the impossible / empty type.
+- **Global singleton ⊤ (top)** — the universal-supertype.
+  (zebra2.ein uses an explicit `T` atom for this — `()` would be
+  the unnamed equivalent.)
+- **Forbidden** — `()` is a parse error; no hole notation.
+
+**Working answer:** *parked*. The grammar's current behaviour
+parses `()` as a synthetic `@empty`-headed `SForm` with no
+attributes; the engine treats it as a no-op atom. No semantic
+commitment in M1. Revisit when a concrete use case forces the
+question — most likely the negative-fact representation in P1.5
+(hypothesis loop) or the partially-derived-fact representation in
+P1.6 (trace).
+
+When a use case arrives, the *placeholder / hole* reading is the
+most likely choice because:
+- ⊥ and ⊤ are better served by explicit named atoms (`T` in
+  zebra2.ein is already the convention).
+- *Forbidden* would require grammar work and offers no upside.
