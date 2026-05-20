@@ -9,7 +9,8 @@ until a second non-engine file appears.
 - :mod:`match`      — runtime matcher executing compiled JoinPlans.
 - :mod:`firing`     — Firing record + ``:assert`` substitution.
 - :mod:`why`        — ``{?var}`` ``:why`` template substitution.
-- :mod:`engine`     — driver: compile_all, step, saturate (S1.3.3).
+- :mod:`engine`     — compile cache + naive step / saturate.
+- :mod:`saturator`  — priority-banded saturation driver (S1.3.3).
 """
 from __future__ import annotations
 

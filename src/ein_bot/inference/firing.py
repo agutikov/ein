@@ -35,18 +35,25 @@ from .compile import JoinPlan, NestedPattern
 
 @dataclass(frozen=True)
 class Firing:
-    """One successful rule application.
+    """One rule application — successful or redundant.
 
-    `derived` is the new fact written to the REASONING layer (or
-    None if the rule asserted something already present — the matcher
-    still yielded the binding, but :meth:`KnowledgeBase.add_fact` is
-    idempotent on (relation_name, args)).
+    `derived` is the new fact written to the REASONING layer (or, if
+    `redundant=True`, the pre-existing fact the matcher would have
+    re-derived; no second insertion is performed).
+
+    `redundant` (S1.3.3) marks a firing whose conclusion was already
+    present in the KB. The matcher still produced the binding —
+    pedagogically relevant for the trace renderer — but
+    `kb.add_fact`'s dedupe returned the existing fact and the
+    saturator chose to skip applying. The trace shows the firing
+    "considered" without double-displaying the conclusion.
     """
     rule: str
     activator: tuple[str, ...]
     bindings: dict[str, Any]
     derived: Fact
     premises: tuple[Fact, ...]
+    redundant: bool = False
 
 
 # ── :assert substitution ───────────────────────────────────────────
