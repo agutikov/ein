@@ -323,7 +323,7 @@ class TestIncrementalIndex:
         (ontology
           (type T)
           (instance A T)
-          (relation r (T T)))
+          (relation r T T))
         """
         from ein_bot.kb import Provenance
         kb = KnowledgeBase.from_ir(parse(text))

@@ -151,22 +151,20 @@ def _ingest_ontology(form: SForm, kb: KnowledgeBase, errors: list[str]) -> list[
             continue
 
         if head == "relation":
-            # (relation Name (T1 T2 …) :kw v ...)
+            # (relation Name T1 T2 … :kw v ...)
+            # Flat args post-R10; grammar guarantees ≥ 2 SYMBOL args
+            # (name + at least one type), followed by optional kw_pairs.
             if len(child.args) < 2:
                 errors.append(f"(relation) needs name + signature at {child.loc}")
                 continue
             name = _atom_name(child.args[0])
-            sig_form = child.args[1]
-            if name is None or not (
-                isinstance(sig_form, SForm)
-                and isinstance(sig_form.head, Atom)
-                and sig_form.head.name == "@sig"
-            ):
+            sig = tuple(
+                a.name for a in child.args[1:]
+                if isinstance(a, Atom)
+            )
+            if name is None or not sig:
                 errors.append(f"malformed (relation) at {child.loc}")
                 continue
-            sig = tuple(
-                a.name for a in sig_form.args if isinstance(a, Atom)
-            )
             kb.add_relation(Relation(
                 name=name, signature=sig, declared=True, loc=child.loc,
             ))
@@ -179,13 +177,13 @@ def _ingest_ontology(form: SForm, kb: KnowledgeBase, errors: list[str]) -> list[
                 errors.append(f"(a-priori) needs name + signature at {child.loc}")
                 continue
             name = _atom_name(child.args[0])
-            sig_form = child.args[1]
-            if name is None or not isinstance(sig_form, SForm):
+            sig = tuple(
+                a.name for a in child.args[1:]
+                if isinstance(a, Atom)
+            )
+            if name is None or not sig:
                 errors.append(f"malformed (a-priori) at {child.loc}")
                 continue
-            sig = tuple(
-                a.name for a in sig_form.args if isinstance(a, Atom)
-            )
             kb.add_relation(Relation(
                 name=name, signature=sig, declared=True, loc=child.loc,
             ))

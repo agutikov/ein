@@ -37,8 +37,13 @@
 //      · `and`      — (and EXPR+ [kw_pair*])         — conjunction
 //      · `or`       — (or  EXPR+ [kw_pair*])         — disjunction
 //      · `neq`      — (neq A B)                      — distinctness predicate
+//      · `relation` — (relation NAME T1 T2 … [kw…])  — schema declarator (R10)
+//      · `a-priori` — (a-priori NAME T1 T2 … [kw…])  — schema declarator (R10)
 //      These never match SYMBOL — a typo like `(instnce Norwegian
 //      Nationality)` is a parse-time error, not a validator error.
+//      Similarly `(relation R (T1 T2))` is rejected: the inner group
+//      has no matching production in relation_decl, and `relation` no
+//      longer falls back to generic_fact.
 //      `(symmetric R)`, `(transitive R)` etc. stay generic because
 //      they ARE declared (as rules) in the puzzle file.
 //
@@ -69,13 +74,17 @@ start: form*
      | trace_form
 
 // ═══════════ Ontology (schema + implicit assumptions) ═══════════
+// `relation` and `a-priori` take flat args under M1 form (b)
+// (kernel docs `01-ein-graph/03_ein_model.md` §7.2; P1.3 S1.3.0 R10).
+// `(relation R (T1 T2))` is rejected — the inner group has no purpose
+// when no body follows. Token disambiguation works because trailing
+// `:kw value` pairs lex as KEYWORD, not SYMBOL.
 ontology_form: "(" "ontology" ontology_decl* ")"
 ?ontology_decl: type_decl | relation_decl | apriori_decl
               | fact_form
 type_decl:     "(" "type" SYMBOL [SYMBOL] ")"
-relation_decl: "(" "relation" SYMBOL relation_sig kw_pair* ")"
-apriori_decl:  "(" "a-priori" SYMBOL relation_sig kw_pair* ")"
-relation_sig:   "(" SYMBOL+ ")"
+relation_decl: "(" "relation" SYMBOL SYMBOL+ kw_pair* ")"
+apriori_decl:  "(" "a-priori" SYMBOL SYMBOL+ kw_pair* ")"
 
 // ═══════════ Facts (explicit problem statements) ═══════════
 // `fact_form` is shared with (ontology …) and (reasoning …); the
@@ -149,7 +158,7 @@ or_form:       "(" "or" value+ kw_pair* ")"
 // `neq_test` is still a valid SYMBOL. This is what gives us
 // parse-time rejection of `(instance Norwegian)` (wrong arity)
 // instead of silently parsing it as generic_fact.
-SYMBOL:   /(?!(?:instance|not|and|or|neq)\b)[A-Za-z][A-Za-z0-9_-]*/
+SYMBOL:   /(?!(?:instance|not|and|or|neq|relation|a-priori)\b)[A-Za-z][A-Za-z0-9_-]*/
 VAR:      /\?[A-Za-z][A-Za-z0-9_-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
 WILDCARD: "_"

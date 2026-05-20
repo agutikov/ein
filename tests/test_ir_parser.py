@@ -38,7 +38,7 @@ def test_ontology_relation_binary():
     _ok("""
     (ontology
       (type Person) (type House)
-      (relation lives-in (Person House) :cardinality 1..1))
+      (relation lives-in Person House :cardinality 1..1))
     """)
 
 
@@ -46,14 +46,14 @@ def test_ontology_relation_nary():
     _ok("""
     (ontology
       (type Attribute)
-      (relation between-three (Attribute Attribute Attribute)))
+      (relation between-three Attribute Attribute Attribute))
     """)
 
 
 def test_ontology_apriori():
     _ok("""
     (ontology
-      (a-priori right-of (House House) :pattern (right-of ?a ?b)))
+      (a-priori right-of House House :pattern (right-of ?a ?b)))
     """)
 
 

@@ -79,7 +79,7 @@ class Pattern:
                         walk(a, "=")
                     return
                 # generic SForm with head Atom = relation name (or kw-pair carrier)
-                if head_name is not None and head_name not in {"@empty", "@sig", "@params"}:
+                if head_name is not None and head_name not in {"@empty", "@params"}:
                     if head_name not in rels:
                         rels.append(head_name)
                 for a in node.args:

@@ -169,9 +169,9 @@
 
   ;; ── Relation signatures. Properties (incl. spatial-ness) live
   ;; ── below as rule-application facts, not as kw-pairs here.
-  (relation co-located (Attribute Attribute))
-  (relation right-of   (Attribute Attribute))
-  (relation next-to    (Attribute Attribute))
+  (relation co-located Attribute Attribute)
+  (relation right-of   Attribute Attribute)
+  (relation next-to    Attribute Attribute)
 
   ;; ── Rule-application facts. Implicit: the puzzle never says
   ;; ── "co-located is symmetric" — that's universal context.

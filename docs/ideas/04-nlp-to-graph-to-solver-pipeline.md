@@ -133,7 +133,7 @@ In ein-lang terms, this maps onto:
 
 ```lisp
 (ontology
-  (relation lives-in (Human House))
+  (relation lives-in Human House)
   (instance Norwegian Human))     ; deduced — `Norwegian` constrained by lives-in
 (facts
   (lives-in Norwegian YellowHouse :source "(N)"))

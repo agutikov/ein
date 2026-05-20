@@ -20,7 +20,7 @@ def _tiny_kb() -> KnowledgeBase:
     (ontology
       (type T)
       (instance A T) (instance B T) (instance C T) (instance D T)
-      (relation r (T T)))
+      (relation r T T))
     (facts
       (r A B :source "(1)")
       (r B C :source "(2)")

@@ -95,8 +95,8 @@ class SForm:
     `head` is an `Atom` for normal forms (including the `=` atom), but
     can be `Var` or `Wildcard` inside pattern interiors — e.g.
     `(?rel ?a ?b)` or `(_ ?a ?b)`. Synthetic atoms whose name starts
-    with `@` (e.g. `@sig`, `@params`) mark headless parens in the
-    grammar (`relation_sig`, `rule_params`); the dumper emits them
+    with `@` (e.g. `@params`, `@empty`) mark headless parens in the
+    grammar (`rule_params`, empty `()`); the dumper emits them
     without a head.
     """
     head: "Atom | Var | Wildcard"

@@ -228,33 +228,29 @@ def render_ontology(form: SForm) -> str:
                 b.edge(_atom_id(name), _atom_id(parent),
                        "style=dashed, arrowhead=empty")
         elif head == "relation":
-            # (relation Name (T1 T2 …) [kw…])
+            # (relation Name T1 T2 … [kw…]) — flat args post-R10.
             args = decl.args
             if not args or not isinstance(args[0], (Atom, Var)):
                 continue
             rel_name = _value_label(args[0])
-            sig = args[1] if len(args) > 1 and isinstance(args[1], SForm) else None
-            if sig is not None and len(sig.args) >= 2:
-                src = sig.args[0]
-                dst = sig.args[1]
-                if isinstance(src, (Atom, Var, Wildcard)):
-                    b.node(_atom_id(src), f"shape={TYPE_SHAPE}")
-                if isinstance(dst, (Atom, Var, Wildcard)):
-                    b.node(_atom_id(dst), f"shape={TYPE_SHAPE}")
+            sig = [a for a in args[1:] if isinstance(a, (Atom, Var, Wildcard))]
+            if len(sig) >= 2:
+                src, dst = sig[0], sig[1]
+                b.node(_atom_id(src), f"shape={TYPE_SHAPE}")
+                b.node(_atom_id(dst), f"shape={TYPE_SHAPE}")
                 b.edge(_atom_id_for_value(src), _atom_id_for_value(dst),
                        f'label="{rel_name}", style=dashed')
         elif head == "a-priori":
+            # (a-priori Name T1 T2 … [kw…]) — flat args post-R10.
             args = decl.args
             if not args:
                 continue
             ap_name = _value_label(args[0])
-            sig = args[1] if len(args) > 1 and isinstance(args[1], SForm) else None
-            if sig is not None and len(sig.args) >= 2:
-                src, dst = sig.args[0], sig.args[1]
-                if isinstance(src, (Atom, Var, Wildcard)):
-                    b.node(_atom_id(src), f"shape={TYPE_SHAPE}")
-                if isinstance(dst, (Atom, Var, Wildcard)):
-                    b.node(_atom_id(dst), f"shape={TYPE_SHAPE}")
+            sig = [a for a in args[1:] if isinstance(a, (Atom, Var, Wildcard))]
+            if len(sig) >= 2:
+                src, dst = sig[0], sig[1]
+                b.node(_atom_id(src), f"shape={TYPE_SHAPE}")
+                b.node(_atom_id(dst), f"shape={TYPE_SHAPE}")
                 b.edge(_atom_id_for_value(src), _atom_id_for_value(dst),
                        f'label="{ap_name}", style=dashed, penwidth=2')
         else:

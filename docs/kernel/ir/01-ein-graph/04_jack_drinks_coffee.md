@@ -25,35 +25,53 @@ We want the engine to conclude:
 
 We want the engine to also conclude — *without* claim 4 — that:
 
-| # | claim                                           |
-|---|-------------------------------------------------|
-| 5 | Jack can drink drinks.    *(inherited from 1 + 3)*  |
-| 6 | Jack can drink coffee.    *(5 instantiated by 2)*    |
+| #  | claim                            | derivation                                          |
+|----|----------------------------------|-----------------------------------------------------|
+| 5a | Jack can drink drinks.           | LHS-inheritance: (1) + (is-a Jack Human)             |
+| 5b | Humans can drink coffee.         | RHS-inheritance: (1) + (is-a Coffee Drink)           |
+| 6  | Jack can drink coffee.           | chained — either (5a) + (is-a Coffee Drink) via RHS, or (5b) + (is-a Jack Human) via LHS |
 
-The point of the example: **(5) and (6) are derivable from the
+The point of the example: **(5a), (5b), and (6) are derivable from the
 ontology alone** (the type declarations and the is-a edges). The
 explicit fact (4) is a separate assertion — *Jack drinks coffee* is
 not the same as *Jack can drink coffee*; one is observed, the other
 is a possibility entailed by the type structure.
 
+(5a) and (5b) come from **two independent rules** — one per
+argument slot of the binary `can-drink` relation. (6) is not its own
+rule: it emerges from **saturation chaining** of the two. For an
+N-ary relation the pattern generalises to N slot-indexed rules; the
+"any × any × …" closure is always the chained fixpoint, never a
+separate rule. See §2.
+
 ## 2. ein-lang
 
 ```lisp
 (rules
-  ;; T2 rule: inherit relations through is-a — when a relation
-  ;; mentions type T, the same relation mentions every instance of T.
-  (rule inherit-rel (?r)
+  ;; T2 rule (LHS slot): inherit a relation through is-a on arg #1.
+  ;; When a relation has type ?t in its left slot, the same relation
+  ;; also holds with every instance of ?t in that slot.
+  (rule inherit-rel-lhs (?r)
     :match  (and (?r ?t ?other)
                  (is-a ?inst ?t))
     :assert (?r ?inst ?other)
-    :why    "{?inst} is-a {?t}, so {?inst} inherits {?r} from {?t}."
-    :priority 4))
+    :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s left slot from {?t}."
+    :priority 200)
 
-  ;; TODO: here should be 2 parts of inherit-rel rule: for LHS and RHS args
-  ;; so any human can drink some drink
-  ;; some human can drink any drink
-  ;; so any human can drink any drink
-  ;; does it make sense?
+  ;; T2 rule (RHS slot): same on arg #2.
+  (rule inherit-rel-rhs (?r)
+    :match  (and (?r ?other ?t)
+                 (is-a ?inst ?t))
+    :assert (?r ?other ?inst)
+    :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s right slot from {?t}."
+    :priority 200))
+
+;; "Any × any" — e.g. "any human can drink any drink" — is NOT a
+;; separate rule. It emerges from saturation chaining: lhs over (any
+;; human) then rhs over (any drink), or rhs first then lhs. The
+;; chained fixpoint of the two single-slot rules is the closure. For
+;; an N-arg relation the pattern generalises to N slot-indexed rules;
+;; relation-inheritance / rule-polymorphism is parked at F4 Q36.
 
 (ontology
   ;; Types
@@ -64,16 +82,17 @@ is a possibility entailed by the type structure.
   (instance Jack   Human)
   (instance Coffee Drink)
 
-  ;; Relation declarations — `can-drink` is a Human × Drink relation.
-  (relation can-drink (Human Drink))
-  (relation drinks    (Human Drink))
+  ;; Relation declarations — flat args (form b, no body follows;
+  ;; see 03_ein_model.md §7.2).
+  (relation can-drink Human Drink)
+  (relation drinks    Human Drink)
 
   ;; Type-level fact (1): humans can drink drinks.
   (can-drink Human Drink)
 
-  ;; Activate the inheritance rule on can-drink (and drinks).
-  (inherit-rel can-drink)
-)
+  ;; Activate both inheritance rules on can-drink.
+  (inherit-rel-lhs can-drink)
+  (inherit-rel-rhs can-drink))
 
 (facts
   ;; Fact (4): the explicit puzzle statement.
@@ -83,23 +102,31 @@ is a possibility entailed by the type structure.
 ```
 
 Note: this is a *sketch* of the rule library, not a tested M1 file
-(the `inherit-rel` rule above is a T2 generalisation that would land
-in a future puzzle's rule library; M1's zebra rules use a different
-inheritance pattern via `co-located` + `square-fwd/bwd`). The shape
-is faithful; the exact rule names will differ.
+(the `inherit-rel-{lhs,rhs}` pair is a T2 generalisation that would
+land in a future puzzle's rule library; M1's zebra rules use a
+different inheritance pattern via `co-located` + `square-fwd/bwd`).
+The shape — one rule per argument slot, with chaining for the
+cartesian closure — is the canonical pattern for is-a inheritance
+over N-ary relations.
 
-The reasoning layer after saturation (claim (5), (6), plus the
-identity claim from (4)):
+The reasoning layer after saturation (claims (5a), (5b), (6), plus
+the identity claim from (4)):
 
 ```lisp
 (reasoning
-  ;; Claim (5): inherited from (can-drink Human Drink) + (is-a Jack Human)
-  (can-drink Jack Drink   :rule inherit-rel :using ((can-drink Human Drink)
-                                                     (is-a Jack Human)))
+  ;; Claim (5a): LHS inheritance — (can-drink Human Drink) + (is-a Jack Human)
+  (can-drink Jack  Drink  :rule inherit-rel-lhs
+                          :using ((can-drink Human Drink) (is-a Jack Human)))
 
-  ;; Claim (6): two-hop derivation through claim (5) + (is-a Coffee Drink)
-  (can-drink Jack Coffee  :rule inherit-rel :using ((can-drink Jack Drink)
-                                                     (is-a Coffee Drink))))
+  ;; Claim (5b): RHS inheritance — (can-drink Human Drink) + (is-a Coffee Drink)
+  (can-drink Human Coffee :rule inherit-rel-rhs
+                          :using ((can-drink Human Drink) (is-a Coffee Drink)))
+
+  ;; Claim (6): chained — e.g. LHS on (can-drink Human Coffee) + (is-a Jack Human).
+  ;; The reverse path (RHS on (can-drink Jack Drink) + (is-a Coffee Drink)) yields
+  ;; the same conclusion; saturation produces whichever fires first.
+  (can-drink Jack  Coffee :rule inherit-rel-lhs
+                          :using ((can-drink Human Coffee) (is-a Jack Human))))
 ```
 
 ## 3. Compact graph view
@@ -158,16 +185,18 @@ digraph jack_compact_after {
   Jack -> Coffee [label="drinks (puzzle)", color="#2ca02c", fontcolor="#2ca02c"];
 
   // Inherited (reasoning layer, dashed)
-  Jack -> Drink  [label="can-drink (5)",  color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  Jack -> Coffee [label="can-drink (6)",  color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  Jack  -> Drink  [label="can-drink (5a) — lhs", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  Human -> Coffee [label="can-drink (5b) — rhs", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  Jack  -> Coffee [label="can-drink (6) — chained", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
 }
 ```
 
-The two new edges (the reasoning-layer additions) are the
+The three new edges (the reasoning-layer additions) are the
 *inheritance closure* of the type-level `can-drink` relation across
-the `is-a` edges. Notice that the compact view collapses *two*
-separate relations (`can-drink` and `drinks`) onto the same source-
-target pair (Jack→Coffee) — the labels distinguish them.
+the `is-a` edges — the cartesian product `{Human, Jack} × {Drink,
+Coffee}` minus the seed fact. Notice that the compact view collapses
+*two* separate relations (`can-drink` and `drinks`) onto the same
+source-target pair (Jack→Coffee) — the labels distinguish them.
 
 ## 4. Detailed (Levi-bipartite) graph view
 
@@ -220,19 +249,30 @@ digraph jack_levi {
   drinks_JC -> Coffee [label="#2"];
   drinks_JC -> rel_drink [style=dashed, label="instance-of-rel"];
 
-  // Inherited (REASONING layer)
+  // Inherited (REASONING layer) — three derived facts, one per
+  // closure cell. (5a) and (5b) fire from the seed; (6) chains through
+  // either (5a) or (5b).
   can_JD [
     shape=octagon,
-    label="can-drink fact (5)\nlayer=REASONING\nby inherit-rel",
+    label="can-drink fact (5a)\nlayer=REASONING\nby inherit-rel-lhs",
     style=dashed,
   ];
   can_JD -> Jack  [label="#1", style=dashed];
   can_JD -> Drink [label="#2", style=dashed];
   can_JD -> rel_can [style=dashed, label="instance-of-rel"];
 
+  can_HC [
+    shape=octagon,
+    label="can-drink fact (5b)\nlayer=REASONING\nby inherit-rel-rhs",
+    style=dashed,
+  ];
+  can_HC -> Human  [label="#1", style=dashed];
+  can_HC -> Coffee [label="#2", style=dashed];
+  can_HC -> rel_can [style=dashed, label="instance-of-rel"];
+
   can_JC [
     shape=octagon,
-    label="can-drink fact (6)\nlayer=REASONING\nby inherit-rel",
+    label="can-drink fact (6)\nlayer=REASONING\nby inherit-rel-lhs (chained)",
     style=dashed,
   ];
   can_JC -> Jack   [label="#1", style=dashed];
@@ -251,23 +291,27 @@ those edges; the Levi-bipartite view makes them inspectable.
 
 Each row of the §1 table maps onto a precise piece of the graph:
 
-| claim                              | manifestation                                                                |
-|------------------------------------|------------------------------------------------------------------------------|
-| (1) Humans can drink drinks.       | The fact `(can-drink Human Drink)` — type-level, layer=ONTOLOGY.             |
-| (2) Coffee is a drink.             | The fact `(is-a Coffee Drink)` — type-edge.                                  |
-| (3) Jack is a human.               | The fact `(is-a Jack Human)` — type-edge.                                    |
-| (4) Jack drinks coffee.            | The fact `(drinks Jack Coffee :source "puzzle text")` — layer=FACT.           |
-| (5) Jack can drink drinks.         | Derived `(can-drink Jack Drink :rule inherit-rel)` — layer=REASONING.        |
-| (6) Jack can drink coffee.         | Derived `(can-drink Jack Coffee :rule inherit-rel)` — layer=REASONING.       |
+| claim                              | manifestation                                                                       |
+|------------------------------------|--------------------------------------------------------------------------------------|
+| (1) Humans can drink drinks.       | The fact `(can-drink Human Drink)` — type-level, layer=ONTOLOGY.                     |
+| (2) Coffee is a drink.             | The fact `(is-a Coffee Drink)` — type-edge.                                          |
+| (3) Jack is a human.               | The fact `(is-a Jack Human)` — type-edge.                                            |
+| (4) Jack drinks coffee.            | The fact `(drinks Jack Coffee :source "puzzle text")` — layer=FACT.                  |
+| (5a) Jack can drink drinks.        | Derived `(can-drink Jack Drink :rule inherit-rel-lhs)` — layer=REASONING.            |
+| (5b) Humans can drink coffee.      | Derived `(can-drink Human Coffee :rule inherit-rel-rhs)` — layer=REASONING.          |
+| (6) Jack can drink coffee.         | Derived `(can-drink Jack Coffee :rule inherit-rel-lhs)` — layer=REASONING (chained). |
 
-The rule `inherit-rel` (sketched in §2) is a **T2 relation-
-polymorphic** rule
+The rules `inherit-rel-lhs` / `inherit-rel-rhs` (sketched in §2) are
+**T2 relation-polymorphic**
 ([`02_rules.md` §2.2](02_rules.md)) — the relation variable `?r`
 ranges over relations marked as inheritable via property facts. The
-*structure* of the rule (match a relation on a type + an is-a edge,
-assert the relation on the instance) is the **inheritance pattern**;
-it's the same shape as the `transitive` rule in zebra.ein, just
-applied to a different relation algebra.
+*structure* of each rule (match a relation with type ?t in one
+specific slot + an is-a edge for ?t, assert the relation on the
+instance in that same slot) is the **inheritance pattern**; the same
+shape as the `transitive` rule in zebra.ein, just applied along is-a
+rather than along the relation itself. One rule per argument slot of
+the inherited relation; saturation chaining produces the full
+cartesian closure.
 
 ## 6. What this example does NOT cover
 

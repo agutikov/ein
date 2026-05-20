@@ -138,10 +138,10 @@
 (ontology
   ;; ── Relation signatures. `is-a` connects any node to any node;
   ;; ── we type both endpoints as T (the catch-all root).
-  (relation is-a       (T T))
-  (relation co-located (T T))
-  (relation right-of   (T T))
-  (relation next-to    (T T))
+  (relation is-a       T T)
+  (relation co-located T T)
+  (relation right-of   T T)
+  (relation next-to    T T)
 
   ;; ── Inheritance tree, rooted at T. Both subtype-of and instance-of
   ;; ── edges are expressed by the same `is-a` relation; the visual

@@ -64,7 +64,7 @@ class TestShapeMapping:
         (ontology
           (type T)
           (instance A T) (instance B T) (instance C T)
-          (relation r3 (T T T)))
+          (relation r3 T T T))
         (facts
           (r3 A B C :source "(1)"))
         """

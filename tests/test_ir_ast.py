@@ -62,7 +62,7 @@ def test_string_escapes():
 
 def test_int_and_range():
     (form,) = parse(
-        "(ontology (relation r (A B) :cardinality 1..* :priority 5))"
+        "(ontology (relation r A B :cardinality 1..* :priority 5))"
     )
     rel = form.args[0]
     cardinality = next(kp.value for kp in rel.args if isinstance(kp, KwPair)
@@ -126,14 +126,24 @@ def test_empty_rule_params():
     assert params.head == Atom("@params") and params.args == ()
 
 
-def test_relation_sig():
+def test_relation_sig_flat():
+    """Post-R10: relation args are flat — no @sig SForm wrapper."""
     (form,) = parse(
-        "(ontology (relation lives-in (Person House) :cardinality 1..1))"
+        "(ontology (relation lives-in Person House :cardinality 1..1))"
     )
     rel = form.args[0]
-    sig = rel.args[1]
-    assert sig.head == Atom("@sig")
-    assert sig.args == (Atom("Person"), Atom("House"))
+    # rel.args == (name, T1, T2, KwPair(:cardinality 1..1))
+    assert rel.args[0] == Atom("lives-in")
+    assert rel.args[1] == Atom("Person")
+    assert rel.args[2] == Atom("House")
+    assert isinstance(rel.args[3], KwPair)
+    assert rel.args[3].key.name == "cardinality"
+
+
+def test_relation_wrapped_form_rejected():
+    """Post-R10: the wrapped form `(relation R (T1 T2))` is a parse error."""
+    with pytest.raises(IRParseError):
+        parse("(ontology (relation lives-in (Person House)))")
 
 
 # ═══════════ Loc tracking ═══════════
@@ -182,9 +192,9 @@ ROUNDTRIP_CASES = [
     '(facts (lives-in a b :source ""))',           # empty string
     '(facts (lives-in a b :source "unicode é·»→"))',
     # Range edge cases
-    "(ontology (relation r (A B) :cardinality 0..0))",
-    "(ontology (relation r (A B) :cardinality 0..*))",
-    "(ontology (relation r (A B) :cardinality 9999..*))",
+    "(ontology (relation r A B :cardinality 0..0))",
+    "(ontology (relation r A B :cardinality 0..*))",
+    "(ontology (relation r A B :cardinality 9999..*))",
     # Deep nesting
     "(rules (rule deep () :match (and (and (and (and (rel ?a ?b)))))"
     " :assert ?a :why \"d\"))",
@@ -222,9 +232,9 @@ ROUNDTRIP_CASES = [
     "(reasoning (co-located Blue House_2 :rule square-fwd"
     " :using (c10 c15)))",
     # Numbers (positive, negative, zero)
-    "(ontology (relation r (A B) :priority 0))",
-    "(ontology (relation r (A B) :priority -7))",
-    "(ontology (relation r (A B) :priority 9999))",
+    "(ontology (relation r A B :priority 0))",
+    "(ontology (relation r A B :priority -7))",
+    "(ontology (relation r A B :priority 9999))",
     # Instance as fact + as pattern
     "(ontology (instance Norwegian Nationality))",
     "(rules (rule i () :match (instance ?a ?T) :assert ?a :why \"i\"))",

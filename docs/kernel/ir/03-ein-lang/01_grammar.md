@@ -55,9 +55,9 @@ block name carries the **provenance** of the contained items.
 (ontology
   ;; Schema —
   (type <Name> [<Parent>])                         ; declare a type, optional parent
-  (relation <name> (<T1> <T2> [<T3> ...])          ; relation signature, arity ≥ 2
+  (relation <name> <T1> <T2> [<T3> ...]            ; relation signature, arity ≥ 2
     [:cardinality <RANGE>] [...])                   ; optional metadata kw-pairs
-  (a-priori <name> (<T1> <T2> [...])               ; structural / spatial relation
+  (a-priori <name> <T1> <T2> [...]                 ; structural / spatial relation
     :pattern <pattern>)
 
   ;; Implicit assumptions —
@@ -107,7 +107,7 @@ Example:
 (ontology
   (type Attribute)
   (type House Attribute) (type Color Attribute)
-  (relation co-located (Attribute Attribute))
+  (relation co-located Attribute Attribute)
   (instance Norwegian Nationality)
   (instance House_1 House)
   (symmetric  co-located)

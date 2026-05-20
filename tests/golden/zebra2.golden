@@ -50,10 +50,10 @@
     :priority 10))
 
 (ontology
-  (relation is-a (T T))
-  (relation co-located (T T))
-  (relation right-of (T T))
-  (relation next-to (T T))
+  (relation is-a T T)
+  (relation co-located T T)
+  (relation right-of T T)
+  (relation next-to T T)
   (is-a Attribute T)
   (is-a House Attribute)
   (is-a Color Attribute)

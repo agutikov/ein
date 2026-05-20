@@ -140,7 +140,7 @@ class Instance:
 
 @dataclass(frozen=True)
 class Relation:
-    """A relation declaration — `(relation Name (T1 T2 …))`.
+    """A relation declaration — `(relation Name T1 T2 …)`.
 
     `signature` holds the argument-position types **by name**; resolve
     via :attr:`signature_types` to get the corresponding `Type`

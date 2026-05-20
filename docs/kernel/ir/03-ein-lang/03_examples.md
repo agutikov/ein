@@ -34,9 +34,9 @@ source annotation.
   ;; Schema
   (type Attribute)
   (type House Attribute) (type Color Attribute) (type Nationality Attribute)
-  (relation co-located (Attribute Attribute))
-  (relation right-of   (Attribute Attribute))
-  (a-priori position   (House House) :pattern (right-of ?a ?b))
+  (relation co-located Attribute Attribute)
+  (relation right-of   Attribute Attribute)
+  (a-priori position   House House :pattern (right-of ?a ?b))
   ;; Implicit: instance enumeration
   (instance House_1 House) (instance House_2 House) (instance House_3 House)
   (instance Red Color) (instance Green Color) (instance Ivory Color)
@@ -87,7 +87,7 @@ Uses only the relation `is-a` with two recurring rules
 
 ```lisp
 (ontology
-  (relation is-a (T T))
+  (relation is-a T T)
   (is-a Nationality Attribute)
   (is-a Norwegian Nationality)
   (is-a Japanese  Nationality)

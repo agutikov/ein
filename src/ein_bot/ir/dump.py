@@ -27,7 +27,7 @@ _DEFAULT_WIDTH = 80
 
 
 def _is_headless(form: SForm) -> bool:
-    """True for synthetic-head atoms (`@sig`, `@params`, `@empty`)."""
+    """True for synthetic-head atoms (`@params`, `@empty`)."""
     return isinstance(form.head, Atom) and form.head.name.startswith("@")
 
 

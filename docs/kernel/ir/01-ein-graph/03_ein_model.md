@@ -111,7 +111,7 @@ digraph two_slots_one_target {
 }
 ```
 
-That's how `(relation R (T T))` works — both argument slots point at
+That's how `(relation R T T)` works — both argument slots point at
 the same type `T`. The two arrows are *distinguished by slot
 number*, not by target.
 
@@ -123,7 +123,7 @@ the others are *uses* of it:
 
 | sub-meaning             | example                       | which kind of node               |
 |-------------------------|-------------------------------|-----------------------------------|
-| **relation-as-type**    | `(relation co-located (T T))` | declaration node                  |
+| **relation-as-type**    | `(relation co-located T T)`   | declaration node                  |
 | **relation instance** = **fact** | `(co-located Norwegian Red)` | proposition node          |
 | **multi-arrow node** (colloquial) | any `(A B C)`        | bare graph-structural sense       |
 
@@ -196,7 +196,7 @@ behaviour for them and they may not be redefined by user code:
 
 | name         | role                                                            |
 |--------------|-----------------------------------------------------------------|
-| `relation`   | declares a relation-type node (`(relation co-located (T T))`).  |
+| `relation`   | declares a relation-type node (`(relation co-located T T)`).    |
 | `rule`       | declares a rewriting rule (head of `(rule …)` in `(rules …)`).  |
 | `is-a`       | the inheritance/instantiation edge (in zebra2-style encoding).  |
 | `instance`   | the explicit instance-of-type edge (in zebra.ein-style encoding). |
@@ -236,21 +236,28 @@ The grammar currently parses `()` as a placeholder atom `@empty`
 (see [`src/ein_bot/ir/grammar.lark`](../../../../src/ein_bot/ir/grammar.lark));
 no engine semantics are attached.
 
-### 7.2 Relation body — implementation vs property-fact form
+### 7.2 Relation declaration shape — body form and args grouping
+
+Two related sub-questions about how `(relation …)` is written. Both
+are **resolved in M1**; form (a) is admitted as future syntactic
+sugar over the canonical form (b).
 
 ```lisp
 ;; (a) declaration with body — bundles properties into the relation
 (relation is-a (A B) (transitive asymmetric sibling-exclusive))
 
-;; (b) declaration + separate property-application facts (M1 style)
-(relation is-a T T)       ;; can remove parenthesized group for args - no other atoms goes after
+;; (b) declaration + separate property-application facts (M1 form)
+(relation is-a T T)
 (transitive        is-a)
 (asymmetric        is-a)
 (sibling-exclusive is-a)
 ```
 
-Both encodings would mean the same thing semantically (the same rule
-firings, the same closure). The trade-offs:
+#### Property body — Q27 resolved 2026-05-20
+
+M1 ships **form (b)**: properties are first-class graph nodes
+(property-application facts), and rules can both match them
+([T2 rule activation](02_rules.md)) and (in F5) modify them.
 
 | dimension                  | (a) body form                            | (b) property-fact form                |
 |----------------------------|-------------------------------------------|----------------------------------------|
@@ -260,13 +267,29 @@ firings, the same closure). The trade-offs:
 | can rules modify properties | requires rewriting the declaration       | yes (asserting new property facts in REASONING) |
 | zebra2/zebra1 consistency  | needs a body-form spec across both        | M1's existing form; no new spec needed |
 
-M1 ships **form (b)**: properties are first-class graph nodes
-(property-application facts), and rules can both match them
-([T2 rule activation](02_rules.md)) and (in F5) modify them.
-
-Parked at [M1 Q27](../../../../plans/m1_core_graph_reasoning/open_questions.md#q27--relation-body-form).
+See [M1 Q27](../../../../plans/m1_core_graph_reasoning/open_questions.md#q27--relation-body-form).
 Form (a) is admitted as a possible *future syntactic sugar* that
 desugars into form (b) at load time.
+
+#### Args grouping — resolved 2026-05-20 as a corollary of (b)
+
+Under form (b), **nothing follows the args**. The inner `(…)` group
+around the argument types exists in form (a) only to disambiguate the
+args from the trailing property block; with no property block, the
+wrapper is pure noise. M1's canonical form (b) is therefore **flat**:
+
+```lisp
+(relation R T1 T2)              ;; canonical M1 form
+(relation R (T1 T2))            ;; rejected — inner group is empty noise
+```
+
+Tokens disambiguate without the wrapper: `R` and `Ti` lex as SYMBOL;
+any trailing `:kw value` pairs lex as KEYWORD; a `(...)` trailing
+group only appears under form (a) when properties are bundled.
+`(a-priori …)` flattens the same way.
+
+The grammar/parser flattening + example/doc migration is owned by
+[`P1.3 S1.3.0 R10`](../../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#r10--flatten-relation--a-priori-args-no-inner-group-when-no-body-follows).
 
 ### 7.3 The "many meanings of relation" disambiguation
 
@@ -299,11 +322,12 @@ view*, not as new work.
 What's **not yet** implemented and what *might* warrant a follow-up
 implementation phase (P1.2b):
 
-| claim                              | open                                                          |
-|------------------------------------|---------------------------------------------------------------|
-| `(rule …)` can produce `(rule …)`   | F5 (rules-as-data); P1.3 matcher needs an extension           |
+| claim                                | open                                                          |
+|--------------------------------------|---------------------------------------------------------------|
+| `(rule …)` can produce `(rule …)`     | F5 (rules-as-data); P1.3 matcher needs an extension           |
 | `()` empty paren has engine semantics | Q28 — no decision; grammar parses `@empty` as a no-op atom    |
-| declaration body form (a) is sugar  | Q27 — not lifted yet                                          |
+| relation-args flat (no inner group)   | §7.2 resolved; grammar/example migration owned by [P1.3 R10](../../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#r10--flatten-relation--a-priori-args-no-inner-group-when-no-body-follows) |
+| declaration body form (a) is sugar    | Q27 — form (b) ships in M1; form (a) reserved as future sugar |
 
 **P1.2b audit** (closed 2026-05-19): the unified reflexive model
 in this document does NOT require new implementation in M1. The

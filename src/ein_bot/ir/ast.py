@@ -125,18 +125,15 @@ class _ToAST(Transformer):
         return SForm(head=Atom(name="type"), args=kept)
 
     def relation_decl(self, items: list) -> SForm:
-        name, sig, *kws = items
-        return SForm(head=Atom(name="relation"), args=(name, sig, *kws))
+        # Grammar: `"(" "relation" SYMBOL SYMBOL+ kw_pair* ")"`.
+        # Args are flat (post-R10): (name, T1, T2, …, *kws). No inner
+        # @sig SForm; kernel docs `01-ein-graph/03_ein_model.md` §7.2.
+        return SForm(head=Atom(name="relation"), args=tuple(items))
 
     def apriori_decl(self, items: list) -> SForm:
-        name, sig, *kws = items
-        return SForm(head=Atom(name="a-priori"), args=(name, sig, *kws))
-
-    def relation_sig(self, items: list) -> SForm:
-        # `(T1 T2 …)` — a parenthesised type list; render as SForm
-        # with a synthetic head atom "type-list".  This is a private
-        # AST shape; dump() recognises it and emits as `(T1 T2 …)`.
-        return SForm(head=Atom(name="@sig"), args=tuple(items))
+        # Grammar: `"(" "a-priori" SYMBOL SYMBOL+ kw_pair* ")"`. Same
+        # flat-args shape as relation_decl (R10).
+        return SForm(head=Atom(name="a-priori"), args=tuple(items))
 
     # ── Facts ──────────────────────────────────────────────────
     def eq_fact(self, items: list) -> SForm:

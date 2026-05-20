@@ -52,7 +52,7 @@ def test_instance_is_oval_with_instance_of_edge():
 
 
 def test_relation_schema_is_dashed_edge():
-    (form,) = parse("(ontology (type A) (type B) (relation r (A B)))")
+    (form,) = parse("(ontology (type A) (type B) (relation r A B))")
     dot = render_ontology(form)
     assert '"A" -> "B"' in dot
     assert 'label="r"' in dot
