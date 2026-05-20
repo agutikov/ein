@@ -13,23 +13,25 @@ modernised in light of neuro-symbolic and constrained-reasoning research.
 
 | path                 | what's in it                                                                 |
 |----------------------|------------------------------------------------------------------------------|
-| `src/ein_bot/ir/`    | the IR — Lark grammar, typed AST, parser, dump, DOT renderer                 |
-| `src/ein_bot/cli.py` | console script: `ein-bot ir parse | lint | dot`                              |
-| `examples/zebra.ein` | the Zebra puzzle as IR (the smoke-test fixture)                              |
-| `examples/broken/`   | curated parse-failure fixtures (file:line:col error messages)                |
-| `tests/`             | pytest suite (~200 tests)                                                    |
-| `plans/`             | milestone / phase / stage roadmap (M1 active)                                |
-| `docs/kernel/`       | kernel documentation — graph semantics, data model, surface language, inference engine |
-| `docs/ir.md`         | thin redirect into `docs/kernel/` (kept for stable cross-references)         |
-| `docs/PoC/`          | 2021 proof-of-concept — original `reasoning.py` archived                     |
-| `docs/index/`        | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph |
-| `docs/ideas/`        | ideas extracted from research notes (9 files)                                |
-| `utils/`             | renderers for the knowledge graph (Graphviz + Cytoscape)                     |
-| `nlp/`, `smt/`       | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)       |
-| `pyproject.toml`     | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff` |
-| `venv_install.sh`    | bootstrap: create `.venv/` and install the project editable with dev extras  |
-| `AGENTS.md`          | guidance for AI coding agents (`CLAUDE.md` is a symlink to it)               |
-| `TODO.md`            | live worklist                                                                |
+| `ein.py/`               | Python implementation (package, tests, pyproject, demo scripts)              |
+| `ein.py/src/ein_bot/ir/` | the IR — Lark grammar, typed AST, parser, dump, DOT renderer                |
+| `ein.py/src/ein_bot/cli.py` | console script: `ein-bot ir parse | lint | dot`                          |
+| `ein.py/tests/`         | pytest suite (~500 tests)                                                    |
+| `ein.py/demo/`          | runnable demo scripts (bench_saturate.py, …)                                 |
+| `ein.py/pyproject.toml` | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff` |
+| `examples/zebra.ein`    | the Zebra puzzle as IR (the smoke-test fixture)                              |
+| `examples/broken/`      | curated parse-failure fixtures (file:line:col error messages)                |
+| `plans/`                | milestone / phase / stage roadmap (M1 active)                                |
+| `docs/kernel/`          | kernel documentation — graph semantics, data model, surface language, inference engine |
+| `docs/ir.md`            | thin redirect into `docs/kernel/` (kept for stable cross-references)         |
+| `docs/PoC/`             | 2021 proof-of-concept — original `reasoning.py` archived                     |
+| `docs/index/`           | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph |
+| `docs/ideas/`           | ideas extracted from research notes (9 files)                                |
+| `utils/`                | renderers for the knowledge graph (Graphviz + Cytoscape)                     |
+| `nlp/`, `smt/`          | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)       |
+| `venv_install.sh`       | bootstrap: create `.venv/` and install the project editable with dev extras  |
+| `AGENTS.md`             | guidance for AI coding agents (`CLAUDE.md` is a symlink to it)               |
+| `TODO.md`               | live worklist                                                                |
 
 ## Quickstart — Python CLI
 
@@ -87,7 +89,7 @@ for f in forms:
 ### IR file format
 
 S-expression intermediate representation; the grammar is
-`src/ein_bot/ir/grammar.lark` and the spec is
+`ein.py/src/ein_bot/ir/grammar.lark` and the spec is
 [`docs/kernel/`](docs/kernel/) (graph semantics, data model, surface
 language, inference engine — split per
 [`docs/kernel/README.md`](docs/kernel/README.md)). Six top-level forms:

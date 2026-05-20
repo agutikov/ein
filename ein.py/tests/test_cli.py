@@ -10,7 +10,7 @@ from ein_bot.cli import main
 
 def test_ir_parse_zebra(capsys: pytest.CaptureFixture[str]):
     """`ein-bot ir parse examples/zebra.ein` exits 0 and emits canonical IR."""
-    repo_root = Path(__file__).resolve().parent.parent
+    repo_root = Path(__file__).resolve().parents[2]
     zebra = repo_root / "examples" / "zebra.ein"
     rc = main(["ir", "parse", str(zebra)])
     assert rc == 0
@@ -20,7 +20,7 @@ def test_ir_parse_zebra(capsys: pytest.CaptureFixture[str]):
 
 
 def test_ir_lint_ok(capsys: pytest.CaptureFixture[str]):
-    repo_root = Path(__file__).resolve().parent.parent
+    repo_root = Path(__file__).resolve().parents[2]
     zebra = repo_root / "examples" / "zebra.ein"
     rc = main(["ir", "lint", str(zebra)])
     assert rc == 0
@@ -37,7 +37,7 @@ def test_ir_lint_failure(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
 
 def test_ir_dot_zebra(capsys: pytest.CaptureFixture[str]):
     """`ein-bot ir dot examples/zebra.ein` exits 0 and emits non-empty DOT."""
-    repo_root = Path(__file__).resolve().parent.parent
+    repo_root = Path(__file__).resolve().parents[2]
     zebra = repo_root / "examples" / "zebra.ein"
     rc = main(["ir", "dot", str(zebra)])
     assert rc == 0
@@ -67,7 +67,7 @@ def test_ir_dot_failure(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
 ])
 def test_broken_fixtures(name: str, capsys: pytest.CaptureFixture[str]):
     """Each curated broken fixture lints non-zero with file:line:col in stderr."""
-    repo_root = Path(__file__).resolve().parent.parent
+    repo_root = Path(__file__).resolve().parents[2]
     f = repo_root / "examples" / "broken" / name
     assert f.exists(), f"missing fixture: {f}"
     rc = main(["ir", "lint", str(f)])

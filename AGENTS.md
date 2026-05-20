@@ -30,9 +30,13 @@ neuro-symbolic / constrained-reasoning research.
   and a Cytoscape.js page).
 - **`docs/ideas/`** — the user's *own* ideas (9 files); each preserves
   user quotes and open questions. Authoritative on intent.
-- **`src/ein_bot/`** — Python package implementing the kernel. IR
-  parser + dumper under `ir/`; KB store + entities + provenance under
-  `kb/`. The 2021 `reasoning.py` is archived under `docs/PoC/`.
+- **`ein.py/`** — Python implementation. `ein.py/src/ein_bot/` is the
+  package: IR parser + dumper under `ir/`; KB store + entities +
+  provenance under `kb/`; inference engine + saturator + contradiction
+  detector + hypothesis loop under `inference/`. `ein.py/tests/` is the
+  pytest suite, `ein.py/demo/` holds runnable demo scripts
+  (`bench_saturate.py`, …), `ein.py/pyproject.toml` is the build
+  config. The 2021 `reasoning.py` is archived under `docs/PoC/`.
 - **`utils/`** — renderers (`render_knowledge_graph.sh` for Graphviz,
   `render_knowledge_graph_cy.py` for Cytoscape).
 - **`nlp/`, `smt/`** — scratch areas with submodules

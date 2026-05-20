@@ -433,7 +433,7 @@ def test_examples_zebra_parses():
     Level B kernel — S1.1.1 acceptance smoke test."""
     from pathlib import Path
 
-    repo_root = Path(__file__).resolve().parent.parent
+    repo_root = Path(__file__).resolve().parents[2]
     zebra = repo_root / "examples" / "zebra.ein"
     assert zebra.exists(), f"missing: {zebra}"
     tree = parse_tree(zebra.read_text(encoding="utf-8"))

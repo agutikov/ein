@@ -29,7 +29,7 @@ from ein_bot.inference.engine import Engine
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parent.parent.parent
+REPO = Path(__file__).resolve().parents[3]
 DEMOS_DIR = REPO / "examples" / "zebra" / "demos"
 
 # Collect every .ein under demos/, sorted for stable test order.

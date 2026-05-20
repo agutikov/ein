@@ -12,8 +12,8 @@ import pytest
 from ein_bot.ir import parse
 from ein_bot.kb import Fact, KnowledgeBase, Layer, Provenance, to_dot
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-GOLDEN_DIR = REPO_ROOT / "tests" / "golden"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+GOLDEN_DIR = REPO_ROOT / "ein.py" / "tests" / "golden"
 
 
 # ── Helpers ────────────────────────────────────────────────────────

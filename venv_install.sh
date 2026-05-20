@@ -50,7 +50,7 @@ echo "upgrading pip / setuptools / wheel"
 python -m pip install --quiet --upgrade pip setuptools wheel
 
 echo "installing ein-bot (editable) with dev extras"
-python -m pip install --quiet -e "${SCRIPT_DIR}[dev]"
+python -m pip install --quiet -e "${SCRIPT_DIR}/ein.py[dev]"
 
 echo
 echo "done."

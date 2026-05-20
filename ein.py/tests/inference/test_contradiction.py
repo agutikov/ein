@@ -13,7 +13,7 @@ from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parent.parent.parent
+REPO = Path(__file__).resolve().parents[3]
 ZEBRA = REPO / "examples" / "zebra.ein"
 
 

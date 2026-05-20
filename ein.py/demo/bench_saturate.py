@@ -46,8 +46,8 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
-REPO = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO / "src"))
+REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / "ein.py" / "src"))
 
 from ein_bot.inference.engine import Engine  # noqa: E402
 from ein_bot.inference.firing import Firing  # noqa: E402

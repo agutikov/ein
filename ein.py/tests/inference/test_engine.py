@@ -8,7 +8,7 @@ from ein_bot.ir import parse
 from ein_bot.kb.entities import Layer
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parent.parent.parent
+REPO = Path(__file__).resolve().parents[3]
 ZEBRA = REPO / "examples" / "zebra.ein"
 
 

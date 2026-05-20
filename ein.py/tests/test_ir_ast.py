@@ -19,7 +19,7 @@ from ein_bot.ir import (
 )
 
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parents[2]
 ZEBRA = REPO / "examples" / "zebra.ein"
 ZEBRA2 = REPO / "examples" / "zebra2.ein"
 EXAMPLE_FILES = [ZEBRA, ZEBRA2]
@@ -282,7 +282,7 @@ def test_golden_example(path):
                 dump_canonical(parse(Path(f'examples/{stem}.ein').read_text())))"
     """
     src = path.read_text(encoding="utf-8")
-    golden = REPO / "tests" / "golden" / f"{path.stem}.golden"
+    golden = REPO / "ein.py" / "tests" / "golden" / f"{path.stem}.golden"
     got = dump_canonical(parse(src))
     expected = golden.read_text(encoding="utf-8")
     if got != expected:
