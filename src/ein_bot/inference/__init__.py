@@ -12,6 +12,7 @@ until a second non-engine file appears.
 - :mod:`engine`        — compile cache + naive step / saturate.
 - :mod:`saturator`     — priority-banded saturation driver (S1.3.3).
 - :mod:`contradiction` — ``(X, (not X))`` same-layer pair detector (S1.4.1).
+- :mod:`hypothesis`    — outer-loop hypothesis driver + Q40 protocol (S1.5.1).
 """
 from __future__ import annotations
 

@@ -82,4 +82,7 @@ views:
 
 M2b compare to other systems from docs/index
 try benchmarks
+summarize results
+list further growth directions
+
 
