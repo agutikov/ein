@@ -168,6 +168,22 @@ class Saturator:
             for _pr, _tb, p, b, _pr_facts in self._queue
         )
 
+    def contradictions(self) -> tuple:
+        """Detect ``(X, (not X))`` same-layer pairs in the current KB.
+
+        Convenience wrapper around
+        :class:`ein_bot.inference.contradiction.ContradictionDetector`.
+        P1.5's hypothesis loop calls this between branch saturations
+        to decide retraction; the Saturator owns the KB reference,
+        so callers don't need to construct a detector themselves.
+
+        Returns:
+            Tuple of :class:`~ein_bot.inference.contradiction.Contradiction`
+            records, empty when the KB is consistent.
+        """
+        from .contradiction import ContradictionDetector
+        return ContradictionDetector(self.kb).detect()
+
     def solved(self) -> bool:
         """Query-mode predicate. M1 stub returning False.
 
