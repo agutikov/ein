@@ -27,54 +27,20 @@
 ;;                                     + plans/ideas.md (P1.2b audit live entry)
 ;;                                     + docs/kernel/ir/01-ein-graph/README.md (file index update)
 
-
-followup ideas on inference of rules
-(opposite or orthogonal to inference of facts)
-
-1) there are rules that are pure structure - no hardcoded names, only variables
-    example: symmetric, implies
-2) rules that use named predicates (neq, not, and, ...)
-    example: transitive
-3) rules that use rel vars and rel consts 
-    example: square-* family
-4) and F1 rules that has no rel vars
-    example: obsolete type-exclusivity form, that was transformed into (3)
-
-Rules that have only 1 rel var - describe property of this one relation
-Rules that have multiple rel vars - describe properties of those relations interaction
-    example: square-fwd describes inference of co-location on ?R relation basis
-    Btw ?R here is strict order
-    so this square rule can be formulated as a property of co-located relation over right-of order relation
-
-No doubt move from (4) to (2) or (1) can be automated. That's one followup.
-Next one - automated inference of rules from relations.
-Now this is done by IR ontology writer.
-This is part of ontology induction/deduction/inference/search mentioned here docs/ideas/04-nlp-to-graph-to-solver-pipeline.md
-
-Another question is selection of sufficient set of rules.
-For example in zebra2.ein (transitive is-a) is logically correct,
-but not required for inference and produce excessive amount of unnecessary facts.
-
-
-Topic is wide, worth it's own followup document
-
-And, look, if we want fully automated model construction for NL problem text - we need this ontology deduction in M2.
-
----
-
-COW for branching
-should work perfect because we have no deletes and no writes, only appends
-
-P1.8
-
----
-
-Too many (not ...) facts produced by saturation
-Do we need all of them?
-What can be optimized to reduce or remove them?
-
-P1.8
-
-rename P1.8 btw into "improvements"
-
-
+;; Processed 2026-05-21:
+;;   - rule classification + induction (4-class taxonomy: pure-structure /
+;;     predicate-using / rel-var+const / no-rel-vars; single vs multi rel-var;
+;;     auto-generalisation, induction from relations, rule-set sufficiency;
+;;     M2 NL→IR pipeline ties in)
+;;                                   → plans/followups/f7_rule_induction.md (NEW)
+;;                                     + plans/followups/README.md (index row F7)
+;;   - COW for hypothesis branching  → plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md
+;;                                     (Theme B; append-only KB makes true COW trivially correct)
+;;   - (not …) fact volume reduction → plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md
+;;                                     (Theme C; lazy materialisation / layer-aware filter /
+;;                                     goal-driven pruning / compressed representation)
+;;   - P1.8 "rename" suggestion      → plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md
+;;                                     (title broadened from "Ein-lang modules + imports" to
+;;                                     "Improvements"; directory name kept to avoid cross-link
+;;                                     churn across S1.3.0, P1.3 README, etc.)
+;;                                     + plans/m1_core_graph_reasoning/README.md (P1.8 row updated)
