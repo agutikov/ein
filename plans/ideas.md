@@ -15,86 +15,51 @@ mattered?".
 
 ## Live entries
 
-### P1.4 constraints — collapse into "rules with `(not …)` in `:assert`"?
-
-Added 2026-05-20, from a side observation during S1.3.0's Q29
-resolution.
-
-**Observation:** constraint-style reasoning may reduce entirely to
-the existing rule mechanism — no separate constraint abstraction
-needed.
-
-The chain of reasoning:
-
-- A *constraint* in CSP terms = "this proposition must be true".
-- A *rule* with `:assert (not X)` produces a negative fact when its
-  `:match` clause fires.
-- M1's KB is **append-only** (P1.2): facts are never deleted; new
-  facts arrive on top.
-- If both `X` and `(not X)` appear in the same KB state, the engine
-  has a **contradiction signal**. The branch fails; P1.5's
-  hypothesis loop retracts it.
-
-So a "constraint" in P1.4's sense = "a rule whose conclusion is a
-negative fact". Constraint violation = `X ∧ (not X)` co-existing.
-
-**Worked example — zebra.ein already ships this pattern:**
-
-```lisp
-(rule type-exclusivity ()
-  :match  (and (instance ?a ?T)
-               (instance ?b ?T)
-               (neq ?a ?b))
-  :assert (not (co-located ?a ?b))
-  :why    "{?a} and {?b} share type {?T}, can't co-locate.")
-```
-
-Reads as "two distinct instances of the same type cannot
-co-locate" — a constraint, expressed as a rule. The engine asserts
-`(not (co-located ?a ?b))`; on branches where `(co-located ?a ?b)`
-later gets derived, the contradiction surfaces.
-
-**Implications for P1.4:**
-
-- P1.4 may not need new core machinery. Its content shrinks to:
-  - A **contradiction detector**: scan for `(X, (not X))` pairs in
-    the same layer/branch (one pass; cheap).
-  - The **negative-fact representation**: how `(not X)` is stored
-    as a `Fact` (likely `(rel="not", args=(positive-fact-id,))`).
-  - **Interaction with P1.5**: the hypothesis loop reads
-    contradictions from the detector to decide branch retraction.
-- Q5 ("explanation completeness on Zebra") is satisfied by the 6
-  zebra.ein rules — `type-exclusivity` is the only
-  constraint-style rule, and it's already covered.
-- **P1.4 might merge into P1.3** — the detector is a small
-  addition to the saturator. Worth revisiting once P1.3 ships.
-
-**What this does NOT cover:**
-
-- Arithmetic / linear / interval constraints (not in M1 scope —
-  Q33 deferred numeric reasoning to followups).
-- Global constraints (`allDifferent`, cardinality) — also followup
-  territory.
-- Constraints over compound node kinds (Q26-deferred).
-
-For graph-only Zebra-class constraints, the unification holds.
-
-**Cross-links:**
-- [S1.3.0 §F (scope reconsideration)](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#f-scope-reconsideration)
-- [Q40 — hypothesis-rule premises](m1_core_graph_reasoning/open_questions.md) (P1.5)
-- [Idea 03 — three task classes](../docs/ideas/03-three-task-classes.md) — "contradictions" task class consumes exactly this signal
-- [Q33 resolution](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13) — `not` is a structural wrapper handled by matcher/asserter
-
-**Action:** revisit P1.4 README + S1.4.x stages with this lens.
-Don't immediately collapse the phase — confirm there's no
-non-graph constraint type in M1 scope (there shouldn't be after
-Q33). If the unification holds end-to-end, propose either
-"merge P1.4 into P1.3" or "shrink P1.4 to detector + negative-fact
-representation only".
+*(none currently — all parked entries below were promoted or pruned.)*
 
 ---
 
 ## Promoted / pruned
+
+### P1.4 constraints — collapse — closed 2026-05-21, verdict: shrink, don't merge
+
+Added 2026-05-20 during S1.3.0's Q29 resolution. The observation
+that *"constraint = rule with `:assert (not X)`"* led to a question
+about whether P1.4 should merge into P1.3 or just shrink.
+
+**Verdict** (2026-05-21, after P1.3 shipped): *shrink, don't merge.*
+P1.4 keeps a clean phase boundary but drops ~85% of its original
+scope. What's left is a focused contradiction detector
+(1-2 days of work) that P1.5 will call at branch boundaries.
+
+- Structural constraints (single-type / all-different) → already
+  handled by `type-exclusivity` (T2 on `co-located`) shipped in P1.3.
+- Spatial constraints (1-D position lattice + arithmetic
+  propagation) → rejected by [Q17](m1_core_graph_reasoning/open_questions.md#q17--spatial-relation-formalisation),
+  resolved declaratively by `right-of` / `next-to` relations +
+  `square-fwd` / `square-bwd` / `square-unique` rules. The
+  non-adjacent "Ivory left of Green" disjunctive case migrates to
+  P1.5 hypothesis branching.
+- `Constraint` entity / `verify_incremental` API → dropped; the
+  saturator's existing `_index_fact` provides incremental maintenance.
+
+**Survives:** a small `ContradictionDetector` scanning the KB for
+`(X, (not X))` pairs in the same layer. Output feeds P1.5 directly.
+
+**Recorded in:**
+- [`p1.4_constraints/s1.4.0_review.md`](m1_core_graph_reasoning/p1.4_constraints/s1.4.0_review.md)
+  — the full audit + revisions list.
+- [`p1.4_constraints/README.md`](m1_core_graph_reasoning/p1.4_constraints/README.md)
+  — rewritten phase overview (post-shrink).
+- [`p1.4_constraints/s1.4.1_contradiction_detector.md`](m1_core_graph_reasoning/p1.4_constraints/s1.4.1_contradiction_detector.md)
+  — the surviving stage.
+- `p1.4_constraints/s1.4.2_spatial.md` — deleted.
+
+**Cross-links retained:**
+- [S1.3.0 §F (scope reconsideration)](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#f-scope-reconsideration)
+- [Q40 — hypothesis-rule premises](m1_core_graph_reasoning/open_questions.md) (P1.5)
+- [Idea 03 — three task classes](../docs/ideas/03-three-task-classes.md) — "contradictions" task class consumes the detector's output.
+- [Q33 resolution](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13) — `not` is a structural wrapper handled by matcher/asserter; the detector reads its output, not the wrapper machinery.
 
 ### P1.2b audit — closed 2026-05-19, verdict: no phase needed
 

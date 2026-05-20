@@ -48,6 +48,7 @@ Rules that have multiple rel vars - describe properties of those relations inter
 
 No doubt move from (4) to (2) or (1) can be automated. That's one followup.
 Next one - automated inference of rules from relations.
+Now this is done by IR ontology writer.
 This is part of ontology induction/deduction/inference/search mentioned here docs/ideas/04-nlp-to-graph-to-solver-pipeline.md
 
 Another question is selection of sufficient set of rules.
@@ -57,12 +58,14 @@ but not required for inference and produce excessive amount of unnecessary facts
 
 Topic is wide, worth it's own followup document
 
+And, look, if we want fully automated model construction for NL problem text - we need this ontology deduction in M2.
 
 ---
 
 COW for branching
 should work perfect because we have no deletes and no writes, only appends
 
+P1.8
 
 ---
 
@@ -70,6 +73,8 @@ Too many (not ...) facts produced by saturation
 Do we need all of them?
 What can be optimized to reduce or remove them?
 
+P1.8
 
+rename P1.8 btw into "improvements"
 
 

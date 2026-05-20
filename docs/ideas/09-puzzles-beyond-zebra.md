@@ -110,9 +110,12 @@ Combinatorial search; backtracking. **Stresses:** the search side of
 ## Spatial / visual
 
 Tangram, Soma cube, Rubik's cube. **Stresses:** geometry / 3-D
-spatial transformations. The M1 1-D position lattice handles none of
-these; they're explicitly out of scope for the current engine. They
-return in [followups F4 Q32 (2-D / N-D spatial)](../../plans/followups/f4_cross_cutting.md).
+spatial transformations. M1's declarative graph-only spatial
+formulation (`right-of` / `next-to` + `square-fwd` / `square-bwd` /
+`square-unique` rules) is 1-D only and adjacency-flavoured; it
+handles none of these geometry-heavy puzzles. They're explicitly out
+of scope for the current engine and return in
+[followups F4 Q32 (2-D / N-D spatial)](../../plans/followups/f4_cross_cutting.md).
 
 ## Lateral thinking
 

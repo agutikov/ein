@@ -15,7 +15,7 @@ to their own followup file when they grow.
 | Q14 | Rule learning source — hand-written, library, LLM-suggested, learned?       |
 | Q30 | Equality saturation / e-graph promotion — when does Zebra-scale benefit?    |
 | Q31 | LLM as policy over the reasoning graph (M1.P1.5 search-tree choice)         |
-| Q32 | 2-D / N-D spatial — when do we need beyond M1.P1.4's 1-D position lattice?  |
+| Q32 | 2-D / N-D spatial — when do we need beyond M1's declarative right-of / next-to + square rules? |
 | Q33 | Reasoning-graph differential rendering for live agents                      |
 | Q34 | Algebraic properties beyond symmetric/transitive + 2^7 cartesian product   |
 | Q35 | Variable typing via `:match (is-a ?var Type)` — pattern, not syntax          |
@@ -74,12 +74,20 @@ Connection: [`docs/index/11-search-optimization-algorithms.md`](../../docs/index
 
 ## 2-D / N-D spatial (Q32)
 
-M1.P1.4's 1-D position lattice covers Zebra. *Logic-grid* puzzles
-in 2-D, *chess-style* puzzles, *graph-colouring* puzzles all need
-more. F4 would extend `:positional` to multi-dimensional and
-attach Allen-style 2-D relations.
+M1 ships **no** position lattice — [Q17](../m1_core_graph_reasoning/open_questions.md#q17--spatial-relation-formalisation)
+chose the declarative graph-only formulation: `right-of` / `next-to`
+relations + `square-fwd` / `square-bwd` / `square-unique` rules
+handle Zebra-class adjacency. *Logic-grid* puzzles in 2-D,
+*chess-style* puzzles, *graph-colouring* puzzles need more
+expressive spatial reasoning — Allen-style intervals, 2-D
+adjacency, or full arithmetic. F4 would introduce a 2-D positional
+encoding when a concrete puzzle motivates it.
 
-Connection: [M1.P1.4 S1.4.2](../m1_core_graph_reasoning/p1.4_constraints/s1.4.2_spatial.md) leaves the replacement seam explicit.
+Connection: [P1.4 README](../m1_core_graph_reasoning/p1.4_constraints/README.md)
+documents the spatial scope decision; the original
+`s1.4.2_spatial.md` (1-D position-lattice stage) was deleted by the
+2026-05-21 P1.4 shrinkage — see
+[S1.4.0 review §A](../m1_core_graph_reasoning/p1.4_constraints/s1.4.0_review.md#a-obsolete-tasks--resolved-by-p13-ship).
 
 ## Reasoning-graph differential rendering (Q33)
 

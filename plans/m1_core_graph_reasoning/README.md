@@ -28,9 +28,13 @@ Concretely, M1 ships:
    [idea 05](../../docs/ideas/05-zebra-puzzle-graph-reasoner.md) (P1.2).
 3. A **rule registry** with the ten rule families catalogued in
    [idea 06](../../docs/ideas/06-inference-rules-completeness.md) (P1.3).
-4. The two **structural constraints** from the PoC + a clean
-   formalisation of spatial relations (the open question from
-   idea 05 §Open question) (P1.4).
+4. A **contradiction detector** that scans the KB for `(X, (not X))`
+   pairs and feeds the hypothesis loop (P1.4 — shrunk from the
+   original "structural + spatial constraints" scope; the
+   structural cases collapsed into `type-exclusivity` shipped by
+   P1.3, and the spatial PoC open question resolved declaratively
+   via `right-of` / `next-to` + `square-fwd` / `square-bwd` /
+   `square-unique` rules per Q17).
 5. The **saturate-then-hypothesise loop**, multilevel branching,
    contradiction-with-backjump (P1.5).
 6. **Rendering**: DOT for rules / constraints / state /
@@ -47,7 +51,7 @@ Concretely, M1 ships:
 | P1.1  | IR language                            | 1-2 wk   | [`p1.1_ir_language/`](p1.1_ir_language/) |
 | P1.2  | Typed-hypergraph core                  | 2 wk     | [`p1.2_typed_hypergraph/`](p1.2_typed_hypergraph/) |
 | P1.3  | Inference-rule registry + 10 rules     | 2-3 wk   | [`p1.3_inference_rules/`](p1.3_inference_rules/) |
-| P1.4  | Constraints — structural + spatial     | 1 wk     | [`p1.4_constraints/`](p1.4_constraints/) |
+| P1.4  | Contradiction detection                | 1-2 days | [`p1.4_constraints/`](p1.4_constraints/) (shrunk from ~1 wk per [S1.4.0 review](p1.4_constraints/s1.4.0_review.md)) |
 | P1.5  | Hypothesis loop + ATMS branching       | 2 wk     | [`p1.5_hypothesis_loop/`](p1.5_hypothesis_loop/) |
 | P1.6  | Rendering + markdown trace             | 1-2 wk   | [`p1.6_rendering_and_trace/`](p1.6_rendering_and_trace/) |
 | P1.7  | Bootstrapping — Zebra end-to-end       | 1-2 wk   | [`p1.7_bootstrapping_zebra/`](p1.7_bootstrapping_zebra/) |
@@ -155,8 +159,12 @@ makes this self-hosting structure formal.
   Zebra-on-a-half-rule-set debugging, not 100% to "implement all ten".
 - **Constraint formalisation for spatial**: the [idea 05 open
   question](../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)
-  ("Ivory to the left of Green") was unresolved in 2021. P1.4 must
-  resolve it or punt explicitly.
+  ("Ivory to the left of Green") was unresolved in 2021. **Resolved
+  2026-05-18** by [Q17](open_questions.md#q17--spatial-relation-formalisation):
+  declarative graph-only via `right-of` / `next-to` + the
+  `square-fwd` / `square-bwd` / `square-unique` rules. The
+  non-adjacent disjunctive case migrates to P1.5 hypothesis
+  branching.
 
 ## Open questions
 
