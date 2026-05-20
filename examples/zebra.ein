@@ -68,7 +68,7 @@
   (rule transitive (?rel)
     :match  (and (?rel ?a ?b)
                  (?rel ?b ?c)
-                 :where (neq ?a ?c))
+                 (neq ?a ?c))
     :assert (?rel ?a ?c)
     :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
     :priority 5)
@@ -133,7 +133,7 @@
   (rule type-exclusivity ()
     :match  (and (instance ?a ?T)
                  (instance ?b ?T)
-                 :where (neq ?a ?b))
+                 (neq ?a ?b))
     :assert (not (co-located ?a ?b))
     :why    "{?a} and {?b} are distinct instances of {?T} — distinct slots."
     :priority 10))

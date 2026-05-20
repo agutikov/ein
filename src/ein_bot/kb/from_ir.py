@@ -316,8 +316,13 @@ def _ingest_facts(
         else:
             provenance = None
 
-        # Auto-vivify undeclared relations (open-world).
-        if head_name not in kb.relations:
+        # Auto-vivify undeclared relations (open-world), UNLESS the
+        # head is a built-in predicate (eq, neq — Q33). Predicates
+        # dispatch at the matcher level; they are not relations.
+        # S1.3.1 T1.3.1.2: prevents phantom eq/neq entries in
+        # kb.relations.
+        from ein_bot.inference import predicates as _preds
+        if head_name not in kb.relations and not _preds.is_predicate(head_name):
             kb.add_relation(Relation(
                 name=head_name, signature=(), declared=False, loc=child.loc,
             ))

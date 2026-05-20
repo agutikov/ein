@@ -75,7 +75,7 @@
   (rule transitive (?rel)
     :match  (and (?rel ?a ?b)
                  (?rel ?b ?c)
-                 :where (neq ?a ?c))
+                 (neq ?a ?c))
     :assert (?rel ?a ?c)
     :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
     :priority 5)
@@ -114,7 +114,7 @@
 
   (rule asymmetric (?rel)
     :match  (and (?rel ?a ?b)
-                 :where (neq ?a ?b))
+                 (neq ?a ?b))
     :assert (not (?rel ?b ?a))
     :why    "{?rel} is asymmetric: from {?a} →{?rel}→ {?b}, ¬({?b} →{?rel}→ {?a})."
     :priority 1)
@@ -130,7 +130,7 @@
   (rule sibling-exclusive (?rel)
     :match  (and (?rel ?a ?P)
                  (?rel ?b ?P)
-                 :where (neq ?a ?b))
+                 (neq ?a ?b))
     :assert (not (co-located ?a ?b))
     :why    "{?a} and {?b} share parent {?P} under {?rel} — exclusive slots."
     :priority 10))

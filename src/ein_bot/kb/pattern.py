@@ -70,7 +70,13 @@ class Pattern:
                     for a in node.args:
                         walk(a, "instance-arg")
                     return
-                if head_name in {"and", "or", "not", "neq"}:
+                if head_name in {"and", "or", "not", "neq", "eq"}:
+                    # Kernel structural primitives (`and`, `or`, `not`)
+                    # and the built-in predicates from
+                    # `inference/predicates.py` (`eq`, `neq` — Q33). Walk
+                    # the args to collect inner variables and relation
+                    # names, but do NOT register the wrapper head as a
+                    # relation name itself — it's not a fact relation.
                     for a in node.args:
                         walk(a, head_name)
                     return
