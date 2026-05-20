@@ -172,7 +172,16 @@
   (relation next-to    T T)
 
   ;; ── Rule-application facts (implicit context for the engine).
-  (transitive        is-a)
+  ;; ──
+  ;; ── NOTE: `(transitive is-a)` is intentionally OMITTED. Activating
+  ;; ── it derives every ancestor edge (Norwegian is-a Attribute,
+  ;; ── Norwegian is-a T, …), which then makes `(sibling-exclusive
+  ;; ── is-a)` match cross-boundary pairs (Norwegian and Red share
+  ;; ── ancestor Attribute via transitive closure) and emit ~1300
+  ;; ── spurious (not (co-located A B)) facts. Without the transitive
+  ;; ── activator, sibling-exclusive fires only on *direct* is-a
+  ;; ── parent pairs — 120 ordered pairs, matching zebra.ein's
+  ;; ── `(type-exclusivity co-located)` exactly.
   (asymmetric        is-a)
   (sibling-exclusive is-a)
   (symmetric  co-located)

@@ -250,11 +250,15 @@ class TestZebra2:
         assert "asymmetric" in names
         assert "sibling-exclusive" in names
 
-    def test_zebra2_is_a_has_three_rule_apps(self, zebra2_kb):
+    def test_zebra2_is_a_has_two_rule_apps(self, zebra2_kb):
         is_a = zebra2_kb.relations["is-a"]
         rule_names = {r.name for r in is_a.rules}
-        # `(transitive is-a)`, `(asymmetric is-a)`, `(sibling-exclusive is-a)`.
-        assert {"transitive", "asymmetric", "sibling-exclusive"} <= rule_names
+        # `(transitive is-a)` is intentionally dropped — it caused a
+        # quadratic blowup with `(sibling-exclusive is-a)` over the
+        # transitive closure. Only `(asymmetric is-a)` and
+        # `(sibling-exclusive is-a)` remain activated.
+        assert {"asymmetric", "sibling-exclusive"} <= rule_names
+        assert "transitive" not in rule_names
 
     def test_zebra2_facts_count_nonzero(self, zebra2_kb):
         # ≥ 30 is-a facts (subtype + leaf) plus rule-apps plus

@@ -50,6 +50,11 @@ No doubt move from (4) to (2) or (1) can be automated. That's one followup.
 Next one - automated inference of rules from relations.
 This is part of ontology induction/deduction/inference/search mentioned here docs/ideas/04-nlp-to-graph-to-solver-pipeline.md
 
+Another question is selection of sufficient set of rules.
+For example in zebra2.ein (transitive is-a) is logically correct,
+but not required for inference and produce excessive amount of unnecessary facts.
+
+
 Topic is wide, worth it's own followup document
 
 
