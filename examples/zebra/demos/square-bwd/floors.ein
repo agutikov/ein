@@ -1,0 +1,39 @@
+;;; floors — square-bwd in a vertical stack.
+;;;
+;;; Ontology (background):
+;;;   - `above-of` is the directional vertical-stack relation.
+;;;   - `co-located` here means "same horizontal level".
+;;;
+;;; Facts (observed):
+;;;   - Floor2 is above Floor1.
+;;;   - Floor5 is above Floor4.
+;;;   - Floor1 and Floor4 are co-located.
+;;;
+;;; Question:
+;;;   Are Floor2 and Floor5 co-located?  (Yes.)
+;;;
+;;; Expected derivation:
+;;;   (above-of Floor2 Floor1) + (above-of Floor5 Floor4)
+;;;   + (co-located Floor1 Floor4)
+;;;   ⇒ (co-located Floor2 Floor5).
+
+(rules
+  (rule square-bwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?b ?y))
+    :assert (co-located ?a ?x)
+    :why    "square ({?R}, bwd)."
+    :priority 200))
+
+(ontology
+  (relation above-of T T)
+  (relation co-located T T)
+  (square-bwd above-of))
+
+(facts
+  (above-of Floor2 Floor1 :source "(1)")
+  (above-of Floor5 Floor4 :source "(2)")
+  (co-located Floor1 Floor4 :source "(3)"))
+
+(query :mode solve :goal (co-located Floor2 Floor5))

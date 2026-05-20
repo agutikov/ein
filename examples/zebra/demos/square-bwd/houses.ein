@@ -1,0 +1,42 @@
+;;; houses — square-bwd: right-of propagates co-located backward.
+;;;
+;;; Mirror of square-fwd/houses. Here the co-located bridge is on
+;;; the *left* leg (A ↔ C — "same attribute one step left"); the
+;;; rule projects to the *right* leg (B ↔ D).
+;;;
+;;; Ontology (background):
+;;;   - `right-of` is a directional spatial relation.
+;;;   - `co-located` ties attributes in the same house.
+;;;
+;;; Facts (observed):
+;;;   - B is right of A.
+;;;   - D is right of C.
+;;;   - A and C are co-located.
+;;;
+;;; Question:
+;;;   Are B and D co-located?  (Yes — square projects backward.)
+;;;
+;;; Expected derivation:
+;;;   (right-of B A) + (right-of D C) + (co-located A C)
+;;;   ⇒ (co-located B D).
+
+(rules
+  (rule square-bwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?b ?y))
+    :assert (co-located ?a ?x)
+    :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
+    :priority 200))
+
+(ontology
+  (relation right-of T T)
+  (relation co-located T T)
+  (square-bwd right-of))
+
+(facts
+  (right-of B A :source "(1)")
+  (right-of D C :source "(2)")
+  (co-located A C :source "(3)"))
+
+(query :mode solve :goal (co-located B D))

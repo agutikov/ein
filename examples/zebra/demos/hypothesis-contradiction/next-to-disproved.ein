@@ -1,0 +1,35 @@
+;;; next-to-disproved — a neighbour-of hypothesis is contradicted.
+;;;
+;;; The inner proposition is a `next-to` adjacency claim, again
+;;; exercising the nested-fact unification path (Q40 / R9).
+;;;
+;;; Ontology (background):
+;;;   - `next-to` is the symmetric neighbour relation.
+;;;
+;;; Facts (observed via the hypothesis loop):
+;;;   - The engine assumed (next-to X Y) on some branch.
+;;;   - That branch produced a contradiction.
+;;;
+;;; Question:
+;;;   Should (next-to X Y) be rejected?  (Yes.)
+;;;
+;;; Expected derivation:
+;;;   (hypothesis (next-to X Y)) + (contradiction-under (next-to X Y))
+;;;   ⇒ (not (next-to X Y)).
+
+(rules
+  (rule hypothesis-contradiction ()
+    :match  (and (hypothesis ?h)
+                 (contradiction-under ?h))
+    :assert (not ?h)
+    :why    "Assumed {?h}; contradicted. Therefore (not {?h})."
+    :priority 900))
+
+(ontology
+  (relation next-to T T))
+
+(reasoning
+  (hypothesis (next-to X Y))
+  (contradiction-under (next-to X Y)))
+
+(query :mode solve :goal (not (next-to X Y)))

@@ -1,0 +1,31 @@
+;;; neighbours — next-to is symmetric on house positions.
+;;;
+;;; Ontology (background):
+;;;   - `next-to` is the spatial neighbour-of relation between
+;;;     houses; if a wall touches house X and house Y, it touches
+;;;     both ways.
+;;;
+;;; Facts (observed):
+;;;   - House_1 is next to House_2.
+;;;
+;;; Question:
+;;;   Is House_2 next to House_1?  (Yes, by symmetry.)
+;;;
+;;; Expected derivation:
+;;;   (next-to House_1 House_2) ⇒ (next-to House_2 House_1).
+
+(rules
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+    :priority 100))
+
+(ontology
+  (relation next-to T T)
+  (symmetric next-to))
+
+(facts
+  (next-to House_1 House_2 :source "demo"))
+
+(query :mode solve :goal (next-to House_2 House_1))

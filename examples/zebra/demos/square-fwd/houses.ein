@@ -1,0 +1,45 @@
+;;; houses — spatial bridge: right-of propagates co-located forward.
+;;;
+;;; This is the PoC's *square rule* in its forward direction. Two
+;;; houses sit side by side; each has an attribute (A on the left of
+;;; B, C on the left of D). A co-located bridge ties the two
+;;; right-hand sides (B ↔ D — "they're in the same house"); the rule
+;;; projects the bridge to the left-hand sides (A ↔ C).
+;;;
+;;; Ontology (background):
+;;;   - `right-of` is a directional spatial relation.
+;;;   - `co-located` ties two attributes that live in the same house.
+;;;   - `(square-fwd right-of)` activates the rule for right-of.
+;;;
+;;; Facts (observed):
+;;;   - B is right of A.
+;;;   - D is right of C.
+;;;   - B and D are co-located (in the same house).
+;;;
+;;; Question:
+;;;   Are A and C co-located?  (Yes — square projection.)
+;;;
+;;; Expected derivation:
+;;;   (right-of B A) + (right-of D C) + (co-located B D)
+;;;   ⇒ (co-located A C).
+
+(rules
+  (rule square-fwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?a ?x))
+    :assert (co-located ?b ?y)
+    :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
+    :priority 200))
+
+(ontology
+  (relation right-of T T)
+  (relation co-located T T)
+  (square-fwd right-of))
+
+(facts
+  (right-of B A :source "(1)")
+  (right-of D C :source "(2)")
+  (co-located B D :source "(3)"))
+
+(query :mode solve :goal (co-located A C))

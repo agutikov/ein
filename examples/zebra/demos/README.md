@@ -2,8 +2,20 @@
 
 A demo is the smallest IR file that exercises **one** of the seven
 M1-core rules. Each demo's directory name is the rule name; each
-file (`a.ein`, `b.ein`, `c.ein`) is a different scenario (same
-rule, different ontology / facts).
+file is a named scenario (same rule, different ontology / facts).
+
+Every demo file has the same shape:
+
+1. **Header comment** — NL prose for the ontology (background
+   assumptions), the facts (what the puzzle states explicitly), the
+   question, and the expected one-step derivation.
+2. **`(rules …)`** — the single rule the demo exercises (inline per
+   Q30 / P1.8 deferral).
+3. **`(ontology …)`** — minimum schema + activator facts.
+4. **`(facts …)`** or **`(reasoning …)`** — the premises that
+   trigger the rule.
+5. **`(query :mode solve :goal …)`** — the derived fact the engine
+   should produce when it fires the named rule.
 
 Running the engine on any demo produces ≥ 1 firing whose `:rule`
 field matches the demo's directory name. The test
@@ -12,32 +24,28 @@ enforces this for every demo, parametrised over the 21 files.
 
 ## Index
 
-| Rule                       | Type        | Band       | Priority | Demos                                                                                                |
-|----------------------------|-------------|------------|---------:|------------------------------------------------------------------------------------------------------|
-| `symmetric`                | T2          | propagate  | 100      | [a](symmetric/a.ein) · [b](symmetric/b.ein) · [c](symmetric/c.ein)                                   |
-| `transitive`               | T2          | derive     | 200      | [a](transitive/a.ein) · [b](transitive/b.ein) · [c](transitive/c.ein)                                |
-| `implies`                  | T2          | propagate  | 100      | [a](implies/a.ein) · [b](implies/b.ein) · [c](implies/c.ein)                                         |
-| `square-fwd`               | T2          | derive     | 200      | [a](square-fwd/a.ein) · [b](square-fwd/b.ein) · [c](square-fwd/c.ein)                                |
-| `square-bwd`               | T2          | derive     | 200      | [a](square-bwd/a.ein) · [b](square-bwd/b.ein) · [c](square-bwd/c.ein)                                |
-| `type-exclusivity`         | non-generic | eliminate  | 300      | [a](type-exclusivity/a.ein) · [b](type-exclusivity/b.ein) · [c](type-exclusivity/c.ein)              |
-| `hypothesis-contradiction` | non-generic | hypothesis | 900      | [a](hypothesis-contradiction/a.ein) · [b](hypothesis-contradiction/b.ein) · [c](hypothesis-contradiction/c.ein) |
+Each demo carries its own NL header (ontology / facts / question /
+expected derivation) and a `(query …)` block whose `:goal` is the
+fact the named rule produces.
+
+| Rule                       | Type        | Band       | Priority | Demos                                                                                                                                                          |
+|----------------------------|-------------|------------|---------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `symmetric`                | T2          | propagate  | 100      | [couple](symmetric/couple.ein) · [neighbours](symmetric/neighbours.ein) · [friends](symmetric/friends.ein)                                                     |
+| `transitive`               | T2          | derive     | 200      | [colocation-chain](transitive/colocation-chain.ein) · [taxonomy](transitive/taxonomy.ein) · [mealtimes](transitive/mealtimes.ein)                              |
+| `implies`                  | T2          | propagate  | 100      | [right-then-next](implies/right-then-next.ein) · [parent-to-ancestor](implies/parent-to-ancestor.ein) · [org-chart](implies/org-chart.ein)                     |
+| `square-fwd`               | T2          | derive     | 200      | [houses](square-fwd/houses.ein) · [meetings](square-fwd/meetings.ein) · [floors](square-fwd/floors.ein)                                                        |
+| `square-bwd`               | T2          | derive     | 200      | [houses](square-bwd/houses.ein) · [meetings](square-bwd/meetings.ein) · [floors](square-bwd/floors.ein)                                                        |
+| `type-exclusivity`         | non-generic | eliminate  | 300      | [colors](type-exclusivity/colors.ein) · [nationalities](type-exclusivity/nationalities.ein) · [pets](type-exclusivity/pets.ein)                                |
+| `hypothesis-contradiction` | non-generic | hypothesis | 900      | [coloc-disproved](hypothesis-contradiction/coloc-disproved.ein) · [right-of-disproved](hypothesis-contradiction/right-of-disproved.ein) · [next-to-disproved](hypothesis-contradiction/next-to-disproved.ein) |
 
 ## How to read a demo
 
-Each demo is self-contained:
-
-- `(rules …)` — the **one** rule the demo exercises (inline per Q30
-  / P1.8 deferral).
-- `(ontology …)` — minimum schema + activator facts.
-- `(facts …)` or `(reasoning …)` — the premises that trigger the
-  rule.
-
-The demo body comments name the **given** facts and the **derived**
-fact. The engine's actual firing count is recorded in the test
-output; for most demos it's exactly 1, but `symmetric` demos (which
-also re-match on their own conclusion) and `type-exclusivity` demos
-(which fire over ordered pairs of distinct same-type instances)
-legitimately produce more than one firing.
+Each demo is self-contained — the NL header explains what to read
+in the IR body. The engine's actual firing count is recorded in the
+test output; for most demos it's exactly 1, but `symmetric` demos
+(which also re-match on their own conclusion) and `type-exclusivity`
+demos (which fire over ordered pairs of distinct same-type
+instances) legitimately produce more than one firing.
 
 ## Demos that exercise Q40 (nested-fact patterns)
 
@@ -63,19 +71,26 @@ from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 from ein_bot.inference.engine import Engine
 
-kb = KnowledgeBase.from_ir(parse(open('examples/zebra/demos/symmetric/a.ein').read()))
+kb = KnowledgeBase.from_ir(parse(
+    open('examples/zebra/demos/symmetric/couple.ein').read()))
 eng = Engine(kb); eng.compile_all()
 for f in eng.saturate():
     print(f.rule, '→', f.derived.relation_name, f.derived.args)
 "
 ```
 
-## Rendering to DOT/SVG (deferred)
+## Rendering to DOT/SVG
 
-`utils/render_examples.sh` currently processes only top-level
-`examples/*.ein`. Extending it to recurse into `examples/zebra/demos/`
-is a small follow-up — when it lands, this README's table will gain
-SVG links alongside the `.ein` links.
+```sh
+utils/render_examples.sh                  # → build/dot/
+utils/render_examples.sh /tmp/out         # → /tmp/out/
+```
+
+The script recursively discovers every `.ein` under `examples/`
+(top-level files + nested demos, minus `examples/broken/`) and
+produces six per-form variants (`rule-{a,c}_trace-{a,b,c}`) plus
+one unified KB view per demo. Outputs land at
+`<out>/zebra/demos/<rule>/<scenario>/`.
 
 ## See also
 

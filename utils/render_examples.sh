@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
-# Render every examples/*.ein into DOT + SVG variants.
+# Render every .ein under examples/ into DOT + SVG variants.
+# Includes nested demo files (examples/zebra/demos/<rule>/<name>.ein);
+# skips examples/broken/.
 #
 # For each input file, the script invokes `ein-bot ir dot` with every
 # combination of --rule-mode (a, c) × --trace-view (a, b, c) — six
@@ -28,8 +30,12 @@
 #   FORMATS="svg pdf" utils/render_examples.sh
 #
 # Layout of output:
-#   <out>/<example>/rule-<rm>_trace-<tv>/NN_<digraph-name>.dot
-#   <out>/<example>/rule-<rm>_trace-<tv>/NN_<digraph-name>.svg
+#   <out>/<example-rel-path>/rule-<rm>_trace-<tv>/NN_<digraph-name>.dot
+#   <out>/<example-rel-path>/rule-<rm>_trace-<tv>/NN_<digraph-name>.svg
+#
+# `<example-rel-path>` is the relative path under examples/ minus
+# the `.ein` extension — top-level "zebra", nested
+# "zebra/demos/symmetric/couple", etc.
 #
 # Environment overrides:
 #   EINBOT     — command to invoke (default: `ein-bot` if on PATH,
@@ -137,12 +143,18 @@ render_each() {
     shopt -u nullglob
 }
 
-shopt -s nullglob
-ein_files=( "${EXAMPLES_DIR}"/*.ein )
-shopt -u nullglob
+# Recursive discovery — picks up the top-level examples (zebra.ein,
+# zebra2.ein, …) AND any nested demo directories under
+# examples/zebra/demos/<rule>/<scenario>.ein. Skips examples/broken/
+# (intentional parse-failure fixtures).
+mapfile -d '' -t ein_files < <(
+    find "${EXAMPLES_DIR}" \
+        -path "${EXAMPLES_DIR}/broken" -prune -o \
+        -name '*.ein' -type f -print0
+)
 
 if (( ${#ein_files[@]} == 0 )); then
-    echo "no examples/*.ein found"
+    echo "no *.ein files found under ${EXAMPLES_DIR}"
     exit 0
 fi
 
@@ -150,7 +162,12 @@ total_dots=0
 total_imgs=0
 total_unified=0
 for ein in "${ein_files[@]}"; do
-    base="$(basename "${ein}" .ein)"
+    # Relative path from EXAMPLES_DIR, minus the .ein extension.
+    # Top-level files keep their bare stem (e.g. "zebra"); nested
+    # demo files preserve their path so outputs don't collide
+    # (e.g. "zebra/demos/symmetric/couple").
+    rel="${ein#${EXAMPLES_DIR}/}"
+    base="${rel%.ein}"
     echo "==> ${ein}"
     for rmode in "${RULE_MODES[@]}"; do
         for tview in "${TRACE_VIEWS[@]}"; do

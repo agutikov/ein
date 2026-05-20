@@ -153,6 +153,27 @@
     :priority 900))
 
 (ontology
+  ;; ── Relation signatures. Properties (incl. spatial-ness) live
+  ;; ── below as rule-application facts, not as kw-pairs here.
+  (relation co-located Attribute Attribute)
+  (relation right-of   Attribute Attribute)
+  (relation next-to    Attribute Attribute)
+
+  ;; ── Rule-application facts. Implicit: the puzzle never says
+  ;; ── "co-located is symmetric" — that's universal context.
+  (symmetric  co-located)
+  (transitive co-located)
+  (symmetric  next-to)
+  (implies    right-of next-to)
+  (square-fwd right-of)
+  (square-bwd right-of)
+  ;; NOTE: square does NOT apply to next-to. next-to is symmetric
+  ;; and its disjunctive conclusion ("B is at *some* neighbour of X")
+  ;; needs hypothesis branching, not a positive rule firing. See
+  ;; the §rules block design note above.
+  ;; `type-exclusivity` is non-generic — fires for every type
+  ;; automatically; no per-type application fact needed.
+
   ;; ── Type schema. Flat attribute hierarchy. ──
   (type Attribute)
   (type House       Attribute)
@@ -180,27 +201,6 @@
   (instance Parliament    Cigarette)
   (instance Coffee Drink) (instance Tea   Drink) (instance Milk Drink)
   (instance Juice  Drink) (instance Water Drink)
-
-  ;; ── Relation signatures. Properties (incl. spatial-ness) live
-  ;; ── below as rule-application facts, not as kw-pairs here.
-  (relation co-located Attribute Attribute)
-  (relation right-of   Attribute Attribute)
-  (relation next-to    Attribute Attribute)
-
-  ;; ── Rule-application facts. Implicit: the puzzle never says
-  ;; ── "co-located is symmetric" — that's universal context.
-  (symmetric  co-located)
-  (transitive co-located)
-  (symmetric  next-to)
-  (implies    right-of next-to)
-  (square-fwd right-of)
-  (square-bwd right-of)
-  ;; NOTE: square does NOT apply to next-to. next-to is symmetric
-  ;; and its disjunctive conclusion ("B is at *some* neighbour of X")
-  ;; needs hypothesis branching, not a positive rule firing. See
-  ;; the §rules block design note above.
-  ;; `type-exclusivity` is non-generic — fires for every type
-  ;; automatically; no per-type application fact needed.
 
   ;; ── Condition (1) "five houses in a row" — pairwise immediate-
   ;; ── right-of facts. The cardinality statement IS explicit, but

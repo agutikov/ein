@@ -1,0 +1,37 @@
+;;; parent-to-ancestor — every direct parent is an ancestor.
+;;;
+;;; Ontology (background):
+;;;   - `parent-of` is the direct-parent edge.
+;;;   - `ancestor-of` is the more general "somewhere up the family
+;;;     tree" relation.
+;;;   - Every parent is an ancestor — implication is one-way.
+;;;     (The recursive case, transitivity of ancestor-of, would be a
+;;;     separate `transitive` rule firing — out of scope for this
+;;;     base-case demo.)
+;;;
+;;; Facts (observed):
+;;;   - Anne is the parent of Bob.
+;;;
+;;; Question:
+;;;   Is Anne an ancestor of Bob?  (Yes — direct parent ⇒ ancestor.)
+;;;
+;;; Expected derivation:
+;;;   (parent-of Anne Bob) + (implies parent-of ancestor-of)
+;;;   ⇒ (ancestor-of Anne Bob).
+
+(rules
+  (rule implies (?p ?q)
+    :match  (?p ?a ?b)
+    :assert (?q ?a ?b)
+    :why    "{?p} implies {?q}."
+    :priority 100))
+
+(ontology
+  (relation parent-of T T)
+  (relation ancestor-of T T)
+  (implies parent-of ancestor-of))
+
+(facts
+  (parent-of Anne Bob :source "demo"))
+
+(query :mode solve :goal (ancestor-of Anne Bob))

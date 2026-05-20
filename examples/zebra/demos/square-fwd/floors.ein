@@ -1,0 +1,41 @@
+;;; floors — vertical square in a building.
+;;;
+;;; Ontology (background):
+;;;   - `above-of` is a directional vertical-stack relation.
+;;;   - `co-located` here means "same floor" (or, more abstractly,
+;;;     "same horizontal slab").
+;;;
+;;; Facts (observed):
+;;;   - Floor2 is directly above Floor1.
+;;;   - Floor5 is directly above Floor4.
+;;;   - Floor2 and Floor5 are co-located (same horizontal level — in
+;;;     two different stacks, say two buildings).
+;;;
+;;; Question:
+;;;   Are Floor1 and Floor4 co-located?  (Yes — square projection.)
+;;;
+;;; Expected derivation:
+;;;   (above-of Floor2 Floor1) + (above-of Floor5 Floor4)
+;;;   + (co-located Floor2 Floor5)
+;;;   ⇒ (co-located Floor1 Floor4).
+
+(rules
+  (rule square-fwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?a ?x))
+    :assert (co-located ?b ?y)
+    :why    "square ({?R}, fwd)."
+    :priority 200))
+
+(ontology
+  (relation above-of T T)
+  (relation co-located T T)
+  (square-fwd above-of))
+
+(facts
+  (above-of Floor2 Floor1 :source "(1)")
+  (above-of Floor5 Floor4 :source "(2)")
+  (co-located Floor2 Floor5 :source "(3)"))
+
+(query :mode solve :goal (co-located Floor1 Floor4))

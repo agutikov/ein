@@ -1,0 +1,35 @@
+;;; right-of-disproved — a spatial hypothesis is contradicted.
+;;;
+;;; Same shape as coloc-disproved, with the inner proposition being
+;;; a spatial right-of claim instead of a co-located claim.
+;;;
+;;; Ontology (background):
+;;;   - `right-of` is the directional spatial relation.
+;;;
+;;; Facts (observed via the hypothesis loop):
+;;;   - The engine assumed (right-of A B) on some branch.
+;;;   - That branch produced a contradiction.
+;;;
+;;; Question:
+;;;   Should (right-of A B) be rejected?  (Yes.)
+;;;
+;;; Expected derivation:
+;;;   (hypothesis (right-of A B)) + (contradiction-under (right-of A B))
+;;;   ⇒ (not (right-of A B)).
+
+(rules
+  (rule hypothesis-contradiction ()
+    :match  (and (hypothesis ?h)
+                 (contradiction-under ?h))
+    :assert (not ?h)
+    :why    "Assumed {?h}; contradicted. Therefore (not {?h})."
+    :priority 900))
+
+(ontology
+  (relation right-of T T))
+
+(reasoning
+  (hypothesis (right-of A B))
+  (contradiction-under (right-of A B)))
+
+(query :mode solve :goal (not (right-of A B)))

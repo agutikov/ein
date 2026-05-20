@@ -1,0 +1,33 @@
+;;; org-chart — boss-of implies leads.
+;;;
+;;; Ontology (background):
+;;;   - `boss-of` is the direct-management edge.
+;;;   - `leads` is a broader "X holds a leadership position over Y"
+;;;     relation; every boss leads.
+;;;
+;;; Facts (observed):
+;;;   - The Manager is the boss of the Engineer.
+;;;
+;;; Question:
+;;;   Does the Manager lead the Engineer?  (Yes.)
+;;;
+;;; Expected derivation:
+;;;   (boss-of Manager Engineer) + (implies boss-of leads)
+;;;   ⇒ (leads Manager Engineer).
+
+(rules
+  (rule implies (?p ?q)
+    :match  (?p ?a ?b)
+    :assert (?q ?a ?b)
+    :why    "{?p} implies {?q}."
+    :priority 100))
+
+(ontology
+  (relation boss-of T T)
+  (relation leads T T)
+  (implies boss-of leads))
+
+(facts
+  (boss-of Manager Engineer :source "demo"))
+
+(query :mode solve :goal (leads Manager Engineer))

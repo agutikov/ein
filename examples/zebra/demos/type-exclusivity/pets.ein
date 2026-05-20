@@ -1,0 +1,37 @@
+;;; pets — three distinct Pets fire all 6 ordered pairs.
+;;;
+;;; Ontology (background):
+;;;   - `Pet` is a mutually-exclusive attribute type; a household
+;;;     holds at most one of these pets.
+;;;
+;;; Facts (observed):
+;;;   - Dog, Cat, Bird are all instances of Pet.
+;;;
+;;; Question:
+;;;   For each ordered pair of distinct Pets, is co-location ruled
+;;;   out?  (Yes — 6 firings: 3 × 2 ordered pairs.)
+;;;
+;;; Expected derivation:
+;;;   For every distinct (X, Y) ∈ Pet × Pet:
+;;;   (instance X Pet) + (instance Y Pet) + (neq X Y)
+;;;   ⇒ (not (co-located X Y)).
+;;;   Six firings total: (Dog,Cat), (Dog,Bird), (Cat,Dog), (Cat,Bird),
+;;;   (Bird,Dog), (Bird,Cat).
+
+(rules
+  (rule type-exclusivity ()
+    :match  (and (instance ?a ?T)
+                 (instance ?b ?T)
+                 (neq ?a ?b))
+    :assert (not (co-located ?a ?b))
+    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive slots."
+    :priority 300))
+
+(ontology
+  (type Pet)
+  (instance Dog Pet)
+  (instance Cat Pet)
+  (instance Bird Pet)
+  (relation co-located T T))
+
+(query :mode solve :goal (not (co-located Dog Cat)))

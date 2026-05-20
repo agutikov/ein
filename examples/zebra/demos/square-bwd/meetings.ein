@@ -1,0 +1,42 @@
+;;; meetings — square-bwd over temporal ordering.
+;;;
+;;; Ontology (background):
+;;;   - `before-of` is temporal precedence.
+;;;   - `co-located` here is "same moment".
+;;;
+;;; Facts (observed):
+;;;   - Tuesday's meeting was before Monday's meeting.
+;;;   - Friday's call was before Thursday's call.
+;;;   - Monday's meeting and Thursday's call were at the same moment.
+;;;
+;;; Question:
+;;;   Were Tuesday's meeting and Friday's call at the same moment?
+;;;   (Yes — square-bwd projects backward across two parallel
+;;;   orderings.)
+;;;
+;;; Expected derivation:
+;;;   (before-of TuesdayMeeting MondayMeeting)
+;;;   + (before-of FridayCall ThursdayCall)
+;;;   + (co-located MondayMeeting ThursdayCall)
+;;;   ⇒ (co-located TuesdayMeeting FridayCall).
+
+(rules
+  (rule square-bwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?b ?y))
+    :assert (co-located ?a ?x)
+    :why    "square ({?R}, bwd)."
+    :priority 200))
+
+(ontology
+  (relation before-of T T)
+  (relation co-located T T)
+  (square-bwd before-of))
+
+(facts
+  (before-of TuesdayMeeting MondayMeeting :source "(1)")
+  (before-of FridayCall ThursdayCall :source "(2)")
+  (co-located MondayMeeting ThursdayCall :source "(3)"))
+
+(query :mode solve :goal (co-located TuesdayMeeting FridayCall))

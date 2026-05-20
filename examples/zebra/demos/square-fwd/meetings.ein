@@ -1,0 +1,48 @@
+;;; meetings — temporal square: before-of bridged by same-time.
+;;;
+;;; The square rule isn't bound to spatial reasoning. Here `before-of`
+;;; orders events in time; `co-located` plays the role of "same
+;;; moment". If two pairs of events are time-ordered the same way,
+;;; and the LATER members coincide, the EARLIER members coincide too.
+;;;
+;;; Ontology (background):
+;;;   - `before-of` is the temporal-precedes relation.
+;;;   - `co-located` here means "same moment".
+;;;
+;;; Facts (observed):
+;;;   - Tuesday's meeting was before Monday's meeting. (Yes, that's
+;;;     a typo-looking but example-only ordering — read the args as
+;;;     "{later} before {earlier}".)
+;;;   - Friday's call was before Thursday's call.
+;;;   - Tuesday's meeting was at the same moment as Friday's call.
+;;;
+;;; Question:
+;;;   Were Monday's meeting and Thursday's call at the same moment?
+;;;   (Yes — by square projection across two parallel orderings.)
+;;;
+;;; Expected derivation:
+;;;   (before-of TuesdayMeeting MondayMeeting)
+;;;   + (before-of FridayCall ThursdayCall)
+;;;   + (co-located TuesdayMeeting FridayCall)
+;;;   ⇒ (co-located MondayMeeting ThursdayCall).
+
+(rules
+  (rule square-fwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?a ?x))
+    :assert (co-located ?b ?y)
+    :why    "square ({?R}, fwd)."
+    :priority 200))
+
+(ontology
+  (relation before-of T T)
+  (relation co-located T T)
+  (square-fwd before-of))
+
+(facts
+  (before-of TuesdayMeeting MondayMeeting :source "(1)")
+  (before-of FridayCall ThursdayCall :source "(2)")
+  (co-located TuesdayMeeting FridayCall :source "(3)"))
+
+(query :mode solve :goal (co-located MondayMeeting ThursdayCall))

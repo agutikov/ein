@@ -1,0 +1,34 @@
+;;; mealtimes — before-of orders the day's meals.
+;;;
+;;; Ontology (background):
+;;;   - `before-of` is a temporal ordering relation, transitive.
+;;;
+;;; Facts (observed):
+;;;   - Breakfast is before Lunch.
+;;;   - Lunch is before Dinner.
+;;;
+;;; Question:
+;;;   Is Breakfast before Dinner?  (Yes — composition of two orderings.)
+;;;
+;;; Expected derivation:
+;;;   (before-of Breakfast Lunch) + (before-of Lunch Dinner)
+;;;   ⇒ (before-of Breakfast Dinner).
+
+(rules
+  (rule transitive (?rel)
+    :match  (and (?rel ?a ?b)
+                 (?rel ?b ?c)
+                 (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why    "{?rel} is transitive."
+    :priority 200))
+
+(ontology
+  (relation before-of T T)
+  (transitive before-of))
+
+(facts
+  (before-of Breakfast Lunch :source "demo")
+  (before-of Lunch Dinner :source "demo"))
+
+(query :mode solve :goal (before-of Breakfast Dinner))

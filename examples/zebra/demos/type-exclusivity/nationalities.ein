@@ -1,0 +1,37 @@
+;;; nationalities — distinct Nationalities cannot co-locate.
+;;;
+;;; Ontology (background):
+;;;   - `Nationality` is a mutually-exclusive attribute type
+;;;     (a person has one nationality at a time, for the purposes
+;;;     of zebra-class puzzles).
+;;;
+;;; Facts (observed):
+;;;   - Norwegian is an instance of Nationality.
+;;;   - Spaniard is an instance of Nationality.
+;;;
+;;; Question:
+;;;   Can Norwegian and Spaniard be co-located in the same slot?
+;;;   (No — two distinct nationalities can't share a slot.)
+;;;
+;;; Expected derivation:
+;;;   (instance Norwegian Nationality)
+;;;   + (instance Spaniard Nationality)
+;;;   + (neq Norwegian Spaniard)
+;;;   ⇒ (not (co-located Norwegian Spaniard)).
+
+(rules
+  (rule type-exclusivity ()
+    :match  (and (instance ?a ?T)
+                 (instance ?b ?T)
+                 (neq ?a ?b))
+    :assert (not (co-located ?a ?b))
+    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive slots."
+    :priority 300))
+
+(ontology
+  (type Nationality)
+  (instance Norwegian Nationality)
+  (instance Spaniard Nationality)
+  (relation co-located T T))
+
+(query :mode solve :goal (not (co-located Norwegian Spaniard)))

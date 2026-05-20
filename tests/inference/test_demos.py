@@ -42,7 +42,7 @@ def _demo_id(path: Path) -> str:
 
 
 def test_demos_directory_layout():
-    """Exactly 7 rule subdirectories, each with 3 scenarios = 21 files."""
+    """Exactly 7 rule subdirectories, each with 3 named scenarios = 21 files."""
     subdirs = sorted(p.name for p in DEMOS_DIR.iterdir() if p.is_dir())
     assert subdirs == [
         "hypothesis-contradiction", "implies", "square-bwd",
@@ -51,9 +51,9 @@ def test_demos_directory_layout():
     assert len(DEMO_PATHS) == 21, \
         f"expected 21 demo files (7 rules x 3 scenarios), got {len(DEMO_PATHS)}"
     for sub in subdirs:
-        files = sorted(p.name for p in (DEMOS_DIR / sub).glob("*.ein"))
-        assert files == ["a.ein", "b.ein", "c.ein"], \
-            f"{sub}/ missing a/b/c demos; got {files}"
+        eins = sorted(p.name for p in (DEMOS_DIR / sub).glob("*.ein"))
+        assert len(eins) == 3, \
+            f"{sub}/ should have 3 demos; got {len(eins)}: {eins}"
 
 
 @pytest.mark.parametrize("path", DEMO_PATHS, ids=_demo_id)
@@ -70,6 +70,26 @@ def test_demo_fires_named_rule(path: Path):
         f"{_demo_id(path)}: rule {rule_name!r} did not fire. "
         f"Firings observed: {[f.rule for f in firings]}"
     )
+
+
+@pytest.mark.parametrize("path", DEMO_PATHS, ids=_demo_id)
+def test_demo_has_query_block(path: Path):
+    """Every demo carries a `(query :mode solve :goal …)` block.
+
+    The goal pattern names the derived fact the demo's rule is
+    expected to produce; consumers (P1.5 hypothesis loop, P1.6
+    trace renderer) can run a demo and check the query against the
+    saturated KB.
+    """
+    kb = KnowledgeBase.from_ir(parse(path.read_text()))
+    assert kb.query is not None, f"{_demo_id(path)}: missing (query …) block"
+    # The query has at least :mode and :goal kw_pairs.
+    keys = {
+        kp.key.name for kp in kb.query.kw_pairs
+        if hasattr(kp, "key")
+    }
+    assert "mode" in keys, f"{_demo_id(path)}: query missing :mode"
+    assert "goal" in keys, f"{_demo_id(path)}: query missing :goal"
 
 
 @pytest.mark.parametrize("path", DEMO_PATHS, ids=_demo_id)

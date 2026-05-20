@@ -143,6 +143,21 @@
   (relation right-of   T T)
   (relation next-to    T T)
 
+  ;; ── Rule-application facts (implicit context for the engine).
+  (transitive        is-a)
+  (asymmetric        is-a)
+  (sibling-exclusive is-a)
+  (symmetric  co-located)
+  (transitive co-located)
+  (symmetric  next-to)
+  (implies    right-of next-to)
+  (square-fwd right-of)
+  (square-bwd right-of)
+  ;; NOTE: square does NOT apply to next-to. next-to is symmetric;
+  ;; its conclusion is disjunctive (B is at *some* neighbour of X,
+  ;; possibly two candidates) and belongs to hypothesis branching,
+  ;; not to a positive rule firing.
+
   ;; ── Inheritance tree, rooted at T. Both subtype-of and instance-of
   ;; ── edges are expressed by the same `is-a` relation; the visual
   ;; ── distinction (boxes vs ovals) disappears in this formulation
@@ -171,21 +186,6 @@
   (is-a Parliament    Cigarette)
   (is-a Coffee Drink) (is-a Tea   Drink) (is-a Milk Drink)
   (is-a Juice  Drink) (is-a Water Drink)
-
-  ;; ── Rule-application facts (implicit context for the engine).
-  (transitive        is-a)
-  (asymmetric        is-a)
-  (sibling-exclusive is-a)
-  (symmetric  co-located)
-  (transitive co-located)
-  (symmetric  next-to)
-  (implies    right-of next-to)
-  (square-fwd right-of)
-  (square-bwd right-of)
-  ;; NOTE: square does NOT apply to next-to. next-to is symmetric;
-  ;; its conclusion is disjunctive (B is at *some* neighbour of X,
-  ;; possibly two candidates) and belongs to hypothesis branching,
-  ;; not to a positive rule firing.
 
   ;; ── Condition (1) "five houses in a row" — pairwise spatial.
   (right-of House_2 House_1 :source "condition (1)")

@@ -1,0 +1,30 @@
+;;; friends — friend-of is symmetric (custom domain).
+;;;
+;;; Ontology (background):
+;;;   - `friend-of` is a social relation; if X is a friend of Y, then
+;;;     Y is a friend of X.
+;;;
+;;; Facts (observed):
+;;;   - Carol is a friend of Dave.
+;;;
+;;; Question:
+;;;   Is Dave a friend of Carol?  (Yes.)
+;;;
+;;; Expected derivation:
+;;;   (friend-of Carol Dave) ⇒ (friend-of Dave Carol).
+
+(rules
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+    :priority 100))
+
+(ontology
+  (relation friend-of T T)
+  (symmetric friend-of))
+
+(facts
+  (friend-of Carol Dave :source "demo"))
+
+(query :mode solve :goal (friend-of Dave Carol))

@@ -1,0 +1,34 @@
+;;; taxonomy — is-a chains through a type hierarchy.
+;;;
+;;; Ontology (background):
+;;;   - `is-a` is the subtype edge; transitive (if X is a Y and Y is
+;;;     a Z, then X is a Z).
+;;;
+;;; Facts (observed):
+;;;   - Cat is-a Mammal.
+;;;   - Mammal is-a Animal.
+;;;
+;;; Question:
+;;;   Is a Cat an Animal?  (Yes — Cat → Mammal → Animal.)
+;;;
+;;; Expected derivation:
+;;;   (is-a Cat Mammal) + (is-a Mammal Animal) ⇒ (is-a Cat Animal).
+
+(rules
+  (rule transitive (?rel)
+    :match  (and (?rel ?a ?b)
+                 (?rel ?b ?c)
+                 (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why    "{?rel} is transitive."
+    :priority 200))
+
+(ontology
+  (relation is-a T T)
+  (transitive is-a))
+
+(facts
+  (is-a Cat Mammal :source "taxonomy")
+  (is-a Mammal Animal :source "taxonomy"))
+
+(query :mode solve :goal (is-a Cat Animal))
