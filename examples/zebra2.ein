@@ -108,6 +108,34 @@
     :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
     :priority 200)
 
+  ;; ── square-unique: corner-house projection on a SYMMETRIC
+  ;; ── adjacency relation ?R, anchored at a structurally-complete
+  ;; ── type ?T. Identical in spirit to zebra.ein's square-unique;
+  ;; ── the only difference is the structural-completeness premise:
+  ;; ── zebra.ein uses `(instance ?x ?T)`; zebra2.ein uses
+  ;; ── `(is-a ?x ?T)` because there are no kernel-level instance
+  ;; ── facts in this encoding. With the activator below binding ?T
+  ;; ── to `House`, the (is-a ?x House) scan picks up only the five
+  ;; ── direct House memberships — the transitive closure climbs to
+  ;; ── Attribute/T but those have different objects, so the rule
+  ;; ── doesn't overfire on derived ancestor edges.
+  ;; ──
+  ;; ── Activator: (square-unique next-to House). Fires once,
+  ;; ── deriving (co-located Blue House_2) from House_1's corner
+  ;; ── anchor + (next-to Norwegian Blue) + (co-located Norwegian
+  ;; ── House_1). Mirror corner (House_5) is dormant initially —
+  ;; ── nothing is co-located with House_5 in the FACT layer.
+
+  (rule square-unique (?R ?T)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (is-a ?x ?T)
+                 (co-located ?a ?x)
+                 (not (and (?R ?x ?z) (neq ?y ?z))))
+    :assert (co-located ?b ?y)
+    :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
+    :priority 200)
+
   ;; ── New: `asymmetric` rule. Gated by neq so self-loops (?a = ?b)
   ;; ── don't yield a (?rel ?a ?a) → ¬(?rel ?a ?a) contradiction.
   ;; ── Activates via the `(asymmetric is-a)` rule-application fact.
@@ -151,12 +179,14 @@
   (transitive co-located)
   (symmetric  next-to)
   (implies    right-of next-to)
-  (square-fwd right-of)
-  (square-bwd right-of)
-  ;; NOTE: square does NOT apply to next-to. next-to is symmetric;
-  ;; its conclusion is disjunctive (B is at *some* neighbour of X,
-  ;; possibly two candidates) and belongs to hypothesis branching,
-  ;; not to a positive rule firing.
+  (square-fwd    right-of)
+  (square-bwd    right-of)
+  (square-unique next-to House)
+  ;; NOTE: square-fwd/bwd do NOT apply to next-to. next-to is symmetric;
+  ;; its conclusion is disjunctive for non-corner positions (B is at
+  ;; *some* neighbour of X) — that case needs hypothesis branching.
+  ;; The corner case (House_1, House_5) is handled monotonically by
+  ;; square-unique above.
 
   ;; ── Inheritance tree, rooted at T. Both subtype-of and instance-of
   ;; ── edges are expressed by the same `is-a` relation; the visual

@@ -35,6 +35,13 @@
     :why "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
     :priority 200)
   (rule
+    square-unique
+    (?R ?T)
+    :match (and (?R ?a ?b) (?R ?x ?y) (is-a ?x ?T) (co-located ?a ?x) (not (and (?R ?x ?z) (neq ?y ?z))))
+    :assert (co-located ?b ?y)
+    :why "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
+    :priority 200)
+  (rule
     asymmetric
     (?rel)
     :match (and (?rel ?a ?b) (neq ?a ?b))
@@ -63,6 +70,7 @@
   (implies right-of next-to)
   (square-fwd right-of)
   (square-bwd right-of)
+  (square-unique next-to House)
   (is-a Attribute T)
   (is-a House Attribute)
   (is-a Color Attribute)

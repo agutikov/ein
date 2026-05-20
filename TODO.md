@@ -58,3 +58,13 @@ Topic is wide, worth it's own followup document
 COW for branching
 should work perfect because we have no deletes and no writes, only appends
 
+
+---
+
+Too many (not ...) facts produced by saturation
+Do we need all of them?
+What can be optimized to reduce or remove them?
+
+
+
+
