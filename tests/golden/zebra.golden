@@ -35,11 +35,18 @@
     :why "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
     :priority 200)
   (rule
+    square-unique
+    (?R ?T)
+    :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T) (co-located ?a ?x) (not (and (?R ?x ?z) (neq ?y ?z))))
+    :assert (co-located ?b ?y)
+    :why "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
+    :priority 200)
+  (rule
     type-exclusivity
-    ()
+    (?R)
     :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-    :assert (not (co-located ?a ?b))
-    :why "{?a} and {?b} are distinct instances of {?T} — distinct slots."
+    :assert (not (?R ?a ?b))
+    :why "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
     :priority 300)
   (rule
     hypothesis-contradiction
@@ -59,6 +66,8 @@
   (implies right-of next-to)
   (square-fwd right-of)
   (square-bwd right-of)
+  (square-unique next-to House)
+  (type-exclusivity co-located)
   (type Attribute)
   (type House Attribute)
   (type Color Attribute)

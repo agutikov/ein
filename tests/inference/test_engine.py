@@ -13,16 +13,18 @@ ZEBRA = REPO / "examples" / "zebra.ein"
 
 
 def test_engine_compiles_zebra_activator_count():
-    """Zebra.ein has 6 T2 activators + 2 non-generic rules; compile_all
-    should produce 8 entries in the cache."""
+    """Zebra.ein has 8 T2 activators + 1 non-generic rule; compile_all
+    should produce 9 entries in the cache."""
     kb = KnowledgeBase.from_ir(parse(ZEBRA.read_text()))
     eng = Engine(kb)
     eng.compile_all()
-    # T2 activators (6): (symmetric co-located), (symmetric next-to),
+    # T2 activators (8): (symmetric co-located), (symmetric next-to),
     #                    (transitive co-located), (implies right-of next-to),
-    #                    (square-fwd right-of), (square-bwd right-of)
-    # Non-generic (2): type-exclusivity, hypothesis-contradiction.
-    assert len(eng.cache) == 8
+    #                    (square-fwd right-of), (square-bwd right-of),
+    #                    (square-unique next-to House),
+    #                    (type-exclusivity co-located).
+    # Non-generic (1): hypothesis-contradiction.
+    assert len(eng.cache) == 9
     # Every key is well-formed.
     for (rule_name, args) in eng.cache:
         assert rule_name in kb.rules
@@ -88,18 +90,20 @@ def test_engine_saturate_bounded():
 
 
 def test_engine_type_exclusivity_produces_negative_facts():
-    """type-exclusivity is non-generic; its :assert is `(not (...))`
-    which lowers to a nested-fact derivation."""
+    """type-exclusivity is T2 polymorphic; its :assert is `(not (?R …))`
+    which lowers to a nested-fact derivation after the activator
+    binds ?R."""
     kb = KnowledgeBase.from_ir(parse("""
     (rules
-      (rule type-exclusivity ()
+      (rule type-exclusivity (?R)
         :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-        :assert (not (co-located ?a ?b))
+        :assert (not (?R ?a ?b))
         :why "x"))
     (ontology
       (type T)
       (instance A T) (instance B T)
-      (relation co-located T T))
+      (relation co-located T T)
+      (type-exclusivity co-located))
     """))
     eng = Engine(kb)
     eng.compile_all()

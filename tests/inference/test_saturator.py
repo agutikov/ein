@@ -184,12 +184,13 @@ def test_priority_eliminate_after_derive():
     (rules
       (rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)
         :why "s" :priority 100)
-      (rule type-exclusivity ()
+      (rule type-exclusivity (?R)
         :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-        :assert (not (co-located ?a ?b)) :why "x" :priority 300))
+        :assert (not (?R ?a ?b)) :why "x" :priority 300))
     (ontology
       (type Color) (instance Red Color) (instance Blue Color)
-      (relation co-located T T) (symmetric co-located))
+      (relation co-located T T) (symmetric co-located)
+      (type-exclusivity co-located))
     (facts (co-located Norwegian Red :source "(1)"))
     """)
     firings = list(sat.saturate())

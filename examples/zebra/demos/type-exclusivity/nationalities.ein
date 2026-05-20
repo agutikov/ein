@@ -20,18 +20,19 @@
 ;;;   ⇒ (not (co-located Norwegian Spaniard)).
 
 (rules
-  (rule type-exclusivity ()
+  (rule type-exclusivity (?R)
     :match  (and (instance ?a ?T)
                  (instance ?b ?T)
                  (neq ?a ?b))
-    :assert (not (co-located ?a ?b))
-    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive slots."
+    :assert (not (?R ?a ?b))
+    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
     :priority 300))
 
 (ontology
   (type Nationality)
   (instance Norwegian Nationality)
   (instance Spaniard Nationality)
-  (relation co-located T T))
+  (relation co-located T T)
+  (type-exclusivity co-located))
 
 (query :mode solve :goal (not (co-located Norwegian Spaniard)))

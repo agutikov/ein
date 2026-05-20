@@ -42,14 +42,15 @@ def _demo_id(path: Path) -> str:
 
 
 def test_demos_directory_layout():
-    """Exactly 7 rule subdirectories, each with 3 named scenarios = 21 files."""
+    """Exactly 8 rule subdirectories, each with 3 named scenarios = 24 files."""
     subdirs = sorted(p.name for p in DEMOS_DIR.iterdir() if p.is_dir())
     assert subdirs == [
         "hypothesis-contradiction", "implies", "square-bwd",
-        "square-fwd", "symmetric", "transitive", "type-exclusivity",
+        "square-fwd", "square-unique", "symmetric", "transitive",
+        "type-exclusivity",
     ]
-    assert len(DEMO_PATHS) == 21, \
-        f"expected 21 demo files (7 rules x 3 scenarios), got {len(DEMO_PATHS)}"
+    assert len(DEMO_PATHS) == 24, \
+        f"expected 24 demo files (8 rules x 3 scenarios), got {len(DEMO_PATHS)}"
     for sub in subdirs:
         eins = sorted(p.name for p in (DEMOS_DIR / sub).glob("*.ein"))
         assert len(eins) == 3, \

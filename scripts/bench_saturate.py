@@ -4,7 +4,7 @@
 Informational (S1.3.3 acceptance) — not a CI gate. Run from repo
 root:
 
-    python scripts/bench_saturate.py [example.ein]
+    python scripts/bench_saturate.py [example.ein] [--dump]
 
 Prints, in order:
 
@@ -15,6 +15,9 @@ Prints, in order:
    (Δ columns) alongside the absolutes.
 4. Saturation-specific stats: total / productive / redundant
    firings, per-rule firing counts, per-relation derived counts.
+5. With ``--dump``: the saturated KB itself — schema + every fact
+   grouped by layer (ONTOLOGY / FACT / REASONING), with each
+   REASONING-layer fact annotated by the rule that produced it.
 
 The snapshot is intentionally exhaustive — it's both a benchmark
 and a diagnostic for "what does the engine actually do on this
@@ -272,10 +275,167 @@ def print_firings(firings: Iterable[Firing]) -> None:
         print(f"    {rel:<38s}  {_fmt_int(per_relation[rel])}")
 
 
+# ── Saturated KB dump (--dump) ──────────────────────────────────
+
+
+def _ir_text(node: object) -> str:
+    """Compact one-line render of any IRNode. Falls back to str()."""
+    from ein_bot.ir.dump import dump_compact
+
+    if node is None:
+        return "<none>"
+    try:
+        return dump_compact(node)  # type: ignore[arg-type]
+    except (TypeError, AttributeError):
+        return str(node)
+
+
+def _arg_text(a: object) -> str:
+    """Render one fact argument as text. Nested Facts recurse."""
+    if isinstance(a, Fact):
+        return _fact_text(a)
+    return str(a)
+
+
+def _fact_text(f: Fact) -> str:
+    """One-line compact form of a fact: `(rel arg1 arg2 …)`."""
+    if not f.args:
+        return f"({f.relation_name})"
+    return f"({f.relation_name} {' '.join(_arg_text(a) for a in f.args)})"
+
+
+def _fact_text_with_provenance(f: Fact) -> str:
+    """Compact form with `:source` / `:rule` annotation appended."""
+    base = _fact_text(f)[1:-1]  # strip outer parens
+    if f.provenance is None:
+        return f"({base})"
+    p = f.provenance
+    if p.kind == "source" and p.source:
+        return f'({base} :source "{p.source}")'
+    if p.kind == "rule" and p.rule:
+        return f"({base} :rule {p.rule})"
+    if p.kind == "hypothesis":
+        return f"({base} :hypothesis {p.branch})"
+    if p.kind == "rejected":
+        return f"({base} :rejected {p.branch})"
+    return f"({base})"
+
+
+def dump_kb(kb: KnowledgeBase) -> None:
+    """Print the saturated KB as text — schema + facts by layer.
+
+    Output is **readable** but not strictly round-trippable through
+    the parser (the `:source` / `:rule` annotation is grammar-clean;
+    the `:using` premises chain is omitted because the M1 grammar
+    doesn't accept its compact-form value — see S1.2.3 T1.2.3.4).
+    """
+    print()
+    print("=" * 70)
+    print("=  SATURATED KB DUMP")
+    print("=" * 70)
+
+    # ── Schema (types / instances / relations / rules) ───────────
+    if kb.types:
+        print()
+        print(f";; Types ({len(kb.types)})")
+        for t in kb.types.values():
+            if t.parent_name is None:
+                print(f"(type {t.name})")
+            else:
+                print(f"(type {t.name} {t.parent_name})")
+
+    if kb.instances:
+        print()
+        print(f";; Instances ({len(kb.instances)})")
+        for inst in kb.instances.values():
+            print(f"(instance {inst.name} {inst.type_name})")
+
+    if kb.relations:
+        declared = [r for r in kb.relations.values() if r.declared]
+        open_w = [r for r in kb.relations.values() if not r.declared]
+        if declared:
+            print()
+            print(f";; Relations — declared ({len(declared)})")
+            for r in declared:
+                sig = " ".join(r.signature) if r.signature else ""
+                print(f"(relation {r.name}{(' ' + sig) if sig else ''})")
+        if open_w:
+            print()
+            print(f";; Relations — auto-vivified ({len(open_w)})")
+            for r in open_w:
+                print(f";;   {r.name}")
+
+    if kb.rules:
+        print()
+        print(f";; Rules ({len(kb.rules)})")
+        for rule in kb.rules.values():
+            band = _band_label(rule.priority)
+            params = " ".join(f"?{p}" for p in rule.params)
+            print(
+                f";;   {rule.name}  :priority {rule.priority} ({band})"
+                f"  :params ({params})"
+            )
+
+    # ── Facts grouped by layer ───────────────────────────────────
+    layer_buckets: dict[Layer, list[Fact]] = {
+        Layer.ONTOLOGY: [],
+        Layer.FACT: [],
+        Layer.REASONING: [],
+    }
+    for f in kb.facts:
+        layer_buckets[f.layer].append(f)
+
+    for layer, label in [
+        (Layer.ONTOLOGY,  "ONTOLOGY"),
+        (Layer.FACT,      "FACT"),
+        (Layer.REASONING, "REASONING"),
+    ]:
+        facts = layer_buckets[layer]
+        if not facts:
+            continue
+        print()
+        print(f";; ── {label} ({len(facts)} facts) ──")
+        # Group within a layer by relation name so the eye groups by
+        # what's happening; preserve insertion order within each group.
+        groups: dict[str, list[Fact]] = {}
+        for f in facts:
+            groups.setdefault(f.relation_name, []).append(f)
+        for rel in sorted(groups):
+            facts_for_rel = groups[rel]
+            if len(facts_for_rel) > 1:
+                print(f";;   {rel} ({len(facts_for_rel)})")
+            for f in facts_for_rel:
+                print("  " + _fact_text_with_provenance(f))
+
+    # ── Query ────────────────────────────────────────────────────
+    if kb.query is not None:
+        print()
+        print(";; Query")
+        for kp in kb.query.kw_pairs:
+            if hasattr(kp, "key"):
+                print(f";;   :{kp.key.name}  {_ir_text(kp.value)}")
+
+    print()
+    print("=" * 70)
+
+
+def _band_label(priority: int | None) -> str:
+    """Human-readable Q41 priority-band name."""
+    if priority is None:
+        return "unbanded"
+    if priority < 200:
+        return "propagate"
+    if priority < 300:
+        return "derive"
+    if priority < 900:
+        return "eliminate"
+    return "hypothesis"
+
+
 # ── Main ────────────────────────────────────────────────────────
 
 
-def bench(path: Path) -> None:
+def bench(path: Path, *, dump: bool = False) -> None:
     src = path.read_text()
     print(f"input:   {path}")
     print(f"         {len(src)} chars")
@@ -314,13 +474,32 @@ def bench(path: Path) -> None:
     print_snapshot(before, after, title="state AFTER saturation")
     print_firings(firings)
 
+    if dump:
+        dump_kb(kb)
+
 
 if __name__ == "__main__":
-    target = (
-        Path(sys.argv[1]) if len(sys.argv) > 1
-        else REPO / "examples" / "zebra.ein"
+    import argparse
+
+    p = argparse.ArgumentParser(
+        prog="bench_saturate",
+        description="Benchmark + state dump for the Saturator.",
     )
+    p.add_argument(
+        "file",
+        nargs="?",
+        default=str(REPO / "examples" / "zebra.ein"),
+        help="path to a .ein file (default: examples/zebra.ein)",
+    )
+    p.add_argument(
+        "--dump",
+        action="store_true",
+        help="after the benchmark, print the saturated KB grouped by layer",
+    )
+    args = p.parse_args()
+
+    target = Path(args.file)
     if not target.exists():
         print(f"error: {target} not found", file=sys.stderr)
         sys.exit(1)
-    bench(target)
+    bench(target, dump=args.dump)

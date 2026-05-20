@@ -1,0 +1,57 @@
+;;; corner-house — the Zebra walkthrough's corner inference.
+;;;
+;;; This is the inference step the engine was MISSING before
+;;; square-unique landed. Norwegian lives in House_1, which is at
+;;; the corner of the row (only one neighbour: House_2). The puzzle
+;;; states Norwegian is next-to Blue. Therefore Blue lives in
+;;; House_2 — no branching needed.
+;;;
+;;; Ontology (background):
+;;;   - Two houses; House_1 is the leftmost corner with one
+;;;     materialised next-to neighbour (House_2).
+;;;   - `next-to` is symmetric; `(square-unique next-to House)`
+;;;     enables corner-projection inference.
+;;;
+;;; Facts (observed):
+;;;   - Norwegian lives in House_1.
+;;;   - Norwegian is next-to Blue.
+;;;
+;;; Question:
+;;;   Which house is Blue in?  (Answer: House_2.)
+;;;
+;;; Expected derivation:
+;;;   (next-to Norwegian Blue) + (next-to House_1 House_2)
+;;;   + (instance House_1 House) + (co-located Norwegian House_1)
+;;;   + ∄ z ≠ House_2 with (next-to House_1 z)
+;;;   ⇒ (co-located Blue House_2)
+;;;   via rule `square-unique` with ?R = next-to, ?T = House.
+
+(rules
+  (rule square-unique (?R ?T)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (instance ?x ?T)
+                 (co-located ?a ?x)
+                 (not (and (?R ?x ?z) (neq ?y ?z))))
+    :assert (co-located ?b ?y)
+    :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
+    :priority 200))
+
+(ontology
+  (type House)
+  (type Nationality)
+  (type Color)
+  (instance House_1 House)
+  (instance House_2 House)
+  (instance Norwegian Nationality)
+  (instance Blue Color)
+  (relation co-located T T)
+  (relation next-to T T)
+  (square-unique next-to House))
+
+(facts
+  (co-located Norwegian House_1 :source "(10)")
+  (next-to Norwegian Blue :source "(15)")
+  (next-to House_1 House_2 :source "(1)"))
+
+(query :mode solve :goal (co-located Blue House_2))

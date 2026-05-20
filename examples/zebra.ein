@@ -126,16 +126,64 @@
     :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
     :priority 200)
 
-  ;; ── Non-generic rule: fires universally over all (instance ?a ?T)
-  ;; ── pairs. ?T is a free variable of :match, NOT a parameter, so the
-  ;; ── parameter list is empty `()`.
+  ;; ── square-unique: square projection on a SYMMETRIC adjacency
+  ;; ── relation ?R, anchored at a *structurally complete* position
+  ;; ── type ?T (a type whose instances have all their ?R-neighbours
+  ;; ── materialised). The negation-as-failure clause caps
+  ;; ── ?x to corner positions where ?R-neighbour is unique.
+  ;; ──
+  ;; ── A single rule (not fwd/bwd) covers both directions because ?R
+  ;; ── is symmetric — (R ?a ?b) and (R ?b ?a) both materialise via
+  ;; ── the `symmetric` closure; binding the matcher to either reaches
+  ;; ── the same conclusion.
+  ;; ──
+  ;; ── The `(instance ?x ?T)` clause is load-bearing for soundness.
+  ;; ── Without it, the syntactic "?x has one ?R-fact" check also fires
+  ;; ── on attribute pairs whose uniqueness is *incidental* — e.g., the
+  ;; ── puzzle states only `(next-to Norwegian Blue)`, so syntactically
+  ;; ── Norwegian and Blue each have one next-to fact. But that does
+  ;; ── NOT mean Norwegian (or Blue) is at a spatial corner — it means
+  ;; ── the puzzle hasn't materialised their other adjacencies (which
+  ;; ── exist transitively through their houses). The (instance ?x ?T)
+  ;; ── premise restricts firing to ?x whose neighbour set IS complete.
+  ;; ──
+  ;; ── For Zebra: `(square-unique next-to House)`. House_1 and House_5
+  ;; ── have one next-to neighbour each (after the right-of → next-to +
+  ;; ── symmetric closure); House_2/3/4 have two (guard fails on the
+  ;; ── existential). Closes idea-08's "Norwegian in H_1, next-to Blue
+  ;; ── ⇒ Blue in H_2" walkthrough step.
+  ;; ──
+  ;; ── Non-corner cases (House_2/3/4) keep the disjunctive resolution
+  ;; ── deferred to P1.5 hypothesis branching, as originally planned.
 
-  (rule type-exclusivity ()
+  (rule square-unique (?R ?T)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (instance ?x ?T)
+                 (co-located ?a ?x)
+                 (not (and (?R ?x ?z) (neq ?y ?z))))
+    :assert (co-located ?b ?y)
+    :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
+    :priority 200)
+
+  ;; ── T2 rule. ?R is the equivalence-like relation under which
+  ;; ── distinct same-type instances are exclusive — bound by an
+  ;; ── activator fact. For Zebra: `(type-exclusivity co-located)`
+  ;; ── says co-located is the slot-occupancy relation, so two
+  ;; ── distinct Reds (or Nationalities, or Pets …) can never share
+  ;; ── a slot.
+  ;; ──
+  ;; ── ?T is a free var of :match, NOT a parameter; ?R is the param.
+  ;; ── The :match clause is unchanged from the original non-generic
+  ;; ── form — what generalises is only the head of the negative
+  ;; ── conclusion.
+
+  (rule type-exclusivity (?R)
     :match  (and (instance ?a ?T)
                  (instance ?b ?T)
                  (neq ?a ?b))
-    :assert (not (co-located ?a ?b))
-    :why    "{?a} and {?b} are distinct instances of {?T} — distinct slots."
+    :assert (not (?R ?a ?b))
+    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
     :priority 300)
 
   ;; ── Q40 Option A: hypothesis-contradiction matches synthetic
@@ -165,14 +213,15 @@
   (transitive co-located)
   (symmetric  next-to)
   (implies    right-of next-to)
-  (square-fwd right-of)
-  (square-bwd right-of)
-  ;; NOTE: square does NOT apply to next-to. next-to is symmetric
+  (square-fwd       right-of)
+  (square-bwd       right-of)
+  (square-unique    next-to House)
+  (type-exclusivity co-located)
+  ;; NOTE: square-fwd/bwd do NOT apply to next-to. next-to is symmetric
   ;; and its disjunctive conclusion ("B is at *some* neighbour of X")
-  ;; needs hypothesis branching, not a positive rule firing. See
-  ;; the §rules block design note above.
-  ;; `type-exclusivity` is non-generic — fires for every type
-  ;; automatically; no per-type application fact needed.
+  ;; needs hypothesis branching for non-corner positions; corner
+  ;; positions (House_1, House_5) are handled monotonically by
+  ;; square-unique above.
 
   ;; ── Type schema. Flat attribute hierarchy. ──
   (type Attribute)

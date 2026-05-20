@@ -26,3 +26,32 @@
 ;;                                     + plans/open_questions.md (global index)
 ;;                                     + plans/ideas.md (P1.2b audit live entry)
 ;;                                     + docs/kernel/ir/01-ein-graph/README.md (file index update)
+
+
+followup ideas on inference of rules
+(opposite or orthogonal to inference of facts)
+
+1) there are rules that are pure structure - no hardcoded names, only variables
+    example: symmetric, implies
+2) rules that use named predicates (neq, not, and, ...)
+    example: transitive
+3) rules that use rel vars and rel consts 
+    example: square-* family
+4) and F1 rules that has no rel vars
+    example: obsolete type-exclusivity form, that was transformed into (3)
+
+Rules that have only 1 rel var - describe property of this one relation
+Rules that have multiple rel vars - describe properties of those relations interaction
+    example: square-fwd describes inference of co-location on ?R relation basis
+    Btw ?R here is strict order
+    so this square rule can be formulated as a property of co-located relation over right-of order relation
+
+No doubt move from (4) to (2) or (1) can be automated. That's one followup.
+Next one - automated inference of rules from relations.
+This is part of ontology induction/deduction/inference/search mentioned here docs/ideas/04-nlp-to-graph-to-solver-pipeline.md
+
+Topic is wide, worth it's own followup document
+
+
+
+

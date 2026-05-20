@@ -47,12 +47,13 @@ class TestZebraCounts:
         assert {"symmetric", "transitive", "implies", "square-fwd",
                 "square-bwd", "instance"} <= set(open_world)
 
-    def test_seven_rules(self, zebra_kb):
-        """S1.3.2: hypothesis-contradiction promoted to M1 core (Q40 Option A)."""
-        assert len(zebra_kb.rules) == 7
+    def test_eight_rules(self, zebra_kb):
+        """S1.3.2 + square-unique addition for corner-house spatial inference."""
+        assert len(zebra_kb.rules) == 8
         assert set(zebra_kb.rules) == {
             "symmetric", "transitive", "implies",
-            "square-fwd", "square-bwd", "type-exclusivity",
+            "square-fwd", "square-bwd", "square-unique",
+            "type-exclusivity",
             "hypothesis-contradiction",
         }
 
@@ -112,7 +113,9 @@ class TestZebraRelation:
         # involving next-to, OR whose pattern names it.
         # Property facts: `(symmetric next-to)`, `(implies right-of next-to)`.
         names = {r.name for r in zebra_kb.relations["next-to"].rules}
-        assert names == {"symmetric", "implies"}
+        # `square-unique` joined the next-to rule list via the
+        # `(square-unique next-to House)` activator fact (S1.3.2+).
+        assert names == {"symmetric", "implies", "square-unique"}
 
     def test_co_located_in_type_exclusivity(self, zebra_kb):
         # type-exclusivity body asserts `(not (co-located ?a ?b))` —
@@ -146,16 +149,23 @@ class TestZebraRule:
         apps = [f.args for f in imp.applications]
         assert apps == [("right-of", "next-to")]
 
-    def test_type_exclusivity_no_applications(self, zebra_kb):
-        # Non-generic rule (`()`-parameter list) doesn't need a
-        # property fact — fires universally.
+    def test_type_exclusivity_has_one_application(self, zebra_kb):
+        # T2 rule: activator `(type-exclusivity co-located)` is the
+        # single property fact authorising the rule for co-located.
         rule = zebra_kb.rules["type-exclusivity"]
-        assert rule.applications == ()
+        assert len(rule.applications) == 1
+        app = rule.applications[0]
+        assert app.relation_name == "type-exclusivity"
+        assert app.args == ("co-located",)
 
     def test_type_exclusivity_mentions_co_located(self, zebra_kb):
         rule = zebra_kb.rules["type-exclusivity"]
-        rel_names = {r.name for r in rule.relations}
-        assert "co-located" in rel_names
+        # ?R appears only in :assert (not (?R ?a ?b)), so the structural
+        # relation_names list doesn't include "co-located" — but the
+        # `applications` activator + the cross-reference via
+        # `kb.relations["co-located"].rules` does.
+        co_loc_rules = {r.name for r in zebra_kb.relations["co-located"].rules}
+        assert "type-exclusivity" in co_loc_rules
 
     def test_rule_has_pattern_objects(self, zebra_kb):
         sym = zebra_kb.rules["symmetric"]
@@ -169,10 +179,11 @@ class TestZebraRule:
 
 class TestZebraFact:
     def test_fact_count(self, zebra_kb):
-        # Ontology: 30 instance + 6 rule-app + 4 spatial = 40.
+        # Ontology: 30 instance + 8 rule-app + 4 spatial = 42.
+        # (rule-apps include square-unique + type-exclusivity activators.)
         # Facts: 14 (conditions 2..15).
-        # Total: 54.
-        assert len(zebra_kb.facts) == 54
+        # Total: 56.
+        assert len(zebra_kb.facts) == 56
 
     def test_fact_resolves_relation(self, zebra_kb):
         fs = [f for f in zebra_kb.facts if f.source == "condition (10)"]
@@ -346,8 +357,8 @@ class TestIncrementalIndex:
 def test_kb_repr_summary(zebra_kb):
     r = repr(zebra_kb)
     assert "types=7" in r
-    assert "rules=7" in r
-    assert "facts=54" in r
+    assert "rules=8" in r
+    assert "facts=56" in r
 
 
 def test_kb_len_is_node_total(zebra_kb):

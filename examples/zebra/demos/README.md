@@ -35,6 +35,7 @@ fact the named rule produces.
 | `implies`                  | T2          | propagate  | 100      | [right-then-next](implies/right-then-next.ein) · [parent-to-ancestor](implies/parent-to-ancestor.ein) · [org-chart](implies/org-chart.ein)                     |
 | `square-fwd`               | T2          | derive     | 200      | [houses](square-fwd/houses.ein) · [meetings](square-fwd/meetings.ein) · [floors](square-fwd/floors.ein)                                                        |
 | `square-bwd`               | T2          | derive     | 200      | [houses](square-bwd/houses.ein) · [meetings](square-bwd/meetings.ein) · [floors](square-bwd/floors.ein)                                                        |
+| `square-unique`            | T2 (2-param)| derive     | 200      | [corner-house](square-unique/corner-house.ein) · [cul-de-sac](square-unique/cul-de-sac.ein) · [terminus](square-unique/terminus.ein)                            |
 | `type-exclusivity`         | non-generic | eliminate  | 300      | [colors](type-exclusivity/colors.ein) · [nationalities](type-exclusivity/nationalities.ein) · [pets](type-exclusivity/pets.ein)                                |
 | `hypothesis-contradiction` | non-generic | hypothesis | 900      | [coloc-disproved](hypothesis-contradiction/coloc-disproved.ein) · [right-of-disproved](hypothesis-contradiction/right-of-disproved.ein) · [next-to-disproved](hypothesis-contradiction/next-to-disproved.ein) |
 

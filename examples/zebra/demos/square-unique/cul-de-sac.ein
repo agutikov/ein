@@ -1,0 +1,61 @@
+;;; cul-de-sac — a corner inference in a generic street layout.
+;;;
+;;; A short street with a dead-end (Lot_3 is the cul-de-sac, with
+;;; only one adjacent lot: Lot_2). Alice owns Lot_3 and lives next
+;;; to Bob; Bob must therefore own Lot_2.
+;;;
+;;; The :T parameter for square-unique here is `Lot` — the type
+;;; whose instances have all their adjacency materialised.
+;;;
+;;; Ontology (background):
+;;;   - Three lots in a row: Lot_1 — Lot_2 — Lot_3 (cul-de-sac).
+;;;   - `next-to` between lots is fully materialised below.
+;;;   - `(square-unique next-to Lot)` activates the rule for this
+;;;     type.
+;;;
+;;; Facts (observed):
+;;;   - Alice owns Lot_3.
+;;;   - Alice lives next-to Bob.
+;;;
+;;; Question:
+;;;   Which lot does Bob own?  (Answer: Lot_2 — Lot_3's only neighbour.)
+;;;
+;;; Expected derivation:
+;;;   (co-located Alice Lot_3) + (next-to Alice Bob)
+;;;   + (next-to Lot_3 Lot_2) + (instance Lot_3 Lot)
+;;;   + ∄ z ≠ Lot_2 with (next-to Lot_3 z)
+;;;   ⇒ (co-located Bob Lot_2).
+
+(rules
+  (rule square-unique (?R ?T)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (instance ?x ?T)
+                 (co-located ?a ?x)
+                 (not (and (?R ?x ?z) (neq ?y ?z))))
+    :assert (co-located ?b ?y)
+    :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
+    :priority 200))
+
+(ontology
+  (type Lot)
+  (type Owner)
+  (instance Lot_1 Lot)
+  (instance Lot_2 Lot)
+  (instance Lot_3 Lot)
+  (instance Alice Owner)
+  (instance Bob Owner)
+  (relation co-located T T)
+  (relation next-to T T)
+  (square-unique next-to Lot)
+  ;; Full adjacency for the street — `Lot_3` is the cul-de-sac.
+  (next-to Lot_1 Lot_2)
+  (next-to Lot_2 Lot_1)
+  (next-to Lot_2 Lot_3)
+  (next-to Lot_3 Lot_2))
+
+(facts
+  (co-located Alice Lot_3 :source "(1)")
+  (next-to Alice Bob :source "(2)"))
+
+(query :mode solve :goal (co-located Bob Lot_2))

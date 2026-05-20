@@ -210,12 +210,13 @@ def test_square_bwd_negative_no_activator():
 
 def test_type_exclusivity_positive():
     eng = _engine("""
-    (rules (rule type-exclusivity ()
+    (rules (rule type-exclusivity (?R)
       :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-      :assert (not (co-located ?a ?b)) :why "x" :priority 300))
+      :assert (not (?R ?a ?b)) :why "x" :priority 300))
     (ontology
       (type Color) (instance Red Color) (instance Blue Color)
-      (relation co-located T T))
+      (relation co-located T T)
+      (type-exclusivity co-located))
     """)
     firings = list(eng.saturate())
     # Two distinct-instance pairs → 2 firings (Red/Blue, Blue/Red).
@@ -231,13 +232,113 @@ def test_type_exclusivity_positive():
 def test_type_exclusivity_negative_same_instance():
     """Only one instance → no neq-passing pair → no firing."""
     eng = _engine("""
-    (rules (rule type-exclusivity ()
+    (rules (rule type-exclusivity (?R)
       :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-      :assert (not (co-located ?a ?b)) :why "x" :priority 300))
-    (ontology (type Color) (instance Red Color) (relation co-located T T))
+      :assert (not (?R ?a ?b)) :why "x" :priority 300))
+    (ontology
+      (type Color) (instance Red Color)
+      (relation co-located T T)
+      (type-exclusivity co-located))
     """)
     firings = list(eng.saturate())
     assert not any(f.rule == "type-exclusivity" for f in firings)
+
+
+# ── square-unique ─────────────────────────────────────────────────
+
+
+def test_square_unique_corner_inference():
+    """Norwegian in House_1 + next-to Blue ⇒ Blue in House_2.
+
+    The exact Zebra walkthrough step the rule was added to close.
+    Idea-08 explanation-completeness requires this firing.
+    """
+    eng = _engine("""
+    (rules
+      (rule square-unique (?R ?T)
+        :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
+                    (co-located ?a ?x)
+                    (not (and (?R ?x ?z) (neq ?y ?z))))
+        :assert (co-located ?b ?y)
+        :why "u" :priority 200))
+    (ontology
+      (type House) (type Nationality) (type Color)
+      (instance House_1 House) (instance House_2 House)
+      (instance Norwegian Nationality) (instance Blue Color)
+      (relation co-located T T) (relation next-to T T)
+      (square-unique next-to House))
+    (facts
+      (co-located Norwegian House_1 :source "(10)")
+      (next-to Norwegian Blue :source "(15)")
+      (next-to House_1 House_2 :source "(1)"))
+    """)
+    firings = list(eng.saturate())
+    matched = [
+        f for f in firings if f.rule == "square-unique" and not f.redundant
+    ]
+    assert len(matched) == 1
+    assert matched[0].derived.relation_name == "co-located"
+    assert matched[0].derived.args == ("Blue", "House_2")
+
+
+def test_square_unique_does_not_fire_on_attribute_pair():
+    """Soundness: the `(instance ?x ?T)` premise prevents the rule
+    from firing with ?x bound to an attribute (Norwegian, Blue) whose
+    "uniqueness" is just *incidental* (only one stated next-to fact).
+
+    Without this premise, the rule would derive wrong facts like
+    (co-located House_3 Norwegian) by treating Blue as if it had a
+    unique spatial neighbour."""
+    eng = _engine("""
+    (rules
+      (rule square-unique (?R ?T)
+        :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
+                    (co-located ?a ?x)
+                    (not (and (?R ?x ?z) (neq ?y ?z))))
+        :assert (co-located ?b ?y)
+        :why "u" :priority 200))
+    (ontology
+      (type House) (type Nationality)
+      (instance Norwegian Nationality)
+      (relation co-located T T) (relation next-to T T)
+      ;; NOTE: activator names House, but House has no instances here.
+      (square-unique next-to House))
+    (facts
+      (next-to Norwegian Blue :source "(1)"))
+    """)
+    firings = list(eng.saturate())
+    matched = [f for f in firings if f.rule == "square-unique"]
+    # No House instances → guard's (instance ?x House) never matches → no firing.
+    assert not matched
+
+
+def test_square_unique_skips_middle_houses():
+    """House_3 has two next-to neighbours (House_2, House_4) — guard
+    fails for any binding with ?x = House_3."""
+    eng = _engine("""
+    (rules
+      (rule square-unique (?R ?T)
+        :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
+                    (co-located ?a ?x)
+                    (not (and (?R ?x ?z) (neq ?y ?z))))
+        :assert (co-located ?b ?y)
+        :why "u" :priority 200))
+    (ontology
+      (type House) (type Nationality)
+      (instance House_2 House) (instance House_3 House) (instance House_4 House)
+      (instance Spaniard Nationality)
+      (relation co-located T T) (relation next-to T T)
+      (square-unique next-to House)
+      (next-to House_2 House_3) (next-to House_3 House_2)
+      (next-to House_3 House_4) (next-to House_4 House_3))
+    (facts
+      (co-located Spaniard House_3 :source "(1)")
+      (next-to Spaniard Soda :source "(2)"))
+    """)
+    firings = list(eng.saturate())
+    matched = [f for f in firings if f.rule == "square-unique"]
+    # House_3 has two neighbours → guard fails → no firing.
+    assert not matched
 
 
 # ── hypothesis-contradiction ──────────────────────────────────────

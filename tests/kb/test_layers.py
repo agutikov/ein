@@ -17,8 +17,12 @@ from ein_bot.kb import (
 
 class TestLayerViews:
     def test_zebra_ontology_size(self, zebra_kb):
-        # 30 instance facts + 6 rule-app + 4 spatial = 40
-        assert len(zebra_kb.ontology()) == 40
+        # 30 instance + 8 rule-app + 4 spatial = 42
+        # (rule-apps: symmetric/co-located, transitive/co-located,
+        #  symmetric/next-to, implies/right-of/next-to, square-fwd/right-of,
+        #  square-bwd/right-of, square-unique/next-to/House,
+        #  type-exclusivity/co-located.)
+        assert len(zebra_kb.ontology()) == 42
 
     def test_zebra_fact_layer_size(self, zebra_kb):
         # 14 explicit puzzle conditions (2..15)
@@ -29,7 +33,7 @@ class TestLayerViews:
         assert not zebra_kb.reasoning()
 
     def test_all_layers_is_union(self, zebra_kb):
-        assert len(zebra_kb.all_layers()) == 54
+        assert len(zebra_kb.all_layers()) == 56
 
     def test_ontology_fact_not_in_fact_layer(self, zebra_kb):
         # Pick any fact known to be in ONTOLOGY (e.g. an instance form).
@@ -94,7 +98,7 @@ class TestFactViewFilters:
     def test_view_repr(self, zebra_kb):
         r = repr(zebra_kb.ontology())
         assert "ontology" in r
-        assert "len=40" in r
+        assert "len=42" in r
 
     def test_matching_stub_raises(self, zebra_kb):
         # P1.3 seam — until then, .matching() is intentionally a stub.
