@@ -47,11 +47,13 @@ class TestZebraCounts:
         assert {"symmetric", "transitive", "implies", "square-fwd",
                 "square-bwd", "instance"} <= set(open_world)
 
-    def test_six_rules(self, zebra_kb):
-        assert len(zebra_kb.rules) == 6
+    def test_seven_rules(self, zebra_kb):
+        """S1.3.2: hypothesis-contradiction promoted to M1 core (Q40 Option A)."""
+        assert len(zebra_kb.rules) == 7
         assert set(zebra_kb.rules) == {
             "symmetric", "transitive", "implies",
             "square-fwd", "square-bwd", "type-exclusivity",
+            "hypothesis-contradiction",
         }
 
 
@@ -344,7 +346,7 @@ class TestIncrementalIndex:
 def test_kb_repr_summary(zebra_kb):
     r = repr(zebra_kb)
     assert "types=7" in r
-    assert "rules=6" in r
+    assert "rules=7" in r
     assert "facts=54" in r
 
 

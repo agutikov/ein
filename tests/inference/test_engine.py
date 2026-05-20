@@ -13,17 +13,16 @@ ZEBRA = REPO / "examples" / "zebra.ein"
 
 
 def test_engine_compiles_zebra_activator_count():
-    """Zebra.ein has 6 activators (per S1.3.2 §G); compile_all should
-    produce exactly 6 entries in the cache plus one for the
-    activator-less `type-exclusivity`."""
+    """Zebra.ein has 6 T2 activators + 2 non-generic rules; compile_all
+    should produce 8 entries in the cache."""
     kb = KnowledgeBase.from_ir(parse(ZEBRA.read_text()))
     eng = Engine(kb)
     eng.compile_all()
-    # Activators: (symmetric co-located), (symmetric next-to),
-    #             (transitive co-located), (implies right-of next-to),
-    #             (square-fwd right-of), (square-bwd right-of)
-    # Plus 1 for type-exclusivity (no activator).
-    assert len(eng.cache) == 7
+    # T2 activators (6): (symmetric co-located), (symmetric next-to),
+    #                    (transitive co-located), (implies right-of next-to),
+    #                    (square-fwd right-of), (square-bwd right-of)
+    # Non-generic (2): type-exclusivity, hypothesis-contradiction.
+    assert len(eng.cache) == 8
     # Every key is well-formed.
     for (rule_name, args) in eng.cache:
         assert rule_name in kb.rules

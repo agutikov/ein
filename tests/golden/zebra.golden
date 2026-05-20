@@ -5,42 +5,49 @@
     :match (?rel ?a ?b)
     :assert (?rel ?b ?a)
     :why "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 1)
+    :priority 100)
   (rule
     transitive
     (?rel)
     :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
     :assert (?rel ?a ?c)
     :why "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
-    :priority 5)
+    :priority 200)
   (rule
     implies
     (?p ?q)
     :match (?p ?a ?b)
     :assert (?q ?a ?b)
     :why "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-    :priority 3)
+    :priority 100)
   (rule
     square-fwd
     (?R)
     :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
     :assert (co-located ?b ?y)
     :why "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
-    :priority 8)
+    :priority 200)
   (rule
     square-bwd
     (?R)
     :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
     :assert (co-located ?a ?x)
     :why "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
-    :priority 8)
+    :priority 200)
   (rule
     type-exclusivity
     ()
     :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
     :assert (not (co-located ?a ?b))
     :why "{?a} and {?b} are distinct instances of {?T} — distinct slots."
-    :priority 10))
+    :priority 300)
+  (rule
+    hypothesis-contradiction
+    ()
+    :match (and (hypothesis ?h) (contradiction-under ?h))
+    :assert (not ?h)
+    :why "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
+    :priority 900))
 
 (ontology
   (type Attribute)

@@ -63,7 +63,7 @@
     :match  (?rel ?a ?b)
     :assert (?rel ?b ?a)
     :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 1)
+    :priority 100)
 
   (rule transitive (?rel)
     :match  (and (?rel ?a ?b)
@@ -71,7 +71,7 @@
                  (neq ?a ?c))
     :assert (?rel ?a ?c)
     :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
-    :priority 5)
+    :priority 200)
 
   ;; Reflexivity is dropped — see plans/followups/f4_cross_cutting.md Q34.
   ;; `co-located` is mathematically reflexive but materialising self-edges
@@ -82,7 +82,7 @@
     :match  (?p ?a ?b)
     :assert (?q ?a ?b)
     :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-    :priority 3)
+    :priority 100)
 
   ;; ── PoC's "square rule" — declarative formulation. The rule
   ;; ── fires for every relation marked `(square-fwd …)` /
@@ -116,7 +116,7 @@
                  (co-located ?a ?x))
     :assert (co-located ?b ?y)
     :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
-    :priority 8)
+    :priority 200)
 
   (rule square-bwd (?R)
     :match  (and (?R ?a ?b)
@@ -124,7 +124,7 @@
                  (co-located ?b ?y))
     :assert (co-located ?a ?x)
     :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
-    :priority 8)
+    :priority 200)
 
   ;; ── Non-generic rule: fires universally over all (instance ?a ?T)
   ;; ── pairs. ?T is a free variable of :match, NOT a parameter, so the
@@ -136,7 +136,21 @@
                  (neq ?a ?b))
     :assert (not (co-located ?a ?b))
     :why    "{?a} and {?b} are distinct instances of {?T} — distinct slots."
-    :priority 10))
+    :priority 300)
+
+  ;; ── Q40 Option A: hypothesis-contradiction matches synthetic
+  ;; ── (hypothesis ?h) + (contradiction-under ?h) facts emitted by
+  ;; ── P1.5's fork/contradict machinery. The match uses nested-fact
+  ;; ── unification — ?h binds to a relational node (a Fact-valued
+  ;; ── arg), enabled by R9's Fact.args widening. Sits dormant in
+  ;; ── normal saturation; fires only when a branch contradicts.
+
+  (rule hypothesis-contradiction ()
+    :match  (and (hypothesis ?h)
+                 (contradiction-under ?h))
+    :assert (not ?h)
+    :why    "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
+    :priority 900))
 
 (ontology
   ;; ── Type schema. Flat attribute hierarchy. ──
