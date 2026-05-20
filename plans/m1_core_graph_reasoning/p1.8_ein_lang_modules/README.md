@@ -61,7 +61,19 @@ Likely stages once activated:
   promoted to the universal library. If Q30 lands on (b), this
   stage is empty.
 
-### Theme B — Copy-on-write hypothesis branching
+
+### Theme B - PERFORMACE
+
+### Theme B1 - indexes
+
+speedup every step with indexes
+- index of all names
+- indexes of names for every type (object, relation, rule, ....)
+- index of facts by relation name, by number of args, by object
+
+
+
+### Theme B2 — Copy-on-write hypothesis branching
 
 P1.2's `KnowledgeBase.fork()` shallow-copies the `facts` list +
 the four reverse-index dicts (O(|facts|) cost). For P1.5's

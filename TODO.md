@@ -44,3 +44,42 @@
 ;;                                     "Improvements"; directory name kept to avoid cross-link
 ;;                                     churn across S1.3.0, P1.3 README, etc.)
 ;;                                     + plans/m1_core_graph_reasoning/README.md (P1.8 row updated)
+
+
+
+
+P1.9 - kernel docs
+
+
+---
+
+M1b GUI
+after M1 before M2
+
+views:
+- ein language code
+    - source
+    - generated states
+- ein-graph
+    - unified and separate parts, like DOT rendering
+    - compact and detailed (Livi-bipartite) view
+    - auto layout, different modes
+    - manual layout, remember positions
+    - GUI editor
+- branches
+    - git mode
+        - bottom to top
+        - all branches dead-ends, main - solution
+    - folders tree mode (top to bottom)
+    - collapse branches
+    - collapse chains
+    - every folder/revision is a state == ein lang + graph view
+
+2-view mode: left-right branches - lang+graph tabs 
+3-view mode: all 3 views
+
+---
+
+M2b compare to other systems from docs/index
+try benchmarks
+

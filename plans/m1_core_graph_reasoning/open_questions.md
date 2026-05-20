@@ -76,14 +76,32 @@ problem class.
 ## Q6 — Symmetry breaking
 
 Per [idea 08 §Open questions point 3](../../docs/ideas/08-human-style-deductive-trace.md).
-Two paths: (a) pre-trace — engine enforces a canonicalisation
-(e.g. house numbering); (b) post-trace — engine explores both,
-trace planner annotates "doesn't matter which way numbered".
+Two paths initially considered:
+(a) pre-trace — engine enforces a canonicalisation (e.g. house
+numbering); (b) post-trace — engine explores both, trace planner
+annotates "doesn't matter which way numbered".
 
-**Working answer**: ship (a) for M1 with an *escape hatch* — the
-engine records a `(symmetry-class …)` derivation note so the trace
-planner can label it. (b) is reachable later without rework.
-Decided in P1.5 S1.5.3.
+**Resolved 2026-05-21** (user direction during S1.5.0 review):
+**neither (a) nor (b)** — the question doesn't belong to the
+engine. By the time a `.ein` file declares `House_1`, …, `House_5`
+plus `(right-of House_2 House_1)` etc., the orientation is *already
+committed* by construction. The engine sees unique named instances
+with one spatial layout; there is no second orientation to explore
+or canonicalise.
+
+The "WLOG numbering" remark in idea 08's target trace documents
+the **ontology writer's** choice, not a derivation step. M1's
+hypothesis loop (P1.5) does no symmetry handling. M2's NL → IR
+pipeline inherits the decision: the NL parser maps positional
+phrases ("the first house", "the leftmost") to named House
+instances by adopting a convention.
+
+S1.5.3 (the original "symmetry detection placeholder" stage) is
+**dropped** from M1 — see [S1.5.0 review §D](../p1.5_hypothesis_loop/s1.5.0_review.md#d-symmetry--not-an-engine-concern-s153-dropped).
+
+Future puzzles with *latent* symmetry that can't be committed at
+ontology-write time (e.g. graph automorphism on an abstract group)
+remain a research direction — beyond M1's scope.
 
 ## Q15 — Rule ordering
 
