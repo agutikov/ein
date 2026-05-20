@@ -53,5 +53,8 @@ This is part of ontology induction/deduction/inference/search mentioned here doc
 Topic is wide, worth it's own followup document
 
 
+---
 
+COW for branching
+should work perfect because we have no deletes and no writes, only appends
 

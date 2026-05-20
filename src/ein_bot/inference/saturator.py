@@ -81,6 +81,9 @@ class Saturator:
         # firing (a new fact was written; new matches may exist) or
         # before the very first step.
         self._needs_enqueue: bool = True
+        # Last yielded Firing — kept on the instance so a step-limit
+        # raise can quote it without forcing every caller to track it.
+        self._last_firing: Firing | None = None
 
     # ── Public API ────────────────────────────────────────────────
 
@@ -115,16 +118,34 @@ class Saturator:
             return firing
         return None
 
-    def saturate(self) -> Iterator[Firing]:
+    def saturate(
+        self, *, max_steps: int | None = None,
+    ) -> Iterator[Firing]:
         """Run firings until the queue is empty after an enqueue pass.
 
         Yields each :class:`Firing` (productive + redundant) so the
         trace renderer (P1.6) can stream per-step DOT snapshots.
+
+        Args:
+            max_steps: hard cap on the number of step() calls. None
+                (the default) means run to fixed point; a positive
+                integer raises :class:`SaturatorStepLimitError` after
+                ``max_steps`` firings without saturation. Use for
+                runaway-debugging on unfamiliar inputs.
         """
+        i = 0
         while True:
+            if max_steps is not None and i >= max_steps:
+                raise SaturatorStepLimitError(
+                    f"saturator hit max_steps={max_steps} without reaching "
+                    f"fixed point — last firing was {self._last_firing!r}; "
+                    f"see Saturator._last_firing for the runaway candidate."
+                )
             f = self.step()
             if f is None:
                 return
+            self._last_firing = f
+            i += 1
             yield f
 
     def is_stalled(self) -> bool:
@@ -242,4 +263,13 @@ class Saturator:
         return firing
 
 
-__all__ = ["Saturator"]
+class SaturatorStepLimitError(RuntimeError):
+    """Raised when Saturator.saturate(max_steps=N) exhausts the budget.
+
+    Caller inspects the Saturator's ``kb`` and ``_last_firing`` to
+    identify the runaway rule (typically a transitive closure or a
+    join that overgenerates).
+    """
+
+
+__all__ = ["Saturator", "SaturatorStepLimitError"]

@@ -5,17 +5,21 @@ Informational (S1.3.3 acceptance) — not a CI gate. Run from repo
 root:
 
     python scripts/bench_saturate.py [example.ein] [--dump]
+                                     [--max-steps N] [--progress-every K]
 
 Prints, in order:
 
 1. Phase timings — parse, kb-load, compile, saturate.
 2. A full state snapshot **before** saturation: every counter the
    KB and Engine expose.
-3. A full state snapshot **after** saturation, showing deltas
+3. While saturating, one progress line every ``--progress-every``
+   steps (default 500): step number, time-since-last-mark, current
+   fact count, last rule fired.
+4. A full state snapshot **after** saturation, showing deltas
    (Δ columns) alongside the absolutes.
-4. Saturation-specific stats: total / productive / redundant
+5. Saturation-specific stats: total / productive / redundant
    firings, per-rule firing counts, per-relation derived counts.
-5. With ``--dump``: the saturated KB itself — schema + every fact
+6. With ``--dump``: the saturated KB itself — schema + every fact
    grouped by layer (ONTOLOGY / FACT / REASONING), with each
    REASONING-layer fact annotated by the rule that produced it.
 
@@ -23,7 +27,13 @@ The snapshot is intentionally exhaustive — it's both a benchmark
 and a diagnostic for "what does the engine actually do on this
 input?".
 
-Target on a laptop: < 200 ms wall-clock for the Zebra initial
+For inputs that runaway (e.g. transitive-closure + sibling pairs
+producing O(N²) firings), pass ``--max-steps 5000`` to cap the
+budget. The Saturator raises ``SaturatorStepLimitError``; the script
+catches it and prints a per-rule firing breakdown so you can see
+which rule is blowing up.
+
+Target on a laptop: < 200 ms wall-clock for zebra.ein initial
 saturation. Treat numbers as informational; performance work
 proper is a P1.7+ concern.
 """
@@ -435,7 +445,13 @@ def _band_label(priority: int | None) -> str:
 # ── Main ────────────────────────────────────────────────────────
 
 
-def bench(path: Path, *, dump: bool = False) -> None:
+def bench(
+    path: Path,
+    *,
+    dump: bool = False,
+    max_steps: int | None = None,
+    progress_every: int = 500,
+) -> None:
     src = path.read_text()
     print(f"input:   {path}")
     print(f"         {len(src)} chars")
@@ -464,15 +480,52 @@ def bench(path: Path, *, dump: bool = False) -> None:
 
     # ── Phase: saturate ──────────────────────────────────────────
     sat = Saturator(kb, engine=eng)
-    t0 = time.perf_counter()
-    firings = list(sat.saturate())
-    t1 = time.perf_counter()
+    from ein_bot.inference.saturator import SaturatorStepLimitError
+
     print()
-    print(f"saturate: {(t1 - t0) * 1000:8.2f} ms")
+    if max_steps is not None:
+        print(f"saturate: running with max_steps={max_steps}, "
+              f"progress every {progress_every} steps")
+    else:
+        print("saturate: running unbounded")
+
+    firings: list[Firing] = []
+    per_rule: Counter[tuple[str, bool]] = Counter()
+    t_start = time.perf_counter()
+    t_mark = t_start
+    hit_limit = False
+    try:
+        for i, f in enumerate(sat.saturate(max_steps=max_steps)):
+            firings.append(f)
+            per_rule[(f.rule, f.redundant)] += 1
+            if progress_every > 0 and (i + 1) % progress_every == 0:
+                t_now = time.perf_counter()
+                print(
+                    f"  step {i + 1:6d}  "
+                    f"Δ={ (t_now - t_mark) * 1000:8.2f} ms  "
+                    f"facts={len(kb.facts):6d}  "
+                    f"last={f.rule!r}"
+                    f"{' [redundant]' if f.redundant else ''}"
+                )
+                t_mark = t_now
+    except SaturatorStepLimitError as e:
+        hit_limit = True
+        print()
+        print(f"!! saturator step limit hit: {e}")
+    t_end = time.perf_counter()
+    print()
+    print(f"saturate: {(t_end - t_start) * 1000:8.2f} ms  ({len(firings)} firings)")
 
     after = snapshot(kb, eng)
     print_snapshot(before, after, title="state AFTER saturation")
     print_firings(firings)
+
+    if hit_limit:
+        print()
+        print("── per-rule firing breakdown at limit ──")
+        for (rule, redundant), n in per_rule.most_common():
+            tag = "redundant" if redundant else "productive"
+            print(f"  {rule:30s} [{tag:10s}] {n:6d}")
 
     if dump:
         dump_kb(kb)
@@ -496,10 +549,30 @@ if __name__ == "__main__":
         action="store_true",
         help="after the benchmark, print the saturated KB grouped by layer",
     )
+    p.add_argument(
+        "--max-steps",
+        type=int,
+        default=None,
+        help="hard cap on saturator firings (raises SaturatorStepLimitError "
+             "when exceeded); useful for runaway-debugging on a fresh "
+             "input. Default: no cap.",
+    )
+    p.add_argument(
+        "--progress-every",
+        type=int,
+        default=500,
+        help="log a one-line progress sample every N steps "
+             "(0 disables; default: 500).",
+    )
     args = p.parse_args()
 
     target = Path(args.file)
     if not target.exists():
         print(f"error: {target} not found", file=sys.stderr)
         sys.exit(1)
-    bench(target, dump=args.dump)
+    bench(
+        target,
+        dump=args.dump,
+        max_steps=args.max_steps,
+        progress_every=args.progress_every,
+    )
