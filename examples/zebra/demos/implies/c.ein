@@ -1,0 +1,19 @@
+;;; implies/c — boss-of implies leads (org chart).
+;;;
+;;; Given:  (boss-of Manager Engineer) + (implies boss-of leads)
+;;; Derive: (leads Manager Engineer)
+
+(rules
+  (rule implies (?p ?q)
+    :match  (?p ?a ?b)
+    :assert (?q ?a ?b)
+    :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+    :priority 100))
+
+(ontology
+  (relation boss-of T T)
+  (relation leads T T)
+  (implies boss-of leads))
+
+(facts
+  (boss-of Manager Engineer :source "demo"))

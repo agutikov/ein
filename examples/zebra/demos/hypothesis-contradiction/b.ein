@@ -1,0 +1,21 @@
+;;; hypothesis-contradiction/b — contradicted hypothesis on a
+;;; spatial right-of fact.
+;;;
+;;; Given:  (hypothesis (right-of A B))
+;;;       + (contradiction-under (right-of A B))
+;;; Derive: (not (right-of A B))
+
+(rules
+  (rule hypothesis-contradiction ()
+    :match  (and (hypothesis ?h)
+                 (contradiction-under ?h))
+    :assert (not ?h)
+    :why    "Assumed {?h}; contradicted. Therefore (not {?h})."
+    :priority 900))
+
+(ontology
+  (relation right-of T T))
+
+(reasoning
+  (hypothesis (right-of A B))
+  (contradiction-under (right-of A B)))

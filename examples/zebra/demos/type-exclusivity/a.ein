@@ -1,0 +1,23 @@
+;;; type-exclusivity/a — distinct Colors can't co-locate.
+;;;
+;;; Given:  (instance Red Color), (instance Blue Color)
+;;; Derive: (not (co-located Red Blue)), (not (co-located Blue Red))
+;;;
+;;; Note: this rule produces TWO firings per pair of distinct
+;;; same-type instances (one per ordering). The demo test accepts
+;;; ≥ 1 firing of the named rule.
+
+(rules
+  (rule type-exclusivity ()
+    :match  (and (instance ?a ?T)
+                 (instance ?b ?T)
+                 (neq ?a ?b))
+    :assert (not (co-located ?a ?b))
+    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive slots."
+    :priority 300))
+
+(ontology
+  (type Color)
+  (instance Red Color)
+  (instance Blue Color)
+  (relation co-located T T))

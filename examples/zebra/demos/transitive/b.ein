@@ -1,0 +1,21 @@
+;;; transitive/b — is-a chains through type hierarchy.
+;;;
+;;; Given:  (is-a Cat Mammal), (is-a Mammal Animal)
+;;; Derive: (is-a Cat Animal)
+
+(rules
+  (rule transitive (?rel)
+    :match  (and (?rel ?a ?b)
+                 (?rel ?b ?c)
+                 (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+    :priority 200))
+
+(ontology
+  (relation is-a T T)
+  (transitive is-a))
+
+(facts
+  (is-a Cat Mammal :source "taxonomy")
+  (is-a Mammal Animal :source "taxonomy"))

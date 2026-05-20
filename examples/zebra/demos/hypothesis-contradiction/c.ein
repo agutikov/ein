@@ -1,0 +1,26 @@
+;;; hypothesis-contradiction/c — contradicted hypothesis on a fact
+;;; whose arg is itself a relational node (nested-of-nested).
+;;;
+;;; Exercises the matcher's *recursive* nested-fact unification. The
+;;; outer fact is (hypothesis (next-to X Y)); the rule's pattern
+;;; matches ?h to the (next-to X Y) Fact node, and the asserted
+;;; (not ?h) becomes (not (next-to X Y)).
+;;;
+;;; Given:  (hypothesis (next-to X Y))
+;;;       + (contradiction-under (next-to X Y))
+;;; Derive: (not (next-to X Y))
+
+(rules
+  (rule hypothesis-contradiction ()
+    :match  (and (hypothesis ?h)
+                 (contradiction-under ?h))
+    :assert (not ?h)
+    :why    "Assumed {?h}; contradicted. Therefore (not {?h})."
+    :priority 900))
+
+(ontology
+  (relation next-to T T))
+
+(reasoning
+  (hypothesis (next-to X Y))
+  (contradiction-under (next-to X Y)))

@@ -1,0 +1,18 @@
+;;; symmetric/a — co-located is symmetric.
+;;;
+;;; Given:  (co-located Alice Bob)
+;;; Derive: (co-located Bob Alice)
+
+(rules
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+    :priority 100))
+
+(ontology
+  (relation co-located T T)
+  (symmetric co-located))
+
+(facts
+  (co-located Alice Bob :source "demo"))

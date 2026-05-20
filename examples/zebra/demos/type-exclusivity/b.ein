@@ -1,0 +1,19 @@
+;;; type-exclusivity/b — distinct Nationalities can't co-locate.
+;;;
+;;; Given:  (instance Norwegian Nationality), (instance Spaniard Nationality)
+;;; Derive: (not (co-located Norwegian Spaniard)) [×2 ordered]
+
+(rules
+  (rule type-exclusivity ()
+    :match  (and (instance ?a ?T)
+                 (instance ?b ?T)
+                 (neq ?a ?b))
+    :assert (not (co-located ?a ?b))
+    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive slots."
+    :priority 300))
+
+(ontology
+  (type Nationality)
+  (instance Norwegian Nationality)
+  (instance Spaniard Nationality)
+  (relation co-located T T))

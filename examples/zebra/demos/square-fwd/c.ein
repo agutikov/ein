@@ -1,0 +1,25 @@
+;;; square-fwd/c — above-of in a 3D stack.
+;;;
+;;; Given:  (above-of Floor2 Floor1),
+;;;         (above-of Floor5 Floor4),
+;;;         (co-located Floor2 Floor5)
+;;; Derive: (co-located Floor1 Floor4)
+
+(rules
+  (rule square-fwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?a ?x))
+    :assert (co-located ?b ?y)
+    :why    "square ({?R}, fwd)."
+    :priority 200))
+
+(ontology
+  (relation above-of T T)
+  (relation co-located T T)
+  (square-fwd above-of))
+
+(facts
+  (above-of Floor2 Floor1 :source "(1)")
+  (above-of Floor5 Floor4 :source "(2)")
+  (co-located Floor2 Floor5 :source "(3)"))

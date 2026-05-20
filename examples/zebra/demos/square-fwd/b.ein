@@ -1,0 +1,29 @@
+;;; square-fwd/b — temporal square: before-of forwards same-time.
+;;;
+;;; Given:  (before-of TuesdayMeeting MondayMeeting),
+;;;         (before-of FridayCall ThursdayCall),
+;;;         (same-time TuesdayMeeting FridayCall)
+;;; Derive: (same-time MondayMeeting ThursdayCall)
+;;;
+;;; (Square works for any directional relation that bridges via
+;;; a co-located-like equivalence — here `same-time` plays the
+;;; role of `co-located`.)
+
+(rules
+  (rule square-fwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?a ?x))
+    :assert (co-located ?b ?y)
+    :why    "square ({?R}, fwd)."
+    :priority 200))
+
+(ontology
+  (relation before-of T T)
+  (relation co-located T T)
+  (square-fwd before-of))
+
+(facts
+  (before-of TuesdayMeeting MondayMeeting :source "(1)")
+  (before-of FridayCall ThursdayCall :source "(2)")
+  (co-located TuesdayMeeting FridayCall :source "(3)"))

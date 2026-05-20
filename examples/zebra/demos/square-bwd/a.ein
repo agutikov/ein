@@ -1,0 +1,27 @@
+;;; square-bwd/a — spatial bridge: right-of *backwards* co-located.
+;;;
+;;; Mirror of square-fwd/a. Here the co-located bridge is on the
+;;; *right* leg (?b ↔ ?y), and square-bwd projects to the *left*
+;;; leg (?a ↔ ?x).
+;;;
+;;; Given:  (right-of B A), (right-of D C), (co-located A C)
+;;; Derive: (co-located B D)
+
+(rules
+  (rule square-bwd (?R)
+    :match  (and (?R ?a ?b)
+                 (?R ?x ?y)
+                 (co-located ?b ?y))
+    :assert (co-located ?a ?x)
+    :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
+    :priority 200))
+
+(ontology
+  (relation right-of T T)
+  (relation co-located T T)
+  (square-bwd right-of))
+
+(facts
+  (right-of B A :source "(1)")
+  (right-of D C :source "(2)")
+  (co-located A C :source "(3)"))
