@@ -64,6 +64,14 @@ Likely stages once activated:
 
 ### Theme B - PERFORMACE
 
+saturation that produce 150 facts and runs 1.5 seconds IS INSANE!
+I estimate Python performance as 1M-10M+ ops/s
+So it's already over 1M theoretical ops performed, or maybe even 10M or more.
+Before saturation we have 64 facts and 8 rules.
+If number of theoretical ops consumed is between (64*8)^2 and (64*8)^3
+Ok, 64^8 is much bigger, but it doesn't make sense! The (64*8)^2 either!
+WHAT IS THE SATURATION DOING SO LONG???
+
 ### Theme B1 - indexes
 
 speedup every step with indexes
