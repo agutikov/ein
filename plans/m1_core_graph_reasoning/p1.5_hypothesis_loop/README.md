@@ -74,7 +74,7 @@ and the updated
 - `(closed R)` declarations cause the hypothesis generator to
   skip relation `R` entirely (S1.5.4 T1.5.4.1); the demo-suite
   node counts collapse to the human-reasonable shape
-  ([S1.5.4 T1.5.4.4](s1.5.4_hypgen_improvements.md#task-t1544--acceptance)).
+  ([S1.5.4 T1.5.4.6](s1.5.4_hypgen_improvements.md#task-t1546--acceptance)).
 - Unconditionally-dead hypotheses are cached for the duration of
   a single `solve()` call (S1.5.4 T1.5.4.3) — the same `(R A B)`
   is never re-tested at a deeper depth.
