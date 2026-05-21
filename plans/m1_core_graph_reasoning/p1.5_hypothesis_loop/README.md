@@ -1,8 +1,9 @@
 # P1.5 — Hypothesis loop + ATMS-style branching
 
-**Estimate:** ~14-18 days (revised by S1.5.0 + the S1.5.4
-hyp-gen-improvements stage added 2026-05-21 after the demo-run
-feedback).
+**Estimate:** ~14-18 days for M1-blocking stages (S1.5.0–S1.5.4
++ the S1.5.4a/b prerequisite cleanups). S1.5.5/6/7 are
+optional follow-ups split out 2026-05-21; each adds 1-3 days
+when activated but does not gate M1 acceptance.
 **Depends on:** P1.2 (`KnowledgeBase`, `kb.fork`, `Provenance`),
 P1.3 (Saturator, hypothesis-contradiction rule), P1.4
 (`ContradictionDetector`).
@@ -36,7 +37,20 @@ what the loop *records* and what it returns at quiescence.
 | S1.5.1  | [Solve driver + two-step hypothesis gen + Q40 wiring](s1.5.1_saturate_branch.md) | 5-6 days |
 | S1.5.2  | [Multilevel branching + search tree as proof object](s1.5.2_multilevel.md)    | 3-4 days |
 | S1.5.3  | [Canonical fact-list hash + state-dedup + alive-branch termination](s1.5.3_canonicalisation.md) | 3-4 days |
-| S1.5.4  | [Hypothesis generation improvements — relation closure + dead-hypothesis cache](s1.5.4_hypgen_improvements.md) | 3-4 days |
+| S1.5.4a | [Fix `single-parent` → `functional` (+ optional direct ⊥-rule kernel)](s1.5.4a-fix-single-parent.md) | ½-2 days (prerequisite) |
+| S1.5.4b | [Drop Filter B (slot-already-used) from `_hypotheses_for`](s1.5.4b-fix-filter-slot-already-used.md) | ½ day (prerequisite) |
+| S1.5.4  | [Hypothesis-gen improvements — `(closed R)` + config head + counters + alive-set polish](s1.5.4_hypgen_improvements.md) | 3-4 days |
+| S1.5.5  | [Closure auto-inference via explicit rules](s1.5.5_closure_auto_inference.md) | 1-2 days |
+| S1.5.6  | [One-step rule lookahead + `sibling-exclusive` 2-arg rewrite](s1.5.6_one_step_lookahead.md) | 2-3 days |
+| S1.5.7  | [Back-prop `(not h)` on unconditional death (config flag default off)](s1.5.7_back_prop_unconditional.md) | 2-3 days |
+
+S1.5.5/6/7 split out of S1.5.4 on 2026-05-21 per the
+implementation-order TODO. Each ships behind a config flag from
+T1.5.4.4's `(config …)` head; each is independently testable
+against the demo suite. None gates M1 acceptance — S1.5.4's
+acceptance (T1.5.4.6) is what closes the M1 hypothesis-loop
+phase; S1.5.5/6/7 are pure pruning optimisations that close the
+remaining node-count gaps the deferrals leave behind.
 
 The original `s1.5.3_symmetry.md` (engine-time symmetry breaking)
 was **dropped** during the S1.5.0 review — symmetry is an
@@ -75,13 +89,23 @@ and the updated
   skip relation `R` entirely (S1.5.4 T1.5.4.1); the demo-suite
   node counts collapse to the human-reasonable shape
   ([S1.5.4 T1.5.4.6](s1.5.4_hypgen_improvements.md#task-t1546--acceptance)).
-- Unconditionally-dead hypotheses are cached for the duration of
-  a single `solve()` call (S1.5.4 T1.5.4.3) — the same `(R A B)`
-  is never re-tested at a deeper depth.
+- Hypothesis generation is observable: raw + per-filter
+  counters via `bench_solve --hyp-stats` (S1.5.4 T1.5.4.7) and
+  on the SearchTree's root metadata.
+- The alive hypothesis set is computed once at b0 and inherited
+  by descendant branches (S1.5.4 T1.5.4.5 / T1.5.4.8); revert
+  via `(config :enable-alive-inherit false)`.
+- A `(config …)` IR head + `solve(kb, *, config=…)` kwarg gate
+  every optional pruning mechanism (S1.5.4 T1.5.4.4); enabling
+  the S1.5.7 default-off `:enable-back-prop-unconditional` flag
+  caches unconditionally-dead hypotheses for the duration of a
+  single `solve()` call — the same `(R A B)` is never re-tested
+  at a deeper depth.
 - `pytest tests/inference/test_hypothesis.py
   tests/inference/test_multilevel.py
   tests/inference/test_canonicalisation.py
-  tests/inference/test_hypgen_pruning.py` ≥ 36 tests, green.
+  tests/inference/test_hypgen_pruning.py
+  tests/inference/test_config.py` ≥ 36 tests, green.
 - `ruff check src/ein_bot/inference/hypothesis.py
   tests/inference/test_*.py` green.
 

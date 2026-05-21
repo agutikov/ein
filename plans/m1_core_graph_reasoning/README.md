@@ -56,14 +56,18 @@ Concretely, M1 ships:
 | P1.6  | Rendering + markdown trace             | 1-2 wk   | [`p1.6_rendering_and_trace/`](p1.6_rendering_and_trace/) |
 | P1.7  | Bootstrapping — Zebra end-to-end       | 1-2 wk   | [`p1.7_bootstrapping_zebra/`](p1.7_bootstrapping_zebra/) |
 | P1.8  | Improvements (modules+imports / COW fork / negative-fact volume; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; phase title broadened 2026-05-21) |
+| P1.9  | Hypothesis-loop follow-ups (E1-E20 catalog; placeholder) | TBD | [`p1.9_hypothesis_loop_followups/`](p1.9_hypothesis_loop_followups/) |
 
 Phases run roughly sequentially. P1.6 can start as soon as P1.2 is
 in (the renderer only needs the data model); P1.7 is the integration
-phase and gates "M1 done". **P1.8 is a placeholder** parking three
-improvement themes — modules+imports (the original Q30 deferral
-from the 2026-05-20 P1.3 review), copy-on-write hypothesis-branch
-forks, and negative-fact volume reduction (both surfaced 2026-05-21
-during P1.3 / P1.4 work). None gate M1 acceptance.
+phase and gates "M1 done". **P1.8 and P1.9 are placeholders.** P1.8
+parks three improvement themes — modules+imports (the original Q30
+deferral from the 2026-05-20 P1.3 review), copy-on-write
+hypothesis-branch forks, and negative-fact volume reduction (both
+surfaced 2026-05-21 during P1.3 / P1.4 work). P1.9 parks the E1-E20
+hypothesis-loop catalog spun out of S1.5.4 on 2026-05-21 (closure
+refinements, CDCL-inspired learning, search heuristics, CSP-style
+pre-processing, engineering/UX). Neither gates M1 acceptance.
 
 ## Acceptance
 

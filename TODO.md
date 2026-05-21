@@ -48,7 +48,15 @@
 
 
 
-P1.9 - kernel docs
+P1.5 more ideas
+
+- guided hypothesis generation by rules from specific head or with specific name `hrule`
+
+
+---
+
+
+P1.10 - kernel docs
 
 
 ---
