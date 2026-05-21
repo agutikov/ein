@@ -258,6 +258,16 @@ def _fact_repr(fact: Fact | None) -> str:
     return f"{fact.relation_name} " + " ".join(parts)
 
 
+def _hashable_args(args) -> tuple:
+    """Recursively unwrap a fact's args into a hashable / sortable shape."""
+    return tuple(
+        (a.relation_name, _hashable_args(a.args))
+        if isinstance(a, Fact)
+        else a
+        for a in args
+    )
+
+
 # ── Main ───────────────────────────────────────────────────────────
 
 
@@ -285,6 +295,11 @@ def main() -> int:
                     help="abort the search after S wall-clock seconds")
     ap.add_argument("--hyp-stats", action="store_true",
                     help="print per-relation hypothesis-generation breakdown")
+    ap.add_argument("--solution-facts", action="store_true",
+                    help="for each solution leaf, dump its propositional "
+                         "(REASONING-layer, non-bookkeeping) facts + state_hash "
+                         "— useful for confirming why supposedly-duplicate "
+                         "solutions weren't deduped")
     args = ap.parse_args()
 
     text = args.puzzle.read_text()
@@ -380,6 +395,29 @@ def main() -> int:
         if not seen_keys:
             print("  (none — query goal has no variables?)")
         print()
+
+    # ── Per-solution-leaf fact dump ─────────────────────────────
+    if args.solution_facts:
+        from ein_bot.inference.canon import BOOKKEEPING_HEADS, state_hash
+        from ein_bot.kb.entities import Layer
+        sols = tree.solutions()
+        print(f"solution-leaf facts (REASONING layer, "
+              f"bookkeeping {sorted(BOOKKEEPING_HEADS)} omitted):")
+        for s in sols:
+            sh = state_hash(s.kb_snapshot) if s.kb_snapshot else None
+            print(f"  b{s.id}  hash={sh}  on=({_fact_repr(s.hypothesis)})")
+            if s.kb_snapshot is None:
+                print("    (no kb_snapshot)")
+                continue
+            facts = [
+                f for f in s.kb_snapshot.facts
+                if f.layer == Layer.REASONING
+                and f.relation_name not in BOOKKEEPING_HEADS
+            ]
+            facts.sort(key=lambda f: (f.relation_name, _hashable_args(f.args)))
+            for f in facts:
+                print(f"    ({_fact_repr(f)})")
+            print()
 
     # ── Per-leaf summary ────────────────────────────────────────
     if args.leaves:

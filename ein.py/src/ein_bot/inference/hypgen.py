@@ -187,17 +187,16 @@ def _is_symmetric(kb: KnowledgeBase, r_name: str) -> bool:
 
 
 def _is_excluded(kb: KnowledgeBase, fact: Fact) -> bool:
-    """True iff `(not <fact>)` already exists in the KB."""
-    for n in kb._facts_by_relation.get("not", ()):
-        if not n.args:
-            continue
-        inner = n.args[0]
-        if isinstance(inner, Fact) and (
-            inner.relation_name == fact.relation_name
-            and inner.args == fact.args
-        ):
-            return True
-    return False
+    """True iff `(not <fact>)` already exists in the KB.
+
+    O(1) lookup via the kb's `_negated_facts` set — built in
+    `rebuild_indexes` and maintained incrementally in `_index_fact`.
+    The set IS the dead-hypothesis cache (S1.5.4 T1.5.4.3): every
+    `(not h)` derived during saturation, asserted by a rule, or
+    back-propagated from a dying branch lands here and stops the
+    generator from re-emitting `h` on future levels.
+    """
+    return (fact.relation_name, fact.args) in kb._negated_facts
 
 
 __all__ = [

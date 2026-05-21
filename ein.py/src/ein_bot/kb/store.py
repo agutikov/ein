@@ -141,6 +141,12 @@ class KnowledgeBase:
         # `object` / `relation` / `rule`.
         self.names: dict[str, NameRef] = {}
 
+        # Negated-fact index — for each `(not <inner>)` fact, the
+        # `(inner.relation_name, inner.args)` tuple. Lets the
+        # hypothesis-generator's Tier-A exclusion check land in O(1)
+        # instead of an O(|not-facts|) scan over `_facts_by_relation`.
+        self._negated_facts: set[tuple[str, tuple]] = set()
+
     # ── from_ir convenience ───────────────────────────────────────
 
     @classmethod
@@ -248,6 +254,7 @@ class KnowledgeBase:
         self._facts_by_instance = {}
         self._rule_apps_by_rule = {}
         self._rule_apps_on_relation = {}
+        self._negated_facts = set()
         fbr: dict[str, list[Fact]] = defaultdict(list)
         fbi: dict[str, list[Fact]] = defaultdict(list)
         rabr: dict[str, list[Fact]] = defaultdict(list)
@@ -264,6 +271,12 @@ class KnowledgeBase:
                 for a in fact.args:
                     if isinstance(a, str) and a in self.relations:
                         raor[a].append(fact)
+            if fact.relation_name == "not" and fact.args:
+                inner = fact.args[0]
+                if isinstance(inner, Fact):
+                    self._negated_facts.add(
+                        (inner.relation_name, inner.args)
+                    )
         self._facts_by_relation = {k: tuple(v) for k, v in fbr.items()}
         self._facts_by_instance = {k: tuple(v) for k, v in fbi.items()}
         self._rule_apps_by_rule = {k: tuple(v) for k, v in rabr.items()}
@@ -379,6 +392,15 @@ class KnowledgeBase:
                         **self._rule_apps_on_relation,
                         a: (*self._rule_apps_on_relation.get(a, ()), fact),
                     }
+
+        # Negated-fact index — O(1) Tier-A exclusion lookup for the
+        # hypothesis generator.
+        if rn == "not" and fact.args:
+            inner = fact.args[0]
+            if isinstance(inner, Fact):
+                self._negated_facts.add(
+                    (inner.relation_name, inner.args)
+                )
 
         # Names index — append to head + arg sets, creating fresh
         # NameRefs (frozen dataclasses) so the dict-value identity
@@ -556,6 +578,7 @@ class KnowledgeBase:
         new._rule_apps_by_rule = dict(self._rule_apps_by_rule)
         new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
         new.names = dict(self.names)
+        new._negated_facts = set(self._negated_facts)
         return new
 
     # ── Dunder ────────────────────────────────────────────────────
