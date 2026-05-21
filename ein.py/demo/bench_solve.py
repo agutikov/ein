@@ -422,15 +422,26 @@ def main() -> int:
                 print(f"    ({_fact_repr(f)})")
             print()
 
-    # ── Per-leaf summary ────────────────────────────────────────
+    # ── Per-endpoint / leaf summary ─────────────────────────────
     if args.leaves:
-        print("leaves:")
-        for node in tree.nodes.values():
-            if node.children:
-                continue
-            hyp = _fact_repr(node.hypothesis)
-            print(f"  b{node.id:<3} parent=b{node.parent if node.parent is not None else '_':<3} "
-                  f"verdict={node.verdict:<8} on=({hyp})")
+        print("endpoints + leaves (solutions first, then dead, then open):")
+        groups = (
+            ("solution", tree.solutions()),
+            ("dead",     tree.dead_branches()),
+            ("open",     tree.open_branches()),
+        )
+        for label, nodes in groups:
+            for node in nodes:
+                hyp = _fact_repr(node.hypothesis)
+                parent_str = (
+                    f"b{node.parent}" if node.parent is not None else "_"
+                )
+                # Solution endpoints can be interior (all-dead children
+                # + own state goal-matched) — flag this so the shape is
+                # readable.
+                shape = "leaf" if not node.children else f"+{len(node.children)} dead-children"
+                print(f"  b{node.id:<3} parent={parent_str:<4} "
+                      f"verdict={label:<8} {shape:<22} on=({hyp})")
         print()
 
     # ── Full tree IR ─────────────────────────────────────────────
