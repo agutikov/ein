@@ -1,50 +1,38 @@
-"""Hypothesis loop driver — S1.5.1 / P1.5.
+"""Hypothesis loop driver — S1.5.1 / S1.5.2 / S1.5.3.
 
-The outer loop the engine runs when P1.3's saturator stalls
-without solving. Generates hypotheses two ways at the candidate
-level — pick the *most-constrained* object (proxy for CSP's
-smallest-domain heuristic, using fact-count as the proxy), then
-enumerate `(relation, slot, filler)` triples the object is
-type-compatible with but doesn't yet occupy.
+Top-level driver for the outer loop the engine runs when P1.3's
+saturator stalls without solving. Wraps the lower-level pieces:
 
-Each hypothesis is wrapped in the **Q40 Option A protocol**: the
-fork's REASONING layer gets the hypothesis fact itself plus a
-synthetic `(hypothesis <h>)` carrier; on contradiction-detection,
-a `(contradiction-under <h>)` is emitted, triggering the
-`hypothesis-contradiction` rule shipped in P1.3 (which asserts
-`(not h)` for propagation).
+- generation:  :mod:`ein_bot.inference.hypgen`
+- single-branch test (Q40 protocol):  :func:`try_branch` (here)
+- proof object + IR round-trip:  :mod:`ein_bot.inference.search_tree`
+- canonical state hashing for dedup:  :mod:`ein_bot.inference.canon`
 
-This module ships the **single-level** driver: one round of fork,
-saturate, detect, propagate. The recursive search tree
-(S1.5.2) wraps `try_branch` to build the full proof object;
-canonicalisation + dedup + alive-branch termination (S1.5.3)
-turns the tree into the minimal proof DAG.
+This module owns the Mode/Verdict types, the Q40 try_branch call,
+the recursive descent (`_explore`), the bottom-up verdict
+promotion (`_promote_verdicts`), and the top-level `solve` driver.
 
-Symmetric relations emit BOTH orderings of `(R obj filler)` and
-`(R filler obj)` as separate hypotheses — trades memory (one
-extra branch per pair) for time (earlier contradiction detection
-when one direction would surface a contradiction the other
-wouldn't).
-
-Module path follows Q39 (flat `src/ein_bot/inference/`).
+Module path follows Q39 (flat `src/ein_bot/inference/`); see
+[[project-canonical-zebra2]] for the encoding-agnostic story.
 """
 from __future__ import annotations
 
-from collections.abc import Iterator
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Literal
 
-from ein_bot.ir.types import Atom, Int, Keyword, KwPair, SForm
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
+from .canon import state_hash
 from .compile import JoinPlan, compile_pattern
 from .contradiction import ContradictionDetector
 from .firing import Firing
+from .hypgen import generate_hypotheses
 from .match import run as match_run
 from .saturator import Saturator
+from .search_tree import BranchId, SearchNode, SearchTree
 
 # ── Mode + verdicts ─────────────────────────────────────────────────
 
@@ -60,9 +48,7 @@ class Mode(Enum):
 class Solution:
     """A surviving branch: KB satisfies the query goal (mode-aware).
 
-    `tree` carries the full SearchTree proof object (populated by
-    S1.5.2's recursive driver; None for direct construction or
-    S1.5.1's single-level driver).
+    `tree` carries the full SearchTree proof object.
     """
     kb:    KnowledgeBase
     trace: tuple[Firing, ...]
@@ -71,9 +57,17 @@ class Solution:
 
 @dataclass(frozen=True)
 class Ambiguity:
-    """Multiple surviving branches — GAPS mode's normal verdict."""
-    branches: tuple[Solution, ...]
-    tree:     SearchTree | None = None
+    """Multiple surviving branches — GAPS mode's normal verdict.
+
+    Under SOLVE mode, also returned when ``solve()`` couldn't pin
+    the answer to one distinct KB state: either there are multiple
+    solution-leaves OR there are leaves stamped ``open`` (max_depth
+    cutoff). ``unresolved`` lists the open leaves so callers can
+    decide whether to re-run with a deeper budget.
+    """
+    branches:   tuple[Solution, ...]
+    unresolved: tuple[SearchNode, ...] = ()
+    tree:       SearchTree | None = None
 
 
 @dataclass(frozen=True)
@@ -124,204 +118,6 @@ class BranchResult:
 
     def is_alive(self) -> bool:
         return self.kind == "alive"
-
-
-# ── Hypothesis generation (two-step) ───────────────────────────────
-
-
-# Inheritance-relation names the generator recognises when walking
-# ancestry. Both legacy kernel `instance` and canonical zebra2 `is-a`
-# are treated equivalently — the type-compat walk follows whichever
-# the puzzle uses (or both, if a compatibility layer is loaded).
-INHERITANCE_RELATIONS: tuple[str, ...] = ("is-a", "instance")
-
-
-def generate_hypotheses(kb: KnowledgeBase) -> Iterator[Fact]:
-    """Yield candidate hypothesis facts in priority order.
-
-    Step 1 — order *instance-like* objects by descending
-    fact-participation count (most-constrained first; deterministic
-    tiebreak by name).
-    Step 2 — per object, enumerate `(R, slot)` in
-    `possible(obj) - existing(obj)`, fill the other slot with
-    type-compatible objects, prune by `(not …)` in the KB.
-
-    Symmetric R emits both orderings as separate hypotheses.
-
-    Same-call dedup: a fact yielded once (by identity tuple
-    `(relation_name, args)`) is not yielded again — both Alice
-    and Bob enumerate `(r Alice Bob)` from their respective
-    candidate slots, but only the first is yielded.
-
-    Iteration source is the graph's globally-unique-names index
-    (`kb.names`); the instance-like subset is derived via
-    `_instance_like_objects`. Works encoding-agnostically across
-    zebra-original (kernel `(instance N T)`) and zebra2 (`is-a`
-    leaves) — see [[project-canonical-zebra2]].
-    """
-    objects = list(_instance_like_objects(kb))
-    if not objects:
-        return
-    by_count = sorted(
-        objects,
-        key=lambda nr: (
-            -(len(nr.as_head) + len(nr.as_arg)),
-            nr.name,
-        ),
-    )
-    seen: set[tuple[str, tuple]] = set()
-    for obj_ref in by_count:
-        for h in _hypotheses_for(kb, obj_ref):
-            key = (h.relation_name, h.args)
-            if key in seen:
-                continue
-            seen.add(key)
-            yield h
-
-
-def _instance_like_objects(kb: KnowledgeBase) -> Iterator:
-    """Yield NameRefs that look like inheritance-relation leaves.
-
-    A name is "instance-like" if it appears at slot 0 of an
-    inheritance edge (`is-a` or `instance`) and never at slot 1.
-    Kernel `kb.instances` is unioned in for zebra-original encodings
-    that don't materialise `is-a` facts.
-    """
-    at_slot0: set[str] = set()
-    at_slot1: set[str] = set()
-    for rel_name in INHERITANCE_RELATIONS:
-        for f in kb._facts_by_relation.get(rel_name, ()):
-            if len(f.args) >= 2:
-                if isinstance(f.args[0], str):
-                    at_slot0.add(f.args[0])
-                if isinstance(f.args[1], str):
-                    at_slot1.add(f.args[1])
-    leaves = at_slot0 - at_slot1
-    leaves |= set(kb.instances)
-    for name in leaves:
-        ref = kb.names.get(name)
-        if ref is not None and ref.category == "object":
-            yield ref
-
-
-def _hypotheses_for(kb: KnowledgeBase, obj_ref) -> Iterator[Fact]:
-    existing = {
-        (f.relation_name, i)
-        for f in obj_ref.as_arg
-        for i, a in enumerate(f.args)
-        if isinstance(a, str) and a == obj_ref.name
-    }
-    for rel in kb.relations.values():
-        if not rel.signature:
-            continue
-        for slot_idx, sig_type in enumerate(rel.signature):
-            if not _type_compatible(kb, obj_ref.name, sig_type):
-                continue
-            if (rel.name, slot_idx) in existing:
-                continue
-            yield from _fill_slot(kb, rel, slot_idx, obj_ref)
-
-
-def _type_compatible(kb: KnowledgeBase, obj_name: str, sig_type: str) -> bool:
-    """True iff `obj_name` is `sig_type` or has it as a transitive ancestor.
-
-    Walks both `is-a` / `instance` Facts and the kernel `Type.parent`
-    chain. The convention atom `T` is treated as a universal top
-    (compatible with anything) so an unrooted ontology still
-    type-checks against `(relation R T T)` signatures.
-    """
-    if sig_type == obj_name or sig_type == "T":
-        return True
-    return sig_type in _ancestor_names(kb, obj_name)
-
-
-def _ancestor_names(kb: KnowledgeBase, name: str) -> set[str]:
-    """Transitive ancestor set under `is-a` / `instance` + kernel `Type`."""
-    visited: set[str] = set()
-    stack: list[str] = [name]
-    while stack:
-        n = stack.pop()
-        for rel_name in INHERITANCE_RELATIONS:
-            for f in kb._facts_by_relation.get(rel_name, ()):
-                if (len(f.args) >= 2
-                        and isinstance(f.args[0], str)
-                        and f.args[0] == n
-                        and isinstance(f.args[1], str)
-                        and f.args[1] not in visited):
-                    visited.add(f.args[1])
-                    stack.append(f.args[1])
-        t = kb.types.get(n)
-        if t is not None and t.parent_name and t.parent_name not in visited:
-            visited.add(t.parent_name)
-            stack.append(t.parent_name)
-    return visited
-
-
-def _fill_slot(kb: KnowledgeBase, rel,
-               fixed_slot: int, obj_ref) -> Iterator[Fact]:
-    """Enumerate type-compatible fillers; emit symmetric duplicates."""
-    if len(rel.signature) != 2:
-        return     # M1 only handles arity-2 relations
-    other_slot = 1 - fixed_slot
-    other_type = rel.signature[other_slot]
-    symmetric = _is_symmetric(kb, rel.name)
-
-    for filler in _instance_like_objects(kb):
-        if filler.name == obj_ref.name:
-            continue        # skip self-edges
-        if not _type_compatible(kb, filler.name, other_type):
-            continue
-
-        # Build args for the chosen slot assignment.
-        args = _build_args(obj_ref.name, fixed_slot, filler.name, other_slot)
-        fact = Fact(
-            relation_name=rel.name,
-            args=args,
-            layer=Layer.REASONING,
-            provenance=None,    # caller adds Provenance.from_hypothesis later
-        )
-        if not _is_excluded(kb, fact):
-            yield fact
-
-        # Symmetric R: emit the reversed ordering too.
-        if symmetric:
-            rev_args = _build_args(filler.name, fixed_slot, obj_ref.name, other_slot)
-            rev = Fact(
-                relation_name=rel.name,
-                args=rev_args,
-                layer=Layer.REASONING,
-                provenance=None,
-            )
-            if not _is_excluded(kb, rev):
-                yield rev
-
-
-def _build_args(a_name: str, a_slot: int,
-                b_name: str, b_slot: int) -> tuple[str, ...]:
-    """Place two named values into a 2-tuple at the given slots."""
-    args: list[str] = ["", ""]
-    args[a_slot] = a_name
-    args[b_slot] = b_name
-    return tuple(args)
-
-
-def _is_symmetric(kb: KnowledgeBase, r_name: str) -> bool:
-    apps = kb._facts_by_relation.get("symmetric", ())
-    return any(f.args == (r_name,) for f in apps)
-
-
-def _is_excluded(kb: KnowledgeBase, fact: Fact) -> bool:
-    """True iff `(not <fact>)` already exists in the KB."""
-    for n in kb._facts_by_relation.get("not", ()):
-        if not n.args:
-            continue
-        inner = n.args[0]
-        if isinstance(inner, Fact) and (
-            inner.relation_name == fact.relation_name
-            and inner.args == fact.args
-        ):
-            return True
-    return False
 
 
 # ── Single-branch test cycle (Q40 protocol) ────────────────────────
@@ -457,238 +253,27 @@ def _mode_from_query(kb: KnowledgeBase) -> Mode | None:
         return None
 
 
-# ── Search tree (proof object) ─────────────────────────────────────
-
-
-BranchId = int
-
-
-@dataclass(frozen=True)
-class SearchNode:
-    """One node in the search tree — a fork point + its verdict.
-
-    Each node represents *one branch* of exploration: the KB it
-    ran on (post-saturation), the hypothesis fact that seeded it
-    (None for the root), and a verdict:
-
-    - ``solution`` — the branch's KB satisfies the query goal
-      under the active mode. Constructive part of the proof.
-    - ``dead`` — the branch contradicted; ``unsat_core`` carries
-      the source-frontier facts that produced the conflict. The
-      dead branch is part of the *uniqueness* proof for the
-      surviving sibling(s).
-    - ``open`` — interior node whose verdict is determined by its
-      children. S1.5.3's alive-branch promotion settles these;
-      S1.5.2 stamps them and lets the top-level driver inspect
-      leaves directly.
-    """
-    id:          BranchId
-    parent:      BranchId | None
-    hypothesis:  Fact | None             # None for the root
-    kb_snapshot: KnowledgeBase | None    # post-saturation; None after IR round-trip
-    firings:     tuple[Firing, ...]
-    verdict:     Literal["solution", "dead", "open"]
-    children:    tuple[BranchId, ...] = ()
-    unsat_core:  frozenset[Fact] = field(default_factory=frozenset)
-
-
-@dataclass(frozen=True)
-class SearchTree:
-    """Immutable view of a completed search. Built by ``solve()``.
-
-    Per S1.5.0 §F: the tree IS the proof. Dead branches are
-    first-class artefacts witnessing uniqueness; the trace
-    renderer (P1.6) serialises the whole tree.
-    """
-    root:  BranchId
-    nodes: dict[BranchId, SearchNode]
-
-    def solutions(self) -> tuple[SearchNode, ...]:
-        return tuple(n for n in self.nodes.values()
-                     if n.verdict == "solution")
-
-    def dead_branches(self) -> tuple[SearchNode, ...]:
-        return tuple(n for n in self.nodes.values()
-                     if n.verdict == "dead")
-
-    def open_branches(self) -> tuple[SearchNode, ...]:
-        """Interior nodes whose verdict S1.5.3 hasn't promoted, OR
-        leaf nodes that hit ``max_depth``."""
-        return tuple(n for n in self.nodes.values()
-                     if n.verdict == "open")
-
-    # ── IR round-trip ─────────────────────────────────────────────
-
-    def to_ir(self) -> SForm:
-        """Serialise as a ``(trace …)`` SForm — DFS-ordered events.
-
-        Each node becomes a `branch-open` + `branch-close` pair;
-        recursive children are emitted between them. Verdicts go
-        on `branch-close` as ``:verdict <atom>``. The hypothesis
-        seed (when present) goes on `branch-open` as ``:on``.
-
-        KB snapshots, firings, and unsat-core fact references are
-        NOT round-tripped — the IR encodes the *tree shape* + the
-        verdicts + the hypothesis seeds; per-branch state is the
-        trace renderer's (P1.6) territory.
-        """
-        events: list[SForm] = []
-        self._emit(self.root, events)
-        return SForm(head=Atom(name="trace"), args=tuple(events))
-
-    def _emit(self, nid: BranchId, events: list[SForm]) -> None:
-        node = self.nodes[nid]
-        open_args: list = [Atom(name=_branch_name(nid))]
-        if node.hypothesis is not None:
-            open_args.append(KwPair(
-                key=Keyword(name="on"),
-                value=_fact_to_sform(node.hypothesis),
-            ))
-        events.append(SForm(head=Atom(name="branch-open"),
-                            args=tuple(open_args)))
-        for child_id in node.children:
-            self._emit(child_id, events)
-        close_args = [
-            Atom(name=_branch_name(nid)),
-            KwPair(key=Keyword(name="verdict"),
-                   value=Atom(name=node.verdict)),
-        ]
-        events.append(SForm(head=Atom(name="branch-close"),
-                            args=tuple(close_args)))
-
-    @classmethod
-    def from_ir(cls, trace: SForm) -> SearchTree:
-        """Reconstruct a SearchTree from a ``(trace …)`` SForm.
-
-        kb_snapshot and firings are NOT reconstructed (the IR
-        doesn't carry them); use the live tree from a fresh
-        ``solve()`` if you need them.
-        """
-        if not (isinstance(trace, SForm)
-                and isinstance(trace.head, Atom)
-                and trace.head.name == "trace"):
-            raise ValueError("expected (trace …) SForm")
-        nodes: dict[BranchId, SearchNode] = {}
-        stack: list[tuple[BranchId, list[BranchId]]] = []
-        root_id: BranchId | None = None
-
-        for event in trace.args:
-            if not isinstance(event, SForm) or not isinstance(event.head, Atom):
-                continue
-            head = event.head.name
-            if head == "branch-open":
-                nid = _parse_branch_id(event.args[0])
-                hyp = _parse_on_kw(event.args)
-                parent = stack[-1][0] if stack else None
-                if root_id is None:
-                    root_id = nid
-                if stack:
-                    stack[-1][1].append(nid)
-                # Store partial node now; finalize on branch-close.
-                nodes[nid] = SearchNode(
-                    id=nid, parent=parent, hypothesis=hyp,
-                    kb_snapshot=None, firings=(),
-                    verdict="open", children=(),
-                )
-                stack.append((nid, []))
-            elif head == "branch-close":
-                if not stack:
-                    raise ValueError("unmatched branch-close")
-                nid, children_ids = stack.pop()
-                close_nid = _parse_branch_id(event.args[0])
-                if close_nid != nid:
-                    raise ValueError(
-                        f"branch-close {close_nid} doesn't match open {nid}"
-                    )
-                verdict = _parse_verdict_kw(event.args)
-                prev = nodes[nid]
-                nodes[nid] = SearchNode(
-                    id=prev.id, parent=prev.parent,
-                    hypothesis=prev.hypothesis,
-                    kb_snapshot=None, firings=(),
-                    verdict=verdict, children=tuple(children_ids),
-                )
-            # other events (step, contradiction, symmetry-class) ignored.
-
-        if root_id is None:
-            raise ValueError("empty trace — no root branch")
-        if stack:
-            raise ValueError("unbalanced branch-open / close")
-        return cls(root=root_id, nodes=nodes)
-
-
-def _branch_name(nid: BranchId) -> str:
-    return f"b{nid}"
-
-
-def _fact_to_sform(fact: Fact) -> SForm:
-    """Convert a Fact to an IR SForm — recursive for nested args."""
-    arg_nodes = []
-    for a in fact.args:
-        if isinstance(a, Fact):
-            arg_nodes.append(_fact_to_sform(a))
-        elif isinstance(a, int):
-            arg_nodes.append(Int(value=a))
-        else:
-            arg_nodes.append(Atom(name=str(a)))
-    return SForm(head=Atom(name=fact.relation_name), args=tuple(arg_nodes))
-
-
-def _sform_to_fact(node: SForm) -> Fact:
-    """Reverse of `_fact_to_sform` — recursive for nested SForms."""
-    if not isinstance(node.head, Atom):
-        raise ValueError(f"expected Atom head, got {type(node.head).__name__}")
-    args: list = []
-    for a in node.args:
-        if isinstance(a, Atom):
-            args.append(a.name)
-        elif isinstance(a, Int):
-            args.append(a.value)
-        elif isinstance(a, SForm) and isinstance(a.head, Atom):
-            args.append(_sform_to_fact(a))
-    return Fact(
-        relation_name=node.head.name,
-        args=tuple(args),
-        layer=Layer.REASONING,
-    )
-
-
-def _parse_branch_id(node) -> BranchId:
-    if not isinstance(node, Atom):
-        raise ValueError(f"expected Atom branch id, got {type(node).__name__}")
-    name = node.name
-    if not name.startswith("b") or not name[1:].isdigit():
-        raise ValueError(f"branch id must be `b<int>`, got {name!r}")
-    return int(name[1:])
-
-
-def _parse_on_kw(args) -> Fact | None:
-    for a in args:
-        if isinstance(a, KwPair) and a.key.name == "on":
-            value = a.value
-            if isinstance(value, SForm) and isinstance(value.head, Atom):
-                return _sform_to_fact(value)
-    return None
-
-
-def _parse_verdict_kw(args) -> str:
-    for a in args:
-        if isinstance(a, KwPair) and a.key.name == "verdict":
-            value = a.value
-            if isinstance(value, Atom):
-                return value.name
-    return "open"
-
-
 # ── Tree builder (internal) ────────────────────────────────────────
 
 
 class _TreeBuilder:
-    """Append-only builder for SearchNodes during recursive descent."""
+    """Append-only builder for SearchNodes during recursive descent.
+
+    `state_index` maps a post-saturation `state_hash(kb)` to the
+    `BranchId` of the SearchNode that owns that state. S1.5.3's
+    dedup short-circuits `_explore` when an already-seen state is
+    reached via a new path; the search tree becomes a DAG in
+    storage (multiple parents can reference the same child).
+
+    `set_verdict` replaces a node's verdict — frozen-dataclass
+    rebuilds — used by `_promote_verdicts` to propagate leaf
+    verdicts up through the interior nodes.
+    """
 
     def __init__(self) -> None:
         self._next_id: BranchId = 0
         self.nodes: dict[BranchId, SearchNode] = {}
+        self.state_index: dict[int, BranchId] = {}
 
     def alloc(self) -> BranchId:
         nid = self._next_id
@@ -700,6 +285,16 @@ class _TreeBuilder:
 
     def add(self, node: SearchNode) -> None:
         self.nodes[node.id] = node
+
+    def set_verdict(self, nid: BranchId, verdict: str) -> None:
+        """Replace a node's verdict (frozen dataclass → rebuild)."""
+        prev = self.nodes[nid]
+        self.nodes[nid] = SearchNode(
+            id=prev.id, parent=prev.parent, hypothesis=prev.hypothesis,
+            kb_snapshot=prev.kb_snapshot, firings=prev.firings,
+            verdict=verdict, children=prev.children,
+            unsat_core=prev.unsat_core,
+        )
 
     def finalize(self, root_id: BranchId) -> SearchTree:
         return SearchTree(root=root_id, nodes=dict(self.nodes))
@@ -722,12 +317,23 @@ def _explore(
 
     Leaf verdicts: ``dead`` (contradiction), ``solution`` (is_solved
     under mode), ``open`` (depth cap hit). Interior nodes are
-    stamped ``open``; S1.5.3 will promote them via the alive-branch
-    protocol.
+    stamped ``open`` and later promoted by ``_promote_verdicts``.
+
+    S1.5.3 dedup: every entry computes `state_hash(kb)` and short-
+    circuits to the existing node when the same state has been
+    explored via another path. Two branches that saturate to the
+    same closed KB share one SearchNode — the tree is a DAG in
+    storage.
     """
+    sh = state_hash(kb)
+    existing = builder.state_index.get(sh)
+    if existing is not None:
+        return existing
+
     contradictions = ContradictionDetector(kb).detect()
     if contradictions:
         nid = builder.alloc()
+        builder.state_index[sh] = nid
         unsat = kb.unsat_core(c.positive for c in contradictions)
         builder.add(SearchNode(
             id=nid, parent=parent_id, hypothesis=hypothesis,
@@ -739,6 +345,7 @@ def _explore(
 
     if is_solved(kb, mode):
         nid = builder.alloc()
+        builder.state_index[sh] = nid
         builder.add(SearchNode(
             id=nid, parent=parent_id, hypothesis=hypothesis,
             kb_snapshot=kb, firings=firings,
@@ -748,6 +355,7 @@ def _explore(
 
     if depth >= max_depth:
         nid = builder.alloc()
+        builder.state_index[sh] = nid
         builder.add(SearchNode(
             id=nid, parent=parent_id, hypothesis=hypothesis,
             kb_snapshot=kb, firings=firings,
@@ -755,9 +363,14 @@ def _explore(
         ))
         return nid
 
-    # Interior: allocate id, then recurse into each child.
+    # Interior: allocate id, then recurse into each child. Register
+    # the state mapping BEFORE recursing so a child whose
+    # post-saturation state matches this one (rare but possible)
+    # can dedup back to us.
     interior_id = builder.alloc()
+    builder.state_index[sh] = interior_id
     child_ids: list[BranchId] = []
+    seen_children: set[BranchId] = set()
     for h in generate_hypotheses(kb):
         result = try_branch(kb, h, branch_id=builder.peek_id())
         if result.is_alive():
@@ -766,6 +379,11 @@ def _explore(
                 depth + 1, max_depth, builder, mode,
             )
         else:
+            # Dead branches are NOT deduped by state-hash: each
+            # carries its own contradicting fact pair and its own
+            # unsat-core, both of which are part of the proof
+            # witnesses. Two distinct hypotheses dying for the same
+            # underlying reason are still recorded separately.
             child_id = builder.alloc()
             builder.add(SearchNode(
                 id=child_id, parent=interior_id, hypothesis=h,
@@ -773,7 +391,9 @@ def _explore(
                 verdict="dead", children=(),
                 unsat_core=result.unsat_core,
             ))
-        child_ids.append(child_id)
+        if child_id not in seen_children:
+            seen_children.add(child_id)
+            child_ids.append(child_id)
 
     builder.add(SearchNode(
         id=interior_id, parent=parent_id, hypothesis=hypothesis,
@@ -783,7 +403,45 @@ def _explore(
     return interior_id
 
 
-# ── Top-level solve driver (S1.5.2) ────────────────────────────────
+def _promote_verdicts(builder: _TreeBuilder, root_id: BranchId) -> None:
+    """Bottom-up walk; interior nodes inherit verdicts from descendants.
+
+    Priority: any descendant ``solution`` ⇒ ``solution``; else any
+    descendant ``open`` ⇒ ``open``; else all ``dead`` ⇒ ``dead``.
+    Memoised per node so DAG-shared subtrees are walked once.
+    """
+    cache: dict[BranchId, str] = {}
+    in_progress: set[BranchId] = set()
+
+    def walk(nid: BranchId) -> str:
+        if nid in cache:
+            return cache[nid]
+        if nid in in_progress:
+            # Cycle should be impossible (each branch strictly extends
+            # its parent's facts, so state-hashes can't collide along
+            # an ancestor chain). Be defensive anyway.
+            return "open"
+        in_progress.add(nid)
+        node = builder.nodes[nid]
+        if not node.children:
+            cache[nid] = node.verdict
+        else:
+            child_verdicts = [walk(c) for c in node.children]
+            if any(v == "solution" for v in child_verdicts):
+                cache[nid] = "solution"
+            elif any(v == "open" for v in child_verdicts):
+                cache[nid] = "open"
+            else:
+                cache[nid] = "dead"
+        in_progress.discard(nid)
+        if cache[nid] != node.verdict:
+            builder.set_verdict(nid, cache[nid])
+        return cache[nid]
+
+    walk(root_id)
+
+
+# ── Top-level solve driver ─────────────────────────────────────────
 
 
 def solve(
@@ -794,20 +452,20 @@ def solve(
 ) -> Verdict:
     """Multilevel hypothesis search — saturate, generate, recurse.
 
-    Builds the full SearchTree (proof object). Returns:
+    Builds the full SearchTree (proof object) and runs S1.5.3's
+    verdict-promotion pass before extracting the verdict. Returns:
 
-    - ``Solution`` if exactly one branch reaches a ``solution``
-      leaf under SOLVE mode (all surviving leaves under GAPS).
-    - ``Contradiction`` if zero branches survive (the dead-branch
-      unsat-cores certify unsolvability).
-    - ``Ambiguity`` if multiple solution-leaves exist under SOLVE,
-      or any open-leaves exist (max_depth hit).
+    - ``Solution`` if exactly one solution-leaf survives and there
+      are no open leaves (under SOLVE mode).
+    - ``Contradiction`` if zero solution-leaves survive and there
+      are no open leaves (the dead-branch unsat-cores certify
+      unsolvability).
+    - ``Ambiguity`` if multiple solution-leaves exist OR any open
+      leaves remain (max_depth cutoff). The latter case populates
+      ``Ambiguity.unresolved`` so callers can decide to deepen.
 
     The returned Verdict carries the SearchTree on its ``tree``
     attribute. P1.6 reads it to render the proof.
-
-    S1.5.3 adds canonical-state-hash dedup + alive-branch verdict
-    promotion (interior nodes' verdicts inherit from descendants).
     """
     mode = mode or _mode_from_query(kb) or Mode.SOLVE
 
@@ -819,6 +477,7 @@ def solve(
     root_id = _explore(kb, None, None, root_firings,
                        depth=0, max_depth=max_depth,
                        builder=builder, mode=mode)
+    _promote_verdicts(builder, root_id)
     tree = builder.finalize(root_id)
 
     solutions = tree.solutions()
@@ -826,7 +485,7 @@ def solve(
     opens = tree.open_branches()
 
     if mode is Mode.SOLVE:
-        if len(solutions) == 1:
+        if len(solutions) == 1 and not opens:
             s = solutions[0]
             return Solution(kb=s.kb_snapshot, trace=s.firings, tree=tree)
         if len(solutions) == 0 and not opens:
@@ -840,6 +499,7 @@ def solve(
                 Solution(kb=s.kb_snapshot, trace=s.firings, tree=tree)
                 for s in solutions
             ),
+            unresolved=opens,
             tree=tree,
         )
 
@@ -849,6 +509,7 @@ def solve(
                 Solution(kb=s.kb_snapshot, trace=s.firings, tree=tree)
                 for s in solutions
             ),
+            unresolved=opens,
             tree=tree,
         )
 
@@ -870,5 +531,6 @@ __all__ = [
     "generate_hypotheses",
     "is_solved",
     "solve",
+    "state_hash",
     "try_branch",
 ]

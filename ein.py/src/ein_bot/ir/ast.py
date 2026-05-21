@@ -184,6 +184,9 @@ class _ToAST(Transformer):
     def branch_close(self, items: list) -> SForm:
         return SForm(head=Atom(name="branch-close"), args=tuple(items))
 
+    def branch_ref(self, items: list) -> SForm:
+        return SForm(head=Atom(name="branch-ref"), args=tuple(items))
+
     def contradiction_decl(self, items: list) -> SForm:
         return SForm(head=Atom(name="contradiction"), args=tuple(items))
 

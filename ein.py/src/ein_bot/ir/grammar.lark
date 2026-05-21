@@ -111,11 +111,13 @@ trace_form: "(" "trace" trace_event* ")"
 ?trace_event: step_decl
             | branch_open
             | branch_close
+            | branch_ref
             | contradiction_decl
             | symmetry_decl
 step_decl:          "(" "step" SYMBOL kw_pair* ")"
 branch_open:        "(" "branch-open" SYMBOL kw_pair* ")"
 branch_close:       "(" "branch-close" SYMBOL kw_pair* ")"
+branch_ref:         "(" "branch-ref" SYMBOL ")"
 contradiction_decl: "(" "contradiction" SYMBOL kw_pair* ")"
 symmetry_decl:      "(" "symmetry-class" SYMBOL kw_pair* ")"
 
