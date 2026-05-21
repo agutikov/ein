@@ -319,8 +319,12 @@ def main() -> int:
     # Snapshot how many candidates the root would enumerate, broken
     # down by relation. Drives the decision to add `(closed R)` /
     # restrict signatures / cap depth before kicking off solve().
+    # T1.5.4.7: when --hyp-stats is set, also surface the per-filter
+    # breakdown via `generate_hypotheses_with_stats`.
+    from ein_bot.inference.hypgen import generate_hypotheses_with_stats
+    root_facts, root_stats = generate_hypotheses_with_stats(kb)
     root_hyps: Counter[str] = Counter()
-    for h in _hyp_mod.generate_hypotheses(kb):
+    for h in root_facts:
         root_hyps[h.relation_name] += 1
     if root_hyps:
         total_root = sum(root_hyps.values())
@@ -330,6 +334,9 @@ def main() -> int:
             for rel, n in root_hyps.most_common():
                 pct = 100.0 * n / total_root
                 print(f"    {rel:<24s} {n:>6d}  ({pct:>5.1f}%)")
+            print("  root hyp-gen filter breakdown (T1.5.4.7):")
+            for line in root_stats.as_report_lines():
+                print(f"  {line}")
 
     _install_instrumentation(
         verbose=args.verbose,

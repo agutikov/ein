@@ -59,6 +59,18 @@ P1.5 more ideas
 P1.10 - kernel docs
 
 
+inference docs
+- ideomatic level
+- python implementation
+
+
+
+software architecture docs with diagrams
+
+
+rename docs/index to docs/lib
+
+
 ---
 
 M1b GUI

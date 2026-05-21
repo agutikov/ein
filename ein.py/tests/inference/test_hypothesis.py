@@ -84,6 +84,45 @@ def test_object_selection_picks_max_fact_count():
 # ── Candidate enumeration ─────────────────────────────────────────
 
 
+def test_hyp_gen_stats_invariant():
+    """T1.5.4.7 — `raw == emitted + sum(filtered.values())` holds
+    for any KB. Also confirms each named filter bumps the right
+    counter."""
+    from ein_bot.inference.hypgen import generate_hypotheses_with_stats
+
+    kb = _kb("""
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (relation r2 T T)
+      (closed   is-a)
+      (is-a A T) (is-a B T))
+    (facts
+      (r A B :source "(1)")
+      (not (r2 A B) :source "(2)"))
+    """)
+    facts, stats = generate_hypotheses_with_stats(kb)
+    assert stats.raw == stats.emitted + sum(stats.filtered.values())
+    # is-a is closed → pre.closed_relation > 0:
+    assert stats.pre_candidate["closed_relation"] >= 1
+    # (r A B) collides with the source fact → fact_already_exists:
+    assert stats.filtered["fact_already_exists"] >= 1
+    # (not (r2 A B)) negates the (r2 A B) hypothesis → negated_fact:
+    assert stats.filtered["negated_fact"] >= 1
+
+
+def test_hyp_gen_stats_iterator_api_unchanged():
+    """`generate_hypotheses(kb)` still yields plain Facts — no
+    breaking change to existing callers."""
+    kb = _kb("""
+    (ontology
+      (relation is-a T T) (relation r T T)
+      (is-a A T) (is-a B T))
+    """)
+    facts = list(generate_hypotheses(kb))
+    assert all(isinstance(f, Fact) for f in facts)
+
+
 def test_closed_relation_yields_no_hypotheses():
     """T1.5.4.1 — `(closed R)` declares R fully populated; the
     generator skips R entirely. is-a leaves are still
