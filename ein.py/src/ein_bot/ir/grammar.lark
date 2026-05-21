@@ -5,8 +5,8 @@
 // LEVEL B — structurally typed kernel, generic interiors.
 //
 // Enforced by the grammar:
-//   1. Top level: exactly 6 reserved heads
-//      ontology · facts · reasoning · rules · query · trace
+//   1. Top level: exactly 7 reserved heads
+//      ontology · facts · reasoning · rules · query · trace · config
 //   2. Inside (ontology …): schema (type · relation · a-priori) PLUS
 //                           any fact shape — the ontology layer
 //                           holds implicit assumptions (instance
@@ -72,6 +72,7 @@ start: form*
      | rules_form
      | query_form
      | trace_form
+     | config_form
 
 // ═══════════ Ontology (schema + implicit assumptions) ═══════════
 // `relation` and `a-priori` take flat args under M1 form (b)
@@ -105,6 +106,12 @@ rule_params: "(" VAR* ")"
 
 // ═══════════ Query ═══════════
 query_form: "(" "query" kw_pair+ ")"
+
+// ═══════════ Config (solver-level knobs) — T1.5.4.4 ═══════════
+// Empty body is valid: `(config)` resolves to `SolverConfig()`
+// (all defaults). Each `:flag value` pair toggles one boolean
+// gate per `SolverConfig` field; values are SYMBOL `true` / `false`.
+config_form: "(" "config" kw_pair* ")"
 
 // ═══════════ Trace ═══════════
 trace_form: "(" "trace" trace_event* ")"

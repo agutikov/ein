@@ -352,6 +352,7 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
     facts_blocks: list[SForm] = []
     reasoning_blocks: list[SForm] = []
     query_blocks: list[SForm] = []
+    config_blocks: list[SForm] = []
     # trace_blocks unused for S1.2.1; reserved for S1.2.3.
 
     for form in forms:
@@ -369,6 +370,8 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
             reasoning_blocks.append(form)
         elif h == "query":
             query_blocks.append(form)
+        elif h == "config":
+            config_blocks.append(form)
         elif h == "trace":
             pass  # S1.2.3 territory.
         else:
@@ -395,6 +398,17 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
     if query_blocks:
         last = query_blocks[-1]
         kb.query = Query(kw_pairs=last.args)
+
+    # Config (last one wins if there are multiple). Parse into a
+    # `SolverConfig`; on key/value error, surface as a load-time
+    # error so puzzle authors catch typos early.
+    if config_blocks:
+        from ein_bot.inference.config import SolverConfig
+        last_cfg = config_blocks[-1]
+        try:
+            kb.config = SolverConfig.from_kw_pairs(last_cfg.args)
+        except ValueError as e:
+            errors.append(f"(config …): {e}")
 
     # Index rebuild.
     kb.rebuild_indexes()

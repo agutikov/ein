@@ -27,6 +27,7 @@ from ein_bot.kb.store import KnowledgeBase
 
 from .canon import state_hash
 from .compile import JoinPlan, compile_pattern
+from .config import SolverConfig
 from .contradiction import ContradictionDetector
 from .firing import Firing
 from .hypgen import generate_hypotheses
@@ -479,6 +480,7 @@ def solve(
     *,
     mode: Mode | None = None,
     max_depth: int = 6,
+    config: SolverConfig | None = None,
 ) -> Verdict:
     """Multilevel hypothesis search — saturate, generate, recurse.
 
@@ -496,8 +498,17 @@ def solve(
 
     The returned Verdict carries the SearchTree on its ``tree``
     attribute. P1.6 reads it to render the proof.
+
+    Config resolution (T1.5.4.4): the effective `SolverConfig` is
+    ``config`` (kwarg, highest precedence) or ``kb.config`` (parsed
+    from an IR `(config …)` block) or ``SolverConfig()`` (defaults).
+    The resolved config is stashed back on ``kb.config`` so
+    downstream code (saturator, hypgen, _explore) can read it
+    without threading.
     """
     mode = mode or _mode_from_query(kb) or Mode.SOLVE
+    effective_config = config or kb.config or SolverConfig()
+    kb.config = effective_config
 
     # Initial saturation on the root KB.
     sat = Saturator(kb)

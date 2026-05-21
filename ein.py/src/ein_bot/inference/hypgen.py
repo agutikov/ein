@@ -137,7 +137,19 @@ def _ancestor_names(kb: KnowledgeBase, name: str) -> set[str]:
 
 def _fill_slot(kb: KnowledgeBase, rel,
                fixed_slot: int, obj_ref) -> Iterator[Fact]:
-    """Enumerate type-compatible fillers; emit symmetric duplicates."""
+    """Enumerate type-compatible fillers; emit symmetric duplicates.
+
+    Filters per candidate (S1.5.4b's narrower replacement for the
+    removed Filter B):
+    - **fact_already_exists** — `(R a b)` is in `kb.facts` already
+      → don't re-emit. Sound: re-asserting a known fact would dedup
+      via `kb.add_fact`, leaving the fork's state identical to the
+      parent's, which then loops via state-hash dedup. Filter B
+      caught this incidentally by suppressing every filler at the
+      occupied slot; this filter only catches the exact-collision
+      case and leaves multi-image relations alone.
+    - **negated_fact** — Filter C via `_is_excluded`.
+    """
     if len(rel.signature) != 2:
         return     # M1 only handles arity-2 relations
     other_slot = 1 - fixed_slot
@@ -158,7 +170,8 @@ def _fill_slot(kb: KnowledgeBase, rel,
             layer=Layer.REASONING,
             provenance=None,    # caller adds Provenance.from_hypothesis later
         )
-        if not _is_excluded(kb, fact):
+        if (not _is_excluded(kb, fact)
+                and not _already_a_fact(kb, fact)):
             yield fact
 
         # Symmetric R: emit the reversed ordering too.
@@ -170,8 +183,16 @@ def _fill_slot(kb: KnowledgeBase, rel,
                 layer=Layer.REASONING,
                 provenance=None,
             )
-            if not _is_excluded(kb, rev):
+            if (not _is_excluded(kb, rev)
+                    and not _already_a_fact(kb, rev)):
                 yield rev
+
+
+def _already_a_fact(kb: KnowledgeBase, fact: Fact) -> bool:
+    """True iff a fact with `(fact.relation_name, fact.args)` is
+    already in the KB. Independent of layer / provenance —
+    speculating a known fact is a no-op + a state-hash collision."""
+    return kb._fact_by_id(fact.relation_name, fact.args) is not None
 
 
 def _build_args(a_name: str, a_slot: int,

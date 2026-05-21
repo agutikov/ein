@@ -24,6 +24,11 @@
     :assert (?rel ?b ?a)
     :why    "{?rel} is symmetric: {?a} ↔ {?b}."
     :priority 100)
+  (rule sibling-exclusive (?out)
+    :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
+    :assert (not (?out ?a ?b))
+    :why    "{?a} and {?b} share {?T} — exclusive under {?out}."
+    :priority 300)
   (rule functional (?R)
     :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
     :assert (false)
@@ -33,8 +38,9 @@
 (ontology
   (relation is-a       T T)
   (relation co-located T T)
-  (symmetric     co-located)
-  (functional is-a)
+  (symmetric         co-located)
+  (sibling-exclusive co-located)
+  (functional        is-a)
 
   (is-a Color T) (is-a Drink T)
   (is-a Red    Color) (is-a Blue   Color)

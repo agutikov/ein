@@ -116,6 +116,9 @@ class _ToAST(Transformer):
     def trace_form(self, items: list) -> SForm:
         return self._topform("trace", items)
 
+    def config_form(self, items: list) -> SForm:
+        return self._topform("config", items)
+
     # ── Ontology declarations ──────────────────────────────────
     def type_decl(self, items: list) -> SForm:
         # Grammar: `"(" "type" SYMBOL [SYMBOL] ")"`. The optional parent

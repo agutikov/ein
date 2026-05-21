@@ -121,6 +121,12 @@ class KnowledgeBase:
         self.facts: list[Fact] = []
         # Query (optional, only when the IR carries a `(query …)`).
         self.query: Query | None = None
+        # SolverConfig (optional, only when the IR carries a `(config
+        # …)` head; T1.5.4.4). Typed as `Any` here to avoid a hard
+        # import cycle (config lives under inference/, which imports
+        # store). `solve()` resolves precedence as: kwarg > kb.config
+        # > SolverConfig().
+        self.config: Any | None = None
 
         # Equality-class hooks — reserved for F4.
         self.classes: EqClasses = EqClasses()
