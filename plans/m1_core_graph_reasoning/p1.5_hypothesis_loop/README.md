@@ -1,9 +1,11 @@
 # P1.5 — Hypothesis loop + ATMS-style branching
 
-**Estimate:** ~14-18 days for M1-blocking stages (S1.5.0–S1.5.4
-+ the S1.5.4a/b prerequisite cleanups). S1.5.5/6/7 are
-optional follow-ups split out 2026-05-21; each adds 1-3 days
-when activated but does not gate M1 acceptance.
+**Estimate:** ~14-18 days for the core M1-blocking stages
+(S1.5.0–S1.5.4 + the S1.5.4a/b prerequisite cleanups), plus
+~7-11 days for S1.5.7 + S1.5.8 — also M1-blocking, for the
+idea-08 trace-fidelity criterion (see the stage note below).
+S1.5.5/6 are optional pruning follow-ups (1-3 days each when
+activated) and do not gate M1 acceptance.
 **Depends on:** P1.2 (`KnowledgeBase`, `kb.fork`, `Provenance`),
 P1.3 (Saturator, hypothesis-contradiction rule), P1.4
 (`ContradictionDetector`).
@@ -42,15 +44,28 @@ what the loop *records* and what it returns at quiescence.
 | S1.5.4  | [Hypothesis-gen improvements — `(closed R)` + config head + counters + alive-set polish](s1.5.4_hypgen_improvements.md) | 3-4 days |
 | S1.5.5  | [Closure auto-inference via explicit rules](s1.5.5_closure_auto_inference.md) | 1-2 days |
 | S1.5.6  | [One-step rule lookahead + `sibling-exclusive` 2-arg rewrite](s1.5.6_one_step_lookahead.md) | 2-3 days |
-| S1.5.7  | [Back-prop `(not h)` on unconditional death (config flag default off)](s1.5.7_back_prop_unconditional.md) | 2-3 days |
+| S1.5.7  | [Back-prop `(not h)`, re-saturate, return on derived positive](s1.5.7_back_prop_unconditional.md) | 4-6 days |
+| S1.5.8  | [Totality + domain elimination](s1.5.8_totality_domain_elimination.md) | 3-5 days |
 
 S1.5.5/6/7 split out of S1.5.4 on 2026-05-21 per the
-implementation-order TODO. Each ships behind a config flag from
-T1.5.4.4's `(config …)` head; each is independently testable
-against the demo suite. None gates M1 acceptance — S1.5.4's
-acceptance (T1.5.4.6) is what closes the M1 hypothesis-loop
-phase; S1.5.5/6/7 are pure pruning optimisations that close the
-remaining node-count gaps the deferrals leave behind.
+implementation-order TODO; S1.5.8 was added 2026-05-22. Each
+ships behind a config flag from T1.5.4.4's `(config …)` head (or,
+for S1.5.8, as a rule loaded from the puzzle); each is
+independently testable.
+
+- **S1.5.5 / S1.5.6** — pure pruning optimisations; do **not**
+  gate M1 acceptance. S1.5.4's acceptance (T1.5.4.6) closes the
+  core hypothesis-loop phase.
+- **S1.5.7 / S1.5.8** — **M1-blocking** (2026-05-22 direction "M1
+  has to solve zebra"). S1.5.7's re-saturation +
+  return-on-derived-positive and S1.5.8's `domain-elimination`
+  rule together make a forced move ("therefore X") a named
+  saturation firing instead of a hypothesis-branch verdict —
+  required by M1 acceptance criterion #3 (the idea-08 trace must
+  show a named `elimination-by-exhaustion` firing for every
+  "therefore" move in the human walkthrough). They also remove
+  the depth-budget exhaustion the static descent risked when
+  forced moves each spent a tree level.
 
 The original `s1.5.3_symmetry.md` (engine-time symmetry breaking)
 was **dropped** during the S1.5.0 review — symmetry is an
@@ -101,6 +116,12 @@ and the updated
   caches unconditionally-dead hypotheses for the duration of a
   single `solve()` call — the same `(R A B)` is never re-tested
   at a deeper depth.
+- With S1.5.7 + S1.5.8 enabled, a one-survivor slot is resolved
+  by a named `elimination-by-exhaustion` firing recorded on the
+  current node — not a depth+1 hypothesis branch; the Zebra
+  search tree's interior nodes are genuine choice points only,
+  and the trace reads like the idea-08 human walkthrough
+  (S1.5.8 T1.5.8.5).
 - `pytest tests/inference/test_hypothesis.py
   tests/inference/test_multilevel.py
   tests/inference/test_canonicalisation.py

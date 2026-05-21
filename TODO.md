@@ -47,15 +47,23 @@
 
 
 
-
 P1.5 more ideas
 
 - guided hypothesis generation by rules from specific head or with specific name `hrule`
 - option in config to enable automatic hypothesis generation, default is enabled
+- another simple expernal guiding - allow hypothesis only of certain relation, e.g. `co-located` in zebra
 
 
 
 - implication:
+    - implry ?R1 ?R2 - implication between relations
+        - what about implication between rules?
+            - Is there any thechnical blockers?
+                - we can issue new fact of course
+                - but how it will be handled then?
+                - would it be processed correctly? compiled, etc.
+            - Type-match for rules domains?
+            - we now don't check relation domains either btw
     - imply1 - for relations with 1 arg
     - imply2-fwd - for relations with 2 args - our current default imply
     - imply2-reverse, or inverse - for example right-to and left-to
@@ -67,6 +75,17 @@ P1.5 more ideas
         - no facts of relation R between instances of A and B - no relation R betewen A and B types
         - all instances of A and B have relations R - types have relation R
         - some instances of A have relation R with instances of B, some hot have -> there are 2 subtypes
+
+
+- modes:
+    - solve - search for at least one valid solution ASAP, use heuristics to optimize the search
+    - prove - full search, the same in case of one solution, different in case of multiple
+        - is there a way to speedup prove?
+        - not doing full search, replace it with what???
+
+
+- Q: is it possible to get into the same state (that collapse into one) with different path so have different sets of alive hypothesis? Maybe add hyps to canonical state hash?
+
 
 
 ---

@@ -277,7 +277,7 @@ def _hashable_args(args) -> tuple:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("puzzle", type=Path)
-    ap.add_argument("--max-depth", type=int, default=4)
+    ap.add_argument("--max-depth", type=int, default=100)
     ap.add_argument(
         "--mode",
         choices=[m.value for m in Mode],
