@@ -198,14 +198,47 @@ behaviour for them and they may not be redefined by user code:
 |--------------|-----------------------------------------------------------------|
 | `relation`   | declares a relation-type node (`(relation co-located T T)`).    |
 | `rule`       | declares a rewriting rule (head of `(rule …)` in `(rules …)`).  |
+| `not`        | propositional negation; `(not X)` is an octagon fact whose single arg is the negated proposition. The contradiction detector pairs each `(not X)` against a same-layer positive `X`. |
+| `false`      | direct ⊥ — a `(false)` fact asserts that the firing rule has reached a contradiction without needing the self-negation idiom. The contradiction detector treats every `(false …)` as a `kind="direct"` contradiction (see [`../02-data-model/02_store.md` §7.2 unsat-core](../02-data-model/02_store.md) for how the unsat-core walk handles it). Shipped S1.5.4a Part 2 (2026-05-21). |
 | `is-a`       | the inheritance/instantiation edge (in zebra2-style encoding).  |
 | `instance`   | the explicit instance-of-type edge (in zebra.ein-style encoding). |
 | `type`       | declares a type-node (in zebra.ein-style encoding).               |
+
+`not` and `false` are reserved at the **engine** level — the
+contradiction detector scans `_facts_by_relation["not"]` and
+`_facts_by_relation["false"]` for the two contradiction shapes.
+The grammar parses both as ordinary `generic_fact` forms; the
+engine, not the parser, gives them meaning.
 
 `is-a`, `instance`, `type` are *not strictly* reserved in the
 grammar today — both encodings are valid IR (the IR-encoding
 decision is P1.7). But their *engine semantics* are reserved: the
 loader recognises them and builds Type/Instance entities accordingly.
+
+### `false` — direct ⊥ usage
+
+Use `:assert (false)` from inside a rule whose conclusion is "the
+state is contradictory" rather than "some specific proposition X
+is false". Canonical example: the `functional` rule, which says
+"if a relation has two distinct values for the same slot-0
+binding, the state is contradictory":
+
+```lisp
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional: {?a} has {?b} and {?c}."
+  :priority 250)
+```
+
+The `(false)` fact's `args` are empty by convention — multiple
+firings within a single fork dedupe (`Fact` identity is
+`(relation, args)`), so only the first firing's provenance is
+preserved. That's enough for "is this branch dead?" and for
+back-prop (S1.5.7) to identify the responsible hypothesis from
+the first firing's premise chain. Promote to `(false <witness>)`
+with per-firing args if a future puzzle needs all parallel
+contradictions individually addressable.
 
 ## 7. Open design seams
 

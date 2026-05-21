@@ -13,9 +13,8 @@
 ;;;   sibling-exclusive on Color ⇒ (not (Red Blue))
 ;;;   ⇒ contradiction ⇒ branch dies.
 ;;;
-;;; `single-parent` (Q-functional-ish rule) on is-a kills the
-;;; alternate-parent is-a hypotheses the generator produces in the
-;;; absence of a typed signature.
+;;; `functional` on is-a kills the alternate-parent is-a hypotheses
+;;; the generator produces in the absence of a typed signature.
 ;;;
 ;;; Without S1.5.3 dedup the symmetric activator makes the generator
 ;;; emit (Blue H2) AND (H2 Blue) as separate hypotheses; both survive
@@ -42,10 +41,10 @@
     :why    "{?a} and {?b} share {?T} — exclusive under {?out}."
     :priority 300)
 
-  (rule single-parent (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?a ?c) (neq ?b ?c))
-    :assert (not (?rel ?a ?c))
-    :why    "{?rel} functional: {?a} has only one parent."
+  (rule functional (?R)
+    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+    :assert (false)
+    :why    "{?R} not functional: {?a} has {?b} and {?c}."
     :priority 250))
 
 (ontology
@@ -55,7 +54,7 @@
   (symmetric         co-located)
   (transitive        co-located)
   (sibling-exclusive co-located)
-  (single-parent     is-a)
+  (functional        is-a)
 
   (is-a Color T) (is-a House T)
   (is-a Red Color) (is-a Blue Color)

@@ -10,7 +10,7 @@
 ;;; the proof"), even a state where the goal is matched is NOT a
 ;;; solution leaf if alive hypotheses remain. The engine therefore
 ;;; still enumerates `(is-a X Y)` candidates for every is-a leaf;
-;;; `single-parent` kills each alternate-parent hypothesis. After
+;;; `functional` kills each alternate-parent hypothesis. After
 ;;; all extensions die, the state is a true solution endpoint and
 ;;; the verdict promotes to Solution.
 ;;;
@@ -24,17 +24,17 @@
     :assert (?rel ?b ?a)
     :why    "{?rel} is symmetric: {?a} ↔ {?b}."
     :priority 100)
-  (rule single-parent (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?a ?c) (neq ?b ?c))
-    :assert (not (?rel ?a ?c))
-    :why    "{?rel} functional: {?a} has only one parent."
+  (rule functional (?R)
+    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+    :assert (false)
+    :why    "{?R} not functional: {?a} has {?b} and {?c}."
     :priority 250))
 
 (ontology
   (relation is-a       T T)
   (relation co-located T T)
   (symmetric     co-located)
-  (single-parent is-a)
+  (functional is-a)
 
   (is-a Color T) (is-a Drink T)
   (is-a Red    Color) (is-a Blue   Color)

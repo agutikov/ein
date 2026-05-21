@@ -311,3 +311,81 @@ def test_zebra_injected_conflict_caught():
     ]
     assert len(matching) == 1
     assert matching[0].layer is Layer.REASONING
+
+
+# ── Direct ⊥ — S1.5.4a Part 2 ─────────────────────────────────────
+
+
+def test_direct_false_fact_is_contradiction():
+    """A `(false)` fact in any layer is a `kind='direct'`
+    contradiction — `positive` is None, `negative` is the fact
+    itself, `witness` returns the negative for unsat-core walks."""
+    kb = _kb("(ontology (relation r T T))")
+    false_fact = _put(kb, Fact(
+        relation_name="false", args=(), layer=Layer.REASONING,
+        provenance=Provenance.from_rule(rule="functional"),
+    ))
+
+    d = ContradictionDetector(kb)
+    cs = d.detect()
+    assert len(cs) == 1
+    c = cs[0]
+    assert c.kind == "direct"
+    assert c.positive is None
+    assert c.negative is false_fact
+    assert c.witness is false_fact
+    assert c.layer is Layer.REASONING
+    assert d.has_contradiction()
+
+
+def test_direct_false_and_pair_coexist():
+    """Both `(false)` and `(X, (not X))` in the same KB → two
+    Contradictions, one of each kind."""
+    kb = _kb("(ontology (relation r T T))")
+    positive = _put(kb, Fact(
+        relation_name="r", args=("A", "B"), layer=Layer.REASONING,
+        provenance=Provenance.from_hypothesis(branch=1),
+    ))
+    negative = _put(kb, Fact(
+        relation_name="not",
+        args=(Fact(relation_name="r", args=("A", "B"),
+                   layer=Layer.REASONING),),
+        layer=Layer.REASONING,
+        provenance=Provenance.from_rule(rule="sibling-exclusive"),
+    ))
+    false_fact = _put(kb, Fact(
+        relation_name="false", args=(), layer=Layer.REASONING,
+        provenance=Provenance.from_rule(rule="functional"),
+    ))
+
+    cs = ContradictionDetector(kb).detect()
+    kinds = {c.kind for c in cs}
+    assert kinds == {"direct", "pair"}
+    direct = next(c for c in cs if c.kind == "direct")
+    pair = next(c for c in cs if c.kind == "pair")
+    assert direct.negative is false_fact
+    assert pair.positive is positive
+    assert pair.negative is negative
+
+
+def test_pair_kind_defaults_to_pair():
+    """Existing call-sites that don't pass kind= explicitly still
+    get the original `pair` shape — guards against silent
+    behaviour change for unaware callers."""
+    kb = _kb("(ontology (relation r T T))")
+    _put(kb, Fact(
+        relation_name="r", args=("A", "B"), layer=Layer.REASONING,
+        provenance=Provenance.from_hypothesis(branch=1),
+    ))
+    _put(kb, Fact(
+        relation_name="not",
+        args=(Fact(relation_name="r", args=("A", "B"),
+                   layer=Layer.REASONING),),
+        layer=Layer.REASONING,
+        provenance=Provenance.from_rule(rule="type-exclusivity"),
+    ))
+    cs = ContradictionDetector(kb).detect()
+    assert len(cs) == 1
+    assert cs[0].kind == "pair"
+    # witness falls back to positive when present:
+    assert cs[0].witness is cs[0].positive

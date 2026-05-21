@@ -37,10 +37,10 @@
     :assert (not (?out ?a ?b))
     :why    "sib {?T}" :priority 300)
 
-  (rule single-parent (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?a ?c) (neq ?b ?c))
-    :assert (not (?rel ?a ?c))
-    :why    "1p {?rel}" :priority 250))
+  (rule functional (?R)
+    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+    :assert (false)
+    :why    "fn {?R}" :priority 250))
 
 (ontology
   (relation is-a       T T)
@@ -49,7 +49,7 @@
   (symmetric         co-located)
   (transitive        co-located)
   (sibling-exclusive co-located)
-  (single-parent     is-a)
+  (functional        is-a)
 
   (is-a Nationality T) (is-a Drink T) (is-a Pet T)
   (is-a Alice  Nationality) (is-a Bob    Nationality)

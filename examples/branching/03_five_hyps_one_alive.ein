@@ -16,7 +16,7 @@
 ;;;   ⇒ sibling-exclusive on is-a (Cₖ, White both Color) ⇒ (not (Cₖ White))
 ;;;   ⇒ contradiction ⇒ branch dies.
 ;;;
-;;; Only (co-located White H5) survives. The is-a `single-parent`
+;;; Only (co-located White H5) survives. The is-a `functional`
 ;;; rule prunes the secondary stream of (is-a X Y) hypotheses the
 ;;; generator emits for under-constrained slot-1 enumeration.
 ;;;
@@ -44,10 +44,10 @@
     :why    "{?a} and {?b} share {?T} — exclusive"
     :priority 300)
 
-  (rule single-parent (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?a ?c) (neq ?b ?c))
-    :assert (not (?rel ?a ?c))
-    :why    "{?rel} functional"
+  (rule functional (?R)
+    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+    :assert (false)
+    :why    "{?R} not functional"
     :priority 250))
 
 (ontology
@@ -57,7 +57,7 @@
   (symmetric         co-located)
   (transitive        co-located)
   (sibling-exclusive co-located)
-  (single-parent     is-a)
+  (functional        is-a)
 
   (is-a Color T) (is-a House T)
   (is-a Red    Color) (is-a Blue   Color) (is-a Green  Color)

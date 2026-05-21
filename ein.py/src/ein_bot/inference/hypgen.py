@@ -81,19 +81,21 @@ def _instance_like_objects(kb: KnowledgeBase) -> Iterator:
 
 
 def _hypotheses_for(kb: KnowledgeBase, obj_ref) -> Iterator[Fact]:
-    existing = {
-        (f.relation_name, i)
-        for f in obj_ref.as_arg
-        for i, a in enumerate(f.args)
-        if isinstance(a, str) and a == obj_ref.name
-    }
+    # S1.5.4b: Filter B ("slot already used" — skip (R, slot_idx) if
+    # `obj_ref` already sits there in some fact) is INTENTIONALLY
+    # removed. The principled architecture: let user rules express
+    # the functional constraint via (functional R) / (sibling-
+    # exclusive …), let those rules' :assert (not h) populate
+    # kb._negated_facts, let Filter C (T1.5.4.7's `negated_fact`
+    # filter) drop h in O(1). Filter B was only sound for
+    # functional-on-slot relations — broke open-world multi-image
+    # relations like `friends-with`. See
+    # plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.4b-fix-filter-slot-already-used.md
     for rel in kb.relations.values():
         if not rel.signature:
             continue
         for slot_idx, sig_type in enumerate(rel.signature):
             if not _type_compatible(kb, obj_ref.name, sig_type):
-                continue
-            if (rel.name, slot_idx) in existing:
                 continue
             yield from _fill_slot(kb, rel, slot_idx, obj_ref)
 

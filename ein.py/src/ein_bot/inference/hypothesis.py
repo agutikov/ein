@@ -181,7 +181,7 @@ def try_branch(
         more = list(sat.saturate(max_steps=saturator_steps))
         firings.extend(more)
         # Compute unsat-core from the contradicting facts.
-        unsat = fork.unsat_core(c.positive for c in contradictions)
+        unsat = fork.unsat_core(c.witness for c in contradictions)
         return BranchResult.dead(
             branch_id=branch_id,
             hypothesis=h_fact,
@@ -334,7 +334,7 @@ def _explore(
     if contradictions:
         nid = builder.alloc()
         builder.state_index[sh] = nid
-        unsat = kb.unsat_core(c.positive for c in contradictions)
+        unsat = kb.unsat_core(c.witness for c in contradictions)
         builder.add(SearchNode(
             id=nid, parent=parent_id, hypothesis=hypothesis,
             kb_snapshot=kb, firings=firings,

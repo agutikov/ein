@@ -1,21 +1,31 @@
-"""Contradiction detector — S1.4.1 / P1.4.
+"""Contradiction detector — S1.4.1 / P1.4 (+ S1.5.4a Part 2 direct ⊥).
 
-Scans the KB for ``(X, (not X))`` pairs in the same layer, emitting
+Scans the KB for two contradiction shapes, both emitting
 :class:`Contradiction` records the hypothesis loop (P1.5) and trace
-renderer (P1.6) consume.
+renderer (P1.6) consume:
 
-A pair encodes a **branch failure** under M1's append-only KB
-model: there's no way to retract ``X`` once asserted, so the only
+1. **pair** — a same-layer ``(X, (not X))`` pair. The original P1.4
+   shape: a rule asserted ``(not X)`` and ``X`` is also in the KB
+   (typically seeded by a hypothesis fork). ``positive`` and
+   ``negative`` are both populated.
+2. **direct** — a ``(false)`` fact (S1.5.4a Part 2): a rule
+   asserted contradiction directly without going through the
+   self-negation idiom. ``positive`` is ``None``; ``negative`` is
+   the ``(false …)`` fact itself, which carries the firing's
+   provenance for unsat-core walks.
+
+Both encode a **branch failure** under M1's append-only KB model:
+there's no way to retract a fact once asserted, so the only
 resolution is for whatever caused the conflict (typically a
 hypothesis fork) to be unwound. P1.4 ships the *detector*; P1.5
-will ship the *unwinder*.
+ships the *unwinder*.
 
 The detector is a pure scan over the existing fact set — no new
 entity kinds, no indexes, no incremental machinery. The
 Saturator's append-only ``_index_fact`` already keeps
 ``_facts_by_relation`` current; this module just reads it.
 
-Same-layer vs cross-layer:
+Same-layer vs cross-layer (applies to the ``pair`` shape only):
 
 - A REASONING-layer ``(not X)`` derived from ``type-exclusivity``
   is the *expected* output of saturation. If the matching
@@ -29,11 +39,21 @@ Same-layer vs cross-layer:
   cause a derived negative to flag it as broken. P1.5 will
   introduce branch-scoped layers; the cross-source case becomes
   meaningful there.
+
+Direct ⊥ dedup caveat: ``Fact`` identity is by ``(relation, args)``,
+so the second-and-later ``(false)`` firings within a single
+fork collapse onto the first — only the first firing's provenance
+is preserved. That's sufficient for "is this branch dead?" and
+for back-prop to identify the responsible hypothesis (the first
+firing's premise chain reaches it). Promote to ``(false <witness>)``
+with per-firing args if a future puzzle needs all parallel
+contradictions reported.
 """
 from __future__ import annotations
 
 from collections.abc import Iterator
 from dataclasses import dataclass
+from typing import Literal
 
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
@@ -43,24 +63,39 @@ from ein_bot.kb.store import KnowledgeBase
 
 @dataclass(frozen=True)
 class Contradiction:
-    """A ``(X, (not X))`` pair found in the same layer.
+    """A contradiction found by the detector — pair or direct.
 
-    Both facts carry their own :class:`~ein_bot.kb.provenance.Provenance`
-    — the trace renderer (P1.6) reads them to explain *why* each
-    fact was asserted, and the hypothesis loop (P1.5) reads
-    ``positive.provenance`` to decide which branch produced the
-    conflict.
+    For ``kind="pair"``: ``positive`` is the ``X`` fact and
+    ``negative`` is the wrapping ``(not X)`` fact;
+    ``negative.args[0]`` is the inner positive ``Fact``.
 
-    Identity is by the pair plus the layer; same pair across two
-    layers (impossible in the same KB, since :meth:`KnowledgeBase.add_fact`
-    dedupes globally) would compare as distinct. The dataclass is
-    frozen so it can live in sets if a caller wants to dedupe a
-    multi-pass scan.
+    For ``kind="direct"``: ``positive`` is ``None`` and
+    ``negative`` is the ``(false …)`` fact whose provenance walks
+    back to the firing's premises.
+
+    Use :attr:`witness` to get whichever fact is appropriate as
+    the seed for an unsat-core walk — ``positive`` if present,
+    otherwise ``negative``.
+
+    The dataclass is frozen so it can live in sets if a caller
+    wants to dedupe a multi-pass scan.
     """
-    positive: Fact         # the X fact
-    negative: Fact         # the wrapping (not X) fact;
-                           # negative.args[0] is the inner positive Fact
-    layer: Layer           # the shared layer (REASONING / FACT / ONTOLOGY)
+    positive: Fact | None  # the X fact, or None for direct ⊥
+    negative: Fact         # (not X) wrapper OR the (false …) fact itself
+    layer: Layer           # the layer the contradiction lives in
+    kind: Literal["pair", "direct"] = "pair"
+
+    @property
+    def witness(self) -> Fact:
+        """The fact whose derivation DAG seeds the unsat-core walk.
+
+        For pair contradictions: the positive ``X`` (its DAG walks
+        back to the premises that derived it; the negative is
+        typically a structural rule firing whose DAG is shallow).
+        For direct contradictions: the ``(false …)`` fact, whose
+        DAG IS the firing chain of the rule that emitted ⊥.
+        """
+        return self.positive if self.positive is not None else self.negative
 
 
 # ── Detector ──────────────────────────────────────────────────────
@@ -110,7 +145,24 @@ class ContradictionDetector:
     def _iter(self) -> Iterator[Contradiction]:
         """Yield each contradiction once. Used by all three public
         methods to keep the algorithm in one place.
+
+        Two shapes:
+        - **pair** — walks ``_facts_by_relation['not']`` and matches
+          each ``(not X)`` against an existing positive ``X``.
+        - **direct** — walks ``_facts_by_relation['false']`` and
+          yields one ``Contradiction(kind='direct', positive=None)``
+          per ``(false …)`` fact.
         """
+        # Direct ⊥ — ship S1.5.4a Part 2.
+        for false_fact in self.kb._facts_by_relation.get("false", ()):
+            yield Contradiction(
+                positive=None,
+                negative=false_fact,
+                layer=false_fact.layer,
+                kind="direct",
+            )
+
+        # Pair — the original P1.4 shape.
         not_facts = self.kb._facts_by_relation.get("not", ())
         for negative in not_facts:
             if not negative.args:
@@ -134,6 +186,7 @@ class ContradictionDetector:
                 positive=positive,
                 negative=negative,
                 layer=positive.layer,
+                kind="pair",
             )
 
 

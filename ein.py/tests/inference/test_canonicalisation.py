@@ -38,10 +38,10 @@ _RULES = """
     :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
     :assert (not (?out ?a ?b))
     :why "sib" :priority 300)
-  (rule single-parent (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?a ?c) (neq ?b ?c))
-    :assert (not (?rel ?a ?c))
-    :why "1p" :priority 250))
+  (rule functional (?R)
+    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+    :assert (false)
+    :why "fn" :priority 250))
 """
 
 
@@ -145,7 +145,7 @@ def test_dedup_collapses_symmetric_pairs():
       (symmetric         co-located)
       (transitive        co-located)
       (sibling-exclusive co-located)
-      (single-parent     is-a)
+      (functional        is-a)
       (is-a Color T) (is-a House T)
       (is-a Red Color) (is-a Blue Color)
       (is-a H1  House) (is-a H2  House))
