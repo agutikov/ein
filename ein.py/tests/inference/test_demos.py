@@ -30,7 +30,7 @@ from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
-DEMOS_DIR = REPO / "examples" / "zebra" / "demos"
+DEMOS_DIR = REPO / "examples" / "saturation"
 
 # Collect every .ein under demos/, sorted for stable test order.
 DEMO_PATHS = sorted(DEMOS_DIR.rglob("*.ein"))
