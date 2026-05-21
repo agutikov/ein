@@ -25,7 +25,17 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from .entities import Fact, Instance, Layer, Relation, Rule, Type, _attach
+from .entities import (
+    KERNEL_META_RELATIONS,
+    Fact,
+    Instance,
+    Layer,
+    NameRef,
+    Relation,
+    Rule,
+    Type,
+    _attach,
+)
 
 if TYPE_CHECKING:
     from .provenance import DerivationDAG
@@ -124,6 +134,12 @@ class KnowledgeBase:
         self._rules_by_type: dict[str, tuple[Rule, ...]] = {}
         self._rule_apps_by_rule: dict[str, tuple[Fact, ...]] = {}
         self._rule_apps_on_relation: dict[str, tuple[Fact, ...]] = {}
+
+        # Global names index — encoding-agnostic node participation
+        # set per docs/kernel/ir/01-ein-graph/03_ein_model.md §2.
+        # Keyed by name; the NameRef's `category` discriminates
+        # `object` / `relation` / `rule`.
+        self.names: dict[str, NameRef] = {}
 
     # ── from_ir convenience ───────────────────────────────────────
 
@@ -253,6 +269,35 @@ class KnowledgeBase:
         self._rule_apps_by_rule = {k: tuple(v) for k, v in rabr.items()}
         self._rule_apps_on_relation = {k: tuple(v) for k, v in raor.items()}
 
+        # Global names index — every distinct name that appears
+        # anywhere in the KB. Built from `kb.facts` (head + direct
+        # string args) plus the registry keys (so a relation
+        # declared with no facts yet still shows up).
+        head_lists: dict[str, list[Fact]] = defaultdict(list)
+        arg_lists: dict[str, list[Fact]] = defaultdict(list)
+        for fact in self.facts:
+            head_lists[fact.relation_name].append(fact)
+            for a in fact.args:
+                if isinstance(a, str):
+                    arg_lists[a].append(fact)
+        all_names: set[str] = (
+            set(head_lists)
+            | set(arg_lists)
+            | set(self.relations)
+            | set(self.rules)
+            | set(self.types)
+            | set(self.instances)
+        )
+        self.names = {
+            n: NameRef(
+                name=n,
+                category=self._categorise_name(n),
+                as_head=tuple(head_lists.get(n, ())),
+                as_arg=tuple(arg_lists.get(n, ())),
+            )
+            for n in all_names
+        }
+
         # rules_by_relation (named in pattern + via property fact)
         rbr: dict[str, set[str]] = defaultdict(set)
         for rule in self.rules.values():
@@ -289,6 +334,23 @@ class KnowledgeBase:
             for t, names in rbt.items()
         }
 
+    def _categorise_name(self, name: str) -> str:
+        """Map a name to its `NameRef.category`.
+
+        `relation` / `rule` are the two true kernel forms; `instance`
+        / `type` are temporarily hardcoded as `category="relation"`
+        until the proto-library lands and declares them via
+        `(relation instance T T)` / `(relation type T)` — see
+        plans/.../proto_library.md and [[project-canonical-zebra2]].
+        """
+        if name in KERNEL_META_RELATIONS:
+            return "relation"
+        if name in self.relations:
+            return "relation"
+        if name in self.rules:
+            return "rule"
+        return "object"
+
     def _index_fact(self, fact: Fact) -> None:
         """Incrementally append a single fact to the indexes.
 
@@ -317,6 +379,42 @@ class KnowledgeBase:
                         **self._rule_apps_on_relation,
                         a: (*self._rule_apps_on_relation.get(a, ()), fact),
                     }
+
+        # Names index — append to head + arg sets, creating fresh
+        # NameRefs (frozen dataclasses) so the dict-value identity
+        # shifts on update.
+        def _bump_head(name: str) -> None:
+            prev = self.names.get(name)
+            if prev is None:
+                self.names = {**self.names, name: NameRef(
+                    name=name, category=self._categorise_name(name),
+                    as_head=(fact,), as_arg=(),
+                )}
+            else:
+                self.names = {**self.names, name: NameRef(
+                    name=prev.name, category=prev.category,
+                    as_head=(*prev.as_head, fact),
+                    as_arg=prev.as_arg,
+                )}
+
+        def _bump_arg(name: str) -> None:
+            prev = self.names.get(name)
+            if prev is None:
+                self.names = {**self.names, name: NameRef(
+                    name=name, category=self._categorise_name(name),
+                    as_head=(), as_arg=(fact,),
+                )}
+            else:
+                self.names = {**self.names, name: NameRef(
+                    name=prev.name, category=prev.category,
+                    as_head=prev.as_head,
+                    as_arg=(*prev.as_arg, fact),
+                )}
+
+        _bump_head(rn)
+        for a in fact.args:
+            if isinstance(a, str):
+                _bump_arg(a)
 
     # ── Convenience accessors ─────────────────────────────────────
 
@@ -457,6 +555,7 @@ class KnowledgeBase:
         new._rules_by_type = dict(self._rules_by_type)
         new._rule_apps_by_rule = dict(self._rule_apps_by_rule)
         new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
+        new.names = dict(self.names)
         return new
 
     # ── Dunder ────────────────────────────────────────────────────

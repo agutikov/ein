@@ -81,6 +81,29 @@ def snapshot(kb: KnowledgeBase, eng: Engine | None = None) -> dict[str, Any]:
     )
     s["rules"] = len(kb.rules)
 
+    # ── Global names index — encoding-agnostic node set ──────────
+    names_by_cat: Counter[str] = Counter(
+        ref.category for ref in kb.names.values()
+    )
+    s["names_total"]    = len(kb.names)
+    s["names_objects"]  = names_by_cat.get("object", 0)
+    s["names_relations"] = names_by_cat.get("relation", 0)
+    s["names_rules"]    = names_by_cat.get("rule", 0)
+    # Total head-participation and arg-participation across all names.
+    s["names_as_head_total"] = sum(len(r.as_head) for r in kb.names.values())
+    s["names_as_arg_total"]  = sum(len(r.as_arg)  for r in kb.names.values())
+    # Names that appear ONLY as head (declared relations/rules with no
+    # facts yet) or ONLY as arg (orphan objects mentioned without
+    # declaration) — useful diagnostics for ontology authoring.
+    s["names_head_only"] = sum(
+        1 for r in kb.names.values()
+        if r.as_head and not r.as_arg
+    )
+    s["names_arg_only"] = sum(
+        1 for r in kb.names.values()
+        if r.as_arg and not r.as_head
+    )
+
     # ── Facts (totals + per layer) ───────────────────────────────
     s["facts_total"] = len(kb.facts)
     layers = Counter(f.layer for f in kb.facts)
@@ -145,13 +168,22 @@ def _fmt_delta(d: int) -> str:
 
 
 SCALAR_KEYS = [
-    ("types",                          "types"),
-    ("instances",                      "instances"),
+    ("types",                          "types (kernel)"),
+    ("instances",                      "instances (kernel)"),
     ("relations",                      "relations (total)"),
     ("relations_declared",             "  declared"),
     ("relations_open_world",           "  open-world (auto-vivified)"),
     ("rules",                          "rules"),
     (None,                             None),  # separator
+    ("names_total",                    "names (global, encoding-agnostic)"),
+    ("names_objects",                  "  category = object"),
+    ("names_relations",                "  category = relation"),
+    ("names_rules",                    "  category = rule"),
+    ("names_as_head_total",            "  total head-participations"),
+    ("names_as_arg_total",             "  total arg-participations"),
+    ("names_head_only",                "  appearing only as head"),
+    ("names_arg_only",                 "  appearing only as arg"),
+    (None,                             None),
     ("facts_total",                    "facts (total)"),
     ("facts_ontology",                 "  layer = ONTOLOGY"),
     ("facts_fact",                     "  layer = FACT"),

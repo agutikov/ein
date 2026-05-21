@@ -1,8 +1,8 @@
 # P1.5 — Hypothesis loop + ATMS-style branching
 
-**Estimate:** ~11-14 days (revised by S1.5.0; up from the original
-~2 weeks because the canonicalisation + alive-branch termination
-stage was missing from the original plan).
+**Estimate:** ~14-18 days (revised by S1.5.0 + the S1.5.4
+hyp-gen-improvements stage added 2026-05-21 after the demo-run
+feedback).
 **Depends on:** P1.2 (`KnowledgeBase`, `kb.fork`, `Provenance`),
 P1.3 (Saturator, hypothesis-contradiction rule), P1.4
 (`ContradictionDetector`).
@@ -36,6 +36,7 @@ what the loop *records* and what it returns at quiescence.
 | S1.5.1  | [Solve driver + two-step hypothesis gen + Q40 wiring](s1.5.1_saturate_branch.md) | 5-6 days |
 | S1.5.2  | [Multilevel branching + search tree as proof object](s1.5.2_multilevel.md)    | 3-4 days |
 | S1.5.3  | [Canonical fact-list hash + state-dedup + alive-branch termination](s1.5.3_canonicalisation.md) | 3-4 days |
+| S1.5.4  | [Hypothesis generation improvements — relation closure + dead-hypothesis cache](s1.5.4_hypgen_improvements.md) | 3-4 days |
 
 The original `s1.5.3_symmetry.md` (engine-time symmetry breaking)
 was **dropped** during the S1.5.0 review — symmetry is an
@@ -70,9 +71,17 @@ and the updated
 - The `solve()` driver does NOT return early on the first
   goal-matching branch — alive-branch termination is enforced
   (S1.5.3 T1.5.3.4).
+- `(closed R)` declarations cause the hypothesis generator to
+  skip relation `R` entirely (S1.5.4 T1.5.4.1); the demo-suite
+  node counts collapse to the human-reasonable shape
+  ([S1.5.4 T1.5.4.5](s1.5.4_hypgen_improvements.md#task-t1545--acceptance)).
+- Unconditionally-dead hypotheses are cached for the duration of
+  a single `solve()` call (S1.5.4 T1.5.4.3) — the same `(R A B)`
+  is never re-tested at a deeper depth.
 - `pytest tests/inference/test_hypothesis.py
   tests/inference/test_multilevel.py
-  tests/inference/test_canonicalisation.py` ≥ 30 tests, green.
+  tests/inference/test_canonicalisation.py
+  tests/inference/test_hypgen_pruning.py` ≥ 36 tests, green.
 - `ruff check src/ein_bot/inference/hypothesis.py
   tests/inference/test_*.py` green.
 

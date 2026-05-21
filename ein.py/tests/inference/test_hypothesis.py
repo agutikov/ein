@@ -1,4 +1,11 @@
-"""Hypothesis loop tests — S1.5.1 / P1.5."""
+"""Hypothesis loop tests — S1.5.1 / P1.5.
+
+Fixtures use the canonical (zebra2-style) encoding: `is-a` is a normal
+declared relation; no kernel `(type)` or `(instance)` forms. The
+hypothesis generator picks instance-like objects from `kb.names`
+(graph-derived), so this test surface mirrors the production target
+(see [[project-canonical-zebra2]]).
+"""
 from __future__ import annotations
 
 from ein_bot.inference.hypothesis import (
@@ -19,18 +26,43 @@ def _kb(text: str) -> KnowledgeBase:
     return KnowledgeBase.from_ir(parse(text))
 
 
+# Canonical rule library — symmetric / transitive / sibling-exclusive.
+# Each fixture pulls in only what it exercises, but for test stability
+# we always include the three core rules; activators select which
+# relations they apply to.
+_RULES = """
+(rules
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "s"
+    :priority 100)
+  (rule transitive (?rel)
+    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why    "t"
+    :priority 200)
+  (rule sibling-exclusive (?out)
+    :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
+    :assert (not (?out ?a ?b))
+    :why    "sib"
+    :priority 300))
+"""
+
+
 # ── Object selection ──────────────────────────────────────────────
 
 
 def test_object_selection_picks_max_fact_count():
-    """Generator yields hypotheses for the most-constrained instance
-    first. With one instance involved in 3 facts and another in 0,
-    the first hypothesis fact mentions the first instance."""
+    """Generator yields hypotheses for the most-constrained leaf
+    first. With one leaf involved in 3 facts and others in 0 (apart
+    from their is-a edges), the first hypothesis fact mentions the
+    busy one."""
     kb = _kb("""
     (ontology
-      (type T)
-      (instance Anchor T) (instance Other T) (instance Far T)
-      (relation r1 T T) (relation r2 T T) (relation r3 T T))
+      (relation is-a T T)
+      (relation r1 T T) (relation r2 T T) (relation r3 T T)
+      (is-a Anchor T) (is-a Other T) (is-a Far T))
     (facts
       (r1 Anchor Other :source "(1)")
       (r2 Anchor Other :source "(2)")
@@ -38,7 +70,6 @@ def test_object_selection_picks_max_fact_count():
     """)
     hyps = list(generate_hypotheses(kb))
     assert hyps, "expected at least one hypothesis"
-    # First hypothesis should mention Anchor (the most-constrained).
     assert any(a == "Anchor" for a in hyps[0].args), (
         f"first hypothesis args were {hyps[0].args!r}; "
         "expected Anchor to appear"
@@ -53,9 +84,9 @@ def test_excludes_negated_candidates():
     `(r A B)` as a hypothesis candidate."""
     kb = _kb("""
     (ontology
-      (type T)
-      (instance A T) (instance B T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
     (facts
       (not (r A B) :source "(1)"))
     """)
@@ -71,9 +102,9 @@ def test_skips_already_existing_facts():
     in the two-step framework."""
     kb = _kb("""
     (ontology
-      (type T)
-      (instance Alice T) (instance Bob T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a Alice T) (is-a Bob T))
     (facts
       (r Alice Bob :source "(1)"))
     """)
@@ -91,14 +122,12 @@ def test_skips_already_existing_facts():
 def test_symmetric_r_emits_both_orderings():
     """(symmetric R) activator → generator yields both (R A B) and
     (R B A) as separate hypotheses."""
-    kb = _kb("""
-    (rules (rule symmetric (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
+    kb = _kb(_RULES + """
     (ontology
-      (type T)
-      (instance Alice T) (instance Bob T)
+      (relation is-a T T)
       (relation friend T T)
-      (symmetric friend))
+      (symmetric friend)
+      (is-a Alice T) (is-a Bob T))
     """)
     hyps = list(generate_hypotheses(kb))
     pairs = {(h.relation_name, h.args) for h in hyps}
@@ -112,9 +141,9 @@ def test_asymmetric_r_emits_one_ordering_per_object():
     dedup prevents duplicates within a single call."""
     kb = _kb("""
     (ontology
-      (type T)
-      (instance Alice T) (instance Bob T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a Alice T) (is-a Bob T))
     """)
     hyps = list(generate_hypotheses(kb))
     pairs = {(h.relation_name, h.args) for h in hyps}
@@ -135,9 +164,9 @@ def test_try_branch_alive_no_contradiction():
     BranchResult.alive."""
     kb = _kb("""
     (ontology
-      (type T)
-      (instance Alice T) (instance Bob T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a Alice T) (is-a Bob T))
     """)
     hyp = Fact(
         relation_name="r",
@@ -150,22 +179,17 @@ def test_try_branch_alive_no_contradiction():
     assert result.hypothesis.args == ("Alice", "Bob")
 
 
-def test_try_branch_dead_via_type_exclusivity():
-    """A hypothesis (co-located Alice Bob) where Alice and Bob are
-    same-type instances triggers type-exclusivity → contradiction →
+def test_try_branch_dead_via_sibling_exclusive():
+    """A hypothesis (co-located Alice Bob) where Alice and Bob share a
+    parent under is-a triggers sibling-exclusive → contradiction →
     branch dies. Q40 synthetic facts and the (not h) derivation are
     in the fork's REASONING layer."""
-    kb = _kb("""
-    (rules
-      (rule type-exclusivity (?R)
-        :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-        :assert (not (?R ?a ?b))
-        :why "tx" :priority 300))
+    kb = _kb(_RULES + """
     (ontology
-      (type T)
-      (instance Alice T) (instance Bob T)
+      (relation is-a T T)
       (relation co-located T T)
-      (type-exclusivity co-located))
+      (sibling-exclusive co-located)
+      (is-a Alice T) (is-a Bob T))
     """)
     hyp = Fact(
         relation_name="co-located",
@@ -181,8 +205,9 @@ def test_try_branch_q40_protocol_emits_synthetic_facts():
     """Verify Q40 step 2 emits (hypothesis <h>) in the fork."""
     kb = _kb("""
     (ontology
-      (type T) (instance A T) (instance B T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
     """)
     hyp = Fact(
         relation_name="r",
@@ -190,7 +215,6 @@ def test_try_branch_q40_protocol_emits_synthetic_facts():
         layer=Layer.REASONING,
     )
     result = try_branch(kb, hyp, branch_id=7)
-    # Walk the fork's facts for the synthetic (hypothesis h).
     synthetic = [
         f for f in result.kb.facts
         if f.relation_name == "hypothesis"
@@ -208,8 +232,10 @@ def test_try_branch_q40_protocol_emits_synthetic_facts():
 def test_is_solved_solve_mode_exact_one_match():
     """SOLVE mode: exactly one binding for the goal pattern."""
     kb = _kb("""
-    (ontology (type T) (instance A T) (instance B T)
-              (relation r T T))
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
     (facts (r A B :source "(1)"))
     (query :mode solve :goal (r A B))
     """)
@@ -218,8 +244,10 @@ def test_is_solved_solve_mode_exact_one_match():
 
 def test_is_solved_solve_mode_zero_matches():
     kb = _kb("""
-    (ontology (type T) (instance A T) (instance B T)
-              (relation r T T))
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
     (query :mode solve :goal (r A B))
     """)
     assert not is_solved(kb, Mode.SOLVE)
@@ -228,8 +256,10 @@ def test_is_solved_solve_mode_zero_matches():
 def test_is_solved_gaps_mode_at_least_one():
     """GAPS: ≥ 1 match passes."""
     kb = _kb("""
-    (ontology (type T) (instance A T) (instance B T)
-              (relation r T T))
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
     (facts (r A B :source "(1)"))
     (query :mode gaps :goal (r ?a ?b))
     """)
@@ -238,7 +268,10 @@ def test_is_solved_gaps_mode_at_least_one():
 
 def test_is_solved_contradictions_mode_always_false():
     kb = _kb("""
-    (ontology (type T) (instance A T) (relation r T T))
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T))
     (facts (r A A :source "(1)"))
     (query :mode contradictions :goal (r A A))
     """)
@@ -250,13 +283,12 @@ def test_is_solved_contradictions_mode_always_false():
 
 def test_solve_trivial_already_solved():
     """KB where saturation alone satisfies the goal — no branching needed."""
-    kb = _kb("""
-    (rules (rule symmetric (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
+    kb = _kb(_RULES + """
     (ontology
-      (type T) (instance A T) (instance B T)
+      (relation is-a T T)
       (relation r T T)
-      (symmetric r))
+      (symmetric r)
+      (is-a A T) (is-a B T))
     (facts (r A B :source "(1)"))
     (query :mode solve :goal (r B A))
     """)
@@ -265,24 +297,21 @@ def test_solve_trivial_already_solved():
 
 
 def test_solve_picks_surviving_hypothesis():
-    """Two candidate hypotheses; one dies via type-exclusivity, one
-    survives and satisfies the goal."""
-    kb = _kb("""
-    (rules
-      (rule type-exclusivity (?R)
-        :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-        :assert (not (?R ?a ?b))
-        :why "tx" :priority 300))
+    """Saturation alone solves: the goal fact is in `facts`. Branching
+    isn't required; this primarily checks that solve() returns
+    Solution for a trivially-met goal under the zebra2 encoding."""
+    kb = _kb(_RULES + """
     (ontology
-      (type Color) (instance Red Color) (instance Blue Color)
-      (type House) (instance H1 House)
+      (relation is-a T T)
       (relation co-located T T)
-      (type-exclusivity co-located))
+      (sibling-exclusive co-located)
+      (is-a Color T) (is-a House T)
+      (is-a Red Color) (is-a Blue Color)
+      (is-a H1 House))
     (facts
       (co-located Red H1 :source "(1)"))
     (query :mode solve :goal (co-located Red H1))
     """)
-    # Saturation alone solves this — Red is already in H1.
     result = solve(kb)
     assert isinstance(result, Solution)
 
@@ -292,8 +321,9 @@ def test_solve_returns_contradiction_on_baked_in_conflict():
     returns Contradiction."""
     kb = _kb("""
     (ontology
-      (type T) (instance A T) (instance B T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
     (reasoning
       (r A B)
       (not (r A B)))
@@ -306,7 +336,10 @@ def test_solve_returns_contradiction_on_baked_in_conflict():
 def test_solve_mode_defaults_from_query():
     """If no `mode=` kwarg is passed, solve() reads :mode from the query."""
     kb = _kb("""
-    (ontology (type T) (instance A T) (relation r T T))
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T))
     (facts (r A A :source "(1)"))
     (query :mode solve :goal (r A A))
     """)

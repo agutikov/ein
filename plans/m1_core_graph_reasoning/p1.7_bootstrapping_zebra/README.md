@@ -22,7 +22,7 @@ that.
 | ID      | Title                                  | Duration |
 |---------|----------------------------------------|----------|
 | S1.7.1  | Zebra IR + ontology                    | 2-3 days |
-| S1.7.2  | Dynamic-vs-hardcoded audit + decision   | 2-3 days |
+| S1.7.2  | Dynamic-vs-hardcoded audit + decision + proto-library | 4-6 days |
 | S1.7.3  | Trace-matches-human acceptance         | 3-4 days |
 
 ## Acceptance

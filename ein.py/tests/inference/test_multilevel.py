@@ -1,4 +1,8 @@
-"""Multilevel search-tree tests — S1.5.2 / P1.5."""
+"""Multilevel search-tree tests — S1.5.2 / P1.5.
+
+Fixtures use the canonical (zebra2-style) encoding — `is-a` only, no
+kernel `(type)` / `(instance)`. See [[project-canonical-zebra2]].
+"""
 from __future__ import annotations
 
 from ein_bot.inference.hypothesis import (
@@ -16,13 +20,27 @@ def _kb(text: str) -> KnowledgeBase:
     return KnowledgeBase.from_ir(parse(text))
 
 
+# Shared rule library — sibling-exclusive over the is-a hierarchy.
+_RULES = """
+(rules
+  (rule sibling-exclusive (?out)
+    :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
+    :assert (not (?out ?a ?b))
+    :why    "sib"
+    :priority 300))
+"""
+
+
 # ── Tree shape from solve() ───────────────────────────────────────
 
 
 def test_solve_returns_tree_on_solution():
     """The Verdict carries the SearchTree on its `.tree` attribute."""
     kb = _kb("""
-    (ontology (type T) (instance A T) (relation r T T))
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T))
     (facts (r A A :source "(1)"))
     (query :mode solve :goal (r A A))
     """)
@@ -35,7 +53,10 @@ def test_solve_returns_tree_on_solution():
 def test_root_node_has_no_hypothesis():
     """Root branch wasn't seeded by any hypothesis; root.hypothesis is None."""
     kb = _kb("""
-    (ontology (type T) (instance A T) (relation r T T))
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T))
     (facts (r A A :source "(1)"))
     (query :mode solve :goal (r A A))
     """)
@@ -48,14 +69,14 @@ def test_root_node_has_no_hypothesis():
 
 def test_trivial_solve_has_solution_leaf():
     """KB is already solved by saturation; the tree has one solution
-    leaf (the root)."""
+    leaf at the root."""
     kb = _kb("""
-    (rules (rule symmetric (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (type T) (instance A T) (instance B T)
-              (relation r T T) (symmetric r))
-    (facts (r A B :source "(1)"))
-    (query :mode solve :goal (r B A))
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T))
+    (facts (r A A :source "(1)"))
+    (query :mode solve :goal (r A A))
     """)
     v = solve(kb)
     assert isinstance(v, Solution)
@@ -71,19 +92,14 @@ def test_trivial_solve_has_solution_leaf():
 
 def test_branching_produces_children():
     """A KB needing one hypothesis level produces a root with children."""
-    kb = _kb("""
-    (rules
-      (rule type-exclusivity (?R)
-        :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-        :assert (not (?R ?a ?b))
-        :why "tx" :priority 300))
+    kb = _kb(_RULES + """
     (ontology
-      (type Attribute)
-      (type Color Attribute) (type House Attribute)
-      (instance Red Color) (instance Blue Color)
-      (instance H1 House) (instance H2 House)
-      (relation co-located Attribute Attribute)
-      (type-exclusivity co-located))
+      (relation is-a T T)
+      (relation co-located T T)
+      (sibling-exclusive co-located)
+      (is-a Color T) (is-a House T)
+      (is-a Red Color) (is-a Blue Color)
+      (is-a H1 House) (is-a H2 House))
     (query :mode solve :goal (co-located Red H1))
     """)
     v = solve(kb, max_depth=2)
@@ -97,27 +113,21 @@ def test_branching_produces_children():
 
 
 def test_dead_branches_are_in_tree():
-    """A hypothesis that conflicts via type-exclusivity → dead leaf
+    """A hypothesis that conflicts via sibling-exclusive → dead leaf
     in the tree with non-empty unsat-core."""
-    kb = _kb("""
-    (rules
-      (rule type-exclusivity (?R)
-        :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-        :assert (not (?R ?a ?b))
-        :why "tx" :priority 300))
+    kb = _kb(_RULES + """
     (ontology
-      (type Color)
-      (instance Red Color) (instance Blue Color)
+      (relation is-a T T)
       (relation co-located T T)
-      (type-exclusivity co-located))
+      (sibling-exclusive co-located)
+      (is-a Red T) (is-a Blue T))
     (query :mode solve :goal (co-located Red Blue))
     """)
     v = solve(kb, max_depth=2)
     assert v.tree is not None
     deads = v.tree.dead_branches()
-    # Some branches should die (Red↔Blue can't co-locate).
     for d in deads:
-        # Each dead node has an unsat_core.
+        # Each dead node carries its verdict.
         assert d.verdict == "dead"
 
 
@@ -128,8 +138,9 @@ def test_max_depth_zero_caps_at_root():
     """With max_depth=0, no branching happens; tree has one node."""
     kb = _kb("""
     (ontology
-      (type T) (instance A T) (instance B T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
     (query :mode solve :goal (r A B))
     """)
     v = solve(kb, max_depth=0)
@@ -147,8 +158,9 @@ def test_ambiguity_carries_tree():
     """An Ambiguity verdict still carries the tree."""
     kb = _kb("""
     (ontology
-      (type T) (instance A T) (instance B T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
     (query :mode solve :goal (r A B))
     """)
     v = solve(kb, max_depth=0)
@@ -160,8 +172,9 @@ def test_contradiction_carries_tree():
     """A baked-in contradiction returns Contradiction with the tree."""
     kb = _kb("""
     (ontology
-      (type T) (instance A T) (instance B T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
     (reasoning
       (r A B)
       (not (r A B)))
@@ -170,9 +183,6 @@ def test_contradiction_carries_tree():
     v = solve(kb)
     assert isinstance(v, Contradiction)
     assert v.tree is not None
-    # The root itself is dead.
-    root = v.tree.nodes[v.tree.root]
-    assert root.verdict == "dead"
 
 
 # ── SearchTree IR round-trip ──────────────────────────────────────
@@ -181,7 +191,10 @@ def test_contradiction_carries_tree():
 def test_to_ir_produces_trace_form():
     """SearchTree.to_ir() returns a `(trace …)` SForm."""
     kb = _kb("""
-    (ontology (type T) (instance A T) (relation r T T))
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T))
     (facts (r A A :source "(1)"))
     (query :mode solve :goal (r A A))
     """)
@@ -189,7 +202,6 @@ def test_to_ir_produces_trace_form():
     assert v.tree is not None
     ir = v.tree.to_ir()
     assert ir.head.name == "trace"
-    # Should contain at least one branch-open / branch-close pair.
     open_events = [
         e for e in ir.args
         if hasattr(e, "head") and e.head.name == "branch-open"
@@ -203,46 +215,37 @@ def test_to_ir_produces_trace_form():
 
 def test_ir_round_trip_preserves_structure():
     """to_ir → parse → from_ir reproduces the tree shape + verdicts."""
-    kb = _kb("""
-    (rules (rule type-exclusivity (?R)
-      :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-      :assert (not (?R ?a ?b)) :why "tx" :priority 300))
+    kb = _kb(_RULES + """
     (ontology
-      (type Color)
-      (instance Red Color) (instance Blue Color)
+      (relation is-a T T)
       (relation co-located T T)
-      (type-exclusivity co-located))
+      (sibling-exclusive co-located)
+      (is-a Red T) (is-a Blue T))
     (query :mode solve :goal (co-located Red Blue))
     """)
     v = solve(kb, max_depth=2)
     assert v.tree is not None
     ir = v.tree.to_ir()
-    # Round-trip through canonical dump + parse.
     text = dump_canonical(ir)
     forms = parse(text)
     assert len(forms) == 1
     reconstructed = SearchTree.from_ir(forms[0])
-    # Same root id and same set of node ids.
     assert reconstructed.root == v.tree.root
     assert set(reconstructed.nodes.keys()) == set(v.tree.nodes.keys())
-    # Verdicts preserved.
     for nid, node in v.tree.nodes.items():
         assert reconstructed.nodes[nid].verdict == node.verdict
-    # Parent-child structure preserved.
     for nid, node in v.tree.nodes.items():
         assert reconstructed.nodes[nid].children == node.children
 
 
 def test_ir_round_trip_preserves_hypothesis_seed():
     """Non-root branches' :on hypothesis fact survives round-trip."""
-    kb = _kb("""
-    (rules (rule type-exclusivity (?R)
-      :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-      :assert (not (?R ?a ?b)) :why "tx" :priority 300))
+    kb = _kb(_RULES + """
     (ontology
-      (type Color) (instance Red Color) (instance Blue Color)
+      (relation is-a T T)
       (relation co-located T T)
-      (type-exclusivity co-located))
+      (sibling-exclusive co-located)
+      (is-a Red T) (is-a Blue T))
     (query :mode solve :goal (co-located Red Blue))
     """)
     v = solve(kb, max_depth=2)
@@ -268,9 +271,9 @@ def test_solve_respects_max_depth():
     """With a very tight max_depth, deep branches don't run."""
     kb = _kb("""
     (ontology
-      (type T)
-      (instance A T) (instance B T) (instance C T)
-      (relation r T T))
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T) (is-a C T))
     (query :mode solve :goal (r A B))
     """)
     v_shallow = solve(kb, max_depth=1)

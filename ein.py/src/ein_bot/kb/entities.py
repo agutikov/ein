@@ -26,7 +26,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from ein_bot.ir.types import IRNode, Loc
 
@@ -34,6 +34,17 @@ if TYPE_CHECKING:
     from .pattern import Pattern
     from .provenance import Provenance
     from .store import KnowledgeBase
+
+
+NameCategory = Literal["object", "relation", "rule"]
+
+# Kernel meta-relations — names hardcoded as `category="relation"`.
+# `relation` and `rule` are the two true kernel forms; `instance` and
+# `type` are listed here only until the proto-library lands and they
+# get registered through `(relation instance T T)` / `(relation type T)`
+# — owed by T1.7.2.5.d (plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/
+# s1.7.2_dynamic_vs_hardcoded.md). See [[project-canonical-zebra2]].
+KERNEL_META_RELATIONS = frozenset({"relation", "rule", "instance", "type"})
 
 
 # ── Layer enum ─────────────────────────────────────────────────────
@@ -412,10 +423,51 @@ def _detach(entity) -> None:
     object.__setattr__(entity, "_kb", None)
 
 
+# ── Global names index ────────────────────────────────────────────
+
+
+@dataclass(frozen=True)
+class NameRef:
+    """A globally-unique name in the graph + its participation set.
+
+    Per `docs/kernel/ir/01-ein-graph/03_ein_model.md` §2, every distinct
+    name across the KB refers to the same node. This entity records
+    the **participation** of one such name: every fact in which it
+    appears as the head, and every fact in which it appears as a
+    direct string argument.
+
+    Encoding-agnostic: works the same for zebra-original (kernel
+    `(type)` / `(instance)`) and zebra2 (`is-a` as an ordinary
+    declared relation). Consumers that need to iterate "the
+    instance-like objects" can filter by ``category == "object"``;
+    the leaf-vs-internal distinction is then derived from
+    ``as_head`` / ``as_arg`` of the chosen inheritance relation.
+
+    Nested-Fact args (Q40) are NOT counted: the nested Fact is its
+    own entry in `kb.facts`, so its args show up via that entry's
+    ``as_arg``. The outer fact's ``args`` tuple is walked for direct
+    string values only.
+
+    `category`:
+      - ``"relation"`` — declared via ``(relation N …)`` OR a kernel
+        meta-head in `KERNEL_META_RELATIONS`.
+      - ``"rule"`` — declared via ``(rule N …)``.
+      - ``"object"`` — every other name (instances, types, attributes,
+        anchors).
+    """
+    name:     str
+    category: NameCategory
+    as_head:  tuple[Fact, ...] = ()
+    as_arg:   tuple[Fact, ...] = ()
+
+
 __all__ = [
+    "KERNEL_META_RELATIONS",
     "Fact",
     "Instance",
     "Layer",
+    "NameCategory",
+    "NameRef",
     "Relation",
     "Rule",
     "Type",

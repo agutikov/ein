@@ -1,0 +1,76 @@
+;;; P1.5 demo 3/5 — wider branching: five candidate houses, four
+;;; eliminated by anchored siblings.
+;;;
+;;; Five colors, five houses; four colors anchored to H1..H4. The
+;;; lone unanchored color (White) must go to H5 — the only house
+;;; without a Color already there.
+;;;
+;;; The generator emits (co-located White Hk) for k=1..5 (and the
+;;; symmetric pair, since `(symmetric co-located)` is active). Four
+;;; of the five locations contradict via the same chain as demo 2:
+;;;
+;;;   (Cₖ Hₖ) given
+;;;   (White Hₖ) hypothesised
+;;;   ⇒ symmetric ⇒ (Hₖ White)
+;;;   ⇒ transitive on co-located ⇒ (Cₖ White)
+;;;   ⇒ sibling-exclusive on is-a (Cₖ, White both Color) ⇒ (not (Cₖ White))
+;;;   ⇒ contradiction ⇒ branch dies.
+;;;
+;;; Only (co-located White H5) survives. The is-a `single-parent`
+;;; rule prunes the secondary stream of (is-a X Y) hypotheses the
+;;; generator emits for under-constrained slot-1 enumeration.
+;;;
+;;; Expected shape (approximate):
+;;;   verdict   Ambiguity (~2 solution branches; symmetric duplicates)
+;;;   depth     1
+;;;   binding   ?h=H5
+
+(rules
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "{?rel} is symmetric"
+    :priority 100)
+
+  (rule transitive (?rel)
+    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why    "{?rel} transitive"
+    :priority 200)
+
+  (rule sibling-exclusive (?out)
+    :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
+    :assert (not (?out ?a ?b))
+    :why    "{?a} and {?b} share {?T} — exclusive"
+    :priority 300)
+
+  (rule single-parent (?rel)
+    :match  (and (?rel ?a ?b) (?rel ?a ?c) (neq ?b ?c))
+    :assert (not (?rel ?a ?c))
+    :why    "{?rel} functional"
+    :priority 250))
+
+(ontology
+  (relation is-a       T T)
+  (relation co-located T T)
+
+  (symmetric         co-located)
+  (transitive        co-located)
+  (sibling-exclusive co-located)
+  (single-parent     is-a)
+
+  (is-a Color T) (is-a House T)
+  (is-a Red    Color) (is-a Blue   Color) (is-a Green  Color)
+  (is-a Yellow Color) (is-a White  Color)
+  (is-a H1 House) (is-a H2 House) (is-a H3 House)
+  (is-a H4 House) (is-a H5 House))
+
+(facts
+  (co-located Red    H1 :source "(1)")
+  (co-located Blue   H2 :source "(2)")
+  (co-located Green  H3 :source "(3)")
+  (co-located Yellow H4 :source "(4)"))
+
+(query
+  :mode solve
+  :goal (co-located White ?h))

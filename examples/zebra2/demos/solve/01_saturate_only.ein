@@ -1,0 +1,36 @@
+;;; P1.5 demo 1/5 — saturation closes the puzzle without branching.
+;;;
+;;; Two colors, two drinks. Both pairings given. The query asks who
+;;; drinks Coffee. Symmetric closure makes the answer trivially
+;;; readable at the root, so `is_solved` fires before any hypothesis
+;;; is generated.
+;;;
+;;; Expected shape:
+;;;   verdict   Solution
+;;;   nodes     1 (root only)
+;;;   leaves    solution=1, dead=0, open=0
+;;;   binding   ?c=Blue
+
+(rules
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+    :priority 100))
+
+(ontology
+  (relation is-a       T T)
+  (relation co-located T T)
+  (symmetric co-located)
+
+  (is-a Color T) (is-a Drink T)
+  (is-a Red    Color) (is-a Blue   Color)
+  (is-a Tea    Drink) (is-a Coffee Drink))
+
+(facts
+  (co-located Red  Tea    :source "(1)")
+  (co-located Blue Coffee :source "(2)"))
+
+(query
+  :mode solve
+  :goal (co-located ?c Coffee))

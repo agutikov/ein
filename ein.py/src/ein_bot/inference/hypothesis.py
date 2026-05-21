@@ -129,14 +129,22 @@ class BranchResult:
 # ── Hypothesis generation (two-step) ───────────────────────────────
 
 
+# Inheritance-relation names the generator recognises when walking
+# ancestry. Both legacy kernel `instance` and canonical zebra2 `is-a`
+# are treated equivalently — the type-compat walk follows whichever
+# the puzzle uses (or both, if a compatibility layer is loaded).
+INHERITANCE_RELATIONS: tuple[str, ...] = ("is-a", "instance")
+
+
 def generate_hypotheses(kb: KnowledgeBase) -> Iterator[Fact]:
     """Yield candidate hypothesis facts in priority order.
 
-    Step 1 — order instances by descending fact-count (most-
-    constrained first; deterministic tiebreak by name).
-    Step 2 — per instance, enumerate `(R, slot)` in
+    Step 1 — order *instance-like* objects by descending
+    fact-participation count (most-constrained first; deterministic
+    tiebreak by name).
+    Step 2 — per object, enumerate `(R, slot)` in
     `possible(obj) - existing(obj)`, fill the other slot with
-    type-compatible instances, prune by `(not …)` in the KB.
+    type-compatible objects, prune by `(not …)` in the KB.
 
     Symmetric R emits both orderings as separate hypotheses.
 
@@ -144,19 +152,26 @@ def generate_hypotheses(kb: KnowledgeBase) -> Iterator[Fact]:
     `(relation_name, args)`) is not yielded again — both Alice
     and Bob enumerate `(r Alice Bob)` from their respective
     candidate slots, but only the first is yielded.
+
+    Iteration source is the graph's globally-unique-names index
+    (`kb.names`); the instance-like subset is derived via
+    `_instance_like_objects`. Works encoding-agnostically across
+    zebra-original (kernel `(instance N T)`) and zebra2 (`is-a`
+    leaves) — see [[project-canonical-zebra2]].
     """
-    if not kb.instances:
+    objects = list(_instance_like_objects(kb))
+    if not objects:
         return
     by_count = sorted(
-        kb.instances.values(),
-        key=lambda o: (
-            -len(kb._facts_by_instance.get(o.name, ())),
-            o.name,
+        objects,
+        key=lambda nr: (
+            -(len(nr.as_head) + len(nr.as_arg)),
+            nr.name,
         ),
     )
     seen: set[tuple[str, tuple]] = set()
-    for obj in by_count:
-        for h in _hypotheses_for(kb, obj):
+    for obj_ref in by_count:
+        for h in _hypotheses_for(kb, obj_ref):
             key = (h.relation_name, h.args)
             if key in seen:
                 continue
@@ -164,41 +179,86 @@ def generate_hypotheses(kb: KnowledgeBase) -> Iterator[Fact]:
             yield h
 
 
-def _hypotheses_for(kb: KnowledgeBase, obj) -> Iterator[Fact]:
+def _instance_like_objects(kb: KnowledgeBase) -> Iterator:
+    """Yield NameRefs that look like inheritance-relation leaves.
+
+    A name is "instance-like" if it appears at slot 0 of an
+    inheritance edge (`is-a` or `instance`) and never at slot 1.
+    Kernel `kb.instances` is unioned in for zebra-original encodings
+    that don't materialise `is-a` facts.
+    """
+    at_slot0: set[str] = set()
+    at_slot1: set[str] = set()
+    for rel_name in INHERITANCE_RELATIONS:
+        for f in kb._facts_by_relation.get(rel_name, ()):
+            if len(f.args) >= 2:
+                if isinstance(f.args[0], str):
+                    at_slot0.add(f.args[0])
+                if isinstance(f.args[1], str):
+                    at_slot1.add(f.args[1])
+    leaves = at_slot0 - at_slot1
+    leaves |= set(kb.instances)
+    for name in leaves:
+        ref = kb.names.get(name)
+        if ref is not None and ref.category == "object":
+            yield ref
+
+
+def _hypotheses_for(kb: KnowledgeBase, obj_ref) -> Iterator[Fact]:
     existing = {
         (f.relation_name, i)
-        for f in kb._facts_by_instance.get(obj.name, ())
+        for f in obj_ref.as_arg
         for i, a in enumerate(f.args)
-        if a == obj.name
+        if isinstance(a, str) and a == obj_ref.name
     }
     for rel in kb.relations.values():
         if not rel.signature:
             continue
         for slot_idx, sig_type in enumerate(rel.signature):
-            if not _type_compatible(kb, obj.type_name, sig_type):
+            if not _type_compatible(kb, obj_ref.name, sig_type):
                 continue
             if (rel.name, slot_idx) in existing:
                 continue
-            yield from _fill_slot(kb, rel, slot_idx, obj)
+            yield from _fill_slot(kb, rel, slot_idx, obj_ref)
 
 
-def _type_compatible(kb: KnowledgeBase, obj_type: str, sig_type: str) -> bool:
-    """True iff `obj_type` matches `sig_type` directly or via ancestry.
+def _type_compatible(kb: KnowledgeBase, obj_name: str, sig_type: str) -> bool:
+    """True iff `obj_name` is `sig_type` or has it as a transitive ancestor.
 
-    Zebra-style: instances declare a specific type (Nationality,
-    Color, …); the relation declares an ancestor (Attribute). The
-    hypothesis generator needs to walk the type chain to admit such
-    instances as fillers.
+    Walks both `is-a` / `instance` Facts and the kernel `Type.parent`
+    chain. The convention atom `T` is treated as a universal top
+    (compatible with anything) so an unrooted ontology still
+    type-checks against `(relation R T T)` signatures.
     """
-    if obj_type == sig_type:
+    if sig_type == obj_name or sig_type == "T":
         return True
-    t = kb.types.get(obj_type)
-    if t is None:
-        return False
-    return any(a.name == sig_type for a in t.ancestors())
+    return sig_type in _ancestor_names(kb, obj_name)
 
 
-def _fill_slot(kb: KnowledgeBase, rel, fixed_slot: int, obj) -> Iterator[Fact]:
+def _ancestor_names(kb: KnowledgeBase, name: str) -> set[str]:
+    """Transitive ancestor set under `is-a` / `instance` + kernel `Type`."""
+    visited: set[str] = set()
+    stack: list[str] = [name]
+    while stack:
+        n = stack.pop()
+        for rel_name in INHERITANCE_RELATIONS:
+            for f in kb._facts_by_relation.get(rel_name, ()):
+                if (len(f.args) >= 2
+                        and isinstance(f.args[0], str)
+                        and f.args[0] == n
+                        and isinstance(f.args[1], str)
+                        and f.args[1] not in visited):
+                    visited.add(f.args[1])
+                    stack.append(f.args[1])
+        t = kb.types.get(n)
+        if t is not None and t.parent_name and t.parent_name not in visited:
+            visited.add(t.parent_name)
+            stack.append(t.parent_name)
+    return visited
+
+
+def _fill_slot(kb: KnowledgeBase, rel,
+               fixed_slot: int, obj_ref) -> Iterator[Fact]:
     """Enumerate type-compatible fillers; emit symmetric duplicates."""
     if len(rel.signature) != 2:
         return     # M1 only handles arity-2 relations
@@ -206,14 +266,14 @@ def _fill_slot(kb: KnowledgeBase, rel, fixed_slot: int, obj) -> Iterator[Fact]:
     other_type = rel.signature[other_slot]
     symmetric = _is_symmetric(kb, rel.name)
 
-    for filler in kb.instances.values():
-        if filler.name == obj.name:
+    for filler in _instance_like_objects(kb):
+        if filler.name == obj_ref.name:
             continue        # skip self-edges
-        if not _type_compatible(kb, filler.type_name, other_type):
+        if not _type_compatible(kb, filler.name, other_type):
             continue
 
         # Build args for the chosen slot assignment.
-        args = _build_args(obj.name, fixed_slot, filler.name, other_slot)
+        args = _build_args(obj_ref.name, fixed_slot, filler.name, other_slot)
         fact = Fact(
             relation_name=rel.name,
             args=args,
@@ -225,7 +285,7 @@ def _fill_slot(kb: KnowledgeBase, rel, fixed_slot: int, obj) -> Iterator[Fact]:
 
         # Symmetric R: emit the reversed ordering too.
         if symmetric:
-            rev_args = _build_args(filler.name, fixed_slot, obj.name, other_slot)
+            rev_args = _build_args(filler.name, fixed_slot, obj_ref.name, other_slot)
             rev = Fact(
                 relation_name=rel.name,
                 args=rev_args,
