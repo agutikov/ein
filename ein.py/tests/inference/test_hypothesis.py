@@ -101,7 +101,7 @@ def test_hyp_gen_stats_invariant():
       (r A B :source "(1)")
       (not (r2 A B) :source "(2)"))
     """)
-    facts, stats = generate_hypotheses_with_stats(kb)
+    _facts, stats = generate_hypotheses_with_stats(kb)
     assert stats.raw == stats.emitted + sum(stats.filtered.values())
     # is-a is closed → pre.closed_relation > 0:
     assert stats.pre_candidate["closed_relation"] >= 1

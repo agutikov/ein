@@ -75,6 +75,55 @@ change when the engine arrives:
    `logical_types` / `logical_instances` where the encoding might
    matter.
 
+## M1 invariant — `enable_alive_inherit` soundness
+
+[`SolverConfig.enable_alive_inherit`](../../../ein.py/src/ein_bot/inference/config.py)
+ships **on by default** as of S1.5.4 T1.5.4.8. With the flag on,
+the hypothesis loop seeds the alive-candidate set **once at root
+saturation** (via
+[`generate_hypotheses_with_stats`](../../../ein.py/src/ein_bot/inference/hypgen.py))
+and stashes it on `kb.alive`. Forks inherit `alive` through
+[`kb.fork()`](../../../ein.py/src/ein_bot/kb/store.py); each
+`_explore` entry re-prunes against the fork's KB and picks the
+next hypothesis from what remains. `generate_hypotheses` runs
+**once per `solve()` call**.
+
+This is sound iff three pre-conditions hold across the puzzle's
+rule library — collectively the **M1 invariant**:
+
+1. **No new objects.** Rules don't `:assert` facts whose args
+   introduce names that weren't already in the ontology /
+   facts. (Q40 nested-Fact args are existing facts, not new
+   names.)
+2. **No new relations.** Rules don't `:assert (relation N S₀ S₁)`
+   declarations — the relation registry is fixed by the ontology
+   block.
+3. **Hypotheses connect names only.** `_fill_slot` iterates
+   `_instance_like_objects` and string-fills both slots; no
+   nested-Fact hypothesis args.
+
+Under these clauses, every admissible hypothesis is enumerable
+from the root state; deeper branches **eliminate** candidates,
+never extend the space.
+
+**When the invariant breaks** (a rule library asserts new
+`(relation …)`; F5 rules-as-data; a future puzzle's matcher
+produces nested-Fact hypotheses):
+
+- The default-on flag becomes **unsound** — alive entries may
+  miss candidates introduced post-root.
+- The escape hatch: set
+  ``(config :enable-alive-inherit false)`` in the puzzle, or pass
+  ``solve(kb, config=SolverConfig(enable_alive_inherit=False))``
+  programmatically. The engine reverts to per-branch
+  `generate_hypotheses(kb)` — the pre-`40b8dd4` shape — at the
+  cost of re-enumerating every level.
+
+Tracked at
+[M1 Q-S1.5.4.D](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.4_hypgen_improvements.md#open-questions-parked-here)
+as a long-term design seam; promote to a typed invariant check
+when F5 lands.
+
 ## Where the design lives today
 
 The complete plan, including task breakdown and acceptance criteria:

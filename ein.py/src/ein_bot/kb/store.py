@@ -127,6 +127,14 @@ class KnowledgeBase:
         # store). `solve()` resolves precedence as: kwarg > kb.config
         # > SolverConfig().
         self.config: Any | None = None
+        # Alive-hypothesis set — T1.5.4.8 Topic D ship. None until
+        # `solve()` populates it at the root via
+        # `generate_hypotheses_with_stats(root_kb)`. Forks inherit
+        # by reference; `_explore` re-prunes per path and stashes
+        # the new frozenset back here before recursing. Each entry
+        # is a Fact with provenance=None — try_branch re-stamps
+        # branch-specific provenance.
+        self.alive: Any | None = None
 
         # Equality-class hooks — reserved for F4.
         self.classes: EqClasses = EqClasses()
@@ -585,6 +593,11 @@ class KnowledgeBase:
         new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
         new.names = dict(self.names)
         new._negated_facts = set(self._negated_facts)
+        # T1.5.4.4 / T1.5.4.8 carry-over: configs and alive sets are
+        # immutable references; the fork inherits them as-is and
+        # `_explore` swaps in a pruned alive set before recursing.
+        new.config = self.config
+        new.alive = self.alive
         return new
 
     # ── Dunder ────────────────────────────────────────────────────

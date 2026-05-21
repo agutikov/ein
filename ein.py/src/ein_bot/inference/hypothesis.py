@@ -30,7 +30,7 @@ from .compile import JoinPlan, compile_pattern
 from .config import SolverConfig
 from .contradiction import ContradictionDetector
 from .firing import Firing
-from .hypgen import generate_hypotheses
+from .hypgen import generate_hypotheses, generate_hypotheses_with_stats
 from .match import run as match_run
 from .saturator import Saturator
 from .search_tree import BranchId, SearchNode, SearchTree
@@ -301,6 +301,68 @@ class _TreeBuilder:
         return SearchTree(root=root_id, nodes=dict(self.nodes))
 
 
+# ── Candidate selection — T1.5.4.8 (Topic D) ──────────────────────
+
+
+def _candidates_for(kb: KnowledgeBase) -> list[Fact]:
+    """Pick the per-branch hypothesis candidates.
+
+    Default path (``cfg.enable_alive_inherit=True``): the alive
+    set lives on ``kb.alive`` (seeded once at the root by
+    :func:`solve` and inherited through forks). Prune it against
+    the current KB (re-applying the candidate-level filters that
+    might have flipped on path-introduced facts) and iterate.
+
+    Fallback path (``cfg.enable_alive_inherit=False``): per-branch
+    ``generate_hypotheses(kb)`` — the pre-``40b8dd4`` shape.
+    Useful escape hatch for puzzles whose rule library violates
+    the M1 invariant (no rule-created relations / objects).
+    """
+    cfg: SolverConfig = kb.config or SolverConfig()
+    if not cfg.enable_alive_inherit or kb.alive is None:
+        return list(generate_hypotheses(kb))
+    pruned = _prune_alive(kb.alive, kb)
+    if cfg.print_alive:
+        import sys
+        print(
+            f"  [alive] inherited={len(kb.alive)} "
+            f"pruned={len(kb.alive) - len(pruned)} "
+            f"emit={len(pruned)}",
+            file=sys.stderr,
+        )
+    # Mutate kb.alive in place so siblings/descendants of this
+    # state pick up the pruned form without re-pruning.
+    kb.alive = pruned
+    return list(pruned)
+
+
+def _prune_alive(alive: frozenset, kb: KnowledgeBase) -> frozenset:
+    """Drop alive candidates inadmissible at this state.
+
+    Re-applies the per-candidate filters from
+    :func:`~ein_bot.inference.hypgen._apply_filters` against the
+    current KB:
+
+    - **negated_fact** — ``(rel, args) in kb._negated_facts`` (the
+      Tier-A check; fires when an ancestor or this state's
+      saturation derived ``(not h)``).
+    - **fact_already_exists** — ``kb._fact_by_id(rel, args)`` returns
+      a hit (the path added the fact directly; speculating it
+      again would be a no-op + state-hash collision).
+
+    Returns a new frozenset; never mutates ``alive``.
+    """
+    out = []
+    for h in alive:
+        key = (h.relation_name, h.args)
+        if key in kb._negated_facts:
+            continue
+        if kb._fact_by_id(h.relation_name, h.args) is not None:
+            continue
+        out.append(h)
+    return frozenset(out)
+
+
 # ── Recursive descent ──────────────────────────────────────────────
 
 
@@ -372,7 +434,8 @@ def _explore(
 
     child_ids: list[BranchId] = []
     seen_children: set[BranchId] = set()
-    for h in generate_hypotheses(kb):
+    candidates = _candidates_for(kb)
+    for h in candidates:
         result = try_branch(kb, h, branch_id=builder.peek_id())
         if result.is_alive():
             child_id = _explore(
@@ -513,6 +576,22 @@ def solve(
     # Initial saturation on the root KB.
     sat = Saturator(kb)
     root_firings = tuple(sat.saturate(max_steps=10_000))
+
+    # T1.5.4.8 Topic D — compute the alive set once at b0; every
+    # descendant inherits it through `kb.fork()`. Skip the seed when
+    # the inherit flag is off; `_candidates_for` then falls back to
+    # per-branch `generate_hypotheses(kb)`.
+    if effective_config.enable_alive_inherit:
+        root_alive, root_stats = generate_hypotheses_with_stats(kb)
+        kb.alive = frozenset(root_alive)
+        if effective_config.print_alive:
+            import sys
+            print(
+                f"[root alive] {len(kb.alive)} candidates "
+                f"(raw={root_stats.raw}, "
+                f"filtered={root_stats.total_filtered()})",
+                file=sys.stderr,
+            )
 
     builder = _TreeBuilder()
     root_id = _explore(kb, None, None, root_firings,

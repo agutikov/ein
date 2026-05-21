@@ -51,6 +51,22 @@
 P1.5 more ideas
 
 - guided hypothesis generation by rules from specific head or with specific name `hrule`
+- option in config to enable automatic hypothesis generation, default is enabled
+
+
+
+- implication:
+    - imply1 - for relations with 1 arg
+    - imply2-fwd - for relations with 2 args - our current default imply
+    - imply2-reverse, or inverse - for example right-to and left-to
+
+
+- generalization rule, induction, not for Zebra
+    - generalize instances properties to types properties
+    - simple examples:
+        - no facts of relation R between instances of A and B - no relation R betewen A and B types
+        - all instances of A and B have relations R - types have relation R
+        - some instances of A have relation R with instances of B, some hot have -> there are 2 subtypes
 
 
 ---
@@ -59,9 +75,21 @@ P1.5 more ideas
 P1.10 - kernel docs
 
 
+existing IR 3-level docs expand to 4:
+- ein-graph remain
+- data-models splits into
+    - ideomatic data model
+        - data types, collections, indexes, ...
+    - python implementation
+- ein-lang remain
+
+
 inference docs
 - ideomatic level
+    - collections, indexes
+    - algorithm diagrams
 - python implementation
+    - files, modules, data types, functions, classes
 
 
 
@@ -69,6 +97,22 @@ software architecture docs with diagrams
 
 
 rename docs/index to docs/lib
+
+
+
+also, some minor ein-model update:
+- want to differentiate objects and atoms
+    - atoms are names
+        - `rule`, `not`, `T`, `relation`, `Alice`, `co-located` - are all atoms
+    - objects are, as before, Levi-bipartite graph nodes without out arrows and with in arrows from facts
+- want to declare 4-levels representation
+    - 4 leves
+        - objects
+        - facts
+        - relations
+        - rules
+    - idea: create self-describing model of KB types in IR ein lang
+
 
 
 ---
