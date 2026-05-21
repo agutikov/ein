@@ -24,6 +24,11 @@
     :assert (?rel ?b ?a)
     :why    "{?rel} is symmetric: {?a} ↔ {?b}."
     :priority 100)
+  (rule transitive (?rel)
+    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why    "{?rel} transitive"
+    :priority 200)
   (rule sibling-exclusive (?out)
     :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
     :assert (not (?out ?a ?b))
@@ -39,8 +44,10 @@
   (relation is-a       T T)
   (relation co-located T T)
   (symmetric         co-located)
+  (transitive        co-located)
   (sibling-exclusive co-located)
   (functional        is-a)
+  (closed            is-a)   ;; T1.5.4.1 — inheritance forest is fixed
 
   (is-a Color T) (is-a Drink T)
   (is-a Red    Color) (is-a Blue   Color)

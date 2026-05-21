@@ -84,6 +84,43 @@ def test_object_selection_picks_max_fact_count():
 # ── Candidate enumeration ─────────────────────────────────────────
 
 
+def test_closed_relation_yields_no_hypotheses():
+    """T1.5.4.1 — `(closed R)` declares R fully populated; the
+    generator skips R entirely. is-a leaves are still
+    instance-like (the closure affects the relation, not the
+    objects)."""
+    kb = _kb("""
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (closed   is-a)
+      (is-a A T) (is-a B T))
+    (facts (r A B :source "(1)"))
+    """)
+    hyps = list(generate_hypotheses(kb))
+    # Zero `is-a` hypotheses (closed):
+    assert not any(h.relation_name == "is-a" for h in hyps)
+    # `r` still enumerates because it isn't closed:
+    assert any(h.relation_name == "r" for h in hyps)
+
+
+def test_closed_relation_from_reasoning_layer_is_honoured():
+    """T1.5.4.1 / T1.5.4.2 setup — `(closed R)` from REASONING
+    (e.g. a rule firing) is honoured the same way as `(closed R)`
+    from ONTOLOGY. The hypgen-side check just walks
+    `_facts_by_relation['closed']` regardless of layer."""
+    kb = _kb("""
+    (ontology
+      (relation is-a T T)
+      (relation r T T)
+      (is-a A T) (is-a B T))
+    (reasoning (closed is-a))
+    (facts (r A B :source "(1)"))
+    """)
+    hyps = list(generate_hypotheses(kb))
+    assert not any(h.relation_name == "is-a" for h in hyps)
+
+
 def test_excludes_negated_candidates():
     """If (not (r A B)) is already in the KB, the gen skips
     `(r A B)` as a hypothesis candidate."""

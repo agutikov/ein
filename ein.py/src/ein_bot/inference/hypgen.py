@@ -94,6 +94,12 @@ def _hypotheses_for(kb: KnowledgeBase, obj_ref) -> Iterator[Fact]:
     for rel in kb.relations.values():
         if not rel.signature:
             continue
+        if _is_closed(kb, rel.name):
+            # T1.5.4.1 — `(closed R)` activator: the puzzle author
+            # (or the S1.5.5 `infer-closure-from-functional` rule)
+            # has declared R fully populated. Skip it; the
+            # generator contributes zero hypotheses for R.
+            continue
         for slot_idx, sig_type in enumerate(rel.signature):
             if not _type_compatible(kb, obj_ref.name, sig_type):
                 continue
@@ -206,6 +212,20 @@ def _build_args(a_name: str, a_slot: int,
 
 def _is_symmetric(kb: KnowledgeBase, r_name: str) -> bool:
     apps = kb._facts_by_relation.get("symmetric", ())
+    return any(f.args == (r_name,) for f in apps)
+
+
+def _is_closed(kb: KnowledgeBase, r_name: str) -> bool:
+    """True iff `(closed R)` is asserted in the KB (any layer).
+
+    T1.5.4.1 — a closed relation contributes zero hypotheses; the
+    puzzle author has fully populated it. Either authored directly
+    in `(ontology …)` or asserted by a rule firing (e.g. the
+    S1.5.5 `infer-closure-from-functional` rule once it ships).
+    The hypothesis generator does not care which path produced the
+    fact — the index lookup is the same.
+    """
+    apps = kb._facts_by_relation.get("closed", ())
     return any(f.args == (r_name,) for f in apps)
 
 

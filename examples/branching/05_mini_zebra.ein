@@ -50,6 +50,7 @@
   (transitive        co-located)
   (sibling-exclusive co-located)
   (functional        is-a)
+  (closed            is-a)   ;; T1.5.4.1 — inheritance forest is fixed
 
   (is-a Nationality T) (is-a Drink T) (is-a Pet T)
   (is-a Alice  Nationality) (is-a Bob    Nationality)
