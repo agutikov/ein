@@ -182,7 +182,7 @@ def test_promote_all_dead_to_dead():
         kb_snapshot=None, firings=(),
         verdict="open", children=(c1, c2, c3),
     ))
-    _promote_verdicts(builder, root)
+    _promote_verdicts(builder, root, Mode.SOLVE)
     assert builder.nodes[root].verdict == "dead"
 
 
@@ -212,7 +212,7 @@ def test_promote_any_solution_to_solution():
         kb_snapshot=None, firings=(),
         verdict="open", children=(c1, c2, c3),
     ))
-    _promote_verdicts(builder, root)
+    _promote_verdicts(builder, root, Mode.SOLVE)
     assert builder.nodes[root].verdict == "solution"
 
 
@@ -237,7 +237,7 @@ def test_promote_mixed_with_open_to_open():
         kb_snapshot=None, firings=(),
         verdict="open", children=(c1, c2),
     ))
-    _promote_verdicts(builder, root)
+    _promote_verdicts(builder, root, Mode.SOLVE)
     assert builder.nodes[root].verdict == "open"
 
 

@@ -343,15 +343,13 @@ def _explore(
         ))
         return nid
 
-    if is_solved(kb, mode):
-        nid = builder.alloc()
-        builder.state_index[sh] = nid
-        builder.add(SearchNode(
-            id=nid, parent=parent_id, hypothesis=hypothesis,
-            kb_snapshot=kb, firings=firings,
-            verdict="solution", children=(),
-        ))
-        return nid
+    # NOTE — no early `is_solved` exit. A state that matches the
+    # goal but still has alive hypotheses is NOT a solution leaf
+    # (S1.5.0 §F: "the complete exploration tree is the proof";
+    # user reaffirmed 2026-05-21). The is_solved check happens at
+    # the genuine leaf — when `generate_hypotheses` produces no
+    # candidates — and at verdict-promotion for interior nodes
+    # whose children all turn out dead.
 
     if depth >= max_depth:
         nid = builder.alloc()
@@ -363,19 +361,21 @@ def _explore(
         ))
         return nid
 
-    # Interior: allocate id, then recurse into each child. Register
-    # the state mapping BEFORE recursing so a child whose
-    # post-saturation state matches this one (rare but possible)
-    # can dedup back to us.
-    interior_id = builder.alloc()
-    builder.state_index[sh] = interior_id
+    # Interior or no-hypothesis leaf — allocate id, then enumerate
+    # hypotheses. If none, this is a leaf and the verdict is
+    # determined by `is_solved` (true) or "open" (state matched the
+    # goal but the puzzle isn't maximally constrained under the
+    # current rule set).
+    nid = builder.alloc()
+    builder.state_index[sh] = nid
+
     child_ids: list[BranchId] = []
     seen_children: set[BranchId] = set()
     for h in generate_hypotheses(kb):
         result = try_branch(kb, h, branch_id=builder.peek_id())
         if result.is_alive():
             child_id = _explore(
-                result.kb, interior_id, h, result.firings,
+                result.kb, nid, h, result.firings,
                 depth + 1, max_depth, builder, mode,
             )
         else:
@@ -386,7 +386,7 @@ def _explore(
             # underlying reason are still recorded separately.
             child_id = builder.alloc()
             builder.add(SearchNode(
-                id=child_id, parent=interior_id, hypothesis=h,
+                id=child_id, parent=nid, hypothesis=h,
                 kb_snapshot=result.kb, firings=result.firings,
                 verdict="dead", children=(),
                 unsat_core=result.unsat_core,
@@ -395,19 +395,44 @@ def _explore(
             seen_children.add(child_id)
             child_ids.append(child_id)
 
+    if not child_ids:
+        # No more hypotheses available — this is a true leaf. The
+        # state is maximally constrained under the current rule set.
+        leaf_verdict = "solution" if is_solved(kb, mode) else "open"
+        builder.add(SearchNode(
+            id=nid, parent=parent_id, hypothesis=hypothesis,
+            kb_snapshot=kb, firings=firings,
+            verdict=leaf_verdict, children=(),
+        ))
+        return nid
+
+    # Interior: stamp "open" pre-promotion. _promote_verdicts will
+    # resolve it from the children + this state's own is_solved
+    # status (the "all-dead-AND-goal-matched ⇒ solution-endpoint"
+    # case).
     builder.add(SearchNode(
-        id=interior_id, parent=parent_id, hypothesis=hypothesis,
+        id=nid, parent=parent_id, hypothesis=hypothesis,
         kb_snapshot=kb, firings=firings,
         verdict="open", children=tuple(child_ids),
     ))
-    return interior_id
+    return nid
 
 
-def _promote_verdicts(builder: _TreeBuilder, root_id: BranchId) -> None:
+def _promote_verdicts(builder: _TreeBuilder, root_id: BranchId,
+                      mode: Mode) -> None:
     """Bottom-up walk; interior nodes inherit verdicts from descendants.
 
-    Priority: any descendant ``solution`` ⇒ ``solution``; else any
-    descendant ``open`` ⇒ ``open``; else all ``dead`` ⇒ ``dead``.
+    Priority for interior nodes (when at least one child exists):
+      - any descendant ``solution`` ⇒ ``solution`` (propagation);
+      - else any descendant ``open`` ⇒ ``open``;
+      - else (all children dead): this node IS a solution-endpoint
+        iff its own KB satisfies the goal. Otherwise ``dead``.
+
+    The "all-dead-AND-goal-matched ⇒ solution" case is what
+    distinguishes a true terminal state (no extension is consistent,
+    but the state itself answers the query) from a true failure
+    (state doesn't answer the query and can't be extended).
+
     Memoised per node so DAG-shared subtrees are walked once.
     """
     cache: dict[BranchId, str] = {}
@@ -431,6 +456,11 @@ def _promote_verdicts(builder: _TreeBuilder, root_id: BranchId) -> None:
                 cache[nid] = "solution"
             elif any(v == "open" for v in child_verdicts):
                 cache[nid] = "open"
+            elif (node.kb_snapshot is not None
+                  and is_solved(node.kb_snapshot, mode)):
+                # All children dead + goal matched at this state ⇒
+                # the state IS a solution endpoint.
+                cache[nid] = "solution"
             else:
                 cache[nid] = "dead"
         in_progress.discard(nid)
@@ -477,7 +507,7 @@ def solve(
     root_id = _explore(kb, None, None, root_firings,
                        depth=0, max_depth=max_depth,
                        builder=builder, mode=mode)
-    _promote_verdicts(builder, root_id)
+    _promote_verdicts(builder, root_id, mode)
     tree = builder.finalize(root_id)
 
     solutions = tree.solutions()

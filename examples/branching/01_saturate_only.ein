@@ -1,27 +1,40 @@
-;;; P1.5 demo 1/5 — saturation closes the puzzle without branching.
+;;; P1.5 demo 1/5 — minimal branching: saturation pre-solves the
+;;; query; the search tree consists of dead is-a-alternate witnesses
+;;; that the inheritance forest cannot be extended.
 ;;;
 ;;; Two colors, two drinks. Both pairings given. The query asks who
-;;; drinks Coffee. Symmetric closure makes the answer trivially
-;;; readable at the root, so `is_solved` fires before any hypothesis
-;;; is generated.
+;;; drinks Coffee. Symmetric closure on co-located makes the goal
+;;; pattern match at root.
 ;;;
-;;; Expected shape:
-;;;   verdict   Solution
-;;;   nodes     1 (root only)
-;;;   leaves    solution=1, dead=0, open=0
-;;;   binding   ?c=Blue
+;;; Under the S1.5.0 §F semantics ("the complete exploration tree is
+;;; the proof"), even a state where the goal is matched is NOT a
+;;; solution leaf if alive hypotheses remain. The engine therefore
+;;; still enumerates `(is-a X Y)` candidates for every is-a leaf;
+;;; `single-parent` kills each alternate-parent hypothesis. After
+;;; all extensions die, the state is a true solution endpoint and
+;;; the verdict promotes to Solution.
+;;;
+;;; Expected shape: verdict Solution, ?c=Blue. Node count is more
+;;; than one — every is-a-alternate death is a separate dead leaf
+;;; until S1.5.4's `(closed is-a)` short-circuits the enumeration.
 
 (rules
   (rule symmetric (?rel)
     :match  (?rel ?a ?b)
     :assert (?rel ?b ?a)
     :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100))
+    :priority 100)
+  (rule single-parent (?rel)
+    :match  (and (?rel ?a ?b) (?rel ?a ?c) (neq ?b ?c))
+    :assert (not (?rel ?a ?c))
+    :why    "{?rel} functional: {?a} has only one parent."
+    :priority 250))
 
 (ontology
   (relation is-a       T T)
   (relation co-located T T)
-  (symmetric co-located)
+  (symmetric     co-located)
+  (single-parent is-a)
 
   (is-a Color T) (is-a Drink T)
   (is-a Red    Color) (is-a Blue   Color)

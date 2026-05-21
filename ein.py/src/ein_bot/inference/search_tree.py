@@ -75,12 +75,30 @@ class SearchTree:
     nodes: dict[BranchId, SearchNode]
 
     def solutions(self) -> tuple[SearchNode, ...]:
-        """Leaf nodes whose verdict is ``solution`` (the distinct
-        answers). Post-S1.5.3 dedup, leaves are the unique
-        goal-satisfying KB states; interior ``solution`` verdicts
-        come from promotion and are inferred from leaves."""
-        return tuple(n for n in self.nodes.values()
-                     if n.verdict == "solution" and not n.children)
+        """*Deepest* solution markers — the distinct answer states.
+
+        A node is a solution-endpoint iff its verdict is ``solution``
+        AND none of its direct children have verdict ``solution``.
+        Catches both:
+          - true leaves where `generate_hypotheses` returned nothing
+            and `is_solved` was true;
+          - interior nodes whose children all turned out dead but
+            whose own state matches the goal (the "no consistent
+            extension, but the state itself is the answer" case from
+            `_promote_verdicts`).
+
+        Excludes interior nodes whose ``solution`` verdict is purely
+        propagated from a deeper descendant — those aren't endpoints,
+        just path markers.
+        """
+        return tuple(
+            n for n in self.nodes.values()
+            if n.verdict == "solution"
+            and not any(
+                self.nodes[c].verdict == "solution"
+                for c in n.children
+            )
+        )
 
     def dead_branches(self) -> tuple[SearchNode, ...]:
         """Leaf nodes that contradicted — the uniqueness witnesses."""

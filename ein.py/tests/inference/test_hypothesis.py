@@ -46,7 +46,12 @@ _RULES = """
     :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
     :assert (not (?out ?a ?b))
     :why    "sib"
-    :priority 300))
+    :priority 300)
+  (rule single-parent (?rel)
+    :match  (and (?rel ?a ?b) (?rel ?a ?c) (neq ?b ?c))
+    :assert (not (?rel ?a ?c))
+    :why    "1p"
+    :priority 250))
 """
 
 
@@ -282,12 +287,17 @@ def test_is_solved_contradictions_mode_always_false():
 
 
 def test_solve_trivial_already_solved():
-    """KB where saturation alone satisfies the goal — no branching needed."""
+    """The goal matches at root, but the search still explores all
+    alive hypotheses (S1.5.0 §F — complete exploration tree is the
+    proof). With `(single-parent is-a)` the alternate-parent
+    hypotheses die, the search terminates, and the verdict promotes
+    to Solution."""
     kb = _kb(_RULES + """
     (ontology
       (relation is-a T T)
       (relation r T T)
       (symmetric r)
+      (single-parent is-a)
       (is-a A T) (is-a B T))
     (facts (r A B :source "(1)"))
     (query :mode solve :goal (r B A))
@@ -297,14 +307,17 @@ def test_solve_trivial_already_solved():
 
 
 def test_solve_picks_surviving_hypothesis():
-    """Saturation alone solves: the goal fact is in `facts`. Branching
-    isn't required; this primarily checks that solve() returns
-    Solution for a trivially-met goal under the zebra2 encoding."""
+    """The goal `(co-located Red H1)` matches at root. With
+    `(single-parent is-a)` the alternate-parent is-a hypotheses
+    die immediately; with `(sibling-exclusive co-located)` the
+    cross-type co-located hypotheses die; the verdict promotes
+    to Solution after exhaustive exploration confirms uniqueness."""
     kb = _kb(_RULES + """
     (ontology
       (relation is-a T T)
       (relation co-located T T)
       (sibling-exclusive co-located)
+      (single-parent     is-a)
       (is-a Color T) (is-a House T)
       (is-a Red Color) (is-a Blue Color)
       (is-a H1 House))

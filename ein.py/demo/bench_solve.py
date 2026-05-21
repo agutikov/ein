@@ -213,11 +213,14 @@ def tree_depth(tree: SearchTree) -> int:
 
 
 def leaf_summary(tree: SearchTree) -> dict[str, int]:
-    counts = {"solution": 0, "dead": 0, "open": 0}
-    for node in tree.nodes.values():
-        if not node.children:
-            counts[node.verdict] = counts.get(node.verdict, 0) + 1
-    return counts
+    """Headline counts as seen by the engine — solution endpoints
+    (deepest verdict=solution markers, may be interior nodes whose
+    children all turned dead) + dead-leaves + open-leaves."""
+    return {
+        "solution": len(tree.solutions()),
+        "dead":     len(tree.dead_branches()),
+        "open":     len(tree.open_branches()),
+    }
 
 
 # ── Goal-binding extraction ────────────────────────────────────────
