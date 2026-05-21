@@ -1,30 +1,41 @@
-;;; P1.5 demo 4/5 — two-level branching.
+;;; P1.5 demo 4/5 — two-level branching on a *genuinely* underspecified
+;;; puzzle.
 ;;;
-;;; Three colors, three houses, one anchor (Red↔H1). The query asks
-;;; who lives in H3. Saturation can't reach H3 from one anchor, and
-;;; no single hypothesis solves the puzzle:
+;;; Three colors, three houses, exactly one anchor (Red↔H1). The
+;;; query asks who lives in H3. Blue and Green are free to swap
+;;; between H2 and H3; no constraint distinguishes them, so the
+;;; puzzle has TWO valid answers:
+;;;
+;;;   ?c = Blue   ⟺   (Blue at H3, Green at H2)
+;;;   ?c = Green  ⟺   (Green at H3, Blue at H2)
+;;;
+;;; **Ambiguity is the correct verdict here, not a defect of the
+;;; reasoner.** The demo's value is showing that the search descends
+;;; two levels and surfaces all consistent placements:
 ;;;
 ;;;   Level 1 — a hypothesis placing Blue or Green in H2 doesn't
 ;;;             satisfy the goal (which asks about H3); the branch
-;;;             stays alive but unsolved.
+;;;             stays alive but unsolved, so `_explore` recurses.
 ;;;   Level 2 — given the depth-1 placement, the remaining free
 ;;;             color is forced into H3; the depth-2 hypothesis
 ;;;             (co-located <other> H3) closes the goal.
 ;;;
 ;;; Hypotheses that place a color directly into H3 at depth 1 also
-;;; satisfy the goal and terminate as solution-leaves at depth 1.
-;;; The recursive descent therefore finds solutions at both depths,
-;;; and without S1.5.3's state-hash dedup the symmetric activator on
-;;; `co-located` causes the same answer to appear via multiple
-;;; paths. The bindings are consistent.
+;;; satisfy the goal and terminate at depth 1 — both paths lead to
+;;; the same set of consistent answers.
+;;;
+;;; Without S1.5.3's state-hash dedup the symmetric activator on
+;;; `co-located` further inflates each path; that's a pruning issue,
+;;; not a correctness one. The set of distinct bindings the demo
+;;; prints is exactly the puzzle's solution set.
+;;;
+;;; Contrast with demos 2, 3, 5: those have enough anchors to make
+;;; the answer unique; Ambiguity there would indicate a bug.
 ;;;
 ;;; Expected:
-;;;   verdict   Ambiguity (≥2 solution branches)
+;;;   verdict   Ambiguity (real — two valid answers)
 ;;;   depth     2
-;;;   bindings  ?c=Blue OR ?c=Green (one OR the other forces H3 —
-;;;             both are consistent here because the puzzle has two
-;;;             symmetric Blue/Green placements; only the *colour*
-;;;             of H3 is determined by H2's hypothesis).
+;;;   bindings  ?c=Blue AND ?c=Green   (both shown; both correct)
 
 (rules
   (rule symmetric (?rel)
