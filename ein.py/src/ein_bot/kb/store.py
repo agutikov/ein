@@ -225,7 +225,9 @@ class KnowledgeBase:
 
         A hrule is a :class:`Rule` by shape; it lives in its own
         registry so the engine / saturator — which walk ``rules`` —
-        never fire it. ``hypgen`` is its only consumer.
+        never fire it. ``hypgen`` is its only consumer. Rule and
+        hrule names share one name-space — the loader rejects a
+        duplicate, so ``hrules`` is keyed by name like ``rules``.
         """
         if rule.name in self.hrules:
             return self.hrules[rule.name]

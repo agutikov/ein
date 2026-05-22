@@ -8,9 +8,14 @@ Two ways to steer what `hypgen` enumerates:
 - **T1.5.6b.2** — `(hrule …)` declarations: rules that *generate*
   candidate hypotheses. A hrule lives in the `(rules …)` block but
   loads into `kb.hrules` (separate from `kb.rules`); the saturator
-  never fires it. When a puzzle declares any hrule, generation is
-  rule-driven and the blind enumerator is off.
+  never fires it. A hrule may be generic — parameterised — and
+  activated by `(query … :hrules …)`.
+
+Rule, hrule, and relation names must be unique — a duplicate is a
+load error.
 """
+import pytest
+
 from ein_bot.inference.hrule import Hrules
 from ein_bot.inference.hypgen import (
     generate_hypotheses,
@@ -19,6 +24,7 @@ from ein_bot.inference.hypgen import (
 from ein_bot.inference.saturator import Saturator
 from ein_bot.ir import dump_canonical, parse
 from ein_bot.kb.entities import Fact
+from ein_bot.kb.from_ir import KBLoadError
 from ein_bot.kb.store import KnowledgeBase
 
 
@@ -36,7 +42,7 @@ _TWO_REL = """
   (is-a A Thing) (is-a B Thing))
 """
 
-# A hypothesis rule declared in the (rules …) block: every
+# A parameter-less hrule declared in the (rules …) block: every
 # (House, Color) pair is a co-located candidate.
 _HRULE = """
 (rules
@@ -50,6 +56,35 @@ _HRULE = """
   (is-a House T) (is-a Color T)
   (is-a H1 House) (is-a H2 House)
   (is-a Red Color) (is-a Blue Color))
+"""
+
+# A generic hrule — parameterised over (?rel ?type), activated by
+# the `:hrules` block in (query …) with two (rel type) tuples.
+_GENERIC_HRULE = """
+(rules
+  (hrule guess (?rel ?type)
+    :match  (and (is-a ?a ?type) (is-a ?house House))
+    :assert (?rel ?a ?house)
+    :why    "g"))
+(ontology
+  (relation is-a       T T)
+  (relation co-located T T)
+  (is-a House T) (is-a Color T) (is-a Pet T)
+  (is-a H1 House)
+  (is-a Red Color)
+  (is-a Dog Pet))
+(query :mode solve :goal (co-located Red H1)
+       :hrules (guess (co-located Color) (co-located Pet)))
+"""
+
+# Two hrules sharing a name — a load error.
+_DUP_HRULE = """
+(rules
+  (hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "a")
+  (hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "b"))
+(ontology
+  (relation is-a T T) (relation co-located T T)
+  (is-a House T) (is-a H1 House))
 """
 
 
@@ -128,3 +163,29 @@ def test_no_hrule_runs_enumerator():
     """No hrule ⇒ the blind enumerator runs."""
     kb = _kb(_TWO_REL)
     assert list(generate_hypotheses(kb))
+
+
+def test_generic_hrule_via_query_hrules():
+    """A parameterised hrule is activated by `(query … :hrules
+    (NAME (args…) …))` — one plan per activator tuple."""
+    kb = _kb(_GENERIC_HRULE)
+    cands = list(Hrules(kb).candidates(kb))
+    assert len(cands) == 2  # one per (rel type) activator
+    assert Fact("co-located", ("Red", "H1")) in cands
+    assert Fact("co-located", ("Dog", "H1")) in cands
+
+
+# ── name uniqueness ────────────────────────────────────────────────
+
+
+def test_duplicate_hrule_name_rejected():
+    """Two hrules sharing a name is a load error."""
+    with pytest.raises(KBLoadError):
+        _kb(_DUP_HRULE)
+
+
+def test_duplicate_relation_rejected():
+    """Two `(relation R …)` declarations for the same R is a load
+    error."""
+    with pytest.raises(KBLoadError):
+        _kb("(ontology (relation co-located T T) (relation co-located T T))")

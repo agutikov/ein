@@ -56,7 +56,13 @@
     :match (and (?siblings-via ?a ?P) (?siblings-via ?b ?P) (neq ?a ?b))
     :assert (not (?exclusive-under ?a ?b))
     :why "{?a} and {?b} share parent {?P} under {?siblings-via} — exclusive under {?exclusive-under}."
-    :priority 300))
+    :priority 300)
+  (hrule
+    guess-co-located
+    (?A ?B)
+    :match (and (is-a ?a ?A) (is-a ?b ?B))
+    :assert (co-located ?a ?b)
+    :why "guess: {?a} co-located {?b}?"))
 
 (ontology
   (relation is-a T T)
@@ -133,4 +139,5 @@
 
 (query
   :mode solve
-  :goal (and (co-located ?water-drinker Water) (co-located ?zebra-owner Zebra)))
+  :goal (and (co-located ?water-drinker Water) (co-located ?zebra-owner Zebra))
+  :hrules (guess-co-located (Color House) (Drink House) (Pet House) (Nationality House) (Cigarette House)))

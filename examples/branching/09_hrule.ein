@@ -48,10 +48,10 @@
   ;; ── The hypothesis rule. Every (Color, House) pair is a
   ;; ── co-located candidate. `hrule` loads it into kb.hrules —
   ;; ── the saturator and lookahead never see it; hypgen runs it.
-  (hrule guess-co-located ()
-    :match  (and (is-a ?color Color) (is-a ?house House))
-    :assert (co-located ?color ?house)
-    :why    "guess: is {?color} co-located with {?house}?"))
+  (hrule guess (?R ?T1 ?T2)
+    :match  (and (is-a ?x1 ?T1) (is-a ?x2 ?T2))
+    :assert (?R ?x1 ?x2)
+    :why    "guess: is {?x1} {?R} with {?x2}?"))
 
 (ontology
   (relation is-a       T T)
@@ -72,4 +72,8 @@
 
 (query
   :mode solve
-  :goal (co-located Blue ?h))
+  :goal (co-located Blue ?h)
+  :hrules (
+    guess (co-located Color House)
+  )  
+)

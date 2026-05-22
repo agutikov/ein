@@ -165,6 +165,9 @@ def _ingest_ontology(form: SForm, kb: KnowledgeBase, errors: list[str]) -> list[
             if name is None or not sig:
                 errors.append(f"malformed (relation) at {child.loc}")
                 continue
+            if name in kb.relations:
+                errors.append(f"duplicate relation '{name}' at {child.loc}")
+                continue
             kb.add_relation(Relation(
                 name=name, signature=sig, declared=True, loc=child.loc,
             ))
@@ -183,6 +186,9 @@ def _ingest_ontology(form: SForm, kb: KnowledgeBase, errors: list[str]) -> list[
             )
             if name is None or not sig:
                 errors.append(f"malformed (a-priori) at {child.loc}")
+                continue
+            if name in kb.relations:
+                errors.append(f"duplicate relation '{name}' at {child.loc}")
                 continue
             kb.add_relation(Relation(
                 name=name, signature=sig, declared=True, loc=child.loc,
@@ -237,6 +243,12 @@ def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
         params_form = child.args[1]
         if name is None or not isinstance(params_form, SForm):
             errors.append(f"malformed ({head} …) at {child.loc}")
+            continue
+        # `rule` and `hrule` share one name-space — a name must
+        # identify a single declaration.
+        if name in kb.rules or name in kb.hrules:
+            errors.append(
+                f"duplicate rule/hrule name '{name}' at {child.loc}")
             continue
         params = tuple(a.name for a in params_form.args if isinstance(a, Var))
         kws = _kw_pairs(child.args)
