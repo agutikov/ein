@@ -5,7 +5,7 @@ kernel `(type)` / `(instance)`. See [[project-canonical-zebra2]].
 """
 from __future__ import annotations
 
-from ein_bot.inference.hypothesis import (
+from ein_bot.inference.solver import (
     Ambiguity,
     Contradiction,
     SearchTree,

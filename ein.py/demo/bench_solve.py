@@ -67,8 +67,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "ein.py" / "src"))
 
-from ein_bot.inference import hypothesis as _hyp_mod  # noqa: E402
-from ein_bot.inference.hypothesis import (  # noqa: E402
+from ein_bot.inference import solver as _hyp_mod  # noqa: E402
+from ein_bot.inference.solver import (  # noqa: E402
     Ambiguity,
     Contradiction,
     Mode,

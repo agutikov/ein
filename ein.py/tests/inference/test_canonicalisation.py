@@ -4,7 +4,7 @@ Pure-zebra2 fixtures (no kernel `(type)` / `(instance)`).
 """
 from __future__ import annotations
 
-from ein_bot.inference.hypothesis import (
+from ein_bot.inference.solver import (
     Ambiguity,
     Contradiction,
     Mode,
@@ -167,7 +167,7 @@ def test_dedup_collapses_symmetric_pairs():
 def test_promote_all_dead_to_dead():
     """Synthesise a 1-level tree with three dead children — root
     inherits ``dead``."""
-    from ein_bot.inference.hypothesis import SearchNode
+    from ein_bot.inference.solver import SearchNode
     builder = _TreeBuilder()
     root = builder.alloc()
     c1, c2, c3 = builder.alloc(), builder.alloc(), builder.alloc()
@@ -188,7 +188,7 @@ def test_promote_all_dead_to_dead():
 
 def test_promote_any_solution_to_solution():
     """One solution among dead siblings ⇒ parent is ``solution``."""
-    from ein_bot.inference.hypothesis import SearchNode
+    from ein_bot.inference.solver import SearchNode
     builder = _TreeBuilder()
     root = builder.alloc()
     c1, c2, c3 = builder.alloc(), builder.alloc(), builder.alloc()
@@ -218,7 +218,7 @@ def test_promote_any_solution_to_solution():
 
 def test_promote_mixed_with_open_to_open():
     """Mixed dead + open (no solution) ⇒ ``open``."""
-    from ein_bot.inference.hypothesis import SearchNode
+    from ein_bot.inference.solver import SearchNode
     builder = _TreeBuilder()
     root = builder.alloc()
     c1, c2 = builder.alloc(), builder.alloc()
@@ -286,7 +286,7 @@ def test_solve_does_not_early_return_on_first_match():
 def test_ir_round_trip_with_branch_ref():
     """Build a tree with a deduped node manually, round-trip it,
     verify the shared-child structure survives."""
-    from ein_bot.inference.hypothesis import SearchNode
+    from ein_bot.inference.solver import SearchNode
     builder = _TreeBuilder()
     root = builder.alloc()
     shared = builder.alloc()    # the shared descendant
