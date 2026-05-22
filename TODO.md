@@ -47,11 +47,6 @@
 
 
 
-P1.5 more ideas
-
-- guided hypothesis generation by rules from specific head or with specific name `hrule`
-- option in config to enable automatic hypothesis generation, default is enabled
-- another simple expernal guiding - allow hypothesis only of certain relation, e.g. `co-located` in zebra
 
 ---
 

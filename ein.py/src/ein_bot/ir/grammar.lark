@@ -100,8 +100,13 @@ generic_fact: "(" SYMBOL value* kw_pair* ")"
 reasoning_form: "(" "reasoning" fact_form* ")"
 
 // ═══════════ Rules ═══════════
-rules_form: "(" "rules" rule_decl* ")"
-rule_decl: "(" "rule" SYMBOL rule_params kw_pair+ ")"
+// `hrule` (S1.5.6b) — a *hypothesis rule*: same shape as `rule`,
+// lives in the (rules …) block, but loaded into kb.hrules (not
+// kb.rules) — its conclusions are speculative candidates, not
+// entailed facts. The saturator never fires it.
+rules_form: "(" "rules" (rule_decl | hrule_decl)* ")"
+rule_decl:  "(" "rule"  SYMBOL rule_params kw_pair+ ")"
+hrule_decl: "(" "hrule" SYMBOL rule_params kw_pair+ ")"
 rule_params: "(" VAR* ")"
 
 // ═══════════ Query ═══════════

@@ -17,6 +17,26 @@ This is also where we discover all the gaps that the earlier
 phases optimistically deferred. Reserve a third of the phase for
 that.
 
+## Updates
+
+IMPORTANT GOALS:
+1) merge zebra and zebra2 synatx, remove redunduncy, leave only canonical
+2) implement facts closer to NL
+   ```lisp
+      (relation drink Human Drink)      ;; human drink drinks
+      (relation co-located Human Drink) ;; human and drinks can be co-locted
+      (imply drink co-located)          ;; when human drinks a drink means they are co-located
+      (is-instance Norvegian Human)
+      (is-instance Milk Drink)
+      (drink Norvegian Milk)            ;; Norvegian drinks milk (some problem fact)
+   ```
+2.1) What is an appropriate detalization level? I want 1-to-1 with NL facts, what is minimal ontology for this?
+2.2) Does detalization affects compexity?
+2.3) How to reduce complexity without reducing expressiveness?
+   e.g. solve only `co-located` and then directly infer `drink`, `live` etc.
+
+
+
 ## Stages
 
 | ID      | Title                                  | Duration |

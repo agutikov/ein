@@ -27,10 +27,12 @@ from collections import defaultdict
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 
+from ein_bot.ir.types import Atom, SForm
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
 from .config import SolverConfig
+from .hrule import Hrules
 from .lookahead import Lookahead
 
 # Inheritance-relation names the generator recognises when walking
@@ -52,6 +54,8 @@ class HypGenStats:
     - **pre_candidate**: structural skips at the relation/slot level,
       before any single candidate fact is constructed. Today:
       ``closed_relation`` (relation skipped because `(closed R)`),
+      ``relation_not_whitelisted`` (relation absent from the
+      `(config :hypothesis-relations …)` whitelist),
       ``type_incompatible_slot`` (slot skipped because the focal
       object's type doesn't match the slot's signature),
       ``self_edge`` (filler equals focal object).
@@ -132,28 +136,38 @@ def generate_hypotheses_with_stats(
 
 
 def _generate(kb: KnowledgeBase, stats: HypGenStats) -> Iterator[Fact]:
-    objects = list(_instance_like_objects(kb))
-    if not objects:
-        return
+    cfg: SolverConfig = kb.config or SolverConfig()
     # S1.5.6 T1.5.6.2 — one-step lookahead, gated by config. Built
     # once per call (compiles the rule plans); reused per candidate.
-    cfg: SolverConfig = kb.config or SolverConfig()
     lookahead = Lookahead(kb) if cfg.enable_pre_branch_lookahead else None
-    by_count = sorted(
-        objects,
-        key=lambda nr: (
-            -(len(nr.as_head) + len(nr.as_arg)),
-            nr.name,
-        ),
-    )
+    # S1.5.6b T1.5.6b.1 — relation whitelist from the (query …)
+    # block. None ⇒ no restriction.
+    allowed = _query_relations(kb)
     seen: set[tuple[str, tuple]] = set()
-    for obj_ref in by_count:
-        for fact in _raw_candidates(kb, obj_ref, stats):
-            stats.raw += 1
-            kept = _apply_filters(kb, fact, seen, stats, lookahead)
-            if kept:
-                stats.emitted += 1
-                yield fact
+
+    def _emit(fact: Fact) -> Iterator[Fact]:
+        stats.raw += 1
+        if _apply_filters(kb, fact, seen, stats, lookahead):
+            stats.emitted += 1
+            yield fact
+
+    # S1.5.6b — generation is rule-driven when the puzzle declares
+    # any `(hrule …)`; otherwise the blind combinatorial enumerator
+    # runs. The two never both run: hrule presence *is* the switch.
+    if kb.hrules:
+        for fact in Hrules(kb).candidates(kb):
+            yield from _emit(fact)
+    else:
+        by_count = sorted(
+            _instance_like_objects(kb),
+            key=lambda nr: (
+                -(len(nr.as_head) + len(nr.as_arg)),
+                nr.name,
+            ),
+        )
+        for obj_ref in by_count:
+            for fact in _raw_candidates(kb, obj_ref, stats, allowed):
+                yield from _emit(fact)
 
 
 def _apply_filters(
@@ -193,12 +207,15 @@ def _apply_filters(
 
 def _raw_candidates(
     kb: KnowledgeBase, obj_ref, stats: HypGenStats,
+    allowed: frozenset[str] | None,
 ) -> Iterator[Fact]:
     """Enumerate every type-compatible non-self-edge candidate fact.
 
-    Pre-candidate skips (closed_relation, type_incompatible_slot,
-    self_edge) increment ``stats.pre_candidate``; the per-candidate
-    filters fire downstream in :func:`_apply_filters`.
+    Pre-candidate skips (closed_relation, relation_not_whitelisted,
+    type_incompatible_slot, self_edge) increment
+    ``stats.pre_candidate``; the per-candidate filters fire
+    downstream in :func:`_apply_filters`. ``allowed`` is the
+    S1.5.6b relation whitelist (``None`` ⇒ no restriction).
     """
     for rel in kb.relations.values():
         if not rel.signature:
@@ -207,6 +224,10 @@ def _raw_candidates(
             # T1.5.4.1 — `(closed R)` activator. The whole
             # relation contributes zero candidates.
             stats.pre_candidate["closed_relation"] += 1
+            continue
+        if allowed is not None and rel.name not in allowed:
+            # S1.5.6b T1.5.6b.1 — relation not on the whitelist.
+            stats.pre_candidate["relation_not_whitelisted"] += 1
             continue
         for slot_idx, sig_type in enumerate(rel.signature):
             if not _type_compatible(kb, obj_ref.name, sig_type):
@@ -301,6 +322,36 @@ def _is_closed(kb: KnowledgeBase, r_name: str) -> bool:
     """
     apps = kb._facts_by_relation.get("closed", ())
     return any(f.args == (r_name,) for f in apps)
+
+
+def _query_relations(kb: KnowledgeBase) -> frozenset[str] | None:
+    """The `:hypothesis-relations` whitelist from the `(query …)` block.
+
+    S1.5.6b T1.5.6b.1 — a query-scoped hint restricting which
+    relations the enumerator builds candidates for. Returns
+    ``None`` (no restriction) when the query block is absent or
+    carries no `:hypothesis-relations` keyword.
+    """
+    q = kb.query
+    if q is None:
+        return None
+    for kp in q.kw_pairs:
+        key = getattr(kp, "key", None)
+        if key is not None and getattr(key, "name", None) == "hypothesis-relations":
+            return frozenset(_coerce_relation_names(kp.value)) or None
+    return None
+
+
+def _coerce_relation_names(value: object) -> tuple[str, ...]:
+    """Relation names from a `:hypothesis-relations` value — a bare
+    SYMBOL (one relation) or a `(r1 r2 …)` list."""
+    if isinstance(value, Atom):
+        return (value.name,)
+    if isinstance(value, SForm):
+        return tuple(
+            p.name for p in (value.head, *value.args) if isinstance(p, Atom)
+        )
+    return ()
 
 
 # ── Type-system walks ──────────────────────────────────────────────

@@ -45,6 +45,7 @@ what the loop *records* and what it returns at quiescence.
 | S1.5.4  | [Hypothesis-gen improvements — `(closed R)` + config head + counters + alive-set polish](s1.5.4_hypgen_improvements.md) | 3-4 days |
 | S1.5.5  | [Closure auto-inference](s1.5.5_closure_auto_inference.md) — **deferred to P1.8** (2026-05-22) | — |
 | S1.5.6  | [One-step rule lookahead + `sibling-exclusive` 2-arg rewrite](s1.5.6_one_step_lookahead.md) | 2-3 days |
+| S1.5.6b | [Guided hypothesis generation](s1.5.6b_guided_hypgen.md) — done (2026-05-22) | ~3-5 days |
 | S1.5.7  | [Back-prop `(not h)`, re-saturate, return on derived positive](s1.5.7_back_prop_unconditional.md) | 4-6 days |
 | S1.5.8  | [Totality + domain elimination](s1.5.8_totality_domain_elimination.md) | 3-4 days |
 
@@ -62,6 +63,10 @@ independently testable.
 - **S1.5.6** — pure pruning optimisation; does **not** gate M1
   acceptance. S1.5.4's acceptance (T1.5.4.6) closes the core
   hypothesis-loop phase.
+- **S1.5.6b** — **done** 2026-05-22; hypgen-steering — relation
+  whitelist, `hrule` rule-driven generation, the
+  `enable-auto-hypgen` on/off flag. The proactive counterpart to
+  S1.5.6's reactive filtering; not M1-blocking.
 - **S1.5.7 / S1.5.8** — **M1-blocking** (2026-05-22 direction "M1
   has to solve zebra"). S1.5.7's re-saturation +
   return-on-derived-positive and S1.5.8's `domain-elimination`

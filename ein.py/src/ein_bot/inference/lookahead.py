@@ -64,6 +64,9 @@ class Lookahead:
     def __init__(self, kb: KnowledgeBase) -> None:
         engine = Engine(kb)
         engine.compile_all()
+        # `compile_all` walks `kb.rules` only — `(hrule …)` rules
+        # live in `kb.hrules` and are never compiled here, so no
+        # filtering is needed (S1.5.6b).
         self._plans: tuple[JoinPlan, ...] = tuple(engine.cache.values())
 
     def dies_immediately(self, kb: KnowledgeBase, h: Fact) -> bool:

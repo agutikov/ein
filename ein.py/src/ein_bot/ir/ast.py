@@ -174,6 +174,12 @@ class _ToAST(Transformer):
         name, params, *kws = items
         return SForm(head=Atom(name="rule"), args=(name, params, *kws))
 
+    def hrule_decl(self, items: list) -> SForm:
+        # S1.5.6b — a hypothesis rule: same shape as `rule`, but
+        # the loader routes it to kb.hrules instead of kb.rules.
+        name, params, *kws = items
+        return SForm(head=Atom(name="hrule"), args=(name, params, *kws))
+
     def rule_params(self, items: list) -> SForm:
         return SForm(head=Atom(name="@params"), args=tuple(items))
 

@@ -117,6 +117,10 @@ class KnowledgeBase:
         self.instances: dict[str, Instance] = {}
         self.relations: dict[str, Relation] = {}
         self.rules: dict[str, Rule] = {}
+        # Hypothesis rules (S1.5.6b) — kept separate from `rules`:
+        # they generate candidate hypotheses for hypgen and are
+        # never fired by the saturator. Loaded from `(hrule …)`.
+        self.hrules: dict[str, Rule] = {}
         # Facts list (layer is a field on each Fact).
         self.facts: list[Fact] = []
         # Query (optional, only when the IR carries a `(query …)`).
@@ -214,6 +218,19 @@ class KnowledgeBase:
             return self.rules[rule.name]
         _attach(rule, self)
         self.rules[rule.name] = rule
+        return rule
+
+    def add_hrule(self, rule: Rule) -> Rule:
+        """Register a hypothesis rule (S1.5.6b) into ``hrules``.
+
+        A hrule is a :class:`Rule` by shape; it lives in its own
+        registry so the engine / saturator — which walk ``rules`` —
+        never fire it. ``hypgen`` is its only consumer.
+        """
+        if rule.name in self.hrules:
+            return self.hrules[rule.name]
+        _attach(rule, self)
+        self.hrules[rule.name] = rule
         return rule
 
     def add_fact(self, fact: Fact) -> Fact:
@@ -572,6 +589,7 @@ class KnowledgeBase:
         new.instances = self.instances
         new.relations = self.relations
         new.rules = self.rules
+        new.hrules = self.hrules
         new.query = self.query
         # Equality classes: fork its own state (the parent's classes
         # remain reachable via the union-find roots that were created

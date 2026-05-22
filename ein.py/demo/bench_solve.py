@@ -46,6 +46,9 @@ Debug logging (S1.5.4-motivated diagnostics for branching blowup):
   relation is producing the bulk of the candidates (typically
   ``is-a`` on a puzzle that hasn't declared ``(closed is-a)``;
   see plans/.../s1.5.4_hypgen_improvements.md).
+- ``--dump-config`` — print the resolved :class:`SolverConfig`
+  after parsing — the `(config …)` block's values, or the
+  defaults when the puzzle carries no `(config …)` head.
 """
 from __future__ import annotations
 
@@ -298,6 +301,8 @@ def main() -> int:
                     help="abort the search after S wall-clock seconds")
     ap.add_argument("--hyp-stats", action="store_true",
                     help="print per-relation hypothesis-generation breakdown")
+    ap.add_argument("--dump-config", action="store_true",
+                    help="print the resolved SolverConfig after parsing")
     ap.add_argument("--solution-facts", action="store_true",
                     help="for each solution leaf, dump its propositional "
                          "(REASONING-layer, non-bookkeeping) facts + state_hash "
@@ -315,6 +320,24 @@ def main() -> int:
     print(f"file               {args.puzzle}")
     print(f"  parse            {(t1-t0)*1e3:7.2f} ms")
     print(f"  kb-load          {(t2-t1)*1e3:7.2f} ms")
+
+    # ── Resolved solver config (--dump-config) ─────────────────────
+    # The effective SolverConfig solve() would use: kb.config when
+    # the file carries a `(config …)` head, else the defaults.
+    if args.dump_config:
+        from dataclasses import fields as _dc_fields
+
+        from ein_bot.inference.config import SolverConfig
+        _cfg = kb.config
+        _origin = ("from (config …) block" if _cfg is not None
+                   else "defaults (no (config …) head)")
+        _cfg = _cfg or SolverConfig()
+        print(f"  config           {_origin}")
+        for _f in _dc_fields(_cfg):
+            _v = getattr(_cfg, _f.name)
+            _shown = str(_v).lower() if isinstance(_v, bool) else _v
+            print(f"    {_f.name.replace('_', '-'):<32s} {_shown}")
+
     # ── Initial root-hypothesis preview (cheap, useful diagnostic) ──
     # Snapshot how many candidates the root would enumerate, broken
     # down by relation. Drives the decision to add `(closed R)` /

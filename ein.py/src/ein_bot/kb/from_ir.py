@@ -219,18 +219,24 @@ def _ingest_ontology(form: SForm, kb: KnowledgeBase, errors: list[str]) -> list[
 
 
 def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
-    """Pass over `(rules …)` body."""
+    """Pass over `(rules …)` body — `(rule …)` and `(hrule …)` decls.
+
+    S1.5.6b: a `(hrule …)` is structurally a rule but is routed to
+    ``kb.hrules`` (hypothesis generators), not ``kb.rules``
+    (derivation rules the saturator fires).
+    """
     for child in form.args:
-        if not isinstance(child, SForm) or _atom_name(child.head) != "rule":
+        head = _atom_name(child.head) if isinstance(child, SForm) else None
+        if head not in ("rule", "hrule"):
             errors.append(f"non-rule form in (rules …): {child}")
             continue
         if len(child.args) < 2:
-            errors.append(f"(rule) needs name + params at {child.loc}")
+            errors.append(f"({head}) needs name + params at {child.loc}")
             continue
         name = _atom_name(child.args[0])
         params_form = child.args[1]
         if name is None or not isinstance(params_form, SForm):
-            errors.append(f"malformed (rule …) at {child.loc}")
+            errors.append(f"malformed ({head} …) at {child.loc}")
             continue
         params = tuple(a.name for a in params_form.args if isinstance(a, Var))
         kws = _kw_pairs(child.args)
@@ -239,11 +245,12 @@ def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
         why_node = kws.get("why")
         priority_node = kws.get("priority")
         if match_node is None or assert_node is None:
-            errors.append(f"(rule {name}) missing :match or :assert at {child.loc}")
+            errors.append(
+                f"({head} {name}) missing :match or :assert at {child.loc}")
             continue
         why = why_node.value if isinstance(why_node, String) else ""
         priority = priority_node.value if isinstance(priority_node, Int) else None
-        kb.add_rule(Rule(
+        rule = Rule(
             name=name,
             params=params,
             match=Pattern.from_ir(match_node),
@@ -251,7 +258,11 @@ def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
             why=why,
             priority=priority,
             loc=child.loc,
-        ))
+        )
+        if head == "hrule":
+            kb.add_hrule(rule)
+        else:
+            kb.add_rule(rule)
 
 
 def _ingest_facts(
