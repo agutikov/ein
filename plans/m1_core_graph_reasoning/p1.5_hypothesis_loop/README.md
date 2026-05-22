@@ -2,10 +2,11 @@
 
 **Estimate:** ~14-18 days for the core M1-blocking stages
 (S1.5.0–S1.5.4 + the S1.5.4a/b prerequisite cleanups), plus
-~7-11 days for S1.5.7 + S1.5.8 — also M1-blocking, for the
+~7-10 days for S1.5.7 + S1.5.8 — also M1-blocking, for the
 idea-08 trace-fidelity criterion (see the stage note below).
-S1.5.5/6 are optional pruning follow-ups (1-3 days each when
-activated) and do not gate M1 acceptance.
+S1.5.6 is an optional pruning follow-up (2-3 days when
+activated) and does not gate M1 acceptance; S1.5.5 was deferred
+whole to P1.8 on 2026-05-22.
 **Depends on:** P1.2 (`KnowledgeBase`, `kb.fork`, `Provenance`),
 P1.3 (Saturator, hypothesis-contradiction rule), P1.4
 (`ContradictionDetector`).
@@ -42,10 +43,10 @@ what the loop *records* and what it returns at quiescence.
 | S1.5.4a | [Fix `single-parent` → `functional` (+ optional direct ⊥-rule kernel)](s1.5.4a-fix-single-parent.md) | ½-2 days (prerequisite) |
 | S1.5.4b | [Drop Filter B (slot-already-used) from `_hypotheses_for`](s1.5.4b-fix-filter-slot-already-used.md) | ½ day (prerequisite) |
 | S1.5.4  | [Hypothesis-gen improvements — `(closed R)` + config head + counters + alive-set polish](s1.5.4_hypgen_improvements.md) | 3-4 days |
-| S1.5.5  | [Closure auto-inference via explicit rules](s1.5.5_closure_auto_inference.md) | 1-2 days |
+| S1.5.5  | [Closure auto-inference](s1.5.5_closure_auto_inference.md) — **deferred to P1.8** (2026-05-22) | — |
 | S1.5.6  | [One-step rule lookahead + `sibling-exclusive` 2-arg rewrite](s1.5.6_one_step_lookahead.md) | 2-3 days |
 | S1.5.7  | [Back-prop `(not h)`, re-saturate, return on derived positive](s1.5.7_back_prop_unconditional.md) | 4-6 days |
-| S1.5.8  | [Totality + domain elimination](s1.5.8_totality_domain_elimination.md) | 3-5 days |
+| S1.5.8  | [Totality + domain elimination](s1.5.8_totality_domain_elimination.md) | 3-4 days |
 
 S1.5.5/6/7 split out of S1.5.4 on 2026-05-21 per the
 implementation-order TODO; S1.5.8 was added 2026-05-22. Each
@@ -53,9 +54,14 @@ ships behind a config flag from T1.5.4.4's `(config …)` head (or,
 for S1.5.8, as a rule loaded from the puzzle); each is
 independently testable.
 
-- **S1.5.5 / S1.5.6** — pure pruning optimisations; do **not**
-  gate M1 acceptance. S1.5.4's acceptance (T1.5.4.6) closes the
-  core hypothesis-loop phase.
+- **S1.5.5** — **deferred whole to P1.8** (2026-05-22): closure
+  auto-inference is a stdlib-rule concern, re-homed to P1.8's
+  modules + imports + standard library theme. The manual
+  `(closed R)` activator (S1.5.4 T1.5.4.1) stays and is shipped;
+  only the *automatic* inference of `(closed R)` deferred.
+- **S1.5.6** — pure pruning optimisation; does **not** gate M1
+  acceptance. S1.5.4's acceptance (T1.5.4.6) closes the core
+  hypothesis-loop phase.
 - **S1.5.7 / S1.5.8** — **M1-blocking** (2026-05-22 direction "M1
   has to solve zebra"). S1.5.7's re-saturation +
   return-on-derived-positive and S1.5.8's `domain-elimination`

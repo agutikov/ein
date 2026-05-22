@@ -63,6 +63,9 @@
 ;;;     don't fire — every is-a edge looks the same until S1.2.4
 ;;;     adds the KB-aware unified renderer.
 
+(config
+  :enable-pre-branch-lookahead true)
+
 (rules
   ;; ── Property-rules carried over from zebra.ein. ──
 
@@ -147,20 +150,24 @@
     :why    "{?rel} is asymmetric: from {?a} →{?rel}→ {?b}, ¬({?b} →{?rel}→ {?a})."
     :priority 100)
 
-  ;; ── New: `sibling-exclusive`. Generalises `type-exclusivity` from
-  ;; ── the zebra.ein formulation: parameterised on the inheritance
-  ;; ── relation. Fires uniformly for type-siblings (House⊥Color
-  ;; ── under Attribute) AND instance-siblings (Norwegian⊥Spaniard
-  ;; ── under Nationality). The co-located negative conclusion is
-  ;; ── still hardcoded here; could be parameterised in a future
-  ;; ── 2-param variant if other exclusivity domains arrive.
+  ;; ── `sibling-exclusive`. Generalises `type-exclusivity` from the
+  ;; ── zebra.ein formulation. Two-parameter form (T1.5.6.1):
+  ;; ──   ?siblings-via   — the relation whose shared parent defines
+  ;; ──                     the "siblings" group;
+  ;; ──   ?exclusive-under — the relation those siblings are
+  ;; ──                     forbidden from co-occurring under.
+  ;; ── Fires uniformly for type-siblings (House⊥Color under
+  ;; ── Attribute) AND instance-siblings (Norwegian⊥Spaniard under
+  ;; ── Nationality). Making the exclusion relation a binding lets
+  ;; ── the one-step lookahead (S1.5.6) see which hypothesis the
+  ;; ── rule kills instead of reading a hardcoded body.
 
-  (rule sibling-exclusive (?rel)
-    :match  (and (?rel ?a ?P)
-                 (?rel ?b ?P)
+  (rule sibling-exclusive (?siblings-via ?exclusive-under)
+    :match  (and (?siblings-via ?a ?P)
+                 (?siblings-via ?b ?P)
                  (neq ?a ?b))
-    :assert (not (co-located ?a ?b))
-    :why    "{?a} and {?b} share parent {?P} under {?rel} — exclusive slots."
+    :assert (not (?exclusive-under ?a ?b))
+    :why    "{?a} and {?b} share parent {?P} under {?siblings-via} — exclusive under {?exclusive-under}."
     :priority 300))
 
 (ontology
@@ -170,6 +177,8 @@
   (relation co-located T T)
   (relation right-of   T T)
   (relation next-to    T T)
+
+  (closed is-a)
 
   ;; ── Rule-application facts (implicit context for the engine).
   ;; ──
@@ -183,7 +192,11 @@
   ;; ── parent pairs — 120 ordered pairs, matching zebra.ein's
   ;; ── `(type-exclusivity co-located)` exactly.
   (asymmetric        is-a)
-  (sibling-exclusive is-a)
+  ;; siblings-via is-a are exclusive under co-located (the core
+  ;; type-exclusivity) and under is-a itself — the latter kills
+  ;; leaf is-a pairs like (is-a Red Blue) in one rule firing.
+  (sibling-exclusive is-a co-located)
+  (sibling-exclusive is-a is-a)
   (symmetric  co-located)
   (transitive co-located)
   (symmetric  next-to)

@@ -1,3 +1,5 @@
+(config :enable-pre-branch-lookahead true)
+
 (rules
   (rule
     symmetric
@@ -50,10 +52,10 @@
     :priority 100)
   (rule
     sibling-exclusive
-    (?rel)
-    :match (and (?rel ?a ?P) (?rel ?b ?P) (neq ?a ?b))
-    :assert (not (co-located ?a ?b))
-    :why "{?a} and {?b} share parent {?P} under {?rel} — exclusive slots."
+    (?siblings-via ?exclusive-under)
+    :match (and (?siblings-via ?a ?P) (?siblings-via ?b ?P) (neq ?a ?b))
+    :assert (not (?exclusive-under ?a ?b))
+    :why "{?a} and {?b} share parent {?P} under {?siblings-via} — exclusive under {?exclusive-under}."
     :priority 300))
 
 (ontology
@@ -61,8 +63,10 @@
   (relation co-located T T)
   (relation right-of T T)
   (relation next-to T T)
+  (closed is-a)
   (asymmetric is-a)
-  (sibling-exclusive is-a)
+  (sibling-exclusive is-a co-located)
+  (sibling-exclusive is-a is-a)
   (symmetric co-located)
   (transitive co-located)
   (symmetric next-to)

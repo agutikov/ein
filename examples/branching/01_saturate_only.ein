@@ -29,10 +29,10 @@
     :assert (?rel ?a ?c)
     :why    "{?rel} transitive"
     :priority 200)
-  (rule sibling-exclusive (?out)
-    :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
-    :assert (not (?out ?a ?b))
-    :why    "{?a} and {?b} share {?T} — exclusive under {?out}."
+  (rule sibling-exclusive (?siblings-via ?exclusive-under)
+    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+    :assert (not (?exclusive-under ?a ?b))
+    :why    "{?a} and {?b} share {?T} — exclusive under {?exclusive-under}."
     :priority 300)
   (rule functional (?R)
     :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
@@ -45,7 +45,7 @@
   (relation co-located T T)
   (symmetric         co-located)
   (transitive        co-located)
-  (sibling-exclusive co-located)
+  (sibling-exclusive is-a co-located)
   (functional        is-a)
   (closed            is-a)   ;; T1.5.4.1 — inheritance forest is fixed
 

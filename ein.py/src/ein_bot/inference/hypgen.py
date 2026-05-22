@@ -30,6 +30,9 @@ from dataclasses import dataclass, field
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
+from .config import SolverConfig
+from .lookahead import Lookahead
+
 # Inheritance-relation names the generator recognises when walking
 # ancestry. Both legacy kernel `instance` and canonical zebra2 `is-a`
 # are treated equivalently — the type-compat walk follows whichever
@@ -59,8 +62,10 @@ class HypGenStats:
       level. Today: ``negated_fact`` (Tier-A
       ``_negated_facts`` membership), ``fact_already_exists``
       (S1.5.4b narrower replacement for Filter B),
-      ``seen_in_call`` (same-call duplicate from another focal
-      object's perspective).
+      ``lookahead_killed`` (S1.5.6 one-step lookahead — the
+      candidate dies against the saturated KB in a single rule
+      firing), ``seen_in_call`` (same-call duplicate from another
+      focal object's perspective).
     - **emitted**: facts actually yielded to the caller.
 
     Invariant: ``raw == emitted + sum(filtered.values())``.
@@ -130,6 +135,10 @@ def _generate(kb: KnowledgeBase, stats: HypGenStats) -> Iterator[Fact]:
     objects = list(_instance_like_objects(kb))
     if not objects:
         return
+    # S1.5.6 T1.5.6.2 — one-step lookahead, gated by config. Built
+    # once per call (compiles the rule plans); reused per candidate.
+    cfg: SolverConfig = kb.config or SolverConfig()
+    lookahead = Lookahead(kb) if cfg.enable_pre_branch_lookahead else None
     by_count = sorted(
         objects,
         key=lambda nr: (
@@ -141,7 +150,7 @@ def _generate(kb: KnowledgeBase, stats: HypGenStats) -> Iterator[Fact]:
     for obj_ref in by_count:
         for fact in _raw_candidates(kb, obj_ref, stats):
             stats.raw += 1
-            kept = _apply_filters(kb, fact, seen, stats)
+            kept = _apply_filters(kb, fact, seen, stats, lookahead)
             if kept:
                 stats.emitted += 1
                 yield fact
@@ -152,6 +161,7 @@ def _apply_filters(
     fact: Fact,
     seen: set[tuple[str, tuple]],
     stats: HypGenStats,
+    lookahead: Lookahead | None,
 ) -> bool:
     """Run the candidate-level filter pipeline; return True iff kept.
 
@@ -166,6 +176,11 @@ def _apply_filters(
     # fact_already_exists (S1.5.4b narrower replacement for Filter B; O(1)).
     if _already_a_fact(kb, fact):
         stats.filtered["fact_already_exists"] += 1
+        return False
+    # lookahead_killed (S1.5.6 Tier B; one rule step, no fork). Runs
+    # last of the per-candidate checks — it is the costliest.
+    if lookahead is not None and lookahead.dies_immediately(kb, fact):
+        stats.filtered["lookahead_killed"] += 1
         return False
     # seen_in_call dedup (stateful across the call).
     key = (fact.relation_name, fact.args)

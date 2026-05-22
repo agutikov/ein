@@ -321,8 +321,17 @@ def main() -> int:
     # restrict signatures / cap depth before kicking off solve().
     # T1.5.4.7: when --hyp-stats is set, also surface the per-filter
     # breakdown via `generate_hypotheses_with_stats`.
+    #
+    # solve() generates the root alive-set *after* saturating the
+    # root KB, so the preview must saturate first too — otherwise
+    # the negated-fact and one-step-lookahead (S1.5.6) filters see
+    # an empty derived layer and report zero drops. Preview on a
+    # fork so solve()'s own root saturation stays pristine.
     from ein_bot.inference.hypgen import generate_hypotheses_with_stats
-    root_facts, root_stats = generate_hypotheses_with_stats(kb)
+    from ein_bot.inference.saturator import Saturator
+    _preview_kb = kb.fork()
+    list(Saturator(_preview_kb).saturate())
+    root_facts, root_stats = generate_hypotheses_with_stats(_preview_kb)
     root_hyps: Counter[str] = Counter()
     for h in root_facts:
         root_hyps[h.relation_name] += 1

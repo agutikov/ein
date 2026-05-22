@@ -53,21 +53,9 @@ P1.5 more ideas
 - option in config to enable automatic hypothesis generation, default is enabled
 - another simple expernal guiding - allow hypothesis only of certain relation, e.g. `co-located` in zebra
 
+---
 
-
-- implication:
-    - implry ?R1 ?R2 - implication between relations
-        - what about implication between rules?
-            - Is there any thechnical blockers?
-                - we can issue new fact of course
-                - but how it will be handled then?
-                - would it be processed correctly? compiled, etc.
-            - Type-match for rules domains?
-            - we now don't check relation domains either btw
-    - imply1 - for relations with 1 arg
-    - imply2-fwd - for relations with 2 args - our current default imply
-    - imply2-reverse, or inverse - for example right-to and left-to
-
+P1.8 ideas
 
 - generalization rule, induction, not for Zebra
     - generalize instances properties to types properties
@@ -76,6 +64,10 @@ P1.5 more ideas
         - all instances of A and B have relations R - types have relation R
         - some instances of A have relation R with instances of B, some hot have -> there are 2 subtypes
 
+
+---
+
+P1.9 ideas
 
 - modes:
     - solve - search for at least one valid solution ASAP, use heuristics to optimize the search
@@ -136,7 +128,7 @@ also, some minor ein-model update:
 
 ---
 
-M1b GUI
+M1b : GUI
 after M1 before M2
 
 views:
@@ -163,7 +155,9 @@ views:
 
 ---
 
-M2b compare to other systems from docs/index
+M2b : presentation and paper
+
+compare to other systems from docs/index
 try benchmarks
 summarize results
 list further growth directions

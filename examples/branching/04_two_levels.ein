@@ -48,9 +48,9 @@
     :assert (?rel ?a ?c)
     :why    "{?rel} tr" :priority 200)
 
-  (rule sibling-exclusive (?out)
-    :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
-    :assert (not (?out ?a ?b))
+  (rule sibling-exclusive (?siblings-via ?exclusive-under)
+    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+    :assert (not (?exclusive-under ?a ?b))
     :why    "sib {?T}" :priority 300)
 
   (rule functional (?R)
@@ -64,7 +64,7 @@
 
   (symmetric         co-located)
   (transitive        co-located)
-  (sibling-exclusive co-located)
+  (sibling-exclusive is-a co-located)
   (functional        is-a)
   (closed            is-a)   ;; T1.5.4.1 — inheritance forest is fixed
 

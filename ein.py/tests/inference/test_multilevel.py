@@ -23,9 +23,9 @@ def _kb(text: str) -> KnowledgeBase:
 # Shared rule library — sibling-exclusive over the is-a hierarchy.
 _RULES = """
 (rules
-  (rule sibling-exclusive (?out)
-    :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
-    :assert (not (?out ?a ?b))
+  (rule sibling-exclusive (?siblings-via ?exclusive-under)
+    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+    :assert (not (?exclusive-under ?a ?b))
     :why    "sib"
     :priority 300))
 """
@@ -96,7 +96,7 @@ def test_branching_produces_children():
     (ontology
       (relation is-a T T)
       (relation co-located T T)
-      (sibling-exclusive co-located)
+      (sibling-exclusive is-a co-located)
       (is-a Color T) (is-a House T)
       (is-a Red Color) (is-a Blue Color)
       (is-a H1 House) (is-a H2 House))
@@ -119,7 +119,7 @@ def test_dead_branches_are_in_tree():
     (ontology
       (relation is-a T T)
       (relation co-located T T)
-      (sibling-exclusive co-located)
+      (sibling-exclusive is-a co-located)
       (is-a Red T) (is-a Blue T))
     (query :mode solve :goal (co-located Red Blue))
     """)
@@ -219,7 +219,7 @@ def test_ir_round_trip_preserves_structure():
     (ontology
       (relation is-a T T)
       (relation co-located T T)
-      (sibling-exclusive co-located)
+      (sibling-exclusive is-a co-located)
       (is-a Red T) (is-a Blue T))
     (query :mode solve :goal (co-located Red Blue))
     """)
@@ -244,7 +244,7 @@ def test_ir_round_trip_preserves_hypothesis_seed():
     (ontology
       (relation is-a T T)
       (relation co-located T T)
-      (sibling-exclusive co-located)
+      (sibling-exclusive is-a co-located)
       (is-a Red T) (is-a Blue T))
     (query :mode solve :goal (co-located Red Blue))
     """)

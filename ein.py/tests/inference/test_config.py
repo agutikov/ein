@@ -162,16 +162,16 @@ _DEMO = """
 (rules
   (rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)
     :why s :priority 100)
-  (rule sibling-exclusive (?out)
-    :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
-    :assert (not (?out ?a ?b))
+  (rule sibling-exclusive (?siblings-via ?exclusive-under)
+    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+    :assert (not (?exclusive-under ?a ?b))
     :why sib :priority 300))
 
 (ontology
   (relation is-a T T)
   (relation co-located T T)
   (symmetric         co-located)
-  (sibling-exclusive co-located)
+  (sibling-exclusive is-a co-located)
   (closed            is-a)
   (is-a Color T) (is-a House T)
   (is-a Red Color) (is-a Blue Color)

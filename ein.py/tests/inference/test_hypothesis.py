@@ -42,9 +42,9 @@ _RULES = """
     :assert (?rel ?a ?c)
     :why    "t"
     :priority 200)
-  (rule sibling-exclusive (?out)
-    :match  (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
-    :assert (not (?out ?a ?b))
+  (rule sibling-exclusive (?siblings-via ?exclusive-under)
+    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+    :assert (not (?exclusive-under ?a ?b))
     :why    "sib"
     :priority 300)
   (rule functional (?R)
@@ -269,7 +269,7 @@ def test_try_branch_dead_via_sibling_exclusive():
     (ontology
       (relation is-a T T)
       (relation co-located T T)
-      (sibling-exclusive co-located)
+      (sibling-exclusive is-a co-located)
       (is-a Alice T) (is-a Bob T))
     """)
     hyp = Fact(
@@ -392,7 +392,7 @@ def test_solve_picks_surviving_hypothesis():
     (ontology
       (relation is-a T T)
       (relation co-located T T)
-      (sibling-exclusive co-located)
+      (sibling-exclusive is-a co-located)
       (functional        is-a)
       (is-a Color T) (is-a House T)
       (is-a Red Color) (is-a Blue Color)

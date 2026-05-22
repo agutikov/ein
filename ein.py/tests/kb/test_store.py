@@ -254,9 +254,9 @@ class TestZebra2:
         is_a = zebra2_kb.relations["is-a"]
         rule_names = {r.name for r in is_a.rules}
         # `(transitive is-a)` is intentionally dropped — it caused a
-        # quadratic blowup with `(sibling-exclusive is-a)` over the
-        # transitive closure. Only `(asymmetric is-a)` and
-        # `(sibling-exclusive is-a)` remain activated.
+        # quadratic blowup with sibling-exclusive over the transitive
+        # closure. Only `(asymmetric is-a)` and the two
+        # `(sibling-exclusive is-a …)` activators remain.
         assert {"asymmetric", "sibling-exclusive"} <= rule_names
         assert "transitive" not in rule_names
 
