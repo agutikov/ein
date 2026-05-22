@@ -26,6 +26,7 @@ from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
 from .canon import state_hash
+from .closed import emit_closed
 from .compile import JoinPlan, compile_pattern
 from .config import SolverConfig
 from .contradiction import ContradictionDetector
@@ -572,6 +573,11 @@ def solve(
     mode = mode or _mode_from_query(kb) or Mode.SOLVE
     effective_config = config or kb.config or SolverConfig()
     kb.config = effective_config
+
+    # Emit `(closed R)` for every relation no rule can positively
+    # conclude — before saturation, so the hypothesis generator
+    # sees the facts. Replaces hand-written `(closed …)` declarations.
+    emit_closed(kb)
 
     # Initial saturation on the root KB.
     sat = Saturator(kb)

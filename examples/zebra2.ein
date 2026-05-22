@@ -168,7 +168,45 @@
                  (neq ?a ?b))
     :assert (not (?exclusive-under ?a ?b))
     :why    "{?a} and {?b} share parent {?P} under {?siblings-via} — exclusive under {?exclusive-under}."
-    :priority 300))
+    :priority 300)
+
+
+  (hrule guess-co-located ()
+    :match  (and (is-a ?a Color) (is-a ?house House))
+    :assert (co-located ?a ?house)
+    :why    "guess: is {?a} co-located with {?house}?"
+  )
+
+  (hrule guess-co-located ()
+    :match  (and (is-a ?a Drink) (is-a ?house House))
+    :assert (co-located ?a ?house)
+    :why    "guess: is {?a} co-located with {?house}?"
+  )
+
+  (hrule guess-co-located ()
+    :match  (and (is-a ?a Pet) (is-a ?house House))
+    :assert (co-located ?a ?house)
+    :why    "guess: is {?a} co-located with {?house}?"
+  )
+
+  (hrule guess-co-located ()
+    :match  (and (is-a ?a Nationality) (is-a ?house House))
+    :assert (co-located ?a ?house)
+    :why    "guess: is {?a} co-located with {?house}?"
+  )
+
+  (hrule guess-co-located ()
+    :match  (and (is-a ?a Cigarette) (is-a ?house House))
+    :assert (co-located ?a ?house)
+    :why    "guess: is {?a} co-located with {?house}?"
+  )
+
+  ;; TODO: can we have hrule with ?R relation as argument
+  ;; TODO: where to put hrule facts (hypothesis-co-located Pet House)
+  ;;        ontology is not the best place, cause it is state, and hrules are hypgen
+  ;;        maybe new head or query?
+
+)
 
 (ontology
   ;; ── Relation signatures. `is-a` connects any node to any node;
@@ -177,8 +215,6 @@
   (relation co-located T T)
   (relation right-of   T T)
   (relation next-to    T T)
-
-  (closed is-a)
 
   ;; ── Rule-application facts (implicit context for the engine).
   ;; ──
@@ -278,7 +314,9 @@
 (query
   :mode solve
   :goal (and (co-located ?water-drinker Water)
-             (co-located ?zebra-owner   Zebra)))
+             (co-located ?zebra-owner   Zebra))
+;;  :hypothesis-relations (co-located)
+)
 
 ;; Expected solution (as IR facts):
 ;;   (co-located Water Norwegian)

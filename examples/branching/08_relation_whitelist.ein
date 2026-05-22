@@ -1,20 +1,25 @@
 ;;; P1.5 demo 8 — relation whitelist (S1.5.6b T1.5.6b.1).
 ;;;
-;;; The hypothesis generator enumerates every declared relation by
-;;; default. This puzzle has two: `co-located` — the attribute the
-;;; solver must pin down — and `right-of`, the house ordering,
-;;; given in full as facts and never something to *guess*.
+;;; The closed-relation inference already removes relations no rule
+;;; can ever conclude — here `is-a`, emitted as `(closed is-a)`
+;;; before saturation. The `:hypothesis-relations` whitelist is the
+;;; *query-scoped* complement: it can exclude a relation that IS
+;;; rule-propagated, when this particular query has no use for
+;;; guessing it.
 ;;;
-;;; The `:hypothesis-relations (co-located)` keyword in the
-;;; `(query …)` block restricts the generator to `co-located`;
-;;; `right-of` candidates are skipped before construction, visible
-;;; as the `relation_not_whitelisted` pre-candidate count in
-;;; `bench_solve --hyp-stats`. The whitelist is query-scoped — it
-;;; describes how to search for *this* goal.
+;;; This puzzle has `co-located` (the attribute to pin down) and
+;;; `next-to` (the house adjacency). `next-to` is propagated by
+;;; `(symmetric next-to)`, so the closed-inference leaves it OPEN —
+;;; the blind enumerator would build `next-to` candidates. But the
+;;; goal is about `co-located`; the `(query … :hypothesis-relations
+;;; (co-located))` keyword restricts the generator to `co-located`,
+;;; so the `next-to` candidates are skipped — counted as
+;;; `relation_not_whitelisted` in `bench_solve --hyp-stats`,
+;;; alongside the `closed_relation` skip for `is-a`.
 ;;;
-;;; Drop the `:hypothesis-relations` keyword and the generator
-;;; also enumerates `right-of` guesses — pure waste, since the
-;;; ordering is given.
+;;; Drop the `:hypothesis-relations` keyword and the generator also
+;;; enumerates `next-to` guesses — wasteful here, since the
+;;; adjacency is given in full.
 ;;;
 ;;; verdict Solution, ?h = H3.
 
@@ -46,10 +51,11 @@
 (ontology
   (relation is-a       T T)
   (relation co-located T T)
-  (relation right-of   T T)
+  (relation next-to    T T)
 
   (symmetric         co-located)
   (transitive        co-located)
+  (symmetric         next-to)
   (sibling-exclusive is-a co-located)
   (functional        is-a)
 
@@ -57,9 +63,9 @@
   (is-a Red Color) (is-a Green Color) (is-a Blue Color)
   (is-a H1 House) (is-a H2 House) (is-a H3 House)
 
-  ;; The house row — given as facts, never hypothesised.
-  (right-of H2 H1)
-  (right-of H3 H2))
+  ;; The house adjacency — given as facts, never hypothesised.
+  (next-to H1 H2)
+  (next-to H2 H3))
 
 (facts
   (co-located Red   H1 :source "(1)")

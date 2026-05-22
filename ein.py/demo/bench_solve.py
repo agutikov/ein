@@ -49,6 +49,12 @@ Debug logging (S1.5.4-motivated diagnostics for branching blowup):
 - ``--dump-config`` — print the resolved :class:`SolverConfig`
   after parsing — the `(config …)` block's values, or the
   defaults when the puzzle carries no `(config …)` head.
+- ``--print-branch BRANCH`` — after solving, print one branch
+  (e.g. ``b3``): its REASONING-layer state, the alive hypotheses
+  carried at it, and per-branch stats.
+- ``--branch-progress`` — print that same per-branch dump for
+  *every* branch as it is explored — a firehose for backtracking
+  debug; pair with ``--max-nodes``.
 """
 from __future__ import annotations
 
@@ -93,6 +99,7 @@ class _DebugState:
         self.start_time: float = 0.0
         self.last_progress: float = 0.0
         self.verbose: bool = False
+        self.branch_progress: bool = False
         self.progress_every: int = 100
         self.max_nodes: int | None = None
         self.max_time: float | None = None
@@ -104,7 +111,8 @@ _dbg = _DebugState()
 
 def _install_instrumentation(verbose: bool, progress_every: int,
                              max_nodes: int | None,
-                             max_time: float | None) -> None:
+                             max_time: float | None,
+                             branch_progress: bool = False) -> None:
     """Monkey-patch `generate_hypotheses` + `try_branch` to count and log.
 
     The wrappers replace module-level names so `_explore`'s unqualified
@@ -112,6 +120,7 @@ def _install_instrumentation(verbose: bool, progress_every: int,
     them via the module's globals lookup at call time.
     """
     _dbg.verbose = verbose
+    _dbg.branch_progress = branch_progress
     _dbg.progress_every = progress_every
     _dbg.max_nodes = max_nodes
     _dbg.max_time = max_time
@@ -171,6 +180,14 @@ def _install_instrumentation(verbose: bool, progress_every: int,
             print(f" {args_repr}) {dt*1e3:.1f}ms "
                   f"{'alive' if res.is_alive() else 'dead'}",
                   file=sys.stderr)
+        if _dbg.branch_progress:
+            _print_branch(
+                f"b{res.branch_id}", res.kb, res.hypothesis, res.firings,
+                [f"verdict      {res.kind}",
+                 f"firings      {len(res.firings)}",
+                 f"unsat-core   {len(res.unsat_core)}"],
+                sys.stderr,
+            )
         return res
 
     _hyp_mod.generate_hypotheses = wrapped_gen
@@ -274,6 +291,55 @@ def _hashable_args(args) -> tuple:
     )
 
 
+# ── Branch inspection (--print-branch / --branch-progress) ──────────
+
+
+def _node_depth(tree: SearchTree, nid: int) -> int:
+    """Distance from the tree root to node `nid`."""
+    d = 0
+    cur = tree.nodes[nid].parent
+    while cur is not None:
+        d += 1
+        cur = tree.nodes[cur].parent
+    return d
+
+
+def _print_branch(label, kb, hypothesis, firings, stat_lines, stream) -> None:
+    """Print one branch — header, stats, the alive hypotheses it
+    carries, and its REASONING-layer state. Shared by --print-branch
+    (a post-solve SearchNode) and --branch-progress (a live
+    BranchResult)."""
+    from ein_bot.inference.canon import BOOKKEEPING_HEADS
+    from ein_bot.kb.entities import Layer
+
+    def out(s: str) -> None:
+        print(s, file=stream)
+
+    out(f"branch {label}")
+    out(f"  hypothesis   ({_fact_repr(hypothesis)})")
+    for line in stat_lines:
+        out(f"  {line}")
+
+    alive = getattr(kb, "alive", None)
+    if alive:
+        out(f"  alive        {len(alive)} hypotheses")
+        for h in sorted(alive, key=lambda f: (f.relation_name,
+                                              _hashable_args(f.args))):
+            out(f"      ({_fact_repr(h)})")
+    else:
+        out("  alive        none")
+
+    facts = sorted(
+        (f for f in kb.facts
+         if f.layer == Layer.REASONING
+         and f.relation_name not in BOOKKEEPING_HEADS),
+        key=lambda f: (f.relation_name, _hashable_args(f.args)),
+    )
+    out(f"  state        {len(facts)} REASONING facts")
+    for f in facts:
+        out(f"      ({_fact_repr(f)})")
+
+
 # ── Main ───────────────────────────────────────────────────────────
 
 
@@ -303,6 +369,12 @@ def main() -> int:
                     help="print per-relation hypothesis-generation breakdown")
     ap.add_argument("--dump-config", action="store_true",
                     help="print the resolved SolverConfig after parsing")
+    ap.add_argument("--print-branch", metavar="BRANCH", default=None,
+                    help="after solving, print branch BRANCH (e.g. b3) — "
+                         "its state, alive hypotheses, and stats")
+    ap.add_argument("--branch-progress", action="store_true",
+                    help="print every branch's state + alive hyps + stats "
+                         "during the search (verbose; backtracking debug)")
     ap.add_argument("--solution-facts", action="store_true",
                     help="for each solution leaf, dump its propositional "
                          "(REASONING-layer, non-bookkeeping) facts + state_hash "
@@ -350,9 +422,11 @@ def main() -> int:
     # the negated-fact and one-step-lookahead (S1.5.6) filters see
     # an empty derived layer and report zero drops. Preview on a
     # fork so solve()'s own root saturation stays pristine.
+    from ein_bot.inference.closed import emit_closed
     from ein_bot.inference.hypgen import generate_hypotheses_with_stats
     from ein_bot.inference.saturator import Saturator
     _preview_kb = kb.fork()
+    emit_closed(_preview_kb)
     list(Saturator(_preview_kb).saturate())
     root_facts, root_stats = generate_hypotheses_with_stats(_preview_kb)
     root_hyps: Counter[str] = Counter()
@@ -375,6 +449,7 @@ def main() -> int:
         progress_every=args.progress_every,
         max_nodes=args.max_nodes,
         max_time=args.max_time,
+        branch_progress=args.branch_progress,
     )
 
     mode = Mode(args.mode) if args.mode else None
@@ -481,6 +556,38 @@ def main() -> int:
                 shape = "leaf" if not node.children else f"+{len(node.children)} dead-children"
                 print(f"  b{node.id:<3} parent={parent_str:<4} "
                       f"verdict={label:<8} {shape:<22} on=({hyp})")
+        print()
+
+    # ── Single-branch inspection (--print-branch) ────────────────
+    if args.print_branch is not None:
+        want = args.print_branch.strip().lstrip("bB")
+        try:
+            _bid = int(want)
+        except ValueError:
+            print(f"--print-branch: not a branch id: {args.print_branch!r}")
+        else:
+            _node = tree.nodes.get(_bid)
+            if _node is None:
+                _hi = max(tree.nodes) if tree.nodes else 0
+                print(f"--print-branch: no branch b{_bid} "
+                      f"(tree is b0..b{_hi})")
+            elif _node.kb_snapshot is None:
+                print(f"--print-branch: b{_bid} has no kb snapshot")
+            else:
+                print()
+                _parent = (f"b{_node.parent}"
+                           if _node.parent is not None else "—")
+                _print_branch(
+                    f"b{_bid}", _node.kb_snapshot, _node.hypothesis,
+                    _node.firings,
+                    [f"parent       {_parent}",
+                     f"verdict      {_node.verdict}",
+                     f"depth        {_node_depth(tree, _bid)}",
+                     f"firings      {len(_node.firings)}",
+                     f"children     {len(_node.children)}",
+                     f"unsat-core   {len(_node.unsat_core)}"],
+                    sys.stdout,
+                )
         print()
 
     # ── Full tree IR ─────────────────────────────────────────────

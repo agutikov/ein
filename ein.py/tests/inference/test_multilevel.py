@@ -91,11 +91,23 @@ def test_trivial_solve_has_solution_leaf():
 
 
 def test_branching_produces_children():
-    """A KB needing one hypothesis level produces a root with children."""
-    kb = _kb(_RULES + """
+    """A KB needing one hypothesis level produces a root with children.
+
+    `symmetric` is included so `co-located` is rule-producible —
+    otherwise the closed-relation inference (no positive producer
+    ⇒ closed) would skip it and the loop could not branch.
+    """
+    kb = _kb("""
+    (rules
+      (rule symmetric (?rel)
+        :match  (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+      (rule sibling-exclusive (?siblings-via ?exclusive-under)
+        :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+        :assert (not (?exclusive-under ?a ?b)) :why "sib" :priority 300))
     (ontology
       (relation is-a T T)
       (relation co-located T T)
+      (symmetric         co-located)
       (sibling-exclusive is-a co-located)
       (is-a Color T) (is-a House T)
       (is-a Red Color) (is-a Blue Color)

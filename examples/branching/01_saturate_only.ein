@@ -47,7 +47,6 @@
   (transitive        co-located)
   (sibling-exclusive is-a co-located)
   (functional        is-a)
-  (closed            is-a)   ;; T1.5.4.1 — inheritance forest is fixed
 
   (is-a Color T) (is-a Drink T)
   (is-a Red    Color) (is-a Blue   Color)

@@ -63,7 +63,6 @@
   (relation co-located T T)
   (relation right-of T T)
   (relation next-to T T)
-  (closed is-a)
   (asymmetric is-a)
   (sibling-exclusive is-a co-located)
   (sibling-exclusive is-a is-a)

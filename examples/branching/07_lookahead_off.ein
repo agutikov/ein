@@ -65,7 +65,6 @@
   (transitive        co-located)
   (sibling-exclusive is-a co-located)
   (functional        is-a)
-  (closed            is-a)   ;; the inheritance forest is fixed
 
   (is-a Color T) (is-a House T)
   (is-a Red    Color) (is-a Green Color) (is-a Ivory  Color)
