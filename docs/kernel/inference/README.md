@@ -124,6 +124,33 @@ Tracked at
 as a long-term design seam; promote to a typed invariant check
 when F5 lands.
 
+## Unconditional death — back-prop soundness (S1.5.7)
+
+When a hypothesis branch dies, the engine asks whether the death is
+**unconditional** — whether the contradiction would recur from the
+parent KB's facts alone, with the branch's hypothesis `h` playing no
+part. An unconditional death licenses back-propagating `(not h)` into
+the parent ([S1.5.7](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md)),
+where it becomes an O(1) `_negated_facts` filter entry every sibling
+and descendant inherits.
+
+The test is **not** the shallow one — *"the unsat-core contains no
+`kind='hypothesis'` fact"*. That read is unsound: an unsat-core fact
+can be `kind='rule'` and still derive, through a chain of firings,
+from a hypothesis — its own provenance is `'rule'`, but its premises
+are not. [`back_prop.reaches_hypothesis`](../../../ein.py/src/ein_bot/inference/back_prop.py)
+walks `Provenance.premises_raw` transitively — resolving each id
+against the KB — until every chain grounds out at a `source`-kind /
+un-provenanced given, or any chain reaches a `hypothesis` / `rejected`
+terminal. `is_unconditional_death(kb, unsat_core)` is True iff no
+chain reaches a speculative terminal.
+
+The asymmetry is load-bearing: a missed unconditional death merely
+forgoes a cache entry, but a *false* one writes `(not h)` into the
+parent irreversibly and wrongly excludes a valid hypothesis. The
+predicate therefore errs conditional — an empty or unresolvable
+unsat-core reads as conditional, never unconditional.
+
 ## Where the design lives today
 
 The complete plan, including task breakdown and acceptance criteria:
