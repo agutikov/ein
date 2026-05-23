@@ -49,10 +49,14 @@ class SolverConfig:
       ships; **False** until then) — Topic B Tier B, the
       ``_dies_immediately(kb, h)`` one-step rule simulator. Skipped
       cleanly by the engine when the implementation isn't present.
-    - ``enable_back_prop_unconditional`` (default **False**) —
-      Topic C from S1.5.7. The first turn-on is a controlled
-      experiment; flip to ``True`` after the verdict-divergence
-      audit T1.5.7.2.d clears.
+    - ``enable_back_prop_unconditional`` (default **True**, flipped
+      from off on 2026-05-23 once T1.5.7.2 + .5 + .6 shipped) —
+      Topic C from S1.5.7. The consume loop sweeps candidates,
+      back-propagates ``(not h)`` for unconditional deaths into the
+      parent KB, re-saturates, and re-evaluates. ``False`` reverts
+      to the static pre-S1.5.7 descent — keep as an escape hatch if
+      a puzzle's rule library produces nested-Fact hypotheses or
+      otherwise breaks the back-prop preconditions.
     - ``enable_auto_closure`` (default **False**) — S1.5.5's
       ``infer-closure-from-functional`` rule firing during
       saturation. Off until the auto-inference is verified to not
@@ -64,7 +68,7 @@ class SolverConfig:
     enable_alive_inherit:            bool = True
     enable_pre_branch_negated:       bool = True
     enable_pre_branch_lookahead:     bool = True
-    enable_back_prop_unconditional:  bool = False
+    enable_back_prop_unconditional:  bool = True
     enable_auto_closure:             bool = False
     print_alive:                     bool = False
 

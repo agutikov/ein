@@ -166,3 +166,36 @@ def test_reaches_hypothesis_single_fact():
     speculative = _derived(kb, "g", ("A",), rule="r2", premises=[h])
     assert reaches_hypothesis(kb, forced) is False
     assert reaches_hypothesis(kb, speculative) is True
+
+
+# ── own_hypothesis exemption (T1.5.7.2 wiring) ─────────────────────
+
+
+def test_own_hypothesis_excluded_is_unconditional():
+    """The branch's own hypothesis in its core is benign — exempted
+    from the count, so the death reads as unconditional."""
+    kb = _kb()
+    h = _hypothesis(kb, "h", ("A",))
+    assert is_unconditional_death(
+        kb, frozenset({h}), own_hypothesis=h) is True
+
+
+def test_own_plus_other_hypothesis_is_conditional():
+    """Own hypothesis is exempt, but a *second* hypothesis is not —
+    the death rests on an external speculation."""
+    kb = _kb()
+    h = _hypothesis(kb, "h", ("A",))
+    other = _hypothesis(kb, "other", ("B",), branch=9)
+    assert is_unconditional_death(
+        kb, frozenset({h, other}), own_hypothesis=h) is False
+
+
+def test_own_hypothesis_reached_transitively_excluded():
+    """A core fact rule-derived from the *own* hypothesis is still
+    benign — the ``own`` exemption applies at the hypothesis terminal,
+    so it covers facts transitively derived from it too."""
+    kb = _kb()
+    h = _hypothesis(kb, "h", ("A",))
+    derived = _derived(kb, "d", ("A",), rule="r1", premises=[h])
+    assert is_unconditional_death(
+        kb, frozenset({derived}), own_hypothesis=h) is True

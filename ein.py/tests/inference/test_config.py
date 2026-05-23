@@ -24,7 +24,7 @@ def test_defaults_match_ship_decisions():
     assert c.enable_alive_inherit is True
     assert c.enable_pre_branch_negated is True
     assert c.enable_pre_branch_lookahead is True
-    assert c.enable_back_prop_unconditional is False
+    assert c.enable_back_prop_unconditional is True   # flipped 2026-05-23
     assert c.enable_auto_closure is False
     assert c.print_alive is False
 

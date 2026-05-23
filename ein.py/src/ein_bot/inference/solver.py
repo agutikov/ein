@@ -25,6 +25,7 @@ from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
+from .back_prop import back_propagate, is_unconditional_death
 from .canon import state_hash
 from .closed import emit_closed
 from .compile import JoinPlan, compile_pattern
@@ -433,6 +434,58 @@ def _explore(
     nid = builder.alloc()
     builder.state_index[sh] = nid
 
+    # S1.5.7 T1.5.7.6 — the candidate descent. With back-prop off
+    # `_descend` runs the static pre-S1.5.7 loop, byte for byte;
+    # with it on, `_consume` runs the iterative back-prop loop and
+    # may extend this node's firings with re-saturation passes — a
+    # forced move folds in here rather than spending a tree level.
+    cfg: SolverConfig = kb.config or SolverConfig()
+    if cfg.enable_back_prop_unconditional:
+        child_ids, node_firings = _consume(
+            kb, nid, firings, depth, max_depth, builder, mode,
+        )
+    else:
+        child_ids = _descend(kb, nid, depth, max_depth, builder, mode)
+        node_firings = firings
+
+    if not child_ids:
+        # No more hypotheses available — this is a true leaf. The
+        # state is maximally constrained under the current rule set.
+        leaf_verdict = "solution" if is_solved(kb, mode) else "open"
+        builder.add(SearchNode(
+            id=nid, parent=parent_id, hypothesis=hypothesis,
+            kb_snapshot=kb, firings=node_firings,
+            verdict=leaf_verdict, children=(),
+        ))
+        return nid
+
+    # Interior: stamp "open" pre-promotion. _promote_verdicts will
+    # resolve it from the children + this state's own is_solved
+    # status (the "all-dead-AND-goal-matched ⇒ solution-endpoint"
+    # case).
+    builder.add(SearchNode(
+        id=nid, parent=parent_id, hypothesis=hypothesis,
+        kb_snapshot=kb, firings=node_firings,
+        verdict="open", children=tuple(child_ids),
+    ))
+    return nid
+
+
+def _descend(
+    kb: KnowledgeBase,
+    nid: BranchId,
+    depth: int,
+    max_depth: int,
+    builder: _TreeBuilder,
+    mode: Mode,
+) -> list[BranchId]:
+    """Enumerate hypotheses once; recurse alive, record dead.
+
+    The static (non-back-prop) descent — the pre-S1.5.7 ``_explore``
+    candidate loop extracted verbatim, so the
+    ``enable_back_prop_unconditional=False`` path stays byte-identical
+    (S1.5.7 T1.5.7.6.d). ``nid`` is the parent of every child.
+    """
     child_ids: list[BranchId] = []
     seen_children: set[BranchId] = set()
     candidates = _candidates_for(kb)
@@ -459,28 +512,104 @@ def _explore(
         if child_id not in seen_children:
             seen_children.add(child_id)
             child_ids.append(child_id)
+    return child_ids
 
-    if not child_ids:
-        # No more hypotheses available — this is a true leaf. The
-        # state is maximally constrained under the current rule set.
-        leaf_verdict = "solution" if is_solved(kb, mode) else "open"
-        builder.add(SearchNode(
-            id=nid, parent=parent_id, hypothesis=hypothesis,
-            kb_snapshot=kb, firings=firings,
-            verdict=leaf_verdict, children=(),
-        ))
-        return nid
 
-    # Interior: stamp "open" pre-promotion. _promote_verdicts will
-    # resolve it from the children + this state's own is_solved
-    # status (the "all-dead-AND-goal-matched ⇒ solution-endpoint"
-    # case).
-    builder.add(SearchNode(
-        id=nid, parent=parent_id, hypothesis=hypothesis,
-        kb_snapshot=kb, firings=firings,
-        verdict="open", children=tuple(child_ids),
-    ))
-    return nid
+def _consume(
+    kb: KnowledgeBase,
+    nid: BranchId,
+    firings: tuple[Firing, ...],
+    depth: int,
+    max_depth: int,
+    builder: _TreeBuilder,
+    mode: Mode,
+) -> tuple[list[BranchId], tuple[Firing, ...]]:
+    """Iterative back-prop consume loop — S1.5.7 T1.5.7.2 / .5 / .6.
+
+    Each pass sweeps every current candidate with ``try_branch``. A
+    candidate that dies *unconditionally* (``is_unconditional_death``
+    — its contradiction resting on no hypothesis but its own) has
+    ``(not h)`` back-propagated into the parent ``kb`` (T1.5.7.2) and
+    is recorded as a dead child at once: ``(not h)`` removes it from
+    ``_candidates_for`` permanently, so it never reappears.
+
+    If any sibling died unconditionally this pass, the parent ``kb``
+    is re-saturated once (T1.5.7.5) — a back-propped ``(not h)`` is
+    only an O(1) filter entry until re-saturation makes it a premise
+    the rule engine can chain from — and the loop repeats over the
+    shrunk candidate set. Each progressing pass back-props ≥ 1
+    ``(not h)``, so the candidate set strictly shrinks and the loop
+    terminates.
+
+    When a pass makes no progress the still-pending candidates are a
+    genuine disjunction: the loop hands off to ``_descend`` (which
+    re-runs ``try_branch`` inline so branch ids land in allocation
+    order — flag-off byte-identical behaviour when no back-prop ever
+    fires).
+
+    Returns ``(child_ids, node_firings)``; ``node_firings`` is the
+    passed-in ``firings`` extended with every re-saturation pass, so
+    a forced move re-saturation derives folds into *this* node's
+    trace rather than spending a tree level (T1.5.7.6).
+
+    NOTE — under the M1 rule set re-saturation cannot itself produce
+    a *contradiction* (no rule concludes a clash from a ``(not …)``
+    premise). The re-saturation-derived-contradiction case —
+    S1.5.8's ``domain-elimination`` all-excluded shape — is owned by
+    S1.5.8 (T1.5.8.3); revisit this loop when that rule ships.
+    """
+    child_ids: list[BranchId] = []
+    seen_children: set[BranchId] = set()
+    node_firings = firings
+
+    def _add(cid: BranchId) -> None:
+        if cid not in seen_children:
+            seen_children.add(cid)
+            child_ids.append(cid)
+
+    while True:
+        candidates = _candidates_for(kb)
+        if not candidates:
+            break
+        # Sweep — back-propagate every unconditional death as found.
+        unconditional: list[tuple[Fact, BranchResult]] = []
+        for h in candidates:
+            result = try_branch(kb, h, branch_id=builder.peek_id())
+            if (not result.is_alive()
+                    and is_unconditional_death(
+                        result.kb, result.unsat_core,
+                        own_hypothesis=result.hypothesis)):
+                back_propagate(kb, h, result.unsat_core)
+                unconditional.append((h, result))
+        if not unconditional:
+            # Fixpoint — no sibling died unconditionally. Hand off
+            # to the static descent over the still-pending set.
+            for cid in _descend(kb, nid, depth, max_depth, builder, mode):
+                _add(cid)
+            break
+        # Record the unconditionally-dead branches now — `(not h)`
+        # has been back-propped, so they will not be re-swept next
+        # pass.
+        for h, result in unconditional:
+            cid = builder.alloc()
+            builder.add(SearchNode(
+                id=cid, parent=nid, hypothesis=h,
+                kb_snapshot=result.kb, firings=result.firings,
+                verdict="dead", children=(),
+                unsat_core=result.unsat_core,
+            ))
+            _add(cid)
+        # Re-saturate the parent so the back-propped negatives are
+        # premises rule firings can chain from (T1.5.7.5) — once
+        # per sweep, fresh Saturator.
+        node_firings = node_firings + tuple(
+            Saturator(kb).saturate(max_steps=10_000)
+        )
+    # Re-index under the post-re-saturation state hash so a later
+    # branch reaching the settled state dedups here (T1.5.7.5c);
+    # `setdefault` keeps any prior owner of that hash.
+    builder.state_index.setdefault(state_hash(kb), nid)
+    return child_ids, node_firings
 
 
 def _promote_verdicts(builder: _TreeBuilder, root_id: BranchId,
