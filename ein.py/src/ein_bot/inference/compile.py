@@ -236,6 +236,27 @@ def _compile_premise(
         sub_steps = _compile_body(node.args[0], bindings, known_vars)
         return [AbsentGuard(sub_steps=tuple(sub_steps))]
 
+    # `(open P)` — third-state match, S1.5.8c T1.5.8c.3b.
+    # Parser sugar: rewrites to `(and (absent P) (absent (not P)))`.
+    # Names the hypothetical state of P: neither asserted nor
+    # negated in the KB. Useful for gating hypothesis emission
+    # on still-undecided slots.
+    if head_name == "open" and len(node.args) >= 1:
+        p = node.args[0]
+        desugared = SForm(
+            head=Atom(name="and"),
+            args=(
+                SForm(head=Atom(name="absent"), args=(p,)),
+                SForm(
+                    head=Atom(name="absent"),
+                    args=(
+                        SForm(head=Atom(name="not"), args=(p,)),
+                    ),
+                ),
+            ),
+        )
+        return _compile_premise(desugared, bindings, known_vars)
+
     # `(forall ?b (G) (B))` — guarded universal, S1.5.8c T1.5.8c.3a.
     # Parser sugar: rewrites to `(absent (and G (absent B)))` —
     # classical ∀x. G(x) → B(x) ≡ ¬∃x. G(x) ∧ ¬B(x). The bound
