@@ -16,15 +16,29 @@ Designed in `plans/m1_core_graph_reasoning/p1.1_ir_language/`.
 from .dump import dump, dump_canonical, dump_compact
 from .parser import IRParseError, parse, parse_tree
 from .to_dot import (
-    render_facts, render_ontology, render_query, render_reasoning,
-    render_rule, render_trace, to_dot,
+    render_facts,
+    render_ontology,
+    render_query,
+    render_reasoning,
+    render_rule,
+    render_trace,
+    to_dot,
 )
 from .types import (
-    Atom, IRNode, Int, Keyword, KwPair, Loc, Range, SForm, String, Var,
+    Atom,
+    Int,
+    IRNode,
+    Keyword,
+    KwPair,
+    Loc,
+    Range,
+    SForm,
+    String,
+    Var,
     Wildcard,
 )
 
-__all__ = [
+__all__ = [  # noqa: RUF022  — grouped by role, not alphabetical
     # parse / dump
     "parse", "parse_tree", "IRParseError",
     "dump", "dump_canonical", "dump_compact",

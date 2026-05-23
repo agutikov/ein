@@ -23,7 +23,15 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from .types import (
-    Atom, IRNode, Int, Keyword, KwPair, Range, SForm, String, Var,
+    Atom,
+    Int,
+    IRNode,
+    Keyword,
+    KwPair,
+    Range,
+    SForm,
+    String,
+    Var,
     Wildcard,
 )
 
@@ -483,7 +491,11 @@ def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "c",
 
 
 __all__ = [
+    "render_facts",
+    "render_ontology",
+    "render_query",
+    "render_reasoning",
+    "render_rule",
+    "render_trace",
     "to_dot",
-    "render_ontology", "render_facts", "render_reasoning",
-    "render_rule", "render_query", "render_trace",
 ]

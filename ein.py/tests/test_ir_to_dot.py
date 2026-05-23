@@ -18,10 +18,15 @@ from pathlib import Path
 import pytest
 
 from ein_bot.ir import (
-    parse, render_facts, render_ontology, render_query, render_reasoning,
-    render_rule, render_trace, to_dot,
+    parse,
+    render_facts,
+    render_ontology,
+    render_query,
+    render_reasoning,
+    render_rule,
+    render_trace,
+    to_dot,
 )
-
 
 REPO = Path(__file__).resolve().parents[2]
 ZEBRA = REPO / "examples" / "zebra.ein"

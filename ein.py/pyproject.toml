@@ -88,3 +88,11 @@ ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["N802"]
+# Lark Transformer methods must match the grammar's UPPERCASE terminal
+# names (SYMBOL, VAR, KEYWORD, …) — the framework dispatches on name.
+"src/ein_bot/ir/ast.py" = ["N802"]
+# `_loc()` returns `field(default=None, compare=False, hash=False,
+# repr=False)` — calling it inline is the recommended dataclass-field
+# helper idiom; ruff's RUF009 cannot tell `field()` apart from a real
+# function call.
+"src/ein_bot/ir/types.py" = ["RUF009"]

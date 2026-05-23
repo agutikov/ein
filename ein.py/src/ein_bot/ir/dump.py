@@ -18,7 +18,15 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from .types import (
-    Atom, IRNode, Int, Keyword, KwPair, Range, SForm, String, Var,
+    Atom,
+    Int,
+    IRNode,
+    Keyword,
+    KwPair,
+    Range,
+    SForm,
+    String,
+    Var,
     Wildcard,
 )
 

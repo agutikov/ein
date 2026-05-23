@@ -84,7 +84,7 @@ IRNode = Union[
 class KwPair:
     """A `:key value` pair inside a list."""
     key: Keyword
-    value: "IRNode"
+    value: IRNode
     loc: Loc | None = _loc()
 
 
@@ -99,12 +99,21 @@ class SForm:
     grammar (`rule_params`, empty `()`); the dumper emits them
     without a head.
     """
-    head: "Atom | Var | Wildcard"
-    args: tuple["IRNode", ...]
+    head: Atom | Var | Wildcard
+    args: tuple[IRNode, ...]
     loc: Loc | None = _loc()
 
 
 __all__ = [
-    "Loc", "Atom", "Var", "Keyword", "Wildcard", "String", "Int",
-    "Range", "KwPair", "SForm", "IRNode",
+    "Atom",
+    "IRNode",
+    "Int",
+    "Keyword",
+    "KwPair",
+    "Loc",
+    "Range",
+    "SForm",
+    "String",
+    "Var",
+    "Wildcard",
 ]

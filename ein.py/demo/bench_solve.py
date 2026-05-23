@@ -128,13 +128,28 @@ def _install_instrumentation(verbose: bool, progress_every: int,
     _dbg.last_progress = _dbg.start_time
 
     orig_gen = _hyp_mod.generate_hypotheses
+    orig_gen_stats = _hyp_mod.generate_hypotheses_with_stats
     orig_try = _hyp_mod.try_branch
 
     def wrapped_gen(kb):
+        # Per-branch path when `enable_alive_inherit=False` (the
+        # `_candidates_for` fallback) — the alive-inherit default
+        # uses `_prune_alive(kb.alive, kb)` and skips generation
+        # entirely, in which case this wrapper is unused and the
+        # `_with_stats` wrapper below covers the single root call.
         for h in orig_gen(kb):
             _dbg.hyps_gen_total += 1
             _dbg.hyps_by_rel[h.relation_name] += 1
             yield h
+
+    def wrapped_gen_stats(kb):
+        # Root-level call site in `solver.solve` — counts the root
+        # alive-set seed under `enable_alive_inherit=True`.
+        facts, stats = orig_gen_stats(kb)
+        for h in facts:
+            _dbg.hyps_gen_total += 1
+            _dbg.hyps_by_rel[h.relation_name] += 1
+        return facts, stats
 
     def wrapped_try_branch(parent_kb, hypothesis, *, branch_id,
                            saturator_steps=10_000):
@@ -191,6 +206,7 @@ def _install_instrumentation(verbose: bool, progress_every: int,
         return res
 
     _hyp_mod.generate_hypotheses = wrapped_gen
+    _hyp_mod.generate_hypotheses_with_stats = wrapped_gen_stats
     _hyp_mod.try_branch = wrapped_try_branch
 
 

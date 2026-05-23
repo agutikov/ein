@@ -159,7 +159,6 @@ class TestZebraRule:
         assert app.args == ("co-located",)
 
     def test_type_exclusivity_mentions_co_located(self, zebra_kb):
-        rule = zebra_kb.rules["type-exclusivity"]
         # ?R appears only in :assert (not (?R ?a ?b)), so the structural
         # relation_names list doesn't include "co-located" — but the
         # `applications` activator + the cross-reference via

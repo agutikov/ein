@@ -14,7 +14,15 @@ from __future__ import annotations
 from lark import Token, Transformer
 
 from .types import (
-    Atom, IRNode, Int, Keyword, KwPair, Loc, Range, SForm, String, Var,
+    Atom,
+    Int,
+    Keyword,
+    KwPair,
+    Loc,
+    Range,
+    SForm,
+    String,
+    Var,
     Wildcard,
 )
 

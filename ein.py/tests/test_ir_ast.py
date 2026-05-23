@@ -14,10 +14,20 @@ from pathlib import Path
 import pytest
 
 from ein_bot.ir import (
-    Atom, IRParseError, Int, Keyword, KwPair, Range, SForm, String, Var,
-    Wildcard, dump_canonical, dump_compact, parse,
+    Atom,
+    Int,
+    IRParseError,
+    Keyword,
+    KwPair,
+    Range,
+    SForm,
+    String,
+    Var,
+    Wildcard,
+    dump_canonical,
+    dump_compact,
+    parse,
 )
-
 
 REPO = Path(__file__).resolve().parents[2]
 ZEBRA = REPO / "examples" / "zebra.ein"
