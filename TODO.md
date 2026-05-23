@@ -47,6 +47,7 @@
 
 
 
+
 ---
 
 P1.6
@@ -133,13 +134,21 @@ existing IR 3-level docs expand to 4:
 - ein-lang remain
 
 
+kernel API reference: 
+    - primitives and semantically loaded atoms (rule, relation, T, not, eq, neq, closed, absent, forall, open, ...)
+
+stdlib API reference
+
+
 inference docs
 - ideomatic level
     - collections, indexes
-    - algorithm diagrams
+    - algorithm diagrams and mathematic pseudocode
 - python implementation
     - files, modules, data types, functions, classes
 
+
+split kernel docs into user and dev docs, python implementation goes to dev
 
 
 software architecture docs with diagrams
@@ -199,5 +208,14 @@ compare to other systems from docs/index
 try benchmarks
 summarize results
 list further growth directions
+
+---
+
+F1b - logical formulation
+
+Can we express first order logic in ein? How?
+Especially https://en.wikipedia.org/wiki/List_of_rules_of_inference#Rules_for_propositional_calculus
+
+
 
 

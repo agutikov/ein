@@ -83,10 +83,10 @@
     :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
     :priority 200)
 
-  (rule implies (?p ?q)
+  (rule includes (?p ?q)
     :match  (?p ?a ?b)
     :assert (?q ?a ?b)
-    :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+    :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
     :priority 100)
 
   ;; Square applies ONLY to *directional* (asymmetric) spatial
@@ -213,7 +213,7 @@
   (symmetric  co-located)
   (transitive co-located)
   (symmetric  next-to)
-  (implies    right-of next-to)
+  (includes    right-of next-to)
   (square-fwd    right-of)
   (square-bwd    right-of)
   (square-unique next-to House)

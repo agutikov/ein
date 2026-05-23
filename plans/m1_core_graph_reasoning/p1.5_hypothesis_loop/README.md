@@ -48,7 +48,10 @@ what the loop *records* and what it returns at quiescence.
 | S1.5.6b | [Guided hypothesis generation](s1.5.6b_guided_hypgen.md) — done (2026-05-22) | ~3-5 days |
 | S1.5.7  | [Back-prop `(not h)`, re-saturate, return on derived positive](s1.5.7_back_prop_unconditional.md) | 4-6 days |
 | S1.5.7b | [Stable-alive caching in the `_consume` loop](s1.5.7b_consume_loop_stable_alive.md) — parked (2026-05-23), not M1-blocking | ~1-1½ days |
-| S1.5.8  | [Totality + domain elimination](s1.5.8_totality_domain_elimination.md) | 3-4 days |
+| S1.5.8a | [Relation projections + property-on-projection design](s1.5.8a_relation_projections_design.md) — design alternative A (StructuralScan); **superseded by S1.5.8c** | meta |
+| S1.5.8b | [Minimal-kernel proposal for domain-elimination](s1.5.8b_minimal_kernel_proposal.md) — design alternative B (precursor); **rationale record, refined by S1.5.8c** | meta |
+| S1.5.8c | [Final decision](s1.5.8c_final_decision.md) — locks the design: 3 kernel deltas + 2 parser sugars + 2 grammar chars + 10-rule ein stdlib (6 M1-blocking + 4 optional closure) + B1 zebra2 refactor | meta |
+| S1.5.8  | [Totality + domain elimination](s1.5.8_totality_domain_elimination.md) — implements S1.5.8c | 3-4 days |
 
 S1.5.5/6/7 split out of S1.5.4 on 2026-05-21 per the
 implementation-order TODO; S1.5.8 was added 2026-05-22. Each
@@ -86,6 +89,25 @@ independently testable.
   "therefore" move in the human walkthrough). They also remove
   the depth-budget exhaustion the static descent risked when
   forced moves each spent a tree level.
+- **S1.5.8a / S1.5.8b / S1.5.8c** — **design meta-stages**
+  added 2026-05-23/24. All adopt B1 (drop sub-domains;
+  refactor zebra2 into specific binary relations).
+  - **S1.5.8a** — initial design with Python-side
+    `StructuralScan` opcode. **Superseded** by S1.5.8c.
+    Specific zebra2-refactor decisions reaffirmed.
+  - **S1.5.8b** — minimal-kernel pivot (drop NAF default;
+    add `absent`; add `forall` opcode). **Refined** by
+    S1.5.8c (forall becomes parser sugar, `open` added).
+    Kept as the rationale record.
+  - **S1.5.8c** — **final decision** (2026-05-24). 3 kernel
+    deltas (drop `(not P)` NAF default; rename
+    `NegativeGuard` → `AbsentGuard` / register `absent`
+    head; `*` in SYMBOL/VAR grammar) + 2 parser sugars
+    (`forall` → nested absent; `open` → conjunction of
+    absents) + the 10-rule ein stdlib block (6 M1-blocking
+    + 4 optional closure facility) + B1 zebra2 refactor.
+    ~20 LOC kernel + 20 LOC parser pass + 2 grammar chars.
+    S1.5.8 implementation reads only this file.
 
 The original `s1.5.3_symmetry.md` (engine-time symmetry breaking)
 was **dropped** during the S1.5.0 review — symmetry is an
