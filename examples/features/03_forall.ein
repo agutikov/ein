@@ -1,0 +1,57 @@
+;;; ein-bot — feature demo
+;;;
+;;; S1.5.8c T1.5.8c.3a — `(forall ?b (G) (B))` parser sugar.
+;;;
+;;; `forall ?b (G) (B)` desugars at compile time to
+;;;
+;;;     (absent (and G (absent B)))
+;;;
+;;; — the classical ∀x. G(x) → B(x) ≡ ¬∃x. G(x) ∧ ¬B(x) reduction.
+;;; The matcher sees only the desugared form; no new opcode is
+;;; added to the kernel.
+;;;
+;;; Safety: the bound `?b` must appear in the guard `G`. The
+;;; compiler rejects otherwise (no enumerable domain). The bound
+;;; var is local — it doesn't escape into the rule's :assert.
+;;;
+;;; This demo: a small tournament. A player is `undefeated` iff
+;;; they beat every OTHER player. Below, Alice beats both Bob
+;;; and Carol → Alice is undefeated. Bob beats nobody → not
+;;; undefeated. Carol beats only Alice → not undefeated (Bob
+;;; remains unbeaten by Carol).
+
+(rules
+  (rule undefeated ()
+    :match  (and (player ?p)
+                 (forall ?q
+                   (and (player ?q) (neq ?p ?q))
+                   (beats ?p ?q)))
+    :assert (undefeated ?p)
+    :priority 200
+    :why    "{?p} beats every other player ⇒ undefeated"))
+
+(ontology
+  (relation player T)
+  (relation beats  T T)
+  (relation undefeated T))
+
+(facts
+  (player Alice)
+  (player Bob)
+  (player Carol)
+
+  (beats Alice Bob)
+  (beats Alice Carol)
+  (beats Carol Alice))
+
+;; Expected reasoning-layer output (after saturation):
+;;
+;;   (undefeated Alice)   ; Alice beats both other players
+;;
+;; Bob and Carol both fail forall (Bob beats nobody; Carol fails
+;; to beat Bob), so neither fires.
+;;
+;; A variation: if you delete (beats Alice Carol), Alice is no
+;; longer undefeated → the rule fires for no one. If you delete
+;; ALL beats facts AND remove Bob and Carol, Alice is vacuously
+;; undefeated (forall over empty domain → true) → (undefeated Alice).

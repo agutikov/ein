@@ -191,6 +191,24 @@ def _collect_vars(slots: tuple[object, ...], into: set[str]) -> None:
             _collect_vars(s.arg_slots, into)
 
 
+def _var_in_ast(node: object, name: str) -> bool:
+    """True iff Var(name) appears anywhere in the IR sub-tree.
+
+    Used as the safety check for `(forall ?b (G) (B))`: the bound
+    var `?b` must appear in the guard `G`, otherwise the matcher
+    has no enumerable domain. Walks SForm/KwPair/Var.
+    """
+    if isinstance(node, Var):
+        return node.name == name
+    if isinstance(node, SForm):
+        if _var_in_ast(node.head, name):
+            return True
+        return any(_var_in_ast(a, name) for a in node.args)
+    if isinstance(node, KwPair):
+        return _var_in_ast(node.value, name)
+    return False
+
+
 def _compile_premise(
     node: IRNode,
     bindings: dict[str, str | int],
@@ -217,6 +235,40 @@ def _compile_premise(
     if head_name == "absent" and len(node.args) >= 1:
         sub_steps = _compile_body(node.args[0], bindings, known_vars)
         return [AbsentGuard(sub_steps=tuple(sub_steps))]
+
+    # `(forall ?b (G) (B))` — guarded universal, S1.5.8c T1.5.8c.3a.
+    # Parser sugar: rewrites to `(absent (and G (absent B)))` —
+    # classical ∀x. G(x) → B(x) ≡ ¬∃x. G(x) ∧ ¬B(x). The bound
+    # var `?b` must appear in `G` (safety: guard grounds it).
+    if head_name == "forall" and len(node.args) >= 3:
+        bound_node = node.args[0]
+        guard = node.args[1]
+        body = node.args[2]
+        if not isinstance(bound_node, Var):
+            raise ValueError(
+                f"forall: first arg must be a ?bound var, got {bound_node!r}",
+            )
+        if not _var_in_ast(guard, bound_node.name):
+            raise ValueError(
+                f"forall ?{bound_node.name}: bound var does not appear "
+                f"in guard {guard!r}",
+            )
+        desugared = SForm(
+            head=Atom(name="absent"),
+            args=(
+                SForm(
+                    head=Atom(name="and"),
+                    args=(
+                        guard,
+                        SForm(
+                            head=Atom(name="absent"),
+                            args=(body,),
+                        ),
+                    ),
+                ),
+            ),
+        )
+        return _compile_premise(desugared, bindings, known_vars)
 
     # `(not P)` falls through to the generic relation handler
     # below — it compiles as a fact pattern with relation "not"
