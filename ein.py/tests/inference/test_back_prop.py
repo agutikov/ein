@@ -214,6 +214,62 @@ def test_lookahead_kills_back_prop_into_kb():
     assert lookahead_kills, "expected lookahead kills to back-prop"
 
 
+def test_demo_10_11_flag_observable_delta_in_root_kb():
+    """The 10_backprop_on.ein / 11_backprop_off.ein pair isolates a
+    2-step death the S1.5.6 lookahead misses — the only difference
+    between the two files is a single `(config
+    :enable-back-prop-unconditional true/false)` line. ON writes
+    `<back-prop-unconditional>` AND `<lookahead-dies-immediately>`
+    negations into root_kb; OFF writes neither. The verdict and
+    answer are identical (back-prop must not change the puzzle's
+    solution set)."""
+    def counts(verdict) -> dict:
+        root_kb = verdict.tree.nodes[verdict.tree.root].kb_snapshot
+        out: dict = {}
+        for f in root_kb.facts:
+            if f.relation_name != "not" or f.provenance is None:
+                continue
+            if f.provenance.kind == "rule":
+                out[f.provenance.rule] = out.get(f.provenance.rule, 0) + 1
+        return out
+
+    # Load each file with no SolverConfig override — the file's own
+    # `(config …)` block drives the flag.
+    def _solve_file(name: str):
+        kb = KnowledgeBase.from_ir(parse((BRANCHING / name).read_text()))
+        return solve(kb)
+
+    on = _solve_file("10_backprop_on.ein")
+    off = _solve_file("11_backprop_off.ein")
+
+    on_counts = counts(on)
+    off_counts = counts(off)
+
+    # Flag-off: neither back-prop path writes anything.
+    assert "<back-prop-unconditional>" not in off_counts
+    assert "<lookahead-dies-immediately>" not in off_counts
+
+    # Flag-on: both paths fire. Symmetric promotion (T1.5.7.3) writes
+    # the mirror of each kill, so each provenance class lands ≥ 2
+    # facts. (Idempotency keeps the per-class total bounded: the
+    # primary + mirror together yield 2 per unconditional pair.)
+    assert on_counts.get("<back-prop-unconditional>", 0) >= 2, on_counts
+    assert on_counts.get("<lookahead-dies-immediately>", 0) >= 2, on_counts
+
+    # Same verdict (Solution) and the same query-goal binding (?p=Dave).
+    assert type(on) is type(off)
+    assert _answer(on) == _answer(off)
+    assert _answer(on)
+
+    # Tree-shape payoff: with back-prop on, descendants inherit the
+    # cached `(not …)` entries through `fork()` and skip candidates
+    # that would otherwise be re-forked + re-saturated + re-killed
+    # at every deeper level.
+    assert len(on.tree.nodes) < len(off.tree.nodes), (
+        len(on.tree.nodes), len(off.tree.nodes),
+    )
+
+
 def test_flag_on_back_prop_actually_fires():
     """On a puzzle with unconditionally-dead siblings the consume loop
     writes ``<back-prop-unconditional>`` negations into the KB.

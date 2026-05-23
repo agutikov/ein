@@ -297,11 +297,11 @@
   ;; with House). These live in (query …), the search-control
   ;; block, not in (ontology …).
   :hrules (guess-co-located
-            (Color House)
-            (Drink House)
-            (Pet House)
-            (Nationality House)
-            (Cigarette House)))
+            (House Color)
+            (House Drink)
+            (House Pet)
+            (House Nationality)
+            (House Cigarette)))
 
 ;; Expected solution (as IR facts):
 ;;   (co-located Water Norwegian)

@@ -140,4 +140,4 @@
 (query
   :mode solve
   :goal (and (co-located ?water-drinker Water) (co-located ?zebra-owner Zebra))
-  :hrules (guess-co-located (Color House) (Drink House) (Pet House) (Nationality House) (Cigarette House)))
+  :hrules (guess-co-located (House Color) (House Drink) (House Pet) (House Nationality) (House Cigarette)))

@@ -1,0 +1,124 @@
+;;; P1.5 demo 11 — back-prop on unconditional death (S1.5.7): DISABLED.
+;;;
+;;; The DISABLED half of an on/off pair. 11_backprop_off.ein and
+;;; 10_backprop_on.ein are byte-identical except for the single
+;;; `(config …)` line below — diff the two files to see it.
+;;;
+;;; The puzzle: 4 People (Alice, Bob, Carol, Dave). `friends-of`
+;;; (symmetric, implies buddy) and `buddy` (transitive) relate them.
+;;; One given buddy fact (Bob↔Carol) and one explicit `(no-buddy-with
+;;; Alice Carol)` constraint. Goal: who is Alice's friend?
+;;;
+;;; Hypothesis candidates the generator emits for Alice's friend
+;;; (`:hypothesis-relations friends-of` restricts the relation):
+;;;
+;;;   (friends-of Alice Carol)
+;;;     →(implies friends-of buddy)→ (buddy Alice Carol)
+;;;     ⇒ contradicts derived `(not (buddy Alice Carol))`.
+;;;     SINGLE-STEP death — the S1.5.6 lookahead catches it before
+;;;     the branch forks. With back-prop OFF the kill is NOT cached:
+;;;     the lookahead re-runs the match for every descendant.
+;;;
+;;;   (friends-of Alice Bob)
+;;;     →(implies friends-of buddy)→ (buddy Alice Bob)
+;;;     →(transitive buddy) + (buddy Bob Carol)→ (buddy Alice Carol)
+;;;     ⇒ contradicts derived `(not (buddy Alice Carol))`.
+;;;     TWO-STEP death — the lookahead's `transitive(buddy)` plan
+;;;     can't activate on `h` (the activator binds `?rel = buddy`
+;;;     but `h`'s relation is `friends-of`), and the
+;;;     `implies(friends-of, buddy)` plan's conclusion alone doesn't
+;;;     contradict anything in the parent. So `h` ESCAPES the
+;;;     lookahead, reaches `_consume`'s `try_branch`, full-saturates,
+;;;     and dies. With back-prop OFF the death is NOT cached either:
+;;;     every sibling and every descendant that re-encounters
+;;;     `(friends-of Alice Bob)` forks, saturates, and dies its own
+;;;     branch.
+;;;
+;;;   (friends-of Alice Dave) — Dave is unconstrained; ALIVE. The
+;;;   sole survivor of Alice's friend candidates and the unique
+;;;   SOLVE-mode binding ?p = Dave.
+;;;
+;;; With back-prop ON (10_backprop_on.ein) the unconditional death
+;;; of `(friends-of Alice Bob)` writes `(not …)` into the root KB
+;;; at the first sweep; every subsequent descendant drops the
+;;; candidate via the O(1) Filter-C negated-fact check. The same
+;;; caching also fires for the lookahead kills.
+;;;
+;;; With back-prop OFF (this file) the dead-hypothesis cache stays
+;;; empty across the call. Each level re-discovers the same deaths
+;;; — inflating the tree by the redundant dead leaves.
+;;;
+;;; Same verdict (Solution) and the same binding (?p = Dave) either
+;;; way — only the node count and the contents of the root KB's
+;;; `(not …)` facts differ.
+;;;
+;;; Measured: ON (10) = 32 tree nodes (22 dead + 1 solution leaves);
+;;; OFF (11) = 50 (40 dead + 1 solution leaves). Verdict Solution,
+;;; binding ?p = Dave, in both.
+
+(config :enable-back-prop-unconditional false)
+
+(rules
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+    :priority 100)
+
+  (rule transitive (?rel)
+    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+    :assert (?rel ?a ?c)
+    :why    "{?rel} is transitive."
+    :priority 200)
+
+  (rule implies (?p ?q)
+    :match  (?p ?a ?b)
+    :assert (?q ?a ?b)
+    :why    "{?p} implies {?q}."
+    :priority 100)
+
+  (rule functional (?R)
+    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+    :assert (false)
+    :why    "{?R} not functional."
+    :priority 250)
+
+  ;; Helper for this demo only — promotes an explicit
+  ;; `(no-buddy-with a b)` fact into a REASONING `(not (buddy a b))`
+  ;; so its derivation is in the same layer as the buddy chain that
+  ;; would clash with it. (`ContradictionDetector` only flags
+  ;; same-layer `(X, (not X))` pairs — a FACT-layer negative would
+  ;; not register as a clash against a REASONING-derived positive.)
+  (rule explicit-no-buddy ()
+    :match  (no-buddy-with ?a ?b)
+    :assert (not (buddy ?a ?b))
+    :why    "explicit no-buddy: {?a} cannot be buddy of {?b}."
+    :priority 50))
+
+(ontology
+  (relation is-a           T T)
+  (relation friends-of     T T)
+  (relation buddy          T T)
+  (relation no-buddy-with  T T)
+
+  (symmetric  friends-of)
+  (implies    friends-of buddy)
+  (transitive buddy)
+  (functional is-a)
+
+  (is-a Person T)
+  (is-a Alice Person) (is-a Bob   Person)
+  (is-a Carol Person) (is-a Dave  Person)
+
+  ;; Forbidden buddy pair — produces REASONING `(not (buddy …))`
+  ;; via `explicit-no-buddy` at root saturation.
+  (no-buddy-with Alice Carol)
+  (no-buddy-with Carol Alice))
+
+(facts
+  (buddy Bob Carol :source "(1) Bob is Carol's buddy"))
+
+(query
+  :mode solve
+  :goal (friends-of Alice ?p)
+  :hypothesis-relations friends-of)
