@@ -1,0 +1,104 @@
+;;; ein-bot — feature demo
+;;;
+;;; S1.5.8c T1.5.8c.4 — the M1-blocking stdlib rules.
+;;;
+;;; Four parameterised rules, each carrying its own type info
+;;; via activator args (in lieu of arg-type reflection — see
+;;; the S1.5.8c.4 task note on why reflection rules don't fit
+;;; M1's grammar restrictions on `relation`):
+;;;
+;;;   - typecheck-arg-0 (?R ?Dom)      ; closed-world type check on arg 0
+;;;   - typecheck-arg-1 (?R ?Ran)      ; closed-world type check on arg 1
+;;;   - domain-elimination (?R ?OT ?VT) ; one-survivor → force
+;;;   - no-room-left (?R ?OT ?VT)      ; all-excluded → contradiction
+;;;
+;;; The user activates each rule per relation by declaring the
+;;; activator fact with explicit type args. Verbose but explicit
+;;; — every relation can opt in/out of each check independently.
+;;;
+;;; This demo: a small (color-of House Color) example with three
+;;; houses and three colors. House_1 is committed Red; House_2
+;;; has two of three colors negated → domain-elim fires to force
+;;; the survivor. House_3 has no facts so all three colors stay
+;;; open.
+
+(rules
+  ;; ── Stdlib block (would live in a stdlib import under P1.8)
+  (rule typecheck-arg-0 (?R ?Dom)
+    :match  (and (?R ?a ?b)
+                 (absent (is-a ?a ?Dom)))
+    :assert (false)
+    :priority 110
+    :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}")
+
+  (rule typecheck-arg-1 (?R ?Ran)
+    :match  (and (?R ?a ?b)
+                 (absent (is-a ?b ?Ran)))
+    :assert (false)
+    :priority 110
+    :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}")
+
+  (rule domain-elimination (?R ?OT ?VT)
+    :match  (and (functional ?R 0 1)
+                 (total      ?R 0)
+                 (is-a ?a ?OT)
+                 (is-a ?v ?VT)
+                 (forall ?v_other
+                   (and (is-a ?v_other ?VT) (neq ?v_other ?v))
+                   (not (?R ?a ?v_other))))
+    :assert (?R ?a ?v)
+    :priority 400
+    :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v})")
+
+  (rule no-room-left (?R ?OT ?VT)
+    :match  (and (functional ?R 0 1)
+                 (total      ?R 0)
+                 (is-a ?a ?OT)
+                 (forall ?v
+                   (is-a ?v ?VT)
+                   (not (?R ?a ?v))))
+    :assert (false)
+    :priority 110
+    :why    "{?a} has every {?VT} excluded — no value left"))
+
+(ontology
+  (relation color-of House Color)
+  (relation is-a    T T)
+
+  ;; ── Property facts: color-of is a bijection between House and Color
+  ;; ── (positional projection encoding: (functional R i j)).
+  (functional color-of 0 1)   ; each House at most one Color
+  (functional color-of 1 0)   ; each Color at most one House
+  (total      color-of 0)     ; each House has some Color
+  (total      color-of 1)     ; each Color belongs to some House
+
+  ;; ── Stdlib rule activators: opt color-of into all four rules.
+  (typecheck-arg-0   color-of House)
+  (typecheck-arg-1   color-of Color)
+  (domain-elimination color-of House Color)
+  (no-room-left      color-of House Color)
+
+  ;; ── Type and instance hierarchy.
+  (is-a House T) (is-a Color T)
+  (is-a House_1 House) (is-a House_2 House) (is-a House_3 House)
+  (is-a Red    Color)  (is-a Yellow Color)  (is-a Blue    Color))
+
+(facts
+  ;; House_1: Red (committed positive).
+  (color-of House_1 Red)
+
+  ;; House_2: NOT Red, NOT Yellow → Blue must be forced by domain-elim.
+  (not (color-of House_2 Red))
+  (not (color-of House_2 Yellow))
+
+  ;; House_3: no commitments → all three Colors stay open.
+  )
+
+;; Expected after saturation:
+;;
+;;   - typecheck-arg-0 / typecheck-arg-1: silent (all args correctly typed)
+;;   - domain-elimination fires once for House_2 → asserts (color-of House_2 Blue)
+;;   - no-room-left silent (no fully-excluded House)
+;;
+;; The result fact lands in the (reasoning) layer with the four
+;; negative facts + the Yellow is-a as its provenance premises.
