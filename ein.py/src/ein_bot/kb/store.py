@@ -140,6 +140,14 @@ class KnowledgeBase:
         # branch-specific provenance.
         self.alive: Any | None = None
 
+        # S1.5.7b ConsumeStats — per-solve counters for the back-prop
+        # consume loop's `try_branch`-skip cache. None until
+        # `solve()` allocates an instance on the root KB; forks share
+        # by reference so every `_consume` invocation across the
+        # search mutates the same counter. Typed as `Any` to mirror
+        # `config`/`alive` and avoid the inference → kb import cycle.
+        self.consume_stats: Any | None = None
+
         # Equality-class hooks — reserved for F4.
         self.classes: EqClasses = EqClasses()
 
@@ -616,8 +624,12 @@ class KnowledgeBase:
         # T1.5.4.4 / T1.5.4.8 carry-over: configs and alive sets are
         # immutable references; the fork inherits them as-is and
         # `_explore` swaps in a pruned alive set before recursing.
+        # S1.5.7b: consume_stats is a *shared* mutable counter — all
+        # forks point at the same instance so every `_consume` call
+        # accumulates into the same per-solve total.
         new.config = self.config
         new.alive = self.alive
+        new.consume_stats = self.consume_stats
         return new
 
     # ── Dunder ────────────────────────────────────────────────────

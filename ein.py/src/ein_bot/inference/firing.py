@@ -55,6 +55,20 @@ class Firing:
     premises: tuple[Fact, ...]
     redundant: bool = False
 
+    def derives_positive(self) -> bool:
+        """True iff the derived conclusion is positive, not a `(not …)`.
+
+        Under the M1 rule library, re-saturation triggered by a
+        back-prop write produces only `(not …)` propagation (e.g.
+        symmetric-mirror via T1.5.7.3). A `True` here marks a
+        firing that goes *beyond* negation-cache filling — a forced
+        positive deduction (S1.5.7 T1.5.7.6's return-on-positive
+        trigger, or S1.5.8's `domain-elimination` output) and the
+        signal S1.5.7b's consume-loop cache uses to invalidate its
+        stable-alive / stable-conditional-dead entries.
+        """
+        return self.derived.relation_name != "not"
+
 
 # ── :assert substitution ───────────────────────────────────────────
 

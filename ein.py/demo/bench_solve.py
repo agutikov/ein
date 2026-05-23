@@ -210,7 +210,7 @@ def _install_instrumentation(verbose: bool, progress_every: int,
     _hyp_mod.try_branch = wrapped_try_branch
 
 
-def _print_hyp_stats() -> None:
+def _print_hyp_stats(kb=None) -> None:
     print()
     print("hypothesis-generation stats")
     print(f"  branches taken         {_dbg.branches}")
@@ -226,6 +226,17 @@ def _print_hyp_stats() -> None:
         for rel, n in _dbg.hyps_by_rel.most_common():
             pct = 100.0 * n / max(1, _dbg.hyps_gen_total)
             print(f"    {rel:<24s} {n:>6d}  ({pct:>5.1f}%)")
+    # S1.5.7b consume-loop counters — only meaningful with back-prop
+    # on. Reads `ConsumeStats` off the root KB (solve() seeds it
+    # there and every fork shares the same instance by reference).
+    cs = getattr(kb, "consume_stats", None) if kb is not None else None
+    if cs is not None and (cs.alive_cached_skips
+                            or cs.cond_dead_cached_skips
+                            or cs.cache_invalidations):
+        print("  consume-loop cache (S1.5.7b):")
+        print(f"    alive_cached_skips     {cs.alive_cached_skips}")
+        print(f"    cond_dead_cached_skips {cs.cond_dead_cached_skips}")
+        print(f"    cache_invalidations    {cs.cache_invalidations}")
 
 
 # ── Tree metrics ───────────────────────────────────────────────────
@@ -479,7 +490,7 @@ def main() -> int:
         print(f"  branches before abort  {_dbg.branches}")
         print(f"  elapsed                {(t3-t2)*1e3:7.2f} ms")
         if args.hyp_stats or args.verbose:
-            _print_hyp_stats()
+            _print_hyp_stats(kb)
         return 2
 
     print(f"  solve            {(t3-t2)*1e3:7.2f} ms")
@@ -613,7 +624,7 @@ def main() -> int:
 
     # ── Hypothesis-generation stats trailer ──────────────────────
     if args.hyp_stats:
-        _print_hyp_stats()
+        _print_hyp_stats(kb)
 
     return 0
 

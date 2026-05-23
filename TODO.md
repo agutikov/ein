@@ -62,7 +62,7 @@ don't put everything onto cli.py - make separate folder in src/ein/ for cli func
 P1.7 ideas
 
 extend hypgen with adwanced hypothesis ordering
-after all optimizations the idea of minimal domain first ordering is abandoned
+after all optimizations the idea of minimal domain first ordering become abandoned
 
 one idea is to introduce hypothesis scoring
 for 2-rel we have 3 atoms (?R ?A ?B) one relation and 2 objects - score hypothesis by sum of relations of objects + number of existing facts with relation
@@ -85,6 +85,11 @@ example
 ;; 1st-level score = rel_weight * score(co-located) + obj_weight * (score(House1) + score(Cat))
 ```
 
+
+Main question - how human reasoning decides to ask first question "What is a color of first house?" in Zebra?
+Why not for example "what drink is drinked by cat owner"?
+First obvious - all human questions for hypothesis are about houses, but why?
+Second - why exactly color and why exactly first house?
 
 ---
 

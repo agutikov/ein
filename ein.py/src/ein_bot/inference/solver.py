@@ -86,6 +86,35 @@ class Contradiction:
 Verdict = Solution | Ambiguity | Contradiction
 
 
+# ── ConsumeStats (S1.5.7b T1.5.7b.2) ───────────────────────────────
+
+
+@dataclass
+class ConsumeStats:
+    """Per-`solve()` counters for the back-prop `_consume` loop.
+
+    Mutated in place by `_consume`; seeded on the root KB by
+    :func:`solve` and inherited by forks via `kb.fork()` (shared by
+    reference so all consume invocations across the search write to
+    the same instance).
+
+    - ``alive_cached_skips`` — `try_branch` calls *avoided* because
+      the candidate was already verified alive against the current
+      re-saturation generation (T1.5.7b.1).
+    - ``cond_dead_cached_skips`` — `try_branch` calls *avoided*
+      because the candidate was already verified conditionally-dead
+      against the current re-saturation generation (T1.5.7b.4).
+    - ``cache_invalidations`` — number of times the per-`_consume`-call
+      cache was cleared because re-saturation derived a non-`(not …)`
+      fact. Always 0 under M1 (no rule consumes `(not X)` to derive a
+      positive); > 0 only once S1.5.8's `domain-elimination` ships
+      (T1.5.7b.5).
+    """
+    alive_cached_skips:      int = 0
+    cond_dead_cached_skips:  int = 0
+    cache_invalidations:     int = 0
+
+
 # ── BranchResult (intermediate value) ──────────────────────────────
 
 
@@ -478,6 +507,8 @@ def _descend(
     max_depth: int,
     builder: _TreeBuilder,
     mode: Mode,
+    *,
+    exclude_keys: frozenset[tuple[str, tuple]] = frozenset(),
 ) -> list[BranchId]:
     """Enumerate hypotheses once; recurse alive, record dead.
 
@@ -485,11 +516,19 @@ def _descend(
     candidate loop extracted verbatim, so the
     ``enable_back_prop_unconditional=False`` path stays byte-identical
     (S1.5.7 T1.5.7.6.d). ``nid`` is the parent of every child.
+
+    ``exclude_keys`` (S1.5.7b T1.5.7b.4) is the set of
+    ``(relation_name, args)`` keys for candidates already turned into
+    dead SearchNodes by `_consume`'s conditional-dead handling — they
+    are skipped here to avoid double-allocation. Empty default keeps
+    the flag-off path byte-identical.
     """
     child_ids: list[BranchId] = []
     seen_children: set[BranchId] = set()
     candidates = _candidates_for(kb)
     for h in candidates:
+        if exclude_keys and (h.relation_name, h.args) in exclude_keys:
+            continue
         result = try_branch(kb, h, branch_id=builder.peek_id())
         if result.is_alive():
             child_id = _explore(
@@ -524,16 +563,38 @@ def _consume(
     builder: _TreeBuilder,
     mode: Mode,
 ) -> tuple[list[BranchId], tuple[Firing, ...]]:
-    """Iterative back-prop consume loop — S1.5.7 T1.5.7.2 / .5 / .6.
+    """Iterative back-prop consume loop — S1.5.7 T1.5.7.2 / .5 / .6
+    + S1.5.7b T1.5.7b.1 / .4 (verdict cache).
 
-    Each pass sweeps every current candidate with ``try_branch``. A
-    candidate that dies *unconditionally* (``is_unconditional_death``
-    — its contradiction resting on no hypothesis but its own) has
-    ``(not h)`` back-propagated into the parent ``kb`` (T1.5.7.2) and
-    is recorded as a dead child at once: ``(not h)`` removes it from
-    ``_candidates_for`` permanently, so it never reappears.
+    Each pass sweeps every still-unverified candidate with
+    ``try_branch``. The verdict cache (``verdict_at``) records each
+    candidate's last-known outcome so subsequent passes skip
+    candidates whose verdict is stable across re-saturation — under
+    the M1 rule library re-saturation cannot turn an alive or
+    conditionally-dead verdict into anything else, since it only
+    propagates more ``(not …)`` facts (the
+    :meth:`Firing.derives_positive` predicate is universally False
+    under M1; ``True`` only once S1.5.8's ``domain-elimination``
+    ships, at which point the cache is cleared).
 
-    If any sibling died unconditionally this pass, the parent ``kb``
+    Per-candidate outcomes:
+
+    - **alive** ⇒ cache the verdict; the candidate is left for
+      ``_descend``'s recursion on the fixpoint pass.
+    - **dead, unconditional** (``is_unconditional_death`` walks back
+      to source/rule leaves only) ⇒ ``back_propagate`` writes
+      ``(not h)`` into the parent KB (T1.5.7.2), making the
+      candidate disappear from ``_candidates_for`` permanently. The
+      dead SearchNode is allocated after the sweep completes.
+    - **dead, conditional** (unsat-core's transitive walk reaches an
+      ancestor-hypothesis fact) ⇒ ``back_propagate`` would be
+      unsound (``h`` may be alive against a different sibling at a
+      different ancestor context). Instead, the SearchNode is
+      allocated inline now, the verdict cached, and the candidate
+      key added to ``cond_dead_keys`` so ``_descend`` skips it via
+      its ``exclude_keys`` arg (T1.5.7b.4).
+
+    If any sibling died unconditionally this pass the parent ``kb``
     is re-saturated once (T1.5.7.5) — a back-propped ``(not h)`` is
     only an O(1) filter entry until re-saturation makes it a premise
     the rule engine can chain from — and the loop repeats over the
@@ -541,11 +602,11 @@ def _consume(
     ``(not h)``, so the candidate set strictly shrinks and the loop
     terminates.
 
-    When a pass makes no progress the still-pending candidates are a
-    genuine disjunction: the loop hands off to ``_descend`` (which
-    re-runs ``try_branch`` inline so branch ids land in allocation
-    order — flag-off byte-identical behaviour when no back-prop ever
-    fires).
+    When a pass produces no unconditional deaths the still-pending
+    candidates are a genuine disjunction (or already-verified
+    alive); the loop hands off to ``_descend`` (which re-runs
+    ``try_branch`` inline so branch ids land in allocation order —
+    flag-off byte-identical behaviour when no back-prop ever fires).
 
     Returns ``(child_ids, node_firings)``; ``node_firings`` is the
     passed-in ``firings`` extended with every re-saturation pass, so
@@ -562,6 +623,16 @@ def _consume(
     seen_children: set[BranchId] = set()
     node_firings = firings
 
+    # S1.5.7b T1.5.7b.1/.4 — per-`_consume`-call verdict cache.
+    # verdict_at[key] = (verdict, resat_gen) — verdict ∈ {"alive",
+    # "cond-dead"}. `cond_dead_keys` is the projection used to filter
+    # `_descend`'s candidate iteration. `resat_gen` is informational
+    # (stats) and a marker for the invalidation guard.
+    verdict_at: dict[tuple[str, tuple], tuple[str, int]] = {}
+    cond_dead_keys: set[tuple[str, tuple]] = set()
+    resat_gen = 0
+    stats = kb.consume_stats
+
     def _add(cid: BranchId) -> None:
         if cid not in seen_children:
             seen_children.add(cid)
@@ -571,22 +642,72 @@ def _consume(
         candidates = _candidates_for(kb)
         if not candidates:
             break
-        # Sweep — back-propagate every unconditional death as found.
-        unconditional: list[tuple[Fact, BranchResult]] = []
+
+        # Apply the cache: skip candidates whose verdict is already
+        # known; only the unknown set reaches `try_branch`.
+        to_check: list[Fact] = []
         for h in candidates:
+            key = (h.relation_name, h.args)
+            cached = verdict_at.get(key)
+            if cached is None:
+                to_check.append(h)
+                continue
+            if stats is not None:
+                if cached[0] == "alive":
+                    stats.alive_cached_skips += 1
+                else:
+                    stats.cond_dead_cached_skips += 1
+
+        if not to_check:
+            # Every still-pending candidate is cached (alive or
+            # cond-dead). Hand off to _descend, excluding cond-deads
+            # we've already allocated nodes for.
+            for cid in _descend(
+                kb, nid, depth, max_depth, builder, mode,
+                exclude_keys=frozenset(cond_dead_keys),
+            ):
+                _add(cid)
+            break
+
+        # Sweep — classify each unverified candidate.
+        unconditional: list[tuple[Fact, BranchResult]] = []
+        for h in to_check:
             result = try_branch(kb, h, branch_id=builder.peek_id())
-            if (not result.is_alive()
-                    and is_unconditional_death(
-                        result.kb, result.unsat_core,
-                        own_hypothesis=result.hypothesis)):
+            key = (h.relation_name, h.args)
+            if result.is_alive():
+                verdict_at[key] = ("alive", resat_gen)
+            elif is_unconditional_death(
+                    result.kb, result.unsat_core,
+                    own_hypothesis=result.hypothesis):
                 back_propagate(kb, h, result.unsat_core)
                 unconditional.append((h, result))
+                # Unconditional-dead is permanently cached via
+                # `_negated_facts`; no verdict_at entry needed since
+                # the candidate won't reappear in `_candidates_for`.
+            else:
+                # Conditional dead — record the SearchNode now so
+                # `_descend` (and subsequent sweeps) don't re-try it.
+                cid = builder.alloc()
+                builder.add(SearchNode(
+                    id=cid, parent=nid, hypothesis=h,
+                    kb_snapshot=result.kb, firings=result.firings,
+                    verdict="dead", children=(),
+                    unsat_core=result.unsat_core,
+                ))
+                _add(cid)
+                verdict_at[key] = ("cond-dead", resat_gen)
+                cond_dead_keys.add(key)
+
         if not unconditional:
             # Fixpoint — no sibling died unconditionally. Hand off
             # to the static descent over the still-pending set.
-            for cid in _descend(kb, nid, depth, max_depth, builder, mode):
+            for cid in _descend(
+                kb, nid, depth, max_depth, builder, mode,
+                exclude_keys=frozenset(cond_dead_keys),
+            ):
                 _add(cid)
             break
+
         # Record the unconditionally-dead branches now — `(not h)`
         # has been back-propped, so they will not be re-swept next
         # pass.
@@ -599,12 +720,26 @@ def _consume(
                 unsat_core=result.unsat_core,
             ))
             _add(cid)
+
         # Re-saturate the parent so the back-propped negatives are
-        # premises rule firings can chain from (T1.5.7.5) — once
-        # per sweep, fresh Saturator.
-        node_firings = node_firings + tuple(
-            Saturator(kb).saturate(max_steps=10_000)
-        )
+        # premises rule firings can chain from (T1.5.7.5) — once per
+        # sweep, fresh Saturator.
+        new_firings = tuple(Saturator(kb).saturate(max_steps=10_000))
+        node_firings = node_firings + new_firings
+        resat_gen += 1
+
+        # S1.5.7b invalidation guard — `Firing.derives_positive` is
+        # always False under M1 (no rule consumes `(not X)` to derive
+        # a positive). Once S1.5.8's `domain-elimination` ships,
+        # re-saturation can derive a forced positive; we conservatively
+        # drop the alive cache (cond-dead stays, since adding facts
+        # to a fork is monotonic and a known contradiction can only
+        # persist, not vanish — see T1.5.7b's design notes).
+        if any(f.derives_positive() for f in new_firings):
+            verdict_at.clear()
+            if stats is not None:
+                stats.cache_invalidations += 1
+
     # Re-index under the post-re-saturation state hash so a later
     # branch reaching the settled state dedups here (T1.5.7.5c);
     # `setdefault` keeps any prior owner of that hash.
@@ -702,6 +837,12 @@ def solve(
     mode = mode or _mode_from_query(kb) or Mode.SOLVE
     effective_config = config or kb.config or SolverConfig()
     kb.config = effective_config
+    # S1.5.7b — fresh ConsumeStats on the root; forks inherit by
+    # reference so every `_consume` invocation across the search
+    # accumulates into the same instance. Allocated even when
+    # back-prop is off so post-solve inspection finds zero counters
+    # instead of `None`.
+    kb.consume_stats = ConsumeStats()
 
     # Emit `(closed R)` for every relation no rule can positively
     # conclude — before saturation, so the hypothesis generator
