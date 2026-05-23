@@ -68,5 +68,5 @@
 
 (query
   :mode solve
-  :goal (?R Rex Animal) ;;TODO
+  :goal (?R Rex Animal) ;;TODO S1.5.9
 )
