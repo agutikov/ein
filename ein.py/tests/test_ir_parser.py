@@ -426,6 +426,30 @@ def test_reject_bare_close_paren():
     _bad(")")
 
 
+# ═══════════ S1.5.8c T1.5.8c.2 — * in identifier tail ═══════════
+# `*` is purely a character in identifier names; no Kleene or
+# arithmetic meaning. Lets `is-a*` (transitive closure of is-a)
+# and `?R*` parse as ordinary atoms / vars.
+
+def test_star_in_symbol_tail():
+    _ok("(ontology (relation is-a* T T))")
+
+
+def test_star_in_var_tail():
+    _ok(
+        "(rules (rule lift (?R*) :match (?R* ?a ?b) "
+        ":assert (alias ?a ?b) :why \"t\"))",
+    )
+
+
+def test_star_in_both_atom_and_var():
+    _ok(
+        "(ontology (relation is-a* T T)) "
+        "(rules (rule closure (?R ?R*) "
+        ":match (?R ?a ?b) :assert (?R* ?a ?b) :why \"c\"))",
+    )
+
+
 # ═══════════ Integration: bundled examples ═══════════
 
 def test_examples_zebra_parses():

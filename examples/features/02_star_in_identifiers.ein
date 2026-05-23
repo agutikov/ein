@@ -1,0 +1,66 @@
+;;; ein-bot — feature demo
+;;;
+;;; S1.5.8c T1.5.8c.2 — `*` in identifier tail.
+;;;
+;;; The SYMBOL and VAR grammar regexes were widened to accept `*`
+;;; alongside letters / digits / `_` / `-`. The asterisk is purely
+;;; a *character* in names — no Kleene-star, no multiplicative
+;;; meaning, no special engine semantics. It just lets the
+;;; transitive-closure naming convention `R*` parse as the ordinary
+;;; identifier it should be.
+;;;
+;;; This demo uses `is-a*` as the transitive closure of `is-a` —
+;;; the natural use case the grammar widening was motivated by.
+;;; Pair this with T1.5.8c.4's closure-facility stdlib rules and
+;;; you get full transitive ancestor reach from one `(closure is-a is-a*)`
+;;; declaration. Until those stdlib rules land, this demo wires
+;;; the same effect via two hand-written rules:
+;;;
+;;;   1. `(subrel is-a is-a*)` — every direct is-a edge becomes an is-a* edge.
+;;;   2. `(transitive is-a*)` — is-a* propagates transitively.
+
+(rules
+  ;; Sub-relation lift (one direction of the closure idiom).
+  (rule subrel (?Sub ?Super)
+    :match  (?Sub ?a ?b)
+    :assert (?Super ?a ?b)
+    :priority 100
+    :why    "{?Sub} ⊆ {?Super}: lift edge")
+
+  ;; The standard `transitive` rule, used here on is-a*.
+  (rule transitive (?R)
+    :match  (and (?R ?a ?b) (?R ?b ?c))
+    :assert (?R ?a ?c)
+    :priority 200
+    :why    "{?R} is transitive: {?a} →{?R}→ {?b} →{?R}→ {?c}."))
+
+(ontology
+  (relation is-a  T T)
+  (relation is-a* T T)
+
+  ;; Two activators set up the closure of is-a into is-a*.
+  (subrel is-a is-a*)
+  (transitive is-a*)
+
+  ;; A small subtype tree:
+  ;;   T → Animal → Mammal → Dog → Rex
+  (is-a Animal T)
+  (is-a Mammal Animal)
+  (is-a Dog    Mammal)
+  (is-a Rex    Dog))
+
+(facts)
+
+;; After saturation:
+;;   - `is-a` holds only the 4 declared direct edges.
+;;   - `is-a*` holds 4 direct (lifted from is-a) + 6 transitive
+;;     closures = 10 edges total:
+;;       Animal—T, Mammal—Animal, Dog—Mammal, Rex—Dog        (direct)
+;;       Mammal—T, Dog—Animal, Rex—Mammal,                   (length-2)
+;;       Dog—T, Rex—Animal,                                  (length-3)
+;;       Rex—T                                               (length-4)
+;;
+;; The direct `is-a` relation stays unchanged — useful for rules
+;; like `sibling-exclusive` that should only match direct parents.
+;; The closure `is-a*` is available for rules that need full
+;; ancestor reach (typecheck against ancestor types, etc.).
