@@ -136,6 +136,84 @@ def test_flag_on_never_grows_the_tree():
         )
 
 
+# ── T1.5.7.3 — symmetric-dead promotion ────────────────────────────
+
+
+def _kb_with_symmetric(rel: str) -> KnowledgeBase:
+    """KB carrying a `(symmetric <rel>)` activator."""
+    kb = _empty_kb()
+    sym = Fact(relation_name="symmetric", args=(rel,), layer=Layer.ONTOLOGY)
+    stored = kb.add_fact(sym)
+    kb._index_fact(stored)
+    return kb
+
+
+def test_back_propagate_symmetric_writes_both_orderings():
+    """``(symmetric R)`` ⇒ back-propping ``(not (R a b))`` also writes
+    ``(not (R b a))`` — T1.5.7.3."""
+    kb = _kb_with_symmetric("co-located")
+    h = Fact(relation_name="co-located", args=("White", "H1"),
+             layer=Layer.REASONING)
+    back_propagate(kb, h, frozenset())
+    assert ("co-located", ("White", "H1")) in kb._negated_facts
+    assert ("co-located", ("H1", "White")) in kb._negated_facts
+
+
+def test_back_propagate_symmetric_self_edge_no_mirror():
+    """A self-edge ``(R a a)`` has no distinct mirror — only the primary."""
+    kb = _kb_with_symmetric("co-located")
+    h = Fact(relation_name="co-located", args=("X", "X"),
+             layer=Layer.REASONING)
+    n_before = len(kb._facts_by_relation.get("not", ()))
+    back_propagate(kb, h, frozenset())
+    assert len(kb._facts_by_relation.get("not", ())) == n_before + 1
+
+
+def test_back_propagate_promote_symmetric_false_skips_mirror():
+    """``promote_symmetric=False`` opts out of the mirror write."""
+    kb = _kb_with_symmetric("co-located")
+    h = Fact(relation_name="co-located", args=("White", "H1"),
+             layer=Layer.REASONING)
+    back_propagate(kb, h, frozenset(), promote_symmetric=False)
+    assert ("co-located", ("White", "H1")) in kb._negated_facts
+    assert ("co-located", ("H1", "White")) not in kb._negated_facts
+
+
+def test_back_propagate_asymmetric_relation_no_mirror():
+    """No ``(symmetric R)`` activator ⇒ no mirror written even for a
+    2-arg fact."""
+    kb = _empty_kb()
+    h = Fact(relation_name="right-of", args=("A", "B"),
+             layer=Layer.REASONING)
+    back_propagate(kb, h, frozenset())
+    assert ("right-of", ("A", "B")) in kb._negated_facts
+    assert ("right-of", ("B", "A")) not in kb._negated_facts
+
+
+# ── T1.5.7.4 — lookahead composition ───────────────────────────────
+
+
+def test_lookahead_kills_back_prop_into_kb():
+    """When the S1.5.6 lookahead kills a candidate during root
+    enumeration, the kill is cached as a ``<lookahead-dies-immediately>``
+    ``(not h)`` in the KB — T1.5.7.4.a."""
+    kb = KnowledgeBase.from_ir(parse(
+        (BRANCHING / "03_five_hyps_one_alive.ein").read_text()
+    ))
+    verdict = solve(kb, config=SolverConfig(
+        enable_back_prop_unconditional=True,
+        enable_pre_branch_lookahead=True,
+    ))
+    root_kb = verdict.tree.nodes[verdict.tree.root].kb_snapshot
+    lookahead_kills = [
+        f for f in root_kb.facts
+        if f.relation_name == "not"
+        and f.provenance is not None
+        and f.provenance.rule == "<lookahead-dies-immediately>"
+    ]
+    assert lookahead_kills, "expected lookahead kills to back-prop"
+
+
 def test_flag_on_back_prop_actually_fires():
     """On a puzzle with unconditionally-dead siblings the consume loop
     writes ``<back-prop-unconditional>`` negations into the KB.

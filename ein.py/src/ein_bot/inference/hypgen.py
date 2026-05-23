@@ -31,6 +31,7 @@ from ein_bot.ir.types import Atom, SForm
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
+from .back_prop import back_propagate
 from .config import SolverConfig
 from .hrule import Hrules
 from .lookahead import Lookahead
@@ -147,7 +148,7 @@ def _generate(kb: KnowledgeBase, stats: HypGenStats) -> Iterator[Fact]:
 
     def _emit(fact: Fact) -> Iterator[Fact]:
         stats.raw += 1
-        if _apply_filters(kb, fact, seen, stats, lookahead):
+        if _apply_filters(kb, fact, seen, stats, lookahead, cfg):
             stats.emitted += 1
             yield fact
 
@@ -176,6 +177,7 @@ def _apply_filters(
     seen: set[tuple[str, tuple]],
     stats: HypGenStats,
     lookahead: Lookahead | None,
+    cfg: SolverConfig,
 ) -> bool:
     """Run the candidate-level filter pipeline; return True iff kept.
 
@@ -195,6 +197,15 @@ def _apply_filters(
     # last of the per-candidate checks — it is the costliest.
     if lookahead is not None and lookahead.dies_immediately(kb, fact):
         stats.filtered["lookahead_killed"] += 1
+        # T1.5.7.4 — a lookahead kill consults no ancestor hypothesis
+        # (the simulator runs one rule step against the already-
+        # saturated parent KB), so the death is unconditional by
+        # construction. Cache it as a back-propped `(not h)` so
+        # subsequent enumerations / branches inherit the exclusion in
+        # O(1) instead of re-running the lookahead's match.
+        if cfg.enable_back_prop_unconditional:
+            back_propagate(kb, fact, frozenset(),
+                           rule_name="<lookahead-dies-immediately>")
         return False
     # seen_in_call dedup (stateful across the call).
     key = (fact.relation_name, fact.args)

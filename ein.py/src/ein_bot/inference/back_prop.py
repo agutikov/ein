@@ -129,24 +129,25 @@ def is_unconditional_death(
     return not any(_walk(kb, f, visited, own) for f in unsat_core)
 
 
-def back_propagate(
-    kb: KnowledgeBase, hypothesis: Fact, unsat_core: frozenset[Fact],
-) -> Fact:
-    """Write ``(not hypothesis)`` into ``kb`` on an unconditional death — T1.5.7.2.
+def is_symmetric_relation(kb: KnowledgeBase, name: str) -> bool:
+    """True iff ``(symmetric <name>)`` is asserted in ``kb`` (any layer).
 
-    The negation is a REASONING-layer ``(not <hypothesis>)`` fact
-    with ``<back-prop-unconditional>`` rule-provenance citing the
-    ``unsat_core`` frontier — so its derivation walks back to the
-    same given facts the death rested on. Indexing it updates
-    ``kb._negated_facts``, so every subsequent ``_candidates_for`` /
-    ``_prune_alive`` drops ``hypothesis`` in O(1), and ``kb.fork()``
-    carries the exclusion to descendant branches.
-
-    Idempotent: a ``(not hypothesis)`` already present is returned
-    untouched (no double-index).
-
-    Returns the stored ``(not …)`` Fact.
+    Activator-style read of the symmetric property tag — the same
+    check ``hypgen`` uses; lifted here so the back-prop write site
+    can promote the symmetric mirror without importing across
+    sibling modules.
     """
+    apps = kb._facts_by_relation.get("symmetric", ())
+    return any(f.args == (name,) for f in apps)
+
+
+def _write_negation(
+    kb: KnowledgeBase, hypothesis: Fact,
+    unsat_core: frozenset[Fact], rule_name: str,
+) -> Fact:
+    """Write one ``(not hypothesis)`` fact with the given provenance
+    rule name; idempotent — a pre-existing ``(not h)`` is returned
+    untouched."""
     existing = kb._fact_by_id("not", (hypothesis,))
     if existing is not None:
         return existing
@@ -155,7 +156,7 @@ def back_propagate(
         args=(hypothesis,),
         layer=Layer.REASONING,
         provenance=Provenance.from_rule(
-            rule="<back-prop-unconditional>",
+            rule=rule_name,
             premises_raw=tuple(
                 (f.relation_name, f.args) for f in unsat_core
             ),
@@ -166,4 +167,55 @@ def back_propagate(
     return stored
 
 
-__all__ = ["back_propagate", "is_unconditional_death", "reaches_hypothesis"]
+def back_propagate(
+    kb: KnowledgeBase, hypothesis: Fact, unsat_core: frozenset[Fact],
+    *,
+    rule_name: str = "<back-prop-unconditional>",
+    promote_symmetric: bool = True,
+) -> Fact:
+    """Write ``(not hypothesis)`` into ``kb`` on an unconditional death.
+
+    The negation is a REASONING-layer ``(not <hypothesis>)`` fact
+    with rule-provenance citing the ``unsat_core`` frontier — so its
+    derivation walks back to the same given facts the death rested
+    on. Indexing it updates ``kb._negated_facts``, so every
+    subsequent ``_candidates_for`` / ``_prune_alive`` drops
+    ``hypothesis`` in O(1), and ``kb.fork()`` carries the exclusion
+    to descendant branches.
+
+    ``rule_name`` distinguishes the back-prop's origin in traces and
+    audits (T1.5.7.2 ``<back-prop-unconditional>`` for consume-loop
+    kills, T1.5.7.4 ``<lookahead-dies-immediately>`` for S1.5.6
+    lookahead kills).
+
+    With ``promote_symmetric=True`` (the default — T1.5.7.3) the
+    symmetric counterpart ``(not (R b a))`` is *also* written when
+    ``(symmetric R)`` is asserted and ``hypothesis`` is a 2-arg
+    fact with distinct arguments. The symmetric counterpart's death
+    is unconditional under the same reasoning — sound to cache
+    proactively, saving a redundant ``try_branch`` on the next pass.
+
+    Idempotent: a pre-existing ``(not h)`` is returned untouched.
+
+    Returns the *primary* stored ``(not …)`` Fact.
+    """
+    primary = _write_negation(kb, hypothesis, unsat_core, rule_name)
+    if (promote_symmetric
+            and len(hypothesis.args) == 2
+            and hypothesis.args[0] != hypothesis.args[1]
+            and is_symmetric_relation(kb, hypothesis.relation_name)):
+        mirror = Fact(
+            relation_name=hypothesis.relation_name,
+            args=(hypothesis.args[1], hypothesis.args[0]),
+            layer=Layer.REASONING,
+        )
+        _write_negation(kb, mirror, unsat_core, rule_name)
+    return primary
+
+
+__all__ = [
+    "back_propagate",
+    "is_symmetric_relation",
+    "is_unconditional_death",
+    "reaches_hypothesis",
+]
