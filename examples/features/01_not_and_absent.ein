@@ -1,0 +1,72 @@
+;;; ein-bot — feature demo
+;;;
+;;; S1.5.8c K-Δ.1 + K-Δ.2 — `(not P)` and `(absent P)` in :match.
+;;;
+;;; Before S1.5.8c, `(not P)` inside :match meant negation-as-failure
+;;; — the premise passed when no fact matching P was in the KB. This
+;;; was asymmetric with `:assert (not P)`, which has always stored
+;;; a literal `(not P)` fact in the KB.
+;;;
+;;; After S1.5.8c the two are symmetric: `(not P)` is the FACT shape
+;;; — a stored fact whose head is `not` and whose nested arg is P. It
+;;; means the same thing in :match and :assert. NAF moved to the
+;;; explicit `(absent P)` premise.
+;;;
+;;; This demo exercises both forms on the same KB so the contrast is
+;;; visible:
+;;;   ── `see-stored-neg` fires only on pairs where the KB has an
+;;;      explicit `(not (likes a b))` fact stored.
+;;;   ── `unknown-feeling` fires on pairs where the KB has neither
+;;;      a positive `(likes a b)` nor a stored neg `(not (likes a b))`
+;;;      — the "open" / hypothetical state.
+;;;
+;;; Three person pairs, three states, three distinct outcomes.
+
+(rules
+  ;; Stored-neg-fact match: `(not …)` is now an ordinary pattern.
+  (rule see-stored-neg ()
+    :match  (not (likes ?a ?b))
+    :assert (explicitly-dislikes ?a ?b)
+    :why    "stored neg of (likes {?a} {?b}) → {?a} explicitly dislikes {?b}"
+    :priority 200)
+
+  ;; NAF on both states → "open" / undecided slot.
+  (rule unknown-feeling (?Person)
+    :match  (and (is-a ?a ?Person) (is-a ?b ?Person) (neq ?a ?b)
+                 (absent (likes ?a ?b))
+                 (absent (not (likes ?a ?b))))
+    :assert (unknown-feeling ?a ?b)
+    :why    "neither (likes {?a} {?b}) nor its neg stored → undecided"
+    :priority 200))
+
+(ontology
+  (relation likes T T)
+  (relation is-a  T T)
+  (unknown-feeling Person)
+
+  (is-a Person     T)
+  (is-a Alice      Person)
+  (is-a Bob        Person)
+  (is-a Carol      Person))
+
+(facts
+  ;; State 1 — Alice ↔ Bob — POSITIVE: (likes Alice Bob) stored.
+  (likes Alice Bob)
+
+  ;; State 2 — Alice ↔ Carol — NEGATED: (not (likes Alice Carol)) stored.
+  (not (likes Alice Carol))
+
+  ;; State 3 — Bob ↔ Carol — UNDECIDED: neither stored.
+  )
+
+;; Expected reasoning-layer output (after saturation):
+;;
+;;   (explicitly-dislikes Alice Carol)  ; from see-stored-neg
+;;   (unknown-feeling     Bob   Carol)  ; from unknown-feeling
+;;   (unknown-feeling     Carol Bob)    ; symmetric pair
+;;   (unknown-feeling     Alice Alice)  ; -- no, blocked by (neq ?a ?b)
+;;                                       (and similarly for Bob/Carol diagonals)
+;;
+;; (likes Alice Bob) is asserted, so neither rule fires on that pair:
+;;   - see-stored-neg needs a stored (not …) fact — none for (Alice Bob)
+;;   - unknown-feeling needs (absent (likes Alice Bob)) — fails.

@@ -161,7 +161,7 @@
                  (?R ?x ?y)
                  (instance ?x ?T)
                  (co-located ?a ?x)
-                 (not (and (?R ?x ?z) (neq ?y ?z))))
+                 (absent (and (?R ?x ?z) (neq ?y ?z))))
     :assert (co-located ?b ?y)
     :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
     :priority 200)

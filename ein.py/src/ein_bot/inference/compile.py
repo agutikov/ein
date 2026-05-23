@@ -16,7 +16,7 @@ The compiler emits a sequence of opcodes (a :class:`JoinPlan`):
                             — the unifier handles both identically).
 - :class:`Guard`          — evaluate a built-in predicate on current
                             bindings; pass-through or prune.
-- :class:`NegativeGuard`  — negation-as-failure: run a sub-plan; the
+- :class:`AbsentGuard`    — negation-as-failure: run a sub-plan; the
                             parent continues iff the sub-plan yields
                             zero matches.
 - :class:`NestedPattern`  — sub-pattern unified against a ``Fact``-
@@ -89,11 +89,17 @@ class Guard:
 
 
 @dataclass(frozen=True)
-class NegativeGuard:
-    """Negation-as-failure: the parent continues iff the sub-plan
-    yields zero matches against the current bindings.
+class AbsentGuard:
+    """Explicit negation-as-failure: the parent continues iff the
+    sub-plan yields zero matches against the current bindings.
+
+    Emitted by ``(absent P)`` in ``:match`` (S1.5.8c K-Δ.2). The
+    older spelling — ``(not P)`` defaulting to NAF — was dropped
+    in S1.5.8c K-Δ.1, freeing ``(not P)`` to mean what it always
+    meant in ``:assert``: a stored fact with head ``not`` and the
+    inner pattern as its nested arg.
     """
-    sub_steps: tuple[object, ...]   # tuple of Scan/Join/Guard/NegativeGuard
+    sub_steps: tuple[object, ...]   # tuple of Scan/Join/Guard/AbsentGuard
 
 
 @dataclass(frozen=True)
@@ -207,10 +213,17 @@ def _compile_premise(
     head = node.head
     head_name = head.name if isinstance(head, Atom) else None
 
-    # `(not P)` — negation-as-failure wrapper.
-    if head_name == "not" and len(node.args) >= 1:
+    # `(absent P)` — explicit negation-as-failure. S1.5.8c K-Δ.2.
+    if head_name == "absent" and len(node.args) >= 1:
         sub_steps = _compile_body(node.args[0], bindings, known_vars)
-        return [NegativeGuard(sub_steps=tuple(sub_steps))]
+        return [AbsentGuard(sub_steps=tuple(sub_steps))]
+
+    # `(not P)` falls through to the generic relation handler
+    # below — it compiles as a fact pattern with relation "not"
+    # and the inner expression as a NestedPattern arg, matching
+    # stored `(not P)` facts in the KB (S1.5.8c K-Δ.1). The old
+    # NAF default was removed in 2026-05-24; use `(absent P)`
+    # explicitly when negation-as-failure is what you want.
 
     # `(and P1 P2 …)` — flatten into sibling premises in the same plan.
     if head_name == "and":
@@ -362,7 +375,7 @@ __all__ = [
     "Guard",
     "Join",
     "JoinPlan",
-    "NegativeGuard",
+    "AbsentGuard",
     "NestedPattern",
     "Scan",
     "compile_pattern",

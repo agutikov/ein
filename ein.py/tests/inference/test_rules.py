@@ -258,7 +258,7 @@ def test_square_unique_corner_inference():
       (rule square-unique (?R ?T)
         :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
                     (co-located ?a ?x)
-                    (not (and (?R ?x ?z) (neq ?y ?z))))
+                    (absent (and (?R ?x ?z) (neq ?y ?z))))
         :assert (co-located ?b ?y)
         :why "u" :priority 200))
     (ontology
@@ -294,7 +294,7 @@ def test_square_unique_does_not_fire_on_attribute_pair():
       (rule square-unique (?R ?T)
         :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
                     (co-located ?a ?x)
-                    (not (and (?R ?x ?z) (neq ?y ?z))))
+                    (absent (and (?R ?x ?z) (neq ?y ?z))))
         :assert (co-located ?b ?y)
         :why "u" :priority 200))
     (ontology
@@ -320,7 +320,7 @@ def test_square_unique_skips_middle_houses():
       (rule square-unique (?R ?T)
         :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
                     (co-located ?a ?x)
-                    (not (and (?R ?x ?z) (neq ?y ?z))))
+                    (absent (and (?R ?x ?z) (neq ?y ?z))))
         :assert (co-located ?b ?y)
         :why "u" :priority 200))
     (ontology

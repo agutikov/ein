@@ -28,10 +28,10 @@ from ein_bot.kb.store import KnowledgeBase
 
 from . import predicates
 from .compile import (
+    AbsentGuard,
     Guard,
     Join,
     JoinPlan,
-    NegativeGuard,
     NestedPattern,
     Scan,
 )
@@ -122,7 +122,7 @@ def _run_steps(
             yield from _run_steps(rest, bindings, premises, kb)
         return
 
-    if isinstance(step, NegativeGuard):
+    if isinstance(step, AbsentGuard):
         # Negation-as-failure: parent continues iff sub-plan yields zero.
         any_match = False
         for _ in _run_steps(step.sub_steps, bindings, premises, kb):

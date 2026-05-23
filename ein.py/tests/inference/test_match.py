@@ -103,11 +103,13 @@ def test_neq_guard_in_transitive_prunes_2_cycles():
     assert results == []
 
 
-def test_negation_as_failure_succeeds_when_inner_empty():
+def test_absent_succeeds_when_inner_empty():
+    """`(absent P)` is the explicit NAF (S1.5.8c K-Δ.2):
+    the premise passes when no fact matches P."""
     kb = _kb("""
     (rules
       (rule guarded (?r)
-        :match (and (?r ?a ?b) (not (other ?a ?b)))
+        :match (and (?r ?a ?b) (absent (other ?a ?b)))
         :assert (ok ?a ?b)
         :why "g"))
     (ontology
@@ -123,11 +125,12 @@ def test_negation_as_failure_succeeds_when_inner_empty():
     assert results[0][0]["a"] == "X" and results[0][0]["b"] == "Y"
 
 
-def test_negation_as_failure_fails_when_inner_matches():
+def test_absent_fails_when_inner_matches():
+    """`(absent P)` fails when a fact matching P is in the KB."""
     kb = _kb("""
     (rules
       (rule guarded (?r)
-        :match (and (?r ?a ?b) (not (other ?a ?b)))
+        :match (and (?r ?a ?b) (absent (other ?a ?b)))
         :assert (ok ?a ?b)
         :why "g"))
     (ontology
@@ -139,6 +142,52 @@ def test_negation_as_failure_fails_when_inner_matches():
         kb.rules["guarded"], kb._facts_by_relation["guarded"][0],
     )
     results = list(match.run(plan, kb))
+    assert results == []
+
+
+def test_not_premise_matches_stored_neg_fact():
+    """`(not P)` in :match (post S1.5.8c K-Δ.1) matches a STORED
+    ``(not P)`` fact — uniform with how any other fact pattern
+    matches its head's storage."""
+    kb = _kb("""
+    (rules
+      (rule see-neg (?r)
+        :match (and (?r ?a ?b) (not (other ?a ?b)))
+        :assert (saw-neg ?a ?b)
+        :why "stored neg seen"))
+    (ontology
+      (relation r T T) (relation other T T)
+      (see-neg r))
+    (facts (r X Y :source "(1)") (not (other X Y) :source "(2)"))
+    """)
+    plan = compile_rule(
+        kb.rules["see-neg"], kb._facts_by_relation["see-neg"][0],
+    )
+    results = list(match.run(plan, kb))
+    assert len(results) == 1
+    assert results[0][0]["a"] == "X" and results[0][0]["b"] == "Y"
+
+
+def test_not_premise_does_not_match_without_stored_neg():
+    """`(not P)` no longer means NAF (S1.5.8c K-Δ.1): with only
+    the positive `(other X Y)` in the KB and no stored
+    `(not (other X Y))`, the (not …) pattern matches nothing."""
+    kb = _kb("""
+    (rules
+      (rule see-neg (?r)
+        :match (and (?r ?a ?b) (not (other ?a ?b)))
+        :assert (saw-neg ?a ?b)
+        :why "stored neg seen"))
+    (ontology
+      (relation r T T) (relation other T T)
+      (see-neg r))
+    (facts (r X Y :source "(1)") (other X Y :source "(2)"))
+    """)
+    plan = compile_rule(
+        kb.rules["see-neg"], kb._facts_by_relation["see-neg"][0],
+    )
+    results = list(match.run(plan, kb))
+    # No stored (not (other X Y)) fact → no match.
     assert results == []
 
 

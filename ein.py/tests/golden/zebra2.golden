@@ -16,11 +16,11 @@
     :why "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
     :priority 200)
   (rule
-    implies
+    includes
     (?p ?q)
     :match (?p ?a ?b)
     :assert (?q ?a ?b)
-    :why "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+    :why "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
     :priority 100)
   (rule
     square-fwd
@@ -39,7 +39,7 @@
   (rule
     square-unique
     (?R ?T)
-    :match (and (?R ?a ?b) (?R ?x ?y) (is-a ?x ?T) (co-located ?a ?x) (not (and (?R ?x ?z) (neq ?y ?z))))
+    :match (and (?R ?a ?b) (?R ?x ?y) (is-a ?x ?T) (co-located ?a ?x) (absent (and (?R ?x ?z) (neq ?y ?z))))
     :assert (co-located ?b ?y)
     :why "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
     :priority 200)
@@ -75,7 +75,7 @@
   (symmetric co-located)
   (transitive co-located)
   (symmetric next-to)
-  (implies right-of next-to)
+  (includes right-of next-to)
   (square-fwd right-of)
   (square-bwd right-of)
   (square-unique next-to House)

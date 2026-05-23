@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 from ein_bot.inference.compile import (
+    AbsentGuard,
     Guard,
     Join,
-    NegativeGuard,
     NestedPattern,
     Scan,
     compile_rule,
@@ -93,8 +93,9 @@ def test_compile_type_exclusivity_emits_negative_assert():
     assert inner.relation == "co-located"
 
 
-def test_compile_not_premise_emits_negative_guard():
-    """`(not (rel a b))` inside :match emits a NegativeGuard.
+def test_compile_absent_premise_emits_absent_guard():
+    """`(absent (rel a b))` inside :match emits an AbsentGuard
+    (S1.5.8c K-Δ.2).
 
     The inner step is a Join (not Scan) because ?a and ?b are
     already bound by the outer `(?r ?a ?b)` premise — the inner
@@ -103,7 +104,7 @@ def test_compile_not_premise_emits_negative_guard():
     kb = _kb_with("""
     (rules
       (rule guarded (?r)
-        :match (and (?r ?a ?b) (not (other ?a ?b)))
+        :match (and (?r ?a ?b) (absent (other ?a ?b)))
         :assert (ok ?a ?b)
         :why "g"))
     (ontology (relation r T T) (relation other T T) (guarded r))
@@ -111,12 +112,44 @@ def test_compile_not_premise_emits_negative_guard():
     plan = compile_rule(
         kb.rules["guarded"], kb._facts_by_relation["guarded"][0],
     )
-    assert any(isinstance(s, NegativeGuard) for s in plan.steps)
-    neg = next(s for s in plan.steps if isinstance(s, NegativeGuard))
+    assert any(isinstance(s, AbsentGuard) for s in plan.steps)
+    neg = next(s for s in plan.steps if isinstance(s, AbsentGuard))
     assert len(neg.sub_steps) == 1
     sub = neg.sub_steps[0]
     assert isinstance(sub, Join) and sub.relation == "other"
     assert sub.shared_vars == frozenset({"a", "b"})
+
+
+def test_compile_not_premise_emits_scan_with_nested_pattern():
+    """`(not (rel a b))` inside :match no longer means NAF
+    (S1.5.8c K-Δ.1). It compiles as a generic relation pattern
+    with head ``not`` and the inner expression as a
+    NestedPattern arg, matching STORED ``(not …)`` facts in the
+    KB.
+    """
+    kb = _kb_with("""
+    (rules
+      (rule see-neg (?r)
+        :match (and (?r ?a ?b) (not (other ?a ?b)))
+        :assert (saw-neg ?a ?b)
+        :why "saw stored neg of other for {?a},{?b}"))
+    (ontology (relation r T T) (relation other T T) (see-neg r))
+    """)
+    plan = compile_rule(
+        kb.rules["see-neg"], kb._facts_by_relation["see-neg"][0],
+    )
+    # The (not …) premise must NOT compile to an AbsentGuard.
+    assert not any(isinstance(s, AbsentGuard) for s in plan.steps)
+    # It compiles as a Join on "not" with a NestedPattern arg.
+    not_step = next(
+        (s for s in plan.steps if isinstance(s, (Join, Scan)) and s.relation == "not"),
+        None,
+    )
+    assert not_step is not None, "expected a Join/Scan on relation 'not'"
+    assert len(not_step.arg_slots) == 1
+    inner = not_step.arg_slots[0]
+    assert isinstance(inner, NestedPattern)
+    assert inner.relation == "other"
 
 
 def test_compile_nested_match_pattern():
