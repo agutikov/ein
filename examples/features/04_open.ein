@@ -84,3 +84,9 @@
 ;;     (open-slot House_3 Blue)
 ;;
 ;; Total: 2 (H1) + 2 (H2) + 3 (H3) = 7 open-slot facts.
+
+
+(query
+  :mode solve
+  :goal (open-slot ?h ?c)
+)

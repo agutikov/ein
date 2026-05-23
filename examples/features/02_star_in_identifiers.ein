@@ -64,3 +64,9 @@
 ;; like `sibling-exclusive` that should only match direct parents.
 ;; The closure `is-a*` is available for rules that need full
 ;; ancestor reach (typecheck against ancestor types, etc.).
+
+
+(query
+  :mode solve
+  :goal (?R Rex Animal) ;;TODO
+)

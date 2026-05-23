@@ -55,3 +55,9 @@
 ;; longer undefeated → the rule fires for no one. If you delete
 ;; ALL beats facts AND remove Bob and Carol, Alice is vacuously
 ;; undefeated (forall over empty domain → true) → (undefeated Alice).
+
+
+(query
+  :mode solve
+  :goal (undefeated ?who)
+)

@@ -102,3 +102,9 @@
 ;;
 ;; The result fact lands in the (reasoning) layer with the four
 ;; negative facts + the Yellow is-a as its provenance premises.
+
+
+(query
+  :mode solve
+  :goal (color-of ?h ?c)
+)

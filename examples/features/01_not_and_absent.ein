@@ -70,3 +70,9 @@
 ;; (likes Alice Bob) is asserted, so neither rule fires on that pair:
 ;;   - see-stored-neg needs a stored (not …) fact — none for (Alice Bob)
 ;;   - unknown-feeling needs (absent (likes Alice Bob)) — fails.
+
+
+(query
+  :mode solve
+  :goal (unknown-feeling ?a ?b)
+)
