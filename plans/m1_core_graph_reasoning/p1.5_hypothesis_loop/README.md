@@ -47,6 +47,7 @@ what the loop *records* and what it returns at quiescence.
 | S1.5.6  | [One-step rule lookahead + `sibling-exclusive` 2-arg rewrite](s1.5.6_one_step_lookahead.md) | 2-3 days |
 | S1.5.6b | [Guided hypothesis generation](s1.5.6b_guided_hypgen.md) — done (2026-05-22) | ~3-5 days |
 | S1.5.7  | [Back-prop `(not h)`, re-saturate, return on derived positive](s1.5.7_back_prop_unconditional.md) | 4-6 days |
+| S1.5.7b | [Stable-alive caching in the `_consume` loop](s1.5.7b_consume_loop_stable_alive.md) — parked (2026-05-23), not M1-blocking | ~1-1½ days |
 | S1.5.8  | [Totality + domain elimination](s1.5.8_totality_domain_elimination.md) | 3-4 days |
 
 S1.5.5/6/7 split out of S1.5.4 on 2026-05-21 per the
@@ -67,6 +68,14 @@ independently testable.
   whitelist, `hrule` rule-driven generation, the
   `enable-auto-hypgen` on/off flag. The proactive counterpart to
   S1.5.6's reactive filtering; not M1-blocking.
+- **S1.5.7b** — **parked** 2026-05-23; perf follow-up to S1.5.7.
+  Today's consume loop re-runs `try_branch` on every still-alive
+  candidate every sweep pass — under M1's rule set re-saturation
+  can't change an alive verdict, so the re-tries are pure waste
+  (demo 10 measured 110 `try_branch` calls flag-on vs 70 flag-off
+  for the same 32-vs-50 tree). Tracks a per-candidate
+  "verified-alive after re-saturation generation N" cache; not
+  M1-blocking.
 - **S1.5.7 / S1.5.8** — **M1-blocking** (2026-05-22 direction "M1
   has to solve zebra"). S1.5.7's re-saturation +
   return-on-derived-positive and S1.5.8's `domain-elimination`

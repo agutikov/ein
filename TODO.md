@@ -47,6 +47,44 @@
 
 
 
+---
+
+P1.6
+
+rename ein-bot,ein_bot -> ein
+
+merge ein.py/demo into ein
+don't put everything onto cli.py - make separate folder in src/ein/ for cli functions
+
+
+---
+
+P1.7 ideas
+
+extend hypgen with adwanced hypothesis ordering
+after all optimizations the idea of minimal domain first ordering is abandoned
+
+one idea is to introduce hypothesis scoring
+for 2-rel we have 3 atoms (?R ?A ?B) one relation and 2 objects - score hypothesis by sum of relations of objects + number of existing facts with relation
+add configuration options for multiplicators for both components
+second improvement - add second round - sum number of relation of 2nd level from the hypothesis
+example
+```
+(co-located Red House1) ;; fact 1
+(co-located House1 Milk) ;; fact 2
+;; score(House1) = 2
+;; score(co-located) = 2
+;; score(Red) = 1
+;; score(Milk) = 1
+;; score(Cat) = 0 (not mentioned in facts)
+
+(co-located House1 Cat) ;; h1, 1st-level score = score(co-located) + score(House1) + score(Cat) = 2 + 2 + 0
+;; 2nd-level score = 1st-level + score(Red) + score(Milk)
+
+;; with coefficients-weights will be
+;; 1st-level score = rel_weight * score(co-located) + obj_weight * (score(House1) + score(Cat))
+```
+
 
 ---
 
