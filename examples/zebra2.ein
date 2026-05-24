@@ -118,6 +118,17 @@
     :why    "linked: ({?R1} {?h} {?V1}) ⟹ ({?R2} {?h} {?V2})."
     :priority 200)
 
+  ;; `linked` is symmetric — (linked A B C D) and (linked C D A B)
+  ;; express the same constraint. Authors write ONE direction;
+  ;; this meta-rule derives the reverse activator. Saturator
+  ;; cache-refresh then picks it up and the `linked` rule fires
+  ;; in both directions.
+  (rule linked-symmetric ()
+    :match  (linked ?R1 ?V1 ?R2 ?V2)
+    :assert (linked ?R2 ?V2 ?R1 ?V1)
+    :why    "linked is symmetric: derive reverse activator."
+    :priority 100)
+
   ;; `cross-attr-spatial-*` — pure-structural cross-attribute
   ;; propagation across a spatial adjacency relation ?S. The
   ;; spatial relation is itself a rule parameter, so the same two
@@ -404,19 +415,15 @@
 
   ;; (2) The Englishman lives in the red house.
   (linked house-nation Englishman house-color  Red          :source "condition (2)")
-  (linked house-color  Red        house-nation Englishman   :source "condition (2)")
 
   ;; (3) The Spaniard owns the dog.
   (linked house-nation Spaniard   house-pet    Dog          :source "condition (3)")
-  (linked house-pet    Dog        house-nation Spaniard     :source "condition (3)")
 
   ;; (4) Coffee is drunk in the green house.
   (linked house-drink  Coffee     house-color  Green        :source "condition (4)")
-  (linked house-color  Green      house-drink  Coffee       :source "condition (4)")
 
   ;; (5) The Ukrainian drinks tea.
   (linked house-nation Ukrainian  house-drink  Tea          :source "condition (5)")
-  (linked house-drink  Tea        house-nation Ukrainian    :source "condition (5)")
 
   ;; (6) The green house is immediately right of the ivory house.
   (cross-attr-spatial-fwd house-color Ivory house-color Green right-of :source "condition (6)")
@@ -424,11 +431,9 @@
 
   ;; (7) The Old Gold smoker owns snails.
   (linked house-smoke  Old_Gold   house-pet    Snail        :source "condition (7)")
-  (linked house-pet    Snail      house-smoke  Old_Gold     :source "condition (7)")
 
   ;; (8) Kools are smoked in the yellow house.
   (linked house-smoke  Kools      house-color  Yellow       :source "condition (8)")
-  (linked house-color  Yellow     house-smoke  Kools        :source "condition (8)")
 
   ;; (9) Milk is drunk in the middle house.
   (house-drink  House_3 Milk                                :source "condition (9)")
@@ -446,11 +451,9 @@
 
   ;; (13) The Lucky Strike smoker drinks orange juice.
   (linked house-smoke  Lucky_Strike house-drink Juice                            :source "condition (13)")
-  (linked house-drink  Juice        house-smoke Lucky_Strike                     :source "condition (13)")
 
   ;; (14) The Japanese smokes Parliaments.
   (linked house-nation Japanese   house-smoke  Parliament                        :source "condition (14)")
-  (linked house-smoke  Parliament house-nation Japanese                          :source "condition (14)")
 
   ;; (15) The Norwegian lives next to the blue house.
   (cross-attr-spatial-fwd house-nation Norwegian    house-color  Blue           next-to :source "condition (15)")

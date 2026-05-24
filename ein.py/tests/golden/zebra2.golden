@@ -58,6 +58,13 @@
     :why "linked: ({?R1} {?h} {?V1}) ⟹ ({?R2} {?h} {?V2})."
     :priority 200)
   (rule
+    linked-symmetric
+    ()
+    :match (linked ?R1 ?V1 ?R2 ?V2)
+    :assert (linked ?R2 ?V2 ?R1 ?V1)
+    :why "linked is symmetric: derive reverse activator."
+    :priority 100)
+  (rule
     cross-attr-spatial-fwd
     (?R1 ?V1 ?R2 ?V2 ?S)
     :match (and (?R1 ?h1 ?V1) (?S ?h2 ?h1) (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
@@ -241,13 +248,9 @@
   (right-of House_4 House_3 :source "condition (1)")
   (right-of House_5 House_4 :source "condition (1)")
   (linked house-nation Englishman house-color Red :source "condition (2)")
-  (linked house-color Red house-nation Englishman :source "condition (2)")
   (linked house-nation Spaniard house-pet Dog :source "condition (3)")
-  (linked house-pet Dog house-nation Spaniard :source "condition (3)")
   (linked house-drink Coffee house-color Green :source "condition (4)")
-  (linked house-color Green house-drink Coffee :source "condition (4)")
   (linked house-nation Ukrainian house-drink Tea :source "condition (5)")
-  (linked house-drink Tea house-nation Ukrainian :source "condition (5)")
   (cross-attr-spatial-fwd
     house-color
     Ivory
@@ -263,9 +266,7 @@
     right-of
     :source "condition (6)")
   (linked house-smoke Old_Gold house-pet Snail :source "condition (7)")
-  (linked house-pet Snail house-smoke Old_Gold :source "condition (7)")
   (linked house-smoke Kools house-color Yellow :source "condition (8)")
-  (linked house-color Yellow house-smoke Kools :source "condition (8)")
   (house-drink House_3 Milk :source "condition (9)")
   (house-nation House_1 Norwegian :source "condition (10)")
   (cross-attr-spatial-fwd
@@ -297,9 +298,7 @@
     next-to
     :source "condition (12)")
   (linked house-smoke Lucky_Strike house-drink Juice :source "condition (13)")
-  (linked house-drink Juice house-smoke Lucky_Strike :source "condition (13)")
   (linked house-nation Japanese house-smoke Parliament :source "condition (14)")
-  (linked house-smoke Parliament house-nation Japanese :source "condition (14)")
   (cross-attr-spatial-fwd
     house-nation
     Norwegian
