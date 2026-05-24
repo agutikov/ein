@@ -21,20 +21,20 @@
 ;;;   H_4    Spaniard   Ivory   Juice   Lucky_Strike  Dog
 ;;;   H_5    Japanese   Green   Coffee  Parliament    Zebra
 ;;;
-;;; ── Status 2026-05-24 — KNOWN-BAD with all hints uncommented ──
+;;; ── Status 2026-05-24 — Solves under fixed disjunctive-prune ──
 ;;;
-;;; Running this file as-is produces Contradiction, not Solution.
-;;; The dump (S1.5a.11) reveals the bug: `disjunctive-prune` fires
-;;; with bwd-direction activator `(disjunctive-prune right-of
-;;; color-loc Green color-loc Ivory)` and asserts
-;;; `(not (color-loc Ivory House_4))` — claiming Ivory cannot be
-;;; at H_4 even though the Wikipedia solution puts it there. The
-;;; NAF check `(absent (?S ?h_other ?h1))` is correct for the fwd
-;;; activator but wrong for bwd when ?S is asymmetric (right-of):
-;;; the bwd direction needs `(absent (?S ?h1 ?h_other))` instead.
-;;; Tracked in S1.5a.2 (re-opened) — first instance of the
-;;; dump-tree harness immediately surfacing a real inference bug,
-;;; which is exactly what S1.5a.11 was built for.
+;;; Running this file as-is now produces Solution. Earlier (commit
+;;; c8af318) it produced Contradiction because `disjunctive-prune`
+;;; had a single rule that worked correctly for the fwd activator
+;;; but, when the bwd-derive swapped args, ran the same NAF in the
+;;; wrong operand order — fine for symmetric ?S (next-to) but
+;;; wrong for asymmetric ?S (right-of). The S1.5a.11 dump on this
+;;; file surfaced the bug in its first realistic outing.
+;;;
+;;; The fix (S1.5a.2): split into `disjunctive-prune-fwd` /
+;;; `disjunctive-prune-bwd`, each with the correct NAF direction.
+;;; The broken pre-fix copy of this file lives at
+;;; examples/ein-bugs/zebra2-hints.ein as a regression artefact.
 ;;;
 ;;; ── Background ───────────────────────────────────────────────
 ;;;
@@ -208,46 +208,54 @@
     :priority 100)
 
   ;; ──── Disjunctive-prune: pre-emptive negatives ──────────────
-  ;; When (R1 V1 h1) is known and the cross-attribute constraint
-  ;; says V2 must be at some ?S-neighbour of h1, every house NOT
-  ;; ?S-adjacent to h1 has (not (R2 V2 h_other)) — the disjunctive
-  ;; case "V2 is in {?S-neighbours}" expressed as N-1 negatives
-  ;; for non-neighbours. Complements adjacent-via-* which only
-  ;; emits positive deterministic conclusions when the neighbour
-  ;; is UNIQUE; disjunctive-prune fires in both the unique and
-  ;; non-unique cases, restricting V2's domain even when the
-  ;; positive can't be pinned.
-  (rule disjunctive-prune (?S ?R1 ?V1 ?R2 ?V2)
+  ;; For each adjacent-via constraint there's a pair of disjunctive
+  ;; pruners — one per direction — emitting (not …) for every house
+  ;; NOT in the relevant ?S-neighbour set. Complements adjacent-via-*
+  ;; which only emits positives when the neighbour is unique;
+  ;; disjunctive-prune-* fire in both unique and non-unique cases,
+  ;; restricting the partner's domain even when the positive can't
+  ;; be pinned.
+  ;;
+  ;; The split into -fwd / -bwd matters when ?S is **asymmetric**
+  ;; (right-of). The constraint behind `(adjacent-via ?S V1 V2)` is
+  ;; ``(?S V2_h V1_h)`` — V2 is the ?S-target of V1.
+  ;;
+  ;;   - fwd: V1 known at h1; V2 sits at some h_other with
+  ;;     ``(?S h_other h1)``. Exclude h_other where that's absent.
+  ;;   - bwd: V2 known at h1; V1 sits at some h_other with
+  ;;     ``(?S h1 h_other)`` — the *reverse* operand order.
+  ;;     Exclude h_other where that's absent.
+
+  (rule disjunctive-prune-fwd (?S ?R1 ?V1 ?R2 ?V2)
     :match  (and (?R1 ?V1 ?h1)
                  (relation ?R2 ?A ?B)
                  (is-a ?h_other ?B)
                  (neq ?h_other ?h1)
                  (absent (?S ?h_other ?h1)))
     :assert (not (?R2 ?V2 ?h_other))
-    :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours; {?h_other} excluded."
+    :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded."
     :priority 250)
 
-  ;; Auto-derive disjunctive-prune activators from every
-  ;; adjacent-via-{fwd,bwd} activator. The fwd direction passes
-  ;; args as-is (V1 is the known side); bwd swaps so V2's side
-  ;; becomes the trigger. Together they cover both directions of
-  ;; each spatial cross-attribute condition.
-  ;;
-  ;; Priority 200 — these MUST fire AFTER all next-to derivations
-  ;; have drained at priority 100 (`includes right-of next-to` +
-  ;; `symmetric next-to`). The fire-time NAF re-eval (S1.5a.1)
-  ;; also catches the race; this priority gives the propagate
-  ;; band its turn first.
+  (rule disjunctive-prune-bwd (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (?R2 ?V2 ?h1)
+                 (relation ?R1 ?A ?B)
+                 (is-a ?h_other ?B)
+                 (neq ?h_other ?h1)
+                 (absent (?S ?h1 ?h_other)))
+    :assert (not (?R1 ?V1 ?h_other))
+    :why    "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded."
+    :priority 250)
+
   (rule derive-disjunctive-prune-fwd ()
     :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (disjunctive-prune ?S ?R1 ?V1 ?R2 ?V2)
-    :why    "adjacent-via-fwd ⟹ disjunctive-prune (same direction)."
+    :assert (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-fwd ⟹ disjunctive-prune-fwd."
     :priority 200)
 
   (rule derive-disjunctive-prune-bwd ()
     :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (disjunctive-prune ?S ?R2 ?V2 ?R1 ?V1)
-    :why    "adjacent-via-bwd ⟹ disjunctive-prune (swapped sides)."
+    :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
     :priority 200)
 
   ;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
@@ -547,6 +555,7 @@
   ;; (15) The Norwegian lives next to the blue house.
   (adjacent-via next-to  nation-loc Norwegian   color-loc Blue    :source "condition (15)")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; ──── SOLUTION HINTS (S1.5a.11 diagnostic) ─────────────────
   ;; Ten facts pulled from the known solution. Comment any of
   ;; them out to widen the search; uncomment to narrow it. With
@@ -566,10 +575,7 @@
   (color-loc  Ivory          House_4   :source "hint 1")
 
   ;; hint 2 — Green is house 5 (right-of Ivory by cond. 6).
-  (color-loc  Green          House_5   :source "hint 2")
-
-  ;; hint 3 — Blue is house 2 (only neighbour of Norwegian@H1).
-  (color-loc  Blue           House_2   :source "hint 3")
+  ;; (color-loc  Green          House_5   :source "hint 2")
 
   ;; hint 4 — Englishman is house 3 (cond. 2: Red house).
   (nation-loc Englishman     House_3   :source "hint 4")
@@ -578,22 +584,25 @@
   (nation-loc Japanese       House_5   :source "hint 5")
 
   ;; hint 6 — Coffee is in house 5 (cond. 4: drunk in Green house).
-  (drink-loc  Coffee         House_5   :source "hint 6")
+  ;; (drink-loc  Coffee         House_5   :source "hint 6")
 
   ;; hint 7 — Water is in house 1 (the only drink unassigned to
   ;; H_2..H_5 after deductions from Milk@H3 + Coffee@H5).
-  (drink-loc  Water          House_1   :source "hint 7")
+  ;; (drink-loc  Water          House_1   :source "hint 7")
 
   ;; hint 8 — Kools is in house 1 (cond. 8: smoked in Yellow).
-  (smoke-loc  Kools          House_1   :source "hint 8")
+  ;; (smoke-loc  Kools          House_1   :source "hint 8")
 
   ;; hint 9 — Zebra is in house 5 (the unsolved goal: Japanese
   ;; owns the Zebra; Japanese@H5 by hint 5).
-  (pet-loc    Zebra          House_5   :source "hint 9")
+  ;; (pet-loc    Zebra          House_5   :source "hint 9")
 
   ;; hint 10 — Dog is in house 4 (cond. 3: Spaniard owns Dog,
   ;; Spaniard@H4 since every other nation is placed by hints).
-  (pet-loc    Dog            House_4   :source "hint 10"))
+  ;; (pet-loc    Dog            House_4   :source "hint 10")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+)
 
 (query
   :mode solve

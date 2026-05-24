@@ -79,25 +79,32 @@
     :why "adjacent-via ⟹ adjacent-via-bwd (identical args)."
     :priority 100)
   (rule
-    disjunctive-prune
+    disjunctive-prune-fwd
     (?S ?R1 ?V1 ?R2 ?V2)
     :match (and (?R1 ?V1 ?h1) (relation ?R2 ?A ?B) (is-a ?h_other ?B) (neq ?h_other ?h1) (absent (?S ?h_other ?h1)))
     :assert (not (?R2 ?V2 ?h_other))
-    :why "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours; {?h_other} excluded."
+    :why "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded."
+    :priority 250)
+  (rule
+    disjunctive-prune-bwd
+    (?S ?R1 ?V1 ?R2 ?V2)
+    :match (and (?R2 ?V2 ?h1) (relation ?R1 ?A ?B) (is-a ?h_other ?B) (neq ?h_other ?h1) (absent (?S ?h1 ?h_other)))
+    :assert (not (?R1 ?V1 ?h_other))
+    :why "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded."
     :priority 250)
   (rule
     derive-disjunctive-prune-fwd
     ()
     :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (disjunctive-prune ?S ?R1 ?V1 ?R2 ?V2)
-    :why "adjacent-via-fwd ⟹ disjunctive-prune (same direction)."
+    :assert (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why "adjacent-via-fwd ⟹ disjunctive-prune-fwd."
     :priority 200)
   (rule
     derive-disjunctive-prune-bwd
     ()
     :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (disjunctive-prune ?S ?R2 ?V2 ?R1 ?V1)
-    :why "adjacent-via-bwd ⟹ disjunctive-prune (swapped sides)."
+    :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
     :priority 200)
   (rule
     typecheck-arg-0
