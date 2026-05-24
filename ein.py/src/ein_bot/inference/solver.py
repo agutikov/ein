@@ -64,6 +64,15 @@ _current_parent_ctx: ContextVar[int | None] = ContextVar(
     "ein_bot_current_parent_nid", default=None,
 )
 
+# Depth of the search-tree node `_explore` is currently building.
+# Set on `_explore` entry, reset on exit. Diagnostic / instrumentation
+# wrappers (bench_solve --verbose) read this to print branch level
+# next to each progress line. Root is depth 0; children of root are
+# depth 1; etc.
+_current_depth_ctx: ContextVar[int] = ContextVar(
+    "ein_bot_current_depth", default=0,
+)
+
 
 def _alloc_node(builder: _TreeBuilder, parent_id: int | None) -> int:
     """`builder.alloc()` + register the node's dir on any bound dumper.
@@ -512,6 +521,29 @@ def _explore(
     explored via another path. Two branches that saturate to the
     same closed KB share one SearchNode — the tree is a DAG in
     storage.
+    """
+    depth_token = _current_depth_ctx.set(depth)
+    try:
+        return _explore_inner(
+            kb, parent_id, hypothesis, firings, depth, max_depth,
+            builder, mode,
+        )
+    finally:
+        _current_depth_ctx.reset(depth_token)
+
+
+def _explore_inner(
+    kb: KnowledgeBase,
+    parent_id: BranchId | None,
+    hypothesis: Fact | None,
+    firings: tuple[Firing, ...],
+    depth: int,
+    max_depth: int,
+    builder: _TreeBuilder,
+    mode: Mode,
+) -> BranchId:
+    """Body of `_explore` (factored out for the depth-ctx try/finally
+    wrapper). See :func:`_explore` for the contract.
     """
     sh = state_hash(kb)
     existing = builder.state_index.get(sh)

@@ -33,8 +33,13 @@ Debug logging (S1.5.4-motivated diagnostics for branching blowup):
 
 - ``--verbose`` / ``-v`` — emit a one-line progress report on stderr
   every ``--progress-every`` branches (default 100): cumulative
-  branch count, elapsed wall-clock, branches-per-second, the
-  hypothesis relation, and whether the last branch lived or died.
+  branch count `b=`, the new branch's tree depth `d=`,
+  elapsed wall-clock, branches-per-second, alive/dead counters,
+  alive-hypothesis-set sizes for root and current branch
+  (`hyps(root/br)=N/M` — `root` shrinks as back-prop writes
+  `(not h)` into root's `_negated_facts` and `_candidates_for`
+  re-prunes), the hypothesis relation, and whether the last
+  branch lived or died.
 - ``--max-nodes N`` — abort the search if the branch counter
   exceeds ``N``. Default unset (no cap). When triggered, the
   partial tree built so far is *not* available (the abort raises
@@ -104,6 +109,11 @@ class _DebugState:
         self.max_nodes: int | None = None
         self.max_time: float | None = None
         self.aborted: str | None = None
+        # Captured once on the first wrapped_try_branch invocation
+        # (parent_kb at depth=0 IS the root kb). Lets the progress
+        # log report root's *current* alive count — which shrinks
+        # as back-prop adds (not h) to root over the run.
+        self.root_kb = None
 
 
 _dbg = _DebugState()
@@ -162,6 +172,16 @@ def _install_instrumentation(verbose: bool, progress_every: int,
             _dbg.aborted = f"max-time ({_dbg.max_time:.1f}s) exceeded"
             raise BudgetExceededError(_dbg.aborted)
 
+        # Capture root kb the first time we see depth=0 — at that
+        # point parent_kb is the root (try_branch's parent is the
+        # enclosing _explore's nid; depth=0 means root). Used below
+        # to print the *current* root-alive count, which shrinks as
+        # back-prop writes (not h) into root.
+        from ein_bot.inference.solver import _current_depth_ctx
+        parent_depth = _current_depth_ctx.get()
+        if _dbg.root_kb is None and parent_depth == 0:
+            _dbg.root_kb = parent_kb
+
         t = now
         res = orig_try(parent_kb, hypothesis, branch_id=branch_id,
                        saturator_steps=saturator_steps)
@@ -180,11 +200,25 @@ def _install_instrumentation(verbose: bool, progress_every: int,
                 _dbg.progress_every / since_last if since_last > 0 else 0
             )
             overall_rate = _dbg.branches / elapsed if elapsed > 0 else 0
+            # depth of the *new* branch = parent's depth + 1
+            branch_depth = parent_depth + 1
+            root_alive_n = (
+                len(_dbg.root_kb.alive) if _dbg.root_kb is not None
+                and _dbg.root_kb.alive is not None else 0
+            )
+            # Branch's alive set sits on the saturated fork. Counts
+            # what's left to try inside this branch (pre per-call
+            # pruning that the next _candidates_for would apply).
+            branch_alive_n = (
+                len(res.kb.alive) if res.kb is not None
+                and res.kb.alive is not None else 0
+            )
             print(
-                f"  [progress] b={_dbg.branches:>6d}  "
+                f"  [progress] b={_dbg.branches:>6d} d={branch_depth} "
                 f"elapsed={elapsed:>6.1f}s  "
                 f"rate(recent/avg)={recent_rate:>5.0f}/{overall_rate:.0f} br/s  "
                 f"alive={_dbg.alive} dead={_dbg.dead}  "
+                f"hyps(root/br)={root_alive_n}/{branch_alive_n}  "
                 f"last=({hypothesis.relation_name}",
                 end="", file=sys.stderr,
             )
