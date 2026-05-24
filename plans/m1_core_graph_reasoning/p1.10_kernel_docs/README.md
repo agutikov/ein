@@ -26,6 +26,27 @@ are organised into three sub-trees (`ir/01-ein-graph/`,
 - folds in a refined ein-model (atoms vs objects; 4-level
   KB representation).
 
+## Stages
+
+| ID         | Title                                                                       | File                                                                  |
+|------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| S1.10.A1   | IR docs: split data-model into idiomatic + python-impl                      | [s1.10.a1_ir_doc_split.md](s1.10.a1_ir_doc_split.md)                  |
+| S1.10.A2   | Idiomatic data-model backfill                                               | [s1.10.a2_idiomatic_backfill.md](s1.10.a2_idiomatic_backfill.md)      |
+| S1.10.B    | Kernel API reference                                                        | [s1.10.b_kernel_api_reference.md](s1.10.b_kernel_api_reference.md)    |
+| S1.10.C    | Stdlib API reference                                                        | [s1.10.c_stdlib_api_reference.md](s1.10.c_stdlib_api_reference.md)    |
+| S1.10.D    | Inference engine documentation                                              | [s1.10.d_inference_engine_docs.md](s1.10.d_inference_engine_docs.md)  |
+| S1.10.E    | User vs developer docs split                                                | [s1.10.e_user_vs_dev_split.md](s1.10.e_user_vs_dev_split.md)          |
+| S1.10.F    | Architecture overview + diagrams                                            | [s1.10.f_architecture_overview.md](s1.10.f_architecture_overview.md)  |
+| S1.10.G    | `docs/index/` → `docs/lib/` rename                                          | [s1.10.g_docs_index_rename.md](s1.10.g_docs_index_rename.md)          |
+| S1.10.H1   | Ein-model: atoms vs objects                                                 | [s1.10.h1_atom_vs_object.md](s1.10.h1_atom_vs_object.md)              |
+| S1.10.H2   | Ein-model: 4-level KB representation                                        | [s1.10.h2_four_level_kb.md](s1.10.h2_four_level_kb.md)                |
+| S1.10.H3   | Ein-model: self-describing KB types                                         | [s1.10.h3_self_describing_kb.md](s1.10.h3_self_describing_kb.md)      |
+
+Suggested order: H1 → H2 → H3 (vocabulary first, then schema)
+∥ A1 → A2 (data-model split, then backfill); B + C + D can
+follow once A2 + H2 are in; E and F land after the bulk of
+content stabilises; G can ship any time before M2b.
+
 ## Themes
 
 ### Theme A — IR doc 4-level split

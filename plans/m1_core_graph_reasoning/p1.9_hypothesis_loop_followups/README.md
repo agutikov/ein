@@ -34,6 +34,41 @@ Most entries are M/L because they compound on top of T1.5.4.1's
 headline win and the marginal returns diminish; the H entries
 are correctness-bearing (E6) or long-term-structural (E7).
 
+## Stage files
+
+Each E-entry has a per-stage stub file (created 2026-05-24).
+The README catalog rows stay authoritative for the catalog
+description + effort/value/references; the stub files add a
+Tasks / Acceptance / open-questions skeleton.
+
+| Stub file                                                                            | Entry |
+|--------------------------------------------------------------------------------------|-------|
+| [s1.9.e1_functional_activator.md](s1.9.e1_functional_activator.md)                  | E1    |
+| [s1.9.e2_at_most_one.md](s1.9.e2_at_most_one.md)                                    | E2    |
+| [s1.9.e3_no_hypotheses.md](s1.9.e3_no_hypotheses.md)                                | E3    |
+| [s1.9.e4_symmetry_class.md](s1.9.e4_symmetry_class.md)                              | E4    |
+| [s1.9.e5_static_rule_conflict.md](s1.9.e5_static_rule_conflict.md)                  | E5    |
+| [s1.9.e6_transitive_premise_walk.md](s1.9.e6_transitive_premise_walk.md)            | E6    |
+| [s1.9.e7_learned_clause.md](s1.9.e7_learned_clause.md)                              | E7    |
+| [s1.9.e8_watched_fact.md](s1.9.e8_watched_fact.md)                                  | E8    |
+| [s1.9.e9_lcv.md](s1.9.e9_lcv.md)                                                    | E9    |
+| [s1.9.e10_iterative_deepening.md](s1.9.e10_iterative_deepening.md)                  | E10   |
+| [s1.9.e11_goal_driven_filter.md](s1.9.e11_goal_driven_filter.md)                    | E11   |
+| [s1.9.e12_informativeness.md](s1.9.e12_informativeness.md)                          | E12   |
+| [s1.9.e13_per_hyp_budget.md](s1.9.e13_per_hyp_budget.md)                            | E13   |
+| [s1.9.e14_arc_consistency.md](s1.9.e14_arc_consistency.md)                          | E14   |
+| [s1.9.e15_path_consistency.md](s1.9.e15_path_consistency.md)                        | E15   |
+| [s1.9.e16_lazy_root_alive.md](s1.9.e16_lazy_root_alive.md)                          | E16   |
+| [s1.9.e17_branch_budget.md](s1.9.e17_branch_budget.md)                              | E17   |
+| [s1.9.e18_rule_applicability_pruning.md](s1.9.e18_rule_applicability_pruning.md)    | E18   |
+| [s1.9.e19_unsat_core_min.md](s1.9.e19_unsat_core_min.md)                            | E19   |
+| [s1.9.e20_conflict_cache.md](s1.9.e20_conflict_cache.md)                            | E20   |
+| [s1.9.e21_solve_vs_prove.md](s1.9.e21_solve_vs_prove.md)                            | E21   |
+| [s1.9.e22_alive_hyps_in_state_hash.md](s1.9.e22_alive_hyps_in_state_hash.md)        | E22   |
+| [s1.9.e23_prove_speedup.md](s1.9.e23_prove_speedup.md)                              | E23   |
+
+The R1-R4 rejected entries stay in the README catalog only.
+
 ## Catalog
 
 ### Closure refinements (Q-S1.5.4.B descendants)

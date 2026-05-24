@@ -21,6 +21,49 @@ phase was modules-only; the file inside this directory is the
 authoritative scope statement (rename deferred to avoid a churn
 of cross-link breakage across S1.3.0, P1.3 README, etc.).
 
+## Stages
+
+Theme A (modules + imports + standard library):
+
+| ID         | Title                                                  | File                                                                  |
+|------------|--------------------------------------------------------|-----------------------------------------------------------------------|
+| S1.8.A1    | Module-system design                                   | [s1.8.a1_module_system_design.md](s1.8.a1_module_system_design.md)    |
+| S1.8.A2    | Grammar / parser extensions for imports                | [s1.8.a2_grammar_import_use.md](s1.8.a2_grammar_import_use.md)        |
+| S1.8.A3    | Loader: resolve imports                                | [s1.8.a3_loader_resolve_imports.md](s1.8.a3_loader_resolve_imports.md) |
+| S1.8.A4    | Rule library location                                  | [s1.8.a4_rule_library_location.md](s1.8.a4_rule_library_location.md)  |
+| S1.8.A5    | Migration to imports                                   | [s1.8.a5_migration_imports.md](s1.8.a5_migration_imports.md)          |
+| S1.8.A6    | Closure auto-inference                                 | [s1.8.a6_closure_auto_inference.md](s1.8.a6_closure_auto_inference.md) |
+| S1.8.A7    | `imply` family + `converse` + algebra lemmas           | [s1.8.a7_imply_converse_algebra.md](s1.8.a7_imply_converse_algebra.md) |
+| S1.8.A8    | General totality + domain-elimination library form     | [s1.8.a8_general_totality.md](s1.8.a8_general_totality.md)            |
+| S1.8.A9    | Reflective rule-implication                            | [s1.8.a9_reflective_rule_implication.md](s1.8.a9_reflective_rule_implication.md) |
+| S1.8.A10   | Type / domain matching                                 | [s1.8.a10_type_domain_matching.md](s1.8.a10_type_domain_matching.md)  |
+| S1.5.9     | Ein-lang pattern macros (sticky id, relocated 2026-05-24) | [s1.5.9_ein_lang_macros.md](s1.5.9_ein_lang_macros.md)              |
+
+Theme B (performance):
+
+| ID                | Title                                          | File                                                          |
+|-------------------|------------------------------------------------|---------------------------------------------------------------|
+| S1.8.B-indexes    | Indexes for saturation perf (sub-theme B1)     | [s1.8.b_indexes.md](s1.8.b_indexes.md)                       |
+| S1.8.B1           | ForkedKnowledgeBase overlay class (COW)        | [s1.8.b1_cow_overlay.md](s1.8.b1_cow_overlay.md)             |
+| S1.8.B2           | Engine lookups traverse parent chain (COW)     | [s1.8.b2_engine_lookups.md](s1.8.b2_engine_lookups.md)       |
+| S1.8.B3           | Saturator + detector invariants (COW)          | [s1.8.b3_saturator_invariants.md](s1.8.b3_saturator_invariants.md) |
+| S1.8.B4           | COW perf benchmark                             | [s1.8.b4_perf_bench.md](s1.8.b4_perf_bench.md)               |
+
+> The Theme B / B1 / B2 nesting uses the same letter; the
+> indexes sub-theme uses `s1.8.b_indexes.md` (without a
+> numeric suffix) to keep S1.8.B1-B4 free for the COW chain.
+
+Theme C (negative-fact volume reduction):
+
+| ID          | Title                                                  | File                                                            |
+|-------------|--------------------------------------------------------|-----------------------------------------------------------------|
+| S1.8.C1     | Measure negative-fact volume + consumption             | [s1.8.c1_measure_negative_volume.md](s1.8.c1_measure_negative_volume.md) |
+| S1.8.C2     | Pick a representation                                  | [s1.8.c2_pick_representation.md](s1.8.c2_pick_representation.md) |
+| S1.8.C3     | Refactor saturator + detector + trace renderer         | [s1.8.c3_refactor_saturator.md](s1.8.c3_refactor_saturator.md)   |
+
+Themes activate independently when their signals arrive
+(authoring scale → A; perf budget → B; trace clutter → C).
+
 ## Themes
 
 ### Theme A — Ein-lang modules, imports + standard library

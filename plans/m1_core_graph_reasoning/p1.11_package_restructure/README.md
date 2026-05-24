@@ -41,27 +41,18 @@ hard-codes `ein_bot` or the demo path updates). Best done at a
 quiescent point — between milestones, with a green test suite
 on both sides of the rename.
 
-## Likely stages
+## Stages
 
-- **S1.11.1** — directory rename: `git mv src/ein_bot src/ein`,
-  `git mv ein.py ein` (or rename the outer working dir entirely),
-  update `pyproject.toml` (`name`, `[tool.*]` entries,
-  `[project.scripts]`).
-- **S1.11.2** — codebase rename: search-and-replace
-  `ein_bot` → `ein` across all imports, type hints, docstrings,
-  CLI examples.
-- **S1.11.3** — demo merge: move `demo/bench_*.py` into
-  `src/ein/cli/bench_*.py` (or `src/ein/bench/`); expose as CLI
-  subcommands `ein bench solve …`, `ein bench saturate …`.
-- **S1.11.4** — CLI split: refactor `cli.py` into
-  `src/ein/cli/__init__.py` (top-level dispatcher) + one module
-  per subcommand. Reuse the click / argparse setup the existing
-  CLI uses.
-- **S1.11.5** — docs/plans/examples sweep: update every
-  `ein_bot` / `ein.py/demo/` reference under `docs/`,
-  `examples/`, `plans/`, `README.md`, `CLAUDE.md`.
-- **S1.11.6** — acceptance: full test suite + ruff green; M1
-  acceptance reruns (zebra solves, traces match, demos run).
+| ID       | Title                                                 | File                                                                   |
+|----------|-------------------------------------------------------|------------------------------------------------------------------------|
+| S1.11.1  | Directory rename                                      | [s1.11.1_directory_rename.md](s1.11.1_directory_rename.md)            |
+| S1.11.2  | Codebase rename                                       | [s1.11.2_codebase_rename.md](s1.11.2_codebase_rename.md)              |
+| S1.11.3  | Demo merge                                            | [s1.11.3_demo_merge.md](s1.11.3_demo_merge.md)                        |
+| S1.11.4  | CLI split                                             | [s1.11.4_cli_split.md](s1.11.4_cli_split.md)                          |
+| S1.11.5  | Docs / plans / examples sweep                         | [s1.11.5_docs_sweep.md](s1.11.5_docs_sweep.md)                        |
+| S1.11.6  | Acceptance                                            | [s1.11.6_acceptance.md](s1.11.6_acceptance.md)                        |
+
+S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
 
 ## Out of scope
 

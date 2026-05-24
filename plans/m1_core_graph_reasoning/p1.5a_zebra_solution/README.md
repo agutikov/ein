@@ -81,18 +81,20 @@ need to be diffed against the human walkthrough.
 
 ## Stages
 
-| ID         | Title                                                         | Notes |
-|------------|---------------------------------------------------------------|-------|
-| S1.5a.1    | NAF semantic re-architecture                                  | the underlying engine fix; see [§ Approach options](#approach-options) |
-| S1.5a.2    | Hypgen pre-pruning recovery                                   | restore the ~20-candidate prune lost in B1 (hybrid encoding, sibling-exclusive analog, or hypgen-side filter) |
-| S1.5a.3    | idea-08 trace acceptance                                      | once solve works, validate trace against the human walkthrough |
-| S1.5a.4    | Acceptance — zebra2 solves uniquely                           | the M1 #2 gate that S1.5.8c.7 was originally going to own |
-| S1.5a.5    | Relation-name refactor: `house-*` → `*-location`              | rename house-color → color-location, house-nation → nation-location, etc. (see [§ Relation-name refactor](#relation-name-refactor-house---location)) |
-| S1.5a.6    | PyPy compatibility + perf measurement                         | run zebra2 solve under PyPy; measure speedup vs CPython; document compatibility gotchas (see [§ PyPy](#pypy)) |
-| S1.5a.7    | Hypothesis scoring + branch-info ordering                     | advanced ordering ideas — hypothesis scoring by relation+object popularity, branch-info-ordering (see [§ Hypothesis scoring](#hypothesis-scoring-and-branch-info-ordering)). Composes with the perf bench from S1.5a.6 |
+| ID         | Title                                                                                    | File                                                                |
+|------------|------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
+| S1.5a.1    | NAF semantic re-architecture                                                              | [s1.5a.1_naf_semantic_rearch.md](s1.5a.1_naf_semantic_rearch.md)    |
+| S1.5a.2    | Hypgen pre-pruning recovery                                                               | [s1.5a.2_hypgen_pre_pruning_recovery.md](s1.5a.2_hypgen_pre_pruning_recovery.md) |
+| S1.5a.3    | idea-08 trace acceptance                                                                  | [s1.5a.3_idea08_trace_acceptance.md](s1.5a.3_idea08_trace_acceptance.md) |
+| S1.5a.4    | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.4_acceptance_zebra2_solves.md](s1.5a.4_acceptance_zebra2_solves.md) |
+| S1.5a.5    | Relation-name refactor: `house-*` → `*-location`                                          | [s1.5a.5_house_to_location_rename.md](s1.5a.5_house_to_location_rename.md) |
+| S1.5a.6    | PyPy compatibility + perf measurement                                                     | [s1.5a.6_pypy_compat_perf.md](s1.5a.6_pypy_compat_perf.md)         |
+| S1.5a.7    | Hypothesis scoring + branch-info ordering                                                 | [s1.5a.7_hypgen_scoring_branch_info.md](s1.5a.7_hypgen_scoring_branch_info.md) |
 
-Stages get fleshed out as work begins; each opens with its own
-review + design pass.
+S1.5a.1 + S1.5a.2 + S1.5a.3 close M1 acceptance criteria #2/#3
+via S1.5a.4. S1.5a.5–.7 are non-blocking polish + perf
+investigations; promote individually if their gating signals
+arrive.
 
 ## Relation-name refactor: `house-*` → `*-location`
 
