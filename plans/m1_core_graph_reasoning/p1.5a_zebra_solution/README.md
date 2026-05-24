@@ -94,6 +94,7 @@ need to be diffed against the human walkthrough.
 | S1.5a.7    | Hypothesis scoring + branch-info ordering                                                 | [s1.5a.7_hypgen_scoring_branch_info.md](s1.5a.7_hypgen_scoring_branch_info.md) |
 | S1.5a.8    | Static NAF dependency map (observability)                                                 | [s1.5a.8_naf_dependency_map.md](s1.5a.8_naf_dependency_map.md)     |
 | S1.5a.10   | Query semantics: who vs where                                                             | [s1.5a.10_query_semantics_who_vs_where.md](s1.5a.10_query_semantics_who_vs_where.md) |
+| S1.5a.11   | State dump harness (per-phase filesystem snapshots)                                       | [s1.5a.11_state_dump.md](s1.5a.11_state_dump.md) |
 
 S1.5a.1 + S1.5a.2 + S1.5a.3 close M1 acceptance criteria #2/#3
 via S1.5a.4. S1.5a.5–.10 are non-blocking polish + perf +

@@ -407,6 +407,13 @@ def main() -> int:
                          "(REASONING-layer, non-bookkeeping) facts + state_hash "
                          "— useful for confirming why supposedly-duplicate "
                          "solutions weren't deduped")
+    ap.add_argument("--dump-states", metavar="DIR", nargs="?", const="",
+                    default=None,
+                    help="snapshot the engine's state at each lifecycle "
+                         "phase (root saturation, root hypgen, every "
+                         "branch's pre/post-saturation + verdict, "
+                         "back-prop applications, final summary). DIR "
+                         "defaults to dumps/<puzzle-stem>-<timestamp>/.")
     args = ap.parse_args()
 
     text = args.puzzle.read_text()
@@ -479,9 +486,21 @@ def main() -> int:
         branch_progress=args.branch_progress,
     )
 
+    # ── State dumper (--dump-states) ──────────────────────────────
+    dumper = None
+    if args.dump_states is not None:
+        from ein_bot.inference.state_dump import StateDumper
+        if args.dump_states:
+            dump_dir = Path(args.dump_states)
+        else:
+            ts = time.strftime("%Y%m%d-%H%M%S")
+            dump_dir = Path("dumps") / f"{args.puzzle.stem}-{ts}"
+        print(f"  dump-states      {dump_dir}")
+        dumper = StateDumper(out_dir=dump_dir)
+
     mode = Mode(args.mode) if args.mode else None
     try:
-        verdict = solve(kb, mode=mode, max_depth=args.max_depth)
+        verdict = solve(kb, mode=mode, max_depth=args.max_depth, dumper=dumper)
         t3 = time.perf_counter()
     except BudgetExceededError:
         t3 = time.perf_counter()

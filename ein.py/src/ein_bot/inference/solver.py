@@ -17,9 +17,10 @@ Module path follows Q39 (flat `src/ein_bot/inference/`); see
 """
 from __future__ import annotations
 
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
@@ -40,6 +41,19 @@ from .hypgen import (
 from .match import run as match_run
 from .saturator import Saturator
 from .search_tree import BranchId, SearchNode, SearchTree
+
+if TYPE_CHECKING:
+    from .state_dump import StateDumper
+
+# S1.5a.11 — optional per-solve filesystem snapshotting. When a
+# StateDumper is bound here, the solver calls back at six lifecycle
+# points (see state_dump.StateDumper). Bound by solve() at entry;
+# reset on exit. ContextVar so concurrent solves don't trample each
+# other (the engine itself isn't thread-safe, but solve() is a
+# reasonable boundary for parallel diagnostic runs).
+_dumper_ctx: ContextVar[StateDumper | None] = ContextVar(
+    "ein_bot_state_dumper", default=None,
+)
 
 # ── Mode + verdicts ─────────────────────────────────────────────────
 
@@ -177,7 +191,14 @@ def try_branch(
          re-saturate. The `hypothesis-contradiction` rule (P1.3)
          fires and asserts `(not h)` for the parent to consume.
     """
+    dumper = _dumper_ctx.get()
     fork = parent_kb.fork()
+    if dumper is not None:
+        # Snapshot the parent state at fork time; hypothesis recorded
+        # separately so the dumped pre_sat.ein shows the kb-about-to-be-
+        # saturated (post-hypothesis-injection) but the kb-pre-hypothesis
+        # is reconstructable from the parent's own dump if needed.
+        dumper.branch_pre(branch_id, fork, hypothesis)
 
     # Re-stamp hypothesis with branch-specific provenance.
     h_fact = Fact(
@@ -218,20 +239,24 @@ def try_branch(
         firings.extend(more)
         # Compute unsat-core from the contradicting facts.
         unsat = fork.unsat_core(c.witness for c in contradictions)
-        return BranchResult.dead(
+        result = BranchResult.dead(
             branch_id=branch_id,
             hypothesis=h_fact,
             kb=fork,
             firings=tuple(firings),
             unsat_core=frozenset(unsat),
         )
+    else:
+        result = BranchResult.alive(
+            branch_id=branch_id,
+            hypothesis=h_fact,
+            kb=fork,
+            firings=tuple(firings),
+        )
 
-    return BranchResult.alive(
-        branch_id=branch_id,
-        hypothesis=h_fact,
-        kb=fork,
-        firings=tuple(firings),
-    )
+    if dumper is not None:
+        dumper.branch_post(branch_id, fork, tuple(firings), result)
+    return result
 
 
 # ── Mode-aware goal check ──────────────────────────────────────────
@@ -712,7 +737,15 @@ def _consume(
             elif is_unconditional_death(
                     result.kb, result.unsat_core,
                     own_hypothesis=result.hypothesis):
+                _dumper = _dumper_ctx.get()
+                _before_count = len(kb.facts) if _dumper is not None else 0
                 back_propagate(kb, h, result.unsat_core)
+                if _dumper is not None:
+                    # Snapshot the parent KB after the (not h) write
+                    # (and any cascade); the added negatives are the
+                    # tail of kb.facts since this branch's call.
+                    added = list(kb.facts[_before_count:])
+                    _dumper.backprop(result.branch_id, kb, kb, added)
                 unconditional.append((h, result))
                 # Unconditional-dead is permanently cached via
                 # `_negated_facts`; no verdict_at entry needed since
@@ -842,6 +875,7 @@ def solve(
     mode: Mode | None = None,
     max_depth: int = 6,
     config: SolverConfig | None = None,
+    dumper: StateDumper | None = None,
 ) -> Verdict:
     """Multilevel hypothesis search — saturate, generate, recurse.
 
@@ -877,74 +911,95 @@ def solve(
     # instead of `None`.
     kb.consume_stats = ConsumeStats()
 
-    # Emit `(closed R)` for every relation no rule can positively
-    # conclude — before saturation, so the hypothesis generator
-    # sees the facts. Replaces hand-written `(closed …)` declarations.
-    emit_closed(kb)
+    # S1.5a.11 — bind the dumper for the duration of this solve().
+    # Hook points throughout the file read `_dumper_ctx.get()`.
+    dumper_token = _dumper_ctx.set(dumper)
+    try:
+        if dumper is not None:
+            dumper.root_initial(kb)
 
-    # Initial saturation on the root KB.
-    sat = Saturator(kb)
-    root_firings = tuple(sat.saturate(max_steps=10_000))
+        # Emit `(closed R)` for every relation no rule can positively
+        # conclude — before saturation, so the hypothesis generator
+        # sees the facts. Replaces hand-written `(closed …)` declarations.
+        emit_closed(kb)
 
-    # T1.5.4.8 Topic D — compute the alive set once at b0; every
-    # descendant inherits it through `kb.fork()`. Skip the seed when
-    # the inherit flag is off; `_candidates_for` then falls back to
-    # per-branch `generate_hypotheses(kb)`.
-    if effective_config.enable_alive_inherit:
-        root_alive, root_stats = generate_hypotheses_with_stats(kb)
-        kb.alive = frozenset(root_alive)
-        if effective_config.print_alive:
-            import sys
-            print(
-                f"[root alive] {len(kb.alive)} candidates "
-                f"(raw={root_stats.raw}, "
-                f"filtered={root_stats.total_filtered()})",
-                file=sys.stderr,
+        # Initial saturation on the root KB.
+        sat = Saturator(kb)
+        root_firings = tuple(sat.saturate(max_steps=10_000))
+        if dumper is not None:
+            dumper.root_saturated(kb, root_firings, sat.naf_dropped)
+
+        # T1.5.4.8 Topic D — compute the alive set once at b0; every
+        # descendant inherits it through `kb.fork()`. Skip the seed when
+        # the inherit flag is off; `_candidates_for` then falls back to
+        # per-branch `generate_hypotheses(kb)`.
+        if effective_config.enable_alive_inherit:
+            root_alive, root_stats = generate_hypotheses_with_stats(kb)
+            kb.alive = frozenset(root_alive)
+            if dumper is not None:
+                dumper.root_hyps(list(root_alive), root_stats)
+            if effective_config.print_alive:
+                import sys
+                print(
+                    f"[root alive] {len(kb.alive)} candidates "
+                    f"(raw={root_stats.raw}, "
+                    f"filtered={root_stats.total_filtered()})",
+                    file=sys.stderr,
+                )
+
+        builder = _TreeBuilder()
+        root_id = _explore(kb, None, None, root_firings,
+                           depth=0, max_depth=max_depth,
+                           builder=builder, mode=mode)
+        _promote_verdicts(builder, root_id, mode)
+        tree = builder.finalize(root_id)
+
+        solutions = tree.solutions()
+        dead = tree.dead_branches()
+        opens = tree.open_branches()
+
+        verdict: Verdict
+        if mode is Mode.SOLVE:
+            if len(solutions) == 1 and not opens:
+                s = solutions[0]
+                verdict = Solution(
+                    kb=s.kb_snapshot, trace=s.firings, tree=tree,
+                )
+            elif len(solutions) == 0 and not opens:
+                unsat = frozenset().union(
+                    *(d.unsat_core for d in dead), frozenset(),
+                )
+                verdict = Contradiction(unsat_core=unsat, tree=tree)
+            else:
+                verdict = Ambiguity(
+                    branches=tuple(
+                        Solution(kb=s.kb_snapshot, trace=s.firings, tree=tree)
+                        for s in solutions
+                    ),
+                    unresolved=opens,
+                    tree=tree,
+                )
+        elif mode is Mode.GAPS:
+            verdict = Ambiguity(
+                branches=tuple(
+                    Solution(kb=s.kb_snapshot, trace=s.firings, tree=tree)
+                    for s in solutions
+                ),
+                unresolved=opens,
+                tree=tree,
             )
-
-    builder = _TreeBuilder()
-    root_id = _explore(kb, None, None, root_firings,
-                       depth=0, max_depth=max_depth,
-                       builder=builder, mode=mode)
-    _promote_verdicts(builder, root_id, mode)
-    tree = builder.finalize(root_id)
-
-    solutions = tree.solutions()
-    dead = tree.dead_branches()
-    opens = tree.open_branches()
-
-    if mode is Mode.SOLVE:
-        if len(solutions) == 1 and not opens:
-            s = solutions[0]
-            return Solution(kb=s.kb_snapshot, trace=s.firings, tree=tree)
-        if len(solutions) == 0 and not opens:
+        else:
+            # CONTRADICTIONS mode — report dead-branch cores.
             unsat = frozenset().union(
                 *(d.unsat_core for d in dead), frozenset(),
             )
-            return Contradiction(unsat_core=unsat, tree=tree)
-        # Multiple solutions, or unresolved open leaves → ambiguity.
-        return Ambiguity(
-            branches=tuple(
-                Solution(kb=s.kb_snapshot, trace=s.firings, tree=tree)
-                for s in solutions
-            ),
-            unresolved=opens,
-            tree=tree,
-        )
+            verdict = Contradiction(unsat_core=unsat, tree=tree)
 
-    if mode is Mode.GAPS:
-        return Ambiguity(
-            branches=tuple(
-                Solution(kb=s.kb_snapshot, trace=s.firings, tree=tree)
-                for s in solutions
-            ),
-            unresolved=opens,
-            tree=tree,
-        )
-
-    # CONTRADICTIONS mode — report dead-branch cores.
-    unsat = frozenset().union(*(d.unsat_core for d in dead), frozenset())
-    return Contradiction(unsat_core=unsat, tree=tree)
+        if dumper is not None:
+            dumper.summary(verdict, tree, effective_config)
+        return verdict
+    finally:
+        _dumper_ctx.reset(dumper_token)
 
 
 __all__ = [
