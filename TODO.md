@@ -105,12 +105,33 @@
 
 
 
+
+
+---
+
+P1.8 - performance part
+
+
+compression - make atoms vector and replace all atoms everythere else with indexes
+
+
+consistent hashing or something similar
+- hash method for unsat cores that allows to see if another kb has the unsat core included by comaring caches
+- maybe not strict - like Bloom filter, would it help at all anyhow?
+
+
+---
+
 P1.10 kernel docs - separate file for kernel inference feature list absolutely required to solve zebra in reasonable time
 add config options for every (if not yet) write ein files with different config options and measure solution time with 3600s timeout
 collect into table with time and stats showing impact of every option disabled
 
 
+---
+
 vscode ein syntax highlighting - to P1.6
+
+---
 
 M1a - ein.rs in Rust, before M1b GUI
 

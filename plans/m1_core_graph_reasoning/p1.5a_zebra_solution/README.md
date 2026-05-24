@@ -93,6 +93,8 @@ need to be diffed against the human walkthrough.
 | S1.5a.8    | Static NAF dependency map (observability)                                                 | [s1.5a.8_naf_dependency_map.md](s1.5a.8_naf_dependency_map.md)     |
 | S1.5a.10   | Query semantics: who vs where                                                             | [s1.5a.10_query_semantics_who_vs_where.md](s1.5a.10_query_semantics_who_vs_where.md) |
 | S1.5a.11   | State dump harness (per-phase filesystem snapshots)                                       | [s1.5a.11_state_dump.md](s1.5a.11_state_dump.md) |
+| S1.5a.14   | Transitive back-prop (bubble truths to all ancestors)                                     | [s1.5a.14_transitive_backprop.md](s1.5a.14_transitive_backprop.md) |
+| S1.5a.15   | Dead-branch caching by unsat-core + per-level back-prop                                   | [s1.5a.15_dead_caching_unsat_core.md](s1.5a.15_dead_caching_unsat_core.md) |
 | S1.5a.12   | idea-08 trace acceptance                                                                  | [s1.5a.12_idea08_trace_acceptance.md](s1.5a.12_idea08_trace_acceptance.md) |
 | S1.5a.13   | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.13_acceptance_zebra2_solves.md](s1.5a.13_acceptance_zebra2_solves.md) |
 
