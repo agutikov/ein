@@ -50,6 +50,15 @@
 
 ---
 
+P1.5a zebra solution + pypy
+
++ rename house-* relations into *-location, like color-location, drink-location
+
+
+---
+
+global planning main parts
+
 M1 - solve the problem stated in ein - it is the very first step
 M2 - convert NL problem statements into IR facts - second step
 M2+/F4/F7 - ontology and rules induction from facts, that 1: allow solution, 2: reflect common sense of implicits of NL statement
@@ -63,7 +72,7 @@ move S1.5.9 into P1.8
 
 ---
 
-pre P1.6
+P1.6
 
 rename ein-bot,ein_bot -> ein
 
@@ -73,7 +82,7 @@ don't put everything onto cli.py - make separate folder in src/ein/ for cli func
 
 ---
 
-P1.7 ideas
+P1.5a ideas
 
 extend hypgen with adwanced hypothesis ordering
 after all optimizations the idea of minimal domain first ordering become abandoned
@@ -104,6 +113,12 @@ Main question - how human reasoning decides to ask first question "What is a col
 Why not for example "what drink is drinked by cat owner"?
 First obvious - all human questions for hypothesis are about houses, but why?
 Second - why exactly color and why exactly first house?
+
+
+One more idea for branching ordering - prioritize branches that produce more information
+- if branch does not produce any new unconditional constraints
+    - do not branch deeper now, defer it, first explore other branches
+- before going deeper eliminate everything that is shallow
 
 ---
 
