@@ -87,23 +87,25 @@ need to be diffed against the human walkthrough.
 | S1.5a.1a   | Branch exploration order determinism                                                      | [s1.5a.1a_branch_order_determinism.md](s1.5a.1a_branch_order_determinism.md) |
 | S1.5a.2    | Hypgen pre-pruning recovery                                                               | [s1.5a.2_hypgen_pre_pruning_recovery.md](s1.5a.2_hypgen_pre_pruning_recovery.md) |
 | S1.5a.2a   | Statistics determinism (fork-vs-direct, shuffle-vs-default)                               | [s1.5a.2a_statistics_determinism.md](s1.5a.2a_statistics_determinism.md) |
-| S1.5a.3    | idea-08 trace acceptance                                                                  | [s1.5a.3_idea08_trace_acceptance.md](s1.5a.3_idea08_trace_acceptance.md) |
-| S1.5a.4    | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.4_acceptance_zebra2_solves.md](s1.5a.4_acceptance_zebra2_solves.md) |
 | S1.5a.5    | zebra2 relation rename family (`*-loc`, `co-located`, `adjacent-via`)                     | [s1.5a.5_house_to_location_rename.md](s1.5a.5_house_to_location_rename.md) |
 | S1.5a.6    | PyPy compatibility + perf measurement                                                     | [s1.5a.6_pypy_compat_perf.md](s1.5a.6_pypy_compat_perf.md)         |
 | S1.5a.7    | Hypothesis scoring + branch-info ordering                                                 | [s1.5a.7_hypgen_scoring_branch_info.md](s1.5a.7_hypgen_scoring_branch_info.md) |
 | S1.5a.8    | Static NAF dependency map (observability)                                                 | [s1.5a.8_naf_dependency_map.md](s1.5a.8_naf_dependency_map.md)     |
 | S1.5a.10   | Query semantics: who vs where                                                             | [s1.5a.10_query_semantics_who_vs_where.md](s1.5a.10_query_semantics_who_vs_where.md) |
 | S1.5a.11   | State dump harness (per-phase filesystem snapshots)                                       | [s1.5a.11_state_dump.md](s1.5a.11_state_dump.md) |
+| S1.5a.12   | idea-08 trace acceptance                                                                  | [s1.5a.12_idea08_trace_acceptance.md](s1.5a.12_idea08_trace_acceptance.md) |
+| S1.5a.13   | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.13_acceptance_zebra2_solves.md](s1.5a.13_acceptance_zebra2_solves.md) |
 
-S1.5a.1 + S1.5a.2 + S1.5a.3 close M1 acceptance criteria #2/#3
-via S1.5a.4. S1.5a.5–.10 are non-blocking polish + perf +
-observability + query-semantics investigations; promote
-individually if their gating signals arrive. S1.5a.5 already
-shipped 2026-05-24 (the rename ended up broader than initially
-scoped — it folded in the `linked` → `co-located` and
-`cross-attr-spatial` → `adjacent-via` renames discovered as
-TODOs in the same file). S1.5a.8 (NAF dependency map) was spun
+S1.5a.1 + S1.5a.2 + S1.5a.12 close M1 acceptance criteria #2/#3
+via S1.5a.13 (the phase's final acceptance gate; both renumbered
+to the end 2026-05-24 to reflect their actual ordering — they
+compose every other stage's outcome). S1.5a.5–.11 are
+non-blocking polish + perf + observability + query-semantics
+investigations; promote individually if their gating signals
+arrive. S1.5a.5 already shipped 2026-05-24 (the rename ended up
+broader than initially scoped — it folded in the `linked` →
+`co-located` and `cross-attr-spatial` → `adjacent-via` renames
+discovered as TODOs in the same file). S1.5a.8 (NAF dependency map) was spun
 out of S1.5a.1 2026-05-24 once T1.5a.1.1's runtime fix shipped
 — the static-warning half is pure observability with its own
 acceptance bar. S1.5a.1a (branch order determinism) inserted
