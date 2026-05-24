@@ -108,6 +108,7 @@
     :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
     :priority 250)
 
+
   ;; ──── Cross-attribute propagation (new for B1) ─────────────
   ;; `linked` — two attributes share a house, propagate either way.
   ;; Used for the simple (∃h. (?R1 h ?V1) ∧ (?R2 h ?V2)) conditions.
@@ -142,17 +143,28 @@
     :priority 200)
 
   ;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
+  ;; Typecheck against the transitive-closure relation `is-a*`
+  ;; (declared in the ontology, with (subrel is-a is-a*) and
+  ;; (transitive is-a*) activators lifting then closing the
+  ;; ancestor chain). Using is-a* lets typecheck pass for facts
+  ;; whose arg types match the relation's declared type either
+  ;; DIRECTLY or via the type hierarchy — e.g. is-a is declared
+  ;; `(relation is-a T T)` and House is-a Attribute is-a T, so
+  ;; (is-a House Attribute) passes typecheck (House is-a* T).
+  ;; Priority 220 places these AFTER the transitive closure
+  ;; (priority 200) has fully saturated is-a*, so the NAF
+  ;; evaluates against the closed relation.
   (rule typecheck-arg-0 (?R ?Dom)
-    :match  (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
+    :match  (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
     :assert (false)
     :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
-    :priority 110)
+    :priority 220)
 
   (rule typecheck-arg-1 (?R ?Ran)
-    :match  (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
+    :match  (and (?R ?a ?b) (absent (is-a* ?b ?Ran)))
     :assert (false)
     :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
-    :priority 110)
+    :priority 220)
 
   ;; ──── Elimination rules ─────────────────────────────────────
   ;; `domain-elimination` and `range-elimination` mirror each
@@ -239,14 +251,27 @@
   ;; the loader; rules can now match it directly to derive the
   ;; typecheck activators — no manual (typecheck-arg-* R T)
   ;; declarations needed per relation.
+  ;; Typecheck activators auto-derived from bijective relations
+  ;; only. The bijective relations (house-*) have direct-parent
+  ;; arg types (House_1's is-a-parent IS House, etc.), so subrel
+  ;; alone gives (is-a* House_1 House) at priority 100 — typecheck
+  ;; at 220 can NAF-check correctly.
+  ;;
+  ;; Non-bijective declared relations (is-a, is-a*, right-of,
+  ;; next-to) skip typecheck: is-a/is-a* have multi-level type
+  ;; semantics that need a closed is-a* at NAF-evaluation time,
+  ;; but NAF is evaluated at enqueue time (before transitive
+  ;; closure has run). Filtering by (bijective ?R) keeps typecheck
+  ;; sound under the current saturator semantics; lifting this
+  ;; constraint needs a post-saturation typecheck pass (future).
   (rule derive-typecheck-arg-0 ()
-    :match  (relation ?R ?A ?B)
+    :match  (and (relation ?R ?A ?B) (bijective ?R))
     :assert (typecheck-arg-0 ?R ?A)
     :why    "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
     :priority 100)
 
   (rule derive-typecheck-arg-1 ()
-    :match  (relation ?R ?A ?B)
+    :match  (and (relation ?R ?A ?B) (bijective ?R))
     :assert (typecheck-arg-1 ?R ?B)
     :why    "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
     :priority 100)
@@ -280,8 +305,9 @@
     :why    "guess: ({?R} {?h} {?v})?"))
 
 (ontology
-  ;; ──── Relation signatures (direct-parent types throughout) ──
+  ;; ──── Relation signatures ──────────────────────────────────
   (relation is-a         T T)
+  (relation is-a*        T T)
   (relation house-color  House Color)
   (relation house-nation House Nationality)
   (relation house-drink  House Drink)
@@ -290,9 +316,19 @@
   (relation right-of     House House)
   (relation next-to      House House)
 
-  ;; ──── is-a properties (transitive intentionally omitted) ────
+  ;; ──── is-a properties (direct hierarchy, transitive omitted)
+  ;; ── to avoid the cross-boundary sibling-exclusive blow-up).
   (asymmetric        is-a)
   (sibling-exclusive is-a is-a)
+
+  ;; ──── is-a* = transitive closure of is-a ────────────────────
+  ;; (includes is-a is-a*): every direct is-a edge lifts to is-a*.
+  ;; (transitive is-a*): is-a* is closed under transitivity.
+  ;; Combined: is-a* contains every ancestor edge — used by
+  ;; typecheck-arg-{0,1} to check arg-types against the type
+  ;; hierarchy without activating (transitive is-a) directly.
+  (includes   is-a is-a*)
+  (transitive is-a*)
 
   ;; ──── Spatial properties ───────────────────────────────────
   (symmetric next-to)

@@ -48,6 +48,15 @@
 
 
 
+---
+
+M1 - solve the problem stated in ein - it is the very first step
+M2 - convert NL problem statements into IR facts - second step
+M2+/F4/F7 - ontology and rules induction from facts, that 1: allow solution, 2: reflect common sense of implicits of NL statement
+
+
+---
+
 move S1.5.9 into P1.8
 
 

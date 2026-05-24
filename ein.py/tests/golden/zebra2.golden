@@ -74,17 +74,17 @@
   (rule
     typecheck-arg-0
     (?R ?Dom)
-    :match (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
+    :match (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
     :assert (false)
     :why "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
-    :priority 110)
+    :priority 220)
   (rule
     typecheck-arg-1
     (?R ?Ran)
-    :match (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
+    :match (and (?R ?a ?b) (absent (is-a* ?b ?Ran)))
     :assert (false)
     :why "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
-    :priority 110)
+    :priority 220)
   (rule
     domain-elimination
     (?R)
@@ -144,14 +144,14 @@
   (rule
     derive-typecheck-arg-0
     ()
-    :match (relation ?R ?A ?B)
+    :match (and (relation ?R ?A ?B) (bijective ?R))
     :assert (typecheck-arg-0 ?R ?A)
     :why "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
     :priority 100)
   (rule
     derive-typecheck-arg-1
     ()
-    :match (relation ?R ?A ?B)
+    :match (and (relation ?R ?A ?B) (bijective ?R))
     :assert (typecheck-arg-1 ?R ?B)
     :why "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
     :priority 100)
@@ -178,6 +178,7 @@
 
 (ontology
   (relation is-a T T)
+  (relation is-a* T T)
   (relation house-color House Color)
   (relation house-nation House Nationality)
   (relation house-drink House Drink)
@@ -187,6 +188,8 @@
   (relation next-to House House)
   (asymmetric is-a)
   (sibling-exclusive is-a is-a)
+  (includes is-a is-a*)
+  (transitive is-a*)
   (symmetric next-to)
   (includes right-of next-to)
   (bijective house-color)
