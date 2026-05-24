@@ -52,7 +52,7 @@ what the loop *records* and what it returns at quiescence.
 | S1.5.8b | [Minimal-kernel proposal for domain-elimination](s1.5.8b_minimal_kernel_proposal.md) — design alternative B (precursor); **rationale record, refined by S1.5.8c** | meta |
 | S1.5.8c | [Final decision](s1.5.8c_final_decision.md) — locks the design: 3 kernel deltas + 2 parser sugars + 2 grammar chars + 10-rule ein stdlib (6 M1-blocking + 4 optional closure) + B1 zebra2 refactor. Tasks T1.5.8c.1–T1.5.8c.6 shipped (commits `04f5d56`, `615b22c`, `0d7f348`, `f63ce9b`, `2b7f982`). **T1.5.8c.7 (acceptance) spun out to [P1.5a](../p1.5a_zebra_solution/README.md)** — getting zebra to actually solve hit a saturator NAF-semantics race and a hypothesis-count perf gap that need their own design pass. | meta |
 | S1.5.8  | [Totality + domain elimination](s1.5.8_totality_domain_elimination.md) — superseded by S1.5.8c; implementation shipped across commits `04f5d56`, `615b22c`, `0d7f348`, `f63ce9b`, `2b7f982` | meta |
-| S1.5.9  | [ein-lang pattern macros](s1.5.9_ein_lang_macros.md) — park; move forall / open desugaring from compile.py to ein stdlib `(macro …)` declarations; not M1-blocking | ~2-3 days |
+| S1.5.9  | [ein-lang pattern macros](../p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md) — **moved to P1.8 Theme A** (2026-05-24); the stage id stays S1.5.9 for stable cross-refs; the work is stdlib-shaped (macros replace compile.py SForm desugaring) so it lives with imports + stdlib in P1.8 | ~2-3 days |
 
 S1.5.5/6/7 split out of S1.5.4 on 2026-05-21 per the
 implementation-order TODO; S1.5.8 was added 2026-05-22. Each

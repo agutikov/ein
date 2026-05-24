@@ -9,6 +9,41 @@ The companion research notes (no implementation steps, no schedule)
 stay in [`docs/ideas/`](../docs/ideas/). Plans cross-link to those
 ideas where they originate; they do not duplicate them.
 
+## Roadmap at a glance
+
+The big-picture narrative behind the milestone stack (user
+framing 2026-05-24):
+
+- **M1 — solve the problem stated in ein.** The first step:
+  given a puzzle already encoded in the IR, solve it with the
+  graph-native engine. This is what the existing
+  [M1 core graph reasoning](m1_core_graph_reasoning/README.md)
+  delivers; the Zebra puzzle is the acceptance gate.
+- **M2 — convert NL problem statements into IR facts.** The
+  second step: drop the *human encodes the puzzle* assumption.
+  M2 ships the NL → IR pipeline so the engine can be fed
+  problem text directly. [M2 NL → IR](m2_nl_to_ir/README.md).
+- **M2+ — ontology + rules induction from facts** (covered by
+  [F4](followups/f4_cross_cutting.md) /
+  [F7](followups/f7_rule_induction.md)). Beyond M2: induce the
+  ontology + rule activators *that the puzzle implicitly
+  assumes*, so the engine (a) actually *can* solve the puzzle
+  rather than sitting on a half-typed KB and (b) reflects the
+  common-sense implicits an NL statement leans on.
+
+Two adjacent secondary milestones surface ein-bot externally:
+
+- **M1b — GUI** ([m1b_gui/](m1b_gui/README.md)) between M1
+  and M2.
+- **M2b — paper + presentation** ([m2b_presentation/](m2b_presentation/README.md))
+  after M2, before or after M3.
+
+M3 (SMT integration) is the parallel hard-slice escape hatch;
+the followups in [`followups/`](followups/README.md) park the
+research-level threads (self-modification F2/F5/F6, formal
+foundations F1/F1b, rule induction F7, cross-cutting F4, three
+task classes F3).
+
 ## Schema
 
 Four-level hierarchy, mirroring [`/home/user/work/acva/plans/`](../../acva/plans/):
@@ -94,7 +129,9 @@ Stage files have a stable shape:
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
 | [M1](m1_core_graph_reasoning/README.md) | full (stages-as-files) | **active** — MVP scope | ~3 months |
+| [M1b](m1b_gui/README.md)                | placeholder README only | parked — slots between M1 and M2 | TBD |
 | [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |
+| [M2b](m2b_presentation/README.md)       | placeholder README only | parked — paper + talk after M2 (or after M3) | TBD |
 | [M3](m3_smt_integration/README.md)      | sketch (one stage per phase) | planned | ~1 month after M2 |
 | [followups](followups/README.md)        | theme files only | parking lot | unscheduled |
 

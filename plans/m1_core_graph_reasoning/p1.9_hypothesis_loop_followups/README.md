@@ -81,6 +81,14 @@ are correctness-bearing (E6) or long-term-structural (E7).
 | 📅 E19 | Unsat-core minimisation          | shrink the unsat-core to a minimal subset before storing on the dead leaf — purely for trace readability | M | L (UX only) | P1.6 trace renderer; composes with E6 |
 | 📅 E20 | Conflict-cache cross-call        | persist `(not h)` learnings across `solve()` calls when the same puzzle re-runs | M | L | session-scoped speedup; composes with [S1.5.7](../p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md) |
 
+### Mode taxonomy + state-hash design (added 2026-05-24)
+
+| ref | idea | mechanism | effort | value | references |
+|-----|------|-----------|--------|-------|------------|
+| 📅 E21 | `solve` vs `prove` mode split  | `Mode.SOLVE` returns on first alive verdict (uniqueness undetermined; faster); `Mode.PROVE` keeps the current exhaustive semantics (every alive branch fully explored, returns `Solution \| Ambiguity \| Contradiction` with uniqueness witness). Current `Mode.SOLVE` is *operationally* PROVE under [S1.5.3 alive-branch termination](../p1.5_hypothesis_loop/s1.5.3_canonicalisation.md). Split surfaces the user's "find any answer" intent | M | M (UX) | [Idea 03 — three task classes](../../../docs/ideas/03-three-task-classes.md); current `Mode` enum in `inference/solver.py` |
+| 📅 E22 | Alive-hyps in canonical state hash | Open question: can two different paths reach the same post-saturation KB but carry **different alive hypothesis sets**? If yes, S1.5.3's state-hash dedup is **unsound** for the alive-inherit optimisation (T1.5.4.5/8). Fix: extend `state_hash` to include the alive set; collapse only paths whose `(state, alive)` pair matches. Effort is the analysis + the fix together — the analysis may show the case is impossible under M1's monotonic semantics, in which case ship as a paper-form proof rather than a code change | M | M (correctness) | [S1.5.3 canonicalisation](../p1.5_hypothesis_loop/s1.5.3_canonicalisation.md); T1.5.4.5 alive-inherit |
+| 📅 E23 | Prove speedup — replace exhaustive with what? | Once E21 lands, `Mode.PROVE` is the bottleneck. Open question: is there a way to speed up *exhaustive* search without giving up the uniqueness guarantee? Candidates: learned-clause caching (composes with E7), goal-driven pruning (composes with E11 + [F7 §C rule-set sufficiency](../../followups/f7_rule_induction.md)), arc-consistency pre-pass (E14). The framing is "not doing full search" — but uniqueness is a global property; some form of full coverage is required. The interesting design question is which form | L | M (perf) | E7 / E11 / E14 / F7 §C |
+
 ### Rejected / out-of-scope for M1
 
 Listed here for visibility — these would need a fundamental

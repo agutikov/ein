@@ -14,6 +14,7 @@ strikes.
 | F   | Title                                              | Trigger                                                                        |
 |-----|----------------------------------------------------|--------------------------------------------------------------------------------|
 | F1  | [Categorical formulation](f1_categorical_formulation.md)         | when M1 stabilises and the engine's rule set is fixed — formalise post-hoc      |
+| F1b | [Logical formulation](f1b_logical_formulation.md)                | sibling to F1 from the FOL / relation-algebra angle — "which fragment does ein cover?" |
 | F2  | [Self-modifying constraint language](f2_self_modifying_language.md) | rung 1 of self-modification: grammar evolves via LLM ↔ harness loop          |
 | F3  | [Three task classes as first-class operations](f3_three_task_classes_first_class.md) | once M1.P1.5 ships the mode-selection skeleton; surface to users               |
 | F4  | [Cross-cutting](f4_cross_cutting.md)                              | rule-learning, versioned grammars, LLM-as-policy, scope-creep ideas             |

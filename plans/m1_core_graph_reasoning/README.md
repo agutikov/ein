@@ -57,11 +57,13 @@ Concretely, M1 ships:
 | P1.6  | Rendering + markdown trace             | 1-2 wk   | [`p1.6_rendering_and_trace/`](p1.6_rendering_and_trace/) |
 | P1.7  | Bootstrapping — Zebra end-to-end       | 1-2 wk   | [`p1.7_bootstrapping_zebra/`](p1.7_bootstrapping_zebra/) |
 | P1.8  | Improvements (modules+imports+stdlib / COW fork / negative-fact volume; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; phase title broadened 2026-05-21, again 2026-05-22) |
-| P1.9  | Hypothesis-loop follow-ups (E1-E20 catalog; placeholder) | TBD | [`p1.9_hypothesis_loop_followups/`](p1.9_hypothesis_loop_followups/) |
+| P1.9  | Hypothesis-loop follow-ups (E1-E23 catalog; placeholder) | TBD | [`p1.9_hypothesis_loop_followups/`](p1.9_hypothesis_loop_followups/) |
+| P1.10 | Kernel documentation (IR 4-level split / user-vs-dev / architecture / `docs/index` → `docs/lib` rename / ein-model atoms-vs-objects refinement; placeholder) | TBD | [`p1.10_kernel_docs/`](p1.10_kernel_docs/) (created 2026-05-24 from TODO.md) |
+| P1.11 | Package + CLI restructure (`ein-bot`/`ein_bot` → `ein`, merge `ein.py/demo/` into the package, split `cli.py` into a folder; placeholder) | TBD | [`p1.11_package_restructure/`](p1.11_package_restructure/) (created 2026-05-24 from TODO.md) |
 
 Phases run roughly sequentially. P1.6 can start as soon as P1.2 is
 in (the renderer only needs the data model); P1.7 is the integration
-phase and gates "M1 done". **P1.8 and P1.9 are placeholders.** P1.8
+phase and gates "M1 done". **P1.8 – P1.11 are placeholders.** P1.8
 parks improvement themes — modules+imports+stdlib (the original
 Q30 deferral from the 2026-05-20 P1.3 review, broadened 2026-05-22
 to own the standard library: closure auto-inference deferred whole
@@ -69,10 +71,17 @@ from S1.5.5, plus `converse`, the `imply` family, general
 totality, reflective rule-implication, type/domain matching),
 copy-on-write hypothesis-branch forks, and negative-fact volume
 reduction (both surfaced 2026-05-21 during P1.3 / P1.4 work). P1.9
-parks the E1-E20
+parks the E1-E23
 hypothesis-loop catalog spun out of S1.5.4 on 2026-05-21 (closure
 refinements, CDCL-inspired learning, search heuristics, CSP-style
-pre-processing, engineering/UX). Neither gates M1 acceptance.
+pre-processing, engineering/UX), plus the 2026-05-24 mode-taxonomy
++ state-hash-with-hyps additions (E21-E23). P1.10 parks the
+kernel-doc reorg surfaced 2026-05-24 (IR 4-level split,
+user-vs-dev separation, architecture diagrams, `docs/index/` →
+`docs/lib/` rename, ein-model atoms-vs-objects refinement).
+P1.11 parks the package + CLI rename also surfaced 2026-05-24
+(`ein-bot` → `ein`, demo merge, CLI folder split). None of
+P1.8 – P1.11 gates M1 acceptance.
 
 ## Acceptance
 

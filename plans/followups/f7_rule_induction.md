@@ -107,6 +107,53 @@ there. Without it, M2 cannot fully automate model construction
 from natural language — a human still has to write activator
 facts.
 
+### Sub-sub-track B' — instance properties → type properties
+
+A finer-grained generalisation, distinct from inducing rule
+activators on relations: lift properties from **instances** to the
+**type**. Surfaced 2026-05-24 from TODO.md's "P1.8 ideas" entry.
+
+Three concrete patterns:
+
+- **No facts at all** — if no `(R a b)` exists for any
+  `a : A, b : B`, induce `(no-relation R A B)` *at the type
+  level* — i.e. R doesn't connect A-instances to B-instances in
+  this domain. Stronger than per-fact NAF: encodes the absence as
+  a positive type-level claim.
+- **All facts present** — if `(R a b)` holds for *every* pair
+  `(a, b) ∈ A × B`, induce `(total-relation R A B)` (or the
+  generalised form). The type-level analog of pointwise
+  enumeration.
+- **Partial facts** — if some `a : A` have `(R a _)` and some
+  don't, **A splits into two sub-types** under R's domain. Induce
+  `(subtype A_with_R A)` and `(subtype A_without_R A)`; assign
+  instances accordingly. The clustering signal IS the rule shape
+  for a new sub-typing.
+
+The third case is the most interesting: it suggests **ontology
+refinement** driven by observed irregularity. The pre-induction
+ontology says "A-instances are interchangeable"; the post-induction
+ontology has discovered they're not (under R), and adds the
+sub-types that match the data.
+
+Cross-cuts:
+
+- Composes with sub-track B (property induction at the relation
+  level) — instance-property induction can *feed* relation-property
+  induction once a partial pattern is enriched enough.
+- Composes with [Idea 04](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md)
+  ontology deduction — the NL pipeline likely produces partial
+  facts; instance-property induction is how the engine *responds*
+  to that partiality with structure.
+- Composes with [P1.8 Theme C — negative-fact volume](../m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md)
+  — `(no-relation R A B)` at type level *replaces* the
+  `|A| × |B|` negative-fact volume that would otherwise be
+  materialised.
+
+Promotion ordering: probably comes **after** sub-tracks A + B
+have shipped (the type-level induction needs the relation-level
+property language to land its conclusions into).
+
 ## Sub-track C — rule-set sufficiency
 
 A logically-correct rule activation can still be operationally

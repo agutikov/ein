@@ -158,6 +158,12 @@ Likely stages once activated (continuing the A-numbering):
 - **S1.8.A9** — reflective rule-implication (the compile-cache
   fix).
 - **S1.8.A10** — type / domain matching for relations + rules.
+- **[S1.5.9](s1.5.9_ein_lang_macros.md) — ein-lang pattern macros**
+  (relocated 2026-05-24 from P1.5 with sticky id). Moves the
+  `(forall …)` and `(open …)` parser sugars from compile.py SForm
+  desugaring into ein stdlib via a `(macro NAME (params) BODY)`
+  declaration form. The natural companion to imports — macros +
+  imports together unlock a real shareable stdlib.
 
 ### Theme B - PERFORMACE
 

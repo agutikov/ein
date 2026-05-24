@@ -45,208 +45,60 @@
 ;;                                     churn across S1.3.0, P1.3 README, etc.)
 ;;                                     + plans/m1_core_graph_reasoning/README.md (P1.8 row updated)
 
-
-
-
----
-
-P1.5a zebra solution + pypy
-
-+ rename house-* relations into *-location, like color-location, drink-location
-
-
----
-
-global planning main parts
-
-M1 - solve the problem stated in ein - it is the very first step
-M2 - convert NL problem statements into IR facts - second step
-M2+/F4/F7 - ontology and rules induction from facts, that 1: allow solution, 2: reflect common sense of implicits of NL statement
-
-
----
-
-move S1.5.9 into P1.8
-
-
-
----
-
-P1.6
-
-rename ein-bot,ein_bot -> ein
-
-merge ein.py/demo into ein
-don't put everything onto cli.py - make separate folder in src/ein/ for cli functions
-
-
----
-
-P1.5a ideas
-
-extend hypgen with adwanced hypothesis ordering
-after all optimizations the idea of minimal domain first ordering become abandoned
-
-one idea is to introduce hypothesis scoring
-for 2-rel we have 3 atoms (?R ?A ?B) one relation and 2 objects - score hypothesis by sum of relations of objects + number of existing facts with relation
-add configuration options for multiplicators for both components
-second improvement - add second round - sum number of relation of 2nd level from the hypothesis
-example
-```
-(co-located Red House1) ;; fact 1
-(co-located House1 Milk) ;; fact 2
-;; score(House1) = 2
-;; score(co-located) = 2
-;; score(Red) = 1
-;; score(Milk) = 1
-;; score(Cat) = 0 (not mentioned in facts)
-
-(co-located House1 Cat) ;; h1, 1st-level score = score(co-located) + score(House1) + score(Cat) = 2 + 2 + 0
-;; 2nd-level score = 1st-level + score(Red) + score(Milk)
-
-;; with coefficients-weights will be
-;; 1st-level score = rel_weight * score(co-located) + obj_weight * (score(House1) + score(Cat))
-```
-
-
-Main question - how human reasoning decides to ask first question "What is a color of first house?" in Zebra?
-Why not for example "what drink is drinked by cat owner"?
-First obvious - all human questions for hypothesis are about houses, but why?
-Second - why exactly color and why exactly first house?
-
-
-One more idea for branching ordering - prioritize branches that produce more information
-- if branch does not produce any new unconditional constraints
-    - do not branch deeper now, defer it, first explore other branches
-- before going deeper eliminate everything that is shallow
-
----
-
-P1.8 ideas
-
-- generalization rule, induction, not for Zebra
-    - generalize instances properties to types properties
-    - simple examples:
-        - no facts of relation R between instances of A and B - no relation R betewen A and B types
-        - all instances of A and B have relations R - types have relation R
-        - some instances of A have relation R with instances of B, some hot have -> there are 2 subtypes
-
-
----
-
-P1.9 ideas
-
-- modes:
-    - solve - search for at least one valid solution ASAP, use heuristics to optimize the search
-    - prove - full search, the same in case of one solution, different in case of multiple
-        - is there a way to speedup prove?
-        - not doing full search, replace it with what???
-
-
-- Q: is it possible to get into the same state (that collapse into one) with different path so have different sets of alive hypothesis? Maybe add hyps to canonical state hash?
-
-
-
----
-
-
-P1.10 - kernel docs
-
-
-existing IR 3-level docs expand to 4:
-- ein-graph remain
-- data-models splits into
-    - ideomatic data model
-        - data types, collections, indexes, ...
-    - python implementation
-- ein-lang remain
-
-
-kernel API reference: 
-    - primitives and semantically loaded atoms (rule, relation, T, not, eq, neq, closed, absent, forall, open, ...)
-
-stdlib API reference
-
-
-inference docs
-- ideomatic level
-    - collections, indexes
-    - algorithm diagrams and mathematic pseudocode
-- python implementation
-    - files, modules, data types, functions, classes
-
-
-split kernel docs into user and dev docs, python implementation goes to dev
-
-
-software architecture docs with diagrams
-
-
-rename docs/index to docs/lib
-
-
-
-also, some minor ein-model update:
-- want to differentiate objects and atoms
-    - atoms are names
-        - `rule`, `not`, `T`, `relation`, `Alice`, `co-located` - are all atoms
-    - objects are, as before, Levi-bipartite graph nodes without out arrows and with in arrows from facts
-- want to declare 4-levels representation
-    - 4 leves
-        - objects
-        - facts
-        - relations
-        - rules
-    - idea: create self-describing model of KB types in IR ein lang
-
-
-
----
-
-M1b : GUI
-after M1 before M2
-
-views:
-- ein language code
-    - source
-    - generated states
-- ein-graph
-    - unified and separate parts, like DOT rendering
-    - compact and detailed (Livi-bipartite) view
-    - auto layout, different modes
-    - manual layout, remember positions
-    - GUI editor
-- branches
-    - git mode
-        - bottom to top
-        - all branches dead-ends, main - solution
-    - folders tree mode (top to bottom)
-    - collapse branches
-    - collapse chains
-    - every folder/revision is a state == ein lang + graph view
-
-2-view mode: left-right branches - lang+graph tabs 
-3-view mode: all 3 views
-
----
-
-M2b : presentation and paper
-
-compare to other systems from docs/index
-try benchmarks
-summarize results
-list further growth directions
-
----
-
-F1b - logical formulation
-
-Can we express first order logic in ein? How?
-Especially https://en.wikipedia.org/wiki/List_of_rules_of_inference#Rules_for_propositional_calculus
-
-https://en.wikipedia.org/wiki/Relation_(mathematics)
-https://en.wikipedia.org/wiki/Relation_algebra
-https://en.wikipedia.org/wiki/Equivalence_relation
-
-
-
+;; Processed 2026-05-24:
+;;   - P1.5a — house-* rename + pypy → plans/m1_core_graph_reasoning/p1.5a_zebra_solution/README.md
+;;                                     (new stages S1.5a.5 rename, S1.5a.6 pypy compatibility/perf,
+;;                                     S1.5a.7 hypgen scoring + branch-info ordering; dedicated
+;;                                     sections "Relation-name refactor" / "PyPy" / "Hypothesis
+;;                                     scoring and branch-info ordering" added)
+;;   - global planning framing       → plans/README.md (new "Roadmap at a glance" preamble:
+;;                                     M1=solve / M2=NL→IR / M2+=induction via F4 + F7;
+;;                                     M1b GUI + M2b paper added to the status table)
+;;   - move S1.5.9 → P1.8            → git mv plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/
+;;                                     s1.5.9_ein_lang_macros.md → plans/m1_core_graph_reasoning/
+;;                                     p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md
+;;                                     (sticky id; only directory changes)
+;;                                     + P1.5 README row redirects to new path
+;;                                     + P1.5a README cross-link updated
+;;                                     + P1.8 README Theme A lists S1.5.9 in stages
+;;                                     + relative cross-refs inside the file updated
+;;   - P1.6 rename + CLI restructure → plans/m1_core_graph_reasoning/p1.11_package_restructure/README.md
+;;                                     (NEW; labelled P1.11 because P1.6 was already taken by
+;;                                     rendering + trace. ein-bot/ein_bot → ein, demo merge into
+;;                                     package, cli.py split into folder.)
+;;                                     + plans/m1_core_graph_reasoning/README.md (P1.11 row)
+;;   - P1.5a ideas (hypgen scoring)  → plans/m1_core_graph_reasoning/p1.5a_zebra_solution/README.md
+;;                                     (folded into the new S1.5a.7 stage + "Hypothesis scoring
+;;                                     and branch-info ordering" section; the human-reasoning
+;;                                     "why color of first house" guiding question parked there)
+;;   - P1.8 ideas (induction)        → plans/followups/f7_rule_induction.md (new sub-sub-track
+;;                                     B' — instance properties → type properties, with the
+;;                                     no-facts/all-facts/partial cases and the sub-type-discovery
+;;                                     framing)
+;;   - P1.9 ideas (modes + state-hash) → plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/README.md
+;;                                       (new catalog rows E21 solve-vs-prove split, E22
+;;                                       alive-hyps in state hash, E23 prove speedup framing)
+;;                                       + plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/
+;;                                         s1.5.3_canonicalisation.md ("Open questions parked here"
+;;                                         + Q-S1.5.3.A on alive-hyps soundness, with cross-ref
+;;                                         to E22)
+;;   - P1.10 - kernel docs           → plans/m1_core_graph_reasoning/p1.10_kernel_docs/README.md
+;;                                     (NEW phase placeholder covering 8 themes: IR 4-level
+;;                                     split, kernel API ref, stdlib API ref, inference docs,
+;;                                     user-vs-dev split, architecture overview, docs/index →
+;;                                     docs/lib rename, ein-model atoms-vs-objects + 4-level KB
+;;                                     refinement)
+;;                                     + plans/m1_core_graph_reasoning/README.md (P1.10 row)
+;;   - M1b : GUI                     → plans/m1b_gui/README.md (NEW placeholder; three views
+;;                                     — ein-lang code, ein-graph, branches — with composable
+;;                                     2-/3-pane layouts; stack choice / state-sync open)
+;;                                     + plans/README.md status table
+;;   - M2b : presentation + paper    → plans/m2b_presentation/README.md (NEW placeholder;
+;;                                     four tracks — comparison to prior art, benchmarks,
+;;                                     results write-up, growth directions)
+;;                                     + plans/README.md status table
+;;   - F1b - logical formulation     → plans/followups/f1b_logical_formulation.md (NEW;
+;;                                     FOL fragment characterisation, propositional-calculus
+;;                                     rules of inference, relation algebra, equivalence
+;;                                     relation; sibling to F1's CT angle)
+;;                                     + plans/followups/README.md (index row F1b)

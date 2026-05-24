@@ -87,9 +87,167 @@ need to be diffed against the human walkthrough.
 | S1.5a.2    | Hypgen pre-pruning recovery                                   | restore the ~20-candidate prune lost in B1 (hybrid encoding, sibling-exclusive analog, or hypgen-side filter) |
 | S1.5a.3    | idea-08 trace acceptance                                      | once solve works, validate trace against the human walkthrough |
 | S1.5a.4    | Acceptance — zebra2 solves uniquely                           | the M1 #2 gate that S1.5.8c.7 was originally going to own |
+| S1.5a.5    | Relation-name refactor: `house-*` → `*-location`              | rename house-color → color-location, house-nation → nation-location, etc. (see [§ Relation-name refactor](#relation-name-refactor-house---location)) |
+| S1.5a.6    | PyPy compatibility + perf measurement                         | run zebra2 solve under PyPy; measure speedup vs CPython; document compatibility gotchas (see [§ PyPy](#pypy)) |
+| S1.5a.7    | Hypothesis scoring + branch-info ordering                     | advanced ordering ideas — hypothesis scoring by relation+object popularity, branch-info-ordering (see [§ Hypothesis scoring](#hypothesis-scoring-and-branch-info-ordering)). Composes with the perf bench from S1.5a.6 |
 
 Stages get fleshed out as work begins; each opens with its own
 review + design pass.
+
+## Relation-name refactor: `house-*` → `*-location`
+
+Surfaced 2026-05-24. The current zebra2 relations are named
+`house-color`, `house-nation`, `house-drink`, `house-smoke`,
+`house-pet` — phrased as *functions on House*. A more uniform
+naming is `color-location`, `nation-location`, `drink-location`,
+`smoke-location`, `pet-location` — phrased as *position of the
+attribute*. The shift makes the relations read as "location of X"
+rather than "X-property of a house", which lines up with how
+`(linked …)` activator facts already talk about cross-attribute
+position (e.g. `(linked nation-location Englishman color-location Red)`
+parses as "the location of the Englishman is the location of the
+Red house").
+
+Mechanically a search-and-replace across `examples/zebra2.ein` +
+any test fixtures + any docs that quote relation names by hand
+([`docs/kernel/`](../../../docs/kernel/), `examples/branching/`'s
+zebra-like demos, the [idea-08 walkthrough](../../../docs/ideas/08-human-style-deductive-trace.md)
+if it names them). Round-trip parse + dump + saturate + solve
+should be byte-identical-modulo-names after the refactor.
+
+Belongs in S1.5a.5; gated on (a) NAF semantic fix landing or (b)
+explicit decision that the rename ships against the current solve
+behaviour. Trivial to revert if it ends up obscuring rather than
+clarifying.
+
+## PyPy
+
+Surfaced 2026-05-24. The solver is pure Python with no native
+extensions; PyPy is a natural candidate for a free speedup,
+especially for the hot saturator loop (`_apply` + match
+binding). Two stages of work:
+
+1. **Compatibility audit** — run the existing pytest suite under
+   PyPy. Likely-incompatible bits: Lark grammar parsing
+   (Lark *does* support PyPy in recent versions), any C-extension
+   dependencies (none today, but check `pyproject.toml`), any
+   `@dataclass` corners that interact with PyPy's slot model.
+2. **Perf measurement** — `bench_solve examples/zebra2.ein` under
+   CPython vs PyPy, plus the branching demos. Headline metric: solve
+   time on zebra2 once the NAF + hypgen fixes (S1.5a.1 / .2) land.
+
+If PyPy gives a free ≥5× on the hot loop, it changes the
+calculus on Theme B1 (indexes) in P1.8 — the saturator might not
+need the index work as urgently. Either way, document the
+finding so future perf work knows the baseline.
+
+Out of scope here: maintaining PyPy-compatibility as a
+permanent constraint (i.e. blocking CPython-only constructs). The
+goal is "measure and document", not "support forever".
+
+## Hypothesis scoring and branch-info ordering
+
+Surfaced 2026-05-24 from TODO.md's "P1.5a ideas" entry. Two
+related directions for better hypothesis-loop ergonomics, plus a
+guiding question.
+
+### Ideas
+
+**1. Hypothesis scoring by fact-popularity sum.** For a candidate
+hypothesis with the shape `(?R ?A ?B)` (one relation + two
+objects, the M1 hypothesis shape), score by a weighted sum of
+the components' existing-fact counts:
+
+```text
+score(R)  = number of facts mentioning relation R
+score(A)  = number of facts mentioning object A
+score(B)  = number of facts mentioning object B
+
+1st-level score = rel_weight * score(R) + obj_weight * (score(A) + score(B))
+```
+
+The multiplier weights `rel_weight` and `obj_weight` are
+configurable knobs; tune them empirically. A second round
+extends the score by summing facts at *one hop* — the objects
+that the candidate's components co-occur with in existing facts.
+
+Worked example (from the original TODO note):
+
+```text
+(co-located Red House1)    ;; fact 1
+(co-located House1 Milk)   ;; fact 2
+
+score(House1) = 2, score(co-located) = 2, score(Red) = 1
+score(Milk) = 1, score(Cat) = 0
+
+hypothesis (co-located House1 Cat):
+  1st-level = score(co-located) + score(House1) + score(Cat) = 2 + 2 + 0
+  2nd-level adds score(Red) + score(Milk) (the 1-hop neighbours)
+```
+
+The intuition: hypotheses involving heavily-referenced
+relations/objects are likelier to be *interesting* — they touch
+more of the existing fact graph and so are more likely to either
+fire useful rules or be quickly contradicted.
+
+Note that under M1 the original "minimal-domain-first" ordering
+heuristic is effectively obsolete after the post-S1.5.4 optimisations;
+the scoring above is a natural successor.
+
+**2. Branch-info ordering.** Prefer branches that *produce more
+information*:
+
+- If a branch's saturation produces **no new unconditional
+  constraints**, defer going deeper inside it — first explore
+  shallow alternatives.
+- Before going deeper anywhere, eliminate everything that's
+  shallow.
+
+The principle: maximise the entropy reduction per branch step.
+Composes with the "stable-alive" caching ([S1.5.7b](../p1.5_hypothesis_loop/s1.5.7b_consume_loop_stable_alive.md)),
+where a branch that adds nothing on re-saturation is already
+flagged.
+
+### The guiding question
+
+> How does human reasoning decide to ask first the question
+> "what is the color of the first house?" in Zebra? Why not e.g.
+> "what drink is drunk by the cat owner?"
+
+Two observable patterns from the idea-08 walkthrough:
+
+1. **All human questions for hypothesis are about houses.** Why
+   houses, not nations/colours/drinks? Probably because *House* is
+   the positional carrier — its 1..5 ordering grounds every other
+   relation. The walkthrough's mental model has a 5-cell strip
+   and fills cells; the question shape follows the model shape.
+2. **Why specifically colour, and why house 1?** Conjecture: the
+   smallest-domain attribute crossed with the strongest
+   positional constraint. Colour has 5 values, but condition
+   (10) (Norwegian in House 1) + condition (8) (Kools next to
+   Horse) + condition (6) (Ivory left of Green) concentrate
+   colour deductions early.
+
+Both are *post-hoc rationalisations* of human behaviour — useful
+as **score heuristics**, not as proof-of-uniqueness arguments.
+The hypothesis-scoring idea above is the engine analog of #1; #2
+informs the relation-priority knob.
+
+S1.5a.7 is the home for measuring whether the scoring beats the
+existing most-constrained-object first heuristic (A2 in S1.5.4's
+catalog).
+
+### Why this lives in P1.5a rather than P1.9
+
+P1.5a is the active phase whose acceptance gate is "zebra2 solves
+uniquely". The scoring and branch-info ordering are heuristics
+that directly close (or fail to close) the perf budget item from
+the acceptance criteria. P1.9 catalogs *follow-up* ideas that
+compose with a shipped solve; these compose with *getting* solve
+to work in the first place.
+
+If S1.5a.7 lands but the heuristic doesn't help, demote to a P1.9
+catalog entry (E21+) with the measurement attached.
 
 ## Approach options for (a) NAF race
 
@@ -174,5 +332,6 @@ The phase ships when:
   list; this phase is a spin-out of the original S1.5.8c.7.
 - [P1.9](../p1.9_hypothesis_loop_followups/) — neighboring
   follow-up phase for hypothesis-loop perf / catalog work.
-- [S1.5.9](../p1.5_hypothesis_loop/s1.5.9_ein_lang_macros.md) —
-  parked macro system; not blocking but composes.
+- [S1.5.9](../p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md) —
+  parked macro system (relocated to P1.8 Theme A 2026-05-24,
+  stage id sticky); not blocking but composes.
