@@ -178,11 +178,12 @@ class TestZebraRule:
 
 class TestZebraFact:
     def test_fact_count(self, zebra_kb):
-        # Ontology: 30 instance + 8 rule-app + 4 spatial = 42.
-        # (rule-apps include square-unique + type-exclusivity activators.)
+        # Ontology: 30 instance + 8 rule-app + 4 spatial + 3 relation-decl = 45.
+        # (rule-apps include square-unique + type-exclusivity activators;
+        #  relation-decl facts are co-located, right-of, next-to.)
         # Facts: 14 (conditions 2..15).
-        # Total: 56.
-        assert len(zebra_kb.facts) == 56
+        # Total: 59.
+        assert len(zebra_kb.facts) == 59
 
     def test_fact_resolves_relation(self, zebra_kb):
         fs = [f for f in zebra_kb.facts if f.source == "condition (10)"]
@@ -361,7 +362,7 @@ def test_kb_repr_summary(zebra_kb):
     r = repr(zebra_kb)
     assert "types=7" in r
     assert "rules=8" in r
-    assert "facts=56" in r
+    assert "facts=59" in r
 
 
 def test_kb_len_is_node_total(zebra_kb):

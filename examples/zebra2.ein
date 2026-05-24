@@ -77,10 +77,35 @@
     :why    "{?a} and {?b} share parent {?P} under {?siblings-via}; exclusive under {?exclusive-under}."
     :priority 300)
 
+  ;; ──── Binary-relation property contradiction rules ─────────
+  ;; Four mathematical properties of a binary relation R ⊆ A × B:
+  ;;   functional  — ∀a ∈ A. |{b : R(a,b)}| ≤ 1   (right-unique)
+  ;;   injective   — ∀b ∈ B. |{a : R(a,b)}| ≤ 1   (left-unique)
+  ;;   total       — ∀a ∈ A. ∃b. R(a,b)            (left-total)
+  ;;   surjective  — ∀b ∈ B. ∃a. R(a,b)            (right-total)
+  ;; bijective = all four. The relation is declared via the
+  ;; (relation R A B) signature; properties are activator facts
+  ;; (functional R), (injective R), (total R), (surjective R).
+  ;;
+  ;; All four fire (false) on VIOLATION, not satisfaction. The
+  ;; uniqueness checks (functional / injective) match two
+  ;; distinct stored facts that contradict. The totality checks
+  ;; (total / surjective) use the open-world-safe formulation:
+  ;; they fire only when EVERY partner is *explicitly* excluded
+  ;; (stored neg facts cover the whole opposite-type domain).
+  ;; This is sound under partial information — a "must hold"
+  ;; rule on totality would fire false on every empty-yet state.
+
   (rule functional (?R)
     :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
     :assert (false)
-    :why    "{?R} not functional at {?a}: has {?b} and {?c}."
+    :why    "{?R} not functional: {?a} has both {?b} and {?c}."
+    :priority 250)
+
+  (rule injective (?R)
+    :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+    :assert (false)
+    :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
     :priority 250)
 
   ;; ──── Cross-attribute propagation (new for B1) ─────────────
@@ -92,32 +117,28 @@
     :why    "linked: ({?R1} {?h} {?V1}) ⟹ ({?R2} {?h} {?V2})."
     :priority 200)
 
-  ;; `cross-attr-right-of-*` — adjacency in the right-of direction.
-  ;; right-of is functional both ways (each house has at most one
-  ;; immediate right + one immediate left), so both directions
-  ;; propagate deterministically.
-  (rule cross-attr-right-of-fwd (?R ?V_left ?V_right)
-    :match  (and (?R ?h_l ?V_left) (right-of ?h_r ?h_l))
-    :assert (?R ?h_r ?V_right)
-    :why    "({?R} {?h_l} {?V_left}) + right-of {?h_r} {?h_l} ⟹ ({?R} {?h_r} {?V_right})."
-    :priority 200)
-
-  (rule cross-attr-right-of-bwd (?R ?V_left ?V_right)
-    :match  (and (?R ?h_r ?V_right) (right-of ?h_r ?h_l))
-    :assert (?R ?h_l ?V_left)
-    :why    "({?R} {?h_r} {?V_right}) + right-of {?h_r} {?h_l} ⟹ ({?R} {?h_l} {?V_left})."
-    :priority 200)
-
-  ;; `cross-attr-next-to-unique` — adjacency in next-to (symmetric).
-  ;; Fires DETERMINISTICALLY only when ?h1 has a unique next-to
-  ;; neighbour (the NAF premise excludes the non-corner disjunctive
-  ;; case). The non-corner case is left for hypothesis branching.
-  (rule cross-attr-next-to-unique (?R1 ?V1 ?R2 ?V2)
+  ;; `cross-attr-spatial-*` — pure-structural cross-attribute
+  ;; propagation across a spatial adjacency relation ?S. The
+  ;; spatial relation is itself a rule parameter, so the same two
+  ;; rules cover both right-of (functional, deterministic) and
+  ;; next-to (symmetric, corner-only) without any rule-body
+  ;; reference to either relation name. NAF gates uniqueness:
+  ;; trivially passes for functional ?S; filters non-corner cases
+  ;; for symmetric ?S.
+  (rule cross-attr-spatial-fwd (?R1 ?V1 ?R2 ?V2 ?S)
     :match  (and (?R1 ?h1 ?V1)
-                 (next-to ?h1 ?h2)
-                 (absent (and (next-to ?h1 ?h_other) (neq ?h_other ?h2))))
+                 (?S ?h2 ?h1)
+                 (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
     :assert (?R2 ?h2 ?V2)
-    :why    "({?R1} {?h1} {?V1}) at corner-house ⟹ ({?R2} {?h2} {?V2}) at the unique neighbour."
+    :why    "({?R1} {?h1} {?V1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?h2} {?V2})."
+    :priority 200)
+
+  (rule cross-attr-spatial-bwd (?R1 ?V1 ?R2 ?V2 ?S)
+    :match  (and (?R2 ?h2 ?V2)
+                 (?S ?h2 ?h1)
+                 (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
+    :assert (?R1 ?h1 ?V1)
+    :why    "({?R2} {?h2} {?V2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?h1} {?V1})."
     :priority 200)
 
   ;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
@@ -133,26 +154,121 @@
     :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
     :priority 110)
 
-  (rule domain-elimination (?R ?OT ?VT)
-    :match  (and (functional ?R 0 1)
-                 (total      ?R 0)
-                 (is-a ?a ?OT)
-                 (is-a ?v ?VT)
-                 (forall ?v_other
-                   (and (is-a ?v_other ?VT) (neq ?v_other ?v))
-                   (not (?R ?a ?v_other))))
-    :assert (?R ?a ?v)
-    :priority 400
-    :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v}).")
+  ;; ──── Elimination rules ─────────────────────────────────────
+  ;; `domain-elimination` and `range-elimination` mirror each
+  ;; other across the two projection directions. Each forces a
+  ;; survivor when all-but-one value in the partner type is
+  ;; explicitly excluded. domain-elim requires functional+total;
+  ;; range-elim requires injective+surjective.
 
-  (rule no-room-left (?R ?OT ?VT)
-    :match  (and (functional ?R 0 1)
-                 (total      ?R 0)
-                 (is-a ?a ?OT)
-                 (forall ?v (is-a ?v ?VT) (not (?R ?a ?v))))
+  (rule domain-elimination (?R)
+    :match  (and (functional ?R) (total ?R)
+                 (relation ?R ?A ?B)
+                 (is-a ?a ?A)
+                 (is-a ?b ?B)
+                 (forall ?b_other
+                   (and (is-a ?b_other ?B) (neq ?b_other ?b))
+                   (not (?R ?a ?b_other))))
+    :assert (?R ?a ?b)
+    :why    "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b})."
+    :priority 400)
+
+  (rule range-elimination (?R)
+    :match  (and (injective ?R) (surjective ?R)
+                 (relation ?R ?A ?B)
+                 (is-a ?b ?B)
+                 (is-a ?a ?A)
+                 (forall ?a_other
+                   (and (is-a ?a_other ?A) (neq ?a_other ?a))
+                   (not (?R ?a_other ?b))))
+    :assert (?R ?a ?b)
+    :why    "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b})."
+    :priority 400)
+
+  (rule total (?R)
+    :match  (and (relation ?R ?A ?B)
+                 (is-a ?a ?A)
+                 (forall ?b (is-a ?b ?B) (not (?R ?a ?b))))
     :assert (false)
-    :priority 110
-    :why    "{?a} has every {?VT} excluded — no value left.")
+    :why    "{?R} not total at {?a}: every {?B} is excluded."
+    :priority 110)
+
+  (rule surjective (?R)
+    :match  (and (relation ?R ?A ?B)
+                 (is-a ?b ?B)
+                 (forall ?a (is-a ?a ?A) (not (?R ?a ?b))))
+    :assert (false)
+    :why    "{?R} not surjective at {?b}: every {?A} is excluded."
+    :priority 110)
+
+  ;; ──── `bijective` shorthand ─────────────────────────────────
+  ;; bijective ≡ functional ∧ injective ∧ total ∧ surjective.
+  ;; Four expansion rules derive the property markers from a
+  ;; single (bijective R) declaration. The saturator refreshes
+  ;; its compile cache each pass, so the derived (functional R)
+  ;; etc. trigger their respective contradiction rules normally.
+  ;; Expansion runs at the propagate band so the derived markers
+  ;; are present before any rule that consumes them fires.
+
+  (rule bijective-functional ()
+    :match  (bijective ?R)
+    :assert (functional ?R)
+    :why    "{?R} is bijective ⟹ functional."
+    :priority 100)
+
+  (rule bijective-injective ()
+    :match  (bijective ?R)
+    :assert (injective ?R)
+    :why    "{?R} is bijective ⟹ injective."
+    :priority 100)
+
+  (rule bijective-total ()
+    :match  (bijective ?R)
+    :assert (total ?R)
+    :why    "{?R} is bijective ⟹ total."
+    :priority 100)
+
+  (rule bijective-surjective ()
+    :match  (bijective ?R)
+    :assert (surjective ?R)
+    :why    "{?R} is bijective ⟹ surjective."
+    :priority 100)
+
+  ;; ──── Typecheck activator derivation from relation signature ─
+  ;; The (relation R A B) declaration is auto-stored as a fact by
+  ;; the loader; rules can now match it directly to derive the
+  ;; typecheck activators — no manual (typecheck-arg-* R T)
+  ;; declarations needed per relation.
+  (rule derive-typecheck-arg-0 ()
+    :match  (relation ?R ?A ?B)
+    :assert (typecheck-arg-0 ?R ?A)
+    :why    "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
+    :priority 100)
+
+  (rule derive-typecheck-arg-1 ()
+    :match  (relation ?R ?A ?B)
+    :assert (typecheck-arg-1 ?R ?B)
+    :why    "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
+    :priority 100)
+
+  ;; ──── Elimination activators derived from property combos ────
+  ;; domain-elimination is sound when R is functional + total in
+  ;; the forward direction; range-elimination is sound when R is
+  ;; injective + surjective. Derive the activators automatically
+  ;; from the property markers — the user only declares the
+  ;; mathematical properties and the eliminations follow.
+
+  (rule derive-domain-elimination ()
+    :match  (and (functional ?R) (total ?R))
+    :assert (domain-elimination ?R)
+    :why    "{?R} functional + total ⟹ domain-elimination active."
+    :priority 100)
+
+  (rule derive-range-elimination ()
+    :match  (and (injective ?R) (surjective ?R))
+    :assert (range-elimination ?R)
+    :why    "{?R} injective + surjective ⟹ range-elimination active."
+    :priority 100)
 
   ;; ──── Hypothesis generation ────────────────────────────────
   ;; One hrule parameterised over (?R ?T1 ?T2); activators in the
@@ -182,39 +298,25 @@
   (symmetric next-to)
   (includes  right-of next-to)
 
-  ;; ──── Per-relation bijection properties ────────────────────
-  ;; (functional R) — 1-arg, activates the existing M1 functional
-  ;; contradiction rule (rule functional (?R) above).
-  ;; (functional R 0 1) / (functional R 1 0) — positional projection,
-  ;; consumed by domain-elimination's :match.
-  ;; (total R 0) / (total R 1) — same.
-  (functional house-color)  (functional house-color  0 1)  (functional house-color  1 0)
-  (total      house-color  0) (total      house-color  1)
-  (functional house-nation) (functional house-nation 0 1)  (functional house-nation 1 0)
-  (total      house-nation 0) (total      house-nation 1)
-  (functional house-drink)  (functional house-drink  0 1)  (functional house-drink  1 0)
-  (total      house-drink  0) (total      house-drink  1)
-  (functional house-smoke)  (functional house-smoke  0 1)  (functional house-smoke  1 0)
-  (total      house-smoke  0) (total      house-smoke  1)
-  (functional house-pet)    (functional house-pet    0 1)  (functional house-pet    1 0)
-  (total      house-pet    0) (total      house-pet    1)
+  ;; ──── Per-relation bijection properties ─────────────────────
+  ;; Each house-* relation is a bijection between House and the
+  ;; attribute type. `(bijective R)` expands at saturation time
+  ;; into `(functional R)`, `(injective R)`, `(total R)`, and
+  ;; `(surjective R)` via the four expansion rules in the rules
+  ;; block. The elimination activators `(domain-elimination R)`
+  ;; and `(range-elimination R)` then derive automatically from
+  ;; the property combinations (functional+total ⟹ domain-elim;
+  ;; injective+surjective ⟹ range-elim) — one declaration per
+  ;; relation unlocks the full bijection-inference pipeline.
+  (bijective house-color)
+  (bijective house-nation)
+  (bijective house-drink)
+  (bijective house-smoke)
+  (bijective house-pet)
 
-  ;; ──── Stdlib rule activators per house-* relation ─────────
-  (typecheck-arg-0    house-color  House)        (typecheck-arg-1 house-color  Color)
-  (typecheck-arg-0    house-nation House)        (typecheck-arg-1 house-nation Nationality)
-  (typecheck-arg-0    house-drink  House)        (typecheck-arg-1 house-drink  Drink)
-  (typecheck-arg-0    house-smoke  House)        (typecheck-arg-1 house-smoke  Cigarette)
-  (typecheck-arg-0    house-pet    House)        (typecheck-arg-1 house-pet    Pet)
-  (domain-elimination house-color  House Color)
-  (domain-elimination house-nation House Nationality)
-  (domain-elimination house-drink  House Drink)
-  (domain-elimination house-smoke  House Cigarette)
-  (domain-elimination house-pet    House Pet)
-  (no-room-left       house-color  House Color)
-  (no-room-left       house-nation House Nationality)
-  (no-room-left       house-drink  House Drink)
-  (no-room-left       house-smoke  House Cigarette)
-  (no-room-left       house-pet    House Pet)
+  ;; typecheck-arg-0/1 activators are DERIVED from the
+  ;; (rel-arg-types …) facts above by the two expansion rules in
+  ;; the rules block — no manual declaration needed.
 
   ;; ──── is-a inheritance tree ─────────────────────────────────
   (is-a Attribute   T)
@@ -281,8 +383,8 @@
   (linked house-drink  Tea        house-nation Ukrainian    :source "condition (5)")
 
   ;; (6) The green house is immediately right of the ivory house.
-  (cross-attr-right-of-fwd house-color Ivory Green          :source "condition (6)")
-  (cross-attr-right-of-bwd house-color Ivory Green          :source "condition (6)")
+  (cross-attr-spatial-fwd house-color Ivory house-color Green right-of :source "condition (6)")
+  (cross-attr-spatial-bwd house-color Ivory house-color Green right-of :source "condition (6)")
 
   ;; (7) The Old Gold smoker owns snails.
   (linked house-smoke  Old_Gold   house-pet    Snail        :source "condition (7)")
@@ -299,12 +401,12 @@
   (house-nation House_1 Norwegian                           :source "condition (10)")
 
   ;; (11) Chesterfields is smoked next to the house with the fox.
-  (cross-attr-next-to-unique house-smoke Chesterfields house-pet   Fox           :source "condition (11)")
-  (cross-attr-next-to-unique house-pet   Fox           house-smoke Chesterfields :source "condition (11)")
+  (cross-attr-spatial-fwd house-smoke Chesterfields house-pet   Fox           next-to :source "condition (11)")
+  (cross-attr-spatial-bwd house-smoke Chesterfields house-pet   Fox           next-to :source "condition (11)")
 
   ;; (12) Kools is smoked next to the house with the horse.
-  (cross-attr-next-to-unique house-smoke Kools house-pet   Horse                 :source "condition (12)")
-  (cross-attr-next-to-unique house-pet   Horse house-smoke Kools                 :source "condition (12)")
+  (cross-attr-spatial-fwd house-smoke Kools         house-pet   Horse         next-to :source "condition (12)")
+  (cross-attr-spatial-bwd house-smoke Kools         house-pet   Horse         next-to :source "condition (12)")
 
   ;; (13) The Lucky Strike smoker drinks orange juice.
   (linked house-smoke  Lucky_Strike house-drink Juice                            :source "condition (13)")
@@ -315,8 +417,8 @@
   (linked house-smoke  Parliament house-nation Japanese                          :source "condition (14)")
 
   ;; (15) The Norwegian lives next to the blue house.
-  (cross-attr-next-to-unique house-nation Norwegian house-color  Blue            :source "condition (15)")
-  (cross-attr-next-to-unique house-color  Blue      house-nation Norwegian       :source "condition (15)"))
+  (cross-attr-spatial-fwd house-nation Norwegian    house-color  Blue           next-to :source "condition (15)")
+  (cross-attr-spatial-bwd house-nation Norwegian    house-color  Blue           next-to :source "condition (15)"))
 
 (query
   :mode solve

@@ -53,11 +53,15 @@ class TestShapeMapping:
         ovals = [line for line in _node_decls(dot) if "shape=oval" in line]
         assert len(ovals) == 30
 
-    def test_zebra_has_no_octagons_for_binary_only_kb(self, zebra_kb):
-        # zebra.ein's facts are all binary; no octagons expected.
+    def test_zebra_octagons_only_for_relation_decls(self, zebra_kb):
+        # Zebra's *domain* facts are all binary; the only ternary
+        # facts are the auto-stored relation declarations
+        # `(relation R T0 T1)` — co-located, right-of, next-to.
+        # Each renders as an octagon (n-ary-fact shape). No other
+        # octagons should appear.
         dot = to_dot(zebra_kb)
         octagons = [line for line in _node_decls(dot) if "shape=octagon" in line]
-        assert octagons == []
+        assert len(octagons) == 3  # one per relation declaration
 
     def test_ternary_fact_produces_octagon(self):
         text = """
@@ -71,7 +75,10 @@ class TestShapeMapping:
         kb = KnowledgeBase.from_ir(parse(text))
         dot = to_dot(kb)
         octagons = [line for line in _node_decls(dot) if "shape=octagon" in line]
-        assert len(octagons) == 1
+        # Two octagons: the ternary domain fact (r3 A B C), and the
+        # 4-ary relation declaration (relation r3 T T T) auto-stored
+        # alongside the kernel kb.relations registry.
+        assert len(octagons) == 2
 
 
 # ═══════════════════════ No duplication ════════════════════════════
@@ -156,8 +163,13 @@ class TestColourStability:
         dot2 = zebra_kb.to_dot()
 
         def colour_for_rel(dot, rel):
+            # Match the relation name inside the edge LABEL, not just
+            # anywhere in the line — relation-decl fact edges contain
+            # the relation name as an arg-target which would
+            # otherwise match first and return the wrong colour.
+            label_pat = re.compile(rf'label="[^"]*\b{re.escape(rel)}\b')
             for line in _edges(dot):
-                if rel in line:
+                if label_pat.search(line):
                     m = re.search(r'color="(#[0-9A-Fa-f]{6})"', line)
                     if m:
                         return m.group(1)

@@ -17,12 +17,15 @@ from ein_bot.kb import (
 
 class TestLayerViews:
     def test_zebra_ontology_size(self, zebra_kb):
-        # 30 instance + 8 rule-app + 4 spatial = 42
+        # 30 instance + 8 rule-app + 4 spatial + 3 relation-decl = 45.
         # (rule-apps: symmetric/co-located, transitive/co-located,
         #  symmetric/next-to, implies/right-of/next-to, square-fwd/right-of,
         #  square-bwd/right-of, square-unique/next-to/House,
         #  type-exclusivity/co-located.)
-        assert len(zebra_kb.ontology()) == 42
+        # The 3 relation-decl facts (co-located, right-of, next-to)
+        # are stored alongside the kernel kb.relations registry so
+        # rules can introspect signatures via (relation ?R ?A ?B).
+        assert len(zebra_kb.ontology()) == 45
 
     def test_zebra_fact_layer_size(self, zebra_kb):
         # 14 explicit puzzle conditions (2..15)
@@ -33,7 +36,8 @@ class TestLayerViews:
         assert not zebra_kb.reasoning()
 
     def test_all_layers_is_union(self, zebra_kb):
-        assert len(zebra_kb.all_layers()) == 56
+        # 45 ontology + 14 fact + 0 reasoning = 59
+        assert len(zebra_kb.all_layers()) == 59
 
     def test_ontology_fact_not_in_fact_layer(self, zebra_kb):
         # Pick any fact known to be in ONTOLOGY (e.g. an instance form).
@@ -98,7 +102,7 @@ class TestFactViewFilters:
     def test_view_repr(self, zebra_kb):
         r = repr(zebra_kb.ontology())
         assert "ontology" in r
-        assert "len=42" in r
+        assert "len=45" in r
 
     def test_matching_stub_raises(self, zebra_kb):
         # P1.3 seam — until then, .matching() is intentionally a stub.

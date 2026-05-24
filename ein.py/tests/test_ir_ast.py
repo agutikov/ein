@@ -150,10 +150,20 @@ def test_relation_sig_flat():
     assert rel.args[3].key.name == "cardinality"
 
 
-def test_relation_wrapped_form_rejected():
-    """Post-R10: the wrapped form `(relation R (T1 T2))` is a parse error."""
-    with pytest.raises(IRParseError):
-        parse("(ontology (relation lives-in (Person House)))")
+def test_relation_wrapped_form_rejected_at_load():
+    """Post-S1.5.8c.5: `relation` is no longer SYMBOL-excluded
+    (rules need to match `(relation ?R ?A ?B)` patterns). The
+    wrapped-arg authoring form `(relation R (T1 T2))` therefore
+    PARSES at the lexer/grammar level, but the loader's
+    relation_decl handler rejects it as malformed (its args
+    aren't all SYMBOLs). Validation moves from parse-time to
+    load-time, with a clearer error.
+    """
+    from ein_bot.kb import KnowledgeBase
+    from ein_bot.kb.from_ir import KBLoadError
+    forms = parse("(ontology (relation lives-in (Person House)))")
+    with pytest.raises(KBLoadError, match="malformed .relation."):
+        KnowledgeBase.from_ir(forms)
 
 
 # ═══════════ Loc tracking ═══════════

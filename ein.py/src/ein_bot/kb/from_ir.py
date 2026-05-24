@@ -171,6 +171,16 @@ def _ingest_ontology(form: SForm, kb: KnowledgeBase, errors: list[str]) -> list[
             kb.add_relation(Relation(
                 name=name, signature=sig, declared=True, loc=child.loc,
             ))
+            # Also store the declaration as an ordinary fact so
+            # rules can introspect signatures via (relation ?R ?A ?B)
+            # patterns. The loader's relation_decl arm has already
+            # validated SYMBOL args; the fact form mirrors them.
+            kb.add_fact(Fact(
+                relation_name="relation",
+                args=(name, *sig),
+                layer=Layer.ONTOLOGY,
+                loc=child.loc,
+            ))
             continue
 
         if head == "a-priori":

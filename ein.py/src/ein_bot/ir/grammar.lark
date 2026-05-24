@@ -172,7 +172,7 @@ or_form:       "(" "or" value+ kw_pair* ")"
 // `neq_test` is still a valid SYMBOL. This is what gives us
 // parse-time rejection of `(instance Norwegian)` (wrong arity)
 // instead of silently parsing it as generic_fact.
-SYMBOL:   /(?!(?:instance|not|and|or|neq|relation|a-priori)\b)[A-Za-z][A-Za-z0-9_*-]*/
+SYMBOL:   /(?!(?:instance|not|and|or|neq|a-priori)\b)[A-Za-z][A-Za-z0-9_*-]*/
 VAR:      /\?[A-Za-z][A-Za-z0-9_*-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
 WILDCARD: "_"

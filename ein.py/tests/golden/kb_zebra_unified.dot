@@ -103,6 +103,18 @@ digraph kb {
   "Water" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
 
   // facts
+  f_d6c4ab1c24 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "co-located" [label="#1", color="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
+  f_d6c4ab1c24 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
+  f_f19a293ea2 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_f19a293ea2 -> "right-of" [label="#1", color="#bcbd22", style=solid];
+  f_f19a293ea2 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
+  f_f19a293ea2 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
+  f_9f06e57054 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_9f06e57054 -> "next-to" [label="#1", color="#bcbd22", style=solid];
+  f_9f06e57054 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
+  f_9f06e57054 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
   "House_2" -> "House_1" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
   "House_3" -> "House_2" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
   "House_4" -> "House_3" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];

@@ -218,7 +218,14 @@ class Saturator:
         Re-running this on every step is cheap on Zebra-scale and
         keeps the queue current after each fact write. The ``_seen``
         set absorbs duplicates from earlier passes in O(1).
+
+        Refresh the compile cache first so any activator-shaped
+        facts derived since the last pass (e.g. `(functional R)`
+        produced by a `(bijective R)` expansion rule) get their
+        plans built. `compile_all` is idempotent — already-cached
+        (rule, activator) pairs early-return.
         """
+        self.engine.compile_all()
         for plan in self.engine.cache.values():
             priority = self._priority_for(plan)
             for bindings, premises in match.run(plan, self.kb):
