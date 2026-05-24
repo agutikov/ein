@@ -1,74 +1,50 @@
-;;; ein-bot — Zebra puzzle (Einstein's puzzle), alternative encoding.
+;;; ein-bot — Zebra puzzle, B1 encoding (S1.5.8c.5, 2026-05-24).
 ;;;
-;;; This is `zebra.ein` with the type/instance split collapsed into a
-;;; single inheritance relation `is-a`. zebra.ein keeps the kernel
-;;; primitives `(type …)` and `(instance …)`; zebra2.ein keeps neither
-;;; and uses an ordinary declared relation throughout.
+;;; ── Background ───────────────────────────────────────────────
 ;;;
-;;; Both files solve the same puzzle and remain valid IR; the grammar
-;;; supports both formulations. The two coexist while we evaluate
-;;; which model the engine prefers.
+;;; The pre-B1 zebra2 used a single symmetric+transitive
+;;; `co-located` relation to express the equivalence "same house"
+;;; across all five attribute kinds (Color, Nationality, Drink,
+;;; Cigarette, Pet). The B1 refactor (S1.5.8c §2.3) drops
+;;; `co-located` entirely and replaces it with five specific
+;;; House-rooted binary relations:
 ;;;
-;;; ── The `is-a` model ──────────────────────────────────────────
+;;;   house-color  : House → Color
+;;;   house-nation : House → Nationality
+;;;   house-drink  : House → Drink
+;;;   house-smoke  : House → Cigarette
+;;;   house-pet    : House → Pet
 ;;;
-;;; A single binary relation `is-a` carries the entire inheritance
-;;; tree. Both type-of-type edges and instance-of-type edges look the
-;;; same syntactically — "leaves are instances" is a structural fact,
-;;; not a syntactic distinction.
+;;; Each is a bijection (functional + total in both projections).
+;;; Spatial relations (right-of, next-to) stay as before, House×House.
 ;;;
-;;; Properties:
-;;;   · **transitive** — A is-a B ∧ B is-a C ⟹ A is-a C.
-;;;   · **asymmetric** for distinct nodes — A is-a B ∧ A ≠ B ⟹
-;;;     ¬(B is-a A). (Reflexive A is-a A is allowed but not
-;;;     materialised.)
+;;; ── Condition encoding under B1 ──────────────────────────────
 ;;;
-;;; ── `T` as the root ───────────────────────────────────────────
+;;; The 15 puzzle conditions split into three groups:
 ;;;
-;;; `T` is the **maximal element** of the is-a tree. Every node
-;;; satisfies `is-a* X T` (directly or via transitive closure). The
-;;; name T = ⊤ (top, terminus). This is hardcoded by convention in
-;;; this file: the type signature of `is-a` is `(T T)`, and the
-;;; top-level subtype `Attribute` directly is-a T.
+;;; (A) Direct house↔attribute facts (atomic):
+;;;     (9)  Milk in middle house  → (house-drink House_3 Milk)
+;;;     (10) Norwegian in first    → (house-nation House_1 Norwegian)
 ;;;
-;;; ── Future investigation ──────────────────────────────────────
+;;; (B) Cross-attribute equality (∃h. (R1 h V1) ∧ (R2 h V2)):
+;;;     (2-5, 7-8, 13-14) — encoded as `linked` activators (both
+;;;     directions) that bidirectionally propagate the
+;;;     partner-attribute via the shared house.
 ;;;
-;;; Hypothesis worth exploring: every asymmetric transitive relation
-;;; in this style may want its own "T" — a unique maximal element
-;;; above every member of the relation. In category-theory terms,
-;;; T is the **terminal object** (limit of the empty diagram) of the
-;;; partial order viewed as a category: a unique morphism from every
-;;; object up to T. The dual — a unique **initial object** ⊥ below
-;;; everything — would be the colimit. For is-a, ⊥ corresponds to
-;;; the impossible / empty type (`Nothing` in some type theories,
-;;; `Void` / `⊥` elsewhere).
+;;; (C) Cross-attribute spatial:
+;;;     (6) right-of  → `cross-attr-right-of-*` activators
+;;;     (11-12, 15) next-to → `cross-attr-next-to-unique-*` (NAF gates
+;;;                  the corner-only case; non-corner needs branching)
 ;;;
-;;; Open question: do other asymmetric-transitive relations (e.g.
-;;; `contains`, `precedes`, a temporal `before`, a part-of meronymic
-;;; hierarchy) inherit the same shape — a unique top, a unique
-;;; bottom, transitive closure, sibling-exclusivity at each level?
-;;; If so, that's a *categorical* property of the family and may want
-;;; a meta-rule (`(has-terminal R T)`, `(has-initial R B)`) the
-;;; engine can exploit uniformly. Parked for post-M1 design work.
-;;;
-;;; ── Trade-offs vs zebra.ein ───────────────────────────────────
-;;;
-;;;   + One inheritance relation instead of two grammar primitives.
-;;;   + `type-exclusivity` generalises to `sibling-exclusive`,
-;;;     applying uniformly to House⊥Color (sibling types) AND
-;;;     Norwegian⊥Spaniard (sibling instances).
-;;;   + Maps cleanly to AtomSpace / RDF / OWL idioms.
-;;;   − Visual rendering (box vs oval) loses its syntactic marker;
-;;;     leaves must be detected from tree structure.
-;;;   − The DOT renderer's `instance_form`-specific shape rules
-;;;     don't fire — every is-a edge looks the same until S1.2.4
-;;;     adds the KB-aware unified renderer.
+;;; The four S1.5.8c.4 stdlib rules (typecheck-arg-{0,1},
+;;; domain-elimination, no-room-left) are inlined here until P1.8
+;;; imports land.
 
 (config
   :enable-pre-branch-lookahead true)
 
 (rules
-  ;; ── Property-rules carried over from zebra.ein. ──
-
+  ;; ──── General property rules (carried over) ────────────────
   (rule symmetric (?rel)
     :match  (?rel ?a ?b)
     :assert (?rel ?b ?a)
@@ -76,11 +52,9 @@
     :priority 100)
 
   (rule transitive (?rel)
-    :match  (and (?rel ?a ?b)
-                 (?rel ?b ?c)
-                 (neq ?a ?c))
+    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
     :assert (?rel ?a ?c)
-    :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+    :why    "{?rel} is transitive."
     :priority 200)
 
   (rule includes (?p ?q)
@@ -89,145 +63,160 @@
     :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
     :priority 100)
 
-  ;; Square applies ONLY to *directional* (asymmetric) spatial
-  ;; relations like `right-of`. For symmetric relations like
-  ;; `next-to`, the would-be conclusion is disjunctive (B is at
-  ;; *some* neighbour of X, often two candidates) and belongs to
-  ;; hypothesis branching — not a positive rule firing.
-
-  (rule square-fwd (?R)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (co-located ?a ?x))
-    :assert (co-located ?b ?y)
-    :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
-    :priority 200)
-
-  (rule square-bwd (?R)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (co-located ?b ?y))
-    :assert (co-located ?a ?x)
-    :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
-    :priority 200)
-
-  ;; ── square-unique: corner-house projection on a SYMMETRIC
-  ;; ── adjacency relation ?R, anchored at a structurally-complete
-  ;; ── type ?T. Identical in spirit to zebra.ein's square-unique;
-  ;; ── the only difference is the structural-completeness premise:
-  ;; ── zebra.ein uses `(instance ?x ?T)`; zebra2.ein uses
-  ;; ── `(is-a ?x ?T)` because there are no kernel-level instance
-  ;; ── facts in this encoding. With the activator below binding ?T
-  ;; ── to `House`, the (is-a ?x House) scan picks up only the five
-  ;; ── direct House memberships — the transitive closure climbs to
-  ;; ── Attribute/T but those have different objects, so the rule
-  ;; ── doesn't overfire on derived ancestor edges.
-  ;; ──
-  ;; ── Activator: (square-unique next-to House). Fires once,
-  ;; ── deriving (co-located Blue House_2) from House_1's corner
-  ;; ── anchor + (next-to Norwegian Blue) + (co-located Norwegian
-  ;; ── House_1). Mirror corner (House_5) is dormant initially —
-  ;; ── nothing is co-located with House_5 in the FACT layer.
-
-  (rule square-unique (?R ?T)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (is-a ?x ?T)
-                 (co-located ?a ?x)
-                 (absent (and (?R ?x ?z) (neq ?y ?z))))
-    :assert (co-located ?b ?y)
-    :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
-    :priority 200)
-
-  ;; ── New: `asymmetric` rule. Gated by neq so self-loops (?a = ?b)
-  ;; ── don't yield a (?rel ?a ?a) → ¬(?rel ?a ?a) contradiction.
-  ;; ── Activates via the `(asymmetric is-a)` rule-application fact.
-
   (rule asymmetric (?rel)
-    :match  (and (?rel ?a ?b)
-                 (neq ?a ?b))
+    :match  (and (?rel ?a ?b) (neq ?a ?b))
     :assert (not (?rel ?b ?a))
-    :why    "{?rel} is asymmetric: from {?a} →{?rel}→ {?b}, ¬({?b} →{?rel}→ {?a})."
+    :why    "{?rel} is asymmetric: ¬({?b} →{?rel}→ {?a})."
     :priority 100)
-
-  ;; ── `sibling-exclusive`. Generalises `type-exclusivity` from the
-  ;; ── zebra.ein formulation. Two-parameter form (T1.5.6.1):
-  ;; ──   ?siblings-via   — the relation whose shared parent defines
-  ;; ──                     the "siblings" group;
-  ;; ──   ?exclusive-under — the relation those siblings are
-  ;; ──                     forbidden from co-occurring under.
-  ;; ── Fires uniformly for type-siblings (House⊥Color under
-  ;; ── Attribute) AND instance-siblings (Norwegian⊥Spaniard under
-  ;; ── Nationality). Making the exclusion relation a binding lets
-  ;; ── the one-step lookahead (S1.5.6) see which hypothesis the
-  ;; ── rule kills instead of reading a hardcoded body.
 
   (rule sibling-exclusive (?siblings-via ?exclusive-under)
     :match  (and (?siblings-via ?a ?P)
                  (?siblings-via ?b ?P)
                  (neq ?a ?b))
     :assert (not (?exclusive-under ?a ?b))
-    :why    "{?a} and {?b} share parent {?P} under {?siblings-via} — exclusive under {?exclusive-under}."
+    :why    "{?a} and {?b} share parent {?P} under {?siblings-via}; exclusive under {?exclusive-under}."
     :priority 300)
 
+  (rule functional (?R)
+    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+    :assert (false)
+    :why    "{?R} not functional at {?a}: has {?b} and {?c}."
+    :priority 250)
 
-  ;; ── Hypothesis rule (S1.5.6b). GENERIC over a pair of types
-  ;; ── (?A ?B): proposes `(co-located ?a ?b)` for every ?a that
-  ;; ── is-a ?A and every ?b that is-a ?B. One plan is compiled
-  ;; ── per (?A ?B) activator listed in the `:hrules` block of
-  ;; ── (query …) — this replaces five near-identical concrete
-  ;; ── hrules. hrule activators live in (query …), not
-  ;; ── (ontology …): they steer hypgen, they are not puzzle state.
-  (hrule guess-co-located (?A ?B)
-    :match  (and (is-a ?a ?A) (is-a ?b ?B))
-    :assert (co-located ?a ?b)
-    :why    "guess: {?a} co-located {?b}?")
+  ;; ──── Cross-attribute propagation (new for B1) ─────────────
+  ;; `linked` — two attributes share a house, propagate either way.
+  ;; Used for the simple (∃h. (?R1 h ?V1) ∧ (?R2 h ?V2)) conditions.
+  (rule linked (?R1 ?V1 ?R2 ?V2)
+    :match  (?R1 ?h ?V1)
+    :assert (?R2 ?h ?V2)
+    :why    "linked: ({?R1} {?h} {?V1}) ⟹ ({?R2} {?h} {?V2})."
+    :priority 200)
 
-)
+  ;; `cross-attr-right-of-*` — adjacency in the right-of direction.
+  ;; right-of is functional both ways (each house has at most one
+  ;; immediate right + one immediate left), so both directions
+  ;; propagate deterministically.
+  (rule cross-attr-right-of-fwd (?R ?V_left ?V_right)
+    :match  (and (?R ?h_l ?V_left) (right-of ?h_r ?h_l))
+    :assert (?R ?h_r ?V_right)
+    :why    "({?R} {?h_l} {?V_left}) + right-of {?h_r} {?h_l} ⟹ ({?R} {?h_r} {?V_right})."
+    :priority 200)
+
+  (rule cross-attr-right-of-bwd (?R ?V_left ?V_right)
+    :match  (and (?R ?h_r ?V_right) (right-of ?h_r ?h_l))
+    :assert (?R ?h_l ?V_left)
+    :why    "({?R} {?h_r} {?V_right}) + right-of {?h_r} {?h_l} ⟹ ({?R} {?h_l} {?V_left})."
+    :priority 200)
+
+  ;; `cross-attr-next-to-unique` — adjacency in next-to (symmetric).
+  ;; Fires DETERMINISTICALLY only when ?h1 has a unique next-to
+  ;; neighbour (the NAF premise excludes the non-corner disjunctive
+  ;; case). The non-corner case is left for hypothesis branching.
+  (rule cross-attr-next-to-unique (?R1 ?V1 ?R2 ?V2)
+    :match  (and (?R1 ?h1 ?V1)
+                 (next-to ?h1 ?h2)
+                 (absent (and (next-to ?h1 ?h_other) (neq ?h_other ?h2))))
+    :assert (?R2 ?h2 ?V2)
+    :why    "({?R1} {?h1} {?V1}) at corner-house ⟹ ({?R2} {?h2} {?V2}) at the unique neighbour."
+    :priority 200)
+
+  ;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
+  (rule typecheck-arg-0 (?R ?Dom)
+    :match  (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
+    :assert (false)
+    :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
+    :priority 110)
+
+  (rule typecheck-arg-1 (?R ?Ran)
+    :match  (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
+    :assert (false)
+    :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
+    :priority 110)
+
+  (rule domain-elimination (?R ?OT ?VT)
+    :match  (and (functional ?R 0 1)
+                 (total      ?R 0)
+                 (is-a ?a ?OT)
+                 (is-a ?v ?VT)
+                 (forall ?v_other
+                   (and (is-a ?v_other ?VT) (neq ?v_other ?v))
+                   (not (?R ?a ?v_other))))
+    :assert (?R ?a ?v)
+    :priority 400
+    :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v}).")
+
+  (rule no-room-left (?R ?OT ?VT)
+    :match  (and (functional ?R 0 1)
+                 (total      ?R 0)
+                 (is-a ?a ?OT)
+                 (forall ?v (is-a ?v ?VT) (not (?R ?a ?v))))
+    :assert (false)
+    :priority 110
+    :why    "{?a} has every {?VT} excluded — no value left.")
+
+  ;; ──── Hypothesis generation ────────────────────────────────
+  ;; One hrule parameterised over (?R ?T1 ?T2); activators in the
+  ;; (query …) :hrules clause enumerate every house-* relation
+  ;; with its (House, attribute-type) pair.
+  (hrule guess (?R ?T1 ?T2)
+    :match  (and (is-a ?h ?T1) (is-a ?v ?T2))
+    :assert (?R ?h ?v)
+    :why    "guess: ({?R} {?h} {?v})?"))
 
 (ontology
-  ;; ── Relation signatures. `is-a` connects any node to any node;
-  ;; ── we type both endpoints as T (the catch-all root).
-  (relation is-a       T T)
-  (relation co-located T T)
-  (relation right-of   T T)
-  (relation next-to    T T)
+  ;; ──── Relation signatures (direct-parent types throughout) ──
+  (relation is-a         T T)
+  (relation house-color  House Color)
+  (relation house-nation House Nationality)
+  (relation house-drink  House Drink)
+  (relation house-smoke  House Cigarette)
+  (relation house-pet    House Pet)
+  (relation right-of     House House)
+  (relation next-to      House House)
 
-  ;; ── Rule-application facts (implicit context for the engine).
-  ;; ──
-  ;; ── NOTE: `(transitive is-a)` is intentionally OMITTED. Activating
-  ;; ── it derives every ancestor edge (Norwegian is-a Attribute,
-  ;; ── Norwegian is-a T, …), which then makes `(sibling-exclusive
-  ;; ── is-a)` match cross-boundary pairs (Norwegian and Red share
-  ;; ── ancestor Attribute via transitive closure) and emit ~1300
-  ;; ── spurious (not (co-located A B)) facts. Without the transitive
-  ;; ── activator, sibling-exclusive fires only on *direct* is-a
-  ;; ── parent pairs — 120 ordered pairs, matching zebra.ein's
-  ;; ── `(type-exclusivity co-located)` exactly.
+  ;; ──── is-a properties (transitive intentionally omitted) ────
   (asymmetric        is-a)
-  ;; siblings-via is-a are exclusive under co-located (the core
-  ;; type-exclusivity) and under is-a itself — the latter kills
-  ;; leaf is-a pairs like (is-a Red Blue) in one rule firing.
-  (sibling-exclusive is-a co-located)
   (sibling-exclusive is-a is-a)
-  (symmetric  co-located)
-  (transitive co-located)
-  (symmetric  next-to)
-  (includes    right-of next-to)
-  (square-fwd    right-of)
-  (square-bwd    right-of)
-  (square-unique next-to House)
-  ;; NOTE: square-fwd/bwd do NOT apply to next-to. next-to is symmetric;
-  ;; its conclusion is disjunctive for non-corner positions (B is at
-  ;; *some* neighbour of X) — that case needs hypothesis branching.
-  ;; The corner case (House_1, House_5) is handled monotonically by
-  ;; square-unique above.
 
-  ;; ── Inheritance tree, rooted at T. Both subtype-of and instance-of
-  ;; ── edges are expressed by the same `is-a` relation; the visual
-  ;; ── distinction (boxes vs ovals) disappears in this formulation
-  ;; ── until the KB-aware renderer (S1.2.4) reintroduces it
-  ;; ── structurally.
+  ;; ──── Spatial properties ───────────────────────────────────
+  (symmetric next-to)
+  (includes  right-of next-to)
+
+  ;; ──── Per-relation bijection properties ────────────────────
+  ;; (functional R) — 1-arg, activates the existing M1 functional
+  ;; contradiction rule (rule functional (?R) above).
+  ;; (functional R 0 1) / (functional R 1 0) — positional projection,
+  ;; consumed by domain-elimination's :match.
+  ;; (total R 0) / (total R 1) — same.
+  (functional house-color)  (functional house-color  0 1)  (functional house-color  1 0)
+  (total      house-color  0) (total      house-color  1)
+  (functional house-nation) (functional house-nation 0 1)  (functional house-nation 1 0)
+  (total      house-nation 0) (total      house-nation 1)
+  (functional house-drink)  (functional house-drink  0 1)  (functional house-drink  1 0)
+  (total      house-drink  0) (total      house-drink  1)
+  (functional house-smoke)  (functional house-smoke  0 1)  (functional house-smoke  1 0)
+  (total      house-smoke  0) (total      house-smoke  1)
+  (functional house-pet)    (functional house-pet    0 1)  (functional house-pet    1 0)
+  (total      house-pet    0) (total      house-pet    1)
+
+  ;; ──── Stdlib rule activators per house-* relation ─────────
+  (typecheck-arg-0    house-color  House)        (typecheck-arg-1 house-color  Color)
+  (typecheck-arg-0    house-nation House)        (typecheck-arg-1 house-nation Nationality)
+  (typecheck-arg-0    house-drink  House)        (typecheck-arg-1 house-drink  Drink)
+  (typecheck-arg-0    house-smoke  House)        (typecheck-arg-1 house-smoke  Cigarette)
+  (typecheck-arg-0    house-pet    House)        (typecheck-arg-1 house-pet    Pet)
+  (domain-elimination house-color  House Color)
+  (domain-elimination house-nation House Nationality)
+  (domain-elimination house-drink  House Drink)
+  (domain-elimination house-smoke  House Cigarette)
+  (domain-elimination house-pet    House Pet)
+  (no-room-left       house-color  House Color)
+  (no-room-left       house-nation House Nationality)
+  (no-room-left       house-drink  House Drink)
+  (no-room-left       house-smoke  House Cigarette)
+  (no-room-left       house-pet    House Pet)
+
+  ;; ──── is-a inheritance tree ─────────────────────────────────
   (is-a Attribute   T)
   (is-a House       Attribute)
   (is-a Color       Attribute)
@@ -236,73 +225,113 @@
   (is-a Cigarette   Attribute)
   (is-a Drink       Attribute)
 
-  ;; Leaves (formerly instance facts).
+  ;; House instances
   (is-a House_1 House) (is-a House_2 House) (is-a House_3 House)
   (is-a House_4 House) (is-a House_5 House)
+  ;; Colors
   (is-a Red    Color)  (is-a Green Color)  (is-a Ivory Color)
   (is-a Yellow Color)  (is-a Blue  Color)
+  ;; Nationalities
   (is-a Englishman Nationality) (is-a Spaniard  Nationality)
   (is-a Ukrainian  Nationality) (is-a Norwegian Nationality)
   (is-a Japanese   Nationality)
-  (is-a Dog   Pet)   (is-a Snail Pet) (is-a Fox Pet)
-  (is-a Horse Pet)   (is-a Zebra Pet)
+  ;; Pets
+  (is-a Dog Pet) (is-a Snail Pet) (is-a Fox Pet)
+  (is-a Horse Pet) (is-a Zebra Pet)
+  ;; Cigarettes
   (is-a Old_Gold      Cigarette) (is-a Kools        Cigarette)
   (is-a Chesterfields Cigarette) (is-a Lucky_Strike Cigarette)
   (is-a Parliament    Cigarette)
+  ;; Drinks
   (is-a Coffee Drink) (is-a Tea   Drink) (is-a Milk Drink)
   (is-a Juice  Drink) (is-a Water Drink)
 
-  ;; ── Condition (1) "five houses in a row" — pairwise spatial.
-  (right-of House_2 House_1 :source "condition (1)")
-  (right-of House_3 House_2 :source "condition (1)")
-  (right-of House_4 House_3 :source "condition (1)")
-  (right-of House_5 House_4 :source "condition (1)"))
+  )
 
 (facts
+  ;; ──── Puzzle conditions ─────────────────────────────────────
+  ;;
+  ;; Conditions 9 and 10 are direct attribute↔house facts.
+  ;; Conditions 2-8 and 11-15 are cross-attribute equalities,
+  ;; encoded as `linked` / `cross-attr-*` activator facts that
+  ;; trigger the corresponding propagation rules (defined in the
+  ;; rules block). Condition 1 is the row of houses (right-of
+  ;; pairs).
+  ;;
+  ;; (1) Five houses in a row.
+  (right-of House_2 House_1       :source "condition (1)")
+  (right-of House_3 House_2       :source "condition (1)")
+  (right-of House_4 House_3       :source "condition (1)")
+  (right-of House_5 House_4       :source "condition (1)")
+
   ;; (2) The Englishman lives in the red house.
-  (co-located Englishman Red       :source "condition (2)")
+  (linked house-nation Englishman house-color  Red          :source "condition (2)")
+  (linked house-color  Red        house-nation Englishman   :source "condition (2)")
+
   ;; (3) The Spaniard owns the dog.
-  (co-located Spaniard Dog         :source "condition (3)")
+  (linked house-nation Spaniard   house-pet    Dog          :source "condition (3)")
+  (linked house-pet    Dog        house-nation Spaniard     :source "condition (3)")
+
   ;; (4) Coffee is drunk in the green house.
-  (co-located Coffee Green         :source "condition (4)")
+  (linked house-drink  Coffee     house-color  Green        :source "condition (4)")
+  (linked house-color  Green      house-drink  Coffee       :source "condition (4)")
+
   ;; (5) The Ukrainian drinks tea.
-  (co-located Ukrainian Tea        :source "condition (5)")
+  (linked house-nation Ukrainian  house-drink  Tea          :source "condition (5)")
+  (linked house-drink  Tea        house-nation Ukrainian    :source "condition (5)")
+
   ;; (6) The green house is immediately right of the ivory house.
-  (right-of   Green Ivory          :source "condition (6)")
+  (cross-attr-right-of-fwd house-color Ivory Green          :source "condition (6)")
+  (cross-attr-right-of-bwd house-color Ivory Green          :source "condition (6)")
+
   ;; (7) The Old Gold smoker owns snails.
-  (co-located Old_Gold Snail       :source "condition (7)")
+  (linked house-smoke  Old_Gold   house-pet    Snail        :source "condition (7)")
+  (linked house-pet    Snail      house-smoke  Old_Gold     :source "condition (7)")
+
   ;; (8) Kools are smoked in the yellow house.
-  (co-located Kools Yellow         :source "condition (8)")
+  (linked house-smoke  Kools      house-color  Yellow       :source "condition (8)")
+  (linked house-color  Yellow     house-smoke  Kools        :source "condition (8)")
+
   ;; (9) Milk is drunk in the middle house.
-  (co-located Milk House_3         :source "condition (9)")
+  (house-drink  House_3 Milk                                :source "condition (9)")
+
   ;; (10) The Norwegian lives in the first house.
-  (co-located Norwegian House_1    :source "condition (10)")
+  (house-nation House_1 Norwegian                           :source "condition (10)")
+
   ;; (11) Chesterfields is smoked next to the house with the fox.
-  (next-to    Chesterfields Fox    :source "condition (11)")
+  (cross-attr-next-to-unique house-smoke Chesterfields house-pet   Fox           :source "condition (11)")
+  (cross-attr-next-to-unique house-pet   Fox           house-smoke Chesterfields :source "condition (11)")
+
   ;; (12) Kools is smoked next to the house with the horse.
-  (next-to    Kools Horse          :source "condition (12)")
+  (cross-attr-next-to-unique house-smoke Kools house-pet   Horse                 :source "condition (12)")
+  (cross-attr-next-to-unique house-pet   Horse house-smoke Kools                 :source "condition (12)")
+
   ;; (13) The Lucky Strike smoker drinks orange juice.
-  (co-located Lucky_Strike Juice   :source "condition (13)")
+  (linked house-smoke  Lucky_Strike house-drink Juice                            :source "condition (13)")
+  (linked house-drink  Juice        house-smoke Lucky_Strike                     :source "condition (13)")
+
   ;; (14) The Japanese smokes Parliaments.
-  (co-located Japanese Parliament  :source "condition (14)")
+  (linked house-nation Japanese   house-smoke  Parliament                        :source "condition (14)")
+  (linked house-smoke  Parliament house-nation Japanese                          :source "condition (14)")
+
   ;; (15) The Norwegian lives next to the blue house.
-  (next-to    Norwegian Blue       :source "condition (15)"))
+  (cross-attr-next-to-unique house-nation Norwegian house-color  Blue            :source "condition (15)")
+  (cross-attr-next-to-unique house-color  Blue      house-nation Norwegian       :source "condition (15)"))
 
 (query
   :mode solve
-  :goal (and (co-located ?water-drinker Water)
-             (co-located ?zebra-owner   Zebra))
-  ;; Activators for the generic `guess-co-located` hrule — one
-  ;; (?A ?B) type pair per attribute (each attribute type paired
-  ;; with House). These live in (query …), the search-control
-  ;; block, not in (ontology …).
-  :hrules (guess-co-located
-            (House Color)
-            (House Drink)
-            (House Pet)
-            (House Nationality)
-            (House Cigarette)))
+  :goal (and (house-drink ?h_water Water)
+             (house-pet   ?h_zebra Zebra))
+  ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per
+  ;; house-* relation; the hrule emits (?R ?h ?v) candidates for
+  ;; every (h, v) of the corresponding types.
+  :hrules (guess
+            (house-color  House Color)
+            (house-nation House Nationality)
+            (house-drink  House Drink)
+            (house-smoke  House Cigarette)
+            (house-pet    House Pet)))
 
-;; Expected solution (as IR facts):
-;;   (co-located Water Norwegian)
-;;   (co-located Zebra Japanese)
+;; Expected solution facts:
+;;   - (house-nation ?h Norwegian) ∧ (house-drink ?h Water) — same ?h
+;;   - (house-nation ?h Japanese)  ∧ (house-pet   ?h Zebra) — same ?h

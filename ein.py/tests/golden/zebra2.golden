@@ -13,7 +13,7 @@
     (?rel)
     :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
     :assert (?rel ?a ?c)
-    :why "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+    :why "{?rel} is transitive."
     :priority 200)
   (rule
     includes
@@ -23,62 +23,147 @@
     :why "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
     :priority 100)
   (rule
-    square-fwd
-    (?R)
-    :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
-    :assert (co-located ?b ?y)
-    :why "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
-    :priority 200)
-  (rule
-    square-bwd
-    (?R)
-    :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
-    :assert (co-located ?a ?x)
-    :why "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
-    :priority 200)
-  (rule
-    square-unique
-    (?R ?T)
-    :match (and (?R ?a ?b) (?R ?x ?y) (is-a ?x ?T) (co-located ?a ?x) (absent (and (?R ?x ?z) (neq ?y ?z))))
-    :assert (co-located ?b ?y)
-    :why "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
-    :priority 200)
-  (rule
     asymmetric
     (?rel)
     :match (and (?rel ?a ?b) (neq ?a ?b))
     :assert (not (?rel ?b ?a))
-    :why "{?rel} is asymmetric: from {?a} →{?rel}→ {?b}, ¬({?b} →{?rel}→ {?a})."
+    :why "{?rel} is asymmetric: ¬({?b} →{?rel}→ {?a})."
     :priority 100)
   (rule
     sibling-exclusive
     (?siblings-via ?exclusive-under)
     :match (and (?siblings-via ?a ?P) (?siblings-via ?b ?P) (neq ?a ?b))
     :assert (not (?exclusive-under ?a ?b))
-    :why "{?a} and {?b} share parent {?P} under {?siblings-via} — exclusive under {?exclusive-under}."
+    :why "{?a} and {?b} share parent {?P} under {?siblings-via}; exclusive under {?exclusive-under}."
     :priority 300)
+  (rule
+    functional
+    (?R)
+    :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+    :assert (false)
+    :why "{?R} not functional at {?a}: has {?b} and {?c}."
+    :priority 250)
+  (rule
+    linked
+    (?R1 ?V1 ?R2 ?V2)
+    :match (?R1 ?h ?V1)
+    :assert (?R2 ?h ?V2)
+    :why "linked: ({?R1} {?h} {?V1}) ⟹ ({?R2} {?h} {?V2})."
+    :priority 200)
+  (rule
+    cross-attr-right-of-fwd
+    (?R ?V_left ?V_right)
+    :match (and (?R ?h_l ?V_left) (right-of ?h_r ?h_l))
+    :assert (?R ?h_r ?V_right)
+    :why "({?R} {?h_l} {?V_left}) + right-of {?h_r} {?h_l} ⟹ ({?R} {?h_r} {?V_right})."
+    :priority 200)
+  (rule
+    cross-attr-right-of-bwd
+    (?R ?V_left ?V_right)
+    :match (and (?R ?h_r ?V_right) (right-of ?h_r ?h_l))
+    :assert (?R ?h_l ?V_left)
+    :why "({?R} {?h_r} {?V_right}) + right-of {?h_r} {?h_l} ⟹ ({?R} {?h_l} {?V_left})."
+    :priority 200)
+  (rule
+    cross-attr-next-to-unique
+    (?R1 ?V1 ?R2 ?V2)
+    :match (and (?R1 ?h1 ?V1) (next-to ?h1 ?h2) (absent (and (next-to ?h1 ?h_other) (neq ?h_other ?h2))))
+    :assert (?R2 ?h2 ?V2)
+    :why "({?R1} {?h1} {?V1}) at corner-house ⟹ ({?R2} {?h2} {?V2}) at the unique neighbour."
+    :priority 200)
+  (rule
+    typecheck-arg-0
+    (?R ?Dom)
+    :match (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
+    :assert (false)
+    :why "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
+    :priority 110)
+  (rule
+    typecheck-arg-1
+    (?R ?Ran)
+    :match (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
+    :assert (false)
+    :why "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
+    :priority 110)
+  (rule
+    domain-elimination
+    (?R ?OT ?VT)
+    :match (and (functional ?R 0 1) (total ?R 0) (is-a ?a ?OT) (is-a ?v ?VT) (forall ?v_other (and (is-a ?v_other ?VT) (neq ?v_other ?v)) (not (?R ?a ?v_other))))
+    :assert (?R ?a ?v)
+    :priority 400
+    :why "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v}).")
+  (rule
+    no-room-left
+    (?R ?OT ?VT)
+    :match (and (functional ?R 0 1) (total ?R 0) (is-a ?a ?OT) (forall ?v (is-a ?v ?VT) (not (?R ?a ?v))))
+    :assert (false)
+    :priority 110
+    :why "{?a} has every {?VT} excluded — no value left.")
   (hrule
-    guess-co-located
-    (?A ?B)
-    :match (and (is-a ?a ?A) (is-a ?b ?B))
-    :assert (co-located ?a ?b)
-    :why "guess: {?a} co-located {?b}?"))
+    guess
+    (?R ?T1 ?T2)
+    :match (and (is-a ?h ?T1) (is-a ?v ?T2))
+    :assert (?R ?h ?v)
+    :why "guess: ({?R} {?h} {?v})?"))
 
 (ontology
   (relation is-a T T)
-  (relation co-located T T)
-  (relation right-of T T)
-  (relation next-to T T)
+  (relation house-color House Color)
+  (relation house-nation House Nationality)
+  (relation house-drink House Drink)
+  (relation house-smoke House Cigarette)
+  (relation house-pet House Pet)
+  (relation right-of House House)
+  (relation next-to House House)
   (asymmetric is-a)
-  (sibling-exclusive is-a co-located)
   (sibling-exclusive is-a is-a)
-  (symmetric co-located)
-  (transitive co-located)
   (symmetric next-to)
   (includes right-of next-to)
-  (square-fwd right-of)
-  (square-bwd right-of)
-  (square-unique next-to House)
+  (functional house-color)
+  (functional house-color 0 1)
+  (functional house-color 1 0)
+  (total house-color 0)
+  (total house-color 1)
+  (functional house-nation)
+  (functional house-nation 0 1)
+  (functional house-nation 1 0)
+  (total house-nation 0)
+  (total house-nation 1)
+  (functional house-drink)
+  (functional house-drink 0 1)
+  (functional house-drink 1 0)
+  (total house-drink 0)
+  (total house-drink 1)
+  (functional house-smoke)
+  (functional house-smoke 0 1)
+  (functional house-smoke 1 0)
+  (total house-smoke 0)
+  (total house-smoke 1)
+  (functional house-pet)
+  (functional house-pet 0 1)
+  (functional house-pet 1 0)
+  (total house-pet 0)
+  (total house-pet 1)
+  (typecheck-arg-0 house-color House)
+  (typecheck-arg-1 house-color Color)
+  (typecheck-arg-0 house-nation House)
+  (typecheck-arg-1 house-nation Nationality)
+  (typecheck-arg-0 house-drink House)
+  (typecheck-arg-1 house-drink Drink)
+  (typecheck-arg-0 house-smoke House)
+  (typecheck-arg-1 house-smoke Cigarette)
+  (typecheck-arg-0 house-pet House)
+  (typecheck-arg-1 house-pet Pet)
+  (domain-elimination house-color House Color)
+  (domain-elimination house-nation House Nationality)
+  (domain-elimination house-drink House Drink)
+  (domain-elimination house-smoke House Cigarette)
+  (domain-elimination house-pet House Pet)
+  (no-room-left house-color House Color)
+  (no-room-left house-nation House Nationality)
+  (no-room-left house-drink House Drink)
+  (no-room-left house-smoke House Cigarette)
+  (no-room-left house-pet House Pet)
   (is-a Attribute T)
   (is-a House Attribute)
   (is-a Color Attribute)
@@ -115,29 +200,71 @@
   (is-a Tea Drink)
   (is-a Milk Drink)
   (is-a Juice Drink)
-  (is-a Water Drink)
+  (is-a Water Drink))
+
+(facts
   (right-of House_2 House_1 :source "condition (1)")
   (right-of House_3 House_2 :source "condition (1)")
   (right-of House_4 House_3 :source "condition (1)")
-  (right-of House_5 House_4 :source "condition (1)"))
-
-(facts
-  (co-located Englishman Red :source "condition (2)")
-  (co-located Spaniard Dog :source "condition (3)")
-  (co-located Coffee Green :source "condition (4)")
-  (co-located Ukrainian Tea :source "condition (5)")
-  (right-of Green Ivory :source "condition (6)")
-  (co-located Old_Gold Snail :source "condition (7)")
-  (co-located Kools Yellow :source "condition (8)")
-  (co-located Milk House_3 :source "condition (9)")
-  (co-located Norwegian House_1 :source "condition (10)")
-  (next-to Chesterfields Fox :source "condition (11)")
-  (next-to Kools Horse :source "condition (12)")
-  (co-located Lucky_Strike Juice :source "condition (13)")
-  (co-located Japanese Parliament :source "condition (14)")
-  (next-to Norwegian Blue :source "condition (15)"))
+  (right-of House_5 House_4 :source "condition (1)")
+  (linked house-nation Englishman house-color Red :source "condition (2)")
+  (linked house-color Red house-nation Englishman :source "condition (2)")
+  (linked house-nation Spaniard house-pet Dog :source "condition (3)")
+  (linked house-pet Dog house-nation Spaniard :source "condition (3)")
+  (linked house-drink Coffee house-color Green :source "condition (4)")
+  (linked house-color Green house-drink Coffee :source "condition (4)")
+  (linked house-nation Ukrainian house-drink Tea :source "condition (5)")
+  (linked house-drink Tea house-nation Ukrainian :source "condition (5)")
+  (cross-attr-right-of-fwd house-color Ivory Green :source "condition (6)")
+  (cross-attr-right-of-bwd house-color Ivory Green :source "condition (6)")
+  (linked house-smoke Old_Gold house-pet Snail :source "condition (7)")
+  (linked house-pet Snail house-smoke Old_Gold :source "condition (7)")
+  (linked house-smoke Kools house-color Yellow :source "condition (8)")
+  (linked house-color Yellow house-smoke Kools :source "condition (8)")
+  (house-drink House_3 Milk :source "condition (9)")
+  (house-nation House_1 Norwegian :source "condition (10)")
+  (cross-attr-next-to-unique
+    house-smoke
+    Chesterfields
+    house-pet
+    Fox
+    :source "condition (11)")
+  (cross-attr-next-to-unique
+    house-pet
+    Fox
+    house-smoke
+    Chesterfields
+    :source "condition (11)")
+  (cross-attr-next-to-unique
+    house-smoke
+    Kools
+    house-pet
+    Horse
+    :source "condition (12)")
+  (cross-attr-next-to-unique
+    house-pet
+    Horse
+    house-smoke
+    Kools
+    :source "condition (12)")
+  (linked house-smoke Lucky_Strike house-drink Juice :source "condition (13)")
+  (linked house-drink Juice house-smoke Lucky_Strike :source "condition (13)")
+  (linked house-nation Japanese house-smoke Parliament :source "condition (14)")
+  (linked house-smoke Parliament house-nation Japanese :source "condition (14)")
+  (cross-attr-next-to-unique
+    house-nation
+    Norwegian
+    house-color
+    Blue
+    :source "condition (15)")
+  (cross-attr-next-to-unique
+    house-color
+    Blue
+    house-nation
+    Norwegian
+    :source "condition (15)"))
 
 (query
   :mode solve
-  :goal (and (co-located ?water-drinker Water) (co-located ?zebra-owner Zebra))
-  :hrules (guess-co-located (House Color) (House Drink) (House Pet) (House Nationality) (House Cigarette)))
+  :goal (and (house-drink ?h_water Water) (house-pet ?h_zebra Zebra))
+  :hrules (guess (house-color House Color) (house-nation House Nationality) (house-drink House Drink) (house-smoke House Cigarette) (house-pet House Pet)))
