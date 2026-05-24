@@ -5,41 +5,46 @@
 ;;; The pre-B1 zebra2 used a single symmetric+transitive
 ;;; `co-located` relation to express the equivalence "same house"
 ;;; across all five attribute kinds (Color, Nationality, Drink,
-;;; Cigarette, Pet). The B1 refactor (S1.5.8c §2.3) drops
-;;; `co-located` entirely and replaces it with five specific
-;;; House-rooted binary relations:
+;;; Cigarette, Pet). The B1 refactor (S1.5.8c §2.3) drops that
+;;; single equivalence relation and replaces it with five specific
+;;; attribute→House projections:
 ;;;
-;;;   house-color  : House → Color
-;;;   house-nation : House → Nationality
-;;;   house-drink  : House → Drink
-;;;   house-smoke  : House → Cigarette
-;;;   house-pet    : House → Pet
+;;;   color-loc  : Color       → House
+;;;   nation-loc : Nationality → House
+;;;   drink-loc  : Drink       → House
+;;;   smoke-loc  : Cigarette   → House
+;;;   pet-loc    : Pet         → House
 ;;;
 ;;; Each is a bijection (functional + total in both projections).
 ;;; Spatial relations (right-of, next-to) stay as before, House×House.
+;;;
+;;; Naming convention (S1.5a.5, 2026-05-24): the relations are
+;;; named *-loc to read as "location of the X" — `(color-loc Red H1)`
+;;; ≡ "the location of Red is H1". Attribute is in slot 0; House
+;;; sits in slot 1. The cross-attribute primitives `co-located` and
+;;; `adjacent-via` mirror that convention.
 ;;;
 ;;; ── Condition encoding under B1 ──────────────────────────────
 ;;;
 ;;; The 15 puzzle conditions split into three groups:
 ;;;
-;;; (A) Direct house↔attribute facts (atomic):
-;;;     (9)  Milk in middle house  → (house-drink House_3 Milk)
-;;;     (10) Norwegian in first    → (house-nation House_1 Norwegian)
+;;; (A) Direct attribute↔house facts (atomic):
+;;;     (9)  Milk in middle house  → (drink-loc Milk House_3)
+;;;     (10) Norwegian in first    → (nation-loc Norwegian House_1)
 ;;;
-;;; (B) Cross-attribute equality (∃h. (R1 h V1) ∧ (R2 h V2)):
-;;;     (2-5, 7-8, 13-14) — encoded as `linked` activators (both
-;;;     directions) that bidirectionally propagate the
+;;; (B) Cross-attribute equality (∃h. (R1 V1 h) ∧ (R2 V2 h)):
+;;;     (2-5, 7-8, 13-14) — encoded as `co-located` activators
+;;;     (both directions) that bidirectionally propagate the
 ;;;     partner-attribute via the shared house.
 ;;;
 ;;; (C) Cross-attribute spatial:
-;;;     (6, 11-12, 15) — encoded as a single `cross-attr-spatial`
-;;;                  activator that expands into both `-fwd` and
-;;;                  `-bwd` directional activators; the spatial
-;;;                  relation (right-of or next-to) is the last
-;;;                  parameter. NAF gates uniqueness — trivially
-;;;                  passes for functional right-of; filters non-
-;;;                  corner cases for symmetric next-to (those
-;;;                  need branching).
+;;;     (6, 11-12, 15) — encoded as a single `adjacent-via` activator
+;;;     that expands into both `-fwd` and `-bwd` directional
+;;;     activators. The spatial relation (right-of or next-to) is
+;;;     the FIRST parameter so the activator reads "adjacent via R:
+;;;     A is here, B is over there". NAF gates uniqueness — trivially
+;;;     passes for functional right-of; filters non-corner cases for
+;;;     symmetric next-to (those need branching).
 ;;;
 ;;; The four S1.5.8c.4 stdlib rules (typecheck-arg-{0,1},
 ;;; domain-elimination, no-room-left) are inlined here until P1.8
@@ -100,116 +105,113 @@
     :priority 250)
 
 
-  ;; TODO: rename linked to co-located, because this is essentially co-location of two facts with open House variable
-  ;; TODO: rename cross-attr-spatial to relative-over|siblings-over|neighbors-over|connected-over, because it is facts with open location but fixed relative position over relation next-to/right-of; and move ?relation-over to first argument
-
-  ;; ──── Cross-attribute propagation (new for B1) ─────────────
-  ;; `linked` — two attributes share a house, propagate either way.
-  ;; Used for the simple (∃h. (?R1 h ?V1) ∧ (?R2 h ?V2)) conditions.
-  (rule linked (?R1 ?V1 ?R2 ?V2)
-    :match  (?R1 ?h ?V1)
-    :assert (?R2 ?h ?V2)
-    :why    "linked: ({?R1} {?h} {?V1}) ⟹ ({?R2} {?h} {?V2})."
+  ;; ──── Cross-attribute propagation (B1) ─────────────────────
+  ;; `co-located` — two attribute-values share a house, propagate
+  ;; the partner via the shared house. The activator's V1 / V2 are
+  ;; attribute values (Color, Nationality, …); the rule scans for a
+  ;; fact placing V1 at house ?h and asserts the partner at the
+  ;; same ?h.
+  (rule co-located (?R1 ?V1 ?R2 ?V2)
+    :match  (?R1 ?V1 ?h)
+    :assert (?R2 ?V2 ?h)
+    :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h})."
     :priority 200)
 
-  ;; `linked` is symmetric — (linked A B C D) and (linked C D A B)
-  ;; express the same constraint. Authors write ONE direction;
-  ;; this meta-rule derives the reverse activator. Saturator
-  ;; cache-refresh then picks it up and the `linked` rule fires
-  ;; in both directions.
-  (rule linked-symmetric ()
-    :match  (linked ?R1 ?V1 ?R2 ?V2)
-    :assert (linked ?R2 ?V2 ?R1 ?V1)
-    :why    "linked is symmetric: derive reverse activator."
+  ;; `co-located` is symmetric — (co-located A B C D) and
+  ;; (co-located C D A B) express the same constraint. Authors
+  ;; write ONE direction; this meta-rule derives the reverse
+  ;; activator. Saturator cache-refresh then picks it up and the
+  ;; `co-located` rule fires in both directions.
+  (rule co-located-symmetric ()
+    :match  (co-located ?R1 ?V1 ?R2 ?V2)
+    :assert (co-located ?R2 ?V2 ?R1 ?V1)
+    :why    "co-located is symmetric: derive reverse activator."
     :priority 100)
 
-  ;; `cross-attr-spatial-*` — pure-structural cross-attribute
-  ;; propagation across a spatial adjacency relation ?S. The
-  ;; spatial relation is itself a rule parameter, so the same two
-  ;; rules cover both right-of (functional, deterministic) and
-  ;; next-to (symmetric, corner-only) without any rule-body
+  ;; `adjacent-via-*` — pure-structural cross-attribute propagation
+  ;; across a spatial adjacency relation ?S (first parameter). The
+  ;; same two rules cover both right-of (functional, deterministic)
+  ;; and next-to (symmetric, corner-only) without any rule-body
   ;; reference to either relation name. NAF gates uniqueness:
   ;; trivially passes for functional ?S; filters non-corner cases
   ;; for symmetric ?S.
-  (rule cross-attr-spatial-fwd (?R1 ?V1 ?R2 ?V2 ?S)
-    :match  (and (?R1 ?h1 ?V1)
+  (rule adjacent-via-fwd (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (?R1 ?V1 ?h1)
                  (?S ?h2 ?h1)
                  (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
-    :assert (?R2 ?h2 ?V2)
-    :why    "({?R1} {?h1} {?V1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?h2} {?V2})."
+    :assert (?R2 ?V2 ?h2)
+    :why    "({?R1} {?V1} {?h1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?V2} {?h2})."
     :priority 200)
 
-  (rule cross-attr-spatial-bwd (?R1 ?V1 ?R2 ?V2 ?S)
-    :match  (and (?R2 ?h2 ?V2)
+  (rule adjacent-via-bwd (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (?R2 ?V2 ?h2)
                  (?S ?h2 ?h1)
                  (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
-    :assert (?R1 ?h1 ?V1)
-    :why    "({?R2} {?h2} {?V2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?h1} {?V1})."
+    :assert (?R1 ?V1 ?h1)
+    :why    "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1})."
     :priority 200)
 
-  ;; `cross-attr-spatial` — single non-directional activator that
-  ;; expands into both fwd and bwd. The underlying constraint is
-  ;; one thing (V1's and V2's houses are ?S-adjacent in the order
+  ;; `adjacent-via` — single non-directional activator that expands
+  ;; into both fwd and bwd. The underlying constraint is one thing
+  ;; (V1's and V2's houses are ?S-adjacent in the order
   ;; (?S V2-house V1-house)); the two propagation directions are
-  ;; just bookkeeping. Author writes ONE `cross-attr-spatial`
-  ;; activator per puzzle condition; the two meta-rules below
-  ;; derive the directional activators that trigger the actual
-  ;; propagation rules above.
-  (rule derive-cross-attr-spatial-fwd ()
-    :match  (cross-attr-spatial ?R1 ?V1 ?R2 ?V2 ?S)
-    :assert (cross-attr-spatial-fwd ?R1 ?V1 ?R2 ?V2 ?S)
-    :why    "cross-attr-spatial ⟹ cross-attr-spatial-fwd (identical args)."
+  ;; just bookkeeping. Author writes ONE `adjacent-via` activator
+  ;; per puzzle condition; the two meta-rules below derive the
+  ;; directional activators that trigger the actual propagation
+  ;; rules above.
+  (rule derive-adjacent-via-fwd ()
+    :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via ⟹ adjacent-via-fwd (identical args)."
     :priority 100)
 
-  (rule derive-cross-attr-spatial-bwd ()
-    :match  (cross-attr-spatial ?R1 ?V1 ?R2 ?V2 ?S)
-    :assert (cross-attr-spatial-bwd ?R1 ?V1 ?R2 ?V2 ?S)
-    :why    "cross-attr-spatial ⟹ cross-attr-spatial-bwd (identical args)."
+  (rule derive-adjacent-via-bwd ()
+    :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via ⟹ adjacent-via-bwd (identical args)."
     :priority 100)
 
   ;; ──── Disjunctive-prune: pre-emptive negatives ──────────────
-  ;; When (R1 h1 V1) is known and the cross-attribute constraint
+  ;; When (R1 V1 h1) is known and the cross-attribute constraint
   ;; says V2 must be at some ?S-neighbour of h1, every house NOT
-  ;; ?S-adjacent to h1 has (not (R2 h_other V2)) — the disjunctive
+  ;; ?S-adjacent to h1 has (not (R2 V2 h_other)) — the disjunctive
   ;; case "V2 is in {?S-neighbours}" expressed as N-1 negatives
-  ;; for non-neighbours. Complements cross-attr-spatial-* which
-  ;; only emits positive deterministic conclusions when the
-  ;; neighbour is UNIQUE; disjunctive-prune fires in both the
-  ;; unique and non-unique cases, restricting V2's domain even
-  ;; when the positive can't be pinned.
-  (rule disjunctive-prune (?R1 ?V1 ?R2 ?V2 ?S)
-    :match  (and (?R1 ?h1 ?V1)
+  ;; for non-neighbours. Complements adjacent-via-* which only
+  ;; emits positive deterministic conclusions when the neighbour
+  ;; is UNIQUE; disjunctive-prune fires in both the unique and
+  ;; non-unique cases, restricting V2's domain even when the
+  ;; positive can't be pinned.
+  (rule disjunctive-prune (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (?R1 ?V1 ?h1)
                  (relation ?R2 ?A ?B)
-                 (is-a ?h_other ?A)
+                 (is-a ?h_other ?B)
                  (neq ?h_other ?h1)
                  (absent (?S ?h_other ?h1)))
-    :assert (not (?R2 ?h_other ?V2))
+    :assert (not (?R2 ?V2 ?h_other))
     :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours; {?h_other} excluded."
     :priority 250)
 
   ;; Auto-derive disjunctive-prune activators from every
-  ;; cross-attr-spatial-{fwd,bwd} activator. The fwd direction
-  ;; passes args as-is (V1 is the known side); bwd swaps so V2's
-  ;; side becomes the trigger. Together they cover both directions
-  ;; of each spatial cross-attribute condition.
+  ;; adjacent-via-{fwd,bwd} activator. The fwd direction passes
+  ;; args as-is (V1 is the known side); bwd swaps so V2's side
+  ;; becomes the trigger. Together they cover both directions of
+  ;; each spatial cross-attribute condition.
   ;;
   ;; Priority 200 — these MUST fire AFTER all next-to derivations
   ;; have drained at priority 100 (`includes right-of next-to` +
-  ;; `symmetric next-to`). Otherwise the disjunctive-prune plans
-  ;; get compiled and scanned before next-to closure completes,
-  ;; and their NAF gates (`absent (?S h_other h1)`) pass for
-  ;; adjacent houses that haven't been symmetric-derived yet —
-  ;; the enqueue-time NAF semantics commits the wrong firing.
+  ;; `symmetric next-to`). The fire-time NAF re-eval (S1.5a.1)
+  ;; also catches the race; this priority gives the propagate
+  ;; band its turn first.
   (rule derive-disjunctive-prune-fwd ()
-    :match  (cross-attr-spatial-fwd ?R1 ?V1 ?R2 ?V2 ?S)
-    :assert (disjunctive-prune ?R1 ?V1 ?R2 ?V2 ?S)
-    :why    "cross-attr-spatial-fwd ⟹ disjunctive-prune (same direction)."
+    :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (disjunctive-prune ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-fwd ⟹ disjunctive-prune (same direction)."
     :priority 200)
 
   (rule derive-disjunctive-prune-bwd ()
-    :match  (cross-attr-spatial-bwd ?R1 ?V1 ?R2 ?V2 ?S)
-    :assert (disjunctive-prune ?R2 ?V2 ?R1 ?V1 ?S)
-    :why    "cross-attr-spatial-bwd ⟹ disjunctive-prune (swapped sides)."
+    :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (disjunctive-prune ?S ?R2 ?V2 ?R1 ?V1)
+    :why    "adjacent-via-bwd ⟹ disjunctive-prune (swapped sides)."
     :priority 200)
 
   ;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
@@ -322,8 +324,8 @@
   ;; typecheck activators — no manual (typecheck-arg-* R T)
   ;; declarations needed per relation.
   ;; Typecheck activators auto-derived from bijective relations
-  ;; only. The bijective relations (house-*) have direct-parent
-  ;; arg types (House_1's is-a-parent IS House, etc.), so subrel
+  ;; only. The bijective relations (*-loc) have direct-parent arg
+  ;; types (House_1's is-a-parent IS House, etc.), so subrel
   ;; alone gives (is-a* House_1 House) at priority 100 — typecheck
   ;; at 220 can NAF-check correctly.
   ;;
@@ -367,22 +369,22 @@
 
   ;; ──── Hypothesis generation ────────────────────────────────
   ;; One hrule parameterised over (?R ?T1 ?T2); activators in the
-  ;; (query …) :hrules clause enumerate every house-* relation
-  ;; with its (House, attribute-type) pair.
+  ;; (query …) :hrules clause enumerate every *-loc relation with
+  ;; its (attribute-type, House) pair.
   (hrule guess (?R ?T1 ?T2)
-    :match  (and (is-a ?h ?T1) (is-a ?v ?T2))
-    :assert (?R ?h ?v)
-    :why    "guess: ({?R} {?h} {?v})?"))
+    :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
+    :assert (?R ?a ?b)
+    :why    "guess: ({?R} {?a} {?b})?"))
 
 (ontology
   ;; ──── Relation signatures ──────────────────────────────────
   (relation is-a         T T)
   (relation is-a*        T T)
-  (relation house-color  House Color)         ;; TODO: rename to color-loc, smoke-loc
-  (relation house-nation House Nationality)
-  (relation house-drink  House Drink)
-  (relation house-smoke  House Cigarette)
-  (relation house-pet    House Pet)
+  (relation color-loc    Color       House)
+  (relation nation-loc   Nationality House)
+  (relation drink-loc    Drink       House)
+  (relation smoke-loc    Cigarette   House)
+  (relation pet-loc      Pet         House)
   (relation right-of     House House)
   (relation next-to      House House)
 
@@ -400,24 +402,24 @@
   (includes  right-of next-to)
 
   ;; ──── Per-relation bijection properties ─────────────────────
-  ;; Each house-* relation is a bijection between House and the
-  ;; attribute type. `(bijective R)` expands at saturation time
-  ;; into `(functional R)`, `(injective R)`, `(total R)`, and
+  ;; Each *-loc relation is a bijection between its attribute type
+  ;; and House. `(bijective R)` expands at saturation time into
+  ;; `(functional R)`, `(injective R)`, `(total R)`, and
   ;; `(surjective R)` via the four expansion rules in the rules
   ;; block. The elimination activators `(domain-elimination R)`
   ;; and `(range-elimination R)` then derive automatically from
   ;; the property combinations (functional+total ⟹ domain-elim;
   ;; injective+surjective ⟹ range-elim) — one declaration per
   ;; relation unlocks the full bijection-inference pipeline.
-  (bijective house-color)
-  (bijective house-nation)
-  (bijective house-drink)
-  (bijective house-smoke)
-  (bijective house-pet)
+  (bijective color-loc)
+  (bijective nation-loc)
+  (bijective drink-loc)
+  (bijective smoke-loc)
+  (bijective pet-loc)
 
   ;; typecheck-arg-0/1 activators are DERIVED from the
-  ;; (rel-arg-types …) facts above by the two expansion rules in
-  ;; the rules block — no manual declaration needed.
+  ;; (relation …) facts by the two expansion rules in the rules
+  ;; block — no manual declaration needed.
 
   ;; ──── is-a inheritance tree ─────────────────────────────────
   (is-a Attribute   T)
@@ -456,7 +458,7 @@
   ;;
   ;; Conditions 9 and 10 are direct attribute↔house facts.
   ;; Conditions 2-8 and 11-15 are cross-attribute equalities,
-  ;; encoded as `linked` / `cross-attr-*` activator facts that
+  ;; encoded as `co-located` / `adjacent-via` activator facts that
   ;; trigger the corresponding propagation rules (defined in the
   ;; rules block). Condition 1 is the row of houses (right-of
   ;; pairs).
@@ -468,61 +470,61 @@
   (right-of House_5 House_4       :source "condition (1)")
 
   ;; (2) The Englishman lives in the red house.
-  (linked house-nation Englishman house-color  Red          :source "condition (2)")
+  (co-located nation-loc Englishman color-loc Red                 :source "condition (2)")
 
   ;; (3) The Spaniard owns the dog.
-  (linked house-nation Spaniard   house-pet    Dog          :source "condition (3)")
+  (co-located nation-loc Spaniard   pet-loc   Dog                 :source "condition (3)")
 
   ;; (4) Coffee is drunk in the green house.
-  (linked house-drink  Coffee     house-color  Green        :source "condition (4)")
+  (co-located drink-loc  Coffee     color-loc Green               :source "condition (4)")
 
   ;; (5) The Ukrainian drinks tea.
-  (linked house-nation Ukrainian  house-drink  Tea          :source "condition (5)")
+  (co-located nation-loc Ukrainian  drink-loc Tea                 :source "condition (5)")
 
   ;; (6) The green house is immediately right of the ivory house.
-  (cross-attr-spatial house-color Ivory house-color Green right-of :source "condition (6)")
+  (adjacent-via right-of color-loc Ivory color-loc Green          :source "condition (6)")
 
   ;; (7) The Old Gold smoker owns snails.
-  (linked house-smoke  Old_Gold   house-pet    Snail        :source "condition (7)")
+  (co-located smoke-loc  Old_Gold   pet-loc   Snail               :source "condition (7)")
 
   ;; (8) Kools are smoked in the yellow house.
-  (linked house-smoke  Kools      house-color  Yellow       :source "condition (8)")
+  (co-located smoke-loc  Kools      color-loc Yellow              :source "condition (8)")
 
   ;; (9) Milk is drunk in the middle house.
-  (house-drink  House_3 Milk                                :source "condition (9)")
+  (drink-loc  Milk       House_3                                  :source "condition (9)")
 
   ;; (10) The Norwegian lives in the first house.
-  (house-nation House_1 Norwegian                           :source "condition (10)")
+  (nation-loc Norwegian  House_1                                  :source "condition (10)")
 
   ;; (11) Chesterfields is smoked next to the house with the fox.
-  (cross-attr-spatial house-smoke Chesterfields house-pet   Fox           next-to :source "condition (11)")
+  (adjacent-via next-to  smoke-loc Chesterfields pet-loc   Fox    :source "condition (11)")
 
   ;; (12) Kools is smoked next to the house with the horse.
-  (cross-attr-spatial house-smoke Kools         house-pet   Horse         next-to :source "condition (12)")
+  (adjacent-via next-to  smoke-loc Kools         pet-loc   Horse  :source "condition (12)")
 
   ;; (13) The Lucky Strike smoker drinks orange juice.
-  (linked house-smoke  Lucky_Strike house-drink Juice                            :source "condition (13)")
+  (co-located smoke-loc  Lucky_Strike drink-loc Juice             :source "condition (13)")
 
   ;; (14) The Japanese smokes Parliaments.
-  (linked house-nation Japanese   house-smoke  Parliament                        :source "condition (14)")
+  (co-located nation-loc Japanese     smoke-loc Parliament        :source "condition (14)")
 
   ;; (15) The Norwegian lives next to the blue house.
-  (cross-attr-spatial house-nation Norwegian    house-color  Blue           next-to :source "condition (15)"))
+  (adjacent-via next-to  nation-loc Norwegian   color-loc Blue    :source "condition (15)"))
 
 (query
   :mode solve
-  :goal (and (house-drink ?h_water Water)    ;; TODO: s1.5a.10 How to ask here Who drinks water? Not Where water is drinked.
-             (house-pet   ?h_zebra Zebra))
+  :goal (and (drink-loc Water ?h_water)
+             (pet-loc   Zebra ?h_zebra))
   ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per
-  ;; house-* relation; the hrule emits (?R ?h ?v) candidates for
-  ;; every (h, v) of the corresponding types.
+  ;; *-loc relation; the hrule emits (?R ?v ?h) candidates for
+  ;; every (v, h) of the corresponding types.
   :hrules (guess
-            (house-color  House Color)
-            (house-nation House Nationality)
-            (house-drink  House Drink)
-            (house-smoke  House Cigarette)
-            (house-pet    House Pet)))
+            (color-loc  Color       House)
+            (nation-loc Nationality House)
+            (drink-loc  Drink       House)
+            (smoke-loc  Cigarette   House)
+            (pet-loc    Pet         House)))
 
 ;; Expected solution facts:
-;;   - (house-nation ?h Norwegian) ∧ (house-drink ?h Water) — same ?h
-;;   - (house-nation ?h Japanese)  ∧ (house-pet   ?h Zebra) — same ?h
+;;   - (nation-loc Norwegian ?h) ∧ (drink-loc Water ?h) — same ?h
+;;   - (nation-loc Japanese  ?h) ∧ (pet-loc   Zebra ?h) — same ?h

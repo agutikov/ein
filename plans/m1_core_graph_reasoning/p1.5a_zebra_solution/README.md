@@ -88,49 +88,47 @@ need to be diffed against the human walkthrough.
 | S1.5a.2    | Hypgen pre-pruning recovery                                                               | [s1.5a.2_hypgen_pre_pruning_recovery.md](s1.5a.2_hypgen_pre_pruning_recovery.md) |
 | S1.5a.3    | idea-08 trace acceptance                                                                  | [s1.5a.3_idea08_trace_acceptance.md](s1.5a.3_idea08_trace_acceptance.md) |
 | S1.5a.4    | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.4_acceptance_zebra2_solves.md](s1.5a.4_acceptance_zebra2_solves.md) |
-| S1.5a.5    | Relation-name refactor: `house-*` → `*-location`                                          | [s1.5a.5_house_to_location_rename.md](s1.5a.5_house_to_location_rename.md) |
+| S1.5a.5    | zebra2 relation rename family (`*-loc`, `co-located`, `adjacent-via`)                     | [s1.5a.5_house_to_location_rename.md](s1.5a.5_house_to_location_rename.md) |
 | S1.5a.6    | PyPy compatibility + perf measurement                                                     | [s1.5a.6_pypy_compat_perf.md](s1.5a.6_pypy_compat_perf.md)         |
 | S1.5a.7    | Hypothesis scoring + branch-info ordering                                                 | [s1.5a.7_hypgen_scoring_branch_info.md](s1.5a.7_hypgen_scoring_branch_info.md) |
 | S1.5a.8    | Static NAF dependency map (observability)                                                 | [s1.5a.8_naf_dependency_map.md](s1.5a.8_naf_dependency_map.md)     |
+| S1.5a.10   | Query semantics: who vs where                                                             | [s1.5a.10_query_semantics_who_vs_where.md](s1.5a.10_query_semantics_who_vs_where.md) |
 
 S1.5a.1 + S1.5a.2 + S1.5a.3 close M1 acceptance criteria #2/#3
-via S1.5a.4. S1.5a.5–.8 are non-blocking polish + perf +
-observability investigations; promote individually if their
-gating signals arrive. S1.5a.8 (NAF dependency map) was spun
+via S1.5a.4. S1.5a.5–.10 are non-blocking polish + perf +
+observability + query-semantics investigations; promote
+individually if their gating signals arrive. S1.5a.5 already
+shipped 2026-05-24 (the rename ended up broader than initially
+scoped — it folded in the `linked` → `co-located` and
+`cross-attr-spatial` → `adjacent-via` renames discovered as
+TODOs in the same file). S1.5a.8 (NAF dependency map) was spun
 out of S1.5a.1 2026-05-24 once T1.5a.1.1's runtime fix shipped
 — the static-warning half is pure observability with its own
 acceptance bar. S1.5a.1a (branch order determinism) inserted
 2026-05-24 — discovered while measuring [S1.5a.2](s1.5a.2_hypgen_pre_pruning_recovery.md)
 candidates; `kb.alive`'s `frozenset` plus randomised
-`PYTHONHASHSEED` make every `bench_solve` invocation visit
+`PYTHONHASHSEED` made every `bench_solve` invocation visit
 branches in a different order. A prerequisite for any A/B
-measurement and for golden-tree snapshots downstream.
+measurement and for golden-tree snapshots downstream. S1.5a.10
+(query semantics) surfaced during the rename pass from a
+line-514 TODO; the natural human question "who drinks water?"
+returns a House under the current goal, not a Nationality —
+goal-extension is the cheap fix, `:project` is the longer-term
+refactor.
 
-## Relation-name refactor: `house-*` → `*-location`
+## Relation-name refactor: `house-*` → `*-loc` (shipped)
 
-Surfaced 2026-05-24. The current zebra2 relations are named
-`house-color`, `house-nation`, `house-drink`, `house-smoke`,
-`house-pet` — phrased as *functions on House*. A more uniform
-naming is `color-location`, `nation-location`, `drink-location`,
-`smoke-location`, `pet-location` — phrased as *position of the
-attribute*. The shift makes the relations read as "location of X"
-rather than "X-property of a house", which lines up with how
-`(linked …)` activator facts already talk about cross-attribute
-position (e.g. `(linked nation-location Englishman color-location Red)`
-parses as "the location of the Englishman is the location of the
-Red house").
-
-Mechanically a search-and-replace across `examples/zebra2.ein` +
-any test fixtures + any docs that quote relation names by hand
-([`docs/kernel/`](../../../docs/kernel/), `examples/branching/`'s
-zebra-like demos, the [idea-08 walkthrough](../../../docs/ideas/08-human-style-deductive-trace.md)
-if it names them). Round-trip parse + dump + saturate + solve
-should be byte-identical-modulo-names after the refactor.
-
-Belongs in S1.5a.5; gated on (a) NAF semantic fix landing or (b)
-explicit decision that the rename ships against the current solve
-behaviour. Trivial to revert if it ends up obscuring rather than
-clarifying.
+Shipped 2026-05-24 — broader than originally scoped. The five
+`house-*` relations renamed to `*-loc` (color-loc, nation-loc,
+drink-loc, smoke-loc, pet-loc) with attribute as slot 0 and
+House as slot 1; `linked` renamed to `co-located` and
+`cross-attr-spatial` renamed to `adjacent-via` (with `?S` moved
+to the first arg). All folded into [S1.5a.5](s1.5a.5_house_to_location_rename.md);
+that doc has the full diff. The relations read as "location of
+X" — `(color-loc Red H1)` ≡ "the location of Red is H1" —
+matching the way `(co-located nation-loc Englishman color-loc Red)`
+already wants to be read. Saturation behaviour unchanged
+(223 firings, 181 productive, identical to pre-rename).
 
 ## PyPy
 
