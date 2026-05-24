@@ -50,6 +50,7 @@ The five files map to plan phases; each ships when its phase does.
 | `(forall ?b (G) (B))` / `(open P)` | S1.5.8c.3a/b parser sugars: `forall` desugars to `(absent (and G (absent B)))`; `open` desugars to `(and (absent P) (absent (not P)))`. No matcher addition — both compile to existing `AbsentGuard` machinery. |
 | Saturator cache-refresh         | S1.5.8c-followup: `_enqueue_pass` re-runs `engine.compile_all()` at the top of each pass so runtime-derived activator facts (e.g. produced by expansion rules) get their plans compiled and the rule fires. |
 | `AbsentGuard` re-evaluation at fire time | S1.5a.1 T1.5a.1.1: `Saturator._apply` calls `match.absents_still_pass(plan, bindings, kb)` before `fire()`. If a derivation between enqueue and dequeue has made an AbsentGuard's sub-plan match, the firing is dropped (counted in `Saturator.naf_dropped`). See § "NAF semantics" below. |
+| Hypothesis-branch order is deterministic | S1.5a.1a T1.5a.1a.1: `solver._candidates_for` sorts by `(-score_hypothesis(f, kb), f.args, f.relation_name)`. Content-based; `PYTHONHASHSEED` does not reach the iteration order. Score is a stub (`0`) in M1; S1.5a.7 fills it. See § "Determinism" below. |
 
 The data substrate (KB, entities, layer views, fork, provenance,
 derivation DAG) is **complete** through P1.2. The engine that
@@ -201,6 +202,47 @@ re-evaluates every plan against its own KB and so its
 - T1.5a.1.2 — static NAF dependency map; emit a load-time warning
   when a derived relation is the target of an AbsentGuard, so
   authors know which rules rely on the fire-time check.
+
+## Determinism — content-based candidate ordering (S1.5a.1a)
+
+`solve()` visits hypothesis branches in the order
+[`_candidates_for`](../../../ein.py/src/ein_bot/inference/solver.py)
+returns them. Pre-S1.5a.1a that list was the iteration of a
+`frozenset` (the root alive-set stashed on `kb.alive`), which
+reaches `hash(Fact)`, which reaches `hash(str)` — randomised
+per process by Python since 3.3. The visible symptom: every
+`bench_solve` invocation explored branches in a different order.
+
+The fix sorts the result of `_candidates_for` by
+[`_candidate_sort_key`](../../../ein.py/src/ein_bot/inference/solver.py):
+
+```python
+(-score_hypothesis(fact, kb), fact.args, fact.relation_name)
+```
+
+All three components are content-derived; `hash(str)` never
+reaches the tuple. With the M1 stub
+[`score_hypothesis`](../../../ein.py/src/ein_bot/inference/hypgen.py)
+returning `0` for every fact, the effective order is
+``(args, relation_name)`` — alphabetic on first arg, then
+second, then relation. The score primary key is the slot
+[S1.5a.7](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.7_hypgen_scoring_branch_info.md)
+fills in (fact-popularity sum, weighted relation/object
+coefficients); when it lands, the solver doesn't move.
+
+**Determinism rule for new code.** Any `set` / `frozenset`
+whose iteration order influences user-visible output (branch
+IDs, trace ordering, log lines, fixture-dependent test
+assertions) must be sorted at the iteration boundary. `set`
+membership checks, `_fired`, `_negated_facts`, `_seen` — these
+are membership-only and don't need sorting. The audit point is
+the read site, not the storage site.
+
+[`tests/inference/test_branch_determinism.py`](../../../ein.py/tests/inference/test_branch_determinism.py)
+spawns two subprocesses with different `PYTHONHASHSEED` and
+asserts their solve output is byte-identical; any regression
+that re-leaks hash order into the candidate path fails the
+subprocess test.
 
 ## Unconditional death — back-prop soundness (S1.5.7)
 

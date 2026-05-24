@@ -403,6 +403,25 @@ def _ancestor_names(kb: KnowledgeBase, name: str) -> set[str]:
     return visited
 
 
+def score_hypothesis(fact: Fact, kb: KnowledgeBase) -> int:
+    """Ordering score for a hypothesis fact — higher means tried first.
+
+    M1 stub: returns ``0`` for every fact. The caller (``solver._candidates_for``)
+    sorts the candidate list by ``(-score_hypothesis(f, kb), f.args,
+    f.relation_name)``; with a constant score the sort falls through to
+    the content-based tiebreaker keys, which is the determinism property
+    [S1.5a.1a](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.1a_branch_order_determinism.md)
+    requires.
+
+    The real scoring work lives in
+    [S1.5a.7](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.7_hypgen_scoring_branch_info.md)
+    — weighted fact-popularity sum + one-hop extensions + relation
+    priority. The stub keeps the call site stable so S1.5a.7's body
+    change doesn't ripple into ``solver.py``.
+    """
+    return 0
+
+
 def _instance_like_objects(kb: KnowledgeBase) -> Iterator:
     """Yield NameRefs that look like inheritance-relation leaves.
 
@@ -442,4 +461,5 @@ __all__ = [
     "HypGenStats",
     "generate_hypotheses",
     "generate_hypotheses_with_stats",
+    "score_hypothesis",
 ]

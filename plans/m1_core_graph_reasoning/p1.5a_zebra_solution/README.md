@@ -84,6 +84,7 @@ need to be diffed against the human walkthrough.
 | ID         | Title                                                                                    | File                                                                |
 |------------|------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
 | S1.5a.1    | NAF semantic re-architecture                                                              | [s1.5a.1_naf_semantic_rearch.md](s1.5a.1_naf_semantic_rearch.md)    |
+| S1.5a.1a   | Branch exploration order determinism                                                      | [s1.5a.1a_branch_order_determinism.md](s1.5a.1a_branch_order_determinism.md) |
 | S1.5a.2    | Hypgen pre-pruning recovery                                                               | [s1.5a.2_hypgen_pre_pruning_recovery.md](s1.5a.2_hypgen_pre_pruning_recovery.md) |
 | S1.5a.3    | idea-08 trace acceptance                                                                  | [s1.5a.3_idea08_trace_acceptance.md](s1.5a.3_idea08_trace_acceptance.md) |
 | S1.5a.4    | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.4_acceptance_zebra2_solves.md](s1.5a.4_acceptance_zebra2_solves.md) |
@@ -98,7 +99,12 @@ observability investigations; promote individually if their
 gating signals arrive. S1.5a.8 (NAF dependency map) was spun
 out of S1.5a.1 2026-05-24 once T1.5a.1.1's runtime fix shipped
 — the static-warning half is pure observability with its own
-acceptance bar.
+acceptance bar. S1.5a.1a (branch order determinism) inserted
+2026-05-24 — discovered while measuring [S1.5a.2](s1.5a.2_hypgen_pre_pruning_recovery.md)
+candidates; `kb.alive`'s `frozenset` plus randomised
+`PYTHONHASHSEED` make every `bench_solve` invocation visit
+branches in a different order. A prerequisite for any A/B
+measurement and for golden-tree snapshots downstream.
 
 ## Relation-name refactor: `house-*` → `*-location`
 

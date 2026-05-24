@@ -32,7 +32,11 @@ from .compile import JoinPlan, compile_pattern
 from .config import SolverConfig
 from .contradiction import ContradictionDetector
 from .firing import Firing
-from .hypgen import generate_hypotheses, generate_hypotheses_with_stats
+from .hypgen import (
+    generate_hypotheses,
+    generate_hypotheses_with_stats,
+    score_hypothesis,
+)
 from .match import run as match_run
 from .saturator import Saturator
 from .search_tree import BranchId, SearchNode, SearchTree
@@ -335,8 +339,30 @@ class _TreeBuilder:
 # ── Candidate selection — T1.5.4.8 (Topic D) ──────────────────────
 
 
+def _candidate_sort_key(fact: Fact, kb: KnowledgeBase) -> tuple:
+    """Total-order key for hypothesis-candidate iteration.
+
+    Components, in order of dominance:
+
+    1. ``-score_hypothesis(fact, kb)`` — higher score wins, by tried-
+       first convention. S1.5a.1a leaves the score constant at 0
+       (S1.5a.7 will fill it); the unary negation keeps the sort
+       ascending so the same tuple-key shape composes when the
+       score is real.
+    2. ``fact.args`` — tuple of strings (or nested Facts under Q40,
+       sorted lexicographically by repr-shape).
+    3. ``fact.relation_name`` — final tiebreaker so two facts with
+       identical args under different relations get a stable order.
+
+    The point of this key is **determinism**: it is content-based, so
+    a Python process's randomised ``hash(str)`` never reaches the
+    iteration order. See `plans/.../s1.5a.1a_branch_order_determinism.md`.
+    """
+    return (-score_hypothesis(fact, kb), fact.args, fact.relation_name)
+
+
 def _candidates_for(kb: KnowledgeBase) -> list[Fact]:
-    """Pick the per-branch hypothesis candidates.
+    """Pick the per-branch hypothesis candidates, ordered deterministically.
 
     Default path (``cfg.enable_alive_inherit=True``): the alive
     set lives on ``kb.alive`` (seeded once at the root by
@@ -348,10 +374,17 @@ def _candidates_for(kb: KnowledgeBase) -> list[Fact]:
     ``generate_hypotheses(kb)`` — the pre-``40b8dd4`` shape.
     Useful escape hatch for puzzles whose rule library violates
     the M1 invariant (no rule-created relations / objects).
+
+    Both paths run the result through :func:`_candidate_sort_key`
+    so the visit order is process-independent (S1.5a.1a). With the
+    S1.5a.1a stub score the effective order is
+    ``(args, relation_name)``; the score primary key reserves the
+    slot for S1.5a.7's real scoring without a downstream code edit.
     """
     cfg: SolverConfig = kb.config or SolverConfig()
     if not cfg.enable_alive_inherit or kb.alive is None:
-        return list(generate_hypotheses(kb))
+        raw = list(generate_hypotheses(kb))
+        return sorted(raw, key=lambda f: _candidate_sort_key(f, kb))
     pruned = _prune_alive(kb.alive, kb)
     if cfg.print_alive:
         import sys
@@ -364,7 +397,7 @@ def _candidates_for(kb: KnowledgeBase) -> list[Fact]:
     # Mutate kb.alive in place so siblings/descendants of this
     # state pick up the pruned form without re-pruning.
     kb.alive = pruned
-    return list(pruned)
+    return sorted(pruned, key=lambda f: _candidate_sort_key(f, kb))
 
 
 def _prune_alive(alive: frozenset, kb: KnowledgeBase) -> frozenset:
