@@ -23,20 +23,6 @@
     :why "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
     :priority 100)
   (rule
-    asymmetric
-    (?rel)
-    :match (and (?rel ?a ?b) (neq ?a ?b))
-    :assert (not (?rel ?b ?a))
-    :why "{?rel} is asymmetric: ¬({?b} →{?rel}→ {?a})."
-    :priority 100)
-  (rule
-    sibling-exclusive
-    (?siblings-via ?exclusive-under)
-    :match (and (?siblings-via ?a ?P) (?siblings-via ?b ?P) (neq ?a ?b))
-    :assert (not (?exclusive-under ?a ?b))
-    :why "{?a} and {?b} share parent {?P} under {?siblings-via}; exclusive under {?exclusive-under}."
-    :priority 300)
-  (rule
     functional
     (?R)
     :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
@@ -228,8 +214,6 @@
   (relation house-pet House Pet)
   (relation right-of House House)
   (relation next-to House House)
-  (asymmetric is-a)
-  (sibling-exclusive is-a is-a)
   (includes is-a is-a*)
   (transitive is-a*)
   (symmetric next-to)

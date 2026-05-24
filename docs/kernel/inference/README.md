@@ -49,6 +49,7 @@ The five files map to plan phases; each ships when its phase does.
 | `(not P)` / `(absent P)` premises | S1.5.8c.1 shipped: `(not P)` in `:match` matches a STORED `(not P)` fact (uniform with all other patterns); `(absent P)` is the explicit NAF guard. The old NAF default on `(not P)` was dropped. |
 | `(forall ?b (G) (B))` / `(open P)` | S1.5.8c.3a/b parser sugars: `forall` desugars to `(absent (and G (absent B)))`; `open` desugars to `(and (absent P) (absent (not P)))`. No matcher addition — both compile to existing `AbsentGuard` machinery. |
 | Saturator cache-refresh         | S1.5.8c-followup: `_enqueue_pass` re-runs `engine.compile_all()` at the top of each pass so runtime-derived activator facts (e.g. produced by expansion rules) get their plans compiled and the rule fires. |
+| `AbsentGuard` re-evaluation at fire time | S1.5a.1 T1.5a.1.1: `Saturator._apply` calls `match.absents_still_pass(plan, bindings, kb)` before `fire()`. If a derivation between enqueue and dequeue has made an AbsentGuard's sub-plan match, the firing is dropped (counted in `Saturator.naf_dropped`). See § "NAF semantics" below. |
 
 The data substrate (KB, entities, layer views, fork, provenance,
 derivation DAG) is **complete** through P1.2. The engine that
@@ -126,6 +127,80 @@ Tracked at
 [M1 Q-S1.5.4.D](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.4_hypgen_improvements.md#open-questions-parked-here)
 as a long-term design seam; promote to a typed invariant check
 when F5 lands.
+
+## NAF semantics — fire-time re-evaluation (S1.5a.1)
+
+`(absent P)` in a `:match` clause compiles to an
+[`AbsentGuard`](../../../ein.py/src/ein_bot/inference/compile.py)
+step. The matcher's
+[`_run_steps`](../../../ein.py/src/ein_bot/inference/match.py)
+yields a binding only when the AbsentGuard's `sub_steps` produce
+zero matches against the current KB — classical NAF over the
+saturator's accumulating fact base.
+
+**The race.** The saturator's enqueue pass evaluates every plan
+step (including AbsentGuards) when it admits a candidate firing
+to the priority queue. The firing then sits in the heap until its
+priority comes up. Between enqueue and dequeue, other rules may
+have derived new facts — and one of those facts may now satisfy
+an AbsentGuard's sub-plan, retroactively invalidating the NAF
+verdict that admitted the firing. Without a fire-time check the
+saturator commits the firing anyway, producing an *unsound*
+derivation against the closed KB.
+
+Priority ordering hides the race when every rule that *derives*
+the watched relation runs at a strictly-lower priority than every
+rule that *NAFs* it. zebra2's `(includes right-of next-to)` +
+`(symmetric next-to)` chain runs at priority 100, fully draining
+before priority-200 cross-attr rules with NAFs over `next-to` are
+ever enqueued — so the race is structurally prevented for that
+shape. Bands ≥ 200 that derive facts another band-≥ 200 rule
+NAFs over don't have that protection, and neither does any
+branched saturation that starts with a non-empty queue.
+
+**The fix.**
+[`match.absents_still_pass(plan, bindings, kb)`](../../../ein.py/src/ein_bot/inference/match.py)
+walks the plan's top-level `AbsentGuard` steps and re-runs each
+sub-plan against the *current* KB with the dequeued bindings.
+`Saturator._apply` calls it after the redundant-conclusion check
+and before
+[`fire()`](../../../ein.py/src/ein_bot/inference/firing.py);
+on `False`, the binding is recorded in `engine._fired` (so the
+queue stops churning on it), `Saturator.naf_dropped` is
+incremented, and `_apply` returns `None`. The caller in `step()`
+treats `None` as "skip and pop again."
+
+Nested AbsentGuards (e.g. from a `forall` desugar to
+`(absent (and G (absent B)))`) compose transparently — the outer's
+`sub_steps` flow through `_run_steps`, which recurses on the inner
+AbsentGuard against the same current KB. Only AbsentGuards are
+re-checked: `Scan`/`Join` steps can only narrow under monotonic
+fact growth, and `Guard` predicates are stateless over the KB.
+
+**Termination.** Within a single `saturate()` run the fact base
+grows monotonically (no retractions). Once an AbsentGuard fails
+at fire time, the watched fact it tripped on stays in the KB; the
+binding sits in `_fired` and is not re-enqueued. A dropped firing
+removes itself from the fixpoint candidate set without re-entering
+— termination is preserved.
+
+The retracting flow that *does* exist (hypothesis branching's
+`kb.fork()`) takes a fresh saturator over the branch KB; the
+branch starts with an empty `_seen`/`_queue` and inherits no
+dropped-firing state from the parent. The branched saturator
+re-evaluates every plan against its own KB and so its
+`naf_dropped` count is independent.
+
+**Open follow-ups.**
+
+- [Q-S1.5a.1.B](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.1_naf_semantic_rearch.md#open-questions)
+  — caching per-(rule, binding) NAF results and invalidating on
+  watched-fact arrival. Composes with
+  [P1.9 E8](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/)
+  (watched-fact rule applicability).
+- T1.5a.1.2 — static NAF dependency map; emit a load-time warning
+  when a derived relation is the target of an AbsentGuard, so
+  authors know which rules rely on the fire-time check.
 
 ## Unconditional death — back-prop soundness (S1.5.7)
 

@@ -90,11 +90,15 @@ need to be diffed against the human walkthrough.
 | S1.5a.5    | Relation-name refactor: `house-*` → `*-location`                                          | [s1.5a.5_house_to_location_rename.md](s1.5a.5_house_to_location_rename.md) |
 | S1.5a.6    | PyPy compatibility + perf measurement                                                     | [s1.5a.6_pypy_compat_perf.md](s1.5a.6_pypy_compat_perf.md)         |
 | S1.5a.7    | Hypothesis scoring + branch-info ordering                                                 | [s1.5a.7_hypgen_scoring_branch_info.md](s1.5a.7_hypgen_scoring_branch_info.md) |
+| S1.5a.8    | Static NAF dependency map (observability)                                                 | [s1.5a.8_naf_dependency_map.md](s1.5a.8_naf_dependency_map.md)     |
 
 S1.5a.1 + S1.5a.2 + S1.5a.3 close M1 acceptance criteria #2/#3
-via S1.5a.4. S1.5a.5–.7 are non-blocking polish + perf
-investigations; promote individually if their gating signals
-arrive.
+via S1.5a.4. S1.5a.5–.8 are non-blocking polish + perf +
+observability investigations; promote individually if their
+gating signals arrive. S1.5a.8 (NAF dependency map) was spun
+out of S1.5a.1 2026-05-24 once T1.5a.1.1's runtime fix shipped
+— the static-warning half is pure observability with its own
+acceptance bar.
 
 ## Relation-name refactor: `house-*` → `*-location`
 

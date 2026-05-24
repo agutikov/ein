@@ -68,20 +68,6 @@
     :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
     :priority 100)
 
-  (rule asymmetric (?rel)
-    :match  (and (?rel ?a ?b) (neq ?a ?b))
-    :assert (not (?rel ?b ?a))
-    :why    "{?rel} is asymmetric: ¬({?b} →{?rel}→ {?a})."
-    :priority 100)
-
-  (rule sibling-exclusive (?siblings-via ?exclusive-under)
-    :match  (and (?siblings-via ?a ?P)
-                 (?siblings-via ?b ?P)
-                 (neq ?a ?b))
-    :assert (not (?exclusive-under ?a ?b))
-    :why    "{?a} and {?b} share parent {?P} under {?siblings-via}; exclusive under {?exclusive-under}."
-    :priority 300)
-
   ;; ──── Binary-relation property contradiction rules ─────────
   ;; Four mathematical properties of a binary relation R ⊆ A × B:
   ;;   functional  — ∀a ∈ A. |{b : R(a,b)}| ≤ 1   (right-unique)
@@ -113,6 +99,9 @@
     :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
     :priority 250)
 
+
+  ;; TODO: rename linked to co-located, because this is essentially co-location of two facts with open House variable
+  ;; TODO: rename cross-attr-spatial to relative-over|siblings-over|neighbors-over|connected-over, because it is facts with open location but fixed relative position over relation next-to/right-of; and move ?relation-over to first argument
 
   ;; ──── Cross-attribute propagation (new for B1) ─────────────
   ;; `linked` — two attributes share a house, propagate either way.
@@ -389,18 +378,13 @@
   ;; ──── Relation signatures ──────────────────────────────────
   (relation is-a         T T)
   (relation is-a*        T T)
-  (relation house-color  House Color)
+  (relation house-color  House Color)         ;; TODO: rename to color-loc, smoke-loc
   (relation house-nation House Nationality)
   (relation house-drink  House Drink)
   (relation house-smoke  House Cigarette)
   (relation house-pet    House Pet)
   (relation right-of     House House)
   (relation next-to      House House)
-
-  ;; ──── is-a properties (direct hierarchy, transitive omitted)
-  ;; ── to avoid the cross-boundary sibling-exclusive blow-up).
-  (asymmetric        is-a)
-  (sibling-exclusive is-a is-a)
 
   ;; ──── is-a* = transitive closure of is-a ────────────────────
   ;; (includes is-a is-a*): every direct is-a edge lifts to is-a*.
@@ -527,7 +511,7 @@
 
 (query
   :mode solve
-  :goal (and (house-drink ?h_water Water)
+  :goal (and (house-drink ?h_water Water)    ;; TODO: s1.5a.10 How to ask here Who drinks water? Not Where water is drinked.
              (house-pet   ?h_zebra Zebra))
   ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per
   ;; house-* relation; the hrule emits (?R ?h ?v) candidates for

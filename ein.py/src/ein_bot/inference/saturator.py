@@ -84,6 +84,10 @@ class Saturator:
         # Last yielded Firing — kept on the instance so a step-limit
         # raise can quote it without forcing every caller to track it.
         self._last_firing: Firing | None = None
+        # Count of firings dropped at dequeue because an AbsentGuard
+        # premise that passed at enqueue no longer holds against the
+        # current KB (S1.5a.1 fire-time NAF re-eval).
+        self.naf_dropped: int = 0
 
     # ── Public API ────────────────────────────────────────────────
 
@@ -279,6 +283,15 @@ class Saturator:
                 premises=premises,
                 redundant=True,
             )
+
+        # S1.5a.1 fire-time NAF re-evaluation. An AbsentGuard premise
+        # that passed at enqueue time may have been invalidated by a
+        # rule that derived the watched fact in the interim. Skip the
+        # firing in that case — the binding stays in `_fired` so the
+        # queue doesn't churn on it.
+        if not match.absents_still_pass(plan, bindings, self.kb):
+            self.naf_dropped += 1
+            return None
 
         firing = fire(plan, bindings, premises, self.kb)
         # `fire()` already calls kb.add_fact + _index_fact; the new

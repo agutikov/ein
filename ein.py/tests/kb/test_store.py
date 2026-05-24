@@ -243,23 +243,6 @@ class TestZebra2:
         declared = {n for n, r in zebra2_kb.relations.items() if r.declared}
         assert "is-a" in declared
 
-    def test_zebra2_rules_include_asymmetric_and_sibling(self, zebra2_kb):
-        names = set(zebra2_kb.rules)
-        # Carried over: symmetric, transitive, implies, square-fwd/bwd.
-        # New: asymmetric, sibling-exclusive.
-        assert "asymmetric" in names
-        assert "sibling-exclusive" in names
-
-    def test_zebra2_is_a_has_two_rule_apps(self, zebra2_kb):
-        is_a = zebra2_kb.relations["is-a"]
-        rule_names = {r.name for r in is_a.rules}
-        # `(transitive is-a)` is intentionally dropped — it caused a
-        # quadratic blowup with sibling-exclusive over the transitive
-        # closure. Only `(asymmetric is-a)` and the two
-        # `(sibling-exclusive is-a …)` activators remain.
-        assert {"asymmetric", "sibling-exclusive"} <= rule_names
-        assert "transitive" not in rule_names
-
     def test_zebra2_facts_count_nonzero(self, zebra2_kb):
         # ≥ 30 is-a facts (subtype + leaf) plus rule-apps plus
         # spatial plus conditions. Just smoke-check non-empty.

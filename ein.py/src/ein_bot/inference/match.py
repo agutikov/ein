@@ -150,4 +150,40 @@ def run(
     yield from _run_steps(plan.steps, seed, (), kb)
 
 
-__all__ = ["run"]
+def absents_still_pass(
+    plan: JoinPlan,
+    bindings: dict[str, Any],
+    kb: KnowledgeBase,
+) -> bool:
+    """Re-evaluate every top-level ``AbsentGuard`` against current KB.
+
+    The saturator calls this at fire time to close the enqueue-time
+    NAF race (S1.5a.1 T1.5a.1.1): an ``(absent P)`` premise whose
+    sub-plan saw zero matches at first-enqueue may now see matches
+    because another rule has derived a fact satisfying P in the
+    meantime. Without the re-check, the saturator commits the firing
+    on a stale verdict.
+
+    Walks ``plan.steps`` once; for each :class:`AbsentGuard`, runs its
+    ``sub_steps`` under the given ``bindings`` against ``kb``. Returns
+    ``False`` as soon as any sub-plan yields a match (the AbsentGuard
+    would now fail); ``True`` if all AbsentGuards still pass.
+
+    Nested AbsentGuards (e.g. from a ``forall`` desugar to
+    ``(absent (and G (absent B)))``) are handled transparently: the
+    outer's ``sub_steps`` run through :func:`_run_steps`, which
+    recurses on the inner AbsentGuard against the same current KB.
+
+    Scan/Join/Guard steps are not re-checked. Saturation grows the KB
+    monotonically within a single ``saturate()`` run, so any Scan/Join
+    that succeeded at enqueue still has its premise facts present at
+    dequeue; Guard predicates (``neq``, …) are stateless over the KB.
+    """
+    for step in plan.steps:
+        if isinstance(step, AbsentGuard):
+            for _ in _run_steps(step.sub_steps, bindings, (), kb):
+                return False
+    return True
+
+
+__all__ = ["absents_still_pass", "run"]
