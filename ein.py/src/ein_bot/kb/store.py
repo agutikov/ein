@@ -148,6 +148,16 @@ class KnowledgeBase:
         # `config`/`alive` and avoid the inference → kb import cycle.
         self.consume_stats: Any | None = None
 
+        # S1.5a.17 — Set of `(relation_name, args)` FactIds for
+        # hypotheses promoted to root-givens by an unconditional
+        # positive bubble. Populated on the root kb by
+        # `_mirror_forced_positive`; trace-only marker (the actual
+        # filtering of these candidates from `_candidates_for` flows
+        # through `_fact_by_id` since the bubbled positive is now an
+        # ordinary root fact). Forks share by reference like
+        # `consume_stats`.
+        self.committed_hypotheses: set[tuple[str, tuple]] = set()
+
         # Equality-class hooks — reserved for F4.
         self.classes: EqClasses = EqClasses()
 
@@ -630,6 +640,9 @@ class KnowledgeBase:
         new.config = self.config
         new.alive = self.alive
         new.consume_stats = self.consume_stats
+        # S1.5a.17 — committed-hypotheses set is shared by reference
+        # (root-only mutation; forks read for filtering).
+        new.committed_hypotheses = self.committed_hypotheses
         return new
 
     # ── Dunder ────────────────────────────────────────────────────

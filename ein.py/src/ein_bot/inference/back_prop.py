@@ -60,6 +60,33 @@ _kb_chain_ctx: ContextVar[tuple[KnowledgeBase, ...]] = ContextVar(
     "ein_bot_kb_chain", default=(),
 )
 
+# S1.5a.17 — Eager root-bubble pass id. None when eager mode is off
+# (back-prop behaves as the S1.5a.14 opportunistic write). Set by
+# the outer driver to the current pass number; `back_propagate` and
+# `_mirror_forced_positive` raise `BubbleAbort(pass_id)` after
+# writing a NEW fact when this is not None.
+_eager_pass_ctx: ContextVar[int | None] = ContextVar(
+    "ein_bot_eager_pass_id", default=None,
+)
+
+
+class BubbleAbort(Exception):
+    """Eager-bubble abort signal — S1.5a.17.
+
+    Raised by `back_propagate` and `_mirror_forced_positive` after
+    a new fact has been written to root.kb (and ancestor kbs)
+    under eager mode. Caught by the outer solve driver, which
+    discards the in-flight subtree, re-saturates root.kb, and
+    restarts the search.
+
+    Carries the pass id so the catch site can verify it's the
+    current pass (stale aborts from a prior pass that somehow
+    bubbled through a ContextVar gap would re-raise).
+    """
+    def __init__(self, pass_id: int) -> None:
+        super().__init__(f"S1.5a.17 BubbleAbort(pass_id={pass_id})")
+        self.pass_id = pass_id
+
 # Provenance kinds marking a fact as speculative — introduced on a
 # hypothesis branch rather than given (`source`) or rule-derived.
 # `rejected` (a retracted hypothesis) counts: it is still branch-local.
@@ -230,7 +257,16 @@ def back_propagate(
     untouched.
 
     Returns the *primary* stored ``(not …)`` Fact in ``kb``.
+
+    **Eager mode (S1.5a.17).** When :data:`_eager_pass_ctx` is set
+    (the outer driver bound a pass id), this function raises
+    :class:`BubbleAbort` after writing if at least one *new* fact
+    was added (idempotent re-writes don't trigger). The chain's
+    root kb (``chain[0]``) gets its ``_pass_bubbled`` counter
+    incremented by the number of new writes so the outer driver
+    can detect fixpoint by counter delta.
     """
+    primary_existed = kb._fact_by_id("not", (hypothesis,)) is not None
     primary = _write_negation(kb, hypothesis, unsat_core, rule_name)
 
     # Bubble (not h) up to EVERY ancestor kb (S1.5a.14). The
@@ -255,7 +291,10 @@ def back_propagate(
     chain = _kb_chain_ctx.get()
     ancestors = tuple(ak for ak in chain if ak is not kb)
     bubbled_name = rule_name + "-bubbled"
+    new_writes = 0 if primary_existed else 1
     for anc_kb in ancestors:
+        if anc_kb._fact_by_id("not", (hypothesis,)) is None:
+            new_writes += 1
         _write_negation(anc_kb, hypothesis, unsat_core, bubbled_name)
 
     if (promote_symmetric
@@ -267,8 +306,12 @@ def back_propagate(
             args=(hypothesis.args[1], hypothesis.args[0]),
             layer=Layer.REASONING,
         )
+        if kb._fact_by_id("not", (mirror,)) is None:
+            new_writes += 1
         _write_negation(kb, mirror, unsat_core, rule_name)
         for anc_kb in ancestors:
+            if anc_kb._fact_by_id("not", (mirror,)) is None:
+                new_writes += 1
             _write_negation(anc_kb, mirror, unsat_core, bubbled_name)
 
     # Invalidate ancestor verdict_at caches so any stale "alive"
@@ -277,7 +320,28 @@ def back_propagate(
     # whose kb received the bubbled write.
     if ancestors:
         _clear_ancestor_verdict_caches()
+
+    # S1.5a.17 — eager-bubble abort. Bump the root counter and
+    # raise after the writes are durable so the outer driver sees
+    # the new state on re-entry.
+    eager_pass = _eager_pass_ctx.get()
+    if eager_pass is not None and new_writes > 0:
+        root_kb = chain[0] if chain else kb
+        _bump_pass_bubbled(root_kb, new_writes)
+        raise BubbleAbort(pass_id=eager_pass)
     return primary
+
+
+def _bump_pass_bubbled(root_kb: KnowledgeBase, n: int) -> None:
+    """Increment root_kb._pass_bubbled by n (initialise if absent).
+
+    The counter is a thin attribute on root.kb that the outer
+    driver in `solver.py` reads to decide fixpoint between passes.
+    Always set, even when eager mode is off, so post-solve
+    inspection finds zero instead of AttributeError.
+    """
+    cur = getattr(root_kb, "_pass_bubbled", 0)
+    root_kb._pass_bubbled = cur + n
 
 
 # Verdict-at chain. Each `_consume` pushes its own verdict_at dict
@@ -305,9 +369,13 @@ def _clear_ancestor_verdict_caches() -> None:
 
 
 __all__ = [
+    "_bump_pass_bubbled",
     "_consume_caches_ctx",
+    "_eager_pass_ctx",
     "_kb_chain_ctx",
+    "_write_negation",
     "back_propagate",
+    "BubbleAbort",
     "is_symmetric_relation",
     "is_unconditional_death",
     "reaches_hypothesis",

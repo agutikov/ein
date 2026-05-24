@@ -27,9 +27,13 @@ from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
 from .back_prop import (
+    _bump_pass_bubbled,
     _consume_caches_ctx,
+    _eager_pass_ctx,
     _kb_chain_ctx,
+    _write_negation,
     back_propagate,
+    BubbleAbort,
     is_unconditional_death,
     reaches_hypothesis,
 )
@@ -109,7 +113,20 @@ def _mirror_forced_positive(
     carries a `<forced-positive-bubbled>` rule provenance citing
     the original derivation's premises so the trace can follow
     where the truth was first mined.
+
+    **Eager mode (S1.5a.17).** When `_eager_pass_ctx` is set:
+    - The root kb (``ancestors[0]`` when called with the chain
+      containing root) gets ``committed_hypotheses`` updated for
+      any newly-written fact that matches a candidate shape.
+    - Root's ``_pass_bubbled`` counter is bumped by the new-write
+      count.
+    - :class:`BubbleAbort` is raised once at least one new fact
+      lands, so the outer driver can discard the in-flight
+      subtree and re-saturate root.
     """
+    new_writes = 0
+    root_kb: KnowledgeBase | None = ancestors[0] if ancestors else None
+    fid = (derived.relation_name, derived.args)
     for anc_kb in ancestors:
         if anc_kb._fact_by_id(derived.relation_name, derived.args) is not None:
             continue
@@ -127,6 +144,17 @@ def _mirror_forced_positive(
         )
         stored = anc_kb.add_fact(mirror)
         anc_kb._index_fact(stored)
+        new_writes += 1
+        # Mark committed at root only — root.kb.committed_hypotheses
+        # is the canonical tracker; ancestors share by reference but
+        # only the root copy is meaningful for trace rendering.
+        if anc_kb is root_kb:
+            root_kb.committed_hypotheses.add(fid)
+
+    eager_pass = _eager_pass_ctx.get()
+    if eager_pass is not None and new_writes > 0 and root_kb is not None:
+        _bump_pass_bubbled(root_kb, new_writes)
+        raise BubbleAbort(pass_id=eager_pass)
 
 
 def _dump_node(
@@ -440,7 +468,18 @@ class _TreeBuilder:
             id=prev.id, parent=prev.parent, hypothesis=prev.hypothesis,
             kb_snapshot=prev.kb_snapshot, firings=prev.firings,
             verdict=verdict, children=prev.children,
-            unsat_core=prev.unsat_core,
+            unsat_core=prev.unsat_core, forced=prev.forced,
+        )
+
+    def set_forced(self, nid: BranchId) -> None:
+        """Mark a node `forced=True` (S1.5a.17 — promoted-dead or
+        committed-positive). Frozen-dataclass rebuild."""
+        prev = self.nodes[nid]
+        self.nodes[nid] = SearchNode(
+            id=prev.id, parent=prev.parent, hypothesis=prev.hypothesis,
+            kb_snapshot=prev.kb_snapshot, firings=prev.firings,
+            verdict=prev.verdict, children=prev.children,
+            unsat_core=prev.unsat_core, forced=True,
         )
 
     def finalize(self, root_id: BranchId) -> SearchTree:
@@ -1038,6 +1077,178 @@ def _promote_verdicts(builder: _TreeBuilder, root_id: BranchId,
     walk(root_id)
 
 
+# ── S1.5a.17 — Promoted-dead → root fact synthesis ─────────────────
+
+
+def _aggregate_subtree_unsat_cores(
+    builder: _TreeBuilder, root_id: BranchId,
+) -> frozenset[Fact]:
+    """Walk a subtree and collect every dead-leaf unsat-core.
+
+    The subtree's root is expected to be promoted-dead (every leaf
+    contradicted). Aggregation grounds out at direct-dead leaves —
+    their ``unsat_core`` is the source-frontier of their
+    contradiction; the union over all leaves is the joint witness
+    that the subtree's hypothesis is unconditionally false at the
+    enclosing level.
+    """
+    out: set[Fact] = set()
+    stack: list[BranchId] = [root_id]
+    seen: set[BranchId] = set()
+    while stack:
+        nid = stack.pop()
+        if nid in seen:
+            continue
+        seen.add(nid)
+        node = builder.nodes.get(nid)
+        if node is None:
+            continue
+        if node.unsat_core:
+            out.update(node.unsat_core)
+        for cid in node.children:
+            stack.append(cid)
+    return frozenset(out)
+
+
+def _synthesise_promoted_dead_facts(
+    builder: _TreeBuilder, root_id: BranchId, root_kb: KnowledgeBase,
+) -> int:
+    """Root-level case of S1.5a.15 T1.5a.15.4 — S1.5a.17 T1.5a.17.3.
+
+    After `_promote_verdicts`, walk root's children. For each child
+    whose verdict is ``"dead"`` and was NOT a direct contradiction
+    (i.e., it has children of its own — the death came from subtree
+    exhaustion), synthesise ``(not h)`` at root with rule provenance
+    ``<root-promoted-dead>`` and a premise list filtered to facts
+    that hold at root (the subtree's hypothesis-kind terminals don't
+    qualify; only givens / root-resident facts do).
+
+    Returns the number of new ``(not h)`` facts written. The outer
+    driver re-saturates and re-loops when this is > 0; that is what
+    guarantees outer-loop termination for the all-children-die-by-
+    exhaustion case (no leaf bubble would have fired otherwise).
+    """
+    root = builder.nodes.get(root_id)
+    if root is None:
+        return 0
+    new_facts = 0
+    for cid in root.children:
+        child = builder.nodes.get(cid)
+        if child is None or child.hypothesis is None:
+            continue
+        if child.verdict != "dead":
+            continue
+        # Direct-dead leaves (no children) already had back_propagate
+        # write (not h) during _consume; nothing to do here.
+        if not child.children:
+            continue
+        if root_kb._fact_by_id("not", (child.hypothesis,)) is not None:
+            continue
+        aggregated = _aggregate_subtree_unsat_cores(builder, cid)
+        filtered = frozenset(
+            f for f in aggregated
+            if root_kb._fact_by_id(f.relation_name, f.args) is not None
+        )
+        _write_negation(
+            root_kb, child.hypothesis, filtered,
+            "<root-promoted-dead>",
+        )
+        builder.set_forced(cid)
+        new_facts += 1
+    if new_facts:
+        _bump_pass_bubbled(root_kb, new_facts)
+    return new_facts
+
+
+# ── S1.5a.17 — Eager outer driver ──────────────────────────────────
+
+
+def _run_eager_outer_loop(
+    root_kb: KnowledgeBase,
+    mode: Mode,
+    max_depth: int,
+    root_firings: tuple[Firing, ...],
+) -> tuple[_TreeBuilder, BranchId, tuple[Firing, ...]]:
+    """Outer driver: pass→abort→re-saturate→re-enter until fixpoint.
+
+    Each pass starts with a fresh `_TreeBuilder` (the prior pass's
+    SearchNodes are discarded — state-hash dedup is intentionally
+    NOT carried across passes, because every meaningful pass tightens
+    root.kb and most state hashes change). The `_eager_pass_ctx`
+    ContextVar is set so `back_propagate` and `_mirror_forced_positive`
+    raise `BubbleAbort` after writing a new fact at any level.
+
+    Three outcomes per pass:
+
+    1. ``BubbleAbort`` raised mid-`_explore` ⇒ catch, re-saturate
+       root.kb (so the new (not h) / forced-positive cascades), loop.
+    2. ``_explore`` returns cleanly. Run `_promote_verdicts`, then
+       `_synthesise_promoted_dead_facts` — if it writes any
+       (not h), re-saturate and loop. Else fixpoint: return.
+    3. (Implicit guard) `_pass_bubbled` is the canonical counter:
+       both abort path and promoted-dead path bump it. The loop
+       terminates when a pass starts and ends with the same counter.
+
+    Termination: each non-fixpoint pass strictly grows root.kb by
+    at least one fact and `_candidates_for` filters bubbled
+    (not h) / committed positives — so the candidate space strictly
+    shrinks, bounding pass count by `|root candidates|`.
+    """
+    cfg = root_kb.config or SolverConfig()
+    if getattr(root_kb, "_pass_bubbled", None) is None:
+        root_kb._pass_bubbled = 0
+
+    pass_id = 0
+    builder: _TreeBuilder
+    root_id: BranchId
+    while True:
+        pass_id += 1
+        bubbles_before = root_kb._pass_bubbled
+        builder = _TreeBuilder()
+        token = _eager_pass_ctx.set(pass_id)
+        try:
+            try:
+                root_id = _explore(
+                    root_kb, None, None, root_firings,
+                    depth=0, max_depth=max_depth,
+                    builder=builder, mode=mode,
+                )
+            except BubbleAbort as e:
+                if e.pass_id != pass_id:
+                    raise
+                # Re-saturate root so the bubbled facts cascade.
+                root_firings = root_firings + tuple(
+                    Saturator(root_kb).saturate(max_steps=10_000),
+                )
+                if cfg.enable_alive_inherit and root_kb.alive is not None:
+                    root_kb.alive = _prune_alive(root_kb.alive, root_kb)
+                continue
+        finally:
+            _eager_pass_ctx.reset(token)
+
+        # Pass completed without abort. Promote, then check for
+        # promoted-dead root children that need (not h) synthesis.
+        _promote_verdicts(builder, root_id, mode)
+        synthesised = _synthesise_promoted_dead_facts(
+            builder, root_id, root_kb,
+        )
+        if synthesised == 0:
+            # Fixpoint — nothing was bubbled this pass and no
+            # promoted-dead facts to mint. Return the final tree.
+            return builder, root_id, root_firings
+        # Synthesised at least one (not h); re-saturate and loop
+        # with a fresh builder.
+        root_firings = root_firings + tuple(
+            Saturator(root_kb).saturate(max_steps=10_000),
+        )
+        if cfg.enable_alive_inherit and root_kb.alive is not None:
+            root_kb.alive = _prune_alive(root_kb.alive, root_kb)
+        # Sanity guard — if both counter checks somehow agree we
+        # didn't make progress, exit to avoid an infinite loop.
+        if root_kb._pass_bubbled == bubbles_before:
+            return builder, root_id, root_firings
+
+
 # ── Top-level solve driver ─────────────────────────────────────────
 
 
@@ -1119,11 +1330,16 @@ def solve(
                     file=sys.stderr,
                 )
 
-        builder = _TreeBuilder()
-        root_id = _explore(kb, None, None, root_firings,
-                           depth=0, max_depth=max_depth,
-                           builder=builder, mode=mode)
-        _promote_verdicts(builder, root_id, mode)
+        if effective_config.enable_eager_root_bubble:
+            builder, root_id, root_firings = _run_eager_outer_loop(
+                kb, mode, max_depth, root_firings,
+            )
+        else:
+            builder = _TreeBuilder()
+            root_id = _explore(kb, None, None, root_firings,
+                               depth=0, max_depth=max_depth,
+                               builder=builder, mode=mode)
+            _promote_verdicts(builder, root_id, mode)
         tree = builder.finalize(root_id)
 
         solutions = tree.solutions()

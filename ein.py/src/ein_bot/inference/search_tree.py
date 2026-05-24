@@ -61,6 +61,12 @@ class SearchNode:
     verdict:     Literal["solution", "dead", "open"]
     children:    tuple[BranchId, ...] = ()
     unsat_core:  frozenset[Fact] = field(default_factory=frozenset)
+    # S1.5a.17 — marks a `dead` node whose `(not h)` was synthesised
+    # by `_synthesise_promoted_dead_facts` (root child whose subtree
+    # exhausted), or a `committed` candidate forced by a deep
+    # positive bubble. Trace-only signal; runtime semantics flow
+    # through root.kb._negated_facts / fact existence.
+    forced:      bool = False
 
 
 @dataclass(frozen=True)

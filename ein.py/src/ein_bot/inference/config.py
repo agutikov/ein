@@ -61,6 +61,16 @@ class SolverConfig:
       ``infer-closure-from-functional`` rule firing during
       saturation. Off until the auto-inference is verified to not
       over-fire on rule libraries that don't expect it.
+    - ``enable_eager_root_bubble`` (default **False**) — S1.5a.17.
+      Flips back-prop from opportunistic write to eager
+      abort-and-restart. Any unconditional bubble (positive or
+      negative, at any depth) raises ``BubbleAbort``, the in-flight
+      subtree is discarded, root.kb is re-saturated, and the outer
+      loop continues with the next root candidate. Promoted-dead
+      root children also synthesise ``(not h)`` between passes so
+      the outer loop terminates by fixpoint. Default off until the
+      S1.5a.16 shuffle-invariance harness ratifies the order-sensitivity
+      change.
     - ``print_alive`` (default **False**) — diagnostic from
       T1.5.4.8.b. When True, every ``_explore`` entry logs the
       inherited alive-set size and the per-filter prune counts.
@@ -70,6 +80,7 @@ class SolverConfig:
     enable_pre_branch_lookahead:     bool = True
     enable_back_prop_unconditional:  bool = True
     enable_auto_closure:             bool = False
+    enable_eager_root_bubble:        bool = False
     print_alive:                     bool = False
 
     @classmethod

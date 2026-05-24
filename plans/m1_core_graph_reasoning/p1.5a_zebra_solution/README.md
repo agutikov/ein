@@ -95,6 +95,8 @@ need to be diffed against the human walkthrough.
 | S1.5a.11   | State dump harness (per-phase filesystem snapshots)                                       | [s1.5a.11_state_dump.md](s1.5a.11_state_dump.md) |
 | S1.5a.14   | Transitive back-prop (bubble truths to all ancestors)                                     | [s1.5a.14_transitive_backprop.md](s1.5a.14_transitive_backprop.md) |
 | S1.5a.15   | Dead-branch caching by unsat-core + per-level back-prop                                   | [s1.5a.15_dead_caching_unsat_core.md](s1.5a.15_dead_caching_unsat_core.md) |
+| S1.5a.16   | Branch-order shuffle invariance (depth-bounded partial-information equivalence)           | [s1.5a.16_branch_order_shuffle_invariance.md](s1.5a.16_branch_order_shuffle_invariance.md) |
+| S1.5a.17   | Eager root-bubble + outer re-entry loop (absorbs S1.5a.14 P2 + root-case of S1.5a.15 T4)  | [s1.5a.17_eager_root_bubble_outer_loop.md](s1.5a.17_eager_root_bubble_outer_loop.md) |
 | S1.5a.12   | idea-08 trace acceptance                                                                  | [s1.5a.12_idea08_trace_acceptance.md](s1.5a.12_idea08_trace_acceptance.md) |
 | S1.5a.13   | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.13_acceptance_zebra2_solves.md](s1.5a.13_acceptance_zebra2_solves.md) |
 
@@ -120,7 +122,23 @@ measurement and for golden-tree snapshots downstream. S1.5a.10
 line-514 TODO; the natural human question "who drinks water?"
 returns a House under the current goal, not a Nationality —
 goal-extension is the cheap fix, `:project` is the longer-term
-refactor.
+refactor. S1.5a.16 (branch-order shuffle invariance) inserted
+2026-05-25 as the depth-bounded counterpart of S1.5a.2a's
+fixpoint property — suspected order-sensitivity bug in the
+caching / back-prop / NAF-timing triad means depth-D partial
+information may not be permutation-invariant even though the
+fixpoint equalises. Promoted out of T1.5a.2a.2; absorbs the
+shuffle-knob task. Acts as a regression net for S1.5a.15.
+S1.5a.17 (eager root-bubble + outer re-entry loop) inserted
+2026-05-25 to flip back-prop from opportunistic write to eager
+abort-and-restart-at-root. Trigger is any unconditional bubble
+(positive or negative). Absorbs the deferred S1.5a.14 Phase 2
+(outer driver) and the root-level case of S1.5a.15 T1.5a.15.4
+(promoted-dead → root fact) — the latter is what makes the
+outer loop terminate when a root child dies by subtree
+exhaustion. The general per-level promoted-dead back-prop at
+depths ≥ 1 stays with S1.5a.15. S1.5a.16's harness is the
+gate for promoting this stage's config flag to default-on.
 
 ## Relation-name refactor: `house-*` → `*-loc` (shipped)
 
