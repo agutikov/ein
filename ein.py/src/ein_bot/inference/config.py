@@ -81,6 +81,23 @@ class SolverConfig:
       ``enable_eager_root_bubble`` — a novel clause is a
       root-level write that triggers ``BubbleAbort``. Off until
       smoke measurement on demo 10 + zebra2 confirms net win.
+    - ``hypgen_scoring`` (default ``"popularity"``, flipped from
+      ``"most-constrained"`` 2026-05-25 once S1.5a.7 measurement
+      ratified the popularity heuristic) — S1.5a.7. Values:
+      ``"popularity"`` (Idea 1 — weighted sum of fact-popularity
+      at relation + object level; per-branch via kb fact-indexes),
+      ``"most-constrained"`` (the prior default — score 0,
+      content-based tiebreaker dominates; kept as escape hatch
+      for puzzles where popularity hurts),
+      ``"branch-info"`` / ``"popularity+branch-info"`` reserved
+      for a future stage (raise NotImplementedError today —
+      requires post-saturation signal not cheaply available
+      pre-fork). Scoring is recomputed per branch since
+      ``score_hypothesis(fact, kb)`` reads ``kb._facts_by_*``.
+    - ``hypgen_rel_weight`` (default 1.0) — popularity-mode
+      coefficient for the relation's fact-count.
+    - ``hypgen_obj_weight`` (default 1.0) — popularity-mode
+      coefficient for each of the two object args' fact-counts.
     - ``print_alive`` (default **False**) — diagnostic from
       T1.5.4.8.b. When True, every ``_explore`` entry logs the
       inherited alive-set size and the per-filter prune counts.
@@ -92,6 +109,9 @@ class SolverConfig:
     enable_auto_closure:             bool = False
     enable_eager_root_bubble:        bool = False
     enable_path_condition_nogoods:   bool = False
+    hypgen_scoring:                  str = "popularity"
+    hypgen_rel_weight:               float = 1.0
+    hypgen_obj_weight:               float = 1.0
     print_alive:                     bool = False
 
     @classmethod
@@ -109,7 +129,7 @@ class SolverConfig:
         the strings ``"true"`` / ``"false"``, or Python ``bool``.
         Anything else raises.
         """
-        known_fields = {f.name for f in fields(cls)}
+        field_by_name = {f.name: f for f in fields(cls)}
         out: dict[str, Any] = {}
         for kp in kw_pairs:
             key = getattr(kp, "key", None)
@@ -120,30 +140,56 @@ class SolverConfig:
                 )
             key_name = getattr(key, "name", str(key))
             field_name = key_name.replace("-", "_")
-            if field_name not in known_fields:
+            if field_name not in field_by_name:
                 raise ValueError(
                     f"unknown config flag :{key_name} "
                     f"(expected one of: "
-                    f"{', '.join(sorted(n.replace('_', '-') for n in known_fields))})",
+                    f"{', '.join(sorted(n.replace('_', '-') for n in field_by_name))})",
                 )
-            out[field_name] = _coerce_bool(field_name, value)
+            out[field_name] = _coerce(field_by_name[field_name], value)
         return cls(**out)
 
 
-def _coerce_bool(field_name: str, value: Any) -> bool:
-    """Coerce a SolverConfig field value to bool.
+def _coerce(field, value: Any) -> Any:
+    """Type-dispatch coercer for SolverConfig fields.
 
-    Accepts: Python ``bool``; SYMBOL/Atom ``true``/``false``; the
-    strings ``"true"``/``"false"``. Raises ValueError otherwise.
+    Uses the dataclass field's type annotation to pick the right
+    primitive coercion (bool / float / str). All values may
+    arrive as Atoms (with ``.name``) from the IR parser; the
+    primitive layer strips that wrapper. Anything outside the
+    documented value space raises with a kebab-cased flag name.
     """
-    if isinstance(value, bool):
-        return value
+    field_name = field.name
+    field_type = field.type
     raw = getattr(value, "name", value)
-    if isinstance(raw, str) and raw.lower() in ("true", "false"):
-        return raw.lower() == "true"
+
+    if field_type is bool or field_type == "bool":
+        if isinstance(value, bool):
+            return value
+        if isinstance(raw, str) and raw.lower() in ("true", "false"):
+            return raw.lower() == "true"
+        raise ValueError(
+            f"config flag :{field_name.replace('_', '-')} expects "
+            f"true/false, got {value!r}",
+        )
+    if field_type is float or field_type == "float":
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            raise ValueError(
+                f"config flag :{field_name.replace('_', '-')} expects "
+                f"a number, got {value!r}",
+            )
+    if field_type is str or field_type == "str":
+        if isinstance(raw, str):
+            return raw
+        raise ValueError(
+            f"config flag :{field_name.replace('_', '-')} expects "
+            f"a string, got {value!r}",
+        )
     raise ValueError(
-        f"config flag :{field_name.replace('_', '-')} expects "
-        f"true/false, got {value!r}",
+        f"config flag :{field_name.replace('_', '-')} has "
+        f"unsupported type {field_type!r}",
     )
 
 

@@ -273,9 +273,13 @@ def test_synthesise_promoted_dead_facts_fires_on_promoted_dead_only():
 
 def test_flag_off_tree_node_count_matches_legacy_baseline():
     """Demo 10 legacy baseline is 32 tree nodes (22 dead + 1 solution
-    + interior). Flag-off must match exactly to confirm the new code
-    paths are gated behind the flag."""
+    + interior). Flag-off + most-constrained scoring must match
+    exactly to confirm the eager-bubble code paths are gated
+    behind the flag (and to insulate this test from S1.5a.7's
+    popularity-default flip)."""
     kb = _load(DEMO_BACKPROP)
-    verdict = solve(kb)  # flag off by default
+    verdict = solve(kb, config=SolverConfig(
+        hypgen_scoring="most-constrained",
+    ))
     tree = verdict.tree
     assert len(tree.nodes) == 32

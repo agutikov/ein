@@ -403,23 +403,94 @@ def _ancestor_names(kb: KnowledgeBase, name: str) -> set[str]:
     return visited
 
 
-def score_hypothesis(fact: Fact, kb: KnowledgeBase) -> int:
+def score_hypothesis(fact: Fact, kb: KnowledgeBase) -> float:
     """Ordering score for a hypothesis fact — higher means tried first.
 
-    M1 stub: returns ``0`` for every fact. The caller (``solver._candidates_for``)
-    sorts the candidate list by ``(-score_hypothesis(f, kb), f.args,
-    f.relation_name)``; with a constant score the sort falls through to
-    the content-based tiebreaker keys, which is the determinism property
-    [S1.5a.1a](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.1a_branch_order_determinism.md)
-    requires.
+    Dispatches on :attr:`SolverConfig.hypgen_scoring`:
 
-    The real scoring work lives in
-    [S1.5a.7](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.7_hypgen_scoring_branch_info.md)
-    — weighted fact-popularity sum + one-hop extensions + relation
-    priority. The stub keeps the call site stable so S1.5a.7's body
-    change doesn't ripple into ``solver.py``.
+    - ``"most-constrained"`` (default): returns ``0`` — the sort
+      falls through to the content-based tiebreaker keys in
+      ``solver._candidate_sort_key``, preserving the
+      [S1.5a.1a](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.1a_branch_order_determinism.md)
+      determinism property.
+    - ``"popularity"`` (S1.5a.7 Idea 1): weighted fact-popularity
+      sum. Higher-popularity relations + objects score higher;
+      the intuition is "candidates touching the heavily-referenced
+      parts of the fact graph are more likely to either fire
+      useful rules or be quickly contradicted". Per-branch by
+      construction — reads ``kb._facts_by_relation`` and
+      ``kb._facts_by_instance`` which carry the branch's own
+      facts (including back-propped negatives).
+    - ``"branch-info"`` / ``"popularity+branch-info"``: reserved
+      for a future stage; raise ``NotImplementedError`` to surface
+      misconfigurations at first call. Branch-info ordering
+      requires a post-saturation signal (did the branch derive
+      new positives?) which isn't cheaply available pre-fork —
+      designing a proxy is its own measurement task and lives
+      with [S1.5.7b stable-alive
+      caching](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.7b_consume_loop_stable_alive.md)
+      as the natural integration point.
+
+    Returns ``float`` — caller sort key uses ``-score_hypothesis(...)``
+    so larger scores win regardless of int/float.
     """
-    return 0
+    cfg = kb.config
+    mode = (
+        getattr(cfg, "hypgen_scoring", "most-constrained")
+        if cfg is not None else "most-constrained"
+    )
+    if mode == "most-constrained":
+        return 0.0
+    if mode == "popularity":
+        return _score_popularity(fact, kb, cfg)
+    if mode in ("branch-info", "popularity+branch-info"):
+        raise NotImplementedError(
+            f"hypgen-scoring={mode!r} is reserved for a follow-up "
+            f"stage; today only 'most-constrained' and 'popularity' "
+            f"are wired. See "
+            f"plans/m1_core_graph_reasoning/p1.5a_zebra_solution/"
+            f"s1.5a.7_hypgen_scoring_branch_info.md § T1.5a.7.3.",
+        )
+    raise ValueError(
+        f"unknown hypgen-scoring mode: {mode!r} "
+        f"(expected 'most-constrained' or 'popularity')",
+    )
+
+
+def _score_popularity(
+    fact: Fact, kb: KnowledgeBase, cfg,
+) -> float:
+    """Weighted fact-popularity score — S1.5a.7 Idea 1.
+
+    ``score = rel_weight * count(R) + obj_weight * Σ count(arg_i)``
+
+    Where:
+    - ``count(R)`` is the length of ``kb._facts_by_relation[R]``
+      (number of facts using this relation in the current branch).
+    - ``count(arg_i)`` for a string-valued arg is the length of
+      ``kb.names[arg_i].as_arg`` (the encoding-agnostic
+      every-name-that-appears-anywhere index — works under both
+      the kernel ``(instance …)`` encoding and the zebra2
+      ``(is-a X Y)`` relational encoding without gating on
+      ``kb.instances``).
+
+    Non-string args (nested Facts, ints) contribute 0 — they don't
+    have a name to index by.
+
+    Weights default to 1.0/1.0; tune via
+    :attr:`SolverConfig.hypgen_rel_weight` and
+    :attr:`SolverConfig.hypgen_obj_weight`.
+    """
+    rel_count = len(kb._facts_by_relation.get(fact.relation_name, ()))
+    obj_count_sum = 0
+    for a in fact.args:
+        if isinstance(a, str):
+            nref = kb.names.get(a)
+            if nref is not None:
+                obj_count_sum += len(nref.as_arg)
+    rel_w = getattr(cfg, "hypgen_rel_weight", 1.0)
+    obj_w = getattr(cfg, "hypgen_obj_weight", 1.0)
+    return rel_w * rel_count + obj_w * obj_count_sum
 
 
 def _instance_like_objects(kb: KnowledgeBase) -> Iterator:

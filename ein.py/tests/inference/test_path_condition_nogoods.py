@@ -183,11 +183,14 @@ def test_emit_nogood_no_abort_when_subsumed_under_eager_mode():
 
 def test_flag_off_default_keeps_demo_10_baseline():
     """Default config keeps the no-goods flag OFF — demo 10's
-    tree shape is unchanged from the pre-S1.5a.18 baseline
-    (32 nodes)."""
+    tree shape under most-constrained scoring is the pre-S1.5a.18
+    32-node baseline. Pinning the scoring mode here insulates the
+    test from S1.5a.7's popularity-default flip."""
     assert SolverConfig().enable_path_condition_nogoods is False
     kb = _load(DEMO_BACKPROP)
-    verdict = solve(kb)
+    verdict = solve(kb, config=SolverConfig(
+        hypgen_scoring="most-constrained",
+    ))
     assert isinstance(verdict, Solution)
     assert len(verdict.tree.nodes) == 32
     # _nogoods set is empty (no emissions ever happened).
