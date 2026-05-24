@@ -445,10 +445,10 @@ def _lower_assert(expr: IRNode, bindings: dict[str, str | int]) -> object:
 
 
 __all__ = [
+    "AbsentGuard",
     "Guard",
     "Join",
     "JoinPlan",
-    "AbsentGuard",
     "NestedPattern",
     "Scan",
     "compile_pattern",

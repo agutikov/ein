@@ -14,8 +14,8 @@ documentation split.
 
 | terminal   | regex                          | examples                                | role                                              |
 |------------|--------------------------------|-----------------------------------------|---------------------------------------------------|
-| `SYMBOL`   | `[A-Za-z][A-Za-z0-9_-]*`       | `has-color`, `next-to`, `House_1`        | atoms; list heads in patterns; rule / type / step names |
-| `VAR`      | `\?[A-Za-z][A-Za-z0-9_-]*`     | `?a`, `?house`, `?T`, `?Type`            | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars (`?T`). |
+| `SYMBOL`   | `[A-Za-z][A-Za-z0-9_*-]*`      | `has-color`, `next-to`, `House_1`, `is-a*` | atoms; list heads in patterns; rule / type / step names. `*` in tail is a character with no Kleene/multiplicative meaning (S1.5.8c.2 — supports the transitive-closure naming convention `R*`). |
+| `VAR`      | `\?[A-Za-z][A-Za-z0-9_*-]*`    | `?a`, `?house`, `?T`, `?R*`              | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars; `*` in tail allowed (same convention as SYMBOL). |
 | `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:rule`, `:where`, `:cardinality`        | argument markers; **always** followed by a value  |
 | `WILDCARD` | `_`                            | `_`                                      | head / arg wildcard in patterns                   |
 | `INT`      | `-?[0-9]+`                     | `0`, `42`, `-7`                          | integer atoms (e.g. `:priority 10`)               |
@@ -137,6 +137,16 @@ error. `and`, `or`, `neq` are also reserved kernel meta-primitives
 but they belong inside `:match` patterns / `:where` clauses, not at
 the fact level — the grammar rejects them in `(facts …)`.
 
+**`relation` was de-reserved in S1.5.8c.5.** It still drives the
+schema-declarator production `(relation NAME SYMBOL+)` in
+`(ontology …)`, but it's no longer SYMBOL-excluded, so rules can
+pattern-match against the schema via `(relation ?R ?A ?B)` in
+`:match` clauses. The loader auto-stores each relation
+declaration as a fact `(relation R T1 T2 …)` alongside the
+kernel's `kb.relations` registry; rules introspect signatures
+through this fact form. Authoring still uses the shape-pinned
+declarator; rule patterns use the variable form.
+
 Domain relations (`co-located`, `lives-in`, `next-to`) stay generic
 `(SYMBOL value*)` and are open-world: anyone can introduce a new
 relation by declaring it in the ontology and using it in facts.
@@ -240,6 +250,47 @@ is applied via the fact `(symmetric co-located)`, which substitutes
 `?rel = co-located` and then matches `(co-located ?a ?b)` against
 working memory. One generic rule per property replaces N per-relation
 property-rules.
+
+#### Premise forms in `:match`
+
+In addition to ordinary fact patterns, `:match` accepts three
+NAF / quantifier-style premises:
+
+| premise            | semantics                                           | added in    |
+|--------------------|-----------------------------------------------------|-------------|
+| `(not P)`          | matches a STORED `(not P)` fact in the KB           | S1.5.8c.1   |
+| `(absent P)`       | negation-as-failure — fires iff no fact matches P   | S1.5.8c.1   |
+| `(open P)`         | parser sugar for `(and (absent P) (absent (not P)))` — the third-state match: P is neither asserted nor negated | S1.5.8c.3b |
+| `(forall ?b (G) (B))` | parser sugar for `(absent (and G (absent B)))` — for every binding of `?b` satisfying guard G, body B must hold | S1.5.8c.3a |
+
+The three-state model: at any moment, a potential fact P is
+**asserted** (matched by `(P)`), **negated** (matched by `(not P)`),
+or **open** (matched by `(open P)`). The earlier overloaded
+`(not P)` meaning (default NAF) was dropped in S1.5.8c — NAF must
+now be written explicitly as `(absent P)`. `forall` and `open` are
+parser sugars expressed in terms of `absent`; the matcher itself
+sees only `absent` + nested patterns.
+
+#### NAF evaluation timing (known limitation)
+
+`(absent P)` is evaluated at **enqueue time**, not at fire time.
+A rule's NAF premise sees the KB state at the moment the matcher
+first finds a binding. Once that binding is enqueued (with
+NAF=passes), the firing commits regardless of later KB state.
+
+This means **NAF on derived facts can race**: if a rule's `(absent
+(R ?x))` premise depends on a relation R that is itself populated
+by another rule's firings, the NAF might pass early (before R is
+fully derived), commit a firing that would be incorrect under the
+fully-derived KB. The race is benign when R is fully present at
+load time (e.g., enumerated facts), problematic when R is
+derived by `(symmetric)` / `(includes)` / `(transitive)` rules.
+
+Parked for engine-side resolution in
+[P1.5a](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/README.md).
+Until then, rules whose NAF depends on derived facts should
+pre-declare the derived facts explicitly in `(ontology …)` or
+`(facts …)` to avoid the race.
 
 ### Query
 

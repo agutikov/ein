@@ -162,7 +162,7 @@ def test_relation_wrapped_form_rejected_at_load():
     from ein_bot.kb import KnowledgeBase
     from ein_bot.kb.from_ir import KBLoadError
     forms = parse("(ontology (relation lives-in (Person House)))")
-    with pytest.raises(KBLoadError, match="malformed .relation."):
+    with pytest.raises(KBLoadError, match=r"malformed .relation."):
         KnowledgeBase.from_ir(forms)
 
 

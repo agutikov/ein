@@ -147,7 +147,7 @@ def test_forall_rejects_bound_not_in_guard():
     (ontology (relation player T T) (relation whatever T T))
     """
     kb = _kb(text)
-    with pytest.raises(ValueError, match="forall .v: bound var does not appear"):
+    with pytest.raises(ValueError, match=r"forall .v: bound var does not appear"):
         compile_rule(kb.rules["bad-rule"], None)
 
 

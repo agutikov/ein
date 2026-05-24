@@ -1,0 +1,178 @@
+# P1.5a — Zebra solution + saturator/NAF gaps
+
+**Estimate:** unknown — depends on which path is chosen (engine
+re-arch vs ein-side workarounds vs hybrid).
+**Status:** **active** parking lot — created 2026-05-24 as the
+follow-up phase that owns the work originally framed as
+[S1.5.8c.7](../p1.5_hypothesis_loop/s1.5.8c_final_decision.md#task-t158c7--acceptance)
+acceptance. Spun out because the underlying gaps are deeper than
+"land a few more rules" — they're engine semantics + rule-set
+completeness questions that need their own design + measurement.
+**Depends on:** [P1.5](../p1.5_hypothesis_loop/) shipped through
+[S1.5.8c](../p1.5_hypothesis_loop/s1.5.8c_final_decision.md);
+zebra2 in B1 encoding with bijective shorthand + disjunctive-prune
+landed (commits `04f5d56`, `615b22c`, `0d7f348`, `f63ce9b`,
+`2b7f982`).
+**Blocks:** M1 acceptance criterion #2/#3 from
+[M1 README](../README.md#acceptance) — "zebra solves uniquely
+under Mode.SOLVE" and "the trace matches idea-08 to within named
+rule firings."
+
+## Goal
+
+zebra2.ein, in its current B1 encoding with the rule set shipped
+through S1.5.8c, **doesn't actually solve in reasonable time** —
+bench_solve runs to Ambiguity with one open branch even at depth
+0 (no hypothesis branching). The structural refactor is complete;
+the inference gap that prevents solve is the work of this phase.
+
+## What's wrong, concretely
+
+### (a) NAF-at-enqueue-time race
+
+The saturator's `AbsentGuard` evaluates its sub-plan against the
+KB state **at the moment of first enqueue**, not at fire time.
+Once a binding-with-NAF-passes lands in the queue, the firing
+commits regardless of later KB state.
+
+This races with rules whose NAF premises depend on facts that
+are themselves *derived* by other rules (e.g.,
+`cross-attr-spatial-fwd`'s `(absent (?S ?h_o ?h1))` against a
+`next-to` relation populated by `(symmetric)` + `(includes)`).
+Between the first derivation step and the last, the NAF sees a
+partial KB and passes spuriously.
+
+Surfaced concretely:
+- `cross-attr-spatial-fwd` for condition (12) `(Kools next-to
+  Horse)` fires deterministically for non-corner Kools houses,
+  inventing a unique-neighbour conclusion when the puzzle's
+  semantics says the case is disjunctive.
+- The `disjunctive-prune` rule (intended to derive negatives
+  for non-adjacent houses) has the same exposure since it has
+  the same NAF shape.
+
+Workaround in current zebra2: declare next-to facts explicitly
+in `(facts)` (8 facts replacing 4 `right-of` + `symmetric`/`includes`
+derivation). Dodges the race for *this* relation; doesn't fix the
+underlying semantic.
+
+### (b) Hypothesis-count perf gap
+
+Root-hypothesis enumeration produces 122 candidates under the
+current B1 encoding vs ~101 under the pre-B1 zebra2. The 21-candidate
+delta tracks to losing the `(sibling-exclusive is-a co-located)`
+firings — pre-B1 those derived ~120 `(not (co-located A B))` facts
+for same-type sibling pairs, which the hypgen filter consumed to
+prune candidates.
+
+Under B1 there's no `co-located`; `(sibling-exclusive is-a
+house-color)` etc. would assert malformed negatives
+(`(not (house-color Red Blue))` — args don't satisfy house-color's
+House×Color signature). So no comparable pruning exists.
+
+### (c) idea-08 trace fidelity
+
+M1 acceptance #3 requires every "Therefore X" in the
+[idea-08 target trace](../../../docs/ideas/08-human-style-deductive-trace.md#the-target-trace-paraphrased)
+to correspond to a named saturation-rule firing in the engine
+trace. Until the puzzle actually solves, this criterion can't
+be checked. After solve works, the trace's named-rule firings
+need to be diffed against the human walkthrough.
+
+## Stages
+
+| ID         | Title                                                         | Notes |
+|------------|---------------------------------------------------------------|-------|
+| S1.5a.1    | NAF semantic re-architecture                                  | the underlying engine fix; see [§ Approach options](#approach-options) |
+| S1.5a.2    | Hypgen pre-pruning recovery                                   | restore the ~20-candidate prune lost in B1 (hybrid encoding, sibling-exclusive analog, or hypgen-side filter) |
+| S1.5a.3    | idea-08 trace acceptance                                      | once solve works, validate trace against the human walkthrough |
+| S1.5a.4    | Acceptance — zebra2 solves uniquely                           | the M1 #2 gate that S1.5.8c.7 was originally going to own |
+
+Stages get fleshed out as work begins; each opens with its own
+review + design pass.
+
+## Approach options for (a) NAF race
+
+Three paths, not mutually exclusive:
+
+1. **Engine: re-evaluate NAF at fire time.** When a queued firing
+   dequeues, re-run its match (or just its NAF sub-plans) against
+   the current KB. If NAF now fails, drop the firing. ~15–30 LOC
+   in `inference/saturator.py`'s `_apply`. Most principled. Fixes
+   every NAF-on-derived-fact case at once, not just the spatial
+   ones in zebra2.
+
+2. **Per-rule "wait for closure" gating.** Defer rules whose NAF
+   depends on derived facts until those facts are saturated. Needs
+   a "phase marker" mechanism the engine doesn't have today.
+
+3. **Ein-side: pre-declare derived facts.** Sidestep the race by
+   manually enumerating the derived facts in `(facts)` or
+   `(ontology)`. Quick + concrete (already done for next-to in
+   zebra2); doesn't generalise.
+
+(1) is the long-term answer. (3) is the M1-acceptance shortcut.
+
+## Approach options for (b) hypothesis-count gap
+
+1. **Hybrid encoding with co-located projection.** Re-introduce
+   `co-located : Attribute × Attribute` as a derived equivalence
+   relation, with `house-*` as typed projections via a
+   `projection` rule. `(sibling-exclusive is-a co-located)`
+   pre-emptively populates the negatives that hypgen filters on.
+   The path discussed at length pre-S1.5.8c.7-spinout.
+
+2. **linked-induced + linked-transitive.** Two-tier reasoning at
+   the linked-fact level (rejected pre-spinout as functionally
+   equivalent to chains the existing rules already cover; doesn't
+   add unique pruning).
+
+3. **Hypgen-side filter on linked facts.** Engine extension: have
+   hypgen consult `(linked …)` activator facts directly when
+   deciding which candidates to emit, rather than relying on
+   `(not …)` facts to prune.
+
+4. **Per-house-* sibling-exclusive analog.** Direct rules that
+   derive `(not (house-color H_other V))` when `(house-color H V)`
+   is committed and H_other ≠ H. Functional+total cover SOME of
+   this already; a more aggressive version pre-emptively asserts
+   the cross-house siblings.
+
+The hybrid (1) is the most aligned with the original zebra2's
+proven mechanics. (3) is engine work but lifts the abstraction
+better.
+
+## Acceptance for the phase (= M1 #2 + #3)
+
+The phase ships when:
+
+1. `bench_solve examples/zebra2.ein` returns
+   `Solution` with `(house-nation House_? Japanese) ∧
+   (house-pet House_? Zebra)` and `(house-nation House_? Norwegian)
+   ∧ (house-drink House_? Water)` bound to specific houses,
+   within a sensible time budget (target: < 60s on a laptop).
+2. The trace contains every named rule firing the idea-08
+   walkthrough mentions, in structurally equivalent order
+   (matched per the M1 acceptance criterion #3 checklist —
+   "Therefore the first house is yellow" → named
+   `domain-elimination` firing, etc.).
+3. The NAF race (or the per-rule workaround for it) is
+   documented in
+   [`docs/kernel/inference/`](../../../docs/kernel/inference/)
+   so anyone writing new rules with derived-NAF premises knows
+   the constraint.
+
+## Cross-links
+
+- [S1.5.8c](../p1.5_hypothesis_loop/s1.5.8c_final_decision.md) —
+  the structural refactor and rule design this phase builds on.
+- [M1 README — acceptance](../README.md#acceptance) — the gates
+  this phase exists to close.
+- [idea-08](../../../docs/ideas/08-human-style-deductive-trace.md)
+  — the trace fidelity target.
+- [P1.5 README](../p1.5_hypothesis_loop/README.md) — P1.5's stage
+  list; this phase is a spin-out of the original S1.5.8c.7.
+- [P1.9](../p1.9_hypothesis_loop_followups/) — neighboring
+  follow-up phase for hypothesis-loop perf / catalog work.
+- [S1.5.9](../p1.5_hypothesis_loop/s1.5.9_ein_lang_macros.md) —
+  parked macro system; not blocking but composes.

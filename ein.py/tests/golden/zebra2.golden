@@ -79,6 +79,27 @@
     :why "({?R2} {?h2} {?V2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?h1} {?V1})."
     :priority 200)
   (rule
+    disjunctive-prune
+    (?R1 ?V1 ?R2 ?V2 ?S)
+    :match (and (?R1 ?h1 ?V1) (relation ?R2 ?A ?B) (is-a ?h_other ?A) (neq ?h_other ?h1) (absent (?S ?h_other ?h1)))
+    :assert (not (?R2 ?h_other ?V2))
+    :why "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours; {?h_other} excluded."
+    :priority 250)
+  (rule
+    derive-disjunctive-prune-fwd
+    ()
+    :match (cross-attr-spatial-fwd ?R1 ?V1 ?R2 ?V2 ?S)
+    :assert (disjunctive-prune ?R1 ?V1 ?R2 ?V2 ?S)
+    :why "cross-attr-spatial-fwd ⟹ disjunctive-prune (same direction)."
+    :priority 200)
+  (rule
+    derive-disjunctive-prune-bwd
+    ()
+    :match (cross-attr-spatial-bwd ?R1 ?V1 ?R2 ?V2 ?S)
+    :assert (disjunctive-prune ?R2 ?V2 ?R1 ?V1 ?S)
+    :why "cross-attr-spatial-bwd ⟹ disjunctive-prune (swapped sides)."
+    :priority 200)
+  (rule
     typecheck-arg-0
     (?R ?Dom)
     :match (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))

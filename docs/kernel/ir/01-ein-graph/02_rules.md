@@ -319,6 +319,47 @@ negative fact: the contradiction detector sees the pair and reports
 the conflict. The unsat-core walk traces both back to their source
 frontiers and returns the minimal subset that produced the clash.
 
+### 3.1 Three-state fact storage (S1.5.8c)
+
+A potential fact `P` is at any moment in one of three states:
+
+| state          | KB shape                            | matched by                          |
+|----------------|-------------------------------------|--------------------------------------|
+| **asserted**   | `P` stored as positive              | `(P)` pattern                       |
+| **negated**    | `(not P)` stored as a fact          | `(not P)` pattern (matches the stored neg fact) |
+| **open**       | neither in KB                       | `(open P)` pattern (sugar for `(and (absent P) (absent (not P)))`) |
+
+The three pattern shapes parallel the three storage states.
+`(not P)` in `:match` matches a stored `(not P)` fact, NOT NAF —
+NAF must be written explicitly as `(absent P)` (S1.5.8c K-Δ.1).
+`(open P)` is parser sugar for the conjunction of two absents,
+giving rules a way to gate on "P is undecided" — useful for
+hypothesis-generation rules that should only propose candidates
+for slots that aren't yet committed either way.
+
+### 3.2 Transitive closure as a 2-fact idiom
+
+Transitive closure of a relation R is achieved by activating
+`(transitive R)` and letting the saturator close R against
+itself to fixpoint. After saturation, R IS its own transitive
+closure — no separate relation needed.
+
+When BOTH the direct R AND the transitively-closed R\* must
+coexist (e.g., zebra2's direct `is-a` for sibling-exclusive and
+transitively-closed `is-a*` for typecheck), declare a second
+relation R\* and bridge it via the `includes` activator
+(every direct R-edge lifts to R\*), plus `(transitive R*)`:
+
+```lisp
+(relation is-a  T T)
+(relation is-a* T T)
+(includes is-a is-a*)    ; the `includes` rule: every (is-a a b) → (is-a* a b)
+(transitive is-a*)        ; the `transitive` rule on is-a*
+```
+
+After saturation, `is-a*` holds every ancestor edge while `is-a`
+remains direct — the "two parallel relations" closure idiom.
+
 ## 4. The :where clause — predicate guards
 
 Predicates allowed in `:where`:

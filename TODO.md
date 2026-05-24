@@ -244,6 +244,9 @@ F1b - logical formulation
 Can we express first order logic in ein? How?
 Especially https://en.wikipedia.org/wiki/List_of_rules_of_inference#Rules_for_propositional_calculus
 
+https://en.wikipedia.org/wiki/Relation_(mathematics)
+https://en.wikipedia.org/wiki/Relation_algebra
+https://en.wikipedia.org/wiki/Equivalence_relation
 
 
 

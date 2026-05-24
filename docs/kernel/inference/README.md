@@ -46,6 +46,9 @@ The five files map to plan phases; each ships when its phase does.
 | Hypothesis branching            | `kb.fork()` exists; full loop is P1.5                            |
 | Contradiction detection         | `kb.unsat_core()` exists; clash detection in P1.5                |
 | Trace generation                | `DerivationDAG.to_dot()` exists; markdown trace in P1.6           |
+| `(not P)` / `(absent P)` premises | S1.5.8c.1 shipped: `(not P)` in `:match` matches a STORED `(not P)` fact (uniform with all other patterns); `(absent P)` is the explicit NAF guard. The old NAF default on `(not P)` was dropped. |
+| `(forall ?b (G) (B))` / `(open P)` | S1.5.8c.3a/b parser sugars: `forall` desugars to `(absent (and G (absent B)))`; `open` desugars to `(and (absent P) (absent (not P)))`. No matcher addition — both compile to existing `AbsentGuard` machinery. |
+| Saturator cache-refresh         | S1.5.8c-followup: `_enqueue_pass` re-runs `engine.compile_all()` at the top of each pass so runtime-derived activator facts (e.g. produced by expansion rules) get their plans compiled and the rule fires. |
 
 The data substrate (KB, entities, layer views, fork, provenance,
 derivation DAG) is **complete** through P1.2. The engine that
