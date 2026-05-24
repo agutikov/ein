@@ -113,6 +113,12 @@ P1.8 - performance part
 
 
 compression - make atoms vector and replace all atoms everythere else with indexes
+all relation facts become vectors of numbers - head is [0]
+then if we have few atoms - can compress entire relation to number,
+for example < 255 atoms 64bit integer can hold up to 8 atom flat relation
+then every fact also can be encoded with unique sequential index - there would be much more of them than atoms - so can use only vectors for non-flat facts, but what are they? (not fact) (not (and fact fact fact))
+maybe still can be encoded into vectors or numbers
+finally think about this encoding like about hash itself or source for hash
 
 
 consistent hashing or something similar
@@ -134,4 +140,6 @@ vscode ein syntax highlighting - to P1.6
 ---
 
 M1a - ein.rs in Rust, before M1b GUI
+
+
 

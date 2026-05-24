@@ -158,6 +158,16 @@ class KnowledgeBase:
         # `consume_stats`.
         self.committed_hypotheses: set[tuple[str, tuple]] = set()
 
+        # S1.5a.18 — Learned no-good clauses (path-condition CDCL).
+        # Each clause is a frozenset of `(relation_name, args)`
+        # FactIds; meaning: "any branch whose path condition is a
+        # superset of this clause is dead". Populated by
+        # `nogoods.emit_nogood` on the root kb only; forks share
+        # by reference for read access during pre-fork filtering.
+        # Subsumption is enforced on emit — `_nogoods` is kept
+        # minimal (no clause is a strict superset of another).
+        self._nogoods: set[frozenset[tuple[str, tuple]]] = set()
+
         # Equality-class hooks — reserved for F4.
         self.classes: EqClasses = EqClasses()
 
@@ -643,6 +653,9 @@ class KnowledgeBase:
         # S1.5a.17 — committed-hypotheses set is shared by reference
         # (root-only mutation; forks read for filtering).
         new.committed_hypotheses = self.committed_hypotheses
+        # S1.5a.18 — no-good clause set: shared by reference for
+        # cross-fork read access during pre-fork filtering.
+        new._nogoods = self._nogoods
         return new
 
     # ── Dunder ────────────────────────────────────────────────────

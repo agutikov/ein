@@ -71,6 +71,16 @@ class SolverConfig:
       the outer loop terminates by fixpoint. Default off until the
       S1.5a.16 shuffle-invariance harness ratifies the order-sensitivity
       change.
+    - ``enable_path_condition_nogoods`` (default **False**) —
+      S1.5a.18. CDCL clause learning on the hypothesis tree:
+      every dead branch emits the negation of its path condition
+      as a clause stored at ``root.kb._nogoods``; future branches
+      whose prospective path is a superset of any learned clause
+      are filtered PRE-FORK (no try_branch, no SearchNode).
+      Subsumption keeps the clause set minimal. Composes with
+      ``enable_eager_root_bubble`` — a novel clause is a
+      root-level write that triggers ``BubbleAbort``. Off until
+      smoke measurement on demo 10 + zebra2 confirms net win.
     - ``print_alive`` (default **False**) — diagnostic from
       T1.5.4.8.b. When True, every ``_explore`` entry logs the
       inherited alive-set size and the per-filter prune counts.
@@ -81,6 +91,7 @@ class SolverConfig:
     enable_back_prop_unconditional:  bool = True
     enable_auto_closure:             bool = False
     enable_eager_root_bubble:        bool = False
+    enable_path_condition_nogoods:   bool = False
     print_alive:                     bool = False
 
     @classmethod

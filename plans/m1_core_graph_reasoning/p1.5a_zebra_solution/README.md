@@ -97,6 +97,7 @@ need to be diffed against the human walkthrough.
 | S1.5a.15   | Dead-branch caching by unsat-core + per-level back-prop                                   | [s1.5a.15_dead_caching_unsat_core.md](s1.5a.15_dead_caching_unsat_core.md) |
 | S1.5a.16   | Branch-order shuffle invariance (depth-bounded partial-information equivalence)           | [s1.5a.16_branch_order_shuffle_invariance.md](s1.5a.16_branch_order_shuffle_invariance.md) |
 | S1.5a.17   | Eager root-bubble + outer re-entry loop (absorbs S1.5a.14 P2 + root-case of S1.5a.15 T4)  | [s1.5a.17_eager_root_bubble_outer_loop.md](s1.5a.17_eager_root_bubble_outer_loop.md) |
+| S1.5a.18   | Path-condition no-good clause learning (CDCL dual of S1.5a.15 P1, pre-fork filter)        | [s1.5a.18_path_condition_nogoods.md](s1.5a.18_path_condition_nogoods.md) |
 | S1.5a.12   | idea-08 trace acceptance                                                                  | [s1.5a.12_idea08_trace_acceptance.md](s1.5a.12_idea08_trace_acceptance.md) |
 | S1.5a.13   | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.13_acceptance_zebra2_solves.md](s1.5a.13_acceptance_zebra2_solves.md) |
 
@@ -139,6 +140,16 @@ outer loop terminate when a root child dies by subtree
 exhaustion. The general per-level promoted-dead back-prop at
 depths ≥ 1 stays with S1.5a.15. S1.5a.16's harness is the
 gate for promoting this stage's config flag to default-on.
+S1.5a.18 (path-condition no-good clause learning) inserted
+2026-05-25 as the CDCL flavour of conditional-death pruning:
+every dead branch emits ``(not (and h_1 … h_self))`` as a
+clause stored at root; future branches whose prospective path
+is a superset of any learned clause are filtered PRE-FORK
+(no try_branch, no SearchNode). Subsumption keeps the clause
+set minimal. Dual of S1.5a.15 P1 with a cheaper match test
+(path-superset vs fact-set-superset) firing earlier in the
+pipeline (pre-fork vs post-saturation). Composes with S1.5a.17:
+a novel clause is a root-level write that triggers BubbleAbort.
 
 ## Relation-name refactor: `house-*` → `*-loc` (shipped)
 

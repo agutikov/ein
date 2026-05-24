@@ -49,6 +49,7 @@ from .hypgen import (
     score_hypothesis,
 )
 from .match import run as match_run
+from .nogoods import build_clause, emit_nogood, matches_any_nogood
 from .saturator import Saturator
 from .search_tree import BranchId, SearchNode, SearchTree
 
@@ -81,6 +82,16 @@ _current_parent_ctx: ContextVar[int | None] = ContextVar(
 # depth 1; etc.
 _current_depth_ctx: ContextVar[int] = ContextVar(
     "ein_bot_current_depth", default=0,
+)
+
+# S1.5a.18 — path condition for the current branch. Tuple of
+# FactIds in root-first order, one per ancestor hypothesis +
+# the current node's hypothesis (when present). Empty at root.
+# Pushed on `_explore` entry for nodes with a hypothesis,
+# popped on exit. Read by `_consume`/`_descend`'s pre-fork filter
+# and by the death-recording sites to build the no-good clause.
+_path_ctx: ContextVar[tuple[tuple[str, tuple], ...]] = ContextVar(
+    "ein_bot_path_condition", default=(),
 )
 
 
@@ -605,12 +616,23 @@ def _explore(
     depth_token = _current_depth_ctx.set(depth)
     chain = _kb_chain_ctx.get()
     chain_token = _kb_chain_ctx.set((*chain, kb))
+    # S1.5a.18 — extend the path-condition tuple when entering a
+    # hypothesis-seeded node. Root (hypothesis=None) leaves the
+    # path unchanged; every deeper level adds exactly one FactId.
+    path = _path_ctx.get()
+    if hypothesis is not None:
+        path_token = _path_ctx.set(
+            (*path, (hypothesis.relation_name, hypothesis.args)),
+        )
+    else:
+        path_token = _path_ctx.set(path)
     try:
         return _explore_inner(
             kb, parent_id, hypothesis, firings, depth, max_depth,
             builder, mode,
         )
     finally:
+        _path_ctx.reset(path_token)
         _kb_chain_ctx.reset(chain_token)
         _current_depth_ctx.reset(depth_token)
 
@@ -741,10 +763,38 @@ def _descend(
     child_ids: list[BranchId] = []
     seen_children: set[BranchId] = set()
     candidates = _candidates_for(kb)
+    # S1.5a.18 — pre-fork filter setup. We don't pre-filter the
+    # candidate list; instead each iteration checks per-candidate
+    # and allocates a dead-by-nogood SearchNode in lieu of
+    # try_branch when the clause-match fires. See _consume for the
+    # rationale (verdict-promotion needs the dead leaf to remain).
+    cfg = kb.config or SolverConfig()
+    ng_root_kb = (
+        _kb_chain_ctx.get()[0] if _kb_chain_ctx.get() else kb
+    )
+    ng_enabled = (
+        cfg.enable_path_condition_nogoods and bool(ng_root_kb._nogoods)
+    )
+    ng_path_set = frozenset(_path_ctx.get()) if ng_enabled else frozenset()
     parent_token = _current_parent_ctx.set(nid)
     try:
         for h in candidates:
             if exclude_keys and (h.relation_name, h.args) in exclude_keys:
+                continue
+            if ng_enabled and matches_any_nogood(
+                    h, ng_path_set, ng_root_kb._nogoods):
+                child_id = _alloc_node(builder, nid)
+                builder.add(SearchNode(
+                    id=child_id, parent=nid, hypothesis=h,
+                    kb_snapshot=None, firings=(),
+                    verdict="dead", children=(),
+                    unsat_core=frozenset(),
+                ))
+                _dump_node(child_id, nid, h, kb, (),
+                           "dead", frozenset())
+                if child_id not in seen_children:
+                    seen_children.add(child_id)
+                    child_ids.append(child_id)
                 continue
             result = try_branch(kb, h, branch_id=builder.peek_id())
             if result.is_alive():
@@ -767,6 +817,21 @@ def _descend(
                 ))
                 _dump_node(child_id, nid, h, result.kb, result.firings,
                            "dead", result.unsat_core)
+                # S1.5a.18 — emit path-condition clause when the
+                # death is conditional (multi-element path). The
+                # unconditional case is owned by back_propagate's
+                # (not h_self) write to _negated_facts.
+                if (cfg.enable_path_condition_nogoods
+                        and not is_unconditional_death(
+                            result.kb, result.unsat_core,
+                            own_hypothesis=result.hypothesis,
+                        )):
+                    root_kb = (
+                        _kb_chain_ctx.get()[0]
+                        if _kb_chain_ctx.get() else kb
+                    )
+                    clause = build_clause(_path_ctx.get(), h)
+                    emit_nogood(root_kb, clause)
             if child_id not in seen_children:
                 seen_children.add(child_id)
                 child_ids.append(child_id)
@@ -893,10 +958,46 @@ def _consume(
                     else:
                         stats.cond_dead_cached_skips += 1
 
+            # S1.5a.18 — pre-fork filter against learned no-goods.
+            # A candidate whose prospective path is a superset of
+            # an existing clause is provably dead; allocate a
+            # synthetic "dead-by-nogood" SearchNode instead of
+            # calling try_branch. We can't simply drop the
+            # candidate — verdict promotion requires every alive
+            # parent to have at least one dead/solution child to
+            # promote to dead, else it becomes an "open" leaf.
+            cfg = kb.config or SolverConfig()
+            ng_root_kb = (
+                _kb_chain_ctx.get()[0] if _kb_chain_ctx.get() else kb
+            )
+            if (cfg.enable_path_condition_nogoods
+                    and ng_root_kb._nogoods):
+                ng_path_set = frozenset(_path_ctx.get())
+                still_to_check: list[Fact] = []
+                for h in to_check:
+                    if matches_any_nogood(
+                            h, ng_path_set, ng_root_kb._nogoods):
+                        cid = _alloc_node(builder, nid)
+                        builder.add(SearchNode(
+                            id=cid, parent=nid, hypothesis=h,
+                            kb_snapshot=None, firings=(),
+                            verdict="dead", children=(),
+                            unsat_core=frozenset(),
+                        ))
+                        _dump_node(cid, nid, h, kb, (),
+                                   "dead", frozenset())
+                        _add(cid)
+                        key = (h.relation_name, h.args)
+                        verdict_at[key] = ("cond-dead", resat_gen)
+                        cond_dead_keys.add(key)
+                    else:
+                        still_to_check.append(h)
+                to_check = still_to_check
+
             if not to_check:
-                # Every still-pending candidate is cached. Hand off
-                # to _descend, excluding cond-deads we've already
-                # allocated nodes for.
+                # Every still-pending candidate is cached (or
+                # filtered). Hand off to _descend, excluding
+                # cond-deads we've already allocated nodes for.
                 for cid in _descend(
                     kb, nid, depth, max_depth, builder, mode,
                     exclude_keys=frozenset(cond_dead_keys),
@@ -937,6 +1038,20 @@ def _consume(
                     _add(cid)
                     verdict_at[key] = ("cond-dead", resat_gen)
                     cond_dead_keys.add(key)
+                    # S1.5a.18 — emit the path-condition clause for
+                    # this conditional death. The clause is the
+                    # ancestor path + the dying hypothesis itself.
+                    # Unconditional deaths already write (not h) via
+                    # back_propagate; the multi-element clause
+                    # would be subsumed in practice and is skipped
+                    # to keep the clause set tight.
+                    if cfg.enable_path_condition_nogoods:
+                        root_kb = (
+                            _kb_chain_ctx.get()[0]
+                            if _kb_chain_ctx.get() else kb
+                        )
+                        clause = build_clause(_path_ctx.get(), h)
+                        emit_nogood(root_kb, clause)
 
             if not unconditional:
                 # Fixpoint — no sibling died unconditionally. Hand
