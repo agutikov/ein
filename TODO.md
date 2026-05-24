@@ -105,6 +105,9 @@
 
 
 
+P1.10 kernel docs - separate file for kernel inference feature list absolutely required to solve zebra in reasonable time
+add config options for every (if not yet) write ein files with different config options and measure solution time with 3600s timeout
+collect into table with time and stats showing impact of every option disabled
 
 
 vscode ein syntax highlighting - to P1.6

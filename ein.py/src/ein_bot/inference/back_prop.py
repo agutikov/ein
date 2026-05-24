@@ -36,9 +36,29 @@ hypothesis-dependent one.
 """
 from __future__ import annotations
 
+from contextvars import ContextVar
+
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import FactId, Provenance
 from ein_bot.kb.store import KnowledgeBase
+
+# S1.5a.14 — Ancestor-kb chain for transitive back-prop.
+#
+# An unconditional death at depth N derives `(not h)` whose
+# correctness rests on no hypothesis (own_hypothesis exempted). The
+# fact is therefore true at EVERY ancestor level — depth N-1,
+# N-2, …, 0 (root) — not just at depth N. Pre-S1.5a.14 the engine
+# wrote the negation only to the immediate consume's kb; the
+# fix walks the chain and writes to every ancestor too.
+#
+# `_explore` (solver.py) pushes its kb on entry and pops on exit.
+# `back_propagate` reads the chain and mirrors the write to every
+# entry except the one it was given. The chain is root-first, so
+# chain[0] is root and chain[-1] is the most recent `_explore`'s
+# kb (which is also the kb the current consume is operating on).
+_kb_chain_ctx: ContextVar[tuple[KnowledgeBase, ...]] = ContextVar(
+    "ein_bot_kb_chain", default=(),
+)
 
 # Provenance kinds marking a fact as speculative — introduced on a
 # hypothesis branch rather than given (`source`) or rule-derived.
@@ -173,7 +193,8 @@ def back_propagate(
     rule_name: str = "<back-prop-unconditional>",
     promote_symmetric: bool = True,
 ) -> Fact:
-    """Write ``(not hypothesis)`` into ``kb`` on an unconditional death.
+    """Write ``(not hypothesis)`` into ``kb`` *and* every ancestor kb
+    on an unconditional death.
 
     The negation is a REASONING-layer ``(not <hypothesis>)`` fact
     with rule-provenance citing the ``unsat_core`` frontier — so its
@@ -182,6 +203,15 @@ def back_propagate(
     subsequent ``_candidates_for`` / ``_prune_alive`` drops
     ``hypothesis`` in O(1), and ``kb.fork()`` carries the exclusion
     to descendant branches.
+
+    **Transitive bubble-up (S1.5a.14).** Because the death is
+    unconditional — its premise chain reaches no speculative fact —
+    ``(not h)`` is provably true in *every* ancestor's context, not
+    just the immediate parent. The :data:`_kb_chain_ctx` ContextVar
+    holds the chain (root first, current consume's kb last) so this
+    function can mirror the write into every ancestor. Ancestor
+    writes carry the rule-name suffix ``-bubbled`` so traces show
+    which writes were lifted from a deeper level.
 
     ``rule_name`` distinguishes the back-prop's origin in traces and
     audits (T1.5.7.2 ``<back-prop-unconditional>`` for consume-loop
@@ -194,12 +224,40 @@ def back_propagate(
     fact with distinct arguments. The symmetric counterpart's death
     is unconditional under the same reasoning — sound to cache
     proactively, saving a redundant ``try_branch`` on the next pass.
+    The mirror is bubbled to ancestors too.
 
-    Idempotent: a pre-existing ``(not h)`` is returned untouched.
+    Idempotent: a pre-existing ``(not h)`` at any level is returned
+    untouched.
 
-    Returns the *primary* stored ``(not …)`` Fact.
+    Returns the *primary* stored ``(not …)`` Fact in ``kb``.
     """
     primary = _write_negation(kb, hypothesis, unsat_core, rule_name)
+
+    # Bubble (not h) up to EVERY ancestor kb (S1.5a.14). The
+    # death's premise chain reaches no hypothesis other than the
+    # branch's own, so ``(not h)`` is provably true at every level.
+    # Pruning at every level is essential for combinatorial sanity
+    # — without it, depth-6 puzzles with 60 alive hyps face 60^6
+    # potential branchings even when most are dead at the parent.
+    #
+    # Mutating ancestor kbs invalidates two caches the ancestors
+    # may be relying on mid-flight:
+    #   1. `builder.state_index` keyed by `state_hash(ancestor.kb)`
+    #      — now stale (different fact set → different hash). Future
+    #      _explore calls on equivalent states compute the *new*
+    #      hash, so dedup just gives false negatives (slower, not
+    #      wrong); we accept it.
+    #   2. Per-`_consume` `verdict_at` — caches alive/cond-dead
+    #      verdicts for already-tried hypotheses. If (not h) lands
+    #      and h is cached "alive" at the ancestor's level, the
+    #      ancestor would recurse on a now-doomed branch. Cleared
+    #      via the `_consume_caches_ctx` chain (see solver.py).
+    chain = _kb_chain_ctx.get()
+    ancestors = tuple(ak for ak in chain if ak is not kb)
+    bubbled_name = rule_name + "-bubbled"
+    for anc_kb in ancestors:
+        _write_negation(anc_kb, hypothesis, unsat_core, bubbled_name)
+
     if (promote_symmetric
             and len(hypothesis.args) == 2
             and hypothesis.args[0] != hypothesis.args[1]
@@ -210,10 +268,45 @@ def back_propagate(
             layer=Layer.REASONING,
         )
         _write_negation(kb, mirror, unsat_core, rule_name)
+        for anc_kb in ancestors:
+            _write_negation(anc_kb, mirror, unsat_core, bubbled_name)
+
+    # Invalidate ancestor verdict_at caches so any stale "alive"
+    # entry for the now-dead hypothesis is re-classified on the
+    # next sweep. Cache invalidation is done at every ancestor
+    # whose kb received the bubbled write.
+    if ancestors:
+        _clear_ancestor_verdict_caches()
     return primary
 
 
+# Verdict-at chain. Each `_consume` pushes its own verdict_at dict
+# onto this contextvar on entry and pops on exit. `back_propagate`
+# clears every ancestor entry on a bubble so the next sweep
+# re-classifies hypotheses against the now-tighter kb.
+_consume_caches_ctx: ContextVar[tuple[dict, ...]] = ContextVar(
+    "ein_bot_consume_caches", default=(),
+)
+
+
+def _clear_ancestor_verdict_caches() -> None:
+    """Clear every ancestor `_consume`'s verdict_at cache.
+
+    Called after `back_propagate` writes bubbled negatives. The
+    chain holds verdict_at dicts in root-first order with the
+    current `_consume`'s dict last; we clear all but the last
+    (the current sweep will re-evaluate on its own).
+    """
+    caches = _consume_caches_ctx.get()
+    if len(caches) <= 1:
+        return
+    for v in caches[:-1]:
+        v.clear()
+
+
 __all__ = [
+    "_consume_caches_ctx",
+    "_kb_chain_ctx",
     "back_propagate",
     "is_symmetric_relation",
     "is_unconditional_death",

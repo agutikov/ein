@@ -575,23 +575,23 @@
   (color-loc  Ivory          House_4   :source "hint 1")
 
   ;; hint 2 — Green is house 5 (right-of Ivory by cond. 6).
-  ;; (color-loc  Green          House_5   :source "hint 2")
+  (color-loc  Green          House_5   :source "hint 2")
 
   ;; hint 4 — Englishman is house 3 (cond. 2: Red house).
   (nation-loc Englishman     House_3   :source "hint 4")
 
   ;; hint 5 — Japanese is house 5 (Parliament-smoker in Green).
-  ;; (nation-loc Japanese       House_5   :source "hint 5")
+  (nation-loc Japanese       House_5   :source "hint 5")
 
   ;; hint 6 — Coffee is in house 5 (cond. 4: drunk in Green house).
-  ;; (drink-loc  Coffee         House_5   :source "hint 6")
+  (drink-loc  Coffee         House_5   :source "hint 6")
 
   ;; hint 7 — Water is in house 1 (the only drink unassigned to
   ;; H_2..H_5 after deductions from Milk@H3 + Coffee@H5).
-  ;; (drink-loc  Water          House_1   :source "hint 7")
+  (drink-loc  Water          House_1   :source "hint 7")
 
   ;; hint 8 — Kools is in house 1 (cond. 8: smoked in Yellow).
-  ;; (smoke-loc  Kools          House_1   :source "hint 8")
+  (smoke-loc  Kools          House_1   :source "hint 8")
 
   ;; hint 9 — Zebra is in house 5 (the unsolved goal: Japanese
   ;; owns the Zebra; Japanese@H5 by hint 5).

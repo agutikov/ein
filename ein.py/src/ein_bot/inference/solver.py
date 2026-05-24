@@ -26,7 +26,13 @@ from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
-from .back_prop import back_propagate, is_unconditional_death
+from .back_prop import (
+    _consume_caches_ctx,
+    _kb_chain_ctx,
+    back_propagate,
+    is_unconditional_death,
+    reaches_hypothesis,
+)
 from .canon import state_hash
 from .closed import emit_closed
 from .compile import JoinPlan, compile_pattern
@@ -86,6 +92,41 @@ def _alloc_node(builder: _TreeBuilder, parent_id: int | None) -> int:
     if d is not None:
         d.node_alloc(nid, parent_id)
     return nid
+
+
+def _mirror_forced_positive(
+    derived: Fact, ancestors: tuple[KnowledgeBase, ...],
+) -> None:
+    """Write an unconditional positive fact into every ancestor kb.
+
+    Counterpart of `back_propagate`'s bubble-up for negatives.
+    Called from `_consume` when re-saturation derives a positive
+    that has no hypothesis ancestor (`reaches_hypothesis` returns
+    False) — such a fact is provably true at every level above too.
+
+    Idempotent: skips ancestors that already hold the fact under
+    the same `(relation_name, args)` identity. The mirrored fact
+    carries a `<forced-positive-bubbled>` rule provenance citing
+    the original derivation's premises so the trace can follow
+    where the truth was first mined.
+    """
+    for anc_kb in ancestors:
+        if anc_kb._fact_by_id(derived.relation_name, derived.args) is not None:
+            continue
+        prov_premises: tuple = ()
+        if derived.provenance is not None and derived.provenance.kind == "rule":
+            prov_premises = derived.provenance.premises_raw
+        mirror = Fact(
+            relation_name=derived.relation_name,
+            args=derived.args,
+            layer=Layer.REASONING,
+            provenance=Provenance.from_rule(
+                rule="<forced-positive-bubbled>",
+                premises_raw=prov_premises,
+            ),
+        )
+        stored = anc_kb.add_fact(mirror)
+        anc_kb._index_fact(stored)
 
 
 def _dump_node(
@@ -523,12 +564,15 @@ def _explore(
     storage.
     """
     depth_token = _current_depth_ctx.set(depth)
+    chain = _kb_chain_ctx.get()
+    chain_token = _kb_chain_ctx.set((*chain, kb))
     try:
         return _explore_inner(
             kb, parent_id, hypothesis, firings, depth, max_depth,
             builder, mode,
         )
     finally:
+        _kb_chain_ctx.reset(chain_token)
         _current_depth_ctx.reset(depth_token)
 
 
@@ -782,6 +826,12 @@ def _consume(
             child_ids.append(cid)
 
     parent_token = _current_parent_ctx.set(nid)
+    # Push our verdict_at onto the consume-caches chain so a
+    # descendant's `back_propagate` can clear it when a bubbled
+    # (not h) lands at our level (S1.5a.14). Without this, stale
+    # "alive" cache entries would let dead candidates be recursed.
+    caches = _consume_caches_ctx.get()
+    caches_token = _consume_caches_ctx.set((*caches, verdict_at))
     try:
         while True:
             candidates = _candidates_for(kb)
@@ -900,13 +950,32 @@ def _consume(
                     neg_facts_added=added_facts,
                 )
 
-            # S1.5.7b invalidation guard — `Firing.derives_positive`
-            # is always False under M1.
+            # S1.5a.14 — forced-positive mining. Any positive
+            # derivation in this re-sat whose premise chain doesn't
+            # touch any hypothesis is unconditional — true at root
+            # (b0) too. Mirror it only to root, not to intermediate
+            # ancestors (mutating live ancestors breaks state-hash
+            # dedup in the search tree).
+            chain = _kb_chain_ctx.get()
+            root_kb = chain[0] if chain else None
+            if root_kb is not None and root_kb is not kb:
+                for f in new_firings:
+                    if f.redundant or not f.derives_positive():
+                        continue
+                    if reaches_hypothesis(kb, f.derived):
+                        continue
+                    _mirror_forced_positive(f.derived, (root_kb,))
+
+            # S1.5.7b invalidation guard — when ANY positive lands
+            # via re-sat (forced or not), drop the verdict cache so
+            # the next sweep re-classifies alive candidates against
+            # the new state.
             if any(f.derives_positive() for f in new_firings):
                 verdict_at.clear()
                 if stats is not None:
                     stats.cache_invalidations += 1
     finally:
+        _consume_caches_ctx.reset(caches_token)
         _current_parent_ctx.reset(parent_token)
 
     # Re-index under the post-re-saturation state hash so a later
