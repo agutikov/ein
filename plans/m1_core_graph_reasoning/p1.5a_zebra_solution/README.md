@@ -86,6 +86,7 @@ need to be diffed against the human walkthrough.
 | S1.5a.1    | NAF semantic re-architecture                                                              | [s1.5a.1_naf_semantic_rearch.md](s1.5a.1_naf_semantic_rearch.md)    |
 | S1.5a.1a   | Branch exploration order determinism                                                      | [s1.5a.1a_branch_order_determinism.md](s1.5a.1a_branch_order_determinism.md) |
 | S1.5a.2    | Hypgen pre-pruning recovery                                                               | [s1.5a.2_hypgen_pre_pruning_recovery.md](s1.5a.2_hypgen_pre_pruning_recovery.md) |
+| S1.5a.2a   | Statistics determinism (fork-vs-direct, shuffle-vs-default)                               | [s1.5a.2a_statistics_determinism.md](s1.5a.2a_statistics_determinism.md) |
 | S1.5a.3    | idea-08 trace acceptance                                                                  | [s1.5a.3_idea08_trace_acceptance.md](s1.5a.3_idea08_trace_acceptance.md) |
 | S1.5a.4    | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.4_acceptance_zebra2_solves.md](s1.5a.4_acceptance_zebra2_solves.md) |
 | S1.5a.5    | zebra2 relation rename family (`*-loc`, `co-located`, `adjacent-via`)                     | [s1.5a.5_house_to_location_rename.md](s1.5a.5_house_to_location_rename.md) |

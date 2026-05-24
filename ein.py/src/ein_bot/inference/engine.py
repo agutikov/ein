@@ -49,13 +49,20 @@ class Engine:
 
         - Parameter-less rules (``rule.params == ()``) have *one*
           implicit activator — None. They apply once over the KB.
-        - Parameterised rules consult ``rule.applications`` (the
-          property-application facts whose head matches the rule's
-          name).
+        - Parameterised rules consult ``self.kb._rule_apps_by_rule[rule.name]``
+          — the property-application facts whose head matches the
+          rule's name in **this engine's KB**. We can't read
+          ``rule.applications`` here: that property delegates to
+          ``rule._kb`` (the load-time KB), which after a
+          [`fork`](../kb/store.py) points at the parent — its
+          ``_rule_apps_by_rule`` map misses any activator facts that
+          rules derived *during* the fork's saturation. The
+          stats-determinism violation tracked in S1.5a.2a was a
+          direct consequence (see plans/.../s1.5a.2a_statistics_determinism.md).
         """
         if not rule.params:
             return (None,)
-        return tuple(rule.applications)
+        return self.kb._rule_apps_by_rule.get(rule.name, ())
 
     def compile_for(
         self, rule: Rule, activator: Fact | None,
