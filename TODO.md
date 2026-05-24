@@ -102,3 +102,10 @@
 ;;                                     rules of inference, relation algebra, equivalence
 ;;                                     relation; sibling to F1's CT angle)
 ;;                                     + plans/followups/README.md (index row F1b)
+
+
+
+vscode ein syntax highlighting - to P1.6
+
+M1a - ein.rs in Rust, before M1b GUI
+

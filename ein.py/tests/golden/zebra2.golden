@@ -79,6 +79,20 @@
     :why "({?R2} {?h2} {?V2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?h1} {?V1})."
     :priority 200)
   (rule
+    derive-cross-attr-spatial-fwd
+    ()
+    :match (cross-attr-spatial ?R1 ?V1 ?R2 ?V2 ?S)
+    :assert (cross-attr-spatial-fwd ?R1 ?V1 ?R2 ?V2 ?S)
+    :why "cross-attr-spatial ⟹ cross-attr-spatial-fwd (identical args)."
+    :priority 100)
+  (rule
+    derive-cross-attr-spatial-bwd
+    ()
+    :match (cross-attr-spatial ?R1 ?V1 ?R2 ?V2 ?S)
+    :assert (cross-attr-spatial-bwd ?R1 ?V1 ?R2 ?V2 ?S)
+    :why "cross-attr-spatial ⟹ cross-attr-spatial-bwd (identical args)."
+    :priority 100)
+  (rule
     disjunctive-prune
     (?R1 ?V1 ?R2 ?V2 ?S)
     :match (and (?R1 ?h1 ?V1) (relation ?R2 ?A ?B) (is-a ?h_other ?A) (neq ?h_other ?h1) (absent (?S ?h_other ?h1)))
@@ -272,14 +286,7 @@
   (linked house-nation Spaniard house-pet Dog :source "condition (3)")
   (linked house-drink Coffee house-color Green :source "condition (4)")
   (linked house-nation Ukrainian house-drink Tea :source "condition (5)")
-  (cross-attr-spatial-fwd
-    house-color
-    Ivory
-    house-color
-    Green
-    right-of
-    :source "condition (6)")
-  (cross-attr-spatial-bwd
+  (cross-attr-spatial
     house-color
     Ivory
     house-color
@@ -290,28 +297,14 @@
   (linked house-smoke Kools house-color Yellow :source "condition (8)")
   (house-drink House_3 Milk :source "condition (9)")
   (house-nation House_1 Norwegian :source "condition (10)")
-  (cross-attr-spatial-fwd
+  (cross-attr-spatial
     house-smoke
     Chesterfields
     house-pet
     Fox
     next-to
     :source "condition (11)")
-  (cross-attr-spatial-bwd
-    house-smoke
-    Chesterfields
-    house-pet
-    Fox
-    next-to
-    :source "condition (11)")
-  (cross-attr-spatial-fwd
-    house-smoke
-    Kools
-    house-pet
-    Horse
-    next-to
-    :source "condition (12)")
-  (cross-attr-spatial-bwd
+  (cross-attr-spatial
     house-smoke
     Kools
     house-pet
@@ -320,14 +313,7 @@
     :source "condition (12)")
   (linked house-smoke Lucky_Strike house-drink Juice :source "condition (13)")
   (linked house-nation Japanese house-smoke Parliament :source "condition (14)")
-  (cross-attr-spatial-fwd
-    house-nation
-    Norwegian
-    house-color
-    Blue
-    next-to
-    :source "condition (15)")
-  (cross-attr-spatial-bwd
+  (cross-attr-spatial
     house-nation
     Norwegian
     house-color

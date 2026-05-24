@@ -32,9 +32,14 @@
 ;;;     partner-attribute via the shared house.
 ;;;
 ;;; (C) Cross-attribute spatial:
-;;;     (6) right-of  → `cross-attr-right-of-*` activators
-;;;     (11-12, 15) next-to → `cross-attr-next-to-unique-*` (NAF gates
-;;;                  the corner-only case; non-corner needs branching)
+;;;     (6, 11-12, 15) — encoded as a single `cross-attr-spatial`
+;;;                  activator that expands into both `-fwd` and
+;;;                  `-bwd` directional activators; the spatial
+;;;                  relation (right-of or next-to) is the last
+;;;                  parameter. NAF gates uniqueness — trivially
+;;;                  passes for functional right-of; filters non-
+;;;                  corner cases for symmetric next-to (those
+;;;                  need branching).
 ;;;
 ;;; The four S1.5.8c.4 stdlib rules (typecheck-arg-{0,1},
 ;;; domain-elimination, no-room-left) are inlined here until P1.8
@@ -152,6 +157,26 @@
     :assert (?R1 ?h1 ?V1)
     :why    "({?R2} {?h2} {?V2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?h1} {?V1})."
     :priority 200)
+
+  ;; `cross-attr-spatial` — single non-directional activator that
+  ;; expands into both fwd and bwd. The underlying constraint is
+  ;; one thing (V1's and V2's houses are ?S-adjacent in the order
+  ;; (?S V2-house V1-house)); the two propagation directions are
+  ;; just bookkeeping. Author writes ONE `cross-attr-spatial`
+  ;; activator per puzzle condition; the two meta-rules below
+  ;; derive the directional activators that trigger the actual
+  ;; propagation rules above.
+  (rule derive-cross-attr-spatial-fwd ()
+    :match  (cross-attr-spatial ?R1 ?V1 ?R2 ?V2 ?S)
+    :assert (cross-attr-spatial-fwd ?R1 ?V1 ?R2 ?V2 ?S)
+    :why    "cross-attr-spatial ⟹ cross-attr-spatial-fwd (identical args)."
+    :priority 100)
+
+  (rule derive-cross-attr-spatial-bwd ()
+    :match  (cross-attr-spatial ?R1 ?V1 ?R2 ?V2 ?S)
+    :assert (cross-attr-spatial-bwd ?R1 ?V1 ?R2 ?V2 ?S)
+    :why    "cross-attr-spatial ⟹ cross-attr-spatial-bwd (identical args)."
+    :priority 100)
 
   ;; ──── Disjunctive-prune: pre-emptive negatives ──────────────
   ;; When (R1 h1 V1) is known and the cross-attribute constraint
@@ -471,8 +496,7 @@
   (linked house-nation Ukrainian  house-drink  Tea          :source "condition (5)")
 
   ;; (6) The green house is immediately right of the ivory house.
-  (cross-attr-spatial-fwd house-color Ivory house-color Green right-of :source "condition (6)")
-  (cross-attr-spatial-bwd house-color Ivory house-color Green right-of :source "condition (6)")
+  (cross-attr-spatial house-color Ivory house-color Green right-of :source "condition (6)")
 
   ;; (7) The Old Gold smoker owns snails.
   (linked house-smoke  Old_Gold   house-pet    Snail        :source "condition (7)")
@@ -487,12 +511,10 @@
   (house-nation House_1 Norwegian                           :source "condition (10)")
 
   ;; (11) Chesterfields is smoked next to the house with the fox.
-  (cross-attr-spatial-fwd house-smoke Chesterfields house-pet   Fox           next-to :source "condition (11)")
-  (cross-attr-spatial-bwd house-smoke Chesterfields house-pet   Fox           next-to :source "condition (11)")
+  (cross-attr-spatial house-smoke Chesterfields house-pet   Fox           next-to :source "condition (11)")
 
   ;; (12) Kools is smoked next to the house with the horse.
-  (cross-attr-spatial-fwd house-smoke Kools         house-pet   Horse         next-to :source "condition (12)")
-  (cross-attr-spatial-bwd house-smoke Kools         house-pet   Horse         next-to :source "condition (12)")
+  (cross-attr-spatial house-smoke Kools         house-pet   Horse         next-to :source "condition (12)")
 
   ;; (13) The Lucky Strike smoker drinks orange juice.
   (linked house-smoke  Lucky_Strike house-drink Juice                            :source "condition (13)")
@@ -501,8 +523,7 @@
   (linked house-nation Japanese   house-smoke  Parliament                        :source "condition (14)")
 
   ;; (15) The Norwegian lives next to the blue house.
-  (cross-attr-spatial-fwd house-nation Norwegian    house-color  Blue           next-to :source "condition (15)")
-  (cross-attr-spatial-bwd house-nation Norwegian    house-color  Blue           next-to :source "condition (15)"))
+  (cross-attr-spatial house-nation Norwegian    house-color  Blue           next-to :source "condition (15)"))
 
 (query
   :mode solve
