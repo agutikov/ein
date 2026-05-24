@@ -1,9 +1,11 @@
 """StateDumper — per-phase filesystem snapshots of the hypothesis loop.
 
 A diagnostic harness for "show me the complete picture of inference"
-on a `solve()` run. The dumper is wired through optional `dumper=`
-arguments on :func:`solver.solve` and :func:`solver.try_branch`; when
-provided, the engine calls back at six lifecycle points:
+on a `solve()` run. The dumper is wired through an optional `dumper=`
+argument on :func:`solver.solve`; when provided, the engine calls
+back at lifecycle hooks. **The filesystem hierarchy mirrors the
+search tree** — each SearchNode gets a folder whose `branches/`
+subfolder holds its children, recursively.
 
 ==============================  ===================================
 hook                            output path
@@ -14,27 +16,38 @@ naf_dropped)``                  ``01_root_saturated/stats.json``
                                 ``01_root_saturated/firings.jsonl``
 ``root_hyps(alive, stats)``     ``02_root_hyps.ein``
                                 ``02_root_hyps/hyp_stats.json``
-``branch_pre(bid, parent, h)``  ``branches/b<bid>/hypothesis.ein``
-                                ``branches/b<bid>/pre_sat.ein``
-``branch_post(bid, kb, firings, ``branches/b<bid>/post_sat.ein``
-result)``                       ``branches/b<bid>/firings.jsonl``
-                                ``branches/b<bid>/verdict.json``
-``backprop(parent_before,       ``branches/b<bid>/backprop.ein``
-parent_after, neg_facts)``      ``branches/b<bid>/backprop.json``
+``node_alloc(nid, parent_id)``  registers ``<parent>/branches/b<nid>/``
+``node_dump(nid, parent_id, h,  ``<parent>/branches/b<nid>/{hypothesis.ein,
+kb, firings, verdict_kind,      post_sat.ein, firings.jsonl, verdict.json}``
+unsat_core)``
+``node_resaturated(nid, cycle,  ``<nid>/resats/<cycle>.ein,
+kb, new_firings, dead_children, <cycle>.json,
+neg_facts_added)``              <cycle>_firings.jsonl``
 ``summary(verdict, tree, cfg)`` ``summary.json``
 ==============================  ===================================
 
 The ``.ein`` files are full-KB snapshots — every layer (ONTOLOGY,
 FACT, REASONING) collapsed into one ``(ontology …)`` + ``(facts …)``
 pair so each file is independently readable. Provenance lands in
-each fact's ``:source`` / ``:rule`` kw-pair where present; layer is
-recorded via a ``:layer`` kw-pair for the FACT and REASONING facts
-(ONTOLOGY facts go in the ontology block).
+each fact's ``:source`` / ``:rule`` / ``:hypothesis`` kw-pair where
+present; layer is recorded via a ``:layer reasoning`` kw-pair on
+derived facts (ONTOLOGY facts go in the ontology block).
+
+`node_alloc` pre-registers each search-tree node's directory so
+that any children allocated inside the same `_explore` / `_consume`
+call land under their parent's already-existing dir. The `_dirs`
+map is keyed by node id; the root maps to ``out_dir`` itself.
+
+`node_resaturated` fires at the end of each `_consume` sweep that
+ended in at least one unconditional death — after `back_propagate`
++ re-saturation on the parent. Each event is sequence-numbered
+inside the parent's `resats/` subfolder so the consume loop's
+multi-cycle structure is preserved on disk.
 
 Designed for human inspection + diff; not a serialisation format.
 The output isn't round-trippable through `parse` unless the puzzle
-happens to declare every relation referenced (parser will reject
-unknown relations); inspect the files, don't re-feed them.
+happens to declare every relation referenced; inspect the files,
+don't re-feed them.
 """
 from __future__ import annotations
 
@@ -49,7 +62,6 @@ from ein_bot.ir.types import Atom, Int, Keyword, KwPair, SForm, String
 if TYPE_CHECKING:
     from ein_bot.inference.firing import Firing
     from ein_bot.inference.hypgen import HypGenStats
-    from ein_bot.inference.solver import BranchResult
     from ein_bot.kb.entities import Fact
     from ein_bot.kb.store import KnowledgeBase
 
@@ -182,24 +194,57 @@ def _fact_summary(fact: Fact) -> dict[str, Any]:
 class StateDumper:
     """Filesystem-snapshotting hooks attached to a `solve()` invocation.
 
-    Usage::
+    Directory layout — **the folder hierarchy mirrors the search
+    tree.** Each node has its own folder containing its
+    hypothesis (if non-root), pre/post-saturation kb snapshots,
+    firings + verdict, a `resats/` subfolder for re-saturation
+    events triggered by child unconditional deaths (S1.5.7b), and
+    a `branches/` subfolder holding its children — recursively the
+    same shape::
 
-        dumper = StateDumper(Path("dumps/zebra2-2026-05-24/"))
-        solve(kb, dumper=dumper)
-        # → reads `dumps/zebra2-…/{00_root_initial.ein, …}`
+        dumps/<puzzle>-<ts>/
+          00_root_initial.ein
+          01_root_saturated.ein
+          01_root_saturated/{stats.json, firings.jsonl}
+          02_root_hyps.ein
+          02_root_hyps/hyp_stats.json
+          resats/                 ← root re-sats (if any)
+            001.ein
+            001.json
+          branches/               ← root's children
+            b1/
+              hypothesis.ein
+              pre_sat.ein         ← parent kb at fork time
+              post_sat.ein        ← b1 kb after b1's saturation
+              firings.jsonl
+              verdict.json
+              resats/             ← re-sats on b1 (after a child died)
+                001.ein           ← b1's kb after back-prop + re-sat
+                001.json          ← child bids that died + neg facts added
+              branches/           ← b1's children (recursive)
+                b3/
+                  ...
+          summary.json
 
-    Each hook is independently optional — if the solver omits a call
-    (e.g. the back-prop hook), the corresponding files just don't
-    appear.
+    Each hook is independently optional — if the solver omits a
+    call (e.g. the re-sat hook), the corresponding files just
+    don't appear.
+
+    Branch nesting requires the solver to call `branch_pre` and
+    `branch_post` with a `parent_id` so the dumper can resolve the
+    target dir from `_node_dirs[parent_id]`. The root node has
+    `parent_id=None`; its dir is `out_dir` itself, registered under
+    a sentinel key `_NODE_ROOT`.
     """
 
     out_dir: Path
     started_at: float = field(default_factory=time.time)
-    _branches_seen: set[int] = field(default_factory=set)
+    _node_dirs: dict[int, Path] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         self.out_dir.mkdir(parents=True, exist_ok=True)
-        (self.out_dir / "branches").mkdir(exist_ok=True)
+        # Root node has search-tree id 0; its dir is out_dir itself.
+        self._node_dirs[0] = self.out_dir
 
     # ── Root pipeline ────────────────────────────────────────────
 
@@ -214,98 +259,117 @@ class StateDumper:
         (self.out_dir / "01_root_saturated.ein").write_text(_kb_to_ein_text(kb))
         sub = self.out_dir / "01_root_saturated"
         sub.mkdir(exist_ok=True)
-        productive = [f for f in firings if not f.redundant]
-        per_rule: dict[str, int] = {}
-        for f in productive:
-            per_rule[f.rule] = per_rule.get(f.rule, 0) + 1
-        (sub / "stats.json").write_text(json.dumps({
-            "total_firings": len(firings),
-            "productive": len(productive),
-            "redundant": len(firings) - len(productive),
-            "naf_dropped": naf_dropped,
-            "per_rule_productive": per_rule,
-            "fact_count_by_layer": _fact_count_by_layer(kb),
-        }, indent=2, sort_keys=True))
-        with (sub / "firings.jsonl").open("w") as fp:
-            for f in firings:
-                fp.write(json.dumps(_firing_to_dict(f)) + "\n")
+        _write_firings(sub, firings, naf_dropped, kb)
 
     def root_hyps(self, alive: list[Fact], stats: HypGenStats) -> None:
         """Snapshot of the root alive hypothesis set + filter stats."""
-        forms = [_fact_to_sform(h, with_kwargs=False) for h in alive]
-        wrapper = SForm(head=Atom(name="alive"), args=tuple(forms))
-        from ein_bot.ir.dump import dump_canonical
-        (self.out_dir / "02_root_hyps.ein").write_text(dump_canonical([wrapper]))
-        sub = self.out_dir / "02_root_hyps"
-        sub.mkdir(exist_ok=True)
-        (sub / "hyp_stats.json").write_text(json.dumps({
-            "raw": stats.raw,
-            "emitted": stats.emitted,
-            "filtered": dict(stats.filtered),
-            "pre_candidate": dict(stats.pre_candidate),
-        }, indent=2, sort_keys=True))
+        _write_alive(self.out_dir, "02_root_hyps", alive, stats)
 
-    # ── Per-branch ───────────────────────────────────────────────
+    # ── Per-node ─────────────────────────────────────────────────
 
-    def branch_pre(
-        self, bid: int, parent_kb: KnowledgeBase, hypothesis: Fact,
-    ) -> None:
-        """Snapshot the parent KB + the hypothesis being tried.
+    def node_alloc(self, nid: int, parent_id: int | None) -> None:
+        """Pre-register a node's directory under its parent.
 
-        Called just before the branch's saturation. The hypothesis is
-        *not yet* in `parent_kb`; the dumped `pre_sat.ein` shows the
-        parent at the moment of fork.
+        Called by the solver right after ``builder.alloc()`` so that
+        any children dumped inside the node's exploration find the
+        parent already at ``_node_dirs[parent_id]``. Idempotent.
         """
-        bdir = self._branch_dir(bid)
-        from ein_bot.ir.dump import dump_canonical
-        (bdir / "hypothesis.ein").write_text(
-            dump_canonical([_fact_to_sform(hypothesis, with_kwargs=False)]),
-        )
-        (bdir / "pre_sat.ein").write_text(_kb_to_ein_text(parent_kb))
+        if parent_id is None:
+            # Root node — its dir is out_dir; recorded in __post_init__.
+            self._node_dirs.setdefault(nid, self.out_dir)
+            return
+        if nid in self._node_dirs:
+            return  # already registered
+        self._make_branch_dir(nid, parent_id)
 
-    def branch_post(
+    def node_dump(
         self,
-        bid: int,
-        branch_kb: KnowledgeBase,
+        nid: int,
+        parent_id: int | None,
+        hypothesis: Fact | None,
+        kb: KnowledgeBase,
         firings: tuple,
-        result: BranchResult,
+        verdict_kind: str,
+        unsat_core: frozenset = frozenset(),
     ) -> None:
-        """Snapshot after the branch's saturation closes."""
-        bdir = self._branch_dir(bid)
-        (bdir / "post_sat.ein").write_text(_kb_to_ein_text(branch_kb))
-        with (bdir / "firings.jsonl").open("w") as fp:
+        """Snapshot one search-tree node at the moment it's finalised.
+
+        Called once per ``builder.add(SearchNode(...))`` in the
+        solver. Non-root nodes get a dedicated folder under their
+        parent's ``branches/``; the root (parent_id=None) writes its
+        verdict.json in-place at ``out_dir`` but skips hypothesis /
+        post_sat (those are already captured by `root_initial` +
+        `root_saturated`).
+        """
+        if parent_id is None:
+            # Root node — only the verdict tag is interesting at
+            # node-finalisation time; the rest is in 00_/01_/02_.
+            (self.out_dir / "node.json").write_text(json.dumps({
+                "branch_id": nid,
+                "kind": verdict_kind,
+                "hypothesis": None,
+                "firings": len(firings),
+                "unsat_core": [_fact_summary(f) for f in unsat_core],
+            }, indent=2))
+            return
+        # The dir is normally pre-registered by node_alloc; fall back
+        # to creating it now if the caller skipped alloc registration.
+        ndir = self._node_dirs.get(nid) or self._make_branch_dir(
+            nid, parent_id,
+        )
+        from ein_bot.ir.dump import dump_canonical
+        if hypothesis is not None:
+            (ndir / "hypothesis.ein").write_text(
+                dump_canonical([_fact_to_sform(hypothesis, with_kwargs=False)]),
+            )
+        (ndir / "post_sat.ein").write_text(_kb_to_ein_text(kb))
+        with (ndir / "firings.jsonl").open("w") as fp:
             for f in firings:
                 fp.write(json.dumps(_firing_to_dict(f)) + "\n")
-        verdict_json = {
-            "branch_id": bid,
-            "kind": result.kind,
-            "hypothesis": _fact_summary(result.hypothesis),
+        (ndir / "verdict.json").write_text(json.dumps({
+            "branch_id": nid,
+            "parent_id": parent_id,
+            "kind": verdict_kind,
+            "hypothesis": _fact_summary(hypothesis) if hypothesis else None,
             "firings": len(firings),
-            "unsat_core": [_fact_summary(f) for f in result.unsat_core],
-        }
-        (bdir / "verdict.json").write_text(json.dumps(verdict_json, indent=2))
-
-    def backprop(
-        self,
-        bid: int,
-        parent_before: KnowledgeBase,
-        parent_after: KnowledgeBase,
-        neg_facts: list[Fact],
-    ) -> None:
-        """Snapshot of the parent KB before and after a back-prop write.
-
-        Fires when a branch dies unconditionally and writes a
-        ``(not h)`` (plus its unsat-core's derived companions) into
-        the parent. The parent state changes; the dumper snapshots
-        the delta.
-        """
-        bdir = self._branch_dir(bid)
-        (bdir / "backprop_after.ein").write_text(_kb_to_ein_text(parent_after))
-        (bdir / "backprop.json").write_text(json.dumps({
-            "added_negatives": [_fact_summary(f) for f in neg_facts],
-            "parent_fact_count_before": len(parent_before.facts),
-            "parent_fact_count_after": len(parent_after.facts),
+            "unsat_core": [_fact_summary(f) for f in unsat_core],
         }, indent=2))
+
+    def node_resaturated(
+        self,
+        nid: int,
+        cycle: int,
+        kb: KnowledgeBase,
+        new_firings: tuple,
+        dead_children: list[tuple[int, Fact]],
+        neg_facts_added: list[Fact],
+    ) -> None:
+        """A consume-loop re-saturation closed on `nid`.
+
+        Called after `_consume` back-props one or more unconditional
+        deaths into this node's KB and runs a re-saturation pass to
+        propagate the new ``(not h)`` premises (S1.5.7b T1.5.7.5).
+        `cycle` is 1-indexed and increments per re-sat on this node.
+        """
+        ndir = self._node_dirs.get(nid)
+        if ndir is None:
+            return  # node not registered (shouldn't happen)
+        resats = ndir / "resats"
+        resats.mkdir(exist_ok=True)
+        (resats / f"{cycle:03d}.ein").write_text(_kb_to_ein_text(kb))
+        (resats / f"{cycle:03d}.json").write_text(json.dumps({
+            "cycle": cycle,
+            "node_id": nid,
+            "dead_children": [
+                {"branch_id": bid, "hypothesis": _fact_summary(h)}
+                for bid, h in dead_children
+            ],
+            "negatives_added": [_fact_summary(f) for f in neg_facts_added],
+            "new_firings_count": len(new_firings),
+        }, indent=2))
+        with (resats / f"{cycle:03d}_firings.jsonl").open("w") as fp:
+            for f in new_firings:
+                fp.write(json.dumps(_firing_to_dict(f)) + "\n")
 
     # ── Summary ──────────────────────────────────────────────────
 
@@ -325,22 +389,70 @@ class StateDumper:
             except TypeError:
                 cfg_dict = {"repr": repr(config)}
         elapsed = time.time() - self.started_at
+        branches_dumped = sorted(
+            bid for bid in self._node_dirs if isinstance(bid, int)
+        )
         (self.out_dir / "summary.json").write_text(json.dumps({
             "verdict": verdict_kind,
             "leaves": leaves,
             "tree_nodes": len(tree.nodes) if tree is not None else 0,
-            "branches_dumped": sorted(self._branches_seen),
+            "branches_dumped": branches_dumped,
             "elapsed_seconds": round(elapsed, 3),
             "config": cfg_dict,
         }, indent=2, sort_keys=True, default=str))
 
     # ── Internals ────────────────────────────────────────────────
 
-    def _branch_dir(self, bid: int) -> Path:
-        self._branches_seen.add(bid)
-        d = self.out_dir / "branches" / f"b{bid}"
+    def _make_branch_dir(self, bid: int, parent_id: int) -> Path:
+        """Allocate the directory for branch `bid` under its parent.
+
+        Falls back to out_dir if the parent isn't registered yet
+        (defensive — every parent should have been registered via
+        a prior `branch_pre` call, except the root, which is keyed 0
+        in __post_init__).
+        """
+        parent_dir = self._node_dirs.get(parent_id, self.out_dir)
+        d = parent_dir / "branches" / f"b{bid}"
         d.mkdir(parents=True, exist_ok=True)
+        self._node_dirs[bid] = d
         return d
+
+
+def _write_firings(
+    sub: Path, firings: tuple, naf_dropped: int, kb: KnowledgeBase,
+) -> None:
+    productive = [f for f in firings if not f.redundant]
+    per_rule: dict[str, int] = {}
+    for f in productive:
+        per_rule[f.rule] = per_rule.get(f.rule, 0) + 1
+    (sub / "stats.json").write_text(json.dumps({
+        "total_firings": len(firings),
+        "productive": len(productive),
+        "redundant": len(firings) - len(productive),
+        "naf_dropped": naf_dropped,
+        "per_rule_productive": per_rule,
+        "fact_count_by_layer": _fact_count_by_layer(kb),
+    }, indent=2, sort_keys=True))
+    with (sub / "firings.jsonl").open("w") as fp:
+        for f in firings:
+            fp.write(json.dumps(_firing_to_dict(f)) + "\n")
+
+
+def _write_alive(
+    out_dir: Path, stem: str, alive: list[Fact], stats: HypGenStats,
+) -> None:
+    forms = [_fact_to_sform(h, with_kwargs=False) for h in alive]
+    wrapper = SForm(head=Atom(name="alive"), args=tuple(forms))
+    from ein_bot.ir.dump import dump_canonical
+    (out_dir / f"{stem}.ein").write_text(dump_canonical([wrapper]))
+    sub = out_dir / stem
+    sub.mkdir(exist_ok=True)
+    (sub / "hyp_stats.json").write_text(json.dumps({
+        "raw": stats.raw,
+        "emitted": stats.emitted,
+        "filtered": dict(stats.filtered),
+        "pre_candidate": dict(stats.pre_candidate),
+    }, indent=2, sort_keys=True))
 
 
 def _fact_count_by_layer(kb: KnowledgeBase) -> dict[str, int]:

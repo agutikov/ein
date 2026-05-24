@@ -46,7 +46,7 @@ if TYPE_CHECKING:
     from .state_dump import StateDumper
 
 # S1.5a.11 — optional per-solve filesystem snapshotting. When a
-# StateDumper is bound here, the solver calls back at six lifecycle
+# StateDumper is bound here, the solver calls back at lifecycle
 # points (see state_dump.StateDumper). Bound by solve() at entry;
 # reset on exit. ContextVar so concurrent solves don't trample each
 # other (the engine itself isn't thread-safe, but solve() is a
@@ -54,6 +54,51 @@ if TYPE_CHECKING:
 _dumper_ctx: ContextVar[StateDumper | None] = ContextVar(
     "ein_bot_state_dumper", default=None,
 )
+
+# Current parent-node id for the consume/descend cycle. _consume
+# and _descend set this to the node they are exploring so the
+# `node_resaturated` hook (and any future hook needing "current
+# scope") can attach events to the right node. `None` denotes the
+# root node's children scope.
+_current_parent_ctx: ContextVar[int | None] = ContextVar(
+    "ein_bot_current_parent_nid", default=None,
+)
+
+
+def _alloc_node(builder: _TreeBuilder, parent_id: int | None) -> int:
+    """`builder.alloc()` + register the node's dir on any bound dumper.
+
+    Pre-registering the dir at alloc time guarantees that any
+    children allocated inside the same `_explore` / `_consume` call
+    can nest under their parent's already-existing directory.
+    """
+    nid = builder.alloc()
+    d = _dumper_ctx.get()
+    if d is not None:
+        d.node_alloc(nid, parent_id)
+    return nid
+
+
+def _dump_node(
+    nid: int,
+    parent_id: int | None,
+    hypothesis: Fact | None,
+    kb: KnowledgeBase,
+    firings: tuple[Firing, ...],
+    verdict_kind: str,
+    unsat_core: frozenset[Fact] = frozenset(),
+) -> None:
+    """Forward to the bound StateDumper (no-op if none is bound).
+
+    Centralises the dumper-existence check so the alloc sites in
+    `_explore` / `_descend` / `_consume` stay terse. Mirrors the
+    fields `SearchNode` carries — call it right after
+    `builder.add(SearchNode(...))`.
+    """
+    d = _dumper_ctx.get()
+    if d is not None:
+        d.node_dump(nid, parent_id, hypothesis, kb, firings,
+                    verdict_kind, unsat_core)
 
 # ── Mode + verdicts ─────────────────────────────────────────────────
 
@@ -191,14 +236,7 @@ def try_branch(
          re-saturate. The `hypothesis-contradiction` rule (P1.3)
          fires and asserts `(not h)` for the parent to consume.
     """
-    dumper = _dumper_ctx.get()
     fork = parent_kb.fork()
-    if dumper is not None:
-        # Snapshot the parent state at fork time; hypothesis recorded
-        # separately so the dumped pre_sat.ein shows the kb-about-to-be-
-        # saturated (post-hypothesis-injection) but the kb-pre-hypothesis
-        # is reconstructable from the parent's own dump if needed.
-        dumper.branch_pre(branch_id, fork, hypothesis)
 
     # Re-stamp hypothesis with branch-specific provenance.
     h_fact = Fact(
@@ -254,8 +292,6 @@ def try_branch(
             firings=tuple(firings),
         )
 
-    if dumper is not None:
-        dumper.branch_post(branch_id, fork, tuple(firings), result)
     return result
 
 
@@ -484,7 +520,7 @@ def _explore(
 
     contradictions = ContradictionDetector(kb).detect()
     if contradictions:
-        nid = builder.alloc()
+        nid = _alloc_node(builder, parent_id)
         builder.state_index[sh] = nid
         unsat = kb.unsat_core(c.witness for c in contradictions)
         builder.add(SearchNode(
@@ -493,6 +529,8 @@ def _explore(
             verdict="dead", children=(),
             unsat_core=frozenset(unsat),
         ))
+        _dump_node(nid, parent_id, hypothesis, kb, firings,
+                   "dead", frozenset(unsat))
         return nid
 
     # NOTE — no early `is_solved` exit. A state that matches the
@@ -504,13 +542,14 @@ def _explore(
     # whose children all turn out dead.
 
     if depth >= max_depth:
-        nid = builder.alloc()
+        nid = _alloc_node(builder, parent_id)
         builder.state_index[sh] = nid
         builder.add(SearchNode(
             id=nid, parent=parent_id, hypothesis=hypothesis,
             kb_snapshot=kb, firings=firings,
             verdict="open", children=(),
         ))
+        _dump_node(nid, parent_id, hypothesis, kb, firings, "open")
         return nid
 
     # Interior or no-hypothesis leaf — allocate id, then enumerate
@@ -518,7 +557,7 @@ def _explore(
     # determined by `is_solved` (true) or "open" (state matched the
     # goal but the puzzle isn't maximally constrained under the
     # current rule set).
-    nid = builder.alloc()
+    nid = _alloc_node(builder, parent_id)
     builder.state_index[sh] = nid
 
     # S1.5.7 T1.5.7.6 — the candidate descent. With back-prop off
@@ -544,6 +583,8 @@ def _explore(
             kb_snapshot=kb, firings=node_firings,
             verdict=leaf_verdict, children=(),
         ))
+        _dump_node(nid, parent_id, hypothesis, kb, node_firings,
+                   leaf_verdict)
         return nid
 
     # Interior: stamp "open" pre-promotion. _promote_verdicts will
@@ -555,6 +596,7 @@ def _explore(
         kb_snapshot=kb, firings=node_firings,
         verdict="open", children=tuple(child_ids),
     ))
+    _dump_node(nid, parent_id, hypothesis, kb, node_firings, "open")
     return nid
 
 
@@ -584,31 +626,37 @@ def _descend(
     child_ids: list[BranchId] = []
     seen_children: set[BranchId] = set()
     candidates = _candidates_for(kb)
-    for h in candidates:
-        if exclude_keys and (h.relation_name, h.args) in exclude_keys:
-            continue
-        result = try_branch(kb, h, branch_id=builder.peek_id())
-        if result.is_alive():
-            child_id = _explore(
-                result.kb, nid, h, result.firings,
-                depth + 1, max_depth, builder, mode,
-            )
-        else:
-            # Dead branches are NOT deduped by state-hash: each
-            # carries its own contradicting fact pair and its own
-            # unsat-core, both of which are part of the proof
-            # witnesses. Two distinct hypotheses dying for the same
-            # underlying reason are still recorded separately.
-            child_id = builder.alloc()
-            builder.add(SearchNode(
-                id=child_id, parent=nid, hypothesis=h,
-                kb_snapshot=result.kb, firings=result.firings,
-                verdict="dead", children=(),
-                unsat_core=result.unsat_core,
-            ))
-        if child_id not in seen_children:
-            seen_children.add(child_id)
-            child_ids.append(child_id)
+    parent_token = _current_parent_ctx.set(nid)
+    try:
+        for h in candidates:
+            if exclude_keys and (h.relation_name, h.args) in exclude_keys:
+                continue
+            result = try_branch(kb, h, branch_id=builder.peek_id())
+            if result.is_alive():
+                child_id = _explore(
+                    result.kb, nid, h, result.firings,
+                    depth + 1, max_depth, builder, mode,
+                )
+            else:
+                # Dead branches are NOT deduped by state-hash: each
+                # carries its own contradicting fact pair and its own
+                # unsat-core, both of which are part of the proof
+                # witnesses. Two distinct hypotheses dying for the same
+                # underlying reason are still recorded separately.
+                child_id = _alloc_node(builder, nid)
+                builder.add(SearchNode(
+                    id=child_id, parent=nid, hypothesis=h,
+                    kb_snapshot=result.kb, firings=result.firings,
+                    verdict="dead", children=(),
+                    unsat_core=result.unsat_core,
+                ))
+                _dump_node(child_id, nid, h, result.kb, result.firings,
+                           "dead", result.unsat_core)
+            if child_id not in seen_children:
+                seen_children.add(child_id)
+                child_ids.append(child_id)
+    finally:
+        _current_parent_ctx.reset(parent_token)
     return child_ids
 
 
@@ -691,120 +739,143 @@ def _consume(
     resat_gen = 0
     stats = kb.consume_stats
 
+    # S1.5a.11 dumper bookkeeping: emit one node_resaturated event
+    # per consume cycle (covering all dead children in that sweep
+    # + their cumulative negatives + the re-sat firings).
+    _dumper = _dumper_ctx.get()
+
     def _add(cid: BranchId) -> None:
         if cid not in seen_children:
             seen_children.add(cid)
             child_ids.append(cid)
 
-    while True:
-        candidates = _candidates_for(kb)
-        if not candidates:
-            break
+    parent_token = _current_parent_ctx.set(nid)
+    try:
+        while True:
+            candidates = _candidates_for(kb)
+            if not candidates:
+                break
 
-        # Apply the cache: skip candidates whose verdict is already
-        # known; only the unknown set reaches `try_branch`.
-        to_check: list[Fact] = []
-        for h in candidates:
-            key = (h.relation_name, h.args)
-            cached = verdict_at.get(key)
-            if cached is None:
-                to_check.append(h)
-                continue
-            if stats is not None:
-                if cached[0] == "alive":
-                    stats.alive_cached_skips += 1
+            # Apply the cache: skip candidates whose verdict is
+            # already known; only the unknown set reaches
+            # `try_branch`.
+            to_check: list[Fact] = []
+            for h in candidates:
+                key = (h.relation_name, h.args)
+                cached = verdict_at.get(key)
+                if cached is None:
+                    to_check.append(h)
+                    continue
+                if stats is not None:
+                    if cached[0] == "alive":
+                        stats.alive_cached_skips += 1
+                    else:
+                        stats.cond_dead_cached_skips += 1
+
+            if not to_check:
+                # Every still-pending candidate is cached. Hand off
+                # to _descend, excluding cond-deads we've already
+                # allocated nodes for.
+                for cid in _descend(
+                    kb, nid, depth, max_depth, builder, mode,
+                    exclude_keys=frozenset(cond_dead_keys),
+                ):
+                    _add(cid)
+                break
+
+            # Sweep — classify each unverified candidate.
+            unconditional: list[tuple[Fact, BranchResult]] = []
+            facts_before_sweep = len(kb.facts)
+            for h in to_check:
+                result = try_branch(kb, h, branch_id=builder.peek_id())
+                key = (h.relation_name, h.args)
+                if result.is_alive():
+                    verdict_at[key] = ("alive", resat_gen)
+                elif is_unconditional_death(
+                        result.kb, result.unsat_core,
+                        own_hypothesis=result.hypothesis):
+                    back_propagate(kb, h, result.unsat_core)
+                    unconditional.append((h, result))
+                    # Unconditional-dead is permanently cached via
+                    # `_negated_facts`; no verdict_at entry needed
+                    # since the candidate won't reappear in
+                    # `_candidates_for`.
                 else:
-                    stats.cond_dead_cached_skips += 1
+                    # Conditional dead — record the SearchNode now
+                    # so `_descend` (and subsequent sweeps) don't
+                    # re-try it.
+                    cid = _alloc_node(builder, nid)
+                    builder.add(SearchNode(
+                        id=cid, parent=nid, hypothesis=h,
+                        kb_snapshot=result.kb, firings=result.firings,
+                        verdict="dead", children=(),
+                        unsat_core=result.unsat_core,
+                    ))
+                    _dump_node(cid, nid, h, result.kb,
+                               result.firings, "dead", result.unsat_core)
+                    _add(cid)
+                    verdict_at[key] = ("cond-dead", resat_gen)
+                    cond_dead_keys.add(key)
 
-        if not to_check:
-            # Every still-pending candidate is cached (alive or
-            # cond-dead). Hand off to _descend, excluding cond-deads
-            # we've already allocated nodes for.
-            for cid in _descend(
-                kb, nid, depth, max_depth, builder, mode,
-                exclude_keys=frozenset(cond_dead_keys),
-            ):
-                _add(cid)
-            break
+            if not unconditional:
+                # Fixpoint — no sibling died unconditionally. Hand
+                # off to the static descent over the still-pending
+                # set.
+                for cid in _descend(
+                    kb, nid, depth, max_depth, builder, mode,
+                    exclude_keys=frozenset(cond_dead_keys),
+                ):
+                    _add(cid)
+                break
 
-        # Sweep — classify each unverified candidate.
-        unconditional: list[tuple[Fact, BranchResult]] = []
-        for h in to_check:
-            result = try_branch(kb, h, branch_id=builder.peek_id())
-            key = (h.relation_name, h.args)
-            if result.is_alive():
-                verdict_at[key] = ("alive", resat_gen)
-            elif is_unconditional_death(
-                    result.kb, result.unsat_core,
-                    own_hypothesis=result.hypothesis):
-                _dumper = _dumper_ctx.get()
-                _before_count = len(kb.facts) if _dumper is not None else 0
-                back_propagate(kb, h, result.unsat_core)
-                if _dumper is not None:
-                    # Snapshot the parent KB after the (not h) write
-                    # (and any cascade); the added negatives are the
-                    # tail of kb.facts since this branch's call.
-                    added = list(kb.facts[_before_count:])
-                    _dumper.backprop(result.branch_id, kb, kb, added)
-                unconditional.append((h, result))
-                # Unconditional-dead is permanently cached via
-                # `_negated_facts`; no verdict_at entry needed since
-                # the candidate won't reappear in `_candidates_for`.
-            else:
-                # Conditional dead — record the SearchNode now so
-                # `_descend` (and subsequent sweeps) don't re-try it.
-                cid = builder.alloc()
+            # Record the unconditionally-dead branches now — `(not h)`
+            # has been back-propped, so they will not be re-swept
+            # next pass.
+            dead_for_resat: list[tuple[int, Fact]] = []
+            for h, result in unconditional:
+                cid = _alloc_node(builder, nid)
                 builder.add(SearchNode(
                     id=cid, parent=nid, hypothesis=h,
                     kb_snapshot=result.kb, firings=result.firings,
                     verdict="dead", children=(),
                     unsat_core=result.unsat_core,
                 ))
+                _dump_node(cid, nid, h, result.kb, result.firings,
+                           "dead", result.unsat_core)
                 _add(cid)
-                verdict_at[key] = ("cond-dead", resat_gen)
-                cond_dead_keys.add(key)
+                dead_for_resat.append((cid, h))
 
-        if not unconditional:
-            # Fixpoint — no sibling died unconditionally. Hand off
-            # to the static descent over the still-pending set.
-            for cid in _descend(
-                kb, nid, depth, max_depth, builder, mode,
-                exclude_keys=frozenset(cond_dead_keys),
-            ):
-                _add(cid)
-            break
+            # Re-saturate the parent so the back-propped negatives
+            # are premises rule firings can chain from (T1.5.7.5).
+            new_firings = tuple(
+                Saturator(kb).saturate(max_steps=10_000),
+            )
+            node_firings = node_firings + new_firings
+            resat_gen += 1
 
-        # Record the unconditionally-dead branches now — `(not h)`
-        # has been back-propped, so they will not be re-swept next
-        # pass.
-        for h, result in unconditional:
-            cid = builder.alloc()
-            builder.add(SearchNode(
-                id=cid, parent=nid, hypothesis=h,
-                kb_snapshot=result.kb, firings=result.firings,
-                verdict="dead", children=(),
-                unsat_core=result.unsat_core,
-            ))
-            _add(cid)
+            if _dumper is not None:
+                # The "new facts" between the sweep start and now
+                # include the back-prop negatives + their re-sat
+                # cascades. The dumper's _node_dirs maps `nid` to a
+                # filesystem path (root is keyed 0).
+                added_facts = list(kb.facts[facts_before_sweep:])
+                _dumper.node_resaturated(
+                    nid=nid,
+                    cycle=resat_gen,
+                    kb=kb,
+                    new_firings=new_firings,
+                    dead_children=dead_for_resat,
+                    neg_facts_added=added_facts,
+                )
 
-        # Re-saturate the parent so the back-propped negatives are
-        # premises rule firings can chain from (T1.5.7.5) — once per
-        # sweep, fresh Saturator.
-        new_firings = tuple(Saturator(kb).saturate(max_steps=10_000))
-        node_firings = node_firings + new_firings
-        resat_gen += 1
-
-        # S1.5.7b invalidation guard — `Firing.derives_positive` is
-        # always False under M1 (no rule consumes `(not X)` to derive
-        # a positive). Once S1.5.8's `domain-elimination` ships,
-        # re-saturation can derive a forced positive; we conservatively
-        # drop the alive cache (cond-dead stays, since adding facts
-        # to a fork is monotonic and a known contradiction can only
-        # persist, not vanish — see T1.5.7b's design notes).
-        if any(f.derives_positive() for f in new_firings):
-            verdict_at.clear()
-            if stats is not None:
-                stats.cache_invalidations += 1
+            # S1.5.7b invalidation guard — `Firing.derives_positive`
+            # is always False under M1.
+            if any(f.derives_positive() for f in new_firings):
+                verdict_at.clear()
+                if stats is not None:
+                    stats.cache_invalidations += 1
+    finally:
+        _current_parent_ctx.reset(parent_token)
 
     # Re-index under the post-re-saturation state hash so a later
     # branch reaching the settled state dedups here (T1.5.7.5c);

@@ -43,21 +43,39 @@ def test_dumper_produces_root_phase_files(dump_dir: Path):
 
 
 def test_dumper_produces_branch_files(dump_dir: Path):
-    """Each visited branch produces its 5-file kit."""
+    """Each visited branch produces its core 4-file kit."""
     kb = KnowledgeBase.from_ir(parse(DEMO.read_text()))
     solve(kb, max_depth=2, dumper=StateDumper(out_dir=dump_dir))
 
     branches = dump_dir / "branches"
     assert branches.exists()
-    # The demo has at least one alive branch.
     bdirs = sorted(branches.iterdir())
     assert bdirs, "no branch directories created"
     for bdir in bdirs:
-        for fname in ("hypothesis.ein", "pre_sat.ein", "post_sat.ein",
+        for fname in ("hypothesis.ein", "post_sat.ein",
                       "firings.jsonl", "verdict.json"):
             assert (bdir / fname).exists(), (
                 f"branch {bdir.name} missing {fname}"
             )
+
+
+def test_dumper_nests_subbranches(dump_dir: Path):
+    """A branch with children must contain a `branches/` subfolder
+    with one entry per child SearchNode."""
+    demo = REPO / "examples" / "branching" / "04_two_levels.ein"
+    kb = KnowledgeBase.from_ir(parse(demo.read_text()))
+    solve(kb, max_depth=3, dumper=StateDumper(out_dir=dump_dir))
+
+    # At least one direct child of root must itself have grandchildren.
+    nested = False
+    for child in (dump_dir / "branches").iterdir():
+        if (child / "branches").exists() and any((child / "branches").iterdir()):
+            nested = True
+            break
+    assert nested, (
+        "expected at least one branch with a non-empty branches/ "
+        "subfolder; demo 04_two_levels descends two levels"
+    )
 
 
 def test_dumper_summary_json(dump_dir: Path):
@@ -78,14 +96,22 @@ def test_dumper_verdict_json_parseable(dump_dir: Path):
     kb = KnowledgeBase.from_ir(parse(DEMO.read_text()))
     solve(kb, max_depth=2, dumper=StateDumper(out_dir=dump_dir))
 
-    branches = dump_dir / "branches"
-    for bdir in branches.iterdir():
-        v = json.loads((bdir / "verdict.json").read_text())
-        assert v["kind"] in ("alive", "dead")
-        assert v["hypothesis"]["relation"]
-        assert isinstance(v["hypothesis"]["args"], list)
-        assert isinstance(v["firings"], int)
-        assert isinstance(v["unsat_core"], list)
+    def _walk(branches_dir: Path) -> int:
+        seen = 0
+        if not branches_dir.exists():
+            return 0
+        for bdir in branches_dir.iterdir():
+            v = json.loads((bdir / "verdict.json").read_text())
+            assert v["kind"] in ("solution", "open", "dead"), v["kind"]
+            assert v["hypothesis"]["relation"]
+            assert isinstance(v["hypothesis"]["args"], list)
+            assert isinstance(v["firings"], int)
+            assert isinstance(v["unsat_core"], list)
+            seen += 1
+            seen += _walk(bdir / "branches")
+        return seen
+
+    assert _walk(dump_dir / "branches") >= 1
 
 
 def test_solve_without_dumper_unaffected():
