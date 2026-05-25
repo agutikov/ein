@@ -19,11 +19,11 @@ digraph kb {
   "Fox" [shape=oval, label="Fox"];
   "Green" [shape=oval, label="Green"];
   "Horse" [shape=oval, label="Horse"];
-  "House_1" [shape=oval, label="House_1"];
-  "House_2" [shape=oval, label="House_2"];
-  "House_3" [shape=oval, label="House_3"];
-  "House_4" [shape=oval, label="House_4"];
-  "House_5" [shape=oval, label="House_5"];
+  "House-1" [shape=oval, label="House-1"];
+  "House-2" [shape=oval, label="House-2"];
+  "House-3" [shape=oval, label="House-3"];
+  "House-4" [shape=oval, label="House-4"];
+  "House-5" [shape=oval, label="House-5"];
   "Ivory" [shape=oval, label="Ivory"];
   "Japanese" [shape=oval, label="Japanese"];
   "Juice" [shape=oval, label="Juice"];
@@ -42,15 +42,15 @@ digraph kb {
   "Yellow" [shape=oval, label="Yellow"];
   "Zebra" [shape=oval, label="Zebra"];
 
-  "House_1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
 
-  "House_2" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-2" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
 
-  "House_3" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-3" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
 
-  "House_4" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-4" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
 
-  "House_5" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
+  "House-5" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
 
   "Red" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
 
@@ -115,10 +115,10 @@ digraph kb {
   f_9f06e57054 -> "next-to" [label="#1", color="#bcbd22", style=solid];
   f_9f06e57054 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
   f_9f06e57054 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
-  "House_2" -> "House_1" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
-  "House_3" -> "House_2" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
-  "House_4" -> "House_3" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
-  "House_5" -> "House_4" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-2" -> "House-1" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-3" -> "House-2" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-4" -> "House-3" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-5" -> "House-4" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
   "Englishman" -> "Red" [label="co-located (2)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Spaniard" -> "Dog" [label="co-located (3)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Coffee" -> "Green" [label="co-located (4)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
@@ -126,8 +126,8 @@ digraph kb {
   "Green" -> "Ivory" [label="right-of (6)", color="#d62728", fontcolor="#d62728", style=solid];
   "Old_Gold" -> "Snail" [label="co-located (7)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Kools" -> "Yellow" [label="co-located (8)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Milk" -> "House_3" [label="co-located (9)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Norwegian" -> "House_1" [label="co-located (10)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Milk" -> "House-3" [label="co-located (9)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Norwegian" -> "House-1" [label="co-located (10)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Chesterfields" -> "Fox" [label="next-to (11)", color="#d62728", fontcolor="#d62728", style=solid];
   "Kools" -> "Horse" [label="next-to (12)", color="#d62728", fontcolor="#d62728", style=solid];
   "Lucky_Strike" -> "Juice" [label="co-located (13)", color="#bcbd22", fontcolor="#bcbd22", style=solid];

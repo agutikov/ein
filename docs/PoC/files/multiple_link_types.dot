@@ -1,9 +1,9 @@
 digraph G {
     House [style=filled];
 
-    House -> House_1 [dir=none];
-    House -> House_2 [dir=none];
+    House -> House-1 [dir=none];
+    House -> House-2 [dir=none];
 
-    House_1 -> House_2 [label="right" color="red"];
-    House_1 -> House_2 [dir=none label="next" color="blue" style=dashed]
+    House-1 -> House-2 [label="right" color="red"];
+    House-1 -> House-2 [dir=none label="next" color="blue" style=dashed]
 }

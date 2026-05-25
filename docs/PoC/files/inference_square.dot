@@ -1,19 +1,19 @@
 digraph G {
     House, Color, Nationality [style=filled];
 
-    House_1 -> House;
-    House_2 -> House;
+    House-1 -> House;
+    House-2 -> House;
 
-    House_1 -> House_2 [label="next" color="blue"];
+    House-1 -> House-2 [label="next" color="blue"];
 
     Norwegian -> Nationality;
 
     Blue -> Color;
 
-    Norwegian -> House_1;
+    Norwegian -> House-1;
 
     Norwegian -> Blue [label="next" color="blue"];
 
-    Blue -> House_2 [style=bold, color="green"];
+    Blue -> House-2 [style=bold, color="green"];
 
 }

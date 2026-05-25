@@ -147,13 +147,13 @@
   ;; ── exist transitively through their houses). The (instance ?x ?T)
   ;; ── premise restricts firing to ?x whose neighbour set IS complete.
   ;; ──
-  ;; ── For Zebra: `(square-unique next-to House)`. House_1 and House_5
+  ;; ── For Zebra: `(square-unique next-to House)`. House-1 and House-5
   ;; ── have one next-to neighbour each (after the right-of → next-to +
-  ;; ── symmetric closure); House_2/3/4 have two (guard fails on the
+  ;; ── symmetric closure); House-2/3/4 have two (guard fails on the
   ;; ── existential). Closes idea-08's "Norwegian in H_1, next-to Blue
   ;; ── ⇒ Blue in H_2" walkthrough step.
   ;; ──
-  ;; ── Non-corner cases (House_2/3/4) keep the disjunctive resolution
+  ;; ── Non-corner cases (House-2/3/4) keep the disjunctive resolution
   ;; ── deferred to P1.5 hypothesis branching, as originally planned.
 
   (rule square-unique (?R ?T)
@@ -220,7 +220,7 @@
   ;; NOTE: square-fwd/bwd do NOT apply to next-to. next-to is symmetric
   ;; and its disjunctive conclusion ("B is at *some* neighbour of X")
   ;; needs hypothesis branching for non-corner positions; corner
-  ;; positions (House_1, House_5) are handled monotonically by
+  ;; positions (House-1, House-5) are handled monotonically by
   ;; square-unique above.
 
   ;; ── Type schema. Flat attribute hierarchy. ──
@@ -233,11 +233,11 @@
   (type Drink       Attribute)
 
   ;; ── Instance enumeration. Implicit: the puzzle text mentions each
-  ;; ── attribute (Norwegian, Red, House_1, …) without literally saying
+  ;; ── attribute (Norwegian, Red, House-1, …) without literally saying
   ;; ── "Norwegian is a Nationality"; the reader supplies the typing
   ;; ── from context. Hence ontology, not facts.
-  (instance House_1 House) (instance House_2 House) (instance House_3 House)
-  (instance House_4 House) (instance House_5 House)
+  (instance House-1 House) (instance House-2 House) (instance House-3 House)
+  (instance House-4 House) (instance House-5 House)
   (instance Red    Color) (instance Green Color) (instance Ivory Color)
   (instance Yellow Color) (instance Blue  Color)
   (instance Englishman Nationality) (instance Spaniard  Nationality)
@@ -255,10 +255,10 @@
   ;; ── right-of facts. The cardinality statement IS explicit, but
   ;; ── the pairwise consequences are reader-supplied; hence here
   ;; ── (with `:source` pointing at the originating condition).
-  (right-of House_2 House_1 :source "condition (1)")
-  (right-of House_3 House_2 :source "condition (1)")
-  (right-of House_4 House_3 :source "condition (1)")
-  (right-of House_5 House_4 :source "condition (1)"))
+  (right-of House-2 House-1 :source "condition (1)")
+  (right-of House-3 House-2 :source "condition (1)")
+  (right-of House-4 House-3 :source "condition (1)")
+  (right-of House-5 House-4 :source "condition (1)"))
 
 (facts
   ;; The 14 numbered puzzle conditions. Each is a direct rendering of
@@ -280,9 +280,9 @@
   ;; (8) Kools are smoked in the yellow house.
   (co-located Kools Yellow         :source "condition (8)")
   ;; (9) Milk is drunk in the middle house.
-  (co-located Milk House_3         :source "condition (9)")
+  (co-located Milk House-3         :source "condition (9)")
   ;; (10) The Norwegian lives in the first house.
-  (co-located Norwegian House_1    :source "condition (10)")
+  (co-located Norwegian House-1    :source "condition (10)")
   ;; (11) Chesterfields is smoked next to the house with the fox.
   (next-to    Chesterfields Fox    :source "condition (11)")
   ;; (12) Kools is smoked next to the house with the horse.

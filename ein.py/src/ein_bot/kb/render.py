@@ -6,7 +6,7 @@ renderer **fuses** entity identity across forms: the `Norwegian`
 instance node is emitted **once** and participates in:
 
 - its type-edge to ``Nationality`` (ontology layer),
-- its `(co-located Norwegian House_1 :source "(10)")` fact edge
+- its `(co-located Norwegian House-1 :source "(10)")` fact edge
   (fact layer),
 - any inferred edges (reasoning layer).
 

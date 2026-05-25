@@ -102,7 +102,7 @@ class TestFactProperties:
     def test_source_property(self, zebra_kb):
         f = next(
             x for x in zebra_kb.facts
-            if x.relation_name == "co-located" and x.args == ("Norwegian", "House_1")
+            if x.relation_name == "co-located" and x.args == ("Norwegian", "House-1")
         )
         assert f.source == "condition (10)"
         assert f.rule_name is None

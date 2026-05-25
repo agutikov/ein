@@ -10,8 +10,8 @@ problem statements and the solver / proof chapters of this index.
 
 Syntactic parse trees show *form* ("The Norwegian lives in the first
 house"), not the *semantic roles* a solver actually needs
-(`entity: Norwegian`, `property: nationality`, `relation: lives_in`,
-`target: house_1`, `constraint: equality`).
+(`entity: Norwegian`, `property: nationality`, `relation: lives-in`,
+`target: house-1`, `constraint: equality`).
 
 What is needed is a **semantic representation**, not just an AST.
 

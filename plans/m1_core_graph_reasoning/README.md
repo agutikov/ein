@@ -105,7 +105,7 @@ M1 ships when **all** of the following pass:
 4. **Three task classes**: `ein-bot query zebra.ein --mode=solve|gaps|contradictions`
    runs all three modes. `gaps` on the puzzle minus condition (15)
    returns at least the colour of house 1; `contradictions` on the
-   puzzle plus `(fact (= (color House_1) Green))` returns a minimal
+   puzzle plus `(fact (= (color House-1) Green))` returns a minimal
    contradiction with provenance back to that fact and to (5).
 5. **Rules**: a `rules.ein` file lists ten named rule families
    ([idea 06](../../docs/ideas/06-inference-rules-completeness.md)

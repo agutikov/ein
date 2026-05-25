@@ -17,18 +17,18 @@
 ;;;     attributes sharing a house.
 ;;;
 ;;; Facts (observed via the hypothesis loop — in `reasoning`):
-;;;   - The engine assumed (co-located Norwegian House_2) on some
+;;;   - The engine assumed (co-located Norwegian House-2) on some
 ;;;     branch.
 ;;;   - That branch produced a contradiction under that assumption.
 ;;;
 ;;; Question:
-;;;   Should (co-located Norwegian House_2) be rejected? (Yes —
+;;;   Should (co-located Norwegian House-2) be rejected? (Yes —
 ;;;   contradicted hypotheses become negative facts.)
 ;;;
 ;;; Expected derivation:
-;;;   (hypothesis (co-located Norwegian House_2))
-;;;   + (contradiction-under (co-located Norwegian House_2))
-;;;   ⇒ (not (co-located Norwegian House_2)).
+;;;   (hypothesis (co-located Norwegian House-2))
+;;;   + (contradiction-under (co-located Norwegian House-2))
+;;;   ⇒ (not (co-located Norwegian House-2)).
 
 (rules
   (rule hypothesis-contradiction ()
@@ -42,7 +42,7 @@
   (relation co-located T T))
 
 (reasoning
-  (hypothesis (co-located Norwegian House_2))
-  (contradiction-under (co-located Norwegian House_2)))
+  (hypothesis (co-located Norwegian House-2))
+  (contradiction-under (co-located Norwegian House-2)))
 
-(query :mode solve :goal (not (co-located Norwegian House_2)))
+(query :mode solve :goal (not (co-located Norwegian House-2)))

@@ -14,7 +14,7 @@ documentation split.
 
 | terminal   | regex                          | examples                                | role                                              |
 |------------|--------------------------------|-----------------------------------------|---------------------------------------------------|
-| `SYMBOL`   | `[A-Za-z][A-Za-z0-9_*-]*`      | `has-color`, `next-to`, `House_1`, `is-a*` | atoms; list heads in patterns; rule / type / step names. `*` in tail is a character with no Kleene/multiplicative meaning (S1.5.8c.2 — supports the transitive-closure naming convention `R*`). |
+| `SYMBOL`   | `[A-Za-z][A-Za-z0-9_*-]*`      | `has-color`, `next-to`, `House-1`, `is-a*` | atoms; list heads in patterns; rule / type / step names. `*` in tail is a character with no Kleene/multiplicative meaning (S1.5.8c.2 — supports the transitive-closure naming convention `R*`). |
 | `VAR`      | `\?[A-Za-z][A-Za-z0-9_*-]*`    | `?a`, `?house`, `?T`, `?R*`              | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars; `*` in tail allowed (same convention as SYMBOL). |
 | `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:rule`, `:where`, `:cardinality`        | argument markers; **always** followed by a value  |
 | `WILDCARD` | `_`                            | `_`                                      | head / arg wildcard in patterns                   |
@@ -27,7 +27,7 @@ non-nesting.
 
 **Naming convention** — hyphenated lowercase for relations and rule
 names (`has-color`, `triangle-composition`); PascalCase or `Foo_N`
-for types and instances (`Person`, `House_1`, `Norwegian`). Convention
+for types and instances (`Person`, `House-1`, `Norwegian`). Convention
 only; the grammar accepts either.
 
 ---
@@ -109,10 +109,10 @@ Example:
   (type House Attribute) (type Color Attribute)
   (relation co-located Attribute Attribute)
   (instance Norwegian Nationality)
-  (instance House_1 House)
+  (instance House-1 House)
   (symmetric  co-located)
   (transitive co-located)
-  (right-of House_2 House_1 :source "condition (1)"))   ; from "five in a row"
+  (right-of House-2 House-1 :source "condition (1)"))   ; from "five in a row"
 ```
 
 ### Facts — `(NAME args*)`, with reserved heads
@@ -157,7 +157,7 @@ condition level:
 | kind | example | semantics |
 |---|---|---|
 | **relation instance** | `(co-located Englishman Red :source "(2)")` | a relation holds between specific entities |
-| **equality**          | `(= (color House_1) Red :source "(?)")` | equational form |
+| **equality**          | `(= (color House-1) Red :source "(?)")` | equational form |
 | **negative**          | `(not (drinks Spaniard Coffee) :source "(?)")` | the wrapped fact does *not* hold |
 
 `all-different` is **not** a kernel primitive; pairwise distinctness
@@ -200,11 +200,11 @@ Example:
 ```lisp
 (facts
   (instance Norwegian Nationality)
-  (instance House_1   House)
+  (instance House-1   House)
   (symmetric  co-located)
   (transitive co-located)
   (implies    right-of next-to)
-  (lives-in   Norwegian House_1 :source "condition (10)"))
+  (lives-in   Norwegian House-1 :source "condition (10)"))
 ```
 
 ### Rules

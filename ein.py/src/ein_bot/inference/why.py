@@ -8,8 +8,8 @@ treated as a literal (left in the output unchanged).
 Example:
 
     >>> render_why("{?rel} is transitive: {?a} →{?rel}→ {?b}",
-    ...            {"rel": "co-located", "a": "Norwegian", "b": "House_1"})
-    'co-located is transitive: Norwegian →co-located→ House_1'
+    ...            {"rel": "co-located", "a": "Norwegian", "b": "House-1"})
+    'co-located is transitive: Norwegian →co-located→ House-1'
 
 Unbound vars leave their reference text in place. A future
 strictness flag could promote this to an error, but the trace

@@ -17,7 +17,7 @@ Arrow is "labled" by type of source and destination (this case - only destinatio
 ![Link label example](files/link_label.svg)
 
 Multiple types of arrows between two objects.
-House_2 is to the right of House_1.
+House-2 is to the right of House-1.
 And both are next to another one.
 ![Multiple link types](files/multiple_link_types.svg)
 

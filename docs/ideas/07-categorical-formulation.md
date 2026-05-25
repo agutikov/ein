@@ -19,7 +19,7 @@ There are at least three plausible categorical readings — none of
 them is *the* answer yet.
 
 ### Reading A — graph as a free category
-- **Objects**: entities (`Norwegian`, `House_1`, `Blue`, `Tea`, …).
+- **Objects**: entities (`Norwegian`, `House-1`, `Blue`, `Tea`, …).
 - **Morphisms**: relations (`lives_in`, `next_to`, `has_color`,
   `drinks`, …) plus all paths obtained by composing them.
 - **Composition**: chaining relations.

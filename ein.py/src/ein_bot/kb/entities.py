@@ -298,7 +298,7 @@ class Fact:
     - ``str`` — a named node (name of an Instance / Relation / Type).
     - ``int`` — a numeric literal.
     - ``Fact`` — a **relational node** embedded as an argument
-      (e.g. ``(hypothesis (co-located Norwegian House_2))``). The
+      (e.g. ``(hypothesis (co-located Norwegian House-2))``). The
       nested ``Fact`` participates in identity recursively: two outer
       facts are equal iff their ``(relation_name, args)`` tuples
       compare equal element-wise, with nested ``Fact`` instances

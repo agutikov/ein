@@ -24,7 +24,7 @@ def test_single_scan_binds_binary_fact():
       (relation co-located T T)
       (mirror co-located))
     (facts
-      (co-located Norwegian House_1 :source "(1)"))
+      (co-located Norwegian House-1 :source "(1)"))
     """)
     plan = compile_rule(kb.rules["mirror"], kb._facts_by_relation["mirror"][0])
     results = list(match.run(plan, kb))
@@ -32,7 +32,7 @@ def test_single_scan_binds_binary_fact():
     bindings, premises = results[0]
     assert bindings["r"] == "co-located"
     assert bindings["a"] == "Norwegian"
-    assert bindings["b"] == "House_1"
+    assert bindings["b"] == "House-1"
     assert premises[0].relation_name == "co-located"
 
 
@@ -205,7 +205,7 @@ def test_nested_fact_pattern_unifies_against_relational_arg():
     # Synthesise the nested fact manually (P1.5 will do this).
     inner = Fact(
         relation_name="co-located",
-        args=("Norwegian", "House_2"),
+        args=("Norwegian", "House-2"),
         layer=Layer.REASONING,
         provenance=Provenance.from_source(source=None),
     )
@@ -224,7 +224,7 @@ def test_nested_fact_pattern_unifies_against_relational_arg():
     assert len(results) == 1
     bindings, _ = results[0]
     assert bindings["a"] == "Norwegian"
-    assert bindings["b"] == "House_2"
+    assert bindings["b"] == "House-2"
 
 
 def test_no_match_when_relation_absent():

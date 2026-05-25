@@ -93,7 +93,7 @@ def test_not_fact_is_dashed():
 def test_reasoning_uses_dashed_edges():
     """Derived facts (reasoning layer) render with dashed edges per §6."""
     (form,) = parse(
-        "(reasoning (co-located Blue House_2 :rule square-fwd :using (c10)))"
+        "(reasoning (co-located Blue House-2 :rule square-fwd :using (c10)))"
     )
     dot = render_reasoning(form)
     assert "digraph reasoning" in dot
@@ -177,7 +177,7 @@ def test_trace_step_has_box_node():
     (form,) = parse("""
     (trace
       (step s1 :rule from-condition :using (c10)
-               :derives (lives-in Norwegian House_1)))
+               :derives (lives-in Norwegian House-1)))
     """)
     dot = render_trace(form, view="a")
     assert "digraph trace" in dot

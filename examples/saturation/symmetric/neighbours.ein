@@ -6,13 +6,13 @@
 ;;;     both ways.
 ;;;
 ;;; Facts (observed):
-;;;   - House_1 is next to House_2.
+;;;   - House-1 is next to House-2.
 ;;;
 ;;; Question:
-;;;   Is House_2 next to House_1?  (Yes, by symmetry.)
+;;;   Is House-2 next to House-1?  (Yes, by symmetry.)
 ;;;
 ;;; Expected derivation:
-;;;   (next-to House_1 House_2) ⇒ (next-to House_2 House_1).
+;;;   (next-to House-1 House-2) ⇒ (next-to House-2 House-1).
 
 (rules
   (rule symmetric (?rel)
@@ -26,6 +26,6 @@
   (symmetric next-to))
 
 (facts
-  (next-to House_1 House_2 :source "demo"))
+  (next-to House-1 House-2 :source "demo"))
 
-(query :mode solve :goal (next-to House_2 House_1))
+(query :mode solve :goal (next-to House-2 House-1))

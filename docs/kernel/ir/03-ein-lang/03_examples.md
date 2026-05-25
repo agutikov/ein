@@ -15,7 +15,7 @@ documentation split.
 
 ```lisp
 (facts
-  (lives-in Norwegian House_1 :source "condition (10)"))
+  (lives-in Norwegian House-1 :source "condition (10)"))
 ```
 
 The shortest meaningful IR — one fact-layer entry with an explicit
@@ -38,7 +38,7 @@ source annotation.
   (relation right-of   Attribute Attribute)
   (a-priori position   House House :pattern (right-of ?a ?b))
   ;; Implicit: instance enumeration
-  (instance House_1 House) (instance House_2 House) (instance House_3 House)
+  (instance House-1 House) (instance House-2 House) (instance House-3 House)
   (instance Red Color) (instance Green Color) (instance Ivory Color)
   (instance Norwegian Nationality) (instance Englishman Nationality)
   ;; Implicit: rule-application meta-facts
@@ -48,7 +48,7 @@ source annotation.
   ;; Explicit puzzle conditions only.
   (co-located Englishman Red    :source "condition (2)")
   (right-of   Green Ivory       :source "condition (6)")
-  (co-located Norwegian House_1 :source "condition (10)"))
+  (co-located Norwegian House-1 :source "condition (10)"))
 
 (query :mode solve :goal (co-located ?nationality Water))
 ```
@@ -153,10 +153,10 @@ After saturation, an engine dump of the reasoning layer looks like:
 
 ```lisp
 (reasoning
-  ;; The engine derived (co-located House_1 Norwegian) from
+  ;; The engine derived (co-located House-1 Norwegian) from
   ;; condition (10) via the symmetric rule.
-  (co-located House_1 Norwegian :rule symmetric
-                                :using ((co-located Norwegian House_1)))
+  (co-located House-1 Norwegian :rule symmetric
+                                :using ((co-located Norwegian House-1)))
 
   ;; Type-exclusivity: Norwegian and Japanese are distinct
   ;; Nationality instances, so they're not co-located.

@@ -44,7 +44,7 @@ def test_engine_step_produces_one_firing():
       (relation co-located T T)
       (symmetric co-located))
     (facts
-      (co-located Norwegian House_1 :source "(10)"))
+      (co-located Norwegian House-1 :source "(10)"))
     """))
     eng = Engine(kb)
     eng.compile_all()
@@ -52,13 +52,13 @@ def test_engine_step_produces_one_firing():
     assert firing is not None
     assert firing.rule == "symmetric"
     assert firing.derived.relation_name == "co-located"
-    assert firing.derived.args == ("House_1", "Norwegian")
+    assert firing.derived.args == ("House-1", "Norwegian")
     assert firing.derived.layer == Layer.REASONING
     # Provenance threads the premise.
     prov = firing.derived.provenance
     assert prov is not None and prov.kind == "rule"
     assert prov.rule == "symmetric"
-    assert prov.premises_raw == (("co-located", ("Norwegian", "House_1")),)
+    assert prov.premises_raw == (("co-located", ("Norwegian", "House-1")),)
 
 
 def test_engine_saturate_bounded():

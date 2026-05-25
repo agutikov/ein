@@ -256,7 +256,7 @@ predicate fires when the graph reaches a state where it holds.
 ```dot
 digraph t3_aggregate {
   rankdir=LR;
-  H3     [shape=ellipse, label="House_3"];
+  H3     [shape=ellipse, label="House-3"];
   Red    [shape=ellipse];
   Green  [shape=ellipse];
   Yellow [shape=ellipse];
@@ -269,13 +269,13 @@ digraph t3_aggregate {
   H3 -> Blue   [label="¬co-located", color=red, style=dashed];
   H3 -> Ivory  [label="co-located\n(forced — only remaining)", color=darkgreen, penwidth=2];
 
-  note [shape=note, label="Aggregate check (unique-remaining ?slot Color):\n  Red, Green, Yellow, Blue eliminated;\n  Ivory is the only remaining Color candidate.\nFire: assert co-located(House_3, Ivory) in REASONING."];
+  note [shape=note, label="Aggregate check (unique-remaining ?slot Color):\n  Red, Green, Yellow, Blue eliminated;\n  Ivory is the only remaining Color candidate.\nFire: assert co-located(House-3, Ivory) in REASONING."];
 }
 ```
 
 The trace records: *"By exclusion of Red, Green, Yellow, Blue from
-House_3's Color slot, only Ivory remains — therefore
-co-located(House_3, Ivory)."*
+House-3's Color slot, only Ivory remains — therefore
+co-located(House-3, Ivory)."*
 
 **Examples in the project (planned for P1.3):**
 `elimination-by-exhaustion`, `arc-consistency-propagate`,

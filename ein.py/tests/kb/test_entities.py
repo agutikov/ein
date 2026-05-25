@@ -214,15 +214,15 @@ def test_pattern_iter_yields_variables():
 
 
 def test_fact_args_admit_nested_fact():
-    inner = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
+    inner = Fact(relation_name="co-located", args=("Norwegian", "House-2"))
     outer = Fact(relation_name="hypothesis", args=(inner,))
     assert outer.args == (inner,)
     assert isinstance(outer.args[0], Fact)
 
 
 def test_nested_fact_equality_propagates():
-    a_inner = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
-    b_inner = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
+    a_inner = Fact(relation_name="co-located", args=("Norwegian", "House-2"))
+    b_inner = Fact(relation_name="co-located", args=("Norwegian", "House-2"))
     a = Fact(relation_name="hypothesis", args=(a_inner,))
     b = Fact(relation_name="hypothesis", args=(b_inner,))
     assert a == b
@@ -232,11 +232,11 @@ def test_nested_fact_equality_propagates():
 def test_nested_fact_distinct_inner_makes_outer_unequal():
     a = Fact(
         relation_name="hypothesis",
-        args=(Fact(relation_name="co-located", args=("Norwegian", "House_2")),),
+        args=(Fact(relation_name="co-located", args=("Norwegian", "House-2")),),
     )
     b = Fact(
         relation_name="hypothesis",
-        args=(Fact(relation_name="co-located", args=("Norwegian", "House_3")),),
+        args=(Fact(relation_name="co-located", args=("Norwegian", "House-3")),),
     )
     assert a != b
     assert hash(a) != hash(b)
@@ -248,11 +248,11 @@ def test_nested_fact_layer_excluded_from_identity():
     # layers are still equal.
     from ein_bot.kb import Provenance
     inner_fact = Fact(
-        relation_name="co-located", args=("Norwegian", "House_2"),
+        relation_name="co-located", args=("Norwegian", "House-2"),
         layer=Layer.FACT,
     )
     inner_reasoning = Fact(
-        relation_name="co-located", args=("Norwegian", "House_2"),
+        relation_name="co-located", args=("Norwegian", "House-2"),
         layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=42),
     )
@@ -263,7 +263,7 @@ def test_nested_fact_layer_excluded_from_identity():
 
 
 def test_nested_fact_arg_entities_returns_fact_as_is():
-    inner = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
+    inner = Fact(relation_name="co-located", args=("Norwegian", "House-2"))
     outer = Fact(relation_name="hypothesis", args=(inner,))
     # Detached entities still produce arg_entities via the str/int
     # passthrough; a Fact arg is returned as-is.
@@ -274,7 +274,7 @@ def test_nested_fact_arg_entities_returns_fact_as_is():
 
 def test_nested_fact_two_levels_deep():
     # (?outer (?mid (?inner a b))) — chain of three relational nodes.
-    innermost = Fact(relation_name="co-located", args=("Norwegian", "House_2"))
+    innermost = Fact(relation_name="co-located", args=("Norwegian", "House-2"))
     mid = Fact(relation_name="hypothesis", args=(innermost,))
     outer = Fact(relation_name="contradiction-under", args=(mid,))
     # Identity tuple cascades:
@@ -282,7 +282,7 @@ def test_nested_fact_two_levels_deep():
         relation_name="contradiction-under",
         args=(Fact(relation_name="hypothesis",
                    args=(Fact(relation_name="co-located",
-                              args=("Norwegian", "House_2")),)),),
+                              args=("Norwegian", "House-2")),)),),
     )
     assert outer == twin
     assert hash(outer) == hash(twin)
@@ -292,11 +292,11 @@ def test_nested_fact_set_membership():
     # Sets need hashing; nested-fact Facts must work in sets.
     f1 = Fact(
         relation_name="hypothesis",
-        args=(Fact(relation_name="co-located", args=("Norwegian", "House_2")),),
+        args=(Fact(relation_name="co-located", args=("Norwegian", "House-2")),),
     )
     f2 = Fact(
         relation_name="hypothesis",
-        args=(Fact(relation_name="co-located", args=("Norwegian", "House_2")),),
+        args=(Fact(relation_name="co-located", args=("Norwegian", "House-2")),),
     )
     s = {f1}
     assert f2 in s

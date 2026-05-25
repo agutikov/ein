@@ -38,11 +38,11 @@ EXAMPLE_FILES = [ZEBRA, ZEBRA2]
 # ═══════════ Lowering: terminals ═══════════
 
 def test_atom():
-    (form,) = parse("(facts (lives-in Norwegian House_1))")
+    (form,) = parse("(facts (lives-in Norwegian House-1))")
     fact = form.args[0]
     assert isinstance(fact, SForm)
     assert fact.head == Atom("lives-in")
-    assert fact.args == (Atom("Norwegian"), Atom("House_1"))
+    assert fact.args == (Atom("Norwegian"), Atom("House-1"))
 
 
 def test_var_and_wildcard():
@@ -56,7 +56,7 @@ def test_var_and_wildcard():
 
 
 def test_keyword_kwpair():
-    (form,) = parse("(query :mode solve :goal (lives-in _ House_1))")
+    (form,) = parse("(query :mode solve :goal (lives-in _ House-1))")
     args = form.args
     assert isinstance(args[0], KwPair)
     assert args[0].key == Keyword("mode")
@@ -99,7 +99,7 @@ def test_top_level_heads():
 
 
 def test_eq_fact():
-    (form,) = parse("(facts (= (color House_1) Red))")
+    (form,) = parse("(facts (= (color House-1) Red))")
     eq = form.args[0]
     assert eq.head == Atom("=")
     assert isinstance(eq.args[0], SForm) and eq.args[0].head == Atom("color")
@@ -191,8 +191,8 @@ ROUNDTRIP_CASES = [
     # ── Original baseline cases ──
     "(ontology)",
     "(ontology (type Person) (type Engineer Person))",
-    "(facts (= (color House_1) Red))",
-    "(facts (lives-in Norwegian House_1 :source \"condition (10)\"))",
+    "(facts (= (color House-1) Red))",
+    "(facts (lives-in Norwegian House-1 :source \"condition (10)\"))",
     "(ontology (symmetric co-located) (implies right-of next-to))",
     "(rules (rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)"
     " :why \"sym\"))",
@@ -200,7 +200,7 @@ ROUNDTRIP_CASES = [
     " :where (transitive ?r)) :assert (?r ?a ?c) :why \"tr\"))",
     "(query :mode solve :goal (drinks Water ?h))",
     "(trace (step s1 :rule from-condition :using (c10)"
-    " :derives (lives-in Norwegian House_1)))",
+    " :derives (lives-in Norwegian House-1)))",
     "(trace (branch-open s3 :on (lives-in Englishman ?h)"
     " :choices (a b c)))",
     # ── Edge cases (S1.1.3 T1.1.3.3, 2026-05-18) ──
@@ -236,7 +236,7 @@ ROUNDTRIP_CASES = [
     "(rules (rule p () :why \"p\" :match a :assert b :priority 1))",
     # Equality patterns / facts
     "(facts (= a b))",
-    "(facts (= (color House_1) Red))",
+    "(facts (= (color House-1) Red))",
     "(rules (rule eq () :match (= ?a ?b) :assert ?a :why \"e\"))",
     # Negation
     "(facts (not (lives-in Spaniard Coffee)))",
@@ -249,7 +249,7 @@ ROUNDTRIP_CASES = [
     "(rules (rule mix () :match (and (or (rel ?a ?b) (rel ?b ?a))"
     " (not (rel ?a ?a)) :where (neq ?a ?b)) :assert ?a :why \"mx\"))",
     # Reasoning provenance
-    "(reasoning (co-located Blue House_2 :rule square-fwd"
+    "(reasoning (co-located Blue House-2 :rule square-fwd"
     " :using (c10 c15)))",
     # Numbers (positive, negative, zero)
     "(ontology (relation r A B :priority 0))",
@@ -317,7 +317,7 @@ def test_golden_example(path):
 
 
 def test_dump_compact_one_line():
-    (form,) = parse("(facts (lives-in Norwegian House_1 :source \"x\"))")
+    (form,) = parse("(facts (lives-in Norwegian House-1 :source \"x\"))")
     compact = dump_compact(form)
     assert "\n" not in compact
     assert compact.startswith("(facts ") and compact.endswith(")")

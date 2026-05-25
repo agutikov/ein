@@ -1,17 +1,17 @@
 digraph G {
     House, Color [style=filled];
 
-    House_4 -> House;
-    House_5 -> House;
+    House-4 -> House;
+    House-5 -> House;
 
-    House_4 -> House_5 [dir=forward label="right" color="red"];
+    House-4 -> House-5 [dir=forward label="right" color="red"];
 
     Ivory -> Color;
     Green -> Color;
 
     Ivory -> Green [dir=forward label="right" color="red"];
 
-    Ivory -> House_4;
+    Ivory -> House-4;
 
-    Green -> House_5 [style=bold color="green"];
+    Green -> House-5 [style=bold color="green"];
 }

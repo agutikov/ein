@@ -80,7 +80,7 @@ class TestFactViewFilters:
         f = list(zebra_kb.fact_layer().by_source("condition (10)"))
         assert len(f) == 1
         assert f[0].relation_name == "co-located"
-        assert f[0].args == ("Norwegian", "House_1")
+        assert f[0].args == ("Norwegian", "House-1")
 
     def test_by_rule_returns_empty_pre_reasoning(self, zebra_kb):
         # Before any reasoning happens, no facts have :rule provenance.
@@ -231,7 +231,7 @@ class TestLogicalInstances:
         names = {instance_name(i) for i in insts}
         # Spot-check a few.
         assert "Norwegian" in names
-        assert "House_1" in names
+        assert "House-1" in names
         assert "Zebra" in names
 
     def test_unified_is_a_encoding(self, zebra2_kb):
@@ -239,9 +239,9 @@ class TestLogicalInstances:
         insts = logical_instances(zebra2_kb)
         names = {instance_name(i) for i in insts}
         assert "Norwegian" in names
-        assert "House_1" in names
+        assert "House-1" in names
         # Non-leaf types must NOT appear (House appears as parent of
-        # House_1..5, so it's not a leaf).
+        # House-1..5, so it's not a leaf).
         assert "House" not in names
         assert "Attribute" not in names
         assert "T" not in names

@@ -33,8 +33,8 @@ object   = "the first house"
         ↓ but the solver needs ↓
 entity   = Norwegian
 property = nationality
-relation = lives_in
-target   = house_1
+relation = lives-in
+target   = House-1
 constraint = equality (pos(Norwegian) = 1)
 ```
 

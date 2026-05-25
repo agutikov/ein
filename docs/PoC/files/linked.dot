@@ -6,12 +6,12 @@ digraph G {
     House -> House_First;
     House -> House_A;
     House -> House_Middle;
-    House -> House_1;
+    House -> House-1;
     House -> House_Last;
 
-    House_First -> House_A -> House_Middle -> House_1 -> House_Last [dir=forward label="right" color="red"];
+    House_First -> House_A -> House_Middle -> House-1 -> House_Last [dir=forward label="right" color="red"];
 
-    House_First -> House_A -> House_Middle -> House_1 -> House_Last [label="next" color="blue"];
+    House_First -> House_A -> House_Middle -> House-1 -> House_Last [label="next" color="blue"];
 
     Color -> Ivory;
     Color -> Yellow;

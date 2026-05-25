@@ -9,10 +9,10 @@
 ;;;     specific relation into the more general one).
 ;;;
 ;;; Facts (observed):
-;;;   - House_2 is immediately right of House_1.
+;;;   - House-2 is immediately right of House-1.
 ;;;
 ;;; Question:
-;;;   Are House_2 and House_1 next to each other?  (Yes.)
+;;;   Are House-2 and House-1 next to each other?  (Yes.)
 ;;;
 ;;; Expected derivation:
 ;;;   (right-of H2 H1) + (implies right-of next-to)

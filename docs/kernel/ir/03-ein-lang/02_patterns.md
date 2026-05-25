@@ -24,7 +24,7 @@ validator (S1.1.2) enforces well-formedness against the rules below.
 | construct                | example                                | reserved? | meaning                                         |
 |--------------------------|----------------------------------------|-----------|-------------------------------------------------|
 | variables                | `?a`, `?house`                          | —         | bound by the match; reused across sub-clauses   |
-| ground atoms             | `Red`, `House_1`                        | —         | match literally                                 |
+| ground atoms             | `Red`, `House-1`                        | —         | match literally                                 |
 | relation pattern         | `(?r ?a ?b [?c …])`                     | —         | VAR head binds the relation name; args bind positions |
 | named relation pattern   | `(co-located ?a ?b)`                    | —         | match a specific relation's instances                  |
 | head wildcard            | `(_ ?a ?b)`                             | —         | match any binary list head                      |

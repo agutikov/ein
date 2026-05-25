@@ -223,7 +223,7 @@ def test_nested_inner_fact():
     """
     kb = _kb("(ontology (relation hypothesis T) (relation co-located T T))")
     inner_inner = Fact(
-        relation_name="co-located", args=("Norwegian", "House_2"),
+        relation_name="co-located", args=("Norwegian", "House-2"),
         layer=Layer.REASONING,
         provenance=Provenance.from_rule(rule="hyp"),
     )
@@ -238,7 +238,7 @@ def test_nested_inner_fact():
         args=(Fact(
             relation_name="hypothesis",
             args=(Fact(relation_name="co-located",
-                       args=("Norwegian", "House_2"),
+                       args=("Norwegian", "House-2"),
                        layer=Layer.REASONING),),
             layer=Layer.REASONING,
         ),),

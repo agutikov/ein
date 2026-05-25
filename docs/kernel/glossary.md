@@ -15,7 +15,7 @@ authoritative discussion.
 
 ### Object
 A graph node representing a concrete entity in a puzzle (Norwegian,
-House_1, Red). Drawn as an ellipse in the compact view. See
+House-1, Red). Drawn as an ellipse in the compact view. See
 [`ir/01-ein-graph/01_kb.md` §1](ir/01-ein-graph/01_kb.md).
 
 ### Type

@@ -1,15 +1,15 @@
 digraph G {
     House, Color, Cigarette [style=filled];
 
-    House_1 -> House;
+    House-1 -> House;
 
     Kools -> Cigarette;
 
     Yellow -> Color;
 
-    House_1 -> Yellow;
+    House-1 -> Yellow;
 
     Yellow -> Kools;
 
-    House_1 -> Kools [style=bold, color="green"];
+    House-1 -> Kools [style=bold, color="green"];
 }

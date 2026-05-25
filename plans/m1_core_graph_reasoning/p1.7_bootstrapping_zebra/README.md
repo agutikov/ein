@@ -65,7 +65,7 @@ This phase *is* the M1 acceptance. The full set:
    condition (15), returns at least one diverging goal node.
 
 4. `ein-bot query examples/zebra-bad.ein --mode=contradictions`,
-   where `zebra-bad.ein` adds `(rel has-color House_1 Green)` to
+   where `zebra-bad.ein` adds `(rel has-color House-1 Green)` to
    the original, returns a 2- or 3-edge unsat core that includes
    the offending fact and condition (5).
 

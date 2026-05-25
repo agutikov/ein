@@ -1,6 +1,6 @@
 digraph G {
     subgraph cluster_house {
-        House_1, House_2, House_3, House_4, House_5 [shape=box];
+        House-1, House-2, House-3, House-4, House-5 [shape=box];
         label="House";
     }
 
@@ -49,11 +49,11 @@ digraph G {
     Kools -> Yellow;
     Yellow -> Kools;
 
-    Milk -> House_3;
-    House_3 -> Milk;
+    Milk -> House-3;
+    House-3 -> Milk;
 
-    Norwegian -> House_1;
-    House_1 -> Norwegian;
+    Norwegian -> House-1;
+    House-1 -> Norwegian;
 
     Chesterfields -> Fox [label="next to" style=dashed color="blue"];
     Fox -> Chesterfields [label="next to" style=dashed color="blue"];

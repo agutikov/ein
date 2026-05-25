@@ -95,7 +95,7 @@ class TestNoDuplication:
 
     def test_house_1_appears_exactly_once(self, zebra_kb):
         dot = zebra_kb.to_dot()
-        nodes = _nodes_named(dot, "House_1")
+        nodes = _nodes_named(dot, "House-1")
         assert len(nodes) == 1
 
     def test_nationality_type_appears_exactly_once(self, zebra_kb):
@@ -119,7 +119,7 @@ class TestFusion:
         assert len(type_edges) == 1
         coloc_edges = [
             line for line in _edges(dot)
-            if '"Norwegian"' in line and '"House_1"' in line
+            if '"Norwegian"' in line and '"House-1"' in line
             and "co-located" in line
         ]
         assert len(coloc_edges) == 1

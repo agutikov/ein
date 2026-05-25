@@ -82,8 +82,8 @@ Every node is *either*:
 
 | flavour      | example                | notation in ein-lang  |
 |--------------|------------------------|------------------------|
-| **named**    | `Norwegian`, `House_1` | bare atom              |
-| **relational** | `(co-located Norwegian House_1)` | parenthesised list |
+| **named**    | `Norwegian`, `House-1` | bare atom              |
+| **relational** | `(co-located Norwegian House-1)` | parenthesised list |
 
 The relational form is **just a node with N outgoing slot-edges to
 its arguments**. Notably:

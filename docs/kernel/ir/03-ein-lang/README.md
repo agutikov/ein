@@ -56,7 +56,7 @@ inspirations chapter (`05_inspirations.md`) are reference material.
   (SMT-LIB compatible).
 - Hyphenated lowercase for relations and rule names (`has-color`,
   `triangle-composition`); PascalCase or `Foo_N` for types and
-  instances (`Person`, `House_1`).
+  instances (`Person`, `House-1`).
 - All ein code blocks tagged ```` ```lisp ```` for syntax
   highlighting.
 - DOT examples tagged ```` ```dot ````.

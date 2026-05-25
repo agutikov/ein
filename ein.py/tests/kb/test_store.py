@@ -71,7 +71,7 @@ class TestZebraTypeHierarchy:
 
     def test_house_has_five_instances(self, zebra_kb):
         names = {i.name for i in zebra_kb.types["House"].instances}
-        assert names == {"House_1", "House_2", "House_3", "House_4", "House_5"}
+        assert names == {"House-1", "House-2", "House-3", "House-4", "House-5"}
 
     def test_ancestors_chain(self, zebra_kb):
         # House -> Attribute -> (root)
@@ -95,7 +95,7 @@ class TestZebraInstance:
         assert ("next-to", Layer.FACT) in rels
 
     def test_house_1_facts_layer_split(self, zebra_kb):
-        f = zebra_kb.instances["House_1"].facts
+        f = zebra_kb.instances["House-1"].facts
         layers = {fact.layer for fact in f}
         # Appears in ontology (instance + structural right-of) and in
         # fact layer (condition (10)).
@@ -200,7 +200,7 @@ class TestZebraFact:
         assert isinstance(a, Instance)
         assert isinstance(b, Instance)
         assert a.name == "Norwegian"
-        assert b.name == "House_1"
+        assert b.name == "House-1"
 
     def test_property_fact_is_rule_application(self, zebra_kb):
         # `(symmetric co-located)` has head=symmetric (a rule).
@@ -368,7 +368,7 @@ class TestNestedFactArgsThroughLoader:
     §3 — relational nodes (parenthesised forms) are a first-class
     flavour of node and can appear as arguments to other facts.
     Q40 Option A relies on this for the synthetic
-    ``(hypothesis (co-located Norwegian House_2))`` facts emitted
+    ``(hypothesis (co-located Norwegian House-2))`` facts emitted
     at fork time.
     """
 
@@ -376,7 +376,7 @@ class TestNestedFactArgsThroughLoader:
         from ein_bot.ir import parse
         forms = parse(
             "(facts "
-            "  (hypothesis (co-located Norwegian House_2)))"
+            "  (hypothesis (co-located Norwegian House-2)))"
         )
         kb = KnowledgeBase.from_ir(forms)
         # The outer fact is registered (top-level).
@@ -386,12 +386,12 @@ class TestNestedFactArgsThroughLoader:
         assert isinstance(outer.args[0], Fact)
         inner = outer.args[0]
         assert inner.relation_name == "co-located"
-        assert inner.args == ("Norwegian", "House_2")
+        assert inner.args == ("Norwegian", "House-2")
 
     def test_nested_fact_equality_across_loads(self):
         """Two separate loads with identical IR produce equal nested facts."""
         from ein_bot.ir import parse
-        src = "(facts (hypothesis (co-located Norwegian House_2)))"
+        src = "(facts (hypothesis (co-located Norwegian House-2)))"
         kb1 = KnowledgeBase.from_ir(parse(src))
         kb2 = KnowledgeBase.from_ir(parse(src))
         f1 = next(f for f in kb1.facts if f.relation_name == "hypothesis")
@@ -405,7 +405,7 @@ class TestNestedFactArgsThroughLoader:
         forms = parse(
             "(facts "
             "  (contradiction-under "
-            "    (hypothesis (co-located Norwegian House_2))))"
+            "    (hypothesis (co-located Norwegian House-2))))"
         )
         kb = KnowledgeBase.from_ir(forms)
         outer = next(f for f in kb.facts if f.relation_name == "contradiction-under")
@@ -415,4 +415,4 @@ class TestNestedFactArgsThroughLoader:
         assert isinstance(mid.args[0], Fact)
         innermost = mid.args[0]
         assert innermost.relation_name == "co-located"
-        assert innermost.args == ("Norwegian", "House_2")
+        assert innermost.args == ("Norwegian", "House-2")

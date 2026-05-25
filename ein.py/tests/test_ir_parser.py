@@ -64,7 +64,7 @@ def test_facts_empty():
 
 
 def test_facts_eq():
-    _ok("(facts (= (color House_1) Red))")
+    _ok("(facts (= (color House-1) Red))")
 
 
 def test_facts_instance():
@@ -75,8 +75,8 @@ def test_facts_instance():
 def test_facts_relation_with_source():
     _ok("""
     (facts
-      (lives-in Norwegian House_1 :source "condition (10)")
-      (drinks Milk House_3        :source "condition (9)"))
+      (lives-in Norwegian House-1 :source "condition (10)")
+      (drinks Milk House-3        :source "condition (9)"))
     """)
 
 
@@ -98,7 +98,7 @@ def test_facts_property_application():
 def test_facts_meta_relation():
     """All-different / constraints are just facts with the constraint
     name as head — no `constraint` wrapper."""
-    _ok("(facts (all-different House_1 House_2 House_3 House_4 House_5))")
+    _ok("(facts (all-different House-1 House-2 House-3 House-4 House-5))")
 
 
 # ═══════════ Reserved kernel meta-primitives ═══════════
@@ -243,7 +243,7 @@ def test_query_solve():
 
 
 def test_query_gaps():
-    _ok("(query :mode gaps :goal (lives-in _ House_1))")
+    _ok("(query :mode gaps :goal (lives-in _ House-1))")
 
 
 def test_query_contradictions():
@@ -261,7 +261,7 @@ def test_trace_step_only():
     (trace
       (step s1 :rule from-condition
                :using (c10)
-               :derives (lives-in Norwegian House_1)
+               :derives (lives-in Norwegian House-1)
                :source "condition (10)"))
     """)
 
@@ -270,17 +270,17 @@ def test_trace_with_branch_and_contradiction():
     _ok("""
     (trace
       (step s1 :rule from-condition :using (c10)
-               :derives (lives-in Norwegian House_1))
+               :derives (lives-in Norwegian House-1))
       (step s2 :rule exclusivity :using (s1)
-               :derives (not (lives-in Norwegian House_2)))
+               :derives (not (lives-in Norwegian House-2)))
       (branch-open s3 :on (lives-in Englishman ?h)
                       :choices (s3_1 s3_2 s3_3 s3_4 s3_5))
       (step s3_1 :rule hypothesis
-                 :assumes (lives-in Englishman House_1)
+                 :assumes (lives-in Englishman House-1)
                  :derives (contradiction-with s1))
       (contradiction c-branch :using (s3_1) :assumption s3_1)
       (branch-close s3 :choose s3_2)
-      (symmetry-class sc1 :over (House_1 House_2) :note "numbering irrelevant"))
+      (symmetry-class sc1 :over (House-1 House-2) :note "numbering irrelevant"))
     """)
 
 
@@ -329,8 +329,8 @@ def test_reasoning_with_derived_facts():
     """Derived facts use `:rule` / `:using` provenance instead of `:source`."""
     _ok("""
     (reasoning
-      (co-located Blue House_2 :rule square-fwd :using (c10 c15))
-      (not (co-located Norwegian House_2) :rule type-exclusivity :using (c10)))
+      (co-located Blue House-2 :rule square-fwd :using (c10 c15))
+      (not (co-located Norwegian House-2) :rule type-exclusivity :using (c10)))
     """)
 
 

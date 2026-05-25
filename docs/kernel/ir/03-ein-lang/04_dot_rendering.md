@@ -57,9 +57,9 @@ digraph ontology {
   Person     [shape=box];
   House      [shape=box];
   Norwegian  [shape=oval];
-  House_1    [shape=oval];
+  House-1    [shape=oval];
   Norwegian -> Person [style=dashed, arrowhead=empty];   // instance-of
-  House_1   -> House  [style=dashed, arrowhead=empty];
+  House-1   -> House  [style=dashed, arrowhead=empty];
   Person -> House [label="lives-in (1..1)", style=dashed]; // relation schema
 }
 ```
@@ -121,8 +121,8 @@ DAG is also what
 ```dot
 digraph derivation {
   c10 [shape=rectangle, label="condition (10)"];
-  s1  [shape=rectangle, label="lives-in(Norwegian, House_1)"];
-  s2  [shape=rectangle, label="¬lives-in(Norwegian, House_2)"];
+  s1  [shape=rectangle, label="lives-in(Norwegian, House-1)"];
+  s2  [shape=rectangle, label="¬lives-in(Norwegian, House-2)"];
   c10 -> s1 [label="from-condition"];
   s1  -> s2 [label="exclusivity"];
 }
@@ -146,7 +146,7 @@ identity is fused across forms — `Norwegian` (instance) appears
 **once** and participates in:
 
 - its `is-a` edge to `Nationality` (ontology layer),
-- its `(co-located Norwegian House_1)` fact edge (fact layer),
+- its `(co-located Norwegian House-1)` fact edge (fact layer),
 - any derived edges that mention it (reasoning layer).
 
 This is the PoC's *linked.svg* aesthetic — all the entity types on
@@ -203,16 +203,16 @@ digraph zebra_unified_fragment {
 
   // instances
   "Norwegian" [shape=oval, label="Norwegian"];
-  "House_1"   [shape=oval, label="House_1"];
+  "House-1"   [shape=oval, label="House-1"];
 
   // type edges (instance-of)
   "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "House_1"   -> "House"       [style=dashed, arrowhead=empty, label="is-a"];
+  "House-1"   -> "House"       [style=dashed, arrowhead=empty, label="is-a"];
   "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
   "House"       -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
 
   // fact-layer edges (note short-source id "(10)" + per-relation colour)
-  "Norwegian" -> "House_1" [
+  "Norwegian" -> "House-1" [
     label="co-located (10)",
     color="#1f77b4", fontcolor="#1f77b4",
     style=solid,

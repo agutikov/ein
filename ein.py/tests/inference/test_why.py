@@ -12,10 +12,10 @@ def test_single_substitution():
 def test_multiple_substitutions():
     out = render_why(
         "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}.",
-        {"rel": "co-located", "a": "Norwegian", "b": "House_1", "c": "Red"},
+        {"rel": "co-located", "a": "Norwegian", "b": "House-1", "c": "Red"},
     )
     assert out == \
-        "co-located is transitive: Norwegian →co-located→ House_1 →co-located→ Red."
+        "co-located is transitive: Norwegian →co-located→ House-1 →co-located→ Red."
 
 
 def test_bare_braces_left_literal():

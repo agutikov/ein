@@ -248,7 +248,7 @@ def test_type_exclusivity_negative_same_instance():
 
 
 def test_square_unique_corner_inference():
-    """Norwegian in House_1 + next-to Blue ⇒ Blue in House_2.
+    """Norwegian in House-1 + next-to Blue ⇒ Blue in House-2.
 
     The exact Zebra walkthrough step the rule was added to close.
     Idea-08 explanation-completeness requires this firing.
@@ -263,14 +263,14 @@ def test_square_unique_corner_inference():
         :why "u" :priority 200))
     (ontology
       (type House) (type Nationality) (type Color)
-      (instance House_1 House) (instance House_2 House)
+      (instance House-1 House) (instance House-2 House)
       (instance Norwegian Nationality) (instance Blue Color)
       (relation co-located T T) (relation next-to T T)
       (square-unique next-to House))
     (facts
-      (co-located Norwegian House_1 :source "(10)")
+      (co-located Norwegian House-1 :source "(10)")
       (next-to Norwegian Blue :source "(15)")
-      (next-to House_1 House_2 :source "(1)"))
+      (next-to House-1 House-2 :source "(1)"))
     """)
     firings = list(eng.saturate())
     matched = [
@@ -278,7 +278,7 @@ def test_square_unique_corner_inference():
     ]
     assert len(matched) == 1
     assert matched[0].derived.relation_name == "co-located"
-    assert matched[0].derived.args == ("Blue", "House_2")
+    assert matched[0].derived.args == ("Blue", "House-2")
 
 
 def test_square_unique_does_not_fire_on_attribute_pair():
@@ -287,7 +287,7 @@ def test_square_unique_does_not_fire_on_attribute_pair():
     "uniqueness" is just *incidental* (only one stated next-to fact).
 
     Without this premise, the rule would derive wrong facts like
-    (co-located House_3 Norwegian) by treating Blue as if it had a
+    (co-located House-3 Norwegian) by treating Blue as if it had a
     unique spatial neighbour."""
     eng = _engine("""
     (rules
@@ -313,8 +313,8 @@ def test_square_unique_does_not_fire_on_attribute_pair():
 
 
 def test_square_unique_skips_middle_houses():
-    """House_3 has two next-to neighbours (House_2, House_4) — guard
-    fails for any binding with ?x = House_3."""
+    """House-3 has two next-to neighbours (House-2, House-4) — guard
+    fails for any binding with ?x = House-3."""
     eng = _engine("""
     (rules
       (rule square-unique (?R ?T)
@@ -325,19 +325,19 @@ def test_square_unique_skips_middle_houses():
         :why "u" :priority 200))
     (ontology
       (type House) (type Nationality)
-      (instance House_2 House) (instance House_3 House) (instance House_4 House)
+      (instance House-2 House) (instance House-3 House) (instance House-4 House)
       (instance Spaniard Nationality)
       (relation co-located T T) (relation next-to T T)
       (square-unique next-to House)
-      (next-to House_2 House_3) (next-to House_3 House_2)
-      (next-to House_3 House_4) (next-to House_4 House_3))
+      (next-to House-2 House-3) (next-to House-3 House-2)
+      (next-to House-3 House-4) (next-to House-4 House-3))
     (facts
-      (co-located Spaniard House_3 :source "(1)")
+      (co-located Spaniard House-3 :source "(1)")
       (next-to Spaniard Soda :source "(2)"))
     """)
     firings = list(eng.saturate())
     matched = [f for f in firings if f.rule == "square-unique"]
-    # House_3 has two neighbours → guard fails → no firing.
+    # House-3 has two neighbours → guard fails → no firing.
     assert not matched
 
 
@@ -370,10 +370,10 @@ def test_hypothesis_contradiction_positive():
       :assert (not ?h) :why "h" :priority 900))
     (ontology (relation co-located T T))
     """)
-    # Synthetic inner proposition: (co-located Norwegian House_2)
+    # Synthetic inner proposition: (co-located Norwegian House-2)
     prop = Fact(
         relation_name="co-located",
-        args=("Norwegian", "House_2"),
+        args=("Norwegian", "House-2"),
         layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=1),
     )
@@ -399,7 +399,7 @@ def test_hypothesis_contradiction_negative_no_contradiction_fact():
     """)
     prop = Fact(
         relation_name="co-located",
-        args=("Norwegian", "House_2"),
+        args=("Norwegian", "House-2"),
         layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=1),
     )

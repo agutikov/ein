@@ -27,7 +27,7 @@
 ;;; The dump (S1.5a.11) reveals the bug: `disjunctive-prune` fires
 ;;; with bwd-direction activator `(disjunctive-prune right-of
 ;;; color-loc Green color-loc Ivory)` and asserts
-;;; `(not (color-loc Ivory House_4))` — claiming Ivory cannot be
+;;; `(not (color-loc Ivory House-4))` — claiming Ivory cannot be
 ;;; at H_4 even though the Wikipedia solution puts it there. The
 ;;; NAF check `(absent (?S ?h_other ?h1))` is correct for the fwd
 ;;; activator but wrong for bwd when ?S is asymmetric (right-of):
@@ -65,8 +65,8 @@
 ;;; The 15 puzzle conditions split into three groups:
 ;;;
 ;;; (A) Direct attribute↔house facts (atomic):
-;;;     (9)  Milk in middle house  → (drink-loc Milk House_3)
-;;;     (10) Norwegian in first    → (nation-loc Norwegian House_1)
+;;;     (9)  Milk in middle house  → (drink-loc Milk House-3)
+;;;     (10) Norwegian in first    → (nation-loc Norwegian House-1)
 ;;;
 ;;; (B) Cross-attribute equality (∃h. (R1 V1 h) ∧ (R2 V2 h)):
 ;;;     (2-5, 7-8, 13-14) — encoded as `co-located` activators
@@ -361,8 +361,8 @@
   ;; declarations needed per relation.
   ;; Typecheck activators auto-derived from bijective relations
   ;; only. The bijective relations (*-loc) have direct-parent arg
-  ;; types (House_1's is-a-parent IS House, etc.), so subrel
-  ;; alone gives (is-a* House_1 House) at priority 100 — typecheck
+  ;; types (House-1's is-a-parent IS House, etc.), so subrel
+  ;; alone gives (is-a* House-1 House) at priority 100 — typecheck
   ;; at 220 can NAF-check correctly.
   ;;
   ;; Non-bijective declared relations (is-a, is-a*, right-of,
@@ -467,8 +467,8 @@
   (is-a Drink       Attribute)
 
   ;; House instances
-  (is-a House_1 House) (is-a House_2 House) (is-a House_3 House)
-  (is-a House_4 House) (is-a House_5 House)
+  (is-a House-1 House) (is-a House-2 House) (is-a House-3 House)
+  (is-a House-4 House) (is-a House-5 House)
   ;; Colors
   (is-a Red    Color)  (is-a Green Color)  (is-a Ivory Color)
   (is-a Yellow Color)  (is-a Blue  Color)
@@ -500,10 +500,10 @@
   ;; pairs).
   ;;
   ;; (1) Five houses in a row.
-  (right-of House_2 House_1       :source "condition (1)")
-  (right-of House_3 House_2       :source "condition (1)")
-  (right-of House_4 House_3       :source "condition (1)")
-  (right-of House_5 House_4       :source "condition (1)")
+  (right-of House-2 House-1       :source "condition (1)")
+  (right-of House-3 House-2       :source "condition (1)")
+  (right-of House-4 House-3       :source "condition (1)")
+  (right-of House-5 House-4       :source "condition (1)")
 
   ;; (2) The Englishman lives in the red house.
   (co-located nation-loc Englishman color-loc Red                 :source "condition (2)")
@@ -527,10 +527,10 @@
   (co-located smoke-loc  Kools      color-loc Yellow              :source "condition (8)")
 
   ;; (9) Milk is drunk in the middle house.
-  (drink-loc  Milk       House_3                                  :source "condition (9)")
+  (drink-loc  Milk       House-3                                  :source "condition (9)")
 
   ;; (10) The Norwegian lives in the first house.
-  (nation-loc Norwegian  House_1                                  :source "condition (10)")
+  (nation-loc Norwegian  House-1                                  :source "condition (10)")
 
   ;; (11) Chesterfields is smoked next to the house with the fox.
   (adjacent-via next-to  smoke-loc Chesterfields pet-loc   Fox    :source "condition (11)")
@@ -563,37 +563,37 @@
 
   ;; hint 1 — Ivory is house 4 (cond. 6 fixes "Ivory then Green",
   ;; combined with Norwegian@H1+Blue@H2 → Ivory∈{H3,H4}; sol = H4).
-  (color-loc  Ivory          House_4   :source "hint 1")
+  (color-loc  Ivory          House-4   :source "hint 1")
 
   ;; hint 2 — Green is house 5 (right-of Ivory by cond. 6).
-  (color-loc  Green          House_5   :source "hint 2")
+  (color-loc  Green          House-5   :source "hint 2")
 
   ;; hint 3 — Blue is house 2 (only neighbour of Norwegian@H1).
-  (color-loc  Blue           House_2   :source "hint 3")
+  (color-loc  Blue           House-2   :source "hint 3")
 
   ;; hint 4 — Englishman is house 3 (cond. 2: Red house).
-  (nation-loc Englishman     House_3   :source "hint 4")
+  (nation-loc Englishman     House-3   :source "hint 4")
 
   ;; hint 5 — Japanese is house 5 (Parliament-smoker in Green).
-  (nation-loc Japanese       House_5   :source "hint 5")
+  (nation-loc Japanese       House-5   :source "hint 5")
 
   ;; hint 6 — Coffee is in house 5 (cond. 4: drunk in Green house).
-  (drink-loc  Coffee         House_5   :source "hint 6")
+  (drink-loc  Coffee         House-5   :source "hint 6")
 
   ;; hint 7 — Water is in house 1 (the only drink unassigned to
   ;; H_2..H_5 after deductions from Milk@H3 + Coffee@H5).
-  (drink-loc  Water          House_1   :source "hint 7")
+  (drink-loc  Water          House-1   :source "hint 7")
 
   ;; hint 8 — Kools is in house 1 (cond. 8: smoked in Yellow).
-  (smoke-loc  Kools          House_1   :source "hint 8")
+  (smoke-loc  Kools          House-1   :source "hint 8")
 
   ;; hint 9 — Zebra is in house 5 (the unsolved goal: Japanese
   ;; owns the Zebra; Japanese@H5 by hint 5).
-  (pet-loc    Zebra          House_5   :source "hint 9")
+  (pet-loc    Zebra          House-5   :source "hint 9")
 
   ;; hint 10 — Dog is in house 4 (cond. 3: Spaniard owns Dog,
   ;; Spaniard@H4 since every other nation is placed by hints).
-  (pet-loc    Dog            House_4   :source "hint 10"))
+  (pet-loc    Dog            House-4   :source "hint 10"))
 
 (query
   :mode solve

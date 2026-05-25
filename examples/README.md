@@ -4,9 +4,9 @@ The Wikipedia-style deductive solution to the Zebra puzzle, translated to
 English line-by-line and annotated with the ein facts, rules and hypotheses
 each NL step corresponds to. The encoding under analysis is
 [`zebra2.ein`](zebra2.ein); references to conditions `(1)`–`(15)` match the
-numbering in its `(facts …)` block. Constants (`House_1`, `Kools`,
+numbering in its `(facts …)` block. Constants (`House-1`, `Kools`,
 `Old_Gold`, `Lucky_Strike`, `Chesterfields`) follow the ein spelling; in
-prose `H_i` abbreviates `House_i`.
+prose `H_i` abbreviates `House-i`.
 
 ## How to read the trace
 
@@ -35,7 +35,7 @@ prose `H_i` abbreviates `House_i`.
 
 | # | NL condition | ein fact |
 |---|---|---|
-| 1 | Five houses in a row. | `(right-of House_{i+1} House_i)` for i=1..4 |
+| 1 | Five houses in a row. | `(right-of House-{i+1} House-i)` for i=1..4 |
 | 2 | The Englishman lives in the red house. | `(co-located nation-loc Englishman color-loc Red)` |
 | 3 | The Spaniard owns the dog. | `(co-located nation-loc Spaniard pet-loc Dog)` |
 | 4 | Coffee is drunk in the green house. | `(co-located drink-loc Coffee color-loc Green)` |
@@ -43,8 +43,8 @@ prose `H_i` abbreviates `House_i`.
 | 6 | The green house is immediately right of the ivory house. | `(adjacent-via right-of color-loc Ivory color-loc Green)` |
 | 7 | The Old Gold smoker owns snails. | `(co-located smoke-loc Old_Gold pet-loc Snail)` |
 | 8 | Kools are smoked in the yellow house. | `(co-located smoke-loc Kools color-loc Yellow)` |
-| 9 | Milk is drunk in the middle house. | `(drink-loc Milk House_3)` |
-| 10 | The Norwegian lives in the first house. | `(nation-loc Norwegian House_1)` |
+| 9 | Milk is drunk in the middle house. | `(drink-loc Milk House-3)` |
+| 10 | The Norwegian lives in the first house. | `(nation-loc Norwegian House-1)` |
 | 11 | Chesterfields is smoked next to the house with the fox. | `(adjacent-via next-to smoke-loc Chesterfields pet-loc Fox)` |
 | 12 | Kools is smoked next to the house with the horse. | `(adjacent-via next-to smoke-loc Kools pet-loc Horse)` |
 | 13 | The Lucky Strike smoker drinks orange juice. | `(co-located smoke-loc Lucky_Strike drink-loc Juice)` |
@@ -71,7 +71,7 @@ Puzzle query (from the `(query …)` block):
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 0 | Norwegian in `H_1` | input fact (10) | `(nation-loc Norwegian House_1)` |
+| 0 | Norwegian in `H_1` | input fact (10) | `(nation-loc Norwegian House-1)` |
 
 > **From (10) and (15) the second house is blue.** What colour is the first
 > house? Not green and not ivory — they must be adjacent (from (6) and the
@@ -80,27 +80,27 @@ Puzzle query (from the `(query …)` block):
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 0 | Blue at `H_2` | `(adjacent-via-fwd next-to nation-loc Norwegian color-loc Blue)` | Norwegian@`H_1`; H_1's only `next-to` neighbour is `H_2` ⟹ `(color-loc Blue House_2)` |
-| 0 | not Blue at `H_1` | `(functional color-loc)` → negative-derivation | Blue@`H_2` ⟹ `(not (color-loc Blue House_1))` |
-| 0 | not Green at `H_1` | `(disjunctive-prune-bwd right-of color-loc Ivory color-loc Green)` | Green is `right-of` Ivory (6); `H_1` has no left neighbour ⟹ `(not (color-loc Green House_1))` |
-| 0 | not Ivory at `H_1` | `(disjunctive-prune-fwd right-of color-loc Ivory color-loc Green)` | Ivory@`H_1` would force Green@`H_2`, conflict with Blue@`H_2` ⟹ `(not (color-loc Ivory House_1))` |
+| 0 | Blue at `H_2` | `(adjacent-via-fwd next-to nation-loc Norwegian color-loc Blue)` | Norwegian@`H_1`; H_1's only `next-to` neighbour is `H_2` ⟹ `(color-loc Blue House-2)` |
+| 0 | not Blue at `H_1` | `(functional color-loc)` → negative-derivation | Blue@`H_2` ⟹ `(not (color-loc Blue House-1))` |
+| 0 | not Green at `H_1` | `(disjunctive-prune-bwd right-of color-loc Ivory color-loc Green)` | Green is `right-of` Ivory (6); `H_1` has no left neighbour ⟹ `(not (color-loc Green House-1))` |
+| 0 | not Ivory at `H_1` | `(disjunctive-prune-fwd right-of color-loc Ivory color-loc Green)` | Ivory@`H_1` would force Green@`H_2`, conflict with Blue@`H_2` ⟹ `(not (color-loc Ivory House-1))` |
 | 0 | not Red at `H_1` | `(co-located nation-loc Englishman color-loc Red)` + `(functional nation-loc)` | Norwegian@`H_1` ⟹ Englishman ≠ `H_1` ⟹ Red ≠ `H_1` |
-| 0 | **Yellow at `H_1`** | `(domain-elimination color-loc)` | Blue/Green/Ivory/Red all excluded at `H_1` ⟹ `(color-loc Yellow House_1)` |
+| 0 | **Yellow at `H_1`** | `(domain-elimination color-loc)` | Blue/Green/Ivory/Red all excluded at `H_1` ⟹ `(color-loc Yellow House-1)` |
 
 > Consequently **Kools are smoked in `H_1`** (8) and **a horse is kept in
 > `H_2`** (12).
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 0 | Kools at `H_1` | `(co-located smoke-loc Kools color-loc Yellow)` | Yellow@`H_1` ⟹ `(smoke-loc Kools House_1)` |
-| 0 | Horse at `H_2` | `(adjacent-via-fwd next-to smoke-loc Kools pet-loc Horse)` | Kools@`H_1`; unique next-to neighbour `H_2` ⟹ `(pet-loc Horse House_2)` |
+| 0 | Kools at `H_1` | `(co-located smoke-loc Kools color-loc Yellow)` | Yellow@`H_1` ⟹ `(smoke-loc Kools House-1)` |
+| 0 | Horse at `H_2` | `(adjacent-via-fwd next-to smoke-loc Kools pet-loc Horse)` | Kools@`H_1`; unique next-to neighbour `H_2` ⟹ `(pet-loc Horse House-2)` |
 
 > **What does the Norwegian — first house, yellow, Kools — drink?** Not tea
 > (Ukrainian — 5); not coffee (green house — 4); not milk (third house —
 > 9); not orange juice (Lucky Strike smoker — 13). ***Therefore the
 > Norwegian drinks water,*** answering the first half of the puzzle.
 
-This is the user-cited example: the open query `(drink-loc House_1 ?d)`
+This is the user-cited example: the open query `(drink-loc House-1 ?d)`
 would have `(guess drink-loc Drink House)` enumerate five hypotheses — Tea,
 Coffee, Milk, Juice, Water — of which four are killed by stored negatives
 derived from (4), (5), (9), (13). The compact dual is
@@ -110,9 +110,9 @@ derived from (4), (5), (9), (13). The compact dual is
 |---|---|---|---|
 | 0 | not Tea at `H_1` | `(co-located nation-loc Ukrainian drink-loc Tea)` + `(functional nation-loc)` | Norwegian@`H_1` ⟹ Ukrainian ≠ `H_1` ⟹ Tea ≠ `H_1` |
 | 0 | not Coffee at `H_1` | `(co-located drink-loc Coffee color-loc Green)` + `(functional color-loc)` | Yellow@`H_1` ⟹ Green ≠ `H_1` ⟹ Coffee ≠ `H_1` |
-| 0 | not Milk at `H_1` | `(functional drink-loc)` → negative | Milk@`H_3` ⟹ `(not (drink-loc Milk House_1))` |
+| 0 | not Milk at `H_1` | `(functional drink-loc)` → negative | Milk@`H_3` ⟹ `(not (drink-loc Milk House-1))` |
 | 0 | not Juice at `H_1` | `(co-located smoke-loc Lucky_Strike drink-loc Juice)` + `(functional smoke-loc)` | Kools@`H_1` ⟹ Lucky_Strike ≠ `H_1` ⟹ Juice ≠ `H_1` |
-| 0 | **Water at `H_1`** | `(domain-elimination drink-loc)` | Tea/Coffee/Milk/Juice excluded at `H_1` ⟹ `(drink-loc Water House_1)` |
+| 0 | **Water at `H_1`** | `(domain-elimination drink-loc)` | Tea/Coffee/Milk/Juice excluded at `H_1` ⟹ `(drink-loc Water House-1)` |
 
 End-of-step state:
 
@@ -136,10 +136,10 @@ Unconditional negatives at `d = 0`:
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 0 | not Kools at `H_2` | `(functional smoke-loc)` → negative | Kools@`H_1` ⟹ `(not (smoke-loc Kools House_2))` |
+| 0 | not Kools at `H_2` | `(functional smoke-loc)` → negative | Kools@`H_1` ⟹ `(not (smoke-loc Kools House-2))` |
 | 0 | not Old_Gold at `H_2` | `(co-located smoke-loc Old_Gold pet-loc Snail)` + `(functional pet-loc)` | Horse@`H_2` ⟹ Snail ≠ `H_2` ⟹ Old_Gold ≠ `H_2` |
 
-Surviving hypotheses on `(smoke-loc ?c House_2)`: Lucky_Strike, Parliament,
+Surviving hypotheses on `(smoke-loc ?c House-2)`: Lucky_Strike, Parliament,
 Chesterfields.
 
 ### Branch H_2.A — Lucky_Strike@`H_2`  (refuted)
@@ -152,15 +152,15 @@ Chesterfields.
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 1 | **Hypothesis** | `(guess smoke-loc Cigarette House)` opens branch | `(smoke-loc Lucky_Strike House_2)` |
-| 1 | Juice at `H_2` | `(co-located smoke-loc Lucky_Strike drink-loc Juice)` | ⟹ `(drink-loc Juice House_2)` |
-| 1 | not Norwegian@`H_2` | `(functional nation-loc)` | Norwegian@`H_1` ⟹ `(not (nation-loc Norwegian House_2))` |
+| 1 | **Hypothesis** | `(guess smoke-loc Cigarette House)` opens branch | `(smoke-loc Lucky_Strike House-2)` |
+| 1 | Juice at `H_2` | `(co-located smoke-loc Lucky_Strike drink-loc Juice)` | ⟹ `(drink-loc Juice House-2)` |
+| 1 | not Norwegian@`H_2` | `(functional nation-loc)` | Norwegian@`H_1` ⟹ `(not (nation-loc Norwegian House-2))` |
 | 1 | not Englishman@`H_2` | (2) + `(functional color-loc)` | Blue@`H_2` ⟹ Red ≠ `H_2` ⟹ Englishman ≠ `H_2` |
 | 1 | not Spaniard@`H_2` | (3) + `(functional pet-loc)` | Horse@`H_2` ⟹ Dog ≠ `H_2` ⟹ Spaniard ≠ `H_2` |
 | 1 | not Ukrainian@`H_2` | (5) + `(functional drink-loc)` | Juice@`H_2` ⟹ Tea ≠ `H_2` ⟹ Ukrainian ≠ `H_2` |
 | 1 | not Japanese@`H_2` | (14) + `(functional smoke-loc)` | Lucky_Strike@`H_2` ⟹ Parliament ≠ `H_2` ⟹ Japanese ≠ `H_2` |
 | 1 | **⊥** | `(total nation-loc)` | every Nationality excluded at `H_2` ⟹ `(false)` |
-| 1→0 | learn no-good | path-condition learning (S1.5a.18) | `(not (smoke-loc Lucky_Strike House_2))` lifted to `d=0` |
+| 1→0 | learn no-good | path-condition learning (S1.5a.18) | `(not (smoke-loc Lucky_Strike House-2))` lifted to `d=0` |
 
 ### Branch H_2.B — Parliament@`H_2`  (refuted)
 
@@ -170,14 +170,14 @@ Chesterfields.
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 1 | **Hypothesis** | `(guess smoke-loc Cigarette House)` | `(smoke-loc Parliament House_2)` |
-| 1 | Japanese@`H_2` | `(co-located smoke-loc Parliament nation-loc Japanese)` (symmetric of 14) | ⟹ `(nation-loc Japanese House_2)` |
+| 1 | **Hypothesis** | `(guess smoke-loc Cigarette House)` | `(smoke-loc Parliament House-2)` |
+| 1 | Japanese@`H_2` | `(co-located smoke-loc Parliament nation-loc Japanese)` (symmetric of 14) | ⟹ `(nation-loc Japanese House-2)` |
 | 1 | not Tea@`H_2` | (5) + `(functional nation-loc)` | Japanese@`H_2` ⟹ Ukrainian ≠ `H_2` ⟹ Tea ≠ `H_2` |
 | 1 | not Coffee@`H_2` | (4) + `(functional color-loc)` | Blue@`H_2` ⟹ Green ≠ `H_2` ⟹ Coffee ≠ `H_2` |
-| 1 | not Milk@`H_2` | `(functional drink-loc)` | Milk@`H_3` ⟹ `(not (drink-loc Milk House_2))` |
+| 1 | not Milk@`H_2` | `(functional drink-loc)` | Milk@`H_3` ⟹ `(not (drink-loc Milk House-2))` |
 | 1 | not Juice@`H_2` | (13) + `(functional smoke-loc)` | Parliament@`H_2` ⟹ Lucky_Strike ≠ `H_2` ⟹ Juice ≠ `H_2` |
 | 1 | **⊥** | `(total drink-loc)` | every Drink excluded at `H_2` ⟹ `(false)` |
-| 1→0 | learn no-good | path-condition learning | `(not (smoke-loc Parliament House_2))` |
+| 1→0 | learn no-good | path-condition learning | `(not (smoke-loc Parliament House-2))` |
 
 ### Resuming `d = 0` after both branches refuted
 
@@ -185,7 +185,7 @@ Chesterfields.
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 0 | **Chesterfields@`H_2`** | `(domain-elimination smoke-loc)` | Kools/Old_Gold/Lucky_Strike/Parliament excluded ⟹ `(smoke-loc Chesterfields House_2)` |
+| 0 | **Chesterfields@`H_2`** | `(domain-elimination smoke-loc)` | Kools/Old_Gold/Lucky_Strike/Parliament excluded ⟹ `(smoke-loc Chesterfields House-2)` |
 
 > What nationality is in `H_2` (blue, Chesterfields, horse)? Not Norwegian
 > (10), not Englishman (red — 2), not Spaniard (dog — 3), not Japanese
@@ -194,8 +194,8 @@ Chesterfields.
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
 | 0 | four negatives at `H_2` | as in branch H_2.A but with Chesterfields ≠ Parliament substituted | not Norwegian / not Englishman / not Spaniard / not Japanese at `H_2` |
-| 0 | **Ukrainian@`H_2`** | `(domain-elimination nation-loc)` | only Ukrainian survives ⟹ `(nation-loc Ukrainian House_2)` |
-| 0 | **Tea@`H_2`** | `(co-located nation-loc Ukrainian drink-loc Tea)` | ⟹ `(drink-loc Tea House_2)` |
+| 0 | **Ukrainian@`H_2`** | `(domain-elimination nation-loc)` | only Ukrainian survives ⟹ `(nation-loc Ukrainian House-2)` |
+| 0 | **Tea@`H_2`** | `(co-located nation-loc Ukrainian drink-loc Tea)` | ⟹ `(drink-loc Tea House-2)` |
 
 ---
 
@@ -206,8 +206,8 @@ Chesterfields.
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 0 | Fox ∈ {`H_1`, `H_3`} | `(disjunctive-prune-fwd next-to smoke-loc Chesterfields pet-loc Fox)` + `(disjunctive-prune-bwd next-to smoke-loc Chesterfields pet-loc Fox)` | next-to-neighbours of `H_2` = {`H_1`,`H_3`} ⟹ `(not (pet-loc Fox House_4))`, `(not (pet-loc Fox House_5))` |
-| 0 | not Fox at `H_2` | `(functional pet-loc)` | Horse@`H_2` ⟹ `(not (pet-loc Fox House_2))` |
+| 0 | Fox ∈ {`H_1`, `H_3`} | `(disjunctive-prune-fwd next-to smoke-loc Chesterfields pet-loc Fox)` + `(disjunctive-prune-bwd next-to smoke-loc Chesterfields pet-loc Fox)` | next-to-neighbours of `H_2` = {`H_1`,`H_3`} ⟹ `(not (pet-loc Fox House-4))`, `(not (pet-loc Fox House-5))` |
+| 0 | not Fox at `H_2` | `(functional pet-loc)` | Horse@`H_2` ⟹ `(not (pet-loc Fox House-2))` |
 
 ### Branch Fox.A — Fox@`H_3`  (refuted)
 
@@ -223,15 +223,15 @@ Chesterfields.
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 1 | **Hypothesis** | `(guess pet-loc Pet House)` | `(pet-loc Fox House_3)` |
-| 1 | Snail ≠ `H_3` | `(functional pet-loc)` | ⟹ `(not (pet-loc Snail House_3))` |
-| 1 | Old_Gold ≠ `H_3` | `(co-located smoke-loc Old_Gold pet-loc Snail)` (back-prop) | ⟹ `(not (smoke-loc Old_Gold House_3))` |
+| 1 | **Hypothesis** | `(guess pet-loc Pet House)` | `(pet-loc Fox House-3)` |
+| 1 | Snail ≠ `H_3` | `(functional pet-loc)` | ⟹ `(not (pet-loc Snail House-3))` |
+| 1 | Old_Gold ≠ `H_3` | `(co-located smoke-loc Old_Gold pet-loc Snail)` (back-prop) | ⟹ `(not (smoke-loc Old_Gold House-3))` |
 | 1 | Old_Gold smoker drinks Coffee | `(domain-elimination drink-loc)` on Old_Gold's house | Water/Tea/Juice/Milk excluded ⟹ Old_Gold-house = Coffee-house |
 | 1 | Old_Gold lives in green | `(co-located drink-loc Coffee color-loc Green)` | ⟹ Old_Gold-house = green-house |
 | 1 | five nationality exclusions at green-house | combination of (2), (3), (5), (10), (14) + the established hypothesis facts | every Nationality contradicted at green-house |
 | 1 | **⊥** | `(total nation-loc)` | ⟹ `(false)` |
-| 1→0 | learn no-good | path-condition learning | `(not (pet-loc Fox House_3))` |
-| 0 | **Fox@`H_1`** | `(domain-elimination pet-loc)` | `H_2..H_5` all excluded ⟹ `(pet-loc Fox House_1)` |
+| 1→0 | learn no-good | path-condition learning | `(not (pet-loc Fox House-3))` |
+| 0 | **Fox@`H_1`** | `(domain-elimination pet-loc)` | `H_2..H_5` all excluded ⟹ `(pet-loc Fox House-1)` |
 
 ---
 
@@ -242,7 +242,7 @@ Chesterfields.
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 0 | Coffee ∈ {`H_4`,`H_5`} | `(functional drink-loc)` chain | Water@`H_1`, Tea@`H_2`, Milk@`H_3` ⟹ `(not (drink-loc Coffee House_{1..3}))` |
+| 0 | Coffee ∈ {`H_4`,`H_5`} | `(functional drink-loc)` chain | Water@`H_1`, Tea@`H_2`, Milk@`H_3` ⟹ `(not (drink-loc Coffee House-{1..3}))` |
 | 0 | Juice ∈ {`H_4`,`H_5`} | same | symmetric exclusion |
 
 > Where does the Old-Gold-and-snail keeper live? Not the juice house —
@@ -262,7 +262,7 @@ Chesterfields.
 | 1 | **Hypothesis** | implicit branching over `{H_4, H_5}` for Old_Gold = coffee-house | Old_Gold at the coffee house |
 | 1 | replays the step-3 sub-trace (green house, no valid nationality) | as in Branch Fox.A | `(false)` |
 | 1→0 | learn no-good | path-condition learning | Old_Gold ≠ coffee-house |
-| 0 | **Old_Gold@`H_3`, Snail@`H_3`** | `(domain-elimination smoke-loc)` over `H_3` | Kools@`H_1`, Chesterfields@`H_2`, Lucky_Strike@juice-house ∈ {`H_4`,`H_5`}, Parliament@Japanese ∈ {`H_4`,`H_5`} ⟹ `(smoke-loc Old_Gold House_3)`, then (7) ⟹ `(pet-loc Snail House_3)` |
+| 0 | **Old_Gold@`H_3`, Snail@`H_3`** | `(domain-elimination smoke-loc)` over `H_3` | Kools@`H_1`, Chesterfields@`H_2`, Lucky_Strike@juice-house ∈ {`H_4`,`H_5`}, Parliament@Japanese ∈ {`H_4`,`H_5`} ⟹ `(smoke-loc Old_Gold House-3)`, then (7) ⟹ `(pet-loc Snail House-3)` |
 
 > Then Parliament is smoked in the green house, where coffee is drunk and
 > the Japanese lives (14). The Spaniard lives in the ivory ("white" in the
@@ -283,8 +283,8 @@ Chesterfields.
 
 | d | NL | ein rule | premises → conclusion |
 |---|---|---|---|
-| 0 | **Zebra@`H_5`** | `(domain-elimination pet-loc)` at `H_5` | Fox@`H_1`, Horse@`H_2`, Snail@`H_3`, Dog@`H_4` (Spaniard@`H_4`) ⟹ `(pet-loc Zebra House_5)` |
-| 0 | **Query satisfied** | conjunction of `(drink-loc Water House_1)` and `(pet-loc Zebra House_5)` | both goal conjuncts present |
+| 0 | **Zebra@`H_5`** | `(domain-elimination pet-loc)` at `H_5` | Fox@`H_1`, Horse@`H_2`, Snail@`H_3`, Dog@`H_4` (Spaniard@`H_4`) ⟹ `(pet-loc Zebra House-5)` |
+| 0 | **Query satisfied** | conjunction of `(drink-loc Water House-1)` and `(pet-loc Zebra House-5)` | both goal conjuncts present |
 
 Final solution:
 
@@ -312,9 +312,9 @@ block — the puzzle's underlying constraint graph is reflection-invariant.
 
 | branch | depth | refuted by | learnt clause |
 |---|---|---|---|
-| `Lucky_Strike@H_2` | 1 | `(total nation-loc)` at `H_2` | `(not (smoke-loc Lucky_Strike House_2))` |
-| `Parliament@H_2`   | 1 | `(total drink-loc)` at `H_2`  | `(not (smoke-loc Parliament House_2))` |
-| `Fox@H_3`          | 1 | `(total nation-loc)` at green-house | `(not (pet-loc Fox House_3))` |
+| `Lucky_Strike@H_2` | 1 | `(total nation-loc)` at `H_2` | `(not (smoke-loc Lucky_Strike House-2))` |
+| `Parliament@H_2`   | 1 | `(total drink-loc)` at `H_2`  | `(not (smoke-loc Parliament House-2))` |
+| `Fox@H_3`          | 1 | `(total nation-loc)` at green-house | `(not (pet-loc Fox House-3))` |
 | `Old_Gold@coffee-house` | 1 | replays Fox@`H_3` sub-trace | `(not (smoke-loc Old_Gold @ coffee-house))` |
 
 No branch reaches `d = 2`. The human solution is a flat sequence of unit-

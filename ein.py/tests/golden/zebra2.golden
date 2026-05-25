@@ -237,11 +237,11 @@
   (is-a Pet Attribute)
   (is-a Cigarette Attribute)
   (is-a Drink Attribute)
-  (is-a House_1 House)
-  (is-a House_2 House)
-  (is-a House_3 House)
-  (is-a House_4 House)
-  (is-a House_5 House)
+  (is-a House-1 House)
+  (is-a House-2 House)
+  (is-a House-3 House)
+  (is-a House-4 House)
+  (is-a House-5 House)
   (is-a Red Color)
   (is-a Green Color)
   (is-a Ivory Color)
@@ -269,10 +269,10 @@
   (is-a Water Drink))
 
 (facts
-  (right-of House_2 House_1 :source "condition (1)")
-  (right-of House_3 House_2 :source "condition (1)")
-  (right-of House_4 House_3 :source "condition (1)")
-  (right-of House_5 House_4 :source "condition (1)")
+  (right-of House-2 House-1 :source "condition (1)")
+  (right-of House-3 House-2 :source "condition (1)")
+  (right-of House-4 House-3 :source "condition (1)")
+  (right-of House-5 House-4 :source "condition (1)")
   (co-located nation-loc Englishman color-loc Red :source "condition (2)")
   (co-located nation-loc Spaniard pet-loc Dog :source "condition (3)")
   (co-located drink-loc Coffee color-loc Green :source "condition (4)")
@@ -286,8 +286,8 @@
     :source "condition (6)")
   (co-located smoke-loc Old_Gold pet-loc Snail :source "condition (7)")
   (co-located smoke-loc Kools color-loc Yellow :source "condition (8)")
-  (drink-loc Milk House_3 :source "condition (9)")
-  (nation-loc Norwegian House_1 :source "condition (10)")
+  (drink-loc Milk House-3 :source "condition (9)")
+  (nation-loc Norwegian House-1 :source "condition (10)")
   (adjacent-via
     next-to
     smoke-loc

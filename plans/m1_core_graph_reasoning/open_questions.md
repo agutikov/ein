@@ -83,8 +83,8 @@ annotates "doesn't matter which way numbered".
 
 **Resolved 2026-05-21** (user direction during S1.5.0 review):
 **neither (a) nor (b)** — the question doesn't belong to the
-engine. By the time a `.ein` file declares `House_1`, …, `House_5`
-plus `(right-of House_2 House_1)` etc., the orientation is *already
+engine. By the time a `.ein` file declares `House-1`, …, `House-5`
+plus `(right-of House-2 House-1)` etc., the orientation is *already
 committed* by construction. The engine sees unique named instances
 with one spatial layout; there is no second orientation to explore
 or canonicalise.
@@ -284,7 +284,7 @@ The user proposed (2026-05-18) splitting the `(ontology …)` block
   (types-and-objects
     (type Attribute) …
     (instance Norwegian Nationality) …
-    (instance House_1 House) …))
+    (instance House-1 House) …))
 ```
 
 Justification (user's): "rules are separate head — good. Ontology
@@ -689,7 +689,7 @@ itself, not as a separate fact.
 **Resolved 2026-05-20** — option **A**. The kernel ein model
 (`docs/kernel/ir/01-ein-graph/03_ein_model.md` §3) already says
 facts can have **relational nodes** as args — `(hypothesis
-(co-located Norwegian House_2))` is just a fact whose first arg
+(co-located Norwegian House-2))` is just a fact whose first arg
 is a relational node. This is *not* a compound-node-kind promotion
 (Q26 is about virtual / computed kinds; different concern); it's
 the kernel's existing node-as-arg duality.

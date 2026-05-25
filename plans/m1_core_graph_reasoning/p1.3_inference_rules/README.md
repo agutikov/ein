@@ -65,7 +65,7 @@ scope.
   applicable rules in priority-band order
   (`propagate → derive → eliminate`); the trace shows the firings.
 - Q40 Option A: a synthetic `(hypothesis (co-located Norwegian
-  House_2))` fact is matched by `hypothesis-contradiction`'s
+  House-2))` fact is matched by `hypothesis-contradiction`'s
   pattern (nested-fact unification works end-to-end).
 - Built-in predicate registry contains exactly `eq` + `neq` (Q33);
   no phantom `eq` / `neq` relations auto-vivified in

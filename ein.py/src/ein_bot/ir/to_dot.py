@@ -194,7 +194,7 @@ def _emit_fact(b: _Builder, fact: SForm, *, derived: bool = False) -> None:
 def _atom_id_for_value(node: IRNode) -> str:
     """Resolve an atom-like or SForm value to a DOT node id.
 
-    For nested SForm values (rare — e.g. `(= (color House_1) Red)`),
+    For nested SForm values (rare — e.g. `(= (color House-1) Red)`),
     recursively introduce a hyperedge node.
     """
     if isinstance(node, (Atom, Var, Wildcard)):
