@@ -58,6 +58,7 @@ Concretely, M1 ships:
 | P1.4  | Contradiction detection                | 1-2 days | [`p1.4_constraints/`](p1.4_constraints/) (shrunk from ~1 wk per [S1.4.0 review](p1.4_constraints/s1.4.0_review.md)) |
 | P1.5  | Hypothesis loop + ATMS branching       | 2 wk     | [`p1.5_hypothesis_loop/`](p1.5_hypothesis_loop/) |
 | P1.5a | Zebra solution + saturator/NAF gaps    | unknown  | [`p1.5a_zebra_solution/`](p1.5a_zebra_solution/) (spun out 2026-05-24 from S1.5.8c.7) |
+| P1.5b | Set-indexed search engines (monotonic + lattice DAG)               | design   | [`p1.5b_lattice_search/`](p1.5b_lattice_search/) (opened 2026-05-25 — two set-indexed engines replacing ordered-path tree's d! redundancy: monotonic = first solution, lattice = full map; both coexist with tree until parity) |
 | P1.6  | Rendering + markdown trace             | 1-2 wk   | [`p1.6_rendering_and_trace/`](p1.6_rendering_and_trace/) |
 | P1.7  | Bootstrapping — Zebra end-to-end       | 1-2 wk   | [`p1.7_bootstrapping_zebra/`](p1.7_bootstrapping_zebra/) |
 | P1.8  | Improvements (modules+imports+stdlib / COW fork / negative-fact volume; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; phase title broadened 2026-05-21, again 2026-05-22) |

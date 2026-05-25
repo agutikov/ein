@@ -26,6 +26,8 @@ Smoke (depth 0): `bench_solve examples/zebra2.ein --max-depth 0` → `Ambiguity`
 | [S1.5a.16](s1.5a.16_branch_order_shuffle_invariance.md) | Branch-order shuffle invariance (depth-bounded) | in-progress (design) | — | T1.5a.16.1–.4 (knob + serialiser, harness, triage, doc); gates the S1.5a.17 default-on flip |
 | [S1.5a.17](s1.5a.17_eager_root_bubble_outer_loop.md) | Eager root-bubble + outer re-entry loop | partial (flag off) | 2026-05-25 mechanism (`43333c5`) | T1.5a.17.1–.6 surface in code & tests; default flip + acceptance composition gated on S1.5a.16 harness |
 | [S1.5a.18](s1.5a.18_path_condition_nogoods.md) | Path-condition no-good clause learning | partial (flag off) | 2026-05-25 mechanism (`2d8cac3`) | T1.5a.18.1–.4 surface in code & tests; default flip gated on empirical demo-10 + zebra2 measurement |
+| [S1.5a.19](s1.5a.19_d0_negative_completion_gap.md) | d=0 negative-completion gap + downstream stall + dumper enhancement | active design | — | T1.5a.19.1–.6 (branch diff, downstream-stall diagnosis, dumper timeline+attribution, catalog/design, prototype, tests/docs); **named perf lever that closes the depth gap** for [[S1.5a.13]] |
+| [S1.5a.20](s1.5a.20_branch_isolation_rearch.md) | Branch-isolation re-architecture (two channels: `try_branch` ↓ + `integrate` ↑) + logical/search branch vocabulary + per-child dump | active design | — | T1.5a.20.1–.7 (fork deep-isolation, `back_propagate` collapse, forced-positive return path, nogoods re-route, `_TreeBuilder` ownership audit, per-child branch_result+integrate dump, distributed snapshot bundle); **prerequisite for S1.5a.19 implementation** + closes Q2a/c for free |
 
 **Legend.** *shipped* = all tasks closed, in git, default-on if config-gated. *partial* = mechanism shipped behind an off-by-default flag, or only a subset of tasks closed. *in-progress (design)* = doc + design exists, code not yet started. *parked* = doc exists, not currently scheduled — promote when blocker lifts. *planned* = terminal acceptance stage, runs after its dependencies.
 
@@ -37,16 +39,20 @@ S1.5a.13 (zebra2 solves)
   ├── S1.5a.2   ✓   (disjunctive-prune fwd/bwd)
   ├── S1.5a.12  ✗   parked — needs P1.6 trace renderer
   └── perf levers for cold-solve in budget:
+        S1.5a.20  design    **branch-isolation re-arch** — prerequisite for .19 impl; closes Q2a/c
+        S1.5a.19  design    **closes the depth gap** (d=0 negative completion); lands on .20's isolated boundary
         S1.5a.7   partial   (popularity default on; branch-info NIE)
-        S1.5a.14  partial   (Phase 1 shipped; Phase 2/3 elsewhere)
-        S1.5a.15  design    (not started)
+        S1.5a.14  partial   (Phase 1 shipped; Phase 2/3 elsewhere; .20 re-architects this mechanism)
+        S1.5a.15  design    (not started; Phase 2 promoted-dead becomes natural under .20)
         S1.5a.16  design    (gate for .17 default-on)
-        S1.5a.17  partial   (flag off; awaits .16 harness)
-        S1.5a.18  partial   (flag off; awaits demo-10 measurement)
+        S1.5a.17  partial   (flag off; awaits .16 harness; .20 reroutes BubbleAbort)
+        S1.5a.18  partial   (flag off; awaits demo-10 measurement; .20 routes emit_nogood per-frame)
         S1.5a.6   partial   (PyPy runner only)
 ```
 
-The shortest path to closing the gate is: **S1.5a.16** (harness) → flip **S1.5a.17** + **S1.5a.18** defaults → land **S1.5a.15** → run **S1.5a.13** measurement → if budget met, queue **S1.5a.12** (after P1.6 S1.6.4) → final verdict.
+**S1.5a.20** is the structural enabler — every "go up" channel (back-prop, forced-positive, nogood-emit, verdict-cache clear) collapses into one `integrate()` step on the immediate parent, and `kb.fork()` deep-isolates every shared mutable container. **S1.5a.19** is qualitatively different from the perf levers: every other lever makes the *depth-bounded search* cheaper; S1.5a.19 closes the inference gap at d=0, shrinking the depth needed to *find* the solution (NL trace lives at depth 1; engine currently needs > 4). Landing them in order — .20 then .19 — means S1.5a.19's chosen design (T1.5a.19.4 approach A/B/C) lands on the isolated boundary instead of inflating the leak surface.
+
+The shortest path to closing the gate is now: **S1.5a.20** (rewrite the two channels) → **S1.5a.19** (BUG diagnosis + design + prototype on the isolated boundary; closes Q2a/c via integrate steps 6+7) → **S1.5a.16** (harness) → flip **S1.5a.17** + **S1.5a.18** defaults → land **S1.5a.15** → run **S1.5a.13** measurement → if budget met, queue **S1.5a.12** (after P1.6 S1.6.4) → final verdict.
 
 ## Open tasks by stage
 
@@ -124,6 +130,38 @@ The shortest path to closing the gate is: **S1.5a.16** (harness) → flip **S1.5
 - **T1.5a.18.3** — Wire into the death sites (`_consume` sweep, `_descend` dead-leaf, `_explore_inner` contradiction-on-entry; three pre-fork filter sites).
 - **T1.5a.18.4** — Tests (`test_path_condition_nogoods.py` ✓; subsumption / filter / flag-off parity / flag-on conditional-death emit / eager + nogoods composition).
 - *Acceptance still open:* demo 10 tree-node count ≤ 20 (vs 32 flag-off baseline); zebra2 clause-set bounded < 200 after depth-3 run; default flip.
+
+### S1.5a.19 — d=0 negative-completion gap + downstream stall + dumper enhancement (active design)
+**BUG.** `bench_solve_pypy ./examples/zebra2.ein --max-depth 4` → `Ambiguity` (568 nodes, 472 dead, 77 open, 0 solutions, 49.4 s) while `examples/README.md`'s NL trace solves the puzzle with four single-hypothesis branches refuted at depth 1.
+**Diagnosis (2026-05-25, two passes).** Pass 1 claimed "engine never derives Yellow@H_1" — wrong. `dump/zebra2/resats/{001,002}.ein` show the engine **does** derive Yellow@H_1 (`range-elimination`), Kools@H_1 (`co-located`), Horse@H_2 (`adjacent-via-fwd`), Water@H_1 (`domain-elimination`) — but via the [[S1.5a.14]] back-prop + re-saturation loop after 24 dead d=1 branches. Pass 2 (after [[s1.5a.11]] dumper enhancement) surfaced **four confirmed sub-bugs** via `00_timeline.jsonl` + the resat attribution split:
+- **(Q1)** d=0 inference incompleteness — engine pays 24 dead d=1 branches to learn negatives NL produces in one d=0 saturation pass.
+- **(Q2a)** stale alive-set under `enable_alive_inherit=True` — root cycle 1 writes Yellow@H_1 at seq=25; b15 (Yellow@H_3) and b20 (Yellow@H_4) still get alloc'd + saturated at seq=32/42. **New sub-stage S1.5a.19a candidate.**
+- **(Q2b)** 0-derivation resats — b25 cycle 1: 10 negatives written, 0 derivations. Back-prop's single-negative-per-dead-candidate doesn't satisfy domain/range-elim's `forall` premise. Same root cause as Q1; closed by Q1's fix.
+- **(Q2c)** missed contradiction post-resat — b432 cycle 2 derives `(false)` via functional drink-loc; b432 nonetheless marked verdict=open and engine alloc's d=3 children for ~20 s. **New sub-stage S1.5a.19c candidate.**
+
+Hypothesis ordering is **out of scope** — order affects time-to-first-solution but not the depth-`d` closure, which is fixed by (root kb + rule set + the *set* of length-≤`d` path conditions). Tracked separately under [S1.5a.7](s1.5a.7_hypgen_scoring_branch_info.md).
+
+*Prerequisite added 2026-05-25:* [[S1.5a.20]] (branch-isolation re-architecture) lands first. The current engine has 12 violations of the "exactly two channels" rule; S1.5a.19's chosen approach (T1.5a.19.4 A/B/C) lands on the post-S1.5a.20 isolated boundary. Q2a (alive refresh) + Q2c (post-resat contradiction) close as side-effects of S1.5a.20's `integrate` steps 6+7.
+
+- **T1.5a.19.1** — Branch-by-branch NL ↔ engine diff; cross-reference `resats/` dead_children to separate Step-1-closure sources from post-cycle-2 exploration.
+- **T1.5a.19.2** — Downstream-stall fix work (Q2a/c land as new sub-stages 19a/19c; Q2b unified with Q1's fix; Q2d tracked in S1.5a.7).
+- **T1.5a.19.3** — ✓ shipped 2026-05-25 (dumper enhancement: `00_timeline.jsonl` + back_prop/resat split + nested-Fact summary; 5 new tests, 670/670 suite green).
+- **T1.5a.19.4** — Catalog missing d=0 inferences + design space (A: ein rules / B: engine semantics / C: lookahead → saturation feedback).
+- **T1.5a.19.5** — Prototype + measure: `bench_solve examples/zebra2.ein --max-depth 1` → `Solution`, ≤ 30 nodes, < 5 s.
+- **T1.5a.19.6** — Tests + docs.
+- *Blocks:* S1.5a.13 — single perf lever that *closes the depth gap*.
+
+### S1.5a.20 — Branch-isolation re-architecture (active design)
+**Motivation.** User direction 2026-05-25: *"each branch processing MUST be isolated from both ancestors, descendants and siblings; some day maybe branches will be processed in distributed env, so they must be isolated already now"*. Inventory of the current implementation found ONE clean "args go down" channel (`try_branch`) but **four** "go up" channels — `back_propagate`, `_mirror_forced_positive`, `emit_nogood`, `_clear_ancestor_verdict_caches` — three of which reach across the full ancestor chain in one call via `_kb_chain_ctx` / `_consume_caches_ctx` ContextVars, plus shared mutable `kb.fork()` fields (`consume_stats`, `committed_hypotheses`, `_nogoods`, entity `_kb` back-pointers).
+**Target.** Two channels: (1) `try_branch(parent_snapshot, hypothesis) → BranchResult`; (2) `integrate(parent_kb, child_result) → BranchResult | None`. Bubbling depth-N → root happens by N nested integrations, each one acting only on its immediate parent.
+- **T1.5a.20.1** — `kb.fork()` deep-isolation: `consume_stats_delta`, `learned_nogoods`, `forced_positives` on `BranchResult`; entity `_kb` audit (rebuild table on fork vs explicit `kb=` arg).
+- **T1.5a.20.2** — `back_propagate` collapse: writes only to given kb; remove `_kb_chain_ctx` + `_consume_caches_ctx`; stratify the chain-walk into per-level integrates.
+- **T1.5a.20.3** — `_mirror_forced_positive` removal: forced positives travel via `BranchResult`; eager-mode `BubbleAbort` raised only from root frame.
+- **T1.5a.20.4** — `emit_nogood` re-routing: per-frame `_nogoods`; explicit `path_condition` argument replaces `_path_ctx` reads.
+- **T1.5a.20.5** — `_TreeBuilder` ownership audit: parent-only writes; child returns `SearchSubtree`.
+- **T1.5a.20.6** — Per-child-branch dump: `branches/b{i}/branch_result.json` (full BranchResult — proposed_negatives + forced_positives + learned_nogoods + consume_stats_delta + search/logical branch ids) + `branches/b{i}/integrate.json` (parent-side adopt/reject decisions per item, with reasons). Per-cycle aggregate becomes a summary pointing at the per-child files.
+- **T1.5a.20.7** — Distributed-ready `BranchRequest`/`BranchResponse` schema + pickle-roundtrip smoke fixture.
+- *Blocks:* S1.5a.19 (T1.5a.19.4 design space lands on the isolated boundary); P1.8 Theme B parallel/distributed execution.
 
 ## Open design questions parked in stage files
 

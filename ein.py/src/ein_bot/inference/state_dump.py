@@ -10,6 +10,7 @@ subfolder holds its children, recursively.
 ==============================  ===================================
 hook                            output path
 ==============================  ===================================
+*every hook*                    appends one record to ``00_timeline.jsonl``
 ``root_initial(kb)``            ``00_root_initial.ein``
 ``root_saturated(kb, firings,   ``01_root_saturated.ein``
 naf_dropped)``                  ``01_root_saturated/stats.json``
@@ -43,7 +44,39 @@ map is keyed by node id; the root maps to ``out_dir`` itself.
 ended in at least one unconditional death — after `back_propagate`
 + re-saturation on the parent. Each event is sequence-numbered
 inside the parent's `resats/` subfolder so the consume loop's
-multi-cycle structure is preserved on disk.
+multi-cycle structure is preserved on disk. The per-cycle JSON
+splits the facts written during the cycle into two attribution
+buckets (T1.5a.19.3.b):
+
+- ``back_prop_writes`` — synthetic ``(not h)`` (and forced-positive
+  bubble) writes from :func:`back_propagate` / :func:`_mirror_forced_positive`;
+  each carries ``from_dead_child: <branch_id>`` linking the write
+  back to the dead child whose unconditional refutation produced
+  it (``None`` for symmetric mirrors or cross-puzzle bubbles that
+  don't match a current dead child).
+- ``resat_derivations`` — facts derived by the saturator pass that
+  followed the back-prop writes; each carries the firing
+  ``rule`` and a flat ``premises`` list (``[{relation, args}, …]``).
+
+The flat ``negatives_added`` field is retained for backward compat
+— it is the concatenation of the two buckets in firing order.
+
+The chronological event log lives at ``00_timeline.jsonl``
+(T1.5a.19.3.a). One JSON record per line, written in firing order,
+each with:
+
+- ``seq`` — monotonic event counter (0-indexed)
+- ``ts_ms`` — wall-time milliseconds relative to dumper construction
+- ``event`` — hook name (``root_initial``, ``root_saturated``,
+  ``root_hyps``, ``node_alloc``, ``node_dump``,
+  ``node_resaturated``, ``summary``)
+- event-specific summary fields (counts, ids, verdict kinds — *not*
+  full Fact bodies; those land in the per-event ``.ein`` / ``.json``
+  files). Reading the timeline alone tells you the order events
+  fired, including the interleave between branch exploration
+  (``node_alloc`` / ``node_dump``) and re-saturation
+  (``node_resaturated``) — the relationship the per-event files
+  alone can't show.
 
 Designed for human inspection + diff; not a serialisation format.
 The output isn't round-trippable through `parse` unless the puzzle
@@ -56,10 +89,22 @@ import json
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import IO, TYPE_CHECKING, Any
 
 from ein_bot.ir.types import Atom, Int, Keyword, KwPair, SForm, String
 from ein_bot.kb.entities import Fact
+
+# Rule-name prefixes that mark a Fact as a back-prop / lookahead write
+# (vs a normal saturator derivation). Used by `_classify_resat_write` to
+# split `node_resaturated`'s `neg_facts_added` into the two attribution
+# buckets. Kept in one place so future back-prop variants (S1.5a.17
+# forced-positive bubbles are already covered by the `<` prefix) stay
+# classified consistently.
+_BACK_PROP_RULE_PREFIXES: tuple[str, ...] = (
+    "<back-prop",
+    "<lookahead",
+    "<forced-positive",
+)
 
 if TYPE_CHECKING:
     from ein_bot.inference.firing import Firing
@@ -182,10 +227,68 @@ def _firing_to_dict(firing: Firing) -> dict[str, Any]:
 
 
 def _fact_summary(fact: Fact) -> dict[str, Any]:
+    """Recursive Fact → JSON-friendly dict.
+
+    Nested-Fact args (e.g. inside ``(not (color-loc Green House-3))``)
+    render as nested ``{"relation": …, "args": […]}`` dicts so the
+    output is machine-parseable. Atoms / ints / strings stringify.
+    """
     return {
         "relation": fact.relation_name,
-        "args": [str(a) for a in fact.args],
+        "args": [_fact_summary(a) if isinstance(a, Fact) else str(a)
+                 for a in fact.args],
     }
+
+
+def _classify_resat_write(
+    fact: Fact, dead_lookup: dict[tuple[str, tuple], int],
+) -> tuple[str, dict[str, Any]]:
+    """Classify a fact written during a `node_resaturated` event.
+
+    Returns ``(category, record)`` where ``category`` is one of
+    ``"back_prop"`` (synthetic write — ``(not h)`` from
+    :func:`back_propagate` or a forced-positive bubble) or
+    ``"resat"`` (saturator-derived fact carrying named-rule
+    provenance like ``"range-elimination"``).
+
+    Back-prop writes link to the dead child whose death produced
+    them via ``from_dead_child: branch_id``; the inner Fact's
+    identity ``(relation_name, args)`` is matched against
+    ``dead_lookup``. Cross-puzzle cases (mirror writes for symmetric
+    relations, forced-positive bubbles) may not match a dead child
+    and report ``None``.
+
+    Resat derivations carry the firing rule + a flat list of
+    ``(relation, args)`` premise ids from the Fact's provenance.
+    """
+    prov = fact.provenance
+    rule = prov.rule if (prov is not None and prov.kind == "rule") else None
+    is_back_prop = (
+        rule is not None
+        and any(rule.startswith(p) for p in _BACK_PROP_RULE_PREFIXES)
+    )
+    if is_back_prop:
+        from_dead_child: int | None = None
+        if (fact.relation_name == "not"
+                and fact.args and isinstance(fact.args[0], Fact)):
+            inner = fact.args[0]
+            from_dead_child = dead_lookup.get((inner.relation_name, inner.args))
+        return ("back_prop", {
+            "from_dead_child": from_dead_child,
+            "fact": _fact_summary(fact),
+            "rule": rule,
+        })
+    premises: list[dict[str, Any]] = []
+    if prov is not None and prov.kind == "rule":
+        premises = [
+            {"relation": rel, "args": [str(a) for a in args]}
+            for rel, args in prov.premises_raw
+        ]
+    return ("resat", {
+        "fact": _fact_summary(fact),
+        "rule": rule,
+        "premises": premises,
+    })
 
 
 def _fact_slug(fact: Fact) -> str:
@@ -264,17 +367,52 @@ class StateDumper:
     out_dir: Path
     started_at: float = field(default_factory=time.time)
     _node_dirs: dict[int, Path] = field(default_factory=dict)
+    _timeline_seq: int = field(default=0, init=False)
+    _timeline_fp: IO[str] | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         self.out_dir.mkdir(parents=True, exist_ok=True)
         # Root node has search-tree id 0; its dir is out_dir itself.
         self._node_dirs[0] = self.out_dir
+        # `00_timeline.jsonl` — chronological event log; one record per
+        # hook call in firing order. Opened in __post_init__, flushed
+        # after each emit so a tailing reader sees events live. The
+        # handle leaks on GC if `summary()` is never called; harmless
+        # since the OS reclaims it.
+        self._timeline_fp = (self.out_dir / "00_timeline.jsonl").open("w")
+
+    # ── Timeline ─────────────────────────────────────────────────
+
+    def _emit_timeline(self, event: str, **fields: Any) -> None:
+        """Append one JSON record to ``00_timeline.jsonl``.
+
+        Records carry a monotonic ``seq``, wall-time ``ts_ms``
+        relative to ``started_at``, the ``event`` name (matching the
+        hook method), and event-specific fields. Each line is one
+        complete JSON object — JSONL, not a JSON array.
+
+        Flushes per write so a reader can ``tail -f`` the file
+        during a long run.
+        """
+        if self._timeline_fp is None:
+            return  # defensive — closed/never-opened path
+        rec: dict[str, Any] = {
+            "seq": self._timeline_seq,
+            "ts_ms": round((time.time() - self.started_at) * 1000, 3),
+            "event": event,
+            **fields,
+        }
+        self._timeline_fp.write(json.dumps(rec) + "\n")
+        self._timeline_fp.flush()
+        self._timeline_seq += 1
 
     # ── Root pipeline ────────────────────────────────────────────
 
     def root_initial(self, kb: KnowledgeBase) -> None:
         """Snapshot of the parsed input, before any inference runs."""
         (self.out_dir / "00_root_initial.ein").write_text(_kb_to_ein_text(kb))
+        self._emit_timeline("root_initial",
+                            facts=len(kb.facts))
 
     def root_saturated(
         self, kb: KnowledgeBase, firings: tuple, naf_dropped: int,
@@ -284,10 +422,17 @@ class StateDumper:
         sub = self.out_dir / "01_root_saturated"
         sub.mkdir(exist_ok=True)
         _write_firings(sub, firings, naf_dropped, kb)
+        self._emit_timeline("root_saturated",
+                            firings=len(firings), naf_dropped=naf_dropped,
+                            facts=len(kb.facts))
 
     def root_hyps(self, alive: list[Fact], stats: HypGenStats) -> None:
         """Snapshot of the root alive hypothesis set + filter stats."""
         _write_alive(self.out_dir, "02_root_hyps", alive, stats)
+        self._emit_timeline("root_hyps",
+                            alive=len(alive), raw=stats.raw,
+                            emitted=stats.emitted,
+                            filtered=dict(stats.filtered))
 
     # ── Per-node ─────────────────────────────────────────────────
 
@@ -314,6 +459,10 @@ class StateDumper:
         if nid in self._node_dirs:
             return  # already registered
         self._make_branch_dir(nid, parent_id, hypothesis)
+        self._emit_timeline("node_alloc",
+                            node_id=nid, parent_id=parent_id,
+                            hypothesis=(_fact_summary(hypothesis)
+                                        if hypothesis is not None else None))
 
     def node_dump(
         self,
@@ -344,6 +493,11 @@ class StateDumper:
                 "firings": len(firings),
                 "unsat_core": [_fact_summary(f) for f in unsat_core],
             }, indent=2))
+            self._emit_timeline("node_dump",
+                                node_id=nid, parent_id=None,
+                                verdict_kind=verdict_kind,
+                                firings=len(firings),
+                                unsat_core_size=len(unsat_core))
             return
         # The dir is normally pre-registered by node_alloc; fall back
         # to creating it now if the caller skipped alloc registration.
@@ -367,6 +521,11 @@ class StateDumper:
             "firings": len(firings),
             "unsat_core": [_fact_summary(f) for f in unsat_core],
         }, indent=2))
+        self._emit_timeline("node_dump",
+                            node_id=nid, parent_id=parent_id,
+                            verdict_kind=verdict_kind,
+                            firings=len(firings),
+                            unsat_core_size=len(unsat_core))
 
     def node_resaturated(
         self,
@@ -390,6 +549,21 @@ class StateDumper:
         resats = ndir / "resats"
         resats.mkdir(exist_ok=True)
         (resats / f"{cycle:03d}.ein").write_text(_kb_to_ein_text(kb))
+        # T1.5a.19.3.b — split the flat `neg_facts_added` into two
+        # attribution buckets by classifying each fact's provenance.
+        # Bridges the "where did this bubble from?" gap in the
+        # previous flat list.
+        dead_lookup: dict[tuple[str, tuple], int] = {
+            (h.relation_name, h.args): bid for bid, h in dead_children
+        }
+        back_prop_writes: list[dict[str, Any]] = []
+        resat_derivations: list[dict[str, Any]] = []
+        for f in neg_facts_added:
+            kind, rec = _classify_resat_write(f, dead_lookup)
+            if kind == "back_prop":
+                back_prop_writes.append(rec)
+            else:
+                resat_derivations.append(rec)
         (resats / f"{cycle:03d}.json").write_text(json.dumps({
             "cycle": cycle,
             "node_id": nid,
@@ -397,12 +571,23 @@ class StateDumper:
                 {"branch_id": bid, "hypothesis": _fact_summary(h)}
                 for bid, h in dead_children
             ],
+            "back_prop_writes": back_prop_writes,
+            "resat_derivations": resat_derivations,
+            # Backward-compat — pre-T1.5a.19.3 flat field. Readers
+            # should prefer the two split fields above; this one is
+            # the concatenation in the same order.
             "negatives_added": [_fact_summary(f) for f in neg_facts_added],
             "new_firings_count": len(new_firings),
         }, indent=2))
         with (resats / f"{cycle:03d}_firings.jsonl").open("w") as fp:
             for f in new_firings:
                 fp.write(json.dumps(_firing_to_dict(f)) + "\n")
+        self._emit_timeline("node_resaturated",
+                            node_id=nid, cycle=cycle,
+                            dead_children_count=len(dead_children),
+                            back_prop_writes_count=len(back_prop_writes),
+                            resat_derivations_count=len(resat_derivations),
+                            new_firings_count=len(new_firings))
 
     # ── Summary ──────────────────────────────────────────────────
 
@@ -433,6 +618,18 @@ class StateDumper:
             "elapsed_seconds": round(elapsed, 3),
             "config": cfg_dict,
         }, indent=2, sort_keys=True, default=str))
+        self._emit_timeline("summary",
+                            verdict=verdict_kind, leaves=leaves,
+                            tree_nodes=(len(tree.nodes)
+                                        if tree is not None else 0),
+                            elapsed_seconds=round(elapsed, 3))
+        # Close the timeline handle on summary — the dumper's lifecycle
+        # ends here (one summary per solve() call). Safe to do here
+        # rather than __del__ because the solver always calls summary
+        # in its `finally:` block.
+        if self._timeline_fp is not None:
+            self._timeline_fp.close()
+            self._timeline_fp = None
 
     # ── Internals ────────────────────────────────────────────────
 

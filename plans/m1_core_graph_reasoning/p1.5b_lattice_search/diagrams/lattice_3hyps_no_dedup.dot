@@ -1,0 +1,104 @@
+// P1.5b — Search lattice over 3 hypotheses, no state-hash dedup.
+//
+// Shows the powerset lattice with EVERY node distinct. Each
+// commitment set's saturation step is rendered as a separate
+// arc; multi-parent edges (every layer-k set has k parents)
+// are all drawn.
+//
+// Render: dot -Tsvg lattice_3hyps_no_dedup.dot -o lattice_3hyps_no_dedup.svg
+//      or dot -Tpng lattice_3hyps_no_dedup.dot -o lattice_3hyps_no_dedup.png
+
+digraph lattice_3hyps_no_dedup {
+  rankdir = TB;
+  splines = polyline;
+  ranksep = 0.5;
+  nodesep = 0.3;
+  fontname = "Helvetica";
+  node [fontname = "Helvetica", style = "rounded,filled"];
+  edge [fontname = "Helvetica", fontsize = 9];
+
+  label = "Search lattice over 3 hypotheses — no dedup\nevery commitment ⟶ saturation ⟶ next-layer commitment";
+  labelloc = t;
+  fontsize = 13;
+
+  // ── Legend ──────────────────────────────────────────────────────
+  subgraph cluster_legend {
+    label = "Legend";
+    style = dashed;
+    fontsize = 10;
+    color = gray;
+    legend_commit [label="commitment\nset (raw)",
+                   fillcolor = lightblue, shape = box];
+    legend_kb [label="saturated\nkb",
+               fillcolor = palegreen, shape = note];
+    legend_commit -> legend_kb [label = "  sat  ",
+                                style = dashed, color = gray];
+    legend_kb -> legend_commit [label = "  +h_i  ",
+                                style = solid, color = black,
+                                constraint = false];
+  }
+
+  // ── Layer 0 — root (empty commitment) ──────────────────────────
+  L0_commit [label = "∅", fillcolor = lightblue, shape = box];
+  L0_kb [label = "kb(∅)\n= sat(root)", fillcolor = palegreen, shape = note];
+  L0_commit -> L0_kb [label = "  sat  ", style = dashed, color = gray];
+
+  // ── Layer 1 ─────────────────────────────────────────────────────
+  L1_h1     [label = "{h₁}",      fillcolor = lightblue, shape = box];
+  L1_h2     [label = "{h₂}",      fillcolor = lightblue, shape = box];
+  L1_h3     [label = "{h₃}",      fillcolor = lightblue, shape = box];
+
+  L1_h1_kb  [label = "kb({h₁})",  fillcolor = palegreen, shape = note];
+  L1_h2_kb  [label = "kb({h₂})",  fillcolor = palegreen, shape = note];
+  L1_h3_kb  [label = "kb({h₃})",  fillcolor = palegreen, shape = note];
+
+  L1_h1 -> L1_h1_kb [label = "  sat  ", style = dashed, color = gray];
+  L1_h2 -> L1_h2_kb [label = "  sat  ", style = dashed, color = gray];
+  L1_h3 -> L1_h3_kb [label = "  sat  ", style = dashed, color = gray];
+
+  // Layer 0 → Layer 1 (one edge per hypothesis from root.kb)
+  L0_kb -> L1_h1 [label = "+h₁"];
+  L0_kb -> L1_h2 [label = "+h₂"];
+  L0_kb -> L1_h3 [label = "+h₃"];
+
+  // ── Layer 2 — pair commitments ──────────────────────────────────
+  L2_h1h2     [label = "{h₁, h₂}",     fillcolor = lightblue, shape = box];
+  L2_h1h3     [label = "{h₁, h₃}",     fillcolor = lightblue, shape = box];
+  L2_h2h3     [label = "{h₂, h₃}",     fillcolor = lightblue, shape = box];
+
+  L2_h1h2_kb  [label = "kb({h₁,h₂})",  fillcolor = palegreen, shape = note];
+  L2_h1h3_kb  [label = "kb({h₁,h₃})",  fillcolor = palegreen, shape = note];
+  L2_h2h3_kb  [label = "kb({h₂,h₃})",  fillcolor = palegreen, shape = note];
+
+  L2_h1h2 -> L2_h1h2_kb [label = "  sat  ", style = dashed, color = gray];
+  L2_h1h3 -> L2_h1h3_kb [label = "  sat  ", style = dashed, color = gray];
+  L2_h2h3 -> L2_h2h3_kb [label = "  sat  ", style = dashed, color = gray];
+
+  // Layer 1 → Layer 2 — multi-parent: every layer-2 set has 2 parents.
+  // (Each parent IS a layer-1 saturated kb that adds the missing hyp.)
+  L1_h1_kb -> L2_h1h2 [label = "+h₂"];
+  L1_h2_kb -> L2_h1h2 [label = "+h₁"];
+  L1_h1_kb -> L2_h1h3 [label = "+h₃"];
+  L1_h3_kb -> L2_h1h3 [label = "+h₁"];
+  L1_h2_kb -> L2_h2h3 [label = "+h₃"];
+  L1_h3_kb -> L2_h2h3 [label = "+h₂"];
+
+  // ── Layer 3 — the full commitment ───────────────────────────────
+  L3        [label = "{h₁, h₂, h₃}",     fillcolor = lightblue, shape = box];
+  L3_kb     [label = "kb({h₁,h₂,h₃})",   fillcolor = palegreen, shape = note];
+  L3 -> L3_kb [label = "  sat  ", style = dashed, color = gray];
+
+  // Layer 2 → Layer 3 — 3-parent
+  L2_h1h2_kb -> L3 [label = "+h₃"];
+  L2_h1h3_kb -> L3 [label = "+h₂"];
+  L2_h2h3_kb -> L3 [label = "+h₁"];
+
+  // ── Rank constraints — keep tiers horizontally aligned ─────────
+  { rank = same; L0_commit; L0_kb; }
+  { rank = same; L1_h1; L1_h2; L1_h3; }
+  { rank = same; L1_h1_kb; L1_h2_kb; L1_h3_kb; }
+  { rank = same; L2_h1h2; L2_h1h3; L2_h2h3; }
+  { rank = same; L2_h1h2_kb; L2_h1h3_kb; L2_h2h3_kb; }
+  { rank = same; L3; }
+  { rank = same; L3_kb; }
+}

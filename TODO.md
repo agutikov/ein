@@ -107,6 +107,7 @@
 
 
 
+
 ---
 
 P1.8 - performance part
@@ -126,6 +127,15 @@ consistent hashing or something similar
 - maybe not strict - like Bloom filter, would it help at all anyhow?
 
 
+re-saturation and hyps alive-recompute:
+- build and hold indexes of atoms participation: objects, relations, rules etc...
+    - so when see a new fact (?R ?x ?a)
+    - we also see a KB subset of facts that may interact with the new fact
+    - and subset of rules the fact can interact through
+Is it correct? Is it possible to implement?
+
+
+
 ---
 
 P1.10 kernel docs - separate file for kernel inference feature list absolutely required to solve zebra in reasonable time
@@ -141,5 +151,36 @@ vscode ein syntax highlighting - to P1.6
 
 M1a - ein.rs in Rust, before M1b GUI
 
+
+---
+
+to Followups:
+
+kernel inference already have quite a lot of features about how it derive facts and where propagates them
+we are trying to minimize the kernel to some reasonably minimal, not esoteric-minimal, not theoretically-minimal
+what inference features make sense to express in ein lang instead of kernel code: saturation, branching, hypgen, hypfilter, backprop, ...?
+
+
+---
+
+
+expression proposal for M1+
+
+(co-located (drink-loc Milk ?h) (smoke-loc Kools ?h))
+
+Aready existing meaning (drink-loc Milk ?h) - House where milk is drinked.
+So (drink-loc Milk ?h) is a variable with context, but it is mostly variable.
+How to work with it? Does it make sense to implement?
+
+
+---
+
+
+version-based saturation optimization
+
+version-based COW-powered KB structure
+
+
+---
 
 

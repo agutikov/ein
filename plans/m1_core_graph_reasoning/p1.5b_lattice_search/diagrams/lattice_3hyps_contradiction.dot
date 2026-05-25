@@ -1,0 +1,119 @@
+// P1.5b — Search lattice over 3 hypotheses WITH a 2-clause death.
+//
+// Fully explored. Layer-1 enterings are all alive; at layer 2 the
+// pair {h₁, h₂} saturates to a contradiction — emit nogood
+// frozenset({h₁, h₂}) into root._nogoods. Layer 3's sole candidate
+// {h₁, h₂, h₃} is then pruned at generation time
+// (matches_any_nogood: {h₁,h₂} ⊆ {h₁,h₂,h₃}), so the search
+// terminates after layer 2 with three alive layer-2 sets and one
+// dead.
+//
+// Verdict (Q1.5b.7): depends on whether any of the alive sets
+// satisfies the goal. If exactly one does → Solved; if none → the
+// open-frontier-at-max-depth case → Ambiguity. Drawn here as
+// "search complete" without committing to which.
+//
+// Render: dot -Tsvg lattice_3hyps_contradiction.dot -o lattice_3hyps_contradiction.svg
+
+digraph lattice_3hyps_contradiction {
+  rankdir = TB;
+  splines = polyline;
+  ranksep = 0.5;
+  nodesep = 0.3;
+  fontname = "Helvetica";
+  node [fontname = "Helvetica", style = "rounded,filled"];
+  edge [fontname = "Helvetica", fontsize = 9];
+
+  label = "Search lattice over 3 hypotheses — 2-clause death at layer 2\n{h₁, h₂} dies → root._nogoods += frozenset({h₁, h₂}) → {h₁,h₂,h₃} pruned at layer-3 gen";
+  labelloc = t;
+  fontsize = 12;
+
+  // ── Legend ──────────────────────────────────────────────────────
+  subgraph cluster_legend {
+    label = "Legend";
+    style = dashed;
+    fontsize = 10;
+    color = gray;
+    legend_commit [label="commitment\nset (raw)",
+                   fillcolor = lightblue, shape = box];
+    legend_kb [label="saturated\nkb (alive)",
+               fillcolor = palegreen, shape = note];
+    legend_dead [label="dead kb\n(contradiction)",
+                 fillcolor = salmon, shape = note];
+    legend_pruned [label="pruned —\nnever forked\n(matches nogood)",
+                   fillcolor = lightgrey, shape = box, style = "rounded,filled,dashed"];
+    legend_commit -> legend_kb [label = "  sat  ",
+                                style = dashed, color = gray];
+    legend_kb -> legend_commit [label = "  +h_i  ",
+                                style = solid, color = black,
+                                constraint = false];
+  }
+
+  // ── Layer 0 ─────────────────────────────────────────────────────
+  L0_kb [label = "kb(∅)\n= sat(root)", fillcolor = palegreen, shape = note];
+
+  // ── Layer 1 — all alive ─────────────────────────────────────────
+  L1_h1    [label = "{h₁}",     fillcolor = lightblue, shape = box];
+  L1_h2    [label = "{h₂}",     fillcolor = lightblue, shape = box];
+  L1_h3    [label = "{h₃}",     fillcolor = lightblue, shape = box];
+
+  L1_h1_kb [label = "kb({h₁})", fillcolor = palegreen, shape = note];
+  L1_h2_kb [label = "kb({h₂})", fillcolor = palegreen, shape = note];
+  L1_h3_kb [label = "kb({h₃})", fillcolor = palegreen, shape = note];
+
+  L1_h1 -> L1_h1_kb [label = "sat", style = dashed, color = gray];
+  L1_h2 -> L1_h2_kb [label = "sat", style = dashed, color = gray];
+  L1_h3 -> L1_h3_kb [label = "sat", style = dashed, color = gray];
+
+  L0_kb -> L1_h1 [label = "+h₁"];
+  L0_kb -> L1_h2 [label = "+h₂"];
+  L0_kb -> L1_h3 [label = "+h₃"];
+
+  // ── Layer 2 — one dead, two alive ──────────────────────────────
+  L2_h1h2 [label = "{h₁, h₂}", fillcolor = lightblue, shape = box];
+  L2_h1h3 [label = "{h₁, h₃}", fillcolor = lightblue, shape = box];
+  L2_h2h3 [label = "{h₂, h₃}", fillcolor = lightblue, shape = box];
+
+  L2_h1h2_kb [label = "kb({h₁,h₂})\n— dead —\nemit nogood {h₁,h₂}",
+              fillcolor = salmon, shape = note];
+  L2_h1h3_kb [label = "kb({h₁,h₃})", fillcolor = palegreen, shape = note];
+  L2_h2h3_kb [label = "kb({h₂,h₃})", fillcolor = palegreen, shape = note];
+
+  L2_h1h2 -> L2_h1h2_kb [label = "sat", style = dashed, color = red];
+  L2_h1h3 -> L2_h1h3_kb [label = "sat", style = dashed, color = gray];
+  L2_h2h3 -> L2_h2h3_kb [label = "sat", style = dashed, color = gray];
+
+  // Layer 1 → Layer 2 (multi-parent)
+  L1_h1_kb -> L2_h1h2 [label = "+h₂"];
+  L1_h2_kb -> L2_h1h2 [label = "+h₁"];
+  L1_h1_kb -> L2_h1h3 [label = "+h₃"];
+  L1_h3_kb -> L2_h1h3 [label = "+h₁"];
+  L1_h2_kb -> L2_h2h3 [label = "+h₃"];
+  L1_h3_kb -> L2_h2h3 [label = "+h₂"];
+
+  // ── Nogood emission ─────────────────────────────────────────────
+  nogood_emit [label = "root._nogoods\n+= frozenset({h₁, h₂})",
+               fillcolor = mistyrose, shape = note, style = "filled,dashed"];
+  L2_h1h2_kb -> nogood_emit [label = "emit", style = dotted, color = red];
+
+  // ── Layer 3 — sole candidate pruned at generation ──────────────
+  L3_pruned [label = "{h₁, h₂, h₃}\n— pruned at generation —\nmatches_any_nogood:\nfrozenset({h₁,h₂}) ⊆ {h₁,h₂,h₃}\nnever forked, never saturated",
+             fillcolor = lightgrey, shape = box, style = "rounded,filled,dashed"];
+
+  // Apriori would attempt this set from L2 alive pairs; nogood
+  // intercepts. Drawn as a dashed-grey edge from the alive layer-2
+  // parents to show the prospective lineage.
+  L2_h1h3_kb -> L3_pruned [label = "+h₂ would form\n{h₁,h₂,h₃}\n→ filtered by nogood",
+                           style = dashed, color = "#888888"];
+  L2_h2h3_kb -> L3_pruned [label = "+h₁ would form\n{h₁,h₂,h₃}\n→ filtered by nogood",
+                           style = dashed, color = "#888888"];
+  nogood_emit -> L3_pruned [label = "filter", style = dotted, color = red,
+                            constraint = false];
+
+  // ── Rank constraints ───────────────────────────────────────────
+  { rank = same; L1_h1; L1_h2; L1_h3; }
+  { rank = same; L1_h1_kb; L1_h2_kb; L1_h3_kb; }
+  { rank = same; L2_h1h2; L2_h1h3; L2_h2h3; }
+  { rank = same; L2_h1h2_kb; L2_h1h3_kb; L2_h2h3_kb; }
+  { rank = same; L3_pruned; nogood_emit; }
+}

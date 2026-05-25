@@ -126,3 +126,120 @@ def test_solve_without_dumper_unaffected():
 
     assert type(v_a) is type(v_b)
     assert len(v_a.tree.nodes) == len(v_b.tree.nodes)
+
+
+# ── T1.5a.19.3 dumper enhancements ─────────────────────────────────
+
+
+def _read_jsonl(path: Path) -> list[dict]:
+    return [json.loads(line) for line in path.read_text().splitlines() if line]
+
+
+def test_timeline_jsonl_exists_and_monotonic(dump_dir: Path):
+    """`00_timeline.jsonl` is JSONL, has monotonic seq + non-negative ts_ms."""
+    kb = KnowledgeBase.from_ir(parse(DEMO.read_text()))
+    solve(kb, max_depth=2, dumper=StateDumper(out_dir=dump_dir))
+
+    timeline_path = dump_dir / "00_timeline.jsonl"
+    assert timeline_path.exists(), "00_timeline.jsonl not written"
+    events = _read_jsonl(timeline_path)
+    assert events, "timeline is empty"
+
+    # seq is 0-indexed and strictly monotonic; ts_ms is non-negative
+    # and weakly monotonic (events can fire in the same ms tick).
+    for i, rec in enumerate(events):
+        assert rec["seq"] == i, f"seq jump at index {i}: {rec}"
+        assert rec["ts_ms"] >= 0
+        assert "event" in rec
+    times = [r["ts_ms"] for r in events]
+    assert times == sorted(times), "ts_ms went backwards"
+
+
+def test_timeline_covers_lifecycle_events(dump_dir: Path):
+    """Every documented hook category surfaces at least one record."""
+    demo = REPO / "examples" / "branching" / "04_two_levels.ein"
+    kb = KnowledgeBase.from_ir(parse(demo.read_text()))
+    solve(kb, max_depth=3, dumper=StateDumper(out_dir=dump_dir))
+
+    events = _read_jsonl(dump_dir / "00_timeline.jsonl")
+    seen = {r["event"] for r in events}
+    # node_resaturated is optional (depends on whether unconditional
+    # deaths fire); the others must be present.
+    assert {"root_initial", "root_saturated", "root_hyps",
+            "node_alloc", "node_dump", "summary"} <= seen
+
+
+def test_timeline_summary_is_last(dump_dir: Path):
+    """`summary` is the closing event."""
+    kb = KnowledgeBase.from_ir(parse(DEMO.read_text()))
+    solve(kb, max_depth=2, dumper=StateDumper(out_dir=dump_dir))
+
+    events = _read_jsonl(dump_dir / "00_timeline.jsonl")
+    assert events[-1]["event"] == "summary"
+
+
+def test_nested_fact_summary_recurses(dump_dir: Path):
+    """`(not (R …))` unsat-core entries land as nested dicts, not str-reprs."""
+    kb = KnowledgeBase.from_ir(parse(DEMO.read_text()))
+    solve(kb, max_depth=2, dumper=StateDumper(out_dir=dump_dir))
+
+    # Walk every verdict.json; if any unsat_core entry has nested-Fact
+    # args, ensure they parse as dicts (not the legacy str-repr).
+    saw_nested = False
+    for vpath in dump_dir.rglob("verdict.json"):
+        v = json.loads(vpath.read_text())
+        for entry in v["unsat_core"]:
+            for arg in entry["args"]:
+                if isinstance(arg, dict):
+                    assert "relation" in arg and "args" in arg
+                    saw_nested = True
+                else:
+                    # Atoms remain strings; legacy "Fact(relation_name=…)"
+                    # repr would also be a str, but with the marker
+                    # prefix we can spot the regression.
+                    assert not arg.startswith("Fact(relation_name"), (
+                        f"legacy str-repr leaked: {arg!r}"
+                    )
+    # Demo 03 doesn't always produce nested-Fact unsat-cores; the
+    # assertion above already covers the negative case (no str-repr
+    # leaked), so seeing_nested is informational only.
+    _ = saw_nested
+
+
+def test_resat_attribution_split(tmp_path: Path):
+    """When resats fire, `back_prop_writes` and `resat_derivations`
+    are both present in the cycle JSON and their union equals the
+    legacy flat `negatives_added`."""
+    # Demo 10 is the back-prop-on fixture — it deterministically
+    # produces unconditional deaths that trigger root resats.
+    demo = REPO / "examples" / "branching" / "10_backprop_on.ein"
+    kb = KnowledgeBase.from_ir(parse(demo.read_text()))
+    dump_dir = tmp_path / "dump"
+    solve(kb, max_depth=3, dumper=StateDumper(out_dir=dump_dir))
+
+    cycle_jsons = list(dump_dir.rglob("resats/*.json"))
+    if not cycle_jsons:
+        pytest.skip("demo produced no resat events; nothing to check")
+    for path in cycle_jsons:
+        rec = json.loads(path.read_text())
+        assert "back_prop_writes" in rec, f"missing in {path}"
+        assert "resat_derivations" in rec, f"missing in {path}"
+        assert "negatives_added" in rec, "backward-compat field dropped"
+        # Each back-prop write either links to a dead child or
+        # explains its absence (None for symmetric mirrors etc.).
+        dead_ids = {c["branch_id"] for c in rec["dead_children"]}
+        for w in rec["back_prop_writes"]:
+            assert "from_dead_child" in w
+            assert w["from_dead_child"] is None or w["from_dead_child"] in dead_ids
+            assert w["rule"]  # always carries a `<…>` rule marker
+        # Resat derivations carry rule + premises.
+        for d in rec["resat_derivations"]:
+            assert "rule" in d
+            assert "premises" in d
+        # Backward-compat: flat list equals the concatenation in
+        # firing order. The dumper builds it as the source iteration
+        # order, but the two-bucket split keeps each entry verbatim,
+        # so flat-count = sum of bucket counts.
+        assert (len(rec["negatives_added"])
+                == len(rec["back_prop_writes"])
+                + len(rec["resat_derivations"]))

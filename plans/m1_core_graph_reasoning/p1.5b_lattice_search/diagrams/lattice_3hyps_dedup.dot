@@ -1,0 +1,113 @@
+// P1.5b — Search lattice over 3 hypotheses WITH state-hash dedup.
+//
+// Fully explored (layers 0–3). One cross-layer merge demonstrates
+// how the search lattice can collapse multiple commitment sets at
+// different layers into a single SetNode. The scenario: a rule
+// under h₂ makes h₁ and h₃ derivable from each other when h₂ is
+// committed. So:
+//   sat(root ∪ {h₁, h₂}) derives h₃         → kb = {…, h₁, h₂, h₃}
+//   sat(root ∪ {h₂, h₃}) derives h₁         → same kb
+//   sat(root ∪ {h₁, h₂, h₃}) is idempotent  → same kb
+// All three commitment sets state-hash to the same kb; the lattice
+// stores one node with three labels.
+//
+// Render: dot -Tsvg lattice_3hyps_dedup.dot -o lattice_3hyps_dedup.svg
+
+digraph lattice_3hyps_dedup {
+  rankdir = TB;
+  splines = polyline;
+  ranksep = 0.5;
+  nodesep = 0.3;
+  fontname = "Helvetica";
+  node [fontname = "Helvetica", style = "rounded,filled"];
+  edge [fontname = "Helvetica", fontsize = 9];
+
+  label = "Search lattice over 3 hypotheses — state-hash dedup across layers 2 and 3\n{h₁, h₂} ≡ {h₂, h₃} ≡ {h₁, h₂, h₃} all merge into ONE SetNode (three labels)";
+  labelloc = t;
+  fontsize = 12;
+
+  // ── Legend ──────────────────────────────────────────────────────
+  subgraph cluster_legend {
+    label = "Legend";
+    style = dashed;
+    fontsize = 10;
+    color = gray;
+    legend_commit [label="commitment\nset (raw)",
+                   fillcolor = lightblue, shape = box];
+    legend_kb [label="saturated\nkb (alive)",
+               fillcolor = palegreen, shape = note];
+    legend_merged [label="merged kb\n(state-hash dedup,\nlayer-spanning)",
+                   fillcolor = gold, shape = note];
+    legend_commit -> legend_kb [label = "  sat  ",
+                                style = dashed, color = gray];
+    legend_kb -> legend_commit [label = "  +h_i  ",
+                                style = solid, color = black,
+                                constraint = false];
+  }
+
+  // ── Layer 0 ─────────────────────────────────────────────────────
+  L0_kb [label = "kb(∅)\n= sat(root)", fillcolor = palegreen, shape = note];
+
+  // ── Layer 1 ─────────────────────────────────────────────────────
+  L1_h1    [label = "{h₁}",     fillcolor = lightblue, shape = box];
+  L1_h2    [label = "{h₂}",     fillcolor = lightblue, shape = box];
+  L1_h3    [label = "{h₃}",     fillcolor = lightblue, shape = box];
+
+  L1_h1_kb [label = "kb({h₁})", fillcolor = palegreen, shape = note];
+  L1_h2_kb [label = "kb({h₂})", fillcolor = palegreen, shape = note];
+  L1_h3_kb [label = "kb({h₃})", fillcolor = palegreen, shape = note];
+
+  L1_h1 -> L1_h1_kb [label = "sat", style = dashed, color = gray];
+  L1_h2 -> L1_h2_kb [label = "sat", style = dashed, color = gray];
+  L1_h3 -> L1_h3_kb [label = "sat", style = dashed, color = gray];
+
+  L0_kb -> L1_h1 [label = "+h₁"];
+  L0_kb -> L1_h2 [label = "+h₂"];
+  L0_kb -> L1_h3 [label = "+h₃"];
+
+  // ── Layer 2 — three commitments, TWO distinct kbs (one merged) ──
+  L2_h1h2 [label = "{h₁, h₂}", fillcolor = lightblue, shape = box];
+  L2_h1h3 [label = "{h₁, h₃}", fillcolor = lightblue, shape = box];
+  L2_h2h3 [label = "{h₂, h₃}", fillcolor = lightblue, shape = box];
+
+  L2_h1h3_kb [label = "kb({h₁,h₃})", fillcolor = palegreen, shape = note];
+
+  // The merged node — first arrival is {h₁,h₂}; canonical_set =
+  // {h₁,h₂}. {h₂,h₃} merges in at layer 2; {h₁,h₂,h₃} merges in at
+  // layer 3 (drawn lower down). Labels accumulate.
+  merged_kb [label = "kb({h₁,h₂})\n≡ kb({h₂,h₃})\n≡ kb({h₁,h₂,h₃})\n— merged across layers 2 & 3 —\nlabels = ({h₁,h₂}, {h₂,h₃}, {h₁,h₂,h₃})\nparents = ({h₁},{h₂},{h₃}, kb({h₁,h₃}))",
+               fillcolor = gold, shape = note];
+
+  L2_h1h2 -> merged_kb     [label = "sat",          style = dashed, color = darkorange];
+  L2_h1h3 -> L2_h1h3_kb    [label = "sat",          style = dashed, color = gray];
+  L2_h2h3 -> merged_kb     [label = "sat [dedup!]", style = dashed, color = darkorange];
+
+  // Layer 1 → Layer 2 (multi-parent)
+  L1_h1_kb -> L2_h1h2 [label = "+h₂"];
+  L1_h2_kb -> L2_h1h2 [label = "+h₁"];
+  L1_h1_kb -> L2_h1h3 [label = "+h₃"];
+  L1_h3_kb -> L2_h1h3 [label = "+h₁"];
+  L1_h2_kb -> L2_h2h3 [label = "+h₃"];
+  L1_h3_kb -> L2_h2h3 [label = "+h₂"];
+
+  // ── Layer 3 — one commitment, merges cross-layer ────────────────
+  L3 [label = "{h₁, h₂, h₃}", fillcolor = lightblue, shape = box];
+
+  // Layer 3's saturate arc lands on the SAME merged_kb — cross-layer
+  // state-hash dedup. Drawn in a darker orange to emphasise the
+  // cross-layer aspect.
+  L3 -> merged_kb [label = "sat [dedup! cross-layer]",
+                   style = dashed, color = "#cc5500"];
+
+  // Layer 2 → Layer 3 — multi-parent across distinct AND merged
+  // parent kbs.
+  merged_kb -> L3      [label = "+h₃  (from {h₁,h₂})\nor +h₁ (from {h₂,h₃})"];
+  L2_h1h3_kb -> L3     [label = "+h₂"];
+
+  // ── Rank constraints ───────────────────────────────────────────
+  { rank = same; L1_h1; L1_h2; L1_h3; }
+  { rank = same; L1_h1_kb; L1_h2_kb; L1_h3_kb; }
+  { rank = same; L2_h1h2; L2_h1h3; L2_h2h3; }
+  { rank = same; L2_h1h3_kb; merged_kb; }
+  { rank = same; L3; }
+}

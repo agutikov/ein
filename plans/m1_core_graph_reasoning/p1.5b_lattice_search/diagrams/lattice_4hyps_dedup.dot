@@ -1,0 +1,203 @@
+// P1.5b — Search lattice over 4 hypotheses, fully explored, with
+// state-hash dedup AND a 2-clause death.
+//
+// Layers 0–4 of the powerset over {h₁, h₂, h₃, h₄}.
+//
+// Layer 2 events:
+//   • Merge: {h₁, h₃} and {h₁, h₄} saturate to the SAME kb (a rule
+//     under h₁ derives h₄ from h₃ ⟹ committing h₄ adds no new fact
+//     when h₃ is already in). The merged node carries both labels +
+//     the union of parents.
+//   • Death: {h₂, h₃} saturates to a contradiction → emit nogood
+//     frozenset({h₂, h₃}). Every superset containing both h₂ and h₃
+//     is filtered out at generation time in subsequent layers.
+//
+// Layer 3 events:
+//   • {h₁,h₂,h₃} and {h₂,h₃,h₄} pruned at generation (nogood match).
+//   • {h₁,h₂,h₄} explored — distinct alive kb.
+//   • {h₁,h₃,h₄} explored — CROSS-LAYER MERGE into the layer-2
+//     merged node (because adding h₄ to kb({h₁,h₃,…,h₄}) is
+//     idempotent — h₄ is already there).
+//
+// Layer 4:
+//   • {h₁,h₂,h₃,h₄} pruned (nogood match). Search terminates.
+//
+// Render: dot -Tsvg lattice_4hyps_dedup.dot -o lattice_4hyps_dedup.svg
+//      or dot -Tpng lattice_4hyps_dedup.dot -o lattice_4hyps_dedup.png
+
+digraph lattice_4hyps_dedup {
+  rankdir = TB;
+  splines = polyline;
+  ranksep = 0.5;
+  nodesep = 0.25;
+  fontname = "Helvetica";
+  node [fontname = "Helvetica", style = "rounded,filled"];
+  edge [fontname = "Helvetica", fontsize = 9];
+
+  label = "Search lattice over 4 hypotheses — fully explored\nlayer-2 merge {h₁,h₃} ≡ {h₁,h₄}; layer-2 death {h₂,h₃};\nlayer-3 cross-layer merge {h₁,h₃,h₄} → existing merged node; layer-4 pruned";
+  labelloc = t;
+  fontsize = 11;
+
+  // ── Legend ──────────────────────────────────────────────────────
+  subgraph cluster_legend {
+    label = "Legend";
+    style = dashed;
+    fontsize = 10;
+    color = gray;
+    legend_commit [label="commitment\nset (raw)",
+                   fillcolor = lightblue, shape = box];
+    legend_kb [label="saturated\nkb (alive)",
+               fillcolor = palegreen, shape = note];
+    legend_merged [label="merged kb\n(state-hash dedup)",
+                   fillcolor = gold, shape = note];
+    legend_dead [label="dead kb\n(contradiction)",
+                 fillcolor = salmon, shape = note];
+    legend_commit -> legend_kb [label = "  sat  ",
+                                style = dashed, color = gray];
+    legend_kb -> legend_commit [label = "  +h_i  ",
+                                style = solid, color = black,
+                                constraint = false];
+  }
+
+  // ── Layer 0 ─────────────────────────────────────────────────────
+  L0_kb [label = "kb(∅)\n= sat(root)", fillcolor = palegreen, shape = note];
+
+  // ── Layer 1 — 4 hypotheses ──────────────────────────────────────
+  L1_h1    [label = "{h₁}",     fillcolor = lightblue, shape = box];
+  L1_h2    [label = "{h₂}",     fillcolor = lightblue, shape = box];
+  L1_h3    [label = "{h₃}",     fillcolor = lightblue, shape = box];
+  L1_h4    [label = "{h₄}",     fillcolor = lightblue, shape = box];
+
+  L1_h1_kb [label = "kb({h₁})", fillcolor = palegreen, shape = note];
+  L1_h2_kb [label = "kb({h₂})", fillcolor = palegreen, shape = note];
+  L1_h3_kb [label = "kb({h₃})", fillcolor = palegreen, shape = note];
+  L1_h4_kb [label = "kb({h₄})", fillcolor = palegreen, shape = note];
+
+  L1_h1 -> L1_h1_kb [label = "sat", style = dashed, color = gray];
+  L1_h2 -> L1_h2_kb [label = "sat", style = dashed, color = gray];
+  L1_h3 -> L1_h3_kb [label = "sat", style = dashed, color = gray];
+  L1_h4 -> L1_h4_kb [label = "sat", style = dashed, color = gray];
+
+  // Layer 0 → Layer 1
+  L0_kb -> L1_h1 [label = "+h₁"];
+  L0_kb -> L1_h2 [label = "+h₂"];
+  L0_kb -> L1_h3 [label = "+h₃"];
+  L0_kb -> L1_h4 [label = "+h₄"];
+
+  // ── Layer 2 — 6 commitment sets, 4 distinct kbs ────────────────
+  // Commitments (one per (k=2)-subset of {h1..h4})
+  L2_h1h2 [label = "{h₁, h₂}", fillcolor = lightblue, shape = box];
+  L2_h1h3 [label = "{h₁, h₃}", fillcolor = lightblue, shape = box];
+  L2_h1h4 [label = "{h₁, h₄}", fillcolor = lightblue, shape = box];
+  L2_h2h3 [label = "{h₂, h₃}", fillcolor = lightblue, shape = box];
+  L2_h2h4 [label = "{h₂, h₄}", fillcolor = lightblue, shape = box];
+  L2_h3h4 [label = "{h₃, h₄}", fillcolor = lightblue, shape = box];
+
+  // Saturated kbs — note ONE MERGED node for {h₁,h₃} ≡ {h₁,h₄},
+  // and ONE DEAD node for {h₂,h₃}.
+  L2_h1h2_kb    [label = "kb({h₁,h₂})",                 fillcolor = palegreen, shape = note];
+  L2_merged_kb  [label = "kb({h₁,h₃}) ≡ kb({h₁,h₄})\n— merged via state-hash —\nlabels = ({h₁,h₃}, {h₁,h₄})\nparents = ({h₁,h₃,h₄})\n            (deduped: {h₁},{h₃},{h₄})",
+                 fillcolor = gold, shape = note];
+  L2_h2h3_kb    [label = "kb({h₂,h₃})\n— dead —\nemit nogood {h₂,h₃}",
+                 fillcolor = salmon, shape = note];
+  L2_h2h4_kb    [label = "kb({h₂,h₄})",                 fillcolor = palegreen, shape = note];
+  L2_h3h4_kb    [label = "kb({h₃,h₄})",                 fillcolor = palegreen, shape = note];
+
+  // Saturation arcs from each commit to its kb. The two arcs into
+  // the merged node are coloured darkorange to highlight that
+  // state-hash dedup fired there.
+  L2_h1h2 -> L2_h1h2_kb    [label = "sat",          style = dashed, color = gray];
+  L2_h1h3 -> L2_merged_kb  [label = "sat",          style = dashed, color = darkorange];
+  L2_h1h4 -> L2_merged_kb  [label = "sat [dedup!]", style = dashed, color = darkorange];
+  L2_h2h3 -> L2_h2h3_kb    [label = "sat",          style = dashed, color = red];
+  L2_h2h4 -> L2_h2h4_kb    [label = "sat",          style = dashed, color = gray];
+  L2_h3h4 -> L2_h3h4_kb    [label = "sat",          style = dashed, color = gray];
+
+  // Layer 1 → Layer 2 — multi-parent (each L2 set has 2 parents)
+  L1_h1_kb -> L2_h1h2 [label = "+h₂"];
+  L1_h2_kb -> L2_h1h2 [label = "+h₁"];
+  L1_h1_kb -> L2_h1h3 [label = "+h₃"];
+  L1_h3_kb -> L2_h1h3 [label = "+h₁"];
+  L1_h1_kb -> L2_h1h4 [label = "+h₄"];
+  L1_h4_kb -> L2_h1h4 [label = "+h₁"];
+  L1_h2_kb -> L2_h2h3 [label = "+h₃"];
+  L1_h3_kb -> L2_h2h3 [label = "+h₂"];
+  L1_h2_kb -> L2_h2h4 [label = "+h₄"];
+  L1_h4_kb -> L2_h2h4 [label = "+h₂"];
+  L1_h3_kb -> L2_h3h4 [label = "+h₄"];
+  L1_h4_kb -> L2_h3h4 [label = "+h₃"];
+
+  // ── Annotation — what the dead set emits ───────────────────────
+  nogood_emit [label = "root._nogoods += frozenset({h₂, h₃})\nfuture layers' candidates containing\nboth h₂ and h₃ are filtered out",
+               fillcolor = mistyrose, shape = note, style = "filled,dashed"];
+  L2_h2h3_kb -> nogood_emit [label = "emit", style = dotted, color = red];
+
+  // ── Layer 3 — Apriori-gen + nogood filter ──────────────────────
+  // Apriori prefix-join over A_2 produces 4 raw candidates of size
+  // 3: {h₁,h₂,h₃}, {h₁,h₂,h₄}, {h₁,h₃,h₄}, {h₂,h₃,h₄}.
+  // Filter:
+  //   • {h₁,h₂,h₃} — matches nogood {h₂,h₃} ⊆ S → PRUNED
+  //   • {h₂,h₃,h₄} — matches nogood {h₂,h₃} ⊆ S → PRUNED
+  //   • {h₁,h₂,h₄} — passes → EXPLORED, new alive kb
+  //   • {h₁,h₃,h₄} — passes → EXPLORED, cross-layer merge
+
+  L3_h1h2h3_pruned [label = "{h₁, h₂, h₃}\n— pruned at gen —\nnogood match",
+                    fillcolor = lightgrey, shape = box, style = "rounded,filled,dashed"];
+  L3_h2h3h4_pruned [label = "{h₂, h₃, h₄}\n— pruned at gen —\nnogood match",
+                    fillcolor = lightgrey, shape = box, style = "rounded,filled,dashed"];
+
+  L3_h1h2h4 [label = "{h₁, h₂, h₄}", fillcolor = lightblue, shape = box];
+  L3_h1h3h4 [label = "{h₁, h₃, h₄}", fillcolor = lightblue, shape = box];
+
+  L3_h1h2h4_kb [label = "kb({h₁,h₂,h₄})", fillcolor = palegreen, shape = note];
+
+  L3_h1h2h4 -> L3_h1h2h4_kb [label = "sat", style = dashed, color = gray];
+
+  // {h₁,h₃,h₄}'s saturated kb collides with the layer-2 merged kb
+  // — cross-layer dedup. The arc points UP to the layer-2 merged
+  // node; this is the key didactic moment.
+  L3_h1h3h4 -> L2_merged_kb [label = "sat [dedup! cross-layer]",
+                             style = dashed, color = "#cc5500"];
+
+  // Layer 2 → Layer 3 — alive parents only.
+  // {h₁,h₂,h₄}: parents are {h₁,h₂}, {h₁,h₄}, {h₂,h₄}. The middle
+  // one is in the merged node, so it shows there.
+  L2_h1h2_kb   -> L3_h1h2h4 [label = "+h₄"];
+  L2_merged_kb -> L3_h1h2h4 [label = "+h₂   (from {h₁,h₄})", color = darkorange];
+  L2_h2h4_kb   -> L3_h1h2h4 [label = "+h₁"];
+
+  // {h₁,h₃,h₄}: parents are {h₁,h₃}, {h₁,h₄}, {h₃,h₄}. The first
+  // two are BOTH in the merged node — two conceptual edges, one
+  // physical (drawn once with combined label).
+  L2_merged_kb -> L3_h1h3h4 [label = "+h₄  (from {h₁,h₃})\n+h₃ (from {h₁,h₄})",
+                             color = darkorange];
+  L2_h3h4_kb   -> L3_h1h3h4 [label = "+h₁"];
+
+  // Pruned candidates' prospective lineage (dashed, gray) — would
+  // have come from these alive parents, intercepted by the nogood
+  // filter at generation time.
+  L2_h1h2_kb   -> L3_h1h2h3_pruned [label = "would form\n{h₁,h₂,h₃}", style = dashed, color = "#888888"];
+  L2_h2h4_kb   -> L3_h2h3h4_pruned [label = "would form\n{h₂,h₃,h₄}", style = dashed, color = "#888888"];
+  nogood_emit  -> L3_h1h2h3_pruned [label = "filter", style = dotted, color = red, constraint = false];
+  nogood_emit  -> L3_h2h3h4_pruned [label = "filter", style = dotted, color = red, constraint = false];
+
+  // ── Layer 4 — fully pruned ─────────────────────────────────────
+  // Only one possible size-4 set: {h₁,h₂,h₃,h₄}. Pruned by the
+  // {h₂,h₃} nogood (and by Apriori — {h₂,h₃} would be a 2-subset
+  // not in A_2). Search terminates.
+  L4_pruned [label = "{h₁, h₂, h₃, h₄}\n— pruned at gen —\nnogood match: {h₂,h₃} ⊆ S\nApriori: {h₂,h₃} ∉ A_2\nsearch terminates",
+             fillcolor = lightgrey, shape = box, style = "rounded,filled,dashed"];
+  L3_h1h2h4_kb -> L4_pruned [label = "+h₃ would form\n{h₁,h₂,h₃,h₄}", style = dashed, color = "#888888"];
+  L2_merged_kb -> L4_pruned [label = "+h₂ from {h₁,h₃,h₄}-label\nwould form\n{h₁,h₂,h₃,h₄}",
+                             style = dashed, color = "#888888"];
+  nogood_emit  -> L4_pruned [label = "filter", style = dotted, color = red, constraint = false];
+
+  // ── Rank constraints ───────────────────────────────────────────
+  { rank = same; L1_h1; L1_h2; L1_h3; L1_h4; }
+  { rank = same; L1_h1_kb; L1_h2_kb; L1_h3_kb; L1_h4_kb; }
+  { rank = same; L2_h1h2; L2_h1h3; L2_h1h4; L2_h2h3; L2_h2h4; L2_h3h4; }
+  { rank = same; L2_h1h2_kb; L2_merged_kb; L2_h2h3_kb; L2_h2h4_kb; L2_h3h4_kb; nogood_emit; }
+  { rank = same; L3_h1h2h3_pruned; L3_h1h2h4; L3_h1h3h4; L3_h2h3h4_pruned; }
+  { rank = same; L3_h1h2h4_kb; }
+  { rank = same; L4_pruned; }
+}

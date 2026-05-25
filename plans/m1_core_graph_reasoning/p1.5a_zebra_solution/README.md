@@ -98,6 +98,8 @@ need to be diffed against the human walkthrough.
 | S1.5a.16   | Branch-order shuffle invariance (depth-bounded partial-information equivalence)           | [s1.5a.16_branch_order_shuffle_invariance.md](s1.5a.16_branch_order_shuffle_invariance.md) |
 | S1.5a.17   | Eager root-bubble + outer re-entry loop (absorbs S1.5a.14 P2 + root-case of S1.5a.15 T4)  | [s1.5a.17_eager_root_bubble_outer_loop.md](s1.5a.17_eager_root_bubble_outer_loop.md) |
 | S1.5a.18   | Path-condition no-good clause learning (CDCL dual of S1.5a.15 P1, pre-fork filter)        | [s1.5a.18_path_condition_nogoods.md](s1.5a.18_path_condition_nogoods.md) |
+| S1.5a.19   | d=0 negative-completion gap (functional/injective neg + spatial endpoint + co-located chain) | [s1.5a.19_d0_negative_completion_gap.md](s1.5a.19_d0_negative_completion_gap.md) |
+| S1.5a.20   | Branch-isolation re-architecture (two channels: `try_branch` ↓ + `integrate` ↑)              | [s1.5a.20_branch_isolation_rearch.md](s1.5a.20_branch_isolation_rearch.md) |
 | S1.5a.12   | idea-08 trace acceptance                                                                  | [s1.5a.12_idea08_trace_acceptance.md](s1.5a.12_idea08_trace_acceptance.md) |
 | S1.5a.13   | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.13_acceptance_zebra2_solves.md](s1.5a.13_acceptance_zebra2_solves.md) |
 
