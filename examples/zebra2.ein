@@ -104,6 +104,51 @@
     :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
     :priority 250)
 
+  ;; ──── Negative-derivation companions for functional / injective ──
+  ;; The `functional` / `injective` rules above only fire (false) on
+  ;; violation. The d=0 negative-completion (S1.5a.19) wants the dual
+  ;; shape — given a positive (?R ?a ?b) on a functional/injective R,
+  ;; assert the explicit (not (?R …)) facts for every alternative.
+  ;; These directly close the chains the NL Zebra trace walks
+  ;; (examples/README.md) — e.g. (color-loc Yellow H_1) ⟹
+  ;; (not (color-loc Yellow H_{2..5})) via functional-negative and
+  ;; (not (color-loc {Red,Green,Ivory,Blue} H_1)) via injective-negative.
+  ;;
+  ;; Priority 240 — fires AFTER propagation (200) so the new positives
+  ;; are visible, and BEFORE both the violation rules (250) and the
+  ;; elimination rules (400), so derived negatives reach
+  ;; domain/range-elimination's `forall` premises in the same pass.
+
+  (rule functional-negative (?R)
+    :match  (and (?R ?a ?b)
+                 (relation ?R ?A ?B)
+                 (is-a ?b_other ?B)
+                 (neq ?b_other ?b))
+    :assert (not (?R ?a ?b_other))
+    :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
+    :priority 240)
+
+  (rule injective-negative (?R)
+    :match  (and (?R ?a ?b)
+                 (relation ?R ?A ?B)
+                 (is-a ?a_other ?A)
+                 (neq ?a_other ?a))
+    :assert (not (?R ?a_other ?b))
+    :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
+    :priority 240)
+
+  (rule derive-functional-negative ()
+    :match  (functional ?R)
+    :assert (functional-negative ?R)
+    :why    "{?R} functional ⟹ functional-negative active."
+    :priority 100)
+
+  (rule derive-injective-negative ()
+    :match  (injective ?R)
+    :assert (injective-negative ?R)
+    :why    "{?R} injective ⟹ injective-negative active."
+    :priority 100)
+
 
   ;; ──── Cross-attribute propagation (B1) ─────────────────────
   ;; `co-located` — two attribute-values share a house, propagate
@@ -126,6 +171,28 @@
     :match  (co-located ?R1 ?V1 ?R2 ?V2)
     :assert (co-located ?R2 ?V2 ?R1 ?V1)
     :why    "co-located is symmetric: derive reverse activator."
+    :priority 100)
+
+  ;; `co-located-negative` — negative propagation across co-located.
+  ;; The activator asserts V1 and V2 share a house, so the equivalence
+  ;; carries negatives too: (not (?R1 ?V1 ?h)) ⟹ (not (?R2 ?V2 ?h)).
+  ;; The reverse direction (V2 → V1) is covered automatically by
+  ;; `co-located-symmetric` producing the swapped activator, which
+  ;; `derive-co-located-negative` then lifts to a second
+  ;; `co-located-negative` activator. Closes the NL chain
+  ;; *Norwegian@H_1 ⟹ Englishman ≠ H_1 ⟹ Red ≠ H_1* once
+  ;; `functional-negative` / `injective-negative` have produced the
+  ;; first negative.
+  (rule co-located-negative (?R1 ?V1 ?R2 ?V2)
+    :match  (not (?R1 ?V1 ?h))
+    :assert (not (?R2 ?V2 ?h))
+    :why    "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h}))."
+    :priority 200)
+
+  (rule derive-co-located-negative ()
+    :match  (co-located ?R1 ?V1 ?R2 ?V2)
+    :assert (co-located-negative ?R1 ?V1 ?R2 ?V2)
+    :why    "co-located activator ⟹ co-located-negative active."
     :priority 100)
 
   ;; `adjacent-via-*` — pure-structural cross-attribute propagation
@@ -151,6 +218,32 @@
     :why    "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1})."
     :priority 200)
 
+  ;; ──── Negative-derivation companions for adjacent-via-{fwd,bwd} ──
+  ;; Contrapositives: V1@h1 ⟹ V2@h2 (unique ?S-target) gives
+  ;; (not V2@h2) ⟹ (not V1@h1) (same uniqueness witness). Closes
+  ;; the NL chain *(color-loc Blue H_2) ⟹ ¬(color-loc Green H_2)
+  ;; ⟹ ¬(color-loc Ivory H_1)* at d=0 — without this, Ivory@H_1
+  ;; stays open and `domain-elimination color-loc` cannot force
+  ;; Yellow@H_1 in the first saturation pass (S1.5a.19 follow-up).
+  ;; Same NAF uniqueness as the positive sibling — silent for
+  ;; symmetric ?S in non-corner cases.
+
+  (rule adjacent-via-fwd-negative (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (not (?R2 ?V2 ?h2))
+                 (?S ?h2 ?h1)
+                 (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
+    :assert (not (?R1 ?V1 ?h1))
+    :why    "(not ({?R2} {?V2} {?h2})) + unique-{?S}-source {?h1} ⟹ (not ({?R1} {?V1} {?h1}))."
+    :priority 240)
+
+  (rule adjacent-via-bwd-negative (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (not (?R1 ?V1 ?h1))
+                 (?S ?h2 ?h1)
+                 (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
+    :assert (not (?R2 ?V2 ?h2))
+    :why    "(not ({?R1} {?V1} {?h1})) + unique-{?S}-target {?h2} ⟹ (not ({?R2} {?V2} {?h2}))."
+    :priority 240)
+
   ;; `adjacent-via` — single non-directional activator that expands
   ;; into both fwd and bwd. The underlying constraint is one thing
   ;; (V1's and V2's houses are ?S-adjacent in the order
@@ -170,6 +263,18 @@
     :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
     :why    "adjacent-via ⟹ adjacent-via-bwd (identical args)."
     :priority 100)
+
+  (rule derive-adjacent-via-fwd-negative ()
+    :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-fwd ⟹ adjacent-via-fwd-negative."
+    :priority 200)
+
+  (rule derive-adjacent-via-bwd-negative ()
+    :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-bwd ⟹ adjacent-via-bwd-negative."
+    :priority 200)
 
   ;; ──── Disjunctive-prune: pre-emptive negatives ──────────────
   ;; For each adjacent-via constraint there's a pair of disjunctive
@@ -238,6 +343,49 @@
     :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
     :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
     :why    "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
+    :priority 200)
+
+  ;; ──── Spatial-endpoint exclusion ────────────────────────────
+  ;; The constraint behind `(adjacent-via ?S V1 V2)` is `(?S V2_h V1_h)`
+  ;; — V2 sits at the ?S-target of V1's house. At "endpoint" houses
+  ;; — those with no ?S-source / ?S-target — V1 / V2 cannot live, no
+  ;; matter where the other is located.
+  ;;
+  ;; Unlike `disjunctive-prune-{fwd,bwd}` (which only fire after V1 or
+  ;; V2 is *already located*), these endpoint rules derive negatives
+  ;; PROPHYLACTICALLY at d=0 from the spatial relation's domain gaps
+  ;; alone. For `(adjacent-via right-of color-loc Ivory color-loc Green)`
+  ;; they close *Ivory ≠ H_5* (no h with (right-of h H_5)) and
+  ;; *Green ≠ H_1* (no h with (right-of H_1 h)) without any prior
+  ;; positive. For symmetric `next-to` the absent-guard fails for every
+  ;; interior house, so no spurious negatives fire — corner-only.
+
+  (rule adjacent-via-endpoint-fwd (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (relation ?R1 ?A ?B)
+                 (is-a ?h1 ?B)
+                 (absent (and (is-a ?h2 ?B) (?S ?h2 ?h1))))
+    :assert (not (?R1 ?V1 ?h1))
+    :why    "{?h1} has no {?S}-source; ({?R1} {?V1} {?h1}) impossible."
+    :priority 240)
+
+  (rule adjacent-via-endpoint-bwd (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (relation ?R2 ?A ?B)
+                 (is-a ?h2 ?B)
+                 (absent (and (is-a ?h1 ?B) (?S ?h2 ?h1))))
+    :assert (not (?R2 ?V2 ?h2))
+    :why    "{?h2} has no {?S}-target; ({?R2} {?V2} {?h2}) impossible."
+    :priority 240)
+
+  (rule derive-adjacent-via-endpoint-fwd ()
+    :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-fwd ⟹ adjacent-via-endpoint-fwd."
+    :priority 200)
+
+  (rule derive-adjacent-via-endpoint-bwd ()
+    :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-bwd ⟹ adjacent-via-endpoint-bwd."
     :priority 200)
 
   ;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────

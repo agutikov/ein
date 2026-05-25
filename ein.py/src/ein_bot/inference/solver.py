@@ -268,10 +268,17 @@ class ConsumeStats:
       fact. Always 0 under M1 (no rule consumes `(not X)` to derive a
       positive); > 0 only once S1.5.8's `domain-elimination` ships
       (T1.5.7b.5).
+    - ``apriori_dead_in_sweep`` — `try_branch` calls *avoided* inside
+      a single sweep because an earlier sibling's `back_propagate` +
+      mid-sweep re-saturation already wrote `(not h)` for this
+      candidate. The synthetic dead SearchNode mirrors the path-
+      condition no-good treatment so verdict promotion still sees a
+      dead child for the apriori-killed hypothesis.
     """
     alive_cached_skips:      int = 0
     cond_dead_cached_skips:  int = 0
     cache_invalidations:     int = 0
+    apriori_dead_in_sweep:   int = 0
 
 
 # ── BranchResult (intermediate value) ──────────────────────────────
@@ -1013,11 +1020,48 @@ def _consume(
                 break
 
             # Sweep — classify each unverified candidate.
+            #
+            # Within the sweep, an unconditional death calls
+            # ``back_propagate(kb, h, …)`` which writes ``(not h)``
+            # into ``kb._negated_facts`` AND ``kb.facts``. We then
+            # re-saturate ``kb`` so the rule library can chain
+            # transitive negatives from the new ``(not h)``. The
+            # apriori re-check at the top of each iteration picks up
+            # both the direct back-prop and its mid-sweep cascades,
+            # skipping the full ``try_branch`` cost on later siblings
+            # that are already provably dead.
             unconditional: list[tuple[Fact, BranchResult]] = []
             facts_before_sweep = len(kb.facts)
+            mid_sweep_firings: list[Firing] = []
             for h in to_check:
-                result = try_branch(kb, h, branch_id=builder.peek_id())
                 key = (h.relation_name, h.args)
+                # Apriori Tier-A re-check: earlier sibling's back-prop
+                # + in-sweep re-saturation may have made h dead.
+                if key in kb._negated_facts:
+                    cid = _alloc_node(builder, nid, h)
+                    builder.add(SearchNode(
+                        id=cid, parent=nid, hypothesis=h,
+                        kb_snapshot=None, firings=(),
+                        verdict="dead", children=(),
+                        unsat_core=frozenset(),
+                    ))
+                    _dump_node(cid, nid, h, kb, (),
+                               "dead", frozenset())
+                    _add(cid)
+                    verdict_at[key] = ("cond-dead", resat_gen)
+                    cond_dead_keys.add(key)
+                    if stats is not None:
+                        stats.apriori_dead_in_sweep += 1
+                    continue
+                if kb._fact_by_id(h.relation_name, h.args) is not None:
+                    # Mid-sweep re-saturation may have derived the
+                    # candidate's positive directly (functional /
+                    # adjacency closure). Speculating it is a no-op;
+                    # mark alive and move on — the candidate is
+                    # permanently absorbed into kb.
+                    verdict_at[key] = ("alive", resat_gen)
+                    continue
+                result = try_branch(kb, h, branch_id=builder.peek_id())
                 if result.is_alive():
                     verdict_at[key] = ("alive", resat_gen)
                 elif is_unconditional_death(
@@ -1029,6 +1073,14 @@ def _consume(
                     # `_negated_facts`; no verdict_at entry needed
                     # since the candidate won't reappear in
                     # `_candidates_for`.
+                    # Mid-sweep re-saturation — propagate the new
+                    # ``(not h)``'s transitive consequences into kb
+                    # so the apriori re-check above can skip
+                    # subsequent siblings that are now provably dead
+                    # without paying the full try_branch cost.
+                    mid_sweep_firings.extend(
+                        Saturator(kb).saturate(max_steps=10_000),
+                    )
                 else:
                     # Conditional dead — record the SearchNode now
                     # so `_descend` (and subsequent sweeps) don't
@@ -1090,9 +1142,17 @@ def _consume(
 
             # Re-saturate the parent so the back-propped negatives
             # are premises rule firings can chain from (T1.5.7.5).
-            new_firings = tuple(
+            # With mid-sweep re-saturation enabled, this pass is
+            # mostly idempotent — it picks up at most the firings
+            # from the LAST unconditional death (whose mid-sweep
+            # re-sat hadn't yet run before the for-loop exited) and
+            # serves as the canonical attribution point for
+            # node_resaturated dumper events + forced-positive mining
+            # + verdict-cache invalidation.
+            post_sweep_firings = tuple(
                 Saturator(kb).saturate(max_steps=10_000),
             )
+            new_firings = tuple(mid_sweep_firings) + post_sweep_firings
             node_firings = node_firings + new_firings
             resat_gen += 1
 

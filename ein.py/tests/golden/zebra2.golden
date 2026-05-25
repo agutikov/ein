@@ -37,6 +37,34 @@
     :why "{?R} not injective: {?c} reached from both {?a} and {?b}."
     :priority 250)
   (rule
+    functional-negative
+    (?R)
+    :match (and (?R ?a ?b) (relation ?R ?A ?B) (is-a ?b_other ?B) (neq ?b_other ?b))
+    :assert (not (?R ?a ?b_other))
+    :why "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
+    :priority 240)
+  (rule
+    injective-negative
+    (?R)
+    :match (and (?R ?a ?b) (relation ?R ?A ?B) (is-a ?a_other ?A) (neq ?a_other ?a))
+    :assert (not (?R ?a_other ?b))
+    :why "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
+    :priority 240)
+  (rule
+    derive-functional-negative
+    ()
+    :match (functional ?R)
+    :assert (functional-negative ?R)
+    :why "{?R} functional ⟹ functional-negative active."
+    :priority 100)
+  (rule
+    derive-injective-negative
+    ()
+    :match (injective ?R)
+    :assert (injective-negative ?R)
+    :why "{?R} injective ⟹ injective-negative active."
+    :priority 100)
+  (rule
     co-located
     (?R1 ?V1 ?R2 ?V2)
     :match (?R1 ?V1 ?h)
@@ -49,6 +77,20 @@
     :match (co-located ?R1 ?V1 ?R2 ?V2)
     :assert (co-located ?R2 ?V2 ?R1 ?V1)
     :why "co-located is symmetric: derive reverse activator."
+    :priority 100)
+  (rule
+    co-located-negative
+    (?R1 ?V1 ?R2 ?V2)
+    :match (not (?R1 ?V1 ?h))
+    :assert (not (?R2 ?V2 ?h))
+    :why "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h}))."
+    :priority 200)
+  (rule
+    derive-co-located-negative
+    ()
+    :match (co-located ?R1 ?V1 ?R2 ?V2)
+    :assert (co-located-negative ?R1 ?V1 ?R2 ?V2)
+    :why "co-located activator ⟹ co-located-negative active."
     :priority 100)
   (rule
     adjacent-via-fwd
@@ -65,6 +107,20 @@
     :why "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1})."
     :priority 200)
   (rule
+    adjacent-via-fwd-negative
+    (?S ?R1 ?V1 ?R2 ?V2)
+    :match (and (not (?R2 ?V2 ?h2)) (?S ?h2 ?h1) (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
+    :assert (not (?R1 ?V1 ?h1))
+    :why "(not ({?R2} {?V2} {?h2})) + unique-{?S}-source {?h1} ⟹ (not ({?R1} {?V1} {?h1}))."
+    :priority 240)
+  (rule
+    adjacent-via-bwd-negative
+    (?S ?R1 ?V1 ?R2 ?V2)
+    :match (and (not (?R1 ?V1 ?h1)) (?S ?h2 ?h1) (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
+    :assert (not (?R2 ?V2 ?h2))
+    :why "(not ({?R1} {?V1} {?h1})) + unique-{?S}-target {?h2} ⟹ (not ({?R2} {?V2} {?h2}))."
+    :priority 240)
+  (rule
     derive-adjacent-via-fwd
     ()
     :match (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
@@ -78,6 +134,20 @@
     :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
     :why "adjacent-via ⟹ adjacent-via-bwd (identical args)."
     :priority 100)
+  (rule
+    derive-adjacent-via-fwd-negative
+    ()
+    :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+    :why "adjacent-via-fwd ⟹ adjacent-via-fwd-negative."
+    :priority 200)
+  (rule
+    derive-adjacent-via-bwd-negative
+    ()
+    :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+    :why "adjacent-via-bwd ⟹ adjacent-via-bwd-negative."
+    :priority 200)
   (rule
     disjunctive-prune-fwd
     (?S ?R1 ?V1 ?R2 ?V2)
@@ -105,6 +175,34 @@
     :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
     :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
     :why "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
+    :priority 200)
+  (rule
+    adjacent-via-endpoint-fwd
+    (?S ?R1 ?V1 ?R2 ?V2)
+    :match (and (relation ?R1 ?A ?B) (is-a ?h1 ?B) (absent (and (is-a ?h2 ?B) (?S ?h2 ?h1))))
+    :assert (not (?R1 ?V1 ?h1))
+    :why "{?h1} has no {?S}-source; ({?R1} {?V1} {?h1}) impossible."
+    :priority 240)
+  (rule
+    adjacent-via-endpoint-bwd
+    (?S ?R1 ?V1 ?R2 ?V2)
+    :match (and (relation ?R2 ?A ?B) (is-a ?h2 ?B) (absent (and (is-a ?h1 ?B) (?S ?h2 ?h1))))
+    :assert (not (?R2 ?V2 ?h2))
+    :why "{?h2} has no {?S}-target; ({?R2} {?V2} {?h2}) impossible."
+    :priority 240)
+  (rule
+    derive-adjacent-via-endpoint-fwd
+    ()
+    :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why "adjacent-via-fwd ⟹ adjacent-via-endpoint-fwd."
+    :priority 200)
+  (rule
+    derive-adjacent-via-endpoint-bwd
+    ()
+    :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why "adjacent-via-bwd ⟹ adjacent-via-endpoint-bwd."
     :priority 200)
   (rule
     typecheck-arg-0

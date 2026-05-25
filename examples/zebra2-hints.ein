@@ -140,6 +140,42 @@
     :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
     :priority 250)
 
+  ;; ──── Negative-derivation companions for functional / injective ──
+  ;; See zebra2.ein for the design rationale (S1.5a.19). From a
+  ;; positive (?R ?a ?b) on a functional/injective relation, derive
+  ;; the explicit (not …) negatives for every alternative, so that
+  ;; domain-elimination / range-elimination see them at d=0.
+
+  (rule functional-negative (?R)
+    :match  (and (?R ?a ?b)
+                 (relation ?R ?A ?B)
+                 (is-a ?b_other ?B)
+                 (neq ?b_other ?b))
+    :assert (not (?R ?a ?b_other))
+    :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
+    :priority 240)
+
+  (rule injective-negative (?R)
+    :match  (and (?R ?a ?b)
+                 (relation ?R ?A ?B)
+                 (is-a ?a_other ?A)
+                 (neq ?a_other ?a))
+    :assert (not (?R ?a_other ?b))
+    :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
+    :priority 240)
+
+  (rule derive-functional-negative ()
+    :match  (functional ?R)
+    :assert (functional-negative ?R)
+    :why    "{?R} functional ⟹ functional-negative active."
+    :priority 100)
+
+  (rule derive-injective-negative ()
+    :match  (injective ?R)
+    :assert (injective-negative ?R)
+    :why    "{?R} injective ⟹ injective-negative active."
+    :priority 100)
+
 
   ;; ──── Cross-attribute propagation (B1) ─────────────────────
   ;; `co-located` — two attribute-values share a house, propagate
@@ -162,6 +198,20 @@
     :match  (co-located ?R1 ?V1 ?R2 ?V2)
     :assert (co-located ?R2 ?V2 ?R1 ?V1)
     :why    "co-located is symmetric: derive reverse activator."
+    :priority 100)
+
+  ;; `co-located-negative` — negative propagation across the
+  ;; equivalence. See zebra2.ein for full rationale.
+  (rule co-located-negative (?R1 ?V1 ?R2 ?V2)
+    :match  (not (?R1 ?V1 ?h))
+    :assert (not (?R2 ?V2 ?h))
+    :why    "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h}))."
+    :priority 200)
+
+  (rule derive-co-located-negative ()
+    :match  (co-located ?R1 ?V1 ?R2 ?V2)
+    :assert (co-located-negative ?R1 ?V1 ?R2 ?V2)
+    :why    "co-located activator ⟹ co-located-negative active."
     :priority 100)
 
   ;; `adjacent-via-*` — pure-structural cross-attribute propagation
@@ -187,6 +237,24 @@
     :why    "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1})."
     :priority 200)
 
+  ;; ──── Negative-derivation companions for adjacent-via-{fwd,bwd} ──
+  ;; Contrapositives — see zebra2.ein for the design rationale.
+  (rule adjacent-via-fwd-negative (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (not (?R2 ?V2 ?h2))
+                 (?S ?h2 ?h1)
+                 (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
+    :assert (not (?R1 ?V1 ?h1))
+    :why    "(not ({?R2} {?V2} {?h2})) + unique-{?S}-source {?h1} ⟹ (not ({?R1} {?V1} {?h1}))."
+    :priority 240)
+
+  (rule adjacent-via-bwd-negative (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (not (?R1 ?V1 ?h1))
+                 (?S ?h2 ?h1)
+                 (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
+    :assert (not (?R2 ?V2 ?h2))
+    :why    "(not ({?R1} {?V1} {?h1})) + unique-{?S}-target {?h2} ⟹ (not ({?R2} {?V2} {?h2}))."
+    :priority 240)
+
   ;; `adjacent-via` — single non-directional activator that expands
   ;; into both fwd and bwd. The underlying constraint is one thing
   ;; (V1's and V2's houses are ?S-adjacent in the order
@@ -206,6 +274,18 @@
     :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
     :why    "adjacent-via ⟹ adjacent-via-bwd (identical args)."
     :priority 100)
+
+  (rule derive-adjacent-via-fwd-negative ()
+    :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-fwd ⟹ adjacent-via-fwd-negative."
+    :priority 200)
+
+  (rule derive-adjacent-via-bwd-negative ()
+    :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-bwd ⟹ adjacent-via-bwd-negative."
+    :priority 200)
 
   ;; ──── Disjunctive-prune: pre-emptive negatives ──────────────
   ;; For each adjacent-via constraint there's a pair of disjunctive
@@ -256,6 +336,41 @@
     :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
     :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
     :why    "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
+    :priority 200)
+
+  ;; ──── Spatial-endpoint exclusion ────────────────────────────
+  ;; Prophylactic corner-house negatives at d=0 — see zebra2.ein for
+  ;; the full rationale. For `(adjacent-via right-of color-loc Ivory
+  ;; color-loc Green)`, closes *Ivory ≠ H_5* (fwd) and *Green ≠ H_1*
+  ;; (bwd) without needing either to be located. Silent for
+  ;; symmetric `next-to` (every house has a neighbour).
+
+  (rule adjacent-via-endpoint-fwd (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (relation ?R1 ?A ?B)
+                 (is-a ?h1 ?B)
+                 (absent (and (is-a ?h2 ?B) (?S ?h2 ?h1))))
+    :assert (not (?R1 ?V1 ?h1))
+    :why    "{?h1} has no {?S}-source; ({?R1} {?V1} {?h1}) impossible."
+    :priority 240)
+
+  (rule adjacent-via-endpoint-bwd (?S ?R1 ?V1 ?R2 ?V2)
+    :match  (and (relation ?R2 ?A ?B)
+                 (is-a ?h2 ?B)
+                 (absent (and (is-a ?h1 ?B) (?S ?h2 ?h1))))
+    :assert (not (?R2 ?V2 ?h2))
+    :why    "{?h2} has no {?S}-target; ({?R2} {?V2} {?h2}) impossible."
+    :priority 240)
+
+  (rule derive-adjacent-via-endpoint-fwd ()
+    :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-fwd ⟹ adjacent-via-endpoint-fwd."
+    :priority 200)
+
+  (rule derive-adjacent-via-endpoint-bwd ()
+    :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :assert (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2)
+    :why    "adjacent-via-bwd ⟹ adjacent-via-endpoint-bwd."
     :priority 200)
 
   ;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
@@ -578,10 +693,10 @@
   (color-loc  Green          House-5   :source "hint 2")
 
   ;; hint 4 — Englishman is house 3 (cond. 2: Red house).
-  (nation-loc Englishman     House-3   :source "hint 4")
+  ;; (nation-loc Englishman     House-3   :source "hint 4")
 
   ;; hint 5 — Japanese is house 5 (Parliament-smoker in Green).
-  (nation-loc Japanese       House-5   :source "hint 5")
+  ;; (nation-loc Japanese       House-5   :source "hint 5")
 
   ;; hint 6 — Coffee is in house 5 (cond. 4: drunk in Green house).
   ;; (drink-loc  Coffee         House-5   :source "hint 6")
