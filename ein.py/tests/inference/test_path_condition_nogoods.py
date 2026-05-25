@@ -23,7 +23,6 @@ import pytest
 
 from ein_bot.inference.back_prop import (
     BubbleAbort,
-    _bump_pass_bubbled,
     _eager_pass_ctx,
 )
 from ein_bot.inference.config import SolverConfig

@@ -71,6 +71,13 @@ Zebra-acceptance milestone.
 - PoC (the 2021 prototype, preserved): [`docs/PoC/`](../PoC/).
 - Source of truth for parsing: [`src/ein_bot/ir/grammar.lark`](../../src/ein_bot/ir/grammar.lark).
 - Source of truth for the KB: [`src/ein_bot/kb/`](../../src/ein_bot/kb/).
+- **End-to-end target trace**:
+  [`examples/README.md`](../../examples/README.md) — the human
+  Wikipedia Zebra solution annotated as ein.py inference (NL ↔ ein
+  rule ↔ branch-depth, contradictions, learnt no-goods). The
+  *inference* column is what the M1 kernel + engine must reproduce;
+  the *whole row* (NL ⇄ IR ⇄ solution ⇄ NL explanation) is what M2
+  closes.
 
 ## Conventions
 

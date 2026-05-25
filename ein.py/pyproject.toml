@@ -96,3 +96,5 @@ ignore = []
 # helper idiom; ruff's RUF009 cannot tell `field()` apart from a real
 # function call.
 "src/ein_bot/ir/types.py" = ["RUF009"]
+# `∪` (set-union) is intentional mathematical notation in docstrings.
+"src/ein_bot/inference/nogoods.py" = ["RUF002"]

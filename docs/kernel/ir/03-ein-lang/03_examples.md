@@ -176,6 +176,12 @@ After saturation, an engine dump of the reasoning layer looks like:
 - Full encoded puzzles:
   [`examples/zebra.ein`](../../../../examples/zebra.ein),
   [`examples/zebra2.ein`](../../../../examples/zebra2.ein).
+- [`examples/README.md`](../../../../examples/README.md) — the
+  Wikipedia human-style Zebra solution annotated step-by-step against
+  `zebra2.ein`: NL sentence ↔ firing ein rule ↔ branch-depth ↔
+  premises → conclusion, with the four `d=1` hypothesis branches and
+  their learnt no-good clauses spelled out. M1 target (the inference
+  column) and M2 target (the full NL ⇄ IR ⇄ NL row).
 - [`01_grammar.md`](01_grammar.md) — the form-level grammar for what
   you see above.
 - [`02_patterns.md`](02_patterns.md) — the pattern sub-language

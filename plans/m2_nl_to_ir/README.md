@@ -12,6 +12,18 @@ Take a natural-language puzzle statement and emit M1's IR, so the
 graph engine can solve, find gaps, or find contradictions in
 problems stated in English (or Russian — the user is bilingual).
 
+The ultimate M2 ambition — beyond the NL → IR direction this
+milestone delivers — is the full round-trip:
+`NL problem → facts → ontology+rules → solution → NL explanation of
+solution steps`. Both endpoints are NL; the IR is the pivot. The
+worked Zebra example in
+[`examples/README.md`](../../examples/README.md) shows that target
+end to end: the Wikipedia NL text in one column, the corresponding
+ein facts / rule firings / branch-depth in the other. NL → IR
+realises the input side of this table; the explanation side (IR
+trace → NL paragraphs) is M2's stretch goal and the natural lead-in
+to [M2b](../m2b_presentation/README.md).
+
 Per [`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md`](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md):
 **do NOT go directly from NLP-tree to SMT**. The IR is the *third*
 artefact in the pipeline:

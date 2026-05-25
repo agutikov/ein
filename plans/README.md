@@ -31,6 +31,18 @@ framing 2026-05-24):
   rather than sitting on a half-typed KB and (b) reflects the
   common-sense implicits an NL statement leans on.
 
+The end-to-end target the milestone stack converges on is the
+worked solution in [`examples/README.md`](../examples/README.md): the
+human Wikipedia walkthrough of the Zebra puzzle annotated as ein.py
+inference (NL ↔ ein rule ↔ branch-depth, plus learnt no-goods). M1
+must reproduce the *inference* column — the rule firings, branches,
+and contradictions that take the encoded `zebra2.ein` to the final
+table. M2's ultimate ambition is the *full* row — `NL problem → facts
+→ ontology+rules → solution → NL explanation of solution steps` —
+i.e. NL parses into the same `(facts …)` / `(ontology …)` blocks the
+engine consumes, and the engine's trace renders back into the same
+NL paragraphs the README cites.
+
 Two adjacent secondary milestones surface ein-bot externally:
 
 - **M1b — GUI** ([m1b_gui/](m1b_gui/README.md)) between M1

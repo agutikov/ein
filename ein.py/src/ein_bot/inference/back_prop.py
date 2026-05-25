@@ -70,7 +70,7 @@ _eager_pass_ctx: ContextVar[int | None] = ContextVar(
 )
 
 
-class BubbleAbort(Exception):
+class BubbleAbort(Exception):  # noqa: N818 — control-flow signal, not an error (cf. StopIteration)
     """Eager-bubble abort signal — S1.5a.17.
 
     Raised by `back_propagate` and `_mirror_forced_positive` after
@@ -369,13 +369,13 @@ def _clear_ancestor_verdict_caches() -> None:
 
 
 __all__ = [
+    "BubbleAbort",
     "_bump_pass_bubbled",
     "_consume_caches_ctx",
     "_eager_pass_ctx",
     "_kb_chain_ctx",
     "_write_negation",
     "back_propagate",
-    "BubbleAbort",
     "is_symmetric_relation",
     "is_unconditional_death",
     "reaches_hypothesis",

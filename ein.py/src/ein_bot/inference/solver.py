@@ -27,13 +27,13 @@ from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
 from .back_prop import (
+    BubbleAbort,
     _bump_pass_bubbled,
     _consume_caches_ctx,
     _eager_pass_ctx,
     _kb_chain_ctx,
     _write_negation,
     back_propagate,
-    BubbleAbort,
     is_unconditional_death,
     reaches_hypothesis,
 )
@@ -95,17 +95,24 @@ _path_ctx: ContextVar[tuple[tuple[str, tuple], ...]] = ContextVar(
 )
 
 
-def _alloc_node(builder: _TreeBuilder, parent_id: int | None) -> int:
+def _alloc_node(
+    builder: _TreeBuilder, parent_id: int | None,
+    hypothesis: Fact | None = None,
+) -> int:
     """`builder.alloc()` + register the node's dir on any bound dumper.
 
     Pre-registering the dir at alloc time guarantees that any
     children allocated inside the same `_explore` / `_consume` call
     can nest under their parent's already-existing directory.
+
+    ``hypothesis`` (when known) is forwarded to the dumper so the
+    branch folder name carries a readable slug — see
+    :meth:`state_dump.StateDumper._make_branch_dir`.
     """
     nid = builder.alloc()
     d = _dumper_ctx.get()
     if d is not None:
-        d.node_alloc(nid, parent_id)
+        d.node_alloc(nid, parent_id, hypothesis)
     return nid
 
 
@@ -657,7 +664,7 @@ def _explore_inner(
 
     contradictions = ContradictionDetector(kb).detect()
     if contradictions:
-        nid = _alloc_node(builder, parent_id)
+        nid = _alloc_node(builder, parent_id, hypothesis)
         builder.state_index[sh] = nid
         unsat = kb.unsat_core(c.witness for c in contradictions)
         builder.add(SearchNode(
@@ -679,7 +686,7 @@ def _explore_inner(
     # whose children all turn out dead.
 
     if depth >= max_depth:
-        nid = _alloc_node(builder, parent_id)
+        nid = _alloc_node(builder, parent_id, hypothesis)
         builder.state_index[sh] = nid
         builder.add(SearchNode(
             id=nid, parent=parent_id, hypothesis=hypothesis,
@@ -694,7 +701,7 @@ def _explore_inner(
     # determined by `is_solved` (true) or "open" (state matched the
     # goal but the puzzle isn't maximally constrained under the
     # current rule set).
-    nid = _alloc_node(builder, parent_id)
+    nid = _alloc_node(builder, parent_id, hypothesis)
     builder.state_index[sh] = nid
 
     # S1.5.7 T1.5.7.6 — the candidate descent. With back-prop off
@@ -783,7 +790,7 @@ def _descend(
                 continue
             if ng_enabled and matches_any_nogood(
                     h, ng_path_set, ng_root_kb._nogoods):
-                child_id = _alloc_node(builder, nid)
+                child_id = _alloc_node(builder, nid, h)
                 builder.add(SearchNode(
                     id=child_id, parent=nid, hypothesis=h,
                     kb_snapshot=None, firings=(),
@@ -808,7 +815,7 @@ def _descend(
                 # unsat-core, both of which are part of the proof
                 # witnesses. Two distinct hypotheses dying for the same
                 # underlying reason are still recorded separately.
-                child_id = _alloc_node(builder, nid)
+                child_id = _alloc_node(builder, nid, h)
                 builder.add(SearchNode(
                     id=child_id, parent=nid, hypothesis=h,
                     kb_snapshot=result.kb, firings=result.firings,
@@ -977,7 +984,7 @@ def _consume(
                 for h in to_check:
                     if matches_any_nogood(
                             h, ng_path_set, ng_root_kb._nogoods):
-                        cid = _alloc_node(builder, nid)
+                        cid = _alloc_node(builder, nid, h)
                         builder.add(SearchNode(
                             id=cid, parent=nid, hypothesis=h,
                             kb_snapshot=None, firings=(),
@@ -1026,7 +1033,7 @@ def _consume(
                     # Conditional dead — record the SearchNode now
                     # so `_descend` (and subsequent sweeps) don't
                     # re-try it.
-                    cid = _alloc_node(builder, nid)
+                    cid = _alloc_node(builder, nid, h)
                     builder.add(SearchNode(
                         id=cid, parent=nid, hypothesis=h,
                         kb_snapshot=result.kb, firings=result.firings,
@@ -1069,7 +1076,7 @@ def _consume(
             # next pass.
             dead_for_resat: list[tuple[int, Fact]] = []
             for h, result in unconditional:
-                cid = _alloc_node(builder, nid)
+                cid = _alloc_node(builder, nid, h)
                 builder.add(SearchNode(
                     id=cid, parent=nid, hypothesis=h,
                     kb_snapshot=result.kb, firings=result.firings,

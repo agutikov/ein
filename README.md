@@ -20,6 +20,8 @@ modernised in light of neuro-symbolic and constrained-reasoning research.
 | `ein.py/demo/`          | runnable demo scripts (bench_saturate.py, …)                                 |
 | `ein.py/pyproject.toml` | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff` |
 | `examples/zebra.ein`    | the Zebra puzzle as IR (the smoke-test fixture)                              |
+| `examples/zebra2.ein`   | same puzzle in the unified-`is-a` / `*-loc` encoding (the active acceptance target) |
+| [`examples/README.md`](examples/README.md) | human Zebra solution traced step-by-step as ein.py inference (NL↔ein↔branch-depth table) — **M1 target** for the engine, **M2 target** for the surrounding NL ⇄ IR round-trip |
 | `examples/broken/`      | curated parse-failure fixtures (file:line:col error messages)                |
 | `plans/`                | milestone / phase / stage roadmap (M1 active)                                |
 | `docs/kernel/`          | kernel documentation — graph semantics, data model, surface language, inference engine |
@@ -138,3 +140,10 @@ cross-references). The original single-file PoC
 reference. The deep rewrite is tracked in
 [`plans/`](plans/README.md); see [`AGENTS.md`](AGENTS.md) for context
 aimed at coding agents.
+
+The end-to-end target — what the engine must reproduce by the close of
+M1, and what NL ⇄ IR completes by the close of M2 — is annotated step by
+step in [`examples/README.md`](examples/README.md): the Wikipedia
+human-style Zebra solution, every NL sentence paired with the firing
+ein rule, branch-depth labels for the four hypothesis points, and the
+no-good clauses learnt on contradiction.

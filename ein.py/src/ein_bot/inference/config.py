@@ -175,11 +175,11 @@ def _coerce(field, value: Any) -> Any:
     if field_type is float or field_type == "float":
         try:
             return float(raw)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as e:
             raise ValueError(
                 f"config flag :{field_name.replace('_', '-')} expects "
                 f"a number, got {value!r}",
-            )
+            ) from e
     if field_type is str or field_type == "str":
         if isinstance(raw, str):
             return raw

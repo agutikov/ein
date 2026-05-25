@@ -32,7 +32,7 @@ set.
 """
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from ein_bot.kb.entities import Fact
 from ein_bot.kb.store import KnowledgeBase
@@ -149,10 +149,10 @@ def build_clause(path: tuple[FactId, ...], own: Fact) -> Clause:
 
 
 __all__ = [
-    "build_clause",
     "Clause",
-    "emit_nogood",
     "FactId",
+    "build_clause",
+    "emit_nogood",
     "filter_by_nogoods",
     "matches_any_nogood",
 ]

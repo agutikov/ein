@@ -16,8 +16,9 @@ naf_dropped)``                  ``01_root_saturated/stats.json``
                                 ``01_root_saturated/firings.jsonl``
 ``root_hyps(alive, stats)``     ``02_root_hyps.ein``
                                 ``02_root_hyps/hyp_stats.json``
-``node_alloc(nid, parent_id)``  registers ``<parent>/branches/b<nid>/``
-``node_dump(nid, parent_id, h,  ``<parent>/branches/b<nid>/{hypothesis.ein,
+``node_alloc(nid, parent_id,    registers ``<parent>/branches/b<nid>[_<slug>]/``
+hypothesis=None)``              (e.g. ``b3_drink-loc_milk_house-1``)
+``node_dump(nid, parent_id, h,  ``<parent>/branches/b<nid>[_<slug>]/{hypothesis.ein,
 kb, firings, verdict_kind,      post_sat.ein, firings.jsonl, verdict.json}``
 unsat_core)``
 ``node_resaturated(nid, cycle,  ``<nid>/resats/<cycle>.ein,
@@ -58,11 +59,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from ein_bot.ir.types import Atom, Int, Keyword, KwPair, SForm, String
+from ein_bot.kb.entities import Fact
 
 if TYPE_CHECKING:
     from ein_bot.inference.firing import Firing
     from ein_bot.inference.hypgen import HypGenStats
-    from ein_bot.kb.entities import Fact
     from ein_bot.kb.store import KnowledgeBase
 
 
@@ -187,6 +188,29 @@ def _fact_summary(fact: Fact) -> dict[str, Any]:
     }
 
 
+def _fact_slug(fact: Fact) -> str:
+    """Filesystem-safe lowercase slug for a fact.
+
+    ``(drink-loc Milk House_1)`` → ``drink-loc_milk_house-1``. Fields
+    are joined with ``_``; within each field, ``_`` in source names
+    becomes ``-`` so the field separator stays unambiguous. Hyphens
+    in source names (kebab-case relations like ``drink-loc``) are
+    preserved verbatim. Nested-Fact args render via ``_fact_slug``
+    recursively, wrapped in ``[]`` so they don't merge with the
+    flat field stream.
+    """
+    def field_to_slug(s: str) -> str:
+        return s.lower().replace("_", "-")
+
+    parts = [field_to_slug(fact.relation_name)]
+    for a in fact.args:
+        if isinstance(a, Fact):
+            parts.append(f"[{_fact_slug(a)}]")
+        else:
+            parts.append(field_to_slug(str(a)))
+    return "_".join(parts)
+
+
 # ── The dumper ────────────────────────────────────────────────────
 
 
@@ -267,12 +291,21 @@ class StateDumper:
 
     # ── Per-node ─────────────────────────────────────────────────
 
-    def node_alloc(self, nid: int, parent_id: int | None) -> None:
+    def node_alloc(
+        self, nid: int, parent_id: int | None,
+        hypothesis: Fact | None = None,
+    ) -> None:
         """Pre-register a node's directory under its parent.
 
         Called by the solver right after ``builder.alloc()`` so that
         any children dumped inside the node's exploration find the
         parent already at ``_node_dirs[parent_id]``. Idempotent.
+
+        When ``hypothesis`` is provided, the directory name carries
+        a lowercase slug of the fact — e.g.
+        ``b3_drink-loc_milk_house-1`` for
+        ``(drink-loc Milk House_1)``. Useful for human inspection;
+        the leading ``b<nid>`` keeps lexical sort = allocation order.
         """
         if parent_id is None:
             # Root node — its dir is out_dir; recorded in __post_init__.
@@ -280,7 +313,7 @@ class StateDumper:
             return
         if nid in self._node_dirs:
             return  # already registered
-        self._make_branch_dir(nid, parent_id)
+        self._make_branch_dir(nid, parent_id, hypothesis)
 
     def node_dump(
         self,
@@ -315,7 +348,7 @@ class StateDumper:
         # The dir is normally pre-registered by node_alloc; fall back
         # to creating it now if the caller skipped alloc registration.
         ndir = self._node_dirs.get(nid) or self._make_branch_dir(
-            nid, parent_id,
+            nid, parent_id, hypothesis,
         )
         from ein_bot.ir.dump import dump_canonical
         if hypothesis is not None:
@@ -403,16 +436,28 @@ class StateDumper:
 
     # ── Internals ────────────────────────────────────────────────
 
-    def _make_branch_dir(self, bid: int, parent_id: int) -> Path:
+    def _make_branch_dir(
+        self, bid: int, parent_id: int, hypothesis: Fact | None = None,
+    ) -> Path:
         """Allocate the directory for branch `bid` under its parent.
 
         Falls back to out_dir if the parent isn't registered yet
         (defensive — every parent should have been registered via
         a prior `branch_pre` call, except the root, which is keyed 0
         in __post_init__).
+
+        Folder name is ``b<bid>`` for no-hypothesis nodes (interior
+        / forced) and ``b<bid>_<slug>`` when a hypothesis is known
+        at alloc time, where ``<slug>`` is the lowercase fact (e.g.
+        ``drink-loc_milk_house-1`` for ``(drink-loc Milk House_1)``).
         """
         parent_dir = self._node_dirs.get(parent_id, self.out_dir)
-        d = parent_dir / "branches" / f"b{bid}"
+        name = f"b{bid}"
+        if hypothesis is not None:
+            slug = _fact_slug(hypothesis)
+            if slug:
+                name = f"{name}_{slug}"
+        d = parent_dir / "branches" / name
         d.mkdir(parents=True, exist_ok=True)
         self._node_dirs[bid] = d
         return d

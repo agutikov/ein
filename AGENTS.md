@@ -30,6 +30,14 @@ neuro-symbolic / constrained-reasoning research.
   and a Cytoscape.js page).
 - **`docs/ideas/`** — the user's *own* ideas (9 files); each preserves
   user quotes and open questions. Authoritative on intent.
+- **`examples/`** — encoded Zebra puzzles (`zebra.ein` classic,
+  `zebra2.ein` unified-is-a / `*-loc`, `zebra2-hints.ein` partial-state
+  fixture) plus [`examples/README.md`](examples/README.md): the
+  Wikipedia human walkthrough annotated as ein.py inference (NL↔ein
+  rule↔branch-depth table, hypotheses with their contradictions and
+  no-good clauses). It is the **M1 target trace** for the engine and
+  the **M2 target** for the NL ⇄ IR round-trip (NL problem → facts →
+  ontology+rules → solution → NL explanation).
 - **`ein.py/`** — Python implementation. `ein.py/src/ein_bot/` is the
   package: IR parser + dumper under `ir/`; KB store + entities +
   provenance under `kb/`; inference engine + saturator + contradiction
