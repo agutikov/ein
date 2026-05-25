@@ -555,11 +555,17 @@ def _candidates_for(kb: KnowledgeBase) -> list[Fact]:
     S1.5a.1a stub score the effective order is
     ``(args, relation_name)``; the score primary key reserves the
     slot for S1.5a.7's real scoring without a downstream code edit.
+
+    When ``cfg.candidate_order_seed >= 0`` (T1.5a.2a.2 / S1.5a.16)
+    the sorted list is then permuted by a content-mixed seeded RNG
+    via :func:`_maybe_shuffle_candidates`, exposing path-sensitivity
+    bugs to the shuffle-invariance test.
     """
     cfg: SolverConfig = kb.config or SolverConfig()
     if not cfg.enable_alive_inherit or kb.alive is None:
         raw = list(generate_hypotheses(kb))
-        return sorted(raw, key=lambda f: _candidate_sort_key(f, kb))
+        ordered = sorted(raw, key=lambda f: _candidate_sort_key(f, kb))
+        return _maybe_shuffle_candidates(ordered, cfg)
     pruned = _prune_alive(kb.alive, kb)
     if cfg.print_alive:
         import sys
@@ -572,7 +578,40 @@ def _candidates_for(kb: KnowledgeBase) -> list[Fact]:
     # Mutate kb.alive in place so siblings/descendants of this
     # state pick up the pruned form without re-pruning.
     kb.alive = pruned
-    return sorted(pruned, key=lambda f: _candidate_sort_key(f, kb))
+    ordered = sorted(pruned, key=lambda f: _candidate_sort_key(f, kb))
+    return _maybe_shuffle_candidates(ordered, cfg)
+
+
+def _maybe_shuffle_candidates(
+    cands: list[Fact], cfg: SolverConfig,
+) -> list[Fact]:
+    """Permute the sorted candidate list under a content-mixed RNG.
+
+    When ``cfg.candidate_order_seed`` is negative (the default) the
+    sorted list passes through unchanged — `solve()` visits branches
+    in the S1.5a.1a content-sorted order.
+
+    When non-negative, builds a stable string seed by joining the
+    config seed with each candidate's ``(relation_name, args)`` tuple
+    (PYTHONHASHSEED-independent — no ``hash()`` on strings), then
+    applies ``random.Random(seed_str).shuffle(...)``. Different
+    branch points see different candidate lists, so each gets a
+    different but reproducible permutation; the same (seed, kb,
+    rules, branch path) tuple always produces the same order.
+    """
+    if cfg.candidate_order_seed < 0:
+        return cands
+    import random
+    # Stable, hash-seed-independent string seed: int + the
+    # relation/arg shape of every candidate.
+    seed_parts = [str(cfg.candidate_order_seed)]
+    for f in cands:
+        seed_parts.append(f.relation_name)
+        seed_parts.extend(str(a) for a in f.args)
+    rng = random.Random("|".join(seed_parts))
+    shuffled = list(cands)
+    rng.shuffle(shuffled)
+    return shuffled
 
 
 def _prune_alive(alive: frozenset, kb: KnowledgeBase) -> frozenset:

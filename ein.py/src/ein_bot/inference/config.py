@@ -101,6 +101,17 @@ class SolverConfig:
     - ``print_alive`` (default **False**) — diagnostic from
       T1.5.4.8.b. When True, every ``_explore`` entry logs the
       inherited alive-set size and the per-filter prune counts.
+    - ``candidate_order_seed`` (default **-1**) — T1.5a.2a.2 /
+      S1.5a.16. Negative means the default S1.5a.1a content-sort
+      (``_candidate_sort_key`` — deterministic, branch order
+      replayable across processes). A non-negative integer applies
+      ``random.Random(seed-mixed-with-content)`` to the sorted list
+      in ``_candidates_for`` so the branch order is a deterministic
+      permutation of the default, *different per branch point*.
+      Used by ``tests/inference/test_shuffle_invariance.py`` to
+      probe whether the depth-D output (alive / dead endpoints +
+      unsat-core union) is path-independent. Puzzle authors won't
+      normally set it.
     """
     enable_alive_inherit:            bool = True
     enable_pre_branch_negated:       bool = True
@@ -113,6 +124,7 @@ class SolverConfig:
     hypgen_rel_weight:               float = 1.0
     hypgen_obj_weight:               float = 1.0
     print_alive:                     bool = False
+    candidate_order_seed:            int = -1
 
     @classmethod
     def from_kw_pairs(cls, kw_pairs: Iterable[Any]) -> SolverConfig:
@@ -172,6 +184,19 @@ def _coerce(field, value: Any) -> Any:
             f"config flag :{field_name.replace('_', '-')} expects "
             f"true/false, got {value!r}",
         )
+    if field_type is int or field_type == "int":
+        if isinstance(value, bool):
+            raise ValueError(
+                f"config flag :{field_name.replace('_', '-')} expects "
+                f"an integer, got bool {value!r}",
+            )
+        try:
+            return int(raw)
+        except (TypeError, ValueError) as e:
+            raise ValueError(
+                f"config flag :{field_name.replace('_', '-')} expects "
+                f"an integer, got {value!r}",
+            ) from e
     if field_type is float or field_type == "float":
         try:
             return float(raw)
