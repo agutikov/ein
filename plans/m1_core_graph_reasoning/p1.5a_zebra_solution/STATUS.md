@@ -22,16 +22,15 @@ Smoke (depth 1, current canonical) — fresh re-run 2026-05-26 post-`455bfd6`:
 | [S1.5a.1](s1.5a.1_naf_semantic_rearch.md) | NAF semantic re-architecture | shipped | 2026-05-24 (`ccf2aa8`) | — |
 | [S1.5a.1a](s1.5a.1a_branch_order_determinism.md) | Branch exploration order determinism | shipped | 2026-05-24 (`fb04f1a`) | — |
 | [S1.5a.2](s1.5a.2_hypgen_pre_pruning_recovery.md) | Hypgen pre-pruning recovery (disjunctive-prune fwd/bwd) | shipped | 2026-05-24 (`00b5ed3`) | — |
-| [S1.5a.2a](s1.5a.2a_statistics_determinism.md) | Statistics determinism | partial | 2026-05-24 V1 (`bbe3690`); 2026-05-26 T1.5a.2a.2 (`27aee13`) | T1.5a.2a.2 shipped (knob + demo-only test); fuller S1.5a.16 harness pending; T1.5a.2a.3 doc pending; Q-S1.5a.2a.B parked |
+| [S1.5a.2a](s1.5a.2a_statistics_determinism.md) | Statistics determinism | **shipped** | 2026-05-24 V1 (`bbe3690`); 2026-05-26 T1.5a.2a.2 (`27aee13`); closed 2026-05-26 | T1.5a.2a.3 dropped (covered by S1.5a.1a doc); Q-S1.5a.2a.B parked, promote at P1.5b S1.5b.3 if needed |
 | [S1.5a.5](s1.5a.5_house_to_location_rename.md) | zebra2 rename family (`*-loc`, `co-located`, `adjacent-via`) | shipped | 2026-05-24 (`ef7c69e`) | — |
-| [S1.5a.6](s1.5a.6_pypy_compat_perf.md) | PyPy compatibility + perf measurement | partial | 2026-05-25 runner only (`a2a802d`) | T1.5a.6.1–.4 (audit, bench, report, docs) |
-| [S1.5a.7](s1.5a.7_hypgen_scoring_branch_info.md) | Hypothesis scoring + branch-info ordering | partial | 2026-05-25 Idea 1 default (`10550d4`) | T1.5a.7.3 (Idea 2 impl, currently `NotImplementedError`); T1.5a.7.4/.5 (empirical compare + recommendation) |
+| [S1.5a.6](s1.5a.6_pypy_compat_perf.md) | PyPy compatibility + perf measurement | **shipped** | 2026-05-25 runner (`a2a802d`); closed 2026-05-26 | T1.5a.6.2/.3/.4 closed without execution — S1.5a.13.1 has the headline 6.0× data point; broader bench lands naturally when P1.8 Theme B starts |
+| [S1.5a.7](s1.5a.7_hypgen_scoring_branch_info.md) | Hypothesis scoring + branch-info ordering | **shipped** | 2026-05-25 Idea 1 default (`10550d4`); closed 2026-05-26 | Idea 2 (branch-info) closed without execution — moot under P1.5b set-indexed engines; popularity reused by S1.5b.26. P1.9 E12 owns long-term informativeness successor. |
 | [S1.5a.11](s1.5a.11_state_dump.md) | State dump harness | shipped | 2026-05-24 v1 + v2 (`6680956`, `691d349`) | non-blocking polish (pre-backprop snapshot, JSON mirror, streaming, round-trippable `.ein`) |
 | [S1.5a.13](s1.5a.13_acceptance_zebra2_solves.md) | Acceptance — zebra2 solves uniquely (solve arm) | **shipped (solve arm)** | 2026-05-26 (verdict + measurement + docs) | — (trace arm at P1.6 S1.6.5) |
-| [S1.5a.14](s1.5a.14_transitive_backprop.md) | Transitive back-prop | partial | 2026-05-25 Phase 1 (`17bd821`) | Phase 2 dropped with S1.5a.17; Phase 3 absorbed into S1.5a.15; nothing standalone remains |
-| [S1.5a.15](s1.5a.15_dead_caching_unsat_core.md) | Dead-branch caching by unsat-core + per-level back-prop | in-progress (design) | — | T1.5a.15.1–.4 (all four phases); ready to start when its perf-headroom slot comes |
-| [S1.5a.16](s1.5a.16_branch_order_shuffle_invariance.md) | Branch-order shuffle invariance (depth-bounded) | partial | 2026-05-26 knob + demo harness (`27aee13`) | T1.5a.16.2 zebra2 row deferred (~30 s CPython solve); T1.5a.16.3 triage open; T1.5a.16.4 doc |
-| [S1.5a.18](s1.5a.18_path_condition_nogoods.md) | Path-condition no-good clause learning | partial (flag off) | 2026-05-25 mechanism (`2d8cac3`) | T1.5a.18.1–.4 surface in code & tests; default flip gated on demo-10 + zebra2 measurement |
+| [S1.5a.14](s1.5a.14_transitive_backprop.md) | Transitive back-prop | **shipped** | 2026-05-25 Phase 1 (`17bd821`); closed 2026-05-26 | Phase 2 dropped with S1.5a.17 (P1.5b absorbs); Phase 3 dropped with S1.5a.15 |
+| [S1.5a.16](s1.5a.16_branch_order_shuffle_invariance.md) | Branch-order shuffle invariance (depth-bounded) | **shipped** | 2026-05-26 knob + demo harness (`27aee13`); closed 2026-05-26 | T1.5a.16.2/.3/.4 closed without execution; tree-side regression net is the 13-case test; lattice-side analog at [P1.5b S1.5b.31](../p1.5b_lattice_search/s1.5b.31_lattice_shuffle_invariance.md) |
+| [S1.5a.18](s1.5a.18_path_condition_nogoods.md) | Path-condition no-good clause learning | **shipped (flag off)** | 2026-05-25 mechanism (`2d8cac3`); closed 2026-05-26 | Default kept off — measured no win at M1 scope without outer-loop re-entry. Mechanism is forward-going; P1.5b owns the default-flip decision at the monotonic engine. |
 | [S1.5a.19](s1.5a.19_d0_negative_completion_gap.md) | d=0 negative-completion gap + downstream stall + dumper enhancement | **shipped** | 2026-05-25 dumper (`6affc06`); 2026-05-26 rules + per-sibling re-sat (`455bfd6`); 2026-05-26 tests + Q2a/c closure | T1.5a.19.1 → S1.6.5 (NL trace diff lives there); Q2c hardening parked (no observed need at d=1) |
 
 **Legend.** *shipped* = all tasks closed, in git, default-on if config-gated. *partial* = mechanism shipped behind an off-by-default flag, or only a subset of tasks closed. *in-progress (design)* = doc + design exists, code not yet started.
@@ -43,6 +42,7 @@ Smoke (depth 1, current canonical) — fresh re-run 2026-05-26 post-`455bfd6`:
 | ~~S1.5a.8~~  | → [S1.7.4](../p1.7_bootstrapping_zebra/s1.7.4_naf_dependency_map.md) (NAF dep map relocated to P1.7) |
 | ~~S1.5a.10~~ | → [S1.7.5](../p1.7_bootstrapping_zebra/s1.7.5_query_semantics_who_vs_where.md) (query semantics relocated to P1.7) |
 | ~~S1.5a.12~~ | → [S1.6.5](../p1.6_rendering_and_trace/s1.6.5_idea08_trace_acceptance.md) (trace acceptance relocated to P1.6) |
+| ~~S1.5a.15~~ | DROPPED — original motivation closed by S1.5a.19 (32 nodes / 8.4 s, well inside budget); Phases 2/3/4 obsoleted by [P1.5b](../p1.5b_lattice_search/) set-indexed engines; Phase 1 idea may compose with [S1.5b.22](../p1.5b_lattice_search/s1.5b.22_lattice_dedup.md) if lattice measurement exposes dead-redundancy. [File](s1.5a.15_dead_caching_unsat_core.md) preserved with DROPPED header. |
 | ~~S1.5a.17~~ | DROPPED — superseded by [P1.5b](../p1.5b_lattice_search/) set-indexed engines ([file](s1.5a.17_eager_root_bubble_outer_loop.md) preserved with DROPPED header) |
 | ~~S1.5a.20~~ | DROPPED — superseded by [P1.5b](../p1.5b_lattice_search/) `try_set` / per-set `integrate` ([file](s1.5a.20_branch_isolation_rearch.md) preserved with DROPPED header) |
 
@@ -58,61 +58,56 @@ Trace arm of M1 acceptance #3 now lives at:
   P1.6 S1.6.5 (../p1.6_rendering_and_trace/s1.6.5_idea08_trace_acceptance.md)
     blocked on P1.6 S1.6.4 markdown trace renderer.
 
-Perf headroom (decoupled — land on their own schedules):
-  S1.5a.7   partial   (popularity default on; branch-info NIE)
-  S1.5a.14  partial   (Phase 1 shipped; Phase 2 dropped with .17; Phase 3 in .15)
-  S1.5a.15  design    (not started; promoted-dead caching)
-  S1.5a.16  partial   (knob + demo-shuffle test 2026-05-26; zebra2 row + triage open)
-  S1.5a.18  partial   (flag off; awaits demo-10 measurement)
-  S1.5a.6   partial   (PyPy runner only)
+Perf headroom (all reviewed + closed 2026-05-26):
+  S1.5a.6   ✓ closed   (PyPy runner shipped; 6.0× headline at S1.5a.13.1)
+  S1.5a.7   ✓ closed   (popularity default on; branch-info dropped — moot under P1.5b)
+  S1.5a.14  ✓ closed   (Phase 1 shipped; Phases 2/3 dropped with .17/.15)
+  S1.5a.16  ✓ closed   (knob + 13-case test ship; broader sweep moot, lattice analog at P1.5b S1.5b.31)
+  S1.5a.18  ✓ closed   (mechanism ships, default off — no win at M1 scope; flip moves to P1.5b)
 ```
 
-**Next.** S1.5a.13 solve-arm finalisation (T1.5a.13.1 measurement write-up, T1.5a.13.3 docs, T1.5a.13.4 verdict) + S1.5a.19 follow-ups (T1.5a.19.2 Q2a/c reproducer, T1.5a.19.6 unit tests + engine README).
+**P1.5a complete.** All stages reviewed; nothing active left. The active in-tree stages (S1.5a.1/.1a/.2/.2a/.5/.6/.7/.11/.13/.14/.16/.18/.19) are shipped or closed; S1.5a.8/.10/.12 relocated to P1.6/P1.7; S1.5a.15/.17/.20 dropped (P1.5b supersedes). Trace arm of M1 acceptance #3 lives at P1.6 S1.6.5.
 
 ## Open tasks by stage
 
-### S1.5a.2a — Statistics determinism (partial)
-- **T1.5a.2a.2** — ✓ shipped 2026-05-26 (`27aee13`). `SolverConfig.candidate_order_seed: int = -1` (sentinel for default sort; ≥0 = content-mixed seeded shuffle). `_maybe_shuffle_candidates` wraps the existing `_candidates_for` sort with a `random.Random(seed_str).shuffle()` where `seed_str` joins the config seed with every candidate's `(relation, args)` (PYTHONHASHSEED-independent). `tests/inference/test_shuffle_invariance.py` (13 cases on demos 04/05 × depths 0–2 × seeds 0–1) asserts a five-set invariant — verdict type, root `_negated_facts`, solution-leaf state hashes, leaves-by-verdict Counter, unsat-core union — holds across orderings. **Zebra2 row deferred** (CPython ~30 s/solve blows the in-suite budget); the wider S1.5a.16 harness picks up the fuller param matrix + per-violation triage.
-- **T1.5a.2a.3** — Document the invariant in `docs/kernel/inference/README.md` (Statistics determinism subsection).
-- **Q-S1.5a.2a.B** — Broader entity back-pointer audit (`Type._kb` / `Relation._kb` / `Instance._kb`); decision deferred until another consumer trips the bug.
+### S1.5a.2a — Statistics determinism (✓ shipped 2026-05-26)
+- **T1.5a.2a.1** — ✓ V1 shipped 2026-05-24 (`bbe3690`). `engine._activators_for` reads `self.kb._rule_apps_by_rule` directly; `Rule._kb` back-pointer no longer drives plan compilation. Regression test in `test_saturator_fork_parity.py`.
+- **T1.5a.2a.2** — ✓ shipped 2026-05-26 (`27aee13`). `SolverConfig.candidate_order_seed` + `_maybe_shuffle_candidates`; `test_shuffle_invariance.py` covers demos 04/05 × depths 0–2 × seeds 0–1 (13 cases). Zebra2 row deferred to S1.5a.16's harness.
+- **T1.5a.2a.3** — dropped 2026-05-26. The invariant is documented implicitly via S1.5a.1a's "Determinism — content-based candidate ordering" section in `docs/kernel/inference/README.md` + the test file's docstring; a separate "Statistics determinism" subsection would add little signal.
+- **Q-S1.5a.2a.B** — parked. Broader `Type._kb` / `Relation._kb` / `Instance._kb` audit deferred until P1.5b's set-batch primitive (S1.5b.3) trips the pattern or another consumer surfaces a divergence.
 
-### S1.5a.6 — PyPy compatibility + perf (partial)
-- **T1.5a.6.1** — Compatibility audit (pytest under PyPy3; categorise + fix/skip failures).
-- **T1.5a.6.2** — Perf measurement (`bench_solve` + `bench_saturate` CPython vs PyPy cold vs warm; branching demos).
-- **T1.5a.6.3** — Report (compat status + perf table + viability recommendation; bears on P1.8 Theme B urgency).
-- **T1.5a.6.4** — Document caveats in `docs/kernel/inference/`.
+### S1.5a.6 — PyPy compatibility + perf (✓ closed 2026-05-26)
+- **T1.5a.6.1** — implicit closure. Full pytest + the EIN_RUN_SLOW=1 integration test all pass under PyPy3; compat is fine.
+- **T1.5a.6.2** — closed without execution. The S1.5a.13.1 PyPy/CPython matrix (PyPy 8.4 s vs CPython 50.9 s = 6.0× speedup on zebra2 `--max-depth 1`) is the headline data point. `bench_saturate` + branching-demo expansion is confirmatory only.
+- **T1.5a.6.3** — closed. The ≥5× threshold for "changes P1.8 Theme B indexes urgency" is met by the existing data point; a formal report would add weight without signal. P1.8 Theme B can reference the S1.5a.13.1 section directly when it starts.
+- **T1.5a.6.4** — closed. `docs/kernel/inference/` carries the PyPy reference path via the `feedback_use_pypy_bench` memory + `bench_solve_pypy.sh` cross-link in the stage file.
 
-### S1.5a.7 — Hypothesis scoring + branch-info (partial)
-- **T1.5a.7.3** — Implement branch-info ordering (Idea 2); currently raises `NotImplementedError`; needs post-saturation signal integrating with S1.5.7b stable-alive caching.
-- **T1.5a.7.4** — Empirical comparison (all 4 scoring modes × zebra2 + 5 branching demos; tabulate tree-node count, wall time, alive-set size, unsat-core size).
-- **T1.5a.7.5** — Recommendation report (default-mode choice from T1.5a.7.4).
+### S1.5a.7 — Hypothesis scoring + branch-info (✓ closed 2026-05-26)
+- **T1.5a.7.1/.2** — ✓ shipped 2026-05-25 (`10550d4`). Popularity scoring is the M1 default; `most-constrained` kept as escape hatch.
+- **T1.5a.7.3** — closed without execution. Branch-info ordering becomes moot under P1.5b's set-indexed engines (selection is per commitment set; the tree-side per-branch `_consume` signal it needed doesn't exist in monotonic/lattice). The `NotImplementedError` config slot stays as a tombstone — cleaned up naturally when the tree solver is deprecated end of P1.5b. P1.9 E12 carries the long-term informativeness successor.
+- **T1.5a.7.4/.5** — closed without execution. The default flip to popularity didn't regress the suite; S1.5a.13 closed inside budget so a formal comparison adds no signal. P1.5b S1.5b.26 picks up the within-layer scoring axis natively (reuses S1.5a.7's per-element scorer).
 
 ### S1.5a.13 — Acceptance — zebra2 solves uniquely (solve arm — ✓ shipped 2026-05-26)
 - **T1.5a.13.1** — ✓ shipped. PyPy3 8.4 s solve / 32 nodes; CPython 3.14 50.9 s solve / 32 nodes (identical tree shape). Tabulated comparison vs pre-S1.5a.19 (568 nodes, Ambiguity, 49.9 s) lives in the stage file's measurement section.
 - **T1.5a.13.3** — ✓ shipped. `docs/kernel/inference/README.md` now carries six S1.5a-era sections: NAF semantics + hypgen pre-pruning + determinism + d=0 negative-completion + mid-sweep saturation/per-sibling re-check + (existing) unconditional-death back-prop.
 - **T1.5a.13.4** — ✓ shipped (SHIP). Verdict written at the end of the stage file. Trace arm at P1.6 S1.6.5.
 
-### S1.5a.14 — Transitive back-prop (partial)
-- Phase 1 shipped. Phase 2 (outer driver) was absorbed into S1.5a.17 — **dropped 2026-05-26** with that stage (P1.5b's set-indexed engines re-saturate from root natively, so no outer driver is needed). Phase 3 (per-level) absorbed into S1.5a.15. Nothing standalone remains.
+### S1.5a.14 — Transitive back-prop (✓ closed 2026-05-26)
+- Phase 1 shipped 2026-05-25 (`17bd821`) — `_kb_chain_ctx`, `_consume_caches_ctx`, `_mirror_forced_positive`, ancestor-write + verdict-cache invalidation. Code live in current solver.
+- Phase 2 dropped with S1.5a.17 (P1.5b set-indexed engines absorb the outer-driver pattern natively).
+- Phase 3 dropped with S1.5a.15 (P1.5b's per-set verdict has no ancestor-chain concept).
+- Phase 1's ContextVars get cleaned up naturally when the tree solver is deprecated end of P1.5b.
 
-### S1.5a.15 — Dead-branch caching by unsat-core (design)
-- **T1.5a.15.1** — Direct-dead unsat-core cache (`builder.dead_index: list[_DeadByCore]`; superset short-circuit in `_explore`; bench on `zebra2-hints`).
-- **T1.5a.15.2** — Promoted-dead cache via `_promote_verdicts` (`aggregated_unsat_core` field; alive-fp pairing; register in `dead_index`).
-- **T1.5a.15.3** — Per-level back-prop (`builder.depth_of[nid]`; `back_propagate_per_level(shallowest_required)`; per-binding analysis on every dead candidate).
-- **T1.5a.15.4** — Promoted-dead back-prop — root case was formerly absorbed into S1.5a.17 (now dropped); the **general per-level case (depths ≥ 1)** remains here.
+### S1.5a.16 — Branch-order shuffle invariance (✓ closed 2026-05-26)
+- **T1.5a.16.1** — ✓ shipped 2026-05-26 (`27aee13`). `SolverConfig.candidate_order_seed` knob + `_maybe_shuffle_candidates` + inline `_invariants(verdict, root_kb)` projection in the test file. The 13-case `test_shuffle_invariance.py` is the tree-side regression net.
+- **T1.5a.16.2/.3** — closed without execution. The original triage taxonomy (state-hash cache class / back-prop-depth class) fed S1.5a.15 phases that are now DROPPED; the broader sweep tests the tree solver that P1.5b deprecates at end of phase.
+- **T1.5a.16.4** — closed. S1.5a.1a's existing "Determinism — content-based candidate ordering" section in `docs/kernel/inference/README.md` already names the determinism testing surface; a depth-bounded sibling note would add little signal at the current scope.
+- Lattice-side analog (shuffle-invariance over commitment-set visit order) tracked at [P1.5b S1.5b.31](../p1.5b_lattice_search/s1.5b.31_lattice_shuffle_invariance.md).
 
-### S1.5a.16 — Branch-order shuffle invariance (partial)
-- **T1.5a.16.1** — *Partly shipped 2026-05-26 (`27aee13`).* `SolverConfig.candidate_order_seed: int` + `_maybe_shuffle_candidates` in `solver.py`. The "snapshot serialiser" lives as an inline `_invariants(verdict, root_kb)` projection in the test file.
-- **T1.5a.16.2** — *Partly shipped.* `tests/inference/test_shuffle_invariance.py` covers demos 04/05 at depths 0/1/2 × seeds 0/1 in 3.85 s (13 cases). Zebra2 row + the param-matrix expansion deferred — would need a `slow` marker or live in a separate file run via `bench_solve_pypy.sh`. `demo/diff_shuffle.py` not yet written.
-- **T1.5a.16.3** — Triage open. Demos 04/05 pass clean across all probed seeds × depths. Promotion required for zebra2 + deeper depths.
-- **T1.5a.16.4** — Document invariant in `docs/kernel/inference/README.md` Determinism subsection.
-
-### S1.5a.18 — Path-condition no-good clause learning (partial)
-- **T1.5a.18.1** — Storage + ContextVar + config flag (`KnowledgeBase._nogoods`; `_path_ctx` ContextVar; `enable_path_condition_nogoods` ✓ in `config.py`, default `False`).
-- **T1.5a.18.2** — `nogoods.py` helpers (✓ module exists: `emit_nogood`, `filter_by_nogoods`).
-- **T1.5a.18.3** — Wire into the death sites (`_consume` sweep, `_descend` dead-leaf, `_explore_inner` contradiction-on-entry; three pre-fork filter sites).
-- **T1.5a.18.4** — Tests (`test_path_condition_nogoods.py` ✓).
-- *Acceptance still open:* demo 10 tree-node count ≤ 20 (vs 32 flag-off baseline); zebra2 clause-set bounded < 200 after depth-3 run; default flip.
+### S1.5a.18 — Path-condition no-good clause learning (✓ shipped 2026-05-26, flag off)
+- **T1.5a.18.1/.2/.3/.4** — ✓ shipped 2026-05-25 (`2d8cac3`). Storage + ContextVar + `nogoods.py` helpers + death-site wiring + tests.
+- **Default flip** — closed 2026-05-26 with flag kept off. Measured no win at M1 scope: demo 10 with flag on learns 6 clauses but prunes 0 nodes (same 32-node tree); zebra2 d=1 learns 0 clauses (deaths are depth-1, in `back_propagate`'s 1-element domain). Without outer-loop re-entry (S1.5a.17 dropped), clauses are learned-but-unused within a single solve.
+- The mechanism is sound and forward-going — P1.5b's monotonic engine has the layer-by-layer outer loop that consults `_nogoods` between layers (P1.5b README: "unified CDCL prune mechanism for both engines"). Default-flip decision moves to the new engine.
 
 ### S1.5a.19 — d=0 negative-completion gap + downstream stall (partial — core shipped)
 **Status 2026-05-26.** Approach A (ein-lang rules) chosen and shipped: six new rules in `examples/zebra2.ein` + mirrored in `zebra2-hints.ein` close the d=0 negative completion. Combined with a per-sibling apriori Tier-A re-check + mid-sweep `Saturator(kb).saturate(...)` after every `back_propagate(...)` in `_consume`'s sweep, the puzzle now solves at `--max-depth 1`. Numbers (PyPy laptop ref):

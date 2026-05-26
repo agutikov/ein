@@ -92,7 +92,6 @@ need to be diffed against the human walkthrough.
 | S1.5a.7    | Hypothesis scoring + branch-info ordering                                                 | [s1.5a.7_hypgen_scoring_branch_info.md](s1.5a.7_hypgen_scoring_branch_info.md) |
 | S1.5a.11   | State dump harness (per-phase filesystem snapshots)                                       | [s1.5a.11_state_dump.md](s1.5a.11_state_dump.md) |
 | S1.5a.14   | Transitive back-prop (bubble truths to all ancestors)                                     | [s1.5a.14_transitive_backprop.md](s1.5a.14_transitive_backprop.md) |
-| S1.5a.15   | Dead-branch caching by unsat-core + per-level back-prop                                   | [s1.5a.15_dead_caching_unsat_core.md](s1.5a.15_dead_caching_unsat_core.md) |
 | S1.5a.16   | Branch-order shuffle invariance (depth-bounded partial-information equivalence)           | [s1.5a.16_branch_order_shuffle_invariance.md](s1.5a.16_branch_order_shuffle_invariance.md) |
 | S1.5a.18   | Path-condition no-good clause learning (CDCL dual of S1.5a.15 P1, pre-fork filter)        | [s1.5a.18_path_condition_nogoods.md](s1.5a.18_path_condition_nogoods.md) |
 | S1.5a.19   | d=0 negative-completion gap (functional/injective neg + spatial endpoint + co-located chain) | [s1.5a.19_d0_negative_completion_gap.md](s1.5a.19_d0_negative_completion_gap.md) |
@@ -100,6 +99,7 @@ need to be diffed against the human walkthrough.
 | ~~S1.5a.8~~  | → [S1.7.4](../p1.7_bootstrapping_zebra/s1.7.4_naf_dependency_map.md) (NAF dep map relocated to P1.7 2026-05-26)               | — |
 | ~~S1.5a.10~~ | → [S1.7.5](../p1.7_bootstrapping_zebra/s1.7.5_query_semantics_who_vs_where.md) (query semantics relocated to P1.7 2026-05-26) | — |
 | ~~S1.5a.12~~ | → [S1.6.5](../p1.6_rendering_and_trace/s1.6.5_idea08_trace_acceptance.md) (trace acceptance relocated to P1.6 2026-05-26)     | — |
+| ~~S1.5a.15~~ | DROPPED 2026-05-26 — original motivation closed by S1.5a.19; Phases 2/3/4 obsoleted by [P1.5b](../p1.5b_lattice_search/) set-indexed engines | [s1.5a.15_dead_caching_unsat_core.md](s1.5a.15_dead_caching_unsat_core.md) (historical) |
 | ~~S1.5a.17~~ | DROPPED 2026-05-26 — superseded by [P1.5b](../p1.5b_lattice_search/) set-indexed engines | [s1.5a.17_eager_root_bubble_outer_loop.md](s1.5a.17_eager_root_bubble_outer_loop.md) (historical) |
 | ~~S1.5a.20~~ | DROPPED 2026-05-26 — superseded by [P1.5b](../p1.5b_lattice_search/) `try_set` / per-set `integrate` | [s1.5a.20_branch_isolation_rearch.md](s1.5a.20_branch_isolation_rearch.md) (historical) |
 
@@ -153,6 +153,17 @@ vs fact-set-superset) firing earlier in the pipeline
   [S1.7.5](../p1.7_bootstrapping_zebra/s1.7.5_query_semantics_who_vs_where.md).**
   Query-language extension first exercised by the P1.7 NL
   question shape ("who drinks water?").
+- **S1.5a.15 dead-branch caching by unsat-core —
+  DROPPED.** Original motivation (cold-solve perf budget) closed
+  by [S1.5a.19](s1.5a.19_d0_negative_completion_gap.md) — zebra2
+  solves at 32 nodes / 8.4 s on PyPy, well inside budget. Phases
+  2/3/4 obsoleted by [P1.5b](../p1.5b_lattice_search/): no
+  ancestor chain, no `_promote_verdicts`, no "depth ≥ D" concept.
+  Phase 1 (direct-dead cache keyed by unsat-core) could compose
+  with [S1.5b.22](../p1.5b_lattice_search/s1.5b.22_lattice_dedup.md)
+  if measurement shows the lattice's per-set state-hash dedup
+  misses dead-redundancy worth caching — promote to a real
+  P1.5b followup then.
 - **S1.5a.17 eager root-bubble + outer re-entry loop —
   DROPPED, superseded by [P1.5b](../p1.5b_lattice_search/).**
   Both set-indexed engines (monotonic + lattice) re-saturate

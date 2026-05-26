@@ -38,6 +38,13 @@ Reference points to compare against:
   used in zebra) is exactly an equivalence relation; the property
   facts that mark it as such are activators for the kernel rules.
 
+
+TODO: Relation algebra questions:
+- stdlib rules for rel properties from list: functional, coreflexive, etc...
+  - converse - what? rule?
+- properties detection - are rules able to detect properties from facts?
+
+
 ## Why deferred
 
 Like F1, the formal reading is post-hoc — pinning down "ein is
