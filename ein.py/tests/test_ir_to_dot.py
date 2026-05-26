@@ -211,6 +211,20 @@ def test_to_dot_on_unknown_top_level_raises():
         to_dot(bogus)
 
 
+def test_to_dot_skips_config_form():
+    """`(config …)` is solver knobs, not graph structure — emits no
+    DOT and doesn't break sibling forms in a tuple render."""
+    forms = parse("""
+    (config :enable-pre-branch-lookahead true)
+    (ontology (type Person))
+    """)
+    dot = to_dot(forms)
+    assert "digraph ontology" in dot
+    assert "config" not in dot
+    # No blank-line gap from the dropped config chunk.
+    assert "\n\n\n" not in dot
+
+
 # ═══════════ Zebra smoke test ═══════════
 
 def test_zebra_to_dot_is_non_empty():

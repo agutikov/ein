@@ -483,11 +483,14 @@ def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "c",
             return render_query(node)
         if head == "trace":
             return render_trace(node, view=trace_view)
+        if head == "config":
+            # Solver knobs — no graph structure to render.
+            return ""
         raise ValueError(f"unknown top-level form: {head}")
     # Tuple/iterable of top-level forms
     chunks = [to_dot(f, rule_mode=rule_mode, trace_view=trace_view)
               for f in node]
-    return "\n\n".join(chunks)
+    return "\n\n".join(c for c in chunks if c)
 
 
 __all__ = [

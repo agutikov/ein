@@ -105,7 +105,29 @@
 
 
 
+P1.6
 
+IMPORTANT: canonical Levi-pipartite graph representation reflects ein-lang structure well
+Atoms/names are nodes with arrows to, relations (lists) are nodes with arrows from
+But it is not readable, so for rendering default mode should be compact.
+
+update utils/render_examples.sh 0 remove extra rendering modes
+trace doesn't matter because example problems doesn't have trace
+rules combine both variants into one diagram
+
+
+S1.6.1
+Attention to rules rendering with folded match like (absent (and (?R1 ?a ?b) (?R2 ?x ?y)))
+
+
+---
+
+
+P1.7 
+
+remove support of zebra.ein completely - remove type and instance hardcoded keywords
+rewrite zerba.ein with type and instance relations declared in the ein code itself
+Explain in comments what is missing compared to zebra2.ein - what produce 1000+ hypothesis.
 
 
 ---
@@ -141,6 +163,15 @@ Is it correct? Is it possible to implement?
 P1.10 kernel docs - separate file for kernel inference feature list absolutely required to solve zebra in reasonable time
 add config options for every (if not yet) write ein files with different config options and measure solution time with 3600s timeout
 collect into table with time and stats showing impact of every option disabled
+
+P1.10 Ein API refernce
+
+P1.10 Ein Zebra guide - group rules into related groups
+and explain every rule behaviour:
+- in ein lang facts
+- in NL
+- with compact graphs before and after
+- with canonical Levi-bipartite graphs
 
 
 ---
