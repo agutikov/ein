@@ -266,11 +266,13 @@ def _print_hyp_stats(kb=None) -> None:
     cs = getattr(kb, "consume_stats", None) if kb is not None else None
     if cs is not None and (cs.alive_cached_skips
                             or cs.cond_dead_cached_skips
-                            or cs.cache_invalidations):
+                            or cs.cache_invalidations
+                            or cs.apriori_dead_in_sweep):
         print("  consume-loop cache (S1.5.7b):")
         print(f"    alive_cached_skips     {cs.alive_cached_skips}")
         print(f"    cond_dead_cached_skips {cs.cond_dead_cached_skips}")
         print(f"    cache_invalidations    {cs.cache_invalidations}")
+        print(f"    apriori_dead_in_sweep  {cs.apriori_dead_in_sweep}")
 
 
 # ── Tree metrics ───────────────────────────────────────────────────

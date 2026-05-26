@@ -90,68 +90,84 @@ need to be diffed against the human walkthrough.
 | S1.5a.5    | zebra2 relation rename family (`*-loc`, `co-located`, `adjacent-via`)                     | [s1.5a.5_house_to_location_rename.md](s1.5a.5_house_to_location_rename.md) |
 | S1.5a.6    | PyPy compatibility + perf measurement                                                     | [s1.5a.6_pypy_compat_perf.md](s1.5a.6_pypy_compat_perf.md)         |
 | S1.5a.7    | Hypothesis scoring + branch-info ordering                                                 | [s1.5a.7_hypgen_scoring_branch_info.md](s1.5a.7_hypgen_scoring_branch_info.md) |
-| S1.5a.8    | Static NAF dependency map (observability)                                                 | [s1.5a.8_naf_dependency_map.md](s1.5a.8_naf_dependency_map.md)     |
-| S1.5a.10   | Query semantics: who vs where                                                             | [s1.5a.10_query_semantics_who_vs_where.md](s1.5a.10_query_semantics_who_vs_where.md) |
 | S1.5a.11   | State dump harness (per-phase filesystem snapshots)                                       | [s1.5a.11_state_dump.md](s1.5a.11_state_dump.md) |
 | S1.5a.14   | Transitive back-prop (bubble truths to all ancestors)                                     | [s1.5a.14_transitive_backprop.md](s1.5a.14_transitive_backprop.md) |
 | S1.5a.15   | Dead-branch caching by unsat-core + per-level back-prop                                   | [s1.5a.15_dead_caching_unsat_core.md](s1.5a.15_dead_caching_unsat_core.md) |
 | S1.5a.16   | Branch-order shuffle invariance (depth-bounded partial-information equivalence)           | [s1.5a.16_branch_order_shuffle_invariance.md](s1.5a.16_branch_order_shuffle_invariance.md) |
-| S1.5a.17   | Eager root-bubble + outer re-entry loop (absorbs S1.5a.14 P2 + root-case of S1.5a.15 T4)  | [s1.5a.17_eager_root_bubble_outer_loop.md](s1.5a.17_eager_root_bubble_outer_loop.md) |
 | S1.5a.18   | Path-condition no-good clause learning (CDCL dual of S1.5a.15 P1, pre-fork filter)        | [s1.5a.18_path_condition_nogoods.md](s1.5a.18_path_condition_nogoods.md) |
 | S1.5a.19   | d=0 negative-completion gap (functional/injective neg + spatial endpoint + co-located chain) | [s1.5a.19_d0_negative_completion_gap.md](s1.5a.19_d0_negative_completion_gap.md) |
-| S1.5a.20   | Branch-isolation re-architecture (two channels: `try_branch` ↓ + `integrate` ↑)              | [s1.5a.20_branch_isolation_rearch.md](s1.5a.20_branch_isolation_rearch.md) |
-| S1.5a.12   | idea-08 trace acceptance                                                                  | [s1.5a.12_idea08_trace_acceptance.md](s1.5a.12_idea08_trace_acceptance.md) |
 | S1.5a.13   | Acceptance — zebra2 solves uniquely                                                       | [s1.5a.13_acceptance_zebra2_solves.md](s1.5a.13_acceptance_zebra2_solves.md) |
+| ~~S1.5a.8~~  | → [S1.7.4](../p1.7_bootstrapping_zebra/s1.7.4_naf_dependency_map.md) (NAF dep map relocated to P1.7 2026-05-26)               | — |
+| ~~S1.5a.10~~ | → [S1.7.5](../p1.7_bootstrapping_zebra/s1.7.5_query_semantics_who_vs_where.md) (query semantics relocated to P1.7 2026-05-26) | — |
+| ~~S1.5a.12~~ | → [S1.6.5](../p1.6_rendering_and_trace/s1.6.5_idea08_trace_acceptance.md) (trace acceptance relocated to P1.6 2026-05-26)     | — |
+| ~~S1.5a.17~~ | DROPPED 2026-05-26 — superseded by [P1.5b](../p1.5b_lattice_search/) set-indexed engines | [s1.5a.17_eager_root_bubble_outer_loop.md](s1.5a.17_eager_root_bubble_outer_loop.md) (historical) |
+| ~~S1.5a.20~~ | DROPPED 2026-05-26 — superseded by [P1.5b](../p1.5b_lattice_search/) `try_set` / per-set `integrate` | [s1.5a.20_branch_isolation_rearch.md](s1.5a.20_branch_isolation_rearch.md) (historical) |
 
-S1.5a.1 + S1.5a.2 + S1.5a.12 close M1 acceptance criteria #2/#3
-via S1.5a.13 (the phase's final acceptance gate; both renumbered
-to the end 2026-05-24 to reflect their actual ordering — they
-compose every other stage's outcome). S1.5a.5–.11 are
-non-blocking polish + perf + observability + query-semantics
-investigations; promote individually if their gating signals
-arrive. S1.5a.5 already shipped 2026-05-24 (the rename ended up
-broader than initially scoped — it folded in the `linked` →
-`co-located` and `cross-attr-spatial` → `adjacent-via` renames
-discovered as TODOs in the same file). S1.5a.8 (NAF dependency map) was spun
-out of S1.5a.1 2026-05-24 once T1.5a.1.1's runtime fix shipped
-— the static-warning half is pure observability with its own
-acceptance bar. S1.5a.1a (branch order determinism) inserted
-2026-05-24 — discovered while measuring [S1.5a.2](s1.5a.2_hypgen_pre_pruning_recovery.md)
-candidates; `kb.alive`'s `frozenset` plus randomised
-`PYTHONHASHSEED` made every `bench_solve` invocation visit
-branches in a different order. A prerequisite for any A/B
-measurement and for golden-tree snapshots downstream. S1.5a.10
-(query semantics) surfaced during the rename pass from a
-line-514 TODO; the natural human question "who drinks water?"
-returns a House under the current goal, not a Nationality —
-goal-extension is the cheap fix, `:project` is the longer-term
-refactor. S1.5a.16 (branch-order shuffle invariance) inserted
-2026-05-25 as the depth-bounded counterpart of S1.5a.2a's
-fixpoint property — suspected order-sensitivity bug in the
-caching / back-prop / NAF-timing triad means depth-D partial
-information may not be permutation-invariant even though the
-fixpoint equalises. Promoted out of T1.5a.2a.2; absorbs the
-shuffle-knob task. Acts as a regression net for S1.5a.15.
-S1.5a.17 (eager root-bubble + outer re-entry loop) inserted
-2026-05-25 to flip back-prop from opportunistic write to eager
-abort-and-restart-at-root. Trigger is any unconditional bubble
-(positive or negative). Absorbs the deferred S1.5a.14 Phase 2
-(outer driver) and the root-level case of S1.5a.15 T1.5a.15.4
-(promoted-dead → root fact) — the latter is what makes the
-outer loop terminate when a root child dies by subtree
-exhaustion. The general per-level promoted-dead back-prop at
-depths ≥ 1 stays with S1.5a.15. S1.5a.16's harness is the
-gate for promoting this stage's config flag to default-on.
-S1.5a.18 (path-condition no-good clause learning) inserted
-2026-05-25 as the CDCL flavour of conditional-death pruning:
-every dead branch emits ``(not (and h_1 … h_self))`` as a
-clause stored at root; future branches whose prospective path
-is a superset of any learned clause are filtered PRE-FORK
-(no try_branch, no SearchNode). Subsumption keeps the clause
-set minimal. Dual of S1.5a.15 P1 with a cheaper match test
-(path-superset vs fact-set-superset) firing earlier in the
-pipeline (pre-fork vs post-saturation). Composes with S1.5a.17:
-a novel clause is a root-level write that triggers BubbleAbort.
+S1.5a.1 + S1.5a.2 close M1 acceptance criterion #2 via
+S1.5a.13 (the phase's final acceptance gate). Criterion #3
+(trace fidelity) is now closed by P1.6 S1.6.5 (relocated from
+S1.5a.12 on 2026-05-26 — trace acceptance belongs after the
+renderer ships, not before). S1.5a.5–.11 are non-blocking
+polish + perf + observability investigations; promote
+individually if their gating signals arrive. S1.5a.5 already
+shipped 2026-05-24 (the rename ended up broader than initially
+scoped — it folded in the `linked` → `co-located` and
+`cross-attr-spatial` → `adjacent-via` renames discovered as
+TODOs in the same file). S1.5a.1a (branch order determinism)
+inserted 2026-05-24 — discovered while measuring
+[S1.5a.2](s1.5a.2_hypgen_pre_pruning_recovery.md) candidates;
+`kb.alive`'s `frozenset` plus randomised `PYTHONHASHSEED` made
+every `bench_solve` invocation visit branches in a different
+order. A prerequisite for any A/B measurement and for
+golden-tree snapshots downstream. S1.5a.16 (branch-order
+shuffle invariance) inserted 2026-05-25 as the depth-bounded
+counterpart of S1.5a.2a's fixpoint property — suspected
+order-sensitivity bug in the caching / back-prop / NAF-timing
+triad means depth-D partial information may not be
+permutation-invariant even though the fixpoint equalises.
+Promoted out of T1.5a.2a.2; absorbs the shuffle-knob task.
+Acts as a regression net for S1.5a.15. S1.5a.18
+(path-condition no-good clause learning) inserted 2026-05-25
+as the CDCL flavour of conditional-death pruning: every dead
+branch emits ``(not (and h_1 … h_self))`` as a clause stored
+at root; future branches whose prospective path is a superset
+of any learned clause are filtered PRE-FORK (no try_branch,
+no SearchNode). Subsumption keeps the clause set minimal.
+Dual of S1.5a.15 P1 with a cheaper match test (path-superset
+vs fact-set-superset) firing earlier in the pipeline
+(pre-fork vs post-saturation).
+
+## Moved or dropped 2026-05-26
+
+- **S1.5a.12 idea-08 trace acceptance →
+  [S1.6.5](../p1.6_rendering_and_trace/s1.6.5_idea08_trace_acceptance.md).**
+  Trace fidelity belongs *after* the trace renderer
+  ([P1.6 S1.6.4](../p1.6_rendering_and_trace/s1.6.4_markdown_trace.md))
+  ships, not before. The checklist + diff workflow is unchanged;
+  only the phase home moves.
+- **S1.5a.8 static NAF dependency map →
+  [S1.7.4](../p1.7_bootstrapping_zebra/s1.7.4_naf_dependency_map.md).**
+  Pure observability tooling whose acceptance criterion is the
+  end-to-end Zebra demo — natural home is the P1.7 bootstrap.
+- **S1.5a.10 query semantics: who vs where →
+  [S1.7.5](../p1.7_bootstrapping_zebra/s1.7.5_query_semantics_who_vs_where.md).**
+  Query-language extension first exercised by the P1.7 NL
+  question shape ("who drinks water?").
+- **S1.5a.17 eager root-bubble + outer re-entry loop —
+  DROPPED, superseded by [P1.5b](../p1.5b_lattice_search/).**
+  Both set-indexed engines (monotonic + lattice) re-saturate
+  from root on every commitment set, so "lift unconditional
+  facts to root and restart" is the default control flow —
+  no opt-in mechanism needed. The flag + mechanism already
+  shipped (commit `43333c5`) stays as a tree-side reference
+  until the tree solver is deprecated end of P1.5b.
+- **S1.5a.20 branch-isolation re-architecture —
+  DROPPED, superseded by [P1.5b](../p1.5b_lattice_search/).**
+  The `try_set` ↓ + per-set `integrate` ↑ contract delivers
+  the two-channel target natively (no ancestor chains;
+  commitments are sets, not paths). The file is preserved
+  as the channel inventory + per-child branch-dump schema
+  (T1.5a.20.6) that P1.5b stage files still reference.
 
 ## Relation-name refactor: `house-*` → `*-loc` (shipped)
 

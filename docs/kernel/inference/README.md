@@ -199,9 +199,63 @@ re-evaluates every plan against its own KB and so its
   watched-fact arrival. Composes with
   [P1.9 E8](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/)
   (watched-fact rule applicability).
-- T1.5a.1.2 — static NAF dependency map; emit a load-time warning
-  when a derived relation is the target of an AbsentGuard, so
-  authors know which rules rely on the fire-time check.
+- [S1.7.4](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.4_naf_dependency_map.md)
+  — static NAF dependency map; emit a load-time warning when a
+  derived relation is the target of an AbsentGuard, so authors
+  know which rules rely on the fire-time check. Relocated to
+  P1.7 on 2026-05-26 (formerly P1.5a S1.5a.8 / T1.5a.1.2).
+
+## Hypgen pre-pruning — disjunctive-prune (S1.5a.2)
+
+The hypothesis generator
+([`generate_hypotheses`](../../../ein.py/src/ein_bot/inference/hypgen.py))
+emits one candidate `(?R ?A ?B)` per legal slot-fill at root
+saturation; each candidate becomes a hypothesis the solver
+might branch on. The generator's filter consults
+[`kb._negated_facts`](../../../ein.py/src/ein_bot/kb/store.py)
+to drop candidates whose negation is already known: a
+candidate ``(color-loc Yellow House-3)`` is dropped if
+``(not (color-loc Yellow House-3))`` is in `_negated_facts`.
+The `--hyp-stats` output's `filtered.negated_fact` counter
+measures this filter's hit-rate (62 of 125 raw candidates on
+zebra2, leaving 56 emitted).
+
+Pre-S1.5a.2 the only `(not …)` facts entering
+`_negated_facts` at root saturation were the ones the puzzle
+declared directly. Cross-attribute spatial constraints
+(`adjacent-via`) didn't contribute negatives — the
+`adjacent-via-{fwd,bwd}` rules only assert positives when the
+spatial neighbour is unique. For non-corner houses no positive
+fires and the candidate stays in the hypothesis space.
+
+**The fix.** Two new rules ship with each `adjacent-via`
+activator:
+
+- ``disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2`` — given
+  ``(R1 V1 h1)``, for every ``h_other`` in the partner's
+  type-domain where ``(?S h_other h1)`` is absent, assert
+  ``(not (R2 V2 h_other))``.
+- ``disjunctive-prune-bwd`` — symmetric, with the NAF operand
+  order reversed for asymmetric ?S like ``right-of``.
+
+These fire in BOTH unique and non-unique cases, so they
+contribute negatives even when the positive can't be pinned.
+The pair derives from a single ``(adjacent-via ?S V1 V2)``
+activator via two meta-rules (`derive-disjunctive-prune-{fwd,bwd}`
+at priority 200) — author writes one activator, gets both
+pre-pruners. Priority 250 on the pruner itself ensures the
+next-to derivations at priority 100 drain first, so the NAF
+guard sees the closed adjacency graph.
+
+The split into `-fwd` / `-bwd` matters for asymmetric ?S:
+pre-S1.5a.2 there was a single rule whose `-bwd` direction
+swapped the activator args but kept the `-fwd` NAF, asserting
+spurious ``(not (color-loc Ivory House-4))`` from a known
+``Green@House-5``. For symmetric ``next-to`` the two NAF
+directions are equivalent and the bug was masked; the
+S1.5a.11 dump on `zebra2-hints.ein` surfaced it in its first
+realistic outing. The two-rule structure makes each
+direction's NAF explicit in its own match clause.
 
 ## Determinism — content-based candidate ordering (S1.5a.1a)
 
@@ -243,6 +297,147 @@ spawns two subprocesses with different `PYTHONHASHSEED` and
 asserts their solve output is byte-identical; any regression
 that re-leaks hash order into the candidate path fails the
 subprocess test.
+
+## d=0 negative-completion (S1.5a.19)
+
+The NL Zebra walkthrough closes at depth 0 — every "Therefore X"
+in the trace is reachable from the puzzle's facts + ontology
+without any hypothesis branching. Pre-S1.5a.19, the engine
+needed branching to discover the same negatives: a known
+``(color-loc Yellow House-1)`` did not derive
+``(not (color-loc Yellow House-{2,3,4,5}))`` in the same
+saturation pass, so the candidates lingered in hypgen's
+output and the solver split into 568 nodes searching for a
+contradiction that NL closes at d=0. After S1.5a.19 the tree
+collapses to 32 nodes at `--max-depth 1` (see
+[`STATUS.md`](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/STATUS.md)).
+
+Six new rules ship in
+[`examples/zebra2.ein`](../../../examples/zebra2.ein) (mirrored
+in `zebra2-hints.ein`) to close the gap. Each derives a
+``(not …)`` directly from positive evidence + an ontology
+declaration, with no recourse to branching:
+
+| rule                                              | premise pattern                                                                                                                 | derived negative                                |
+|---------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
+| `functional-negative ?R`                          | ``(R ?a ?b)`` ∧ ``functional R`` ∧ ``b' ≠ b``                                                                                  | ``(not (R a b'))``                              |
+| `injective-negative ?R`                           | ``(R ?a ?b)`` ∧ ``injective R`` ∧ ``a' ≠ a``                                                                                   | ``(not (R a' b))``                              |
+| `co-located-negative ?R1 ?V1 ?R2 ?V2`             | ``(co-located R1 V1 R2 V2)`` ∧ ``(not (R1 V1 h))``                                                                             | ``(not (R2 V2 h))``                             |
+| `adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2`    | no ``h2`` with ``(?S h2 h1)``                                                                                                  | ``(not (R1 V1 h1))``                            |
+| `adjacent-via-endpoint-bwd`                       | no ``h1`` with ``(?S h2 h1)``                                                                                                  | ``(not (R2 V2 h2))``                            |
+| `adjacent-via-{fwd,bwd}-negative`                 | contrapositive of `adjacent-via-{fwd,bwd}` — ``(not (R2 V2 h2))`` + unique ?S-source ⟹ ``(not (R1 V1 h1))`` (and symmetric)    | ``(not (R1 V1 h1))`` resp. ``(not (R2 V2 h2))`` |
+
+Each rule has a `derive-…` meta-rule (priority 100 or 200)
+that lifts an ontology activator (`functional R`,
+`co-located R1 V1 R2 V2`, `adjacent-via-{fwd,bwd} ?S …`) into
+the target rule's own activator. Authors keep writing one
+ontology-level declaration per constraint; the engine fans it
+out into the negative-completion machinery automatically.
+
+**Priority discipline** (lines 117-120 of `examples/zebra2.ein`):
+the negative rules sit at priority 240 — AFTER propagation
+(200) so the new positives are visible, BEFORE both
+sibling-violation rules (250) and elimination rules (400), so
+derived negatives reach `domain/range-elimination`'s `forall`
+premises in the same pass.
+
+The NL chain this closes (see
+[`examples/README.md`](../../../examples/README.md)):
+*Norwegian@H_1 ⟹ Englishman ≠ H_1 ⟹ Red ≠ H_1* — once
+`functional-negative` produces the first negative,
+`co-located-negative` propagates it across the equivalence,
+and the cascade terminates at the corner-house exclusions from
+`adjacent-via-endpoint-{fwd,bwd}`.
+
+Naming convention: every rule name carries `-negative` so the
+trace renderer (P1.6 S1.6.4) can group derivation events by
+polarity. The `derive-…-negative` meta-rules are similarly
+named after the target they enable.
+
+## Mid-sweep saturation + per-sibling apriori re-check (S1.5a.19)
+
+The d=0 rules above are necessary but not sufficient on their
+own — the solver's `_consume` loop must actually *use* the new
+negatives. Pre-S1.5a.19's loop tested every sibling in the
+parent's alive set via the full `try_branch` (fork + saturate
++ contradiction-detect), even if an earlier sibling's
+back-prop had just made the next sibling apriori dead. The
+cost was paid for the contradiction to re-surface inside the
+fork.
+
+S1.5a.19 fixes this with two cheap pre-fork checks plus a
+mid-sweep saturator pass
+([`solver.py:1075-1122`](../../../ein.py/src/ein_bot/inference/solver.py)):
+
+```python
+for h in to_check:
+    key = (h.relation_name, h.args)
+    # (a) Apriori Tier-A re-check: earlier sibling's back-prop
+    #     + in-sweep re-saturation may have made h dead.
+    if key in kb._negated_facts:
+        stats.apriori_dead_in_sweep += 1
+        # mark dead, no try_branch
+        continue
+    # (b) Mid-sweep re-saturation may have derived h's positive
+    #     directly (functional / adjacency closure).
+    if kb._fact_by_id(h.relation_name, h.args) is not None:
+        # mark alive, no try_branch
+        continue
+    result = try_branch(kb, h, branch_id=...)
+    if result.is_alive():
+        ...
+    elif is_unconditional_death(result.kb, result.unsat_core, ...):
+        back_propagate(kb, h, result.unsat_core)
+        # Mid-sweep saturator: propagate (not h)'s transitive
+        # consequences into kb so subsequent apriori re-checks
+        # can skip more siblings.
+        mid_sweep_firings.extend(
+            Saturator(kb).saturate(max_steps=10_000))
+    else:
+        ...
+```
+
+Three pieces compose:
+
+1. **Apriori Tier-A re-check** before `try_branch`: query
+   `kb._negated_facts` directly; if the sibling's negation is
+   now known, skip the fork and mark dead in one O(1) step.
+   Counted in `stats.apriori_dead_in_sweep`.
+2. **Positive-already-derived check**: between siblings the
+   mid-sweep saturator may have derived h's positive directly
+   (e.g. via `adjacent-via-bwd` from a recently-pinned
+   ``(?R2 ?V2 h2)``); mark alive and skip the fork.
+3. **Mid-sweep `Saturator(kb).saturate(...)`** after each
+   `back_propagate`: runs the saturator on the parent KB with
+   the freshly-bubbled ``(not h)`` so the d=0
+   negative-completion rules can fire transitively before the
+   next sibling is tested. `max_steps=10_000` caps the cost;
+   on zebra2 the sweep terminates well below the cap.
+
+Measured impact on zebra2 (depth 1): 28 of 31 dead leaves
+(`apriori_dead_in_sweep=28`) skip `try_branch` entirely via
+the Tier-A path; the three remaining dead siblings need the
+full fork (cases the apriori check can't predict from
+`_negated_facts` alone — e.g. a sibling whose conditional
+contradiction depends on the candidate's own consequences).
+
+Together the rules + mechanism implement at the engine level
+what the NL trace does at the cognitive level: each commitment
+unfolds its consequences fully before the next decision. The
+result is the 568 → 32 node collapse documented in
+[`STATUS.md`](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/STATUS.md).
+
+**Future composition.** The mid-sweep saturator pass is the
+engine's "go up" channel; pre-2026-05-26 it was the motivation
+for the now-dropped [S1.5a.20 branch-isolation re-architecture](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.20_branch_isolation_rearch.md).
+The
+[P1.5b](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/)
+set-indexed engines (monotonic + lattice) bake the per-set
+saturate-from-root pattern in from the start, so the mid-sweep
+pass becomes the default control flow rather than an opt-in.
+The tree-side `_consume` keeps the explicit mid-sweep until
+P1.5b reaches parity; then the per-sibling re-check moves to
+whichever engine inherits the responsibility.
 
 ## Unconditional death — back-prop soundness (S1.5.7)
 

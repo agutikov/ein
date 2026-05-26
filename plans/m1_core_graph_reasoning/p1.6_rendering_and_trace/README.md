@@ -27,6 +27,7 @@ and a one-sentence English explanation.
 | S1.6.2  | DOT — state + state transitions        | 2-3 days |
 | S1.6.3  | DOT — search tree                      | 2 days   |
 | S1.6.4  | Markdown trace renderer                | 4-5 days |
+| S1.6.5  | idea-08 trace acceptance               | 2-4 days |
 
 ## Acceptance
 

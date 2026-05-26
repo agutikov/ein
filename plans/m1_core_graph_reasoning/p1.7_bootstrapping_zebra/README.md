@@ -44,6 +44,8 @@ IMPORTANT GOALS:
 | S1.7.1  | Zebra IR + ontology                    | 2-3 days |
 | S1.7.2  | Dynamic-vs-hardcoded audit + decision + proto-library | 4-6 days |
 | S1.7.3  | Trace-matches-human acceptance         | 3-4 days |
+| S1.7.4  | Static NAF dependency map (observability) — relocated from P1.5a 2026-05-26 | ~½ day |
+| S1.7.5  | Query semantics: who vs where — relocated from P1.5a 2026-05-26 | 1-2 days |
 
 ## Acceptance
 

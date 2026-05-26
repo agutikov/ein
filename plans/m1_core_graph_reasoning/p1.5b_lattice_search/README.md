@@ -10,11 +10,16 @@ identical under M1's monotone saturation. Two engines ship
 under this phase with **distinct purposes** (below). Stage
 plan: monotonic stages first (S1.5b.0–S1.5b.10), then lattice
 from S1.5b.20 onward.
-**Depends on:**
+**Depends on:** —
+P1.5b owns its own isolation model: set-batch `try_set` ↓ +
+per-set `integrate` ↑, with no ancestor chains (commitments
+are sets, not paths). The pre-2026-05-26 dependency on
 [P1.5a S1.5a.20](../p1.5a_zebra_solution/s1.5a.20_branch_isolation_rearch.md)
-(branch-isolation re-architecture — both engines sit on top of
-the isolated `try_branch` / `integrate` primitives; the lattice
-also uses the `BranchResult` boundary type more aggressively).
+(branch-isolation re-architecture) was dropped together with
+S1.5a.20 itself — that stage's contract is delivered natively
+here. `BranchResult`-shaped payloads still flow up via
+integrate; the .20 file is retained as historical design notes
++ channel inventory.
 Composes with
 [S1.5a.18](../p1.5a_zebra_solution/s1.5a.18_path_condition_nogoods.md)
 (path-condition no-goods become the unified CDCL prune
@@ -174,9 +179,6 @@ P1.5b does NOT own:
 - The d=0 inference completeness fix
   ([S1.5a.19](../p1.5a_zebra_solution/s1.5a.19_d0_negative_completion_gap.md))
   — orthogonal; shrinks the search base for both engines.
-- The channel-isolation refactor
-  ([S1.5a.20](../p1.5a_zebra_solution/s1.5a.20_branch_isolation_rearch.md))
-  — prerequisite.
 - The NL trace renderer
   ([P1.6 S1.6.4](../p1.6_rendering_and_trace/))
   — consumes the lattice's `LatticeProof`.
@@ -267,10 +269,11 @@ lattice block.
 
 ## Cross-links
 
-- Prerequisite:
+- Historical design notes (no longer prerequisite — superseded
+  by this phase 2026-05-26):
   [P1.5a S1.5a.20](../p1.5a_zebra_solution/s1.5a.20_branch_isolation_rearch.md)
-  — channel isolation; the `BranchResult` + `integrate`
-  boundary is what both engines sit on.
+  — channel inventory + per-child branch-dump schema (T1.5a.20.6)
+  that lattice's per-set dumper still references.
 - Composes with:
   - [P1.5a S1.5a.18](../p1.5a_zebra_solution/s1.5a.18_path_condition_nogoods.md)
     — nogoods become the unified CDCL prune mechanism.
