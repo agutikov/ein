@@ -43,9 +43,12 @@ i.e. NL parses into the same `(facts …)` / `(ontology …)` blocks the
 engine consumes, and the engine's trace renders back into the same
 NL paragraphs the README cites.
 
-Two adjacent secondary milestones surface ein-bot externally:
+Two adjacent secondary milestones surface ein-bot externally,
+plus a Rust port slotted before the GUI:
 
-- **M1b — GUI** ([m1b_gui/](m1b_gui/README.md)) between M1
+- **M1a — Rust port (ein.rs)** ([m1a_rust/](m1a_rust/README.md))
+  between M1 and M1b — the engine that ships from M2 onward.
+- **M1b — GUI** ([m1b_gui/](m1b_gui/README.md)) between M1a
   and M2.
 - **M2b — paper + presentation** ([m2b_presentation/](m2b_presentation/README.md))
   after M2, before or after M3.
@@ -141,7 +144,8 @@ Stage files have a stable shape:
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
 | [M1](m1_core_graph_reasoning/README.md) | full (stages-as-files) | **active** — MVP scope | ~3 months |
-| [M1b](m1b_gui/README.md)                | placeholder README only | parked — slots between M1 and M2 | TBD |
+| [M1a](m1a_rust/README.md)               | placeholder README only | parked — Rust port (ein.rs); slots between M1 and M1b | TBD |
+| [M1b](m1b_gui/README.md)                | placeholder README only | parked — slots between M1a and M2 | TBD |
 | [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |
 | [M2b](m2b_presentation/README.md)       | placeholder README only | parked — paper + talk after M2 (or after M3) | TBD |
 | [M3](m3_smt_integration/README.md)      | sketch (one stage per phase) | planned | ~1 month after M2 |

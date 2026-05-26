@@ -238,6 +238,86 @@ Likely stages:
   lang" looks like (probably a `(meta …)` block or stdlib file).
   Bears on F5.
 
+### Theme I — Kernel feature × config matrix
+
+User direction 2026-05-27: *"separate file for kernel
+inference feature list absolutely required to solve zebra in
+reasonable time. Add config options for every (if not yet),
+write ein files with different config options and measure
+solution time with 3600 s timeout. Collect into table with
+time and stats showing impact of every option disabled."*
+
+The output is a measurement-backed reference page (likely
+`docs/kernel/inference/features.md`) that tells a puzzle
+author: "these config knobs are load-bearing; disabling them
+slows / breaks zebra2 by ⟨factor⟩."
+
+Steps:
+
+1. **Audit current `SolverConfig`.** Catalogue every flag
+   (`enable_back_prop_unconditional`, `enable_alive_inherit`,
+   `enable_eager_root_bubble`, `enable_path_condition_nogoods`,
+   `enable_pre_branch_lookahead`, `candidate_order_seed`,
+   `hypgen_scoring`, etc.). For every flag with a `True`
+   default, generate a paired `examples/zebra2-noFLAG.ein`
+   variant that flips the flag off via its `(config …)` block.
+2. **Add missing flags.** Any kernel feature whose impact we
+   want to measure but which isn't behind a config flag yet
+   gets one (default = current behaviour; the negation is the
+   "feature off" case).
+3. **Bench matrix.** Run `bench_solve_pypy.sh` on every
+   variant with a 3600 s timeout. Record verdict, tree-node
+   count, solve time, RSS.
+4. **Result table** in `features.md`: one row per flag,
+   columns for [default-on solve, flag-off solve, slowdown
+   factor, "broken if off" sentinel].
+
+Composes with Theme D (inference engine documentation) — the
+features table cross-links into the per-feature narrative.
+
+### Theme J — Ein API reference
+
+User direction 2026-05-27. The Python-facing API for embedding
+ein-bot in another project: how to construct a `KnowledgeBase`,
+load IR, call `Saturator(kb).saturate()`, run `solve(kb,
+mode=…)`, iterate `Firing`s, read provenance. Differs from
+Theme B (kernel API) which is the IR-level surface; Theme J is
+the Python-level surface a downstream user would import.
+
+Lands as `docs/api/ein.md` (top-level Python package surface)
+plus `docs/api/<module>.md` per public module. Composes with
+Theme E (user vs developer split) — Theme J is *user-facing
+embedding docs*, distinct from Theme D's engine internals.
+
+If [M1a Rust port](../../m1a_rust/README.md) ships, the API
+reference moves to ein.rs's surface (PyO3 binding + native
+Rust) and Theme J's Python-side becomes the legacy reference.
+
+### Theme K — Ein Zebra guide
+
+User direction 2026-05-27. A long-form walkthrough of
+`examples/zebra2.ein`, grouping rules into related families
+(propagation / negative-completion / disjunctive-prune /
+domain-elimination / spatial-endpoint / typecheck …). For
+each rule:
+
+- **Ein-lang form** — the literal `(rule …)` block from
+  `zebra2.ein` plus a one-paragraph plain-English summary.
+- **NL framing** — how the rule's intent reads in the
+  Wikipedia Zebra walkthrough (cross-link `examples/README.md`).
+- **Compact graph before / after** — small DOT showing the
+  KB state immediately before and after the rule fires.
+  Single-instance illustration, not full puzzle state.
+- **Canonical Levi-bipartite graph before / after** — same
+  pair under the Levi rendering, so the reader can flip
+  between the two views. (See P1.6's
+  default-compact-Levi-by-flag framing.)
+
+Lands as `docs/kernel/zebra_guide.md` (or a small folder
+under `docs/kernel/` if the rule families warrant per-family
+pages). Composes with P1.6 S1.6.1 (rule rendering) — the
+graph pairs reuse the same rule renderer.
+
 ## Out of scope
 
 - Anything that *changes the kernel semantics* — that work
@@ -267,6 +347,16 @@ Likely stages:
 - **H:** the atom/object distinction is reflected in
   `03_ein_model.md` and the glossary; the 4-level table is in
   the canonical doc.
+- **I:** `features.md` carries the config-flag matrix with
+  measured impact per flag against zebra2 (3600 s timeout
+  per cell). Authors know which features they need on.
+- **J:** `docs/api/ein.md` documents the Python embedding
+  surface. A downstream user can import `ein_bot`,
+  load a `.ein`, run `solve`, and read the verdict without
+  reading the kernel internals.
+- **K:** `docs/kernel/zebra_guide.md` walks every rule
+  family in `zebra2.ein` with ein form + NL + compact +
+  Levi graphs before/after.
 
 ## Open questions
 

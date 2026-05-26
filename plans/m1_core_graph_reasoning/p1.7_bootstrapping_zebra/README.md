@@ -35,7 +35,34 @@ IMPORTANT GOALS:
 2.3) How to reduce complexity without reducing expressiveness?
    e.g. solve only `co-located` and then directly infer `drink`, `live` etc.
 
+### Drop classic `zebra.ein` support (user direction 2026-05-27)
 
+The classic `examples/zebra.ein` encoding leans on the engine's
+*hardcoded* `type` / `instance` keywords (the pre-B1 path from
+P1.2 typed-hypergraph). Once P1.7 lands the canonical
+unified-syntax encoding, the classic file becomes redundant —
+keep removing the hardcoded keyword path and rewrite the
+classic puzzle in the new vocabulary as a sub-task of S1.7.1
+(zebra IR + ontology). Goals:
+
+1. Remove `type` / `instance` as kernel-special keywords; treat
+   them as ordinary relations declared in the ein code itself
+   (the `(relation type Instance Type)` shape).
+2. Rewrite `examples/zebra.ein` against the unified syntax. Drop
+   `examples/zebra.ein` if the new encoding makes it byte-equal
+   to a trivial alias of zebra2.ein; otherwise keep the
+   rewritten file as a NL-closer variant.
+3. Document in comments **what the rewritten classic encoding
+   is missing compared to `zebra2.ein`** — specifically, which
+   rules / activator declarations the classic file would need
+   that drive its hyp-gen count from M1's current measurement
+   to the 1000+-hypothesis pre-B1 baseline. The comment table
+   is the audit's *output*; without it, the encoding-comparison
+   loses the empirical anchor.
+
+This composes with goal (1) above ("merge zebra and zebra2
+syntax, leave only canonical") — that goal *is* the rewrite;
+the comments are the differential audit.
 
 ## Stages
 

@@ -22,6 +22,7 @@ to their own followup file when they grow.
 | Q36 | Relation inheritance / rule polymorphism — `(subtype-of instance-of subtype-of)` |
 | Q37 | Induction — facts → rules over relations; rules learned from fact patterns  |
 | Q38 | LLM as fact/relation/type/rule extractor — per-word/per-role question schemas |
+| Q39 | Facts as variables-with-context (M1+ proposal) — `(co-located (drink-loc Milk ?h) (smoke-loc Kools ?h))` |
 
 ---
 
@@ -472,6 +473,59 @@ two surfaces.
 Connection: [M2 P2.4](../m2_nl_to_ir/p2.4_nl_to_ir_pipeline/),
 [idea 01](../../docs/ideas/01-self-modifying-constraint-language.md),
 [docs/index/10 NLP & semantic parsing](../../docs/index/10-nlp-semantic-parsing.md).
+
+## Facts as variables-with-context (M1+ proposal, Q39)
+
+User direction 2026-05-27. The current `:match` syntax binds
+variables to atoms:
+
+```lisp
+(co-located drink-loc Milk smoke-loc Kools)   ;; M1 — atoms only
+```
+
+The proposal extends `:match` to bind variables to *facts
+with free variables* — a fact-shape that's mostly a variable
+but with a known relation + partial args:
+
+```lisp
+(co-located (drink-loc Milk ?h) (smoke-loc Kools ?h))
+```
+
+Reading: "the fact `(drink-loc Milk ?h)` and the fact
+`(smoke-loc Kools ?h)` are co-located via shared `?h`."
+Already meaningful in NL — `(drink-loc Milk ?h)` is "the
+house where Milk is drunk" — a variable with context, not
+quite a free variable.
+
+**Semantics question.** Is `(drink-loc Milk ?h)` *the fact
+itself* (treating Fact as a first-class value) or *the
+binding of `?h`* (a `?h`-shaped slot that needs the partner
+fact to bind)? The two readings produce different match
+semantics:
+
+- **Fact-as-value reading.** `?h` is an unbound variable
+  inside a known-relation fact; the outer `(co-located …)`
+  joins two such facts. Implementation: extend `:match` to
+  accept compound forms; treat the binder as a join on the
+  shared `?h`. Needs nested-Fact hypothesis support
+  (currently parked under M1's invariant clause 3 — "no
+  nested-Fact hypothesis args").
+- **Variable-binding reading.** `(drink-loc Milk ?h)` is
+  syntactic sugar for "?h such that (drink-loc Milk ?h) is a
+  known fact"; the outer `(co-located …)` is a join on the
+  ?h binding. Implementation: this is *already* what the
+  current matcher does — the proposal is just a NL-closer
+  surface syntax for it.
+
+**Worth implementing?** The user's own framing question.
+M1+/M2 territory; concrete trigger is when M2's NL → IR
+pipeline outputs facts in this shape and the engine needs to
+consume them without a desugaring pass.
+
+Connection: M2 NL → IR (the natural-reading source);
+[F1b logical formulation](f1b_logical_formulation.md) (the
+quantification interpretation); P1.5's nested-Fact invariant
+(the soundness boundary).
 
 ---
 

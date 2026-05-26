@@ -255,6 +255,165 @@ Likely stages once activated:
 Out of scope: garbage-collecting collapsed branches (M1's append-
 only model says we don't free anything). Out of M1 entirely.
 
+### Theme B2.v — Version-based COW + version-based saturation
+
+User direction 2026-05-27, extending Theme B2:
+
+**Version-based KB.** Each `fork()` stamps a monotonically
+increasing version number. Facts carry their introduction
+version. Indexes are versioned tries / persistent maps. A
+fact-set query at version N returns every fact whose
+introduction version ≤ N AND whose owning fork is in the
+caller's lineage. Roll-back to any version is O(1) (no fork
+ever destroys facts — the version stamp filters them).
+
+Composes with Theme B2 (COW): a forked KB *is* a (parent, new
+version stamp, overlay) tuple; the overlay accumulates the
+fork's appends; lookups traverse the chain by version order.
+
+**Version-based saturation.** Each `Firing` carries an
+introduction version. Re-saturation after a back-prop write
+(or a P1.5b's per-set re-saturate-from-root) only needs to
+process facts whose version is *newer* than the last
+saturator-completion mark on this kb — i.e. **incremental
+saturation against a version delta** rather than a full
+re-derivation. The saturator's `_fired` cache becomes a
+"already-fired-as-of-version-V" map; a fact added at version
+V+1 only triggers re-checks of rules whose `_activators_for`
+includes that fact's relation.
+
+Useful regime: P1.5b's monotonic engine's per-layer Apriori
+prefix-join — instead of re-saturating the parent from
+scratch when integrating a layer's unconditionals, advance
+the version stamp and let the version-delta drive only the
+firings whose premises actually changed.
+
+Likely stages:
+
+- **S1.8.B2.v.1** — Version stamp on `KnowledgeBase` + `Fact`.
+  Indexes accept a version arg; default is "current".
+- **S1.8.B2.v.2** — Incremental saturator: `Saturator(kb,
+  since_version=V)` only walks firings whose premises'
+  version > V.
+- **S1.8.B2.v.3** — P1.5b integration: monotonic engine's
+  per-layer integrate uses the version delta as the
+  re-sat input.
+
+### Theme B3 — Atom-vector compression
+
+User direction 2026-05-27. The current `Fact` is `(relation_name:
+str, args: tuple[str, ...])` — every component is a string. For a
+puzzle with N < 256 atoms, every atom fits in a byte; an
+8-slot flat fact (head + 7 args) fits in a single 64-bit
+integer:
+
+```
+fact_int := atom_idx[0] << 56     # head (relation name)
+          | atom_idx[1] << 48     # arg 0
+          | atom_idx[2] << 40     # arg 1
+          | …
+          | atom_idx[7] <<  0     # arg 7
+```
+
+Equality, indexing, set membership all collapse to integer ops
+— a 10×+ speedup over `hash((relation_name, args))` on the hot
+path. The atom table (`atoms: list[str]`) is the only
+string-indexed structure; everything downstream is integer
+indexes.
+
+**Non-flat facts** — `(not X)` where X is itself a fact,
+`(not (and X Y))` for nogood clauses — don't fit in 64 bits.
+Two approaches:
+
+- **Variable-length encoding.** Use `bytes` / `bytearray` for
+  non-flat facts; flat facts stay as `int`. Two-tier
+  representation.
+- **Sequential fact-ids.** Allocate a sequential `fact_id` per
+  Fact (atom-indexes-or-bytes); reference facts by id in
+  compound positions. `(not X)` becomes `(not, fact_id_of_X)`,
+  a 2-element flat-int.
+
+**Hash-source framing.** The integer-encoded fact IS the hash
+input — no separate `hash(Fact)` call; the encoding's own
+bytes are the hash. Composes with the consistent-hashing
+theme below.
+
+Likely stages:
+
+- **S1.8.B3.1** — atom table + flat-fact-int encoding;
+  measure the saturator speedup on demo 10 + zebra2.
+- **S1.8.B3.2** — non-flat encoding strategy decided
+  empirically (variable bytes vs sequential ids).
+- **S1.8.B3.3** — re-target indexes to use atom-int /
+  fact-id; remove the str-keyed fallback.
+
+### Theme B4 — Unsat-core fingerprint / consistent hashing
+
+User direction 2026-05-27. The lattice engine's per-set
+state-hash dedup (P1.5b S1.5b.22) catches equivalent kbs but
+not equivalent *deaths*: two sets that died for the same
+reason via different intermediate kbs both consume a
+`SearchNode`. A fingerprint over the unsat-core's
+source-frontier — possibly Bloom-filter-style for
+approximate-superset detection — would let "this death's
+core is included by my prospective kb" return cheap True.
+
+Two flavours:
+
+- **Exact set-of-fact-ids fingerprint.** A canonical sorted
+  tuple → hash. Cheap to compare; subset test is O(|core|).
+- **Bloom-filter fingerprint.** Per-core bit vector; superset
+  test is bitwise-AND-equals-core. False positives possible;
+  re-verify on hit. Useful when the dead-core count grows
+  past hundreds.
+
+The S1.5a.15-Phase-1-style direct-dead cache (dropped from
+P1.5a) is the *consumer* of this fingerprint if it ever
+ships as a P1.5b followup. Worth measuring before building:
+does the lattice's per-set state-hash dedup already catch
+most of what the fingerprint would catch?
+
+### Theme B5 — Fact-participation indexes for re-saturation
+
+User direction 2026-05-27. When a fact `(R ?x ?a)` lands at
+version V, only a subset of the KB *could* interact with it:
+
+- Other facts mentioning `?x`, `?a`, or relation `R` —
+  potential premises for rules that involve those atoms.
+- Rules whose activator pattern includes `R` or whose
+  parameters bind one of the affected atoms.
+
+Build atom-participation indexes:
+
+- `atom → list[(rule_name, slot)]` — every rule whose pattern
+  references this atom (or atoms of the same type) in some
+  slot.
+- `relation → list[rule_name]` — every rule whose pattern
+  mentions this relation (already exists as
+  `_rule_apps_by_rule`; extend to `_rule_apps_by_relation`).
+- `atom → list[fact_id]` — every fact mentioning this atom.
+
+Re-saturation after a fact lands at version V then walks only
+the index-narrowed rule × fact subset, not the full kb.
+
+Open question (the user's note): "Is it correct? Is it
+possible to implement?" — yes for atom + relation
+participation; the rule-activator interaction needs care
+(rules with relation-variable parameters like `(rule
+sibling-exclusive (?siblings-via ?exclusive-under) …)` need
+indexing by *both* the parameter slots' instantiated
+relations).
+
+Likely stages:
+
+- **S1.8.B5.1** — Build the indexes at `compile_all()` time
+  + maintain incrementally on every fact append.
+- **S1.8.B5.2** — Saturator consults the indexes to scope
+  the candidate-firing search.
+- **S1.8.B5.3** — Benchmark on zebra2 (target: per-fact
+  consume cost drops from O(|kb| × |rules|) to
+  O(|relevant_facts| × |relevant_rules|)).
+
 ### Theme C — Negative-fact volume reduction
 
 P1.3 saturation produces **lots** of negative facts. Zebra.ein's

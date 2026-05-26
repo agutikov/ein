@@ -84,6 +84,62 @@ with phases:
   (idea 08) carries over to F5: every firing — including a
   meta-firing — must name its cause.
 
+## Kernel minimisation — which inference features belong in ein-lang vs kernel code?
+
+User direction 2026-05-27: the kernel today carries quite a
+bit about *how* it derives facts and *where* it propagates
+them — saturation, branching, hypothesis generation,
+hypothesis filtering, back-prop, the consume loop, NAF
+re-eval, the lookahead, the path-condition nogoods, the
+mid-sweep re-saturation. The current target is **reasonably
+minimal**, not **theoretically minimal** or **esoterically
+minimal** — but reasonably-minimal is itself an audit
+question:
+
+> *Which inference features make sense to express in ein-lang
+> instead of kernel code?*
+
+For each kernel mechanism, the audit asks:
+
+1. Can the mechanism be expressed as ein-lang rules / activators
+   without engine support? (E.g., S1.5a.19's `functional-negative`
+   et al. are ein rules — they used to be implicit in the engine
+   via refutation chains, now they're declared.)
+2. If yes, is the engine-side version *strictly more efficient*,
+   or just a historical accident?
+3. If "just historical", the move is engine → ein-lang: rewrite
+   the feature as a stdlib rule pack, drop the engine code.
+4. If "engine is strictly more efficient", the feature stays in
+   the kernel — but its existence is documented as a
+   load-bearing engine primitive (composes with P1.10 Theme I
+   features-table).
+
+Sub-track of F5 because the eventual format of the audit
+is "rules-that-replace-engine-code" — a literal
+rules-as-data exercise. Candidate kernel features to audit:
+
+- **Saturation** — the firing loop itself. Is it expressible
+  as a meta-rule that iterates until quiescence? (Probably
+  yes, but with stratification headaches.)
+- **Branching / hypgen** — the hypothesis enumeration. Is the
+  candidate-generation logic expressible as ein-lang queries
+  + activators? (S1.5.4's hypgen-filter logic is engine-side
+  today; some of it might lift.)
+- **Hypfilter (lookahead-kill)** — already an opt-in feature
+  (`enable_pre_branch_lookahead`); audit whether it's a
+  natural rule rather than engine code.
+- **Back-prop** — `(not h)` writes on unconditional death.
+  Could this be a meta-rule that reacts to a
+  `(branch-died ?branch_id)` activator?
+- **NAF re-eval** — fire-time check of `AbsentGuard`. This
+  is probably load-bearing engine; document as such.
+
+Promotion trigger: an M1-tail or P1.10 cycle that's
+audit-friendly (no active design pressure on the kernel).
+The output is (a) a smaller kernel, (b) more rules in the
+stdlib, (c) Theme I features-table cross-references the
+audit's conclusions.
+
 ## Prior art / connections
 
 - [F4 Q34](f4_cross_cutting.md) — the rule-property cartesian product;

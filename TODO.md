@@ -103,115 +103,56 @@
 ;;                                     relation; sibling to F1's CT angle)
 ;;                                     + plans/followups/README.md (index row F1b)
 
-
-
-P1.6
-
-IMPORTANT: canonical Levi-pipartite graph representation reflects ein-lang structure well
-Atoms/names are nodes with arrows to, relations (lists) are nodes with arrows from
-But it is not readable, so for rendering default mode should be compact.
-
-update utils/render_examples.sh 0 remove extra rendering modes
-trace doesn't matter because example problems doesn't have trace
-rules combine both variants into one diagram
-
-
-S1.6.1
-Attention to rules rendering with folded match like (absent (and (?R1 ?a ?b) (?R2 ?x ?y)))
-
-
----
-
-
-P1.7 
-
-remove support of zebra.ein completely - remove type and instance hardcoded keywords
-rewrite zerba.ein with type and instance relations declared in the ein code itself
-Explain in comments what is missing compared to zebra2.ein - what produce 1000+ hypothesis.
-
-
----
-
-P1.8 - performance part
-
-
-compression - make atoms vector and replace all atoms everythere else with indexes
-all relation facts become vectors of numbers - head is [0]
-then if we have few atoms - can compress entire relation to number,
-for example < 255 atoms 64bit integer can hold up to 8 atom flat relation
-then every fact also can be encoded with unique sequential index - there would be much more of them than atoms - so can use only vectors for non-flat facts, but what are they? (not fact) (not (and fact fact fact))
-maybe still can be encoded into vectors or numbers
-finally think about this encoding like about hash itself or source for hash
-
-
-consistent hashing or something similar
-- hash method for unsat cores that allows to see if another kb has the unsat core included by comaring caches
-- maybe not strict - like Bloom filter, would it help at all anyhow?
-
-
-re-saturation and hyps alive-recompute:
-- build and hold indexes of atoms participation: objects, relations, rules etc...
-    - so when see a new fact (?R ?x ?a)
-    - we also see a KB subset of facts that may interact with the new fact
-    - and subset of rules the fact can interact through
-Is it correct? Is it possible to implement?
-
-
-
----
-
-P1.10 kernel docs - separate file for kernel inference feature list absolutely required to solve zebra in reasonable time
-add config options for every (if not yet) write ein files with different config options and measure solution time with 3600s timeout
-collect into table with time and stats showing impact of every option disabled
-
-P1.10 Ein API refernce
-
-P1.10 Ein Zebra guide - group rules into related groups
-and explain every rule behaviour:
-- in ein lang facts
-- in NL
-- with compact graphs before and after
-- with canonical Levi-bipartite graphs
-
-
----
-
-vscode ein syntax highlighting - to P1.6
-
----
-
-M1a - ein.rs in Rust, before M1b GUI
-
-
----
-
-to Followups:
-
-kernel inference already have quite a lot of features about how it derive facts and where propagates them
-we are trying to minimize the kernel to some reasonably minimal, not esoteric-minimal, not theoretically-minimal
-what inference features make sense to express in ein lang instead of kernel code: saturation, branching, hypgen, hypfilter, backprop, ...?
-
-
----
-
-
-expression proposal for M1+
-
-(co-located (drink-loc Milk ?h) (smoke-loc Kools ?h))
-
-Aready existing meaning (drink-loc Milk ?h) - House where milk is drinked.
-So (drink-loc Milk ?h) is a variable with context, but it is mostly variable.
-How to work with it? Does it make sense to implement?
-
-
----
-
-
-version-based saturation optimization
-
-version-based COW-powered KB structure
-
-
----
+;; Processed 2026-05-27:
+;;   - M1a Rust port               → plans/m1a_rust/README.md (NEW placeholder;
+;;                                   ein.rs slots between M1 and M1b; PyPy 6.0×
+;;                                   on zebra2 d=1 motivates native port;
+;;                                   Boundary A vs B left open)
+;;                                   + plans/README.md (status table M1a row +
+;;                                   prose preamble)
+;;   - P1.6 Levi/compact defaults  → plans/m1_core_graph_reasoning/
+;;                                   p1.6_rendering_and_trace/README.md
+;;                                   (new "Defaults" + "render_examples.sh"
+;;                                   sections; compact project-wide,
+;;                                   Levi-by-flag; rule mode (a)+LR, trace
+;;                                   per-step; collapse 6-variant matrix to 1
+;;                                   variant per file)
+;;                                   + VSCode syntax highlighting note
+;;   - S1.6.1 absent-folded match  → plans/m1_core_graph_reasoning/
+;;                                   p1.6_rendering_and_trace/s1.6.1_dot_rules_constraints.md
+;;                                   (Task T1.6.1.1 amended with attention to
+;;                                   nested (absent (and …)) rendering;
+;;                                   sub-cluster recommendation)
+;;   - P1.7 drop zebra.ein support → plans/m1_core_graph_reasoning/
+;;                                   p1.7_bootstrapping_zebra/README.md (new
+;;                                   sub-section under Updates; goals: remove
+;;                                   type/instance hardcoded keywords; rewrite
+;;                                   classic against unified syntax; comment-
+;;                                   table audit of what's missing vs zebra2)
+;;   - P1.8 compression / hashing /  → plans/m1_core_graph_reasoning/
+;;     re-saturation indexes /        p1.8_ein_lang_modules/README.md (three
+;;     version-based COW + sat        new Themes added: B2.v version-based COW
+;;                                    + version-based saturation; B3 atom-vector
+;;                                    compression with 64-bit-int encoding;
+;;                                    B4 unsat-core fingerprint / consistent
+;;                                    hashing; B5 fact-participation indexes
+;;                                    for re-saturation)
+;;   - P1.10 features × config       → plans/m1_core_graph_reasoning/
+;;     matrix + Ein API + Zebra        p1.10_kernel_docs/README.md (three new
+;;     guide                           Themes added: I features-table with 3600s
+;;                                    bench matrix; J Python embedding API;
+;;                                    K rule-by-rule Zebra walkthrough with
+;;                                    compact + Levi graphs before/after)
+;;                                    + Acceptance entries for I/J/K
+;;   - Kernel minimisation followup → plans/followups/f5_rules_as_data.md
+;;                                    (new sub-section "Kernel minimisation —
+;;                                    which inference features belong in
+;;                                    ein-lang vs kernel code?"; audit
+;;                                    candidates: saturation, branching,
+;;                                    hypfilter, back-prop, NAF re-eval)
+;;   - Facts-as-variables M1+ idea  → plans/followups/f4_cross_cutting.md
+;;                                    (new Q39 row in open-questions table +
+;;                                    full sub-section with semantics question:
+;;                                    fact-as-value vs variable-binding readings)
 
 

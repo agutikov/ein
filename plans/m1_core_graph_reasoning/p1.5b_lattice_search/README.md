@@ -262,6 +262,7 @@ P1.5b does NOT own:
 | S1.5b.29 | F8 — `LatticeProof` data class + P1.6 handoff contract (per [Q1.5b.6](open_questions.md#q15b6--reasoning-path-post-solve-phase)) |
 | S1.5b.30 | F9 — end-of-phase perf round: subset-trie / interned set-ids; `try_set` set-batch perf measurement; tree-side deprecation tag |
 | S1.5b.31 | Lattice shuffle invariance — traversal-order regression net (tree-side sibling: P1.5a S1.5a.16, closed 2026-05-26) |
+| S1.5b.32 | Domain-elim rule (forall) vs explicit hypothesis exploration — research stage: result/correctness/satisfiability vs performance trade-offs across both engines |
 
 The boundaries between stages will shift; the numbering keeps
 a 10-slot gap between monotonic and lattice so follow-up
