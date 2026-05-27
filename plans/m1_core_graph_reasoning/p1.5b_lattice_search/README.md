@@ -14,10 +14,14 @@ shipped 2026-05-27 (`22a4ebd`, file-split refactor —
 `inference/{tree,monotonic,lattice}/`);
 [S1.5b.2](s1.5b.2_common_apriori_gen.md) shipped 2026-05-27
 (`80d47df`, common `apriori.py` — prefix-join + filter
-helpers; 17 tests). [S1.5b.3](s1.5b.3_common_set_batch_primitive.md)
-(common `try_commitment_set` primitive) is the next implementation
-surface; can parallelise with the monotonic skeleton
-(S1.5b.4).
+helpers; 17 tests);
+[S1.5b.3](s1.5b.3_common_set_batch_primitive.md) shipped
+2026-05-27 (common `commitment.py` — `try_commitment_set` +
+`CommitmentSetResult`; 7 tests covering the alive / dead-pre /
+dead-post trichotomy + unconditional-fact extraction +
+isolation + empty-commitment sentinel).
+[S1.5b.4](s1.5b.4_monotonic_skeleton.md) (monotonic engine
+skeleton) is now the next implementation surface.
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments
