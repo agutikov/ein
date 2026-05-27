@@ -16,10 +16,11 @@ shipped 2026-05-27 (`22a4ebd`, file-split refactor —
 (`80d47df`, common `apriori.py` — prefix-join + filter
 helpers; 17 tests);
 [S1.5b.3](s1.5b.3_common_set_batch_primitive.md) shipped
-2026-05-27 (common `commitment.py` — `try_commitment_set` +
-`CommitmentSetResult`; 7 tests covering the alive / dead-pre /
-dead-post trichotomy + unconditional-fact extraction +
-isolation + empty-commitment sentinel).
+2026-05-27 (`424c9ac`, common `commitment.py` —
+`try_commitment_set` + `CommitmentSetResult`; 7 tests covering
+the alive / dead-pre / dead-post trichotomy +
+unconditional-fact extraction + isolation +
+empty-commitment sentinel).
 [S1.5b.4](s1.5b.4_monotonic_skeleton.md) (monotonic engine
 skeleton) is now the next implementation surface.
 **Depends on:** —
