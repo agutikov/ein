@@ -72,8 +72,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "ein.py" / "src"))
 
-from ein_bot.inference import solver as _hyp_mod  # noqa: E402
-from ein_bot.inference.solver import (  # noqa: E402
+from ein_bot.inference.tree import solver as _hyp_mod  # noqa: E402
+from ein_bot.inference.tree.solver import (  # noqa: E402
     Ambiguity,
     Contradiction,
     Mode,
@@ -177,7 +177,7 @@ def _install_instrumentation(verbose: bool, progress_every: int,
         # enclosing _explore's nid; depth=0 means root). Used below
         # to print the *current* root-alive count, which shrinks as
         # back-prop writes (not h) into root.
-        from ein_bot.inference.solver import _current_depth_ctx
+        from ein_bot.inference.tree.solver import _current_depth_ctx
         parent_depth = _current_depth_ctx.get()
         if _dbg.root_kb is None and parent_depth == 0:
             _dbg.root_kb = parent_kb

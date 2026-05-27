@@ -27,7 +27,7 @@ from ein_bot.ir.types import Atom, Int, Keyword, KwPair, SForm
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
-from .firing import Firing
+from ..firing import Firing
 
 BranchId = int
 

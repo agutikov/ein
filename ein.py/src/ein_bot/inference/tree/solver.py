@@ -37,24 +37,24 @@ from .back_prop import (
     is_unconditional_death,
     reaches_hypothesis,
 )
-from .canon import state_hash
-from .closed import emit_closed
-from .compile import JoinPlan, compile_pattern
-from .config import SolverConfig
-from .contradiction import ContradictionDetector
-from .firing import Firing
-from .hypgen import (
+from ..canon import state_hash
+from ..closed import emit_closed
+from ..compile import JoinPlan, compile_pattern
+from ..config import SolverConfig
+from ..contradiction import ContradictionDetector
+from ..firing import Firing
+from ..hypgen import (
     generate_hypotheses,
     generate_hypotheses_with_stats,
     score_hypothesis,
 )
-from .match import run as match_run
-from .nogoods import build_clause, emit_nogood, matches_any_nogood
-from .saturator import Saturator
+from ..match import run as match_run
+from ..nogoods import build_clause, emit_nogood, matches_any_nogood
+from ..saturator import Saturator
 from .search_tree import BranchId, SearchNode, SearchTree
 
 if TYPE_CHECKING:
-    from .state_dump import StateDumper
+    from ..state_dump import StateDumper
 
 # S1.5a.11 — optional per-solve filesystem snapshotting. When a
 # StateDumper is bound here, the solver calls back at lifecycle

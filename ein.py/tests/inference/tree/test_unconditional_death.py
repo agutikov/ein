@@ -8,7 +8,7 @@ firings deep is *conditional* even though its own provenance kind is
 """
 from __future__ import annotations
 
-from ein_bot.inference.back_prop import (
+from ein_bot.inference.tree.back_prop import (
     is_unconditional_death,
     reaches_hypothesis,
 )

@@ -24,12 +24,12 @@ import pytest
 
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.hypgen import score_hypothesis
-from ein_bot.inference.solver import Solution, solve
+from ein_bot.inference.tree.solver import Solution, solve
 from ein_bot.ir import parse
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 DEMO_BACKPROP = REPO / "examples" / "branching" / "10_backprop_on.ein"
 
 

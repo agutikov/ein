@@ -15,12 +15,12 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.solver import solve
+from ein_bot.inference.tree.solver import solve
 from ein_bot.inference.state_dump import StateDumper
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 DEMO = REPO / "examples" / "branching" / "03_five_hyps_one_alive.ein"
 
 

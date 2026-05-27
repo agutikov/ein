@@ -11,15 +11,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.back_prop import back_propagate
+from ein_bot.inference.tree.back_prop import back_propagate
 from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.solver import Ambiguity, Solution, solve
+from ein_bot.inference.tree.solver import Ambiguity, Solution, solve
 from ein_bot.ir import parse
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"
 
 

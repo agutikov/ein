@@ -25,7 +25,7 @@ import sys
 import textwrap
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 DEMO = REPO / "examples" / "branching" / "03_five_hyps_one_alive.ein"
 
 
@@ -34,7 +34,7 @@ _DRIVER = textwrap.dedent("""
     from pathlib import Path
     sys.path.insert(0, {src!r})
 
-    from ein_bot.inference.solver import solve
+    from ein_bot.inference.tree.solver import solve
     from ein_bot.ir import parse
     from ein_bot.kb.store import KnowledgeBase
 
@@ -99,7 +99,7 @@ def test_solve_branch_order_stable_in_process():
     branch sequence — basic sanity check that the sort is
     deterministic within a process, independent of any hash-seed
     concern."""
-    from ein_bot.inference.solver import solve
+    from ein_bot.inference.tree.solver import solve
     from ein_bot.ir import parse
     from ein_bot.kb.store import KnowledgeBase
 
@@ -127,7 +127,7 @@ def test_candidate_sort_key_is_content_based():
     `fact.relation_name` (plus a constant score in M1). Hash of any
     string never reaches the returned tuple.
     """
-    from ein_bot.inference.solver import _candidate_sort_key
+    from ein_bot.inference.tree.solver import _candidate_sort_key
     from ein_bot.ir import parse
     from ein_bot.kb.entities import Fact, Layer
     from ein_bot.kb.store import KnowledgeBase

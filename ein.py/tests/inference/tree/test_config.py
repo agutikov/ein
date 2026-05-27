@@ -4,7 +4,7 @@ from __future__ import annotations
 import pytest
 
 from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.solver import solve
+from ein_bot.inference.tree.solver import solve
 from ein_bot.ir import parse
 from ein_bot.kb.from_ir import KBLoadError
 from ein_bot.kb.store import KnowledgeBase
@@ -184,7 +184,7 @@ _DEMO = """
 def test_root_alive_seeded_on_kb():
     """After solve() the root KB carries `kb.alive` (frozenset of
     candidate Facts)."""
-    from ein_bot.inference.solver import solve
+    from ein_bot.inference.tree.solver import solve
     kb = _kb(_DEMO)
     solve(kb)
     assert kb.alive is not None
@@ -195,7 +195,7 @@ def test_disable_alive_inherit_matches_inherit_path():
     """The fallback path (`enable_alive_inherit=False`) reaches the
     same verdict as the default. Verdict + binding count must
     agree."""
-    from ein_bot.inference.solver import Solution, solve
+    from ein_bot.inference.tree.solver import Solution, solve
 
     kb_inh = _kb(_DEMO)
     res_inh = solve(kb_inh, config=SolverConfig(enable_alive_inherit=True))
@@ -211,7 +211,7 @@ def test_disable_alive_inherit_matches_inherit_path():
 def test_disable_alive_inherit_leaves_kb_alive_none():
     """When the flag is off, `solve()` doesn't seed `kb.alive` —
     the fallback path uses `generate_hypotheses(kb)` per branch."""
-    from ein_bot.inference.solver import solve
+    from ein_bot.inference.tree.solver import solve
     kb = _kb(_DEMO)
     solve(kb, config=SolverConfig(enable_alive_inherit=False))
     assert kb.alive is None

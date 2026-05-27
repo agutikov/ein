@@ -26,7 +26,7 @@ from pathlib import Path
 
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.firing import Firing
-from ein_bot.inference.solver import (
+from ein_bot.inference.tree.solver import (
     Ambiguity,
     ConsumeStats,
     Solution,
@@ -36,7 +36,7 @@ from ein_bot.ir import parse
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"
 
 
@@ -200,7 +200,7 @@ def test_cache_invalidation_clears_alive_entries(monkeypatch):
     universally False).
     """
     from ein_bot.inference import saturator as sat_mod
-    from ein_bot.inference import solver as solver_mod
+    from ein_bot.inference.tree import solver as solver_mod
 
     kb = KnowledgeBase.from_ir(parse(
         (BRANCHING / "10_backprop_on.ein").read_text(),

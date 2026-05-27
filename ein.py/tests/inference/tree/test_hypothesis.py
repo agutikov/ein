@@ -8,7 +8,7 @@ hypothesis generator picks instance-like objects from `kb.names`
 """
 from __future__ import annotations
 
-from ein_bot.inference.solver import (
+from ein_bot.inference.tree.solver import (
     Contradiction,
     Mode,
     Solution,

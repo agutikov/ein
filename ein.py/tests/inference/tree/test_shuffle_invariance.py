@@ -31,11 +31,11 @@ import pytest
 
 from ein_bot.inference.canon import state_hash
 from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.solver import Ambiguity, Contradiction, Solution, solve
+from ein_bot.inference.tree.solver import Ambiguity, Contradiction, Solution, solve
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 
 
 # ── Helpers ───────────────────────────────────────────────────────

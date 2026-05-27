@@ -21,7 +21,7 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.back_prop import (
+from ein_bot.inference.tree.back_prop import (
     BubbleAbort,
     _eager_pass_ctx,
 )
@@ -31,12 +31,12 @@ from ein_bot.inference.nogoods import (
     emit_nogood,
     filter_by_nogoods,
 )
-from ein_bot.inference.solver import Solution, solve
+from ein_bot.inference.tree.solver import Solution, solve
 from ein_bot.ir import parse
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 DEMO_BACKPROP = REPO / "examples" / "branching" / "10_backprop_on.ein"
 
 

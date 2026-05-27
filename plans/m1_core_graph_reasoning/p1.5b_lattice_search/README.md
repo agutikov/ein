@@ -3,13 +3,16 @@
 **Estimate:** unknown — design phase; per-stage budget will be
 drafted as the bootstrap + backbone rounds settle the
 implementation surface.
-**Status:** **active design** — phase opened 2026-05-25 after
-the user observation that ordered-path tree search wastes
+**Status:** **active implementation** — phase opened 2026-05-25
+after the user observation that ordered-path tree search wastes
 ``d!`` work on hypothesis permutations that are semantically
 identical under M1's monotone saturation. Two engines ship
 under this phase with **distinct purposes** (below). Stage
 plan: monotonic stages first (S1.5b.0–S1.5b.10), then lattice
-from S1.5b.20 onward.
+from S1.5b.20 onward. [S1.5b.1](s1.5b.1_file_split_refactor.md)
+shipped 2026-05-27 (file-split refactor —
+`inference/{tree,monotonic,lattice}/`); S1.5b.2+ is the next
+implementation surface.
 **Depends on:** —
 P1.5b owns its own isolation model: set-batch `try_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments

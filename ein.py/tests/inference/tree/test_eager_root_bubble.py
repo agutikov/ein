@@ -26,14 +26,14 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.back_prop import (
+from ein_bot.inference.tree.back_prop import (
     BubbleAbort,
     _eager_pass_ctx,
     _kb_chain_ctx,
     back_propagate,
 )
 from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.solver import (
+from ein_bot.inference.tree.solver import (
     Ambiguity,
     Solution,
     _synthesise_promoted_dead_facts,
@@ -44,7 +44,7 @@ from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 DEMO_BACKPROP = REPO / "examples" / "branching" / "10_backprop_on.ein"
 DEMO_FIVE_HYPS = REPO / "examples" / "branching" / "03_five_hyps_one_alive.ein"
 
@@ -240,7 +240,7 @@ def test_synthesise_promoted_dead_facts_fires_on_promoted_dead_only():
     kb = _load(DEMO_BACKPROP)
     verdict = solve(kb)  # flag off — populate via legacy path
     tree = verdict.tree
-    from ein_bot.inference.solver import _TreeBuilder
+    from ein_bot.inference.tree.solver import _TreeBuilder
     builder = _TreeBuilder()
     builder.nodes = dict(tree.nodes)
     # Count expected promoted-dead writes: root children that are
