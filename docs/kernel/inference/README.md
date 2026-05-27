@@ -466,6 +466,106 @@ parent irreversibly and wrongly excludes a valid hypothesis. The
 predicate therefore errs conditional — an empty or unresolvable
 unsat-core reads as conditional, never unconditional.
 
+## Set-indexed search — monotonic engine (P1.5b S1.5b.0–.10)
+
+The tree engine's depth-first ordering over hypothesis branches
+prices in d! orderings of the same commitment set — for d=4 on
+zebra2 that's 24× redundant work on each set. The **monotonic
+engine** under
+[`ein.py/src/ein_bot/inference/monotonic/`](../../../ein.py/src/ein_bot/inference/monotonic/)
+collapses this by indexing by commitment **set** rather than
+path: layer N enumerates every size-N alive subset via
+Apriori-style prefix-join, enters each via the common
+[`try_commitment_set`](../../../ein.py/src/ein_bot/inference/commitment.py)
+primitive, and merges only the unconditional consequences back
+into a single root KB. First goal-satisfying commitment wins
+(SOLVE mode — Q1.5b.7); GAPS / CONTRADICTIONS belong to the
+peer **lattice engine** (S1.5b.20+).
+
+### Termination conditions, in order of precedence
+
+1. **Solution at a fork.** `is_solved(result.kb, mode)` on an
+   alive entering — the fork's saturated kb carries the
+   committed hypotheses + their derivations, which is the
+   context the goal needs when it references hypothesis facts
+   directly (e.g. `examples/branching/05_mini_zebra.ein`).
+   Returns `Solution(kb=result.kb)` so the caller sees the
+   hypothesis context the goal depended on. **Algorithm spec
+   §3d.vii.**
+2. **Solution at root.** After merging unconditional facts from
+   an alive commitment, a forced-positive cascade may promote
+   remaining singleton hypotheses to root and `is_solved` fires
+   there. This is how `examples/zebra2.ein` solves —
+   `(color-loc Green House-4)` cascades into 30 unconditional
+   facts that complete the puzzle at root via the chain of
+   pre-emptive lookahead negatives.
+3. **Contradiction at Phase 1.** Root saturates to `(false)` —
+   the puzzle is inconsistent before any hypothesis enters.
+4. **Contradiction at Phase 3.** Every layer-1 singleton died;
+   `_compute_alive` returns ∅; verdict is Contradiction.
+5. **Ambiguity.** Layer cap reached with alive ≠ ∅ and no
+   goal-satisfying commitment found.
+
+### CDCL nogoods (S1.5b.6)
+
+Every dead entering emits `frozenset(C)` into
+`root_kb._nogoods` via `inference.nogoods.emit_nogood`
+(min_size=1 so layer-1 singleton deaths land — Q1.5b.5.c).
+The next layer's `generate_layer` filters supersets via the
+existing `apriori.filter_candidate` subset check; the engine
+never re-enters a strict superset of a known-dead set.
+Singleton dead clauses additionally write `(not h)` into
+`root_kb._negated_facts` (plus the symmetric mirror if
+`(symmetric R)` is in the ontology) so subsequent
+`_compute_alive` calls drop h from `alive`.
+
+### Diagnostics — `MonotonicDumper` (S1.5b.7)
+
+Optional `dumper=MonotonicDumper(out_dir=…)` captures:
+
+```
+dump/<puzzle>-<ts>/
+   00_root_initial.ein           ← root before any enterings
+   00_timeline.jsonl             ← chronological event log
+   layers/
+       layer_NN_pre.ein          ← root.kb at layer N start
+       layer_NN_post.ein         ← root.kb at layer N end
+   summary.json                  ← final stats + verdict
+```
+
+Six lifecycle hooks (`root_initial`, `layer_start`, `entering`,
+`layer_end`, `early_terminate`, `summary`) fire from the
+backbone; `dumper=None` is a no-op for every hook site. The
+`_VerboseDumper` subclass in `demo/bench_monotonic.py` streams
+the same events to stderr as `--verbose` progress lines without
+needing an on-disk dump.
+
+### Budget — `max_time` / `max_enterings`
+
+`monotonic_solve(..., max_time=N, max_enterings=K)` checks the
+caps before every `try_commitment_set` call; on exhaust raises
+`BudgetExceededError(reason, stats)` with the partial counters.
+The dumper's timeline is flushed via `MonotonicDumper.close()`
+on the abort path (no `summary.json` then — the events up to
+the abort suffice for diagnostic).
+
+### Measured performance
+
+On the laptop reference (PyPy):
+
+- `examples/zebra2.ein`: Solution in ~1.9 s (CPython ~2.8 s),
+  1 alive entering, 0 nogoods — single-shot solve via fork-side
+  `is_solved`. ~18× faster than tree on CPython; ~4× on PyPy.
+- `examples/branching/*` (11 fixtures): all 11 reach the
+  tree-side bindings; combined parity-test wall ~3.5 s. See
+  [`parity_baselines.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/parity_baselines.md).
+
+### Cross-links
+
+- Stage plan: [P1.5b S1.5b.0–.10 in p1.5b_lattice_search/](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/).
+- Equivalence claim: [Q1.5b.7 § monotonic vs lattice](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/open_questions.md#q15b7--termination--completeness--mode-handling).
+- Algorithm spec: [`algorithm_layer_n.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md) §3d.
+
 ## Where the design lives today
 
 The complete plan, including task breakdown and acceptance criteria:

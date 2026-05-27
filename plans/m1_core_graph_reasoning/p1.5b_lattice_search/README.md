@@ -216,21 +216,37 @@ P1.5b does NOT own:
 
 ## Acceptance for the phase
 
-### Monotonic engine
+### Monotonic engine — ✓ shipped 2026-05-28
 
-1. `bench_monotonic.py examples/zebra2.ein` returns `Solution`
-   with the same bindings as the tree-side target in
-   [S1.5a.13](../p1.5a_zebra_solution/s1.5a.13_acceptance_zebra2_solves.md)
-   within the same time budget (target: < 60s; ideally < 5s
-   after S1.5a.19). **✓ closed 2026-05-27 by
-   [S1.5b.8](s1.5b.8_monotonic_acceptance.md)** — measured
-   2.76 s CPython / 1.91 s PyPy (well under both targets).
-2. Every demo under `examples/branching/` reaches the
-   tree-side verdict (SOLVE-mode bindings match). *(Pending —
-   [S1.5b.9](s1.5b.9_monotonic_branching_parity.md).)*
-3. The implementation is small — target ≤ 200 LOC including
-   imports + helpers, excluding the common kernel modules
-   it imports unchanged.
+1. ✓ `bench_monotonic.py examples/zebra2.ein` returns
+   `Solution` with the same bindings as the tree-side target
+   in [S1.5a.13](../p1.5a_zebra_solution/s1.5a.13_acceptance_zebra2_solves.md)
+   within the same time budget. **Closed 2026-05-27 by
+   [S1.5b.8](s1.5b.8_monotonic_acceptance.md)** —
+   measured **2.76 s CPython / 1.91 s PyPy** (well under the
+   < 60 s ceiling and the < 5 s ideal).
+2. ✓ Every demo under `examples/branching/` reaches the
+   tree-side verdict (SOLVE-mode bindings match). **Closed
+   2026-05-28 by [S1.5b.9](s1.5b.9_monotonic_branching_parity.md)** —
+   11/11 fixtures green in
+   [`parity_baselines.md`](parity_baselines.md);
+   `04_two_levels.ein` is a documented Q1.5b.7 divergence
+   (tree Ambiguity vs monotonic SOLVE first-solution).
+3. △ The implementation grew beyond the original ≤ 200 LOC
+   target as features landed (S1.5b.6 CDCL, S1.5b.7 dumper,
+   S1.5b.9 fork-side `is_solved` fix). Final LOC:
+   - `solver.py` — 570 LOC (~430 non-blank-non-comment).
+     Backbone + CDCL emit/filter/writeback + budget gates +
+     dumper hooks + fork-side `is_solved` + forced-positive
+     promotion cascade.
+   - `state_dump.py` — 212 LOC (`MonotonicDumper` hook framework).
+   - `__init__.py` — 55 LOC (re-exports + module docstring).
+   The original 200-LOC target was set for the **backbone
+   alone** (S1.5b.5); with the feature stages folded in, the
+   per-stage LOC delta is in the respective stage docs. Code
+   complexity remains low: most lines are docstrings + the
+   six hook-site sprinkles in the backbone loop; the CDCL
+   path is ~20 lines.
 
 ### Lattice engine
 

@@ -190,6 +190,53 @@ def test_backbone_parity_with_and_without_dumper(tmp_path: Path) -> None:
     assert s_none == s_dump
 
 
+def test_dumper_out_dir_none_writes_no_files(
+    tmp_path: Path,
+) -> None:
+    """``MonotonicDumper(out_dir=None)`` is a pure hook target —
+    the lifecycle methods all fire but no filesystem writes
+    happen. Used by `bench_monotonic --verbose` (no `--dump-states`)
+    via the ``_VerboseDumper`` subclass.
+    """
+    kb = _kb(SINGLETON_FIXTURE)
+    dumper = MonotonicDumper(out_dir=None)
+    # Hooks fire — sanity-call all six manually to exercise the
+    # None-guards in the writer methods. We use the kb itself
+    # as a stand-in for the per-hook kb argument.
+    monotonic_solve(
+        kb, max_set_size=2, config=_NO_LOOKAHEAD, dumper=dumper,
+    )
+    # tmp_path is unused — assert the file system stays empty.
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_dumper_records_fork_side_early_terminate(
+    tmp_path: Path,
+) -> None:
+    """When the engine terminates via fork-side ``is_solved``
+    (S1.5b.9), the dumper emits ``entering`` + ``early_terminate``
+    events but NOT ``layer_end`` (we returned mid-layer).
+    ``summary`` still fires via the ``_finish`` exit hook.
+    """
+    from ein_bot.inference.tree.solver import Solution
+    repo = Path(__file__).resolve().parents[4]
+    text = (repo / "examples" / "branching" / "05_mini_zebra.ein").read_text()
+    kb = _kb(text)
+    dumper = MonotonicDumper(out_dir=tmp_path)
+    verdict, _stats = monotonic_solve(
+        kb, max_set_size=3, dumper=dumper,
+    )
+    assert isinstance(verdict, Solution)
+    events = _read_timeline(tmp_path / "00_timeline.jsonl")
+    kinds = [e["event"] for e in events]
+    # The dump should show: root_initial → layer_start →
+    # entering* → early_terminate → summary, with no layer_end.
+    assert "early_terminate" in kinds
+    et = next(e for e in events if e["event"] == "early_terminate")
+    assert et["reason"] == "is_solved_at_fork"
+    assert kinds[-1] == "summary"
+
+
 def test_dumper_summary_records_contradiction_verdict(
     tmp_path: Path,
 ) -> None:

@@ -1,18 +1,70 @@
-"""Monotonic engine main loop — S1.5b.5 backbone + S1.5b.6 CDCL.
+"""Monotonic engine main loop.
 
-Single ``KnowledgeBase`` instance (root); commitment sets entered
-via :func:`ein_bot.inference.commitment.try_commitment_set`;
-unconditional facts merged into root; re-saturate + recompute
-alive after each merge (Option A cadence — Q1.5b.2.a); terminate
-on :func:`is_solved` (``root.kb``) or layer exhaustion.
+Set-indexed BFS over commitment sets. Single ``KnowledgeBase``
+instance (root); each layer's candidates come from the Apriori
+prefix-join (:mod:`ein_bot.inference.apriori`); each candidate
+is entered via the common
+:func:`ein_bot.inference.commitment.try_commitment_set` primitive.
+Unconditional consequences of an alive commitment merge into
+root; the loop terminates on the first goal-satisfying fork
+(algorithm_layer_n.md §3d.vii — S1.5b.9), on a root contradiction,
+or on layer exhaustion.
 
-SOLVE mode only (Q1.5b.7). CDCL nogoods integrated via
-:func:`ein_bot.inference.nogoods.emit_nogood` — every dead
-entering emits ``frozenset(C)`` (singletons included; see
-Q1.5b.5.c). Singleton deaths additionally write ``(not h)`` into
-``root_kb._negated_facts`` so the next ``_compute_alive`` drops
-``h`` from ``alive`` (mirrors ``tree/back_prop._write_negation``
-without its ContextVar coupling). No dumper (S1.5b.7).
+Termination conditions
+----------------------
+
+- :class:`Solution` at a fork — ``is_solved(result.kb, mode)``
+  on an alive entering. Returns ``Solution(kb=result.kb)`` so
+  the caller sees the hypothesis-and-derivations context the
+  goal depended on. **Required** for puzzles whose goal directly
+  references hypothesis facts (e.g. branching/05_mini_zebra).
+- :class:`Solution` at root — after merging unconditional facts
+  from an alive commitment, a forced-positive cascade may
+  promote remaining singleton hypotheses to root and is_solved
+  fires there (e.g. zebra2 — one alive commitment cascades into
+  30 unconditional facts that complete the puzzle at root).
+- :class:`Contradiction` — root saturates to ``(false)`` in
+  Phase 1, or every layer-1 singleton dies and ``_compute_alive``
+  returns empty in Phase 3.
+- :class:`Ambiguity` — layer cap reached with alive ≠ ∅ and no
+  satisfying commitment found.
+
+CDCL (S1.5b.6)
+--------------
+
+Every dead entering emits ``frozenset(C)`` into
+``root_kb._nogoods`` via :func:`ein_bot.inference.nogoods.emit_nogood`
+(``min_size=1`` so layer-1 singleton deaths land — Q1.5b.5.c).
+Singleton dead clauses additionally write ``(not h)`` to
+``root_kb._negated_facts`` via :func:`_emit_negated_fact_writeback`
+(plus the symmetric-mirror if ``(symmetric R)``); mirrors
+``tree/back_prop._write_negation`` without the ContextVar
+coupling.
+
+Budget (S1.5b.7 / bench CLI parity)
+-----------------------------------
+
+``max_time`` (wall-clock) + ``max_enterings`` (per-call cap) raise
+:class:`BudgetExceededError` with partial stats. The dumper's
+timeline is flushed via :meth:`MonotonicDumper.close` on abort;
+``summary.json`` is **not** emitted then (the timeline events
+suffice for diagnostic).
+
+Dumper hooks (S1.5b.7)
+----------------------
+
+Optional :class:`MonotonicDumper` receives lifecycle callbacks
+at six sites: ``root_initial``, ``layer_start``, ``entering``,
+``layer_end``, ``early_terminate``, ``summary``. The single
+``_finish`` exit helper guarantees ``summary`` lands on every
+non-abort path.
+
+SOLVE mode only (Q1.5b.7)
+-------------------------
+
+GAPS and CONTRADICTIONS belong to the lattice engine; the
+monotonic loop raises :class:`NotImplementedError` if either
+is requested.
 """
 from __future__ import annotations
 
