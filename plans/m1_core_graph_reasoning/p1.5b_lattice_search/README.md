@@ -20,9 +20,14 @@ helpers; 17 tests);
 `try_commitment_set` + `CommitmentSetResult`; 7 tests covering
 the alive / dead-pre / dead-post trichotomy +
 unconditional-fact extraction + isolation +
-empty-commitment sentinel).
-[S1.5b.4](s1.5b.4_monotonic_skeleton.md) (monotonic engine
-skeleton) is now the next implementation surface.
+empty-commitment sentinel);
+[S1.5b.4](s1.5b.4_monotonic_skeleton.md) shipped 2026-05-27
+(monotonic engine skeleton — `inference/monotonic/` stub
+modules + `demo/bench_monotonic.py` CLI; backbone fills the
+stubs in S1.5b.5). [S1.5b.5](s1.5b.5_monotonic_backbone.md)
+(monotonic backbone — the main loop wiring `apriori` +
+`try_commitment_set` + nogoods) is now the next implementation
+surface.
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments
