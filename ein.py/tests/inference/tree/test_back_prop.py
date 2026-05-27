@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.tree.back_prop import back_propagate
 from ein_bot.inference.config import SolverConfig
+from ein_bot.inference.tree.back_prop import back_propagate
 from ein_bot.inference.tree.solver import Ambiguity, Solution, solve
 from ein_bot.ir import parse
 from ein_bot.kb.entities import Fact, Layer

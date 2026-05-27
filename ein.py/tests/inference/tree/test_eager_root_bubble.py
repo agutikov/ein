@@ -26,13 +26,13 @@ from pathlib import Path
 
 import pytest
 
+from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.tree.back_prop import (
     BubbleAbort,
     _eager_pass_ctx,
     _kb_chain_ctx,
     back_propagate,
 )
-from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.tree.solver import (
     Ambiguity,
     Solution,

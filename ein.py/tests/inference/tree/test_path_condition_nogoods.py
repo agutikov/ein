@@ -21,15 +21,15 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.tree.back_prop import (
-    BubbleAbort,
-    _eager_pass_ctx,
-)
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.nogoods import (
     build_clause,
     emit_nogood,
     filter_by_nogoods,
+)
+from ein_bot.inference.tree.back_prop import (
+    BubbleAbort,
+    _eager_pass_ctx,
 )
 from ein_bot.inference.tree.solver import Solution, solve
 from ein_bot.ir import parse

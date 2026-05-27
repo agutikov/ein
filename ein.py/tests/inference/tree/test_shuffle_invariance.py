@@ -31,7 +31,7 @@ import pytest
 
 from ein_bot.inference.canon import state_hash
 from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.tree.solver import Ambiguity, Contradiction, Solution, solve
+from ein_bot.inference.tree.solver import solve
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
@@ -103,9 +103,13 @@ def _diff(a: dict, b: dict) -> str:
                 only_a = a[k] - b[k]
                 only_b = b[k] - a[k]
                 if only_a:
-                    lines.append(f"    only in default: {sorted(only_a)[:5]}{'…' if len(only_a) > 5 else ''}")
+                    head = sorted(only_a)[:5]
+                    suffix = "…" if len(only_a) > 5 else ""
+                    lines.append(f"    only in default: {head}{suffix}")
                 if only_b:
-                    lines.append(f"    only in shuffle: {sorted(only_b)[:5]}{'…' if len(only_b) > 5 else ''}")
+                    head = sorted(only_b)[:5]
+                    suffix = "…" if len(only_b) > 5 else ""
+                    lines.append(f"    only in shuffle: {head}{suffix}")
             else:
                 lines.append(f"    default: {a[k]!r}")
                 lines.append(f"    shuffle: {b[k]!r}")

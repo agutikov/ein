@@ -428,9 +428,9 @@ def test_zebra2_solves_at_max_depth_1():
         pytest.skip("zebra2 d=1 solve is ~50s on CPython; "
                     "set EIN_RUN_SLOW=1 or run via bench_solve_pypy.sh")
 
-    REPO = Path(__file__).resolve().parents[4]
+    repo = Path(__file__).resolve().parents[4]
     kb = KnowledgeBase.from_ir(parse(
-        (REPO / "examples" / "zebra2.ein").read_text()))
+        (repo / "examples" / "zebra2.ein").read_text()))
     verdict = solve(kb, max_depth=1)
     assert isinstance(verdict, Solution), (
         f"expected Solution, got {type(verdict).__name__}")
