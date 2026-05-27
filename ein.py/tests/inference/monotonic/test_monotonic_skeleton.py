@@ -175,16 +175,10 @@ def test_branching_03_solves_via_forced_positive():
 def test_zebra2_solves_via_monotonic_backbone():
     """zebra2 — the M1 acceptance puzzle — solves under the
     monotonic backbone with max_set_size=2. Tree-side answer:
-    h_water=House-1, h_zebra=House-5. Skipped on CPython by
-    default (still a few hundred ms), gated on EIN_RUN_SLOW=1
-    or run via the PyPy bench script.
+    h_water=House-1, h_zebra=House-5. Runs in ~5 s on CPython
+    (1.6 s on PyPy) — fast enough for the regular suite, no
+    EIN_RUN_SLOW gate needed.
     """
-    import os
-    if not os.environ.get("EIN_RUN_SLOW"):
-        pytest.skip(
-            "zebra2 is slow on CPython; set EIN_RUN_SLOW=1 or "
-            "run via bench_monotonic on PyPy",
-        )
     text = (REPO / "examples" / "zebra2.ein").read_text()
     kb = KnowledgeBase.from_ir(parse(text))
     verdict, _ = monotonic_solve(kb, max_set_size=2)
