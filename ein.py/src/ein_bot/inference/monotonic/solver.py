@@ -1,4 +1,4 @@
-"""Monotonic engine main loop — S1.5b.5 backbone.
+"""Monotonic engine main loop — S1.5b.5 backbone + S1.5b.6 CDCL.
 
 Single ``KnowledgeBase`` instance (root); commitment sets entered
 via :func:`ein_bot.inference.commitment.try_commitment_set`;
@@ -6,8 +6,13 @@ unconditional facts merged into root; re-saturate + recompute
 alive after each merge (Option A cadence — Q1.5b.2.a); terminate
 on :func:`is_solved` (``root.kb``) or layer exhaustion.
 
-SOLVE mode only (Q1.5b.7). No CDCL nogoods yet (S1.5b.6 wires
-that in). No dumper (S1.5b.7).
+SOLVE mode only (Q1.5b.7). CDCL nogoods integrated via
+:func:`ein_bot.inference.nogoods.emit_nogood` — every dead
+entering emits ``frozenset(C)`` (singletons included; see
+Q1.5b.5.c). Singleton deaths additionally write ``(not h)`` into
+``root_kb._negated_facts`` so the next ``_compute_alive`` drops
+``h`` from ``alive`` (mirrors ``tree/back_prop._write_negation``
+without its ContextVar coupling). No dumper (S1.5b.7).
 """
 from __future__ import annotations
 
@@ -23,6 +28,7 @@ from ein_bot.inference.commitment import try_commitment_set
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.contradiction import ContradictionDetector
 from ein_bot.inference.hypgen import generate_hypotheses
+from ein_bot.inference.nogoods import emit_nogood
 from ein_bot.inference.saturator import Saturator
 from ein_bot.inference.tree.solver import (
     Ambiguity,
@@ -49,6 +55,9 @@ class MonotonicStats:
     forced_positives:    int = 0
     saturate_count:      int = 0
     layers_explored:     int = 0
+    # S1.5b.6 — CDCL counters.
+    nogoods_emitted:     int = 0
+    nogoods_subsumed:    int = 0
 
 
 def monotonic_solve(
@@ -111,7 +120,7 @@ def monotonic_solve(
             candidates = generate_layer(
                 a_prev,
                 alive=alive,
-                nogoods=frozenset(),  # S1.5b.6 will pass root_kb._nogoods
+                nogoods=root_kb._nogoods,
             )
 
         candidates.sort()  # lex; scoring switch lands in monotonic followups
@@ -121,11 +130,25 @@ def monotonic_solve(
             stats.enterings_total += 1
             result = try_commitment_set(root_kb, c)
 
-            if result.kind == "dead-pre":
-                stats.enterings_dead_pre += 1
-                continue
-            if result.kind == "dead-post":
-                stats.enterings_dead_post += 1
+            if result.kind in ("dead-pre", "dead-post"):
+                if result.kind == "dead-pre":
+                    stats.enterings_dead_pre += 1
+                else:
+                    stats.enterings_dead_post += 1
+                # CDCL — subsumption-aware nogood emit. min_size=1 so
+                # layer-1 singleton deaths land (Q1.5b.5.c); without
+                # that the layer-2 prefix-join would still pair the
+                # dead singleton with every survivor.
+                if emit_nogood(root_kb, frozenset(c), min_size=1):
+                    stats.nogoods_emitted += 1
+                else:
+                    stats.nogoods_subsumed += 1
+                # Singleton dead: writeback (not h) so the next
+                # _compute_alive drops h, mirroring back_prop's
+                # _write_negation in the tree engine (no ContextVar
+                # coupling here — the monotonic loop has no chain).
+                if len(c) == 1:
+                    _emit_negated_fact_writeback(root_kb, c[0])
                 continue
 
             # Alive.
@@ -173,6 +196,12 @@ def monotonic_solve(
         a_prev = a_layer
 
     # ── Phase 3 — Verdict synthesis ──────────────────────────
+    # S1.5b.6: singleton dead writebacks may have shrunk
+    # `_negated_facts` since the last `_compute_alive` call (which
+    # only fires on alive enterings with merged facts). Refresh
+    # ``alive`` so the empty-alive contradiction check below is
+    # observed when every layer-1 singleton died.
+    alive = _compute_alive(root_kb)
     if is_solved(root_kb, mode):
         return _solution(root_kb), stats
     if not alive:
@@ -181,6 +210,67 @@ def monotonic_solve(
 
 
 # ── Helpers ──────────────────────────────────────────────────
+
+
+def _emit_negated_fact_writeback(
+    root_kb: KnowledgeBase, h_id: FactId,
+) -> None:
+    """For a singleton dead clause ``{h_id}``, write ``(not h)``
+    into ``root_kb`` so ``generate_hypotheses`` excludes ``h``
+    on the next saturate and the next ``_compute_alive`` shrinks
+    ``alive`` accordingly. For symmetric relations, the mirror
+    ``(not (R b a))`` is written too — matches the tree-side
+    ``back_propagate(..., promote_symmetric=True)`` path, since
+    :func:`_compute_alive`'s symmetric canonicalisation would
+    otherwise resurrect the dead entry through the mirror
+    orientation.
+
+    Minimal equivalent of
+    :func:`ein_bot.inference.tree.back_prop._write_negation` —
+    same shape, no :data:`_kb_chain_ctx` / :data:`_eager_pass_ctx`
+    coupling (the monotonic loop has no chain and never operates
+    under eager mode). Idempotent: a pre-existing ``(not h)`` at
+    root is left untouched.
+    """
+    rn, args = h_id
+    _write_negation_local(root_kb, rn, args)
+    if (
+        len(args) == 2
+        and args[0] != args[1]
+        and rn in _symmetric_relations(root_kb)
+    ):
+        _write_negation_local(root_kb, rn, (args[1], args[0]))
+
+
+def _write_negation_local(
+    root_kb: KnowledgeBase, rn: str, args: tuple,
+) -> None:
+    inner = Fact(
+        relation_name=rn, args=args,
+        layer=Layer.REASONING, provenance=None,
+    )
+    if root_kb._fact_by_id("not", (inner,)) is not None:
+        return
+    not_fact = Fact(
+        relation_name="not",
+        args=(inner,),
+        layer=Layer.REASONING,
+        provenance=Provenance.from_rule(
+            rule="<monotonic-unconditional>",
+            premises_raw=(),
+        ),
+    )
+    stored = root_kb.add_fact(not_fact)
+    root_kb._index_fact(stored)
+
+
+def _symmetric_relations(kb: KnowledgeBase) -> frozenset[str]:
+    """Names declared ``(symmetric R)`` in the ontology."""
+    return frozenset(
+        f.args[0]
+        for f in kb._facts_by_relation.get("symmetric", ())
+        if len(f.args) >= 1
+    )
 
 
 def _promote_forced_positives(

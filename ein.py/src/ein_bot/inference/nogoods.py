@@ -19,8 +19,12 @@ added.
 
 Single-element clauses (size < 2) are owned by
 :func:`back_prop.back_propagate` (which writes ``(not h)`` into
-``_negated_facts``); :func:`emit_nogood` rejects them as a no-op
-to avoid double-bookkeeping.
+``_negated_facts``); :func:`emit_nogood`'s ``min_size`` parameter
+defaults to ``2`` so the tree side keeps that guard. Set-indexed
+engines (monotonic / lattice — Q1.5b.5.c) pass ``min_size=1``
+to let singleton clauses land, since the in-layer filter relies
+on ``root._nogoods`` for cross-layer pruning before the next
+``_compute_alive`` recomputes ``alive``.
 
 Eager-mode composition (S1.5a.17): on a successful add (clause
 was novel and non-subsumed), :func:`emit_nogood` bumps
@@ -50,12 +54,16 @@ FactId = tuple[str, tuple]
 Clause = frozenset[FactId]
 
 
-def emit_nogood(root_kb: KnowledgeBase, clause: Clause) -> bool:
+def emit_nogood(
+    root_kb: KnowledgeBase,
+    clause: Clause,
+    *,
+    min_size: int = 2,
+) -> bool:
     """Insert ``clause`` into ``root_kb._nogoods`` with subsumption.
 
     Returns True iff a new clause was actually added; False if the
-    clause is subsumed by an existing one (or is too small to be
-    useful — size < 2).
+    clause is subsumed by an existing one (or is below ``min_size``).
 
     Subsumption rules:
     - If any existing ``C ⊆ clause``, return False (existing is
@@ -63,12 +71,19 @@ def emit_nogood(root_kb: KnowledgeBase, clause: Clause) -> bool:
     - Else remove every existing ``C' ⊇ clause`` (new clause
       subsumes them), insert ``clause``, return True.
 
+    ``min_size`` (default 2) lets the tree caller keep the
+    "size-1 clauses are back-prop's domain" guard — the
+    ``(not h)`` writeback already filters those candidates via
+    ``_negated_facts`` before any nogood check would fire.
+    Set-indexed engines (monotonic / lattice — Q1.5b.5.c) pass
+    ``min_size=1`` so layer-1 singleton deaths land too,
+    because the `apriori.filter_candidate` subset check runs
+    against ``root._nogoods`` before ``alive`` is recomputed.
+
     Under eager mode (``_eager_pass_ctx`` set) and a True return,
     bumps ``root_kb._pass_bubbled`` and raises :class:`BubbleAbort`.
     """
-    if len(clause) < 2:
-        # Single-element clauses are the (not h) back-prop's
-        # responsibility; ignore here to avoid double-recording.
+    if len(clause) < min_size:
         return False
 
     nogoods = root_kb._nogoods

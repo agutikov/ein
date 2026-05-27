@@ -117,6 +117,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  forced_positives   {stats.forced_positives}")
     print(f"  saturate_count     {stats.saturate_count}")
     print(f"  layers_explored    {stats.layers_explored}")
+    print(f"  nogoods_emitted    {stats.nogoods_emitted}")
+    print(f"  nogoods_subsumed   {stats.nogoods_subsumed}")
     print(f"  wall               {elapsed * 1000:.1f} ms")
     return 0
 
