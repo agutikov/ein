@@ -26,17 +26,6 @@ from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
-from .back_prop import (
-    BubbleAbort,
-    _bump_pass_bubbled,
-    _consume_caches_ctx,
-    _eager_pass_ctx,
-    _kb_chain_ctx,
-    _write_negation,
-    back_propagate,
-    is_unconditional_death,
-    reaches_hypothesis,
-)
 from ..canon import state_hash
 from ..closed import emit_closed
 from ..compile import JoinPlan, compile_pattern
@@ -51,10 +40,21 @@ from ..hypgen import (
 from ..match import run as match_run
 from ..nogoods import build_clause, emit_nogood, matches_any_nogood
 from ..saturator import Saturator
+from .back_prop import (
+    BubbleAbort,
+    _bump_pass_bubbled,
+    _consume_caches_ctx,
+    _eager_pass_ctx,
+    _kb_chain_ctx,
+    _write_negation,
+    back_propagate,
+    is_unconditional_death,
+    reaches_hypothesis,
+)
 from .search_tree import BranchId, SearchNode, SearchTree
 
 if TYPE_CHECKING:
-    from ..state_dump import StateDumper
+    from .state_dump import StateDumper
 
 # S1.5a.11 — optional per-solve filesystem snapshotting. When a
 # StateDumper is bound here, the solver calls back at lifecycle

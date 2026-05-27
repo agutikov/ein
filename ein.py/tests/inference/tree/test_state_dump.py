@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 
 from ein_bot.inference.tree.solver import solve
-from ein_bot.inference.state_dump import StateDumper
+from ein_bot.inference.tree.state_dump import StateDumper
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 

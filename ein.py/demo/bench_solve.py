@@ -525,7 +525,7 @@ def main() -> int:
     # ── State dumper (--dump-states) ──────────────────────────────
     dumper = None
     if args.dump_states is not None:
-        from ein_bot.inference.state_dump import StateDumper
+        from ein_bot.inference.tree.state_dump import StateDumper
         if args.dump_states:
             dump_dir = Path(args.dump_states)
         else:
