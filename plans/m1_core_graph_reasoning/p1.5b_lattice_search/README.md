@@ -26,12 +26,12 @@ empty-commitment sentinel);
 stub modules + `demo/bench_monotonic.py` CLI; backbone fills
 the stubs in S1.5b.5);
 [S1.5b.5](s1.5b.5_monotonic_backbone.md) shipped 2026-05-27
-**partial** — monotonic backbone live (Apriori + `try_commitment_set`
-+ root-merge of unconditional facts + Phase-1
-ContradictionDetector); 8 tests pass; branching/01 → Solution
-(root-only), branching/04 → Ambiguity (genuine multi-solution);
-**branching/03 → Ambiguity not Solution** (forced-positive
-promotion gap — see stage Ship notes). [S1.5b.5](s1.5b.5_monotonic_backbone.md)
+**partial** (`8692e7c`) — monotonic backbone live (Apriori +
+`try_commitment_set` + root-merge of unconditional facts +
+Phase-1 ContradictionDetector); 8 tests pass; branching/01 →
+Solution (root-only), branching/04 → Ambiguity (genuine
+multi-solution); **branching/03 → Ambiguity not Solution**
+(forced-positive promotion gap — see stage Ship notes). [S1.5b.5](s1.5b.5_monotonic_backbone.md)
 (monotonic backbone — the main loop wiring `apriori` +
 `try_commitment_set` + nogoods) is now the next implementation
 surface.
