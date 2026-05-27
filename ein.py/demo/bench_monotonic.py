@@ -2,16 +2,16 @@
 
 Mirrors :mod:`bench_solve`'s CLI shape but reaches into
 ``inference/monotonic/`` instead of ``inference/tree/``. Output
-is one-shot: print the verdict + bindings + a brief per-layer
-summary; with ``--dump-states DIR`` produce a minimal monotonic
-dump (root snapshot per layer + ``00_timeline.jsonl``).
-
-Stub — backbone wired in S1.5b.5.
+is one-shot: verdict + goal bindings (if Solution) + per-run
+stats + elapsed wall. With ``--dump-states DIR``, produce a
+minimal monotonic dump (root snapshot per layer +
+``00_timeline.jsonl``) — currently a no-op (S1.5b.7).
 """
 from __future__ import annotations
 
 import argparse
 import sys
+import time
 from pathlib import Path
 
 # Make `from ein_bot.…` resolve when running from a checkout.
@@ -45,6 +45,29 @@ def _build_argparser() -> argparse.ArgumentParser:
     return ap
 
 
+def _query_goal_bindings(kb: KnowledgeBase) -> list[dict[str, str]]:
+    """Run the query's ``:goal`` pattern against ``kb``; return
+    binding rows. Mirrors bench_solve.query_goal_bindings."""
+    from ein_bot.inference.compile import JoinPlan, compile_pattern
+    from ein_bot.inference.match import run as match_run
+
+    if kb is None or kb.query is None:
+        return []
+    for kp in kb.query.kw_pairs:
+        if kp.key.name == "goal":
+            steps = compile_pattern(kp.value, {})
+            plan = JoinPlan(
+                rule_name="<query>",
+                activator_args=(),
+                bindings_seed={},
+                steps=tuple(steps),
+                assert_template=None,
+                why="",
+            )
+            return [dict(b) for b, _premises in match_run(plan, kb)]
+    return []
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _build_argparser().parse_args(argv)
     text = args.puzzle.read_text()
@@ -56,17 +79,44 @@ def main(argv: list[str] | None = None) -> int:
         MonotonicDumper(out_dir=args.dump_states)
         if args.dump_states is not None else None
     )
-    # NOTE — S1.5b.5 wires `dumper` into `monotonic_solve`'s
-    # signature; current stub doesn't accept it.
+    # NOTE — S1.5b.7 wires `dumper` into `monotonic_solve`'s
+    # signature; current backbone doesn't accept it.
     _ = dumper
 
-    verdict = monotonic_solve(
+    t0 = time.perf_counter()
+    verdict, stats = monotonic_solve(
         kb,
         max_set_size=args.max_set_size,
         config=config,
     )
+    elapsed = time.perf_counter() - t0
 
-    print(f"verdict: {type(verdict).__name__}")
+    print(f"file              {args.puzzle}")
+    print(f"verdict           {type(verdict).__name__}")
+
+    sol_kb = getattr(verdict, "kb", None)
+    if sol_kb is None and getattr(verdict, "branches", None):
+        sol_kb = verdict.branches[0].kb
+    if sol_kb is not None:
+        rows = _query_goal_bindings(sol_kb)
+        if rows:
+            print("goal bindings (from query :goal):")
+            for row in rows:
+                pairs = ", ".join(
+                    f"{k}={v}" for k, v in sorted(row.items())
+                )
+                print(f"  {pairs}")
+
+    print()
+    print("stats")
+    print(f"  enterings_total    {stats.enterings_total}")
+    print(f"  enterings_alive    {stats.enterings_alive}")
+    print(f"  enterings_dead_pre  {stats.enterings_dead_pre}")
+    print(f"  enterings_dead_post {stats.enterings_dead_post}")
+    print(f"  facts_merged       {stats.facts_merged}")
+    print(f"  saturate_count     {stats.saturate_count}")
+    print(f"  layers_explored    {stats.layers_explored}")
+    print(f"  wall               {elapsed * 1000:.1f} ms")
     return 0
 
 
