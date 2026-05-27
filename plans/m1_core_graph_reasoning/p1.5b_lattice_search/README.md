@@ -33,7 +33,7 @@ Solution (root-only), branching/04 → Ambiguity (genuine
 multi-solution); branching/03 was Ambiguity due to the
 forced-positive promotion gap.
 [S1.5b.5b](s1.5b.5b_monotonic_forced_positive.md) shipped
-2026-05-27 — **closes the gap**: forced-positive promotion
+2026-05-27 (`8c483d6`) — **closes the gap**: forced-positive promotion
 + symmetric canonicalisation in `_compute_alive`. 7 of 11
 branching demos flipped Ambiguity → Solution; **zebra2
 solves under the monotonic backbone in ~5s on CPython** (vs
