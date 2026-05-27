@@ -79,15 +79,13 @@ def main(argv: list[str] | None = None) -> int:
         MonotonicDumper(out_dir=args.dump_states)
         if args.dump_states is not None else None
     )
-    # NOTE — S1.5b.7 wires `dumper` into `monotonic_solve`'s
-    # signature; current backbone doesn't accept it.
-    _ = dumper
 
     t0 = time.perf_counter()
     verdict, stats = monotonic_solve(
         kb,
         max_set_size=args.max_set_size,
         config=config,
+        dumper=dumper,
     )
     elapsed = time.perf_counter() - t0
 
@@ -120,6 +118,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  nogoods_emitted    {stats.nogoods_emitted}")
     print(f"  nogoods_subsumed   {stats.nogoods_subsumed}")
     print(f"  wall               {elapsed * 1000:.1f} ms")
+    if dumper is not None:
+        print(f"dump              {args.dump_states}")
     return 0
 
 

@@ -28,6 +28,7 @@ from ein_bot.inference.commitment import try_commitment_set
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.contradiction import ContradictionDetector
 from ein_bot.inference.hypgen import generate_hypotheses
+from ein_bot.inference.monotonic.state_dump import MonotonicDumper
 from ein_bot.inference.nogoods import emit_nogood
 from ein_bot.inference.saturator import Saturator
 from ein_bot.inference.tree.solver import (
@@ -66,6 +67,7 @@ def monotonic_solve(
     max_set_size: int = 5,
     config: SolverConfig | None = None,
     mode: Mode = Mode.SOLVE,
+    dumper: MonotonicDumper | None = None,
 ) -> tuple[Verdict, MonotonicStats]:
     """Run the monotonic set-search engine on ``root_kb``.
 
@@ -76,6 +78,11 @@ def monotonic_solve(
     just ``Verdict``) — the tuple form gives the bench script
     + tests direct access to the per-run counters without a
     side-channel on ``root_kb``. See stage Ship notes.
+
+    Pass ``dumper`` to capture a per-layer filesystem audit
+    (S1.5b.7) — root + per-layer ``.ein`` snapshots, a
+    ``00_timeline.jsonl`` event log, and a ``summary.json``.
+    ``dumper=None`` (default) makes every hook a no-op.
     """
     if mode is not Mode.SOLVE:
         raise NotImplementedError(
@@ -92,27 +99,31 @@ def monotonic_solve(
     # ── Phase 1 — Initial saturation + alive ──────────────────
     _ = list(Saturator(root_kb).saturate())
     stats.saturate_count += 1
+    if dumper is not None:
+        dumper.root_initial(root_kb)
     # Root contradiction (e.g., a rule derived `(false)` directly):
     # spec didn't list this check but without it, a contradictory
     # root falls through to Phase 2 where every entering dead-pre's
     # and the final verdict mis-reports as Ambiguity.
     if ContradictionDetector(root_kb).detect():
-        return _contradiction(root_kb), stats
+        return _finish(dumper, _contradiction(root_kb), stats)
     if is_solved(root_kb, mode):
-        return _solution(root_kb), stats
+        return _finish(dumper, _solution(root_kb), stats)
 
     alive = _compute_alive(root_kb)
     alive, term = _promote_forced_positives(root_kb, alive, stats, mode)
     if term is not None:
-        return term, stats
+        return _finish(dumper, term, stats)
     if not alive:
-        return _contradiction(root_kb), stats
+        return _finish(dumper, _contradiction(root_kb), stats)
 
     a_prev: list[CanonicalSetId] = layer_1(alive)
 
     # ── Phase 2 — Layer-by-layer iteration ───────────────────
     for layer in range(1, max_set_size + 1):
         stats.layers_explored = layer
+        if dumper is not None:
+            dumper.layer_start(layer, root_kb, len(alive))
 
         if layer == 1:
             candidates = list(a_prev)
@@ -139,7 +150,8 @@ def monotonic_solve(
                 # layer-1 singleton deaths land (Q1.5b.5.c); without
                 # that the layer-2 prefix-join would still pair the
                 # dead singleton with every survivor.
-                if emit_nogood(root_kb, frozenset(c), min_size=1):
+                landed = emit_nogood(root_kb, frozenset(c), min_size=1)
+                if landed:
                     stats.nogoods_emitted += 1
                 else:
                     stats.nogoods_subsumed += 1
@@ -149,11 +161,18 @@ def monotonic_solve(
                 # coupling here — the monotonic loop has no chain).
                 if len(c) == 1:
                     _emit_negated_fact_writeback(root_kb, c[0])
+                if dumper is not None:
+                    dumper.entering(
+                        layer, c, result,
+                        facts_merged=0,
+                        nogood_emitted=landed,
+                        nogood_subsumed=not landed,
+                    )
                 continue
 
             # Alive.
             stats.enterings_alive += 1
-            root_changed = False
+            this_merged = 0
             for f in result.unconditional_facts:
                 if root_kb._fact_by_id(
                     f.relation_name, f.args,
@@ -161,16 +180,26 @@ def monotonic_solve(
                     stored = root_kb.add_fact(f)
                     root_kb._index_fact(stored)
                     stats.facts_merged += 1
-                    root_changed = True
+                    this_merged += 1
 
-            if root_changed:
+            if dumper is not None:
+                dumper.entering(
+                    layer, c, result,
+                    facts_merged=this_merged,
+                    nogood_emitted=False,
+                    nogood_subsumed=False,
+                )
+
+            if this_merged:
                 # Option A cadence (Q1.5b.2.a) — re-saturate +
                 # recompute alive after every alive entering.
                 _ = list(Saturator(root_kb).saturate())
                 stats.saturate_count += 1
                 # Merged facts could derive a contradiction at root.
                 if ContradictionDetector(root_kb).detect():
-                    return _contradiction(root_kb), stats
+                    return _finish(
+                        dumper, _contradiction(root_kb), stats,
+                    )
                 alive = _compute_alive(root_kb)
                 # Forced-positive promotion (S1.5b.5b): if alive
                 # shrinks to a singleton, that hypothesis is forced.
@@ -178,10 +207,14 @@ def monotonic_solve(
                     root_kb, alive, stats, mode,
                 )
                 if term is not None:
-                    return term, stats
+                    return _finish(dumper, term, stats)
 
                 if is_solved(root_kb, mode):
-                    return _solution(root_kb), stats
+                    if dumper is not None:
+                        dumper.early_terminate(layer, "is_solved")
+                    return _finish(
+                        dumper, _solution(root_kb), stats,
+                    )
 
                 # Remaining in-flight candidates may contain
                 # elements no longer alive; `try_commitment_set` handles
@@ -191,6 +224,8 @@ def monotonic_solve(
 
             a_layer.append(c)
 
+        if dumper is not None:
+            dumper.layer_end(layer, root_kb, len(alive), len(a_layer))
         if not a_layer:
             break
         a_prev = a_layer
@@ -203,10 +238,21 @@ def monotonic_solve(
     # observed when every layer-1 singleton died.
     alive = _compute_alive(root_kb)
     if is_solved(root_kb, mode):
-        return _solution(root_kb), stats
+        return _finish(dumper, _solution(root_kb), stats)
     if not alive:
-        return _contradiction(root_kb), stats
-    return _ambiguity(root_kb), stats
+        return _finish(dumper, _contradiction(root_kb), stats)
+    return _finish(dumper, _ambiguity(root_kb), stats)
+
+
+def _finish(
+    dumper: MonotonicDumper | None,
+    verdict: Verdict,
+    stats: MonotonicStats,
+) -> tuple[Verdict, MonotonicStats]:
+    """Single exit hook — emits ``dumper.summary`` if set."""
+    if dumper is not None:
+        dumper.summary(verdict, stats)
+    return verdict, stats
 
 
 # ── Helpers ──────────────────────────────────────────────────
