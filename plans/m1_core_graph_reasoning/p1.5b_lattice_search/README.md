@@ -13,8 +13,8 @@ from S1.5b.20 onward. [S1.5b.1](s1.5b.1_file_split_refactor.md)
 shipped 2026-05-27 (`22a4ebd`, file-split refactor —
 `inference/{tree,monotonic,lattice}/`);
 [S1.5b.2](s1.5b.2_common_apriori_gen.md) shipped 2026-05-27
-(common `apriori.py` — prefix-join + filter helpers; 17
-tests). [S1.5b.3](s1.5b.3_common_set_batch_primitive.md)
+(`80d47df`, common `apriori.py` — prefix-join + filter
+helpers; 17 tests). [S1.5b.3](s1.5b.3_common_set_batch_primitive.md)
 (common `try_set` primitive) is the next implementation
 surface; can parallelise with the monotonic skeleton
 (S1.5b.4).
