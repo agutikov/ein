@@ -22,9 +22,9 @@ the alive / dead-pre / dead-post trichotomy +
 unconditional-fact extraction + isolation +
 empty-commitment sentinel);
 [S1.5b.4](s1.5b.4_monotonic_skeleton.md) shipped 2026-05-27
-(monotonic engine skeleton — `inference/monotonic/` stub
-modules + `demo/bench_monotonic.py` CLI; backbone fills the
-stubs in S1.5b.5). [S1.5b.5](s1.5b.5_monotonic_backbone.md)
+(`cb7da8a`, monotonic engine skeleton — `inference/monotonic/`
+stub modules + `demo/bench_monotonic.py` CLI; backbone fills
+the stubs in S1.5b.5). [S1.5b.5](s1.5b.5_monotonic_backbone.md)
 (monotonic backbone — the main loop wiring `apriori` +
 `try_commitment_set` + nogoods) is now the next implementation
 surface.
