@@ -226,8 +226,8 @@ under the rule set.
 
 Under Q1.5b.8's bootstrap-incremental engine bridge, every
 saturation runs `try_branch(parent_kb, h)` once — taking `k`
-saturations per size-`k` set. The future set-batch primitive
-`try_set(parent_kb, commitment_set)` would collapse those
+saturations per size-`k` set. The future commitment-set primitive
+`try_commitment_set(parent_kb, commitment)` would collapse those
 `k` saturations into 1 by adding all hypotheses at once;
 parked in F9 perf round (see
 [`open_questions.md` § Q1.5b.8](open_questions.md#q15b8--engine-bridge)).

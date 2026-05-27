@@ -15,11 +15,11 @@ shipped 2026-05-27 (`22a4ebd`, file-split refactor —
 [S1.5b.2](s1.5b.2_common_apriori_gen.md) shipped 2026-05-27
 (`80d47df`, common `apriori.py` — prefix-join + filter
 helpers; 17 tests). [S1.5b.3](s1.5b.3_common_set_batch_primitive.md)
-(common `try_set` primitive) is the next implementation
+(common `try_commitment_set` primitive) is the next implementation
 surface; can parallelise with the monotonic skeleton
 (S1.5b.4).
 **Depends on:** —
-P1.5b owns its own isolation model: set-batch `try_set` ↓ +
+P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments
 are sets, not paths). The pre-2026-05-26 dependency on
 [P1.5a S1.5a.20](../p1.5a_zebra_solution/s1.5a.20_branch_isolation_rearch.md)
@@ -83,7 +83,7 @@ No per-set storage, no dedup, no DAG, no proof artefact beyond
 the final root snapshot.
 
 - Apriori prefix-join for layer-by-layer candidate generation.
-- Set-batch `try_set(root, C)` primitive — fork from root once
+- Commitment-set `try_commitment_set(root, C)` primitive — fork from root once
   per commitment, add all hypotheses, saturate once. No
   intermediate state shared between enterings.
 - Each entering's **unconditional** facts (chain doesn't touch
@@ -101,7 +101,7 @@ multilabel + multi-parent; state-hash dedup as merge; per-set
 audit trail in the dumper; produces a `LatticeProof` data
 class (full DAG + provenances) for P1.6's explanation phase.
 
-- Same Apriori prefix-join + set-batch primitive.
+- Same Apriori prefix-join + commitment-set primitive.
 - **Does not** terminate on first solution — exhausts to
   ``max_set_size`` so the full set of satisfying commitments
   is enumerated.
@@ -177,7 +177,7 @@ P1.5b owns:
 - The lattice engine — full implementation including
   `SetNode`, per-set dumper, `LatticeProof`.
 - The shared kernel pieces both engines need (Apriori-gen,
-  set-batch primitive, common nogood store).
+  commitment-set primitive, common nogood store).
 - A new shared dumper base under `inference/state_dump.py`
   (split into common helpers + engine-specific layouts).
 - Example fixtures under `examples/lattice/` exercising
@@ -243,7 +243,7 @@ P1.5b does NOT own:
 | S1.5b.0  | Discussion summary + decisions log (closes [`open_questions.md`](open_questions.md))   |
 | S1.5b.1  | File-split refactor — `inference/{,tree/,monotonic/,lattice/}` + tests mirror              |
 | S1.5b.2  | Common Apriori-gen module — `inference/apriori.py` (prefix-join + filters)             |
-| S1.5b.3  | Common set-batch primitive — `try_set(root_kb, commitment_set) → SetResult`            |
+| S1.5b.3  | Common commitment-set primitive — `try_commitment_set(root_kb, commitment) → CommitmentSetResult`            |
 | S1.5b.4  | `inference/monotonic/` skeleton + `bench_monotonic.py` skeleton                        |
 | S1.5b.5  | Monotonic backbone — single-root accumulator; early terminate on goal                  |
 | S1.5b.6  | Monotonic CDCL — unified `_nogoods` store; `matches_any_nogood` filter                 |
@@ -268,7 +268,7 @@ P1.5b does NOT own:
 | S1.5b.27 | F6 — optional sanity check (`--lattice-sanity-check`)                                  |
 | S1.5b.28 | F7 — example fixtures (`examples/lattice/01_subset_pruned.ein`, `02_genuine_3set_death.ein`) + state-hash-collision verification on `examples/zebra2-hints.ein` |
 | S1.5b.29 | F8 — `LatticeProof` data class + P1.6 handoff contract (per [Q1.5b.6](open_questions.md#q15b6--reasoning-path-post-solve-phase)) |
-| S1.5b.30 | F9 — end-of-phase perf round: subset-trie / interned set-ids; `try_set` set-batch perf measurement; tree-side deprecation tag |
+| S1.5b.30 | F9 — end-of-phase perf round: subset-trie / interned set-ids; `try_commitment_set` commitment-set perf measurement; tree-side deprecation tag |
 | S1.5b.31 | Lattice shuffle invariance — traversal-order regression net (tree-side sibling: P1.5a S1.5a.16, closed 2026-05-26) |
 | S1.5b.32 | Domain-elim rule (forall) vs explicit hypothesis exploration — research stage: result/correctness/satisfiability vs performance trade-offs across both engines |
 

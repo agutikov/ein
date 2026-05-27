@@ -16,7 +16,7 @@ reconstruct the rationale.
 | Q1.5b.5 | Refutation semantics — unify with S1.5a.18 nogoods, or distinct mechanic?                 | ✅ resolved 2026-05-25 — unified |
 | Q1.5b.6 | Reasoning-path post-solve phase — P1.5b or P1.6?                                          | ✅ resolved 2026-05-25 — both phases own a piece |
 | Q1.5b.7 | Termination + completeness + mode handling — when does each engine stop? what trichotomy? | ✅ resolved 2026-05-25 — monotonic terminates on first goal-sat; lattice exhaustive to `max_set_size` (Q1.5b.10 merged in) |
-| Q1.5b.8 | Engine bridge — set-batch `try_set` vs incremental `try_step` (S1.5a.20 primitive reuse)  | ✅ resolved 2026-05-25 — copy-on-modify; bootstrap → backbone → features |
+| Q1.5b.8 | Engine bridge — commitment-set `try_commitment_set` vs incremental `try_step` (S1.5a.20 primitive reuse)  | ✅ resolved 2026-05-25 — copy-on-modify; bootstrap → backbone → features |
 | Q1.5b.9 | Scoring within a layer — defer or include in initial design?                              | ✅ resolved 2026-05-25 |
 | Q1.5b.10 | *(merged into Q1.5b.7)* Mode handling — SOLVE vs GAPS vs CONTRADICTIONS                  | ✅ merged 2026-05-25 |
 
@@ -224,7 +224,7 @@ A stage task creates:
   pruned candidate.
 - ``examples/lattice/02_genuine_3set_death.ein`` — fixture
   where a 3-element commitment dies but **no** 2-subset of it
-  is in ``D_2``. The dump must show the layer-3 try_set
+  is in ``D_2``. The dump must show the layer-3 try_commitment_set
   running, the 3-element clause emitted, and the corresponding
   ``D_3`` entry recorded.
 
@@ -723,7 +723,7 @@ User direction 2026-05-25:
 > implementation strategy - bootstrap: skeleton, then backbone
 > implementation, then features: dedup, backprop, etc."*
 
-The choice between **set-batch** ``try_set`` and **incremental**
+The choice between **commitment-set** ``try_commitment_set`` and **incremental**
 ``try_branch`` reuse is not pre-decided. The same
 copy-on-modify rule from Q1.5b.1.a applies to the engine
 layer: start by reusing S1.5a.20's `try_branch` unchanged
@@ -802,7 +802,7 @@ each builds on the previous:
 - **F9.** End-of-phase perf round:
   - Subset-trie / interned-set-id optimisations (Q1.5b.2.b
     deferred items).
-  - Decide on set-batch ``try_set`` primitive (this is where
+  - Decide on commitment-set ``try_commitment_set`` primitive (this is where
     the original Q1.5b.8 choice gets re-opened — but only
     if perf measurement shows incremental saturation is the
     bottleneck).
@@ -811,7 +811,7 @@ each builds on the previous:
 The feature order is a sketch — the per-stage plan settles
 the precise boundaries after the bootstrap + backbone land.
 
-### Why this defers the set-batch vs incremental decision
+### Why this defers the commitment-set vs incremental decision
 
 Under bootstrap, the simplest thing is `try_branch` invoked
 incrementally — no new primitive needed, common-file unchanged,
@@ -820,9 +820,9 @@ size-`k` set instead of 1. Whether that cost is acceptable for
 M1's `max_set_size` ≤ ~5 is an empirical question, answered
 after the backbone runs.
 
-If the answer is "fine" → no `try_set`, common engine stays
+If the answer is "fine" → no `try_commitment_set`, common engine stays
 common. If the answer is "too slow" → copy to
-`inference/lattice/engine.py` and add `try_set` as a DAG-specific
+`inference/lattice/engine.py` and add `try_commitment_set` as a DAG-specific
 optimisation; common engine is still unchanged. Either way,
 no design decision is locked in before the data is in.
 
@@ -925,7 +925,7 @@ search.
 - **Q1.5b.8 (engine bridge) — resolved copy-on-modify +
   bootstrap-style implementation order.** Reuse S1.5a.20's
   `try_branch` unchanged from common `inference/`; if a
-  variant needs `try_set` (or any divergence), copy to
+  variant needs `try_commitment_set` (or any divergence), copy to
   `inference/<variant>/`. Implementation in rounds:
   bootstrap (stubs) → backbone (minimal runnable) →
   features.
