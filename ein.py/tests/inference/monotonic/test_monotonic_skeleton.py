@@ -125,15 +125,37 @@ def test_root_contradiction_returns_contradiction():
 # ── Ambiguity (correct verdict when puzzle has multiple solutions) ─
 
 
-def test_branching_04_returns_ambiguity():
+def test_branching_04_returns_first_solution():
     """examples/branching/04_two_levels.ein has TWO valid answers
-    (Blue↔H3 or Green↔H3) — Ambiguity is the *correct* verdict per
-    the demo's own header comment.
+    (Blue↔H3 or Green↔H3). Tree returns Ambiguity carrying both;
+    monotonic SOLVE-mode terminates on the first goal-satisfying
+    commitment (per algorithm_layer_n.md §3d.vii — fork-side
+    is_solved). Q1.5b.7 spells out the divergence: monotonic
+    SOLVE = "give me ONE solution", lattice/tree at depth-cap =
+    "give me the verdict shape including alternates".
+
+    Lex order picks `(co-located Blue H3)` first, so the result
+    binds c=Blue (one of the two valid colours for H3).
     """
     text = (BRANCHING / "04_two_levels.ein").read_text()
     kb = KnowledgeBase.from_ir(parse(text))
     verdict, _ = monotonic_solve(kb, max_set_size=3)
-    assert isinstance(verdict, Ambiguity)
+    assert isinstance(verdict, Solution)
+    # Goal binding check — the bench helper-mirror pattern used
+    # by test_branching_03 above.
+    from ein_bot.inference.compile import JoinPlan, compile_pattern
+    from ein_bot.inference.match import run as match_run
+    goal = next(
+        kp.value for kp in verdict.kb.query.kw_pairs
+        if kp.key.name == "goal"
+    )
+    plan = JoinPlan(
+        rule_name="<query>", activator_args=(), bindings_seed={},
+        steps=tuple(compile_pattern(goal, {})),
+        assert_template=None, why="",
+    )
+    rows = [dict(b) for b, _premises in match_run(plan, verdict.kb)]
+    assert rows == [{"c": "Blue"}]
 
 
 # ── Forced-positive promotion (S1.5b.5b) ──────────────────────────

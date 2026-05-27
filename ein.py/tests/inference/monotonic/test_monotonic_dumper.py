@@ -44,11 +44,15 @@ SINGLETON_FIXTURE = """
     :priority 100))
 (ontology
   (relation paint T T)
+  ; declared but never asserted — keeps the goal unreachable so
+  ; the fork-side is_solved check doesn't short-circuit the run
+  ; before layer_end + the dead-post entering's nogood event fire.
+  (relation never T)
   (is-a Thing T)
   (is-a Red Thing) (is-a Blue Thing))
 (facts)
 (query :mode solve
-       :goal  (paint ?c ?d)
+       :goal  (never ?x)
        :hypothesis-relations paint)
 """
 

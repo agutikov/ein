@@ -49,12 +49,16 @@ _FIXTURE = """
     :priority 100))
 (ontology
   (relation R T T)
+  ; declared but never asserted — keeps the goal unreachable so
+  ; the fork-side is_solved check doesn't end the run before the
+  ; budget cap can fire.
+  (relation never T)
   (is-a Thing T)
   (is-a a Thing) (is-a b Thing)
   (is-a c Thing) (is-a d Thing))
 (facts)
 (query :mode solve
-       :goal  (R ?x ?y)
+       :goal  (never ?x)
        :hypothesis-relations R)
 """
 

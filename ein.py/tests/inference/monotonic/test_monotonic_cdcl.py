@@ -62,11 +62,15 @@ SINGLETON_FIXTURE = """
     :priority 100))
 (ontology
   (relation paint T T)
+  ; declared but never asserted — keeps the goal unreachable so
+  ; the fork-side is_solved check doesn't short-circuit the runs
+  ; that need to observe layer-2 / Phase-3 behaviour.
+  (relation never T)
   (is-a Thing T)
   (is-a Red Thing) (is-a Blue Thing))
 (facts)
 (query :mode solve
-       :goal  (paint ?c ?d)
+       :goal  (never ?x)
        :hypothesis-relations paint)
 """
 
@@ -101,11 +105,15 @@ MULTI_FIXTURE = """
     :priority 100))
 (ontology
   (relation R T T)
+  ; declared but never asserted — keeps the goal unreachable so
+  ; layer-2/3 enterings fire instead of being cut off by the
+  ; fork-side is_solved check.
+  (relation never T)
   (is-a Thing T)
   (is-a a Thing) (is-a b Thing) (is-a c Thing))
 (facts)
 (query :mode solve
-       :goal  (R ?x ?y)
+       :goal  (never ?x)
        :hypothesis-relations R)
 """
 

@@ -221,6 +221,33 @@ def monotonic_solve(
 
             # Alive.
             stats.enterings_alive += 1
+
+            # Fork-side is_solved (algorithm_layer_n.md §3d.vii):
+            # if the fork's saturated kb already satisfies the
+            # goal, this commitment IS the solution. Required for
+            # puzzles whose goal directly references hypothesis
+            # facts (e.g. branching/05_mini_zebra,
+            # branching/07_lookahead_off, branching/10_backprop_on,
+            # branching/11_backprop_off — their goal needs the
+            # committed hypothesis in scope to bind, but
+            # hypothesis facts never merge to root). The returned
+            # Solution carries `result.kb` (the fork) so the
+            # caller sees the hypothesis + derivations context.
+            if is_solved(result.kb, mode):
+                if dumper is not None:
+                    dumper.entering(
+                        layer, c, result,
+                        facts_merged=0,
+                        nogood_emitted=False,
+                        nogood_subsumed=False,
+                    )
+                    dumper.early_terminate(layer, "is_solved_at_fork")
+                return _finish(
+                    dumper,
+                    Solution(kb=result.kb, trace=(), tree=None),
+                    stats,
+                )
+
             this_merged = 0
             for f in result.unconditional_facts:
                 if root_kb._fact_by_id(
