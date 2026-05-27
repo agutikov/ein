@@ -47,9 +47,15 @@ from ein_bot.kb.store import KnowledgeBase
 
 @dataclass
 class MonotonicDumper:
-    """Filesystem-snapshotting hooks attached to a :func:`monotonic_solve` run."""
+    """Filesystem-snapshotting hooks attached to a :func:`monotonic_solve` run.
 
-    out_dir: Path
+    ``out_dir=None`` skips every filesystem write — the hooks still
+    fire but produce no on-disk artefacts. Useful for subclasses
+    that consume the lifecycle stream (e.g. ``bench_monotonic.py``'s
+    verbose-mode progress emitter) without paying for the dump.
+    """
+
+    out_dir: Path | None = None
     started_at: float = field(default_factory=time.time)
     _timeline_fp: IO[str] | None = field(
         default=None, init=False, repr=False,
@@ -57,6 +63,8 @@ class MonotonicDumper:
     _timeline_seq: int = field(default=0, init=False)
 
     def __post_init__(self) -> None:
+        if self.out_dir is None:
+            return
         self.out_dir.mkdir(parents=True, exist_ok=True)
         (self.out_dir / "layers").mkdir(exist_ok=True)
         self._timeline_fp = (
@@ -66,9 +74,10 @@ class MonotonicDumper:
     # ── Lifecycle hooks ──────────────────────────────────────────
 
     def root_initial(self, kb: KnowledgeBase) -> None:
-        (self.out_dir / "00_root_initial.ein").write_text(
-            _kb_to_ein_text(kb),
-        )
+        if self.out_dir is not None:
+            (self.out_dir / "00_root_initial.ein").write_text(
+                _kb_to_ein_text(kb),
+            )
         self._emit_timeline("root_initial", facts=len(kb.facts))
 
     def layer_start(
@@ -85,9 +94,10 @@ class MonotonicDumper:
         the off-by-one and keeps ``layer_NN_pre`` and
         ``layer_NN_post`` paired.
         """
-        (self.out_dir / "layers" / f"layer_{layer:02d}_pre.ein").write_text(
-            _kb_to_ein_text(kb),
-        )
+        if self.out_dir is not None:
+            (self.out_dir / "layers" / f"layer_{layer:02d}_pre.ein").write_text(
+                _kb_to_ein_text(kb),
+            )
         self._emit_timeline(
             "layer_start", layer=layer, alive_size=alive_size,
         )
@@ -125,9 +135,10 @@ class MonotonicDumper:
         alive_size: int,
         survived_count: int,
     ) -> None:
-        (self.out_dir / "layers" / f"layer_{layer:02d}_post.ein").write_text(
-            _kb_to_ein_text(kb),
-        )
+        if self.out_dir is not None:
+            (self.out_dir / "layers" / f"layer_{layer:02d}_post.ein").write_text(
+                _kb_to_ein_text(kb),
+            )
         self._emit_timeline(
             "layer_end",
             layer=layer,
@@ -142,6 +153,18 @@ class MonotonicDumper:
             "early_terminate", layer=layer, reason=reason,
         )
 
+    def close(self) -> None:
+        """Close the timeline file without emitting ``summary.json``.
+
+        Called by the abort path (``BudgetExceededError``) so the
+        timeline file is flushed + closed when no final summary
+        will be written. Normal exits close it via :meth:`summary`.
+        Idempotent.
+        """
+        if self._timeline_fp is not None:
+            self._timeline_fp.close()
+            self._timeline_fp = None
+
     def summary(self, verdict: Any, stats: Any) -> None:
         verdict_kind = type(verdict).__name__
         elapsed = time.time() - self.started_at
@@ -153,13 +176,14 @@ class MonotonicDumper:
         except TypeError:
             stats_dict = {"repr": repr(stats)}
 
-        (self.out_dir / "summary.json").write_text(
-            json.dumps({
-                "verdict": verdict_kind,
-                "elapsed_seconds": round(elapsed, 3),
-                "stats": stats_dict,
-            }, indent=2, sort_keys=True, default=str),
-        )
+        if self.out_dir is not None:
+            (self.out_dir / "summary.json").write_text(
+                json.dumps({
+                    "verdict": verdict_kind,
+                    "elapsed_seconds": round(elapsed, 3),
+                    "stats": stats_dict,
+                }, indent=2, sort_keys=True, default=str),
+            )
         self._emit_timeline(
             "summary",
             verdict=verdict_kind,

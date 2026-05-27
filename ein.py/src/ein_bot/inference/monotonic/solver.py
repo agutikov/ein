@@ -16,6 +16,7 @@ without its ContextVar coupling). No dumper (S1.5b.7).
 """
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 
 from ein_bot.inference.apriori import (
@@ -44,6 +45,20 @@ from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
 
+class BudgetExceededError(RuntimeError):
+    """Raised by :func:`monotonic_solve` when ``max_time`` or
+    ``max_enterings`` is hit before the solve completes.
+
+    Carries the partial :class:`MonotonicStats` so callers can
+    print the work done before the abort.
+    """
+
+    def __init__(self, reason: str, stats: MonotonicStats) -> None:
+        super().__init__(reason)
+        self.reason = reason
+        self.stats = stats
+
+
 @dataclass
 class MonotonicStats:
     """Cumulative counters for one :func:`monotonic_solve` run."""
@@ -68,6 +83,8 @@ def monotonic_solve(
     config: SolverConfig | None = None,
     mode: Mode = Mode.SOLVE,
     dumper: MonotonicDumper | None = None,
+    max_time: float | None = None,
+    max_enterings: int | None = None,
 ) -> tuple[Verdict, MonotonicStats]:
     """Run the monotonic set-search engine on ``root_kb``.
 
@@ -83,6 +100,14 @@ def monotonic_solve(
     (S1.5b.7) — root + per-layer ``.ein`` snapshots, a
     ``00_timeline.jsonl`` event log, and a ``summary.json``.
     ``dumper=None`` (default) makes every hook a no-op.
+
+    ``max_time`` (wall-clock seconds) and ``max_enterings``
+    (cumulative count of ``try_commitment_set`` calls) cap the
+    work. When either is exceeded the function raises
+    :class:`BudgetExceededError` with the partial stats; the
+    dumper's ``summary.json`` is **not** emitted on abort (the
+    timeline's events up to the abort are sufficient for
+    diagnostic). ``None`` (default) disables the respective cap.
     """
     if mode is not Mode.SOLVE:
         raise NotImplementedError(
@@ -95,6 +120,7 @@ def monotonic_solve(
     root_kb.config = cfg
 
     stats = MonotonicStats()
+    t_start = time.perf_counter()
 
     # ── Phase 1 — Initial saturation + alive ──────────────────
     _ = list(Saturator(root_kb).saturate())
@@ -138,6 +164,29 @@ def monotonic_solve(
 
         a_layer: list[CanonicalSetId] = []
         for c in candidates:
+            # Budget gate — check BEFORE the (potentially slow)
+            # try_commitment_set call. Raises with partial stats.
+            # The dumper (if any) is closed here so its
+            # 00_timeline.jsonl is flushed; no summary.json on abort.
+            if (
+                max_enterings is not None
+                and stats.enterings_total >= max_enterings
+            ):
+                if dumper is not None:
+                    dumper.close()
+                raise BudgetExceededError(
+                    f"max-enterings ({max_enterings}) reached", stats,
+                )
+            if (
+                max_time is not None
+                and (time.perf_counter() - t_start) > max_time
+            ):
+                if dumper is not None:
+                    dumper.close()
+                raise BudgetExceededError(
+                    f"max-time ({max_time}s) exceeded", stats,
+                )
+
             stats.enterings_total += 1
             result = try_commitment_set(root_kb, c)
 

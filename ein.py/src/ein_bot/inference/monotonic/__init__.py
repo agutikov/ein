@@ -9,6 +9,9 @@ primitive; unconditional facts merged into root; terminates on
 SOLVE mode only. See [P1.5b README] for the design rationale
 and the equivalence claim against the lattice engine.
 """
-from ein_bot.inference.monotonic.solver import monotonic_solve
+from ein_bot.inference.monotonic.solver import (
+    BudgetExceededError,
+    monotonic_solve,
+)
 
-__all__ = ["monotonic_solve"]
+__all__ = ["BudgetExceededError", "monotonic_solve"]
