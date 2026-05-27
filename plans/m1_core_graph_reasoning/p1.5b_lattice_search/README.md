@@ -30,8 +30,14 @@ the stubs in S1.5b.5);
 `try_commitment_set` + root-merge of unconditional facts +
 Phase-1 ContradictionDetector); 8 tests pass; branching/01 →
 Solution (root-only), branching/04 → Ambiguity (genuine
-multi-solution); **branching/03 → Ambiguity not Solution**
-(forced-positive promotion gap — see stage Ship notes). [S1.5b.5](s1.5b.5_monotonic_backbone.md)
+multi-solution); branching/03 was Ambiguity due to the
+forced-positive promotion gap.
+[S1.5b.5b](s1.5b.5b_monotonic_forced_positive.md) shipped
+2026-05-27 — **closes the gap**: forced-positive promotion
++ symmetric canonicalisation in `_compute_alive`. 7 of 11
+branching demos flipped Ambiguity → Solution; **zebra2
+solves under the monotonic backbone in ~5s on CPython** (vs
+tree's ~50s). 9 monotonic tests pass. [S1.5b.5](s1.5b.5_monotonic_backbone.md)
 (monotonic backbone — the main loop wiring `apriori` +
 `try_commitment_set` + nogoods) is now the next implementation
 surface.

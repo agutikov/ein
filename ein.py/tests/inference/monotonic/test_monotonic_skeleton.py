@@ -136,30 +136,59 @@ def test_branching_04_returns_ambiguity():
     assert isinstance(verdict, Ambiguity)
 
 
-# ── Documented gap: forced-positive promotion (NOT in backbone) ────
+# ── Forced-positive promotion (S1.5b.5b) ──────────────────────────
 
 
-def test_branching_03_returns_ambiguity_pending_forced_positives():
-    """examples/branching/03_five_hyps_one_alive.ein has a *unique*
-    answer (?h=H5) under tree-side, but the monotonic backbone
-    returns Ambiguity.
+def test_branching_03_solves_via_forced_positive():
+    """examples/branching/03_five_hyps_one_alive.ein: lookahead
+    + symmetric-canonicalised hypgen shrinks alive to the
+    singleton `{(co-located White H5)}` right after Phase 1's
+    initial saturation. Forced-positive promotion merges it
+    into root, re-saturation derives `(co-located White H5)`
+    + its symmetric pair, goal `(co-located White ?h)`
+    matches ?h=H5, return Solution.
 
-    The backbone's `_is_unconditional` check returns False for any
-    fact whose chain reaches a committed hypothesis — so when alive
-    shrinks to a singleton ({h_unique}), h_unique is never merged
-    into root, and the goal (which depends on h_unique's
-    consequences) is never satisfied. Tree-side returns Solution
-    because the *surviving fork's* kb includes the committed
-    hypothesis.
-
-    Forced-positive promotion (merge h_unique when alive shrinks
-    to a singleton) lands in a later stage. When it ships, this
-    test will need to flip to `Solution`.
+    Pre-S1.5b.5b: returned Ambiguity (the conditional-fact
+    extraction never merged h_unique into root).
     """
     text = (BRANCHING / "03_five_hyps_one_alive.ein").read_text()
     kb = KnowledgeBase.from_ir(parse(text))
-    verdict, _ = monotonic_solve(kb, max_set_size=3)
-    assert isinstance(verdict, Ambiguity)
+    verdict, stats = monotonic_solve(kb, max_set_size=3)
+    assert isinstance(verdict, Solution)
+    assert stats.forced_positives >= 1
+    # Goal binding check via the bench's helper-mirror.
+    from ein_bot.inference.compile import JoinPlan, compile_pattern
+    from ein_bot.inference.match import run as match_run
+    goal = next(
+        kp.value for kp in verdict.kb.query.kw_pairs
+        if kp.key.name == "goal"
+    )
+    plan = JoinPlan(
+        rule_name="<query>", activator_args=(), bindings_seed={},
+        steps=tuple(compile_pattern(goal, {})),
+        assert_template=None, why="",
+    )
+    rows = [dict(b) for b, _premises in match_run(plan, verdict.kb)]
+    assert rows == [{"h": "H5"}]
+
+
+def test_zebra2_solves_via_monotonic_backbone():
+    """zebra2 — the M1 acceptance puzzle — solves under the
+    monotonic backbone with max_set_size=2. Tree-side answer:
+    h_water=House-1, h_zebra=House-5. Skipped on CPython by
+    default (still a few hundred ms), gated on EIN_RUN_SLOW=1
+    or run via the PyPy bench script.
+    """
+    import os
+    if not os.environ.get("EIN_RUN_SLOW"):
+        pytest.skip(
+            "zebra2 is slow on CPython; set EIN_RUN_SLOW=1 or "
+            "run via bench_monotonic on PyPy",
+        )
+    text = (REPO / "examples" / "zebra2.ein").read_text()
+    kb = KnowledgeBase.from_ir(parse(text))
+    verdict, _ = monotonic_solve(kb, max_set_size=2)
+    assert isinstance(verdict, Solution)
 
 
 # ── Stats correctness ─────────────────────────────────────────────

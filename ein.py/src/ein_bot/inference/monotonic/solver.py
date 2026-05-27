@@ -32,6 +32,8 @@ from ein_bot.inference.tree.solver import (
     Verdict,
     is_solved,
 )
+from ein_bot.kb.entities import Fact, Layer
+from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
 
@@ -44,6 +46,7 @@ class MonotonicStats:
     enterings_dead_pre:  int = 0
     enterings_dead_post: int = 0
     facts_merged:        int = 0
+    forced_positives:    int = 0
     saturate_count:      int = 0
     layers_explored:     int = 0
 
@@ -90,6 +93,9 @@ def monotonic_solve(
         return _solution(root_kb), stats
 
     alive = _compute_alive(root_kb)
+    alive, term = _promote_forced_positives(root_kb, alive, stats, mode)
+    if term is not None:
+        return term, stats
     if not alive:
         return _contradiction(root_kb), stats
 
@@ -143,6 +149,13 @@ def monotonic_solve(
                 if ContradictionDetector(root_kb).detect():
                     return _contradiction(root_kb), stats
                 alive = _compute_alive(root_kb)
+                # Forced-positive promotion (S1.5b.5b): if alive
+                # shrinks to a singleton, that hypothesis is forced.
+                alive, term = _promote_forced_positives(
+                    root_kb, alive, stats, mode,
+                )
+                if term is not None:
+                    return term, stats
 
                 if is_solved(root_kb, mode):
                     return _solution(root_kb), stats
@@ -170,16 +183,97 @@ def monotonic_solve(
 # ── Helpers ──────────────────────────────────────────────────
 
 
+def _promote_forced_positives(
+    root_kb: KnowledgeBase,
+    alive: frozenset[FactId],
+    stats: MonotonicStats,
+    mode: Mode,
+) -> tuple[frozenset[FactId], Verdict | None]:
+    """Cascade: while ``alive`` is a singleton ``{h_unique}``,
+    promote ``h_unique`` to a root fact, re-saturate, check
+    contradiction + is_solved, recompute alive. Repeat.
+
+    Returns ``(alive_after, verdict)`` — ``verdict`` is non-None
+    iff the cascade hit a terminal condition (Solution /
+    Contradiction); the caller should return it immediately.
+
+    The promoted Fact uses ``Provenance.from_rule(
+    "<forced-positive>", premises_raw=())`` so its provenance
+    kind is "rule" with empty premises — this makes
+    :func:`commitment._reaches_commitment` walk through it as a
+    non-hypothesis terminal, so future commit chains that pass
+    through this fact don't get incorrectly flagged as
+    conditional.
+
+    Soundness: ``alive = {h}`` means every other slot-mate has
+    been refuted (back-prop wrote ``(not h_other)`` at root, or
+    hypgen filtered it). Combined with the puzzle's slot
+    exclusivity constraint, ``h`` must be true. The
+    post-promotion :class:`ContradictionDetector` catches any
+    surfacing inconsistency.
+    """
+    while len(alive) == 1:
+        (rn, args) = next(iter(alive))
+        promoted = Fact(
+            relation_name=rn,
+            args=args,
+            layer=Layer.REASONING,
+            provenance=Provenance.from_rule(
+                rule="<forced-positive>", premises_raw=(),
+            ),
+        )
+        stored = root_kb.add_fact(promoted)
+        root_kb._index_fact(stored)
+        stats.facts_merged += 1
+        stats.forced_positives += 1
+
+        _ = list(Saturator(root_kb).saturate())
+        stats.saturate_count += 1
+
+        if ContradictionDetector(root_kb).detect():
+            return alive, _contradiction(root_kb)
+        if is_solved(root_kb, mode):
+            return alive, _solution(root_kb)
+        alive = _compute_alive(root_kb)
+
+    return alive, None
+
+
 def _compute_alive(kb: KnowledgeBase) -> frozenset[FactId]:
     """Build the current alive set as a frozenset of FactIds.
 
     Reuses :func:`ein_bot.inference.hypgen.generate_hypotheses`
-    — the canonical "which hypotheses are still viable" query.
+    — the canonical "which hypotheses are still viable" query —
+    and canonicalises pairs under symmetric-relation declarations
+    so ``(R a b)`` and ``(R b a)`` collapse to one entry when
+    ``(symmetric R)`` is in the ontology.
+
+    The canonicalisation matters for forced-positive promotion:
+    hypgen emits both orientations of a symmetric pair (the user
+    might want to score each independently), but for "is this
+    the *sole* surviving hypothesis?" the pair is one
+    hypothesis. Without dedup, alive size always ≥ 2 for any
+    symmetric-relation candidate, and the promotion cascade
+    never fires.
     """
-    return frozenset(
-        (f.relation_name, f.args)
-        for f in generate_hypotheses(kb)
-    )
+    symmetric_relations = {
+        f.args[0]
+        for f in kb._facts_by_relation.get("symmetric", ())
+        if len(f.args) >= 1
+    }
+    canonical: set[FactId] = set()
+    for f in generate_hypotheses(kb):
+        rn = f.relation_name
+        args = f.args
+        if (
+            rn in symmetric_relations
+            and len(args) == 2
+            and args[0] > args[1]
+        ):
+            canonical.add((rn, (args[1], args[0])))
+        else:
+            canonical.add((rn, args))
+    return frozenset(canonical)
 
 
 def _solution(kb: KnowledgeBase) -> Verdict:

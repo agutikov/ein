@@ -114,6 +114,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  enterings_dead_pre  {stats.enterings_dead_pre}")
     print(f"  enterings_dead_post {stats.enterings_dead_post}")
     print(f"  facts_merged       {stats.facts_merged}")
+    print(f"  forced_positives   {stats.forced_positives}")
     print(f"  saturate_count     {stats.saturate_count}")
     print(f"  layers_explored    {stats.layers_explored}")
     print(f"  wall               {elapsed * 1000:.1f} ms")
