@@ -222,9 +222,12 @@ P1.5b does NOT own:
    with the same bindings as the tree-side target in
    [S1.5a.13](../p1.5a_zebra_solution/s1.5a.13_acceptance_zebra2_solves.md)
    within the same time budget (target: < 60s; ideally < 5s
-   after S1.5a.19).
+   after S1.5a.19). **✓ closed 2026-05-27 by
+   [S1.5b.8](s1.5b.8_monotonic_acceptance.md)** — measured
+   2.76 s CPython / 1.91 s PyPy (well under both targets).
 2. Every demo under `examples/branching/` reaches the
-   tree-side verdict (SOLVE-mode bindings match).
+   tree-side verdict (SOLVE-mode bindings match). *(Pending —
+   [S1.5b.9](s1.5b.9_monotonic_branching_parity.md).)*
 3. The implementation is small — target ≤ 200 LOC including
    imports + helpers, excluding the common kernel modules
    it imports unchanged.
