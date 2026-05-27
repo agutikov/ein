@@ -10,7 +10,7 @@ identical under M1's monotone saturation. Two engines ship
 under this phase with **distinct purposes** (below). Stage
 plan: monotonic stages first (S1.5b.0–S1.5b.10), then lattice
 from S1.5b.20 onward. [S1.5b.1](s1.5b.1_file_split_refactor.md)
-shipped 2026-05-27 (file-split refactor —
+shipped 2026-05-27 (`22a4ebd`, file-split refactor —
 `inference/{tree,monotonic,lattice}/`); S1.5b.2+ is the next
 implementation surface.
 **Depends on:** —
