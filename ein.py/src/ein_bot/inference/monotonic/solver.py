@@ -70,6 +70,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from typing import Literal
 
 from ein_bot.inference.apriori import (
     CanonicalSetId,
@@ -80,6 +81,7 @@ from ein_bot.inference.apriori import (
 from ein_bot.inference.commitment import try_commitment_set
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.contradiction import ContradictionDetector
+from ein_bot.inference.firing import Firing
 from ein_bot.inference.hypgen import generate_hypotheses
 from ein_bot.inference.monotonic.lattice import LatticeStats
 from ein_bot.inference.monotonic.state_dump import (
@@ -132,6 +134,31 @@ class MonotonicStats:
     nogoods_subsumed:    int = 0
 
 
+@dataclass(frozen=True)
+class _RawSolution:
+    """Backbone-internal record of one satisfying commitment.
+
+    S1.5b.22 promotes this to the public
+    :class:`ein_bot.inference.monotonic.lattice.SolutionRecord`
+    with a deep ``KnowledgeBase.snapshot()`` for isolation.
+    For the S1.5b.21 backbone the ``kb`` field is a live
+    reference — callers should read it immediately after the
+    return rather than holding a long-lived alias (root.kb
+    mutates as the loop continues; fork kbs are stable since
+    the loop discards the fork after each ``try_commitment_set``).
+
+    Filled by :func:`_explore_layers` when ``entry == "gaps"``
+    on every ``is_solved`` hit (fork-side or root-side).
+    Carries the commitment that triggered the satisfaction
+    plus the kb at that moment.
+    """
+
+    commitment: CanonicalSetId
+    kb: KnowledgeBase
+    firings: tuple[Firing, ...]
+    layer: int
+
+
 def monotonic_solve(
     root_kb: KnowledgeBase,
     *,
@@ -167,213 +194,31 @@ def monotonic_solve(
     """
     if mode is not Mode.SOLVE:
         raise NotImplementedError(
-            "monotonic engine supports SOLVE mode only "
-            "(Q1.5b.7); use the lattice engine for GAPS / "
-            "CONTRADICTIONS",
+            "monotonic_solve supports SOLVE mode only — use "
+            "gaps_solve for GAPS or contradictions_solve for "
+            "CONTRADICTIONS (sibling functions in this same "
+            "module)",
         )
 
-    cfg = config or root_kb.config or SolverConfig()
-    root_kb.config = cfg
-
-    stats = MonotonicStats()
-    t_start = time.perf_counter()
-
-    # ── Phase 1 — Initial saturation + alive ──────────────────
-    _ = list(Saturator(root_kb).saturate())
-    stats.saturate_count += 1
-    if dumper is not None:
-        dumper.root_initial(root_kb)
-    # Root contradiction (e.g., a rule derived `(false)` directly):
-    # spec didn't list this check but without it, a contradictory
-    # root falls through to Phase 2 where every entering dead-pre's
-    # and the final verdict mis-reports as Ambiguity.
-    if ContradictionDetector(root_kb).detect():
-        return _finish(dumper, _contradiction(root_kb), stats)
-    if is_solved(root_kb, mode):
-        return _finish(dumper, _solution(root_kb), stats)
-
-    alive = _compute_alive(root_kb)
-    alive, term = _promote_forced_positives(root_kb, alive, stats, mode)
-    if term is not None:
-        return _finish(dumper, term, stats)
-    if not alive:
-        return _finish(dumper, _contradiction(root_kb), stats)
-
-    a_prev: list[CanonicalSetId] = layer_1(alive)
-
-    # ── Phase 2 — Layer-by-layer iteration ───────────────────
-    for layer in range(1, max_set_size + 1):
-        stats.layers_explored = layer
-        if dumper is not None:
-            dumper.layer_start(layer, root_kb, len(alive))
-
-        if layer == 1:
-            candidates = list(a_prev)
-        else:
-            candidates = generate_layer(
-                a_prev,
-                alive=alive,
-                nogoods=root_kb._nogoods,
-            )
-
-        candidates.sort()  # lex; scoring switch lands in monotonic followups
-
-        a_layer: list[CanonicalSetId] = []
-        for c in candidates:
-            # Budget gate — check BEFORE the (potentially slow)
-            # try_commitment_set call. Raises with partial stats.
-            # The dumper (if any) is closed here so its
-            # 00_timeline.jsonl is flushed; no summary.json on abort.
-            if (
-                max_enterings is not None
-                and stats.enterings_total >= max_enterings
-            ):
-                if dumper is not None:
-                    dumper.close()
-                raise BudgetExceededError(
-                    f"max-enterings ({max_enterings}) reached", stats,
-                )
-            if (
-                max_time is not None
-                and (time.perf_counter() - t_start) > max_time
-            ):
-                if dumper is not None:
-                    dumper.close()
-                raise BudgetExceededError(
-                    f"max-time ({max_time}s) exceeded", stats,
-                )
-
-            stats.enterings_total += 1
-            result = try_commitment_set(root_kb, c)
-
-            if result.kind in ("dead-pre", "dead-post"):
-                if result.kind == "dead-pre":
-                    stats.enterings_dead_pre += 1
-                else:
-                    stats.enterings_dead_post += 1
-                # CDCL — subsumption-aware nogood emit. min_size=1 so
-                # layer-1 singleton deaths land (Q1.5b.5.c); without
-                # that the layer-2 prefix-join would still pair the
-                # dead singleton with every survivor.
-                landed = emit_nogood(root_kb, frozenset(c), min_size=1)
-                if landed:
-                    stats.nogoods_emitted += 1
-                else:
-                    stats.nogoods_subsumed += 1
-                # Singleton dead: writeback (not h) so the next
-                # _compute_alive drops h, mirroring back_prop's
-                # _write_negation in the tree engine (no ContextVar
-                # coupling here — the monotonic loop has no chain).
-                if len(c) == 1:
-                    _emit_negated_fact_writeback(root_kb, c[0])
-                if dumper is not None:
-                    dumper.entering(
-                        layer, c, result,
-                        facts_merged=0,
-                        nogood_emitted=landed,
-                        nogood_subsumed=not landed,
-                    )
-                continue
-
-            # Alive.
-            stats.enterings_alive += 1
-
-            # Fork-side is_solved (algorithm_layer_n.md §3d.vii):
-            # if the fork's saturated kb already satisfies the
-            # goal, this commitment IS the solution. Required for
-            # puzzles whose goal directly references hypothesis
-            # facts (e.g. branching/05_mini_zebra,
-            # branching/07_lookahead_off, branching/10_backprop_on,
-            # branching/11_backprop_off — their goal needs the
-            # committed hypothesis in scope to bind, but
-            # hypothesis facts never merge to root). The returned
-            # Solution carries `result.kb` (the fork) so the
-            # caller sees the hypothesis + derivations context.
-            if is_solved(result.kb, mode):
-                if dumper is not None:
-                    dumper.entering(
-                        layer, c, result,
-                        facts_merged=0,
-                        nogood_emitted=False,
-                        nogood_subsumed=False,
-                    )
-                    dumper.early_terminate(layer, "is_solved_at_fork")
-                return _finish(
-                    dumper,
-                    Solution(kb=result.kb, trace=(), tree=None),
-                    stats,
-                )
-
-            this_merged = 0
-            for f in result.unconditional_facts:
-                if root_kb._fact_by_id(
-                    f.relation_name, f.args,
-                ) is None:
-                    stored = root_kb.add_fact(f)
-                    root_kb._index_fact(stored)
-                    stats.facts_merged += 1
-                    this_merged += 1
-
-            if dumper is not None:
-                dumper.entering(
-                    layer, c, result,
-                    facts_merged=this_merged,
-                    nogood_emitted=False,
-                    nogood_subsumed=False,
-                )
-
-            if this_merged:
-                # Option A cadence (Q1.5b.2.a) — re-saturate +
-                # recompute alive after every alive entering.
-                _ = list(Saturator(root_kb).saturate())
-                stats.saturate_count += 1
-                # Merged facts could derive a contradiction at root.
-                if ContradictionDetector(root_kb).detect():
-                    return _finish(
-                        dumper, _contradiction(root_kb), stats,
-                    )
-                alive = _compute_alive(root_kb)
-                # Forced-positive promotion (S1.5b.5b): if alive
-                # shrinks to a singleton, that hypothesis is forced.
-                alive, term = _promote_forced_positives(
-                    root_kb, alive, stats, mode,
-                )
-                if term is not None:
-                    return _finish(dumper, term, stats)
-
-                if is_solved(root_kb, mode):
-                    if dumper is not None:
-                        dumper.early_terminate(layer, "is_solved")
-                    return _finish(
-                        dumper, _solution(root_kb), stats,
-                    )
-
-                # Remaining in-flight candidates may contain
-                # elements no longer alive; `try_commitment_set` handles
-                # those gracefully via the dead-pre path
-                # (committed fact + existing `(not h)` at root
-                # → pre-saturation contradiction).
-
-            a_layer.append(c)
-
-        if dumper is not None:
-            dumper.layer_end(layer, root_kb, len(alive), len(a_layer))
-        if not a_layer:
-            break
-        a_prev = a_layer
-
-    # ── Phase 3 — Verdict synthesis ──────────────────────────
-    # S1.5b.6: singleton dead writebacks may have shrunk
-    # `_negated_facts` since the last `_compute_alive` call (which
-    # only fires on alive enterings with merged facts). Refresh
-    # ``alive`` so the empty-alive contradiction check below is
-    # observed when every layer-1 singleton died.
-    alive = _compute_alive(root_kb)
-    if is_solved(root_kb, mode):
-        return _finish(dumper, _solution(root_kb), stats)
-    if not alive:
-        return _finish(dumper, _contradiction(root_kb), stats)
-    return _finish(dumper, _ambiguity(root_kb), stats)
+    # Behaviour-preserving wrapper around the shared
+    # _explore_layers helper (S1.5b.21). The early-terminate
+    # paths, Phase 3 verdict synthesis, and stats counters all
+    # match the pre-refactor monotonic_solve. The helper's
+    # `entry="monotonic"` discriminator selects the
+    # solution-mode dispatch on every outcome node.
+    verdict, stats = _explore_layers(
+        root_kb,
+        entry="monotonic",
+        max_set_size=max_set_size,
+        config=config,
+        dumper=dumper,
+        max_time=max_time,
+        max_enterings=max_enterings,
+    )
+    # The MonotonicStats type-narrow is safe here — entry
+    # "monotonic" always returns MonotonicStats.
+    assert isinstance(stats, MonotonicStats)
+    return verdict, stats
 
 
 def _finish(
@@ -574,6 +419,350 @@ def _ambiguity(kb: KnowledgeBase) -> Verdict:
     )
 
 
+# ── Shared core loop — _explore_layers ───────────────────────
+#
+# S1.5b.21: extracted from the pre-refactor `monotonic_solve`
+# body. The `entry` discriminator dispatches outcomes for the
+# three public functions (monotonic_solve, gaps_solve,
+# contradictions_solve). The shared core is NEVER DUPLICATED
+# across the three entries — they're all thin wrappers.
+#
+# Behaviour-preserving for `entry="monotonic"`. New behaviour
+# for `entry="gaps"`: instead of early-terminate on is_solved,
+# record into a local `solutions` list and continue the
+# search. Phase 3 synthesises `Ambiguity(branches=[Solution
+# for each recorded])`. The `entry="contradictions"` branch is
+# reserved for S1.5b.23.
+
+
+def _gaps_verdict(solutions: list[_RawSolution]) -> Ambiguity:
+    """Synthesise the GAPS-mode verdict from collected solutions."""
+    branches = tuple(
+        Solution(kb=s.kb, trace=(), tree=None) for s in solutions
+    )
+    return Ambiguity(branches=branches, unresolved=(), tree=None)
+
+
+def _explore_layers(
+    root_kb: KnowledgeBase,
+    *,
+    entry: Literal["monotonic", "gaps", "contradictions"],
+    max_set_size: int = 5,
+    config: SolverConfig | None = None,
+    dumper: MonotonicDumper | LatticeDumper | None = None,
+    max_time: float | None = None,
+    max_enterings: int | None = None,
+) -> tuple[Verdict, MonotonicStats]:
+    """The shared per-candidate loop. See
+    `plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md`
+    for the per-step contract.
+
+    ``entry`` discriminator picks the outcome dispatch +
+    Phase 3 verdict synthesis:
+
+    - ``"monotonic"`` — early-terminate on first goal-sat at
+      fork or root; Phase 3 returns
+      Solution / Ambiguity-frontier / Contradiction per the
+      existing trichotomy.
+    - ``"gaps"`` — record every goal-sat (fork or root) into
+      a local ``solutions`` list, do NOT add satisfying
+      commitments to ``a_layer`` so supersets aren't generated;
+      Phase 3 returns Ambiguity(branches=…). Once root itself
+      satisfies, Phase 2 terminates (further exploration is
+      redundant under monotone semantics).
+    - ``"contradictions"`` — S1.5b.23.
+
+    Stats type is :class:`MonotonicStats` for all three entries
+    in S1.5b.21; S1.5b.22 swaps to :class:`LatticeStats` for
+    gaps + contradictions (the public types). The internal
+    counter set is the same.
+    """
+    if entry == "contradictions":
+        raise NotImplementedError(
+            "_explore_layers entry='contradictions' — backbone "
+            "lands in S1.5b.23",
+        )
+
+    cfg = config or root_kb.config or SolverConfig()
+    root_kb.config = cfg
+
+    # Mode for is_solved-style checks. The mode parameter that
+    # used to live on monotonic_solve was about verdict shape,
+    # which we now dispatch via `entry`. For goal satisfaction
+    # the check is always SOLVE-mode semantics.
+    mode = Mode.SOLVE
+
+    stats = MonotonicStats()
+    t_start = time.perf_counter()
+
+    # Backbone-internal accumulator (gaps).
+    solutions: list[_RawSolution] = []
+    # Tracks whether root.kb has already satisfied is_solved —
+    # ensures gaps records the root-side solution at most once.
+    root_was_solved = False
+
+    # ── Phase 1 — Initial saturation + alive ──────────────────
+    _ = list(Saturator(root_kb).saturate())
+    stats.saturate_count += 1
+    if dumper is not None:
+        dumper.root_initial(root_kb)
+    if ContradictionDetector(root_kb).detect():
+        if entry == "monotonic":
+            return _finish(dumper, _contradiction(root_kb), stats)
+        # gaps: zero solutions; Ambiguity with empty branches.
+        return _finish(dumper, _gaps_verdict(solutions), stats)
+    if is_solved(root_kb, mode):
+        if entry == "monotonic":
+            return _finish(dumper, _solution(root_kb), stats)
+        # gaps: root satisfies trivially; record with empty
+        # commitment carrier + return Ambiguity with 1 branch.
+        solutions.append(_RawSolution(
+            commitment=(), kb=root_kb, firings=(), layer=0,
+        ))
+        return _finish(dumper, _gaps_verdict(solutions), stats)
+
+    alive = _compute_alive(root_kb)
+    alive, term = _promote_forced_positives(root_kb, alive, stats, mode)
+    if term is not None:
+        if entry == "monotonic":
+            return _finish(dumper, term, stats)
+        # gaps: if cascade landed Solution, that's one branch;
+        # if Contradiction, zero branches (Ambiguity with empty).
+        if isinstance(term, Solution):
+            solutions.append(_RawSolution(
+                commitment=(), kb=root_kb, firings=(), layer=0,
+            ))
+        return _finish(dumper, _gaps_verdict(solutions), stats)
+    if not alive:
+        if entry == "monotonic":
+            return _finish(dumper, _contradiction(root_kb), stats)
+        # gaps: empty alive + no solution = zero branches.
+        return _finish(dumper, _gaps_verdict(solutions), stats)
+
+    a_prev: list[CanonicalSetId] = layer_1(alive)
+
+    # ── Phase 2 — Layer-by-layer iteration ───────────────────
+    phase_2_done = False
+    for layer in range(1, max_set_size + 1):
+        if phase_2_done:
+            break
+        stats.layers_explored = layer
+        if dumper is not None:
+            dumper.layer_start(layer, root_kb, len(alive))
+
+        if layer == 1:
+            candidates = list(a_prev)
+        else:
+            candidates = generate_layer(
+                a_prev,
+                alive=alive,
+                nogoods=root_kb._nogoods,
+            )
+
+        candidates.sort()  # lex; scoring switch in S1.5b.26
+
+        a_layer: list[CanonicalSetId] = []
+        for c in candidates:
+            # Budget gate — same as pre-refactor monotonic_solve.
+            if (
+                max_enterings is not None
+                and stats.enterings_total >= max_enterings
+            ):
+                if dumper is not None:
+                    dumper.close()
+                raise BudgetExceededError(
+                    f"max-enterings ({max_enterings}) reached", stats,
+                )
+            if (
+                max_time is not None
+                and (time.perf_counter() - t_start) > max_time
+            ):
+                if dumper is not None:
+                    dumper.close()
+                raise BudgetExceededError(
+                    f"max-time ({max_time}s) exceeded", stats,
+                )
+
+            stats.enterings_total += 1
+            result = try_commitment_set(root_kb, c)
+
+            if result.kind in ("dead-pre", "dead-post"):
+                if result.kind == "dead-pre":
+                    stats.enterings_dead_pre += 1
+                else:
+                    stats.enterings_dead_post += 1
+                landed = emit_nogood(root_kb, frozenset(c), min_size=1)
+                if landed:
+                    stats.nogoods_emitted += 1
+                else:
+                    stats.nogoods_subsumed += 1
+                if len(c) == 1:
+                    _emit_negated_fact_writeback(root_kb, c[0])
+                if dumper is not None:
+                    dumper.entering(
+                        layer, c, result,
+                        facts_merged=0,
+                        nogood_emitted=landed,
+                        nogood_subsumed=not landed,
+                    )
+                # Note (S1.5b.23): contradictions_solve will
+                # collect dead commitments + unsat_cores here.
+                continue
+
+            # Alive.
+            stats.enterings_alive += 1
+
+            # Fork-side is_solved (§3c.ii of algorithm_layer_n.md).
+            if is_solved(result.kb, mode):
+                if entry == "monotonic":
+                    if dumper is not None:
+                        dumper.entering(
+                            layer, c, result,
+                            facts_merged=0,
+                            nogood_emitted=False,
+                            nogood_subsumed=False,
+                        )
+                        dumper.early_terminate(layer, "is_solved_at_fork")
+                    return _finish(
+                        dumper,
+                        Solution(kb=result.kb, trace=(), tree=None),
+                        stats,
+                    )
+                # entry == "gaps": record + continue, do NOT add
+                # to a_layer (supersets of a satisfying commitment
+                # would trivially also satisfy — bloating the
+                # solutions list with redundant records).
+                solutions.append(_RawSolution(
+                    commitment=c, kb=result.kb,
+                    firings=result.firings, layer=layer,
+                ))
+                if dumper is not None:
+                    dumper.entering(
+                        layer, c, result,
+                        facts_merged=0,
+                        nogood_emitted=False,
+                        nogood_subsumed=False,
+                    )
+                    if hasattr(dumper, "solution_recorded"):
+                        dumper.solution_recorded(solutions[-1], layer)
+                continue  # don't merge; don't append to a_layer
+
+            this_merged = 0
+            for f in result.unconditional_facts:
+                if root_kb._fact_by_id(
+                    f.relation_name, f.args,
+                ) is None:
+                    stored = root_kb.add_fact(f)
+                    root_kb._index_fact(stored)
+                    stats.facts_merged += 1
+                    this_merged += 1
+
+            if dumper is not None:
+                dumper.entering(
+                    layer, c, result,
+                    facts_merged=this_merged,
+                    nogood_emitted=False,
+                    nogood_subsumed=False,
+                )
+
+            if this_merged:
+                # Option A cadence (Q1.5b.2.a) — re-saturate +
+                # recompute alive after every alive entering.
+                _ = list(Saturator(root_kb).saturate())
+                stats.saturate_count += 1
+                # Merged facts could derive a contradiction at root.
+                if ContradictionDetector(root_kb).detect():
+                    if entry == "monotonic":
+                        return _finish(
+                            dumper, _contradiction(root_kb), stats,
+                        )
+                    # gaps: root contradictory; stop exploring,
+                    # synthesise Ambiguity with collected solutions.
+                    phase_2_done = True
+                    break
+                alive = _compute_alive(root_kb)
+                alive, term = _promote_forced_positives(
+                    root_kb, alive, stats, mode,
+                )
+                if term is not None:
+                    if entry == "monotonic":
+                        return _finish(dumper, term, stats)
+                    # gaps:
+                    if isinstance(term, Solution):
+                        if not root_was_solved:
+                            solutions.append(_RawSolution(
+                                commitment=c, kb=root_kb,
+                                firings=(), layer=layer,
+                            ))
+                            root_was_solved = True
+                            if (
+                                dumper is not None
+                                and hasattr(dumper, "solution_recorded")
+                            ):
+                                dumper.solution_recorded(
+                                    solutions[-1], layer,
+                                )
+                    # Cascade hit a terminal — exit Phase 2 either
+                    # way (Solution: root satisfies; Contradiction:
+                    # root contradictory). Further exploration is
+                    # redundant.
+                    phase_2_done = True
+                    break
+
+                if is_solved(root_kb, mode):
+                    if entry == "monotonic":
+                        if dumper is not None:
+                            dumper.early_terminate(layer, "is_solved")
+                        return _finish(
+                            dumper, _solution(root_kb), stats,
+                        )
+                    # gaps: record once (root_was_solved guard)
+                    # then terminate Phase 2 — root satisfies, so
+                    # every remaining candidate would just
+                    # re-confirm via fork-side is_solved.
+                    if not root_was_solved:
+                        solutions.append(_RawSolution(
+                            commitment=c, kb=root_kb,
+                            firings=(), layer=layer,
+                        ))
+                        root_was_solved = True
+                        if (
+                            dumper is not None
+                            and hasattr(dumper, "solution_recorded")
+                        ):
+                            dumper.solution_recorded(
+                                solutions[-1], layer,
+                            )
+                    phase_2_done = True
+                    break
+
+            a_layer.append(c)
+
+        if dumper is not None:
+            dumper.layer_end(layer, root_kb, len(alive), len(a_layer))
+        if phase_2_done:
+            break
+        if not a_layer:
+            break
+        a_prev = a_layer
+
+    # ── Phase 3 — Verdict synthesis ──────────────────────────
+    if entry == "monotonic":
+        # S1.5b.6: singleton dead writebacks may have shrunk
+        # `_negated_facts` since the last `_compute_alive` call;
+        # refresh so the empty-alive contradiction check below
+        # is observed.
+        alive = _compute_alive(root_kb)
+        if is_solved(root_kb, mode):
+            return _finish(dumper, _solution(root_kb), stats)
+        if not alive:
+            return _finish(dumper, _contradiction(root_kb), stats)
+        return _finish(dumper, _ambiguity(root_kb), stats)
+
+    # entry == "gaps": always Ambiguity (mode contract).
+    return _finish(dumper, _gaps_verdict(solutions), stats)
+
+
 # ── Sibling entries — gaps_solve + contradictions_solve ──────
 #
 # Per project_set_search_unified memory (2026-05-28): the
@@ -601,7 +790,7 @@ def gaps_solve(
     dumper: LatticeDumper | None = None,
     max_time: float | None = None,
     max_enterings: int | None = None,
-) -> tuple[Ambiguity, LatticeStats]:
+) -> tuple[Ambiguity, MonotonicStats]:
     """Run the unified set-search engine under the GAPS contract.
 
     Exhaustive Apriori-gen — no early termination. Collects
@@ -619,17 +808,30 @@ def gaps_solve(
     ``proof.kb_index`` storage; under :func:`gaps_solve` the
     state-hash dedup MERGE step is auto-disabled (distinct
     satisfying commitments must register separately per the
-    GAPS contract).
+    GAPS contract). **NB: not yet wired in S1.5b.21** — the
+    backbone accepts the flag but ignores it. S1.5b.22 wires
+    `LatticeProof.kb_index`.
 
-    **S1.5b.20 stub** — raises :class:`NotImplementedError`.
-    Backbone lands in S1.5b.21
-    (``s1.5b.21_lattice_backbone.md``).
+    Returns ``(Ambiguity, MonotonicStats)`` in S1.5b.21
+    (deviation from the spec's ``LatticeStats``: that class
+    is an empty dataclass stub in this stage). S1.5b.22
+    promotes the stats type to :class:`LatticeStats` once the
+    LatticeProof shape lands.
     """
-    raise NotImplementedError(
-        "gaps_solve — backbone lands in S1.5b.21. See "
-        "plans/m1_core_graph_reasoning/p1.5b_lattice_search/"
-        "s1.5b.21_lattice_backbone.md",
+    _ = store_lattice  # S1.5b.22 wires this
+    verdict, stats = _explore_layers(
+        root_kb,
+        entry="gaps",
+        max_set_size=max_set_size,
+        config=config,
+        dumper=dumper,
+        max_time=max_time,
+        max_enterings=max_enterings,
     )
+    # The Ambiguity type-narrow is safe — entry "gaps" always
+    # returns Ambiguity per the GAPS mode contract.
+    assert isinstance(verdict, Ambiguity)
+    return verdict, stats
 
 
 def contradictions_solve(

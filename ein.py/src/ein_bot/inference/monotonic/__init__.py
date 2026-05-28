@@ -79,6 +79,7 @@ from ein_bot.inference.monotonic.lattice import (
 )
 from ein_bot.inference.monotonic.solver import (
     BudgetExceededError,
+    MonotonicStats,
     contradictions_solve,
     gaps_solve,
     monotonic_solve,
@@ -91,6 +92,7 @@ __all__ = [
     "LatticeDumper",
     "LatticeProof",
     "LatticeStats",
+    "MonotonicStats",
     "SetNode",
     "SolutionRecord",
     "contradictions_solve",

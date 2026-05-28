@@ -49,13 +49,9 @@ def test_imports_resolve():
     assert LatticeStats is not None
     # Dumper class exists (S1.5b.29 fills the hooks).
     assert LatticeDumper is not None
-
-
-def test_gaps_solve_raises_notimplementederror():
-    """S1.5b.21 fills the backbone."""
-    kb = KnowledgeBase()
-    with pytest.raises(NotImplementedError, match=r"S1\.5b\.21"):
-        gaps_solve(kb)
+    # gaps_solve is no longer a stub (S1.5b.21 shipped the
+    # backbone). The contract tests for gaps_solve live in
+    # test_gaps_backbone.py.
 
 
 def test_contradictions_solve_raises_notimplementederror():
@@ -91,11 +87,6 @@ def test_dumper_no_op_hooks():
 
 
 # ── Placeholders for the feature stages ────────────────────
-
-
-@pytest.mark.skip(reason="gaps_solve backbone — S1.5b.21")
-def test_gaps_solve_returns_ambiguity_on_solvable_puzzle():
-    pass
 
 
 @pytest.mark.skip(reason="LatticeProof data shapes — S1.5b.22")
