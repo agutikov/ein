@@ -81,7 +81,11 @@ from ein_bot.inference.commitment import try_commitment_set
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.contradiction import ContradictionDetector
 from ein_bot.inference.hypgen import generate_hypotheses
-from ein_bot.inference.monotonic.state_dump import MonotonicDumper
+from ein_bot.inference.monotonic.lattice import LatticeStats
+from ein_bot.inference.monotonic.state_dump import (
+    LatticeDumper,
+    MonotonicDumper,
+)
 from ein_bot.inference.nogoods import emit_nogood
 from ein_bot.inference.saturator import Saturator
 from ein_bot.inference.tree.solver import (
@@ -567,4 +571,102 @@ def _ambiguity(kb: KnowledgeBase) -> Verdict:
         branches=(Solution(kb=kb, trace=(), tree=None),),
         unresolved=(),
         tree=None,
+    )
+
+
+# ── Sibling entries — gaps_solve + contradictions_solve ──────
+#
+# Per project_set_search_unified memory (2026-05-28): the
+# engine is unified — all three public entries
+# (monotonic_solve, gaps_solve, contradictions_solve) live
+# side-by-side in this package. They share the per-candidate
+# flow from `algorithm_layer_n.md` (Apriori prefix-join +
+# try_commitment_set + flat root-writes); the difference is
+# whether the loop early-terminates on first goal-sat
+# (monotonic) or exhausts to collect every satisfying /
+# refuted commitment (gaps / contradictions). S1.5b.21 lifts
+# the shared core out of `monotonic_solve` into a private
+# `_explore_layers` helper that all three entries call;
+# S1.5b.23 fills `contradictions_solve`.
+#
+# Skeleton stage — S1.5b.20 — both raise NotImplementedError.
+
+
+def gaps_solve(
+    root_kb: KnowledgeBase,
+    *,
+    max_set_size: int = 5,
+    config: SolverConfig | None = None,
+    store_lattice: bool = False,
+    dumper: LatticeDumper | None = None,
+    max_time: float | None = None,
+    max_enterings: int | None = None,
+) -> tuple[Ambiguity, LatticeStats]:
+    """Run the unified set-search engine under the GAPS contract.
+
+    Exhaustive Apriori-gen — no early termination. Collects
+    every satisfying commitment into ``proof.solutions``;
+    returns :class:`Ambiguity` (always; mode contract) whose
+    branches enumerate the satisfying kbs.
+
+    Caller interpretation:
+        - ``len(verdict.branches) == 0`` — no solution within
+          depth cap.
+        - ``len(verdict.branches) == 1`` — uniquely solvable.
+        - ``len(verdict.branches) > 1`` — genuine multi-solution.
+
+    ``store_lattice=True`` opts into per-SetNode
+    ``proof.kb_index`` storage; under :func:`gaps_solve` the
+    state-hash dedup MERGE step is auto-disabled (distinct
+    satisfying commitments must register separately per the
+    GAPS contract).
+
+    **S1.5b.20 stub** — raises :class:`NotImplementedError`.
+    Backbone lands in S1.5b.21
+    (``s1.5b.21_lattice_backbone.md``).
+    """
+    raise NotImplementedError(
+        "gaps_solve — backbone lands in S1.5b.21. See "
+        "plans/m1_core_graph_reasoning/p1.5b_lattice_search/"
+        "s1.5b.21_lattice_backbone.md",
+    )
+
+
+def contradictions_solve(
+    root_kb: KnowledgeBase,
+    *,
+    max_set_size: int = 5,
+    config: SolverConfig | None = None,
+    store_lattice: bool = False,
+    dumper: LatticeDumper | None = None,
+    max_time: float | None = None,
+    max_enterings: int | None = None,
+) -> tuple[Contradiction, LatticeStats]:
+    """Run the unified set-search engine under the CONTRADICTIONS
+    contract.
+
+    Exhaustive Apriori-gen — no early termination. Collects
+    every dead commitment into ``proof.dead_commitments``;
+    returns :class:`Contradiction` (always; mode contract)
+    whose ``unsat_core`` is the union of every dead's core
+    plus the learned nogood clauses.
+
+    Caller interpretation:
+        - ``len(verdict.proof.dead_commitments) == 0`` — no
+          deaths within depth cap (degenerate; possibly fully
+          solvable).
+        - non-empty — refutation map.
+
+    ``store_lattice=True`` enables state-hash dedup MERGE
+    (distinct dead commitments with identical post-saturation
+    kbs collapse into one multilabel SetNode).
+
+    **S1.5b.20 stub** — raises :class:`NotImplementedError`.
+    Backbone lands in S1.5b.23
+    (``s1.5b.23_lattice_dumper.md``).
+    """
+    raise NotImplementedError(
+        "contradictions_solve — backbone lands in S1.5b.23. "
+        "See plans/m1_core_graph_reasoning/p1.5b_lattice_search/"
+        "s1.5b.23_lattice_dumper.md",
     )

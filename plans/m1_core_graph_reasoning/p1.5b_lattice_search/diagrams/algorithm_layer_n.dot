@@ -1,11 +1,12 @@
-// P1.5b — Lattice engine per-candidate processing in layer N
+// P1.5b — Unified engine per-candidate processing in layer N
 //
-// Shared private `_explore_layers` flow used by both public
-// entries `gaps_solve` + `contradictions_solve`. Entry-specific
-// behaviour is annotated at the outcome nodes (record_solution,
-// dead_collect). Monotonic engine's flow is similar but adds
-// early-terminate at record_solution; documented separately in
-// s1.5b.5_monotonic_backbone.md.
+// Shared private `_explore_layers` flow used by all THREE public
+// entries `monotonic_solve` + `gaps_solve` + `contradictions_solve`
+// (all sibling functions in inference/monotonic/solver.py — one
+// unified engine, three contracts). Entry-specific behaviour is
+// annotated at the outcome nodes (record_solution, dead_collect):
+// monotonic adds early-terminate at record_solution; gaps + contra
+// always exhaust and collect.
 //
 // Saturation commutativity + flat root-writes kill the per-parent
 // bubble + per-set kb storage of ALIVE intermediates that earlier

@@ -1,36 +1,44 @@
-# P1.5b — Per-candidate processing in layer N (lattice engine)
+# P1.5b — Per-candidate processing in layer N (unified engine)
 
 Companion to [`diagrams/algorithm_layer_n.dot`](diagrams/algorithm_layer_n.dot).
 Renders the per-candidate flow inside one BFS layer of the
-**lattice engine**'s shared private `_explore_layers`
-helper, used by both public entries (`gaps_solve`,
-`contradictions_solve`). The layer-wrapping loop (enumerate
-→ process → close layer → recompute alive → next layer) sits
-one level above.
+**unified set-search engine**'s shared private
+`_explore_layers` helper, called by all three public entries
+([`monotonic_solve`](../../../ein.py/src/ein_bot/inference/monotonic/solver.py),
+`gaps_solve`, `contradictions_solve`) which live side-by-side
+in
+[`inference/monotonic/`](../../../ein.py/src/ein_bot/inference/monotonic/).
+The layer-wrapping loop (enumerate → process → close layer →
+recompute alive → next layer) sits one level above.
 
-The monotonic engine's per-candidate flow is documented in
-[`s1.5b.5_monotonic_backbone.md`](s1.5b.5_monotonic_backbone.md);
-it shares the core shape with the lattice engine but adds
-early-terminate on first goal-sat and omits both
-`LatticeProof` collection and per-set storage.
+`monotonic_solve` adds early-terminate on first goal-sat
+(returns Solution immediately) and omits LatticeProof
+collection; `gaps_solve` + `contradictions_solve` always
+exhaust and collect into LatticeProof. Otherwise the flow
+below is the same for all three. The S1.5b.21 refactor
+extracts `_explore_layers` from the existing
+`monotonic_solve` body — the loop is **never duplicated**
+across the three entries.
 
 **Design context — 2026-05-28.** Earlier drafts of this
-document described the lattice flow with multi-parent
+document described separate "monotonic" and "lattice"
+engine flows; the lattice flow carried multi-parent
 integrate, per-set kb storage of every visited commitment,
 per-parent `is_unconditional_at` checks, and a runtime
 sanity step. Under M1's monotone + order-commutative
 saturation, those steps reduce to **idempotent multi-writes
 of the same nogood/forced-positive** or to **always-True
-predicates** — i.e., mechanical redundancy. The flow
-described below uses **flat root-writes** (single write to
-`root._nogoods` / `root.facts` instead of per-parent bubble)
-and bounded per-set storage (SetNodes only when
-`store_lattice=True`; SOLUTION kbs always; dead unsat-cores
-under `contradictions_solve`). A separate engine-design
-correction the same day clarified that the phase ships
-**two engines, three entries** — `monotonic_solve` (solution
-mode only), `gaps_solve`, `contradictions_solve` — rather
-than a single `solve(mode=…)` dispatcher. See
+predicates** — mechanical redundancy. The flow below uses
+**flat root-writes** (single write to `root._nogoods` /
+`root.facts` instead of per-parent bubble) and bounded
+per-set storage (SetNodes only when `store_lattice=True`;
+SOLUTION kbs always; dead unsat-cores under
+`contradictions_solve`). The same-day engine-design
+correction also collapsed the "two engines" framing into
+**one unified engine with three sibling public entries** —
+all in
+[`inference/monotonic/`](../../../ein.py/src/ein_bot/inference/monotonic/),
+sharing the helper described here. See
 [`project-set-search-unified` memory] + the 2026-05-28
 conversation; [README](README.md) for the phase shape.
 
@@ -54,44 +62,52 @@ The diagram uses six colour bands:
 | salmon            | DEAD outcome                                            |
 | plum              | flat root-write (nogood emit or unconditional merge)    |
 
-## Engine surface — three entries
+## Engine surface — three sibling entries
+
+All three live in
+[`inference/monotonic/solver.py`](../../../ein.py/src/ein_bot/inference/monotonic/solver.py)
+and call the shared private
+``_explore_layers(entry: Literal["monotonic","gaps","contradictions"], …)``
+helper (the per-candidate flow described in §3 below).
+S1.5b.21 extracts the helper from today's `monotonic_solve`
+body; S1.5b.21 + S1.5b.23 add the two new wrappers.
 
 ```python
-# Engine 1: monotonic — solution mode only, no storage.
+# All three: inference/monotonic/solver.py
+
 def monotonic_solve(
     root_kb,
     *,
     max_set_size: int = 5,
     config: SolverConfig | None = None,
+    mode: Mode = Mode.SOLVE,                # legacy; raises for non-SOLVE
     dumper: MonotonicDumper | None = None,
     max_time: float | None = None,
     max_enterings: int | None = None,
 ) -> tuple[Verdict, MonotonicStats]:
-    """Solution mode. Early-terminate on first goal-sat.
+    """SOLUTION MODE. Early-terminate on first goal-sat.
     Per-candidate flow is the §3 algorithm below WITH
     early-terminate at §3c.ii AND no LatticeProof collection.
-    Documented in s1.5b.5_monotonic_backbone.md."""
-
-# Engine 2: lattice — two separate entries sharing
-# _explore_layers.
+    Documented in s1.5b.5_monotonic_backbone.md.
+    Shipped under S1.5b.0 to S1.5b.10."""
 
 def gaps_solve(
     root_kb,
     *,
     max_set_size: int = 5,
     config: SolverConfig | None = None,
-    store_lattice: bool = False,                # orthogonal storage toggle
+    store_lattice: bool = False,            # orthogonal storage toggle
     dumper: LatticeDumper | None = None,
     max_time: float | None = None,
     max_enterings: int | None = None,
 ) -> tuple[Ambiguity, LatticeStats]:
-    """GAPS contract: always Ambiguity. Per-candidate flow
+    """GAPS CONTRACT: always Ambiguity. Per-candidate flow
     is the §3 algorithm below WITHOUT early-terminate,
     collecting every satisfying commitment into
     proof.solutions. State-hash dedup MERGE is auto-disabled
     under gaps_solve (correctness — distinct satisfying
     commitments must register separately) even when
-    store_lattice=True."""
+    store_lattice=True. Backbone: S1.5b.21."""
 
 def contradictions_solve(
     root_kb,
@@ -103,16 +119,18 @@ def contradictions_solve(
     max_time: float | None = None,
     max_enterings: int | None = None,
 ) -> tuple[Contradiction, LatticeStats]:
-    """CONTRADICTIONS contract: always Contradiction. Per-candidate
-    flow is the §3 algorithm below WITHOUT early-terminate,
-    collecting every dead commitment into proof.dead_commitments.
-    State-hash dedup merge is safe here (refutation map is
-    multi-label by construction)."""
+    """CONTRADICTIONS CONTRACT: always Contradiction.
+    Per-candidate flow is the §3 algorithm below WITHOUT
+    early-terminate, collecting every dead commitment into
+    proof.dead_commitments. State-hash dedup merge is safe
+    here (refutation map is multi-label by construction).
+    Backbone: S1.5b.23."""
 ```
 
 `store_lattice` toggles whether `LatticeProof.kb_index`
 (per-visited-commitment `SetNode` storage) is built.
-Independent of which lattice entry is called.
+Independent of which entry is called; not present on
+`monotonic_solve` (no storage by design).
 
 ## Algorithm
 

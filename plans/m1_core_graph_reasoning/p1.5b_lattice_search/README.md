@@ -6,20 +6,25 @@ surface.
 **Status:** **active implementation** — phase opened 2026-05-25
 after the user observation that ordered-path tree search wastes
 ``d!`` work on hypothesis permutations that are semantically
-identical under M1's monotone saturation. **Two engines**
-ship under this phase with **distinct contracts** (below).
-Stage plan: monotonic stages first (S1.5b.0–S1.5b.10, all
-shipped); lattice stages from S1.5b.20 onward. Killed
+identical under M1's monotone saturation. **One unified engine**
+ships under this phase, hosting all three public entries
+under `inference/monotonic/`. Stage plan: monotonic stages
+first (S1.5b.0–S1.5b.10, all shipped); lattice-feature
+stages from S1.5b.20 onward extend the same package. Killed
 2026-05-28 in light of monotone-saturation properties:
 **S1.5b.24** (multi-parent integrate — flat root-writes
 are equivalent) and **S1.5b.25** (per-set forced-positive
 mining — already covered by `CommitmentSetResult.unconditional_facts`).
-Also clarified 2026-05-28: **the engines are NOT a single
-mode-driven function** — `monotonic_solve` is solution-mode
-only; the lattice engine ships **two separate entries**
-(`gaps_solve`, `contradictions_solve`) with an orthogonal
-`store_lattice` flag. See [`project-set-search-unified`
-memory] + [`algorithm_layer_n.md`](algorithm_layer_n.md). [S1.5b.1](s1.5b.1_file_split_refactor.md)
+Also clarified 2026-05-28 (in three stages): the engine
+is **NOT a single mode-driven function** (`monotonic_solve`,
+`gaps_solve`, `contradictions_solve` are separate functions
+with distinct return types); the engine is **NOT split
+across two folders** (everything lives in
+`inference/monotonic/`); the core loop is **NOT duplicated**
+across the three entries (S1.5b.21 extracts a shared
+`_explore_layers` helper). See
+[`project-set-search-unified` memory] +
+[`algorithm_layer_n.md`](algorithm_layer_n.md). [S1.5b.1](s1.5b.1_file_split_refactor.md)
 shipped 2026-05-27 (`22a4ebd`, file-split refactor —
 `inference/{tree,monotonic,lattice}/`);
 [S1.5b.2](s1.5b.2_common_apriori_gen.md) shipped 2026-05-27
@@ -102,56 +107,50 @@ At depth 4 on zebra2 with N ≈ 89 candidates, the ceiling is
 
 ## What this phase delivers
 
-**Two engines, three entry points** — **not** a single
-`solve(mode=…)` dispatcher. Per user direction 2026-05-28:
+**One engine, three sibling public entries** — all hosted
+side-by-side in `inference/monotonic/`. **Not** a single
+`solve(mode=…)` dispatcher; **not** two parallel engine
+folders. Per user direction 2026-05-28 (in three stages):
 
-> *"not mode-driven; solution/gaps/... mode separately,
-> flag for storage for lattice nodes - separately;
-> monotonic works only with solution mode"*
+> 1. *"not mode-driven; solution/gaps/... mode separately,
+>    flag for storage for lattice nodes - separately;
+>    monotonic works only with solution mode"*
+> 2. *"unified monotonic-lattice engine"*
+> 3. *"do not duplicate main engine, they all first iterate
+>    lattice nodes, and then make decisions about results
+>    depending on mode"*
 
-The earlier "one mode-driven engine" framing was discarded
-on the same date — conflating three distinct contracts
-(fast-solution / complete-solution-set / refutation-map)
-into a single function with a `mode` parameter hides each
-contract's verdict shape and optimisation profile behind a
-runtime branch. Separate functions per contract keep the
-type system honest. See [`project-set-search-unified`
-memory] + [`algorithm_layer_n.md`](algorithm_layer_n.md).
+The three contracts (fast-solution / complete-solution-set
+/ refutation-map) get three distinct function signatures
+with distinct return types — the type system carries each
+contract — but they share **one** private `_explore_layers`
+helper that hosts the per-candidate flow from
+[`algorithm_layer_n.md`](algorithm_layer_n.md). S1.5b.21
+extracts the helper from the existing `monotonic_solve`
+body; S1.5b.21 + S1.5b.23 add the two new entries as thin
+wrappers calling the same helper with different
+discriminators.
 
-### Engine 1 — monotonic (`inference/monotonic/`)
-
-**Solution mode only.** Early-terminate on first
-goal-satisfying fork. No `LatticeProof`, no DAG storage,
-no opt-in toggle for storage. The current implementation
-in
-[`monotonic/solver.py:monotonic_solve`](../../../ein.py/src/ein_bot/inference/monotonic/solver.py)
-already matches this contract (shipped under
-S1.5b.0–.10). No structural changes.
+### The three entries
 
 ```python
+# inference/monotonic/solver.py — all three live here.
+
 def monotonic_solve(
     kb,
     *,
     max_set_size: int = 5,
     config: SolverConfig | None = None,
+    mode: Mode = Mode.SOLVE,    # legacy guard; raises for non-SOLVE
     dumper: MonotonicDumper | None = None,
     max_time: float | None = None,
     max_enterings: int | None = None,
 ) -> tuple[Verdict, MonotonicStats]:
-    """Solution mode. Early-terminate on first goal-sat.
+    """SOLUTION MODE. Early-terminate on first goal-sat.
     Verdict: Solution / Ambiguity-frontier / Contradiction.
-    """
-```
+    Already shipped under S1.5b.0 to S1.5b.10."""
 
-### Engine 2 — lattice (`inference/lattice/`) — **two entries**
 
-The lattice engine ships two distinct top-level functions,
-each with its own verdict-shape contract. Both build on
-the same shared private `_explore_layers(...)` helper
-(the per-candidate flow from
-[`algorithm_layer_n.md`](algorithm_layer_n.md)).
-
-```python
 def gaps_solve(
     kb,
     *,
@@ -162,13 +161,13 @@ def gaps_solve(
     max_time: float | None = None,
     max_enterings: int | None = None,
 ) -> tuple[Ambiguity, LatticeStats]:
-    """GAPS mode. Exhaustive search. Collects every satisfying
-    commitment into `proof.solutions`. Verdict is always
-    `Ambiguity` (mode contract); caller checks
-    `len(verdict.proof.solutions)` to interpret —
-    `== 1` means uniquely solvable, `> 1` means genuine
-    multi-solution, `== 0` means unsolvable within the cap.
-    """
+    """GAPS MODE. Exhaustive. Collects every satisfying
+    commitment into proof.solutions. Verdict is always
+    Ambiguity (contract); caller checks
+    len(verdict.proof.solutions) to interpret —
+    == 1 means uniquely solvable, > 1 means genuine
+    multi-solution, == 0 means unsolvable within the cap.
+    Backbone: S1.5b.21."""
 
 
 def contradictions_solve(
@@ -181,17 +180,32 @@ def contradictions_solve(
     max_time: float | None = None,
     max_enterings: int | None = None,
 ) -> tuple[Contradiction, LatticeStats]:
-    """CONTRADICTIONS mode. Exhaustive search. Collects every
-    dead commitment into `proof.dead_commitments`. Verdict is
-    always `Contradiction` (mode contract); `unsat_core` is
-    the union of every recorded dead's core plus the learned
-    nogood clauses.
-    """
+    """CONTRADICTIONS MODE. Exhaustive. Collects every dead
+    commitment into proof.dead_commitments. Verdict is
+    always Contradiction (contract); unsat_core is the
+    union of every recorded dead's core plus the learned
+    nogood clauses. Backbone: S1.5b.23."""
+```
+
+Under the hood (S1.5b.21):
+
+```python
+def _explore_layers(
+    root_kb, *,
+    entry: Literal["monotonic", "gaps", "contradictions"],
+    max_set_size, config, store_lattice, dumper, max_time, max_enterings,
+) -> tuple[Verdict, Stats]:
+    """Shared core. Dispatches on `entry` for outcome handling +
+    verdict synthesis. The three public functions are thin
+    wrappers that fix `entry` and the return-type-narrowing."""
 ```
 
 ### `store_lattice` — orthogonal storage flag
 
-Independent of which entry is called. When `False` (default):
+Only on `gaps_solve` and `contradictions_solve` (monotonic
+doesn't take it — no storage by design).
+
+When `False` (default):
 
 - `proof.solutions` (gaps) / `proof.dead_commitments`
   (contradictions) are collected — these are mandatory for
@@ -203,23 +217,23 @@ When `True`:
 
 - Additionally builds `proof.kb_index: dict[int, SetNode]`
   — one SetNode per visited commitment with kb_snapshot,
-  enabling state-hash dedup as multilabel merge + DAG
-  audit + the per-set dumper folders.
-- For `gaps_solve` specifically: state-hash dedup MERGE
-  is auto-disabled (distinct satisfying commitments must
-  register separately under GAPS contract). The SetNodes
-  are still built, but two SetNodes with identical
-  state_hash stay separate rather than collapsing.
+  enabling state-hash dedup as multilabel merge (under
+  `contradictions_solve` only) + DAG audit + the per-set
+  dumper folders (under either entry).
+- For `gaps_solve`: state-hash dedup MERGE is
+  auto-disabled (distinct satisfying commitments must
+  register separately under GAPS contract). SetNodes are
+  built but two with identical state_hash stay separate.
 
 ### Why monotonic doesn't have `store_lattice`
 
-Monotonic is the "fastest path to first solution" engine.
+Monotonic is the "fastest path to first solution" entry.
 It commits unconditional facts to root incrementally; the
 only kbs that ever exist outside the loop are root.kb and
 the surviving fork's kb (the returned Solution.kb). There's
 no DAG to store — every dead commitment's clause goes
 straight to `root._nogoods`, never per-SetNode. Adding a
-storage flag would be feature creep against the engine's
+storage flag would be feature creep against the entry's
 single contract.
 
 If you want lattice storage for a *uniquely-solvable*
@@ -254,42 +268,56 @@ ein.py/src/ein_bot/inference/
    │                                    ContradictionDetector, Lookahead,
    │                                    hypgen, nogoods, apriori, commitment,
    │                                    canon (state_hash), kb-store helpers
-   ├── tree/                         ← current tree-search (reference; deprecated end-of-phase)
+   ├── tree/                         ← legacy tree-search (reference; deprecated end-of-phase)
    │   ├── solver.py                 ← _explore / _descend / _consume
    │   ├── back_prop.py              ← ancestor-chain back-prop (S1.5a.14)
    │   └── ...
-   ├── monotonic/                    ← solution-mode-only engine
+   ├── monotonic/                    ← UNIFIED set-search engine; all three public entries
    │   ├── solver.py                 ← monotonic_solve (shipped S1.5b.0–.10)
-   │   ├── state_dump.py             ← MonotonicDumper (S1.5b.7)
-   │   └── ...
-   └── lattice/                      ← gaps_solve + contradictions_solve
-       ├── solver.py                 ← public entries + shared _explore_layers
-       ├── lattice.py                ← LatticeProof, SetNode, SolutionRecord, DeadCommitment
-       ├── state_dump.py             ← LatticeDumper (S1.5b.29)
-       └── ...
+   │   │                               + gaps_solve (S1.5b.20 stub, S1.5b.21 backbone)
+   │   │                               + contradictions_solve (S1.5b.20 stub, S1.5b.23 backbone)
+   │   │                               + private _explore_layers shared core (S1.5b.21)
+   │   ├── lattice.py                ← LatticeProof, SolutionRecord, DeadCommitment,
+   │   │                               SetNode, LatticeStats (S1.5b.20 stubs, S1.5b.22 fields)
+   │   ├── state_dump.py             ← MonotonicDumper (S1.5b.7) + LatticeDumper
+   │   │                               (S1.5b.20 stub, S1.5b.29 implementation)
+   │   └── __init__.py               ← re-exports all three entries + all data types
+   └── lattice/                      ← empty package (legacy 0-byte __init__.py;
+                                        kept for future namespace use, not an engine)
 
 ein.py/demo/
-   ├── bench_solve.py                ← unchanged; tree entry (deprecated end-of-phase)
+   ├── bench_solve.py                ← unchanged; legacy tree entry (deprecated end-of-phase)
    ├── bench_monotonic.py            ← monotonic_solve entry (shipped S1.5b.0–.10)
-   └── bench_lattice.py              ← gaps_solve + contradictions_solve entry
-                                        (renamed from bench_dag.py concept; new in S1.5b.20)
-                                        CLI dispatches to one of the two functions:
-                                          --gaps         → gaps_solve
-                                          --contradictions → contradictions_solve
-                                          --store-lattice  → orthogonal storage flag
+   └── bench_lattice.py              ← gaps_solve + contradictions_solve dispatcher (S1.5b.20)
+                                        --gaps           → gaps_solve
+                                        --contradictions → contradictions_solve
+                                        --store-lattice  → orthogonal storage flag
+                                        imports from inference.monotonic (the unified engine)
 ```
 
-**Two engines, three benches, three public entries.**
-The `inference/lattice/` subpackage hosts both lattice
-entries (sharing a private `_explore_layers` helper) plus
-the data-structure module (`lattice.py`) consumed by both
-entries and by P1.6's explanation walk. The `--gaps` /
+**One engine, three public entries, three demo scripts.**
+The `inference/monotonic/` subpackage hosts all three
+public functions (sharing the private `_explore_layers`
+helper that S1.5b.21 extracts from the existing
+`monotonic_solve` body) plus the data-structure module
+(`lattice.py`) consumed by `gaps_solve` /
+`contradictions_solve` and by P1.6's explanation walk. The
+folder name `monotonic` describes one of the three
+functions, not the whole engine — kept to avoid churning
+imports across the codebase. The `--gaps` /
 `--contradictions` flag on `bench_lattice.py` is **CLI
-dispatch**, not a mode parameter on the underlying engine
-— each function has its own contract and return type.
+dispatch**, not a mode parameter on a single entry — each
+public function has its own contract and return type.
 
-**Tree as reference, not legacy.** Stays around until both
-lattice entries reach parity on the regression suite;
+**`inference/lattice/` stays empty.** The 0-byte
+`__init__.py` exists from before the unification (legacy
+package layout); not deleting the folder lets us reserve
+the namespace for future use without churning git history.
+Do NOT add solver modules there — the unified engine lives
+in `inference/monotonic/`.
+
+**Tree as reference, not legacy.** Stays around until the
+two lattice entries reach parity on the regression suite;
 removal queued for end of phase (S1.5b.30 perf round).
 
 ## Scope boundary
@@ -415,28 +443,29 @@ P1.5b does NOT own:
 
 ### *(S1.5b.11 to S1.5b.19 reserved — monotonic perf / extension space)*
 
-### Lattice engine — S1.5b.20 onward
+### Lattice-feature stages — S1.5b.20 onward
 
-Each stage builds out the `inference/lattice/` engine —
-two distinct entries (`gaps_solve`, `contradictions_solve`)
-sharing a private `_explore_layers` helper. The
+Each stage builds out the unified set-search engine in
+`inference/monotonic/` — adding the lattice data types,
+the two non-monotonic public entries (`gaps_solve`,
+`contradictions_solve`), and the LatticeDumper. The
 `store_lattice` flag is orthogonal and lands in S1.5b.22.
 
 | ID       | Title                                                                                  |
 |----------|----------------------------------------------------------------------------------------|
-| S1.5b.20 | **Lattice engine skeleton** — `inference/lattice/{__init__,solver,lattice,state_dump}.py` stubs; `bench_lattice.py` skeleton with `--gaps` / `--contradictions` / `--store-lattice` flags; tests collect with skip markers |
-| S1.5b.21 | **`gaps_solve` backbone** — public entry + shared private `_explore_layers`; exhaustive Apriori-gen; collects every satisfying commitment; verdict = `Ambiguity` always (mode contract); NO `LatticeProof` yet (S1.5b.22), NO `store_lattice` storage (S1.5b.22), NO dumper (S1.5b.29) |
-| S1.5b.22 | **`LatticeProof` data class + `store_lattice` flag** — `inference/lattice/lattice.py` defines `SolutionRecord`, `DeadCommitment`, `SetNode`, `LatticeProof`, `LatticeStats`; `gaps_solve` returns `Ambiguity(proof=…)`; `store_lattice=True` builds per-SetNode `kb_index` (state-hash dedup merge auto-disabled under gaps_solve — correctness) |
-| S1.5b.23 | **`contradictions_solve` backbone** — second public entry; collects every dead commitment into `proof.dead_commitments`; verdict = `Contradiction(unsat_core=⋃ cores, proof=…)` always; reuses `_explore_layers` from S1.5b.21 |
+| S1.5b.20 | **Lattice-entry skeleton** — `inference/monotonic/lattice.py` (data class stubs); `inference/monotonic/solver.py` extended with `gaps_solve` + `contradictions_solve` stubs raising `NotImplementedError`; `inference/monotonic/state_dump.py` extended with `LatticeDumper` (no-op hooks); `bench_lattice.py` skeleton dispatcher; tests under `tests/inference/lattice/` collect with skip markers |
+| S1.5b.21 | **`gaps_solve` backbone + shared `_explore_layers`** — refactor: extract the existing `monotonic_solve` loop body into a private `_explore_layers(entry="monotonic"\|"gaps"\|"contradictions", …)` helper; rewire `monotonic_solve` to call it with `entry="monotonic"`; add `gaps_solve` calling with `entry="gaps"`; exhaustive (no early-terminate when entry != "monotonic"); collects every satisfying commitment; verdict = `Ambiguity` always (mode contract); NO `LatticeProof` fields yet (S1.5b.22), NO `store_lattice` storage (S1.5b.22), NO LatticeDumper sections (S1.5b.29) |
+| S1.5b.22 | **`LatticeProof` data class + `store_lattice` flag** — `inference/monotonic/lattice.py` fills `SolutionRecord`, `DeadCommitment`, `SetNode`, `LatticeProof`, `LatticeStats` with real fields; `gaps_solve` returns `Ambiguity(proof=…)`; `store_lattice=True` builds per-SetNode `kb_index` (state-hash dedup merge auto-disabled under `gaps_solve` — correctness); also adds `KnowledgeBase.snapshot()` to `kb/store.py` |
+| S1.5b.23 | **`contradictions_solve` backbone** — calls `_explore_layers` with `entry="contradictions"`; collects every dead commitment into `proof.dead_commitments`; verdict = `Contradiction(unsat_core=⋃ cores, proof=…)` always; under `store_lattice=True` the state-hash dedup merge fires |
 | ~~S1.5b.24~~ | ~~Back-prop integrate~~ — **KILLED** 2026-05-28: flat root-writes are equivalent under monotone saturation. See [s1.5b.24_lattice_integrate.md](s1.5b.24_lattice_integrate.md). |
 | ~~S1.5b.25~~ | ~~Per-set forced-positive mining~~ — **KILLED** 2026-05-28: already provided by `CommitmentSetResult.unconditional_facts` + flat root-merge. See [s1.5b.25_lattice_forced_positives.md](s1.5b.25_lattice_forced_positives.md). |
-| S1.5b.26 | Within-layer scoring switch (`lattice_order: "lex" \| "score-sum"`) — applies to both lattice entries via shared `_explore_layers` |
-| S1.5b.27 | Optional saturation-commutativity sanity check (`--commutativity-check`) — dev/regression tool; validates the premise both lattice entries rest on |
+| S1.5b.26 | Within-layer scoring switch (`lattice_order: "lex" \| "score-sum"`) — applies to all three entries via shared `_explore_layers` |
+| S1.5b.27 | Optional saturation-commutativity sanity check (`--commutativity-check`) — dev/regression tool; validates the premise all three entries rest on |
 | S1.5b.28 | Lattice example fixtures + state-hash collision measurement — `examples/lattice/01_subset_pruned.ein`, `02_genuine_3set_death.ein`; verify state-hash collision on `examples/zebra2-hints.ein` under `contradictions_solve --store-lattice` |
-| S1.5b.29 | **`LatticeDumper` + P1.6 handoff contract** — `inference/lattice/state_dump.py`; per-set folder layout under `--dump-states`; ratify `LatticeProof` contract via mock-walker tests; both lattice entries get dumper hooks |
-| S1.5b.30 | End-of-phase perf round + tree-side deprecation — subset-trie / interned set-ids; rename considerations (`monotonic_solve` stays, tree gets `# deprecated` tags); measure d!-redundancy ratio on zebra2 |
+| S1.5b.29 | **`LatticeDumper` implementation + P1.6 handoff contract** — fills `inference/monotonic/state_dump.py`'s `LatticeDumper` class with the real per-set folder layout under `--dump-states`; ratifies the `LatticeProof` contract via mock-walker tests; both `gaps_solve` + `contradictions_solve` get dumper hooks in `_explore_layers` |
+| S1.5b.30 | End-of-phase perf round + tree-side deprecation — subset-trie / interned set-ids; tree gets `# deprecated` tags; measure d!-redundancy ratio on zebra2; rename considerations parked (the folder name `monotonic` describes one of three entries, but renaming would churn imports across the codebase) |
 | S1.5b.31 | Lattice shuffle invariance — traversal-order regression net for both lattice entries (tree-side sibling: P1.5a S1.5a.16, closed 2026-05-26) |
-| S1.5b.32 | Domain-elim rule (forall) vs explicit hypothesis exploration — research stage: result/correctness/satisfiability vs performance trade-offs across monotonic + both lattice entries + tree side |
+| S1.5b.32 | Domain-elim rule (forall) vs explicit hypothesis exploration — research stage: result/correctness/satisfiability vs performance trade-offs across the unified engine's three entries + tree side |
 
 The boundaries between stages will shift; the numbering keeps
 a 10-slot gap between the monotonic stages (S1.5b.0–.10) and

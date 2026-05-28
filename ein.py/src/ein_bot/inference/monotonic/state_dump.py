@@ -209,4 +209,81 @@ class MonotonicDumper:
         self._timeline_seq += 1
 
 
-__all__ = ["MonotonicDumper"]
+@dataclass
+class LatticeDumper:
+    """Filesystem-snapshotting hooks attached to a :func:`gaps_solve`
+    or :func:`contradictions_solve` run.
+
+    Sibling of :class:`MonotonicDumper`; shares the same
+    lifecycle-hook pattern but adds entry-specific sections
+    (``solutions/`` under :func:`gaps_solve`, ``dead/`` under
+    :func:`contradictions_solve`, ``kb_index/`` when
+    ``store_lattice=True``). The two dumpers may merge into a
+    single class end-of-phase; for now keeping them separate
+    keeps each entry's audit shape independent.
+
+    ``out_dir=None`` skips every filesystem write — the hooks
+    still fire but produce no on-disk artefacts.
+
+    **Skeleton stage — S1.5b.20.** All hooks are no-op
+    callables. S1.5b.29 fills the real per-set audit layout
+    per ``s1.5b.29_lattice_proof.md``.
+    """
+
+    out_dir: Path | None = None
+    started_at: float = field(default_factory=time.time)
+
+    # Lifecycle hooks — names mirror MonotonicDumper for
+    # consistency. S1.5b.29 will override these with the real
+    # writers and add the lattice-specific
+    # ``solution_recorded`` / ``dead_recorded`` /
+    # ``proof_summary`` hooks (already stubbed below).
+
+    def root_initial(self, kb: KnowledgeBase) -> None:
+        """Called once after Phase 1's initial saturation."""
+
+    def layer_start(
+        self, layer: int, kb: KnowledgeBase, alive_size: int,
+    ) -> None:
+        """Called at the top of each Phase 2 layer iteration."""
+
+    def entering(
+        self,
+        layer: int,
+        commitment: tuple,
+        result: Any,
+        *,
+        facts_merged: int,
+        nogood_emitted: bool,
+        nogood_subsumed: bool,
+    ) -> None:
+        """Called after each ``try_commitment_set`` returns."""
+
+    def layer_end(
+        self,
+        layer: int,
+        kb: KnowledgeBase,
+        alive_size: int,
+        survived_count: int,
+    ) -> None:
+        """Called at the bottom of each Phase 2 layer iteration."""
+
+    def solution_recorded(
+        self, record: Any, layer: int,
+    ) -> None:
+        """Called when :func:`gaps_solve` appends a SolutionRecord."""
+
+    def dead_recorded(self, dead: Any) -> None:
+        """Called when :func:`contradictions_solve` appends a DeadCommitment."""
+
+    def proof_summary(self, proof: Any) -> None:
+        """Called from :meth:`summary` when ``proof`` is non-None."""
+
+    def summary(self, verdict: Any, stats: Any) -> None:
+        """Called once at the end of the solve."""
+
+    def close(self) -> None:
+        """Called on abort (budget exceeded) — flush partial state."""
+
+
+__all__ = ["LatticeDumper", "MonotonicDumper"]
