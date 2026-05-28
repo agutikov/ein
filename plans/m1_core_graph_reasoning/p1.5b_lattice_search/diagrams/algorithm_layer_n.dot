@@ -1,17 +1,29 @@
-// P1.5b — Lattice-search per-candidate processing in layer N
+// P1.5b — Lattice engine per-candidate processing in layer N
+//
+// Shared private `_explore_layers` flow used by both public
+// entries `gaps_solve` + `contradictions_solve`. Entry-specific
+// behaviour is annotated at the outcome nodes (record_solution,
+// dead_collect). Monotonic engine's flow is similar but adds
+// early-terminate at record_solution; documented separately in
+// s1.5b.5_monotonic_backbone.md.
+//
+// Saturation commutativity + flat root-writes kill the per-parent
+// bubble + per-set kb storage of ALIVE intermediates that earlier
+// drafts of this diagram carried. See algorithm_layer_n.md for the
+// per-step contract; see project_set_search_unified memory +
+// 2026-05-28 conversation for the rationale.
 //
 // Render:  dot -Tsvg algorithm_layer_n.dot -o algorithm_layer_n.svg
 //      or  dot -Tpng algorithm_layer_n.dot -o algorithm_layer_n.png
 //
 // Colour legend:
-//   light blue       — setup / data flow
-//   light cyan       — accumulators (forced positives / negatives)
+//   light blue       — setup / data flow / try_commitment_set
 //   light yellow     — decision points (diamonds)
-//   light gray      — optional / disabled-by-default
-//   pale green      — ALIVE outcome
-//   medium sea green — SOLUTION outcome (terminal)
-//   salmon          — DEAD outcome
-//   plum            — back-propagation / nogood emission
+//   light gray       — optional / opt-in feature (hash dedup, sanity)
+//   pale green       — ALIVE outcome
+//   medium sea green — SOLUTION outcome (entry-specific: collected by gaps_solve)
+//   salmon           — DEAD outcome (nogood emit + entry-specific: collected by contradictions_solve)
+//   plum             — root-mutation step (flat write: nogoods or unconditional facts)
 
 digraph layer_n_processing {
   rankdir = TB;
@@ -22,132 +34,95 @@ digraph layer_n_processing {
   node [fontname = "Helvetica", shape = box, style = "rounded,filled"];
   edge [fontname = "Helvetica"];
 
-  // ── Layer-level setup ────────────────────────────────────────────
-  start [label = "Layer N start\nA_1, …, A_{N-1} frozen\nroot._nogoods carried in",
+  // ── Layer-level setup ──────────────────────────────────────────
+  start [label = "Layer N start\nA_1, …, A_{N-1} frozen\nroot.facts + root._nogoods current",
          fillcolor = lightblue];
 
   generate [label = "Apriori prefix-join\nA_{N-1} ⨝ A_{N-1} → candidates\n(each size-N candidate generated once)",
             fillcolor = lightblue];
 
-  filter [label = "Filter candidates:\n• every (N-1)-subset ∈ A_{N-1}\n• ¬ matches_any_nogood(c, root._nogoods)\n• every element ∈ current_alive",
+  filter [label = "Filter candidates:\n• every (N-1)-subset ∈ A_{N-1}\n• ¬ matches_any_nogood(C, root._nogoods)\n• every element ∈ current_alive",
           fillcolor = lightyellow, shape = parallelogram];
 
   loop_head [label = "for each surviving candidate C\n(|C| = N)",
              fillcolor = lightblue, shape = octagon];
 
-  // ── Per-candidate setup ─────────────────────────────────────────
-  find_parents [label = "find C's parents:\nall N (N-1)-subsets of C\n(each must be in A_{N-1})",
-                fillcolor = lightblue];
-
-  sanity [label = "[OPTIONAL — disabled by default]\nfor each parent P_i:\n  fork(P_i.kb), add h_i = C \\ P_i, saturate\nverify state_hash(...) is identical across all i\n(validates saturation commutativity)",
-          fillcolor = lightgray, style = "rounded,filled,dashed"];
-
-  fork_one [label = "fork ANY one parent P's kb\n(commutativity ⟹ result is independent of choice)",
-            fillcolor = lightblue];
-
-  add_hyp [label = "add hypothesis h = C \\ P to fork\n(NOT yet saturated)",
+  // ── Per-candidate setup ────────────────────────────────────────
+  try_set [label = "try_commitment_set(root, C):\n• fork ← root.fork()\n• add every h ∈ C to fork\n• pre-sat ContradictionDetector(fork)\n• Saturator(fork).saturate()\n• post-sat ContradictionDetector(fork)\n• extract unconditional_facts (chain ∩ C = ∅)",
            fillcolor = lightblue];
 
-  // ── Pre-saturation contradiction (apriori filter) ───────────────
-  pre_contra [label = "ContradictionDetector(fork).detect()\n[pre-sat: any (X, ¬X) pair?]",
+  hash_dedup [label = "[OPT-IN — store_lattice flag]\nstate_hash(fork) ∈ proof.kb_index?\n[under gaps_solve: SetNode is added but\n NOT merged — distinct sets must register\n separately by GAPS contract]",
+              fillcolor = lightgray, style = "rounded,filled,dashed", shape = diamond];
+
+  merge_label [label = "MERGE label into existing SetNode E\n(contradictions_solve only):\n• E.labels += (C,)\n• audit row marks C → merged_into = E\nSKIP downstream (everything already recorded)",
+               fillcolor = lightgray, style = "rounded,filled,dashed"];
+
+  kind_check [label = "result.kind?",
               fillcolor = lightyellow, shape = diamond];
 
-  // ── Saturation pipeline ─────────────────────────────────────────
-  saturate [label = "Saturator(fork).saturate()",
-            fillcolor = lightblue];
+  // ── DEAD path ──────────────────────────────────────────────────
+  dead [label = "DEAD (pre-sat or post-sat)\nunsat_core = result.unsat_core",
+        fillcolor = salmon];
 
-  // ── Post-saturation state-hash dedup ────────────────────────────
-  state_hash_check [label = "state_hash(fork) ∈ lattice index?\n[post-sat dedup checkpoint]",
-                    fillcolor = lightyellow, shape = diamond];
-
-  merge_into [label = "MERGE into existing node E\n• E.labels += (C,)\n• E.parents += C's parents\n• audit row in A_N or D_N\n  marks C → merged_into=E.canonical_set\nSKIP downstream pipeline\n(verdict + bubbles already recorded on E)",
-              fillcolor = lightcyan];
-
-  record_uncond [label = "scan firings:\n• forced_positives — derives_positive ∧ ¬reaches_hypothesis\n• proposed_negatives — ¬h_other derived with no-hypothesis chain",
-                 fillcolor = lightcyan];
-
-  post_contra [label = "ContradictionDetector(fork).detect()\n[post-sat: any (X, ¬X) pair?]",
-               fillcolor = lightyellow, shape = diamond];
-
-  is_solved [label = "is_solved(fork, mode)?\n(goal facts present)",
-             fillcolor = lightyellow, shape = diamond];
-
-  // ── Outcome: ALIVE ──────────────────────────────────────────────
-  alive [label = "ALIVE\nrecord SetNode in A_N\n• canonical_set = C\n• labels = (C,) (multilabel grows on future merges)\n• parents = (P_1, …, P_N)\n• kb_snapshot, firings, forced_*, learned_nogoods",
-         fillcolor = palegreen];
-
-  alive_integrate [label = "integrate(parent_kb, C's BranchResult)\nfor EACH parent P_i of C:\n• adopt forced_positives (if forced at P_i too)\n• adopt proposed_negatives (per-level unconditional check)\n• merge learned_nogoods (idempotent under subsumption)\nrecursive bubble continues until root",
+  dead_root_write [label = "Flat root-write:\n• emit_nogood(root, frozenset(C))\n  (subsumption-aware insert — nogoods.py)\n• if |C| = 1: write (not h) to root._negated_facts\n  (+ symmetric mirror if applicable)",
                    fillcolor = plum];
 
-  // ── Outcome: DEAD (pre-sat) ─────────────────────────────────────
-  dead_pre [label = "DEAD (pre-sat)\nunsat_core = ContradictionDetector witnesses\nemit nogood = frozenset(C) into root._nogoods\nrecord SetNode in D_N with verdict=\"dead\"",
-            fillcolor = salmon];
+  dead_collect [label = "[contradictions_solve only]\nproof.dead_commitments.append(\n  DeadCommitment(C, unsat_core, ...)\n)\n[gaps_solve / monotonic_solve:\n nothing collected; clause suffices]",
+                fillcolor = lightcyan];
 
-  dead_pre_integrate [label = "integrate(parent_kb, C's BranchResult)\nfor EACH parent P_i of C:\n• merge clause {frozenset(C)} into _nogoods\n(no forced positives — never saturated)\nidempotent across the N parents",
-                      fillcolor = plum];
+  // ── ALIVE path ─────────────────────────────────────────────────
+  is_solved_fork [label = "is_solved(result.kb, mode)?",
+                  fillcolor = lightyellow, shape = diamond];
 
-  // ── Outcome: DEAD (post-sat) ────────────────────────────────────
-  dead_post [label = "DEAD (post-sat)\nunsat_core = ContradictionDetector witnesses\nemit nogood = frozenset(C) into root._nogoods\nrecord SetNode in D_N with verdict=\"dead\"",
-             fillcolor = salmon];
+  record_solution [label = "RECORD solution (entry-specific):\n• gaps_solve:\n    proof.solutions.append(\n      SolutionRecord(C, result.kb.snapshot(), ...)\n    )\n• monotonic_solve:\n    return Solution(kb=result.kb)   ← early-terminate\n• contradictions_solve: nothing recorded",
+                   fillcolor = mediumseagreen];
 
-  dead_post_integrate [label = "integrate(parent_kb, C's BranchResult)\nfor EACH parent P_i of C:\n• merge clause {frozenset(C)} into _nogoods\n• adopt forced_positives collected pre-contradiction\n  (if independently unconditional at P_i)\nidempotent across the N parents",
-                       fillcolor = plum];
+  merge_uncond [label = "Flat root-write (alive merge):\n• for f ∈ result.unconditional_facts:\n    root.add_fact(f); root._index_fact(f)\n• Saturator(root).saturate()\n• ContradictionDetector(root) — early ⊥ exit\n• alive ← compute_alive(root)\n• promote_forced_positives cascade\n  (singleton alive → h is forced)\n• if is_solved(root): entry-specific record\n  (monotonic terminates; gaps records; contra: nothing)",
+                fillcolor = plum];
 
-  // ── Outcome: SOLUTION ───────────────────────────────────────────
-  solution [label = "SOLUTION\nLatticeProof produced:\n• final_kb = fork\n• alive_at_end = C\n• lattice DAG\n• dead_commitments\n(SOLVE mode: terminate; GAPS: record + continue)",
-            fillcolor = mediumseagreen];
-
-  // ── Layer wrap-up ───────────────────────────────────────────────
+  // ── Layer wrap-up ──────────────────────────────────────────────
   loop_tail [label = "next candidate?",
              fillcolor = lightblue, shape = octagon];
 
-  end [label = "Layer N complete\nA_N, D_N populated\nroot._nogoods updated\nrecompute current_alive for layer N+1",
+  end [label = "Layer N complete\nA_N populated (alive sets visited)\nroot.facts + root._nogoods up to date\nproof.solutions + proof.dead_commitments grown",
        fillcolor = lightblue];
 
-  // ── Edges: setup → loop ─────────────────────────────────────────
+  // ── Edges: setup → loop ────────────────────────────────────────
   start -> generate;
   generate -> filter;
   filter -> loop_head;
 
-  // ── Edges: per-candidate ────────────────────────────────────────
-  loop_head -> find_parents;
-  find_parents -> sanity [style = dashed, color = gray, label = "if enabled"];
-  sanity -> fork_one [style = dashed, color = gray, label = "states agree"];
-  find_parents -> fork_one [label = "default path"];
-  fork_one -> add_hyp;
-  add_hyp -> pre_contra;
+  // ── Per-candidate edges ────────────────────────────────────────
+  loop_head -> try_set;
+  try_set -> hash_dedup [label = "if flag on", style = dashed, color = gray];
+  try_set -> kind_check [label = "default"];
+  hash_dedup -> merge_label [label = "hit (cross-set collide)", style = dashed, color = gray];
+  hash_dedup -> kind_check [label = "miss"];
+  merge_label -> loop_tail [style = dashed, color = gray];
 
-  // ── Pre-sat branch ──────────────────────────────────────────────
-  pre_contra -> dead_pre [label = "contradiction", color = red];
-  pre_contra -> saturate [label = "clean"];
+  kind_check -> dead [label = "dead-pre / dead-post", color = red];
+  kind_check -> is_solved_fork [label = "alive"];
 
-  // ── Post-sat branch ─────────────────────────────────────────────
-  saturate -> state_hash_check;
-  state_hash_check -> merge_into [label = "hit", color = darkblue];
-  state_hash_check -> record_uncond [label = "miss"];
-  merge_into -> loop_tail [label = "skip", style = dashed, color = darkblue];
-  record_uncond -> post_contra;
-  post_contra -> dead_post [label = "contradiction", color = red];
-  post_contra -> is_solved [label = "clean"];
-  is_solved -> solution [label = "goal satisfied", color = darkgreen];
-  is_solved -> alive [label = "goal not satisfied"];
+  // ── DEAD subgraph ──────────────────────────────────────────────
+  dead -> dead_root_write;
+  dead_root_write -> dead_collect;
+  dead_collect -> loop_tail;
 
-  // ── Outcome → integrate ─────────────────────────────────────────
-  alive -> alive_integrate;
-  dead_pre -> dead_pre_integrate;
-  dead_post -> dead_post_integrate;
+  // ── ALIVE subgraph ─────────────────────────────────────────────
+  is_solved_fork -> record_solution [label = "goal satisfied", color = darkgreen];
+  is_solved_fork -> merge_uncond [label = "goal not satisfied"];
+  record_solution -> loop_tail [label = "gaps/contra: continue", color = darkgreen];
+  // monotonic_solve's early-terminate is an implicit edge out of
+  // record_solution to the solver's exit — not shown here since
+  // this diagram describes the lattice engine's shared core.
+  merge_uncond -> loop_tail;
 
-  // ── Loop back / terminate ───────────────────────────────────────
-  alive_integrate -> loop_tail;
-  dead_pre_integrate -> loop_tail;
-  dead_post_integrate -> loop_tail;
-  solution -> loop_tail [label = "GAPS mode\nor record-and-continue", style = dotted];
-  // SOLVE mode would terminate here — drawn as an implicit edge to "end" via the solution node.
-
+  // ── Loop back / terminate ──────────────────────────────────────
   loop_tail -> loop_head [label = "more", style = dashed];
   loop_tail -> end [label = "exhausted", style = bold];
 
-  // ── Same-rank groupings ─────────────────────────────────────────
-  { rank = same; alive; dead_post; solution; }
-  { rank = same; alive_integrate; dead_post_integrate; dead_pre_integrate; }
+  // ── Same-rank groupings ────────────────────────────────────────
+  { rank = same; dead; is_solved_fork; }
+  { rank = same; dead_root_write; record_solution; merge_uncond; }
+  { rank = same; dead_collect; }
 }
