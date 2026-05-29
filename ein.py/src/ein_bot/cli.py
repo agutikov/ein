@@ -11,9 +11,11 @@ Subcommands:
     ein-bot render rule        <file> --name=N    # a single rule's DOT
     ein-bot render constraints <file>             # constraint-scope DOT
     ein-bot render lattice     <file>             # commitment-lattice DOT (runs a solve)
+    ein-bot solve <file> --trace=out.md           # markdown trace (S1.6.4)
 
 All `render`/`dot` commands emit DOT to stdout only; rasterising to SVG
-is a shell-script concern (see utils/render_examples.sh).
+is a shell-script concern (see utils/render_examples.sh). `solve`
+writes a self-contained markdown trace with inline `dot` blocks.
 
 Invoked via the ``ein-bot`` console script or ``python -m ein_bot.cli``.
 """
@@ -205,6 +207,42 @@ def _cmd_render_lattice(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_solve(args: argparse.Namespace) -> int:
+    """Solve a puzzle and write the markdown trace (S1.6.4).
+
+    Runs a proof-producing entry (gaps / contradictions, store_lattice
+    so the lattice DAG renders), linearizes the lattice into a story,
+    and writes the markdown (to ``--trace`` or stdout).
+    """
+    nodes = _parse_or_exit(Path(args.file))
+    if nodes is None:
+        return 1
+    try:
+        kb = KnowledgeBase.from_ir(nodes)
+    except KBLoadError as e:
+        print(f"kb load error: {e}", file=sys.stderr)
+        return 1
+    from .inference.monotonic import contradictions_solve, gaps_solve
+    from .trace import linearize, render_markdown
+    solve = contradictions_solve if args.mode == "contradictions" else gaps_solve
+    verdict, _ = solve(kb, max_set_size=args.max_set_size, store_lattice=True)
+    trace = linearize(
+        verdict, diagrams=not args.no_diagrams,
+        full_kb_snapshots=args.full_kb_snapshots,
+    )
+    md = render_markdown(
+        trace, mode="reorder" if args.reorder else "engine",
+        diagrams=not args.no_diagrams,
+    )
+    if args.trace and args.trace != "-":
+        Path(args.trace).write_text(md, encoding="utf-8")
+        print(f"wrote {args.trace} ({len(trace.steps)} steps, "
+              f"{len(trace.reductios)} refuted)", file=sys.stderr)
+    else:
+        sys.stdout.write(md)
+    return 0
+
+
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="ein-bot",
@@ -327,6 +365,26 @@ def _build_parser() -> argparse.ArgumentParser:
                        help="don't store the per-commitment lattice (full view "
                             "then falls back to the solution frontier)")
     r_lat.set_defaults(func=_cmd_render_lattice)
+
+    # ── solve subcommand (S1.6.4) — markdown trace ──
+    solve_cmd = sub.add_parser(
+        "solve", help="solve a puzzle and write its markdown trace (S1.6.4)",
+    )
+    solve_cmd.add_argument("file")
+    solve_cmd.add_argument("--trace", default=None, metavar="OUT.md",
+                           help="write the markdown trace here (default: stdout; "
+                                "'-' for stdout)")
+    solve_cmd.add_argument("--mode", choices=["gaps", "contradictions"], default="gaps",
+                           help="proof-producing solve to run (default: gaps)")
+    solve_cmd.add_argument("--max-set-size", type=int, default=3,
+                           help="commitment-set depth cap (default 3)")
+    solve_cmd.add_argument("--no-diagrams", action="store_true",
+                           help="suppress all inline dot blocks")
+    solve_cmd.add_argument("--full-kb-snapshots", action="store_true",
+                           help="append a whole-KB snapshot of the final state")
+    solve_cmd.add_argument("--reorder", action="store_true",
+                           help="cluster steps by target entity instead of engine order")
+    solve_cmd.set_defaults(func=_cmd_solve)
 
     return p
 

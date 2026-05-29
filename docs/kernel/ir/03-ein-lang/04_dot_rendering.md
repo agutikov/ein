@@ -193,6 +193,31 @@ Fed a `LatticeSnapshotV1`
 the diagram is **order-stable across `lattice_order_seed`** (reuses the
 S1.5b.31 shuffle-invariance guarantee).
 
+## Markdown trace (S1.6.4)
+
+The capstone output — what makes ein-bot *not just a solver* (idea 08)
+— is not DOT but a **markdown narrative** that threads the diagrams
+together. [`ein_bot.trace`](../../../../ein.py/src/ein_bot/trace/)
+(`ein-bot solve <file> --trace=out.md`):
+
+- `linearize(verdict)` turns the *unordered* commitment lattice into a
+  depth-ordered story: the primary solution's firings as numbered
+  steps (smallest commitment first; `()` = unconditional root
+  saturation), and each refuted `DeadCommitment` as a reductio.
+- `render_markdown(trace)` emits one section per step — rule name,
+  English `:why` (`render_why(rule.why, firing.bindings)`), premises
+  with their quoted `:source` sentences, and an inline `dot` derivation
+  slice (S1.6.2). Refuted hypotheses fold into `<details>` blocks
+  (closed by their lifted no-good); the file closes with the
+  lattice-DAG (S1.6.3) + solution grid. `--no-diagrams` suppresses the
+  `dot` blocks; `--reorder` clusters steps by target entity; round-trips
+  through the parser as a `(trace …)` form (`trace.ast.TraceStep`).
+
+Every diagram is an inline fenced `dot` block — no SVG. The trace is
+the **M1 acceptance artefact** (criterion #3): every named move in the
+[idea-08 walkthrough](../../../ideas/08-human-style-deductive-trace.md)
+must surface as a named rule firing (P1.7 / S1.6.5 enforce this).
+
 ## Unified KB view (S1.2.4)
 
 When the renderer has the full :class:`KnowledgeBase` (not just a

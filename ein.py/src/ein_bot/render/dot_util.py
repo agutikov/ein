@@ -47,7 +47,10 @@ def fact_label(relation_name: str, args: tuple) -> str:
     parts: list[str] = []
     for a in args:
         if hasattr(a, "relation_name") and hasattr(a, "args"):
-            parts.append(fact_label(a.relation_name, a.args))
+            parts.append(fact_label(a.relation_name, a.args))         # nested Fact
+        elif (isinstance(a, tuple) and len(a) == 2
+              and isinstance(a[0], str) and isinstance(a[1], tuple)):
+            parts.append(fact_label(a[0], a[1]))                      # nested FactRef
         else:
             parts.append(str(a))
     inner = ", ".join(parts)
