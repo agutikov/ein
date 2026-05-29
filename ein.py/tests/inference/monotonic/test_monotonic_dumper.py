@@ -218,7 +218,7 @@ def test_dumper_records_fork_side_early_terminate(
     events but NOT ``layer_end`` (we returned mid-layer).
     ``summary`` still fires via the ``_finish`` exit hook.
     """
-    from ein_bot.inference.tree.solver import Solution
+    from ein_bot.inference.verdict import Solution
     repo = Path(__file__).resolve().parents[4]
     text = (repo / "examples" / "branching" / "05_mini_zebra.ein").read_text()
     kb = _kb(text)

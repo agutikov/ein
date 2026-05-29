@@ -32,7 +32,7 @@ from ein_bot.inference.monotonic import (
     LatticeStats,
     gaps_solve,
 )
-from ein_bot.inference.tree.solver import Ambiguity, Solution
+from ein_bot.inference.verdict import Ambiguity, Solution
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 

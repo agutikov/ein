@@ -46,7 +46,7 @@ from ein_bot.inference.monotonic.solver import (
     _LatticeLoopState,
     _record_setnode,
 )
-from ein_bot.inference.tree.solver import Contradiction
+from ein_bot.inference.verdict import Contradiction
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 

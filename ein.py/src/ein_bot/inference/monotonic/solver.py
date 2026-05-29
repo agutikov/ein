@@ -38,7 +38,7 @@ Every dead entering emits ``frozenset(C)`` into
 Singleton dead clauses additionally write ``(not h)`` to
 ``root_kb._negated_facts`` via :func:`_emit_negated_fact_writeback`
 (plus the symmetric-mirror if ``(symmetric R)``); mirrors
-``tree/back_prop._write_negation`` without the ContextVar
+``back_prop._write_negation`` without the ContextVar
 coupling.
 
 Budget (S1.5b.7 / bench CLI parity)
@@ -98,7 +98,7 @@ from ein_bot.inference.monotonic.state_dump import (
 )
 from ein_bot.inference.nogoods import emit_nogood
 from ein_bot.inference.saturator import Saturator
-from ein_bot.inference.tree.solver import (
+from ein_bot.inference.verdict import (
     Ambiguity,
     Contradiction,
     Mode,
@@ -287,7 +287,7 @@ def _emit_negated_fact_writeback(
     orientation.
 
     Minimal equivalent of
-    :func:`ein_bot.inference.tree.back_prop._write_negation` —
+    :func:`ein_bot.inference.back_prop._write_negation` —
     same shape, no :data:`_kb_chain_ctx` / :data:`_eager_pass_ctx`
     coupling (the monotonic loop has no chain and never operates
     under eager mode). Idempotent: a pre-existing ``(not h)`` at
@@ -428,7 +428,7 @@ def _compute_alive(kb: KnowledgeBase) -> frozenset[FactId]:
 
 
 def _solution(kb: KnowledgeBase) -> Verdict:
-    return Solution(kb=kb, trace=(), tree=None)
+    return Solution(kb=kb, trace=())
 
 
 def _contradiction(kb: KnowledgeBase) -> Verdict:
@@ -437,7 +437,7 @@ def _contradiction(kb: KnowledgeBase) -> Verdict:
     # unsat_core; consumers should re-run with nogoods enabled
     # for the rich diagnostic.
     _ = kb  # reserved for future provenance walk
-    return Contradiction(unsat_core=frozenset(), tree=None)
+    return Contradiction(unsat_core=frozenset())
 
 
 def _ambiguity(kb: KnowledgeBase) -> Verdict:
@@ -451,9 +451,7 @@ def _ambiguity(kb: KnowledgeBase) -> Verdict:
     # lattice's `LatticeProof` (S1.5b.29) will carry the
     # proper richer artefact.
     return Ambiguity(
-        branches=(Solution(kb=kb, trace=(), tree=None),),
-        unresolved=(),
-        tree=None,
+        branches=(Solution(kb=kb, trace=()),),
     )
 
 
@@ -543,17 +541,17 @@ def _finalise_lattice_verdict(
     )
     if entry == "gaps":
         branches = tuple(
-            Solution(kb=s.kb, trace=s.firings, tree=None)
+            Solution(kb=s.kb, trace=s.firings)
             for s in lstate.solutions
         )
         return Ambiguity(
-            branches=branches, unresolved=(), tree=None, proof=proof,
+            branches=branches, proof=proof,
         )
     # entry == "contradictions"
     cores: frozenset[Fact] = frozenset()
     for d in lstate.dead_commitments:
         cores = cores | d.unsat_core
-    return Contradiction(unsat_core=cores, tree=None, proof=proof)
+    return Contradiction(unsat_core=cores, proof=proof)
 
 
 def _record_setnode(
@@ -957,7 +955,7 @@ def _explore_layers(
                         dumper.early_terminate(layer, "is_solved_at_fork")
                     return _finish(
                         dumper,
-                        Solution(kb=result.kb, trace=(), tree=None),
+                        Solution(kb=result.kb, trace=()),
                         stats,
                     )
                 if entry == "gaps":

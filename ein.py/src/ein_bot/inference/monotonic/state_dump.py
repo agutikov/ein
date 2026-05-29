@@ -36,17 +36,150 @@ from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import IO, Any
 
-# `_kb_to_ein_text` lives on the tree side after S1.5b.1's split
-# (corrected by commit 995315b — see plans/.../s1.5b.1...). The
-# helper is a pure (kb → str) renderer; importing across engine
-# folders is consistent with monotonic/solver.py already importing
-# Verdict types from `ein_bot.inference.tree.solver`.
-from ein_bot.inference.tree.state_dump import (
-    _fact_summary,
-    _firing_to_dict,
-    _kb_to_ein_text,
-)
+from ein_bot.ir.types import Atom, Int, Keyword, KwPair, SForm, String
+from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
+
+# ── Serialisation helpers ────────────────────────────────────
+#
+# Migrated 2026-05-29 out of ``inference.tree.state_dump`` as part
+# of the tree-solver removal. The renderers + JSON serialisers are
+# engine-agnostic: they project a :class:`Fact` / :class:`Firing` /
+# :class:`KnowledgeBase` into ein source text or machine-parseable
+# JSON, used by both :class:`MonotonicDumper` and
+# :class:`LatticeDumper` below.
+
+
+def _arg_to_node(arg: Any) -> Any:
+    """Lower a Fact arg to an IR node."""
+    if isinstance(arg, Fact):
+        return _fact_to_sform(arg, with_kwargs=False)
+    if isinstance(arg, int):
+        return Int(value=arg)
+    return Atom(name=str(arg))
+
+
+def _fact_to_sform(fact: Fact, *, with_kwargs: bool = True) -> SForm:
+    """Render a Fact as ``(rel arg0 arg1 ... :source "..." :rule "..." :layer ...)``.
+
+    Nested-Fact args are recursively lowered without their kwargs
+    (so they read as bare ``(rel args...)`` inside the outer form).
+    """
+    args: list[Any] = [_arg_to_node(a) for a in fact.args]
+    if with_kwargs:
+        prov = fact.provenance
+        if prov is not None:
+            if prov.kind == "source" and prov.source:
+                args.append(KwPair(
+                    key=Keyword(name="source"),
+                    value=String(value=prov.source),
+                ))
+            elif prov.kind == "rule" and prov.rule:
+                args.append(KwPair(
+                    key=Keyword(name="rule"),
+                    value=String(value=prov.rule),
+                ))
+            elif prov.kind == "hypothesis":
+                args.append(KwPair(
+                    key=Keyword(name="hypothesis"),
+                    value=Int(value=prov.branch or 0),
+                ))
+        # Layer kw-pair on FACT/REASONING facts so the reader
+        # can tell them apart inside a single (facts ...) block.
+        # ONTOLOGY facts don't carry one — they live in the
+        # ontology block.
+        if fact.layer is Layer.REASONING:
+            args.append(KwPair(
+                key=Keyword(name="layer"),
+                value=Atom(name="reasoning"),
+            ))
+    return SForm(head=Atom(name=fact.relation_name), args=tuple(args))
+
+
+def _kb_to_ein_text(kb: KnowledgeBase) -> str:
+    """Render a KB as ``(ontology ...) (facts ...)`` ein text.
+
+    Splits by layer:
+    - ONTOLOGY-layer facts (the ``(relation ...)``, ``(is-a ...)``,
+      ``(bijective ...)``, etc.) land in the ontology block.
+    - FACT-layer facts (the puzzle's authored conditions) and
+      REASONING-layer facts (everything the saturator derived,
+      including ``(not ...)``) land in the facts block, with
+      ``:layer reasoning`` annotated on the derived ones.
+    """
+    from ein_bot.ir.dump import dump_canonical
+
+    ont_args: list[SForm] = []
+    fact_args: list[SForm] = []
+    for f in kb.facts:
+        sform = _fact_to_sform(f)
+        if f.layer is Layer.ONTOLOGY:
+            ont_args.append(sform)
+        else:
+            fact_args.append(sform)
+
+    forms: list[SForm] = []
+    if ont_args:
+        forms.append(SForm(
+            head=Atom(name="ontology"), args=tuple(ont_args),
+        ))
+    if fact_args:
+        forms.append(SForm(
+            head=Atom(name="facts"), args=tuple(fact_args),
+        ))
+    return dump_canonical(forms)
+
+
+def _firing_to_dict(firing: Any) -> dict[str, Any]:
+    """Serialise a Firing for JSONL output.
+
+    Stripped-down: rule name, activator, derived fact id,
+    redundancy flag, and the premise fact-ids. Bindings flattened
+    to ``{str: str}`` (Fact bindings dropped — chase them via
+    premises).
+    """
+    bindings_clean: dict[str, str] = {}
+    for k, v in firing.bindings.items():
+        if isinstance(v, Fact):
+            bindings_clean[k] = f"<fact:{v.relation_name}>"
+        else:
+            bindings_clean[k] = str(v)
+    return {
+        "rule": firing.rule,
+        "activator": list(firing.activator),
+        "bindings": bindings_clean,
+        "redundant": firing.redundant,
+        "derived": {
+            "relation": firing.derived.relation_name,
+            "args": [
+                {"relation": a.relation_name,
+                 "args": list(map(str, a.args))}
+                if isinstance(a, type(firing.derived)) else str(a)
+                for a in firing.derived.args
+            ],
+        },
+        "premises": [
+            {"relation": p.relation_name,
+             "args": list(map(str, p.args))}
+            for p in firing.premises
+        ],
+    }
+
+
+def _fact_summary(fact: Fact) -> dict[str, Any]:
+    """Recursive Fact → JSON-friendly dict.
+
+    Nested-Fact args (e.g. inside ``(not (color-loc Green House-3))``)
+    render as nested ``{"relation": ..., "args": [...]}`` dicts so the
+    output is machine-parseable. Atoms / ints / strings stringify.
+    """
+    return {
+        "relation": fact.relation_name,
+        "args": [
+            _fact_summary(a) if isinstance(a, Fact) else str(a)
+            for a in fact.args
+        ],
+    }
 
 
 @dataclass

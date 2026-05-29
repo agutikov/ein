@@ -1,7 +1,9 @@
 """Solver configuration — T1.5.4.4 (S1.5.4 ship).
 
 `SolverConfig` is the typed view over the IR `(config …)` head and
-the kwarg accepted by :func:`ein_bot.inference.tree.solver.solve`.
+the kwarg accepted by :func:`ein_bot.inference.monotonic.monotonic_solve`
++ :func:`ein_bot.inference.monotonic.gaps_solve` +
+:func:`ein_bot.inference.monotonic.contradictions_solve`.
 
 Resolution precedence (highest wins):
 

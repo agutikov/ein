@@ -40,7 +40,7 @@ from ein_bot.inference.monotonic.solver import (
     _LatticeLoopState,
     _record_setnode,
 )
-from ein_bot.inference.tree.solver import Ambiguity
+from ein_bot.inference.verdict import Ambiguity
 from ein_bot.ir import parse
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance

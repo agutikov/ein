@@ -59,7 +59,7 @@ def test_contradictions_solve_callable_post_s1_5b_23():
     empty ``proof.dead_commitments`` for a kb that has no
     hypothesis-bearing relations. Detailed contradictions
     contract tests live in ``test_contradictions_backbone.py``."""
-    from ein_bot.inference.tree.solver import Contradiction
+    from ein_bot.inference.verdict import Contradiction
     kb = KnowledgeBase()
     verdict, stats = contradictions_solve(kb)
     assert isinstance(verdict, Contradiction)

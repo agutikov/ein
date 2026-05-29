@@ -23,7 +23,7 @@ from ein_bot.inference.monotonic.solver import (
     monotonic_solve as _direct,
 )
 from ein_bot.inference.monotonic.state_dump import MonotonicDumper
-from ein_bot.inference.tree.solver import (
+from ein_bot.inference.verdict import (
     Ambiguity,
     Contradiction,
     Mode,

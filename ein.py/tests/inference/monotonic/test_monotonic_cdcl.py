@@ -28,7 +28,7 @@ from __future__ import annotations
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.monotonic import monotonic_solve
 from ein_bot.inference.nogoods import emit_nogood
-from ein_bot.inference.tree.solver import (
+from ein_bot.inference.verdict import (
     Ambiguity,
     Contradiction,
 )

@@ -152,7 +152,7 @@ def test_lattice_snapshot_requires_proof():
     """``lattice_snapshot`` rejects a verdict whose ``proof``
     is None (the monotonic_solve case)."""
     from ein_bot.inference.monotonic import monotonic_solve
-    from ein_bot.inference.tree.solver import Solution
+    from ein_bot.inference.verdict import Solution
 
     kb = _kb_from(BRANCHING / "01_saturate_only.ein")
     verdict, _ = monotonic_solve(kb)

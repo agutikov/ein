@@ -30,7 +30,7 @@ from ein_bot.inference.monotonic.solver import (
     monotonic_solve,
 )
 from ein_bot.inference.monotonic.state_dump import MonotonicDumper
-from ein_bot.inference.tree.solver import Mode
+from ein_bot.inference.verdict import Mode
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 

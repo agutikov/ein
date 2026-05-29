@@ -31,10 +31,10 @@ from ein_bot.ir.types import Atom, SForm
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
+from .back_prop import back_propagate
 from .config import SolverConfig
 from .hrule import Hrules
 from .lookahead import Lookahead
-from .tree.back_prop import back_propagate
 
 # Inheritance-relation names the generator recognises when walking
 # ancestry. Both legacy kernel `instance` and canonical zebra2 `is-a`

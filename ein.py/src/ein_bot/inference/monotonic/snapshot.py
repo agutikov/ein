@@ -44,7 +44,7 @@ from dataclasses import dataclass
 from ein_bot.inference.apriori import CanonicalSetId, FactId
 from ein_bot.inference.canon import state_hash
 from ein_bot.inference.monotonic.lattice import LatticeProof
-from ein_bot.inference.tree.solver import Verdict
+from ein_bot.inference.verdict import Verdict
 from ein_bot.kb.store import KnowledgeBase
 
 

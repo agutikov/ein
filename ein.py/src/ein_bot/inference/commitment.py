@@ -24,7 +24,7 @@ Cross-refs:
   primitive shared by both engines).
 - :mod:`ein_bot.inference.apriori` — produces the
   :data:`CanonicalSetId` inputs.
-- :mod:`ein_bot.inference.tree.back_prop` —
+- :mod:`ein_bot.inference.back_prop` —
   :func:`reaches_hypothesis`'s global "any hypothesis-kind"
   variant; :func:`_reaches_commitment` here is the
   commitment-set parameterised analogue.
@@ -188,7 +188,7 @@ def _is_unconditional(
     hypothesis in ``hypothesis_ids``.
 
     Commitment-set parameterised analogue of
-    :func:`ein_bot.inference.tree.back_prop.reaches_hypothesis`
+    :func:`ein_bot.inference.back_prop.reaches_hypothesis`
     (which uses a global "any hypothesis-kind fact" terminal).
     Here the terminal is matching a specific FactId in the
     commitment — soundness rests on this distinction.

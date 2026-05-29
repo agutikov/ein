@@ -41,7 +41,7 @@ from collections.abc import Iterable
 from ein_bot.kb.entities import Fact
 from ein_bot.kb.store import KnowledgeBase
 
-from .tree.back_prop import (
+from .back_prop import (
     BubbleAbort,
     _bump_pass_bubbled,
     _eager_pass_ctx,

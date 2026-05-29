@@ -33,7 +33,7 @@ A future stage upgrades the validator with the deeper walk once
 from __future__ import annotations
 
 from ein_bot.inference.monotonic.lattice import LatticeProof
-from ein_bot.inference.tree.solver import (
+from ein_bot.inference.verdict import (
     Ambiguity,
     Contradiction,
     Mode,
