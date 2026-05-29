@@ -354,6 +354,16 @@ trace renderer (P1.6 S1.6.4) can group derivation events by
 polarity. The `derive-…-negative` meta-rules are similarly
 named after the target they enable.
 
+These elimination rules are pathway **A** in the "domain-elimination
+rule vs explicit hypothesis exploration" comparison: when their
+premises are derivable they solve at root saturation and preempt the
+hypothesis search entirely. The S1.5b.32 measurement
+([`domain_elim_vs_hypothesis.md`](domain_elim_vs_hypothesis.md))
+quantifies the trade-off — A leaves the exhaustive lattice at 0 sets;
+without it the engine falls back to forced-positive promotion (1 set)
+or, with every elimination path off, full branch-and-refute (7 sets,
+6 nogoods on the fixture).
+
 ## Mid-sweep saturation + per-sibling apriori re-check (S1.5a.19)
 
 The d=0 rules above are necessary but not sufficient on their

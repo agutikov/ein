@@ -1,0 +1,68 @@
+;;; S1.5b.32 fixture — pathway B with REAL branching (no pre-elimination).
+;;; Variant of b_only.ein with the d=0 negative-completion rules also
+;;; removed: nothing eliminates Blue's wrong houses ahead of time, so
+;;; neither domain-elimination nor forced-positive promotion can fire.
+;;; The engine must actually fork on each (color-loc Blue ?h) and
+;;; refute H2/H3 via the injective violation rule — the N-branch cost
+;;; the stage attributes to pathway B.
+;;;
+;;; Identical to ab.ein minus pathway A. Goal: (color-loc Blue ?h),
+;;; answer ?h = H1.
+
+(rules
+  ;; ── Bijection property expansion: (bijective R) ⟹ the four markers.
+  (rule bijective-functional ()
+    :match  (bijective ?R) :assert (functional ?R)
+    :why "{?R} bijective ⟹ functional." :priority 100)
+  (rule bijective-injective ()
+    :match  (bijective ?R) :assert (injective ?R)
+    :why "{?R} bijective ⟹ injective." :priority 100)
+  (rule bijective-total ()
+    :match  (bijective ?R) :assert (total ?R)
+    :why "{?R} bijective ⟹ total." :priority 100)
+  (rule bijective-surjective ()
+    :match  (bijective ?R) :assert (surjective ?R)
+    :why "{?R} bijective ⟹ surjective." :priority 100)
+
+  ;; ── Violation rules: fire (false) when uniqueness breaks.
+  ;;    These are what refute the wrong branches under pathway B.
+  (rule functional (?R)
+    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+    :assert (false)
+    :why "{?R} not functional: {?a} has both {?b} and {?c}." :priority 250)
+  (rule injective (?R)
+    :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+    :assert (false)
+    :why "{?R} not injective: {?c} from both {?a} and {?b}." :priority 250)
+
+  (rule injective-negative (?R)
+    :match  (and (?R ?a ?b) (relation ?R ?A ?B)
+                 (is-a ?a_other ?A) (neq ?a_other ?a))
+    :assert (not (?R ?a_other ?b))
+    :why "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
+    :priority 240)
+
+  ;; ── Pathway B: hypothesis generator.
+  (hrule guess (?R ?T1 ?T2)
+    :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
+    :assert (?R ?a ?b)
+    :why "guess: ({?R} {?a} {?b})?"))
+
+(ontology
+  (relation is-a      T T)
+  (relation color-loc Color House)
+
+  (bijective color-loc)
+
+  (is-a Color T) (is-a House T)
+  (is-a Red Color) (is-a Green Color) (is-a Blue Color)
+  (is-a H1 House)  (is-a H2 House)    (is-a H3 House))
+
+(facts
+  (color-loc Red   H2 :source "(1) Red is in house 2")
+  (color-loc Green H3 :source "(2) Green is in house 3"))
+
+(query
+  :mode solve
+  :goal (color-loc Blue ?h)
+  :hrules (guess (color-loc Color House)))

@@ -178,8 +178,10 @@ deletion of `inference/tree/` + migration of the
 `Verdict` types — tracked outside this phase).
 [S1.5b.32](s1.5b.32_domain_elim_vs_hyp_exploration.md)
 (research-stage write-up: domain-elim rule vs explicit
-hypothesis exploration) remains as the only outstanding
-non-shipping research item.
+hypothesis exploration) **shipped 2026-05-29** — report at
+[`docs/kernel/inference/domain_elim_vs_hypothesis.md`](../../../docs/kernel/inference/domain_elim_vs_hypothesis.md),
+recommendation **pathway A as default, B as fallback**. With
+that the phase has no outstanding items.
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments
