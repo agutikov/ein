@@ -22,8 +22,6 @@ Cross-references:
 """
 from __future__ import annotations
 
-import pytest
-
 from ein_bot.inference.monotonic import (
     DeadCommitment,
     LatticeDumper,
@@ -54,11 +52,20 @@ def test_imports_resolve():
     # test_gaps_backbone.py.
 
 
-def test_contradictions_solve_raises_notimplementederror():
-    """S1.5b.23 fills the backbone."""
+def test_contradictions_solve_callable_post_s1_5b_23():
+    """S1.5b.23 lifted the NotImplementedError stub. The
+    public entry is now callable on an empty kb; the verdict
+    is :class:`Contradiction` (mode contract — always) with
+    empty ``proof.dead_commitments`` for a kb that has no
+    hypothesis-bearing relations. Detailed contradictions
+    contract tests live in ``test_contradictions_backbone.py``."""
+    from ein_bot.inference.tree.solver import Contradiction
     kb = KnowledgeBase()
-    with pytest.raises(NotImplementedError, match=r"S1\.5b\.23"):
-        contradictions_solve(kb)
+    verdict, stats = contradictions_solve(kb)
+    assert isinstance(verdict, Contradiction)
+    assert verdict.proof is not None
+    assert verdict.proof.dead_commitments == ()
+    assert stats.enterings_total == 0
 
 
 def test_dumper_no_op_hooks():
@@ -113,6 +120,5 @@ def test_lattice_proof_carries_solutions_under_gaps():
         assert isinstance(rec, SolutionRecord)
 
 
-@pytest.mark.skip(reason="contradictions_solve backbone — S1.5b.23")
-def test_contradictions_solve_returns_contradiction():
-    pass
+# S1.5b.23 shipped — contradictions_solve is wired. Detailed
+# contract tests live in ``test_contradictions_backbone.py``.

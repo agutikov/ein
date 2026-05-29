@@ -78,8 +78,25 @@ under gaps the dedup MERGE is auto-disabled
 the contradictions-side merge branch is forward-compat
 (S1.5b.23 lifts the upstream raise to activate it); 12 new
 test bodies, 783 pytest green, ruff clean).
-[S1.5b.23](s1.5b.23_lattice_dumper.md) (`contradictions_solve`
-backbone) is now the next implementation surface.
+[S1.5b.23](s1.5b.23_lattice_dumper.md) shipped 2026-05-29
+(`contradictions_solve` backbone — lifts the upstream
+`entry == "contradictions"` raise in `_explore_layers`;
+adds `DeadCommitment` collection at the dead branch
+(skipped on state-hash-merge per S1.5b.22's subsumption
+comment); entry-aware Phase 1 / Phase 2 dispatch so
+contradictions does NOT short-circuit on root-is_solved or
+cascade-Solution but DOES on root-contradiction or
+cascade-Contradiction; fork-side is_solved falls through to
+the alive flow so supersets of solved commitments are still
+explored; 9 new tests, all 11 branching fixtures
+smoke-cleared, 792 pytest green, ruff clean).
+The next implementation surface is
+[S1.5b.26](s1.5b.26_lattice_scoring.md) (within-layer
+scoring switch — applies to all three entries via shared
+`_explore_layers`) or
+[S1.5b.28](s1.5b.28_lattice_fixtures.md) (lattice example
+fixtures + state-hash collision measurement on
+`zebra2-hints`).
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments
