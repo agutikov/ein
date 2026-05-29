@@ -68,6 +68,7 @@ is requested.
 """
 from __future__ import annotations
 
+import random
 import time
 from dataclasses import dataclass, field, replace
 from typing import Literal
@@ -676,6 +677,14 @@ def _explore_layers(
     stats = MonotonicStats()
     t_start = time.perf_counter()
     lstate = _LatticeLoopState()
+    # S1.5b.31 — shuffle rng, one per solve when configured.
+    # ``random.Random(seed)`` is stateful; calling ``.shuffle``
+    # per-layer advances its state so each layer gets a
+    # different (but deterministic-given-seed) permutation.
+    shuffle_rng: random.Random | None = (
+        random.Random(cfg.lattice_order_seed)
+        if cfg.lattice_order_seed is not None else None
+    )
     # store_lattice is monotonic-irrelevant — short-circuit even
     # if a caller pased it through (defensive; the public
     # ``monotonic_solve`` doesn't expose the flag).
@@ -800,6 +809,12 @@ def _explore_layers(
         candidates = order_candidates(
             candidates, mode=cfg.lattice_order, kb=root_kb,
         )
+        # S1.5b.31 — optional per-layer shuffle for the
+        # shuffle-invariance harness. ``shuffle_rng`` carries
+        # state across layers when seeded, so different layers
+        # get different permutations of their candidates list.
+        if shuffle_rng is not None:
+            shuffle_rng.shuffle(candidates)
 
         a_layer: list[CanonicalSetId] = []
         for c in candidates:

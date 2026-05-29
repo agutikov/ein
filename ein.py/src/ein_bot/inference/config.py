@@ -152,6 +152,17 @@ class SolverConfig:
     # recorded under lex; switching default would force
     # re-baselining for no engine-correctness gain.
     lattice_order:                   str = "lex"
+    # S1.5b.31 — within-layer shuffle seed. When set, the
+    # solver applies a per-layer ``random.Random(seed).shuffle``
+    # to ``candidates`` AFTER :func:`order_candidates` so the
+    # shuffle invariance harness can probe traversal-order
+    # dependence. One ``random.Random`` is created per solve;
+    # its state advances across layers, so different layers
+    # get different (but deterministic-given-seed) shuffles.
+    # ``None`` (default) disables — every candidate list is
+    # consumed in the ``lattice_order`` order without
+    # randomisation.
+    lattice_order_seed:              int | None = None
 
     @classmethod
     def from_kw_pairs(cls, kw_pairs: Iterable[Any]) -> SolverConfig:

@@ -90,6 +90,21 @@ cascade-Contradiction; fork-side is_solved falls through to
 the alive flow so supersets of solved commitments are still
 explored; 9 new tests, all 11 branching fixtures
 smoke-cleared, 792 pytest green, ruff clean).
+[S1.5b.31](s1.5b.31_lattice_shuffle_invariance.md) shipped
+2026-05-29 (lattice shuffle invariance —
+`SolverConfig.lattice_order_seed: int | None = None`
+orthogonal to `lattice_order`; `_explore_layers` shuffles
+each layer's candidates via `random.Random(seed)` after
+`order_candidates`; new
+`inference/monotonic/snapshot.py` ships
+`LatticeSnapshotV1` + `lattice_snapshot(verdict, root_kb)`
+projecting the LatticeProof into a content-addressed
+permutation-invariant snapshot (state_hash-keyed
+multilabel union); test harness parametrises 2 entries x
+5 fixtures x 3 depths x 10 seeds = 300 triples plus 3
+sanity tests, all green — the engine loop is verified
+traversal-order-invariant on every shipped fixture;
+1131 pytest green, ruff clean).
 [S1.5b.26](s1.5b.26_lattice_scoring.md) shipped 2026-05-29
 (within-layer scoring switch — `inference/apriori.py`
 ships `order_candidates(candidates, mode, kb)` with the
@@ -140,14 +155,14 @@ calls `dumper.proof_summary(verdict.proof)` before
 4 entry x store_lattice combinations; 807 pytest green,
 ruff clean). The next implementation surface is
 [S1.5b.30](s1.5b.30_lattice_perf_round.md) (end-of-phase
-perf round + tree-side deprecation tags),
-[S1.5b.31](s1.5b.31_lattice_shuffle_invariance.md)
-(shuffle invariance — traversal-order regression net),
-or [S1.5b.32](s1.5b.32_domain_elim_vs_hyp_exploration.md)
-(research-stage: domain-elim rule vs explicit hypothesis
-exploration). With S1.5b.26/.27/.28/.29 landed, the
-lattice-features block is **content-complete**; remaining
-stages are perf/regression-net work.
+perf round + tree-side deprecation tags — the phase
+closer) or
+[S1.5b.32](s1.5b.32_domain_elim_vs_hyp_exploration.md)
+(research-stage write-up: domain-elim rule vs explicit
+hypothesis exploration). With S1.5b.26/.27/.28/.29/.31
+landed, every functional and regression-net stage in the
+lattice-features block has shipped — only the phase
+closer + the optional research stage remain.
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments

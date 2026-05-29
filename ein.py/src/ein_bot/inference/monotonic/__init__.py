@@ -81,6 +81,10 @@ from ein_bot.inference.monotonic.lattice import (
     SetNode,
     SolutionRecord,
 )
+from ein_bot.inference.monotonic.snapshot import (
+    LatticeSnapshotV1,
+    lattice_snapshot,
+)
 from ein_bot.inference.monotonic.solver import (
     BudgetExceededError,
     MonotonicStats,
@@ -95,12 +99,14 @@ __all__ = [
     "DeadCommitment",
     "LatticeDumper",
     "LatticeProof",
+    "LatticeSnapshotV1",
     "LatticeStats",
     "MonotonicStats",
     "SetNode",
     "SolutionRecord",
     "contradictions_solve",
     "gaps_solve",
+    "lattice_snapshot",
     "monotonic_solve",
     "validate_proof_for_explanation",
     "verdict_entry",
