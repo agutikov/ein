@@ -52,10 +52,34 @@ forced-positive promotion gap.
 + symmetric canonicalisation in `_compute_alive`. 7 of 11
 branching demos flipped Ambiguity → Solution; **zebra2
 solves under the monotonic backbone in ~5s on CPython** (vs
-tree's ~50s). 9 monotonic tests pass. [S1.5b.5](s1.5b.5_monotonic_backbone.md)
-(monotonic backbone — the main loop wiring `apriori` +
-`try_commitment_set` + nogoods) is now the next implementation
-surface.
+tree's ~50s). 9 monotonic tests pass.
+Monotonic block closed 2026-05-28 with
+[S1.5b.10](s1.5b.10_monotonic_docs_tests.md) (`4bf49fe`,
+docs + 38 monotonic tests).
+[S1.5b.20](s1.5b.20_lattice_skeleton.md) shipped 2026-05-28
+(`9f8b910`, lattice-entry skeleton — stub dataclasses,
+`gaps_solve`/`contradictions_solve` raising
+`NotImplementedError`, `LatticeDumper` no-op shell,
+`bench_lattice.py` dispatcher).
+[S1.5b.21](s1.5b.21_lattice_backbone.md) shipped 2026-05-29
+(`a5efdde`, gaps_solve backbone — extracts shared
+`_explore_layers(entry, …)` helper out of `monotonic_solve`;
+`gaps_solve` collects every satisfying commitment;
+verdict = `Ambiguity` always; 8 tests pass branching/01,
+branching/03, branching/04 (2 branches), branching/05 (3
+branches)).
+[S1.5b.22](s1.5b.22_lattice_dedup.md) shipped 2026-05-29
+(`14aae12`, `LatticeProof` + `store_lattice` flag —
+fills `SolutionRecord` / `DeadCommitment` / `SetNode` /
+`LatticeProof` / `LatticeStats` with real fields; adds
+`KnowledgeBase.snapshot()` for archival branch kbs;
+under gaps the dedup MERGE is auto-disabled
+(`hash(commitment)` keying — `state_hash_merges` stays 0);
+the contradictions-side merge branch is forward-compat
+(S1.5b.23 lifts the upstream raise to activate it); 12 new
+test bodies, 783 pytest green, ruff clean).
+[S1.5b.23](s1.5b.23_lattice_dumper.md) (`contradictions_solve`
+backbone) is now the next implementation surface.
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments
