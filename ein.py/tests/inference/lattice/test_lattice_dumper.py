@@ -1,16 +1,25 @@
 """LatticeDumper file-I/O tests — S1.5b.29 T1.5b.29.6.
 
-Verifies the per-set audit folder layout under each entry x flag
-combination:
+Verifies the per-hypothesis audit folder layout under each entry x
+flag combination. The layout is **per-layer grouped** (S1.5b.30):
 
-- ``solutions/<C-slug>/`` under gaps with non-empty solutions
-- ``dead/<C-slug>/`` under contradictions with non-empty deads
-- ``kb_index/<state_hash_hex>/`` under store_lattice=True
-- ``proof_summary.json`` indexes everything
-- ``out_dir=None`` produces no on-disk artefacts
+- ``enterings/layer_NN/<C-slug>/`` — one folder per commitment
+  tested at that layer, carrying ``outcome.txt`` (alive | dead-pre
+  | dead-post | solution) plus the emission artefacts for that
+  outcome (``firings.jsonl`` + ``unconditional_facts.jsonl`` for
+  every saturated fork; ``kb.ein`` for solutions; ``unsat_core.jsonl``
+  + ``learned_clause.json`` for deaths).
+- ``kb_index/layer_NN/kb_<i>/`` — under ``store_lattice=True``,
+  ordered ids per layer (``kb_0`` … ``kb_n``) rather than
+  hash-named folders.
+- ``proof_summary.json`` indexes everything; each solution /
+  dead entry carries a ``path`` pointing at its ``enterings/``
+  folder.
+- ``out_dir=None`` produces no on-disk artefacts.
 
 Cross-references:
 
+- User-facing doc: ``docs/kernel/inference/lattice_dump.md``.
 - Layout spec:
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.29_lattice_proof.md``
 - Implementation:
@@ -38,63 +47,83 @@ def _kb_from(path: Path) -> KnowledgeBase:
     return KnowledgeBase.from_ir(parse(path.read_text()))
 
 
-# ── solutions/ folder under gaps ──────────────────────────
+def _outcome_folders(dump_dir: Path) -> dict[str, list[Path]]:
+    """Map outcome → list of ``enterings/`` folders carrying it."""
+    by_outcome: dict[str, list[Path]] = {}
+    for outcome_file in dump_dir.glob("enterings/layer_*/*/outcome.txt"):
+        by_outcome.setdefault(
+            outcome_file.read_text().strip(), [],
+        ).append(outcome_file.parent)
+    return by_outcome
+
+
+# ── enterings/ solution folders under gaps ────────────────
 
 
 def test_dumper_solutions_folder_under_gaps(tmp_path: Path):
-    """``gaps_solve`` on branching/04 with dumper produces
-    ``solutions/`` with two subfolders (one per SolutionRecord)."""
+    """``gaps_solve`` on branching/04 with dumper produces per-layer
+    ``enterings/layer_NN/<slug>/`` folders; the ``solution``-outcome
+    ones each carry commitment.json + kb.ein + firings.jsonl."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
     dump_dir = tmp_path / "gaps-dump"
     dumper = LatticeDumper(out_dir=dump_dir)
     gaps_solve(kb, max_set_size=3, dumper=dumper)
 
-    solutions_dir = dump_dir / "solutions"
-    assert solutions_dir.is_dir()
-    subfolders = sorted(p.name for p in solutions_dir.iterdir())
-    assert len(subfolders) == 2
-    # Each subfolder has commitment.json + kb.ein + firings.jsonl.
-    for sub in solutions_dir.iterdir():
+    assert (dump_dir / "enterings").is_dir()
+    by_outcome = _outcome_folders(dump_dir)
+    solution_folders = by_outcome.get("solution", [])
+    assert len(solution_folders) >= 1
+    for sub in solution_folders:
         assert (sub / "commitment.json").is_file()
         assert (sub / "kb.ein").is_file()
         assert (sub / "firings.jsonl").is_file()
-        # commitment.json is parseable JSON.
+        # commitment.json is a parseable list of FactId dicts.
         with (sub / "commitment.json").open() as fp:
             commit = json.load(fp)
         assert isinstance(commit, list)
         assert len(commit) >= 1  # at least one FactId
-    # No dead/ folder under gaps.
-    assert not (dump_dir / "dead").exists()
+    # Per-layer grouping: folders live under layers/layer_NN/, never
+    # at the flat enterings/ root.
+    assert not list(dump_dir.glob("enterings/co-located*"))
 
 
-# ── dead/ folder under contradictions ─────────────────────
+# ── enterings/ dead folders under contradictions ──────────
 
 
 def test_dumper_dead_folder_under_contradictions(tmp_path: Path):
     """``contradictions_solve`` on branching/04 produces
-    ``dead/`` with subfolders carrying commitment.json +
-    unsat_core.jsonl + learned_clause.json."""
+    ``dead-pre`` / ``dead-post`` outcome folders carrying
+    commitment.json + unsat_core.jsonl + learned_clause.json.
+    The layer + kind metadata lives in proof_summary, not in
+    commitment.json (which is the bare FactId list)."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
     dump_dir = tmp_path / "contra-dump"
     dumper = LatticeDumper(out_dir=dump_dir)
     contradictions_solve(kb, max_set_size=3, dumper=dumper)
 
-    dead_dir = dump_dir / "dead"
-    assert dead_dir.is_dir()
-    subfolders = sorted(p.name for p in dead_dir.iterdir())
-    assert len(subfolders) >= 1
-    for sub in dead_dir.iterdir():
+    by_outcome = _outcome_folders(dump_dir)
+    dead_folders = (
+        by_outcome.get("dead-pre", []) + by_outcome.get("dead-post", [])
+    )
+    assert len(dead_folders) >= 1
+    for sub in dead_folders:
         assert (sub / "commitment.json").is_file()
         assert (sub / "unsat_core.jsonl").is_file()
         assert (sub / "learned_clause.json").is_file()
         with (sub / "commitment.json").open() as fp:
-            payload = json.load(fp)
-        assert "commitment" in payload
-        assert "layer" in payload
-        assert "kind" in payload
-        assert payload["kind"] in ("dead-pre", "dead-post")
-    # No solutions/ folder under contradictions.
-    assert not (dump_dir / "solutions").exists()
+            commit = json.load(fp)
+        assert isinstance(commit, list)
+        assert len(commit) >= 1
+
+    # Layer + kind for every dead commitment is indexed in
+    # proof_summary.json.
+    with (dump_dir / "proof_summary.json").open() as fp:
+        summary = json.load(fp)
+    assert summary["dead_commitments"]
+    for d in summary["dead_commitments"]:
+        assert d["kind"] in ("dead-pre", "dead-post")
+        assert "layer" in d
+        assert (dump_dir / d["path"]).is_dir()
 
 
 # ── proof_summary.json indexes everything ─────────────────
@@ -102,7 +131,7 @@ def test_dumper_dead_folder_under_contradictions(tmp_path: Path):
 
 def test_dumper_proof_summary_indexes_everything(tmp_path: Path):
     """``proof_summary.json`` is written for both lattice
-    entries; every slug it lists resolves to an on-disk
+    entries; every ``path`` it lists resolves to an on-disk
     folder."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
     dump_dir = tmp_path / "gaps-dump"
@@ -119,10 +148,11 @@ def test_dumper_proof_summary_indexes_everything(tmp_path: Path):
         "alive_at_end", "learned_nogoods_count", "stats",
     ):
         assert key in summary
-    # Every solution slug listed has its folder.
+    # Every solution listed has its per-layer enterings folder.
+    assert summary["solutions"]
     for s in summary["solutions"]:
-        slug = s["slug"]
-        assert (dump_dir / "solutions" / slug).is_dir()
+        assert (dump_dir / s["path"]).is_dir()
+        assert s["path"].startswith("enterings/layer_")
     # stats has the LatticeStats field set.
     assert summary["stats"]["solutions_found"] == len(summary["solutions"])
 
@@ -131,8 +161,8 @@ def test_dumper_proof_summary_indexes_everything(tmp_path: Path):
 
 
 def test_dumper_kb_index_folder_under_store_lattice(tmp_path: Path):
-    """``--store-lattice`` produces ``kb_index/`` with one
-    subfolder per :class:`SetNode`."""
+    """``--store-lattice`` produces ``kb_index/layer_NN/kb_<i>/``
+    with per-layer ordered ids (one folder per :class:`SetNode`)."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
     dump_dir = tmp_path / "gaps-store"
     dumper = LatticeDumper(out_dir=dump_dir)
@@ -142,15 +172,24 @@ def test_dumper_kb_index_folder_under_store_lattice(tmp_path: Path):
 
     kb_index_dir = dump_dir / "kb_index"
     assert kb_index_dir.is_dir()
-    subfolders = list(kb_index_dir.iterdir())
-    assert len(subfolders) > 0
-    for sub in subfolders:
-        assert (sub / "canonical_set.json").is_file()
-        assert (sub / "labels.json").is_file()
-        assert (sub / "verdict.txt").is_file()
-        # verdict.txt is one of the literal values.
-        verdict_text = (sub / "verdict.txt").read_text().strip()
-        assert verdict_text in ("alive", "dead", "solution")
+    # Two-level layout: kb_index/layer_NN/kb_<i>/.
+    layer_dirs = sorted(kb_index_dir.iterdir())
+    assert layer_dirs
+    for layer_dir in layer_dirs:
+        assert layer_dir.name.startswith("layer_")
+        node_dirs = sorted(layer_dir.iterdir())
+        assert node_dirs
+        # Ordered ids kb_0 … kb_n within the layer.
+        assert [p.name for p in node_dirs] == [
+            f"kb_{i}" for i in range(len(node_dirs))
+        ]
+        for sub in node_dirs:
+            assert (sub / "canonical_set.json").is_file()
+            assert (sub / "labels.json").is_file()
+            assert (sub / "verdict.txt").is_file()
+            assert (sub / "state_hash.txt").is_file()
+            verdict_text = (sub / "verdict.txt").read_text().strip()
+            assert verdict_text in ("alive", "dead", "solution")
 
 
 def test_dumper_kb_index_absent_without_store_lattice(tmp_path: Path):
@@ -190,7 +229,8 @@ def test_dumper_no_op_when_out_dir_is_none(tmp_path: Path):
 def test_dumper_timeline_records_events(tmp_path: Path):
     """The timeline carries one record per hook invocation
     (root_initial, layer_start, entering, layer_end,
-    solution_recorded / dead_recorded, proof_summary, summary)."""
+    proof_summary, summary). Each ``entering`` record carries
+    its ``outcome``, and at least one is a ``solution``."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
     dump_dir = tmp_path / "timeline-check"
     dumper = LatticeDumper(out_dir=dump_dir)
@@ -209,9 +249,14 @@ def test_dumper_timeline_records_events(tmp_path: Path):
     assert "layer_start" in event_names
     assert "entering" in event_names
     assert "layer_end" in event_names
-    assert "solution_recorded" in event_names
     assert "proof_summary" in event_names
     assert "summary" in event_names
+    # Every entering carries an outcome; the solution outcome
+    # (formerly a separate solution_recorded event) is now an
+    # entering with outcome="solution".
+    enterings = [e for e in events if e["event"] == "entering"]
+    assert all("outcome" in e for e in enterings)
+    assert any(e["outcome"] == "solution" for e in enterings)
     # Sequence numbers are monotonic.
     seqs = [e["seq"] for e in events]
     assert seqs == sorted(seqs)

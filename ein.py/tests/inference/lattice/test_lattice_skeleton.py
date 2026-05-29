@@ -69,11 +69,14 @@ def test_contradictions_solve_callable_post_s1_5b_23():
 
 
 def test_dumper_no_op_hooks():
-    """LatticeDumper's hooks are callable no-ops in S1.5b.20.
+    """LatticeDumper's hooks are no-ops when ``out_dir=None``.
 
     The class shape exists so :mod:`bench_lattice` and the
-    public entries can accept a ``dumper`` parameter. S1.5b.29
-    fills the real file-writing implementation.
+    public entries can accept a ``dumper`` parameter without
+    requiring a write target. The dumper restructure (post-
+    S1.5b.30) folded the old ``solution_recorded`` /
+    ``dead_recorded`` per-outcome hooks into a single
+    ``entering`` hook with an ``outcome`` kwarg.
     """
     dumper = LatticeDumper()
     # Each hook accepts its expected args without raising.
@@ -81,13 +84,12 @@ def test_dumper_no_op_hooks():
     dumper.layer_start(1, None, 0)
     dumper.entering(
         1, (), None,
+        outcome="alive",
         facts_merged=0,
         nogood_emitted=False,
         nogood_subsumed=False,
     )
     dumper.layer_end(1, None, 0, 0)
-    dumper.solution_recorded(None, 1)
-    dumper.dead_recorded(None)
     dumper.proof_summary(None)
     dumper.summary(None, None)
     dumper.close()

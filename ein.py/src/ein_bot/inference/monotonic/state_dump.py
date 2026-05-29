@@ -244,14 +244,23 @@ class MonotonicDumper:
         layer: int,
         commitment: tuple,
         result: Any,
-        facts_merged: int,
-        nogood_emitted: bool,
-        nogood_subsumed: bool,
+        *,
+        outcome: str = "alive",
+        facts_merged: int = 0,
+        nogood_emitted: bool = False,
+        nogood_subsumed: bool = False,
     ) -> None:
-        """One ``try_commitment_set`` outcome — alive or dead."""
+        """One ``try_commitment_set`` outcome — alive or dead.
+
+        ``outcome`` is one of ``"alive"`` / ``"dead-pre"`` /
+        ``"dead-post"`` / ``"solution"``. MonotonicDumper logs
+        it in the timeline but doesn't write per-commitment
+        folders (that's :class:`LatticeDumper`'s job).
+        """
         self._emit_timeline(
             "entering",
             layer=layer,
+            outcome=outcome,
             commitment=[
                 {"relation": rn, "args": [str(a) for a in args]}
                 for (rn, args) in commitment
@@ -394,39 +403,45 @@ class LatticeDumper:
 
     Sibling of :class:`MonotonicDumper`; shares the same
     lifecycle-hook pattern but adds entry-specific sections.
-    The dump folder layout::
+
+    Dump layout::
 
         out_dir/
-        ├── 00_root_initial.ein   ← initial root snapshot
+        ├── 00_root_initial.ein   ← root before any hypothesis
         ├── 00_timeline.jsonl     ← lifecycle event log
         ├── layers/
-        │   ├── layer_NN_pre.ein  ← root.kb at layer NN start
-        │   └── layer_NN_post.ein ← root.kb at layer NN end
-        ├── solutions/            ← gaps_solve: one folder per SolutionRecord
-        │   └── <C-slug>/
-        │       ├── commitment.json
-        │       ├── kb.ein
-        │       └── firings.jsonl
-        ├── dead/                 ← contradictions_solve: one folder per DeadCommitment
-        │   └── <C-slug>/
-        │       ├── commitment.json
-        │       ├── unsat_core.jsonl
-        │       └── learned_clause.json
-        ├── kb_index/             ← store_lattice=True: one folder per SetNode
-        │   └── <state_hash_hex>/
-        │       ├── canonical_set.json
-        │       ├── labels.json
-        │       └── verdict.txt
-        ├── proof_summary.json    ← top-level proof index (gaps/contra only)
+        │   └── layer_NN/
+        │       ├── pre.ein       ← root.kb at start of layer NN
+        │       └── post.ein      ← root.kb at end of layer NN
+        ├── enterings/            ← per-hypothesis emission tracking
+        │   └── layer_NN/
+        │       └── <C-slug>/
+        │           ├── commitment.json
+        │           ├── outcome.txt          ← alive | dead-pre | dead-post | solution
+        │           ├── unconditional_facts.jsonl   (non-dead-pre)
+        │           ├── firings.jsonl               (non-dead-pre)
+        │           ├── kb.ein                      (solution only)
+        │           ├── unsat_core.jsonl            (dead-pre / dead-post)
+        │           └── learned_clause.json         (dead-pre / dead-post)
+        ├── kb_index/             ← under store_lattice=True
+        │   └── layer_NN/
+        │       └── kb_<i>/
+        │           ├── state_hash.txt    ← hex of state_hash field
+        │           ├── canonical_set.json
+        │           ├── labels.json
+        │           └── verdict.txt
+        ├── proof_summary.json    ← top-level proof index
         └── summary.json          ← cumulative stats
 
     ``out_dir=None`` skips every filesystem write — hooks still
     fire (so the solver loop's call sites stay uniform) but
     produce no on-disk artefacts. Subfolders are created lazily
     on first per-section write so the layout reflects what
-    actually happened (no empty ``dead/`` under
-    :func:`gaps_solve`, no empty ``solutions/`` under
-    :func:`contradictions_solve`).
+    actually happened (e.g. no empty ``kb_index/`` under
+    ``store_lattice=False``).
+
+    User-facing documentation:
+    ``docs/kernel/inference/lattice_dump.md``.
     """
 
     out_dir: Path | None = None
@@ -435,9 +450,6 @@ class LatticeDumper:
         default=None, init=False, repr=False,
     )
     _timeline_seq: int = field(default=0, init=False)
-    _solutions_dir_made: bool = field(default=False, init=False)
-    _dead_dir_made: bool = field(default=False, init=False)
-    _kb_index_dir_made: bool = field(default=False, init=False)
 
     def __post_init__(self) -> None:
         if self.out_dir is None:
@@ -447,6 +459,25 @@ class LatticeDumper:
         self._timeline_fp = (
             self.out_dir / "00_timeline.jsonl"
         ).open("w")
+
+    # ── Path helpers ─────────────────────────────────────────
+
+    def _layer_dir(self, layer: int) -> Path:
+        """``layers/layer_NN/`` — created lazily on first call."""
+        assert self.out_dir is not None
+        p = self.out_dir / "layers" / f"layer_{layer:02d}"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
+    def _entering_dir(self, layer: int, commitment: tuple) -> Path:
+        """``enterings/layer_NN/<slug>/`` — created lazily."""
+        assert self.out_dir is not None
+        slug = _commitment_slug(commitment)
+        p = (
+            self.out_dir / "enterings" / f"layer_{layer:02d}" / slug
+        )
+        p.mkdir(parents=True, exist_ok=True)
+        return p
 
     # ── Lifecycle hooks ──────────────────────────────────────
 
@@ -465,10 +496,9 @@ class LatticeDumper:
         self, layer: int, kb: KnowledgeBase, alive_size: int,
     ) -> None:
         if self.out_dir is not None and kb is not None:
-            (
-                self.out_dir / "layers"
-                / f"layer_{layer:02d}_pre.ein"
-            ).write_text(_kb_to_ein_text(kb))
+            (self._layer_dir(layer) / "pre.ein").write_text(
+                _kb_to_ein_text(kb),
+            )
         self._emit_timeline(
             "layer_start", layer=layer, alive_size=alive_size,
         )
@@ -479,13 +509,36 @@ class LatticeDumper:
         commitment: tuple,
         result: Any,
         *,
-        facts_merged: int,
-        nogood_emitted: bool,
-        nogood_subsumed: bool,
+        outcome: str = "alive",
+        facts_merged: int = 0,
+        nogood_emitted: bool = False,
+        nogood_subsumed: bool = False,
     ) -> None:
-        """One ``try_commitment_set`` outcome — alive or dead."""
+        """One ``try_commitment_set`` outcome.
+
+        ``outcome`` is one of ``"alive"`` / ``"dead-pre"`` /
+        ``"dead-post"`` / ``"solution"`` — the engine's per-
+        commitment classification. Writes a per-commitment
+        folder under ``enterings/layer_NN/<C-slug>/`` with the
+        artefacts relevant to the outcome:
+
+        - ``commitment.json`` + ``outcome.txt`` — always.
+        - ``unconditional_facts.jsonl`` + ``firings.jsonl`` —
+          for non-``dead-pre`` outcomes (the fork saturated;
+          ``result.unconditional_facts`` / ``result.firings``
+          reflect that saturation).
+        - ``kb.ein`` — for ``"solution"`` only (the saturated
+          fork's full kb).
+        - ``unsat_core.jsonl`` + ``learned_clause.json`` —
+          for ``"dead-pre"`` / ``"dead-post"`` (the
+          contradiction witnesses + the learned negative
+          clause).
+
+        The timeline carries one record per call with counts.
+        """
         rec: dict[str, Any] = {
             "layer": layer,
+            "outcome": outcome,
             "commitment": (
                 _commitment_json(commitment)
                 if commitment is not None else []
@@ -503,6 +556,50 @@ class LatticeDumper:
             })
         self._emit_timeline("entering", **rec)
 
+        if self.out_dir is None or result is None or commitment is None:
+            return
+
+        folder = self._entering_dir(layer, commitment)
+        (folder / "commitment.json").write_text(
+            json.dumps(_commitment_json(commitment), indent=2),
+        )
+        (folder / "outcome.txt").write_text(outcome)
+
+        if result.kind != "dead-pre":
+            # Both alive and dead-post have saturated forks
+            # whose unconditional_facts + firings are
+            # meaningful per-hypothesis emissions.
+            with (folder / "unconditional_facts.jsonl").open("w") as fp:
+                for f in result.unconditional_facts:
+                    fp.write(json.dumps(_fact_summary(f)) + "\n")
+            with (folder / "firings.jsonl").open("w") as fp:
+                for firing in result.firings:
+                    fp.write(json.dumps(_firing_to_dict(firing)) + "\n")
+
+        if outcome == "solution":
+            # Full saturated kb of the satisfying fork.
+            (folder / "kb.ein").write_text(_kb_to_ein_text(result.kb))
+
+        if outcome in ("dead-pre", "dead-post"):
+            with (folder / "unsat_core.jsonl").open("w") as fp:
+                for f in result.unsat_core:
+                    fp.write(json.dumps(_fact_summary(f)) + "\n")
+            (folder / "learned_clause.json").write_text(
+                json.dumps(
+                    [
+                        _factid_json(fid)
+                        for fid in sorted(
+                            commitment,
+                            key=lambda f: (
+                                f[0], tuple(map(str, f[1])),
+                            ),
+                        )
+                    ],
+                    indent=2,
+                    default=str,
+                ),
+            )
+
     def layer_end(
         self,
         layer: int,
@@ -511,10 +608,9 @@ class LatticeDumper:
         survived_count: int,
     ) -> None:
         if self.out_dir is not None and kb is not None:
-            (
-                self.out_dir / "layers"
-                / f"layer_{layer:02d}_post.ein"
-            ).write_text(_kb_to_ein_text(kb))
+            (self._layer_dir(layer) / "post.ein").write_text(
+                _kb_to_ein_text(kb),
+            )
         self._emit_timeline(
             "layer_end",
             layer=layer,
@@ -523,123 +619,58 @@ class LatticeDumper:
             survived_count=survived_count,
         )
 
-    def solution_recorded(
-        self, record: Any, layer: int,
-    ) -> None:
-        """Called when :func:`gaps_solve` appends a SolutionRecord.
-
-        Writes a per-solution subfolder under ``solutions/``
-        with the commitment, the SolutionRecord's kb snapshot
-        (full ein render), and the firings that produced this
-        solution.
-        """
-        self._emit_timeline(
-            "solution_recorded",
-            layer=layer,
-            commitment=(
-                _commitment_json(record.commitment)
-                if record is not None and record.commitment
-                else []
-            ),
-        )
-        if self.out_dir is None or record is None:
-            return
-        if not self._solutions_dir_made:
-            (self.out_dir / "solutions").mkdir(exist_ok=True)
-            self._solutions_dir_made = True
-        slug = _commitment_slug(record.commitment)
-        folder = self.out_dir / "solutions" / slug
-        folder.mkdir(parents=True, exist_ok=True)
-        (folder / "commitment.json").write_text(
-            json.dumps(_commitment_json(record.commitment), indent=2),
-        )
-        (folder / "kb.ein").write_text(_kb_to_ein_text(record.kb))
-        with (folder / "firings.jsonl").open("w") as fp:
-            for firing in record.firings:
-                fp.write(json.dumps(_firing_to_dict(firing)) + "\n")
-
-    def dead_recorded(self, dead: Any) -> None:
-        """Called when :func:`contradictions_solve` appends a
-        DeadCommitment.
-
-        Writes a per-dead subfolder under ``dead/`` with the
-        commitment, the unsat_core (one fact per line), and the
-        learned_clause (sorted FactId list).
-        """
-        self._emit_timeline(
-            "dead_recorded",
-            layer=getattr(dead, "layer", None),
-            kind=getattr(dead, "kind", None),
-            unsat_core_size=(
-                len(dead.unsat_core) if dead is not None else 0
-            ),
-            commitment=(
-                _commitment_json(dead.commitment)
-                if dead is not None and dead.commitment
-                else []
-            ),
-        )
-        if self.out_dir is None or dead is None:
-            return
-        if not self._dead_dir_made:
-            (self.out_dir / "dead").mkdir(exist_ok=True)
-            self._dead_dir_made = True
-        slug = _commitment_slug(dead.commitment)
-        folder = self.out_dir / "dead" / slug
-        folder.mkdir(parents=True, exist_ok=True)
-        (folder / "commitment.json").write_text(
-            json.dumps({
-                "commitment": _commitment_json(dead.commitment),
-                "layer": dead.layer,
-                "kind": dead.kind,
-            }, indent=2),
-        )
-        with (folder / "unsat_core.jsonl").open("w") as fp:
-            for f in dead.unsat_core:
-                fp.write(json.dumps(_fact_summary(f)) + "\n")
-        (folder / "learned_clause.json").write_text(
-            json.dumps(
-                [
-                    _factid_json(fid)
-                    for fid in sorted(
-                        dead.learned_clause,
-                        key=lambda f: (f[0], tuple(map(str, f[1]))),
-                    )
-                ],
-                indent=2,
-                default=str,
-            ),
-        )
-
     def proof_summary(self, proof: Any) -> None:
         """Top-level proof index — written from ``_finish`` when
-        ``verdict.proof`` is non-None. Also materialises the
-        ``kb_index/`` folder (one subfolder per :class:`SetNode`)
-        when ``proof.kb_index`` is populated."""
+        ``verdict.proof`` is non-None. Materialises the
+        ``kb_index/layer_NN/kb_<i>/`` folder hierarchy with
+        per-layer ordered ids (i = 0..n within each layer,
+        deterministic via state_hash sort) when
+        ``proof.kb_index`` is populated."""
         if self.out_dir is None or proof is None:
             return
 
-        # Materialise kb_index/ subfolders.
+        # Per-layer ordered ids: group by node.layer, sort
+        # within layer by state_hash for determinism, assign
+        # kb_0 ... kb_n.
+        kb_id_by_state_hash: dict[int, tuple[int, int]] = {}
         if proof.kb_index:
-            if not self._kb_index_dir_made:
-                (self.out_dir / "kb_index").mkdir(exist_ok=True)
-                self._kb_index_dir_made = True
-            for key, node in proof.kb_index.items():
-                slug = f"{key & 0xFFFFFFFFFFFFFFFF:016x}"
-                folder = self.out_dir / "kb_index" / slug
-                folder.mkdir(parents=True, exist_ok=True)
-                (folder / "canonical_set.json").write_text(
-                    json.dumps(
-                        _commitment_json(node.canonical_set),
-                        indent=2,
-                    ),
+            (self.out_dir / "kb_index").mkdir(exist_ok=True)
+            by_layer: dict[int, list[Any]] = {}
+            for node in proof.kb_index.values():
+                by_layer.setdefault(node.layer, []).append(node)
+            for layer_n, nodes in by_layer.items():
+                nodes_sorted = sorted(nodes, key=lambda n: n.state_hash)
+                layer_dir = (
+                    self.out_dir / "kb_index"
+                    / f"layer_{layer_n:02d}"
                 )
-                (folder / "labels.json").write_text(
-                    json.dumps([
-                        _commitment_json(c) for c in node.labels
-                    ], indent=2),
-                )
-                (folder / "verdict.txt").write_text(node.verdict)
+                layer_dir.mkdir(parents=True, exist_ok=True)
+                for idx, node in enumerate(nodes_sorted):
+                    kb_id_by_state_hash[node.state_hash] = (
+                        layer_n, idx,
+                    )
+                    folder = layer_dir / f"kb_{idx}"
+                    folder.mkdir(exist_ok=True)
+                    (folder / "state_hash.txt").write_text(
+                        f"{node.state_hash & 0xFFFFFFFFFFFFFFFF:016x}",
+                    )
+                    (folder / "canonical_set.json").write_text(
+                        json.dumps(
+                            _commitment_json(node.canonical_set),
+                            indent=2,
+                        ),
+                    )
+                    (folder / "labels.json").write_text(
+                        json.dumps(
+                            [_commitment_json(c) for c in node.labels],
+                            indent=2,
+                        ),
+                    )
+                    (folder / "verdict.txt").write_text(node.verdict)
+
+        def _kb_id_label(node: Any) -> str:
+            layer_n, idx = kb_id_by_state_hash[node.state_hash]
+            return f"layer_{layer_n:02d}/kb_{idx}"
 
         # Top-level index.
         summary = {
@@ -648,6 +679,10 @@ class LatticeDumper:
                     "slug": _commitment_slug(s.commitment),
                     "layer": s.layer,
                     "commitment": _commitment_json(s.commitment),
+                    "path": (
+                        f"enterings/layer_{s.layer:02d}/"
+                        f"{_commitment_slug(s.commitment)}"
+                    ),
                 }
                 for s in proof.solutions
             ],
@@ -657,13 +692,18 @@ class LatticeDumper:
                     "layer": d.layer,
                     "kind": d.kind,
                     "commitment": _commitment_json(d.commitment),
+                    "path": (
+                        f"enterings/layer_{d.layer:02d}/"
+                        f"{_commitment_slug(d.commitment)}"
+                    ),
                 }
                 for d in proof.dead_commitments
             ],
             "kb_index": [
                 {
+                    "kb_id": _kb_id_label(node),
                     "state_hash_hex": (
-                        f"{key & 0xFFFFFFFFFFFFFFFF:016x}"
+                        f"{node.state_hash & 0xFFFFFFFFFFFFFFFF:016x}"
                     ),
                     "canonical_set": _commitment_json(
                         node.canonical_set,
@@ -674,7 +714,7 @@ class LatticeDumper:
                     "verdict": node.verdict,
                     "layer": node.layer,
                 }
-                for key, node in proof.kb_index.items()
+                for node in proof.kb_index.values()
             ],
             "alive_at_end": [
                 _commitment_json(c) for c in proof.alive_at_end

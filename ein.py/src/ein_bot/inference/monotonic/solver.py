@@ -896,17 +896,11 @@ def _explore_layers(
                 if dumper is not None:
                     dumper.entering(
                         layer, c, result,
+                        outcome=result.kind,  # "dead-pre" / "dead-post"
                         facts_merged=0,
                         nogood_emitted=landed,
                         nogood_subsumed=not landed,
                     )
-                    if (
-                        entry == "contradictions"
-                        and hasattr(dumper, "dead_recorded")
-                    ):
-                        dumper.dead_recorded(
-                            lstate.dead_commitments[-1],
-                        )
                 continue
 
             # Alive.
@@ -948,6 +942,7 @@ def _explore_layers(
                     if dumper is not None:
                         dumper.entering(
                             layer, c, result,
+                            outcome="solution",
                             facts_merged=0,
                             nogood_emitted=False,
                             nogood_subsumed=False,
@@ -970,21 +965,20 @@ def _explore_layers(
                     if dumper is not None:
                         dumper.entering(
                             layer, c, result,
+                            outcome="solution",
                             facts_merged=0,
                             nogood_emitted=False,
                             nogood_subsumed=False,
                         )
-                        if hasattr(dumper, "solution_recorded"):
-                            dumper.solution_recorded(
-                                lstate.solutions[-1], layer,
-                            )
                     continue  # don't merge; don't append to a_layer
                 # entry == "contradictions": no solution recording.
                 # Fall through to the alive flow so unconditional
                 # facts merge into root and ``c`` lands in
                 # ``a_layer`` for next-layer pair generation —
                 # supersets of a solved commitment can still die
-                # under additional hypotheses.
+                # under additional hypotheses. The ``entering``
+                # call at the merge block below passes
+                # ``outcome="solution"`` because the kb is solved.
 
             this_merged = 0
             for f in result.unconditional_facts:
@@ -999,6 +993,7 @@ def _explore_layers(
             if dumper is not None:
                 dumper.entering(
                     layer, c, result,
+                    outcome="solution" if solved else "alive",
                     facts_merged=this_merged,
                     nogood_emitted=False,
                     nogood_subsumed=False,
@@ -1038,15 +1033,6 @@ def _explore_layers(
                                     firings=(), layer=layer,
                                 ))
                                 lstate.root_was_solved = True
-                                if (
-                                    dumper is not None
-                                    and hasattr(
-                                        dumper, "solution_recorded",
-                                    )
-                                ):
-                                    dumper.solution_recorded(
-                                        lstate.solutions[-1], layer,
-                                    )
                         # gaps: cascade hit a terminal — exit
                         # Phase 2 either way (Solution: root
                         # satisfies; Contradiction: root
@@ -1082,15 +1068,6 @@ def _explore_layers(
                                 firings=(), layer=layer,
                             ))
                             lstate.root_was_solved = True
-                            if (
-                                dumper is not None
-                                and hasattr(
-                                    dumper, "solution_recorded",
-                                )
-                            ):
-                                dumper.solution_recorded(
-                                    lstate.solutions[-1], layer,
-                                )
                         phase_2_done = True
                         break
                     # entry == "contradictions": root is_solved

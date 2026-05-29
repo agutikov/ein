@@ -540,6 +540,19 @@ backbone; `dumper=None` is a no-op for every hook site. The
 the same events to stderr as `--verbose` progress lines without
 needing an on-disk dump.
 
+`MonotonicDumper` captures only the per-layer root snapshots —
+the solution-mode engine early-terminates, so most hypotheses are
+never reached and there's nothing per-hypothesis to record. For a
+**complete per-hypothesis record** — every commitment tested at
+every layer, with the firings each one emitted, survivors and
+casualties alike — run the exhaustive lattice entries
+(`gaps_solve` / `contradictions_solve`) with a `LatticeDumper`:
+see [`lattice_dump.md`](lattice_dump.md). That dump groups
+`enterings/` and `kb_index/` by layer and writes
+`outcome.txt` + `firings.jsonl` + `unsat_core.jsonl` per
+commitment — the audit trail for debugging problem statements and
+rules.
+
 ### Budget — `max_time` / `max_enterings`
 
 `monotonic_solve(..., max_time=N, max_enterings=K)` checks the
