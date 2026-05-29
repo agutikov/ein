@@ -94,6 +94,14 @@ def _build_argparser() -> argparse.ArgumentParser:
         "--max-enterings", type=int, default=None,
         help="abort after N try_commitment_set calls",
     )
+    ap.add_argument(
+        "--lattice-sanity-check", action="store_true",
+        help="S1.5b.27 release regression: for every alive "
+             "size-k>=2 commitment, verify every (k-1)-subset "
+             "parent path saturates to the same kb. Off by "
+             "default — costs k+1 saturations per checked "
+             "commitment.",
+    )
     return ap
 
 
@@ -103,6 +111,9 @@ def main(argv: list[str] | None = None) -> int:
     kb = KnowledgeBase.from_ir(parse(text))
 
     config = kb.config or SolverConfig()
+    if args.lattice_sanity_check:
+        from dataclasses import replace as _replace
+        config = _replace(config, lattice_sanity_check=True)
     dumper = (
         LatticeDumper(out_dir=args.dump_states)
         if args.dump_states is not None else None

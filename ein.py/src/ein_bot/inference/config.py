@@ -125,6 +125,15 @@ class SolverConfig:
     hypgen_obj_weight:               float = 1.0
     print_alive:                     bool = False
     candidate_order_seed:            int = -1
+    # S1.5b.27 — saturation-commutativity sanity check.
+    # When True, ``_explore_layers`` runs
+    # :func:`ein_bot.inference.monotonic.sanity.check_commutativity`
+    # for every alive size-``k>=2`` commitment, verifying every
+    # ``(k-1)``-subset parent path produces the same
+    # post-saturation kb. Off by default — costs ``k+1``
+    # saturations per checked commitment. Release-regression
+    # only.
+    lattice_sanity_check:            bool = False
 
     @classmethod
     def from_kw_pairs(cls, kw_pairs: Iterable[Any]) -> SolverConfig:

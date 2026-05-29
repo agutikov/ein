@@ -90,6 +90,18 @@ cascade-Contradiction; fork-side is_solved falls through to
 the alive flow so supersets of solved commitments are still
 explored; 9 new tests, all 11 branching fixtures
 smoke-cleared, 792 pytest green, ruff clean).
+[S1.5b.27](s1.5b.27_lattice_sanity_check.md) shipped 2026-05-29
+(saturation-commutativity sanity check —
+`inference/monotonic/sanity.py` ships `check_commutativity`
++ `SanityError`; gated by
+`SolverConfig.lattice_sanity_check` (default False) and
+`--lattice-sanity-check` CLI flag; wired into
+`_explore_layers` right after the alive `_record_setnode`;
+costs ``k+1`` saturations per checked size-``k`` commitment
+so off by default; verified M1's premise holds on every
+shipped fixture — 11 branching + 3 lattice — under the
+release-regression flag; 7 new tests, 820 pytest green,
+ruff clean).
 [S1.5b.28](s1.5b.28_lattice_fixtures.md) shipped 2026-05-29
 (lattice fixtures + state-hash collision verification —
 ships `examples/lattice/01_subset_pruned.ein` (Apriori
@@ -118,11 +130,12 @@ calls `dumper.proof_summary(verdict.proof)` before
 ruff clean). The next implementation surface is
 [S1.5b.26](s1.5b.26_lattice_scoring.md) (within-layer
 scoring switch — applies to all three entries via shared
-`_explore_layers`),
-[S1.5b.27](s1.5b.27_lattice_sanity_check.md) (saturation-
-commutativity sanity check — dev/regression tool), or
+`_explore_layers`) or
 [S1.5b.30](s1.5b.30_lattice_perf_round.md) (end-of-phase
-perf round + tree-side deprecation tags).
+perf round + tree-side deprecation tags;
+[S1.5b.31](s1.5b.31_lattice_shuffle_invariance.md) shuffle
+invariance + [S1.5b.32](s1.5b.32_domain_elim_vs_hyp_exploration.md)
+research-stage stages also outstanding).
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments

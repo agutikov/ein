@@ -906,6 +906,20 @@ def _explore_layers(
                     layer=layer,
                 )
 
+            # S1.5b.27 — saturation-commutativity sanity check.
+            # Off by default; cfg.lattice_sanity_check triggers the
+            # release regression that verifies every (k-1)-subset
+            # parent path produces the same post-saturation kb as
+            # the direct commitment. Runs orthogonally to
+            # store_lattice / entry — the premise applies to every
+            # alive commitment regardless of the dumper or proof
+            # surface. Skipped for singletons (no parents).
+            if cfg.lattice_sanity_check and len(c) >= 2:
+                from ein_bot.inference.monotonic.sanity import (
+                    check_commutativity,
+                )
+                check_commutativity(root_kb, c)
+
             # Fork-side is_solved (§3c.ii of algorithm_layer_n.md).
             if solved:
                 if entry == "monotonic":
