@@ -1,0 +1,75 @@
+;;; P1.5b lattice fixture — genuine 3-element death.
+;;;
+;;; Demonstrates: a 3-element commitment {h1, h2, h3} dies but no
+;;; 2-subset of it is in D_2. Apriori prefix-join produces the
+;;; candidate (every 2-subset is alive, so all three pairs are
+;;; in a_prev and share enough prefix to combine); matches_any_nogood
+;;; lets it through (no shorter clause subsumes it);
+;;; try_commitment_set forks and saturates;
+;;; ContradictionDetector hits.
+;;;
+;;; This is the "genuine combinatorial-core" case Q1.5b.2.d flags
+;;; as unavoidable: no amount of subset elimination can avoid the
+;;; size-3 fork.
+;;;
+;;; Three hypothesis candidates from three distinct relations:
+;;;
+;;;   (a-prop X)    h1
+;;;   (b-prop X)    h2
+;;;   (c-prop X)    h3
+;;;
+;;; A custom three-way conflict rule fires ONLY when ALL three are
+;;; present in the fork's kb:
+;;;
+;;;   (rule three-conflict ()
+;;;     :match (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
+;;;     :assert (false))
+;;;
+;;; Committing any 2-subset leaves one relation empty in the
+;;; fork → rule doesn't fire → fork stays alive.
+;;; Committing the full 3-subset hits all three → rule fires →
+;;; (false) → ContradictionDetector hits → dead-post.
+;;;
+;;; Expected verdict + counts under contradictions_solve with
+;;; max_set_size=3:
+;;;
+;;;   verdict          Contradiction (mode contract)
+;;;   enterings_total  7   (3 singletons + 3 pairs + 1 triple)
+;;;   dead_commitments 1   (the {h1, h2, h3} death only —
+;;;                         no 2-subset dies)
+;;;   nogoods_emitted  1   (the size-3 clause; learned_clause
+;;;                         equals the 3-set itself)
+;;;   layers_explored  3
+;;;
+;;; Composes with [diagrams/lattice_3hyps_genuine.svg] (analogue
+;;; Diagram 3 in lattice_diagrams.md) — the lattice node-coloured
+;;; rendering of the same shape.
+
+(rules
+  (rule three-conflict ()
+    :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
+    :assert (false)
+    :why    "{?x} a-prop AND {?y} b-prop AND {?z} c-prop — jointly forbidden"
+    :priority 200)
+
+  (hrule guess (?R ?T)
+    :match  (is-a ?x ?T)
+    :assert (?R ?x)
+    :why    "guess: is {?x} {?R}?"))
+
+(ontology
+  (relation is-a   T T)
+  (relation a-prop T)
+  (relation b-prop T)
+  (relation c-prop T)
+
+  (is-a Item T)
+  (is-a X    Item))
+
+(query
+  :mode solve
+  :goal (a-prop ?x)
+  :hrules (
+    guess (a-prop Item)
+    guess (b-prop Item)
+    guess (c-prop Item)))

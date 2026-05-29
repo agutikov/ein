@@ -90,6 +90,18 @@ cascade-Contradiction; fork-side is_solved falls through to
 the alive flow so supersets of solved commitments are still
 explored; 9 new tests, all 11 branching fixtures
 smoke-cleared, 792 pytest green, ruff clean).
+[S1.5b.28](s1.5b.28_lattice_fixtures.md) shipped 2026-05-29
+(lattice fixtures + state-hash collision verification —
+ships `examples/lattice/01_subset_pruned.ein` (Apriori
+prefix-join structural pruning),
+`02_genuine_3set_death.ein` (combinatorial-core 3-set
+death), `03_state_hash_collision.ein` (canonical fast
+fixture for the merge path); verified zebra2-hints
+naturally triggers strong collisions — 13 correct-hint
+commitments collapse to one multilabel SetNode at
+max_set_size=1, documented in Findings; 6 fast pinned
+tests + 1 EIN_RUN_SLOW-gated zebra2-hints test;
+813 pytest green, ruff clean).
 [S1.5b.29](s1.5b.29_lattice_proof.md) shipped 2026-05-29
 (`LatticeDumper` implementation + P1.6 handoff contract —
 fills the per-set audit folder layout `root.ein` +
@@ -107,9 +119,8 @@ ruff clean). The next implementation surface is
 [S1.5b.26](s1.5b.26_lattice_scoring.md) (within-layer
 scoring switch — applies to all three entries via shared
 `_explore_layers`),
-[S1.5b.28](s1.5b.28_lattice_fixtures.md) (lattice example
-fixtures + state-hash collision measurement on
-`zebra2-hints`), or
+[S1.5b.27](s1.5b.27_lattice_sanity_check.md) (saturation-
+commutativity sanity check — dev/regression tool), or
 [S1.5b.30](s1.5b.30_lattice_perf_round.md) (end-of-phase
 perf round + tree-side deprecation tags).
 **Depends on:** —

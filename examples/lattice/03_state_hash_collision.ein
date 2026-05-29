@@ -1,0 +1,92 @@
+;;; P1.5b lattice fixture — state-hash collision (Q1.5b.4.c).
+;;;
+;;; Demonstrates: distinct commitments saturating to identical
+;;; post-saturation kbs collapse into one multilabel SetNode under
+;;; ``contradictions_solve(store_lattice=True)``. This is the
+;;; canonical small-fixture instance of the state-hash dedup MERGE
+;;; path; the same phenomenon naturally occurs on
+;;; ``examples/zebra2-hints.ein`` at scale (S1.5b.28's Findings
+;;; section documents the larger case) but the saturation cost
+;;; there is ~1s per fork, making it impractical as a fast unit
+;;; test. This fixture saturates in microseconds.
+;;;
+;;; Three hypothesis candidates from three unary relations:
+;;;
+;;;   (h1 X)    candidate 1
+;;;   (h2 X)    candidate 2
+;;;   (h3 X)    candidate 3
+;;;
+;;; Two implication rules form a bidirectional bridge through h2:
+;;;
+;;;   (rule h2-derives-h1 ()
+;;;     :match (h2 ?x) :assert (h1 ?x))
+;;;   (rule h2-derives-h3 ()
+;;;     :match (h2 ?x) :assert (h3 ?x))
+;;;
+;;; Saturation outcomes:
+;;;
+;;;   Layer 1 — commit {(h1 X)}: fork has h1 only; no rules fire
+;;;             (no h2). Kb = {h1}. State_hash = A.
+;;;   Layer 1 — commit {(h2 X)}: fork has h2; both rules fire,
+;;;             derive h1 and h3. Kb = {h1, h2, h3}. State_hash = B.
+;;;   Layer 1 — commit {(h3 X)}: fork has h3 only; no rules fire.
+;;;             Kb = {h3}. State_hash = C.
+;;;
+;;;   Layer 2 — commit {(h1 X), (h2 X)}: fork has h1, h2; rules
+;;;             derive h3. Kb = {h1, h2, h3}. State_hash = B (!)
+;;;             → MERGE with {(h2 X)}'s SetNode. state_hash_merges += 1.
+;;;   Layer 2 — commit {(h1 X), (h3 X)}: no h2 → no rules.
+;;;             Kb = {h1, h3}. State_hash = D.
+;;;   Layer 2 — commit {(h2 X), (h3 X)}: rules derive h1.
+;;;             Kb = {h1, h2, h3}. State_hash = B (!)
+;;;             → MERGE with {(h2 X)}'s SetNode. state_hash_merges += 1.
+;;;
+;;; Expected counts under ``contradictions_solve(store_lattice=True,
+;;; max_set_size=2)``:
+;;;
+;;;   verdict           Contradiction (mode contract)
+;;;   enterings_total   6   (3 + 3)
+;;;   state_hash_merges 2   (the two layer-2 collapses into the
+;;;                          {h2}-SetNode)
+;;;   kb_index size     4   (one node each for A, B, C, D)
+;;;   multilabel nodes  1   (B has labels = (h2,), (h1,h2), (h2,h3))
+;;;
+;;; The dead_commitments list stays empty (every commitment is
+;;; alive — no contradiction fires) but the verdict is still
+;;; Contradiction by the mode contract; the test's pin is on the
+;;; merge counters, not on deaths.
+
+(rules
+  (rule h2-derives-h1 ()
+    :match  (h2 ?x)
+    :assert (h1 ?x)
+    :why    "h2({?x}) → h1({?x})"
+    :priority 100)
+
+  (rule h2-derives-h3 ()
+    :match  (h2 ?x)
+    :assert (h3 ?x)
+    :why    "h2({?x}) → h3({?x})"
+    :priority 100)
+
+  (hrule guess (?R ?T)
+    :match  (is-a ?x ?T)
+    :assert (?R ?x)
+    :why    "guess: is {?x} {?R}?"))
+
+(ontology
+  (relation is-a T T)
+  (relation h1   T)
+  (relation h2   T)
+  (relation h3   T)
+
+  (is-a Item T)
+  (is-a X    Item))
+
+(query
+  :mode solve
+  :goal (h1 ?x)
+  :hrules (
+    guess (h1 Item)
+    guess (h2 Item)
+    guess (h3 Item)))

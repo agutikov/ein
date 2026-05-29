@@ -1,0 +1,86 @@
+;;; P1.5b lattice fixture — Apriori subset pruning.
+;;;
+;;; Demonstrates: a layer-3 candidate {h1, h2, X} is filtered at
+;;; generation because its 2-subset {h1, h2} dies at layer 2. The
+;;; Apriori prefix-join in inference/apriori.py drops the (h1, h2)
+;;; pair from a_prev when it dies; the (k+1)-join therefore never
+;;; emits a 3-superset containing both — the pruning is structural,
+;;; happening BEFORE the expensive try_commitment_set fork+saturate.
+;;; filter_candidate's matches_any_nogood subset check is a
+;;; redundant belt-and-braces guard against any 3-set whose dead
+;;; 2-subset slips back into the pool (shouldn't happen under M1).
+;;;
+;;; Four hypothesis candidates: (proposed a), (proposed b),
+;;; (proposed c), (proposed d). A single (incompat a b) fact in
+;;; root + the incompat-block rule says "if both a and b are
+;;; proposed, false". So:
+;;;
+;;;   Layer 1 — 4 alive singletons.
+;;;   Layer 2 — 6 pairs; {a,b} dies (incompat-block fires);
+;;;             5 alive pairs.
+;;;   Layer 3 — Apriori prefix-join over the 5 alive pairs
+;;;             generates only 2 candidates ({a,c,d} and
+;;;             {b,c,d}). The would-be {a,b,c} and {a,b,d}
+;;;             are NEVER produced — the (a,b) prefix is gone
+;;;             from a_prev.
+;;;
+;;; Expected verdict + counts under contradictions_solve with
+;;; max_set_size=3:
+;;;
+;;;   verdict          Contradiction (mode contract)
+;;;   enterings_total  12  (4 + 6 + 2)
+;;;   dead_commitments 1   (the {a,b} death; the 3-set deaths
+;;;                         we'd see WITHOUT the pruning never
+;;;                         materialise)
+;;;   nogoods_emitted  1   (frozenset({(proposed,(a,)), (proposed,(b,))}))
+;;;
+;;; This is the F1 / F3 path from idea-08's "subset elimination"
+;;; observation: nogood subsumption + Apriori prefix-join =
+;;; combinatorial pruning that no per-set forking can match.
+;;;
+;;; Composes with [diagrams/lattice_4hyps_dedup.svg] (Diagram 4
+;;; in lattice_diagrams.md) — the same shape rendered as a
+;;; node-coloured lattice.
+
+(rules
+  (rule symmetric (?rel)
+    :match  (?rel ?a ?b)
+    :assert (?rel ?b ?a)
+    :why    "{?rel} symmetric: {?a} ↔ {?b}"
+    :priority 100)
+
+  (rule incompat-block ()
+    :match  (and (incompat ?a ?b)
+                 (proposed ?a)
+                 (proposed ?b)
+                 (neq ?a ?b))
+    :assert (false)
+    :why    "{?a} and {?b} are jointly forbidden by an incompat fact"
+    :priority 200)
+
+  (hrule guess (?R ?T)
+    :match  (is-a ?x ?T)
+    :assert (?R ?x)
+    :why    "guess: is {?x} {?R}?"))
+
+(ontology
+  (relation is-a     T T)
+  (relation proposed T)
+  (relation incompat T T)
+
+  (symmetric incompat)
+
+  (is-a Custom T)
+  (is-a a      Custom)
+  (is-a b      Custom)
+  (is-a c      Custom)
+  (is-a d      Custom))
+
+(facts
+  (incompat a b :source "(only the {a, b} pair is forbidden)"))
+
+(query
+  :mode solve
+  :goal (proposed ?x)
+  :hrules (
+    guess (proposed Custom)))

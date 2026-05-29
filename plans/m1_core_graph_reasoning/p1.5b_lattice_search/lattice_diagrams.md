@@ -281,3 +281,17 @@ rendering tooling, same colour vocabulary.
   — the channel-isolation rewrite that makes per-set
   `BranchResult` + `integrate` the universal up/down channel
   the lattice orchestrator sits on.
+- **Reproducible examples** (S1.5b.28) — the diagrams above
+  are illustrative; the actual on-disk
+  ``proof_summary.json`` + ``kb_index/`` audit folders for
+  the same phenomena live under
+  ``examples/lattice/``. Run
+  ``demo/bench_lattice.py --contradictions --store-lattice
+  examples/lattice/<N>_*.ein --dump-states <dir>`` to
+  produce the rendered version:
+
+  | Fixture | Phenomenon | Stage |
+  |---------|------------|-------|
+  | [`01_subset_pruned.ein`](../../../examples/lattice/01_subset_pruned.ein) | Apriori prefix-join structural pruning of {h₁, h₂}-containing 3-sets | S1.5b.28 |
+  | [`02_genuine_3set_death.ein`](../../../examples/lattice/02_genuine_3set_death.ein) | combinatorial-core 3-set death with no 2-subset in D₂ | S1.5b.28 |
+  | [`03_state_hash_collision.ein`](../../../examples/lattice/03_state_hash_collision.ein) | distinct commitments collapsing into one multilabel SetNode (Q1.5b.4.c) | S1.5b.28 |
