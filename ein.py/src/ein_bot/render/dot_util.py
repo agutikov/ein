@@ -37,6 +37,23 @@ def quote(s: str) -> str:
     return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
+def fact_label(relation_name: str, args: tuple) -> str:
+    """A readable ``rel(a, b, …)`` label for a fact or fact-id.
+
+    Recurses into nested Fact-shaped args (Q40 relational nodes). Used
+    by the derivation-slice (:mod:`ein_bot.render.slice`) and the
+    lattice DAG (:mod:`ein_bot.render.lattice_dag`).
+    """
+    parts: list[str] = []
+    for a in args:
+        if hasattr(a, "relation_name") and hasattr(a, "args"):
+            parts.append(fact_label(a.relation_name, a.args))
+        else:
+            parts.append(str(a))
+    inner = ", ".join(parts)
+    return f"{relation_name}({inner})" if inner else relation_name
+
+
 def value_label(node: IRNode) -> str:
     """Human-readable single-line label for a value (e.g. an edge label)."""
     if isinstance(node, Atom):
@@ -69,6 +86,7 @@ __all__ = [
     "TYPE_SHAPE",
     "VAR_SHAPE",
     "WILDCARD_ATTRS",
+    "fact_label",
     "quote",
     "value_label",
 ]

@@ -10,6 +10,7 @@ Subcommands:
     ein-bot render rules       <file>             # one DOT per rule (S1.6.1)
     ein-bot render rule        <file> --name=N    # a single rule's DOT
     ein-bot render constraints <file>             # constraint-scope DOT
+    ein-bot render lattice     <file>             # commitment-lattice DOT (runs a solve)
 
 All `render`/`dot` commands emit DOT to stdout only; rasterising to SVG
 is a shell-script concern (see utils/render_examples.sh).
@@ -27,7 +28,7 @@ from pathlib import Path
 from .ir import IRParseError, dump_canonical, parse
 from .ir import to_dot as ir_to_dot
 from .kb import KBLoadError, KnowledgeBase, Layer
-from .render import render_constraints, render_rule, render_rules
+from .render import render_constraints, render_lattice, render_rule, render_rules
 
 
 def _env_truthy(value: str | None) -> bool:
@@ -172,6 +173,38 @@ def _cmd_render_constraints(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_render_lattice(args: argparse.Namespace) -> int:
+    """Run a proof-producing solve and render its commitment lattice.
+
+    Unlike the static `render` views, this *runs the engine* — the
+    lattice DAG comes from a `LatticeProof`. ``gaps_solve`` /
+    ``contradictions_solve`` populate the proof; the full view needs
+    ``store_lattice`` (on by default).
+    """
+    nodes = _parse_or_exit(Path(args.file))
+    if nodes is None:
+        return 1
+    try:
+        kb = KnowledgeBase.from_ir(nodes)
+    except KBLoadError as e:
+        print(f"kb load error: {e}", file=sys.stderr)
+        return 1
+    from .inference.monotonic import contradictions_solve, gaps_solve
+    solve = contradictions_solve if args.mode == "contradictions" else gaps_solve
+    verdict, _ = solve(
+        kb, max_set_size=args.max_set_size,
+        store_lattice=not args.no_store_lattice,
+    )
+    proof = getattr(verdict, "proof", None)
+    if proof is None:
+        print(f"{args.mode} produced no LatticeProof for {args.file}",
+              file=sys.stderr)
+        return 1
+    sys.stdout.write(render_lattice(proof, view=args.view))
+    sys.stdout.write("\n")
+    return 0
+
+
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="ein-bot",
@@ -200,8 +233,12 @@ def _build_parser() -> argparse.ArgumentParser:
         help="rule rendering: 'sidebyside' LHS|RHS clusters, LR (default); "
              "'overlay' LHS solid + RHS dashed",
     )
-    ir_dot.add_argument("--trace-view", choices=["a", "b", "c"], default="a",
-                        help="trace view: 'a' per-step (default), 'b' aggregate, 'c' DAG")
+    ir_dot.add_argument(
+        "--trace-view",
+        choices=["per-step", "aggregate", "dag", "a", "b", "c"], default="per-step",
+        help="trace view: 'per-step' (default), 'aggregate', or 'dag' "
+             "(derivation DAG); legacy a/b/c accepted",
+    )
     ir_dot.add_argument(
         "--levi", action="store_true",
         help="Levi-bipartite hyperedge view (default: compact entity-style); "
@@ -274,6 +311,22 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     r_con.add_argument("file")
     r_con.set_defaults(func=_cmd_render_constraints)
+
+    r_lat = render_sub.add_parser(
+        "lattice",
+        help="commitment-lattice / proof-DAG DOT (runs a solve, S1.6.3)",
+    )
+    r_lat.add_argument("file")
+    r_lat.add_argument("--mode", choices=["gaps", "contradictions"], default="gaps",
+                       help="proof-producing solve to run (default: gaps)")
+    r_lat.add_argument("--view", choices=["full", "solution"], default="full",
+                       help="'full' every commitment (default) or 'solution' frontier")
+    r_lat.add_argument("--max-set-size", type=int, default=3,
+                       help="commitment-set depth cap (default 3)")
+    r_lat.add_argument("--no-store-lattice", action="store_true",
+                       help="don't store the per-commitment lattice (full view "
+                            "then falls back to the solution frontier)")
+    r_lat.set_defaults(func=_cmd_render_lattice)
 
     return p
 

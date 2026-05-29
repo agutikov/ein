@@ -310,15 +310,47 @@ def render_query(form: SForm) -> str:
     return b.build()
 
 
-def render_trace(form: SForm, *, view: str = "a") -> str:
-    """Render `(trace …)` — currently only mode (a) per-step is implemented.
+# Trace-view aliases — friendly names alongside the legacy letters.
+_TRACE_VIEW_ALIASES = {
+    "a": "a", "per-step": "a",
+    "b": "b", "aggregate": "b",
+    "c": "c", "dag": "c",
+}
 
-    Mode (a) emits a single digraph showing all step nodes connected
-    by `:using` references. Modes (b) aggregate and (c) derivation-DAG
-    are P1.6 territory; this v0 just labels them and falls through.
+
+def _trace_premises(using: SForm) -> list[Atom]:
+    """Premise refs in a `:using` clause.
+
+    `(and c10 c15)` → [c10, c15] (the `and` head is the combinator);
+    `(c10)` → [c10] (the head IS the premise).
     """
-    if view not in ("a", "b", "c"):
-        raise ValueError(f"unknown trace view: {view!r}")
+    head = using.head
+    if isinstance(head, Atom) and head.name == "and":
+        return [a for a in using.args if isinstance(a, Atom)]
+    out = [head] if isinstance(head, Atom) else []
+    out += [a for a in using.args if isinstance(a, Atom)]
+    return out
+
+
+def render_trace(form: SForm, *, view: str = "a") -> str:
+    """Render `(trace …)`.
+
+    - **(a) per-step** (default) / **(b) aggregate** — a single digraph
+      of step nodes linked by `:using` references.
+    - **(c) derivation DAG** (alias ``dag``) — the *explanation graph*:
+      one node per derived fact (`:derives`), each linked back to its
+      `:using` premises (chaining through earlier steps), the edge
+      labelled by the firing `:rule`.
+    """
+    canon = _TRACE_VIEW_ALIASES.get(view)
+    if canon is None:
+        raise ValueError(
+            f"unknown trace view: {view!r} "
+            f"(expected per-step/a, aggregate/b, or dag/c)"
+        )
+    if canon == "c":
+        return _render_trace_dag(form)
+
     b = _Builder("trace")
     for ev in form.args:
         if not isinstance(ev, SForm):
@@ -339,15 +371,50 @@ def render_trace(form: SForm, *, view: str = "a") -> str:
         for arg in ev.args:
             if isinstance(arg, KwPair) and arg.key.name == "using":
                 if isinstance(arg.value, SForm):
-                    head = arg.value.head
-                    if isinstance(head, Atom):
-                        b.node(_atom_id(head), "shape=rectangle")
-                        b.edge(_atom_id(head), step_id, 'style=dashed')
-                    for premise in arg.value.args:
-                        if isinstance(premise, Atom):
-                            b.node(_atom_id(premise), "shape=rectangle")
-                            b.edge(_atom_id(premise), step_id,
-                                   'style=dashed')
+                    for premise in _trace_premises(arg.value):
+                        b.node(_atom_id(premise), "shape=rectangle")
+                        b.edge(_atom_id(premise), step_id, 'style=dashed')
+    return b.build()
+
+
+def _render_trace_dag(form: SForm) -> str:
+    """View (c) — derived-fact nodes linked to their `:using` premises."""
+    b = _Builder("trace")
+    derived_by_step: dict[str, str] = {}   # step name → its derived-fact node id
+    for ev in form.args:
+        if not isinstance(ev, SForm):
+            continue
+        step_name = next((a.name for a in ev.args if isinstance(a, Atom)), None)
+        if step_name is None:
+            continue
+        rule = None
+        derives: SForm | None = None
+        using: SForm | None = None
+        for arg in ev.args:
+            if isinstance(arg, KwPair):
+                if arg.key.name == "rule":
+                    rule = _value_label(arg.value)
+                elif arg.key.name == "derives" and isinstance(arg.value, SForm):
+                    derives = arg.value
+                elif arg.key.name == "using" and isinstance(arg.value, SForm):
+                    using = arg.value
+        # Node: the derived fact (falls back to the step name).
+        if derives is not None:
+            dlabel = _value_label(derives)
+            dnode = _quote(dlabel)
+            b.node(dnode, f"shape=box, style=bold, label={_quote(dlabel)}")
+        else:
+            dnode = _quote(step_name)
+            b.node(dnode, f"shape=box, label={_quote(step_name)}")
+        derived_by_step[step_name] = dnode
+        edge_attrs = f'label="{rule}"' if rule else None
+        if using is not None:
+            for premise in _trace_premises(using):
+                # Chain to a prior step's derived fact when the ref names one.
+                pid = derived_by_step.get(premise.name, _atom_id(premise))
+                if premise.name not in derived_by_step:
+                    b.node(_atom_id(premise), "shape=rectangle")
+                b.edge(pid, dnode, edge_attrs)
     return b.build()
 
 

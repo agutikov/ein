@@ -149,33 +149,49 @@ the step's `:derives` is committed.
 **(b) Aggregate** — single file, final state, edges coloured by step
 number (early = blue, late = red). For overviews and paper figures.
 
-**(c) Derivation DAG** — nodes are derived facts (one per `:derives`),
-edges connect each derived fact to its `:using` premises. The natural
-"explanation graph" view per
-[idea 08](../../../ideas/08-human-style-deductive-trace.md). The
-DAG is also what
-[`../02-data-model/02_store.md` §provenance](../02-data-model/02_store.md)'s
-`kb.derivation_dag(fact).to_dot()` produces directly:
+**(c) Derivation DAG** (alias `dag`; **implemented S1.6.3 T1.6.3.3**) —
+nodes are derived facts (one per `:derives`), edges connect each
+derived fact to its `:using` premises (chaining through earlier steps),
+the edge labelled by the firing `:rule`. The natural "explanation
+graph" view per
+[idea 08](../../../ideas/08-human-style-deductive-trace.md):
 
 ```dot
 digraph derivation {
   c10 [shape=rectangle, label="condition (10)"];
-  s1  [shape=rectangle, label="lives-in(Norwegian, House-1)"];
-  s2  [shape=rectangle, label="¬lives-in(Norwegian, House-2)"];
-  c10 -> s1 [label="from-condition"];
-  s1  -> s2 [label="exclusivity"];
+  "(lives-in Norwegian House-1)" [shape=box, style=bold];
+  "(not (lives-in Norwegian House-2))" [shape=box, style=bold];
+  c10 -> "(lives-in Norwegian House-1)" [label="from-condition"];
+  "(lives-in Norwegian House-1)" -> "(not (lives-in Norwegian House-2))" [label="exclusivity"];
 }
 ```
 
-## Branch rendering
+The view names accept friendly aliases: `per-step` (a), `aggregate`
+(b), `dag` (c).
 
-- **Search-tree view** (P1.5 forward-reference): nodes are states
-  bracketed by `branch-open` / `branch-close`; edges are `:choices`.
-  Default for the `--search-tree` flag.
-- **Per-state snapshots**: each branch becomes a `cluster_branch_<id>`
-  sub-graph inside the working-memory DOT. Maps onto
-  [`../02-data-model/02_store.md`](../02-data-model/02_store.md)'s
-  `kb.fork()` semantics — each fork gets a distinct DOT cluster.
+## Branch rendering — the commitment lattice (S1.6.3)
+
+The P1.5 ordered search tree was removed with the tree solver
+(2026-05-29); the engine now produces a **set-indexed commitment
+lattice**. [`ein_bot.render.lattice_dag`](../../../../ein.py/src/ein_bot/render/lattice_dag.py)
+renders it as a DAG (`render_lattice(proof | snapshot, view=)`):
+
+- `rankdir=LR`, ranked by **layer** (= commitment-set size); layer 0
+  (root saturation) at the left, layers flowing rightward.
+- One node per visited commitment / `state_hash`; when several
+  commitments collapse to one post-saturation state the node is a
+  multilabel ("+N ≡ same state").
+- Colour by verdict — **alive** grey, **dead** red, **solution** green.
+  Dead nodes carry their `unsat_core` in the tooltip and a dashed
+  back-edge labelled with the lifted `learned_clause` (no-good).
+- Two views: `full` (every commitment; needs `store_lattice=True`) and
+  `solution` (survivors + pruned siblings — the small sub-DAG the trace
+  embeds).
+
+Fed a `LatticeSnapshotV1`
+([`snapshot.py`](../../../../ein.py/src/ein_bot/inference/monotonic/snapshot.py))
+the diagram is **order-stable across `lattice_order_seed`** (reuses the
+S1.5b.31 shuffle-invariance guarantee).
 
 ## Unified KB view (S1.2.4)
 

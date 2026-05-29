@@ -16,6 +16,7 @@ See ``plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/``.
 from __future__ import annotations
 
 from .constraints import render_constraints
+from .lattice_dag import render_lattice
 from .palette import PALETTE, hash_color
 from .rules import render_rule, render_rules
 from .slice import render_slice, render_solution, render_state
@@ -24,6 +25,7 @@ __all__ = [
     "PALETTE",
     "hash_color",
     "render_constraints",
+    "render_lattice",
     "render_rule",
     "render_rules",
     "render_slice",

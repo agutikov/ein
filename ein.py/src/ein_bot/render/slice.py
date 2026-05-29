@@ -31,7 +31,7 @@ import hashlib
 from typing import TYPE_CHECKING
 
 from ..inference.why import render_why
-from .dot_util import quote
+from .dot_util import fact_label, quote
 from .palette import hash_color
 
 if TYPE_CHECKING:
@@ -66,15 +66,6 @@ def _key(relation_name: str, args: tuple) -> str:
 
 def _node_id(key: str) -> str:
     return quote("f_" + hashlib.md5(key.encode("utf-8")).hexdigest()[:10])
-
-
-def _label_of(relation_name: str, args: tuple) -> str:
-    parts = [
-        _label_of(a.relation_name, a.args) if _is_fact(a) else str(a)   # type: ignore[attr-defined]
-        for a in args
-    ]
-    inner = ", ".join(parts)
-    return f"{relation_name}({inner})" if inner else relation_name
 
 
 def _esc(s: str) -> str:
@@ -132,7 +123,7 @@ def render_slice(
             negative = relation_name == "not"
             seed = key in seed_keys
             derived = key in derived_keys
-            attrs = [f"label={quote(_label_of(relation_name, args))}", "shape=box"]
+            attrs = [f"label={quote(fact_label(relation_name, args))}", "shape=box"]
             if seed:
                 attrs += [f'color="{_SEED_COLOUR}"', f'fontcolor="{_SEED_COLOUR}"',
                           'style="rounded,filled"', 'fillcolor="#fdeaea"']
@@ -182,7 +173,7 @@ def render_slice(
             edges.append(f'  {cid} -> {bottom} [color="{_SEED_COLOUR}"];')
         if learned_clause:
             ng = quote("learned-nogood")
-            clause = " ∧ ".join(sorted(_label_of(fid[0], fid[1]) for fid in learned_clause))
+            clause = " ∧ ".join(sorted(fact_label(fid[0], fid[1]) for fid in learned_clause))
             firing_nodes.append(
                 f"  {ng} [shape=note, label={_multiline('learned no-good', clause)}];"
             )
