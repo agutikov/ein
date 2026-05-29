@@ -70,6 +70,10 @@ See [P1.5b README](../../../../plans/m1_core_graph_reasoning/p1.5b_lattice_searc
 + ``project_set_search_unified`` memory for the design
 rationale.
 """
+from ein_bot.inference.monotonic.contract import (
+    validate_proof_for_explanation,
+    verdict_entry,
+)
 from ein_bot.inference.monotonic.lattice import (
     DeadCommitment,
     LatticeProof,
@@ -98,4 +102,6 @@ __all__ = [
     "contradictions_solve",
     "gaps_solve",
     "monotonic_solve",
+    "validate_proof_for_explanation",
+    "verdict_entry",
 ]

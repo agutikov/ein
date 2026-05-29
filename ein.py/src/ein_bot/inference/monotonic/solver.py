@@ -248,12 +248,22 @@ def monotonic_solve(
 
 
 def _finish(
-    dumper: MonotonicDumper | None,
+    dumper: MonotonicDumper | LatticeDumper | None,
     verdict: Verdict,
     stats: MonotonicStats,
 ) -> tuple[Verdict, MonotonicStats]:
-    """Single exit hook — emits ``dumper.summary`` if set."""
+    """Single exit hook — emits ``dumper.proof_summary`` (when the
+    verdict carries a :class:`LatticeProof`) followed by
+    ``dumper.summary``. The two-step shape lets the
+    :class:`LatticeDumper` materialise its ``kb_index/`` folder +
+    top-level ``proof_summary.json`` index before the cumulative
+    summary lands. Monotonic verdicts have ``proof = None``, so
+    :meth:`proof_summary` is skipped on that path.
+    """
     if dumper is not None:
+        proof = getattr(verdict, "proof", None)
+        if proof is not None and hasattr(dumper, "proof_summary"):
+            dumper.proof_summary(proof)
         dumper.summary(verdict, stats)
     return verdict, stats
 

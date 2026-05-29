@@ -90,13 +90,28 @@ cascade-Contradiction; fork-side is_solved falls through to
 the alive flow so supersets of solved commitments are still
 explored; 9 new tests, all 11 branching fixtures
 smoke-cleared, 792 pytest green, ruff clean).
-The next implementation surface is
+[S1.5b.29](s1.5b.29_lattice_proof.md) shipped 2026-05-29
+(`LatticeDumper` implementation + P1.6 handoff contract —
+fills the per-set audit folder layout `root.ein` +
+`00_timeline.jsonl` + `layers/{NN_pre,NN_post}.ein` +
+`solutions/<C-slug>/` (gaps) + `dead/<C-slug>/`
+(contradictions) + `kb_index/<state_hash_hex>/`
+(store_lattice) + `proof_summary.json` + `summary.json`;
+adds `validate_proof_for_explanation` checking 6 structural
+invariants the P1.6 NL renderer will rely on; `_finish` now
+calls `dumper.proof_summary(verdict.proof)` before
+`dumper.summary` so both lattice entries emit the index;
+15 new test bodies; bench-smoked on branching/04 under all
+4 entry x store_lattice combinations; 807 pytest green,
+ruff clean). The next implementation surface is
 [S1.5b.26](s1.5b.26_lattice_scoring.md) (within-layer
 scoring switch — applies to all three entries via shared
-`_explore_layers`) or
+`_explore_layers`),
 [S1.5b.28](s1.5b.28_lattice_fixtures.md) (lattice example
 fixtures + state-hash collision measurement on
-`zebra2-hints`).
+`zebra2-hints`), or
+[S1.5b.30](s1.5b.30_lattice_perf_round.md) (end-of-phase
+perf round + tree-side deprecation tags).
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments

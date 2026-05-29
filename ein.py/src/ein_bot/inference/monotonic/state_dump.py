@@ -41,7 +41,11 @@ from typing import IO, Any
 # helper is a pure (kb → str) renderer; importing across engine
 # folders is consistent with monotonic/solver.py already importing
 # Verdict types from `ein_bot.inference.tree.solver`.
-from ein_bot.inference.tree.state_dump import _kb_to_ein_text
+from ein_bot.inference.tree.state_dump import (
+    _fact_summary,
+    _firing_to_dict,
+    _kb_to_ein_text,
+)
 from ein_bot.kb.store import KnowledgeBase
 
 
@@ -209,43 +213,132 @@ class MonotonicDumper:
         self._timeline_seq += 1
 
 
+# ── LatticeDumper helpers ────────────────────────────────────
+
+
+def _commitment_slug(commitment: tuple) -> str:
+    """Render a CanonicalSetId (tuple of ``(relation_name, args)``
+    FactIds) as a filesystem-safe slug.
+
+    Empty commitment renders as ``root``; size-1 renders as the
+    bare FactId slug; multi-element renders as ``<slug1>+<slug2>``.
+    Within each FactId, args are joined with ``_``; ``_`` in
+    identifiers becomes ``-`` so the field separator stays
+    unambiguous. Matches :func:`tree.state_dump._fact_slug`'s
+    style on a per-FactId basis.
+    """
+    if not commitment:
+        return "root"
+
+    def _field(s: str) -> str:
+        return str(s).lower().replace("_", "-")
+
+    def _factid_slug(fid: tuple) -> str:
+        rn, args = fid
+        return "_".join([_field(rn), *(_field(a) for a in args)])
+
+    return "+".join(_factid_slug(fid) for fid in commitment)
+
+
+def _factid_json(fid: tuple) -> dict[str, Any]:
+    """Render a FactId ``(relation_name, args)`` as JSON-friendly."""
+    rn, args = fid
+    return {
+        "relation": rn,
+        "args": [str(a) for a in args],
+    }
+
+
+def _commitment_json(commitment: tuple) -> list[dict[str, Any]]:
+    """Render a CanonicalSetId as a list of FactId JSON dicts."""
+    return [_factid_json(fid) for fid in commitment]
+
+
 @dataclass
 class LatticeDumper:
     """Filesystem-snapshotting hooks attached to a :func:`gaps_solve`
     or :func:`contradictions_solve` run.
 
     Sibling of :class:`MonotonicDumper`; shares the same
-    lifecycle-hook pattern but adds entry-specific sections
-    (``solutions/`` under :func:`gaps_solve`, ``dead/`` under
-    :func:`contradictions_solve`, ``kb_index/`` when
-    ``store_lattice=True``). The two dumpers may merge into a
-    single class end-of-phase; for now keeping them separate
-    keeps each entry's audit shape independent.
+    lifecycle-hook pattern but adds entry-specific sections.
+    The dump folder layout::
 
-    ``out_dir=None`` skips every filesystem write — the hooks
-    still fire but produce no on-disk artefacts.
+        out_dir/
+        ├── 00_root_initial.ein   ← initial root snapshot
+        ├── 00_timeline.jsonl     ← lifecycle event log
+        ├── layers/
+        │   ├── layer_NN_pre.ein  ← root.kb at layer NN start
+        │   └── layer_NN_post.ein ← root.kb at layer NN end
+        ├── solutions/            ← gaps_solve: one folder per SolutionRecord
+        │   └── <C-slug>/
+        │       ├── commitment.json
+        │       ├── kb.ein
+        │       └── firings.jsonl
+        ├── dead/                 ← contradictions_solve: one folder per DeadCommitment
+        │   └── <C-slug>/
+        │       ├── commitment.json
+        │       ├── unsat_core.jsonl
+        │       └── learned_clause.json
+        ├── kb_index/             ← store_lattice=True: one folder per SetNode
+        │   └── <state_hash_hex>/
+        │       ├── canonical_set.json
+        │       ├── labels.json
+        │       └── verdict.txt
+        ├── proof_summary.json    ← top-level proof index (gaps/contra only)
+        └── summary.json          ← cumulative stats
 
-    **Skeleton stage — S1.5b.20.** All hooks are no-op
-    callables. S1.5b.29 fills the real per-set audit layout
-    per ``s1.5b.29_lattice_proof.md``.
+    ``out_dir=None`` skips every filesystem write — hooks still
+    fire (so the solver loop's call sites stay uniform) but
+    produce no on-disk artefacts. Subfolders are created lazily
+    on first per-section write so the layout reflects what
+    actually happened (no empty ``dead/`` under
+    :func:`gaps_solve`, no empty ``solutions/`` under
+    :func:`contradictions_solve`).
     """
 
     out_dir: Path | None = None
     started_at: float = field(default_factory=time.time)
+    _timeline_fp: IO[str] | None = field(
+        default=None, init=False, repr=False,
+    )
+    _timeline_seq: int = field(default=0, init=False)
+    _solutions_dir_made: bool = field(default=False, init=False)
+    _dead_dir_made: bool = field(default=False, init=False)
+    _kb_index_dir_made: bool = field(default=False, init=False)
 
-    # Lifecycle hooks — names mirror MonotonicDumper for
-    # consistency. S1.5b.29 will override these with the real
-    # writers and add the lattice-specific
-    # ``solution_recorded`` / ``dead_recorded`` /
-    # ``proof_summary`` hooks (already stubbed below).
+    def __post_init__(self) -> None:
+        if self.out_dir is None:
+            return
+        self.out_dir.mkdir(parents=True, exist_ok=True)
+        (self.out_dir / "layers").mkdir(exist_ok=True)
+        self._timeline_fp = (
+            self.out_dir / "00_timeline.jsonl"
+        ).open("w")
+
+    # ── Lifecycle hooks ──────────────────────────────────────
 
     def root_initial(self, kb: KnowledgeBase) -> None:
         """Called once after Phase 1's initial saturation."""
+        if self.out_dir is not None and kb is not None:
+            (self.out_dir / "00_root_initial.ein").write_text(
+                _kb_to_ein_text(kb),
+            )
+        self._emit_timeline(
+            "root_initial",
+            facts=len(kb.facts) if kb is not None else 0,
+        )
 
     def layer_start(
         self, layer: int, kb: KnowledgeBase, alive_size: int,
     ) -> None:
-        """Called at the top of each Phase 2 layer iteration."""
+        if self.out_dir is not None and kb is not None:
+            (
+                self.out_dir / "layers"
+                / f"layer_{layer:02d}_pre.ein"
+            ).write_text(_kb_to_ein_text(kb))
+        self._emit_timeline(
+            "layer_start", layer=layer, alive_size=alive_size,
+        )
 
     def entering(
         self,
@@ -257,7 +350,25 @@ class LatticeDumper:
         nogood_emitted: bool,
         nogood_subsumed: bool,
     ) -> None:
-        """Called after each ``try_commitment_set`` returns."""
+        """One ``try_commitment_set`` outcome — alive or dead."""
+        rec: dict[str, Any] = {
+            "layer": layer,
+            "commitment": (
+                _commitment_json(commitment)
+                if commitment is not None else []
+            ),
+            "facts_merged": facts_merged,
+            "nogood_emitted": nogood_emitted,
+            "nogood_subsumed": nogood_subsumed,
+        }
+        if result is not None:
+            rec.update({
+                "kind": result.kind,
+                "firings": len(result.firings),
+                "unconditional_count": len(result.unconditional_facts),
+                "unsat_core_size": len(result.unsat_core),
+            })
+        self._emit_timeline("entering", **rec)
 
     def layer_end(
         self,
@@ -266,24 +377,243 @@ class LatticeDumper:
         alive_size: int,
         survived_count: int,
     ) -> None:
-        """Called at the bottom of each Phase 2 layer iteration."""
+        if self.out_dir is not None and kb is not None:
+            (
+                self.out_dir / "layers"
+                / f"layer_{layer:02d}_post.ein"
+            ).write_text(_kb_to_ein_text(kb))
+        self._emit_timeline(
+            "layer_end",
+            layer=layer,
+            facts=len(kb.facts) if kb is not None else 0,
+            alive_size=alive_size,
+            survived_count=survived_count,
+        )
 
     def solution_recorded(
         self, record: Any, layer: int,
     ) -> None:
-        """Called when :func:`gaps_solve` appends a SolutionRecord."""
+        """Called when :func:`gaps_solve` appends a SolutionRecord.
+
+        Writes a per-solution subfolder under ``solutions/``
+        with the commitment, the SolutionRecord's kb snapshot
+        (full ein render), and the firings that produced this
+        solution.
+        """
+        self._emit_timeline(
+            "solution_recorded",
+            layer=layer,
+            commitment=(
+                _commitment_json(record.commitment)
+                if record is not None and record.commitment
+                else []
+            ),
+        )
+        if self.out_dir is None or record is None:
+            return
+        if not self._solutions_dir_made:
+            (self.out_dir / "solutions").mkdir(exist_ok=True)
+            self._solutions_dir_made = True
+        slug = _commitment_slug(record.commitment)
+        folder = self.out_dir / "solutions" / slug
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "commitment.json").write_text(
+            json.dumps(_commitment_json(record.commitment), indent=2),
+        )
+        (folder / "kb.ein").write_text(_kb_to_ein_text(record.kb))
+        with (folder / "firings.jsonl").open("w") as fp:
+            for firing in record.firings:
+                fp.write(json.dumps(_firing_to_dict(firing)) + "\n")
 
     def dead_recorded(self, dead: Any) -> None:
-        """Called when :func:`contradictions_solve` appends a DeadCommitment."""
+        """Called when :func:`contradictions_solve` appends a
+        DeadCommitment.
+
+        Writes a per-dead subfolder under ``dead/`` with the
+        commitment, the unsat_core (one fact per line), and the
+        learned_clause (sorted FactId list).
+        """
+        self._emit_timeline(
+            "dead_recorded",
+            layer=getattr(dead, "layer", None),
+            kind=getattr(dead, "kind", None),
+            unsat_core_size=(
+                len(dead.unsat_core) if dead is not None else 0
+            ),
+            commitment=(
+                _commitment_json(dead.commitment)
+                if dead is not None and dead.commitment
+                else []
+            ),
+        )
+        if self.out_dir is None or dead is None:
+            return
+        if not self._dead_dir_made:
+            (self.out_dir / "dead").mkdir(exist_ok=True)
+            self._dead_dir_made = True
+        slug = _commitment_slug(dead.commitment)
+        folder = self.out_dir / "dead" / slug
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "commitment.json").write_text(
+            json.dumps({
+                "commitment": _commitment_json(dead.commitment),
+                "layer": dead.layer,
+                "kind": dead.kind,
+            }, indent=2),
+        )
+        with (folder / "unsat_core.jsonl").open("w") as fp:
+            for f in dead.unsat_core:
+                fp.write(json.dumps(_fact_summary(f)) + "\n")
+        (folder / "learned_clause.json").write_text(
+            json.dumps(
+                [
+                    _factid_json(fid)
+                    for fid in sorted(
+                        dead.learned_clause,
+                        key=lambda f: (f[0], tuple(map(str, f[1]))),
+                    )
+                ],
+                indent=2,
+                default=str,
+            ),
+        )
 
     def proof_summary(self, proof: Any) -> None:
-        """Called from :meth:`summary` when ``proof`` is non-None."""
+        """Top-level proof index — written from ``_finish`` when
+        ``verdict.proof`` is non-None. Also materialises the
+        ``kb_index/`` folder (one subfolder per :class:`SetNode`)
+        when ``proof.kb_index`` is populated."""
+        if self.out_dir is None or proof is None:
+            return
+
+        # Materialise kb_index/ subfolders.
+        if proof.kb_index:
+            if not self._kb_index_dir_made:
+                (self.out_dir / "kb_index").mkdir(exist_ok=True)
+                self._kb_index_dir_made = True
+            for key, node in proof.kb_index.items():
+                slug = f"{key & 0xFFFFFFFFFFFFFFFF:016x}"
+                folder = self.out_dir / "kb_index" / slug
+                folder.mkdir(parents=True, exist_ok=True)
+                (folder / "canonical_set.json").write_text(
+                    json.dumps(
+                        _commitment_json(node.canonical_set),
+                        indent=2,
+                    ),
+                )
+                (folder / "labels.json").write_text(
+                    json.dumps([
+                        _commitment_json(c) for c in node.labels
+                    ], indent=2),
+                )
+                (folder / "verdict.txt").write_text(node.verdict)
+
+        # Top-level index.
+        summary = {
+            "solutions": [
+                {
+                    "slug": _commitment_slug(s.commitment),
+                    "layer": s.layer,
+                    "commitment": _commitment_json(s.commitment),
+                }
+                for s in proof.solutions
+            ],
+            "dead_commitments": [
+                {
+                    "slug": _commitment_slug(d.commitment),
+                    "layer": d.layer,
+                    "kind": d.kind,
+                    "commitment": _commitment_json(d.commitment),
+                }
+                for d in proof.dead_commitments
+            ],
+            "kb_index": [
+                {
+                    "state_hash_hex": (
+                        f"{key & 0xFFFFFFFFFFFFFFFF:016x}"
+                    ),
+                    "canonical_set": _commitment_json(
+                        node.canonical_set,
+                    ),
+                    "labels": [
+                        _commitment_json(c) for c in node.labels
+                    ],
+                    "verdict": node.verdict,
+                    "layer": node.layer,
+                }
+                for key, node in proof.kb_index.items()
+            ],
+            "alive_at_end": [
+                _commitment_json(c) for c in proof.alive_at_end
+            ],
+            "learned_nogoods_count": len(proof.learned_nogoods),
+            "stats": {
+                f.name: getattr(proof.stats, f.name)
+                for f in fields(proof.stats)
+            },
+        }
+        (self.out_dir / "proof_summary.json").write_text(
+            json.dumps(summary, indent=2, sort_keys=True, default=str),
+        )
+        self._emit_timeline(
+            "proof_summary",
+            solutions=len(proof.solutions),
+            dead_commitments=len(proof.dead_commitments),
+            kb_index_size=len(proof.kb_index),
+        )
 
     def summary(self, verdict: Any, stats: Any) -> None:
-        """Called once at the end of the solve."""
+        verdict_kind = type(verdict).__name__ if verdict is not None else None
+        elapsed = time.time() - self.started_at
+        try:
+            stats_dict = {
+                f.name: getattr(stats, f.name)
+                for f in fields(stats)
+            }
+        except TypeError:
+            stats_dict = {"repr": repr(stats)}
+
+        if self.out_dir is not None:
+            (self.out_dir / "summary.json").write_text(
+                json.dumps({
+                    "verdict": verdict_kind,
+                    "elapsed_seconds": round(elapsed, 3),
+                    "stats": stats_dict,
+                }, indent=2, sort_keys=True, default=str),
+            )
+        self._emit_timeline(
+            "summary",
+            verdict=verdict_kind,
+            elapsed_seconds=round(elapsed, 3),
+        )
+        if self._timeline_fp is not None:
+            self._timeline_fp.close()
+            self._timeline_fp = None
 
     def close(self) -> None:
-        """Called on abort (budget exceeded) — flush partial state."""
+        """Flush the timeline file without emitting ``summary.json``.
+
+        Called by abort paths (``BudgetExceededError``).
+        Idempotent.
+        """
+        if self._timeline_fp is not None:
+            self._timeline_fp.close()
+            self._timeline_fp = None
+
+    # ── Internals ────────────────────────────────────────────
+
+    def _emit_timeline(self, event: str, **fields_: Any) -> None:
+        if self._timeline_fp is None:
+            return
+        rec = {
+            "seq": self._timeline_seq,
+            "ts_ms": round((time.time() - self.started_at) * 1000, 3),
+            "event": event,
+            **fields_,
+        }
+        self._timeline_fp.write(json.dumps(rec, default=str) + "\n")
+        self._timeline_fp.flush()
+        self._timeline_seq += 1
 
 
 __all__ = ["LatticeDumper", "MonotonicDumper"]
