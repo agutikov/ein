@@ -416,3 +416,125 @@ class TestNestedFactArgsThroughLoader:
         innermost = mid.args[0]
         assert innermost.relation_name == "co-located"
         assert innermost.args == ("Norwegian", "House-2")
+
+
+# ═══════════════════════ Snapshot — S1.5b.22 T1.5b.22.2 ════════════
+
+
+class TestKBSnapshot:
+    """:meth:`KnowledgeBase.snapshot` deep-copies the mutable state
+    so a satisfying-branch kb returned from :func:`gaps_solve` is
+    stable under later root mutations."""
+
+    def test_kb_snapshot_isolation(self):
+        from ein_bot.ir import parse
+        from ein_bot.kb import Provenance
+        text = """
+        (ontology
+          (type T)
+          (instance a T)
+          (instance b T)
+          (relation r T T))
+        (facts (r a b :source "(1)"))
+        """
+        kb = KnowledgeBase.from_ir(parse(text))
+        snap = kb.snapshot()
+        n_facts_at_snapshot = len(snap.facts)
+
+        # Mutate source: add a new fact + a nogood + a
+        # committed-hypothesis marker.
+        new_fact = Fact(
+            relation_name="r", args=("b", "a"),
+            layer=Layer.REASONING,
+            provenance=Provenance.from_rule(rule="post-snapshot"),
+        )
+        kb.add_fact(new_fact)
+        kb._index_fact(kb.facts[-1])
+        kb._nogoods.add(frozenset({("h", ("x",))}))
+        kb.committed_hypotheses.add(("h", ("x",)))
+
+        # Snapshot's mutable state unchanged.
+        assert len(snap.facts) == n_facts_at_snapshot
+        assert len(kb.facts) == n_facts_at_snapshot + 1
+        # Snapshot's _nogoods + committed_hypotheses are decoupled.
+        assert snap._nogoods == set()
+        assert snap.committed_hypotheses == set()
+        assert kb._nogoods != snap._nogoods  # source mutated; snap didn't
+        # The reverse-indexes on the snapshot reflect only the
+        # snapshot-time facts.
+        snap_r_facts = snap._facts_by_relation.get("r", ())
+        # The fact (r a b) is in the original FACT layer; ensure it's
+        # there but (r b a) is NOT.
+        snap_r_args = {f.args for f in snap_r_facts}
+        assert ("a", "b") in snap_r_args
+        assert ("b", "a") not in snap_r_args
+
+    def test_kb_snapshot_preserves_derivation_dag(self):
+        """A snapshot's :meth:`derivation_dag` walks the same chain
+        the source had at snapshot time, even after the source
+        mutates."""
+        from ein_bot.ir import parse
+        from ein_bot.kb import Provenance
+        text = """
+        (ontology
+          (type T)
+          (instance a T) (instance b T)
+          (relation p T T)
+          (relation q T T))
+        (facts (p a b :source "(1)"))
+        """
+        kb = KnowledgeBase.from_ir(parse(text))
+        # Add a derived fact whose provenance points at the source.
+        p_fact = kb._fact_by_id("p", ("a", "b"))
+        assert p_fact is not None
+        derived = Fact(
+            relation_name="q", args=("a", "b"),
+            layer=Layer.REASONING,
+            provenance=Provenance.from_rule(
+                rule="p-to-q",
+                premises_raw=(("p", ("a", "b")),),
+            ),
+        )
+        kb.add_fact(derived)
+        kb._index_fact(kb.facts[-1])
+
+        snap = kb.snapshot()
+        # Snapshot dag walks one premise.
+        snap_q = snap._fact_by_id("q", ("a", "b"))
+        assert snap_q is not None
+        snap_dag = snap.derivation_dag(snap_q)
+        snap_source_relations = {
+            (f.relation_name, f.args) for f in snap_dag.sources
+        }
+        assert ("p", ("a", "b")) in snap_source_relations
+
+        # Mutate the source's q.provenance via adding *another* premise
+        # is hard without re-instantiating; instead, drop the source's
+        # `p` fact's derivation by clearing facts. Snapshot's dag must
+        # still walk the same chain.
+        kb.facts.clear()
+        kb.rebuild_indexes()
+        snap_dag2 = snap.derivation_dag(snap_q)
+        snap_source_relations2 = {
+            (f.relation_name, f.args) for f in snap_dag2.sources
+        }
+        assert snap_source_relations2 == snap_source_relations
+
+    def test_kb_snapshot_shares_immutable_registries(self):
+        """Registries (types / instances / relations / rules) are
+        shared by reference — mutation of these on the source IS
+        visible on the snapshot, by design. This documents the
+        contract."""
+        from ein_bot.ir import parse
+        text = """
+        (ontology
+          (type T)
+          (instance a T)
+          (relation r T T))
+        """
+        kb = KnowledgeBase.from_ir(parse(text))
+        snap = kb.snapshot()
+        assert snap.types is kb.types
+        assert snap.instances is kb.instances
+        assert snap.relations is kb.relations
+        assert snap.rules is kb.rules

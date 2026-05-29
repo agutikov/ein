@@ -29,7 +29,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from ein_bot.inference.monotonic import (
-    MonotonicStats,
+    LatticeStats,
     gaps_solve,
 )
 from ein_bot.inference.tree.solver import Ambiguity, Solution
@@ -52,14 +52,16 @@ def _kb_inline(text: str) -> KnowledgeBase:
 
 
 def test_gaps_solve_always_returns_ambiguity_tuple():
-    """``(verdict, stats)`` shape; verdict is :class:`Ambiguity`."""
+    """``(verdict, stats)`` shape; verdict is :class:`Ambiguity`,
+    stats is :class:`LatticeStats` (per S1.5b.22 the public
+    ``gaps_solve`` returns the lattice-counter view)."""
     kb = _kb_from(BRANCHING / "01_saturate_only.ein")
     result = gaps_solve(kb)
     assert isinstance(result, tuple)
     assert len(result) == 2
     verdict, stats = result
     assert isinstance(verdict, Ambiguity)
-    assert isinstance(stats, MonotonicStats)
+    assert isinstance(stats, LatticeStats)
 
 
 # ── Single-branch outcomes ─────────────────────────────────

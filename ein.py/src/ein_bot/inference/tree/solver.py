@@ -22,6 +22,11 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
+if TYPE_CHECKING:
+    # Forward-only — runtime import would form a cycle
+    # (monotonic.lattice → tree.solver via Verdict types).
+    from ein_bot.inference.monotonic.lattice import LatticeProof
+
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
@@ -210,11 +215,16 @@ class Mode(Enum):
 class Solution:
     """A surviving branch: KB satisfies the query goal (mode-aware).
 
-    `tree` carries the full SearchTree proof object.
+    `tree` carries the full SearchTree proof object; `proof` is
+    the optional :class:`LatticeProof` artefact attached by the
+    set-search engine's non-monotonic entries
+    (:func:`gaps_solve`, :func:`contradictions_solve`). Tree-side
+    callers leave it as None.
     """
     kb:    KnowledgeBase
     trace: tuple[Firing, ...]
     tree:  SearchTree | None = None
+    proof: LatticeProof | None = None
 
 
 @dataclass(frozen=True)
@@ -225,11 +235,14 @@ class Ambiguity:
     the answer to one distinct KB state: either there are multiple
     solution-leaves OR there are leaves stamped ``open`` (max_depth
     cutoff). ``unresolved`` lists the open leaves so callers can
-    decide whether to re-run with a deeper budget.
+    decide whether to re-run with a deeper budget. ``proof`` is
+    the optional :class:`LatticeProof` artefact returned by
+    :func:`gaps_solve`.
     """
     branches:   tuple[Solution, ...]
     unresolved: tuple[SearchNode, ...] = ()
     tree:       SearchTree | None = None
+    proof:      LatticeProof | None = None
 
 
 @dataclass(frozen=True)
@@ -237,9 +250,12 @@ class Contradiction:
     """No surviving branch — the puzzle is unsolvable under the
     given constraints. `unsat_core` is the source-frontier facts
     that jointly produce the conflict; `tree` is the proof-by-
-    refutation artefact (every branch dead, with its own unsat-core)."""
+    refutation artefact (every branch dead, with its own unsat-core);
+    `proof` is the optional :class:`LatticeProof` returned by
+    :func:`contradictions_solve` (None for tree-side callers)."""
     unsat_core: frozenset[Fact] = frozenset()
     tree:       SearchTree | None = None
+    proof:      LatticeProof | None = None
 
 
 Verdict = Solution | Ambiguity | Contradiction

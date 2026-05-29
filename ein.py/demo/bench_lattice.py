@@ -135,12 +135,45 @@ def main(argv: list[str] | None = None) -> int:
     print(f"entry             {entry_name}")
     print(f"store_lattice     {args.store_lattice}")
     print(f"verdict           {type(verdict).__name__}")
-    # Per-entry verdict-shape printing lands in S1.5b.21+
-    # (gaps: enumerate branches; contradictions: print
-    # unsat_core size + dead_commitments count).
+
+    # Per-entry verdict-shape printing — gaps enumerates
+    # branches, contradictions prints unsat_core size +
+    # dead count. ``verdict.proof`` is non-None for both
+    # lattice entries (S1.5b.22).
+    proof = getattr(verdict, "proof", None)
+    if args.gaps:
+        branches = getattr(verdict, "branches", ())
+        print(f"branches          {len(branches)}")
+        if proof is not None:
+            print(f"solutions         {len(proof.solutions)}")
+    else:
+        # contradictions
+        unsat_core = getattr(verdict, "unsat_core", frozenset())
+        print(f"unsat_core_size   {len(unsat_core)}")
+        if proof is not None:
+            print(f"dead_commitments  {len(proof.dead_commitments)}")
     print()
+
     print("stats")
     print(f"  wall             {elapsed * 1000:.1f} ms")
+    if proof is not None:
+        s = proof.stats
+        print(f"  enterings        {s.enterings_total} "
+              f"(alive={s.enterings_alive} "
+              f"dead_pre={s.enterings_dead_pre} "
+              f"dead_post={s.enterings_dead_post})")
+        print(f"  layers_explored  {s.layers_explored}")
+        print(f"  saturate_count   {s.saturate_count}")
+        print(f"  facts_merged     {s.facts_merged}")
+        print(f"  forced_positives {s.forced_positives}")
+        print(f"  nogoods          emitted={s.nogoods_emitted} "
+              f"subsumed={s.nogoods_subsumed}")
+        if args.store_lattice:
+            print(f"  kb_index         {len(proof.kb_index)} nodes")
+            print(f"  state_hash_merges {s.state_hash_merges}")
+        if proof.alive_at_end:
+            print(f"  alive_at_end     {len(proof.alive_at_end)} "
+                  "(depth cap hit)")
     if dumper is not None and args.dump_states is not None:
         print(f"dump              {args.dump_states}")
     return 0

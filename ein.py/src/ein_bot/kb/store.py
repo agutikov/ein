@@ -658,6 +658,60 @@ class KnowledgeBase:
         new._nogoods = self._nogoods
         return new
 
+    # ── Snapshot — S1.5b.22 T1.5b.22.2 ────────────────────────────
+
+    def snapshot(self) -> KnowledgeBase:
+        """Deep-ish archival copy. Used by :class:`SolutionRecord` so
+        a satisfying-branch kb survives later mutations of root.
+
+        Differs from :meth:`fork` in three places:
+
+        - ``_nogoods`` is COPIED (fork shares by reference because
+          live branches read concurrently; the snapshot is archival
+          so we want isolation).
+        - ``committed_hypotheses`` is COPIED for the same reason.
+        - Indexes are rebuilt from scratch via
+          :meth:`rebuild_indexes` (cheap on puzzle scale) rather
+          than shallow-copied — keeps the snapshot's indexes
+          internally consistent with its copied ``facts`` list
+          even if the source mutates afterwards.
+
+        Shares by reference (constant across the search, no
+        mutation concern): ``types``, ``instances``, ``relations``,
+        ``rules``, ``hrules``, ``classes``, ``query``, ``config``,
+        ``alive``, ``consume_stats``.
+
+        Soundness invariant: a snapshotted kb's
+        :meth:`derivation_dag` walks the same chain as the source
+        did at snapshot time. Provenance carries the rule
+        reference; we only need name equality, so sharing the rule
+        registry by reference is fine.
+        """
+        new = KnowledgeBase()
+        # Share constant registries by reference.
+        new.types     = self.types
+        new.instances = self.instances
+        new.relations = self.relations
+        new.rules     = self.rules
+        new.hrules    = self.hrules
+        new.query     = self.query
+        new.config    = self.config
+        new.alive     = self.alive
+        new.consume_stats = self.consume_stats
+        # Equality classes: copy state (the parent's union-find
+        # remains reachable via the roots that were created before
+        # the snapshot).
+        new.classes = EqClasses()
+        new.classes._parent = dict(self.classes._parent)
+        # Deep-copy mutable state.
+        new.facts = list(self.facts)
+        new._nogoods = set(self._nogoods)
+        new.committed_hypotheses = set(self.committed_hypotheses)
+        # Rebuild indexes (re-derives ``_negated_facts`` + every
+        # ``_*_by_*`` map from the copied ``facts`` list).
+        new.rebuild_indexes()
+        return new
+
     # ── Dunder ────────────────────────────────────────────────────
 
     def __len__(self) -> int:

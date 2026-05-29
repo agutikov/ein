@@ -87,11 +87,30 @@ def test_dumper_no_op_hooks():
 
 
 # ── Placeholders for the feature stages ────────────────────
+#
+# S1.5b.22 shipped — LatticeProof now carries real fields. The
+# detailed proof-shape contract tests live in
+# ``test_lattice_proof.py``. The placeholder below stays as a
+# minimal smoke check that the public surface is wired.
 
 
-@pytest.mark.skip(reason="LatticeProof data shapes — S1.5b.22")
 def test_lattice_proof_carries_solutions_under_gaps():
-    pass
+    """Smoke: ``gaps_solve(kb).proof`` is a :class:`LatticeProof`
+    with the populated fields. Detailed shape tests in
+    ``test_lattice_proof.py``."""
+    from pathlib import Path
+
+    from ein_bot.ir import parse
+    repo = Path(__file__).resolve().parents[4]
+    kb = KnowledgeBase.from_ir(
+        parse((repo / "examples" / "branching"
+               / "04_two_levels.ein").read_text()),
+    )
+    verdict, _ = gaps_solve(kb, max_set_size=3)
+    assert isinstance(verdict.proof, LatticeProof)
+    assert len(verdict.proof.solutions) == 2
+    for rec in verdict.proof.solutions:
+        assert isinstance(rec, SolutionRecord)
 
 
 @pytest.mark.skip(reason="contradictions_solve backbone — S1.5b.23")
