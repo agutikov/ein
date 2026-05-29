@@ -31,12 +31,27 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from ..render.dot_util import (
+    EQUALITY_SHAPE,
+    GROUND_SHAPE,
+    HYPER_SHAPE,
+    INSTANCE_SHAPE,
+    TYPE_SHAPE,
+    VAR_SHAPE,
+    WILDCARD_ATTRS,
+)
+from ..render.dot_util import (
+    quote as _quote,
+)
+from ..render.dot_util import (
+    value_label as _value_label,
+)
 from ..render.palette import hash_color
+from ..render.rules import render_rule, render_rules
 from .types import (
     Atom,
     Int,
     IRNode,
-    Keyword,
     KwPair,
     Range,
     SForm,
@@ -44,20 +59,6 @@ from .types import (
     Var,
     Wildcard,
 )
-
-# ── Shape table (per docs/ir.md §6 node-shape legend) ──────────────
-TYPE_SHAPE      = "box"
-INSTANCE_SHAPE  = "oval"
-GROUND_SHAPE    = "rectangle"
-HYPER_SHAPE     = "octagon"
-EQUALITY_SHAPE  = "doublecircle"
-VAR_SHAPE       = "diamond"
-WILDCARD_ATTRS  = 'shape=diamond, style=dashed'
-
-
-def _quote(s: str) -> str:
-    """Quote a DOT identifier or label, escaping internal quotes."""
-    return '"' + s.replace('\\', '\\\\').replace('"', '\\"') + '"'
 
 
 def _atom_id(node: Atom | Var | Wildcard) -> str:
@@ -67,30 +68,6 @@ def _atom_id(node: Atom | Var | Wildcard) -> str:
     if isinstance(node, Wildcard):
         return _quote("_")
     return _quote(node.name)
-
-
-def _value_label(node: IRNode) -> str:
-    """Human-readable single-line label for a value (used as edge labels)."""
-    if isinstance(node, Atom):
-        return node.name
-    if isinstance(node, Var):
-        return f"?{node.name}"
-    if isinstance(node, Wildcard):
-        return "_"
-    if isinstance(node, Keyword):
-        return f":{node.name}"
-    if isinstance(node, String):
-        return node.value
-    if isinstance(node, Int):
-        return str(node.value)
-    if isinstance(node, Range):
-        high = "*" if node.high is None else str(node.high)
-        return f"{node.low}..{high}"
-    if isinstance(node, SForm):
-        inner = " ".join(_value_label(a) for a in node.args)
-        head = _value_label(node.head)
-        return f"({head} {inner})" if inner else f"({head})"
-    raise TypeError(f"not a value node: {type(node).__name__}")
 
 
 # ── Builder — accumulates node decls + edges for one digraph ───────
@@ -333,139 +310,6 @@ def render_query(form: SForm) -> str:
     return b.build()
 
 
-# Rule-mode aliases. The default is side-by-side LHS|RHS clusters
-# (most readable for rule libraries); the compact overlay variant is
-# opt-in (S1.6.0). Legacy single-letter names "a"/"c" stay accepted.
-_RULE_MODE_ALIASES = {
-    "a": "a", "sidebyside": "a", "side-by-side": "a",
-    "c": "c", "overlay": "c",
-}
-
-
-def render_rule(rule_sform: SForm, *, mode: str = "a") -> str:
-    """Render a single `(rule Name params :match … :assert … :why … …)`.
-
-    Modes (default ``"sidebyside"``):
-      - "sidebyside" / "a" : side-by-side LHS|RHS clusters, ``rankdir=TB``
-      - "overlay" / "c"    : LHS solid, RHS additions dashed (compact)
-    """
-    canon = _RULE_MODE_ALIASES.get(mode)
-    if canon is None:
-        raise ValueError(
-            f"unknown rule mode: {mode!r} "
-            f"(expected 'sidebyside'/'a' or 'overlay'/'c')"
-        )
-
-    # Extract rule fields. rule_decl args: [name, params, kw_pair...]
-    rule_name = "anon"
-    match_expr: SForm | None = None
-    assert_expr: SForm | None = None
-    for i, arg in enumerate(rule_sform.args):
-        if i == 0 and isinstance(arg, Atom):
-            rule_name = arg.name
-        elif isinstance(arg, KwPair):
-            if arg.key.name == "match" and isinstance(arg.value, SForm):
-                match_expr = arg.value
-            elif arg.key.name == "assert" and isinstance(arg.value, SForm):
-                assert_expr = arg.value
-
-    safe_name = rule_name.replace("-", "_").replace(" ", "_")
-    graph_name = f"rule_{safe_name}_{'lhs_rhs' if canon == 'a' else 'overlay'}"
-
-    if canon == "a":
-        return _render_rule_lhs_rhs(graph_name, match_expr, assert_expr)
-    return _render_rule_overlay(graph_name, match_expr, assert_expr)
-
-
-def _render_rule_lhs_rhs(graph_name: str, match: SForm | None,
-                         assert_: SForm | None) -> str:
-    """Mode (a) — side-by-side `cluster_lhs` / `cluster_rhs` blocks."""
-    parts = [f"digraph {graph_name} {{", "  rankdir=TB;"]
-    parts.append('  subgraph cluster_lhs { label="match";')
-    if match is not None:
-        for line in _render_pattern_edges(match, suffix="_l"):
-            parts.append(f"    {line}")
-    parts.append("  }")
-    parts.append('  subgraph cluster_rhs { label="assert";')
-    if assert_ is not None:
-        for line in _render_pattern_edges(assert_, suffix="_r"):
-            parts.append(f"    {line}")
-    parts.append("  }")
-    parts.append("}")
-    return "\n".join(parts)
-
-
-def _render_rule_overlay(graph_name: str, match: SForm | None,
-                         assert_: SForm | None) -> str:
-    """Mode (c) — LHS solid, RHS additions dashed (overlay)."""
-    parts = [f"digraph {graph_name} {{"]
-    if match is not None:
-        for line in _render_pattern_edges(match, suffix=""):
-            parts.append(f"  {line}")
-    if assert_ is not None:
-        for line in _render_pattern_edges(assert_, suffix="",
-                                          extra_attrs="style=dashed"):
-            parts.append(f"  {line}")
-    parts.append("}")
-    return "\n".join(parts)
-
-
-def _render_pattern_edges(expr: SForm, *, suffix: str,
-                          extra_attrs: str = "") -> list[str]:
-    """Flatten a pattern expression into DOT edge lines.
-
-    Patterns are `(and …)` / `(or …)` / `(not …)` / a single relation
-    pattern. Each binary relation `(rel a b)` becomes one edge
-    `a -> b [label="rel"]`; n-ary patterns are rendered Levi-bipartite.
-    """
-    out: list[str] = []
-    # Combinator heads are always Atoms (and / or / not are reserved
-    # kernel primitives); only relation-pattern heads can be Var or
-    # Wildcard.
-    head_name = expr.head.name if isinstance(expr.head, Atom) else None
-    if head_name == "and":
-        for child in expr.args:
-            if isinstance(child, SForm):
-                out.extend(_render_pattern_edges(child, suffix=suffix,
-                                                 extra_attrs=extra_attrs))
-        return out
-    if head_name == "or":
-        for child in expr.args:
-            if isinstance(child, SForm):
-                or_attrs = f"{extra_attrs}, color=blue" if extra_attrs else "color=blue"
-                out.extend(_render_pattern_edges(child, suffix=suffix,
-                                                 extra_attrs=or_attrs))
-        return out
-    if head_name == "not" and expr.args and isinstance(expr.args[0], SForm):
-        not_attrs = f"{extra_attrs}, color=red" if extra_attrs else "color=red"
-        inner = _render_pattern_edges(expr.args[0], suffix=suffix,
-                                      extra_attrs=not_attrs)
-        return inner
-    # A relation pattern: head is the relation name (or ?var/wildcard),
-    # positional args are the participants.
-    head_label = _value_label(expr.head)
-    positional = [a for a in expr.args if not isinstance(a, KwPair)]
-    if len(positional) == 2:
-        a, b = positional
-        a_id = _quote(_value_label(a) + suffix)
-        b_id = _quote(_value_label(b) + suffix)
-        attrs = f'label="{head_label}"'
-        if extra_attrs:
-            attrs += f", {extra_attrs}"
-        out.append(f"{a_id} -> {b_id} [{attrs}];")
-    elif positional:
-        # n-ary: introduce one hyperedge node
-        h_id = _quote(f"h_{head_label}{suffix}")
-        out.append(f'{h_id} [shape={HYPER_SHAPE}, label="{head_label}"];')
-        for i, arg in enumerate(positional, start=1):
-            t_id = _quote(_value_label(arg) + suffix)
-            attrs = f'label="{i}"'
-            if extra_attrs:
-                attrs += f", {extra_attrs}"
-            out.append(f"{h_id} -> {t_id} [{attrs}];")
-    return out
-
-
 def render_trace(form: SForm, *, view: str = "a") -> str:
     """Render `(trace …)` — currently only mode (a) per-step is implemented.
 
@@ -531,9 +375,7 @@ def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "a",
         if head == "reasoning":
             return render_reasoning(node, levi=levi)
         if head == "rules":
-            chunks = [render_rule(r, mode=rule_mode)
-                      for r in node.args if isinstance(r, SForm)]
-            return "\n\n".join(chunks)
+            return render_rules(node, mode=rule_mode)
         if head == "rule":
             return render_rule(node, mode=rule_mode)
         if head == "query":
@@ -556,6 +398,7 @@ __all__ = [
     "render_query",
     "render_reasoning",
     "render_rule",
+    "render_rules",
     "render_trace",
     "to_dot",
 ]

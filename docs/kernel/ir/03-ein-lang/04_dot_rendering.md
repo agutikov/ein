@@ -76,13 +76,17 @@ digraph ontology {
 
 ## Rule rendering — modes, configurable
 
-**Default = (a) side-by-side, `rankdir=LR` (S1.6.0).** The previous
+**Default = (a) side-by-side, `rankdir=TB` (S1.6.0).** The previous
 cross-product (rule-mode × trace-view) collapsed to one diagram per
 rule: the side-by-side LHS|RHS view, the most readable for rule
 libraries. The overlay variant (c) is opt-in via
 `render_rule(…, mode="overlay")` / `ein-bot ir dot --rule-mode=overlay`
 (the legacy single-letter names `"a"` / `"c"` are still accepted).
 **(b)** is opt-in.
+
+The renderer lives in
+[`ein_bot.render.rules`](../../../../ein.py/src/ein_bot/render/rules.py)
+(`ein-bot render rules|rule …`); `ir.to_dot` delegates to it.
 
 **(a) Side-by-side LHS | RHS** — explicit; readable for rule libraries.
 
@@ -95,6 +99,25 @@ digraph rule_triangle_lhs_rhs {
     a2 -> c2 [label="?r"]; }
 }
 ```
+
+**Faithful pattern rendering (S1.6.1).** Within each panel the renderer
+distinguishes the three things that can appear in a `:match` / `:assert`:
+
+- **Relations** `(R a b)` → a labelled arrow `a → b` (relation-coloured;
+  `R` may be a `?var`); n-ary `(R a b c …)` → a Levi octagon.
+- **Guard predicates** `(neq ?a ?b)` / `(eq …)` → a *dotted, undirected*
+  `≠` / `=` link with `constraint=false` — they are computed, not data,
+  so they are never drawn as a relation arrow.
+- **NAF guards** `(absent (and …))` → a `cluster_absent` subgraph (∄):
+  inner conjuncts render *inside* it, the binder-local variables are
+  declared inside while shared variables stay outside, so the
+  "no such match exists" reading survives. `(not P)` renders red with a
+  `¬` prefix.
+
+Node ids carry a per-panel `_L`/`_R` suffix so the `match` and `assert`
+copies of a variable are distinct nodes (the panels don't collapse),
+but the **label** is always the clean name — both panels show `?a`.
+Variables are diamonds, ground atoms rectangles (the shape legend).
 
 **(b) DPO span `L ← K → R`** — categorical reading
 ([idea 07](../../../ideas/07-categorical-formulation.md)). Three

@@ -7,6 +7,12 @@ Subcommands:
     ein-bot ir dot   <file>     # render IR as one DOT per top-level form
     ein-bot kb dot   <file>     # render the loaded KB as a unified DOT
                                 # (S1.2.4 — per docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+    ein-bot render rules       <file>             # one DOT per rule (S1.6.1)
+    ein-bot render rule        <file> --name=N    # a single rule's DOT
+    ein-bot render constraints <file>             # constraint-scope DOT
+
+All `render`/`dot` commands emit DOT to stdout only; rasterising to SVG
+is a shell-script concern (see utils/render_examples.sh).
 
 Invoked via the ``ein-bot`` console script or ``python -m ein_bot.cli``.
 """
@@ -21,6 +27,7 @@ from pathlib import Path
 from .ir import IRParseError, dump_canonical, parse
 from .ir import to_dot as ir_to_dot
 from .kb import KBLoadError, KnowledgeBase, Layer
+from .render import render_constraints, render_rule, render_rules
 
 
 def _env_truthy(value: str | None) -> bool:
@@ -108,6 +115,63 @@ def _cmd_kb_dot(args: argparse.Namespace) -> int:
     return 0
 
 
+# ── render subcommand (S1.6.1) — DOT for rules / constraints ──
+
+
+def _parse_or_exit(path: Path):
+    """Parse a file, printing a parse error to stderr and returning None."""
+    try:
+        return parse(path.read_text(encoding="utf-8"), filename=str(path))
+    except IRParseError as e:
+        print(e, file=sys.stderr)
+        return None
+
+
+def _rules_forms(nodes):
+    """All `(rules …)` top-level forms among parsed nodes."""
+    from .ir import SForm
+    return [n for n in nodes if isinstance(n, SForm) and n.head.name == "rules"]
+
+
+def _cmd_render_rules(args: argparse.Namespace) -> int:
+    nodes = _parse_or_exit(Path(args.file))
+    if nodes is None:
+        return 1
+    chunks = [render_rules(rf, mode=args.rule_mode) for rf in _rules_forms(nodes)]
+    chunks = [c for c in chunks if c]
+    if not chunks:
+        print(f"no (rules …) form in {args.file}", file=sys.stderr)
+        return 1
+    sys.stdout.write("\n\n".join(chunks))
+    sys.stdout.write("\n")
+    return 0
+
+
+def _cmd_render_rule(args: argparse.Namespace) -> int:
+    from .ir import Atom, SForm
+    nodes = _parse_or_exit(Path(args.file))
+    if nodes is None:
+        return 1
+    for rf in _rules_forms(nodes):
+        for r in rf.args:
+            if (isinstance(r, SForm) and r.args
+                    and isinstance(r.args[0], Atom) and r.args[0].name == args.name):
+                sys.stdout.write(render_rule(r, mode=args.rule_mode))
+                sys.stdout.write("\n")
+                return 0
+    print(f"no rule named {args.name!r} in {args.file}", file=sys.stderr)
+    return 1
+
+
+def _cmd_render_constraints(args: argparse.Namespace) -> int:
+    nodes = _parse_or_exit(Path(args.file))
+    if nodes is None:
+        return 1
+    sys.stdout.write(render_constraints(nodes))
+    sys.stdout.write("\n")
+    return 0
+
+
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="ein-bot",
@@ -181,6 +245,35 @@ def _build_parser() -> argparse.ArgumentParser:
         help="DOT graph name (default 'kb')",
     )
     kb_dot.set_defaults(func=_cmd_kb_dot)
+
+    # ── render subcommand (S1.6.1) — DOT only, no SVG ──
+    render_cmd = sub.add_parser(
+        "render", help="DOT for rules / constraints (S1.6.1)",
+    )
+    render_sub = render_cmd.add_subparsers(dest="render_cmd", required=True)
+
+    rule_mode_opts = dict(
+        choices=["sidebyside", "overlay"], default="sidebyside",
+        help="rule rendering: 'sidebyside' LHS|RHS clusters (default) "
+             "or 'overlay' (LHS solid + RHS dashed)",
+    )
+
+    r_rules = render_sub.add_parser("rules", help="one DOT digraph per rule")
+    r_rules.add_argument("file")
+    r_rules.add_argument("--rule-mode", **rule_mode_opts)
+    r_rules.set_defaults(func=_cmd_render_rules)
+
+    r_rule = render_sub.add_parser("rule", help="a single rule's DOT, by name")
+    r_rule.add_argument("file")
+    r_rule.add_argument("--name", required=True, help="rule name to render")
+    r_rule.add_argument("--rule-mode", **rule_mode_opts)
+    r_rule.set_defaults(func=_cmd_render_rule)
+
+    r_con = render_sub.add_parser(
+        "constraints", help="constraint-scope DOT (structural properties)",
+    )
+    r_con.add_argument("file")
+    r_con.set_defaults(func=_cmd_render_constraints)
 
     return p
 

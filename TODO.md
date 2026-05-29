@@ -156,3 +156,6 @@
 ;;                                    fact-as-value vs variable-binding readings)
 
 
+P1.8 add rules emitting multiple facts per match, not just only single - shrink the rule set where need multiple rules per emit with identical match
+
+
