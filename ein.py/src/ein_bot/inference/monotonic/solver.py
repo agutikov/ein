@@ -77,6 +77,7 @@ from ein_bot.inference.apriori import (
     FactId,
     generate_layer,
     layer_1,
+    order_candidates,
 )
 from ein_bot.inference.canon import state_hash
 from ein_bot.inference.commitment import try_commitment_set
@@ -790,7 +791,15 @@ def _explore_layers(
                 nogoods=root_kb._nogoods,
             )
 
-        candidates.sort()  # lex; scoring switch in S1.5b.26
+        # S1.5b.26 — within-layer scoring switch. cfg.lattice_order
+        # default 'lex' falls through to canonical-tuple sort
+        # (the previous inline candidates.sort() behaviour);
+        # 'score-sum' descends by sum of per-element
+        # score_hypothesis, lex tiebreak. order_candidates is
+        # pure — no side effects on root_kb or stats.
+        candidates = order_candidates(
+            candidates, mode=cfg.lattice_order, kb=root_kb,
+        )
 
         a_layer: list[CanonicalSetId] = []
         for c in candidates:

@@ -134,6 +134,24 @@ class SolverConfig:
     # saturations per checked commitment. Release-regression
     # only.
     lattice_sanity_check:            bool = False
+    # S1.5b.26 — within-layer candidate ordering. ``"lex"``
+    # is canonical-tuple sort (deterministic + the shipping
+    # default — preserves regression baselines).
+    # ``"score-sum"`` is the per-set score from S1.5a.7's
+    # :func:`ein_bot.inference.hypgen.score_hypothesis` summed
+    # over the set's elements (descending; tiebreak lex).
+    # The actual differentiation depends on
+    # :attr:`hypgen_scoring` — under the default
+    # ``"most-constrained"`` every score is 0.0 and
+    # score-sum collapses to lex. Set
+    # ``hypgen_scoring="popularity"`` alongside to surface
+    # informed ordering. The deviation from the
+    # ``s1.5b.26_lattice_scoring.md`` spec's default
+    # (``"score-sum"``) is intentional: the regression
+    # baselines under monotonic_solve + lattice tests were
+    # recorded under lex; switching default would force
+    # re-baselining for no engine-correctness gain.
+    lattice_order:                   str = "lex"
 
     @classmethod
     def from_kw_pairs(cls, kw_pairs: Iterable[Any]) -> SolverConfig:

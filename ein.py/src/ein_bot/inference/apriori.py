@@ -123,6 +123,76 @@ def layer_1(alive: frozenset[FactId]) -> list[CanonicalSetId]:
     return [(h,) for h in sorted(alive)]
 
 
+def order_candidates(
+    candidates: list[CanonicalSetId],
+    *,
+    mode: str = "lex",
+    kb: object | None = None,
+) -> list[CanonicalSetId]:
+    """Within-layer ordering knob — S1.5b.26 (Q1.5b.2.c).
+
+    - ``"lex"`` — canonical-tuple order, deterministic and
+      uninformed. The shipping default — preserves the
+      regression baselines that landed under S1.5b.21's
+      ``candidates.sort()`` inline call.
+    - ``"score-sum"`` — per-set score = ``sum(
+      score_hypothesis(fid_to_fact(fid), kb) for fid in C)``,
+      descending (higher score = explored first); tiebreak by
+      canonical tuple for determinism. Reuses S1.5a.7's
+      per-element :func:`ein_bot.inference.hypgen.score_hypothesis`,
+      so the actual contribution depends on
+      ``kb.config.hypgen_scoring`` (default
+      ``"most-constrained"`` returns 0.0 for every fact —
+      the tiebreak then takes over and ``"score-sum"`` ≡
+      ``"lex"`` in effect; set ``hypgen_scoring="popularity"``
+      to see informed ordering).
+
+    ``kb`` is required for ``"score-sum"`` (and ignored under
+    ``"lex"``). The ``fid → Fact`` lookup wraps the lazy form
+    used by the engine elsewhere: try ``_fact_by_id`` first,
+    fall back to a synthetic stub Fact when the candidate
+    isn't yet present in ``kb``.
+    """
+    if mode == "lex":
+        return sorted(candidates)
+
+    if mode == "score-sum":
+        if kb is None:
+            raise ValueError(
+                "score-sum mode requires kb (for score_hypothesis); "
+                "pass kb=root_kb",
+            )
+        # Local imports — apriori is a leaf module that the
+        # solver imports; hypgen + entities depend on the kb
+        # store. Avoiding top-level imports keeps apriori
+        # importable from cold without dragging the world.
+        from ein_bot.inference.hypgen import score_hypothesis
+        from ein_bot.kb.entities import Fact, Layer
+
+        def _fact_from_id(fid: FactId) -> Fact:
+            rn, args = fid
+            existing = kb._fact_by_id(rn, args)  # type: ignore[union-attr]
+            if existing is not None:
+                return existing
+            # Synthetic — the candidate is prospective, not yet
+            # in the kb. ``score_hypothesis`` reads
+            # ``fact.relation_name`` and ``fact.args``; provenance
+            # / layer are immaterial for the scorer.
+            return Fact(
+                relation_name=rn, args=args, layer=Layer.REASONING,
+            )
+
+        def _set_score(c: CanonicalSetId) -> float:
+            return sum(score_hypothesis(_fact_from_id(fid), kb) for fid in c)
+
+        return sorted(candidates, key=lambda c: (-_set_score(c), c))
+
+    raise ValueError(
+        f"unknown lattice_order mode: {mode!r} "
+        f"(expected 'lex' or 'score-sum')",
+    )
+
+
 __all__ = [
     "CanonicalSetId",
     "FactId",
@@ -131,4 +201,5 @@ __all__ = [
     "filter_candidate",
     "generate_layer",
     "layer_1",
+    "order_candidates",
 ]

@@ -90,6 +90,17 @@ cascade-Contradiction; fork-side is_solved falls through to
 the alive flow so supersets of solved commitments are still
 explored; 9 new tests, all 11 branching fixtures
 smoke-cleared, 792 pytest green, ruff clean).
+[S1.5b.26](s1.5b.26_lattice_scoring.md) shipped 2026-05-29
+(within-layer scoring switch — `inference/apriori.py`
+ships `order_candidates(candidates, mode, kb)` with the
+`"lex"` / `"score-sum"` modes; wired into
+`_explore_layers` via `SolverConfig.lattice_order`
+(default `"lex"` — preserves regression baselines);
+`score-sum` reuses S1.5a.7's `score_hypothesis` and is
+informed only under non-default `hypgen_scoring`;
+`bench_lattice.py --lattice-order {lex,score-sum}`
+forces the config field; 8 new tests; 828 pytest green,
+ruff clean).
 [S1.5b.27](s1.5b.27_lattice_sanity_check.md) shipped 2026-05-29
 (saturation-commutativity sanity check —
 `inference/monotonic/sanity.py` ships `check_commutativity`
@@ -128,14 +139,15 @@ calls `dumper.proof_summary(verdict.proof)` before
 15 new test bodies; bench-smoked on branching/04 under all
 4 entry x store_lattice combinations; 807 pytest green,
 ruff clean). The next implementation surface is
-[S1.5b.26](s1.5b.26_lattice_scoring.md) (within-layer
-scoring switch — applies to all three entries via shared
-`_explore_layers`) or
 [S1.5b.30](s1.5b.30_lattice_perf_round.md) (end-of-phase
-perf round + tree-side deprecation tags;
-[S1.5b.31](s1.5b.31_lattice_shuffle_invariance.md) shuffle
-invariance + [S1.5b.32](s1.5b.32_domain_elim_vs_hyp_exploration.md)
-research-stage stages also outstanding).
+perf round + tree-side deprecation tags),
+[S1.5b.31](s1.5b.31_lattice_shuffle_invariance.md)
+(shuffle invariance — traversal-order regression net),
+or [S1.5b.32](s1.5b.32_domain_elim_vs_hyp_exploration.md)
+(research-stage: domain-elim rule vs explicit hypothesis
+exploration). With S1.5b.26/.27/.28/.29 landed, the
+lattice-features block is **content-complete**; remaining
+stages are perf/regression-net work.
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments

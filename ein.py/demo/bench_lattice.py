@@ -102,6 +102,16 @@ def _build_argparser() -> argparse.ArgumentParser:
              "default — costs k+1 saturations per checked "
              "commitment.",
     )
+    ap.add_argument(
+        "--lattice-order", choices=("lex", "score-sum"),
+        default=None,
+        help="within-layer candidate ordering (S1.5b.26). "
+             "'lex' (default) is canonical-tuple sort — "
+             "deterministic regression baseline. 'score-sum' "
+             "uses S1.5a.7 hypgen scoring summed per-set; "
+             "informed only when --hypgen-scoring is set to "
+             "an informed mode like 'popularity'.",
+    )
     return ap
 
 
@@ -111,9 +121,14 @@ def main(argv: list[str] | None = None) -> int:
     kb = KnowledgeBase.from_ir(parse(text))
 
     config = kb.config or SolverConfig()
-    if args.lattice_sanity_check:
+    if args.lattice_sanity_check or args.lattice_order is not None:
         from dataclasses import replace as _replace
-        config = _replace(config, lattice_sanity_check=True)
+        replacements: dict = {}
+        if args.lattice_sanity_check:
+            replacements["lattice_sanity_check"] = True
+        if args.lattice_order is not None:
+            replacements["lattice_order"] = args.lattice_order
+        config = _replace(config, **replacements)
     dumper = (
         LatticeDumper(out_dir=args.dump_states)
         if args.dump_states is not None else None
