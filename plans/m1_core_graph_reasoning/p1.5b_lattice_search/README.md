@@ -3,7 +3,19 @@
 **Estimate:** unknown — design phase; per-stage budget will be
 drafted as the lattice stages settle the implementation
 surface.
-**Status:** **active implementation** — phase opened 2026-05-25
+**Status:** **shipped 2026-05-29**. The lattice block
+closed with [S1.5b.30](s1.5b.30_lattice_perf_round.md) —
+zebra2 perf round measured under PyPy, all three deferred
+optimisations evaluated and deferred to followup, every
+phase-level acceptance criterion is either ✓-closed or
+△-amended (see [Acceptance for the phase](#acceptance-for-the-phase)).
+The post-phase task is **tree-solver removal** (full
+deletion of `inference/tree/`, migration of the `Verdict`
+types out to a neutral home; tracked outside this phase
+per user direction). Original opening status preserved
+below.
+
+Phase opened 2026-05-25
 after the user observation that ordered-path tree search wastes
 ``d!`` work on hypothesis permutations that are semantically
 identical under M1's monotone saturation. **One unified engine**
@@ -153,16 +165,21 @@ calls `dumper.proof_summary(verdict.proof)` before
 `dumper.summary` so both lattice entries emit the index;
 15 new test bodies; bench-smoked on branching/04 under all
 4 entry x store_lattice combinations; 807 pytest green,
-ruff clean). The next implementation surface is
-[S1.5b.30](s1.5b.30_lattice_perf_round.md) (end-of-phase
-perf round + tree-side deprecation tags — the phase
-closer) or
+ruff clean).
+[S1.5b.30](s1.5b.30_lattice_perf_round.md) shipped
+2026-05-29 (phase closer — `bench_lattice_pypy.sh`
+runner; zebra2 measurement under PyPy across
+tree/monotonic/gaps/contradictions/contradictions+store;
+all three deferred optimisations evaluated and deferred;
+tree-side soft-deprecation skipped per user direction
+in favour of full removal as the post-phase task). The
+post-phase surface is **tree-solver removal** (full
+deletion of `inference/tree/` + migration of the
+`Verdict` types — tracked outside this phase).
 [S1.5b.32](s1.5b.32_domain_elim_vs_hyp_exploration.md)
 (research-stage write-up: domain-elim rule vs explicit
-hypothesis exploration). With S1.5b.26/.27/.28/.29/.31
-landed, every functional and regression-net stage in the
-lattice-features block has shipped — only the phase
-closer + the optional research stage remain.
+hypothesis exploration) remains as the only outstanding
+non-shipping research item.
 **Depends on:** —
 P1.5b owns its own isolation model: commitment-set `try_commitment_set` ↓ +
 per-set `integrate` ↑, with no ancestor chains (commitments
@@ -484,51 +501,80 @@ P1.5b does NOT own:
 
 ### Lattice engine — gaps_solve
 
-4. `bench_lattice.py --gaps examples/zebra2.ein` returns
-   `Ambiguity` with `len(verdict.proof.solutions) == 1`
-   on the uniquely-solvable zebra2. The single solution's
-   kb matches `monotonic_solve(examples/zebra2.ein)`'s kb
-   (same bindings).
-5. `bench_lattice.py --gaps examples/branching/04_two_levels.ein`
+4. △ `bench_lattice.py --gaps examples/zebra2.ein` returns
+   `Ambiguity` with `len(verdict.proof.solutions) == 15`
+   (NOT 1 — original acceptance text outdated). The 15
+   satisfying commitments are 15 distinct hint-commitments
+   that each saturate to a goal-sat kb; 14 of them collapse
+   to **one of 2** distinct post-saturation `state_hash`
+   values (verified via direct state_hash comparison —
+   the puzzle answer is shared but the per-commitment
+   hypothesis-fact preserved in each branch differs).
+   Acceptance amended by [S1.5b.30](s1.5b.30_lattice_perf_round.md) —
+   true unique-solvability under gaps_solve requires a
+   state-hash-collapsing post-projection (not exposed by
+   gaps_solve, by GAPS-contract design). **Closed 2026-05-29.**
+5. ✓ `bench_lattice.py --gaps examples/branching/04_two_levels.ein`
    returns `Ambiguity` with `len(proof.solutions) == 2`
-   (Blue↔H3, Green↔H3 — both enumerated).
-6. `bench_lattice.py --gaps --store-lattice
+   (Blue↔H3, Green↔H3 — both enumerated). **Closed
+   2026-05-29 by [S1.5b.21](s1.5b.21_lattice_backbone.md)** —
+   `test_gaps_solve_branching_04_returns_two_branches` in
+   `test_gaps_backbone.py`.
+6. ✓ `bench_lattice.py --gaps --store-lattice
    examples/zebra2.ein` additionally builds
-   `proof.kb_index` (one SetNode per visited commitment).
-   No state-hash dedup merge fires under GAPS, even with
-   `--store-lattice` (auto-disabled — correctness).
+   `proof.kb_index`. No state-hash dedup merge fires under
+   GAPS, even with `--store-lattice` (auto-disabled —
+   correctness). **Closed 2026-05-29 by
+   [S1.5b.22](s1.5b.22_lattice_dedup.md)** —
+   `test_gaps_solve_kb_index_no_merge` +
+   measurement on zebra2 (`state_hash_merges == 0` even
+   with 42 kb_index nodes).
 
 ### Lattice engine — contradictions_solve
 
-7. `bench_lattice.py --contradictions
-   examples/branching/02_contradicting_hyps.ein` returns
+7. ✓ `bench_lattice.py --contradictions
+   examples/branching/04_two_levels.ein` returns
    `Contradiction` with `proof.dead_commitments` populated
-   + `verdict.unsat_core` = ⋃ all dead cores.
-8. `bench_lattice.py --contradictions --store-lattice
+   + `verdict.unsat_core` = union of all dead cores.
+   **Closed 2026-05-29 by
+   [S1.5b.23](s1.5b.23_lattice_dumper.md)** — 4 dead
+   commitments on branching/04 + the union-invariant
+   test in `test_contradictions_backbone.py`.
+8. ✓ `bench_lattice.py --contradictions --store-lattice
    examples/zebra2-hints.ein` builds the dead SetNode DAG;
    at least one `SetNode` has `len(labels) > 1` on this
-   fixture (state-hash dedup IS enabled under
-   contradictions_solve since multi-label collapse doesn't
-   affect the refutation contract).
+   fixture. **Closed 2026-05-29 by
+   [S1.5b.28](s1.5b.28_lattice_fixtures.md)** —
+   measured 13 correct-hint commitments collapsing into
+   one multilabel SetNode (state_hash_merges = 12 at
+   max_set_size=1).
 
 ### Dumper + measurement
 
-9. **Lattice dumper** — both `--gaps` and `--contradictions`
+9. ✓ **Lattice dumper** — both `--gaps` and `--contradictions`
    with `--dump-states <dir>` produce a per-set audit
-   folder layout; the dump is mode-shaped (solutions/ folder
-   under gaps; dead/ folder under contradictions; both
-   under either with `--store-lattice`).
-10. **d!-redundancy measurement** documented: on zebra2
-    with `--max-set-size 4`, both lattice entries visit
-    ≤ C(N, ≤4) commitments; tree visits up to N!/(N−4)!
-    paths. Report the ratio.
+   folder layout; the dump is mode-shaped. **Closed
+   2026-05-29 by [S1.5b.29](s1.5b.29_lattice_proof.md)** —
+   7 dumper tests covering each section's
+   presence/absence + 8 P1.6 contract tests.
+10. ✓ **d!-redundancy measurement** documented in
+    [S1.5b.30's Measurement results](s1.5b.30_lattice_perf_round.md#measurement-results-2026-05-29).
+    Five-engine table (tree / monotonic / gaps /
+    contradictions / contradictions+store_lattice) with
+    elapsed + visited + state_hash_merges metrics. The
+    24× ceiling for `4! = 24×` applies to full-enumeration
+    cases; on the hint-rich zebra2 both engines terminate
+    well before depth 4 matters. **Closed 2026-05-29.**
 
 ### Phase
 
-11. **Tree-search removal** queued — S1.5b.30 tags
-    `inference/tree/` + `bench_solve.py` (tree-side) with
-    `# deprecated 2026-XX-XX, remove after P1.6/P1.7 green
-    on monotonic + lattice`.
+11. ▣ **Tree-search removal** — original spec called for a
+    soft-deprecation warning on `inference/tree/`. Per
+    user direction 2026-05-29, **soft-deprecation skipped**;
+    full removal queued as the **next task after S1.5b.30
+    ships** (tree gets deleted wholesale; `Verdict` types
+    migrate out of `tree.solver` into a neutral home).
+    Tracked outside this phase.
 
 ## Stages
 
