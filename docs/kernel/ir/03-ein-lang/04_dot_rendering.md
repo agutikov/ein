@@ -308,6 +308,29 @@ checklist of deliberate divergences (new reasoning-layer dashed
 styling, per-relation colour-palette change) lands when the
 renderer's output is reviewed visually.
 
+## Derivation slices + KB snapshots (S1.6.2)
+
+The trace ([S1.6.4](../../../../plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/s1.6.4_markdown_trace.md))
+does not embed the whole KB per step — it embeds a **provenance cone**:
+[`ein_bot.render.slice`](../../../../ein.py/src/ein_bot/render/slice.py).
+
+- `render_slice(commitment, firings, kb)` — one hypothesis's cone: the
+  hypothesis fact(s) (red seeds), the premises each firing consumed,
+  the firings as rule-nodes (labelled with the rendered `:why`), and
+  the derived facts (bold). **Only cone facts appear**, never the whole
+  KB. Negative / eliminated-alternative facts are greyed. Fed a
+  `DeadCommitment`'s `contradiction=(unsat_core, learned_clause)` it
+  becomes the refuted-branch slice terminating in a `⊥` node tagged
+  with the lifted no-good.
+- `render_state(kb, *, layer_filter=, since=)` — the whole-KB snapshot
+  (the §Unified KB view), flag-gated in the trace behind
+  `--full-kb-snapshots`. `since=<kb_before>` thickens (`penwidth=3`) the
+  facts a step added — the transition highlight.
+- `render_solution(kb)` — the solved-state view for the closing section.
+
+All three emit inline `dot` (the Python layer emits DOT; rasterising
+stays in shell).
+
 ## Reverse parse (`from_dot`)
 
 Required by Q21 but not blocking on P1.1. The schema fixed by this

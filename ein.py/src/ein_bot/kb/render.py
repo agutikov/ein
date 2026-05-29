@@ -101,16 +101,18 @@ def _emit_instance_node(name: str) -> str:
     return f"  {_q(name)} [shape=oval, label={_q(name)}];"
 
 
-def _emit_is_a_edge(child: str, parent: str) -> str:
+def _emit_is_a_edge(child: str, parent: str, *, penwidth: int | None = None) -> str:
     """The dashed empty-arrow type-edge."""
+    pw = f", penwidth={penwidth}" if penwidth else ""
     return (
         f"  {_q(child)} -> {_q(parent)} "
-        f'[style=dashed, arrowhead=empty, label="is-a"];'
+        f'[style=dashed, arrowhead=empty, label="is-a"{pw}];'
     )
 
 
 def _emit_binary_fact(
     fact: Fact, *, colour: str, style: str, label_extra: str | None,
+    penwidth: int | None = None,
 ) -> str:
     src, dst = fact.args
     label_parts = [fact.relation_name]
@@ -123,11 +125,14 @@ def _emit_binary_fact(
         f'fontcolor="{colour}"',
         f"style={style}",
     ]
+    if penwidth:
+        attrs.append(f"penwidth={penwidth}")
     return f"  {_q(str(src))} -> {_q(str(dst))} [{', '.join(attrs)}];"
 
 
 def _emit_hyperedge(
     fact: Fact, *, colour: str, style: str, label_extra: str | None,
+    penwidth: int | None = None,
 ) -> list[str]:
     """A non-binary fact: one octagon node + n labelled edges to args.
 
@@ -138,14 +143,15 @@ def _emit_hyperedge(
     head_label = f"({fact.relation_name})"
     if label_extra:
         head_label += f"\\n{label_extra}"
+    pw = f", penwidth={penwidth}" if penwidth else ""
     lines = [
         f'  {nid} [shape=octagon, label={_q(head_label)}, '
-        f'color="{colour}", fontcolor="{colour}", style={style}];',
+        f'color="{colour}", fontcolor="{colour}", style={style}{pw}];',
     ]
     for i, a in enumerate(fact.args, 1):
         lines.append(
             f"  {nid} -> {_q(str(a))} "
-            f'[label="#{i}", color="{colour}", style={style}];'
+            f'[label="#{i}", color="{colour}", style={style}{pw}];'
         )
     return lines
 
@@ -163,6 +169,7 @@ def to_dot(
     colour_by: Literal["relation", "layer", "none"] = "relation",
     include_types: bool = True,
     include_instances: bool = True,
+    since: KnowledgeBase | None = None,
     name: str = "kb",
 ) -> str:
     """Render a :class:`KnowledgeBase` as a unified Graphviz digraph.
@@ -181,6 +188,11 @@ def to_dot(
         Emit `Type` nodes + type-edges. Default ``True``.
     include_instances
         Emit `Instance` nodes. Default ``True``.
+    since
+        A prior KB to diff against (S1.6.2 T1.6.2.3). Facts present here
+        but absent from ``since`` are drawn thicker (``penwidth=3``) —
+        the transition highlight, "this step added E". Default ``None``
+        (no highlight; output byte-identical to the un-``since`` form).
     name
         DOT graph name (default ``"kb"``).
 
@@ -190,6 +202,10 @@ def to_dot(
         Complete ``digraph`` string. Pass to ``dot -Tsvg`` for SVG.
     """
     layers_set = set(layers)
+    since_keys = (
+        {(f.relation_name, f.args) for f in since.facts}
+        if since is not None else None
+    )
     lines: list[str] = []
     lines.append(f"digraph {name} {{")
     # `fdp` is the layout engine; this is just a hint via a comment so
@@ -249,21 +265,29 @@ def to_dot(
         colour = _pick_colour(f, colour_by)
         style = _pick_style(f.layer)
         label_extra = _label_extra(f)
+        # Transition highlight (S1.6.2 T1.6.2.3): facts new since `since`.
+        penwidth = (
+            3 if since_keys is not None
+            and (f.relation_name, f.args) not in since_keys
+            else None
+        )
 
         # `is-a` facts (zebra2 case): render with the type-edge style,
         # not the regular relation-coloured arrow.
         if f.relation_name == "is-a" and len(f.args) == 2:
             child, parent = f.args
-            lines.append(_emit_is_a_edge(str(child), str(parent)))
+            lines.append(_emit_is_a_edge(str(child), str(parent), penwidth=penwidth))
             continue
 
         if len(f.args) == 2:
             lines.append(_emit_binary_fact(
                 f, colour=colour, style=style, label_extra=label_extra,
+                penwidth=penwidth,
             ))
         else:
             lines.extend(_emit_hyperedge(
                 f, colour=colour, style=style, label_extra=label_extra,
+                penwidth=penwidth,
             ))
 
     lines.append("}")

@@ -18,6 +18,7 @@ from __future__ import annotations
 from .constraints import render_constraints
 from .palette import PALETTE, hash_color
 from .rules import render_rule, render_rules
+from .slice import render_slice, render_solution, render_state
 
 __all__ = [
     "PALETTE",
@@ -25,4 +26,7 @@ __all__ = [
     "render_constraints",
     "render_rule",
     "render_rules",
+    "render_slice",
+    "render_solution",
+    "render_state",
 ]
