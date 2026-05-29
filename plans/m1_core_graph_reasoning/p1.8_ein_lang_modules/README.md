@@ -37,6 +37,7 @@ Theme A (modules + imports + standard library):
 | S1.8.A8    | General totality + domain-elimination library form     | [s1.8.a8_general_totality.md](s1.8.a8_general_totality.md)            |
 | S1.8.A9    | Reflective rule-implication                            | [s1.8.a9_reflective_rule_implication.md](s1.8.a9_reflective_rule_implication.md) |
 | S1.8.A10   | Type / domain matching                                 | [s1.8.a10_type_domain_matching.md](s1.8.a10_type_domain_matching.md)  |
+| S1.8.A11   | Multi-fact assertion from a single rule                | [s1.8.a11_multi_fact_assert.md](s1.8.a11_multi_fact_assert.md)        |
 | S1.5.9     | Ein-lang pattern macros (sticky id, relocated 2026-05-24) | [s1.5.9_ein_lang_macros.md](s1.5.9_ein_lang_macros.md)              |
 
 Theme B (performance):
@@ -201,6 +202,9 @@ Likely stages once activated (continuing the A-numbering):
 - **S1.8.A9** — reflective rule-implication (the compile-cache
   fix).
 - **S1.8.A10** — type / domain matching for relations + rules.
+- **S1.8.A11** — multi-fact assertion from a single rule
+  (`:assert (and …)`); the model is one-fact-per-firing today (see the
+  [stage file](s1.8.a11_multi_fact_assert.md)). Surface syntax TBC.
 - **[S1.5.9](s1.5.9_ein_lang_macros.md) — ein-lang pattern macros**
   (relocated 2026-05-24 from P1.5 with sticky id). Moves the
   `(forall …)` and `(open …)` parser sugars from compile.py SForm
