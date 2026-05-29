@@ -64,16 +64,41 @@ def test_relation_schema_is_dashed_edge():
     assert "style=dashed" in dot
 
 
-def test_generic_fact_is_levi_bipartite():
-    """An n-ary fact becomes one octagon node + one edge per arg."""
+def test_nary_fact_is_octagon_even_when_compact():
+    """An n-ary (arity ≠ 2) fact stays Levi-bipartite in *both* modes —
+    DOT has no native hyperedge, so the octagon is unavoidable."""
     (form,) = parse("(facts (next-to Norwegian Englishman Spaniard))")
-    dot = render_facts(form)
+    dot = render_facts(form)  # compact default
     assert "shape=octagon" in dot
     assert 'label="next-to"' in dot
     # Three positional args → three role-labelled edges
     assert 'label="1"' in dot
     assert 'label="2"' in dot
     assert 'label="3"' in dot
+
+
+def test_binary_fact_is_compact_arrow_by_default():
+    """Compact (default): a binary fact collapses to one labelled,
+    relation-coloured arrow — no Levi octagon."""
+    (form,) = parse('(facts (co-located Norwegian House-1 :source "(10)"))')
+    dot = render_facts(form)
+    assert '"Norwegian" -> "House-1"' in dot
+    assert 'label="co-located"' in dot
+    assert "shape=octagon" not in dot
+    # colour-by-relation styling is applied
+    assert "color=" in dot
+
+
+def test_binary_fact_is_levi_octagon_with_flag():
+    """`levi=True` restores the canonical Levi-bipartite encoding:
+    even a binary fact becomes an octagon list-node with role edges."""
+    (form,) = parse('(facts (co-located Norwegian House-1 :source "(10)"))')
+    dot = render_facts(form, levi=True)
+    assert "shape=octagon" in dot
+    assert 'label="1"' in dot
+    assert 'label="2"' in dot
+    # no collapsed direct arrow between the two atoms
+    assert '"Norwegian" -> "House-1"' not in dot
 
 
 def test_equality_is_doublecircle():
@@ -83,9 +108,20 @@ def test_equality_is_doublecircle():
 
 
 def test_not_fact_is_dashed():
-    """`(not X)` recurses and marks the resulting edges dashed."""
+    """`(not X)` recurses and marks the resulting edges dashed.
+
+    Compact (default): the binary inner fact is a dashed arrow."""
     (form,) = parse("(facts (not (co-located Spaniard Coffee)))")
     dot = render_facts(form)
+    assert "style=dashed" in dot
+    assert '"Spaniard" -> "Coffee"' in dot
+    assert "shape=octagon" not in dot
+
+
+def test_not_fact_is_dashed_levi():
+    """Under `levi=True` the negated binary fact is a dashed octagon."""
+    (form,) = parse("(facts (not (co-located Spaniard Coffee)))")
+    dot = render_facts(form, levi=True)
     assert "style=dashed" in dot
     assert "shape=octagon" in dot
 
@@ -140,6 +176,26 @@ def test_rule_mode_a_has_lhs_rhs_clusters():
     assert "cluster_rhs" in dot
     assert 'label="match"' in dot
     assert 'label="assert"' in dot
+    assert "rankdir=TB" in dot  # S1.6.0: side-by-side is left-to-right
+
+
+def test_rule_default_mode_is_side_by_side():
+    """S1.6.0: the default rule mode is side-by-side LHS|RHS (was overlay)."""
+    (form,) = parse("""
+    (rules (rule triangle ()
+      :match (and (?r ?a ?b) (?r ?b ?c)) :assert (?r ?a ?c) :why "tri"))
+    """)
+    dot = to_dot(form)  # no rule_mode → default
+    assert "cluster_lhs" in dot
+    assert "rankdir=TB" in dot
+
+
+def test_rule_mode_aliases():
+    """Friendly names map onto the legacy single-letter modes."""
+    (form,) = parse('(rules (rule x () :match (r ?a ?b) :assert (r ?b ?a) :why "x"))')
+    rule = form.args[0]
+    assert render_rule(rule, mode="sidebyside") == render_rule(rule, mode="a")
+    assert render_rule(rule, mode="overlay") == render_rule(rule, mode="c")
 
 
 def test_rule_mode_c_overlay_has_dashed_rhs():

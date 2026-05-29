@@ -49,34 +49,15 @@ import re
 from collections.abc import Iterable
 from typing import Literal
 
+from ..render.palette import hash_color as _hash_color
 from .entities import Fact, Layer
 from .store import KnowledgeBase
 from .views import instance_name, logical_instances, logical_types, type_name
 
-# ── Palette + colour helper ───────────────────────────────────────
-
-
-# Distinct, mid-saturation colours readable on both light and dark
-# backgrounds. From d3.schemeCategory10 with a couple of swaps for
-# legibility on print.
-_PALETTE = (
-    "#1f77b4",  # blue
-    "#ff7f0e",  # orange
-    "#2ca02c",  # green
-    "#d62728",  # red
-    "#9467bd",  # purple
-    "#8c564b",  # brown
-    "#e377c2",  # pink
-    "#7f7f7f",  # gray
-    "#bcbd22",  # olive
-    "#17becf",  # cyan
-)
-
-
-def _hash_color(name: str) -> str:
-    """Stable colour per relation name — deterministic across runs."""
-    h = hashlib.sha1(name.encode("utf-8")).hexdigest()
-    return _PALETTE[int(h, 16) % len(_PALETTE)]
+# ── Colour helper ─────────────────────────────────────────────────
+# The relation-colour palette is shared with the per-form IR renderer
+# (S1.6.0) so a relation is drawn the same colour in every view; see
+# :mod:`ein_bot.render.palette`.
 
 
 # ── DOT escaping helpers ──────────────────────────────────────────

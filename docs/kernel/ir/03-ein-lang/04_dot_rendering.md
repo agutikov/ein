@@ -50,6 +50,16 @@ binary facts, the compact rendering (collapsed labelled arrow) is
 also permitted; see
 [`../01-ein-graph/01_kb.md` §2.1](../01-ein-graph/01_kb.md).
 
+**Default = compact (S1.6.0).** Faithful as it is, the
+list-node-per-relation Levi view is unreadable as a default. So
+`ein_bot.ir.to_dot` (and `ein-bot ir dot`) renders **compact** by
+default: a binary fact `(rel a b)` collapses to one labelled,
+relation-coloured arrow `a → b [label="rel"]` (the colour is the
+shared per-relation palette — see §Unified KB view). n-ary facts stay
+Levi-bipartite (no native hyperedge to collapse). The canonical
+Levi-bipartite view of *every* relation is opt-in via
+`to_dot(…, levi=True)` / `ein-bot ir dot --levi` / `EIN_RENDER_LEVI=1`.
+
 ## Ontology — UML-ish
 
 ```dot
@@ -64,15 +74,21 @@ digraph ontology {
 }
 ```
 
-## Rule rendering — three modes, configurable
+## Rule rendering — modes, configurable
 
-Default: **(a)** for `rules.ein` documentation, **(c)** for trace
-output. **(b)** is opt-in.
+**Default = (a) side-by-side, `rankdir=LR` (S1.6.0).** The previous
+cross-product (rule-mode × trace-view) collapsed to one diagram per
+rule: the side-by-side LHS|RHS view, the most readable for rule
+libraries. The overlay variant (c) is opt-in via
+`render_rule(…, mode="overlay")` / `ein-bot ir dot --rule-mode=overlay`
+(the legacy single-letter names `"a"` / `"c"` are still accepted).
+**(b)** is opt-in.
 
 **(a) Side-by-side LHS | RHS** — explicit; readable for rule libraries.
 
 ```dot
 digraph rule_triangle_lhs_rhs {
+  rankdir=TB;
   subgraph cluster_lhs { label="match";
     a1 -> b1 [label="?r"]; b1 -> c1 [label="?r"]; }
   subgraph cluster_rhs { label="assert";

@@ -1,11 +1,11 @@
-"""IR → DOT renderer — S1.1.4.
+"""IR → DOT renderer — S1.1.4 / S1.6.0.
 
-Implements `docs/ir.md` §6 (Rendering schema). Forward-only: reverse
-parse (`from_dot`) lands in P1.2.
+Implements `docs/kernel/ir/03-ein-lang/04_dot_rendering.md`. Forward-only:
+reverse parse (`from_dot`) lands in P1.2.
 
 Public entry points:
 
-    to_dot(node, *, rule_mode="c", trace_view="a") -> str
+    to_dot(node, *, rule_mode="a", trace_view="a", levi=False) -> str
         Top-level dispatch. Accepts a single SForm or a tuple of
         top-level SForms. Returns one `digraph` per top-level form,
         joined by blank lines.
@@ -15,6 +15,15 @@ Public entry points:
         Per-form renderers. Each returns a complete `digraph { … }`
         string.
 
+**Compact vs Levi (S1.6.0).** The default view is *compact*
+(entity-style): a binary fact `(rel a b)` collapses to one labelled,
+relation-coloured arrow `a -> b [label="rel"]`. The canonical
+Levi-bipartite view — every relation a list-node (`octagon`) with
+role-labelled arrows to its participants — is faithful but unreadable
+as a default; it stays available via ``levi=True`` (CLI ``--levi`` /
+``EIN_RENDER_LEVI=1``). n-ary facts (arity ≠ 2) render Levi-bipartite
+in both modes (DOT has no native hyperedge).
+
 The renderer is *structural*: only graph structure is fixed by the
 schema; layout (positions, rank, unspecified styles) is free.
 """
@@ -22,6 +31,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from ..render.palette import hash_color
 from .types import (
     Atom,
     Int,
@@ -143,11 +153,15 @@ def _atom_arg_attrs(node: IRNode) -> str:
     return f"shape={GROUND_SHAPE}"
 
 
-def _emit_fact(b: _Builder, fact: SForm, *, derived: bool = False) -> None:
-    """Emit one fact as a Levi-bipartite hyperedge.
+def _emit_fact(b: _Builder, fact: SForm, *, derived: bool = False,
+               levi: bool = False) -> None:
+    """Emit one fact.
 
     Reserved-word facts (`=`, `instance`, `not`) get specialised
-    encodings; everything else uses the generic Levi-bipartite shape.
+    encodings. A generic *binary* relation collapses to one labelled
+    arrow in the default *compact* view, or — under ``levi=True`` —
+    keeps the canonical Levi-bipartite octagon. n-ary relations
+    (arity ≠ 2) are always Levi-bipartite (DOT has no native hyperedge).
     """
     head = fact.head.name
     positional = tuple(a for a in fact.args if not isinstance(a, KwPair))
@@ -177,10 +191,25 @@ def _emit_fact(b: _Builder, fact: SForm, *, derived: bool = False) -> None:
 
     # Negative fact → recurse into the wrapped expression, mark dashed
     if head == "not" and len(positional) == 1 and isinstance(positional[0], SForm):
-        _emit_fact(b, positional[0], derived=True)  # dashed via 'derived'
+        _emit_fact(b, positional[0], derived=True, levi=levi)  # dashed
         return
 
-    # Generic n-ary relation → Levi-bipartite octagon
+    # Compact (default): a binary relation is one relation-coloured
+    # arrow — the entity-style view. Levi keeps the octagon (below).
+    if not levi and len(positional) == 2:
+        a, c = positional
+        _emit_atom(b, a)
+        _emit_atom(b, c)
+        colour = hash_color(head)
+        style = "dashed" if derived else "solid"
+        b.edge(_atom_id_for_value(a), _atom_id_for_value(c),
+               f'label="{head}", color="{colour}", '
+               f'fontcolor="{colour}", style={style}')
+        _ = kwpairs
+        return
+
+    # Levi-bipartite octagon: every n-ary relation, plus binary under
+    # ``levi=True`` — one list-node, role-labelled arrows to each arg.
     style = ", style=dashed" if derived else ""
     h_id = b.fresh_h(head)
     for i, arg in enumerate(positional, start=1):
@@ -216,8 +245,13 @@ def _emit_atom(b: _Builder, node: IRNode) -> None:
         b.node(_atom_id(node), _atom_arg_attrs(node))
 
 
-def render_ontology(form: SForm) -> str:
-    """Render `(ontology …)` per docs/ir.md §6 'Ontology — UML-ish'."""
+def render_ontology(form: SForm, *, levi: bool = False) -> str:
+    """Render `(ontology …)` — UML-ish type/instance/relation schema.
+
+    Type / relation / a-priori declarations render identically in both
+    modes (they are schema, already drawn as direct labelled edges);
+    only implicit facts inside the block honour ``levi``.
+    """
     b = _Builder("ontology")
     for decl in form.args:
         if not isinstance(decl, SForm):
@@ -262,24 +296,29 @@ def render_ontology(form: SForm) -> str:
                 b.edge(_atom_id_for_value(src), _atom_id_for_value(dst),
                        f'label="{ap_name}", style=dashed, penwidth=2')
         else:
-            # Implicit fact inside ontology — Levi-bipartite.
-            _emit_fact(b, decl)
+            # Implicit fact inside ontology — compact or Levi.
+            _emit_fact(b, decl, levi=levi)
     return b.build()
 
 
-def render_facts(form: SForm, *, derived: bool = False) -> str:
-    """Render `(facts …)` or `(reasoning …)` — Levi-bipartite hyperedges."""
+def render_facts(form: SForm, *, derived: bool = False,
+                 levi: bool = False) -> str:
+    """Render `(facts …)` or `(reasoning …)`.
+
+    Compact by default (binary facts as labelled arrows); pass
+    ``levi=True`` for the Levi-bipartite hyperedge view.
+    """
     name = "reasoning" if derived else "facts"
     b = _Builder(name)
     for fact in form.args:
         if isinstance(fact, SForm):
-            _emit_fact(b, fact, derived=derived)
+            _emit_fact(b, fact, derived=derived, levi=levi)
     return b.build()
 
 
-def render_reasoning(form: SForm) -> str:
+def render_reasoning(form: SForm, *, levi: bool = False) -> str:
     """Render `(reasoning …)` — derived facts shown with dashed edges."""
-    return render_facts(form, derived=True)
+    return render_facts(form, derived=True, levi=levi)
 
 
 def render_query(form: SForm) -> str:
@@ -294,15 +333,28 @@ def render_query(form: SForm) -> str:
     return b.build()
 
 
-def render_rule(rule_sform: SForm, *, mode: str = "c") -> str:
+# Rule-mode aliases. The default is side-by-side LHS|RHS clusters
+# (most readable for rule libraries); the compact overlay variant is
+# opt-in (S1.6.0). Legacy single-letter names "a"/"c" stay accepted.
+_RULE_MODE_ALIASES = {
+    "a": "a", "sidebyside": "a", "side-by-side": "a",
+    "c": "c", "overlay": "c",
+}
+
+
+def render_rule(rule_sform: SForm, *, mode: str = "a") -> str:
     """Render a single `(rule Name params :match … :assert … :why … …)`.
 
-    Modes:
-      - "a" : side-by-side LHS|RHS clusters (default for rule libraries)
-      - "c" : overlay — LHS solid, RHS additions dashed (default for traces)
+    Modes (default ``"sidebyside"``):
+      - "sidebyside" / "a" : side-by-side LHS|RHS clusters, ``rankdir=TB``
+      - "overlay" / "c"    : LHS solid, RHS additions dashed (compact)
     """
-    if mode not in ("a", "c"):
-        raise ValueError(f"unknown rule mode: {mode!r} (expected 'a' or 'c')")
+    canon = _RULE_MODE_ALIASES.get(mode)
+    if canon is None:
+        raise ValueError(
+            f"unknown rule mode: {mode!r} "
+            f"(expected 'sidebyside'/'a' or 'overlay'/'c')"
+        )
 
     # Extract rule fields. rule_decl args: [name, params, kw_pair...]
     rule_name = "anon"
@@ -318,9 +370,9 @@ def render_rule(rule_sform: SForm, *, mode: str = "c") -> str:
                 assert_expr = arg.value
 
     safe_name = rule_name.replace("-", "_").replace(" ", "_")
-    graph_name = f"rule_{safe_name}_{'lhs_rhs' if mode == 'a' else 'overlay'}"
+    graph_name = f"rule_{safe_name}_{'lhs_rhs' if canon == 'a' else 'overlay'}"
 
-    if mode == "a":
+    if canon == "a":
         return _render_rule_lhs_rhs(graph_name, match_expr, assert_expr)
     return _render_rule_overlay(graph_name, match_expr, assert_expr)
 
@@ -328,7 +380,7 @@ def render_rule(rule_sform: SForm, *, mode: str = "c") -> str:
 def _render_rule_lhs_rhs(graph_name: str, match: SForm | None,
                          assert_: SForm | None) -> str:
     """Mode (a) — side-by-side `cluster_lhs` / `cluster_rhs` blocks."""
-    parts = [f"digraph {graph_name} {{"]
+    parts = [f"digraph {graph_name} {{", "  rankdir=TB;"]
     parts.append('  subgraph cluster_lhs { label="match";')
     if match is not None:
         for line in _render_pattern_edges(match, suffix="_l"):
@@ -457,22 +509,27 @@ def render_trace(form: SForm, *, view: str = "a") -> str:
 
 # ── Top-level dispatch ─────────────────────────────────────────────
 
-def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "c",
-           trace_view: str = "a") -> str:
+def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "a",
+           trace_view: str = "a", levi: bool = False) -> str:
     """Render an IR node (or tuple of top-level forms) to DOT.
 
     Returns one `digraph { … }` per top-level form, joined by blank
     lines. For a `(rules …)` form, each child rule becomes its own
     digraph (a rule library is multiple graphs).
+
+    ``levi=True`` selects the Levi-bipartite view for ontology / facts
+    / reasoning forms (default: compact). ``rule_mode`` defaults to the
+    side-by-side LHS|RHS view; pass ``"overlay"`` for the compact
+    overlay (S1.6.0).
     """
     if isinstance(node, SForm):
         head = node.head.name
         if head == "ontology":
-            return render_ontology(node)
+            return render_ontology(node, levi=levi)
         if head == "facts":
-            return render_facts(node, derived=False)
+            return render_facts(node, derived=False, levi=levi)
         if head == "reasoning":
-            return render_reasoning(node)
+            return render_reasoning(node, levi=levi)
         if head == "rules":
             chunks = [render_rule(r, mode=rule_mode)
                       for r in node.args if isinstance(r, SForm)]
@@ -488,7 +545,7 @@ def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "c",
             return ""
         raise ValueError(f"unknown top-level form: {head}")
     # Tuple/iterable of top-level forms
-    chunks = [to_dot(f, rule_mode=rule_mode, trace_view=trace_view)
+    chunks = [to_dot(f, rule_mode=rule_mode, trace_view=trace_view, levi=levi)
               for f in node]
     return "\n\n".join(c for c in chunks if c)
 

@@ -177,7 +177,7 @@ The mode is set per top-level form:
 - **ontology / facts / reasoning** — compact (entity-style:
   instances + arrows, the abstract view).
 - **rules** — `rule-mode=a` (Side-by-side LHS | RHS clusters)
-  with `rankdir=LR`. The two existing modes ((a) clusters,
+  with `rankdir=TB`. The two existing modes ((a) clusters,
   (c) overlay) get folded into one default diagram per rule
   rather than the current cross-product; the `(c)` overlay
   variant moves behind a `--rule-mode=overlay` flag.
@@ -199,10 +199,15 @@ don't carry `(trace …)` blocks, so the trace dimension is a
 no-op for most of them anyway — only the `(rule …)`
 output changes.
 
-**Output (2026-05-29):** SVG is no longer required project-wide;
-`render_examples.sh` defaults to emitting `.dot` only (pass `--svg` to
-also rasterise). The trace bundle (S1.6.4) embeds `dot` inline and
-never writes SVG.
+**Output convention (S1.6.0, 2026-05-30).** The split is by *layer*,
+not by feature: **the Python tools emit DOT only** — the `ein-bot` CLI
+(`ir dot`, and the S1.6.1–S1.6.2 `render …` commands), and the S1.6.4
+markdown trace (inline fenced `dot` blocks). None of them call
+Graphviz. **Rasterising DOT → SVG is a shell-script job**:
+`render_examples.sh` takes that DOT and renders it for an examples
+overview — **`.dot` + SVG by default** (`--no-svg` / `--dot-only` for
+dot-only), with rule diagrams in a **`rules/` subfolder** per example
+and the other forms flat.
 
 ## VSCode ein syntax highlighting
 

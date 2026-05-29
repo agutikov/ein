@@ -13,6 +13,7 @@ Invoked via the ``ein-bot`` console script or ``python -m ein_bot.cli``.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from collections.abc import Sequence
 from pathlib import Path
@@ -20,6 +21,11 @@ from pathlib import Path
 from .ir import IRParseError, dump_canonical, parse
 from .ir import to_dot as ir_to_dot
 from .kb import KBLoadError, KnowledgeBase, Layer
+
+
+def _env_truthy(value: str | None) -> bool:
+    """True for the usual affirmative env-var spellings."""
+    return (value or "").strip().lower() in ("1", "true", "yes", "on")
 
 
 def _cmd_ir_parse(args: argparse.Namespace) -> int:
@@ -50,8 +56,9 @@ def _cmd_ir_dot(args: argparse.Namespace) -> int:
     except IRParseError as e:
         print(e, file=sys.stderr)
         return 1
+    levi = args.levi or _env_truthy(os.environ.get("EIN_RENDER_LEVI"))
     sys.stdout.write(ir_to_dot(nodes, rule_mode=args.rule_mode,
-                               trace_view=args.trace_view))
+                               trace_view=args.trace_view, levi=levi))
     sys.stdout.write("\n")
     return 0
 
@@ -124,10 +131,18 @@ def _build_parser() -> argparse.ArgumentParser:
         help="render parsed IR as DOT (per docs/kernel/ir/03-ein-lang/04_dot_rendering.md)",
     )
     ir_dot.add_argument("file")
-    ir_dot.add_argument("--rule-mode", choices=["a", "c"], default="c",
-                        help="rule rendering: 'a' side-by-side, 'c' overlay (default)")
+    ir_dot.add_argument(
+        "--rule-mode", choices=["sidebyside", "overlay"], default="sidebyside",
+        help="rule rendering: 'sidebyside' LHS|RHS clusters, LR (default); "
+             "'overlay' LHS solid + RHS dashed",
+    )
     ir_dot.add_argument("--trace-view", choices=["a", "b", "c"], default="a",
                         help="trace view: 'a' per-step (default), 'b' aggregate, 'c' DAG")
+    ir_dot.add_argument(
+        "--levi", action="store_true",
+        help="Levi-bipartite hyperedge view (default: compact entity-style); "
+             "also enabled by EIN_RENDER_LEVI=1",
+    )
     ir_dot.set_defaults(func=_cmd_ir_dot)
 
     # ── kb subcommand ──

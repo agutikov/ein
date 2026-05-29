@@ -58,6 +58,40 @@ def test_ir_dot_failure(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
     assert "broken.ein:" in err
 
 
+def _ir_dot_out(capsys, *extra: str) -> str:
+    repo_root = Path(__file__).resolve().parents[2]
+    zebra = repo_root / "examples" / "zebra.ein"
+    rc = main(["ir", "dot", str(zebra), *extra])
+    assert rc == 0
+    return capsys.readouterr().out
+
+
+def test_ir_dot_levi_collapses_binaries(capsys: pytest.CaptureFixture[str]):
+    """Compact (default) draws binary facts as single arrows; --levi
+    expands every binary into a Levi octagon, so it has strictly more
+    octagons than the compact view."""
+    compact = _ir_dot_out(capsys)
+    levi = _ir_dot_out(capsys, "--levi")
+    assert levi.count("octagon") > compact.count("octagon")
+
+
+def test_ir_dot_env_levi_matches_flag(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch,
+):
+    """EIN_RENDER_LEVI=1 is equivalent to passing --levi."""
+    flag = _ir_dot_out(capsys, "--levi")
+    monkeypatch.setenv("EIN_RENDER_LEVI", "1")
+    env = _ir_dot_out(capsys)
+    assert env == flag
+
+
+def test_ir_dot_rule_mode_overlay(capsys: pytest.CaptureFixture[str]):
+    """--rule-mode=overlay yields the dashed-RHS overlay (no clusters)."""
+    out = _ir_dot_out(capsys, "--rule-mode", "overlay")
+    assert "cluster_lhs" not in out
+    assert "style=dashed" in out
+
+
 @pytest.mark.parametrize("name", [
     "unclosed_paren.ein",
     "keyword_as_value.ein",
