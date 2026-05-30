@@ -108,13 +108,18 @@ class _VerboseDumper(MonotonicDumper):
         layer: int,
         commitment: tuple,
         result: Any,
-        facts_merged: int,
-        nogood_emitted: bool,
-        nogood_subsumed: bool,
+        *,
+        outcome: str = "alive",
+        facts_merged: int = 0,
+        nogood_emitted: bool = False,
+        nogood_subsumed: bool = False,
     ) -> None:
         super().entering(
-            layer, commitment, result, facts_merged,
-            nogood_emitted, nogood_subsumed,
+            layer, commitment, result,
+            outcome=outcome,
+            facts_merged=facts_merged,
+            nogood_emitted=nogood_emitted,
+            nogood_subsumed=nogood_subsumed,
         )
         self._enterings_in_layer += 1
         if result.kind == "alive":
@@ -127,7 +132,9 @@ class _VerboseDumper(MonotonicDumper):
             self._nogoods_in_layer += 1
 
         if self._enterings_in_layer % self.progress_every == 0:
-            extras: list[str] = [result.kind]
+            # ``outcome`` subsumes ``result.kind`` and adds
+            # "solution"; show it so a solved fork is visible.
+            extras: list[str] = [outcome]
             if facts_merged:
                 extras.append(f"merged={facts_merged}")
             if result.firings:
