@@ -68,7 +68,7 @@ end-to-end.
 
 | ID      | Title                                  | Duration |
 |---------|----------------------------------------|----------|
-| S1.7.1  | Canonical encoding (done) + GAPS/CONTRADICTIONS fixtures | ~1 day |
+| S1.7.1  | Canonical encoding + GAPS/CONTRADICTIONS fixtures (**done** 2026-05-30) | ~1 day |
 | S1.7.2  | Kernel audit + minimization decision (full purity) | decision done 2026-05-30 |
 | S1.7.3  | Trace-matches-human acceptance (via S1.6.5) — **the M1 gate** | 2-3 days |
 | S1.7.4  | Static NAF dependency map (observability) — relocated from P1.5a 2026-05-26 | ~½ day |
@@ -101,9 +101,9 @@ demonstrator). The full set:
 3. `ein-bot solve examples/zebra2-minus-15.ein --mode=gaps`
    returns at least one diverging goal node.
 
-4. `ein-bot solve examples/zebra2-bad.ein --mode=contradictions`
+4. `ein-bot solve examples/ein-bugs/zebra2-bad.ein --mode=contradictions`
    returns a 2–3 edge unsat core including the injected fact and
-   the colliding condition (5).
+   the colliding condition (6).
 
 5. Pytest default suite green and < 30 s (the `EIN_RUN_SLOW`
    zebra gates excluded); `ruff check .` green. (Suite is already

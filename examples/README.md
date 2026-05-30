@@ -329,3 +329,22 @@ refutation hypotheses at depth 1; saturation at `d = 0` between branches
 shrinks the next branch's surviving domain, which is why each successive
 refutation is shorter than the previous one (the *"we already excluded
 water and tea on the previous step"* pattern in step 3).
+
+## Variant fixtures (P1.7 three-task-class acceptance)
+
+Two thin diffs of `zebra2.ein` (same ontology + rules) exercise the other
+two task classes from [idea 03](../docs/ideas/03-three-task-classes.md):
+
+- [`zebra2-minus-15.ein`](zebra2-minus-15.ein) — **GAPS**: drops condition
+  (15) (the only fact pinning Blue at `H_2`), leaving the colours
+  under-determined. `--mode=gaps` reports ≥ 1 diverging goal node.
+- [`ein-bugs/zebra2-bad.ein`](ein-bugs/zebra2-bad.ein) — **CONTRADICTIONS**:
+  adds an injected `(color-loc Green House-1)` that collides with condition
+  (6)'s spatial endpoint (Green is `right-of` Ivory, so it cannot sit in the
+  leftmost house). `--mode=contradictions` returns a 2-3 edge unsat core
+  pairing the injection with (6). It lives under `ein-bugs/` rather than
+  `broken/` because it parses cleanly — it is semantically unsatisfiable,
+  not malformed IR.
+
+Parse + thin-diff invariants are pinned by
+[`tests/integration/test_zebra_parse.py`](../ein.py/tests/integration/test_zebra_parse.py).

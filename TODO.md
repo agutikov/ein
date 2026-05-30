@@ -163,4 +163,5 @@ pull relation algrabra features as library rules into P1.8 from plans/followups/
 
 
 split P1.8 into 2 phases P1.8 and P1.8a - move performance part into P1.8a, leave ein language and lib things in P1.8
+combine this with review and replan of the phase
 
