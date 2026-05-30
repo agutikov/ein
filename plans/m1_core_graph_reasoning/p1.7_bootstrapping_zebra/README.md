@@ -35,71 +35,84 @@ IMPORTANT GOALS:
 2.3) How to reduce complexity without reducing expressiveness?
    e.g. solve only `co-located` and then directly infer `drink`, `live` etc.
 
-### Drop classic `zebra.ein` support (user direction 2026-05-27)
+### Kernel de-hardcoding — full purity pass (decided 2026-05-30)
 
-The classic `examples/zebra.ein` encoding leans on the engine's
-*hardcoded* `type` / `instance` keywords (the pre-B1 path from
-P1.2 typed-hypergraph). Once P1.7 lands the canonical
-unified-syntax encoding, the classic file becomes redundant —
-keep removing the hardcoded keyword path and rewrite the
-classic puzzle in the new vocabulary as a sub-task of S1.7.1
-(zebra IR + ontology). Goals:
+**Supersedes the earlier "drop classic zebra.ein" / proto-library
+direction.** Decision: the kernel keeps only the declarators
+`relation` / `rule` / `hrule` and the logical primitives `not`
+`false` `and` `or` `neq` `forall` `absent`. **Everything else
+leaves the kernel** — `type`, `instance`, `a-priori`, `symmetric`,
+`is-a`, `closed`/`open` — re-expressed as ein rules (or, for the
+dead `a-priori` alias, deleted), with `zebra2.ein` re-validated
+end-to-end.
 
-1. Remove `type` / `instance` as kernel-special keywords; treat
-   them as ordinary relations declared in the ein code itself
-   (the `(relation type Instance Type)` shape).
-2. Rewrite `examples/zebra.ein` against the unified syntax. Drop
-   `examples/zebra.ein` if the new encoding makes it byte-equal
-   to a trivial alias of zebra2.ein; otherwise keep the
-   rewritten file as a NL-closer variant.
-3. Document in comments **what the rewritten classic encoding
-   is missing compared to `zebra2.ein`** — specifically, which
-   rules / activator declarations the classic file would need
-   that drive its hyp-gen count from M1's current measurement
-   to the 1000+-hypothesis pre-B1 baseline. The comment table
-   is the audit's *output*; without it, the encoding-comparison
-   loses the empirical anchor.
-
-This composes with goal (1) above ("merge zebra and zebra2
-syntax, leave only canonical") — that goal *is* the rewrite;
-the comments are the differential audit.
+- The audit (full list of kernel-special names) + the decision
+  live in [S1.7.2](s1.7.2_dynamic_vs_hardcoded.md).
+- The **tractable** execution — drop `a-priori`; `type`/`instance`
+  → generic facts + rules in `zebra.ein`; `symmetric` dedup; `or`
+  lowering — is [S1.7.6](s1.7.6_kernel_minimization.md).
+- The **load-bearing** removals (`is-a`, `closed`/`open`) are
+  **parked as an end-of-phase analysis stage**,
+  [S1.7.7](s1.7.7_kernel_purity_analysis.md) — they may surface an
+  irreducible kernel.
+- `type`/`instance` stay **writable** as generic facts on
+  user-declared relations (`(type UserType T)` is the basic form);
+  their semantics move into rules in `zebra.ein`. **`zebra.ein` is
+  a demonstrator, not required to solve or trace-match.**
+  `zebra2.ein` stays the canonical solving target.
+- **Not an M1 gate:** zebra2 already solves *with* the primitives,
+  so the purity pass is a kernel-quality goal; M1-done does not
+  wait on it.
 
 ## Stages
 
 | ID      | Title                                  | Duration |
 |---------|----------------------------------------|----------|
-| S1.7.1  | Zebra IR + ontology                    | 2-3 days |
-| S1.7.2  | Dynamic-vs-hardcoded audit + decision + proto-library | 4-6 days |
-| S1.7.3  | Trace-matches-human acceptance         | 3-4 days |
+| S1.7.1  | Canonical encoding (done) + GAPS/CONTRADICTIONS fixtures | ~1 day |
+| S1.7.2  | Kernel audit + minimization decision (full purity) | decision done 2026-05-30 |
+| S1.7.3  | Trace-matches-human acceptance (via S1.6.5) — **the M1 gate** | 2-3 days |
 | S1.7.4  | Static NAF dependency map (observability) — relocated from P1.5a 2026-05-26 | ~½ day |
 | S1.7.5  | Query semantics: who vs where — relocated from P1.5a 2026-05-26 | 1-2 days |
+| S1.7.6  | Kernel minimization — execution (a-priori/type/instance/symmetric/or) — **not an M1 gate** | 2-3 days |
+| S1.7.7  | Kernel purity analysis — `is-a` + closed-world (**parked**, phase end) — **not an M1 gate** | research |
 
 ## Acceptance
 
-This phase *is* the M1 acceptance. The full set:
+This phase *is* the M1 acceptance. **Target file:
+`examples/zebra2.ein`** (canonical; `zebra.ein` is a non-solving
+demonstrator). The full set:
 
-1. `ein-bot solve examples/zebra.ein --trace=zebra.md
-    --diagrams=zebra-out/` exits 0 with the canonical answer:
+1. A CLI **answer path** on `zebra2.ein` exits 0 and emits the
+   canonical answer in words:
 
    > The **Japanese** keeps the **zebra**. The **Norwegian**
    > drinks **water**.
 
+   (The engine already solves — `test_monotonic_skeleton`; the
+   work is wiring `monotonic_solve` into the CLI + rendering the
+   answer line. See S1.7.3 T1.7.3.3.)
+
 2. The markdown trace satisfies the *named-rule-firing checklist*
-   from [idea 08](../../../docs/ideas/08-human-style-deductive-trace.md#the-target-trace-paraphrased)
-   — every human move (direct fact, composition, elimination,
-   forward chaining, case analysis, reductio, symmetry) appears
-   as a named rule firing with provenance.
+   — **shipped as** [S1.6.5](../p1.6_rendering_and_trace/s1.6.5_idea08_trace_acceptance.md)
+   (`s1.6.5_idea08_checklist.md` + `test_idea08_acceptance.py`);
+   the per-move YAML harness is **not** built (user decision
+   2026-05-30).
 
-3. `ein-bot query examples/zebra.ein --mode=gaps`, after deleting
-   condition (15), returns at least one diverging goal node.
+3. `ein-bot solve examples/zebra2-minus-15.ein --mode=gaps`
+   returns at least one diverging goal node.
 
-4. `ein-bot query examples/zebra-bad.ein --mode=contradictions`,
-   where `zebra-bad.ein` adds `(rel has-color House-1 Green)` to
-   the original, returns a 2- or 3-edge unsat core that includes
-   the offending fact and condition (5).
+4. `ein-bot solve examples/zebra2-bad.ein --mode=contradictions`
+   returns a 2–3 edge unsat core including the injected fact and
+   the colliding condition (5).
 
-5. Pytest suite total ≥ 100 tests; `ruff check .` green; `pytest`
-   wall time < 30 s.
+5. Pytest default suite green and < 30 s (the `EIN_RUN_SLOW`
+   zebra gates excluded); `ruff check .` green. (Suite is already
+   ~1038 tests, well over the original ≥ 100.)
+
+**Kernel purity ([S1.7.6](s1.7.6_kernel_minimization.md) +
+parked [S1.7.7](s1.7.7_kernel_purity_analysis.md)) is *not* part
+of this gate** — zebra2 solves with `is-a` / `symmetric` /
+`closed` as primitives.
 
 ## Connections
 
