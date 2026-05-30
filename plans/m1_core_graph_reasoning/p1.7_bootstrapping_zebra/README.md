@@ -71,6 +71,7 @@ end-to-end.
 | S1.7.1  | Canonical encoding + GAPS/CONTRADICTIONS fixtures (**done** 2026-05-30) | ~1 day |
 | S1.7.2  | Kernel audit + minimization decision (full purity) | decision done 2026-05-30 |
 | S1.7.3  | Trace-matches-human acceptance (via S1.6.5) — **the M1 gate** | 2-3 days |
+| S1.7.3a | Completeness via open hypotheses — sound solution-state (fixes the SAT→⊥ / partial-dead-end soundness bug S1.7.3 found) | TBD |
 | S1.7.4  | Static NAF dependency map (observability) — relocated from P1.5a 2026-05-26 | ~½ day |
 | S1.7.5  | Query semantics: who vs where — relocated from P1.5a 2026-05-26 | 1-2 days |
 | S1.7.6  | Kernel minimization — execution (a-priori/type/instance/symmetric/or) — **not an M1 gate** | 2-3 days |
