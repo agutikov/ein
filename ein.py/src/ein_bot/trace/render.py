@@ -77,7 +77,12 @@ def render_markdown(
     elif mode == "reorder":
         lines += _render_reordered(trace, diagrams=diagrams)
     else:
+        emitted_hyp = False
         for step in trace.steps:
+            # Unconditional (d=0) spine first; then the under-hypothesis block.
+            if step.conditional and not emitted_hyp:
+                lines += [f"## Under hypothesis — {trace.commitment}", ""]
+                emitted_hyp = True
             lines += _render_step(step, diagrams=diagrams)
 
     if trace.reductios:

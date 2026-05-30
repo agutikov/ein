@@ -76,20 +76,37 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 EXAMPLES_DIR="${REPO_ROOT}/examples"
 
-# ── Arg parsing: raster toggle + optional positional OUT_DIR ──
-# SVG is rendered by default (alongside the .dot); --no-svg / --dot-only
-# emits .dot only. `--svg` is accepted as an explicit (default) opt-in.
-# The commitment-lattice DAG (`render lattice`) RUNS the solver, so it
-# is best-effort under a timeout; --no-lattice skips it.
+usage() {
+    cat <<'USAGE'
+render_examples.sh — render every examples/*.ein to DOT + SVG.
+
+Usage: utils/render_examples.sh [OPTIONS] [OUT_DIR]
+
+Default: .dot + SVG per form (rules in a rules/ subfolder), the unified
+KB view, and the commitment-lattice DAG (runs a solve under PyPy).
+
+Options:
+  --no-svg, --dot-only    emit .dot only (skip rasterising)
+  --no-lattice            skip the solver-run lattice DAG
+  -h, --help              show this help
+
+OUT_DIR defaults to build/dot. Env: EINBOT, EINBOT_LATTICE, FORMATS,
+LATTICE_TIMEOUT (see the file header).
+USAGE
+}
+
+# ── Arg parsing: raster + lattice toggles + optional positional OUT_DIR.
+# SVG and the lattice DAG are on by default; --no-svg / --no-lattice opt out.
 WANT_RASTER=1
 WANT_LATTICE=1
 OUT_DIR=""
 for arg in "$@"; do
     case "${arg}" in
+        -h|--help)           usage; exit 0 ;;
         --svg)               WANT_RASTER=1 ;;
         --no-svg|--dot-only) WANT_RASTER=0 ;;
         --no-lattice)        WANT_LATTICE=0 ;;
-        -*)    echo "unknown option: ${arg}" >&2; exit 2 ;;
+        -*)    echo "unknown option: ${arg} (try --help)" >&2; exit 2 ;;
         *)     OUT_DIR="${arg}" ;;
     esac
 done

@@ -188,6 +188,38 @@ def test_linearize_real_contradictions_has_reductios():
     assert all("refuted" in r.summary for r in trace.reductios)
 
 
+# ── --relevant prune (S1.6.5) ──────────────────────────────────────
+
+def test_relevant_prune_reduces_and_dedupes():
+    kb = _kb(BRANCHING / "04_two_levels.ein")
+    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    full = linearize(verdict, diagrams=False)
+    pruned = linearize(verdict, diagrams=False, relevant=True)
+    assert len(pruned.steps) < len(full.steps)        # the slice is smaller
+    assert "pruned to" in pruned.summary
+    # each kept step derives a distinct fact (first, non-redundant)
+    derived = [s.derived for s in pruned.steps]
+    assert len(derived) == len(set(derived))
+
+
+def test_relevant_marks_conditional_under_hypothesis():
+    kb = _kb(BRANCHING / "04_two_levels.ein")
+    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    pruned = linearize(verdict, diagrams=False, relevant=True)
+    # branching/04's solution needs the commitment, so kept steps are
+    # under the hypothesis → the render shows the divider.
+    md = render_markdown(pruned, diagrams=False)
+    assert any(s.conditional for s in pruned.steps)
+    assert "## Under hypothesis —" in md
+
+
+def test_cli_solve_relevant(capsys: pytest.CaptureFixture[str]):
+    rc = main(["solve", str(BRANCHING / "04_two_levels.ein"),
+               "--relevant", "--no-diagrams"])
+    assert rc == 0
+    assert "pruned to" in capsys.readouterr().out
+
+
 # ── CLI ────────────────────────────────────────────────────────────
 
 def test_cli_solve_writes_trace(tmp_path: Path, capsys: pytest.CaptureFixture[str]):

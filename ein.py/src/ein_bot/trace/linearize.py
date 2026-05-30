@@ -28,6 +28,7 @@ from ..render.dot_util import fact_label
 from ..render.lattice_dag import render_lattice
 from ..render.slice import render_slice, render_solution, render_state
 from .ast import TraceStep
+from .relevance import relevant_firings
 
 
 @dataclass(frozen=True)
@@ -70,7 +71,8 @@ def _target_entity(derived) -> str | None:
     return None
 
 
-def _step_from_firing(n: int, firing, kb, *, diagrams: bool) -> TraceStep:
+def _step_from_firing(n: int, firing, kb, *, diagrams: bool,
+                      conditional: bool = False) -> TraceStep:
     premises = tuple((p.relation_name, p.args) for p in firing.premises)
     derived = (firing.derived.relation_name, firing.derived.args)
     bindings = {k: str(v) for k, v in firing.bindings.items()}
@@ -81,8 +83,19 @@ def _step_from_firing(n: int, firing, kb, *, diagrams: bool) -> TraceStep:
     return TraceStep(
         n=n, rule=firing.rule, premises=premises, derived=derived,
         bindings=bindings, why=why, diagram=diagram,
-        section=_target_entity(derived), sources=sources,
+        section=_target_entity(derived), sources=sources, conditional=conditional,
     )
+
+
+def _build_steps(firings, kb, *, diagrams: bool, relevant: bool,
+                 commitment=()) -> list[TraceStep]:
+    """Firings → TraceSteps, optionally pruned to the goal-relevant slice."""
+    if relevant:
+        kept = relevant_firings(tuple(firings), kb, commitment)
+        return [_step_from_firing(i, f, kb, diagrams=diagrams, conditional=cond)
+                for i, (f, cond) in enumerate(kept, start=1)]
+    return [_step_from_firing(i, f, kb, diagrams=diagrams)
+            for i, f in enumerate(firings, start=1)]
 
 
 def _reductio(dc, kb, *, diagrams: bool) -> Reductio:
@@ -104,17 +117,25 @@ def _reductio(dc, kb, *, diagrams: bool) -> Reductio:
 
 def linearize(
     verdict: Verdict, *, diagrams: bool = True, full_kb_snapshots: bool = False,
+    relevant: bool = False,
 ) -> Trace:
-    """Build a :class:`Trace` from a solver verdict (+ its proof)."""
+    """Build a :class:`Trace` from a solver verdict (+ its proof).
+
+    ``relevant=True`` prunes the firing log to the goal-relevant slice
+    (drop redundant + provenance backtrack from the solution); see
+    :mod:`ein_bot.trace.relevance`.
+    """
     proof = getattr(verdict, "proof", None)
 
     # ── Monotonic Solution (no proof): the trace IS solution.trace. ──
     if isinstance(verdict, Solution) and proof is None:
         kb = verdict.kb
-        steps = [_step_from_firing(i, f, kb, diagrams=diagrams)
-                 for i, f in enumerate(verdict.trace, start=1)]
+        steps = _build_steps(verdict.trace, kb, diagrams=diagrams,
+                             relevant=relevant)
+        kept = f" ({len(steps)} of {len(verdict.trace)} relevant)" if relevant else ""
         return Trace(
-            steps=steps, summary=f"Solved in {len(steps)} steps (unconditional).",
+            steps=steps,
+            summary=f"Solved in {len(steps)} steps (unconditional){kept}.",
             commitment="∅ (unconditional)", solved=True, n_solutions=1,
             solution_dot=render_solution(kb) if diagrams else None,
             full_kb_dot=render_state(kb) if full_kb_snapshots else None,
@@ -129,17 +150,21 @@ def linearize(
     spine_kb = primary.kb if primary is not None else None
 
     steps: list[TraceStep] = []
+    n_firings = 0
     if primary is not None:
-        steps = [_step_from_firing(i, f, spine_kb, diagrams=diagrams)
-                 for i, f in enumerate(primary.firings, start=1)]
+        n_firings = len(primary.firings)
+        steps = _build_steps(primary.firings, spine_kb, diagrams=diagrams,
+                             relevant=relevant, commitment=primary.commitment)
 
     reductios = [_reductio(dc, spine_kb, diagrams=diagrams) for dc in deads]
 
     solved = primary is not None
     commitment = _commitment_label(primary.commitment) if primary else "—"
+    pruned = (f" (pruned to {len(steps)} of {n_firings} firings)"
+              if (relevant and solved) else "")
     if solved:
         summary = (f"Solved in {len(steps)} steps; commitment {commitment}; "
-                   f"{len(solutions)} solution(s), {len(reductios)} refuted.")
+                   f"{len(solutions)} solution(s), {len(reductios)} refuted{pruned}.")
     else:
         summary = (f"No solution — {len(reductios)} commitments refuted "
                    f"({len(deads)} dead).")

@@ -14,12 +14,9 @@
 #                                    blocks replaced by ![](img/…svg) refs,
 #                                    viewable in any markdown viewer
 #
-# Usage:
-#   utils/zebra2_trace.sh                     # → build/zebra2/zebra2.md
-#   utils/zebra2_trace.sh --svg               # also rasterise for viewing
-#   utils/zebra2_trace.sh /tmp/out            # custom output dir
-#   utils/zebra2_trace.sh -- --reorder        # forward flags to `solve`
-#                                             # (--reorder, --no-diagrams, …)
+# Run `utils/zebra2_trace.sh --help` for usage. By default it writes the
+# goal-pruned (~11-step) trace; `--full` gives the complete ~560-firing
+# saturation log.
 #
 # Setup (one-time):  ./venv_install.sh pypy3   # creates .venv-pypy/
 
@@ -30,21 +27,51 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PYPY="${REPO_ROOT}/.venv-pypy/bin/python"
 ZEBRA2="${REPO_ROOT}/examples/zebra2.ein"
 
-# ── Arg parsing: --svg, optional OUT_DIR, then `--` forwards to solve ──
+usage() {
+    cat <<'USAGE'
+zebra2_trace.sh — solve zebra2 under PyPy, render its markdown trace.
+
+Usage: utils/zebra2_trace.sh [OPTIONS] [OUT_DIR]
+
+Default: the goal-pruned (~11-step) trace → build/zebra2/zebra2.md.
+
+Options:
+  --full                  the complete saturation log (~560 firings)
+  --svg                   also rasterise each inline dot block to
+                          OUT_DIR/img/ + a viewable OUT_DIR/zebra2.view.md
+  --reorder               cluster steps by target entity
+  --no-diagrams           omit the inline dot blocks
+  --full-kb-snapshots     append a whole-KB snapshot of the final state
+  -- <flags…>             forward arbitrary flags to `ein-bot solve`
+                          (e.g. -- --mode contradictions --max-set-size 4)
+  -h, --help              show this help
+
+OUT_DIR defaults to build/zebra2. Needs the PyPy venv (.venv-pypy);
+create it with ./venv_install.sh pypy3.
+USAGE
+}
+
+# ── Arg parsing. Default = the goal-pruned trace; --full opts out. ──
 WANT_SVG=0
+RELEVANT=1
 OUT_DIR=""
 SOLVE_ARGS=()
 forward=0
 for arg in "$@"; do
     if (( forward )); then SOLVE_ARGS+=( "${arg}" ); continue; fi
     case "${arg}" in
-        --svg) WANT_SVG=1 ;;
-        --)    forward=1 ;;
-        -*)    echo "unknown option: ${arg} (use '--' to forward flags to solve)" >&2
-               exit 2 ;;
-        *)     OUT_DIR="${arg}" ;;
+        -h|--help)  usage; exit 0 ;;
+        --full)     RELEVANT=0 ;;
+        --relevant) RELEVANT=1 ;;
+        --svg)      WANT_SVG=1 ;;
+        --reorder|--no-diagrams|--full-kb-snapshots)
+                    SOLVE_ARGS+=( "${arg}" ) ;;
+        --)         forward=1 ;;
+        -*)         echo "unknown option: ${arg} (try --help)" >&2; exit 2 ;;
+        *)          OUT_DIR="${arg}" ;;
     esac
 done
+(( RELEVANT )) && SOLVE_ARGS+=( --relevant )
 OUT_DIR="${OUT_DIR:-${REPO_ROOT}/build/zebra2}"
 MD="${OUT_DIR}/zebra2.md"
 

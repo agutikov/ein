@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from .ast import TraceStep, parse_trace_steps, trace_to_ir
 from .linearize import Reductio, Trace, linearize
+from .relevance import relevant_firings
 from .render import render_markdown
 
 __all__ = [
@@ -26,6 +27,7 @@ __all__ = [
     "TraceStep",
     "linearize",
     "parse_trace_steps",
+    "relevant_firings",
     "render_markdown",
     "trace_to_ir",
 ]

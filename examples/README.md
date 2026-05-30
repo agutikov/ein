@@ -15,6 +15,13 @@ prose `H_i` abbreviates `House-i`.
   backjumps to `d−1` and asserts the negation of the entering hypothesis as
   a learnt no-good clause (S1.5a.18). The human solution stays flat — no
   branch ever reaches `d = 2`.
+  - **`d` → `(layer, set-size)` (P1.5b).** The engine no longer has an
+    ordered tree; it has a commitment lattice. `d` maps to **commitment-set
+    size** (= the lattice *layer*): `d = 0` is the empty commitment (root
+    saturation), `d = 1` a size-1 commitment, and a `1→0` no-good is a
+    `DeadCommitment.learned_clause`. The acceptance matches *named firing +
+    position-in-layer*, "or a recognisably equivalent" order — see
+    [`s1.6.5_idea08_checklist.md`](../plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/s1.6.5_idea08_checklist.md).
 - Each row names the **ein rule** firing and the **premises → conclusion**
   it consumes/produces. Rule names match the `(rule …)` blocks in
   [`zebra2.ein`](zebra2.ein).

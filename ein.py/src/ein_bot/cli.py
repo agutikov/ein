@@ -228,7 +228,7 @@ def _cmd_solve(args: argparse.Namespace) -> int:
     verdict, _ = solve(kb, max_set_size=args.max_set_size, store_lattice=True)
     trace = linearize(
         verdict, diagrams=not args.no_diagrams,
-        full_kb_snapshots=args.full_kb_snapshots,
+        full_kb_snapshots=args.full_kb_snapshots, relevant=args.relevant,
     )
     md = render_markdown(
         trace, mode="reorder" if args.reorder else "engine",
@@ -384,6 +384,9 @@ def _build_parser() -> argparse.ArgumentParser:
                            help="append a whole-KB snapshot of the final state")
     solve_cmd.add_argument("--reorder", action="store_true",
                            help="cluster steps by target entity instead of engine order")
+    solve_cmd.add_argument("--relevant", action="store_true",
+                           help="prune to the goal-relevant slice (drop redundant + "
+                                "provenance backtrack from the solution; S1.6.5)")
     solve_cmd.set_defaults(func=_cmd_solve)
 
     return p

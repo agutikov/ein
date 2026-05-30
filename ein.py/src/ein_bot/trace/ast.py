@@ -38,6 +38,7 @@ class TraceStep:
     diagram:  str | None = None   # inline DOT slice (S1.6.2) — render-time
     section:  str | None = None   # clustering key (target entity) — render-time
     sources:  tuple[str, ...] = ()  # quoted source sentences (T1.6.4.5)
+    conditional: bool = False     # depends on a hypothesis (commitment) fact
 
     @property
     def derived_label(self) -> str:
