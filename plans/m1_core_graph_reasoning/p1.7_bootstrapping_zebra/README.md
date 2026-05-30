@@ -70,8 +70,7 @@ end-to-end.
 |---------|----------------------------------------|----------|
 | S1.7.1  | Canonical encoding + GAPS/CONTRADICTIONS fixtures (**done** 2026-05-30) | ~1 day |
 | S1.7.2  | Kernel audit + minimization decision (full purity) | decision done 2026-05-30 |
-| S1.7.3  | Trace-matches-human acceptance (via S1.6.5) — **the M1 gate** | 2-3 days |
-| S1.7.3a | Completeness via open hypotheses — sound solution-state (fixes the SAT→⊥ / partial-dead-end soundness bug S1.7.3 found) | TBD |
+| S1.7.3 / S1.7.3a | Trace-matches-human acceptance + the open-hypothesis soundness fix → **relocated 2026-05-31 to [P1.7a](../p1.7a_solution_search_refactor/README.md)** (it grew into a structural search/result/stop refactor — the corrected M1 gate) | see P1.7a |
 | S1.7.4  | Static NAF dependency map (observability) — relocated from P1.5a 2026-05-26 | ~½ day |
 | S1.7.5  | Query semantics: who vs where — relocated from P1.5a 2026-05-26 | 1-2 days |
 | S1.7.6  | Kernel minimization — execution (a-priori/type/instance/symmetric/or) — **not an M1 gate** | 2-3 days |
@@ -79,7 +78,15 @@ end-to-end.
 
 ## Acceptance
 
-This phase *is* the M1 acceptance. **Target file:
+> **Relocated 2026-05-31.** The M1 acceptance *gate* (solve / trace /
+> three-task-class / answer-in-words) moved to
+> [**P1.7a**](../p1.7a_solution_search_refactor/README.md) when S1.7.3's
+> soundness bug turned the fix into a structural refactor. Criteria 1–4
+> below are now **owned by P1.7a S1.7a.7**; they remain here as the
+> historical statement of the gate. P1.7 retains the *encoding* and
+> *kernel-purity* work (S1.7.1/.2/.4/.5/.6/.7), none of which is the gate.
+
+This phase *was* the M1 acceptance. **Target file:
 `examples/zebra2.ein`** (canonical; `zebra.ein` is a non-solving
 demonstrator). The full set:
 
