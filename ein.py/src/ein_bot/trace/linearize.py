@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..inference.verdict import Solution, Verdict
+from ..inference.verdict import Ambiguity, Contradiction, Solution, Verdict
 from ..inference.why import render_why
 from ..render.dot_util import fact_label
 from ..render.lattice_dag import render_lattice
@@ -139,6 +139,35 @@ def linearize(
             commitment="∅ (unconditional)", solved=True, n_solutions=1,
             solution_dot=render_solution(kb) if diagrams else None,
             full_kb_dot=render_state(kb) if full_kb_snapshots else None,
+        )
+
+    # ── P1.7a solve() Ambiguity / Contradiction (no proof). ──
+    if isinstance(verdict, Ambiguity) and proof is None:
+        first = verdict.branches[0] if verdict.branches else None
+        kb = first.kb if first is not None else None
+        steps = (
+            _build_steps(first.trace, kb, diagrams=diagrams, relevant=relevant)
+            if first is not None else []
+        )
+        return Trace(
+            steps=steps,
+            summary=f"Ambiguous — {len(verdict.branches)} models (showing one).",
+            commitment="∅ (unconditional)", solved=False,
+            n_solutions=len(verdict.branches),
+            solution_dot=(
+                render_solution(kb) if (diagrams and kb is not None) else None
+            ),
+        )
+
+    if isinstance(verdict, Contradiction) and proof is None:
+        core = sorted({
+            s for f in verdict.unsat_core
+            if (s := getattr(f.provenance, "source", None))
+        })
+        label = ", ".join(core) if core else f"{len(verdict.unsat_core)} facts"
+        return Trace(
+            steps=[], summary=f"Contradiction — no model; unsat core: {label}.",
+            commitment="—", solved=False, n_solutions=0,
         )
 
     solutions = list(proof.solutions) if proof is not None else []

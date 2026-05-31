@@ -165,3 +165,31 @@ def test_sat_never_contradiction_unsat_never_solution():
     assert isinstance(v_unsat, Contradiction), (
         "an unsatisfiable puzzle must never yield Solution/Ambiguity"
     )
+
+
+# ── CLI answer path (S1.7a.6) — acceptance criterion #1 ───────────
+
+
+def test_cli_solve_emits_answer_in_words(capsys):
+    """`ein-bot solve --mode=solve zebra2.ein` exits 0 and prints the
+    canonical answer in English (who, projected from the model)."""
+    from ein_bot.cli import main
+
+    rc = main(["solve", "--mode=solve", str(ZEBRA2)])
+    assert rc == 0
+    out = capsys.readouterr().out.lower()
+    # who + what, both questions answered.
+    assert "norwegian" in out and "water" in out
+    assert "japanese" in out and "zebra" in out
+
+
+def test_cli_solve_contradiction_reports_no_solution(capsys):
+    """`--mode=solve` on the unsat fixture reports no solution + names the
+    injected fact in the core (exit 0 — the tool classified it correctly)."""
+    from ein_bot.cli import main
+
+    rc = main(["solve", "--mode=solve", str(BAD)])
+    assert rc == 0
+    out = capsys.readouterr().out.lower()
+    assert "no solution" in out and "contradict" in out
+    assert "injected contradiction" in out

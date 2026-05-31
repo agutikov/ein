@@ -92,8 +92,8 @@ the job and makes the shared decision **sound**.
 | **S1.7a.2** | `solution_node` core — `complete ∧ consistent`, deduped by `state_hash`; the predicates | ✅ **shipped** (`4297deb`) — `inference/solution.py` |
 | **S1.7a.3** | One search + result-type-from-`k` — verdict from the deduped count; retire `is_solved`/`Mode` as terminator | ✅ **shipped** (`4297deb`) — `solve()`/`verdict_of`, **pure per-branch** |
 | **S1.7a.4** | Stop policy — `stop_after: int \| None`; honesty about early-stop vs exhausted | ✅ **shipped** (`4297deb`) |
-| **S1.7a.5** | `:goal` as projection; demote `:mode`; revert the S1.7.3 experiment | ◑ **partial** — revert is a no-op (never committed); projection → S1.7a.6 |
-| **S1.7a.6** | Trace + CLI answer path — answer-in-words for SOLVE; verdict-consuming linearizer | ○ **pending** — the main remaining work |
+| **S1.7a.5** | `:goal` as projection; demote `:mode`; revert the S1.7.3 experiment | ✅ **done** (via .6) — revert was a no-op; projection landed in S1.7a.6 |
+| **S1.7a.6** | Trace + CLI answer path — answer-in-words for SOLVE; verdict-consuming linearizer | ✅ **shipped** — `solve --mode=solve` + `trace/answer.py`; proof-less verdicts render |
 | **S1.7a.7** | **Acceptance** + test infra (`run_tests.sh`, drop `pytest.ini`); PyPy 3-variant solve ← **M1 gate** | ✅ **shipped** (`75bee52`) — gate **GREEN** |
 
 ## What shipped (2026-05-31) — and where it deviated from the plan
@@ -120,8 +120,13 @@ holds. Deviations from [`target_design.md`](target_design.md) /
   run as Phase 2 of `run_tests.sh` — not `tests/`-resident (user direction).
 - **Cross-interpreter PyPy-speedup assertion (criterion 5) not wired** (no
   CPython venv locally); PyPy is the runner default.
-- **Still open: [S1.7a.6](s1.7a.6_trace_cli_answer.md)** — CLI `solve`
-  answer-in-words + trace integration.
+- **S1.7a.6 shipped** — `ein-bot solve --mode=solve` prints the English
+  answer (the *who* projected via `nation-loc` at the goal's house); proof-less
+  `Solution`/`Ambiguity`/`Contradiction` all render. With this, the M1
+  acceptance criteria #1–5 are met; the **M1-done closer** (mark done in
+  `../p1.7_bootstrapping_zebra/README.md` + `plans/README.md`) and the manual
+  trace-narrative review remain. Other non-gating follow-ups: minimal-MUS
+  unsat core, the cross-interpreter speedup assertion.
 
 ## Acceptance (this is M1's, corrected)
 

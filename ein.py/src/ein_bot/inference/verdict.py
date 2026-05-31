@@ -1,5 +1,5 @@
 """Verdict types + Mode + is_solved — the shared surface across the
-inference engine entries (``monotonic_solve``, ``gaps_solve``,
+inference engine entries (``solve``, ``gaps_solve``,
 ``contradictions_solve``).
 
 Migrated 2026-05-29 out of ``inference.tree.solver`` as part of the
@@ -71,9 +71,9 @@ class Solution:
     """A surviving branch: KB satisfies the query goal (mode-aware).
 
     ``proof`` is the optional :class:`LatticeProof` attached by the
-    set-search engine's non-monotonic entries
+    set-search engine's lattice entries
     (:func:`gaps_solve`, :func:`contradictions_solve`).
-    :func:`monotonic_solve` leaves it None.
+    :func:`solve` leaves it None.
     """
 
     kb:    KnowledgeBase
@@ -85,8 +85,8 @@ class Solution:
 class Ambiguity:
     """Multiple surviving branches — GAPS mode's normal verdict.
 
-    Also returned by :func:`monotonic_solve` when the depth cap is
-    reached with non-empty alive set and no surviving solution.
+    Also returned by :func:`solve` when it finds ``k > 1`` distinct
+    solution nodes (a genuine ambiguity / gap).
     ``proof`` is the optional :class:`LatticeProof` returned by
     :func:`gaps_solve`.
     """
@@ -113,6 +113,34 @@ Verdict = Solution | Ambiguity | Contradiction
 # ── Goal check ────────────────────────────────────────────────────
 
 
+def goal_bindings(kb: KnowledgeBase, goal=None) -> list[dict[str, str]]:
+    """Run the query ``:goal`` pattern against ``kb``; return the binding
+    rows (``var -> value``).
+
+    Same matcher machinery :func:`is_solved` uses to *count* matches — here
+    the rows are returned so callers can project an answer (the CLI
+    ``--mode=solve`` path, P1.7a S1.7a.6). ``goal`` defaults to the kb's own
+    ``(query :goal …)``; pass an explicit goal pattern to project a different
+    question (e.g. ``(nation-loc ?who <house>)``) over a solved model. Values
+    are bare strings (fact args are stored unwrapped).
+    """
+    if goal is None:
+        if kb.query is None:
+            return []
+        goal = _query_value(kb.query, "goal")
+    if goal is None:
+        return []
+    plan = JoinPlan(
+        rule_name="<query>",
+        activator_args=(),
+        bindings_seed={},
+        steps=tuple(compile_pattern(goal, {})),
+        assert_template=None,
+        why="",
+    )
+    return [dict(b) for b, _premises in match_run(plan, kb)]
+
+
 def is_solved(kb: KnowledgeBase, mode: Mode) -> bool:
     """Has the KB satisfied the query goal under ``mode``?
 
@@ -122,26 +150,11 @@ def is_solved(kb: KnowledgeBase, mode: Mode) -> bool:
     """
     if mode is Mode.CONTRADICTIONS:
         return False
-    if kb.query is None:
-        return False
-    goal = _query_value(kb.query, "goal")
-    if goal is None:
-        return False
-
-    steps = compile_pattern(goal, {})
-    plan = JoinPlan(
-        rule_name="<query>",
-        activator_args=(),
-        bindings_seed={},
-        steps=tuple(steps),
-        assert_template=None,
-        why="",
-    )
-    matches = list(match_run(plan, kb))
+    n = len(goal_bindings(kb))
     if mode is Mode.SOLVE:
-        return len(matches) == 1
+        return n == 1
     if mode is Mode.GAPS:
-        return len(matches) >= 1
+        return n >= 1
     return False
 
 
@@ -171,5 +184,6 @@ __all__ = [
     "Mode",
     "Solution",
     "Verdict",
+    "goal_bindings",
     "is_solved",
 ]

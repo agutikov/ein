@@ -16,6 +16,7 @@ narrative — the project's main human-facing output, what makes ein-bot
 """
 from __future__ import annotations
 
+from .answer import render_answer
 from .ast import TraceStep, parse_trace_steps, trace_to_ir
 from .linearize import Reductio, Trace, linearize
 from .relevance import relevant_firings
@@ -28,6 +29,7 @@ __all__ = [
     "linearize",
     "parse_trace_steps",
     "relevant_firings",
+    "render_answer",
     "render_markdown",
     "trace_to_ir",
 ]
