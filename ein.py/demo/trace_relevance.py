@@ -51,7 +51,7 @@ def main() -> None:
     for af in answer:
         try:
             dag = skb.derivation_dag(af)
-        except Exception:  # noqa: BLE001 — best-effort probe
+        except Exception:
             continue
         for node in dag.nodes:
             required.add(_key(node))

@@ -31,6 +31,7 @@ dependencies = [
 dev = [
     "pytest>=7",
     "pytest-cov>=4",
+    "pytest-xdist>=3",  # parallel test execution: run_tests.sh -j N (pytest -n)
     "ruff>=0.4",
 ]
 

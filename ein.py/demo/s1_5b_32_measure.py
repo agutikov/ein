@@ -39,15 +39,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ein_bot.inference.config import SolverConfig  # noqa: E402
-from ein_bot.inference.monotonic import (  # noqa: E402
+from ein_bot.inference.config import SolverConfig
+from ein_bot.inference.monotonic import (
     contradictions_solve,
     gaps_solve,
     monotonic_solve,
 )
-from ein_bot.inference.saturator import Saturator  # noqa: E402
-from ein_bot.ir import parse  # noqa: E402
-from ein_bot.kb.store import KnowledgeBase  # noqa: E402
+from ein_bot.inference.saturator import Saturator
+from ein_bot.ir import parse
+from ein_bot.kb.store import KnowledgeBase
 
 EX = Path(__file__).resolve().parents[2] / "examples" / "domain_elim"
 FIXTURES = ["ab", "b_only", "b_branch"]
@@ -89,7 +89,8 @@ def stats_of(verdict, fallback):
 def table(headers, rows):
     w = [max(len(str(c)) for c in [headers[i]] + [r[i] for r in rows])
          for i in range(len(headers))]
-    line = lambda cells: "  ".join(str(c).ljust(w[i]) for i, c in enumerate(cells))
+    def line(cells):
+        return "  ".join(str(c).ljust(w[i]) for i, c in enumerate(cells))
     print(line(headers))
     print(line(["-" * x for x in w]))
     for r in rows:
