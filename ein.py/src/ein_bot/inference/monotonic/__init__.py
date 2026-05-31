@@ -9,13 +9,15 @@ function. All three share the per-candidate flow from
 ``try_commitment_set`` + flat root-writes); they differ only
 in whether the loop early-terminates and what gets collected:
 
-- :func:`monotonic_solve` — solution mode. Early-terminates
-  on first goal-satisfying fork. No :class:`LatticeProof`
-  collection. Returns :class:`Solution` /
-  :class:`Ambiguity` (frontier) / :class:`Contradiction`.
-  **The first-solution-wins shape that suffices for solving
-  uniquely-solvable puzzles fast.** Already shipped under
-  S1.5b.0 through S1.5b.10.
+- :func:`solve` — the **sound default** entry (P1.7a). Runs the
+  set-indexed lattice exploration recording every solution node
+  (``consistent ∧ complete`` — no open hypothesis) deduped by
+  :func:`state_hash`, then derives the verdict from the count
+  ``k`` via :func:`verdict_of` (``1`` → :class:`Solution`,
+  ``>1`` → :class:`Ambiguity`, ``0`` → :class:`Contradiction`).
+  ``stop_after=1`` is the sound fast path; ``stop_after=None``
+  exhausts the lattice (so a ``k=1`` is certified-unique). No
+  :class:`LatticeProof` collection (``proof`` stays None).
 - :func:`gaps_solve` — GAPS contract. Exhaustive Apriori-gen.
   Collects every satisfying commitment into
   ``proof.solutions``. Returns :class:`Ambiguity` always.
@@ -34,8 +36,8 @@ in whether the loop early-terminates and what gets collected:
 post-saturation kbs collapse). Under :func:`gaps_solve`
 the storage is built but the merge is **auto-disabled** —
 distinct satisfying commitments must register separately per
-the GAPS contract. :func:`monotonic_solve` doesn't take the
-flag (no storage by design).
+the GAPS contract. :func:`solve` doesn't take the flag (no
+storage by design).
 
 **Algorithm sketch (shared by all three).** Single
 :class:`KnowledgeBase` instance (root); commitment sets
@@ -60,7 +62,7 @@ this algorithm no longer does).
   singleton, promote it to a root fact.
 
 **Diagnostics.** Two dumper classes:
-:class:`MonotonicDumper` (S1.5b.7) for monotonic_solve;
+:class:`MonotonicDumper` (S1.5b.7) for :func:`solve`;
 :class:`LatticeDumper` (S1.5b.29 — stub today) for
 gaps_solve + contradictions_solve. Both share the lifecycle
 hook shape; the lattice dumper adds entry-specific sections
@@ -90,7 +92,6 @@ from ein_bot.inference.monotonic.solver import (
     MonotonicStats,
     contradictions_solve,
     gaps_solve,
-    monotonic_solve,
     solve,
     verdict_of,
 )
@@ -115,7 +116,6 @@ __all__ = [
     "contradictions_solve",
     "gaps_solve",
     "lattice_snapshot",
-    "monotonic_solve",
     "solve",
     "validate_proof_for_explanation",
     "verdict_entry",

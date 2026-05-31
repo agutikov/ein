@@ -23,7 +23,8 @@ accumulated at root at each layer boundary. No
 ``set/<canonical-slug>/`` folders — that's a lattice-engine feature
 (S1.5b.23).
 
-The dumper's six lifecycle hooks fire from :func:`monotonic_solve`
+The dumper's six lifecycle hooks fire from :func:`solve` (and the
+lattice entries :func:`gaps_solve` / :func:`contradictions_solve`)
 when the caller passes ``dumper=MonotonicDumper(out_dir=…)``.
 ``dumper=None`` is a no-op for every hook site; the backbone
 behaviour is identical to the pre-S1.5b.7 path.
@@ -186,7 +187,7 @@ def _fact_summary(fact: Fact) -> dict[str, Any]:
 
 @dataclass
 class MonotonicDumper:
-    """Filesystem-snapshotting hooks attached to a :func:`monotonic_solve` run.
+    """Filesystem-snapshotting hooks attached to a :func:`solve` run.
 
     ``out_dir=None`` skips every filesystem write — the hooks still
     fire but produce no on-disk artefacts. Useful for subclasses

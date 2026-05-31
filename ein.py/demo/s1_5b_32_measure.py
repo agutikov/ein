@@ -3,7 +3,7 @@
 
 Domain-elimination saturation rule (pathway A) vs explicit hypothesis
 exploration (pathway B), measured across the unified engine's three
-public entries (monotonic_solve / gaps_solve / contradictions_solve)
+public entries (solve / gaps_solve / contradictions_solve)
 over the examples/domain_elim/*.ein fixtures.
 
 Run::
@@ -43,7 +43,7 @@ from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.monotonic import (
     contradictions_solve,
     gaps_solve,
-    monotonic_solve,
+    solve,
 )
 from ein_bot.inference.saturator import Saturator
 from ein_bot.ir import parse
@@ -123,7 +123,7 @@ def section_saturation_audit():
 
 def run_entry(name, entry, *, config=None, store_lattice=False):
     if entry == "monotonic":
-        v, s = monotonic_solve(fresh(name), max_set_size=5, config=config)
+        v, s = solve(fresh(name), stop_after=1, max_set_size=5, config=config)
     else:
         fn = gaps_solve if entry == "gaps" else contradictions_solve
         v, s = fn(fresh(name), max_set_size=5, config=config,
@@ -177,7 +177,7 @@ def section_provenance():
     print("\n== D. Monotonic solved-KB: what produced (color-loc Blue H1)? ==\n")
     rows = []
     for name in FIXTURES:
-        v, _ = monotonic_solve(fresh(name), max_set_size=5)
+        v, _ = solve(fresh(name), stop_after=1, max_set_size=5)
         rows.append([name, type(v).__name__,
                      answer_provenance(getattr(v, "kb", None))])
     table(["fixture", "verdict", "answer-provenance"], rows)

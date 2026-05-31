@@ -1,4 +1,4 @@
-"""Budget abort tests for `monotonic_solve` — Tier 1 of the
+"""Budget abort tests for `solve` — Tier 1 of the
 bench_monotonic CLI parity work.
 
 Covers:
@@ -21,11 +21,11 @@ import pytest
 
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.monotonic import (
-    BudgetExceededError as _PkgBudgetError,
-)
-from ein_bot.inference.monotonic.solver import (
     BudgetExceededError,
-    monotonic_solve,
+    solve,
+)
+from ein_bot.inference.monotonic import (
+    BudgetExceededError as _PkgBudgetError,
 )
 from ein_bot.inference.monotonic.state_dump import MonotonicDumper
 from ein_bot.ir import parse
@@ -71,7 +71,7 @@ _NO_LOOKAHEAD = SolverConfig(
 def test_max_enterings_aborts_with_partial_stats() -> None:
     kb = _kb(_FIXTURE)
     with pytest.raises(BudgetExceededError) as exc:
-        monotonic_solve(
+        solve(
             kb, max_set_size=3, config=_NO_LOOKAHEAD,
             max_enterings=2,
         )
@@ -88,7 +88,7 @@ def test_max_time_aborts_with_partial_stats() -> None:
     # observed any wall-clock progress. Hypgen + saturation
     # already burned some microseconds, so this aborts very fast.
     with pytest.raises(BudgetExceededError) as exc:
-        monotonic_solve(
+        solve(
             kb, max_set_size=3, config=_NO_LOOKAHEAD,
             max_time=0.0,
         )
@@ -109,7 +109,7 @@ def test_dumper_timeline_captures_events_up_to_abort(
     kb = _kb(_FIXTURE)
     dumper = MonotonicDumper(out_dir=tmp_path)
     with pytest.raises(BudgetExceededError):
-        monotonic_solve(
+        solve(
             kb, max_set_size=3, config=_NO_LOOKAHEAD,
             dumper=dumper, max_enterings=2,
         )
@@ -134,10 +134,11 @@ def test_no_budget_completes_normally() -> None:
     """Sanity guard: without any limits, the engine runs to
     completion on the same fixture."""
     kb = _kb(_FIXTURE)
-    verdict, _stats = monotonic_solve(
+    verdict, _stats = solve(
         kb, max_set_size=3, config=_NO_LOOKAHEAD,
     )
-    # The puzzle's goal `(R ?x ?y)` isn't satisfied by any merged
-    # root fact (hypotheses don't merge as facts), so verdict is
-    # Ambiguity. The point is just that no exception fires.
+    # The `kill-pair` rule asserts (false) on every R-pair, so no
+    # complete∧consistent solution node survives — solve() reads
+    # the verdict from the deduped solution-node count (k=0). The
+    # point is just that no exception fires.
     assert verdict is not None

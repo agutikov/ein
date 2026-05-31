@@ -112,7 +112,8 @@ from ein_bot.kb.store import KnowledgeBase
 
 
 class BudgetExceededError(RuntimeError):
-    """Raised by :func:`monotonic_solve` when ``max_time`` or
+    """Raised by :func:`solve` / :func:`gaps_solve` /
+    :func:`contradictions_solve` when ``max_time`` or
     ``max_enterings`` is hit before the solve completes.
 
     Carries the partial :class:`MonotonicStats` so callers can
@@ -127,7 +128,8 @@ class BudgetExceededError(RuntimeError):
 
 @dataclass
 class MonotonicStats:
-    """Cumulative counters for one :func:`monotonic_solve` run."""
+    """Cumulative counters for one set-search run (:func:`solve` /
+    :func:`gaps_solve` / :func:`contradictions_solve`)."""
 
     enterings_total:     int = 0
     enterings_alive:     int = 0
@@ -155,8 +157,6 @@ class _LatticeLoopState:
     Bundles every lattice-specific local that the per-candidate
     loop mutates so the dozen return sites in the outer function
     can hand a single bag to :func:`_finalise_lattice_verdict`.
-    For ``entry == "monotonic"`` the state object is constructed
-    but never read.
 
     Field semantics:
 
@@ -195,68 +195,6 @@ class _LatticeLoopState:
     # short by ``stop_after`` / the depth cap (``truncated``).
     solution_nodes:    dict[int, SolutionRecord] = field(default_factory=dict)
     truncated:         bool = False
-
-
-def monotonic_solve(
-    root_kb: KnowledgeBase,
-    *,
-    max_set_size: int = 5,
-    config: SolverConfig | None = None,
-    mode: Mode = Mode.SOLVE,
-    dumper: MonotonicDumper | None = None,
-    max_time: float | None = None,
-    max_enterings: int | None = None,
-) -> tuple[Verdict, MonotonicStats]:
-    """Run the monotonic set-search engine on ``root_kb``.
-
-    Returns ``(verdict, stats)``. SOLVE mode only (Q1.5b.7) —
-    GAPS / CONTRADICTIONS belong to the lattice engine.
-
-    The signature deviates from the S1.5b.5 spec (which returned
-    just ``Verdict``) — the tuple form gives the bench script
-    + tests direct access to the per-run counters without a
-    side-channel on ``root_kb``. See stage Ship notes.
-
-    Pass ``dumper`` to capture a per-layer filesystem audit
-    (S1.5b.7) — root + per-layer ``.ein`` snapshots, a
-    ``00_timeline.jsonl`` event log, and a ``summary.json``.
-    ``dumper=None`` (default) makes every hook a no-op.
-
-    ``max_time`` (wall-clock seconds) and ``max_enterings``
-    (cumulative count of ``try_commitment_set`` calls) cap the
-    work. When either is exceeded the function raises
-    :class:`BudgetExceededError` with the partial stats; the
-    dumper's ``summary.json`` is **not** emitted on abort (the
-    timeline's events up to the abort are sufficient for
-    diagnostic). ``None`` (default) disables the respective cap.
-    """
-    if mode is not Mode.SOLVE:
-        raise NotImplementedError(
-            "monotonic_solve supports SOLVE mode only — use "
-            "gaps_solve for GAPS or contradictions_solve for "
-            "CONTRADICTIONS (sibling functions in this same "
-            "module)",
-        )
-
-    # Behaviour-preserving wrapper around the shared
-    # _explore_layers helper (S1.5b.21). The early-terminate
-    # paths, Phase 3 verdict synthesis, and stats counters all
-    # match the pre-refactor monotonic_solve. The helper's
-    # `entry="monotonic"` discriminator selects the
-    # solution-mode dispatch on every outcome node.
-    verdict, stats = _explore_layers(
-        root_kb,
-        entry="monotonic",
-        max_set_size=max_set_size,
-        config=config,
-        dumper=dumper,
-        max_time=max_time,
-        max_enterings=max_enterings,
-    )
-    # The MonotonicStats type-narrow is safe here — entry
-    # "monotonic" always returns MonotonicStats.
-    assert isinstance(stats, MonotonicStats)
-    return verdict, stats
 
 
 def verdict_of(lstate: _LatticeLoopState, *, exhausted: bool) -> Verdict:
@@ -312,12 +250,13 @@ def solve(
     ``stop_after`` bounds the search to the first ``n`` distinct solution
     nodes (``None`` = exhaust) — the orthogonal stop policy. ``stop_after=1``
     is the sound fast path: it stops on the first complete∧consistent node
-    (never a partial goal-match, unlike the legacy ``monotonic_solve``), but
+    (never a partial goal-match, unlike the removed ``monotonic_solve``), but
     sets ``stats.exhausted=False`` so a ``k=1`` result reads as "a model",
     not certified-unique.
 
-    Unlike ``monotonic_solve`` (first goal-pattern match — unsound) and
-    ``gaps_solve`` (stops at root goal-match — masks ambiguity), this entry
+    Unlike the removed ``monotonic_solve`` (first goal-pattern match —
+    unsound) and ``gaps_solve`` (stops at root goal-match — masks
+    ambiguity), this entry
     terminates only on lattice exhaustion, ``stop_after``, or budget. See
     ``plans/m1_core_graph_reasoning/p1.7a_solution_search_refactor/``.
     """
@@ -507,35 +446,19 @@ def _contradiction(kb: KnowledgeBase) -> Verdict:
     return Contradiction(unsat_core=core)
 
 
-def _ambiguity(kb: KnowledgeBase) -> Verdict:
-    # Semantic mismatch acknowledged: tree-side `Ambiguity`
-    # carries `branches: tuple[Solution, ...]` describing
-    # multiple distinct solved KBs. For monotonic exhaustion
-    # (didn't reach goal within `max_set_size`), root.kb is
-    # NOT a solved branch — it's a partial state. Wrapping it
-    # as `Solution(kb=kb, …)` preserves the kb for the bench
-    # to display, at the cost of a misleading type name. The
-    # lattice's `LatticeProof` (S1.5b.29) will carry the
-    # proper richer artefact.
-    return Ambiguity(
-        branches=(Solution(kb=kb, trace=()),),
-    )
-
-
 # ── Shared core loop — _explore_layers ───────────────────────
 #
 # S1.5b.21: extracted from the pre-refactor `monotonic_solve`
 # body. The `entry` discriminator dispatches outcomes for the
-# three public functions (monotonic_solve, gaps_solve,
+# three public functions (solve, gaps_solve,
 # contradictions_solve). The shared core is NEVER DUPLICATED
 # across the three entries — they're all thin wrappers.
 #
-# Behaviour-preserving for `entry="monotonic"`. New behaviour
-# for `entry="gaps"`: instead of early-terminate on is_solved,
-# record into a local `solutions` list and continue the
-# search. Phase 3 synthesises `Ambiguity(branches=[Solution
-# for each recorded])`. The `entry="contradictions"` branch is
-# reserved for S1.5b.23.
+# New behaviour for `entry="gaps"`: instead of early-terminate
+# on is_solved, record into a local `solutions` list and
+# continue the search. Phase 3 synthesises
+# `Ambiguity(branches=[Solution for each recorded])`. The
+# `entry="contradictions"` branch is reserved for S1.5b.23.
 
 
 def _build_lattice_stats(
@@ -552,8 +475,8 @@ def _build_lattice_stats(
     lattice-only triple
     (``solutions_found`` / ``state_hash_merges`` / ``elapsed_seconds``)
     is supplied by the caller. Keeping :class:`MonotonicStats`
-    free of the lattice counters preserves the
-    :func:`monotonic_solve` public surface unchanged.
+    free of the lattice counters preserves the :func:`solve`
+    public surface unchanged.
     """
     return LatticeStats(
         enterings_total=mstats.enterings_total,
@@ -679,7 +602,7 @@ def _record_setnode(
 def _explore_layers(
     root_kb: KnowledgeBase,
     *,
-    entry: Literal["monotonic", "gaps", "contradictions", "solve"],
+    entry: Literal["gaps", "contradictions", "solve"],
     max_set_size: int = 5,
     config: SolverConfig | None = None,
     store_lattice: bool = False,
@@ -695,10 +618,15 @@ def _explore_layers(
     ``entry`` discriminator picks the outcome dispatch + Phase 3
     verdict synthesis:
 
-    - ``"monotonic"`` — early-terminate on first goal-sat at
-      fork or root; Phase 3 returns
-      Solution / Ambiguity-frontier / Contradiction per the
-      existing trichotomy. Ignores ``store_lattice``.
+    - ``"solve"`` (P1.7a) — exhaust the lattice (or stop after
+      ``stop_after`` distinct solution nodes), recording every
+      solution node (``consistent ∧ complete`` — keyed by
+      :func:`is_solution_node`, not goal match) deduped by
+      :func:`state_hash` into ``lstate.solution_nodes``; Phase 3
+      reads the verdict from the count ``k`` via
+      :func:`verdict_of`. Keeps root stable (no unconditional
+      merge mid-search — unsound under NAF). Ignores
+      ``store_lattice``.
     - ``"gaps"`` — record every goal-sat (fork or root) into
       ``lstate.solutions`` as :class:`SolutionRecord` (kb is a
       :meth:`KnowledgeBase.snapshot` for isolation), do NOT add
@@ -757,12 +685,6 @@ def _explore_layers(
         random.Random(cfg.lattice_order_seed)
         if cfg.lattice_order_seed is not None else None
     )
-    # store_lattice is monotonic-irrelevant — short-circuit even
-    # if a caller pased it through (defensive; the public
-    # ``monotonic_solve`` doesn't expose the flag).
-    if entry == "monotonic":
-        store_lattice = False
-
     def _finalise_gaps() -> tuple[Verdict, MonotonicStats]:
         """Build the gaps-side Ambiguity verdict from current
         ``lstate`` + emit the dumper summary via :func:`_finish`.
@@ -836,8 +758,6 @@ def _explore_layers(
     if dumper is not None:
         dumper.root_initial(root_kb)
     if ContradictionDetector(root_kb).detect():
-        if entry == "monotonic":
-            return _finish(dumper, _contradiction(root_kb), stats)
         if entry == "solve":
             # root contradictory before any commitment (e.g. zebra2-bad:
             # injected fact clashes with (6) during root saturation) →
@@ -852,8 +772,6 @@ def _explore_layers(
         # the empty frozenset (no commitments were tried).
         return _finalise_contradictions()
     if is_solved(root_kb, mode):
-        if entry == "monotonic":
-            return _finish(dumper, _solution(root_kb), stats)
         if entry == "gaps":
             # root satisfies trivially; record with empty
             # commitment carrier + return Ambiguity with 1 branch.
@@ -869,8 +787,6 @@ def _explore_layers(
     alive = _compute_alive(root_kb)
     alive, term = _promote_forced_positives(root_kb, alive, stats, mode)
     if term is not None:
-        if entry == "monotonic":
-            return _finish(dumper, term, stats)
         if entry == "solve":
             # mode=CONTRADICTIONS ⇒ term is a Contradiction (the
             # forced-positive cascade hit ⊥) → k=0 with root core.
@@ -893,8 +809,6 @@ def _explore_layers(
         # cascade. Don't short-circuit — supersets may still
         # die. Fall through to Phase 2.
     if not alive:
-        if entry == "monotonic":
-            return _finish(dumper, _contradiction(root_kb), stats)
         if entry == "solve":
             # empty alive + consistent (no contradiction above) ⇒ root is
             # itself a complete, consistent model — the unique solution.
@@ -1075,21 +989,6 @@ def _explore_layers(
 
             # Fork-side is_solved (§3c.ii of algorithm_layer_n.md).
             if solved:
-                if entry == "monotonic":
-                    if dumper is not None:
-                        dumper.entering(
-                            layer, c, result,
-                            outcome="solution",
-                            facts_merged=0,
-                            nogood_emitted=False,
-                            nogood_subsumed=False,
-                        )
-                        dumper.early_terminate(layer, "is_solved_at_fork")
-                    return _finish(
-                        dumper,
-                        Solution(kb=result.kb, trace=()),
-                        stats,
-                    )
                 if entry == "solve":
                     # Solution node (consistent ∧ complete): record it
                     # (deduped by state_hash); do NOT merge its facts
@@ -1188,10 +1087,6 @@ def _explore_layers(
                 stats.saturate_count += 1
                 # Merged facts could derive a contradiction at root.
                 if ContradictionDetector(root_kb).detect():
-                    if entry == "monotonic":
-                        return _finish(
-                            dumper, _contradiction(root_kb), stats,
-                        )
                     if entry == "solve":
                         # merged invariants contradict at root ⇒ no model;
                         # record the core and stop.
@@ -1210,8 +1105,6 @@ def _explore_layers(
                     root_kb, alive, stats, mode,
                 )
                 if term is not None:
-                    if entry == "monotonic":
-                        return _finish(dumper, term, stats)
                     if entry == "solve":
                         # cascade hit ⊥ at root mid-merge → stop;
                         # record the root core for the k=0 verdict.
@@ -1253,12 +1146,6 @@ def _explore_layers(
                     break
 
                 if is_solved(root_kb, mode):
-                    if entry == "monotonic":
-                        if dumper is not None:
-                            dumper.early_terminate(layer, "is_solved")
-                        return _finish(
-                            dumper, _solution(root_kb), stats,
-                        )
                     if entry == "gaps":
                         # record once (root_was_solved guard)
                         # then terminate Phase 2 — root satisfies,
@@ -1323,18 +1210,6 @@ def _explore_layers(
                 lstate.truncated = True
 
     # ── Phase 3 — Verdict synthesis ──────────────────────────
-    if entry == "monotonic":
-        # S1.5b.6: singleton dead writebacks may have shrunk
-        # `_negated_facts` since the last `_compute_alive` call;
-        # refresh so the empty-alive contradiction check below
-        # is observed.
-        alive = _compute_alive(root_kb)
-        if is_solved(root_kb, mode):
-            return _finish(dumper, _solution(root_kb), stats)
-        if not alive:
-            return _finish(dumper, _contradiction(root_kb), stats)
-        return _finish(dumper, _ambiguity(root_kb), stats)
-
     if entry == "solve":
         # P1.7a — verdict read from the deduped solution-node count k.
         return _finalise_solve()
@@ -1351,13 +1226,14 @@ def _explore_layers(
 #
 # Per project_set_search_unified memory (2026-05-28): the
 # engine is unified — all three public entries
-# (monotonic_solve, gaps_solve, contradictions_solve) live
+# (solve, gaps_solve, contradictions_solve) live
 # side-by-side in this package. They share the per-candidate
 # flow from `algorithm_layer_n.md` (Apriori prefix-join +
 # try_commitment_set + flat root-writes); the difference is
-# whether the loop early-terminates on first goal-sat
-# (monotonic) or exhausts to collect every satisfying /
-# refuted commitment (gaps / contradictions). S1.5b.21 lifts
+# whether the loop records solution nodes and reads the verdict
+# from their count (solve) or exhausts to collect every
+# satisfying / refuted commitment (gaps / contradictions).
+# S1.5b.21 lifts
 # the shared core out of `monotonic_solve` into a private
 # `_explore_layers` helper that all three entries call;
 # S1.5b.23 fills `contradictions_solve`.

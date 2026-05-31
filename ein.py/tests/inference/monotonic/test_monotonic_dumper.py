@@ -22,7 +22,7 @@ import json
 from pathlib import Path
 
 from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import monotonic_solve
+from ein_bot.inference.monotonic import solve
 from ein_bot.inference.monotonic.state_dump import MonotonicDumper
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
@@ -68,7 +68,7 @@ _NO_LOOKAHEAD = SolverConfig(
 def test_run_produces_expected_files(tmp_path: Path) -> None:
     kb = _kb(SINGLETON_FIXTURE)
     dumper = MonotonicDumper(out_dir=tmp_path)
-    monotonic_solve(
+    solve(
         kb, max_set_size=2, config=_NO_LOOKAHEAD, dumper=dumper,
     )
 
@@ -100,7 +100,7 @@ def _read_timeline(p: Path) -> list[dict]:
 def test_timeline_event_order(tmp_path: Path) -> None:
     kb = _kb(SINGLETON_FIXTURE)
     dumper = MonotonicDumper(out_dir=tmp_path)
-    monotonic_solve(
+    solve(
         kb, max_set_size=2, config=_NO_LOOKAHEAD, dumper=dumper,
     )
 
@@ -141,7 +141,7 @@ def test_timeline_event_order(tmp_path: Path) -> None:
 def test_entering_records_include_nogood_info(tmp_path: Path) -> None:
     kb = _kb(SINGLETON_FIXTURE)
     dumper = MonotonicDumper(out_dir=tmp_path)
-    monotonic_solve(
+    solve(
         kb, max_set_size=2, config=_NO_LOOKAHEAD, dumper=dumper,
     )
     events = _read_timeline(tmp_path / "00_timeline.jsonl")
@@ -178,11 +178,11 @@ _TRIVIAL_FIXTURE = """
 
 def test_backbone_parity_with_and_without_dumper(tmp_path: Path) -> None:
     kb_no_dumper = _kb(_TRIVIAL_FIXTURE)
-    v_none, s_none = monotonic_solve(kb_no_dumper, max_set_size=1)
+    v_none, s_none = solve(kb_no_dumper, max_set_size=1)
 
     kb_with_dumper = _kb(_TRIVIAL_FIXTURE)
     dumper = MonotonicDumper(out_dir=tmp_path)
-    v_dump, s_dump = monotonic_solve(
+    v_dump, s_dump = solve(
         kb_with_dumper, max_set_size=1, dumper=dumper,
     )
 
@@ -203,37 +203,54 @@ def test_dumper_out_dir_none_writes_no_files(
     # Hooks fire — sanity-call all six manually to exercise the
     # None-guards in the writer methods. We use the kb itself
     # as a stand-in for the per-hook kb argument.
-    monotonic_solve(
+    solve(
         kb, max_set_size=2, config=_NO_LOOKAHEAD, dumper=dumper,
     )
     # tmp_path is unused — assert the file system stays empty.
     assert list(tmp_path.iterdir()) == []
 
 
-def test_dumper_records_fork_side_early_terminate(
+def test_dumper_records_stop_after_solution_node(
     tmp_path: Path,
 ) -> None:
-    """When the engine terminates via fork-side ``is_solved``
-    (S1.5b.9), the dumper emits ``entering`` + ``early_terminate``
-    events but NOT ``layer_end`` (we returned mid-layer).
-    ``summary`` still fires via the ``_finish`` exit hook.
+    """When ``solve(stop_after=1)`` stops at the first
+    complete∧consistent solution node (the sound fast path —
+    no fork-side ``is_solved`` short-circuit), the dumper emits
+    the ``entering`` event for that node with ``outcome="solution"``
+    and returns mid-layer, so the terminating layer has NO
+    ``layer_end``. ``summary`` still fires via the ``_finish`` exit
+    hook (guards against an early ``return`` that skips it).
     """
     from ein_bot.inference.verdict import Solution
     repo = Path(__file__).resolve().parents[4]
     text = (repo / "examples" / "branching" / "05_mini_zebra.ein").read_text()
     kb = _kb(text)
     dumper = MonotonicDumper(out_dir=tmp_path)
-    verdict, _stats = monotonic_solve(
-        kb, max_set_size=3, dumper=dumper,
+    verdict, stats = solve(
+        kb, max_set_size=3, stop_after=1, dumper=dumper,
     )
     assert isinstance(verdict, Solution)
+    # stop_after=1 returns "a model" without certifying uniqueness.
+    assert stats.solution_nodes == 1
+    assert stats.exhausted is False
     events = _read_timeline(tmp_path / "00_timeline.jsonl")
     kinds = [e["event"] for e in events]
-    # The dump should show: root_initial → layer_start →
-    # entering* → early_terminate → summary, with no layer_end.
-    assert "early_terminate" in kinds
-    et = next(e for e in events if e["event"] == "early_terminate")
-    assert et["reason"] == "is_solved_at_fork"
+    # The dump should show: root_initial → layer_start → entering* →
+    # ... → layer_start → entering(solution) → summary, with the
+    # terminating layer's layer_end omitted (we returned mid-layer).
+    solution_entering = [
+        e for e in events
+        if e["event"] == "entering" and e["outcome"] == "solution"
+    ]
+    assert solution_entering, (
+        "stop_after=1 must record the solution node's entering"
+    )
+    # The terminating entering's layer has no matching layer_end —
+    # the last layer_start is not followed by a layer_end.
+    last_start = max(
+        i for i, e in enumerate(events) if e["event"] == "layer_start"
+    )
+    assert "layer_end" not in kinds[last_start:]
     assert kinds[-1] == "summary"
 
 
@@ -258,6 +275,6 @@ def test_dumper_summary_records_contradiction_verdict(
     (query :mode solve :goal (trigger ?x))
     """)
     dumper = MonotonicDumper(out_dir=tmp_path)
-    monotonic_solve(kb, max_set_size=1, dumper=dumper)
+    solve(kb, max_set_size=1, dumper=dumper)
     summary = json.loads((tmp_path / "summary.json").read_text())
     assert summary["verdict"] == "Contradiction"

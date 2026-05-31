@@ -150,12 +150,13 @@ def test_contradictions_shuffle_invariance(
 
 def test_lattice_snapshot_requires_proof():
     """``lattice_snapshot`` rejects a verdict whose ``proof``
-    is None (the monotonic_solve case)."""
-    from ein_bot.inference.monotonic import monotonic_solve
+    is None (the ``solve`` fast-path case, which carries no
+    :class:`LatticeProof`)."""
+    from ein_bot.inference.monotonic import solve
     from ein_bot.inference.verdict import Solution
 
     kb = _kb_from(BRANCHING / "01_saturate_only.ein")
-    verdict, _ = monotonic_solve(kb)
+    verdict, _ = solve(kb)
     assert isinstance(verdict, Solution)
     assert verdict.proof is None
     with pytest.raises(ValueError, match=r"LatticeProof"):

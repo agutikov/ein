@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
-"""Run the monotonic set-search engine on a .ein file.
+"""Run the sound set-search engine (``solve``) on a .ein file.
 
 Mirrors :mod:`bench_solve`'s CLI shape but reaches into
-``inference/monotonic/`` instead of ``inference/tree/``. Output
-is one-shot: verdict + goal bindings (if Solution) + per-run
-stats + elapsed wall. With ``--dump-states DIR``, also persist
+``inference/monotonic/`` instead of ``inference/tree/``. The
+verdict is SOUND — :func:`ein_bot.inference.monotonic.solve`
+reads Solution / Ambiguity / Contradiction off the deduped
+solution-node count ``k`` (not a first-goal-match). Default
+``--stop_after=1`` stops at the first complete∧consistent
+node (fast, ``exhausted=False``); ``--exhaustive`` runs the
+lattice to the end so ``k`` is exact (``exhausted=True``).
+Output is one-shot: verdict + goal bindings (if Solution) +
+per-run stats + elapsed wall. With ``--dump-states DIR``, also persist
 a minimal monotonic dump (root snapshot per layer +
 ``00_timeline.jsonl``). With ``--verbose``, emit per-layer +
 per-entering progress lines to stderr — bench_solve parity
@@ -27,10 +33,9 @@ sys.path.insert(
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.monotonic.solver import (
     BudgetExceededError,
-    monotonic_solve,
+    solve,
 )
 from ein_bot.inference.monotonic.state_dump import MonotonicDumper
-from ein_bot.inference.verdict import Mode
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
@@ -227,13 +232,13 @@ def _build_argparser() -> argparse.ArgumentParser:
                          "(SolverConfig.enable_back_prop_unconditional=False) "
                          "— pairs with --no-lookahead when exercising "
                          "the raw monotonic loop")
-    ap.add_argument("--mode",
-                    choices=[m.value for m in Mode],
-                    default=None,
-                    help="override the query's :mode field. "
-                         "Monotonic supports SOLVE only — GAPS / "
-                         "CONTRADICTIONS produce a clean error "
-                         "(use the lattice engine for those)")
+    ap.add_argument("--exhaustive", action="store_true",
+                    help="exhaust the lattice (stop_after=None) instead "
+                         "of stopping at the first complete∧consistent "
+                         "solution node (stop_after=1). Exhausting lets "
+                         "the verdict prove uniqueness (Solution) vs "
+                         "ambiguity (Ambiguity, k>1) — stats.exhausted "
+                         "is True only then")
     ap.add_argument("--print-final-state", action="store_true",
                     help="on Solution, dump root.kb's REASONING-layer "
                          "facts (bookkeeping heads omitted) sorted "
@@ -414,16 +419,15 @@ def main(argv: list[str] | None = None) -> int:
     config = _resolved_config(kb, args)
     dumper = _make_dumper(args)
 
-    mode = Mode(args.mode) if args.mode else Mode.SOLVE
     aborted_reason: str | None = None
     verdict = None
     t0 = time.perf_counter()
     try:
-        verdict, stats = monotonic_solve(
+        verdict, stats = solve(
             kb,
+            stop_after=None if args.exhaustive else 1,
             max_set_size=args.max_set_size,
             config=config,
-            mode=mode,
             dumper=dumper,
             max_time=args.max_time,
             max_enterings=args.max_enterings,
@@ -431,11 +435,6 @@ def main(argv: list[str] | None = None) -> int:
     except BudgetExceededError as e:
         aborted_reason = e.reason
         stats = e.stats
-    except NotImplementedError as e:
-        # Monotonic raises this for GAPS / CONTRADICTIONS (Q1.5b.7).
-        # Print a clean message and exit 2; don't let the traceback fly.
-        print(f"** error: {e} **", file=sys.stderr)
-        return 2
     elapsed = time.perf_counter() - t0
 
     print(f"file              {args.puzzle}")
@@ -462,6 +461,8 @@ def main(argv: list[str] | None = None) -> int:
 
     print()
     print("stats")
+    print(f"  solution_nodes (k) {stats.solution_nodes}")
+    print(f"  exhausted          {str(stats.exhausted).lower()}")
     print(f"  enterings_total    {stats.enterings_total}")
     print(f"  enterings_alive    {stats.enterings_alive}")
     print(f"  enterings_dead_pre  {stats.enterings_dead_pre}")

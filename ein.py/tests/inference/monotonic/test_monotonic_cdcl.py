@@ -20,17 +20,22 @@ Covers the four shapes called out in the stage doc:
    when the monotonic emit path tries to re-add a covered clause.
 
 4. **Empty alive after singleton deaths → Contradiction.** Every
-   layer-1 hypothesis dies; the Phase-3 ``_compute_alive`` refresh
-   sees an empty ``alive`` and the verdict is :class:`Contradiction`.
+   layer-1 hypothesis dies; the exhaustive sound ``solve`` records
+   zero solution nodes (k=0) and the verdict is :class:`Contradiction`.
+
+Exercised through the sound, exhaustive ``solve`` entry (not the
+legacy first-goal-match ``monotonic_solve``); the CDCL nogoods and
+singleton-death writeback are emitted by the same shared loop, but
+counts reflect full lattice exploration up to ``max_set_size``.
 """
 from __future__ import annotations
 
 from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import monotonic_solve
+from ein_bot.inference.monotonic import solve
 from ein_bot.inference.nogoods import emit_nogood
 from ein_bot.inference.verdict import (
-    Ambiguity,
     Contradiction,
+    Solution,
 )
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
@@ -84,13 +89,13 @@ def test_singleton_death_emits_clause_and_writeback():
     calls drop the dead candidate.
     """
     kb = _kb(SINGLETON_FIXTURE)
-    _verdict, stats = monotonic_solve(kb, max_set_size=2, config=_NO_LOOKAHEAD)
+    _verdict, stats = solve(kb, max_set_size=2, config=_NO_LOOKAHEAD)
 
     blue_red = ("paint", ("Blue", "Red"))
     assert frozenset({blue_red}) in kb._nogoods
     assert blue_red in kb._negated_facts
-    assert stats.nogoods_emitted >= 1
-    assert stats.enterings_dead_post >= 1
+    assert stats.nogoods_emitted == 1
+    assert stats.enterings_dead_post == 1
 
 
 # ── 2) Multi-element death — emit + layer-3 filter ────────────────
@@ -130,7 +135,7 @@ def test_multi_element_death_emits_clause_and_filters():
     yield them).
     """
     kb = _kb(MULTI_FIXTURE)
-    _verdict, stats = monotonic_solve(
+    _verdict, stats = solve(
         kb, max_set_size=3, config=_NO_LOOKAHEAD,
     )
 
@@ -138,8 +143,10 @@ def test_multi_element_death_emits_clause_and_filters():
     h_bc = ("R", ("b", "c"))
     dead_pair = frozenset({h_ab, h_bc})
     assert dead_pair in kb._nogoods
-    # The dead pair fires once at layer 2.
-    assert stats.enterings_dead_post >= 1
+    # The dead pair fires once at layer 2; the size-2 clause then
+    # filters every layer-3 superset so it stays the only nogood.
+    assert stats.enterings_dead_post == 1
+    assert stats.nogoods_emitted == 1
     # No layer-3 entering should have survived containing both ab
     # and bc — the filter killed them before try_commitment_set
     # was even called. If a layer-3 commitment with both elements
@@ -219,19 +226,21 @@ def test_all_layer_1_singletons_die_returns_contradiction():
     Phase-3 ``_compute_alive`` refresh sees an empty ``alive``
     and the verdict is :class:`Contradiction`."""
     kb = _kb(ALL_DIE_FIXTURE)
-    verdict, stats = monotonic_solve(
+    verdict, stats = solve(
         kb, max_set_size=2, config=_NO_LOOKAHEAD,
     )
     assert isinstance(verdict, Contradiction)
-    # Both singletons died.
+    # Both singletons died → zero solution nodes (k=0).
+    assert stats.solution_nodes == 0
     assert stats.enterings_dead_post == 2
     assert stats.enterings_alive == 0
     # Both clauses recorded (subsumption left them both — disjoint).
+    assert stats.nogoods_emitted == 2
     assert ("h", ("a", "b")) in kb._negated_facts
     assert ("h", ("b", "a")) in kb._negated_facts
 
 
-# ── Cross-check: Ambiguity when some singletons survive ───────────
+# ── Cross-check: surviving singleton yields a solution node ───────
 
 
 def test_singleton_filter_does_not_falsely_kill_alive():
@@ -240,11 +249,13 @@ def test_singleton_filter_does_not_falsely_kill_alive():
     after a different singleton's death wrote ``(not h_dead)``.
     """
     kb = _kb(SINGLETON_FIXTURE)
-    verdict, _stats = monotonic_solve(
+    verdict, stats = solve(
         kb, max_set_size=2, config=_NO_LOOKAHEAD,
     )
-    # (paint Red Blue) survives; (paint Blue Red) dies. Verdict
-    # should be Ambiguity — Red→Blue is alive but the hypothesis
-    # never gets merged into root, so is_solved stays False.
-    assert isinstance(verdict, Ambiguity)
+    # (paint Red Blue) survives; (paint Blue Red) dies. The lone
+    # surviving singleton is the single complete∧consistent
+    # solution node (k=1), so the sound `solve` verdict is Solution
+    # and the dead mirror is the only thing negated.
+    assert isinstance(verdict, Solution)
+    assert stats.solution_nodes == 1
     assert ("paint", ("Red", "Blue")) not in kb._negated_facts
