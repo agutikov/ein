@@ -31,11 +31,13 @@ behaviour is identical to the pre-S1.5b.7 path.
 from __future__ import annotations
 
 import json
+import sys
 import time
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import IO, Any
 
+from ein_bot.inference.canon import state_hash
 from ein_bot.ir.types import Atom, Int, Keyword, KwPair, SForm, String
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
@@ -353,6 +355,106 @@ class MonotonicDumper:
         self._timeline_fp.write(json.dumps(rec) + "\n")
         self._timeline_fp.flush()
         self._timeline_seq += 1
+
+
+class ProgressDumper(MonotonicDumper):
+    """Live progress emitter for slow ``solve`` runs.
+
+    Prints concise progress to ``stream`` (default ``sys.stderr``) so a
+    multi-minute exhaustive search isn't a silent hang — used by the P1.7a
+    acceptance runner, and available to the CLI/bench. As a
+    :class:`MonotonicDumper` subclass, passing ``out_dir`` ALSO writes the
+    full filesystem log (``00_timeline.jsonl`` + per-layer ``.ein``
+    snapshots) alongside the live lines.
+
+    Every ``progress_every``-th entering prints a line; layer boundaries,
+    each solution node, and the final summary always print.
+    """
+
+    def __init__(
+        self,
+        *,
+        stream: IO[str] | None = None,
+        progress_every: int = 10,
+        label: str = "",
+        out_dir: Path | None = None,
+    ) -> None:
+        super().__init__(out_dir=out_dir)
+        self.stream = stream if stream is not None else sys.stderr
+        self.progress_every = progress_every
+        self.label = label
+        self._enterings = 0
+        # Distinct solution-node states (deduped by state_hash) — matches
+        # the verdict's k, not the raw count of solution-outcome events.
+        self._node_hashes: set[int] = set()
+
+    def _say(self, msg: str) -> None:
+        print(msg, file=self.stream, flush=True)
+
+    def _el(self) -> str:
+        return f"{time.time() - self.started_at:5.0f}s"
+
+    def root_initial(self, kb: KnowledgeBase) -> None:  # type: ignore[override]
+        super().root_initial(kb)
+        head = f"[{self.label}] " if self.label else ""
+        self._say(f"{head}root saturated: {len(kb.facts)} facts  ({self._el()})")
+
+    def layer_start(  # type: ignore[override]
+        self, layer: int, kb: KnowledgeBase, alive_size: int,
+    ) -> None:
+        super().layer_start(layer, kb, alive_size)
+        self._say(
+            f"  layer {layer}: alive={alive_size} root_facts={len(kb.facts)}"
+            f"  ({self._el()})",
+        )
+
+    def entering(  # type: ignore[override]
+        self,
+        layer: int,
+        commitment: tuple,
+        result: Any,
+        *,
+        outcome: str = "alive",
+        facts_merged: int = 0,
+        nogood_emitted: bool = False,
+        nogood_subsumed: bool = False,
+    ) -> None:
+        super().entering(
+            layer, commitment, result, outcome=outcome,
+            facts_merged=facts_merged, nogood_emitted=nogood_emitted,
+            nogood_subsumed=nogood_subsumed,
+        )
+        self._enterings += 1
+        if outcome == "solution":
+            self._node_hashes.add(state_hash(result.kb))
+        if outcome == "solution" or self._enterings % self.progress_every == 0:
+            self._say(
+                f"    e={self._enterings:>5d} layer={layer} -> {outcome:<9s}"
+                f" solution-nodes={len(self._node_hashes)}  ({self._el()})",
+            )
+
+    def layer_end(  # type: ignore[override]
+        self,
+        layer: int,
+        kb: KnowledgeBase,
+        alive_size: int,
+        survived_count: int,
+    ) -> None:
+        super().layer_end(layer, kb, alive_size, survived_count)
+        self._say(
+            f"  layer {layer} done: survivors={survived_count}"
+            f" enterings={self._enterings} solution-nodes={len(self._node_hashes)}"
+            f"  ({self._el()})",
+        )
+
+    def summary(self, verdict: Any, stats: Any) -> None:  # type: ignore[override]
+        super().summary(verdict, stats)
+        k = getattr(stats, "solution_nodes", "?")
+        ex = getattr(stats, "exhausted", "?")
+        self._say(
+            f"  => {type(verdict).__name__}  k={k}  exhausted={ex}"
+            f"  enterings={stats.enterings_total}  ({self._el()})",
+        )
 
 
 # ── LatticeDumper helpers ────────────────────────────────────

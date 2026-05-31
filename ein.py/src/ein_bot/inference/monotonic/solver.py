@@ -84,7 +84,6 @@ from ein_bot.inference.canon import state_hash
 from ein_bot.inference.commitment import try_commitment_set
 from ein_bot.inference.config import SolverConfig
 from ein_bot.inference.contradiction import ContradictionDetector
-from ein_bot.inference.hypgen import generate_hypotheses
 from ein_bot.inference.monotonic.lattice import (
     DeadCommitment,
     LatticeProof,
@@ -98,6 +97,7 @@ from ein_bot.inference.monotonic.state_dump import (
 )
 from ein_bot.inference.nogoods import emit_nogood
 from ein_bot.inference.saturator import Saturator
+from ein_bot.inference.solution import is_solution_node, open_hypotheses
 from ein_bot.inference.verdict import (
     Ambiguity,
     Contradiction,
@@ -140,6 +140,11 @@ class MonotonicStats:
     # S1.5b.6 — CDCL counters.
     nogoods_emitted:     int = 0
     nogoods_subsumed:    int = 0
+    # P1.7a — solve entry: deduped solution-node count `k` and whether
+    # the search was exhaustive (else `k` is a lower bound and a k=1
+    # result is "a solution", not a proven-unique one).
+    solution_nodes:      int = 0
+    exhausted:           bool = True
 
 
 @dataclass
@@ -185,6 +190,11 @@ class _LatticeLoopState:
     alive_at_end_tuple: tuple[CanonicalSetId, ...] = ()
     state_hash_merges: int = 0
     root_was_solved:   bool = False
+    # P1.7a — solve entry: deduped solution nodes (state_hash → record)
+    # and whether the search ran out of lattice (exhausted) or was cut
+    # short by ``stop_after`` / the depth cap (``truncated``).
+    solution_nodes:    dict[int, SolutionRecord] = field(default_factory=dict)
+    truncated:         bool = False
 
 
 def monotonic_solve(
@@ -247,6 +257,80 @@ def monotonic_solve(
     # "monotonic" always returns MonotonicStats.
     assert isinstance(stats, MonotonicStats)
     return verdict, stats
+
+
+def verdict_of(lstate: _LatticeLoopState, *, exhausted: bool) -> Verdict:
+    """Derive the verdict from the deduped solution-node count ``k`` (P1.7a).
+
+    | k  | verdict          | meaning                                     |
+    |----|------------------|---------------------------------------------|
+    | 1  | ``Solution``     | the model (unique iff ``exhausted``)        |
+    | >1 | ``Ambiguity``    | ``k`` distinct models (a gap)               |
+    | 0  | ``Contradiction``| unsat (core = union of dead cores) if exhausted|
+
+    The query ``:goal`` does NOT decide this — it projects over the model(s)
+    afterwards (S1.7a.6). A solution is always the same thing; only how many
+    we found and whether we exhausted the lattice pick the type. ``exhausted``
+    is surfaced to the caller via ``stats.exhausted`` (a ``k=0`` from a
+    truncated run is NOT proven-unsat; a ``k=1`` from a ``stop_after`` run is
+    "a model", not proven-unique).
+    """
+    nodes = list(lstate.solution_nodes.values())
+    k = len(nodes)
+    if k == 1:
+        n = nodes[0]
+        return Solution(kb=n.kb, trace=n.firings)
+    if k > 1:
+        return Ambiguity(
+            branches=tuple(Solution(kb=n.kb, trace=n.firings) for n in nodes),
+        )
+    cores: frozenset[Fact] = frozenset()
+    for d in lstate.dead_commitments:
+        cores = cores | d.unsat_core
+    return Contradiction(unsat_core=cores)
+
+
+def solve(
+    root_kb: KnowledgeBase,
+    *,
+    stop_after: int | None = None,
+    max_set_size: int = 5,
+    config: SolverConfig | None = None,
+    dumper: MonotonicDumper | LatticeDumper | None = None,
+    max_time: float | None = None,
+    max_enterings: int | None = None,
+) -> tuple[Verdict, MonotonicStats]:
+    """P1.7a sound search — the one entry whose verdict is *read* from the
+    result rather than chosen up front.
+
+    Runs the set-indexed lattice exploration, recording every **solution
+    node** (``consistent ∧ complete`` — no open hypothesis) deduped by
+    :func:`state_hash`, and derives the verdict via :func:`verdict_of` from
+    the count ``k``. ``stats.solution_nodes`` is ``k``; ``stats.exhausted``
+    says whether the lattice was fully explored.
+
+    ``stop_after`` bounds the search to the first ``n`` distinct solution
+    nodes (``None`` = exhaust) — the orthogonal stop policy. ``stop_after=1``
+    is the sound fast path: it stops on the first complete∧consistent node
+    (never a partial goal-match, unlike the legacy ``monotonic_solve``), but
+    sets ``stats.exhausted=False`` so a ``k=1`` result reads as "a model",
+    not certified-unique.
+
+    Unlike ``monotonic_solve`` (first goal-pattern match — unsound) and
+    ``gaps_solve`` (stops at root goal-match — masks ambiguity), this entry
+    terminates only on lattice exhaustion, ``stop_after``, or budget. See
+    ``plans/m1_core_graph_reasoning/p1.7a_solution_search_refactor/``.
+    """
+    return _explore_layers(
+        root_kb,
+        entry="solve",
+        stop_after=stop_after,
+        max_set_size=max_set_size,
+        config=config,
+        dumper=dumper,
+        max_time=max_time,
+        max_enterings=max_enterings,
+    )
 
 
 def _finish(
@@ -391,40 +475,13 @@ def _promote_forced_positives(
 
 
 def _compute_alive(kb: KnowledgeBase) -> frozenset[FactId]:
-    """Build the current alive set as a frozenset of FactIds.
+    """The current alive set = the open-hypothesis set.
 
-    Reuses :func:`ein_bot.inference.hypgen.generate_hypotheses`
-    — the canonical "which hypotheses are still viable" query —
-    and canonicalises pairs under symmetric-relation declarations
-    so ``(R a b)`` and ``(R b a)`` collapse to one entry when
-    ``(symmetric R)`` is in the ontology.
-
-    The canonicalisation matters for forced-positive promotion:
-    hypgen emits both orientations of a symmetric pair (the user
-    might want to score each independently), but for "is this
-    the *sole* surviving hypothesis?" the pair is one
-    hypothesis. Without dedup, alive size always ≥ 2 for any
-    symmetric-relation candidate, and the promotion cascade
-    never fires.
+    Delegates to :func:`ein_bot.inference.solution.open_hypotheses`
+    (P1.7a) so there is exactly one canonical open-set definition;
+    ``complete(kb) ≡ not _compute_alive(kb)``.
     """
-    symmetric_relations = {
-        f.args[0]
-        for f in kb._facts_by_relation.get("symmetric", ())
-        if len(f.args) >= 1
-    }
-    canonical: set[FactId] = set()
-    for f in generate_hypotheses(kb):
-        rn = f.relation_name
-        args = f.args
-        if (
-            rn in symmetric_relations
-            and len(args) == 2
-            and args[0] > args[1]
-        ):
-            canonical.add((rn, (args[1], args[0])))
-        else:
-            canonical.add((rn, args))
-    return frozenset(canonical)
+    return open_hypotheses(kb)
 
 
 def _solution(kb: KnowledgeBase) -> Verdict:
@@ -432,12 +489,22 @@ def _solution(kb: KnowledgeBase) -> Verdict:
 
 
 def _contradiction(kb: KnowledgeBase) -> Verdict:
-    # The full source frontier is the responsibility of S1.5b.6
-    # (nogoods accumulation). For the backbone, return an empty
-    # unsat_core; consumers should re-run with nogoods enabled
-    # for the rich diagnostic.
-    _ = kb  # reserved for future provenance walk
-    return Contradiction(unsat_core=frozenset())
+    """Contradiction verdict carrying the source-frontier unsat core.
+
+    P1.7a: walk each contradiction witness's derivation DAG back to
+    its ``source``-kind terminals via :meth:`KnowledgeBase.unsat_core`
+    — the same call ``try_commitment_set`` makes per-commitment
+    (``commitment.py``). Previously a stub returning ``frozenset()``,
+    which left root-level contradictions (e.g. ``zebra2-bad``, where
+    the clash fires during root saturation before any commitment)
+    with an empty core.
+    """
+    contras = ContradictionDetector(kb).detect()
+    core = (
+        frozenset(kb.unsat_core(c.witness for c in contras))
+        if contras else frozenset()
+    )
+    return Contradiction(unsat_core=core)
 
 
 def _ambiguity(kb: KnowledgeBase) -> Verdict:
@@ -612,13 +679,14 @@ def _record_setnode(
 def _explore_layers(
     root_kb: KnowledgeBase,
     *,
-    entry: Literal["monotonic", "gaps", "contradictions"],
+    entry: Literal["monotonic", "gaps", "contradictions", "solve"],
     max_set_size: int = 5,
     config: SolverConfig | None = None,
     store_lattice: bool = False,
     dumper: MonotonicDumper | LatticeDumper | None = None,
     max_time: float | None = None,
     max_enterings: int | None = None,
+    stop_after: int | None = None,
 ) -> tuple[Verdict, MonotonicStats]:
     """The shared per-candidate loop. See
     `plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md`
@@ -669,8 +737,14 @@ def _explore_layers(
     # Mode for is_solved-style checks. The mode parameter that
     # used to live on monotonic_solve was about verdict shape,
     # which we now dispatch via `entry`. For goal satisfaction
-    # the check is always SOLVE-mode semantics.
-    mode = Mode.SOLVE
+    # the check is always SOLVE-mode semantics — EXCEPT for the
+    # P1.7a "solve" entry, whose termination signal is
+    # is_solution_node (consistent ∧ complete), not goal match.
+    # Running is_solved under CONTRADICTIONS semantics (always
+    # False) neutralises every is_solved-driven stop in the
+    # shared loop so "solve" exhausts the lattice; solution
+    # recording is keyed on is_solution_node at the dispatch sites.
+    mode = Mode.CONTRADICTIONS if entry == "solve" else Mode.SOLVE
 
     stats = MonotonicStats()
     t_start = time.perf_counter()
@@ -719,6 +793,43 @@ def _explore_layers(
         )
         return _finish(dumper, verdict, stats)
 
+    # ── P1.7a "solve" entry helpers ───────────────────────────
+    def _record_node(
+        node_kb: KnowledgeBase,
+        commitment: CanonicalSetId,
+        firings: tuple = (),
+        layer: int = 0,
+    ) -> None:
+        """Record a solution node (consistent ∧ complete), deduped by
+        :func:`state_hash`. Stores a :meth:`snapshot` so it survives later
+        root mutation."""
+        h = state_hash(node_kb)
+        if h not in lstate.solution_nodes:
+            lstate.solution_nodes[h] = SolutionRecord(
+                commitment=commitment,
+                kb=node_kb.snapshot(),
+                firings=tuple(firings),
+                layer=layer,
+            )
+
+    def _root_dead() -> None:
+        """Record a root-level contradiction's unsat core (commitment ())."""
+        contras = ContradictionDetector(root_kb).detect()
+        core = frozenset(
+            root_kb.unsat_core(c.witness for c in contras)
+        ) if contras else frozenset()
+        lstate.dead_commitments.append(DeadCommitment(
+            commitment=(), unsat_core=core,
+            learned_clause=frozenset(), layer=0, kind="dead-post",
+        ))
+
+    def _finalise_solve() -> tuple[Verdict, MonotonicStats]:
+        """Build the solve verdict from the deduped solution-node set."""
+        stats.solution_nodes = len(lstate.solution_nodes)
+        stats.exhausted = not lstate.truncated
+        verdict = verdict_of(lstate, exhausted=stats.exhausted)
+        return _finish(dumper, verdict, stats)
+
     # ── Phase 1 — Initial saturation + alive ──────────────────
     _ = list(Saturator(root_kb).saturate())
     stats.saturate_count += 1
@@ -727,6 +838,12 @@ def _explore_layers(
     if ContradictionDetector(root_kb).detect():
         if entry == "monotonic":
             return _finish(dumper, _contradiction(root_kb), stats)
+        if entry == "solve":
+            # root contradictory before any commitment (e.g. zebra2-bad:
+            # injected fact clashes with (6) during root saturation) →
+            # k=0, with the source-frontier core.
+            _root_dead()
+            return _finalise_solve()
         if entry == "gaps":
             # zero solutions; Ambiguity with empty branches.
             return _finalise_gaps()
@@ -754,6 +871,11 @@ def _explore_layers(
     if term is not None:
         if entry == "monotonic":
             return _finish(dumper, term, stats)
+        if entry == "solve":
+            # mode=CONTRADICTIONS ⇒ term is a Contradiction (the
+            # forced-positive cascade hit ⊥) → k=0 with root core.
+            _root_dead()
+            return _finalise_solve()
         if entry == "gaps":
             # if cascade landed Solution, that's one branch;
             # if Contradiction, zero branches (Ambiguity with empty).
@@ -773,6 +895,11 @@ def _explore_layers(
     if not alive:
         if entry == "monotonic":
             return _finish(dumper, _contradiction(root_kb), stats)
+        if entry == "solve":
+            # empty alive + consistent (no contradiction above) ⇒ root is
+            # itself a complete, consistent model — the unique solution.
+            _record_node(root_kb, ())
+            return _finalise_solve()
         if entry == "gaps":
             return _finalise_gaps()
         # contradictions: empty alive + no Phase-2 work to do.
@@ -884,7 +1011,10 @@ def _explore_layers(
 
                 # S1.5b.23 — contradictions collects every dead
                 # commitment with its unsat-core + learned clause.
-                if entry == "contradictions":
+                # P1.7a "solve" collects them too — the k=0 verdict's
+                # core is the union of these (try_commitment_set already
+                # computed result.unsat_core via fork.unsat_core).
+                if entry in ("contradictions", "solve"):
                     lstate.dead_commitments.append(DeadCommitment(
                         commitment=c,
                         unsat_core=result.unsat_core,
@@ -905,7 +1035,14 @@ def _explore_layers(
 
             # Alive.
             stats.enterings_alive += 1
-            solved = is_solved(result.kb, mode)
+            # P1.7a "solve": a "solved" fork is a *solution node*
+            # (consistent ∧ complete), NOT a goal-pattern match —
+            # this is what excludes the partial dead-end and what
+            # forces incomplete goal-matchers to keep expanding.
+            solved = (
+                is_solution_node(result.kb) if entry == "solve"
+                else is_solved(result.kb, mode)
+            )
 
             # SetNode recording: hoisted out of the entry-specific
             # branches so each commitment lands in ``kb_index`` at
@@ -953,6 +1090,27 @@ def _explore_layers(
                         Solution(kb=result.kb, trace=()),
                         stats,
                     )
+                if entry == "solve":
+                    # Solution node (consistent ∧ complete): record it
+                    # (deduped by state_hash); do NOT merge its facts
+                    # (model-specific) and do NOT expand it (complete —
+                    # supersets would be redundant or dead).
+                    _record_node(result.kb, c, result.firings, layer)
+                    if dumper is not None:
+                        dumper.entering(
+                            layer, c, result,
+                            outcome="solution",
+                            facts_merged=0,
+                            nogood_emitted=False,
+                            nogood_subsumed=False,
+                        )
+                    if (
+                        stop_after is not None
+                        and len(lstate.solution_nodes) >= stop_after
+                    ):
+                        lstate.truncated = True
+                        return _finalise_solve()
+                    continue
                 if entry == "gaps":
                     # record + continue, do NOT add to a_layer
                     # (supersets of a satisfying commitment would
@@ -979,6 +1137,30 @@ def _explore_layers(
                 # under additional hypotheses. The ``entering``
                 # call at the merge block below passes
                 # ``outcome="solution"`` because the kb is solved.
+
+            if entry == "solve":
+                # P1.7a — PURE PER-BRANCH search; keep root STABLE.
+                # Do NOT merge unconditional facts and do NOT promote
+                # forced-positives into the shared root mid-search:
+                #   * unconditional-fact extraction is UNSOUND under NAF
+                #     (`absent`) — a fork fact derived via `absent X`
+                #     looks unconditional by the provenance walk but
+                #     actually depends on the commitment having
+                #     suppressed X; merging it into root is wrong;
+                #   * cumulative shared-root promotion is the monotonic
+                #     SAT→⊥ pollution Phase A (S1.7a.1) flagged.
+                # Each commitment is evaluated independently against the
+                # post-Phase-1 root; nogoods (emitted above on deaths)
+                # prune supersets. This incomplete commitment just
+                # expands to the next layer.
+                if dumper is not None:
+                    dumper.entering(
+                        layer, c, result, outcome="alive",
+                        facts_merged=0, nogood_emitted=False,
+                        nogood_subsumed=False,
+                    )
+                a_layer.append(c)
+                continue
 
             this_merged = 0
             for f in result.unconditional_facts:
@@ -1010,6 +1192,12 @@ def _explore_layers(
                         return _finish(
                             dumper, _contradiction(root_kb), stats,
                         )
+                    if entry == "solve":
+                        # merged invariants contradict at root ⇒ no model;
+                        # record the core and stop.
+                        _root_dead()
+                        phase_2_done = True
+                        break
                     # gaps / contradictions: root contradictory;
                     # stop exploring. Phase 3 synthesises the
                     # entry-specific verdict (gaps→Ambiguity with
@@ -1024,6 +1212,12 @@ def _explore_layers(
                 if term is not None:
                     if entry == "monotonic":
                         return _finish(dumper, term, stats)
+                    if entry == "solve":
+                        # cascade hit ⊥ at root mid-merge → stop;
+                        # record the root core for the k=0 verdict.
+                        _root_dead()
+                        phase_2_done = True
+                        break
                     if entry == "gaps":
                         if isinstance(term, Solution):
                             if not lstate.root_was_solved:
@@ -1049,6 +1243,14 @@ def _explore_layers(
                     # extending the cascade's now-solved root may
                     # still die under further hypotheses, and we
                     # want to enumerate those deads.
+
+                if entry == "solve" and not alive:
+                    # root became fully determined mid-merge (every
+                    # hypothesis decided by invariants alone) ⇒ the
+                    # unique model is root; no choices remain.
+                    _record_node(root_kb, ())
+                    phase_2_done = True
+                    break
 
                 if is_solved(root_kb, mode):
                     if entry == "monotonic":
@@ -1082,6 +1284,30 @@ def _explore_layers(
             break
         if not a_layer:
             break
+        if entry == "solve":
+            # P1.7a — SOUND inter-layer prune. This layer's size-k
+            # deaths wrote ``¬g`` (sound: ``{g}`` is genuinely
+            # inconsistent with root). Recompute alive and promote any
+            # backbone singletons via the forced-positive cascade
+            # (sound: a sole-surviving slot value must hold) — NOT the
+            # NAF-unsound unconditional-fact merge skipped per commitment
+            # above. This collapses the candidate space the way the
+            # legacy engines prune, without the SAT→⊥ pollution.
+            alive = _compute_alive(root_kb)
+            alive, term = _promote_forced_positives(
+                root_kb, alive, stats, mode,
+            )
+            if term is not None:
+                _root_dead()       # cascade hit ⊥ → no model exists
+                break
+            if not alive:
+                _record_node(root_kb, ())  # backbone determines all cells
+                break
+            # drop commitments no longer entirely within `alive`
+            # (an element got promoted into root or refuted).
+            a_layer = [c for c in a_layer if all(e in alive for e in c)]
+            if not a_layer:
+                break
         a_prev = a_layer
         # Capture the surviving size-N frontier when the depth cap
         # is the natural loop terminator. ``alive_at_end`` stays
@@ -1089,6 +1315,12 @@ def _explore_layers(
         # solved, frontier exhausted).
         if layer == max_set_size:
             lstate.alive_at_end_tuple = tuple(a_layer)
+            # P1.7a: a non-empty frontier at the depth cap means the
+            # lattice was NOT fully explored — `k` is a lower bound,
+            # so a k=1 result is "a model", not certified unique, and
+            # a k=0 is "no model within the cap", not proven unsat.
+            if a_layer:
+                lstate.truncated = True
 
     # ── Phase 3 — Verdict synthesis ──────────────────────────
     if entry == "monotonic":
@@ -1102,6 +1334,10 @@ def _explore_layers(
         if not alive:
             return _finish(dumper, _contradiction(root_kb), stats)
         return _finish(dumper, _ambiguity(root_kb), stats)
+
+    if entry == "solve":
+        # P1.7a — verdict read from the deduped solution-node count k.
+        return _finalise_solve()
 
     if entry == "gaps":
         # always Ambiguity (mode contract).

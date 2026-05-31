@@ -91,8 +91,14 @@ from ein_bot.inference.monotonic.solver import (
     contradictions_solve,
     gaps_solve,
     monotonic_solve,
+    solve,
+    verdict_of,
 )
-from ein_bot.inference.monotonic.state_dump import LatticeDumper
+from ein_bot.inference.monotonic.state_dump import (
+    LatticeDumper,
+    MonotonicDumper,
+    ProgressDumper,
+)
 
 __all__ = [
     "BudgetExceededError",
@@ -101,13 +107,17 @@ __all__ = [
     "LatticeProof",
     "LatticeSnapshotV1",
     "LatticeStats",
+    "MonotonicDumper",
     "MonotonicStats",
+    "ProgressDumper",
     "SetNode",
     "SolutionRecord",
     "contradictions_solve",
     "gaps_solve",
     "lattice_snapshot",
     "monotonic_solve",
+    "solve",
     "validate_proof_for_explanation",
     "verdict_entry",
+    "verdict_of",
 ]

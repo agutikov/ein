@@ -132,3 +132,50 @@ The P1.5b unification already built most of the substrate the target needs.
 
 These four are S1.7a.1's charter; their answers are appended back here as a
 "Findings" section before any code in S1.7a.2+ is written.
+
+## Findings (S1.7a.1, 2026-05-31, measured)
+
+Measured by the committed probe `ein.py/demo/probe_solution_nodes.py`, which
+applies `consistent ∧ complete` + `state_hash` dedup to the **existing**
+`gaps_solve` / `contradictions_solve` output (read-only). Run under PyPy.
+
+- **OQ1 — the dead-end is OPEN, not all-refuted (resolved).** On `zebra2.ein`,
+  `gaps_solve` records 15 commitments; under the new definition **14 collapse
+  to one `state_hash` (the 25/25 model) and 1 is incomplete — 19/25 cells,
+  **12 open hypotheses, consistent=True**. So the partial dead-end
+  (`color-loc Green House-4` family) is excluded by **`not complete`** (it has
+  open hyps), *not* by inconsistency. `consistent ∧ complete` is the right
+  predicate and `_compute_alive` is the right completeness test. **zebra2 → k = 1.**
+- **OQ4 — nothing to revert (resolved).** The S1.7.3 completeness-gate
+  experiment was **never committed**: no `solve_requires_complete_model`, no
+  `_is_complete_model`, no `trace/answer.py`, no `demo/compare_engines.py`.
+  Only harmless goal-binding helpers exist (`_query_goal_bindings` in
+  `bench_monotonic.py`, `_goal_bindings` in a test). S1.7a.5 T3 is a no-op.
+- **NEW — the contradictions core extractor is a stub.** `zebra2-bad.ein` dies
+  at **root saturation** (the injected `(color-loc Green House-1)` clashes with
+  (6) before any commitment → `enterings_total=0`). `gaps` correctly yields
+  `k=0`, but `contradictions_solve` returns an **empty `unsat_core`** because
+  `_contradiction(root_kb)` (`solver.py:434`) is a backbone stub returning
+  `frozenset()`. **Fix is cheap:** `try_commitment_set` already computes
+  per-commitment cores via `fork.unsat_core(witnesses)` (`commitment.py:130`);
+  the root-death site must make the identical `root_kb.unsat_core(…)` call.
+- **NEW — `minus-15`'s true `k` is unmeasurable read-only; it proves the
+  structural need.** `gaps_solve(minus-15)` reports only `k=1` — an **artifact**:
+  it terminates on `is_solved` (root goal-match) and **does not expand
+  goal-matching-but-incomplete commitments** (the probe shows 3 such records
+  with 20–36 open color hyps — the *other* models, abandoned half-built). The
+  colours are genuinely under-determined (open `color-loc` hyps across houses),
+  so the true `k>1`. **Conclusion:** the sound search must (a) record on
+  `is_solution_node`, not `is_solved`; (b) **expand incomplete commitments
+  until complete-or-dead**; (c) terminate on **lattice exhaustion**, not
+  goal-match. This cannot be validated until the engine is changed — it is the
+  structural refactor itself.
+- **Perf signal (OQ2/test-gating).** Exhaustive `gaps_solve` on `zebra2` is
+  **~34 s under PyPy** (vs ~1.9 s for the unsound first-goal-match `monotonic`).
+  Full-enumeration acceptance tests must be `EIN_RUN_SLOW`-gated or use the
+  `stop_after=1` fast-path for the answer + a separate certification run.
+
+**Net effect on the plan:** S1.7a.2 (predicates) + the core-extractor fix are
+confirmed cheap. S1.7a.3 is bigger than "filter + dedup" — it must change the
+**expansion + termination** conditions (expand incomplete, stop on exhaustion),
+which is exactly why this is a phase, not a patch.
