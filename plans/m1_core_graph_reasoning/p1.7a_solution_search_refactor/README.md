@@ -86,19 +86,42 @@ the job and makes the shared decision **sound**.
 
 ## Transition stages
 
-| ID | title | gate? |
+| ID | title | status (2026-05-31) |
 |---|---|---|
-| **S1.7a.1** | Investigations — finish the analysis (verify open-vs-refuted on real branch kbs; measure exhaustive `gaps` on all 3 variants; settle exhaustiveness certification) | no |
-| **S1.7a.2** | `solution_node` core — `complete ∧ consistent`, deduped by `state_hash`; the predicates | no |
-| **S1.7a.3** | One search + result-type-from-`k` — derive the verdict from the deduped solution-node count; retire `is_solved`/`Mode` as the termination signal | no |
-| **S1.7a.4** | Stop policy — `stop_after: int \| None` (first / 42 / exhaust) layered on the sound search; honesty about early-stop vs exhausted | no |
-| **S1.7a.5** | `:goal` as projection; demote `:mode` / `--mode` to (stop preset × projection); revert the S1.7.3 completeness-gate experiment | no |
-| **S1.7a.6** | Trace + CLI answer path — sound answer-in-words for SOLVE; verdict-consuming linearizer | no |
-| **S1.7a.7** | **Acceptance** — `run_tests.sh`, drop root `pytest.ini`; PyPy tests solving all 3 zebra2 variants completely with expected results + the PyPy speedup check | **M1 gate** |
+| **S1.7a.1** | Investigations — finish the analysis (open-vs-refuted; exhaustive search on all 3 variants; certification) | ✅ **done** (`4297deb`) — probe + findings in [`analysis.md`](analysis.md) |
+| **S1.7a.2** | `solution_node` core — `complete ∧ consistent`, deduped by `state_hash`; the predicates | ✅ **shipped** (`4297deb`) — `inference/solution.py` |
+| **S1.7a.3** | One search + result-type-from-`k` — verdict from the deduped count; retire `is_solved`/`Mode` as terminator | ✅ **shipped** (`4297deb`) — `solve()`/`verdict_of`, **pure per-branch** |
+| **S1.7a.4** | Stop policy — `stop_after: int \| None`; honesty about early-stop vs exhausted | ✅ **shipped** (`4297deb`) |
+| **S1.7a.5** | `:goal` as projection; demote `:mode`; revert the S1.7.3 experiment | ◑ **partial** — revert is a no-op (never committed); projection → S1.7a.6 |
+| **S1.7a.6** | Trace + CLI answer path — answer-in-words for SOLVE; verdict-consuming linearizer | ○ **pending** — the main remaining work |
+| **S1.7a.7** | **Acceptance** + test infra (`run_tests.sh`, drop `pytest.ini`); PyPy 3-variant solve ← **M1 gate** | ✅ **shipped** (`75bee52`) — gate **GREEN** |
 
-Stage docs are written before their code (per the project's standing
-"design-into-the-stage-doc-first" rule). S1.7a.1's measurements feed back
-into `analysis.md`.
+## What shipped (2026-05-31) — and where it deviated from the plan
+
+P1.7a's soundness goal is **met and gated** (commits `4297deb`, `75bee52`):
+`solve()` gives `zebra2` → unique Solution (25/25), `zebra2-minus-15` →
+Ambiguity, `zebra2-bad` → Contradiction; the SAT↛⊥ / UNSAT↛Solution invariant
+holds. Deviations from [`target_design.md`](target_design.md) /
+[`refactoring_design.md`](refactoring_design.md), recorded honestly:
+
+- **Pure per-branch, not the surgical-reuse plan.** `refactoring_design.md`
+  proposed reusing the root-merge + forced-positive machinery; in practice
+  that **reproduced the SAT→⊥ bug** because `unconditional_facts` extraction
+  is *unsound under NAF* (`absent`). `solve()` keeps root stable (no
+  cross-commitment merge) + a sound inter-layer forced-positive prune.
+- **Perf is the soundness tax.** Exhaustive `solve()` ≈ 90s (zebra2) / 64s
+  (minus-15 to 2 models) under PyPy — hence acceptance is a separate slow
+  phase; `stop_after=1` is the ~6s fast answer.
+- **Unsat core = source frontier (~38 facts), not a minimal MUS.** Criterion
+  3's "2–3 edge core" is aspirational; the injected fact is in the core,
+  condition (6) grounds out through the `right-of` chain. MUS minimisation is
+  a follow-up.
+- **Acceptance lives in `ein.py/acceptance/`** (outside pytest `testpaths`),
+  run as Phase 2 of `run_tests.sh` — not `tests/`-resident (user direction).
+- **Cross-interpreter PyPy-speedup assertion (criterion 5) not wired** (no
+  CPython venv locally); PyPy is the runner default.
+- **Still open: [S1.7a.6](s1.7a.6_trace_cli_answer.md)** — CLI `solve`
+  answer-in-words + trace integration.
 
 ## Acceptance (this is M1's, corrected)
 
