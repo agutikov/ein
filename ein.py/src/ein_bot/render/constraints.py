@@ -5,7 +5,7 @@ the **ontology** layer — the implicit "co-located is symmetric /
 color-loc is a bijection" context the solver supplies, as opposed to
 the explicit puzzle conditions in `(facts …)`. They are identified
 structurally: an ontology fact whose head is **neither a kernel
-keyword (`relation` / `type` / `instance` / `a-priori`) nor a declared
+keyword (`relation` / `type` / `instance`) nor a declared
 relation name**. That captures property activators like `bijective`
 (matched by the `bijective-*` rules, but not itself a rule name) while
 excluding relation data such as `(is-a House Attribute)` — no
@@ -38,7 +38,7 @@ from .dot_util import GROUND_SHAPE, HYPER_SHAPE, TYPE_SHAPE, quote, value_label
 from .palette import hash_color
 
 # Kernel ontology keywords — declarations, not constraint facts.
-_KERNEL_ONTOLOGY_HEADS = frozenset({"relation", "type", "instance", "a-priori"})
+_KERNEL_ONTOLOGY_HEADS = frozenset({"relation", "type", "instance"})
 
 
 def _declared_relations(ontology: SForm) -> set[str]:

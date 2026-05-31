@@ -32,20 +32,24 @@ class TestZebraCounts:
         # acceptance update.)
         assert len(zebra_kb.instances) == 30
 
-    def test_three_declared_relations(self, zebra_kb):
+    def test_five_declared_relations(self, zebra_kb):
+        # S1.7.6: `type` / `instance` are now ordinary DECLARED relations
+        # (was kernel forms) alongside the three domain relations.
         declared = sorted(
             n for n, r in zebra_kb.relations.items() if r.declared
         )
-        assert declared == ["co-located", "next-to", "right-of"]
+        assert declared == ["co-located", "instance", "next-to", "right-of", "type"]
 
     def test_open_world_relations_include_rule_names(self, zebra_kb):
         # Property tags (heads of `(symmetric R)` etc.) auto-vivify
-        # as open-world relations.
+        # as open-world relations. (`instance` is no longer here — it is
+        # a declared relation since S1.7.6.)
         open_world = sorted(
             n for n, r in zebra_kb.relations.items() if not r.declared
         )
         assert {"symmetric", "transitive", "implies", "square-fwd",
-                "square-bwd", "instance"} <= set(open_world)
+                "square-bwd"} <= set(open_world)
+        assert "instance" not in open_world
 
     def test_eight_rules(self, zebra_kb):
         """S1.3.2 + square-unique addition for corner-house spatial inference."""
@@ -178,12 +182,13 @@ class TestZebraRule:
 
 class TestZebraFact:
     def test_fact_count(self, zebra_kb):
-        # Ontology: 30 instance + 8 rule-app + 4 spatial + 3 relation-decl = 45.
-        # (rule-apps include square-unique + type-exclusivity activators;
-        #  relation-decl facts are co-located, right-of, next-to.)
+        # Ontology: 7 type-decl + 30 instance + 8 rule-app + 4 spatial
+        #  + 5 relation-decl = 54. (S1.7.6: type/instance are plain
+        #  relations now — the 7 (type …) decls are ONTOLOGY facts, and
+        #  relation-decls are co-located, right-of, next-to, type, instance.)
         # Facts: 14 (conditions 2..15).
-        # Total: 59.
-        assert len(zebra_kb.facts) == 59
+        # Total: 68.
+        assert len(zebra_kb.facts) == 68
 
     def test_fact_resolves_relation(self, zebra_kb):
         fs = [f for f in zebra_kb.facts if f.source == "condition (10)"]
@@ -345,7 +350,7 @@ def test_kb_repr_summary(zebra_kb):
     r = repr(zebra_kb)
     assert "types=7" in r
     assert "rules=8" in r
-    assert "facts=59" in r
+    assert "facts=68" in r
 
 
 def test_kb_len_is_node_total(zebra_kb):
@@ -521,9 +526,12 @@ class TestKBSnapshot:
         assert snap_source_relations2 == snap_source_relations
 
     def test_kb_snapshot_shares_immutable_registries(self):
-        """Registries (types / instances / relations / rules) are
-        shared by reference — mutation of these on the source IS
-        visible on the snapshot, by design. This documents the
+        """`relations` / `rules` are shared by reference — mutation of
+        these on the source IS visible on the snapshot, by design.
+        `types` / `instances` are NOT shared since S1.7.6: they are
+        DERIVED in `rebuild_indexes` from the (copied) `(type …)` /
+        `(instance …)` facts, so the snapshot owns content-equal but
+        distinct dicts of isolated entities. This documents the
         contract."""
         from ein_bot.ir import parse
         text = """
@@ -534,7 +542,10 @@ class TestKBSnapshot:
         """
         kb = KnowledgeBase.from_ir(parse(text))
         snap = kb.snapshot()
-        assert snap.types is kb.types
-        assert snap.instances is kb.instances
         assert snap.relations is kb.relations
         assert snap.rules is kb.rules
+        # Derived registries: distinct objects, equal content.
+        assert snap.types is not kb.types
+        assert snap.instances is not kb.instances
+        assert snap.types.keys() == kb.types.keys()
+        assert snap.instances.keys() == kb.instances.keys()

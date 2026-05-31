@@ -37,7 +37,7 @@ from collections.abc import Iterable
 
 from ein_bot.ir.types import Atom, Int, IRNode, KwPair, Range, SForm, String, Var
 
-from .entities import Fact, Instance, Layer, Relation, Rule, Type
+from .entities import Fact, Layer, Relation, Rule
 from .pattern import Pattern
 from .provenance import Provenance
 from .store import KnowledgeBase, Query
@@ -137,19 +137,6 @@ def _ingest_ontology(form: SForm, kb: KnowledgeBase, errors: list[str]) -> list[
             continue
         head = _atom_name(child.head) if isinstance(child.head, Atom) else None
 
-        if head == "type":
-            # (type Name)  or  (type Name Parent)
-            if not child.args:
-                errors.append(f"(type) with no name at {child.loc}")
-                continue
-            name = _atom_name(child.args[0])
-            parent = _atom_name(child.args[1]) if len(child.args) >= 2 else None
-            if name is None:
-                errors.append(f"(type) with non-atom name at {child.loc}")
-                continue
-            kb.add_type(Type(name=name, parent_name=parent, loc=child.loc))
-            continue
-
         if head == "relation":
             # (relation Name T1 T2 … :kw v ...)
             # Flat args post-R10; grammar guarantees ≥ 2 SYMBOL args
@@ -183,55 +170,35 @@ def _ingest_ontology(form: SForm, kb: KnowledgeBase, errors: list[str]) -> list[
             ))
             continue
 
-        if head == "a-priori":
-            # Same shape as (relation …) for now; future M3 may carry
-            # additional metadata. Treat as a Relation with a marker.
-            if len(child.args) < 2:
-                errors.append(f"(a-priori) needs name + signature at {child.loc}")
-                continue
-            name = _atom_name(child.args[0])
-            sig = tuple(
-                a.name for a in child.args[1:]
-                if isinstance(a, Atom)
-            )
-            if name is None or not sig:
-                errors.append(f"malformed (a-priori) at {child.loc}")
-                continue
-            if name in kb.relations:
-                errors.append(f"duplicate relation '{name}' at {child.loc}")
-                continue
-            kb.add_relation(Relation(
-                name=name, signature=sig, declared=True, loc=child.loc,
-            ))
-            continue
-
-        if head == "instance":
-            # (instance Name TypeName [:kw v ...])
-            if len(child.args) < 2:
-                errors.append(f"(instance) needs name + type at {child.loc}")
-                continue
-            iname = _atom_name(child.args[0])
-            tname = _atom_name(child.args[1])
-            if iname is None or tname is None:
-                errors.append(f"(instance) args must be atoms at {child.loc}")
-                continue
-            # Auto-vivify the type so the link resolves even if the
-            # `(type …)` declaration is absent.
-            if tname not in kb.types:
-                kb.add_type(Type(name=tname, parent_name=None, loc=child.loc))
-            kb.add_instance(Instance(
-                name=iname, type_name=tname, loc=child.loc,
-            ))
-            # The instance form is also a Fact (relation = "instance",
-            # layer = ONTOLOGY) for the cross-ref machinery.
-            deferred_facts.append(child)
-            continue
-
-        # Anything else is a fact in the ontology layer (rule-app facts,
-        # structural facts, etc.).
+        # Anything else — including `(type …)` / `(instance …)`
+        # enumerations (S1.7.6: no longer kernel declarators) — is an
+        # ordinary fact in the ontology layer (rule-app facts,
+        # structural facts, type/instance facts). `kb.types` /
+        # `kb.instances` are derived from the `(type …)` / `(instance …)`
+        # facts in `KnowledgeBase.rebuild_indexes`.
         deferred_facts.append(child)
 
     return deferred_facts
+
+
+def _match_disjuncts(node: IRNode) -> list[IRNode] | None:
+    """If a rule `:match` is a *top-level* `(or d1 … dn)`, return the
+    disjuncts ``[d1, …, dn]`` (trailing kw-pairs dropped); else ``None``.
+
+    S1.7.6 T1.7.6.5 — `or` stays a kernel primitive, but an `(or …)` at
+    the head of a rule's `:match` **lowers to one rule per disjunct**,
+    exploiting ein's already-disjunctive multiple-rules semantics rather
+    than a runtime branch (user design note 2026-05-30). The matcher
+    therefore never evaluates `or`; the loader desugars it away. Only the
+    top-level position is lowered — a nested `(or …)` (e.g. inside an
+    `(and …)`) would need full DNF expansion, deferred until a rule needs
+    it (no M1 rule uses `or`).
+    """
+    if (isinstance(node, SForm)
+            and isinstance(node.head, Atom)
+            and node.head.name == "or"):
+        return [a for a in node.args if not isinstance(a, KwPair)]
+    return None
 
 
 def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
@@ -240,6 +207,11 @@ def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
     S1.5.6b: a `(hrule …)` is structurally a rule but is routed to
     ``kb.hrules`` (hypothesis generators), not ``kb.rules``
     (derivation rules the saturator fires).
+
+    S1.7.6 T1.7.6.5: a `:match` headed by `(or …)` is lowered to one
+    `Rule` per disjunct (see :func:`_match_disjuncts`); the instances are
+    named ``<rule>__or0``, ``<rule>__or1``, … so they stay distinct in
+    the rule registry.
     """
     for child in form.args:
         head = _atom_name(child.head) if isinstance(child, SForm) else None
@@ -272,19 +244,31 @@ def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
             continue
         why = why_node.value if isinstance(why_node, String) else ""
         priority = priority_node.value if isinstance(priority_node, Int) else None
-        rule = Rule(
-            name=name,
-            params=params,
-            match=Pattern.from_ir(match_node),
-            assert_=Pattern.from_ir(assert_node),
-            why=why,
-            priority=priority,
-            loc=child.loc,
-        )
-        if head == "hrule":
-            kb.add_hrule(rule)
-        else:
-            kb.add_rule(rule)
+
+        # T1.7.6.5 — lower a top-level `(or d1 … dn)` :match into one rule
+        # per disjunct. A non-`or` :match is a 1-element list, so the name
+        # is unchanged for the common case.
+        disjuncts = _match_disjuncts(match_node)
+        match_nodes = disjuncts if disjuncts is not None else [match_node]
+        for i, mnode in enumerate(match_nodes):
+            rname = name if len(match_nodes) == 1 else f"{name}__or{i}"
+            if rname in kb.rules or rname in kb.hrules:
+                errors.append(
+                    f"duplicate rule/hrule name '{rname}' at {child.loc}")
+                continue
+            rule = Rule(
+                name=rname,
+                params=params,
+                match=Pattern.from_ir(mnode),
+                assert_=Pattern.from_ir(assert_node),
+                why=why,
+                priority=priority,
+                loc=child.loc,
+            )
+            if head == "hrule":
+                kb.add_hrule(rule)
+            else:
+                kb.add_rule(rule)
 
 
 def _ingest_facts(

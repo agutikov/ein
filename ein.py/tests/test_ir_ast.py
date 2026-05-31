@@ -329,7 +329,7 @@ def test_dump_compact_one_line():
     ("(rules (rule x () :match a", "1:"),       # unclosed paren
     ("Norwegian", "1:"),                         # top-level bare atom
     ("(query :mode :solve)", "1:"),              # keyword as value
-    ("(facts (instance Norwegian))", "1:"),      # instance arity 1
+    ("(facts (neq Norwegian))", "1:"),           # reserved-word arity (neq needs 2)
     ("(step s1)", "1:"),                         # step at top level
 ])
 def test_error_has_location(src: str, marker: str) -> None:

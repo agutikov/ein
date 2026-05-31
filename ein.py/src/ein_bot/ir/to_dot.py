@@ -225,7 +225,7 @@ def _emit_atom(b: _Builder, node: IRNode) -> None:
 def render_ontology(form: SForm, *, levi: bool = False) -> str:
     """Render `(ontology …)` — UML-ish type/instance/relation schema.
 
-    Type / relation / a-priori declarations render identically in both
+    Type / relation declarations render identically in both
     modes (they are schema, already drawn as direct labelled edges);
     only implicit facts inside the block honour ``levi``.
     """
@@ -259,19 +259,6 @@ def render_ontology(form: SForm, *, levi: bool = False) -> str:
                 b.node(_atom_id(dst), f"shape={TYPE_SHAPE}")
                 b.edge(_atom_id_for_value(src), _atom_id_for_value(dst),
                        f'label="{rel_name}", style=dashed')
-        elif head == "a-priori":
-            # (a-priori Name T1 T2 … [kw…]) — flat args post-R10.
-            args = decl.args
-            if not args:
-                continue
-            ap_name = _value_label(args[0])
-            sig = [a for a in args[1:] if isinstance(a, (Atom, Var, Wildcard))]
-            if len(sig) >= 2:
-                src, dst = sig[0], sig[1]
-                b.node(_atom_id(src), f"shape={TYPE_SHAPE}")
-                b.node(_atom_id(dst), f"shape={TYPE_SHAPE}")
-                b.edge(_atom_id_for_value(src), _atom_id_for_value(dst),
-                       f'label="{ap_name}", style=dashed, penwidth=2')
         else:
             # Implicit fact inside ontology — compact or Levi.
             _emit_fact(b, decl, levi=levi)

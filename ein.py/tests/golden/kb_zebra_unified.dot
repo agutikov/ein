@@ -103,6 +103,14 @@ digraph kb {
   "Water" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
 
   // facts
+  f_37670ec3be [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_37670ec3be -> "type" [label="#1", color="#bcbd22", style=solid];
+  f_37670ec3be -> "T" [label="#2", color="#bcbd22", style=solid];
+  f_37670ec3be -> "T" [label="#3", color="#bcbd22", style=solid];
+  f_d6a8c6686e [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d6a8c6686e -> "instance" [label="#1", color="#bcbd22", style=solid];
+  f_d6a8c6686e -> "T" [label="#2", color="#bcbd22", style=solid];
+  f_d6a8c6686e -> "T" [label="#3", color="#bcbd22", style=solid];
   f_d6c4ab1c24 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   f_d6c4ab1c24 -> "co-located" [label="#1", color="#bcbd22", style=solid];
   f_d6c4ab1c24 -> "Attribute" [label="#2", color="#bcbd22", style=solid];

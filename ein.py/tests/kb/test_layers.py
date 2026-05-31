@@ -17,15 +17,18 @@ from ein_bot.kb import (
 
 class TestLayerViews:
     def test_zebra_ontology_size(self, zebra_kb):
-        # 30 instance + 8 rule-app + 4 spatial + 3 relation-decl = 45.
+        # 7 type-decl + 30 instance + 8 rule-app + 4 spatial
+        #  + 5 relation-decl = 54.
         # (rule-apps: symmetric/co-located, transitive/co-located,
         #  symmetric/next-to, implies/right-of/next-to, square-fwd/right-of,
         #  square-bwd/right-of, square-unique/next-to/House,
         #  type-exclusivity/co-located.)
-        # The 3 relation-decl facts (co-located, right-of, next-to)
-        # are stored alongside the kernel kb.relations registry so
-        # rules can introspect signatures via (relation ?R ?A ?B).
-        assert len(zebra_kb.ontology()) == 45
+        # The 5 relation-decl facts (co-located, right-of, next-to, and —
+        # since S1.7.6 — type, instance) are stored alongside the
+        # kb.relations registry so rules can introspect signatures via
+        # (relation ?R ?A ?B). The 7 (type …) decls are ONTOLOGY facts
+        # too now (type left the kernel; it is a plain relation).
+        assert len(zebra_kb.ontology()) == 54
 
     def test_zebra_fact_layer_size(self, zebra_kb):
         # 14 explicit puzzle conditions (2..15)
@@ -36,8 +39,8 @@ class TestLayerViews:
         assert not zebra_kb.reasoning()
 
     def test_all_layers_is_union(self, zebra_kb):
-        # 45 ontology + 14 fact + 0 reasoning = 59
-        assert len(zebra_kb.all_layers()) == 59
+        # 54 ontology + 14 fact + 0 reasoning = 68
+        assert len(zebra_kb.all_layers()) == 68
 
     def test_ontology_fact_not_in_fact_layer(self, zebra_kb):
         # Pick any fact known to be in ONTOLOGY (e.g. an instance form).
@@ -102,7 +105,7 @@ class TestFactViewFilters:
     def test_view_repr(self, zebra_kb):
         r = repr(zebra_kb.ontology())
         assert "ontology" in r
-        assert "len=45" in r
+        assert "len=54" in r
 
     def test_matching_stub_raises(self, zebra_kb):
         # P1.3 seam — until then, .matching() is intentionally a stub.

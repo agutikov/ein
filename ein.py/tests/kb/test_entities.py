@@ -170,10 +170,13 @@ def test_pattern_extracts_variables():
     assert p.variables == ("a", "b")
     assert p.relation_names == ("co-located",)
     assert p.type_names == ()
-    assert p.has_instance_pattern is False
 
 
-def test_pattern_recognises_instance_form():
+def test_pattern_instance_is_a_generic_relation():
+    # S1.7.6: `instance` is no longer a kernel meta-primitive — it is an
+    # ordinary relation. So `(instance ?a House)` in a pattern registers
+    # `instance` in `relation_names` (like any relation head) and no
+    # longer plucks `House` into `type_names` (which is now vestigial).
     from ein_bot.ir import parse
     forms = parse(
         "(rules (rule r () :match (and (instance ?a House) (co-located ?a ?b)) "
@@ -182,9 +185,10 @@ def test_pattern_recognises_instance_form():
     rule = forms[0].args[0]
     match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
     p = Pattern.from_ir(match_node)
-    assert p.has_instance_pattern is True
-    assert "House" in p.type_names
+    assert "instance" in p.relation_names
     assert "co-located" in p.relation_names
+    assert "House" not in p.type_names
+    assert p.type_names == ()
     assert set(p.variables) == {"a", "b"}
 
 

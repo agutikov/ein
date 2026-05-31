@@ -37,10 +37,12 @@ from .hrule import Hrules
 from .lookahead import Lookahead
 
 # Inheritance-relation names the generator recognises when walking
-# ancestry. Both legacy kernel `instance` and canonical zebra2 `is-a`
-# are treated equivalently — the type-compat walk follows whichever
-# the puzzle uses (or both, if a compatibility layer is loaded).
-INHERITANCE_RELATIONS: tuple[str, ...] = ("is-a", "instance")
+# ancestry. Canonical zebra2 uses `is-a`. Since S1.7.6 `instance` is no
+# longer a kernel inheritance edge — a puzzle that uses `(instance …)`
+# bridges it to `is-a` with a user rule (see zebra.ein), so ancestry
+# always flows through `is-a` here. (`kb.instances` is still unioned in
+# by `_instance_like_objects` for instance-based encodings.)
+INHERITANCE_RELATIONS: tuple[str, ...] = ("is-a",)
 
 
 # ── Stats dataclass — T1.5.4.7 ─────────────────────────────────────
@@ -382,7 +384,7 @@ def _type_compatible(kb: KnowledgeBase, obj_name: str, sig_type: str) -> bool:
 
 
 def _ancestor_names(kb: KnowledgeBase, name: str) -> set[str]:
-    """Transitive ancestor set under `is-a` / `instance` + kernel `Type`."""
+    """Transitive ancestor set under `is-a` edges + the `Type` parent chain."""
     visited: set[str] = set()
     stack: list[str] = [name]
     while stack:
@@ -497,9 +499,9 @@ def _instance_like_objects(kb: KnowledgeBase) -> Iterator:
     """Yield NameRefs that look like inheritance-relation leaves.
 
     A name is "instance-like" if it appears at slot 0 of an
-    inheritance edge (`is-a` or `instance`) and never at slot 1.
-    Kernel `kb.instances` is unioned in for zebra-original encodings
-    that don't materialise `is-a` facts.
+    inheritance edge (`is-a`) and never at slot 1. `kb.instances`
+    (derived from `(instance …)` facts since S1.7.6) is unioned in for
+    instance-based encodings that don't materialise `is-a` facts.
     """
     at_slot0: set[str] = set()
     at_slot1: set[str] = set()

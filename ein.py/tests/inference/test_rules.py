@@ -414,3 +414,44 @@ def test_hypothesis_contradiction_negative_no_contradiction_fact():
 
     firings = list(eng.saturate())
     assert not any(f.rule == "hypothesis-contradiction" for f in firings)
+
+
+# ── or-lowering (S1.7.6 T1.7.6.5) ──────────────────────────────────
+
+
+def test_or_in_match_lowers_to_one_rule_per_disjunct():
+    """A top-level `(or …)` in a rule :match is desugared at LOAD time
+    into one rule per disjunct (`<name>__or<i>`), exploiting ein's
+    disjunctive multiple-rules semantics — no runtime `or` branch."""
+    kb = KnowledgeBase.from_ir(parse("""
+    (ontology (relation p T T) (relation q T T) (relation r T T))
+    (rules (rule disj ()
+      :match (or (p ?x ?y) (q ?x ?y)) :assert (r ?x ?y) :why "d"))
+    """))
+    # One source rule → two compiled instances; the base name is gone.
+    assert "disj" not in kb.rules
+    assert set(kb.rules) == {"disj__or0", "disj__or1"}
+    # Each instance matches exactly its disjunct, and shares the assert.
+    assert kb.rules["disj__or0"].match.relation_names == ("p",)
+    assert kb.rules["disj__or1"].match.relation_names == ("q",)
+    assert kb.rules["disj__or0"].assert_.relation_names == ("r",)
+    assert kb.rules["disj__or1"].assert_.relation_names == ("r",)
+
+
+def test_or_disjuncts_fire_independently():
+    """Either disjunct alone triggers the shared :assert — the
+    multiple-rules disjunction the desugar relies on (T1.7.6.5)."""
+    def _r_facts(activator: str) -> set:
+        eng = _engine(f"""
+        (rules (rule disj ()
+          :match (or (p ?x ?y) (q ?x ?y)) :assert (r ?x ?y) :why "d"))
+        (ontology (relation p T T) (relation q T T) (relation r T T))
+        (facts ({activator} :source "(1)"))
+        """)
+        return {
+            f.derived.args for f in eng.saturate()
+            if f.derived.relation_name == "r"
+        }
+
+    assert ("A", "B") in _r_facts("p A B")   # left disjunct fires
+    assert ("C", "D") in _r_facts("q C D")   # right disjunct fires

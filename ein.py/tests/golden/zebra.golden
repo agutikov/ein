@@ -57,6 +57,8 @@
     :priority 900))
 
 (ontology
+  (relation type T T)
+  (relation instance T T)
   (relation co-located Attribute Attribute)
   (relation right-of Attribute Attribute)
   (relation next-to Attribute Attribute)

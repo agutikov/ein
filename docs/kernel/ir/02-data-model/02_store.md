@@ -58,7 +58,7 @@ The loader walks parsed IR forms in a fixed order:
 
 1. **Pass 1** (ontology block, schema):
    - `(type …)` → `Type` entity.
-   - `(relation …)` / `(a-priori …)` → `Relation` entity
+   - `(relation …)` → `Relation` entity
      (`declared=True`).
    - `(instance …)` → `Instance` entity (auto-vivifies the type if
      absent).

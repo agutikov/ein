@@ -24,9 +24,13 @@
 ;;;                       with `:source "condition (N)"`.
 ;;;       (reasoning …) — DERIVED facts the engine produces at runtime.
 ;;;                       Empty at authoring time; populated by solve.
-;;;   · `instance` is a kernel reserved word (shape: arity 2).
-;;;     `co-located`, `right-of`, `next-to` are domain relations
-;;;     declared via `(relation …)`.
+;;;   · `type` / `instance` are ORDINARY relations since S1.7.6 (not
+;;;     kernel declarators) — declared via `(relation …)` like
+;;;     `co-located` / `right-of` / `next-to`, and consumed directly by
+;;;     the `type-exclusivity` / `square-unique` rules. zebra.ein is a
+;;;     DEMONSTRATOR of this pure encoding: it parses + loads but is not
+;;;     tuned to solve end-to-end (the canonical solving target is
+;;;     examples/zebra2.ein).
 ;;;   · Rule-application facts (`(symmetric co-located)` etc.) are
 ;;;     IMPLICIT — the puzzle text never says "co-located is
 ;;;     symmetric"; the solver supplies it from context. Hence they
@@ -203,6 +207,13 @@
 (ontology
   ;; ── Relation signatures. Properties (incl. spatial-ness) live
   ;; ── below as rule-application facts, not as kw-pairs here.
+  ;; `type` / `instance` are ordinary relations since S1.7.6 (not kernel
+  ;; declarators); `T` is the universal-top type annotation — these
+  ;; meta-relations span the hierarchy, so their args aren't constrained
+  ;; to Attribute. `(type Sub Super)` = Sub's parent type is Super;
+  ;; `(instance Thing Type)` = Thing is an instance of Type.
+  (relation type     T T)
+  (relation instance T T)
   (relation co-located Attribute Attribute)
   (relation right-of   Attribute Attribute)
   (relation next-to    Attribute Attribute)

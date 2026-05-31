@@ -36,7 +36,7 @@ source annotation.
   (type House Attribute) (type Color Attribute) (type Nationality Attribute)
   (relation co-located Attribute Attribute)
   (relation right-of   Attribute Attribute)
-  (a-priori position   House House :pattern (right-of ?a ?b))
+  (relation position   House House)                ; structural; a right-of derivation is a rule
   ;; Implicit: instance enumeration
   (instance House-1 House) (instance House-2 House) (instance House-3 House)
   (instance Red Color) (instance Green Color) (instance Ivory Color)

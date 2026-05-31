@@ -39,12 +39,13 @@ if TYPE_CHECKING:
 NameCategory = Literal["object", "relation", "rule"]
 
 # Kernel meta-relations — names hardcoded as `category="relation"`.
-# `relation` and `rule` are the two true kernel forms; `instance` and
-# `type` are listed here only until the proto-library lands and they
-# get registered through `(relation instance T T)` / `(relation type T)`
-# — owed by T1.7.2.5.d (plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/
-# s1.7.2_dynamic_vs_hardcoded.md). See [[project-canonical-zebra2]].
-KERNEL_META_RELATIONS = frozenset({"relation", "rule", "instance", "type"})
+# `relation` and `rule` are the only two true kernel forms. `instance`
+# and `type` LEFT this set in S1.7.6 (full-purity pass): they are now
+# ordinary relations a puzzle declares via `(relation instance T T)` /
+# `(relation type UserType Type)`, categorised as "relation" only when
+# so declared. See [[project-canonical-zebra2]] and
+# plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md.
+KERNEL_META_RELATIONS = frozenset({"relation", "rule"})
 
 
 # ── Layer enum ─────────────────────────────────────────────────────

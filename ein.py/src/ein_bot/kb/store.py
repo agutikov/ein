@@ -207,20 +207,11 @@ class KnowledgeBase:
 
     # ── Registry mutation (used by the loader) ────────────────────
 
-    def add_type(self, t: Type) -> Type:
-        """Register a Type (idempotent on name; first-wins for parent)."""
-        if t.name in self.types:
-            return self.types[t.name]
-        _attach(t, self)
-        self.types[t.name] = t
-        return t
-
-    def add_instance(self, inst: Instance) -> Instance:
-        if inst.name in self.instances:
-            return self.instances[inst.name]
-        _attach(inst, self)
-        self.instances[inst.name] = inst
-        return inst
+    # `types` / `instances` have no `add_*` mutator: since S1.7.6 they
+    # are DERIVED in `rebuild_indexes` from the `(type …)` / `(instance
+    # …)` facts. The entity-API surface (`kb.types`, `Type.instances`,
+    # …) is a projection of those facts, not a registry fed by a
+    # dedicated loader arm. The loader just ingests the facts.
 
     def add_relation(self, rel: Relation) -> Relation:
         """Register a Relation; the *declared* flag wins over open-world.
@@ -292,6 +283,47 @@ class KnowledgeBase:
         single-fact additions in the reasoning layer is provided by
         :meth:`_index_fact` so a saturation loop need not rebuild.
         """
+        # Derive the type / instance registries from their facts
+        # (S1.7.6). `(type …)` / `(instance …)` are plain facts on
+        # user-space relations, not kernel declarators; `kb.types` /
+        # `kb.instances` are the entity-API surface OVER those facts — a
+        # projection, not a registry fed by a dedicated loader arm.
+        # Two passes so an explicit `(type X P)` (carrying a parent)
+        # wins over the parentless auto-vivification that an
+        # `(instance _ X)` would otherwise produce.
+        self.types = {}
+        self.instances = {}
+        for fact in self.facts:
+            if fact.relation_name != "type" or not fact.args:
+                continue
+            name = fact.args[0]
+            if not isinstance(name, str) or name in self.types:
+                continue
+            parent = (
+                fact.args[1]
+                if len(fact.args) >= 2 and isinstance(fact.args[1], str)
+                else None
+            )
+            t = Type(name=name, parent_name=parent, loc=fact.loc)
+            _attach(t, self)
+            self.types[name] = t
+        for fact in self.facts:
+            if fact.relation_name != "instance" or len(fact.args) < 2:
+                continue
+            iname, tname = fact.args[0], fact.args[1]
+            if not isinstance(iname, str) or not isinstance(tname, str):
+                continue
+            if iname not in self.instances:
+                inst = Instance(name=iname, type_name=tname, loc=fact.loc)
+                _attach(inst, self)
+                self.instances[iname] = inst
+            # Auto-vivify the referenced type so `Instance.type` and
+            # `_instances_by_type` resolve even without a `(type …)` decl.
+            if tname not in self.types:
+                t = Type(name=tname, parent_name=None, loc=fact.loc)
+                _attach(t, self)
+                self.types[tname] = t
+
         # types_by_parent
         types_by_parent: dict[str, list[Type]] = defaultdict(list)
         for t in self.types.values():
@@ -411,11 +443,13 @@ class KnowledgeBase:
     def _categorise_name(self, name: str) -> str:
         """Map a name to its `NameRef.category`.
 
-        `relation` / `rule` are the two true kernel forms; `instance`
-        / `type` are temporarily hardcoded as `category="relation"`
-        until the proto-library lands and declares them via
-        `(relation instance T T)` / `(relation type T)` — see
-        plans/.../proto_library.md and [[project-canonical-zebra2]].
+        `relation` / `rule` are the only two kernel forms hardcoded as
+        `category="relation"` (`KERNEL_META_RELATIONS`). Since S1.7.6
+        `type` / `instance` are NOT special: they categorise as
+        `"relation"` only when the puzzle declares them (e.g.
+        `(relation instance Thing Type)` in zebra.ein), otherwise they
+        fall through to `"object"` like any other name. See
+        [[project-canonical-zebra2]].
         """
         if name in KERNEL_META_RELATIONS:
             return "relation"
@@ -677,9 +711,11 @@ class KnowledgeBase:
           even if the source mutates afterwards.
 
         Shares by reference (constant across the search, no
-        mutation concern): ``types``, ``instances``, ``relations``,
-        ``rules``, ``hrules``, ``classes``, ``query``, ``config``,
-        ``alive``, ``consume_stats``.
+        mutation concern): ``relations``, ``rules``, ``hrules``,
+        ``classes``, ``query``, ``config``, ``alive``,
+        ``consume_stats``. (``types`` / ``instances`` are derived by
+        :meth:`rebuild_indexes` from the copied facts — S1.7.6 — so the
+        snapshot owns isolated type/instance entities, not shared ones.)
 
         Soundness invariant: a snapshotted kb's
         :meth:`derivation_dag` walks the same chain as the source
@@ -688,9 +724,10 @@ class KnowledgeBase:
         registry by reference is fine.
         """
         new = KnowledgeBase()
-        # Share constant registries by reference.
-        new.types     = self.types
-        new.instances = self.instances
+        # Share constant registries by reference. `types` / `instances`
+        # are NOT shared — `rebuild_indexes` (below) re-derives them from
+        # the copied `facts`, giving the snapshot fully isolated
+        # type/instance entities that back-point at the snapshot.
         new.relations = self.relations
         new.rules     = self.rules
         new.hrules    = self.hrules

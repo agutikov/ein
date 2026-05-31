@@ -4,8 +4,10 @@ A `Pattern` lifts a rule's `:match` or `:assert` IR clause into a
 typed object that knows three things:
 
 - the variables bound by the pattern (``variables``),
-- the relation names mentioned by literal head (``relation_names``),
-- the type names mentioned via ``(instance ?_ T)`` shape (``type_names``).
+- the relation names mentioned by literal head (``relation_names`` —
+  this now includes ``instance``, an ordinary relation since S1.7.6),
+- ``type_names`` — vestigial; it was plucked from the old
+  ``(instance ?_ T)`` special-case and is now always empty.
 
 This is **structural** — no matching semantics, no binding, no
 backtracking. The pattern matcher lives in P1.3 and consumes these
@@ -21,7 +23,7 @@ KnowledgeBase.
 from __future__ import annotations
 
 from collections.abc import Iterator
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from ein_bot.ir.types import Atom, IRNode, KwPair, SForm, Var
 
@@ -36,8 +38,12 @@ class Pattern:
     expr: IRNode
     variables: tuple[str, ...]
     relation_names: tuple[str, ...]
+    # `type_names` is vestigial since S1.7.6: it used to be plucked from
+    # `(instance ?_ T)` patterns, but `instance` is now an ordinary
+    # relation (no special-case), so this stays empty until/unless a
+    # relation-signature-based type extractor repopulates it. Kept for
+    # the `Rule.types` / `_rules_by_type` / `Type.rules` API surface.
     type_names: tuple[str, ...]
-    has_instance_pattern: bool = field(default=False)
 
     @classmethod
     def from_ir(cls, expr: IRNode) -> Pattern:
@@ -45,10 +51,8 @@ class Pattern:
         vars_: list[str] = []
         rels: list[str] = []
         types: list[str] = []
-        has_instance = False
 
         def walk(node: IRNode, position: str = "top") -> None:
-            nonlocal has_instance
             if isinstance(node, Var):
                 if node.name not in vars_:
                     vars_.append(node.name)
@@ -59,17 +63,9 @@ class Pattern:
                 if isinstance(node.head, Var):
                     walk(node.head, "head-var")
                 head_name = node.head.name if isinstance(node.head, Atom) else None
-                if head_name == "instance":
-                    has_instance = True
-                    # (instance EntExpr TypeExpr) — recurse into both,
-                    # and pluck the type name if it's a literal atom.
-                    if len(node.args) >= 2 and isinstance(node.args[1], Atom):
-                        t = node.args[1].name
-                        if t not in types:
-                            types.append(t)
-                    for a in node.args:
-                        walk(a, "instance-arg")
-                    return
+                # `instance` is no longer special (S1.7.6): it falls
+                # through to the generic-relation handler below, which
+                # registers it in `relation_names` and walks its args.
                 if head_name in {"and", "or", "not", "neq", "eq"}:
                     # Kernel structural primitives (`and`, `or`, `not`)
                     # and the built-in predicates from
@@ -104,7 +100,6 @@ class Pattern:
             variables=tuple(vars_),
             relation_names=tuple(rels),
             type_names=tuple(types),
-            has_instance_pattern=has_instance,
         )
 
     def __iter__(self) -> Iterator[str]:

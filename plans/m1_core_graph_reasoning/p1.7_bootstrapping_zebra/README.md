@@ -66,15 +66,22 @@ end-to-end.
 
 ## Stages
 
+S1.7.1–S1.7.3 are done / relocated. The **left stages** are listed in
+**execution order S1.7.6 → S1.7.4 → S1.7.5 → S1.7.7** (not numeric ID
+order — reordered 2026-05-31 to front-load the kernel-minimization
+execution). The only hard edge among them, **S1.7.7 after S1.7.6**, is
+preserved; S1.7.4/.5 are independent of S1.7.6, and S1.7.4 sits ahead of
+S1.7.7 so its derived-NAF map is in place when closure is de-hardcoded.
+
 | ID      | Title                                  | Duration |
 |---------|----------------------------------------|----------|
 | S1.7.1  | Canonical encoding + GAPS/CONTRADICTIONS fixtures (**done** 2026-05-30) | ~1 day |
 | S1.7.2  | Kernel audit + minimization decision (full purity) | decision done 2026-05-30 |
 | S1.7.3 / S1.7.3a | Trace-matches-human acceptance + the open-hypothesis soundness fix → **relocated 2026-05-31 to [P1.7a](../p1.7a_solution_search_refactor/README.md)** (it grew into a structural search/result/stop refactor — the corrected M1 gate) | see P1.7a |
+| S1.7.6  | Kernel minimization — execution (a-priori/type/instance/or **done** 2026-06-01; symmetric tested → moved to S1.7.7) — **not an M1 gate** | 2-3 days |
 | S1.7.4  | Static NAF dependency map (observability) — relocated from P1.5a 2026-05-26 | ~½ day |
 | S1.7.5  | Query semantics: who vs where — relocated from P1.5a 2026-05-26 | 1-2 days |
-| S1.7.6  | Kernel minimization — execution (a-priori/type/instance/symmetric/or) — **not an M1 gate** | 2-3 days |
-| S1.7.7  | Kernel purity analysis — `is-a` + closed-world (**parked**, phase end) — **not an M1 gate** | research |
+| S1.7.7  | Kernel purity analysis — `is-a` + `symmetric` + closed-world (**parked**, phase end) — **not an M1 gate** | research |
 
 ## Acceptance
 

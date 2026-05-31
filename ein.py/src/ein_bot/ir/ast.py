@@ -128,23 +128,16 @@ class _ToAST(Transformer):
         return self._topform("config", items)
 
     # ── Ontology declarations ──────────────────────────────────
-    def type_decl(self, items: list) -> SForm:
-        # Grammar: `"(" "type" SYMBOL [SYMBOL] ")"`. The optional parent
-        # SYMBOL is `None` when omitted; drop it so the dump round-trip
-        # emits `(type Person)` vs `(type Engineer Person)` correctly.
-        kept = tuple(x for x in items if x is not None)
-        return SForm(head=Atom(name="type"), args=kept)
-
+    # `type` / `instance` have no dedicated transformer method: since
+    # S1.7.6 they are plain facts, lowered by `generic_fact` /
+    # `generic_list` to `SForm(head=Atom("type"|"instance"), …)` —
+    # the exact shape the old `type_decl` / `instance_form` methods
+    # produced, so the AST is unchanged.
     def relation_decl(self, items: list) -> SForm:
         # Grammar: `"(" "relation" SYMBOL SYMBOL+ kw_pair* ")"`.
         # Args are flat (post-R10): (name, T1, T2, …, *kws). No inner
         # @sig SForm; kernel docs `01-ein-graph/03_ein_model.md` §7.2.
         return SForm(head=Atom(name="relation"), args=tuple(items))
-
-    def apriori_decl(self, items: list) -> SForm:
-        # Grammar: `"(" "a-priori" SYMBOL SYMBOL+ kw_pair* ")"`. Same
-        # flat-args shape as relation_decl (R10).
-        return SForm(head=Atom(name="a-priori"), args=tuple(items))
 
     # ── Facts ──────────────────────────────────────────────────
     def eq_fact(self, items: list) -> SForm:
@@ -162,9 +155,6 @@ class _ToAST(Transformer):
     # Each reserved-word form gets a synthetic Atom head matching the
     # literal. The grammar guarantees arity / arg shape; the validator
     # (deferred) will check arg types and contextual constraints.
-    def instance_form(self, items: list) -> SForm:
-        return SForm(head=Atom(name="instance"), args=tuple(items))
-
     def not_form(self, items: list) -> SForm:
         return SForm(head=Atom(name="not"), args=tuple(items))
 

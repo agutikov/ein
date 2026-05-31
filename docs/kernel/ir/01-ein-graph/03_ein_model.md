@@ -200,9 +200,7 @@ behaviour for them and they may not be redefined by user code:
 | `rule`       | declares a rewriting rule (head of `(rule …)` in `(rules …)`).  |
 | `not`        | propositional negation; `(not X)` is an octagon fact whose single arg is the negated proposition. The contradiction detector pairs each `(not X)` against a same-layer positive `X`. |
 | `false`      | direct ⊥ — a `(false)` fact asserts that the firing rule has reached a contradiction without needing the self-negation idiom. The contradiction detector treats every `(false …)` as a `kind="direct"` contradiction (see [`../02-data-model/02_store.md` §7.2 unsat-core](../02-data-model/02_store.md) for how the unsat-core walk handles it). Shipped S1.5.4a Part 2 (2026-05-21). |
-| `is-a`       | the inheritance/instantiation edge (in zebra2-style encoding).  |
-| `instance`   | the explicit instance-of-type edge (in zebra.ein-style encoding). |
-| `type`       | declares a type-node (in zebra.ein-style encoding).               |
+| `is-a`       | inheritance/instantiation edge the engine's ancestry walk recognises (`hypgen.INHERITANCE_RELATIONS`); zebra2's canonical inheritance relation. |
 
 `not` and `false` are reserved at the **engine** level — the
 contradiction detector scans `_facts_by_relation["not"]` and
@@ -210,10 +208,17 @@ contradiction detector scans `_facts_by_relation["not"]` and
 The grammar parses both as ordinary `generic_fact` forms; the
 engine, not the parser, gives them meaning.
 
-`is-a`, `instance`, `type` are *not strictly* reserved in the
-grammar today — both encodings are valid IR (the IR-encoding
-decision is P1.7). But their *engine semantics* are reserved: the
-loader recognises them and builds Type/Instance entities accordingly.
+`is-a` is *not strictly* reserved in the grammar (it parses as an
+ordinary `generic_fact`), but its **engine semantics** are reserved:
+`hypgen._ancestor_names` / `_instance_like_objects` follow `is-a`
+edges (plus the derived `kb.types` parent chain) when type-checking
+hypotheses. Since **S1.7.6** (full-purity pass) `type` / `instance` /
+`a-priori` are **no longer kernel forms**: `a-priori` was deleted, and
+`type` / `instance` are ordinary relations a puzzle declares via
+`(relation …)` — `kb.types` / `kb.instances` are *derived views* over
+the `(type …)` / `(instance …)` facts, not built by a special loader
+arm. See
+[S1.7.6](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md).
 
 ### `false` — direct ⊥ usage
 
@@ -319,7 +324,6 @@ wrapper is pure noise. M1's canonical form (b) is therefore **flat**:
 Tokens disambiguate without the wrapper: `R` and `Ti` lex as SYMBOL;
 any trailing `:kw value` pairs lex as KEYWORD; a `(...)` trailing
 group only appears under form (a) when properties are bundled.
-`(a-priori …)` flattens the same way.
 
 The grammar/parser flattening + example/doc migration is owned by
 [`P1.3 S1.3.0 R10`](../../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#r10--flatten-relation--a-priori-args-no-inner-group-when-no-body-follows).

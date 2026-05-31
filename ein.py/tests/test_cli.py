@@ -96,7 +96,10 @@ def test_ir_dot_rule_mode_overlay(capsys: pytest.CaptureFixture[str]):
     "unclosed_paren.ein",
     "keyword_as_value.ein",
     "bare_top_level_atom.ein",
-    "instance_in_ontology.ein",
+    # `instance_in_ontology.ein` retired in S1.7.6: it tested parse-time
+    # rejection of `(instance Norwegian)` (arity-1), but `instance` is no
+    # longer a reserved declarator with pinned arity — it parses as an
+    # ordinary generic fact, so there is no lint failure to assert.
     "rule_missing_params.ein",
 ])
 def test_broken_fixtures(name: str, capsys: pytest.CaptureFixture[str]):

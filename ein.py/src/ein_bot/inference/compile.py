@@ -305,12 +305,13 @@ def _compile_premise(
             steps.extend(_compile_premise(child, bindings, known_vars))
         return steps
 
-    # `(or …)` — disjunction. Not in M1 zebra.ein; the saturation
-    # engine handles branching via :match alternatives in a future
-    # extension. Leave as a structural step the matcher rejects.
+    # `(or …)` — disjunction. A *top-level* `(or …)` in a rule :match is
+    # lowered to one rule per disjunct at LOAD time (S1.7.6 T1.7.6.5;
+    # `kb.from_ir._match_disjuncts`), exploiting the already-disjunctive
+    # multiple-rules semantics — so it never reaches the compiler. A
+    # *nested* `(or …)` (e.g. inside `(and …)`) would need DNF expansion
+    # and is unsupported; emit nothing so the loader doesn't trip.
     if head_name == "or":
-        # Not yet supported; emit nothing so the loader doesn't trip.
-        # Tests in S1.3.2 will reveal if a zebra-class rule needs this.
         return []
 
     # Predicate dispatch: head matches a registered built-in.
@@ -321,15 +322,11 @@ def _compile_premise(
     # production), so it arrives with head Atom("neq"). It's also
     # in the predicate registry; the branch above handles it.
 
-    # `(instance Ent Type)` — kernel meta-primitive; matched as if a
-    # binary relation `instance`. The KB's `_facts_by_relation` is
-    # populated for "instance" by the loader (instances ARE facts).
-    if head_name == "instance":
-        slots = tuple(_slot(a, bindings) for a in node.args)
-        shared = _shared_vars(slots, known_vars)
-        step: object = Join("instance", slots, shared) if shared else Scan("instance", slots)
-        _collect_vars(slots, known_vars)
-        return [step]
+    # `(instance Ent Type)` is no longer special (S1.7.6): it is an
+    # ordinary binary relation, compiled by the generic relation
+    # handler below (Scan/Join on relation "instance"). The KB's
+    # `_facts_by_relation` is populated for "instance" because instances
+    # ARE facts.
 
     # Relation pattern: `(REL args…)` or `(?rel args…)`. After the
     # activator binding the head is either an Atom (literal relation

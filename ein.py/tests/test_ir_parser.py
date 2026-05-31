@@ -1,7 +1,7 @@
 """Grammar acceptance + rejection tests for the IR kernel (S1.1.1).
 
 The kernel is Level B with generic-facts:
-  · Ontology holds only schema (types + relation signatures + a-priori).
+  · Ontology holds only schema (types + relation signatures).
   · Facts are generic `(NAME args*)` — relation instances, instance
     declarations, property applications, all the same shape.
   · Rule parameter lists are mandatory (empty `()` for non-generic).
@@ -50,10 +50,14 @@ def test_ontology_relation_nary():
     """)
 
 
-def test_ontology_apriori():
+def test_apriori_is_now_a_plain_symbol():
+    # `a-priori` was a vestigial alias of `relation`; S1.7.6 T1.7.6.1
+    # removed it from the kernel. It is no longer a reserved declarator
+    # — `a-priori` now lexes as an ordinary SYMBOL, so `(a-priori …)`
+    # parses as a plain generic ontology fact, like any domain head.
     _ok("""
     (ontology
-      (a-priori right-of House House :pattern (right-of ?a ?b)))
+      (a-priori right-of House House))
     """)
 
 
@@ -102,9 +106,9 @@ def test_facts_meta_relation():
 
 
 # ═══════════ Reserved kernel meta-primitives ═══════════
-# `instance`, `not`, `and`, `or`, `neq` are shape-pinned: they have
-# fixed arity and a dedicated grammar rule. Domain relations stay
-# generic SYMBOL-headed.
+# `not`, `and`, `or`, `neq` are shape-pinned: they have fixed arity and
+# a dedicated grammar rule. `instance` left the reserved set in S1.7.6
+# (now a plain relation). Domain relations stay generic SYMBOL-headed.
 
 def test_instance_fact_arity_2():
     _ok("(facts (instance Norwegian Nationality))")
@@ -124,15 +128,13 @@ def test_instance_in_pattern():
     """)
 
 
-def test_reject_instance_arity_1():
-    """`(instance X)` is missing the type arg — instance_form rejects;
-    generic_fact can't take over because `instance` is reserved."""
-    _bad("(facts (instance Norwegian))")
-
-
-def test_reject_instance_arity_3():
-    """`(instance X Y Z)` is too many positional args."""
-    _bad("(facts (instance Norwegian Nationality Spaniard))")
+def test_instance_arity_now_unchecked():
+    """S1.7.6: `instance` is no longer a reserved declarator, so the
+    grammar no longer pins its arity. `(instance X)` (1 arg) and
+    `(instance X Y Z)` (3 args) both parse as ordinary generic facts
+    now — arity is a loader/validator concern, not a parse error."""
+    _ok("(facts (instance Norwegian))")
+    _ok("(facts (instance Norwegian Nationality Spaniard))")
 
 
 def test_reject_and_at_fact_level():

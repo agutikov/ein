@@ -42,7 +42,7 @@ block name carries the **provenance** of the contained items.
 
 | head        | layer / role                                                 | reserved sub-form heads                              |
 |-------------|--------------------------------------------------------------|------------------------------------------------------|
-| `ontology`  | **implicit** assumptions: schema + reader-supplied context   | `type` · `relation` · `a-priori` · any fact form     |
+| `ontology`  | **implicit** assumptions: schema + reader-supplied context   | `type` · `relation` · any fact form     |
 | `facts`     | **explicit** problem statements (numbered conditions)        | `=` · `instance` · `not` + generic `(NAME args*)`    |
 | `reasoning` | **derived** facts — engine working memory after a solve      | same as `facts`; provenance is `:rule` / `:using`    |
 | `rules`     | inference-rule definitions (meta over ontology + facts)      | `rule`                                               |
@@ -57,8 +57,8 @@ block name carries the **provenance** of the contained items.
   (type <Name> [<Parent>])                         ; declare a type, optional parent
   (relation <name> <T1> <T2> [<T3> ...]            ; relation signature, arity ≥ 2
     [:cardinality <RANGE>] [...])                   ; optional metadata kw-pairs
-  (a-priori <name> <T1> <T2> [...]                 ; structural / spatial relation
-    :pattern <pattern>)
+  ;; structural/spatial relations are plain (relation …); a pattern-
+  ;; based derivation is an ordinary rule. (a-priori removed, S1.7.6.)
 
   ;; Implicit assumptions —
   (instance <Ent> <Type>)                          ; instance enumeration
@@ -70,7 +70,7 @@ block name carries the **provenance** of the contained items.
 
 The ontology accepts **two populations**:
 
-1. **Schema** — `type`, `relation`, `a-priori`. Describes the universe
+1. **Schema** — `type`, `relation`. Describes the universe
    of discourse.
 2. **Implicit-but-true assertions** — anything the puzzle treats as
    background truth without literally stating it. Three recurring

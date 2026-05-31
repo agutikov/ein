@@ -56,12 +56,14 @@ class TestShapeMapping:
     def test_zebra_octagons_only_for_relation_decls(self, zebra_kb):
         # Zebra's *domain* facts are all binary; the only ternary
         # facts are the auto-stored relation declarations
-        # `(relation R T0 T1)` — co-located, right-of, next-to.
-        # Each renders as an octagon (n-ary-fact shape). No other
-        # octagons should appear.
+        # `(relation R T0 T1)` — co-located, right-of, next-to, and —
+        # since S1.7.6 — type, instance. Each renders as an octagon
+        # (n-ary-fact shape). The `(type …)` / `(instance …)` enumeration
+        # facts are suppressed (shown as type boxes / instance-of edges),
+        # so no other octagons should appear.
         dot = to_dot(zebra_kb)
         octagons = [line for line in _node_decls(dot) if "shape=octagon" in line]
-        assert len(octagons) == 3  # one per relation declaration
+        assert len(octagons) == 5  # one per relation declaration
 
     def test_ternary_fact_produces_octagon(self):
         text = """
@@ -261,10 +263,15 @@ class TestSuppressions:
 
     def test_instance_facts_suppressed_in_favour_of_type_edges(self, zebra_kb):
         # `(instance Norwegian Nationality)` is shown as a dashed
-        # type-edge; the kernel `instance` fact form is suppressed to
-        # avoid duplicate edges.
+        # type-edge; the `instance` enumeration fact is suppressed to
+        # avoid duplicate edges. We look for edges *labelled* with the
+        # instance relation (`label="instance"`) — a non-suppressed
+        # instance fact would draw `Norwegian -> Nationality
+        # [label="instance"]`. The `(relation instance T T)` schema
+        # octagon's edge to the `"instance"` name node is labelled
+        # `#1` (an arg position), so it is correctly excluded.
         dot = zebra_kb.to_dot()
-        instance_edges = [line for line in _edges(dot) if '"instance"' in line]
+        instance_edges = [line for line in _edges(dot) if 'label="instance"' in line]
         assert instance_edges == []
 
 

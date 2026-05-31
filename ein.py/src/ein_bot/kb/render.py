@@ -303,8 +303,11 @@ def _suppress(f: Fact, kb: KnowledgeBase) -> bool:
     Three classes of suppression:
     1. Rule-application meta-facts — head matches a Rule name
        (`(symmetric co-located)` etc.). Pure meta; not data.
-    2. `instance` kernel facts — already rendered as type-edges via
-       `Instance.type_name`. Avoid the duplicate edge.
+    2. `instance` / `type` schema facts — already rendered via the
+       derived entity nodes (type boxes, instance ovals) and the
+       instance-of / parent edges. Since S1.7.6 these are ordinary
+       facts (not kernel declarators); suppress them here so the
+       schema isn't drawn twice (entity node + octagon).
     3. `not`-headed facts whose arg structure is collapsed by the
        loader — the inner proposition is lost, so we can't render
        them faithfully. M1 punt; revisit when the loader preserves
@@ -312,7 +315,7 @@ def _suppress(f: Fact, kb: KnowledgeBase) -> bool:
     """
     if f.relation_name in kb.rules:
         return True
-    if f.relation_name == "instance":
+    if f.relation_name in ("instance", "type"):
         return True
     if f.relation_name == "not":
         # Negative facts — punt for M1 (see docstring).
