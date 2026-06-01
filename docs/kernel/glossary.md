@@ -217,10 +217,12 @@ inclusion). See [F4 Q36](../../plans/followups/f4_cross_cutting.md).
 ### Encoding-agnostic
 A piece of code that works equally well over `zebra.ein` (classic
 `(type …)` / `(instance …)` declarations) and `zebra2.ein` (unified
-`is-a` fact graph), without committing to either encoding. The data
-model exposes :func:`logical_types` / :func:`logical_instances` for
-this. The IR-encoding final call is deferred to P1.7 S1.7.2 T1.7.2.5.
-See [`ir/02-data-model/02_store.md` §6](ir/02-data-model/02_store.md).
+`is-a` fact graph), without committing to either encoding. P1.7
+resolved the encoding question — `is-a` is canonical
+([S1.7.6](../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md)),
+and S1.7.23 removed the kernel's type/instance entity-view entirely
+(the `logical_types` / `logical_instances` bridge is gone), so both
+forms are just facts and any type projection is a user-space rule.
 
 ### Open-world
 The KB loader tolerates references to undeclared types and relations

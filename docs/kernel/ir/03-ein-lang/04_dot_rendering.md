@@ -239,8 +239,8 @@ for the design plan; the implementation is
 
 | graph element                       | DOT shape / style                              |
 |-------------------------------------|------------------------------------------------|
-| `Type` (or logical type)            | `shape=box`                                    |
-| `Instance` (or logical instance)    | `shape=oval`                                   |
+| type-role node (from `is-a`/`type` facts) | `shape=box`                              |
+| instance/object node (leaf)         | `shape=oval`                                   |
 | Binary `Fact(rel, a, b)`            | direct edge `a → b [label=rel ...]`            |
 | n-ary `Fact` (arity ≠ 2)            | `shape=octagon` Levi node + n slot-edges       |
 | Instance-of (type-edge)             | `style=dashed, arrowhead=empty, label="is-a"`  |
@@ -257,10 +257,12 @@ for the design plan; the implementation is
   they're meta, not data. (Their structural effect — making the
   `symmetric` rule fire on `co-located` — is visible in the
   derivation DAG, not in the unified KB view.)
-- **`instance` kernel facts** — the `(instance Norwegian Nationality)`
-  proposition is already shown as a dashed type-edge derived from
-  `Instance.type_name`. Including it again as a labelled `instance`
-  edge would duplicate.
+- **`instance` / `type` schema facts** — the
+  `(instance Norwegian Nationality)` proposition is already shown as a
+  dashed type-edge derived from the fact itself (S1.7.23 —
+  `render._schema_nodes` reads `is-a` / `(type …)` / `(instance …)`
+  facts directly; there is no `Instance.type_name` entity). Including
+  it again as a labelled edge would duplicate.
 - **`not`-headed facts** with collapsed arg structure — current
   loader limitation (S1.2.3 T1.2.3.4 deferral). Revisit when the
   loader preserves nested SForm args.
@@ -333,13 +335,13 @@ spread-out aesthetic.
 
 ### Encoding-agnostic
 
-The renderer uses :func:`logical_types` / :func:`logical_instances`
-(S1.2.2) to pick node shapes — so `zebra2.ein` (unified `is-a`
-encoding) renders to the same visual shape as `zebra.ein` (classic
-`(type …)` / `(instance …)` encoding), even though
-``zebra2_kb.types`` and ``zebra2_kb.instances`` are empty. `is-a`
-facts get the type-edge styling rather than the regular coloured-
-arrow styling.
+The renderer derives node shapes by reading the puzzle's `is-a` /
+`(type …)` / `(instance …)` facts directly (`render._schema_nodes`,
+S1.7.23 — there is no `logical_types` / `kb.types` entity-view to
+consult), so `zebra2.ein` (unified `is-a`) renders to the same visual
+shapes as `zebra.ein` (classic `(type …)` / `(instance …)`). `is-a`
+facts get the type-edge styling rather than the regular coloured-arrow
+styling.
 
 ### PoC comparison (T1.2.4.5 — deferred)
 

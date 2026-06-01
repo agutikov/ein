@@ -76,9 +76,11 @@ Uses the kernel `(type …)` and `(instance …)` declarations:
   (instance Japanese  Nationality))
 ```
 
-The KB loader builds `Type` and `Instance` entities at load time;
-the inheritance hierarchy is cached. `kb.types` and `kb.instances`
-are populated.
+`(type …)` / `(instance …)` are ordinary facts (S1.7.6); the kernel
+builds **no** `Type` / `Instance` entity-view over them (S1.7.23), so
+a type projection — if a puzzle wants one — is a user-space rule over
+these facts. `zebra.ein` is a non-solving demonstrator; `zebra2.ein`
+below is the canonical encoding.
 
 ### Unified is-a (`zebra2.ein`)
 
@@ -96,12 +98,11 @@ Uses only the relation `is-a` with two recurring rules
   (sibling-exclusive is-a))
 ```
 
-No `Type` or `Instance` entities are built at load time — the
-hierarchy emerges dynamically from `is-a` facts after rule
-saturation. `kb.types` and `kb.instances` are *empty*; downstream
-code uses
-[`logical_types(kb)`](../02-data-model/02_store.md#6-encoding-agnostic-logical-views)
-to ask "what are the type-like nodes" agnostically.
+The inheritance hierarchy is just the `is-a` fact graph (closed under
+`transitive is-a` after saturation). The kernel keeps no derived
+type/instance view (S1.7.23); anything that needs "the type-like
+nodes" reads the `is-a` facts directly (e.g. the renderer's
+`_schema_nodes`) or via a user-space rule.
 
 The categorical motivation (T as terminal object / limit of the
 order viewed as a category) is documented in `zebra2.ein`'s header.

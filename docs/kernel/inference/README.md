@@ -74,11 +74,12 @@ change when the engine arrives:
 4. **Lazy branching.** Saturate first with all propagation rules;
    branch only when no rule fires and the puzzle is not yet solved.
    ([Q19 working answer](../../../plans/m1_core_graph_reasoning/open_questions.md#q19).)
-5. **Encoding-agnostic.** The engine must work over both `zebra.ein`
-   (classic) and `zebra2.ein` (unified is-a) — the final IR encoding
-   choice is deferred to P1.7. The matcher must consult
-   `logical_types` / `logical_instances` where the encoding might
-   matter.
+5. **Encoding-agnostic.** The engine works over both `zebra.ein`
+   (classic) and `zebra2.ein` (unified is-a). P1.7 resolved the
+   encoding (`is-a` canonical) and S1.7.23 removed the kernel
+   type/instance entity-view, so the engine treats `(type …)` /
+   `(instance …)` / `is-a` uniformly as facts — there is no
+   `logical_types` / `logical_instances` bridge to consult.
 
 ## M1 invariant — `enable_alive_inherit` soundness
 

@@ -15,53 +15,56 @@ derivation DAGs).
 
 ## 1. Registries
 
-The KB owns five dicts keyed by entity name plus one fact list:
+The KB owns the entity-name dicts plus one fact list:
 
 ```python
 class KnowledgeBase:
-    types:     dict[str, Type]
-    instances: dict[str, Instance]
     relations: dict[str, Relation]   # both declared and open-world
     rules:     dict[str, Rule]
+    hrules:    dict[str, Rule]        # hypothesis-generation rules
     facts:     list[Fact]             # all layers; `layer` is per-fact
+    names:     dict[str, NameRef]     # every distinct name + participation
     query:     Query | None           # optional, from (query …)
     classes:   EqClasses              # union-find placeholder
 ```
 
+> **S1.7.23 — no `types` / `instances` registries.** The kernel keeps
+> no type-system entity-view; `(type …)` / `(instance …)` are ordinary
+> facts and the inheritance forest is just `is-a` facts. See
+> [`01_entities.md` §1](01_entities.md).
+
 Lookups are O(1) for entities, O(|facts|) for the fact list. Per-
-relation and per-instance fact lookups go through the reverse
-indexes below — O(1) by name.
+relation fact lookups go through the reverse indexes below — O(1) by
+name.
 
 ## 2. Reverse indexes
 
-Six dicts precomputed at load and incrementally maintained on
-single-fact additions:
+Precomputed at load and (for the fact / name indexes) incrementally
+maintained on single-fact additions:
 
 | index                       | maps                                          | populated by      |
 |-----------------------------|-----------------------------------------------|-------------------|
-| `_types_by_parent`          | parent name → tuple of subtypes               | full rebuild      |
-| `_instances_by_type`        | type name → tuple of instances                 | full rebuild      |
 | `_facts_by_relation`        | relation name → tuple of facts                 | full + incremental |
-| `_facts_by_instance`        | instance name → tuple of facts mentioning it   | full + incremental |
 | `_rules_by_relation`        | relation name → tuple of rules over it          | full rebuild      |
-| `_rules_by_type`            | type name → tuple of rules touching it          | full rebuild      |
 | `_rule_apps_by_rule`        | rule name → tuple of property-application facts | full + incremental |
 | `_rule_apps_on_relation`    | relation name → tuple of property facts on it   | full + incremental |
+| `names`                     | name → `NameRef` (head / arg participation)    | full + incremental |
 
-Entities expose these via `@property` accessors (e.g.
-`type.instances`, `relation.facts`) — the dicts themselves are
-internal.
+Entities expose these via `@property` accessors (e.g. `relation.facts`)
+— the dicts themselves are internal. (S1.7.23 removed the
+`_types_by_parent` / `_instances_by_type` / `_facts_by_instance` /
+`_rules_by_type` indexes — they served only the deleted `Type` /
+`Instance` accessors.)
 
 ## 3. Loading from IR — `KnowledgeBase.from_ir(forms)`
 
 The loader walks parsed IR forms in a fixed order:
 
 1. **Pass 1** (ontology block, schema):
-   - `(type …)` → `Type` entity.
-   - `(relation …)` → `Relation` entity
-     (`declared=True`).
-   - `(instance …)` → `Instance` entity (auto-vivifies the type if
-     absent).
+   - `(relation …)` → `Relation` entity (`declared=True`).
+   - `(type …)` / `(instance …)` → ordinary `Fact`s (S1.7.23 — no
+     `Type` / `Instance` entities; they are plain facts on user-space
+     relations, see [`01_entities.md` §1](01_entities.md)).
 2. **Pass 2** (rules block):
    - `(rule …)` → `Rule` entity with `match` / `assert_` `Pattern`
      objects.
@@ -119,10 +122,9 @@ implementation:
 def fork(self) -> KnowledgeBase:
     new = KnowledgeBase()
     # Shared by reference (immutable post-load):
-    new.types      = self.types
-    new.instances  = self.instances
     new.relations  = self.relations
     new.rules      = self.rules
+    new.hrules     = self.hrules
     new.query      = self.query
     # Equality classes: forked (its own state, seeded from parent's).
     new.classes._parent = dict(self.classes._parent)
@@ -130,10 +132,10 @@ def fork(self) -> KnowledgeBase:
     # fork don't touch the parent.
     new.facts = list(self.facts)
     new._facts_by_relation     = dict(self._facts_by_relation)
-    new._facts_by_instance     = dict(self._facts_by_instance)
     new._rule_apps_by_rule     = dict(self._rule_apps_by_rule)
     new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
-    # … (similar for other indexes)
+    new.names                  = dict(self.names)
+    # … (`_rules_by_relation` shared by reference; immutable post-load)
     return new
 ```
 
@@ -142,44 +144,24 @@ scale at ~50-200 facts. If hypothesis branching becomes a hot path
 (P1.5 profiling), revisit with a copy-on-write index wrapper.
 
 **Caveat about entity back-pointers:** shared entities keep their
-`_kb` pointing at the **original** KB, not the fork. So
-`norwegian.facts` (entity API) returns the root KB's facts, *not*
+`_kb` pointing at the **original** KB, not the fork. So a shared
+`Relation`'s `.facts` (entity API) returns the root KB's facts, *not*
 the fork's view. Fork-scoped queries go through the explicit view
-API: `fork.all_layers().about(norwegian)`. This is intentional —
+API: `fork.all_layers().about(name)`. This is intentional —
 the entity API tells you *root* state, the view API tells you
 *branch* state.
 
-## 6. Encoding-agnostic logical views
+## 6. Type / instance views — removed (S1.7.23)
 
-[Memory: project — IR encoding choice deferred](../../../../README.md)
-keeps both `zebra.ein` (classic) and `zebra2.ein` (unified is-a)
-valid through every M1 stage. Downstream code must NOT assume
-`kb.types` is populated.
-
-Two helpers in `views.py` paper over the difference:
-
-```python
-logical_types(kb)     -> tuple[Type | str, ...]
-logical_instances(kb) -> tuple[Instance | str, ...]
-```
-
-- **Classic encoding** (zebra.ein): returns `kb.types.values()` /
-  `kb.instances.values()` — typed entities.
-- **Unified-is-a encoding** (zebra2.ein): `kb.types` and
-  `kb.instances` are empty. The helpers walk `is-a` facts —
-  RHS atoms of `(is-a Child Parent)` are the *logical types*; LHS
-  atoms that never appear as RHS are the *logical instances* (leaves
-  of the is-a forest).
-
-The return is a **union** type (`Type | str` / `Instance | str`)
-because in the unified case no entity exists — only a name. Two
-companion helpers, `type_name(x)` and `instance_name(x)`, paper over
-the union for callers that just want a string.
-
-The drift-detection tests in
-`tests/kb/test_layers.py::TestEncodingDriftDetection` assert that
-both encodings produce the same logical-leaf set (the only
-structural difference is zebra2's catch-all `T` root).
+This section used to document `logical_types` / `logical_instances`
+(and `type_name` / `instance_name`) — the encoding-agnostic
+`is-a`-bridge over the `kb.types` / `kb.instances` entity-view. **All
+of it is gone** ([S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md)):
+the kernel imposes no type system, so there is no derived
+types-and-instances view to maintain. A puzzle that wants a named-type
+projection computes it with a user-space ein-lang rule over its own
+inheritance relation; the renderer reads `is-a` / `(type …)` /
+`(instance …)` facts directly (`kb/render.py:_schema_nodes`).
 
 ## 7. Provenance + derivation DAG
 

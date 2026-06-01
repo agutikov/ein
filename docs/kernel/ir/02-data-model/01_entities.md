@@ -12,72 +12,36 @@ code is authoritative for field shapes.
 
 ---
 
-## 1. The five entity classes
+## 1. The three entity classes
 
 Each kind of graph node from
-[`../01-ein-graph/01_kb.md` §1](../01-ein-graph/01_kb.md) has a
-corresponding frozen dataclass. Identity follows the table:
+[`../01-ein-graph/01_kb.md` §1](../01-ein-graph/01_kb.md) that the
+engine reasons over has a corresponding frozen dataclass. Identity
+follows the table:
 
 | graph node kind | Python class | identity (`__eq__` / `__hash__`) |
 |-----------------|--------------|----------------------------------|
-| Object          | `Instance`   | `name` (string)                  |
-| Type            | `Type`       | `name` + `parent_name`           |
 | Relation        | `Relation`   | `name` + `signature`              |
 | Rule            | `Rule`       | `name`                           |
 | Fact            | `Fact`       | `(relation_name, args)`           |
+
+> **S1.7.23 — no `Type` / `Instance` entity classes.** The kernel
+> imposes no type system: there is no derived types-and-instances
+> entity-view (and no `kb.types` / `kb.instances` registries). Object
+> and type nodes are just **names** — they appear as `Fact` args and
+> as the heads/args of the puzzle's own `is-a` / `(type …)` /
+> `(instance …)` facts; the participation of every name is captured by
+> the lightweight `NameRef` index (§1.4). A puzzle that wants a
+> named-type projection computes it with a user-space ein-lang rule
+> over its own inheritance relation. See
+> [S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md).
 
 Metadata fields (`loc`, `provenance`, `layer`, `_kb`, `raw`) are
 **excluded** from identity — two facts with the same `(rel, args)`
 but different layers or sources are *the same fact* for dedup
 purposes (see [`../01-ein-graph/01_kb.md` §4](../01-ein-graph/01_kb.md)).
 
-### 1.1 `Type`
-
-Internal node of the inheritance forest.
-
-```python
-Type(
-    name: str,
-    parent_name: str | None,   # None for root types
-    loc:  Loc | None,           # IR source position (metadata)
-    _kb:  KnowledgeBase | None, # back-pointer (metadata)
-)
-```
-
-Cross-reference accessors:
-- `t.parent` → `Type | None` — direct parent in the forest.
-- `t.children` → `tuple[Type, ...]` — direct subtypes.
-- `t.ancestors()` → `Iterator[Type]` — walk up the chain.
-- `t.instances` → `tuple[Instance, ...]` — `Instance`s with
-  `type_name == t.name`.
-- `t.rules` → `tuple[Rule, ...]` — rules whose patterns name this
-  type (via `(is-a ?x T)` / `(instance ?x T)`).
-
-Multi-typing is **out of scope for M1** — each `Instance` has at
-most one direct parent type (M1 Q23). Multiple types per object
-would arrive via the unified-is-a encoding (zebra2.ein) and is
-handled there by the `is-a` fact graph, not by a multi-valued
-`Instance.type` field.
-
-### 1.2 `Instance`
-
-Leaf node — an instance of exactly one type.
-
-```python
-Instance(
-    name:       str,
-    type_name:  str,
-    loc:        Loc | None,
-    _kb:        KnowledgeBase | None,
-)
-```
-
-Cross-references:
-- `inst.type` → `Type | None` — the type this instance belongs to.
-- `inst.facts` → `tuple[Fact, ...]` — every fact mentioning this
-  instance in any argument position (across all layers).
-
-### 1.3 `Relation`
+### 1.1 `Relation`
 
 A relation declaration. Note: relations are **first-class nodes**
 in the graph — they participate in facts (`(symmetric co-located)`)
@@ -101,9 +65,11 @@ fact heads without an accompanying `(relation …)` declaration
 are *also* rule names). Both flavours are graph nodes; the flag is
 metadata for the schema-validator.
 
+The `signature` holds the argument-position type **names** (opaque
+atoms — S1.7.23 keeps no `Type` entities to resolve them to; hypgen
+uses them only as object-exclusion metadata).
+
 Cross-references:
-- `rel.signature_types` → `tuple[Type, ...]` — argument-position
-  types as `Type` entities (filtered to those known to the KB).
 - `rel.facts` → `tuple[Fact, ...]` — all facts whose head is this
   relation's name.
 - `rel.properties` → `tuple[Fact, ...]` — rule-application facts
@@ -115,7 +81,7 @@ Cross-references:
   rule (e.g. `symmetric`), the corresponding rule. Non-None for
   property-tag carriers.
 
-### 1.4 `Rule`
+### 1.2 `Rule`
 
 A graph rewriting rule. See
 [`../01-ein-graph/02_rules.md`](../01-ein-graph/02_rules.md) for
@@ -141,14 +107,12 @@ here we only carry the structure.
 Cross-references:
 - `rule.relations` → `tuple[Relation, ...]` — relations mentioned by
   literal name in `match` or `assert_`.
-- `rule.types` → `tuple[Type, ...]` — types touched by `(is-a ?x T)`
-  / `(instance ?x T)` premises.
 - `rule.applications` → `tuple[Fact, ...]` — property-facts whose
   head is this rule's name (T2 activations). For example, the
   `symmetric` rule's `applications` includes `(symmetric co-located)`
   and `(symmetric next-to)`.
 
-### 1.5 `Fact`
+### 1.3 `Fact`
 
 A hyperedge — an instance of a relation applied to specific
 arguments. The proposition.
@@ -169,7 +133,7 @@ Arguments admit three shapes, matching the kernel ein model's
 **named** vs **relational** node duality
 ([`../01-ein-graph/03_ein_model.md` §3](../01-ein-graph/03_ein_model.md)):
 
-- `str` — a named node (name of an Instance / Relation / Type).
+- `str` — a named node (an object name or a Relation name).
 - `int` — a numeric literal.
 - `Fact` — a **relational node** embedded as an argument
   (e.g. `(hypothesis (co-located Norwegian House-2))`). The nested
@@ -184,9 +148,10 @@ Resolution to typed entities happens on demand via
 Cross-references:
 - `f.relation` → `Relation | None` — the relation entity this fact
   instantiates.
-- `f.arg_entities` → `tuple[Instance | Relation | Type | str | int, ...]`
-  — resolve each arg to its entity, with string passthrough for
-  unknowns.
+- `f.arg_entities` → `tuple[Relation | Fact | str | int, ...]` —
+  resolve each name arg to its `Relation` entity when declared;
+  object names stay raw strings (S1.7.23 — no `Type` / `Instance`
+  entities), nested `Fact` args pass through.
 - `f.is_rule_application` → `bool` — True iff the fact's head matches
   a declared rule name (i.e., the fact is a property activator).
 - `f.applied_rule` → `Rule | None` — the rule it activates.
@@ -195,6 +160,29 @@ Cross-references:
   [`02_store.md`](02_store.md).
 - `f.premises` → `tuple[Fact, ...]` — for rule-kind provenance,
   resolved premise facts via the owning KB.
+
+### 1.4 `NameRef` — the global names index
+
+Since S1.7.23 dropped the `Type` / `Instance` entity-view, the
+encoding-agnostic record of "every distinct name and where it
+participates" is a lightweight `NameRef` (one per name in `kb.names`),
+not a typed entity:
+
+```python
+NameRef(
+    name:     str,
+    category: "object" | "relation" | "rule",  # the discriminator
+    as_head:  tuple[Fact, ...],   # facts where the name is the head
+    as_arg:   tuple[Fact, ...],   # facts where it appears as a string arg
+)
+```
+
+`category` is `"relation"` for declared relations + the kernel-meta
+heads (`relation` / `rule`), `"rule"` for rule names, and `"object"`
+for everything else. `hypgen._candidate_objects` reads it (minus
+signature-type names and the reserved primitives) to pick the blind
+enumerator's guessable objects — replacing the old `is-a`-leaf /
+`kb.instances` selection.
 
 ---
 
@@ -217,8 +205,10 @@ Pattern(
 The pattern object is **structural-only** for M1 — the matching
 semantics (binding, unification, backtracking) lives in P1.3 with
 the inference engine. The Pattern serves as the type-checker's view
-of a clause and as the data the `Rule.relations` / `Rule.types`
-cross-references walk.
+of a clause and as the data the `Rule.relations` cross-reference
+walks. (`type_names` / `has_instance_pattern` are now **vestigial** —
+S1.7.23 removed the `Rule.types` / `_rules_by_type` consumers with the
+`Type` entity; the fields remain only as structural metadata.)
 
 A small example — the LHS `(and (?rel ?a ?b) (?rel ?b ?c))` of the
 `transitive` rule:
@@ -312,14 +302,13 @@ return empty tuples / `None`.
 ## 6. Identity rules — summary
 
 ```text
-   Type:       (name, parent_name)
-   Instance:   (name,)
    Relation:   (name, signature)
    Rule:       (name,)
    Fact:       (relation_name, args)        — recursive: args may contain Fact
    Pattern:    (expr,)   — by structural IR equality
    Provenance: (all data fields except `loc`)
 ```
+(S1.7.23 — no `Type` / `Instance` entities.)
 
 Two entities are equal iff their identity tuples are equal — `loc`,
 layer, provenance, and back-pointers never affect equality. For

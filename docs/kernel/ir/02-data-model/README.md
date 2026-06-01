@@ -1,21 +1,22 @@
 # Data model — Python in-memory representation
 
 How the graph from [`../01-ein-graph/`](../01-ein-graph/) is held in
-memory: frozen dataclasses for the five entity kinds, the
+memory: frozen dataclasses for the entity kinds, the
 `KnowledgeBase` store that owns them, the reverse indexes that make
 cross-references O(1), the layer views, the hypothesis-fork mechanic,
 and the provenance + derivation-DAG machinery.
 
 ## Files
 
-- [`01_entities.md`](01_entities.md) — the five entity dataclasses
-  (`Type`, `Instance`, `Relation`, `Rule`, `Fact`) plus `Pattern`,
+- [`01_entities.md`](01_entities.md) — the entity dataclasses
+  (`Relation`, `Rule`, `Fact` + the `NameRef` index) plus `Pattern`,
   `Provenance`, and `Layer`. Identity rules. Cross-reference
   accessors. Pattern's structural-only view of `:match` / `:assert`.
+  (S1.7.23 — no `Type` / `Instance` classes; the kernel imposes no
+  type system.)
 - [`02_store.md`](02_store.md) — `KnowledgeBase` registries + reverse
   indexes; the IR loader; layer views (`FactView`); `kb.fork()` for
-  hypothesis branches; encoding-agnostic `logical_types` /
-  `logical_instances`; `derivation_dag` / `unsat_core`; equality
+  hypothesis branches; `derivation_dag` / `unsat_core`; equality
   classes placeholder.
 
 ## Reading order
@@ -27,12 +28,11 @@ and viewed.
 
 ## Where this maps to code
 
-- `src/ein_bot/kb/entities.py` — Type/Instance/Relation/Rule/Fact/Layer.
+- `src/ein_bot/kb/entities.py` — Relation/Rule/Fact/NameRef/Layer.
 - `src/ein_bot/kb/pattern.py` — Pattern.
 - `src/ein_bot/kb/provenance.py` — Provenance, DerivationDAG.
 - `src/ein_bot/kb/store.py` — KnowledgeBase, EqClasses, Query.
-- `src/ein_bot/kb/views.py` — FactView, logical_types,
-  logical_instances.
+- `src/ein_bot/kb/views.py` — FactView.
 - `src/ein_bot/kb/from_ir.py` — IR → KB loader.
 
 ## Stability
@@ -41,6 +41,9 @@ Stable through M1. F4 promotion seams (compound node kinds, e-graph)
 are noted explicitly in `01_entities.md` / `02_store.md`; M1 doesn't
 implement them but the architecture stays open.
 
-The IR encoding choice (classic vs unified is-a) is **deferred to
-P1.7** — the data model handles both transparently; downstream code
-uses `logical_types` / `logical_instances` to stay encoding-agnostic.
+The IR encoding choice (classic `(type …)`/`(instance …)` vs unified
+`is-a`) was **resolved in P1.7**: the canonical encoding is `is-a`
+([S1.7.6](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md)),
+and the kernel keeps no type/instance entity-view at all
+([S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md)) —
+both forms are just facts.
