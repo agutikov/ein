@@ -77,7 +77,7 @@ independent** and may run in any order or in parallel; **S1.7b.6 is the gate**.
 | ID | title | leverage | findings | status |
 |---|---|---|---|---|
 | **S1.7b.1** | [Dead-code & stale-doc sweep](s1.7b.1_dead_code_sweep.md) | high / ~½ day, near-zero risk | F-KER-9, F-ENG-2/3/10, F-KB-11, F-RTC-7 | ✅ **shipped** (`0e124ea`) |
-| **S1.7b.2** | [`_explore_layers` decomposition + `Mode` retirement](s1.7b.2_explore_layers_decomposition.md) | **flagship** | F-ENG-1/4/5/6/7/8/13/14, F-KER-1 | ⏸ **deferred** (see ledger) |
+| **S1.7b.2** | [`_explore_layers` decomposition + `Mode` retirement](s1.7b.2_explore_layers_decomposition.md) | **flagship** | F-ENG-1/4/5/6/7/8/13/14, F-KER-1 | ◐ **candidate body decomposed** (`ee715b2`) — module-level/EntryPolicy/Mode deferred |
 | **S1.7b.3** | [Inference-kernel function refactors](s1.7b.3_inference_kernel_functions.md) | high | F-KER-2/3/4/5/6/7/8/10/15 | ◐ **mostly shipped** (`0e124ea`,`030365c`) — helper unifications deferred |
 | **S1.7b.4** | [KB hot-path & index refactor](s1.7b.4_kb_hotpath_and_indexes.md) | high (perf + a bug) | F-KB-1/2/3/4/5/6/9/13 | ◐ **bug+perf shipped** (`0e124ea`,`b658968`) — decomp/wrappers deferred |
 | **S1.7b.5** | [Shared DOT emitter + render/trace/cli decomposition](s1.7b.5_dot_emitter_and_render_trace_cli.md) | high | F-RTC-1..10, F-KB-8/10 | ◐ **escape dedup shipped** (`ba01162`) — emitter API/cli/trace deferred |
@@ -174,18 +174,24 @@ green throughout.
 Net: `src/` shrank 13337 → 13269 LOC (despite added code) with **0** dead
 functions; +14 regression tests (617 `test_` defs).
 
-**Deferred — and why (honest):**
+**Flagship `_explore_layers` (S1.7b.2) — candidate body decomposed (`ee715b2`).**
+The 300-line per-candidate body was extracted, **incrementally and
+byte-exact**, into three named nested helpers — `_check_budget()`,
+`_handle_dead()`, `_merge_and_recheck() -> bool` — shrinking the candidate
+loop to ~50 readable lines and collapsing the `phase_2_done` break-flag from
+**7 set-sites to 1** (F-ENG-6). Each step was verified against the full
+acceptance gate: **identical** enterings (zebra2 101 / minus-15 215 /
+invariant 11) and verdicts as baseline. Done as *nested* helpers (closures
+capturing the loop state, `nonlocal alive`) rather than module-level, on
+purpose: the module-level extraction needs a `_LoopCtx` and an error-prone
+`ctx.`-rename across the soundness-critical loop — exactly where a single slip
+reintroduces a **P1.7a-class bug** (a non-model called a model / a SAT puzzle
+→ ⊥). **Still deferred** (the higher-risk remainder): module-level extraction
++ Phase-1/Phase-3 split via `_LoopCtx` (to shrink the function's *own* AST
+span — it is still large because the helpers nest inside it), the full
+`EntryPolicy` strategy, and the `Mode`-neutraliser retirement (F-KER-1).
 
-- **The flagship `_explore_layers` decomposition (S1.7b.2) — NOT done.** After
-  reading all 620 lines: the per-candidate merge block mutates the
-  loop-carried `alive`/`a_layer` through **7 entry-discriminated
-  `phase_2_done` break-sites**, and a byte-exact EntryPolicy extraction is the
-  plan's own "3–5 day" effort where a single mis-mapped break reintroduces a
-  **P1.7a-class soundness bug** (the engine called a non-model a model / a SAT
-  puzzle ⊥). Rushing it under one session's budget was judged the wrong risk
-  against the "no behaviour change" constraint. It remains the highest-value
-  follow-up; do it incrementally with the acceptance gate after each step.
-- **Bounded items left on the table** (lower-value or coupled to the flagship):
+**Bounded items also left on the table** (lower-value or coupled to the flagship):
   `rebuild_indexes` decomposition + snapshot shallow-copy + typed index
   wrappers (F-KB-2/6/9); `from_ir.load` / `parse_trace_steps` nesting
   flattening (F-KB-7 / F-RTC-4, still depth 8/9); the `node()/edge()/cluster()`
