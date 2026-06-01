@@ -77,7 +77,7 @@ independent** and may run in any order or in parallel; **S1.7b.6 is the gate**.
 | ID | title | leverage | findings | status |
 |---|---|---|---|---|
 | **S1.7b.1** | [Dead-code & stale-doc sweep](s1.7b.1_dead_code_sweep.md) | high / ~½ day, near-zero risk | F-KER-9, F-ENG-2/3/10, F-KB-11, F-RTC-7 | ✅ **shipped** (`0e124ea`) |
-| **S1.7b.2** | [`_explore_layers` decomposition + `Mode` retirement](s1.7b.2_explore_layers_decomposition.md) | **flagship** | F-ENG-1/4/5/6/7/8/13/14, F-KER-1 | ◑ **8 helpers hoisted to module level** (`ee715b2`,`1780812`) — `_explore_layers` 620→382; Phase-split/EntryPolicy/Mode deferred |
+| **S1.7b.2** | [`_explore_layers` decomposition + `Mode` retirement](s1.7b.2_explore_layers_decomposition.md) | **flagship** | F-ENG-1/4/5/6/7/8/13/14, F-KER-1 | ● **decomposed + `Mode` retired** (`ee715b2`→`6a4f777`) — `_explore_layers` 620→103; phases module-level; F-KER-1 done. `EntryPolicy` assessed **not-a-fit** (see ledger) |
 | **S1.7b.3** | [Inference-kernel function refactors](s1.7b.3_inference_kernel_functions.md) | high | F-KER-2/3/4/5/6/7/8/10/15 | ◐ **mostly shipped** (`0e124ea`,`030365c`) — helper unifications deferred |
 | **S1.7b.4** | [KB hot-path & index refactor](s1.7b.4_kb_hotpath_and_indexes.md) | high (perf + a bug) | F-KB-1/2/3/4/5/6/9/13 | ◐ **bug+perf shipped** (`0e124ea`,`b658968`) — decomp/wrappers deferred |
 | **S1.7b.5** | [Shared DOT emitter + render/trace/cli decomposition](s1.7b.5_dot_emitter_and_render_trace_cli.md) | high | F-RTC-1..10, F-KB-8/10 | ◐ **escape dedup shipped** (`ba01162`) — emitter API/cli/trace deferred |
@@ -174,24 +174,43 @@ green throughout.
 Net: `src/` shrank 13337 → 13269 LOC (despite added code) with **0** dead
 functions; +14 regression tests (617 `test_` defs).
 
-**Flagship `_explore_layers` (S1.7b.2) — candidate body decomposed *and*
-helpers hoisted to module level (`ee715b2`, `1780812`).** Done in two
-byte-exact steps. First (`ee715b2`) the 300-line per-candidate body was
-extracted into three named helpers — `_check_budget` / `_handle_dead` /
-`_merge_and_recheck` — shrinking the candidate loop to ~50 readable lines and
-collapsing the `phase_2_done` break-flag from **7 set-sites to 1** (F-ENG-6).
-Then (`1780812`) all **8** helpers were lifted from closures to **module-level
-functions** behind a `_LoopCtx` dataclass; `_merge_and_recheck` dropped
-`nonlocal alive` in favour of taking + returning `alive`. The function's own
-AST span fell **620 → 382 lines** (each hoisted helper ≤ 90). Both steps
-verified against the full acceptance gate — **identical** enterings (zebra2
-101 / minus-15 215 / invariant 11) and verdicts as baseline; the
-soundness-critical `nonlocal`→`ctx`/return rename was done with the gate as the
-net (and a clean revert point), since a slip there is a **P1.7a-class bug** (a
-non-model called a model / a SAT puzzle → ⊥). **Still deferred**: extracting
-Phase 1/2/3 to push `_explore_layers` below the 120-line bar (it is now linear
-orchestration), the full `EntryPolicy` strategy, and the `Mode`-neutraliser
-retirement (F-KER-1).
+**Flagship `_explore_layers` (S1.7b.2) — decomposed `620 → 103` and the `Mode`
+neutraliser retired (`ee715b2` → `6a4f777`, six byte-exact commits).** Built up
+incrementally, each step verified against the full acceptance gate with
+**identical** enterings (zebra2 101 / minus-15 215 / invariant 11) and verdicts:
+
+1. **Candidate body → 3 helpers** (`ee715b2`): `_check_budget` /
+   `_handle_dead` / `_merge_and_recheck`; the candidate loop fell to ~50 lines
+   and the `phase_2_done` break-flag from **7 set-sites to 1** (F-ENG-6).
+2. **Helpers hoisted to module level** (`1780812`): all 8 closures → module
+   functions behind a `_LoopCtx` dataclass.
+3. **Phase split** (`08d1a1b`): `_phase1_root` / `_phase2_layers` /
+   `_phase3_verdict` extracted; `_explore_layers` became a ~12-line
+   orchestrator (`if (r := _phaseN(ctx)) is not None: return r`). **620 → 103
+   lines** (mostly docstring).
+4. **`Mode` retired** (`6a4f777`, F-KER-1): the
+   `mode = Mode.CONTRADICTIONS if entry == "solve"` neutraliser hack — passing
+   a deliberately-wrong Mode so `is_solved` returned False on the solve path —
+   is gone, replaced by explicit `check_goal: bool` (on
+   `_promote_forced_positives`) and `entry != "solve"` guards.
+
+The soundness-critical rewrites (the `nonlocal`→ctx/return rename, the
+`phase_2_done`→return mapping, the `Mode` guards) were each done with the
+acceptance gate as the net + a clean per-commit revert point — a slip there is
+a **P1.7a-class bug** (a non-model called a model / a SAT puzzle → ⊥).
+
+**`EntryPolicy` — assessed and *not* done (an honest engineering call).** The
+remaining ~20 `entry ==` sites are now localized inside the four small phase
+functions, but they are **heterogeneous in control flow**: some return a
+terminal verdict, some record-and-`continue`, some fall through to the next
+block, some guard a mutation. They do not map onto a uniform set of policy
+methods without each method returning a "what to do next" sentinel that the
+caller must re-dispatch — which is *more* indirection than the explicit
+ladders, for **three fixed entries** that will never grow. Verdict: the
+localized ladders are clearer and lower-risk than a forced policy hierarchy;
+F-ENG-1's "EntryPolicy ideal" is aspirational and does not fit this code.
+`_phase2_layers` stays at 220 AST lines but is **130 code + 77 comment** (the
+load-bearing P1.7a explanations) — a coherent layer loop, not a monolith.
 
 **Bounded items also left on the table** (lower-value or coupled to the flagship):
   `rebuild_indexes` decomposition + snapshot shallow-copy + typed index
@@ -202,7 +221,9 @@ retirement (F-KER-1).
   unifications; F-KB-13 type annotations.
 
 **Acceptance scorecard (S1.7b.6):** #1 behaviour-unchanged ✅ · #2 both bugs
-closed with tests ✅ · #3 metrics *partially* moved (0 dead funcs ✅, but
-functions >120 lines and depth-≥8 nesting remain in the deferred items —
-**not** met) · #4 no public-API churn ✅ · #5 hot-path no-regression ✅
-(4:43 ≈ 4:39, same enterings).
+closed with tests ✅ · #3 metrics *largely* moved (0 dead funcs ✅; the
+flagship `_explore_layers` **620 → 103** ✅; `Mode` hack gone ✅) — *partially*
+unmet on the long tail: `_phase2_layers` 220-span/130-code, `rebuild_indexes`
+(164), `_build_parser` (154), and the depth-8/9 `from_ir.load` /
+`parse_trace_steps` are the deliberate deferrals · #4 no public-API churn ✅ ·
+#5 hot-path no-regression ✅ (4:42 ≈ 4:39, same enterings).
