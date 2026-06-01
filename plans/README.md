@@ -101,7 +101,8 @@ plans/
 │   ├── p1.5_hypothesis_loop/         …
 │   ├── p1.6_rendering_and_trace/     …
 │   ├── p1.7_bootstrapping_zebra/     …
-│   └── p1.7a_solution_search_refactor/  sound solution model & search/result/stop refactor (the M1 gate)
+│   ├── p1.7a_solution_search_refactor/  sound solution model & search/result/stop refactor (the M1 gate)
+│   └── p1.7b_review_and_refactor/    post-M1 debt paydown — code-cited review + refactor (non-gating)
 ├── m2_nl_to_ir/                      NL → IR — link-grammar / GBNF / llama.cpp
 │   ├── README.md
 │   ├── open_questions.md

@@ -62,6 +62,7 @@ Concretely, M1 ships:
 | P1.6  | Rendering + markdown trace             | 1-2 wk   | [`p1.6_rendering_and_trace/`](p1.6_rendering_and_trace/) |
 | P1.7  | Bootstrapping — Zebra end-to-end       | 1-2 wk   | [`p1.7_bootstrapping_zebra/`](p1.7_bootstrapping_zebra/) (encoding + kernel-purity; the *gate* spun out to P1.7a) |
 | P1.7a | Sound solution model & search/result/stop refactor | 1-2 wk | [`p1.7a_solution_search_refactor/`](p1.7a_solution_search_refactor/) (spun out 2026-05-31 from P1.7 S1.7.3/.3a; **the corrected M1 gate**) |
+| P1.7b | Review & refactor — post-M1 debt paydown | 1-2.5 wk | [`p1.7b_review_and_refactor/`](p1.7b_review_and_refactor/) (created 2026-06-01; **non-gating**, behaviour-preserving cleanup of the M1 reference impl; 40-finding code-cited [review](p1.7b_review_and_refactor/findings.md)) |
 | P1.8  | Improvements (modules+imports+stdlib / COW fork / negative-fact volume; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; phase title broadened 2026-05-21, again 2026-05-22) |
 | P1.9  | Hypothesis-loop follow-ups (E1-E23 catalog; placeholder) | TBD | [`p1.9_hypothesis_loop_followups/`](p1.9_hypothesis_loop_followups/) |
 | P1.10 | Kernel documentation (IR 4-level split / user-vs-dev / architecture / `docs/index` → `docs/lib` rename / ein-model atoms-vs-objects refinement; placeholder) | TBD | [`p1.10_kernel_docs/`](p1.10_kernel_docs/) (created 2026-05-24 from TODO.md) |
@@ -70,8 +71,13 @@ Concretely, M1 ships:
 Phases run roughly sequentially. P1.6 can start as soon as P1.2 is
 in (the renderer only needs the data model); P1.7 is the integration
 phase, and its acceptance gate was spun out 2026-05-31 to **P1.7a**
-(the sound solution model), which now gates "M1 done". **P1.8 – P1.11
-are placeholders.** P1.8
+(the sound solution model), which now gates "M1 done". **P1.7b**
+(created 2026-06-01) is a **non-gating**, behaviour-preserving cleanup
+of the implementation M1 actually shipped on — it pays down the scar
+tissue left by the engine removals (`tree/`, `monotonic_solve`) and the
+P1.7a soundness retrofit, grounded in a 40-finding code-cited review;
+recommended before the [M1a Rust port](../m1a_rust/README.md)
+transcribes the reference. **P1.8 – P1.11 are placeholders.** P1.8
 parks improvement themes — modules+imports+stdlib (the original
 Q30 deferral from the 2026-05-20 P1.3 review, broadened 2026-05-22
 to own the standard library: closure auto-inference deferred whole
