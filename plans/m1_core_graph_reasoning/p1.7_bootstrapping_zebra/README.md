@@ -72,6 +72,8 @@ order — reordered 2026-05-31 to front-load the kernel-minimization
 execution). The only hard edge among them, **S1.7.7 after S1.7.6**, is
 preserved; S1.7.4/.5 are independent of S1.7.6, and S1.7.4 sits ahead of
 S1.7.7 so its derived-NAF map is in place when closure is de-hardcoded.
+**S1.7.8–.22 are children of S1.7.7** (one per hardcoded engine name);
+they share its parked status and feed its written conclusion (T1.7.7.5).
 
 | ID      | Title                                  | Duration |
 |---------|----------------------------------------|----------|
@@ -81,7 +83,8 @@ S1.7.7 so its derived-NAF map is in place when closure is de-hardcoded.
 | S1.7.6  | Kernel minimization — execution (a-priori/type/instance/or **done** 2026-06-01; symmetric tested → moved to S1.7.7) — **not an M1 gate** | 2-3 days |
 | S1.7.4  | Static NAF dependency map (observability) — **done** 2026-06-01 (`Engine.naf_dependency_map()` + default-off `DerivedNafWarning`; Scope B / post-saturation) | ~½ day |
 | S1.7.5  | Query semantics: who vs where — **done** 2026-06-01 (option 2: `:goal` joins through house to `nation-loc`; `answer.py` de-hardcoded) | 1-2 days |
-| S1.7.7  | Kernel purity analysis — `is-a` + `symmetric` + closed-world (**parked**, phase end) — **not an M1 gate** | research |
+| S1.7.7  | Kernel purity analysis — **comprehensive inventory** of every hardcoded engine name + de-risk spike (**parked**, phase end) — **not an M1 gate** | research |
+| S1.7.8–.22 | **Per-name decomposition** (one stage file per hardcoded name): `is-a` (.8), `symmetric` (.9), `closed` (.10), `open` (.11), `not`/`false`/`and`/`or`/`forall`/`absent` (.12–.17), `eq`/`neq` (.18), bookkeeping heads (.19), `hypothesis-relations` (.20), task-class entries (.21), engine-internal strings (.22) — each: functionality, removal consequences, ein-lang-rule route, name-agnostic route | analysis |
 
 ## Acceptance
 
