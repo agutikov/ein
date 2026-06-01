@@ -481,33 +481,34 @@ class KnowledgeBase:
         return "object"
 
     def _index_fact(self, fact: Fact) -> None:
-        """Incrementally append a single fact to the indexes.
+        """Incrementally append a single fact to the reverse indexes.
 
-        Used by the reasoning-layer mutations (P1.3 / P1.5) so a
-        saturation step needn't call :meth:`rebuild_indexes`.
+        Used by the reasoning layer (P1.3 / P1.5) so a saturation step
+        needn't call :meth:`rebuild_indexes`. Writes are **in place**:
+        :meth:`fork` and :meth:`snapshot` give every kb its own index
+        dicts (no kb aliases another's — every assignment is a fresh
+        ``{}`` / ``dict(...)``), so an in-place append never leaks across
+        branches — and avoids the per-fact whole-dict rebuild the old
+        ``{**d, k: …}`` form paid (O(|relations|) and O(|names|) per add).
         """
         rn = fact.relation_name
-        self._facts_by_relation = {
-            **self._facts_by_relation,
-            rn: (*self._facts_by_relation.get(rn, ()), fact),
-        }
+        self._facts_by_relation[rn] = (
+            *self._facts_by_relation.get(rn, ()), fact,
+        )
         for a in fact.args:
             if isinstance(a, str) and a in self.instances:
-                self._facts_by_instance = {
-                    **self._facts_by_instance,
-                    a: (*self._facts_by_instance.get(a, ()), fact),
-                }
+                self._facts_by_instance[a] = (
+                    *self._facts_by_instance.get(a, ()), fact,
+                )
         if rn in self.rules:
-            self._rule_apps_by_rule = {
-                **self._rule_apps_by_rule,
-                rn: (*self._rule_apps_by_rule.get(rn, ()), fact),
-            }
+            self._rule_apps_by_rule[rn] = (
+                *self._rule_apps_by_rule.get(rn, ()), fact,
+            )
             for a in fact.args:
                 if isinstance(a, str) and a in self.relations:
-                    self._rule_apps_on_relation = {
-                        **self._rule_apps_on_relation,
-                        a: (*self._rule_apps_on_relation.get(a, ()), fact),
-                    }
+                    self._rule_apps_on_relation[a] = (
+                        *self._rule_apps_on_relation.get(a, ()), fact,
+                    )
 
         # Negated-fact index — O(1) Tier-A exclusion lookup for the
         # hypothesis generator.
@@ -518,36 +519,35 @@ class KnowledgeBase:
                     (inner.relation_name, inner.args)
                 )
 
-        # Names index — append to head + arg sets, creating fresh
-        # NameRefs (frozen dataclasses) so the dict-value identity
-        # shifts on update.
+        # Names index — append to head + arg sets via fresh frozen
+        # NameRefs (the value identity shifts on update).
         def _bump_head(name: str) -> None:
             prev = self.names.get(name)
             if prev is None:
-                self.names = {**self.names, name: NameRef(
+                self.names[name] = NameRef(
                     name=name, category=self._categorise_name(name),
                     as_head=(fact,), as_arg=(),
-                )}
+                )
             else:
-                self.names = {**self.names, name: NameRef(
+                self.names[name] = NameRef(
                     name=prev.name, category=prev.category,
                     as_head=(*prev.as_head, fact),
                     as_arg=prev.as_arg,
-                )}
+                )
 
         def _bump_arg(name: str) -> None:
             prev = self.names.get(name)
             if prev is None:
-                self.names = {**self.names, name: NameRef(
+                self.names[name] = NameRef(
                     name=name, category=self._categorise_name(name),
                     as_head=(), as_arg=(fact,),
-                )}
+                )
             else:
-                self.names = {**self.names, name: NameRef(
+                self.names[name] = NameRef(
                     name=prev.name, category=prev.category,
                     as_head=prev.as_head,
                     as_arg=(*prev.as_arg, fact),
-                )}
+                )
 
         _bump_head(rn)
         for a in fact.args:
@@ -699,15 +699,18 @@ class KnowledgeBase:
         new.classes._parent = dict(self.classes._parent)
         # Facts list: copy so appends to the fork don't touch parent.
         new.facts = list(self.facts)
-        # Reverse indexes: shallow-copy the dicts (values stay shared;
-        # mutations replace whole entries via dict-merge in
-        # `_index_fact`).
-        new._types_by_parent = dict(self._types_by_parent)
-        new._instances_by_type = dict(self._instances_by_type)
+        # Reverse indexes. The four type/rule indexes derive from the
+        # (post-load-immutable) types/instances/rules registries and are
+        # never mutated by `_index_fact`, so they're SHARED by reference
+        # like those registries. The fact / name / negated indexes ARE
+        # appended to during saturation, so each fork gets its own copy
+        # and then mutates it in place (see `_index_fact`).
+        new._types_by_parent = self._types_by_parent
+        new._instances_by_type = self._instances_by_type
+        new._rules_by_relation = self._rules_by_relation
+        new._rules_by_type = self._rules_by_type
         new._facts_by_relation = dict(self._facts_by_relation)
         new._facts_by_instance = dict(self._facts_by_instance)
-        new._rules_by_relation = dict(self._rules_by_relation)
-        new._rules_by_type = dict(self._rules_by_type)
         new._rule_apps_by_rule = dict(self._rule_apps_by_rule)
         new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
         new.names = dict(self.names)
