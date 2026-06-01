@@ -204,20 +204,22 @@ def test_contradictions_solve_state_hash_merge_via_unit_helper():
 
 def test_contradictions_solve_store_lattice_populates_kb_index():
     """Under ``store_lattice=True``, every visited non-``dead-pre``
-    commitment registers in ``proof.kb_index``. Distinct
-    commitments map to distinct entries (state_hash keying);
-    collisions would collapse but branching/04 produces
-    distinct kb-states per commitment."""
+    commitment registers in ``proof.kb_index`` (keyed by state_hash).
+
+    S1.7.24 — branching/04's ``co-located`` is symmetric, so since the
+    kernel stopped canonicalising symmetric pairs both orientations
+    `(c, h)` / `(h, c)` are now explored as distinct commitments that
+    saturate (via the user's `(rule symmetric)`) to the SAME kb-state —
+    so the state_hash dedup MERGES them and ``state_hash_merges`` is
+    positive (it was 0 when canonicalisation kept one orientation)."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
     verdict, stats = contradictions_solve(
         kb, max_set_size=3, store_lattice=True,
     )
     assert isinstance(verdict, Contradiction)
     assert len(verdict.proof.kb_index) > 0
-    # branching/04 has no naturally-occurring state_hash
-    # collisions, so no merges fire here. (The unit-level
-    # merge test above pins the merge wiring.)
-    assert stats.state_hash_merges == 0
+    # Symmetric orientations collapse at the state_hash key → merges.
+    assert stats.state_hash_merges > 0
 
 
 def test_contradictions_solve_store_lattice_off_keeps_kb_index_empty():

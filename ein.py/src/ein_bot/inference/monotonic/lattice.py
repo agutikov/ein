@@ -119,6 +119,11 @@ class DeadCommitment:
     learned_clause: frozenset[FactId]
     layer:          int
     kind:           Literal["dead-pre", "dead-post"]
+    # S1.7.23/.24 — `state_hash` of the (dead) post-saturation kb. The
+    # orientation-invariant key for result-level snapshots: two
+    # orientations of a symmetric dead commitment saturate to the same
+    # dead state. Defaults to 0 for records predating the field.
+    state_hash:     int = 0
 
 
 @dataclass(frozen=True)

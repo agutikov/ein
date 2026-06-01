@@ -159,13 +159,12 @@ def is_unconditional_death(
     return not any(_walk(kb, f, visited, own) for f in unsat_core)
 
 
-def is_symmetric_relation(kb: KnowledgeBase, name: str) -> bool:
-    """True iff ``(symmetric <name>)`` is asserted in ``kb``.
-
-    Thin wrapper over :meth:`KnowledgeBase.is_symmetric`, kept at the
-    back-prop write site so it can promote the symmetric mirror.
-    """
-    return kb.is_symmetric(name)
+# S1.7.24 — `is_symmetric_relation` was DELETED with the on-death
+# symmetric mirror: back-prop no longer writes `(not (R b a))` when
+# `(R a b)` dies. A symmetric counterpart's death is recovered
+# generically — committing it re-derives the dead orientation (the
+# user's `(rule symmetric)`) and hits the same ⊥ one branch later — so
+# the kernel imposes no `(symmetric R)` semantics here.
 
 
 def _write_negation(
@@ -217,7 +216,6 @@ def back_propagate(
     kb: KnowledgeBase, hypothesis: Fact, unsat_core: frozenset[Fact],
     *,
     rule_name: str = "<back-prop-unconditional>",
-    promote_symmetric: bool = True,
 ) -> Fact:
     """Write ``(not hypothesis)`` into ``kb`` *and* every ancestor kb
     on an unconditional death.
@@ -244,13 +242,10 @@ def back_propagate(
     kills, T1.5.7.4 ``<lookahead-dies-immediately>`` for S1.5.6
     lookahead kills).
 
-    With ``promote_symmetric=True`` (the default — T1.5.7.3) the
-    symmetric counterpart ``(not (R b a))`` is *also* written when
-    ``(symmetric R)`` is asserted and ``hypothesis`` is a 2-arg
-    fact with distinct arguments. The symmetric counterpart's death
-    is unconditional under the same reasoning — sound to cache
-    proactively, saving a redundant ``try_branch`` on the next pass.
-    The mirror is bubbled to ancestors too.
+    S1.7.24 — no symmetric mirror: a dead ``(R a b)`` does NOT
+    proactively write ``(not (R b a))``. The counterpart's death is
+    recovered generically (re-derivation hits the same ⊥); the kernel
+    keys on ``is_symmetric`` nowhere.
 
     Idempotent: a pre-existing ``(not h)`` at any level is returned
     untouched.
@@ -294,22 +289,6 @@ def back_propagate(
     new_writes += _bubble_to_ancestors(
         ancestors, hypothesis, unsat_core, bubbled_name,
     )
-
-    if (promote_symmetric
-            and len(hypothesis.args) == 2
-            and hypothesis.args[0] != hypothesis.args[1]
-            and is_symmetric_relation(kb, hypothesis.relation_name)):
-        mirror = Fact(
-            relation_name=hypothesis.relation_name,
-            args=(hypothesis.args[1], hypothesis.args[0]),
-            layer=Layer.REASONING,
-        )
-        if kb._fact_by_id("not", (mirror,)) is None:
-            new_writes += 1
-        _write_negation(kb, mirror, unsat_core, rule_name)
-        new_writes += _bubble_to_ancestors(
-            ancestors, mirror, unsat_core, bubbled_name,
-        )
 
     # Invalidate ancestor verdict_at caches so any stale "alive"
     # entry for the now-dead hypothesis is re-classified on the
@@ -373,6 +352,5 @@ __all__ = [
     "_kb_chain_ctx",
     "_write_negation",
     "back_propagate",
-    "is_symmetric_relation",
     "is_unconditional_death",
 ]

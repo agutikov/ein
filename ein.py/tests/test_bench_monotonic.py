@@ -60,11 +60,18 @@ def test_solve_run_exhaustive_is_ambiguity():
     """``--exhaustive`` runs the lattice to the end; this fixture has
     two distinct solution nodes, so the sound verdict is
     ``Ambiguity`` (k=2, exhausted=true) — what first-goal-match
-    masked."""
+    masked.
+
+    S1.7.24 — uses ``--max-set-size 3`` (was 2): branching/04's
+    ``co-located`` is symmetric, and with the kernel no longer
+    canonicalising symmetric pairs both orientations enter the search,
+    so the lattice needs depth 3 (not 2) to fully exhaust. ``k`` is
+    still 2 (distinct model STATES collapse via state_hash dedup);
+    only the depth needed to *certify* exhaustion grew."""
     proc = subprocess.run(
         [
             sys.executable, str(SCRIPT), str(BRANCHING_FIXTURE),
-            "--max-set-size", "2", "--exhaustive",
+            "--max-set-size", "3", "--exhaustive",
         ],
         capture_output=True, text=True, check=True,
     )

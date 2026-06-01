@@ -254,11 +254,15 @@ def _fill_slot(
     obj_ref,
     stats: HypGenStats,
 ) -> Iterator[Fact]:
-    """Enumerate candidate-object fillers; emit symmetric duplicates.
+    """Enumerate candidate-object fillers for ``obj_ref``.
 
     S1.7.23: fillers are no longer restricted to type-compatible
     objects (the `is-a` type-filter is gone); ``obj_ref`` pairs with
     every candidate object except itself.
+
+    S1.7.24: no symmetric mirror — the kernel does not consult
+    `is_symmetric` here (both orderings still arise across focal
+    objects; canonical-only generation is a user hrule's job).
 
     S1.5.4b: Filter B ("slot already used" — skip (R, slot_idx)
     when ``obj_ref`` already sits there) is INTENTIONALLY removed.
@@ -268,8 +272,13 @@ def _fill_slot(
     if len(rel.signature) != 2:
         return     # M1 only handles arity-2 relations
     other_slot = 1 - fixed_slot
-    symmetric = kb.is_symmetric(rel.name)
 
+    # S1.7.24 — no kernel symmetric-awareness in generation: the
+    # enumerator does NOT consult `is_symmetric` to emit the mirror
+    # `(R b a)`. The blind loop already produces both orderings via
+    # different focal objects; a symmetric puzzle that wants only
+    # canonical pairs declares a `guess`-style hrule (mini_zebra's
+    # pattern). The kernel imposes no `(symmetric R)` semantics.
     for filler in _candidate_objects(kb):
         if filler.name == obj_ref.name:
             stats.pre_candidate["self_edge"] += 1
@@ -282,15 +291,6 @@ def _fill_slot(
             layer=Layer.REASONING,
             provenance=None,
         )
-        if symmetric:
-            rev_args = _build_args(filler.name, fixed_slot,
-                                   obj_ref.name, other_slot)
-            yield Fact(
-                relation_name=rel.name,
-                args=rev_args,
-                layer=Layer.REASONING,
-                provenance=None,
-            )
 
 
 # ── Per-candidate predicates ───────────────────────────────────────

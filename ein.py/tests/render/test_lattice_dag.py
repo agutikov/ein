@@ -116,8 +116,20 @@ def test_gaps_full_solution_frontier_matches_proof():
     kb = _kb(BRANCHING / "04_two_levels.ein")
     verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
     dot = render_lattice(verdict.proof, view="full")
-    # branching/04 has exactly two satisfying commitments → two greens
-    assert dot.count(SOL_GREEN) == len(verdict.proof.solutions) == 2
+    sol_nodes = [
+        n for n in verdict.proof.kb_index.values() if n.verdict == "solution"
+    ]
+    # The render shows one green node per satisfying COMMITMENT — the gaps
+    # kb_index is per-commitment (no state merge; the documented contract).
+    # S1.7.24: branching/04's `co-located` is symmetric, and with the
+    # kernel no longer canonicalising symmetric pairs both orientations
+    # are explored, so the two models surface as four satisfying
+    # commitments → four green nodes.
+    assert dot.count(SOL_GREEN) == len(sol_nodes)
+    # `proof.solutions` reports distinct MODELS (state_hash-deduped): two.
+    assert len(verdict.proof.solutions) == 2
+    # …and the green frontier covers exactly those two distinct states.
+    assert len({n.state_hash for n in sol_nodes}) == 2
 
 
 # ── state_hash collapse → one multilabel node ──────────────────────

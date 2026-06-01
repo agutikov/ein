@@ -81,20 +81,29 @@ def test_gaps_solve_root_satisfies_in_phase_1():
     assert stats.layers_explored == 0
 
 
-def test_gaps_solve_forced_positive_cascade_at_phase_1():
-    """``branching/03_five_hyps_one_alive`` — lookahead +
-    symmetric-canonicalised hypgen shrinks alive to a
-    singleton ``{(co-located White H5)}`` right at the end
-    of Phase 1; ``_promote_forced_positives`` cascades it
-    into root before any candidate iteration starts.
-    Verdict: Ambiguity with 1 branch.
+def test_gaps_solve_branching_03_returns_one_model():
+    """``branching/03_five_hyps_one_alive`` resolves to the single
+    model ``(co-located White H5)`` — gaps_solve reports 1 branch.
+
+    S1.7.24 — pre-removal this fired the forced-positive CASCADE at the
+    end of Phase 1: the symmetric open-set canonicalisation shrank
+    ``alive`` to the singleton ``{(co-located White H5)}``, so
+    ``_promote_forced_positives`` resolved it with zero Phase-2
+    enterings. With the canonicalisation gone, the sole viable
+    symmetric pair registers as TWO open entries, so the cascade
+    (which keys on a singleton ``alive``) no longer fires — the model
+    is instead found by a Phase-2 commitment. The VERDICT (1 distinct
+    model) is unchanged; only the mechanism is. This documents that
+    the cascade is a symmetric-canonicalisation-dependent optimisation,
+    not a correctness requirement.
     """
     kb = _kb_from(BRANCHING / "03_five_hyps_one_alive.ein")
     verdict, stats = gaps_solve(kb, max_set_size=3)
     assert len(verdict.branches) == 1
-    # The cascade did the work; no Phase 2 candidates needed.
-    assert stats.enterings_total == 0
-    assert stats.forced_positives >= 1
+    # The cascade no longer fires for symmetric pairs; the model is
+    # found via a Phase-2 commitment instead.
+    assert stats.forced_positives == 0
+    assert stats.enterings_total >= 1
 
 
 # ── Multi-branch outcomes (the headline feature) ──────────
@@ -143,13 +152,20 @@ def test_gaps_solve_branching_04_returns_two_branches():
     assert stats.layers_explored >= 1
 
 
-def test_gaps_solve_branching_05_returns_three_branches():
-    """``branching/05_mini_zebra`` is documented as a
-    multi-solution puzzle; gaps_solve enumerates all 3.
+def test_gaps_solve_branching_05_returns_one_distinct_model():
+    """``branching/05_mini_zebra`` has a UNIQUE model (solve k=1: Bob
+    drinks Coffee, owns Dog) — gaps_solve reports ONE distinct model.
+
+    S1.7.24 — pre-dedup this returned 3 *branches that all shared one
+    state_hash* (the same model recorded via three commitment paths — a
+    latent gaps over-count the symmetric retirement exposed). gaps now
+    dedups solution records by post-saturation state_hash (the generic
+    signal SOLVE already used), so the branch count reflects distinct
+    MODELS, not commitment paths.
     """
     kb = _kb_from(BRANCHING / "05_mini_zebra.ein")
     verdict, _stats = gaps_solve(kb, max_set_size=3)
-    assert len(verdict.branches) == 3
+    assert len(verdict.branches) == 1
 
 
 # ── Zero-branch outcomes (Contradiction degenerate) ───────

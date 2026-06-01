@@ -303,12 +303,16 @@ def _emit_negated_fact_writeback(
     """For a singleton dead clause ``{h_id}``, write ``(not h)``
     into ``root_kb`` so ``generate_hypotheses`` excludes ``h``
     on the next saturate and the next ``_compute_alive`` shrinks
-    ``alive`` accordingly. For symmetric relations, the mirror
-    ``(not (R b a))`` is written too — matches the tree-side
-    ``back_propagate(..., promote_symmetric=True)`` path, since
-    :func:`_compute_alive`'s symmetric canonicalisation would
-    otherwise resurrect the dead entry through the mirror
-    orientation.
+    ``alive`` accordingly.
+
+    S1.7.24 — no symmetric mirror: the counterpart ``(R b a)`` is
+    NOT proactively negated. With the open-set canonicalisation also
+    gone (`solution.open_hypotheses`), the two orientations are
+    independent open entries; the counterpart dies on its own branch
+    (re-derivation via the user's `(rule symmetric)` hits the same
+    ⊥), and the two branches collapse at the generic
+    `canon.state_hash` solution-node dedup. The kernel keys on
+    ``is_symmetric`` nowhere.
 
     Minimal equivalent of
     :func:`ein_bot.inference.back_prop._write_negation` —
@@ -319,12 +323,6 @@ def _emit_negated_fact_writeback(
     """
     rn, args = h_id
     _write_negation_local(root_kb, rn, args)
-    if (
-        len(args) == 2
-        and args[0] != args[1]
-        and rn in root_kb.symmetric_relations()
-    ):
-        _write_negation_local(root_kb, rn, (args[1], args[0]))
 
 
 def _write_negation_local(
@@ -486,6 +484,26 @@ def _build_lattice_stats(
     )
 
 
+def _dedup_solutions_by_state(
+    records: list[SolutionRecord],
+) -> tuple[SolutionRecord, ...]:
+    """Collapse solution records that saturate to the same KB state, in
+    deterministic order. S1.7.24 — recovers correct model counting
+    generically (no symmetric-awareness): the two orientations of a
+    symmetric pair share a ``state_hash`` and count once. The kept
+    representative is the one with the lexicographically smallest
+    ``commitment`` (deterministic regardless of candidate order, so the
+    branch list is shuffle-invariant); records are returned in
+    ``state_hash`` order."""
+    best: dict[int, SolutionRecord] = {}
+    for r in records:
+        h = state_hash(r.kb)
+        cur = best.get(h)
+        if cur is None or tuple(sorted(r.commitment)) < tuple(sorted(cur.commitment)):
+            best[h] = r
+    return tuple(best[h] for h in sorted(best))
+
+
 def _finalise_lattice_verdict(
     entry: Literal["gaps", "contradictions"],
     *,
@@ -506,14 +524,24 @@ def _finalise_lattice_verdict(
     ``store_lattice`` is set (when off, the proof carries an
     empty dict to keep the field's type stable).
     """
+    # S1.7.24 — dedup recorded solutions by post-saturation `state_hash`
+    # (the generic signal SOLVE's `solution_nodes` dict already keys on).
+    # A model reached by two commitments — e.g. the two orientations
+    # `{(R a b)}` / `{(R b a)}` of a symmetric relation, which the user's
+    # `(rule symmetric)` saturates to the SAME KB — is ONE model. Distinct
+    # models keep distinct hashes (no-op for non-colliding gaps); the
+    # canonical (min-commitment) representative + state_hash ordering make
+    # the branch list deterministic, so the kernel needs no symmetric
+    # canonicalisation to count an undecided symmetric pair once.
+    solutions = _dedup_solutions_by_state(lstate.solutions)
     lattice_stats = _build_lattice_stats(
         stats,
-        solutions_found=len(lstate.solutions),
+        solutions_found=len(solutions),
         state_hash_merges=lstate.state_hash_merges,
         elapsed_seconds=elapsed_seconds,
     )
     proof = LatticeProof(
-        solutions=tuple(lstate.solutions),
+        solutions=solutions,
         dead_commitments=tuple(lstate.dead_commitments),
         kb_index=dict(lstate.kb_index) if store_lattice else {},
         alive_at_end=lstate.alive_at_end_tuple,
@@ -523,7 +551,7 @@ def _finalise_lattice_verdict(
     if entry == "gaps":
         branches = tuple(
             Solution(kb=s.kb, trace=s.firings)
-            for s in lstate.solutions
+            for s in solutions
         )
         return Ambiguity(
             branches=branches, proof=proof,
@@ -672,6 +700,7 @@ def _root_dead(ctx: _LoopCtx) -> None:
     ctx.lstate.dead_commitments.append(DeadCommitment(
         commitment=(), unsat_core=core,
         learned_clause=frozenset(), layer=0, kind="dead-post",
+        state_hash=state_hash(ctx.root_kb),
     ))
 
 
@@ -755,6 +784,7 @@ def _handle_dead(
             learned_clause=frozenset(c),
             layer=layer,
             kind=result.kind,
+            state_hash=state_hash(result.kb),
         ))
 
     if ctx.dumper is not None:

@@ -228,6 +228,28 @@ its parent [S1.7.6](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping
 had already removed `type` / `instance` / `a-priori` from the kernel
 forms.
 
+**`symmetric` is NOT reserved either (S1.7.24)** — it is a plain
+property tag exactly like `transitive` / `functional`. Symmetry lives
+*entirely* in the user's positive rule `(rule symmetric (?R) :match
+(?R ?a ?b) :assert (?R ?b ?a))`; the kernel keys on `is_symmetric` in
+**no search path**. S1.7.24 deleted the three search-layer sites that
+used to hardcode symmetric-awareness: generation's both-orderings emit
+(`hypgen._fill_slot`), the on-death mirror (`back_prop`'s
+`promote_symmetric` + the monotonic writeback), and the open-set
+canonicalisation (`solution.open_hypotheses`). Correct model counting
+(`k`) is now recovered *generically* — the two orientations of an
+undecided pair saturate (via the user's rule) to the same KB and
+collapse at the `canon.state_hash` solution-node dedup; result-level
+lattice records (gaps solutions, contradictions deads, the shuffle
+snapshot) key on that state, not the commitment path. `store.is_symmetric`
+/ `symmetric_relations` survive only as unprivileged property queries (no
+search code calls them). This makes the kernel sound for a user-defined
+or differently-named symmetric rule, and a precondition for sound rule
+*induction* ([F7](../../../../plans/followups/f7_rule_induction.md)) — a
+symmetric-aware kernel would presuppose the very property induction must
+learn. See
+[S1.7.24](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md).
+
 ### `false` — direct ⊥ usage
 
 Use `:assert (false)` from inside a rule whose conclusion is "the

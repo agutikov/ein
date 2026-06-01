@@ -71,13 +71,17 @@ def test_p16_contract_gaps_branching_04_store_lattice():
 
 
 def test_p16_contract_gaps_branching_05():
-    """``gaps_solve`` on branching/05 — 3 distinct solutions.
-    Each solution's snapshotted kb satisfies is_solved."""
+    """``gaps_solve`` on branching/05 — ONE distinct solution (the
+    puzzle has a unique model). Its snapshotted kb satisfies is_solved.
+
+    S1.7.24 — was 3 pre-dedup (the same model via three commitment
+    paths); gaps now dedups ``proof.solutions`` by state_hash to
+    distinct MODELS."""
     kb = _kb_from(BRANCHING / "05_mini_zebra.ein")
     verdict, _ = gaps_solve(kb, max_set_size=3)
     assert verdict.proof is not None
     validate_proof_for_explanation(verdict, verdict.proof)
-    assert len(verdict.proof.solutions) == 3
+    assert len(verdict.proof.solutions) == 1
 
 
 # ── contradictions_solve x {store_lattice: F/T} on branching/04 ──

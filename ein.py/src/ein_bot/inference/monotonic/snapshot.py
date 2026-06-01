@@ -8,9 +8,13 @@ Two solves of the same puzzle at the same ``max_set_size``
 under different :attr:`SolverConfig.lattice_order_seed` values
 must produce snapshots that compare ``==`` — if they don't, an
 order leak has crept into the engine loop (forced-positive
-integration order, nogood subsumption order, multilabel
-representative-id leak, etc.) and the lattice's "set determines
-kb" invariant is degraded at the engine level.
+integration order, multilabel representative-id leak, etc.) and the
+lattice's "set determines kb" invariant is degraded at the engine
+level. The snapshot is **result-level** (S1.7.24): it keys on the
+post-saturation STATES reached (solutions / deads / nodes), not the
+commitment PATHS or the learned-nogood clauses — both of which are
+legitimately order/orientation-sensitive once symmetric pairs are no
+longer canonicalised by the kernel.
 
 The snapshot canonicalises per-state_hash:
 
@@ -41,7 +45,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ein_bot.inference.apriori import CanonicalSetId, FactId
+from ein_bot.inference.apriori import CanonicalSetId
 from ein_bot.inference.canon import state_hash
 from ein_bot.inference.monotonic.lattice import LatticeProof
 from ein_bot.inference.verdict import Verdict
@@ -72,24 +76,30 @@ class LatticeSnapshotV1:
         ``state_hash(root_kb)`` at termination. Carries the
         accumulated unconditional-facts merges + the
         forced-positive promotions.
-    nogoods
-        ``frozenset(proof.learned_nogoods)`` — the engine's
-        final nogood store. Order of emission must not affect
-        the final set.
     verdict_kind
         ``type(verdict).__name__`` (``"Solution"`` /
         ``"Ambiguity"`` / ``"Contradiction"``) — the mode
         contract's verdict shape.
     solutions
-        ``frozenset(s.commitment for s in proof.solutions)``
-        — the set of satisfying commitments collected by
-        :func:`gaps_solve`. ``frozenset(())`` under monotonic
-        / contradictions.
+        ``frozenset(state_hash(s.kb) for s in proof.solutions)``
+        — the set of distinct satisfying *model states* (S1.7.24;
+        keyed by post-saturation state_hash, NOT commitment path,
+        so the two orientations of a symmetric pair count once).
+        ``frozenset(())`` under monotonic / contradictions.
     deads
-        ``frozenset(d.commitment for d in proof.dead_commitments)``
-        — the set of refuted commitments collected by
-        :func:`contradictions_solve`. ``frozenset(())`` under
+        ``frozenset(d.state_hash for d in proof.dead_commitments)``
+        — the set of distinct refuted *states* (S1.7.24; state-keyed
+        for the same orientation-invariance). ``frozenset(())`` under
         monotonic / gaps.
+
+    Note (S1.7.24): learned **nogoods are NOT in the snapshot**. A
+    learned clause ``{(R a b), …}`` and its symmetric mirror
+    ``{(R b a), …}`` are the same logical clause but distinct facts,
+    and their equivalence is unknowable without ``is_symmetric`` — so
+    the final nogood set is order/orientation-sensitive once the kernel
+    stops canonicalising symmetric pairs. It is an internal
+    optimisation artifact, not part of the solve *result*, so result-
+    invariance keys on states (solutions / deads / nodes), not clauses.
     alive_at_end
         ``frozenset(proof.alive_at_end)`` — the surviving
         size-``N`` frontier when the depth cap was the natural
@@ -100,10 +110,11 @@ class LatticeSnapshotV1:
         tuple[int, frozenset[CanonicalSetId], frozenset[str]], ...,
     ]
     root_state_hash:     int
-    nogoods:             frozenset[frozenset[FactId]]
     verdict_kind:        str
-    solutions:           frozenset[CanonicalSetId]
-    deads:               frozenset[CanonicalSetId]
+    # S1.7.24 — solutions / deads are sets of post-saturation STATE
+    # hashes (orientation-invariant), not commitment paths.
+    solutions:           frozenset[int]
+    deads:               frozenset[int]
     alive_at_end:        frozenset[CanonicalSetId]
 
 
@@ -159,10 +170,20 @@ def lattice_snapshot(
     return LatticeSnapshotV1(
         nodes_by_state_hash=nodes,
         root_state_hash=state_hash(root_kb),
-        nogoods=frozenset(proof.learned_nogoods),
         verdict_kind=type(verdict).__name__,
-        solutions=frozenset(s.commitment for s in proof.solutions),
-        deads=frozenset(d.commitment for d in proof.dead_commitments),
+        # S1.7.24 — RESULT-level keys: a solution / dead is identified by
+        # the post-saturation STATE it reaches, not the commitment PATH
+        # that reached it. This is orientation-invariant — the two
+        # orientations of a symmetric pair saturate to the same state —
+        # so the snapshot is shuffle-invariant without the kernel
+        # canonicalising symmetric pairs. (Learned `nogoods` are NOT in
+        # the snapshot: a learned clause `{(R a b),…}` and its mirror
+        # `{(R b a),…}` are the same logical clause but distinct facts,
+        # and the equivalence is unknowable without `is_symmetric`; the
+        # final nogood SET is thus order/orientation-sensitive and is an
+        # internal optimisation artifact, not part of the solve result.)
+        solutions=frozenset(state_hash(s.kb) for s in proof.solutions),
+        deads=frozenset(d.state_hash for d in proof.dead_commitments),
         alive_at_end=frozenset(proof.alive_at_end),
     )
 

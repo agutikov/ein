@@ -32,21 +32,20 @@ def open_hypotheses(kb: KnowledgeBase) -> frozenset[FactId]:
 
     :func:`generate_hypotheses` already yields exactly the candidates that
     are neither asserted (``_already_a_fact``) nor refuted (``_negated_facts``)
-    nor immediately doomed (lookahead). Pairs of a symmetric relation are
-    canonicalised — ``(R a b)`` and ``(R b a)`` collapse to one entry when
-    ``(symmetric R)`` is declared — so a sole surviving symmetric hypothesis
-    registers as size-1 (matters for the forced-positive cascade).
+    nor immediately doomed (lookahead).
+
+    S1.7.24 — **no symmetric canonicalisation.** The kernel keys on
+    ``is_symmetric`` nowhere, so ``(R a b)`` and ``(R b a)`` are TWO
+    distinct open entries even for a ``(symmetric R)`` relation. Correct
+    ``k`` is recovered generically: committing either orientation
+    re-derives the other (the user's ``(rule symmetric)``), so both
+    branches saturate to the **same** KB and collapse at the
+    ``canon.state_hash`` solution-node dedup — the pair counts once
+    because the *user's* rule established the equivalence, not the kernel.
     """
-    symmetric_relations = kb.symmetric_relations()
-    canonical: set[FactId] = set()
-    for f in generate_hypotheses(kb):
-        rn = f.relation_name
-        args = f.args
-        if rn in symmetric_relations and len(args) == 2 and args[0] > args[1]:
-            canonical.add((rn, (args[1], args[0])))
-        else:
-            canonical.add((rn, args))
-    return frozenset(canonical)
+    return frozenset(
+        (f.relation_name, f.args) for f in generate_hypotheses(kb)
+    )
 
 
 def complete(kb: KnowledgeBase) -> bool:
