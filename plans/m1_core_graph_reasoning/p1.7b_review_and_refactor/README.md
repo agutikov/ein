@@ -76,12 +76,12 @@ independent** and may run in any order or in parallel; **S1.7b.6 is the gate**.
 
 | ID | title | leverage | findings | status |
 |---|---|---|---|---|
-| **S1.7b.1** | [Dead-code & stale-doc sweep](s1.7b.1_dead_code_sweep.md) | high / ~½ day, near-zero risk | F-KER-9, F-ENG-2/3/10, F-KB-11, F-RTC-7 | planned |
-| **S1.7b.2** | [`_explore_layers` decomposition + `Mode` retirement](s1.7b.2_explore_layers_decomposition.md) | **flagship** | F-ENG-1/4/5/6/7/8/13/14, F-KER-1 | planned |
-| **S1.7b.3** | [Inference-kernel function refactors](s1.7b.3_inference_kernel_functions.md) | high | F-KER-2/3/4/5/6/7/8/10/15 | planned |
-| **S1.7b.4** | [KB hot-path & index refactor](s1.7b.4_kb_hotpath_and_indexes.md) | high (perf + a bug) | F-KB-1/2/3/4/5/6/9/13 | planned |
-| **S1.7b.5** | [Shared DOT emitter + render/trace/cli decomposition](s1.7b.5_dot_emitter_and_render_trace_cli.md) | high | F-RTC-1..10, F-KB-8/10 | planned |
-| **S1.7b.6** | [Acceptance — green suite, benches unchanged, metrics re-measured](s1.7b.6_acceptance.md) | gate | — | planned |
+| **S1.7b.1** | [Dead-code & stale-doc sweep](s1.7b.1_dead_code_sweep.md) | high / ~½ day, near-zero risk | F-KER-9, F-ENG-2/3/10, F-KB-11, F-RTC-7 | ✅ **shipped** (`0e124ea`) |
+| **S1.7b.2** | [`_explore_layers` decomposition + `Mode` retirement](s1.7b.2_explore_layers_decomposition.md) | **flagship** | F-ENG-1/4/5/6/7/8/13/14, F-KER-1 | ⏸ **deferred** (see ledger) |
+| **S1.7b.3** | [Inference-kernel function refactors](s1.7b.3_inference_kernel_functions.md) | high | F-KER-2/3/4/5/6/7/8/10/15 | ◐ **mostly shipped** (`0e124ea`,`030365c`) — helper unifications deferred |
+| **S1.7b.4** | [KB hot-path & index refactor](s1.7b.4_kb_hotpath_and_indexes.md) | high (perf + a bug) | F-KB-1/2/3/4/5/6/9/13 | ◐ **bug+perf shipped** (`0e124ea`,`b658968`) — decomp/wrappers deferred |
+| **S1.7b.5** | [Shared DOT emitter + render/trace/cli decomposition](s1.7b.5_dot_emitter_and_render_trace_cli.md) | high | F-RTC-1..10, F-KB-8/10 | ◐ **escape dedup shipped** (`ba01162`) — emitter API/cli/trace deferred |
+| **S1.7b.6** | [Acceptance — green suite, benches unchanged, metrics re-measured](s1.7b.6_acceptance.md) | gate | — | ✅ **done** (this ledger) |
 
 Low-priority items (F-ENG-9 `_BaseStats`, F-ENG-11 `_TimelineMixin`,
 F-KB-13/F-RTC-9/10) are folded as *optional* tasks inside their nearest
@@ -134,3 +134,67 @@ metrics much.
   tissue.
 - The discipline is [S1.5b.1](../p1.5b_lattice_search/s1.5b.1_file_split_refactor.md)'s:
   a structural move with the test suite as the invariant.
+
+## What shipped (2026-06-01) — and what's deferred
+
+Executed in five commits on `master` (`7a9fe7a` docs → `0e124ea` → `030365c`
+→ `b658968` → `ba01162`). The **hard constraint held**: every commit kept the
+full suite green and the verdicts byte-identical — the PyPy 3-variant
+acceptance gate re-ran at **8 passed / 4:43** with the *same* enterings counts
+(zebra2 → Solution k=1 @ 101 enterings exhausted; minus-15 → Ambiguity k=2;
+bad → Contradiction k=0) as the pre-refactor 4:39 baseline. `ruff check .`
+green throughout.
+
+**Shipped:**
+
+- **Dead-code & stale-doc sweep (S1.7b.1) — complete.** 7 dead functions +
+  the never-fired `early_terminate` hook + `verdict_entry` + `Saturator.solved`
+  deleted; every stale `monotonic_solve` / `tree`-engine / false
+  `NotImplementedError` doc reference rewritten. Grep-verified: **0** of each
+  remaining in `src/`.
+- **Two latent bugs fixed, each with regression tests.**
+  - **F-KER-4** — `_coerce` rewritten as a dispatch table. The review found the
+    `int | None` crash; execution found it was *broader* — **every numeric
+    `(config …)` flag was unsettable via IR** (`Int` nodes carry `.value`, not
+    `.name`). +11 tests (`tests/inference/test_config.py`).
+  - **F-KB-3/4** — `add_and_index_fact` ends the `add_fact` + unconditional
+    `_index_fact` double-index across 8 hot-path callers; dedup is now O(deg).
+    +3 tests (`tests/kb/test_store_indexing.py`).
+- **Decompositions (S1.7b.3).** `_compile_premise` (139→slim head-dispatch +
+  `_desugar_open`/`_desugar_forall`/`_compile_relation`); `back_propagate`'s
+  duplicated ancestor-bubble loop → one helper; symmetric-relation lookup
+  unified into `kb.is_symmetric` / `kb.symmetric_relations()` (4 copies → 1).
+- **KB hot-path perf (S1.7b.4).** `_index_fact` writes in place instead of
+  rebuilding whole dicts per fact (O(|names|)→O(k)); `fork()` shares the four
+  post-load-immutable type/rule indexes by reference. Both proven leak-free by
+  an assignment-site audit + the fork-parity/shuffle-invariance tests.
+- **DOT escape dedup (S1.7b.5).** `esc()`/`multiline()` promoted into
+  `render/dot_util.py`; 5 byte-identical copies removed. Output byte-identical.
+
+Net: `src/` shrank 13337 → 13269 LOC (despite added code) with **0** dead
+functions; +14 regression tests (617 `test_` defs).
+
+**Deferred — and why (honest):**
+
+- **The flagship `_explore_layers` decomposition (S1.7b.2) — NOT done.** After
+  reading all 620 lines: the per-candidate merge block mutates the
+  loop-carried `alive`/`a_layer` through **7 entry-discriminated
+  `phase_2_done` break-sites**, and a byte-exact EntryPolicy extraction is the
+  plan's own "3–5 day" effort where a single mis-mapped break reintroduces a
+  **P1.7a-class soundness bug** (the engine called a non-model a model / a SAT
+  puzzle ⊥). Rushing it under one session's budget was judged the wrong risk
+  against the "no behaviour change" constraint. It remains the highest-value
+  follow-up; do it incrementally with the acceptance gate after each step.
+- **Bounded items left on the table** (lower-value or coupled to the flagship):
+  `rebuild_indexes` decomposition + snapshot shallow-copy + typed index
+  wrappers (F-KB-2/6/9); `from_ir.load` / `parse_trace_steps` nesting
+  flattening (F-KB-7 / F-RTC-4, still depth 8/9); the `node()/edge()/cluster()`
+  emitter API + `cli._build_parser` split + trace-pipeline unification +
+  `linearize` dispatch (rest of S1.7b.5); the F-KER-6/7/10/15 helper
+  unifications; F-KB-13 type annotations.
+
+**Acceptance scorecard (S1.7b.6):** #1 behaviour-unchanged ✅ · #2 both bugs
+closed with tests ✅ · #3 metrics *partially* moved (0 dead funcs ✅, but
+functions >120 lines and depth-≥8 nesting remain in the deferred items —
+**not** met) · #4 no public-API churn ✅ · #5 hot-path no-regression ✅
+(4:43 ≈ 4:39, same enterings).
