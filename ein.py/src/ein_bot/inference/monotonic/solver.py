@@ -13,7 +13,8 @@ or on layer exhaustion.
 Termination conditions
 ----------------------
 
-- :class:`Solution` at a fork — ``is_solved(result.kb, mode)``
+- :class:`Solution` at a fork — ``is_solution_node`` (solve) or
+  ``is_solved(result.kb, Mode.SOLVE)`` (gaps / contradictions)
   on an alive entering. Returns ``Solution(kb=result.kb)`` so
   the caller sees the hypothesis-and-derivations context the
   goal depended on. **Required** for puzzles whose goal directly
@@ -351,7 +352,8 @@ def _promote_forced_positives(
     root_kb: KnowledgeBase,
     alive: frozenset[FactId],
     stats: MonotonicStats,
-    mode: Mode,
+    *,
+    check_goal: bool,
 ) -> tuple[frozenset[FactId], Verdict | None]:
     """Cascade: while ``alive`` is a singleton ``{h_unique}``,
     promote ``h_unique`` to a root fact, re-saturate, check
@@ -395,7 +397,7 @@ def _promote_forced_positives(
 
         if ContradictionDetector(root_kb).detect():
             return alive, _contradiction(root_kb)
-        if is_solved(root_kb, mode):
+        if check_goal and is_solved(root_kb, Mode.SOLVE):
             return alive, _solution(root_kb)
         alive = _compute_alive(root_kb)
 
@@ -598,7 +600,6 @@ class _LoopCtx:
     handoff."""
     root_kb: KnowledgeBase
     entry: Literal["gaps", "contradictions", "solve"]
-    mode: Mode
     cfg: SolverConfig
     stats: MonotonicStats
     lstate: _LatticeLoopState
@@ -809,7 +810,7 @@ def _merge_and_recheck(
             return True, alive
         alive = _compute_alive(ctx.root_kb)
         alive, term = _promote_forced_positives(
-            ctx.root_kb, alive, ctx.stats, ctx.mode,
+            ctx.root_kb, alive, ctx.stats, check_goal=True,
         )
         if term is not None:
             if ctx.entry == "solve":
@@ -841,7 +842,7 @@ def _merge_and_recheck(
             _record_node(ctx, ctx.root_kb, ())
             return True, alive
 
-        if is_solved(ctx.root_kb, ctx.mode):
+        if is_solved(ctx.root_kb, Mode.SOLVE):
             if ctx.entry == "gaps":
                 # record once (root_was_solved guard) then terminate Phase 2
                 # — root satisfies, so remaining candidates would just
@@ -864,7 +865,7 @@ def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
     fully-determined). On fall-through, stash the open set + layer-1 frontier
     on ``ctx`` for Phase 2 and return None; otherwise return the verdict."""
     root_kb, stats, lstate = ctx.root_kb, ctx.stats, ctx.lstate
-    dumper, entry, mode = ctx.dumper, ctx.entry, ctx.mode
+    dumper, entry = ctx.dumper, ctx.entry
 
     _ = list(Saturator(root_kb).saturate())
     stats.saturate_count += 1
@@ -884,7 +885,7 @@ def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
         # ``proof.dead_commitments``, ``verdict.unsat_core`` is
         # the empty frozenset (no commitments were tried).
         return _finalise_contradictions(ctx)
-    if is_solved(root_kb, mode):
+    if entry != "solve" and is_solved(root_kb, Mode.SOLVE):
         if entry == "gaps":
             # root satisfies trivially; record with empty commitment
             # carrier + return Ambiguity with 1 branch.
@@ -898,11 +899,13 @@ def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
         # deads; fall through to Phase 2.
 
     alive = _compute_alive(root_kb)
-    alive, term = _promote_forced_positives(root_kb, alive, stats, mode)
+    alive, term = _promote_forced_positives(
+        root_kb, alive, stats, check_goal=(entry != "solve"),
+    )
     if term is not None:
         if entry == "solve":
-            # mode=CONTRADICTIONS ⇒ term is a Contradiction (the
-            # forced-positive cascade hit ⊥) → k=0 with root core.
+            # solve never goal-terminates the cascade (check_goal=False),
+            # so a term here is a Contradiction (cascade hit ⊥) → k=0.
             _root_dead(ctx)
             return _finalise_solve(ctx)
         if entry == "gaps":
@@ -955,7 +958,7 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
     ``stop_after`` early-stop verdict (solve) or None (exhausted → Phase 3).
     Reads the Phase-1 handoff (``ctx.alive`` / ``ctx.a_prev``)."""
     root_kb, stats, lstate = ctx.root_kb, ctx.stats, ctx.lstate
-    dumper, entry, mode, cfg = ctx.dumper, ctx.entry, ctx.mode, ctx.cfg
+    dumper, entry, cfg = ctx.dumper, ctx.entry, ctx.cfg
     store_lattice, max_set_size = ctx.store_lattice, ctx.max_set_size
     shuffle_rng, stop_after = ctx.shuffle_rng, ctx.stop_after
     alive, a_prev = ctx.alive, ctx.a_prev
@@ -1011,7 +1014,7 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
             # forces incomplete goal-matchers to keep expanding.
             solved = (
                 is_solution_node(result.kb) if entry == "solve"
-                else is_solved(result.kb, mode)
+                else is_solved(result.kb, Mode.SOLVE)
             )
 
             # SetNode recording: hoisted out of the entry-specific
@@ -1142,7 +1145,7 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
             # legacy engines prune, without the SAT→⊥ pollution.
             alive = _compute_alive(root_kb)
             alive, term = _promote_forced_positives(
-                root_kb, alive, stats, mode,
+                root_kb, alive, stats, check_goal=False,
             )
             if term is not None:
                 _root_dead(ctx)       # cascade hit ⊥ → no model exists
@@ -1235,18 +1238,12 @@ def _explore_layers(
     cfg = config or root_kb.config or SolverConfig()
     root_kb.config = cfg
 
-    # Mode for is_solved-style checks. The mode parameter that
-    # used to live on the monotonic entry was about verdict shape,
-    # which we now dispatch via `entry`. For goal satisfaction
-    # the check is always SOLVE-mode semantics — EXCEPT for the
-    # P1.7a "solve" entry, whose termination signal is
-    # is_solution_node (consistent ∧ complete), not goal match.
-    # Running is_solved under CONTRADICTIONS semantics (always
-    # False) neutralises every is_solved-driven stop in the
-    # shared loop so "solve" exhausts the lattice; solution
-    # recording is keyed on is_solution_node at the dispatch sites.
-    mode = Mode.CONTRADICTIONS if entry == "solve" else Mode.SOLVE
-
+    # Goal satisfaction is checked with SOLVE-mode semantics, gated per
+    # entry: solve never goal-terminates (its signal is is_solution_node —
+    # consistent ∧ complete), so the is_solved checks are guarded by
+    # ``entry != "solve"`` / ``check_goal`` at their sites rather than via a
+    # neutralised Mode (F-KER-1 — the CONTRADICTIONS-as-always-False hack
+    # is gone).
     stats = MonotonicStats()
     t_start = time.perf_counter()
     lstate = _LatticeLoopState()
@@ -1259,7 +1256,7 @@ def _explore_layers(
         if cfg.lattice_order_seed is not None else None
     )
     ctx = _LoopCtx(
-        root_kb=root_kb, entry=entry, mode=mode, cfg=cfg, stats=stats,
+        root_kb=root_kb, entry=entry, cfg=cfg, stats=stats,
         lstate=lstate, dumper=dumper, store_lattice=store_lattice,
         t_start=t_start, max_time=max_time, max_enterings=max_enterings,
         max_set_size=max_set_size, stop_after=stop_after,
