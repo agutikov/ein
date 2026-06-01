@@ -36,7 +36,7 @@ from dataclasses import dataclass, field
 from ein_bot.ir.types import Atom, Int, IRNode, KwPair, SForm, Var
 from ein_bot.kb.entities import Fact, Rule
 
-from . import predicates
+from . import predicates, primitives
 
 # ── Opcode types ───────────────────────────────────────────────────
 
@@ -215,12 +215,12 @@ def _desugar_open(p: IRNode) -> SForm:
     KB. Useful for gating hypothesis emission on still-undecided slots.
     """
     return SForm(
-        head=Atom(name="and"),
+        head=Atom(name=primitives.AND),
         args=(
-            SForm(head=Atom(name="absent"), args=(p,)),
+            SForm(head=Atom(name=primitives.ABSENT), args=(p,)),
             SForm(
-                head=Atom(name="absent"),
-                args=(SForm(head=Atom(name="not"), args=(p,)),),
+                head=Atom(name=primitives.ABSENT),
+                args=(SForm(head=Atom(name=primitives.NOT), args=(p,)),),
             ),
         ),
     )
@@ -243,11 +243,11 @@ def _desugar_forall(node: SForm) -> SForm:
             f"in guard {guard!r}",
         )
     return SForm(
-        head=Atom(name="absent"),
+        head=Atom(name=primitives.ABSENT),
         args=(
             SForm(
-                head=Atom(name="and"),
-                args=(guard, SForm(head=Atom(name="absent"), args=(body,))),
+                head=Atom(name=primitives.AND),
+                args=(guard, SForm(head=Atom(name=primitives.ABSENT), args=(body,))),
             ),
         ),
     )
@@ -306,17 +306,17 @@ def _compile_premise(
     head_name = head.name if isinstance(head, Atom) else None
 
     # `(absent P)` — explicit negation-as-failure. S1.5.8c K-Δ.2.
-    if head_name == "absent" and len(node.args) >= 1:
+    if head_name == primitives.ABSENT and len(node.args) >= 1:
         sub_steps = _compile_body(node.args[0], bindings, known_vars)
         return [AbsentGuard(sub_steps=tuple(sub_steps))]
 
     # `(open P)` — third-state match, desugared to and(absent, absent-not).
-    if head_name == "open" and len(node.args) >= 1:
+    if head_name == primitives.OPEN and len(node.args) >= 1:
         return _compile_premise(_desugar_open(node.args[0]), bindings, known_vars)
 
     # `(forall ?b (G) (B))` — guarded universal, desugared to
     # absent(and(G, absent(B))).
-    if head_name == "forall" and len(node.args) >= 3:
+    if head_name == primitives.FORALL and len(node.args) >= 3:
         return _compile_premise(_desugar_forall(node), bindings, known_vars)
 
     # `(not P)` falls through to the generic relation handler
@@ -327,7 +327,7 @@ def _compile_premise(
     # explicitly when negation-as-failure is what you want.
 
     # `(and P1 P2 …)` — flatten into sibling premises in the same plan.
-    if head_name == "and":
+    if head_name == primitives.AND:
         steps: list[object] = []
         for child in node.args:
             steps.extend(_compile_premise(child, bindings, known_vars))
@@ -339,7 +339,7 @@ def _compile_premise(
     # multiple-rules semantics — so it never reaches the compiler. A
     # *nested* `(or …)` (e.g. inside `(and …)`) would need DNF expansion
     # and is unsupported; emit nothing so the loader doesn't trip.
-    if head_name == "or":
+    if head_name == primitives.OR:
         return []
 
     # Predicate dispatch: head matches a registered built-in.
@@ -459,7 +459,7 @@ def asserted_relation(plan: JoinPlan) -> str | None:
     behind [`closed.producible_relations`](closed.py).
     """
     t = plan.assert_template
-    if isinstance(t, NestedPattern) and t.relation != "not":
+    if isinstance(t, NestedPattern) and t.relation != primitives.NOT:
         return t.relation
     return None
 
@@ -471,7 +471,7 @@ def negated_relation(plan: JoinPlan) -> str | None:
     ``(absent (not (R …)))`` guard (a ``forall``/totality NAF) watches.
     """
     t = plan.assert_template
-    if isinstance(t, NestedPattern) and t.relation == "not":
+    if isinstance(t, NestedPattern) and t.relation == primitives.NOT:
         for inner in t.arg_slots:
             if isinstance(inner, NestedPattern):
                 return inner.relation
@@ -499,7 +499,7 @@ def naf_relation_refs(plan: JoinPlan) -> list[tuple[str, bool]]:
     def walk(steps: tuple[object, ...]) -> None:
         for st in steps:
             if isinstance(st, (Scan, Join)):
-                if st.relation == "not":
+                if st.relation == primitives.NOT:
                     for slot in st.arg_slots:
                         if isinstance(slot, NestedPattern):
                             out.append((slot.relation, True))

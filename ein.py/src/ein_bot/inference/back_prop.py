@@ -38,6 +38,8 @@ from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import FactId, Provenance
 from ein_bot.kb.store import KnowledgeBase
 
+from . import primitives
+
 # S1.5a.14 — Ancestor-kb chain for transitive back-prop.
 #
 # An unconditional death at depth N derives `(not h)` whose
@@ -174,11 +176,11 @@ def _write_negation(
     """Write one ``(not hypothesis)`` fact with the given provenance
     rule name; idempotent — a pre-existing ``(not h)`` is returned
     untouched."""
-    existing = kb._fact_by_id("not", (hypothesis,))
+    existing = kb._fact_by_id(primitives.NOT, (hypothesis,))
     if existing is not None:
         return existing
     not_fact = Fact(
-        relation_name="not",
+        relation_name=primitives.NOT,
         args=(hypothesis,),
         layer=Layer.REASONING,
         provenance=Provenance.from_rule(
@@ -206,7 +208,7 @@ def _bubble_to_ancestors(
     """
     new = 0
     for anc_kb in ancestors:
-        if anc_kb._fact_by_id("not", (fact,)) is None:
+        if anc_kb._fact_by_id(primitives.NOT, (fact,)) is None:
             new += 1
         _write_negation(anc_kb, fact, unsat_core, bubbled_name)
     return new
@@ -260,7 +262,7 @@ def back_propagate(
     incremented by the number of new writes so the outer driver
     can detect fixpoint by counter delta.
     """
-    primary_existed = kb._fact_by_id("not", (hypothesis,)) is not None
+    primary_existed = kb._fact_by_id(primitives.NOT, (hypothesis,)) is not None
     primary = _write_negation(kb, hypothesis, unsat_core, rule_name)
 
     # Bubble (not h) up to EVERY ancestor kb (S1.5a.14). The

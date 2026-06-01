@@ -32,6 +32,13 @@ from ein_bot.kb.store import KnowledgeBase
 from .compile import asserted_relation
 from .engine import Engine
 
+# S1.7.25 T1.7.25.2 — the single source for the `closed` relation name.
+# `closed` is a KEPT kernel mechanism for M1 (S1.7.10): `(closed R)`
+# suppresses hypothesis generation for R; it is author-writable but
+# usually auto-inferred by `emit_closed`. See
+# docs/kernel/inference/reserved_engine_strings.md.
+CLOSED = "closed"
+
 
 def producible_relations(kb: KnowledgeBase) -> frozenset[str]:
     """Relation names that some compiled rule positively asserts.
@@ -65,7 +72,7 @@ def emit_closed(kb: KnowledgeBase) -> list[str]:
     producible = producible_relations(kb)
     already = {
         f.args[0]
-        for f in kb._facts_by_relation.get("closed", ())
+        for f in kb._facts_by_relation.get(CLOSED, ())
         if f.args and isinstance(f.args[0], str)
     }
     newly: list[str] = []
@@ -77,10 +84,10 @@ def emit_closed(kb: KnowledgeBase) -> list[str]:
             continue
         if name in producible or name in already:
             continue
-        fact = Fact(relation_name="closed", args=(name,), layer=Layer.ONTOLOGY)
+        fact = Fact(relation_name=CLOSED, args=(name,), layer=Layer.ONTOLOGY)
         kb.add_and_index_fact(fact)
         newly.append(name)
     return newly
 
 
-__all__ = ["emit_closed", "producible_relations"]
+__all__ = ["CLOSED", "emit_closed", "producible_relations"]

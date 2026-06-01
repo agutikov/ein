@@ -191,13 +191,20 @@ will decide whether to keep the distinction syntactic (classic
 
 ## 6. Reserved relation names
 
-Some relation names are *kernel-defined*; the engine has built-in
-behaviour for them and they may not be redefined by user code:
+> **Authoritative lists (S1.7.25):** the full reserved vocabulary lives in
+> two dedicated references — surface words in
+> [`../03-ein-lang/06_reserved_names.md`](../03-ein-lang/06_reserved_names.md)
+> and engine-internal strings in
+> [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md).
+> This section keeps only the **graph-node declarators** (the names that
+> introduce a node kind) plus the two `⊥` heads relevant to the graph
+> model; everything else is in those docs.
 
 | name         | role                                                            |
 |--------------|-----------------------------------------------------------------|
 | `relation`   | declares a relation-type node (`(relation co-located T T)`).    |
 | `rule`       | declares a rewriting rule (head of `(rule …)` in `(rules …)`).  |
+| `hrule`      | declares a hypothesis-generation rule (drives `hypgen`; never fired by the saturator). |
 | `not`        | propositional negation; `(not X)` is an octagon fact whose single arg is the negated proposition. The contradiction detector pairs each `(not X)` against a same-layer positive `X`. |
 | `false`      | direct ⊥ — a `(false)` fact asserts that the firing rule has reached a contradiction without needing the self-negation idiom. The contradiction detector treats every `(false …)` as a `kind="direct"` contradiction (see [`../02-data-model/02_store.md` §7.2 unsat-core](../02-data-model/02_store.md) for how the unsat-core walk handles it). Shipped S1.5.4a Part 2 (2026-05-21). |
 
@@ -205,7 +212,9 @@ behaviour for them and they may not be redefined by user code:
 contradiction detector scans `_facts_by_relation["not"]` and
 `_facts_by_relation["false"]` for the two contradiction shapes.
 The grammar parses both as ordinary `generic_fact` forms; the
-engine, not the parser, gives them meaning.
+engine, not the parser, gives them meaning. (The full rule-body / ⊥
+calculus — `and` `or` `absent` + `eq` `neq` — is declared in
+`inference/primitives.py` / `predicates.py`; see the surface doc.)
 
 **`is-a` and `T` are NOT reserved (S1.7.23).** The kernel imposes no
 type system: it names no inheritance relation and keeps no universal-top

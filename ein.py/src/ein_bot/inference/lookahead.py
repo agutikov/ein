@@ -44,7 +44,7 @@ from __future__ import annotations
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
-from . import match
+from . import match, primitives
 from .compile import Join, JoinPlan, NestedPattern, Scan
 from .engine import Engine
 from .firing import build_fact
@@ -122,10 +122,10 @@ def _is_contradiction(kb: KnowledgeBase, f: Fact, h: Fact) -> bool:
     ``h`` and any rule-derived ``f`` live at the REASONING layer.
     """
     # Direct ⊥ — a `(false …)` fact.
-    if f.relation_name == "false":
+    if f.relation_name == primitives.FALSE:
         return True
     # `f` is a negative `(not g)`.
-    if f.relation_name == "not":
+    if f.relation_name == primitives.NOT:
         if not f.args or not isinstance(f.args[0], Fact):
             return False
         g = f.args[0]
@@ -141,7 +141,7 @@ def _is_contradiction(kb: KnowledgeBase, f: Fact, h: Fact) -> bool:
     # `(not f)` already exists at the REASONING layer.
     if (f.relation_name, f.args) not in kb._negated_facts:
         return False
-    neg = kb._fact_by_id("not", (f,))
+    neg = kb._fact_by_id(primitives.NOT, (f,))
     return neg is not None and neg.layer is Layer.REASONING
 
 

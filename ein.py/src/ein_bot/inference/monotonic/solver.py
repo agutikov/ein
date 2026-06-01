@@ -37,10 +37,10 @@ Every dead entering emits ``frozenset(C)`` into
 ``root_kb._nogoods`` via :func:`ein_bot.inference.nogoods.emit_nogood`
 (``min_size=1`` so layer-1 singleton deaths land — Q1.5b.5.c).
 Singleton dead clauses additionally write ``(not h)`` to
-``root_kb._negated_facts`` via :func:`_emit_negated_fact_writeback`
-(plus the symmetric-mirror if ``(symmetric R)``); mirrors
-``back_prop._write_negation`` without the ContextVar
-coupling.
+``root_kb._negated_facts`` via :func:`_emit_negated_fact_writeback`;
+mirrors ``back_prop._write_negation`` without the ContextVar
+coupling. (S1.7.24 — no symmetric-mirror: the counterpart dies on
+its own branch, recovered at the generic state_hash dedup.)
 
 Budget (S1.5b.7 / bench CLI parity)
 -----------------------------------
@@ -74,6 +74,7 @@ import time
 from dataclasses import dataclass, field, replace
 from typing import Literal
 
+from ein_bot.inference import primitives
 from ein_bot.inference.apriori import (
     CanonicalSetId,
     FactId,
@@ -332,10 +333,10 @@ def _write_negation_local(
         relation_name=rn, args=args,
         layer=Layer.REASONING, provenance=None,
     )
-    if root_kb._fact_by_id("not", (inner,)) is not None:
+    if root_kb._fact_by_id(primitives.NOT, (inner,)) is not None:
         return
     not_fact = Fact(
-        relation_name="not",
+        relation_name=primitives.NOT,
         args=(inner,),
         layer=Layer.REASONING,
         provenance=Provenance.from_rule(

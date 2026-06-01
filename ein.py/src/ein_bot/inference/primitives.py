@@ -1,0 +1,139 @@
+"""Rule-body / ⊥ structural primitives — the kernel's reserved
+non-relation vocabulary, declared in one place (S1.7.25 T1.7.25.1).
+
+These are the structural forms a rule body is built from — *not*
+relations (their truth is not data in the KB) and *not* predicates
+(``eq`` / ``neq``, computed guards — those live in
+:mod:`ein_bot.inference.predicates`). They are the calculus the
+compiler, matcher, and contradiction detector interpret directly.
+
+The point of this module is purely to **name the vocabulary once**:
+each primitive has a name constant + a one-line semantic + the
+canonical site that implements its deep behaviour. The scattered
+``head_name == "and"`` / ``_facts_by_relation["not"]`` literals across
+``compile.py`` / ``contradiction.py`` / ``lookahead.py`` /
+``back_prop.py`` / ``solver.py`` / ``hypgen.py`` reference these
+constants, so adding/auditing a kernel primitive is a one-file change.
+The deep behaviour stays where it lives (this is the ``predicates.py``
+*registry* pattern, not a behavioural move).
+
+Two status classes:
+
+- **kept** (M1 kernel primitives): ``not`` ``false`` ``and`` ``or``
+  ``absent``. Genuine inference / rule-body primitives.
+- **sugar** (desugars at compile time; → P1.8 macros, S1.5.9):
+  ``open`` ``forall``. Listed here so the compiler dispatch and the
+  hypgen object-exclusion read one source; no kernel commitment.
+
+See ``docs/kernel/ir/03-ein-lang/06_reserved_names.md`` (surface) and
+``plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.25_reserved_names_encapsulate_document.md``.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from ein_bot.inference import predicates
+
+# ── Name constants ─────────────────────────────────────────────────
+# Kept M1 kernel primitives (rule-body / ⊥ calculus).
+NOT    = "not"
+FALSE  = "false"
+AND    = "and"
+OR     = "or"
+ABSENT = "absent"
+# Sugar — desugars at compile time; → P1.8 macros (S1.5.9).
+OPEN   = "open"
+FORALL = "forall"
+
+
+@dataclass(frozen=True)
+class Primitive:
+    """One structural primitive's metadata (name + meaning + site)."""
+    name:   str
+    arity:  str          # human-readable ("1", "0+", "2+", "3")
+    status: str          # "kept" | "sugar"
+    role:   str          # one-line semantic
+    site:   str          # canonical implementing site
+
+
+_REGISTRY: dict[str, Primitive] = {
+    NOT: Primitive(
+        NOT, "1", "kept",
+        "propositional negation; `(not X)` is a stored octagon fact whose "
+        "single arg is the negated proposition",
+        "matcher (`match.py`) + contradiction detector (`contradiction.py`)",
+    ),
+    FALSE: Primitive(
+        FALSE, "0+", "kept",
+        "direct ⊥ — `(false)` asserts the firing rule reached a "
+        "contradiction (args empty by convention)",
+        "contradiction detector (`contradiction.py`)",
+    ),
+    AND: Primitive(
+        AND, "2+", "kept",
+        "conjunction; flattened into sibling premises of the same plan",
+        "compiler (`compile.py:_compile_premise`)",
+    ),
+    OR: Primitive(
+        OR, "2+", "kept",
+        "disjunction; a top-level `(or …)` in a `:match` is lowered to one "
+        "rule per disjunct at LOAD time (`kb.from_ir`)",
+        "loader (`kb.from_ir._match_disjuncts`) + compiler guard",
+    ),
+    ABSENT: Primitive(
+        ABSENT, "1", "kept",
+        "negation-as-failure on a sub-pattern (`AbsentGuard`)",
+        "compiler (`compile.py`) + matcher (`match.py`)",
+    ),
+    OPEN: Primitive(
+        OPEN, "1", "sugar",
+        "third-state match; `(open P)` → `(and (absent P) (absent (not P)))`",
+        "compiler (`compile.py:_desugar_open`); → P1.8 macro",
+    ),
+    FORALL: Primitive(
+        FORALL, "3", "sugar",
+        "guarded universal; `(forall ?b G B)` → `(absent (and G (absent B)))`",
+        "compiler (`compile.py:_desugar_forall`); → P1.8 macro",
+    ),
+}
+
+# The kept rule-body / ⊥ primitives (genuine kernel vocabulary, M1).
+STRUCTURAL: frozenset[str] = frozenset(
+    n for n, p in _REGISTRY.items() if p.status == "kept"
+)
+# Compile-time sugar (→ P1.8 macros).
+SUGAR: frozenset[str] = frozenset(
+    n for n, p in _REGISTRY.items() if p.status == "sugar"
+)
+# Everything the compiler dispatches on as a structural form.
+RESERVED_RULE_BODY: frozenset[str] = STRUCTURAL | SUGAR
+
+
+def is_structural(name: str) -> bool:
+    """True iff `name` is a kept structural rule-body / ⊥ primitive."""
+    return name in STRUCTURAL
+
+
+def non_object_names() -> frozenset[str]:
+    """Reserved names that are NEVER guessable objects — the rule-body /
+    ⊥ primitives plus the computed predicates (`eq` / `neq`). Consumed by
+    :func:`ein_bot.inference.hypgen._candidate_objects` so the blind
+    enumerator never proposes a primitive name as a graph object."""
+    return RESERVED_RULE_BODY | frozenset(predicates.names())
+
+
+def get(name: str) -> Primitive | None:
+    """The :class:`Primitive` metadata for `name`, or None."""
+    return _REGISTRY.get(name)
+
+
+def names() -> tuple[str, ...]:
+    """All declared primitive names (kept + sugar), sorted."""
+    return tuple(sorted(_REGISTRY))
+
+
+__all__ = [
+    "ABSENT", "AND", "FALSE", "FORALL", "NOT", "OPEN", "OR",
+    "RESERVED_RULE_BODY", "STRUCTURAL", "SUGAR",
+    "Primitive", "get", "is_structural", "names", "non_object_names",
+]

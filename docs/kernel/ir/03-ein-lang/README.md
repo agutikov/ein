@@ -27,6 +27,11 @@ model in [`../02-data-model/`](../02-data-model/).
 - [`05_inspirations.md`](05_inspirations.md) — design influences
   (SMT-LIB, miniKanren, AtomSpace, Datalog, DPO graph rewriting) and
   where ein-lang diverges.
+- [`06_reserved_names.md`](06_reserved_names.md) — the authoritative
+  reserved surface-words reference: declarators, rule-body / ⊥
+  primitives, predicates, `open`/`forall` sugar, `closed`,
+  `hypothesis-relations`. (Engine-internal strings:
+  [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md).)
 
 ## Reading order
 

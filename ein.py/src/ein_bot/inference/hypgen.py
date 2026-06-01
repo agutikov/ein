@@ -40,10 +40,17 @@ from ein_bot.ir.types import Atom, SForm
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
+from . import primitives
 from .back_prop import back_propagate
+from .closed import CLOSED
 from .config import SolverConfig
 from .hrule import Hrules
 from .lookahead import Lookahead
+
+# S1.7.25 T1.7.25.3 — the `(query …)` scoping keyword that restricts
+# which relations the blind enumerator builds candidates for. Reserved
+# engine string for M1; see docs/kernel/inference/reserved_engine_strings.md.
+HYPOTHESIS_RELATIONS = "hypothesis-relations"
 
 # ── Stats dataclass — T1.5.4.7 ─────────────────────────────────────
 
@@ -326,7 +333,7 @@ def _is_closed(kb: KnowledgeBase, r_name: str) -> bool:
     The hypothesis generator does not care which path produced the
     fact — the index lookup is the same.
     """
-    apps = kb._facts_by_relation.get("closed", ())
+    apps = kb._facts_by_relation.get(CLOSED, ())
     return any(f.args == (r_name,) for f in apps)
 
 
@@ -343,7 +350,7 @@ def _query_relations(kb: KnowledgeBase) -> frozenset[str] | None:
         return None
     for kp in q.kw_pairs:
         key = getattr(kp, "key", None)
-        if key is not None and getattr(key, "name", None) == "hypothesis-relations":
+        if key is not None and getattr(key, "name", None) == HYPOTHESIS_RELATIONS:
             return frozenset(_coerce_relation_names(kp.value)) or None
     return None
 
@@ -448,26 +455,18 @@ def _score_popularity(
     return rel_w * rel_count + obj_w * obj_count_sum
 
 
-# Reserved kernel primitive names — the rule-body / ⊥ vocabulary that
-# can appear as a fact HEAD (`(not …)`, `(false)`) but is never an
-# object. They are NOT auto-registered as relations, so `_categorise_name`
-# leaves them as `category="object"`; without this guard a `(not h)` fact
-# back-propagated DURING generation would inject `not` into `kb.names` and
-# the enumerator would then propose `(R x not)` garbage. These are the
-# *kept* hardcoded kernel names (S1.7.25); excluding them by name is sound
-# — they are reserved, never puzzle objects.
-_RESERVED_PRIMITIVES: frozenset[str] = frozenset(
-    {"not", "false", "and", "or", "absent", "forall", "neq", "eq"}
-)
-
-
 def _candidate_objects(kb: KnowledgeBase) -> Iterator:
     """Yield the candidate objects the enumerator may guess about.
 
     S1.7.23 — a **name-free** signal: a node of `object` category (the
     `NameRef.category` discriminator — not a relation / rule / kernel-meta
     name), minus the names a puzzle **declares as a type** in a relation
-    signature, minus the reserved logical primitives (:data:`_RESERVED_PRIMITIVES`).
+    signature, minus the reserved logical primitives
+    (:func:`ein_bot.inference.primitives.non_object_names` — the rule-body /
+    ⊥ vocabulary `not`/`false`/`and`/`or`/`absent`/`forall` plus the
+    `eq`/`neq` predicates; these can appear as a fact HEAD, e.g. a `(not h)`
+    fact back-propagated DURING generation, but are never puzzle objects —
+    without the guard the enumerator would propose `(R x not)` garbage).
     The kernel no longer keys this on the `is-a` name or the
     `kb.instances` view (the old "instance-like = `is-a` leaf" rule, a
     kernel-imposed type system); it reads only `category` + the relation
@@ -487,8 +486,9 @@ def _candidate_objects(kb: KnowledgeBase) -> Iterator:
         for t in (rel.signature or ())
         if isinstance(t, str)
     }
+    reserved = primitives.non_object_names()
     for name in sorted(kb.names):
-        if name in type_nodes or name in _RESERVED_PRIMITIVES:
+        if name in type_nodes or name in reserved:
             continue
         ref = kb.names[name]
         if ref.category == "object":

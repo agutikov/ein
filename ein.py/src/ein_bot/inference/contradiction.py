@@ -58,6 +58,8 @@ from typing import Literal
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
+from . import primitives
+
 # ── Contradiction record ──────────────────────────────────────────
 
 
@@ -154,7 +156,7 @@ class ContradictionDetector:
           per ``(false …)`` fact.
         """
         # Direct ⊥ — ship S1.5.4a Part 2.
-        for false_fact in self.kb._facts_by_relation.get("false", ()):
+        for false_fact in self.kb._facts_by_relation.get(primitives.FALSE, ()):
             yield Contradiction(
                 positive=None,
                 negative=false_fact,
@@ -163,7 +165,7 @@ class ContradictionDetector:
             )
 
         # Pair — the original P1.4 shape.
-        not_facts = self.kb._facts_by_relation.get("not", ())
+        not_facts = self.kb._facts_by_relation.get(primitives.NOT, ())
         for negative in not_facts:
             if not negative.args:
                 continue  # malformed; skip defensively
