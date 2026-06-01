@@ -588,6 +588,269 @@ def _record_setnode(
     return False
 
 
+@dataclass
+class _LoopCtx:
+    """Shared state threaded through the :func:`_explore_layers` phase
+    helpers — lets them live at module level instead of as closures. The
+    mutable populations (``stats``, ``lstate``, ``root_kb``, ``dumper``) are
+    the same objects the main loop holds, so a helper's mutation is visible
+    to the loop and vice-versa."""
+    root_kb: KnowledgeBase
+    entry: Literal["gaps", "contradictions", "solve"]
+    mode: Mode
+    stats: MonotonicStats
+    lstate: _LatticeLoopState
+    dumper: MonotonicDumper | LatticeDumper | None
+    store_lattice: bool
+    t_start: float
+    max_time: float | None
+    max_enterings: int | None
+
+
+def _finalise_gaps(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
+    """Build the gaps-side Ambiguity verdict from ``ctx.lstate`` + emit the
+    dumper summary via :func:`_finish`."""
+    verdict = _finalise_lattice_verdict(
+        "gaps",
+        root_kb=ctx.root_kb,
+        lstate=ctx.lstate,
+        stats=ctx.stats,
+        elapsed_seconds=time.perf_counter() - ctx.t_start,
+        store_lattice=ctx.store_lattice,
+    )
+    return _finish(ctx.dumper, verdict, ctx.stats)
+
+
+def _finalise_contradictions(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
+    """Build the contradictions-side Contradiction verdict (``unsat_core``
+    = set union over every recorded dead's ``unsat_core``)."""
+    verdict = _finalise_lattice_verdict(
+        "contradictions",
+        root_kb=ctx.root_kb,
+        lstate=ctx.lstate,
+        stats=ctx.stats,
+        elapsed_seconds=time.perf_counter() - ctx.t_start,
+        store_lattice=ctx.store_lattice,
+    )
+    return _finish(ctx.dumper, verdict, ctx.stats)
+
+
+def _record_node(
+    ctx: _LoopCtx,
+    node_kb: KnowledgeBase,
+    commitment: CanonicalSetId,
+    firings: tuple = (),
+    layer: int = 0,
+) -> None:
+    """Record a solution node (consistent ∧ complete), deduped by
+    :func:`state_hash`. Stores a :meth:`snapshot` so it survives later root
+    mutation."""
+    h = state_hash(node_kb)
+    if h not in ctx.lstate.solution_nodes:
+        ctx.lstate.solution_nodes[h] = SolutionRecord(
+            commitment=commitment,
+            kb=node_kb.snapshot(),
+            firings=tuple(firings),
+            layer=layer,
+        )
+
+
+def _root_dead(ctx: _LoopCtx) -> None:
+    """Record a root-level contradiction's unsat core (commitment ())."""
+    contras = ContradictionDetector(ctx.root_kb).detect()
+    core = frozenset(
+        ctx.root_kb.unsat_core(c.witness for c in contras)
+    ) if contras else frozenset()
+    ctx.lstate.dead_commitments.append(DeadCommitment(
+        commitment=(), unsat_core=core,
+        learned_clause=frozenset(), layer=0, kind="dead-post",
+    ))
+
+
+def _finalise_solve(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
+    """Build the solve verdict from the deduped solution-node set."""
+    ctx.stats.solution_nodes = len(ctx.lstate.solution_nodes)
+    ctx.stats.exhausted = not ctx.lstate.truncated
+    verdict = verdict_of(ctx.lstate, exhausted=ctx.stats.exhausted)
+    return _finish(ctx.dumper, verdict, ctx.stats)
+
+
+def _check_budget(ctx: _LoopCtx) -> None:
+    """Raise :class:`BudgetExceededError` if the entering-count or wall-time
+    budget is spent (flushing the dumper first)."""
+    if (
+        ctx.max_enterings is not None
+        and ctx.stats.enterings_total >= ctx.max_enterings
+    ):
+        if ctx.dumper is not None:
+            ctx.dumper.close()
+        raise BudgetExceededError(
+            f"max-enterings ({ctx.max_enterings}) reached", ctx.stats,
+        )
+    if (
+        ctx.max_time is not None
+        and (time.perf_counter() - ctx.t_start) > ctx.max_time
+    ):
+        if ctx.dumper is not None:
+            ctx.dumper.close()
+        raise BudgetExceededError(
+            f"max-time ({ctx.max_time}s) exceeded", ctx.stats,
+        )
+
+
+def _handle_dead(
+    ctx: _LoopCtx, c: CanonicalSetId, layer: int, result,
+) -> None:
+    """Record a dead commitment: count it, emit its nogood (+ size-1
+    ``(not h)`` writeback), append a :class:`DeadCommitment` for the
+    contradictions / solve entries, and log it. Under ``store_lattice`` a
+    contradictions-side state-hash merge may absorb it — then the downstream
+    writes are skipped (the earlier arrival already did them)."""
+    if result.kind == "dead-pre":
+        ctx.stats.enterings_dead_pre += 1
+    else:
+        ctx.stats.enterings_dead_post += 1
+
+    # S1.5b.22 state-hash dedup (contradictions) / SetNode storage (gaps).
+    # dead-post only — dead-pre's kb is the unsaturated fork.
+    skip_downstream = False
+    if (
+        ctx.store_lattice
+        and result.kind == "dead-post"
+        and ctx.entry in ("gaps", "contradictions")
+    ):
+        skip_downstream = _record_setnode(
+            ctx.lstate,
+            entry=ctx.entry,  # type: ignore[arg-type]
+            commitment=c,
+            result_kb=result.kb,
+            verdict_label="dead",
+            layer=layer,
+        )
+    if skip_downstream:
+        return
+
+    landed = emit_nogood(ctx.root_kb, frozenset(c), min_size=1)
+    if landed:
+        ctx.stats.nogoods_emitted += 1
+    else:
+        ctx.stats.nogoods_subsumed += 1
+    if len(c) == 1:
+        _emit_negated_fact_writeback(ctx.root_kb, c[0])
+
+    # contradictions collects every dead; solve collects them too — the
+    # k=0 verdict's core is the union of these.
+    if ctx.entry in ("contradictions", "solve"):
+        ctx.lstate.dead_commitments.append(DeadCommitment(
+            commitment=c,
+            unsat_core=result.unsat_core,
+            learned_clause=frozenset(c),
+            layer=layer,
+            kind=result.kind,
+        ))
+
+    if ctx.dumper is not None:
+        ctx.dumper.entering(
+            layer, c, result,
+            outcome=result.kind,  # "dead-pre" / "dead-post"
+            facts_merged=0,
+            nogood_emitted=landed,
+            nogood_subsumed=not landed,
+        )
+
+
+def _merge_and_recheck(
+    ctx: _LoopCtx, c: CanonicalSetId, layer: int, result, solved: bool,
+    alive: frozenset[FactId],
+) -> tuple[bool, frozenset[FactId]]:
+    """Merge an alive commitment's unconditional facts into root,
+    re-saturate, and re-check root. Returns ``(stop, alive)`` — ``stop`` is
+    True iff Phase 2 should stop (root went contradictory, was solved
+    (gaps), or got fully determined); ``alive`` is the recomputed open set
+    (unchanged when nothing merged). Only ``gaps`` / ``contradictions``
+    reach here; ``solve`` keeps root stable and never calls this."""
+    this_merged = 0
+    for f in result.unconditional_facts:
+        if ctx.root_kb._fact_by_id(
+            f.relation_name, f.args,
+        ) is None:
+            ctx.root_kb.add_and_index_fact(f)
+            ctx.stats.facts_merged += 1
+            this_merged += 1
+
+    if ctx.dumper is not None:
+        ctx.dumper.entering(
+            layer, c, result,
+            outcome="solution" if solved else "alive",
+            facts_merged=this_merged,
+            nogood_emitted=False,
+            nogood_subsumed=False,
+        )
+
+    if this_merged:
+        # Option A cadence (Q1.5b.2.a) — re-saturate + recompute alive
+        # after every alive entering.
+        _ = list(Saturator(ctx.root_kb).saturate())
+        ctx.stats.saturate_count += 1
+        # Merged facts could derive a contradiction at root.
+        if ContradictionDetector(ctx.root_kb).detect():
+            if ctx.entry == "solve":
+                # merged invariants contradict at root ⇒ no model; record
+                # the core and stop.
+                _root_dead(ctx)
+            # gaps / contradictions: root contradictory; stop.
+            return True, alive
+        alive = _compute_alive(ctx.root_kb)
+        alive, term = _promote_forced_positives(
+            ctx.root_kb, alive, ctx.stats, ctx.mode,
+        )
+        if term is not None:
+            if ctx.entry == "solve":
+                # cascade hit ⊥ at root mid-merge → stop.
+                _root_dead(ctx)
+                return True, alive
+            if ctx.entry == "gaps":
+                if isinstance(term, Solution):
+                    if not ctx.lstate.root_was_solved:
+                        ctx.lstate.solutions.append(SolutionRecord(
+                            commitment=c,
+                            kb=ctx.root_kb.snapshot(),
+                            firings=(), layer=layer,
+                        ))
+                        ctx.lstate.root_was_solved = True
+                # gaps: cascade hit a terminal (Solution: root satisfies;
+                # Contradiction: root contradictory) — exit Phase 2 either way.
+                return True, alive
+            # entry == "contradictions":
+            if isinstance(term, Contradiction):
+                # root contradicted by cascade — stop.
+                return True, alive
+            # Solution: continue exploring. Supersets extending the
+            # cascade's now-solved root may still die.
+
+        if ctx.entry == "solve" and not alive:
+            # root became fully determined mid-merge (every hypothesis
+            # decided by invariants alone) ⇒ unique model.
+            _record_node(ctx, ctx.root_kb, ())
+            return True, alive
+
+        if is_solved(ctx.root_kb, ctx.mode):
+            if ctx.entry == "gaps":
+                # record once (root_was_solved guard) then terminate Phase 2
+                # — root satisfies, so remaining candidates would just
+                # re-confirm via fork-side is_solved.
+                if not ctx.lstate.root_was_solved:
+                    ctx.lstate.solutions.append(SolutionRecord(
+                        commitment=c, kb=ctx.root_kb.snapshot(),
+                        firings=(), layer=layer,
+                    ))
+                    ctx.lstate.root_was_solved = True
+                return True, alive
+            # entry == "contradictions": root is_solved is not a stop
+            # condition — supersets at higher layers may die.
+    return False, alive
+
+
 def _explore_layers(
     root_kb: KnowledgeBase,
     *,
@@ -674,245 +937,11 @@ def _explore_layers(
         random.Random(cfg.lattice_order_seed)
         if cfg.lattice_order_seed is not None else None
     )
-    def _finalise_gaps() -> tuple[Verdict, MonotonicStats]:
-        """Build the gaps-side Ambiguity verdict from current
-        ``lstate`` + emit the dumper summary via :func:`_finish`.
-        Hoisted into a nested function so the dozen gaps return
-        sites stay single-line.
-        """
-        verdict = _finalise_lattice_verdict(
-            "gaps",
-            root_kb=root_kb,
-            lstate=lstate,
-            stats=stats,
-            elapsed_seconds=time.perf_counter() - t_start,
-            store_lattice=store_lattice,
-        )
-        return _finish(dumper, verdict, stats)
-
-    def _finalise_contradictions() -> tuple[Verdict, MonotonicStats]:
-        """Build the contradictions-side Contradiction verdict
-        (``unsat_core`` = set union over every recorded
-        dead's ``unsat_core``)."""
-        verdict = _finalise_lattice_verdict(
-            "contradictions",
-            root_kb=root_kb,
-            lstate=lstate,
-            stats=stats,
-            elapsed_seconds=time.perf_counter() - t_start,
-            store_lattice=store_lattice,
-        )
-        return _finish(dumper, verdict, stats)
-
-    # ── P1.7a "solve" entry helpers ───────────────────────────
-    def _record_node(
-        node_kb: KnowledgeBase,
-        commitment: CanonicalSetId,
-        firings: tuple = (),
-        layer: int = 0,
-    ) -> None:
-        """Record a solution node (consistent ∧ complete), deduped by
-        :func:`state_hash`. Stores a :meth:`snapshot` so it survives later
-        root mutation."""
-        h = state_hash(node_kb)
-        if h not in lstate.solution_nodes:
-            lstate.solution_nodes[h] = SolutionRecord(
-                commitment=commitment,
-                kb=node_kb.snapshot(),
-                firings=tuple(firings),
-                layer=layer,
-            )
-
-    def _root_dead() -> None:
-        """Record a root-level contradiction's unsat core (commitment ())."""
-        contras = ContradictionDetector(root_kb).detect()
-        core = frozenset(
-            root_kb.unsat_core(c.witness for c in contras)
-        ) if contras else frozenset()
-        lstate.dead_commitments.append(DeadCommitment(
-            commitment=(), unsat_core=core,
-            learned_clause=frozenset(), layer=0, kind="dead-post",
-        ))
-
-    def _finalise_solve() -> tuple[Verdict, MonotonicStats]:
-        """Build the solve verdict from the deduped solution-node set."""
-        stats.solution_nodes = len(lstate.solution_nodes)
-        stats.exhausted = not lstate.truncated
-        verdict = verdict_of(lstate, exhausted=stats.exhausted)
-        return _finish(dumper, verdict, stats)
-
-    def _check_budget() -> None:
-        """Raise :class:`BudgetExceededError` if the entering-count or
-        wall-time budget is spent (flushing the dumper first)."""
-        if (
-            max_enterings is not None
-            and stats.enterings_total >= max_enterings
-        ):
-            if dumper is not None:
-                dumper.close()
-            raise BudgetExceededError(
-                f"max-enterings ({max_enterings}) reached", stats,
-            )
-        if (
-            max_time is not None
-            and (time.perf_counter() - t_start) > max_time
-        ):
-            if dumper is not None:
-                dumper.close()
-            raise BudgetExceededError(
-                f"max-time ({max_time}s) exceeded", stats,
-            )
-
-    def _handle_dead(c: CanonicalSetId, layer: int, result) -> None:
-        """Record a dead commitment: count it, emit its nogood (+ size-1
-        ``(not h)`` writeback), append a :class:`DeadCommitment` for the
-        contradictions / solve entries, and log it. Under ``store_lattice``
-        a contradictions-side state-hash merge may absorb it — then the
-        downstream writes are skipped (the earlier arrival already did
-        them)."""
-        if result.kind == "dead-pre":
-            stats.enterings_dead_pre += 1
-        else:
-            stats.enterings_dead_post += 1
-
-        # S1.5b.22 state-hash dedup (contradictions) / SetNode storage
-        # (gaps). dead-post only — dead-pre's kb is the unsaturated fork.
-        skip_downstream = False
-        if (
-            store_lattice
-            and result.kind == "dead-post"
-            and entry in ("gaps", "contradictions")
-        ):
-            skip_downstream = _record_setnode(
-                lstate,
-                entry=entry,  # type: ignore[arg-type]
-                commitment=c,
-                result_kb=result.kb,
-                verdict_label="dead",
-                layer=layer,
-            )
-        if skip_downstream:
-            return
-
-        landed = emit_nogood(root_kb, frozenset(c), min_size=1)
-        if landed:
-            stats.nogoods_emitted += 1
-        else:
-            stats.nogoods_subsumed += 1
-        if len(c) == 1:
-            _emit_negated_fact_writeback(root_kb, c[0])
-
-        # contradictions collects every dead; solve collects them too —
-        # the k=0 verdict's core is the union of these.
-        if entry in ("contradictions", "solve"):
-            lstate.dead_commitments.append(DeadCommitment(
-                commitment=c,
-                unsat_core=result.unsat_core,
-                learned_clause=frozenset(c),
-                layer=layer,
-                kind=result.kind,
-            ))
-
-        if dumper is not None:
-            dumper.entering(
-                layer, c, result,
-                outcome=result.kind,  # "dead-pre" / "dead-post"
-                facts_merged=0,
-                nogood_emitted=landed,
-                nogood_subsumed=not landed,
-            )
-
-    def _merge_and_recheck(
-        c: CanonicalSetId, layer: int, result, solved: bool,
-    ) -> bool:
-        """Merge an alive commitment's unconditional facts into root,
-        re-saturate, and re-check root. Returns ``True`` iff Phase 2
-        should **stop** — root went contradictory, was solved (gaps), or
-        got fully determined. Mutates the loop-carried ``alive`` via
-        ``nonlocal`` (only ``gaps`` / ``contradictions`` reach here;
-        ``solve`` keeps root stable and never calls this)."""
-        nonlocal alive
-        this_merged = 0
-        for f in result.unconditional_facts:
-            if root_kb._fact_by_id(
-                f.relation_name, f.args,
-            ) is None:
-                root_kb.add_and_index_fact(f)
-                stats.facts_merged += 1
-                this_merged += 1
-
-        if dumper is not None:
-            dumper.entering(
-                layer, c, result,
-                outcome="solution" if solved else "alive",
-                facts_merged=this_merged,
-                nogood_emitted=False,
-                nogood_subsumed=False,
-            )
-
-        if this_merged:
-            # Option A cadence (Q1.5b.2.a) — re-saturate + recompute
-            # alive after every alive entering.
-            _ = list(Saturator(root_kb).saturate())
-            stats.saturate_count += 1
-            # Merged facts could derive a contradiction at root.
-            if ContradictionDetector(root_kb).detect():
-                if entry == "solve":
-                    # merged invariants contradict at root ⇒ no model;
-                    # record the core and stop.
-                    _root_dead()
-                # gaps / contradictions: root contradictory; stop.
-                return True
-            alive = _compute_alive(root_kb)
-            alive, term = _promote_forced_positives(
-                root_kb, alive, stats, mode,
-            )
-            if term is not None:
-                if entry == "solve":
-                    # cascade hit ⊥ at root mid-merge → stop.
-                    _root_dead()
-                    return True
-                if entry == "gaps":
-                    if isinstance(term, Solution):
-                        if not lstate.root_was_solved:
-                            lstate.solutions.append(SolutionRecord(
-                                commitment=c,
-                                kb=root_kb.snapshot(),
-                                firings=(), layer=layer,
-                            ))
-                            lstate.root_was_solved = True
-                    # gaps: cascade hit a terminal (Solution: root
-                    # satisfies; Contradiction: root contradictory) —
-                    # exit Phase 2 either way.
-                    return True
-                # entry == "contradictions":
-                if isinstance(term, Contradiction):
-                    # root contradicted by cascade — stop.
-                    return True
-                # Solution: continue exploring. Supersets extending the
-                # cascade's now-solved root may still die.
-
-            if entry == "solve" and not alive:
-                # root became fully determined mid-merge (every
-                # hypothesis decided by invariants alone) ⇒ unique model.
-                _record_node(root_kb, ())
-                return True
-
-            if is_solved(root_kb, mode):
-                if entry == "gaps":
-                    # record once (root_was_solved guard) then terminate
-                    # Phase 2 — root satisfies, so remaining candidates
-                    # would just re-confirm via fork-side is_solved.
-                    if not lstate.root_was_solved:
-                        lstate.solutions.append(SolutionRecord(
-                            commitment=c, kb=root_kb.snapshot(),
-                            firings=(), layer=layer,
-                        ))
-                        lstate.root_was_solved = True
-                    return True
-                # entry == "contradictions": root is_solved is not a
-                # stop condition — supersets at higher layers may die.
-        return False
+    ctx = _LoopCtx(
+        root_kb=root_kb, entry=entry, mode=mode, stats=stats,
+        lstate=lstate, dumper=dumper, store_lattice=store_lattice,
+        t_start=t_start, max_time=max_time, max_enterings=max_enterings,
+    )
 
     # ── Phase 1 — Initial saturation + alive ──────────────────
     _ = list(Saturator(root_kb).saturate())
@@ -924,15 +953,15 @@ def _explore_layers(
             # root contradictory before any commitment (e.g. zebra2-bad:
             # injected fact clashes with (6) during root saturation) →
             # k=0, with the source-frontier core.
-            _root_dead()
-            return _finalise_solve()
+            _root_dead(ctx)
+            return _finalise_solve(ctx)
         if entry == "gaps":
             # zero solutions; Ambiguity with empty branches.
-            return _finalise_gaps()
+            return _finalise_gaps(ctx)
         # contradictions: root itself is contradictory — empty
         # ``proof.dead_commitments``, ``verdict.unsat_core`` is
         # the empty frozenset (no commitments were tried).
-        return _finalise_contradictions()
+        return _finalise_contradictions(ctx)
     if is_solved(root_kb, mode):
         if entry == "gaps":
             # root satisfies trivially; record with empty
@@ -941,7 +970,7 @@ def _explore_layers(
                 commitment=(), kb=root_kb.snapshot(),
                 firings=(), layer=0,
             ))
-            return _finalise_gaps()
+            return _finalise_gaps(ctx)
         # contradictions: root is_solved before any commitment.
         # No early return — supersets of singleton hypotheses
         # can still surface deads; fall through to Phase 2.
@@ -952,8 +981,8 @@ def _explore_layers(
         if entry == "solve":
             # mode=CONTRADICTIONS ⇒ term is a Contradiction (the
             # forced-positive cascade hit ⊥) → k=0 with root core.
-            _root_dead()
-            return _finalise_solve()
+            _root_dead(ctx)
+            return _finalise_solve(ctx)
         if entry == "gaps":
             # if cascade landed Solution, that's one branch;
             # if Contradiction, zero branches (Ambiguity with empty).
@@ -962,11 +991,11 @@ def _explore_layers(
                     commitment=(), kb=root_kb.snapshot(),
                     firings=(), layer=0,
                 ))
-            return _finalise_gaps()
+            return _finalise_gaps(ctx)
         # contradictions:
         if isinstance(term, Contradiction):
             # root contradicted by cascade — no deads collected.
-            return _finalise_contradictions()
+            return _finalise_contradictions(ctx)
         # Solution: root satisfies after a forced-positive
         # cascade. Don't short-circuit — supersets may still
         # die. Fall through to Phase 2.
@@ -974,12 +1003,12 @@ def _explore_layers(
         if entry == "solve":
             # empty alive + consistent (no contradiction above) ⇒ root is
             # itself a complete, consistent model — the unique solution.
-            _record_node(root_kb, ())
-            return _finalise_solve()
+            _record_node(ctx, root_kb, ())
+            return _finalise_solve(ctx)
         if entry == "gaps":
-            return _finalise_gaps()
+            return _finalise_gaps(ctx)
         # contradictions: empty alive + no Phase-2 work to do.
-        return _finalise_contradictions()
+        return _finalise_contradictions(ctx)
 
     a_prev: list[CanonicalSetId] = layer_1(alive)
 
@@ -1019,12 +1048,12 @@ def _explore_layers(
 
         a_layer: list[CanonicalSetId] = []
         for c in candidates:
-            _check_budget()
+            _check_budget(ctx)
             stats.enterings_total += 1
             result = try_commitment_set(root_kb, c)
 
             if result.kind in ("dead-pre", "dead-post"):
-                _handle_dead(c, layer, result)
+                _handle_dead(ctx, c, layer, result)
                 continue
 
             # Alive.
@@ -1074,7 +1103,7 @@ def _explore_layers(
                     # (deduped by state_hash); do NOT merge its facts
                     # (model-specific) and do NOT expand it (complete —
                     # supersets would be redundant or dead).
-                    _record_node(result.kb, c, result.firings, layer)
+                    _record_node(ctx, result.kb, c, result.firings, layer)
                     if dumper is not None:
                         dumper.entering(
                             layer, c, result,
@@ -1088,7 +1117,7 @@ def _explore_layers(
                         and len(lstate.solution_nodes) >= stop_after
                     ):
                         lstate.truncated = True
-                        return _finalise_solve()
+                        return _finalise_solve(ctx)
                     continue
                 if entry == "gaps":
                     # record + continue, do NOT add to a_layer
@@ -1141,7 +1170,10 @@ def _explore_layers(
                 a_layer.append(c)
                 continue
 
-            if _merge_and_recheck(c, layer, result, solved):
+            stop, alive = _merge_and_recheck(
+                ctx, c, layer, result, solved, alive,
+            )
+            if stop:
                 phase_2_done = True
                 break
             a_layer.append(c)
@@ -1166,10 +1198,10 @@ def _explore_layers(
                 root_kb, alive, stats, mode,
             )
             if term is not None:
-                _root_dead()       # cascade hit ⊥ → no model exists
+                _root_dead(ctx)       # cascade hit ⊥ → no model exists
                 break
             if not alive:
-                _record_node(root_kb, ())  # backbone determines all cells
+                _record_node(ctx, root_kb, ())  # backbone determines all cells
                 break
             # drop commitments no longer entirely within `alive`
             # (an element got promoted into root or refuted).
@@ -1193,14 +1225,14 @@ def _explore_layers(
     # ── Phase 3 — Verdict synthesis ──────────────────────────
     if entry == "solve":
         # P1.7a — verdict read from the deduped solution-node count k.
-        return _finalise_solve()
+        return _finalise_solve(ctx)
 
     if entry == "gaps":
         # always Ambiguity (mode contract).
-        return _finalise_gaps()
+        return _finalise_gaps(ctx)
 
     # entry == "contradictions": always Contradiction (mode contract).
-    return _finalise_contradictions()
+    return _finalise_contradictions(ctx)
 
 
 # ── Sibling entries — gaps_solve + contradictions_solve ──────
