@@ -591,13 +591,15 @@ def _record_setnode(
 @dataclass
 class _LoopCtx:
     """Shared state threaded through the :func:`_explore_layers` phase
-    helpers — lets them live at module level instead of as closures. The
-    mutable populations (``stats``, ``lstate``, ``root_kb``, ``dumper``) are
-    the same objects the main loop holds, so a helper's mutation is visible
-    to the loop and vice-versa."""
+    functions + helpers — lets them live at module level instead of as
+    closures. The mutable populations (``stats``, ``lstate``, ``root_kb``,
+    ``dumper``) are the same objects throughout, so a mutation in one phase is
+    visible to the next; ``alive`` / ``a_prev`` carry the Phase-1 → Phase-2
+    handoff."""
     root_kb: KnowledgeBase
     entry: Literal["gaps", "contradictions", "solve"]
     mode: Mode
+    cfg: SolverConfig
     stats: MonotonicStats
     lstate: _LatticeLoopState
     dumper: MonotonicDumper | LatticeDumper | None
@@ -605,6 +607,11 @@ class _LoopCtx:
     t_start: float
     max_time: float | None
     max_enterings: int | None
+    max_set_size: int
+    stop_after: int | None
+    shuffle_rng: random.Random | None
+    alive: frozenset[FactId] = frozenset()
+    a_prev: list[CanonicalSetId] = field(default_factory=list)
 
 
 def _finalise_gaps(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
@@ -851,99 +858,14 @@ def _merge_and_recheck(
     return False, alive
 
 
-def _explore_layers(
-    root_kb: KnowledgeBase,
-    *,
-    entry: Literal["gaps", "contradictions", "solve"],
-    max_set_size: int = 5,
-    config: SolverConfig | None = None,
-    store_lattice: bool = False,
-    dumper: MonotonicDumper | LatticeDumper | None = None,
-    max_time: float | None = None,
-    max_enterings: int | None = None,
-    stop_after: int | None = None,
-) -> tuple[Verdict, MonotonicStats]:
-    """The shared per-candidate loop. See
-    `plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md`
-    for the per-step contract.
+def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
+    """Phase 1 — saturate the root and handle the terminal root states
+    (contradictory / trivially-solved / forced-positive cascade /
+    fully-determined). On fall-through, stash the open set + layer-1 frontier
+    on ``ctx`` for Phase 2 and return None; otherwise return the verdict."""
+    root_kb, stats, lstate = ctx.root_kb, ctx.stats, ctx.lstate
+    dumper, entry, mode = ctx.dumper, ctx.entry, ctx.mode
 
-    ``entry`` discriminator picks the outcome dispatch + Phase 3
-    verdict synthesis:
-
-    - ``"solve"`` (P1.7a) — exhaust the lattice (or stop after
-      ``stop_after`` distinct solution nodes), recording every
-      solution node (``consistent ∧ complete`` — keyed by
-      :func:`is_solution_node`, not goal match) deduped by
-      :func:`state_hash` into ``lstate.solution_nodes``; Phase 3
-      reads the verdict from the count ``k`` via
-      :func:`verdict_of`. Keeps root stable (no unconditional
-      merge mid-search — unsound under NAF). Ignores
-      ``store_lattice``.
-    - ``"gaps"`` — record every goal-sat (fork or root) into
-      ``lstate.solutions`` as :class:`SolutionRecord` (kb is a
-      :meth:`KnowledgeBase.snapshot` for isolation), do NOT add
-      satisfying commitments to ``a_layer`` so supersets aren't
-      generated; Phase 3 returns Ambiguity(branches=…). Once
-      root itself satisfies, Phase 2 terminates (further
-      exploration is redundant under monotone semantics). When
-      ``store_lattice=True`` every visited non-``dead-pre``
-      commitment also lands in ``lstate.kb_index`` (keyed by
-      ``hash(commitment)`` — distinct commitments stay
-      separate).
-    - ``"contradictions"`` (S1.5b.23) — every dead commitment is
-      recorded into ``lstate.dead_commitments`` as a
-      :class:`DeadCommitment`. Fork-side ``is_solved`` does NOT
-      short-circuit (we fall through to the alive flow, merge
-      unconditional facts, and add the commitment to
-      ``a_layer`` so its supersets are explored — supersets of
-      a solved commitment can still die under additional
-      hypotheses). Root-side ``is_solved`` and cascade-Solution
-      similarly do not terminate Phase 2 under contradictions.
-      Root contradictions and cascade-Contradictions DO
-      terminate (root is dead — no more commitments can land).
-      Under ``store_lattice=True`` the state-hash dedup MERGE
-      is active: distinct dead commitments saturating to the
-      same kb collapse into one multilabel SetNode and skip
-      downstream root-writes / DeadCommitment append.
-
-    Stats: :class:`MonotonicStats` is the internal counter type;
-    :func:`gaps_solve` / :func:`contradictions_solve` promote to
-    :class:`LatticeStats` at the public boundary by reading
-    ``verdict.proof.stats``.
-    """
-    cfg = config or root_kb.config or SolverConfig()
-    root_kb.config = cfg
-
-    # Mode for is_solved-style checks. The mode parameter that
-    # used to live on the monotonic entry was about verdict shape,
-    # which we now dispatch via `entry`. For goal satisfaction
-    # the check is always SOLVE-mode semantics — EXCEPT for the
-    # P1.7a "solve" entry, whose termination signal is
-    # is_solution_node (consistent ∧ complete), not goal match.
-    # Running is_solved under CONTRADICTIONS semantics (always
-    # False) neutralises every is_solved-driven stop in the
-    # shared loop so "solve" exhausts the lattice; solution
-    # recording is keyed on is_solution_node at the dispatch sites.
-    mode = Mode.CONTRADICTIONS if entry == "solve" else Mode.SOLVE
-
-    stats = MonotonicStats()
-    t_start = time.perf_counter()
-    lstate = _LatticeLoopState()
-    # S1.5b.31 — shuffle rng, one per solve when configured.
-    # ``random.Random(seed)`` is stateful; calling ``.shuffle``
-    # per-layer advances its state so each layer gets a
-    # different (but deterministic-given-seed) permutation.
-    shuffle_rng: random.Random | None = (
-        random.Random(cfg.lattice_order_seed)
-        if cfg.lattice_order_seed is not None else None
-    )
-    ctx = _LoopCtx(
-        root_kb=root_kb, entry=entry, mode=mode, stats=stats,
-        lstate=lstate, dumper=dumper, store_lattice=store_lattice,
-        t_start=t_start, max_time=max_time, max_enterings=max_enterings,
-    )
-
-    # ── Phase 1 — Initial saturation + alive ──────────────────
     _ = list(Saturator(root_kb).saturate())
     stats.saturate_count += 1
     if dumper is not None:
@@ -964,16 +886,16 @@ def _explore_layers(
         return _finalise_contradictions(ctx)
     if is_solved(root_kb, mode):
         if entry == "gaps":
-            # root satisfies trivially; record with empty
-            # commitment carrier + return Ambiguity with 1 branch.
+            # root satisfies trivially; record with empty commitment
+            # carrier + return Ambiguity with 1 branch.
             lstate.solutions.append(SolutionRecord(
                 commitment=(), kb=root_kb.snapshot(),
                 firings=(), layer=0,
             ))
             return _finalise_gaps(ctx)
-        # contradictions: root is_solved before any commitment.
-        # No early return — supersets of singleton hypotheses
-        # can still surface deads; fall through to Phase 2.
+        # contradictions: root is_solved before any commitment. No early
+        # return — supersets of singleton hypotheses can still surface
+        # deads; fall through to Phase 2.
 
     alive = _compute_alive(root_kb)
     alive, term = _promote_forced_positives(root_kb, alive, stats, mode)
@@ -984,8 +906,8 @@ def _explore_layers(
             _root_dead(ctx)
             return _finalise_solve(ctx)
         if entry == "gaps":
-            # if cascade landed Solution, that's one branch;
-            # if Contradiction, zero branches (Ambiguity with empty).
+            # if cascade landed Solution, that's one branch; if
+            # Contradiction, zero branches (Ambiguity with empty).
             if isinstance(term, Solution):
                 lstate.solutions.append(SolutionRecord(
                     commitment=(), kb=root_kb.snapshot(),
@@ -996,9 +918,8 @@ def _explore_layers(
         if isinstance(term, Contradiction):
             # root contradicted by cascade — no deads collected.
             return _finalise_contradictions(ctx)
-        # Solution: root satisfies after a forced-positive
-        # cascade. Don't short-circuit — supersets may still
-        # die. Fall through to Phase 2.
+        # Solution: root satisfies after a forced-positive cascade. Don't
+        # short-circuit — supersets may still die. Fall through to Phase 2.
     if not alive:
         if entry == "solve":
             # empty alive + consistent (no contradiction above) ⇒ root is
@@ -1010,9 +931,35 @@ def _explore_layers(
         # contradictions: empty alive + no Phase-2 work to do.
         return _finalise_contradictions(ctx)
 
-    a_prev: list[CanonicalSetId] = layer_1(alive)
+    ctx.alive = alive
+    ctx.a_prev = layer_1(alive)
+    return None
 
-    # ── Phase 2 — Layer-by-layer iteration ───────────────────
+
+def _phase3_verdict(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
+    """Phase 3 — synthesise the entry's verdict from the accumulated
+    ``ctx.lstate`` (solve: count → verdict; gaps: Ambiguity; contradictions:
+    Contradiction)."""
+    if ctx.entry == "solve":
+        # P1.7a — verdict read from the deduped solution-node count k.
+        return _finalise_solve(ctx)
+    if ctx.entry == "gaps":
+        # always Ambiguity (mode contract).
+        return _finalise_gaps(ctx)
+    # entry == "contradictions": always Contradiction (mode contract).
+    return _finalise_contradictions(ctx)
+
+
+def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
+    """Phase 2 — explore the commitment lattice layer by layer. Returns the
+    ``stop_after`` early-stop verdict (solve) or None (exhausted → Phase 3).
+    Reads the Phase-1 handoff (``ctx.alive`` / ``ctx.a_prev``)."""
+    root_kb, stats, lstate = ctx.root_kb, ctx.stats, ctx.lstate
+    dumper, entry, mode, cfg = ctx.dumper, ctx.entry, ctx.mode, ctx.cfg
+    store_lattice, max_set_size = ctx.store_lattice, ctx.max_set_size
+    shuffle_rng, stop_after = ctx.shuffle_rng, ctx.stop_after
+    alive, a_prev = ctx.alive, ctx.a_prev
+
     phase_2_done = False
     for layer in range(1, max_set_size + 1):
         if phase_2_done:
@@ -1222,17 +1169,112 @@ def _explore_layers(
             if a_layer:
                 lstate.truncated = True
 
+    return None
+
+
+def _explore_layers(
+    root_kb: KnowledgeBase,
+    *,
+    entry: Literal["gaps", "contradictions", "solve"],
+    max_set_size: int = 5,
+    config: SolverConfig | None = None,
+    store_lattice: bool = False,
+    dumper: MonotonicDumper | LatticeDumper | None = None,
+    max_time: float | None = None,
+    max_enterings: int | None = None,
+    stop_after: int | None = None,
+) -> tuple[Verdict, MonotonicStats]:
+    """The shared per-candidate loop. See
+    `plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md`
+    for the per-step contract.
+
+    ``entry`` discriminator picks the outcome dispatch + Phase 3
+    verdict synthesis:
+
+    - ``"solve"`` (P1.7a) — exhaust the lattice (or stop after
+      ``stop_after`` distinct solution nodes), recording every
+      solution node (``consistent ∧ complete`` — keyed by
+      :func:`is_solution_node`, not goal match) deduped by
+      :func:`state_hash` into ``lstate.solution_nodes``; Phase 3
+      reads the verdict from the count ``k`` via
+      :func:`verdict_of`. Keeps root stable (no unconditional
+      merge mid-search — unsound under NAF). Ignores
+      ``store_lattice``.
+    - ``"gaps"`` — record every goal-sat (fork or root) into
+      ``lstate.solutions`` as :class:`SolutionRecord` (kb is a
+      :meth:`KnowledgeBase.snapshot` for isolation), do NOT add
+      satisfying commitments to ``a_layer`` so supersets aren't
+      generated; Phase 3 returns Ambiguity(branches=…). Once
+      root itself satisfies, Phase 2 terminates (further
+      exploration is redundant under monotone semantics). When
+      ``store_lattice=True`` every visited non-``dead-pre``
+      commitment also lands in ``lstate.kb_index`` (keyed by
+      ``hash(commitment)`` — distinct commitments stay
+      separate).
+    - ``"contradictions"`` (S1.5b.23) — every dead commitment is
+      recorded into ``lstate.dead_commitments`` as a
+      :class:`DeadCommitment`. Fork-side ``is_solved`` does NOT
+      short-circuit (we fall through to the alive flow, merge
+      unconditional facts, and add the commitment to
+      ``a_layer`` so its supersets are explored — supersets of
+      a solved commitment can still die under additional
+      hypotheses). Root-side ``is_solved`` and cascade-Solution
+      similarly do not terminate Phase 2 under contradictions.
+      Root contradictions and cascade-Contradictions DO
+      terminate (root is dead — no more commitments can land).
+      Under ``store_lattice=True`` the state-hash dedup MERGE
+      is active: distinct dead commitments saturating to the
+      same kb collapse into one multilabel SetNode and skip
+      downstream root-writes / DeadCommitment append.
+
+    Stats: :class:`MonotonicStats` is the internal counter type;
+    :func:`gaps_solve` / :func:`contradictions_solve` promote to
+    :class:`LatticeStats` at the public boundary by reading
+    ``verdict.proof.stats``.
+    """
+    cfg = config or root_kb.config or SolverConfig()
+    root_kb.config = cfg
+
+    # Mode for is_solved-style checks. The mode parameter that
+    # used to live on the monotonic entry was about verdict shape,
+    # which we now dispatch via `entry`. For goal satisfaction
+    # the check is always SOLVE-mode semantics — EXCEPT for the
+    # P1.7a "solve" entry, whose termination signal is
+    # is_solution_node (consistent ∧ complete), not goal match.
+    # Running is_solved under CONTRADICTIONS semantics (always
+    # False) neutralises every is_solved-driven stop in the
+    # shared loop so "solve" exhausts the lattice; solution
+    # recording is keyed on is_solution_node at the dispatch sites.
+    mode = Mode.CONTRADICTIONS if entry == "solve" else Mode.SOLVE
+
+    stats = MonotonicStats()
+    t_start = time.perf_counter()
+    lstate = _LatticeLoopState()
+    # S1.5b.31 — shuffle rng, one per solve when configured.
+    # ``random.Random(seed)`` is stateful; calling ``.shuffle``
+    # per-layer advances its state so each layer gets a
+    # different (but deterministic-given-seed) permutation.
+    shuffle_rng: random.Random | None = (
+        random.Random(cfg.lattice_order_seed)
+        if cfg.lattice_order_seed is not None else None
+    )
+    ctx = _LoopCtx(
+        root_kb=root_kb, entry=entry, mode=mode, cfg=cfg, stats=stats,
+        lstate=lstate, dumper=dumper, store_lattice=store_lattice,
+        t_start=t_start, max_time=max_time, max_enterings=max_enterings,
+        max_set_size=max_set_size, stop_after=stop_after,
+        shuffle_rng=shuffle_rng,
+    )
+
+    # ── Phase 1 — root saturation + terminal root states ──────
+    if (r := _phase1_root(ctx)) is not None:
+        return r
+    # ── Phase 2 — Layer-by-layer iteration ───────────────────
+    if (r := _phase2_layers(ctx)) is not None:
+        return r
+
     # ── Phase 3 — Verdict synthesis ──────────────────────────
-    if entry == "solve":
-        # P1.7a — verdict read from the deduped solution-node count k.
-        return _finalise_solve(ctx)
-
-    if entry == "gaps":
-        # always Ambiguity (mode contract).
-        return _finalise_gaps(ctx)
-
-    # entry == "contradictions": always Contradiction (mode contract).
-    return _finalise_contradictions(ctx)
+    return _phase3_verdict(ctx)
 
 
 # ── Sibling entries — gaps_solve + contradictions_solve ──────
