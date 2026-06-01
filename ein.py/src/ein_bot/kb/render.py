@@ -49,6 +49,7 @@ import re
 from collections.abc import Iterable
 from typing import Literal
 
+from ..render.dot_util import quote as _q
 from ..render.palette import hash_color as _hash_color
 from .entities import Fact, Layer
 from .store import KnowledgeBase
@@ -61,11 +62,6 @@ from .views import instance_name, logical_instances, logical_types, type_name
 
 
 # ── DOT escaping helpers ──────────────────────────────────────────
-
-
-def _q(s: str) -> str:
-    """Quote a DOT identifier or label."""
-    return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
 def _fact_node_id(f: Fact) -> str:

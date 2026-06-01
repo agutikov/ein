@@ -32,9 +32,20 @@ VAR_SHAPE = "diamond"
 WILDCARD_ATTRS = "shape=diamond, style=dashed"
 
 
+def esc(s: str) -> str:
+    """Escape DOT-special characters (backslash, double-quote) in a label
+    or identifier body — *without* the surrounding quotes."""
+    return s.replace("\\", "\\\\").replace('"', '\\"')
+
+
 def quote(s: str) -> str:
-    """Quote a DOT identifier or label, escaping internal quotes."""
-    return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    """Quote a DOT identifier or label, escaping internal specials."""
+    return '"' + esc(s) + '"'
+
+
+def multiline(*parts: str) -> str:
+    r"""A quoted DOT label with ``\n``-separated, escaped non-empty lines."""
+    return '"' + "\\n".join(esc(p) for p in parts if p) + '"'
 
 
 def fact_label(relation_name: str, args: tuple) -> str:
@@ -89,7 +100,9 @@ __all__ = [
     "TYPE_SHAPE",
     "VAR_SHAPE",
     "WILDCARD_ATTRS",
+    "esc",
     "fact_label",
+    "multiline",
     "quote",
     "value_label",
 ]

@@ -31,7 +31,7 @@ import hashlib
 from typing import TYPE_CHECKING
 
 from ..inference.why import render_why
-from .dot_util import fact_label, quote
+from .dot_util import fact_label, multiline, quote
 from .palette import hash_color
 
 if TYPE_CHECKING:
@@ -66,15 +66,6 @@ def _key(relation_name: str, args: tuple) -> str:
 
 def _node_id(key: str) -> str:
     return quote("f_" + hashlib.md5(key.encode("utf-8")).hexdigest()[:10])
-
-
-def _esc(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', '\\"')
-
-
-def _multiline(*parts: str) -> str:
-    """A quoted DOT label with `\\n`-separated, escaped lines."""
-    return '"' + "\\n".join(_esc(p) for p in parts if p) + '"'
 
 
 def _fact_keys(kb: KnowledgeBase) -> set[str]:
@@ -152,7 +143,7 @@ def render_slice(
         style = "rounded,dashed" if firing.redundant else "rounded,bold"
         firing_nodes.append(
             f'  {fnode} [shape=box, style="{style}", color="{colour}", '
-            f"fontcolor=\"{colour}\", label={_multiline(firing.rule, why)}];"
+            f"fontcolor=\"{colour}\", label={multiline(firing.rule, why)}];"
         )
         for p in firing.premises:
             pid = _touch(p.relation_name, p.args)
@@ -175,7 +166,7 @@ def render_slice(
             ng = quote("learned-nogood")
             clause = " ∧ ".join(sorted(fact_label(fid[0], fid[1]) for fid in learned_clause))
             firing_nodes.append(
-                f"  {ng} [shape=note, label={_multiline('learned no-good', clause)}];"
+                f"  {ng} [shape=note, label={multiline('learned no-good', clause)}];"
             )
             edges.append(f'  {bottom} -> {ng} [style=dashed, label="lifts to"];')
 

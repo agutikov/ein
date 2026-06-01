@@ -35,7 +35,7 @@ import hashlib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .dot_util import fact_label, quote
+from .dot_util import fact_label, multiline, quote
 
 if TYPE_CHECKING:
     from ..inference.apriori import CanonicalSetId, FactId
@@ -165,14 +165,6 @@ def _cell_id(cell: _Cell) -> str:
     return quote("n_" + hashlib.md5(seed.encode("utf-8")).hexdigest()[:10])
 
 
-def _esc(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', '\\"')
-
-
-def _multiline(*parts: str) -> str:
-    return '"' + "\\n".join(_esc(p) for p in parts if p) + '"'
-
-
 # ── the renderer ───────────────────────────────────────────────────
 
 def render_lattice(source, *, view: str = "full", name: str = "lattice") -> str:
@@ -197,11 +189,11 @@ def render_lattice(source, *, view: str = "full", name: str = "lattice") -> str:
     # Root node (layer 0). Reuse a root-cell's verdict colour if present.
     if root_cell is not None:
         border, fill = _VERDICT_STYLE.get(root_cell.verdict, _VERDICT_STYLE["alive"])
-        lines.append(f'  {quote("root")} [label={_multiline("∅ root", "(saturation)")}, '
+        lines.append(f'  {quote("root")} [label={multiline("∅ root", "(saturation)")}, '
                      f'style=filled, color="{border}", fillcolor="{fill}"];')
     else:
         lines.append(f'  {quote("root")} '
-                     f'[label={_multiline("root", "(saturation)")}, '
+                     f'[label={multiline("root", "(saturation)")}, '
                      f'style=filled, color="#7f7f7f", fillcolor="#eeeeee"];')
 
     # Cell nodes.
@@ -214,7 +206,7 @@ def render_lattice(source, *, view: str = "full", name: str = "lattice") -> str:
         label_parts = [_commit_label(cell.rep)]
         if extra > 0:
             label_parts.append(f"(+{extra} ≡ same state)")
-        attrs = [f"label={_multiline(*label_parts)}", "style=filled",
+        attrs = [f"label={multiline(*label_parts)}", "style=filled",
                  f'color="{border}"', f'fillcolor="{fill}"']
         if cell.unsat_core:
             core = ", ".join(sorted(fact_label(f.relation_name, f.args)
