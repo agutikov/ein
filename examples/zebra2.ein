@@ -687,8 +687,17 @@
 
 (query
   :mode solve
-  :goal (and (drink-loc Water ?h_water)
-             (pet-loc   Zebra ?h_zebra))
+  ;; The two puzzle questions are "who drinks water?" and "who owns the
+  ;; zebra?" — a Nationality, not a House (S1.7.5 who-vs-where). The goal
+  ;; binds the located house, then joins through the shared house to
+  ;; nation-loc so ?who_water / ?who_zebra carry the answer. Under solve()
+  ;; the goal is projection-only (the verdict is consistent ∧ complete,
+  ;; not goal-match), so the extra conjuncts don't gate the search; they
+  ;; let the answer renderer report "the Norwegian drinks the water".
+  :goal (and (drink-loc  Water      ?h_water)
+             (nation-loc ?who_water ?h_water)
+             (pet-loc    Zebra      ?h_zebra)
+             (nation-loc ?who_zebra ?h_zebra))
   ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per
   ;; *-loc relation; the hrule emits (?R ?v ?h) candidates for
   ;; every (v, h) of the corresponding types.

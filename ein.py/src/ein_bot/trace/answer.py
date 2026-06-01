@@ -2,10 +2,13 @@
 
 Turns a `solve()` :class:`~ein_bot.inference.verdict.Verdict` into a one-line
 natural-language answer for the CLI ``solve --mode=solve`` path. The query
-``:goal`` gives the *where* (house vars); the *who* is projected by reading
-``nation-loc`` at each bound house (the S1.7.5 who-vs-where note). Thin and
-puzzle-shaped on purpose: the relation→verb vocab is the only domain-specific
-piece — the full `:ask` NL surface is M2.
+``:goal`` carries both halves of the S1.7.5 who-vs-where question: an *anchor*
+conjunct ``(drink-loc Water ?h)`` (a known value at an unknown house) and a
+*projection* conjunct ``(nation-loc ?who ?h)`` joined on the same house — so
+``?who`` is bound by the matcher and read straight off the solution. The
+projection relation is whatever the query names (``nation-loc`` for Zebra),
+not hardcoded here. Thin and puzzle-shaped on purpose: the relation→verb vocab
+is the only domain-specific piece — the full `:ask` NL surface is M2.
 """
 from __future__ import annotations
 
@@ -40,11 +43,25 @@ def _conjuncts(goal) -> list:
     return [goal]
 
 
-def _nation_at(kb, house: str) -> str | None:
-    for f in kb._facts_by_relation.get("nation-loc", ()):
-        if len(f.args) == 2 and f.args[1] == house:
-            return f.args[0]
-    return None
+def _who_by_house(conjuncts, b: dict) -> dict[str, str]:
+    """Map house *value* → projected "who", from projection conjuncts
+    ``(R ?who ?h)`` (a :class:`Var` in slot 0). Keyed by the resolved house
+    value (``b[?h]``), so an anchor and its projection pair up whether they
+    share a house var or two vars that bind the same house. The relation
+    ``R`` is whatever the query names — not hardcoded.
+    """
+    out: dict[str, str] = {}
+    for conj in conjuncts:
+        if not (isinstance(conj, SForm) and isinstance(conj.head, Atom)
+                and len(conj.args) == 2):
+            continue
+        who_node, house_node = conj.args
+        if isinstance(who_node, Var) and isinstance(house_node, Var):
+            who = b.get(who_node.name)
+            house = b.get(house_node.name)
+            if who is not None and house is not None:
+                out[house] = who
+    return out
 
 
 def _solution_answer(kb, *, exhausted: bool) -> str:
@@ -53,24 +70,28 @@ def _solution_answer(kb, *, exhausted: bool) -> str:
     if goal is None or not rows:
         return "Solved (no query goal to project)."
     b = rows[0]
+    conjuncts = _conjuncts(goal)
+    who_by_house = _who_by_house(conjuncts, b)
     parts: list[str] = []
-    for conj in _conjuncts(goal):
+    for conj in conjuncts:
         if not (isinstance(conj, SForm) and isinstance(conj.head, Atom)
                 and len(conj.args) == 2):
             continue
-        rel = conj.head.name
         anchor_node, house_node = conj.args
-        anchor = anchor_node.name if isinstance(anchor_node, Atom) else None
+        # Render anchor conjuncts `(R Value ?h)` only; projection conjuncts
+        # (a Var in slot 0) are consumed by `_who_by_house` above.
+        if not isinstance(anchor_node, Atom):
+            continue
         hvar = house_node.name if isinstance(house_node, Var) else None
         house = b.get(hvar) if hvar else None
-        if anchor is None or house is None:
+        if house is None:
             continue
-        who = _nation_at(kb, house)
-        verb = _VERB.get(rel)
+        who = who_by_house.get(house)
+        verb = _VERB.get(conj.head.name)
         if who and verb:
-            parts.append(f"the {who} {verb} the {_humanise(anchor)}")
+            parts.append(f"the {who} {verb} the {_humanise(anchor_node.name)}")
         else:
-            parts.append(f"{_humanise(anchor)} is in {house}")
+            parts.append(f"{_humanise(anchor_node.name)} is in {house}")
     if not parts:
         return "Solved."
     sentence = "; ".join(parts)
