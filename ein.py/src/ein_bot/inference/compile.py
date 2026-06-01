@@ -446,6 +446,74 @@ def _lower_assert(expr: IRNode, bindings: dict[str, str | int]) -> object:
     return _slot(expr, bindings)
 
 
+# ── Plan introspection (pure walks; no KB) — S1.7.4 ─────────────────
+
+
+def asserted_relation(plan: JoinPlan) -> str | None:
+    """The positive relation a plan's ``:assert`` concludes, or ``None``.
+
+    A plan whose assert template is ``(R …)`` with head not ``not``
+    proves ``R`` is rule-derivable. ``(not (R …))`` asserts a negation
+    (use :func:`negated_relation`) and a leaf/absent assert proves
+    nothing positive — both return ``None``. This is the building block
+    behind [`closed.producible_relations`](closed.py).
+    """
+    t = plan.assert_template
+    if isinstance(t, NestedPattern) and t.relation != "not":
+        return t.relation
+    return None
+
+
+def negated_relation(plan: JoinPlan) -> str | None:
+    """The relation ``R`` a plan's ``:assert`` *negates* via ``(not (R …))``,
+    or ``None``. The dual of :func:`asserted_relation` — it answers
+    "does some rule derive a ``(not (R …))`` fact?", which is what an
+    ``(absent (not (R …)))`` guard (a ``forall``/totality NAF) watches.
+    """
+    t = plan.assert_template
+    if isinstance(t, NestedPattern) and t.relation == "not":
+        for inner in t.arg_slots:
+            if isinstance(inner, NestedPattern):
+                return inner.relation
+    return None
+
+
+def naf_relation_refs(plan: JoinPlan) -> list[tuple[str, bool]]:
+    """``(relation, negated)`` pairs every ``AbsentGuard`` in ``plan`` watches.
+
+    Recurses through nested ``AbsentGuard`` steps (the ``forall`` /
+    ``open`` desugars to ``(absent (and G (absent B)))`` — S1.7.4
+    Q-S1.7.4.B says enter both levels). A ``(not (R …))`` sub-pattern —
+    a ``Scan``/``Join`` on relation ``"not"`` carrying a
+    :class:`NestedPattern` arg — yields ``(R, True)`` (the genuine
+    watched relation is the nested one); any other relation lookup
+    yields ``(rel, False)``. Order-preserving; the caller dedupes.
+
+    Activator-bound head vars (``?S`` in ``adjacent-via-*``, ``?R`` in
+    the elimination rules) are already substituted to literal relation
+    names by :func:`compile_rule`, so the names returned here are
+    concrete and per-activator.
+    """
+    out: list[tuple[str, bool]] = []
+
+    def walk(steps: tuple[object, ...]) -> None:
+        for st in steps:
+            if isinstance(st, (Scan, Join)):
+                if st.relation == "not":
+                    for slot in st.arg_slots:
+                        if isinstance(slot, NestedPattern):
+                            out.append((slot.relation, True))
+                else:
+                    out.append((st.relation, False))
+            elif isinstance(st, AbsentGuard):
+                walk(st.sub_steps)
+
+    for st in plan.steps:
+        if isinstance(st, AbsentGuard):
+            walk(st.sub_steps)
+    return out
+
+
 __all__ = [
     "AbsentGuard",
     "Guard",
@@ -453,6 +521,9 @@ __all__ = [
     "JoinPlan",
     "NestedPattern",
     "Scan",
+    "asserted_relation",
     "compile_pattern",
     "compile_rule",
+    "naf_relation_refs",
+    "negated_relation",
 ]

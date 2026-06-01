@@ -103,6 +103,20 @@ class SolverConfig:
     - ``print_alive`` (default **False**) — diagnostic from
       T1.5.4.8.b. When True, every ``_explore`` entry logs the
       inherited alive-set size and the per-filter prune counts.
+    - ``warn_derived_naf`` (default **False**) — S1.7.4
+      observability. When True, the root saturation in
+      :func:`ein_bot.inference.monotonic.solver._phase1_root` emits a
+      :class:`ein_bot.inference.naf_deps.DerivedNafWarning` for every
+      rule whose ``(absent …)`` guard watches a rule-derived relation
+      (so its soundness leans on the S1.5a.1 fire-time re-eval).
+      Default **off**, not on as the stage doc first proposed: the
+      suite runs under ``filterwarnings=["error"]``, and while
+      ``closed`` stays hardcoded the NAF is sound regardless so the
+      warning is pure advisory. Promote to default-on when
+      [S1.7.7](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.7_kernel_purity_analysis.md)
+      de-hardcodes closure and the map becomes load-bearing. The map
+      itself is always available via
+      :meth:`ein_bot.inference.engine.Engine.naf_dependency_map`.
     - ``candidate_order_seed`` (default **-1**) — T1.5a.2a.2 /
       S1.5a.16. Negative means the default S1.5a.1a content-sort
       (``_candidate_sort_key`` — deterministic, branch order
@@ -126,6 +140,7 @@ class SolverConfig:
     hypgen_rel_weight:               float = 1.0
     hypgen_obj_weight:               float = 1.0
     print_alive:                     bool = False
+    warn_derived_naf:                bool = False
     candidate_order_seed:            int = -1
     # S1.5b.27 — saturation-commutativity sanity check.
     # When True, ``_explore_layers`` runs

@@ -29,7 +29,7 @@ from __future__ import annotations
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
-from .compile import NestedPattern
+from .compile import asserted_relation
 from .engine import Engine
 
 
@@ -40,16 +40,17 @@ def producible_relations(kb: KnowledgeBase) -> frozenset[str]:
     whose ``:assert`` template is ``(R …)`` — head not ``not`` —
     proves ``R`` is rule-derivable. T2 rules contribute once per
     activator, so a relation reachable only through an
-    *un-activated* rule is correctly absent.
+    *un-activated* rule is correctly absent. The per-plan test is
+    [`compile.asserted_relation`](compile.py), shared with the
+    S1.7.4 NAF dependency map.
     """
     engine = Engine(kb)
     engine.compile_all()
-    out: set[str] = set()
-    for plan in engine.cache.values():
-        template = plan.assert_template
-        if isinstance(template, NestedPattern) and template.relation != "not":
-            out.add(template.relation)
-    return frozenset(out)
+    return frozenset(
+        r
+        for plan in engine.cache.values()
+        if (r := asserted_relation(plan)) is not None
+    )
 
 
 def emit_closed(kb: KnowledgeBase) -> list[str]:

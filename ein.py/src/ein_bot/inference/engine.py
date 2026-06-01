@@ -89,6 +89,22 @@ class Engine:
         """The compile cache — exposed for tests + tracing."""
         return self._cache
 
+    def naf_dependency_map(self) -> list[Any]:
+        """Static NAF dependency map (S1.7.4) — one record per (rule,
+        activator) whose ``(absent …)`` guards watch a rule-derived
+        relation vs a declared-only one. Returns
+        :class:`ein_bot.inference.naf_deps.NafDep` records.
+
+        Walks the *current* compile cache, so for a complete map call
+        after the cache is populated. Many NAF-bearing rules are
+        activated by rule-derived facts that only exist post-initial-
+        saturation, so a map taken on a freshly-loaded (unsaturated)
+        engine is incomplete by design — see
+        :mod:`ein_bot.inference.naf_deps`.
+        """
+        from . import naf_deps
+        return naf_deps.compute_naf_map(self._cache)
+
     # ── Firing ────────────────────────────────────────────────────
 
     def _iter_pending(self) -> Iterator[tuple[JoinPlan, dict[str, Any], tuple[Fact, ...]]]:

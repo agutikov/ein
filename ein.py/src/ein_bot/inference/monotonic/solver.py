@@ -867,8 +867,16 @@ def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
     root_kb, stats, lstate = ctx.root_kb, ctx.stats, ctx.lstate
     dumper, entry = ctx.dumper, ctx.entry
 
-    _ = list(Saturator(root_kb).saturate())
+    sat = Saturator(root_kb)
+    _ = list(sat.saturate())
     stats.saturate_count += 1
+    if ctx.cfg.warn_derived_naf:
+        # S1.7.4 — once-per-solve, post-saturation so the cache holds
+        # the plans of rules with rule-derived activators (adjacent-via-*,
+        # the elimination rules). Reuse this saturator's fully-populated
+        # engine cache rather than recompiling.
+        from ein_bot.inference import naf_deps
+        naf_deps.emit_derived_naf_warnings(sat.engine.cache)
     if dumper is not None:
         dumper.root_initial(root_kb)
     if ContradictionDetector(root_kb).detect():

@@ -192,6 +192,31 @@ dropped-firing state from the parent. The branched saturator
 re-evaluates every plan against its own KB and so its
 `naf_dropped` count is independent.
 
+**Static NAF dependency map (S1.7.4).** The fire-time re-eval makes
+*every* derived-NAF rule sound, but it doesn't tell the author *which*
+of their rules rely on it. [`naf_deps`](../../../ein.py/src/ein_bot/inference/naf_deps.py)
+answers that statically:
+[`Engine.naf_dependency_map()`](../../../ein.py/src/ein_bot/inference/engine.py)
+walks the compile cache and returns one `NafDep` per `(rule, activator)`
+that carries an `AbsentGuard`, splitting the watched relations into
+`derived` (some rule positively asserts it — or, for an
+`(absent (not (R …)))` guard, some rule asserts `(not (R …))`) vs
+`declared_only` (extension fixed by `(facts)`/`(ontology)`). The
+classification reuses [`compile.asserted_relation`](../../../ein.py/src/ein_bot/inference/compile.py)
+(the same test behind [`closed.producible_relations`](../../../ein.py/src/ein_bot/inference/closed.py))
+and its `negated_relation` dual. Because the activator-bound head var
+(`?S` in `adjacent-via-*`) is baked to a literal relation per activator,
+the split is per-activator: zebra2's `adjacent-via-fwd` is derived-NAF on
+its `next-to` activator but declared-only on `right-of` — mirroring the
+priority-protection note above. **The map is only complete on a
+post-initial-saturation cache** — most NAF-bearing rules (the spatial and
+elimination families) are activated by *derived* facts absent at load —
+so the warning is emitted once, after `_phase1_root`'s root saturation,
+gated by `SolverConfig.warn_derived_naf` (a `DerivedNafWarning`). That
+flag defaults **off**: while `closed` stays hardcoded the NAF is sound
+regardless, and the suite runs under `filterwarnings=["error"]`; it
+promotes to load-bearing under [S1.7.7](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.7_kernel_purity_analysis.md).
+
 **Open follow-ups.**
 
 - [Q-S1.5a.1.B](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.1_naf_semantic_rearch.md#open-questions)
@@ -200,10 +225,11 @@ re-evaluates every plan against its own KB and so its
   [P1.9 E8](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/)
   (watched-fact rule applicability).
 - [S1.7.4](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.4_naf_dependency_map.md)
-  — static NAF dependency map; emit a load-time warning when a
-  derived relation is the target of an AbsentGuard, so authors
-  know which rules rely on the fire-time check. Relocated to
-  P1.7 on 2026-05-26 (formerly P1.5a S1.5a.8 / T1.5a.1.2).
+  — static NAF dependency map: **shipped** 2026-06-01 (see "Static
+  NAF dependency map" above). `Engine.naf_dependency_map()` +
+  the post-saturation `DerivedNafWarning` (default-off
+  `warn_derived_naf`). Relocated to P1.7 on 2026-05-26 (formerly
+  P1.5a S1.5a.8 / T1.5a.1.2).
 
 ## Hypgen pre-pruning — disjunctive-prune (S1.5a.2)
 
