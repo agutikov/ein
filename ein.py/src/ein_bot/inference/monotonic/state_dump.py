@@ -1,8 +1,9 @@
 """MonotonicDumper — per-layer filesystem snapshots of the monotonic solve.
 
-Mirrors :class:`ein_bot.inference.tree.state_dump.StateDumper`'s shape
-but with no per-set storage (monotonic doesn't carry SetNodes, so
-there's nothing to dump per set). The output layout is:
+Engine-agnostic renderers + JSON serialisers (formerly shared with
+the removed tree-side ``StateDumper``), with no per-set storage
+(monotonic doesn't carry SetNodes, so there's nothing to dump per
+set). The output layout is:
 
 ::
 
@@ -296,12 +297,6 @@ class MonotonicDumper:
             survived_count=survived_count,
         )
 
-    def early_terminate(self, layer: int, reason: str) -> None:
-        """The loop returned mid-layer (e.g. is_solved fired)."""
-        self._emit_timeline(
-            "early_terminate", layer=layer, reason=reason,
-        )
-
     def close(self) -> None:
         """Close the timeline file without emitting ``summary.json``.
 
@@ -469,8 +464,7 @@ def _commitment_slug(commitment: tuple) -> str:
     bare FactId slug; multi-element renders as ``<slug1>+<slug2>``.
     Within each FactId, args are joined with ``_``; ``_`` in
     identifiers becomes ``-`` so the field separator stays
-    unambiguous. Matches :func:`tree.state_dump._fact_slug`'s
-    style on a per-FactId basis.
+    unambiguous.
     """
     if not commitment:
         return "root"

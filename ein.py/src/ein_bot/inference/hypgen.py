@@ -87,9 +87,6 @@ class HypGenStats:
     filtered: dict[str, int] = field(default_factory=lambda: defaultdict(int))
     pre_candidate: dict[str, int] = field(default_factory=lambda: defaultdict(int))
 
-    def total_filtered(self) -> int:
-        return sum(self.filtered.values())
-
     def as_report_lines(self) -> list[str]:
         """Human-readable per-line summary for `bench_solve --hyp-stats`."""
         lines = [

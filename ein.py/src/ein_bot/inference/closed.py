@@ -77,8 +77,7 @@ def emit_closed(kb: KnowledgeBase) -> list[str]:
         if name in producible or name in already:
             continue
         fact = Fact(relation_name="closed", args=(name,), layer=Layer.ONTOLOGY)
-        kb.add_fact(fact)
-        kb._index_fact(fact)
+        kb.add_and_index_fact(fact)
         newly.append(name)
     return newly
 

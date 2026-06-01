@@ -102,7 +102,7 @@ def _cmd_kb_dot(args: argparse.Namespace) -> int:
                 for name in args.layers.split(",")
             )
         except KeyError as e:
-            valid = ",".join(sorted(set(_LAYER_BY_NAME.values()) and _LAYER_BY_NAME))
+            valid = ",".join(sorted(_LAYER_BY_NAME))
             print(f"unknown layer {e}; pick from {valid}", file=sys.stderr)
             return 2
     else:

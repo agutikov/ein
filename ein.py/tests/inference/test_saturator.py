@@ -60,15 +60,6 @@ def test_saturator_accepts_existing_engine():
     assert len(sat.engine.cache) == cache_size
 
 
-def test_solved_stub_returns_false():
-    """solved() is a stub for M1; P1.5/P1.7 plug it in."""
-    sat = _sat("""
-    (rules (rule s (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (s r))
-    """)
-    assert sat.solved() is False
-
-
 # ── Saturation behaviour ──────────────────────────────────────────
 
 

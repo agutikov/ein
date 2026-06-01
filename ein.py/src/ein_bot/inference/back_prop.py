@@ -24,15 +24,11 @@ terminal — otherwise no death would ever read as unconditional.
 The remaining judgement is a transitive premise walk. The shallow
 read — *"the core contains no ``kind='hypothesis'`` fact"* — is
 unsound: a core fact can be ``kind='rule'`` yet derive, through a
-chain of firings, from a hypothesis. :func:`reaches_hypothesis`
+chain of firings, from a hypothesis. The internal walk :func:`_walk`
 follows ``Provenance.premises_raw`` (resolved against the KB) until
 every chain grounds out at a ``source`` / un-provenanced given, or
 any chain reaches a ``hypothesis`` / ``rejected`` terminal that is
 not ``own``.
-
-T1.5.7.6 reuses :func:`reaches_hypothesis` (no ``own``) to classify a
-fact derived by parent re-saturation as a *forced deduction* vs a
-hypothesis-dependent one.
 """
 from __future__ import annotations
 
@@ -129,19 +125,6 @@ def _walk(
     return False                           # source-kind — a given
 
 
-def reaches_hypothesis(kb: KnowledgeBase, fact: Fact) -> bool:
-    """True iff ``fact`` transitively depends on any hypothesis-kind fact.
-
-    The single-fact walk T1.5.7.6 reuses to classify a
-    re-saturation-derived fact as forced (False) vs hypothesis-
-    dependent (True). No ``own`` exemption — every hypothesis counts.
-
-    A ``rule``-kind premise id absent from ``kb`` is skipped; callers
-    must pass a KB in which the derivation chain is fully present.
-    """
-    return _walk(kb, fact, set(), own=None)
-
-
 def is_unconditional_death(
     kb: KnowledgeBase,
     unsat_core: frozenset[Fact],
@@ -209,9 +192,28 @@ def _write_negation(
             ),
         ),
     )
-    stored = kb.add_fact(not_fact)
-    kb._index_fact(stored)
+    stored = kb.add_and_index_fact(not_fact)
     return stored
+
+
+def _bubble_to_ancestors(
+    ancestors: tuple[KnowledgeBase, ...],
+    fact: Fact,
+    unsat_core: frozenset[Fact],
+    bubbled_name: str,
+) -> int:
+    """Write ``(not fact)`` into every ancestor kb; return the number of
+    ancestors that did not already carry it (the new-write delta).
+
+    Shared by the primary-hypothesis and symmetric-mirror bubbles in
+    :func:`back_propagate` (S1.5a.14).
+    """
+    new = 0
+    for anc_kb in ancestors:
+        if anc_kb._fact_by_id("not", (fact,)) is None:
+            new += 1
+        _write_negation(anc_kb, fact, unsat_core, bubbled_name)
+    return new
 
 
 def back_propagate(
@@ -292,10 +294,9 @@ def back_propagate(
     ancestors = tuple(ak for ak in chain if ak is not kb)
     bubbled_name = rule_name + "-bubbled"
     new_writes = 0 if primary_existed else 1
-    for anc_kb in ancestors:
-        if anc_kb._fact_by_id("not", (hypothesis,)) is None:
-            new_writes += 1
-        _write_negation(anc_kb, hypothesis, unsat_core, bubbled_name)
+    new_writes += _bubble_to_ancestors(
+        ancestors, hypothesis, unsat_core, bubbled_name,
+    )
 
     if (promote_symmetric
             and len(hypothesis.args) == 2
@@ -309,10 +310,9 @@ def back_propagate(
         if kb._fact_by_id("not", (mirror,)) is None:
             new_writes += 1
         _write_negation(kb, mirror, unsat_core, rule_name)
-        for anc_kb in ancestors:
-            if anc_kb._fact_by_id("not", (mirror,)) is None:
-                new_writes += 1
-            _write_negation(anc_kb, mirror, unsat_core, bubbled_name)
+        new_writes += _bubble_to_ancestors(
+            ancestors, mirror, unsat_core, bubbled_name,
+        )
 
     # Invalidate ancestor verdict_at caches so any stale "alive"
     # entry for the now-dead hypothesis is re-classified on the
@@ -378,5 +378,4 @@ __all__ = [
     "back_propagate",
     "is_symmetric_relation",
     "is_unconditional_death",
-    "reaches_hypothesis",
 ]

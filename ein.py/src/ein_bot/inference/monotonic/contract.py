@@ -34,10 +34,8 @@ from __future__ import annotations
 
 from ein_bot.inference.monotonic.lattice import LatticeProof
 from ein_bot.inference.verdict import (
-    Ambiguity,
     Contradiction,
     Mode,
-    Solution,
     Verdict,
     is_solved,
 )
@@ -154,21 +152,4 @@ def validate_proof_for_explanation(
     )
 
 
-def verdict_entry(verdict: Verdict) -> str:
-    """Map a verdict back to the public entry that produced it.
-
-    :class:`Solution` is monotonic; :class:`Ambiguity` is gaps;
-    :class:`Contradiction` is contradictions. Useful for
-    test parametrisation + dumper section dispatch in
-    P1.6-shaped consumers.
-    """
-    if isinstance(verdict, Solution):
-        return "monotonic"
-    if isinstance(verdict, Ambiguity):
-        return "gaps"
-    if isinstance(verdict, Contradiction):
-        return "contradictions"
-    raise TypeError(f"unknown verdict type: {type(verdict)!r}")
-
-
-__all__ = ["validate_proof_for_explanation", "verdict_entry"]
+__all__ = ["validate_proof_for_explanation"]

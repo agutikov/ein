@@ -150,7 +150,7 @@ class SolverConfig:
     # informed ordering. The deviation from the
     # ``s1.5b.26_lattice_scoring.md`` spec's default
     # (``"score-sum"``) is intentional: the regression
-    # baselines under monotonic_solve + lattice tests were
+    # baselines under the monotonic loop + lattice tests were
     # recorded under lex; switching default would force
     # re-baselining for no engine-correctness gain.
     lattice_order:                   str = "lex"
@@ -202,60 +202,96 @@ class SolverConfig:
         return cls(**out)
 
 
+def _flag(field) -> str:
+    """Kebab-cased IR flag name for an error message."""
+    return field.name.replace("_", "-")
+
+
+def _unwrap(value: Any) -> Any:
+    """Strip an IR wrapper node to its Python value.
+
+    ``Int`` / ``String`` carry ``.value``; ``Atom`` (a SYMBOL like
+    ``true`` / ``lex``) carries ``.name``; a raw Python primitive — or a
+    node with neither (e.g. ``Range``) — passes through unchanged.
+    """
+    if hasattr(value, "value"):
+        return value.value
+    if hasattr(value, "name"):
+        return value.name
+    return value
+
+
+def _coerce_bool(field, value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    raw = _unwrap(value)
+    if isinstance(raw, bool):
+        return raw
+    if isinstance(raw, str) and raw.lower() in ("true", "false"):
+        return raw.lower() == "true"
+    raise ValueError(
+        f"config flag :{_flag(field)} expects true/false, got {value!r}",
+    )
+
+
+def _coerce_int(field, value: Any) -> int:
+    raw = _unwrap(value)
+    if isinstance(value, bool) or isinstance(raw, bool):
+        raise ValueError(
+            f"config flag :{_flag(field)} expects an integer, got bool {value!r}",
+        )
+    try:
+        return int(raw)
+    except (TypeError, ValueError) as e:
+        raise ValueError(
+            f"config flag :{_flag(field)} expects an integer, got {value!r}",
+        ) from e
+
+
+def _coerce_float(field, value: Any) -> float:
+    raw = _unwrap(value)
+    try:
+        return float(raw)
+    except (TypeError, ValueError) as e:
+        raise ValueError(
+            f"config flag :{_flag(field)} expects a number, got {value!r}",
+        ) from e
+
+
+def _coerce_str(field, value: Any) -> str:
+    raw = _unwrap(value)
+    if isinstance(raw, str):
+        return raw
+    raise ValueError(
+        f"config flag :{_flag(field)} expects a string, got {value!r}",
+    )
+
+
+_COERCERS = {
+    "bool": _coerce_bool,
+    "int": _coerce_int,
+    "float": _coerce_float,
+    "str": _coerce_str,
+}
+
+
 def _coerce(field, value: Any) -> Any:
     """Type-dispatch coercer for SolverConfig fields.
 
-    Uses the dataclass field's type annotation to pick the right
-    primitive coercion (bool / float / str). All values may
-    arrive as Atoms (with ``.name``) from the IR parser; the
-    primitive layer strips that wrapper. Anything outside the
-    documented value space raises with a kebab-cased flag name.
+    ``field.type`` is a *string* (the module uses ``from __future__ import
+    annotations``), so the base type is its first ``|``-separated token —
+    ``"int | None"`` coerces as ``int``. IR values arrive wrapped (``Atom``
+    with ``.name``; ``Int`` / ``String`` with ``.value``) or as raw Python
+    primitives; the per-type coercer unwraps them. A type outside
+    ``{bool, int, float, str}`` raises with the kebab-cased flag name.
     """
-    field_name = field.name
-    field_type = field.type
-    raw = getattr(value, "name", value)
-
-    if field_type is bool or field_type == "bool":
-        if isinstance(value, bool):
-            return value
-        if isinstance(raw, str) and raw.lower() in ("true", "false"):
-            return raw.lower() == "true"
+    base = field.type.split("|")[0].strip()
+    coercer = _COERCERS.get(base)
+    if coercer is None:
         raise ValueError(
-            f"config flag :{field_name.replace('_', '-')} expects "
-            f"true/false, got {value!r}",
+            f"config flag :{_flag(field)} has unsupported type {field.type!r}",
         )
-    if field_type is int or field_type == "int":
-        if isinstance(value, bool):
-            raise ValueError(
-                f"config flag :{field_name.replace('_', '-')} expects "
-                f"an integer, got bool {value!r}",
-            )
-        try:
-            return int(raw)
-        except (TypeError, ValueError) as e:
-            raise ValueError(
-                f"config flag :{field_name.replace('_', '-')} expects "
-                f"an integer, got {value!r}",
-            ) from e
-    if field_type is float or field_type == "float":
-        try:
-            return float(raw)
-        except (TypeError, ValueError) as e:
-            raise ValueError(
-                f"config flag :{field_name.replace('_', '-')} expects "
-                f"a number, got {value!r}",
-            ) from e
-    if field_type is str or field_type == "str":
-        if isinstance(raw, str):
-            return raw
-        raise ValueError(
-            f"config flag :{field_name.replace('_', '-')} expects "
-            f"a string, got {value!r}",
-        )
-    raise ValueError(
-        f"config flag :{field_name.replace('_', '-')} has "
-        f"unsupported type {field_type!r}",
-    )
+    return coercer(field, value)
 
 
 __all__ = ["SolverConfig"]

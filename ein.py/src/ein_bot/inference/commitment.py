@@ -24,10 +24,9 @@ Cross-refs:
   primitive shared by both engines).
 - :mod:`ein_bot.inference.apriori` — produces the
   :data:`CanonicalSetId` inputs.
-- :mod:`ein_bot.inference.back_prop` —
-  :func:`reaches_hypothesis`'s global "any hypothesis-kind"
-  variant; :func:`_reaches_commitment` here is the
-  commitment-set parameterised analogue.
+- :mod:`ein_bot.inference.back_prop` — :func:`_walk`'s global
+  "any speculative-kind" terminal; :func:`_reaches_commitment`
+  here is the commitment-set parameterised analogue.
 """
 from __future__ import annotations
 
@@ -111,8 +110,7 @@ def try_commitment_set(
             layer=Layer.REASONING,
             provenance=Provenance.from_hypothesis(branch=0),
         )
-        stored = fork.add_fact(h_fact)
-        fork._index_fact(stored)
+        stored = fork.add_and_index_fact(h_fact)
         hypothesis_facts.append(stored)
 
     # Pre-saturation contradiction check (apriori filter at the
@@ -188,8 +186,8 @@ def _is_unconditional(
     hypothesis in ``hypothesis_ids``.
 
     Commitment-set parameterised analogue of
-    :func:`ein_bot.inference.back_prop.reaches_hypothesis`
-    (which uses a global "any hypothesis-kind fact" terminal).
+    :func:`ein_bot.inference.back_prop._walk`
+    (which uses a global "any speculative-kind fact" terminal).
     Here the terminal is matching a specific FactId in the
     commitment — soundness rests on this distinction.
     """

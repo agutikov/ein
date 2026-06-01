@@ -53,10 +53,6 @@ def open_hypotheses(kb: KnowledgeBase) -> frozenset[FactId]:
     return frozenset(canonical)
 
 
-def has_open_hypothesis(kb: KnowledgeBase) -> bool:
-    return bool(open_hypotheses(kb))
-
-
 def complete(kb: KnowledgeBase) -> bool:
     """No open hypothesis — the generator proposes nothing undecided."""
     return not open_hypotheses(kb)
@@ -75,7 +71,6 @@ def is_solution_node(kb: KnowledgeBase) -> bool:
 __all__ = [
     "complete",
     "consistent",
-    "has_open_hypothesis",
     "is_solution_node",
     "open_hypotheses",
 ]

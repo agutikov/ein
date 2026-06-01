@@ -153,13 +153,12 @@ class Saturator:
             yield f
 
     def is_stalled(self) -> bool:
-        """True iff no firing is currently available.
+        """True iff no firing is currently available (the queue holds
+        no unfired binding).
 
-        P1.5's hypothesis loop calls this to decide when to fork:
-        ``while not solved() and not is_stalled(): step()``. A fork
-        injects a new hypothesis fact; the caller must clear the
-        ``_needs_enqueue`` flag (or call this method, which forces a
-        fresh pass) so subsequent matches are picked up.
+        Forces a fresh enqueue pass first — callers may have written
+        facts directly to the KB outside ``step()``'s flow — so any
+        newly-matchable binding is picked up before the stalled check.
         """
         # Always force a fresh pass — callers may have written facts
         # directly to the KB outside of step()'s flow (e.g. P1.5).
@@ -176,10 +175,9 @@ class Saturator:
         """Detect ``(X, (not X))`` same-layer pairs in the current KB.
 
         Convenience wrapper around
-        :class:`ein_bot.inference.contradiction.ContradictionDetector`.
-        P1.5's hypothesis loop calls this between branch saturations
-        to decide retraction; the Saturator owns the KB reference,
-        so callers don't need to construct a detector themselves.
+        :class:`ein_bot.inference.contradiction.ContradictionDetector`
+        for callers holding a Saturator: it owns the KB reference, so
+        they don't need to construct a detector themselves.
 
         Returns:
             Tuple of :class:`~ein_bot.inference.contradiction.Contradiction`
@@ -187,16 +185,6 @@ class Saturator:
         """
         from .contradiction import ContradictionDetector
         return ContradictionDetector(self.kb).detect()
-
-    def solved(self) -> bool:
-        """Query-mode predicate. M1 stub returning False.
-
-        Plugged in by P1.5/P1.7 — will compile the `(query …)`
-        block's `:goal` pattern and check whether the KB satisfies
-        it. Until then, the saturator runs to fixed point regardless
-        of the query block.
-        """
-        return False
 
     # ── Internals ─────────────────────────────────────────────────
 

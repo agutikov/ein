@@ -175,15 +175,6 @@ class _VerboseDumper(MonotonicDumper):
             file=sys.stderr,
         )
 
-    def early_terminate(  # type: ignore[override]
-        self, layer: int, reason: str,
-    ) -> None:
-        super().early_terminate(layer, reason)
-        print(
-            f"layer {layer:>2d} terminate {reason}",
-            file=sys.stderr,
-        )
-
 
 def _commitment_label(commitment: tuple) -> str:
     """Render a CanonicalSetId as ``(R a b), (R c d)`` for the log."""

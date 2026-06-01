@@ -1,7 +1,7 @@
 """Lattice data structures for the unified set-search engine.
 
 The :func:`gaps_solve` and :func:`contradictions_solve` entries
-(siblings of :func:`monotonic_solve` in this same package)
+(siblings of :func:`solve` in this same package)
 return verdicts wrapping a :class:`LatticeProof` artefact. This
 module defines the proof's data shape + the per-record companion
 types + the cumulative-counters class :class:`LatticeStats`.

@@ -21,18 +21,11 @@ What survives:
 - :func:`is_solved` — goal-pattern check against a kb (mode-aware:
   SOLVE expects exactly one binding, GAPS expects at least one,
   CONTRADICTIONS never satisfies).
-- :func:`_query_value` / :func:`_mode_from_query` — small Query
-  accessors used by the engine + by is_solved.
+- :func:`_query_value` — small Query accessor used by the engine
+  (goal projection, the CLI answer path).
 
-What was dropped (with the tree solver):
-
-- ``Solution.tree`` / ``Ambiguity.tree`` / ``Contradiction.tree``
-  (held a ``SearchTree | None`` produced by the tree solver).
-- ``Ambiguity.unresolved`` (held ``tuple[SearchNode, ...]`` of
-  depth-cap open leaves — a tree-search concept).
-
-The lattice engines never populated these fields; their migration
-from tree.solver leaves them out by design.
+The tree-side ``.tree`` / ``.unresolved`` verdict fields were dropped in
+that move; the lattice engines never populated them.
 """
 from __future__ import annotations
 
@@ -164,18 +157,6 @@ def _query_value(query, kw_name: str):
         if hasattr(kp, "key") and kp.key.name == kw_name:
             return kp.value
     return None
-
-
-def _mode_from_query(kb: KnowledgeBase) -> Mode | None:
-    if kb.query is None:
-        return None
-    mv = _query_value(kb.query, "mode")
-    if mv is None or not hasattr(mv, "name"):
-        return None
-    try:
-        return Mode(mv.name)
-    except ValueError:
-        return None
 
 
 __all__ = [

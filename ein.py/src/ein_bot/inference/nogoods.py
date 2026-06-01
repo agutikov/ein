@@ -20,7 +20,7 @@ added.
 Single-element clauses (size < 2) are owned by
 :func:`back_prop.back_propagate` (which writes ``(not h)`` into
 ``_negated_facts``); :func:`emit_nogood`'s ``min_size`` parameter
-defaults to ``2`` so the tree side keeps that guard. Set-indexed
+defaults to ``2`` to preserve that split. The set-indexed
 engines (monotonic / lattice — Q1.5b.5.c) pass ``min_size=1``
 to let singleton clauses land, since the in-layer filter relies
 on ``root._nogoods`` for cross-layer pruning before the next
@@ -35,8 +35,6 @@ the in-flight subtree and re-enters with the tightened clause
 set.
 """
 from __future__ import annotations
-
-from collections.abc import Iterable
 
 from ein_bot.kb.entities import Fact
 from ein_bot.kb.store import KnowledgeBase
@@ -71,8 +69,8 @@ def emit_nogood(
     - Else remove every existing ``C' ⊇ clause`` (new clause
       subsumes them), insert ``clause``, return True.
 
-    ``min_size`` (default 2) lets the tree caller keep the
-    "size-1 clauses are back-prop's domain" guard — the
+    ``min_size`` (default 2) preserves the
+    "size-1 clauses are back-prop's domain" split — the
     ``(not h)`` writeback already filters those candidates via
     ``_negated_facts`` before any nogood check would fire.
     Set-indexed engines (monotonic / lattice — Q1.5b.5.c) pass
@@ -129,29 +127,6 @@ def matches_any_nogood(
     return any(c.issubset(prospective) for c in nogoods)
 
 
-def filter_by_nogoods(
-    candidates: Iterable[Fact],
-    path_set: frozenset[FactId],
-    nogoods: set[Clause],
-) -> list[Fact]:
-    """Return only candidates whose prospective path is NOT a
-    superset of any learned clause.
-
-    Convenience wrapper over :func:`matches_any_nogood` for callers
-    that want a pre-filtered list (e.g. for diagnostics). The
-    solver itself uses :func:`matches_any_nogood` per-candidate so
-    it can allocate a dead-by-nogood SearchNode instead of
-    silently dropping the candidate (which would break verdict
-    promotion when a parent's only children were all filtered).
-    """
-    if not nogoods:
-        return list(candidates)
-    return [
-        h for h in candidates
-        if not matches_any_nogood(h, path_set, nogoods)
-    ]
-
-
 def build_clause(path: tuple[FactId, ...], own: Fact) -> Clause:
     """Construct the path-condition clause for a death.
 
@@ -168,6 +143,5 @@ __all__ = [
     "FactId",
     "build_clause",
     "emit_nogood",
-    "filter_by_nogoods",
     "matches_any_nogood",
 ]

@@ -125,8 +125,6 @@ def _atom_arg_attrs(node: IRNode) -> str:
         return f"shape={VAR_SHAPE}"
     if isinstance(node, Wildcard):
         return WILDCARD_ATTRS
-    if isinstance(node, Atom):
-        return f"shape={GROUND_SHAPE}"
     return f"shape={GROUND_SHAPE}"
 
 

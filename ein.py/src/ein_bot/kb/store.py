@@ -273,6 +273,27 @@ class KnowledgeBase:
         self.facts.append(fact)
         return fact
 
+    def add_and_index_fact(self, fact: Fact) -> Fact:
+        """Reasoning-layer add: dedup against the live indexes and, on a
+        genuinely-new fact, append it *and* update the incremental indexes.
+
+        The saturation hot path. Unlike :meth:`add_fact` — the loader's
+        index-free append that dedups by scanning :attr:`facts` before
+        :meth:`rebuild_indexes` runs — this dedups with the O(deg)
+        :meth:`_fact_by_id` lookup (the reasoning layer keeps
+        ``_facts_by_relation`` current) and returns a pre-existing fact
+        **without** re-indexing it. So a fact re-derived by a second rule
+        lands in the indexes exactly once, rather than the ``add_fact`` +
+        unconditional ``_index_fact`` pattern's silent double-index.
+        """
+        existing = self._fact_by_id(fact.relation_name, fact.args)
+        if existing is not None:
+            return existing
+        _attach(fact, self)
+        self.facts.append(fact)
+        self._index_fact(fact)
+        return fact
+
     # ── Index rebuild ─────────────────────────────────────────────
 
     def rebuild_indexes(self) -> None:

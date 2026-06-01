@@ -54,17 +54,17 @@ Dumper hooks (S1.5b.7)
 ----------------------
 
 Optional :class:`MonotonicDumper` receives lifecycle callbacks
-at six sites: ``root_initial``, ``layer_start``, ``entering``,
-``layer_end``, ``early_terminate``, ``summary``. The single
-``_finish`` exit helper guarantees ``summary`` lands on every
-non-abort path.
+at five sites: ``root_initial``, ``layer_start``, ``entering``,
+``layer_end``, ``summary``. The single ``_finish`` exit helper
+guarantees ``summary`` lands on every non-abort path.
 
-SOLVE mode only (Q1.5b.7)
--------------------------
+Three entries (Q1.5b.7 / P1.7a)
+-------------------------------
 
-GAPS and CONTRADICTIONS belong to the lattice engine; the
-monotonic loop raises :class:`NotImplementedError` if either
-is requested.
+All three public entries — :func:`solve`, :func:`gaps_solve`,
+:func:`contradictions_solve` — dispatch through the shared
+per-candidate loop via the ``entry`` discriminator; they differ
+only in the outcome recording and the Phase-3 verdict synthesis.
 """
 from __future__ import annotations
 
@@ -250,11 +250,11 @@ def solve(
     ``stop_after`` bounds the search to the first ``n`` distinct solution
     nodes (``None`` = exhaust) — the orthogonal stop policy. ``stop_after=1``
     is the sound fast path: it stops on the first complete∧consistent node
-    (never a partial goal-match, unlike the removed ``monotonic_solve``), but
-    sets ``stats.exhausted=False`` so a ``k=1`` result reads as "a model",
+    (never a partial goal-match, unlike the removed first-goal-match entry),
+    but sets ``stats.exhausted=False`` so a ``k=1`` result reads as "a model",
     not certified-unique.
 
-    Unlike the removed ``monotonic_solve`` (first goal-pattern match —
+    Unlike the removed first-goal-match entry (first goal-pattern match —
     unsound) and ``gaps_solve`` (stops at root goal-match — masks
     ambiguity), this entry
     terminates only on lattice exhaustion, ``stop_after``, or budget. See
@@ -344,8 +344,7 @@ def _write_negation_local(
             premises_raw=(),
         ),
     )
-    stored = root_kb.add_fact(not_fact)
-    root_kb._index_fact(stored)
+    root_kb.add_and_index_fact(not_fact)
 
 
 def _symmetric_relations(kb: KnowledgeBase) -> frozenset[str]:
@@ -396,8 +395,7 @@ def _promote_forced_positives(
                 rule="<forced-positive>", premises_raw=(),
             ),
         )
-        stored = root_kb.add_fact(promoted)
-        root_kb._index_fact(stored)
+        root_kb.add_and_index_fact(promoted)
         stats.facts_merged += 1
         stats.forced_positives += 1
 
@@ -448,7 +446,7 @@ def _contradiction(kb: KnowledgeBase) -> Verdict:
 
 # ── Shared core loop — _explore_layers ───────────────────────
 #
-# S1.5b.21: extracted from the pre-refactor `monotonic_solve`
+# S1.5b.21: extracted from the pre-refactor monotonic-loop
 # body. The `entry` discriminator dispatches outcomes for the
 # three public functions (solve, gaps_solve,
 # contradictions_solve). The shared core is NEVER DUPLICATED
@@ -663,7 +661,7 @@ def _explore_layers(
     root_kb.config = cfg
 
     # Mode for is_solved-style checks. The mode parameter that
-    # used to live on monotonic_solve was about verdict shape,
+    # used to live on the monotonic entry was about verdict shape,
     # which we now dispatch via `entry`. For goal satisfaction
     # the check is always SOLVE-mode semantics — EXCEPT for the
     # P1.7a "solve" entry, whose termination signal is
@@ -857,7 +855,7 @@ def _explore_layers(
 
         a_layer: list[CanonicalSetId] = []
         for c in candidates:
-            # Budget gate — same as pre-refactor monotonic_solve.
+            # Budget gate — same as the pre-refactor monotonic loop.
             if (
                 max_enterings is not None
                 and stats.enterings_total >= max_enterings
@@ -1066,8 +1064,7 @@ def _explore_layers(
                 if root_kb._fact_by_id(
                     f.relation_name, f.args,
                 ) is None:
-                    stored = root_kb.add_fact(f)
-                    root_kb._index_fact(stored)
+                    root_kb.add_and_index_fact(f)
                     stats.facts_merged += 1
                     this_merged += 1
 
@@ -1233,12 +1230,9 @@ def _explore_layers(
 # whether the loop records solution nodes and reads the verdict
 # from their count (solve) or exhausts to collect every
 # satisfying / refuted commitment (gaps / contradictions).
-# S1.5b.21 lifts
-# the shared core out of `monotonic_solve` into a private
+# S1.5b.21 lifted the shared core into the private
 # `_explore_layers` helper that all three entries call;
-# S1.5b.23 fills `contradictions_solve`.
-#
-# Skeleton stage — S1.5b.20 — both raise NotImplementedError.
+# S1.5b.23 filled `contradictions_solve`.
 
 
 def gaps_solve(

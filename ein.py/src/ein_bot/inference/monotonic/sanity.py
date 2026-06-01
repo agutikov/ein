@@ -142,8 +142,7 @@ def check_commutativity(
             provenance=Provenance.from_hypothesis(branch=0),
         )
         fork = parent_result.kb.fork()
-        stored = fork.add_fact(h_fact)
-        fork._index_fact(stored)
+        fork.add_and_index_fact(h_fact)
         _ = list(Saturator(fork).saturate())
         parent_hash = state_hash(fork)
         if parent_hash != direct_hash:

@@ -55,20 +55,6 @@ class Firing:
     premises: tuple[Fact, ...]
     redundant: bool = False
 
-    def derives_positive(self) -> bool:
-        """True iff the derived conclusion is positive, not a `(not …)`.
-
-        Under the M1 rule library, re-saturation triggered by a
-        back-prop write produces only `(not …)` propagation (e.g.
-        symmetric-mirror via T1.5.7.3). A `True` here marks a
-        firing that goes *beyond* negation-cache filling — a forced
-        positive deduction (S1.5.7 T1.5.7.6's return-on-positive
-        trigger, or S1.5.8's `domain-elimination` output) and the
-        signal S1.5.7b's consume-loop cache uses to invalidate its
-        stable-alive / stable-conditional-dead entries.
-        """
-        return self.derived.relation_name != "not"
-
 
 # ── :assert substitution ───────────────────────────────────────────
 
@@ -164,11 +150,10 @@ def fire(
         provenance=provenance,
     )
 
-    # Add to KB; add_fact deduplicates by (relation_name, args). If a
-    # prior firing already produced this fact, add_fact returns the
-    # existing instance. Either way we have a stable Fact to report.
-    stored = kb.add_fact(derived)
-    kb._index_fact(stored)
+    # Add + index in one step. add_and_index_fact dedups by
+    # (relation_name, args) and indexes only a genuinely-new fact, so a
+    # conclusion re-derived by another rule is returned (and indexed) once.
+    stored = kb.add_and_index_fact(derived)
 
     # Activator args as strings — for the Firing record only.
     activator = tuple(

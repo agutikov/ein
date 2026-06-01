@@ -32,8 +32,8 @@ Cross-references:
 
 - Stage spec:
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.31_lattice_shuffle_invariance.md``.
-- Sibling on the tree side:
-  ``ein.py/tests/inference/test_shuffle_invariance.py``.
+- Sibling test:
+  ``ein.py/tests/inference/lattice/test_shuffle_invariance.py``.
 - Snapshot input: :class:`LatticeProof` (S1.5b.22) +
   ``root_kb`` at termination.
 """
@@ -116,7 +116,7 @@ def lattice_snapshot(
 
     Requires ``verdict.proof`` to be non-None — call this on
     verdicts from :func:`gaps_solve` or
-    :func:`contradictions_solve`, not :func:`monotonic_solve`.
+    :func:`contradictions_solve`, not :func:`solve`.
     The ``root_kb`` argument is the kb at termination (the
     solver's ``root_kb`` after the call returns) — its
     ``state_hash`` records the cumulative root-side merges +

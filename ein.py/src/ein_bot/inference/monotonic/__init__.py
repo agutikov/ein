@@ -74,7 +74,6 @@ rationale.
 """
 from ein_bot.inference.monotonic.contract import (
     validate_proof_for_explanation,
-    verdict_entry,
 )
 from ein_bot.inference.monotonic.lattice import (
     DeadCommitment,
@@ -118,6 +117,5 @@ __all__ = [
     "lattice_snapshot",
     "solve",
     "validate_proof_for_explanation",
-    "verdict_entry",
     "verdict_of",
 ]
