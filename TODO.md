@@ -156,10 +156,9 @@
 ;;                                    fact-as-value vs variable-binding readings)
 
 
-P1.8 add rules emitting multiple facts per match, not just only single - shrink the rule set where need multiple rules per emit with identical match
-
-
+P1.8
 pull relation algrabra features as library rules into P1.8 from plans/followups/f1b_logical_formulation.md
+
 
 
 split P1.8 into 2 phases P1.8 and P1.8a - move performance part into P1.8a, leave ein language and lib things in P1.8
