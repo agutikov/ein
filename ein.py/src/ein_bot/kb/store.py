@@ -597,6 +597,22 @@ class KnowledgeBase:
                 return f
         return None
 
+    def symmetric_relations(self) -> frozenset[str]:
+        """Relation names declared ``(symmetric R)`` — read from the
+        ``symmetric``-fact index (any layer)."""
+        return frozenset(
+            f.args[0]
+            for f in self._facts_by_relation.get("symmetric", ())
+            if f.args
+        )
+
+    def is_symmetric(self, relation_name: str) -> bool:
+        """True iff ``(symmetric <relation_name>)`` is asserted."""
+        return any(
+            f.args and f.args[0] == relation_name
+            for f in self._facts_by_relation.get("symmetric", ())
+        )
+
     def derivation_dag(self, fact: Fact) -> DerivationDAG:
         """Build the derivation DAG rooted at `fact`.
 

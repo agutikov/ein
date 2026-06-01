@@ -321,7 +321,7 @@ def _emit_negated_fact_writeback(
     if (
         len(args) == 2
         and args[0] != args[1]
-        and rn in _symmetric_relations(root_kb)
+        and rn in root_kb.symmetric_relations()
     ):
         _write_negation_local(root_kb, rn, (args[1], args[0]))
 
@@ -345,15 +345,6 @@ def _write_negation_local(
         ),
     )
     root_kb.add_and_index_fact(not_fact)
-
-
-def _symmetric_relations(kb: KnowledgeBase) -> frozenset[str]:
-    """Names declared ``(symmetric R)`` in the ontology."""
-    return frozenset(
-        f.args[0]
-        for f in kb._facts_by_relation.get("symmetric", ())
-        if len(f.args) >= 1
-    )
 
 
 def _promote_forced_positives(

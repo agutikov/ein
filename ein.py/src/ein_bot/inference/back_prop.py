@@ -160,15 +160,12 @@ def is_unconditional_death(
 
 
 def is_symmetric_relation(kb: KnowledgeBase, name: str) -> bool:
-    """True iff ``(symmetric <name>)`` is asserted in ``kb`` (any layer).
+    """True iff ``(symmetric <name>)`` is asserted in ``kb``.
 
-    Activator-style read of the symmetric property tag — the same
-    check ``hypgen`` uses; lifted here so the back-prop write site
-    can promote the symmetric mirror without importing across
-    sibling modules.
+    Thin wrapper over :meth:`KnowledgeBase.is_symmetric`, kept at the
+    back-prop write site so it can promote the symmetric mirror.
     """
-    apps = kb._facts_by_relation.get("symmetric", ())
-    return any(f.args == (name,) for f in apps)
+    return kb.is_symmetric(name)
 
 
 def _write_negation(

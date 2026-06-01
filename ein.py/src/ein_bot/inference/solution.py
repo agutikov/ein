@@ -37,11 +37,7 @@ def open_hypotheses(kb: KnowledgeBase) -> frozenset[FactId]:
     ``(symmetric R)`` is declared — so a sole surviving symmetric hypothesis
     registers as size-1 (matters for the forced-positive cascade).
     """
-    symmetric_relations = {
-        f.args[0]
-        for f in kb._facts_by_relation.get("symmetric", ())
-        if len(f.args) >= 1
-    }
+    symmetric_relations = kb.symmetric_relations()
     canonical: set[FactId] = set()
     for f in generate_hypotheses(kb):
         rn = f.relation_name

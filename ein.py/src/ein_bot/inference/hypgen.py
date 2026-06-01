@@ -264,7 +264,7 @@ def _fill_slot(
         return     # M1 only handles arity-2 relations
     other_slot = 1 - fixed_slot
     other_type = rel.signature[other_slot]
-    symmetric = _is_symmetric(kb, rel.name)
+    symmetric = kb.is_symmetric(rel.name)
 
     for filler in _instance_like_objects(kb):
         if filler.name == obj_ref.name:
@@ -313,11 +313,6 @@ def _is_excluded(kb: KnowledgeBase, fact: Fact) -> bool:
     generator from re-emitting `h` on future levels.
     """
     return (fact.relation_name, fact.args) in kb._negated_facts
-
-
-def _is_symmetric(kb: KnowledgeBase, r_name: str) -> bool:
-    apps = kb._facts_by_relation.get("symmetric", ())
-    return any(f.args == (r_name,) for f in apps)
 
 
 def _is_closed(kb: KnowledgeBase, r_name: str) -> bool:

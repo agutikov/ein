@@ -209,6 +209,80 @@ def _var_in_ast(node: object, name: str) -> bool:
     return False
 
 
+def _desugar_open(p: IRNode) -> SForm:
+    """`(open P)` → `(and (absent P) (absent (not P)))` — the third-state
+    match (S1.5.8c T1.5.8c.3b): P is neither asserted nor negated in the
+    KB. Useful for gating hypothesis emission on still-undecided slots.
+    """
+    return SForm(
+        head=Atom(name="and"),
+        args=(
+            SForm(head=Atom(name="absent"), args=(p,)),
+            SForm(
+                head=Atom(name="absent"),
+                args=(SForm(head=Atom(name="not"), args=(p,)),),
+            ),
+        ),
+    )
+
+
+def _desugar_forall(node: SForm) -> SForm:
+    """`(forall ?b (G) (B))` → `(absent (and G (absent B)))` — guarded
+    universal (S1.5.8c T1.5.8c.3a): ∀x. G(x) → B(x) ≡ ¬∃x. G(x) ∧ ¬B(x).
+    The bound var ``?b`` must appear in the guard (safety: the guard
+    grounds it). Raises ValueError on a malformed head.
+    """
+    bound_node, guard, body = node.args[0], node.args[1], node.args[2]
+    if not isinstance(bound_node, Var):
+        raise ValueError(
+            f"forall: first arg must be a ?bound var, got {bound_node!r}",
+        )
+    if not _var_in_ast(guard, bound_node.name):
+        raise ValueError(
+            f"forall ?{bound_node.name}: bound var does not appear "
+            f"in guard {guard!r}",
+        )
+    return SForm(
+        head=Atom(name="absent"),
+        args=(
+            SForm(
+                head=Atom(name="and"),
+                args=(guard, SForm(head=Atom(name="absent"), args=(body,))),
+            ),
+        ),
+    )
+
+
+def _compile_relation(
+    node: SForm,
+    head: IRNode,
+    bindings: dict[str, str | int],
+    known_vars: set[str],
+) -> list[object]:
+    """Compile a relation pattern `(REL args…)` / `(?rel args…)` into a
+    Scan or Join step.
+
+    After activator binding the head is a literal relation :class:`Atom`
+    or a :class:`Var` bound by the activator; an unbound head var
+    (genuinely relation-polymorphic matching across all relations) is
+    unsupported in M1's activator model (Q29) and skipped silently.
+    `(not P)` arrives here as relation "not" with the inner expression a
+    NestedPattern arg, matching stored `(not P)` facts (S1.5.8c K-Δ.1);
+    `(instance Ent Type)` is likewise an ordinary binary relation (S1.7.6).
+    """
+    if isinstance(head, Atom):
+        rel_name = head.name
+    elif isinstance(head, Var) and head.name in bindings:
+        rel_name = str(bindings[head.name])
+    else:
+        return []
+    slots = tuple(_slot(a, bindings) for a in node.args if not isinstance(a, KwPair))
+    shared = _shared_vars(slots, known_vars)
+    step = Join(rel_name, slots, shared) if shared else Scan(rel_name, slots)
+    _collect_vars(slots, known_vars)
+    return [step]
+
+
 def _compile_premise(
     node: IRNode,
     bindings: dict[str, str | int],
@@ -236,60 +310,14 @@ def _compile_premise(
         sub_steps = _compile_body(node.args[0], bindings, known_vars)
         return [AbsentGuard(sub_steps=tuple(sub_steps))]
 
-    # `(open P)` — third-state match, S1.5.8c T1.5.8c.3b.
-    # Parser sugar: rewrites to `(and (absent P) (absent (not P)))`.
-    # Names the hypothetical state of P: neither asserted nor
-    # negated in the KB. Useful for gating hypothesis emission
-    # on still-undecided slots.
+    # `(open P)` — third-state match, desugared to and(absent, absent-not).
     if head_name == "open" and len(node.args) >= 1:
-        p = node.args[0]
-        desugared = SForm(
-            head=Atom(name="and"),
-            args=(
-                SForm(head=Atom(name="absent"), args=(p,)),
-                SForm(
-                    head=Atom(name="absent"),
-                    args=(
-                        SForm(head=Atom(name="not"), args=(p,)),
-                    ),
-                ),
-            ),
-        )
-        return _compile_premise(desugared, bindings, known_vars)
+        return _compile_premise(_desugar_open(node.args[0]), bindings, known_vars)
 
-    # `(forall ?b (G) (B))` — guarded universal, S1.5.8c T1.5.8c.3a.
-    # Parser sugar: rewrites to `(absent (and G (absent B)))` —
-    # classical ∀x. G(x) → B(x) ≡ ¬∃x. G(x) ∧ ¬B(x). The bound
-    # var `?b` must appear in `G` (safety: guard grounds it).
+    # `(forall ?b (G) (B))` — guarded universal, desugared to
+    # absent(and(G, absent(B))).
     if head_name == "forall" and len(node.args) >= 3:
-        bound_node = node.args[0]
-        guard = node.args[1]
-        body = node.args[2]
-        if not isinstance(bound_node, Var):
-            raise ValueError(
-                f"forall: first arg must be a ?bound var, got {bound_node!r}",
-            )
-        if not _var_in_ast(guard, bound_node.name):
-            raise ValueError(
-                f"forall ?{bound_node.name}: bound var does not appear "
-                f"in guard {guard!r}",
-            )
-        desugared = SForm(
-            head=Atom(name="absent"),
-            args=(
-                SForm(
-                    head=Atom(name="and"),
-                    args=(
-                        guard,
-                        SForm(
-                            head=Atom(name="absent"),
-                            args=(body,),
-                        ),
-                    ),
-                ),
-            ),
-        )
-        return _compile_premise(desugared, bindings, known_vars)
+        return _compile_premise(_desugar_forall(node), bindings, known_vars)
 
     # `(not P)` falls through to the generic relation handler
     # below — it compiles as a fact pattern with relation "not"
@@ -322,32 +350,9 @@ def _compile_premise(
     # production), so it arrives with head Atom("neq"). It's also
     # in the predicate registry; the branch above handles it.
 
-    # `(instance Ent Type)` is no longer special (S1.7.6): it is an
-    # ordinary binary relation, compiled by the generic relation
-    # handler below (Scan/Join on relation "instance"). The KB's
-    # `_facts_by_relation` is populated for "instance" because instances
-    # ARE facts.
-
-    # Relation pattern: `(REL args…)` or `(?rel args…)`. After the
-    # activator binding the head is either an Atom (literal relation
-    # name) or a Var that wasn't bound by the activator — the latter
-    # would imply genuinely-relation-polymorphic matching across all
-    # relations, which M1 does NOT support (Q29 / activator model).
-    if isinstance(head, Atom):
-        rel_name = head.name
-    elif isinstance(head, Var) and head.name in bindings:
-        rel_name = str(bindings[head.name])
-    else:
-        # Unbound head var — not supported in M1's activator model.
-        # The saturation engine would have to enumerate all relations.
-        # Skip silently for now; S1.3.2's tests will surface it.
-        return []
-
-    slots = tuple(_slot(a, bindings) for a in node.args if not isinstance(a, KwPair))
-    shared = _shared_vars(slots, known_vars)
-    step = Join(rel_name, slots, shared) if shared else Scan(rel_name, slots)
-    _collect_vars(slots, known_vars)
-    return [step]
+    # Relation pattern `(REL args…)` / `(?rel args…)`. `(not P)` and
+    # `(instance Ent Type)` are ordinary relations here (S1.5.8c / S1.7.6).
+    return _compile_relation(node, head, bindings, known_vars)
 
 
 def _compile_body(
