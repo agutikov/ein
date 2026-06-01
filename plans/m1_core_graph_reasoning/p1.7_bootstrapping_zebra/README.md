@@ -85,6 +85,9 @@ they share its parked status and feed its written conclusion (T1.7.7.5).
 | S1.7.5  | Query semantics: who vs where — **done** 2026-06-01 (option 2: `:goal` joins through house to `nation-loc`; `answer.py` de-hardcoded) | 1-2 days |
 | S1.7.7  | Kernel purity analysis — **comprehensive inventory** of every hardcoded engine name + de-risk spike (**parked**, phase end) — **not an M1 gate** | research |
 | S1.7.8–.22 | **Per-name decomposition** (one stage file per hardcoded name): `is-a` (.8), `symmetric` (.9), `closed` (.10), `open` (.11), `not`/`false`/`and`/`or`/`forall`/`absent` (.12–.17), `eq`/`neq` (.18), bookkeeping heads (.19), `hypothesis-relations` (.20), task-class entries (.21), engine-internal strings (.22) — each: functionality, removal consequences, ein-lang-rule route, name-agnostic route | analysis |
+| S1.7.23 | **Retire the kernel-imposed type system** (`is-a`/`T`) — execution of the [S1.7.8](s1.7.8_isa.md) finding (spike-verified no-op on zebra2); kernel keys on no inheritance name; inheritance rules stay inline (stdlib extraction → P1.8) — **not an M1 gate** | ~1-2 days |
+| S1.7.24 | **De-hardcode `symmetric`** — execution of the [S1.7.9](s1.7.9_symmetric.md) decision: kernel keys on `is_symmetric` nowhere (generation → user hrule; `k` → generic state-dedup; mirror dropped); sound for user-defined `symmetric` + induction. Converges with S1.7.23 on hrule-driven generation — **not an M1 gate** | ~2-3 days |
+| S1.7.25 | **Reserved names: encapsulate + document** — the *kept* half of the kernel: isolate the rule-body/⊥ primitives (`false`/`not`/`and`/`or`/`absent`, `eq`/`neq` model) + `closed` (predicates.py pattern); mark bookkeeping heads / `hypothesis-relations` / task classes reserved M1 strings; write the reserved-names docs in `docs/kernel/ir/03-ein-lang` + `docs/kernel/inference`. `open`/`forall` → P1.8 macros | ~2-3 days |
 
 ## Acceptance
 

@@ -201,7 +201,12 @@ Likely stages once activated (continuing the A-numbering):
   form; reconcile with S1.5.8's zebra slice.
 - **S1.8.A9** — reflective rule-implication (the compile-cache
   fix).
-- **S1.8.A10** — type / domain matching for relations + rules.
+- **S1.8.A10** — type / domain matching for relations + rules. The
+  *opt-in* typing that complements
+  [S1.7.23](../p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md)
+  (P1.7), which *removes* the kernel's *imposed* `is-a`/`T` type system;
+  A4/A5 then extract the inheritance rules + `guess` hrule into the
+  importable `stdlib/types.ein`.
 - **S1.8.A11** — multi-fact assertion from a single rule
   (`:assert (and …)`); the model is one-fact-per-firing today (see the
   [stage file](s1.8.a11_multi_fact_assert.md)). Surface syntax TBC.
