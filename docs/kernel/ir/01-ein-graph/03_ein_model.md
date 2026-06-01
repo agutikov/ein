@@ -200,7 +200,6 @@ behaviour for them and they may not be redefined by user code:
 | `rule`       | declares a rewriting rule (head of `(rule …)` in `(rules …)`).  |
 | `not`        | propositional negation; `(not X)` is an octagon fact whose single arg is the negated proposition. The contradiction detector pairs each `(not X)` against a same-layer positive `X`. |
 | `false`      | direct ⊥ — a `(false)` fact asserts that the firing rule has reached a contradiction without needing the self-negation idiom. The contradiction detector treats every `(false …)` as a `kind="direct"` contradiction (see [`../02-data-model/02_store.md` §7.2 unsat-core](../02-data-model/02_store.md) for how the unsat-core walk handles it). Shipped S1.5.4a Part 2 (2026-05-21). |
-| `is-a`       | inheritance/instantiation edge the engine's ancestry walk recognises (`hypgen.INHERITANCE_RELATIONS`); zebra2's canonical inheritance relation. |
 
 `not` and `false` are reserved at the **engine** level — the
 contradiction detector scans `_facts_by_relation["not"]` and
@@ -208,17 +207,26 @@ contradiction detector scans `_facts_by_relation["not"]` and
 The grammar parses both as ordinary `generic_fact` forms; the
 engine, not the parser, gives them meaning.
 
-`is-a` is *not strictly* reserved in the grammar (it parses as an
-ordinary `generic_fact`), but its **engine semantics** are reserved:
-`hypgen._ancestor_names` / `_instance_like_objects` follow `is-a`
-edges (plus the derived `kb.types` parent chain) when type-checking
-hypotheses. Since **S1.7.6** (full-purity pass) `type` / `instance` /
-`a-priori` are **no longer kernel forms**: `a-priori` was deleted, and
-`type` / `instance` are ordinary relations a puzzle declares via
-`(relation …)` — `kb.types` / `kb.instances` are *derived views* over
-the `(type …)` / `(instance …)` facts, not built by a special loader
-arm. See
-[S1.7.6](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md).
+**`is-a` and `T` are NOT reserved (S1.7.23).** The kernel imposes no
+type system: it names no inheritance relation and keeps no universal-top
+atom. `is-a` is an ordinary relation a puzzle declares with
+`(relation is-a T T)`, and `T` is an ordinary capitalised atom a puzzle
+uses to name its top type — both are plain data the puzzle's *own* rules
+(transitivity, `sibling-exclusive`, a `guess` hrule's `:match`,
+`typecheck-arg-*`) interpret in user space. The S1.7.23 execution deleted
+every kernel site that *interpreted* them: `hypgen`'s type-compatibility
+filter (`_type_compatible` / `_ancestor_names` / `INHERITANCE_RELATIONS`
+and the `"T"` universal-top short-circuit), the candidate-object selector
+(`_instance_like_objects` → name-free `_candidate_objects`), and the whole
+`kb.types` / `kb.instances` type/instance entity-view (the registries, the
+`_types_by_parent` / `_instances_by_type` / `_facts_by_instance` indexes,
+and the `Type` / `Instance` entity classes). A puzzle that wants a
+named-type *projection* computes it with an ein-lang rule over its own
+inheritance relation. See
+[S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md);
+its parent [S1.7.6](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md)
+had already removed `type` / `instance` / `a-priori` from the kernel
+forms.
 
 ### `false` — direct ⊥ usage
 

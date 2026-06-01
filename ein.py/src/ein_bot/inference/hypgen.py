@@ -1,13 +1,26 @@
 """Hypothesis generation — the two-step "pick object, pick relation"
 enumerator that produces candidate Facts for the search tree.
 
-Step 1 — order *instance-like* objects (graph leaves of `is-a` /
-`instance`, plus the kernel `kb.instances` view as a fallback) by
-descending fact-participation; ties broken by name.
+Step 1 — order *candidate objects* (every `object`-category node, by a
+name-free signal — S1.7.23) by descending fact-participation; ties
+broken by name.
 Step 2 — per object, enumerate `(relation, slot)` pairs, fill the
-other slot with type-compatible instance-like objects, prune by
-the named filter pipeline (see :class:`HypGenStats`), and emit
-both orderings for symmetric relations.
+other slot with the candidate objects, prune by the named filter
+pipeline (see :class:`HypGenStats`), and emit both orderings for
+symmetric relations.
+
+**S1.7.23 — the kernel imposes no type system.** The generator used to
+restrict slot fillers to `is-a`-type-compatible objects
+(`_type_compatible` walking an `is-a` / `Type.parent` ancestry, plus the
+`T` universal-top short-circuit) and to select candidate objects from
+the `is-a` leaves / `kb.instances` view. Both keyed the kernel on the
+`is-a` name and on a derived type lattice — a kernel-imposed type system.
+They are gone: the enumerator now proposes type-blind, and the puzzle's
+own rules (a `guess`-style hrule's `:match`, or `typecheck-arg-*` +
+`functional` contradiction rules on the blind path) do the type-pruning
+in user space over `is-a`-as-a-plain-relation. See
+`plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md`
+and docs/kernel/ir/01-ein-graph/03_ein_model.md §6.
 
 T1.5.4.7 — the per-filter counter refactor. User observation
 2026-05-21: *"I think we can't 'not generate' some hypothesis
@@ -16,10 +29,6 @@ and filtered by every condition."* :func:`generate_hypotheses`
 is the iterator API (existing call sites unchanged);
 :func:`generate_hypotheses_with_stats` materialises and returns
 the counter dataclass alongside.
-
-Encoding-agnostic across zebra-original (kernel `(instance N T)`)
-and zebra2 (`is-a` leaves) — see [[project-canonical-zebra2]] and
-docs/kernel/ir/01-ein-graph/03_ein_model.md §6.
 """
 from __future__ import annotations
 
@@ -36,15 +45,6 @@ from .config import SolverConfig
 from .hrule import Hrules
 from .lookahead import Lookahead
 
-# Inheritance-relation names the generator recognises when walking
-# ancestry. Canonical zebra2 uses `is-a`. Since S1.7.6 `instance` is no
-# longer a kernel inheritance edge — a puzzle that uses `(instance …)`
-# bridges it to `is-a` with a user rule (see zebra.ein), so ancestry
-# always flows through `is-a` here. (`kb.instances` is still unioned in
-# by `_instance_like_objects` for instance-based encodings.)
-INHERITANCE_RELATIONS: tuple[str, ...] = ("is-a",)
-
-
 # ── Stats dataclass — T1.5.4.7 ─────────────────────────────────────
 
 
@@ -59,9 +59,9 @@ class HypGenStats:
       ``closed_relation`` (relation skipped because `(closed R)`),
       ``relation_not_whitelisted`` (relation absent from the
       `(config :hypothesis-relations …)` whitelist),
-      ``type_incompatible_slot`` (slot skipped because the focal
-      object's type doesn't match the slot's signature),
-      ``self_edge`` (filler equals focal object).
+      ``self_edge`` (filler equals focal object). (Before S1.7.23 a
+      ``type_incompatible_slot`` / ``type_incompatible_filler`` skip
+      also lived here — the kernel `is-a` type-filter; removed.)
     - **raw**: number of constructed candidate facts entering the
       per-candidate filter pipeline. Equals
       ``emitted + sum(filtered.values())``.
@@ -159,7 +159,7 @@ def _generate(kb: KnowledgeBase, stats: HypGenStats) -> Iterator[Fact]:
             yield from _emit(fact)
     else:
         by_count = sorted(
-            _instance_like_objects(kb),
+            _candidate_objects(kb),
             key=lambda nr: (
                 -(len(nr.as_head) + len(nr.as_arg)),
                 nr.name,
@@ -219,13 +219,17 @@ def _raw_candidates(
     kb: KnowledgeBase, obj_ref, stats: HypGenStats,
     allowed: frozenset[str] | None,
 ) -> Iterator[Fact]:
-    """Enumerate every type-compatible non-self-edge candidate fact.
+    """Enumerate every non-self-edge candidate fact for ``obj_ref``.
 
     Pre-candidate skips (closed_relation, relation_not_whitelisted,
-    type_incompatible_slot, self_edge) increment
-    ``stats.pre_candidate``; the per-candidate filters fire
-    downstream in :func:`_apply_filters`. ``allowed`` is the
+    self_edge) increment ``stats.pre_candidate``; the per-candidate
+    filters fire downstream in :func:`_apply_filters`. ``allowed`` is the
     S1.5.6b relation whitelist (``None`` ⇒ no restriction).
+
+    S1.7.23 — no type-filter: ``obj_ref`` fills *every* slot of every
+    open relation, type-blind. Type-wrong candidates are killed
+    downstream by the puzzle's own contradiction rules (`typecheck-arg-*`
+    + `functional`) / lookahead, not by a kernel `is-a` walk.
     """
     for rel in kb.relations.values():
         if not rel.signature:
@@ -239,10 +243,7 @@ def _raw_candidates(
             # S1.5.6b T1.5.6b.1 — relation not on the whitelist.
             stats.pre_candidate["relation_not_whitelisted"] += 1
             continue
-        for slot_idx, sig_type in enumerate(rel.signature):
-            if not _type_compatible(kb, obj_ref.name, sig_type):
-                stats.pre_candidate["type_incompatible_slot"] += 1
-                continue
+        for slot_idx in range(len(rel.signature)):
             yield from _fill_slot(kb, rel, slot_idx, obj_ref, stats)
 
 
@@ -253,7 +254,11 @@ def _fill_slot(
     obj_ref,
     stats: HypGenStats,
 ) -> Iterator[Fact]:
-    """Enumerate type-compatible fillers; emit symmetric duplicates.
+    """Enumerate candidate-object fillers; emit symmetric duplicates.
+
+    S1.7.23: fillers are no longer restricted to type-compatible
+    objects (the `is-a` type-filter is gone); ``obj_ref`` pairs with
+    every candidate object except itself.
 
     S1.5.4b: Filter B ("slot already used" — skip (R, slot_idx)
     when ``obj_ref`` already sits there) is INTENTIONALLY removed.
@@ -263,15 +268,11 @@ def _fill_slot(
     if len(rel.signature) != 2:
         return     # M1 only handles arity-2 relations
     other_slot = 1 - fixed_slot
-    other_type = rel.signature[other_slot]
     symmetric = kb.is_symmetric(rel.name)
 
-    for filler in _instance_like_objects(kb):
+    for filler in _candidate_objects(kb):
         if filler.name == obj_ref.name:
             stats.pre_candidate["self_edge"] += 1
-            continue
-        if not _type_compatible(kb, filler.name, other_type):
-            stats.pre_candidate["type_incompatible_filler"] += 1
             continue
 
         args = _build_args(obj_ref.name, fixed_slot, filler.name, other_slot)
@@ -359,44 +360,6 @@ def _coerce_relation_names(value: object) -> tuple[str, ...]:
     return ()
 
 
-# ── Type-system walks ──────────────────────────────────────────────
-
-
-def _type_compatible(kb: KnowledgeBase, obj_name: str, sig_type: str) -> bool:
-    """True iff `obj_name` is `sig_type` or has it as a transitive ancestor.
-
-    Walks both `is-a` / `instance` Facts and the kernel `Type.parent`
-    chain. The convention atom `T` is treated as a universal top
-    (compatible with anything) so an unrooted ontology still
-    type-checks against `(relation R T T)` signatures.
-    """
-    if sig_type == obj_name or sig_type == "T":
-        return True
-    return sig_type in _ancestor_names(kb, obj_name)
-
-
-def _ancestor_names(kb: KnowledgeBase, name: str) -> set[str]:
-    """Transitive ancestor set under `is-a` edges + the `Type` parent chain."""
-    visited: set[str] = set()
-    stack: list[str] = [name]
-    while stack:
-        n = stack.pop()
-        for rel_name in INHERITANCE_RELATIONS:
-            for f in kb._facts_by_relation.get(rel_name, ()):
-                if (len(f.args) >= 2
-                        and isinstance(f.args[0], str)
-                        and f.args[0] == n
-                        and isinstance(f.args[1], str)
-                        and f.args[1] not in visited):
-                    visited.add(f.args[1])
-                    stack.append(f.args[1])
-        t = kb.types.get(n)
-        if t is not None and t.parent_name and t.parent_name not in visited:
-            visited.add(t.parent_name)
-            stack.append(t.parent_name)
-    return visited
-
-
 def score_hypothesis(fact: Fact, kb: KnowledgeBase) -> float:
     """Ordering score for a hypothesis fact — higher means tried first.
 
@@ -412,8 +375,8 @@ def score_hypothesis(fact: Fact, kb: KnowledgeBase) -> float:
       the intuition is "candidates touching the heavily-referenced
       parts of the fact graph are more likely to either fire
       useful rules or be quickly contradicted". Per-branch by
-      construction — reads ``kb._facts_by_relation`` and
-      ``kb._facts_by_instance`` which carry the branch's own
+      construction — reads ``kb._facts_by_relation`` and ``kb.names``
+      (the arg-participation index) which carry the branch's own
       facts (including back-propped negatives).
     - ``"branch-info"`` / ``"popularity+branch-info"``: reserved
       for a future stage; raise ``NotImplementedError`` to surface
@@ -462,11 +425,9 @@ def _score_popularity(
     - ``count(R)`` is the length of ``kb._facts_by_relation[R]``
       (number of facts using this relation in the current branch).
     - ``count(arg_i)`` for a string-valued arg is the length of
-      ``kb.names[arg_i].as_arg`` (the encoding-agnostic
-      every-name-that-appears-anywhere index — works under both
-      the kernel ``(instance …)`` encoding and the zebra2
-      ``(is-a X Y)`` relational encoding without gating on
-      ``kb.instances``).
+      ``kb.names[arg_i].as_arg`` (the every-name-that-appears-anywhere
+      index — counts a node's argument participation directly, with no
+      dependence on any type/instance registry).
 
     Non-string args (nested Facts, ints) contribute 0 — they don't
     have a name to index by.
@@ -487,28 +448,50 @@ def _score_popularity(
     return rel_w * rel_count + obj_w * obj_count_sum
 
 
-def _instance_like_objects(kb: KnowledgeBase) -> Iterator:
-    """Yield NameRefs that look like inheritance-relation leaves.
+# Reserved kernel primitive names — the rule-body / ⊥ vocabulary that
+# can appear as a fact HEAD (`(not …)`, `(false)`) but is never an
+# object. They are NOT auto-registered as relations, so `_categorise_name`
+# leaves them as `category="object"`; without this guard a `(not h)` fact
+# back-propagated DURING generation would inject `not` into `kb.names` and
+# the enumerator would then propose `(R x not)` garbage. These are the
+# *kept* hardcoded kernel names (S1.7.25); excluding them by name is sound
+# — they are reserved, never puzzle objects.
+_RESERVED_PRIMITIVES: frozenset[str] = frozenset(
+    {"not", "false", "and", "or", "absent", "forall", "neq", "eq"}
+)
 
-    A name is "instance-like" if it appears at slot 0 of an
-    inheritance edge (`is-a`) and never at slot 1. `kb.instances`
-    (derived from `(instance …)` facts since S1.7.6) is unioned in for
-    instance-based encodings that don't materialise `is-a` facts.
+
+def _candidate_objects(kb: KnowledgeBase) -> Iterator:
+    """Yield the candidate objects the enumerator may guess about.
+
+    S1.7.23 — a **name-free** signal: a node of `object` category (the
+    `NameRef.category` discriminator — not a relation / rule / kernel-meta
+    name), minus the names a puzzle **declares as a type** in a relation
+    signature, minus the reserved logical primitives (:data:`_RESERVED_PRIMITIVES`).
+    The kernel no longer keys this on the `is-a` name or the
+    `kb.instances` view (the old "instance-like = `is-a` leaf" rule, a
+    kernel-imposed type system); it reads only `category` + the relation
+    *signatures* a puzzle already declares with `(relation R A B)` — A/B
+    are the type-role nodes to exclude. (For a `(relation color-of House
+    Color)` ontology that is `{House, Color, T, …}` — exactly the
+    non-guessable type atoms the old is-a-leaf test excluded, derived
+    without naming `is-a`.)
+
+    Type-wrong candidates that survive this still die downstream against
+    the puzzle's contradiction rules (`typecheck-arg-*`) — soundness does
+    not depend on this set being tight, only tractability. Yielded sorted
+    by name for branch-order determinism ([S1.5a.1a]).
     """
-    at_slot0: set[str] = set()
-    at_slot1: set[str] = set()
-    for rel_name in INHERITANCE_RELATIONS:
-        for f in kb._facts_by_relation.get(rel_name, ()):
-            if len(f.args) >= 2:
-                if isinstance(f.args[0], str):
-                    at_slot0.add(f.args[0])
-                if isinstance(f.args[1], str):
-                    at_slot1.add(f.args[1])
-    leaves = at_slot0 - at_slot1
-    leaves |= set(kb.instances)
-    for name in leaves:
-        ref = kb.names.get(name)
-        if ref is not None and ref.category == "object":
+    type_nodes = {
+        t for rel in kb.relations.values()
+        for t in (rel.signature or ())
+        if isinstance(t, str)
+    }
+    for name in sorted(kb.names):
+        if name in type_nodes or name in _RESERVED_PRIMITIVES:
+            continue
+        ref = kb.names[name]
+        if ref.category == "object":
             yield ref
 
 
@@ -522,7 +505,6 @@ def _build_args(a_name: str, a_slot: int,
 
 
 __all__ = [
-    "INHERITANCE_RELATIONS",
     "HypGenStats",
     "generate_hypotheses",
     "generate_hypotheses_with_stats",

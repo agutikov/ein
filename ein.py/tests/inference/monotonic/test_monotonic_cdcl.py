@@ -66,7 +66,12 @@ SINGLETON_FIXTURE = """
     :why    "Blue can't paint anything"
     :priority 100))
 (ontology
-  (relation paint T T)
+  ; S1.7.23 — `paint`'s slots carry the real type `Thing` (not the
+  ; top `T`): hypgen's name-free candidate-object set excludes nodes
+  ; that appear as a relation-signature type, so `Thing` (and `T`, via
+  ; `never`) drop out and only `Red`/`Blue` are guessable — the old
+  ; is-a-leaf set, reproduced without the kernel reading `is-a`.
+  (relation paint Thing Thing)
   ; declared but never asserted — keeps the goal unreachable so
   ; the fork-side is_solved check doesn't short-circuit the runs
   ; that need to observe layer-2 / Phase-3 behaviour.
@@ -109,7 +114,9 @@ MULTI_FIXTURE = """
     :why    "(R a b) + (R b c) is forbidden"
     :priority 100))
 (ontology
-  (relation R T T)
+  ; S1.7.23 — typed slots so hypgen's name-free object set excludes
+  ; `Thing`/`T` and guesses only over {a, b, c} (see SINGLETON note).
+  (relation R Thing Thing)
   ; declared but never asserted — keeps the goal unreachable so
   ; layer-2/3 enterings fire instead of being cut off by the
   ; fork-side is_solved check.
@@ -211,8 +218,11 @@ ALL_DIE_FIXTURE = """
     :why    "(h b a) forbidden"
     :priority 100))
 (ontology
-  (relation h T T)
-  (is-a Thing T)
+  ; S1.7.23 — `Thing`-typed slots; no dangling top `T` here (no
+  ; `never` relation to name it), so the two-level is-a is flattened
+  ; to one level. hypgen's name-free object set excludes `Thing` and
+  ; guesses only over {a, b}.
+  (relation h Thing Thing)
   (is-a a Thing) (is-a b Thing))
 (facts)
 (query :mode solve

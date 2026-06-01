@@ -8,40 +8,19 @@ from __future__ import annotations
 
 from ein_bot.kb import (
     Fact,
-    Instance,
     KnowledgeBase,
     Layer,
     Pattern,
     Relation,
     Rule,
-    Type,
 )
 from ein_bot.kb.entities import _attach, _detach
 
 # ── Identity & equality ────────────────────────────────────────────
 
 
-def test_type_identity_by_name():
-    a = Type(name="House")
-    b = Type(name="House")
-    assert a == b
-    assert hash(a) == hash(b)
-
-
-def test_type_identity_independent_of_parent_for_eq():
-    # parent_name IS part of the data tuple, so two Types with
-    # different parents are NOT equal — that's by design (the parent
-    # is part of the type declaration).
-    a = Type(name="House", parent_name="Attribute")
-    b = Type(name="House", parent_name=None)
-    assert a != b
-
-
-def test_instance_identity_by_name_only():
-    a = Instance(name="Norwegian", type_name="Nationality")
-    b = Instance(name="Norwegian", type_name="Nationality")
-    assert a == b
-    assert hash(a) == hash(b)
+# S1.7.23 — the `Type` / `Instance` identity tests were DELETED with
+# those entity classes (the kernel keeps no type-system entity-view).
 
 
 def test_relation_identity_by_name_and_signature():
@@ -70,34 +49,17 @@ def test_rule_identity_by_name_only():
 # ── Detached entities return empty cross-refs ──────────────────────
 
 
-def test_detached_type_has_no_relations():
-    t = Type(name="House")
-    assert t.parent is None
-    assert t.children == ()
-    assert list(t.ancestors()) == []
-    assert t.instances == ()
-    assert t.rules == ()
-
-
-def test_detached_instance_has_no_type_or_facts():
-    inst = Instance(name="Norwegian", type_name="Nationality")
-    assert inst.type is None
-    assert inst.facts == ()
-
-
 def test_detached_relation_has_no_rules_or_facts():
     rel = Relation(name="co-located", signature=("Attribute", "Attribute"))
     assert rel.facts == ()
     assert rel.rules == ()
     assert rel.properties == ()
-    assert rel.signature_types == ()
 
 
 def test_detached_rule_has_no_applications():
     r = Rule(name="symmetric", params=("rel",))
     assert r.applications == ()
     assert r.relations == ()
-    assert r.types == ()
 
 
 def test_detached_fact_args_pass_through():
@@ -113,8 +75,8 @@ def test_detached_fact_args_pass_through():
 
 def test_attach_does_not_break_equality():
     kb = KnowledgeBase()
-    a = Type(name="House")
-    b = Type(name="House")
+    a = Relation(name="co-located")
+    b = Relation(name="co-located")
     _attach(a, kb)
     # b is detached; eq is by data, not by _kb.
     assert a == b
@@ -123,7 +85,7 @@ def test_attach_does_not_break_equality():
 
 def test_attach_can_be_undone():
     kb = KnowledgeBase()
-    t = Type(name="House")
+    t = Relation(name="co-located")
     _attach(t, kb)
     assert t._kb is kb
     _detach(t)
@@ -133,8 +95,8 @@ def test_attach_can_be_undone():
 def test_attach_does_not_affect_repr_compare_hash():
     # _kb is excluded from compare/hash/repr.
     kb = KnowledgeBase()
-    a = Type(name="House", parent_name="Attribute")
-    b = Type(name="House", parent_name="Attribute")
+    a = Relation(name="co-located", signature=("A", "B"))
+    b = Relation(name="co-located", signature=("A", "B"))
     _attach(a, kb)
     assert repr(a) == repr(b)
     assert hash(a) == hash(b)

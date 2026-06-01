@@ -32,15 +32,16 @@ KB graph](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md).
   across layers so the eye groups by relation.
 - Rule-application meta-facts (``(symmetric R)`` etc.) are
   **suppressed** — they're meta, not data.
-- ``instance`` kernel facts are suppressed in favour of the
-  type-edge derived from ``Instance.type_name`` (otherwise every
-  instance would have a duplicate edge).
+- ``instance`` / ``type`` schema facts are suppressed in favour of the
+  derived instance-of edge (otherwise every instance would have a
+  duplicate edge).
 
-**Encoding-agnostic**: zebra2.ein has empty `kb.types` /
-`kb.instances` — the renderer falls back to :func:`logical_types`
-and :func:`logical_instances` to decide which node atoms are
-type-like (box) vs instance-like (oval), and renders the explicit
-`is-a` facts with the type-edge style.
+**Encoding-agnostic** (presentation reads the inheritance convention
+directly — S1.7.23, since the kernel no longer keeps a type/instance
+entity-view): :func:`_schema_nodes` scans the puzzle's `is-a` /
+`(type …)` / `(instance …)` facts to decide which node atoms are
+type-like (box) vs instance-like (oval), and the `is-a` facts are drawn
+with the type-edge style in the fact pass.
 """
 from __future__ import annotations
 
@@ -53,7 +54,6 @@ from ..render.dot_util import quote as _q
 from ..render.palette import hash_color as _hash_color
 from .entities import Fact, Layer
 from .store import KnowledgeBase
-from .views import instance_name, logical_instances, logical_types, type_name
 
 # ── Colour helper ─────────────────────────────────────────────────
 # The relation-colour palette is shared with the per-form IR renderer
@@ -87,6 +87,51 @@ def _short_source(source: str | None) -> str | None:
 
 
 # ── Edge / node emitters ──────────────────────────────────────────
+
+
+def _schema_nodes(
+    kb: KnowledgeBase,
+) -> tuple[set[str], set[str], list[tuple[str, str]]]:
+    """Derive the (type-names, instance-names, instance-of-edges) the
+    renderer draws, straight from the puzzle's inheritance facts.
+
+    S1.7.23 — replaces the deleted `logical_types` / `logical_instances`
+    helpers (which read the removed `kb.types` / `kb.instances`
+    entity-view). Presentation may know the inheritance convention; it
+    is not kernel reasoning. Recognised:
+
+    - ``(is-a Child Parent)`` — Parent is a type, Child a leaf unless it
+      is itself a parent elsewhere; the edge Child→Parent is drawn by the
+      fact pass (type-edge style), so it is NOT returned here.
+    - ``(type X [P])`` — X (and P, if present) are types. No type→parent
+      edge is drawn (matching the pre-S1.7.23 renderer, which drew only
+      instance-of edges, not the type hierarchy).
+    - ``(instance I T)`` — I is an instance, T a type; edge I→T.
+    """
+    types: set[str] = set()
+    children: set[str] = set()
+    parents: set[str] = set()
+    edges: list[tuple[str, str]] = []
+
+    def _two_strs(args: tuple) -> bool:
+        return len(args) >= 2 and isinstance(args[0], str) and isinstance(args[1], str)
+
+    for f in kb.facts:
+        rn, args = f.relation_name, f.args
+        if rn == "is-a" and _two_strs(args):
+            children.add(args[0])
+            parents.add(args[1])
+            types.add(args[1])
+        elif rn == "type" and args and isinstance(args[0], str):
+            types.add(args[0])
+            if len(args) >= 2 and isinstance(args[1], str):
+                types.add(args[1])
+        elif rn == "instance" and _two_strs(args):
+            children.add(args[0])
+            types.add(args[1])
+            edges.append((args[0], args[1]))
+    instances = (children - parents) - types
+    return types, instances, edges
 
 
 def _emit_type_node(name: str) -> str:
@@ -210,24 +255,17 @@ def to_dot(
     lines.append("  rankdir=BT;")
     lines.append('  node [fontname="Inter"];')
 
-    # ── 1. Resolve "logical" types and instances ──
-    # `logical_types(kb)` / `logical_instances(kb)` are encoding-
-    # agnostic (per S1.2.2): zebra.ein returns the declared entities;
-    # zebra2.ein returns names harvested from `is-a` facts.
-    if include_types:
-        type_names = sorted({type_name(t) for t in logical_types(kb)})
-    else:
-        type_names = []
-    if include_instances:
-        inst_names = sorted({instance_name(i) for i in logical_instances(kb)})
-    else:
-        inst_names = []
-    # In zebra2 there are no actual Instance entities — but the leaf
-    # names are returned by logical_instances as raw strings. To avoid
-    # rendering the same name as both box and oval we skip ovals when
-    # a name is already declared as a type.
-    type_set = set(type_names)
-    inst_names = [n for n in inst_names if n not in type_set]
+    # ── 1. Resolve type / instance node atoms from inheritance facts ──
+    # S1.7.23 — read the puzzle's `is-a` / `(type …)` / `(instance …)`
+    # facts directly (presentation knows the convention; the kernel no
+    # longer keeps a type/instance entity-view).
+    schema_types, schema_insts, instanceof_edges = _schema_nodes(kb)
+    type_set = schema_types if include_types else set()
+    type_names = sorted(type_set)
+    # Skip ovals when a name is already a type box (avoid double-render).
+    inst_names = (
+        sorted(schema_insts - type_set) if include_instances else []
+    )
 
     # ── 2. Emit type / instance nodes ──
     if type_names:
@@ -240,14 +278,13 @@ def to_dot(
             lines.append(_emit_instance_node(name_))
 
     # ── 3. Emit instance-of edges (only when ONTOLOGY is requested) ──
-    # zebra.ein: from kb.instances[name].type_name.
-    # zebra2.ein: from `is-a` facts in the ontology layer (rendered
-    # below via the fact pass with special-cased styling).
+    # `(instance I T)` / `(type X P)` edges (the `is-a` facts draw their
+    # own type-edge in the fact pass below).
     if Layer.ONTOLOGY in layers_set and include_types and include_instances:
-        for inst in kb.instances.values():
-            if inst.type_name and inst.type_name in type_set:
+        for child, parent in instanceof_edges:
+            if parent in type_set:
                 lines.append("")
-                lines.append(_emit_is_a_edge(inst.name, inst.type_name))
+                lines.append(_emit_is_a_edge(child, parent))
 
     # ── 4. Emit facts ──
     if kb.facts:

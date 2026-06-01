@@ -11,8 +11,9 @@ the framing note in
 Public API:
 
 - :class:`KnowledgeBase` — the registry of entities and cross-refs.
-- :class:`Type`, :class:`Instance`, :class:`Relation`, :class:`Rule`,
-  :class:`Fact` — entity dataclasses.
+- :class:`Relation`, :class:`Rule`, :class:`Fact` — entity dataclasses.
+  (S1.7.23 — the `Type` / `Instance` entity classes were deleted with the
+  kernel type system; the inheritance forest is just `is-a` facts.)
 - :class:`Layer` — three knowledge populations (ontology / fact /
   reasoning).
 - :class:`Pattern` — structural view of a `:match` / `:assert` clause.
@@ -20,26 +21,19 @@ Public API:
 - :func:`load` — build a KB from parsed IR forms (also exposed as
   ``KnowledgeBase.from_ir(forms)``).
 """
-from .entities import Fact, Instance, Layer, Relation, Rule, Type
+from .entities import Fact, Layer, Relation, Rule
 from .from_ir import KBLoadError, load
 from .pattern import Pattern
 from .provenance import DerivationDAG, Provenance
 from .render import to_dot
 from .store import EqClasses, KnowledgeBase, Query
-from .views import (
-    FactView,
-    instance_name,
-    logical_instances,
-    logical_types,
-    type_name,
-)
+from .views import FactView
 
 __all__ = [
     "DerivationDAG",
     "EqClasses",
     "Fact",
     "FactView",
-    "Instance",
     "KBLoadError",
     "KnowledgeBase",
     "Layer",
@@ -48,11 +42,6 @@ __all__ = [
     "Query",
     "Relation",
     "Rule",
-    "Type",
-    "instance_name",
     "load",
-    "logical_instances",
-    "logical_types",
     "to_dot",
-    "type_name",
 ]

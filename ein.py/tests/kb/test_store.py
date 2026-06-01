@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from ein_bot.kb import (
     Fact,
-    Instance,
     KnowledgeBase,
     Layer,
 )
@@ -16,21 +15,13 @@ from ein_bot.kb import (
 
 
 class TestZebraCounts:
-    """Top-level entity counts against the S1.2.1 acceptance."""
+    """Top-level entity counts against the S1.2.1 acceptance.
 
-    def test_seven_types(self, zebra_kb):
-        # Attribute + 6 leaf types.
-        assert len(zebra_kb.types) == 7
-        assert set(zebra_kb.types) == {
-            "Attribute", "House", "Color", "Nationality",
-            "Pet", "Cigarette", "Drink",
-        }
-
-    def test_thirty_instances(self, zebra_kb):
-        # 5 houses + 5 of each of 5 attribute categories = 30.
-        # (The early S1.2.1 draft said 25; off-by-one — see plan
-        # acceptance update.)
-        assert len(zebra_kb.instances) == 30
+    S1.7.23 — the `test_seven_types` / `test_thirty_instances` cases were
+    DELETED with the `kb.types` / `kb.instances` entity-view; the
+    inheritance forest is now just `(type …)` / `(instance …)` facts in
+    the fact list (counted by `TestZebraFact.test_fact_count`).
+    """
 
     def test_five_declared_relations(self, zebra_kb):
         # S1.7.6: `type` / `instance` are now ordinary DECLARED relations
@@ -62,49 +53,11 @@ class TestZebraCounts:
         }
 
 
-class TestZebraTypeHierarchy:
-    def test_attribute_has_no_parent(self, zebra_kb):
-        assert zebra_kb.types["Attribute"].parent is None
-
-    def test_house_has_attribute_parent(self, zebra_kb):
-        assert zebra_kb.types["House"].parent is zebra_kb.types["Attribute"]
-
-    def test_attribute_children(self, zebra_kb):
-        kids = {t.name for t in zebra_kb.types["Attribute"].children}
-        assert kids == {"House", "Color", "Nationality", "Pet", "Cigarette", "Drink"}
-
-    def test_house_has_five_instances(self, zebra_kb):
-        names = {i.name for i in zebra_kb.types["House"].instances}
-        assert names == {"House-1", "House-2", "House-3", "House-4", "House-5"}
-
-    def test_ancestors_chain(self, zebra_kb):
-        # House -> Attribute -> (root)
-        chain = [t.name for t in zebra_kb.types["House"].ancestors()]
-        assert chain == ["Attribute"]
-
-
-class TestZebraInstance:
-    def test_norwegian_type(self, zebra_kb):
-        n = zebra_kb.instances["Norwegian"]
-        assert n.type == zebra_kb.types["Nationality"]
-
-    def test_norwegian_facts_include_instance_and_explicit(self, zebra_kb):
-        # Per S1.2.1 acceptance: Norwegian.facts includes both the
-        # implicit `(instance Norwegian Nationality)` and explicit
-        # co-located / next-to facts.
-        facts = zebra_kb.instances["Norwegian"].facts
-        rels = [(f.relation_name, f.layer) for f in facts]
-        assert ("instance", Layer.ONTOLOGY) in rels
-        assert ("co-located", Layer.FACT) in rels
-        assert ("next-to", Layer.FACT) in rels
-
-    def test_house_1_facts_layer_split(self, zebra_kb):
-        f = zebra_kb.instances["House-1"].facts
-        layers = {fact.layer for fact in f}
-        # Appears in ontology (instance + structural right-of) and in
-        # fact layer (condition (10)).
-        assert Layer.ONTOLOGY in layers
-        assert Layer.FACT in layers
+# S1.7.23 — `TestZebraTypeHierarchy` (Type.parent/children/instances/
+# ancestors) and `TestZebraInstance` (Instance.type/.facts) were DELETED
+# with the `Type` / `Instance` entity classes. The inheritance forest is
+# `is-a` / `(type …)` / `(instance …)` facts; a puzzle that wants a
+# typed view computes it with a user-space ein-lang rule.
 
 
 class TestZebraRelation:
@@ -134,12 +87,11 @@ class TestZebraRelation:
         # `(square-bwd right-of)`.
         assert heads == ["implies", "square-bwd", "square-fwd"]
 
-    def test_relation_signature_resolution(self, zebra_kb):
+    def test_relation_signature_is_opaque_names(self, zebra_kb):
+        # S1.7.23 — `signature` is opaque type-name atoms; there is no
+        # `signature_types` → `Type` resolution (no Type entities).
         rel = zebra_kb.relations["co-located"]
         assert rel.signature == ("Attribute", "Attribute")
-        sig_types = rel.signature_types
-        assert len(sig_types) == 2
-        assert sig_types[0] is zebra_kb.types["Attribute"]
 
 
 class TestZebraRule:
@@ -199,13 +151,14 @@ class TestZebraFact:
         assert f.layer == Layer.FACT
 
     def test_fact_arg_entities_resolution(self, zebra_kb):
+        # S1.7.23 — object-name args resolve to raw strings (no
+        # `Instance` entities); only Relation-name args resolve to a
+        # `Relation`. `(co-located Norwegian House-1)` → both strings.
         fs = [f for f in zebra_kb.facts if f.source == "condition (10)"]
         f = fs[0]
         a, b = f.arg_entities
-        assert isinstance(a, Instance)
-        assert isinstance(b, Instance)
-        assert a.name == "Norwegian"
-        assert b.name == "House-1"
+        assert a == "Norwegian"
+        assert b == "House-1"
 
     def test_property_fact_is_rule_application(self, zebra_kb):
         # `(symmetric co-located)` has head=symmetric (a rule).
@@ -238,11 +191,14 @@ class TestZebraFact:
 class TestZebra2:
     """The unified `is-a` model uses no `(type …)` or `(instance …)`."""
 
-    def test_zebra2_no_types_or_instances(self, zebra2_kb):
+    def test_zebra2_has_no_type_instance_facts(self, zebra2_kb):
         # All inheritance is expressed via `is-a` facts; no `(type …)`
-        # or `(instance …)` declarations.
-        assert zebra2_kb.types == {}
-        assert zebra2_kb.instances == {}
+        # or `(instance …)` facts. (S1.7.23 — there are no kb.types /
+        # kb.instances registries to check; assert over the fact list.)
+        rels = {f.relation_name for f in zebra2_kb.facts}
+        assert "type" not in rels
+        assert "instance" not in rels
+        assert "is-a" in rels
 
     def test_zebra2_relations_include_is_a(self, zebra2_kb):
         declared = {n for n, r in zebra2_kb.relations.items() if r.declared}
@@ -273,16 +229,9 @@ class TestOpenWorld:
         assert rel.declared is False
         assert len(rel.facts) == 1
 
-    def test_undeclared_type_auto_vivifies(self):
-        from ein_bot.ir import parse
-        text = """
-        (ontology
-          (instance A NoSuchType))
-        """
-        kb = KnowledgeBase.from_ir(parse(text))
-        assert "NoSuchType" in kb.types
-        assert kb.types["NoSuchType"].parent is None
-        assert kb.instances["A"].type == kb.types["NoSuchType"]
+# S1.7.23 — `test_undeclared_type_auto_vivifies` was DELETED: there is no
+# `kb.types` registry to auto-vivify into. An `(instance A NoSuchType)`
+# fact is just a fact; `NoSuchType` is an ordinary node name.
 
 
 class TestQueryLoading:
@@ -348,17 +297,14 @@ class TestIncrementalIndex:
 
 def test_kb_repr_summary(zebra_kb):
     r = repr(zebra_kb)
-    assert "types=7" in r
     assert "rules=8" in r
     assert "facts=68" in r
 
 
 def test_kb_len_is_node_total(zebra_kb):
-    # types + instances + relations + rules + facts
+    # S1.7.23 — relations + rules + facts (no types / instances).
     expected = (
-        len(zebra_kb.types) + len(zebra_kb.instances)
-        + len(zebra_kb.relations) + len(zebra_kb.rules)
-        + len(zebra_kb.facts)
+        len(zebra_kb.relations) + len(zebra_kb.rules) + len(zebra_kb.facts)
     )
     assert len(zebra_kb) == expected
 
@@ -528,11 +474,7 @@ class TestKBSnapshot:
     def test_kb_snapshot_shares_immutable_registries(self):
         """`relations` / `rules` are shared by reference — mutation of
         these on the source IS visible on the snapshot, by design.
-        `types` / `instances` are NOT shared since S1.7.6: they are
-        DERIVED in `rebuild_indexes` from the (copied) `(type …)` /
-        `(instance …)` facts, so the snapshot owns content-equal but
-        distinct dicts of isolated entities. This documents the
-        contract."""
+        (S1.7.23 — there are no `types` / `instances` registries.)"""
         from ein_bot.ir import parse
         text = """
         (ontology
@@ -544,8 +486,3 @@ class TestKBSnapshot:
         snap = kb.snapshot()
         assert snap.relations is kb.relations
         assert snap.rules is kb.rules
-        # Derived registries: distinct objects, equal content.
-        assert snap.types is not kb.types
-        assert snap.instances is not kb.instances
-        assert snap.types.keys() == kb.types.keys()
-        assert snap.instances.keys() == kb.instances.keys()

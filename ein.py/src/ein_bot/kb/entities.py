@@ -3,18 +3,23 @@
 These are *typed views* over the canonical graph store; the data
 model itself is the graph (per the framing locked in 8e2ef71).
 Each entity carries a `_kb` back-pointer used by the cross-reference
-properties (`Type.instances`, `Relation.rules`, …); the back-pointer
+properties (`Relation.rules`, `Rule.relations`, …); the back-pointer
 is set by `KnowledgeBase` after instance construction via
 `object.__setattr__` so the dataclasses can stay frozen.
 
+Since S1.7.23 there are **no `Type` / `Instance` entities** — the kernel
+imposes no type system, so the inheritance forest is just `is-a` facts a
+puzzle declares, with no derived type/instance entity-view. The entities
+here are `Relation`, `Rule`, `Fact` (+ the `NameRef` participation index).
+
 Identity:
-    Type, Instance, Relation, Rule  — by `name` (a str).
-    Fact                            — by `(relation_name, args)`.
+    Relation, Rule  — by `name` (a str).
+    Fact            — by `(relation_name, args)`.
 
 `_kb` is excluded from `__eq__` / `__hash__` / `__repr__`; two
 entities of the same kind with the same name are equal across KBs.
 
-Cross-reference fields (`Type.instances`, `Relation.rules`, etc.) live
+Cross-reference fields (`Relation.rules`, `Rule.relations`, etc.) live
 on the entity as ``@property`` accessors that delegate to the KB —
 they return empty tuples when the entity is detached (no `_kb`).
 
@@ -23,7 +28,6 @@ The Pattern entity (the `:match` / `:assert` clauses) lives in
 """
 from __future__ import annotations
 
-from collections.abc import Iterator
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Literal
@@ -77,86 +81,27 @@ class Layer(Enum):
 # ── Entities ───────────────────────────────────────────────────────
 
 
-@dataclass(frozen=True)
-class Type:
-    """A type node in the inheritance forest.
-
-    Roots have ``parent_name is None``; everything else inherits from
-    a parent type. Multi-typing is out of scope for M1 (M1 Q23) —
-    each Type has at most one direct parent.
-    """
-    name: str
-    parent_name: str | None = None
-    loc: Loc | None = field(default=None, compare=False, hash=False, repr=False)
-    _kb: KnowledgeBase | None = field(default=None, compare=False, hash=False, repr=False)
-
-    @property
-    def parent(self) -> Type | None:
-        if self._kb is None or self.parent_name is None:
-            return None
-        return self._kb.types.get(self.parent_name)
-
-    @property
-    def children(self) -> tuple[Type, ...]:
-        """Direct subtypes."""
-        if self._kb is None:
-            return ()
-        return self._kb._types_by_parent.get(self.name, ())
-
-    def ancestors(self) -> Iterator[Type]:
-        """Walk the parent chain (excluding self), nearest first."""
-        cur = self.parent
-        while cur is not None:
-            yield cur
-            cur = cur.parent
-
-    @property
-    def instances(self) -> tuple[Instance, ...]:
-        """Direct instances declared `(instance _ ThisType)`."""
-        if self._kb is None:
-            return ()
-        return self._kb._instances_by_type.get(self.name, ())
-
-    @property
-    def rules(self) -> tuple[Rule, ...]:
-        """Rules whose `:match` / `:assert` patterns name this type."""
-        if self._kb is None:
-            return ()
-        return self._kb._rules_by_type.get(self.name, ())
-
-
-@dataclass(frozen=True)
-class Instance:
-    """A leaf node — an instance of exactly one type.
-
-    Created from `(instance Name TypeName)` ontology forms.
-    """
-    name: str
-    type_name: str
-    loc: Loc | None = field(default=None, compare=False, hash=False, repr=False)
-    _kb: KnowledgeBase | None = field(default=None, compare=False, hash=False, repr=False)
-
-    @property
-    def type(self) -> Type | None:
-        if self._kb is None:
-            return None
-        return self._kb.types.get(self.type_name)
-
-    @property
-    def facts(self) -> tuple[Fact, ...]:
-        """All facts mentioning this instance (any argument position)."""
-        if self._kb is None:
-            return ()
-        return self._kb._facts_by_instance.get(self.name, ())
+# S1.7.23 — the `Type` and `Instance` entity classes were DELETED here.
+# They were the entity-view of the kernel-imposed type system: derived
+# from `(type …)` / `(instance …)` facts and read through the
+# `kb.types` / `kb.instances` registries + the `_types_by_parent` /
+# `_instances_by_type` / `_facts_by_instance` indexes. The kernel imposes
+# no type system (a puzzle's `is-a` rules ARE its type system, in user
+# space), so the registries, indexes, and these classes are gone. A
+# puzzle that wants a named-type view computes it with an ein-lang rule
+# over its own inheritance relation. See
+# plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md.
 
 
 @dataclass(frozen=True)
 class Relation:
     """A relation declaration — `(relation Name T1 T2 …)`.
 
-    `signature` holds the argument-position types **by name**; resolve
-    via :attr:`signature_types` to get the corresponding `Type`
-    entities (filtered to those known to the KB).
+    `signature` holds the argument-position types **by name** — opaque
+    atoms naming whatever a puzzle declared `(relation R A B)` with.
+    Since S1.7.23 the kernel keeps no `Type` entities, so there is no
+    `signature` → `Type` resolution; the names are used only as
+    object-exclusion metadata by hypgen.
 
     Note: a Relation entity is also created on the fly for "open-world"
     relations — heads of facts that have no `(relation …)` declaration.
@@ -174,15 +119,6 @@ class Relation:
     declared: bool = True
     loc: Loc | None = field(default=None, compare=False, hash=False, repr=False)
     _kb: KnowledgeBase | None = field(default=None, compare=False, hash=False, repr=False)
-
-    @property
-    def signature_types(self) -> tuple[Type, ...]:
-        """Argument-position types as `Type` entities (known to the KB)."""
-        if self._kb is None:
-            return ()
-        return tuple(
-            self._kb.types[n] for n in self.signature if n in self._kb.types
-        )
 
     @property
     def facts(self) -> tuple[Fact, ...]:
@@ -258,19 +194,6 @@ class Rule:
         )
 
     @property
-    def types(self) -> tuple[Type, ...]:
-        """Types touched by `(instance ?_ T)` patterns inside this rule."""
-        if self._kb is None or self.match is None:
-            return ()
-        names: set[str] = set()
-        for p in (self.match, self.assert_):
-            if p is not None:
-                names.update(p.type_names)
-        return tuple(
-            self._kb.types[n] for n in sorted(names) if n in self._kb.types
-        )
-
-    @property
     def applications(self) -> tuple[Fact, ...]:
         """Property-application facts whose head is this rule's name.
 
@@ -296,7 +219,7 @@ class Fact:
     *named* vs *relational* node duality
     (``docs/kernel/ir/01-ein-graph/03_ein_model.md`` §3):
 
-    - ``str`` — a named node (name of an Instance / Relation / Type).
+    - ``str`` — a named node (an object name or a Relation name).
     - ``int`` — a numeric literal.
     - ``Fact`` — a **relational node** embedded as an argument
       (e.g. ``(hypothesis (co-located Norwegian House-2))``). The
@@ -305,9 +228,10 @@ class Fact:
       compare equal element-wise, with nested ``Fact`` instances
       cascading via their own ``__eq__``.
 
-    Resolution to a typed `Instance` / `Relation` happens through the
-    KB at access time via :attr:`arg_entities`. Nested ``Fact`` args
-    are returned as-is (they're already entities).
+    Resolution of a name arg to its `Relation` happens through the
+    KB at access time via :attr:`arg_entities` (since S1.7.23 there are
+    no `Type` / `Instance` entities — object-name args stay raw strings).
+    Nested ``Fact`` args are returned as-is (they're already entities).
     """
     relation_name: str
     args: tuple[str | int | Fact, ...]
@@ -365,13 +289,15 @@ class Fact:
         return self._kb.relations.get(self.relation_name)
 
     @property
-    def arg_entities(self) -> tuple[Instance | Relation | Type | Fact | str | int, ...]:
+    def arg_entities(self) -> tuple[Relation | Fact | str | int, ...]:
         """Resolve each arg to its KB entity, or leave as raw string/int.
 
         Nested ``Fact`` args are returned as-is (they're already
-        entity-shaped). String / int args fall back to the raw value
-        when no matching entity is found, so the loader stays
-        tolerant of open-world references.
+        entity-shaped). A string arg resolves to its :class:`Relation`
+        entity when one is declared; otherwise it stays a raw string
+        (since S1.7.23 there are no `Type` / `Instance` entities — plain
+        object names are returned as-is, keeping the loader tolerant of
+        open-world references).
         """
         if self._kb is None:
             return self.args
@@ -383,12 +309,8 @@ class Fact:
             if isinstance(a, int):
                 out.append(a)
                 continue
-            if a in self._kb.instances:
-                out.append(self._kb.instances[a])
-            elif a in self._kb.relations:
+            if a in self._kb.relations:
                 out.append(self._kb.relations[a])
-            elif a in self._kb.types:
-                out.append(self._kb.types[a])
             else:
                 out.append(a)
         return tuple(out)
@@ -465,13 +387,11 @@ class NameRef:
 __all__ = [
     "KERNEL_META_RELATIONS",
     "Fact",
-    "Instance",
     "Layer",
     "NameCategory",
     "NameRef",
     "Relation",
     "Rule",
-    "Type",
     "_attach",
     "_detach",
 ]

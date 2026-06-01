@@ -6,10 +6,6 @@ import pytest
 from ein_bot.kb import (
     Fact,
     Layer,
-    instance_name,
-    logical_instances,
-    logical_types,
-    type_name,
 )
 
 # ═══════════════════════ Layer views ═══════════════════════════════
@@ -66,18 +62,13 @@ class TestFactViewFilters:
         for f in co_loc:
             assert f.relation_name == "co-located"
 
-    def test_about_filter_by_instance_object(self, zebra_kb):
-        norwegian = zebra_kb.instances["Norwegian"]
-        facts = list(zebra_kb.all_layers().about(norwegian))
-        # Norwegian appears in: 1 instance fact, 1 co-located, 1 next-to.
-        assert len(facts) == 3
-
     def test_about_filter_by_name(self, zebra_kb):
-        # String form should be equivalent to Instance form.
-        facts_by_name = list(zebra_kb.all_layers().about("Norwegian"))
-        norwegian = zebra_kb.instances["Norwegian"]
-        facts_by_obj = list(zebra_kb.all_layers().about(norwegian))
-        assert facts_by_name == facts_by_obj
+        # `about` takes a node name (S1.7.23 — no Instance entities).
+        # Norwegian appears in: 1 instance fact, 1 co-located, 1 next-to.
+        facts = list(zebra_kb.all_layers().about("Norwegian"))
+        assert len(facts) == 3
+        for f in facts:
+            assert "Norwegian" in f.args
 
     def test_by_source(self, zebra_kb):
         f = list(zebra_kb.fact_layer().by_source("condition (10)"))
@@ -119,8 +110,6 @@ class TestFactViewFilters:
 class TestFork:
     def test_fork_shares_immutable_populations(self, zebra_kb):
         fork = zebra_kb.fork()
-        assert fork.types is zebra_kb.types
-        assert fork.instances is zebra_kb.instances
         assert fork.relations is zebra_kb.relations
         assert fork.rules is zebra_kb.rules
         assert fork.query is zebra_kb.query
@@ -133,7 +122,7 @@ class TestFork:
     def test_fork_copies_indexes(self, zebra_kb):
         fork = zebra_kb.fork()
         assert fork._facts_by_relation is not zebra_kb._facts_by_relation
-        assert fork._facts_by_instance is not zebra_kb._facts_by_instance
+        assert fork.names is not zebra_kb.names
 
     def test_fork_classes_independent(self, zebra_kb):
         fork = zebra_kb.fork()
@@ -160,7 +149,8 @@ class TestFork:
         assert len(zebra_kb.reasoning()) == 0
 
     def test_fork_entity_back_pointer_caveat(self, zebra_kb):
-        """`norwegian.facts` returns the *original* kb's facts.
+        """A shared `Relation` entity's `.facts` returns the *original*
+        kb's facts.
 
         Shared entities keep their `_kb` pointing at the root; the
         fork's reasoning additions are reachable only via the fork's
@@ -169,7 +159,8 @@ class TestFork:
         """
         from ein_bot.kb import Provenance
         fork = zebra_kb.fork()
-        norwegian = zebra_kb.instances["Norwegian"]
+        co_located = zebra_kb.relations["co-located"]
+        before = len(co_located.facts)
         derived = Fact(
             relation_name="co-located",
             args=("Norwegian", "Water"),
@@ -178,103 +169,18 @@ class TestFork:
         )
         fork.add_fact(derived)
         fork._index_fact(fork.facts[-1])
-        # entity.facts returns the ROOT's view of Norwegian.
-        assert all(f.layer != Layer.REASONING for f in norwegian.facts)
+        # The shared entity still reports the ROOT's facts (unchanged).
+        assert len(co_located.facts) == before
         # Fork view sees the new derivation.
-        fork_view = list(fork.all_layers().about(norwegian))
+        fork_view = list(fork.all_layers().about("Norwegian"))
         assert any(
             f.relation_name == "co-located" and f.args == ("Norwegian", "Water")
             for f in fork_view
         )
 
 
-# ═══════════════════════ Encoding-agnostic logical views ═══════════
-
-
-class TestLogicalTypes:
-    def test_classic_encoding(self, zebra_kb):
-        # zebra.ein populates kb.types directly.
-        names = {type_name(t) for t in logical_types(zebra_kb)}
-        assert names == {
-            "Attribute", "House", "Color", "Nationality",
-            "Pet", "Cigarette", "Drink",
-        }
-
-    def test_unified_is_a_encoding(self, zebra2_kb):
-        # zebra2.ein has empty kb.types — logical_types must fall
-        # back to walking is-a facts.
-        names = {type_name(t) for t in logical_types(zebra2_kb)}
-        # T is the catch-all root in zebra2.ein; classic encoding
-        # doesn't have it. Otherwise the leaf types should match.
-        leaf_types = names - {"T"}
-        assert leaf_types == {
-            "Attribute", "House", "Color", "Nationality",
-            "Pet", "Cigarette", "Drink",
-        }
-        # T appears as the root.
-        assert "T" in names
-
-    def test_logical_types_yields_strings_for_unified(self, zebra2_kb):
-        # In the unified-is-a case, no Type entity exists, so the
-        # helper returns raw names (strings).
-        for t in logical_types(zebra2_kb):
-            assert isinstance(t, str)
-
-    def test_logical_types_yields_type_entities_for_classic(self, zebra_kb):
-        # Classic case: Type entities are returned directly.
-        from ein_bot.kb import Type
-        for t in logical_types(zebra_kb):
-            assert isinstance(t, Type)
-
-
-class TestLogicalInstances:
-    def test_classic_encoding(self, zebra_kb):
-        insts = logical_instances(zebra_kb)
-        assert len(insts) == 30
-        names = {instance_name(i) for i in insts}
-        # Spot-check a few.
-        assert "Norwegian" in names
-        assert "House-1" in names
-        assert "Zebra" in names
-
-    def test_unified_is_a_encoding(self, zebra2_kb):
-        # Leaves of the is-a forest — same 30 entities, but as names.
-        insts = logical_instances(zebra2_kb)
-        names = {instance_name(i) for i in insts}
-        assert "Norwegian" in names
-        assert "House-1" in names
-        # Non-leaf types must NOT appear (House appears as parent of
-        # House-1..5, so it's not a leaf).
-        assert "House" not in names
-        assert "Attribute" not in names
-        assert "T" not in names
-        # 30 leaves expected (5 of each of 6 categories).
-        assert len(insts) == 30
-
-    def test_logical_instances_returns_strings_for_unified(self, zebra2_kb):
-        for i in logical_instances(zebra2_kb):
-            assert isinstance(i, str)
-
-
-class TestEncodingDriftDetection:
-    """Asserts both encodings produce the same logical content.
-
-    This is the "drift detector" promised by the encoding-deferral
-    principle (memory: project — IR encoding choice deferred): if a
-    change breaks one encoding's view but not the other, this test
-    fails first.
-    """
-
-    def test_same_leaf_set(self, zebra_kb, zebra2_kb):
-        classic = {instance_name(i) for i in logical_instances(zebra_kb)}
-        unified = {instance_name(i) for i in logical_instances(zebra2_kb)}
-        assert classic == unified
-
-    def test_same_leaf_types_modulo_root(self, zebra_kb, zebra2_kb):
-        # Classic encoding has 7 types (Attribute + 6 leaves).
-        # Unified encoding adds the catch-all `T` above Attribute —
-        # 8 total, 7 in common with classic.
-        classic = {type_name(t) for t in logical_types(zebra_kb)}
-        unified = {type_name(t) for t in logical_types(zebra2_kb)}
-        assert classic <= unified
-        assert unified - classic == {"T"}
+# S1.7.23 — the `TestLogicalTypes` / `TestLogicalInstances` /
+# `TestEncodingDriftDetection` classes were DELETED: `logical_types` /
+# `logical_instances` (the `is-a`-bridge for the removed `kb.types` /
+# `kb.instances` entity-view) no longer exist. A puzzle's named-type
+# projection is now a user-space ein-lang rule over `is-a`.

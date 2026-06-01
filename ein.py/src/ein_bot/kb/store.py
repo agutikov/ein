@@ -2,9 +2,13 @@
 
 The KB owns:
 
-- five registries keyed by name (``types``, ``instances``,
-  ``relations``, ``rules``) and one fact list (``facts``);
-- six reverse indexes covering the cross-references documented in
+- registries keyed by name (``relations``, ``rules``, ``hrules``) and one
+  fact list (``facts``). S1.7.23 — there are **no** ``types`` /
+  ``instances`` registries: the kernel imposes no type system, so the
+  inheritance forest is just ``is-a`` facts with no derived entity-view;
+- the reverse indexes (``_facts_by_relation``, ``_rules_by_relation``,
+  ``_rule_apps_by_rule`` / ``_rule_apps_on_relation``, ``names``) covering
+  the cross-references documented in
   ``plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.1_data_model.md``;
 - an optional :class:`Query` slot (set when an IR file contains
   ``(query …)``);
@@ -28,12 +32,10 @@ from typing import TYPE_CHECKING, Any
 from .entities import (
     KERNEL_META_RELATIONS,
     Fact,
-    Instance,
     Layer,
     NameRef,
     Relation,
     Rule,
-    Type,
     _attach,
 )
 
@@ -112,9 +114,10 @@ class KnowledgeBase:
     """
 
     def __init__(self) -> None:
-        # Registries (entity by name).
-        self.types: dict[str, Type] = {}
-        self.instances: dict[str, Instance] = {}
+        # Registries (entity by name). S1.7.23 — `types` / `instances`
+        # are GONE: the kernel keeps no type-system entity-view. The
+        # inheritance forest is just `is-a` facts; a puzzle that wants a
+        # named-type projection computes it with an ein-lang rule.
         self.relations: dict[str, Relation] = {}
         self.rules: dict[str, Rule] = {}
         # Hypothesis rules (S1.5.6b) — kept separate from `rules`:
@@ -171,13 +174,12 @@ class KnowledgeBase:
         # Equality-class hooks — reserved for F4.
         self.classes: EqClasses = EqClasses()
 
-        # Reverse indexes — populated by `_rebuild_indexes`.
-        self._types_by_parent: dict[str, tuple[Type, ...]] = {}
-        self._instances_by_type: dict[str, tuple[Instance, ...]] = {}
+        # Reverse indexes — populated by `_rebuild_indexes`. S1.7.23 —
+        # `_types_by_parent` / `_instances_by_type` / `_facts_by_instance`
+        # / `_rules_by_type` are GONE: they served only the deleted
+        # `Type` / `Instance` entity accessors.
         self._facts_by_relation: dict[str, tuple[Fact, ...]] = {}
-        self._facts_by_instance: dict[str, tuple[Fact, ...]] = {}
         self._rules_by_relation: dict[str, tuple[Rule, ...]] = {}
-        self._rules_by_type: dict[str, tuple[Rule, ...]] = {}
         self._rule_apps_by_rule: dict[str, tuple[Fact, ...]] = {}
         self._rule_apps_on_relation: dict[str, tuple[Fact, ...]] = {}
 
@@ -207,11 +209,10 @@ class KnowledgeBase:
 
     # ── Registry mutation (used by the loader) ────────────────────
 
-    # `types` / `instances` have no `add_*` mutator: since S1.7.6 they
-    # are DERIVED in `rebuild_indexes` from the `(type …)` / `(instance
-    # …)` facts. The entity-API surface (`kb.types`, `Type.instances`,
-    # …) is a projection of those facts, not a registry fed by a
-    # dedicated loader arm. The loader just ingests the facts.
+    # S1.7.23 — no `types` / `instances` registries at all: `(type …)` /
+    # `(instance …)` are ordinary facts a puzzle may declare, but the
+    # kernel builds no type/instance entity-view over them. The loader
+    # just ingests the facts; any named-type projection is a user rule.
 
     def add_relation(self, rel: Relation) -> Relation:
         """Register a Relation; the *declared* flag wins over open-world.
@@ -303,81 +304,21 @@ class KnowledgeBase:
         called once after batch ingest. Incremental maintenance for
         single-fact additions in the reasoning layer is provided by
         :meth:`_index_fact` so a saturation loop need not rebuild.
+
+        S1.7.23 — no type / instance derivation: `(type …)` / `(instance
+        …)` are ordinary facts indexed like any other, with no
+        type/instance entity-view built over them.
         """
-        # Derive the type / instance registries from their facts
-        # (S1.7.6). `(type …)` / `(instance …)` are plain facts on
-        # user-space relations, not kernel declarators; `kb.types` /
-        # `kb.instances` are the entity-API surface OVER those facts — a
-        # projection, not a registry fed by a dedicated loader arm.
-        # Two passes so an explicit `(type X P)` (carrying a parent)
-        # wins over the parentless auto-vivification that an
-        # `(instance _ X)` would otherwise produce.
-        self.types = {}
-        self.instances = {}
-        for fact in self.facts:
-            if fact.relation_name != "type" or not fact.args:
-                continue
-            name = fact.args[0]
-            if not isinstance(name, str) or name in self.types:
-                continue
-            parent = (
-                fact.args[1]
-                if len(fact.args) >= 2 and isinstance(fact.args[1], str)
-                else None
-            )
-            t = Type(name=name, parent_name=parent, loc=fact.loc)
-            _attach(t, self)
-            self.types[name] = t
-        for fact in self.facts:
-            if fact.relation_name != "instance" or len(fact.args) < 2:
-                continue
-            iname, tname = fact.args[0], fact.args[1]
-            if not isinstance(iname, str) or not isinstance(tname, str):
-                continue
-            if iname not in self.instances:
-                inst = Instance(name=iname, type_name=tname, loc=fact.loc)
-                _attach(inst, self)
-                self.instances[iname] = inst
-            # Auto-vivify the referenced type so `Instance.type` and
-            # `_instances_by_type` resolve even without a `(type …)` decl.
-            if tname not in self.types:
-                t = Type(name=tname, parent_name=None, loc=fact.loc)
-                _attach(t, self)
-                self.types[tname] = t
-
-        # types_by_parent
-        types_by_parent: dict[str, list[Type]] = defaultdict(list)
-        for t in self.types.values():
-            if t.parent_name is not None:
-                types_by_parent[t.parent_name].append(t)
-        self._types_by_parent = {
-            p: tuple(sorted(ts, key=lambda x: x.name))
-            for p, ts in types_by_parent.items()
-        }
-
-        # instances_by_type
-        instances_by_type: dict[str, list[Instance]] = defaultdict(list)
-        for inst in self.instances.values():
-            instances_by_type[inst.type_name].append(inst)
-        self._instances_by_type = {
-            t: tuple(insts) for t, insts in instances_by_type.items()
-        }
-
         # facts indexes
         self._facts_by_relation = {}
-        self._facts_by_instance = {}
         self._rule_apps_by_rule = {}
         self._rule_apps_on_relation = {}
         self._negated_facts = set()
         fbr: dict[str, list[Fact]] = defaultdict(list)
-        fbi: dict[str, list[Fact]] = defaultdict(list)
         rabr: dict[str, list[Fact]] = defaultdict(list)
         raor: dict[str, list[Fact]] = defaultdict(list)
         for fact in self.facts:
             fbr[fact.relation_name].append(fact)
-            for a in fact.args:
-                if isinstance(a, str) and a in self.instances:
-                    fbi[a].append(fact)
             if fact.relation_name in self.rules:
                 rabr[fact.relation_name].append(fact)
                 # Each arg that is a known Relation is a target of the
@@ -392,7 +333,6 @@ class KnowledgeBase:
                         (inner.relation_name, inner.args)
                     )
         self._facts_by_relation = {k: tuple(v) for k, v in fbr.items()}
-        self._facts_by_instance = {k: tuple(v) for k, v in fbi.items()}
         self._rule_apps_by_rule = {k: tuple(v) for k, v in rabr.items()}
         self._rule_apps_on_relation = {k: tuple(v) for k, v in raor.items()}
 
@@ -412,8 +352,6 @@ class KnowledgeBase:
             | set(arg_lists)
             | set(self.relations)
             | set(self.rules)
-            | set(self.types)
-            | set(self.instances)
         )
         self.names = {
             n: NameRef(
@@ -445,20 +383,6 @@ class KnowledgeBase:
         self._rules_by_relation = {
             rel: tuple(self.rules[n] for n in sorted(names) if n in self.rules)
             for rel, names in rbr.items()
-        }
-
-        # rules_by_type
-        rbt: dict[str, set[str]] = defaultdict(set)
-        for rule in self.rules.values():
-            for p in (rule.match, rule.assert_):
-                if p is None:
-                    continue
-                for tn in p.type_names:
-                    if tn in self.types:
-                        rbt[tn].add(rule.name)
-        self._rules_by_type = {
-            t: tuple(self.rules[n] for n in sorted(names) if n in self.rules)
-            for t, names in rbt.items()
         }
 
     def _categorise_name(self, name: str) -> str:
@@ -495,11 +419,6 @@ class KnowledgeBase:
         self._facts_by_relation[rn] = (
             *self._facts_by_relation.get(rn, ()), fact,
         )
-        for a in fact.args:
-            if isinstance(a, str) and a in self.instances:
-                self._facts_by_instance[a] = (
-                    *self._facts_by_instance.get(a, ()), fact,
-                )
         if rn in self.rules:
             self._rule_apps_by_rule[rn] = (
                 *self._rule_apps_by_rule.get(rn, ()), fact,
@@ -659,19 +578,18 @@ class KnowledgeBase:
     def fork(self) -> KnowledgeBase:
         """Create a branch for hypothesis exploration.
 
-        Shares the immutable populations (`types`, `instances`,
-        `relations`, `rules`, `query`) **by reference**. The
-        :attr:`facts` list and the reverse indexes are shallow-copied
-        so the fork can append :class:`Layer.REASONING` facts and
-        rebuild its own incremental indexes without leaking into the
-        parent.
+        Shares the immutable populations (`relations`, `rules`,
+        `hrules`, `query`) **by reference**. The :attr:`facts` list and
+        the reverse indexes are shallow-copied so the fork can append
+        :class:`Layer.REASONING` facts and rebuild its own incremental
+        indexes without leaking into the parent.
 
         Caveat about entity back-pointers: shared entities keep their
-        ``_kb`` pointing at the **original** KB. This means
-        ``norwegian.facts`` returns the original KB's facts, NOT the
-        fork's view. For fork-scoped queries use
-        ``fork.all_layers().about(norwegian)`` or the explicit
-        indexes on the fork (``fork._facts_by_instance[name]``). This
+        ``_kb`` pointing at the **original** KB. This means a shared
+        ``Relation``'s ``.facts`` returns the original KB's facts, NOT
+        the fork's view. For fork-scoped queries use
+        ``fork.all_layers().about(name)`` or the explicit indexes on the
+        fork (``fork._facts_by_relation[name]``). This
         is intentional: hypothesis branches rarely introduce new
         entities, only new derived facts; the entity API tells you
         the root state, the fork view tells you the branch state.
@@ -686,8 +604,6 @@ class KnowledgeBase:
         """
         new = KnowledgeBase()
         # Share immutable populations by reference.
-        new.types = self.types
-        new.instances = self.instances
         new.relations = self.relations
         new.rules = self.rules
         new.hrules = self.hrules
@@ -699,18 +615,14 @@ class KnowledgeBase:
         new.classes._parent = dict(self.classes._parent)
         # Facts list: copy so appends to the fork don't touch parent.
         new.facts = list(self.facts)
-        # Reverse indexes. The four type/rule indexes derive from the
-        # (post-load-immutable) types/instances/rules registries and are
-        # never mutated by `_index_fact`, so they're SHARED by reference
-        # like those registries. The fact / name / negated indexes ARE
-        # appended to during saturation, so each fork gets its own copy
-        # and then mutates it in place (see `_index_fact`).
-        new._types_by_parent = self._types_by_parent
-        new._instances_by_type = self._instances_by_type
+        # Reverse indexes. `_rules_by_relation` derives from the
+        # (post-load-immutable) rules registry and is never mutated by
+        # `_index_fact`, so it's SHARED by reference like the registries.
+        # The fact / name / negated indexes ARE appended to during
+        # saturation, so each fork gets its own copy and mutates it in
+        # place (see `_index_fact`).
         new._rules_by_relation = self._rules_by_relation
-        new._rules_by_type = self._rules_by_type
         new._facts_by_relation = dict(self._facts_by_relation)
-        new._facts_by_instance = dict(self._facts_by_instance)
         new._rule_apps_by_rule = dict(self._rule_apps_by_rule)
         new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
         new.names = dict(self.names)
@@ -753,9 +665,8 @@ class KnowledgeBase:
         Shares by reference (constant across the search, no
         mutation concern): ``relations``, ``rules``, ``hrules``,
         ``classes``, ``query``, ``config``, ``alive``,
-        ``consume_stats``. (``types`` / ``instances`` are derived by
-        :meth:`rebuild_indexes` from the copied facts — S1.7.6 — so the
-        snapshot owns isolated type/instance entities, not shared ones.)
+        ``consume_stats``. (Since S1.7.23 there are no ``types`` /
+        ``instances`` registries to share or re-derive.)
 
         Soundness invariant: a snapshotted kb's
         :meth:`derivation_dag` walks the same chain as the source
@@ -764,10 +675,7 @@ class KnowledgeBase:
         registry by reference is fine.
         """
         new = KnowledgeBase()
-        # Share constant registries by reference. `types` / `instances`
-        # are NOT shared — `rebuild_indexes` (below) re-derives them from
-        # the copied `facts`, giving the snapshot fully isolated
-        # type/instance entities that back-point at the snapshot.
+        # Share constant registries by reference.
         new.relations = self.relations
         new.rules     = self.rules
         new.hrules    = self.hrules
@@ -792,17 +700,13 @@ class KnowledgeBase:
     # ── Dunder ────────────────────────────────────────────────────
 
     def __len__(self) -> int:
-        """Total node count: types + instances + relations + rules + facts."""
-        return (
-            len(self.types) + len(self.instances) + len(self.relations)
-            + len(self.rules) + len(self.facts)
-        )
+        """Total node count: relations + rules + facts."""
+        return len(self.relations) + len(self.rules) + len(self.facts)
 
     def __repr__(self) -> str:
         return (
-            f"<KnowledgeBase types={len(self.types)} instances={len(self.instances)} "
-            f"relations={len(self.relations)} rules={len(self.rules)} "
-            f"facts={len(self.facts)}>"
+            f"<KnowledgeBase relations={len(self.relations)} "
+            f"rules={len(self.rules)} facts={len(self.facts)}>"
         )
 
 

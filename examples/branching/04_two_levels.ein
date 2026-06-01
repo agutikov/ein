@@ -60,7 +60,13 @@
 
 (ontology
   (relation is-a       T T)
-  (relation co-located T T)
+  ;; S1.7.23 — `co-located` here relates a Color to a House. Naming
+  ;; those types in the signature lets hypgen's name-free candidate set
+  ;; exclude the type atoms (`Color`/`House`/`T`) and guess only over
+  ;; the leaf instances — no kernel `is-a` read. (The signature is
+  ;; object-selection metadata; the type-compatibility filter is gone,
+  ;; so the symmetric `(co-located H1 Red)` direction is unaffected.)
+  (relation co-located Color House)
 
   (symmetric         co-located)
   (transitive        co-located)
