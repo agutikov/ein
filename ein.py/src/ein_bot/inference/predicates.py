@@ -36,7 +36,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from ein_bot.ir.types import Atom, Int, Var
+from .resolve import resolve_leaf
 
 # A Predicate is a callable taking (bindings, args) and returning bool.
 # `bindings` maps variable name → resolved value (str | int | Fact).
@@ -45,32 +45,12 @@ from ein_bot.ir.types import Atom, Int, Var
 Predicate = Callable[[dict[str, Any], tuple[Any, ...]], bool]
 
 
-def _resolve(bindings: dict[str, Any], slot: Any) -> Any:
-    """Resolve an IR slot to its bound value, or its literal payload.
-
-    - ``Var``  — look up in bindings; returns None if unbound (the
-      matcher should never call predicates with unbound vars, but
-      returning None makes the failure mode visible rather than a
-      KeyError).
-    - ``Atom`` — return the atom's name (string).
-    - ``Int``  — return the integer value.
-    - Anything else (already-resolved str/int/Fact) — return as-is.
-    """
-    if isinstance(slot, Var):
-        return bindings.get(slot.name)
-    if isinstance(slot, Atom):
-        return slot.name
-    if isinstance(slot, Int):
-        return slot.value
-    return slot
-
-
 def _eq(bindings: dict[str, Any], args: tuple[Any, ...]) -> bool:
-    return _resolve(bindings, args[0]) == _resolve(bindings, args[1])
+    return resolve_leaf(args[0], bindings) == resolve_leaf(args[1], bindings)
 
 
 def _neq(bindings: dict[str, Any], args: tuple[Any, ...]) -> bool:
-    return _resolve(bindings, args[0]) != _resolve(bindings, args[1])
+    return resolve_leaf(args[0], bindings) != resolve_leaf(args[1], bindings)
 
 
 _REGISTRY: dict[str, Predicate] = {

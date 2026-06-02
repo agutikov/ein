@@ -23,12 +23,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from ein_bot.ir.types import Atom, Int, Var
+from ein_bot.ir.types import Var
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
 from .compile import JoinPlan, NestedPattern
+from .resolve import resolve_leaf
 
 # ── Firing ─────────────────────────────────────────────────────────
 
@@ -59,6 +60,18 @@ class Firing:
 # ── :assert substitution ───────────────────────────────────────────
 
 
+def _unbound_var(slot: Var, bindings: dict[str, Any]) -> Any:
+    """Fail-loud unbound-Var policy for ``:assert`` resolution.
+
+    The matcher should never invoke firing with unbound vars in the
+    assert template, so an unbound one is an invariant violation rather
+    than a silent skip.
+    """
+    raise KeyError(
+        f"unbound var ?{slot.name} in :assert — bindings: {bindings}",
+    )
+
+
 def _resolve(slot: object, bindings: dict[str, Any]) -> Any:
     """Walk a slot under bindings, resolving Vars to their bound values.
 
@@ -66,27 +79,16 @@ def _resolve(slot: object, bindings: dict[str, Any]) -> Any:
     - str / int / Fact for leaves (Var-bound or Atom/Int literals);
     - Fact for NestedPattern slots — constructed recursively.
 
-    Raises KeyError if a Var is unbound — the matcher should never
-    invoke firing with unbound vars in the assert template, so this
-    is a fail-loud invariant violation rather than a silent skip.
+    Raises KeyError if a Var is unbound (see :func:`_unbound_var`).
+    Leaf cases delegate to the shared :func:`resolve_leaf`.
     """
-    if isinstance(slot, Var):
-        if slot.name not in bindings:
-            raise KeyError(
-                f"unbound var ?{slot.name} in :assert — bindings: {bindings}",
-            )
-        return bindings[slot.name]
-    if isinstance(slot, Atom):
-        return slot.name
-    if isinstance(slot, Int):
-        return slot.value
     if isinstance(slot, NestedPattern):
         return Fact(
             relation_name=slot.relation,
             args=tuple(_resolve(a, bindings) for a in slot.arg_slots),
             layer=Layer.REASONING,
         )
-    return slot
+    return resolve_leaf(slot, bindings, _unbound_var)
 
 
 def build_fact(
