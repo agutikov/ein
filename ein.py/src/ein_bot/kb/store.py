@@ -40,6 +40,8 @@ from .entities import (
 )
 
 if TYPE_CHECKING:
+    from ..inference.config import SolverConfig
+    from ..ir.types import KwPair
     from .provenance import DerivationDAG
     from .views import FactView
 
@@ -97,7 +99,7 @@ class Query:
     The body keeps the raw `KwPair` tuple — interpretation lives in
     P1.5 (hypothesis loop), which reads ``mode`` and ``goal``.
     """
-    kw_pairs: tuple[Any, ...] = ()
+    kw_pairs: tuple[KwPair, ...] = ()
 
 
 # ── KnowledgeBase ──────────────────────────────────────────────────
@@ -129,11 +131,12 @@ class KnowledgeBase:
         # Query (optional, only when the IR carries a `(query …)`).
         self.query: Query | None = None
         # SolverConfig (optional, only when the IR carries a `(config
-        # …)` head; T1.5.4.4). Typed as `Any` here to avoid a hard
-        # import cycle (config lives under inference/, which imports
-        # store). `solve()` resolves precedence as: kwarg > kb.config
+        # …)` head; T1.5.4.4). The forward ref lives under TYPE_CHECKING
+        # so the inference → kb import stays a checker-only edge (no
+        # runtime cycle; instance-attr annotations are not evaluated).
+        # `solve()` resolves precedence as: kwarg > kb.config
         # > SolverConfig().
-        self.config: Any | None = None
+        self.config: SolverConfig | None = None
         # Alive-hypothesis set — T1.5.4.8 Topic D ship. None until
         # `solve()` populates it at the root via
         # `generate_hypotheses_with_stats(root_kb)`. Forks inherit
