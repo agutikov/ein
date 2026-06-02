@@ -1,7 +1,21 @@
-# P1.7c — Retire the `(rules …)` / `(ontology …)` / `(facts …)` block heads
+# P1.7c — Post-M1 cleanup: block-head removal + P1.7b debt tail
 
 **Estimate:** TBD (grammar + loader; small but touches every `.ein`).
 **Status:** **placeholder** — created 2026-06-02 from `TODO.md`.
+
+> **Two tracks.** This phase carries two independent post-M1 cleanups:
+> - **Track A (S1.7c.1–.5)** — the block-head removal described below
+>   (surface-syntax purity).
+> - **Track B (S1.7c.10–.32)** — the [P1.7b](../p1.7b_review_and_refactor/README.md)
+>   review's **deferred refactor tail**: one stage per deferral, see
+>   [Track B](#track-b--p17b-refactor-debt-tail-s17c10) at the bottom.
+>
+> The two share nothing but the directory; the `.10` start leaves room in
+> `.1–.9` for Track A. Both inherit P1.7b's **one hard constraint — no
+> behaviour change** (full pytest + PyPy 3-variant acceptance green,
+> verdicts byte-identical) — except the two stages that close a latent bug
+> ([S1.7c.32](s1.7c.32_share_sexpr_escaper.md), each gated by a regression
+> test).
 **Origin (user, 2026-06-02):**
 
 > remove ein heads: `rules`, `ontology`, `facts` — make plain code. We
@@ -59,18 +73,92 @@ This removes three reserved *block* heads (`rules` / `ontology` / `facts`,
 4. **Grammar shape.** Whether the top level is a bare sequence of forms
    or still a single `(program …)`-style root.
 
-## Likely stages
+## Stages (Track A)
 
-- **S1.7c.1** — decide layer attribution (Q1) — the gating design call.
-- **S1.7c.2** — grammar: top level = flat form sequence; classify by head
-  against the reserved declarator set.
-- **S1.7c.3** — loader: route each form by head; back-compat shim for the
-  wrapped form (deprecation window).
-- **S1.7c.4** — migrate `examples/` + inline fixtures; drop the shim.
-- **S1.7c.5** — docs: grammar (`01_grammar.md`) + reserved-names update.
+Sequential — S1.7c.1 is the gating design call; .2/.3 are the grammar+loader
+core; .4 is the migration; .5 is doc-sync. The hard constraint is
+**KB-preserving**: a flat rewrite of any `.ein` must load to a byte-identical
+KB (same facts, per-fact `layer`, provenance) — syntax changes, semantics
+don't.
+
+| ID | title | resolves | gist |
+|---|---|---|---|
+| **S1.7c.1** | [Layer-attribution decision](s1.7c.1_layer_attribution_decision.md) | Q1 (the crux) | flat facts lose the block's `Layer`; recover it. Investigation finding: **only `REASONING` is inference-load-bearing** (`lookahead.py:139` — "cross-layer is not a contradiction"); ONTOLOGY-vs-FACT is render/provenance only → **derive layer from `:rule`/`:source` annotations**. Design-only stage. |
+| **S1.7c.2** | [Flat-form grammar](s1.7c.2_flat_form_grammar.md) | Q3, Q4 | `start: form*` over a declarator/fact alternation; classify by head against the closed reserved set; **else → fact**. `trace` stays an engine-emitted sibling. |
+| **S1.7c.3** | [Loader flat routing + shim](s1.7c.3_loader_flat_routing.md) | Q2 | `from_ir.load` routes per-head with `_layer_of`; back-compat shim accepts the wrapped form (deprecation warning) so the 4 examples + ~40 fixtures keep loading. Pairs with [S1.7c.23](s1.7c.23_flatten_from_ir_load.md). |
+| **S1.7c.4** | [Migrate + drop shim](s1.7c.4_migrate_and_drop_shim.md) | Q2 | scripted KB-preserving unwrap of `examples/` + fixtures; delete the shim; flat becomes the only surface. |
+| **S1.7c.5** | [Docs: grammar + reserved-names](s1.7c.5_docs_grammar_reserved_names.md) | doc-sync | rewrite `01_grammar.md`, the `grammar.lark` header, `06_reserved_names.md` (now the classifier's source of truth) + re-snippet examples. |
+
+## Track B — P1.7b refactor-debt tail (S1.7c.10+)
+
+P1.7b shipped its high-leverage core (the flagship `_explore_layers`
+620→103, the `Mode` retirement, the two latent-bug fixes, the hot-path perf)
+but **deferred a long tail** of decompositions / unifications — see the
+[P1.7b ledger](../p1.7b_review_and_refactor/README.md#what-shipped-2026-06-01--and-whats-deferred).
+Each surviving deferral becomes **one stage** here, grouped by subsystem and
+ordered low-risk → high-risk so confidence compounds. Every stage cites its
+finding id in [`findings.md`](../p1.7b_review_and_refactor/findings.md).
+
+| ID | title | finding | leverage / risk |
+|---|---|---|---|
+| **S1.7c.10** | [`FactId` neutral home](s1.7c.10_factid_neutral_home.md) | F-KER-6 | trivial |
+| **S1.7c.11** | [Unify the two swapped-arg `_resolve`](s1.7c.11_unify_resolve_leaf.md) | F-KER-7 | low |
+| **S1.7c.12** | [Unify the provenance-chain DFS](s1.7c.12_unify_provenance_dfs.md) | F-KER-10 | low–med |
+| **S1.7c.13** | [`_lattice_public` post-amble](s1.7c.13_lattice_public_postamble.md) | F-ENG-5 (+14) | low |
+| **S1.7c.14** | [Collapse unsat-core synthesis](s1.7c.14_unify_unsat_core.md) | F-ENG-7 | med |
+| **S1.7c.15** | [Split `_LatticeLoopState`](s1.7c.15_split_lattice_loop_state.md) | F-ENG-8 | med–high |
+| **S1.7c.16** | [Factor `_BaseStats`](s1.7c.16_factor_base_stats.md) | F-ENG-9 | low |
+| **S1.7c.17** | [`_TimelineMixin` for dumpers](s1.7c.17_timeline_mixin.md) | F-ENG-11 | low |
+| **S1.7c.18** | [Drop redundant `consistent()` (perf)](s1.7c.18_drop_redundant_consistent.md) | F-ENG-12 | perf |
+| **S1.7c.19** | [Remove the two `type: ignore`](s1.7c.19_drop_type_ignore.md) | F-ENG-13 | trivial |
+| **S1.7c.20** | [Decompose `rebuild_indexes`](s1.7c.20_decompose_rebuild_indexes.md) | F-KB-2 | med |
+| **S1.7c.21** | [`snapshot` shallow-copy](s1.7c.21_snapshot_shallow_copy.md) | F-KB-6 | med |
+| **S1.7c.22** | [Typed index wrappers](s1.7c.22_typed_index_wrappers.md) | F-KB-9 | high |
+| **S1.7c.23** | [Flatten `from_ir.load`](s1.7c.23_flatten_from_ir_load.md) | F-KB-7 | med (coord. Track A) |
+| **S1.7c.24** | [Restore `Query` annotations](s1.7c.24_restore_query_annotations.md) | F-KB-13 | low |
+| **S1.7c.25** | [Shared DOT emitter API](s1.7c.25_shared_dot_emitter.md) | F-RTC-1 (+F-KB-8) | high (headline) |
+| **S1.7c.26** | [Decompose `to_dot`](s1.7c.26_decompose_to_dot.md) | F-KB-10 ≡ F-RTC-6 | med |
+| **S1.7c.27** | [Split `_build_parser`](s1.7c.27_split_build_parser.md) | F-RTC-2 | low–med |
+| **S1.7c.28** | [Unify the two trace pipelines](s1.7c.28_unify_trace_pipelines.md) | F-RTC-3 | med |
+| **S1.7c.29** | [Flatten `parse_trace_steps` (depth 9)](s1.7c.29_flatten_parse_trace_steps.md) | F-RTC-4 | med |
+| **S1.7c.30** | [`linearize` dispatch table](s1.7c.30_linearize_dispatch.md) | F-RTC-5 | low–med |
+| **S1.7c.31** | [Public KB/verdict accessors](s1.7c.31_public_kb_accessors.md) | F-RTC-9 | low |
+| **S1.7c.32** | [Share the S-expr escaper (fixes a bug)](s1.7c.32_share_sexpr_escaper.md) | F-RTC-10 | low (+regression) |
+
+**Suggested ordering.** `.10`/`.11`/`.16`/`.17`/`.19`/`.24`/`.31`/`.32`
+first (trivial / low risk); the KB cluster `.22 → .20/.21` together (the
+typed wrappers make the decomp + shallow-copy structurally safe); the RTC
+DOT pair `.25 → .26`; the trace chain `.29 → .28`; `.15 → .19`; `.23`
+coordinated with Track A's `load` rewrite. Reuse the P1.7b acceptance gate
+(`run_tests.sh` + `bench_solve_monotonic_pypy.sh`) as the invariant for every
+stage.
+
+### Not carried over (verified during this breakdown, 2026-06-02)
+
+Re-checked against the code — already closed or deliberately dropped, so **no
+stage**:
+
+- **F-RTC-7** (`to_dot` unreachable return) — *done*: `_atom_arg_attrs`
+  (`ir/to_dot.py:122`) is now a clean `Var`/`Wildcard`/default ladder; the
+  trailing return is reachable.
+- **F-RTC-8** (`cli.py:105` `and` short-circuit) — *done*: now
+  `",".join(sorted(_LAYER_BY_NAME))`.
+- **F-KER-15** (`_instance_like_objects` hoist) — *moot*: the function no
+  longer exists (subsumed by the name-free `_candidate_objects` from S1.7.23).
+- **F-KB-11** (`type_names` vestige) — *parked, keep* (a deliberate S1.7.6
+  seam, not a refactor deferral); folded into the `.20` early-skip note.
+- **EntryPolicy** (F-ENG-1 ideal) — *won't-do*: P1.7b assessed it a poor fit
+  for three fixed entries (a re-dispatch sentinel = more indirection than the
+  localized ladders). Not reopened.
 
 ## Connections
 
+- [P1.7b — review & refactor](../p1.7b_review_and_refactor/README.md) —
+  Track B is its deferred tail; [`findings.md`](../p1.7b_review_and_refactor/findings.md)
+  is the source register every Track-B stage cites.
+- [M1a Rust port](../../m1a_rust/README.md) — the strongest reason to drain
+  Track B before porting: `ein.rs` should transcribe the clean reference, not
+  the remaining scar tissue (P1.7b's own "recommended before M1a" note).
 - [P1.7 kernel-purity arc](../p1.7_bootstrapping_zebra/) — same "fewer
   special forms" thrust, one layer up (surface syntax vs engine).
 - [P1.8 S1.5.9 macros](../p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)
