@@ -34,12 +34,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-from ein_bot.inference.apriori import CanonicalSetId, FactId
+from ein_bot.inference.apriori import CanonicalSetId
 from ein_bot.inference.contradiction import ContradictionDetector
 from ein_bot.inference.firing import Firing
 from ein_bot.inference.saturator import Saturator
 from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.provenance import Provenance, reaches
+from ein_bot.kb.provenance import FactId, Provenance, reaches
 from ein_bot.kb.store import KnowledgeBase
 
 

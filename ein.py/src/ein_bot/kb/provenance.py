@@ -45,6 +45,10 @@ if TYPE_CHECKING:
 
 # A fact id is its (relation_name, args) identity tuple — sufficient
 # because Fact.__eq__ / __hash__ are exactly on these two fields.
+# Single home for the alias (F-KER-6): inference/{apriori,nogoods,
+# solution,back_prop,commitment}, monotonic/lattice and the render
+# DAGs all import it from here — kb sits below inference, so this is
+# the one module both layers can share without an import cycle.
 FactId = tuple[str, tuple[object, ...]]
 
 

@@ -21,9 +21,9 @@ delegates here so there is exactly one open-set definition.
 """
 from __future__ import annotations
 
-from ein_bot.inference.apriori import FactId
 from ein_bot.inference.contradiction import ContradictionDetector
 from ein_bot.inference.hypgen import generate_hypotheses
+from ein_bot.kb.provenance import FactId
 from ein_bot.kb.store import KnowledgeBase
 
 

@@ -77,7 +77,6 @@ from typing import Literal
 from ein_bot.inference import primitives
 from ein_bot.inference.apriori import (
     CanonicalSetId,
-    FactId,
     generate_layer,
     layer_1,
     order_candidates,
@@ -109,7 +108,7 @@ from ein_bot.inference.verdict import (
     is_solved,
 )
 from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.provenance import Provenance
+from ein_bot.kb.provenance import FactId, Provenance
 from ein_bot.kb.store import KnowledgeBase
 
 

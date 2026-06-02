@@ -45,9 +45,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Literal
 
-from ein_bot.inference.apriori import CanonicalSetId, FactId
+from ein_bot.inference.apriori import CanonicalSetId
 from ein_bot.inference.firing import Firing
 from ein_bot.kb.entities import Fact
+from ein_bot.kb.provenance import FactId
 from ein_bot.kb.store import KnowledgeBase
 
 

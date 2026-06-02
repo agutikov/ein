@@ -27,9 +27,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-# (relation_name, args) tuple — matches `nogoods.FactId` shape so
-# the two modules compose without conversion. See Q1.5b.3.
-FactId = tuple[str, tuple]
+from ein_bot.kb.provenance import FactId
 
 # Canonically-ordered tuple of FactIds. Sort key is the natural
 # tuple order on (relation_name, args). A CanonicalSetId is the

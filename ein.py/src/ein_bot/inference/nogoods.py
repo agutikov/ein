@@ -37,6 +37,7 @@ set.
 from __future__ import annotations
 
 from ein_bot.kb.entities import Fact
+from ein_bot.kb.provenance import FactId
 from ein_bot.kb.store import KnowledgeBase
 
 from .back_prop import (
@@ -48,7 +49,6 @@ from .back_prop import (
 # Clause = frozenset of FactIds — order-insensitive set of
 # hypothesis (relation_name, args) tuples whose joint commitment
 # is provably inconsistent at root.
-FactId = tuple[str, tuple]
 Clause = frozenset[FactId]
 
 

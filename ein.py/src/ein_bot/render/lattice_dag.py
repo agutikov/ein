@@ -38,8 +38,9 @@ from typing import TYPE_CHECKING
 from .dot_util import fact_label, multiline, quote
 
 if TYPE_CHECKING:
-    from ..inference.apriori import CanonicalSetId, FactId
+    from ..inference.apriori import CanonicalSetId
     from ..inference.monotonic.lattice import DeadCommitment
+    from ..kb.provenance import FactId
 
 _VERDICT_STYLE = {
     # verdict → (border, fill)

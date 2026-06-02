@@ -37,9 +37,10 @@ from .palette import hash_color
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from ..inference.apriori import CanonicalSetId, FactId
+    from ..inference.apriori import CanonicalSetId
     from ..inference.firing import Firing
     from ..kb.entities import Fact
+    from ..kb.provenance import FactId
     from ..kb.store import KnowledgeBase
 
 _SEED_COLOUR = "#d62728"      # red — hypothesis / seed facts, ⊥
