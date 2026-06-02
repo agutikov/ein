@@ -1328,6 +1328,54 @@ def _explore_layers(
 # S1.5b.23 filled `contradictions_solve`.
 
 
+def _lattice_public(
+    root_kb: KnowledgeBase,
+    *,
+    entry: Literal["gaps", "contradictions"],
+    expected_type: type[Verdict],
+    max_set_size: int,
+    config: SolverConfig | None,
+    store_lattice: bool,
+    dumper: LatticeDumper | None,
+    max_time: float | None,
+    max_enterings: int | None,
+) -> tuple[Verdict, LatticeStats]:
+    """Run the set-search loop under a lattice ``entry`` and apply the
+    shared public post-amble that ``gaps_solve`` / ``contradictions_solve``
+    used to carry verbatim.
+
+    Each mode contract guarantees a verdict of ``expected_type`` carrying a
+    non-None :class:`LatticeProof`, whose ``stats`` (the full
+    :class:`LatticeStats`, built by the entry's finaliser) is the advertised
+    counter set — the :class:`MonotonicStats` return of
+    :func:`_explore_layers` is discarded. The contract is enforced with an
+    explicit ``raise`` (not ``assert``) so a slip surfaces as a clear error
+    rather than an opaque ``AttributeError`` under ``python -O``
+    (F-ENG-5 / F-ENG-14).
+    """
+    verdict, _mstats = _explore_layers(
+        root_kb,
+        entry=entry,
+        max_set_size=max_set_size,
+        config=config,
+        store_lattice=store_lattice,
+        dumper=dumper,
+        max_time=max_time,
+        max_enterings=max_enterings,
+    )
+    if not isinstance(verdict, expected_type):
+        raise TypeError(
+            f"{entry} contract violated: expected "
+            f"{expected_type.__name__}, got {type(verdict).__name__}",
+        )
+    if verdict.proof is None:
+        raise RuntimeError(
+            f"{entry} contract violated: "
+            f"{expected_type.__name__} carries no LatticeProof",
+        )
+    return verdict, verdict.proof.stats
+
+
 def gaps_solve(
     root_kb: KnowledgeBase,
     *,
@@ -1364,9 +1412,13 @@ def gaps_solve(
     is guaranteed to stay zero under :func:`gaps_solve`
     regardless of input.
     """
-    verdict, _mstats = _explore_layers(
+    # entry="gaps" always returns Ambiguity (per the mode contract)
+    # carrying a non-None proof whose LatticeProof.stats is the full
+    # LatticeStats (built by ``_finalise_gaps``); see _lattice_public.
+    return _lattice_public(
         root_kb,
         entry="gaps",
+        expected_type=Ambiguity,
         max_set_size=max_set_size,
         config=config,
         store_lattice=store_lattice,
@@ -1374,14 +1426,6 @@ def gaps_solve(
         max_time=max_time,
         max_enterings=max_enterings,
     )
-    # entry="gaps" always returns Ambiguity (per the mode
-    # contract) carrying a non-None proof (LatticeProof.stats is
-    # the full LatticeStats — built by ``_finalise_gaps``). The
-    # MonotonicStats return value is discarded — the lattice
-    # counter set is what the public contract advertises.
-    assert isinstance(verdict, Ambiguity)
-    assert verdict.proof is not None
-    return verdict, verdict.proof.stats
 
 
 def contradictions_solve(
@@ -1430,9 +1474,12 @@ def contradictions_solve(
     explored — supersets of a solved commitment can still die
     under additional hypotheses.
     """
-    verdict, _mstats = _explore_layers(
+    # entry="contradictions" always returns Contradiction (per the mode
+    # contract) carrying a non-None LatticeProof; see _lattice_public.
+    return _lattice_public(
         root_kb,
         entry="contradictions",
+        expected_type=Contradiction,
         max_set_size=max_set_size,
         config=config,
         store_lattice=store_lattice,
@@ -1440,8 +1487,3 @@ def contradictions_solve(
         max_time=max_time,
         max_enterings=max_enterings,
     )
-    # entry="contradictions" always returns Contradiction (per
-    # the mode contract) carrying a non-None LatticeProof.
-    assert isinstance(verdict, Contradiction)
-    assert verdict.proof is not None
-    return verdict, verdict.proof.stats
