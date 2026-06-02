@@ -49,10 +49,11 @@ FIRING_TARGET = frozenset({
 
 
 def _zebra2_rule_names() -> set[str]:
+    # P1.7c: rules are flat top-level `(rule …)` / `(hrule …)` forms.
     forms = parse(ZEBRA2.read_text())
-    rules = next(f for f in forms if isinstance(f, SForm) and f.head.name == "rules")
-    return {r.args[0].name for r in rules.args
-            if isinstance(r, SForm) and r.args and isinstance(r.args[0], Atom)}
+    return {f.args[0].name for f in forms
+            if isinstance(f, SForm) and f.head.name in ("rule", "hrule")
+            and f.args and isinstance(f.args[0], Atom)}
 
 
 # ── always-on: library coverage ────────────────────────────────────

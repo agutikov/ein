@@ -58,25 +58,26 @@ Entities expose these via `@property` accessors (e.g. `relation.facts`)
 
 ## 3. Loading from IR — `KnowledgeBase.from_ir(forms)`
 
-The loader walks parsed IR forms in a fixed order:
+The loader walks the **flat sequence of forms** (P1.7c — no block
+wrappers; see [`../03-ein-lang/06_reserved_names.md`](../03-ein-lang/06_reserved_names.md)),
+routing each by its **head**:
 
-1. **Pass 1** (ontology block, schema):
+1. **Declarators** (by head):
    - `(relation …)` → `Relation` entity (`declared=True`).
-   - `(type …)` / `(instance …)` → ordinary `Fact`s (S1.7.23 — no
+   - `(rule …)` / `(hrule …)` → `Rule` entity with `match` / `assert_`
+     `Pattern` objects.
+   - `(query …)` → the `Query` (last one wins).
+2. **Facts** (any other head — `=`, `not`, or a generic `(NAME …)`):
+   - `(type …)` / `(instance …)` are ordinary `Fact`s (S1.7.23 — no
      `Type` / `Instance` entities; they are plain facts on user-space
      relations, see [`01_entities.md` §1](01_entities.md)).
-2. **Pass 2** (rules block):
-   - `(rule …)` → `Rule` entity with `match` / `assert_` `Pattern`
-     objects.
-3. **Pass 3** (facts):
-   - Ontology-block fact children → `Fact(layer=ONTOLOGY, …)`.
-   - `(facts …)` children → `Fact(layer=FACT, …)`.
-   - `(reasoning …)` children → `Fact(layer=REASONING, …)`.
+   - The fact's **layer is per-fact** (P1.7c S1.7c.1): an explicit
+     `:layer` wins, else derived — `:rule`/`:using` → REASONING,
+     `:source` → FACT, neither → ONTOLOGY.
    - Any fact whose head is *not* a declared relation auto-vivifies
      a `Relation(declared=False, …)`.
-4. **Query**: last `(query …)` block, if any.
-5. **Indexes**: `rebuild_indexes()`.
-6. **Cycle check**: `detect_provenance_cycles()` over the loaded
+3. **Indexes**: `rebuild_indexes()`.
+4. **Cycle check**: `detect_provenance_cycles()` over the loaded
    facts; raises `KBLoadError` on circular `:using` chains.
 
 The loader is **open-world tolerant**: undeclared types and

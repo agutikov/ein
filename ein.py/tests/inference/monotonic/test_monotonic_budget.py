@@ -41,22 +41,20 @@ def _kb(text: str) -> KnowledgeBase:
 # `_NO_LOOKAHEAD` keeps the deaths flowing through `try_commitment_set`
 # instead of being pre-empted by hypgen's lookahead.
 _FIXTURE = """
-(rules
-  (rule kill-pair ()
-    :match  (and (R a b) (R c d))
-    :assert (false)
-    :why    "kills the specific (R a b)+(R c d) pair"
-    :priority 100))
-(ontology
-  (relation R T T)
-  ; declared but never asserted — keeps the goal unreachable so
-  ; the fork-side is_solved check doesn't end the run before the
-  ; budget cap can fire.
-  (relation never T)
-  (is-a Thing T)
-  (is-a a Thing) (is-a b Thing)
-  (is-a c Thing) (is-a d Thing))
-(facts)
+(rule kill-pair ()
+  :match  (and (R a b) (R c d))
+  :assert (false)
+  :why    "kills the specific (R a b)+(R c d) pair"
+  :priority 100)
+(relation R T T)
+; declared but never asserted — keeps the goal unreachable so
+; the fork-side is_solved check doesn't end the run before the
+; budget cap can fire.
+(relation never T)
+(is-a Thing T)
+(is-a a Thing) (is-a b Thing)
+(is-a c Thing) (is-a d Thing)
+
 (query :mode solve
        :goal  (never ?x)
        :hypothesis-relations R)

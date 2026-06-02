@@ -67,12 +67,10 @@ class TestShapeMapping:
 
     def test_ternary_fact_produces_octagon(self):
         text = """
-        (ontology
-          (type T)
-          (instance A T) (instance B T) (instance C T)
-          (relation r3 T T T))
-        (facts
-          (r3 A B C :source "(1)"))
+        (type T)
+        (instance A T) (instance B T) (instance C T)
+        (relation r3 T T T)
+        (r3 A B C :source "(1)")
         """
         kb = KnowledgeBase.from_ir(parse(text))
         dot = to_dot(kb)

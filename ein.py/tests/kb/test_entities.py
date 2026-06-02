@@ -120,10 +120,9 @@ def test_pattern_extracts_variables():
     from ein_bot.ir import parse
     # Use a simple match clause: (co-located ?a ?b)
     forms = parse(
-        '(rules (rule r () :match (co-located ?a ?b) '
-        ':assert (co-located ?b ?a) :why "x"))'
+        '(rule r () :match (co-located ?a ?b) :assert (co-located ?b ?a) :why "x")'
     )
-    rule = forms[0].args[0]
+    rule = forms[0]  # P1.7c: a flat top-level (rule …) form
     match_node = next(
         kw.value for kw in rule.args
         if hasattr(kw, "key") and kw.key.name == "match"
@@ -141,10 +140,10 @@ def test_pattern_instance_is_a_generic_relation():
     # longer plucks `House` into `type_names` (which is now vestigial).
     from ein_bot.ir import parse
     forms = parse(
-        "(rules (rule r () :match (and (instance ?a House) (co-located ?a ?b)) "
-        ":assert (instance ?b Nationality) :why \"\"))"
+        '(rule r () :match (and (instance ?a House) (co-located ?a ?b))'
+        ' :assert (instance ?b Nationality) :why "")'
     )
-    rule = forms[0].args[0]
+    rule = forms[0]  # P1.7c: a flat top-level (rule …) form
     match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
     p = Pattern.from_ir(match_node)
     assert "instance" in p.relation_names
@@ -157,10 +156,9 @@ def test_pattern_instance_is_a_generic_relation():
 def test_pattern_dedupes_variables():
     from ein_bot.ir import parse
     forms = parse(
-        "(rules (rule r () :match (and (co-located ?a ?b) (co-located ?b ?a)) "
-        ":assert (= ?a ?b) :why \"\"))"
+        '(rule r () :match (and (co-located ?a ?b) (co-located ?b ?a)) :assert (= ?a ?b) :why "")'
     )
-    rule = forms[0].args[0]
+    rule = forms[0]  # P1.7c: a flat top-level (rule …) form
     match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
     p = Pattern.from_ir(match_node)
     assert p.variables == ("a", "b")
@@ -169,8 +167,8 @@ def test_pattern_dedupes_variables():
 
 def test_pattern_iter_yields_variables():
     from ein_bot.ir import parse
-    forms = parse("(rules (rule r () :match (rel ?x ?y ?z) :assert (rel ?z ?y ?x) :why \"\"))")
-    rule = forms[0].args[0]
+    forms = parse('(rule r () :match (rel ?x ?y ?z) :assert (rel ?z ?y ?x) :why "")')
+    rule = forms[0]  # P1.7c: a flat top-level (rule …) form
     match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
     p = Pattern.from_ir(match_node)
     assert list(p) == ["x", "y", "z"]

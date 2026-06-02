@@ -26,32 +26,29 @@
 ;;;   ⇒ (co-located Blue House-2)
 ;;;   via rule `square-unique` with ?R = next-to, ?T = House.
 
-(rules
-  (rule square-unique (?R ?T)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (instance ?x ?T)
-                 (co-located ?a ?x)
-                 (absent (and (?R ?x ?z) (neq ?y ?z))))
-    :assert (co-located ?b ?y)
-    :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
-    :priority 200))
+(rule square-unique (?R ?T)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (instance ?x ?T)
+               (co-located ?a ?x)
+               (absent (and (?R ?x ?z) (neq ?y ?z))))
+  :assert (co-located ?b ?y)
+  :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
+  :priority 200)
 
-(ontology
-  (type House)
-  (type Nationality)
-  (type Color)
-  (instance House-1 House)
-  (instance House-2 House)
-  (instance Norwegian Nationality)
-  (instance Blue Color)
-  (relation co-located T T)
-  (relation next-to T T)
-  (square-unique next-to House))
+(type House)
+(type Nationality)
+(type Color)
+(instance House-1 House)
+(instance House-2 House)
+(instance Norwegian Nationality)
+(instance Blue Color)
+(relation co-located T T)
+(relation next-to T T)
+(square-unique next-to House)
 
-(facts
-  (co-located Norwegian House-1 :source "(10)")
-  (next-to Norwegian Blue :source "(15)")
-  (next-to House-1 House-2 :source "(1)"))
+(co-located Norwegian House-1 :source "(10)")
+(next-to Norwegian Blue :source "(15)")
+(next-to House-1 House-2 :source "(1)")
 
 (query :mode solve :goal (co-located Blue House-2))

@@ -119,16 +119,14 @@ def test_p16_contract_root_contradiction():
     empty solutions / empty deads. Validator passes (no
     invariants are violated by emptiness)."""
     kb = KnowledgeBase.from_ir(parse("""
-    (rules
-      (rule always-false ()
-        :match (trigger ?x)
-        :assert (false)
-        :why "always" :priority 100))
-    (ontology
-      (type T)
-      (relation trigger T)
-      (instance a T))
-    (facts (trigger a :source "(1)"))
+    (rule always-false ()
+      :match (trigger ?x)
+      :assert (false)
+      :why "always" :priority 100)
+    (type T)
+    (relation trigger T)
+    (instance a T)
+    (trigger a :source "(1)")
     (query :mode solve :goal (trigger ?x))
     """))
     verdict, _ = contradictions_solve(kb, max_set_size=1)

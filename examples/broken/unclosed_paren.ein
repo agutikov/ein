@@ -1,5 +1,5 @@
 ;; Should fail: rule_decl body never closes.
-(rules
-  (rule x ()
-    :match a
-    :assert b
+;; Flat form (P1.7c): a top-level `(rule …)` with an unterminated body.
+(rule x ()
+  :match a
+  :assert b

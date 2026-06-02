@@ -99,9 +99,8 @@ def test_elimination_alternatives_are_grey():
 
 def test_why_template_rendered_on_firing_node():
     kb = KnowledgeBase.from_ir(parse(
-        '(rules (rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)'
-        '  :why "{?rel} symmetric: {?a} <-> {?b}"))'
-        " (ontology) (facts)"
+        '(rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)'
+        ' :why "{?rel} symmetric: {?a} <-> {?b}")'
     ))
     firing = _firing("symmetric", (SEED,), _f("co-located", "H3", "Blue"),
                      bindings={"rel": "co-located", "a": "Blue", "b": "H3"})
@@ -138,8 +137,7 @@ def _kb(text: str) -> KnowledgeBase:
 
 def test_render_state_emits_full_graph():
     kb = _kb(
-        "(ontology (relation r A A) (instance A T) (instance B T))"
-        ' (facts (r A B :source "(1)"))'
+        '(relation r A A) (instance A T) (instance B T) (r A B :source "(1)")'
     )
     dot = render_state(kb, name="snap")
     assert dot.startswith("digraph snap")
@@ -147,8 +145,8 @@ def test_render_state_emits_full_graph():
 
 
 def test_render_state_since_thickens_new_facts():
-    before = _kb("(ontology (relation r X X)) (facts (r a b))")
-    after = _kb("(ontology (relation r X X)) (facts (r a b) (r b c))")
+    before = _kb('(relation r X X) (r a b :layer fact)')
+    after = _kb('(relation r X X) (r a b :layer fact) (r b c :layer fact)')
     plain = render_state(after)
     highlighted = render_state(after, since=before)
     # the carried fact stays thin; the new one is thickened
@@ -162,8 +160,8 @@ def test_render_state_since_thickens_new_facts():
 
 def test_render_solution_renders_solved_state():
     kb = _kb(
-        "(ontology (relation co-located A H) (instance Blue A) (instance H3 H))"
-        ' (facts (co-located Blue H3 :source "(1)"))'
+        '(relation co-located A H) (instance Blue A) (instance H3 H)'
+        ' (co-located Blue H3 :source "(1)")'
     )
     dot = render_solution(kb)
     assert "digraph solution" in dot
@@ -178,7 +176,7 @@ def test_all_renderers_emit_valid_dot():
     assert _parses(render_slice(COMMITMENT, FIRINGS, None,
                                 contradiction=(frozenset({SEED}),
                                                frozenset({("co-located", ("Blue", "H3"))}))))
-    kb = _kb("(ontology (relation r X X)) (facts (r a b) (r b c))")
+    kb = _kb('(relation r X X) (r a b :layer fact) (r b c :layer fact)')
     assert _parses(render_state(kb))
     assert _parses(render_solution(kb))
 

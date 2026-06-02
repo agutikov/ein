@@ -22,77 +22,73 @@
 ;;; the survivor. House-3 has no facts so all three colors stay
 ;;; open.
 
-(rules
-  ;; ── Stdlib block (would live in a stdlib import under P1.8)
-  (rule typecheck-arg-0 (?R ?Dom)
-    :match  (and (?R ?a ?b)
-                 (absent (is-a ?a ?Dom)))
-    :assert (false)
-    :priority 110
-    :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}")
+;; ── Stdlib block (would live in a stdlib import under P1.8)
+(rule typecheck-arg-0 (?R ?Dom)
+  :match  (and (?R ?a ?b)
+               (absent (is-a ?a ?Dom)))
+  :assert (false)
+  :priority 110
+  :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}")
 
-  (rule typecheck-arg-1 (?R ?Ran)
-    :match  (and (?R ?a ?b)
-                 (absent (is-a ?b ?Ran)))
-    :assert (false)
-    :priority 110
-    :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}")
+(rule typecheck-arg-1 (?R ?Ran)
+  :match  (and (?R ?a ?b)
+               (absent (is-a ?b ?Ran)))
+  :assert (false)
+  :priority 110
+  :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}")
 
-  (rule domain-elimination (?R ?OT ?VT)
-    :match  (and (functional ?R 0 1)
-                 (total      ?R 0)
-                 (is-a ?a ?OT)
+(rule domain-elimination (?R ?OT ?VT)
+  :match  (and (functional ?R 0 1)
+               (total      ?R 0)
+               (is-a ?a ?OT)
+               (is-a ?v ?VT)
+               (forall ?v_other
+                 (and (is-a ?v_other ?VT) (neq ?v_other ?v))
+                 (not (?R ?a ?v_other))))
+  :assert (?R ?a ?v)
+  :priority 400
+  :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v})")
+
+(rule no-room-left (?R ?OT ?VT)
+  :match  (and (functional ?R 0 1)
+               (total      ?R 0)
+               (is-a ?a ?OT)
+               (forall ?v
                  (is-a ?v ?VT)
-                 (forall ?v_other
-                   (and (is-a ?v_other ?VT) (neq ?v_other ?v))
-                   (not (?R ?a ?v_other))))
-    :assert (?R ?a ?v)
-    :priority 400
-    :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v})")
+                 (not (?R ?a ?v))))
+  :assert (false)
+  :priority 110
+  :why    "{?a} has every {?VT} excluded — no value left")
 
-  (rule no-room-left (?R ?OT ?VT)
-    :match  (and (functional ?R 0 1)
-                 (total      ?R 0)
-                 (is-a ?a ?OT)
-                 (forall ?v
-                   (is-a ?v ?VT)
-                   (not (?R ?a ?v))))
-    :assert (false)
-    :priority 110
-    :why    "{?a} has every {?VT} excluded — no value left"))
+(relation color-of House Color)
+(relation is-a    T T)
 
-(ontology
-  (relation color-of House Color)
-  (relation is-a    T T)
+;; ── Property facts: color-of is a bijection between House and Color
+;; ── (positional projection encoding: (functional R i j)).
+(functional color-of 0 1)   ; each House at most one Color
+(functional color-of 1 0)   ; each Color at most one House
+(total      color-of 0)     ; each House has some Color
+(total      color-of 1)     ; each Color belongs to some House
 
-  ;; ── Property facts: color-of is a bijection between House and Color
-  ;; ── (positional projection encoding: (functional R i j)).
-  (functional color-of 0 1)   ; each House at most one Color
-  (functional color-of 1 0)   ; each Color at most one House
-  (total      color-of 0)     ; each House has some Color
-  (total      color-of 1)     ; each Color belongs to some House
+;; ── Stdlib rule activators: opt color-of into all four rules.
+(typecheck-arg-0   color-of House)
+(typecheck-arg-1   color-of Color)
+(domain-elimination color-of House Color)
+(no-room-left      color-of House Color)
 
-  ;; ── Stdlib rule activators: opt color-of into all four rules.
-  (typecheck-arg-0   color-of House)
-  (typecheck-arg-1   color-of Color)
-  (domain-elimination color-of House Color)
-  (no-room-left      color-of House Color)
+;; ── Type and instance hierarchy.
+(is-a House T) (is-a Color T)
+(is-a House-1 House) (is-a House-2 House) (is-a House-3 House)
+(is-a Red    Color)  (is-a Yellow Color)  (is-a Blue    Color)
 
-  ;; ── Type and instance hierarchy.
-  (is-a House T) (is-a Color T)
-  (is-a House-1 House) (is-a House-2 House) (is-a House-3 House)
-  (is-a Red    Color)  (is-a Yellow Color)  (is-a Blue    Color))
+;; House-1: Red (committed positive).
+(color-of House-1 Red :layer fact)
 
-(facts
-  ;; House-1: Red (committed positive).
-  (color-of House-1 Red)
+;; House-2: NOT Red, NOT Yellow → Blue must be forced by domain-elim.
+(not (color-of House-2 Red) :layer fact)
+(not (color-of House-2 Yellow) :layer fact)
 
-  ;; House-2: NOT Red, NOT Yellow → Blue must be forced by domain-elim.
-  (not (color-of House-2 Red))
-  (not (color-of House-2 Yellow))
-
-  ;; House-3: no commitments → all three Colors stay open.
-  )
+;; House-3: no commitments → all three Colors stay open.
 
 ;; Expected after saturation:
 ;;

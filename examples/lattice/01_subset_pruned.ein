@@ -42,42 +42,39 @@
 ;;; in lattice_diagrams.md) — the same shape rendered as a
 ;;; node-coloured lattice.
 
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} symmetric: {?a} ↔ {?b}"
-    :priority 100)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} symmetric: {?a} ↔ {?b}"
+  :priority 100)
 
-  (rule incompat-block ()
-    :match  (and (incompat ?a ?b)
-                 (proposed ?a)
-                 (proposed ?b)
-                 (neq ?a ?b))
-    :assert (false)
-    :why    "{?a} and {?b} are jointly forbidden by an incompat fact"
-    :priority 200)
+(rule incompat-block ()
+  :match  (and (incompat ?a ?b)
+               (proposed ?a)
+               (proposed ?b)
+               (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are jointly forbidden by an incompat fact"
+  :priority 200)
 
-  (hrule guess (?R ?T)
-    :match  (is-a ?x ?T)
-    :assert (?R ?x)
-    :why    "guess: is {?x} {?R}?"))
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
 
-(ontology
-  (relation is-a     T T)
-  (relation proposed T)
-  (relation incompat T T)
+(relation is-a     T T)
+(relation proposed T)
+(relation incompat T T)
 
-  (symmetric incompat)
+(symmetric incompat)
 
-  (is-a Custom T)
-  (is-a a      Custom)
-  (is-a b      Custom)
-  (is-a c      Custom)
-  (is-a d      Custom))
+(is-a Custom T)
+(is-a a      Custom)
+(is-a b      Custom)
+(is-a c      Custom)
+(is-a d      Custom)
 
-(facts
-  (incompat a b :source "(only the {a, b} pair is forbidden)"))
+(incompat a b :source "(only the {a, b} pair is forbidden)")
 
 (query
   :mode solve

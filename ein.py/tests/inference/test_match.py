@@ -15,16 +15,13 @@ def _kb(text: str) -> KnowledgeBase:
 
 def test_single_scan_binds_binary_fact():
     kb = _kb("""
-    (rules
-      (rule mirror (?r)
-        :match (?r ?a ?b)
-        :assert (?r ?b ?a)
-        :why "m"))
-    (ontology
-      (relation co-located T T)
-      (mirror co-located))
-    (facts
-      (co-located Norwegian House-1 :source "(1)"))
+    (rule mirror (?r)
+      :match (?r ?a ?b)
+      :assert (?r ?b ?a)
+      :why "m")
+    (relation co-located T T)
+    (mirror co-located)
+    (co-located Norwegian House-1 :source "(1)")
     """)
     plan = compile_rule(kb.rules["mirror"], kb._facts_by_relation["mirror"][0])
     results = list(match.run(plan, kb))
@@ -38,18 +35,15 @@ def test_single_scan_binds_binary_fact():
 
 def test_join_with_shared_var_chains_facts():
     kb = _kb("""
-    (rules
-      (rule transitive (?rel)
-        :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-        :assert (?rel ?a ?c)
-        :why "t"))
-    (ontology
-      (relation r T T)
-      (transitive r))
-    (facts
-      (r A B :source "(1)")
-      (r B C :source "(2)")
-      (r C D :source "(3)"))
+    (rule transitive (?rel)
+      :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+      :assert (?rel ?a ?c)
+      :why "t")
+    (relation r T T)
+    (transitive r)
+    (r A B :source "(1)")
+    (r B C :source "(2)")
+    (r C D :source "(3)")
     """)
     plan = compile_rule(
         kb.rules["transitive"],
@@ -66,13 +60,12 @@ def test_join_with_shared_var_chains_facts():
 
 def test_neq_guard_prunes_self_loops():
     kb = _kb("""
-    (rules
-      (rule self (?rel)
-        :match (and (?rel ?a ?a))
-        :assert (?rel ?a ?a)
-        :why "s"))
-    (ontology (relation r T T) (self r))
-    (facts (r X X :source "(1)") (r Y Z :source "(2)"))
+    (rule self (?rel)
+      :match (and (?rel ?a ?a))
+      :assert (?rel ?a ?a)
+      :why "s")
+    (relation r T T) (self r)
+    (r X X :source "(1)") (r Y Z :source "(2)")
     """)
     # No neq guard here — test the `?a ?a` repeated-var unification.
     plan = compile_rule(
@@ -86,13 +79,12 @@ def test_neq_guard_prunes_self_loops():
 
 def test_neq_guard_in_transitive_prunes_2_cycles():
     kb = _kb("""
-    (rules
-      (rule transitive (?rel)
-        :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-        :assert (?rel ?a ?c)
-        :why "t"))
-    (ontology (relation r T T) (transitive r))
-    (facts (r A B :source "(1)") (r B A :source "(2)"))
+    (rule transitive (?rel)
+      :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+      :assert (?rel ?a ?c)
+      :why "t")
+    (relation r T T) (transitive r)
+    (r A B :source "(1)") (r B A :source "(2)")
     """)
     plan = compile_rule(
         kb.rules["transitive"],
@@ -107,15 +99,13 @@ def test_absent_succeeds_when_inner_empty():
     """`(absent P)` is the explicit NAF (S1.5.8c K-Δ.2):
     the premise passes when no fact matches P."""
     kb = _kb("""
-    (rules
-      (rule guarded (?r)
-        :match (and (?r ?a ?b) (absent (other ?a ?b)))
-        :assert (ok ?a ?b)
-        :why "g"))
-    (ontology
-      (relation r T T) (relation other T T)
-      (guarded r))
-    (facts (r X Y :source "(1)"))
+    (rule guarded (?r)
+      :match (and (?r ?a ?b) (absent (other ?a ?b)))
+      :assert (ok ?a ?b)
+      :why "g")
+    (relation r T T) (relation other T T)
+    (guarded r)
+    (r X Y :source "(1)")
     """)
     plan = compile_rule(
         kb.rules["guarded"], kb._facts_by_relation["guarded"][0],
@@ -128,15 +118,13 @@ def test_absent_succeeds_when_inner_empty():
 def test_absent_fails_when_inner_matches():
     """`(absent P)` fails when a fact matching P is in the KB."""
     kb = _kb("""
-    (rules
-      (rule guarded (?r)
-        :match (and (?r ?a ?b) (absent (other ?a ?b)))
-        :assert (ok ?a ?b)
-        :why "g"))
-    (ontology
-      (relation r T T) (relation other T T)
-      (guarded r))
-    (facts (r X Y :source "(1)") (other X Y :source "(2)"))
+    (rule guarded (?r)
+      :match (and (?r ?a ?b) (absent (other ?a ?b)))
+      :assert (ok ?a ?b)
+      :why "g")
+    (relation r T T) (relation other T T)
+    (guarded r)
+    (r X Y :source "(1)") (other X Y :source "(2)")
     """)
     plan = compile_rule(
         kb.rules["guarded"], kb._facts_by_relation["guarded"][0],
@@ -150,15 +138,13 @@ def test_not_premise_matches_stored_neg_fact():
     ``(not P)`` fact — uniform with how any other fact pattern
     matches its head's storage."""
     kb = _kb("""
-    (rules
-      (rule see-neg (?r)
-        :match (and (?r ?a ?b) (not (other ?a ?b)))
-        :assert (saw-neg ?a ?b)
-        :why "stored neg seen"))
-    (ontology
-      (relation r T T) (relation other T T)
-      (see-neg r))
-    (facts (r X Y :source "(1)") (not (other X Y) :source "(2)"))
+    (rule see-neg (?r)
+      :match (and (?r ?a ?b) (not (other ?a ?b)))
+      :assert (saw-neg ?a ?b)
+      :why "stored neg seen")
+    (relation r T T) (relation other T T)
+    (see-neg r)
+    (r X Y :source "(1)") (not (other X Y) :source "(2)")
     """)
     plan = compile_rule(
         kb.rules["see-neg"], kb._facts_by_relation["see-neg"][0],
@@ -173,15 +159,13 @@ def test_not_premise_does_not_match_without_stored_neg():
     the positive `(other X Y)` in the KB and no stored
     `(not (other X Y))`, the (not …) pattern matches nothing."""
     kb = _kb("""
-    (rules
-      (rule see-neg (?r)
-        :match (and (?r ?a ?b) (not (other ?a ?b)))
-        :assert (saw-neg ?a ?b)
-        :why "stored neg seen"))
-    (ontology
-      (relation r T T) (relation other T T)
-      (see-neg r))
-    (facts (r X Y :source "(1)") (other X Y :source "(2)"))
+    (rule see-neg (?r)
+      :match (and (?r ?a ?b) (not (other ?a ?b)))
+      :assert (saw-neg ?a ?b)
+      :why "stored neg seen")
+    (relation r T T) (relation other T T)
+    (see-neg r)
+    (r X Y :source "(1)") (other X Y :source "(2)")
     """)
     plan = compile_rule(
         kb.rules["see-neg"], kb._facts_by_relation["see-neg"][0],
@@ -195,12 +179,11 @@ def test_nested_fact_pattern_unifies_against_relational_arg():
     """Q40 — match `(hypothesis (co-located ?a ?b))` against a
     synthetic fact whose first arg is a nested co-located Fact."""
     kb = _kb("""
-    (rules
-      (rule trap ()
-        :match (hypothesis (co-located ?a ?b))
-        :assert (caught ?a ?b)
-        :why "h"))
-    (ontology (relation co-located T T) (relation hypothesis T))
+    (rule trap ()
+      :match (hypothesis (co-located ?a ?b))
+      :assert (caught ?a ?b)
+      :why "h")
+    (relation co-located T T) (relation hypothesis T)
     """)
     # Synthesise the nested fact manually (P1.5 will do this).
     inner = Fact(
@@ -229,12 +212,11 @@ def test_nested_fact_pattern_unifies_against_relational_arg():
 
 def test_no_match_when_relation_absent():
     kb = _kb("""
-    (rules
-      (rule sym (?rel)
-        :match (?rel ?a ?b)
-        :assert (?rel ?b ?a)
-        :why "s"))
-    (ontology (relation r T T) (sym r))
+    (rule sym (?rel)
+      :match (?rel ?a ?b)
+      :assert (?rel ?b ?a)
+      :why "s")
+    (relation r T T) (sym r)
     """)
     plan = compile_rule(
         kb.rules["sym"], kb._facts_by_relation["sym"][0],

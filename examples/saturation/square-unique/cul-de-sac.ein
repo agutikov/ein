@@ -26,36 +26,33 @@
 ;;;   + ∄ z ≠ Lot_2 with (next-to Lot_3 z)
 ;;;   ⇒ (co-located Bob Lot_2).
 
-(rules
-  (rule square-unique (?R ?T)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (instance ?x ?T)
-                 (co-located ?a ?x)
-                 (absent (and (?R ?x ?z) (neq ?y ?z))))
-    :assert (co-located ?b ?y)
-    :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
-    :priority 200))
+(rule square-unique (?R ?T)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (instance ?x ?T)
+               (co-located ?a ?x)
+               (absent (and (?R ?x ?z) (neq ?y ?z))))
+  :assert (co-located ?b ?y)
+  :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
+  :priority 200)
 
-(ontology
-  (type Lot)
-  (type Owner)
-  (instance Lot_1 Lot)
-  (instance Lot_2 Lot)
-  (instance Lot_3 Lot)
-  (instance Alice Owner)
-  (instance Bob Owner)
-  (relation co-located T T)
-  (relation next-to T T)
-  (square-unique next-to Lot)
-  ;; Full adjacency for the street — `Lot_3` is the cul-de-sac.
-  (next-to Lot_1 Lot_2)
-  (next-to Lot_2 Lot_1)
-  (next-to Lot_2 Lot_3)
-  (next-to Lot_3 Lot_2))
+(type Lot)
+(type Owner)
+(instance Lot_1 Lot)
+(instance Lot_2 Lot)
+(instance Lot_3 Lot)
+(instance Alice Owner)
+(instance Bob Owner)
+(relation co-located T T)
+(relation next-to T T)
+(square-unique next-to Lot)
+;; Full adjacency for the street — `Lot_3` is the cul-de-sac.
+(next-to Lot_1 Lot_2)
+(next-to Lot_2 Lot_1)
+(next-to Lot_2 Lot_3)
+(next-to Lot_3 Lot_2)
 
-(facts
-  (co-located Alice Lot_3 :source "(1)")
-  (next-to Alice Bob :source "(2)"))
+(co-located Alice Lot_3 :source "(1)")
+(next-to Alice Bob :source "(2)")
 
 (query :mode solve :goal (co-located Bob Lot_2))

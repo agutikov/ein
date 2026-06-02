@@ -4,10 +4,10 @@ A `lark.Transformer` walks the parse tree produced by `grammar.lark`
 and emits a tuple of typed `SForm`s. Source positions are captured
 from Lark tokens (`propagate_positions=True` on the parser).
 
-Every top-level form (`ontology`, `facts`, `rules`, `query`, `trace`)
-becomes a single `SForm(head=Atom("ontology"), …)` etc. — the rule
-heads are stripped from the grammar's quoted-string keywords and
-re-introduced as Atom heads so the AST is uniform.
+The top level is a **flat sequence** of forms (P1.7c): each declarator
+(`relation` / `rule` / `hrule` / `query` / `config` / `trace`) and each
+fact lowers to a single `SForm`, with the head re-introduced as an Atom
+so the AST is uniform. There are no block wrappers.
 """
 from __future__ import annotations
 
@@ -105,18 +105,6 @@ class _ToAST(Transformer):
     # ── Top-level forms ────────────────────────────────────────
     def _topform(self, head_name: str, items: list) -> SForm:
         return SForm(head=Atom(name=head_name), args=tuple(items))
-
-    def ontology_form(self, items: list) -> SForm:
-        return self._topform("ontology", items)
-
-    def facts_form(self, items: list) -> SForm:
-        return self._topform("facts", items)
-
-    def reasoning_form(self, items: list) -> SForm:
-        return self._topform("reasoning", items)
-
-    def rules_form(self, items: list) -> SForm:
-        return self._topform("rules", items)
 
     def query_form(self, items: list) -> SForm:
         return self._topform("query", items)

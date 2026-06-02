@@ -18,19 +18,16 @@
 ;;;   (right-of H2 H1) + (implies right-of next-to)
 ;;;   ⇒ (next-to H2 H1).
 
-(rules
-  (rule implies (?p ?q)
-    :match  (?p ?a ?b)
-    :assert (?q ?a ?b)
-    :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-    :priority 100))
+(rule implies (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+  :priority 100)
 
-(ontology
-  (relation right-of T T)
-  (relation next-to T T)
-  (implies right-of next-to))
+(relation right-of T T)
+(relation next-to T T)
+(implies right-of next-to)
 
-(facts
-  (right-of H2 H1 :source "(1)"))
+(right-of H2 H1 :source "(1)")
 
 (query :mode solve :goal (next-to H2 H1))

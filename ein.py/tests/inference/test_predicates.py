@@ -77,12 +77,11 @@ def test_loader_does_not_auto_vivify_predicates():
     # the rule body but NOT a top-level `(neq …)` fact, so `neq`
     # should never appear in kb.relations.
     text = """
-    (rules
-      (rule asym (?rel)
-        :match (and (?rel ?a ?b) (neq ?a ?b))
-        :assert (not (?rel ?b ?a))
-        :why "asym"))
-    (ontology (relation r T T) (asym r))
+    (rule asym (?rel)
+      :match (and (?rel ?a ?b) (neq ?a ?b))
+      :assert (not (?rel ?b ?a))
+      :why "asym")
+    (relation r T T) (asym r)
     """
     kb = KnowledgeBase.from_ir(parse(text))
     assert "neq" not in kb.relations

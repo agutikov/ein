@@ -50,31 +50,27 @@ def _dep(deps: list[naf_deps.NafDep], rule: str) -> naf_deps.NafDep:
 # ── Unit: positive NAF, declared-only vs derived ─────────────────────
 
 _DECLARED_ONLY = """
-(rules
-  (rule probe ()
-    :match  (and (seed ?a ?b) (absent (target ?a ?b)))
-    :assert (out ?a ?b) :why "p" :priority 100))
-(ontology
-  (relation seed   T T)
-  (relation target T T)
-  (relation out    T T))
-(facts (seed A B))
+(rule probe ()
+  :match  (and (seed ?a ?b) (absent (target ?a ?b)))
+  :assert (out ?a ?b) :why "p" :priority 100)
+(relation seed   T T)
+(relation target T T)
+(relation out    T T)
+(seed A B :layer fact)
 """
 
 _DERIVED = """
-(rules
-  (rule probe ()
-    :match  (and (seed ?a ?b) (absent (target ?a ?b)))
-    :assert (out ?a ?b) :why "p" :priority 100)
-  (rule mk-target ()
-    :match  (src ?a ?b)
-    :assert (target ?a ?b) :why "m" :priority 100))
-(ontology
-  (relation seed   T T)
-  (relation target T T)
-  (relation out    T T)
-  (relation src    T T))
-(facts (seed A B))
+(rule probe ()
+  :match  (and (seed ?a ?b) (absent (target ?a ?b)))
+  :assert (out ?a ?b) :why "p" :priority 100)
+(rule mk-target ()
+  :match  (src ?a ?b)
+  :assert (target ?a ?b) :why "m" :priority 100)
+(relation seed   T T)
+(relation target T T)
+(relation out    T T)
+(relation src    T T)
+(seed A B :layer fact)
 """
 
 
@@ -95,31 +91,27 @@ def test_derived_naf_flagged():
 # ── Unit: negated NAF — Scope B (the (not (R …)) case) ───────────────
 
 _NEG_DECLARED_ONLY = """
-(rules
-  (rule probe ()
-    :match  (and (seed ?a ?b) (absent (not (target ?a ?b))))
-    :assert (out ?a ?b) :why "p" :priority 100))
-(ontology
-  (relation seed   T T)
-  (relation target T T)
-  (relation out    T T))
-(facts (seed A B))
+(rule probe ()
+  :match  (and (seed ?a ?b) (absent (not (target ?a ?b))))
+  :assert (out ?a ?b) :why "p" :priority 100)
+(relation seed   T T)
+(relation target T T)
+(relation out    T T)
+(seed A B :layer fact)
 """
 
 _NEG_DERIVED = """
-(rules
-  (rule probe ()
-    :match  (and (seed ?a ?b) (absent (not (target ?a ?b))))
-    :assert (out ?a ?b) :why "p" :priority 100)
-  (rule mk-neg ()
-    :match  (src ?a ?b)
-    :assert (not (target ?a ?b)) :why "n" :priority 100))
-(ontology
-  (relation seed   T T)
-  (relation target T T)
-  (relation out    T T)
-  (relation src    T T))
-(facts (seed A B))
+(rule probe ()
+  :match  (and (seed ?a ?b) (absent (not (target ?a ?b))))
+  :assert (out ?a ?b) :why "p" :priority 100)
+(rule mk-neg ()
+  :match  (src ?a ?b)
+  :assert (not (target ?a ?b)) :why "n" :priority 100)
+(relation seed   T T)
+(relation target T T)
+(relation out    T T)
+(relation src    T T)
+(seed A B :layer fact)
 """
 
 

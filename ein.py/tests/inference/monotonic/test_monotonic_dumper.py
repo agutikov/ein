@@ -36,21 +36,19 @@ def _kb(text: str) -> KnowledgeBase:
 # guarantees at least one layer-1 dead-post entering when the
 # CDCL path is exercised under `_NO_LOOKAHEAD`.
 SINGLETON_FIXTURE = """
-(rules
-  (rule forbid-paint-Blue ()
-    :match  (paint Blue ?y)
-    :assert (false)
-    :why    "Blue can't paint anything"
-    :priority 100))
-(ontology
-  (relation paint T T)
-  ; declared but never asserted — keeps the goal unreachable so
-  ; the fork-side is_solved check doesn't short-circuit the run
-  ; before layer_end + the dead-post entering's nogood event fire.
-  (relation never T)
-  (is-a Thing T)
-  (is-a Red Thing) (is-a Blue Thing))
-(facts)
+(rule forbid-paint-Blue ()
+  :match  (paint Blue ?y)
+  :assert (false)
+  :why    "Blue can't paint anything"
+  :priority 100)
+(relation paint T T)
+; declared but never asserted — keeps the goal unreachable so
+; the fork-side is_solved check doesn't short-circuit the run
+; before layer_end + the dead-post entering's nogood event fire.
+(relation never T)
+(is-a Thing T)
+(is-a Red Thing) (is-a Blue Thing)
+
 (query :mode solve
        :goal  (never ?x)
        :hypothesis-relations paint)
@@ -163,15 +161,13 @@ def test_entering_records_include_nogood_info(tmp_path: Path) -> None:
 
 
 _TRIVIAL_FIXTURE = """
-(rules
-  (rule sym-r ()
-    :match (r ?x ?y) :assert (r ?y ?x)
-    :why "symmetric r" :priority 100))
-(ontology
-  (type T)
-  (relation r T T)
-  (instance a T) (instance b T))
-(facts (r a b :source "(1)"))
+(rule sym-r ()
+  :match (r ?x ?y) :assert (r ?y ?x)
+  :why "symmetric r" :priority 100)
+(type T)
+(relation r T T)
+(instance a T) (instance b T)
+(r a b :source "(1)")
 (query :mode solve :goal (r b ?x))
 """
 
@@ -262,16 +258,14 @@ def test_dumper_summary_records_contradiction_verdict(
     skips the summary hook.
     """
     kb = _kb("""
-    (rules
-      (rule always-false ()
-        :match (trigger ?x)
-        :assert (false)
-        :why "always" :priority 100))
-    (ontology
-      (type T)
-      (relation trigger T)
-      (instance a T))
-    (facts (trigger a :source "(1)"))
+    (rule always-false ()
+      :match (trigger ?x)
+      :assert (false)
+      :why "always" :priority 100)
+    (type T)
+    (relation trigger T)
+    (instance a T)
+    (trigger a :source "(1)")
     (query :mode solve :goal (trigger ?x))
     """)
     dumper = MonotonicDumper(out_dir=tmp_path)

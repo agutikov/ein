@@ -18,20 +18,18 @@
 ;;;   (instance Red Color) + (instance Blue Color) + (neq Red Blue)
 ;;;   ⇒ (not (co-located Red Blue)).  [Fires twice — also (Blue, Red).]
 
-(rules
-  (rule type-exclusivity (?R)
-    :match  (and (instance ?a ?T)
-                 (instance ?b ?T)
-                 (neq ?a ?b))
-    :assert (not (?R ?a ?b))
-    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
-    :priority 300))
+(rule type-exclusivity (?R)
+  :match  (and (instance ?a ?T)
+               (instance ?b ?T)
+               (neq ?a ?b))
+  :assert (not (?R ?a ?b))
+  :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
+  :priority 300)
 
-(ontology
-  (type Color)
-  (instance Red Color)
-  (instance Blue Color)
-  (relation co-located T T)
-  (type-exclusivity co-located))
+(type Color)
+(instance Red Color)
+(instance Blue Color)
+(relation co-located T T)
+(type-exclusivity co-located)
 
 (query :mode solve :goal (not (co-located Red Blue)))

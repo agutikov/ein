@@ -39,130 +39,127 @@
 ;;; contradiction rules that then kill them. So this file also
 ;;; exercises that fallback.
 
-(rules
-  ;; ── Bijection violation rules (fire `(false)` on collision) ──
-  (rule functional (?R)
-    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-    :assert (false)
-    :why    "{?R} not functional: {?a} has both {?b} and {?c}."
-    :priority 250)
+;; ── Bijection violation rules (fire `(false)` on collision) ──
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional: {?a} has both {?b} and {?c}."
+  :priority 250)
 
-  (rule injective (?R)
-    :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-    :assert (false)
-    :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
-    :priority 250)
+(rule injective (?R)
+  :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+  :assert (false)
+  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
+  :priority 250)
 
-  ;; ── Negative-completion companions (assert the row/column nots) ──
-  (rule functional-negative (?R)
-    :match  (and (?R ?a ?b)
-                 (relation ?R ?A ?B)
-                 (is-a ?b_other ?B)
-                 (neq ?b_other ?b))
-    :assert (not (?R ?a ?b_other))
-    :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
-    :priority 240)
+;; ── Negative-completion companions (assert the row/column nots) ──
+(rule functional-negative (?R)
+  :match  (and (?R ?a ?b)
+               (relation ?R ?A ?B)
+               (is-a ?b_other ?B)
+               (neq ?b_other ?b))
+  :assert (not (?R ?a ?b_other))
+  :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
+  :priority 240)
 
-  (rule injective-negative (?R)
-    :match  (and (?R ?a ?b)
-                 (relation ?R ?A ?B)
-                 (is-a ?a_other ?A)
-                 (neq ?a_other ?a))
-    :assert (not (?R ?a_other ?b))
-    :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
-    :priority 240)
+(rule injective-negative (?R)
+  :match  (and (?R ?a ?b)
+               (relation ?R ?A ?B)
+               (is-a ?a_other ?A)
+               (neq ?a_other ?a))
+  :assert (not (?R ?a_other ?b))
+  :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
+  :priority 240)
 
-  (rule derive-functional-negative ()
-    :match  (functional ?R)
-    :assert (functional-negative ?R)
-    :why    "{?R} functional ⟹ functional-negative active."
-    :priority 100)
+(rule derive-functional-negative ()
+  :match  (functional ?R)
+  :assert (functional-negative ?R)
+  :why    "{?R} functional ⟹ functional-negative active."
+  :priority 100)
 
-  (rule derive-injective-negative ()
-    :match  (injective ?R)
-    :assert (injective-negative ?R)
-    :why    "{?R} injective ⟹ injective-negative active."
-    :priority 100)
+(rule derive-injective-negative ()
+  :match  (injective ?R)
+  :assert (injective-negative ?R)
+  :why    "{?R} injective ⟹ injective-negative active."
+  :priority 100)
 
-  ;; ── Domain elimination (force the survivor) + no-room-left ──
-  (rule domain-elimination (?R ?OT ?VT)
-    :match  (and (functional ?R 0 1)
-                 (total      ?R 0)
-                 (is-a ?a ?OT)
+;; ── Domain elimination (force the survivor) + no-room-left ──
+(rule domain-elimination (?R ?OT ?VT)
+  :match  (and (functional ?R 0 1)
+               (total      ?R 0)
+               (is-a ?a ?OT)
+               (is-a ?v ?VT)
+               (forall ?v_other
+                 (and (is-a ?v_other ?VT) (neq ?v_other ?v))
+                 (not (?R ?a ?v_other))))
+  :assert (?R ?a ?v)
+  :priority 400
+  :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v})")
+
+(rule no-room-left (?R ?OT ?VT)
+  :match  (and (functional ?R 0 1)
+               (total      ?R 0)
+               (is-a ?a ?OT)
+               (forall ?v
                  (is-a ?v ?VT)
-                 (forall ?v_other
-                   (and (is-a ?v_other ?VT) (neq ?v_other ?v))
-                   (not (?R ?a ?v_other))))
-    :assert (?R ?a ?v)
-    :priority 400
-    :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v})")
+                 (not (?R ?a ?v))))
+  :assert (false)
+  :priority 110
+  :why    "{?a} has every {?VT} excluded — no value left")
 
-  (rule no-room-left (?R ?OT ?VT)
-    :match  (and (functional ?R 0 1)
-                 (total      ?R 0)
-                 (is-a ?a ?OT)
-                 (forall ?v
-                   (is-a ?v ?VT)
-                   (not (?R ?a ?v))))
-    :assert (false)
-    :priority 110
-    :why    "{?a} has every {?VT} excluded — no value left")
+;; ── Closed-world type checks (the post-(b) contradiction rules) ──
+(rule typecheck-arg-0 (?R ?Dom)
+  :match  (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
+  :assert (false)
+  :priority 110
+  :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}")
 
-  ;; ── Closed-world type checks (the post-(b) contradiction rules) ──
-  (rule typecheck-arg-0 (?R ?Dom)
-    :match  (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
-    :assert (false)
-    :priority 110
-    :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}")
+(rule typecheck-arg-1 (?R ?Ran)
+  :match  (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
+  :assert (false)
+  :priority 110
+  :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}")
 
-  (rule typecheck-arg-1 (?R ?Ran)
-    :match  (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
-    :assert (false)
-    :priority 110
-    :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}"))
+(relation color-of House Color)
+(relation is-a     T T)
 
-(ontology
-  (relation color-of House Color)
-  (relation is-a     T T)
+;; color-of is a bijection between House and Color.
+(functional color-of)          ; violation-rule activator (2-arg)
+(injective  color-of)
+(functional color-of 0 1)       ; positional projection (domain-elim)
+(total      color-of 0)
 
-  ;; color-of is a bijection between House and Color.
-  (functional color-of)          ; violation-rule activator (2-arg)
-  (injective  color-of)
-  (functional color-of 0 1)       ; positional projection (domain-elim)
-  (total      color-of 0)
+;; Opt color-of into elimination + the closed-world type checks.
+;; `domain-elimination` is what positively *produces* a `color-of`
+;; fact, so its activator also keeps `color-of` OPEN (un-`closed`)
+;; for the blind enumerator — without it `emit_closed` would close
+;; `color-of` (no rule produces it) and there would be nothing to
+;; guess.
+(domain-elimination color-of House Color)
+(no-room-left       color-of House Color)
+(typecheck-arg-0    color-of House)
+(typecheck-arg-1    color-of Color)
 
-  ;; Opt color-of into elimination + the closed-world type checks.
-  ;; `domain-elimination` is what positively *produces* a `color-of`
-  ;; fact, so its activator also keeps `color-of` OPEN (un-`closed`)
-  ;; for the blind enumerator — without it `emit_closed` would close
-  ;; `color-of` (no rule produces it) and there would be nothing to
-  ;; guess.
-  (domain-elimination color-of House Color)
-  (no-room-left       color-of House Color)
-  (typecheck-arg-0    color-of House)
-  (typecheck-arg-1    color-of Color)
+;; `is-a` is the inheritance forest — fully given, never guessed.
+;; Declare it closed so the blind enumerator only ever proposes
+;; `color-of` hypotheses (the guessed relation stays open). Without
+;; this the enumerator would speculate `(is-a X Y)` pairs and the
+;; lattice would blow up — the normal solve path does not auto-close
+;; (that is a bench-only `emit_closed` convenience), so the fixture
+;; declares it. (`color-of` is intentionally NOT closed.)
+(closed is-a)
 
-  ;; `is-a` is the inheritance forest — fully given, never guessed.
-  ;; Declare it closed so the blind enumerator only ever proposes
-  ;; `color-of` hypotheses (the guessed relation stays open). Without
-  ;; this the enumerator would speculate `(is-a X Y)` pairs and the
-  ;; lattice would blow up — the normal solve path does not auto-close
-  ;; (that is a bench-only `emit_closed` convenience), so the fixture
-  ;; declares it. (`color-of` is intentionally NOT closed.)
-  (closed is-a)
+;; Type + instance hierarchy (3 houses, 3 colours).
+(is-a House T) (is-a Color T)
+(is-a H1 House) (is-a H2 House) (is-a H3 House)
+(is-a Red Color) (is-a Green Color) (is-a Blue Color)
 
-  ;; Type + instance hierarchy (3 houses, 3 colours).
-  (is-a House T) (is-a Color T)
-  (is-a H1 House) (is-a H2 House) (is-a H3 House)
-  (is-a Red Color) (is-a Green Color) (is-a Blue Color))
-
-(facts
-  ;; One anchor pins H1; that leaves a 2×2 residue (H2,H3 × Green,Blue)
-  ;; that the bijection can't fully *force* without a guess — so the
-  ;; blind enumerator must propose `(color-of H2 …)`, and `solve`
-  ;; branches. Keeping it to a single residual guess keeps the lattice
-  ;; tiny (fast under CPython) while still exercising the blind path.
-  (color-of H1 Red :source "(1) H1 is Red"))
+;; One anchor pins H1; that leaves a 2×2 residue (H2,H3 × Green,Blue)
+;; that the bijection can't fully *force* without a guess — so the
+;; blind enumerator must propose `(color-of H2 …)`, and `solve`
+;; branches. Keeping it to a single residual guess keeps the lattice
+;; tiny (fast under CPython) while still exercising the blind path.
+(color-of H1 Red :source "(1) H1 is Red")
 
 (query
   :mode solve

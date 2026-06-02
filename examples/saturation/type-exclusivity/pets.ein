@@ -18,21 +18,19 @@
 ;;;   Six firings total: (Dog,Cat), (Dog,Bird), (Cat,Dog), (Cat,Bird),
 ;;;   (Bird,Dog), (Bird,Cat).
 
-(rules
-  (rule type-exclusivity (?R)
-    :match  (and (instance ?a ?T)
-                 (instance ?b ?T)
-                 (neq ?a ?b))
-    :assert (not (?R ?a ?b))
-    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
-    :priority 300))
+(rule type-exclusivity (?R)
+  :match  (and (instance ?a ?T)
+               (instance ?b ?T)
+               (neq ?a ?b))
+  :assert (not (?R ?a ?b))
+  :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
+  :priority 300)
 
-(ontology
-  (type Pet)
-  (instance Dog Pet)
-  (instance Cat Pet)
-  (instance Bird Pet)
-  (relation co-located T T)
-  (type-exclusivity co-located))
+(type Pet)
+(instance Dog Pet)
+(instance Cat Pet)
+(instance Bird Pet)
+(relation co-located T T)
+(type-exclusivity co-located)
 
 (query :mode solve :goal (not (co-located Dog Cat)))

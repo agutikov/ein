@@ -35,16 +35,13 @@ def test_engine_step_produces_one_firing():
     """A symmetric activator on co-located + one co-located fact →
     step() produces exactly one new fact (the reverse)."""
     kb = KnowledgeBase.from_ir(parse("""
-    (rules
-      (rule symmetric (?rel)
-        :match (?rel ?a ?b)
-        :assert (?rel ?b ?a)
-        :why "{?rel} sym {?a}↔{?b}"))
-    (ontology
-      (relation co-located T T)
-      (symmetric co-located))
-    (facts
-      (co-located Norwegian House-1 :source "(10)"))
+    (rule symmetric (?rel)
+      :match (?rel ?a ?b)
+      :assert (?rel ?b ?a)
+      :why "{?rel} sym {?a}↔{?b}")
+    (relation co-located T T)
+    (symmetric co-located)
+    (co-located Norwegian House-1 :source "(10)")
     """))
     eng = Engine(kb)
     eng.compile_all()
@@ -65,17 +62,14 @@ def test_engine_saturate_bounded():
     """`symmetric` over two facts saturates to four facts (each pair
     + its reverse). After two firings step() returns None."""
     kb = KnowledgeBase.from_ir(parse("""
-    (rules
-      (rule symmetric (?rel)
-        :match (?rel ?a ?b)
-        :assert (?rel ?b ?a)
-        :why "s"))
-    (ontology
-      (relation r T T)
-      (symmetric r))
-    (facts
-      (r A B :source "(1)")
-      (r C D :source "(2)"))
+    (rule symmetric (?rel)
+      :match (?rel ?a ?b)
+      :assert (?rel ?b ?a)
+      :why "s")
+    (relation r T T)
+    (symmetric r)
+    (r A B :source "(1)")
+    (r C D :source "(2)")
     """))
     eng = Engine(kb)
     eng.compile_all()
@@ -94,16 +88,14 @@ def test_engine_type_exclusivity_produces_negative_facts():
     which lowers to a nested-fact derivation after the activator
     binds ?R."""
     kb = KnowledgeBase.from_ir(parse("""
-    (rules
-      (rule type-exclusivity (?R)
-        :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-        :assert (not (?R ?a ?b))
-        :why "x"))
-    (ontology
-      (type T)
-      (instance A T) (instance B T)
-      (relation co-located T T)
-      (type-exclusivity co-located))
+    (rule type-exclusivity (?R)
+      :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+      :assert (not (?R ?a ?b))
+      :why "x")
+    (type T)
+    (instance A T) (instance B T)
+    (relation co-located T T)
+    (type-exclusivity co-located)
     """))
     eng = Engine(kb)
     eng.compile_all()

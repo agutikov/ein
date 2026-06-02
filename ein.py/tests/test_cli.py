@@ -15,8 +15,12 @@ def test_ir_parse_zebra(capsys: pytest.CaptureFixture[str]):
     rc = main(["ir", "parse", str(zebra)])
     assert rc == 0
     out = capsys.readouterr().out
-    assert out.startswith("(rules") or out.startswith("(ontology")
-    assert "(facts" in out
+    # P1.7c: flat forms — zebra.ein opens with its first rule (broken
+    # multi-line by the pretty-printer), and the puzzle facts/relations
+    # are top-level forms (no block wrappers).
+    assert out.startswith("(rule")
+    assert "(co-located" in out
+    assert "(query" in out
 
 
 def test_ir_lint_ok(capsys: pytest.CaptureFixture[str]):
@@ -27,8 +31,11 @@ def test_ir_lint_ok(capsys: pytest.CaptureFixture[str]):
 
 
 def test_ir_lint_failure(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
+    # Post-P1.7c `(unknown-head a b)` is a valid FLAT fact, so it lints
+    # clean. A genuine lint failure now needs a real malformed form — a
+    # top-level kernel primitive (`and` is shape-pinned, never a fact head).
     bad = tmp_path / "broken.ein"
-    bad.write_text("(unknown-head a b)\n")
+    bad.write_text("(and a b)\n")
     rc = main(["ir", "lint", str(bad)])
     assert rc == 1
     err = capsys.readouterr().err

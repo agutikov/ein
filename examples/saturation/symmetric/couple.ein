@@ -15,18 +15,15 @@
 ;;;   (co-located Alice Bob) + (symmetric co-located)
 ;;;   ⇒ (co-located Bob Alice)  via rule `symmetric`.
 
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100))
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
 
-(ontology
-  (relation co-located T T)
-  (symmetric co-located))
+(relation co-located T T)
+(symmetric co-located)
 
-(facts
-  (co-located Alice Bob :source "demo"))
+(co-located Alice Bob :source "demo")
 
 (query :mode solve :goal (co-located Bob Alice))

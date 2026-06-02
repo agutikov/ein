@@ -59,26 +59,24 @@ _NO_LOOKAHEAD = SolverConfig(
 
 
 SINGLETON_FIXTURE = """
-(rules
-  (rule forbid-paint-Blue ()
-    :match  (paint Blue ?y)
-    :assert (false)
-    :why    "Blue can't paint anything"
-    :priority 100))
-(ontology
-  ; S1.7.23 — `paint`'s slots carry the real type `Thing` (not the
-  ; top `T`): hypgen's name-free candidate-object set excludes nodes
-  ; that appear as a relation-signature type, so `Thing` (and `T`, via
-  ; `never`) drop out and only `Red`/`Blue` are guessable — the old
-  ; is-a-leaf set, reproduced without the kernel reading `is-a`.
-  (relation paint Thing Thing)
-  ; declared but never asserted — keeps the goal unreachable so
-  ; the fork-side is_solved check doesn't short-circuit the runs
-  ; that need to observe layer-2 / Phase-3 behaviour.
-  (relation never T)
-  (is-a Thing T)
-  (is-a Red Thing) (is-a Blue Thing))
-(facts)
+(rule forbid-paint-Blue ()
+  :match  (paint Blue ?y)
+  :assert (false)
+  :why    "Blue can't paint anything"
+  :priority 100)
+; S1.7.23 — `paint`'s slots carry the real type `Thing` (not the
+; top `T`): hypgen's name-free candidate-object set excludes nodes
+; that appear as a relation-signature type, so `Thing` (and `T`, via
+; `never`) drop out and only `Red`/`Blue` are guessable — the old
+; is-a-leaf set, reproduced without the kernel reading `is-a`.
+(relation paint Thing Thing)
+; declared but never asserted — keeps the goal unreachable so
+; the fork-side is_solved check doesn't short-circuit the runs
+; that need to observe layer-2 / Phase-3 behaviour.
+(relation never T)
+(is-a Thing T)
+(is-a Red Thing) (is-a Blue Thing)
+
 (query :mode solve
        :goal  (never ?x)
        :hypothesis-relations paint)
@@ -107,23 +105,21 @@ def test_singleton_death_emits_clause_and_writeback():
 
 
 MULTI_FIXTURE = """
-(rules
-  (rule kill-ab-bc ()
-    :match  (and (R a b) (R b c))
-    :assert (false)
-    :why    "(R a b) + (R b c) is forbidden"
-    :priority 100))
-(ontology
-  ; S1.7.23 — typed slots so hypgen's name-free object set excludes
-  ; `Thing`/`T` and guesses only over {a, b, c} (see SINGLETON note).
-  (relation R Thing Thing)
-  ; declared but never asserted — keeps the goal unreachable so
-  ; layer-2/3 enterings fire instead of being cut off by the
-  ; fork-side is_solved check.
-  (relation never T)
-  (is-a Thing T)
-  (is-a a Thing) (is-a b Thing) (is-a c Thing))
-(facts)
+(rule kill-ab-bc ()
+  :match  (and (R a b) (R b c))
+  :assert (false)
+  :why    "(R a b) + (R b c) is forbidden"
+  :priority 100)
+; S1.7.23 — typed slots so hypgen's name-free object set excludes
+; `Thing`/`T` and guesses only over {a, b, c} (see SINGLETON note).
+(relation R Thing Thing)
+; declared but never asserted — keeps the goal unreachable so
+; layer-2/3 enterings fire instead of being cut off by the
+; fork-side is_solved check.
+(relation never T)
+(is-a Thing T)
+(is-a a Thing) (is-a b Thing) (is-a c Thing)
+
 (query :mode solve
        :goal  (never ?x)
        :hypothesis-relations R)
@@ -206,25 +202,23 @@ def test_emit_nogood_subsumes_superset_on_min_size_1():
 
 
 ALL_DIE_FIXTURE = """
-(rules
-  (rule forbid-h-a-b ()
-    :match  (h a b)
-    :assert (false)
-    :why    "(h a b) forbidden"
-    :priority 100)
-  (rule forbid-h-b-a ()
-    :match  (h b a)
-    :assert (false)
-    :why    "(h b a) forbidden"
-    :priority 100))
-(ontology
-  ; S1.7.23 — `Thing`-typed slots; no dangling top `T` here (no
-  ; `never` relation to name it), so the two-level is-a is flattened
-  ; to one level. hypgen's name-free object set excludes `Thing` and
-  ; guesses only over {a, b}.
-  (relation h Thing Thing)
-  (is-a a Thing) (is-a b Thing))
-(facts)
+(rule forbid-h-a-b ()
+  :match  (h a b)
+  :assert (false)
+  :why    "(h a b) forbidden"
+  :priority 100)
+(rule forbid-h-b-a ()
+  :match  (h b a)
+  :assert (false)
+  :why    "(h b a) forbidden"
+  :priority 100)
+; S1.7.23 — `Thing`-typed slots; no dangling top `T` here (no
+; `never` relation to name it), so the two-level is-a is flattened
+; to one level. hypgen's name-free object set excludes `Thing` and
+; guesses only over {a, b}.
+(relation h Thing Thing)
+(is-a a Thing) (is-a b Thing)
+
 (query :mode solve
        :goal  (h ?x ?y)
        :hypothesis-relations h)

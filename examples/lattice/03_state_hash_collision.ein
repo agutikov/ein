@@ -56,32 +56,30 @@
 ;;; Contradiction by the mode contract; the test's pin is on the
 ;;; merge counters, not on deaths.
 
-(rules
-  (rule h2-derives-h1 ()
-    :match  (h2 ?x)
-    :assert (h1 ?x)
-    :why    "h2({?x}) → h1({?x})"
-    :priority 100)
+(rule h2-derives-h1 ()
+  :match  (h2 ?x)
+  :assert (h1 ?x)
+  :why    "h2({?x}) → h1({?x})"
+  :priority 100)
 
-  (rule h2-derives-h3 ()
-    :match  (h2 ?x)
-    :assert (h3 ?x)
-    :why    "h2({?x}) → h3({?x})"
-    :priority 100)
+(rule h2-derives-h3 ()
+  :match  (h2 ?x)
+  :assert (h3 ?x)
+  :why    "h2({?x}) → h3({?x})"
+  :priority 100)
 
-  (hrule guess (?R ?T)
-    :match  (is-a ?x ?T)
-    :assert (?R ?x)
-    :why    "guess: is {?x} {?R}?"))
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
 
-(ontology
-  (relation is-a T T)
-  (relation h1   T)
-  (relation h2   T)
-  (relation h3   T)
+(relation is-a T T)
+(relation h1   T)
+(relation h2   T)
+(relation h3   T)
 
-  (is-a Item T)
-  (is-a X    Item))
+(is-a Item T)
+(is-a X    Item)
 
 (query
   :mode solve

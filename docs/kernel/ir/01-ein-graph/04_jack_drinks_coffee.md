@@ -47,24 +47,23 @@ separate rule. See §2.
 ## 2. ein-lang
 
 ```lisp
-(rules
-  ;; T2 rule (LHS slot): inherit a relation through is-a on arg #1.
-  ;; When a relation has type ?t in its left slot, the same relation
-  ;; also holds with every instance of ?t in that slot.
-  (rule inherit-rel-lhs (?r)
-    :match  (and (?r ?t ?other)
-                 (is-a ?inst ?t))
-    :assert (?r ?inst ?other)
-    :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s left slot from {?t}."
-    :priority 200)
+;; T2 rule (LHS slot): inherit a relation through is-a on arg #1.
+;; When a relation has type ?t in its left slot, the same relation
+;; also holds with every instance of ?t in that slot.
+(rule inherit-rel-lhs (?r)
+  :match  (and (?r ?t ?other)
+               (is-a ?inst ?t))
+  :assert (?r ?inst ?other)
+  :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s left slot from {?t}."
+  :priority 200)
 
-  ;; T2 rule (RHS slot): same on arg #2.
-  (rule inherit-rel-rhs (?r)
-    :match  (and (?r ?other ?t)
-                 (is-a ?inst ?t))
-    :assert (?r ?other ?inst)
-    :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s right slot from {?t}."
-    :priority 200))
+;; T2 rule (RHS slot): same on arg #2.
+(rule inherit-rel-rhs (?r)
+  :match  (and (?r ?other ?t)
+               (is-a ?inst ?t))
+  :assert (?r ?other ?inst)
+  :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s right slot from {?t}."
+  :priority 200)
 
 ;; "Any × any" — e.g. "any human can drink any drink" — is NOT a
 ;; separate rule. It emerges from saturation chaining: lhs over (any
@@ -73,30 +72,29 @@ separate rule. See §2.
 ;; an N-arg relation the pattern generalises to N slot-indexed rules;
 ;; relation-inheritance / rule-polymorphism is parked at F4 Q36.
 
-(ontology
-  ;; Types
-  (type Human)
-  (type Drink)
+;; Schema + implicit assumptions (no :source → ONTOLOGY layer)
+;; Types
+(type Human)
+(type Drink)
 
-  ;; Instances
-  (instance Jack   Human)
-  (instance Coffee Drink)
+;; Instances
+(instance Jack   Human)
+(instance Coffee Drink)
 
-  ;; Relation declarations — flat args (form b, no body follows;
-  ;; see 03_ein_model.md §7.2).
-  (relation can-drink Human Drink)
-  (relation drinks    Human Drink)
+;; Relation declarations — flat args (form b, no body follows;
+;; see 03_ein_model.md §7.2).
+(relation can-drink Human Drink)
+(relation drinks    Human Drink)
 
-  ;; Type-level fact (1): humans can drink drinks.
-  (can-drink Human Drink)
+;; Type-level fact (1): humans can drink drinks.
+(can-drink Human Drink)
 
-  ;; Activate both inheritance rules on can-drink.
-  (inherit-rel-lhs can-drink)
-  (inherit-rel-rhs can-drink))
+;; Activate both inheritance rules on can-drink.
+(inherit-rel-lhs can-drink)
+(inherit-rel-rhs can-drink)
 
-(facts
-  ;; Fact (4): the explicit puzzle statement.
-  (drinks Jack Coffee :source "puzzle text"))
+;; Fact (4): the explicit puzzle statement (:source → FACT layer).
+(drinks Jack Coffee :source "puzzle text")
 
 (query :mode solve :goal (drinks Jack Coffee))
 ```
@@ -113,20 +111,19 @@ The reasoning layer after saturation (claims (5a), (5b), (6), plus
 the identity claim from (4)):
 
 ```lisp
-(reasoning
-  ;; Claim (5a): LHS inheritance — (can-drink Human Drink) + (is-a Jack Human)
-  (can-drink Jack  Drink  :rule inherit-rel-lhs
-                          :using ((can-drink Human Drink) (is-a Jack Human)))
+;; Claim (5a): LHS inheritance — (can-drink Human Drink) + (is-a Jack Human)
+(can-drink Jack  Drink  :rule inherit-rel-lhs
+                        :using ((can-drink Human Drink) (is-a Jack Human)))
 
-  ;; Claim (5b): RHS inheritance — (can-drink Human Drink) + (is-a Coffee Drink)
-  (can-drink Human Coffee :rule inherit-rel-rhs
-                          :using ((can-drink Human Drink) (is-a Coffee Drink)))
+;; Claim (5b): RHS inheritance — (can-drink Human Drink) + (is-a Coffee Drink)
+(can-drink Human Coffee :rule inherit-rel-rhs
+                        :using ((can-drink Human Drink) (is-a Coffee Drink)))
 
-  ;; Claim (6): chained — e.g. LHS on (can-drink Human Coffee) + (is-a Jack Human).
-  ;; The reverse path (RHS on (can-drink Jack Drink) + (is-a Coffee Drink)) yields
-  ;; the same conclusion; saturation produces whichever fires first.
-  (can-drink Jack  Coffee :rule inherit-rel-lhs
-                          :using ((can-drink Human Coffee) (is-a Jack Human))))
+;; Claim (6): chained — e.g. LHS on (can-drink Human Coffee) + (is-a Jack Human).
+;; The reverse path (RHS on (can-drink Jack Drink) + (is-a Coffee Drink)) yields
+;; the same conclusion; saturation produces whichever fires first.
+(can-drink Jack  Coffee :rule inherit-rel-lhs
+                        :using ((can-drink Human Coffee) (is-a Jack Human)))
 ```
 
 ## 3. Compact graph view

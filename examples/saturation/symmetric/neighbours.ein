@@ -14,18 +14,15 @@
 ;;; Expected derivation:
 ;;;   (next-to House-1 House-2) ⇒ (next-to House-2 House-1).
 
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100))
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
 
-(ontology
-  (relation next-to T T)
-  (symmetric next-to))
+(relation next-to T T)
+(symmetric next-to)
 
-(facts
-  (next-to House-1 House-2 :source "demo"))
+(next-to House-1 House-2 :source "demo")
 
 (query :mode solve :goal (next-to House-2 House-1))

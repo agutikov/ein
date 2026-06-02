@@ -17,19 +17,16 @@
 ;;;   (hypothesis (right-of A B)) + (contradiction-under (right-of A B))
 ;;;   ⇒ (not (right-of A B)).
 
-(rules
-  (rule hypothesis-contradiction ()
-    :match  (and (hypothesis ?h)
-                 (contradiction-under ?h))
-    :assert (not ?h)
-    :why    "Assumed {?h}; contradicted. Therefore (not {?h})."
-    :priority 900))
+(rule hypothesis-contradiction ()
+  :match  (and (hypothesis ?h)
+               (contradiction-under ?h))
+  :assert (not ?h)
+  :why    "Assumed {?h}; contradicted. Therefore (not {?h})."
+  :priority 900)
 
-(ontology
-  (relation right-of T T))
+(relation right-of T T)
 
-(reasoning
-  (hypothesis (right-of A B))
-  (contradiction-under (right-of A B)))
+(hypothesis (right-of A B) :layer reasoning)
+(contradiction-under (right-of A B) :layer reasoning)
 
 (query :mode solve :goal (not (right-of A B)))

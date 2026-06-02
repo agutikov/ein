@@ -89,511 +89,506 @@
 (config
   :enable-pre-branch-lookahead true)
 
-(rules
-  ;; ──── General property rules (carried over) ────────────────
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100)
-
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} is transitive."
-    :priority 200)
-
-  (rule includes (?p ?q)
-    :match  (?p ?a ?b)
-    :assert (?q ?a ?b)
-    :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-    :priority 100)
-
-  ;; ──── Binary-relation property contradiction rules ─────────
-  ;; Four mathematical properties of a binary relation R ⊆ A × B:
-  ;;   functional  — ∀a ∈ A. |{b : R(a,b)}| ≤ 1   (right-unique)
-  ;;   injective   — ∀b ∈ B. |{a : R(a,b)}| ≤ 1   (left-unique)
-  ;;   total       — ∀a ∈ A. ∃b. R(a,b)            (left-total)
-  ;;   surjective  — ∀b ∈ B. ∃a. R(a,b)            (right-total)
-  ;; bijective = all four. The relation is declared via the
-  ;; (relation R A B) signature; properties are activator facts
-  ;; (functional R), (injective R), (total R), (surjective R).
-  ;;
-  ;; All four fire (false) on VIOLATION, not satisfaction. The
-  ;; uniqueness checks (functional / injective) match two
-  ;; distinct stored facts that contradict. The totality checks
-  ;; (total / surjective) use the open-world-safe formulation:
-  ;; they fire only when EVERY partner is *explicitly* excluded
-  ;; (stored neg facts cover the whole opposite-type domain).
-  ;; This is sound under partial information — a "must hold"
-  ;; rule on totality would fire false on every empty-yet state.
-
-  (rule functional (?R)
-    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-    :assert (false)
-    :why    "{?R} not functional: {?a} has both {?b} and {?c}."
-    :priority 250)
-
-  (rule injective (?R)
-    :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-    :assert (false)
-    :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
-    :priority 250)
-
-
-  ;; ──── Cross-attribute propagation (B1) ─────────────────────
-  ;; `co-located` — two attribute-values share a house, propagate
-  ;; the partner via the shared house. The activator's V1 / V2 are
-  ;; attribute values (Color, Nationality, …); the rule scans for a
-  ;; fact placing V1 at house ?h and asserts the partner at the
-  ;; same ?h.
-  (rule co-located (?R1 ?V1 ?R2 ?V2)
-    :match  (?R1 ?V1 ?h)
-    :assert (?R2 ?V2 ?h)
-    :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h})."
-    :priority 200)
-
-  ;; `co-located` is symmetric — (co-located A B C D) and
-  ;; (co-located C D A B) express the same constraint. Authors
-  ;; write ONE direction; this meta-rule derives the reverse
-  ;; activator. Saturator cache-refresh then picks it up and the
-  ;; `co-located` rule fires in both directions.
-  (rule co-located-symmetric ()
-    :match  (co-located ?R1 ?V1 ?R2 ?V2)
-    :assert (co-located ?R2 ?V2 ?R1 ?V1)
-    :why    "co-located is symmetric: derive reverse activator."
-    :priority 100)
-
-  ;; `adjacent-via-*` — pure-structural cross-attribute propagation
-  ;; across a spatial adjacency relation ?S (first parameter). The
-  ;; same two rules cover both right-of (functional, deterministic)
-  ;; and next-to (symmetric, corner-only) without any rule-body
-  ;; reference to either relation name. NAF gates uniqueness:
-  ;; trivially passes for functional ?S; filters non-corner cases
-  ;; for symmetric ?S.
-  (rule adjacent-via-fwd (?S ?R1 ?V1 ?R2 ?V2)
-    :match  (and (?R1 ?V1 ?h1)
-                 (?S ?h2 ?h1)
-                 (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
-    :assert (?R2 ?V2 ?h2)
-    :why    "({?R1} {?V1} {?h1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?V2} {?h2})."
-    :priority 200)
-
-  (rule adjacent-via-bwd (?S ?R1 ?V1 ?R2 ?V2)
-    :match  (and (?R2 ?V2 ?h2)
-                 (?S ?h2 ?h1)
-                 (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
-    :assert (?R1 ?V1 ?h1)
-    :why    "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1})."
-    :priority 200)
-
-  ;; `adjacent-via` — single non-directional activator that expands
-  ;; into both fwd and bwd. The underlying constraint is one thing
-  ;; (V1's and V2's houses are ?S-adjacent in the order
-  ;; (?S V2-house V1-house)); the two propagation directions are
-  ;; just bookkeeping. Author writes ONE `adjacent-via` activator
-  ;; per puzzle condition; the two meta-rules below derive the
-  ;; directional activators that trigger the actual propagation
-  ;; rules above.
-  (rule derive-adjacent-via-fwd ()
-    :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :why    "adjacent-via ⟹ adjacent-via-fwd (identical args)."
-    :priority 100)
-
-  (rule derive-adjacent-via-bwd ()
-    :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :why    "adjacent-via ⟹ adjacent-via-bwd (identical args)."
-    :priority 100)
-
-  ;; ──── Disjunctive-prune: pre-emptive negatives ──────────────
-  ;; When (R1 V1 h1) is known and the cross-attribute constraint
-  ;; says V2 must be at some ?S-neighbour of h1, every house NOT
-  ;; ?S-adjacent to h1 has (not (R2 V2 h_other)) — the disjunctive
-  ;; case "V2 is in {?S-neighbours}" expressed as N-1 negatives
-  ;; for non-neighbours. Complements adjacent-via-* which only
-  ;; emits positive deterministic conclusions when the neighbour
-  ;; is UNIQUE; disjunctive-prune fires in both the unique and
-  ;; non-unique cases, restricting V2's domain even when the
-  ;; positive can't be pinned.
-  (rule disjunctive-prune (?S ?R1 ?V1 ?R2 ?V2)
-    :match  (and (?R1 ?V1 ?h1)
-                 (relation ?R2 ?A ?B)
-                 (is-a ?h_other ?B)
-                 (neq ?h_other ?h1)
-                 (absent (?S ?h_other ?h1)))
-    :assert (not (?R2 ?V2 ?h_other))
-    :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours; {?h_other} excluded."
-    :priority 250)
-
-  ;; Auto-derive disjunctive-prune activators from every
-  ;; adjacent-via-{fwd,bwd} activator. The fwd direction passes
-  ;; args as-is (V1 is the known side); bwd swaps so V2's side
-  ;; becomes the trigger. Together they cover both directions of
-  ;; each spatial cross-attribute condition.
-  ;;
-  ;; Priority 200 — these MUST fire AFTER all next-to derivations
-  ;; have drained at priority 100 (`includes right-of next-to` +
-  ;; `symmetric next-to`). The fire-time NAF re-eval (S1.5a.1)
-  ;; also catches the race; this priority gives the propagate
-  ;; band its turn first.
-  (rule derive-disjunctive-prune-fwd ()
-    :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (disjunctive-prune ?S ?R1 ?V1 ?R2 ?V2)
-    :why    "adjacent-via-fwd ⟹ disjunctive-prune (same direction)."
-    :priority 200)
-
-  (rule derive-disjunctive-prune-bwd ()
-    :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (disjunctive-prune ?S ?R2 ?V2 ?R1 ?V1)
-    :why    "adjacent-via-bwd ⟹ disjunctive-prune (swapped sides)."
-    :priority 200)
-
-  ;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
-  ;; Typecheck against the transitive-closure relation `is-a*`
-  ;; (declared in the ontology, with (subrel is-a is-a*) and
-  ;; (transitive is-a*) activators lifting then closing the
-  ;; ancestor chain). Using is-a* lets typecheck pass for facts
-  ;; whose arg types match the relation's declared type either
-  ;; DIRECTLY or via the type hierarchy — e.g. is-a is declared
-  ;; `(relation is-a T T)` and House is-a Attribute is-a T, so
-  ;; (is-a House Attribute) passes typecheck (House is-a* T).
-  ;; Priority 220 places these AFTER the transitive closure
-  ;; (priority 200) has fully saturated is-a*, so the NAF
-  ;; evaluates against the closed relation.
-  (rule typecheck-arg-0 (?R ?Dom)
-    :match  (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
-    :assert (false)
-    :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
-    :priority 220)
-
-  (rule typecheck-arg-1 (?R ?Ran)
-    :match  (and (?R ?a ?b) (absent (is-a* ?b ?Ran)))
-    :assert (false)
-    :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
-    :priority 220)
-
-  ;; ──── Elimination rules ─────────────────────────────────────
-  ;; `domain-elimination` and `range-elimination` mirror each
-  ;; other across the two projection directions. Each forces a
-  ;; survivor when all-but-one value in the partner type is
-  ;; explicitly excluded. domain-elim requires functional+total;
-  ;; range-elim requires injective+surjective.
-
-  (rule domain-elimination (?R)
-    :match  (and (functional ?R) (total ?R)
-                 (relation ?R ?A ?B)
-                 (is-a ?a ?A)
-                 (is-a ?b ?B)
-                 (forall ?b_other
-                   (and (is-a ?b_other ?B) (neq ?b_other ?b))
-                   (not (?R ?a ?b_other))))
-    :assert (?R ?a ?b)
-    :why    "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b})."
-    :priority 400)
-
-  (rule range-elimination (?R)
-    :match  (and (injective ?R) (surjective ?R)
-                 (relation ?R ?A ?B)
-                 (is-a ?b ?B)
-                 (is-a ?a ?A)
-                 (forall ?a_other
-                   (and (is-a ?a_other ?A) (neq ?a_other ?a))
-                   (not (?R ?a_other ?b))))
-    :assert (?R ?a ?b)
-    :why    "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b})."
-    :priority 400)
-
-  (rule total (?R)
-    :match  (and (relation ?R ?A ?B)
-                 (is-a ?a ?A)
-                 (forall ?b (is-a ?b ?B) (not (?R ?a ?b))))
-    :assert (false)
-    :why    "{?R} not total at {?a}: every {?B} is excluded."
-    :priority 110)
-
-  (rule surjective (?R)
-    :match  (and (relation ?R ?A ?B)
-                 (is-a ?b ?B)
-                 (forall ?a (is-a ?a ?A) (not (?R ?a ?b))))
-    :assert (false)
-    :why    "{?R} not surjective at {?b}: every {?A} is excluded."
-    :priority 110)
-
-  ;; ──── `bijective` shorthand ─────────────────────────────────
-  ;; bijective ≡ functional ∧ injective ∧ total ∧ surjective.
-  ;; Four expansion rules derive the property markers from a
-  ;; single (bijective R) declaration. The saturator refreshes
-  ;; its compile cache each pass, so the derived (functional R)
-  ;; etc. trigger their respective contradiction rules normally.
-  ;; Expansion runs at the propagate band so the derived markers
-  ;; are present before any rule that consumes them fires.
-
-  (rule bijective-functional ()
-    :match  (bijective ?R)
-    :assert (functional ?R)
-    :why    "{?R} is bijective ⟹ functional."
-    :priority 100)
-
-  (rule bijective-injective ()
-    :match  (bijective ?R)
-    :assert (injective ?R)
-    :why    "{?R} is bijective ⟹ injective."
-    :priority 100)
-
-  (rule bijective-total ()
-    :match  (bijective ?R)
-    :assert (total ?R)
-    :why    "{?R} is bijective ⟹ total."
-    :priority 100)
-
-  (rule bijective-surjective ()
-    :match  (bijective ?R)
-    :assert (surjective ?R)
-    :why    "{?R} is bijective ⟹ surjective."
-    :priority 100)
-
-  ;; ──── Typecheck activator derivation from relation signature ─
-  ;; The (relation R A B) declaration is auto-stored as a fact by
-  ;; the loader; rules can now match it directly to derive the
-  ;; typecheck activators — no manual (typecheck-arg-* R T)
-  ;; declarations needed per relation.
-  ;; Typecheck activators auto-derived from bijective relations
-  ;; only. The bijective relations (*-loc) have direct-parent arg
-  ;; types (House-1's is-a-parent IS House, etc.), so subrel
-  ;; alone gives (is-a* House-1 House) at priority 100 — typecheck
-  ;; at 220 can NAF-check correctly.
-  ;;
-  ;; Non-bijective declared relations (is-a, is-a*, right-of,
-  ;; next-to) skip typecheck: is-a/is-a* have multi-level type
-  ;; semantics that need a closed is-a* at NAF-evaluation time,
-  ;; but NAF is evaluated at enqueue time (before transitive
-  ;; closure has run). Filtering by (bijective ?R) keeps typecheck
-  ;; sound under the current saturator semantics; lifting this
-  ;; constraint needs a post-saturation typecheck pass (future).
-  (rule derive-typecheck-arg-0 ()
-    :match  (and (relation ?R ?A ?B) (bijective ?R))
-    :assert (typecheck-arg-0 ?R ?A)
-    :why    "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
-    :priority 100)
-
-  (rule derive-typecheck-arg-1 ()
-    :match  (and (relation ?R ?A ?B) (bijective ?R))
-    :assert (typecheck-arg-1 ?R ?B)
-    :why    "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
-    :priority 100)
-
-  ;; ──── Elimination activators derived from property combos ────
-  ;; domain-elimination is sound when R is functional + total in
-  ;; the forward direction; range-elimination is sound when R is
-  ;; injective + surjective. Derive the activators automatically
-  ;; from the property markers — the user only declares the
-  ;; mathematical properties and the eliminations follow.
-
-  (rule derive-domain-elimination ()
-    :match  (and (functional ?R) (total ?R))
-    :assert (domain-elimination ?R)
-    :why    "{?R} functional + total ⟹ domain-elimination active."
-    :priority 100)
-
-  (rule derive-range-elimination ()
-    :match  (and (injective ?R) (surjective ?R))
-    :assert (range-elimination ?R)
-    :why    "{?R} injective + surjective ⟹ range-elimination active."
-    :priority 100)
-
-  ;; ──── Hypothesis generation ────────────────────────────────
-  ;; One hrule parameterised over (?R ?T1 ?T2); activators in the
-  ;; (query …) :hrules clause enumerate every *-loc relation with
-  ;; its (attribute-type, House) pair.
-  (hrule guess (?R ?T1 ?T2)
-    :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
-    :assert (?R ?a ?b)
-    :why    "guess: ({?R} {?a} {?b})?"))
-
-(ontology
-  ;; ──── Relation signatures ──────────────────────────────────
-  (relation is-a         T T)
-  (relation is-a*        T T)
-  (relation color-loc    Color       House)
-  (relation nation-loc   Nationality House)
-  (relation drink-loc    Drink       House)
-  (relation smoke-loc    Cigarette   House)
-  (relation pet-loc      Pet         House)
-  (relation right-of     House House)
-  (relation next-to      House House)
-
-  ;; ──── is-a* = transitive closure of is-a ────────────────────
-  ;; (includes is-a is-a*): every direct is-a edge lifts to is-a*.
-  ;; (transitive is-a*): is-a* is closed under transitivity.
-  ;; Combined: is-a* contains every ancestor edge — used by
-  ;; typecheck-arg-{0,1} to check arg-types against the type
-  ;; hierarchy without activating (transitive is-a) directly.
-  (includes   is-a is-a*)
-  (transitive is-a*)
-
-  ;; ──── Spatial properties ───────────────────────────────────
-  (symmetric next-to)
-  (includes  right-of next-to)
-
-  ;; ──── Per-relation bijection properties ─────────────────────
-  ;; Each *-loc relation is a bijection between its attribute type
-  ;; and House. `(bijective R)` expands at saturation time into
-  ;; `(functional R)`, `(injective R)`, `(total R)`, and
-  ;; `(surjective R)` via the four expansion rules in the rules
-  ;; block. The elimination activators `(domain-elimination R)`
-  ;; and `(range-elimination R)` then derive automatically from
-  ;; the property combinations (functional+total ⟹ domain-elim;
-  ;; injective+surjective ⟹ range-elim) — one declaration per
-  ;; relation unlocks the full bijection-inference pipeline.
-  (bijective color-loc)
-  (bijective nation-loc)
-  (bijective drink-loc)
-  (bijective smoke-loc)
-  (bijective pet-loc)
-
-  ;; typecheck-arg-0/1 activators are DERIVED from the
-  ;; (relation …) facts by the two expansion rules in the rules
-  ;; block — no manual declaration needed.
-
-  ;; ──── is-a inheritance tree ─────────────────────────────────
-  (is-a Attribute   T)
-  (is-a House       Attribute)
-  (is-a Color       Attribute)
-  (is-a Nationality Attribute)
-  (is-a Pet         Attribute)
-  (is-a Cigarette   Attribute)
-  (is-a Drink       Attribute)
-
-  ;; House instances
-  (is-a House-1 House) (is-a House-2 House) (is-a House-3 House)
-  (is-a House-4 House) (is-a House-5 House)
-  ;; Colors
-  (is-a Red    Color)  (is-a Green Color)  (is-a Ivory Color)
-  (is-a Yellow Color)  (is-a Blue  Color)
-  ;; Nationalities
-  (is-a Englishman Nationality) (is-a Spaniard  Nationality)
-  (is-a Ukrainian  Nationality) (is-a Norwegian Nationality)
-  (is-a Japanese   Nationality)
-  ;; Pets
-  (is-a Dog Pet) (is-a Snail Pet) (is-a Fox Pet)
-  (is-a Horse Pet) (is-a Zebra Pet)
-  ;; Cigarettes
-  (is-a Old_Gold      Cigarette) (is-a Kools        Cigarette)
-  (is-a Chesterfields Cigarette) (is-a Lucky_Strike Cigarette)
-  (is-a Parliament    Cigarette)
-  ;; Drinks
-  (is-a Coffee Drink) (is-a Tea   Drink) (is-a Milk Drink)
-  (is-a Juice  Drink) (is-a Water Drink)
-
-  )
-
-(facts
-  ;; ──── Puzzle conditions ─────────────────────────────────────
-  ;;
-  ;; Conditions 9 and 10 are direct attribute↔house facts.
-  ;; Conditions 2-8 and 11-15 are cross-attribute equalities,
-  ;; encoded as `co-located` / `adjacent-via` activator facts that
-  ;; trigger the corresponding propagation rules (defined in the
-  ;; rules block). Condition 1 is the row of houses (right-of
-  ;; pairs).
-  ;;
-  ;; (1) Five houses in a row.
-  (right-of House-2 House-1       :source "condition (1)")
-  (right-of House-3 House-2       :source "condition (1)")
-  (right-of House-4 House-3       :source "condition (1)")
-  (right-of House-5 House-4       :source "condition (1)")
-
-  ;; (2) The Englishman lives in the red house.
-  (co-located nation-loc Englishman color-loc Red                 :source "condition (2)")
-
-  ;; (3) The Spaniard owns the dog.
-  (co-located nation-loc Spaniard   pet-loc   Dog                 :source "condition (3)")
-
-  ;; (4) Coffee is drunk in the green house.
-  (co-located drink-loc  Coffee     color-loc Green               :source "condition (4)")
-
-  ;; (5) The Ukrainian drinks tea.
-  (co-located nation-loc Ukrainian  drink-loc Tea                 :source "condition (5)")
-
-  ;; (6) The green house is immediately right of the ivory house.
-  (adjacent-via right-of color-loc Ivory color-loc Green          :source "condition (6)")
-
-  ;; (7) The Old Gold smoker owns snails.
-  (co-located smoke-loc  Old_Gold   pet-loc   Snail               :source "condition (7)")
-
-  ;; (8) Kools are smoked in the yellow house.
-  (co-located smoke-loc  Kools      color-loc Yellow              :source "condition (8)")
-
-  ;; (9) Milk is drunk in the middle house.
-  (drink-loc  Milk       House-3                                  :source "condition (9)")
-
-  ;; (10) The Norwegian lives in the first house.
-  (nation-loc Norwegian  House-1                                  :source "condition (10)")
-
-  ;; (11) Chesterfields is smoked next to the house with the fox.
-  (adjacent-via next-to  smoke-loc Chesterfields pet-loc   Fox    :source "condition (11)")
-
-  ;; (12) Kools is smoked next to the house with the horse.
-  (adjacent-via next-to  smoke-loc Kools         pet-loc   Horse  :source "condition (12)")
-
-  ;; (13) The Lucky Strike smoker drinks orange juice.
-  (co-located smoke-loc  Lucky_Strike drink-loc Juice             :source "condition (13)")
-
-  ;; (14) The Japanese smokes Parliaments.
-  (co-located nation-loc Japanese     smoke-loc Parliament        :source "condition (14)")
-
-  ;; (15) The Norwegian lives next to the blue house.
-  (adjacent-via next-to  nation-loc Norwegian   color-loc Blue    :source "condition (15)")
-
-  ;; ──── SOLUTION HINTS (S1.5a.11 diagnostic) ─────────────────
-  ;; Ten facts pulled from the known solution. Comment any of
-  ;; them out to widen the search; uncomment to narrow it. With
-  ;; all ten asserted the engine has a near-trivial closure left
-  ;; to discover. The hints span all five attribute relations so
-  ;; tightening or loosening is uniform across the puzzle, not
-  ;; biased to one attribute axis.
-  ;;
-  ;; To see the dump-tree work end-to-end, leave all ten enabled
-  ;; and run:
-  ;;     bench_solve examples/zebra2-hints.ein --dump-states
-  ;; The expected verdict is Solution; the branches/ tree should
-  ;; contain at most a few nodes.
-
-  ;; hint 1 — Ivory is house 4 (cond. 6 fixes "Ivory then Green",
-  ;; combined with Norwegian@H1+Blue@H2 → Ivory∈{H3,H4}; sol = H4).
-  (color-loc  Ivory          House-4   :source "hint 1")
-
-  ;; hint 2 — Green is house 5 (right-of Ivory by cond. 6).
-  (color-loc  Green          House-5   :source "hint 2")
-
-  ;; hint 3 — Blue is house 2 (only neighbour of Norwegian@H1).
-  (color-loc  Blue           House-2   :source "hint 3")
-
-  ;; hint 4 — Englishman is house 3 (cond. 2: Red house).
-  (nation-loc Englishman     House-3   :source "hint 4")
-
-  ;; hint 5 — Japanese is house 5 (Parliament-smoker in Green).
-  (nation-loc Japanese       House-5   :source "hint 5")
-
-  ;; hint 6 — Coffee is in house 5 (cond. 4: drunk in Green house).
-  (drink-loc  Coffee         House-5   :source "hint 6")
-
-  ;; hint 7 — Water is in house 1 (the only drink unassigned to
-  ;; H_2..H_5 after deductions from Milk@H3 + Coffee@H5).
-  (drink-loc  Water          House-1   :source "hint 7")
-
-  ;; hint 8 — Kools is in house 1 (cond. 8: smoked in Yellow).
-  (smoke-loc  Kools          House-1   :source "hint 8")
-
-  ;; hint 9 — Zebra is in house 5 (the unsolved goal: Japanese
-  ;; owns the Zebra; Japanese@H5 by hint 5).
-  (pet-loc    Zebra          House-5   :source "hint 9")
-
-  ;; hint 10 — Dog is in house 4 (cond. 3: Spaniard owns Dog,
-  ;; Spaniard@H4 since every other nation is placed by hints).
-  (pet-loc    Dog            House-4   :source "hint 10"))
+;; ──── General property rules (carried over) ────────────────
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
+
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive."
+  :priority 200)
+
+(rule includes (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+  :priority 100)
+
+;; ──── Binary-relation property contradiction rules ─────────
+;; Four mathematical properties of a binary relation R ⊆ A × B:
+;;   functional  — ∀a ∈ A. |{b : R(a,b)}| ≤ 1   (right-unique)
+;;   injective   — ∀b ∈ B. |{a : R(a,b)}| ≤ 1   (left-unique)
+;;   total       — ∀a ∈ A. ∃b. R(a,b)            (left-total)
+;;   surjective  — ∀b ∈ B. ∃a. R(a,b)            (right-total)
+;; bijective = all four. The relation is declared via the
+;; (relation R A B) signature; properties are activator facts
+;; (functional R), (injective R), (total R), (surjective R).
+;;
+;; All four fire (false) on VIOLATION, not satisfaction. The
+;; uniqueness checks (functional / injective) match two
+;; distinct stored facts that contradict. The totality checks
+;; (total / surjective) use the open-world-safe formulation:
+;; they fire only when EVERY partner is *explicitly* excluded
+;; (stored neg facts cover the whole opposite-type domain).
+;; This is sound under partial information — a "must hold"
+;; rule on totality would fire false on every empty-yet state.
+
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional: {?a} has both {?b} and {?c}."
+  :priority 250)
+
+(rule injective (?R)
+  :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+  :assert (false)
+  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
+  :priority 250)
+
+
+;; ──── Cross-attribute propagation (B1) ─────────────────────
+;; `co-located` — two attribute-values share a house, propagate
+;; the partner via the shared house. The activator's V1 / V2 are
+;; attribute values (Color, Nationality, …); the rule scans for a
+;; fact placing V1 at house ?h and asserts the partner at the
+;; same ?h.
+(rule co-located (?R1 ?V1 ?R2 ?V2)
+  :match  (?R1 ?V1 ?h)
+  :assert (?R2 ?V2 ?h)
+  :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h})."
+  :priority 200)
+
+;; `co-located` is symmetric — (co-located A B C D) and
+;; (co-located C D A B) express the same constraint. Authors
+;; write ONE direction; this meta-rule derives the reverse
+;; activator. Saturator cache-refresh then picks it up and the
+;; `co-located` rule fires in both directions.
+(rule co-located-symmetric ()
+  :match  (co-located ?R1 ?V1 ?R2 ?V2)
+  :assert (co-located ?R2 ?V2 ?R1 ?V1)
+  :why    "co-located is symmetric: derive reverse activator."
+  :priority 100)
+
+;; `adjacent-via-*` — pure-structural cross-attribute propagation
+;; across a spatial adjacency relation ?S (first parameter). The
+;; same two rules cover both right-of (functional, deterministic)
+;; and next-to (symmetric, corner-only) without any rule-body
+;; reference to either relation name. NAF gates uniqueness:
+;; trivially passes for functional ?S; filters non-corner cases
+;; for symmetric ?S.
+(rule adjacent-via-fwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (?R1 ?V1 ?h1)
+               (?S ?h2 ?h1)
+               (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
+  :assert (?R2 ?V2 ?h2)
+  :why    "({?R1} {?V1} {?h1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?V2} {?h2})."
+  :priority 200)
+
+(rule adjacent-via-bwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (?R2 ?V2 ?h2)
+               (?S ?h2 ?h1)
+               (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
+  :assert (?R1 ?V1 ?h1)
+  :why    "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1})."
+  :priority 200)
+
+;; `adjacent-via` — single non-directional activator that expands
+;; into both fwd and bwd. The underlying constraint is one thing
+;; (V1's and V2's houses are ?S-adjacent in the order
+;; (?S V2-house V1-house)); the two propagation directions are
+;; just bookkeeping. Author writes ONE `adjacent-via` activator
+;; per puzzle condition; the two meta-rules below derive the
+;; directional activators that trigger the actual propagation
+;; rules above.
+(rule derive-adjacent-via-fwd ()
+  :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+  :why    "adjacent-via ⟹ adjacent-via-fwd (identical args)."
+  :priority 100)
+
+(rule derive-adjacent-via-bwd ()
+  :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+  :why    "adjacent-via ⟹ adjacent-via-bwd (identical args)."
+  :priority 100)
+
+;; ──── Disjunctive-prune: pre-emptive negatives ──────────────
+;; When (R1 V1 h1) is known and the cross-attribute constraint
+;; says V2 must be at some ?S-neighbour of h1, every house NOT
+;; ?S-adjacent to h1 has (not (R2 V2 h_other)) — the disjunctive
+;; case "V2 is in {?S-neighbours}" expressed as N-1 negatives
+;; for non-neighbours. Complements adjacent-via-* which only
+;; emits positive deterministic conclusions when the neighbour
+;; is UNIQUE; disjunctive-prune fires in both the unique and
+;; non-unique cases, restricting V2's domain even when the
+;; positive can't be pinned.
+(rule disjunctive-prune (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (?R1 ?V1 ?h1)
+               (relation ?R2 ?A ?B)
+               (is-a ?h_other ?B)
+               (neq ?h_other ?h1)
+               (absent (?S ?h_other ?h1)))
+  :assert (not (?R2 ?V2 ?h_other))
+  :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours; {?h_other} excluded."
+  :priority 250)
+
+;; Auto-derive disjunctive-prune activators from every
+;; adjacent-via-{fwd,bwd} activator. The fwd direction passes
+;; args as-is (V1 is the known side); bwd swaps so V2's side
+;; becomes the trigger. Together they cover both directions of
+;; each spatial cross-attribute condition.
+;;
+;; Priority 200 — these MUST fire AFTER all next-to derivations
+;; have drained at priority 100 (`includes right-of next-to` +
+;; `symmetric next-to`). The fire-time NAF re-eval (S1.5a.1)
+;; also catches the race; this priority gives the propagate
+;; band its turn first.
+(rule derive-disjunctive-prune-fwd ()
+  :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (disjunctive-prune ?S ?R1 ?V1 ?R2 ?V2)
+  :why    "adjacent-via-fwd ⟹ disjunctive-prune (same direction)."
+  :priority 200)
+
+(rule derive-disjunctive-prune-bwd ()
+  :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (disjunctive-prune ?S ?R2 ?V2 ?R1 ?V1)
+  :why    "adjacent-via-bwd ⟹ disjunctive-prune (swapped sides)."
+  :priority 200)
+
+;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
+;; Typecheck against the transitive-closure relation `is-a*`
+;; (declared in the ontology, with (subrel is-a is-a*) and
+;; (transitive is-a*) activators lifting then closing the
+;; ancestor chain). Using is-a* lets typecheck pass for facts
+;; whose arg types match the relation's declared type either
+;; DIRECTLY or via the type hierarchy — e.g. is-a is declared
+;; `(relation is-a T T)` and House is-a Attribute is-a T, so
+;; (is-a House Attribute) passes typecheck (House is-a* T).
+;; Priority 220 places these AFTER the transitive closure
+;; (priority 200) has fully saturated is-a*, so the NAF
+;; evaluates against the closed relation.
+(rule typecheck-arg-0 (?R ?Dom)
+  :match  (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
+  :assert (false)
+  :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
+  :priority 220)
+
+(rule typecheck-arg-1 (?R ?Ran)
+  :match  (and (?R ?a ?b) (absent (is-a* ?b ?Ran)))
+  :assert (false)
+  :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
+  :priority 220)
+
+;; ──── Elimination rules ─────────────────────────────────────
+;; `domain-elimination` and `range-elimination` mirror each
+;; other across the two projection directions. Each forces a
+;; survivor when all-but-one value in the partner type is
+;; explicitly excluded. domain-elim requires functional+total;
+;; range-elim requires injective+surjective.
+
+(rule domain-elimination (?R)
+  :match  (and (functional ?R) (total ?R)
+               (relation ?R ?A ?B)
+               (is-a ?a ?A)
+               (is-a ?b ?B)
+               (forall ?b_other
+                 (and (is-a ?b_other ?B) (neq ?b_other ?b))
+                 (not (?R ?a ?b_other))))
+  :assert (?R ?a ?b)
+  :why    "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b})."
+  :priority 400)
+
+(rule range-elimination (?R)
+  :match  (and (injective ?R) (surjective ?R)
+               (relation ?R ?A ?B)
+               (is-a ?b ?B)
+               (is-a ?a ?A)
+               (forall ?a_other
+                 (and (is-a ?a_other ?A) (neq ?a_other ?a))
+                 (not (?R ?a_other ?b))))
+  :assert (?R ?a ?b)
+  :why    "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b})."
+  :priority 400)
+
+(rule total (?R)
+  :match  (and (relation ?R ?A ?B)
+               (is-a ?a ?A)
+               (forall ?b (is-a ?b ?B) (not (?R ?a ?b))))
+  :assert (false)
+  :why    "{?R} not total at {?a}: every {?B} is excluded."
+  :priority 110)
+
+(rule surjective (?R)
+  :match  (and (relation ?R ?A ?B)
+               (is-a ?b ?B)
+               (forall ?a (is-a ?a ?A) (not (?R ?a ?b))))
+  :assert (false)
+  :why    "{?R} not surjective at {?b}: every {?A} is excluded."
+  :priority 110)
+
+;; ──── `bijective` shorthand ─────────────────────────────────
+;; bijective ≡ functional ∧ injective ∧ total ∧ surjective.
+;; Four expansion rules derive the property markers from a
+;; single (bijective R) declaration. The saturator refreshes
+;; its compile cache each pass, so the derived (functional R)
+;; etc. trigger their respective contradiction rules normally.
+;; Expansion runs at the propagate band so the derived markers
+;; are present before any rule that consumes them fires.
+
+(rule bijective-functional ()
+  :match  (bijective ?R)
+  :assert (functional ?R)
+  :why    "{?R} is bijective ⟹ functional."
+  :priority 100)
+
+(rule bijective-injective ()
+  :match  (bijective ?R)
+  :assert (injective ?R)
+  :why    "{?R} is bijective ⟹ injective."
+  :priority 100)
+
+(rule bijective-total ()
+  :match  (bijective ?R)
+  :assert (total ?R)
+  :why    "{?R} is bijective ⟹ total."
+  :priority 100)
+
+(rule bijective-surjective ()
+  :match  (bijective ?R)
+  :assert (surjective ?R)
+  :why    "{?R} is bijective ⟹ surjective."
+  :priority 100)
+
+;; ──── Typecheck activator derivation from relation signature ─
+;; The (relation R A B) declaration is auto-stored as a fact by
+;; the loader; rules can now match it directly to derive the
+;; typecheck activators — no manual (typecheck-arg-* R T)
+;; declarations needed per relation.
+;; Typecheck activators auto-derived from bijective relations
+;; only. The bijective relations (*-loc) have direct-parent arg
+;; types (House-1's is-a-parent IS House, etc.), so subrel
+;; alone gives (is-a* House-1 House) at priority 100 — typecheck
+;; at 220 can NAF-check correctly.
+;;
+;; Non-bijective declared relations (is-a, is-a*, right-of,
+;; next-to) skip typecheck: is-a/is-a* have multi-level type
+;; semantics that need a closed is-a* at NAF-evaluation time,
+;; but NAF is evaluated at enqueue time (before transitive
+;; closure has run). Filtering by (bijective ?R) keeps typecheck
+;; sound under the current saturator semantics; lifting this
+;; constraint needs a post-saturation typecheck pass (future).
+(rule derive-typecheck-arg-0 ()
+  :match  (and (relation ?R ?A ?B) (bijective ?R))
+  :assert (typecheck-arg-0 ?R ?A)
+  :why    "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
+  :priority 100)
+
+(rule derive-typecheck-arg-1 ()
+  :match  (and (relation ?R ?A ?B) (bijective ?R))
+  :assert (typecheck-arg-1 ?R ?B)
+  :why    "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
+  :priority 100)
+
+;; ──── Elimination activators derived from property combos ────
+;; domain-elimination is sound when R is functional + total in
+;; the forward direction; range-elimination is sound when R is
+;; injective + surjective. Derive the activators automatically
+;; from the property markers — the user only declares the
+;; mathematical properties and the eliminations follow.
+
+(rule derive-domain-elimination ()
+  :match  (and (functional ?R) (total ?R))
+  :assert (domain-elimination ?R)
+  :why    "{?R} functional + total ⟹ domain-elimination active."
+  :priority 100)
+
+(rule derive-range-elimination ()
+  :match  (and (injective ?R) (surjective ?R))
+  :assert (range-elimination ?R)
+  :why    "{?R} injective + surjective ⟹ range-elimination active."
+  :priority 100)
+
+;; ──── Hypothesis generation ────────────────────────────────
+;; One hrule parameterised over (?R ?T1 ?T2); activators in the
+;; (query …) :hrules clause enumerate every *-loc relation with
+;; its (attribute-type, House) pair.
+(hrule guess (?R ?T1 ?T2)
+  :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
+  :assert (?R ?a ?b)
+  :why    "guess: ({?R} {?a} {?b})?")
+
+;; ──── Relation signatures ──────────────────────────────────
+(relation is-a         T T)
+(relation is-a*        T T)
+(relation color-loc    Color       House)
+(relation nation-loc   Nationality House)
+(relation drink-loc    Drink       House)
+(relation smoke-loc    Cigarette   House)
+(relation pet-loc      Pet         House)
+(relation right-of     House House)
+(relation next-to      House House)
+
+;; ──── is-a* = transitive closure of is-a ────────────────────
+;; (includes is-a is-a*): every direct is-a edge lifts to is-a*.
+;; (transitive is-a*): is-a* is closed under transitivity.
+;; Combined: is-a* contains every ancestor edge — used by
+;; typecheck-arg-{0,1} to check arg-types against the type
+;; hierarchy without activating (transitive is-a) directly.
+(includes   is-a is-a*)
+(transitive is-a*)
+
+;; ──── Spatial properties ───────────────────────────────────
+(symmetric next-to)
+(includes  right-of next-to)
+
+;; ──── Per-relation bijection properties ─────────────────────
+;; Each *-loc relation is a bijection between its attribute type
+;; and House. `(bijective R)` expands at saturation time into
+;; `(functional R)`, `(injective R)`, `(total R)`, and
+;; `(surjective R)` via the four expansion rules in the rules
+;; block. The elimination activators `(domain-elimination R)`
+;; and `(range-elimination R)` then derive automatically from
+;; the property combinations (functional+total ⟹ domain-elim;
+;; injective+surjective ⟹ range-elim) — one declaration per
+;; relation unlocks the full bijection-inference pipeline.
+(bijective color-loc)
+(bijective nation-loc)
+(bijective drink-loc)
+(bijective smoke-loc)
+(bijective pet-loc)
+
+;; typecheck-arg-0/1 activators are DERIVED from the
+;; (relation …) facts by the two expansion rules in the rules
+;; block — no manual declaration needed.
+
+;; ──── is-a inheritance tree ─────────────────────────────────
+(is-a Attribute   T)
+(is-a House       Attribute)
+(is-a Color       Attribute)
+(is-a Nationality Attribute)
+(is-a Pet         Attribute)
+(is-a Cigarette   Attribute)
+(is-a Drink       Attribute)
+
+;; House instances
+(is-a House-1 House) (is-a House-2 House) (is-a House-3 House)
+(is-a House-4 House) (is-a House-5 House)
+;; Colors
+(is-a Red    Color)  (is-a Green Color)  (is-a Ivory Color)
+(is-a Yellow Color)  (is-a Blue  Color)
+;; Nationalities
+(is-a Englishman Nationality) (is-a Spaniard  Nationality)
+(is-a Ukrainian  Nationality) (is-a Norwegian Nationality)
+(is-a Japanese   Nationality)
+;; Pets
+(is-a Dog Pet) (is-a Snail Pet) (is-a Fox Pet)
+(is-a Horse Pet) (is-a Zebra Pet)
+;; Cigarettes
+(is-a Old_Gold      Cigarette) (is-a Kools        Cigarette)
+(is-a Chesterfields Cigarette) (is-a Lucky_Strike Cigarette)
+(is-a Parliament    Cigarette)
+;; Drinks
+(is-a Coffee Drink) (is-a Tea   Drink) (is-a Milk Drink)
+(is-a Juice  Drink) (is-a Water Drink)
+
+;; ──── Puzzle conditions ─────────────────────────────────────
+;;
+;; Conditions 9 and 10 are direct attribute↔house facts.
+;; Conditions 2-8 and 11-15 are cross-attribute equalities,
+;; encoded as `co-located` / `adjacent-via` activator facts that
+;; trigger the corresponding propagation rules (defined in the
+;; rules block). Condition 1 is the row of houses (right-of
+;; pairs).
+;;
+;; (1) Five houses in a row.
+(right-of House-2 House-1       :source "condition (1)")
+(right-of House-3 House-2       :source "condition (1)")
+(right-of House-4 House-3       :source "condition (1)")
+(right-of House-5 House-4       :source "condition (1)")
+
+;; (2) The Englishman lives in the red house.
+(co-located nation-loc Englishman color-loc Red                 :source "condition (2)")
+
+;; (3) The Spaniard owns the dog.
+(co-located nation-loc Spaniard   pet-loc   Dog                 :source "condition (3)")
+
+;; (4) Coffee is drunk in the green house.
+(co-located drink-loc  Coffee     color-loc Green               :source "condition (4)")
+
+;; (5) The Ukrainian drinks tea.
+(co-located nation-loc Ukrainian  drink-loc Tea                 :source "condition (5)")
+
+;; (6) The green house is immediately right of the ivory house.
+(adjacent-via right-of color-loc Ivory color-loc Green          :source "condition (6)")
+
+;; (7) The Old Gold smoker owns snails.
+(co-located smoke-loc  Old_Gold   pet-loc   Snail               :source "condition (7)")
+
+;; (8) Kools are smoked in the yellow house.
+(co-located smoke-loc  Kools      color-loc Yellow              :source "condition (8)")
+
+;; (9) Milk is drunk in the middle house.
+(drink-loc  Milk       House-3                                  :source "condition (9)")
+
+;; (10) The Norwegian lives in the first house.
+(nation-loc Norwegian  House-1                                  :source "condition (10)")
+
+;; (11) Chesterfields is smoked next to the house with the fox.
+(adjacent-via next-to  smoke-loc Chesterfields pet-loc   Fox    :source "condition (11)")
+
+;; (12) Kools is smoked next to the house with the horse.
+(adjacent-via next-to  smoke-loc Kools         pet-loc   Horse  :source "condition (12)")
+
+;; (13) The Lucky Strike smoker drinks orange juice.
+(co-located smoke-loc  Lucky_Strike drink-loc Juice             :source "condition (13)")
+
+;; (14) The Japanese smokes Parliaments.
+(co-located nation-loc Japanese     smoke-loc Parliament        :source "condition (14)")
+
+;; (15) The Norwegian lives next to the blue house.
+(adjacent-via next-to  nation-loc Norwegian   color-loc Blue    :source "condition (15)")
+
+;; ──── SOLUTION HINTS (S1.5a.11 diagnostic) ─────────────────
+;; Ten facts pulled from the known solution. Comment any of
+;; them out to widen the search; uncomment to narrow it. With
+;; all ten asserted the engine has a near-trivial closure left
+;; to discover. The hints span all five attribute relations so
+;; tightening or loosening is uniform across the puzzle, not
+;; biased to one attribute axis.
+;;
+;; To see the dump-tree work end-to-end, leave all ten enabled
+;; and run:
+;;     bench_solve examples/zebra2-hints.ein --dump-states
+;; The expected verdict is Solution; the branches/ tree should
+;; contain at most a few nodes.
+
+;; hint 1 — Ivory is house 4 (cond. 6 fixes "Ivory then Green",
+;; combined with Norwegian@H1+Blue@H2 → Ivory∈{H3,H4}; sol = H4).
+(color-loc  Ivory          House-4   :source "hint 1")
+
+;; hint 2 — Green is house 5 (right-of Ivory by cond. 6).
+(color-loc  Green          House-5   :source "hint 2")
+
+;; hint 3 — Blue is house 2 (only neighbour of Norwegian@H1).
+(color-loc  Blue           House-2   :source "hint 3")
+
+;; hint 4 — Englishman is house 3 (cond. 2: Red house).
+(nation-loc Englishman     House-3   :source "hint 4")
+
+;; hint 5 — Japanese is house 5 (Parliament-smoker in Green).
+(nation-loc Japanese       House-5   :source "hint 5")
+
+;; hint 6 — Coffee is in house 5 (cond. 4: drunk in Green house).
+(drink-loc  Coffee         House-5   :source "hint 6")
+
+;; hint 7 — Water is in house 1 (the only drink unassigned to
+;; H_2..H_5 after deductions from Milk@H3 + Coffee@H5).
+(drink-loc  Water          House-1   :source "hint 7")
+
+;; hint 8 — Kools is in house 1 (cond. 8: smoked in Yellow).
+(smoke-loc  Kools          House-1   :source "hint 8")
+
+;; hint 9 — Zebra is in house 5 (the unsolved goal: Japanese
+;; owns the Zebra; Japanese@H5 by hint 5).
+(pet-loc    Zebra          House-5   :source "hint 9")
+
+;; hint 10 — Dog is in house 4 (cond. 3: Spaniard owns Dog,
+;; Spaniard@H4 since every other nation is placed by hints).
+(pet-loc    Dog            House-4   :source "hint 10")
 
 (query
   :mode solve

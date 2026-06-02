@@ -35,56 +35,49 @@ def _kb(text: str) -> KnowledgeBase:
 # Two declared relations + two instance-like objects — the blind
 # enumerator produces both `co-located` and `likes` candidates.
 _TWO_REL = """
-(ontology
-  (relation co-located T T)
-  (relation likes      T T)
-  (is-a Thing T)
-  (is-a A Thing) (is-a B Thing))
+(relation co-located T T)
+(relation likes      T T)
+(is-a Thing T)
+(is-a A Thing) (is-a B Thing)
 """
 
 # A parameter-less hrule declared in the (rules …) block: every
 # (House, Color) pair is a co-located candidate.
 _HRULE = """
-(rules
-  (hrule guess-co-located ()
-    :match  (and (is-a ?o House) (is-a ?v Color))
-    :assert (co-located ?o ?v)
-    :why    "guess co-located"))
-(ontology
-  (relation is-a       T T)
-  (relation co-located T T)
-  (is-a House T) (is-a Color T)
-  (is-a H1 House) (is-a H2 House)
-  (is-a Red Color) (is-a Blue Color))
+(hrule guess-co-located ()
+  :match  (and (is-a ?o House) (is-a ?v Color))
+  :assert (co-located ?o ?v)
+  :why    "guess co-located")
+(relation is-a       T T)
+(relation co-located T T)
+(is-a House T) (is-a Color T)
+(is-a H1 House) (is-a H2 House)
+(is-a Red Color) (is-a Blue Color)
 """
 
 # A generic hrule — parameterised over (?rel ?type), activated by
 # the `:hrules` block in (query …) with two (rel type) tuples.
 _GENERIC_HRULE = """
-(rules
-  (hrule guess (?rel ?type)
-    :match  (and (is-a ?a ?type) (is-a ?house House))
-    :assert (?rel ?a ?house)
-    :why    "g"))
-(ontology
-  (relation is-a       T T)
-  (relation co-located T T)
-  (is-a House T) (is-a Color T) (is-a Pet T)
-  (is-a H1 House)
-  (is-a Red Color)
-  (is-a Dog Pet))
+(hrule guess (?rel ?type)
+  :match  (and (is-a ?a ?type) (is-a ?house House))
+  :assert (?rel ?a ?house)
+  :why    "g")
+(relation is-a       T T)
+(relation co-located T T)
+(is-a House T) (is-a Color T) (is-a Pet T)
+(is-a H1 House)
+(is-a Red Color)
+(is-a Dog Pet)
 (query :mode solve :goal (co-located Red H1)
        :hrules (guess (co-located Color) (co-located Pet)))
 """
 
 # Two hrules sharing a name — a load error.
 _DUP_HRULE = """
-(rules
-  (hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "a")
-  (hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "b"))
-(ontology
-  (relation is-a T T) (relation co-located T T)
-  (is-a House T) (is-a H1 House))
+(hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "a")
+(hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "b")
+(relation is-a T T) (relation co-located T T)
+(is-a House T) (is-a H1 House)
 """
 
 
@@ -188,4 +181,4 @@ def test_duplicate_relation_rejected():
     """Two `(relation R …)` declarations for the same R is a load
     error."""
     with pytest.raises(KBLoadError):
-        _kb("(ontology (relation co-located T T) (relation co-located T T))")
+        _kb("(relation co-located T T) (relation co-located T T)")

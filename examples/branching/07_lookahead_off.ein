@@ -32,51 +32,48 @@
 
 (config :enable-pre-branch-lookahead false)
 
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} symmetric"
-    :priority 100)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} symmetric"
+  :priority 100)
 
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} transitive"
-    :priority 200)
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} transitive"
+  :priority 200)
 
-  (rule sibling-exclusive (?siblings-via ?exclusive-under)
-    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
-    :assert (not (?exclusive-under ?a ?b))
-    :why    "{?a} and {?b} share {?T} — exclusive under {?exclusive-under}."
-    :priority 300)
+(rule sibling-exclusive (?siblings-via ?exclusive-under)
+  :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+  :assert (not (?exclusive-under ?a ?b))
+  :why    "{?a} and {?b} share {?T} — exclusive under {?exclusive-under}."
+  :priority 300)
 
-  (rule functional (?R)
-    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-    :assert (false)
-    :why    "{?R} not functional"
-    :priority 250))
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional"
+  :priority 250)
 
-(ontology
-  (relation is-a       T T)
-  (relation co-located T T)
+(relation is-a       T T)
+(relation co-located T T)
 
-  (symmetric         co-located)
-  (transitive        co-located)
-  (sibling-exclusive is-a co-located)
-  (functional        is-a)
+(symmetric         co-located)
+(transitive        co-located)
+(sibling-exclusive is-a co-located)
+(functional        is-a)
 
-  (is-a Color T) (is-a House T)
-  (is-a Red    Color) (is-a Green Color) (is-a Ivory  Color)
-  (is-a Yellow Color) (is-a Blue  Color)
-  (is-a H1 House) (is-a H2 House) (is-a H3 House)
-  (is-a H4 House) (is-a H5 House))
+(is-a Color T) (is-a House T)
+(is-a Red    Color) (is-a Green Color) (is-a Ivory  Color)
+(is-a Yellow Color) (is-a Blue  Color)
+(is-a H1 House) (is-a H2 House) (is-a H3 House)
+(is-a H4 House) (is-a H5 House)
 
-(facts
-  (co-located Red    H1 :source "(1)")
-  (co-located Green  H2 :source "(2)")
-  (co-located Ivory  H3 :source "(3)")
-  (co-located Yellow H4 :source "(4)"))
+(co-located Red    H1 :source "(1)")
+(co-located Green  H2 :source "(2)")
+(co-located Ivory  H3 :source "(3)")
+(co-located Yellow H4 :source "(4)")
 
 (query
   :mode solve

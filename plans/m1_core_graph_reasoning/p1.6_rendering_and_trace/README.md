@@ -211,23 +211,12 @@ and the other forms flat.
 
 ## VSCode ein syntax highlighting
 
-Owned by P1.6 since it lives next to the DOT renderer work
-and shares the IR grammar surface. Lightweight TextMate /
-LSP-free grammar definition (`.tmLanguage.json`) covering:
-
-- S-expr structure (`( … )` nesting, atom vs string literal)
-- Keywords (`relation`, `rule`, `match`, `assert`, `is-a`,
-  `functional`, `injective`, `co-located`, `adjacent-via`,
-  `not`, `absent`, `forall`, `open`, `query`, `facts`,
-  `ontology`, `config`)
-- Variables (`?var` form)
-- Comment lines (`;` prefix)
-- Optional: brace-matching, snippet for `(rule … :match …
-  :assert … :why … :priority …)`.
-
-Land as a separate sub-stage if the TextMate file grows
-non-trivial; otherwise fold into S1.6.1 (rules rendering)
-since both edit the same set of rule keywords.
+**Moved (2026-06-02) to
+[P1.7c S1.7c.8](../p1.7c_block_head_removal/s1.7c.8_vscode_syntax_highlighting.md).**
+It highlights the IR *surface* syntax, which P1.7c flattened (the old
+keyword list here still named the removed `facts` / `ontology` / `rules`
+block wrappers), so the editor grammar belongs next to the surface-syntax
+work, not the DOT renderer. The DOT renderers (S1.6.1–.4) stay in P1.6.
 
 ## Acceptance
 

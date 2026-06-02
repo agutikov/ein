@@ -1,132 +1,202 @@
-(rules
-  (rule
-    symmetric
-    (?rel)
-    :match (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100)
-  (rule
-    transitive
-    (?rel)
-    :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
-    :priority 200)
-  (rule
-    implies
-    (?p ?q)
-    :match (?p ?a ?b)
-    :assert (?q ?a ?b)
-    :why "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-    :priority 100)
-  (rule
-    square-fwd
-    (?R)
-    :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
-    :assert (co-located ?b ?y)
-    :why "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
-    :priority 200)
-  (rule
-    square-bwd
-    (?R)
-    :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
-    :assert (co-located ?a ?x)
-    :why "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
-    :priority 200)
-  (rule
-    square-unique
-    (?R ?T)
-    :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T) (co-located ?a ?x) (absent (and (?R ?x ?z) (neq ?y ?z))))
-    :assert (co-located ?b ?y)
-    :why "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
-    :priority 200)
-  (rule
-    type-exclusivity
-    (?R)
-    :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-    :assert (not (?R ?a ?b))
-    :why "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
-    :priority 300)
-  (rule
-    hypothesis-contradiction
-    ()
-    :match (and (hypothesis ?h) (contradiction-under ?h))
-    :assert (not ?h)
-    :why "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
-    :priority 900))
+(rule
+  symmetric
+  (?rel)
+  :match (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
 
-(ontology
-  (relation type T T)
-  (relation instance T T)
-  (relation co-located Attribute Attribute)
-  (relation right-of Attribute Attribute)
-  (relation next-to Attribute Attribute)
-  (symmetric co-located)
-  (transitive co-located)
-  (symmetric next-to)
-  (implies right-of next-to)
-  (square-fwd right-of)
-  (square-bwd right-of)
-  (square-unique next-to House)
-  (type-exclusivity co-located)
-  (type Attribute)
-  (type House Attribute)
-  (type Color Attribute)
-  (type Nationality Attribute)
-  (type Pet Attribute)
-  (type Cigarette Attribute)
-  (type Drink Attribute)
-  (instance House-1 House)
-  (instance House-2 House)
-  (instance House-3 House)
-  (instance House-4 House)
-  (instance House-5 House)
-  (instance Red Color)
-  (instance Green Color)
-  (instance Ivory Color)
-  (instance Yellow Color)
-  (instance Blue Color)
-  (instance Englishman Nationality)
-  (instance Spaniard Nationality)
-  (instance Ukrainian Nationality)
-  (instance Norwegian Nationality)
-  (instance Japanese Nationality)
-  (instance Dog Pet)
-  (instance Snail Pet)
-  (instance Fox Pet)
-  (instance Horse Pet)
-  (instance Zebra Pet)
-  (instance Old_Gold Cigarette)
-  (instance Kools Cigarette)
-  (instance Chesterfields Cigarette)
-  (instance Lucky_Strike Cigarette)
-  (instance Parliament Cigarette)
-  (instance Coffee Drink)
-  (instance Tea Drink)
-  (instance Milk Drink)
-  (instance Juice Drink)
-  (instance Water Drink)
-  (right-of House-2 House-1 :source "condition (1)")
-  (right-of House-3 House-2 :source "condition (1)")
-  (right-of House-4 House-3 :source "condition (1)")
-  (right-of House-5 House-4 :source "condition (1)"))
+(rule
+  transitive
+  (?rel)
+  :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+  :priority 200)
 
-(facts
-  (co-located Englishman Red :source "condition (2)")
-  (co-located Spaniard Dog :source "condition (3)")
-  (co-located Coffee Green :source "condition (4)")
-  (co-located Ukrainian Tea :source "condition (5)")
-  (right-of Green Ivory :source "condition (6)")
-  (co-located Old_Gold Snail :source "condition (7)")
-  (co-located Kools Yellow :source "condition (8)")
-  (co-located Milk House-3 :source "condition (9)")
-  (co-located Norwegian House-1 :source "condition (10)")
-  (next-to Chesterfields Fox :source "condition (11)")
-  (next-to Kools Horse :source "condition (12)")
-  (co-located Lucky_Strike Juice :source "condition (13)")
-  (co-located Japanese Parliament :source "condition (14)")
-  (next-to Norwegian Blue :source "condition (15)"))
+(rule
+  implies
+  (?p ?q)
+  :match (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+  :priority 100)
+
+(rule
+  square-fwd
+  (?R)
+  :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
+  :assert (co-located ?b ?y)
+  :why "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
+  :priority 200)
+
+(rule
+  square-bwd
+  (?R)
+  :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
+  :assert (co-located ?a ?x)
+  :why "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
+  :priority 200)
+
+(rule
+  square-unique
+  (?R ?T)
+  :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T) (co-located ?a ?x) (absent (and (?R ?x ?z) (neq ?y ?z))))
+  :assert (co-located ?b ?y)
+  :why "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
+  :priority 200)
+
+(rule
+  type-exclusivity
+  (?R)
+  :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+  :assert (not (?R ?a ?b))
+  :why "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
+  :priority 300)
+
+(rule
+  hypothesis-contradiction
+  ()
+  :match (and (hypothesis ?h) (contradiction-under ?h))
+  :assert (not ?h)
+  :why "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
+  :priority 900)
+
+(relation type T T)
+
+(relation instance T T)
+
+(relation co-located Attribute Attribute)
+
+(relation right-of Attribute Attribute)
+
+(relation next-to Attribute Attribute)
+
+(symmetric co-located)
+
+(transitive co-located)
+
+(symmetric next-to)
+
+(implies right-of next-to)
+
+(square-fwd right-of)
+
+(square-bwd right-of)
+
+(square-unique next-to House)
+
+(type-exclusivity co-located)
+
+(type Attribute)
+
+(type House Attribute)
+
+(type Color Attribute)
+
+(type Nationality Attribute)
+
+(type Pet Attribute)
+
+(type Cigarette Attribute)
+
+(type Drink Attribute)
+
+(instance House-1 House)
+
+(instance House-2 House)
+
+(instance House-3 House)
+
+(instance House-4 House)
+
+(instance House-5 House)
+
+(instance Red Color)
+
+(instance Green Color)
+
+(instance Ivory Color)
+
+(instance Yellow Color)
+
+(instance Blue Color)
+
+(instance Englishman Nationality)
+
+(instance Spaniard Nationality)
+
+(instance Ukrainian Nationality)
+
+(instance Norwegian Nationality)
+
+(instance Japanese Nationality)
+
+(instance Dog Pet)
+
+(instance Snail Pet)
+
+(instance Fox Pet)
+
+(instance Horse Pet)
+
+(instance Zebra Pet)
+
+(instance Old_Gold Cigarette)
+
+(instance Kools Cigarette)
+
+(instance Chesterfields Cigarette)
+
+(instance Lucky_Strike Cigarette)
+
+(instance Parliament Cigarette)
+
+(instance Coffee Drink)
+
+(instance Tea Drink)
+
+(instance Milk Drink)
+
+(instance Juice Drink)
+
+(instance Water Drink)
+
+(right-of House-2 House-1 :source "condition (1)" :layer ontology)
+
+(right-of House-3 House-2 :source "condition (1)" :layer ontology)
+
+(right-of House-4 House-3 :source "condition (1)" :layer ontology)
+
+(right-of House-5 House-4 :source "condition (1)" :layer ontology)
+
+(co-located Englishman Red :source "condition (2)")
+
+(co-located Spaniard Dog :source "condition (3)")
+
+(co-located Coffee Green :source "condition (4)")
+
+(co-located Ukrainian Tea :source "condition (5)")
+
+(right-of Green Ivory :source "condition (6)")
+
+(co-located Old_Gold Snail :source "condition (7)")
+
+(co-located Kools Yellow :source "condition (8)")
+
+(co-located Milk House-3 :source "condition (9)")
+
+(co-located Norwegian House-1 :source "condition (10)")
+
+(next-to Chesterfields Fox :source "condition (11)")
+
+(next-to Kools Horse :source "condition (12)")
+
+(co-located Lucky_Strike Juice :source "condition (13)")
+
+(co-located Japanese Parliament :source "condition (14)")
+
+(next-to Norwegian Blue :source "condition (15)")
 
 (query
   :mode solve

@@ -15,19 +15,16 @@
 ;;;   (boss-of Manager Engineer) + (implies boss-of leads)
 ;;;   ⇒ (leads Manager Engineer).
 
-(rules
-  (rule implies (?p ?q)
-    :match  (?p ?a ?b)
-    :assert (?q ?a ?b)
-    :why    "{?p} implies {?q}."
-    :priority 100))
+(rule implies (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?p} implies {?q}."
+  :priority 100)
 
-(ontology
-  (relation boss-of T T)
-  (relation leads T T)
-  (implies boss-of leads))
+(relation boss-of T T)
+(relation leads T T)
+(implies boss-of leads)
 
-(facts
-  (boss-of Manager Engineer :source "demo"))
+(boss-of Manager Engineer :source "demo")
 
 (query :mode solve :goal (leads Manager Engineer))

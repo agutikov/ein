@@ -1,7 +1,11 @@
 # P1.7c — Post-M1 cleanup: block-head removal + P1.7b debt tail
 
 **Estimate:** TBD (grammar + loader; small but touches every `.ein`).
-**Status:** **placeholder** — created 2026-06-02 from `TODO.md`.
+**Status:** **Track A (S1.7c.1–.5) DONE 2026-06-02** — block heads removed;
+the surface is a flat sequence of forms classified by head, layer attributed
+per fact ([S1.7c.1](s1.7c.1_layer_attribution_decision.md)). Full pytest
+green + M1 acceptance gate green with verdicts intact. **Track B
+(S1.7c.10–.32) still pending.**
 
 > **Two tracks.** This phase carries two independent post-M1 cleanups:
 > - **Track A (S1.7c.1–.5)** — the block-head removal described below
@@ -83,11 +87,12 @@ don't.
 
 | ID | title | resolves | gist |
 |---|---|---|---|
-| **S1.7c.1** | [Layer-attribution decision](s1.7c.1_layer_attribution_decision.md) | Q1 (the crux) | flat facts lose the block's `Layer`; recover it. Investigation finding: **only `REASONING` is inference-load-bearing** (`lookahead.py:139` — "cross-layer is not a contradiction"); ONTOLOGY-vs-FACT is render/provenance only → **derive layer from `:rule`/`:source` annotations**. Design-only stage. |
+| **S1.7c.1** | [Layer-attribution decision](s1.7c.1_layer_attribution_decision.md) | Q1 (the crux) | flat facts lose the block's `Layer`; recover it. Only `REASONING` is inference-load-bearing; ONTOLOGY-vs-FACT is render/provenance only. **Decision: derive from provenance (`:rule`/`:using`→REASONING, `:source`→FACT, else ONTOLOGY), with an explicit `:layer` override** for the 23 corpus facts where pure derivation disagrees (sourced ONTOLOGY, unsourced FACT, authored REASONING). Design-only. |
 | **S1.7c.2** | [Flat-form grammar](s1.7c.2_flat_form_grammar.md) | Q3, Q4 | `start: form*` over a declarator/fact alternation; classify by head against the closed reserved set; **else → fact**. `trace` stays an engine-emitted sibling. |
 | **S1.7c.3** | [Loader flat routing + shim](s1.7c.3_loader_flat_routing.md) | Q2 | `from_ir.load` routes per-head with `_layer_of`; back-compat shim accepts the wrapped form (deprecation warning) so the 4 examples + ~40 fixtures keep loading. Pairs with [S1.7c.23](s1.7c.23_flatten_from_ir_load.md). |
 | **S1.7c.4** | [Migrate + drop shim](s1.7c.4_migrate_and_drop_shim.md) | Q2 | scripted KB-preserving unwrap of `examples/` + fixtures; delete the shim; flat becomes the only surface. |
 | **S1.7c.5** | [Docs: grammar + reserved-names](s1.7c.5_docs_grammar_reserved_names.md) | doc-sync | rewrite `01_grammar.md`, the `grammar.lark` header, `06_reserved_names.md` (now the classifier's source of truth) + re-snippet examples. |
+| **S1.7c.8** | [VSCode ein syntax highlighting](s1.7c.8_vscode_syntax_highlighting.md) | ergonomics | TextMate `.tmLanguage.json` for the flat surface — relocated from [P1.6](../p1.6_rendering_and_trace/README.md) (it highlights the surface syntax P1.7c just changed). **Planned** (stage doc only). |
 
 ## Track B — P1.7b refactor-debt tail (S1.7c.10+)
 

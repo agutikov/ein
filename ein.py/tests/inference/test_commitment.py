@@ -46,16 +46,14 @@ def test_alive_one_element_conditional_derivation():
     it is conditional (NOT in unconditional_facts), but it IS in kb.
     """
     kb = _kb("""
-    (rules
-      (rule swap ()
-        :match (target ?x ?y) :assert (other ?y ?x)
-        :why "swap target → other" :priority 100))
-    (ontology
-      (type T)
-      (relation target T T)
-      (relation other T T)
-      (instance c T) (instance d T))
-    (facts)
+    (rule swap ()
+      :match (target ?x ?y) :assert (other ?y ?x)
+      :why "swap target → other" :priority 100)
+    (type T)
+    (relation target T T)
+    (relation other T T)
+    (instance c T) (instance d T)
+    
     """)
     commitment = (("target", ("c", "d")),)
     result = try_commitment_set(kb, commitment)
@@ -78,16 +76,14 @@ def test_alive_unconditional_derivation_from_root_facts():
     "chain doesn't touch the commitment" check.
     """
     kb = _kb("""
-    (rules
-      (rule sym-r ()
-        :match (r ?x ?y) :assert (r ?y ?x)
-        :why "symmetric r" :priority 100))
-    (ontology
-      (type T)
-      (relation r T T)
-      (relation h T)
-      (instance a T) (instance b T))
-    (facts (r a b :source "(1)"))
+    (rule sym-r ()
+      :match (r ?x ?y) :assert (r ?y ?x)
+      :why "symmetric r" :priority 100)
+    (type T)
+    (relation r T T)
+    (relation h T)
+    (instance a T) (instance b T)
+    (r a b :source "(1)")
     """)
     commitment = (("h", ("a",)),)
     result = try_commitment_set(kb, commitment)
@@ -106,20 +102,18 @@ def test_alive_conditional_excluded_from_unconditional_facts():
     """Same fixture; the (d a) derivation from the hypothesis is
     conditional and must NOT appear in unconditional_facts."""
     kb = _kb("""
-    (rules
-      (rule sym-r ()
-        :match (r ?x ?y) :assert (r ?y ?x)
-        :why "symmetric r" :priority 100)
-      (rule from-h ()
-        :match (h ?x) :assert (d ?x)
-        :why "h gives d" :priority 100))
-    (ontology
-      (type T)
-      (relation r T T)
-      (relation h T)
-      (relation d T)
-      (instance a T) (instance b T))
-    (facts (r a b :source "(1)"))
+    (rule sym-r ()
+      :match (r ?x ?y) :assert (r ?y ?x)
+      :why "symmetric r" :priority 100)
+    (rule from-h ()
+      :match (h ?x) :assert (d ?x)
+      :why "h gives d" :priority 100)
+    (type T)
+    (relation r T T)
+    (relation h T)
+    (relation d T)
+    (instance a T) (instance b T)
+    (r a b :source "(1)")
     """)
     commitment = (("h", ("a",)),)
     result = try_commitment_set(kb, commitment)
@@ -145,11 +139,10 @@ def test_dead_pre_root_carries_negation_of_committed_hypothesis():
     a pre-saturation contradiction.
     """
     kb = _kb("""
-    (ontology
-      (type T)
-      (relation target T T)
-      (instance c T) (instance d T))
-    (facts)
+    (type T)
+    (relation target T T)
+    (instance c T) (instance d T)
+    
     """)
     # Seed REASONING-layer (not (target c d)) — pattern from
     # test_contradiction.test_pair_kind_defaults_to_pair.
@@ -184,18 +177,16 @@ def test_dead_post_two_hypotheses_derive_contradiction():
     flags the pair → dead-post.
     """
     kb = _kb("""
-    (rules
-      (rule h1-implies-x ()
-        :match (h1 ?x) :assert (x ?x)
-        :why "h1 → x" :priority 100)
-      (rule h2-forbids-x ()
-        :match (h2 ?x) :assert (not (x ?x))
-        :why "h2 → ¬x" :priority 100))
-    (ontology
-      (type T)
-      (relation h1 T) (relation h2 T) (relation x T)
-      (instance a T))
-    (facts)
+    (rule h1-implies-x ()
+      :match (h1 ?x) :assert (x ?x)
+      :why "h1 → x" :priority 100)
+    (rule h2-forbids-x ()
+      :match (h2 ?x) :assert (not (x ?x))
+      :why "h2 → ¬x" :priority 100)
+    (type T)
+    (relation h1 T) (relation h2 T) (relation x T)
+    (instance a T)
+    
     """)
     commitment = (("h1", ("a",)), ("h2", ("a",)))
 
@@ -230,11 +221,10 @@ def test_isolation_two_calls_yield_independent_forks():
     fork's facts list doesn't affect the other or the root.
     """
     kb = _kb("""
-    (ontology
-      (type T)
-      (relation h1 T) (relation h2 T)
-      (instance a T))
-    (facts)
+    (type T)
+    (relation h1 T) (relation h2 T)
+    (instance a T)
+    
     """)
     root_size = len(kb.facts)
 
@@ -266,15 +256,13 @@ def test_empty_commitment_returns_alive_with_empty_results():
     hypothesis_facts and unconditional_facts are empty.
     """
     kb = _kb("""
-    (rules
-      (rule sym-r ()
-        :match (r ?x ?y) :assert (r ?y ?x)
-        :why "symmetric r" :priority 100))
-    (ontology
-      (type T)
-      (relation r T T)
-      (instance a T) (instance b T))
-    (facts (r a b :source "(1)"))
+    (rule sym-r ()
+      :match (r ?x ?y) :assert (r ?y ?x)
+      :why "symmetric r" :priority 100)
+    (type T)
+    (relation r T T)
+    (instance a T) (instance b T)
+    (r a b :source "(1)")
     """)
     # Pre-saturate root so the empty-commitment fork has nothing
     # new to derive.

@@ -1,16 +1,19 @@
-"""IR → KnowledgeBase loader — S1.2.1 T1.2.1.4.
+"""IR → KnowledgeBase loader — S1.2.1 T1.2.1.4; flat routing S1.7c.3.
 
-Walks parsed top-level forms (`ontology`, `facts`, `reasoning`,
-`rules`, `query`, `trace`) and populates a fresh :class:`KnowledgeBase`.
+Walks a **flat sequence** of parsed top-level forms and classifies each
+by its head (P1.7c): `relation` → relation decl; `rule` / `hrule` →
+rule; `query` / `config` → their handlers; `trace` → ignored; **any
+other head → a fact** (layer from :func:`_layer_of`). The four
+deprecated block wrappers (`ontology` / `facts` / `reasoning` / `rules`)
+are still accepted behind a back-compat shim until S1.7c.4.
 
 The load order matters because some entities reference others:
-1. Pass 1 — collect raw declarations into local lists (no entities
-   created yet).
-2. Pass 2 — instantiate entities in dependency order: types,
-   relations, instances, rules, facts.
-3. Pass 3 — re-classify facts: any fact whose head matches a rule
-   name OR a declared relation name is fine; otherwise create an
-   open-world :class:`Relation` so cross-references still work.
+1. Pass 1 — relations (declared signatures), collecting fact-shaped
+   ontology children for pass 3.
+2. Pass 2 — rules / hrules. After this, rule-name resolution is possible.
+3. Pass 3 — facts: any fact whose head matches a rule name OR a declared
+   relation name is fine; otherwise create an open-world
+   :class:`Relation` so cross-references still work.
 4. Index rebuild.
 
 Tolerance:
@@ -45,6 +48,47 @@ from .store import KnowledgeBase, Query
 
 class KBLoadError(ValueError):
     """Raised at end of load with a list of accumulated problems."""
+
+
+# ── Surface vocabulary the flat classifier keys on (P1.7c) ─────────
+#
+# The closed declarator set: a top-level head `relation` / `rule` / `hrule`
+# / `query` / `config` is a declarator; `trace` is the engine-emitted
+# sibling (ignored on load); ANY OTHER head is a fact. Source of truth:
+# `docs/kernel/ir/03-ein-lang/06_reserved_names.md`.
+_LAYER_BY_NAME = {layer.value: layer for layer in Layer}  # "ontology"/"fact"/"reasoning"
+
+
+def _layer_of(form: SForm, errors: list[str]) -> Layer:
+    """The flat-form layer-attribution rule (S1.7c.1).
+
+    An explicit ``:layer <ontology|fact|reasoning>`` keyword is
+    **authoritative**; otherwise the layer is **derived** from the
+    provenance annotation already on the form — the same signal the
+    ``Provenance`` kind keys on:
+
+    - ``:rule`` / ``:using``  → REASONING (engine working-memory dump)
+    - ``:source``             → FACT      (an explicit numbered statement)
+    - neither                 → ONTOLOGY  (implicit background assumption)
+
+    `:layer` is consumed here only — ``_fact_args`` drops every kw-pair,
+    so it never becomes a fact arg, and the provenance arm is untouched.
+    """
+    kws = _kw_pairs(form.args)
+    explicit = kws.get("layer")
+    if explicit is not None:
+        name = _atom_name(explicit)
+        if name in _LAYER_BY_NAME:
+            return _LAYER_BY_NAME[name]
+        errors.append(
+            f"(:layer {name}) — unknown layer at {form.loc}; "
+            f"expected one of {', '.join(sorted(_LAYER_BY_NAME))}")
+        # fall through to derivation so loading continues
+    if "rule" in kws or "using" in kws:
+        return Layer.REASONING
+    if "source" in kws:
+        return Layer.FACT
+    return Layer.ONTOLOGY
 
 
 # ── Utility extractors ─────────────────────────────────────────────
@@ -123,62 +167,43 @@ def _fact_args(args: tuple[IRNode, ...]) -> tuple[str | int | Fact, ...]:
 # ── Pass 1 / 2 — collect + instantiate ─────────────────────────────
 
 
-def _ingest_ontology(form: SForm, kb: KnowledgeBase, errors: list[str]) -> list[SForm]:
-    """Pass over `(ontology …)` body.
+def _ingest_relation(child: SForm, kb: KnowledgeBase, errors: list[str]) -> bool:
+    """Ingest one `(relation Name T1 T2 … :kw v …)` declaration.
 
-    Returns the list of fact-shaped child forms to be processed in
-    pass 2 (after rules are known) — type/relation declarations and
-    instance forms are handled inline.
+    Returns ``True`` iff ``child`` is a `relation` form (handled — even
+    if malformed, in which case an error is recorded); ``False`` if the
+    head isn't `relation` (the caller treats it as a fact). Shared by
+    the wrapped `(ontology …)` pass and the flat top-level routing.
     """
-    deferred_facts: list[SForm] = []
-
-    for child in form.args:
-        if not isinstance(child, SForm):
-            continue
-        head = _atom_name(child.head) if isinstance(child.head, Atom) else None
-
-        if head == "relation":
-            # (relation Name T1 T2 … :kw v ...)
-            # Flat args post-R10; grammar guarantees ≥ 2 SYMBOL args
-            # (name + at least one type), followed by optional kw_pairs.
-            if len(child.args) < 2:
-                errors.append(f"(relation) needs name + signature at {child.loc}")
-                continue
-            name = _atom_name(child.args[0])
-            sig = tuple(
-                a.name for a in child.args[1:]
-                if isinstance(a, Atom)
-            )
-            if name is None or not sig:
-                errors.append(f"malformed (relation) at {child.loc}")
-                continue
-            if name in kb.relations:
-                errors.append(f"duplicate relation '{name}' at {child.loc}")
-                continue
-            kb.add_relation(Relation(
-                name=name, signature=sig, declared=True, loc=child.loc,
-            ))
-            # Also store the declaration as an ordinary fact so
-            # rules can introspect signatures via (relation ?R ?A ?B)
-            # patterns. The loader's relation_decl arm has already
-            # validated SYMBOL args; the fact form mirrors them.
-            kb.add_fact(Fact(
-                relation_name="relation",
-                args=(name, *sig),
-                layer=Layer.ONTOLOGY,
-                loc=child.loc,
-            ))
-            continue
-
-        # Anything else — including `(type …)` / `(instance …)`
-        # enumerations (S1.7.6: no longer kernel declarators) — is an
-        # ordinary fact in the ontology layer (rule-app facts,
-        # structural facts, type/instance facts). `kb.types` /
-        # `kb.instances` are derived from the `(type …)` / `(instance …)`
-        # facts in `KnowledgeBase.rebuild_indexes`.
-        deferred_facts.append(child)
-
-    return deferred_facts
+    head = _atom_name(child.head) if isinstance(child.head, Atom) else None
+    if head != "relation":
+        return False
+    # Flat args post-R10; grammar guarantees ≥ 2 SYMBOL args
+    # (name + at least one type), followed by optional kw_pairs.
+    if len(child.args) < 2:
+        errors.append(f"(relation) needs name + signature at {child.loc}")
+        return True
+    name = _atom_name(child.args[0])
+    sig = tuple(a.name for a in child.args[1:] if isinstance(a, Atom))
+    if name is None or not sig:
+        errors.append(f"malformed (relation) at {child.loc}")
+        return True
+    if name in kb.relations:
+        errors.append(f"duplicate relation '{name}' at {child.loc}")
+        return True
+    kb.add_relation(Relation(
+        name=name, signature=sig, declared=True, loc=child.loc,
+    ))
+    # Also store the declaration as an ordinary fact so rules can
+    # introspect signatures via (relation ?R ?A ?B) patterns. The
+    # relation decl has already validated SYMBOL args; the fact mirrors them.
+    kb.add_fact(Fact(
+        relation_name="relation",
+        args=(name, *sig),
+        layer=Layer.ONTOLOGY,
+        loc=child.loc,
+    ))
+    return True
 
 
 def _match_disjuncts(node: IRNode) -> list[IRNode] | None:
@@ -201,8 +226,13 @@ def _match_disjuncts(node: IRNode) -> list[IRNode] | None:
     return None
 
 
-def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
-    """Pass over `(rules …)` body — `(rule …)` and `(hrule …)` decls.
+def _ingest_rules(
+    rule_forms: Iterable[SForm], kb: KnowledgeBase, errors: list[str],
+) -> None:
+    """Ingest a sequence of `(rule …)` / `(hrule …)` declarations.
+
+    Fed either a deprecated `(rules …)` block's ``form.args`` or the flat
+    top-level stream of rule/hrule forms (S1.7c.3) — same logic both ways.
 
     S1.5.6b: a `(hrule …)` is structurally a rule but is routed to
     ``kb.hrules`` (hypothesis generators), not ``kb.rules``
@@ -213,7 +243,7 @@ def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
     named ``<rule>__or0``, ``<rule>__or1``, … so they stay distinct in
     the rule registry.
     """
-    for child in form.args:
+    for child in rule_forms:
         head = _atom_name(child.head) if isinstance(child, SForm) else None
         if head not in ("rule", "hrule"):
             errors.append(f"non-rule form in (rules …): {child}")
@@ -271,145 +301,143 @@ def _ingest_rules(form: SForm, kb: KnowledgeBase, errors: list[str]) -> None:
                 kb.add_rule(rule)
 
 
-def _ingest_facts(
-    forms: Iterable[SForm], kb: KnowledgeBase, layer: Layer, errors: list[str]
+def _ingest_one_fact(
+    child: IRNode, kb: KnowledgeBase, layer: Layer, errors: list[str]
 ) -> None:
-    """Build Fact entities from a sequence of fact-shaped SForms."""
-    for child in forms:
-        if not isinstance(child, SForm):
-            continue
-        head_name = _atom_name(child.head)
-        if head_name is None:
-            errors.append(f"fact with non-atom head at {child.loc}")
-            continue
-        # Map kernel meta-primitives to canonical relation names.
-        # `not` / `and` / `or` / `neq` / `=` are kernel forms; they
-        # appear at top level rarely (mostly inside rule bodies), but
-        # if they DO they become facts whose relation is the literal
-        # head atom name. The KB treats them as ordinary relations.
-        kws = _kw_pairs(child.args)
-        source = (
-            kws["source"].value if isinstance(kws.get("source"), String) else None
+    """Build one Fact entity at the given ``layer`` (from :func:`_layer_of`)."""
+    if not isinstance(child, SForm):
+        return
+    head_name = _atom_name(child.head)
+    if head_name is None:
+        errors.append(f"fact with non-atom head at {child.loc}")
+        return
+    # Map kernel meta-primitives to canonical relation names.
+    # `not` / `and` / `or` / `neq` / `=` are kernel forms; they
+    # appear at top level rarely (mostly inside rule bodies), but
+    # if they DO they become facts whose relation is the literal
+    # head atom name. The KB treats them as ordinary relations.
+    kws = _kw_pairs(child.args)
+    source = (
+        kws["source"].value if isinstance(kws.get("source"), String) else None
+    )
+    rule_name = (
+        _atom_name(kws.get("rule")) if "rule" in kws else None
+    )
+
+    # `:using` carries a list of (rel args) compact forms — each
+    # one is an SForm whose head is a relation name and whose
+    # args are the fact's args. Extract as (rel, args) fact-id
+    # tuples for the Provenance.premises_raw field.
+    #
+    # **IR round-trip caveat** (S1.2.3 T1.2.3.4 deferred): the
+    # current grammar (P1.1) doesn't accept a headless list as a
+    # kw-pair value, so `:using ((rel a b) (rel c d))` doesn't
+    # parse. The atom-id form `:using (c10 c15)` parses but to a
+    # different shape (SForm with c10 as head, c15 as arg) and
+    # would need an atom-id → Fact resolver. Both forms wait on
+    # P1.1; until then, rule-kind provenance is populated by the
+    # engine via direct `Provenance.from_rule()` construction —
+    # which DOES work, just not round-trip through IR yet.
+    using_node = kws.get("using")
+    premises_raw: tuple = ()
+    if isinstance(using_node, SForm):
+        ids: list = []
+        for inner in using_node.args:
+            if not isinstance(inner, SForm) or not isinstance(inner.head, Atom):
+                continue
+            ids.append((inner.head.name, _fact_args(inner.args)))
+        premises_raw = tuple(ids)
+
+    # Build the Provenance object — exactly one of source / rule
+    # populates a kind; ONTOLOGY layer with no annotation gets a
+    # source-kind record with source=None (the IR location alone
+    # marks the origin).
+    provenance: Provenance | None
+    if rule_name is not None:
+        provenance = Provenance.from_rule(
+            rule=rule_name, premises_raw=premises_raw, loc=child.loc,
         )
-        rule_name = (
-            _atom_name(kws.get("rule")) if "rule" in kws else None
-        )
+    elif source is not None or layer in (Layer.FACT, Layer.ONTOLOGY):
+        provenance = Provenance.from_source(source=source, loc=child.loc)
+    else:
+        provenance = None
 
-        # `:using` carries a list of (rel args) compact forms — each
-        # one is an SForm whose head is a relation name and whose
-        # args are the fact's args. Extract as (rel, args) fact-id
-        # tuples for the Provenance.premises_raw field.
-        #
-        # **IR round-trip caveat** (S1.2.3 T1.2.3.4 deferred): the
-        # current grammar (P1.1) doesn't accept a headless list as a
-        # kw-pair value, so `:using ((rel a b) (rel c d))` doesn't
-        # parse. The atom-id form `:using (c10 c15)` parses but to a
-        # different shape (SForm with c10 as head, c15 as arg) and
-        # would need an atom-id → Fact resolver. Both forms wait on
-        # P1.1; until then, rule-kind provenance is populated by the
-        # engine via direct `Provenance.from_rule()` construction —
-        # which DOES work, just not round-trip through IR yet.
-        using_node = kws.get("using")
-        premises_raw: tuple = ()
-        if isinstance(using_node, SForm):
-            ids: list = []
-            for inner in using_node.args:
-                if not isinstance(inner, SForm) or not isinstance(inner.head, Atom):
-                    continue
-                ids.append((inner.head.name, _fact_args(inner.args)))
-            premises_raw = tuple(ids)
-
-        # Build the Provenance object — exactly one of source / rule
-        # populates a kind; ONTOLOGY layer with no annotation gets a
-        # source-kind record with source=None (the IR location alone
-        # marks the origin).
-        provenance: Provenance | None
-        if rule_name is not None:
-            provenance = Provenance.from_rule(
-                rule=rule_name, premises_raw=premises_raw, loc=child.loc,
-            )
-        elif source is not None or layer in (Layer.FACT, Layer.ONTOLOGY):
-            provenance = Provenance.from_source(source=source, loc=child.loc)
-        else:
-            provenance = None
-
-        # Auto-vivify undeclared relations (open-world), UNLESS the
-        # head is a built-in predicate (eq, neq — Q33). Predicates
-        # dispatch at the matcher level; they are not relations.
-        # S1.3.1 T1.3.1.2: prevents phantom eq/neq entries in
-        # kb.relations.
-        from ein_bot.inference import predicates as _preds
-        if head_name not in kb.relations and not _preds.is_predicate(head_name):
-            kb.add_relation(Relation(
-                name=head_name, signature=(), declared=False, loc=child.loc,
-            ))
-
-        args_tuple = _fact_args(child.args)
-        kb.add_fact(Fact(
-            relation_name=head_name,
-            args=args_tuple,
-            layer=layer,
-            provenance=provenance,
-            raw=child,
-            loc=child.loc,
+    # Auto-vivify undeclared relations (open-world), UNLESS the
+    # head is a built-in predicate (eq, neq — Q33). Predicates
+    # dispatch at the matcher level; they are not relations.
+    # S1.3.1 T1.3.1.2: prevents phantom eq/neq entries in
+    # kb.relations.
+    from ein_bot.inference import predicates as _preds
+    if head_name not in kb.relations and not _preds.is_predicate(head_name):
+        kb.add_relation(Relation(
+            name=head_name, signature=(), declared=False, loc=child.loc,
         ))
+
+    args_tuple = _fact_args(child.args)
+    kb.add_fact(Fact(
+        relation_name=head_name,
+        args=args_tuple,
+        layer=layer,
+        provenance=provenance,
+        raw=child,
+        loc=child.loc,
+    ))
 
 
 # ── Public entry point ─────────────────────────────────────────────
 
 
 def load(forms: Iterable[SForm]) -> KnowledgeBase:
-    """Build a populated :class:`KnowledgeBase` from parsed IR forms."""
+    """Build a populated :class:`KnowledgeBase` from parsed IR forms.
+
+    P1.7c — the surface is a **flat sequence of forms**, each classified
+    by its head: ``relation`` → a relation declaration; ``rule`` /
+    ``hrule`` → a rule; ``query`` / ``config`` → their handlers; ``trace``
+    → ignored; **anything else → a fact** with layer from
+    :func:`_layer_of`. (A former-wrapper head such as ``(facts …)`` is now
+    just a fact whose relation is ``facts``.)
+    """
     kb = KnowledgeBase()
     errors: list[str] = []
 
-    # Collect top-level blocks (multiple of each kind merge).
-    ontology_blocks: list[SForm] = []
-    rules_blocks: list[SForm] = []
-    facts_blocks: list[SForm] = []
-    reasoning_blocks: list[SForm] = []
+    # Flat top-level forms, bucketed into the three classic passes
+    # (relations → rules → facts) so resolution order is preserved.
+    flat_relations: list[SForm] = []
+    flat_rules: list[SForm] = []
+    flat_facts: list[tuple[SForm, Layer]] = []   # each carries its own layer
     query_blocks: list[SForm] = []
     config_blocks: list[SForm] = []
-    # trace_blocks unused for S1.2.1; reserved for S1.2.3.
 
     for form in forms:
         if not isinstance(form, SForm) or not isinstance(form.head, Atom):
             errors.append(f"unexpected top-level form: {form!r}")
             continue
         h = form.head.name
-        if h == "ontology":
-            ontology_blocks.append(form)
-        elif h == "rules":
-            rules_blocks.append(form)
-        elif h == "facts":
-            facts_blocks.append(form)
-        elif h == "reasoning":
-            reasoning_blocks.append(form)
+        if h == "relation":
+            flat_relations.append(form)
+        elif h in ("rule", "hrule"):
+            flat_rules.append(form)
         elif h == "query":
             query_blocks.append(form)
         elif h == "config":
             config_blocks.append(form)
         elif h == "trace":
-            pass  # S1.2.3 territory.
+            pass  # engine-emitted output; parsed by trace/ast.py, not here.
         else:
-            errors.append(f"unknown top-level form: ({h} …)")
+            # The flat default: any non-reserved head is a fact, with its
+            # layer derived (or read off an explicit :layer) per S1.7c.1.
+            flat_facts.append((form, _layer_of(form, errors)))
 
-    # Pass 1 — types, relations, instances (and *collect* fact-shaped
-    # children for pass 3 below).
-    deferred_ontology_facts: list[SForm] = []
-    for block in ontology_blocks:
-        deferred_ontology_facts.extend(_ingest_ontology(block, kb, errors))
+    # Pass 1 — relations (declared signatures + the auto-stored decl facts).
+    for rform in flat_relations:
+        _ingest_relation(rform, kb, errors)
 
     # Pass 2 — rules. After this, rule-name resolution is possible.
-    for block in rules_blocks:
-        _ingest_rules(block, kb, errors)
+    _ingest_rules(flat_rules, kb, errors)
 
-    # Pass 3 — facts. Each block carries its own layer.
-    _ingest_facts(deferred_ontology_facts, kb, Layer.ONTOLOGY, errors)
-    for block in facts_blocks:
-        _ingest_facts(block.args, kb, Layer.FACT, errors)
-    for block in reasoning_blocks:
-        _ingest_facts(block.args, kb, Layer.REASONING, errors)
+    # Pass 3 — facts. Each flat fact carries its own layer (resolved above).
+    for fact_form, layer in flat_facts:
+        _ingest_one_fact(fact_form, kb, layer, errors)
 
     # Query (last one wins if there are multiple).
     if query_blocks:

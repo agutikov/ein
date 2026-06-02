@@ -130,16 +130,14 @@ def test_contradictions_solve_root_contradiction_returns_empty_deads():
     tried). ``verdict.unsat_core`` is the empty frozenset
     (no recorded dead's core to union)."""
     kb = _kb_inline("""
-    (rules
-      (rule always-false ()
-        :match (trigger ?x)
-        :assert (false)
-        :why "always" :priority 100))
-    (ontology
-      (type T)
-      (relation trigger T)
-      (instance a T))
-    (facts (trigger a :source "(1)"))
+    (rule always-false ()
+      :match (trigger ?x)
+      :assert (false)
+      :why "always" :priority 100)
+    (type T)
+    (relation trigger T)
+    (instance a T)
+    (trigger a :source "(1)")
     (query :mode solve :goal (trigger ?x))
     """)
     verdict, stats = contradictions_solve(kb, max_set_size=1)

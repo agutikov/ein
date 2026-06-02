@@ -14,21 +14,18 @@
 ;;;   (before-of Breakfast Lunch) + (before-of Lunch Dinner)
 ;;;   ⇒ (before-of Breakfast Dinner).
 
-(rules
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b)
-                 (?rel ?b ?c)
-                 (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} is transitive."
-    :priority 200))
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b)
+               (?rel ?b ?c)
+               (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive."
+  :priority 200)
 
-(ontology
-  (relation before-of T T)
-  (transitive before-of))
+(relation before-of T T)
+(transitive before-of)
 
-(facts
-  (before-of Breakfast Lunch :source "demo")
-  (before-of Lunch Dinner :source "demo"))
+(before-of Breakfast Lunch :source "demo")
+(before-of Lunch Dinner :source "demo")
 
 (query :mode solve :goal (before-of Breakfast Dinner))

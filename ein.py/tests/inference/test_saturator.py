@@ -35,10 +35,10 @@ def _sat(text: str) -> Saturator:
 def test_saturator_constructs_without_engine():
     """Saturator(kb) auto-builds the Engine + compile cache."""
     sat = _sat("""
-    (rules (rule symmetric (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (symmetric r))
-    (facts (r A B :source "(1)"))
+    (rule symmetric (?rel)
+:match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (symmetric r)
+    (r A B :source "(1)")
     """)
     assert isinstance(sat.engine, Engine)
     assert sat.engine.cache, "compile cache should be populated automatically"
@@ -47,10 +47,10 @@ def test_saturator_constructs_without_engine():
 def test_saturator_accepts_existing_engine():
     """Saturator(kb, engine) reuses the provided engine + its cache."""
     kb = KnowledgeBase.from_ir(parse("""
-    (rules (rule sym (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (sym r))
-    (facts (r A B :source "(1)"))
+    (rule sym (?rel)
+:match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (sym r)
+    (r A B :source "(1)")
     """))
     eng = Engine(kb)
     eng.compile_all()
@@ -65,8 +65,8 @@ def test_saturator_accepts_existing_engine():
 
 def test_empty_kb_saturates_to_nothing():
     sat = _sat("""
-    (rules (rule s (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (s r))
+    (rule s (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (s r)
     """)
     firings = list(sat.saturate())
     assert firings == []
@@ -81,9 +81,9 @@ def test_single_fact_one_firing():
     legitimate output of saturation.
     """
     sat = _sat("""
-    (rules (rule s (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (s r))
-    (facts (r A B :source "(1)"))
+    (rule s (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (s r)
+    (r A B :source "(1)")
     """)
     firings = list(sat.saturate())
     productive = [f for f in firings if not f.redundant]
@@ -96,11 +96,11 @@ def test_single_fact_one_firing():
 def test_triangle_transitive_closure():
     """A-B-C chain reaches (A, C) via transitive."""
     sat = _sat("""
-    (rules (rule transitive (?rel)
-      :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-      :assert (?rel ?a ?c) :why "t" :priority 200))
-    (ontology (relation r T T) (transitive r))
-    (facts (r A B :source "(1)") (r B C :source "(2)"))
+    (rule transitive (?rel)
+:match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+:assert (?rel ?a ?c) :why "t" :priority 200)
+    (relation r T T) (transitive r)
+    (r A B :source "(1)") (r B C :source "(2)")
     """)
     firings = list(sat.saturate())
     productive = {f.derived.args for f in firings if not f.redundant}
@@ -110,14 +110,13 @@ def test_triangle_transitive_closure():
 def test_chained_transitivity_four_nodes():
     """A-B-C-D chain reaches the full transitive closure."""
     sat = _sat("""
-    (rules (rule transitive (?rel)
-      :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-      :assert (?rel ?a ?c) :why "t" :priority 200))
-    (ontology (relation r T T) (transitive r))
-    (facts
-      (r A B :source "(1)")
-      (r B C :source "(2)")
-      (r C D :source "(3)"))
+    (rule transitive (?rel)
+:match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+:assert (?rel ?a ?c) :why "t" :priority 200)
+    (relation r T T) (transitive r)
+    (r A B :source "(1)")
+    (r B C :source "(2)")
+    (r C D :source "(3)")
     """)
     list(sat.saturate())
     derived = {
@@ -146,14 +145,13 @@ def test_priority_propagate_before_derive():
     on the input facts has run.)
     """
     sat = _sat("""
-    (rules
-      (rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)
-        :why "s" :priority 100)
-      (rule transitive (?rel)
-        :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-        :assert (?rel ?a ?c) :why "t" :priority 200))
-    (ontology (relation r T T) (symmetric r) (transitive r))
-    (facts (r A B :source "(1)") (r B C :source "(2)"))
+    (rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)
+      :why "s" :priority 100)
+    (rule transitive (?rel)
+      :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+      :assert (?rel ?a ?c) :why "t" :priority 200)
+    (relation r T T) (symmetric r) (transitive r)
+    (r A B :source "(1)") (r B C :source "(2)")
     """)
     firings = list(sat.saturate())
     productive = [f for f in firings if not f.redundant]
@@ -172,17 +170,15 @@ def test_priority_propagate_before_derive():
 def test_priority_eliminate_after_derive():
     """type-exclusivity (300) does not preempt symmetric (100)."""
     sat = _sat("""
-    (rules
-      (rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)
-        :why "s" :priority 100)
-      (rule type-exclusivity (?R)
-        :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-        :assert (not (?R ?a ?b)) :why "x" :priority 300))
-    (ontology
-      (type Color) (instance Red Color) (instance Blue Color)
-      (relation co-located T T) (symmetric co-located)
-      (type-exclusivity co-located))
-    (facts (co-located Norwegian Red :source "(1)"))
+    (rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)
+      :why "s" :priority 100)
+    (rule type-exclusivity (?R)
+      :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+      :assert (not (?R ?a ?b)) :why "x" :priority 300)
+    (type Color) (instance Red Color) (instance Blue Color)
+    (relation co-located T T) (symmetric co-located)
+    (type-exclusivity co-located)
+    (co-located Norwegian Red :source "(1)")
     """)
     firings = list(sat.saturate())
     productive = [f for f in firings if not f.redundant]
@@ -207,10 +203,10 @@ def test_redundant_firing_marked():
     the reverse), once redundantly (re-deriving the original). The
     second firing must carry redundant=True and must NOT re-insert."""
     sat = _sat("""
-    (rules (rule sym (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (sym r))
-    (facts (r A B :source "(1)"))
+    (rule sym (?rel)
+:match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (sym r)
+    (r A B :source "(1)")
     """)
     firings = list(sat.saturate())
     productive = [f for f in firings if not f.redundant]
@@ -228,10 +224,10 @@ def test_redundant_firing_marked():
 
 def test_is_stalled_after_closure():
     sat = _sat("""
-    (rules (rule sym (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (sym r))
-    (facts (r A B :source "(1)"))
+    (rule sym (?rel)
+:match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (sym r)
+    (r A B :source "(1)")
     """)
     list(sat.saturate())
     assert sat.is_stalled()
@@ -240,10 +236,10 @@ def test_is_stalled_after_closure():
 def test_is_stalled_false_before_first_step():
     """Before any firing, the queue has work; is_stalled is False."""
     sat = _sat("""
-    (rules (rule sym (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (sym r))
-    (facts (r A B :source "(1)"))
+    (rule sym (?rel)
+:match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (sym r)
+    (r A B :source "(1)")
     """)
     assert not sat.is_stalled()
 
@@ -260,10 +256,10 @@ def test_is_stalled_flips_after_new_fact():
     from ein_bot.kb.provenance import Provenance
 
     sat = _sat("""
-    (rules (rule sym (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (sym r))
-    (facts (r A B :source "(1)"))
+    (rule sym (?rel)
+:match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (sym r)
+    (r A B :source "(1)")
     """)
     list(sat.saturate())
     assert sat.is_stalled()
@@ -288,10 +284,10 @@ def test_is_stalled_flips_after_new_fact():
 def test_saturate_is_idempotent():
     """Running saturate() twice on the same KB: second call yields zero."""
     sat = _sat("""
-    (rules (rule sym (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (sym r))
-    (facts (r A B :source "(1)"))
+    (rule sym (?rel)
+:match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (sym r)
+    (r A B :source "(1)")
     """)
     first = list(sat.saturate())
     assert first, "first saturate should produce firings"

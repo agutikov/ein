@@ -1,6 +1,6 @@
 ;; Should fail: rule parameter list is mandatory — `()` for non-generic.
-(rules
-  (rule symmetric
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "test"))
+;; Flat form (P1.7c): a top-level `(rule …)` declarator with no params.
+(rule symmetric
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "test")

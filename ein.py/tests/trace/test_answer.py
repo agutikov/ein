@@ -22,15 +22,13 @@ def _solution(text: str) -> Solution:
 # A complete model encoded directly as facts (no solving needed) + the
 # zebra2-shaped who-vs-where goal.
 _ZEBRA_SHAPED = """
-(ontology
-  (relation drink-loc  Drink       House)
-  (relation nation-loc Nationality House)
-  (relation pet-loc    Pet         House))
-(facts
-  (drink-loc  Water     House-1)
-  (nation-loc Norwegian House-1)
-  (pet-loc    Zebra     House-5)
-  (nation-loc Japanese  House-5))
+(relation drink-loc  Drink       House)
+(relation nation-loc Nationality House)
+(relation pet-loc    Pet         House)
+(drink-loc  Water     House-1 :layer fact)
+(nation-loc Norwegian House-1 :layer fact)
+(pet-loc    Zebra     House-5 :layer fact)
+(nation-loc Japanese  House-5 :layer fact)
 (query
   :mode solve
   :goal (and (drink-loc  Water      ?h_water)
@@ -54,12 +52,10 @@ def test_projection_relation_not_hardcoded():
     """The 'who' relation is whatever the query names — here `owner-loc`,
     not `nation-loc`. Regression against the old hardcoded `_nation_at`."""
     text = """
-    (ontology
-      (relation drink-loc Drink House)
-      (relation owner-loc Owner House))
-    (facts
-      (drink-loc Water House-1)
-      (owner-loc Zaphod House-1))
+    (relation drink-loc Drink House)
+    (relation owner-loc Owner House)
+    (drink-loc Water House-1 :layer fact)
+    (owner-loc Zaphod House-1 :layer fact)
     (query
       :mode solve
       :goal (and (drink-loc Water ?h) (owner-loc ?who ?h)))
@@ -72,8 +68,8 @@ def test_where_fallback_without_projection():
     """A goal with only an anchor (no projection conjunct) degrades to the
     'where' phrasing rather than dropping the answer."""
     text = """
-    (ontology (relation drink-loc Drink House))
-    (facts (drink-loc Water House-1))
+    (relation drink-loc Drink House)
+    (drink-loc Water House-1 :layer fact)
     (query :mode solve :goal (drink-loc Water ?h))
     """
     ans = render_answer(_solution(text)).lower()
@@ -81,6 +77,7 @@ def test_where_fallback_without_projection():
 
 
 def test_no_goal_is_graceful():
-    text = "(ontology (relation drink-loc Drink House))\n(facts (drink-loc Water House-1))"
+    text = """(relation drink-loc Drink House)
+(drink-loc Water House-1 :layer fact)"""
     ans = render_answer(_solution(text))
     assert "Solved" in ans

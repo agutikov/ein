@@ -45,26 +45,24 @@
 ;;; Diagram 3 in lattice_diagrams.md) — the lattice node-coloured
 ;;; rendering of the same shape.
 
-(rules
-  (rule three-conflict ()
-    :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
-    :assert (false)
-    :why    "{?x} a-prop AND {?y} b-prop AND {?z} c-prop — jointly forbidden"
-    :priority 200)
+(rule three-conflict ()
+  :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
+  :assert (false)
+  :why    "{?x} a-prop AND {?y} b-prop AND {?z} c-prop — jointly forbidden"
+  :priority 200)
 
-  (hrule guess (?R ?T)
-    :match  (is-a ?x ?T)
-    :assert (?R ?x)
-    :why    "guess: is {?x} {?R}?"))
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
 
-(ontology
-  (relation is-a   T T)
-  (relation a-prop T)
-  (relation b-prop T)
-  (relation c-prop T)
+(relation is-a   T T)
+(relation a-prop T)
+(relation b-prop T)
+(relation c-prop T)
 
-  (is-a Item T)
-  (is-a X    Item))
+(is-a Item T)
+(is-a X    Item)
 
 (query
   :mode solve

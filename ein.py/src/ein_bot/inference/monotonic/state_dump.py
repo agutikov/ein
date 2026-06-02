@@ -88,50 +88,49 @@ def _fact_to_sform(fact: Fact, *, with_kwargs: bool = True) -> SForm:
                     key=Keyword(name="hypothesis"),
                     value=Int(value=prov.branch or 0),
                 ))
-        # Layer kw-pair on FACT/REASONING facts so the reader
-        # can tell them apart inside a single (facts ...) block.
-        # ONTOLOGY facts don't carry one — they live in the
-        # ontology block.
-        if fact.layer is Layer.REASONING:
+        # Layer kw-pair only when provenance-derivation wouldn't recover
+        # it on reload (P1.7c S1.7c.1): a `:rule` fact derives REASONING
+        # and a `:source` fact derives FACT for free, so `:layer` is
+        # emitted only for the residue — a hypothesis/unannotated
+        # REASONING fact, an unsourced FACT, a sourced ONTOLOGY fact.
+        # Keeps the flat dump → reload layer round-trip exact (the
+        # wrapped loader silently dropped this annotation).
+        has_rule = prov is not None and prov.kind == "rule" and bool(prov.rule)
+        has_source = (
+            prov is not None and prov.kind == "source" and bool(prov.source)
+        )
+        derived = (
+            Layer.REASONING if has_rule
+            else Layer.FACT if has_source
+            else Layer.ONTOLOGY
+        )
+        if fact.layer is not derived:
             args.append(KwPair(
                 key=Keyword(name="layer"),
-                value=Atom(name="reasoning"),
+                value=Atom(name=fact.layer.value),
             ))
     return SForm(head=Atom(name=fact.relation_name), args=tuple(args))
 
 
 def _kb_to_ein_text(kb: KnowledgeBase) -> str:
-    """Render a KB as ``(ontology ...) (facts ...)`` ein text.
+    """Render a KB as a **flat** sequence of ein forms (P1.7c S1.7c.3).
 
-    Splits by layer:
-    - ONTOLOGY-layer facts (the ``(relation ...)``, ``(is-a ...)``,
-      ``(bijective ...)``, etc.) land in the ontology block.
-    - FACT-layer facts (the puzzle's authored conditions) and
-      REASONING-layer facts (everything the saturator derived,
-      including ``(not ...)``) land in the facts block, with
-      ``:layer reasoning`` annotated on the derived ones.
+    The block wrappers are gone — each fact is a top-level form. Layer is
+    carried per fact: ONTOLOGY facts (the ``(relation ...)``, ``(is-a ...)``,
+    ``(bijective ...)`` schema) carry no annotation; FACT facts carry
+    ``:source``; REASONING facts (everything the saturator derived,
+    including ``(not ...)``) carry ``:rule`` / ``:using`` — or an explicit
+    ``:layer`` when provenance alone wouldn't re-derive the layer (see
+    :func:`_fact_to_sform`). ONTOLOGY facts are emitted first purely for
+    readability; the round-trip is order-independent.
     """
     from ein_bot.ir.dump import dump_canonical
 
-    ont_args: list[SForm] = []
-    fact_args: list[SForm] = []
+    ont: list[SForm] = []
+    rest: list[SForm] = []
     for f in kb.facts:
-        sform = _fact_to_sform(f)
-        if f.layer is Layer.ONTOLOGY:
-            ont_args.append(sform)
-        else:
-            fact_args.append(sform)
-
-    forms: list[SForm] = []
-    if ont_args:
-        forms.append(SForm(
-            head=Atom(name="ontology"), args=tuple(ont_args),
-        ))
-    if fact_args:
-        forms.append(SForm(
-            head=Atom(name="facts"), args=tuple(fact_args),
-        ))
-    return dump_canonical(forms)
+        (ont if f.layer is Layer.ONTOLOGY else rest).append(_fact_to_sform(f))
+    return dump_canonical([*ont, *rest])
 
 
 def _firing_to_dict(firing: Any) -> dict[str, Any]:

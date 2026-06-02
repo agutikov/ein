@@ -1,408 +1,513 @@
 (config :enable-pre-branch-lookahead true)
 
-(rules
-  (rule
-    symmetric
-    (?rel)
-    :match (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100)
-  (rule
-    transitive
-    (?rel)
-    :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why "{?rel} is transitive."
-    :priority 200)
-  (rule
-    includes
-    (?p ?q)
-    :match (?p ?a ?b)
-    :assert (?q ?a ?b)
-    :why "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-    :priority 100)
-  (rule
-    functional
-    (?R)
-    :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-    :assert (false)
-    :why "{?R} not functional: {?a} has both {?b} and {?c}."
-    :priority 250)
-  (rule
-    injective
-    (?R)
-    :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-    :assert (false)
-    :why "{?R} not injective: {?c} reached from both {?a} and {?b}."
-    :priority 250)
-  (rule
-    functional-negative
-    (?R)
-    :match (and (?R ?a ?b) (relation ?R ?A ?B) (is-a ?b_other ?B) (neq ?b_other ?b))
-    :assert (not (?R ?a ?b_other))
-    :why "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
-    :priority 240)
-  (rule
-    injective-negative
-    (?R)
-    :match (and (?R ?a ?b) (relation ?R ?A ?B) (is-a ?a_other ?A) (neq ?a_other ?a))
-    :assert (not (?R ?a_other ?b))
-    :why "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
-    :priority 240)
-  (rule
-    derive-functional-negative
-    ()
-    :match (functional ?R)
-    :assert (functional-negative ?R)
-    :why "{?R} functional ⟹ functional-negative active."
-    :priority 100)
-  (rule
-    derive-injective-negative
-    ()
-    :match (injective ?R)
-    :assert (injective-negative ?R)
-    :why "{?R} injective ⟹ injective-negative active."
-    :priority 100)
-  (rule
-    co-located
-    (?R1 ?V1 ?R2 ?V2)
-    :match (?R1 ?V1 ?h)
-    :assert (?R2 ?V2 ?h)
-    :why "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h})."
-    :priority 200)
-  (rule
-    co-located-symmetric
-    ()
-    :match (co-located ?R1 ?V1 ?R2 ?V2)
-    :assert (co-located ?R2 ?V2 ?R1 ?V1)
-    :why "co-located is symmetric: derive reverse activator."
-    :priority 100)
-  (rule
-    co-located-negative
-    (?R1 ?V1 ?R2 ?V2)
-    :match (not (?R1 ?V1 ?h))
-    :assert (not (?R2 ?V2 ?h))
-    :why "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h}))."
-    :priority 200)
-  (rule
-    derive-co-located-negative
-    ()
-    :match (co-located ?R1 ?V1 ?R2 ?V2)
-    :assert (co-located-negative ?R1 ?V1 ?R2 ?V2)
-    :why "co-located activator ⟹ co-located-negative active."
-    :priority 100)
-  (rule
-    adjacent-via-fwd
-    (?S ?R1 ?V1 ?R2 ?V2)
-    :match (and (?R1 ?V1 ?h1) (?S ?h2 ?h1) (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
-    :assert (?R2 ?V2 ?h2)
-    :why "({?R1} {?V1} {?h1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?V2} {?h2})."
-    :priority 200)
-  (rule
-    adjacent-via-bwd
-    (?S ?R1 ?V1 ?R2 ?V2)
-    :match (and (?R2 ?V2 ?h2) (?S ?h2 ?h1) (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
-    :assert (?R1 ?V1 ?h1)
-    :why "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1})."
-    :priority 200)
-  (rule
-    adjacent-via-fwd-negative
-    (?S ?R1 ?V1 ?R2 ?V2)
-    :match (and (not (?R2 ?V2 ?h2)) (?S ?h2 ?h1) (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
-    :assert (not (?R1 ?V1 ?h1))
-    :why "(not ({?R2} {?V2} {?h2})) + unique-{?S}-source {?h1} ⟹ (not ({?R1} {?V1} {?h1}))."
-    :priority 240)
-  (rule
-    adjacent-via-bwd-negative
-    (?S ?R1 ?V1 ?R2 ?V2)
-    :match (and (not (?R1 ?V1 ?h1)) (?S ?h2 ?h1) (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
-    :assert (not (?R2 ?V2 ?h2))
-    :why "(not ({?R1} {?V1} {?h1})) + unique-{?S}-target {?h2} ⟹ (not ({?R2} {?V2} {?h2}))."
-    :priority 240)
-  (rule
-    derive-adjacent-via-fwd
-    ()
-    :match (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :why "adjacent-via ⟹ adjacent-via-fwd (identical args)."
-    :priority 100)
-  (rule
-    derive-adjacent-via-bwd
-    ()
-    :match (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :why "adjacent-via ⟹ adjacent-via-bwd (identical args)."
-    :priority 100)
-  (rule
-    derive-adjacent-via-fwd-negative
-    ()
-    :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
-    :why "adjacent-via-fwd ⟹ adjacent-via-fwd-negative."
-    :priority 200)
-  (rule
-    derive-adjacent-via-bwd-negative
-    ()
-    :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
-    :why "adjacent-via-bwd ⟹ adjacent-via-bwd-negative."
-    :priority 200)
-  (rule
-    disjunctive-prune-fwd
-    (?S ?R1 ?V1 ?R2 ?V2)
-    :match (and (?R1 ?V1 ?h1) (relation ?R2 ?A ?B) (is-a ?h_other ?B) (neq ?h_other ?h1) (absent (?S ?h_other ?h1)))
-    :assert (not (?R2 ?V2 ?h_other))
-    :why "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded."
-    :priority 250)
-  (rule
-    disjunctive-prune-bwd
-    (?S ?R1 ?V1 ?R2 ?V2)
-    :match (and (?R2 ?V2 ?h1) (relation ?R1 ?A ?B) (is-a ?h_other ?B) (neq ?h_other ?h1) (absent (?S ?h1 ?h_other)))
-    :assert (not (?R1 ?V1 ?h_other))
-    :why "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded."
-    :priority 250)
-  (rule
-    derive-disjunctive-prune-fwd
-    ()
-    :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :why "adjacent-via-fwd ⟹ disjunctive-prune-fwd."
-    :priority 200)
-  (rule
-    derive-disjunctive-prune-bwd
-    ()
-    :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :why "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
-    :priority 200)
-  (rule
-    adjacent-via-endpoint-fwd
-    (?S ?R1 ?V1 ?R2 ?V2)
-    :match (and (relation ?R1 ?A ?B) (is-a ?h1 ?B) (absent (and (is-a ?h2 ?B) (?S ?h2 ?h1))))
-    :assert (not (?R1 ?V1 ?h1))
-    :why "{?h1} has no {?S}-source; ({?R1} {?V1} {?h1}) impossible."
-    :priority 240)
-  (rule
-    adjacent-via-endpoint-bwd
-    (?S ?R1 ?V1 ?R2 ?V2)
-    :match (and (relation ?R2 ?A ?B) (is-a ?h2 ?B) (absent (and (is-a ?h1 ?B) (?S ?h2 ?h1))))
-    :assert (not (?R2 ?V2 ?h2))
-    :why "{?h2} has no {?S}-target; ({?R2} {?V2} {?h2}) impossible."
-    :priority 240)
-  (rule
-    derive-adjacent-via-endpoint-fwd
-    ()
-    :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2)
-    :why "adjacent-via-fwd ⟹ adjacent-via-endpoint-fwd."
-    :priority 200)
-  (rule
-    derive-adjacent-via-endpoint-bwd
-    ()
-    :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :assert (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2)
-    :why "adjacent-via-bwd ⟹ adjacent-via-endpoint-bwd."
-    :priority 200)
-  (rule
-    typecheck-arg-0
-    (?R ?Dom)
-    :match (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
-    :assert (false)
-    :why "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
-    :priority 220)
-  (rule
-    typecheck-arg-1
-    (?R ?Ran)
-    :match (and (?R ?a ?b) (absent (is-a* ?b ?Ran)))
-    :assert (false)
-    :why "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
-    :priority 220)
-  (rule
-    domain-elimination
-    (?R)
-    :match (and (functional ?R) (total ?R) (relation ?R ?A ?B) (is-a ?a ?A) (is-a ?b ?B) (forall ?b_other (and (is-a ?b_other ?B) (neq ?b_other ?b)) (not (?R ?a ?b_other))))
-    :assert (?R ?a ?b)
-    :why "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b})."
-    :priority 400)
-  (rule
-    range-elimination
-    (?R)
-    :match (and (injective ?R) (surjective ?R) (relation ?R ?A ?B) (is-a ?b ?B) (is-a ?a ?A) (forall ?a_other (and (is-a ?a_other ?A) (neq ?a_other ?a)) (not (?R ?a_other ?b))))
-    :assert (?R ?a ?b)
-    :why "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b})."
-    :priority 400)
-  (rule
-    total
-    (?R)
-    :match (and (relation ?R ?A ?B) (is-a ?a ?A) (forall ?b (is-a ?b ?B) (not (?R ?a ?b))))
-    :assert (false)
-    :why "{?R} not total at {?a}: every {?B} is excluded."
-    :priority 110)
-  (rule
-    surjective
-    (?R)
-    :match (and (relation ?R ?A ?B) (is-a ?b ?B) (forall ?a (is-a ?a ?A) (not (?R ?a ?b))))
-    :assert (false)
-    :why "{?R} not surjective at {?b}: every {?A} is excluded."
-    :priority 110)
-  (rule
-    bijective-functional
-    ()
-    :match (bijective ?R)
-    :assert (functional ?R)
-    :why "{?R} is bijective ⟹ functional."
-    :priority 100)
-  (rule
-    bijective-injective
-    ()
-    :match (bijective ?R)
-    :assert (injective ?R)
-    :why "{?R} is bijective ⟹ injective."
-    :priority 100)
-  (rule
-    bijective-total
-    ()
-    :match (bijective ?R)
-    :assert (total ?R)
-    :why "{?R} is bijective ⟹ total."
-    :priority 100)
-  (rule
-    bijective-surjective
-    ()
-    :match (bijective ?R)
-    :assert (surjective ?R)
-    :why "{?R} is bijective ⟹ surjective."
-    :priority 100)
-  (rule
-    derive-typecheck-arg-0
-    ()
-    :match (and (relation ?R ?A ?B) (bijective ?R))
-    :assert (typecheck-arg-0 ?R ?A)
-    :why "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
-    :priority 100)
-  (rule
-    derive-typecheck-arg-1
-    ()
-    :match (and (relation ?R ?A ?B) (bijective ?R))
-    :assert (typecheck-arg-1 ?R ?B)
-    :why "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
-    :priority 100)
-  (rule
-    derive-domain-elimination
-    ()
-    :match (and (functional ?R) (total ?R))
-    :assert (domain-elimination ?R)
-    :why "{?R} functional + total ⟹ domain-elimination active."
-    :priority 100)
-  (rule
-    derive-range-elimination
-    ()
-    :match (and (injective ?R) (surjective ?R))
-    :assert (range-elimination ?R)
-    :why "{?R} injective + surjective ⟹ range-elimination active."
-    :priority 100)
-  (hrule
-    guess
-    (?R ?T1 ?T2)
-    :match (and (is-a ?a ?T1) (is-a ?b ?T2))
-    :assert (?R ?a ?b)
-    :why "guess: ({?R} {?a} {?b})?"))
+(rule
+  symmetric
+  (?rel)
+  :match (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
 
-(ontology
-  (relation is-a T T)
-  (relation is-a* T T)
-  (relation color-loc Color House)
-  (relation nation-loc Nationality House)
-  (relation drink-loc Drink House)
-  (relation smoke-loc Cigarette House)
-  (relation pet-loc Pet House)
-  (relation right-of House House)
-  (relation next-to House House)
-  (includes is-a is-a*)
-  (transitive is-a*)
-  (symmetric next-to)
-  (includes right-of next-to)
-  (bijective color-loc)
-  (bijective nation-loc)
-  (bijective drink-loc)
-  (bijective smoke-loc)
-  (bijective pet-loc)
-  (is-a Attribute T)
-  (is-a House Attribute)
-  (is-a Color Attribute)
-  (is-a Nationality Attribute)
-  (is-a Pet Attribute)
-  (is-a Cigarette Attribute)
-  (is-a Drink Attribute)
-  (is-a House-1 House)
-  (is-a House-2 House)
-  (is-a House-3 House)
-  (is-a House-4 House)
-  (is-a House-5 House)
-  (is-a Red Color)
-  (is-a Green Color)
-  (is-a Ivory Color)
-  (is-a Yellow Color)
-  (is-a Blue Color)
-  (is-a Englishman Nationality)
-  (is-a Spaniard Nationality)
-  (is-a Ukrainian Nationality)
-  (is-a Norwegian Nationality)
-  (is-a Japanese Nationality)
-  (is-a Dog Pet)
-  (is-a Snail Pet)
-  (is-a Fox Pet)
-  (is-a Horse Pet)
-  (is-a Zebra Pet)
-  (is-a Old_Gold Cigarette)
-  (is-a Kools Cigarette)
-  (is-a Chesterfields Cigarette)
-  (is-a Lucky_Strike Cigarette)
-  (is-a Parliament Cigarette)
-  (is-a Coffee Drink)
-  (is-a Tea Drink)
-  (is-a Milk Drink)
-  (is-a Juice Drink)
-  (is-a Water Drink))
+(rule
+  transitive
+  (?rel)
+  :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why "{?rel} is transitive."
+  :priority 200)
 
-(facts
-  (right-of House-2 House-1 :source "condition (1)")
-  (right-of House-3 House-2 :source "condition (1)")
-  (right-of House-4 House-3 :source "condition (1)")
-  (right-of House-5 House-4 :source "condition (1)")
-  (co-located nation-loc Englishman color-loc Red :source "condition (2)")
-  (co-located nation-loc Spaniard pet-loc Dog :source "condition (3)")
-  (co-located drink-loc Coffee color-loc Green :source "condition (4)")
-  (co-located nation-loc Ukrainian drink-loc Tea :source "condition (5)")
-  (adjacent-via
-    right-of
-    color-loc
-    Ivory
-    color-loc
-    Green
-    :source "condition (6)")
-  (co-located smoke-loc Old_Gold pet-loc Snail :source "condition (7)")
-  (co-located smoke-loc Kools color-loc Yellow :source "condition (8)")
-  (drink-loc Milk House-3 :source "condition (9)")
-  (nation-loc Norwegian House-1 :source "condition (10)")
-  (adjacent-via
-    next-to
-    smoke-loc
-    Chesterfields
-    pet-loc
-    Fox
-    :source "condition (11)")
-  (adjacent-via next-to smoke-loc Kools pet-loc Horse :source "condition (12)")
-  (co-located smoke-loc Lucky_Strike drink-loc Juice :source "condition (13)")
-  (co-located nation-loc Japanese smoke-loc Parliament :source "condition (14)")
-  (adjacent-via
-    next-to
-    nation-loc
-    Norwegian
-    color-loc
-    Blue
-    :source "condition (15)"))
+(rule
+  includes
+  (?p ?q)
+  :match (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+  :priority 100)
+
+(rule
+  functional
+  (?R)
+  :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why "{?R} not functional: {?a} has both {?b} and {?c}."
+  :priority 250)
+
+(rule
+  injective
+  (?R)
+  :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+  :assert (false)
+  :why "{?R} not injective: {?c} reached from both {?a} and {?b}."
+  :priority 250)
+
+(rule
+  functional-negative
+  (?R)
+  :match (and (?R ?a ?b) (relation ?R ?A ?B) (is-a ?b_other ?B) (neq ?b_other ?b))
+  :assert (not (?R ?a ?b_other))
+  :why "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
+  :priority 240)
+
+(rule
+  injective-negative
+  (?R)
+  :match (and (?R ?a ?b) (relation ?R ?A ?B) (is-a ?a_other ?A) (neq ?a_other ?a))
+  :assert (not (?R ?a_other ?b))
+  :why "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
+  :priority 240)
+
+(rule
+  derive-functional-negative
+  ()
+  :match (functional ?R)
+  :assert (functional-negative ?R)
+  :why "{?R} functional ⟹ functional-negative active."
+  :priority 100)
+
+(rule
+  derive-injective-negative
+  ()
+  :match (injective ?R)
+  :assert (injective-negative ?R)
+  :why "{?R} injective ⟹ injective-negative active."
+  :priority 100)
+
+(rule
+  co-located
+  (?R1 ?V1 ?R2 ?V2)
+  :match (?R1 ?V1 ?h)
+  :assert (?R2 ?V2 ?h)
+  :why "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h})."
+  :priority 200)
+
+(rule
+  co-located-symmetric
+  ()
+  :match (co-located ?R1 ?V1 ?R2 ?V2)
+  :assert (co-located ?R2 ?V2 ?R1 ?V1)
+  :why "co-located is symmetric: derive reverse activator."
+  :priority 100)
+
+(rule
+  co-located-negative
+  (?R1 ?V1 ?R2 ?V2)
+  :match (not (?R1 ?V1 ?h))
+  :assert (not (?R2 ?V2 ?h))
+  :why "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h}))."
+  :priority 200)
+
+(rule
+  derive-co-located-negative
+  ()
+  :match (co-located ?R1 ?V1 ?R2 ?V2)
+  :assert (co-located-negative ?R1 ?V1 ?R2 ?V2)
+  :why "co-located activator ⟹ co-located-negative active."
+  :priority 100)
+
+(rule
+  adjacent-via-fwd
+  (?S ?R1 ?V1 ?R2 ?V2)
+  :match (and (?R1 ?V1 ?h1) (?S ?h2 ?h1) (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
+  :assert (?R2 ?V2 ?h2)
+  :why "({?R1} {?V1} {?h1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?V2} {?h2})."
+  :priority 200)
+
+(rule
+  adjacent-via-bwd
+  (?S ?R1 ?V1 ?R2 ?V2)
+  :match (and (?R2 ?V2 ?h2) (?S ?h2 ?h1) (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
+  :assert (?R1 ?V1 ?h1)
+  :why "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1})."
+  :priority 200)
+
+(rule
+  adjacent-via-fwd-negative
+  (?S ?R1 ?V1 ?R2 ?V2)
+  :match (and (not (?R2 ?V2 ?h2)) (?S ?h2 ?h1) (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
+  :assert (not (?R1 ?V1 ?h1))
+  :why "(not ({?R2} {?V2} {?h2})) + unique-{?S}-source {?h1} ⟹ (not ({?R1} {?V1} {?h1}))."
+  :priority 240)
+
+(rule
+  adjacent-via-bwd-negative
+  (?S ?R1 ?V1 ?R2 ?V2)
+  :match (and (not (?R1 ?V1 ?h1)) (?S ?h2 ?h1) (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
+  :assert (not (?R2 ?V2 ?h2))
+  :why "(not ({?R1} {?V1} {?h1})) + unique-{?S}-target {?h2} ⟹ (not ({?R2} {?V2} {?h2}))."
+  :priority 240)
+
+(rule
+  derive-adjacent-via-fwd
+  ()
+  :match (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+  :why "adjacent-via ⟹ adjacent-via-fwd (identical args)."
+  :priority 100)
+
+(rule
+  derive-adjacent-via-bwd
+  ()
+  :match (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+  :why "adjacent-via ⟹ adjacent-via-bwd (identical args)."
+  :priority 100)
+
+(rule
+  derive-adjacent-via-fwd-negative
+  ()
+  :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+  :why "adjacent-via-fwd ⟹ adjacent-via-fwd-negative."
+  :priority 200)
+
+(rule
+  derive-adjacent-via-bwd-negative
+  ()
+  :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+  :why "adjacent-via-bwd ⟹ adjacent-via-bwd-negative."
+  :priority 200)
+
+(rule
+  disjunctive-prune-fwd
+  (?S ?R1 ?V1 ?R2 ?V2)
+  :match (and (?R1 ?V1 ?h1) (relation ?R2 ?A ?B) (is-a ?h_other ?B) (neq ?h_other ?h1) (absent (?S ?h_other ?h1)))
+  :assert (not (?R2 ?V2 ?h_other))
+  :why "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded."
+  :priority 250)
+
+(rule
+  disjunctive-prune-bwd
+  (?S ?R1 ?V1 ?R2 ?V2)
+  :match (and (?R2 ?V2 ?h1) (relation ?R1 ?A ?B) (is-a ?h_other ?B) (neq ?h_other ?h1) (absent (?S ?h1 ?h_other)))
+  :assert (not (?R1 ?V1 ?h_other))
+  :why "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded."
+  :priority 250)
+
+(rule
+  derive-disjunctive-prune-fwd
+  ()
+  :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
+  :why "adjacent-via-fwd ⟹ disjunctive-prune-fwd."
+  :priority 200)
+
+(rule
+  derive-disjunctive-prune-bwd
+  ()
+  :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
+  :why "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
+  :priority 200)
+
+(rule
+  adjacent-via-endpoint-fwd
+  (?S ?R1 ?V1 ?R2 ?V2)
+  :match (and (relation ?R1 ?A ?B) (is-a ?h1 ?B) (absent (and (is-a ?h2 ?B) (?S ?h2 ?h1))))
+  :assert (not (?R1 ?V1 ?h1))
+  :why "{?h1} has no {?S}-source; ({?R1} {?V1} {?h1}) impossible."
+  :priority 240)
+
+(rule
+  adjacent-via-endpoint-bwd
+  (?S ?R1 ?V1 ?R2 ?V2)
+  :match (and (relation ?R2 ?A ?B) (is-a ?h2 ?B) (absent (and (is-a ?h1 ?B) (?S ?h2 ?h1))))
+  :assert (not (?R2 ?V2 ?h2))
+  :why "{?h2} has no {?S}-target; ({?R2} {?V2} {?h2}) impossible."
+  :priority 240)
+
+(rule
+  derive-adjacent-via-endpoint-fwd
+  ()
+  :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2)
+  :why "adjacent-via-fwd ⟹ adjacent-via-endpoint-fwd."
+  :priority 200)
+
+(rule
+  derive-adjacent-via-endpoint-bwd
+  ()
+  :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2)
+  :why "adjacent-via-bwd ⟹ adjacent-via-endpoint-bwd."
+  :priority 200)
+
+(rule
+  typecheck-arg-0
+  (?R ?Dom)
+  :match (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
+  :assert (false)
+  :why "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
+  :priority 220)
+
+(rule
+  typecheck-arg-1
+  (?R ?Ran)
+  :match (and (?R ?a ?b) (absent (is-a* ?b ?Ran)))
+  :assert (false)
+  :why "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
+  :priority 220)
+
+(rule
+  domain-elimination
+  (?R)
+  :match (and (functional ?R) (total ?R) (relation ?R ?A ?B) (is-a ?a ?A) (is-a ?b ?B) (forall ?b_other (and (is-a ?b_other ?B) (neq ?b_other ?b)) (not (?R ?a ?b_other))))
+  :assert (?R ?a ?b)
+  :why "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b})."
+  :priority 400)
+
+(rule
+  range-elimination
+  (?R)
+  :match (and (injective ?R) (surjective ?R) (relation ?R ?A ?B) (is-a ?b ?B) (is-a ?a ?A) (forall ?a_other (and (is-a ?a_other ?A) (neq ?a_other ?a)) (not (?R ?a_other ?b))))
+  :assert (?R ?a ?b)
+  :why "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b})."
+  :priority 400)
+
+(rule
+  total
+  (?R)
+  :match (and (relation ?R ?A ?B) (is-a ?a ?A) (forall ?b (is-a ?b ?B) (not (?R ?a ?b))))
+  :assert (false)
+  :why "{?R} not total at {?a}: every {?B} is excluded."
+  :priority 110)
+
+(rule
+  surjective
+  (?R)
+  :match (and (relation ?R ?A ?B) (is-a ?b ?B) (forall ?a (is-a ?a ?A) (not (?R ?a ?b))))
+  :assert (false)
+  :why "{?R} not surjective at {?b}: every {?A} is excluded."
+  :priority 110)
+
+(rule
+  bijective-functional
+  ()
+  :match (bijective ?R)
+  :assert (functional ?R)
+  :why "{?R} is bijective ⟹ functional."
+  :priority 100)
+
+(rule
+  bijective-injective
+  ()
+  :match (bijective ?R)
+  :assert (injective ?R)
+  :why "{?R} is bijective ⟹ injective."
+  :priority 100)
+
+(rule
+  bijective-total
+  ()
+  :match (bijective ?R)
+  :assert (total ?R)
+  :why "{?R} is bijective ⟹ total."
+  :priority 100)
+
+(rule
+  bijective-surjective
+  ()
+  :match (bijective ?R)
+  :assert (surjective ?R)
+  :why "{?R} is bijective ⟹ surjective."
+  :priority 100)
+
+(rule
+  derive-typecheck-arg-0
+  ()
+  :match (and (relation ?R ?A ?B) (bijective ?R))
+  :assert (typecheck-arg-0 ?R ?A)
+  :why "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
+  :priority 100)
+
+(rule
+  derive-typecheck-arg-1
+  ()
+  :match (and (relation ?R ?A ?B) (bijective ?R))
+  :assert (typecheck-arg-1 ?R ?B)
+  :why "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
+  :priority 100)
+
+(rule
+  derive-domain-elimination
+  ()
+  :match (and (functional ?R) (total ?R))
+  :assert (domain-elimination ?R)
+  :why "{?R} functional + total ⟹ domain-elimination active."
+  :priority 100)
+
+(rule
+  derive-range-elimination
+  ()
+  :match (and (injective ?R) (surjective ?R))
+  :assert (range-elimination ?R)
+  :why "{?R} injective + surjective ⟹ range-elimination active."
+  :priority 100)
+
+(hrule
+  guess
+  (?R ?T1 ?T2)
+  :match (and (is-a ?a ?T1) (is-a ?b ?T2))
+  :assert (?R ?a ?b)
+  :why "guess: ({?R} {?a} {?b})?")
+
+(relation is-a T T)
+
+(relation is-a* T T)
+
+(relation color-loc Color House)
+
+(relation nation-loc Nationality House)
+
+(relation drink-loc Drink House)
+
+(relation smoke-loc Cigarette House)
+
+(relation pet-loc Pet House)
+
+(relation right-of House House)
+
+(relation next-to House House)
+
+(includes is-a is-a*)
+
+(transitive is-a*)
+
+(symmetric next-to)
+
+(includes right-of next-to)
+
+(bijective color-loc)
+
+(bijective nation-loc)
+
+(bijective drink-loc)
+
+(bijective smoke-loc)
+
+(bijective pet-loc)
+
+(is-a Attribute T)
+
+(is-a House Attribute)
+
+(is-a Color Attribute)
+
+(is-a Nationality Attribute)
+
+(is-a Pet Attribute)
+
+(is-a Cigarette Attribute)
+
+(is-a Drink Attribute)
+
+(is-a House-1 House)
+
+(is-a House-2 House)
+
+(is-a House-3 House)
+
+(is-a House-4 House)
+
+(is-a House-5 House)
+
+(is-a Red Color)
+
+(is-a Green Color)
+
+(is-a Ivory Color)
+
+(is-a Yellow Color)
+
+(is-a Blue Color)
+
+(is-a Englishman Nationality)
+
+(is-a Spaniard Nationality)
+
+(is-a Ukrainian Nationality)
+
+(is-a Norwegian Nationality)
+
+(is-a Japanese Nationality)
+
+(is-a Dog Pet)
+
+(is-a Snail Pet)
+
+(is-a Fox Pet)
+
+(is-a Horse Pet)
+
+(is-a Zebra Pet)
+
+(is-a Old_Gold Cigarette)
+
+(is-a Kools Cigarette)
+
+(is-a Chesterfields Cigarette)
+
+(is-a Lucky_Strike Cigarette)
+
+(is-a Parliament Cigarette)
+
+(is-a Coffee Drink)
+
+(is-a Tea Drink)
+
+(is-a Milk Drink)
+
+(is-a Juice Drink)
+
+(is-a Water Drink)
+
+(right-of House-2 House-1 :source "condition (1)")
+
+(right-of House-3 House-2 :source "condition (1)")
+
+(right-of House-4 House-3 :source "condition (1)")
+
+(right-of House-5 House-4 :source "condition (1)")
+
+(co-located nation-loc Englishman color-loc Red :source "condition (2)")
+
+(co-located nation-loc Spaniard pet-loc Dog :source "condition (3)")
+
+(co-located drink-loc Coffee color-loc Green :source "condition (4)")
+
+(co-located nation-loc Ukrainian drink-loc Tea :source "condition (5)")
+
+(adjacent-via right-of color-loc Ivory color-loc Green :source "condition (6)")
+
+(co-located smoke-loc Old_Gold pet-loc Snail :source "condition (7)")
+
+(co-located smoke-loc Kools color-loc Yellow :source "condition (8)")
+
+(drink-loc Milk House-3 :source "condition (9)")
+
+(nation-loc Norwegian House-1 :source "condition (10)")
+
+(adjacent-via
+  next-to
+  smoke-loc
+  Chesterfields
+  pet-loc
+  Fox
+  :source "condition (11)")
+
+(adjacent-via next-to smoke-loc Kools pet-loc Horse :source "condition (12)")
+
+(co-located smoke-loc Lucky_Strike drink-loc Juice :source "condition (13)")
+
+(co-located nation-loc Japanese smoke-loc Parliament :source "condition (14)")
+
+(adjacent-via
+  next-to
+  nation-loc
+  Norwegian
+  color-loc
+  Blue
+  :source "condition (15)")
 
 (query
   :mode solve

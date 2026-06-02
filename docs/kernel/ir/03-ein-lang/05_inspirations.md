@@ -42,8 +42,8 @@ motivated by:
 Some constraint systems (Z3, MiniZinc) keep one universal expression
 language; others (Prolog, Datalog) keep two (terms + clauses). ein-
 lang is in the latter camp: the **pattern sub-language**
-([`02_patterns.md`](02_patterns.md)) is a strict subset of what
-appears in `(facts …)`, plus variables.
+([`02_patterns.md`](02_patterns.md)) is a strict subset of the
+fact-form syntax, plus variables.
 
 The split makes the rule-application semantics legible: a rule's
 LHS is *only* a pattern, never an expression with side effects or

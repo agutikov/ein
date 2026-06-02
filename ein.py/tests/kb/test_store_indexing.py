@@ -50,11 +50,10 @@ def test_two_rules_deriving_same_fact_index_once():
 
     kb = KnowledgeBase.from_ir(parse(
         """
-        (ontology (relation r T T) (relation p T T) (relation q T T))
-        (facts (r a b) (p a b))
-        (rules
-          (rule from-r () :match (r ?x ?y) :assert (q ?x ?y) :why "" :priority 100)
-          (rule from-p () :match (p ?x ?y) :assert (q ?x ?y) :why "" :priority 100))
+        (relation r T T) (relation p T T) (relation q T T)
+        (r a b :layer fact) (p a b :layer fact)
+        (rule from-r () :match (r ?x ?y) :assert (q ?x ?y) :why "" :priority 100)
+        (rule from-p () :match (p ?x ?y) :assert (q ?x ?y) :why "" :priority 100)
         """
     ))
     list(Saturator(kb).saturate())

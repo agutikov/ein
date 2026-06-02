@@ -25,10 +25,10 @@ def _engine(text: str) -> Engine:
 
 def test_symmetric_positive():
     eng = _engine("""
-    (rules (rule symmetric (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T) (symmetric r))
-    (facts (r A B :source "(1)"))
+    (rule symmetric (?rel)
+:match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T) (symmetric r)
+    (r A B :source "(1)")
     """)
     firings = list(eng.saturate())
     assert any(
@@ -42,10 +42,10 @@ def test_symmetric_positive():
 def test_symmetric_negative_no_activator():
     """No `(symmetric r)` activator → rule sits dormant."""
     eng = _engine("""
-    (rules (rule symmetric (?rel)
-      :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100))
-    (ontology (relation r T T))
-    (facts (r A B :source "(1)"))
+    (rule symmetric (?rel)
+:match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+    (relation r T T)
+    (r A B :source "(1)")
     """)
     firings = list(eng.saturate())
     assert not any(f.rule == "symmetric" for f in firings)
@@ -56,11 +56,11 @@ def test_symmetric_negative_no_activator():
 
 def test_transitive_positive():
     eng = _engine("""
-    (rules (rule transitive (?rel)
-      :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-      :assert (?rel ?a ?c) :why "t" :priority 200))
-    (ontology (relation r T T) (transitive r))
-    (facts (r A B :source "(1)") (r B C :source "(2)"))
+    (rule transitive (?rel)
+:match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+:assert (?rel ?a ?c) :why "t" :priority 200)
+    (relation r T T) (transitive r)
+    (r A B :source "(1)") (r B C :source "(2)")
     """)
     firings = list(eng.saturate())
     assert any(
@@ -72,11 +72,11 @@ def test_transitive_positive():
 def test_transitive_negative_neq_prunes_cycle():
     """A-B + B-A: neq prunes the (A, A) and (B, B) cycles."""
     eng = _engine("""
-    (rules (rule transitive (?rel)
-      :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-      :assert (?rel ?a ?c) :why "t" :priority 200))
-    (ontology (relation r T T) (transitive r))
-    (facts (r A B :source "(1)") (r B A :source "(2)"))
+    (rule transitive (?rel)
+:match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+:assert (?rel ?a ?c) :why "t" :priority 200)
+    (relation r T T) (transitive r)
+    (r A B :source "(1)") (r B A :source "(2)")
     """)
     firings = list(eng.saturate())
     # No (r A A) or (r B B) firings — only what transitivity actually
@@ -89,13 +89,12 @@ def test_transitive_negative_neq_prunes_cycle():
 
 def test_implies_positive():
     eng = _engine("""
-    (rules (rule implies (?p ?q)
-      :match (?p ?a ?b) :assert (?q ?a ?b) :why "i" :priority 100))
-    (ontology
-      (relation right-of T T)
-      (relation next-to T T)
-      (implies right-of next-to))
-    (facts (right-of H2 H1 :source "(1)"))
+    (rule implies (?p ?q)
+:match (?p ?a ?b) :assert (?q ?a ?b) :why "i" :priority 100)
+    (relation right-of T T)
+    (relation next-to T T)
+    (implies right-of next-to)
+    (right-of H2 H1 :source "(1)")
     """)
     firings = list(eng.saturate())
     assert any(
@@ -110,12 +109,11 @@ def test_implies_negative_wrong_relation():
     """A `(right-of …)` fact does NOT trigger `implies` if the
     activator names a different source relation."""
     eng = _engine("""
-    (rules (rule implies (?p ?q)
-      :match (?p ?a ?b) :assert (?q ?a ?b) :why "i" :priority 100))
-    (ontology
-      (relation co-located T T) (relation next-to T T)
-      (implies co-located next-to))
-    (facts (right-of A B :source "(1)"))
+    (rule implies (?p ?q)
+:match (?p ?a ?b) :assert (?q ?a ?b) :why "i" :priority 100)
+    (relation co-located T T) (relation next-to T T)
+    (implies co-located next-to)
+    (right-of A B :source "(1)")
     """)
     firings = list(eng.saturate())
     assert not any(f.rule == "implies" for f in firings)
@@ -127,17 +125,14 @@ def test_implies_negative_wrong_relation():
 def test_square_fwd_positive():
     """Square: from (R a b) + (R x y) + (co-located a x), derive (co-located b y)."""
     eng = _engine("""
-    (rules
-      (rule square-fwd (?R)
-        :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
-        :assert (co-located ?b ?y) :why "sq" :priority 200))
-    (ontology
-      (relation right-of T T) (relation co-located T T)
-      (square-fwd right-of))
-    (facts
-      (right-of H2 H1 :source "(1)")
-      (right-of H3 H2 :source "(2)")
-      (co-located H2 H2 :source "(3)"))
+    (rule square-fwd (?R)
+      :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
+      :assert (co-located ?b ?y) :why "sq" :priority 200)
+    (relation right-of T T) (relation co-located T T)
+    (square-fwd right-of)
+    (right-of H2 H1 :source "(1)")
+    (right-of H3 H2 :source "(2)")
+    (co-located H2 H2 :source "(3)")
     """)
     firings = list(eng.saturate())
     # (right-of H2 H1) + (right-of H3 H2) + (co-located H2 H2) -> derive (co-located H1 H2).
@@ -151,16 +146,13 @@ def test_square_fwd_positive():
 def test_square_fwd_negative_missing_bridge():
     """Same fact graph but without the co-located bridge → no firing."""
     eng = _engine("""
-    (rules
-      (rule square-fwd (?R)
-        :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
-        :assert (co-located ?b ?y) :why "sq" :priority 200))
-    (ontology
-      (relation right-of T T) (relation co-located T T)
-      (square-fwd right-of))
-    (facts
-      (right-of H2 H1 :source "(1)")
-      (right-of H3 H2 :source "(2)"))
+    (rule square-fwd (?R)
+      :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
+      :assert (co-located ?b ?y) :why "sq" :priority 200)
+    (relation right-of T T) (relation co-located T T)
+    (square-fwd right-of)
+    (right-of H2 H1 :source "(1)")
+    (right-of H3 H2 :source "(2)")
     """)
     firings = list(eng.saturate())
     assert not any(f.rule == "square-fwd" for f in firings)
@@ -171,17 +163,14 @@ def test_square_fwd_negative_missing_bridge():
 
 def test_square_bwd_positive():
     eng = _engine("""
-    (rules
-      (rule square-bwd (?R)
-        :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
-        :assert (co-located ?a ?x) :why "sq" :priority 200))
-    (ontology
-      (relation right-of T T) (relation co-located T T)
-      (square-bwd right-of))
-    (facts
-      (right-of H2 H1 :source "(1)")
-      (right-of H3 H2 :source "(2)")
-      (co-located H1 H1 :source "(3)"))
+    (rule square-bwd (?R)
+      :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
+      :assert (co-located ?a ?x) :why "sq" :priority 200)
+    (relation right-of T T) (relation co-located T T)
+    (square-bwd right-of)
+    (right-of H2 H1 :source "(1)")
+    (right-of H3 H2 :source "(2)")
+    (co-located H1 H1 :source "(3)")
     """)
     firings = list(eng.saturate())
     # ?a=H2 ?b=H1 ?x=H2 ?y=H1 + (co-located H1 H1) ⇒ derive (co-located H2 H2).
@@ -191,15 +180,13 @@ def test_square_bwd_positive():
 
 def test_square_bwd_negative_no_activator():
     eng = _engine("""
-    (rules
-      (rule square-bwd (?R)
-        :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
-        :assert (co-located ?a ?x) :why "sq" :priority 200))
-    (ontology (relation right-of T T) (relation co-located T T))
-    (facts
-      (right-of H2 H1 :source "(1)")
-      (right-of H3 H2 :source "(2)")
-      (co-located H1 H1 :source "(3)"))
+    (rule square-bwd (?R)
+      :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
+      :assert (co-located ?a ?x) :why "sq" :priority 200)
+    (relation right-of T T) (relation co-located T T)
+    (right-of H2 H1 :source "(1)")
+    (right-of H3 H2 :source "(2)")
+    (co-located H1 H1 :source "(3)")
     """)
     firings = list(eng.saturate())
     assert not any(f.rule == "square-bwd" for f in firings)
@@ -210,13 +197,12 @@ def test_square_bwd_negative_no_activator():
 
 def test_type_exclusivity_positive():
     eng = _engine("""
-    (rules (rule type-exclusivity (?R)
-      :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-      :assert (not (?R ?a ?b)) :why "x" :priority 300))
-    (ontology
-      (type Color) (instance Red Color) (instance Blue Color)
-      (relation co-located T T)
-      (type-exclusivity co-located))
+    (rule type-exclusivity (?R)
+:match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+:assert (not (?R ?a ?b)) :why "x" :priority 300)
+    (type Color) (instance Red Color) (instance Blue Color)
+    (relation co-located T T)
+    (type-exclusivity co-located)
     """)
     firings = list(eng.saturate())
     # Two distinct-instance pairs → 2 firings (Red/Blue, Blue/Red).
@@ -232,13 +218,12 @@ def test_type_exclusivity_positive():
 def test_type_exclusivity_negative_same_instance():
     """Only one instance → no neq-passing pair → no firing."""
     eng = _engine("""
-    (rules (rule type-exclusivity (?R)
-      :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-      :assert (not (?R ?a ?b)) :why "x" :priority 300))
-    (ontology
-      (type Color) (instance Red Color)
-      (relation co-located T T)
-      (type-exclusivity co-located))
+    (rule type-exclusivity (?R)
+:match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+:assert (not (?R ?a ?b)) :why "x" :priority 300)
+    (type Color) (instance Red Color)
+    (relation co-located T T)
+    (type-exclusivity co-located)
     """)
     firings = list(eng.saturate())
     assert not any(f.rule == "type-exclusivity" for f in firings)
@@ -254,23 +239,20 @@ def test_square_unique_corner_inference():
     Idea-08 explanation-completeness requires this firing.
     """
     eng = _engine("""
-    (rules
-      (rule square-unique (?R ?T)
-        :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
-                    (co-located ?a ?x)
-                    (absent (and (?R ?x ?z) (neq ?y ?z))))
-        :assert (co-located ?b ?y)
-        :why "u" :priority 200))
-    (ontology
-      (type House) (type Nationality) (type Color)
-      (instance House-1 House) (instance House-2 House)
-      (instance Norwegian Nationality) (instance Blue Color)
-      (relation co-located T T) (relation next-to T T)
-      (square-unique next-to House))
-    (facts
-      (co-located Norwegian House-1 :source "(10)")
-      (next-to Norwegian Blue :source "(15)")
-      (next-to House-1 House-2 :source "(1)"))
+    (rule square-unique (?R ?T)
+      :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
+                  (co-located ?a ?x)
+                  (absent (and (?R ?x ?z) (neq ?y ?z))))
+      :assert (co-located ?b ?y)
+      :why "u" :priority 200)
+    (type House) (type Nationality) (type Color)
+    (instance House-1 House) (instance House-2 House)
+    (instance Norwegian Nationality) (instance Blue Color)
+    (relation co-located T T) (relation next-to T T)
+    (square-unique next-to House)
+    (co-located Norwegian House-1 :source "(10)")
+    (next-to Norwegian Blue :source "(15)")
+    (next-to House-1 House-2 :source "(1)")
     """)
     firings = list(eng.saturate())
     matched = [
@@ -290,21 +272,18 @@ def test_square_unique_does_not_fire_on_attribute_pair():
     (co-located House-3 Norwegian) by treating Blue as if it had a
     unique spatial neighbour."""
     eng = _engine("""
-    (rules
-      (rule square-unique (?R ?T)
-        :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
-                    (co-located ?a ?x)
-                    (absent (and (?R ?x ?z) (neq ?y ?z))))
-        :assert (co-located ?b ?y)
-        :why "u" :priority 200))
-    (ontology
-      (type House) (type Nationality)
-      (instance Norwegian Nationality)
-      (relation co-located T T) (relation next-to T T)
-      ;; NOTE: activator names House, but House has no instances here.
-      (square-unique next-to House))
-    (facts
-      (next-to Norwegian Blue :source "(1)"))
+    (rule square-unique (?R ?T)
+      :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
+                  (co-located ?a ?x)
+                  (absent (and (?R ?x ?z) (neq ?y ?z))))
+      :assert (co-located ?b ?y)
+      :why "u" :priority 200)
+    (type House) (type Nationality)
+    (instance Norwegian Nationality)
+    (relation co-located T T) (relation next-to T T)
+    ;; NOTE: activator names House, but House has no instances here.
+    (square-unique next-to House)
+    (next-to Norwegian Blue :source "(1)")
     """)
     firings = list(eng.saturate())
     matched = [f for f in firings if f.rule == "square-unique"]
@@ -316,24 +295,21 @@ def test_square_unique_skips_middle_houses():
     """House-3 has two next-to neighbours (House-2, House-4) — guard
     fails for any binding with ?x = House-3."""
     eng = _engine("""
-    (rules
-      (rule square-unique (?R ?T)
-        :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
-                    (co-located ?a ?x)
-                    (absent (and (?R ?x ?z) (neq ?y ?z))))
-        :assert (co-located ?b ?y)
-        :why "u" :priority 200))
-    (ontology
-      (type House) (type Nationality)
-      (instance House-2 House) (instance House-3 House) (instance House-4 House)
-      (instance Spaniard Nationality)
-      (relation co-located T T) (relation next-to T T)
-      (square-unique next-to House)
-      (next-to House-2 House-3) (next-to House-3 House-2)
-      (next-to House-3 House-4) (next-to House-4 House-3))
-    (facts
-      (co-located Spaniard House-3 :source "(1)")
-      (next-to Spaniard Soda :source "(2)"))
+    (rule square-unique (?R ?T)
+      :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
+                  (co-located ?a ?x)
+                  (absent (and (?R ?x ?z) (neq ?y ?z))))
+      :assert (co-located ?b ?y)
+      :why "u" :priority 200)
+    (type House) (type Nationality)
+    (instance House-2 House) (instance House-3 House) (instance House-4 House)
+    (instance Spaniard Nationality)
+    (relation co-located T T) (relation next-to T T)
+    (square-unique next-to House)
+    (next-to House-2 House-3) (next-to House-3 House-2)
+    (next-to House-3 House-4) (next-to House-4 House-3)
+    (co-located Spaniard House-3 :source "(1)")
+    (next-to Spaniard Soda :source "(2)")
     """)
     firings = list(eng.saturate())
     matched = [f for f in firings if f.rule == "square-unique"]
@@ -365,10 +341,10 @@ def test_hypothesis_contradiction_positive():
     """With both synthetic facts present, the rule fires and asserts
     (not <inner-prop>)."""
     eng = _engine("""
-    (rules (rule hypothesis-contradiction ()
-      :match (and (hypothesis ?h) (contradiction-under ?h))
-      :assert (not ?h) :why "h" :priority 900))
-    (ontology (relation co-located T T))
+    (rule hypothesis-contradiction ()
+:match (and (hypothesis ?h) (contradiction-under ?h))
+:assert (not ?h) :why "h" :priority 900)
+    (relation co-located T T)
     """)
     # Synthetic inner proposition: (co-located Norwegian House-2)
     prop = Fact(
@@ -392,10 +368,10 @@ def test_hypothesis_contradiction_positive():
 def test_hypothesis_contradiction_negative_no_contradiction_fact():
     """Hypothesis fact present but no contradiction-under → no firing."""
     eng = _engine("""
-    (rules (rule hypothesis-contradiction ()
-      :match (and (hypothesis ?h) (contradiction-under ?h))
-      :assert (not ?h) :why "h" :priority 900))
-    (ontology (relation co-located T T))
+    (rule hypothesis-contradiction ()
+:match (and (hypothesis ?h) (contradiction-under ?h))
+:assert (not ?h) :why "h" :priority 900)
+    (relation co-located T T)
     """)
     prop = Fact(
         relation_name="co-located",
@@ -424,9 +400,9 @@ def test_or_in_match_lowers_to_one_rule_per_disjunct():
     into one rule per disjunct (`<name>__or<i>`), exploiting ein's
     disjunctive multiple-rules semantics — no runtime `or` branch."""
     kb = KnowledgeBase.from_ir(parse("""
-    (ontology (relation p T T) (relation q T T) (relation r T T))
-    (rules (rule disj ()
-      :match (or (p ?x ?y) (q ?x ?y)) :assert (r ?x ?y) :why "d"))
+    (relation p T T) (relation q T T) (relation r T T)
+    (rule disj ()
+:match (or (p ?x ?y) (q ?x ?y)) :assert (r ?x ?y) :why "d")
     """))
     # One source rule → two compiled instances; the base name is gone.
     assert "disj" not in kb.rules
@@ -443,10 +419,10 @@ def test_or_disjuncts_fire_independently():
     multiple-rules disjunction the desugar relies on (T1.7.6.5)."""
     def _r_facts(activator: str) -> set:
         eng = _engine(f"""
-        (rules (rule disj ()
-          :match (or (p ?x ?y) (q ?x ?y)) :assert (r ?x ?y) :why "d"))
-        (ontology (relation p T T) (relation q T T) (relation r T T))
-        (facts ({activator} :source "(1)"))
+        (rule disj ()
+          :match (or (p ?x ?y) (q ?x ?y)) :assert (r ?x ?y) :why "d")
+        (relation p T T) (relation q T T) (relation r T T)
+        ({activator} :source "(1)")
         """)
         return {
             f.derived.args for f in eng.saturate()

@@ -44,17 +44,15 @@ def test_naf_preserved_when_derived_fact_never_arrives():
     """Gate's NAF over relation ``r`` passes; no rule derives ``r``,
     so the gated firing must fire exactly once."""
     sat = _sat("""
-    (rules
-      (rule gate ()
-        :match (and (trigger ?a ?b) (absent (r ?a ?b)))
-        :assert (gated ?a ?b)
-        :why "gate fires when r absent"
-        :priority 200))
-    (ontology
-      (relation trigger T T)
-      (relation r T T)
-      (relation gated T T))
-    (facts (trigger X Y :source "(1)"))
+    (rule gate ()
+      :match (and (trigger ?a ?b) (absent (r ?a ?b)))
+      :assert (gated ?a ?b)
+      :why "gate fires when r absent"
+      :priority 200)
+    (relation trigger T T)
+    (relation r T T)
+    (relation gated T T)
+    (trigger X Y :source "(1)")
     """)
     firings = list(sat.saturate())
     productive = [f for f in firings if not f.redundant]
@@ -75,25 +73,22 @@ def test_naf_dropped_when_derived_fact_arrives_between_enqueue_and_fire():
     fire on the stale verdict; under fire-time re-eval it must drop.
     """
     sat = _sat("""
-    (rules
-      (rule derive-r ()
-        :match (raw ?a ?b)
-        :assert (r ?a ?b)
-        :why "derive r from raw"
-        :priority 100)
-      (rule gate ()
-        :match (and (trigger ?a ?b) (absent (r ?a ?b)))
-        :assert (gated ?a ?b)
-        :why "gate fires when r absent"
-        :priority 200))
-    (ontology
-      (relation raw T T)
-      (relation r T T)
-      (relation trigger T T)
-      (relation gated T T))
-    (facts
-      (raw X Y :source "(1)")
-      (trigger X Y :source "(2)"))
+    (rule derive-r ()
+      :match (raw ?a ?b)
+      :assert (r ?a ?b)
+      :why "derive r from raw"
+      :priority 100)
+    (rule gate ()
+      :match (and (trigger ?a ?b) (absent (r ?a ?b)))
+      :assert (gated ?a ?b)
+      :why "gate fires when r absent"
+      :priority 200)
+    (relation raw T T)
+    (relation r T T)
+    (relation trigger T T)
+    (relation gated T T)
+    (raw X Y :source "(1)")
+    (trigger X Y :source "(2)")
     """)
     list(sat.saturate())
     # r derived by priority-100 rule.
@@ -115,25 +110,22 @@ def test_naf_dropped_counter_visibility():
     rejects a firing. The plain count is enough for P1.5a tracing;
     P1.9 may extend with per-rule breakdown."""
     sat = _sat("""
-    (rules
-      (rule derive-r ()
-        :match (raw ?a ?b)
-        :assert (r ?a ?b)
-        :why "derive r from raw"
-        :priority 100)
-      (rule gate ()
-        :match (and (trigger ?a ?b) (absent (r ?a ?b)))
-        :assert (gated ?a ?b)
-        :why "gate fires when r absent"
-        :priority 200))
-    (ontology
-      (relation raw T T)
-      (relation r T T)
-      (relation trigger T T)
-      (relation gated T T))
-    (facts
-      (raw X Y :source "(1)")
-      (trigger X Y :source "(2)"))
+    (rule derive-r ()
+      :match (raw ?a ?b)
+      :assert (r ?a ?b)
+      :why "derive r from raw"
+      :priority 100)
+    (rule gate ()
+      :match (and (trigger ?a ?b) (absent (r ?a ?b)))
+      :assert (gated ?a ?b)
+      :why "gate fires when r absent"
+      :priority 200)
+    (relation raw T T)
+    (relation r T T)
+    (relation trigger T T)
+    (relation gated T T)
+    (raw X Y :source "(1)")
+    (trigger X Y :source "(2)")
     """)
     list(sat.saturate())
     assert sat.naf_dropped >= 1, (
@@ -151,25 +143,22 @@ def test_naf_preserved_when_derive_does_not_apply():
     ``r`` populated for (P,Q) only and must still fire.
     """
     sat = _sat("""
-    (rules
-      (rule derive-r-PQ ()
-        :match (raw P Q)
-        :assert (r P Q)
-        :why "derive r for (P,Q)"
-        :priority 100)
-      (rule gate ()
-        :match (and (trigger ?a ?b) (absent (r ?a ?b)))
-        :assert (gated ?a ?b)
-        :why "gate fires when r absent for (?a,?b)"
-        :priority 200))
-    (ontology
-      (relation raw T T)
-      (relation r T T)
-      (relation trigger T T)
-      (relation gated T T))
-    (facts
-      (raw P Q :source "(1)")
-      (trigger X Y :source "(2)"))
+    (rule derive-r-PQ ()
+      :match (raw P Q)
+      :assert (r P Q)
+      :why "derive r for (P,Q)"
+      :priority 100)
+    (rule gate ()
+      :match (and (trigger ?a ?b) (absent (r ?a ?b)))
+      :assert (gated ?a ?b)
+      :why "gate fires when r absent for (?a,?b)"
+      :priority 200)
+    (relation raw T T)
+    (relation r T T)
+    (relation trigger T T)
+    (relation gated T T)
+    (raw P Q :source "(1)")
+    (trigger X Y :source "(2)")
     """)
     list(sat.saturate())
     gated_facts = {f.args for f in sat.kb.facts if f.relation_name == "gated"}
@@ -197,38 +186,35 @@ def test_naf_over_derived_next_to_zebra_shape():
     closed relation and gate fires only for genuine non-neighbours.
     """
     sat = _sat("""
-    (rules
-      (rule symmetric (?rel)
-        :match (?rel ?a ?b)
-        :assert (?rel ?b ?a)
-        :why "symmetric"
-        :priority 100)
-      (rule includes (?p ?q)
-        :match (?p ?a ?b)
-        :assert (?q ?a ?b)
-        :why "includes"
-        :priority 100)
-      (rule gate-non-neighbour ()
-        :match (and (anchor ?h1) (other ?h_o) (neq ?h_o ?h1)
-                    (absent (next-to ?h_o ?h1)))
-        :assert (non-neighbour ?h_o ?h1)
-        :why "h_o is not next-to h1"
-        :priority 250))
-    (ontology
-      (relation right-of  T T)
-      (relation next-to   T T)
-      (relation anchor    T)
-      (relation other     T)
-      (relation non-neighbour T T)
-      (symmetric next-to)
-      (includes  right-of next-to))
-    (facts
-      (right-of H2 H1 :source "(1)")
-      (right-of H3 H2 :source "(2)")
-      (anchor H2 :source "(3)")
-      (other H1 :source "(4)")
-      (other H2 :source "(5)")
-      (other H3 :source "(6)"))
+    (rule symmetric (?rel)
+      :match (?rel ?a ?b)
+      :assert (?rel ?b ?a)
+      :why "symmetric"
+      :priority 100)
+    (rule includes (?p ?q)
+      :match (?p ?a ?b)
+      :assert (?q ?a ?b)
+      :why "includes"
+      :priority 100)
+    (rule gate-non-neighbour ()
+      :match (and (anchor ?h1) (other ?h_o) (neq ?h_o ?h1)
+                  (absent (next-to ?h_o ?h1)))
+      :assert (non-neighbour ?h_o ?h1)
+      :why "h_o is not next-to h1"
+      :priority 250)
+    (relation right-of  T T)
+    (relation next-to   T T)
+    (relation anchor    T)
+    (relation other     T)
+    (relation non-neighbour T T)
+    (symmetric next-to)
+    (includes  right-of next-to)
+    (right-of H2 H1 :source "(1)")
+    (right-of H3 H2 :source "(2)")
+    (anchor H2 :source "(3)")
+    (other H1 :source "(4)")
+    (other H2 :source "(5)")
+    (other H3 :source "(6)")
     """)
     list(sat.saturate())
     next_to = {f.args for f in sat.kb.facts if f.relation_name == "next-to"}

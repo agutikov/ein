@@ -19,10 +19,7 @@ import pytest
 
 from ein_bot.ir import (
     parse,
-    render_facts,
-    render_ontology,
     render_query,
-    render_reasoning,
     render_rule,
     render_trace,
     to_dot,
@@ -35,21 +32,18 @@ ZEBRA = REPO / "examples" / "zebra.ein"
 # ═══════════ Shape mapping ═══════════
 
 def test_type_decl_is_box():
-    (form,) = parse("(ontology (type Person))")
-    dot = render_ontology(form)
+    dot = to_dot(parse("(type Person)"))
     assert '"Person" [shape=box];' in dot
 
 
 def test_type_parent_is_dashed_arrow():
-    (form,) = parse("(ontology (type Engineer Person))")
-    dot = render_ontology(form)
+    dot = to_dot(parse("(type Engineer Person)"))
     assert "style=dashed, arrowhead=empty" in dot
     assert '"Engineer" -> "Person"' in dot
 
 
 def test_instance_is_oval_with_instance_of_edge():
-    (form,) = parse("(ontology (instance Norwegian Nationality))")
-    dot = render_ontology(form)
+    dot = to_dot(parse("(instance Norwegian Nationality)"))
     assert '"Norwegian" [shape=oval];' in dot
     assert '"Nationality" [shape=box];' in dot
     assert '"Norwegian" -> "Nationality"' in dot
@@ -57,8 +51,7 @@ def test_instance_is_oval_with_instance_of_edge():
 
 
 def test_relation_schema_is_dashed_edge():
-    (form,) = parse("(ontology (type A) (type B) (relation r A B))")
-    dot = render_ontology(form)
+    dot = to_dot(parse("(type A) (type B) (relation r A B)"))
     assert '"A" -> "B"' in dot
     assert 'label="r"' in dot
     assert "style=dashed" in dot
@@ -67,8 +60,7 @@ def test_relation_schema_is_dashed_edge():
 def test_nary_fact_is_octagon_even_when_compact():
     """An n-ary (arity ≠ 2) fact stays Levi-bipartite in *both* modes —
     DOT has no native hyperedge, so the octagon is unavoidable."""
-    (form,) = parse("(facts (next-to Norwegian Englishman Spaniard))")
-    dot = render_facts(form)  # compact default
+    dot = to_dot(parse('(next-to Norwegian Englishman Spaniard :source "(1)")'))
     assert "shape=octagon" in dot
     assert 'label="next-to"' in dot
     # Three positional args → three role-labelled edges
@@ -80,8 +72,7 @@ def test_nary_fact_is_octagon_even_when_compact():
 def test_binary_fact_is_compact_arrow_by_default():
     """Compact (default): a binary fact collapses to one labelled,
     relation-coloured arrow — no Levi octagon."""
-    (form,) = parse('(facts (co-located Norwegian House-1 :source "(10)"))')
-    dot = render_facts(form)
+    dot = to_dot(parse('(co-located Norwegian House-1 :source "(10)")'))
     assert '"Norwegian" -> "House-1"' in dot
     assert 'label="co-located"' in dot
     assert "shape=octagon" not in dot
@@ -92,8 +83,8 @@ def test_binary_fact_is_compact_arrow_by_default():
 def test_binary_fact_is_levi_octagon_with_flag():
     """`levi=True` restores the canonical Levi-bipartite encoding:
     even a binary fact becomes an octagon list-node with role edges."""
-    (form,) = parse('(facts (co-located Norwegian House-1 :source "(10)"))')
-    dot = render_facts(form, levi=True)
+    dot = to_dot(parse('(co-located Norwegian House-1 :source "(10)")'),
+                 levi=True)
     assert "shape=octagon" in dot
     assert 'label="1"' in dot
     assert 'label="2"' in dot
@@ -102,8 +93,7 @@ def test_binary_fact_is_levi_octagon_with_flag():
 
 
 def test_equality_is_doublecircle():
-    (form,) = parse("(facts (= a b))")
-    dot = render_facts(form)
+    dot = to_dot(parse('(= a b :source "(1)")'))
     assert "shape=doublecircle" in dot
 
 
@@ -111,8 +101,7 @@ def test_not_fact_is_dashed():
     """`(not X)` recurses and marks the resulting edges dashed.
 
     Compact (default): the binary inner fact is a dashed arrow."""
-    (form,) = parse("(facts (not (co-located Spaniard Coffee)))")
-    dot = render_facts(form)
+    dot = to_dot(parse('(not (co-located Spaniard Coffee) :source "(1)")'))
     assert "style=dashed" in dot
     assert '"Spaniard" -> "Coffee"' in dot
     assert "shape=octagon" not in dot
@@ -120,18 +109,17 @@ def test_not_fact_is_dashed():
 
 def test_not_fact_is_dashed_levi():
     """Under `levi=True` the negated binary fact is a dashed octagon."""
-    (form,) = parse("(facts (not (co-located Spaniard Coffee)))")
-    dot = render_facts(form, levi=True)
+    dot = to_dot(parse('(not (co-located Spaniard Coffee) :source "(1)")'),
+                 levi=True)
     assert "style=dashed" in dot
     assert "shape=octagon" in dot
 
 
 def test_reasoning_uses_dashed_edges():
     """Derived facts (reasoning layer) render with dashed edges per §6."""
-    (form,) = parse(
-        "(reasoning (co-located Blue House-2 :rule square-fwd :using (c10)))"
-    )
-    dot = render_reasoning(form)
+    dot = to_dot(parse(
+        "(co-located Blue House-2 :rule square-fwd :using (c10))"
+    ))
     assert "digraph reasoning" in dot
     assert "style=dashed" in dot
 
@@ -140,9 +128,9 @@ def test_reasoning_uses_dashed_edges():
 
 def test_var_is_diamond_in_rules():
     (form,) = parse(
-        "(rules (rule v (?r) :match (?r ?a ?b) :assert ?a :why \"v\"))"
+        "(rule v (?r) :match (?r ?a ?b) :assert ?a :why \"v\")"
     )
-    rule = form.args[0]
+    rule = form  # P1.7c: a flat top-level (rule …) form
     dot = render_rule(rule, mode="c")
     # Mode (c) just emits edges; the var node isn't separately shaped
     # but the edge endpoints quote their atom-label form.
@@ -152,9 +140,9 @@ def test_var_is_diamond_in_rules():
 
 def test_wildcard_in_pattern():
     (form,) = parse(
-        "(rules (rule w () :match (_ ?a ?b) :assert ?a :why \"w\"))"
+        "(rule w () :match (_ ?a ?b) :assert ?a :why \"w\")"
     )
-    rule = form.args[0]
+    rule = form  # P1.7c: a flat top-level (rule …) form
     dot = render_rule(rule, mode="c")
     # Wildcard head appears as the edge label.
     assert "_" in dot
@@ -165,12 +153,12 @@ def test_wildcard_in_pattern():
 
 def test_rule_mode_a_has_lhs_rhs_clusters():
     (form,) = parse("""
-    (rules (rule triangle ()
+    (rule triangle ()
       :match (and (?r ?a ?b) (?r ?b ?c))
       :assert (?r ?a ?c)
-      :why "tri"))
+      :why "tri")
     """)
-    rule = form.args[0]
+    rule = form  # P1.7c: a flat top-level (rule …) form
     dot = render_rule(rule, mode="a")
     assert "cluster_lhs" in dot
     assert "cluster_rhs" in dot
@@ -182,8 +170,8 @@ def test_rule_mode_a_has_lhs_rhs_clusters():
 def test_rule_default_mode_is_side_by_side():
     """S1.6.0: the default rule mode is side-by-side LHS|RHS (was overlay)."""
     (form,) = parse("""
-    (rules (rule triangle ()
-      :match (and (?r ?a ?b) (?r ?b ?c)) :assert (?r ?a ?c) :why "tri"))
+    (rule triangle ()
+      :match (and (?r ?a ?b) (?r ?b ?c)) :assert (?r ?a ?c) :why "tri")
     """)
     dot = to_dot(form)  # no rule_mode → default
     assert "cluster_lhs" in dot
@@ -192,8 +180,8 @@ def test_rule_default_mode_is_side_by_side():
 
 def test_rule_mode_aliases():
     """Friendly names map onto the legacy single-letter modes."""
-    (form,) = parse('(rules (rule x () :match (r ?a ?b) :assert (r ?b ?a) :why "x"))')
-    rule = form.args[0]
+    (form,) = parse('(rule x () :match (r ?a ?b) :assert (r ?b ?a) :why "x")')
+    rule = form  # P1.7c: a flat top-level (rule …) form
     assert render_rule(rule, mode="sidebyside") == render_rule(rule, mode="a")
     assert render_rule(rule, mode="overlay") == render_rule(rule, mode="c")
 
@@ -201,12 +189,12 @@ def test_rule_mode_aliases():
 def test_rule_mode_c_overlay_has_dashed_rhs():
     """Mode (c): LHS solid, RHS additions dashed."""
     (form,) = parse("""
-    (rules (rule triangle ()
+    (rule triangle ()
       :match (and (?r ?a ?b) (?r ?b ?c))
       :assert (?r ?a ?c)
-      :why "tri"))
+      :why "tri")
     """)
-    rule = form.args[0]
+    rule = form  # P1.7c: a flat top-level (rule …) form
     dot = render_rule(rule, mode="c")
     assert "style=dashed" in dot
     # No clusters in overlay mode
@@ -214,8 +202,8 @@ def test_rule_mode_c_overlay_has_dashed_rhs():
 
 
 def test_unknown_rule_mode_raises():
-    (form,) = parse("(rules (rule x () :match a :assert b :why \"x\"))")
-    rule = form.args[0]
+    (form,) = parse("(rule x () :match a :assert b :why \"x\")")
+    rule = form  # P1.7c: a flat top-level (rule …) form
     with pytest.raises(ValueError):
         render_rule(rule, mode="z")
 
@@ -250,8 +238,8 @@ def test_trace_invalid_view_raises():
 
 def test_to_dot_on_tuple_of_forms():
     forms = parse("""
-    (ontology (type Person))
-    (facts (lives-in a b))
+    (type Person)
+    (lives-in a b :source "(1)")
     """)
     dot = to_dot(forms)
     # Two digraphs joined by a blank line
@@ -259,12 +247,13 @@ def test_to_dot_on_tuple_of_forms():
     assert "digraph facts" in dot
 
 
-def test_to_dot_on_unknown_top_level_raises():
-    """A synthetic SForm with an unrecognised head should raise."""
+def test_to_dot_unknown_head_renders_as_a_fact():
+    """P1.7c flat model: any non-reserved head is a fact, so `to_dot`
+    renders it (via its layer's view) rather than raising on an
+    'unknown' top-level head."""
     from ein_bot.ir import Atom, SForm
-    bogus = SForm(head=Atom("nonsense"), args=())
-    with pytest.raises(ValueError):
-        to_dot(bogus)
+    dot = to_dot(SForm(head=Atom("nonsense"), args=(Atom("x"),)))
+    assert isinstance(dot, str) and "digraph" in dot
 
 
 def test_to_dot_skips_config_form():
@@ -272,7 +261,7 @@ def test_to_dot_skips_config_form():
     DOT and doesn't break sibling forms in a tuple render."""
     forms = parse("""
     (config :enable-pre-branch-lookahead true)
-    (ontology (type Person))
+    (type Person)
     """)
     dot = to_dot(forms)
     assert "digraph ontology" in dot

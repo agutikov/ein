@@ -35,9 +35,10 @@ _HAVE_DOT = shutil.which("dot") is not None
 # ── helpers ────────────────────────────────────────────────────────
 
 def _rules_of(path: Path) -> list[SForm]:
+    # P1.7c: rules are flat top-level `(rule …)` / `(hrule …)` forms.
     forms = parse(path.read_text(encoding="utf-8"))
-    rules_form = next(f for f in forms if isinstance(f, SForm) and f.head.name == "rules")
-    return [r for r in rules_form.args if isinstance(r, SForm)]
+    return [f for f in forms
+            if isinstance(f, SForm) and f.head.name in ("rule", "hrule")]
 
 
 def _rule_named(path: Path, name: str) -> SForm:
@@ -71,8 +72,8 @@ def test_every_rule_renders_valid_dot(path: Path, mode: str):
 # ── clean labels — the `_L`/`_R` suffix must not leak ──────────────
 
 def test_panel_suffix_does_not_leak_into_labels():
-    (form,) = parse('(rules (rule t () :match (r ?a ?b) :assert (r ?b ?a) :why "t"))')
-    dot = render_rule(form.args[0], mode="sidebyside")
+    (form,) = parse('(rule t () :match (r ?a ?b) :assert (r ?b ?a) :why "t")')
+    dot = render_rule(form, mode="sidebyside")
     # the disambiguating suffix is in the node *ids* …
     assert '"?a_L"' in dot
     assert '"?a_R"' in dot
@@ -84,8 +85,8 @@ def test_panel_suffix_does_not_leak_into_labels():
 
 def test_same_variable_distinct_nodes_per_panel():
     """`?a` appears in both panels as two ids but one shared label."""
-    (form,) = parse('(rules (rule t () :match (r ?a ?b) :assert (r ?b ?a) :why "t"))')
-    dot = render_rule(form.args[0], mode="sidebyside")
+    (form,) = parse('(rule t () :match (r ?a ?b) :assert (r ?b ?a) :why "t")')
+    dot = render_rule(form, mode="sidebyside")
     assert '"?a_L"' in dot and '"?a_R"' in dot          # two nodes
     assert dot.count('label="?a"') == 2                 # same label, both panels
 
@@ -94,9 +95,9 @@ def test_same_variable_distinct_nodes_per_panel():
 
 def test_variables_are_diamonds_atoms_rectangles():
     (form,) = parse(
-        '(rules (rule t () :match (color ?a Red) :assert (loc ?a House-1) :why "t"))'
+        '(rule t () :match (color ?a Red) :assert (loc ?a House-1) :why "t")'
     )
-    dot = render_rule(form.args[0], mode="sidebyside")
+    dot = render_rule(form, mode="sidebyside")
     # ?a is a variable → diamond; Red / House-1 are ground → rectangle.
     assert re.search(r'"\?a_[LR]" \[label="\?a", shape=diamond\]', dot)
     assert re.search(r'"Red_L" \[label="Red", shape=rectangle\]', dot)
@@ -142,19 +143,18 @@ def test_nary_relation_pattern_is_octagon():
 # ── combined library references every rule name ────────────────────
 
 def test_render_rules_references_all_rule_names():
-    forms = parse(ZEBRA2.read_text(encoding="utf-8"))
-    rules_form = next(f for f in forms if isinstance(f, SForm) and f.head.name == "rules")
-    dot = render_rules(rules_form)
-    for r in rules_form.args:
-        if isinstance(r, SForm) and r.args and isinstance(r.args[0], Atom):
+    rules = _rules_of(ZEBRA2)
+    dot = render_rules(SForm(head=Atom("rules"), args=tuple(rules)))
+    for r in rules:
+        if r.args and isinstance(r.args[0], Atom):
             safe = r.args[0].name.replace("-", "_")
             assert f"rule_{safe}_lhs_rhs" in dot
 
 
 def test_unknown_rule_mode_raises():
-    (form,) = parse('(rules (rule x () :match a :assert b :why "x"))')
+    (form,) = parse('(rule x () :match a :assert b :why "x")')
     with pytest.raises(ValueError):
-        render_rule(form.args[0], mode="bogus")
+        render_rule(form, mode="bogus")
 
 
 # ── constraint-scope diagram ───────────────────────────────────────

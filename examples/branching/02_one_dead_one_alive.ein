@@ -22,46 +22,43 @@
 ;;; with two converging solution branches. The bindings printed by
 ;;; the demo are the same either way.
 
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
 
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
-    :priority 200)
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+  :priority 200)
 
-  (rule sibling-exclusive (?siblings-via ?exclusive-under)
-    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
-    :assert (not (?exclusive-under ?a ?b))
-    :why    "{?a} and {?b} share {?T} — exclusive under {?exclusive-under}."
-    :priority 300)
+(rule sibling-exclusive (?siblings-via ?exclusive-under)
+  :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+  :assert (not (?exclusive-under ?a ?b))
+  :why    "{?a} and {?b} share {?T} — exclusive under {?exclusive-under}."
+  :priority 300)
 
-  (rule functional (?R)
-    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-    :assert (false)
-    :why    "{?R} not functional: {?a} has {?b} and {?c}."
-    :priority 250))
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional: {?a} has {?b} and {?c}."
+  :priority 250)
 
-(ontology
-  (relation is-a       T T)
-  (relation co-located T T)
+(relation is-a       T T)
+(relation co-located T T)
 
-  (symmetric         co-located)
-  (transitive        co-located)
-  (sibling-exclusive is-a co-located)
-  (functional        is-a)
+(symmetric         co-located)
+(transitive        co-located)
+(sibling-exclusive is-a co-located)
+(functional        is-a)
 
-  (is-a Color T) (is-a House T)
-  (is-a Red Color) (is-a Blue Color)
-  (is-a H1  House) (is-a H2   House))
+(is-a Color T) (is-a House T)
+(is-a Red Color) (is-a Blue Color)
+(is-a H1  House) (is-a H2   House)
 
-(facts
-  (co-located Red H1 :source "(1) Red is at H1"))
+(co-located Red H1 :source "(1) Red is at H1")
 
 (query
   :mode solve

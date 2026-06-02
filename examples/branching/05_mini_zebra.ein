@@ -21,58 +21,55 @@
 ;;; hypotheses contradict via the same chain demonstrated in
 ;;; demos 2 and 3.
 
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} sym" :priority 100)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} sym" :priority 100)
 
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} tr" :priority 200)
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} tr" :priority 200)
 
-  (rule sibling-exclusive (?siblings-via ?exclusive-under)
-    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
-    :assert (not (?exclusive-under ?a ?b))
-    :why    "sib {?T}" :priority 300)
+(rule sibling-exclusive (?siblings-via ?exclusive-under)
+  :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+  :assert (not (?exclusive-under ?a ?b))
+  :why    "sib {?T}" :priority 300)
 
-  (rule functional (?R)
-    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-    :assert (false)
-    :why    "fn {?R}" :priority 250)
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "fn {?R}" :priority 250)
 
-  ;; S1.7.23 — `co-located` spans three attribute types
-  ;; (Nationality/Drink/Pet) through one relation, so a 2-slot
-  ;; signature can't name all three for hypgen's name-free object
-  ;; exclusion. Instead, object selection moves into user space: this
-  ;; `guess` hrule proposes a `co-located` between an instance of one
-  ;; attribute type and an instance of another. `(is-a ?a ?A)` binds
-  ;; ?a to the *instances* of the activator type ?A (the attribute
-  ;; types are `is-a T`, never `is-a Nationality`), so leaves are
-  ;; selected by pattern, not by a kernel is-a-leaf rule.
-  (hrule guess (?A ?B)
-    :match  (and (is-a ?a ?A) (is-a ?b ?B))
-    :assert (co-located ?a ?b)
-    :why    "guess: are {?a} and {?b} co-located?"))
+;; S1.7.23 — `co-located` spans three attribute types
+;; (Nationality/Drink/Pet) through one relation, so a 2-slot
+;; signature can't name all three for hypgen's name-free object
+;; exclusion. Instead, object selection moves into user space: this
+;; `guess` hrule proposes a `co-located` between an instance of one
+;; attribute type and an instance of another. `(is-a ?a ?A)` binds
+;; ?a to the *instances* of the activator type ?A (the attribute
+;; types are `is-a T`, never `is-a Nationality`), so leaves are
+;; selected by pattern, not by a kernel is-a-leaf rule.
+(hrule guess (?A ?B)
+  :match  (and (is-a ?a ?A) (is-a ?b ?B))
+  :assert (co-located ?a ?b)
+  :why    "guess: are {?a} and {?b} co-located?")
 
-(ontology
-  (relation is-a       T T)
-  (relation co-located T T)
+(relation is-a       T T)
+(relation co-located T T)
 
-  (symmetric         co-located)
-  (transitive        co-located)
-  (sibling-exclusive is-a co-located)
-  (functional        is-a)
+(symmetric         co-located)
+(transitive        co-located)
+(sibling-exclusive is-a co-located)
+(functional        is-a)
 
-  (is-a Nationality T) (is-a Drink T) (is-a Pet T)
-  (is-a Alice  Nationality) (is-a Bob    Nationality)
-  (is-a Tea    Drink)       (is-a Coffee Drink)
-  (is-a Cat    Pet)         (is-a Dog    Pet))
+(is-a Nationality T) (is-a Drink T) (is-a Pet T)
+(is-a Alice  Nationality) (is-a Bob    Nationality)
+(is-a Tea    Drink)       (is-a Coffee Drink)
+(is-a Cat    Pet)         (is-a Dog    Pet)
 
-(facts
-  (co-located Alice Tea :source "(1) Alice drinks Tea")
-  (co-located Alice Cat :source "(2) Alice has the Cat"))
+(co-located Alice Tea :source "(1) Alice drinks Tea")
+(co-located Alice Cat :source "(2) Alice has the Cat")
 
 (query
   :mode solve

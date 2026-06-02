@@ -13,18 +13,15 @@
 ;;; Expected derivation:
 ;;;   (friend-of Carol Dave) ⇒ (friend-of Dave Carol).
 
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100))
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
 
-(ontology
-  (relation friend-of T T)
-  (symmetric friend-of))
+(relation friend-of T T)
+(symmetric friend-of)
 
-(facts
-  (friend-of Carol Dave :source "demo"))
+(friend-of Carol Dave :source "demo")
 
 (query :mode solve :goal (friend-of Dave Carol))

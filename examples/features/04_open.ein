@@ -27,37 +27,33 @@
 ;;; `(house-color ?h ?c)` ONLY for House-Color pairs still in
 ;;; the open state.
 
-(rules
-  ;; Demonstration rule — fires reasoning-layer candidate facts.
-  ;; In real puzzles this'd be an `hrule` (hypothesis rule); for
-  ;; the demo we use `rule` so the firings land in (reasoning).
-  (rule open-candidate ()
-    :match  (and (is-a ?h House) (is-a ?c Color)
-                 (open (house-color ?h ?c)))
-    :assert (open-slot ?h ?c)
-    :priority 300
-    :why    "({?h}, {?c}) is undecided"))
+;; Demonstration rule — fires reasoning-layer candidate facts.
+;; In real puzzles this'd be an `hrule` (hypothesis rule); for
+;; the demo we use `rule` so the firings land in (reasoning).
+(rule open-candidate ()
+  :match  (and (is-a ?h House) (is-a ?c Color)
+               (open (house-color ?h ?c)))
+  :assert (open-slot ?h ?c)
+  :priority 300
+  :why    "({?h}, {?c}) is undecided")
 
-(ontology
-  (relation house-color House Color)
-  (relation is-a        T T)
-  (relation open-slot   House Color)
+(relation house-color House Color)
+(relation is-a        T T)
+(relation open-slot   House Color)
 
-  (is-a House T)
-  (is-a Color T)
-  (is-a House-1 House)  (is-a House-2 House)  (is-a House-3 House)
-  (is-a Yellow  Color)  (is-a Red     Color)  (is-a Blue    Color))
+(is-a House T)
+(is-a Color T)
+(is-a House-1 House)  (is-a House-2 House)  (is-a House-3 House)
+(is-a Yellow  Color)  (is-a Red     Color)  (is-a Blue    Color)
 
-(facts
-  ;; House-1's color is COMMITTED positive — Yellow.
-  (house-color House-1 Yellow)
+;; House-1's color is COMMITTED positive — Yellow.
+(house-color House-1 Yellow :layer fact)
 
-  ;; House-2's color is COMMITTED negative — NOT Red.
-  ;; (the other two — Yellow/Blue — remain open for House-2.)
-  (not (house-color House-2 Red))
+;; House-2's color is COMMITTED negative — NOT Red.
+;; (the other two — Yellow/Blue — remain open for House-2.)
+(not (house-color House-2 Red) :layer fact)
 
-  ;; House-3 has no commitments — all three colors open.
-  )
+;; House-3 has no commitments — all three colors open.
 
 ;; Expected reasoning-layer output:
 ;;

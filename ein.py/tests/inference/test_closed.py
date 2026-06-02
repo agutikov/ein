@@ -17,21 +17,19 @@ def _kb(text: str) -> KnowledgeBase:
 # `co-located` is propagated by `symmetric` — producible; `is-a` is
 # concluded by no rule (`sibling-exclusive` only asserts a negative).
 _PUZZLE = """
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why "s" :priority 100)
-  (rule sibling-exclusive (?siblings-via ?exclusive-under)
-    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
-    :assert (not (?exclusive-under ?a ?b))
-    :why "sib" :priority 300))
-(ontology
-  (relation is-a       T T)
-  (relation co-located T T)
-  (symmetric         co-located)
-  (sibling-exclusive is-a co-located)
-  (is-a Thing T) (is-a A Thing) (is-a B Thing))
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why "s" :priority 100)
+(rule sibling-exclusive (?siblings-via ?exclusive-under)
+  :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+  :assert (not (?exclusive-under ?a ?b))
+  :why "sib" :priority 300)
+(relation is-a       T T)
+(relation co-located T T)
+(symmetric         co-located)
+(sibling-exclusive is-a co-located)
+(is-a Thing T) (is-a A Thing) (is-a B Thing)
 """
 
 
@@ -68,16 +66,14 @@ def test_negative_assert_is_not_production():
     """A rule whose only `:assert` is `(not …)` makes nothing
     producible — every declared relation closes."""
     kb = _kb("""
-    (rules
-      (rule sibling-exclusive (?siblings-via ?exclusive-under)
-        :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
-        :assert (not (?exclusive-under ?a ?b))
-        :why "sib" :priority 300))
-    (ontology
-      (relation is-a       T T)
-      (relation co-located T T)
-      (sibling-exclusive is-a co-located)
-      (is-a Thing T) (is-a A Thing) (is-a B Thing))
+    (rule sibling-exclusive (?siblings-via ?exclusive-under)
+      :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+      :assert (not (?exclusive-under ?a ?b))
+      :why "sib" :priority 300)
+    (relation is-a       T T)
+    (relation co-located T T)
+    (sibling-exclusive is-a co-located)
+    (is-a Thing T) (is-a A Thing) (is-a B Thing)
     """)
     assert producible_relations(kb) == frozenset()
     assert set(emit_closed(kb)) == {"is-a", "co-located"}

@@ -62,7 +62,7 @@ def _parses(dot: str) -> bool:
 # ── synthetic 3-commitment proof: 1 solution + 2 dead ──────────────
 
 def _synthetic_proof() -> LatticeProof:
-    empty = KnowledgeBase.from_ir(parse("(ontology) (facts)"))
+    empty = KnowledgeBase.from_ir(parse(' '))
     sol = SolutionRecord(commitment=(("p", ("a",)),), kb=empty, firings=(), layer=1)
     d1 = DeadCommitment(
         commitment=(("p", ("b",)),),

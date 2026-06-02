@@ -20,29 +20,26 @@
 ;;; undefeated. Carol beats only Alice → not undefeated (Bob
 ;;; remains unbeaten by Carol).
 
-(rules
-  (rule undefeated ()
-    :match  (and (player ?p)
-                 (forall ?q
-                   (and (player ?q) (neq ?p ?q))
-                   (beats ?p ?q)))
-    :assert (undefeated ?p)
-    :priority 200
-    :why    "{?p} beats every other player ⇒ undefeated"))
+(rule undefeated ()
+  :match  (and (player ?p)
+               (forall ?q
+                 (and (player ?q) (neq ?p ?q))
+                 (beats ?p ?q)))
+  :assert (undefeated ?p)
+  :priority 200
+  :why    "{?p} beats every other player ⇒ undefeated")
 
-(ontology
-  (relation player T)
-  (relation beats  T T)
-  (relation undefeated T))
+(relation player T)
+(relation beats  T T)
+(relation undefeated T)
 
-(facts
-  (player Alice)
-  (player Bob)
-  (player Carol)
+(player Alice :layer fact)
+(player Bob :layer fact)
+(player Carol :layer fact)
 
-  (beats Alice Bob)
-  (beats Alice Carol)
-  (beats Carol Alice))
+(beats Alice Bob :layer fact)
+(beats Alice Carol :layer fact)
+(beats Carol Alice :layer fact)
 
 ;; Expected reasoning-layer output (after saturation):
 ;;

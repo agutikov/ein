@@ -30,19 +30,16 @@ def _setup_three_states():
     (Bob   Carol) — open    (neither stored)
     """
     return _kb("""
-    (rules
-      (rule find-open ()
-        :match (and (is-a ?a Person) (is-a ?b Person) (neq ?a ?b)
-                    (open (likes ?a ?b)))
-        :assert (open-likes ?a ?b)
-        :why "{?a}→{?b} undecided"))
-    (ontology
-      (relation likes T T) (relation is-a T T)
-      (is-a Person T)
-      (is-a Alice Person) (is-a Bob Person) (is-a Carol Person))
-    (facts
-      (likes Alice Bob)
-      (not (likes Alice Carol)))
+    (rule find-open ()
+      :match (and (is-a ?a Person) (is-a ?b Person) (neq ?a ?b)
+                  (open (likes ?a ?b)))
+      :assert (open-likes ?a ?b)
+      :why "{?a}→{?b} undecided")
+    (relation likes T T) (relation is-a T T)
+    (is-a Person T)
+    (is-a Alice Person) (is-a Bob Person) (is-a Carol Person)
+    (likes Alice Bob :layer fact)
+    (not (likes Alice Carol) :layer fact)
     """)
 
 
@@ -104,16 +101,14 @@ def test_open_with_no_bindings_on_empty_kb():
     ?a/?b combination from the outer enumeration qualifies
     as open."""
     kb = _kb("""
-    (rules
-      (rule find-open ()
-        :match (and (is-a ?a Person) (is-a ?b Person) (neq ?a ?b)
-                    (open (likes ?a ?b)))
-        :assert (open-likes ?a ?b)
-        :why "all-undecided"))
-    (ontology
-      (relation likes T T) (relation is-a T T)
-      (is-a Person T)
-      (is-a Alice Person) (is-a Bob Person))
+    (rule find-open ()
+      :match (and (is-a ?a Person) (is-a ?b Person) (neq ?a ?b)
+                  (open (likes ?a ?b)))
+      :assert (open-likes ?a ?b)
+      :why "all-undecided")
+    (relation likes T T) (relation is-a T T)
+    (is-a Person T)
+    (is-a Alice Person) (is-a Bob Person)
     """)
     results = _run(kb, "find-open")
     # Alice—Bob and Bob—Alice, both open.

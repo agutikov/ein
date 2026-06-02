@@ -14,41 +14,37 @@ documentation split.
 > *"The Norwegian lives in the first house."*
 
 ```lisp
-(facts
-  (lives-in Norwegian House-1 :source "condition (10)"))
+(lives-in Norwegian House-1 :source "condition (10)")
 ```
 
-The shortest meaningful IR — one fact-layer entry with an explicit
-source annotation.
+The shortest meaningful IR — one fact whose `:source` derives the
+FACT layer.
 
 ## A larger Zebra fragment
 
 ```lisp
-(rules
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?b ?c) :where (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} is transitive."))
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) :where (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive.")
 
-(ontology
-  ;; Schema
-  (type Attribute)
-  (type House Attribute) (type Color Attribute) (type Nationality Attribute)
-  (relation co-located Attribute Attribute)
-  (relation right-of   Attribute Attribute)
-  (relation position   House House)                ; structural; a right-of derivation is a rule
-  ;; Implicit: instance enumeration
-  (instance House-1 House) (instance House-2 House) (instance House-3 House)
-  (instance Red Color) (instance Green Color) (instance Ivory Color)
-  (instance Norwegian Nationality) (instance Englishman Nationality)
-  ;; Implicit: rule-application meta-facts
-  (transitive co-located))
+;; Schema + implicit assumptions (no :source → ONTOLOGY layer)
+(type Attribute)
+(type House Attribute) (type Color Attribute) (type Nationality Attribute)
+(relation co-located Attribute Attribute)
+(relation right-of   Attribute Attribute)
+(relation position   House House)                ; structural; a right-of derivation is a rule
+;; Implicit: instance enumeration
+(instance House-1 House) (instance House-2 House) (instance House-3 House)
+(instance Red Color) (instance Green Color) (instance Ivory Color)
+(instance Norwegian Nationality) (instance Englishman Nationality)
+;; Implicit: rule-application meta-facts
+(transitive co-located)
 
-(facts
-  ;; Explicit puzzle conditions only.
-  (co-located Englishman Red    :source "condition (2)")
-  (right-of   Green Ivory       :source "condition (6)")
-  (co-located Norwegian House-1 :source "condition (10)"))
+;; Explicit puzzle conditions (each :source → FACT layer)
+(co-located Englishman Red    :source "condition (2)")
+(right-of   Green Ivory       :source "condition (6)")
+(co-located Norwegian House-1 :source "condition (10)")
 
 (query :mode solve :goal (co-located ?nationality Water))
 ```
@@ -70,10 +66,9 @@ deferred).
 Uses the kernel `(type …)` and `(instance …)` declarations:
 
 ```lisp
-(ontology
-  (type Nationality Attribute)
-  (instance Norwegian Nationality)
-  (instance Japanese  Nationality))
+(type Nationality Attribute)
+(instance Norwegian Nationality)
+(instance Japanese  Nationality)
 ```
 
 `(type …)` / `(instance …)` are ordinary facts (S1.7.6); the kernel
@@ -88,14 +83,13 @@ Uses only the relation `is-a` with two recurring rules
 (`transitive is-a` and `asymmetric is-a`):
 
 ```lisp
-(ontology
-  (relation is-a T T)
-  (is-a Nationality Attribute)
-  (is-a Norwegian Nationality)
-  (is-a Japanese  Nationality)
-  (transitive is-a)
-  (asymmetric is-a)
-  (sibling-exclusive is-a))
+(relation is-a T T)
+(is-a Nationality Attribute)
+(is-a Norwegian Nationality)
+(is-a Japanese  Nationality)
+(transitive is-a)
+(asymmetric is-a)
+(sibling-exclusive is-a)
 ```
 
 The inheritance hierarchy is just the `is-a` fact graph (closed under
@@ -109,36 +103,35 @@ order viewed as a category) is documented in `zebra2.ein`'s header.
 
 ## Worked rule library
 
-Both encodings use the same property-rule pattern. From
-`zebra.ein`'s rules block:
+Both encodings use the same property-rule pattern. The `(rule …)`
+forms from `zebra.ein`:
 
 ```lisp
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 1)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 1)
 
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?b ?c) :where (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} is transitive."
-    :priority 5)
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) :where (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive."
+  :priority 5)
 
-  (rule implies (?p ?q)
-    :match  (?p ?a ?b)
-    :assert (?q ?a ?b)
-    :why    "{?p} implies {?q}."
-    :priority 3)
+(rule implies (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?p} implies {?q}."
+  :priority 3)
 
-  (rule type-exclusivity ()
-    :match  (and (instance ?a ?T)
-                 (instance ?b ?T)
-                 :where (neq ?a ?b))
-    :assert (not (co-located ?a ?b))
-    :why    "{?a} and {?b} are distinct instances of {?T} — distinct slots."
-    :priority 10))
+(rule type-exclusivity ()
+  :match  (and (instance ?a ?T)
+               (instance ?b ?T)
+               :where (neq ?a ?b))
+  :assert (not (co-located ?a ?b))
+  :why    "{?a} and {?b} are distinct instances of {?T} — distinct slots."
+  :priority 10)
 ```
 
 `symmetric`, `transitive`, `implies` are **T2** rules
@@ -150,21 +143,21 @@ LHS and RHS.
 
 ## Reasoning-layer dump
 
-After saturation, an engine dump of the reasoning layer looks like:
+After saturation, an engine dump of the derived facts looks like
+(flat forms; each carries `:rule` / `:using`, so it re-classifies to
+the REASONING layer on reload):
 
 ```lisp
-(reasoning
-  ;; The engine derived (co-located House-1 Norwegian) from
-  ;; condition (10) via the symmetric rule.
-  (co-located House-1 Norwegian :rule symmetric
-                                :using ((co-located Norwegian House-1)))
+;; The engine derived (co-located House-1 Norwegian) from
+;; condition (10) via the symmetric rule.
+(co-located House-1 Norwegian :rule symmetric
+                              :using ((co-located Norwegian House-1)))
 
-  ;; Type-exclusivity: Norwegian and Japanese are distinct
-  ;; Nationality instances, so they're not co-located.
-  (not (co-located Norwegian Japanese) :rule type-exclusivity
-                                       :using ((instance Norwegian Nationality)
-                                               (instance Japanese  Nationality)))
-  …)
+;; Type-exclusivity: Norwegian and Japanese are distinct
+;; Nationality instances, so they're not co-located.
+(not (co-located Norwegian Japanese) :rule type-exclusivity
+                                     :using ((instance Norwegian Nationality)
+                                             (instance Japanese  Nationality)))
 ```
 
 > **Note** — the `:using` IR syntax above isn't yet round-trippable

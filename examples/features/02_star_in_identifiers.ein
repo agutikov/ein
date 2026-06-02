@@ -19,37 +19,35 @@
 ;;;   1. `(subrel is-a is-a*)` — every direct is-a edge becomes an is-a* edge.
 ;;;   2. `(transitive is-a*)` — is-a* propagates transitively.
 
-(rules
-  ;; Sub-relation lift (one direction of the closure idiom).
-  (rule subrel (?Sub ?Super)
-    :match  (?Sub ?a ?b)
-    :assert (?Super ?a ?b)
-    :priority 100
-    :why    "{?Sub} ⊆ {?Super}: lift edge")
+;; Sub-relation lift (one direction of the closure idiom).
+(rule subrel (?Sub ?Super)
+  :match  (?Sub ?a ?b)
+  :assert (?Super ?a ?b)
+  :priority 100
+  :why    "{?Sub} ⊆ {?Super}: lift edge")
 
-  ;; The standard `transitive` rule, used here on is-a*.
-  (rule transitive (?R)
-    :match  (and (?R ?a ?b) (?R ?b ?c))
-    :assert (?R ?a ?c)
-    :priority 200
-    :why    "{?R} is transitive: {?a} →{?R}→ {?b} →{?R}→ {?c}."))
+;; The standard `transitive` rule, used here on is-a*.
+(rule transitive (?R)
+  :match  (and (?R ?a ?b) (?R ?b ?c))
+  :assert (?R ?a ?c)
+  :priority 200
+  :why    "{?R} is transitive: {?a} →{?R}→ {?b} →{?R}→ {?c}.")
 
-(ontology
-  (relation is-a  T T)
-  (relation is-a* T T)
+(relation is-a  T T)
+(relation is-a* T T)
 
-  ;; Two activators set up the closure of is-a into is-a*.
-  (subrel is-a is-a*)
-  (transitive is-a*)
+;; Two activators set up the closure of is-a into is-a*.
+(subrel is-a is-a*)
+(transitive is-a*)
 
-  ;; A small subtype tree:
-  ;;   T → Animal → Mammal → Dog → Rex
-  (is-a Animal T)
-  (is-a Mammal Animal)
-  (is-a Dog    Mammal)
-  (is-a Rex    Dog))
+;; A small subtype tree:
+;;   T → Animal → Mammal → Dog → Rex
+(is-a Animal T)
+(is-a Mammal Animal)
+(is-a Dog    Mammal)
+(is-a Rex    Dog)
 
-(facts)
+
 
 ;; After saturation:
 ;;   - `is-a` holds only the 4 declared direct edges.

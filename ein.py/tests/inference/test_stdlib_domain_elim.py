@@ -25,25 +25,24 @@ def _saturate(kb: KnowledgeBase) -> list:
 
 
 STDLIB = """
-(rules
-  (rule typecheck-arg-0 (?R ?Dom)
-    :match  (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
-    :assert (false) :priority 110 :why "t0")
-  (rule typecheck-arg-1 (?R ?Ran)
-    :match  (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
-    :assert (false) :priority 110 :why "t1")
-  (rule domain-elimination (?R ?OT ?VT)
-    :match  (and (functional ?R 0 1) (total ?R 0)
-                 (is-a ?a ?OT) (is-a ?v ?VT)
-                 (forall ?v_other
-                   (and (is-a ?v_other ?VT) (neq ?v_other ?v))
-                   (not (?R ?a ?v_other))))
-    :assert (?R ?a ?v) :priority 400 :why "de")
-  (rule no-room-left (?R ?OT ?VT)
-    :match  (and (functional ?R 0 1) (total ?R 0)
-                 (is-a ?a ?OT)
-                 (forall ?v (is-a ?v ?VT) (not (?R ?a ?v))))
-    :assert (false) :priority 110 :why "nrl"))
+(rule typecheck-arg-0 (?R ?Dom)
+  :match  (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
+  :assert (false) :priority 110 :why "t0")
+(rule typecheck-arg-1 (?R ?Ran)
+  :match  (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
+  :assert (false) :priority 110 :why "t1")
+(rule domain-elimination (?R ?OT ?VT)
+  :match  (and (functional ?R 0 1) (total ?R 0)
+               (is-a ?a ?OT) (is-a ?v ?VT)
+               (forall ?v_other
+                 (and (is-a ?v_other ?VT) (neq ?v_other ?v))
+                 (not (?R ?a ?v_other))))
+  :assert (?R ?a ?v) :priority 400 :why "de")
+(rule no-room-left (?R ?OT ?VT)
+  :match  (and (functional ?R 0 1) (total ?R 0)
+               (is-a ?a ?OT)
+               (forall ?v (is-a ?v ?VT) (not (?R ?a ?v))))
+  :assert (false) :priority 110 :why "nrl")
 """
 
 
@@ -62,16 +61,14 @@ def test_demo_file_solves_to_color_of_house2_blue():
 
 def test_domain_elim_forces_unique_survivor():
     kb = _kb(STDLIB + """
-    (ontology
-      (relation color-of House Color) (relation is-a T T)
-      (functional color-of 0 1) (total color-of 0)
-      (domain-elimination color-of House Color)
-      (is-a House T) (is-a Color T)
-      (is-a H1 House)
-      (is-a Red Color) (is-a Blue Color) (is-a Green Color))
-    (facts
-      (not (color-of H1 Red) :source "(a)")
-      (not (color-of H1 Blue) :source "(b)"))
+    (relation color-of House Color) (relation is-a T T)
+    (functional color-of 0 1) (total color-of 0)
+    (domain-elimination color-of House Color)
+    (is-a House T) (is-a Color T)
+    (is-a H1 House)
+    (is-a Red Color) (is-a Blue Color) (is-a Green Color)
+    (not (color-of H1 Red) :source "(a)")
+    (not (color-of H1 Blue) :source "(b)")
     """)
     firings = _saturate(kb)
     derived = [
@@ -84,16 +81,14 @@ def test_domain_elim_forces_unique_survivor():
 
 def test_no_room_left_fires_when_every_value_excluded():
     kb = _kb(STDLIB + """
-    (ontology
-      (relation color-of House Color) (relation is-a T T)
-      (functional color-of 0 1) (total color-of 0)
-      (no-room-left color-of House Color)
-      (is-a House T) (is-a Color T)
-      (is-a H1 House)
-      (is-a Red Color) (is-a Blue Color))
-    (facts
-      (not (color-of H1 Red) :source "(a)")
-      (not (color-of H1 Blue) :source "(b)"))
+    (relation color-of House Color) (relation is-a T T)
+    (functional color-of 0 1) (total color-of 0)
+    (no-room-left color-of House Color)
+    (is-a House T) (is-a Color T)
+    (is-a H1 House)
+    (is-a Red Color) (is-a Blue Color)
+    (not (color-of H1 Red) :source "(a)")
+    (not (color-of H1 Blue) :source "(b)")
     """)
     firings = _saturate(kb)
     falses = [
@@ -107,14 +102,13 @@ def test_no_room_left_silent_when_one_value_remains():
     """Mirror of no-room-left: one survivor → domain-elim fires,
     no-room-left silent."""
     kb = _kb(STDLIB + """
-    (ontology
-      (relation color-of House Color) (relation is-a T T)
-      (functional color-of 0 1) (total color-of 0)
-      (no-room-left color-of House Color)
-      (is-a House T) (is-a Color T)
-      (is-a H1 House)
-      (is-a Red Color) (is-a Blue Color))
-    (facts (not (color-of H1 Red) :source "(a)"))
+    (relation color-of House Color) (relation is-a T T)
+    (functional color-of 0 1) (total color-of 0)
+    (no-room-left color-of House Color)
+    (is-a House T) (is-a Color T)
+    (is-a H1 House)
+    (is-a Red Color) (is-a Blue Color)
+    (not (color-of H1 Red) :source "(a)")
     """)
     firings = _saturate(kb)
     nrl = [f for f in firings if not f.redundant and f.rule == "no-room-left"]
@@ -124,14 +118,12 @@ def test_no_room_left_silent_when_one_value_remains():
 def test_typecheck_fires_on_mistyped_arg():
     """Wrong-typed arg → typecheck fires (false)."""
     kb = _kb(STDLIB + """
-    (ontology
-      (relation color-of House Color) (relation is-a T T)
-      (typecheck-arg-0 color-of House)
-      (is-a House T) (is-a Color T) (is-a Person T)
-      (is-a Englishman Person)
-      (is-a H1 House) (is-a Red Color))
-    (facts
-      (color-of Englishman Red :source "(bad)"))
+    (relation color-of House Color) (relation is-a T T)
+    (typecheck-arg-0 color-of House)
+    (is-a House T) (is-a Color T) (is-a Person T)
+    (is-a Englishman Person)
+    (is-a H1 House) (is-a Red Color)
+    (color-of Englishman Red :source "(bad)")
     """)
     firings = _saturate(kb)
     tc = [f for f in firings if not f.redundant and f.rule == "typecheck-arg-0"]
@@ -140,13 +132,12 @@ def test_typecheck_fires_on_mistyped_arg():
 
 def test_typecheck_silent_on_well_typed_facts():
     kb = _kb(STDLIB + """
-    (ontology
-      (relation color-of House Color) (relation is-a T T)
-      (typecheck-arg-0 color-of House)
-      (typecheck-arg-1 color-of Color)
-      (is-a House T) (is-a Color T)
-      (is-a H1 House) (is-a Red Color))
-    (facts (color-of H1 Red :source "(ok)"))
+    (relation color-of House Color) (relation is-a T T)
+    (typecheck-arg-0 color-of House)
+    (typecheck-arg-1 color-of Color)
+    (is-a House T) (is-a Color T)
+    (is-a H1 House) (is-a Red Color)
+    (color-of H1 Red :source "(ok)")
     """)
     firings = _saturate(kb)
     tc = [
@@ -159,13 +150,12 @@ def test_typecheck_silent_on_well_typed_facts():
 def test_domain_elim_silent_without_total_or_functional():
     """If the property facts aren't declared, domain-elim doesn't fire."""
     kb = _kb(STDLIB + """
-    (ontology
-      (relation color-of House Color) (relation is-a T T)
-      (domain-elimination color-of House Color)
-      (is-a House T) (is-a Color T)
-      (is-a H1 House)
-      (is-a Red Color) (is-a Blue Color))
-    (facts (not (color-of H1 Red) :source "(a)"))
+    (relation color-of House Color) (relation is-a T T)
+    (domain-elimination color-of House Color)
+    (is-a House T) (is-a Color T)
+    (is-a H1 House)
+    (is-a Red Color) (is-a Blue Color)
+    (not (color-of H1 Red) :source "(a)")
     """)
     firings = _saturate(kb)
     de = [

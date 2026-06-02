@@ -58,65 +58,62 @@
 
 (config :enable-back-prop-unconditional false)
 
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
 
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} is transitive."
-    :priority 200)
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive."
+  :priority 200)
 
-  (rule implies (?p ?q)
-    :match  (?p ?a ?b)
-    :assert (?q ?a ?b)
-    :why    "{?p} implies {?q}."
-    :priority 100)
+(rule implies (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?p} implies {?q}."
+  :priority 100)
 
-  (rule functional (?R)
-    :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-    :assert (false)
-    :why    "{?R} not functional."
-    :priority 250)
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional."
+  :priority 250)
 
-  ;; Helper for this demo only — promotes an explicit
-  ;; `(no-buddy-with a b)` fact into a REASONING `(not (buddy a b))`
-  ;; so its derivation is in the same layer as the buddy chain that
-  ;; would clash with it. (`ContradictionDetector` only flags
-  ;; same-layer `(X, (not X))` pairs — a FACT-layer negative would
-  ;; not register as a clash against a REASONING-derived positive.)
-  (rule explicit-no-buddy ()
-    :match  (no-buddy-with ?a ?b)
-    :assert (not (buddy ?a ?b))
-    :why    "explicit no-buddy: {?a} cannot be buddy of {?b}."
-    :priority 50))
+;; Helper for this demo only — promotes an explicit
+;; `(no-buddy-with a b)` fact into a REASONING `(not (buddy a b))`
+;; so its derivation is in the same layer as the buddy chain that
+;; would clash with it. (`ContradictionDetector` only flags
+;; same-layer `(X, (not X))` pairs — a FACT-layer negative would
+;; not register as a clash against a REASONING-derived positive.)
+(rule explicit-no-buddy ()
+  :match  (no-buddy-with ?a ?b)
+  :assert (not (buddy ?a ?b))
+  :why    "explicit no-buddy: {?a} cannot be buddy of {?b}."
+  :priority 50)
 
-(ontology
-  (relation is-a           T T)
-  (relation friends-of     T T)
-  (relation buddy          T T)
-  (relation no-buddy-with  T T)
+(relation is-a           T T)
+(relation friends-of     T T)
+(relation buddy          T T)
+(relation no-buddy-with  T T)
 
-  (symmetric  friends-of)
-  (implies    friends-of buddy)
-  (transitive buddy)
-  (functional is-a)
+(symmetric  friends-of)
+(implies    friends-of buddy)
+(transitive buddy)
+(functional is-a)
 
-  (is-a Person T)
-  (is-a Alice Person) (is-a Bob   Person)
-  (is-a Carol Person) (is-a Dave  Person)
+(is-a Person T)
+(is-a Alice Person) (is-a Bob   Person)
+(is-a Carol Person) (is-a Dave  Person)
 
-  ;; Forbidden buddy pair — produces REASONING `(not (buddy …))`
-  ;; via `explicit-no-buddy` at root saturation.
-  (no-buddy-with Alice Carol)
-  (no-buddy-with Carol Alice))
+;; Forbidden buddy pair — produces REASONING `(not (buddy …))`
+;; via `explicit-no-buddy` at root saturation.
+(no-buddy-with Alice Carol)
+(no-buddy-with Carol Alice)
 
-(facts
-  (buddy Bob Carol :source "(1) Bob is Carol's buddy"))
+(buddy Bob Carol :source "(1) Bob is Carol's buddy")
 
 (query
   :mode solve

@@ -14,13 +14,42 @@ and **no symmetric semantics** (`symmetric` is a plain user property tag —
 A name is reserved **iff** it appears in this table or the engine-strings
 doc — nothing else is special.
 
-## Declarators
+## Top-level declarators — the closed classifier set (P1.7c)
+
+A program is a **flat sequence of forms** (P1.7c — the `(ontology …)` /
+`(facts …)` / `(reasoning …)` / `(rules …)` block wrappers were removed in
+[S1.7c.4](../../../../plans/m1_core_graph_reasoning/p1.7c_block_head_removal/s1.7c.4_migrate_and_drop_shim.md)).
+Each top-level form is classified by its **head**: a head in the table
+below is a declarator (`trace` is the engine-emitted sibling); **any other
+head is a fact** — "detect facts by *not* being reserved" (the author's
+design note). This set is **closed**: the parser keys on it (`rule` / `hrule` / `query` /
+`config` / `trace` are SYMBOL-excluded, so a malformed declarator — e.g.
+`(query)` with no kw-pairs — is a *parse* error; `relation` is the one
+exception, kept a plain SYMBOL so rules can pattern-match
+`(relation ?R ?A ?B)`, so its malformed form is rejected at *load* time),
+and the loader
+([`kb.from_ir`](../../../../ein.py/src/ein_bot/kb/from_ir.py)) routes by the
+same set.
 
 | name | form | meaning | engine site |
 |------|------|---------|-------------|
-| `relation` | `(relation R A B)` | declare a relation-type node + its arg-type signature | `kb.from_ir`; `entities.KERNEL_META_RELATIONS` |
+| `relation` | `(relation R A B …)` | declare a relation-type node + its arg-type signature | `kb.from_ir`; `entities.KERNEL_META_RELATIONS` |
 | `rule` | `(rule N (?p…) :match … :assert …)` | declare a saturation rewrite rule | `kb.from_ir` |
 | `hrule` | `(hrule N (?p…) :match … :assert …)` | declare a hypothesis-generation rule (drives `hypgen`, never fired by the saturator) | `kb.from_ir`; `hypgen` |
+| `query` | `(query :mode … :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
+| `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
+| `trace` | `(trace <event>*)` | **engine-emitted** derivation log — parsed by [`trace/ast.py`](../../../../ein.py/src/ein_bot/trace/ast.py), ignored by `kb.from_ir`; a *sibling*, not part of the declarator-vs-fact dichotomy | `trace/` |
+
+**Else → fact.** A top-level form whose head is none of the above is a
+fact: `=`, `not`, or a generic `(NAME args*)`. Its knowledge **layer** is
+per-fact (no longer positional): an explicit `:layer ontology|fact|reasoning`
+wins, else it is derived — `:rule`/`:using` → REASONING, `:source` → FACT,
+neither → ONTOLOGY ([S1.7c.1](../../../../plans/m1_core_graph_reasoning/p1.7c_block_head_removal/s1.7c.1_layer_attribution_decision.md)).
+A former-wrapper head like `(facts …)` therefore now parses as a plain fact.
+
+**Forward-reserved:** `macro` joins this set once
+[P1.8 S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)
+lands (`(macro …)` definitions); until then it lexes as an ordinary SYMBOL.
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 

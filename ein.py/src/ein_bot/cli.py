@@ -130,38 +130,44 @@ def _parse_or_exit(path: Path):
         return None
 
 
-def _rules_forms(nodes):
-    """All `(rules …)` top-level forms among parsed nodes."""
+def _rule_forms(nodes):
+    """All flat `(rule …)` / `(hrule …)` declarations among parsed nodes
+    (P1.7c — the `(rules …)` block wrapper is gone)."""
     from .ir import SForm
-    return [n for n in nodes if isinstance(n, SForm) and n.head.name == "rules"]
+    return [n for n in nodes
+            if isinstance(n, SForm) and n.head.name in ("rule", "hrule")]
 
 
 def _cmd_render_rules(args: argparse.Namespace) -> int:
+    from .ir import Atom, SForm
     nodes = _parse_or_exit(Path(args.file))
     if nodes is None:
         return 1
-    chunks = [render_rules(rf, mode=args.rule_mode) for rf in _rules_forms(nodes)]
-    chunks = [c for c in chunks if c]
-    if not chunks:
-        print(f"no (rules …) form in {args.file}", file=sys.stderr)
+    rule_forms = _rule_forms(nodes)
+    if not rule_forms:
+        print(f"no rule forms in {args.file}", file=sys.stderr)
         return 1
-    sys.stdout.write("\n\n".join(chunks))
+    # Render the rule library as one group (one digraph per rule).
+    dot = render_rules(
+        SForm(head=Atom(name="rules"), args=tuple(rule_forms)),
+        mode=args.rule_mode,
+    )
+    sys.stdout.write(dot)
     sys.stdout.write("\n")
     return 0
 
 
 def _cmd_render_rule(args: argparse.Namespace) -> int:
-    from .ir import Atom, SForm
+    from .ir import Atom
     nodes = _parse_or_exit(Path(args.file))
     if nodes is None:
         return 1
-    for rf in _rules_forms(nodes):
-        for r in rf.args:
-            if (isinstance(r, SForm) and r.args
-                    and isinstance(r.args[0], Atom) and r.args[0].name == args.name):
-                sys.stdout.write(render_rule(r, mode=args.rule_mode))
-                sys.stdout.write("\n")
-                return 0
+    for r in _rule_forms(nodes):
+        if (r.args and isinstance(r.args[0], Atom)
+                and r.args[0].name == args.name):
+            sys.stdout.write(render_rule(r, mode=args.rule_mode))
+            sys.stdout.write("\n")
+            return 0
     print(f"no rule named {args.name!r} in {args.file}", file=sys.stderr)
     return 1
 

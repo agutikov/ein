@@ -17,23 +17,20 @@
 ;;;   + (co-located Floor1 Floor4)
 ;;;   ⇒ (co-located Floor2 Floor5).
 
-(rules
-  (rule square-bwd (?R)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (co-located ?b ?y))
-    :assert (co-located ?a ?x)
-    :why    "square ({?R}, bwd)."
-    :priority 200))
+(rule square-bwd (?R)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (co-located ?b ?y))
+  :assert (co-located ?a ?x)
+  :why    "square ({?R}, bwd)."
+  :priority 200)
 
-(ontology
-  (relation above-of T T)
-  (relation co-located T T)
-  (square-bwd above-of))
+(relation above-of T T)
+(relation co-located T T)
+(square-bwd above-of)
 
-(facts
-  (above-of Floor2 Floor1 :source "(1)")
-  (above-of Floor5 Floor4 :source "(2)")
-  (co-located Floor1 Floor4 :source "(3)"))
+(above-of Floor2 Floor1 :source "(1)")
+(above-of Floor5 Floor4 :source "(2)")
+(co-located Floor1 Floor4 :source "(3)")
 
 (query :mode solve :goal (co-located Floor2 Floor5))

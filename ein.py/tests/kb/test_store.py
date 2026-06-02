@@ -217,11 +217,9 @@ class TestOpenWorld:
     def test_undeclared_relation_auto_vivifies(self):
         from ein_bot.ir import parse
         text = """
-        (ontology
-          (type Foo)
-          (instance A Foo))
-        (facts
-          (mystery-relation A B :source "(1)"))
+        (type Foo)
+        (instance A Foo)
+        (mystery-relation A B :source "(1)")
         """
         kb = KnowledgeBase.from_ir(parse(text))
         assert "mystery-relation" in kb.relations
@@ -274,10 +272,9 @@ class TestIncrementalIndex:
     def test_index_fact_appends(self):
         from ein_bot.ir import parse
         text = """
-        (ontology
-          (type T)
-          (instance A T)
-          (relation r T T))
+        (type T)
+        (instance A T)
+        (relation r T T)
         """
         from ein_bot.kb import Provenance
         kb = KnowledgeBase.from_ir(parse(text))
@@ -326,8 +323,7 @@ class TestNestedFactArgsThroughLoader:
     def test_loader_constructs_nested_fact_in_args(self):
         from ein_bot.ir import parse
         forms = parse(
-            "(facts "
-            "  (hypothesis (co-located Norwegian House-2)))"
+            '(hypothesis (co-located Norwegian House-2) :layer fact)'
         )
         kb = KnowledgeBase.from_ir(forms)
         # The outer fact is registered (top-level).
@@ -342,7 +338,7 @@ class TestNestedFactArgsThroughLoader:
     def test_nested_fact_equality_across_loads(self):
         """Two separate loads with identical IR produce equal nested facts."""
         from ein_bot.ir import parse
-        src = "(facts (hypothesis (co-located Norwegian House-2)))"
+        src = '(hypothesis (co-located Norwegian House-2) :layer fact)'
         kb1 = KnowledgeBase.from_ir(parse(src))
         kb2 = KnowledgeBase.from_ir(parse(src))
         f1 = next(f for f in kb1.facts if f.relation_name == "hypothesis")
@@ -354,9 +350,7 @@ class TestNestedFactArgsThroughLoader:
     def test_two_levels_of_nesting_through_loader(self):
         from ein_bot.ir import parse
         forms = parse(
-            "(facts "
-            "  (contradiction-under "
-            "    (hypothesis (co-located Norwegian House-2))))"
+            '(contradiction-under     (hypothesis (co-located Norwegian House-2)) :layer fact)'
         )
         kb = KnowledgeBase.from_ir(forms)
         outer = next(f for f in kb.facts if f.relation_name == "contradiction-under")
@@ -381,12 +375,11 @@ class TestKBSnapshot:
         from ein_bot.ir import parse
         from ein_bot.kb import Provenance
         text = """
-        (ontology
-          (type T)
-          (instance a T)
-          (instance b T)
-          (relation r T T))
-        (facts (r a b :source "(1)"))
+        (type T)
+        (instance a T)
+        (instance b T)
+        (relation r T T)
+        (r a b :source "(1)")
         """
         kb = KnowledgeBase.from_ir(parse(text))
         snap = kb.snapshot()
@@ -427,12 +420,11 @@ class TestKBSnapshot:
         from ein_bot.ir import parse
         from ein_bot.kb import Provenance
         text = """
-        (ontology
-          (type T)
-          (instance a T) (instance b T)
-          (relation p T T)
-          (relation q T T))
-        (facts (p a b :source "(1)"))
+        (type T)
+        (instance a T) (instance b T)
+        (relation p T T)
+        (relation q T T)
+        (p a b :source "(1)")
         """
         kb = KnowledgeBase.from_ir(parse(text))
         # Add a derived fact whose provenance points at the source.
@@ -477,10 +469,9 @@ class TestKBSnapshot:
         (S1.7.23 — there are no `types` / `instances` registries.)"""
         from ein_bot.ir import parse
         text = """
-        (ontology
-          (type T)
-          (instance a T)
-          (relation r T T))
+        (type T)
+        (instance a T)
+        (relation r T T)
         """
         kb = KnowledgeBase.from_ir(parse(text))
         snap = kb.snapshot()

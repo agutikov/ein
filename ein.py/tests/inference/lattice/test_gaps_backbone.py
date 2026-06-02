@@ -177,16 +177,14 @@ def test_gaps_solve_root_contradiction_returns_empty_branches():
     (no satisfying commitment exists).
     """
     kb = _kb_inline("""
-    (rules
-      (rule always-false ()
-        :match (trigger ?x)
-        :assert (false)
-        :why "always" :priority 100))
-    (ontology
-      (type T)
-      (relation trigger T)
-      (instance a T))
-    (facts (trigger a :source "(1)"))
+    (rule always-false ()
+      :match (trigger ?x)
+      :assert (false)
+      :why "always" :priority 100)
+    (type T)
+    (relation trigger T)
+    (instance a T)
+    (trigger a :source "(1)")
     (query :mode solve :goal (trigger ?x))
     """)
     verdict, stats = gaps_solve(kb, max_set_size=1)

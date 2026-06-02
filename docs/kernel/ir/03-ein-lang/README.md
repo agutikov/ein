@@ -1,8 +1,8 @@
 # ein-lang — surface S-expression syntax
 
 The textual IR that users author and the engine dumps. A small
-S-expression dialect with six top-level forms; the surface
-representation of the graph from
+S-expression dialect — a flat sequence of forms classified by head
+(P1.7c); the surface representation of the graph from
 [`../01-ein-graph/`](../01-ein-graph/), held in memory by the data
 model in [`../02-data-model/`](../02-data-model/).
 
@@ -14,8 +14,9 @@ model in [`../02-data-model/`](../02-data-model/).
 ## Files
 
 - [`01_grammar.md`](01_grammar.md) — lexical rules (terminals,
-  comments, naming convention) + the six top-level forms
-  (`ontology`, `facts`, `reasoning`, `rules`, `query`, `trace`).
+  comments, naming convention) + the flat top-level form set: the
+  declarators (`relation`, `rule`, `hrule`, `query`, `config`), the
+  engine-emitted `trace`, and the else-is-a-fact default.
 - [`02_patterns.md`](02_patterns.md) — the pattern sub-language used
   inside rule `:match` / `:assert` clauses; predicate registry;
   what's deliberately *not* in the pattern language.

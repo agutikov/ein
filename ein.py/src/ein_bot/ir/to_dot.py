@@ -405,18 +405,37 @@ def _render_trace_dag(form: SForm) -> str:
 
 # ── Top-level dispatch ─────────────────────────────────────────────
 
+def _flat_layer(form: SForm) -> str:
+    """Layer of a flat fact form for rendering (mirrors `kb.from_ir._layer_of`):
+    explicit `:layer` wins, else `:rule`/`:using`→reasoning, `:source`→fact,
+    else ontology."""
+    kw = {a.key.name for a in form.args if isinstance(a, KwPair)}
+    for a in form.args:
+        if (isinstance(a, KwPair) and a.key.name == "layer"
+                and isinstance(a.value, Atom)):
+            return a.value.name
+    if "rule" in kw or "using" in kw:
+        return "reasoning"
+    if "source" in kw:
+        return "fact"
+    return "ontology"
+
+
 def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "a",
            trace_view: str = "a", levi: bool = False) -> str:
-    """Render an IR node (or tuple of top-level forms) to DOT.
+    """Render an IR node (or a flat sequence of top-level forms) to DOT.
 
-    Returns one `digraph { … }` per top-level form, joined by blank
-    lines. For a `(rules …)` form, each child rule becomes its own
-    digraph (a rule library is multiple graphs).
+    Returns one `digraph { … }` per rendered group, joined by blank lines.
+    A flat program (P1.7c) is **regrouped** by head/layer back into the
+    layer views the renderers draw: `rule`/`hrule` → a rule library;
+    `relation` + ONTOLOGY-layer facts → the ontology view; FACT-layer →
+    facts; REASONING-layer → reasoning. (The deprecated `(ontology …)` /
+    `(facts …)` / `(reasoning …)` / `(rules …)` wrapper forms still render
+    directly if passed.)
 
-    ``levi=True`` selects the Levi-bipartite view for ontology / facts
-    / reasoning forms (default: compact). ``rule_mode`` defaults to the
-    side-by-side LHS|RHS view; pass ``"overlay"`` for the compact
-    overlay (S1.6.0).
+    ``levi=True`` selects the Levi-bipartite view for ontology / facts /
+    reasoning (default: compact). ``rule_mode`` defaults to the
+    side-by-side LHS|RHS view; pass ``"overlay"`` for the compact overlay.
     """
     if isinstance(node, SForm):
         head = node.head.name
@@ -428,7 +447,7 @@ def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "a",
             return render_reasoning(node, levi=levi)
         if head == "rules":
             return render_rules(node, mode=rule_mode)
-        if head == "rule":
+        if head == "rule" or head == "hrule":
             return render_rule(node, mode=rule_mode)
         if head == "query":
             return render_query(node)
@@ -437,11 +456,49 @@ def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "a",
         if head == "config":
             # Solver knobs — no graph structure to render.
             return ""
-        raise ValueError(f"unknown top-level form: {head}")
-    # Tuple/iterable of top-level forms
-    chunks = [to_dot(f, rule_mode=rule_mode, trace_view=trace_view, levi=levi)
-              for f in node]
-    return "\n\n".join(c for c in chunks if c)
+        # A flat fact: render it via its layer's view (singleton group).
+        layer = _flat_layer(node)
+        wrapper = {"ontology": "ontology", "fact": "facts",
+                   "reasoning": "reasoning"}[layer]
+        return to_dot(SForm(head=Atom(name=wrapper), args=(node,)),
+                      rule_mode=rule_mode, trace_view=trace_view, levi=levi)
+
+    # A sequence of top-level forms — regroup flat forms into layer views.
+    forms = [f for f in node if isinstance(f, SForm)]
+    rules: list[SForm] = []
+    buckets: dict[str, list[SForm]] = {"ontology": [], "fact": [], "reasoning": []}
+    chunks: list[str] = []
+    for f in forms:
+        h = f.head.name
+        if h in ("ontology", "facts", "reasoning", "rules", "query",
+                 "trace", "config"):
+            chunks.append(to_dot(f, rule_mode=rule_mode,
+                                 trace_view=trace_view, levi=levi))
+        elif h in ("rule", "hrule"):
+            rules.append(f)
+        elif h == "relation":
+            buckets["ontology"].append(f)
+        else:
+            buckets[_flat_layer(f)].append(f)
+
+    rendered: list[str] = []
+    if rules:
+        rendered.append(render_rules(
+            SForm(head=Atom(name="rules"), args=tuple(rules)), mode=rule_mode))
+    if buckets["ontology"]:
+        rendered.append(render_ontology(
+            SForm(head=Atom(name="ontology"), args=tuple(buckets["ontology"])),
+            levi=levi))
+    if buckets["fact"]:
+        rendered.append(render_facts(
+            SForm(head=Atom(name="facts"), args=tuple(buckets["fact"])),
+            derived=False, levi=levi))
+    if buckets["reasoning"]:
+        rendered.append(render_reasoning(
+            SForm(head=Atom(name="reasoning"), args=tuple(buckets["reasoning"])),
+            levi=levi))
+    rendered.extend(chunks)
+    return "\n\n".join(c for c in rendered if c)
 
 
 __all__ = [

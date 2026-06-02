@@ -60,12 +60,16 @@ form of every fact, regardless of arity. See
 [`ir/01-ein-graph/01_kb.md` §2.2](ir/01-ein-graph/01_kb.md).
 
 ### Layer (ontology / fact / reasoning)
-Three knowledge populations the KB stratifies facts into.
+Three knowledge populations the KB stratifies facts into. The layer
+is **per fact** (P1.7c — no block wrappers): an explicit `:layer` wins,
+else it is derived from provenance.
 - **ontology** — implicit assumptions (schema, instance enumeration,
-  rule-application meta-facts).
-- **fact** — explicit puzzle statements, each with a `:source` annotation.
+  rule-application meta-facts). Derived when a fact carries neither
+  `:source` nor `:rule`/`:using`.
+- **fact** — explicit puzzle statements, each with a `:source`
+  annotation (which derives this layer).
 - **reasoning** — derived facts produced by rule firings or
-  hypotheses.
+  hypotheses; carry `:rule`/`:using` (which derives this layer).
 See [`ir/01-ein-graph/01_kb.md` §3](ir/01-ein-graph/01_kb.md).
 
 ### Provenance

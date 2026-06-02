@@ -11,18 +11,16 @@ from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
 _SIB = """
-(rules
-  (rule sibling-exclusive (?siblings-via ?exclusive-under)
-    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
-    :assert (not (?exclusive-under ?a ?b))
-    :why "sib" :priority 300))
-(ontology
-  (relation is-a       T T)
-  (relation co-located T T)
-  (sibling-exclusive is-a co-located)
-  (sibling-exclusive is-a is-a)
-  (is-a Color T)
-  (is-a Red Color) (is-a Blue Color))
+(rule sibling-exclusive (?siblings-via ?exclusive-under)
+  :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+  :assert (not (?exclusive-under ?a ?b))
+  :why "sib" :priority 300)
+(relation is-a       T T)
+(relation co-located T T)
+(sibling-exclusive is-a co-located)
+(sibling-exclusive is-a is-a)
+(is-a Color T)
+(is-a Red Color) (is-a Blue Color)
 """
 
 

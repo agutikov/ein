@@ -22,14 +22,12 @@ def test_compile_transitive_with_activator_bakes_relation():
     """For (transitive co-located), the plan's relation slots are
     `co-located` literals — no free `?rel` head var remains."""
     kb = _kb_with("""
-    (rules
-      (rule transitive (?rel)
-        :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-        :assert (?rel ?a ?c)
-        :why "{?rel} is transitive"))
-    (ontology
-      (relation co-located T T)
-      (transitive co-located))
+    (rule transitive (?rel)
+      :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+      :assert (?rel ?a ?c)
+      :why "{?rel} is transitive")
+    (relation co-located T T)
+    (transitive co-located)
     """)
     rule = kb.rules["transitive"]
     activator = kb._facts_by_relation["transitive"][0]
@@ -55,12 +53,11 @@ def test_compile_transitive_with_activator_bakes_relation():
 def test_compile_join_shared_vars():
     """The second relation step records the shared var(s) with the first."""
     kb = _kb_with("""
-    (rules
-      (rule transitive (?rel)
-        :match (and (?rel ?a ?b) (?rel ?b ?c))
-        :assert (?rel ?a ?c)
-        :why "t"))
-    (ontology (relation r T T) (transitive r))
+    (rule transitive (?rel)
+      :match (and (?rel ?a ?b) (?rel ?b ?c))
+      :assert (?rel ?a ?c)
+      :why "t")
+    (relation r T T) (transitive r)
     """)
     plan = compile_rule(
         kb.rules["transitive"], kb._facts_by_relation["transitive"][0],
@@ -74,12 +71,11 @@ def test_compile_join_shared_vars():
 def test_compile_type_exclusivity_emits_negative_assert():
     """`:assert (not (co-located ?a ?b))` lowers to a nested-fact template."""
     kb = _kb_with("""
-    (rules
-      (rule type-exclusivity ()
-        :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-        :assert (not (co-located ?a ?b))
-        :why "x"))
-    (ontology (type T))
+    (rule type-exclusivity ()
+      :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+      :assert (not (co-located ?a ?b))
+      :why "x")
+    (type T)
     """)
     plan = compile_rule(kb.rules["type-exclusivity"], None)
     assert plan.activator_args == ()
@@ -102,12 +98,11 @@ def test_compile_absent_premise_emits_absent_guard():
     relation must respect those bindings.
     """
     kb = _kb_with("""
-    (rules
-      (rule guarded (?r)
-        :match (and (?r ?a ?b) (absent (other ?a ?b)))
-        :assert (ok ?a ?b)
-        :why "g"))
-    (ontology (relation r T T) (relation other T T) (guarded r))
+    (rule guarded (?r)
+      :match (and (?r ?a ?b) (absent (other ?a ?b)))
+      :assert (ok ?a ?b)
+      :why "g")
+    (relation r T T) (relation other T T) (guarded r)
     """)
     plan = compile_rule(
         kb.rules["guarded"], kb._facts_by_relation["guarded"][0],
@@ -128,12 +123,11 @@ def test_compile_not_premise_emits_scan_with_nested_pattern():
     KB.
     """
     kb = _kb_with("""
-    (rules
-      (rule see-neg (?r)
-        :match (and (?r ?a ?b) (not (other ?a ?b)))
-        :assert (saw-neg ?a ?b)
-        :why "saw stored neg of other for {?a},{?b}"))
-    (ontology (relation r T T) (relation other T T) (see-neg r))
+    (rule see-neg (?r)
+      :match (and (?r ?a ?b) (not (other ?a ?b)))
+      :assert (saw-neg ?a ?b)
+      :why "saw stored neg of other for {?a},{?b}")
+    (relation r T T) (relation other T T) (see-neg r)
     """)
     plan = compile_rule(
         kb.rules["see-neg"], kb._facts_by_relation["see-neg"][0],
@@ -156,12 +150,11 @@ def test_compile_nested_match_pattern():
     """Q40 — `(hypothesis (co-located ?a ?b))` compiles to a Scan
     on `hypothesis` with a NestedPattern arg slot."""
     kb = _kb_with("""
-    (rules
-      (rule hyp-test ()
-        :match (hypothesis (co-located ?a ?b))
-        :assert (caught ?a ?b)
-        :why "h"))
-    (ontology (relation co-located T T) (relation hypothesis T))
+    (rule hyp-test ()
+      :match (hypothesis (co-located ?a ?b))
+      :assert (caught ?a ?b)
+      :why "h")
+    (relation co-located T T) (relation hypothesis T)
     """)
     plan = compile_rule(kb.rules["hyp-test"], None)
     assert len(plan.steps) == 1
@@ -178,12 +171,11 @@ def test_compile_drops_where_keyword():
     (no Guard emitted). Authors should write positional `(neq …)` —
     the migration is mechanical."""
     kb = _kb_with("""
-    (rules
-      (rule old-where (?r)
-        :match (and (?r ?a ?b) :where (neq ?a ?b))
-        :assert (?r ?b ?a)
-        :why "ow"))
-    (ontology (relation r T T) (old-where r))
+    (rule old-where (?r)
+      :match (and (?r ?a ?b) :where (neq ?a ?b))
+      :assert (?r ?b ?a)
+      :why "ow")
+    (relation r T T) (old-where r)
     """)
     plan = compile_rule(
         kb.rules["old-where"], kb._facts_by_relation["old-where"][0],

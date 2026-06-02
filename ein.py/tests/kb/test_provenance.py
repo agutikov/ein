@@ -17,14 +17,12 @@ from ein_bot.kb.provenance import detect_provenance_cycles
 def _tiny_kb() -> KnowledgeBase:
     """Three-node ontology suitable for triangle-composition tests."""
     text = """
-    (ontology
-      (type T)
-      (instance A T) (instance B T) (instance C T) (instance D T)
-      (relation r T T))
-    (facts
-      (r A B :source "(1)")
-      (r B C :source "(2)")
-      (r C D :source "(3)"))
+    (type T)
+    (instance A T) (instance B T) (instance C T) (instance D T)
+    (relation r T T)
+    (r A B :source "(1)")
+    (r B C :source "(2)")
+    (r C D :source "(3)")
     """
     return KnowledgeBase.from_ir(parse(text))
 

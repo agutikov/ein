@@ -75,22 +75,20 @@ def test_runtime_derived_activator_compiles_on_fork():
       should fire and produce `(done X)`.
     """
     text = """
-    (rules
-      (rule meta-derive ()
-        :match  (trigger ?x)
-        :assert (target ?x)
-        :why    "trigger ⟹ target activator"
-        :priority 100)
-      (rule target (?x)
-        :match  (trigger ?y)
-        :assert (done ?y)
-        :why    "trigger fires target"
-        :priority 200))
-    (ontology
-      (relation trigger T)
-      (relation done T)
-      (relation target T))
-    (facts (trigger X :source "(1)"))
+    (rule meta-derive ()
+      :match  (trigger ?x)
+      :assert (target ?x)
+      :why    "trigger ⟹ target activator"
+      :priority 100)
+    (rule target (?x)
+      :match  (trigger ?y)
+      :assert (done ?y)
+      :why    "trigger fires target"
+      :priority 200)
+    (relation trigger T)
+    (relation done T)
+    (relation target T)
+    (trigger X :source "(1)")
     """
     kb = KnowledgeBase.from_ir(parse(text))
     fork = kb.fork()

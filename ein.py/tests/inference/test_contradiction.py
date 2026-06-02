@@ -44,8 +44,8 @@ def test_empty_kb():
 
 def test_positive_only_no_conflict():
     kb = _kb("""
-    (ontology (relation r T T))
-    (facts (r A B :source "(1)"))
+    (relation r T T)
+    (r A B :source "(1)")
     """)
     d = ContradictionDetector(kb)
     assert d.detect() == ()
@@ -55,8 +55,8 @@ def test_positive_only_no_conflict():
 def test_negative_only_no_conflict():
     """A `(not X)` without the matching positive is not a conflict."""
     kb = _kb("""
-    (ontology (relation r T T))
-    (facts (not (r A B) :source "(1)"))
+    (relation r T T)
+    (not (r A B) :source "(1)")
     """)
     d = ContradictionDetector(kb)
     assert d.detect() == ()
@@ -66,10 +66,9 @@ def test_negative_only_no_conflict():
 def test_different_inner_no_conflict():
     """`(not (r A B))` + `(r A C)` — different args, no pair."""
     kb = _kb("""
-    (ontology (relation r T T))
-    (facts
-      (r A C :source "(1)")
-      (not (r A B) :source "(2)"))
+    (relation r T T)
+    (r A C :source "(1)")
+    (not (r A B) :source "(2)")
     """)
     d = ContradictionDetector(kb)
     assert d.detect() == ()
@@ -80,7 +79,7 @@ def test_different_inner_no_conflict():
 
 def test_same_layer_conflict_in_reasoning():
     """Both X and (not X) in REASONING — one Contradiction."""
-    kb = _kb("(ontology (relation r T T))")
+    kb = _kb('(relation r T T)')
 
     positive = _put(kb, Fact(
         relation_name="r",
@@ -108,7 +107,7 @@ def test_same_layer_conflict_in_reasoning():
 
 def test_same_layer_conflict_in_fact_layer():
     """Same pair entirely in FACT layer — also a contradiction."""
-    kb = _kb("(ontology (relation r T T))")
+    kb = _kb('(relation r T T)')
     _put(kb, Fact(
         relation_name="r", args=("A", "B"), layer=Layer.FACT,
         provenance=Provenance.from_source(source="(1)"),
@@ -131,7 +130,7 @@ def test_same_layer_conflict_in_fact_layer():
 def test_cross_layer_non_conflict():
     """Positive in FACT, negative in REASONING — NOT a contradiction
     (engine-design choice; see ContradictionDetector docstring)."""
-    kb = _kb("(ontology (relation r T T))")
+    kb = _kb('(relation r T T)')
     _put(kb, Fact(
         relation_name="r", args=("A", "B"), layer=Layer.FACT,
         provenance=Provenance.from_source(source="(1)"),
@@ -152,7 +151,7 @@ def test_cross_layer_non_conflict():
 
 def test_multi_contradiction_kb():
     """Several (X, (not X)) pairs — detector reports all."""
-    kb = _kb("(ontology (relation r T T))")
+    kb = _kb('(relation r T T)')
     for a, b in [("A", "B"), ("C", "D"), ("E", "F")]:
         _put(kb, Fact(
             relation_name="r", args=(a, b), layer=Layer.REASONING,
@@ -176,7 +175,7 @@ def test_multi_contradiction_kb():
 
 
 def test_detect_layer_scopes_correctly():
-    kb = _kb("(ontology (relation r T T))")
+    kb = _kb('(relation r T T)')
     # One conflict in REASONING.
     _put(kb, Fact(relation_name="r", args=("X", "Y"),
                   layer=Layer.REASONING,
@@ -221,7 +220,7 @@ def test_nested_inner_fact():
     detector should recognise the pair correctly via Fact.__eq__'s
     recursive comparison.
     """
-    kb = _kb("(ontology (relation hypothesis T) (relation co-located T T))")
+    kb = _kb('(relation hypothesis T) (relation co-located T T)')
     inner_inner = Fact(
         relation_name="co-located", args=("Norwegian", "House-2"),
         layer=Layer.REASONING,
@@ -257,7 +256,7 @@ def test_nested_inner_fact():
 
 def test_saturator_contradictions_helper():
     """Saturator.contradictions() delegates to ContradictionDetector."""
-    kb = _kb("(ontology (relation r T T))")
+    kb = _kb('(relation r T T)')
     _put(kb, Fact(relation_name="r", args=("A", "B"),
                   layer=Layer.REASONING,
                   provenance=Provenance.from_rule(rule="r1")))
@@ -320,7 +319,7 @@ def test_direct_false_fact_is_contradiction():
     """A `(false)` fact in any layer is a `kind='direct'`
     contradiction — `positive` is None, `negative` is the fact
     itself, `witness` returns the negative for unsat-core walks."""
-    kb = _kb("(ontology (relation r T T))")
+    kb = _kb('(relation r T T)')
     false_fact = _put(kb, Fact(
         relation_name="false", args=(), layer=Layer.REASONING,
         provenance=Provenance.from_rule(rule="functional"),
@@ -341,7 +340,7 @@ def test_direct_false_fact_is_contradiction():
 def test_direct_false_and_pair_coexist():
     """Both `(false)` and `(X, (not X))` in the same KB → two
     Contradictions, one of each kind."""
-    kb = _kb("(ontology (relation r T T))")
+    kb = _kb('(relation r T T)')
     positive = _put(kb, Fact(
         relation_name="r", args=("A", "B"), layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=1),
@@ -372,7 +371,7 @@ def test_pair_kind_defaults_to_pair():
     """Existing call-sites that don't pass kind= explicitly still
     get the original `pair` shape — guards against silent
     behaviour change for unaware callers."""
-    kb = _kb("(ontology (relation r T T))")
+    kb = _kb('(relation r T T)')
     _put(kb, Fact(
         relation_name="r", args=("A", "B"), layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=1),

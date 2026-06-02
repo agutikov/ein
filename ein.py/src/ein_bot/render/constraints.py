@@ -41,6 +41,40 @@ from .palette import hash_color
 _KERNEL_ONTOLOGY_HEADS = frozenset({"relation", "type", "instance"})
 
 
+_NON_FACT_HEADS = frozenset({
+    "rule", "hrule", "query", "trace", "config",
+    "ontology", "facts", "reasoning",   # deprecated wrappers
+})
+
+
+def _flat_layer(form: SForm) -> str:
+    """Layer of a flat fact form (mirrors `kb.from_ir._layer_of`): explicit
+    `:layer` wins, else `:rule`/`:using`→reasoning, `:source`→fact, else
+    ontology."""
+    kw = {a.key.name for a in form.args if isinstance(a, KwPair)}
+    for a in form.args:
+        if (isinstance(a, KwPair) and a.key.name == "layer"
+                and isinstance(a.value, Atom)):
+            return a.value.name
+    if "rule" in kw or "using" in kw:
+        return "reasoning"
+    if "source" in kw:
+        return "fact"
+    return "ontology"
+
+
+def _is_ontology_form(f: object) -> bool:
+    """A flat top-level form belonging to the ontology group (schema +
+    property tags + type/is-a enumerations) — i.e. a relation decl or any
+    ONTOLOGY-layer fact, but not a rule / query / trace / config / sourced
+    (FACT) condition / derived (REASONING) fact."""
+    if not (isinstance(f, SForm) and isinstance(f.head, Atom)):
+        return False
+    if f.head.name in _NON_FACT_HEADS:
+        return False
+    return _flat_layer(f) == "ontology"
+
+
 def _declared_relations(ontology: SForm) -> set[str]:
     """Relation names declared via `(relation Name …)` in the ontology."""
     out: set[str] = set()
@@ -67,7 +101,14 @@ def render_constraints(
         (f for f in forms_l if isinstance(f, SForm) and f.head.name == "ontology"),
         None,
     )
-    declared_rel = _declared_relations(ontology) if ontology is not None else set()
+    if ontology is None:
+        # Flat program (P1.7c): synthesise the ontology group from the
+        # relation decls + ONTOLOGY-layer facts among the top-level forms.
+        ontology = SForm(
+            head=Atom(name="ontology"),
+            args=tuple(f for f in forms_l if _is_ontology_form(f)),
+        )
+    declared_rel = _declared_relations(ontology)
 
     unary: dict[str, list[str]] = {}    # relation → [property, …]
     binary: list[tuple[str, str, str]] = []   # (property, a, b)

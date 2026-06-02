@@ -17,19 +17,16 @@
 ;;;   (hypothesis (next-to X Y)) + (contradiction-under (next-to X Y))
 ;;;   ⇒ (not (next-to X Y)).
 
-(rules
-  (rule hypothesis-contradiction ()
-    :match  (and (hypothesis ?h)
-                 (contradiction-under ?h))
-    :assert (not ?h)
-    :why    "Assumed {?h}; contradicted. Therefore (not {?h})."
-    :priority 900))
+(rule hypothesis-contradiction ()
+  :match  (and (hypothesis ?h)
+               (contradiction-under ?h))
+  :assert (not ?h)
+  :why    "Assumed {?h}; contradicted. Therefore (not {?h})."
+  :priority 900)
 
-(ontology
-  (relation next-to T T))
+(relation next-to T T)
 
-(reasoning
-  (hypothesis (next-to X Y))
-  (contradiction-under (next-to X Y)))
+(hypothesis (next-to X Y) :layer reasoning)
+(contradiction-under (next-to X Y) :layer reasoning)
 
 (query :mode solve :goal (not (next-to X Y)))

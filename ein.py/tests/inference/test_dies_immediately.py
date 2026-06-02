@@ -25,30 +25,27 @@ def _saturated_kb(text: str) -> KnowledgeBase:
 # facts the transitive-join lookahead chains through. Red↔H1 is
 # the only anchor.
 _PUZZLE = """
-(rules
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why "s" :priority 100)
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why "t" :priority 200)
-  (rule sibling-exclusive (?siblings-via ?exclusive-under)
-    :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
-    :assert (not (?exclusive-under ?a ?b))
-    :why "sib" :priority 300))
-(ontology
-  (relation is-a       T T)
-  (relation co-located T T)
-  (symmetric         co-located)
-  (transitive        co-located)
-  (sibling-exclusive is-a co-located)
-  (is-a Color T) (is-a House T)
-  (is-a Red Color) (is-a Blue Color)
-  (is-a H1  House) (is-a H2  House))
-(facts
-  (co-located Red H1 :source "(1)"))
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why "s" :priority 100)
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why "t" :priority 200)
+(rule sibling-exclusive (?siblings-via ?exclusive-under)
+  :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+  :assert (not (?exclusive-under ?a ?b))
+  :why "sib" :priority 300)
+(relation is-a       T T)
+(relation co-located T T)
+(symmetric         co-located)
+(transitive        co-located)
+(sibling-exclusive is-a co-located)
+(is-a Color T) (is-a House T)
+(is-a Red Color) (is-a Blue Color)
+(is-a H1  House) (is-a H2  House)
+(co-located Red H1 :source "(1)")
 """
 
 
@@ -74,16 +71,13 @@ def test_direct_false_kill():
     """A candidate that makes a relation non-functional trips the
     `functional` rule's `:assert (false)` — direct ⊥."""
     kb = _saturated_kb("""
-    (rules
-      (rule functional (?R)
-        :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-        :assert (false)
-        :why "fn" :priority 250))
-    (ontology
-      (relation co-located T T)
-      (functional co-located))
-    (facts
-      (co-located Red H1 :source "(1)"))
+    (rule functional (?R)
+      :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+      :assert (false)
+      :why "fn" :priority 250)
+    (relation co-located T T)
+    (functional co-located)
+    (co-located Red H1 :source "(1)")
     """)
     h = Fact("co-located", ("Red", "H2"), layer=Layer.REASONING)
     assert Lookahead(kb).dies_immediately(kb, h) is True
@@ -93,14 +87,12 @@ def test_self_negating_rule():
     """A rule that asserts `(not h)` straight from `h` — the
     self-falsification shape."""
     kb = _saturated_kb("""
-    (rules
-      (rule deny (?R)
-        :match  (?R ?a ?b)
-        :assert (not (?R ?a ?b))
-        :why "deny" :priority 100))
-    (ontology
-      (relation r T T)
-      (deny r))
+    (rule deny (?R)
+      :match  (?R ?a ?b)
+      :assert (not (?R ?a ?b))
+      :why "deny" :priority 100)
+    (relation r T T)
+    (deny r)
     """)
     h = Fact("r", ("A", "B"), layer=Layer.REASONING)
     assert Lookahead(kb).dies_immediately(kb, h) is True
@@ -112,8 +104,8 @@ def test_is_contradiction_layer_guard():
     guard is what stops the lookahead false-killing a live
     hypothesis."""
     kb = _saturated_kb("""
-    (ontology (relation r T T))
-    (facts (r A B :source "given"))
+    (relation r T T)
+    (r A B :source "given")
     """)
     g_fact = kb._fact_by_id("r", ("A", "B"))
     assert g_fact is not None and g_fact.layer is Layer.FACT
@@ -152,6 +144,6 @@ def test_config_on_kills_doomed_candidate():
 def test_no_rules_never_kills():
     """A KB with no rules has no plans — nothing can die in one
     step, so every candidate is reported alive."""
-    kb = _saturated_kb("(ontology (relation co-located T T))")
+    kb = _saturated_kb('(relation co-located T T)')
     h = Fact("co-located", ("A", "B"), layer=Layer.REASONING)
     assert Lookahead(kb).dies_immediately(kb, h) is False

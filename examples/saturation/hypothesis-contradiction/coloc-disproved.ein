@@ -30,19 +30,16 @@
 ;;;   + (contradiction-under (co-located Norwegian House-2))
 ;;;   ⇒ (not (co-located Norwegian House-2)).
 
-(rules
-  (rule hypothesis-contradiction ()
-    :match  (and (hypothesis ?h)
-                 (contradiction-under ?h))
-    :assert (not ?h)
-    :why    "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
-    :priority 900))
+(rule hypothesis-contradiction ()
+  :match  (and (hypothesis ?h)
+               (contradiction-under ?h))
+  :assert (not ?h)
+  :why    "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
+  :priority 900)
 
-(ontology
-  (relation co-located T T))
+(relation co-located T T)
 
-(reasoning
-  (hypothesis (co-located Norwegian House-2))
-  (contradiction-under (co-located Norwegian House-2)))
+(hypothesis (co-located Norwegian House-2) :layer reasoning)
+(contradiction-under (co-located Norwegian House-2) :layer reasoning)
 
 (query :mode solve :goal (not (co-located Norwegian House-2)))

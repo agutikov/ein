@@ -59,251 +59,248 @@
 ;;;   · Reflexivity (and other trivial-on-Zebra algebraic properties)
 ;;;     parked in plans/followups/f4_cross_cutting.md Q34.
 
-(rules
-  ;; ── Generic property-rules. Each applies to relations listed via
-  ;; ── property-application facts in the ontology block.
+;; ── Generic property-rules. Each applies to relations listed via
+;; ── property-application facts in the ontology block.
 
-  (rule symmetric (?rel)
-    :match  (?rel ?a ?b)
-    :assert (?rel ?b ?a)
-    :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-    :priority 100)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
 
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b)
-                 (?rel ?b ?c)
-                 (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
-    :priority 200)
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b)
+               (?rel ?b ?c)
+               (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
+  :priority 200)
 
-  ;; Reflexivity is dropped — see plans/followups/f4_cross_cutting.md Q34.
-  ;; `co-located` is mathematically reflexive but materialising self-edges
-  ;; adds no inference power for Zebra-class puzzles.
+;; Reflexivity is dropped — see plans/followups/f4_cross_cutting.md Q34.
+;; `co-located` is mathematically reflexive but materialising self-edges
+;; adds no inference power for Zebra-class puzzles.
 
-  ;; Generic implication: any (?p ?a ?b) fact also asserts (?q ?a ?b).
-  (rule implies (?p ?q)
-    :match  (?p ?a ?b)
-    :assert (?q ?a ?b)
-    :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-    :priority 100)
+;; Generic implication: any (?p ?a ?b) fact also asserts (?q ?a ?b).
+(rule implies (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+  :priority 100)
 
-  ;; ── PoC's "square rule" — declarative formulation. The rule
-  ;; ── fires for every relation marked `(square-fwd …)` /
-  ;; ── `(square-bwd …)`. Together they project the spatial
-  ;; ── relation R across the co-located bridge:
-  ;; ──
-  ;; ──   ?x  ──R──▶ ?y       (the spatial leg)
-  ;; ──   ▲           ▲
-  ;; ──   │ co-loc    │ co-loc (one is bridge, the other inferred)
-  ;; ──   ?a  ──R──▶ ?b       (the attribute leg)
-  ;; ──
-  ;; ── Forward: bridge is the left side (?a↔?x), infer the right
-  ;; ── side (?b↔?y). Backward: bridge is the right side, infer the
-  ;; ── left. Both directions are needed because right-of is NOT
-  ;; ── symmetric — given (right-of A B) we cannot rebind to
-  ;; ── (right-of B A) via symmetric closure.
-  ;; ──
-  ;; ── **Restriction**: square applies ONLY to *directional* spatial
-  ;; ── relations like `right-of`. For symmetric (non-directional)
-  ;; ── relations like `next-to`, the rule's conclusion is genuinely
-  ;; ── disjunctive: given (next-to A B), (next-to X Y), and
-  ;; ── (co-located A X), B is co-located with *some* neighbour of X,
-  ;; ── which may or may not be Y — X can have two neighbours. The
-  ;; ── disjunctive conclusion belongs to hypothesis branching
-  ;; ── (P1.5), not to a positive rule firing. Hence we do NOT
-  ;; ── declare (square-fwd next-to) or (square-bwd next-to) below.
+;; ── PoC's "square rule" — declarative formulation. The rule
+;; ── fires for every relation marked `(square-fwd …)` /
+;; ── `(square-bwd …)`. Together they project the spatial
+;; ── relation R across the co-located bridge:
+;; ──
+;; ──   ?x  ──R──▶ ?y       (the spatial leg)
+;; ──   ▲           ▲
+;; ──   │ co-loc    │ co-loc (one is bridge, the other inferred)
+;; ──   ?a  ──R──▶ ?b       (the attribute leg)
+;; ──
+;; ── Forward: bridge is the left side (?a↔?x), infer the right
+;; ── side (?b↔?y). Backward: bridge is the right side, infer the
+;; ── left. Both directions are needed because right-of is NOT
+;; ── symmetric — given (right-of A B) we cannot rebind to
+;; ── (right-of B A) via symmetric closure.
+;; ──
+;; ── **Restriction**: square applies ONLY to *directional* spatial
+;; ── relations like `right-of`. For symmetric (non-directional)
+;; ── relations like `next-to`, the rule's conclusion is genuinely
+;; ── disjunctive: given (next-to A B), (next-to X Y), and
+;; ── (co-located A X), B is co-located with *some* neighbour of X,
+;; ── which may or may not be Y — X can have two neighbours. The
+;; ── disjunctive conclusion belongs to hypothesis branching
+;; ── (P1.5), not to a positive rule firing. Hence we do NOT
+;; ── declare (square-fwd next-to) or (square-bwd next-to) below.
 
-  (rule square-fwd (?R)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (co-located ?a ?x))
-    :assert (co-located ?b ?y)
-    :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
-    :priority 200)
+(rule square-fwd (?R)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (co-located ?a ?x))
+  :assert (co-located ?b ?y)
+  :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
+  :priority 200)
 
-  (rule square-bwd (?R)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (co-located ?b ?y))
-    :assert (co-located ?a ?x)
-    :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
-    :priority 200)
+(rule square-bwd (?R)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (co-located ?b ?y))
+  :assert (co-located ?a ?x)
+  :why    "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
+  :priority 200)
 
-  ;; ── square-unique: square projection on a SYMMETRIC adjacency
-  ;; ── relation ?R, anchored at a *structurally complete* position
-  ;; ── type ?T (a type whose instances have all their ?R-neighbours
-  ;; ── materialised). The negation-as-failure clause caps
-  ;; ── ?x to corner positions where ?R-neighbour is unique.
-  ;; ──
-  ;; ── A single rule (not fwd/bwd) covers both directions because ?R
-  ;; ── is symmetric — (R ?a ?b) and (R ?b ?a) both materialise via
-  ;; ── the `symmetric` closure; binding the matcher to either reaches
-  ;; ── the same conclusion.
-  ;; ──
-  ;; ── The `(instance ?x ?T)` clause is load-bearing for soundness.
-  ;; ── Without it, the syntactic "?x has one ?R-fact" check also fires
-  ;; ── on attribute pairs whose uniqueness is *incidental* — e.g., the
-  ;; ── puzzle states only `(next-to Norwegian Blue)`, so syntactically
-  ;; ── Norwegian and Blue each have one next-to fact. But that does
-  ;; ── NOT mean Norwegian (or Blue) is at a spatial corner — it means
-  ;; ── the puzzle hasn't materialised their other adjacencies (which
-  ;; ── exist transitively through their houses). The (instance ?x ?T)
-  ;; ── premise restricts firing to ?x whose neighbour set IS complete.
-  ;; ──
-  ;; ── For Zebra: `(square-unique next-to House)`. House-1 and House-5
-  ;; ── have one next-to neighbour each (after the right-of → next-to +
-  ;; ── symmetric closure); House-2/3/4 have two (guard fails on the
-  ;; ── existential). Closes idea-08's "Norwegian in H_1, next-to Blue
-  ;; ── ⇒ Blue in H_2" walkthrough step.
-  ;; ──
-  ;; ── Non-corner cases (House-2/3/4) keep the disjunctive resolution
-  ;; ── deferred to P1.5 hypothesis branching, as originally planned.
+;; ── square-unique: square projection on a SYMMETRIC adjacency
+;; ── relation ?R, anchored at a *structurally complete* position
+;; ── type ?T (a type whose instances have all their ?R-neighbours
+;; ── materialised). The negation-as-failure clause caps
+;; ── ?x to corner positions where ?R-neighbour is unique.
+;; ──
+;; ── A single rule (not fwd/bwd) covers both directions because ?R
+;; ── is symmetric — (R ?a ?b) and (R ?b ?a) both materialise via
+;; ── the `symmetric` closure; binding the matcher to either reaches
+;; ── the same conclusion.
+;; ──
+;; ── The `(instance ?x ?T)` clause is load-bearing for soundness.
+;; ── Without it, the syntactic "?x has one ?R-fact" check also fires
+;; ── on attribute pairs whose uniqueness is *incidental* — e.g., the
+;; ── puzzle states only `(next-to Norwegian Blue)`, so syntactically
+;; ── Norwegian and Blue each have one next-to fact. But that does
+;; ── NOT mean Norwegian (or Blue) is at a spatial corner — it means
+;; ── the puzzle hasn't materialised their other adjacencies (which
+;; ── exist transitively through their houses). The (instance ?x ?T)
+;; ── premise restricts firing to ?x whose neighbour set IS complete.
+;; ──
+;; ── For Zebra: `(square-unique next-to House)`. House-1 and House-5
+;; ── have one next-to neighbour each (after the right-of → next-to +
+;; ── symmetric closure); House-2/3/4 have two (guard fails on the
+;; ── existential). Closes idea-08's "Norwegian in H_1, next-to Blue
+;; ── ⇒ Blue in H_2" walkthrough step.
+;; ──
+;; ── Non-corner cases (House-2/3/4) keep the disjunctive resolution
+;; ── deferred to P1.5 hypothesis branching, as originally planned.
 
-  (rule square-unique (?R ?T)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (instance ?x ?T)
-                 (co-located ?a ?x)
-                 (absent (and (?R ?x ?z) (neq ?y ?z))))
-    :assert (co-located ?b ?y)
-    :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
-    :priority 200)
+(rule square-unique (?R ?T)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (instance ?x ?T)
+               (co-located ?a ?x)
+               (absent (and (?R ?x ?z) (neq ?y ?z))))
+  :assert (co-located ?b ?y)
+  :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
+  :priority 200)
 
-  ;; ── T2 rule. ?R is the equivalence-like relation under which
-  ;; ── distinct same-type instances are exclusive — bound by an
-  ;; ── activator fact. For Zebra: `(type-exclusivity co-located)`
-  ;; ── says co-located is the slot-occupancy relation, so two
-  ;; ── distinct Reds (or Nationalities, or Pets …) can never share
-  ;; ── a slot.
-  ;; ──
-  ;; ── ?T is a free var of :match, NOT a parameter; ?R is the param.
-  ;; ── The :match clause is unchanged from the original non-generic
-  ;; ── form — what generalises is only the head of the negative
-  ;; ── conclusion.
+;; ── T2 rule. ?R is the equivalence-like relation under which
+;; ── distinct same-type instances are exclusive — bound by an
+;; ── activator fact. For Zebra: `(type-exclusivity co-located)`
+;; ── says co-located is the slot-occupancy relation, so two
+;; ── distinct Reds (or Nationalities, or Pets …) can never share
+;; ── a slot.
+;; ──
+;; ── ?T is a free var of :match, NOT a parameter; ?R is the param.
+;; ── The :match clause is unchanged from the original non-generic
+;; ── form — what generalises is only the head of the negative
+;; ── conclusion.
 
-  (rule type-exclusivity (?R)
-    :match  (and (instance ?a ?T)
-                 (instance ?b ?T)
-                 (neq ?a ?b))
-    :assert (not (?R ?a ?b))
-    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
-    :priority 300)
+(rule type-exclusivity (?R)
+  :match  (and (instance ?a ?T)
+               (instance ?b ?T)
+               (neq ?a ?b))
+  :assert (not (?R ?a ?b))
+  :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
+  :priority 300)
 
-  ;; ── Q40 Option A: hypothesis-contradiction matches synthetic
-  ;; ── (hypothesis ?h) + (contradiction-under ?h) facts emitted by
-  ;; ── P1.5's fork/contradict machinery. The match uses nested-fact
-  ;; ── unification — ?h binds to a relational node (a Fact-valued
-  ;; ── arg), enabled by R9's Fact.args widening. Sits dormant in
-  ;; ── normal saturation; fires only when a branch contradicts.
+;; ── Q40 Option A: hypothesis-contradiction matches synthetic
+;; ── (hypothesis ?h) + (contradiction-under ?h) facts emitted by
+;; ── P1.5's fork/contradict machinery. The match uses nested-fact
+;; ── unification — ?h binds to a relational node (a Fact-valued
+;; ── arg), enabled by R9's Fact.args widening. Sits dormant in
+;; ── normal saturation; fires only when a branch contradicts.
 
-  (rule hypothesis-contradiction ()
-    :match  (and (hypothesis ?h)
-                 (contradiction-under ?h))
-    :assert (not ?h)
-    :why    "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
-    :priority 900))
+(rule hypothesis-contradiction ()
+  :match  (and (hypothesis ?h)
+               (contradiction-under ?h))
+  :assert (not ?h)
+  :why    "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
+  :priority 900)
 
-(ontology
-  ;; ── Relation signatures. Properties (incl. spatial-ness) live
-  ;; ── below as rule-application facts, not as kw-pairs here.
-  ;; `type` / `instance` are ordinary relations since S1.7.6 (not kernel
-  ;; declarators); `T` is the universal-top type annotation — these
-  ;; meta-relations span the hierarchy, so their args aren't constrained
-  ;; to Attribute. `(type Sub Super)` = Sub's parent type is Super;
-  ;; `(instance Thing Type)` = Thing is an instance of Type.
-  (relation type     T T)
-  (relation instance T T)
-  (relation co-located Attribute Attribute)
-  (relation right-of   Attribute Attribute)
-  (relation next-to    Attribute Attribute)
+;; ── Relation signatures. Properties (incl. spatial-ness) live
+;; ── below as rule-application facts, not as kw-pairs here.
+;; `type` / `instance` are ordinary relations since S1.7.6 (not kernel
+;; declarators); `T` is the universal-top type annotation — these
+;; meta-relations span the hierarchy, so their args aren't constrained
+;; to Attribute. `(type Sub Super)` = Sub's parent type is Super;
+;; `(instance Thing Type)` = Thing is an instance of Type.
+(relation type     T T)
+(relation instance T T)
+(relation co-located Attribute Attribute)
+(relation right-of   Attribute Attribute)
+(relation next-to    Attribute Attribute)
 
-  ;; ── Rule-application facts. Implicit: the puzzle never says
-  ;; ── "co-located is symmetric" — that's universal context.
-  (symmetric  co-located)
-  (transitive co-located)
-  (symmetric  next-to)
-  (implies    right-of next-to)
-  (square-fwd       right-of)
-  (square-bwd       right-of)
-  (square-unique    next-to House)
-  (type-exclusivity co-located)
-  ;; NOTE: square-fwd/bwd do NOT apply to next-to. next-to is symmetric
-  ;; and its disjunctive conclusion ("B is at *some* neighbour of X")
-  ;; needs hypothesis branching for non-corner positions; corner
-  ;; positions (House-1, House-5) are handled monotonically by
-  ;; square-unique above.
+;; ── Rule-application facts. Implicit: the puzzle never says
+;; ── "co-located is symmetric" — that's universal context.
+(symmetric  co-located)
+(transitive co-located)
+(symmetric  next-to)
+(implies    right-of next-to)
+(square-fwd       right-of)
+(square-bwd       right-of)
+(square-unique    next-to House)
+(type-exclusivity co-located)
+;; NOTE: square-fwd/bwd do NOT apply to next-to. next-to is symmetric
+;; and its disjunctive conclusion ("B is at *some* neighbour of X")
+;; needs hypothesis branching for non-corner positions; corner
+;; positions (House-1, House-5) are handled monotonically by
+;; square-unique above.
 
-  ;; ── Type schema. Flat attribute hierarchy. ──
-  (type Attribute)
-  (type House       Attribute)
-  (type Color       Attribute)
-  (type Nationality Attribute)
-  (type Pet         Attribute)
-  (type Cigarette   Attribute)
-  (type Drink       Attribute)
+;; ── Type schema. Flat attribute hierarchy. ──
+(type Attribute)
+(type House       Attribute)
+(type Color       Attribute)
+(type Nationality Attribute)
+(type Pet         Attribute)
+(type Cigarette   Attribute)
+(type Drink       Attribute)
 
-  ;; ── Instance enumeration. Implicit: the puzzle text mentions each
-  ;; ── attribute (Norwegian, Red, House-1, …) without literally saying
-  ;; ── "Norwegian is a Nationality"; the reader supplies the typing
-  ;; ── from context. Hence ontology, not facts.
-  (instance House-1 House) (instance House-2 House) (instance House-3 House)
-  (instance House-4 House) (instance House-5 House)
-  (instance Red    Color) (instance Green Color) (instance Ivory Color)
-  (instance Yellow Color) (instance Blue  Color)
-  (instance Englishman Nationality) (instance Spaniard  Nationality)
-  (instance Ukrainian  Nationality) (instance Norwegian Nationality)
-  (instance Japanese   Nationality)
-  (instance Dog   Pet)   (instance Snail Pet) (instance Fox Pet)
-  (instance Horse Pet)   (instance Zebra Pet)
-  (instance Old_Gold      Cigarette) (instance Kools        Cigarette)
-  (instance Chesterfields Cigarette) (instance Lucky_Strike Cigarette)
-  (instance Parliament    Cigarette)
-  (instance Coffee Drink) (instance Tea   Drink) (instance Milk Drink)
-  (instance Juice  Drink) (instance Water Drink)
+;; ── Instance enumeration. Implicit: the puzzle text mentions each
+;; ── attribute (Norwegian, Red, House-1, …) without literally saying
+;; ── "Norwegian is a Nationality"; the reader supplies the typing
+;; ── from context. Hence ontology, not facts.
+(instance House-1 House) (instance House-2 House) (instance House-3 House)
+(instance House-4 House) (instance House-5 House)
+(instance Red    Color) (instance Green Color) (instance Ivory Color)
+(instance Yellow Color) (instance Blue  Color)
+(instance Englishman Nationality) (instance Spaniard  Nationality)
+(instance Ukrainian  Nationality) (instance Norwegian Nationality)
+(instance Japanese   Nationality)
+(instance Dog   Pet)   (instance Snail Pet) (instance Fox Pet)
+(instance Horse Pet)   (instance Zebra Pet)
+(instance Old_Gold      Cigarette) (instance Kools        Cigarette)
+(instance Chesterfields Cigarette) (instance Lucky_Strike Cigarette)
+(instance Parliament    Cigarette)
+(instance Coffee Drink) (instance Tea   Drink) (instance Milk Drink)
+(instance Juice  Drink) (instance Water Drink)
 
-  ;; ── Condition (1) "five houses in a row" — pairwise immediate-
-  ;; ── right-of facts. The cardinality statement IS explicit, but
-  ;; ── the pairwise consequences are reader-supplied; hence here
-  ;; ── (with `:source` pointing at the originating condition).
-  (right-of House-2 House-1 :source "condition (1)")
-  (right-of House-3 House-2 :source "condition (1)")
-  (right-of House-4 House-3 :source "condition (1)")
-  (right-of House-5 House-4 :source "condition (1)"))
+;; ── Condition (1) "five houses in a row" — pairwise immediate-
+;; ── right-of facts. The cardinality statement IS explicit, but
+;; ── the pairwise consequences are reader-supplied; hence here
+;; ── (with `:source` pointing at the originating condition).
+(right-of House-2 House-1 :source "condition (1)" :layer ontology)
+(right-of House-3 House-2 :source "condition (1)" :layer ontology)
+(right-of House-4 House-3 :source "condition (1)" :layer ontology)
+(right-of House-5 House-4 :source "condition (1)" :layer ontology)
 
-(facts
-  ;; The 14 numbered puzzle conditions. Each is a direct rendering of
-  ;; one sentence of the problem text. Condition (1) lives in ontology
-  ;; (above) as four pairwise spatial facts.
+;; The 14 numbered puzzle conditions. Each is a direct rendering of
+;; one sentence of the problem text. Condition (1) lives in ontology
+;; (above) as four pairwise spatial facts.
 
-  ;; (2) The Englishman lives in the red house.
-  (co-located Englishman Red       :source "condition (2)")
-  ;; (3) The Spaniard owns the dog.
-  (co-located Spaniard Dog         :source "condition (3)")
-  ;; (4) Coffee is drunk in the green house.
-  (co-located Coffee Green         :source "condition (4)")
-  ;; (5) The Ukrainian drinks tea.
-  (co-located Ukrainian Tea        :source "condition (5)")
-  ;; (6) The green house is immediately right of the ivory house.
-  (right-of   Green Ivory          :source "condition (6)")
-  ;; (7) The Old Gold smoker owns snails.
-  (co-located Old_Gold Snail       :source "condition (7)")
-  ;; (8) Kools are smoked in the yellow house.
-  (co-located Kools Yellow         :source "condition (8)")
-  ;; (9) Milk is drunk in the middle house.
-  (co-located Milk House-3         :source "condition (9)")
-  ;; (10) The Norwegian lives in the first house.
-  (co-located Norwegian House-1    :source "condition (10)")
-  ;; (11) Chesterfields is smoked next to the house with the fox.
-  (next-to    Chesterfields Fox    :source "condition (11)")
-  ;; (12) Kools is smoked next to the house with the horse.
-  (next-to    Kools Horse          :source "condition (12)")
-  ;; (13) The Lucky Strike smoker drinks orange juice.
-  (co-located Lucky_Strike Juice   :source "condition (13)")
-  ;; (14) The Japanese smokes Parliaments.
-  (co-located Japanese Parliament  :source "condition (14)")
-  ;; (15) The Norwegian lives next to the blue house.
-  (next-to    Norwegian Blue       :source "condition (15)"))
+;; (2) The Englishman lives in the red house.
+(co-located Englishman Red       :source "condition (2)")
+;; (3) The Spaniard owns the dog.
+(co-located Spaniard Dog         :source "condition (3)")
+;; (4) Coffee is drunk in the green house.
+(co-located Coffee Green         :source "condition (4)")
+;; (5) The Ukrainian drinks tea.
+(co-located Ukrainian Tea        :source "condition (5)")
+;; (6) The green house is immediately right of the ivory house.
+(right-of   Green Ivory          :source "condition (6)")
+;; (7) The Old Gold smoker owns snails.
+(co-located Old_Gold Snail       :source "condition (7)")
+;; (8) Kools are smoked in the yellow house.
+(co-located Kools Yellow         :source "condition (8)")
+;; (9) Milk is drunk in the middle house.
+(co-located Milk House-3         :source "condition (9)")
+;; (10) The Norwegian lives in the first house.
+(co-located Norwegian House-1    :source "condition (10)")
+;; (11) Chesterfields is smoked next to the house with the fox.
+(next-to    Chesterfields Fox    :source "condition (11)")
+;; (12) Kools is smoked next to the house with the horse.
+(next-to    Kools Horse          :source "condition (12)")
+;; (13) The Lucky Strike smoker drinks orange juice.
+(co-located Lucky_Strike Juice   :source "condition (13)")
+;; (14) The Japanese smokes Parliaments.
+(co-located Japanese Parliament  :source "condition (14)")
+;; (15) The Norwegian lives next to the blue house.
+(next-to    Norwegian Blue       :source "condition (15)")
 
 (query
   :mode solve

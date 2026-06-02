@@ -4,7 +4,7 @@ The Wikipedia-style deductive solution to the Zebra puzzle, translated to
 English line-by-line and annotated with the ein facts, rules and hypotheses
 each NL step corresponds to. The encoding under analysis is
 [`zebra2.ein`](zebra2.ein); references to conditions `(1)`–`(15)` match the
-numbering in its `(facts …)` block. Constants (`House-1`, `Kools`,
+`:source "condition (N)"` numbering on its puzzle facts. Constants (`House-1`, `Kools`,
 `Old_Gold`, `Lucky_Strike`, `Chesterfields`) follow the ein spelling; in
 prose `H_i` abbreviates `House-i`.
 

@@ -19,20 +19,18 @@
 ;;;   + (neq Norwegian Spaniard)
 ;;;   ⇒ (not (co-located Norwegian Spaniard)).
 
-(rules
-  (rule type-exclusivity (?R)
-    :match  (and (instance ?a ?T)
-                 (instance ?b ?T)
-                 (neq ?a ?b))
-    :assert (not (?R ?a ?b))
-    :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
-    :priority 300))
+(rule type-exclusivity (?R)
+  :match  (and (instance ?a ?T)
+               (instance ?b ?T)
+               (neq ?a ?b))
+  :assert (not (?R ?a ?b))
+  :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
+  :priority 300)
 
-(ontology
-  (type Nationality)
-  (instance Norwegian Nationality)
-  (instance Spaniard Nationality)
-  (relation co-located T T)
-  (type-exclusivity co-located))
+(type Nationality)
+(instance Norwegian Nationality)
+(instance Spaniard Nationality)
+(relation co-located T T)
+(type-exclusivity co-located)
 
 (query :mode solve :goal (not (co-located Norwegian Spaniard)))

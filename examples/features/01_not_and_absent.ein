@@ -22,42 +22,38 @@
 ;;;
 ;;; Three person pairs, three states, three distinct outcomes.
 
-(rules
-  ;; Stored-neg-fact match: `(not …)` is now an ordinary pattern.
-  (rule see-stored-neg ()
-    :match  (not (likes ?a ?b))
-    :assert (explicitly-dislikes ?a ?b)
-    :why    "stored neg of (likes {?a} {?b}) → {?a} explicitly dislikes {?b}"
-    :priority 200)
+;; Stored-neg-fact match: `(not …)` is now an ordinary pattern.
+(rule see-stored-neg ()
+  :match  (not (likes ?a ?b))
+  :assert (explicitly-dislikes ?a ?b)
+  :why    "stored neg of (likes {?a} {?b}) → {?a} explicitly dislikes {?b}"
+  :priority 200)
 
-  ;; NAF on both states → "open" / undecided slot.
-  (rule unknown-feeling (?Person)
-    :match  (and (is-a ?a ?Person) (is-a ?b ?Person) (neq ?a ?b)
-                 (absent (likes ?a ?b))
-                 (absent (not (likes ?a ?b))))
-    :assert (unknown-feeling ?a ?b)
-    :why    "neither (likes {?a} {?b}) nor its neg stored → undecided"
-    :priority 200))
+;; NAF on both states → "open" / undecided slot.
+(rule unknown-feeling (?Person)
+  :match  (and (is-a ?a ?Person) (is-a ?b ?Person) (neq ?a ?b)
+               (absent (likes ?a ?b))
+               (absent (not (likes ?a ?b))))
+  :assert (unknown-feeling ?a ?b)
+  :why    "neither (likes {?a} {?b}) nor its neg stored → undecided"
+  :priority 200)
 
-(ontology
-  (relation likes T T)
-  (relation is-a  T T)
-  (unknown-feeling Person)
+(relation likes T T)
+(relation is-a  T T)
+(unknown-feeling Person)
 
-  (is-a Person     T)
-  (is-a Alice      Person)
-  (is-a Bob        Person)
-  (is-a Carol      Person))
+(is-a Person     T)
+(is-a Alice      Person)
+(is-a Bob        Person)
+(is-a Carol      Person)
 
-(facts
-  ;; State 1 — Alice ↔ Bob — POSITIVE: (likes Alice Bob) stored.
-  (likes Alice Bob)
+;; State 1 — Alice ↔ Bob — POSITIVE: (likes Alice Bob) stored.
+(likes Alice Bob :layer fact)
 
-  ;; State 2 — Alice ↔ Carol — NEGATED: (not (likes Alice Carol)) stored.
-  (not (likes Alice Carol))
+;; State 2 — Alice ↔ Carol — NEGATED: (not (likes Alice Carol)) stored.
+(not (likes Alice Carol) :layer fact)
 
-  ;; State 3 — Bob ↔ Carol — UNDECIDED: neither stored.
-  )
+;; State 3 — Bob ↔ Carol — UNDECIDED: neither stored.
 
 ;; Expected reasoning-layer output (after saturation):
 ;;

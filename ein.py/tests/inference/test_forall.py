@@ -38,15 +38,14 @@ def test_forall_desugars_to_nested_absent_guards():
     AbsentGuard wrapping another AbsentGuard — the classical
     ¬∃x. G(x) ∧ ¬B(x) reduction."""
     kb = _kb("""
-    (rules
-      (rule undefeated ()
-        :match (and (player ?p)
-                    (forall ?q
-                      (and (player ?q) (neq ?p ?q))
-                      (beats ?p ?q)))
-        :assert (undefeated ?p)
-        :why "u"))
-    (ontology (relation player T T) (relation beats T T))
+    (rule undefeated ()
+      :match (and (player ?p)
+                  (forall ?q
+                    (and (player ?q) (neq ?p ?q))
+                    (beats ?p ?q)))
+      :assert (undefeated ?p)
+      :why "u")
+    (relation player T T) (relation beats T T)
     """)
     rule = kb.rules["undefeated"]
     plan = compile_rule(rule, None)
@@ -63,21 +62,19 @@ def test_forall_desugars_to_nested_absent_guards():
 def test_forall_all_pass_fires():
     """All ?q-bindings satisfy the body → forall is true → rule fires."""
     kb = _kb("""
-    (rules
-      (rule undefeated ()
-        :match (and (player ?p)
-                    (forall ?q
-                      (and (player ?q) (neq ?p ?q))
-                      (beats ?p ?q)))
-        :assert (undefeated ?p)
-        :why "u"))
-    (ontology (relation player T T) (relation beats T T))
-    (facts
-      (player Alice :source "(1)")
-      (player Bob   :source "(2)")
-      (player Carol :source "(3)")
-      (beats Alice Bob   :source "(4)")
-      (beats Alice Carol :source "(5)"))
+    (rule undefeated ()
+      :match (and (player ?p)
+                  (forall ?q
+                    (and (player ?q) (neq ?p ?q))
+                    (beats ?p ?q)))
+      :assert (undefeated ?p)
+      :why "u")
+    (relation player T T) (relation beats T T)
+    (player Alice :source "(1)")
+    (player Bob   :source "(2)")
+    (player Carol :source "(3)")
+    (beats Alice Bob   :source "(4)")
+    (beats Alice Carol :source "(5)")
     """)
     results = _run(kb, "undefeated")
     # Alice is undefeated (beats both Bob and Carol).
@@ -92,21 +89,19 @@ def test_forall_all_pass_fires():
 def test_forall_any_fail_does_not_fire():
     """If even one ?q-binding lacks the body, forall fails."""
     kb = _kb("""
-    (rules
-      (rule undefeated ()
-        :match (and (player ?p)
-                    (forall ?q
-                      (and (player ?q) (neq ?p ?q))
-                      (beats ?p ?q)))
-        :assert (undefeated ?p)
-        :why "u"))
-    (ontology (relation player T T) (relation beats T T))
-    (facts
-      (player Alice :source "(1)")
-      (player Bob   :source "(2)")
-      (player Carol :source "(3)")
-      ;; Alice beats Bob but NOT Carol — undefeated must fail.
-      (beats Alice Bob :source "(4)"))
+    (rule undefeated ()
+      :match (and (player ?p)
+                  (forall ?q
+                    (and (player ?q) (neq ?p ?q))
+                    (beats ?p ?q)))
+      :assert (undefeated ?p)
+      :why "u")
+    (relation player T T) (relation beats T T)
+    (player Alice :source "(1)")
+    (player Bob   :source "(2)")
+    (player Carol :source "(3)")
+    ;; Alice beats Bob but NOT Carol — undefeated must fail.
+    (beats Alice Bob :source "(4)")
     """)
     results = _run(kb, "undefeated")
     assert results == []
@@ -116,16 +111,15 @@ def test_forall_empty_domain_is_vacuously_true():
     """`(forall ?q (G) (B))` with G yielding no bindings →
     vacuously true. The rule fires."""
     kb = _kb("""
-    (rules
-      (rule lone-undefeated ()
-        :match (and (player ?p)
-                    (forall ?q
-                      (and (player ?q) (neq ?p ?q))
-                      (beats ?p ?q)))
-        :assert (undefeated ?p)
-        :why "alone, hence undefeated"))
-    (ontology (relation player T T) (relation beats T T))
-    (facts (player Alice :source "(1)"))
+    (rule lone-undefeated ()
+      :match (and (player ?p)
+                  (forall ?q
+                    (and (player ?q) (neq ?p ?q))
+                    (beats ?p ?q)))
+      :assert (undefeated ?p)
+      :why "alone, hence undefeated")
+    (relation player T T) (relation beats T T)
+    (player Alice :source "(1)")
     """)
     results = _run(kb, "lone-undefeated")
     # Alice has no other player to beat → forall vacuous-true.
@@ -137,14 +131,13 @@ def test_forall_rejects_bound_not_in_guard():
     """Safety: ?bound must appear in the guard; otherwise the
     matcher has no enumerable domain. Load-time rejection."""
     text = """
-    (rules
-      (rule bad-rule ()
-        :match (forall ?v
-                  (player ?other)
-                  (whatever ?v))
-        :assert (oops)
-        :why "wrong"))
-    (ontology (relation player T T) (relation whatever T T))
+    (rule bad-rule ()
+      :match (forall ?v
+                (player ?other)
+                (whatever ?v))
+      :assert (oops)
+      :why "wrong")
+    (relation player T T) (relation whatever T T)
     """
     kb = _kb(text)
     with pytest.raises(ValueError, match=r"forall .v: bound var does not appear"):
@@ -156,19 +149,17 @@ def test_forall_bound_does_not_escape():
     appear in the rule's :assert conclusion or be bound for
     outer steps after the forall."""
     kb = _kb("""
-    (rules
-      (rule all-beaten ()
-        :match (and (player ?p)
-                    (forall ?q
-                      (and (player ?q) (neq ?p ?q))
-                      (beats ?p ?q)))
-        :assert (all-beaten ?p)
-        :why "all"))
-    (ontology (relation player T T) (relation beats T T))
-    (facts
-      (player Alice :source "(1)")
-      (player Bob   :source "(2)")
-      (beats Alice Bob :source "(3)"))
+    (rule all-beaten ()
+      :match (and (player ?p)
+                  (forall ?q
+                    (and (player ?q) (neq ?p ?q))
+                    (beats ?p ?q)))
+      :assert (all-beaten ?p)
+      :why "all")
+    (relation player T T) (relation beats T T)
+    (player Alice :source "(1)")
+    (player Bob   :source "(2)")
+    (beats Alice Bob :source "(3)")
     """)
     results = _run(kb, "all-beaten")
     assert len(results) == 1

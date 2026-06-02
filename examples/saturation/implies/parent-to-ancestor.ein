@@ -19,19 +19,16 @@
 ;;;   (parent-of Anne Bob) + (implies parent-of ancestor-of)
 ;;;   ⇒ (ancestor-of Anne Bob).
 
-(rules
-  (rule implies (?p ?q)
-    :match  (?p ?a ?b)
-    :assert (?q ?a ?b)
-    :why    "{?p} implies {?q}."
-    :priority 100))
+(rule implies (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?p} implies {?q}."
+  :priority 100)
 
-(ontology
-  (relation parent-of T T)
-  (relation ancestor-of T T)
-  (implies parent-of ancestor-of))
+(relation parent-of T T)
+(relation ancestor-of T T)
+(implies parent-of ancestor-of)
 
-(facts
-  (parent-of Anne Bob :source "demo"))
+(parent-of Anne Bob :source "demo")
 
 (query :mode solve :goal (ancestor-of Anne Bob))

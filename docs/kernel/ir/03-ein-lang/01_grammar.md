@@ -34,154 +34,158 @@ only; the grammar accepts either.
 
 ## §2 Top-level forms
 
-The kernel has **6 reserved heads**. Anything else at the top level
-fails to parse. Three of them — `ontology`, `facts`, `reasoning` —
-are the *three knowledge layers* from
-[`../01-ein-graph/01_kb.md` §3](../01-ein-graph/01_kb.md); the
-block name carries the **provenance** of the contained items.
+A program is a **flat sequence of forms** (P1.7c). Each top-level form is
+classified by its **head** against the closed declarator set; anything
+whose head is not a declarator is a **fact**. Source of truth for the set:
+[`06_reserved_names.md`](06_reserved_names.md) (the parser + loader both
+key on it).
 
-| head        | layer / role                                                 | reserved sub-form heads                              |
-|-------------|--------------------------------------------------------------|------------------------------------------------------|
-| `ontology`  | **implicit** assumptions: schema + reader-supplied context   | `type` · `relation` · any fact form     |
-| `facts`     | **explicit** problem statements (numbered conditions)        | `=` · `instance` · `not` + generic `(NAME args*)`    |
-| `reasoning` | **derived** facts — engine working memory after a solve      | same as `facts`; provenance is `:rule` / `:using`    |
-| `rules`     | inference-rule definitions (meta over ontology + facts)      | `rule`                                               |
-| `query`     | what to ask the engine                                       | keyword-args only (`:mode`, `:goal`)                 |
-| `trace`     | engine output — derivation log + branches                    | `step` · `branch-open` · `branch-close` · `contradiction` · `symmetry-class` |
+| head | role | shape |
+|------|------|-------|
+| `relation` | declare a relation-type + its arg-type signature | `(relation <name> <T1> <T2> [<T3> …] [:kw v]*)` |
+| `rule` | a saturation rewrite rule | `(rule <name> (<param-vars>*) :match … :assert … …)` |
+| `hrule` | a hypothesis-generation rule (drives the blind enumerator) | same shape as `rule` |
+| `query` | what to ask the engine | `(query :mode … :goal … …)` |
+| `config` | solver knobs | `(config [:flag v]*)` |
+| `trace` | **engine output** — derivation log (engine-emitted, not authored) | `(trace <step\|branch-open\|…>*)` |
+| *anything else* | **a fact** | `(= …)` · `(not …)` · generic `(<NAME> <args>* [:kw v]*)` |
 
-### Ontology — schema + implicit assumptions
+The block wrappers `(ontology …)` / `(facts …)` / `(reasoning …)` /
+`(rules …)` were **removed in P1.7c** (S1.7c.4); a former-wrapper head now
+simply reads as a fact (e.g. `(facts X)` is a fact whose relation is
+`facts`).
 
-```lisp
-(ontology
-  ;; Schema —
-  (type <Name> [<Parent>])                         ; declare a type, optional parent
-  (relation <name> <T1> <T2> [<T3> ...]            ; relation signature, arity ≥ 2
-    [:cardinality <RANGE>] [...])                   ; optional metadata kw-pairs
-  ;; structural/spatial relations are plain (relation …); a pattern-
-  ;; based derivation is an ordinary rule. (a-priori removed, S1.7.6.)
+### Knowledge layer — per fact, not positional
 
-  ;; Implicit assumptions —
-  (instance <Ent> <Type>)                          ; instance enumeration
-  (<rule-name> <relation> ...)                     ; rule-application meta-facts
-  (<relation> <args> ... [:source "..."])           ; pairwise structural facts derived
-                                                    ;   from background context
-  )
-```
+The three knowledge layers from
+[`../01-ein-graph/01_kb.md` §3](../01-ein-graph/01_kb.md) — ONTOLOGY
+(implicit assumptions), FACT (explicit problem statements), REASONING
+(engine-derived) — used to be carried by the enclosing block. Flat forms
+carry the layer **per fact** (P1.7c S1.7c.1): an explicit
+`:layer ontology|fact|reasoning` keyword is authoritative; otherwise the
+layer is **derived from provenance** — the same signal that picks the
+`Provenance` kind:
 
-The ontology accepts **two populations**:
+| the fact carries… | layer | meaning |
+|---|---|---|
+| `:rule` / `:using` | REASONING | engine working-memory (a derived fact) |
+| `:source "(N)"` | FACT | an explicit, numbered problem statement |
+| neither | ONTOLOGY | an implicit background assumption (schema, type/instance enumeration, property tag) |
 
-1. **Schema** — `type`, `relation`. Describes the universe
-   of discourse.
-2. **Implicit-but-true assertions** — anything the puzzle treats as
-   background truth without literally stating it. Three recurring
-   shapes: instance enumeration, rule-application meta-facts, and
-   pairwise structural facts derived from a cardinality / ordering
-   statement.
-
-The split between *ontology* and *facts* is **by provenance**: did the
-puzzle's text say it, or did the reader supply it from context? An
-explicit numbered condition goes in `facts` with `:source "(N)"`; a
-reader-supplied assumption goes in `ontology`.
-
-Rule-application facts (`(symmetric co-located)`, `(implies right-of
-next-to)`) live in `ontology` because the puzzle text never says
-"co-located is symmetric" — that's universal context. They are the
-*meta* of the relation, while `rules` is the meta of the *engine*.
-
-**Facts-block-head vs facts-as-objects.** The `(facts …)` block-head
-identifies "this block contains *explicit* facts"; the same fact
-*shapes* (`(NAME args*)`, `(instance …)`, `(not …)`, `(= …)`) can
-also appear inside `(ontology …)` and `(reasoning …)` — there the
-provenance differs (implicit / derived) but the structural shape is
-identical. The loader normalises: fact identity is `(relation_name,
-args)`, layer records origin. See
+Only REASONING is inference-distinguished (the contradiction detector's
+cross-layer rule); ONTOLOGY-vs-FACT is render / provenance metadata and
+does not affect the search. Authored files rarely need an explicit
+`:layer` — a sourced condition derives FACT, an unannotated property tag or
+`relation` decl derives ONTOLOGY. Write `:layer` only where the derivation
+would disagree with intent (e.g. a structural ONTOLOGY fact that *also*
+wants a `:source`, or an unsourced explicit FACT). Fact identity is
+`(relation_name, args)`; the layer only records origin. See
 [`../02-data-model/01_entities.md` §1.5](../02-data-model/01_entities.md)
 and [`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md` §Ontology
 deduction by common sense](../../../ideas/04-nlp-to-graph-to-solver-pipeline.md)
-for how the NL frontend distinguishes the two populations from
-context.
+for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 
-Example:
-
-```lisp
-(ontology
-  (type Attribute)
-  (type House Attribute) (type Color Attribute)
-  (relation co-located Attribute Attribute)
-  (instance Norwegian Nationality)
-  (instance House-1 House)
-  (symmetric  co-located)
-  (transitive co-located)
-  (right-of House-2 House-1 :source "condition (1)"))   ; from "five in a row"
-```
-
-### Facts — `(NAME args*)`, with reserved heads
+### Relation declarator
 
 ```lisp
-(facts
-  (= <expr> <expr> :source <STRING>)                  ; equality condition   (reserved)
-  (instance <Ent> <Type> :source <STRING>)            ; instance assertion   (reserved, arity 2)
-  (not <expr> :source <STRING>)                       ; negative condition   (reserved, arity 1)
-  (<name> <arg>* :source <STRING>))                   ; relation condition
+(relation <name> <T1> <T2> [<T3> ...]    ; relation signature, arity ≥ 2
+  [:cardinality <RANGE>] [...])           ; optional metadata kw-pairs
 ```
 
-The `facts` block holds **explicit problem statements** — one entry
-per numbered puzzle condition, each annotated with
-`:source "condition (N)"`. Implicit assumptions (instance enumerations,
-rule-application meta-facts, structural facts derived from background
-context) live in `(ontology …)` instead.
+`relation` declares a relation-type node + its arg-type signature
+(structural / spatial relations are plain `(relation …)`; a pattern-based
+derivation is an ordinary `rule`; `a-priori` removed in S1.7.6). The loader
+auto-stores each declaration as an ONTOLOGY fact `(relation R T1 T2 …)` so
+rules can introspect signatures via a `(relation ?R ?A ?B)` pattern in
+`:match`. Because of that, `relation` is **not** SYMBOL-excluded, so the
+malformed wrapped-arg form `(relation R (T1 T2))` parses but is rejected at
+LOAD time (not parse time).
 
-Three heads are **shape-pinned reserved words** at the grammar level:
-`=`, `instance`, `not`. Wrong arity is a parse error, not a validator
-error. `and`, `or`, `neq` are also reserved kernel meta-primitives
-but they belong inside `:match` patterns / `:where` clauses, not at
-the fact level — the grammar rejects them in `(facts …)`.
+A schema + implicit-assumption example (all flat forms; the property tags
+and enumerations derive ONTOLOGY, so no `:layer` is needed):
 
-**`relation` was de-reserved in S1.5.8c.5.** It still drives the
-schema-declarator production `(relation NAME SYMBOL+)` in
-`(ontology …)`, but it's no longer SYMBOL-excluded, so rules can
-pattern-match against the schema via `(relation ?R ?A ?B)` in
-`:match` clauses. The loader auto-stores each relation
-declaration as a fact `(relation R T1 T2 …)` alongside the
-kernel's `kb.relations` registry; rules introspect signatures
-through this fact form. Authoring still uses the shape-pinned
-declarator; rule patterns use the variable form.
+```lisp
+(type Attribute)
+(type House Attribute) (type Color Attribute)
+(relation co-located Attribute Attribute)
+(instance Norwegian Nationality)
+(instance House-1 House)
+(symmetric  co-located)
+(transitive co-located)
+(right-of House-2 House-1 :source "condition (1)" :layer ontology)  ; "five in a row" — sourced but structural
+```
 
-Domain relations (`co-located`, `lives-in`, `next-to`) stay generic
-`(SYMBOL value*)` and are open-world: anyone can introduce a new
-relation by declaring it in the ontology and using it in facts.
+### Facts — `(NAME args*)`, the flat default
 
-Three kinds of facts share the same syntactic family at the explicit-
-condition level:
+A fact is any top-level form whose head is **not** a declarator. Three
+shapes:
+
+```lisp
+(= <expr> <expr> [:source <STRING>])      ; equality            (reserved head `=`)
+(not <expr> [:source <STRING>])           ; negative            (reserved head `not`, arity 1)
+(<name> <arg>* [:source <STRING>])        ; relation instance / enumeration / property tag
+```
 
 | kind | example | semantics |
 |---|---|---|
 | **relation instance** | `(co-located Englishman Red :source "(2)")` | a relation holds between specific entities |
-| **equality**          | `(= (color House-1) Red :source "(?)")` | equational form |
+| **equality**          | `(= (color House-1) Red :source "(?)")` | equational form (reserved `=`) |
 | **negative**          | `(not (drinks Spaniard Coffee) :source "(?)")` | the wrapped fact does *not* hold |
 
-`all-different` is **not** a kernel primitive; pairwise distinctness
-within a category is derived by `type-exclusivity` from the
-`(instance X T)` facts. Genuinely puzzle-specific structural shapes
-(parity, budget, …) just take their own head: `(budget-total X Y)`.
+`=` and `not` are **shape-pinned reserved heads** (wrong arity is a parse
+error). `and` / `or` / `neq` are kernel meta-primitives that belong inside
+`:match` patterns / `:where` clauses, never a top-level fact head — and the
+declarators `rule` / `hrule` / `query` / `config` / `trace` cannot be fact
+heads either (they're SYMBOL-excluded). Everything else — `instance`,
+`type`, `symmetric`, `co-located`, `lives-in`, … — is an ordinary generic
+`(SYMBOL value*)` fact, open-world: introduce a relation by declaring it
+with `(relation …)` and asserting it.
 
-### Reasoning — derived facts (engine working memory)
+The layer of each fact follows the
+[per-fact rule](#knowledge-layer--per-fact-not-positional): a `:source`
+makes it a FACT-layer problem statement; `:rule` / `:using` make it a
+REASONING-layer derived fact; no annotation makes it an ONTOLOGY-layer
+background assumption (an explicit `:layer` overrides). Rule-application
+facts (`(symmetric co-located)`, `(implies right-of next-to)`) carry no
+annotation → ONTOLOGY: the puzzle text never says "co-located is
+symmetric"; that's universal context, the *meta* of the relation, while a
+`rule` is the meta of the *engine*.
+
+`all-different` is **not** a kernel primitive; pairwise distinctness within
+a category is derived by `type-exclusivity` from the `(instance X T)`
+facts. Genuinely puzzle-specific structural shapes (parity, budget, …) just
+take their own head: `(budget-total X Y)`.
+
+A flat explicit-conditions example (each numbered condition is FACT-layer
+via its `:source`; the property tag derives ONTOLOGY):
 
 ```lisp
-(reasoning
-  (<name> <arg>* :rule <RuleName> :using (<premise-id>+))
-  (not <expr>   :rule <RuleName> :using (<premise-id>+))
-  ...)
+(lives-in Norwegian House-1 :source "condition (10)")
+(co-located Englishman Red  :source "condition (2)")
+(symmetric  co-located)                              ; property tag — implicit, ONTOLOGY
 ```
 
-The `reasoning` block holds facts the engine has *derived* at runtime.
-Same syntactic shapes as `(facts …)`; the provenance kw-pair is
-`:rule` (which rule fired) + `:using` (which premises it consumed),
-instead of `:source` (which puzzle condition originated it).
+### Derived facts (REASONING layer — engine working memory)
 
-Hand-authored puzzle files typically leave this block empty — it's
-populated by the engine after `solve`. The block is parseable IR, so
-engine dumps round-trip through `parse` / `dump`.
+The engine *derives* facts at runtime and dumps them as flat forms
+annotated with `:rule` (which rule fired) + `:using` (which premises it
+consumed) instead of `:source` — so they re-classify to the REASONING
+layer on reload:
+
+```lisp
+(<name> <arg>* :rule <RuleName> :using (<premise-id>+))
+(not <expr>    :rule <RuleName> :using (<premise-id>+))
+```
+
+A hand-authored puzzle has none; they appear in engine dumps, which
+round-trip through `parse` / `dump`. (A REASONING fact with no rule
+provenance — e.g. an authored hypothesis fixture — carries an explicit
+`:layer reasoning` instead.) Example derived facts:
+
+```lisp
+(co-located Blue House-2 :rule square-fwd :using (c10 c15))
+(not (co-located Norwegian House-2) :rule type-exclusivity :using (c10))
+```
 
 > **`:using` IR round-trip caveat (M1):** the current grammar accepts
 > `:using (atom-id-1 atom-id-2 ...)` but parses it to a shape that
@@ -195,28 +199,18 @@ engine dumps round-trip through `parse` / `dump`.
 > programmatically via `Provenance.from_rule(...)`, which works
 > end-to-end — only the IR text round-trip is deferred.
 
-Example:
-
-```lisp
-(facts
-  (instance Norwegian Nationality)
-  (instance House-1   House)
-  (symmetric  co-located)
-  (transitive co-located)
-  (implies    right-of next-to)
-  (lives-in   Norwegian House-1 :source "condition (10)"))
-```
-
 ### Rules
 
 ```lisp
-(rules
-  (rule <name> (<param-vars>*)    ; parameter list — mandatory, `()` for non-generic
-    :match <pattern>              ; LHS — structural pattern (see 02_patterns.md)
-    :assert <conclusion>          ; RHS — what to derive
-    :why <STRING>                 ; reason template for trace
-    [:priority <INT>]))           ; rule ordering — lower = earlier
+(rule <name> (<param-vars>*)      ; parameter list — mandatory, `()` for non-generic
+  :match <pattern>                ; LHS — structural pattern (see 02_patterns.md)
+  :assert <conclusion>            ; RHS — what to derive
+  :why <STRING>                   ; reason template for trace
+  [:priority <INT>])              ; rule ordering — lower = earlier
 ```
+
+A rule is a top-level `(rule …)` form (a hypothesis-generation rule is the
+same shape headed `hrule`). There is no `(rules …)` block (P1.7c).
 
 Each rule has one `:match` and one `:assert`. The pattern sub-language
 is in [`02_patterns.md`](02_patterns.md). `:priority` resolves
@@ -289,8 +283,8 @@ derived by `(symmetric)` / `(includes)` / `(transitive)` rules.
 Parked for engine-side resolution in
 [P1.5a](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/README.md).
 Until then, rules whose NAF depends on derived facts should
-pre-declare the derived facts explicitly in `(ontology …)` or
-`(facts …)` to avoid the race.
+pre-declare those facts explicitly (as ONTOLOGY- or FACT-layer forms)
+to avoid the race.
 
 ### Query
 

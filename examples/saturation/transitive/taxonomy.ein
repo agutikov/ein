@@ -14,21 +14,18 @@
 ;;; Expected derivation:
 ;;;   (is-a Cat Mammal) + (is-a Mammal Animal) ⇒ (is-a Cat Animal).
 
-(rules
-  (rule transitive (?rel)
-    :match  (and (?rel ?a ?b)
-                 (?rel ?b ?c)
-                 (neq ?a ?c))
-    :assert (?rel ?a ?c)
-    :why    "{?rel} is transitive."
-    :priority 200))
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b)
+               (?rel ?b ?c)
+               (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive."
+  :priority 200)
 
-(ontology
-  (relation is-a T T)
-  (transitive is-a))
+(relation is-a T T)
+(transitive is-a)
 
-(facts
-  (is-a Cat Mammal :source "taxonomy")
-  (is-a Mammal Animal :source "taxonomy"))
+(is-a Cat Mammal :source "taxonomy")
+(is-a Mammal Animal :source "taxonomy")
 
 (query :mode solve :goal (is-a Cat Animal))

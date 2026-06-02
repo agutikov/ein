@@ -1,2 +1,4 @@
-;; Should fail: only the 5 reserved top-level forms are allowed.
+;; Should fail: a bare atom is not a form. Every top-level form is a
+;; parenthesised list `(...)`; post-P1.7c the head need not be a reserved
+;; wrapper (any non-declarator head is a fact), but a lone atom is not a list.
 Norwegian

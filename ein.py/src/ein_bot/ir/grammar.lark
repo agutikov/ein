@@ -2,58 +2,48 @@
 // Designed in S1.1.1 T1.1.1.1 + T1.1.1.2.
 // See plans/m1_core_graph_reasoning/p1.1_ir_language/s1.1.1_grammar_design.md
 //
-// LEVEL B — structurally typed kernel, generic interiors.
+// LEVEL B — structurally typed kernel, generic interiors. FLAT top level
+// (P1.7c): a program is a sequence of forms classified by head — no block
+// wrappers (the former (ontology …) / (facts …) / (reasoning …) / (rules …)
+// were removed in S1.7c.4).
 //
 // Enforced by the grammar:
-//   1. Top level: exactly 7 reserved heads
-//      ontology · facts · reasoning · rules · query · trace · config
-//   2. Inside (ontology …): the `relation` schema declarator PLUS
-//                           any fact shape — the ontology layer
-//                           holds implicit assumptions (type /
-//                           instance enumerations, rule-application
-//                           facts, structural facts derived from
-//                           background context). Per plans/README.md
-//                           glossary. `type` / `instance` are plain
-//                           facts since S1.7.6 — not kernel
-//                           declarators.
-//   3. Inside (facts …):    explicit problem statements only —
-//                           `=`, `not`, plus generic (NAME args*)
-//                           forms for relation assertions (an
-//                           `(instance …)` enumeration is just one
-//                           such generic fact). Each carries
-//                           `:source "(N)"` pointing at the puzzle
-//                           condition.
-//   4. Inside (reasoning …): derived facts the engine has inferred
-//                           at runtime. Same fact shapes as (facts);
-//                           provenance is `:rule` / `:using` instead
-//                           of `:source`. Authors usually leave this
-//                           block empty; the engine dumps it after a
-//                           solve.
-//   5. Inside (trace …):    only step · branch-open · branch-close ·
-//                           contradiction · symmetry-class
-//   6. :keyword value pair alternation — KEYWORD is never a value,
+//   1. Top level is `form*`. Each form is classified by its HEAD:
+//      · `relation` / `rule` / `hrule` / `query` / `config` — the closed
+//        declarator set;
+//      · `trace` — the engine-emitted sibling (its body is step ·
+//        branch-open · branch-close · branch-ref · contradiction ·
+//        symmetry-class), parsed by trace/ast.py, ignored by kb.from_ir;
+//      · ANY OTHER head — a fact: `=`, `not`, or a generic (NAME args*).
+//      "Detect facts by *not* being reserved." Source of truth for the
+//      declarator set: docs/kernel/ir/03-ein-lang/06_reserved_names.md.
+//   2. A fact's knowledge LAYER is per-fact, not positional (P1.7c S1.7c.1):
+//      an explicit `:layer ontology|fact|reasoning` wins; else it is derived
+//      from provenance — `:rule`/`:using` → REASONING, `:source` → FACT,
+//      neither → ONTOLOGY. `type` / `instance` are plain facts (S1.7.6).
+//   3. :keyword value pair alternation — KEYWORD is never a value,
 //      never appears twice in a row.
-//   7. Heads of expression lists (inside values and patterns) must be
+//   4. Heads of expression lists (inside values and patterns) must be
 //      SYMBOL, VAR, WILDCARD, or "=" — never KEYWORD. (?var :key :key)
 //      still fails via the kw_pair production, not via head restriction.
-//   8. **Kernel meta-primitives are reserved words** (shape-pinned):
-//      · `not`      — (not EXPR)                     — negation
-//      · `and`      — (and EXPR+ [kw_pair*])         — conjunction
-//      · `or`       — (or  EXPR+ [kw_pair*])         — disjunction
-//      · `neq`      — (neq A B)                      — distinctness predicate
-//      · `relation` — (relation NAME T1 T2 … [kw…])  — schema declarator (R10)
-//      These never match SYMBOL — a typo like `(nto Foo)` for
-//      `(not Foo)` is a parse-time error, not a validator error.
-//      Similarly `(relation R (T1 T2))` is rejected: the inner group
-//      has no matching production in relation_decl, and `relation` no
-//      longer falls back to generic_fact.
-//      `(symmetric R)`, `(transitive R)` etc. stay generic because
-//      they ARE declared (as rules) in the puzzle file. So do `type` /
-//      `instance` (S1.7.6): they are ordinary relations declared in
-//      the puzzle, not kernel forms.
+//   5. **Reserved words** (shape-pinned — never match SYMBOL):
+//      · kernel meta-primitives — `not` (not EXPR) · `and` (and EXPR+) ·
+//        `or` (or EXPR+) · `neq` (neq A B);
+//      · declarators — `rule` · `hrule` · `query` · `config` · `trace`.
+//      A typo or malformed shape on these is a PARSE-time error: `(nto Foo)`
+//      is not `(not …)`, `(query)` lacks its kw-pairs, `(rule x)` lacks its
+//      params — all rejected at parse. (A consequence of the word-boundary
+//      lookahead: an identifier may not equal a reserved word nor begin with
+//      `<word>-`, e.g. `rule-x`.) `relation` is the ONE declarator NOT
+//      excluded from SYMBOL — rules match `(relation ?R ?A ?B)` patterns —
+//      so a malformed `(relation R (T1 T2))` parses but the LOADER rejects
+//      it. The former wrapper heads `ontology`/`facts`/`reasoning`/`rules`
+//      stay ordinary SYMBOLs: each now parses as a plain fact head.
 //
-// Domain-relation heads (`co-located`, `lives-in`, …) stay generic:
-// they are declared via `(relation …)` in the ontology.
+// Domain-relation heads (`co-located`, `lives-in`, …) stay generic: they
+// are declared via `(relation …)`. `(symmetric R)`, `(transitive R)`, and
+// the type/instance enumerations are all generic facts (declared as
+// rules/relations in the puzzle), not kernel forms.
 //
 // Rule parameter lists are MANDATORY: `()` for non-generic rules,
 // `(?p1 ?p2 …)` for generic rules.
@@ -69,46 +59,52 @@
 // constrained LLM decoding is derived from this file by a Lark→GBNF
 // translator (utils/lark_to_gbnf.py, planned for M2.P2.3).
 
+// ─── Top level: a flat sequence of forms (P1.7c) ───
+// A program is `form*`. Each top-level form is classified by its HEAD against
+// the closed declarator set {relation · rule · hrule · query · config}
+// (+ `trace`, the engine-emitted sibling, kept so it never misclassifies as a
+// fact); ANY OTHER head falls through to `fact_form` (eq_fact / not_form /
+// generic_fact). This is the author's "detect facts by *not* being reserved"
+// rule. The block wrappers (ontology · facts · reasoning · rules) are GONE
+// (P1.7c S1.7c.4): a former-wrapper head like `(facts …)` now parses as an
+// ordinary fact. The reserved-head COLLISION guard is enforced at LOAD time,
+// not here: `relation` stays a valid SYMBOL (rules match `(relation ?R ?A ?B)`
+// patterns), so a malformed `(relation R (T1 T2))` parses but the loader
+// rejects it (test_relation_wrapped_form_rejected_at_load).
 start: form*
 
-?form: ontology_form
-     | facts_form
-     | reasoning_form
-     | rules_form
+?form: relation_decl        // ↓ flat declarators (closed reserved set)
+     | rule_decl
+     | hrule_decl
      | query_form
-     | trace_form
      | config_form
+     | trace_form
+     | fact_form            // ← anything else: a flat fact
 
-// ═══════════ Ontology (schema + implicit assumptions) ═══════════
+// ═══════════ Relation declarator (schema) ═══════════
 // `relation` takes flat args under M1 form (b)
 // (kernel docs `01-ein-graph/03_ein_model.md` §7.2; P1.3 S1.3.0 R10).
-// `(relation R (T1 T2))` is rejected — the inner group has no purpose
-// when no body follows. Token disambiguation works because trailing
-// `:kw value` pairs lex as KEYWORD, not SYMBOL.
-ontology_form: "(" "ontology" ontology_decl* ")"
-?ontology_decl: relation_decl
-              | fact_form
+// `(relation R (T1 T2))` is rejected at LOAD time — the inner group makes
+// `relation_decl` not match, and `relation` is a plain SYMBOL so the form
+// falls to `generic_fact`, which the loader then rejects as a malformed
+// relation. Token disambiguation works because trailing `:kw value` pairs
+// lex as KEYWORD, not SYMBOL.
 relation_decl: "(" "relation" SYMBOL SYMBOL+ kw_pair* ")"
 
-// ═══════════ Facts (explicit problem statements) ═══════════
-// `fact_form` is shared with (ontology …) and (reasoning …); the
-// block name carries the provenance distinction (explicit / implicit
-// / derived). `(type …)` / `(instance …)` enumerations parse here as
-// ordinary generic_fact forms (S1.7.6 — no longer kernel declarators).
-facts_form: "(" "facts" fact_form* ")"
+// ═══════════ Facts (the flat default — any non-declarator head) ═══════════
+// A fact is `=` / `not` / any generic `(NAME args*)` form. `(type …)` /
+// `(instance …)` enumerations parse as ordinary generic_fact forms (S1.7.6 —
+// no longer kernel declarators). Layer is per-fact provenance (`:source` →
+// FACT, `:rule`/`:using` → REASONING, else ONTOLOGY) or an explicit `:layer`
+// (P1.7c S1.7c.1) — no longer a block wrapper.
 ?fact_form: eq_fact | not_form | generic_fact
 eq_fact:      "(" EQ value value kw_pair* ")"
 generic_fact: "(" SYMBOL value* kw_pair* ")"
 
-// ═══════════ Reasoning (derived facts; engine working memory) ═══════════
-reasoning_form: "(" "reasoning" fact_form* ")"
-
 // ═══════════ Rules ═══════════
-// `hrule` (S1.5.6b) — a *hypothesis rule*: same shape as `rule`,
-// lives in the (rules …) block, but loaded into kb.hrules (not
-// kb.rules) — its conclusions are speculative candidates, not
-// entailed facts. The saturator never fires it.
-rules_form: "(" "rules" (rule_decl | hrule_decl)* ")"
+// `hrule` (S1.5.6b) — a *hypothesis rule*: same shape as `rule`, but
+// loaded into kb.hrules (not kb.rules) — its conclusions are speculative
+// candidates, not entailed facts. The saturator never fires it.
 rule_decl:  "(" "rule"  SYMBOL rule_params kw_pair+ ")"
 hrule_decl: "(" "hrule" SYMBOL rule_params kw_pair+ ")"
 rule_params: "(" VAR* ")"
@@ -161,10 +157,10 @@ generic_list: "(" ")"
 ?list_item: value | kw_pair
 
 // ═══════════ Kernel meta-primitives (shape-pinned) ═══════════
-// `not` accepts trailing kw_pairs so derived-fact provenance (e.g.
-// `:rule type-exclusivity :using (c10)`) attaches naturally inside
-// (reasoning …). In :match / :assert positions the validator will
-// reject unwanted kw_pairs.
+// `not` accepts trailing kw_pairs so a derived `(not …)` fact's
+// provenance (e.g. `:rule type-exclusivity :using (c10)`, which
+// re-classifies it to the REASONING layer) attaches naturally. In
+// :match / :assert positions the validator will reject unwanted kw_pairs.
 not_form:      "(" "not" value kw_pair* ")"
 neq_form:      "(" "neq" value value ")"
 and_form:      "(" "and" value+ kw_pair* ")"
@@ -177,7 +173,7 @@ or_form:       "(" "or" value+ kw_pair* ")"
 // set in S1.7.6 (it is now a plain relation), so `(instance Norwegian)`
 // no longer gets parse-time arity rejection — it parses as a generic
 // fact with one arg, like any domain head.
-SYMBOL:   /(?!(?:not|and|or|neq)\b)[A-Za-z][A-Za-z0-9_*-]*/
+SYMBOL:   /(?!(?:not|and|or|neq|rule|hrule|query|config|trace)\b)[A-Za-z][A-Za-z0-9_*-]*/
 VAR:      /\?[A-Za-z][A-Za-z0-9_*-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
 WILDCARD: "_"

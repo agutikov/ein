@@ -20,23 +20,20 @@
 ;;;   + (co-located MondayMeeting ThursdayCall)
 ;;;   ⇒ (co-located TuesdayMeeting FridayCall).
 
-(rules
-  (rule square-bwd (?R)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (co-located ?b ?y))
-    :assert (co-located ?a ?x)
-    :why    "square ({?R}, bwd)."
-    :priority 200))
+(rule square-bwd (?R)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (co-located ?b ?y))
+  :assert (co-located ?a ?x)
+  :why    "square ({?R}, bwd)."
+  :priority 200)
 
-(ontology
-  (relation before-of T T)
-  (relation co-located T T)
-  (square-bwd before-of))
+(relation before-of T T)
+(relation co-located T T)
+(square-bwd before-of)
 
-(facts
-  (before-of TuesdayMeeting MondayMeeting :source "(1)")
-  (before-of FridayCall ThursdayCall :source "(2)")
-  (co-located MondayMeeting ThursdayCall :source "(3)"))
+(before-of TuesdayMeeting MondayMeeting :source "(1)")
+(before-of FridayCall ThursdayCall :source "(2)")
+(co-located MondayMeeting ThursdayCall :source "(3)")
 
 (query :mode solve :goal (co-located TuesdayMeeting FridayCall))

@@ -202,7 +202,8 @@ walks the compile cache and returns one `NafDep` per `(rule, activator)`
 that carries an `AbsentGuard`, splitting the watched relations into
 `derived` (some rule positively asserts it — or, for an
 `(absent (not (R …)))` guard, some rule asserts `(not (R …))`) vs
-`declared_only` (extension fixed by `(facts)`/`(ontology)`). The
+`declared_only` (extension fixed by enumerated ONTOLOGY-/FACT-layer
+facts — no rule produces it). The
 classification reuses [`compile.asserted_relation`](../../../ein.py/src/ein_bot/inference/compile.py)
 (the same test behind [`closed.producible_relations`](../../../ein.py/src/ein_bot/inference/closed.py))
 and its `negated_relation` dual. Because the activator-bound head var

@@ -23,23 +23,20 @@
 ;;;   (right-of B A) + (right-of D C) + (co-located B D)
 ;;;   ⇒ (co-located A C).
 
-(rules
-  (rule square-fwd (?R)
-    :match  (and (?R ?a ?b)
-                 (?R ?x ?y)
-                 (co-located ?a ?x))
-    :assert (co-located ?b ?y)
-    :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
-    :priority 200))
+(rule square-fwd (?R)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (co-located ?a ?x))
+  :assert (co-located ?b ?y)
+  :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
+  :priority 200)
 
-(ontology
-  (relation right-of T T)
-  (relation co-located T T)
-  (square-fwd right-of))
+(relation right-of T T)
+(relation co-located T T)
+(square-fwd right-of)
 
-(facts
-  (right-of B A :source "(1)")
-  (right-of D C :source "(2)")
-  (co-located B D :source "(3)"))
+(right-of B A :source "(1)")
+(right-of D C :source "(2)")
+(co-located B D :source "(3)")
 
 (query :mode solve :goal (co-located A C))
