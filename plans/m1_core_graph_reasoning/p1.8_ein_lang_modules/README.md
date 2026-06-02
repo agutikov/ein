@@ -1,20 +1,22 @@
-# P1.8 — Improvements
+# P1.8 — Ein-language modules + standard library
 
 **Estimate:** TBD.
-**Status:** **placeholder** — themes parked here for post-P1.7
-attention. Originally the home of the modules/imports deferral
-from S1.3.0 R8 (2026-05-20); broadened 2026-05-21 to also collect
-runtime optimisations the M1 implementation surfaced; broadened
-again 2026-05-22 — Theme A now also owns the **standard library**
-(closure auto-inference deferred whole from S1.5.5, plus
-`converse`, the `imply` family, general totality, reflective
-rule-implication, and type/domain matching).
+**Status:** **placeholder** — the ein-language + library work parked for
+post-P1.7 attention. Originally the home of the modules/imports deferral
+from S1.3.0 R8 (2026-05-20); broadened 2026-05-22 — Theme A now also owns
+the **standard library** (closure auto-inference deferred whole from
+S1.5.5, plus `converse`, the `imply` family, general totality, reflective
+rule-implication, type/domain matching, and the relation-algebra library
+rules pulled from [F1b](../../followups/f1b_logical_formulation.md)).
+**The performance themes split out to [P1.8a](../p1.8a_performance/) on
+2026-06-02** (COW fork, version-COW, atom compression, fingerprinting,
+participation indexes, negative-fact volume) — this phase is now
+language + library only.
 **Depends on:** varies per theme; see each §.
 **Blocks:** nothing within M1 acceptance — P1.7 still gates "M1
 done" regardless. P1.8 ships when one of its themes acquires
-enough motivation (puzzle authoring grows past one file, perf
-hits ergonomic thresholds, or a future puzzle's branching cost
-overruns the laptop).
+enough motivation (puzzle authoring grows past one file, a future
+puzzle needs an imported stdlib rule).
 
 Directory name `p1.8_ein_lang_modules` is historical from when the
 phase was modules-only; the file inside this directory is the
@@ -38,32 +40,14 @@ Theme A (modules + imports + standard library):
 | S1.8.A9    | Reflective rule-implication                            | [s1.8.a9_reflective_rule_implication.md](s1.8.a9_reflective_rule_implication.md) |
 | S1.8.A10   | Type / domain matching                                 | [s1.8.a10_type_domain_matching.md](s1.8.a10_type_domain_matching.md)  |
 | S1.8.A11   | Multi-fact assertion from a single rule                | [s1.8.a11_multi_fact_assert.md](s1.8.a11_multi_fact_assert.md)        |
+| S1.8.A12   | Relation-algebra library rules (from F1b §PFL.3)       | *(folded into the stdlib § below; stage file TBC)*                   |
 | S1.5.9     | Ein-lang pattern macros (sticky id, relocated 2026-05-24) | [s1.5.9_ein_lang_macros.md](s1.5.9_ein_lang_macros.md)              |
 
-Theme B (performance):
-
-| ID                | Title                                          | File                                                          |
-|-------------------|------------------------------------------------|---------------------------------------------------------------|
-| S1.8.B-indexes    | Indexes for saturation perf (sub-theme B1)     | [s1.8.b_indexes.md](s1.8.b_indexes.md)                       |
-| S1.8.B1           | ForkedKnowledgeBase overlay class (COW)        | [s1.8.b1_cow_overlay.md](s1.8.b1_cow_overlay.md)             |
-| S1.8.B2           | Engine lookups traverse parent chain (COW)     | [s1.8.b2_engine_lookups.md](s1.8.b2_engine_lookups.md)       |
-| S1.8.B3           | Saturator + detector invariants (COW)          | [s1.8.b3_saturator_invariants.md](s1.8.b3_saturator_invariants.md) |
-| S1.8.B4           | COW perf benchmark                             | [s1.8.b4_perf_bench.md](s1.8.b4_perf_bench.md)               |
-
-> The Theme B / B1 / B2 nesting uses the same letter; the
-> indexes sub-theme uses `s1.8.b_indexes.md` (without a
-> numeric suffix) to keep S1.8.B1-B4 free for the COW chain.
-
-Theme C (negative-fact volume reduction):
-
-| ID          | Title                                                  | File                                                            |
-|-------------|--------------------------------------------------------|-----------------------------------------------------------------|
-| S1.8.C1     | Measure negative-fact volume + consumption             | [s1.8.c1_measure_negative_volume.md](s1.8.c1_measure_negative_volume.md) |
-| S1.8.C2     | Pick a representation                                  | [s1.8.c2_pick_representation.md](s1.8.c2_pick_representation.md) |
-| S1.8.C3     | Refactor saturator + detector + trace renderer         | [s1.8.c3_refactor_saturator.md](s1.8.c3_refactor_saturator.md)   |
-
-Themes activate independently when their signals arrive
-(authoring scale → A; perf budget → B; trace clutter → C).
+The **performance** themes (COW fork, version-COW, atom compression,
+unsat-core fingerprint, participation indexes) and the **negative-fact
+volume reduction** theme moved to [P1.8a](../p1.8a_performance/) in the
+2026-06-02 split. Theme A activates when authoring scale demands a shared
+stdlib.
 
 ## Themes
 
@@ -217,268 +201,39 @@ Likely stages once activated (continuing the A-numbering):
   declaration form. The natural companion to imports — macros +
   imports together unlock a real shareable stdlib.
 
-### Theme B - PERFORMACE
+#### Relation-algebra library rules (S1.8.A12)
 
-saturation that produce 150 facts and runs 1.5 seconds IS INSANE!
-I estimate Python performance as 1M-10M+ ops/s
-So it's already over 1M theoretical ops performed, or maybe even 10M or more.
-Before saturation we have 64 facts and 8 rules.
-If number of theoretical ops consumed is between (64*8)^2 and (64*8)^3
-Ok, 64^8 is much bigger, but it doesn't make sense! The (64*8)^2 either!
-WHAT IS THE SATURATION DOING SO LONG???
+Pull the **relation-algebra operations** from
+[F1b §PFL.3](../../followups/f1b_logical_formulation.md) into the stdlib
+as importable library rules (TODO direction 2026-06-02). F1b §PFL.3 would
+systematise the operations the zebra rules already encode ad-hoc as
+activators — `compose`, `converse`, `meet`/`join`, identity/`top`/`bottom`
+— plus the equivalence-relation laws (reflexive / symmetric / transitive
+as a packaged bundle). The A7 `imply` / `converse` family is the seed;
+A12 generalises it to the full relation-algebra signature so a puzzle
+`(import stdlib/algebra)` instead of re-deriving `right-of`/`left-of`
+converse + `next-to` self-converse + transitivity by hand. Sequencing:
+after A7 (the `converse` / `imply` lemmas) and A1–A3 (imports), so the
+algebra ships as a real importable module; the FOL-fragment + rules-of-
+inference framing in F1b is the design backdrop.
 
-### Theme B1 - indexes
+### Theme B + Theme C → moved to P1.8a
 
-speedup every step with indexes
-- index of all names
-- indexes of names for every type (object, relation, rule, ....)
-- index of facts by relation name, by number of args, by object
-
-
-
-### Theme B2 — Copy-on-write hypothesis branching
-
-P1.2's `KnowledgeBase.fork()` shallow-copies the `facts` list +
-the four reverse-index dicts (O(|facts|) cost). For P1.5's
-hypothesis loop, where each branch potentially forks many sub-
-branches, that copy cost compounds.
-
-**Insight (user direction 2026-05-21):** the M1 KB is **append-
-only** — no deletes, no in-place writes, only appends. That makes
-**true copy-on-write** trivially correct: a fork inherits the
-parent's facts + indexes by reference; the fork's own appends
-write to per-fork overlays; lookups consult the fork's overlays
-first, then fall through to the parent.
-
-Likely stages once activated:
-
-- **S1.8.B1** — `ForkedKnowledgeBase` overlay class (or rework
-  `KnowledgeBase` itself with a layered backing store).
-- **S1.8.B2** — adjust the engine's `_facts_by_relation` lookups
-  to traverse the parent chain transparently.
-- **S1.8.B3** — saturator + contradiction-detector behaviour
-  preserved (same `Firing` outputs, same `Contradiction` records).
-- **S1.8.B4** — perf benchmark vs the shallow-copy fork (target:
-  O(1) fork; lookup overhead ≤ depth × constant).
-
-Out of scope: garbage-collecting collapsed branches (M1's append-
-only model says we don't free anything). Out of M1 entirely.
-
-### Theme B2.v — Version-based COW + version-based saturation
-
-User direction 2026-05-27, extending Theme B2:
-
-**Version-based KB.** Each `fork()` stamps a monotonically
-increasing version number. Facts carry their introduction
-version. Indexes are versioned tries / persistent maps. A
-fact-set query at version N returns every fact whose
-introduction version ≤ N AND whose owning fork is in the
-caller's lineage. Roll-back to any version is O(1) (no fork
-ever destroys facts — the version stamp filters them).
-
-Composes with Theme B2 (COW): a forked KB *is* a (parent, new
-version stamp, overlay) tuple; the overlay accumulates the
-fork's appends; lookups traverse the chain by version order.
-
-**Version-based saturation.** Each `Firing` carries an
-introduction version. Re-saturation after a back-prop write
-(or a P1.5b's per-set re-saturate-from-root) only needs to
-process facts whose version is *newer* than the last
-saturator-completion mark on this kb — i.e. **incremental
-saturation against a version delta** rather than a full
-re-derivation. The saturator's `_fired` cache becomes a
-"already-fired-as-of-version-V" map; a fact added at version
-V+1 only triggers re-checks of rules whose `_activators_for`
-includes that fact's relation.
-
-Useful regime: P1.5b's monotonic engine's per-layer Apriori
-prefix-join — instead of re-saturating the parent from
-scratch when integrating a layer's unconditionals, advance
-the version stamp and let the version-delta drive only the
-firings whose premises actually changed.
-
-Likely stages:
-
-- **S1.8.B2.v.1** — Version stamp on `KnowledgeBase` + `Fact`.
-  Indexes accept a version arg; default is "current".
-- **S1.8.B2.v.2** — Incremental saturator: `Saturator(kb,
-  since_version=V)` only walks firings whose premises'
-  version > V.
-- **S1.8.B2.v.3** — P1.5b integration: monotonic engine's
-  per-layer integrate uses the version delta as the
-  re-sat input.
-
-### Theme B3 — Atom-vector compression
-
-User direction 2026-05-27. The current `Fact` is `(relation_name:
-str, args: tuple[str, ...])` — every component is a string. For a
-puzzle with N < 256 atoms, every atom fits in a byte; an
-8-slot flat fact (head + 7 args) fits in a single 64-bit
-integer:
-
-```
-fact_int := atom_idx[0] << 56     # head (relation name)
-          | atom_idx[1] << 48     # arg 0
-          | atom_idx[2] << 40     # arg 1
-          | …
-          | atom_idx[7] <<  0     # arg 7
-```
-
-Equality, indexing, set membership all collapse to integer ops
-— a 10×+ speedup over `hash((relation_name, args))` on the hot
-path. The atom table (`atoms: list[str]`) is the only
-string-indexed structure; everything downstream is integer
-indexes.
-
-**Non-flat facts** — `(not X)` where X is itself a fact,
-`(not (and X Y))` for nogood clauses — don't fit in 64 bits.
-Two approaches:
-
-- **Variable-length encoding.** Use `bytes` / `bytearray` for
-  non-flat facts; flat facts stay as `int`. Two-tier
-  representation.
-- **Sequential fact-ids.** Allocate a sequential `fact_id` per
-  Fact (atom-indexes-or-bytes); reference facts by id in
-  compound positions. `(not X)` becomes `(not, fact_id_of_X)`,
-  a 2-element flat-int.
-
-**Hash-source framing.** The integer-encoded fact IS the hash
-input — no separate `hash(Fact)` call; the encoding's own
-bytes are the hash. Composes with the consistent-hashing
-theme below.
-
-Likely stages:
-
-- **S1.8.B3.1** — atom table + flat-fact-int encoding;
-  measure the saturator speedup on demo 10 + zebra2.
-- **S1.8.B3.2** — non-flat encoding strategy decided
-  empirically (variable bytes vs sequential ids).
-- **S1.8.B3.3** — re-target indexes to use atom-int /
-  fact-id; remove the str-keyed fallback.
-
-### Theme B4 — Unsat-core fingerprint / consistent hashing
-
-User direction 2026-05-27. The lattice engine's per-set
-state-hash dedup (P1.5b S1.5b.22) catches equivalent kbs but
-not equivalent *deaths*: two sets that died for the same
-reason via different intermediate kbs both consume a
-`SearchNode`. A fingerprint over the unsat-core's
-source-frontier — possibly Bloom-filter-style for
-approximate-superset detection — would let "this death's
-core is included by my prospective kb" return cheap True.
-
-Two flavours:
-
-- **Exact set-of-fact-ids fingerprint.** A canonical sorted
-  tuple → hash. Cheap to compare; subset test is O(|core|).
-- **Bloom-filter fingerprint.** Per-core bit vector; superset
-  test is bitwise-AND-equals-core. False positives possible;
-  re-verify on hit. Useful when the dead-core count grows
-  past hundreds.
-
-The S1.5a.15-Phase-1-style direct-dead cache (dropped from
-P1.5a) is the *consumer* of this fingerprint if it ever
-ships as a P1.5b followup. Worth measuring before building:
-does the lattice's per-set state-hash dedup already catch
-most of what the fingerprint would catch?
-
-### Theme B5 — Fact-participation indexes for re-saturation
-
-User direction 2026-05-27. When a fact `(R ?x ?a)` lands at
-version V, only a subset of the KB *could* interact with it:
-
-- Other facts mentioning `?x`, `?a`, or relation `R` —
-  potential premises for rules that involve those atoms.
-- Rules whose activator pattern includes `R` or whose
-  parameters bind one of the affected atoms.
-
-Build atom-participation indexes:
-
-- `atom → list[(rule_name, slot)]` — every rule whose pattern
-  references this atom (or atoms of the same type) in some
-  slot.
-- `relation → list[rule_name]` — every rule whose pattern
-  mentions this relation (already exists as
-  `_rule_apps_by_rule`; extend to `_rule_apps_by_relation`).
-- `atom → list[fact_id]` — every fact mentioning this atom.
-
-Re-saturation after a fact lands at version V then walks only
-the index-narrowed rule × fact subset, not the full kb.
-
-Open question (the user's note): "Is it correct? Is it
-possible to implement?" — yes for atom + relation
-participation; the rule-activator interaction needs care
-(rules with relation-variable parameters like `(rule
-sibling-exclusive (?siblings-via ?exclusive-under) …)` need
-indexing by *both* the parameter slots' instantiated
-relations).
-
-Likely stages:
-
-- **S1.8.B5.1** — Build the indexes at `compile_all()` time
-  + maintain incrementally on every fact append.
-- **S1.8.B5.2** — Saturator consults the indexes to scope
-  the candidate-firing search.
-- **S1.8.B5.3** — Benchmark on zebra2 (target: per-fact
-  consume cost drops from O(|kb| × |rules|) to
-  O(|relevant_facts| × |relevant_rules|)).
-
-### Theme C — Negative-fact volume reduction
-
-P1.3 saturation produces **lots** of negative facts. Zebra.ein's
-`(type-exclusivity co-located)` alone derives 120 `(not (co-located
-A B))` facts; over the full saturation the REASONING layer holds
-~120 not-facts vs ~25 positive derivations. The volume is
-correct (each negative is a real consequence of the rule), but
-much of it is *load-bearing only via the contradiction detector* —
-the negatives are scanned for matching positives, never queried
-directly.
-
-**Possible optimisations** (each is a research direction, not a
-quick win):
-
-- **Lazy materialisation**: derive `(not X)` *on demand* when the
-  contradiction detector asks rather than during saturation. Trade
-  fact-volume for detector-time; the detector becomes a pull-style
-  matcher.
-- **Layer-aware filtering**: a `(not X)` derived from
-  type-exclusivity is mechanically true given the puzzle's type
-  declarations — it doesn't need to live in REASONING at all if no
-  consumer reads it. Move to a virtual layer.
-- **Goal-driven pruning**: combined with F7 §C (rule-set
-  sufficiency), suppress type-exclusivity firings whose
-  conclusions are demonstrably unconsumed by any subsequent rule
-  *and* unconsumed by the query.
-- **Compressed representation**: a *single* `(not (co-located ?
-  ?_T))` fact with `?_T` denoting "any pair distinct under T",
-  expanded lazily. Needs compound-node-kind support (Q26).
-
-Likely stages once activated:
-
-- **S1.8.C1** — measure: how much of the (not …) volume is
-  actually consumed? Empirical study on Zebra + the demos.
-- **S1.8.C2** — pick a representation (lazy / virtual layer /
-  compressed) based on the measurement.
-- **S1.8.C3** — refactor the saturator + detector + trace
-  renderer to honour it.
-
-Cross-cuts F7 §C (rule-set sufficiency) — the deepest win likely
-combines volume reduction with activator-selection pruning.
+The **performance** themes (indexes, copy-on-write fork + version-COW,
+atom-vector compression, unsat-core fingerprinting, fact-participation
+indexes) and the **negative-fact volume reduction** theme were split out
+to **[P1.8a — Performance](../p1.8a_performance/)** on 2026-06-02 (they
+are runtime optimisations, not ein-language / library work). See that
+phase's README.
 
 ## Acceptance (TBD per theme)
 
-Each theme drafts its own when activated. Skeleton:
-
-- **A:** a multi-file `.ein` project loads end-to-end; conflict
-  policy documented; a puzzle `(import …)`s the stdlib instead of
-  inlining rules; `infer-closure` / `converse` / the `imply`
-  family fire from the imported library; zebra.ein continues to
-  work.
-- **B:** `fork()` is O(1); zebra.ein saturation through a fork
-  matches the non-fork baseline; perf benchmark green.
-- **C:** Zebra REASONING-layer fact count drops by ≥ 50% with no
-  loss of contradiction-detection power; saturation time within
-  20% of pre-optimisation.
+Theme A drafts its own when activated. Skeleton: a multi-file `.ein`
+project loads end-to-end; conflict policy documented; a puzzle
+`(import …)`s the stdlib instead of inlining rules; `infer-closure` /
+`converse` / the `imply` family / the relation-algebra rules fire from
+the imported library; zebra2.ein continues to work. (The Theme B / C
+acceptance moved to [P1.8a](../p1.8a_performance/).)
 
 ## Open questions
 
@@ -491,11 +246,15 @@ Each theme drafts its own when activated. Skeleton:
   inherited with the deferral).
 - **Stdlib — reflective rule-implication default.** Whether the
   compile-cache fix is always-on or gated; bears on F5.
-- *(Theme B and Theme C have not yet surfaced specific Q-numbered
-  questions; activation will probably introduce some.)*
+- **Relation-algebra surface (A12).** How far F1b §PFL.3's
+  `compose`/`converse`/`meet`/`join` go as library rules vs needing
+  new engine support (e.g. composition wants a join the matcher
+  already does; a variadic algebra would not).
 
 ## Cross-links
 
+- Sibling phase: [P1.8a — Performance](../p1.8a_performance/) (the
+  runtime-optimisation half, split off 2026-06-02).
 - Origin of Theme A (modules deferral):
   [`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q30](../p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13).
 - Stdlib content deferred in from P1.5:
@@ -503,13 +262,11 @@ Each theme drafts its own when activated. Skeleton:
   (deferred whole, 2026-05-22);
   [S1.5.8 — totality + domain elimination](../p1.5_hypothesis_loop/s1.5.8_totality_domain_elimination.md)
   (zebra slice stays M1-blocking; the general form re-homes here).
+- Relation-algebra source:
+  [F1b — logical formulation](../../followups/f1b_logical_formulation.md)
+  §PFL.3 (A12).
 - Related followups:
   [F2 self-modifying language](../../followups/f2_self_modifying_language.md),
   [F5 rules as data](../../followups/f5_rules_as_data.md) — F5 rung 2
   *is* the reflective rule-implication fix in the stdlib §; both
   would consume Theme A's module mechanism if it lands.
-- Theme B context: P1.2's `KnowledgeBase.fork()` shallow-copy,
-  P1.5 hypothesis branching's per-fork cost.
-- Theme C context:
-  [F7 — Rule taxonomy + rule induction](../../followups/f7_rule_induction.md) §C
-  (rule-set sufficiency) is the upstream design partner.

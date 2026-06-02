@@ -156,11 +156,21 @@
 ;;                                    fact-as-value vs variable-binding readings)
 
 
-P1.8
-pull relation algrabra features as library rules into P1.8 from plans/followups/f1b_logical_formulation.md
-
-
-
-split P1.8 into 2 phases P1.8 and P1.8a - move performance part into P1.8a, leave ein language and lib things in P1.8
-combine this with review and replan of the phase
+;; Processed 2026-06-02:
+;;   - P1.7c block-head removal     → plans/m1_core_graph_reasoning/p1.7c_block_head_removal/README.md
+;;                                    (NEW placeholder; flat-form grammar — facts = head ∉
+;;                                    {rule, hrule, relation, query, config, macro}; layer
+;;                                    attribution flagged as the crux open question)
+;;                                    + plans/m1_core_graph_reasoning/README.md (P1.7c row + prose)
+;;   - relation algebra → P1.8      → plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md
+;;                                    (Theme A stdlib §; new S1.8.A12 "Relation-algebra library
+;;                                    rules" pulling F1b §PFL.3 compose/converse/meet/join + an
+;;                                    A12 open-question on the surface vs needed engine support)
+;;   - split P1.8 → P1.8 + P1.8a    → git mv the 8 perf stage files (s1.8.b*, s1.8.c*) into
+;;                                    plans/m1_core_graph_reasoning/p1.8a_performance/ (NEW phase;
+;;                                    sticky ids kept). P1.8 retitled "Ein-language modules +
+;;                                    standard library" (lang/lib only); the Theme B/C prose moved
+;;                                    + reorganised into the P1.8a README (with a B0 renumber task
+;;                                    noting the table-vs-prose B-id collision). m1 README: P1.8 row
+;;                                    retitled, P1.8a row added, placeholder prose updated.
 

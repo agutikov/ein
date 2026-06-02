@@ -63,7 +63,9 @@ Concretely, M1 ships:
 | P1.7  | Bootstrapping — Zebra end-to-end       | 1-2 wk   | [`p1.7_bootstrapping_zebra/`](p1.7_bootstrapping_zebra/) (encoding + kernel-purity; the *gate* spun out to P1.7a) |
 | P1.7a | Sound solution model & search/result/stop refactor | 1-2 wk | [`p1.7a_solution_search_refactor/`](p1.7a_solution_search_refactor/) (spun out 2026-05-31 from P1.7 S1.7.3/.3a; **the corrected M1 gate**) |
 | P1.7b | Review & refactor — post-M1 debt paydown | 1-2.5 wk | [`p1.7b_review_and_refactor/`](p1.7b_review_and_refactor/) (created 2026-06-01; **non-gating**, behaviour-preserving cleanup of the M1 reference impl; 40-finding code-cited [review](p1.7b_review_and_refactor/findings.md)) |
-| P1.8  | Improvements (modules+imports+stdlib / COW fork / negative-fact volume; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; phase title broadened 2026-05-21, again 2026-05-22) |
+| P1.7c | Retire the `(rules …)`/`(ontology …)`/`(facts …)` block heads (flat-form grammar; placeholder) | TBD | [`p1.7c_block_head_removal/`](p1.7c_block_head_removal/) (created 2026-06-02 from TODO.md; surface-syntax continuation of the P1.7 purity arc) |
+| P1.8  | Ein-language modules + standard library (imports / stdlib rules / relation-algebra / macros; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; perf split out to P1.8a 2026-06-02) |
+| P1.8a | Performance (COW fork / version-COW / atom compression / fingerprinting / participation indexes / negative-fact volume; placeholder) | TBD | [`p1.8a_performance/`](p1.8a_performance/) (split from P1.8 2026-06-02 from TODO.md) |
 | P1.9  | Hypothesis-loop follow-ups (E1-E23 catalog; placeholder) | TBD | [`p1.9_hypothesis_loop_followups/`](p1.9_hypothesis_loop_followups/) |
 | P1.10 | Kernel documentation (IR 4-level split / user-vs-dev / architecture / `docs/index` → `docs/lib` rename / ein-model atoms-vs-objects refinement; placeholder) | TBD | [`p1.10_kernel_docs/`](p1.10_kernel_docs/) (created 2026-05-24 from TODO.md) |
 | P1.11 | Package + CLI restructure (`ein-bot`/`ein_bot` → `ein`, merge `ein.py/demo/` into the package, split `cli.py` into a folder; placeholder) | TBD | [`p1.11_package_restructure/`](p1.11_package_restructure/) (created 2026-05-24 from TODO.md) |
@@ -77,14 +79,21 @@ of the implementation M1 actually shipped on — it pays down the scar
 tissue left by the engine removals (`tree/`, `monotonic_solve`) and the
 P1.7a soundness retrofit, grounded in a 40-finding code-cited review;
 recommended before the [M1a Rust port](../m1a_rust/README.md)
-transcribes the reference. **P1.8 – P1.11 are placeholders.** P1.8
-parks improvement themes — modules+imports+stdlib (the original
-Q30 deferral from the 2026-05-20 P1.3 review, broadened 2026-05-22
-to own the standard library: closure auto-inference deferred whole
-from S1.5.5, plus `converse`, the `imply` family, general
-totality, reflective rule-implication, type/domain matching),
-copy-on-write hypothesis-branch forks, and negative-fact volume
-reduction (both surfaced 2026-05-21 during P1.3 / P1.4 work). P1.9
+transcribes the reference. **P1.7c** (created 2026-06-02 from
+TODO.md) is the surface-syntax continuation of P1.7's purity arc —
+retire the `(rules …)`/`(ontology …)`/`(facts …)` block heads for a
+flat-form grammar (facts = any head not in the closed declarator set).
+**P1.7c, P1.8, P1.8a, P1.9 – P1.11 are placeholders.** P1.8
+parks the **ein-language + standard-library** themes — modules+imports
+(the original Q30 deferral from the 2026-05-20 P1.3 review, broadened
+2026-05-22 to own the standard library: closure auto-inference deferred
+whole from S1.5.5, plus `converse`, the `imply` family, general
+totality, reflective rule-implication, type/domain matching), the
+relation-algebra library rules (from F1b §PFL.3), and macros (S1.5.9).
+**P1.8a** (split from P1.8 2026-06-02) parks the **performance** themes —
+copy-on-write hypothesis-branch forks (surfaced 2026-05-21), version-COW
++ atom-vector compression + unsat-core fingerprinting + participation
+indexes (2026-05-27), and negative-fact volume reduction. P1.9
 parks the E1-E23
 hypothesis-loop catalog spun out of S1.5.4 on 2026-05-21 (closure
 refinements, CDCL-inspired learning, search heuristics, CSP-style
@@ -95,7 +104,7 @@ user-vs-dev separation, architecture diagrams, `docs/index/` →
 `docs/lib/` rename, ein-model atoms-vs-objects refinement).
 P1.11 parks the package + CLI rename also surfaced 2026-05-24
 (`ein-bot` → `ein`, demo merge, CLI folder split). None of
-P1.8 – P1.11 gates M1 acceptance.
+P1.7c / P1.8 – P1.11 gates M1 acceptance.
 
 ## Acceptance
 
