@@ -35,6 +35,7 @@ from __future__ import annotations
 import json
 import sys
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import IO, Any
@@ -185,8 +186,83 @@ def _fact_summary(fact: Fact) -> dict[str, Any]:
     }
 
 
+class _TimelineMixin:
+    """Shared ``00_timeline.jsonl`` + ``summary.json`` plumbing.
+
+    :class:`MonotonicDumper` and :class:`LatticeDumper` both stream a
+    JSONL timeline and write a final ``summary.json``; they carried
+    verbatim copies of ``_emit_timeline`` / ``summary`` / ``close``
+    (F-ENG-11). The only behavioural knob is the timeline record's
+    ``json.dumps`` ``default=`` serialiser — Monotonic emits with the
+    strict default (``None``), Lattice passes ``str`` because its
+    records can carry non-JSON-native payloads (FactId tuples). That
+    knob is :attr:`_timeline_json_default`.
+
+    Hosts must provide the ``_timeline_fp`` / ``_timeline_seq`` /
+    ``started_at`` / ``out_dir`` attributes (both dumpers do, as
+    dataclass fields).
+    """
+
+    # default= for timeline records; None ⇒ json.dumps' strict default.
+    _timeline_json_default: Callable[[Any], Any] | None = None
+
+    def close(self) -> None:
+        """Close the timeline file without emitting ``summary.json``.
+
+        Called by abort paths (``BudgetExceededError``) so the timeline
+        is flushed + closed when no final summary will be written;
+        normal exits close it via :meth:`summary`. Idempotent.
+        """
+        if self._timeline_fp is not None:
+            self._timeline_fp.close()
+            self._timeline_fp = None
+
+    def summary(self, verdict: Any, stats: Any) -> None:
+        verdict_kind = type(verdict).__name__ if verdict is not None else None
+        elapsed = time.time() - self.started_at
+        try:
+            stats_dict = {
+                f.name: getattr(stats, f.name)
+                for f in fields(stats)
+            }
+        except TypeError:
+            stats_dict = {"repr": repr(stats)}
+
+        if self.out_dir is not None:
+            (self.out_dir / "summary.json").write_text(
+                json.dumps({
+                    "verdict": verdict_kind,
+                    "elapsed_seconds": round(elapsed, 3),
+                    "stats": stats_dict,
+                }, indent=2, sort_keys=True, default=str),
+            )
+        self._emit_timeline(
+            "summary",
+            verdict=verdict_kind,
+            elapsed_seconds=round(elapsed, 3),
+        )
+        if self._timeline_fp is not None:
+            self._timeline_fp.close()
+            self._timeline_fp = None
+
+    def _emit_timeline(self, event: str, **fields_: Any) -> None:
+        if self._timeline_fp is None:
+            return
+        rec = {
+            "seq": self._timeline_seq,
+            "ts_ms": round((time.time() - self.started_at) * 1000, 3),
+            "event": event,
+            **fields_,
+        }
+        self._timeline_fp.write(
+            json.dumps(rec, default=self._timeline_json_default) + "\n",
+        )
+        self._timeline_fp.flush()
+        self._timeline_seq += 1
+
+
 @dataclass
-class MonotonicDumper:
+class MonotonicDumper(_TimelineMixin):
     """Filesystem-snapshotting hooks attached to a :func:`solve` run.
 
     ``out_dir=None`` skips every filesystem write — the hooks still
@@ -295,61 +371,6 @@ class MonotonicDumper:
             alive_size=alive_size,
             survived_count=survived_count,
         )
-
-    def close(self) -> None:
-        """Close the timeline file without emitting ``summary.json``.
-
-        Called by the abort path (``BudgetExceededError``) so the
-        timeline file is flushed + closed when no final summary
-        will be written. Normal exits close it via :meth:`summary`.
-        Idempotent.
-        """
-        if self._timeline_fp is not None:
-            self._timeline_fp.close()
-            self._timeline_fp = None
-
-    def summary(self, verdict: Any, stats: Any) -> None:
-        verdict_kind = type(verdict).__name__
-        elapsed = time.time() - self.started_at
-        try:
-            stats_dict = {
-                f.name: getattr(stats, f.name)
-                for f in fields(stats)
-            }
-        except TypeError:
-            stats_dict = {"repr": repr(stats)}
-
-        if self.out_dir is not None:
-            (self.out_dir / "summary.json").write_text(
-                json.dumps({
-                    "verdict": verdict_kind,
-                    "elapsed_seconds": round(elapsed, 3),
-                    "stats": stats_dict,
-                }, indent=2, sort_keys=True, default=str),
-            )
-        self._emit_timeline(
-            "summary",
-            verdict=verdict_kind,
-            elapsed_seconds=round(elapsed, 3),
-        )
-        if self._timeline_fp is not None:
-            self._timeline_fp.close()
-            self._timeline_fp = None
-
-    # ── Internals ────────────────────────────────────────────────
-
-    def _emit_timeline(self, event: str, **fields_: Any) -> None:
-        if self._timeline_fp is None:
-            return
-        rec = {
-            "seq": self._timeline_seq,
-            "ts_ms": round((time.time() - self.started_at) * 1000, 3),
-            "event": event,
-            **fields_,
-        }
-        self._timeline_fp.write(json.dumps(rec) + "\n")
-        self._timeline_fp.flush()
-        self._timeline_seq += 1
 
 
 class ProgressDumper(MonotonicDumper):
@@ -493,7 +514,7 @@ def _commitment_json(commitment: tuple) -> list[dict[str, Any]]:
 
 
 @dataclass
-class LatticeDumper:
+class LatticeDumper(_TimelineMixin):
     """Filesystem-snapshotting hooks attached to a :func:`gaps_solve`
     or :func:`contradictions_solve` run.
 
@@ -546,6 +567,11 @@ class LatticeDumper:
         default=None, init=False, repr=False,
     )
     _timeline_seq: int = field(default=0, init=False)
+
+    # Lattice timeline records can carry non-JSON-native payloads
+    # (FactId tuples), so serialise them with ``default=str`` — the one
+    # knob that distinguishes this dumper's timeline from Monotonic's.
+    _timeline_json_default = str
 
     def __post_init__(self) -> None:
         if self.out_dir is None:
@@ -830,59 +856,6 @@ class LatticeDumper:
             dead_commitments=len(proof.dead_commitments),
             kb_index_size=len(proof.kb_index),
         )
-
-    def summary(self, verdict: Any, stats: Any) -> None:
-        verdict_kind = type(verdict).__name__ if verdict is not None else None
-        elapsed = time.time() - self.started_at
-        try:
-            stats_dict = {
-                f.name: getattr(stats, f.name)
-                for f in fields(stats)
-            }
-        except TypeError:
-            stats_dict = {"repr": repr(stats)}
-
-        if self.out_dir is not None:
-            (self.out_dir / "summary.json").write_text(
-                json.dumps({
-                    "verdict": verdict_kind,
-                    "elapsed_seconds": round(elapsed, 3),
-                    "stats": stats_dict,
-                }, indent=2, sort_keys=True, default=str),
-            )
-        self._emit_timeline(
-            "summary",
-            verdict=verdict_kind,
-            elapsed_seconds=round(elapsed, 3),
-        )
-        if self._timeline_fp is not None:
-            self._timeline_fp.close()
-            self._timeline_fp = None
-
-    def close(self) -> None:
-        """Flush the timeline file without emitting ``summary.json``.
-
-        Called by abort paths (``BudgetExceededError``).
-        Idempotent.
-        """
-        if self._timeline_fp is not None:
-            self._timeline_fp.close()
-            self._timeline_fp = None
-
-    # ── Internals ────────────────────────────────────────────
-
-    def _emit_timeline(self, event: str, **fields_: Any) -> None:
-        if self._timeline_fp is None:
-            return
-        rec = {
-            "seq": self._timeline_seq,
-            "ts_ms": round((time.time() - self.started_at) * 1000, 3),
-            "event": event,
-            **fields_,
-        }
-        self._timeline_fp.write(json.dumps(rec, default=str) + "\n")
-        self._timeline_fp.flush()
-        self._timeline_seq += 1
 
 
 __all__ = ["LatticeDumper", "MonotonicDumper"]
