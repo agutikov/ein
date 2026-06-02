@@ -39,32 +39,22 @@ def _env_truthy(value: str | None) -> bool:
 
 
 def _cmd_ir_parse(args: argparse.Namespace) -> int:
-    path = Path(args.file)
-    try:
-        nodes = parse(path.read_text(encoding="utf-8"), filename=str(path))
-    except IRParseError as e:
-        print(e, file=sys.stderr)
+    nodes = _parse_or_exit(Path(args.file))
+    if nodes is None:
         return 1
     sys.stdout.write(dump_canonical(nodes))
     return 0
 
 
 def _cmd_ir_lint(args: argparse.Namespace) -> int:
-    path = Path(args.file)
-    try:
-        parse(path.read_text(encoding="utf-8"), filename=str(path))
-    except IRParseError as e:
-        print(e, file=sys.stderr)
+    if _parse_or_exit(Path(args.file)) is None:
         return 1
     return 0
 
 
 def _cmd_ir_dot(args: argparse.Namespace) -> int:
-    path = Path(args.file)
-    try:
-        nodes = parse(path.read_text(encoding="utf-8"), filename=str(path))
-    except IRParseError as e:
-        print(e, file=sys.stderr)
+    nodes = _parse_or_exit(Path(args.file))
+    if nodes is None:
         return 1
     levi = args.levi or _env_truthy(os.environ.get("EIN_RENDER_LEVI"))
     sys.stdout.write(ir_to_dot(nodes, rule_mode=args.rule_mode,
@@ -83,16 +73,8 @@ _LAYER_BY_NAME = {
 
 def _cmd_kb_dot(args: argparse.Namespace) -> int:
     """Render the loaded KB as a single unified Graphviz digraph."""
-    path = Path(args.file)
-    try:
-        nodes = parse(path.read_text(encoding="utf-8"), filename=str(path))
-    except IRParseError as e:
-        print(e, file=sys.stderr)
-        return 1
-    try:
-        kb = KnowledgeBase.from_ir(nodes)
-    except KBLoadError as e:
-        print(f"kb load error: {e}", file=sys.stderr)
+    kb = _load_kb_or_exit(Path(args.file))
+    if kb is None:
         return 1
     # Parse --layers spec; default to all.
     if args.layers:
@@ -127,6 +109,26 @@ def _parse_or_exit(path: Path):
         return parse(path.read_text(encoding="utf-8"), filename=str(path))
     except IRParseError as e:
         print(e, file=sys.stderr)
+        return None
+
+
+def _load_kb_or_exit(path: Path):
+    """Parse + build a :class:`KnowledgeBase`, or print the failure and
+    return None.
+
+    Mirrors :func:`_parse_or_exit`'s sentinel convention — return None on
+    error and let the caller ``return 1``; it does *not* call ``sys.exit``.
+    Collapses the parse (IRParseError) + KB-build (KBLoadError) bail-out
+    the ``kb dot`` / ``render lattice`` / ``solve`` handlers each carried
+    verbatim.
+    """
+    nodes = _parse_or_exit(path)
+    if nodes is None:
+        return None
+    try:
+        return KnowledgeBase.from_ir(nodes)
+    except KBLoadError as e:
+        print(f"kb load error: {e}", file=sys.stderr)
         return None
 
 
@@ -189,13 +191,8 @@ def _cmd_render_lattice(args: argparse.Namespace) -> int:
     ``contradictions_solve`` populate the proof; the full view needs
     ``store_lattice`` (on by default).
     """
-    nodes = _parse_or_exit(Path(args.file))
-    if nodes is None:
-        return 1
-    try:
-        kb = KnowledgeBase.from_ir(nodes)
-    except KBLoadError as e:
-        print(f"kb load error: {e}", file=sys.stderr)
+    kb = _load_kb_or_exit(Path(args.file))
+    if kb is None:
         return 1
     from .inference.monotonic import contradictions_solve, gaps_solve
     solve = contradictions_solve if args.mode == "contradictions" else gaps_solve
@@ -222,13 +219,8 @@ def _cmd_solve(args: argparse.Namespace) -> int:
     entries (``store_lattice`` so the lattice DAG renders), linearize the
     lattice into a story, and write the markdown (to ``--trace`` or stdout).
     """
-    nodes = _parse_or_exit(Path(args.file))
-    if nodes is None:
-        return 1
-    try:
-        kb = KnowledgeBase.from_ir(nodes)
-    except KBLoadError as e:
-        print(f"kb load error: {e}", file=sys.stderr)
+    kb = _load_kb_or_exit(Path(args.file))
+    if kb is None:
         return 1
 
     # P1.7a S1.7a.6 — sound solve() + English answer line.
@@ -273,13 +265,7 @@ def _cmd_solve(args: argparse.Namespace) -> int:
     return 0
 
 
-def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(
-        prog="ein-bot",
-        description="Graph-based reasoner for Zebra-style puzzles.",
-    )
-    sub = p.add_subparsers(dest="cmd", required=True)
-
+def _add_ir_parser(sub) -> None:
     ir = sub.add_parser("ir", help="IR utilities")
     ir_sub = ir.add_subparsers(dest="ir_cmd", required=True)
 
@@ -314,7 +300,8 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     ir_dot.set_defaults(func=_cmd_ir_dot)
 
-    # ── kb subcommand ──
+
+def _add_kb_parser(sub) -> None:
     kb_cmd = sub.add_parser("kb", help="Knowledge-base utilities")
     kb_sub = kb_cmd.add_subparsers(dest="kb_cmd", required=True)
 
@@ -351,6 +338,8 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     kb_dot.set_defaults(func=_cmd_kb_dot)
 
+
+def _add_render_parser(sub) -> None:
     # ── render subcommand (S1.6.1) — DOT only, no SVG ──
     render_cmd = sub.add_parser(
         "render", help="DOT for rules / constraints (S1.6.1)",
@@ -396,6 +385,8 @@ def _build_parser() -> argparse.ArgumentParser:
                             "then falls back to the solution frontier)")
     r_lat.set_defaults(func=_cmd_render_lattice)
 
+
+def _add_solve_parser(sub) -> None:
     # ── solve subcommand (S1.6.4) — markdown trace ──
     solve_cmd = sub.add_parser(
         "solve", help="solve a puzzle and write its markdown trace (S1.6.4)",
@@ -426,6 +417,17 @@ def _build_parser() -> argparse.ArgumentParser:
                                 "provenance backtrack from the solution; S1.6.5)")
     solve_cmd.set_defaults(func=_cmd_solve)
 
+
+def _build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        prog="ein-bot",
+        description="Graph-based reasoner for Zebra-style puzzles.",
+    )
+    sub = p.add_subparsers(dest="cmd", required=True)
+    _add_ir_parser(sub)
+    _add_kb_parser(sub)
+    _add_render_parser(sub)
+    _add_solve_parser(sub)
     return p
 
 
