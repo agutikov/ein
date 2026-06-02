@@ -1,0 +1,202 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "ein",
+  "scopeName": "source.ein",
+  "fileTypes": ["ein"],
+  "_comment": [
+    "ein-bot surface-language TextMate grammar (S1.7c.8). REGEX highlighting,",
+    "not a parser: it will happily colour syntactically-invalid ein — shape",
+    "correctness is the loader's job (kb.from_ir). The three closed reserved",
+    "name sets below are the single source of truth's mirror — keep them in",
+    "sync with docs/kernel/ir/03-ein-lang/06_reserved_names.md (declarators)",
+    "and ein.py/src/ein_bot/inference/{primitives,predicates}.py (rule-body",
+    "primitives + computed predicates). The test tests/test_vscode_grammar.py",
+    "re-derives each list from this file and fails on drift."
+  ],
+  "patterns": [{ "include": "#expression" }],
+  "repository": {
+    "expression": {
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#string" },
+        { "include": "#declarator-relation" },
+        { "include": "#declarator-rule" },
+        { "include": "#declarator-other" },
+        { "include": "#primitive-form" },
+        { "include": "#predicate-form" },
+        { "include": "#equality-form" },
+        { "include": "#paren" },
+        { "include": "#layer-value" },
+        { "include": "#keyword" },
+        { "include": "#number" },
+        { "include": "#boolean" },
+        { "include": "#variable" },
+        { "include": "#wildcard" }
+      ]
+    },
+
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.semicolon.ein",
+          "match": ";.*$"
+        },
+        {
+          "name": "comment.block.ein",
+          "begin": "#\\|",
+          "end": "\\|#"
+        }
+      ]
+    },
+
+    "string": {
+      "name": "string.quoted.double.ein",
+      "begin": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.ein" } },
+      "end": "\"",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.ein" } },
+      "patterns": [
+        {
+          "name": "constant.character.escape.ein",
+          "match": "\\\\."
+        },
+        {
+          "comment": "{?var} / {?rel} interpolation in :why explanation strings",
+          "name": "variable.other.interpolation.ein",
+          "match": "\\{[^}]*\\}"
+        }
+      ]
+    },
+
+    "declarator-relation": {
+      "comment": "(relation R A B …) — head + relation-type name. Closed declarator set; see 06_reserved_names.md.",
+      "begin": "(\\()\\s*(relation)\\b\\s*([A-Za-z][A-Za-z0-9_*-]*)?",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.parens.begin.ein" },
+        "2": { "name": "keyword.control.declarator.ein" },
+        "3": { "name": "entity.name.type.ein" }
+      },
+      "end": "(\\))",
+      "endCaptures": { "1": { "name": "punctuation.section.parens.end.ein" } },
+      "patterns": [{ "include": "#expression" }]
+    },
+
+    "declarator-rule": {
+      "comment": "(rule N …) / (hrule N …) — head + rule name.",
+      "begin": "(\\()\\s*(rule|hrule)\\b\\s*([A-Za-z][A-Za-z0-9_*-]*)?",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.parens.begin.ein" },
+        "2": { "name": "keyword.control.declarator.ein" },
+        "3": { "name": "entity.name.function.ein" }
+      },
+      "end": "(\\))",
+      "endCaptures": { "1": { "name": "punctuation.section.parens.end.ein" } },
+      "patterns": [{ "include": "#expression" }]
+    },
+
+    "declarator-other": {
+      "comment": "(query …) / (config …) / (trace …) — nameless declarators. `macro` is forward-reserved (P1.8 S1.5.9) and intentionally absent until it lands.",
+      "begin": "(\\()\\s*(query|config|trace)\\b",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.parens.begin.ein" },
+        "2": { "name": "keyword.control.declarator.ein" }
+      },
+      "end": "(\\))",
+      "endCaptures": { "1": { "name": "punctuation.section.parens.end.ein" } },
+      "patterns": [{ "include": "#expression" }]
+    },
+
+    "primitive-form": {
+      "comment": "Rule-body / ⊥ structural primitives, head position only (primitives.STRUCTURAL ∪ SUGAR).",
+      "begin": "(\\()\\s*(and|or|not|absent|forall|open|false)\\b",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.parens.begin.ein" },
+        "2": { "name": "keyword.control.primitive.ein" }
+      },
+      "end": "(\\))",
+      "endCaptures": { "1": { "name": "punctuation.section.parens.end.ein" } },
+      "patterns": [{ "include": "#expression" }]
+    },
+
+    "predicate-form": {
+      "comment": "Computed predicates, head position only (predicates.names()).",
+      "begin": "(\\()\\s*(eq|neq)\\b",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.parens.begin.ein" },
+        "2": { "name": "keyword.operator.predicate.ein" }
+      },
+      "end": "(\\))",
+      "endCaptures": { "1": { "name": "punctuation.section.parens.end.ein" } },
+      "patterns": [{ "include": "#expression" }]
+    },
+
+    "equality-form": {
+      "comment": "(= a b …) — the reserved `=` equality head.",
+      "begin": "(\\()\\s*(=)(?=[\\s)])",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.parens.begin.ein" },
+        "2": { "name": "keyword.operator.equality.ein" }
+      },
+      "end": "(\\))",
+      "endCaptures": { "1": { "name": "punctuation.section.parens.end.ein" } },
+      "patterns": [{ "include": "#expression" }]
+    },
+
+    "paren": {
+      "comment": "Generic S-expression — any non-reserved head (a fact or a relation reference). Must come AFTER every specific head rule above.",
+      "begin": "(\\()",
+      "beginCaptures": { "1": { "name": "punctuation.section.parens.begin.ein" } },
+      "end": "(\\))",
+      "endCaptures": { "1": { "name": "punctuation.section.parens.end.ein" } },
+      "patterns": [{ "include": "#expression" }]
+    },
+
+    "layer-value": {
+      "comment": "`:layer ontology|fact|reasoning` — the explicit per-fact layer override (S1.7c.1). Must precede #keyword.",
+      "match": "(:layer)\\b\\s+(ontology|fact|reasoning)\\b",
+      "captures": {
+        "1": { "name": "entity.other.attribute-name.ein" },
+        "2": { "name": "constant.language.layer.ein" }
+      }
+    },
+
+    "keyword": {
+      "comment": "Any :keyword (KEYWORD terminal). Covers :match :assert :why :priority :source :rule :using :mode :goal :hrules :hypothesis-relations and all solver-config flags.",
+      "name": "entity.other.attribute-name.ein",
+      "match": ":[a-z][A-Za-z0-9_-]*"
+    },
+
+    "number": {
+      "patterns": [
+        {
+          "comment": "RANGE — n..m / n..* (arity / interval). Must precede integer.",
+          "name": "constant.numeric.range.ein",
+          "match": "(?<![\\w.-])[0-9]+\\.\\.(?:[0-9]+|\\*)"
+        },
+        {
+          "comment": "INT. Lookbehind keeps the trailing digits of symbols like House-1 / House_3 from being mis-lexed as numbers.",
+          "name": "constant.numeric.integer.ein",
+          "match": "(?<![\\w.-])-?[0-9]+"
+        }
+      ]
+    },
+
+    "boolean": {
+      "comment": "Bare true / false config values (the primitive `(false)` head is handled by #primitive-form before this is reached).",
+      "name": "constant.language.boolean.ein",
+      "match": "\\b(?:true|false)\\b"
+    },
+
+    "variable": {
+      "comment": "?var pattern variable (VAR terminal), including a trailing-* relation variable like ?R*.",
+      "name": "variable.parameter.ein",
+      "match": "\\?[A-Za-z][A-Za-z0-9_*-]*"
+    },
+
+    "wildcard": {
+      "comment": "Bare _ wildcard (WILDCARD terminal). House_1's internal _ is inside a symbol token and never reaches here.",
+      "name": "variable.language.wildcard.ein",
+      "match": "(?<![A-Za-z0-9_*?-])_(?![A-Za-z0-9_*-])"
+    }
+  }
+}

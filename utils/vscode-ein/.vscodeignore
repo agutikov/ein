@@ -1,0 +1,5 @@
+# Keep the VSIX to just the grammar + config + manifest + docs.
+*.vsix
+node_modules/
+.vscode-test/
+.DS_Store
