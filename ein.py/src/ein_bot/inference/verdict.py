@@ -21,7 +21,7 @@ What survives:
 - :func:`is_solved` — goal-pattern check against a kb (mode-aware:
   SOLVE expects exactly one binding, GAPS expects at least one,
   CONTRADICTIONS never satisfies).
-- :func:`_query_value` — small Query accessor used by the engine
+- :func:`query_value` — small Query accessor used by the engine
   (goal projection, the CLI answer path).
 
 The tree-side ``.tree`` / ``.unresolved`` verdict fields were dropped in
@@ -120,7 +120,7 @@ def goal_bindings(kb: KnowledgeBase, goal=None) -> list[dict[str, str]]:
     if goal is None:
         if kb.query is None:
             return []
-        goal = _query_value(kb.query, "goal")
+        goal = query_value(kb.query, "goal")
     if goal is None:
         return []
     plan = JoinPlan(
@@ -151,7 +151,7 @@ def is_solved(kb: KnowledgeBase, mode: Mode) -> bool:
     return False
 
 
-def _query_value(query, kw_name: str):
+def query_value(query, kw_name: str):
     """Look up a kw_pair value by keyword name on a Query."""
     for kp in query.kw_pairs:
         if hasattr(kp, "key") and kp.key.name == kw_name:
@@ -167,4 +167,5 @@ __all__ = [
     "Verdict",
     "goal_bindings",
     "is_solved",
+    "query_value",
 ]

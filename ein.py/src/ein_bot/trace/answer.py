@@ -18,8 +18,8 @@ from ein_bot.inference.verdict import (
     Contradiction,
     Solution,
     Verdict,
-    _query_value,
     goal_bindings,
+    query_value,
 )
 from ein_bot.ir.types import Atom, SForm, Var
 
@@ -65,7 +65,7 @@ def _who_by_house(conjuncts, b: dict) -> dict[str, str]:
 
 
 def _solution_answer(kb, *, exhausted: bool) -> str:
-    goal = _query_value(kb.query, "goal") if kb.query is not None else None
+    goal = query_value(kb.query, "goal") if kb.query is not None else None
     rows = goal_bindings(kb, goal)
     if goal is None or not rows:
         return "Solved (no query goal to project)."
