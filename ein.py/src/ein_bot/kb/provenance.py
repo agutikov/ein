@@ -30,7 +30,7 @@ Granularity: per-fact (M1 Q18 working answer).
 """
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -271,6 +271,51 @@ def detect_provenance_cycles(facts: Iterable[Fact], resolve: object) -> list[lis
     for f in facts:
         dfs(f)
     return out
+
+
+# ── Provenance-chain reachability ─────────────────────────────────
+
+
+def reaches(
+    fact: Fact,
+    visited: set[FactId],
+    resolve: object,
+    is_terminal: Callable[[FactId, Fact], bool | None],
+) -> bool:
+    """Provenance-chain DFS: True iff some premise chain from ``fact``
+    reaches a *terminal* fact, by the caller's ``is_terminal`` test.
+
+    ``is_terminal(key, fact)`` returns ``True`` / ``False`` to
+    short-circuit at ``fact`` (it is a terminal), or ``None`` to keep
+    walking its ``rule``-kind premises. ``resolve(rel, args) -> Fact |
+    None`` looks up a premise id (as in :func:`build_derivation_dag`),
+    so this module needn't import ``store.py``.
+
+    ``visited`` guards provenance cycles and memoises across sibling
+    walks: a fact left in ``visited`` was reached on a chain that did
+    not (yet) yield a terminal, so a revisit contributes nothing — sound
+    because a chain that *does* reach one short-circuits every caller
+    above it. Pass a shared set to memoise across several roots.
+
+    Factored from back_prop's ``_walk`` (hypothesis terminal) and
+    commitment's ``_reaches_commitment`` (commitment terminal), which
+    differed only in this test (F-KER-10).
+    """
+    key: FactId = (fact.relation_name, fact.args)
+    if key in visited:
+        return False
+    visited.add(key)
+    terminal = is_terminal(key, fact)
+    if terminal is not None:
+        return terminal
+    prov = fact.provenance
+    if prov is None or prov.kind != "rule":
+        return False
+    for rid in prov.premises_raw:
+        premise = resolve(*rid)
+        if premise is not None and reaches(premise, visited, resolve, is_terminal):
+            return True
+    return False
 
 
 __all__ = [

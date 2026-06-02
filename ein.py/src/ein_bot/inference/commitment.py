@@ -24,9 +24,10 @@ Cross-refs:
   primitive shared by both engines).
 - :mod:`ein_bot.inference.apriori` — produces the
   :data:`CanonicalSetId` inputs.
-- :mod:`ein_bot.inference.back_prop` — :func:`_walk`'s global
-  "any speculative-kind" terminal; :func:`_reaches_commitment`
-  here is the commitment-set parameterised analogue.
+- :mod:`ein_bot.inference.back_prop` — its hypothesis walk uses a
+  global "any speculative-kind" terminal; :func:`_is_unconditional`
+  here is the commitment-set parameterised analogue. Both run the
+  shared :func:`ein_bot.kb.provenance.reaches` DFS.
 """
 from __future__ import annotations
 
@@ -38,7 +39,7 @@ from ein_bot.inference.contradiction import ContradictionDetector
 from ein_bot.inference.firing import Firing
 from ein_bot.inference.saturator import Saturator
 from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.provenance import Provenance
+from ein_bot.kb.provenance import Provenance, reaches
 from ein_bot.kb.store import KnowledgeBase
 
 
@@ -185,42 +186,17 @@ def _is_unconditional(
     """True iff ``fact``'s derivation chain doesn't touch any
     hypothesis in ``hypothesis_ids``.
 
-    Commitment-set parameterised analogue of
-    :func:`ein_bot.inference.back_prop._walk`
-    (which uses a global "any speculative-kind fact" terminal).
-    Here the terminal is matching a specific FactId in the
-    commitment — soundness rests on this distinction.
+    Commitment-set parameterised analogue of back_prop's hypothesis
+    walk (which uses a global "any speculative-kind fact" terminal).
+    Here the terminal is matching a specific FactId in the commitment
+    — soundness rests on this distinction. Both run the shared
+    :func:`~ein_bot.kb.provenance.reaches` DFS (F-KER-10).
     """
+    def _commitment_terminal(key: FactId, _fact: Fact) -> bool | None:
+        return True if key in hypothesis_ids else None
+
     visited: set[FactId] = set()
-    return not _reaches_commitment(kb, fact, visited, hypothesis_ids)
-
-
-def _reaches_commitment(
-    kb: KnowledgeBase, fact: Fact,
-    visited: set[FactId], hypothesis_ids: frozenset[FactId],
-) -> bool:
-    """Recursive walker — True iff some premise chain reaches a
-    fact in ``hypothesis_ids``.
-
-    Cycle-safe via ``visited``; skips ``rule``-kind premises whose
-    id is absent from ``kb`` (defensive; shouldn't happen in a
-    well-formed derivation chain).
-    """
-    key: FactId = (fact.relation_name, fact.args)
-    if key in visited:
-        return False
-    visited.add(key)
-    if key in hypothesis_ids:
-        return True
-    prov = fact.provenance
-    if prov is None or prov.kind != "rule":
-        return False
-    for rid in prov.premises_raw:
-        premise = kb._fact_by_id(*rid)
-        if premise is not None and _reaches_commitment(
-                kb, premise, visited, hypothesis_ids):
-            return True
-    return False
+    return not reaches(fact, visited, kb._fact_by_id, _commitment_terminal)
 
 
 __all__ = [

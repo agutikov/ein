@@ -365,7 +365,7 @@ def _promote_forced_positives(
     The promoted Fact uses ``Provenance.from_rule(
     "<forced-positive>", premises_raw=())`` so its provenance
     kind is "rule" with empty premises — this makes
-    :func:`commitment._reaches_commitment` walk through it as a
+    :func:`commitment._is_unconditional`'s walk pass through it as a
     non-hypothesis terminal, so future commit chains that pass
     through this fact don't get incorrectly flagged as
     conditional.

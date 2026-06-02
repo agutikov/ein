@@ -24,7 +24,8 @@ terminal — otherwise no death would ever read as unconditional.
 The remaining judgement is a transitive premise walk. The shallow
 read — *"the core contains no ``kind='hypothesis'`` fact"* — is
 unsound: a core fact can be ``kind='rule'`` yet derive, through a
-chain of firings, from a hypothesis. The internal walk :func:`_walk`
+chain of firings, from a hypothesis. The shared provenance walk
+:func:`~ein_bot.kb.provenance.reaches` (with a hypothesis terminal)
 follows ``Provenance.premises_raw`` (resolved against the KB) until
 every chain grounds out at a ``source`` / un-provenanced given, or
 any chain reaches a ``hypothesis`` / ``rejected`` terminal that is
@@ -35,7 +36,7 @@ from __future__ import annotations
 from contextvars import ContextVar
 
 from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.provenance import FactId, Provenance
+from ein_bot.kb.provenance import FactId, Provenance, reaches
 from ein_bot.kb.store import KnowledgeBase
 
 from . import primitives
@@ -91,42 +92,6 @@ class BubbleAbort(Exception):  # noqa: N818 — control-flow signal, not an erro
 _SPECULATIVE_KINDS = frozenset({"hypothesis", "rejected"})
 
 
-def _walk(
-    kb: KnowledgeBase, fact: Fact, visited: set[FactId],
-    own: FactId | None,
-) -> bool:
-    """Recursive core: True iff ``fact``'s premise chain touches a
-    speculative fact *other than* ``own``.
-
-    ``own`` is the FactId of the branch's own hypothesis — expected
-    in its death's witness set (it is what ``¬`` is being proven of,
-    not an external assumption), so a speculative fact equal to
-    ``own`` is a benign terminal.
-
-    ``visited`` guards provenance cycles and memoises across sibling
-    walks: a fact left in ``visited`` was reached on a chain that
-    did not (yet) yield a non-``own`` hypothesis, so a revisit
-    contributes nothing — return False. Sound because a chain that
-    *does* reach one short-circuits every caller above it.
-    """
-    key: FactId = (fact.relation_name, fact.args)
-    if key in visited:
-        return False
-    visited.add(key)
-    prov = fact.provenance
-    if prov is None:
-        return False                       # un-provenanced — a given
-    if prov.kind in _SPECULATIVE_KINDS:
-        return key != own                  # hypothesis terminal
-    if prov.kind == "rule":
-        for rid in prov.premises_raw:
-            premise = kb._fact_by_id(*rid)
-            if premise is not None and _walk(kb, premise, visited, own):
-                return True
-        return False
-    return False                           # source-kind — a given
-
-
 def is_unconditional_death(
     kb: KnowledgeBase,
     unsat_core: frozenset[Fact],
@@ -157,8 +122,26 @@ def is_unconditional_death(
         (own_hypothesis.relation_name, own_hypothesis.args)
         if own_hypothesis is not None else None
     )
+
+    def _hypothesis_terminal(key: FactId, fact: Fact) -> bool | None:
+        """A speculative fact other than ``own`` is a hypothesis
+        terminal; ``own`` itself and un-provenanced / source-kind givens
+        are not; ``rule``-kind keeps walking premises (return None).
+        """
+        prov = fact.provenance
+        if prov is None:
+            return False                       # un-provenanced — a given
+        if prov.kind in _SPECULATIVE_KINDS:
+            return key != own                  # hypothesis terminal
+        if prov.kind == "rule":
+            return None                        # walk the premises
+        return False                           # source-kind — a given
+
     visited: set[FactId] = set()
-    return not any(_walk(kb, f, visited, own) for f in unsat_core)
+    return not any(
+        reaches(f, visited, kb._fact_by_id, _hypothesis_terminal)
+        for f in unsat_core
+    )
 
 
 # S1.7.24 — `is_symmetric_relation` was DELETED with the on-death
