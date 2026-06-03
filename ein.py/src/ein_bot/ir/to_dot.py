@@ -341,24 +341,19 @@ def render_trace(form: SForm, *, view: str = "a") -> str:
         if not isinstance(ev, SForm):
             continue
         kind = ev.head.name
-        # First positional arg is the step name (a SYMBOL).
-        step_name = None
-        for arg in ev.args:
-            if isinstance(arg, Atom):
-                step_name = arg.name
-                break
+        step_name = ev.leading_symbol()   # first positional symbol
         if step_name is None:
             continue
         step_id = _quote(step_name)
         shape = "box" if kind == "step" else "ellipse"
         b.node(step_id, f"shape={shape}, label=\"{kind}: {step_name}\"")
-        # Extract :using premises for edge connections.
-        for arg in ev.args:
-            if isinstance(arg, KwPair) and arg.key.name == "using":
-                if isinstance(arg.value, SForm):
-                    for premise in _trace_premises(arg.value):
-                        b.node(_atom_id(premise), "shape=rectangle")
-                        b.edge(_atom_id(premise), step_id, 'style=dashed')
+        # Extract :using premises for edge connections (atom-decomposed by
+        # `_trace_premises` — one node per token, NOT one per fact).
+        using = ev.kw_map().get("using")
+        if isinstance(using, SForm):
+            for premise in _trace_premises(using):
+                b.node(_atom_id(premise), "shape=rectangle")
+                b.edge(_atom_id(premise), step_id, 'style=dashed')
     return b.build()
 
 
@@ -369,20 +364,17 @@ def _render_trace_dag(form: SForm) -> str:
     for ev in form.args:
         if not isinstance(ev, SForm):
             continue
-        step_name = next((a.name for a in ev.args if isinstance(a, Atom)), None)
+        step_name = ev.leading_symbol()
         if step_name is None:
             continue
-        rule = None
-        derives: SForm | None = None
-        using: SForm | None = None
-        for arg in ev.args:
-            if isinstance(arg, KwPair):
-                if arg.key.name == "rule":
-                    rule = _value_label(arg.value)
-                elif arg.key.name == "derives" and isinstance(arg.value, SForm):
-                    derives = arg.value
-                elif arg.key.name == "using" and isinstance(arg.value, SForm):
-                    using = arg.value
+        kw = ev.kw_map()
+        rule = _value_label(kw["rule"]) if "rule" in kw else None
+        derives = kw.get("derives")
+        using = kw.get("using")
+        if not isinstance(derives, SForm):
+            derives = None
+        if not isinstance(using, SForm):
+            using = None
         # Node: the derived fact (falls back to the step name).
         if derives is not None:
             dlabel = _value_label(derives)

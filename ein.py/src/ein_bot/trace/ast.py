@@ -150,9 +150,9 @@ def _parse_step(ev: SForm, default_n: int) -> TraceStep:
     field default exactly as the old ladder's per-arm ``isinstance`` guards
     did.
     """
-    name = next((a.name for a in ev.args if isinstance(a, Atom)), "s0")
+    name = ev.leading_symbol() or "s0"
     n = int(name[1:]) if name[1:].isdigit() else default_n
-    kw = {a.key.name: a.value for a in ev.args if isinstance(a, KwPair)}
+    kw = ev.kw_map()
     rule_val = kw.get("rule")
     rule = (
         "" if rule_val is None

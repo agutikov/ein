@@ -103,6 +103,23 @@ class SForm:
     args: tuple[IRNode, ...]
     loc: Loc | None = _loc()
 
+    def leading_symbol(self) -> str | None:
+        """The first positional :class:`Atom` arg's name — e.g. a `(step s3
+        …)` record id — or ``None`` if the form has no leading symbol.
+
+        Generic SForm accessor shared by the trace DOT renderers
+        (:mod:`ein_bot.ir.to_dot`) and the trace AST parser
+        (:mod:`ein_bot.trace.ast`) so the step-field extraction lives once
+        (S1.7c.28).
+        """
+        return next((a.name for a in self.args if isinstance(a, Atom)), None)
+
+    def kw_map(self) -> dict[str, IRNode]:
+        """The ``{keyword: value}`` map over this form's :class:`KwPair`
+        args. Last wins on a repeated key — the same outcome as the
+        positional ``if key == …`` scans this replaces (S1.7c.28)."""
+        return {a.key.name: a.value for a in self.args if isinstance(a, KwPair)}
+
 
 __all__ = [
     "Atom",
