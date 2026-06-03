@@ -53,32 +53,53 @@ from ein_bot.kb.store import KnowledgeBase
 
 
 @dataclass
-class LatticeStats:
-    """Cumulative counters for one :func:`gaps_solve` /
-    :func:`contradictions_solve` run.
+class _BaseStats:
+    """Per-candidate counters shared by every set-search entry — the
+    base of both :class:`MonotonicStats` (``solve``, in
+    :mod:`ein_bot.inference.monotonic.solver`) and :class:`LatticeStats`
+    (``gaps`` / ``contradictions``).
 
-    Superset of :class:`MonotonicStats` (lives in
-    :mod:`ein_bot.inference.monotonic.solver`): the per-candidate
-    counters are shared (``enterings_*``, ``facts_merged``,
-    ``forced_positives``, ``saturate_count``, ``layers_explored``,
-    ``nogoods_emitted``, ``nogoods_subsumed``); the lattice-only
-    additions are :attr:`solutions_found`,
-    :attr:`state_hash_merges`, and :attr:`elapsed_seconds`. The
-    two classes stay distinct (not inherited) so each public
-    entry advertises its own counter set at the type level.
+    Factoring these here (F-ENG-9) retires a hand-maintained field-copy
+    in ``solver._build_lattice_stats`` that silently went stale when a
+    counter was added to one stats class but not the other. A counter
+    added here now flows into both subclasses — and the generic copy —
+    automatically.
     """
 
     enterings_total:     int = 0
     enterings_alive:     int = 0
     enterings_dead_pre:  int = 0
     enterings_dead_post: int = 0
-    solutions_found:     int = 0
     facts_merged:        int = 0
     forced_positives:    int = 0
     saturate_count:      int = 0
     layers_explored:     int = 0
+    # S1.5b.6 — CDCL counters.
     nogoods_emitted:     int = 0
     nogoods_subsumed:    int = 0
+
+
+@dataclass
+class LatticeStats(_BaseStats):
+    """Cumulative counters for one :func:`gaps_solve` /
+    :func:`contradictions_solve` run.
+
+    Inherits the shared per-candidate counters from :class:`_BaseStats`;
+    adds the lattice-only :attr:`solutions_found`,
+    :attr:`state_hash_merges`, and :attr:`elapsed_seconds`.
+    :class:`MonotonicStats` (in
+    :mod:`ein_bot.inference.monotonic.solver`) is the sibling subclass —
+    neither inherits the other, so each public entry advertises its own
+    full counter set at the type level.
+
+    NB: under the :class:`_BaseStats` split, :attr:`solutions_found` now
+    serialises *after* the shared counters (it previously sat at field
+    index 4). Every consumer reads stats by field name, so this is
+    observable only in the key order of a dumper's ``summary.json`` stats
+    block — which nothing asserts on.
+    """
+
+    solutions_found:     int = 0
     state_hash_merges:   int = 0
     elapsed_seconds:     float = 0.0
 

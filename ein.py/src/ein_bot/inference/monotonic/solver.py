@@ -71,7 +71,8 @@ from __future__ import annotations
 
 import random
 import time
-from dataclasses import dataclass, field, replace
+from collections.abc import Iterable
+from dataclasses import dataclass, field, fields, replace
 from typing import Literal
 
 from ein_bot.inference import primitives
@@ -91,6 +92,7 @@ from ein_bot.inference.monotonic.lattice import (
     LatticeStats,
     SetNode,
     SolutionRecord,
+    _BaseStats,
 )
 from ein_bot.inference.monotonic.state_dump import (
     LatticeDumper,
@@ -128,21 +130,17 @@ class BudgetExceededError(RuntimeError):
 
 
 @dataclass
-class MonotonicStats:
+class MonotonicStats(_BaseStats):
     """Cumulative counters for one set-search run (:func:`solve` /
-    :func:`gaps_solve` / :func:`contradictions_solve`)."""
+    :func:`gaps_solve` / :func:`contradictions_solve`).
 
-    enterings_total:     int = 0
-    enterings_alive:     int = 0
-    enterings_dead_pre:  int = 0
-    enterings_dead_post: int = 0
-    facts_merged:        int = 0
-    forced_positives:    int = 0
-    saturate_count:      int = 0
-    layers_explored:     int = 0
-    # S1.5b.6 — CDCL counters.
-    nogoods_emitted:     int = 0
-    nogoods_subsumed:    int = 0
+    Inherits the shared per-candidate counters from :class:`_BaseStats`
+    (defined in :mod:`ein_bot.inference.monotonic.lattice`); adds the two
+    ``solve``-entry extras below. :class:`LatticeStats` is the sibling
+    subclass — neither inherits the other, so each public entry advertises
+    its own counter set at the type level. The base counters lead, so the
+    ``solve`` ``summary.json`` field order is unchanged."""
+
     # P1.7a — solve entry: deduped solution-node count `k` and whether
     # the search was exhaustive (else `k` is a lower bound and a k=1
     # result is "a solution", not a proven-unique one).
@@ -198,6 +196,37 @@ class _LatticeLoopState:
     truncated:         bool = False
 
 
+# ── Unsat-core synthesis (single home — F-ENG-7) ──────────────
+#
+# Two shapes recur across the verdict-building sites: a union over
+# every recorded dead's core, and a fresh source-frontier walk of a
+# kb that already holds a contradiction. Both live here so a fix to
+# the core derivation can't miss a copy. (``commitment.py`` has a
+# third source-frontier site, but it already holds the ``detect()``
+# result in hand and sits below this module in the import graph, so
+# it stays inline.)
+
+
+def _union_dead_cores(deads: Iterable[DeadCommitment]) -> frozenset[Fact]:
+    """Union the unsat cores of every recorded dead commitment — the
+    payload of the ``k=0`` / contradictions verdict."""
+    cores: frozenset[Fact] = frozenset()
+    for d in deads:
+        cores = cores | d.unsat_core
+    return cores
+
+
+def _source_frontier_core(kb: KnowledgeBase) -> frozenset[Fact]:
+    """The unsat core for a contradiction already present in ``kb``:
+    walk each witness's derivation DAG back to its ``source``-kind
+    terminals via :meth:`KnowledgeBase.unsat_core`. ``frozenset()``
+    when ``kb`` is in fact consistent."""
+    contras = ContradictionDetector(kb).detect()
+    if not contras:
+        return frozenset()
+    return frozenset(kb.unsat_core(c.witness for c in contras))
+
+
 def verdict_of(lstate: _LatticeLoopState, *, exhausted: bool) -> Verdict:
     """Derive the verdict from the deduped solution-node count ``k`` (P1.7a).
 
@@ -223,10 +252,7 @@ def verdict_of(lstate: _LatticeLoopState, *, exhausted: bool) -> Verdict:
         return Ambiguity(
             branches=tuple(Solution(kb=n.kb, trace=n.firings) for n in nodes),
         )
-    cores: frozenset[Fact] = frozenset()
-    for d in lstate.dead_commitments:
-        cores = cores | d.unsat_core
-    return Contradiction(unsat_core=cores)
+    return Contradiction(unsat_core=_union_dead_cores(lstate.dead_commitments))
 
 
 def solve(
@@ -427,12 +453,7 @@ def _contradiction(kb: KnowledgeBase) -> Verdict:
     the clash fires during root saturation before any commitment)
     with an empty core.
     """
-    contras = ContradictionDetector(kb).detect()
-    core = (
-        frozenset(kb.unsat_core(c.witness for c in contras))
-        if contras else frozenset()
-    )
-    return Contradiction(unsat_core=core)
+    return Contradiction(unsat_core=_source_frontier_core(kb))
 
 
 # ── Shared core loop — _explore_layers ───────────────────────
@@ -460,25 +481,19 @@ def _build_lattice_stats(
     """Project a :class:`MonotonicStats` plus the lattice-only
     counters into the public :class:`LatticeStats` shape.
 
-    The shared counters are copied field-for-field; the
+    The shared base counters are copied generically off
+    :class:`_BaseStats` — no hand-maintained field list, so a counter
+    added to the base can't silently go uncopied (F-ENG-9). The
     lattice-only triple
     (``solutions_found`` / ``state_hash_merges`` / ``elapsed_seconds``)
     is supplied by the caller. Keeping :class:`MonotonicStats`
     free of the lattice counters preserves the :func:`solve`
     public surface unchanged.
     """
+    shared = {f.name: getattr(mstats, f.name) for f in fields(_BaseStats)}
     return LatticeStats(
-        enterings_total=mstats.enterings_total,
-        enterings_alive=mstats.enterings_alive,
-        enterings_dead_pre=mstats.enterings_dead_pre,
-        enterings_dead_post=mstats.enterings_dead_post,
+        **shared,
         solutions_found=solutions_found,
-        facts_merged=mstats.facts_merged,
-        forced_positives=mstats.forced_positives,
-        saturate_count=mstats.saturate_count,
-        layers_explored=mstats.layers_explored,
-        nogoods_emitted=mstats.nogoods_emitted,
-        nogoods_subsumed=mstats.nogoods_subsumed,
         state_hash_merges=state_hash_merges,
         elapsed_seconds=elapsed_seconds,
     )
@@ -557,10 +572,9 @@ def _finalise_lattice_verdict(
             branches=branches, proof=proof,
         )
     # entry == "contradictions"
-    cores: frozenset[Fact] = frozenset()
-    for d in lstate.dead_commitments:
-        cores = cores | d.unsat_core
-    return Contradiction(unsat_core=cores, proof=proof)
+    return Contradiction(
+        unsat_core=_union_dead_cores(lstate.dead_commitments), proof=proof,
+    )
 
 
 def _record_setnode(
@@ -693,10 +707,7 @@ def _record_node(
 
 def _root_dead(ctx: _LoopCtx) -> None:
     """Record a root-level contradiction's unsat core (commitment ())."""
-    contras = ContradictionDetector(ctx.root_kb).detect()
-    core = frozenset(
-        ctx.root_kb.unsat_core(c.witness for c in contras)
-    ) if contras else frozenset()
+    core = _source_frontier_core(ctx.root_kb)
     ctx.lstate.dead_commitments.append(DeadCommitment(
         commitment=(), unsat_core=core,
         learned_clause=frozenset(), layer=0, kind="dead-post",
@@ -754,11 +765,11 @@ def _handle_dead(
     if (
         ctx.store_lattice
         and result.kind == "dead-post"
-        and ctx.entry in ("gaps", "contradictions")
+        and (ctx.entry == "gaps" or ctx.entry == "contradictions")
     ):
         skip_downstream = _record_setnode(
             ctx.lstate,
-            entry=ctx.entry,  # type: ignore[arg-type]
+            entry=ctx.entry,
             commitment=c,
             result_kb=result.kb,
             verdict_label="dead",
@@ -1066,10 +1077,10 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
             # most once per visit, with the correct kb-state
             # verdict label. Skipped for monotonic and for
             # ``store_lattice=False``.
-            if store_lattice and entry in ("gaps", "contradictions"):
+            if store_lattice and (entry == "gaps" or entry == "contradictions"):
                 _record_setnode(
                     lstate,
-                    entry=entry,  # type: ignore[arg-type]
+                    entry=entry,
                     commitment=c,
                     result_kb=result.kb,
                     verdict_label="solution" if solved else "alive",
