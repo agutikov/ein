@@ -45,11 +45,11 @@ with the type-edge style in the fact pass.
 """
 from __future__ import annotations
 
-import hashlib
 import re
 from collections.abc import Iterable
 from typing import Literal
 
+from ..render.dot_util import fact_key, hashed_id
 from ..render.dot_util import quote as _q
 from ..render.palette import hash_color as _hash_color
 from .entities import Fact, Layer
@@ -68,10 +68,10 @@ def _fact_node_id(f: Fact) -> str:
     """Stable DOT identifier for an octagon hyperedge node.
 
     Derived deterministically from ``(relation_name, args)`` so two
-    runs produce the same id (visual-regression friendly).
+    runs produce the same id (visual-regression friendly). S1.7c.25 —
+    the shared ``f_<md5[:10]>`` identity scheme (``dot_util.hashed_id``).
     """
-    key = f"{f.relation_name}|" + ",".join(str(a) for a in f.args)
-    return "f_" + hashlib.md5(key.encode("utf-8")).hexdigest()[:10]
+    return hashed_id("f_", fact_key(f.relation_name, f.args))
 
 
 def _short_source(source: str | None) -> str | None:

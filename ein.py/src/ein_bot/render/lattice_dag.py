@@ -31,11 +31,10 @@ Verdict colours: alive grey, dead red, solution green.
 """
 from __future__ import annotations
 
-import hashlib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .dot_util import fact_label, multiline, quote
+from .dot_util import digraph_open, fact_label, hashed_id, multiline, quote
 
 if TYPE_CHECKING:
     from ..inference.apriori import CanonicalSetId
@@ -163,7 +162,7 @@ def _cell_id(cell: _Cell) -> str:
     if not cell.rep:
         return quote("root")
     seed = "|".join(fact_label(fid[0], fid[1]) for fid in cell.rep)
-    return quote("n_" + hashlib.md5(seed.encode("utf-8")).hexdigest()[:10])
+    return hashed_id("n_", seed, quoted=True)  # S1.7c.25 — shared hash tail
 
 
 # ── the renderer ───────────────────────────────────────────────────
@@ -179,7 +178,7 @@ def render_lattice(source, *, view: str = "full", name: str = "lattice") -> str:
         raise ValueError(f"unknown lattice view: {view!r} (expected 'full' or 'solution')")
     cells, full_ok = _cells(source, view)
 
-    lines = [f"digraph {name} {{", "  rankdir=LR;", '  node [fontname="Inter", shape=box];']
+    lines = digraph_open(name, rankdir="LR", node_defaults='fontname="Inter", shape=box')
     if view == "full" and not full_ok:
         lines.append("  // no stored lattice (store_lattice=False) — "
                      "showing the solution frontier instead")

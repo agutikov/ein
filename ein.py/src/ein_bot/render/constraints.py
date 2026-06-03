@@ -34,7 +34,14 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from ..ir.types import Atom, KwPair, SForm
-from .dot_util import GROUND_SHAPE, HYPER_SHAPE, TYPE_SHAPE, quote, value_label
+from .dot_util import (
+    GROUND_SHAPE,
+    HYPER_SHAPE,
+    TYPE_SHAPE,
+    digraph_open,
+    quote,
+    value_label,
+)
 from .palette import hash_color
 
 # Kernel ontology keywords — declarations, not constraint facts.
@@ -142,8 +149,7 @@ def render_constraints(
                 for lbl in labels:
                     _note(lbl)
 
-    lines = [f"digraph {name} {{", "  rankdir=LR;",
-             '  node [fontname="Inter"];']
+    lines = digraph_open(name, rankdir="LR", node_defaults='fontname="Inter"')
     if not relations:
         lines.append("  // no structural-constraint facts found "
                      "(rule-headed ontology facts)")

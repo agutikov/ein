@@ -35,6 +35,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from ein_bot.ir.types import Loc
+from ein_bot.render.dot_util import fact_key, hashed_id
 
 if TYPE_CHECKING:
     from .entities import Fact
@@ -177,13 +178,9 @@ class DerivationDAG:
 def _fact_dot_id(f: Fact) -> str:
     """Stable DOT node id for a Fact — derived from its identity."""
     # Hash the (relation, args) tuple deterministically.
-    key = f"{f.relation_name}|" + ",".join(str(a) for a in f.args)
-    # DOT identifiers must match [A-Za-z_][A-Za-z0-9_]* ; use a
-    # surrogate hex hash. S1.7c.25 (F-KB-8): 10 hex chars + utf-8 encode,
-    # matching the other three content-keyed `f_<md5>` id sites
-    # (kb/render, render/slice, render/lattice_dag) — was [:12] here.
-    import hashlib
-    return "f_" + hashlib.md5(key.encode("utf-8")).hexdigest()[:10]
+    # S1.7c.25 — the shared ``f_<md5[:10]>`` identity scheme
+    # (``dot_util.hashed_id`` + ``fact_key``); was a local [:12] md5 (F-KB-8).
+    return hashed_id("f_", fact_key(f.relation_name, f.args))
 
 
 def _fact_dot_label(f: Fact) -> str:

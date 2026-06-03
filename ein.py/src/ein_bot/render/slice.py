@@ -27,11 +27,10 @@ Colour key: hypothesis/seed facts red, derived facts bold, negative
 """
 from __future__ import annotations
 
-import hashlib
 from typing import TYPE_CHECKING
 
 from ..inference.why import render_why
-from .dot_util import fact_label, multiline, quote
+from .dot_util import digraph_open, fact_label, hashed_id, multiline, quote
 from .palette import hash_color
 
 if TYPE_CHECKING:
@@ -66,7 +65,11 @@ def _key(relation_name: str, args: tuple) -> str:
 
 
 def _node_id(key: str) -> str:
-    return quote("f_" + hashlib.md5(key.encode("utf-8")).hexdigest()[:10])
+    # S1.7c.25 — shared hash tail; the recursive `key` (built by `_key` /
+    # `_arg_str`, which descends into nested Facts) stays LOCAL — that
+    # recursion is load-bearing for these node ids, so it is NOT merged
+    # into the flat `dot_util.fact_key`.
+    return hashed_id("f_", key, quoted=True)
 
 
 def _fact_keys(kb: KnowledgeBase) -> set[str]:
@@ -171,7 +174,7 @@ def render_slice(
             )
             edges.append(f'  {bottom} -> {ng} [style=dashed, label="lifts to"];')
 
-    lines = [f"digraph {name} {{", "  rankdir=LR;", '  node [fontname="Inter"];']
+    lines = digraph_open(name, rankdir="LR", node_defaults='fontname="Inter"')
     lines += list(node_decls.values())
     lines += firing_nodes
     lines += edges
