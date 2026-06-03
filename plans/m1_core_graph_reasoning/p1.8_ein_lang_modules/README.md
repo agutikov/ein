@@ -65,6 +65,29 @@ phase is the canonical home for:
   files (relation / type / instance imports, namespace scoping,
   re-exports, conflict resolution).
 
+#### Adding a top-level declarator — the P1.7c checklist
+
+Two Theme-A stages introduce new top-level forms — `macro`
+([S1.5.9](s1.5.9_ein_lang_macros.md)) and `import` / `use`
+([S1.8.A2](s1.8.a2_grammar_import_use.md)). Since
+[P1.7c](../p1.7c_block_head_removal/README.md) the surface is a **flat
+sequence of forms classified by head against a closed declarator set**, so
+each new declarator is a **4-point registration** (not a new wrapper block):
+
+1. **`grammar.lark`** — add the production to the `?form` alternation.
+2. **`grammar.lark`** `SYMBOL` negative-lookahead — add the head so a
+   malformed form is a *parse* error, not a silent fall-through to a fact.
+   (`relation` is the one documented exception — kept a plain `SYMBOL` so
+   rules can pattern-match `(relation ?R ?A ?B)`.)
+3. **[`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)**
+   — add the head to the closed Declarators table (the parser/loader's source
+   of truth; it already forward-reserves `macro`).
+4. **`from_ir.load()`** head-switch — add a routing branch.
+
+Each addition **expands the reserved set**, so a pre-existing fact whose head
+collides would silently misclassify — grep the corpus first (none collide for
+`macro` / `import` / `use` as of 2026-06-03).
+
 The P1.3 review surfaced three coupled questions:
 
 1. Where do rule definitions live — inline per puzzle, in a
