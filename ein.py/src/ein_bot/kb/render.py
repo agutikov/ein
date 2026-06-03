@@ -247,84 +247,97 @@ def to_dot(
         {(f.relation_name, f.args) for f in since.facts}
         if since is not None else None
     )
-    lines: list[str] = []
-    lines.append(f"digraph {name} {{")
-    # `fdp` is the layout engine; this is just a hint via a comment so
-    # render_examples.sh picks fdp for kb dot outputs.
-    lines.append("  // suggested layout: fdp")
-    lines.append("  rankdir=BT;")
-    lines.append('  node [fontname="Inter"];')
-
-    # ── 1. Resolve type / instance node atoms from inheritance facts ──
-    # S1.7.23 — read the puzzle's `is-a` / `(type …)` / `(instance …)`
-    # facts directly (presentation knows the convention; the kernel no
-    # longer keeps a type/instance entity-view).
-    schema_types, schema_insts, instanceof_edges = _schema_nodes(kb)
-    type_set = schema_types if include_types else set()
-    type_names = sorted(type_set)
-    # Skip ovals when a name is already a type box (avoid double-render).
-    inst_names = (
-        sorted(schema_insts - type_set) if include_instances else []
-    )
-
-    # ── 2. Emit type / instance nodes ──
-    if type_names:
-        lines.append("  // types")
-        for name_ in type_names:
-            lines.append(_emit_type_node(name_))
-    if inst_names:
-        lines.append("  // instances")
-        for name_ in inst_names:
-            lines.append(_emit_instance_node(name_))
-
-    # ── 3. Emit instance-of edges (only when ONTOLOGY is requested) ──
-    # `(instance I T)` / `(type X P)` edges (the `is-a` facts draw their
-    # own type-edge in the fact pass below).
-    if Layer.ONTOLOGY in layers_set and include_types and include_instances:
-        for child, parent in instanceof_edges:
-            if parent in type_set:
-                lines.append("")
-                lines.append(_emit_is_a_edge(child, parent))
-
-    # ── 4. Emit facts ──
+    lines: list[str] = [
+        f"digraph {name} {{",
+        # `fdp` is the layout engine; this is just a hint via a comment so
+        # render_examples.sh picks fdp for kb dot outputs.
+        "  // suggested layout: fdp",
+        "  rankdir=BT;",
+        '  node [fontname="Inter"];',
+    ]
+    # Type / instance / instance-of nodes from the schema facts.
+    lines.extend(_emit_schema_nodes(
+        kb, layers_set=layers_set,
+        include_types=include_types, include_instances=include_instances,
+    ))
+    # Facts.
     if kb.facts:
         lines.append("")
         lines.append("  // facts")
     for f in kb.facts:
-        if f.layer not in layers_set:
+        if f.layer not in layers_set or _suppress(f, kb):
             continue
-        if _suppress(f, kb):
-            continue
-        colour = _pick_colour(f, colour_by)
-        style = _pick_style(f.layer)
-        label_extra = _label_extra(f)
-        # Transition highlight (S1.6.2 T1.6.2.3): facts new since `since`.
-        penwidth = (
-            3 if since_keys is not None
-            and (f.relation_name, f.args) not in since_keys
-            else None
-        )
-
-        # `is-a` facts (zebra2 case): render with the type-edge style,
-        # not the regular relation-coloured arrow.
-        if f.relation_name == "is-a" and len(f.args) == 2:
-            child, parent = f.args
-            lines.append(_emit_is_a_edge(str(child), str(parent), penwidth=penwidth))
-            continue
-
-        if len(f.args) == 2:
-            lines.append(_emit_binary_fact(
-                f, colour=colour, style=style, label_extra=label_extra,
-                penwidth=penwidth,
-            ))
-        else:
-            lines.extend(_emit_hyperedge(
-                f, colour=colour, style=style, label_extra=label_extra,
-                penwidth=penwidth,
-            ))
-
+        lines.extend(_emit_fact_line(f, colour_by=colour_by, since_keys=since_keys))
     lines.append("}")
     return "\n".join(lines)
+
+
+def _emit_schema_nodes(
+    kb: KnowledgeBase,
+    *,
+    layers_set: set[Layer],
+    include_types: bool,
+    include_instances: bool,
+) -> list[str]:
+    """The type / instance / instance-of DOT lines (S1.7c.26).
+
+    S1.7.23 — read the puzzle's `is-a` / `(type …)` / `(instance …)` facts
+    directly (presentation knows the convention; the kernel no longer keeps
+    a type/instance entity-view). Instance-of edges are emitted only when
+    ONTOLOGY is requested; the `is-a` *facts* draw their own type-edge in
+    the per-fact pass.
+    """
+    schema_types, schema_insts, instanceof_edges = _schema_nodes(kb)
+    type_set = schema_types if include_types else set()
+    type_names = sorted(type_set)
+    # Skip ovals when a name is already a type box (avoid double-render).
+    inst_names = sorted(schema_insts - type_set) if include_instances else []
+
+    out: list[str] = []
+    if type_names:
+        out.append("  // types")
+        out.extend(_emit_type_node(name_) for name_ in type_names)
+    if inst_names:
+        out.append("  // instances")
+        out.extend(_emit_instance_node(name_) for name_ in inst_names)
+    if Layer.ONTOLOGY in layers_set and include_types and include_instances:
+        for child, parent in instanceof_edges:
+            if parent in type_set:
+                out.append("")
+                out.append(_emit_is_a_edge(child, parent))
+    return out
+
+
+def _emit_fact_line(
+    f: Fact,
+    *,
+    colour_by: Literal["relation", "layer", "none"],
+    since_keys: set | None,
+) -> list[str]:
+    """The DOT line(s) for one fact: `is-a` → type-edge style, binary →
+    coloured arrow, else hyperedge (S1.7c.26). The caller filters by layer
+    and suppression. ``since_keys`` drives the S1.6.2 transition highlight
+    (facts new since a prior KB drawn at ``penwidth=3``)."""
+    colour = _pick_colour(f, colour_by)
+    style = _pick_style(f.layer)
+    label_extra = _label_extra(f)
+    penwidth = (
+        3 if since_keys is not None
+        and (f.relation_name, f.args) not in since_keys
+        else None
+    )
+    if f.relation_name == "is-a" and len(f.args) == 2:
+        child, parent = f.args
+        return [_emit_is_a_edge(str(child), str(parent), penwidth=penwidth)]
+    if len(f.args) == 2:
+        return [_emit_binary_fact(
+            f, colour=colour, style=style, label_extra=label_extra,
+            penwidth=penwidth,
+        )]
+    return list(_emit_hyperedge(
+        f, colour=colour, style=style, label_extra=label_extra,
+        penwidth=penwidth,
+    ))
 
 
 # ── Per-fact decision helpers ─────────────────────────────────────
