@@ -4,7 +4,7 @@
 name sets in head position — declarators, rule-body / ⊥ primitives, and
 computed predicates. Those sets have a single source of truth:
 
-- primitives → :mod:`ein_bot.inference.primitives` (``STRUCTURAL ∪ SUGAR``)
+- primitives → :mod:`ein_bot.inference.primitives` (``STRUCTURAL | SUGAR``)
 - predicates → :mod:`ein_bot.inference.predicates` (``names()``)
 - declarators → ``docs/kernel/ir/03-ein-lang/06_reserved_names.md`` (the
   closed P1.7c set; mirrored as ``EXPECTED_DECLARATORS`` below)
