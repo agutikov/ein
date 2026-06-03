@@ -1,0 +1,19 @@
+digraph slice {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_754f8eabdf" [label="co-located(Blue, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_a2e6230da9" [label="co-located(H3, Blue)", shape=box, style=rounded, penwidth=2];
+  "f_fe19e0fead" [label="not(co-located(Red, H3))", shape=box, color="#7f7f7f", fontcolor="#7f7f7f", style=rounded, penwidth=2];
+  "f_c8c9f5f2b1" [label="not(co-located(Green, H3))", shape=box, color="#7f7f7f", fontcolor="#7f7f7f", style=rounded];
+  "f_422f003b5a" [label="co-located(Yellow, H1)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric"];
+  "fire1_type-exclusivity" [shape=box, style="rounded,bold", color="#2ca02c", fontcolor="#2ca02c", label="type-exclusivity"];
+  "fire2_domain-elimination" [shape=box, style="rounded,bold", color="#17becf", fontcolor="#17becf", label="domain-elimination"];
+  "f_754f8eabdf" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_a2e6230da9" [color="#7f7f7f", style=bold];
+  "f_754f8eabdf" -> "fire1_type-exclusivity" [color="#2ca02c"];
+  "fire1_type-exclusivity" -> "f_fe19e0fead" [color="#2ca02c", style=bold];
+  "f_fe19e0fead" -> "fire2_domain-elimination" [color="#17becf"];
+  "f_c8c9f5f2b1" -> "fire2_domain-elimination" [color="#17becf"];
+  "fire2_domain-elimination" -> "f_422f003b5a" [color="#17becf", style=bold];
+}

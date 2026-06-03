@@ -1,0 +1,33 @@
+digraph snap {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+  // types
+  "Thing" [shape=box, label="Thing"];
+  // instances
+  "a" [shape=oval, label="a"];
+  "b" [shape=oval, label="b"];
+  "c" [shape=oval, label="c"];
+
+  "a" -> "Thing" [style=dashed, arrowhead=empty, label="is-a"];
+
+  "b" -> "Thing" [style=dashed, arrowhead=empty, label="is-a"];
+
+  "c" -> "Thing" [style=dashed, arrowhead=empty, label="is-a"];
+
+  // facts
+  f_55b91239d1 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_55b91239d1 -> "r" [label="#1", color="#bcbd22", style=solid];
+  f_55b91239d1 -> "Thing" [label="#2", color="#bcbd22", style=solid];
+  f_55b91239d1 -> "Thing" [label="#3", color="#bcbd22", style=solid];
+  f_8258b48950 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_8258b48950 -> "tern" [label="#1", color="#bcbd22", style=solid];
+  f_8258b48950 -> "Thing" [label="#2", color="#bcbd22", style=solid];
+  f_8258b48950 -> "Thing" [label="#3", color="#bcbd22", style=solid];
+  f_8258b48950 -> "Thing" [label="#4", color="#bcbd22", style=solid];
+  "a" -> "b" [label="r (1)", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  f_5245fd1485 [shape=octagon, label="(tern)\\n(2)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_5245fd1485 -> "a" [label="#1", color="#bcbd22", style=solid];
+  f_5245fd1485 -> "b" [label="#2", color="#bcbd22", style=solid];
+  f_5245fd1485 -> "c" [label="#3", color="#bcbd22", style=solid];
+}

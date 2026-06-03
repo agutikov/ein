@@ -1,0 +1,6 @@
+digraph constraints {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "co-located" [shape=rectangle, label="co-located\\n«symmetric»"];
+  "next-to" [shape=rectangle, label="next-to\\n«transitive»"];
+}

@@ -1,0 +1,5 @@
+digraph reasoning {
+  "Blue" [shape=rectangle];
+  "House-2" [shape=rectangle];
+  "Blue" -> "House-2" [label="co-located", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+}

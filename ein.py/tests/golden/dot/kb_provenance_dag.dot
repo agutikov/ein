@@ -1,0 +1,8 @@
+digraph derivation {
+  rankdir=BT;
+  f_0b8a036bc4 [shape=box, label="(q a c)\n[rule: triangle]"];
+  f_69510aab53 [shape=ellipse, label="(p a b)\n[(1)]"];
+  f_b34b2c73fa [shape=ellipse, label="(p b c)\n[(2)]"];
+  f_69510aab53 -> f_0b8a036bc4;
+  f_b34b2c73fa -> f_0b8a036bc4;
+}

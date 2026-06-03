@@ -1,0 +1,14 @@
+digraph lattice {
+  rankdir=LR;
+  node [fontname="Inter", shape=box];
+  "root" [label="root\n(saturation)", style=filled, color="#7f7f7f", fillcolor="#eeeeee"];
+  "n_d7023de41f" [label="{p(a)}", style=filled, color="#2ca02c", fillcolor="#e8f6e8"];
+  "n_bdff6259d5" [label="{p(b)}", style=filled, color="#d62728", fillcolor="#fdeaea", tooltip="unsat-core: p(b), q(b) | no-good: p(b)"];
+  "n_e390271852" [label="{p(c)}", style=filled, color="#d62728", fillcolor="#fdeaea", tooltip="unsat-core: p(c) | no-good: p(c)"];
+  "root" -> "n_d7023de41f";
+  "root" -> "n_bdff6259d5";
+  "root" -> "n_e390271852";
+  "n_bdff6259d5" -> "root" [style=dashed, color="#d62728", constraint=false, label="no-good"];
+  "n_e390271852" -> "root" [style=dashed, color="#d62728", constraint=false, label="no-good"];
+  {rank=same; "n_d7023de41f" "n_bdff6259d5" "n_e390271852"}
+}

@@ -1,0 +1,5 @@
+digraph facts {
+  "Spaniard" [shape=rectangle];
+  "Coffee" [shape=rectangle];
+  "Spaniard" -> "Coffee" [label="co-located", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+}

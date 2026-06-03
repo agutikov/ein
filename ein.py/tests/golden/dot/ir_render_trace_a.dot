@@ -1,0 +1,6 @@
+digraph trace {
+  "s1" [shape=box, label="step: s1"];
+  "c10" [shape=rectangle];
+  "s2" [shape=box, label="step: s2"];
+  "c10" -> "s1" [style=dashed];
+}

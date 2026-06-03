@@ -179,9 +179,11 @@ def _fact_dot_id(f: Fact) -> str:
     # Hash the (relation, args) tuple deterministically.
     key = f"{f.relation_name}|" + ",".join(str(a) for a in f.args)
     # DOT identifiers must match [A-Za-z_][A-Za-z0-9_]* ; use a
-    # surrogate hex hash.
+    # surrogate hex hash. S1.7c.25 (F-KB-8): 10 hex chars + utf-8 encode,
+    # matching the other three content-keyed `f_<md5>` id sites
+    # (kb/render, render/slice, render/lattice_dag) — was [:12] here.
     import hashlib
-    return "f_" + hashlib.md5(key.encode()).hexdigest()[:12]
+    return "f_" + hashlib.md5(key.encode("utf-8")).hexdigest()[:10]
 
 
 def _fact_dot_label(f: Fact) -> str:

@@ -1,0 +1,3 @@
+digraph ontology {
+  "Person" [shape=box];
+}
