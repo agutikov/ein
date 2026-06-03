@@ -520,3 +520,29 @@ class TestKBSnapshot:
         assert snap._negated_facts == oracle._negated_facts
         assert snap._rules_by_relation == oracle._rules_by_relation
         assert snap.names == oracle.names
+
+    def test_fork_snapshot_index_copy_contract(self):
+        """S1.7c.22 — `fork` and `snapshot` share one index-copy contract
+        (`_copy_fact_indexes_into`): the 5 fact-derived indexes are
+        independent shallow copies that agree with the source by value;
+        `_rules_by_relation` is shared by reference."""
+        from ein_bot.ir import parse
+        text = """
+        (type T)
+        (instance a T) (instance b T)
+        (relation r T T)
+        (r a b :source "(1)")
+        """
+        kb = KnowledgeBase.from_ir(parse(text))
+        for copy in (kb.fork(), kb.snapshot()):
+            # Same contents by value …
+            assert copy._facts_by_relation == kb._facts_by_relation
+            assert copy._rule_apps_by_rule == kb._rule_apps_by_rule
+            assert copy._rule_apps_on_relation == kb._rule_apps_on_relation
+            assert copy.names == kb.names
+            assert copy._negated_facts == kb._negated_facts
+            # … `_rules_by_relation` shared by reference, the rest copied.
+            assert copy._rules_by_relation is kb._rules_by_relation
+            assert copy._facts_by_relation is not kb._facts_by_relation
+            assert copy.names is not kb.names
+            assert copy._negated_facts is not kb._negated_facts

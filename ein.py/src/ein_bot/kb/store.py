@@ -603,18 +603,10 @@ class KnowledgeBase:
         new.classes._parent = dict(self.classes._parent)
         # Facts list: copy so appends to the fork don't touch parent.
         new.facts = list(self.facts)
-        # Reverse indexes. `_rules_by_relation` derives from the
-        # (post-load-immutable) rules registry and is never mutated by
-        # `_index_fact`, so it's SHARED by reference like the registries.
-        # The fact / name / negated indexes ARE appended to during
-        # saturation, so each fork gets its own copy and mutates it in
-        # place (see `_index_fact`).
-        new._rules_by_relation = self._rules_by_relation
-        new._facts_by_relation = dict(self._facts_by_relation)
-        new._rule_apps_by_rule = dict(self._rule_apps_by_rule)
-        new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
-        new.names = dict(self.names)
-        new._negated_facts = set(self._negated_facts)
+        # Reverse indexes — the single fork/snapshot copy contract
+        # (`_rules_by_relation` shared by reference, the five fact-derived
+        # indexes shallow-copied; see `_copy_fact_indexes_into`).
+        self._copy_fact_indexes_into(new)
         # T1.5.4.4 carry-over: `config` is an immutable reference; the
         # fork inherits it as-is.
         new.config = self.config
@@ -674,20 +666,36 @@ class KnowledgeBase:
         new.facts = list(self.facts)
         new._nogoods = set(self._nogoods)
         new.committed_hypotheses = set(self.committed_hypotheses)
-        # S1.7c.21 — shallow-copy the in-place-maintained indexes (same
-        # invariant `fork` relies on: `_index_fact` rebinds each key to a
-        # fresh immutable tuple, never mutating in place, so a shallow copy
-        # can't leak across the source/snapshot boundary). Byte-identical
-        # to a full `rebuild_indexes()` from the copied `facts` list, but
-        # skips the per-snapshot rebuild on the warm solution path.
-        # `_rules_by_relation` is post-load-immutable → shared by reference.
+        # S1.7c.21 — shallow-copy the in-place-maintained indexes (the same
+        # contract `fork` uses) rather than a full `rebuild_indexes()` per
+        # recorded solution. See `_copy_fact_indexes_into` for why the
+        # shallow copy is byte-identical to a rebuild on this warm path.
+        self._copy_fact_indexes_into(new)
+        return new
+
+    def _copy_fact_indexes_into(self, new: KnowledgeBase) -> None:
+        """The single fork/snapshot reverse-index copy contract (S1.7c.22).
+
+        ``_rules_by_relation`` derives from the post-load-immutable rules
+        registry and is never mutated by :meth:`_index_fact`, so it is
+        SHARED by reference (like the other registries). The five
+        fact-derived indexes ARE appended to during saturation, so each copy
+        gets its own shallow copy to mutate in place. That shallow copy is
+        byte-identical to a full :meth:`rebuild_indexes` because
+        :meth:`_index_fact` rebinds each key to a fresh immutable tuple (and
+        re-adds to the set), never mutating a shared container in place
+        (S1.7c.21) — so :meth:`fork` and :meth:`snapshot` cannot desync,
+        which is the F-KB-9 win. (A full typed-index wrapper was assessed
+        and rejected: post-S1.7.23 there is only one static index against
+        five mutable, so the wrapper's mutable/static separation collapses to
+        ceremony; this helper captures the whole remaining value.)
+        """
         new._rules_by_relation = self._rules_by_relation
         new._facts_by_relation = dict(self._facts_by_relation)
         new._rule_apps_by_rule = dict(self._rule_apps_by_rule)
         new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
         new.names = dict(self.names)
         new._negated_facts = set(self._negated_facts)
-        return new
 
     # ── Dunder ────────────────────────────────────────────────────
 
