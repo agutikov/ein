@@ -27,7 +27,7 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from .entities import (
     KERNEL_META_RELATIONS,
@@ -137,22 +137,6 @@ class KnowledgeBase:
         # `solve()` resolves precedence as: kwarg > kb.config
         # > SolverConfig().
         self.config: SolverConfig | None = None
-        # Alive-hypothesis set — T1.5.4.8 Topic D ship. None until
-        # `solve()` populates it at the root via
-        # `generate_hypotheses_with_stats(root_kb)`. Forks inherit
-        # by reference; `_explore` re-prunes per path and stashes
-        # the new frozenset back here before recursing. Each entry
-        # is a Fact with provenance=None — try_branch re-stamps
-        # branch-specific provenance.
-        self.alive: Any | None = None
-
-        # S1.5.7b ConsumeStats — per-solve counters for the back-prop
-        # consume loop's `try_branch`-skip cache. None until
-        # `solve()` allocates an instance on the root KB; forks share
-        # by reference so every `_consume` invocation across the
-        # search mutates the same counter. Typed as `Any` to mirror
-        # `config`/`alive` and avoid the inference → kb import cycle.
-        self.consume_stats: Any | None = None
 
         # S1.5a.17 — Set of `(relation_name, args)` FactIds for
         # hypotheses promoted to root-givens by an unconditional
@@ -312,7 +296,10 @@ class KnowledgeBase:
         …)` are ordinary facts indexed like any other, with no
         type/instance entity-view built over them.
         """
-        # facts indexes
+        # Facts indexes — a single pass over `self.facts` feeds every
+        # fact-derived grouping (S1.7c.20 — was two walks; the second
+        # rebuilt the head→facts grouping `fbr` already holds, and
+        # collected `arg_lists` alongside).
         self._facts_by_relation = {}
         self._rule_apps_by_rule = {}
         self._rule_apps_on_relation = {}
@@ -320,14 +307,18 @@ class KnowledgeBase:
         fbr: dict[str, list[Fact]] = defaultdict(list)
         rabr: dict[str, list[Fact]] = defaultdict(list)
         raor: dict[str, list[Fact]] = defaultdict(list)
+        arg_lists: dict[str, list[Fact]] = defaultdict(list)
         for fact in self.facts:
             fbr[fact.relation_name].append(fact)
-            if fact.relation_name in self.rules:
+            is_rule_app = fact.relation_name in self.rules
+            if is_rule_app:
                 rabr[fact.relation_name].append(fact)
-                # Each arg that is a known Relation is a target of the
-                # rule application.
-                for a in fact.args:
-                    if isinstance(a, str) and a in self.relations:
+            for a in fact.args:
+                if isinstance(a, str):
+                    arg_lists[a].append(fact)
+                    # Each arg that is a known Relation is a target of
+                    # the rule application.
+                    if is_rule_app and a in self.relations:
                         raor[a].append(fact)
             if fact.relation_name == "not" and fact.args:
                 inner = fact.args[0]
@@ -340,18 +331,12 @@ class KnowledgeBase:
         self._rule_apps_on_relation = {k: tuple(v) for k, v in raor.items()}
 
         # Global names index — every distinct name that appears
-        # anywhere in the KB. Built from `kb.facts` (head + direct
-        # string args) plus the registry keys (so a relation
-        # declared with no facts yet still shows up).
-        head_lists: dict[str, list[Fact]] = defaultdict(list)
-        arg_lists: dict[str, list[Fact]] = defaultdict(list)
-        for fact in self.facts:
-            head_lists[fact.relation_name].append(fact)
-            for a in fact.args:
-                if isinstance(a, str):
-                    arg_lists[a].append(fact)
+        # anywhere in the KB. The head→facts grouping is exactly `fbr`
+        # (built above); `arg_lists` is the per-arg grouping. Registry
+        # keys are unioned in so a relation declared with no facts yet
+        # still shows up.
         all_names: set[str] = (
-            set(head_lists)
+            set(fbr)
             | set(arg_lists)
             | set(self.relations)
             | set(self.rules)
@@ -360,7 +345,7 @@ class KnowledgeBase:
             n: NameRef(
                 name=n,
                 category=self._categorise_name(n),
-                as_head=tuple(head_lists.get(n, ())),
+                as_head=tuple(fbr.get(n, ())),
                 as_arg=tuple(arg_lists.get(n, ())),
             )
             for n in all_names
@@ -630,15 +615,9 @@ class KnowledgeBase:
         new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
         new.names = dict(self.names)
         new._negated_facts = set(self._negated_facts)
-        # T1.5.4.4 / T1.5.4.8 carry-over: configs and alive sets are
-        # immutable references; the fork inherits them as-is and
-        # `_explore` swaps in a pruned alive set before recursing.
-        # S1.5.7b: consume_stats is a *shared* mutable counter — all
-        # forks point at the same instance so every `_consume` call
-        # accumulates into the same per-solve total.
+        # T1.5.4.4 carry-over: `config` is an immutable reference; the
+        # fork inherits it as-is.
         new.config = self.config
-        new.alive = self.alive
-        new.consume_stats = self.consume_stats
         # S1.5a.17 — committed-hypotheses set is shared by reference
         # (root-only mutation; forks read for filtering).
         new.committed_hypotheses = self.committed_hypotheses
@@ -653,23 +632,25 @@ class KnowledgeBase:
         """Deep-ish archival copy. Used by :class:`SolutionRecord` so
         a satisfying-branch kb survives later mutations of root.
 
-        Differs from :meth:`fork` in three places:
+        Differs from :meth:`fork` in two places:
 
         - ``_nogoods`` is COPIED (fork shares by reference because
           live branches read concurrently; the snapshot is archival
           so we want isolation).
         - ``committed_hypotheses`` is COPIED for the same reason.
-        - Indexes are rebuilt from scratch via
-          :meth:`rebuild_indexes` (cheap on puzzle scale) rather
-          than shallow-copied — keeps the snapshot's indexes
-          internally consistent with its copied ``facts`` list
-          even if the source mutates afterwards.
+
+        The reverse indexes are shallow-copied exactly as in
+        :meth:`fork` (S1.7c.21): the source kb's indexes are already
+        consistent with its ``facts`` (every mutation goes through
+        :meth:`_index_fact`, which rebinds keys to fresh immutable
+        tuples), so the copy is byte-identical to a full
+        :meth:`rebuild_indexes` without paying for one per snapshot.
 
         Shares by reference (constant across the search, no
         mutation concern): ``relations``, ``rules``, ``hrules``,
-        ``classes``, ``query``, ``config``, ``alive``,
-        ``consume_stats``. (Since S1.7.23 there are no ``types`` /
-        ``instances`` registries to share or re-derive.)
+        ``classes``, ``query``, ``config``. (Since S1.7.23 there
+        are no ``types`` / ``instances`` registries to share or
+        re-derive.)
 
         Soundness invariant: a snapshotted kb's
         :meth:`derivation_dag` walks the same chain as the source
@@ -684,8 +665,6 @@ class KnowledgeBase:
         new.hrules    = self.hrules
         new.query     = self.query
         new.config    = self.config
-        new.alive     = self.alive
-        new.consume_stats = self.consume_stats
         # Equality classes: copy state (the parent's union-find
         # remains reachable via the roots that were created before
         # the snapshot).
@@ -695,9 +674,19 @@ class KnowledgeBase:
         new.facts = list(self.facts)
         new._nogoods = set(self._nogoods)
         new.committed_hypotheses = set(self.committed_hypotheses)
-        # Rebuild indexes (re-derives ``_negated_facts`` + every
-        # ``_*_by_*`` map from the copied ``facts`` list).
-        new.rebuild_indexes()
+        # S1.7c.21 — shallow-copy the in-place-maintained indexes (same
+        # invariant `fork` relies on: `_index_fact` rebinds each key to a
+        # fresh immutable tuple, never mutating in place, so a shallow copy
+        # can't leak across the source/snapshot boundary). Byte-identical
+        # to a full `rebuild_indexes()` from the copied `facts` list, but
+        # skips the per-snapshot rebuild on the warm solution path.
+        # `_rules_by_relation` is post-load-immutable → shared by reference.
+        new._rules_by_relation = self._rules_by_relation
+        new._facts_by_relation = dict(self._facts_by_relation)
+        new._rule_apps_by_rule = dict(self._rule_apps_by_rule)
+        new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
+        new.names = dict(self.names)
+        new._negated_facts = set(self._negated_facts)
         return new
 
     # ── Dunder ────────────────────────────────────────────────────

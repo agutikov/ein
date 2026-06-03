@@ -477,3 +477,46 @@ class TestKBSnapshot:
         snap = kb.snapshot()
         assert snap.relations is kb.relations
         assert snap.rules is kb.rules
+
+    def test_kb_snapshot_indexes_match_rebuild(self):
+        """S1.7c.21 — ``snapshot`` shallow-copies the in-place-maintained
+        indexes instead of calling ``rebuild_indexes``; the index *contents*
+        must equal a full rebuild from the copied ``facts`` list, including a
+        fact added incrementally via ``_index_fact`` after load.
+
+        (The ``names`` key *order* legitimately differs — the shallow copy
+        keeps deterministic insertion order, a rebuild uses set-iteration
+        order, which is per-process random anyway; only contents are
+        semantic, so this asserts ``==`` not key order.)
+        """
+        from ein_bot.ir import parse
+        from ein_bot.kb import Provenance
+        text = """
+        (type T)
+        (instance a T) (instance b T)
+        (relation r T T)
+        (relation s T T)
+        (r a b :source "(1)")
+        """
+        kb = KnowledgeBase.from_ir(parse(text))
+        # Exercise the incremental index path so the snapshot copies a
+        # post-`_index_fact` state, not just a freshly-rebuilt one.
+        derived = Fact(
+            relation_name="s", args=("b", "a"),
+            layer=Layer.REASONING,
+            provenance=Provenance.from_rule(rule="r-to-s"),
+        )
+        kb.add_fact(derived)
+        kb._index_fact(kb.facts[-1])
+
+        snap = kb.snapshot()
+        # Oracle: a second snapshot whose indexes are fully rebuilt.
+        oracle = kb.snapshot()
+        oracle.rebuild_indexes()
+
+        assert snap._facts_by_relation == oracle._facts_by_relation
+        assert snap._rule_apps_by_rule == oracle._rule_apps_by_rule
+        assert snap._rule_apps_on_relation == oracle._rule_apps_on_relation
+        assert snap._negated_facts == oracle._negated_facts
+        assert snap._rules_by_relation == oracle._rules_by_relation
+        assert snap.names == oracle.names
