@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from .strings import escape_string_literal
 from .types import (
     Atom,
     Int,
@@ -48,15 +49,7 @@ def _atom_text(node: Atom | Var | Wildcard) -> str:
 
 
 def _string_text(node: String) -> str:
-    body = (
-        node.value
-        .replace("\\", "\\\\")
-        .replace('"', '\\"')
-        .replace("\n", "\\n")
-        .replace("\t", "\\t")
-        .replace("\r", "\\r")
-    )
-    return f'"{body}"'
+    return escape_string_literal(node.value)
 
 
 def _range_text(node: Range) -> str:

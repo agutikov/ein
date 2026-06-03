@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from ..ir.strings import escape_string_literal
 from ..ir.types import Atom, KwPair, SForm, String
 from ..ir.types import Int as IRInt
 from ..render.dot_util import fact_label
@@ -64,7 +65,7 @@ def _arg_to_sexpr(a: object) -> str:
     # Atom-safe names pass through; anything else becomes a string literal.
     if s and all(c.isalnum() or c in "-_*?." for c in s) and not s[0].isdigit():
         return s
-    return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    return escape_string_literal(s)
 
 
 def _fact_to_sexpr(rel: str, args: tuple) -> str:
@@ -86,7 +87,7 @@ def step_to_ir(step: TraceStep) -> str:
         binds = " ".join(f"?{k} {_arg_to_sexpr(v)}" for k, v in step.bindings.items())
         parts.append(f":bind ({binds})")
     if step.why:
-        parts.append(':why "' + step.why.replace("\\", "\\\\").replace('"', '\\"') + '"')
+        parts.append(f":why {escape_string_literal(step.why)}")
     return " ".join(parts) + ")"
 
 

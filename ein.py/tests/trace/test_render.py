@@ -153,6 +153,33 @@ def test_trace_ast_round_trips():
         assert b.bindings == s.bindings
 
 
+def test_trace_control_chars_escaped_on_emit():
+    """S1.7c.32 — a `why` (or string fact-arg) containing \\n / \\t must be
+    EMITTED backslash-escaped, not as a raw control char. step_to_ir and the
+    fact-arg escaper previously escaped only \\ and " (trace/ast.py), so such
+    a string did NOT round-trip (the parser unescapes the full set). Asserts
+    on emitted BYTES — a value round-trip alone is green pre-fix and proves
+    nothing.
+    """
+    # `parse`, `TraceStep`, `parse_trace_steps`, `trace_to_ir` are
+    # module-level; only the submodule-private escaper sites need importing.
+    from ein_bot.trace.ast import _fact_to_sexpr, step_to_ir
+    step = TraceStep(
+        n=1, rule="r", premises=(("p", ("a",)),), derived=("q", ("a",)),
+        why='first\nsecond\twith "quote" and \\slash',
+    )
+    line = step_to_ir(step)
+    # Emitted bytes: control chars escaped; no raw newline/tab in the output.
+    assert r"\n" in line and r"\t" in line
+    assert "\n" not in line and "\t" not in line
+    # Whole trace round-trips the value exactly (parser unescapes).
+    (form,) = parse(trace_to_ir([step]))
+    (back,) = parse_trace_steps(form)
+    assert back.why == step.why
+    # The fact-arg escaper (ast.py:67) is fixed too.
+    assert _fact_to_sexpr("note", ("a\nb",)) == r'(note "a\nb")'
+
+
 # ── inline dot slices are valid ────────────────────────────────────
 
 @pytest.mark.skipif(not _HAVE_DOT, reason="graphviz `dot` not installed")
