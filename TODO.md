@@ -82,13 +82,13 @@
 ;;                                         s1.5.3_canonicalisation.md ("Open questions parked here"
 ;;                                         + Q-S1.5.3.A on alive-hyps soundness, with cross-ref
 ;;                                         to E22)
-;;   - P1.10 - kernel docs           → plans/m1_core_graph_reasoning/p1.10_kernel_docs/README.md
+;;   - P1.20 - kernel docs           → plans/m1_core_graph_reasoning/p1.20_kernel_docs/README.md
 ;;                                     (NEW phase placeholder covering 8 themes: IR 4-level
 ;;                                     split, kernel API ref, stdlib API ref, inference docs,
 ;;                                     user-vs-dev split, architecture overview, docs/index →
 ;;                                     docs/lib rename, ein-model atoms-vs-objects + 4-level KB
 ;;                                     refinement)
-;;                                     + plans/m1_core_graph_reasoning/README.md (P1.10 row)
+;;                                     + plans/m1_core_graph_reasoning/README.md (P1.20 row)
 ;;   - M1b : GUI                     → plans/m1b_gui/README.md (NEW placeholder; three views
 ;;                                     — ein-lang code, ein-graph, branches — with composable
 ;;                                     2-/3-pane layouts; stack choice / state-sync open)
@@ -137,8 +137,8 @@
 ;;                                    B4 unsat-core fingerprint / consistent
 ;;                                    hashing; B5 fact-participation indexes
 ;;                                    for re-saturation)
-;;   - P1.10 features × config       → plans/m1_core_graph_reasoning/
-;;     matrix + Ein API + Zebra        p1.10_kernel_docs/README.md (three new
+;;   - P1.20 features × config       → plans/m1_core_graph_reasoning/
+;;     matrix + Ein API + Zebra        p1.20_kernel_docs/README.md (three new
 ;;     guide                           Themes added: I features-table with 3600s
 ;;                                    bench matrix; J Python embedding API;
 ;;                                    K rule-by-rule Zebra walkthrough with

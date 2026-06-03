@@ -99,7 +99,7 @@ S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
 - [`CLAUDE.md`](../../../CLAUDE.md) — needs an update once the
   package name changes (the agent guide references `ein.py/` and
   `ein_bot/` paths).
-- [P1.10 Theme G](../p1.10_kernel_docs/README.md) — sibling
+- [P1.20 Theme G](../p1.20_kernel_docs/README.md) — sibling
   housekeeping (rename `docs/index/` → `docs/lib/`); same
   scheduling concerns (do at a quiescent point).
 - [`pyproject.toml`](../../../ein.py/pyproject.toml) — needs
@@ -107,4 +107,5 @@ S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
 - The user's TODO.md historically called this "P1.6" — that label
   collided with [P1.6 rendering + trace](../p1.6_rendering_and_trace/README.md),
   so the phase was numbered P1.11 on intake (the next free M1 slot
-  after P1.10 kernel-docs).
+  after the then-P1.10 kernel-docs, since renumbered to P1.20 so docs
+  sort last).

@@ -1,4 +1,4 @@
-# P1.10 — Kernel documentation
+# P1.20 — Kernel documentation
 
 **Estimate:** TBD per theme.
 **Status:** **placeholder** — created 2026-05-24 from the
@@ -16,7 +16,7 @@ M2b (paper) by giving them a stable doc surface to point at.
 The existing kernel docs at [`docs/kernel/`](../../../docs/kernel/)
 are organised into three sub-trees (`ir/01-ein-graph/`,
 `ir/02-data-model/`, `ir/03-ein-lang/`) plus a stub
-`inference/`. P1.10 takes that structure further:
+`inference/`. P1.20 takes that structure further:
 
 - splits data-model into idiomatic vs python-impl,
 - adds inference-engine docs to match,
@@ -30,17 +30,17 @@ are organised into three sub-trees (`ir/01-ein-graph/`,
 
 | ID         | Title                                                                       | File                                                                  |
 |------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------|
-| S1.10.A1   | IR docs: split data-model into idiomatic + python-impl                      | [s1.10.a1_ir_doc_split.md](s1.10.a1_ir_doc_split.md)                  |
-| S1.10.A2   | Idiomatic data-model backfill                                               | [s1.10.a2_idiomatic_backfill.md](s1.10.a2_idiomatic_backfill.md)      |
-| S1.10.B    | Kernel API reference                                                        | [s1.10.b_kernel_api_reference.md](s1.10.b_kernel_api_reference.md)    |
-| S1.10.C    | Stdlib API reference                                                        | [s1.10.c_stdlib_api_reference.md](s1.10.c_stdlib_api_reference.md)    |
-| S1.10.D    | Inference engine documentation                                              | [s1.10.d_inference_engine_docs.md](s1.10.d_inference_engine_docs.md)  |
-| S1.10.E    | User vs developer docs split                                                | [s1.10.e_user_vs_dev_split.md](s1.10.e_user_vs_dev_split.md)          |
-| S1.10.F    | Architecture overview + diagrams                                            | [s1.10.f_architecture_overview.md](s1.10.f_architecture_overview.md)  |
-| S1.10.G    | `docs/index/` → `docs/lib/` rename                                          | [s1.10.g_docs_index_rename.md](s1.10.g_docs_index_rename.md)          |
-| S1.10.H1   | Ein-model: atoms vs objects                                                 | [s1.10.h1_atom_vs_object.md](s1.10.h1_atom_vs_object.md)              |
-| S1.10.H2   | Ein-model: 4-level KB representation                                        | [s1.10.h2_four_level_kb.md](s1.10.h2_four_level_kb.md)                |
-| S1.10.H3   | Ein-model: self-describing KB types                                         | [s1.10.h3_self_describing_kb.md](s1.10.h3_self_describing_kb.md)      |
+| S1.20.A1   | IR docs: split data-model into idiomatic + python-impl                      | [s1.20.a1_ir_doc_split.md](s1.20.a1_ir_doc_split.md)                  |
+| S1.20.A2   | Idiomatic data-model backfill                                               | [s1.20.a2_idiomatic_backfill.md](s1.20.a2_idiomatic_backfill.md)      |
+| S1.20.B    | Kernel API reference                                                        | [s1.20.b_kernel_api_reference.md](s1.20.b_kernel_api_reference.md)    |
+| S1.20.C    | Stdlib API reference                                                        | [s1.20.c_stdlib_api_reference.md](s1.20.c_stdlib_api_reference.md)    |
+| S1.20.D    | Inference engine documentation                                              | [s1.20.d_inference_engine_docs.md](s1.20.d_inference_engine_docs.md)  |
+| S1.20.E    | User vs developer docs split                                                | [s1.20.e_user_vs_dev_split.md](s1.20.e_user_vs_dev_split.md)          |
+| S1.20.F    | Architecture overview + diagrams                                            | [s1.20.f_architecture_overview.md](s1.20.f_architecture_overview.md)  |
+| S1.20.G    | `docs/index/` → `docs/lib/` rename                                          | [s1.20.g_docs_index_rename.md](s1.20.g_docs_index_rename.md)          |
+| S1.20.H1   | Ein-model: atoms vs objects                                                 | [s1.20.h1_atom_vs_object.md](s1.20.h1_atom_vs_object.md)              |
+| S1.20.H2   | Ein-model: 4-level KB representation                                        | [s1.20.h2_four_level_kb.md](s1.20.h2_four_level_kb.md)                |
+| S1.20.H3   | Ein-model: self-describing KB types                                         | [s1.20.h3_self_describing_kb.md](s1.20.h3_self_describing_kb.md)      |
 
 Suggested order: H1 → H2 → H3 (vocabulary first, then schema)
 ∥ A1 → A2 (data-model split, then backfill); B + C + D can
@@ -78,10 +78,10 @@ language wants the abstract shapes without Python noise.
 
 Likely stages:
 
-- **S1.10.A1** — split the existing `02-data-model/` into
+- **S1.20.A1** — split the existing `02-data-model/` into
   idiomatic (collections, indexes, algorithms over the data) and
   python-impl (modules, classes, file layout).
-- **S1.10.A2** — backfill the idiomatic level with mathematical
+- **S1.20.A2** — backfill the idiomatic level with mathematical
   pseudocode / diagrams for the index structures.
 
 ### Theme B — Kernel API reference
@@ -89,7 +89,7 @@ Likely stages:
 Today the kernel's **primitives and semantically-loaded atoms**
 (`rule`, `relation`, `T`, `not`, `eq`, `neq`, `closed`, `absent`,
 `forall`, `open`, `false`, `true`, …) are documented piecemeal
-across the three sub-trees + the engine source. P1.10 ships a
+across the three sub-trees + the engine source. P1.20 ships a
 dedicated reference page that lists each, its arity / signature,
 its semantic role, and its rendering in `(rules …)` / `(facts …)`
 contexts.
@@ -109,7 +109,7 @@ ships the stdlib content — until then this is just an outline.
 ### Theme D — Inference engine documentation
 
 Today's [`docs/kernel/inference/`](../../../docs/kernel/inference/)
-is a stub. P1.10 fills it with two layers matching Theme A:
+is a stub. P1.20 fills it with two layers matching Theme A:
 
 - **Idiomatic** — collections (the rule-cache, the activator
   index, the firing queue), indexes (`_facts_by_relation`,
@@ -230,11 +230,11 @@ F5 (rules-as-data) and F1b (logical formulation).
 
 Likely stages:
 
-- **S1.10.H1** — write up the atom/object distinction; update
+- **S1.20.H1** — write up the atom/object distinction; update
   glossary; update `03_ein_model.md` §2/§3.
-- **S1.10.H2** — write up the 4-level representation; identify
+- **S1.20.H2** — write up the 4-level representation; identify
   which existing model-doc files it touches.
-- **S1.10.H3** — sketch what "self-describing KB types in ein
+- **S1.20.H3** — sketch what "self-describing KB types in ein
   lang" looks like (probably a `(meta …)` block or stdlib file).
   Bears on F5.
 
@@ -321,7 +321,7 @@ graph pairs reuse the same rule renderer.
 ## Out of scope
 
 - Anything that *changes the kernel semantics* — that work
-  belongs in M1's earlier phases. P1.10 is *documentation* of the
+  belongs in M1's earlier phases. P1.20 is *documentation* of the
   shipped kernel.
 - Multi-language SDK docs — Python is the only implementation
   through M1; if/when a second implementation lands, the

@@ -111,7 +111,7 @@ For each kernel mechanism, the audit asks:
    the feature as a stdlib rule pack, drop the engine code.
 4. If "engine is strictly more efficient", the feature stays in
    the kernel — but its existence is documented as a
-   load-bearing engine primitive (composes with P1.10 Theme I
+   load-bearing engine primitive (composes with P1.20 Theme I
    features-table).
 
 Sub-track of F5 because the eventual format of the audit
@@ -134,7 +134,7 @@ rules-as-data exercise. Candidate kernel features to audit:
 - **NAF re-eval** — fire-time check of `AbsentGuard`. This
   is probably load-bearing engine; document as such.
 
-Promotion trigger: an M1-tail or P1.10 cycle that's
+Promotion trigger: an M1-tail or P1.20 cycle that's
 audit-friendly (no active design pressure on the kernel).
 The output is (a) a smaller kernel, (b) more rules in the
 stdlib, (c) Theme I features-table cross-references the

@@ -67,8 +67,8 @@ Concretely, M1 ships:
 | P1.8  | Ein-language modules + standard library (imports / stdlib rules / relation-algebra / macros; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; perf split out to P1.8a 2026-06-02) |
 | P1.8a | Performance (COW fork / version-COW / atom compression / fingerprinting / participation indexes / negative-fact volume; placeholder) | TBD | [`p1.8a_performance/`](p1.8a_performance/) (split from P1.8 2026-06-02 from TODO.md) |
 | P1.9  | Hypothesis-loop follow-ups (E1-E23 catalog; placeholder) | TBD | [`p1.9_hypothesis_loop_followups/`](p1.9_hypothesis_loop_followups/) |
-| P1.10 | Kernel documentation (IR 4-level split / user-vs-dev / architecture / `docs/index` → `docs/lib` rename / ein-model atoms-vs-objects refinement; placeholder) | TBD | [`p1.10_kernel_docs/`](p1.10_kernel_docs/) (created 2026-05-24 from TODO.md) |
 | P1.11 | Package + CLI restructure (`ein-bot`/`ein_bot` → `ein`, merge `ein.py/demo/` into the package, split `cli.py` into a folder; placeholder) | TBD | [`p1.11_package_restructure/`](p1.11_package_restructure/) (created 2026-05-24 from TODO.md) |
+| P1.20 | Kernel documentation (IR 4-level split / user-vs-dev / architecture / `docs/index` → `docs/lib` rename / ein-model atoms-vs-objects refinement; placeholder) | TBD | [`p1.20_kernel_docs/`](p1.20_kernel_docs/) (created 2026-05-24 from TODO.md; **renumbered P1.10 → P1.20 so docs sort last**, leaving P1.12–P1.19 for future phases) |
 
 Phases run roughly sequentially. P1.6 can start as soon as P1.2 is
 in (the renderer only needs the data model); P1.7 is the integration
@@ -83,7 +83,7 @@ transcribes the reference. **P1.7c** (created 2026-06-02 from
 TODO.md) is the surface-syntax continuation of P1.7's purity arc —
 retire the `(rules …)`/`(ontology …)`/`(facts …)` block heads for a
 flat-form grammar (facts = any head not in the closed declarator set).
-**P1.7c, P1.8, P1.8a, P1.9 – P1.11 are placeholders.** P1.8
+**P1.7c, P1.8, P1.8a, P1.9, P1.11, P1.20 are placeholders.** P1.8
 parks the **ein-language + standard-library** themes — modules+imports
 (the original Q30 deferral from the 2026-05-20 P1.3 review, broadened
 2026-05-22 to own the standard library: closure auto-inference deferred
@@ -98,13 +98,15 @@ parks the E1-E23
 hypothesis-loop catalog spun out of S1.5.4 on 2026-05-21 (closure
 refinements, CDCL-inspired learning, search heuristics, CSP-style
 pre-processing, engineering/UX), plus the 2026-05-24 mode-taxonomy
-+ state-hash-with-hyps additions (E21-E23). P1.10 parks the
-kernel-doc reorg surfaced 2026-05-24 (IR 4-level split,
-user-vs-dev separation, architecture diagrams, `docs/index/` →
-`docs/lib/` rename, ein-model atoms-vs-objects refinement).
-P1.11 parks the package + CLI rename also surfaced 2026-05-24
-(`ein-bot` → `ein`, demo merge, CLI folder split). None of
-P1.7c / P1.8 – P1.11 gates M1 acceptance.
++ state-hash-with-hyps additions (E21-E23).
+P1.11 parks the package + CLI rename surfaced 2026-05-24
+(`ein-bot` → `ein`, demo merge, CLI folder split). P1.20 — the
+last phase, **renumbered from P1.10 so docs ship after all
+implementation** — parks the kernel-doc reorg also surfaced
+2026-05-24 (IR 4-level split, user-vs-dev separation, architecture
+diagrams, `docs/index/` → `docs/lib/` rename, ein-model
+atoms-vs-objects refinement). None of P1.7c, P1.8 – P1.11, P1.20
+gates M1 acceptance.
 
 ## Acceptance
 

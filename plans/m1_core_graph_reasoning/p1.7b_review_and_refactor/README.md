@@ -7,7 +7,7 @@
 **Blocks:** nothing for M1 (M1 shipped via P1.7a). **Recommended before**
 [M1a — Rust port](../../m1a_rust/README.md) (don't transcribe a 621-line fused
 function or dead code into `ein.rs`) and
-[P1.10 — kernel docs](../p1.10_kernel_docs/README.md) (cleaner code → simpler
+[P1.20 — kernel docs](../p1.20_kernel_docs/README.md) (cleaner code → simpler
 docs).
 **Created:** 2026-06-01, from a review of the implementation as it stands after
 the M1 gate.
