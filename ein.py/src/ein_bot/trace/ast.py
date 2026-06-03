@@ -98,23 +98,77 @@ def trace_to_ir(steps: list[TraceStep]) -> str:
 
 # ── parse back ─────────────────────────────────────────────────────
 
+def _atom_or_value(x: object) -> object:
+    """One IR scalar's Python value: ``Atom`` → name, ``Int`` / ``String``
+    → value, anything else → ``str(x)``. Shared by the fact-ref and the
+    binding parsers (S1.7c.29)."""
+    if isinstance(x, Atom):
+        return x.name
+    if isinstance(x, (IRInt, String)):
+        return x.value
+    return str(x)
+
+
 def _sform_to_factref(form: SForm) -> FactRef:
     rel = form.head.name if isinstance(form.head, Atom) else str(form.head)
     args: list = []
     for a in form.args:
         if isinstance(a, KwPair):
             continue
-        if isinstance(a, SForm):
-            args.append(_sform_to_factref(a))
-        elif isinstance(a, Atom):
-            args.append(a.name)
-        elif isinstance(a, IRInt):
-            args.append(a.value)
-        elif isinstance(a, String):
-            args.append(a.value)
-        else:
-            args.append(str(a))
+        args.append(
+            _sform_to_factref(a) if isinstance(a, SForm) else _atom_or_value(a)
+        )
     return (rel, tuple(args))
+
+
+def _parse_using(val: SForm) -> tuple[FactRef, ...]:
+    """Premises from a `:using` value — an `(and …)` of facts, or one fact."""
+    if val.head.name == "and":
+        return tuple(_sform_to_factref(c) for c in val.args
+                     if isinstance(c, SForm))
+    return (_sform_to_factref(val),)
+
+
+def _parse_bindings(val: SForm) -> dict[str, str]:
+    """Variable bindings from a `:bind (?v value …)` flat pair list."""
+    items = [val.head, *val.args]
+    bindings: dict[str, str] = {}
+    for i in range(0, len(items) - 1, 2):
+        var_name = getattr(items[i], "name", None)
+        if var_name:
+            bindings[var_name] = _atom_or_value(items[i + 1])
+    return bindings
+
+
+def _parse_step(ev: SForm, default_n: int) -> TraceStep:
+    """One `(step …)` form → a :class:`TraceStep` (serialisable core only).
+
+    Keyed off a ``{kw: value}`` map rather than an ``if/elif`` ladder over
+    the arg sequence (S1.7c.29) — each field is a flat, guarded lookup, and
+    a malformed value (wrong IR node type for its key) falls back to the
+    field default exactly as the old ladder's per-arm ``isinstance`` guards
+    did.
+    """
+    name = next((a.name for a in ev.args if isinstance(a, Atom)), "s0")
+    n = int(name[1:]) if name[1:].isdigit() else default_n
+    kw = {a.key.name: a.value for a in ev.args if isinstance(a, KwPair)}
+    rule_val = kw.get("rule")
+    rule = (
+        "" if rule_val is None
+        else rule_val.name if isinstance(rule_val, Atom)
+        else str(rule_val)
+    )
+    using, derives, bind, why = (
+        kw.get("using"), kw.get("derives"), kw.get("bind"), kw.get("why"),
+    )
+    return TraceStep(
+        n=n,
+        rule=rule,
+        premises=_parse_using(using) if isinstance(using, SForm) else (),
+        derived=_sform_to_factref(derives) if isinstance(derives, SForm) else ("", ()),
+        bindings=_parse_bindings(bind) if isinstance(bind, SForm) else {},
+        why=why.value if isinstance(why, String) else "",
+    )
 
 
 def parse_trace_steps(form: SForm) -> list[TraceStep]:
@@ -125,47 +179,8 @@ def parse_trace_steps(form: SForm) -> list[TraceStep]:
     """
     steps: list[TraceStep] = []
     for ev in form.args:
-        if not isinstance(ev, SForm) or ev.head.name != "step":
-            continue
-        name = next((a.name for a in ev.args if isinstance(a, Atom)), "s0")
-        n = int(name[1:]) if name[1:].isdigit() else len(steps) + 1
-        rule = ""
-        premises: tuple[FactRef, ...] = ()
-        derived: FactRef = ("", ())
-        bindings: dict[str, str] = {}
-        why = ""
-        for arg in ev.args:
-            if not isinstance(arg, KwPair):
-                continue
-            key, val = arg.key.name, arg.value
-            if key == "rule":
-                rule = val.name if isinstance(val, Atom) else str(val)
-            elif key == "using" and isinstance(val, SForm):
-                if val.head.name == "and":
-                    premises = tuple(_sform_to_factref(c) for c in val.args
-                                     if isinstance(c, SForm))
-                else:
-                    premises = (_sform_to_factref(val),)
-            elif key == "derives" and isinstance(val, SForm):
-                derived = _sform_to_factref(val)
-            elif key == "why" and isinstance(val, String):
-                why = val.value
-            elif key == "bind" and isinstance(val, SForm):
-                flat = [val.head, *val.args]
-                names = [x for x in flat]
-                i = 0
-                while i + 1 < len(names):
-                    var, value = names[i], names[i + 1]
-                    var_name = getattr(var, "name", None)
-                    if var_name:
-                        bindings[var_name] = (
-                            value.name if isinstance(value, Atom)
-                            else value.value if isinstance(value, (IRInt, String))
-                            else str(value)
-                        )
-                    i += 2
-        steps.append(TraceStep(n=n, rule=rule, premises=premises, derived=derived,
-                               bindings=bindings, why=why))
+        if isinstance(ev, SForm) and ev.head.name == "step":
+            steps.append(_parse_step(ev, len(steps) + 1))
     return steps
 
 
