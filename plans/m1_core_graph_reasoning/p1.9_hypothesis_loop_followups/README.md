@@ -111,8 +111,8 @@ The R1-R4 rejected entries stay in the README catalog only.
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| 📅 E16 | Lazy `root_alive` materialisation | keep the generator stream-based instead of frozenset-materialised; saves memory on huge puzzles | S | L (memory) | T1.5.4.5 alternative |
-| 📅 E17 | Engine-level branch budget       | move `bench_solve --max-nodes` into `solve()` itself; surface as `Verdict.aborted` flag | S | L (UX) | bench_solve already has the wrapper |
+| 📅 E16 | Lazy alive-set materialisation | stream `_compute_alive` instead of materialising a `frozenset[FactId]`; saves memory on huge puzzles. **Premise re-grounded** — no `root_alive`, and `state_hash` doesn't use the alive set ([E16 § Re-grounding](s1.9.e16_lazy_root_alive.md#re-grounding-2026-06-03)) — so the win is smaller than first framed | S | L (memory) | T1.5.4.5 alternative |
+| 📅 E17 | Engine-level branch budget       | **largely shipped** — `solve()` already has `max_enterings` + `max_time`, raising `BudgetExceededError` on abort (wrapper: `demo/bench_monotonic.py --max-enterings`). Residual: surface abort as a *verdict* (`Aborted`/flag), not only an exception — see [E17 § Already shipped](s1.9.e17_branch_budget.md#already-shipped-2026-06-03) | S | L (UX) | already in the engine |
 | 📅 E18 | Rule-applicability pruning       | per puzzle, drop rules whose `:match` references relations absent from the KB | S | L | trim engine work |
 | 📅 E19 | Unsat-core minimisation          | shrink the unsat-core to a minimal subset before storing on the dead leaf — purely for trace readability | M | L (UX only) | P1.6 trace renderer; composes with E6 |
 | 📅 E20 | Conflict-cache cross-call        | persist `(not h)` learnings across `solve()` calls when the same puzzle re-runs | M | L | session-scoped speedup; composes with [S1.5.7](../p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md) |
