@@ -151,36 +151,60 @@ class MonotonicStats(_BaseStats):
 @dataclass
 class _LatticeLoopState:
     """Mutable accumulator threaded through :func:`_explore_layers`
-    for ``entry in ("gaps", "contradictions")``.
+    for ALL THREE entries (``solve`` / ``gaps`` / ``contradictions``).
+    One instance is built at the top of :func:`_explore_layers` and
+    threaded via :attr:`_LoopCtx.lstate`; each entry mutates and reads
+    only its own subset (below), so the return sites can hand a single
+    bag to :func:`verdict_of` (solve) or
+    :func:`_finalise_lattice_verdict` (gaps / contradictions).
 
-    Bundles every lattice-specific local that the per-candidate
-    loop mutates so the dozen return sites in the outer function
-    can hand a single bag to :func:`_finalise_lattice_verdict`.
+    The fields do NOT partition cleanly by entry — ``dead_commitments``
+    is shared by {solve, contradictions}, ``kb_index`` by {gaps,
+    contradictions}, and ``alive_at_end_tuple`` is written by all three
+    (empty triple-intersection) — so this stays ONE class, not an
+    entry-keyed split (S1.7c.15, assessed + rejected): the field sets
+    form a Venn lattice that a class tree can't express, and any split
+    forces the cross-entry mutators (:func:`_handle_dead`,
+    :func:`_record_setnode`, :func:`_finalise_lattice_verdict`) onto a
+    Union/Protocol observationally identical to this class — while
+    turning the structurally-safe unconditional writes (``:1222`` /
+    ``_handle_dead``) into a routing decision that could silently
+    misroute a verdict.
 
-    Field semantics:
+    Field → owning entry (every field is read by ≥1 entry):
 
-    - :attr:`solutions` — every satisfying commitment encountered
-      under gaps (each carries a :meth:`KnowledgeBase.snapshot`
-      of the fork's saturated kb so root-side mutation after
-      return doesn't corrupt the branch view).
-    - :attr:`dead_commitments` — every refuted commitment under
-      contradictions (S1.5b.23 wires the contradictions writes;
-      gaps leaves this empty by contract).
-    - :attr:`kb_index` — per-SetNode storage. Empty when
-      ``store_lattice=False``. Key encoding differs by entry:
-      under gaps it is :func:`hash` of the canonical commitment
-      tuple (so distinct commitments stay separate per the GAPS
-      contract); under contradictions it is
-      :func:`state_hash` of the post-saturation kb (so distinct
-      commitments collapse on state-hash collision).
-    - :attr:`alive_at_end_tuple` — the size-N surviving
-      commitments captured at the last Phase 2 layer iff the
-      depth cap was reached; ``()`` otherwise.
-    - :attr:`state_hash_merges` — counter ticked whenever the
-      contradictions-side dedup folds a fresh commitment into an
-      existing :class:`SetNode`.
-    - :attr:`root_was_solved` — guard against double-recording
-      the root-side solution in gaps Phase 2.
+    - :attr:`solution_nodes` / :attr:`truncated` — **SOLVE only**
+      (P1.7a). Deduped solution nodes (``state_hash`` → record); written
+      by :func:`_record_node`, read by :func:`verdict_of` /
+      :func:`_finalise_solve` / the ``stop_after`` + depth-cap gates.
+      ``truncated`` records a ``stop_after`` / depth-cap cut (→
+      ``stats.exhausted``).
+    - :attr:`solutions` / :attr:`root_was_solved` — **GAPS only**.
+      :attr:`solutions` is every satisfying commitment (each carries a
+      :meth:`KnowledgeBase.snapshot` so root-side mutation after return
+      doesn't corrupt the branch view), read by
+      :func:`_finalise_lattice_verdict`; :attr:`root_was_solved` guards
+      against double-recording the root-side solution in Phase 2.
+    - :attr:`dead_commitments` — **SOLVE + CONTRADICTIONS**. Every
+      refuted commitment; written by :func:`_root_dead` /
+      :func:`_handle_dead` (guard: ``entry ∈ {solve, contradictions}``),
+      read by :func:`verdict_of` (solve ``k=0`` core) and
+      :func:`_finalise_lattice_verdict` (contradictions core). Gaps
+      leaves it empty by contract.
+    - :attr:`kb_index` — **GAPS + CONTRADICTIONS** (``store_lattice``
+      only). Per-SetNode storage; empty when ``store_lattice=False``.
+      Key encoding differs by entry: under gaps it is :func:`hash` of
+      the canonical commitment tuple (distinct commitments stay
+      separate per the GAPS contract); under contradictions it is
+      :func:`state_hash` of the post-saturation kb (distinct
+      commitments collapse on a state-hash collision).
+    - :attr:`state_hash_merges` — **CONTRADICTIONS only**. Counter
+      ticked whenever the contradictions-side dedup folds a fresh
+      commitment into an existing :class:`SetNode`.
+    - :attr:`alive_at_end_tuple` — written by **all three** at the last
+      Phase 2 layer iff the depth cap was reached (``()`` otherwise; no
+      entry guard); read only by the lattice finaliser (gaps /
+      contradictions).
     """
 
     solutions:         list[SolutionRecord] = field(default_factory=list)
