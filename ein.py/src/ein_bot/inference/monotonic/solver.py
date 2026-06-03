@@ -98,7 +98,7 @@ from ein_bot.inference.monotonic.state_dump import (
 )
 from ein_bot.inference.nogoods import emit_nogood
 from ein_bot.inference.saturator import Saturator
-from ein_bot.inference.solution import is_solution_node, open_hypotheses
+from ein_bot.inference.solution import complete, open_hypotheses
 from ein_bot.inference.verdict import (
     Ambiguity,
     Contradiction,
@@ -1050,8 +1050,14 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
             # (consistent ∧ complete), NOT a goal-pattern match —
             # this is what excludes the partial dead-end and what
             # forces incomplete goal-matchers to keep expanding.
+            # F-ENG-12: consistency is already established on this ALIVE
+            # branch (try_commitment_set returns kind="alive" only after
+            # its post-saturation ContradictionDetector.detect() came
+            # back empty, and result.kb is that unmutated fork), so check
+            # completeness directly — is_solution_node would re-run a
+            # full detect() on a kb already proved consistent.
             solved = (
-                is_solution_node(result.kb) if entry == "solve"
+                complete(result.kb) if entry == "solve"
                 else is_solved(result.kb, Mode.SOLVE)
             )
 
