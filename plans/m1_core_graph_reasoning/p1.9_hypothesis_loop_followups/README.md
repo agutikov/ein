@@ -24,9 +24,10 @@ moved from S1.5.4 on 2026-05-21. Each entry promotes to a
 are met; until then this README is the authoritative spec.
 
 **Legend.**
-*Status:* 📅 parked (awaiting activation signal) · ❌ rejected
-for M1 (parked here for visibility; will not promote without a
-fundamental scope change).
+*Status:* 📅 parked (awaiting activation signal) · ✅ resolved
+(closed by shipped work) · ⛔ superseded (overtaken by a later
+design; kept for the record) · ❌ rejected for M1 (parked here for
+visibility; will not promote without a fundamental scope change).
 *Effort:* S (≤ ½ day) · M (1-3 days) · L (> 3 days).
 *Value:* H / M / L — node-count reduction on the demo suite,
 with the qualifier "after the S1.5.4 ship lands" where relevant.
@@ -78,7 +79,7 @@ The R1-R4 rejected entries stay in the README catalog only.
 | 📅 E1 | `(functional R)` activator       | weaker than `single-parent`; just declares R is a function on its slot-0 | S | M | DL `funcProp` |
 | 📅 E2 | `(at-most-one R slot)` activator | per-slot cardinality declaration; closure derives when every leaf at that slot is occupied | M | M | CSP cardinality |
 | 📅 E3 | `(no-hypotheses R)` activator    | distinct from `(closed R)`: R stays open-world but the engine never *guesses* on it. For observational data | S | L | engineering convenience |
-| 📅 E4 | `(symmetry-class R T)`           | declare T-instances interchangeable under R; collapse to canonical representative at gen-time, replacing the A5 emit-both hack | M | M | CSP value-symmetry breaking ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
+| 📅 E4 | `(symmetry-class R T)`           | declare T-instances interchangeable under R; collapse to a canonical representative at gen-time. (The "A5 emit-both hack" it once replaced was removed by [S1.7.24](../p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md); now an *optional* value-symmetry optimisation over a user `(rule symmetric)`) | M | M | CSP value-symmetry breaking ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
 | 📅 E5 | Static rule-conflict pre-analysis | precompute `(relation, arg-position)` mutex pairs from the rule set; drop hypotheses violating mutex at gen-time | M | M | rule-set sufficiency, [F7 §C](../../followups/f7_rule_induction.md) |
 
 ### Conflict-driven learning (SAT/CDCL-inspired)
@@ -120,9 +121,9 @@ The R1-R4 rejected entries stay in the README catalog only.
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| 📅 E21 | `solve` vs `prove` mode split  | `Mode.SOLVE` returns on first alive verdict (uniqueness undetermined; faster); `Mode.PROVE` keeps the current exhaustive semantics (every alive branch fully explored, returns `Solution \| Ambiguity \| Contradiction` with uniqueness witness). Current `Mode.SOLVE` is *operationally* PROVE under [S1.5.3 alive-branch termination](../p1.5_hypothesis_loop/s1.5.3_canonicalisation.md). Split surfaces the user's "find any answer" intent | M | M (UX) | [Idea 03 — three task classes](../../../docs/ideas/03-three-task-classes.md); current `Mode` enum in `inference/solver.py` |
-| 📅 E22 | Alive-hyps in canonical state hash | Open question: can two different paths reach the same post-saturation KB but carry **different alive hypothesis sets**? If yes, S1.5.3's state-hash dedup is **unsound** for the alive-inherit optimisation (T1.5.4.5/8). Fix: extend `state_hash` to include the alive set; collapse only paths whose `(state, alive)` pair matches. Effort is the analysis + the fix together — the analysis may show the case is impossible under M1's monotonic semantics, in which case ship as a paper-form proof rather than a code change | M | M (correctness) | [S1.5.3 canonicalisation](../p1.5_hypothesis_loop/s1.5.3_canonicalisation.md); T1.5.4.5 alive-inherit |
-| 📅 E23 | Prove speedup — replace exhaustive with what? | Once E21 lands, `Mode.PROVE` is the bottleneck. Open question: is there a way to speed up *exhaustive* search without giving up the uniqueness guarantee? Candidates: learned-clause caching (composes with E7), goal-driven pruning (composes with E11 + [F7 §C rule-set sufficiency](../../followups/f7_rule_induction.md)), arc-consistency pre-pass (E14). The framing is "not doing full search" — but uniqueness is a global property; some form of full coverage is required. The interesting design question is which form | L | M (perf) | E7 / E11 / E14 / F7 §C |
+| ⛔ E21 | `solve` vs `prove` mode split  | **Superseded by [P1.7a](../p1.7a_solution_search_refactor/README.md) (2026-05-31)** — shipped *differently*: the exhaustive-with-uniqueness side is now `solve()` (returns `Solution \| Ambiguity \| Contradiction`, 1/>1/0 verdict); the fast side is the monotonic `solve(stop_after=1)` path. `Mode` (in `inference/verdict.py`, not `solver.py`) is the orthogonal SOLVE/GAPS/CONTRADICTIONS task-class axis, not SOLVE/PROVE. See [E21 § Superseded](s1.9.e21_solve_vs_prove.md#superseded-by-p17a-2026-06-03) | M | M (UX) | [Idea 03 — three task classes](../../../docs/ideas/03-three-task-classes.md) |
+| ✅ E22 | Alive-hyps in canonical state hash | **Resolved in code:** `canon.state_hash` keys dedup on the KB facts ONLY, not the alive set — the engine relies on "KB ⇒ alive-set" and [S1.7.24](../p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md)'s state-hash-keyed lattice cements it. The "extend the hash with the alive set" fix was *not* taken; residual = document the invariant. See [E22 § Resolution](s1.9.e22_alive_hyps_in_state_hash.md#resolution-2026-06-03) | M | M (correctness) | [S1.5.3 canonicalisation](../p1.5_hypothesis_loop/s1.5.3_canonicalisation.md); T1.5.4.5 alive-inherit |
+| 📅 E23 | Speed up the complete (exhaustive) search | **Re-anchored** from the never-shipped `Mode.PROVE` to `solve()` (P1.7a's complete entry — the actual bottleneck). Open question: is there a way to speed up *exhaustive* search without giving up the uniqueness guarantee? Candidates: learned-clause caching (composes with E7), goal-driven pruning (composes with E11 + [F7 §C rule-set sufficiency](../../followups/f7_rule_induction.md)), arc-consistency pre-pass (E14). Uniqueness is a global property; some form of full coverage is required. The design question is which form | L | M (perf) | E7 / E11 / E14 / F7 §C |
 
 ### Rejected / out-of-scope for M1
 
