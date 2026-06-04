@@ -23,6 +23,21 @@ def test_ir_parse_zebra(capsys: pytest.CaptureFixture[str]):
     assert "(query" in out
 
 
+def test_ir_parse_resolve_zebra2(capsys: pytest.CaptureFixture[str]):
+    """`ir parse --resolve examples/zebra2.ein` splices `(import std.macro …)`
+    inline and emits a standalone file: no `(import …)` remains, the `forall`
+    macro is present (zebra2 uses it), and there is no `open` macro (unused —
+    tree-shaken)."""
+    repo_root = Path(__file__).resolve().parents[2]
+    zebra2 = repo_root / "examples" / "zebra2.ein"
+    rc = main(["ir", "parse", "--resolve", str(zebra2)])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "(import " not in out
+    assert "(macro forall " in out
+    assert "(macro open " not in out          # unused → dropped
+
+
 def test_ir_lint_ok(capsys: pytest.CaptureFixture[str]):
     repo_root = Path(__file__).resolve().parents[2]
     zebra = repo_root / "examples" / "zebra.ein"

@@ -212,4 +212,82 @@ def resolve_imports(
     return out
 
 
-__all__ = ["resolve_imports"]
+# ── Resolved + minimized dump (A1 D9) ──────────────────────────────
+
+
+def _decl_name(form: IRNode) -> str | None:
+    """The name a single declarator form binds (rule/hrule/relation/macro), or
+    None for a fact / non-declarator."""
+    if (isinstance(form, SForm) and isinstance(form.head, Atom)
+            and form.head.name in _DECLARATORS
+            and form.args and isinstance(form.args[0], Atom)):
+        return form.args[0].name
+    return None
+
+
+def _referenced_names(node: IRNode, out: set[str] | None = None) -> set[str]:
+    """Every :class:`Atom` name reachable from ``node`` — heads (so a macro
+    invocation `(forall …)` counts as referencing `forall`), args, and kw-pair
+    values. Object names + reserved words are collected too; the caller only
+    follows those that name an imported declaration."""
+    if out is None:
+        out = set()
+    if isinstance(node, Atom):
+        out.add(node.name)
+    elif isinstance(node, SForm):
+        if isinstance(node.head, Atom):
+            out.add(node.head.name)
+        for a in node.args:
+            _referenced_names(a, out)
+    elif isinstance(node, KwPair):
+        _referenced_names(node.value, out)
+    return out
+
+
+def _resolve_tagged(forms, base_dir: Path | None) -> list[tuple[SForm, bool]]:
+    """Resolve imports, tagging each result form ``is_imported``: the puzzle's
+    own (non-import) forms are ``False``; everything an import brings in
+    (transitively) is ``True``."""
+    out: list[tuple[SForm, bool]] = []
+    for form in forms:
+        if _is_import(form):
+            for f in resolve_imports([form], base_dir=base_dir):
+                out.append((f, True))
+        else:
+            out.append((form, False))
+    return out
+
+
+def resolve_and_minimize(forms, *, base_dir: Path | None = None) -> list[SForm]:
+    """Resolve every `(import …)` inline, then **tree-shake**: drop any imported
+    *declaration* (rule/hrule/relation/macro) nothing references (A1 D9).
+
+    Reachability seeds from the puzzle's own forms (and any imported facts,
+    kept conservatively), then closes over imported declarations' bodies. The
+    result is a standalone, import-free form list — `dump_canonical` of it is a
+    self-contained `.ein` equivalent to the original. Import-free input passes
+    through unchanged.
+    """
+    tagged = _resolve_tagged(list(forms), base_dir)
+    imported_decls: dict[str, SForm] = {
+        nm: f for f, imp in tagged
+        if imp and (nm := _decl_name(f)) is not None
+    }
+    reachable: set[str] = set()
+    work: list[str] = []
+    for f, imp in tagged:                    # roots: puzzle forms + imported facts
+        if not imp or _decl_name(f) is None:
+            work.extend(_referenced_names(f))
+    while work:
+        n = work.pop()
+        if n in reachable or n not in imported_decls:
+            continue
+        reachable.add(n)
+        work.extend(_referenced_names(imported_decls[n]))
+    return [
+        f for f, imp in tagged
+        if not imp or _decl_name(f) is None or _decl_name(f) in reachable
+    ]
+
+
+__all__ = ["resolve_and_minimize", "resolve_imports"]

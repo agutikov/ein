@@ -39,9 +39,21 @@ def _env_truthy(value: str | None) -> bool:
 
 
 def _cmd_ir_parse(args: argparse.Namespace) -> int:
-    nodes = _parse_or_exit(Path(args.file))
+    path = Path(args.file)
+    nodes = _parse_or_exit(path)
     if nodes is None:
         return 1
+    if getattr(args, "resolve", False):
+        # D9 — splice `(import …)` inline + drop unreferenced library symbols,
+        # emitting a standalone minimal `.ein`. base_dir = the file's dir so
+        # file-relative imports resolve; std.* resolves regardless.
+        from .kb.from_ir import KBLoadError
+        from .kb.imports import resolve_and_minimize
+        try:
+            nodes = resolve_and_minimize(nodes, base_dir=path.parent)
+        except KBLoadError as e:
+            print(f"resolve error: {e}", file=sys.stderr)
+            return 1
     sys.stdout.write(dump_canonical(nodes))
     return 0
 
@@ -273,6 +285,10 @@ def _add_ir_parser(sub) -> None:
 
     ir_parse = ir_sub.add_parser("parse", help="parse and re-dump canonical IR")
     ir_parse.add_argument("file")
+    ir_parse.add_argument(
+        "--resolve", action="store_true",
+        help="splice (import …) inline and tree-shake unreferenced library "
+             "symbols, emitting a standalone minimal .ein (P1.8 D9)")
     ir_parse.set_defaults(func=_cmd_ir_parse)
 
     ir_lint = ir_sub.add_parser("lint", help="parse-only check; non-zero on error")

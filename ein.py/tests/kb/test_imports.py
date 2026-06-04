@@ -154,6 +154,57 @@ def test_existing_import_free_kb_unaffected():
     assert "x" in kb.relations and len(kb.facts) >= 1
 
 
+# ── Resolved + minimized dump (D9) ─────────────────────────────────
+
+
+def _resolved(src: str):
+    from ein_bot.ir import dump_canonical
+    from ein_bot.kb.imports import resolve_and_minimize
+    forms = resolve_and_minimize(parse(src), base_dir=None)
+    return forms, dump_canonical(forms)
+
+
+def test_resolve_inlines_and_treeshakes_unused():
+    """`forall` used, `open` not → `--resolve` inlines forall and drops open;
+    the output is import-free and reloads standalone."""
+    forms, out = _resolved("""
+    (import std.macro :symbols (forall open))
+    (rule r () :match (and (player ?p) (forall ?q (player ?q) (beats ?p ?q)))
+      :assert (ok ?p) :why "u")
+    (relation player T T) (relation beats T T)
+    """)
+    macros = {f.args[0].name for f in forms if f.head.name == "macro"}
+    assert macros == {"forall"}                       # open tree-shaken
+    assert not any(f.head.name == "import" for f in forms)
+    kb = _load(out)                                   # standalone + valid
+    assert "r" in kb.rules and set(kb.macros) == {"forall"}
+
+
+def test_resolve_keeps_qualified_used():
+    forms, _ = _resolved("""
+    (import std.macro)
+    (rule r () :match (std.macro.forall ?q (player ?q) (beats ?q ?q))
+      :assert (ok ?q) :why "w")
+    (relation player T T) (relation beats T T)
+    """)
+    macros = {f.args[0].name for f in forms if f.head.name == "macro"}
+    assert macros == {"std.macro.forall"}             # std.macro.open dropped
+
+
+def test_resolve_drops_all_unused_imports():
+    forms, _ = _resolved("""
+    (import std.macro :symbols (forall open))
+    (relation x T T) (x A B :source "(1)")
+    """)
+    assert not any(f.head.name == "macro" for f in forms)   # neither used
+
+
+def test_resolve_passthrough_without_imports():
+    forms, _ = _resolved('(relation x T T) (x A B :source "(1)")')
+    heads = [f.head.name for f in forms]
+    assert heads == ["relation", "x"]
+
+
 # ── Reserved-name guard (D3), shared across declarators ────────────
 
 
