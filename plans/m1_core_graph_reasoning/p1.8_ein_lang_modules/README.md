@@ -40,7 +40,7 @@ Theme A (modules + imports + standard library):
 | S1.8.A9    | Reflective rule-implication                            | [s1.8.a9_reflective_rule_implication.md](s1.8.a9_reflective_rule_implication.md) |
 | S1.8.A10   | Type / domain matching                                 | [s1.8.a10_type_domain_matching.md](s1.8.a10_type_domain_matching.md)  |
 | S1.8.A11   | Multi-fact assertion from a single rule                | [s1.8.a11_multi_fact_assert.md](s1.8.a11_multi_fact_assert.md)        |
-| S1.8.A12   | Relation-algebra library rules (from F1b §PFL.3)       | *(folded into the stdlib § below; stage file TBC)*                   |
+| S1.8.A12   | Relation-algebra library rules (from F1b §PFL.3)       | [s1.8.a12_relation_algebra.md](s1.8.a12_relation_algebra.md)          |
 | S1.5.9     | Ein-lang pattern macros (sticky id, relocated 2026-05-24) | [s1.5.9_ein_lang_macros.md](s1.5.9_ein_lang_macros.md)              |
 
 The **performance** themes (COW fork, version-COW, atom compression,
