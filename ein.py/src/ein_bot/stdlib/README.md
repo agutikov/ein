@@ -1,0 +1,68 @@
+# ein-bot standard library (`std.*`)
+
+The canonical, **package-shipped** standard library. This directory *is* the
+stdlib root: the import resolver
+([`ein_bot/kb/imports.py`](../kb/imports.py)) maps a logical module name
+`std.<path>` to `ein_bot/stdlib/<path>.ein` (P1.8 S1.8.A1 §D4 / S1.8.A3).
+It ships with the package via `pyproject.toml` `package-data`
+(`ein_bot = ["stdlib/*.ein", "stdlib/**/*.ein"]`), so `(import std.…)`
+resolves whether ein-bot is run from a checkout or an install.
+
+## Location decision (S1.8.A4 — closes [Q30](../../../../plans/m1_core_graph_reasoning/open_questions.md#q30--universal-rule-library--import-mechanism))
+
+**Q30 → (c) hybrid.** Puzzle-*agnostic* vocabulary (the pattern macros today;
+the relation-algebra / type rule families as they land) lives here as
+importable modules; puzzle-*specific* content (a puzzle's activator facts,
+its bespoke spatial/typecheck rules) stays inline in the puzzle file. A
+puzzle pulls the library in with one `(import …)` and declares only its own
+facts.
+
+Why the package (not `examples/`): `examples/` is user content and is not
+installed, so an install-relative import couldn't find it; the package dir is
+always present and version-locked to the engine.
+
+## Modules
+
+| module | file | provides | stage |
+|--------|------|----------|-------|
+| `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `open` pattern macros | S1.5.9 |
+
+*Planned (not yet shipped):* `std.algebra` (the `imply` / `converse` /
+relation-algebra rule family — P1.8 S1.8.A7 / A12) and `std.types`
+(inheritance + `guess` — A10). When those land, the universal kernel rules
+(`symmetric` / `transitive` / …) move out of inline `zebra2.ein` into them
+(the pending tail of S1.8.A5).
+
+## Importing
+
+Three tiers (Python-style — see the [A1 decision record](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.8.a1_module_system_design.md#decision-record-2026-06-04)):
+
+```lisp
+(import std.macro)                        ; → (std.macro.forall …)   fully qualified
+(import std.macro :as m)                  ; → (m.forall …)           aliased
+(import std.macro :symbols (forall open)) ; → (forall …)             flat-selective
+```
+
+`:as` and `:symbols` are mutually exclusive. Names are logical and dotted
+(`.` is a normal atom character); the `.ein` suffix is implied. A
+file-relative import (a non-`std` name) resolves against the importing file's
+directory.
+
+To inline a puzzle's imports into a single standalone file (resolving + 
+tree-shaking unused library symbols):
+
+```sh
+ein-bot ir parse --resolve path/to/puzzle.ein
+```
+
+## One layout-detail per concern
+
+One file per coherent concern (`macro.ein`, future `algebra.ein`,
+`types.ein`) rather than one monolith — `:symbols` selective imports and the
+tree-shaking dump both reward small, focused modules. A `README.md` here is
+ignored by the resolver (only `*.ein` files are modules).
+
+Each shipped stdlib symbol is exercised by a test (e.g. `forall` / `open` by
+`tests/inference/test_forall.py` / `test_open.py` and
+`tests/kb/test_imports.py`). The full per-symbol API reference is deferred to
+[S1.20.C](../../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.c_stdlib_api_reference.md).
