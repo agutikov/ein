@@ -216,6 +216,13 @@ class Saturator:
         produced by a `(bijective R)` expansion rule) get their
         plans built. `compile_all` is idempotent — already-cached
         (rule, activator) pairs early-return.
+
+        This per-pass refresh IS **reflective rule-implication**
+        (P1.8 S1.8.A9 / F5 rung 2): because `compile_all` →
+        `_activators_for` reads the *live* `kb._rule_apps_by_rule`
+        index, a fact a rule *derives* — `(symmetric foo)` — becomes
+        an activator for the matching generic rule on the next pass.
+        No special-casing; pinned by `tests/inference/test_reflective_rule.py`.
         """
         self.engine.compile_all()
         for plan in self.engine.cache.values():
