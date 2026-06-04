@@ -50,6 +50,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "ein_bot.ir" = ["*.lark"]
+"ein_bot" = ["stdlib/*.ein", "stdlib/**/*.ein"]
 
 # ---------------------------------------------------------------------------
 # pytest

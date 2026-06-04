@@ -126,7 +126,9 @@ def _load_kb_or_exit(path: Path):
     if nodes is None:
         return None
     try:
-        return KnowledgeBase.from_ir(nodes)
+        # base_dir = the puzzle's directory so file-relative `(import …)`
+        # forms resolve against it (S1.8.A3); `std.*` resolves regardless.
+        return KnowledgeBase.from_ir(nodes, base_dir=path.parent)
     except KBLoadError as e:
         print(f"kb load error: {e}", file=sys.stderr)
         return None

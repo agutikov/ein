@@ -192,14 +192,27 @@ class KnowledgeBase:
     # ── from_ir convenience ───────────────────────────────────────
 
     @classmethod
-    def from_ir(cls, forms) -> KnowledgeBase:
+    def from_ir(cls, forms, *, base_dir=None) -> KnowledgeBase:
         """Construct a KB from parsed IR forms.
 
         Delegates to :func:`ein_bot.kb.from_ir.load`. Importing here
         avoids a hard import-time cycle (`from_ir` imports `store`).
+        ``base_dir`` is the directory file-relative `(import …)` forms
+        resolve against (P1.8 S1.8.A3); ``None`` resolves only ``std.*``.
         """
         from .from_ir import load
-        return load(forms)
+        return load(forms, base_dir=base_dir)
+
+    @classmethod
+    def from_file(cls, path) -> KnowledgeBase:
+        """Construct a KB from a ``.ein`` file, resolving its `(import …)`
+        forms file-relative to the file's directory (P1.8 S1.8.A3)."""
+        from pathlib import Path
+
+        from ein_bot.ir import parse
+        p = Path(path)
+        forms = parse(p.read_text(encoding="utf-8"), filename=str(p))
+        return cls.from_ir(forms, base_dir=p.parent)
 
     # ── Registry mutation (used by the loader) ────────────────────
 

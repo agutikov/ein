@@ -39,6 +39,7 @@ Errors:
 from __future__ import annotations
 
 from collections.abc import Iterable
+from pathlib import Path
 
 from ein_bot.ir.macros import Macro, MacroError, expand_macros
 from ein_bot.ir.types import Atom, Int, IRNode, KwPair, Range, SForm, String, Var
@@ -468,27 +469,38 @@ def _ingest_one_fact(
 # ── Public entry point ─────────────────────────────────────────────
 
 
-def load(forms: Iterable[SForm]) -> KnowledgeBase:
+def load(forms: Iterable[SForm], *, base_dir: Path | None = None) -> KnowledgeBase:
     """Build a populated :class:`KnowledgeBase` from parsed IR forms.
 
     P1.7c — the surface is a **flat sequence of forms**, each classified
     by its head: ``relation`` → a relation declaration; ``rule`` /
-    ``hrule`` → a rule; ``macro`` → a pattern macro (S1.5.9); ``import`` →
-    a module import (S1.8.A2 — routed here, resolution pending in A3);
+    ``hrule`` → a rule; ``macro`` → a pattern macro (S1.5.9);
     ``query`` / ``config`` → their handlers; ``trace`` → ignored;
     **anything else → a fact** with layer from :func:`_layer_of`. (A
     former-wrapper head such as ``(facts …)`` is now just a fact whose
     relation is ``facts``.)
+
+    P1.8 S1.8.A3 — `(import …)` forms are resolved **first**, at the form
+    level (:func:`ein_bot.kb.imports.resolve_imports`): each is replaced by
+    its module's qualified form-list, so by the time the head-classifier
+    below runs the stream is import-free (flatten-then-load — A1 D8).
+    ``base_dir`` is the directory file-relative imports resolve against
+    (``None`` for an in-memory load — only ``std.*`` imports resolve then).
     """
     kb = KnowledgeBase()
     errors: list[str] = []
+
+    # Resolve imports up front into one flat, import-free, qualified stream.
+    # Resolution errors (not found / cycle / bad spec) are fatal and raise
+    # immediately (a half-resolved program can't be ingested).
+    from .imports import resolve_imports
+    forms = resolve_imports(forms, base_dir=base_dir)
 
     # Flat top-level forms, bucketed into the three classic passes
     # (relations → rules → facts) so resolution order is preserved.
     flat_relations: list[SForm] = []
     flat_rules: list[SForm] = []
     flat_macros: list[SForm] = []
-    flat_imports: list[SForm] = []
     flat_facts: list[tuple[SForm, Layer]] = []   # each carries its own layer
     query_blocks: list[SForm] = []
     config_blocks: list[SForm] = []
@@ -505,7 +517,9 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
         elif h == "macro":
             flat_macros.append(form)
         elif h == "import":
-            flat_imports.append(form)
+            # resolve_imports (above) consumes every import; a survivor here
+            # means a resolver bug — surface it rather than ingest it as a fact.
+            errors.append(f"unresolved (import …) at {form.loc} — internal error")
         elif h == "query":
             query_blocks.append(form)
         elif h == "config":
@@ -517,19 +531,9 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
             # layer derived (or read off an explicit :layer) per S1.7c.1.
             flat_facts.append((form, _layer_of(form, errors)))
 
-    # Imports (P1.8 S1.8.A2): the grammar + AST recognise `(import …)` and
-    # the head-switch routes it here so it is not misclassified as a fact.
-    # Resolution + merge (the flatten-then-load of A1 D8) lands in S1.8.A3;
-    # until then a present import is an explicit load error, not a silent
-    # no-op. Round-trip (parse/dump) is unaffected — it never calls load().
-    for imp in flat_imports:
-        mod = _atom_name(imp.args[0]) if imp.args else None
-        errors.append(
-            f"(import {mod or '?'}) — import resolution is not implemented "
-            f"yet (lands in P1.8 S1.8.A3) at {imp.loc}")
-
     # Pass 0 — macros (P1.8 S1.5.9). Built first so the rules pass can
-    # expand `(macro …)` invocations in every clause.
+    # expand `(macro …)` invocations in every clause. (Imports were already
+    # resolved into this stream, so any imported macros are present here too.)
     _ingest_macros(flat_macros, kb, errors)
 
     # Pass 1 — relations (declared signatures + the auto-stored decl facts).
