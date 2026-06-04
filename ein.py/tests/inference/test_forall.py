@@ -4,9 +4,8 @@ Since P1.8 S1.5.9 `forall` is an ein-lang `(macro …)` (no longer a
 compile.py desugar): the loader expands `(forall ?b (G) (B))` →
 `(absent (and G (absent B)))` before the compiler runs. The expansion is
 structurally identical to the old desugaring, so the surface semantics
-and the nested-`AbsentGuard` shape are unchanged. Each KB here therefore
-prepends the `forall` macro (the inline-until-imports idiom — copy of
-`std.macro`, `examples/stdlib/macro.ein`).
+and the nested-`AbsentGuard` shape are unchanged. Each KB here imports
+`forall` from the `std.macro` stdlib module (S1.8.A5).
 """
 from __future__ import annotations
 
@@ -15,11 +14,9 @@ from ein_bot.inference.compile import AbsentGuard, compile_rule
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
-# Inline stdlib sugar (until ein-lang imports land — P1.8 S1.8.A1-A5).
-_SUGAR = """
-(macro forall (?b ?G ?B)
-  (absent (and ?G (absent ?B))))
-"""
+# `forall` comes from the std.macro stdlib module (resolved via the package,
+# so no base_dir needed) — S1.8.A5 replaced the inline copy with this import.
+_SUGAR = "(import std.macro :symbols (forall))\n"
 
 
 def _kb(text: str) -> KnowledgeBase:

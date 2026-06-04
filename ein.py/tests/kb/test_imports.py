@@ -9,8 +9,6 @@ guard (shared across declarators; facts may still carry reserved heads).
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
 from ein_bot.inference.compile import AbsentGuard, compile_rule
@@ -147,17 +145,6 @@ def test_import_cycle_rejected(tmp_path):
     _write(tmp_path, "b.ein", "(import a)\n(relation y T T)\n")
     with pytest.raises(KBLoadError, match=r"import cycle"):
         KnowledgeBase.from_file(tmp_path / "a.ein")
-
-
-def test_demo_mirror_matches_canonical():
-    """`examples/stdlib/macro.ein` must stay content-identical to the
-    package-canonical `ein_bot/stdlib/macro.ein` (only header comments differ,
-    which parsing strips) — else the resolver and the inlined copies drift."""
-    import ein_bot
-    pkg = Path(ein_bot.__file__).resolve().parent / "stdlib" / "macro.ein"
-    repo = Path(__file__).resolve().parents[3]
-    demo = repo / "examples" / "stdlib" / "macro.ein"
-    assert parse(pkg.read_text()) == parse(demo.read_text())
 
 
 def test_existing_import_free_kb_unaffected():

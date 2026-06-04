@@ -5,8 +5,7 @@
 an ein-lang `(macro …)` (no longer a compile.py desugar); the loader
 expands `(open P)` → `(and (absent P) (absent (not P)))` before the
 compiler runs — structurally identical, so the surface semantics are
-unchanged. Each KB prepends the `open` macro (the inline-until-imports
-idiom — copy of `std.macro`, `examples/stdlib/macro.ein`).
+unchanged. Each KB imports `open` from the `std.macro` stdlib module (S1.8.A5).
 """
 from __future__ import annotations
 
@@ -15,11 +14,8 @@ from ein_bot.inference.compile import AbsentGuard, compile_rule
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
-# Inline stdlib sugar (until ein-lang imports land — P1.8 S1.8.A1-A5).
-_SUGAR = """
-(macro open (?P)
-  (and (absent ?P) (absent (not ?P))))
-"""
+# `open` comes from std.macro (resolved via the package, so no base_dir needed).
+_SUGAR = "(import std.macro :symbols (open))\n"
 
 
 def _kb(text: str) -> KnowledgeBase:

@@ -2,8 +2,7 @@
 ;;;
 ;;; **Canonical, package-shipped** module: the import resolver
 ;;; (`kb.imports`) maps the logical name `std.macro` to THIS file under the
-;;; packaged stdlib root (`ein_bot/stdlib/`). `examples/stdlib/macro.ein` is a
-;;; demo mirror of the same content.
+;;; packaged stdlib root (`ein_bot/stdlib/`).
 ;;;
 ;;; `forall` and `open` used to be compile-time desugars baked into
 ;;; inference/compile.py; since S1.5.9 they are ordinary ein-lang `(macro …)`

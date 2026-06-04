@@ -58,7 +58,7 @@ structural primitives (`absent` / `false`), the computed predicates
 name at all (parse error). The guard is about *binding* a name; a **fact** may
 still carry a reserved head (a stored `(not X)` octagon). `open` / `forall`
 are deliberately *not* reserved — they migrated into the `std.macro` module
-([`examples/stdlib/macro.ein`](../../../../examples/stdlib/macro.ein)).
+([`ein.py/src/ein_bot/stdlib/macro.ein`](../../../../ein.py/src/ein_bot/stdlib/macro.ein)).
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 
@@ -89,13 +89,13 @@ bindings, not looked up in the KB.
 `forall` and `open` were compile-time desugars baked into `compile.py`.
 Since [S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)
 they are ordinary ein-lang `(macro …)` declarations (the `std.macro` module,
-[`examples/stdlib/macro.ein`](../../../../examples/stdlib/macro.ein))
+[`ein.py/src/ein_bot/stdlib/macro.ein`](../../../../ein.py/src/ein_bot/stdlib/macro.ein))
 expanded at **load** time (`kb.from_ir` → `ir.macros.expand_macros`) — they
 are **no longer kernel vocabulary**, no longer in `primitives.py`, and a
-puzzle may even redefine them. Until ein-lang imports land
-([S1.8.A1–A5](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md)),
-a file that wants them inlines the two `(macro …)` forms (copy of
-`macro.ein`); afterwards, `(import std.macro :symbols (forall open))`.
+puzzle may even redefine them. A puzzle that wants them imports them
+([S1.8.A1–A5](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md)):
+`(import std.macro :symbols (forall open))` (flat surface), or
+`(import std.macro)` / `:as m` for qualified access.
 
 | macro | form | expands to |
 |-------|------|------------|

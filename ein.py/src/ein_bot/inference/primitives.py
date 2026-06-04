@@ -19,9 +19,9 @@ The deep behaviour stays where it lives (this is the ``predicates.py``
 
 The M1 kernel primitives are ``not`` ``false`` ``and`` ``or`` ``absent``.
 ``open`` / ``forall`` used to live here too as compile-time *sugar*; since
-P1.8 S1.5.9 they are ordinary ein-lang ``(macro …)`` declarations (the
-``std.macro`` module, ``examples/stdlib/macro.ein``) expanded at load time,
-so they are no longer kernel vocabulary and no longer appear in this registry.
+P1.8 S1.5.9 they are ordinary ein-lang ``(macro …)`` declarations (the ``std.macro``
+module, ``ein_bot/stdlib/macro.ein``) expanded at load time, so they are no
+longer kernel vocabulary and no longer appear in this registry.
 
 See ``docs/kernel/ir/03-ein-lang/06_reserved_names.md`` (surface) and
 ``plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.25_reserved_names_encapsulate_document.md``.
