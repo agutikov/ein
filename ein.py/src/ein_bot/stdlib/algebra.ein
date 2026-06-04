@@ -68,3 +68,38 @@
   :assert (converse ?R2 ?R1)
   :priority 90
   :why    "(converse {?R1} {?R2}) ⟹ (converse {?R2} {?R1})")
+
+;; ── converse well-formedness — domain/range typecheck (P1.8 S1.8.A10) ────────
+;; A `(converse R1 R2)` is type-valid iff R2's signature is R1's reversed:
+;;   range(R1) = domain(R2)  and  domain(R1) = range(R2),
+;; up to the supplied subtype relation ?isR* (a puzzle's transitive is-a
+;; closure). These reject (⊥) the ill-typed pairings — `(converse house-color
+;; pet-dog)` etc. The signatures are read straight off the `(relation …)`
+;; declaration facts (matchable since rules already do `(relation ?R ?A ?B)`);
+;; the hierarchy relation arrives as the parameter ?isR*, so the rule BODY names
+;; no `is-a` literal — its dependency on is-a*'s closure is explicit in the
+;; parameter list. The `(neq …)` guard absorbs the identical-type case, so an
+;; *irreflexive* ?isR* (zebra2's is-a* is transitive-but-irreflexive) still
+;; passes exact-type converses (right-of/left-of) without a self-loop; declare
+;; `(reflexive is-a*)` (std.typing) only if you want the pure-subtype reading.
+;; Activate per pair — `(converse-illtyped-dom right-of left-of is-a*)` — or let
+;; std.typing's `(type-hierarchy …)` knob derive the activators.
+(rule converse-illtyped-dom (?R1 ?R2 ?isR*)
+  :match  (and (converse  ?R1 ?R2)
+               (relation  ?R1 ?D1 ?Rn1)
+               (relation  ?R2 ?D2 ?Rn2)
+               (neq ?Rn1 ?D2)
+               (absent (?isR* ?Rn1 ?D2)))
+  :assert (false)
+  :priority 110
+  :why    "converse {?R1}/{?R2} ill-typed: range({?R1})={?Rn1} neither = nor <: domain({?R2})={?D2} under {?isR*}.")
+
+(rule converse-illtyped-ran (?R1 ?R2 ?isR*)
+  :match  (and (converse  ?R1 ?R2)
+               (relation  ?R1 ?D1 ?Rn1)
+               (relation  ?R2 ?D2 ?Rn2)
+               (neq ?D1 ?Rn2)
+               (absent (?isR* ?D1 ?Rn2)))
+  :assert (false)
+  :priority 110
+  :why    "converse {?R1}/{?R2} ill-typed: domain({?R1})={?D1} neither = nor <: range({?R2})={?Rn2} under {?isR*}.")

@@ -50,7 +50,7 @@ def test_domain_elim_forces_unique_survivor():
     kb = _kb(STDLIB + """
     (relation color-of House Color) (relation is-a T T)
     (functional color-of 0 1) (total color-of 0)
-    (domain-elimination color-of House Color)
+    (domain-elimination color-of is-a House Color)
     (is-a House T) (is-a Color T)
     (is-a H1 House)
     (is-a Red Color) (is-a Blue Color) (is-a Green Color)
@@ -70,7 +70,7 @@ def test_no_room_left_fires_when_every_value_excluded():
     kb = _kb(STDLIB + """
     (relation color-of House Color) (relation is-a T T)
     (functional color-of 0 1) (total color-of 0)
-    (no-room-left color-of House Color)
+    (no-room-left color-of is-a House Color)
     (is-a House T) (is-a Color T)
     (is-a H1 House)
     (is-a Red Color) (is-a Blue Color)
@@ -91,7 +91,7 @@ def test_no_room_left_silent_when_one_value_remains():
     kb = _kb(STDLIB + """
     (relation color-of House Color) (relation is-a T T)
     (functional color-of 0 1) (total color-of 0)
-    (no-room-left color-of House Color)
+    (no-room-left color-of is-a House Color)
     (is-a House T) (is-a Color T)
     (is-a H1 House)
     (is-a Red Color) (is-a Blue Color)
@@ -106,7 +106,7 @@ def test_typecheck_fires_on_mistyped_arg():
     """Wrong-typed arg → typecheck fires (false)."""
     kb = _kb(STDLIB + """
     (relation color-of House Color) (relation is-a T T)
-    (typecheck-arg-0 color-of House)
+    (typecheck-arg-0 color-of is-a House)
     (is-a House T) (is-a Color T) (is-a Person T)
     (is-a Englishman Person)
     (is-a H1 House) (is-a Red Color)
@@ -120,8 +120,8 @@ def test_typecheck_fires_on_mistyped_arg():
 def test_typecheck_silent_on_well_typed_facts():
     kb = _kb(STDLIB + """
     (relation color-of House Color) (relation is-a T T)
-    (typecheck-arg-0 color-of House)
-    (typecheck-arg-1 color-of Color)
+    (typecheck-arg-0 color-of is-a House)
+    (typecheck-arg-1 color-of is-a Color)
     (is-a House T) (is-a Color T)
     (is-a H1 House) (is-a Red Color)
     (color-of H1 Red :source "(ok)")
@@ -138,7 +138,7 @@ def test_domain_elim_silent_without_total_or_functional():
     """If the property facts aren't declared, domain-elim doesn't fire."""
     kb = _kb(STDLIB + """
     (relation color-of House Color) (relation is-a T T)
-    (domain-elimination color-of House Color)
+    (domain-elimination color-of is-a House Color)
     (is-a House T) (is-a Color T)
     (is-a H1 House)
     (is-a Red Color) (is-a Blue Color)

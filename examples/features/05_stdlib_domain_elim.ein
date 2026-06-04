@@ -2,15 +2,16 @@
 ;;;
 ;;; S1.5.8c T1.5.8c.4 — the M1-blocking stdlib rules.
 ;;;
-;;; Four parameterised rules, each carrying its own type info
-;;; via activator args (in lieu of arg-type reflection — see
-;;; the S1.5.8c.4 task note on why reflection rules don't fit
-;;; M1's grammar restrictions on `relation`):
+;;; Four parameterised rules, each carrying the relation, the
+;;; instance-type relation `?isa`, and its argument type(s) as
+;;; activator args (P1.8 S1.8.A10 — the hierarchy relation is a
+;;; parameter, not a hardcoded `is-a`, so the rule bodies stay
+;;; is-a-free):
 ;;;
-;;;   - typecheck-arg-0 (?R ?Dom)      ; closed-world type check on arg 0
-;;;   - typecheck-arg-1 (?R ?Ran)      ; closed-world type check on arg 1
-;;;   - domain-elimination (?R ?OT ?VT) ; one-survivor → force
-;;;   - no-room-left (?R ?OT ?VT)      ; all-excluded → contradiction
+;;;   - typecheck-arg-0 (?R ?isa ?Dom)      ; closed-world type check on arg 0
+;;;   - typecheck-arg-1 (?R ?isa ?Ran)      ; closed-world type check on arg 1
+;;;   - domain-elimination (?R ?isa ?OT ?VT) ; one-survivor → force
+;;;   - no-room-left (?R ?isa ?OT ?VT)      ; all-excluded → contradiction
 ;;;
 ;;; The user activates each rule per relation by declaring the
 ;;; activator fact with explicit type args. Verbose but explicit
@@ -40,11 +41,13 @@
 (total      color-of 0)     ; each House has some Color
 (total      color-of 1)     ; each Color belongs to some House
 
-;; ── Stdlib rule activators: opt color-of into all four rules.
-(typecheck-arg-0   color-of House)
-(typecheck-arg-1   color-of Color)
-(domain-elimination color-of House Color)
-(no-room-left      color-of House Color)
+;; ── Stdlib rule activators: opt color-of into all four rules. The 2nd arg
+;; ── names the instance-type relation (here `is-a`); the rules read it as
+;; ── their `?isa` parameter instead of hardcoding it (S1.8.A10 — is-a-free body).
+(typecheck-arg-0   color-of is-a House)
+(typecheck-arg-1   color-of is-a Color)
+(domain-elimination color-of is-a House Color)
+(no-room-left      color-of is-a House Color)
 
 ;; ── Type and instance hierarchy.
 (is-a House T) (is-a Color T)
