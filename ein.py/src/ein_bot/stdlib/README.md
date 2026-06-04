@@ -28,13 +28,23 @@ always present and version-locked to the engine.
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `open` pattern macros | S1.5.9 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (closed R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |
-| `std.algebra` | [`algebra.ein`](algebra.ein) | `converse` + `imply1` / `imply2-fwd` / `imply2-reverse` + the `symmetric`⟺`converse R R` algebra lemmas + `converse-illtyped-{dom,ran}` signature typecheck (generic; lemmas use reflective rule-implication) | S1.8.A7 |
+| `std.algebra` | [`algebra.ein`](algebra.ein) | the full relation-algebra signature: relative (`converse` / `compose` / `identity`), Boolean (`meet` / `join` / `difference` / `complement` / `top` / `empty`), property checks (`irreflexive` / `antisymmetric` / `asymmetric` / `connex` / `difunctional`), `imply1` / `imply2-fwd` / `imply2-reverse`, the equational lemmas (`symmetric`⟺`converse R R`, Schröder `compose-negative-{r,s}`, contravariance, converse-over-join) + `converse-illtyped-{dom,ran}` signature typecheck (generic; lemmas use reflective rule-implication) | S1.8.A7 + A12 |
 | `std.typing` | [`typing.ein`](typing.ein) | `(type-hierarchy ?isR*)` one-knob converse-typecheck driver + `(reflexive R)` closure (non-generic fan-out; pairs with `std.algebra`'s `converse-illtyped-*`) | S1.8.A10 |
 
-*Planned (not yet shipped):* the full relation-algebra signature (`compose` /
-`meet` / `join` — A12) extending `std.algebra`. When the universal kernel rules
-(`symmetric` / `transitive` / …) themselves move out of inline `zebra2.ein` into
-a stdlib module, that's the pending tail of S1.8.A5.
+`std.algebra`'s ops split **intrinsic** (read existing edges: `compose` / `meet`
+/ `difference` / `converse` / `join` / `difunctional`) vs **extensive** (range
+over the `Dom×Ran` universe to reach absent pairs: `complement` / `top` /
+`identity` / `connex`). The extensive ops take the puzzle's instance-type
+relation + argument types `(?isa Dom Ran)` (the A10 universe) as parameters and
+inherit the closed-world soundness caveat — sound only when the operand is
+saturation-determined (the `std.closure` caveat), so not for branching puzzles.
+
+*Planned (not yet shipped):* the **division residuals** (`R\S` / `R/S` / `syq` —
+an allegory extension beyond Tarski's RA, S1.8.A12 T5) need a `forall` over the
+universe and have no M1 consumer; design is in the stage doc. When the universal
+kernel rules (`symmetric` / `transitive` / …) themselves move out of inline
+`zebra2.ein` into a stdlib module, that's the pending tail of S1.8.A5 (`compose`
+is the keystone the `transitive` promotion rides on).
 
 **Rule modules vs `forall`.** `std.elim`'s rules are *generic* (parametrised
 over a relation), so a puzzle imports them **flat** (`:symbols`) to keep the

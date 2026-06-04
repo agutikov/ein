@@ -1,13 +1,39 @@
-;;; ein-bot stdlib — `std.algebra`: relation-algebra library rules (P1.8 S1.8.A7).
+;;; ein-bot stdlib — `std.algebra`: relation-algebra library rules (P1.8 S1.8.A7 + A12).
 ;;;
-;;; The `converse` / `imply` family + the symmetric⟺converse algebra lemmas.
-;;; All are GENERIC (parametrised over relations), so a puzzle imports them
-;;; FLAT and declares activator facts naming the relation pair:
+;;; The full relation-algebra signature — Tarski's ⟨∪, ∩, ¬, 0, 1, ;, ⁻¹, 1'⟩
+;;; over relations-as-pair-sets — as generic ein rules on the existing matcher.
+;;; A7 seeded the relative layer (`converse` / `imply`); A12 adds composition
+;;; (`compose`), the Boolean lattice (`meet` / `join` / `difference` /
+;;; `complement` / `top` / `empty`), the identity (`identity`), the missing
+;;; single-relation property checks, and the Tarski/Maddux equational lemmas
+;;; (Schröder B10, contravariance B7, converse-over-join B8).
 ;;;
-;;;     (import std.algebra :symbols (converse imply1 imply2-fwd imply2-reverse))
-;;;     (converse right-of left-of)   ; opt the right-of/left-of pair in
+;;; All rules are GENERIC (parametrised over the operand relations), so a puzzle
+;;; imports them FLAT and declares activator facts naming the operands:
+;;;
+;;;     (import std.algebra :symbols (converse compose meet))
+;;;     (converse right-of left-of)            ; R2 = R1°
+;;;     (compose  right-of right-of two-right)  ; two-right = right-of ; right-of
+;;;     (meet     owns rents shares)            ; shares = owns ∩ rents
 ;;;
 ;;; Reach individual rules by `:symbols` so the activators' bare names resolve.
+;;;
+;;; ── intrinsic vs extensive ───────────────────────────────────────────────────
+;;; INTRINSIC ops (`compose` / `meet` / `difference` / `converse` / `join` /
+;;; `difunctional`) read only existing edges — pure joins / NAF over the KB.
+;;; EXTENSIVE ops (`complement` / `top` / `identity` / `connex`) range over the
+;;; `Dom×Ran` universe to reach ABSENT pairs, so they take the puzzle's
+;;; instance-type relation + the argument types `(?isa ?Dom ?Ran)` (the A10
+;;; `std.typing` / `std.elim` machinery) and inherit the closed-world soundness
+;;; caveat: a `complement` / `connex` / `difference` reading is sound only when
+;;; the operand is saturation-determined (the `std.closure` caveat), NOT when it
+;;; needs hypothesis BRANCHING (the Zebra attribute relations). Opt in per use.
+;;; The hierarchy relation always arrives as the ?isa PARAM, never an `is-a`
+;;; literal — the rule bodies stay is-a-free (kernel-purity, S1.8.A10).
+;;;
+;;; Expressivity: RA ≡ FOL with ≤3 variables, so most ≤3-var constraints are
+;;; expressible here; `co-located` (4 params) / `adjacent-via` (5) exceed the L3
+;;; ceiling and correctly stay as puzzle-local named rules.
 
 ;; ── converse — (converse R1 R2) ⟺ R2 = R1° (the inverse relation).
 ;; Mirrors each R1-edge into R2 with the endpoints swapped. `right-of`/`left-of`
@@ -103,3 +129,194 @@
   :assert (false)
   :priority 110
   :why    "converse {?R1}/{?R2} ill-typed: domain({?R1})={?D1} neither = nor <: range({?R2})={?Rn2} under {?isR*}.")
+
+;; ╒═══════════════════════════════════════════════════════════════════════════╕
+;; │ S1.8.A12 — the rest of the relation-algebra signature                      │
+;; ╘═══════════════════════════════════════════════════════════════════════════╛
+
+;; ── relative (composition) layer ─────────────────────────────────────────────
+
+;; compose — (compose R1 R2 R3) ⟺ R3 ⊇ R1;R2 (relative product). The shared ?b
+;; makes it a Join: an R1-edge into ?b composes with an R2-edge out of ?b.
+;; `(compose right-of right-of two-right)` builds the two-to-the-right relation;
+;; `(compose R R R)` is exactly transitive closure of R.
+(rule compose (?R1 ?R2 ?R3)
+  :match  (and (?R1 ?a ?b) (?R2 ?b ?c))
+  :assert (?R3 ?a ?c)
+  :priority 100
+  :why    "(compose {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?b},{?c}) → {?R3}({?a},{?c}).")
+
+;; identity — (identity R isa Dom) ⟺ R ⊇ 1' on Dom: self-loop every Dom element.
+;; EXTENSIVE (⊙) — materialises pairs absent from the edge set, so it ranges over
+;; the `(?isa _ ?Dom)` extent rather than existing edges.
+(rule identity (?R ?isa ?Dom)
+  :match  (?isa ?a ?Dom)
+  :assert (?R ?a ?a)
+  :priority 100
+  :why    "(identity {?R} {?isa} {?Dom}): {?a}∈{?Dom} → {?R}({?a},{?a}).")
+
+;; ── Boolean (lattice) layer ──────────────────────────────────────────────────
+
+;; meet — (meet R1 R2 R3) ⟺ R3 ⊇ R1∩R2: the pairs in BOTH operands.
+(rule meet (?R1 ?R2 ?R3)
+  :match  (and (?R1 ?a ?b) (?R2 ?a ?b))
+  :assert (?R3 ?a ?b)
+  :priority 100
+  :why    "(meet {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+;; difference — (difference R1 R2 R3) ⟺ R3 ⊇ R1∖R2: in R1 but NOT R2 (NAF on R2).
+;; The `absent` is re-checked at fire time (`absents_still_pass`), but order R2's
+;; saturation before this fires for sane traces (Q-S1.8.A12.C). Closed-world:
+;; sound only when R2 is saturation-determined.
+(rule difference (?R1 ?R2 ?R3)
+  :match  (and (?R1 ?a ?b) (absent (?R2 ?a ?b)))
+  :assert (?R3 ?a ?b)
+  :priority 100
+  :why    "(difference {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧¬{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+;; join — (join R1 R2 R3) ⟺ R3 ⊇ R1∪R2. A GENERIC `(rule join … :match (or …))`
+;; would load-split into `join__or0` / `join__or1`, which the `(join …)` activator
+;; can never reach (store.py registers activators by exact rule name) — the dual
+;; of A11. So `join` uses the NON-generic fan-out idiom (`bijective-properties` /
+;; `reflexive`): a None-activator rule reads the `(join …)` operand fact and
+;; multi-asserts both per-operand activators, which then (A9 reflective) light up
+;; the two generic copiers. IMPORT all three (`derive-join join-l join-r`); the
+;; activator relation is `join`, distinct from any rule name.
+(rule derive-join ()
+  :match  (join ?R1 ?R2 ?R3)
+  :assert (and (join-l ?R1 ?R2 ?R3) (join-r ?R1 ?R2 ?R3))
+  :priority 120
+  :why    "(join {?R1} {?R2} {?R3}): fan out into the two per-operand copiers.")
+
+(rule join-l (?R1 ?R2 ?R3)
+  :match  (?R1 ?a ?b)
+  :assert (?R3 ?a ?b)
+  :priority 100
+  :why    "(join {?R1} {?R2} {?R3}): {?R1}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+(rule join-r (?R1 ?R2 ?R3)
+  :match  (?R2 ?a ?b)
+  :assert (?R3 ?a ?b)
+  :priority 100
+  :why    "(join {?R1} {?R2} {?R3}): {?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
+
+;; empty — (empty R) ⟺ R = 0: a CHECK. Any edge in R contradicts the claim.
+(rule empty (?R)
+  :match  (?R ?a ?b)
+  :assert (false)
+  :priority 110
+  :why    "(empty {?R}) violated: {?R}({?a},{?b}) exists.")
+
+;; top — (top R isa Dom Ran) ⟺ R ⊇ 1: the full Dom×Ran rectangle. EXTENSIVE (⊙).
+(rule top (?R ?isa ?Dom ?Ran)
+  :match  (and (?isa ?a ?Dom) (?isa ?b ?Ran))
+  :assert (?R ?a ?b)
+  :priority 100
+  :why    "(top {?R} {?isa} {?Dom} {?Ran}): {?a}∈{?Dom},{?b}∈{?Ran} → {?R}({?a},{?b}).")
+
+;; complement — (complement R1 R2 isa Dom Ran) ⟺ R2 ⊇ ¬R1 over Dom×Ran: the pairs
+;; of the universe ABSENT from R1. EXTENSIVE (⊙) and the one op that materialises
+;; absent pairs, so it inherits the closed-world caveat squarely — sound only when
+;; R1 is saturation-determined (the `std.closure` caveat). One positive R1-edge
+;; removed shrinks the complement.
+(rule complement (?R1 ?R2 ?isa ?Dom ?Ran)
+  :match  (and (?isa ?a ?Dom) (?isa ?b ?Ran) (absent (?R1 ?a ?b)))
+  :assert (?R2 ?a ?b)
+  :priority 100
+  :why    "(complement {?R1} {?R2}): {?a}∈{?Dom},{?b}∈{?Ran},¬{?R1}({?a},{?b}) → {?R2}({?a},{?b}).")
+
+;; ── single-relation property checks (RA equations) ───────────────────────────
+;; These complete the tag vocabulary zebra2 already uses (`symmetric` ✅ A7,
+;; `functional` / `total` / `bijective` ✅, `reflexive` ✅ A10). Each is a generic
+;; check (`⟹ (false)`) or closure (`⟹ the closing edge`).
+
+;; irreflexive — R∩1' = 0: no self-loop. The repeated ?a is an equality
+;; constraint in the matcher (`_bind_arg`), so this fires only on `(R a a)`.
+(rule irreflexive (?R)
+  :match  (?R ?a ?a)
+  :assert (false)
+  :priority 110
+  :why    "(irreflexive {?R}) violated: self-loop {?R}({?a},{?a}).")
+
+;; antisymmetric — R∩R° ⊆ 1': R(a,b)∧R(b,a) ⟹ a=b, so a DISTINCT mutual pair is ⊥.
+(rule antisymmetric (?R)
+  :match  (and (?R ?a ?b) (?R ?b ?a) (neq ?a ?b))
+  :assert (false)
+  :priority 110
+  :why    "(antisymmetric {?R}) violated: {?R}({?a},{?b})∧{?R}({?b},{?a}), {?a}≠{?b}.")
+
+;; asymmetric — R∩R° = 0: ANY mutual pair (incl. a self-loop) is ⊥ — strictly
+;; stronger than antisymmetric (= antisymmetric ∧ irreflexive).
+(rule asymmetric (?R)
+  :match  (and (?R ?a ?b) (?R ?b ?a))
+  :assert (false)
+  :priority 110
+  :why    "(asymmetric {?R}) violated: both {?R}({?a},{?b}) and {?R}({?b},{?a}).")
+
+;; connex — R∪R° = 1 over Dom (a total / linear relation): every DISTINCT pair of
+;; Dom elements is comparable. CHECK, EXTENSIVE (⊙) — quantifies over the absent
+;; pairs, so closed-world (Dom = ?isa-extent, both args one type). Two distinct
+;; Dom elements with neither orientation present ⟹ ⊥.
+(rule connex (?R ?isa ?Dom)
+  :match  (and (?isa ?a ?Dom) (?isa ?b ?Dom) (neq ?a ?b)
+               (absent (?R ?a ?b)) (absent (?R ?b ?a)))
+  :assert (false)
+  :priority 110
+  :why    "(connex {?R}) violated: {?a},{?b}∈{?Dom} incomparable (neither {?R}({?a},{?b}) nor {?R}({?b},{?a})).")
+
+;; difunctional — R;R°;R ⊆ R: a CLOSURE. R(a,b)∧R(c,b)∧R(c,d) ⟹ R(a,d) (rows that
+;; overlap in a column agree on every column). Bounded by existing nodes → dedup
+;; terminates.
+(rule difunctional (?R)
+  :match  (and (?R ?a ?b) (?R ?c ?b) (?R ?c ?d))
+  :assert (?R ?a ?d)
+  :priority 90
+  :why    "(difunctional {?R}): {?R}({?a},{?b})∧{?R}({?c},{?b})∧{?R}({?c},{?d}) → {?R}({?a},{?d}).")
+
+;; ── equational theory: Tarski/Maddux axioms as lemma rules ───────────────────
+;; B1–B5 (Boolean + monoid structure) hold by construction (ein relations are
+;; pair-sets — a representable RA), so they need no rules. B6–B10 are
+;; DERIVATIONAL — they interrelate operator facts; all reflective (A9: a derived
+;; `(compose …)` / `(join …)` lights up its rule next pass) and convergent (every
+;; back-derivation already exists → the saturator's dedup bounds the loop).
+
+;; B10 Schröder / cycle law — A;B ≤ C⁻ ⟺ A˘;C ≤ B⁻ ⟺ C;B˘ ≤ A⁻. Operationally,
+;; for a declared composite T = R;S, a MISSING composite edge forces a missing
+;; factor: ¬T(a,c) ∧ R(a,b) ⟹ ¬S(b,c), and dually ¬T(a,c) ∧ S(b,c) ⟹ ¬R(a,b).
+;; The generic form of zebra2's `adjacent-via` / `disjunctive-prune` negative
+;; propagation (Q-S1.8.A12.E). SOUND only when T = R;S is CLOSED — composition is
+;; the only source of T (the `std.closure` caveat). Opt in PER TRIPLE, separate
+;; from `compose`, since the closed-T obligation is stricter: declare
+;; `(compose-negative-s R S T)` / `(compose-negative-r R S T)` to enable.
+(rule compose-negative-s (?R ?S ?T)
+  :match  (and (?R ?a ?b) (not (?T ?a ?c)))
+  :assert (not (?S ?b ?c))
+  :priority 240
+  :why    "Schröder ({?R};{?S}={?T} closed): {?R}({?a},{?b})∧¬{?T}({?a},{?c}) → ¬{?S}({?b},{?c}).")
+
+(rule compose-negative-r (?R ?S ?T)
+  :match  (and (?S ?b ?c) (not (?T ?a ?c)))
+  :assert (not (?R ?a ?b))
+  :priority 240
+  :why    "Schröder ({?R};{?S}={?T} closed): {?S}({?b},{?c})∧¬{?T}({?a},{?c}) → ¬{?R}({?a},{?b}).")
+
+;; B7 contravariance — (A;B)° = B°;A°. From a declared `(compose R S T)` plus the
+;; three converse facts, derive the converse composite `(compose S° R° T°)`.
+;; Non-generic (operator facts from premises); reflective; converges (re-applying
+;; with `converse-pair-symmetric`'s back-edges yields `(compose R S T)`, already
+;; present).
+(rule compose-contravariant ()
+  :match  (and (compose ?R ?S ?T)
+               (converse ?R ?Rc) (converse ?S ?Sc) (converse ?T ?Tc))
+  :assert (compose ?Sc ?Rc ?Tc)
+  :priority 90
+  :why    "B7 contravariance: ({?R};{?S}={?T}) ⟹ ({?Sc};{?Rc}={?Tc}) (converses).")
+
+;; B8 converse over join — (A∨B)° = A°∨B°. From `(join R S U)` plus the converse
+;; facts, derive `(join R° S° U°)`. Same reflective/convergent shape as B7.
+(rule join-converse ()
+  :match  (and (join ?R ?S ?U)
+               (converse ?R ?Rc) (converse ?S ?Sc) (converse ?U ?Uc))
+  :assert (join ?Rc ?Sc ?Uc)
+  :priority 90
+  :why    "B8: ({?R}∪{?S}={?U}) ⟹ ({?Rc}∪{?Sc}={?Uc}) (converses).")
