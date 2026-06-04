@@ -153,13 +153,16 @@ def _firing_to_dict(firing: Any) -> dict[str, Any]:
         "activator": list(firing.activator),
         "bindings": bindings_clean,
         "redundant": firing.redundant,
+        # S1.8.A13: `firing.derived` is now a tuple; this debug dump shows the
+        # primary conclusion (the full fan-out is in the slice diagram + the KB
+        # dump). `a` is a nested Fact (octagon) iff it has `.relation_name`.
         "derived": {
-            "relation": firing.derived.relation_name,
+            "relation": firing.derived[0].relation_name,
             "args": [
                 {"relation": a.relation_name,
                  "args": list(map(str, a.args))}
-                if isinstance(a, type(firing.derived)) else str(a)
-                for a in firing.derived.args
+                if hasattr(a, "relation_name") else str(a)
+                for a in firing.derived[0].args
             ],
         },
         "premises": [

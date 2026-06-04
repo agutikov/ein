@@ -135,7 +135,7 @@ def test_gaps_solve_branching_04_returns_two_branches():
         plan = JoinPlan(
             rule_name="<query>", activator_args=(), bindings_seed={},
             steps=tuple(compile_pattern(goal, {})),
-            assert_template=None, why="",
+            assert_templates=(), why="",
         )
         rows = [dict(b) for b, _premises in match_run(plan, branch.kb)]
         assert rows, f"branch {branch} doesn't satisfy goal"

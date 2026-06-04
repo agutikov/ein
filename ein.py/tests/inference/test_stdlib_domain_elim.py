@@ -42,8 +42,8 @@ def test_demo_file_solves_to_color_of_house2_blue():
     assert len(productive) == 1
     f = productive[0]
     assert f.rule == "domain-elimination"
-    assert f.derived.relation_name == "color-of"
-    assert f.derived.args == ("House-2", "Blue")
+    assert f.derived[0].relation_name == "color-of"
+    assert f.derived[0].args == ("House-2", "Blue")
 
 
 def test_domain_elim_forces_unique_survivor():
@@ -59,7 +59,7 @@ def test_domain_elim_forces_unique_survivor():
     """)
     firings = _saturate(kb)
     derived = [
-        f.derived for f in firings
+        f.derived[0] for f in firings
         if not f.redundant and f.rule == "domain-elimination"
     ]
     assert len(derived) == 1

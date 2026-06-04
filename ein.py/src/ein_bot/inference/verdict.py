@@ -128,7 +128,7 @@ def goal_bindings(kb: KnowledgeBase, goal=None) -> list[dict[str, str]]:
         activator_args=(),
         bindings_seed={},
         steps=tuple(compile_pattern(goal, {})),
-        assert_template=None,
+        assert_templates=(),
         why="",
     )
     return [dict(b) for b, _premises in match_run(plan, kb)]

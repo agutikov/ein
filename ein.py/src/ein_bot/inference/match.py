@@ -145,9 +145,15 @@ def run(
     The seeded bindings from the activator binding are merged into
     every emitted result so the asserter has uniform access to all
     bound names (rule params + body vars).
+
+    S1.8.A13: a rule whose ``:match`` is a top-level ``(or …)`` carries its
+    extra disjuncts in ``plan.extra_match_plans``; each runs from a fresh seed,
+    so every caller (saturator, lookahead, engine) sees all disjuncts' matches
+    without any rule-split. Single-``:match`` rules have no extras (one pass).
     """
-    seed: dict[str, Any] = dict(plan.bindings_seed)
-    yield from _run_steps(plan.steps, seed, (), kb)
+    yield from _run_steps(plan.steps, dict(plan.bindings_seed), (), kb)
+    for extra_steps in plan.extra_match_plans:
+        yield from _run_steps(extra_steps, dict(plan.bindings_seed), (), kb)
 
 
 def absents_still_pass(

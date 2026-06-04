@@ -36,7 +36,7 @@ def _f(rel: str, *args, layer: Layer = Layer.REASONING) -> Fact:
 def _firing(rule: str, premises: tuple[Fact, ...], derived: Fact,
             bindings: dict | None = None, redundant: bool = False) -> Firing:
     return Firing(rule=rule, activator=(), bindings=bindings or {},
-                  derived=derived, premises=premises, redundant=redundant)
+                  derived=(derived,), premises=premises, redundant=redundant)
 
 
 def _parses(dot: str) -> bool:

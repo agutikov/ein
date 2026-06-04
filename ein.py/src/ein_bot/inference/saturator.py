@@ -249,32 +249,32 @@ class Saturator:
         key: tuple,
     ) -> Firing | None:
         """Apply one popped candidate; build a Firing (productive or redundant)."""
-        if plan.assert_template is None:
+        if not plan.assert_templates:
             # Defensive — no assert clause, nothing to derive. Mark
             # fired so the queue doesn't churn on it forever.
             self.engine._fired.add(key)
             return None
 
-        # Tentative-build: what would this firing derive? Cheap
-        # because build_fact is a pure walk over the assert template.
-        tentative = build_fact(plan.assert_template, bindings)
-        existing = self.kb._fact_by_id(
-            tentative.relation_name, tentative.args,
-        )
+        # Tentative-build every conclusion (S1.8.A13: a `:assert (and …)` has
+        # several). Cheap — build_fact is a pure walk over each template.
+        tentative = [build_fact(t, bindings) for t in plan.assert_templates]
+        existing = [
+            self.kb._fact_by_id(t.relation_name, t.args) for t in tentative
+        ]
 
         # Mark this binding fired regardless of redundancy — the
         # matcher will keep producing it on every pass otherwise.
         self.engine._fired.add(key)
 
-        if existing is not None:
-            # Conclusion already known. Record the firing as
-            # redundant; the trace renderer will show the engine
-            # considered it without re-asserting.
+        if all(e is not None for e in existing):
+            # Every conclusion already known → redundant (a partially-novel
+            # multi-assert is productive and falls through to `fire`). The trace
+            # renderer shows the firing was considered without re-asserting.
             return Firing(
                 rule=plan.rule_name,
                 activator=tuple(str(a) for a in plan.activator_args),
                 bindings=dict(bindings),
-                derived=existing,
+                derived=tuple(existing),
                 premises=premises,
                 redundant=True,
             )

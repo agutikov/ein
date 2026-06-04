@@ -31,11 +31,12 @@ def _saturate(src: str, max_steps: int = 3000):
 
 
 def _false(firings):
-    return [f for f in firings if f.derived.relation_name == "false"]
+    return [f for f in firings
+            if any(d.relation_name == "false" for d in f.derived)]
 
 
 def _derived(firings):
-    return {(f.derived.relation_name, f.derived.args) for f in firings}
+    return {(d.relation_name, d.args) for f in firings for d in f.derived}
 
 
 # ── variant (b): raw per-pair activators ───────────────────────────

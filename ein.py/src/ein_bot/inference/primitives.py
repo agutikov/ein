@@ -70,8 +70,8 @@ _REGISTRY: dict[str, Primitive] = {
     OR: Primitive(
         OR, "2+",
         "disjunction; a top-level `(or …)` in a `:match` is lowered to one "
-        "rule per disjunct at LOAD time (`kb.from_ir`)",
-        "loader (`kb.from_ir._match_disjuncts`) + compiler guard",
+        "match plan per disjunct at COMPILE time (S1.8.A13), on one rule",
+        "compiler (`compile._match_disjuncts` / `compile_rule`) + guard",
     ),
     ABSENT: Primitive(
         ABSENT, "1",

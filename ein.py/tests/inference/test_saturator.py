@@ -88,9 +88,9 @@ def test_single_fact_one_firing():
     firings = list(sat.saturate())
     productive = [f for f in firings if not f.redundant]
     assert len(productive) == 1
-    assert productive[0].derived.relation_name == "r"
-    assert productive[0].derived.args == ("B", "A")
-    assert productive[0].derived.layer == Layer.REASONING
+    assert productive[0].derived[0].relation_name == "r"
+    assert productive[0].derived[0].args == ("B", "A")
+    assert productive[0].derived[0].layer == Layer.REASONING
 
 
 def test_triangle_transitive_closure():
@@ -103,7 +103,7 @@ def test_triangle_transitive_closure():
     (r A B :source "(1)") (r B C :source "(2)")
     """)
     firings = list(sat.saturate())
-    productive = {f.derived.args for f in firings if not f.redundant}
+    productive = {f.derived[0].args for f in firings if not f.redundant}
     assert ("A", "C") in productive
 
 

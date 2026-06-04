@@ -48,11 +48,11 @@ def test_engine_step_produces_one_firing():
     firing = eng.step()
     assert firing is not None
     assert firing.rule == "symmetric"
-    assert firing.derived.relation_name == "co-located"
-    assert firing.derived.args == ("House-1", "Norwegian")
-    assert firing.derived.layer == Layer.REASONING
+    assert firing.derived[0].relation_name == "co-located"
+    assert firing.derived[0].args == ("House-1", "Norwegian")
+    assert firing.derived[0].layer == Layer.REASONING
     # Provenance threads the premise.
-    prov = firing.derived.provenance
+    prov = firing.derived[0].provenance
     assert prov is not None and prov.kind == "rule"
     assert prov.rule == "symmetric"
     assert prov.premises_raw == (("co-located", ("Norwegian", "House-1")),)
@@ -78,7 +78,7 @@ def test_engine_saturate_bounded():
     # → assert the originals. add_fact dedupes, so the second round
     # produces no NEW facts, but it still counts as firings until the
     # _fired set absorbs every (rule, activator, bindings) triple.
-    derived = {(f.derived.relation_name, f.derived.args) for f in firings}
+    derived = {(f.derived[0].relation_name, f.derived[0].args) for f in firings}
     assert ("r", ("B", "A")) in derived
     assert ("r", ("D", "C")) in derived
 
@@ -103,11 +103,11 @@ def test_engine_type_exclusivity_produces_negative_facts():
     # Each ordered pair of distinct A/B instances produces one negative.
     # (instance A T, instance B T, neq A B) → not (co-located A B).
     # (instance B T, instance A T, neq B A) → not (co-located B A).
-    rels = {f.derived.relation_name for f in firings}
+    rels = {f.derived[0].relation_name for f in firings}
     assert "not" in rels
     # Nested-Fact arg verification.
-    not_firing = next(f for f in firings if f.derived.relation_name == "not")
-    inner = not_firing.derived.args[0]
+    not_firing = next(f for f in firings if f.derived[0].relation_name == "not")
+    inner = not_firing.derived[0].args[0]
     # The inner is a Fact (relational-node arg per Q40 / R9).
     assert hasattr(inner, "relation_name")
     assert inner.relation_name == "co-located"

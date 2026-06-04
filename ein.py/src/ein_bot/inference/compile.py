@@ -114,11 +114,27 @@ class JoinPlan:
     activator_args: tuple[str, ...]
     bindings_seed: dict[str, str | int] = field(default_factory=dict)
     steps: tuple[object, ...] = ()
-    # Compiled :assert pattern — its slot values are also IR nodes
-    # (Var / Atom / Int / NestedPattern). The asserter walks this
-    # and builds the derived Fact at firing time.
-    assert_template: object | None = None
+    # S1.8.A13: a `:match (or d1 … dm)` compiles to ONE plan with `steps` =
+    # the first disjunct and `extra_match_plans` = the remaining disjuncts'
+    # step tuples. `match.run` executes `steps` plus every entry here, so
+    # every match.run caller transparently sees all disjuncts (no rule-split,
+    # no `__or<i>` siblings). Empty for the common single-`:match` rule.
+    extra_match_plans: tuple[tuple[object, ...], ...] = ()
+    # S1.8.A13: a `:match`/`:assert` may conclude SEVERAL facts. Each entry is
+    # a compiled conclusion template (Var / Atom / Int / NestedPattern slots);
+    # `fire()` walks them all and emits one Firing with N derived facts. A
+    # single-`:assert` rule is a 1-tuple; the `assert_template` property below
+    # keeps the single-fact reader path working.
+    assert_templates: tuple[object, ...] = ()
     why: str = ""
+
+    @property
+    def assert_template(self) -> object | None:
+        """The first conclusion template — back-compat for single-assert
+        readers (closure/NAF analysis, hrule). Multi-assert consumers
+        (`fire`, the saturator's redundancy check, lookahead) walk
+        `assert_templates` directly."""
+        return self.assert_templates[0] if self.assert_templates else None
 
 
 # ── Compile entry points ───────────────────────────────────────────
@@ -269,12 +285,12 @@ def _compile_premise(
             steps.extend(_compile_premise(child, bindings, known_vars))
         return steps
 
-    # `(or …)` — disjunction. A *top-level* `(or …)` in a rule :match is
-    # lowered to one rule per disjunct at LOAD time (S1.7.6 T1.7.6.5;
-    # `kb.from_ir._match_disjuncts`), exploiting the already-disjunctive
-    # multiple-rules semantics — so it never reaches the compiler. A
-    # *nested* `(or …)` (e.g. inside `(and …)`) would need DNF expansion
-    # and is unsupported; emit nothing so the loader doesn't trip.
+    # `(or …)` — disjunction. A *top-level* `(or …)` in a rule :match is split
+    # into one match plan per disjunct by `compile_rule` (S1.8.A13; via
+    # `_match_disjuncts`) BEFORE `_compile_premise` runs, so each disjunct
+    # arrives here already unwrapped — `_compile_premise` never sees the `or`.
+    # A *nested* `(or …)` (e.g. inside `(and …)`) would need DNF expansion and
+    # is unsupported; emit nothing so the compiler doesn't trip.
     if head_name == primitives.OR:
         return []
 
@@ -318,6 +334,33 @@ def compile_pattern(
 # ── Rule-level compile (driven by the engine) ──────────────────────
 
 
+def _match_disjuncts(expr: IRNode) -> list[IRNode]:
+    """A top-level ``(or d1 … dm)`` :match → ``[d1, …, dm]``; else ``[expr]``.
+
+    S1.8.A13: the disjunction lowers to multiple compiled match plans on ONE
+    rule (`steps` + `extra_match_plans`), not the old load-time `__or<i>` rule
+    clones. Only the top-level position is split; a nested `(or …)` still needs
+    DNF and is unsupported (`_compile_premise`)."""
+    if (isinstance(expr, SForm) and isinstance(expr.head, Atom)
+            and expr.head.name == primitives.OR):
+        return [a for a in expr.args if not isinstance(a, KwPair)]
+    return [expr]
+
+
+def _assert_conjuncts(expr: IRNode) -> list[IRNode]:
+    """A top-level ``(and c1 … ck)`` :assert → ``[c1, …, ck]``; else ``[expr]``.
+
+    S1.8.A13: one match concludes several facts in a single firing (see
+    `JoinPlan.assert_templates` / `fire`), not the old `__and<j>` rule clones —
+    so a *generic* rule may multi-assert (the rule keeps its name, activation is
+    unaffected). Only the top level is split; a nested `(and …)` (inside a
+    `(not …)`, say) is left to the asserter."""
+    if (isinstance(expr, SForm) and isinstance(expr.head, Atom)
+            and expr.head.name == primitives.AND):
+        return [a for a in expr.args if not isinstance(a, KwPair)]
+    return [expr]
+
+
 def compile_rule(rule: Rule, activator: Fact | None) -> JoinPlan:
     """Compile a (rule, activator) pair into a :class:`JoinPlan`.
 
@@ -345,24 +388,34 @@ def compile_rule(rule: Rule, activator: Fact | None) -> JoinPlan:
             a for a in activator.args if isinstance(a, str)
         )
 
+    # Match: a top-level `(or …)` lowers to one step-tuple per disjunct
+    # (S1.8.A13). `steps` is the first; `extra_match_plans` the rest — `match.run`
+    # executes them all. Each disjunct compiles with the same activator bindings
+    # and its own fresh body-var scope.
     if rule.match is None:
-        steps: tuple[object, ...] = ()
+        match_seqs: list[tuple[object, ...]] = [()]
     else:
-        steps = compile_pattern(rule.match.expr, bindings)
+        match_seqs = [compile_pattern(d, bindings)
+                      for d in _match_disjuncts(rule.match.expr)]
 
-    # The :assert template is lowered the same way — Var slots stay
-    # unbound (to be filled at firing time); Atom/Int/NestedPattern
-    # slots stay literal.
-    assert_template: object | None = None
-    if rule.assert_ is not None:
-        assert_template = _lower_assert(rule.assert_.expr, bindings)
+    # Assert: a top-level `(and …)` lowers to one template per conjunct — Var
+    # slots stay unbound (filled at firing time); Atom/Int/NestedPattern stay
+    # literal. `fire()` emits all of them in one Firing.
+    if rule.assert_ is None:
+        assert_templates: tuple[object, ...] = ()
+    else:
+        assert_templates = tuple(
+            _lower_assert(c, bindings)
+            for c in _assert_conjuncts(rule.assert_.expr)
+        )
 
     return JoinPlan(
         rule_name=rule.name,
         activator_args=activator_args,
         bindings_seed=dict(bindings),
-        steps=steps,
-        assert_template=assert_template,
+        steps=match_seqs[0],
+        extra_match_plans=tuple(match_seqs[1:]),
+        assert_templates=assert_templates,
         why=rule.why,
     )
 

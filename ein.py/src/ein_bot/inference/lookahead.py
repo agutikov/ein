@@ -77,8 +77,13 @@ class Lookahead:
         mutation of ``kb``.
         """
         for plan in self._plans:
-            template = plan.assert_template
-            if not isinstance(template, NestedPattern):
+            # A rule may conclude SEVERAL facts (S1.8.A13) — any one could
+            # contradict `h`, so probe every fact-shaped conclusion.
+            fact_templates = [
+                t for t in plan.assert_templates
+                if isinstance(t, NestedPattern)
+            ]
+            if not fact_templates:
                 continue
             for idx, step in enumerate(plan.steps):
                 if not isinstance(step, (Scan, Join)):
@@ -99,18 +104,18 @@ class Lookahead:
                     activator_args=plan.activator_args,
                     bindings_seed=seed,
                     steps=rest,
-                    assert_template=template,
                     why=plan.why,
                 )
                 for bindings, _premises in match.run(probe, kb):
-                    try:
-                        f = build_fact(template, bindings)
-                    except (KeyError, TypeError):
-                        # Defensive: a malformed assert template
-                        # never kills a candidate.
-                        continue
-                    if _is_contradiction(kb, f, h):
-                        return True
+                    for template in fact_templates:
+                        try:
+                            f = build_fact(template, bindings)
+                        except (KeyError, TypeError):
+                            # Defensive: a malformed assert template
+                            # never kills a candidate.
+                            continue
+                        if _is_contradiction(kb, f, h):
+                            return True
         return False
 
 

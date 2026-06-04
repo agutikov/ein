@@ -87,7 +87,7 @@ def _f(rel: str, *args: object, layer: Layer = Layer.REASONING) -> Fact:
 
 
 def _firing(rule: str, premises: tuple[Fact, ...], derived: Fact) -> Firing:
-    return Firing(rule=rule, activator=(), bindings={}, derived=derived,
+    return Firing(rule=rule, activator=(), bindings={}, derived=(derived,),
                   premises=premises, redundant=False)
 
 

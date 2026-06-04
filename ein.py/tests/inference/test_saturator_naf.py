@@ -58,8 +58,8 @@ def test_naf_preserved_when_derived_fact_never_arrives():
     productive = [f for f in firings if not f.redundant]
     assert len(productive) == 1
     assert productive[0].rule == "gate"
-    assert productive[0].derived.relation_name == "gated"
-    assert productive[0].derived.args == ("X", "Y")
+    assert productive[0].derived[0].relation_name == "gated"
+    assert productive[0].derived[0].args == ("X", "Y")
 
 
 def test_naf_dropped_when_derived_fact_arrives_between_enqueue_and_fire():

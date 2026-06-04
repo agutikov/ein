@@ -74,7 +74,9 @@ def _target_entity(derived) -> str | None:
 def _step_from_firing(n: int, firing, kb, *, diagrams: bool,
                       conditional: bool = False) -> TraceStep:
     premises = tuple((p.relation_name, p.args) for p in firing.premises)
-    derived = (firing.derived.relation_name, firing.derived.args)
+    # S1.8.A13: `firing.derived` is a tuple; the linear step records the primary
+    # conclusion (the per-step slice diagram renders the full fan-out).
+    derived = (firing.derived[0].relation_name, firing.derived[0].args)
     bindings = {k: str(v) for k, v in firing.bindings.items()}
     rule = getattr(kb, "rules", {}).get(firing.rule) if kb is not None else None
     why = render_why(rule.why, firing.bindings) if (rule and rule.why) else ""

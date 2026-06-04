@@ -6,6 +6,7 @@ does NOT fire — missing activator, wrong types, or guard prunes).
 """
 from __future__ import annotations
 
+from ein_bot.inference.compile import compile_rule
 from ein_bot.inference.engine import Engine
 from ein_bot.ir import parse
 from ein_bot.kb.entities import Fact, Layer
@@ -33,8 +34,8 @@ def test_symmetric_positive():
     firings = list(eng.saturate())
     assert any(
         f.rule == "symmetric"
-        and f.derived.relation_name == "r"
-        and f.derived.args == ("B", "A")
+        and f.derived[0].relation_name == "r"
+        and f.derived[0].args == ("B", "A")
         for f in firings
     )
 
@@ -64,7 +65,7 @@ def test_transitive_positive():
     """)
     firings = list(eng.saturate())
     assert any(
-        f.rule == "transitive" and f.derived.args == ("A", "C")
+        f.rule == "transitive" and f.derived[0].args == ("A", "C")
         for f in firings
     )
 
@@ -81,7 +82,7 @@ def test_transitive_negative_neq_prunes_cycle():
     firings = list(eng.saturate())
     # No (r A A) or (r B B) firings — only what transitivity actually
     # produces (nothing for a 2-cycle).
-    assert all(f.derived.args[0] != f.derived.args[1] for f in firings)
+    assert all(f.derived[0].args[0] != f.derived[0].args[1] for f in firings)
 
 
 # ── implies ────────────────────────────────────────────────────────
@@ -99,8 +100,8 @@ def test_implies_positive():
     firings = list(eng.saturate())
     assert any(
         f.rule == "implies"
-        and f.derived.relation_name == "next-to"
-        and f.derived.args == ("H2", "H1")
+        and f.derived[0].relation_name == "next-to"
+        and f.derived[0].args == ("H2", "H1")
         for f in firings
     )
 
@@ -139,7 +140,7 @@ def test_square_fwd_positive():
     # Map to slots: ?a=H2, ?b=H1, ?x=H3, ?y=H2 ⇒ require (co-located H2 H3) — missing.
     # Try other binding: ?a=H3, ?b=H2, ?x=H2, ?y=H1 + (co-located H3 H2) — missing.
     # ?a=H2, ?b=H1, ?x=H2, ?y=H1: (co-located H2 H2) ✓ ⇒ derive (co-located H1 H1).
-    derived = {(f.derived.relation_name, f.derived.args) for f in firings}
+    derived = {(f.derived[0].relation_name, f.derived[0].args) for f in firings}
     assert ("co-located", ("H1", "H1")) in derived
 
 
@@ -174,7 +175,7 @@ def test_square_bwd_positive():
     """)
     firings = list(eng.saturate())
     # ?a=H2 ?b=H1 ?x=H2 ?y=H1 + (co-located H1 H1) ⇒ derive (co-located H2 H2).
-    derived = {(f.derived.relation_name, f.derived.args) for f in firings}
+    derived = {(f.derived[0].relation_name, f.derived[0].args) for f in firings}
     assert ("co-located", ("H2", "H2")) in derived
 
 
@@ -206,11 +207,11 @@ def test_type_exclusivity_positive():
     """)
     firings = list(eng.saturate())
     # Two distinct-instance pairs → 2 firings (Red/Blue, Blue/Red).
-    not_firings = [f for f in firings if f.derived.relation_name == "not"]
+    not_firings = [f for f in firings if f.derived[0].relation_name == "not"]
     assert len(not_firings) == 2
     # Each inner arg is a nested Fact (co-located).
     for f in not_firings:
-        inner = f.derived.args[0]
+        inner = f.derived[0].args[0]
         assert isinstance(inner, Fact)
         assert inner.relation_name == "co-located"
 
@@ -259,8 +260,8 @@ def test_square_unique_corner_inference():
         f for f in firings if f.rule == "square-unique" and not f.redundant
     ]
     assert len(matched) == 1
-    assert matched[0].derived.relation_name == "co-located"
-    assert matched[0].derived.args == ("Blue", "House-2")
+    assert matched[0].derived[0].relation_name == "co-located"
+    assert matched[0].derived[0].args == ("Blue", "House-2")
 
 
 def test_square_unique_does_not_fire_on_attribute_pair():
@@ -360,7 +361,7 @@ def test_hypothesis_contradiction_positive():
     # nested Fact `prop`.
     matched = [f for f in firings if f.rule == "hypothesis-contradiction"]
     assert len(matched) == 1
-    derived = matched[0].derived
+    derived = matched[0].derived[0]
     assert derived.relation_name == "not"
     assert derived.args == (prop,)
 
@@ -395,23 +396,27 @@ def test_hypothesis_contradiction_negative_no_contradiction_fact():
 # ── or-lowering (S1.7.6 T1.7.6.5) ──────────────────────────────────
 
 
-def test_or_in_match_lowers_to_one_rule_per_disjunct():
-    """A top-level `(or …)` in a rule :match is desugared at LOAD time
-    into one rule per disjunct (`<name>__or<i>`), exploiting ein's
-    disjunctive multiple-rules semantics — no runtime `or` branch."""
+def test_or_in_match_keeps_one_rule_with_multiple_plans():
+    """S1.8.A13: a top-level `(or …)` in :match NO LONGER splits the rule into
+    `__or<i>` clones. The rule keeps its name; `compile_rule` lowers the
+    disjuncts to one match plan each (`steps` + `extra_match_plans`), which
+    `match.run` executes together. (Firing: test_or_disjuncts_fire_independently.)"""
     kb = KnowledgeBase.from_ir(parse("""
     (relation p T T) (relation q T T) (relation r T T)
     (rule disj ()
 :match (or (p ?x ?y) (q ?x ?y)) :assert (r ?x ?y) :why "d")
     """))
-    # One source rule → two compiled instances; the base name is gone.
-    assert "disj" not in kb.rules
-    assert set(kb.rules) == {"disj__or0", "disj__or1"}
-    # Each instance matches exactly its disjunct, and shares the assert.
-    assert kb.rules["disj__or0"].match.relation_names == ("p",)
-    assert kb.rules["disj__or1"].match.relation_names == ("q",)
-    assert kb.rules["disj__or0"].assert_.relation_names == ("r",)
-    assert kb.rules["disj__or1"].assert_.relation_names == ("r",)
+    # One source rule → ONE rule, name intact; no clones.
+    assert set(kb.rules) == {"disj"}
+    plan = compile_rule(kb.rules["disj"], None)
+    # 2 disjuncts → first in `steps`, the other in `extra_match_plans`.
+    assert len(plan.extra_match_plans) == 1
+    scanned = {s.relation
+               for seq in (plan.steps, *plan.extra_match_plans)
+               for s in seq if hasattr(s, "relation")}
+    assert scanned == {"p", "q"}
+    # One shared :assert template.
+    assert len(plan.assert_templates) == 1
 
 
 def test_or_disjuncts_fire_independently():
@@ -425,8 +430,8 @@ def test_or_disjuncts_fire_independently():
         ({activator} :source "(1)")
         """)
         return {
-            f.derived.args for f in eng.saturate()
-            if f.derived.relation_name == "r"
+            f.derived[0].args for f in eng.saturate()
+            if f.derived[0].relation_name == "r"
         }
 
     assert ("A", "B") in _r_facts("p A B")   # left disjunct fires

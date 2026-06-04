@@ -52,7 +52,11 @@ class Firing:
     rule: str
     activator: tuple[str, ...]
     bindings: dict[str, Any]
-    derived: Fact
+    # S1.8.A13: the facts a single rule application concludes. One template →
+    # a 1-tuple; a `:assert (and …)` → N facts, all sharing one Provenance (one
+    # application fanning out to N derived nodes). A `redundant` firing's tuple
+    # holds the pre-existing fact(s) the matcher would have re-derived.
+    derived: tuple[Fact, ...]
     premises: tuple[Fact, ...]
     redundant: bool = False
 
@@ -127,7 +131,7 @@ def fire(
     no ``:assert`` template (defensive — shouldn't happen for a
     well-formed rule), returns None.
     """
-    if plan.assert_template is None:
+    if not plan.assert_templates:
         return None
 
     # Stringify bindings for Provenance.bindings (tuple[(str, str), ...]).
@@ -139,23 +143,23 @@ def fire(
     premises_raw = tuple(
         (p.relation_name, p.args) for p in premises
     )
+    # One Provenance per application — every conclusion of this firing shares
+    # it (S1.8.A13: one rule application → N derived facts, one node fanning out).
     provenance = Provenance.from_rule(
         rule=plan.rule_name,
         premises_raw=premises_raw,
         bindings=binding_pairs,
     )
 
-    derived = build_fact(
-        plan.assert_template,
-        bindings,
-        layer=Layer.REASONING,
-        provenance=provenance,
+    # Build + store each templated conclusion. add_and_index_fact dedups by
+    # (relation_name, args), so an already-known conclusion is returned (and
+    # indexed) once — a partially-novel multi-assert still records every fact.
+    stored = tuple(
+        kb.add_and_index_fact(build_fact(
+            template, bindings, layer=Layer.REASONING, provenance=provenance,
+        ))
+        for template in plan.assert_templates
     )
-
-    # Add + index in one step. add_and_index_fact dedups by
-    # (relation_name, args) and indexes only a genuinely-new fact, so a
-    # conclusion re-derived by another rule is returned (and indexed) once.
-    stored = kb.add_and_index_fact(derived)
 
     # Activator args as strings — for the Firing record only.
     activator = tuple(

@@ -24,9 +24,10 @@ def _kb(src: str) -> KnowledgeBase:
 
 def _productive(kb: KnowledgeBase):
     return [
-        (f.rule, f.derived.relation_name, f.derived.args)
+        (f.rule, d.relation_name, d.args)
         for f in Saturator(kb).saturate(max_steps=2000)
         if not f.redundant
+        for d in f.derived
     ]
 
 

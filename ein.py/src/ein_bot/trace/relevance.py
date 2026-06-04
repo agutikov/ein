@@ -97,9 +97,12 @@ def relevant_firings(
     seeds = _seed_keys(kb)
 
     # Backward provenance cone from the seeds over the firing graph.
+    # S1.8.A13: a firing concludes SEVERAL facts (`f.derived` is a tuple); index
+    # the firing under each, so the provenance cone reaches it via any conclusion.
     by_derived: dict[FactKey, list[Firing]] = {}
     for f in firings:
-        by_derived.setdefault(_key(f.derived), []).append(f)
+        for d in f.derived:
+            by_derived.setdefault(_key(d), []).append(f)
     needed: set[FactKey] = set()
     stack = list(seeds)
     while stack:
@@ -115,18 +118,21 @@ def relevant_firings(
     conditional: set[FactKey] = {tuple(fid) for fid in (commitment or ())}
     for f in firings:
         if any(_key(p) in conditional for p in f.premises):
-            conditional.add(_key(f.derived))
+            for d in f.derived:
+                conditional.add(_key(d))
 
     kept: list[tuple[Firing, bool]] = []
     seen: set[FactKey] = set()
     for f in firings:
         if f.redundant:
             continue
-        dk = _key(f.derived)
-        if dk not in needed or dk in seen:
+        # Keep the firing once if any conclusion is needed-and-not-yet-shown.
+        fresh = [_key(d) for d in f.derived
+                 if _key(d) in needed and _key(d) not in seen]
+        if not fresh:
             continue
-        seen.add(dk)
-        kept.append((f, dk in conditional))
+        seen.update(fresh)
+        kept.append((f, any(_key(d) in conditional for d in f.derived)))
     return kept
 
 

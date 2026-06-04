@@ -105,7 +105,8 @@ def render_slice(
     since_keys = _fact_keys(since) if since is not None else None
 
     seed_keys = {_key(fid[0], fid[1]) for fid in (commitment or ())}
-    derived_keys = {_key(f.derived.relation_name, f.derived.args) for f in firings}
+    derived_keys = {_key(d.relation_name, d.args)
+                    for f in firings for d in f.derived}
 
     node_decls: dict[str, str] = {}     # key → full decl line
     edges: list[str] = []
@@ -152,8 +153,10 @@ def render_slice(
         for p in firing.premises:
             pid = _touch(p.relation_name, p.args)
             edges.append(f'  {pid} -> {fnode} [color="{colour}"];')
-        did = _touch(firing.derived.relation_name, firing.derived.args)
-        edges.append(f'  {fnode} -> {did} [color="{colour}", style=bold];')
+        # One application fans out to each derived fact (S1.8.A13).
+        for d in firing.derived:
+            did = _touch(d.relation_name, d.args)
+            edges.append(f'  {fnode} -> {did} [color="{colour}", style=bold];')
 
     # Refuted branch → ⊥ tied to the unsat-core, tagged with the no-good.
     if contradiction is not None:

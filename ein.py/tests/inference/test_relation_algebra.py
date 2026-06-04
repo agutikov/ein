@@ -26,22 +26,23 @@ def _firings(src: str, max_steps: int = 4000):
 
 
 def _derived(src: str, max_steps: int = 4000):
-    return {(f.derived.relation_name, f.derived.args)
-            for f in _firings(src, max_steps)}
+    return {(d.relation_name, d.args)
+            for f in _firings(src, max_steps) for d in f.derived}
 
 
 def _false(src: str, max_steps: int = 4000):
     return [f for f in _firings(src, max_steps)
-            if f.derived.relation_name == "false"]
+            if any(d.relation_name == "false" for d in f.derived)]
 
 
 def _negatives(src: str, max_steps: int = 4000):
     """The (rel, args) of every derived `(not (rel …))` fact."""
     out = set()
     for f in _firings(src, max_steps):
-        if f.derived.relation_name == "not":
-            inner = f.derived.args[0]            # a nested Fact (Q40)
-            out.add((inner.relation_name, inner.args))
+        for d in f.derived:                      # one firing may derive several
+            if d.relation_name == "not":
+                inner = d.args[0]                # a nested Fact (Q40)
+                out.add((inner.relation_name, inner.args))
     return out
 
 

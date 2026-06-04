@@ -116,9 +116,9 @@ def test_demo_derived_fact_lands_in_reasoning(path: Path):
     firings = list(eng.saturate())
     matched = [f for f in firings if f.rule == rule_name]
     assert matched
-    reasoning_firings = [f for f in matched if f.derived.layer == Layer.REASONING]
+    reasoning_firings = [f for f in matched if f.derived[0].layer == Layer.REASONING]
     assert reasoning_firings, (
         f"{_demo_id(path)}: rule fired but no firing produced a "
         f"REASONING-layer fact. Layers seen: "
-        f"{[f.derived.layer.value for f in matched]}"
+        f"{[f.derived[0].layer.value for f in matched]}"
     )

@@ -260,7 +260,7 @@ def _query_goal_bindings(kb: KnowledgeBase) -> list[dict[str, str]]:
                 activator_args=(),
                 bindings_seed={},
                 steps=tuple(steps),
-                assert_template=None,
+                assert_templates=(),
                 why="",
             )
             return [dict(b) for b, _premises in match_run(plan, kb)]

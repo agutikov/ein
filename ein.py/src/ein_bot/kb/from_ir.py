@@ -267,48 +267,6 @@ def _ingest_macros(
         )
 
 
-def _match_disjuncts(node: IRNode) -> list[IRNode] | None:
-    """If a rule `:match` is a *top-level* `(or d1 … dn)`, return the
-    disjuncts ``[d1, …, dn]`` (trailing kw-pairs dropped); else ``None``.
-
-    S1.7.6 T1.7.6.5 — `or` stays a kernel primitive, but an `(or …)` at
-    the head of a rule's `:match` **lowers to one rule per disjunct**,
-    exploiting ein's already-disjunctive multiple-rules semantics rather
-    than a runtime branch (user design note 2026-05-30). The matcher
-    therefore never evaluates `or`; the loader desugars it away. Only the
-    top-level position is lowered — a nested `(or …)` (e.g. inside an
-    `(and …)`) would need full DNF expansion, deferred until a rule needs
-    it (no M1 rule uses `or`).
-    """
-    if (isinstance(node, SForm)
-            and isinstance(node.head, Atom)
-            and node.head.name == "or"):
-        return [a for a in node.args if not isinstance(a, KwPair)]
-    return None
-
-
-def _assert_conjuncts(node: IRNode) -> list[IRNode] | None:
-    """If a rule `:assert` is a *top-level* `(and c1 … cn)`, return the
-    conjuncts ``[c1, …, cn]`` (trailing kw-pairs dropped); else ``None``.
-
-    P1.8 S1.8.A11 — a rule that should conclude several facts from one match
-    is **lowered to one rule per conjunct** at load time, the dual of
-    :func:`_match_disjuncts`'s `(or …)`-in-`:match` split (and reusing the same
-    `<rule>__and<j>` naming idea). The firing model stays one-fact-per-firing;
-    each conjunct fires as an ordinary single-`:assert` rule sharing the parent
-    `:match` and `:why`. Trace-grouping into one rule *application*
-    (one node → N facts) is deferred to S1.6.2 — these surface as `__and<j>`
-    siblings, exactly as `(or …)` surfaces as `__or<i>` siblings. Only the
-    top-level position is lowered; a nested `(and …)` (inside an assert's
-    `(not …)`, say) is left alone. `and` is SYMBOL-excluded so this never
-    collides with a real fact head; no M1 rule asserts `(and …)` today."""
-    if (isinstance(node, SForm)
-            and isinstance(node.head, Atom)
-            and node.head.name == "and"):
-        return [a for a in node.args if not isinstance(a, KwPair)]
-    return None
-
-
 def _ingest_rules(
     rule_forms: Iterable[SForm], kb: KnowledgeBase, errors: list[str],
 ) -> None:
@@ -321,17 +279,14 @@ def _ingest_rules(
     ``kb.hrules`` (hypothesis generators), not ``kb.rules``
     (derivation rules the saturator fires).
 
-    S1.7.6 T1.7.6.5: a `:match` headed by `(or …)` is lowered to one
-    `Rule` per disjunct (see :func:`_match_disjuncts`); the instances are
-    named ``<rule>__or0``, ``<rule>__or1``, … so they stay distinct in
-    the rule registry.
-
-    S1.8.A11: a `:assert` headed by `(and …)` is the dual — lowered to one
-    `Rule` per conjunct (see :func:`_assert_conjuncts`), named
-    ``<rule>__and0`` … so one match concludes several facts. The two splits
-    compose as a cross-product (``<rule>__or<i>__and<j>``). Generic rules
-    (non-empty params) reject a multi-fact assert (the split names break
-    activator resolution).
+    S1.8.A13: a `:match` headed by `(or …)` and a `:assert` headed by
+    `(and …)` are NO LONGER split into `__or<i>` / `__and<j>` rule clones.
+    Each becomes ONE `Rule` keeping its source name; the compiler lowers the
+    `(or …)` to multiple match plans and the `(and …)` to multiple assert
+    templates (see :func:`ein_bot.inference.compile._match_disjuncts` /
+    ``_assert_conjuncts``), and `fire()` emits all conclusions in one firing.
+    Because the rule keeps its name, a *generic* (parameterised) rule may now
+    multi-assert — the load-time reject S1.8.A11 needed is gone.
     """
     for child in rule_forms:
         head = _atom_name(child.head) if isinstance(child, SForm) else None
@@ -386,54 +341,27 @@ def _ingest_rules(
         why = why_node.value if isinstance(why_node, String) else ""
         priority = priority_node.value if isinstance(priority_node, Int) else None
 
-        # Lower a top-level `(or d1 … dn)` :match into one rule per disjunct
-        # (T1.7.6.5) and a top-level `(and c1 … cn)` :assert into one rule per
-        # conjunct (S1.8.A11). The common single-`:match` / single-`:assert`
-        # case is a 1x1 grid, so the name is unchanged. A rule with both splits
-        # is the cross-product, named `<rule>__or<i>__and<j>`.
-        disjuncts = _match_disjuncts(match_node)
-        match_nodes = disjuncts if disjuncts is not None else [match_node]
-        conjuncts = _assert_conjuncts(assert_node)
-        assert_nodes = conjuncts if conjuncts is not None else [assert_node]
-        # The per-conjunct split renames the rule to `<name>__and<j>`, whose
-        # generic-rule activator would have to be `(<name>__and<j> …)` — but a
-        # puzzle writes `(<name> …)`. So multi-fact `:assert` on a *generic*
-        # rule (non-empty params) can't activate; reject it loudly rather than
-        # split into rules that silently never fire. (Non-generic rules use a
-        # None activator and are unaffected.) Lifting this needs the firing-
-        # level representation (S1.8.A11 doc options 1/2), deferred.
-        if len(assert_nodes) > 1 and params:
-            errors.append(
-                f"({head} {name}) multi-fact :assert (and …) is unsupported on "
-                f"a generic rule (params {list(params)}) — the split rules' "
-                f"activators would need the split names; use a non-generic rule "
-                f"or split by hand (S1.8.A11 limitation) at {child.loc}")
-            continue
-        for i, mnode in enumerate(match_nodes):
-            for j, anode in enumerate(assert_nodes):
-                suffix = ""
-                if len(match_nodes) > 1:
-                    suffix += f"__or{i}"
-                if len(assert_nodes) > 1:
-                    suffix += f"__and{j}"
-                rname = name + suffix
-                if rname in kb.rules or rname in kb.hrules:
-                    errors.append(
-                        f"duplicate rule/hrule name '{rname}' at {child.loc}")
-                    continue
-                rule = Rule(
-                    name=rname,
-                    params=params,
-                    match=Pattern.from_ir(mnode),
-                    assert_=Pattern.from_ir(anode),
-                    why=why,
-                    priority=priority,
-                    loc=child.loc,
-                )
-                if head == "hrule":
-                    kb.add_hrule(rule)
-                else:
-                    kb.add_rule(rule)
+        # S1.8.A13: a top-level `(or …)` :match and a top-level `(and …)`
+        # :assert are NO LONGER split into `__or<i>__and<j>` rule clones. They
+        # stay as ordinary AST on ONE rule — which keeps its source name, so
+        # generic (parameterised) activation is unaffected. `compile_rule` lowers
+        # the `(or …)` to multiple match plans and the `(and …)` to multiple
+        # assert templates; `fire()` emits all conclusions in one firing. Hence a
+        # *generic* rule may now multi-assert (the old loud reject is gone), and
+        # `kb.rules` carries one entry per source rule (clean provenance).
+        rule = Rule(
+            name=name,
+            params=params,
+            match=Pattern.from_ir(match_node),
+            assert_=Pattern.from_ir(assert_node),
+            why=why,
+            priority=priority,
+            loc=child.loc,
+        )
+        if head == "hrule":
+            kb.add_hrule(rule)
+        else:
+            kb.add_rule(rule)
 
 
 def _ingest_one_fact(

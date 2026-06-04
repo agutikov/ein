@@ -26,7 +26,7 @@ def _derived(src: str, max_steps: int = 3000):
     kb = KnowledgeBase.from_ir(parse(src))
     fs = [f for f in Saturator(kb).saturate(max_steps=max_steps)
           if not f.redundant]
-    return {(f.derived.relation_name, f.derived.args) for f in fs}
+    return {(d.relation_name, d.args) for f in fs for d in f.derived}
 
 
 # ── imply / converse family ────────────────────────────────────────
