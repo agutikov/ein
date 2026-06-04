@@ -8,18 +8,11 @@
 ;;; answer ?h = H1.
 
 ;; ── Bijection property expansion: (bijective R) ⟹ the four markers.
-(rule bijective-functional ()
-  :match  (bijective ?R) :assert (functional ?R)
-  :why "{?R} bijective ⟹ functional." :priority 100)
-(rule bijective-injective ()
-  :match  (bijective ?R) :assert (injective ?R)
-  :why "{?R} bijective ⟹ injective." :priority 100)
-(rule bijective-total ()
-  :match  (bijective ?R) :assert (total ?R)
-  :why "{?R} bijective ⟹ total." :priority 100)
-(rule bijective-surjective ()
-  :match  (bijective ?R) :assert (surjective ?R)
-  :why "{?R} bijective ⟹ surjective." :priority 100)
+(rule bijective-properties ()
+  :match  (bijective ?R)
+  :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
+  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
+  :priority 100)
 
 ;; ── Violation rules: fire (false) when uniqueness breaks.
 ;;    These are what refute the wrong branches under pathway B.

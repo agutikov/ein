@@ -464,35 +464,18 @@
 
 ;; ──── `bijective` shorthand ─────────────────────────────────
 ;; bijective ≡ functional ∧ injective ∧ total ∧ surjective.
-;; Four expansion rules derive the property markers from a
-;; single (bijective R) declaration. The saturator refreshes
-;; its compile cache each pass, so the derived (functional R)
-;; etc. trigger their respective contradiction rules normally.
-;; Expansion runs at the propagate band so the derived markers
+;; One rule with a multi-fact `:assert (and …)` (S1.8.A11) derives all
+;; four property markers from a single (bijective R) declaration — it
+;; lowers at load to four `bijective-properties__and<j>` rules. The
+;; saturator refreshes its compile cache each pass, so the derived
+;; (functional R) etc. trigger their respective contradiction rules
+;; normally. Expansion runs at the propagate band so the derived markers
 ;; are present before any rule that consumes them fires.
 
-(rule bijective-functional ()
+(rule bijective-properties ()
   :match  (bijective ?R)
-  :assert (functional ?R)
-  :why    "{?R} is bijective ⟹ functional."
-  :priority 100)
-
-(rule bijective-injective ()
-  :match  (bijective ?R)
-  :assert (injective ?R)
-  :why    "{?R} is bijective ⟹ injective."
-  :priority 100)
-
-(rule bijective-total ()
-  :match  (bijective ?R)
-  :assert (total ?R)
-  :why    "{?R} is bijective ⟹ total."
-  :priority 100)
-
-(rule bijective-surjective ()
-  :match  (bijective ?R)
-  :assert (surjective ?R)
-  :why    "{?R} is bijective ⟹ surjective."
+  :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
+  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
   :priority 100)
 
 ;; ──── Typecheck activator derivation from relation signature ─

@@ -283,35 +283,11 @@
   :priority 110)
 
 (rule
-  bijective-functional
+  bijective-properties
   ()
   :match (bijective ?R)
-  :assert (functional ?R)
-  :why "{?R} is bijective ⟹ functional."
-  :priority 100)
-
-(rule
-  bijective-injective
-  ()
-  :match (bijective ?R)
-  :assert (injective ?R)
-  :why "{?R} is bijective ⟹ injective."
-  :priority 100)
-
-(rule
-  bijective-total
-  ()
-  :match (bijective ?R)
-  :assert (total ?R)
-  :why "{?R} is bijective ⟹ total."
-  :priority 100)
-
-(rule
-  bijective-surjective
-  ()
-  :match (bijective ?R)
-  :assert (surjective ?R)
-  :why "{?R} is bijective ⟹ surjective."
+  :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
+  :why "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
   :priority 100)
 
 (rule
