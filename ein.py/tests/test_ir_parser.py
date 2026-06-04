@@ -260,6 +260,45 @@ def test_macro_is_not_a_plain_symbol_head():
     _bad("(macro ?x ?y)")
 
 
+# ═══════════ Import declarator + dotted atoms (P1.8 S1.8.A2) ═══════════
+
+def test_import_bare():
+    """`(import MODULE)` — whole-module, qualified-by-default."""
+    _ok("(import std.macro)")
+
+
+def test_import_as_alias():
+    _ok("(import std.macro :as m)")
+
+
+def test_import_symbols():
+    _ok("(import std.macro :symbols (forall open))")
+
+
+def test_reject_import_no_module():
+    """`import` requires a module SYMBOL — `(import)` is a parse error."""
+    _bad("(import)")
+
+
+def test_dotted_atom_is_one_symbol():
+    """`.` is a SYMBOL char: a dotted name lexes as a single atom (used for
+    module names + qualified references)."""
+    _ok("(rel a.b c.d.e)")
+    _ok("(rule r () :match (std.macro.forall ?x) :assert (y ?x) :why \"w\")")
+
+
+def test_dotted_atom_cannot_start_with_reserved_word():
+    """The negative-lookahead is start-anchored: a dotted atom may not BEGIN
+    with a reserved word (`import.x` is rejected; `std.import` would be fine)."""
+    _bad("(import.foo Bar)")
+
+
+def test_range_still_lexes_despite_dotted_atoms():
+    """`1..5` stays a RANGE (digit-anchored), not an atom — no regression
+    from adding `.` to the letter-anchored SYMBOL."""
+    _ok("(relation r A B :cardinality 1..1)")
+
+
 # ═══════════ Query ═══════════
 
 def test_query_solve():

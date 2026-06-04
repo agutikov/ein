@@ -30,7 +30,7 @@
 //      · kernel meta-primitives — `not` (not EXPR) · `and` (and EXPR+) ·
 //        `or` (or EXPR+) · `neq` (neq A B);
 //      · declarators — `rule` · `hrule` · `query` · `config` · `trace`
-//        · `macro` (P1.8 S1.5.9).
+//        · `macro` (P1.8 S1.5.9) · `import` (P1.8 S1.8.A2).
 //      A typo or malformed shape on these is a PARSE-time error: `(nto Foo)`
 //      is not `(not …)`, `(query)` lacks its kw-pairs, `(rule x)` lacks its
 //      params — all rejected at parse. (A consequence of the word-boundary
@@ -81,6 +81,7 @@ start: form*
      | config_form
      | trace_form
      | macro_decl           // ← P1.8 S1.5.9 flat declarator
+     | import_form          // ← P1.8 S1.8.A2 flat declarator
      | fact_form            // ← anything else: a flat fact
 
 // ═══════════ Relation declarator (schema) ═══════════
@@ -122,6 +123,19 @@ rule_params: "(" VAR* ")"
 // single `value` that follows.
 macro_decl:   "(" "macro" SYMBOL macro_params value ")"
 macro_params: "(" VAR+ ")"
+
+// ═══════════ Import declarator (P1.8 S1.8.A2 / A1 decision record) ═══════════
+// `(import MODULE [:as ALIAS | :symbols (S+)])` — pull a library module in.
+// MODULE is a **logical name written as a dotted atom** (`std.macro`); `.` is
+// part of `SYMBOL` (below), so `std.macro` lexes as one atom and the loader
+// resolves it to a file. The trailing kw-pairs carry the import tier:
+//   · none           → fully-qualified  `(std.macro.forall …)`
+//   · `:as m`        → aliased          `(m.forall …)`
+//   · `:symbols (…)` → flat-selective   `(forall …)`
+// Reusing the generic `kw_pair*` keeps this consistent with `query`/`config`;
+// the loader (S1.8.A3) validates `:as`-XOR-`:symbols` + resolves. `import` is
+// SYMBOL-excluded so `(import)` (no module) is a PARSE error.
+import_form: "(" "import" SYMBOL kw_pair* ")"
 
 // ═══════════ Query ═══════════
 query_form: "(" "query" kw_pair+ ")"
@@ -187,7 +201,15 @@ or_form:       "(" "or" value+ kw_pair* ")"
 // set in S1.7.6 (it is now a plain relation), so `(instance Norwegian)`
 // no longer gets parse-time arity rejection — it parses as a generic
 // fact with one arg, like any domain head.
-SYMBOL:   /(?!(?:not|and|or|neq|rule|hrule|query|config|trace|macro)\b)[A-Za-z][A-Za-z0-9_*-]*/
+//
+// `.` is a SYMBOL char (P1.8 S1.8.A2 / A1 decision record): an atom may carry
+// dots so module names (`std.macro`) and qualified references (`m.forall`) are
+// ordinary atoms — the parser does NO module resolution, the loader does, by
+// name. No ambiguity with `RANGE` (`1..5`): RANGE is digit-anchored, SYMBOL is
+// letter-anchored; maximal munch makes `std.macro.forall` one atom. The `\b`
+// lookahead is start-anchored, so a dotted atom may not *begin* with a reserved
+// word (`rule.x` is rejected, `std.rule` is fine).
+SYMBOL:   /(?!(?:not|and|or|neq|rule|hrule|query|config|trace|macro|import)\b)[A-Za-z][A-Za-z0-9_*.-]*/
 VAR:      /\?[A-Za-z][A-Za-z0-9_*-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
 WILDCARD: "_"

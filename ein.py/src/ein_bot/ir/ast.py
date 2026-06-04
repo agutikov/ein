@@ -115,6 +115,13 @@ class _ToAST(Transformer):
     def config_form(self, items: list) -> SForm:
         return self._topform("config", items)
 
+    def import_form(self, items: list) -> SForm:
+        # `(import MODULE [:as A | :symbols (S+)])` → SForm(head="import",
+        # args=(module_atom, *kw_pairs)). The dotted module name lowers via
+        # SYMBOL to a single Atom (e.g. Atom("std.macro")); the loader
+        # (S1.8.A3) resolves it and reads the `:as`/`:symbols` kw-pairs.
+        return self._topform("import", items)
+
     # ── Ontology declarations ──────────────────────────────────
     # `type` / `instance` have no dedicated transformer method: since
     # S1.7.6 they are plain facts, lowered by `generic_fact` /

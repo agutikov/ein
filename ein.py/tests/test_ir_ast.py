@@ -145,6 +145,22 @@ def test_macro_decl_shape():
     assert isinstance(body, SForm) and body.head == Atom("absent")
 
 
+def test_import_decl_shape():
+    """`(import MODULE :as A)` → SForm("import", (module_atom, KwPair)).
+    The dotted module name lowers to a single Atom."""
+    (form,) = parse("(import std.macro :as sg)")
+    assert form.head == Atom("import")
+    module, kw = form.args
+    assert module == Atom("std.macro")          # dotted name = one atom
+    assert isinstance(kw, KwPair) and kw.key.name == "as"
+    assert kw.value == Atom("sg")
+
+
+def test_dotted_atom_lowers_to_single_atom():
+    (form,) = parse("(rel a.b c.d.e)")
+    assert form.args == (Atom("a.b"), Atom("c.d.e"))
+
+
 def test_relation_sig_flat():
     """Post-R10: relation args are flat — no @sig SForm wrapper."""
     (form,) = parse(
@@ -274,6 +290,11 @@ ROUNDTRIP_CASES = [
     # Macro declarators (P1.8 S1.5.9)
     "(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))",
     "(macro open (?P) (and (absent ?P) (absent (not ?P))))",
+    # Import declarators + dotted atoms (P1.8 S1.8.A2)
+    "(import std.macro)",
+    "(import std.macro :as m)",
+    "(import std.macro :symbols (forall open))",
+    "(rel a.b c.d.e)",
 ]
 
 

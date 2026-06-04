@@ -30,10 +30,10 @@ REPO = Path(__file__).resolve().parents[1]
 # examples/ and utils/ live at the project root (one level above ein.py/).
 GRAMMAR_PATH = REPO.parent / "utils" / "vscode-ein" / "ein.tmLanguage.json"
 
-# The closed declarator set (P1.7c + P1.8 S1.5.9 `macro`). Source of truth:
-# docs/kernel/ir/03-ein-lang/06_reserved_names.md.
+# The closed declarator set (P1.7c + S1.5.9 `macro` + S1.8.A2 `import`).
+# Source of truth: docs/kernel/ir/03-ein-lang/06_reserved_names.md.
 EXPECTED_DECLARATORS = {
-    "relation", "rule", "hrule", "query", "config", "trace", "macro",
+    "relation", "rule", "hrule", "query", "config", "trace", "macro", "import",
 }
 # Wrapper heads removed in S1.7c.4 — must parse as ordinary fact heads,
 # never highlighted as keywords.

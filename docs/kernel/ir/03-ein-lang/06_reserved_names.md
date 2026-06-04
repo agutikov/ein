@@ -23,7 +23,7 @@ Each top-level form is classified by its **head**: a head in the table
 below is a declarator (`trace` is the engine-emitted sibling); **any other
 head is a fact** — "detect facts by *not* being reserved" (the author's
 design note). This set is **closed**: the parser keys on it (`rule` / `hrule` / `query` /
-`config` / `trace` / `macro` are SYMBOL-excluded, so a malformed declarator — e.g.
+`config` / `trace` / `macro` / `import` are SYMBOL-excluded, so a malformed declarator — e.g.
 `(query)` with no kw-pairs — is a *parse* error; `relation` is the one
 exception, kept a plain SYMBOL so rules can pattern-match
 `(relation ?R ?A ?B)`, so its malformed form is rejected at *load* time),
@@ -39,6 +39,7 @@ same set.
 | `query` | `(query :mode … :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
 | `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
 | `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation expands to BODY before compilation ([P1.8 S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)) | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
+| `import` | `(import M [:as A \| :symbols (S…)])` | pull in a library module `M` (a dotted logical name, e.g. `std.macro`); qualified-by-default, or aliased/flat-selective ([P1.8 S1.8.A1–A2](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.8.a1_module_system_design.md)) | `kb.from_ir` (grammar A2; resolve A3) |
 | `trace` | `(trace <event>*)` | **engine-emitted** derivation log — parsed by [`trace/ast.py`](../../../../ein.py/src/ein_bot/trace/ast.py), ignored by `kb.from_ir`; a *sibling*, not part of the declarator-vs-fact dichotomy | `trace/` |
 
 **Else → fact.** A top-level form whose head is none of the above is a
@@ -48,14 +49,16 @@ wins, else it is derived — `:rule`/`:using` → REASONING, `:source` → FACT,
 neither → ONTOLOGY ([S1.7c.1](../../../../plans/m1_core_graph_reasoning/p1.7c_block_head_removal/s1.7c.1_layer_attribution_decision.md)).
 A former-wrapper head like `(facts …)` therefore now parses as a plain fact.
 
-**Macro names are user-space**, with one guard: a `(macro …)` may not be
-*named* after reserved kernel vocabulary — the structural primitives
-(`absent` / `false`), the computed predicates (`eq` / `neq`), or `relation`
-(`_reserved_macro_names`). The SYMBOL-excluded keywords
-(`not` / `and` / `or` / `neq` / the declarators) can't be written as a macro
-name at all (parse error). `open` / `forall` are deliberately *not* reserved —
-they are the [desugaring sugar](#desugaring-sugar--p18-macros) slated to
-migrate into stdlib macros.
+**Declared names are user-space**, with one guard (`_reserved_names`,
+P1.8 S1.8.A1 D3): a `(rule …)` / `(hrule …)` / `(relation …)` / `(macro …)`
+may not *bind* a name that shadows reserved kernel vocabulary — the
+structural primitives (`absent` / `false`), the computed predicates
+(`eq` / `neq`), or `relation`. The SYMBOL-excluded keywords
+(`not` / `and` / `or` / `neq` / the declarators) can't be written as a declared
+name at all (parse error). The guard is about *binding* a name; a **fact** may
+still carry a reserved head (a stored `(not X)` octagon). `open` / `forall`
+are deliberately *not* reserved — they migrated into the `std.macro` module
+([`examples/stdlib/macro.ein`](../../../../examples/stdlib/macro.ein)).
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 

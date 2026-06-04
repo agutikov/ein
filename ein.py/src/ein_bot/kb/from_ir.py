@@ -191,6 +191,10 @@ def _ingest_relation(child: SForm, kb: KnowledgeBase, errors: list[str]) -> bool
     if name is None or not sig:
         errors.append(f"malformed (relation) at {child.loc}")
         return True
+    if name in _reserved_names():
+        errors.append(
+            f"relation '{name}' shadows a reserved kernel name at {child.loc}")
+        return True
     if name in kb.relations:
         errors.append(f"duplicate relation '{name}' at {child.loc}")
         return True
@@ -209,15 +213,20 @@ def _ingest_relation(child: SForm, kb: KnowledgeBase, errors: list[str]) -> bool
     return True
 
 
-def _reserved_macro_names() -> frozenset[str]:
-    """Names a `(macro …)` may not be NAMED — shadowing kernel vocabulary
-    (Q-S1.5.9.2). The grammar already SYMBOL-excludes
+def _reserved_names() -> frozenset[str]:
+    """Names a declaration (`rule` / `hrule` / `relation` / `macro`) may not
+    BIND — shadowing kernel vocabulary (P1.8 S1.8.A1 decision D3; was the
+    macro-only Q-S1.5.9.2 guard, generalised to all declarators).
+
+    The grammar already SYMBOL-excludes
     ``not``/``and``/``or``/``neq``/``rule``/``hrule``/``query``/``config``/
-    ``trace``/``macro``, so the collidable names that still reach the loader
-    as a macro head are the structural primitives (``absent``/``false``),
-    the computed predicates (``eq``/``neq``), and ``relation``. ``open`` /
-    ``forall`` are deliberately NOT reserved — they are precisely the sugar
-    slated to migrate INTO stdlib macros (S1.5.9 T1.5.9.3)."""
+    ``trace``/``macro``/``import``, so the collidable names that still reach
+    the loader as a declared name are the structural primitives
+    (``absent``/``false``), the computed predicates (``eq``/``neq``), and
+    ``relation`` (kept a plain SYMBOL for `(relation ?R ?A ?B)` patterns).
+    ``open`` / ``forall`` are deliberately NOT reserved — they migrated INTO
+    the `std.macro` module (S1.5.9). This guard is about *binding* a name; a
+    *fact* may still have a reserved head (e.g. a stored ``(not X)`` octagon)."""
     from ein_bot.inference import predicates, primitives
     return primitives.STRUCTURAL | frozenset(predicates.names()) | {"relation"}
 
@@ -232,7 +241,7 @@ def _ingest_macros(
     (:func:`_reserved_macro_names`) or duplicates an earlier macro is rejected
     with a load-time error (P1.8 S1.5.9 T1.5.9.1).
     """
-    reserved = _reserved_macro_names()
+    reserved = _reserved_names()
     for form in macro_forms:
         # AST shape: SForm("macro", (name_atom, @params SForm, body)).
         if len(form.args) < 3:
@@ -306,6 +315,13 @@ def _ingest_rules(
         params_form = child.args[1]
         if name is None or not isinstance(params_form, SForm):
             errors.append(f"malformed ({head} …) at {child.loc}")
+            continue
+        if name in _reserved_names():
+            # A rule named `absent`/`false`/`eq`/`relation` would never fire
+            # (the compiler/matcher read those as primitives, not the rule) —
+            # reject rather than silently register a dead rule (D3).
+            errors.append(
+                f"{head} '{name}' shadows a reserved kernel name at {child.loc}")
             continue
         # `rule` and `hrule` share one name-space — a name must
         # identify a single declaration.
@@ -457,10 +473,12 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
 
     P1.7c — the surface is a **flat sequence of forms**, each classified
     by its head: ``relation`` → a relation declaration; ``rule`` /
-    ``hrule`` → a rule; ``query`` / ``config`` → their handlers; ``trace``
-    → ignored; **anything else → a fact** with layer from
-    :func:`_layer_of`. (A former-wrapper head such as ``(facts …)`` is now
-    just a fact whose relation is ``facts``.)
+    ``hrule`` → a rule; ``macro`` → a pattern macro (S1.5.9); ``import`` →
+    a module import (S1.8.A2 — routed here, resolution pending in A3);
+    ``query`` / ``config`` → their handlers; ``trace`` → ignored;
+    **anything else → a fact** with layer from :func:`_layer_of`. (A
+    former-wrapper head such as ``(facts …)`` is now just a fact whose
+    relation is ``facts``.)
     """
     kb = KnowledgeBase()
     errors: list[str] = []
@@ -470,6 +488,7 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
     flat_relations: list[SForm] = []
     flat_rules: list[SForm] = []
     flat_macros: list[SForm] = []
+    flat_imports: list[SForm] = []
     flat_facts: list[tuple[SForm, Layer]] = []   # each carries its own layer
     query_blocks: list[SForm] = []
     config_blocks: list[SForm] = []
@@ -485,6 +504,8 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
             flat_rules.append(form)
         elif h == "macro":
             flat_macros.append(form)
+        elif h == "import":
+            flat_imports.append(form)
         elif h == "query":
             query_blocks.append(form)
         elif h == "config":
@@ -495,6 +516,17 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
             # The flat default: any non-reserved head is a fact, with its
             # layer derived (or read off an explicit :layer) per S1.7c.1.
             flat_facts.append((form, _layer_of(form, errors)))
+
+    # Imports (P1.8 S1.8.A2): the grammar + AST recognise `(import …)` and
+    # the head-switch routes it here so it is not misclassified as a fact.
+    # Resolution + merge (the flatten-then-load of A1 D8) lands in S1.8.A3;
+    # until then a present import is an explicit load error, not a silent
+    # no-op. Round-trip (parse/dump) is unaffected — it never calls load().
+    for imp in flat_imports:
+        mod = _atom_name(imp.args[0]) if imp.args else None
+        errors.append(
+            f"(import {mod or '?'}) — import resolution is not implemented "
+            f"yet (lands in P1.8 S1.8.A3) at {imp.loc}")
 
     # Pass 0 — macros (P1.8 S1.5.9). Built first so the rules pass can
     # expand `(macro …)` invocations in every clause.
