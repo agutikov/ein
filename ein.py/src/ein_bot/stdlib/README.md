@@ -28,12 +28,13 @@ always present and version-locked to the engine.
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `open` pattern macros | S1.5.9 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (closed R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |
+| `std.algebra` | [`algebra.ein`](algebra.ein) | `converse` + `imply1` / `imply2-fwd` / `imply2-reverse` + the `symmetric`⟺`converse R R` algebra lemmas (generic; lemmas use reflective rule-implication) | S1.8.A7 |
 
-*Planned (not yet shipped):* `std.algebra` (the `imply` / `converse` /
-relation-algebra rule family — P1.8 S1.8.A7 / A12) and `std.types`
-(inheritance + `guess` — A10). When those land, the universal kernel rules
-(`symmetric` / `transitive` / …) move out of inline `zebra2.ein` into them
-(the pending tail of S1.8.A5).
+*Planned (not yet shipped):* `std.types` (inheritance + `guess` — A10), and
+the full relation-algebra signature (`compose` / `meet` / `join` — A12)
+extending `std.algebra`. When the universal kernel rules (`symmetric` /
+`transitive` / …) themselves move out of inline `zebra2.ein` into a stdlib
+module, that's the pending tail of S1.8.A5.
 
 **Rule modules vs `forall`.** `std.elim`'s rules are *generic* (parametrised
 over a relation), so a puzzle imports them **flat** (`:symbols`) to keep the

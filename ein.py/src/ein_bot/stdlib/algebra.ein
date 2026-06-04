@@ -1,0 +1,70 @@
+;;; ein-bot stdlib — `std.algebra`: relation-algebra library rules (P1.8 S1.8.A7).
+;;;
+;;; The `converse` / `imply` family + the symmetric⟺converse algebra lemmas.
+;;; All are GENERIC (parametrised over relations), so a puzzle imports them
+;;; FLAT and declares activator facts naming the relation pair:
+;;;
+;;;     (import std.algebra :symbols (converse imply1 imply2-fwd imply2-reverse))
+;;;     (converse right-of left-of)   ; opt the right-of/left-of pair in
+;;;
+;;; Reach individual rules by `:symbols` so the activators' bare names resolve.
+
+;; ── converse — (converse R1 R2) ⟺ R2 = R1° (the inverse relation).
+;; Mirrors each R1-edge into R2 with the endpoints swapped. `right-of`/`left-of`
+;; are converse; `next-to` is self-converse.
+(rule converse (?R1 ?R2)
+  :match  (?R1 ?a ?b)
+  :assert (?R2 ?b ?a)
+  :priority 100
+  :why    "(converse {?R1} {?R2}): mirror {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
+
+;; ── imply1 — (imply1 R1 R2): (R1 a) ⇒ (R2 a), a 1-arg (property) implication.
+;; Doubles as property→property: (imply1 functional closed) turns a
+;; (functional R) marker into a (closed R) one — no new rule shape needed.
+(rule imply1 (?R1 ?R2)
+  :match  (?R1 ?a)
+  :assert (?R2 ?a)
+  :priority 100
+  :why    "(imply1 {?R1} {?R2}): {?R1}({?a}) → {?R2}({?a})")
+
+;; ── imply2-fwd — (imply2-fwd R1 R2): (R1 a b) ⇒ (R2 a b), forward 2-arg.
+(rule imply2-fwd (?R1 ?R2)
+  :match  (?R1 ?a ?b)
+  :assert (?R2 ?a ?b)
+  :priority 100
+  :why    "(imply2-fwd {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?a},{?b})")
+
+;; ── imply2-reverse — ergonomic alias of `converse`: (R1 a b) ⇒ (R2 b a).
+(rule imply2-reverse (?R1 ?R2)
+  :match  (?R1 ?a ?b)
+  :assert (?R2 ?b ?a)
+  :priority 100
+  :why    "(imply2-reverse {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
+
+;; ── algebra lemmas ──────────────────────────────────────────────────────────
+;; These DERIVE `converse` / `symmetric` activator facts, which then activate
+;; the rules above (and the puzzle's `symmetric` rule) — relying on reflective
+;; rule-implication (P1.8 S1.8.A9): a derived `(converse R R)` activates the
+;; `converse` rule on the next saturation pass. Parameter-less (free match
+;; vars). They converge: every back-derivation is a fact that already exists,
+;; so the saturator's dedup bounds the loop.
+
+;; symmetric R ⟺ converse R R (a symmetric relation is its own inverse).
+(rule symmetric-is-self-converse ()
+  :match  (symmetric ?R)
+  :assert (converse ?R ?R)
+  :priority 90
+  :why    "symmetric {?R} ⟹ (converse {?R} {?R})")
+
+(rule self-converse-is-symmetric ()
+  :match  (converse ?R ?R)
+  :assert (symmetric ?R)
+  :priority 90
+  :why    "(converse {?R} {?R}) ⟹ symmetric {?R}")
+
+;; converse is symmetric on the pair: (converse R1 R2) ⟹ (converse R2 R1).
+(rule converse-pair-symmetric ()
+  :match  (converse ?R1 ?R2)
+  :assert (converse ?R2 ?R1)
+  :priority 90
+  :why    "(converse {?R1} {?R2}) ⟹ (converse {?R2} {?R1})")
