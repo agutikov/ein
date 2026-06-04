@@ -23,6 +23,7 @@ import pytest
 from ein_bot.inference.monotonic import gaps_solve
 from ein_bot.ir import Atom, SForm, parse
 from ein_bot.kb import KnowledgeBase
+from ein_bot.kb.imports import resolve_imports
 
 REPO = Path(__file__).resolve().parents[3]
 ZEBRA2 = REPO / "examples" / "zebra2.ein"
@@ -49,8 +50,11 @@ FIRING_TARGET = frozenset({
 
 
 def _zebra2_rule_names() -> set[str]:
-    # P1.7c: rules are flat top-level `(rule …)` / `(hrule …)` forms.
-    forms = parse(ZEBRA2.read_text())
+    # Rules zebra2 PROVIDES — resolve imports first, so the universal rules
+    # promoted to std.algebra (S1.8.A5-tail: symmetric/transitive/includes)
+    # count as provided, not just the ones still defined inline. (P1.7c: rules
+    # are flat top-level `(rule …)` / `(hrule …)` forms.)
+    forms = resolve_imports(parse(ZEBRA2.read_text()), base_dir=ZEBRA2.parent)
     return {f.args[0].name for f in forms
             if isinstance(f, SForm) and f.head.name in ("rule", "hrule")
             and f.args and isinstance(f.args[0], Atom)}

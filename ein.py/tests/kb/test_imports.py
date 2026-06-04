@@ -237,3 +237,24 @@ def test_non_reserved_names_still_load():
 def test_fact_may_have_a_reserved_head():
     kb = _load('(not (likes A B) :source "(1)") (relation likes T T)')
     assert any(f.relation_name == "not" for f in kb.facts)
+
+
+# ── S1.8.A5-tail: zebra2 imports its universal rules from std.algebra ──
+
+
+def test_zebra2_imports_universal_rules_from_stdlib():
+    """The canonical fixture pulls `symmetric` / `transitive` / `includes` from
+    `std.algebra` (no longer inline). Pins the coupling in the fast suite: the
+    faithful golden only checks the import line, and the behavioural acceptance
+    is the slow/skipped gate, so a drift in the stdlib bodies would otherwise go
+    uncaught here. Bodies must match what zebra2's activators expect."""
+    from pathlib import Path
+
+    examples = Path(__file__).resolve().parents[3] / "examples"
+    kb = KnowledgeBase.from_file(examples / "zebra2.ein")
+
+    for name, prio in (("symmetric", 100), ("transitive", 200), ("includes", 100)):
+        assert name in kb.rules, f"{name} not resolved into zebra2"
+        assert kb.rules[name].priority == prio
+    # the transitive closure keeps its (neq ?a ?c) self-loop guard
+    assert "neq" in repr(kb.rules["transitive"].match)

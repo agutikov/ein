@@ -214,6 +214,36 @@ def test_difunctional_closes_overlapping_rows():
     assert ("r", ("A", "D")) in d
 
 
+# ── property closures (the S1.8.A5 promotion: symmetric/transitive/includes) ──
+
+
+def test_symmetric_mirrors_edges():
+    d = _derived(_imp("symmetric")
+                 + '(symmetric knows)\n(knows A B :source "(1)")')
+    assert ("knows", ("B", "A")) in d
+
+
+def test_transitive_closes_a_chain_without_self_loops():
+    """The (neq ?a ?c) guard keeps an irreflexive chain irreflexive — unlike a
+    bare (compose R R R), which would also add (R A A)."""
+    d = _derived(_imp("transitive") + """
+    (transitive lt)
+    (lt A B :source "(1)") (lt B C :source "(2)") (lt C D :source "(3)")
+    """)
+    assert ("lt", ("A", "C")) in d
+    assert ("lt", ("A", "D")) in d
+    assert ("lt", ("A", "A")) not in d          # no self-loop (neq guard)
+
+
+def test_includes_lifts_subrelation():
+    """(includes is-a is-a*): every is-a edge lifts into is-a* (its closure)."""
+    d = _derived(_imp("includes") + """
+    (includes is-a is-a*)
+    (is-a House-1 House :source "(1)")
+    """)
+    assert ("is-a*", ("House-1", "House")) in d
+
+
 # ── equational theory (B6–B10 lemmas) ──────────────────────────────
 
 

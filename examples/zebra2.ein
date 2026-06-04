@@ -57,24 +57,12 @@
 (config
   :enable-pre-branch-lookahead true)
 
-;; ──── General property rules (carried over) ────────────────
-(rule symmetric (?rel)
-  :match  (?rel ?a ?b)
-  :assert (?rel ?b ?a)
-  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 100)
-
-(rule transitive (?rel)
-  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-  :assert (?rel ?a ?c)
-  :why    "{?rel} is transitive."
-  :priority 200)
-
-(rule includes (?p ?q)
-  :match  (?p ?a ?b)
-  :assert (?q ?a ?b)
-  :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-  :priority 100)
+;; ──── General property rules — now from std.algebra (S1.8.A5) ──
+;; symmetric / transitive / includes were inline kernel rules; they are the
+;; importable std.algebra property-closure rules (P1.8 S1.8.A5-tail). Imported
+;; FLAT so the bare names their activators reference (`(symmetric next-to)`,
+;; `(transitive is-a*)`, `(includes is-a is-a*)` below) resolve unchanged.
+(import std.algebra :symbols (symmetric transitive includes))
 
 ;; ──── Binary-relation property contradiction rules ─────────
 ;; Four mathematical properties of a binary relation R ⊆ A × B:

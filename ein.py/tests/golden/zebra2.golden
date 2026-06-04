@@ -2,29 +2,7 @@
 
 (config :enable-pre-branch-lookahead true)
 
-(rule
-  symmetric
-  (?rel)
-  :match (?rel ?a ?b)
-  :assert (?rel ?b ?a)
-  :why "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 100)
-
-(rule
-  transitive
-  (?rel)
-  :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-  :assert (?rel ?a ?c)
-  :why "{?rel} is transitive."
-  :priority 200)
-
-(rule
-  includes
-  (?p ?q)
-  :match (?p ?a ?b)
-  :assert (?q ?a ?b)
-  :why "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-  :priority 100)
+(import std.algebra :symbols (symmetric transitive includes))
 
 (rule
   functional

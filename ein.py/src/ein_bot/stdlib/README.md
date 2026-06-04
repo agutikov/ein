@@ -28,7 +28,7 @@ always present and version-locked to the engine.
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `open` pattern macros | S1.5.9 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (closed R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |
-| `std.algebra` | [`algebra.ein`](algebra.ein) | the full relation-algebra signature: relative (`converse` / `compose` / `identity`), Boolean (`meet` / `join` / `difference` / `complement` / `top` / `empty`), property checks (`irreflexive` / `antisymmetric` / `asymmetric` / `connex` / `difunctional`), `imply1` / `imply2-fwd` / `imply2-reverse`, the equational lemmas (`symmetric`⟺`converse R R`, Schröder `compose-negative-{r,s}`, contravariance, converse-over-join) + `converse-illtyped-{dom,ran}` signature typecheck (generic; lemmas use reflective rule-implication) | S1.8.A7 + A12 |
+| `std.algebra` | [`algebra.ein`](algebra.ein) | the full relation-algebra signature: relative (`converse` / `compose` / `identity`), Boolean (`meet` / `join` / `difference` / `complement` / `top` / `empty`), property checks (`irreflexive` / `antisymmetric` / `asymmetric` / `connex` / `difunctional`), property **closures** (`symmetric` / `transitive` / `includes` — the universal kernel rules, S1.8.A5), `imply1` / `imply2-fwd` / `imply2-reverse`, the equational lemmas (`symmetric`⟺`converse R R`, Schröder `compose-negative-{r,s}`, contravariance, converse-over-join) + `converse-illtyped-{dom,ran}` signature typecheck (generic; lemmas use reflective rule-implication) | S1.8.A7 + A12 + A5 |
 | `std.typing` | [`typing.ein`](typing.ein) | `(type-hierarchy ?isR*)` one-knob converse-typecheck driver + `(reflexive R)` closure (non-generic fan-out; pairs with `std.algebra`'s `converse-illtyped-*`) | S1.8.A10 |
 
 `std.algebra`'s ops split **intrinsic** (read existing edges: `compose` / `meet`
@@ -39,12 +39,18 @@ relation + argument types `(?isa Dom Ran)` (the A10 universe) as parameters and
 inherit the closed-world soundness caveat — sound only when the operand is
 saturation-determined (the `std.closure` caveat), so not for branching puzzles.
 
+The universal kernel rules (`symmetric` / `transitive` / `includes`) now live
+here as the property-closure section, and the `zebra2*` fixtures + the two
+backprop `branching/` demos import them
+(`(import std.algebra :symbols (symmetric transitive includes))`) rather than
+inlining — the S1.8.A5-tail. Example files whose inline copy is *byte-identical*
+were migrated; files carrying a **variant** copy (a different `:why` text) and
+the `saturation/{symmetric,transitive}/*` showcase demos deliberately keep the
+rule inline.
+
 *Planned (not yet shipped):* the **division residuals** (`R\S` / `R/S` / `syq` —
 an allegory extension beyond Tarski's RA, S1.8.A12 T5) need a `forall` over the
-universe and have no M1 consumer; design is in the stage doc. When the universal
-kernel rules (`symmetric` / `transitive` / …) themselves move out of inline
-`zebra2.ein` into a stdlib module, that's the pending tail of S1.8.A5 (`compose`
-is the keystone the `transitive` promotion rides on).
+universe and have no M1 consumer; design is in the stage doc.
 
 **Rule modules vs `forall`.** `std.elim`'s rules are *generic* (parametrised
 over a relation), so a puzzle imports them **flat** (`:symbols`) to keep the

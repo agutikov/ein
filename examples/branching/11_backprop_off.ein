@@ -58,17 +58,8 @@
 
 (config :enable-back-prop-unconditional false)
 
-(rule symmetric (?rel)
-  :match  (?rel ?a ?b)
-  :assert (?rel ?b ?a)
-  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 100)
-
-(rule transitive (?rel)
-  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-  :assert (?rel ?a ?c)
-  :why    "{?rel} is transitive."
-  :priority 200)
+;; symmetric / transitive — from std.algebra (S1.8.A5).
+(import std.algebra :symbols (symmetric transitive))
 
 (rule implies (?p ?q)
   :match  (?p ?a ?b)

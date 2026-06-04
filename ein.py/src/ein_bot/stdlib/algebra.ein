@@ -273,6 +273,40 @@
   :priority 90
   :why    "(difunctional {?R}): {?R}({?a},{?b})∧{?R}({?c},{?b})∧{?R}({?c},{?d}) → {?R}({?a},{?d}).")
 
+;; ── single-relation property CLOSURES (vs the checks above) ───────────────────
+;; The checks above fire `(false)` on a violation; these instead DERIVE the edge
+;; that makes the property hold — the operational reading for properties that are
+;; always achievable by adding edges (symmetric / transitive closure / ⊆-lifting),
+;; as opposed to the violable ones (ir/anti/a-symmetric). The universal kernel
+;; rules a puzzle used to inline (S1.8.A5 promotion); activate per relation, e.g.
+;; `(symmetric next-to)`, `(transitive is-a*)`, `(includes is-a is-a*)`.
+
+;; symmetric — R = R°: mirror every edge. (See also the symmetric⟺converse-R-R
+;; lemmas above, which relate this tag to `converse`.)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
+  :priority 100)
+
+;; transitive — R;R ⊆ R: the transitive closure. The guarded (`neq ?a ?c`)
+;; special case of `(compose R R R)` — the guard suppresses the self-loop a bare
+;; compose-into-self would add, which keeps an irreflexive closure irreflexive.
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive."
+  :priority 200)
+
+;; includes — R ⊆ S (subrelation lifting): copy every R-edge into S. The
+;; ⊆-flavoured twin of `imply2-fwd` (identical body) — `(includes is-a is-a*)`
+;; reads "is-a* includes is-a", lifting each direct edge into the closure.
+(rule includes (?p ?q)
+  :match  (?p ?a ?b)
+  :assert (?q ?a ?b)
+  :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+  :priority 100)
+
 ;; ── equational theory: Tarski/Maddux axioms as lemma rules ───────────────────
 ;; B1–B5 (Boolean + monoid structure) hold by construction (ein relations are
 ;; pair-sets — a representable RA), so they need no rules. B6–B10 are

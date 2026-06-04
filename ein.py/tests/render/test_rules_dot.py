@@ -196,19 +196,22 @@ def test_cli_render_rules(capsys: pytest.CaptureFixture[str]):
     assert out.count("digraph") == len(_rules_of(ZEBRA2))
 
 
+# `functional` (not `symmetric`) — the render commands are faithful static file
+# views (no import resolution), and symmetric/transitive/includes now arrive via
+# `(import std.algebra …)` (S1.8.A5-tail). `functional` stays defined inline.
 def test_cli_render_rule_by_name(capsys: pytest.CaptureFixture[str]):
-    rc = main(["render", "rule", str(ZEBRA2), "--name", "symmetric"])
+    rc = main(["render", "rule", str(ZEBRA2), "--name", "functional"])
     assert rc == 0
     out = capsys.readouterr().out
-    assert "digraph rule_symmetric_lhs_rhs" in out
+    assert "digraph rule_functional_lhs_rhs" in out
 
 
 def test_cli_render_rule_overlay(capsys: pytest.CaptureFixture[str]):
-    rc = main(["render", "rule", str(ZEBRA2), "--name", "symmetric",
+    rc = main(["render", "rule", str(ZEBRA2), "--name", "functional",
                "--rule-mode", "overlay"])
     assert rc == 0
     out = capsys.readouterr().out
-    assert "rule_symmetric_overlay" in out
+    assert "rule_functional_overlay" in out
     assert "cluster_lhs" not in out
 
 
