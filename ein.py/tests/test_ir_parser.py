@@ -222,6 +222,44 @@ def test_rule_equality_pattern():
     _ok("(rule eq-elim () :match (= ?a ?b) :assert ?a)")
 
 
+# ═══════════ Macro declarator (P1.8 S1.5.9) ═══════════
+
+def test_macro_decl_multi_param():
+    """`(macro NAME (?p…) BODY)` — the forall sugar as an ein macro."""
+    _ok("(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))")
+
+
+def test_macro_decl_single_param():
+    """One parameter, an `(and …)` body — the open sugar."""
+    _ok("(macro open (?P) (and (absent ?P) (absent (not ?P))))")
+
+
+def test_macro_body_can_be_a_var():
+    """The body is any `value`, including a bare var."""
+    _ok("(macro id (?x) ?x)")
+
+
+def test_reject_macro_no_params():
+    """`macro_params` is `VAR+` — an empty param list is a parse error."""
+    _bad("(macro foo () (rel ?a))")
+
+
+def test_reject_macro_no_body():
+    """The body `value` is mandatory."""
+    _bad("(macro foo (?p))")
+
+
+def test_reject_macro_bare():
+    """`macro` is SYMBOL-excluded: a bare `(macro)` is a parse error, not a
+    silent fact head named `macro`."""
+    _bad("(macro)")
+
+
+def test_macro_is_not_a_plain_symbol_head():
+    """The negative-lookahead forbids `macro` as a fact head entirely."""
+    _bad("(macro ?x ?y)")
+
+
 # ═══════════ Query ═══════════
 
 def test_query_solve():

@@ -8,6 +8,8 @@ deprecated block wrappers (`ontology` / `facts` / `reasoning` / `rules`)
 are still accepted behind a back-compat shim until S1.7c.4.
 
 The load order matters because some entities reference others:
+0. Pass 0 — macros (P1.8 S1.5.9): build the `(macro …)` registry so the
+   rules pass can expand macro invocations in each clause.
 1. Pass 1 — relations (declared signatures), collecting fact-shaped
    ontology children for pass 3.
 2. Pass 2 — rules / hrules. After this, rule-name resolution is possible.
@@ -38,6 +40,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from ein_bot.ir.macros import Macro, MacroError, expand_macros
 from ein_bot.ir.types import Atom, Int, IRNode, KwPair, Range, SForm, String, Var
 
 from .entities import Fact, Layer, Relation, Rule
@@ -206,6 +209,54 @@ def _ingest_relation(child: SForm, kb: KnowledgeBase, errors: list[str]) -> bool
     return True
 
 
+def _reserved_macro_names() -> frozenset[str]:
+    """Names a `(macro …)` may not be NAMED — shadowing kernel vocabulary
+    (Q-S1.5.9.2). The grammar already SYMBOL-excludes
+    ``not``/``and``/``or``/``neq``/``rule``/``hrule``/``query``/``config``/
+    ``trace``/``macro``, so the collidable names that still reach the loader
+    as a macro head are the structural primitives (``absent``/``false``),
+    the computed predicates (``eq``/``neq``), and ``relation``. ``open`` /
+    ``forall`` are deliberately NOT reserved — they are precisely the sugar
+    slated to migrate INTO stdlib macros (S1.5.9 T1.5.9.3)."""
+    from ein_bot.inference import predicates, primitives
+    return primitives.STRUCTURAL | frozenset(predicates.names()) | {"relation"}
+
+
+def _ingest_macros(
+    macro_forms: Iterable[SForm], kb: KnowledgeBase, errors: list[str],
+) -> None:
+    """Pre-pass: register every `(macro NAME (?p…) BODY)` into ``kb.macros``.
+
+    Runs before :func:`_ingest_rules`, whose clause-expansion step reads this
+    registry. A macro whose name shadows reserved kernel vocabulary
+    (:func:`_reserved_macro_names`) or duplicates an earlier macro is rejected
+    with a load-time error (P1.8 S1.5.9 T1.5.9.1).
+    """
+    reserved = _reserved_macro_names()
+    for form in macro_forms:
+        # AST shape: SForm("macro", (name_atom, @params SForm, body)).
+        if len(form.args) < 3:
+            errors.append(f"(macro) needs name + params + body at {form.loc}")
+            continue
+        name = _atom_name(form.args[0])
+        params_form = form.args[1]
+        body = form.args[2]
+        if name is None or not isinstance(params_form, SForm):
+            errors.append(f"malformed (macro …) at {form.loc}")
+            continue
+        if name in reserved:
+            errors.append(
+                f"macro '{name}' shadows a reserved kernel name at {form.loc}")
+            continue
+        if name in kb.macros:
+            errors.append(f"duplicate macro '{name}' at {form.loc}")
+            continue
+        params = tuple(a.name for a in params_form.args if isinstance(a, Var))
+        kb.macros[name] = Macro(
+            name=name, params=params, body=body, loc=form.loc,
+        )
+
+
 def _match_disjuncts(node: IRNode) -> list[IRNode] | None:
     """If a rule `:match` is a *top-level* `(or d1 … dn)`, return the
     disjuncts ``[d1, …, dn]`` (trailing kw-pairs dropped); else ``None``.
@@ -272,6 +323,20 @@ def _ingest_rules(
             errors.append(
                 f"({head} {name}) missing :match or :assert at {child.loc}")
             continue
+
+        # P1.8 S1.5.9 — rewrite `(macro …)` invocations in the clauses
+        # before they are compiled. Done before disjunct-lowering so a
+        # macro that expands to a top-level `(or …)` is still split into
+        # one rule per disjunct. The `kb.macros` guard skips the (rebuild)
+        # walk entirely for the common macro-free puzzle.
+        if kb.macros:
+            try:
+                match_node = expand_macros(match_node, kb.macros)
+                assert_node = expand_macros(assert_node, kb.macros)
+            except MacroError as e:
+                errors.append(f"({head} {name}): {e}")
+                continue
+
         why = why_node.value if isinstance(why_node, String) else ""
         priority = priority_node.value if isinstance(priority_node, Int) else None
 
@@ -404,6 +469,7 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
     # (relations → rules → facts) so resolution order is preserved.
     flat_relations: list[SForm] = []
     flat_rules: list[SForm] = []
+    flat_macros: list[SForm] = []
     flat_facts: list[tuple[SForm, Layer]] = []   # each carries its own layer
     query_blocks: list[SForm] = []
     config_blocks: list[SForm] = []
@@ -417,6 +483,8 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
             flat_relations.append(form)
         elif h in ("rule", "hrule"):
             flat_rules.append(form)
+        elif h == "macro":
+            flat_macros.append(form)
         elif h == "query":
             query_blocks.append(form)
         elif h == "config":
@@ -427,6 +495,10 @@ def load(forms: Iterable[SForm]) -> KnowledgeBase:
             # The flat default: any non-reserved head is a fact, with its
             # layer derived (or read off an explicit :layer) per S1.7c.1.
             flat_facts.append((form, _layer_of(form, errors)))
+
+    # Pass 0 — macros (P1.8 S1.5.9). Built first so the rules pass can
+    # expand `(macro …)` invocations in every clause.
+    _ingest_macros(flat_macros, kb, errors)
 
     # Pass 1 — relations (declared signatures + the auto-stored decl facts).
     for rform in flat_relations:

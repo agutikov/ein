@@ -463,7 +463,7 @@ def _candidate_objects(kb: KnowledgeBase) -> Iterator:
     name), minus the names a puzzle **declares as a type** in a relation
     signature, minus the reserved logical primitives
     (:func:`ein_bot.inference.primitives.non_object_names` — the rule-body /
-    ⊥ vocabulary `not`/`false`/`and`/`or`/`absent`/`forall` plus the
+    ⊥ vocabulary `not`/`false`/`and`/`or`/`absent` plus the
     `eq`/`neq` predicates; these can appear as a fact HEAD, e.g. a `(not h)`
     fact back-propagated DURING generation, but are never puzzle objects —
     without the guard the enumerator would propose `(R x not)` garbage).

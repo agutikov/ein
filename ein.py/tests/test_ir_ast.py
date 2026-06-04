@@ -134,6 +134,17 @@ def test_empty_rule_params():
     assert params.head == Atom("@params") and params.args == ()
 
 
+def test_macro_decl_shape():
+    """`(macro NAME (?p…) BODY)` → SForm("macro", (name, @params, body))."""
+    (form,) = parse("(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))")
+    assert form.head == Atom("macro")
+    name, params, body = form.args
+    assert name == Atom("forall")
+    assert isinstance(params, SForm) and params.head == Atom("@params")
+    assert params.args == (Var("b"), Var("G"), Var("B"))
+    assert isinstance(body, SForm) and body.head == Atom("absent")
+
+
 def test_relation_sig_flat():
     """Post-R10: relation args are flat — no @sig SForm wrapper."""
     (form,) = parse(
@@ -260,6 +271,9 @@ ROUNDTRIP_CASES = [
     # Instance as fact + as pattern
     "(instance Norwegian Nationality)",
     "(rule i () :match (instance ?a ?T) :assert ?a :why \"i\")",
+    # Macro declarators (P1.8 S1.5.9)
+    "(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))",
+    "(macro open (?P) (and (absent ?P) (absent (not ?P))))",
 ]
 
 

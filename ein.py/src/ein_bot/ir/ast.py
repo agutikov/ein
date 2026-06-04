@@ -169,6 +169,17 @@ class _ToAST(Transformer):
     def rule_params(self, items: list) -> SForm:
         return SForm(head=Atom(name="@params"), args=tuple(items))
 
+    # ── Macro (P1.8 S1.5.9) ────────────────────────────────────
+    # `(macro NAME (?p…) BODY)` lowers to SForm(head="macro",
+    # args=(name_atom, @params SForm, body)). The loader's macro
+    # pre-pass reads these args; the expander rewrites invocations.
+    def macro_decl(self, items: list) -> SForm:
+        name, params, body = items
+        return SForm(head=Atom(name="macro"), args=(name, params, body))
+
+    def macro_params(self, items: list) -> SForm:
+        return SForm(head=Atom(name="@params"), args=tuple(items))
+
     # ── Trace events ───────────────────────────────────────────
     def step_decl(self, items: list) -> SForm:
         return SForm(head=Atom(name="step"), args=tuple(items))

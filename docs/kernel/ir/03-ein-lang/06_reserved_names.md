@@ -23,7 +23,7 @@ Each top-level form is classified by its **head**: a head in the table
 below is a declarator (`trace` is the engine-emitted sibling); **any other
 head is a fact** — "detect facts by *not* being reserved" (the author's
 design note). This set is **closed**: the parser keys on it (`rule` / `hrule` / `query` /
-`config` / `trace` are SYMBOL-excluded, so a malformed declarator — e.g.
+`config` / `trace` / `macro` are SYMBOL-excluded, so a malformed declarator — e.g.
 `(query)` with no kw-pairs — is a *parse* error; `relation` is the one
 exception, kept a plain SYMBOL so rules can pattern-match
 `(relation ?R ?A ?B)`, so its malformed form is rejected at *load* time),
@@ -38,6 +38,7 @@ same set.
 | `hrule` | `(hrule N (?p…) :match … :assert …)` | declare a hypothesis-generation rule (drives `hypgen`, never fired by the saturator) | `kb.from_ir`; `hypgen` |
 | `query` | `(query :mode … :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
 | `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
+| `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation expands to BODY before compilation ([P1.8 S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)) | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
 | `trace` | `(trace <event>*)` | **engine-emitted** derivation log — parsed by [`trace/ast.py`](../../../../ein.py/src/ein_bot/trace/ast.py), ignored by `kb.from_ir`; a *sibling*, not part of the declarator-vs-fact dichotomy | `trace/` |
 
 **Else → fact.** A top-level form whose head is none of the above is a
@@ -47,9 +48,14 @@ wins, else it is derived — `:rule`/`:using` → REASONING, `:source` → FACT,
 neither → ONTOLOGY ([S1.7c.1](../../../../plans/m1_core_graph_reasoning/p1.7c_block_head_removal/s1.7c.1_layer_attribution_decision.md)).
 A former-wrapper head like `(facts …)` therefore now parses as a plain fact.
 
-**Forward-reserved:** `macro` joins this set once
-[P1.8 S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)
-lands (`(macro …)` definitions); until then it lexes as an ordinary SYMBOL.
+**Macro names are user-space**, with one guard: a `(macro …)` may not be
+*named* after reserved kernel vocabulary — the structural primitives
+(`absent` / `false`), the computed predicates (`eq` / `neq`), or `relation`
+(`_reserved_macro_names`). The SYMBOL-excluded keywords
+(`not` / `and` / `or` / `neq` / the declarators) can't be written as a macro
+name at all (parse error). `open` / `forall` are deliberately *not* reserved —
+they are the [desugaring sugar](#desugaring-sugar--p18-macros) slated to
+migrate into stdlib macros.
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 
@@ -75,17 +81,23 @@ bindings, not looked up in the KB.
 | `eq` | 2 | `(eq ?a ?b)` true iff the slots resolve equal | matcher `Guard` opcode |
 | `neq` | 2 | `(neq ?a ?b)` true iff the slots resolve unequal | matcher `Guard` opcode |
 
-## Desugaring sugar (→ P1.8 macros)
+## Pattern-macro sugar (`forall` / `open`) — NOT reserved
 
-These desugar at **compile time** into the primitives above; they carry no
-standalone kernel commitment and are slated to become importable P1.8
-macros ([S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)).
-Listed in `primitives.SUGAR`.
+`forall` and `open` were compile-time desugars baked into `compile.py`.
+Since [S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)
+they are ordinary ein-lang `(macro …)` declarations
+([`examples/stdlib/sugar.ein`](../../../../examples/stdlib/sugar.ein))
+expanded at **load** time (`kb.from_ir` → `ir.macros.expand_macros`) — they
+are **no longer kernel vocabulary**, no longer in `primitives.py`, and a
+puzzle may even redefine them. Until ein-lang imports land
+([S1.8.A1–A5](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md)),
+a file that wants them inlines the two `(macro …)` forms (copy of
+`sugar.ein`); afterwards, `(import "stdlib/sugar")`.
 
-| name | form | desugars to | engine site |
-|------|------|-------------|-------------|
-| `open` | `(open P)` | `(and (absent P) (absent (not P)))` — P is neither asserted nor negated | `compile.py:_desugar_open` |
-| `forall` | `(forall ?b G B)` | `(absent (and G (absent B)))` — guarded universal ∀b. G→B | `compile.py:_desugar_forall` |
+| macro | form | expands to |
+|-------|------|------------|
+| `open` | `(open P)` | `(and (absent P) (absent (not P)))` — P is neither asserted nor negated |
+| `forall` | `(forall ?b G B)` | `(absent (and G (absent B)))` — guarded universal ∀b. G→B |
 
 ## Hypothesis / query control
 

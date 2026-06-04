@@ -1,23 +1,29 @@
-"""Tests for the `(forall ?b (G) (B))` parser sugar — S1.5.8c T1.5.8c.3a.
+"""Tests for the `(forall ?b (G) (B))` pattern macro.
 
-`forall` is sugar that desugars at compile time to
-`(absent (and G (absent B)))`. The matcher sees only the
-desugared form; this test file pins both the surface semantics
-(observable behaviour for users of the rule) and the desugaring
-(the safety check that the bound var must appear in the guard).
+Since P1.8 S1.5.9 `forall` is an ein-lang `(macro …)` (no longer a
+compile.py desugar): the loader expands `(forall ?b (G) (B))` →
+`(absent (and G (absent B)))` before the compiler runs. The expansion is
+structurally identical to the old desugaring, so the surface semantics
+and the nested-`AbsentGuard` shape are unchanged. Each KB here therefore
+prepends the `forall` macro (the inline-until-imports idiom — copy of
+`examples/stdlib/sugar.ein`).
 """
 from __future__ import annotations
-
-import pytest
 
 from ein_bot.inference import match
 from ein_bot.inference.compile import AbsentGuard, compile_rule
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
+# Inline stdlib sugar (until ein-lang imports land — P1.8 S1.8.A1-A5).
+_SUGAR = """
+(macro forall (?b ?G ?B)
+  (absent (and ?G (absent ?B))))
+"""
+
 
 def _kb(text: str) -> KnowledgeBase:
-    return KnowledgeBase.from_ir(parse(text))
+    return KnowledgeBase.from_ir(parse(_SUGAR + text))
 
 
 def _run(kb: KnowledgeBase, rule_name: str) -> list:
@@ -127,9 +133,13 @@ def test_forall_empty_domain_is_vacuously_true():
     assert results[0][0]["p"] == "Alice"
 
 
-def test_forall_rejects_bound_not_in_guard():
-    """Safety: ?bound must appear in the guard; otherwise the
-    matcher has no enumerable domain. Load-time rejection."""
+def test_forall_bound_not_in_guard_no_longer_rejected():
+    """P1.8 S1.5.9 T1.5.9.4 — the old compile.py `_var_in_ast` safety check
+    ("?bound must appear in the guard") left with the desugar. `forall` is
+    now a plain macro that does no per-macro validation, so a malformed
+    forall compiles silently (author beware). A general "scan must ground
+    its bound vars" validator (option b) is the deferred replacement; until
+    then this documents the lost rejection."""
     text = """
     (rule bad-rule ()
       :match (forall ?v
@@ -140,8 +150,9 @@ def test_forall_rejects_bound_not_in_guard():
     (relation player T T) (relation whatever T T)
     """
     kb = _kb(text)
-    with pytest.raises(ValueError, match=r"forall .v: bound var does not appear"):
-        compile_rule(kb.rules["bad-rule"], None)
+    # No exception — the macro expanded and the plan compiled.
+    plan = compile_rule(kb.rules["bad-rule"], None)
+    assert plan is not None
 
 
 def test_forall_bound_does_not_escape():

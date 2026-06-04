@@ -1,8 +1,12 @@
-"""Tests for the `(open P)` parser sugar — S1.5.8c T1.5.8c.3b.
+"""Tests for the `(open P)` pattern macro.
 
-`open` names the third state of a potential fact: neither
-asserted (stored positive) nor negated (stored `(not P)`).
-Desugars at compile time to `(and (absent P) (absent (not P)))`.
+`open` names the third state of a potential fact: neither asserted
+(stored positive) nor negated (stored `(not P)`). Since P1.8 S1.5.9 it is
+an ein-lang `(macro …)` (no longer a compile.py desugar); the loader
+expands `(open P)` → `(and (absent P) (absent (not P)))` before the
+compiler runs — structurally identical, so the surface semantics are
+unchanged. Each KB prepends the `open` macro (the inline-until-imports
+idiom — copy of `examples/stdlib/sugar.ein`).
 """
 from __future__ import annotations
 
@@ -11,9 +15,15 @@ from ein_bot.inference.compile import AbsentGuard, compile_rule
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
+# Inline stdlib sugar (until ein-lang imports land — P1.8 S1.8.A1-A5).
+_SUGAR = """
+(macro open (?P)
+  (and (absent ?P) (absent (not ?P))))
+"""
+
 
 def _kb(text: str) -> KnowledgeBase:
-    return KnowledgeBase.from_ir(parse(text))
+    return KnowledgeBase.from_ir(parse(_SUGAR + text))
 
 
 def _run(kb: KnowledgeBase, rule_name: str) -> list:

@@ -29,7 +29,8 @@
 //   5. **Reserved words** (shape-pinned — never match SYMBOL):
 //      · kernel meta-primitives — `not` (not EXPR) · `and` (and EXPR+) ·
 //        `or` (or EXPR+) · `neq` (neq A B);
-//      · declarators — `rule` · `hrule` · `query` · `config` · `trace`.
+//      · declarators — `rule` · `hrule` · `query` · `config` · `trace`
+//        · `macro` (P1.8 S1.5.9).
 //      A typo or malformed shape on these is a PARSE-time error: `(nto Foo)`
 //      is not `(not …)`, `(query)` lacks its kw-pairs, `(rule x)` lacks its
 //      params — all rejected at parse. (A consequence of the word-boundary
@@ -79,6 +80,7 @@ start: form*
      | query_form
      | config_form
      | trace_form
+     | macro_decl           // ← P1.8 S1.5.9 flat declarator
      | fact_form            // ← anything else: a flat fact
 
 // ═══════════ Relation declarator (schema) ═══════════
@@ -108,6 +110,18 @@ generic_fact: "(" SYMBOL value* kw_pair* ")"
 rule_decl:  "(" "rule"  SYMBOL rule_params kw_pair+ ")"
 hrule_decl: "(" "hrule" SYMBOL rule_params kw_pair+ ")"
 rule_params: "(" VAR* ")"
+
+// ═══════════ Macro declarator (P1.8 S1.5.9) ═══════════
+// `(macro NAME (?p…) BODY)` — a load-time AST-rewrite alias. The expander
+// (`kb.from_ir` → `ir.macros.expand_macros`) substitutes a rule clause's
+// `(NAME a…)` invocation with BODY before the compiler runs, so `forall` /
+// `open` (and any future sugar) live as ein source, not compile.py arms.
+// `macro` is SYMBOL-excluded (negative-lookahead below), so a malformed
+// `(macro)` is a PARSE error, not a silent fact named `macro`. The first
+// paren-group after NAME is always the parameter list; the BODY is the
+// single `value` that follows.
+macro_decl:   "(" "macro" SYMBOL macro_params value ")"
+macro_params: "(" VAR+ ")"
 
 // ═══════════ Query ═══════════
 query_form: "(" "query" kw_pair+ ")"
@@ -173,7 +187,7 @@ or_form:       "(" "or" value+ kw_pair* ")"
 // set in S1.7.6 (it is now a plain relation), so `(instance Norwegian)`
 // no longer gets parse-time arity rejection — it parses as a generic
 // fact with one arg, like any domain head.
-SYMBOL:   /(?!(?:not|and|or|neq|rule|hrule|query|config|trace)\b)[A-Za-z][A-Za-z0-9_*-]*/
+SYMBOL:   /(?!(?:not|and|or|neq|rule|hrule|query|config|trace|macro)\b)[A-Za-z][A-Za-z0-9_*-]*/
 VAR:      /\?[A-Za-z][A-Za-z0-9_*-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
 WILDCARD: "_"

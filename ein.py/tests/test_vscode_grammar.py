@@ -4,7 +4,7 @@
 name sets in head position — declarators, rule-body / ⊥ primitives, and
 computed predicates. Those sets have a single source of truth:
 
-- primitives → :mod:`ein_bot.inference.primitives` (``STRUCTURAL | SUGAR``)
+- primitives → :mod:`ein_bot.inference.primitives` (``STRUCTURAL``)
 - predicates → :mod:`ein_bot.inference.predicates` (``names()``)
 - declarators → ``docs/kernel/ir/03-ein-lang/06_reserved_names.md`` (the
   closed P1.7c set; mirrored as ``EXPECTED_DECLARATORS`` below)
@@ -30,10 +30,11 @@ REPO = Path(__file__).resolve().parents[1]
 # examples/ and utils/ live at the project root (one level above ein.py/).
 GRAMMAR_PATH = REPO.parent / "utils" / "vscode-ein" / "ein.tmLanguage.json"
 
-# The closed declarator set (P1.7c). Source of truth:
-# docs/kernel/ir/03-ein-lang/06_reserved_names.md. `macro` is
-# forward-reserved (P1.8 S1.5.9) and intentionally NOT highlighted yet.
-EXPECTED_DECLARATORS = {"relation", "rule", "hrule", "query", "config", "trace"}
+# The closed declarator set (P1.7c + P1.8 S1.5.9 `macro`). Source of truth:
+# docs/kernel/ir/03-ein-lang/06_reserved_names.md.
+EXPECTED_DECLARATORS = {
+    "relation", "rule", "hrule", "query", "config", "trace", "macro",
+}
 # Wrapper heads removed in S1.7c.4 — must parse as ordinary fact heads,
 # never highlighted as keywords.
 REMOVED_WRAPPERS = {"ontology", "facts", "reasoning", "rules"}
@@ -82,7 +83,9 @@ def test_declarators_match_closed_set(grammar):
 
 
 def test_primitives_match_registry(grammar):
-    expected = set(primitives.STRUCTURAL | primitives.SUGAR)
+    # Since P1.8 S1.5.9 `open`/`forall` are stdlib macros, not primitives —
+    # they are no longer highlighted as kernel primitives.
+    expected = set(primitives.STRUCTURAL)
     assert _names_for_scope(grammar, PRIMITIVE_SCOPE) == expected
 
 

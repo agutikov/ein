@@ -191,68 +191,6 @@ def _collect_vars(slots: tuple[object, ...], into: set[str]) -> None:
             _collect_vars(s.arg_slots, into)
 
 
-def _var_in_ast(node: object, name: str) -> bool:
-    """True iff Var(name) appears anywhere in the IR sub-tree.
-
-    Used as the safety check for `(forall ?b (G) (B))`: the bound
-    var `?b` must appear in the guard `G`, otherwise the matcher
-    has no enumerable domain. Walks SForm/KwPair/Var.
-    """
-    if isinstance(node, Var):
-        return node.name == name
-    if isinstance(node, SForm):
-        if _var_in_ast(node.head, name):
-            return True
-        return any(_var_in_ast(a, name) for a in node.args)
-    if isinstance(node, KwPair):
-        return _var_in_ast(node.value, name)
-    return False
-
-
-def _desugar_open(p: IRNode) -> SForm:
-    """`(open P)` → `(and (absent P) (absent (not P)))` — the third-state
-    match (S1.5.8c T1.5.8c.3b): P is neither asserted nor negated in the
-    KB. Useful for gating hypothesis emission on still-undecided slots.
-    """
-    return SForm(
-        head=Atom(name=primitives.AND),
-        args=(
-            SForm(head=Atom(name=primitives.ABSENT), args=(p,)),
-            SForm(
-                head=Atom(name=primitives.ABSENT),
-                args=(SForm(head=Atom(name=primitives.NOT), args=(p,)),),
-            ),
-        ),
-    )
-
-
-def _desugar_forall(node: SForm) -> SForm:
-    """`(forall ?b (G) (B))` → `(absent (and G (absent B)))` — guarded
-    universal (S1.5.8c T1.5.8c.3a): ∀x. G(x) → B(x) ≡ ¬∃x. G(x) ∧ ¬B(x).
-    The bound var ``?b`` must appear in the guard (safety: the guard
-    grounds it). Raises ValueError on a malformed head.
-    """
-    bound_node, guard, body = node.args[0], node.args[1], node.args[2]
-    if not isinstance(bound_node, Var):
-        raise ValueError(
-            f"forall: first arg must be a ?bound var, got {bound_node!r}",
-        )
-    if not _var_in_ast(guard, bound_node.name):
-        raise ValueError(
-            f"forall ?{bound_node.name}: bound var does not appear "
-            f"in guard {guard!r}",
-        )
-    return SForm(
-        head=Atom(name=primitives.ABSENT),
-        args=(
-            SForm(
-                head=Atom(name=primitives.AND),
-                args=(guard, SForm(head=Atom(name=primitives.ABSENT), args=(body,))),
-            ),
-        ),
-    )
-
-
 def _compile_relation(
     node: SForm,
     head: IRNode,
@@ -310,14 +248,11 @@ def _compile_premise(
         sub_steps = _compile_body(node.args[0], bindings, known_vars)
         return [AbsentGuard(sub_steps=tuple(sub_steps))]
 
-    # `(open P)` — third-state match, desugared to and(absent, absent-not).
-    if head_name == primitives.OPEN and len(node.args) >= 1:
-        return _compile_premise(_desugar_open(node.args[0]), bindings, known_vars)
-
-    # `(forall ?b (G) (B))` — guarded universal, desugared to
-    # absent(and(G, absent(B))).
-    if head_name == primitives.FORALL and len(node.args) >= 3:
-        return _compile_premise(_desugar_forall(node), bindings, known_vars)
+    # `(forall …)` / `(open …)` are no longer compiler-level sugar: since
+    # P1.8 S1.5.9 they are ein-lang `(macro …)` declarations expanded at
+    # LOAD time (kb.from_ir → ir.macros), so by the time the compiler runs
+    # they have already become `(absent (and G (absent B)))` /
+    # `(and (absent P) (absent (not P)))`. See examples/stdlib/sugar.ein.
 
     # `(not P)` falls through to the generic relation handler
     # below — it compiles as a fact pattern with relation "not"
@@ -481,9 +416,9 @@ def negated_relation(plan: JoinPlan) -> str | None:
 def naf_relation_refs(plan: JoinPlan) -> list[tuple[str, bool]]:
     """``(relation, negated)`` pairs every ``AbsentGuard`` in ``plan`` watches.
 
-    Recurses through nested ``AbsentGuard`` steps (the ``forall`` /
-    ``open`` desugars to ``(absent (and G (absent B)))`` — S1.7.4
-    Q-S1.7.4.B says enter both levels). A ``(not (R …))`` sub-pattern —
+    Recurses through nested ``AbsentGuard`` steps (the ``forall`` macro
+    expands to ``(absent (and G (absent B)))`` — S1.7.4 Q-S1.7.4.B says
+    enter both levels). A ``(not (R …))`` sub-pattern —
     a ``Scan``/``Join`` on relation ``"not"`` carrying a
     :class:`NestedPattern` arg — yields ``(R, True)`` (the genuine
     watched relation is the nested one); any other relation lookup

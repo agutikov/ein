@@ -25,6 +25,9 @@ def _saturate(kb: KnowledgeBase) -> list:
 
 
 STDLIB = """
+;; inline stdlib sugar (until ein-lang imports land — P1.8 S1.8.A1-A5)
+(macro forall (?b ?G ?B)
+  (absent (and ?G (absent ?B))))
 (rule typecheck-arg-0 (?R ?Dom)
   :match  (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
   :assert (false) :priority 110 :why "t0")

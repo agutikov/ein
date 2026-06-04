@@ -82,8 +82,8 @@
     },
 
     "declarator-rule": {
-      "comment": "(rule N …) / (hrule N …) — head + rule name.",
-      "begin": "(\\()\\s*(rule|hrule)\\b\\s*([A-Za-z][A-Za-z0-9_*-]*)?",
+      "comment": "(rule N …) / (hrule N …) / (macro N …) — head + declared name.",
+      "begin": "(\\()\\s*(rule|hrule|macro)\\b\\s*([A-Za-z][A-Za-z0-9_*-]*)?",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
         "2": { "name": "keyword.control.declarator.ein" },
@@ -95,7 +95,7 @@
     },
 
     "declarator-other": {
-      "comment": "(query …) / (config …) / (trace …) — nameless declarators. `macro` is forward-reserved (P1.8 S1.5.9) and intentionally absent until it lands.",
+      "comment": "(query …) / (config …) / (trace …) — nameless declarators.",
       "begin": "(\\()\\s*(query|config|trace)\\b",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
@@ -107,8 +107,8 @@
     },
 
     "primitive-form": {
-      "comment": "Rule-body / ⊥ structural primitives, head position only (primitives.STRUCTURAL ∪ SUGAR).",
-      "begin": "(\\()\\s*(and|or|not|absent|forall|open|false)\\b",
+      "comment": "Rule-body / ⊥ structural primitives, head position only (primitives.STRUCTURAL). `forall`/`open` are stdlib macros since P1.8 S1.5.9, not primitives.",
+      "begin": "(\\()\\s*(and|or|not|absent|false)\\b",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
         "2": { "name": "keyword.control.primitive.ein" }

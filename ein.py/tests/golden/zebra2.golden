@@ -1,3 +1,7 @@
+(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))
+
+(macro open (?P) (and (absent ?P) (absent (not ?P))))
+
 (config :enable-pre-branch-lookahead true)
 
 (rule

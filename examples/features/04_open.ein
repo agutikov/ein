@@ -30,6 +30,15 @@
 ;; Demonstration rule — fires reasoning-layer candidate facts.
 ;; In real puzzles this'd be an `hrule` (hypothesis rule); for
 ;; the demo we use `rule` so the firings land in (reasoning).
+;; ─── stdlib sugar (inlined copy of examples/stdlib/sugar.ein) ───────
+;; `forall` / `open` pattern macros (P1.8 S1.5.9), duplicated here until
+;; ein-lang imports land (P1.8 S1.8.A1–A5); then this block collapses to:
+;;     (import "stdlib/sugar")
+(macro forall (?b ?G ?B)
+  (absent (and ?G (absent ?B))))
+(macro open (?P)
+  (and (absent ?P) (absent (not ?P))))
+
 (rule open-candidate ()
   :match  (and (is-a ?h House) (is-a ?c Color)
                (open (house-color ?h ?c)))

@@ -41,6 +41,7 @@ from .entities import (
 
 if TYPE_CHECKING:
     from ..inference.config import SolverConfig
+    from ..ir.macros import Macro
     from ..ir.types import KwPair
     from .provenance import DerivationDAG
     from .views import FactView
@@ -126,6 +127,12 @@ class KnowledgeBase:
         # they generate candidate hypotheses for hypgen and are
         # never fired by the saturator. Loaded from `(hrule …)`.
         self.hrules: dict[str, Rule] = {}
+        # Pattern macros (P1.8 S1.5.9) — `(macro …)` AST-rewrite aliases.
+        # Consumed at LOAD time only: the loader expands each rule clause's
+        # macro invocations before compiling, so nothing reads `macros`
+        # after `load()`. Kept on the KB as an inspectable record (and
+        # shared by reference across forks like the other registries).
+        self.macros: dict[str, Macro] = {}
         # Facts list (layer is a field on each Fact).
         self.facts: list[Fact] = []
         # Query (optional, only when the IR carries a `(query …)`).
@@ -595,6 +602,7 @@ class KnowledgeBase:
         new.relations = self.relations
         new.rules = self.rules
         new.hrules = self.hrules
+        new.macros = self.macros
         new.query = self.query
         # Equality classes: fork its own state (the parent's classes
         # remain reachable via the union-find roots that were created
@@ -655,6 +663,7 @@ class KnowledgeBase:
         new.relations = self.relations
         new.rules     = self.rules
         new.hrules    = self.hrules
+        new.macros    = self.macros
         new.query     = self.query
         new.config    = self.config
         # Equality classes: copy state (the parent's union-find
