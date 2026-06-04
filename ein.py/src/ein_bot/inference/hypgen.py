@@ -327,10 +327,11 @@ def _is_closed(kb: KnowledgeBase, r_name: str) -> bool:
     """True iff `(closed R)` is asserted in the KB (any layer).
 
     T1.5.4.1 — a closed relation contributes zero hypotheses; the
-    puzzle author has fully populated it. Either authored directly
-    in `(ontology …)` or asserted by a rule firing (e.g. the
-    S1.5.5 `infer-closure-from-functional` rule once it ships).
-    The hypothesis generator does not care which path produced the
+    puzzle author has fully populated it. The `(closed R)` fact may be
+    authored directly, emitted by :func:`ein_bot.inference.closed.emit_closed`
+    (the rule-inert auto-closure), or derived by a rule firing — e.g.
+    `std.closure`'s `infer-closure` (functional ∧ total ⇒ closed; P1.8
+    S1.8.A6). The hypothesis generator does not care which path produced the
     fact — the index lookup is the same.
     """
     apps = kb._facts_by_relation.get(CLOSED, ())

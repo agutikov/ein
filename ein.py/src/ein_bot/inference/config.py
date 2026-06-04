@@ -59,10 +59,6 @@ class SolverConfig:
       to the static pre-S1.5.7 descent — keep as an escape hatch if
       a puzzle's rule library produces nested-Fact hypotheses or
       otherwise breaks the back-prop preconditions.
-    - ``enable_auto_closure`` (default **False**) — S1.5.5's
-      ``infer-closure-from-functional`` rule firing during
-      saturation. Off until the auto-inference is verified to not
-      over-fire on rule libraries that don't expect it.
     - ``enable_eager_root_bubble`` (default **False**) — S1.5a.17.
       Flips back-prop from opportunistic write to eager
       abort-and-restart. Any unconditional bubble (positive or
@@ -133,7 +129,10 @@ class SolverConfig:
     enable_pre_branch_negated:       bool = True
     enable_pre_branch_lookahead:     bool = True
     enable_back_prop_unconditional:  bool = True
-    enable_auto_closure:             bool = False
+    # `enable_auto_closure` was a declared-but-inert placeholder for an
+    # `infer-closure-from-functional` rule. P1.8 S1.8.A6 ships that rule as
+    # `std.closure`, opt-in by IMPORT (no kernel↔stdlib rule-name coupling),
+    # so the flag is retired.
     enable_eager_root_bubble:        bool = False
     enable_path_condition_nogoods:   bool = False
     hypgen_scoring:                  str = "popularity"

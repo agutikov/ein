@@ -27,6 +27,7 @@ always present and version-locked to the engine.
 |--------|------|----------|-------|
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `open` pattern macros | S1.5.9 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; needs `forall`) | S1.8.A8 |
+| `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (closed R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |
 
 *Planned (not yet shipped):* `std.algebra` (the `imply` / `converse` /
 relation-algebra rule family — P1.8 S1.8.A7 / A12) and `std.types`
