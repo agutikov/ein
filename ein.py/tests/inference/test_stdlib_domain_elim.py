@@ -24,26 +24,12 @@ def _saturate(kb: KnowledgeBase) -> list:
     return list(Saturator(kb).saturate(max_steps=10000))
 
 
+# The four generic rules now live in the std.elim stdlib module (S1.8.A8);
+# import them flat (so the activator facts' bare names resolve) + forall.
 STDLIB = """
 (import std.macro :symbols (forall))
-(rule typecheck-arg-0 (?R ?Dom)
-  :match  (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
-  :assert (false) :priority 110 :why "t0")
-(rule typecheck-arg-1 (?R ?Ran)
-  :match  (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
-  :assert (false) :priority 110 :why "t1")
-(rule domain-elimination (?R ?OT ?VT)
-  :match  (and (functional ?R 0 1) (total ?R 0)
-               (is-a ?a ?OT) (is-a ?v ?VT)
-               (forall ?v_other
-                 (and (is-a ?v_other ?VT) (neq ?v_other ?v))
-                 (not (?R ?a ?v_other))))
-  :assert (?R ?a ?v) :priority 400 :why "de")
-(rule no-room-left (?R ?OT ?VT)
-  :match  (and (functional ?R 0 1) (total ?R 0)
-               (is-a ?a ?OT)
-               (forall ?v (is-a ?v ?VT) (not (?R ?a ?v))))
-  :assert (false) :priority 110 :why "nrl")
+(import std.elim :symbols (typecheck-arg-0 typecheck-arg-1
+                           domain-elimination no-room-left))
 """
 
 

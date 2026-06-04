@@ -1,0 +1,64 @@
+;;; ein-bot stdlib — `std.elim`: closed-world domain/range elimination + typecheck.
+;;;
+;;; The S1.5.8c.4 "M1-blocking stdlib" rule set, re-homed as an importable
+;;; module (P1.8 S1.8.A8). Four generic rules, each parametrised over a
+;;; relation R and the type(s) of its argument positions, activated by a
+;;; per-relation fact:
+;;;
+;;;   (typecheck-arg-0 R Dom)       — arg 0 of R must be a Dom, else ⊥
+;;;   (typecheck-arg-1 R Ran)       — arg 1 of R must be a Ran, else ⊥
+;;;   (domain-elimination R OT VT)  — R functional+total: one VT survivor → force it
+;;;   (no-room-left R OT VT)        — R functional+total: every VT excluded → ⊥
+;;;
+;;; A puzzle declares the relation's properties positionally —
+;;;   (functional R 0 1) (total R 0)
+;;; — the type hierarchy via (is-a …), and opts each relation into each rule by
+;;; declaring its activator fact. These rules are GENERIC, so import them FLAT
+;;; (`:symbols`) to keep the bare names their activator facts reference.
+;;;
+;;; Dependency: the rules use `forall` (std.macro). Selective import is not
+;;; auto-closure (A1 D7), so the importer must also pull it in:
+;;;     (import std.macro :symbols (forall))
+;;;     (import std.elim :symbols (typecheck-arg-0 typecheck-arg-1
+;;;                                domain-elimination no-room-left))
+;;;
+;;; NOTE: zebra2.ein uses a richer, puzzle-evolved formulation
+;;; (functional-as-a-rule, is-a* transitive typecheck, range-elimination);
+;;; reconciling it with this slice is deferred (A8 tail).
+
+(rule typecheck-arg-0 (?R ?Dom)
+  :match  (and (?R ?a ?b)
+               (absent (is-a ?a ?Dom)))
+  :assert (false)
+  :priority 110
+  :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}")
+
+(rule typecheck-arg-1 (?R ?Ran)
+  :match  (and (?R ?a ?b)
+               (absent (is-a ?b ?Ran)))
+  :assert (false)
+  :priority 110
+  :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}")
+
+(rule domain-elimination (?R ?OT ?VT)
+  :match  (and (functional ?R 0 1)
+               (total      ?R 0)
+               (is-a ?a ?OT)
+               (is-a ?v ?VT)
+               (forall ?v_other
+                 (and (is-a ?v_other ?VT) (neq ?v_other ?v))
+                 (not (?R ?a ?v_other))))
+  :assert (?R ?a ?v)
+  :priority 400
+  :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v})")
+
+(rule no-room-left (?R ?OT ?VT)
+  :match  (and (functional ?R 0 1)
+               (total      ?R 0)
+               (is-a ?a ?OT)
+               (forall ?v
+                 (is-a ?v ?VT)
+                 (not (?R ?a ?v))))
+  :assert (false)
+  :priority 110
+  :why    "{?a} has every {?VT} excluded — no value left")

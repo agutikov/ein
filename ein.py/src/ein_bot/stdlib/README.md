@@ -26,12 +26,24 @@ always present and version-locked to the engine.
 | module | file | provides | stage |
 |--------|------|----------|-------|
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `open` pattern macros | S1.5.9 |
+| `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; needs `forall`) | S1.8.A8 |
 
 *Planned (not yet shipped):* `std.algebra` (the `imply` / `converse` /
 relation-algebra rule family — P1.8 S1.8.A7 / A12) and `std.types`
 (inheritance + `guess` — A10). When those land, the universal kernel rules
 (`symmetric` / `transitive` / …) move out of inline `zebra2.ein` into them
 (the pending tail of S1.8.A5).
+
+**Rule modules vs `forall`.** `std.elim`'s rules are *generic* (parametrised
+over a relation), so a puzzle imports them **flat** (`:symbols`) to keep the
+bare names their activator facts reference — and, because selective import is
+not auto-closure (A1 D7), must also import the rules' `forall` dependency:
+
+```lisp
+(import std.macro :symbols (forall))
+(import std.elim  :symbols (typecheck-arg-0 typecheck-arg-1
+                            domain-elimination no-room-left))
+```
 
 ## Importing
 
