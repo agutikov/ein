@@ -1,0 +1,30 @@
+;;; ein-bot stdlib — `std.macro`: pattern-macro sugar (P1.8 S1.5.9).
+;;;
+;;; Logical module name `std.macro` (resolved by the loader to this file
+;;; under the stdlib root — P1.8 S1.8.A1). `forall` and `open` used to be
+;;; compile-time desugars baked into inference/compile.py; since S1.5.9
+;;; they are ordinary ein-lang `(macro …)` declarations — readable,
+;;; inspectable, and extensible without touching Python (any author can
+;;; add more sugar the same way).
+;;;
+;;; Until ein-lang imports land (P1.8 S1.8.A1–A5), a puzzle that wants this
+;;; sugar copies these two forms to the top of its file. Once `(import …)`
+;;; exists, those copies collapse to a single
+;;;     (import std.macro :symbols (forall open))
+;;; (flat — keeps the bare `(forall …)` / `(open …)` surface), or
+;;;     (import std.macro)            → `(std.macro.forall …)`
+;;;     (import std.macro :as m)      → `(m.forall …)`
+;;; and THIS file becomes the one source of truth.
+
+;; `(forall ?b (G) (B))` — guarded universal ∀b. G(b) → B(b), encoded as
+;; the classical ¬∃b. G(b) ∧ ¬B(b). The bound var ?b must appear in the
+;; guard G (so the matcher has a domain to enumerate); a malformed forall
+;; whose ?b is absent from G is no longer rejected at load (the old
+;; compile.py `_var_in_ast` check) — see P1.8 S1.5.9 T1.5.9.4.
+(macro forall (?b ?G ?B)
+  (absent (and ?G (absent ?B))))
+
+;; `(open P)` — third-state match: P is neither asserted nor negated in
+;; the KB (useful for gating hypothesis emission on still-undecided slots).
+(macro open (?P)
+  (and (absent ?P) (absent (not ?P))))

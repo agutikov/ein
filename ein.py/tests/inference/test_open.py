@@ -6,7 +6,7 @@ an ein-lang `(macro …)` (no longer a compile.py desugar); the loader
 expands `(open P)` → `(and (absent P) (absent (not P)))` before the
 compiler runs — structurally identical, so the surface semantics are
 unchanged. Each KB prepends the `open` macro (the inline-until-imports
-idiom — copy of `examples/stdlib/sugar.ein`).
+idiom — copy of `std.macro`, `examples/stdlib/macro.ein`).
 """
 from __future__ import annotations
 

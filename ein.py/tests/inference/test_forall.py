@@ -6,7 +6,7 @@ compile.py desugar): the loader expands `(forall ?b (G) (B))` →
 structurally identical to the old desugaring, so the surface semantics
 and the nested-`AbsentGuard` shape are unchanged. Each KB here therefore
 prepends the `forall` macro (the inline-until-imports idiom — copy of
-`examples/stdlib/sugar.ein`).
+`std.macro`, `examples/stdlib/macro.ein`).
 """
 from __future__ import annotations
 

@@ -252,7 +252,8 @@ def _compile_premise(
     # P1.8 S1.5.9 they are ein-lang `(macro …)` declarations expanded at
     # LOAD time (kb.from_ir → ir.macros), so by the time the compiler runs
     # they have already become `(absent (and G (absent B)))` /
-    # `(and (absent P) (absent (not P)))`. See examples/stdlib/sugar.ein.
+    # `(and (absent P) (absent (not P)))`. See examples/stdlib/macro.ein
+    # (the `std.macro` module).
 
     # `(not P)` falls through to the generic relation handler
     # below — it compiles as a fact pattern with relation "not"

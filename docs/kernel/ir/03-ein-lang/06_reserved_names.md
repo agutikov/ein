@@ -85,14 +85,14 @@ bindings, not looked up in the KB.
 
 `forall` and `open` were compile-time desugars baked into `compile.py`.
 Since [S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)
-they are ordinary ein-lang `(macro …)` declarations
-([`examples/stdlib/sugar.ein`](../../../../examples/stdlib/sugar.ein))
+they are ordinary ein-lang `(macro …)` declarations (the `std.macro` module,
+[`examples/stdlib/macro.ein`](../../../../examples/stdlib/macro.ein))
 expanded at **load** time (`kb.from_ir` → `ir.macros.expand_macros`) — they
 are **no longer kernel vocabulary**, no longer in `primitives.py`, and a
 puzzle may even redefine them. Until ein-lang imports land
 ([S1.8.A1–A5](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md)),
 a file that wants them inlines the two `(macro …)` forms (copy of
-`sugar.ein`); afterwards, `(import "stdlib/sugar")`.
+`macro.ein`); afterwards, `(import std.macro :symbols (forall open))`.
 
 | macro | form | expands to |
 |-------|------|------------|

@@ -21,10 +21,10 @@
 ;;; remains unbeaten by Carol).
 
 
-;; ─── stdlib sugar (inlined copy of examples/stdlib/sugar.ein) ───────
+;; ─── std.macro (inlined copy of examples/stdlib/macro.ein) ──────────
 ;; `forall` / `open` pattern macros (P1.8 S1.5.9), duplicated here until
 ;; ein-lang imports land (P1.8 S1.8.A1–A5); then this block collapses to:
-;;     (import "stdlib/sugar")
+;;     (import std.macro :symbols (forall open))
 (macro forall (?b ?G ?B)
   (absent (and ?G (absent ?B))))
 (macro open (?P)
