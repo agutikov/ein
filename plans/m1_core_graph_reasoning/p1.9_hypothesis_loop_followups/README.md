@@ -96,7 +96,7 @@ The R1-R4 rejected entries stay in the README catalog only.
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
 | 📅 E9  | Least-constraining-value (LCV)   | within an object's hypotheses, prefer fillers whose addition prunes the *least* of the remaining domain (counterpart to most-constrained-object) | M | M | CSP textbook |
-| 📅 E10 | Iterative deepening              | start `max_depth=1`, deepen on `Ambiguity`-with-open-leaves; cheap puzzles bottom out shallow | S | M | IDA* idiom |
+| ⛔ E10 | Iterative deepening              | **inapplicable to the lattice BFS** — cardinality layering *is* breadth-first deepening; no DFS depth bound to re-raise ([§Inapplicable](s1.9.e10_iterative_deepening.md#inapplicable-to-the-lattice-bfs-2026-06-15)) | S | M | IDA* idiom |
 | 📅 E11 | Goal-driven hypothesis filter    | only emit `h` that could unify with the query goal (or a sub-goal via rule unification); backward chaining trim | M | M | Prolog SLD-resolution; [docs/index/03](../../../docs/index/03-theorem-proving-formal-methods.md) |
 | 📅 E12 | Hypothesis ordering by "informativeness" | prefer hypotheses with high expected pruning (alive: max-constraint; dead: max-back-prop) | M | L (heuristic gain) | CSP value ordering |
 | 📅 E13 | Per-hypothesis saturation budget | abort the fork's saturate after K steps; treat as alive (depth-N open leaf) | M | L (UX) | branch-and-bound |
@@ -107,6 +107,20 @@ The R1-R4 rejected entries stay in the README catalog only.
 |-----|------|-----------|--------|-------|------------|
 | 📅 E14 | Arc-consistency pre-pass         | before main saturation, run AC-3 over the relation graph to prune trivially-impossible facts | L | M | CSP AC-3 ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
 | 📅 E15 | Path-consistency (k-consistency) | generalises AC to k-tuples; expensive but tightens the alive set further | L | L | k-consistency |
+
+> **Lattice re-grounding (2026-06-15).** Re-judged against the engine's actual
+> search — a *complete BFS over commitment-set cardinality* (Apriori), not a
+> DPLL/DFS decision tree ([architecture_and_algorithms.md](../../../docs/kernel/inference/architecture_and_algorithms.md)
+> §O7) — the search/CSP entries split three ways. **Reorderers** (E9, E12) are
+> *inert for the complete/uniqueness search* (within-layer order can't change
+> Apriori pruning) and help only the fast `solve(stop_after=1)` path. **E13** is
+> fast-path-only too (aborting saturation breaks completeness). **E10 is
+> inapplicable** (the cardinality layering already *is* the deepening). The
+> **space-shrinkers** (E11, E4, E5, E14, E15) are the genuine complete-search
+> levers — they cut the *number* of enterings = saturations, attacking the
+> O1+O2 bottleneck from the count side (E4 specifically avoids saturations that
+> `state_hash` only dedups *after* paying for them). See each stub's
+> "Lattice re-grounding" section.
 
 ### Engineering / UX
 
