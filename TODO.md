@@ -174,3 +174,19 @@
 ;;                                    noting the table-vs-prose B-id collision). m1 README: P1.8 row
 ;;                                    retitled, P1.8a row added, placeholder prose updated.
 
+
+
+;; Processed 2026-06-14:
+;;   - zebra2: import its property + elimination rules from   → plans/m1_core_graph_reasoning/p1.8a_performance/
+;;     the stdlib instead of inlining                           s1.8a.f20_stdlib_property_rules.md
+;;     (functional/injective/total/surjective/bijective →       (NEW stage S1.8a.f20 — the deferred S1.8.A8
+;;      std.algebra checks; typecheck/domain-elim/range-elim →  reconciliation: A5-tail byte-identical-resolved-KB
+;;      std.elim, reconciling ?isa-param vs is-a-literal,       migration; total/surjective gain ?isa param;
+;;      adding range-elim; negative companions = open Q)        range-elim added to std.elim; neg-companion home open)
+;;                                                            + plans/.../p1.8a_performance/README.md stage row
+;;                                                              (homed in P1.8a as P1.8 is COMPLETE, not perf)
+;;   - bench: positive-only --print-final-state               → same stage, Task T.f20.7 (drops (not …) + internal
+;;     (skip internal + negative facts)                         heads; positive hypothesis relations only)
+
+
+
