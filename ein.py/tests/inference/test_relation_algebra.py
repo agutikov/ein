@@ -143,7 +143,7 @@ def test_top_fills_the_rectangle():
 
 
 def test_complement_materialises_absent_pairs():
-    """T1.8.A12.6.d — complement over a 2×2 universe with one positive edge:
+    """T1.8.A12.6.d — complement over a 2x2 universe with one positive edge:
     the three absent pairs appear, the present one does not (the positive
     shrinks the complement)."""
     d = _derived(_imp("complement") + """
@@ -245,7 +245,7 @@ def test_includes_lifts_subrelation():
     assert ("is-a*", ("House-1", "House")) in d
 
 
-# ── equational theory (B6–B10 lemmas) ──────────────────────────────
+# ── equational theory (B6-B10 lemmas) ──────────────────────────────
 
 
 def test_schroder_negative_s():

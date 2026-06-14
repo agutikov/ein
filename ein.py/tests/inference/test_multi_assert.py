@@ -78,7 +78,7 @@ def test_single_assert_name_unchanged():
 
 
 def test_or_match_and_assert_one_rule():
-    """`(or …)`-in-match × `(and …)`-in-assert is now ONE rule: each disjunct
+    """`(or …)`-in-match x `(and …)`-in-assert is now ONE rule: each disjunct
     match fires once and emits both conclusions (no `__or<i>__and<j>` grid)."""
     kb = _kb("""
     (rule x () :match (or (a ?n) (b ?n))
