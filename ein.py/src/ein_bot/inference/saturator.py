@@ -57,37 +57,52 @@ from .firing import Firing, build_fact, fire
 _DEFAULT_PRIORITY = 1000
 
 
-def _scan_relations(plan: JoinPlan) -> set[str]:
-    """**Every** relation in a plan's premises — positive Scan/Join AND
-    inside any (nested) ``AbsentGuard`` — the S1.8.B2v re-enqueue trigger
-    set (incl. the A13 ``extra_match_plans`` disjuncts).
+def _positive_relations(plan: JoinPlan) -> set[str]:
+    """Relations of a plan's TOP-LEVEL positive Scan/Join premises (incl. the
+    A13 ``extra_match_plans`` disjuncts) — the **D5-seedable** set: a new fact
+    at one of these creates a new binding the matcher can find by seeding *at*
+    that fact (:func:`match.run_seeded`) instead of re-scanning the relation's
+    whole extent."""
+    rels: set[str] = set()
+    for step in plan.steps:
+        if isinstance(step, (Scan, Join)):
+            rels.add(step.relation)
+    for extra in plan.extra_match_plans:
+        for step in extra:
+            if isinstance(step, (Scan, Join)):
+                rels.add(step.relation)
+    return rels
 
-    A plan's match result can change only if a fact changes at one of these
-    relations. Two ways a delta creates a *new* binding:
 
-    - a **positive** Scan/Join premise gains a fact (the obvious case); and
-    - a fact lands inside an ``AbsentGuard`` and flips it. A bare
-      ``(absent P)`` only *blocks*, but a ``forall`` desugars to a NESTED
-      absent ``(absent (and G (absent B)))`` — adding a ``B`` fact makes the
-      inner absent fail, the outer absent **pass**, and so *enables* a
-      firing (e.g. ``domain-elimination`` fires once the last
-      ``(not (R a b_other))`` exists). So absent relations are triggers too,
-      at **every nesting depth**. (Collecting only the top-level positive
-      premises was the completeness bug that stalled the zebra2 lattice —
-      eliminations stopped firing, hypotheses never pruned.)
-    """
+def _absent_relations(plan: JoinPlan) -> set[str]:
+    """Relations appearing inside any (nested) ``AbsentGuard`` of a plan.
+
+    A delta here can FLIP the absent — a ``forall`` desugars to a nested
+    absent ``(absent (and G (absent B)))``, so adding a ``B`` fact makes the
+    inner absent fail, the outer **pass**, and *enables* a firing (e.g.
+    ``domain-elimination`` once the last ``(not (R a b_other))`` exists). But
+    there is no positive premise to bind, so a plan whose delta relation lands
+    here must **full-match**, not seed (S1.8.B2v D5) — treating it as seedable
+    would re-introduce the D2 completeness bug (stalled eliminations →
+    lattice blow-up). Note ``_positive_relations`` and ``_absent_relations``
+    together are the full re-enqueue trigger set (a relation can be in both)."""
     rels: set[str] = set()
 
-    def walk(steps: tuple) -> None:
+    def walk_absent(steps: tuple) -> None:
         for step in steps:
             if isinstance(step, (Scan, Join)):
                 rels.add(step.relation)
             elif isinstance(step, AbsentGuard):
-                walk(step.sub_steps)
+                walk_absent(step.sub_steps)
 
-    walk(plan.steps)
+    def find_absents(steps: tuple) -> None:
+        for step in steps:
+            if isinstance(step, AbsentGuard):
+                walk_absent(step.sub_steps)
+
+    find_absents(plan.steps)
     for extra in plan.extra_match_plans:
-        walk(extra)
+        find_absents(extra)
     return rels
 
 
@@ -122,18 +137,21 @@ class Saturator:
         # premise that passed at enqueue no longer holds against the
         # current KB (S1.5a.1 fire-time NAF re-eval).
         self.naf_dropped: int = 0
-        # S1.8.B2v — incremental (delta-driven) enqueue. After the cold
-        # full pass, an enqueue pass re-matches ONLY the plans whose
-        # positive premises reference a relation in the last productive
-        # firing's derived facts (the "delta"), plus any plan never yet
-        # matched (e.g. a reflective rule's freshly-compiled plan).
-        # `_delta_relations is None` ⇒ a FULL pass (cold start / is_stalled).
-        self._delta_relations: set[str] | None = None
+        # S1.8.B2v — incremental (delta-driven) enqueue. After the cold full
+        # pass, an enqueue pass processes only the DELTA — the facts the last
+        # productive firing derived: positive-premise plans are SEEDED at the
+        # new fact (D5 semi-naive, `match.run_seeded`), absent-premise plans
+        # (a `forall` that may flip) full-match, and any never-matched plan
+        # (reflective) full-matches. `_delta_facts is None` ⇒ a FULL pass
+        # (cold start / is_stalled).
+        self._delta_facts: list[Fact] | None = None
         self._matched_plan_ids: set[int] = set()
-        # relation → plans (positive-premise index), rebuilt when the
-        # compile cache grows; see `_relation_index`.
-        self._rel_index: dict[str, list[JoinPlan]] | None = None
-        self._rel_index_n: int = -1
+        # relation → plans, split by premise polarity (positive Scan/Join vs
+        # inside an AbsentGuard); rebuilt when the compile cache grows. See
+        # `_indexes`.
+        self._pos_index: dict[str, list[JoinPlan]] | None = None
+        self._abs_index: dict[str, list[JoinPlan]] | None = None
+        self._index_n: int = -1
 
     # ── Public API ────────────────────────────────────────────────
 
@@ -144,9 +162,9 @@ class Saturator:
         queue is empty after a fresh enqueue pass.
         """
         if self._needs_enqueue:
-            self._enqueue_pass(self._delta_relations)
+            self._enqueue_pass(self._delta_facts)
             self._needs_enqueue = False
-            self._delta_relations = None
+            self._delta_facts = None
         while self._queue:
             _priority, _tb, plan, bindings, premises = heapq.heappop(self._queue)
             key = self._binding_key(plan, bindings)
@@ -166,14 +184,12 @@ class Saturator:
             # downstream matches. Redundant firings change nothing.
             if not firing.redundant:
                 self._needs_enqueue = True
-                # S1.8.B2v — the next enqueue pass need only re-match plans
-                # whose positive premises reference a relation this firing
-                # just derived (accumulated until that pass consumes it).
-                rels = {d.relation_name for d in firing.derived}
-                if self._delta_relations is None:
-                    self._delta_relations = rels
+                # S1.8.B2v — the next enqueue pass processes only the facts
+                # this firing just derived (accumulated until consumed).
+                if self._delta_facts is None:
+                    self._delta_facts = list(firing.derived)
                 else:
-                    self._delta_relations |= rels
+                    self._delta_facts.extend(firing.derived)
             return firing
         return None
 
@@ -259,81 +275,112 @@ class Saturator:
             return _DEFAULT_PRIORITY
         return rule.priority
 
-    def _enqueue_pass(self, delta_relations: set[str] | None = None) -> None:
+    def _enqueue_pass(self, delta_facts: list[Fact] | None = None) -> None:
         """Enqueue any not-yet-seen binding.
 
-        S1.8.B2v — **delta-driven**. ``delta_relations is None`` ⇒ a FULL
-        pass over every plan (the cold first pass; ``is_stalled``; any
-        caller that wrote facts outside ``step()``). Otherwise a DELTA
-        pass: re-match only the plans whose positive premises reference a
-        relation in ``delta_relations`` (via :meth:`_relation_index`), plus
-        any plan never matched yet. Soundness: a new binding requires a new
-        fact at a Scan/Join premise, so a plan none of whose positive-
-        premise relations changed cannot gain one; ``AbsentGuard`` deltas
-        only *block* (re-checked at fire time by
-        :func:`match.absents_still_pass`). This turns the per-firing
-        re-enqueue from a full-KB re-match into a handful of plans — the
-        940-full-re-matches → ~run-count fix the S1.8.B2v measurement sized.
+        S1.8.B2v — **delta-driven, semi-naive (D5)**. ``delta_facts is None``
+        ⇒ a FULL pass: full-match every plan (the cold first pass;
+        ``is_stalled``; any caller that wrote facts outside ``step()``).
+        Otherwise a DELTA pass over the facts the last firing derived:
 
-        Refresh the compile cache first so any activator-shaped facts
-        derived since the last pass (e.g. ``(functional R)`` from a
-        ``(bijective R)`` expansion) get their plans built; ``compile_all``
-        is idempotent. This per-pass refresh IS **reflective rule-
-        implication** (S1.8.A9 / F5 rung 2): a derived ``(symmetric foo)``
-        becomes an activator for the generic rule next pass — and its
-        freshly-compiled plan is force-matched here as a "never matched
-        yet" plan regardless of the delta. Pinned by
-        ``tests/inference/test_reflective_rule.py``.
+        - a plan never matched yet (e.g. a reflective rule's freshly-compiled
+          plan) gets one FULL match — it may match existing facts, not just
+          the delta;
+        - a plan whose delta relation lands inside an ``AbsentGuard`` FULL-
+          matches — a ``forall`` may have flipped and there is no positive
+          premise to seed (the D2 completeness case);
+        - otherwise the plan is SEEDED at each delta fact
+          (:func:`match.run_seeded`) — the matcher iterates the one new fact
+          at its premise instead of re-scanning the relation's whole extent
+          (the win the D5 caller-split sized: 91% of matcher output was
+          re-discovery a full re-match would re-compute).
+
+        ``compile_all`` first so derived activators get plans (reflective
+        rule-implication, S1.8.A9; pinned by ``test_reflective_rule.py``).
         """
         self.engine.compile_all()
         cache = self.engine.cache
-        # Plans never matched yet (e.g. just compiled for a derived
-        # activator) always get one full match, regardless of the delta.
-        targets: list[JoinPlan] = [
-            p for p in cache.values() if id(p) not in self._matched_plan_ids
-        ]
-        if delta_relations is None:
-            targets = list(cache.values())
-        else:
-            chosen = {id(p) for p in targets}
-            index = self._relation_index()
-            for rel in delta_relations:
-                for plan in index.get(rel, ()):
-                    if id(plan) not in chosen:
-                        chosen.add(id(plan))
-                        targets.append(plan)
-        for plan in targets:
-            self._matched_plan_ids.add(id(plan))
-            priority = self._priority_for(plan)
-            for bindings, premises in match.run(plan, self.kb):
-                key = self._binding_key(plan, bindings)
-                if key in self._seen:
-                    continue
-                if key in self.engine._fired:
-                    self._seen.add(key)
-                    continue
-                self._seen.add(key)
-                self._tiebreaker += 1
-                heapq.heappush(
-                    self._queue,
-                    (priority, self._tiebreaker, plan, dict(bindings), premises),
-                )
-
-    def _relation_index(self) -> dict[str, list[JoinPlan]]:
-        """relation → plans with that relation in a positive premise.
-
-        Rebuilt when the compile cache grows (reflective rules add plans);
-        cheap (about plan-count * premise-count). Used only by delta passes.
-        """
-        cache = self.engine.cache
-        if self._rel_index is None or self._rel_index_n != len(cache):
-            index: dict[str, list[JoinPlan]] = {}
+        if delta_facts is None:
             for plan in cache.values():
-                for rel in _scan_relations(plan):
-                    index.setdefault(rel, []).append(plan)
-            self._rel_index = index
-            self._rel_index_n = len(cache)
-        return self._rel_index
+                self._matched_plan_ids.add(id(plan))
+                self._full_match(plan)
+            return
+        pos_index, abs_index = self._indexes()
+        full_done: set[int] = set()
+        # Never-matched plans (reflective): one full match each.
+        for plan in cache.values():
+            if id(plan) not in self._matched_plan_ids:
+                self._matched_plan_ids.add(id(plan))
+                full_done.add(id(plan))
+                self._full_match(plan)
+        # Absent-premise plans for any delta relation: full-match once
+        # (a forall may have flipped — not seedable).
+        for rel in {f.relation_name for f in delta_facts}:
+            for plan in abs_index.get(rel, ()):
+                if id(plan) not in full_done:
+                    full_done.add(id(plan))
+                    self._full_match(plan)
+        # Positive-premise plans: seed each delta fact (semi-naive).
+        for fact in delta_facts:
+            for plan in pos_index.get(fact.relation_name, ()):
+                if id(plan) not in full_done:
+                    self._seed_match(plan, fact)
+
+    def _indexes(
+        self,
+    ) -> tuple[dict[str, list[JoinPlan]], dict[str, list[JoinPlan]]]:
+        """(positive, absent) relation → plans indexes, rebuilt when the
+        compile cache grows. ``positive`` keys a plan's top-level Scan/Join
+        relations (seedable); ``absent`` keys relations inside its
+        AbsentGuards (must full-match). Cheap (plan-count * premise-count)."""
+        cache = self.engine.cache
+        if self._pos_index is None or self._index_n != len(cache):
+            pos: dict[str, list[JoinPlan]] = {}
+            absent: dict[str, list[JoinPlan]] = {}
+            for plan in cache.values():
+                for rel in _positive_relations(plan):
+                    pos.setdefault(rel, []).append(plan)
+                for rel in _absent_relations(plan):
+                    absent.setdefault(rel, []).append(plan)
+            self._pos_index = pos
+            self._abs_index = absent
+            self._index_n = len(cache)
+        return self._pos_index, self._abs_index
+
+    def _full_match(self, plan: JoinPlan) -> None:
+        """Full re-match of a plan (cold pass / new plan / absent-flip)."""
+        priority = self._priority_for(plan)
+        for bindings, premises in match.run(plan, self.kb):
+            self._enqueue_binding(plan, bindings, premises, priority)
+
+    def _seed_match(self, plan: JoinPlan, fact: Fact) -> None:
+        """Semi-naive seed (D5): enqueue plan matches in which ``fact`` plays
+        a positive premise."""
+        priority = self._priority_for(plan)
+        for bindings, premises in match.run_seeded(plan, fact, self.kb):
+            self._enqueue_binding(plan, bindings, premises, priority)
+
+    def _enqueue_binding(
+        self,
+        plan: JoinPlan,
+        bindings: dict[str, Any],
+        premises: tuple[Fact, ...],
+        priority: int,
+    ) -> None:
+        """Dedup a (plan, bindings) match against ``_seen`` / ``_fired`` and
+        push it onto the priority queue if fresh."""
+        key = self._binding_key(plan, bindings)
+        if key in self._seen:
+            return
+        if key in self.engine._fired:
+            self._seen.add(key)
+            return
+        self._seen.add(key)
+        self._tiebreaker += 1
+        heapq.heappush(
+            self._queue,
+            (priority, self._tiebreaker, plan, dict(bindings), premises),
+        )
 
     def _apply(
         self,

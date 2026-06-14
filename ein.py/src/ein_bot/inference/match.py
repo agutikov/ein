@@ -195,6 +195,56 @@ def run(
         yield from _run_steps(extra_steps, dict(plan.bindings_seed), (), kb)
 
 
+def _seed_steps(
+    steps: tuple[object, ...],
+    bindings_seed: dict[str, Any],
+    fact: Fact,
+    kb: KnowledgeBase,
+) -> Iterator[tuple[dict[str, Any], tuple[Fact, ...]]]:
+    """Yield matches of ``steps`` in which ``fact`` satisfies one of its
+    positive Scan/Join premises (S1.8.B2v D5 semi-naive).
+
+    For each top-level Scan/Join on ``fact``'s relation, bind that step to
+    ``fact`` and run the *remaining* steps under those bindings — iterating
+    the one new fact at that premise instead of re-scanning the relation's
+    whole extent. A relation appearing in several steps (e.g. transitive
+    ``(R ?a ?b) ∧ (R ?b ?c)``) is seeded at *each*, since ``fact`` may play
+    any role. ``premises`` are rebuilt in the plan's original Scan/Join order
+    (``fact`` at its step's position) so provenance is identical to
+    :func:`run`.
+    """
+    for i, step in enumerate(steps):
+        if not isinstance(step, (Scan, Join)) or step.relation != fact.relation_name:
+            continue
+        seed = _bind_args(step.arg_slots, fact.args, dict(bindings_seed))
+        if seed is None:
+            continue
+        rest = steps[:i] + steps[i + 1:]
+        prem_pos = sum(
+            1 for s in steps[:i] if isinstance(s, (Scan, Join))
+        )
+        for bindings, rest_prem in _run_steps(rest, seed, (), kb):
+            premises = (*rest_prem[:prem_pos], fact, *rest_prem[prem_pos:])
+            yield bindings, premises
+
+
+def run_seeded(
+    plan: JoinPlan,
+    fact: Fact,
+    kb: KnowledgeBase,
+) -> Iterator[tuple[dict[str, Any], tuple[Fact, ...]]]:
+    """Semi-naive delta match (S1.8.B2v D5): every match of ``plan`` in which
+    the newly-derived ``fact`` plays a positive premise. Seeds the primary
+    ``plan.steps`` and each ``extra_match_plans`` disjunct. Caller restricts
+    this to plans where ``fact``'s relation is a *positive* premise; plans
+    with the relation only inside an ``AbsentGuard`` (a ``forall`` that may
+    flip) must full-:func:`run` instead — seeding can't observe an absent
+    flip."""
+    yield from _seed_steps(plan.steps, plan.bindings_seed, fact, kb)
+    for extra_steps in plan.extra_match_plans:
+        yield from _seed_steps(extra_steps, plan.bindings_seed, fact, kb)
+
+
 def absents_still_pass(
     plan: JoinPlan,
     bindings: dict[str, Any],
@@ -231,4 +281,4 @@ def absents_still_pass(
     return True
 
 
-__all__ = ["absents_still_pass", "run"]
+__all__ = ["absents_still_pass", "run", "run_seeded"]
