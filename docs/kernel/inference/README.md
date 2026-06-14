@@ -90,6 +90,20 @@ change when the engine arrives:
 
 ## M1 invariant — `enable_alive_inherit` soundness
 
+> **Superseded mechanism (2026-06-15; P1.7a).** The *inherit-once* mechanism
+> described below — seed `kb.alive` at root, forks inherit it via `kb.fork()`,
+> `generate_hypotheses` runs once per `solve()` — is **no longer how the shipped
+> loop works.** The monotonic / lattice solver **recomputes** the alive set
+> per-KB via `_compute_alive` (`inference/monotonic/solver.py:455`,
+> = `open_hypotheses(kb)`) and **never consults `enable_alive_inherit`** — the
+> flag still exists (`config.py:128`) but is **vestigial / dead** in the solver.
+> What stays load-bearing is the **3-clause invariant** below: it is exactly the
+> "KB ⇒ alive-set" argument (alive is a pure function of the closed KB) that now
+> licenses *both* the per-KB recompute *and* the `canon.state_hash` KB-only dedup
+> ([reserved_engine_strings.md § Result-level invariants](reserved_engine_strings.md);
+> [architecture_and_algorithms.md §7](architecture_and_algorithms.md)). Read the
+> *mechanism* below as historical; the invariant it states still holds.
+
 [`SolverConfig.enable_alive_inherit`](../../../ein.py/src/ein_bot/inference/config.py)
 ships **on by default** as of S1.5.4 T1.5.4.8. With the flag on,
 the hypothesis loop seeds the alive-candidate set **once at root

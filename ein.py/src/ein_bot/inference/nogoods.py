@@ -1,11 +1,13 @@
 """Path-condition no-good clause learning — S1.5a.18.
 
-CDCL flavour applied to the hypothesis-search tree: every dead
-branch's path condition (chain of ancestor hypotheses + own hyp)
-becomes a learned clause stored at ``root.kb._nogoods``. A
-prospective branch whose path is a superset of any learned clause
-is filtered **pre-fork** — no ``try_branch``, no SearchNode, no
-own clause emitted.
+CDCL flavour applied to the hypothesis search: every dead
+commitment's path condition (chain of ancestor hypotheses + own
+hyp) becomes a learned clause stored at ``root.kb._nogoods``. A
+prospective commitment set that is a superset of any learned
+clause is filtered **pre-fork** by
+:func:`ein_bot.inference.apriori.filter_candidate` (the set-search
+engine's downward-closure prune) — no fork, no saturation, no own
+clause emitted.
 
 Clause representation: ``frozenset[tuple[str, tuple]]`` — set of
 FactIds. The implicit "and" is set semantics; the implicit "not
@@ -36,7 +38,6 @@ set.
 """
 from __future__ import annotations
 
-from ein_bot.kb.entities import Fact
 from ein_bot.kb.provenance import FactId
 from ein_bot.kb.store import KnowledgeBase
 
@@ -103,45 +104,8 @@ def emit_nogood(
     return True
 
 
-def matches_any_nogood(
-    h: Fact,
-    path_set: frozenset[FactId],
-    nogoods: set[Clause],
-) -> bool:
-    """True iff ``h``'s prospective path (``path_set ∪ {h.id}``) is
-    a superset of any learned clause — i.e., taking ``h`` would
-    complete a known-dead combination.
-
-    Used by the solver's pre-fork filter to allocate a
-    "dead-by-nogood" SearchNode without calling ``try_branch``
-    (skipping the saturation work while preserving the verdict-
-    promotion invariant that a candidate becomes either alive or
-    dead, never absent).
-
-    Empty ``nogoods`` short-circuits to False so the flag-off path
-    is a no-op.
-    """
-    if not nogoods:
-        return False
-    prospective = path_set | {(h.relation_name, h.args)}
-    return any(c.issubset(prospective) for c in nogoods)
-
-
-def build_clause(path: tuple[FactId, ...], own: Fact) -> Clause:
-    """Construct the path-condition clause for a death.
-
-    ``path`` is the ancestor hypothesis chain (root-first tuple of
-    FactIds); ``own`` is the dying candidate's hypothesis. The
-    clause is the set ``path ∪ {own.id}`` — order-insensitive.
-    """
-    own_id: FactId = (own.relation_name, own.args)
-    return frozenset((*path, own_id))
-
-
 __all__ = [
     "Clause",
     "FactId",
-    "build_clause",
     "emit_nogood",
-    "matches_any_nogood",
 ]

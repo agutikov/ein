@@ -64,6 +64,23 @@ Kept kernel mechanism for M1 — it is load-bearing for hypgen scoping / NAF
 soundness ([S1.7.10](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.10_closed.md));
 the de-hardcode question is parked post-M1.
 
+## Query-scoping keys
+
+`(query …)`-block keywords the hypothesis generator reads to scope which
+relations it enumerates. Single source: the `HYPOTHESIS_RELATIONS` /
+`NO_HYPOTHESIS` constants in
+[`inference/hypgen.py`](../../../ein.py/src/ein_bot/inference/hypgen.py); both
+scope the *blind enumerator* only (hrule-driven generation ignores them).
+
+| key | effect | where |
+|-----|--------|-------|
+| `hypothesis-relations` | **whitelist** — enumerate candidates *only* for the listed relations (`None` ⇒ all) | `hypgen._query_relations` |
+| `no-hypothesis` | **blacklist** (S1.9.E3) — never guess on the listed relations; saturation rules on them still fire | `hypgen._no_hypothesis_relations` |
+
+A relation named by both is excluded (blacklist wins). Neither touches the
+saturator — hypgen-only scoping, distinct from `(closed R)` above (which also
+blocks rule-derivation).
+
 ## Result-level invariants (S1.7.24)
 
 Not strings, but recorded here as part of the engine contract: the

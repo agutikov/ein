@@ -7,8 +7,8 @@ mechanisms:
 
 - ``01_subset_pruned.ein`` — Apriori prefix-join structurally
   drops the supersets of a dead 2-subset. The {a,b}-containing
-  3-sets are never generated; the matches_any_nogood filter is
-  a redundant guard.
+  3-sets are never generated; the ``_nogoods`` subset filter
+  (``apriori.filter_candidate``) is a redundant guard.
 - ``02_genuine_3set_death.ein`` — the genuine combinatorial-core
   case: a 3-set dies but no 2-subset is in D_2. Apriori cannot
   prune; the death surfaces at layer 3.

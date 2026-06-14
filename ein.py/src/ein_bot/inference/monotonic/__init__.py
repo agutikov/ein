@@ -53,7 +53,7 @@ this algorithm no longer does).
 
 - CDCL nogoods — every dead entering emits ``frozenset(C)``
   into ``root_kb._nogoods``; subsequent layers' candidate
-  filter (:func:`ein_bot.inference.nogoods.matches_any_nogood`)
+  filter (:func:`ein_bot.inference.apriori.filter_candidate`)
   catches supersets.
 - Singleton-death writeback — for size-1 dead clauses, writes
   ``(not h)`` to ``root_kb._negated_facts`` so subsequent

@@ -111,6 +111,49 @@ def test_no_whitelist_enumerates_all_relations():
     assert {"co-located", "likes"} <= {f.relation_name for f in facts}
 
 
+# ── S1.9.E3 — query :no-hypothesis blacklist ───────────────────────
+
+
+def test_query_no_hypothesis_excludes_relation():
+    """`(query :no-hypothesis (likes))` drops `likes` from the
+    enumerator while `co-located` still runs; the skip counts as a
+    `no_hypothesis_relation` pre-candidate skip."""
+    kb = _kb(_TWO_REL + "(query :mode solve :goal (co-located A B)"
+                        "        :no-hypothesis (likes))")
+    facts, stats = generate_hypotheses_with_stats(kb)
+    assert facts
+    assert all(f.relation_name != "likes" for f in facts)
+    assert any(f.relation_name == "co-located" for f in facts)
+    assert stats.pre_candidate["no_hypothesis_relation"] > 0
+
+
+def test_query_no_hypothesis_single_relation():
+    """A bare SYMBOL value is a one-relation blacklist."""
+    kb = _kb(_TWO_REL + "(query :mode solve :goal (co-located A B)"
+                        "        :no-hypothesis likes)")
+    facts, _stats = generate_hypotheses_with_stats(kb)
+    assert facts
+    assert all(f.relation_name != "likes" for f in facts)
+
+
+def test_no_hypothesis_overrides_whitelist():
+    """The blacklist applies on top of the whitelist: a relation named
+    by both `:hypothesis-relations` and `:no-hypothesis` is excluded."""
+    kb = _kb(_TWO_REL + "(query :mode solve :goal (co-located A B)"
+                        "        :hypothesis-relations (co-located likes)"
+                        "        :no-hypothesis (likes))")
+    facts, _stats = generate_hypotheses_with_stats(kb)
+    assert facts
+    assert all(f.relation_name == "co-located" for f in facts)
+
+
+def test_no_no_hypothesis_enumerates_all_relations():
+    """No `:no-hypothesis` ⇒ no relation is blacklisted."""
+    kb = _kb(_TWO_REL)
+    _facts, stats = generate_hypotheses_with_stats(kb)
+    assert stats.pre_candidate["no_hypothesis_relation"] == 0
+
+
 # ── T1.5.6b.2 — hrule mechanism ────────────────────────────────────
 
 

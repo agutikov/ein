@@ -18,10 +18,11 @@ conversion. See Q1.5b.3 (lattice node representation —
 canonical tuple) and Q1.5b.5 (refutation semantics — unified
 with `_nogoods` store).
 
-Semantic peer: :func:`ein_bot.inference.nogoods.matches_any_nogood`
-performs the same subset check, but against a single prospective
-hypothesis being added to a path-set; here :func:`filter_candidate`
-checks an already-assembled set against every clause.
+:func:`filter_candidate` is the **live** nogood-consumption path: it
+checks an already-assembled candidate set against every learned clause
+(the downward-closure prune). (A per-prospective-hypothesis variant,
+``nogoods.matches_any_nogood``, was removed 2026-06-15 as dead code —
+the set-level check is the only one the set-search engine uses.)
 """
 from __future__ import annotations
 

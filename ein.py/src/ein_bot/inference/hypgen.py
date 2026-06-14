@@ -52,6 +52,12 @@ from .lookahead import Lookahead
 # engine string for M1; see docs/kernel/inference/reserved_engine_strings.md.
 HYPOTHESIS_RELATIONS = "hypothesis-relations"
 
+# S1.9.E3 — the exclusion dual of HYPOTHESIS_RELATIONS: relations the blind
+# enumerator must never guess on, while saturation rules on them still fire
+# (open-world but un-speculated, e.g. observational data). Reserved engine
+# string for M1; see docs/kernel/inference/reserved_engine_strings.md.
+NO_HYPOTHESIS = "no-hypothesis"
+
 # ── Stats dataclass — T1.5.4.7 ─────────────────────────────────────
 
 
@@ -65,7 +71,9 @@ class HypGenStats:
       before any single candidate fact is constructed. Today:
       ``closed_relation`` (relation skipped because `(closed R)`),
       ``relation_not_whitelisted`` (relation absent from the
-      `(config :hypothesis-relations …)` whitelist),
+      `(query :hypothesis-relations …)` whitelist),
+      ``no_hypothesis_relation`` (relation on the
+      `(query :no-hypothesis …)` blacklist — S1.9.E3),
       ``self_edge`` (filler equals focal object). (Before S1.7.23 a
       ``type_incompatible_slot`` / ``type_incompatible_filler`` skip
       also lived here — the kernel `is-a` type-filter; removed.)
@@ -150,6 +158,8 @@ def _generate(kb: KnowledgeBase, stats: HypGenStats) -> Iterator[Fact]:
     # S1.5.6b T1.5.6b.1 — relation whitelist from the (query …)
     # block. None ⇒ no restriction.
     allowed = _query_relations(kb)
+    # S1.9.E3 — the `:no-hypothesis` blacklist (exclusion dual of `allowed`).
+    excluded = _no_hypothesis_relations(kb)
     seen: set[tuple[str, tuple]] = set()
 
     def _emit(fact: Fact) -> Iterator[Fact]:
@@ -173,7 +183,7 @@ def _generate(kb: KnowledgeBase, stats: HypGenStats) -> Iterator[Fact]:
             ),
         )
         for obj_ref in by_count:
-            for fact in _raw_candidates(kb, obj_ref, stats, allowed):
+            for fact in _raw_candidates(kb, obj_ref, stats, allowed, excluded):
                 yield from _emit(fact)
 
 
@@ -225,6 +235,7 @@ def _apply_filters(
 def _raw_candidates(
     kb: KnowledgeBase, obj_ref, stats: HypGenStats,
     allowed: frozenset[str] | None,
+    excluded: frozenset[str],
 ) -> Iterator[Fact]:
     """Enumerate every non-self-edge candidate fact for ``obj_ref``.
 
@@ -249,6 +260,11 @@ def _raw_candidates(
         if allowed is not None and rel.name not in allowed:
             # S1.5.6b T1.5.6b.1 — relation not on the whitelist.
             stats.pre_candidate["relation_not_whitelisted"] += 1
+            continue
+        if rel.name in excluded:
+            # S1.9.E3 — `:no-hypothesis` blacklist: never guess on R
+            # (saturation rules on R still fire; this is hypgen-only).
+            stats.pre_candidate["no_hypothesis_relation"] += 1
             continue
         for slot_idx in range(len(rel.signature)):
             yield from _fill_slot(kb, rel, slot_idx, obj_ref, stats)
@@ -354,6 +370,27 @@ def _query_relations(kb: KnowledgeBase) -> frozenset[str] | None:
         if key is not None and getattr(key, "name", None) == HYPOTHESIS_RELATIONS:
             return frozenset(_coerce_relation_names(kp.value)) or None
     return None
+
+
+def _no_hypothesis_relations(kb: KnowledgeBase) -> frozenset[str]:
+    """The `:no-hypothesis` exclusion set from the `(query …)` block.
+
+    S1.9.E3 — the *exclusion dual* of :func:`_query_relations`'s
+    `:hypothesis-relations` whitelist: relations the blind enumerator must
+    **never** guess on, even though saturation rules may still derive
+    R-facts (open-world but un-speculated — e.g. observational data). Like
+    the whitelist it scopes the blind enumerator only; hrule-driven
+    generation is the hrule's own concern. Returns an empty set (exclude
+    nothing) when the query block is absent or carries no `:no-hypothesis`.
+    """
+    q = kb.query
+    if q is None:
+        return frozenset()
+    for kp in q.kw_pairs:
+        key = getattr(kp, "key", None)
+        if key is not None and getattr(key, "name", None) == NO_HYPOTHESIS:
+            return frozenset(_coerce_relation_names(kp.value))
+    return frozenset()
 
 
 def _coerce_relation_names(value: object) -> tuple[str, ...]:
