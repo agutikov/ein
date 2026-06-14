@@ -4,39 +4,13 @@
 
 (import std.algebra :symbols (symmetric transitive includes))
 
-(import std.algebra :symbols (functional injective))
+(import std.algebra :symbols (bijective-properties))
 
-(rule
-  functional-negative
-  (?R)
-  :match (and (?R ?a ?b) (relation ?R ?A ?B) (is-a ?b_other ?B) (neq ?b_other ?b))
-  :assert (not (?R ?a ?b_other))
-  :why "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
-  :priority 240)
+(import std.bijection :symbols (bijective-setup typecheck-setup))
 
-(rule
-  injective-negative
-  (?R)
-  :match (and (?R ?a ?b) (relation ?R ?A ?B) (is-a ?a_other ?A) (neq ?a_other ?a))
-  :assert (not (?R ?a_other ?b))
-  :why "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
-  :priority 240)
+(bijection-hierarchy is-a)
 
-(rule
-  derive-functional-negative
-  ()
-  :match (functional ?R)
-  :assert (functional-negative ?R)
-  :why "{?R} functional ⟹ functional-negative active."
-  :priority 100)
-
-(rule
-  derive-injective-negative
-  ()
-  :match (injective ?R)
-  :assert (injective-negative ?R)
-  :why "{?R} injective ⟹ injective-negative active."
-  :priority 100)
+(typecheck-hierarchy is-a*)
 
 (rule
   co-located
@@ -47,11 +21,11 @@
   :priority 200)
 
 (rule
-  co-located-symmetric
+  co-located-fanout
   ()
   :match (co-located ?R1 ?V1 ?R2 ?V2)
-  :assert (co-located ?R2 ?V2 ?R1 ?V1)
-  :why "co-located is symmetric: derive reverse activator."
+  :assert (and (co-located ?R2 ?V2 ?R1 ?V1) (co-located-negative ?R1 ?V1 ?R2 ?V2))
+  :why "co-located {?R1} {?V1} ↔ {?R2} {?V2}: derive the reverse (symmetry) + negative-propagation activators."
   :priority 100)
 
 (rule
@@ -61,14 +35,6 @@
   :assert (not (?R2 ?V2 ?h))
   :why "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h}))."
   :priority 200)
-
-(rule
-  derive-co-located-negative
-  ()
-  :match (co-located ?R1 ?V1 ?R2 ?V2)
-  :assert (co-located-negative ?R1 ?V1 ?R2 ?V2)
-  :why "co-located activator ⟹ co-located-negative active."
-  :priority 100)
 
 (rule
   adjacent-via-fwd
@@ -103,35 +69,27 @@
   :priority 240)
 
 (rule
-  derive-adjacent-via-fwd
+  derive-adjacent-via
   ()
   :match (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why "adjacent-via ⟹ adjacent-via-fwd (identical args)."
+  :assert (and (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2) (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2))
+  :why "adjacent-via ⟹ both directional activators (identical args)."
   :priority 100)
 
 (rule
-  derive-adjacent-via-bwd
-  ()
-  :match (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why "adjacent-via ⟹ adjacent-via-bwd (identical args)."
-  :priority 100)
-
-(rule
-  derive-adjacent-via-fwd-negative
+  derive-adjacent-via-fwd-fanout
   ()
   :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
-  :why "adjacent-via-fwd ⟹ adjacent-via-fwd-negative."
+  :assert (and (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2) (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2) (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2))
+  :why "adjacent-via-fwd ⟹ its negative / disjunctive-prune / endpoint activators."
   :priority 200)
 
 (rule
-  derive-adjacent-via-bwd-negative
+  derive-adjacent-via-bwd-fanout
   ()
   :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
-  :why "adjacent-via-bwd ⟹ adjacent-via-bwd-negative."
+  :assert (and (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2) (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2) (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2))
+  :why "adjacent-via-bwd ⟹ its negative / disjunctive-prune / endpoint activators."
   :priority 200)
 
 (rule
@@ -151,22 +109,6 @@
   :priority 250)
 
 (rule
-  derive-disjunctive-prune-fwd
-  ()
-  :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why "adjacent-via-fwd ⟹ disjunctive-prune-fwd."
-  :priority 200)
-
-(rule
-  derive-disjunctive-prune-bwd
-  ()
-  :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
-  :priority 200)
-
-(rule
   adjacent-via-endpoint-fwd
   (?S ?R1 ?V1 ?R2 ?V2)
   :match (and (relation ?R1 ?A ?B) (is-a ?h1 ?B) (absent (and (is-a ?h2 ?B) (?S ?h2 ?h1))))
@@ -181,104 +123,6 @@
   :assert (not (?R2 ?V2 ?h2))
   :why "{?h2} has no {?S}-target; ({?R2} {?V2} {?h2}) impossible."
   :priority 240)
-
-(rule
-  derive-adjacent-via-endpoint-fwd
-  ()
-  :match (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why "adjacent-via-fwd ⟹ adjacent-via-endpoint-fwd."
-  :priority 200)
-
-(rule
-  derive-adjacent-via-endpoint-bwd
-  ()
-  :match (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why "adjacent-via-bwd ⟹ adjacent-via-endpoint-bwd."
-  :priority 200)
-
-(rule
-  typecheck-arg-0
-  (?R ?Dom)
-  :match (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
-  :assert (false)
-  :why "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
-  :priority 220)
-
-(rule
-  typecheck-arg-1
-  (?R ?Ran)
-  :match (and (?R ?a ?b) (absent (is-a* ?b ?Ran)))
-  :assert (false)
-  :why "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
-  :priority 220)
-
-(rule
-  domain-elimination
-  (?R)
-  :match (and (functional ?R) (total ?R) (relation ?R ?A ?B) (is-a ?a ?A) (is-a ?b ?B) (forall ?b_other (and (is-a ?b_other ?B) (neq ?b_other ?b)) (not (?R ?a ?b_other))))
-  :assert (?R ?a ?b)
-  :why "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b})."
-  :priority 400)
-
-(rule
-  range-elimination
-  (?R)
-  :match (and (injective ?R) (surjective ?R) (relation ?R ?A ?B) (is-a ?b ?B) (is-a ?a ?A) (forall ?a_other (and (is-a ?a_other ?A) (neq ?a_other ?a)) (not (?R ?a_other ?b))))
-  :assert (?R ?a ?b)
-  :why "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b})."
-  :priority 400)
-
-(rule
-  total
-  (?R)
-  :match (and (relation ?R ?A ?B) (is-a ?a ?A) (forall ?b (is-a ?b ?B) (not (?R ?a ?b))))
-  :assert (false)
-  :why "{?R} not total at {?a}: every {?B} is excluded."
-  :priority 110)
-
-(rule
-  surjective
-  (?R)
-  :match (and (relation ?R ?A ?B) (is-a ?b ?B) (forall ?a (is-a ?a ?A) (not (?R ?a ?b))))
-  :assert (false)
-  :why "{?R} not surjective at {?b}: every {?A} is excluded."
-  :priority 110)
-
-(import std.algebra :symbols (bijective-properties))
-
-(rule
-  derive-typecheck-arg-0
-  ()
-  :match (and (relation ?R ?A ?B) (bijective ?R))
-  :assert (typecheck-arg-0 ?R ?A)
-  :why "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
-  :priority 100)
-
-(rule
-  derive-typecheck-arg-1
-  ()
-  :match (and (relation ?R ?A ?B) (bijective ?R))
-  :assert (typecheck-arg-1 ?R ?B)
-  :why "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
-  :priority 100)
-
-(rule
-  derive-domain-elimination
-  ()
-  :match (and (functional ?R) (total ?R))
-  :assert (domain-elimination ?R)
-  :why "{?R} functional + total ⟹ domain-elimination active."
-  :priority 100)
-
-(rule
-  derive-range-elimination
-  ()
-  :match (and (injective ?R) (surjective ?R))
-  :assert (range-elimination ?R)
-  :why "{?R} injective + surjective ⟹ range-elimination active."
-  :priority 100)
 
 (hrule
   guess

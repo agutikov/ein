@@ -135,7 +135,7 @@ def test_negated_premise_is_red_with_neg_prefix():
 # ── n-ary relation pattern → octagon ───────────────────────────────
 
 def test_nary_relation_pattern_is_octagon():
-    rule = _rule_named(ZEBRA2, "derive-adjacent-via-fwd")  # 5-ary activator
+    rule = _rule_named(ZEBRA2, "derive-adjacent-via")  # 5-ary (adjacent-via …) match
     dot = render_rule(rule, mode="sidebyside")
     assert "shape=octagon" in dot
 

@@ -161,21 +161,37 @@ def _qualify(forms: list[SForm], prefix: str) -> list[SForm]:
 
 def _select(forms: list[SForm], symbols: tuple[str, ...],
             module: str, loc) -> list[SForm]:
-    """Keep only the declarations of the listed names, **flat** (unrenamed).
-    A name the module does not declare → error (no re-export of the absent)."""
+    """Keep the listed names **plus their dependency closure**, flat (unrenamed).
+
+    Auto-closure (S1.8a.f20): a listed declaration drags in every *other*
+    declaration of this module it references by name — so importing an entry
+    rule (`bijective-setup`) pulls the machinery it asserts/matches
+    (`domain-elimination`, …) without the importer enumerating all of it. Names
+    referenced but not declared here — cross-module deps (`total` from
+    std.algebra), kernel primitives (`relation`, `forall`) — are left for the
+    importer's *other* imports to provide, so a module need not be self-contained.
+
+    A listed name the module does not declare → error (no re-export of the
+    absent); the closure only follows names this module actually declares.
+    """
+    decls: dict[str, SForm] = {
+        nm: f for f in forms if (nm := _decl_name(f)) is not None
+    }
     wanted = set(symbols)
-    missing = wanted - _defined_names(forms)
+    missing = wanted - set(decls)
     if missing:
         raise KBLoadError(
             f"(import {module} :symbols …) — not provided by the module: "
             f"{', '.join(sorted(missing))} at {loc}")
-    return [
-        f for f in forms
-        if (isinstance(f, SForm) and isinstance(f.head, Atom)
-            and f.head.name in _DECLARATORS
-            and f.args and isinstance(f.args[0], Atom)
-            and f.args[0].name in wanted)
-    ]
+    keep: set[str] = set()
+    work = list(wanted)
+    while work:
+        n = work.pop()
+        if n in keep or n not in decls:
+            continue
+        keep.add(n)
+        work.extend(_referenced_names(decls[n]))
+    return [f for f in forms if _decl_name(f) in keep]
 
 
 # ── Recursive resolver ─────────────────────────────────────────────
@@ -258,32 +274,105 @@ def _resolve_tagged(forms, base_dir: Path | None) -> list[tuple[SForm, bool]]:
     return out
 
 
+def _is_rule_form(form: IRNode) -> bool:
+    return (isinstance(form, SForm) and isinstance(form.head, Atom)
+            and form.head.name in ("rule", "hrule"))
+
+
+def _kw_value(form: SForm, key: str) -> IRNode | None:
+    """The value of a rule/hrule keyword arg (e.g. `:match` / `:assert`)."""
+    for a in form.args:
+        if isinstance(a, KwPair) and a.key.name == key:
+            return a.value
+    return None
+
+
+def _sform_head_names(node: IRNode, out: set[str] | None = None) -> set[str]:
+    """The Atom head-name of every SForm reachable from ``node`` — relation
+    heads and logical connectives (`and`/`not`/…) alike. Variable heads
+    (`(?R ?a ?b)`) contribute nothing. Callers intersect against the sets they
+    care about, so the stray connective names are harmless."""
+    if out is None:
+        out = set()
+    if isinstance(node, SForm):
+        if isinstance(node.head, Atom):
+            out.add(node.head.name)
+        for a in node.args:
+            _sform_head_names(a, out)
+    return out
+
+
 def resolve_and_minimize(forms, *, base_dir: Path | None = None) -> list[SForm]:
     """Resolve every `(import …)` inline, then **tree-shake**: drop any imported
     *declaration* (rule/hrule/relation/macro) nothing references (A1 D9).
 
     Reachability seeds from the puzzle's own forms (and any imported facts,
-    kept conservatively), then closes over imported declarations' bodies. The
-    result is a standalone, import-free form list — `dump_canonical` of it is a
-    self-contained `.ein` equivalent to the original. Import-free input passes
-    through unchanged.
+    kept conservatively), then closes over two coupled relations:
+
+    - **name reference** — a kept form mentioning a declaration's name keeps it
+      (and, transitively, what its body names); this reaches a parameterised
+      rule once something asserts its activator fact, since the activator's head
+      *is* the rule name;
+    - **activation** — an imported rule whose `:match` references a *live*
+      relation is kept too, even when its own name is referenced nowhere (the
+      None-activator glue rules — `bijective-setup`, the `*-setup` fan-outs — are
+      fired by their match pattern, not by name). A relation is live if it heads
+      a kept fact or is asserted by a kept rule; a freshly-kept rule's
+      `:assert` heads join the live set, so activation cascades.
+
+    Without the activation pass, `--resolve` would silently drop an entire
+    activator-driven rule library (e.g. `std.bijection`) and leave a standalone
+    file that no longer solves. The result is import-free; `dump_canonical` of it
+    is a self-contained `.ein` equivalent to the original. Import-free input
+    passes through unchanged.
     """
     tagged = _resolve_tagged(list(forms), base_dir)
     imported_decls: dict[str, SForm] = {
         nm: f for f, imp in tagged
         if imp and (nm := _decl_name(f)) is not None
     }
+    # match / assert relation heads of each imported rule (for activation).
+    imp_match_heads: dict[str, set[str]] = {}
+    imp_assert_heads: dict[str, set[str]] = {}
+    for nm, f in imported_decls.items():
+        if _is_rule_form(f):
+            m, a = _kw_value(f, "match"), _kw_value(f, "assert")
+            imp_match_heads[nm] = _sform_head_names(m) if m is not None else set()
+            imp_assert_heads[nm] = _sform_head_names(a) if a is not None else set()
+
+    # live relations: heads of every kept fact (puzzle + imported facts) and the
+    # asserts of the puzzle's own (always-kept) rules — the relations that can
+    # exist in the saturated KB and so trigger activator-driven imported rules.
+    live: set[str] = set()
+    for f, imp in tagged:
+        if _decl_name(f) is None:                       # a fact / non-declarator
+            _sform_head_names(f, live)
+        elif not imp and _is_rule_form(f):              # puzzle's own rule
+            a = _kw_value(f, "assert")
+            if a is not None:
+                _sform_head_names(a, live)
+
     reachable: set[str] = set()
     work: list[str] = []
     for f, imp in tagged:                    # roots: puzzle forms + imported facts
         if not imp or _decl_name(f) is None:
             work.extend(_referenced_names(f))
-    while work:
-        n = work.pop()
-        if n in reachable or n not in imported_decls:
-            continue
-        reachable.add(n)
-        work.extend(_referenced_names(imported_decls[n]))
+
+    changed = True
+    while changed:
+        changed = False
+        while work:                          # name-reference closure
+            n = work.pop()
+            if n in reachable or n not in imported_decls:
+                continue
+            reachable.add(n)
+            changed = True
+            work.extend(_referenced_names(imported_decls[n]))
+            live |= imp_assert_heads.get(n, set())   # a kept rule's asserts go live
+        for nm, heads in imp_match_heads.items():     # activation closure
+            if nm not in reachable and (heads & live):
+                work.append(nm)
+                changed = True
     return [
         f for f, imp in tagged
         if not imp or _decl_name(f) is None or _decl_name(f) in reachable

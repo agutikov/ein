@@ -28,8 +28,9 @@ always present and version-locked to the engine.
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `open` pattern macros | S1.5.9 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (closed R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |
-| `std.algebra` | [`algebra.ein`](algebra.ein) | the full relation-algebra signature: relative (`converse` / `compose` / `identity`), Boolean (`meet` / `join` / `difference` / `complement` / `top` / `empty`), property checks (`irreflexive` / `antisymmetric` / `asymmetric` / `connex` / `difunctional`), property **closures** (`symmetric` / `transitive` / `includes` — the universal kernel rules, S1.8.A5), `imply1` / `imply2-fwd` / `imply2-reverse`, the equational lemmas (`symmetric`⟺`converse R R`, Schröder `compose-negative-{r,s}`, contravariance, converse-over-join) + `converse-illtyped-{dom,ran}` signature typecheck (generic; lemmas use reflective rule-implication) | S1.8.A7 + A12 + A5 |
+| `std.algebra` | [`algebra.ein`](algebra.ein) | the full relation-algebra signature: relative (`converse` / `compose` / `identity`), Boolean (`meet` / `join` / `difference` / `complement` / `top` / `empty`), cardinality checks (`functional` / `injective` / `total` / `surjective` + the `bijective` fan-out — S1.8a.f20; `total`/`surjective` need `forall`), property checks (`irreflexive` / `antisymmetric` / `asymmetric` / `connex` / `difunctional`), property **closures** (`symmetric` / `transitive` / `includes` — the universal kernel rules, S1.8.A5), `imply1` / `imply2-fwd` / `imply2-reverse`, the equational lemmas (`symmetric`⟺`converse R R`, Schröder `compose-negative-{r,s}`, contravariance, converse-over-join) + `converse-illtyped-{dom,ran}` signature typecheck (generic; lemmas use reflective rule-implication) | S1.8.A7 + A12 + A5 + f20 |
 | `std.typing` | [`typing.ein`](typing.ein) | `(type-hierarchy ?isR*)` one-knob converse-typecheck driver + `(reflexive R)` closure (non-generic fan-out; pairs with `std.algebra`'s `converse-illtyped-*`) | S1.8.A10 |
+| `std.bijection` | [`bijection.ein`](bijection.ein) | closed-world bijection inference, **signature-driven** (types read from `(relation R A B)`) and is-a-free: `bijective-setup` / `typecheck-setup` glue fan a `(bijective R)` + two hierarchy knobs into `domain-elimination` / `range-elimination` (survivor forcing), `functional-negative` / `injective-negative` (d=0 negative completion), `typecheck-arg-{0,1}`. The signature-driven counterpart of `std.elim`'s positional form; needs `forall`. The zebra2 formulation, generalised | S1.8a.f20 |
 
 `std.algebra`'s ops split **intrinsic** (read existing edges: `compose` / `meet`
 / `difference` / `converse` / `join` / `difunctional`) vs **extensive** (range
@@ -52,15 +53,21 @@ rule inline.
 an allegory extension beyond Tarski's RA, S1.8.A12 T5) need a `forall` over the
 universe and have no M1 consumer; design is in the stage doc.
 
-**Rule modules vs `forall`.** `std.elim`'s rules are *generic* (parametrised
+**Rule modules, auto-closure, and `forall`.** Rule modules (`std.elim`,
+`std.bijection`, the `std.algebra` rule families) are *generic* (parametrised
 over a relation), so a puzzle imports them **flat** (`:symbols`) to keep the
-bare names their activator facts reference — and, because selective import is
-not auto-closure (A1 D7), must also import the rules' `forall` dependency:
+bare names their activator facts reference. `:symbols` import is **auto-closure
+within the module** (S1.8a.f20, superseding A1 D7's explicit-only rule): a listed
+declaration drags in every *other* declaration of that module it references by
+name, so you list only the **entry** rules (the ones the puzzle's facts activate)
+and the machinery they assert/match follows. Names referenced *across* modules
+(`forall` in std.macro; `total`/`functional` in std.algebra when a std.bijection
+rule names them) are **not** fabricated — import those modules too:
 
 ```lisp
-(import std.macro :symbols (forall))
-(import std.elim  :symbols (typecheck-arg-0 typecheck-arg-1
-                            domain-elimination no-room-left))
+(import std.macro     :symbols (forall))                 ; cross-module dep, named explicitly
+(import std.algebra   :symbols (bijective-properties))   ; +closure → functional/injective/total/surjective
+(import std.bijection :symbols (bijective-setup typecheck-setup))  ; +closure → elim / negatives / typecheck
 ```
 
 ## Importing
@@ -70,10 +77,12 @@ Three tiers (Python-style — see the [A1 decision record](../../../../plans/m1_
 ```lisp
 (import std.macro)                        ; → (std.macro.forall …)   fully qualified
 (import std.macro :as m)                  ; → (m.forall …)           aliased
-(import std.macro :symbols (forall open)) ; → (forall …)             flat-selective
+(import std.macro :symbols (forall open)) ; → (forall …)             flat-selective + auto-closure
 ```
 
-`:as` and `:symbols` are mutually exclusive. Names are logical and dotted
+`:symbols` keeps the listed names **plus their within-module dependency closure**
+(S1.8a.f20): an entry rule pulls what it asserts/matches without the importer
+enumerating it. `:as` and `:symbols` are mutually exclusive. Names are logical and dotted
 (`.` is a normal atom character); the `.ein` suffix is implied. A
 file-relative import (a non-`std` name) resolves against the importing file's
 directory.

@@ -35,7 +35,7 @@ puzzle whose branching cost overruns the laptop).
 | S1.8.C1           | Measure negative-fact volume + consumption     | [s1.8.c1_measure_negative_volume.md](s1.8.c1_measure_negative_volume.md) |
 | S1.8.C2           | Pick a representation                          | [s1.8.c2_pick_representation.md](s1.8.c2_pick_representation.md) |
 | S1.8.C3           | Refactor saturator + detector + trace renderer | [s1.8.c3_refactor_saturator.md](s1.8.c3_refactor_saturator.md) |
-| S1.8a.f20         | **(P1.8 stdlib followup, not perf)** zebra2 imports its property + elimination rules from std.algebra/std.elim — the deferred A8 reconciliation; + a positive-only bench dump | [s1.8a.f20_stdlib_property_rules.md](s1.8a.f20_stdlib_property_rules.md) |
+| S1.8a.f20         | **(P1.8 stdlib followup, not perf) — DONE 2026-06-15.** zebra2 imports its bijection rules from std.algebra + NEW `std.bijection` (the deferred A8 reconciliation, full migration); `:symbols` import → auto-closure; 3-flag bench dump | [s1.8a.f20_stdlib_property_rules.md](s1.8a.f20_stdlib_property_rules.md) |
 
 The version-COW (B2.v), atom-vector compression (B3), unsat-core
 fingerprint (B4), and participation-index (B5) sub-themes are

@@ -257,8 +257,14 @@ def test_zebra2_imports_universal_rules_from_stdlib():
 
     for name, prio in (
         ("symmetric", 100), ("transitive", 200), ("includes", 100),
-        # S1.8a.f20: cardinality checks + the bijective fan-out.
+        # S1.8a.f20: cardinality checks + the bijective fan-out (std.algebra) …
         ("functional", 250), ("injective", 250), ("bijective-properties", 100),
+        ("total", 110), ("surjective", 110),
+        # … and the bijection-inference family (std.bijection).
+        ("bijective-setup", 100), ("typecheck-setup", 100),
+        ("domain-elimination", 400), ("range-elimination", 400),
+        ("functional-negative", 240), ("injective-negative", 240),
+        ("typecheck-arg-0", 220), ("typecheck-arg-1", 220),
     ):
         assert name in kb.rules, f"{name} not resolved into zebra2"
         assert kb.rules[name].priority == prio
@@ -270,3 +276,26 @@ def test_zebra2_imports_universal_rules_from_stdlib():
     assert "false" in repr(kb.rules["injective"].assert_)
     bij = repr(kb.rules["bijective-properties"].assert_)
     assert all(p in bij for p in ("functional", "injective", "total", "surjective"))
+    # The is-a-free bodies carry the hierarchy as the `?isa` param, not a literal.
+    assert "is-a" not in repr(kb.rules["domain-elimination"].match)
+    assert "isa" in repr(kb.rules["domain-elimination"].params)
+
+
+def test_symbols_import_is_auto_closure():
+    """S1.8a.f20: `:symbols` import pulls the listed names **plus their
+    name-reference closure within the module** — so importing an entry rule
+    drags in the machinery it asserts/matches, but cross-module / kernel names
+    are left for the importer's other imports."""
+    kb = _load(
+        "(import std.macro :symbols (forall))\n"      # cross-module dep of the pulled elim rules
+        "(import std.bijection :symbols (bijective-setup))\n"
+        "(relation color-of T T)\n"
+    )
+    # bijective-setup asserts (domain-elimination …)/(functional-negative …)/… —
+    # all pulled transitively, without being listed.
+    for pulled in ("domain-elimination", "range-elimination",
+                   "functional-negative", "injective-negative"):
+        assert pulled in kb.rules, f"auto-closure did not pull {pulled}"
+    # `total`/`surjective` (asserted by bijective-setup) live in std.algebra, not
+    # std.bijection, so the within-module closure does NOT fabricate them here.
+    assert "total" not in kb.rules and "surjective" not in kb.rules

@@ -83,57 +83,33 @@
 ;; This is sound under partial information — a "must hold"
 ;; rule on totality would fire false on every empty-yet state.
 
-;; functional / injective — the cardinality CHECKS, now from std.algebra
-;; (S1.8a.f20). A second std.algebra import, placed at the inline defs' old
-;; position so the resolved KB stays byte-identical: the activator facts
-;; `(functional *-loc)` / `(injective *-loc)` (derived from `(bijective …)`)
-;; reference the bare names unchanged.
-(import std.algebra :symbols (functional injective))
-
-;; ──── Negative-derivation companions for functional / injective ──
-;; The `functional` / `injective` rules above only fire (false) on
-;; violation. The d=0 negative-completion (S1.5a.19) wants the dual
-;; shape — given a positive (?R ?a ?b) on a functional/injective R,
-;; assert the explicit (not (?R …)) facts for every alternative.
-;; These directly close the chains the NL Zebra trace walks
-;; (examples/README.md) — e.g. (color-loc Yellow H_1) ⟹
-;; (not (color-loc Yellow H_{2..5})) via functional-negative and
-;; (not (color-loc {Red,Green,Ivory,Blue} H_1)) via injective-negative.
+;; ──── Bijection cardinality + inference — imported from the stdlib (S1.8a.f20) ──
+;; The generic cardinality CHECKS (functional / injective / total / surjective +
+;; the `bijective` fan-out) live in std.algebra; the closed-world INFERENCE they
+;; license — negative completion, domain/range elimination, arg typecheck — lives
+;; in std.bijection. All are is-a-free (the type-membership relation rides in as a
+;; param), so this puzzle names its two hierarchies once (below) and the
+;; `*-setup` glue fans each `(bijective …)` out into the operational activators
+;; (`(total color-loc is-a)`, `(domain-elimination color-loc is-a)`,
+;; `(typecheck-arg-0 color-loc is-a* Color)`, …). Only co-located* / adjacent-via*
+;; stay puzzle-specific — they exceed relation algebra's 3-variable ceiling.
 ;;
-;; Priority 240 — fires AFTER propagation (200) so the new positives
-;; are visible, and BEFORE both the violation rules (250) and the
-;; elimination rules (400), so derived negatives reach
-;; domain/range-elimination's `forall` premises in the same pass.
+;; We list only the ENTRY rules — those this puzzle's facts activate
+;; (`(bijective …)` fires `bijective-properties` + `bijective-setup`; the
+;; `(relation …)` signatures + `(bijective …)` fire `typecheck-setup`).
+;; `:symbols` import is auto-closure (S1.8a.f20): each entry rule drags in the
+;; machinery it asserts/matches — `bijective-properties` pulls functional /
+;; injective / total / surjective; `bijective-setup` pulls domain/range
+;; elimination + the negative-completion rules; `typecheck-setup` pulls
+;; typecheck-arg-{0,1}. (`forall` is the one cross-module dep we still name.)
+(import std.algebra   :symbols (bijective-properties))
+(import std.bijection :symbols (bijective-setup typecheck-setup))
 
-(rule functional-negative (?R)
-  :match  (and (?R ?a ?b)
-               (relation ?R ?A ?B)
-               (is-a ?b_other ?B)
-               (neq ?b_other ?b))
-  :assert (not (?R ?a ?b_other))
-  :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
-  :priority 240)
-
-(rule injective-negative (?R)
-  :match  (and (?R ?a ?b)
-               (relation ?R ?A ?B)
-               (is-a ?a_other ?A)
-               (neq ?a_other ?a))
-  :assert (not (?R ?a_other ?b))
-  :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
-  :priority 240)
-
-(rule derive-functional-negative ()
-  :match  (functional ?R)
-  :assert (functional-negative ?R)
-  :why    "{?R} functional ⟹ functional-negative active."
-  :priority 100)
-
-(rule derive-injective-negative ()
-  :match  (injective ?R)
-  :assert (injective-negative ?R)
-  :why    "{?R} injective ⟹ injective-negative active."
-  :priority 100)
+;; The two type-membership hierarchies the bijection rules quantify over:
+;;   is-a   — DIRECT membership (elimination / totality / negative completion);
+;;   is-a*  — its transitive closure (arg typecheck, so a subtype value passes).
+(bijection-hierarchy is-a)
+(typecheck-hierarchy is-a*)
 
 
 ;; ──── Cross-attribute propagation (B1) ─────────────────────
@@ -148,38 +124,37 @@
   :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h})."
   :priority 200)
 
-;; `co-located` is symmetric — (co-located A B C D) and
-;; (co-located C D A B) express the same constraint. Authors
-;; write ONE direction; this meta-rule derives the reverse
-;; activator. Saturator cache-refresh then picks it up and the
-;; `co-located` rule fires in both directions.
-(rule co-located-symmetric ()
+;; `co-located-fanout` — one meta-rule fans a `(co-located …)` activator into
+;; both companions it needs (S1.8a.f20, multi-fact `:assert (and …)`):
+;;   1. the SWAPPED activator — co-located is symmetric, (co-located A B C D) and
+;;      (co-located C D A B) express the same constraint, so authors write ONE
+;;      direction and this derives the reverse (the `co-located` rule then fires
+;;      both ways; the swapped fact re-triggers this rule, swap-back redundant);
+;;   2. the `co-located-negative` activator — the same shared-house equivalence
+;;      carries negatives, (not (R1 V1 h)) ⟹ (not (R2 V2 h)).
+;; (Replaces the former `co-located-symmetric` + `derive-co-located-negative`,
+;; which matched the same `(co-located …)` at the same priority.)
+(rule co-located-fanout ()
   :match  (co-located ?R1 ?V1 ?R2 ?V2)
-  :assert (co-located ?R2 ?V2 ?R1 ?V1)
-  :why    "co-located is symmetric: derive reverse activator."
+  :assert (and (co-located ?R2 ?V2 ?R1 ?V1)
+               (co-located-negative ?R1 ?V1 ?R2 ?V2))
+  :why    "co-located {?R1} {?V1} ↔ {?R2} {?V2}: derive the reverse (symmetry) + negative-propagation activators."
   :priority 100)
 
 ;; `co-located-negative` — negative propagation across co-located.
 ;; The activator asserts V1 and V2 share a house, so the equivalence
 ;; carries negatives too: (not (?R1 ?V1 ?h)) ⟹ (not (?R2 ?V2 ?h)).
 ;; The reverse direction (V2 → V1) is covered automatically by
-;; `co-located-symmetric` producing the swapped activator, which
-;; `derive-co-located-negative` then lifts to a second
-;; `co-located-negative` activator. Closes the NL chain
-;; *Norwegian@H_1 ⟹ Englishman ≠ H_1 ⟹ Red ≠ H_1* once
+;; `co-located-fanout` producing the swapped `co-located` activator,
+;; which then lifts to a second `co-located-negative` activator. Closes
+;; the NL chain *Norwegian@H_1 ⟹ Englishman ≠ H_1 ⟹ Red ≠ H_1* once
 ;; `functional-negative` / `injective-negative` have produced the
-;; first negative.
+;; first negative. (Its activator is derived by `co-located-fanout` above.)
 (rule co-located-negative (?R1 ?V1 ?R2 ?V2)
   :match  (not (?R1 ?V1 ?h))
   :assert (not (?R2 ?V2 ?h))
   :why    "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h}))."
   :priority 200)
-
-(rule derive-co-located-negative ()
-  :match  (co-located ?R1 ?V1 ?R2 ?V2)
-  :assert (co-located-negative ?R1 ?V1 ?R2 ?V2)
-  :why    "co-located activator ⟹ co-located-negative active."
-  :priority 100)
 
 ;; `adjacent-via-*` — pure-structural cross-attribute propagation
 ;; across a spatial adjacency relation ?S (first parameter). The
@@ -235,31 +210,36 @@
 ;; (V1's and V2's houses are ?S-adjacent in the order
 ;; (?S V2-house V1-house)); the two propagation directions are
 ;; just bookkeeping. Author writes ONE `adjacent-via` activator
-;; per puzzle condition; the two meta-rules below derive the
+;; per puzzle condition; the meta-rule below derives both
 ;; directional activators that trigger the actual propagation
 ;; rules above.
-(rule derive-adjacent-via-fwd ()
+(rule derive-adjacent-via ()
   :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via ⟹ adjacent-via-fwd (identical args)."
+  :assert (and (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+               (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2))
+  :why    "adjacent-via ⟹ both directional activators (identical args)."
   :priority 100)
 
-(rule derive-adjacent-via-bwd ()
-  :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via ⟹ adjacent-via-bwd (identical args)."
-  :priority 100)
-
-(rule derive-adjacent-via-fwd-negative ()
+;; `derive-adjacent-via-{fwd,bwd}-fanout` — each directional activator fans out
+;; (S1.8a.f20 multi-fact `:assert (and …)`) into the THREE consumers that key off
+;; it, all at the same priority: the negative-propagation companion, the
+;; disjunctive pruner, and the spatial-endpoint exclusion. (Replaces the six
+;; former derive-adjacent-via-{fwd,bwd}-{negative,…} + derive-disjunctive-prune-*
+;; + derive-adjacent-via-endpoint-* rules, which shared a match and priority.)
+(rule derive-adjacent-via-fwd-fanout ()
   :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-fwd ⟹ adjacent-via-fwd-negative."
+  :assert (and (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+               (disjunctive-prune-fwd     ?S ?R1 ?V1 ?R2 ?V2)
+               (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2))
+  :why    "adjacent-via-fwd ⟹ its negative / disjunctive-prune / endpoint activators."
   :priority 200)
 
-(rule derive-adjacent-via-bwd-negative ()
+(rule derive-adjacent-via-bwd-fanout ()
   :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-bwd ⟹ adjacent-via-bwd-negative."
+  :assert (and (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+               (disjunctive-prune-bwd     ?S ?R1 ?V1 ?R2 ?V2)
+               (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2))
+  :why    "adjacent-via-bwd ⟹ its negative / disjunctive-prune / endpoint activators."
   :priority 200)
 
 ;; ──── Disjunctive-prune: pre-emptive negatives ──────────────
@@ -309,27 +289,12 @@
   :why    "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded."
   :priority 250)
 
-;; Auto-derive disjunctive-prune-{fwd,bwd} activators from every
-;; adjacent-via-{fwd,bwd} activator. Args pass through unchanged
-;; — each rule handles its own direction internally via the NAF
-;; operand order.
-;;
-;; Priority 200 — these MUST fire AFTER all next-to derivations
-;; have drained at priority 100 (`includes right-of next-to` +
-;; `symmetric next-to`). The fire-time NAF re-eval (S1.5a.1)
-;; also catches the race; this priority gives the propagate
-;; band its turn first.
-(rule derive-disjunctive-prune-fwd ()
-  :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-fwd ⟹ disjunctive-prune-fwd."
-  :priority 200)
-
-(rule derive-disjunctive-prune-bwd ()
-  :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
-  :priority 200)
+;; The disjunctive-prune-{fwd,bwd} activators are derived by
+;; `derive-adjacent-via-{fwd,bwd}-fanout` above (priority 200 — they MUST fire
+;; AFTER all next-to derivations have drained at priority 100, `includes
+;; right-of next-to` + `symmetric next-to`; the fire-time NAF re-eval, S1.5a.1,
+;; also catches the race). Args pass through unchanged — each rule handles its
+;; own direction internally via the NAF operand order.
 
 ;; ──── Spatial-endpoint exclusion ────────────────────────────
 ;; The constraint behind `(adjacent-via ?S V1 V2)` is `(?S V2_h V1_h)`
@@ -362,148 +327,15 @@
   :why    "{?h2} has no {?S}-target; ({?R2} {?V2} {?h2}) impossible."
   :priority 240)
 
-(rule derive-adjacent-via-endpoint-fwd ()
-  :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-fwd ⟹ adjacent-via-endpoint-fwd."
-  :priority 200)
+;; The adjacent-via-endpoint-{fwd,bwd} activators are derived by
+;; `derive-adjacent-via-{fwd,bwd}-fanout` above (alongside the negative +
+;; disjunctive-prune activators — same `(adjacent-via-{fwd,bwd} …)` match).
 
-(rule derive-adjacent-via-endpoint-bwd ()
-  :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :assert (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-bwd ⟹ adjacent-via-endpoint-bwd."
-  :priority 200)
-
-;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
-;; Typecheck against the transitive-closure relation `is-a*`
-;; (declared in the ontology, with (subrel is-a is-a*) and
-;; (transitive is-a*) activators lifting then closing the
-;; ancestor chain). Using is-a* lets typecheck pass for facts
-;; whose arg types match the relation's declared type either
-;; DIRECTLY or via the type hierarchy — e.g. is-a is declared
-;; `(relation is-a T T)` and House is-a Attribute is-a T, so
-;; (is-a House Attribute) passes typecheck (House is-a* T).
-;; Priority 220 places these AFTER the transitive closure
-;; (priority 200) has fully saturated is-a*, so the NAF
-;; evaluates against the closed relation.
-(rule typecheck-arg-0 (?R ?Dom)
-  :match  (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
-  :assert (false)
-  :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
-  :priority 220)
-
-(rule typecheck-arg-1 (?R ?Ran)
-  :match  (and (?R ?a ?b) (absent (is-a* ?b ?Ran)))
-  :assert (false)
-  :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
-  :priority 220)
-
-;; ──── Elimination rules ─────────────────────────────────────
-;; `domain-elimination` and `range-elimination` mirror each
-;; other across the two projection directions. Each forces a
-;; survivor when all-but-one value in the partner type is
-;; explicitly excluded. domain-elim requires functional+total;
-;; range-elim requires injective+surjective.
-
-(rule domain-elimination (?R)
-  :match  (and (functional ?R) (total ?R)
-               (relation ?R ?A ?B)
-               (is-a ?a ?A)
-               (is-a ?b ?B)
-               (forall ?b_other
-                 (and (is-a ?b_other ?B) (neq ?b_other ?b))
-                 (not (?R ?a ?b_other))))
-  :assert (?R ?a ?b)
-  :why    "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b})."
-  :priority 400)
-
-(rule range-elimination (?R)
-  :match  (and (injective ?R) (surjective ?R)
-               (relation ?R ?A ?B)
-               (is-a ?b ?B)
-               (is-a ?a ?A)
-               (forall ?a_other
-                 (and (is-a ?a_other ?A) (neq ?a_other ?a))
-                 (not (?R ?a_other ?b))))
-  :assert (?R ?a ?b)
-  :why    "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b})."
-  :priority 400)
-
-(rule total (?R)
-  :match  (and (relation ?R ?A ?B)
-               (is-a ?a ?A)
-               (forall ?b (is-a ?b ?B) (not (?R ?a ?b))))
-  :assert (false)
-  :why    "{?R} not total at {?a}: every {?B} is excluded."
-  :priority 110)
-
-(rule surjective (?R)
-  :match  (and (relation ?R ?A ?B)
-               (is-a ?b ?B)
-               (forall ?a (is-a ?a ?A) (not (?R ?a ?b))))
-  :assert (false)
-  :why    "{?R} not surjective at {?b}: every {?A} is excluded."
-  :priority 110)
-
-;; ──── `bijective` shorthand — now from std.algebra (S1.8a.f20) ─────
-;; bijective ≡ functional ∧ injective ∧ total ∧ surjective. One rule with a
-;; multi-fact `:assert (and …)` (S1.8.A11, lowered firing-level by S1.8.A13)
-;; derives all four property markers from a single (bijective R) declaration.
-;; The saturator refreshes its compile cache each pass, so the derived
-;; (functional R) etc. trigger their respective contradiction rules normally;
-;; expansion runs at the propagate band so the markers are present before any
-;; rule that consumes them fires. Imported at the inline def's old position so
-;; the resolved KB stays byte-identical.
-(import std.algebra :symbols (bijective-properties))
-
-;; ──── Typecheck activator derivation from relation signature ─
-;; The (relation R A B) declaration is auto-stored as a fact by
-;; the loader; rules can now match it directly to derive the
-;; typecheck activators — no manual (typecheck-arg-* R T)
-;; declarations needed per relation.
-;; Typecheck activators auto-derived from bijective relations
-;; only. The bijective relations (*-loc) have direct-parent arg
-;; types (House-1's is-a-parent IS House, etc.), so subrel
-;; alone gives (is-a* House-1 House) at priority 100 — typecheck
-;; at 220 can NAF-check correctly.
-;;
-;; Non-bijective declared relations (is-a, is-a*, right-of,
-;; next-to) skip typecheck: is-a/is-a* have multi-level type
-;; semantics that need a closed is-a* at NAF-evaluation time,
-;; but NAF is evaluated at enqueue time (before transitive
-;; closure has run). Filtering by (bijective ?R) keeps typecheck
-;; sound under the current saturator semantics; lifting this
-;; constraint needs a post-saturation typecheck pass (future).
-(rule derive-typecheck-arg-0 ()
-  :match  (and (relation ?R ?A ?B) (bijective ?R))
-  :assert (typecheck-arg-0 ?R ?A)
-  :why    "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
-  :priority 100)
-
-(rule derive-typecheck-arg-1 ()
-  :match  (and (relation ?R ?A ?B) (bijective ?R))
-  :assert (typecheck-arg-1 ?R ?B)
-  :why    "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
-  :priority 100)
-
-;; ──── Elimination activators derived from property combos ────
-;; domain-elimination is sound when R is functional + total in
-;; the forward direction; range-elimination is sound when R is
-;; injective + surjective. Derive the activators automatically
-;; from the property markers — the user only declares the
-;; mathematical properties and the eliminations follow.
-
-(rule derive-domain-elimination ()
-  :match  (and (functional ?R) (total ?R))
-  :assert (domain-elimination ?R)
-  :why    "{?R} functional + total ⟹ domain-elimination active."
-  :priority 100)
-
-(rule derive-range-elimination ()
-  :match  (and (injective ?R) (surjective ?R))
-  :assert (range-elimination ?R)
-  :why    "{?R} injective + surjective ⟹ range-elimination active."
-  :priority 100)
+;; ──── Bijection inference — imported from std.algebra + std.bijection ────────
+;; typecheck-arg-{0,1}, domain-elimination, range-elimination, total, surjective,
+;; functional-negative, injective-negative and the `bijective`/`*-setup` glue all
+;; come from the stdlib imports at the top (S1.8a.f20). The per-relation
+;; `(bijective …)` declarations + the two `*-hierarchy` knobs drive them.
 
 ;; ──── Hypothesis generation ────────────────────────────────
 ;; One hrule parameterised over (?R ?T1 ?T2); activators in the

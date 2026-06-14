@@ -268,6 +268,36 @@
   :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
   :priority 100)
 
+;; ── totality checks: total / surjective (S1.8a.f20) ──────────────────────────
+;; The left-/right-TOTAL checks of R ⊆ A×B, the EXTENSIVE duals of the (intrinsic)
+;; functional/injective above:
+;;   total       — ∀a∈A. ∃b. R(a,b)  (left-total):   an `a` with every `b` excluded is ⊥.
+;;   surjective  — ∀b∈B. ∃a. R(a,b)  (right-total):  the dual.
+;; Open-world-safe: they fire `(false)` only when EVERY partner is *explicitly*
+;; excluded (the stored `(not …)` facts cover the whole opposite-type domain) —
+;; a "must hold" reading would fire on every empty-yet state. Types come from the
+;; `(relation R A B)` signature; the type-membership relation is the `?isa` PARAM,
+;; never an `is-a` literal (is-a-free body, S1.8.A10), so `(?isa …)` is an
+;; activator-bound scan. Activate per relation: `(total R is-a)` / `(surjective R is-a)`.
+;;
+;; Dependency: these use `forall` (std.macro) — selective import is not
+;; auto-closure (A1 D7), so an importer must pull `forall` in too. Priority 110.
+(rule total (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?a ?A)
+               (forall ?b (?isa ?b ?B) (not (?R ?a ?b))))
+  :assert (false)
+  :why    "{?R} not total at {?a}: every {?B} is excluded."
+  :priority 110)
+
+(rule surjective (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?b ?B)
+               (forall ?a (?isa ?a ?A) (not (?R ?a ?b))))
+  :assert (false)
+  :why    "{?R} not surjective at {?b}: every {?A} is excluded."
+  :priority 110)
+
 ;; irreflexive — R∩1' = 0: no self-loop. The repeated ?a is an equality
 ;; constraint in the matcher (`_bind_arg`), so this fires only on `(R a a)`.
 (rule irreflexive (?R)

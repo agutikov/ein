@@ -50,6 +50,22 @@ COND_15 = ("adjacent-via", ("next-to", "nation-loc", "Norwegian", "color-loc", "
 INJECTED = ("color-loc", ("Green", "House-1"))
 
 
+def test_zebra2_variants_match_generator():
+    """The minus-15 / bad fixtures are *generated* from zebra2.ein by
+    examples/gen_zebra2_variants.py (so a zebra2 rule change can't silently
+    drift them — the S1.8a.f20 lesson). Fail loudly + tell the maintainer to
+    regenerate if the on-disk copies are stale."""
+    import subprocess
+    import sys
+
+    gen = EXAMPLES / "gen_zebra2_variants.py"
+    proc = subprocess.run(
+        [sys.executable, str(gen), "--check"], capture_output=True, text=True)
+    assert proc.returncode == 0, (
+        (proc.stderr or proc.stdout)
+        + "\n  → run: python3 examples/gen_zebra2_variants.py")
+
+
 def _load(path: Path) -> KnowledgeBase:
     return KnowledgeBase.from_ir(parse(path.read_text(), filename=str(path)))
 

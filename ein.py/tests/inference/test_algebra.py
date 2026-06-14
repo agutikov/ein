@@ -17,9 +17,10 @@ _FAMILY = ("(import std.algebra :symbols "
 _LEMMAS = ("(import std.algebra :symbols "
            "(converse symmetric-is-self-converse self-converse-is-symmetric "
            "converse-pair-symmetric))\n")
-# A puzzle's own `symmetric` rule, for the lemma chain.
-_SYM = ('(rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) '
-        ':why "s" :priority 100)\n')
+# The lemma chain needs the `symmetric` closure rule; `:symbols` import is
+# auto-closure (S1.8a.f20), so `self-converse-is-symmetric` (which asserts
+# `(symmetric ?R)`) drags it in — no hand-rolled copy needed (and supplying one
+# would now collide).
 
 
 def _derived(src: str, max_steps: int = 3000):
@@ -61,7 +62,7 @@ def test_imply2_reverse_is_converse():
 
 
 def test_symmetric_derives_self_converse():
-    d = _derived(_LEMMAS + _SYM + "(relation knows T T)\n"
+    d = _derived(_LEMMAS + "(relation knows T T)\n"
                  "(symmetric knows)\n(knows A B :source \"(1)\")")
     assert ("converse", ("knows", "knows")) in d
     # reflective: the derived (converse knows knows) (and symmetric) mirror it
@@ -69,7 +70,7 @@ def test_symmetric_derives_self_converse():
 
 
 def test_self_converse_derives_symmetric():
-    d = _derived(_LEMMAS + _SYM + "(relation knows T T)\n"
+    d = _derived(_LEMMAS + "(relation knows T T)\n"
                  "(converse knows knows)\n(knows A B :source \"(1)\")")
     assert ("symmetric", ("knows",)) in d
     assert ("knows", ("B", "A")) in d
@@ -87,7 +88,7 @@ def test_converse_pair_is_symmetric():
 def test_lemma_loop_terminates():
     """symmetric ⇄ converse-R-R + converse-pair-symmetric must converge, not
     run away (the reflective dedup bounds the loop — Q-S1.8.A9.A)."""
-    src = (_LEMMAS + _SYM + "(relation knows T T)\n"
+    src = (_LEMMAS + "(relation knows T T)\n"
            "(symmetric knows)\n(knows A B :source \"(1)\")")
     kb = KnowledgeBase.from_ir(parse(src))
     try:
