@@ -177,6 +177,19 @@ class KnowledgeBase:
         self._rule_apps_by_rule: dict[str, tuple[Fact, ...]] = {}
         self._rule_apps_on_relation: dict[str, tuple[Fact, ...]] = {}
 
+        # Participation index (S1.8.B-idx, 2026-06-14) — facts grouped by
+        # `(relation, arg-position, atomic value)` so a Scan/Join step with
+        # a bound slot fetches only candidate facts instead of scanning the
+        # whole relation extent (`match.py:_candidates`). Keys are `str` /
+        # `int` arg values only — the join-key types; nested-`Fact` args are
+        # not keyed (they carry a `NestedPattern` slot and full-scan).
+        # Maintained on the same rebind-to-fresh-tuple contract as
+        # `_facts_by_relation`, so fork/snapshot shallow copies stay
+        # byte-identical (F-KB-9).
+        self._facts_by_rel_slot_val: dict[
+            tuple[str, int, str | int], tuple[Fact, ...]
+        ] = {}
+
         # Global names index — encoding-agnostic node participation
         # set per docs/kernel/ir/01-ein-graph/03_ein_model.md §2.
         # Keyed by name; the NameRef's `category` discriminates
@@ -324,16 +337,22 @@ class KnowledgeBase:
         self._rule_apps_by_rule = {}
         self._rule_apps_on_relation = {}
         self._negated_facts = set()
+        self._facts_by_rel_slot_val = {}
         fbr: dict[str, list[Fact]] = defaultdict(list)
         rabr: dict[str, list[Fact]] = defaultdict(list)
         raor: dict[str, list[Fact]] = defaultdict(list)
         arg_lists: dict[str, list[Fact]] = defaultdict(list)
+        fbrsv: dict[tuple[str, int, str | int], list[Fact]] = defaultdict(list)
         for fact in self.facts:
             fbr[fact.relation_name].append(fact)
             is_rule_app = fact.relation_name in self.rules
             if is_rule_app:
                 rabr[fact.relation_name].append(fact)
-            for a in fact.args:
+            for i, a in enumerate(fact.args):
+                # Participation index — same (rel, position, atomic value)
+                # keying as the incremental `_index_fact` path.
+                if type(a) is str or type(a) is int:
+                    fbrsv[(fact.relation_name, i, a)].append(fact)
                 if isinstance(a, str):
                     arg_lists[a].append(fact)
                     # Each arg that is a known Relation is a target of
@@ -349,6 +368,7 @@ class KnowledgeBase:
         self._facts_by_relation = {k: tuple(v) for k, v in fbr.items()}
         self._rule_apps_by_rule = {k: tuple(v) for k, v in rabr.items()}
         self._rule_apps_on_relation = {k: tuple(v) for k, v in raor.items()}
+        self._facts_by_rel_slot_val = {k: tuple(v) for k, v in fbrsv.items()}
 
         # Global names index — every distinct name that appears
         # anywhere in the KB. The head→facts grouping is exactly `fbr`
@@ -427,6 +447,13 @@ class KnowledgeBase:
         self._facts_by_relation[rn] = (
             *self._facts_by_relation.get(rn, ()), fact,
         )
+        # Participation index — key each atomic (str/int) arg by position.
+        for i, val in enumerate(fact.args):
+            if type(val) is str or type(val) is int:
+                psi_key = (rn, i, val)
+                self._facts_by_rel_slot_val[psi_key] = (
+                    *self._facts_by_rel_slot_val.get(psi_key, ()), fact,
+                )
         if rn in self.rules:
             self._rule_apps_by_rule[rn] = (
                 *self._rule_apps_by_rule.get(rn, ()), fact,
@@ -625,7 +652,7 @@ class KnowledgeBase:
         # Facts list: copy so appends to the fork don't touch parent.
         new.facts = list(self.facts)
         # Reverse indexes — the single fork/snapshot copy contract
-        # (`_rules_by_relation` shared by reference, the five fact-derived
+        # (`_rules_by_relation` shared by reference, the six fact-derived
         # indexes shallow-copied; see `_copy_fact_indexes_into`).
         self._copy_fact_indexes_into(new)
         # T1.5.4.4 carry-over: `config` is an immutable reference; the
@@ -700,7 +727,7 @@ class KnowledgeBase:
 
         ``_rules_by_relation`` derives from the post-load-immutable rules
         registry and is never mutated by :meth:`_index_fact`, so it is
-        SHARED by reference (like the other registries). The five
+        SHARED by reference (like the other registries). The six
         fact-derived indexes ARE appended to during saturation, so each copy
         gets its own shallow copy to mutate in place. That shallow copy is
         byte-identical to a full :meth:`rebuild_indexes` because
@@ -709,7 +736,7 @@ class KnowledgeBase:
         (S1.7c.21) — so :meth:`fork` and :meth:`snapshot` cannot desync,
         which is the F-KB-9 win. (A full typed-index wrapper was assessed
         and rejected: post-S1.7.23 there is only one static index against
-        five mutable, so the wrapper's mutable/static separation collapses to
+        six mutable, so the wrapper's mutable/static separation collapses to
         ceremony; this helper captures the whole remaining value.)
         """
         new._rules_by_relation = self._rules_by_relation
@@ -718,6 +745,7 @@ class KnowledgeBase:
         new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
         new.names = dict(self.names)
         new._negated_facts = set(self._negated_facts)
+        new._facts_by_rel_slot_val = dict(self._facts_by_rel_slot_val)
 
     # ── Dunder ────────────────────────────────────────────────────
 

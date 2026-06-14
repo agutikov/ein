@@ -94,6 +94,45 @@ def _bind_args(
 # ── Plan execution ─────────────────────────────────────────────────
 
 
+def _candidates(
+    step: Scan | Join,
+    bindings: dict[str, Any],
+    kb: KnowledgeBase,
+) -> tuple[Fact, ...]:
+    """Facts to try for a Scan/Join step — narrowed by the first bound slot.
+
+    Consults the participation index ``kb._facts_by_rel_slot_val`` keyed on
+    the FIRST slot whose value is known: a constant ``Atom`` / ``Int``, or a
+    ``Var`` already in ``bindings`` bound to an atomic (str/int) value. The
+    returned bucket is a **subset** of the full relation extent (never more
+    work) and a **superset** of the facts that match at that slot — the
+    caller's :func:`_bind_args` re-checks *every* slot, so the narrowing is
+    behaviour-preserving (no false positives, no missed matches). The index
+    mirrors :func:`_bind_arg`'s raw ``==`` (it does **not** apply eq-class
+    resolution — neither does the unifier), so the two cannot drift.
+
+    Falls back to the full ``kb._facts_by_relation`` extent when no slot is
+    bound to an atomic value (the unavoidable base Scan, or a slot bound to a
+    nested ``Fact`` / a ``NestedPattern`` slot — neither is keyed).
+
+    S1.8.B-idx (2026-06-14) — the fix for the 60 M ``_bind_args`` calls the
+    P1.8a baseline profile attributed to the per-step relation-extent rescan.
+    """
+    for i, slot in enumerate(step.arg_slots):
+        if isinstance(slot, Atom):
+            v: Any = slot.name
+        elif isinstance(slot, Int):
+            v = slot.value
+        elif isinstance(slot, Var) and slot.name in bindings:
+            v = bindings[slot.name]
+            if type(v) is not str and type(v) is not int:
+                continue          # nested-Fact binding — not keyed
+        else:
+            continue              # unbound Var, or NestedPattern slot
+        return kb._facts_by_rel_slot_val.get((step.relation, i, v), ())
+    return kb._facts_by_relation.get(step.relation, ())
+
+
 def _run_steps(
     steps: tuple[object, ...],
     bindings: dict[str, Any],
@@ -108,7 +147,7 @@ def _run_steps(
     rest = tuple(rest_list)
 
     if isinstance(step, (Scan, Join)):
-        for fact in kb._facts_by_relation.get(step.relation, ()):
+        for fact in _candidates(step, bindings, kb):
             new_b = _bind_args(step.arg_slots, fact.args, bindings)
             if new_b is not None:
                 yield from _run_steps(rest, new_b, (*premises, fact), kb)
