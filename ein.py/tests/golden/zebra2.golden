@@ -1,12 +1,10 @@
-(import std.macro :symbols (forall open))
-
 (config :enable-pre-branch-lookahead true)
 
 (import std.algebra :symbols (symmetric transitive includes))
 
-(import std.algebra :symbols (bijective-properties))
-
-(import std.bijection :symbols (bijective-setup typecheck-setup))
+(import
+  std.bijection
+  :symbols (bijective-properties bijective-setup typecheck-setup))
 
 (bijection-hierarchy is-a)
 

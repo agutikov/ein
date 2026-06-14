@@ -77,8 +77,22 @@ def test_closed_relation_skipped_by_hypgen():
     "(rule infer-closure () :match (foo ?x) :assert (bar ?x) :why \"w\")\n",
 ])
 def test_local_redefinition_conflicts(bad):
-    """Importing `infer-closure` and also defining it locally is a dup-name
-    load error (the strict conflict policy, A1 D3)."""
+    """Importing `infer-closure` and also defining it locally with a DIFFERENT
+    body is a conflict (A1 D3, now via the S1.8a.f20 dedup: identical re-imports
+    collapse, a differing same-name redefinition errors)."""
     from ein_bot.kb.from_ir import KBLoadError
-    with pytest.raises(KBLoadError, match=r"duplicate rule"):
+    with pytest.raises(KBLoadError, match=r"conflicting definitions of 'infer-closure'"):
         KnowledgeBase.from_ir(parse(bad))
+
+
+def test_identical_redefinition_is_idempotent():
+    """The dedup's other half (S1.8a.f20): importing `infer-closure` and
+    re-declaring it with the same body is harmless — diamonds collapse."""
+    from ein_bot.ir import dump_canonical
+    from ein_bot.kb.imports import _stdlib_root
+    forms = parse((_stdlib_root() / "closure.ein").read_text(encoding="utf-8"))
+    infer = next(f for f in forms
+                 if f.head.name == "rule" and f.args[0].name == "infer-closure")
+    kb = KnowledgeBase.from_ir(parse(
+        "(import std.closure :symbols (infer-closure))\n" + dump_canonical(infer) + "\n"))
+    assert "infer-closure" in kb.rules

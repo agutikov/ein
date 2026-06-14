@@ -40,8 +40,15 @@
 ;;; DIRECT type membership (`is-a`), while typecheck accepts a value whose type
 ;;; matches DIRECTLY or via the hierarchy (`is-a*`, the transitive closure).
 ;;;
-;;; Dependency: the elimination rules use `forall` (std.macro); selective import
-;;; is not auto-closure (A1 D7), so pull `forall` in too.
+;;; Dependencies are **self-imported** (idempotent re-import, S1.8a.f20): `forall`
+;;; (std.macro) for the elimination quantifiers, and the cardinality rules
+;;; (std.algebra) the bodies guard on (`functional`/`total`/…) or a puzzle
+;;; activates (`bijective-properties`). So a puzzle's
+;;; `(import std.bijection :symbols (bijective-properties bijective-setup
+;;; typecheck-setup))` pulls the whole working stack via auto-closure — no
+;;; transitive-dependency bookkeeping for the importer.
+(import std.macro   :symbols (forall))
+(import std.algebra :symbols (functional injective total surjective bijective-properties))
 
 ;; ── glue: fan a (bijective R) out into the operational activators ─────────────
 ;; None-activator (generic-by-premise, the `bijective-properties` idiom). ?isa is

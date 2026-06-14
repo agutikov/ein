@@ -35,6 +35,12 @@
 ;;; expressible here; `co-located` (4 params) / `adjacent-via` (5) exceed the L3
 ;;; ceiling and correctly stay as puzzle-local named rules.
 
+;; Dependency: the extensive totality checks (`total` / `surjective`) quantify
+;; with `forall` (std.macro). Self-imported so `(import std.algebra :symbols
+;; (total …))` pulls it transitively; import is idempotent (S1.8a.f20), so a
+;; puzzle that also imports `forall` is fine.
+(import std.macro :symbols (forall))
+
 ;; ── converse — (converse R1 R2) ⟺ R2 = R1° (the inverse relation).
 ;; Mirrors each R1-edge into R2 with the endpoints swapped. `right-of`/`left-of`
 ;; are converse; `next-to` is self-converse.

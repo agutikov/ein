@@ -447,6 +447,46 @@ def _ingest_one_fact(
     ))
 
 
+# ── Head-resolution validator (S1.8a.f20) ──────────────────────────
+
+
+def _concrete_heads(node: IRNode, out: set[str] | None = None) -> set[str]:
+    """Atom head-names of every SForm in ``node`` (a match/assert pattern).
+    Variable heads (`(?R …)`) contribute nothing — they match any relation."""
+    if out is None:
+        out = set()
+    if isinstance(node, SForm):
+        if isinstance(node.head, Atom):
+            out.add(node.head.name)
+        for a in node.args:
+            _concrete_heads(a, out)
+    return out
+
+
+def _validate_unexpanded_macros(kb: KnowledgeBase, errors: list[str]) -> None:
+    """Catch a rule body that invokes a `std.macro` pattern macro (`forall` /
+    `open`) without importing it. The macro expander leaves an un-defined
+    invocation in place, so the rule loads fine and then **silently never
+    fires** (the `(forall …)` head matches no relation) — the S1.8a.f20 trap.
+    Flag it: a *match head* that names a std.macro macro absent from
+    ``kb.macros`` is a missing `(import std.macro …)`.
+
+    Deliberately narrow — it does NOT require every match head to resolve.
+    Rules legitimately match *optional marker* relations (`functional`,
+    `total`, `bijective`, `hypothesis`, …) that may be absent, in which case
+    the rule simply doesn't fire; that is not an error."""
+    from .imports import stdlib_macro_names
+    unimported = stdlib_macro_names() - set(kb.macros)
+    if not unimported:
+        return
+    for name, r in (*kb.rules.items(), *kb.hrules.items()):
+        for head in sorted(_concrete_heads(r.match.expr) & unimported):
+            errors.append(
+                f"rule '{name}': '({head} …)' is a std.macro pattern macro used "
+                f"without importing it — add (import std.macro :symbols ({head})); "
+                f"unexpanded it would silently never match")
+
+
 # ── Public entry point ─────────────────────────────────────────────
 
 
@@ -543,6 +583,10 @@ def load(forms: Iterable[SForm], *, base_dir: Path | None = None) -> KnowledgeBa
             kb.config = SolverConfig.from_kw_pairs(last_cfg.args)
         except ValueError as e:
             errors.append(f"(config …): {e}")
+
+    # Unexpanded-macro guard: a (forall …)/(open …) used without importing
+    # std.macro would silently never fire (S1.8a.f20).
+    _validate_unexpanded_macros(kb, errors)
 
     # Index rebuild.
     kb.rebuild_indexes()

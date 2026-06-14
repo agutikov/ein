@@ -28,6 +28,7 @@ importing file. The ``.ein`` suffix is implied (D4).
 """
 from __future__ import annotations
 
+import functools
 from pathlib import Path
 
 import ein_bot
@@ -44,6 +45,24 @@ _DECLARATORS = ("rule", "hrule", "relation", "macro")
 def _stdlib_root() -> Path:
     """The packaged standard-library directory (``ein_bot/stdlib/``)."""
     return Path(ein_bot.__file__).resolve().parent / "stdlib"
+
+
+@functools.lru_cache(maxsize=1)
+def stdlib_macro_names() -> frozenset[str]:
+    """The pattern-macro names `std.macro` exports (`forall` / `open`), read
+    from the module rather than hardcoded. The loader uses this to flag a rule
+    that invokes one of them without importing `std.macro` — the invocation
+    would otherwise survive expansion and the rule would silently never fire
+    (S1.8a.f20). Empty if std.macro is somehow unreadable (degrade to no check)."""
+    path = _stdlib_root() / "macro.ein"
+    try:
+        forms = parse(path.read_text(encoding="utf-8"), filename=str(path))
+    except OSError:
+        return frozenset()
+    return frozenset(
+        f.args[0].name for f in forms
+        if isinstance(f, SForm) and isinstance(f.head, Atom)
+        and f.head.name == "macro" and f.args and isinstance(f.args[0], Atom))
 
 
 def _is_import(form: IRNode) -> bool:
@@ -197,6 +216,32 @@ def _select(forms: list[SForm], symbols: tuple[str, ...],
 # ── Recursive resolver ─────────────────────────────────────────────
 
 
+def _dedup_declarations(forms: list[SForm]) -> list[SForm]:
+    """Drop repeated **identical** declarations, keeping the first. Import is
+    idempotent (S1.8a.f20): a module and its importer — or two modules — may both
+    pull the same shared dependency (`forall`, a std.algebra rule), and the
+    diamond must collapse rather than trip a duplicate-name error. A second
+    declaration of the same name with a *different* body is a genuine conflict →
+    error. Non-declaration forms (facts) pass through untouched."""
+    seen: dict[str, SForm] = {}
+    out: list[SForm] = []
+    for f in forms:
+        nm = _decl_name(f)
+        if nm is None:
+            out.append(f)
+            continue
+        prev = seen.get(nm)
+        if prev is None:
+            seen[nm] = f
+            out.append(f)
+        elif prev != f:                       # IRNode equality ignores Loc
+            raise KBLoadError(
+                f"conflicting definitions of '{nm}': same name, different body "
+                f"(at {getattr(f, 'loc', None)})")
+        # else: identical re-import → drop the duplicate.
+    return out
+
+
 def resolve_imports(
     forms,
     *,
@@ -206,12 +251,15 @@ def resolve_imports(
     """Return ``forms`` with every `(import …)` replaced in place by the
     imported module's resolved + qualified forms. Import-free input is returned
     unchanged (cheap pass-through — the common case). ``_loading`` is the active
-    resolution stack for cycle detection."""
+    resolution stack for cycle detection. Identical declarations pulled by more
+    than one import are de-duplicated (idempotent import — S1.8a.f20)."""
     out: list[SForm] = []
+    had_import = False
     for form in forms:
         if not _is_import(form):
             out.append(form)
             continue
+        had_import = True
         module, alias, symbols = _import_spec(form)
         path = _resolve_module_path(module, base_dir, loc=form.loc)
         if str(path) in _loading:
@@ -225,7 +273,9 @@ def resolve_imports(
         else:
             prefix = (alias if alias is not None else module) + MODULE_SEP
             out.extend(_qualify(resolved, prefix))
-    return out
+    # Collapse diamonds only when imports were actually spliced; import-free
+    # input keeps its identity (and the loader's inline-duplicate detection).
+    return _dedup_declarations(out) if had_import else out
 
 
 # ── Resolved + minimized dump (A1 D9) ──────────────────────────────
@@ -373,10 +423,10 @@ def resolve_and_minimize(forms, *, base_dir: Path | None = None) -> list[SForm]:
             if nm not in reachable and (heads & live):
                 work.append(nm)
                 changed = True
-    return [
+    return _dedup_declarations([
         f for f, imp in tagged
         if not imp or _decl_name(f) is None or _decl_name(f) in reachable
-    ]
+    ])
 
 
 __all__ = ["resolve_and_minimize", "resolve_imports"]

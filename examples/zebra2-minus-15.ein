@@ -51,9 +51,6 @@
 ;;; imports land.
 
 
-;; stdlib pattern-macro sugar — forall/open from the std.macro module (S1.8.A5).
-(import std.macro :symbols (forall open))
-
 (config
   :enable-pre-branch-lookahead true)
 
@@ -101,9 +98,10 @@
 ;; machinery it asserts/matches — `bijective-properties` pulls functional /
 ;; injective / total / surjective; `bijective-setup` pulls domain/range
 ;; elimination + the negative-completion rules; `typecheck-setup` pulls
-;; typecheck-arg-{0,1}. (`forall` is the one cross-module dep we still name.)
-(import std.algebra   :symbols (bijective-properties))
-(import std.bijection :symbols (bijective-setup typecheck-setup))
+;; typecheck-arg-{0,1}. `std.bijection` re-exports `bijective-properties` and
+;; self-imports `forall` + the std.algebra cardinality rules, so this one line
+;; pulls the entire working stack — no transitive bookkeeping here.
+(import std.bijection :symbols (bijective-properties bijective-setup typecheck-setup))
 
 ;; The two type-membership hierarchies the bijection rules quantify over:
 ;;   is-a   — DIRECT membership (elimination / totality / negative completion);

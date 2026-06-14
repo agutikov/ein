@@ -283,19 +283,19 @@ def test_zebra2_imports_universal_rules_from_stdlib():
 
 def test_symbols_import_is_auto_closure():
     """S1.8a.f20: `:symbols` import pulls the listed names **plus their
-    name-reference closure within the module** — so importing an entry rule
-    drags in the machinery it asserts/matches, but cross-module / kernel names
-    are left for the importer's other imports."""
+    name-reference closure**. Because std.bijection self-imports its deps
+    (std.macro `forall`, the std.algebra cardinality rules), a single entry
+    rule drags in the whole working stack — no other imports needed."""
     kb = _load(
-        "(import std.macro :symbols (forall))\n"      # cross-module dep of the pulled elim rules
         "(import std.bijection :symbols (bijective-setup))\n"
         "(relation color-of T T)\n"
     )
-    # bijective-setup asserts (domain-elimination …)/(functional-negative …)/… —
-    # all pulled transitively, without being listed.
+    # bijective-setup asserts (domain-elimination …)/(total …)/… and those rules
+    # reference functional/injective — all pulled transitively, none listed.
     for pulled in ("domain-elimination", "range-elimination",
-                   "functional-negative", "injective-negative"):
+                   "functional-negative", "injective-negative",
+                   "total", "surjective", "functional", "injective"):
         assert pulled in kb.rules, f"auto-closure did not pull {pulled}"
-    # `total`/`surjective` (asserted by bijective-setup) live in std.algebra, not
-    # std.bijection, so the within-module closure does NOT fabricate them here.
-    assert "total" not in kb.rules and "surjective" not in kb.rules
+    # …and `forall` (the elim rules' macro dep) rode in via the module's own
+    # import, so the puzzle didn't have to name it.
+    assert "forall" in kb.macros

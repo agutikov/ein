@@ -53,22 +53,33 @@ rule inline.
 an allegory extension beyond Tarski's RA, S1.8.A12 T5) need a `forall` over the
 universe and have no M1 consumer; design is in the stage doc.
 
-**Rule modules, auto-closure, and `forall`.** Rule modules (`std.elim`,
-`std.bijection`, the `std.algebra` rule families) are *generic* (parametrised
-over a relation), so a puzzle imports them **flat** (`:symbols`) to keep the
-bare names their activator facts reference. `:symbols` import is **auto-closure
-within the module** (S1.8a.f20, superseding A1 D7's explicit-only rule): a listed
-declaration drags in every *other* declaration of that module it references by
-name, so you list only the **entry** rules (the ones the puzzle's facts activate)
-and the machinery they assert/match follows. Names referenced *across* modules
-(`forall` in std.macro; `total`/`functional` in std.algebra when a std.bijection
-rule names them) are **not** fabricated — import those modules too:
+**Rule modules, auto-closure, and self-contained dependencies.** Rule modules
+(`std.elim`, `std.bijection`, the `std.algebra` rule families) are *generic*
+(parametrised over a relation), so a puzzle imports them **flat** (`:symbols`)
+to keep the bare names their activator facts reference. Two S1.8a.f20 mechanics
+make this ergonomic:
+
+- **Auto-closure** (superseding A1 D7's explicit-only rule): a listed
+  declaration drags in every *other* declaration **of any module reachable from
+  it** that it references by name. So you list only the **entry** rules — the
+  ones the puzzle's facts activate — and the machinery they assert/match
+  follows.
+- **Self-contained modules + idempotent import:** a module `(import …)`s its own
+  dependencies (`std.algebra` pulls `forall`; `std.bijection` pulls `forall` +
+  the cardinality rules), and re-importing an *identical* declaration is a
+  no-op (a same-name **differing** body is still a conflict). So the diamond
+  collapses and the importer needn't know transitive deps.
+
+Net: pulling the whole bijection stack — elimination, negatives, typecheck,
+the cardinality checks, and `forall` — is one line:
 
 ```lisp
-(import std.macro     :symbols (forall))                 ; cross-module dep, named explicitly
-(import std.algebra   :symbols (bijective-properties))   ; +closure → functional/injective/total/surjective
-(import std.bijection :symbols (bijective-setup typecheck-setup))  ; +closure → elim / negatives / typecheck
+(import std.bijection :symbols (bijective-properties bijective-setup typecheck-setup))
 ```
+
+(A puzzle invoking a `std.macro` macro — `forall` / `open` — in its *own*
+inline rule must still import it; the loader flags an unexpanded `(forall …)` as
+a missing import rather than letting the rule silently never fire.)
 
 ## Importing
 
@@ -80,9 +91,12 @@ Three tiers (Python-style — see the [A1 decision record](../../../../plans/m1_
 (import std.macro :symbols (forall open)) ; → (forall …)             flat-selective + auto-closure
 ```
 
-`:symbols` keeps the listed names **plus their within-module dependency closure**
-(S1.8a.f20): an entry rule pulls what it asserts/matches without the importer
-enumerating it. `:as` and `:symbols` are mutually exclusive. Names are logical and dotted
+`:symbols` keeps the listed names **plus their dependency closure** (S1.8a.f20),
+following name references across the modules a symbol's own module imports; an
+entry rule pulls what it asserts/matches without the importer enumerating it.
+Importing the same declaration twice (the diamond a module's self-imports
+create) is idempotent — identical collapses, a same-name conflict errors.
+`:as` and `:symbols` are mutually exclusive. Names are logical and dotted
 (`.` is a normal atom character); the `.ein` suffix is implied. A
 file-relative import (a non-`std` name) resolves against the importing file's
 directory.
