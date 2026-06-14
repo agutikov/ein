@@ -67,6 +67,7 @@ Tasks / Acceptance / open-questions skeleton.
 | [s1.9.e21_solve_vs_prove.md](s1.9.e21_solve_vs_prove.md)                            | E21   |
 | [s1.9.e22_alive_hyps_in_state_hash.md](s1.9.e22_alive_hyps_in_state_hash.md)        | E22   |
 | [s1.9.e23_prove_speedup.md](s1.9.e23_prove_speedup.md)                              | E23   |
+| [s1.9.e24_lattice_perf_optimisations.md](s1.9.e24_lattice_perf_optimisations.md)    | E24   |
 
 The R1-R4 rejected entries stay in the README catalog only.
 
@@ -76,9 +77,9 @@ The R1-R4 rejected entries stay in the README catalog only.
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| 📅 E1 | `(functional R)` activator       | weaker than `single-parent`; just declares R is a function on its slot-0 | S | M | DL `funcProp` |
-| 📅 E2 | `(at-most-one R slot)` activator | per-slot cardinality declaration; closure derives when every leaf at that slot is occupied | M | M | CSP cardinality |
-| 📅 E3 | `(no-hypotheses R)` activator    | distinct from `(closed R)`: R stays open-world but the engine never *guesses* on it. For observational data | S | L | engineering convenience |
+| ✅ E1 | `(functional R)` activator       | **resolved by P1.8 stdlib** — `functional`/`injective`/`bijective` ship across `std.algebra`/`std.bijection`/`std.elim`/`std.closure` ([§Resolution](s1.9.e1_functional_activator.md#resolution-2026-06-15)); `single-parent` retired | S | M | DL `funcProp` |
+| ✅ E2 | `(at-most-one R slot)` activator | **resolved a different way** — at-most-one = `functional`/`injective` (incl. positional `(functional R 0 1)`) + `std.closure` saturating to `(closed R)`; no dedicated activator needed ([§Resolution](s1.9.e2_at_most_one.md#resolution-2026-06-15)) | M | M | CSP cardinality |
+| 📅 E3 | `:no-hypothesis` query key       | **re-surfaced** as a query key (exclusion dual of the shipped `:hypothesis-relations` whitelist), *not* a `(no-hypotheses R)` property; inclusion form already ships ([§Re-surface](s1.9.e3_no_hypotheses.md#re-surface-2026-06-15)) | S | L | engineering convenience |
 | 📅 E4 | `(symmetry-class R T)`           | declare T-instances interchangeable under R; collapse to a canonical representative at gen-time. (The "A5 emit-both hack" it once replaced was removed by [S1.7.24](../p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md); now an *optional* value-symmetry optimisation over a user `(rule symmetric)`) | M | M | CSP value-symmetry breaking ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
 | 📅 E5 | Static rule-conflict pre-analysis | precompute `(relation, arg-position)` mutex pairs from the rule set; drop hypotheses violating mutex at gen-time | M | M | rule-set sufficiency, [F7 §C](../../followups/f7_rule_induction.md) |
 
@@ -86,9 +87,9 @@ The R1-R4 rejected entries stay in the README catalog only.
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| 📅 E6 | Transitive premise walk for "unconditional" | walk `Provenance.justified_by` chain; "unconditional" iff *no* transitive premise has `kind="hypothesis"` (the safer version of the original T1.5.4.3.a shallow spec) | S | **H** (correctness) | the *promoted* part of E6 ships as [S1.5.7 T1.5.7.1](../p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md#task-t1571--transitive-premise-walk-e6); this entry tracks the broader applicability (e.g. unsat-core minimisation E19, learned-clause E7) |
-| 📅 E7 | Learned-clause from unsat-core   | the conjunction of source facts that produced this contradiction is itself a "learned constraint"; future hypotheses are tested against it without re-running rules | L | H (long-term) | CDCL ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)); ATMS justification cache ([docs/index/09](../../../docs/index/09-cognitive-architectures-neurosymbolic.md)) |
-| 📅 E8 | Watched-fact rule applicability   | maintain SAT-style "watched literals" per rule's match premise; re-fire only when a watched fact changes | L | M | DPLL watched literals |
+| 📅 E6 | Transitive premise walk for "unconditional" | walk `Provenance.premises_raw` chain; "unconditional" iff *no* transitive premise has `kind="hypothesis"` (the safer version of the original T1.5.4.3.a shallow spec) | S | **H** (correctness) | the *promoted* part of E6 ships as [S1.5.7 T1.5.7.1](../p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md#task-t1571--transitive-premise-walk-e6); this entry tracks the broader applicability (e.g. unsat-core minimisation E19, learned-clause E7) |
+| 📅 E7 | Learned-clause from unsat-core   | **core shipped** as `_nogoods` + Apriori downward-closure pruning (S1.5b.6); residual = derive from the *unsat-core* + minimise ([§What already ships](s1.9.e7_learned_clause.md#what-already-ships-2026-06-15)) | L | H (long-term) | CDCL ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)); ATMS justification cache ([docs/index/09](../../../docs/index/09-cognitive-architectures-neurosymbolic.md)) |
+| ⛔ E8 | Watched-fact rule applicability   | **motivation superseded by P1.8a** — delta-driven semi-naive saturation (alpha-memory index + seeded delta join) already kills the re-iterate cost; literal watched-literals judged premature ([§Superseded](s1.9.e8_watched_fact.md#superseded-by-p18a-2026-06-15)) | L | M | DPLL watched literals |
 
 ### Search heuristics
 
@@ -124,6 +125,26 @@ The R1-R4 rejected entries stay in the README catalog only.
 | ⛔ E21 | `solve` vs `prove` mode split  | **Superseded by [P1.7a](../p1.7a_solution_search_refactor/README.md) (2026-05-31)** — shipped *differently*: the exhaustive-with-uniqueness side is now `solve()` (returns `Solution \| Ambiguity \| Contradiction`, 1/>1/0 verdict); the fast side is the monotonic `solve(stop_after=1)` path. `Mode` (in `inference/verdict.py`, not `solver.py`) is the orthogonal SOLVE/GAPS/CONTRADICTIONS task-class axis, not SOLVE/PROVE. See [E21 § Superseded](s1.9.e21_solve_vs_prove.md#superseded-by-p17a-2026-06-03) | M | M (UX) | [Idea 03 — three task classes](../../../docs/ideas/03-three-task-classes.md) |
 | ✅ E22 | Alive-hyps in canonical state hash | **Resolved in code:** `canon.state_hash` keys dedup on the KB facts ONLY, not the alive set — the engine relies on "KB ⇒ alive-set" and [S1.7.24](../p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md)'s state-hash-keyed lattice cements it. The "extend the hash with the alive set" fix was *not* taken; residual = document the invariant. See [E22 § Resolution](s1.9.e22_alive_hyps_in_state_hash.md#resolution-2026-06-03) | M | M (correctness) | [S1.5.3 canonicalisation](../p1.5_hypothesis_loop/s1.5.3_canonicalisation.md); T1.5.4.5 alive-inherit |
 | 📅 E23 | Speed up the complete (exhaustive) search | **Re-anchored** from the never-shipped `Mode.PROVE` to `solve()` (P1.7a's complete entry — the actual bottleneck). Open question: is there a way to speed up *exhaustive* search without giving up the uniqueness guarantee? Candidates: learned-clause caching (composes with E7), goal-driven pruning (composes with E11 + [F7 §C rule-set sufficiency](../../followups/f7_rule_induction.md)), arc-consistency pre-pass (E14). Uniqueness is a global property; some form of full coverage is required. The design question is which form | L | M (perf) | E7 / E11 / E14 / F7 §C |
+
+### Deductive-layer perf (not a hypothesis-loop item; added 2026-06-15)
+
+**Surfaced by the 2026-06-15 P1.9 review.** P1.8a's profiling established that
+**~95% of a solve is the matcher inside saturation (O1+O2 — the *deductive*
+layer), not search**
+([architecture_and_algorithms.md](../../../docs/kernel/inference/architecture_and_algorithms.md) §7).
+Every P1.9 entry above is a *search-layer* optimisation, so the catalog's
+highest-leverage perf lever has **no home here**. Recorded for visibility (the
+📌 marks these as not standard P1.9 parked entries):
+
+| ref | idea | mechanism | effort | value | references |
+|-----|------|-----------|--------|-------|------------|
+| 📌 D1 | RETE **beta-memories** | persist partial joins across firings (the one thing P1.8a's D5 semi-naive join still recomputes); the named next step up the Datalog ladder | M | **H** (perf) | Arch §6 O1 / §7; Forgy *Rete* (1982) |
+| 📌 D2 | Worst-case-optimal join | Leapfrog-Triejoin / Generic-Join — only if cyclic join patterns appear (they don't yet) | L | L (until cyclic) | AGM bound; NPRR (2012) |
+
+These belong to the **performance arc** ([P1.8a](../p1.8a_performance/README.md),
+now closed), not the hypothesis loop — promote into a reopened P1.8a tail or a
+new perf phase when saturation again dominates past the P1.8a gains, *not* into
+P1.9. (Cross-ref: [E23 § Re-anchor 2](s1.9.e23_prove_speedup.md#re-anchor-2-2026-06-15).)
 
 ### Rejected / out-of-scope for M1
 
