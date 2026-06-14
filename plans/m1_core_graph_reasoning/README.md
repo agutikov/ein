@@ -65,7 +65,7 @@ Concretely, M1 ships:
 | P1.7b | Review & refactor — post-M1 debt paydown | 1-2.5 wk | [`p1.7b_review_and_refactor/`](p1.7b_review_and_refactor/) (created 2026-06-01; **non-gating**, behaviour-preserving cleanup of the M1 reference impl; 40-finding code-cited [review](p1.7b_review_and_refactor/findings.md)) |
 | P1.7c | Post-M1 cleanup — **Track A** retire the `(rules …)`/`(ontology …)`/`(facts …)` block heads (flat-form grammar; placeholder) + **Track B** the P1.7b deferred refactor tail (one stage per deferral, S1.7c.10–.32) | TBD | [`p1.7c_block_head_removal/`](p1.7c_block_head_removal/) (created 2026-06-02 from TODO.md; Track A = surface-syntax continuation of the P1.7 purity arc, Track B added 2026-06-02 from the [P1.7b deferrals](p1.7b_review_and_refactor/README.md#what-shipped-2026-06-01--and-whats-deferred)) |
 | P1.8  | Ein-language modules + standard library (imports / stdlib rules / relation-algebra / macros; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; perf split out to P1.8a 2026-06-02) |
-| P1.8a | Performance (COW fork / version-COW / atom compression / fingerprinting / participation indexes / negative-fact volume; placeholder) | TBD | [`p1.8a_performance/`](p1.8a_performance/) (split from P1.8 2026-06-02 from TODO.md) |
+| P1.8a | Performance — **CLOSED 2026-06-15.** Levers measured: COW + negative-volume parked (not-a-lever); participation index + incremental saturation shipped; the S1.8a.f20 stdlib followup done | done | [`p1.8a_performance/`](p1.8a_performance/) (split from P1.8 2026-06-02; closed 2026-06-15) |
 | P1.9  | Hypothesis-loop follow-ups (E1-E23 catalog; placeholder) | TBD | [`p1.9_hypothesis_loop_followups/`](p1.9_hypothesis_loop_followups/) |
 | P1.11 | Package + CLI restructure (`ein-bot`/`ein_bot` → `ein`, merge `ein.py/demo/` into the package, split `cli.py` into a folder; placeholder) | TBD | [`p1.11_package_restructure/`](p1.11_package_restructure/) (created 2026-05-24 from TODO.md) |
 | P1.20 | Kernel documentation (IR 4-level split / user-vs-dev / architecture / `docs/index` → `docs/lib` rename / ein-model atoms-vs-objects refinement; placeholder) | TBD | [`p1.20_kernel_docs/`](p1.20_kernel_docs/) (created 2026-05-24 from TODO.md; **renumbered P1.10 → P1.20 so docs sort last**, leaving P1.12–P1.19 for future phases) |
@@ -83,17 +83,22 @@ transcribes the reference. **P1.7c** (created 2026-06-02 from
 TODO.md) is the surface-syntax continuation of P1.7's purity arc —
 retire the `(rules …)`/`(ontology …)`/`(facts …)` block heads for a
 flat-form grammar (facts = any head not in the closed declarator set).
-**P1.7c, P1.8, P1.8a, P1.9, P1.11, P1.20 are placeholders.** P1.8
+**P1.7c, P1.8, P1.9, P1.11, P1.20 are placeholders; P1.8a is CLOSED
+(2026-06-15).** P1.8
 parks the **ein-language + standard-library** themes — modules+imports
 (the original Q30 deferral from the 2026-05-20 P1.3 review, broadened
 2026-05-22 to own the standard library: closure auto-inference deferred
 whole from S1.5.5, plus `converse`, the `imply` family, general
 totality, reflective rule-implication, type/domain matching), the
 relation-algebra library rules (from F1b §PFL.3), and macros (S1.5.9).
-**P1.8a** (split from P1.8 2026-06-02) parks the **performance** themes —
-copy-on-write hypothesis-branch forks (surfaced 2026-05-21), version-COW
-+ atom-vector compression + unsat-core fingerprinting + participation
-indexes (2026-05-27), and negative-fact volume reduction. P1.9
+**P1.8a** (split from P1.8 2026-06-02, **CLOSED 2026-06-15**) collected the
+**performance** themes and measured the levers: copy-on-write
+hypothesis-branch forks (surfaced 2026-05-21) and negative-fact volume
+reduction were both **measured not-a-lever** and parked; the matcher
+**participation index** + **incremental delta-driven saturation** shipped (the
+real cost was re-saturation); and the **S1.8a.f20** stdlib followup (the
+deferred A8 reconciliation — `std.bijection`, `:symbols` auto-closure,
+self-contained modules) completed. P1.9
 parks the E1-E23
 hypothesis-loop catalog spun out of S1.5.4 on 2026-05-21 (closure
 refinements, CDCL-inspired learning, search heuristics, CSP-style

@@ -1,16 +1,36 @@
 # P1.8a — Performance
 
 **Estimate:** TBD.
-**Status:** **placeholder** — split out of [P1.8](../p1.8_ein_lang_modules/)
-on **2026-06-02** (TODO direction: "move performance part into P1.8a,
-leave ein-language and lib things in P1.8"). P1.8 keeps the ein-language
-+ standard-library work (Theme A); this phase collects every *runtime*
-optimisation the M1 implementation surfaced.
-**Depends on:** varies per theme; mostly the post-M1 engine
-(`inference/monotonic/`, `kb/store.py`).
-**Blocks:** nothing within M1 acceptance — these are post-M1 speedups.
-Each theme activates when its signal arrives (a perf budget overrun, a
-puzzle whose branching cost overruns the laptop).
+**Status:** **CLOSED 2026-06-15.** Split out of [P1.8](../p1.8_ein_lang_modules/)
+on **2026-06-02** (TODO: "move performance part into P1.8a, leave ein-language
+and lib things in P1.8"); collected every *runtime* optimisation the M1
+implementation surfaced, plus the P1.8 stdlib followup that landed here.
+**Blocks:** nothing within M1 acceptance — these were always post-M1 speedups.
+
+## Closing summary (2026-06-15)
+
+The phase did its job: **measure before optimising**, then ship only the levers.
+
+- **Profiling settled the levers.** Copy-on-write hypothesis branching (Theme B,
+  `B1`–`B4`) and negative-fact volume reduction (Theme C, `C1`–`C3`) were both
+  **measured NOT a lever** — `fork()` is `0.000s`, negatives are ~17% of root
+  facts with a ~0s detector — and are **parked** (re-open only on a real budget
+  overrun). The cost is **re-saturation**.
+- **Shipped wins:** the matcher **participation index** (`S1.8.B-indexes`,
+  1.67× PyPy) and **incremental delta-driven saturation** (`S1.8.B2v`, D2 +
+  D5 semi-naive). B2v has further headroom (deeper incrementalisation) but hit
+  diminishing returns; deferred to a future perf phase if a puzzle's branching
+  cost demands it.
+- **Stdlib followup done:** `S1.8a.f20` (the deferred A8 reconciliation) — full
+  bijection-rule migration to `std.algebra` + new `std.bijection`, `:symbols`
+  auto-closure, self-contained modules + import dedup, the unexpanded-macro
+  guard. zebra2 import block: 4 lines → 2; suite 1205 green.
+- `S1.8a.B0` (a coherent `P1.8a.*` renumber) is **moot** — the phase is closed;
+  the sticky `s1.8.b*`/`s1.8.c*` ids stay as the historical record.
+
+**Depends on:** the post-M1 engine (`inference/monotonic/`, `kb/store.py`).
+Each parked theme re-activates only when its signal arrives (a perf budget
+overrun, a puzzle whose branching cost overruns the laptop).
 
 > **Replan note (2026-06-02).** The themes below were lifted verbatim from
 > P1.8's old "Theme B / Theme C" sections; their stage-id numbering is
@@ -23,19 +43,14 @@ puzzle whose branching cost overruns the laptop).
 
 ## Stages
 
-| ID                | Title                                          | File                                                          |
-|-------------------|------------------------------------------------|---------------------------------------------------------------|
-| S1.8a.B0          | Renumber + dedupe the perf theme ids (this replan) | *(this README; no stage file yet)*                        |
-| S1.8.B-indexes    | Participation index for the matcher — **SHIPPED 2026-06-14, 1.67× PyPy** | [s1.8.b_indexes.md](s1.8.b_indexes.md)                       |
-| S1.8.B2v          | **Incremental (delta-driven) saturation** — the order-of-magnitude lever (consolidates B2.v + B5; 91% of firing-work is redundant) | [s1.8.b2v_incremental_saturation.md](s1.8.b2v_incremental_saturation.md) |
-| S1.8.B1           | ForkedKnowledgeBase overlay class (COW)        | [s1.8.b1_cow_overlay.md](s1.8.b1_cow_overlay.md)             |
-| S1.8.B2           | Engine lookups traverse parent chain (COW)     | [s1.8.b2_engine_lookups.md](s1.8.b2_engine_lookups.md)       |
-| S1.8.B3           | Saturator + detector invariants (COW)          | [s1.8.b3_saturator_invariants.md](s1.8.b3_saturator_invariants.md) |
-| S1.8.B4           | COW perf benchmark                             | [s1.8.b4_perf_bench.md](s1.8.b4_perf_bench.md)               |
-| S1.8.C1           | Measure negative-fact volume + consumption     | [s1.8.c1_measure_negative_volume.md](s1.8.c1_measure_negative_volume.md) |
-| S1.8.C2           | Pick a representation                          | [s1.8.c2_pick_representation.md](s1.8.c2_pick_representation.md) |
-| S1.8.C3           | Refactor saturator + detector + trace renderer | [s1.8.c3_refactor_saturator.md](s1.8.c3_refactor_saturator.md) |
-| S1.8a.f20         | **(P1.8 stdlib followup, not perf) — DONE 2026-06-15.** zebra2 imports its bijection rules from std.algebra + NEW `std.bijection` (the deferred A8 reconciliation, full migration); `:symbols` import → auto-closure; 3-flag bench dump | [s1.8a.f20_stdlib_property_rules.md](s1.8a.f20_stdlib_property_rules.md) |
+| ID                | Status | Title / outcome                                | File                                                          |
+|-------------------|--------|------------------------------------------------|---------------------------------------------------------------|
+| S1.8a.f20         | ✅ **DONE** | (P1.8 stdlib followup) bijection rules → std.algebra + new `std.bijection`; `:symbols` auto-closure; self-contained modules + import dedup; unexpanded-macro guard | [s1.8a.f20_stdlib_property_rules.md](s1.8a.f20_stdlib_property_rules.md) |
+| S1.8.B-indexes    | ✅ **SHIPPED** | Participation index for the matcher (1.67× PyPy) | [s1.8.b_indexes.md](s1.8.b_indexes.md)                       |
+| S1.8.B2v          | 🟡 **SHIPPED (partial)** | Incremental delta-driven saturation — D2 + D5 semi-naive; further headroom deferred | [s1.8.b2v_incremental_saturation.md](s1.8.b2v_incremental_saturation.md) |
+| S1.8.B1–B4        | ⏸ **parked** | Copy-on-write hypothesis branching — measured NOT a lever (`fork()` is `0.000s`) | [b1](s1.8.b1_cow_overlay.md) · [b2](s1.8.b2_engine_lookups.md) · [b3](s1.8.b3_saturator_invariants.md) · [b4](s1.8.b4_perf_bench.md) |
+| S1.8.C1–C3        | ⏸ **parked** | Negative-fact volume reduction — measured NOT a lever (~17% of root, ~0s detector) | [c1](s1.8.c1_measure_negative_volume.md) · [c2](s1.8.c2_pick_representation.md) · [c3](s1.8.c3_refactor_saturator.md) |
+| S1.8a.B0          | ⊘ **moot** | Perf-theme id renumber — phase closed, sticky ids kept as history | *(this README)* |
 
 The version-COW (B2.v), atom-vector compression (B3), unsat-core
 fingerprint (B4), and participation-index (B5) sub-themes are
