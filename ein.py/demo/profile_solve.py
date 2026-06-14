@@ -92,6 +92,10 @@ def _build_argparser() -> argparse.ArgumentParser:
                     help="cProfile rows to show per ordering (default 25)")
     ap.add_argument("--no-profile", action="store_true",
                     help="skip cProfile (clean wall-clock only)")
+    ap.add_argument("--callers", action="store_true",
+                    help="attribute the matcher (match.run / _run_steps) "
+                         "cumtime BY CALLER — splits the matching cost across "
+                         "saturator / hypgen / lookahead / query")
     return ap
 
 
@@ -152,7 +156,7 @@ def _print_subsystems(pr: cProfile.Profile, total_wall: float) -> None:
     buckets: dict[str, list[float]] = {name: [0.0, 0.0, 0]
                                        for name, _ in _SUBSYSTEMS}
     other = [0.0, 0.0, 0]
-    for (fn, lineno, name), (cc, nc, tt, ct, _cs) in st.stats.items():
+    for (fn, _lineno, name), (_cc, nc, tt, ct, _cs) in st.stats.items():
         key = f"{Path(fn).name}:{name}"
         label = None
         for sub_name, needles in _SUBSYSTEMS:
@@ -214,6 +218,15 @@ def main(argv: list[str] | None = None) -> int:
         print("── cProfile: top by cumtime ───────────────────────────")
         st.sort_stats("cumulative").print_stats(args.top)
         _print_subsystems(pr, elapsed)
+        if args.callers:
+            # Who drives the matcher? `run` is the entry every subsystem
+            # calls (saturator `_enqueue_pass`, hypgen, lookahead, the query
+            # goal); `_run_steps` is the recursive core. Their callers split
+            # the 70%-matching cost by subsystem.
+            print("\n── matcher entry: callers of match.run ────────────────")
+            st.print_callers(r"match\.py:\d+\(run\)")
+            print("── matcher core: callers of _run_steps ────────────────")
+            st.print_callers(r"match\.py:\d+\(_run_steps\)")
 
     # Theme-C volume: a second (cheap) saturation of a fresh fork.
     _print_negatives(KnowledgeBase.from_ir(parse(puzzle.read_text())))

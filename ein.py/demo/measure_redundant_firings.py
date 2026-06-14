@@ -84,7 +84,7 @@ def main(argv: list[str] | None = None) -> int:
     stop_after = None if args.exhaustive else args.stop_after
 
     kb = KnowledgeBase.from_ir(parse(puzzle.read_text()))
-    verdict, stats = solve(
+    verdict, _stats = solve(
         kb, stop_after=stop_after, max_set_size=args.max_set_size,
         config=kb.config or SolverConfig(),
     )
