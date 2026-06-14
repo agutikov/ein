@@ -234,7 +234,15 @@ def _build_argparser() -> argparse.ArgumentParser:
                     help="on Solution, dump root.kb's REASONING-layer "
                          "facts (bookkeeping heads omitted) sorted "
                          "by (relation, args). Monotonic equivalent "
-                         "of bench_solve --solution-facts")
+                         "of bench_solve --solution-facts.")
+    ap.add_argument("--print-final-positive", action="store_true",
+                    help="like --print-final-state but also drops the "
+                         "(not …) facts — the positive residue of the solve.")
+    ap.add_argument("--print-final-hfacts", action="store_true",
+                    help="dump only the positive facts whose relation is "
+                         "targeted by the query's :hrules — the hypothesis "
+                         "commitments (e.g. zebra2's 25 *-loc), across all "
+                         "layers (so given conditions count too).")
     ap.add_argument("--verbose", "-v", action="store_true",
                     help="emit per-layer + per-entering progress to "
                          "stderr (matches bench_solve --verbose)")
@@ -350,30 +358,73 @@ def _fact_sexpr(arg: Any) -> str:
     return str(arg)
 
 
-def _print_final_state(kb: KnowledgeBase) -> None:
-    """Dump root.kb's REASONING-layer facts in canonical order.
+def _hypothesis_target_relations(kb: KnowledgeBase) -> set[str]:
+    """Relations a query ``:hrules`` clause targets — the hypothesis
+    commitments (e.g. zebra2's five ``*-loc``). Generic: the atoms named in
+    the ``:hrules`` activators that are *declared relations*, so type/object
+    atoms (``House``, ``Color``) drop out position-independently. Empty when
+    the puzzle has no query/hrules."""
+    if kb is None or kb.query is None:
+        return set()
+    from ein_bot.ir import Atom, SForm
 
-    Mirrors :func:`bench_solve._print_solution_facts` shape but
-    for the single monotonic root.kb. Bookkeeping heads (the
-    state-hash exclusion set) are filtered out so the output is
-    the propositional residue of the solve.
+    def _atoms(node: Any, out: set[str]) -> set[str]:
+        if isinstance(node, Atom):
+            out.add(node.name)
+        elif isinstance(node, SForm):
+            if isinstance(node.head, Atom):
+                out.add(node.head.name)
+            for a in node.args:
+                _atoms(a, out)
+        return out
+
+    names: set[str] = set()
+    for kp in kb.query.kw_pairs:
+        if kp.key.name == "hrules":
+            _atoms(kp.value, names)
+    return names & set(kb.relations)
+
+
+def _print_final_state(
+    kb: KnowledgeBase, *, mode: str = "all",
+    targets: set[str] | None = None,
+) -> None:
+    """Dump a slice of the solution kb's facts in canonical order.
+
+    Mirrors :func:`bench_solve._print_solution_facts` shape but for the single
+    monotonic root.kb. Three modes (the three ``--print-final-*`` flags):
+
+    - ``all`` — the REASONING layer with the bookkeeping heads (the state-hash
+      exclusion set) filtered out: the propositional residue of the solve.
+    - ``positive`` — ``all`` with the ``(not …)`` facts dropped too: the
+      positive residue.
+    - ``hfacts`` — only the positive facts whose relation is a query
+      ``:hrules`` target (``targets``), across *every* layer so the given
+      conditions count too — the hypothesis commitments (e.g. zebra2's 25
+      ``*-loc``). Negatives have relation_name ``not`` ∉ targets, so they drop
+      out for free.
     """
     from ein_bot.inference.canon import BOOKKEEPING_HEADS
     from ein_bot.kb.entities import Layer
 
-    facts = [
-        f for f in kb.facts
-        if f.layer == Layer.REASONING
-        and f.relation_name not in BOOKKEEPING_HEADS
-    ]
+    if mode == "hfacts":
+        targets = targets or set()
+        facts = [f for f in kb.facts if f.relation_name in targets]
+        label = f"positive hypothesis-relation facts; :hrules {sorted(targets)}"
+    else:
+        facts = [
+            f for f in kb.facts
+            if f.layer == Layer.REASONING
+            and f.relation_name not in BOOKKEEPING_HEADS
+            and not (mode == "positive" and f.relation_name == "not")
+        ]
+        dropped = "bookkeeping + (not …)" if mode == "positive" else "bookkeeping"
+        label = f"REASONING layer, {dropped} omitted"
     facts.sort(key=lambda f: (
         f.relation_name,
         tuple(_fact_sexpr(a) for a in f.args),
     ))
-    print(
-        f"final-state facts (REASONING layer, "
-        f"bookkeeping {sorted(BOOKKEEPING_HEADS)} omitted):"
-    )
+    print(f"final-state facts ({label}; {len(facts)} facts):")
     for f in facts:
         args_str = " ".join(_fact_sexpr(a) for a in f.args)
         print(f"  ({f.relation_name} {args_str})")
@@ -448,7 +499,16 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  {pairs}")
         if args.print_final_state:
             print()
-            _print_final_state(sol_kb)
+            _print_final_state(sol_kb, mode="all")
+        if args.print_final_positive:
+            print()
+            _print_final_state(sol_kb, mode="positive")
+        if args.print_final_hfacts:
+            print()
+            _print_final_state(
+                sol_kb, mode="hfacts",
+                targets=_hypothesis_target_relations(kb),
+            )
 
     print()
     print("stats")

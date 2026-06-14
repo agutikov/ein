@@ -83,17 +83,12 @@
 ;; This is sound under partial information — a "must hold"
 ;; rule on totality would fire false on every empty-yet state.
 
-(rule functional (?R)
-  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-  :assert (false)
-  :why    "{?R} not functional: {?a} has both {?b} and {?c}."
-  :priority 250)
-
-(rule injective (?R)
-  :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-  :assert (false)
-  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
-  :priority 250)
+;; functional / injective — the cardinality CHECKS, now from std.algebra
+;; (S1.8a.f20). A second std.algebra import, placed at the inline defs' old
+;; position so the resolved KB stays byte-identical: the activator facts
+;; `(functional *-loc)` / `(injective *-loc)` (derived from `(bijective …)`)
+;; reference the bare names unchanged.
+(import std.algebra :symbols (functional injective))
 
 ;; ──── Negative-derivation companions for functional / injective ──
 ;; The `functional` / `injective` rules above only fire (false) on
@@ -450,21 +445,16 @@
   :why    "{?R} not surjective at {?b}: every {?A} is excluded."
   :priority 110)
 
-;; ──── `bijective` shorthand ─────────────────────────────────
-;; bijective ≡ functional ∧ injective ∧ total ∧ surjective.
-;; One rule with a multi-fact `:assert (and …)` (S1.8.A11) derives all
-;; four property markers from a single (bijective R) declaration — it
-;; lowers at load to four `bijective-properties__and<j>` rules. The
-;; saturator refreshes its compile cache each pass, so the derived
-;; (functional R) etc. trigger their respective contradiction rules
-;; normally. Expansion runs at the propagate band so the derived markers
-;; are present before any rule that consumes them fires.
-
-(rule bijective-properties ()
-  :match  (bijective ?R)
-  :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
-  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
-  :priority 100)
+;; ──── `bijective` shorthand — now from std.algebra (S1.8a.f20) ─────
+;; bijective ≡ functional ∧ injective ∧ total ∧ surjective. One rule with a
+;; multi-fact `:assert (and …)` (S1.8.A11, lowered firing-level by S1.8.A13)
+;; derives all four property markers from a single (bijective R) declaration.
+;; The saturator refreshes its compile cache each pass, so the derived
+;; (functional R) etc. trigger their respective contradiction rules normally;
+;; expansion runs at the propagate band so the markers are present before any
+;; rule that consumes them fires. Imported at the inline def's old position so
+;; the resolved KB stays byte-identical.
+(import std.algebra :symbols (bijective-properties))
 
 ;; ──── Typecheck activator derivation from relation signature ─
 ;; The (relation R A B) declaration is auto-stored as a fact by

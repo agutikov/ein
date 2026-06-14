@@ -226,9 +226,47 @@
   :why    "(complement {?R1} {?R2}): {?a}∈{?Dom},{?b}∈{?Ran},¬{?R1}({?a},{?b}) → {?R2}({?a},{?b}).")
 
 ;; ── single-relation property checks (RA equations) ───────────────────────────
-;; These complete the tag vocabulary zebra2 already uses (`symmetric` ✅ A7,
-;; `functional` / `total` / `bijective` ✅, `reflexive` ✅ A10). Each is a generic
-;; check (`⟹ (false)`) or closure (`⟹ the closing edge`).
+;; These complete the tag vocabulary zebra2 uses (`symmetric` ✅ A7,
+;; `functional` / `injective` ✅ S1.8a.f20, `reflexive` ✅ A10; `total` /
+;; `surjective` / `bijective` below). Each is a generic check (`⟹ (false)`) or
+;; closure (`⟹ the closing edge`).
+
+;; ── cardinality checks: functional / injective (S1.8a.f20) ───────────────────
+;; The right-/left-uniqueness checks of a relation R ⊆ A×B:
+;;   functional  — ∀a. |{b : R(a,b)}| ≤ 1  (right-unique): two DISTINCT images of
+;;                 the same `a` is ⊥.
+;;   injective   — ∀b. |{a : R(a,b)}| ≤ 1  (left-unique): the dual.
+;; Generic over R, activated per relation by `(functional R)` / `(injective R)`
+;; (zebra2's *-loc bijections derive these from `(bijective R)`). They fire
+;; `(false)` on VIOLATION, not satisfaction. Priority 250 fires the violation
+;; after the d=0 negative-completion band (240) and before elimination (400),
+;; the band zebra2's pipeline expects.
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional: {?a} has both {?b} and {?c}."
+  :priority 250)
+
+(rule injective (?R)
+  :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+  :assert (false)
+  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
+  :priority 250)
+
+;; bijective — the "all four cardinality properties" shorthand. A single
+;; `(bijective R)` declaration fans out into the four markers
+;; `(functional R)` / `(injective R)` / `(total R)` / `(surjective R)` via one
+;; multi-fact `:assert (and …)` (S1.8.A11, lowered firing-level by S1.8.A13).
+;; A None-activator rule (generic-by-premise): it reads the `(bijective R)`
+;; operand fact, so the importer needs only this one symbol — the derived
+;; markers then activate `functional`/`injective` (here) and the importer's
+;; `total`/`surjective`/elimination rules. Priority 100 (propagate band) so the
+;; markers exist before any rule that consumes them fires.
+(rule bijective-properties ()
+  :match  (bijective ?R)
+  :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
+  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
+  :priority 100)
 
 ;; irreflexive — R∩1' = 0: no self-loop. The repeated ?a is an equality
 ;; constraint in the matcher (`_bind_arg`), so this fires only on `(R a a)`.

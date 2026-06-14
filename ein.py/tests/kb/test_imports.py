@@ -243,18 +243,30 @@ def test_fact_may_have_a_reserved_head():
 
 
 def test_zebra2_imports_universal_rules_from_stdlib():
-    """The canonical fixture pulls `symmetric` / `transitive` / `includes` from
-    `std.algebra` (no longer inline). Pins the coupling in the fast suite: the
-    faithful golden only checks the import line, and the behavioural acceptance
-    is the slow/skipped gate, so a drift in the stdlib bodies would otherwise go
-    uncaught here. Bodies must match what zebra2's activators expect."""
+    """The canonical fixture pulls `symmetric` / `transitive` / `includes` plus
+    the cardinality rules `functional` / `injective` / `bijective-properties`
+    (S1.8a.f20) from `std.algebra` (no longer inline). Pins the coupling in the
+    fast suite: the faithful golden only checks the import line, and the
+    behavioural acceptance is the slow/skipped gate, so a drift in the stdlib
+    bodies would otherwise go uncaught here. Bodies must match what zebra2's
+    activators expect."""
     from pathlib import Path
 
     examples = Path(__file__).resolve().parents[3] / "examples"
     kb = KnowledgeBase.from_file(examples / "zebra2.ein")
 
-    for name, prio in (("symmetric", 100), ("transitive", 200), ("includes", 100)):
+    for name, prio in (
+        ("symmetric", 100), ("transitive", 200), ("includes", 100),
+        # S1.8a.f20: cardinality checks + the bijective fan-out.
+        ("functional", 250), ("injective", 250), ("bijective-properties", 100),
+    ):
         assert name in kb.rules, f"{name} not resolved into zebra2"
         assert kb.rules[name].priority == prio
     # the transitive closure keeps its (neq ?a ?c) self-loop guard
     assert "neq" in repr(kb.rules["transitive"].match)
+    # functional/injective fire (false) on a uniqueness violation, and the
+    # bijective fan-out asserts all four cardinality markers.
+    assert "false" in repr(kb.rules["functional"].assert_)
+    assert "false" in repr(kb.rules["injective"].assert_)
+    bij = repr(kb.rules["bijective-properties"].assert_)
+    assert all(p in bij for p in ("functional", "injective", "total", "surjective"))

@@ -196,22 +196,26 @@ def test_cli_render_rules(capsys: pytest.CaptureFixture[str]):
     assert out.count("digraph") == len(_rules_of(ZEBRA2))
 
 
-# `functional` (not `symmetric`) — the render commands are faithful static file
-# views (no import resolution), and symmetric/transitive/includes now arrive via
-# `(import std.algebra …)` (S1.8.A5-tail). `functional` stays defined inline.
+# `co-located` — the render commands are faithful static file views (no import
+# resolution), so the by-name target must be a rule that stays defined INLINE.
+# symmetric/transitive/includes (S1.8.A5-tail) and now functional/injective/
+# bijective-properties (S1.8a.f20) all arrive via `(import std.algebra …)`, so
+# they're invisible to the static renderer. `co-located` is puzzle-local — it
+# exceeds relation algebra's 3-variable ceiling (4 params), so it's destined to
+# stay inline — a stable target. The hyphen sanitizes to `_` in the DOT id.
 def test_cli_render_rule_by_name(capsys: pytest.CaptureFixture[str]):
-    rc = main(["render", "rule", str(ZEBRA2), "--name", "functional"])
+    rc = main(["render", "rule", str(ZEBRA2), "--name", "co-located"])
     assert rc == 0
     out = capsys.readouterr().out
-    assert "digraph rule_functional_lhs_rhs" in out
+    assert "digraph rule_co_located_lhs_rhs" in out
 
 
 def test_cli_render_rule_overlay(capsys: pytest.CaptureFixture[str]):
-    rc = main(["render", "rule", str(ZEBRA2), "--name", "functional",
+    rc = main(["render", "rule", str(ZEBRA2), "--name", "co-located",
                "--rule-mode", "overlay"])
     assert rc == 0
     out = capsys.readouterr().out
-    assert "rule_functional_overlay" in out
+    assert "rule_co_located_overlay" in out
     assert "cluster_lhs" not in out
 
 

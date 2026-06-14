@@ -4,21 +4,7 @@
 
 (import std.algebra :symbols (symmetric transitive includes))
 
-(rule
-  functional
-  (?R)
-  :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-  :assert (false)
-  :why "{?R} not functional: {?a} has both {?b} and {?c}."
-  :priority 250)
-
-(rule
-  injective
-  (?R)
-  :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-  :assert (false)
-  :why "{?R} not injective: {?c} reached from both {?a} and {?b}."
-  :priority 250)
+(import std.algebra :symbols (functional injective))
 
 (rule
   functional-negative
@@ -260,13 +246,7 @@
   :why "{?R} not surjective at {?b}: every {?A} is excluded."
   :priority 110)
 
-(rule
-  bijective-properties
-  ()
-  :match (bijective ?R)
-  :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
-  :why "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
-  :priority 100)
+(import std.algebra :symbols (bijective-properties))
 
 (rule
   derive-typecheck-arg-0

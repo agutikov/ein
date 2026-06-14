@@ -33,8 +33,10 @@ def _run_bench(*args: str) -> subprocess.CompletedProcess:
 
 
 def test_bench_solve_mode_solves_zebra2_correctly():
-    """Default bench run (solve, stop_after=1) → the correct 25/25 model."""
-    proc = _run_bench("--print-final-state")
+    """Bench run (solve, stop_after=1) → the correct 25/25 model. Exercises
+    both --print-final-state (REASONING residue) and --print-final-hfacts (the
+    hypothesis commitments, all layers)."""
+    proc = _run_bench("--print-final-state", "--print-final-hfacts")
     assert proc.returncode == 0, proc.stderr
     out = proc.stdout
 
@@ -53,12 +55,17 @@ def test_bench_solve_mode_solves_zebra2_correctly():
     ):
         assert cell in out, f"missing/incorrect grid cell: {cell}"
 
-    # The canonical answer cells (derived in the final state). Norwegian@H1
-    # is the input condition (10), so --print-final-state doesn't echo it;
-    # the derived Japanese@H5 + Water@H1 + Zebra@H5 pin the answer.
+    # The canonical answer cells (derived in the final state).
     assert "(drink-loc Water House-1)" in out
     assert "(pet-loc Zebra House-5)" in out
     assert "(nation-loc Japanese House-5)" in out
+
+    # --print-final-hfacts spans every layer, so it DOES echo the given
+    # (nation-loc Norwegian House-1) — condition (10), a FACT-layer fact that
+    # the REASONING-only --print-final-state omits. The hfacts header lists
+    # exactly the five *-loc hypothesis-target relations.
+    assert "(nation-loc Norwegian House-1)" in out
+    assert re.search(r":hrules \[.*'nation-loc'.*\]", out), out[-800:]
 
 
 def test_bench_solve_mode_exhaustive_certifies_unique():
