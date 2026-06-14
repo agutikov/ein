@@ -11,6 +11,13 @@ The inference engine is what takes a populated
 kernel tree describes *what* the engine reads and writes; this
 chapter describes *how* it does it.
 
+> **Architecture + algorithms overview.** For the engine's *as-built*
+> architecture and main steps, the abstract operations it performs, their
+> analogs in other CS fields (Datalog / RETE / CDCL / ATMS / e-graphs), and
+> the fast/optimal known algorithms for each, see
+> [`architecture_and_algorithms.md`](architecture_and_algorithms.md) — the
+> overview the planned chapters below sit under.
+
 ---
 
 ## Planned structure (P1.3 — P1.5)
