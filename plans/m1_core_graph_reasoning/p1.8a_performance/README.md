@@ -26,7 +26,8 @@ puzzle whose branching cost overruns the laptop).
 | ID                | Title                                          | File                                                          |
 |-------------------|------------------------------------------------|---------------------------------------------------------------|
 | S1.8a.B0          | Renumber + dedupe the perf theme ids (this replan) | *(this README; no stage file yet)*                        |
-| S1.8.B-indexes    | Indexes for saturation perf                    | [s1.8.b_indexes.md](s1.8.b_indexes.md)                       |
+| S1.8.B-indexes    | Participation index for the matcher — **SHIPPED 2026-06-14, 1.67× PyPy** | [s1.8.b_indexes.md](s1.8.b_indexes.md)                       |
+| S1.8.B2v          | **Incremental (delta-driven) saturation** — the order-of-magnitude lever (consolidates B2.v + B5; 91% of firing-work is redundant) | [s1.8.b2v_incremental_saturation.md](s1.8.b2v_incremental_saturation.md) |
 | S1.8.B1           | ForkedKnowledgeBase overlay class (COW)        | [s1.8.b1_cow_overlay.md](s1.8.b1_cow_overlay.md)             |
 | S1.8.B2           | Engine lookups traverse parent chain (COW)     | [s1.8.b2_engine_lookups.md](s1.8.b2_engine_lookups.md)       |
 | S1.8.B3           | Saturator + detector invariants (COW)          | [s1.8.b3_saturator_invariants.md](s1.8.b3_saturator_invariants.md) |
