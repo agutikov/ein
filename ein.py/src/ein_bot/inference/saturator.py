@@ -47,7 +47,7 @@ from ein_bot.kb.entities import Fact
 from ein_bot.kb.store import KnowledgeBase
 
 from . import match
-from .compile import JoinPlan
+from .compile import AbsentGuard, Join, JoinPlan, Scan
 from .engine import Engine, _hashable
 from .firing import Firing, build_fact, fire
 
@@ -55,6 +55,40 @@ from .firing import Firing, build_fact, fire
 # eliminate (300) and hypothesis (900) — well-defined, but rarely
 # expected to be hit because every shipping rule declares a priority.
 _DEFAULT_PRIORITY = 1000
+
+
+def _scan_relations(plan: JoinPlan) -> set[str]:
+    """**Every** relation in a plan's premises — positive Scan/Join AND
+    inside any (nested) ``AbsentGuard`` — the S1.8.B2v re-enqueue trigger
+    set (incl. the A13 ``extra_match_plans`` disjuncts).
+
+    A plan's match result can change only if a fact changes at one of these
+    relations. Two ways a delta creates a *new* binding:
+
+    - a **positive** Scan/Join premise gains a fact (the obvious case); and
+    - a fact lands inside an ``AbsentGuard`` and flips it. A bare
+      ``(absent P)`` only *blocks*, but a ``forall`` desugars to a NESTED
+      absent ``(absent (and G (absent B)))`` — adding a ``B`` fact makes the
+      inner absent fail, the outer absent **pass**, and so *enables* a
+      firing (e.g. ``domain-elimination`` fires once the last
+      ``(not (R a b_other))`` exists). So absent relations are triggers too,
+      at **every nesting depth**. (Collecting only the top-level positive
+      premises was the completeness bug that stalled the zebra2 lattice —
+      eliminations stopped firing, hypotheses never pruned.)
+    """
+    rels: set[str] = set()
+
+    def walk(steps: tuple) -> None:
+        for step in steps:
+            if isinstance(step, (Scan, Join)):
+                rels.add(step.relation)
+            elif isinstance(step, AbsentGuard):
+                walk(step.sub_steps)
+
+    walk(plan.steps)
+    for extra in plan.extra_match_plans:
+        walk(extra)
+    return rels
 
 
 class Saturator:
@@ -88,6 +122,18 @@ class Saturator:
         # premise that passed at enqueue no longer holds against the
         # current KB (S1.5a.1 fire-time NAF re-eval).
         self.naf_dropped: int = 0
+        # S1.8.B2v — incremental (delta-driven) enqueue. After the cold
+        # full pass, an enqueue pass re-matches ONLY the plans whose
+        # positive premises reference a relation in the last productive
+        # firing's derived facts (the "delta"), plus any plan never yet
+        # matched (e.g. a reflective rule's freshly-compiled plan).
+        # `_delta_relations is None` ⇒ a FULL pass (cold start / is_stalled).
+        self._delta_relations: set[str] | None = None
+        self._matched_plan_ids: set[int] = set()
+        # relation → plans (positive-premise index), rebuilt when the
+        # compile cache grows; see `_relation_index`.
+        self._rel_index: dict[str, list[JoinPlan]] | None = None
+        self._rel_index_n: int = -1
 
     # ── Public API ────────────────────────────────────────────────
 
@@ -98,8 +144,9 @@ class Saturator:
         queue is empty after a fresh enqueue pass.
         """
         if self._needs_enqueue:
-            self._enqueue_pass()
+            self._enqueue_pass(self._delta_relations)
             self._needs_enqueue = False
+            self._delta_relations = None
         while self._queue:
             _priority, _tb, plan, bindings, premises = heapq.heappop(self._queue)
             key = self._binding_key(plan, bindings)
@@ -119,6 +166,14 @@ class Saturator:
             # downstream matches. Redundant firings change nothing.
             if not firing.redundant:
                 self._needs_enqueue = True
+                # S1.8.B2v — the next enqueue pass need only re-match plans
+                # whose positive premises reference a relation this firing
+                # just derived (accumulated until that pass consumes it).
+                rels = {d.relation_name for d in firing.derived}
+                if self._delta_relations is None:
+                    self._delta_relations = rels
+                else:
+                    self._delta_relations |= rels
             return firing
         return None
 
@@ -204,28 +259,51 @@ class Saturator:
             return _DEFAULT_PRIORITY
         return rule.priority
 
-    def _enqueue_pass(self) -> None:
-        """Walk every plan; enqueue any binding not yet seen.
+    def _enqueue_pass(self, delta_relations: set[str] | None = None) -> None:
+        """Enqueue any not-yet-seen binding.
 
-        Re-running this on every step is cheap on Zebra-scale and
-        keeps the queue current after each fact write. The ``_seen``
-        set absorbs duplicates from earlier passes in O(1).
+        S1.8.B2v — **delta-driven**. ``delta_relations is None`` ⇒ a FULL
+        pass over every plan (the cold first pass; ``is_stalled``; any
+        caller that wrote facts outside ``step()``). Otherwise a DELTA
+        pass: re-match only the plans whose positive premises reference a
+        relation in ``delta_relations`` (via :meth:`_relation_index`), plus
+        any plan never matched yet. Soundness: a new binding requires a new
+        fact at a Scan/Join premise, so a plan none of whose positive-
+        premise relations changed cannot gain one; ``AbsentGuard`` deltas
+        only *block* (re-checked at fire time by
+        :func:`match.absents_still_pass`). This turns the per-firing
+        re-enqueue from a full-KB re-match into a handful of plans — the
+        940-full-re-matches → ~run-count fix the S1.8.B2v measurement sized.
 
-        Refresh the compile cache first so any activator-shaped
-        facts derived since the last pass (e.g. `(functional R)`
-        produced by a `(bijective R)` expansion rule) get their
-        plans built. `compile_all` is idempotent — already-cached
-        (rule, activator) pairs early-return.
-
-        This per-pass refresh IS **reflective rule-implication**
-        (P1.8 S1.8.A9 / F5 rung 2): because `compile_all` →
-        `_activators_for` reads the *live* `kb._rule_apps_by_rule`
-        index, a fact a rule *derives* — `(symmetric foo)` — becomes
-        an activator for the matching generic rule on the next pass.
-        No special-casing; pinned by `tests/inference/test_reflective_rule.py`.
+        Refresh the compile cache first so any activator-shaped facts
+        derived since the last pass (e.g. ``(functional R)`` from a
+        ``(bijective R)`` expansion) get their plans built; ``compile_all``
+        is idempotent. This per-pass refresh IS **reflective rule-
+        implication** (S1.8.A9 / F5 rung 2): a derived ``(symmetric foo)``
+        becomes an activator for the generic rule next pass — and its
+        freshly-compiled plan is force-matched here as a "never matched
+        yet" plan regardless of the delta. Pinned by
+        ``tests/inference/test_reflective_rule.py``.
         """
         self.engine.compile_all()
-        for plan in self.engine.cache.values():
+        cache = self.engine.cache
+        # Plans never matched yet (e.g. just compiled for a derived
+        # activator) always get one full match, regardless of the delta.
+        targets: list[JoinPlan] = [
+            p for p in cache.values() if id(p) not in self._matched_plan_ids
+        ]
+        if delta_relations is None:
+            targets = list(cache.values())
+        else:
+            chosen = {id(p) for p in targets}
+            index = self._relation_index()
+            for rel in delta_relations:
+                for plan in index.get(rel, ()):
+                    if id(plan) not in chosen:
+                        chosen.add(id(plan))
+                        targets.append(plan)
+        for plan in targets:
+            self._matched_plan_ids.add(id(plan))
             priority = self._priority_for(plan)
             for bindings, premises in match.run(plan, self.kb):
                 key = self._binding_key(plan, bindings)
@@ -240,6 +318,22 @@ class Saturator:
                     self._queue,
                     (priority, self._tiebreaker, plan, dict(bindings), premises),
                 )
+
+    def _relation_index(self) -> dict[str, list[JoinPlan]]:
+        """relation → plans with that relation in a positive premise.
+
+        Rebuilt when the compile cache grows (reflective rules add plans);
+        cheap (about plan-count * premise-count). Used only by delta passes.
+        """
+        cache = self.engine.cache
+        if self._rel_index is None or self._rel_index_n != len(cache):
+            index: dict[str, list[JoinPlan]] = {}
+            for plan in cache.values():
+                for rel in _scan_relations(plan):
+                    index.setdefault(rel, []).append(plan)
+            self._rel_index = index
+            self._rel_index_n = len(cache)
+        return self._rel_index
 
     def _apply(
         self,
