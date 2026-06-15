@@ -96,10 +96,10 @@ The R1-R4 rejected entries stay in the README catalog only.
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| 📅 E9  | Least-constraining-value (LCV)   | within an object's hypotheses, prefer fillers whose addition prunes the *least* of the remaining domain (counterpart to most-constrained-object) | M | M | CSP textbook |
+| ❌ E9  | Least-constraining-value (LCV)   | **rejected 2026-06-15** (measured): worst ordering on zebra2 — first completer at rank 35/56 (vs lex 11); completers are heavy pruners, LCV prefers least-pruning ([§Rejected](s1.9.e9_lcv.md#rejected-measured-2026-06-15); `demo/score_hypotheses.py`) | M | M | CSP textbook |
 | ⛔ E10 | Iterative deepening              | **inapplicable to the lattice BFS** — cardinality layering *is* breadth-first deepening; no DFS depth bound to re-raise ([§Inapplicable](s1.9.e10_iterative_deepening.md#inapplicable-to-the-lattice-bfs-2026-06-15)) | S | M | IDA* idiom |
-| 📅 E11 | Goal-driven hypothesis filter    | only emit `h` that could unify with the query goal (or a sub-goal via rule unification); backward chaining trim | M | M | Prolog SLD-resolution; [docs/index/03](../../../docs/index/03-theorem-proving-formal-methods.md) |
-| 📅 E12 | Hypothesis ordering by "informativeness" | prefer hypotheses with high expected pruning (alive: max-constraint; dead: max-back-prop) | M | L (heuristic gain) | CSP value ordering |
+| ❌ E11 | Goal-driven hypothesis filter    | **rejected 2026-06-15** (per user): can't filter a hypothesis without testing it — unsound (drops contradiction-pruning candidates); sound variant is cold on the connected corpus + changes the `solve()` contract ([§Rejected](s1.9.e11_goal_driven_filter.md#rejected-2026-06-15)) | M | M | Prolog SLD-resolution; [docs/index/03](../../../docs/index/03-theorem-proving-formal-methods.md) |
+| ❌ E12 | Hypothesis ordering by "informativeness" | **rejected 2026-06-15** (measured): "max cascade" is dominated by dead-post singletons → first completer at rank 19/56 (vs lex 11); discriminating signal is irreducibly post-fork ([§Rejected](s1.9.e12_informativeness.md#rejected-measured-2026-06-15); `demo/score_hypotheses.py`) | M | L (heuristic gain) | CSP value ordering |
 | ❌ E13 | Per-hypothesis saturation budget | **dropped 2026-06-15** (per user): saturation is correctness-critical — a per-fork budget aborts before quiescence, so the fork's verdict is unsound even on the fast path ([§Dropped](s1.9.e13_per_hyp_budget.md#dropped-2026-06-15)) | M | L (UX) | branch-and-bound |
 
 ### CSP-style pre-processing
@@ -112,19 +112,21 @@ The R1-R4 rejected entries stay in the README catalog only.
 > **Lattice re-grounding (2026-06-15).** Re-judged against the engine's actual
 > search — a *complete BFS over commitment-set cardinality* (Apriori), not a
 > DPLL/DFS decision tree ([architecture_and_algorithms.md](../../../docs/kernel/inference/architecture_and_algorithms.md)
-> §O7) — the search/CSP entries split three ways. **Reorderers** (E9, E12) are
-> *inert for the complete/uniqueness search* (within-layer order can't change
-> Apriori pruning) and help only the fast `solve(stop_after=1)` path. **E13 is
-> dropped** (aborting saturation is unsound — saturation is correctness-critical)
-> and **E10 inapplicable** (the cardinality layering already *is* the deepening).
-> Of the **space-shrinkers**, only **E11** (goal-driven filter) survives as a
-> genuine complete-search lever — fewer alive atoms ⇒ fewer enterings =
-> saturations. **E4/E5 are ⛔ superseded** (value-symmetry → a user hrule + the
-> positive mirror; mutex → rule induction) and **E14/E15 ❌ rejected** — both
-> subsumed by the engine's design: it is append-only with rule-saturation (which
-> already propagates AC-3's `(not h)` negatives to fixpoint) plus a lazy,
-> Apriori-minimal nogood store (which already holds what k-consistency would
-> eagerly compute). See each stub's "Lattice re-grounding" / status section.
+> §O7) — the search/CSP entries are now **all closed** against it. **Reorderers**
+> (E9, E12) are inert for the complete/uniqueness search (within-layer order
+> can't change Apriori pruning) and — measured on zebra2 (`demo/score_hypotheses.py`)
+> — even **worse than lex** on the fast path: LCV ranks the first completer 35th,
+> informativeness 19th, vs lex's 11th, because completers are
+> pre-fork-indistinguishable and the dead-post singletons dominate every cascade
+> signal. **❌ rejected.** **E13 dropped** (aborting saturation is unsound).
+> **E10 inapplicable** (the cardinality layering already *is* the deepening). The
+> would-be **space-shrinkers** are gone too: **E11 ❌ rejected** (can't filter a
+> hypothesis without testing it — unsound, and the sound variant is cold +
+> changes the `solve()` contract); **E4/E5 ⛔ superseded**; **E14/E15 ❌ rejected**
+> (subsumed by append-only rule-saturation + the lazy Apriori-minimal nogood
+> store). Net: the whole §search-heuristics + §CSP-preprocessing cluster is
+> closed — a complete cardinality-BFS over a connected corpus leaves no purchase
+> for these. See each stub's status section.
 
 ### Engineering / UX
 
