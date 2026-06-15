@@ -51,34 +51,14 @@ class SolverConfig:
       ships; **False** until then) — Topic B Tier B, the
       ``_dies_immediately(kb, h)`` one-step rule simulator. Skipped
       cleanly by the engine when the implementation isn't present.
-    - ``enable_back_prop_unconditional`` (default **True**, flipped
-      from off on 2026-05-23 once T1.5.7.2 + .5 + .6 shipped) —
-      Topic C from S1.5.7. The consume loop sweeps candidates,
-      back-propagates ``(not h)`` for unconditional deaths into the
-      parent KB, re-saturates, and re-evaluates. ``False`` reverts
-      to the static pre-S1.5.7 descent — keep as an escape hatch if
-      a puzzle's rule library produces nested-Fact hypotheses or
-      otherwise breaks the back-prop preconditions.
-    - ``enable_eager_root_bubble`` (default **False**) — S1.5a.17.
-      Flips back-prop from opportunistic write to eager
-      abort-and-restart. Any unconditional bubble (positive or
-      negative, at any depth) raises ``BubbleAbort``, the in-flight
-      subtree is discarded, root.kb is re-saturated, and the outer
-      loop continues with the next root candidate. Promoted-dead
-      root children also synthesise ``(not h)`` between passes so
-      the outer loop terminates by fixpoint. Default off until the
-      S1.5a.16 shuffle-invariance harness ratifies the order-sensitivity
-      change.
-    - ``enable_path_condition_nogoods`` (default **False**) —
-      S1.5a.18. CDCL clause learning on the hypothesis tree:
-      every dead branch emits the negation of its path condition
-      as a clause stored at ``root.kb._nogoods``; future branches
-      whose prospective path is a superset of any learned clause
-      are filtered PRE-FORK (no try_branch, no SearchNode).
-      Subsumption keeps the clause set minimal. Composes with
-      ``enable_eager_root_bubble`` — a novel clause is a
-      root-level write that triggers ``BubbleAbort``. Off until
-      smoke measurement on demo 10 + zebra2 confirms net win.
+    - ``enable_lookahead_kill_cache`` (default **True**) — when the
+      one-step lookahead (``enable_pre_branch_lookahead``) kills a
+      candidate, cache it as a ``(not h)`` REASONING fact so subsequent
+      enumerations skip ``h`` via the O(1) ``_negated_facts`` filter
+      instead of re-running the lookahead's match. ``False`` re-runs the
+      lookahead each time. (Renamed 2026-06-15 from the misnamed
+      ``enable_back_prop_unconditional`` — the tree-solver parent
+      back-prop it once gated was removed in ``8d77b02``; S1.9.E6a.)
     - ``hypgen_scoring`` (default ``"popularity"``, flipped from
       ``"most-constrained"`` 2026-05-25 once S1.5a.7 measurement
       ratified the popularity heuristic) — S1.5a.7. Values:
@@ -128,13 +108,11 @@ class SolverConfig:
     enable_alive_inherit:            bool = True
     enable_pre_branch_negated:       bool = True
     enable_pre_branch_lookahead:     bool = True
-    enable_back_prop_unconditional:  bool = True
+    enable_lookahead_kill_cache:     bool = True
     # `enable_auto_closure` was a declared-but-inert placeholder for an
     # `infer-closure-from-functional` rule. P1.8 S1.8.A6 ships that rule as
     # `std.closure`, opt-in by IMPORT (no kernel↔stdlib rule-name coupling),
     # so the flag is retired.
-    enable_eager_root_bubble:        bool = False
-    enable_path_condition_nogoods:   bool = False
     hypgen_scoring:                  str = "popularity"
     hypgen_rel_weight:               float = 1.0
     hypgen_obj_weight:               float = 1.0

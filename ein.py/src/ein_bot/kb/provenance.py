@@ -47,7 +47,7 @@ if TYPE_CHECKING:
 # A fact id is its (relation_name, args) identity tuple — sufficient
 # because Fact.__eq__ / __hash__ are exactly on these two fields.
 # Single home for the alias (F-KER-6): inference/{apriori,nogoods,
-# solution,back_prop,commitment}, monotonic/lattice and the render
+# solution,commitment}, monotonic/lattice and the render
 # DAGs all import it from here — kb sits below inference, so this is
 # the one module both layers can share without an import cycle.
 FactId = tuple[str, tuple[object, ...]]
@@ -300,9 +300,10 @@ def reaches(
     because a chain that *does* reach one short-circuits every caller
     above it. Pass a shared set to memoise across several roots.
 
-    Factored from back_prop's ``_walk`` (hypothesis terminal) and
-    commitment's ``_reaches_commitment`` (commitment terminal), which
-    differed only in this test (F-KER-10).
+    Factored (F-KER-10) so the caller supplies the terminal test — e.g.
+    commitment's ``_is_unconditional`` (commitment terminal). The tree
+    solver's hypothesis-terminal walk also used it, before S1.9.E6a
+    removed ``back_prop``.
     """
     key: FactId = (fact.relation_name, fact.args)
     if key in visited:

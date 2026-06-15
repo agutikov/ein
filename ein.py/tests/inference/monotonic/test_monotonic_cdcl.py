@@ -47,11 +47,11 @@ def _kb(text: str) -> KnowledgeBase:
 
 # Force deaths to surface through `try_commitment_set` rather than
 # being pre-empted by hypgen's lookahead (which would write
-# `(not h)` via back_prop before the monotonic loop sees the
+# `(not h)` via the lookahead-kill cache before the monotonic loop sees the
 # candidate). The monotonic CDCL path is what S1.5b.6 exercises.
 _NO_LOOKAHEAD = SolverConfig(
     enable_pre_branch_lookahead=False,
-    enable_back_prop_unconditional=False,
+    enable_lookahead_kill_cache=False,
 )
 
 

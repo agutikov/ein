@@ -12,8 +12,8 @@ each primitive has a name constant + a one-line semantic + the
 canonical site that implements its deep behaviour. The scattered
 ``head_name == "and"`` / ``_facts_by_relation["not"]`` literals across
 ``compile.py`` / ``contradiction.py`` / ``lookahead.py`` /
-``back_prop.py`` / ``solver.py`` / ``hypgen.py`` reference these
-constants, so adding/auditing a kernel primitive is a one-file change.
+``solver.py`` / ``hypgen.py`` reference these constants, so
+adding/auditing a kernel primitive is a one-file change.
 The deep behaviour stays where it lives (this is the ``predicates.py``
 *registry* pattern, not a behavioural move).
 

@@ -37,9 +37,9 @@ Every dead entering emits ``frozenset(C)`` into
 ``root_kb._nogoods`` via :func:`ein_bot.inference.nogoods.emit_nogood`
 (``min_size=1`` so layer-1 singleton deaths land — Q1.5b.5.c).
 Singleton dead clauses additionally write ``(not h)`` to
-``root_kb._negated_facts`` via :func:`_emit_negated_fact_writeback`;
-mirrors ``back_prop._write_negation`` without the ContextVar
-coupling. (S1.7.24 — no symmetric-mirror: the counterpart dies on
+``root_kb._negated_facts`` via :func:`_emit_negated_fact_writeback`
+— a flat root-write, no ancestor-chain coupling. (S1.7.24 — no
+symmetric-mirror: the counterpart dies on
 its own branch, recovered at the generic state_hash dedup.)
 
 Budget (S1.5b.7 / bench CLI parity)
@@ -364,12 +364,9 @@ def _emit_negated_fact_writeback(
     `canon.state_hash` solution-node dedup. The kernel keys on
     ``is_symmetric`` nowhere.
 
-    Minimal equivalent of
-    :func:`ein_bot.inference.back_prop._write_negation` —
-    same shape, no :data:`_kb_chain_ctx` / :data:`_eager_pass_ctx`
-    coupling (the monotonic loop has no chain and never operates
-    under eager mode). Idempotent: a pre-existing ``(not h)`` at
-    root is left untouched.
+    Writes ``(not h)`` into root with rule-provenance — no ancestor
+    chain or eager-mode coupling (the lattice does flat root-writes).
+    Idempotent: a pre-existing ``(not h)`` at root is left untouched.
     """
     rn, args = h_id
     _write_negation_local(root_kb, rn, args)

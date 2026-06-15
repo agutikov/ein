@@ -145,14 +145,12 @@ class KnowledgeBase:
         # > SolverConfig().
         self.config: SolverConfig | None = None
 
-        # S1.5a.17 — Set of `(relation_name, args)` FactIds for
-        # hypotheses promoted to root-givens by an unconditional
-        # positive bubble. Populated on the root kb by
-        # `_mirror_forced_positive`; trace-only marker (the actual
-        # filtering of these candidates from `_candidates_for` flows
-        # through `_fact_by_id` since the bubbled positive is now an
-        # ordinary root fact). Forks share by reference like
-        # `consume_stats`.
+        # Tree-solver vintage (S1.5a.17): once the set of FactIds for
+        # hypotheses promoted to root-givens by the unconditional positive
+        # bubble. That bubble went with the tree solver (8d77b02), so this
+        # is no longer populated; kept as an empty set forks share by
+        # reference. Candidate filtering against root facts flows through
+        # `_fact_by_id`.
         self.committed_hypotheses: set[tuple[str, tuple]] = set()
 
         # S1.5a.18 — Learned no-good clauses (path-condition CDCL).

@@ -56,7 +56,7 @@ SINGLETON_FIXTURE = """
 
 _NO_LOOKAHEAD = SolverConfig(
     enable_pre_branch_lookahead=False,
-    enable_back_prop_unconditional=False,
+    enable_lookahead_kill_cache=False,
 )
 
 

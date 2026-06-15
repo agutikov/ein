@@ -218,9 +218,9 @@ def _build_argparser() -> argparse.ArgumentParser:
                          "(SolverConfig.enable_pre_branch_lookahead=False) "
                          "— forces deaths through the monotonic CDCL "
                          "path rather than being pre-empted")
-    ap.add_argument("--no-back-prop", action="store_true",
-                    help="disable back_propagate's (not h) writes "
-                         "(SolverConfig.enable_back_prop_unconditional=False) "
+    ap.add_argument("--no-kill-cache", action="store_true",
+                    help="disable the lookahead-kill (not h) cache "
+                         "(SolverConfig.enable_lookahead_kill_cache=False) "
                          "— pairs with --no-lookahead when exercising "
                          "the raw monotonic loop")
     ap.add_argument("--exhaustive", action="store_true",
@@ -441,8 +441,8 @@ def _resolved_config(
     overrides: dict = {}
     if args.no_lookahead:
         overrides["enable_pre_branch_lookahead"] = False
-    if args.no_back_prop:
-        overrides["enable_back_prop_unconditional"] = False
+    if args.no_kill_cache:
+        overrides["enable_lookahead_kill_cache"] = False
     if overrides:
         cfg = _dc_replace(cfg, **overrides)
     return cfg

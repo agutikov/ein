@@ -38,10 +38,10 @@ from dataclasses import dataclass, field
 
 from ein_bot.ir.types import Atom, SForm
 from ein_bot.kb.entities import Fact, Layer
+from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
 from . import primitives
-from .back_prop import back_propagate
 from .closed import CLOSED
 from .config import SolverConfig
 from .hrule import Hrules
@@ -213,15 +213,13 @@ def _apply_filters(
     # last of the per-candidate checks — it is the costliest.
     if lookahead is not None and lookahead.dies_immediately(kb, fact):
         stats.filtered["lookahead_killed"] += 1
-        # T1.5.7.4 — a lookahead kill consults no ancestor hypothesis
-        # (the simulator runs one rule step against the already-
-        # saturated parent KB), so the death is unconditional by
-        # construction. Cache it as a back-propped `(not h)` so
-        # subsequent enumerations / branches inherit the exclusion in
-        # O(1) instead of re-running the lookahead's match.
-        if cfg.enable_back_prop_unconditional:
-            back_propagate(kb, fact, frozenset(),
-                           rule_name="<lookahead-dies-immediately>")
+        # S1.5.6 — the kill runs one rule step against the already-
+        # saturated KB, so it rests on no speculative commitment. Cache
+        # it as a `(not h)` REASONING fact so subsequent enumerations skip
+        # `h` via the O(1) `_negated_facts` filter instead of re-running
+        # the lookahead's match.
+        if cfg.enable_lookahead_kill_cache:
+            _write_negated(kb, fact)
         return False
     # seen_in_call dedup (stateful across the call).
     key = (fact.relation_name, fact.args)
@@ -317,6 +315,25 @@ def _fill_slot(
 
 
 # ── Per-candidate predicates ───────────────────────────────────────
+
+
+def _write_negated(kb: KnowledgeBase, hypothesis: Fact) -> None:
+    """Cache a lookahead-killed candidate as a `(not hypothesis)` REASONING
+    fact (idempotent), so the O(1) `_negated_facts` filter skips it next time.
+
+    The kill rests on the saturated KB alone (a one-step simulation, no
+    speculative commitment), so the provenance cites no premises. (Was
+    `back_prop._write_negation` before S1.9.E6a removed the dead tree-solver
+    back-prop module; this is the only surviving caller.)
+    """
+    if kb._fact_by_id(primitives.NOT, (hypothesis,)) is not None:
+        return
+    kb.add_and_index_fact(Fact(
+        relation_name=primitives.NOT,
+        args=(hypothesis,),
+        layer=Layer.REASONING,
+        provenance=Provenance.from_rule(rule="<lookahead-dies-immediately>"),
+    ))
 
 
 def _already_a_fact(kb: KnowledgeBase, fact: Fact) -> bool:

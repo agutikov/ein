@@ -19,33 +19,18 @@ subsumed and dropped; otherwise existing clauses that are strict
 supersets of the new clause are removed and the new clause is
 added.
 
-Single-element clauses (size < 2) are owned by
-:func:`back_prop.back_propagate` (which writes ``(not h)`` into
-``_negated_facts``); :func:`emit_nogood`'s ``min_size`` parameter
-defaults to ``2`` to preserve that split. The set-indexed
-engines (monotonic / lattice — Q1.5b.5.c) pass ``min_size=1``
-to let singleton clauses land, since the in-layer filter relies
-on ``root._nogoods`` for cross-layer pruning before the next
-``_compute_alive`` recomputes ``alive``.
-
-Eager-mode composition (S1.5a.17): on a successful add (clause
-was novel and non-subsumed), :func:`emit_nogood` bumps
-``root_kb._pass_bubbled`` and raises :class:`BubbleAbort` if
-``_eager_pass_ctx`` is set — same control flow as
-``back_propagate``'s eager-mode raise. The outer driver discards
-the in-flight subtree and re-enters with the tightened clause
-set.
+Single-element clauses (size < 2) are owned by the solver's
+singleton-death ``(not h)`` writeback into ``_negated_facts``;
+:func:`emit_nogood`'s ``min_size`` parameter defaults to ``2`` to
+preserve that split. The set-indexed engines (monotonic / lattice —
+Q1.5b.5.c) pass ``min_size=1`` to let singleton clauses land, since
+the in-layer filter relies on ``root._nogoods`` for cross-layer
+pruning before the next ``_compute_alive`` recomputes ``alive``.
 """
 from __future__ import annotations
 
 from ein_bot.kb.provenance import FactId
 from ein_bot.kb.store import KnowledgeBase
-
-from .back_prop import (
-    BubbleAbort,
-    _bump_pass_bubbled,
-    _eager_pass_ctx,
-)
 
 # Clause = frozenset of FactIds — order-insensitive set of
 # hypothesis (relation_name, args) tuples whose joint commitment
@@ -78,9 +63,6 @@ def emit_nogood(
     ``min_size=1`` so layer-1 singleton deaths land too,
     because the `apriori.filter_candidate` subset check runs
     against ``root._nogoods`` before ``alive`` is recomputed.
-
-    Under eager mode (``_eager_pass_ctx`` set) and a True return,
-    bumps ``root_kb._pass_bubbled`` and raises :class:`BubbleAbort`.
     """
     if len(clause) < min_size:
         return False
@@ -96,11 +78,6 @@ def emit_nogood(
     for c in to_remove:
         nogoods.discard(c)
     nogoods.add(clause)
-
-    eager_pass = _eager_pass_ctx.get()
-    if eager_pass is not None:
-        _bump_pass_bubbled(root_kb, 1)
-        raise BubbleAbort(pass_id=eager_pass)
     return True
 
 
