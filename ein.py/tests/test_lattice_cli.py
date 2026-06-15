@@ -58,3 +58,27 @@ def test_shuffle_is_verdict_invariant():
         )
         verdicts.append(line.split()[1])
     assert verdicts[0] == verdicts[1], verdicts
+
+
+def test_print_final_positive_dumps_each_gaps_branch():
+    """--print-final-positive emits one final-state block per gaps solution
+    branch — this fixture has two distinct models."""
+    proc = _run(
+        "--gaps", str(FIXTURE), "--max-set-size", "2",
+        "--print-final-positive",
+    )
+    out = proc.stdout
+    assert "── branch 1/2 ──" in out
+    assert "── branch 2/2 ──" in out
+    assert out.count("final-state facts") == 2
+
+
+def test_print_final_contradictions_dumps_unsat_core():
+    """--contradictions has no model, so --print-final-* dumps the unsat-core
+    facts instead."""
+    fixture = REPO.parent / "examples" / "lattice" / "02_genuine_3set_death.ein"
+    proc = _run(
+        "--contradictions", str(fixture), "--max-set-size", "3",
+        "--print-final-state",
+    )
+    assert "unsat-core facts" in proc.stdout

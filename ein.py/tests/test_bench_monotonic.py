@@ -74,3 +74,21 @@ def test_solve_run_exhaustive_is_ambiguity():
     assert "verdict           Ambiguity" in out
     assert "solution_nodes (k) 2" in out
     assert "exhausted          true" in out
+
+
+def test_shuffle_is_verdict_invariant():
+    """``--shuffle`` reorders traversal, not the answer (S1.5b.31): two seeds,
+    exhaustive, must agree on the same verdict + k for this fixture."""
+    seen = set()
+    for seed in ("2", "9"):
+        proc = subprocess.run(
+            [*CMD, str(BRANCHING_FIXTURE), "--max-set-size", "3",
+             "--exhaustive", "--shuffle", "--seed", seed],
+            capture_output=True, text=True, check=True,
+        )
+        assert "solution_nodes (k) 2" in proc.stdout
+        seen.add(
+            next(ln for ln in proc.stdout.splitlines()
+                 if ln.startswith("verdict")).split()[1]
+        )
+    assert seen == {"Ambiguity"}, seen

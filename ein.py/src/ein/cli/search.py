@@ -20,6 +20,7 @@ size, entering = ``try_commitment_set`` call).
 from __future__ import annotations
 
 import argparse
+import random
 import sys
 import time
 from pathlib import Path
@@ -34,6 +35,8 @@ from ein.inference.monotonic.solver import (
 from ein.inference.monotonic.state_dump import MonotonicDumper
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
+
+from ._factdump import hypothesis_target_relations, print_final_state
 
 # ── Verbose progress dumper ───────────────────────────────────────
 
@@ -245,6 +248,16 @@ def _build_argparser() -> argparse.ArgumentParser:
     ap.add_argument("--progress-every", type=int, default=100,
                     help="under --verbose, log every N-th entering "
                          "(default 100; set 1 to log every entering)")
+    ap.add_argument("--shuffle", action="store_true",
+                    help="shuffle the within-layer hypothesis/commitment "
+                         "order (a per-layer random.Random(seed).shuffle on "
+                         "top of --lattice-order). Random seed each run "
+                         "unless --seed pins it; the seed used is printed. "
+                         "Changes the TRAVERSAL order, not the verdict — the "
+                         "answer is shuffle-invariant (S1.5b.31)")
+    ap.add_argument("--seed", type=int, default=None,
+                    help="pin the --shuffle RNG seed for a reproducible "
+                         "permutation (default: a fresh random seed each run)")
     return ap
 
 
@@ -343,94 +356,15 @@ def _print_root_hyp_preview(kb: KnowledgeBase, verbose: bool) -> None:
             print(f"  {line}")
 
 
-def _fact_sexpr(arg: Any) -> str:
-    """Render a Fact arg as an s-expression, recursing into nested
-    Fact args (e.g. for ``(not (co-located Blue Green))``)."""
-    from ein.kb.entities import Fact
-
-    if isinstance(arg, Fact):
-        inner = " ".join(_fact_sexpr(a) for a in arg.args)
-        return f"({arg.relation_name} {inner})" if inner else f"({arg.relation_name})"
-    return str(arg)
-
-
-def _hypothesis_target_relations(kb: KnowledgeBase) -> set[str]:
-    """Relations a query ``:hrules`` clause targets — the hypothesis
-    commitments (e.g. zebra2's five ``*-loc``). Generic: the atoms named in
-    the ``:hrules`` activators that are *declared relations*, so type/object
-    atoms (``House``, ``Color``) drop out position-independently. Empty when
-    the puzzle has no query/hrules."""
-    if kb is None or kb.query is None:
-        return set()
-    from ein.ir import Atom, SForm
-
-    def _atoms(node: Any, out: set[str]) -> set[str]:
-        if isinstance(node, Atom):
-            out.add(node.name)
-        elif isinstance(node, SForm):
-            if isinstance(node.head, Atom):
-                out.add(node.head.name)
-            for a in node.args:
-                _atoms(a, out)
-        return out
-
-    names: set[str] = set()
-    for kp in kb.query.kw_pairs:
-        if kp.key.name == "hrules":
-            _atoms(kp.value, names)
-    return names & set(kb.relations)
-
-
-def _print_final_state(
-    kb: KnowledgeBase, *, mode: str = "all",
-    targets: set[str] | None = None,
-) -> None:
-    """Dump a slice of the solution kb's facts in canonical order.
-
-    Mirrors :func:`bench_solve._print_solution_facts` shape but for the single
-    monotonic root.kb. Three modes (the three ``--print-final-*`` flags):
-
-    - ``all`` — the full REASONING layer: the propositional residue of the
-      solve.
-    - ``positive`` — ``all`` with the ``(not …)`` facts dropped too: the
-      positive residue.
-    - ``hfacts`` — only the positive facts whose relation is a query
-      ``:hrules`` target (``targets``), across *every* layer so the given
-      conditions count too — the hypothesis commitments (e.g. zebra2's 25
-      ``*-loc``). Negatives have relation_name ``not`` ∉ targets, so they drop
-      out for free.
-    """
-    from ein.kb.entities import Layer
-
-    if mode == "hfacts":
-        targets = targets or set()
-        facts = [f for f in kb.facts if f.relation_name in targets]
-        label = f"positive hypothesis-relation facts; :hrules {sorted(targets)}"
-    else:
-        facts = [
-            f for f in kb.facts
-            if f.layer == Layer.REASONING
-            and not (mode == "positive" and f.relation_name == "not")
-        ]
-        label = (
-            "REASONING layer, (not …) omitted" if mode == "positive"
-            else "REASONING layer"
-        )
-    facts.sort(key=lambda f: (
-        f.relation_name,
-        tuple(_fact_sexpr(a) for a in f.args),
-    ))
-    print(f"final-state facts ({label}; {len(facts)} facts):")
-    for f in facts:
-        args_str = " ".join(_fact_sexpr(a) for a in f.args)
-        print(f"  ({f.relation_name} {args_str})")
+# Fact-dump helpers (fact_sexpr / hypothesis_target_relations /
+# print_final_state) live in `._factdump`, shared with `ein lattice`.
 
 
 def _resolved_config(
     kb: KnowledgeBase, args: argparse.Namespace,
 ) -> SolverConfig:
     """Start from kb.config (or defaults) and apply CLI overrides
-    (--no-lookahead, --no-kill-cache)."""
+    (--no-lookahead, --no-kill-cache, --shuffle)."""
     from dataclasses import replace as _dc_replace
 
     cfg = kb.config or SolverConfig()
@@ -439,6 +373,10 @@ def _resolved_config(
         overrides["enable_pre_branch_lookahead"] = False
     if args.no_kill_cache:
         overrides["enable_lookahead_kill_cache"] = False
+    if args.shuffle:
+        # lattice_order_seed != None → the solver applies a per-layer
+        # random.Random(seed).shuffle to the candidate order (S1.5b.31).
+        overrides["lattice_order_seed"] = args.seed
     if overrides:
         cfg = _dc_replace(cfg, **overrides)
     return cfg
@@ -454,6 +392,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.hyp_stats:
         _print_root_hyp_preview(kb, verbose=True)
 
+    if args.shuffle and args.seed is None:
+        # Fresh random seed each run so repeated --shuffle differs; pin it
+        # with --seed for reproducibility. Echoed in the output below.
+        args.seed = random.randrange(1, 2**31)
     config = _resolved_config(kb, args)
     dumper = _make_dumper(args)
 
@@ -478,6 +420,8 @@ def main(argv: list[str] | None = None) -> int:
     lookahead_sims = Lookahead.call_count()
 
     print(f"file              {args.puzzle}")
+    if args.shuffle:
+        print(f"shuffle_seed      {args.seed}")
     if aborted_reason is not None:
         print(f"** ABORTED: {aborted_reason} **")
     else:
@@ -497,15 +441,15 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  {pairs}")
         if args.print_final_state:
             print()
-            _print_final_state(sol_kb, mode="all")
+            print_final_state(sol_kb, mode="all")
         if args.print_final_positive:
             print()
-            _print_final_state(sol_kb, mode="positive")
+            print_final_state(sol_kb, mode="positive")
         if args.print_final_hfacts:
             print()
-            _print_final_state(
+            print_final_state(
                 sol_kb, mode="hfacts",
-                targets=_hypothesis_target_relations(kb),
+                targets=hypothesis_target_relations(kb),
             )
 
     print()

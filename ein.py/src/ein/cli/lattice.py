@@ -29,6 +29,7 @@ wires the real per-entry prints.
 from __future__ import annotations
 
 import argparse
+import random
 import sys
 import time
 from dataclasses import replace
@@ -43,6 +44,12 @@ from ein.inference.monotonic import (
 )
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
+
+from ._factdump import (
+    fact_sexpr,
+    hypothesis_target_relations,
+    print_final_state,
+)
 
 
 def _build_argparser() -> argparse.ArgumentParser:
@@ -113,14 +120,15 @@ def _build_argparser() -> argparse.ArgumentParser:
     ap.add_argument(
         "--shuffle", action="store_true",
         help="shuffle the within-layer commitment-candidate (hypothesis) "
-             "order before exploring — a per-layer random.Random(--seed)."
-             "shuffle applied on top of --lattice-order. The verdict is "
-             "shuffle-invariant (same answer, different traversal); use it "
-             "to probe order-dependence of the search.",
+             "order — a per-layer random.Random(seed).shuffle on top of "
+             "--lattice-order. Random seed each run unless --seed pins it; "
+             "the seed used is printed. Changes the TRAVERSAL order, not the "
+             "verdict — gaps/contradictions are shuffle-invariant (S1.5b.31).",
     )
     ap.add_argument(
-        "--seed", type=int, default=0,
-        help="RNG seed for --shuffle (default 0); ignored without --shuffle.",
+        "--seed", type=int, default=None,
+        help="pin the --shuffle RNG seed for a reproducible permutation "
+             "(default: a fresh random seed each run).",
     )
     # ── Verbose progress (parity with `ein search`) ──
     ap.add_argument(
@@ -133,7 +141,48 @@ def _build_argparser() -> argparse.ArgumentParser:
         help="under --verbose, log every N-th entering (default 10; "
              "solution nodes + layer boundaries always log).",
     )
+    # ── Final-state dump (parity with `ein search`) ──
+    ap.add_argument(
+        "--print-final-state", action="store_true",
+        help="dump each --gaps solution branch's REASONING-layer facts; "
+             "for --contradictions, dump the unsat-core facts instead")
+    ap.add_argument(
+        "--print-final-positive", action="store_true",
+        help="like --print-final-state but also drops the (not …) facts")
+    ap.add_argument(
+        "--print-final-hfacts", action="store_true",
+        help="dump only the positive query :hrules-target facts (the "
+             "hypothesis commitments) per --gaps branch")
     return ap
+
+
+def _print_final(verdict: object, kb: KnowledgeBase,
+                 args: argparse.Namespace) -> None:
+    """``--print-final-*`` output: one final-state dump per --gaps solution
+    branch; for --contradictions there is no model, so dump the unsat-core
+    facts instead (the three flags collapse to that single view)."""
+    modes = [m for flag, m in (
+        (args.print_final_state, "all"),
+        (args.print_final_positive, "positive"),
+        (args.print_final_hfacts, "hfacts"),
+    ) if flag]
+    if not modes:
+        return
+    if args.gaps:
+        targets = hypothesis_target_relations(kb)
+        branches = getattr(verdict, "branches", ())
+        for i, branch in enumerate(branches, 1):
+            print()
+            print(f"── branch {i}/{len(branches)} ──")
+            for mode in modes:
+                print_final_state(branch.kb, mode=mode, targets=targets)
+    else:
+        core = getattr(verdict, "unsat_core", frozenset())
+        print()
+        print(f"unsat-core facts ({len(core)} facts):")
+        for f in sorted(core, key=lambda f: (
+                f.relation_name, tuple(fact_sexpr(a) for a in f.args))):
+            print(f"  {fact_sexpr(f)}")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -147,11 +196,15 @@ def main(argv: list[str] | None = None) -> int:
         replacements["lattice_sanity_check"] = True
     if args.lattice_order is not None:
         replacements["lattice_order"] = args.lattice_order
+    seed: int | None = None
     if args.shuffle:
-        # A non-None lattice_order_seed makes the solver apply a per-layer
-        # random.Random(seed).shuffle to the candidate order (after
-        # --lattice-order); verdict-invariant (S1.5b.31).
-        replacements["lattice_order_seed"] = args.seed
+        # Fresh random seed each run (pinned by --seed) so repeated --shuffle
+        # differs. A non-None lattice_order_seed makes the solver apply a
+        # per-layer random.Random(seed).shuffle to the candidate order after
+        # --lattice-order — traversal-order only; the verdict is invariant
+        # (S1.5b.31). Echoed in the output for reproducibility.
+        seed = args.seed if args.seed is not None else random.randrange(1, 2**31)
+        replacements["lattice_order_seed"] = seed
     if replacements:
         config = replace(config, **replacements)
 
@@ -195,6 +248,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"file              {args.puzzle}")
     print(f"entry             {entry_name}")
     print(f"store_lattice     {args.store_lattice}")
+    if seed is not None:
+        print(f"shuffle_seed      {seed}")
     print(f"verdict           {type(verdict).__name__}")
 
     # Per-entry verdict-shape printing — gaps enumerates
@@ -237,6 +292,8 @@ def main(argv: list[str] | None = None) -> int:
                   "(depth cap hit)")
     if dumper is not None and args.dump_states is not None:
         print(f"dump              {args.dump_states}")
+
+    _print_final(verdict, kb, args)
     return 0
 
 
