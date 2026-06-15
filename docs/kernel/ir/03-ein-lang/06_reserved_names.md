@@ -107,6 +107,7 @@ puzzle may even redefine them. A puzzle that wants them imports them
 | name | form | meaning | engine site |
 |------|------|---------|-------------|
 | `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-writable, but usually **auto-inferred** by `emit_closed` for any relation no rule produces, or derived by `std.closure`. Kept kernel mechanism for M1 ([S1.7.10](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.10_closed.md)). | `inference/closed.py` (`CLOSED = "__closed__"`); `hypgen._is_closed` |
+| `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror) | `inference/saturator.py` (`SYMMETRIC`) |
 | `hypothesis-relations` | `(query … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(query … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
 

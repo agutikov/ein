@@ -13,8 +13,8 @@ iff it appears here or in the surface doc*, and nothing is undocumented.
 **Dunder convention (2026-06-15).** A name that triggers kernel-hardcoded
 *behaviour* is written `__dunder__`, lexically distinct from userspace
 rule/relation names (the grammar admits a leading `__`; a bare name never
-triggers kernel behaviour). `__closed__` is the first; `__symmetric__` is
-planned. The bookkeeping carrier heads and the surface task-class / control
+triggers kernel behaviour). `__closed__` and `__symmetric__` are the two so
+far. The bookkeeping carrier heads and the surface task-class / control
 keywords below predate the convention and keep their bare names.
 
 ## Bookkeeping carrier heads
@@ -74,6 +74,27 @@ nor introspect "no rule asserts R" — see the symmetric contrast in the
 ([S1.7.10](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.10_closed.md)).
 Renamed `closed → __closed__` 2026-06-15 per the dunder convention;
 `std.closure`'s `infer-closure` asserts `(__closed__ ?R)`.
+
+## `__symmetric__` — engine effect
+
+The kernel trigger `(__symmetric__ R)` closes R's extension under arg-swap
+**natively in the saturator**: each `(R a b)` produces `(R b a)` directly
+(self-loops `a=b` and already-present mirrors skipped), as a `Firing` with rule
+`__symmetric__` threading the source edge as its premise. Single source:
+`SYMMETRIC = "__symmetric__"` + the mirror machinery
+(`_next_mirror_firing` / `_enqueue_mirror_sources`) in
+[`inference/saturator.py`](../../../ein.py/src/ein_bot/inference/saturator.py).
+
+**A performance optimization, NOT a capability.** It computes the *identical*
+closure as the stdlib `symmetric` rule (`std.algebra`) — pinned by
+`test_symmetric_native.py::test_parity_with_stdlib_symmetric` — but skips the
+JoinPlan + `match.run` the rule pays per mirror (~1.2× on the synthetic
+`demo/bench_symmetric.py`; **no real symmetric-heavy puzzle exists yet** —
+zebra2 uses `co-located*` rules, not the generic closure). Opt-in by marking
+the relation; ordinary puzzles take the no-op path (the mirror queue is empty
+when nothing is marked, so zero overhead). Re-adds, behind the dunder, the
+kernel symmetric-awareness [S1.7.24](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md)
+removed — now namespaced so it never masquerades as a userspace name.
 
 ## Query-scoping keys
 

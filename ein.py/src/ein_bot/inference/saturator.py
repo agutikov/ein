@@ -43,7 +43,8 @@ import heapq
 from collections.abc import Iterator
 from typing import Any
 
-from ein_bot.kb.entities import Fact
+from ein_bot.kb.entities import Fact, Layer
+from ein_bot.kb.provenance import Provenance
 from ein_bot.kb.store import KnowledgeBase
 
 from . import match
@@ -55,6 +56,13 @@ from .firing import Firing, build_fact, fire
 # eliminate (300) and hypothesis (900) — well-defined, but rarely
 # expected to be hit because every shipping rule declares a priority.
 _DEFAULT_PRIORITY = 1000
+
+# Dunder convention — the kernel-native symmetric mirror trigger. A relation
+# marked `(__symmetric__ R)` has its extension closed under arg-swap directly
+# by the saturator (no compiled rule / `match.run`) — the perf-opt counterpart
+# of the stdlib `symmetric` closure rule. See
+# docs/kernel/inference/reserved_engine_strings.md.
+SYMMETRIC = "__symmetric__"
 
 
 def _positive_relations(plan: JoinPlan) -> set[str]:
@@ -152,6 +160,13 @@ class Saturator:
         self._pos_index: dict[str, list[JoinPlan]] | None = None
         self._abs_index: dict[str, list[JoinPlan]] | None = None
         self._index_n: int = -1
+        # `__symmetric__` native mirror (kernel opt). Marked relations (cached,
+        # refreshed when the marker count changes), and the queue of source
+        # facts whose arg-swap mirror is still pending.
+        self._sym_rels: frozenset[str] | None = None
+        self._sym_n: int = -1
+        self._mirror_queue: list[Fact] = []
+        self._mirror_seeded: bool = False
 
     # ── Public API ────────────────────────────────────────────────
 
@@ -165,6 +180,11 @@ class Saturator:
             self._enqueue_pass(self._delta_facts)
             self._needs_enqueue = False
             self._delta_facts = None
+        # `__symmetric__` native mirror — produced before rule firings so the
+        # closure is available to them. A no-op when no relation is marked.
+        mirror = self._next_mirror_firing()
+        if mirror is not None:
+            return mirror
         while self._queue:
             _priority, _tb, plan, bindings, premises = heapq.heappop(self._queue)
             key = self._binding_key(plan, bindings)
@@ -190,6 +210,8 @@ class Saturator:
                     self._delta_facts = list(firing.derived)
                 else:
                     self._delta_facts.extend(firing.derived)
+                # A rule-derived marked fact needs its mirror too.
+                self._enqueue_mirror_sources(firing.derived)
             return firing
         return None
 
@@ -237,6 +259,8 @@ class Saturator:
         self._needs_enqueue = False
         # The queue may contain entries whose bindings have already
         # been fired — filter them out before claiming stalled.
+        if self._has_pending_mirror():
+            return False
         return not any(
             self._binding_key(p, b) not in self.engine._fired
             for _pr, _tb, p, b, _pr_facts in self._queue
@@ -274,6 +298,87 @@ class Saturator:
         if rule is None or rule.priority is None:
             return _DEFAULT_PRIORITY
         return rule.priority
+
+    # ── `__symmetric__` native mirror (kernel optimization) ───────────
+
+    def _symmetric_rels(self) -> frozenset[str]:
+        """Relations marked `(__symmetric__ R)`; cached, refreshed when the
+        marker-fact count changes (a rule may derive `(__symmetric__ R)`)."""
+        facts = self.kb._facts_by_relation.get(SYMMETRIC, ())
+        if self._sym_rels is None or len(facts) != self._sym_n:
+            self._sym_rels = frozenset(f.args[0] for f in facts if f.args)
+            self._sym_n = len(facts)
+        return self._sym_rels
+
+    def _enqueue_mirror_sources(self, facts: tuple[Fact, ...]) -> None:
+        """Queue any marked-relation fact in `facts` for arg-swap mirroring."""
+        sym = self._symmetric_rels()
+        if not sym:
+            return
+        for f in facts:
+            if f.relation_name in sym:
+                self._mirror_queue.append(f)
+
+    def _has_pending_mirror(self) -> bool:
+        """True iff some marked-relation edge `(R a b)` (a≠b) lacks its mirror
+        `(R b a)` — non-mutating, so `is_stalled` can consult it. Cheap when no
+        relation is marked (the common case)."""
+        for r in self._symmetric_rels():
+            for f in self.kb._facts_by_relation.get(r, ()):
+                if (len(f.args) == 2 and f.args[0] != f.args[1]
+                        and self.kb._fact_by_id(r, (f.args[1], f.args[0])) is None):
+                    return True
+        return False
+
+    def _next_mirror_firing(self) -> Firing | None:
+        """One native `(__symmetric__ R)` mirror, or None.
+
+        A marked R's extension is closed under arg-swap: rather than compiling
+        the stdlib `symmetric` rule and running `match.run` each pass, pop a
+        source `(R a b)` and write `(R b a)` directly — skipping self-loops
+        (a=b) and already-present mirrors. The mirror feeds the delta so rules
+        re-enqueue against it. This is the kernel optimization — it skips the
+        JoinPlan / matcher the rule pays per mirror.
+
+        Cold-seeds from the existing marked-relation extents on first call;
+        thereafter `_enqueue_mirror_sources` queues each productive firing's
+        derived marked facts.
+        """
+        if not self._mirror_seeded:
+            self._mirror_seeded = True
+            for r in self._symmetric_rels():
+                self._mirror_queue.extend(self.kb._facts_by_relation.get(r, ()))
+        sym = self._symmetric_rels()
+        while self._mirror_queue:
+            src = self._mirror_queue.pop()
+            if src.relation_name not in sym or len(src.args) != 2:
+                continue
+            a, b = src.args
+            if a == b or self.kb._fact_by_id(src.relation_name, (b, a)) is not None:
+                continue
+            prov = Provenance.from_rule(
+                rule=SYMMETRIC,
+                premises_raw=((src.relation_name, src.args),),
+                bindings=(),
+            )
+            stored = self.kb.add_and_index_fact(Fact(
+                relation_name=src.relation_name, args=(b, a),
+                layer=Layer.REASONING, provenance=prov,
+            ))
+            self._needs_enqueue = True
+            if self._delta_facts is None:
+                self._delta_facts = [stored]
+            else:
+                self._delta_facts.append(stored)
+            self._enqueue_mirror_sources((stored,))
+            return Firing(
+                rule=SYMMETRIC,
+                activator=(src.relation_name,),
+                bindings={"a": a, "b": b},
+                derived=(stored,),
+                premises=(src,),
+            )
+        return None
 
     def _enqueue_pass(self, delta_facts: list[Fact] | None = None) -> None:
         """Enqueue any not-yet-seen binding.
