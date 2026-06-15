@@ -1,11 +1,11 @@
-"""bench_monotonic CLI smoke + sound-solve run.
+"""`ein search` CLI smoke + sound-solve run.
 
-The bench now drives :func:`ein.inference.monotonic.solve`
-(the sound entry — verdict read off the deduped solution-node
-count ``k``, not a first-goal-match). The legacy
-``monotonic_solve raises NotImplementedError`` skeleton is gone,
-so on top of the arg-parsing smoke we run a real puzzle and
-assert the sound verdict + stats shape.
+`ein search` is the promoted `bench_monotonic` command (P1.11 S1.11.3 —
+formerly `demo/bench_monotonic.py`). It drives
+:func:`ein.inference.monotonic.solve` (the sound entry — verdict read off
+the deduped solution-node count ``k``, not a first-goal-match). On top of
+the arg-parsing smoke we run a real puzzle and assert the sound verdict +
+stats shape.
 """
 from __future__ import annotations
 
@@ -14,7 +14,8 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-SCRIPT = REPO / "demo" / "bench_monotonic.py"
+# `ein search` invoked as a module so the test is interpreter-agnostic.
+CMD = [sys.executable, "-m", "ein.cli", "search"]
 # examples/ lives at the project root (one level above ein.py/).
 EXAMPLES = REPO.parent / "examples"
 BRANCHING_FIXTURE = EXAMPLES / "branching" / "04_two_levels.ein"
@@ -23,10 +24,10 @@ BRANCHING_FIXTURE = EXAMPLES / "branching" / "04_two_levels.ein"
 def test_help_smoke():
     """``--help`` works → arg-parsing is wired."""
     proc = subprocess.run(
-        [sys.executable, str(SCRIPT), "--help"],
+        [*CMD, "--help"],
         capture_output=True, text=True, check=True,
     )
-    assert "monotonic" in proc.stdout.lower()
+    assert "set-search" in proc.stdout.lower()
     assert "--max-set-size" in proc.stdout
     assert "--dump-states" in proc.stdout
     # solve()'s orthogonal stop policy is exposed as --exhaustive.
@@ -41,10 +42,7 @@ def test_solve_run_fast_path():
     ``exhausted=false`` (the fast path proves *a* model, not
     uniqueness)."""
     proc = subprocess.run(
-        [
-            sys.executable, str(SCRIPT), str(BRANCHING_FIXTURE),
-            "--max-set-size", "2",
-        ],
+        [*CMD, str(BRANCHING_FIXTURE), "--max-set-size", "2"],
         capture_output=True, text=True, check=True,
     )
     out = proc.stdout
@@ -69,10 +67,7 @@ def test_solve_run_exhaustive_is_ambiguity():
     still 2 (distinct model STATES collapse via state_hash dedup);
     only the depth needed to *certify* exhaustion grew."""
     proc = subprocess.run(
-        [
-            sys.executable, str(SCRIPT), str(BRANCHING_FIXTURE),
-            "--max-set-size", "3", "--exhaustive",
-        ],
+        [*CMD, str(BRANCHING_FIXTURE), "--max-set-size", "3", "--exhaustive"],
         capture_output=True, text=True, check=True,
     )
     out = proc.stdout

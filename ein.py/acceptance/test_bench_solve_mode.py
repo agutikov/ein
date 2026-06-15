@@ -1,15 +1,16 @@
-"""Acceptance — the sound `solve` mode wired into `bench_monotonic.py`.
+"""Acceptance — the sound `solve` mode wired into `ein search`.
 
-`bench_monotonic.py` (run via `./bench_solve_monotonic_pypy.sh`) drives the
-sound `solve()` engine since `monotonic_solve` was removed (P1.7a). This pins
-that the bench solves `zebra2` **correctly** — the full, right 25/25 model —
-rather than the old `monotonic_solve` first-goal-match dead-end, which wrongly
-committed `(color-loc Green House-4)` and stopped.
+`ein search` (the promoted `bench_monotonic` command — P1.11 S1.11.3; run
+via `./bench_solve_monotonic_pypy.sh`) drives the sound `solve()` engine
+since `monotonic_solve` was removed (P1.7a). This pins that it solves
+`zebra2` **correctly** — the full, right 25/25 model — rather than the old
+`monotonic_solve` first-goal-match dead-end, which wrongly committed
+`(color-loc Green House-4)` and stopped.
 
 Invoked as a subprocess, exactly as a user runs it
-(`bench_solve_monotonic_pypy.sh … examples/zebra2.ein --print-final-state`).
-Slow (~6 s under PyPy: solve's `stop_after=1` fast path), hence in the
-acceptance phase, not the unit suite.
+(`ein search examples/zebra2.ein --print-final-state`). Slow (~6 s under
+PyPy: solve's `stop_after=1` fast path), hence in the acceptance phase, not
+the unit suite.
 """
 from __future__ import annotations
 
@@ -19,7 +20,8 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-BENCH = REPO / "ein.py" / "demo" / "bench_monotonic.py"
+# `ein search` is the promoted bench_monotonic command (P1.11 S1.11.3).
+SEARCH = [sys.executable, "-m", "ein.cli", "search"]
 ZEBRA2 = REPO / "examples" / "zebra2.ein"
 
 
@@ -27,7 +29,7 @@ def _run_bench(*args: str) -> subprocess.CompletedProcess:
     # sys.executable is whatever interpreter pytest runs under (PyPy via
     # run_tests.sh); ein is importable there (installed in the venv).
     return subprocess.run(
-        [sys.executable, str(BENCH), str(ZEBRA2), *args],
+        [*SEARCH, str(ZEBRA2), *args],
         capture_output=True, text=True, timeout=180,
     )
 

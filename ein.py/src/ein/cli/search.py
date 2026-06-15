@@ -25,11 +25,6 @@ import time
 from pathlib import Path
 from typing import Any
 
-# Make `from ein.…` resolve when running from a checkout.
-sys.path.insert(
-    0, str(Path(__file__).resolve().parents[1] / "src"),
-)
-
 from ein.inference.config import SolverConfig
 from ein.inference.lookahead import Lookahead
 from ein.inference.monotonic.solver import (

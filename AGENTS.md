@@ -36,12 +36,17 @@ constrained-reasoning research.
 - **`ein.py/`** — Python implementation. `ein.py/src/ein/` is the
   package: IR parser + dumper under `ir/`; KB store + entities +
   provenance under `kb/`; inference engine + saturator + contradiction
-  detector + hypothesis loop under `inference/`. `ein.py/tests/` is the
-  pytest suite, `ein.py/demo/` holds runnable demo scripts
-  (`bench_saturate.py`, …), `ein.py/pyproject.toml` is the build
-  config.
+  detector + hypothesis loop under `inference/`; the `ein` console
+  script under `cli/` (subcommands `ir` / `kb` / `render` / `solve`
+  plus the promoted engine runners `saturate` / `search` / `lattice` /
+  `profile` / `symmetric`). `ein.py/tests/` is the pytest suite,
+  `ein.py/pyproject.toml` is the build config. (P1.11 S1.11.3 promoted
+  the durable `ein.py/demo/` bench scripts into `cli/` and moved the
+  one-off probe/measure scripts to `utils/`.)
 - **`utils/`** — renderers (`render_knowledge_graph.sh` for Graphviz,
-  `render_knowledge_graph_cy.py` for Cytoscape).
+  `render_knowledge_graph_cy.py` for Cytoscape) + ad-hoc engine
+  probe/measure scripts (`score_hypotheses.py`, `s1_5b_32_measure.py`,
+  `trace_relevance.py`, … — moved from `demo/` in P1.11).
 - **`nlp/`, `smt/`** — scratch areas with submodules
   (`nlp/link-grammar`, `smt/CVC4`). Not wired into the active
   `ein.py/` package.

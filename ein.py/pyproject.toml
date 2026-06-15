@@ -107,22 +107,25 @@ ignore = []
 # vulture — dead-code finder.  Install: `pip install -e '.[dev]'`; run: `vulture`
 # ---------------------------------------------------------------------------
 #
-# Scans src + tests + demo together so a src symbol used only by a test or a
-# demo is NOT reported dead (vulture flags names with zero references across
-# every scanned path).  ruff already covers unused imports/locals (F401/F841);
+# Scans src + tests together so a src symbol used only by a test is NOT
+# reported dead (vulture flags names with zero references across every
+# scanned path).  ruff already covers unused imports/locals (F401/F841);
 # vulture adds unused module-level functions / classes / methods / attributes
 # — the class that `committed_hypotheses` / `BOOKKEEPING_HEADS` fell into.
+# (The former `demo/` scratch scripts were promoted into `src/ein/cli/` or
+# moved to repo-root `utils/` in P1.11 S1.11.3; the CLI ones are covered by
+# the `src` path, the utils ones live outside this package.)
 #
 # The first run surfaces false positives from dynamic dispatch (the Lark
 # Transformer methods keyed on grammar terminals, the predicate registry,
 # SolverConfig fields populated by reflection, pytest fixtures).  Seed a
 # whitelist for them, then add it to `paths`:
 #
-#     vulture --make-whitelist src tests demo > whitelist_vulture.py
+#     vulture --make-whitelist src tests > whitelist_vulture.py
 #
 # For a no-install, zero-dependency first pass use utils/find_dead_defs.py.
 [tool.vulture]
-paths = ["src", "tests", "demo", "whitelist_vulture.py"]
+paths = ["src", "tests", "whitelist_vulture.py"]
 min_confidence = 60
 ignore_names = ["test_*", "Test*"]
 ignore_decorators = ["@pytest.fixture", "@fixture"]

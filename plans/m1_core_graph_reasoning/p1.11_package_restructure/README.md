@@ -1,17 +1,19 @@
 # P1.11 — Package + CLI restructure
 
 **Estimate:** TBD (~1-2 days mechanical work + cross-ref update).
-**Status:** **rename DONE 2026-06-15** (commit `e49a325`) — the
-name change (S1.11.1 package dir + S1.11.2 codebase + S1.11.5
-docs/plans/examples sweep) shipped: `ein_bot` → `ein`, `ein-bot`
-→ `Ein`/`ein` by context. **Remaining:** demo-merge (S1.11.3),
-CLI-split (S1.11.4), the outer `ein.py/` dir rename
-(Q-S1.11.1.A, deferred — see [open questions](#open-questions)),
-and final acceptance (S1.11.6). Created 2026-05-24 from the
-TODO.md scratchpad. Pure housekeeping; does not gate M1
-acceptance, but touched every import in the package so it was
-scheduled at a quiescent point (between M1's P1.7 ship and the
-start of M2).
+**Status:** **DONE 2026-06-16** — rename shipped 2026-06-15 (commit
+`e49a325`: S1.11.1 package dir + S1.11.2 codebase + S1.11.5
+docs/plans/examples sweep; `ein_bot` → `ein`, `ein-bot` → `Ein`/`ein`
+by context). The CLI-split (S1.11.4) + demo-cleanup (S1.11.3) + final
+acceptance (S1.11.6) landed 2026-06-16: `cli.py` → a `cli/` package; the
+former `demo/` (13 scripts, not the 2 the plan assumed) split into 5
+promoted `ein` subcommands (`saturate` / `search` / `lattice` / `profile`
+/ `symmetric`) and 8 one-off probe/measure scripts relocated to repo-root
+`utils/`. **Still deferred:** the outer `ein.py/` dir rename
+(Q-S1.11.1.A — see [open questions](#open-questions)). Created 2026-05-24
+from the TODO.md scratchpad. Pure housekeeping; does not gate M1
+acceptance, but touched every import in the package so it was scheduled at
+a quiescent point (between M1's P1.7 ship and the start of M2).
 **Depends on:** [P1.7](../p1.7_bootstrapping_zebra/) ships — the
 zebra E2E test gives the regression baseline that the rename
 must preserve.
@@ -58,10 +60,10 @@ on both sides of the rename.
 |----------|-------------------------------------------------------|---------------------------------|------------------------------------------------------------------------|
 | S1.11.1  | Directory rename                                      | ✅ pkg dir done; outer `ein.py/` deferred | [s1.11.1_directory_rename.md](s1.11.1_directory_rename.md)            |
 | S1.11.2  | Codebase rename                                       | ✅ DONE 2026-06-15              | [s1.11.2_codebase_rename.md](s1.11.2_codebase_rename.md)              |
-| S1.11.3  | Demo merge                                            | ⬜ pending                      | [s1.11.3_demo_merge.md](s1.11.3_demo_merge.md)                        |
-| S1.11.4  | CLI split                                             | ⬜ pending                      | [s1.11.4_cli_split.md](s1.11.4_cli_split.md)                          |
+| S1.11.3  | Demo merge                                            | ✅ DONE 2026-06-16 (5→cli, 8→utils) | [s1.11.3_demo_merge.md](s1.11.3_demo_merge.md)                  |
+| S1.11.4  | CLI split                                             | ✅ DONE 2026-06-16              | [s1.11.4_cli_split.md](s1.11.4_cli_split.md)                          |
 | S1.11.5  | Docs / plans / examples sweep                         | ✅ DONE 2026-06-15              | [s1.11.5_docs_sweep.md](s1.11.5_docs_sweep.md)                        |
-| S1.11.6  | Acceptance                                            | ◐ rename verified; full pending | [s1.11.6_acceptance.md](s1.11.6_acceptance.md)                        |
+| S1.11.6  | Acceptance                                            | ✅ DONE 2026-06-16 (1287+8 green, ruff clean) | [s1.11.6_acceptance.md](s1.11.6_acceptance.md)      |
 
 S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
 The rename spine (S1.11.1 package dir → S1.11.2 → S1.11.5) landed

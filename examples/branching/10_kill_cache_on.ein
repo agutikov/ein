@@ -29,7 +29,7 @@
 ;;; verdict and identical enterings either way. It only cuts repeated
 ;;; lookahead work, visible as the `lookahead_sims` line in the bench's
 ;;; stats block. Measured with
-;;; `python demo/bench_monotonic.py <file> --exhaustive`:
+;;; `python -m ein.cli search <file> --exhaustive`:
 ;;;
 ;;;   ON  (10):  Solution (k=1), enterings_total 41, lookahead_sims 126
 ;;;   OFF (11):  Solution (k=1), enterings_total 41, lookahead_sims 654

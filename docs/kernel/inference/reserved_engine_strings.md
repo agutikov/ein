@@ -89,7 +89,7 @@ The kernel trigger `(__symmetric__ R)` closes R's extension under arg-swap
 closure as the stdlib `symmetric` rule (`std.algebra`) — pinned by
 `test_symmetric_native.py::test_parity_with_stdlib_symmetric` — but skips the
 JoinPlan + `match.run` the rule pays per mirror (~1.2× on the synthetic
-`demo/bench_symmetric.py`; **no real symmetric-heavy puzzle exists yet** —
+`ein.py/src/ein/cli/symmetric.py`; **no real symmetric-heavy puzzle exists yet** —
 zebra2 uses `co-located*` rules, not the generic closure). Opt-in by marking
 the relation; ordinary puzzles take the no-op path (the mirror queue is empty
 when nothing is marked, so zero overhead). Re-adds, behind the dunder, the

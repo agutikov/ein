@@ -20,7 +20,7 @@ import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "ein.py" / "src"))
 
 from ein.inference.closed import emit_closed
 from ein.inference.saturator import Saturator
@@ -30,7 +30,7 @@ from ein.kb.entities import Fact, Layer
 from ein.kb.store import KnowledgeBase
 
 _DEFAULT = (
-    Path(__file__).resolve().parents[2]
+    Path(__file__).resolve().parents[1]
     / "examples" / "branching" / "12_typed_blind_solve.ein"
 )
 

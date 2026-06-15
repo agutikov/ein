@@ -33,11 +33,6 @@ import sys
 import time
 from pathlib import Path
 
-# Make `from ein.…` resolve when running from a checkout.
-sys.path.insert(
-    0, str(Path(__file__).resolve().parents[1] / "src"),
-)
-
 from ein.inference.config import SolverConfig
 from ein.inference.monotonic import (
     LatticeDumper,

@@ -36,7 +36,7 @@ import sys
 from dataclasses import replace
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "ein.py" / "src"))
 
 from ein.inference import primitives
 from ein.inference.commitment import try_commitment_set
@@ -48,7 +48,7 @@ from ein.kb.entities import Fact, Layer
 from ein.kb.provenance import FactId, Provenance
 from ein.kb.store import KnowledgeBase
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[1]
 DEFAULT_PUZZLE = REPO / "examples" / "zebra2.ein"
 
 

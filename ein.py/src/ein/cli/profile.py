@@ -43,14 +43,10 @@ import time
 from dataclasses import fields as dc_fields
 from pathlib import Path
 
-# Make `from ein.…` resolve when running from a checkout.
-_REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(_REPO / "ein.py" / "src"))
-
-from ein.inference.config import SolverConfig  # noqa: E402
-from ein.inference.monotonic.solver import solve  # noqa: E402
-from ein.ir import parse  # noqa: E402
-from ein.kb.store import KnowledgeBase  # noqa: E402
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic.solver import solve
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 # Substrings grouping cProfile rows into engine subsystems. First match
 # wins (order matters — `monotonic/solver` before generic `match`).
@@ -69,7 +65,8 @@ _SUBSYSTEMS: list[tuple[str, tuple[str, ...]]] = [
 
 
 def _default_puzzle() -> Path:
-    return _REPO / "examples" / "zebra2.ein"
+    # repo root = …/src/ein/cli/profile.py → parents[4]; examples/ lives there.
+    return Path(__file__).resolve().parents[4] / "examples" / "zebra2.ein"
 
 
 def _build_argparser() -> argparse.ArgumentParser:

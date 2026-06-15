@@ -25,18 +25,17 @@ folders, since most hypotheses are never reached).
 
 ### From the CLI
 
-[`demo/bench_lattice.py`](../../../ein.py/demo/bench_lattice.py)
+[`ein.py/src/ein/cli/lattice.py`](../../../ein.py/src/ein/cli/lattice.py)
 dispatches both lattice entries. Pass `--dump-states DIR` to attach
 a `LatticeDumper`; add `--store-lattice` to also materialise the
 per-SetNode `kb_index/`:
 
 ```sh
-cd ein.py
 # Every dead commitment + its refutation, dumped:
-python3 demo/bench_lattice.py ../examples/branching/04_two_levels.ein \
+python -m ein.cli lattice examples/branching/04_two_levels.ein \
     --contradictions --store-lattice --dump-states ./dump
 # Every satisfying commitment, dumped:
-python3 demo/bench_lattice.py ../examples/branching/04_two_levels.ein \
+python -m ein.cli lattice examples/branching/04_two_levels.ein \
     --gaps --dump-states ./dump
 tree ./dump
 ```
@@ -224,6 +223,6 @@ it's the entry point for "show me every refutation" tooling.
 - Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10).
 - Implementation: [`monotonic/state_dump.py`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
   (`LatticeDumper`, `MonotonicDumper`).
-- CLI: [`demo/bench_lattice.py`](../../../ein.py/demo/bench_lattice.py).
+- CLI: [`ein lattice`](../../../ein.py/src/ein/cli/lattice.py).
 - Tests: [`tests/inference/lattice/test_lattice_dumper.py`](../../../ein.py/tests/inference/lattice/test_lattice_dumper.py).
 - Algorithm spec: [`algorithm_layer_n.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md).

@@ -46,15 +46,12 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
-REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / "ein.py" / "src"))
-
-from ein.inference.engine import Engine  # noqa: E402
-from ein.inference.firing import Firing  # noqa: E402
-from ein.inference.saturator import Saturator  # noqa: E402
-from ein.ir import parse  # noqa: E402
-from ein.kb.entities import Fact, Layer  # noqa: E402
-from ein.kb.store import KnowledgeBase  # noqa: E402
+from ein.inference.engine import Engine
+from ein.inference.firing import Firing
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.entities import Fact, Layer
+from ein.kb.store import KnowledgeBase
 
 # ── Snapshot ────────────────────────────────────────────────────
 
@@ -566,18 +563,16 @@ def bench(
         dump_kb(kb)
 
 
-if __name__ == "__main__":
+def main(argv: list[str] | None = None) -> int:
     import argparse
 
     p = argparse.ArgumentParser(
-        prog="bench_saturate",
+        prog="ein saturate",
         description="Benchmark + state dump for the Saturator.",
     )
     p.add_argument(
         "file",
-        nargs="?",
-        default=str(REPO / "examples" / "zebra.ein"),
-        help="path to a .ein file (default: examples/zebra.ein)",
+        help="path to a .ein file",
     )
     p.add_argument(
         "--dump",
@@ -599,15 +594,20 @@ if __name__ == "__main__":
         help="log a one-line progress sample every N steps "
              "(0 disables; default: 500).",
     )
-    args = p.parse_args()
+    args = p.parse_args(argv)
 
     target = Path(args.file)
     if not target.exists():
         print(f"error: {target} not found", file=sys.stderr)
-        sys.exit(1)
+        return 1
     bench(
         target,
         dump=args.dump,
         max_steps=args.max_steps,
         progress_every=args.progress_every,
     )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

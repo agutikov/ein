@@ -593,7 +593,7 @@ dump/<puzzle>-<ts>/
 Six lifecycle hooks (`root_initial`, `layer_start`, `entering`,
 `layer_end`, `early_terminate`, `summary`) fire from the
 backbone; `dumper=None` is a no-op for every hook site. The
-`_VerboseDumper` subclass in `demo/bench_monotonic.py` streams
+`_VerboseDumper` subclass in `ein.py/src/ein/cli/search.py` streams
 the same events to stderr as `--verbose` progress lines without
 needing an on-disk dump.
 

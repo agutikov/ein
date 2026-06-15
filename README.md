@@ -31,15 +31,14 @@ The Norwegian drinks the water; the Japanese keeps the zebra.  (a solution — p
 
 | path                          | what's in it                                                                          |
 |-------------------------------|---------------------------------------------------------------------------------------|
-| `ein.py/`                     | Python implementation (package, tests, pyproject, demo scripts)                       |
+| `ein.py/`                     | Python implementation (package, tests, pyproject)                                     |
 | `ein.py/src/ein/ir/`          | ein-lang IR — Lark grammar, typed AST, parser, canonical dump, DOT renderer           |
 | `ein.py/src/ein/kb/`          | typed-entity knowledge base — store + 7 indexes, entities, provenance DAG, imports    |
 | `ein.py/src/ein/inference/`   | the engine — saturator, matcher/join-compiler, commitment-lattice search, no-goods, contradiction detector, verdict |
 | `ein.py/src/ein/render/`, `trace/` | Graphviz DOT renderers + the markdown derivation-trace builder                   |
 | `ein.py/src/ein/stdlib/`      | ein-lang standard library — relation-algebra rules (`closure`, `bijection`, `elim`, `algebra`, `typing`, `macro`) |
-| `ein.py/src/ein/cli.py`       | console script `ein` (`ir` \| `kb` \| `render` \| `solve`)                            |
+| `ein.py/src/ein/cli/`         | console script `ein` — `ir` \| `kb` \| `render` \| `solve`, plus the promoted engine runners `saturate` \| `search` \| `lattice` \| `profile` \| `symmetric` (P1.11) |
 | `ein.py/tests/`               | pytest suite (~1,300 tests)                                                           |
-| `ein.py/demo/`                | benchmark / probe scripts (to be merged into the package — [P1.11](plans/m1_core_graph_reasoning/p1.11_package_restructure/README.md)) |
 | `ein.py/pyproject.toml`       | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff`     |
 | `examples/zebra.ein`, `zebra2.ein` | the Zebra puzzle as ein-lang; `zebra2.ein` (unified-`is-a` / `*-loc`) is the active acceptance target |
 | [`examples/README.md`](examples/README.md) | the Wikipedia human Zebra solution traced step-by-step as Ein inference — **M1 target** for the engine, **M2 target** for the NL ⇄ IR round-trip |
@@ -49,7 +48,7 @@ The Norwegian drinks the water; the Japanese keeps the zebra.  (a solution — p
 | `docs/kernel/`                | kernel documentation — graph semantics, data model, surface language, inference engine |
 | `docs/index/`                 | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph     |
 | `docs/ideas/`                 | ideas extracted from research notes                                                   |
-| `utils/`                      | renderers for the knowledge graph (Graphviz + Cytoscape) + the VS Code ein-lang grammar |
+| `utils/`                      | renderers for the knowledge graph (Graphviz + Cytoscape) + the VS Code ein-lang grammar + ad-hoc engine probe/measure scripts (moved from `demo/` in P1.11) |
 | `nlp/`, `smt/`                | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)                |
 | `AGENTS.md`                   | guidance for AI coding agents (`CLAUDE.md` is a symlink to it)                         |
 | `TODO.md`                     | live worklist                                                                         |
@@ -159,10 +158,12 @@ solve (P1.7), and ein-lang modules + the relation-algebra stdlib (P1.8) are
 in place, with semi-naive saturation for performance (P1.8a). The Zebra
 puzzle solves in all three modes; ~1,300 tests are green.
 
-In flight: [P1.11](plans/m1_core_graph_reasoning/p1.11_package_restructure/README.md)
-package/CLI restructure (the `ein-bot` → `ein` rename has shipped;
-demo-merge + CLI-split remain). Next milestones are **M2** (NL ⇄ IR
-round-trip) and **M3** (SMT integration). The whole roadmap is tracked under
+[P1.11](plans/m1_core_graph_reasoning/p1.11_package_restructure/README.md)
+package/CLI restructure has shipped: the `ein-bot` → `ein` rename, the
+`cli.py` → `cli/` split, and the `demo/` cleanup (durable bench runners
+promoted to `ein` subcommands, one-off probes moved to `utils/`). Next
+milestones are **M2** (NL ⇄ IR round-trip) and **M3** (SMT integration).
+The whole roadmap is tracked under
 [`plans/`](plans/README.md); see [`AGENTS.md`](AGENTS.md) for orientation
 aimed at coding agents.
 

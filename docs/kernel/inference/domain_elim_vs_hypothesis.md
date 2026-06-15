@@ -10,7 +10,7 @@
 > and records the audit conclusion + recommendation the stage owed.
 >
 > Reproduce every number here with
-> [`ein.py/demo/s1_5b_32_measure.py`](../../../ein.py/demo/s1_5b_32_measure.py)
+> [`utils/s1_5b_32_measure.py`](../../../utils/s1_5b_32_measure.py)
 > over the [`examples/domain_elim/`](../../../examples/domain_elim/)
 > fixtures. Long-form stage notes:
 > [`s1.5b.32_domain_elim_vs_hyp_exploration.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.32_domain_elim_vs_hyp_exploration.md).
@@ -187,7 +187,7 @@ is removed.
 
 ## Cross-links
 
-- Harness: [`ein.py/demo/s1_5b_32_measure.py`](../../../ein.py/demo/s1_5b_32_measure.py).
+- Harness: [`utils/s1_5b_32_measure.py`](../../../utils/s1_5b_32_measure.py).
 - Fixtures: [`examples/domain_elim/`](../../../examples/domain_elim/).
 - Stage: [`s1.5b.32_…`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.32_domain_elim_vs_hyp_exploration.md).
 - Engine overview + the d=0 rules: [README](README.md#d0-negative-completion-s15a19).

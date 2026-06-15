@@ -23,7 +23,7 @@ library, so each comparison moves a single variable:
 Run the measurement:
 
 ```sh
-cd ein.py && python3 demo/s1_5b_32_measure.py
+python3 utils/s1_5b_32_measure.py
 ```
 
 Full analysis + results tables:

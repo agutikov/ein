@@ -16,7 +16,7 @@ from ein.inference.monotonic import gaps_solve
 from ein.ir import parse
 from ein.kb import KnowledgeBase
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[1]
 
 
 def _key(f) -> tuple:

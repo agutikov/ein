@@ -37,7 +37,7 @@ import sys
 from dataclasses import replace
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "ein.py" / "src"))
 
 from ein.inference.config import SolverConfig
 from ein.inference.monotonic import (
@@ -49,7 +49,7 @@ from ein.inference.saturator import Saturator
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
 
-EX = Path(__file__).resolve().parents[2] / "examples" / "domain_elim"
+EX = Path(__file__).resolve().parents[1] / "examples" / "domain_elim"
 FIXTURES = ["ab", "b_only", "b_branch"]
 ANSWER = ("color-loc", ["Blue", "H1"])
 

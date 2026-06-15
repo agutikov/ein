@@ -23,11 +23,8 @@ native path skips (the JoinPlan + matcher the rule pays).
 from __future__ import annotations
 
 import argparse
-import pathlib
 import sys
 import time
-
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 
 from ein.inference.saturator import Saturator
 from ein.ir import parse
@@ -59,7 +56,7 @@ def _time_saturate(src: str) -> tuple[float, frozenset]:
     return dt, knows
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         description="Bench __symmetric__ kernel mirror vs the stdlib symmetric rule.",
     )
@@ -67,7 +64,7 @@ def main() -> int:
                     help="number of one-way chain edges to mirror (default 800)")
     ap.add_argument("--repeats", type=int, default=5,
                     help="timed repeats; the min is reported (default 5)")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     stdlib_src = _puzzle(args.edges, native=False)
     native_src = _puzzle(args.edges, native=True)
