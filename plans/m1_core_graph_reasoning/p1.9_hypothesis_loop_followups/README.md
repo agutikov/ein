@@ -100,30 +100,31 @@ The R1-R4 rejected entries stay in the README catalog only.
 | ⛔ E10 | Iterative deepening              | **inapplicable to the lattice BFS** — cardinality layering *is* breadth-first deepening; no DFS depth bound to re-raise ([§Inapplicable](s1.9.e10_iterative_deepening.md#inapplicable-to-the-lattice-bfs-2026-06-15)) | S | M | IDA* idiom |
 | 📅 E11 | Goal-driven hypothesis filter    | only emit `h` that could unify with the query goal (or a sub-goal via rule unification); backward chaining trim | M | M | Prolog SLD-resolution; [docs/index/03](../../../docs/index/03-theorem-proving-formal-methods.md) |
 | 📅 E12 | Hypothesis ordering by "informativeness" | prefer hypotheses with high expected pruning (alive: max-constraint; dead: max-back-prop) | M | L (heuristic gain) | CSP value ordering |
-| 📅 E13 | Per-hypothesis saturation budget | abort the fork's saturate after K steps; treat as alive (depth-N open leaf) | M | L (UX) | branch-and-bound |
+| ❌ E13 | Per-hypothesis saturation budget | **dropped 2026-06-15** (per user): saturation is correctness-critical — a per-fork budget aborts before quiescence, so the fork's verdict is unsound even on the fast path ([§Dropped](s1.9.e13_per_hyp_budget.md#dropped-2026-06-15)) | M | L (UX) | branch-and-bound |
 
 ### CSP-style pre-processing
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| 📅 E14 | Arc-consistency pre-pass         | before main saturation, run AC-3 over the relation graph to prune trivially-impossible facts | L | M | CSP AC-3 ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
-| 📅 E15 | Path-consistency (k-consistency) | generalises AC to k-tuples; expensive but tightens the alive set further | L | L | k-consistency |
+| ❌ E14 | Arc-consistency pre-pass         | **rejected 2026-06-15** — **subsumed by rule-saturation**: the engine is append-only (no domains to prune) and the puzzle's elimination rules already propagate the `(not h)` negatives AC-3 would derive ([§"Prune"…](s1.9.e14_arc_consistency.md#prune-in-an-append-only-engine-2026-06-15)) | L | M | CSP AC-3 ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
+| ❌ E15 | Path-consistency (k-consistency) | **rejected 2026-06-15** — k-tuple generalisation of the (also-rejected) E14; just **eagerly** computes multi-literal nogoods `_nogoods` already builds **lazily + Apriori-minimal** ([§…weird here](s1.9.e15_path_consistency.md#what-it-is-and-why-its-weird-here-2026-06-15)) | L | L | k-consistency |
 
 > **Lattice re-grounding (2026-06-15).** Re-judged against the engine's actual
 > search — a *complete BFS over commitment-set cardinality* (Apriori), not a
 > DPLL/DFS decision tree ([architecture_and_algorithms.md](../../../docs/kernel/inference/architecture_and_algorithms.md)
 > §O7) — the search/CSP entries split three ways. **Reorderers** (E9, E12) are
 > *inert for the complete/uniqueness search* (within-layer order can't change
-> Apriori pruning) and help only the fast `solve(stop_after=1)` path. **E13** is
-> fast-path-only too (aborting saturation breaks completeness). **E10 is
-> inapplicable** (the cardinality layering already *is* the deepening). The
-> **space-shrinkers** (E11, E4, E5, E14, E15) are the genuine complete-search
-> levers — they cut the *number* of enterings = saturations, attacking the
-> O1+O2 bottleneck from the count side (E4's value-symmetry pruning is now ⛔
-> superseded — re-homed to a user hrule + the positive mirror; only the
-> *object*-permutation residual, which `state_hash` still does not dedup, could
-> re-promote it). See each stub's
-> "Lattice re-grounding" section.
+> Apriori pruning) and help only the fast `solve(stop_after=1)` path. **E13 is
+> dropped** (aborting saturation is unsound — saturation is correctness-critical)
+> and **E10 inapplicable** (the cardinality layering already *is* the deepening).
+> Of the **space-shrinkers**, only **E11** (goal-driven filter) survives as a
+> genuine complete-search lever — fewer alive atoms ⇒ fewer enterings =
+> saturations. **E4/E5 are ⛔ superseded** (value-symmetry → a user hrule + the
+> positive mirror; mutex → rule induction) and **E14/E15 ❌ rejected** — both
+> subsumed by the engine's design: it is append-only with rule-saturation (which
+> already propagates AC-3's `(not h)` negatives to fixpoint) plus a lazy,
+> Apriori-minimal nogood store (which already holds what k-consistency would
+> eagerly compute). See each stub's "Lattice re-grounding" / status section.
 
 ### Engineering / UX
 
