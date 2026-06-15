@@ -1,7 +1,7 @@
 """Acceptance — the sound `solve` mode wired into `ein search`.
 
 `ein search` (the promoted `bench_monotonic` command — P1.11 S1.11.3; run
-via `./bench_solve_monotonic_pypy.sh`) drives the sound `solve()` engine
+via `./ein_pypy.sh search`) drives the sound `solve()` engine
 since `monotonic_solve` was removed (P1.7a). This pins that it solves
 `zebra2` **correctly** — the full, right 25/25 model — rather than the old
 `monotonic_solve` first-goal-match dead-end, which wrongly committed

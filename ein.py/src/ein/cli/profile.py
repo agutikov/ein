@@ -24,7 +24,7 @@ negative-fact volume (Theme C / S1.8.C1).
 
 Run under **CPython** for cProfile attribution (relative %); cProfile
 distorts PyPy's JIT, so take wall-clock from PyPy
-(``./bench_solve_monotonic_pypy.sh``) instead. ``--no-profile`` gives a
+(``./ein_pypy.sh search``) instead. ``--no-profile`` gives a
 clean wall-clock here too.
 
 Usage:

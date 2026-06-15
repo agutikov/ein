@@ -24,8 +24,8 @@ It also answers S1.7a.1's open questions:
   - the ``k → verdict`` reading (1 unique / >1 ambiguity / 0 contradiction).
 
 Run under PyPy for the full zebra2 family:
-    ./bench_solve_monotonic_pypy.sh  -- (peer runner)
-    .venv-pypy/bin/python ein.py/demo/probe_solution_nodes.py examples/zebra2.ein
+    ./ein_pypy.sh search  -- (peer runner)
+    .venv-pypy/bin/python utils/probe_solution_nodes.py examples/zebra2.ein
 """
 from __future__ import annotations
 

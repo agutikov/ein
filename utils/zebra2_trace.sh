@@ -5,7 +5,7 @@
 #
 # `ein solve` runs the engine, so it wants PyPy — CPython is too
 # slow for the full zebra2 lattice solve (~35s PyPy vs >90s CPython).
-# See the feedback-use-pypy-bench convention + bench_lattice_pypy.sh.
+# See the feedback-use-pypy-bench convention + ein_pypy.sh.
 #
 # Output:
 #   build/zebra2/zebra2.md         — the trace (inline fenced `dot` blocks)
