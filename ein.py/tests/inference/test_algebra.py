@@ -40,10 +40,11 @@ def test_converse_mirrors():
 
 
 def test_imply1_property_to_property():
-    """imply1's headline use: turn a property marker into another property."""
+    """imply1's headline use: turn a property marker into another property —
+    here the kernel-trigger `__closed__` (dunder convention, 2026-06-15)."""
     d = _derived(_FAMILY + "(relation foo T T)\n"
-                 "(imply1 functional closed)\n(functional foo)")
-    assert ("closed", ("foo",)) in d
+                 "(imply1 functional __closed__)\n(functional foo)")
+    assert ("__closed__", ("foo",)) in d
 
 
 def test_imply2_fwd_copies():
@@ -96,3 +97,20 @@ def test_lemma_loop_terminates():
     except SaturatorStepLimitError:
         raise AssertionError("algebra lemma loop did not terminate") from None
     assert n < 100
+
+
+# ── symmetric negative mirror (the A piece of the full symmetric set) ──
+
+
+def test_symmetric_negative_mirror():
+    """`symmetric-negative`: an impossible edge mirrors too — `(symmetric R)`
+    + `(not (R a b))` ⇒ `(not (R b a))`, landing in `_negated_facts` so hypgen
+    skips the mirror. Userspace reinstatement of the on-death mirror S1.7.24
+    removed from the kernel."""
+    kb = KnowledgeBase.from_ir(parse(
+        "(import std.algebra :symbols (symmetric-negative-setup))\n"
+        "(relation knows T T)\n"
+        "(symmetric knows)\n(not (knows A B) :source \"(1)\")"))
+    list(Saturator(kb).saturate(max_steps=3000))
+    assert ("knows", ("B", "A")) in kb._negated_facts   # derived mirror
+    assert ("knows", ("A", "B")) in kb._negated_facts   # the given negative

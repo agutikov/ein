@@ -216,10 +216,15 @@ or_form:       "(" "or" value+ kw_pair* ")"
 // lexically distinct from userspace names. The `(?:__)?` prefix still requires
 // a following letter, so a bare `_` stays WILDCARD and a single leading `_`
 // (`_x`) is still not a SYMBOL.
+// (WILDCARD below is lookahead-guarded so a leading `__` has no wildcard
+// tokenization — the dynamic Earley lexer would otherwise split `__closed__`
+// in value position into `_`,`_`,`closed__`.)
 SYMBOL:   /(?!(?:not|and|or|neq|rule|hrule|query|config|trace|macro|import)\b)(?:__)?[A-Za-z][A-Za-z0-9_*.-]*/
 VAR:      /\?[A-Za-z][A-Za-z0-9_*-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
-WILDCARD: "_"
+// `_` is the wildcard ONLY when standalone — not when it begins a `__dunder__`
+// SYMBOL (else the leading `__` lexes as two wildcards). Token text is still `_`.
+WILDCARD: /_(?![A-Za-z0-9_])/
 EQ:       "="
 RANGE:    /[0-9]+\.\.([0-9]+|\*)/
 INT:      /-?[0-9]+/

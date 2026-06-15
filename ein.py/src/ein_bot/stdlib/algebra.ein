@@ -363,6 +363,30 @@
   :why    "{?rel} is symmetric: {?a} ↔ {?b}."
   :priority 100)
 
+;; symmetric (negative) — the dual of the positive mirror: an impossible edge
+;; mirrors too. `(symmetric R)` + `(not (R a b))` ⇒ `(not (R b a))`. Matching a
+;; stored `(not (R a b))` (back-prop's on-death `(not h)` writes land in the KB
+;; as facts) derives the mirror negation, which lands in `_negated_facts` so
+;; hypgen skips the symmetric counterpart. Reinstates, in pure userspace, the
+;; on-death mirror S1.7.24 removed from the kernel.
+;;
+;; TWO rules: the matcher can scan a *variable* relation head inside `(not …)`
+;; only when that head is an ACTIVATOR param (compile-time bound), not a
+;; premise-bound var. So `symmetric-negative-setup` lifts `(symmetric R)` to the
+;; activator `(symmetric-negative R)` (picked up reflectively, A9), and the
+;; worker — activated by it, `?rel` a param — does the negation mirror.
+(rule symmetric-negative-setup ()
+  :match  (symmetric ?rel)
+  :assert (symmetric-negative ?rel)
+  :why    "{?rel} symmetric ⟹ activate its negative mirror."
+  :priority 100)
+
+(rule symmetric-negative (?rel)
+  :match  (not (?rel ?a ?b))
+  :assert (not (?rel ?b ?a))
+  :why    "{?rel} symmetric: ¬{?rel}({?a},{?b}) ⟹ ¬{?rel}({?b},{?a})."
+  :priority 100)
+
 ;; transitive — R;R ⊆ R: the transitive closure. The guarded (`neq ?a ?c`)
 ;; special case of `(compose R R R)` — the guard suppresses the self-loop a bare
 ;; compose-into-self would add, which keeps an irreflexive closure irreflexive.
