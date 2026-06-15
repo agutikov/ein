@@ -31,6 +31,7 @@ sys.path.insert(
 )
 
 from ein_bot.inference.config import SolverConfig
+from ein_bot.inference.lookahead import Lookahead
 from ein_bot.inference.monotonic.solver import (
     BudgetExceededError,
     solve,
@@ -434,7 +435,7 @@ def _resolved_config(
     kb: KnowledgeBase, args: argparse.Namespace,
 ) -> SolverConfig:
     """Start from kb.config (or defaults) and apply CLI overrides
-    (--no-lookahead, --no-back-prop)."""
+    (--no-lookahead, --no-kill-cache)."""
     from dataclasses import replace as _dc_replace
 
     cfg = kb.config or SolverConfig()
@@ -463,6 +464,7 @@ def main(argv: list[str] | None = None) -> int:
 
     aborted_reason: str | None = None
     verdict = None
+    Lookahead.reset_call_count()  # count one-step sims across this solve
     t0 = time.perf_counter()
     try:
         verdict, stats = solve(
@@ -478,6 +480,7 @@ def main(argv: list[str] | None = None) -> int:
         aborted_reason = e.reason
         stats = e.stats
     elapsed = time.perf_counter() - t0
+    lookahead_sims = Lookahead.call_count()
 
     print(f"file              {args.puzzle}")
     if aborted_reason is not None:
@@ -521,6 +524,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  facts_merged       {stats.facts_merged}")
     print(f"  forced_positives   {stats.forced_positives}")
     print(f"  saturate_count     {stats.saturate_count}")
+    print(f"  lookahead_sims     {lookahead_sims}")
     print(f"  layers_explored    {stats.layers_explored}")
     print(f"  nogoods_emitted    {stats.nogoods_emitted}")
     print(f"  nogoods_subsumed   {stats.nogoods_subsumed}")

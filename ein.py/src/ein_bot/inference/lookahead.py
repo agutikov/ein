@@ -40,6 +40,8 @@ live hypothesis as dead.
 """
 from __future__ import annotations
 
+from typing import ClassVar
+
 from ein_bot.kb.entities import Fact, Layer
 from ein_bot.kb.store import KnowledgeBase
 
@@ -60,6 +62,24 @@ class Lookahead:
     the rule set).
     """
 
+    # S1.9.E6b — process-wide one-step-simulation counter, for
+    # observability only. The `enable_lookahead_kill_cache` flag's
+    # payoff is *fewer* of these simulations: a cached `(not h)` lets
+    # later hypgen passes skip a doomed candidate via the O(1)
+    # `_negated_facts` filter instead of re-simulating it. M1 is
+    # single-threaded, so a class counter is sound; a caller brackets a
+    # solve with `reset_call_count()` / `call_count()` (see
+    # `demo/bench_monotonic.py`).
+    _dies_calls: ClassVar[int] = 0
+
+    @classmethod
+    def reset_call_count(cls) -> None:
+        Lookahead._dies_calls = 0
+
+    @classmethod
+    def call_count(cls) -> int:
+        return Lookahead._dies_calls
+
     def __init__(self, kb: KnowledgeBase) -> None:
         engine = Engine(kb)
         engine.compile_all()
@@ -75,6 +95,7 @@ class Lookahead:
         this on a post-saturation KB. Read-only: no fork, no
         mutation of ``kb``.
         """
+        Lookahead._dies_calls += 1
         for plan in self._plans:
             # A rule may conclude SEVERAL facts (S1.8.A13) — any one could
             # contradict `h`, so probe every fact-shaped conclusion.

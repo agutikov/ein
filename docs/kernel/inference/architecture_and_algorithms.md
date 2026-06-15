@@ -47,7 +47,7 @@ monotone/non-monotone seam:
 - **Search layer (non-monotone).** Branch: enumerate candidate
   *commitments*, fork-and-saturate each, learn from deaths, dedup models,
   read a verdict. `monotonic/solver.py`, `commitment.py`, `hypgen.py`,
-  `apriori.py`, `nogoods.py`, `back_prop.py`, `lookahead.py`,
+  `apriori.py`, `nogoods.py`, `lookahead.py`,
   `monotonic/solution.py`, `verdict.py`.
 
 ---
@@ -80,7 +80,7 @@ monotone/non-monotone seam:
   │   _phase2_layers BFS the commitment-set lattice by size  │
   │      apriori.generate_layer  (prefix-join + nogood prune) │
   │      try_commitment_set      fork+write+saturate+detect   │
-  │      ├─ dead  → emit no-good, back-prop (not h)           │
+  │      ├─ dead  → emit no-good (prunes supersets)           │
   │      └─ alive → record solution node iff complete∧consistent
   │   verdict_of(k deduped solution nodes by state_hash)      │
   └─────────────────────────────────────────────────────────┘
@@ -107,10 +107,11 @@ singleton, promote it to a root fact and re-saturate — unit propagation).
 by set size: layer 1 = singleton hypotheses, layer k = Apriori prefix-joins
 of layer k-1 (`apriori.generate_layer`), pruned by learned no-goods. Each
 candidate goes through `try_commitment_set`: `fork()` the root, write the
-hypotheses, saturate, detect. A **dead** branch emits a no-good clause and
-(if the death is *unconditional*) back-propagates `(not h)`; an **alive**
-branch that is `complete ∧ consistent` (`solution.is_solution_node`) is
-recorded as a solution node, deduped by `state_hash`. The verdict is read off
+hypotheses, saturate, detect. A **dead** branch emits a no-good clause (whose
+supersets Apriori then prunes — downward closure); an **alive** branch that is
+`complete ∧ consistent` (`solution.is_solution_node`) is recorded as a solution
+node, deduped by `state_hash`. An alive branch also merges its *unconditional*
+consequences (`commitment._is_unconditional`) into the root. The verdict is read off
 the deduped count k (`verdict_of`).
 
 ---
@@ -153,9 +154,9 @@ and the fast/optimal algorithm known for it.
   source frontier of a clash. (`provenance`, `store.unsat_core`.)
 - **O7 — Hypothesis enumeration over a subset lattice.** Generate undecided
   candidates and the size-k commitment sets. (`hypgen`, `apriori`.)
-- **O8 — Conflict-driven pruning.** Learn no-goods, back-propagate forced
-  negatives, prune by one-step lookahead. (`nogoods`, `back_prop`,
-  `lookahead`.)
+- **O8 — Conflict-driven pruning.** Learn no-goods (Apriori downward-closure
+  prune), cache one-step lookahead kills as `(not h)`, prune by that lookahead.
+  (`nogoods`, `apriori`, `lookahead`, `hypgen`.)
 - **O9 — Model canonicalisation / dedup.** Collapse equivalent models.
   (`canon.state_hash`.)
 
@@ -335,12 +336,13 @@ activity heuristic, restarts, and clause-DB minimisation. CSP adds
 
 **ein-bot today.** A creditable CDCL-*flavoured* set: `nogoods.py` learns
 subsumption-**minimal** conflict clauses and prunes by the subset test
-(O7's Apriori filter); `back_prop.py` turns an **unconditional death** into a
-learned unit `(not h)` written to the root (≈ learning a unit clause + unit
-propagation); `lookahead.py` is a **one-step (singleton-consistency /
-forward-checking) lookahead** that kills candidates that would die in one
-firing, before paying for a fork+saturate; the **forced-positive cascade** is
-unit propagation. **Gap:** no backjumping (plain BFS), no VSIDS-style
+(O7's Apriori filter); `lookahead.py` is a **one-step (singleton-consistency /
+forward-checking) lookahead** that kills candidates which would die in one
+firing before paying for a fork+saturate, caching each kill as a learned unit
+`(not h)` (`hypgen._write_negated`, gated by `enable_lookahead_kill_cache` —
+≈ a unit clause + unit propagation); the **forced-positive cascade** —
+merging an alive commitment's unconditional consequences
+(`commitment._is_unconditional`) into the root — is its positive dual. **Gap:** no backjumping (plain BFS), no VSIDS-style
 activity ordering (there is a `score_hypothesis` hook, S1.5a.7, mostly a
 stub), no watched-literals. These are exactly the pieces a DPLL/CDCL
 re-architecture (O7) would bring.

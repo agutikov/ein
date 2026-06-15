@@ -244,7 +244,8 @@ property tag exactly like `transitive` / `functional`. Symmetry lives
 **no search path**. S1.7.24 deleted the three search-layer sites that
 used to hardcode symmetric-awareness: generation's both-orderings emit
 (`hypgen._fill_slot`), the on-death mirror (`back_prop`'s
-`promote_symmetric` + the monotonic writeback), and the open-set
+`promote_symmetric` + the monotonic writeback; `back_prop` itself later
+removed entirely, S1.9.E6a), and the open-set
 canonicalisation (`solution.open_hypotheses`). Correct model counting
 (`k`) is now recovered *generically* — the two orientations of an
 undecided pair saturate (via the user's rule) to the same KB and
@@ -279,8 +280,8 @@ The `(false)` fact's `args` are empty by convention — multiple
 firings within a single fork dedupe (`Fact` identity is
 `(relation, args)`), so only the first firing's provenance is
 preserved. That's enough for "is this branch dead?" and for
-back-prop (S1.5.7) to identify the responsible hypothesis from
-the first firing's premise chain. Promote to `(false <witness>)`
+the unconditional-death analysis (`commitment._is_unconditional`, S1.5.7) to
+identify the responsible hypothesis from the first firing's premise chain. Promote to `(false <witness>)`
 with per-firing args if a future puzzle needs all parallel
 contradictions individually addressable.
 

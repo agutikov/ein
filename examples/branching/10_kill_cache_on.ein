@@ -1,0 +1,94 @@
+;;; P1.5 demo 10/11 — the lookahead-kill cache (`enable-lookahead-kill-cache`).
+;;;
+;;; An on/off pair: 10_kill_cache_on.ein and 11_kill_cache_off.ein are
+;;; byte-identical except the single `(config …)` line below — diff them.
+;;; Sibling of demos 06/07, which toggle the lookahead itself; THIS pair
+;;; toggles the *cache* of the lookahead's kills.
+;;;
+;;; Puzzle: 4 attributes x 2 instances over one `co-located` relation
+;;; (symmetric + transitive). Three anchors pin everything to the Red
+;;; house — Red=Tea, Red=Cat, Red=Pipe — so by per-attribute exclusivity
+;;; the other house takes Milk, Dog, Cigar, and the Milk drinker owns the
+;;; Dog. The model is unique, so the verdict is Solution (run with
+;;; `--exhaustive` to prove uniqueness, k=1).
+;;;
+;;; The lookahead (demo 06) is a hypgen filter: before forking a candidate
+;;; `h` it runs ONE rule step against the saturated KB, and if that already
+;;; contradicts it drops `h` without forking. The lattice re-generates the
+;;; open candidates on every pass — the forced-positive cascade and every
+;;; fork's completeness check — so the SAME doomed `h` is offered again and
+;;; again.
+;;;
+;;;   cache ON  (`… true`):  the first kill writes a `(not h)` REASONING
+;;;     fact; later passes skip `h` via the O(1) `_negated_facts` filter
+;;;     instead of re-simulating it.
+;;;   cache OFF (`… false`): nothing is written, so the one-step simulation
+;;;     re-runs for `h` on every pass.
+;;;
+;;; The cache changes NEITHER the answer NOR the search shape — identical
+;;; verdict and identical enterings either way. It only cuts repeated
+;;; lookahead work, visible as the `lookahead_sims` line in the bench's
+;;; stats block. Measured with
+;;; `python demo/bench_monotonic.py <file> --exhaustive`:
+;;;
+;;;   ON  (10):  Solution (k=1), enterings_total 41, lookahead_sims 126
+;;;   OFF (11):  Solution (k=1), enterings_total 41, lookahead_sims 654
+;;;
+;;; — same Solution, same 41 enterings; the cache turns 654 one-step
+;;; simulations into 126 (~5x fewer).
+
+(config :enable-lookahead-kill-cache true)
+
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} symmetric" :priority 100)
+
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} transitive" :priority 200)
+
+(rule sibling-exclusive (?siblings-via ?exclusive-under)
+  :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
+  :assert (not (?exclusive-under ?a ?b))
+  :why    "siblings under {?T} are not {?exclusive-under}" :priority 300)
+
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why    "{?R} not functional" :priority 250)
+
+;; Type-aware candidate generation: propose a `co-located` between an
+;; instance of attribute type ?A and one of type ?B. (Blind hypgen would
+;; emit type-wrong pairs that never resolve; the hrule keeps generation
+;; type-aware — the mini_zebra pattern, demo 05.)
+(hrule guess (?A ?B)
+  :match  (and (is-a ?a ?A) (is-a ?b ?B))
+  :assert (co-located ?a ?b)
+  :why    "guess: are {?a} and {?b} co-located?")
+
+(relation is-a       T T)
+(relation co-located T T)
+
+(symmetric         co-located)
+(transitive        co-located)
+(sibling-exclusive is-a co-located)
+(functional        is-a)
+
+(is-a Color T) (is-a Drink T) (is-a Pet T) (is-a Smoke T)
+(is-a Red  Color) (is-a Blue  Color)
+(is-a Tea  Drink) (is-a Milk  Drink)
+(is-a Cat  Pet)   (is-a Dog   Pet)
+(is-a Pipe Smoke) (is-a Cigar Smoke)
+
+(co-located Red Tea  :source "(1) the Red house drinks Tea")
+(co-located Red Cat  :source "(2) the Red house keeps the Cat")
+(co-located Red Pipe :source "(3) the Red house smokes a Pipe")
+
+(query
+  :mode solve
+  :goal (and (co-located ?x Milk) (co-located ?x ?p) (is-a ?p Pet))
+  :hrules (
+    guess (Color Drink) guess (Color Pet) guess (Color Smoke)
+    guess (Drink Pet)   guess (Drink Smoke) guess (Pet Smoke)))

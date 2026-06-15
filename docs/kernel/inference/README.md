@@ -395,6 +395,16 @@ or, with every elimination path off, full branch-and-refute (7 sets,
 
 ## Mid-sweep saturation + per-sibling apriori re-check (S1.5a.19)
 
+> **Superseded — describes the removed tree solver** (tree engine removed in
+> `8d77b02`; its last dead residue, `back_prop.py`, deleted in S1.9.E6a). The
+> `inference/solver.py` `_consume` loop, `try_branch`, `back_propagate`, and
+> `is_unconditional_death` named below no longer exist. The live engine is the
+> set-indexed **lattice** (see *Set-indexed search — monotonic engine* below),
+> which bakes the per-set saturate-from-root pattern in from the start; the
+> transitive unconditional walk now lives in `commitment._is_unconditional`.
+> Kept for the algorithmic intuition: each commitment closes its consequences
+> before the next decision.
+
 The d=0 rules above are necessary but not sufficient on their
 own — the solver's `_consume` loop must actually *use* the new
 negatives. Pre-S1.5a.19's loop tested every sibling in the
@@ -478,32 +488,40 @@ The tree-side `_consume` keeps the explicit mid-sweep until
 P1.5b reaches parity; then the per-sibling re-check moves to
 whichever engine inherits the responsibility.
 
-## Unconditional death — back-prop soundness (S1.5.7)
+## Unconditional facts — `_is_unconditional` soundness (S1.5.7 / S1.9.E6a)
 
-When a hypothesis branch dies, the engine asks whether the death is
-**unconditional** — whether the contradiction would recur from the
-parent KB's facts alone, with the branch's hypothesis `h` playing no
-part. An unconditional death licenses back-propagating `(not h)` into
-the parent ([S1.5.7](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md)),
-where it becomes an O(1) `_negated_facts` filter entry every sibling
-and descendant inherits.
+When a commitment's fork saturates, the engine asks of each newly-derived
+fact whether it is **unconditional** — derivable from the root KB's facts
+alone, with no committed hypothesis playing any part
+([S1.5.7](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md)).
+Unconditional facts are merged into the root
+(`try_commitment_set`'s `unconditional_facts`), where they monotonically
+shrink the alive set every later layer inherits.
 
-The test is **not** the shallow one — *"the unsat-core contains no
-`kind='hypothesis'` fact"*. That read is unsound: an unsat-core fact
-can be `kind='rule'` and still derive, through a chain of firings,
-from a hypothesis — its own provenance is `'rule'`, but its premises
-are not. [`back_prop.reaches_hypothesis`](../../../ein.py/src/ein_bot/inference/back_prop.py)
-walks `Provenance.premises_raw` transitively — resolving each id
-against the KB — until every chain grounds out at a `source`-kind /
-un-provenanced given, or any chain reaches a `hypothesis` / `rejected`
-terminal. `is_unconditional_death(kb, unsat_core)` is True iff no
-chain reaches a speculative terminal.
+The test is **not** the shallow one — *"the fact's own provenance isn't
+`kind='hypothesis'`"*. That read is unsound: a `kind='rule'` fact can still
+derive, through a chain of firings, from a committed hypothesis — its own
+provenance is `'rule'`, but its premises are not.
+[`commitment._is_unconditional`](../../../ein.py/src/ein_bot/inference/commitment.py)
+runs the shared
+[`provenance.reaches`](../../../ein.py/src/ein_bot/kb/provenance.py) DFS over
+`premises_raw` transitively — resolving each id against the KB — with a
+*commitment-set terminal*: a chain is **conditional** iff it reaches a
+`FactId` in the committed set, and **unconditional** iff every chain grounds
+out at root facts first.
 
-The asymmetry is load-bearing: a missed unconditional death merely
-forgoes a cache entry, but a *false* one writes `(not h)` into the
-parent irreversibly and wrongly excludes a valid hypothesis. The
-predicate therefore errs conditional — an empty or unresolvable
-unsat-core reads as conditional, never unconditional.
+The asymmetry is load-bearing: a missed unconditional fact merely forgoes a
+root merge, but a *false* one promotes a hypothesis-dependent fact to the root
+irreversibly. The predicate therefore errs conditional — an empty or
+unresolvable chain reads as conditional, never unconditional.
+
+The negative dual — caching a forced `(not h)` — is deliberately narrower:
+only the **one-step lookahead kill** (`hypgen._write_negated`, gated by
+`enable_lookahead_kill_cache`) writes a `(not h)` REASONING fact, and only when
+a single rule firing already refutes `h` before any fork. (The former
+full-saturation "unconditional death → `(not h)` into the parent" —
+`back_prop.is_unconditional_death` / `reaches_hypothesis` — was tree-solver
+machinery: dead after the tree solver's removal, deleted in S1.9.E6a.)
 
 ## Set-indexed search — monotonic engine (P1.5b S1.5b.0–.10)
 

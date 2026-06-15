@@ -221,18 +221,26 @@ def _dedup_declarations(forms: list[SForm]) -> list[SForm]:
     idempotent (S1.8a.f20): a module and its importer — or two modules — may both
     pull the same shared dependency (`forall`, a std.algebra rule), and the
     diamond must collapse rather than trip a duplicate-name error. A second
-    declaration of the same name with a *different* body is a genuine conflict →
-    error. Non-declaration forms (facts) pass through untouched."""
-    seen: dict[str, SForm] = {}
+    declaration of the same name *and kind* with a *different* body is a genuine
+    conflict → error. Non-declaration forms (facts) pass through untouched.
+
+    The dedup key is ``(kind, name)``, not name alone: a ``(rule undefeated …)``
+    and a ``(relation undefeated …)`` share a name but are DISTINCT declarations
+    (a rule that produces a same-named relation is idiomatic), so they must NOT
+    collide. Only a same-kind same-name pair with a different body clashes."""
+    seen: dict[tuple[str, str], SForm] = {}
     out: list[SForm] = []
     for f in forms:
         nm = _decl_name(f)
         if nm is None:
             out.append(f)
             continue
-        prev = seen.get(nm)
+        # `_decl_name` non-None ⇒ f is a declarator SForm with an Atom head, so
+        # `f.head.name` is the kind (rule / hrule / relation / macro).
+        key = (f.head.name, nm)
+        prev = seen.get(key)
         if prev is None:
-            seen[nm] = f
+            seen[key] = f
             out.append(f)
         elif prev != f:                       # IRNode equality ignores Loc
             raise KBLoadError(
