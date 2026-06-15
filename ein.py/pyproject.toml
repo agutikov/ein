@@ -33,6 +33,7 @@ dev = [
     "pytest-cov>=4",
     "pytest-xdist>=3",  # parallel test execution: run_tests.sh -j N (pytest -n)
     "ruff>=0.4",
+    "vulture>=2.11",    # dead-code finder; config in [tool.vulture] below
 ]
 
 [project.scripts]
@@ -100,3 +101,28 @@ ignore = []
 "src/ein_bot/ir/types.py" = ["RUF009"]
 # `∪` (set-union) is intentional mathematical notation in docstrings.
 "src/ein_bot/inference/nogoods.py" = ["RUF002"]
+
+# ---------------------------------------------------------------------------
+# vulture — dead-code finder.  Install: `pip install -e '.[dev]'`; run: `vulture`
+# ---------------------------------------------------------------------------
+#
+# Scans src + tests + demo together so a src symbol used only by a test or a
+# demo is NOT reported dead (vulture flags names with zero references across
+# every scanned path).  ruff already covers unused imports/locals (F401/F841);
+# vulture adds unused module-level functions / classes / methods / attributes
+# — the class that `committed_hypotheses` / `BOOKKEEPING_HEADS` fell into.
+#
+# The first run surfaces false positives from dynamic dispatch (the Lark
+# Transformer methods keyed on grammar terminals, the predicate registry,
+# SolverConfig fields populated by reflection, pytest fixtures).  Seed a
+# whitelist for them, then add it to `paths`:
+#
+#     vulture --make-whitelist src tests demo > whitelist_vulture.py
+#
+# For a no-install, zero-dependency first pass use utils/find_dead_defs.py.
+[tool.vulture]
+paths = ["src", "tests", "demo"]
+min_confidence = 60
+ignore_names = ["test_*", "Test*"]
+ignore_decorators = ["@pytest.fixture", "@fixture"]
+sort_by_size = true
