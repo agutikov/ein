@@ -385,8 +385,7 @@ class TestKBSnapshot:
         snap = kb.snapshot()
         n_facts_at_snapshot = len(snap.facts)
 
-        # Mutate source: add a new fact + a nogood + a
-        # committed-hypothesis marker.
+        # Mutate source: add a new fact + a nogood.
         new_fact = Fact(
             relation_name="r", args=("b", "a"),
             layer=Layer.REASONING,
@@ -395,14 +394,12 @@ class TestKBSnapshot:
         kb.add_fact(new_fact)
         kb._index_fact(kb.facts[-1])
         kb._nogoods.add(frozenset({("h", ("x",))}))
-        kb.committed_hypotheses.add(("h", ("x",)))
 
         # Snapshot's mutable state unchanged.
         assert len(snap.facts) == n_facts_at_snapshot
         assert len(kb.facts) == n_facts_at_snapshot + 1
-        # Snapshot's _nogoods + committed_hypotheses are decoupled.
+        # Snapshot's _nogoods is decoupled.
         assert snap._nogoods == set()
-        assert snap.committed_hypotheses == set()
         assert kb._nogoods != snap._nogoods  # source mutated; snap didn't
         # The reverse-indexes on the snapshot reflect only the
         # snapshot-time facts.

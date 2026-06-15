@@ -95,7 +95,8 @@ class Hrules:
         """Yield one candidate ``Fact`` per `hrule` match against `kb`.
 
         The fact is *not* written to the KB — it is a hypothesis,
-        handed back to ``hypgen`` for filtering and ``try_branch``.
+        handed back to ``hypgen`` for filtering and commitment-set
+        entering.
         """
         for plan in self._plans:
             template = plan.assert_template

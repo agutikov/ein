@@ -394,8 +394,8 @@ def _print_final_state(
     Mirrors :func:`bench_solve._print_solution_facts` shape but for the single
     monotonic root.kb. Three modes (the three ``--print-final-*`` flags):
 
-    - ``all`` — the REASONING layer with the bookkeeping heads (the state-hash
-      exclusion set) filtered out: the propositional residue of the solve.
+    - ``all`` — the full REASONING layer: the propositional residue of the
+      solve.
     - ``positive`` — ``all`` with the ``(not …)`` facts dropped too: the
       positive residue.
     - ``hfacts`` — only the positive facts whose relation is a query
@@ -404,7 +404,6 @@ def _print_final_state(
       ``*-loc``). Negatives have relation_name ``not`` ∉ targets, so they drop
       out for free.
     """
-    from ein_bot.inference.canon import BOOKKEEPING_HEADS
     from ein_bot.kb.entities import Layer
 
     if mode == "hfacts":
@@ -415,11 +414,12 @@ def _print_final_state(
         facts = [
             f for f in kb.facts
             if f.layer == Layer.REASONING
-            and f.relation_name not in BOOKKEEPING_HEADS
             and not (mode == "positive" and f.relation_name == "not")
         ]
-        dropped = "bookkeeping + (not …)" if mode == "positive" else "bookkeeping"
-        label = f"REASONING layer, {dropped} omitted"
+        label = (
+            "REASONING layer, (not …) omitted" if mode == "positive"
+            else "REASONING layer"
+        )
     facts.sort(key=lambda f: (
         f.relation_name,
         tuple(_fact_sexpr(a) for a in f.args),

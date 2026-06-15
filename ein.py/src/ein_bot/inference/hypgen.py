@@ -1,5 +1,5 @@
 """Hypothesis generation — the two-step "pick object, pick relation"
-enumerator that produces candidate Facts for the search tree.
+enumerator that produces candidate Facts for the lattice search.
 
 Step 1 — order *candidate objects* (every `object`-category node, by a
 name-free signal — S1.7.23) by descending fact-participation; ties
@@ -138,9 +138,9 @@ def generate_hypotheses_with_stats(
 ) -> tuple[list[Fact], HypGenStats]:
     """Materialised + counted: returns ``(facts, stats)`` tuple.
 
-    Used by ``bench_solve --hyp-stats`` and by the SearchTree's
-    root-metadata stash (T1.5.4.7.d). The list is the same content
-    :func:`generate_hypotheses` would yield, in the same order.
+    Used by ``demo/bench_monotonic.py`` and the guided-hypgen tests.
+    The list is the same content :func:`generate_hypotheses` would
+    yield, in the same order.
     """
     stats = HypGenStats()
     facts = list(_generate(kb, stats))

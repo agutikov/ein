@@ -1,7 +1,7 @@
 """One-step contradiction lookahead — S1.5.6 T1.5.6.2.
 
 A hypothesis-generation filter: before a candidate fact ``h`` is
-emitted (and later forked + saturated by ``try_branch``), ask the
+emitted (and later forked + saturated by the lattice search), ask the
 cheap question — *"does adding ``h`` to the already-saturated KB
 produce a contradiction in a single rule firing?"*. If yes, drop
 ``h``; it would only fork, saturate, and die.
@@ -11,10 +11,9 @@ complaint asked for: paying for a fork + full saturation just to
 learn a hypothesis dies in one rule step is wasteful.
 :meth:`Lookahead.dies_immediately` runs *one* rule step instead.
 
-Distinct from S1.5.7 back-prop: S1.5.7 is a *branching* feature —
-it caches deaths discovered while exploring the search tree;
-S1.5.6 is a *hypgen* feature — it filters candidates at generation
-time, before any branch exists.
+This is a *hypgen-time* filter: it prunes a candidate at generation
+time — before any fork or saturation — rather than discovering the
+death only after forking and saturating a branch.
 
 Mechanism
 ---------

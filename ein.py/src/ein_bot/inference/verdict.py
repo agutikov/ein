@@ -23,9 +23,6 @@ What survives:
   CONTRADICTIONS never satisfies).
 - :func:`query_value` — small Query accessor used by the engine
   (goal projection, the CLI answer path).
-
-The tree-side ``.tree`` / ``.unresolved`` verdict fields were dropped in
-that move; the lattice engines never populated them.
 """
 from __future__ import annotations
 

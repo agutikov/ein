@@ -145,14 +145,6 @@ class KnowledgeBase:
         # > SolverConfig().
         self.config: SolverConfig | None = None
 
-        # Tree-solver vintage (S1.5a.17): once the set of FactIds for
-        # hypotheses promoted to root-givens by the unconditional positive
-        # bubble. That bubble went with the tree solver (8d77b02), so this
-        # is no longer populated; kept as an empty set forks share by
-        # reference. Candidate filtering against root facts flows through
-        # `_fact_by_id`.
-        self.committed_hypotheses: set[tuple[str, tuple]] = set()
-
         # S1.5a.18 — Learned no-good clauses (path-condition CDCL).
         # Each clause is a frozenset of `(relation_name, args)`
         # FactIds; meaning: "any branch whose path condition is a
@@ -656,9 +648,6 @@ class KnowledgeBase:
         # T1.5.4.4 carry-over: `config` is an immutable reference; the
         # fork inherits it as-is.
         new.config = self.config
-        # S1.5a.17 — committed-hypotheses set is shared by reference
-        # (root-only mutation; forks read for filtering).
-        new.committed_hypotheses = self.committed_hypotheses
         # S1.5a.18 — no-good clause set: shared by reference for
         # cross-fork read access during pre-fork filtering.
         new._nogoods = self._nogoods
@@ -670,12 +659,11 @@ class KnowledgeBase:
         """Deep-ish archival copy. Used by :class:`SolutionRecord` so
         a satisfying-branch kb survives later mutations of root.
 
-        Differs from :meth:`fork` in two places:
+        Differs from :meth:`fork` in one place:
 
         - ``_nogoods`` is COPIED (fork shares by reference because
           live branches read concurrently; the snapshot is archival
           so we want isolation).
-        - ``committed_hypotheses`` is COPIED for the same reason.
 
         The reverse indexes are shallow-copied exactly as in
         :meth:`fork` (S1.7c.21): the source kb's indexes are already
@@ -712,7 +700,6 @@ class KnowledgeBase:
         # Deep-copy mutable state.
         new.facts = list(self.facts)
         new._nogoods = set(self._nogoods)
-        new.committed_hypotheses = set(self.committed_hypotheses)
         # S1.7c.21 — shallow-copy the in-place-maintained indexes (the same
         # contract `fork` uses) rather than a full `rebuild_indexes()` per
         # recorded solution. See `_copy_fact_indexes_into` for why the
