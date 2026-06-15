@@ -118,8 +118,9 @@ The R1-R4 rejected entries stay in the README catalog only.
 > inapplicable** (the cardinality layering already *is* the deepening). The
 > **space-shrinkers** (E11, E4, E5, E14, E15) are the genuine complete-search
 > levers — they cut the *number* of enterings = saturations, attacking the
-> O1+O2 bottleneck from the count side (E4 specifically avoids saturations that
-> `state_hash` only dedups *after* paying for them). See each stub's
+> O1+O2 bottleneck from the count side (E4 prunes value-symmetric branches that
+> today are not deduped at all — `state_hash` only collapses *path-duplicate*
+> models, not symmetric ones). See each stub's
 > "Lattice re-grounding" section.
 
 ### Engineering / UX
