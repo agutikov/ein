@@ -1,15 +1,15 @@
 """Tests for per-fact provenance + derivation DAG — S1.2.3."""
 from __future__ import annotations
 
-from ein_bot.ir import parse
-from ein_bot.kb import (
+from ein.ir import parse
+from ein.kb import (
     DerivationDAG,
     Fact,
     KnowledgeBase,
     Layer,
     Provenance,
 )
-from ein_bot.kb.provenance import detect_provenance_cycles, walk_premises
+from ein.kb.provenance import detect_provenance_cycles, walk_premises
 
 # ── Helpers ────────────────────────────────────────────────────────
 
@@ -87,7 +87,7 @@ class TestProvenanceConstruction:
         assert hash(a) == hash(b)
 
     def test_provenance_loc_excluded_from_eq(self):
-        from ein_bot.ir.types import Loc
+        from ein.ir.types import Loc
         a = Provenance.from_source(source="(2)", loc=Loc("f", 1, 1))
         b = Provenance.from_source(source="(2)", loc=Loc("g", 99, 99))
         assert a == b

@@ -29,9 +29,9 @@ import time
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 _STDLIB = "(import std.algebra :symbols (symmetric))\n(symmetric knows)\n"
 _NATIVE = "(__symmetric__ knows)\n"

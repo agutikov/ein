@@ -1,7 +1,7 @@
 """P1.7a acceptance — the corrected M1 gate.
 
 The three idea-03 task classes as **three readings of one sound search**
-(``ein_bot.inference.monotonic.solve``), exercised on the canonical
+(``ein.inference.monotonic.solve``), exercised on the canonical
 ``examples/`` fixtures (no inline puzzles — the fixtures are the spec):
 
 - :file:`examples/zebra2.ein`              → **Solution**, unique (k=1).
@@ -28,11 +28,11 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from ein_bot.inference.canon import state_hash
-from ein_bot.inference.monotonic import ProgressDumper, solve
-from ein_bot.inference.verdict import Ambiguity, Contradiction, Solution
-from ein_bot.ir import parse
-from ein_bot.kb import KnowledgeBase
+from ein.inference.canon import state_hash
+from ein.inference.monotonic import ProgressDumper, solve
+from ein.inference.verdict import Ambiguity, Contradiction, Solution
+from ein.ir import parse
+from ein.kb import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[2]
 EXAMPLES = REPO / "examples"
@@ -171,9 +171,9 @@ def test_sat_never_contradiction_unsat_never_solution():
 
 
 def test_cli_solve_emits_answer_in_words(capsys):
-    """`ein-bot solve --mode=solve zebra2.ein` exits 0 and prints the
+    """`ein solve --mode=solve zebra2.ein` exits 0 and prints the
     canonical answer in English (who, projected from the model)."""
-    from ein_bot.cli import main
+    from ein.cli import main
 
     rc = main(["solve", "--mode=solve", str(ZEBRA2)])
     assert rc == 0
@@ -186,7 +186,7 @@ def test_cli_solve_emits_answer_in_words(capsys):
 def test_cli_solve_contradiction_reports_no_solution(capsys):
     """`--mode=solve` on the unsat fixture reports no solution + names the
     injected fact in the core (exit 0 — the tool classified it correctly)."""
-    from ein_bot.cli import main
+    from ein.cli import main
 
     rc = main(["solve", "--mode=solve", str(BAD)])
     assert rc == 0

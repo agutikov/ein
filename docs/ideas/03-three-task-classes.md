@@ -58,7 +58,7 @@ Not just "UNSAT" — *which constraints contradict, and why?*
 Falls out by composition: **explain a derived fact** = find the
 sub-DAG of edges from the source facts through to a target fact.
 The user did not enumerate it but the conversation around hypothesis
-generation / testing in the `ein-bot` README implies it.
+generation / testing in the `Ein` README implies it.
 
 ## Open questions
 

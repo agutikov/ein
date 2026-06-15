@@ -37,7 +37,7 @@ system can *prove*.
 ### Rung 3 — harness (procedural) self-modification
 
 The system mutates **its own Python source code** under
-`src/ein_bot/`. The most distant rung; only meaningful with F2 + F5
+`src/ein/`. The most distant rung; only meaningful with F2 + F5
 already in place to confine the feedback loop to a known formal
 substrate.
 
@@ -85,7 +85,7 @@ order in which the substrate matures: M2 builds the GBNF infra (F2
 substrate), P1.3 builds the rule engine (F5 substrate), and the
 existing Python package (already shipped) is the F6 substrate.
 
-## What ein-bot M1 contributes
+## What Ein M1 contributes
 
 M1 doesn't implement *any* self-modification. It builds the
 *non-mutable* substrate the followups need:

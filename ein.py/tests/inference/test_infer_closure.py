@@ -13,10 +13,10 @@ from __future__ import annotations
 
 import pytest
 
-from ein_bot.inference.hypgen import _is_closed
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.hypgen import _is_closed
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 _IMPORT = "(import std.closure :symbols (infer-closure))\n"
 
@@ -57,7 +57,7 @@ def test_infer_closure_is_parameterless():
 def test_closed_relation_skipped_by_hypgen():
     """End-to-end hand-off: once `infer-closure` derives `(__closed__ r)`, hypgen's
     pre-candidate skip fires for r (no hypotheses generated for it)."""
-    from ein_bot.inference import hypgen
+    from ein.inference import hypgen
 
     kb = KnowledgeBase.from_ir(parse(
         _IMPORT
@@ -80,7 +80,7 @@ def test_local_redefinition_conflicts(bad):
     """Importing `infer-closure` and also defining it locally with a DIFFERENT
     body is a conflict (A1 D3, now via the S1.8a.f20 dedup: identical re-imports
     collapse, a differing same-name redefinition errors)."""
-    from ein_bot.kb.from_ir import KBLoadError
+    from ein.kb.from_ir import KBLoadError
     with pytest.raises(KBLoadError, match=r"conflicting definitions of 'infer-closure'"):
         KnowledgeBase.from_ir(parse(bad))
 
@@ -88,8 +88,8 @@ def test_local_redefinition_conflicts(bad):
 def test_identical_redefinition_is_idempotent():
     """The dedup's other half (S1.8a.f20): importing `infer-closure` and
     re-declaring it with the same body is harmless — diamonds collapse."""
-    from ein_bot.ir import dump_canonical
-    from ein_bot.kb.imports import _stdlib_root
+    from ein.ir import dump_canonical
+    from ein.kb.imports import _stdlib_root
     forms = parse((_stdlib_root() / "closure.ein").read_text(encoding="utf-8"))
     infer = next(f for f in forms
                  if f.head.name == "rule" and f.args[0].name == "infer-closure")

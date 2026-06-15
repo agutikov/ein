@@ -14,9 +14,9 @@ positive and negative; the generative ones are pinned to terminate.
 """
 from __future__ import annotations
 
-from ein_bot.inference.saturator import Saturator, SaturatorStepLimitError
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator, SaturatorStepLimitError
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 
 def _firings(src: str, max_steps: int = 4000):

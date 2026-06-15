@@ -25,7 +25,7 @@ ZEBRA2 = REPO / "examples" / "zebra2.ein"
 
 def _run_bench(*args: str) -> subprocess.CompletedProcess:
     # sys.executable is whatever interpreter pytest runs under (PyPy via
-    # run_tests.sh); ein_bot is importable there (installed in the venv).
+    # run_tests.sh); ein is importable there (installed in the venv).
     return subprocess.run(
         [sys.executable, str(BENCH), str(ZEBRA2), *args],
         capture_output=True, text=True, timeout=180,

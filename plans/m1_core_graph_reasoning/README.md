@@ -2,7 +2,7 @@
 
 **Estimate:** ~3 months (~12 weeks).
 **Status:** active — MVP.
-**Depends on:** the refactored package skeleton already in `src/ein_bot/`
+**Depends on:** the refactored package skeleton already in `src/ein/`
 (commit `d37d039`); nothing else.
 **Blocks:** [M2](../m2_nl_to_ir/README.md) (NL frontend needs an IR
 target); [M3](../m3_smt_integration/README.md) (SMT slice needs IR +
@@ -66,7 +66,7 @@ Concretely, M1 ships:
 | P1.8  | Ein-language modules + standard library (imports / stdlib rules / relation-algebra / macros; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; perf split out to P1.8a 2026-06-02) |
 | P1.8a | Performance — **CLOSED 2026-06-15.** Levers measured: COW + negative-volume parked (not-a-lever); participation index + incremental saturation shipped; the S1.8a.f20 stdlib followup done | done | [`p1.8a_performance/`](p1.8a_performance/) (split from P1.8 2026-06-02; closed 2026-06-15) |
 | P1.9  | Hypothesis-loop follow-ups (E1-E23 catalog; placeholder) | TBD | [`p1.9_hypothesis_loop_followups/`](p1.9_hypothesis_loop_followups/) |
-| P1.11 | Package + CLI restructure (`ein-bot`/`ein_bot` → `ein`, merge `ein.py/demo/` into the package, split `cli.py` into a folder; placeholder) | TBD | [`p1.11_package_restructure/`](p1.11_package_restructure/) (created 2026-05-24 from TODO.md) |
+| P1.11 | Package + CLI restructure (`Ein`/`ein` → `ein`, merge `ein.py/demo/` into the package, split `cli.py` into a folder; placeholder) | TBD | [`p1.11_package_restructure/`](p1.11_package_restructure/) (created 2026-05-24 from TODO.md) |
 | P1.20 | Kernel documentation (IR 4-level split / user-vs-dev / architecture / `docs/index` → `docs/lib` rename / ein-model atoms-vs-objects refinement; placeholder) | TBD | [`p1.20_kernel_docs/`](p1.20_kernel_docs/) (created 2026-05-24 from TODO.md; **renumbered P1.10 → P1.20 so docs sort last**, leaving P1.12–P1.19 for future phases) |
 
 Phases run roughly sequentially. P1.6 can start as soon as P1.2 is
@@ -104,7 +104,7 @@ refinements, CDCL-inspired learning, search heuristics, CSP-style
 pre-processing, engineering/UX), plus the 2026-05-24 mode-taxonomy
 + state-hash-with-hyps additions (E21-E23).
 P1.11 parks the package + CLI rename surfaced 2026-05-24
-(`ein-bot` → `ein`, demo merge, CLI folder split). P1.20 — the
+(`Ein` → `ein`, demo merge, CLI folder split). P1.20 — the
 last phase, **renumbered from P1.10 so docs ship after all
 implementation** — parks the kernel-doc reorg also surfaced
 2026-05-24 (IR 4-level split, user-vs-dev separation, architecture
@@ -119,7 +119,7 @@ M1 ships when **all** of the following pass:
 1. **IR**: the Zebra puzzle is expressed in a single `.ein` file that
    the parser accepts; round-trip through dump produces byte-identical
    output modulo whitespace and set ordering.
-2. **Core**: `ein-bot solve zebra.ein --trace=zebra.md` exits 0,
+2. **Core**: `ein solve zebra.ein --trace=zebra.md` exits 0,
    writes `zebra.md` + a `zebra/` folder of DOT snapshots, and emits
    the unique solution (Zebra → Japanese; Water → Norwegian).
 3. **Trace**: the markdown trace matches the
@@ -127,7 +127,7 @@ M1 ships when **all** of the following pass:
    to within a checklist of *named rule firings* — every move in the
    human walkthrough has a corresponding rule firing in the engine
    trace (matching is structural, not literal).
-4. **Three task classes**: `ein-bot query zebra.ein --mode=solve|gaps|contradictions`
+4. **Three task classes**: `ein query zebra.ein --mode=solve|gaps|contradictions`
    runs all three modes. `gaps` on the puzzle minus condition (15)
    returns at least the colour of house 1; `contradictions` on the
    puzzle plus `(fact (= (color House-1) Green))` returns a minimal

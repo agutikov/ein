@@ -16,7 +16,7 @@ and adds the implicit *fourth* class the user named (explain).
 
 ## Current state after M1 + M3
 
-- `ein-bot solve --mode=solve|gaps|contradictions FILE`
+- `ein solve --mode=solve|gaps|contradictions FILE`
   — works, but verbose.
 - Engine returns `Solution | Ambiguity | Contradiction` — already
   three-shaped.
@@ -26,12 +26,12 @@ and adds the implicit *fourth* class the user named (explain).
 ## What F3 adds
 
 - **First-class CLI verbs**:
-  `ein-bot solve …` / `ein-bot gaps …` / `ein-bot why-not …`
+  `ein solve …` / `ein gaps …` / `ein why-not …`
   (this last one is the "what's wrong with my puzzle" verb from
   [idea 03 §Open questions point 4](../../docs/ideas/03-three-task-classes.md#open-questions)).
 - **Explain** (the implicit fourth class —
   [idea 03 §The implicit fourth class](../../docs/ideas/03-three-task-classes.md#the-implicit-fourth-class)) —
-  `ein-bot explain --fact "..."` shows the derivation DAG ending
+  `ein explain --fact "..."` shows the derivation DAG ending
   at a target fact.
 - **Specialised trace UX per mode**:
   - `gaps` highlights divergent values per branch;

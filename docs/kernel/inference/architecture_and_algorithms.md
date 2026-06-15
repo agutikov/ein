@@ -9,8 +9,8 @@
 > the [M1a Rust port](../../../plans/m1a_rust/)) and to make the engine's
 > design choices legible against the state of the art.
 >
-> Source of truth for the code: `ein.py/src/ein_bot/inference/` (engine),
-> `ein.py/src/ein_bot/kb/` (data model). For the *planned* how-to chapters
+> Source of truth for the code: `ein.py/src/ein/inference/` (engine),
+> `ein.py/src/ein/kb/` (data model). For the *planned* how-to chapters
 > (`01_matcher.md` … `05_trace.md`) see [`README.md`](README.md); this file
 > is the architecture + algorithms overview those chapters sit under.
 
@@ -18,7 +18,7 @@
 
 ## 1. What the engine solves, and the three paradigms it fuses
 
-ein-bot answers **finite-domain constraint-satisfaction** questions over a
+Ein answers **finite-domain constraint-satisfaction** questions over a
 [typed hypergraph](../ir/01-ein-graph/01_kb.md) of facts and
 [rules](../ir/01-ein-graph/02_rules.md) — the Zebra puzzle and its kin. Per
 [idea 03](../../../docs/ideas/03-three-task-classes.md) it answers three
@@ -31,7 +31,7 @@ shapes of one question, all read off a single search (P1.7a):
 The engine is the confluence of **three classical paradigms**, and almost
 every component below is recognisable as a piece of one of them:
 
-| paradigm | what ein-bot borrows | classic systems |
+| paradigm | what Ein borrows | classic systems |
 |---|---|---|
 | **Deductive database** (Datalog) | bottom-up forward chaining to a least fixpoint; stratified negation | Soufflé, LogicBlox, DDlog, Datomic |
 | **CSP / SAT solver** | branch on undecided choices, propagate, detect clashes, learn no-goods | DPLL/CDCL (MiniSat, Chaff), CSP (Gecode), ASP (clingo) |
@@ -178,7 +178,7 @@ and the fast/optimal algorithm known for it.
 
 The single most useful reframing: **the deductive layer is a Datalog
 engine, and the search layer is a CDCL/CSP solver with an ATMS underneath.**
-Two idiosyncrasies stand out against that backdrop, both in O7: ein-bot
+Two idiosyncrasies stand out against that backdrop, both in O7: Ein
 branches on **sets of commitments enumerated by cardinality (Apriori)**
 rather than one decision variable at a time (DPLL), and it keeps **explicit
 assumption environments + provenance** (ATMS) rather than a single trail.
@@ -188,7 +188,7 @@ DPLL/CDCL enjoys.
 
 ---
 
-## 6. Fast / optimal known algorithms, and where ein-bot sits
+## 6. Fast / optimal known algorithms, and where Ein sits
 
 ### O1 — Multi-way join (the matcher)
 
@@ -202,7 +202,7 @@ and **beta-memories** (materialised partial joins, reused across firings);
 **TREAT** (Miranker 1987) keeps alpha-memories but *recomputes* the joins
 (cheaper memory, more recompute); **LEAPS** is lazy.
 
-**ein-bot today.** Left-deep binary joins via recursive `_run_steps` over
+**Ein today.** Left-deep binary joins via recursive `_run_steps` over
 `Scan`/`Join`. The **participation index** `_facts_by_rel_slot_val`
 (S1.8.B-idx) is exactly a **RETE alpha-memory / join index** — it narrows a
 bound Scan/Join to candidates by `(relation, slot, value)`. The S1.8.B2v
@@ -224,7 +224,7 @@ goal-directed bottom-up evaluation (sideways information passing). **DRed**
 incremental + iterative dataflows. Production engines (Soufflé) compile to
 semi-naive loops over specialised index structures (Brie, B-tree).
 
-**ein-bot today.** A **priority-banded** saturator (rules fire in priority
+**Ein today.** A **priority-banded** saturator (rules fire in priority
 order — a scheduling refinement over pure rounds). It was *naive* (re-match
 everything each pass); **S1.8.B2v D2** made the within-run re-enqueue
 delta-driven (semi-naive at the *which-plans* granularity), and **D5** made
@@ -244,7 +244,7 @@ fresh KB instead).
 **Answer-Set Programming** (clingo/clasp, DLV) — the production answer to
 non-monotone rules.
 
-**ein-bot today.** `(absent P)` compiles to an `AbsentGuard`, re-checked at
+**Ein today.** `(absent P)` compiles to an `AbsentGuard`, re-checked at
 **fire time** (`match.absents_still_pass`) to close the enqueue-vs-fire race
 (S1.5a.1); `forall` desugars to a nested absent. Within one saturation the
 KB is append-only, so a once-true absent can only *flip to false* (more
@@ -265,7 +265,7 @@ function application and is the heart of SMT equality reasoning. **E-graphs +
 equality saturation** (egg, Willsey et al. 2021) maintain *all* equivalent
 forms compactly and are the modern engine for rewrite-driven optimisation.
 
-**ein-bot today.** A **union-find stub** (`EqClasses`) wired into the API so
+**Ein today.** A **union-find stub** (`EqClasses`) wired into the API so
 `firing` can call `kb.classes.union` — but with **no propagation** yet (the
 glossary reserves *e-graph promotion* for F4). Equality in the puzzles is
 currently carried as ordinary relation facts, not congruence. **Gap:** the
@@ -278,7 +278,7 @@ union-find → congruence closure → e-graph, in that order of ambition.
 **2-watched-literals** make it cost-free until a watched literal flips. In
 CSP it is constraint-violation checking under propagation.
 
-**ein-bot today.** An explicit scan for same-layer `(X, ¬X)` pairs (using
+**Ein today.** An explicit scan for same-layer `(X, ¬X)` pairs (using
 the O(1) `_negated_facts` index) plus the rule-asserted `(false)` sentinel
 (`contradiction.py`). Measured ~0 s — not a bottleneck, so the watched-literal
 machinery would be premature. **Adequate as-is.**
@@ -291,7 +291,7 @@ record per-belief justifications and propagate (in)validity. Database
 for why/how-provenance. In SAT/SMT, **resolution proofs** (DRUP/DRAT) certify
 UNSAT and **MUS** extraction finds a minimal unsatisfiable subset.
 
-**ein-bot today.** Every derived `Fact` carries a `Provenance`
+**Ein today.** Every derived `Fact` carries a `Provenance`
 (`source`/`rule`/`hypothesis`) with `premises_raw`; `DerivationDAG` walks it,
 and `store.unsat_core` returns the **source frontier** of a clash (the given
 facts that jointly force it) via a `reaches` DFS. This is a faithful
@@ -311,7 +311,7 @@ candidates with downward-closed pruning **is Apriori** (Agrawal–Srikant 1994,
 frequent-itemset mining) — the prefix-join + "every subset of a frequent set
 is frequent" pruning.
 
-**ein-bot today.** This is the most non-standard part, and named honestly:
+**Ein today.** This is the most non-standard part, and named honestly:
 `apriori.py` does **literal Apriori** — `apriori_prefix_join` builds size-k
 commitment sets from size-(k-1) ones sharing a (k-1)-prefix, and
 `filter_candidate` prunes any candidate that is a superset of a learned
@@ -320,7 +320,7 @@ no-good (the downward-closure principle: a superset of a dead set is dead).
 candidates, ordered by fact-participation). **Gap / trade-off:** branching by
 *cardinality* over sets is worst-case `O(2^|alive|)` and forgoes per-variable
 CDCL's strength (VSIDS activity, 1UIP learning, **non-chronological
-backjumping** — ein-bot does *plain BFS backtracking*, no backjump). The
+backjumping** — Ein does *plain BFS backtracking*, no backjump). The
 payoff is that gaps (k>1 models) and contradictions (union of dead cores)
 read off the same lattice generically. A DPLL/CDCL re-architecture is the big
 lever if search ever dominates (it currently does not — saturation does).
@@ -334,7 +334,7 @@ activity heuristic, restarts, and clause-DB minimisation. CSP adds
 (Ginsberg), **MAC** (maintain arc consistency), **forward checking**, and
 **singleton arc consistency** (a one-variable lookahead).
 
-**ein-bot today.** A creditable CDCL-*flavoured* set: `nogoods.py` learns
+**Ein today.** A creditable CDCL-*flavoured* set: `nogoods.py` learns
 subsumption-**minimal** conflict clauses and prunes by the subset test
 (O7's Apriori filter); `lookahead.py` is a **one-step (singleton-consistency /
 forward-checking) lookahead** that kills candidates which would die in one
@@ -354,7 +354,7 @@ re-architecture (O7) would bring.
 exploring symmetric models; **graph canonicalisation** (nauty/bliss) for full
 structural symmetry.
 
-**ein-bot today.** `canon.state_hash` hashes the propositional fact set
+**Ein today.** `canon.state_hash` hashes the propositional fact set
 order-insensitively (excluding bookkeeping heads), so distinct branches that
 reach the same model collapse to one solution node — a lightweight
 canonicalisation that the S1.7.24 symmetric-removal made fully generic (no

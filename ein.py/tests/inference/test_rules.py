@@ -6,12 +6,12 @@ does NOT fire — missing activator, wrong types, or guard prunes).
 """
 from __future__ import annotations
 
-from ein_bot.inference.compile import compile_rule
-from ein_bot.inference.engine import Engine
-from ein_bot.ir import parse
-from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.provenance import Provenance
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.compile import compile_rule
+from ein.inference.engine import Engine
+from ein.ir import parse
+from ein.kb.entities import Fact, Layer
+from ein.kb.provenance import Provenance
+from ein.kb.store import KnowledgeBase
 
 
 def _engine(text: str) -> Engine:

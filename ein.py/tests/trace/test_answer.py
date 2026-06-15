@@ -8,10 +8,10 @@ path has coverage outside the slow ``acceptance/`` run.
 """
 from __future__ import annotations
 
-from ein_bot.inference.verdict import Solution
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
-from ein_bot.trace import render_answer
+from ein.inference.verdict import Solution
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
+from ein.trace import render_answer
 
 
 def _solution(text: str) -> Solution:

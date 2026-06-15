@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Find candidate dead definitions in the ein_bot package — a zero-dependency
+Find candidate dead definitions in the ein package — a zero-dependency
 companion to vulture (which needs installing; see [tool.vulture] in
 ein.py/pyproject.toml).
 
@@ -20,7 +20,7 @@ and `BOOKKEEPING_HEADS` were confirmed dead).
 Usage:
     utils/find_dead_defs.py                 # report dead top-level defs in ein.py/src
     utils/find_dead_defs.py --all-kinds     # also report unused methods (noisier)
-    utils/find_dead_defs.py --def-roots ein.py/src/ein_bot/inference
+    utils/find_dead_defs.py --def-roots ein.py/src/ein/inference
     utils/find_dead_defs.py -h
 """
 from __future__ import annotations

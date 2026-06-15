@@ -6,7 +6,7 @@ the owning :class:`KnowledgeBase` via a `_kb` back-pointer for
 cross-reference lookups.
 
 **Source of truth:**
-[`src/ein_bot/kb/entities.py`](../../../../src/ein_bot/kb/entities.py).
+[`src/ein/kb/entities.py`](../../../../src/ein/kb/entities.py).
 This document explains the mapping graph-node ↔ Python class; the
 code is authoritative for field shapes.
 

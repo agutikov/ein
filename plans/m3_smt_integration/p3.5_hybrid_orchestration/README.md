@@ -20,7 +20,7 @@ proof; solvers contribute, they don't replace.
 
 ## Acceptance
 
-- `ein-bot solve --backend=hybrid` is the M3 default.
+- `ein solve --backend=hybrid` is the M3 default.
 - Trace shows graph-engine steps interleaved with SMT slice
   invocations.
 - For Zebra, the graph engine handles everything; the trace shows

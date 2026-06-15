@@ -485,7 +485,7 @@ the *schema of question lists per word-class / per-role* is the
 parked design problem.
 
 Why F4 not M2: the *catalogue* of questions to ask, and *how
-ein-bot's IR vocabulary maps to natural-language constructions*, is
+Ein's IR vocabulary maps to natural-language constructions*, is
 prior to picking an LLM or a GBNF — and outlives any specific
 M2 implementation choice. It is the *rosetta stone* between the
 two surfaces.

@@ -29,7 +29,7 @@ Milestone-scoped. Cross-milestone questions live in
 | Q31 | `:why` template substitution language — `{?var}` or Python `{var}`?    | P1.3 S1.3.1 (resolved 2026-05-20) — `{?var}` (zebra.ein convention) |
 | Q32 | `:where` semantics — sugar, top-level, or drop entirely?               | P1.3 S1.3.1 (resolved 2026-05-20) — drop; ship predicate registry |
 | Q33 | Predicate primitives — minimal set for M1                              | P1.3 S1.3.1 (resolved 2026-05-20) — `eq` + `neq` only; rest → followups |
-| Q39 | Module path — `src/ein_bot/inference/` vs `src/ein_bot/rules/inference/`? | P1.3 (resolved 2026-05-20) — flat `inference/` |
+| Q39 | Module path — `src/ein/inference/` vs `src/ein/rules/inference/`? | P1.3 (resolved 2026-05-20) — flat `inference/` |
 | Q40 | `(hypothesis ?h)` / `(contradiction-under ?h)` rule premises — map to shipped `Provenance`? | P1.3 S1.3.2 + P1.5 (resolved 2026-05-20) — Option A: synthetic facts + `Fact.args` widening |
 | Q41 | Rule priority — scale and placement                                    | P1.3 S1.3.3 (resolved 2026-05-20) — 100/200/300/900 banded, per-rule, lower-first |
 | Q42 | P1.3 scope — path (a) narrow vs (b) all 10 with deferred                | P1.3 (resolved 2026-05-20 by Q33 cascade) — path (a), 6 rules |
@@ -640,16 +640,16 @@ Full context:
 ## Q39 — Module path
 
 Surfaced 2026-05-19 during the P1.3 review. The kernel docs at
-`docs/kernel/inference/` point at `src/ein_bot/inference/`; the
-original P1.3 plan used `src/ein_bot/rules/`.
+`docs/kernel/inference/` point at `src/ein/inference/`; the
+original P1.3 plan used `src/ein/rules/`.
 
-**Resolved 2026-05-20** — **flat `src/ein_bot/inference/`**
+**Resolved 2026-05-20** — **flat `src/ein/inference/`**
 (option A). All M1 engine artifacts (matcher, firing, engine
 driver, predicate registry, compiler) sit at this one level. Tests
 at `tests/inference/`.
 
 KB and its `kb.rules` (rule *definitions*) stay in
-`src/ein_bot/kb/` — rule definitions are *data*; matching /
+`src/ein/kb/` — rule definitions are *data*; matching /
 saturation is *engine*.
 
 Promotion to nested `rules/inference/` (option B) when a second

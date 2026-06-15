@@ -22,12 +22,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ein_bot.inference.closed import emit_closed
-from ein_bot.inference.saturator import Saturator
-from ein_bot.inference.solution import complete, consistent, open_hypotheses
-from ein_bot.ir import parse
-from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.closed import emit_closed
+from ein.inference.saturator import Saturator
+from ein.inference.solution import complete, consistent, open_hypotheses
+from ein.ir import parse
+from ein.kb.entities import Fact, Layer
+from ein.kb.store import KnowledgeBase
 
 _DEFAULT = (
     Path(__file__).resolve().parents[2]

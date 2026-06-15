@@ -167,7 +167,7 @@ on request via a `--levi` flag (or `EIN_RENDER_LEVI=1` env).
 `ir/to_dot.py` renders only Levi-bipartite; the `--levi` flag /
 `EIN_RENDER_LEVI` env are plan-only. Compact mode is **S1.6.0**,
 building on the entity-fused unified view already in
-[`kb/render.py`](../../../ein.py/src/ein_bot/kb/render.py)
+[`kb/render.py`](../../../ein.py/src/ein/kb/render.py)
 (`to_dot(kb, …)`). Both `rule-mode` (a/c) and `trace-view=a` already
 exist; `trace-view` b (aggregate) / c (DAG) are stubs that emit no DOT
 — the DAG view is implemented in S1.6.3.
@@ -200,7 +200,7 @@ no-op for most of them anyway — only the `(rule …)`
 output changes.
 
 **Output convention (S1.6.0, 2026-05-30).** The split is by *layer*,
-not by feature: **the Python tools emit DOT only** — the `ein-bot` CLI
+not by feature: **the Python tools emit DOT only** — the `Ein` CLI
 (`ir dot`, and the S1.6.1–S1.6.2 `render …` commands), and the S1.6.4
 markdown trace (inline fenced `dot` blocks). None of them call
 Graphviz. **Rasterising DOT → SVG is a shell-script job**:
@@ -220,7 +220,7 @@ work, not the DOT renderer. The DOT renderers (S1.6.1–.4) stay in P1.6.
 
 ## Acceptance
 
-- `ein-bot solve zebra.ein --trace=out.md` writes a single
+- `ein solve zebra.ein --trace=out.md` writes a single
   self-contained markdown file (no SVG, no diagram directory). The
   `--trace` path must run a proof-producing entry (see §Net-new
   prerequisites, gap 3).

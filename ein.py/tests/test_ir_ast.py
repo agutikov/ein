@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.ir import (
+from ein.ir import (
     Atom,
     Int,
     IRParseError,
@@ -181,8 +181,8 @@ def test_relation_wrapped_form_rejected_at_load():
     generic fact headed `relation`), but the loader's relation routing
     rejects it as malformed — validation at load time, with a clearer error.
     P1.7c: tested as a flat top-level form (no `(ontology …)` wrapper)."""
-    from ein_bot.kb import KnowledgeBase
-    from ein_bot.kb.from_ir import KBLoadError
+    from ein.kb import KnowledgeBase
+    from ein.kb.from_ir import KBLoadError
     forms = parse("(relation lives-in (Person House))")
     with pytest.raises(KBLoadError, match=r"malformed .relation."):
         KnowledgeBase.from_ir(forms)
@@ -193,7 +193,7 @@ def test_former_wrapper_head_is_a_fact():
     no longer a recognised wrapper. It loads as an ordinary fact whose
     relation is the (former-wrapper) head; its body is a nested arg, not a
     top-level fact."""
-    from ein_bot.kb import KnowledgeBase
+    from ein.kb import KnowledgeBase
     kb = KnowledgeBase.from_ir(parse("(facts (foo a))"))
     rels = {f.relation_name for f in kb.facts}
     assert "facts" in rels        # `facts` is now a relation, not a wrapper
@@ -332,7 +332,7 @@ def test_golden_example(path):
     Catches IR drift across phases (a change in grammar, AST shape,
     or dumper output trips this; refresh the golden if the change is
     intentional with:
-        python3 -c "from pathlib import Path; from ein_bot.ir import \\
+        python3 -c "from pathlib import Path; from ein.ir import \\
             parse, dump_canonical; \\
             stem = 'zebra'  # or 'zebra2' \\
             Path(f'tests/golden/{stem}.golden').write_text( \\

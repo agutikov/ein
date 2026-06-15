@@ -11,7 +11,7 @@ concrete result to write up.
 
 ## Goal
 
-Write up the ein-bot system for an external audience. Frame the
+Write up the Ein system for an external audience. Frame the
 contributions, compare to the systems catalogued in
 [`docs/index/`](../../docs/index/), measure on shared benchmarks,
 and document the directions worth pursuing next.
@@ -35,18 +35,18 @@ Use the existing catalogue under [`docs/index/`](../../docs/index/)
 comparison axis:
 
 - **CSP / SAT / SMT solvers** ([`02`](../../docs/index/02-solvers-csp-sat-smt.md))
-  — Z3, MiniZinc, OR-tools. How does ein-bot's graph + rules
+  — Z3, MiniZinc, OR-tools. How does Ein's graph + rules
   approach compare on a Zebra-class puzzle: encoding effort,
   solve time, trace quality, explainability?
 - **Theorem provers / proof assistants** ([`03`](../../docs/index/03-theorem-proving-formal-methods.md))
-  — Coq, Lean, Isabelle. ein-bot is rule-driven but not a
+  — Coq, Lean, Isabelle. Ein is rule-driven but not a
   proof assistant; characterise the difference.
 - **Graphs + rewrite systems** ([`06`](../../docs/index/06-graphs-rewrite-systems.md))
   — Catlab.jl, GP 2, etc. Graph-rewriting is the closest
   formal relative; ein's twist is the typed-hypergraph + the
   three-layer structure + the human-style trace.
 - **Cognitive architectures / neuro-symbolic** ([`09`](../../docs/index/09-cognitive-architectures-neurosymbolic.md))
-  — ATMS, SOAR, ACT-R, and modern neuro-symbolic stacks. ein-bot's
+  — ATMS, SOAR, ACT-R, and modern neuro-symbolic stacks. Ein's
   hypothesis loop is ATMS-adjacent; the human-trace target is
   a deliberate departure.
 - **LLM + reasoning benchmarks** ([`12`](../../docs/index/12-llm-and-reasoning-benchmarks.md))
@@ -62,7 +62,7 @@ Concrete measurement tracks:
 
 - **Zebra family** — the canonical puzzle + the variants under
   [`docs/ideas/09-puzzles-beyond-zebra.md`](../../docs/ideas/09-puzzles-beyond-zebra.md).
-  ein-bot's home turf; should solve cleanly.
+  Ein's home turf; should solve cleanly.
 - **NL → IR end-to-end** — feed problem text via M2's pipeline,
   solve with M1's engine, report accuracy + ambiguity + time.
 - **Existing reasoning benchmarks** ([`docs/index/12`](../../docs/index/12-llm-and-reasoning-benchmarks.md))
@@ -81,7 +81,7 @@ For each benchmark / comparison:
 - Methodology (what was measured, on what hardware, with what
   config).
 - Headline numbers.
-- Where ein-bot wins (likely: trace quality, encoding ergonomics,
+- Where Ein wins (likely: trace quality, encoding ergonomics,
   human-style explanations) and where it loses (likely: raw solve
   time vs CSP solvers on adversarial puzzles).
 - Threat-to-validity discussion.

@@ -20,11 +20,11 @@ re-encoding.
 
 ## Acceptance
 
-- `python -m ein_bot.smt.translate examples/zebra.ein` emits a
+- `python -m ein.smt.translate examples/zebra.ein` emits a
   syntactically-valid `.smt2` file accepted by `z3 -smt2`.
 - `z3 -smt2 zebra.smt2` returns `sat` with a model assigning every
   goal variable.
-- `ein-bot solve zebra.ein --backend=smt:z3` reports the canonical
+- `ein solve zebra.ein --backend=smt:z3` reports the canonical
   Zebra answer (Japanese keeps zebra; Norwegian drinks water).
 
 ## Connections

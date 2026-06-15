@@ -1,6 +1,6 @@
 # ein — VSCode syntax highlighting
 
-A lightweight **TextMate grammar** for `.ein` files (the ein-bot surface
+A lightweight **TextMate grammar** for `.ein` files (the Ein surface
 language). No language server, no build step — just regex-based
 structural highlighting that any TextMate-grammar consumer can load:
 VSCode, Sublime Text, GitHub `linguist`, `bat`, etc.
@@ -47,8 +47,8 @@ the lexical surface.
 The three closed name sets mirror the kernel's single source of truth:
 
 - **declarators** — [`docs/kernel/ir/03-ein-lang/06_reserved_names.md`](../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)
-- **primitives** — [`ein.py/src/ein_bot/inference/primitives.py`](../../ein.py/src/ein_bot/inference/primitives.py) (`STRUCTURAL ∪ SUGAR`)
-- **predicates** — [`ein.py/src/ein_bot/inference/predicates.py`](../../ein.py/src/ein_bot/inference/predicates.py) (`names()`)
+- **primitives** — [`ein.py/src/ein/inference/primitives.py`](../../ein.py/src/ein/inference/primitives.py) (`STRUCTURAL ∪ SUGAR`)
+- **predicates** — [`ein.py/src/ein/inference/predicates.py`](../../ein.py/src/ein/inference/predicates.py) (`names()`)
 
 `ein.py/tests/test_vscode_grammar.py` re-derives each list straight out
 of `ein.tmLanguage.json` and asserts it equals the authoritative set, so
@@ -95,7 +95,7 @@ cd utils/vscode-ein
 # --baseContentUrl makes the README's relative links resolve on GitHub;
 # needed only because this extension lives in a repo subfolder.
 npx --yes @vscode/vsce package \
-  --baseContentUrl https://github.com/agutikov/ein-bot/blob/master/utils/vscode-ein/
+  --baseContentUrl https://github.com/agutikov/ein/blob/master/utils/vscode-ein/
 # → ein-lang-0.1.0.vsix
 ```
 

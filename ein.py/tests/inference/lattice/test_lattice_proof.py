@@ -29,22 +29,22 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.monotonic import (
+from ein.inference.monotonic import (
     LatticeProof,
     LatticeStats,
     SetNode,
     SolutionRecord,
     gaps_solve,
 )
-from ein_bot.inference.monotonic.solver import (
+from ein.inference.monotonic.solver import (
     _LatticeLoopState,
     _record_setnode,
 )
-from ein_bot.inference.verdict import Ambiguity
-from ein_bot.ir import parse
-from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.provenance import Provenance
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.verdict import Ambiguity
+from ein.ir import parse
+from ein.kb.entities import Fact, Layer
+from ein.kb.provenance import Provenance
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"

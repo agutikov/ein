@@ -1,7 +1,7 @@
 """Saturation-commutativity sanity check — S1.5b.27 T1.5b.27.3.
 
 Pins the behaviour of
-:func:`ein_bot.inference.monotonic.sanity.check_commutativity`:
+:func:`ein.inference.monotonic.sanity.check_commutativity`:
 
 - Passes on every shipped fixture (M1's rule set IS monotone;
   no commutativity violation surfaces).
@@ -14,7 +14,7 @@ Pins the behaviour of
 Cross-references:
 
 - Implementation:
-  ``ein.py/src/ein_bot/inference/monotonic/sanity.py``.
+  ``ein.py/src/ein/inference/monotonic/sanity.py``.
 - Stage spec:
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.27_lattice_sanity_check.md``.
 - Premise:
@@ -27,14 +27,14 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import contradictions_solve
-from ein_bot.inference.monotonic.sanity import (
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic import contradictions_solve
+from ein.inference.monotonic.sanity import (
     SanityError,
     check_commutativity,
 )
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"
@@ -110,7 +110,7 @@ def test_sanity_failure_on_constructed_mismatch(monkeypatch):
     only way to construct the failure since M1's actual rule
     set is monotone (the spec's "contrived violation" fixture
     can't be written within the IR's declarative semantics)."""
-    from ein_bot.inference.monotonic import sanity as sanity_mod
+    from ein.inference.monotonic import sanity as sanity_mod
 
     call_count = {"n": 0}
 

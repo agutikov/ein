@@ -389,7 +389,7 @@ for the equivalence argument.
 ## Layout
 
 ```
-ein.py/src/ein_bot/inference/
+ein.py/src/ein/inference/
    ├── *.py                          ← common kernel: Saturator,
    │                                    ContradictionDetector, Lookahead,
    │                                    hypgen, nogoods, apriori, commitment,

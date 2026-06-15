@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# Create .venv/, install ein-bot in editable mode with dev extras, and
-# leave the `ein-bot` console script on the venv's PATH.
+# Create .venv/, install Ein in editable mode with dev extras, and
+# leave the `ein` console script on the venv's PATH.
 #
 # Usage:
 #   ./venv_install.sh                # creates .venv (uses python3) and installs
@@ -17,7 +17,7 @@
 # After install:
 #   source .venv/bin/activate         # CPython
 #   source .venv-pypy/bin/activate    # PyPy
-#   ein-bot ir parse examples/zebra.ein | head
+#   ein ir parse examples/zebra.ein | head
 #   pytest
 
 set -euo pipefail
@@ -44,7 +44,7 @@ required_minor=10
 read -r have_major have_minor <<<"$(echo "${py_version}" | tr '.' ' ')"
 if (( have_major < required_major )) \
    || (( have_major == required_major && have_minor < required_minor )); then
-    echo "error: ein-bot requires Python >= ${required_major}.${required_minor};"
+    echo "error: Ein requires Python >= ${required_major}.${required_minor};"
     echo "       '${PYTHON}' reports ${py_version}" >&2
     exit 1
 fi
@@ -62,13 +62,13 @@ source "${VENV_DIR}/bin/activate"
 echo "upgrading pip / setuptools / wheel"
 python -m pip install --quiet --upgrade pip setuptools wheel
 
-echo "installing ein-bot (editable) with dev extras"
+echo "installing Ein (editable) with dev extras"
 python -m pip install --quiet -e "${SCRIPT_DIR}/ein.py[dev]"
 
 venv_rel="$(realpath --relative-to="${SCRIPT_DIR}" "${VENV_DIR}" 2>/dev/null || echo "${VENV_DIR}")"
 echo
 echo "done."
 echo "  activate:   source ${venv_rel}/bin/activate"
-echo "  cli:        ein-bot ir parse examples/zebra.ein | head"
+echo "  cli:        ein ir parse examples/zebra.ein | head"
 echo "  tests:      pytest"
 echo "  lint:       ruff check ."

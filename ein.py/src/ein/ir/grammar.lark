@@ -1,0 +1,237 @@
+// Ein IR — kernel grammar
+// Designed in S1.1.1 T1.1.1.1 + T1.1.1.2.
+// See plans/m1_core_graph_reasoning/p1.1_ir_language/s1.1.1_grammar_design.md
+//
+// LEVEL B — structurally typed kernel, generic interiors. FLAT top level
+// (P1.7c): a program is a sequence of forms classified by head — no block
+// wrappers (the former (ontology …) / (facts …) / (reasoning …) / (rules …)
+// were removed in S1.7c.4).
+//
+// Enforced by the grammar:
+//   1. Top level is `form*`. Each form is classified by its HEAD:
+//      · `relation` / `rule` / `hrule` / `query` / `config` — the closed
+//        declarator set;
+//      · `trace` — the engine-emitted sibling (its body is step ·
+//        branch-open · branch-close · branch-ref · contradiction ·
+//        symmetry-class), parsed by trace/ast.py, ignored by kb.from_ir;
+//      · ANY OTHER head — a fact: `=`, `not`, or a generic (NAME args*).
+//      "Detect facts by *not* being reserved." Source of truth for the
+//      declarator set: docs/kernel/ir/03-ein-lang/06_reserved_names.md.
+//   2. A fact's knowledge LAYER is per-fact, not positional (P1.7c S1.7c.1):
+//      an explicit `:layer ontology|fact|reasoning` wins; else it is derived
+//      from provenance — `:rule`/`:using` → REASONING, `:source` → FACT,
+//      neither → ONTOLOGY. `type` / `instance` are plain facts (S1.7.6).
+//   3. :keyword value pair alternation — KEYWORD is never a value,
+//      never appears twice in a row.
+//   4. Heads of expression lists (inside values and patterns) must be
+//      SYMBOL, VAR, WILDCARD, or "=" — never KEYWORD. (?var :key :key)
+//      still fails via the kw_pair production, not via head restriction.
+//   5. **Reserved words** (shape-pinned — never match SYMBOL):
+//      · kernel meta-primitives — `not` (not EXPR) · `and` (and EXPR+) ·
+//        `or` (or EXPR+) · `neq` (neq A B);
+//      · declarators — `rule` · `hrule` · `query` · `config` · `trace`
+//        · `macro` (P1.8 S1.5.9) · `import` (P1.8 S1.8.A2).
+//      A typo or malformed shape on these is a PARSE-time error: `(nto Foo)`
+//      is not `(not …)`, `(query)` lacks its kw-pairs, `(rule x)` lacks its
+//      params — all rejected at parse. (A consequence of the word-boundary
+//      lookahead: an identifier may not equal a reserved word nor begin with
+//      `<word>-`, e.g. `rule-x`.) `relation` is the ONE declarator NOT
+//      excluded from SYMBOL — rules match `(relation ?R ?A ?B)` patterns —
+//      so a malformed `(relation R (T1 T2))` parses but the LOADER rejects
+//      it. The former wrapper heads `ontology`/`facts`/`reasoning`/`rules`
+//      stay ordinary SYMBOLs: each now parses as a plain fact head.
+//
+// Domain-relation heads (`co-located`, `lives-in`, …) stay generic: they
+// are declared via `(relation …)`. `(symmetric R)`, `(transitive R)`, and
+// the type/instance enumerations are all generic facts (declared as
+// rules/relations in the puzzle), not kernel forms.
+//
+// Rule parameter lists are MANDATORY: `()` for non-generic rules,
+// `(?p1 ?p2 …)` for generic rules.
+//
+// Deferred to the semantic validator (S1.1.2):
+//   · which keywords are required per form (:match/:assert/:why in
+//     rules; :rule/:using/:derives in steps; :mode/:goal in query)
+//   · the named structural-predicate registry (A.4 closure)
+//   · arity rules, ground-vs-pattern, type-checking of instance args,
+//     unbound-variable checks, etc.
+//
+// This is the source of truth for the kernel shape. M2's GBNF for
+// constrained LLM decoding is derived from this file by a Lark→GBNF
+// translator (utils/lark_to_gbnf.py, planned for M2.P2.3).
+
+// ─── Top level: a flat sequence of forms (P1.7c) ───
+// A program is `form*`. Each top-level form is classified by its HEAD against
+// the closed declarator set {relation · rule · hrule · query · config}
+// (+ `trace`, the engine-emitted sibling, kept so it never misclassifies as a
+// fact); ANY OTHER head falls through to `fact_form` (eq_fact / not_form /
+// generic_fact). This is the author's "detect facts by *not* being reserved"
+// rule. The block wrappers (ontology · facts · reasoning · rules) are GONE
+// (P1.7c S1.7c.4): a former-wrapper head like `(facts …)` now parses as an
+// ordinary fact. The reserved-head COLLISION guard is enforced at LOAD time,
+// not here: `relation` stays a valid SYMBOL (rules match `(relation ?R ?A ?B)`
+// patterns), so a malformed `(relation R (T1 T2))` parses but the loader
+// rejects it (test_relation_wrapped_form_rejected_at_load).
+start: form*
+
+?form: relation_decl        // ↓ flat declarators (closed reserved set)
+     | rule_decl
+     | hrule_decl
+     | query_form
+     | config_form
+     | trace_form
+     | macro_decl           // ← P1.8 S1.5.9 flat declarator
+     | import_form          // ← P1.8 S1.8.A2 flat declarator
+     | fact_form            // ← anything else: a flat fact
+
+// ═══════════ Relation declarator (schema) ═══════════
+// `relation` takes flat args under M1 form (b)
+// (kernel docs `01-ein-graph/03_ein_model.md` §7.2; P1.3 S1.3.0 R10).
+// `(relation R (T1 T2))` is rejected at LOAD time — the inner group makes
+// `relation_decl` not match, and `relation` is a plain SYMBOL so the form
+// falls to `generic_fact`, which the loader then rejects as a malformed
+// relation. Token disambiguation works because trailing `:kw value` pairs
+// lex as KEYWORD, not SYMBOL.
+relation_decl: "(" "relation" SYMBOL SYMBOL+ kw_pair* ")"
+
+// ═══════════ Facts (the flat default — any non-declarator head) ═══════════
+// A fact is `=` / `not` / any generic `(NAME args*)` form. `(type …)` /
+// `(instance …)` enumerations parse as ordinary generic_fact forms (S1.7.6 —
+// no longer kernel declarators). Layer is per-fact provenance (`:source` →
+// FACT, `:rule`/`:using` → REASONING, else ONTOLOGY) or an explicit `:layer`
+// (P1.7c S1.7c.1) — no longer a block wrapper.
+?fact_form: eq_fact | not_form | generic_fact
+eq_fact:      "(" EQ value value kw_pair* ")"
+generic_fact: "(" SYMBOL value* kw_pair* ")"
+
+// ═══════════ Rules ═══════════
+// `hrule` (S1.5.6b) — a *hypothesis rule*: same shape as `rule`, but
+// loaded into kb.hrules (not kb.rules) — its conclusions are speculative
+// candidates, not entailed facts. The saturator never fires it.
+rule_decl:  "(" "rule"  SYMBOL rule_params kw_pair+ ")"
+hrule_decl: "(" "hrule" SYMBOL rule_params kw_pair+ ")"
+rule_params: "(" VAR* ")"
+
+// ═══════════ Macro declarator (P1.8 S1.5.9) ═══════════
+// `(macro NAME (?p…) BODY)` — a load-time AST-rewrite alias. The expander
+// (`kb.from_ir` → `ir.macros.expand_macros`) substitutes a rule clause's
+// `(NAME a…)` invocation with BODY before the compiler runs, so `forall` /
+// `open` (and any future sugar) live as ein source, not compile.py arms.
+// `macro` is SYMBOL-excluded (negative-lookahead below), so a malformed
+// `(macro)` is a PARSE error, not a silent fact named `macro`. The first
+// paren-group after NAME is always the parameter list; the BODY is the
+// single `value` that follows.
+macro_decl:   "(" "macro" SYMBOL macro_params value ")"
+macro_params: "(" VAR+ ")"
+
+// ═══════════ Import declarator (P1.8 S1.8.A2 / A1 decision record) ═══════════
+// `(import MODULE [:as ALIAS | :symbols (S+)])` — pull a library module in.
+// MODULE is a **logical name written as a dotted atom** (`std.macro`); `.` is
+// part of `SYMBOL` (below), so `std.macro` lexes as one atom and the loader
+// resolves it to a file. The trailing kw-pairs carry the import tier:
+//   · none           → fully-qualified  `(std.macro.forall …)`
+//   · `:as m`        → aliased          `(m.forall …)`
+//   · `:symbols (…)` → flat-selective   `(forall …)`
+// Reusing the generic `kw_pair*` keeps this consistent with `query`/`config`;
+// the loader (S1.8.A3) validates `:as`-XOR-`:symbols` + resolves. `import` is
+// SYMBOL-excluded so `(import)` (no module) is a PARSE error.
+import_form: "(" "import" SYMBOL kw_pair* ")"
+
+// ═══════════ Query ═══════════
+query_form: "(" "query" kw_pair+ ")"
+
+// ═══════════ Config (solver-level knobs) — T1.5.4.4 ═══════════
+// Empty body is valid: `(config)` resolves to `SolverConfig()`
+// (all defaults). Each `:flag value` pair toggles one boolean
+// gate per `SolverConfig` field; values are SYMBOL `true` / `false`.
+config_form: "(" "config" kw_pair* ")"
+
+// ═══════════ Trace ═══════════
+trace_form: "(" "trace" trace_event* ")"
+?trace_event: step_decl
+            | branch_open
+            | branch_close
+            | branch_ref
+            | contradiction_decl
+            | symmetry_decl
+step_decl:          "(" "step" SYMBOL kw_pair* ")"
+branch_open:        "(" "branch-open" SYMBOL kw_pair* ")"
+branch_close:       "(" "branch-close" SYMBOL kw_pair* ")"
+branch_ref:         "(" "branch-ref" SYMBOL ")"
+contradiction_decl: "(" "contradiction" SYMBOL kw_pair* ")"
+symmetry_decl:      "(" "symmetry-class" SYMBOL kw_pair* ")"
+
+// ═══════════ Value sub-language (interior of kw_pair) ═══════════
+// Values never include KEYWORD — that's what enforces :kw value pair
+// alternation. List heads in the pattern interior are restricted to
+// SYMBOL / WILDCARD / "=" so VAR / KEYWORD can never be a head.
+//
+// Reserved-word forms (not · and · or · neq) are matched BEFORE
+// generic_list — their literal heads beat SYMBOL at the lexer
+// (anonymous string literals have higher priority than the SYMBOL
+// regex), so the generic_list alternative cannot match them.
+// `(instance …)` is no longer reserved (S1.7.6): it parses as a
+// generic_list whose head atom is `instance`.
+kw_pair: KEYWORD value
+?value: not_form
+      | and_form
+      | or_form
+      | neq_form
+      | generic_list
+      | SYMBOL | VAR | WILDCARD | INT | RANGE | STRING
+generic_list: "(" ")"
+            | "(" list_head list_item* ")"
+?list_head: SYMBOL | VAR | WILDCARD | EQ
+?list_item: value | kw_pair
+
+// ═══════════ Kernel meta-primitives (shape-pinned) ═══════════
+// `not` accepts trailing kw_pairs so a derived `(not …)` fact's
+// provenance (e.g. `:rule type-exclusivity :using (c10)`, which
+// re-classifies it to the REASONING layer) attaches naturally. In
+// :match / :assert positions the validator will reject unwanted kw_pairs.
+not_form:      "(" "not" value kw_pair* ")"
+neq_form:      "(" "neq" value value ")"
+and_form:      "(" "and" value+ kw_pair* ")"
+or_form:       "(" "or" value+ kw_pair* ")"
+
+// ═══════════ Terminals ═══════════
+// SYMBOL excludes the kernel-primitive reserved words via a negative
+// lookahead with a word boundary — `(neq …)` is reserved, but
+// `neq_test` is still a valid SYMBOL. `instance` left the reserved
+// set in S1.7.6 (it is now a plain relation), so `(instance Norwegian)`
+// no longer gets parse-time arity rejection — it parses as a generic
+// fact with one arg, like any domain head.
+//
+// `.` is a SYMBOL char (P1.8 S1.8.A2 / A1 decision record): an atom may carry
+// dots so module names (`std.macro`) and qualified references (`m.forall`) are
+// ordinary atoms — the parser does NO module resolution, the loader does, by
+// name. No ambiguity with `RANGE` (`1..5`): RANGE is digit-anchored, SYMBOL is
+// letter-anchored; maximal munch makes `std.macro.forall` one atom. The `\b`
+// lookahead is start-anchored, so a dotted atom may not *begin* with a reserved
+// word (`rule.x` is rejected, `std.rule` is fine).
+//
+// A leading `__` is allowed (2026-06-15) so kernel **dunder** names
+// (`__closed__`, `__symmetric__`; see
+// docs/kernel/inference/reserved_engine_strings.md) lex as ordinary atoms,
+// lexically distinct from userspace names. The `(?:__)?` prefix still requires
+// a following letter, so a bare `_` stays WILDCARD and a single leading `_`
+// (`_x`) is still not a SYMBOL.
+// (WILDCARD below is lookahead-guarded so a leading `__` has no wildcard
+// tokenization — the dynamic Earley lexer would otherwise split `__closed__`
+// in value position into `_`,`_`,`closed__`.)
+SYMBOL:   /(?!(?:not|and|or|neq|rule|hrule|query|config|trace|macro|import)\b)(?:__)?[A-Za-z][A-Za-z0-9_*.-]*/
+VAR:      /\?[A-Za-z][A-Za-z0-9_*-]*/
+KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
+// `_` is the wildcard ONLY when standalone — not when it begins a `__dunder__`
+// SYMBOL (else the leading `__` lexes as two wildcards). Token text is still `_`.
+WILDCARD: /_(?![A-Za-z0-9_])/
+EQ:       "="
+RANGE:    /[0-9]+\.\.([0-9]+|\*)/
+INT:      /-?[0-9]+/
+STRING:   /"([^"\\]|\\.)*"/
+
+LINE_COMMENT:  /;[^\n]*/
+BLOCK_COMMENT: /#\|[\s\S]*?\|#/
+%ignore LINE_COMMENT
+%ignore BLOCK_COMMENT
+%ignore /\s+/

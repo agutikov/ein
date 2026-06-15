@@ -40,7 +40,7 @@ implication graph → learn clause → backjump non-chronologically.
 - Wikipedia: <https://en.wikipedia.org/wiki/Conflict-driven_clause_learning>
 
 ### Hypothesis branching with rollback
-The "human style" version used in the `ein-bot` README — pick a
+The "human style" version used in the `Ein` README — pick a
 candidate fact, propagate, look for contradiction, retract on failure.
 Structurally identical to CDCL + ATMS.
 
@@ -161,7 +161,7 @@ Three recurring themes:
    verifier / propagator / search algorithm.
 2. **Backtracking + learning beats pure backtracking.** CDCL's
    *learn-from-failure* loop is structurally the same as ATMS;
-   `ein-bot`'s "hypothesis → contradiction → retract" loop is
+   `Ein`'s "hypothesis → contradiction → retract" loop is
    surprisingly close to CDCL.
 3. **Substructure matters.** E-graphs, congruence closure, union-find,
    implication graphs, proof DAGs — the same data-structural primitives

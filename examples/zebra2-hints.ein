@@ -1,4 +1,4 @@
-;;; ein-bot — Zebra puzzle WITH SOLUTION HINTS (S1.5a.11 diagnostic).
+;;; Ein — Zebra puzzle WITH SOLUTION HINTS (S1.5a.11 diagnostic).
 ;;;
 ;;; Copy of examples/zebra2.ein extended with 10 hint facts from the
 ;;; known Wikipedia solution. Comment out individual hints (or all of

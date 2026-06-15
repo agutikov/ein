@@ -1,4 +1,4 @@
-;;; ein-bot — branching demo 12/…  + S1.7.23 standing regression fixture
+;;; Ein — branching demo 12/…  + S1.7.23 standing regression fixture
 ;;;
 ;;; A no-hrule, NON-`T`-typed puzzle that ACTUALLY SOLVES via the
 ;;; blind hypothesis enumerator (`hypgen._generate`'s no-`(hrule …)`

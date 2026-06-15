@@ -7,7 +7,7 @@ Covers:
 - Rule modes (a) side-by-side and (c) overlay.
 - Optional: `dot -Tcanon` parse-back (skipped if `dot` not on $PATH).
 - Top-level dispatch on a tuple of forms.
-- CLI `ein-bot ir dot` emits non-empty DOT.
+- CLI `ein ir dot` emits non-empty DOT.
 """
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.ir import (
+from ein.ir import (
     parse,
     render_query,
     render_rule,
@@ -251,7 +251,7 @@ def test_to_dot_unknown_head_renders_as_a_fact():
     """P1.7c flat model: any non-reserved head is a fact, so `to_dot`
     renders it (via its layer's view) rather than raising on an
     'unknown' top-level head."""
-    from ein_bot.ir import Atom, SForm
+    from ein.ir import Atom, SForm
     dot = to_dot(SForm(head=Atom("nonsense"), args=(Atom("x"),)))
     assert isinstance(dot, str) and "digraph" in dot
 

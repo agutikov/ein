@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from ein_bot.kb import (
+from ein.kb import (
     Fact,
     Layer,
 )
@@ -132,7 +132,7 @@ class TestFork:
         assert not zebra_kb.classes.equivalent("Norwegian", "Japanese")
 
     def test_fork_reasoning_isolation(self, zebra_kb):
-        from ein_bot.kb import Provenance
+        from ein.kb import Provenance
         # Add a derived fact to the fork; parent's reasoning view
         # must NOT see it.
         fork = zebra_kb.fork()
@@ -157,7 +157,7 @@ class TestFork:
         view methods. This is intentional — entity API == root state;
         view API == branch state.
         """
-        from ein_bot.kb import Provenance
+        from ein.kb import Provenance
         fork = zebra_kb.fork()
         co_located = zebra_kb.relations["co-located"]
         before = len(co_located.facts)

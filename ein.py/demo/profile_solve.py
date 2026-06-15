@@ -43,14 +43,14 @@ import time
 from dataclasses import fields as dc_fields
 from pathlib import Path
 
-# Make `from ein_bot.…` resolve when running from a checkout.
+# Make `from ein.…` resolve when running from a checkout.
 _REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_REPO / "ein.py" / "src"))
 
-from ein_bot.inference.config import SolverConfig  # noqa: E402
-from ein_bot.inference.monotonic.solver import solve  # noqa: E402
-from ein_bot.ir import parse  # noqa: E402
-from ein_bot.kb.store import KnowledgeBase  # noqa: E402
+from ein.inference.config import SolverConfig  # noqa: E402
+from ein.inference.monotonic.solver import solve  # noqa: E402
+from ein.ir import parse  # noqa: E402
+from ein.kb.store import KnowledgeBase  # noqa: E402
 
 # Substrings grouping cProfile rows into engine subsystems. First match
 # wins (order matters — `monotonic/solver` before generic `match`).
@@ -108,9 +108,9 @@ def _count_negatives(kb: KnowledgeBase) -> tuple[int, int, dict[str, int]]:
     """
     from collections import Counter
 
-    from ein_bot.inference.closed import emit_closed
-    from ein_bot.inference.saturator import Saturator
-    from ein_bot.kb.entities import Fact
+    from ein.inference.closed import emit_closed
+    from ein.inference.saturator import Saturator
+    from ein.kb.entities import Fact
 
     preview = kb.fork()
     emit_closed(preview)

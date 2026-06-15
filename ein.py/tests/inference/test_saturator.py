@@ -15,11 +15,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.engine import Engine
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.entities import Layer
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.engine import Engine
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.entities import Layer
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
 ZEBRA = REPO / "examples" / "zebra.ein"
@@ -252,8 +252,8 @@ def test_is_stalled_flips_after_new_fact():
     synthetic fact, then call is_stalled to decide whether to keep
     forking.
     """
-    from ein_bot.kb.entities import Fact
-    from ein_bot.kb.provenance import Provenance
+    from ein.kb.entities import Fact
+    from ein.kb.provenance import Provenance
 
     sat = _sat("""
     (rule sym (?rel)

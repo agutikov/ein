@@ -16,16 +16,16 @@ load error.
 """
 import pytest
 
-from ein_bot.inference.hrule import Hrules
-from ein_bot.inference.hypgen import (
+from ein.inference.hrule import Hrules
+from ein.inference.hypgen import (
     generate_hypotheses,
     generate_hypotheses_with_stats,
 )
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import dump_canonical, parse
-from ein_bot.kb.entities import Fact
-from ein_bot.kb.from_ir import KBLoadError
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator
+from ein.ir import dump_canonical, parse
+from ein.kb.entities import Fact
+from ein.kb.from_ir import KBLoadError
+from ein.kb.store import KnowledgeBase
 
 
 def _kb(text: str) -> KnowledgeBase:

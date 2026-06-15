@@ -6,9 +6,9 @@ saturation so the hypothesis generator skips R — replacing the
 hand-written `(__closed__ …)` declarations. (Dunder convention: the
 kernel trigger is `__closed__`, not the bare userspace `closed`.)
 """
-from ein_bot.inference.closed import emit_closed, producible_relations
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.closed import emit_closed, producible_relations
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 
 def _kb(text: str) -> KnowledgeBase:

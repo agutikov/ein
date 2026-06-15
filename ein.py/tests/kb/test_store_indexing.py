@@ -13,7 +13,7 @@ fact exactly once.
 """
 from __future__ import annotations
 
-from ein_bot.kb import Fact, KnowledgeBase, Layer
+from ein.kb import Fact, KnowledgeBase, Layer
 
 
 def _fact(rel: str, *args: str) -> Fact:
@@ -45,8 +45,8 @@ def test_distinct_facts_each_indexed():
 def test_two_rules_deriving_same_fact_index_once():
     """End-to-end: a conclusion produced by two rules from two premises
     is indexed once after saturation (the real double-index scenario)."""
-    from ein_bot.inference.saturator import Saturator
-    from ein_bot.ir import parse
+    from ein.inference.saturator import Saturator
+    from ein.ir import parse
 
     kb = KnowledgeBase.from_ir(parse(
         """

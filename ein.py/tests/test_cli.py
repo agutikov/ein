@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.cli import main
+from ein.cli import main
 
 
 def test_ir_parse_zebra(capsys: pytest.CaptureFixture[str]):
-    """`ein-bot ir parse examples/zebra.ein` exits 0 and emits canonical IR."""
+    """`ein ir parse examples/zebra.ein` exits 0 and emits canonical IR."""
     repo_root = Path(__file__).resolve().parents[2]
     zebra = repo_root / "examples" / "zebra.ein"
     rc = main(["ir", "parse", str(zebra)])
@@ -58,7 +58,7 @@ def test_ir_lint_failure(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
 
 
 def test_ir_dot_zebra(capsys: pytest.CaptureFixture[str]):
-    """`ein-bot ir dot examples/zebra.ein` exits 0 and emits non-empty DOT."""
+    """`ein ir dot examples/zebra.ein` exits 0 and emits non-empty DOT."""
     repo_root = Path(__file__).resolve().parents[2]
     zebra = repo_root / "examples" / "zebra.ein"
     rc = main(["ir", "dot", str(zebra)])

@@ -3,19 +3,19 @@
 > **Purpose.** When you need to know *which hypotheses the engine
 > tested at each layer* and *what every one of them derived —
 > survivors and casualties alike* — run a lattice entry with a
-> [`LatticeDumper`](../../../ein.py/src/ein_bot/inference/monotonic/state_dump.py)
+> [`LatticeDumper`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
 > attached. The on-disk dump is the audit trail for debugging
 > **problem statements** (is the puzzle even consistent? which
 > committed pair kills it?) and **rules** (did the rule I expected
 > fire under this commitment? did it fire when it shouldn't?).
 
 This page covers the two exhaustive lattice entries —
-[`gaps_solve`](../../../ein.py/src/ein_bot/inference/monotonic/solver.py)
+[`gaps_solve`](../../../ein.py/src/ein/inference/monotonic/solver.py)
 and `contradictions_solve` — which test *every* commitment set
 layer-by-layer and so produce a complete per-hypothesis record.
 The solution-mode [`monotonic_solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10)
 early-terminates on the first solution and uses the lighter
-[`MonotonicDumper`](../../../ein.py/src/ein_bot/inference/monotonic/state_dump.py)
+[`MonotonicDumper`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
 (timeline + per-layer root snapshots only — no per-hypothesis
 folders, since most hypotheses are never reached).
 
@@ -50,9 +50,9 @@ and bound the sweep with `--max-set-size N`, `--max-time S`, or
 
 ```python
 from pathlib import Path
-from ein_bot.inference.monotonic import LatticeDumper, contradictions_solve
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.monotonic import LatticeDumper, contradictions_solve
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 kb = KnowledgeBase.from_ir(parse(Path("examples/branching/04_two_levels.ein").read_text()))
 dumper = LatticeDumper(out_dir=Path("./dump"))
@@ -103,7 +103,7 @@ dump/
 
 ### `<C-slug>` — the commitment slug
 
-A commitment is a *set* of [`FactId`](../../../ein.py/src/ein_bot/inference/commitment.py)s
+A commitment is a *set* of [`FactId`](../../../ein.py/src/ein/inference/commitment.py)s
 `(relation_name, args)`. The slug joins each FactId as
 `relation_arg0_arg1`, with multiple FactIds joined by `+`, and `_`
 inside identifiers rewritten to `-` so the field separator stays
@@ -222,7 +222,7 @@ it's the entry point for "show me every refutation" tooling.
 ## Cross-links
 
 - Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10).
-- Implementation: [`monotonic/state_dump.py`](../../../ein.py/src/ein_bot/inference/monotonic/state_dump.py)
+- Implementation: [`monotonic/state_dump.py`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
   (`LatticeDumper`, `MonotonicDumper`).
 - CLI: [`demo/bench_lattice.py`](../../../ein.py/demo/bench_lattice.py).
 - Tests: [`tests/inference/lattice/test_lattice_dumper.py`](../../../ein.py/tests/inference/lattice/test_lattice_dumper.py).

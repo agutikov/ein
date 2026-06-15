@@ -9,7 +9,7 @@ on any near-term horizon.
 The most ambitious self-modification rung. F2 modifies the *grammar*
 (syntactic); F5 modifies the *rule library* (semantic, declarative);
 **F6 modifies the engine itself** — the Python code under
-`src/ein_bot/`. A rule's RHS can produce a *patch* to a Python file;
+`src/ein/`. A rule's RHS can produce a *patch* to a Python file;
 the harness applies it, reloads the module, and continues running.
 
 Variants this could take:
@@ -26,7 +26,7 @@ Variants this could take:
 - **Online self-patching** — the engine modifies its own running
   process via Python hot-reloading or via writing files + spawning a
   new instance. This is the maximal-risk form and is *not* on any
-  realistic ein-bot timeline.
+  realistic Ein timeline.
 
 ## Why deferred indefinitely
 
@@ -64,7 +64,7 @@ working, with an explicit research bound:
   run the test suite, gather property metrics, return a verdict.
 - **PF6.3** — code-suggestion mode (the *non-risky* form): emit
   patches to stdout, never apply automatically. Useful as a
-  refactoring suggester for `ein_bot/` itself.
+  refactoring suggester for `ein/` itself.
 - **PF6.4** — gated self-application. Apply only with explicit
   human approval per patch; commit to a sandbox branch.
 - **PF6.5** — research bound: *not* online self-modification within
@@ -82,7 +82,7 @@ working, with an explicit research bound:
 - **Scope creep into general code synthesis.** The line between
   "engine modifies itself" and "engine writes new programs" blurs
   fast. F6 explicitly does *not* aim at the latter; the codebase
-  under modification is `src/ein_bot/` only.
+  under modification is `src/ein/` only.
 
 ## Prior art / connections
 

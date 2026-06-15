@@ -25,7 +25,7 @@ so the user can switch backends transparently:
 
 ## Acceptance
 
-- `ein-bot solve --backend=smt:z3 --mode=solve` returns the canonical
+- `ein solve --backend=smt:z3 --mode=solve` returns the canonical
   Zebra answer.
 - `--mode=gaps` on a Zebra-minus-1 returns at least the colour of
   house 1 as free.

@@ -51,7 +51,7 @@ Some plausible operationalisations:
 - **Pattern-match + rule-fire** as the AtomSpace / production-system
   flavour.
 
-The 5-year-old `ein-bot` design already does this in a small way
+The 5-year-old `Ein` design already does this in a small way
 (triangle + square inference rules over a typed graph) — see
 [05-zebra-puzzle-graph-reasoner.md](05-zebra-puzzle-graph-reasoner.md).
 

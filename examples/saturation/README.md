@@ -68,9 +68,9 @@ them directly to exercise the rule independently.
 
 ```sh
 python -c "
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
-from ein_bot.inference.engine import Engine
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
+from ein.inference.engine import Engine
 
 kb = KnowledgeBase.from_ir(parse(
     open('examples/zebra/demos/symmetric/couple.ein').read()))

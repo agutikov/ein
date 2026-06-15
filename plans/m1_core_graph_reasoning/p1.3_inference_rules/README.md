@@ -30,7 +30,7 @@ shipped P1.1 + P1.2:
   in each puzzle's `.ein` file (current zebra.ein convention).
 - **No `:where` keyword** — Q32 dropped it; the predicate registry
   is the single source of truth for built-ins.
-- **Module path**: flat `src/ein_bot/inference/` (Q39); tests at
+- **Module path**: flat `src/ein/inference/` (Q39); tests at
   `tests/inference/`.
 
 The acceptance criterion remains the
@@ -75,7 +75,7 @@ scope.
   per demo; documented in `examples/zebra/demos/README.md`
   (replaces the original `docs/rules/demos.md` location, which
   would have lived next to a non-existent universal library).
-- `ruff check src/ein_bot/inference/ tests/inference/` green.
+- `ruff check src/ein/inference/ tests/inference/` green.
 - 144 + 10 (R9) + new (P1.3) kb/inference tests all pass.
 
 ## Connections

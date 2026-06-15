@@ -27,12 +27,12 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_REPO / "ein.py" / "src"))
 
-from ein_bot.inference import match as _match_mod  # noqa: E402
-from ein_bot.inference import saturator as _sat_mod  # noqa: E402
-from ein_bot.inference.config import SolverConfig  # noqa: E402
-from ein_bot.inference.monotonic.solver import solve  # noqa: E402
-from ein_bot.ir import parse  # noqa: E402
-from ein_bot.kb.store import KnowledgeBase  # noqa: E402
+from ein.inference import match as _match_mod  # noqa: E402
+from ein.inference import saturator as _sat_mod  # noqa: E402
+from ein.inference.config import SolverConfig  # noqa: E402
+from ein.inference.monotonic.solver import solve  # noqa: E402
+from ein.ir import parse  # noqa: E402
+from ein.kb.store import KnowledgeBase  # noqa: E402
 
 YIELDS = [0]
 FIRINGS = [0]

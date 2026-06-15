@@ -39,7 +39,7 @@ all get solver back-ends:
 
 ## Acceptance
 
-- `ein-bot solve zebra.ein --backend=smt:z3` returns the canonical
+- `ein solve zebra.ein --backend=smt:z3` returns the canonical
   answer.
 - `--mode=gaps` returns the expected diverging variables.
 - `--mode=contradictions` returns a minimal unsat core whose

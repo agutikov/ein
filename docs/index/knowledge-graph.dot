@@ -36,7 +36,7 @@ digraph KnowledgeGraph {
             clusterrank=local,
             fontname="Helvetica", fontsize=11, nodesep=0.45, ranksep=1.1,
             bgcolor="white", labelloc="t",
-            label="ein-bot / docs/index — Knowledge Graph of all topics" ];
+            label="Ein / docs/index — Knowledge Graph of all topics" ];
     node  [ fontname="Helvetica", fontsize=10, style="filled" ];
     edge  [ fontname="Helvetica", fontsize=9, color="grey40" ];
 
@@ -723,7 +723,7 @@ digraph KnowledgeGraph {
             LlamaIndex [shape=box3d, fillcolor=palegreen, label="LlamaIndex"];
             ReteAlgo   [shape=hexagon, fillcolor=khaki1, label="Rete algorithm"];
             CLIPS      [shape=box3d, fillcolor=palegreen, label="CLIPS / Drools"];
-            EinBot     [shape=doubleoctagon, fillcolor=lightcoral, label="ein-bot itself\n(this repo)"];
+            EinBot     [shape=doubleoctagon, fillcolor=lightcoral, label="Ein itself\n(this repo)"];
         }
 
         subgraph cluster_09_buzz {

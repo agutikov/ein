@@ -4,7 +4,7 @@ Definitions for terms used throughout the kernel documentation.
 Entries are grouped roughly by topic; cross-references point at the
 authoritative discussion.
 
-> **Scope.** This is a *kernel-internal* glossary — terms ein-bot
+> **Scope.** This is a *kernel-internal* glossary — terms Ein
 > uses with a specific technical meaning. Broader external concepts
 > (LLM, CSP, SMT solver, …) live in
 > [`docs/index/`](../index/).
@@ -55,7 +55,7 @@ node per fact + n slot-labelled edges to participants). See
 ### Levi-bipartite
 The canonical encoding of a hypergraph as an ordinary graph: every
 hyperedge becomes a node, with edges to each of its participants.
-Named after Friedrich Wilhelm Levi. In ein-bot, **the** canonical
+Named after Friedrich Wilhelm Levi. In Ein, **the** canonical
 form of every fact, regardless of arity. See
 [`ir/01-ein-graph/01_kb.md` §2.2](ir/01-ein-graph/01_kb.md).
 
@@ -156,7 +156,7 @@ the full 2⁷ cartesian product discussion.
 ### Reflexive
 `R(x,x)` holds for every `x` in the relation's domain. Example:
 `co-located` mathematically (every node is co-located with itself);
-ein-bot's M1 doesn't materialise the self-edges — see
+Ein's M1 doesn't materialise the self-edges — see
 [zebra.ein §Future-work](../../examples/zebra.ein).
 
 ### Asymmetric
@@ -184,7 +184,7 @@ grammar, so the engine can read its own traces. See
 ### DPO (double-pushout)
 A categorical formulation of graph rewriting where a rule is a span
 `L ← K → R` (matched subgraph K preserved, L-deletions and R-additions
-happen via pushouts). Ein-bot's pattern language is positive
+happen via pushouts). Ein's pattern language is positive
 conjunctive (no deletions), so the K = L case applies; the DPO
 machinery is reserved for the F1 categorical-formulation followup.
 See [`ir/03-ein-lang/04_dot_rendering.md` §Rule rendering mode (b)](ir/03-ein-lang/04_dot_rendering.md).
@@ -192,7 +192,7 @@ See [`ir/03-ein-lang/04_dot_rendering.md` §Rule rendering mode (b)](ir/03-ein-l
 ### E-graph (equality graph)
 A data structure that maintains equivalence classes of terms with
 shared sub-terms compressed — the canonical substrate for *equality
-saturation*. ein-bot ships a union-find placeholder; full e-graph
+saturation*. Ein ships a union-find placeholder; full e-graph
 is F4 Q30. See [`docs/index/06-graphs-rewrite-systems.md`](../index/06-graphs-rewrite-systems.md).
 
 ### Equality saturation
@@ -203,7 +203,7 @@ verification and superoptimisation. F4 promotion target. See
 
 ### ATMS (Assumption-based Truth Maintenance System)
 A truth-maintenance variant where every fact carries the set of
-assumptions it depends on. ein-bot's per-fact provenance (S1.2.3)
+assumptions it depends on. Ein's per-fact provenance (S1.2.3)
 is the ATMS-style substrate; the trace renderer + hypothesis loop
 read it. See [`docs/index/09-cognitive-architectures-neurosymbolic.md`](../index/09-cognitive-architectures-neurosymbolic.md).
 

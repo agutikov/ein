@@ -10,7 +10,7 @@ The kernel is Level B with generic-facts:
 import pytest
 from lark.exceptions import LarkError
 
-from ein_bot.ir import IRParseError, parse_tree
+from ein.ir import IRParseError, parse_tree
 
 
 def _ok(text: str):
@@ -412,7 +412,7 @@ def test_unknown_top_level_head_is_a_fact():
     {relation, rule, hrule, query, config} (+ the `trace` sibling) is a
     FACT — 'detect facts by *not* being reserved'. `(unknown-head …)` used
     to be a top-level parse error; it now parses as a generic fact."""
-    from ein_bot.ir import parse
+    from ein.ir import parse
     forms = parse("(unknown-head a b c)")
     assert len(forms) == 1
     assert forms[0].head.name == "unknown-head"
@@ -535,7 +535,7 @@ def test_examples_zebra_parses():
     sequence of rule decls, relation decls, facts, and one query."""
     from pathlib import Path
 
-    from ein_bot.ir import parse
+    from ein.ir import parse
 
     repo_root = Path(__file__).resolve().parents[2]
     zebra = repo_root / "examples" / "zebra.ein"

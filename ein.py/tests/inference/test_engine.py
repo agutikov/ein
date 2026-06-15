@@ -3,10 +3,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.engine import Engine
-from ein_bot.ir import parse
-from ein_bot.kb.entities import Layer
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.engine import Engine
+from ein.ir import parse
+from ein.kb.entities import Layer
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
 ZEBRA = REPO / "examples" / "zebra.ein"

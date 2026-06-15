@@ -11,10 +11,10 @@ from __future__ import annotations
 
 import pytest
 
-from ein_bot.inference.compile import AbsentGuard, compile_rule
-from ein_bot.ir import parse
-from ein_bot.kb.from_ir import KBLoadError
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.compile import AbsentGuard, compile_rule
+from ein.ir import parse
+from ein.kb.from_ir import KBLoadError
+from ein.kb.store import KnowledgeBase
 
 
 def _load(src: str) -> KnowledgeBase:
@@ -158,8 +158,8 @@ def test_existing_import_free_kb_unaffected():
 
 
 def _resolved(src: str):
-    from ein_bot.ir import dump_canonical
-    from ein_bot.kb.imports import resolve_and_minimize
+    from ein.ir import dump_canonical
+    from ein.kb.imports import resolve_and_minimize
     forms = resolve_and_minimize(parse(src), base_dir=None)
     return forms, dump_canonical(forms)
 

@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEMO = REPO_ROOT / "examples" / "features" / "05_stdlib_domain_elim.ein"

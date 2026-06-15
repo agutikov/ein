@@ -23,7 +23,7 @@ Cross-references:
 - Layout spec:
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.29_lattice_proof.md``
 - Implementation:
-  ``ein.py/src/ein_bot/inference/monotonic/state_dump.py`` (the
+  ``ein.py/src/ein/inference/monotonic/state_dump.py`` (the
   :class:`LatticeDumper` class).
 """
 from __future__ import annotations
@@ -31,13 +31,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ein_bot.inference.monotonic import (
+from ein.inference.monotonic import (
     LatticeDumper,
     contradictions_solve,
     gaps_solve,
 )
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"

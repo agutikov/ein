@@ -36,13 +36,13 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.monotonic import (
+from ein.inference.monotonic import (
     contradictions_solve,
     validate_proof_for_explanation,
 )
-from ein_bot.inference.verdict import Contradiction
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.verdict import Contradiction
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 LATTICE = REPO / "examples" / "lattice"

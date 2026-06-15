@@ -12,9 +12,9 @@ from __future__ import annotations
 from collections import Counter
 from pathlib import Path
 
-from ein_bot.inference.monotonic import gaps_solve
-from ein_bot.ir import parse
-from ein_bot.kb import KnowledgeBase
+from ein.inference.monotonic import gaps_solve
+from ein.ir import parse
+from ein.kb import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[2]
 

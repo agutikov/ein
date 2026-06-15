@@ -31,7 +31,7 @@ These are seeds for further work, not specifications.
    Direct AST → SMT loses too much; an intermediate graph-shaped
    semantic IR is the right hinge.
 
-5. [Zebra-puzzle graph reasoner (5-year-old ein-bot design)](05-zebra-puzzle-graph-reasoner.md)
+5. [Zebra-puzzle graph reasoner (5-year-old Ein design)](05-zebra-puzzle-graph-reasoner.md)
    Typed constraint graph + constraints + triangle/square inference +
    hypothesis generation / testing / multilevel branching + ambiguity
    detection.
@@ -81,7 +81,7 @@ visible:
 ## How to use these files
 
 - These are *yours*. Treat them as a project notebook.
-- When working on `ein-bot`, the natural starting points are
+- When working on `Ein`, the natural starting points are
   ideas 5 (current state) and 4 (next step: NLP → graph).
 - The bolder long-arc ideas are 1 (self-modifying language) and 7
   (categorical formulation); they require sustained design work.

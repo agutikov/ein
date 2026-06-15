@@ -117,7 +117,7 @@ number*, not by target.
 
 ## 4. The "relation" problem — disambiguation
 
-The word "relation" carries **three** distinct meanings in ein-bot.
+The word "relation" carries **three** distinct meanings in Ein.
 The four-term table above defines the **graph-structural** meaning;
 the others are *uses* of it:
 
@@ -311,7 +311,7 @@ Candidates:
 
 Parked at [M1 Q28](../../../../plans/m1_core_graph_reasoning/open_questions.md#q28--empty-parens-node-semantics).
 The grammar currently parses `()` as a placeholder atom `@empty`
-(see [`src/ein_bot/ir/grammar.lark`](../../../../src/ein_bot/ir/grammar.lark));
+(see [`src/ein/ir/grammar.lark`](../../../../src/ein/ir/grammar.lark));
 no engine semantics are attached.
 
 ### 7.2 Relation declaration shape — body form and args grouping

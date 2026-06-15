@@ -21,11 +21,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import solve
-from ein_bot.inference.monotonic.state_dump import MonotonicDumper
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic import solve
+from ein.inference.monotonic.state_dump import MonotonicDumper
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 
 def _kb(text: str) -> KnowledgeBase:
@@ -217,7 +217,7 @@ def test_dumper_records_stop_after_solution_node(
     ``layer_end``. ``summary`` still fires via the ``_finish`` exit
     hook (guards against an early ``return`` that skips it).
     """
-    from ein_bot.inference.verdict import Solution
+    from ein.inference.verdict import Solution
     repo = Path(__file__).resolve().parents[4]
     text = (repo / "examples" / "branching" / "05_mini_zebra.ein").read_text()
     kb = _kb(text)

@@ -2,10 +2,10 @@
 
 Two layers:
 
-- The pure expander (:mod:`ein_bot.ir.macros`) — substitution, recursive
+- The pure expander (:mod:`ein.ir.macros`) — substitution, recursive
   (macro-invoking-macro) expansion, arity-mismatch + runaway-recursion
   rejection, and the identity property (a macro-free tree is unchanged).
-- The loader integration (:mod:`ein_bot.kb.from_ir`) — a `(macro …)`
+- The loader integration (:mod:`ein.kb.from_ir`) — a `(macro …)`
   declaration registers into ``kb.macros``; a rule clause's invocation is
   rewritten before compilation; reserved-name / duplicate rejection.
 
@@ -17,11 +17,11 @@ from __future__ import annotations
 
 import pytest
 
-from ein_bot.ir import dump_compact, parse
-from ein_bot.ir.macros import Macro, MacroError, expand_macros
-from ein_bot.ir.types import Atom, SForm, Var
-from ein_bot.kb.from_ir import KBLoadError
-from ein_bot.kb.store import KnowledgeBase
+from ein.ir import dump_compact, parse
+from ein.ir.macros import Macro, MacroError, expand_macros
+from ein.ir.types import Atom, SForm, Var
+from ein.kb.from_ir import KBLoadError
+from ein.kb.store import KnowledgeBase
 
 
 def _macro(src: str) -> Macro:
@@ -110,7 +110,7 @@ def test_macro_registers_in_kb():
 def test_macro_expands_in_rule_match():
     # A user-defined `forall` macro must compile to the same nested
     # AbsentGuard shape that compile.py's _desugar_forall produces.
-    from ein_bot.inference.compile import AbsentGuard, compile_rule
+    from ein.inference.compile import AbsentGuard, compile_rule
 
     kb = _kb("""
     (macro forall (?b ?G ?B)
@@ -148,7 +148,7 @@ def test_reserved_macro_name_rejected_at_load(name):
 def test_keyword_macro_name_rejected_at_parse(name):
     # SYMBOL-excluded keywords can't even be written as a macro NAME — the
     # negative-lookahead turns `(macro not …)` into a parse error.
-    from ein_bot.ir import IRParseError
+    from ein.ir import IRParseError
     with pytest.raises(IRParseError):
         parse(f"(macro {name} (?p) (rel ?p))")
 

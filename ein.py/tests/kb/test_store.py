@@ -5,7 +5,7 @@ examples (zebra.ein and zebra2.ein).
 """
 from __future__ import annotations
 
-from ein_bot.kb import (
+from ein.kb import (
     Fact,
     KnowledgeBase,
     Layer,
@@ -215,7 +215,7 @@ class TestZebra2:
 
 class TestOpenWorld:
     def test_undeclared_relation_auto_vivifies(self):
-        from ein_bot.ir import parse
+        from ein.ir import parse
         text = """
         (type Foo)
         (instance A Foo)
@@ -254,7 +254,7 @@ class TestEqClasses:
         assert c.equivalent("Norwegian", "Japanese")
 
     def test_classes_dict(self):
-        from ein_bot.kb.store import EqClasses
+        from ein.kb.store import EqClasses
         c = EqClasses()
         c.union("a", "b")
         c.union("c", "d")
@@ -270,13 +270,13 @@ class TestEqClasses:
 
 class TestIncrementalIndex:
     def test_index_fact_appends(self):
-        from ein_bot.ir import parse
+        from ein.ir import parse
         text = """
         (type T)
         (instance A T)
         (relation r T T)
         """
-        from ein_bot.kb import Provenance
+        from ein.kb import Provenance
         kb = KnowledgeBase.from_ir(parse(text))
         # Add a reasoning-layer fact incrementally.
         f = Fact(
@@ -321,7 +321,7 @@ class TestNestedFactArgsThroughLoader:
     """
 
     def test_loader_constructs_nested_fact_in_args(self):
-        from ein_bot.ir import parse
+        from ein.ir import parse
         forms = parse(
             '(hypothesis (co-located Norwegian House-2) :layer fact)'
         )
@@ -337,7 +337,7 @@ class TestNestedFactArgsThroughLoader:
 
     def test_nested_fact_equality_across_loads(self):
         """Two separate loads with identical IR produce equal nested facts."""
-        from ein_bot.ir import parse
+        from ein.ir import parse
         src = '(hypothesis (co-located Norwegian House-2) :layer fact)'
         kb1 = KnowledgeBase.from_ir(parse(src))
         kb2 = KnowledgeBase.from_ir(parse(src))
@@ -348,7 +348,7 @@ class TestNestedFactArgsThroughLoader:
         assert f1.args[0] == f2.args[0]
 
     def test_two_levels_of_nesting_through_loader(self):
-        from ein_bot.ir import parse
+        from ein.ir import parse
         forms = parse(
             '(contradiction-under     (hypothesis (co-located Norwegian House-2)) :layer fact)'
         )
@@ -372,8 +372,8 @@ class TestKBSnapshot:
     stable under later root mutations."""
 
     def test_kb_snapshot_isolation(self):
-        from ein_bot.ir import parse
-        from ein_bot.kb import Provenance
+        from ein.ir import parse
+        from ein.kb import Provenance
         text = """
         (type T)
         (instance a T)
@@ -414,8 +414,8 @@ class TestKBSnapshot:
         """A snapshot's :meth:`derivation_dag` walks the same chain
         the source had at snapshot time, even after the source
         mutates."""
-        from ein_bot.ir import parse
-        from ein_bot.kb import Provenance
+        from ein.ir import parse
+        from ein.kb import Provenance
         text = """
         (type T)
         (instance a T) (instance b T)
@@ -464,7 +464,7 @@ class TestKBSnapshot:
         """`relations` / `rules` are shared by reference — mutation of
         these on the source IS visible on the snapshot, by design.
         (S1.7.23 — there are no `types` / `instances` registries.)"""
-        from ein_bot.ir import parse
+        from ein.ir import parse
         text = """
         (type T)
         (instance a T)
@@ -486,8 +486,8 @@ class TestKBSnapshot:
         order, which is per-process random anyway; only contents are
         semantic, so this asserts ``==`` not key order.)
         """
-        from ein_bot.ir import parse
-        from ein_bot.kb import Provenance
+        from ein.ir import parse
+        from ein.kb import Provenance
         text = """
         (type T)
         (instance a T) (instance b T)
@@ -523,7 +523,7 @@ class TestKBSnapshot:
         (`_copy_fact_indexes_into`): the 5 fact-derived indexes are
         independent shallow copies that agree with the source by value;
         `_rules_by_relation` is shared by reference."""
-        from ein_bot.ir import parse
+        from ein.ir import parse
         text = """
         (type T)
         (instance a T) (instance b T)

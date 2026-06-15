@@ -42,7 +42,7 @@ file it keeps its id; do not reuse a closed id.
 | Q36 | Relation inheritance / rule polymorphism                                      | [followups F4](followups/f4_cross_cutting.md) |
 | Q37 | Induction — rules from facts                                                  | [followups F4](followups/f4_cross_cutting.md) |
 | Q38 | LLM as fact/relation/type/rule extractor                                      | [followups F4](followups/f4_cross_cutting.md) |
-| Q39 | Module path — `src/ein_bot/inference/` vs `src/ein_bot/rules/inference/`?     | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
+| Q39 | Module path — `src/ein/inference/` vs `src/ein/rules/inference/`?     | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
 | Q40 | `(hypothesis ?h)` / `(contradiction-under ?h)` rule premises — Provenance map? | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
 | Q41 | Rule priority — scale (100/200/…) and placement (per-rule vs config)          | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |
 | Q42 | P1.3 scope — path (a) narrow vs (b) all 10 with deferred                       | [M1](m1_core_graph_reasoning/open_questions.md) — resolved 2026-05-20 |

@@ -1,6 +1,6 @@
 """Within-layer candidate ordering switch — S1.5b.26 T1.5b.26.3.
 
-Pins :func:`ein_bot.inference.apriori.order_candidates` and its
+Pins :func:`ein.inference.apriori.order_candidates` and its
 wiring into :func:`_explore_layers` via
 :attr:`SolverConfig.lattice_order`:
 
@@ -19,9 +19,9 @@ depth budget.
 Cross-references:
 
 - Implementation:
-  ``ein.py/src/ein_bot/inference/apriori.py`` (the
+  ``ein.py/src/ein/inference/apriori.py`` (the
   :func:`order_candidates` function) and
-  ``ein.py/src/ein_bot/inference/monotonic/solver.py`` (the
+  ``ein.py/src/ein/inference/monotonic/solver.py`` (the
   call site in ``_explore_layers``).
 - Stage spec:
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.26_lattice_scoring.md``.
@@ -33,11 +33,11 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.apriori import order_candidates
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import contradictions_solve, gaps_solve
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.apriori import order_candidates
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic import contradictions_solve, gaps_solve
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"

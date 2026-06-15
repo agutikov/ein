@@ -8,9 +8,9 @@ converges (every back-derivation already exists), pinned here.
 """
 from __future__ import annotations
 
-from ein_bot.inference.saturator import Saturator, SaturatorStepLimitError
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator, SaturatorStepLimitError
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 _FAMILY = ("(import std.algebra :symbols "
            "(converse imply1 imply2-fwd imply2-reverse))\n")

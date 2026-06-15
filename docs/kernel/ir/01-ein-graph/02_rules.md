@@ -80,7 +80,7 @@ digraph rule_firing_flow {
 
 ## 2. The three types
 
-Rules in ein-bot fall into **three types** by *what their LHS
+Rules in Ein fall into **three types** by *what their LHS
 quantifies over* — what kinds of nodes the matcher must enumerate to
 find a binding. The taxonomy is operational: it tells the engine
 *how to search* for matches and tells the trace renderer *what to
@@ -288,7 +288,7 @@ implementation — but the rule itself stays declarative: the trace
 sees a named firing of the aggregate, not a raw Python call.
 
 T3 is the bridge between graph rewriting and classical CSP /
-arc-consistency reasoning. It's also where ein-bot's engine gains
+arc-consistency reasoning. It's also where Ein's engine gains
 search-pruning power that pure T1/T2 wouldn't reach.
 
 ---

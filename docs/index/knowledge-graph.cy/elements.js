@@ -3468,7 +3468,7 @@ window.cyElements = [
   {
     "data": {
       "id": "EinBot",
-      "label": "ein-bot itself\n(this repo)",
+      "label": "Ein itself\n(this repo)",
       "kind": "cog_arch",
       "dotShape": "doubleoctagon",
       "dotFill": "lightcoral",

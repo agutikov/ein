@@ -1,6 +1,6 @@
 """bench_monotonic CLI smoke + sound-solve run.
 
-The bench now drives :func:`ein_bot.inference.monotonic.solve`
+The bench now drives :func:`ein.inference.monotonic.solve`
 (the sound entry — verdict read off the deduped solution-node
 count ``k``, not a first-goal-match). The legacy
 ``monotonic_solve raises NotImplementedError`` skeleton is gone,

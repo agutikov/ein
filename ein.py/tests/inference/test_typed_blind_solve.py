@@ -16,10 +16,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.monotonic import solve
-from ein_bot.inference.verdict import Solution
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.monotonic import solve
+from ein.inference.verdict import Solution
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
 FIXTURE = REPO / "examples" / "branching" / "12_typed_blind_solve.ein"

@@ -5,9 +5,9 @@ structure** is fixed by this schema; layout (positions, rank,
 unspecified style choices) is free — `random_layout` is permitted.
 
 Per [Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21),
-render is mandatory (`ein_bot.ir.to_dot`,
+render is mandatory (`ein.ir.to_dot`,
 [S1.1.4](../../../../plans/m1_core_graph_reasoning/p1.1_ir_language/s1.1.4_ir_to_dot.md));
-reverse parse (`ein_bot.ir.from_dot`) is a P1.2 deliverable
+reverse parse (`ein.ir.from_dot`) is a P1.2 deliverable
 alongside the typed-hypergraph data model.
 
 This was [`docs/ir.md` §6](../../../ir.md) before the kernel-
@@ -52,13 +52,13 @@ also permitted; see
 
 **Default = compact (S1.6.0).** Faithful as it is, the
 list-node-per-relation Levi view is unreadable as a default. So
-`ein_bot.ir.to_dot` (and `ein-bot ir dot`) renders **compact** by
+`ein.ir.to_dot` (and `ein ir dot`) renders **compact** by
 default: a binary fact `(rel a b)` collapses to one labelled,
 relation-coloured arrow `a → b [label="rel"]` (the colour is the
 shared per-relation palette — see §Unified KB view). n-ary facts stay
 Levi-bipartite (no native hyperedge to collapse). The canonical
 Levi-bipartite view of *every* relation is opt-in via
-`to_dot(…, levi=True)` / `ein-bot ir dot --levi` / `EIN_RENDER_LEVI=1`.
+`to_dot(…, levi=True)` / `ein ir dot --levi` / `EIN_RENDER_LEVI=1`.
 
 ## Ontology — UML-ish
 
@@ -80,13 +80,13 @@ digraph ontology {
 cross-product (rule-mode × trace-view) collapsed to one diagram per
 rule: the side-by-side LHS|RHS view, the most readable for rule
 libraries. The overlay variant (c) is opt-in via
-`render_rule(…, mode="overlay")` / `ein-bot ir dot --rule-mode=overlay`
+`render_rule(…, mode="overlay")` / `ein ir dot --rule-mode=overlay`
 (the legacy single-letter names `"a"` / `"c"` are still accepted).
 **(b)** is opt-in.
 
 The renderer lives in
-[`ein_bot.render.rules`](../../../../ein.py/src/ein_bot/render/rules.py)
-(`ein-bot render rules|rule …`); `ir.to_dot` delegates to it.
+[`ein.render.rules`](../../../../ein.py/src/ein/render/rules.py)
+(`ein render rules|rule …`); `ir.to_dot` delegates to it.
 
 **(a) Side-by-side LHS | RHS** — explicit; readable for rule libraries.
 
@@ -173,7 +173,7 @@ The view names accept friendly aliases: `per-step` (a), `aggregate`
 
 The P1.5 ordered search tree was removed with the tree solver
 (2026-05-29); the engine now produces a **set-indexed commitment
-lattice**. [`ein_bot.render.lattice_dag`](../../../../ein.py/src/ein_bot/render/lattice_dag.py)
+lattice**. [`ein.render.lattice_dag`](../../../../ein.py/src/ein/render/lattice_dag.py)
 renders it as a DAG (`render_lattice(proof | snapshot, view=)`):
 
 - `rankdir=LR`, ranked by **layer** (= commitment-set size); layer 0
@@ -189,16 +189,16 @@ renders it as a DAG (`render_lattice(proof | snapshot, view=)`):
   embeds).
 
 Fed a `LatticeSnapshotV1`
-([`snapshot.py`](../../../../ein.py/src/ein_bot/inference/monotonic/snapshot.py))
+([`snapshot.py`](../../../../ein.py/src/ein/inference/monotonic/snapshot.py))
 the diagram is **order-stable across `lattice_order_seed`** (reuses the
 S1.5b.31 shuffle-invariance guarantee).
 
 ## Markdown trace (S1.6.4)
 
-The capstone output — what makes ein-bot *not just a solver* (idea 08)
+The capstone output — what makes Ein *not just a solver* (idea 08)
 — is not DOT but a **markdown narrative** that threads the diagrams
-together. [`ein_bot.trace`](../../../../ein.py/src/ein_bot/trace/)
-(`ein-bot solve <file> --trace=out.md`):
+together. [`ein.trace`](../../../../ein.py/src/ein/trace/)
+(`ein solve <file> --trace=out.md`):
 
 - `linearize(verdict)` turns the *unordered* commitment lattice into a
   depth-ordered story: the primary solution's firings as numbered
@@ -233,7 +233,7 @@ This is the 2021 prototype's *linked.svg* aesthetic — all the entity
 types on one canvas, related by labelled arrows, coloured by relation. See
 [S1.2.4](../../../../plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.4_graph_representation.md)
 for the design plan; the implementation is
-[`src/ein_bot/kb/render.py`](../../../../src/ein_bot/kb/render.py).
+[`src/ein/kb/render.py`](../../../../src/ein/kb/render.py).
 
 ### Schema
 
@@ -323,10 +323,10 @@ digraph reasoning_edge_example {
 ### CLI
 
 ```sh
-ein-bot kb dot examples/zebra.ein                              # all layers
-ein-bot kb dot examples/zebra.ein --layers=ontology,fact       # no reasoning
-ein-bot kb dot examples/zebra.ein --colour-by=layer            # 3 layer colours
-ein-bot kb dot examples/zebra.ein --no-instances                # types-only
+ein kb dot examples/zebra.ein                              # all layers
+ein kb dot examples/zebra.ein --layers=ontology,fact       # no reasoning
+ein kb dot examples/zebra.ein --colour-by=layer            # 3 layer colours
+ein kb dot examples/zebra.ein --no-instances                # types-only
 ```
 
 `utils/render_examples.sh` produces `_unified.dot` + `_unified.svg`
@@ -354,7 +354,7 @@ renderer's output is reviewed visually.
 
 The trace ([S1.6.4](../../../../plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/s1.6.4_markdown_trace.md))
 does not embed the whole KB per step — it embeds a **provenance cone**:
-[`ein_bot.render.slice`](../../../../ein.py/src/ein_bot/render/slice.py).
+[`ein.render.slice`](../../../../ein.py/src/ein/render/slice.py).
 
 - `render_slice(commitment, firings, kb)` — one hypothesis's cone: the
   hypothesis fact(s) (red seeds), the premises each firing consumed,
@@ -387,4 +387,4 @@ the API will reject non-conforming inputs rather than guess.
   concrete DOT encoding.
 - [`../02-data-model/02_store.md`](../02-data-model/02_store.md) —
   `DerivationDAG.to_dot()` and (S1.2.4) `KnowledgeBase.to_dot()`.
-- Grammar: [`src/ein_bot/ir/grammar.lark`](../../../../src/ein_bot/ir/grammar.lark).
+- Grammar: [`src/ein/ir/grammar.lark`](../../../../src/ein/ir/grammar.lark).

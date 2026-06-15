@@ -1,4 +1,4 @@
-# ein-bot IR — kernel specification
+# Ein IR — kernel specification
 
 > **This file is a redirect.** The IR documentation has been
 > reorganised into a kernel-documentation tree under
@@ -23,7 +23,7 @@
 ## New material — graph-first
 
 The reorganisation introduces two *new* chapters that the flat
-`ir.md` lacked. These describe ein-bot in **pure graph terms**, no
+`ir.md` lacked. These describe Ein in **pure graph terms**, no
 syntax, no Python — the conceptual core the rest of the kernel
 documentation builds on:
 
@@ -76,5 +76,5 @@ For new cross-references, prefer the direct kernel paths above.
 
 - [`docs/kernel/README.md`](kernel/README.md) — top-level
   orientation for the kernel documentation tree.
-- Grammar source of truth: [`src/ein_bot/ir/grammar.lark`](../src/ein_bot/ir/grammar.lark).
-- Code source of truth for the KB: [`src/ein_bot/kb/`](../src/ein_bot/kb/).
+- Grammar source of truth: [`src/ein/ir/grammar.lark`](../src/ein/ir/grammar.lark).
+- Code source of truth for the KB: [`src/ein/kb/`](../src/ein/kb/).

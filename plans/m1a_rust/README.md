@@ -58,7 +58,7 @@ Native Rust crate `ein` re-implementing:
 - Saturator + matcher + back-prop
 - Solver (`_consume` + the P1.5b monotonic / lattice engines)
 - Dumper + DOT renderer hooks
-- CLI (`ein-bot`-equivalent)
+- CLI (`Ein`-equivalent)
 
 Python becomes the reference oracle for differential testing
 (`tests/golden/zebra2.golden` etc. cross-checked against
@@ -98,7 +98,7 @@ allocations to make crossing the FFI boundary expensive.
 
 - **Boundary A vs B.** See § Scope. Decide on promotion.
 - **Build system.** `cargo` standalone, or `cargo` + `maturin`
-  for the PyO3 surface, or a hybrid where ein-bot the CLI stays
+  for the PyO3 surface, or a hybrid where Ein the CLI stays
   Python and only the engine crate is Rust.
 - **Memory model.** Append-only KB makes COW trivially correct
   (P1.8 Theme B2). Rust's borrow checker turns this into a

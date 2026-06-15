@@ -1,8 +1,8 @@
 """Predicate registry tests — S1.3.1 T1.3.1.9."""
 from __future__ import annotations
 
-from ein_bot.inference import predicates
-from ein_bot.ir.types import Atom, Int, Var
+from ein.inference import predicates
+from ein.ir.types import Atom, Int, Var
 
 
 def test_registry_contains_eq_and_neq_only():
@@ -70,8 +70,8 @@ def test_register_extends_registry():
 
 def test_loader_does_not_auto_vivify_predicates():
     """The kb loader must skip predicate names when auto-vivifying."""
-    from ein_bot.ir import parse
-    from ein_bot.kb.store import KnowledgeBase
+    from ein.ir import parse
+    from ein.kb.store import KnowledgeBase
 
     # A rule that uses `(neq ?a ?b)` positionally. The KB loader sees
     # the rule body but NOT a top-level `(neq …)` fact, so `neq`

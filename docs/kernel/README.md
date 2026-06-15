@@ -1,6 +1,6 @@
-# ein-bot kernel — documentation
+# Ein kernel — documentation
 
-The **kernel** is the part of ein-bot that's locked down by M1: the
+The **kernel** is the part of Ein that's locked down by M1: the
 graph it reasons over, the data structures that hold the graph in
 memory, the surface language users write, and (placeholder, P1.3)
 the inference engine that fires rules.
@@ -8,7 +8,7 @@ the inference engine that fires rules.
 Everything above the kernel — NL → IR (M2), SMT slice (M3), the
 self-modifying constraint language (followup F2) — *consumes* the
 kernel. Everything below — the Python implementation in
-`src/ein_bot/` — *implements* the kernel. This tree is the contract
+`src/ein/` — *implements* the kernel. This tree is the contract
 between them.
 
 ## Reading order
@@ -16,7 +16,7 @@ between them.
 The four sub-trees layer on each other:
 
 1. **[`ir/01-ein-graph/`](ir/01-ein-graph/)** — the **semantics**.
-   What ein-bot *reasons about*: nodes, edges, hyperedges, rewrite
+   What Ein *reasons about*: nodes, edges, hyperedges, rewrite
    rules. No syntax, no Python — pure graph theory tailored to the
    project's needs. Read this first to understand what the system
    thinks in.
@@ -42,7 +42,7 @@ The four sub-trees layer on each other:
    define rules is (3); the engine is described here.
 
 The order is also the order of **conceptual precedence**: the graph
-is canonical (see [feedback memory `graph-canonical`](../../../.claude/projects/-home-user-work-ein-bot/memory/feedback_graph_canonical.md)
+is canonical (see [feedback memory `graph-canonical`](../../../.claude/projects/-home-user-work-ein/memory/feedback_graph_canonical.md)
 in your local memory store) — the data model and the syntax are
 *views* of it, the engine *transforms* it.
 
@@ -68,8 +68,8 @@ Zebra-acceptance milestone.
 - Plans roadmap: [`plans/m1_core_graph_reasoning/`](../../plans/m1_core_graph_reasoning/).
 - Ideas (the user's framing of the project's *goals*): [`docs/ideas/`](../ideas/).
 - External tech index: [`docs/index/`](../index/).
-- Source of truth for parsing: [`src/ein_bot/ir/grammar.lark`](../../src/ein_bot/ir/grammar.lark).
-- Source of truth for the KB: [`src/ein_bot/kb/`](../../src/ein_bot/kb/).
+- Source of truth for parsing: [`src/ein/ir/grammar.lark`](../../src/ein/ir/grammar.lark).
+- Source of truth for the KB: [`src/ein/kb/`](../../src/ein/kb/).
 - **End-to-end target trace**:
   [`examples/README.md`](../../examples/README.md) — the human
   Wikipedia Zebra solution annotated as ein.py inference (NL ↔ ein

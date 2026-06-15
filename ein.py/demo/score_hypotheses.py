@@ -38,15 +38,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ein_bot.inference import primitives
-from ein_bot.inference.commitment import try_commitment_set
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.hypgen import score_hypothesis
-from ein_bot.inference.saturator import Saturator
-from ein_bot.inference.solution import is_solution_node, open_hypotheses
-from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.provenance import FactId, Provenance
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference import primitives
+from ein.inference.commitment import try_commitment_set
+from ein.inference.config import SolverConfig
+from ein.inference.hypgen import score_hypothesis
+from ein.inference.saturator import Saturator
+from ein.inference.solution import is_solution_node, open_hypotheses
+from ein.kb.entities import Fact, Layer
+from ein.kb.provenance import FactId, Provenance
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[2]
 DEFAULT_PUZZLE = REPO / "examples" / "zebra2.ein"

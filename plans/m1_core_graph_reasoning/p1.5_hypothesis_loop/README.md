@@ -170,7 +170,7 @@ and the updated
   tests/inference/test_canonicalisation.py
   tests/inference/test_hypgen_pruning.py
   tests/inference/test_config.py` ≥ 36 tests, green.
-- `ruff check src/ein_bot/inference/hypothesis.py
+- `ruff check src/ein/inference/hypothesis.py
   tests/inference/test_*.py` green.
 
 ## Connections

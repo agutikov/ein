@@ -16,7 +16,7 @@ likely leak sources:
   first-arrival semantics propagating into the snapshot).
 
 The snapshot serialiser at
-:mod:`ein_bot.inference.monotonic.snapshot` canonicalises the
+:mod:`ein.inference.monotonic.snapshot` canonicalises the
 multilabel reps, so a real failure here points at one of the
 first two suspects.
 
@@ -35,14 +35,14 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import (
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic import (
     contradictions_solve,
     gaps_solve,
     lattice_snapshot,
 )
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"
@@ -152,8 +152,8 @@ def test_lattice_snapshot_requires_proof():
     """``lattice_snapshot`` rejects a verdict whose ``proof``
     is None (the ``solve`` fast-path case, which carries no
     :class:`LatticeProof`)."""
-    from ein_bot.inference.monotonic import solve
-    from ein_bot.inference.verdict import Solution
+    from ein.inference.monotonic import solve
+    from ein.inference.verdict import Solution
 
     kb = _kb_from(BRANCHING / "01_saturate_only.ein")
     verdict, _ = solve(kb)

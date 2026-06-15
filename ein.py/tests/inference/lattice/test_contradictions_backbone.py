@@ -1,6 +1,6 @@
 """contradictions_solve backbone tests — S1.5b.23 T1.5b.23.5.
 
-Pins :func:`ein_bot.inference.monotonic.contradictions_solve`
+Pins :func:`ein.inference.monotonic.contradictions_solve`
 across the CONTRADICTIONS-mode contract:
 
 - Verdict is always :class:`Contradiction` (mode contract).
@@ -36,19 +36,19 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.monotonic import (
+from ein.inference.monotonic import (
     DeadCommitment,
     LatticeProof,
     LatticeStats,
     contradictions_solve,
 )
-from ein_bot.inference.monotonic.solver import (
+from ein.inference.monotonic.solver import (
     _LatticeLoopState,
     _record_setnode,
 )
-from ein_bot.inference.verdict import Contradiction
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.verdict import Contradiction
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"

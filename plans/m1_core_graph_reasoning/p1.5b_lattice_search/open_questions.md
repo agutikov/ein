@@ -27,7 +27,7 @@ reconstruct the rationale.
 ### Resolution
 
 ```
-ein.py/src/ein_bot/inference/
+ein.py/src/ein/inference/
    ├── *.py            ← common (Saturator, ContradictionDetector,
    │                     Lookahead, hypgen, kb-store helpers, base
    │                     dumper utilities)
@@ -142,7 +142,7 @@ Each candidate is then filtered:
 - No clause in ``root_kb._nogoods`` is a subset of the
   candidate (Q1.5b.2.b' — covers conditional deaths whose
   clauses propagated up from deeper layers; uses
-  [`matches_any_nogood`](../../../ein.py/src/ein_bot/inference/nogoods.py)).
+  [`matches_any_nogood`](../../../ein.py/src/ein/inference/nogoods.py)).
 - Every element is still in the current alive set (covers
   back-propagated single-element negatives written after
   layer-(k-1) closed).
@@ -164,7 +164,7 @@ time** (user 2026-05-25):
 subsumed** by ``(not (and h2 h3))`` — every model that
 satisfies the 2-clause also satisfies the 3-clause; adding the
 3-clause to the KB is a no-op (S1.5a.18's
-[`emit_nogood`](../../../ein.py/src/ein_bot/inference/nogoods.py)
+[`emit_nogood`](../../../ein.py/src/ein/inference/nogoods.py)
 already rejects subsumed clauses on emit). The right thing is
 to **filter the candidate set at generation time** — drop
 ``{h1, h2, h3}`` from layer 3 because ``{h2, h3} ∈ D_2``
@@ -189,7 +189,7 @@ S1.5a.18-style multi-element deaths that don't appear as
 **So the rule is:** generate ``A_k`` candidates from
 ``A_{k−1}`` × ``A_1`` (or via lexicographic prefix-join);
 filter by `matches_any_nogood(candidate, root_kb._nogoods)`
-([`nogoods.py`](../../../ein.py/src/ein_bot/inference/nogoods.py));
+([`nogoods.py`](../../../ein.py/src/ein/inference/nogoods.py));
 filter by current alive (each element still alive);
 deduplicate. The result is the **full and valid** layer-k
 candidate set.
@@ -416,7 +416,7 @@ type + matching helpers are identical.
 
 **Concrete reuse:**
 
-- ``ein.py/src/ein_bot/inference/nogoods.py`` — stays in the
+- ``ein.py/src/ein/inference/nogoods.py`` — stays in the
   **common** folder. Provides `emit_nogood(target_kb, clause)`
   (subsumption-aware insert) + `matches_any_nogood(candidate,
   path_set, nogoods)`. Tree's ``solver.py`` and DAG's
@@ -429,7 +429,7 @@ type + matching helpers are identical.
 **Q1.5b.5.b — Subsumption: same policy.** User direction
 *"yes same policy"*. When a strict subset clause arrives,
 remove the superset. Identical to S1.5a.18's
-[`emit_nogood`](../../../ein.py/src/ein_bot/inference/nogoods.py).
+[`emit_nogood`](../../../ein.py/src/ein/inference/nogoods.py).
 
 **Q1.5b.5.c — Size-1 clauses: no special case.** User
 direction *"no need for special case handling, what for?"*.

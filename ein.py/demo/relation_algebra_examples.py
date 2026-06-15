@@ -23,9 +23,9 @@ Run from the package root:  python demo/relation_algebra_examples.py
 """
 from __future__ import annotations
 
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 
 def saturate(src: str, max_steps: int = 4000):

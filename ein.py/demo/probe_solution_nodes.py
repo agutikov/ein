@@ -34,18 +34,18 @@ import sys
 import time
 from pathlib import Path
 
-from ein_bot.inference.canon import state_hash
-from ein_bot.inference.contradiction import ContradictionDetector
-from ein_bot.inference.monotonic import (
+from ein.inference.canon import state_hash
+from ein.inference.contradiction import ContradictionDetector
+from ein.inference.monotonic import (
     BudgetExceededError,
     contradictions_solve,
     gaps_solve,
     solve,
 )
-from ein_bot.inference.monotonic.solver import _compute_alive
-from ein_bot.inference.verdict import Ambiguity, Contradiction, Solution
-from ein_bot.ir import parse
-from ein_bot.kb import KnowledgeBase
+from ein.inference.monotonic.solver import _compute_alive
+from ein.inference.verdict import Ambiguity, Contradiction, Solution
+from ein.ir import parse
+from ein.kb import KnowledgeBase
 
 _LOC_RELS = ("color-loc", "nation-loc", "drink-loc", "smoke-loc", "pet-loc")
 

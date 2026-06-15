@@ -1,6 +1,6 @@
 """Commitment-lattice / proof-DAG renderer tests — S1.6.3.
 
-Covers `ein_bot.render.lattice_dag.render_lattice`:
+Covers `ein.render.lattice_dag.render_lattice`:
 
 - a 3-commitment proof (1 solution + 2 dead) renders with the right
   verdict colours; dead nodes carry an unsat-core tooltip + a no-good
@@ -22,22 +22,22 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.cli import main
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import (
+from ein.cli import main
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic import (
     contradictions_solve,
     gaps_solve,
     lattice_snapshot,
 )
-from ein_bot.inference.monotonic.lattice import (
+from ein.inference.monotonic.lattice import (
     DeadCommitment,
     LatticeProof,
     SolutionRecord,
 )
-from ein_bot.ir import parse, render_trace
-from ein_bot.kb import KnowledgeBase
-from ein_bot.kb.entities import Fact
-from ein_bot.render import render_lattice
+from ein.ir import parse, render_trace
+from ein.kb import KnowledgeBase
+from ein.kb.entities import Fact
+from ein.render import render_lattice
 
 REPO = Path(__file__).resolve().parents[3]
 BRANCHING = REPO / "examples" / "branching"

@@ -41,5 +41,5 @@ assume.
 ## Connections
 
 - The user's explicit open question.
-- [`/home/user/work/ein-bot/nlp/`](../../../nlp/) — the existing
+- [`/home/user/work/Ein/nlp/`](../../../nlp/) — the existing
   submodule that triggered the question.

@@ -3,7 +3,7 @@
 
 Mirrors :mod:`bench_solve`'s CLI shape but reaches into
 ``inference/monotonic/`` instead of ``inference/tree/``. The
-verdict is SOUND — :func:`ein_bot.inference.monotonic.solve`
+verdict is SOUND — :func:`ein.inference.monotonic.solve`
 reads Solution / Ambiguity / Contradiction off the deduped
 solution-node count ``k`` (not a first-goal-match). Default
 ``--stop_after=1`` stops at the first complete∧consistent
@@ -25,20 +25,20 @@ import time
 from pathlib import Path
 from typing import Any
 
-# Make `from ein_bot.…` resolve when running from a checkout.
+# Make `from ein.…` resolve when running from a checkout.
 sys.path.insert(
     0, str(Path(__file__).resolve().parents[1] / "src"),
 )
 
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.lookahead import Lookahead
-from ein_bot.inference.monotonic.solver import (
+from ein.inference.config import SolverConfig
+from ein.inference.lookahead import Lookahead
+from ein.inference.monotonic.solver import (
     BudgetExceededError,
     solve,
 )
-from ein_bot.inference.monotonic.state_dump import MonotonicDumper
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.monotonic.state_dump import MonotonicDumper
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 # ── Verbose progress dumper ───────────────────────────────────────
 
@@ -256,8 +256,8 @@ def _build_argparser() -> argparse.ArgumentParser:
 def _query_goal_bindings(kb: KnowledgeBase) -> list[dict[str, str]]:
     """Run the query's ``:goal`` pattern against ``kb``; return
     binding rows. Mirrors bench_solve.query_goal_bindings."""
-    from ein_bot.inference.compile import JoinPlan, compile_pattern
-    from ein_bot.inference.match import run as match_run
+    from ein.inference.compile import JoinPlan, compile_pattern
+    from ein.inference.match import run as match_run
 
     if kb is None or kb.query is None:
         return []
@@ -318,11 +318,11 @@ def _print_root_hyp_preview(kb: KnowledgeBase, verbose: bool) -> None:
     """
     from collections import Counter
 
-    from ein_bot.inference.closed import emit_closed
-    from ein_bot.inference.hypgen import (
+    from ein.inference.closed import emit_closed
+    from ein.inference.hypgen import (
         generate_hypotheses_with_stats,
     )
-    from ein_bot.inference.saturator import Saturator
+    from ein.inference.saturator import Saturator
 
     preview = kb.fork()
     emit_closed(preview)
@@ -351,7 +351,7 @@ def _print_root_hyp_preview(kb: KnowledgeBase, verbose: bool) -> None:
 def _fact_sexpr(arg: Any) -> str:
     """Render a Fact arg as an s-expression, recursing into nested
     Fact args (e.g. for ``(not (co-located Blue Green))``)."""
-    from ein_bot.kb.entities import Fact
+    from ein.kb.entities import Fact
 
     if isinstance(arg, Fact):
         inner = " ".join(_fact_sexpr(a) for a in arg.args)
@@ -367,7 +367,7 @@ def _hypothesis_target_relations(kb: KnowledgeBase) -> set[str]:
     the puzzle has no query/hrules."""
     if kb is None or kb.query is None:
         return set()
-    from ein_bot.ir import Atom, SForm
+    from ein.ir import Atom, SForm
 
     def _atoms(node: Any, out: set[str]) -> set[str]:
         if isinstance(node, Atom):
@@ -405,7 +405,7 @@ def _print_final_state(
       ``*-loc``). Negatives have relation_name ``not`` ∉ targets, so they drop
       out for free.
     """
-    from ein_bot.kb.entities import Layer
+    from ein.kb.entities import Layer
 
     if mode == "hfacts":
         targets = targets or set()

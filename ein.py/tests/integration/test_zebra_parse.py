@@ -30,11 +30,11 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.contradiction import ContradictionDetector
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import IRParseError, parse
-from ein_bot.kb.entities import Layer
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.contradiction import ContradictionDetector
+from ein.inference.saturator import Saturator
+from ein.ir import IRParseError, parse
+from ein.kb.entities import Layer
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
 EXAMPLES = REPO / "examples"

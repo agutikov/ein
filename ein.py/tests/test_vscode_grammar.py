@@ -4,8 +4,8 @@
 name sets in head position — declarators, rule-body / ⊥ primitives, and
 computed predicates. Those sets have a single source of truth:
 
-- primitives → :mod:`ein_bot.inference.primitives` (``STRUCTURAL``)
-- predicates → :mod:`ein_bot.inference.predicates` (``names()``)
+- primitives → :mod:`ein.inference.primitives` (``STRUCTURAL``)
+- predicates → :mod:`ein.inference.predicates` (``names()``)
 - declarators → ``docs/kernel/ir/03-ein-lang/06_reserved_names.md`` (the
   closed P1.7c set; mirrored as ``EXPECTED_DECLARATORS`` below)
 
@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference import predicates, primitives
+from ein.inference import predicates, primitives
 
 REPO = Path(__file__).resolve().parents[1]
 # examples/ and utils/ live at the project root (one level above ein.py/).

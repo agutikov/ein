@@ -5,9 +5,9 @@ relation marked `(__symmetric__ R)` has its extension closed under arg-swap
 directly by the saturator — no compiled rule, no `match.run`. Same closure as
 `(symmetric R)`, produced faster (bench: `demo/bench_symmetric.py`).
 """
-from ein_bot.inference.saturator import SYMMETRIC, Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import SYMMETRIC, Saturator
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 # 3 given edges: a normal pair, another pair, and a self-loop.
 _EDGES = "(relation knows T T)\n(knows A B)\n(knows C D)\n(knows E E)\n"

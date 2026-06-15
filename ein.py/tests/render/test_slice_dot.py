@@ -1,6 +1,6 @@
 """Derivation-slice + KB-snapshot renderer tests — S1.6.2.
 
-Covers `ein_bot.render.slice`:
+Covers `ein.render.slice`:
 
 - a provenance cone renders only its own facts (not the whole KB);
 - seeds are red, derived facts bold, negative (eliminated) facts grey;
@@ -18,11 +18,11 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.firing import Firing
-from ein_bot.ir import parse
-from ein_bot.kb import KnowledgeBase
-from ein_bot.kb.entities import Fact, Layer
-from ein_bot.render import render_slice, render_solution, render_state
+from ein.inference.firing import Firing
+from ein.ir import parse
+from ein.kb import KnowledgeBase
+from ein.kb.entities import Fact, Layer
+from ein.render import render_slice, render_solution, render_state
 
 _HAVE_DOT = shutil.which("dot") is not None
 
@@ -185,7 +185,7 @@ def test_all_renderers_emit_valid_dot():
 
 @pytest.mark.skipif(not _HAVE_DOT, reason="graphviz `dot` not installed")
 def test_real_gaps_solve_cone_parses():
-    from ein_bot.inference.monotonic.solver import gaps_solve
+    from ein.inference.monotonic.solver import gaps_solve
     repo = Path(__file__).resolve().parents[3]
     kb = _kb((repo / "examples" / "branching" / "04_two_levels.ein").read_text())
     verdict, _ = gaps_solve(kb, max_set_size=3)

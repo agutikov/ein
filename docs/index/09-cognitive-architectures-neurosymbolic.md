@@ -2,7 +2,7 @@
 
 Systems that try to unify multiple reasoning modes — symbolic + neural,
 logical + probabilistic, memory + execution — inside one substrate.
-Most lines of the discussion converge here, since the `ein-bot` Zebra
+Most lines of the discussion converge here, since the `Ein` Zebra
 solver itself is a *typed constraint graph + rule engine + backtracking
 solver* with explicit hypothesis branching.
 
@@ -117,8 +117,8 @@ classical "expert systems".
 - Wikipedia (Rete algorithm): <https://en.wikipedia.org/wiki/Rete_algorithm>
 - CLIPS: <https://www.clipsrules.net/>
 
-### ein-bot itself
-The `ein-bot` repository in this working tree fits squarely in this
+### Ein itself
+The `Ein` repository in this working tree fits squarely in this
 chapter: a typed relational hypergraph (Ontology + Fact + Reasoning
 layers) + inference rules (triangle, square, exclusivity, hypothesis)
 + backtracking. README:

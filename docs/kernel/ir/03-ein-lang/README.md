@@ -7,7 +7,7 @@ S-expression dialect — a flat sequence of forms classified by head
 model in [`../02-data-model/`](../02-data-model/).
 
 > **Source of truth for what parses**:
-> [`src/ein_bot/ir/grammar.lark`](../../../../src/ein_bot/ir/grammar.lark).
+> [`src/ein/ir/grammar.lark`](../../../../src/ein/ir/grammar.lark).
 > This tree explains intent, examples, and rendering — the grammar
 > file is canonical.
 

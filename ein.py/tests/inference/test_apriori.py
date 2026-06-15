@@ -1,13 +1,13 @@
 """Apriori-gen unit tests — S1.5b.2 T1.5b.2.2.
 
 Pins the textbook prefix-join + filter helpers in
-:mod:`ein_bot.inference.apriori`. The module is pure
+:mod:`ein.inference.apriori`. The module is pure
 set-arithmetic, so every test is a hand-computed fixture; no
 kb / saturator / engine state involved.
 """
 from __future__ import annotations
 
-from ein_bot.inference.apriori import (
+from ein.inference.apriori import (
     apriori_prefix_join,
     canonicalise,
     filter_candidate,

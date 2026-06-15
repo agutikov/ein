@@ -6,9 +6,9 @@ defines the sibling group) and `?exclusive-under` (the relation
 those siblings cannot pairwise co-occur in). Both activator
 patterns must produce the expected `(not …)` derivations.
 """
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 _SIB = """
 (rule sibling-exclusive (?siblings-via ?exclusive-under)

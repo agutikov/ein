@@ -1,7 +1,7 @@
-# ein-bot graph — semantic core
+# Ein graph — semantic core
 
 The graph the engine reasons over. **No language, no Python here** —
-this tree describes ein-bot in graph-theory terms.
+this tree describes Ein in graph-theory terms.
 
 ## Files
 

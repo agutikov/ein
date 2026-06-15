@@ -6,7 +6,7 @@ reference. Areas: **ENG** = monotonic search engine, **KER** = inference
 kernel, **KB** = data model, **RTC** = render / trace / cli / ir.
 
 Review method (2026-06-01): ruff (clean — this is *structural*, not lint,
-debt), an AST span/branch/nesting scan over the whole `ein_bot` package,
+debt), an AST span/branch/nesting scan over the whole `ein` package,
 four parallel subsystem reviews, then **direct code-path verification** of
 every correctness-touching or deletion-bound claim (per the project rule
 *"verify engine claims — read the code path, don't assert from

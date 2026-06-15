@@ -1,6 +1,6 @@
 """Commitment-set primitive tests — S1.5b.3 T1.5b.3.2.
 
-Pins :func:`ein_bot.inference.commitment.try_commitment_set`
+Pins :func:`ein.inference.commitment.try_commitment_set`
 across the trichotomy (alive / dead-pre / dead-post) + the
 unconditional-fact extraction (the soundness-critical novel
 piece) + isolation between two calls + the empty-commitment
@@ -8,15 +8,15 @@ sentinel.
 """
 from __future__ import annotations
 
-from ein_bot.inference.commitment import (
+from ein.inference.commitment import (
     CommitmentSetResult,
     try_commitment_set,
 )
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.provenance import Provenance
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.entities import Fact, Layer
+from ein.kb.provenance import Provenance
+from ein.kb.store import KnowledgeBase
 
 
 def _kb(text: str) -> KnowledgeBase:

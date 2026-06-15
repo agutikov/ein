@@ -307,8 +307,8 @@ def _load(text: str, filename: str):
     import warnings
     repo = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(repo / "ein.py" / "src"))
-    from ein_bot.ir import parse
-    from ein_bot.kb.from_ir import load
+    from ein.ir import parse
+    from ein.kb.from_ir import load
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", DeprecationWarning)
         return load(parse(text, filename=filename))
@@ -371,7 +371,7 @@ def migrate_py_text(src: str, name: str) -> tuple[str, int]:
     before and after, and load to an identical KB fingerprint."""
     import ast
 
-    from ein_bot.ir import IRParseError, parse  # noqa: F401 (import guard)
+    from ein.ir import IRParseError, parse  # noqa: F401 (import guard)
 
     tree = ast.parse(src)
     offs = _line_offsets(src)

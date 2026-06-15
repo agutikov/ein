@@ -39,7 +39,7 @@ the provenance records are non-optional — they're what makes the
 
 ## Acceptance
 
-- `from ein_bot.kb import KnowledgeBase`, populated by
+- `from ein.kb import KnowledgeBase`, populated by
   `KnowledgeBase.from_ir(parse_file("examples/zebra.ein"))`.
 - Entity API: `kb.types`, `kb.instances`, `kb.relations`, `kb.rules`,
   `kb.facts`. Each entity exposes its cross-references as attributes

@@ -1,4 +1,4 @@
-# ein-bot
+# Ein
 
 > **Personal learn-and-research project.** Not production software, not
 > a library, not a benchmark. Code, notes, and the topic catalogue here
@@ -14,8 +14,8 @@ modernised in light of neuro-symbolic and constrained-reasoning research.
 | path                 | what's in it                                                                 |
 |----------------------|------------------------------------------------------------------------------|
 | `ein.py/`               | Python implementation (package, tests, pyproject, demo scripts)              |
-| `ein.py/src/ein_bot/ir/` | the IR — Lark grammar, typed AST, parser, dump, DOT renderer                |
-| `ein.py/src/ein_bot/cli.py` | console script: `ein-bot ir parse | lint | dot`                          |
+| `ein.py/src/ein/ir/` | the IR — Lark grammar, typed AST, parser, dump, DOT renderer                |
+| `ein.py/src/ein/cli.py` | console script: `ein ir parse | lint | dot`                          |
 | `ein.py/tests/`         | pytest suite (~500 tests)                                                    |
 | `ein.py/demo/`          | runnable demo scripts (bench_saturate.py, …)                                 |
 | `ein.py/pyproject.toml` | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff` |
@@ -36,13 +36,13 @@ modernised in light of neuro-symbolic and constrained-reasoning research.
 
 ## Quickstart — Python CLI
 
-The package installs a console script `ein-bot` with three subcommands
+The package installs a console script `ein` with three subcommands
 on the IR.
 
 ### Install
 
 ```sh
-./venv_install.sh                  # creates .venv, installs ein-bot[dev]
+./venv_install.sh                  # creates .venv, installs ein[dev]
 # or pin an interpreter:
 ./venv_install.sh /usr/bin/python3.12
 source .venv/bin/activate
@@ -54,9 +54,9 @@ The script needs Python ≥ 3.10. It's safe to re-run — an existing
 ### Usage
 
 ```sh
-ein-bot ir parse <file>                              # canonical re-dump
-ein-bot ir lint  <file>                              # parse-only check
-ein-bot ir dot   <file> [--rule-mode=a|c] [--trace-view=a|b|c]
+ein ir parse <file>                              # canonical re-dump
+ein ir lint  <file>                              # parse-only check
+ein ir dot   <file> [--rule-mode=a|c] [--trace-view=a|b|c]
 ```
 
 | subcommand    | effect                                                       |
@@ -71,15 +71,15 @@ ein-bot ir dot   <file> [--rule-mode=a|c] [--trace-view=a|b|c]
 
 ```sh
 # round-trip the bundled Zebra puzzle through the canonical printer
-ein-bot ir parse examples/zebra.ein | head -20
+ein ir parse examples/zebra.ein | head -20
 
 # render it as an SVG
-ein-bot ir dot examples/zebra.ein | dot -Tsvg -o /tmp/zebra.svg
+ein ir dot examples/zebra.ein | dot -Tsvg -o /tmp/zebra.svg
 
 # from Python — typed AST
 python -c '
 from pathlib import Path
-from ein_bot.ir import parse, dump_canonical
+from ein.ir import parse, dump_canonical
 forms = parse(Path("examples/zebra.ein").read_text())
 print(len(forms), "top-level forms")
 for f in forms:
@@ -90,7 +90,7 @@ for f in forms:
 ### IR file format
 
 S-expression intermediate representation; the grammar is
-`ein.py/src/ein_bot/ir/grammar.lark` and the spec is
+`ein.py/src/ein/ir/grammar.lark` and the spec is
 [`docs/kernel/`](docs/kernel/) (graph semantics, data model, surface
 language, inference engine — split per
 [`docs/kernel/README.md`](docs/kernel/README.md)). Six top-level forms:

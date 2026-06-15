@@ -91,7 +91,7 @@ change when the engine arrives:
 ## M1 invariant — alive-set soundness
 
 The solver **recomputes** the alive-candidate set per-KB via
-[`_compute_alive`](../../../ein.py/src/ein_bot/inference/monotonic/solver.py)
+[`_compute_alive`](../../../ein.py/src/ein/inference/monotonic/solver.py)
 (`= open_hypotheses(kb)`) — the open hypotheses are a pure function of the
 closed KB. (Historical: an *inherit-once* optimization — seed `kb.alive` at
 root saturation, let forks inherit it via `kb.fork()`, run
@@ -117,7 +117,7 @@ pre-conditions hold across the puzzle's rule library — collectively the
 Under these clauses, every admissible hypothesis is enumerable
 from the current KB state; deeper branches **eliminate** candidates,
 never extend the space. The same "alive ⇐ KB" argument licenses the
-[`canon.state_hash`](../../../ein.py/src/ein_bot/inference/canon.py)
+[`canon.state_hash`](../../../ein.py/src/ein/inference/canon.py)
 KB-only dedup — two KBs with identical facts have identical futures.
 
 **When the invariant breaks** (a rule library asserts new
@@ -134,9 +134,9 @@ when F5 lands.
 ## NAF semantics — fire-time re-evaluation (S1.5a.1)
 
 `(absent P)` in a `:match` clause compiles to an
-[`AbsentGuard`](../../../ein.py/src/ein_bot/inference/compile.py)
+[`AbsentGuard`](../../../ein.py/src/ein/inference/compile.py)
 step. The matcher's
-[`_run_steps`](../../../ein.py/src/ein_bot/inference/match.py)
+[`_run_steps`](../../../ein.py/src/ein/inference/match.py)
 yields a binding only when the AbsentGuard's `sub_steps` produce
 zero matches against the current KB — classical NAF over the
 saturator's accumulating fact base.
@@ -162,12 +162,12 @@ NAFs over don't have that protection, and neither does any
 branched saturation that starts with a non-empty queue.
 
 **The fix.**
-[`match.absents_still_pass(plan, bindings, kb)`](../../../ein.py/src/ein_bot/inference/match.py)
+[`match.absents_still_pass(plan, bindings, kb)`](../../../ein.py/src/ein/inference/match.py)
 walks the plan's top-level `AbsentGuard` steps and re-runs each
 sub-plan against the *current* KB with the dequeued bindings.
 `Saturator._apply` calls it after the redundant-conclusion check
 and before
-[`fire()`](../../../ein.py/src/ein_bot/inference/firing.py);
+[`fire()`](../../../ein.py/src/ein/inference/firing.py);
 on `False`, the binding is recorded in `engine._fired` (so the
 queue stops churning on it), `Saturator.naf_dropped` is
 incremented, and `_apply` returns `None`. The caller in `step()`
@@ -196,17 +196,17 @@ re-evaluates every plan against its own KB and so its
 
 **Static NAF dependency map (S1.7.4).** The fire-time re-eval makes
 *every* derived-NAF rule sound, but it doesn't tell the author *which*
-of their rules rely on it. [`naf_deps`](../../../ein.py/src/ein_bot/inference/naf_deps.py)
+of their rules rely on it. [`naf_deps`](../../../ein.py/src/ein/inference/naf_deps.py)
 answers that statically:
-[`Engine.naf_dependency_map()`](../../../ein.py/src/ein_bot/inference/engine.py)
+[`Engine.naf_dependency_map()`](../../../ein.py/src/ein/inference/engine.py)
 walks the compile cache and returns one `NafDep` per `(rule, activator)`
 that carries an `AbsentGuard`, splitting the watched relations into
 `derived` (some rule positively asserts it — or, for an
 `(absent (not (R …)))` guard, some rule asserts `(not (R …))`) vs
 `declared_only` (extension fixed by enumerated ONTOLOGY-/FACT-layer
 facts — no rule produces it). The
-classification reuses [`compile.asserted_relation`](../../../ein.py/src/ein_bot/inference/compile.py)
-(the same test behind [`closed.producible_relations`](../../../ein.py/src/ein_bot/inference/closed.py))
+classification reuses [`compile.asserted_relation`](../../../ein.py/src/ein/inference/compile.py)
+(the same test behind [`closed.producible_relations`](../../../ein.py/src/ein/inference/closed.py))
 and its `negated_relation` dual. Because the activator-bound head var
 (`?S` in `adjacent-via-*`) is baked to a literal relation per activator,
 the split is per-activator: zebra2's `adjacent-via-fwd` is derived-NAF on
@@ -237,11 +237,11 @@ promotes to load-bearing under [S1.7.7](../../../plans/m1_core_graph_reasoning/p
 ## Hypgen pre-pruning — disjunctive-prune (S1.5a.2)
 
 The hypothesis generator
-([`generate_hypotheses`](../../../ein.py/src/ein_bot/inference/hypgen.py))
+([`generate_hypotheses`](../../../ein.py/src/ein/inference/hypgen.py))
 emits one candidate `(?R ?A ?B)` per legal slot-fill at root
 saturation; each candidate becomes a hypothesis the solver
 might branch on. The generator's filter consults
-[`kb._negated_facts`](../../../ein.py/src/ein_bot/kb/store.py)
+[`kb._negated_facts`](../../../ein.py/src/ein/kb/store.py)
 to drop candidates whose negation is already known: a
 candidate ``(color-loc Yellow House-3)`` is dropped if
 ``(not (color-loc Yellow House-3))`` is in `_negated_facts`.
@@ -289,7 +289,7 @@ direction's NAF explicit in its own match clause.
 ## Determinism — content-based candidate ordering (S1.5a.1a)
 
 `solve()` visits hypothesis branches in the order
-[`_candidates_for`](../../../ein.py/src/ein_bot/inference/solver.py)
+[`_candidates_for`](../../../ein.py/src/ein/inference/solver.py)
 returns them. Pre-S1.5a.1a that list was the iteration of a
 `frozenset` (the root alive-set stashed on `kb.alive`), which
 reaches `hash(Fact)`, which reaches `hash(str)` — randomised
@@ -297,7 +297,7 @@ per process by Python since 3.3. The visible symptom: every
 `bench_solve` invocation explored branches in a different order.
 
 The fix sorts the result of `_candidates_for` by
-[`_candidate_sort_key`](../../../ein.py/src/ein_bot/inference/solver.py):
+[`_candidate_sort_key`](../../../ein.py/src/ein/inference/solver.py):
 
 ```python
 (-score_hypothesis(fact, kb), fact.args, fact.relation_name)
@@ -305,7 +305,7 @@ The fix sorts the result of `_candidates_for` by
 
 All three components are content-derived; `hash(str)` never
 reaches the tuple. With the M1 stub
-[`score_hypothesis`](../../../ein.py/src/ein_bot/inference/hypgen.py)
+[`score_hypothesis`](../../../ein.py/src/ein/inference/hypgen.py)
 returning `0` for every fact, the effective order is
 ``(args, relation_name)`` — alphabetic on first arg, then
 second, then relation. The score primary key is the slot
@@ -416,7 +416,7 @@ fork.
 
 S1.5a.19 fixes this with two cheap pre-fork checks plus a
 mid-sweep saturator pass
-([`solver.py:1075-1122`](../../../ein.py/src/ein_bot/inference/solver.py)):
+([`solver.py:1075-1122`](../../../ein.py/src/ein/inference/solver.py)):
 
 ```python
 for h in to_check:
@@ -502,9 +502,9 @@ The test is **not** the shallow one — *"the fact's own provenance isn't
 `kind='hypothesis'`"*. That read is unsound: a `kind='rule'` fact can still
 derive, through a chain of firings, from a committed hypothesis — its own
 provenance is `'rule'`, but its premises are not.
-[`commitment._is_unconditional`](../../../ein.py/src/ein_bot/inference/commitment.py)
+[`commitment._is_unconditional`](../../../ein.py/src/ein/inference/commitment.py)
 runs the shared
-[`provenance.reaches`](../../../ein.py/src/ein_bot/kb/provenance.py) DFS over
+[`provenance.reaches`](../../../ein.py/src/ein/kb/provenance.py) DFS over
 `premises_raw` transitively — resolving each id against the KB — with a
 *commitment-set terminal*: a chain is **conditional** iff it reaches a
 `FactId` in the committed set, and **unconditional** iff every chain grounds
@@ -529,11 +529,11 @@ The tree engine's depth-first ordering over hypothesis branches
 prices in d! orderings of the same commitment set — for d=4 on
 zebra2 that's 24× redundant work on each set. The **monotonic
 engine** under
-[`ein.py/src/ein_bot/inference/monotonic/`](../../../ein.py/src/ein_bot/inference/monotonic/)
+[`ein.py/src/ein/inference/monotonic/`](../../../ein.py/src/ein/inference/monotonic/)
 collapses this by indexing by commitment **set** rather than
 path: layer N enumerates every size-N alive subset via
 Apriori-style prefix-join, enters each via the common
-[`try_commitment_set`](../../../ein.py/src/ein_bot/inference/commitment.py)
+[`try_commitment_set`](../../../ein.py/src/ein/inference/commitment.py)
 primitive, and merges only the unconditional consequences back
 into a single root KB. First goal-satisfying commitment wins
 (SOLVE mode — Q1.5b.7); GAPS / CONTRADICTIONS belong to the

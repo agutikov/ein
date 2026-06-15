@@ -4,12 +4,12 @@
   "scopeName": "source.ein",
   "fileTypes": ["ein"],
   "_comment": [
-    "ein-bot surface-language TextMate grammar (S1.7c.8). REGEX highlighting,",
+    "Ein surface-language TextMate grammar (S1.7c.8). REGEX highlighting,",
     "not a parser: it will happily colour syntactically-invalid ein — shape",
     "correctness is the loader's job (kb.from_ir). The three closed reserved",
     "name sets below are the single source of truth's mirror — keep them in",
     "sync with docs/kernel/ir/03-ein-lang/06_reserved_names.md (declarators)",
-    "and ein.py/src/ein_bot/inference/{primitives,predicates}.py (rule-body",
+    "and ein.py/src/ein/inference/{primitives,predicates}.py (rule-body",
     "primitives + computed predicates). The test tests/test_vscode_grammar.py",
     "re-derives each list from this file and fails on drift."
   ],

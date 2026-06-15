@@ -4,7 +4,7 @@ Guidance for AI coding agents working in this repo.
 
 ## What this project is
 
-`ein-bot` is a graph-based reasoner for Zebra-style logic puzzles. The
+Ein is a graph-based reasoner for Zebra-style logic puzzles. The
 2021 prototype is being modernised in light of neuro-symbolic /
 constrained-reasoning research.
 
@@ -14,7 +14,7 @@ constrained-reasoning research.
   semantics (`ir/01-ein-graph/`), Python data model (`ir/02-data-model/`),
   surface S-expression language (`ir/03-ein-lang/`, mostly what used
   to be `docs/ir.md`), inference engine (`inference/`, stub before P1.3).
-  Start here for any "what does ein-bot reason about / how" question.
+  Start here for any "what does Ein reason about / how" question.
   See [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
 - **`docs/ir.md`** — thin redirect into `docs/kernel/`; kept so stable
   cross-references resolve.
@@ -33,7 +33,7 @@ constrained-reasoning research.
   no-good clauses). It is the **M1 target trace** for the engine and
   the **M2 target** for the NL ⇄ IR round-trip (NL problem → facts →
   ontology+rules → solution → NL explanation).
-- **`ein.py/`** — Python implementation. `ein.py/src/ein_bot/` is the
+- **`ein.py/`** — Python implementation. `ein.py/src/ein/` is the
   package: IR parser + dumper under `ir/`; KB store + entities +
   provenance under `kb/`; inference engine + saturator + contradiction
   detector + hypothesis loop under `inference/`. `ein.py/tests/` is the

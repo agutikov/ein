@@ -23,18 +23,18 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.firing import Firing
-from ein_bot.inference.monotonic.lattice import (
+from ein.inference.firing import Firing
+from ein.inference.monotonic.lattice import (
     DeadCommitment,
     LatticeProof,
     SolutionRecord,
 )
-from ein_bot.ir import parse
-from ein_bot.ir.to_dot import render_query, render_trace, to_dot
-from ein_bot.ir.types import Atom, SForm
-from ein_bot.kb import KnowledgeBase, Provenance
-from ein_bot.kb.entities import Fact, Layer
-from ein_bot.render import (
+from ein.ir import parse
+from ein.ir.to_dot import render_query, render_trace, to_dot
+from ein.ir.types import Atom, SForm
+from ein.kb import KnowledgeBase, Provenance
+from ein.kb.entities import Fact, Layer
+from ein.render import (
     render_constraints,
     render_rule,
     render_rules,
@@ -42,7 +42,7 @@ from ein_bot.render import (
     render_solution,
     render_state,
 )
-from ein_bot.render.lattice_dag import render_lattice
+from ein.render.lattice_dag import render_lattice
 
 GOLDEN_DIR = Path(__file__).resolve().parents[1] / "golden" / "dot"
 

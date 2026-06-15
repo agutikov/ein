@@ -28,7 +28,7 @@ design note). This set is **closed**: the parser keys on it (`rule` / `hrule` / 
 exception, kept a plain SYMBOL so rules can pattern-match
 `(relation ?R ?A ?B)`, so its malformed form is rejected at *load* time),
 and the loader
-([`kb.from_ir`](../../../../ein.py/src/ein_bot/kb/from_ir.py)) routes by the
+([`kb.from_ir`](../../../../ein.py/src/ein/kb/from_ir.py)) routes by the
 same set.
 
 | name | form | meaning | engine site |
@@ -40,7 +40,7 @@ same set.
 | `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
 | `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation expands to BODY before compilation ([P1.8 S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)) | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
 | `import` | `(import M [:as A \| :symbols (S…)])` | pull in a library module `M` (a dotted logical name, e.g. `std.macro`); qualified-by-default, or aliased/flat-selective ([P1.8 S1.8.A1–A2](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.8.a1_module_system_design.md)) | `kb.from_ir` (grammar A2; resolve A3) |
-| `trace` | `(trace <event>*)` | **engine-emitted** derivation log — parsed by [`trace/ast.py`](../../../../ein.py/src/ein_bot/trace/ast.py), ignored by `kb.from_ir`; a *sibling*, not part of the declarator-vs-fact dichotomy | `trace/` |
+| `trace` | `(trace <event>*)` | **engine-emitted** derivation log — parsed by [`trace/ast.py`](../../../../ein.py/src/ein/trace/ast.py), ignored by `kb.from_ir`; a *sibling*, not part of the declarator-vs-fact dichotomy | `trace/` |
 
 **Else → fact.** A top-level form whose head is none of the above is a
 fact: `=`, `not`, or a generic `(NAME args*)`. Its knowledge **layer** is
@@ -58,11 +58,11 @@ structural primitives (`absent` / `false`), the computed predicates
 name at all (parse error). The guard is about *binding* a name; a **fact** may
 still carry a reserved head (a stored `(not X)` octagon). `open` / `forall`
 are deliberately *not* reserved — they migrated into the `std.macro` module
-([`ein.py/src/ein_bot/stdlib/macro.ein`](../../../../ein.py/src/ein_bot/stdlib/macro.ein)).
+([`ein.py/src/ein/stdlib/macro.ein`](../../../../ein.py/src/ein/stdlib/macro.ein)).
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 
-Declared once in [`inference/primitives.py`](../../../../ein.py/src/ein_bot/inference/primitives.py)
+Declared once in [`inference/primitives.py`](../../../../ein.py/src/ein/inference/primitives.py)
 (`primitives.STRUCTURAL`); the deep behaviour lives at the *engine site*.
 
 | name | arity | meaning | engine site |
@@ -75,7 +75,7 @@ Declared once in [`inference/primitives.py`](../../../../ein.py/src/ein_bot/infe
 
 ## Computed predicates
 
-Declared in [`inference/predicates.py`](../../../../ein.py/src/ein_bot/inference/predicates.py)
+Declared in [`inference/predicates.py`](../../../../ein.py/src/ein/inference/predicates.py)
 (`predicates.names()`). A predicate's truth is *computed* from the current
 bindings, not looked up in the KB.
 
@@ -89,7 +89,7 @@ bindings, not looked up in the KB.
 `forall` and `open` were compile-time desugars baked into `compile.py`.
 Since [S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)
 they are ordinary ein-lang `(macro …)` declarations (the `std.macro` module,
-[`ein.py/src/ein_bot/stdlib/macro.ein`](../../../../ein.py/src/ein_bot/stdlib/macro.ein))
+[`ein.py/src/ein/stdlib/macro.ein`](../../../../ein.py/src/ein/stdlib/macro.ein))
 expanded at **load** time (`kb.from_ir` → `ir.macros.expand_macros`) — they
 are **no longer kernel vocabulary**, no longer in `primitives.py`, and a
 puzzle may even redefine them. A puzzle that wants them imports them

@@ -1,6 +1,6 @@
 """gaps_solve backbone tests — S1.5b.21 T1.5b.21.X.
 
-Pins :func:`ein_bot.inference.monotonic.gaps_solve` across
+Pins :func:`ein.inference.monotonic.gaps_solve` across
 the GAPS-mode contract:
 
 - Verdict is always :class:`Ambiguity` (mode contract).
@@ -28,13 +28,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.monotonic import (
+from ein.inference.monotonic import (
     LatticeStats,
     gaps_solve,
 )
-from ein_bot.inference.verdict import Ambiguity, Solution
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.verdict import Ambiguity, Solution
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"
@@ -124,8 +124,8 @@ def test_gaps_solve_branching_04_returns_two_branches():
     assert len(verdict.branches) == 2
     # Each branch's kb satisfies the goal; verify by re-running
     # the goal pattern against each branch's kb.
-    from ein_bot.inference.compile import JoinPlan, compile_pattern
-    from ein_bot.inference.match import run as match_run
+    from ein.inference.compile import JoinPlan, compile_pattern
+    from ein.inference.match import run as match_run
     bindings_seen: list[dict[str, str]] = []
     for branch in verdict.branches:
         goal = next(

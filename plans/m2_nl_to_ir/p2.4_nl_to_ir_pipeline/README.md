@@ -38,11 +38,11 @@ re-prompts.
 | S2.4.1  | Two-stage extraction (ontology + facts) | 4-5 days |
 | S2.4.2  | Validator + re-prompt                  | 3-4 days |
 | S2.4.3  | Ambiguity-as-hypothesis emission       | 3-4 days |
-| S2.4.4  | End-to-end CLI: `ein-bot from-text`    | 2-3 days |
+| S2.4.4  | End-to-end CLI: `Ein from-text`    | 2-3 days |
 
 ## Acceptance
 
-- `ein-bot from-text examples/zebra.txt > examples/zebra.ein`
+- `Ein from-text examples/zebra.txt > examples/zebra.ein`
   emits IR that the M1 engine solves to the canonical answer.
 - Same for Einstein puzzle text + one logic-grid puzzle text.
 - Removing one Zebra sentence yields a GAPS-mode answer (engine

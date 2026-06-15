@@ -120,7 +120,7 @@ holds. Deviations from [`target_design.md`](target_design.md) /
   run as Phase 2 of `run_tests.sh` — not `tests/`-resident (user direction).
 - **Cross-interpreter PyPy-speedup assertion (criterion 5) not wired** (no
   CPython venv locally); PyPy is the runner default.
-- **S1.7a.6 shipped** — `ein-bot solve --mode=solve` prints the English
+- **S1.7a.6 shipped** — `ein solve --mode=solve` prints the English
   answer (the *who* projected via `nation-loc` at the goal's house); proof-less
   `Solution`/`Ambiguity`/`Contradiction` all render. With this, the M1
   acceptance criteria #1–5 are met; the **M1-done closer** (mark done in

@@ -1,7 +1,7 @@
 # Grammar — lexical rules and top-level forms
 
 > **Source of truth for syntax:**
-> [`src/ein_bot/ir/grammar.lark`](../../../../src/ein_bot/ir/grammar.lark).
+> [`src/ein/ir/grammar.lark`](../../../../src/ein/ir/grammar.lark).
 > This document explains intent and structure; the grammar file is
 > canonical for what parses.
 

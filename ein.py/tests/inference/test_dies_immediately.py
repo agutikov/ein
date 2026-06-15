@@ -6,13 +6,13 @@ a single rule firing. Covers the contradiction shapes (positive
 collision, direct ⊥, ``(not h)`` self-kill), the REASONING-layer
 soundness guard, and the ``:enable-pre-branch-lookahead`` gate.
 """
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.hypgen import generate_hypotheses_with_stats
-from ein_bot.inference.lookahead import Lookahead, _is_contradiction
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.config import SolverConfig
+from ein.inference.hypgen import generate_hypotheses_with_stats
+from ein.inference.lookahead import Lookahead, _is_contradiction
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.entities import Fact, Layer
+from ein.kb.store import KnowledgeBase
 
 
 def _saturated_kb(text: str) -> KnowledgeBase:

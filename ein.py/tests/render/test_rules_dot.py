@@ -1,6 +1,6 @@
 """Rule + constraint DOT renderer tests — S1.6.1.
 
-Covers `ein_bot.render.rules` and `ein_bot.render.constraints`:
+Covers `ein.render.rules` and `ein.render.constraints`:
 
 - every rule in the example libraries emits DOT that Graphviz parses
   (both modes), skipped if `dot` is not installed;
@@ -10,7 +10,7 @@ Covers `ein_bot.render.rules` and `ein_bot.render.constraints`:
 - variables are diamonds, ground atoms rectangles;
 - the constraint diagram surfaces each relation's structural
   properties;
-- the `ein-bot render …` CLI subcommands.
+- the `ein render …` CLI subcommands.
 """
 from __future__ import annotations
 
@@ -21,9 +21,9 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.cli import main
-from ein_bot.ir import Atom, SForm, parse
-from ein_bot.render import render_constraints, render_rule, render_rules
+from ein.cli import main
+from ein.ir import Atom, SForm, parse
+from ein.render import render_constraints, render_rule, render_rules
 
 REPO = Path(__file__).resolve().parents[3]
 ZEBRA = REPO / "examples" / "zebra.ein"

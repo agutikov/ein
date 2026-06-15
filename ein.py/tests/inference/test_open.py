@@ -9,10 +9,10 @@ unchanged. Each KB imports `open` from the `std.macro` stdlib module (S1.8.A5).
 """
 from __future__ import annotations
 
-from ein_bot.inference import match
-from ein_bot.inference.compile import AbsentGuard, compile_rule
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference import match
+from ein.inference.compile import AbsentGuard, compile_rule
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 # `open` comes from std.macro (resolved via the package, so no base_dir needed).
 _SUGAR = "(import std.macro :symbols (open))\n"

@@ -1,18 +1,18 @@
 {
   "name": "ein-lang",
   "displayName": "ein language",
-  "description": "Syntax highlighting for ein-bot .ein puzzle files (TextMate grammar, no language server).",
+  "description": "Syntax highlighting for Ein .ein puzzle files (TextMate grammar, no language server).",
   "version": "0.1.0",
-  "publisher": "ein-bot",
+  "publisher": "Ein",
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/agutikov/ein-bot.git" },
+  "repository": { "type": "git", "url": "https://github.com/agutikov/ein.git" },
   "engines": { "vscode": "^1.60.0" },
   "categories": ["Programming Languages"],
   "contributes": {
     "languages": [
       {
         "id": "ein",
-        "aliases": ["ein", "ein-bot"],
+        "aliases": ["ein", "Ein"],
         "extensions": [".ein"],
         "configuration": "./language-configuration.json"
       }

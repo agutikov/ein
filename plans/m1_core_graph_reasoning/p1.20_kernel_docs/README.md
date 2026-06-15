@@ -278,7 +278,7 @@ features table cross-links into the per-feature narrative.
 ### Theme J — Ein API reference
 
 User direction 2026-05-27. The Python-facing API for embedding
-ein-bot in another project: how to construct a `KnowledgeBase`,
+Ein in another project: how to construct a `KnowledgeBase`,
 load IR, call `Saturator(kb).saturate()`, run `solve(kb,
 mode=…)`, iterate `Firing`s, read provenance. Differs from
 Theme B (kernel API) which is the IR-level surface; Theme J is
@@ -351,7 +351,7 @@ graph pairs reuse the same rule renderer.
   measured impact per flag against zebra2 (3600 s timeout
   per cell). Authors know which features they need on.
 - **J:** `docs/api/ein.md` documents the Python embedding
-  surface. A downstream user can import `ein_bot`,
+  surface. A downstream user can import `ein`,
   load a `.ein`, run `solve`, and read the verdict without
   reading the kernel internals.
 - **K:** `docs/kernel/zebra_guide.md` walks every rule

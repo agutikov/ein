@@ -12,7 +12,7 @@ Python client. Pattern lifted from
 [`/home/user/work/acva/packaging/compose/docker-compose.yml`](../../../acva/packaging/compose/docker-compose.yml).
 
 Why a separate process: stable warm cache; never blocks the
-ein-bot Python; easy to swap models; honest reproducibility via
+Ein Python; easy to swap models; honest reproducibility via
 container digest + model file SHA pinning.
 
 ## Stages
@@ -26,7 +26,7 @@ container digest + model file SHA pinning.
 
 - `docker compose -f packaging/compose/llm.yml up -d` starts the
   llama-server with a pinned model.
-- `python -m ein_bot.llm.smoke "Hello"` returns a constrained
+- `python -m ein.llm.smoke "Hello"` returns a constrained
   greeting using the smallest GBNF grammar in `grammars/`.
 - Model file SHA + container image digest are recorded in
   `docs/decisions/M2-model-gbnf.md`.

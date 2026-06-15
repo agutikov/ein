@@ -4,7 +4,7 @@ Zebra is M1's acceptance gate, but it's only one *kind* of puzzle. The
 engine's design choices (typed hypergraph, named-rule trace,
 hypothesis-loop) make sense only when measured against a wider class
 of human-style logic puzzles. This note catalogues the classes worth
-keeping in view as ein-bot grows, and what each one stresses that
+keeping in view as Ein grows, and what each one stresses that
 Zebra does not.
 
 The companion file [`docs/index/12-llm-and-reasoning-benchmarks.md`](../index/12-llm-and-reasoning-benchmarks.md)
@@ -20,7 +20,7 @@ different.
 The canonical logic-grid puzzle. Many entities, gradual elimination,
 tabular bookkeeping, almost no "insight" — just careful deduction.
 **Stresses:** elimination + composition + global cardinality. The
-ein-bot baseline.
+Ein baseline.
 
 ### Knights and Knaves
 Smullyan's island. Knights always tell the truth; knaves always lie.
@@ -69,7 +69,7 @@ points.
 The barber who shaves all those who do not shave themselves. Connected
 to Russell's paradox in set theory.
 
-**Stresses:** none of these is *solvable* in the ein-bot sense; they
+**Stresses:** none of these is *solvable* in the Ein sense; they
 sit at the boundary of what a reasoning engine should *recognise* as
 self-reference / contradiction rather than try to mechanically prove.
 
@@ -121,7 +121,7 @@ of scope for the current engine and return in
 
 Edward de Bono's situation puzzles: not formal deduction at all — the
 solver asks yes/no questions to discover the hidden model. **Stresses:**
-abductive reasoning over open-world models. Out of scope for ein-bot
+abductive reasoning over open-world models. Out of scope for Ein
 unless / until an LLM front-end handles abduction.
 
 ## Books and cultural references

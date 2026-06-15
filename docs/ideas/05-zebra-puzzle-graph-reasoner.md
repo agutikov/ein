@@ -1,4 +1,4 @@
-# Zebra-puzzle graph reasoner (5-year-old ein-bot design)
+# Zebra-puzzle graph reasoner (5-year-old Ein design)
 
 The canonical record is the repository [README](../../README.md) and
 the `.dot` files in `files/`. This file restates the user's own

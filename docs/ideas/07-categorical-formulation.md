@@ -2,7 +2,7 @@
 
 ## The observation
 
-The triangle inference rule of the `ein-bot` design is *literally*
+The triangle inference rule of the `Ein` design is *literally*
 categorical composition. Once you see that, you naturally ask
 whether the whole puzzle has a categorical formulation: what are
 objects? morphisms? categories? functors?
@@ -79,7 +79,7 @@ engine living in [02-graph-as-formal-substrate.md](02-graph-as-formal-substrate.
 ## Open questions
 
 1. **Which reading should the design commit to?** B is most
-   tractable; C is most idiomatic; A is closest to current `ein-bot`.
+   tractable; C is most idiomatic; A is closest to current `Ein`.
 2. **Does the categorical view buy anything operational?** Examples:
    automatic detection that two rule sets are equivalent (functorial
    isomorphism); transferring a proof from one schema to another

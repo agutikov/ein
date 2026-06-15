@@ -3,11 +3,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.contradiction import ContradictionDetector
-from ein_bot.inference.min_core import minimal_unsat_core
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.contradiction import ContradictionDetector
+from ein.inference.min_core import minimal_unsat_core
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
 

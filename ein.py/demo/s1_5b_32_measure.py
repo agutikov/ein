@@ -39,15 +39,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import (
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic import (
     contradictions_solve,
     gaps_solve,
     solve,
 )
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 EX = Path(__file__).resolve().parents[2] / "examples" / "domain_elim"
 FIXTURES = ["ab", "b_only", "b_branch"]

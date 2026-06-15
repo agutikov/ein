@@ -47,7 +47,7 @@ gated by a new regression test that fails before and passes after.
 
 ## Scope — the review ([`findings.md`](findings.md))
 
-The review covered the whole `ein_bot` package (13.3k LOC, 51 files) via an
+The review covered the whole `ein` package (13.3k LOC, 51 files) via an
 AST span/branch/nesting scan + four parallel subsystem audits, with every
 correctness- or deletion-bound claim re-verified against the code path. It
 catalogues **40 findings** across four areas (ENG / KER / KB / RTC), each with
@@ -114,7 +114,7 @@ metrics much.
 - **New features / new heuristics.** The E1-E23 catalog is
   [P1.9](../p1.9_hypothesis_loop_followups/README.md); this phase only
   *cleans* what exists.
-- **The package/CLI rename** (`ein-bot` → `ein`, demo merge, cli folder
+- **The package/CLI rename** (`Ein` → `ein`, demo merge, cli folder
   split) is [P1.11](../p1.11_package_restructure/README.md) — S1.7b.2's
   `cli._build_parser` split is internal-only and does **not** pre-empt P1.11's
   folder move.

@@ -3,7 +3,7 @@
 Pins the unified engine's two non-monotonic public entries
 (:func:`gaps_solve`, :func:`contradictions_solve`, both
 sitting alongside :func:`monotonic_solve` in
-:mod:`ein_bot.inference.monotonic`) + the LatticeProof
+:mod:`ein.inference.monotonic`) + the LatticeProof
 data-class surface and the LatticeDumper class shape. Both
 entries currently raise :class:`NotImplementedError`; the
 backbones land in S1.5b.21 / S1.5b.23 respectively.
@@ -22,7 +22,7 @@ Cross-references:
 """
 from __future__ import annotations
 
-from ein_bot.inference.monotonic import (
+from ein.inference.monotonic import (
     DeadCommitment,
     LatticeDumper,
     LatticeProof,
@@ -32,7 +32,7 @@ from ein_bot.inference.monotonic import (
     contradictions_solve,
     gaps_solve,
 )
-from ein_bot.kb.store import KnowledgeBase
+from ein.kb.store import KnowledgeBase
 
 
 def test_imports_resolve():
@@ -59,7 +59,7 @@ def test_contradictions_solve_callable_post_s1_5b_23():
     empty ``proof.dead_commitments`` for a kb that has no
     hypothesis-bearing relations. Detailed contradictions
     contract tests live in ``test_contradictions_backbone.py``."""
-    from ein_bot.inference.verdict import Contradiction
+    from ein.inference.verdict import Contradiction
     kb = KnowledgeBase()
     verdict, stats = contradictions_solve(kb)
     assert isinstance(verdict, Contradiction)
@@ -109,7 +109,7 @@ def test_lattice_proof_carries_solutions_under_gaps():
     ``test_lattice_proof.py``."""
     from pathlib import Path
 
-    from ein_bot.ir import parse
+    from ein.ir import parse
     repo = Path(__file__).resolve().parents[4]
     kb = KnowledgeBase.from_ir(
         parse((repo / "examples" / "branching"

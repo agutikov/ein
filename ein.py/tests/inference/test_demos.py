@@ -25,9 +25,9 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.engine import Engine
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.engine import Engine
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
 DEMOS_DIR = REPO / "examples" / "saturation"
@@ -107,7 +107,7 @@ def test_demo_derived_fact_lands_in_reasoning(path: Path):
     work; this test just confirms at least one REASONING-layer
     derivation exists.
     """
-    from ein_bot.kb.entities import Layer
+    from ein.kb.entities import Layer
 
     rule_name = path.parent.name
     kb = KnowledgeBase.from_ir(parse(path.read_text()))

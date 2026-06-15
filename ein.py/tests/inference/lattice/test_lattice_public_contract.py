@@ -17,8 +17,8 @@ import textwrap
 
 import pytest
 
-from ein_bot.inference.monotonic import solver
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.monotonic import solver
+from ein.kb.store import KnowledgeBase
 
 
 def test_gaps_rejects_wrong_verdict_type(monkeypatch):
@@ -42,8 +42,8 @@ def test_contract_survives_python_O():
     """
     script = textwrap.dedent(
         """
-        import ein_bot.inference.monotonic.solver as s
-        from ein_bot.kb.store import KnowledgeBase
+        import ein.inference.monotonic.solver as s
+        from ein.kb.store import KnowledgeBase
         s._explore_layers = lambda *a, **k: (object(), None)
         try:
             s.gaps_solve(KnowledgeBase())

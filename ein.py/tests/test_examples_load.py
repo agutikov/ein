@@ -20,9 +20,9 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.ir.parser import IRParseError
-from ein_bot.kb.from_ir import KBLoadError
-from ein_bot.kb.store import KnowledgeBase
+from ein.ir.parser import IRParseError
+from ein.kb.from_ir import KBLoadError
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[2]
 EXAMPLES = REPO / "examples"

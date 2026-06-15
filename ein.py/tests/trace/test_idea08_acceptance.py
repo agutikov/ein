@@ -20,10 +20,10 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.monotonic import gaps_solve
-from ein_bot.ir import Atom, SForm, parse
-from ein_bot.kb import KnowledgeBase
-from ein_bot.kb.imports import resolve_imports
+from ein.inference.monotonic import gaps_solve
+from ein.ir import Atom, SForm, parse
+from ein.kb import KnowledgeBase
+from ein.kb.imports import resolve_imports
 
 REPO = Path(__file__).resolve().parents[3]
 ZEBRA2 = REPO / "examples" / "zebra2.ein"

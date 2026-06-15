@@ -1,7 +1,7 @@
 """`:why` template substitution tests — S1.3.1 T1.3.1.9."""
 from __future__ import annotations
 
-from ein_bot.inference.why import render_why
+from ein.inference.why import render_why
 
 
 def test_single_substitution():

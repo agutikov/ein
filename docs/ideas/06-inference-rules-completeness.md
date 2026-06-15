@@ -2,7 +2,7 @@
 
 ## The open question
 
-The 5-year-old `ein-bot` defines two inference rules:
+The 5-year-old `Ein` defines two inference rules:
 
 - **Triangle** (transitive composition).
 - **Square** (spatial propagation).

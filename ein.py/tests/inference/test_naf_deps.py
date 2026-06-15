@@ -1,4 +1,4 @@
-"""Static NAF dependency map — S1.7.4 (`ein_bot.inference.naf_deps`).
+"""Static NAF dependency map — S1.7.4 (`ein.inference.naf_deps`).
 
 A rule's ``(absent …)`` guard *depends on a derived relation* when some
 rule positively asserts the watched relation (or, Scope B, asserts its
@@ -17,14 +17,14 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference import naf_deps
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.engine import Engine
-from ein_bot.inference.monotonic import solve
-from ein_bot.inference.naf_deps import DerivedNafWarning
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference import naf_deps
+from ein.inference.config import SolverConfig
+from ein.inference.engine import Engine
+from ein.inference.monotonic import solve
+from ein.inference.naf_deps import DerivedNafWarning
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ZEBRA2 = REPO_ROOT / "examples" / "zebra2.ein"

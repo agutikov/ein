@@ -49,12 +49,12 @@ from typing import Any
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "ein.py" / "src"))
 
-from ein_bot.inference.engine import Engine  # noqa: E402
-from ein_bot.inference.firing import Firing  # noqa: E402
-from ein_bot.inference.saturator import Saturator  # noqa: E402
-from ein_bot.ir import parse  # noqa: E402
-from ein_bot.kb.entities import Fact, Layer  # noqa: E402
-from ein_bot.kb.store import KnowledgeBase  # noqa: E402
+from ein.inference.engine import Engine  # noqa: E402
+from ein.inference.firing import Firing  # noqa: E402
+from ein.inference.saturator import Saturator  # noqa: E402
+from ein.ir import parse  # noqa: E402
+from ein.kb.entities import Fact, Layer  # noqa: E402
+from ein.kb.store import KnowledgeBase  # noqa: E402
 
 # ── Snapshot ────────────────────────────────────────────────────
 
@@ -324,7 +324,7 @@ def print_firings(firings: Iterable[Firing]) -> None:
 
 def _ir_text(node: object) -> str:
     """Compact one-line render of any IRNode. Falls back to str()."""
-    from ein_bot.ir.dump import dump_compact
+    from ein.ir.dump import dump_compact
 
     if node is None:
         return "<none>"
@@ -515,7 +515,7 @@ def bench(
 
     # ── Phase: saturate ──────────────────────────────────────────
     sat = Saturator(kb, engine=eng)
-    from ein_bot.inference.saturator import SaturatorStepLimitError
+    from ein.inference.saturator import SaturatorStepLimitError
 
     print()
     if max_steps is not None:

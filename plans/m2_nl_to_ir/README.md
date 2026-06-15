@@ -59,7 +59,7 @@ question, committed under `docs/decisions/M2-*.md`.
 
 M2 ships when:
 
-1. `ein-bot from-text zebra.txt > zebra.ein` produces valid IR that
+1. `Ein from-text zebra.txt > zebra.ein` produces valid IR that
    the M1 engine solves to the canonical Zebra answer.
 2. End-to-end on at least three puzzles: classical Zebra, Einstein
    variant, one logic-grid puzzle with a different ontology.

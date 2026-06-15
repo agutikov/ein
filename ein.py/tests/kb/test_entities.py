@@ -6,7 +6,7 @@ loader-driven cross-reference tests live in `test_store.py`.
 """
 from __future__ import annotations
 
-from ein_bot.kb import (
+from ein.kb import (
     Fact,
     KnowledgeBase,
     Layer,
@@ -14,7 +14,7 @@ from ein_bot.kb import (
     Relation,
     Rule,
 )
-from ein_bot.kb.entities import _attach, _detach
+from ein.kb.entities import _attach, _detach
 
 # ── Identity & equality ────────────────────────────────────────────
 
@@ -30,7 +30,7 @@ def test_relation_identity_by_name_and_signature():
 
 
 def test_fact_identity_by_relation_and_args_not_layer_or_provenance():
-    from ein_bot.kb import Provenance
+    from ein.kb import Provenance
     a = Fact(
         relation_name="co-located", args=("A", "B"),
         layer=Layer.FACT,
@@ -117,7 +117,7 @@ def test_layer_values_distinct():
 
 
 def test_pattern_extracts_variables():
-    from ein_bot.ir import parse
+    from ein.ir import parse
     # Use a simple match clause: (co-located ?a ?b)
     forms = parse(
         '(rule r () :match (co-located ?a ?b) :assert (co-located ?b ?a) :why "x")'
@@ -138,7 +138,7 @@ def test_pattern_instance_is_a_generic_relation():
     # ordinary relation. So `(instance ?a House)` in a pattern registers
     # `instance` in `relation_names` (like any relation head) and no
     # longer plucks `House` into `type_names` (which is now vestigial).
-    from ein_bot.ir import parse
+    from ein.ir import parse
     forms = parse(
         '(rule r () :match (and (instance ?a House) (co-located ?a ?b))'
         ' :assert (instance ?b Nationality) :why "")'
@@ -154,7 +154,7 @@ def test_pattern_instance_is_a_generic_relation():
 
 
 def test_pattern_dedupes_variables():
-    from ein_bot.ir import parse
+    from ein.ir import parse
     forms = parse(
         '(rule r () :match (and (co-located ?a ?b) (co-located ?b ?a)) :assert (= ?a ?b) :why "")'
     )
@@ -166,7 +166,7 @@ def test_pattern_dedupes_variables():
 
 
 def test_pattern_iter_yields_variables():
-    from ein_bot.ir import parse
+    from ein.ir import parse
     forms = parse('(rule r () :match (rel ?x ?y ?z) :assert (rel ?z ?y ?x) :why "")')
     rule = forms[0]  # P1.7c: a flat top-level (rule …) form
     match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
@@ -210,7 +210,7 @@ def test_nested_fact_layer_excluded_from_identity():
     # As with non-nested facts: layer/provenance is metadata, not part
     # of identity. Two outer facts with nested facts in different
     # layers are still equal.
-    from ein_bot.kb import Provenance
+    from ein.kb import Provenance
     inner_fact = Fact(
         relation_name="co-located", args=("Norwegian", "House-2"),
         layer=Layer.FACT,

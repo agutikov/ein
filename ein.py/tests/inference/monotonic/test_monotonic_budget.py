@@ -8,7 +8,7 @@ Covers:
 2. `max_time` raises with a `reason` mentioning the limit; the
    exception preserves whatever counters the engine accumulated.
 3. `BudgetExceededError` re-exports through the package root
-   (`from ein_bot.inference.monotonic import BudgetExceededError`).
+   (`from ein.inference.monotonic import BudgetExceededError`).
 4. `dumper`'s timeline has events recorded right up to the
    abort point (no `summary` event — the abort path skips it).
 """
@@ -19,18 +19,18 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import (
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic import (
     BudgetExceededError,
     solve,
 )
-from ein_bot.inference.monotonic import (
+from ein.inference.monotonic import (
     BudgetExceededError as _PkgBudgetError,
 )
-from ein_bot.inference.monotonic.state_dump import MonotonicDumper
-from ein_bot.inference.verdict import Aborted
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.monotonic.state_dump import MonotonicDumper
+from ein.inference.verdict import Aborted
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 
 def _kb(text: str) -> KnowledgeBase:
@@ -97,7 +97,7 @@ def test_max_time_aborts_with_partial_stats() -> None:
 
 
 def test_budget_exception_reexported_from_package() -> None:
-    """``from ein_bot.inference.monotonic import BudgetExceededError``
+    """``from ein.inference.monotonic import BudgetExceededError``
     pulls the same class as the deep import."""
     assert _PkgBudgetError is BudgetExceededError
 

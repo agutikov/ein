@@ -3,15 +3,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ein_bot.inference.contradiction import (
+from ein.inference.contradiction import (
     Contradiction,
     ContradictionDetector,
 )
-from ein_bot.inference.saturator import Saturator
-from ein_bot.ir import parse
-from ein_bot.kb.entities import Fact, Layer
-from ein_bot.kb.provenance import Provenance
-from ein_bot.kb.store import KnowledgeBase
+from ein.inference.saturator import Saturator
+from ein.ir import parse
+from ein.kb.entities import Fact, Layer
+from ein.kb.provenance import Provenance
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
 ZEBRA = REPO / "examples" / "zebra.ein"

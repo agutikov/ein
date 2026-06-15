@@ -3,7 +3,7 @@
 # Solve zebra2 under the project's PyPy venv and render its markdown
 # trace (S1.6.4) into build/zebra2/.
 #
-# `ein-bot solve` runs the engine, so it wants PyPy — CPython is too
+# `ein solve` runs the engine, so it wants PyPy — CPython is too
 # slow for the full zebra2 lattice solve (~35s PyPy vs >90s CPython).
 # See the feedback-use-pypy-bench convention + bench_lattice_pypy.sh.
 #
@@ -42,7 +42,7 @@ Options:
   --reorder               cluster steps by target entity
   --no-diagrams           omit the inline dot blocks
   --full-kb-snapshots     append a whole-KB snapshot of the final state
-  -- <flags…>             forward arbitrary flags to `ein-bot solve`
+  -- <flags…>             forward arbitrary flags to `ein solve`
                           (e.g. -- --mode contradictions --max-set-size 4)
   -h, --help              show this help
 
@@ -85,7 +85,7 @@ else
     export PYTHONPATH="${REPO_ROOT}/ein.py/src${PYTHONPATH:+:${PYTHONPATH}}"
     PYBIN="python3"
 fi
-EIN=( "${PYBIN}" -m ein_bot.cli )
+EIN=( "${PYBIN}" -m ein.cli )
 
 if [[ ! -f "${ZEBRA2}" ]]; then
     echo "error: ${ZEBRA2} not found" >&2

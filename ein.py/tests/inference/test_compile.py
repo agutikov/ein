@@ -1,7 +1,7 @@
 """Compiler tests — S1.3.1 T1.3.1.9."""
 from __future__ import annotations
 
-from ein_bot.inference.compile import (
+from ein.inference.compile import (
     AbsentGuard,
     Guard,
     Join,
@@ -9,9 +9,9 @@ from ein_bot.inference.compile import (
     Scan,
     compile_rule,
 )
-from ein_bot.ir import parse
-from ein_bot.ir.types import Var
-from ein_bot.kb.store import KnowledgeBase
+from ein.ir import parse
+from ein.ir.types import Var
+from ein.kb.store import KnowledgeBase
 
 
 def _kb_with(text: str) -> KnowledgeBase:

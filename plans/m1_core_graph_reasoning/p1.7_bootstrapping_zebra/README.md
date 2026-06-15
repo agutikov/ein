@@ -119,10 +119,10 @@ demonstrator). The full set:
    the per-move YAML harness is **not** built (user decision
    2026-05-30).
 
-3. `ein-bot solve examples/zebra2-minus-15.ein --mode=gaps`
+3. `ein solve examples/zebra2-minus-15.ein --mode=gaps`
    returns at least one diverging goal node.
 
-4. `ein-bot solve examples/ein-bugs/zebra2-bad.ein --mode=contradictions`
+4. `ein solve examples/ein-bugs/zebra2-bad.ein --mode=contradictions`
    returns a 2–3 edge unsat core including the injected fact and
    the colliding condition (6).
 

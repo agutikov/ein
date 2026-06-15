@@ -25,7 +25,7 @@ ontology coverage) is checked in P2.4.
 
 ## Acceptance
 
-- `python -m ein_bot.ir.to_gbnf > grammars/ir.gbnf` produces a
+- `python -m ein.ir.to_gbnf > grammars/ir.gbnf` produces a
   grammar accepted by llama-server.
 - A round-trip experiment: take the engine's
   `examples/zebra.ein`, dump-canonical it, feed it through the

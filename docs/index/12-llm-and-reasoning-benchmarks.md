@@ -76,7 +76,7 @@ Resistance to confident misinformation; reasoning under misleading priors.
 
 ### ProofWriter
 Multi-hop deduction with explicit Horn-clause facts/rules; produces *proofs*
-plus answers. Closest in spirit to ein-bot's three task classes.
+plus answers. Closest in spirit to Ein's three task classes.
 - Paper: <https://arxiv.org/abs/2012.13048>
 
 ### FOLIO — First-Order Logic
@@ -150,7 +150,7 @@ Cross-references: [`03-theorem-proving-formal-methods.md`](03-theorem-proving-fo
 Less standardised than the LLM benchmarks above; usually generated:
 
 - **Sudoku** — domain-restricted, well-studied baseline.
-- **Zebra-style** custom sets — *the* class of relevance to ein-bot.
+- **Zebra-style** custom sets — *the* class of relevance to Ein.
 - **Graph colouring** — n-colourability over benchmark graph families.
 - **Scheduling / planning** — IPC (International Planning Competition).
 - **Pigeonhole / Ramsey** — classical hard SAT instances.

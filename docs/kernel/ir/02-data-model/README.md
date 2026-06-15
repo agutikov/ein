@@ -28,12 +28,12 @@ and viewed.
 
 ## Where this maps to code
 
-- `src/ein_bot/kb/entities.py` — Relation/Rule/Fact/NameRef/Layer.
-- `src/ein_bot/kb/pattern.py` — Pattern.
-- `src/ein_bot/kb/provenance.py` — Provenance, DerivationDAG.
-- `src/ein_bot/kb/store.py` — KnowledgeBase, EqClasses, Query.
-- `src/ein_bot/kb/views.py` — FactView.
-- `src/ein_bot/kb/from_ir.py` — IR → KB loader.
+- `src/ein/kb/entities.py` — Relation/Rule/Fact/NameRef/Layer.
+- `src/ein/kb/pattern.py` — Pattern.
+- `src/ein/kb/provenance.py` — Provenance, DerivationDAG.
+- `src/ein/kb/store.py` — KnowledgeBase, EqClasses, Query.
+- `src/ein/kb/views.py` — FactView.
+- `src/ein/kb/from_ir.py` — IR → KB loader.
 
 ## Stability
 

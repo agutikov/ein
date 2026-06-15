@@ -1,4 +1,4 @@
-;;; ein-bot — Zebra puzzle (Einstein's puzzle) in IR form.
+;;; Ein — Zebra puzzle (Einstein's puzzle) in IR form.
 ;;;
 ;;; Setup: five houses in a row. Each house has a colour, occupant
 ;;; nationality, drink, cigarette brand, and pet. Each attribute

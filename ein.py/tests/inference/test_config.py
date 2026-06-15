@@ -16,8 +16,8 @@ on a constructed ``SolverConfig``, never through ``from_kw_pairs``.
 """
 import pytest
 
-from ein_bot.inference.config import SolverConfig
-from ein_bot.ir import parse
+from ein.inference.config import SolverConfig
+from ein.ir import parse
 
 
 def _cfg(text: str) -> SolverConfig:
@@ -86,7 +86,7 @@ def test_unsupported_type_message_names_the_flag():
     # A synthetic field whose annotation is outside {bool,int,float,str}.
     from dataclasses import dataclass, fields
 
-    from ein_bot.inference.config import _coerce
+    from ein.inference.config import _coerce
 
     @dataclass
     class _Fake:

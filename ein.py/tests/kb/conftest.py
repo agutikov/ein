@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.ir import parse
-from ein_bot.kb import KnowledgeBase
+from ein.ir import parse
+from ein.kb import KnowledgeBase
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 EXAMPLES = REPO_ROOT / "examples"

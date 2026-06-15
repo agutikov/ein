@@ -4,10 +4,10 @@ Companion to [`diagrams/algorithm_layer_n.dot`](diagrams/algorithm_layer_n.dot).
 Renders the per-candidate flow inside one BFS layer of the
 **unified set-search engine**'s shared private
 `_explore_layers` helper, called by all three public entries
-([`monotonic_solve`](../../../ein.py/src/ein_bot/inference/monotonic/solver.py),
+([`monotonic_solve`](../../../ein.py/src/ein/inference/monotonic/solver.py),
 `gaps_solve`, `contradictions_solve`) which live side-by-side
 in
-[`inference/monotonic/`](../../../ein.py/src/ein_bot/inference/monotonic/).
+[`inference/monotonic/`](../../../ein.py/src/ein/inference/monotonic/).
 The layer-wrapping loop (enumerate → process → close layer →
 recompute alive → next layer) sits one level above.
 
@@ -37,7 +37,7 @@ SOLUTION kbs always; dead unsat-cores under
 correction also collapsed the "two engines" framing into
 **one unified engine with three sibling public entries** —
 all in
-[`inference/monotonic/`](../../../ein.py/src/ein_bot/inference/monotonic/),
+[`inference/monotonic/`](../../../ein.py/src/ein/inference/monotonic/),
 sharing the helper described here. See
 [`project-set-search-unified` memory] + the 2026-05-28
 conversation; [README](README.md) for the phase shape.
@@ -65,7 +65,7 @@ The diagram uses six colour bands:
 ## Engine surface — three sibling entries
 
 All three live in
-[`inference/monotonic/solver.py`](../../../ein.py/src/ein_bot/inference/monotonic/solver.py)
+[`inference/monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py)
 and call the shared private
 ``_explore_layers(entry: Literal["monotonic","gaps","contradictions"], …)``
 helper (the per-candidate flow described in §3 below).
@@ -167,7 +167,7 @@ Drop ``C`` if any of:
 #### 3a. `try_commitment_set(root, C)`
 
 The single all-in-one primitive
-([`commitment.py`](../../../ein.py/src/ein_bot/inference/commitment.py)):
+([`commitment.py`](../../../ein.py/src/ein/inference/commitment.py)):
 
 ```
 fork ← root.fork()
@@ -201,7 +201,7 @@ walk of `provenance.premises_raw`) never hits any
 `h_id ∈ frozenset(C)`. Equivalently — the derivation is valid
 in `(root, rules)` alone. The walker terminates at non-rule
 provenances (raw facts, hypothesis facts, forced-positive
-promotions). See [`commitment._reaches_commitment`](../../../ein.py/src/ein_bot/inference/commitment.py).
+promotions). See [`commitment._reaches_commitment`](../../../ein.py/src/ein/inference/commitment.py).
 
 Note (user, 2026-05-25): under M1 all hypotheses are positive
 facts; negative hypotheses are a follow-up. The pre-sat
@@ -508,16 +508,16 @@ What stays:
 
 ## Cross-references
 
-- Engine entry: [`monotonic/solver.py`](../../../ein.py/src/ein_bot/inference/monotonic/solver.py)
+- Engine entry: [`monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py)
   (today's name; rename to `inference/solver.py` is queued
   end-of-phase).
 - Filter helpers:
-  [`nogoods.py`](../../../ein.py/src/ein_bot/inference/nogoods.py)
+  [`nogoods.py`](../../../ein.py/src/ein/inference/nogoods.py)
   (`matches_any_nogood`, `emit_nogood`).
 - Commitment primitive:
-  [`commitment.py`](../../../ein.py/src/ein_bot/inference/commitment.py)
+  [`commitment.py`](../../../ein.py/src/ein/inference/commitment.py)
   (`try_commitment_set`, `_reaches_commitment`).
-- State hash: [`canon.py`](../../../ein.py/src/ein_bot/inference/canon.py).
+- State hash: [`canon.py`](../../../ein.py/src/ein/inference/canon.py).
 - Saturation commutativity premise:
   [README § Motivation](README.md#motivation) +
   [`project-set-search-unified` memory].

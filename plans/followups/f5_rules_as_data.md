@@ -6,7 +6,7 @@
 
 ## What this is
 
-In ein-bot's design, **rules are first-class graph objects** — Rule
+In Ein's design, **rules are first-class graph objects** — Rule
 entities, Pattern dataclasses, property-application facts. F5 takes
 the next step: have the *engine itself* manipulate rules **as graph
 data** during reasoning, not just as static configuration loaded

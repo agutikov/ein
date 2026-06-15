@@ -3,7 +3,7 @@
 Calls :func:`validate_proof_for_explanation` on the verdict's
 proof for every combination of lattice entry x store_lattice on
 small fixtures. The validator's body is in
-:mod:`ein_bot.inference.monotonic.contract`; this file pins
+:mod:`ein.inference.monotonic.contract`; this file pins
 the contract holds end-to-end on real solver runs.
 
 Cross-references:
@@ -11,7 +11,7 @@ Cross-references:
 - Stage spec:
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.29_lattice_proof.md``
 - Validator implementation:
-  ``ein.py/src/ein_bot/inference/monotonic/contract.py``
+  ``ein.py/src/ein/inference/monotonic/contract.py``
 - P1.6 consumer side:
   ``plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/``
 """
@@ -21,15 +21,15 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.inference.monotonic import (
+from ein.inference.monotonic import (
     contradictions_solve,
     gaps_solve,
 )
-from ein_bot.inference.monotonic.contract import (
+from ein.inference.monotonic.contract import (
     validate_proof_for_explanation,
 )
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"

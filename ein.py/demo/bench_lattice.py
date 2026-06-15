@@ -2,7 +2,7 @@
 """Run the unified set-search engine's lattice entries on a .ein file.
 
 Both :func:`gaps_solve` and :func:`contradictions_solve` live
-in :mod:`ein_bot.inference.monotonic` alongside
+in :mod:`ein.inference.monotonic` alongside
 :func:`monotonic_solve` — one unified engine, three sibling
 public functions. This CLI is a convenience dispatcher for the
 two non-monotonic entries; :mod:`bench_monotonic` covers the
@@ -33,19 +33,19 @@ import sys
 import time
 from pathlib import Path
 
-# Make `from ein_bot.…` resolve when running from a checkout.
+# Make `from ein.…` resolve when running from a checkout.
 sys.path.insert(
     0, str(Path(__file__).resolve().parents[1] / "src"),
 )
 
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import (
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic import (
     LatticeDumper,
     contradictions_solve,
     gaps_solve,
 )
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 
 def _build_argparser() -> argparse.ArgumentParser:

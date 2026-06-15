@@ -30,15 +30,15 @@ counts reflect full lattice exploration up to ``max_set_size``.
 """
 from __future__ import annotations
 
-from ein_bot.inference.config import SolverConfig
-from ein_bot.inference.monotonic import solve
-from ein_bot.inference.nogoods import emit_nogood
-from ein_bot.inference.verdict import (
+from ein.inference.config import SolverConfig
+from ein.inference.monotonic import solve
+from ein.inference.nogoods import emit_nogood
+from ein.inference.verdict import (
     Contradiction,
     Solution,
 )
-from ein_bot.ir import parse
-from ein_bot.kb.store import KnowledgeBase
+from ein.ir import parse
+from ein.kb.store import KnowledgeBase
 
 
 def _kb(text: str) -> KnowledgeBase:

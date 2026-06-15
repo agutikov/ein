@@ -4,7 +4,7 @@
 # Includes nested demo files (examples/zebra/demos/<rule>/<name>.ein);
 # skips examples/broken/.
 #
-# One variant per file (S1.6.0): `ein-bot ir dot` under the project
+# One variant per file (S1.6.0): `ein ir dot` under the project
 # defaults — compact entity-style facts/ontology/reasoning, rules as
 # side-by-side LHS|RHS clusters (rankdir=LR), per-step trace. The other
 # views are reachable per-file via flags/env for the rare cases that
@@ -15,7 +15,7 @@
 # used to emit was dropped — the trace dimension is a no-op for the
 # example puzzles anyway (they carry no `(trace …)` blocks).
 #
-# Convention: the Python ein-bot tools emit DOT only (the CLI, the
+# Convention: the Python Ein tools emit DOT only (the CLI, the
 # S1.6.1-2 `render …` commands, the S1.6.4 trace). Turning that DOT
 # into SVG is a shell-script job — that's what this script is for.
 # Writes both `.dot` and rendered SVG by default; pass `--no-svg`
@@ -26,9 +26,9 @@
 # subfolder** (numbered on their own); every other form stays flat in
 # the example dir. Two whole-example views are added per example:
 #   * `_unified.dot` — the unified "everything-on-one-page"
-#     view (`ein-bot kb dot`, S1.2.4), rendered through `fdp`.
+#     view (`ein kb dot`, S1.2.4), rendered through `fdp`.
 #   * `_lattice.dot` — the commitment-lattice / proof-DAG
-#     (`ein-bot render lattice`, S1.6.3), rendered through `dot`. This
+#     (`ein render lattice`, S1.6.3), rendered through `dot`. This
 #     one RUNS the solver, so it uses the project's **PyPy venv**
 #     (`.venv-pypy/`) when present — CPython is too slow for the big
 #     puzzles — and is best-effort under a timeout. `--no-lattice` skips
@@ -56,11 +56,11 @@
 # "zebra/demos/symmetric/couple", etc.
 #
 # Environment overrides:
-#   EINBOT          — command for the static renders (default: `ein-bot`
-#                     if on PATH, else `python3 -m ein_bot.cli`,
+#   EINBOT          — command for the static renders (default: `Ein`
+#                     if on PATH, else `python3 -m ein.cli`,
 #                     PYTHONPATH=ein.py/src).
 #   EINBOT_LATTICE  — command for the solver-run lattice render (default:
-#                     `.venv-pypy/bin/python -m ein_bot.cli` when the
+#                     `.venv-pypy/bin/python -m ein.cli` when the
 #                     PyPy venv exists, else EINBOT).
 #   FORMATS         — space-separated Graphviz formats to rasterise
 #                     (e.g. "svg pdf"). Defaults to "svg"; `--no-svg`
@@ -132,19 +132,19 @@ else
     RASTER_FORMATS=""
 fi
 
-# Pick the ein-bot invocation: console script if installed, else the
+# Pick the Ein invocation: console script if installed, else the
 # in-tree module entrypoint. The static renders (`ir dot` / `kb dot`)
 # are startup-dominated, so they stay on this interpreter.
 if [[ -n "${EINBOT:-}" ]]; then
     # shellcheck disable=SC2206
     EIN_CMD=( ${EINBOT} )
-elif command -v ein-bot >/dev/null 2>&1; then
-    EIN_CMD=( ein-bot )
+elif command -v Ein >/dev/null 2>&1; then
+    EIN_CMD=( Ein )
 else
     # In-tree fallback: the package lives under ein.py/src after the
     # P1.11 restructure.
     export PYTHONPATH="${REPO_ROOT}/ein.py/src${PYTHONPATH:+:${PYTHONPATH}}"
-    EIN_CMD=( python3 -m ein_bot.cli )
+    EIN_CMD=( python3 -m ein.cli )
 fi
 
 # `render lattice` RUNS the solver — use the project's PyPy venv when
@@ -156,7 +156,7 @@ if [[ -n "${EINBOT_LATTICE:-}" ]]; then
     # shellcheck disable=SC2206
     LATTICE_CMD=( ${EINBOT_LATTICE} )
 elif [[ -x "${PYPY_PYTHON}" ]]; then
-    LATTICE_CMD=( "${PYPY_PYTHON}" -m ein_bot.cli )
+    LATTICE_CMD=( "${PYPY_PYTHON}" -m ein.cli )
 else
     LATTICE_CMD=( "${EIN_CMD[@]}" )
 fi
@@ -178,7 +178,7 @@ IR_DOT_ARGS=()
 [[ -n "${EINBOT_RULE_MODE:-}"  ]] && IR_DOT_ARGS+=( --rule-mode  "${EINBOT_RULE_MODE}" )
 [[ -n "${EINBOT_TRACE_VIEW:-}" ]] && IR_DOT_ARGS+=( --trace-view "${EINBOT_TRACE_VIEW}" )
 
-echo "ein-bot:   ${EIN_CMD[*]}"
+echo "Ein:   ${EIN_CMD[*]}"
 echo "examples:  ${EXAMPLES_DIR}"
 echo "output:    ${OUT_DIR}"
 echo "raster:    ${RASTER_FORMATS:-<none — .dot only>}"

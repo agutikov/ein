@@ -31,7 +31,7 @@ source: `canon.BOOKKEEPING_HEADS`.
 ## Task-class entries
 
 The three search modes. Single source: the `Mode` enum in
-[`inference/verdict.py`](../../../ein.py/src/ein_bot/inference/verdict.py);
+[`inference/verdict.py`](../../../ein.py/src/ein/inference/verdict.py);
 the solver's `entry` discriminator uses the same string values.
 
 | string | `Mode` | entry function | verdict shape |
@@ -59,7 +59,7 @@ post-M1.
 The kernel trigger `(__closed__ R)` (a **dunder** name per the convention above;
 the bare `closed` is now a free userspace name) has two engine sides, both
 isolated in
-[`inference/closed.py`](../../../ein.py/src/ein_bot/inference/closed.py)
+[`inference/closed.py`](../../../ein.py/src/ein/inference/closed.py)
 (constant `CLOSED = "__closed__"`):
 
 - **Auto-inference** — `emit_closed` writes `(__closed__ R)` for every declared
@@ -83,7 +83,7 @@ The kernel trigger `(__symmetric__ R)` closes R's extension under arg-swap
 `__symmetric__` threading the source edge as its premise. Single source:
 `SYMMETRIC = "__symmetric__"` + the mirror machinery
 (`_next_mirror_firing` / `_enqueue_mirror_sources`) in
-[`inference/saturator.py`](../../../ein.py/src/ein_bot/inference/saturator.py).
+[`inference/saturator.py`](../../../ein.py/src/ein/inference/saturator.py).
 
 **A performance optimization, NOT a capability.** It computes the *identical*
 closure as the stdlib `symmetric` rule (`std.algebra`) — pinned by
@@ -101,7 +101,7 @@ removed — now namespaced so it never masquerades as a userspace name.
 `(query …)`-block keywords the hypothesis generator reads to scope which
 relations it enumerates. Single source: the `HYPOTHESIS_RELATIONS` /
 `NO_HYPOTHESIS` constants in
-[`inference/hypgen.py`](../../../ein.py/src/ein_bot/inference/hypgen.py); both
+[`inference/hypgen.py`](../../../ein.py/src/ein/inference/hypgen.py); both
 scope the *blind enumerator* only (hrule-driven generation ignores them).
 
 | key | effect | where |

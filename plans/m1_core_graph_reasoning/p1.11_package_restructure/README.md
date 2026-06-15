@@ -17,8 +17,8 @@ by giving it a cleaner package surface to extend.
 Three pieces of housekeeping that the M1 implementation
 accumulated:
 
-1. **Package rename:** `ein-bot` / `ein_bot` → `ein`. The
-   project's user-facing name is "ein"; "ein-bot" was the repo
+1. **Package rename:** `Ein` / `ein` → `ein`. The
+   project's user-facing name is "ein"; "Ein" was the repo
    placeholder. Bring the Python package + CLI binary into line.
 2. **Demo merge:** the `ein.py/demo/` scratchpad
    (`bench_saturate.py`, `bench_solve.py`) becomes part of the
@@ -26,7 +26,7 @@ accumulated:
    `src/ein/bench/` or `src/ein/cli/bench.py`. Today they sit
    outside the package's source root and are runnable only via
    `python ein.py/demo/bench_solve.py`.
-3. **CLI split:** the single `src/ein_bot/cli.py` becomes a
+3. **CLI split:** the single `src/ein/cli.py` becomes a
    folder `src/ein/cli/` with per-subcommand modules (`solve.py`,
    `saturate.py`, `query.py`, `dump.py`, etc.). Today everything
    piles onto one CLI module; subcommands proliferate as M1's
@@ -35,9 +35,9 @@ accumulated:
 ## Why deferred
 
 The work is mechanical (no design questions) but high-churn
-(every `from ein_bot.…` import becomes `from ein.…`, every
+(every `from ein.…` import becomes `from ein.…`, every
 `ein.py/demo/*` reference shifts, every doc cross-link that
-hard-codes `ein_bot` or the demo path updates). Best done at a
+hard-codes `ein` or the demo path updates). Best done at a
 quiescent point — between milestones, with a green test suite
 on both sides of the rename.
 
@@ -67,7 +67,7 @@ S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
 ## Acceptance
 
 - `from ein.ir import parser` (or whatever the new import path
-  is) works; `from ein_bot.ir import parser` does not.
+  is) works; `from ein.ir import parser` does not.
 - `ein solve examples/zebra2.ein` works (renamed CLI entry).
 - `ein bench solve examples/zebra2.ein` works (merged-demo CLI
   subcommand).
@@ -92,13 +92,13 @@ S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
 
 ## Cross-links
 
-- `ein.py/src/ein_bot/` — the package source affected by
+- `ein.py/src/ein/` — the package source affected by
   the rename.
 - `ein.py/demo/` — the scratchpad that gets merged into
   the package.
 - [`CLAUDE.md`](../../../CLAUDE.md) — needs an update once the
   package name changes (the agent guide references `ein.py/` and
-  `ein_bot/` paths).
+  `ein/` paths).
 - [P1.20 Theme G](../p1.20_kernel_docs/README.md) — sibling
   housekeeping (rename `docs/index/` → `docs/lib/`); same
   scheduling concerns (do at a quiescent point).

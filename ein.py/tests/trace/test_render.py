@@ -1,6 +1,6 @@
 """Markdown trace renderer tests — S1.6.4 T1.6.4.7.
 
-Covers `ein_bot.trace`:
+Covers `ein.trace`:
 
 - a synthetic 3-step trace renders to a committed golden markdown;
 - `--reorder` clusters by entity with the *same* set of steps;
@@ -20,11 +20,11 @@ from pathlib import Path
 
 import pytest
 
-from ein_bot.cli import main
-from ein_bot.inference.monotonic import contradictions_solve, gaps_solve
-from ein_bot.ir import parse
-from ein_bot.kb import KnowledgeBase
-from ein_bot.trace import (
+from ein.cli import main
+from ein.inference.monotonic import contradictions_solve, gaps_solve
+from ein.ir import parse
+from ein.kb import KnowledgeBase
+from ein.trace import (
     Reductio,
     Trace,
     TraceStep,
@@ -163,7 +163,7 @@ def test_trace_control_chars_escaped_on_emit():
     """
     # `parse`, `TraceStep`, `parse_trace_steps`, `trace_to_ir` are
     # module-level; only the submodule-private escaper sites need importing.
-    from ein_bot.trace.ast import _fact_to_sexpr, step_to_ir
+    from ein.trace.ast import _fact_to_sexpr, step_to_ir
     step = TraceStep(
         n=1, rule="r", premises=(("p", ("a",)),), derived=("q", ("a",)),
         why='first\nsecond\twith "quote" and \\slash',

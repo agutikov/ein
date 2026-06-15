@@ -1,7 +1,7 @@
 # Plans
 
-Forward-looking roadmap for ein-bot. The 2021 prototype informs the
-design; the cleaned-up package skeleton (`src/ein_bot/`) just unblocks
+Forward-looking roadmap for Ein. The 2021 prototype informs the
+design; the cleaned-up package skeleton (`src/ein/`) just unblocks
 the work — the actual *implementation* of the design lives here.
 
 The companion research notes (no implementation steps, no schedule)
@@ -42,7 +42,7 @@ i.e. NL parses into the same `(facts …)` / `(ontology …)` blocks the
 engine consumes, and the engine's trace renders back into the same
 NL paragraphs the README cites.
 
-Two adjacent secondary milestones surface ein-bot externally,
+Two adjacent secondary milestones surface Ein externally,
 plus a Rust port slotted before the GUI:
 
 - **M1a — Rust port (ein.rs)** ([m1a_rust/](m1a_rust/README.md))
