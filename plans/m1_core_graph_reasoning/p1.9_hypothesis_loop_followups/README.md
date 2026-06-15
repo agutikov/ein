@@ -80,8 +80,8 @@ The R1-R4 rejected entries stay in the README catalog only.
 | ✅ E1 | `(functional R)` activator       | **resolved by P1.8 stdlib** — `functional`/`injective`/`bijective` ship across `std.algebra`/`std.bijection`/`std.elim`/`std.closure` ([§Resolution](s1.9.e1_functional_activator.md#resolution-2026-06-15)); `single-parent` retired | S | M | DL `funcProp` |
 | ✅ E2 | `(at-most-one R slot)` activator | **resolved a different way** — at-most-one = `functional`/`injective` (incl. positional `(functional R 0 1)`) + `std.closure` saturating to `(closed R)`; no dedicated activator needed ([§Resolution](s1.9.e2_at_most_one.md#resolution-2026-06-15)) | M | M | CSP cardinality |
 | ✅ E3 | `:no-hypothesis` query key       | **implemented** — query key `:no-hypothesis`, the exclusion dual of the `:hypothesis-relations` whitelist; blind-enumerator-scoped, saturation untouched ([§Implemented](s1.9.e3_no_hypotheses.md#implemented-2026-06-15)) | S | L | engineering convenience |
-| 📅 E4 | `(symmetry-class R T)`           | declare T-instances interchangeable under R; collapse to a canonical representative at gen-time. (The "A5 emit-both hack" it once replaced was removed by [S1.7.24](../p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md); now an *optional* value-symmetry optimisation over a user `(rule symmetric)`) | M | M | CSP value-symmetry breaking ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
-| 📅 E5 | Static rule-conflict pre-analysis | precompute `(relation, arg-position)` mutex pairs from the rule set; drop hypotheses violating mutex at gen-time | M | M | rule-set sufficiency, [F7 §C](../../followups/f7_rule_induction.md) |
+| ⛔ E4 | `(symmetry-class R T)`           | **superseded 2026-06-15** by the symmetric **D/A/B/C decomposition** (Phase 2a/2b) — the dedicated activator is overtaken: E4(a) gen-time pruning → a user hrule (B); E4(b) uniqueness-up-to-symmetry → the positive mirror (C subsumed by D — stdlib `symmetric` + kernel `__symmetric__`). Residual = *object*-value-symmetry (lex-leader SBP/SBDD, L-effort, unexercised) ([§Superseded](s1.9.e4_symmetry_class.md#superseded-by-the-dabc-decomposition-2026-06-15)) | M | M | CSP value-symmetry breaking ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
+| ⛔ E5 | Static rule-conflict pre-analysis | **reframed 2026-06-15 → rule induction (F4-Q34 / F5 / F7)**: a mutex is a *negative hrule* (zebra2 already ships it as `functional-negative`), so this is `property → negative-companion rule` synthesis (cf. `symmetric → symmetric-negative`), not a hypgen table; only a *dominated* Python-table residual stays in P1.9 ([§Reframed](s1.9.e5_static_rule_conflict.md#reframed-as-rule-induction-2026-06-15)) | M | M | rule-set sufficiency, [F7 §C](../../followups/f7_rule_induction.md) |
 
 ### Conflict-driven learning (SAT/CDCL-inspired)
 
@@ -118,9 +118,10 @@ The R1-R4 rejected entries stay in the README catalog only.
 > inapplicable** (the cardinality layering already *is* the deepening). The
 > **space-shrinkers** (E11, E4, E5, E14, E15) are the genuine complete-search
 > levers — they cut the *number* of enterings = saturations, attacking the
-> O1+O2 bottleneck from the count side (E4 prunes value-symmetric branches that
-> today are not deduped at all — `state_hash` only collapses *path-duplicate*
-> models, not symmetric ones). See each stub's
+> O1+O2 bottleneck from the count side (E4's value-symmetry pruning is now ⛔
+> superseded — re-homed to a user hrule + the positive mirror; only the
+> *object*-permutation residual, which `state_hash` still does not dedup, could
+> re-promote it). See each stub's
 > "Lattice re-grounding" section.
 
 ### Engineering / UX

@@ -189,6 +189,26 @@ So they classify a *relation bundle*, not just a relation. This is
 the conceptual content of the PoC's square rule, already
 implemented in zebra.ein but worth naming.
 
+### The negative-companion column
+
+Each property tag implies not just a positive *check / closure* rule but a
+**negative-propagation companion** — the dual that pushes `(not …)` facts:
+
+| property | positive rule | negative companion |
+|----------|---------------|--------------------|
+| `symmetric`  | `symmetric` (mirror the edge)  | `symmetric-negative` (`¬R(a,b) ⟹ ¬R(b,a)`) |
+| `functional` | `functional` (two values ⇒ ⊥)  | `functional-negative` (the **mutex** `R(a,b) ⟹ ¬R(a,b_other)`) |
+| `injective`  | `injective` (two sources ⇒ ⊥)  | `injective-negative` (the dual mutex) |
+
+The negative companion is *mechanically determined* by the property — a column
+of the cartesian product, not a free design choice. Deriving it from the
+positive tag is rule-from-rule synthesis
+([F7 sub-track D](f7_rule_induction.md#sub-track-d--companion-rule-synthesis-property-duals)),
+and it is the home of the former
+[P1.9 E5](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e5_static_rule_conflict.md)
+"static mutex pre-analysis": the mutex *is* the `functional` / `injective`
+negative companion.
+
 ### Minimal rule set — minimal for *what*?
 
 The user (2026-05-18) asked whether one should search for the

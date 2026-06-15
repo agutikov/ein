@@ -181,6 +181,33 @@ post-hoc on a saturated KB, flagging activators whose firings
 were all redundant or unconsumed — a static-analysis pass on the
 rule library.
 
+## Sub-track D — companion-rule synthesis (property duals)
+
+Distinct from generalisation (sub-track A, which makes one rule *more
+general*) and statistical induction (sub-track B): synthesise a **companion
+rule** mechanically determined by a property declaration. Two ship hand-written
+today:
+
+- `(symmetric R)` → `symmetric-negative` (`¬R(a,b) ⟹ ¬R(b,a)`);
+- `(functional R)` → `functional-negative` (the **mutex** `R(a,b) ⟹ ¬R(a,b_other)`).
+
+The positive property-*check* and its negative-*propagation* dual are two faces
+of one algebraic fact; deriving the second from the first is a fixed IR-AST
+transform (negate the conclusion, mirror the matched positions). The engine
+already has the *activation* half — `symmetric-negative-setup` derives
+`(symmetric-negative R)` from `(symmetric R)` (A9 reflective rule-implication);
+the missing half is emitting the companion *body* as data, which is
+[F5](f5_rules_as_data.md)'s `:assert <rule>` (PF5.1). This **subsumes the former
+[P1.9 E5](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e5_static_rule_conflict.md)**
+("static mutex pre-analysis"): a mutex *is* the `functional` / `injective`
+companion, so it is a derived rule, not a hypgen table. Soundness of a
+synthesised companion is decidable cheaply — a bounded chase of the existing
+saturator over a 2-atom abstract witness, sound on the monotone (NAF-free)
+fragment where `functional` / `injective` live. Which property implies which
+companion is a column of
+[F4 §Q34](f4_cross_cutting.md#algebraic-properties-beyond-symmetric-transitive--and-the-2-7-cartesian-product-q34)'s
+2⁷ cartesian product.
+
 ## Relation to other followups
 
 - [F1 — Categorical formulation](f1_categorical_formulation.md) —

@@ -128,6 +128,13 @@ rules-as-data exercise. Candidate kernel features to audit:
 - **Hypfilter (lookahead-kill)** — already an opt-in feature
   (`enable_pre_branch_lookahead`); audit whether it's a
   natural rule rather than engine code.
+- **Static mutex pre-analysis (ex-[P1.9 E5](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e5_static_rule_conflict.md))**
+  — audit *already resolved*: a `(rel, argpos)` mutex is the negative-companion
+  rule `functional-negative`, not a Python hypfilter table — express as a rule.
+  Soundness of a synthesised companion is a bounded chase over a 2-atom abstract
+  witness (monotone fragment) — the existing saturator as the check, no new
+  engine. The companion *taxonomy* is
+  [F7 sub-track D](f7_rule_induction.md#sub-track-d--companion-rule-synthesis-property-duals).
 - **Back-prop** — `(not h)` writes on unconditional death.
   Could this be a meta-rule that reacts to a
   `(branch-died ?branch_id)` activator?
