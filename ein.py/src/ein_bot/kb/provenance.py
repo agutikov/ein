@@ -320,10 +320,61 @@ def reaches(
     return False
 
 
+def walk_premises(
+    root: Fact,
+    resolve: Callable[[str, tuple[object, ...]], Fact | None],
+    *,
+    keep: Callable[[FactId, Fact], bool],
+    visited: set[FactId] | None = None,
+) -> set[Fact]:
+    """Collect every fact in ``root``'s transitive premise closure for which
+    ``keep`` is True — the **set-collecting dual** of :func:`reaches` (E6).
+
+    Where :func:`reaches` short-circuits at the first terminal and returns a
+    ``bool``, this walks the *whole* closure over rule-kind ``premises_raw``
+    and accumulates each kept fact. ``resolve(rel, args) -> Fact | None`` looks
+    up a premise id (as in :func:`build_derivation_dag`), so this module needn't
+    import ``store.py``.
+
+    ``keep(key, fact)`` decides set membership only; it does **not** stop the
+    walk — rule-kind facts are always expanded. A predicate selecting the
+    derivation *frontier* (``provenance is None or kind in {"source",
+    "hypothesis"}``) reproduces :meth:`KnowledgeBase.unsat_core`; this is the
+    shared substrate for the unsat-core frontier and the core minimiser (E19).
+
+    ``visited`` guards provenance cycles and memoises across roots: pass a
+    shared set to collect the frontier across several conflicting facts in one
+    pass (the union is identical to walking each separately — a fact is kept
+    iff reachable from any root). Iterative (explicit stack) so a deep
+    derivation chain can't blow the recursion limit.
+    """
+    if visited is None:
+        visited = set()
+    out: set[Fact] = set()
+    stack: list[Fact] = [root]
+    while stack:
+        f = stack.pop()
+        key: FactId = (f.relation_name, f.args)
+        if key in visited:
+            continue
+        visited.add(key)
+        if keep(key, f):
+            out.add(f)
+        prov = f.provenance
+        if prov is not None and prov.kind == "rule":
+            for rid in prov.premises_raw:
+                premise = resolve(*rid)
+                if premise is not None:
+                    stack.append(premise)
+    return out
+
+
 __all__ = [
     "DerivationDAG",
     "FactId",
     "Provenance",
     "build_derivation_dag",
     "detect_provenance_cycles",
+    "reaches",
+    "walk_premises",
 ]

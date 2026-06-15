@@ -9,7 +9,7 @@ from ein_bot.kb import (
     Layer,
     Provenance,
 )
-from ein_bot.kb.provenance import detect_provenance_cycles
+from ein_bot.kb.provenance import detect_provenance_cycles, walk_premises
 
 # ── Helpers ────────────────────────────────────────────────────────
 
@@ -386,3 +386,88 @@ class TestLoaderRejectsCycles:
         kb._index_fact(kb.facts[-1])
         cycles = detect_provenance_cycles(kb.facts, kb._fact_by_id)
         assert cycles != []
+
+
+# ═══════════════════════ walk_premises (E6) ════════════════════════
+
+
+def _src(kb: KnowledgeBase, rel: str, args: tuple, sid: str) -> Fact:
+    """Add a FACT-layer source fact; return the indexed instance."""
+    f = Fact(
+        relation_name=rel, args=args, layer=Layer.FACT,
+        provenance=Provenance.from_source(sid),
+    )
+    kb.add_fact(f)
+    kb._index_fact(kb.facts[-1])
+    return kb.facts[-1]
+
+
+def _frontier(_key: object, fact: Fact) -> bool:
+    """Derivation-frontier predicate: source/hypothesis/un-provenanced."""
+    return (fact.provenance is None
+            or fact.provenance.kind in ("source", "hypothesis"))
+
+
+class TestWalkPremises:
+    """E6 — ``walk_premises`` is the set-collecting dual of ``reaches``."""
+
+    def _diamond_kb(self):
+        """sources s1,s2 -> d1; s2 -> d2; d1,d2 -> top. Frontier(top)={s1,s2}."""
+        kb = KnowledgeBase.from_ir(parse(
+            "(relation r T T)\n(relation d T T)\n(relation top T T)"))
+        s1 = _src(kb, "r", ("A", "B"), "(1)")
+        s2 = _src(kb, "r", ("B", "C"), "(2)")
+        d1 = _add_derived(kb, "d", ("A", "C"), "compose",
+                          (("r", ("A", "B")), ("r", ("B", "C"))))
+        d2 = _add_derived(kb, "d", ("C", "A"), "flip",
+                          (("r", ("B", "C")),))
+        top = _add_derived(kb, "top", ("A", "A"), "join",
+                           (("d", ("A", "C")), ("d", ("C", "A"))))
+        return kb, {"s1": s1, "s2": s2, "d1": d1, "d2": d2, "top": top}
+
+    def test_collects_source_frontier(self):
+        kb, n = self._diamond_kb()
+        got = walk_premises(n["top"], kb._fact_by_id, keep=_frontier)
+        assert got == {n["s1"], n["s2"]}
+
+    def test_predicate_selects_non_leaf_facts(self):
+        # `keep` decides membership, not whether to descend — so it can
+        # collect rule-kind intermediates too.
+        kb, n = self._diamond_kb()
+        got = walk_premises(
+            n["top"], kb._fact_by_id,
+            keep=lambda _k, f: f.relation_name == "d")
+        assert got == {n["d1"], n["d2"]}
+
+    def test_shared_visited_unions_across_roots(self):
+        kb, n = self._diamond_kb()
+        visited: set = set()
+        got: set = set()
+        for root in (n["d1"], n["d2"]):
+            got |= walk_premises(
+                root, kb._fact_by_id, keep=_frontier, visited=visited)
+        assert got == {n["s1"], n["s2"]}
+
+    def test_cycle_terminates(self):
+        # A provenance 2-cycle (rule-kind only, no frontier) must not loop.
+        kb = KnowledgeBase.from_ir(parse("(relation r T T)"))
+        f_ab = Fact(
+            relation_name="r", args=("A", "B"), layer=Layer.REASONING,
+            provenance=Provenance.from_rule(
+                rule="R1", premises_raw=(("r", ("B", "A")),)))
+        f_ba = Fact(
+            relation_name="r", args=("B", "A"), layer=Layer.REASONING,
+            provenance=Provenance.from_rule(
+                rule="R2", premises_raw=(("r", ("A", "B")),)))
+        kb.add_fact(f_ab)
+        kb.add_fact(f_ba)
+        kb._index_fact(kb.facts[-2])
+        kb._index_fact(kb.facts[-1])
+        assert walk_premises(f_ab, kb._fact_by_id, keep=_frontier) == set()
+
+    def test_parity_with_derivation_dag_sources(self):
+        # The unsat-core frontier == the DAG's `.sources` (the refactor's
+        # invariant, in miniature).
+        kb, n = self._diamond_kb()
+        got = walk_premises(n["top"], kb._fact_by_id, keep=_frontier)
+        assert got == set(kb.derivation_dag(n["top"]).sources)

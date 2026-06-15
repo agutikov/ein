@@ -568,18 +568,32 @@ class KnowledgeBase:
         return to_dot(self, **kwargs)
 
     def unsat_core(self, conflicting: Iterable[Fact]) -> set[Fact]:
-        """Minimal source-kind frontier across a set of conflicting facts.
+        """Frontier of given/assumed facts across a set of conflicting facts.
 
-        For each conflicting fact, walk its derivation DAG and
-        accumulate the source-kind terminals. The union is the
-        minimal set of *given* facts that, jointly, derive the
-        conflict; it's what the *contradictions* task class returns
-        to the user (idea 03).
+        For each conflicting fact, walk its derivation closure and
+        accumulate the *frontier* terminals — source-kind, hypothesis-kind,
+        or un-provenanced givens. The union is the minimal set of facts
+        that jointly derive the conflict (the given clues, plus the
+        committed hypotheses when a branch is involved); it's what the
+        *contradictions* task class returns to the user (idea 03).
+
+        Built on the shared frontier collector
+        :func:`~ein_bot.kb.provenance.walk_premises` (E6) — the same
+        premise-closure walk as :meth:`derivation_dag`, without
+        materialising the edge set. One shared ``visited`` set memoises
+        the walk across all the conflicting facts.
         """
+        from .provenance import walk_premises
+
+        def _is_frontier(_key: object, fact: Fact) -> bool:
+            return (fact.provenance is None
+                    or fact.provenance.kind in ("source", "hypothesis"))
+
         core: set[Fact] = set()
+        visited: set = set()
         for f in conflicting:
-            dag = self.derivation_dag(f)
-            core.update(dag.sources)
+            core |= walk_premises(
+                f, self._fact_by_id, keep=_is_frontier, visited=visited)
         return core
 
     # ── Fork — S1.2.2 T1.2.2.3 ────────────────────────────────────
