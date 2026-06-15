@@ -1,9 +1,15 @@
 # P1.11 — Package + CLI restructure
 
 **Estimate:** TBD (~1-2 days mechanical work + cross-ref update).
-**Status:** **placeholder** — created 2026-05-24 from the
+**Status:** **rename DONE 2026-06-15** (commit `e49a325`) — the
+name change (S1.11.1 package dir + S1.11.2 codebase + S1.11.5
+docs/plans/examples sweep) shipped: `ein_bot` → `ein`, `ein-bot`
+→ `Ein`/`ein` by context. **Remaining:** demo-merge (S1.11.3),
+CLI-split (S1.11.4), the outer `ein.py/` dir rename
+(Q-S1.11.1.A, deferred — see [open questions](#open-questions)),
+and final acceptance (S1.11.6). Created 2026-05-24 from the
 TODO.md scratchpad. Pure housekeeping; does not gate M1
-acceptance, but touches every import in the package so it's best
+acceptance, but touched every import in the package so it was
 scheduled at a quiescent point (between M1's P1.7 ship and the
 start of M2).
 **Depends on:** [P1.7](../p1.7_bootstrapping_zebra/) ships — the
@@ -17,9 +23,14 @@ by giving it a cleaner package surface to extend.
 Three pieces of housekeeping that the M1 implementation
 accumulated:
 
-1. **Package rename:** `Ein` / `ein` → `ein`. The
-   project's user-facing name is "ein"; "Ein" was the repo
-   placeholder. Bring the Python package + CLI binary into line.
+1. **Package rename:** `ein-bot` / `ein_bot` → `ein`. The
+   project's user-facing name is "ein" / "Ein"; "ein-bot" was the
+   repo placeholder. Bring the Python package + CLI binary into
+   line. **DONE 2026-06-15** (commit `e49a325`): package dir
+   `src/ein_bot/` → `src/ein/`, every import, `pyproject` `name` +
+   `[project.scripts]` (`ein-bot` → `ein`), repo URL, and prose
+   (`Ein` proper-noun / `ein` command). The *outer* `ein.py/`
+   directory was left as-is (Q-S1.11.1.A).
 2. **Demo merge:** the `ein.py/demo/` scratchpad
    (`bench_saturate.py`, `bench_solve.py`) becomes part of the
    `ein` package proper — either under
@@ -35,24 +46,26 @@ accumulated:
 ## Why deferred
 
 The work is mechanical (no design questions) but high-churn
-(every `from ein.…` import becomes `from ein.…`, every
+(every `from ein_bot.…` import becomes `from ein.…`, every
 `ein.py/demo/*` reference shifts, every doc cross-link that
-hard-codes `ein` or the demo path updates). Best done at a
+hard-codes `ein_bot` or the demo path updates). Best done at a
 quiescent point — between milestones, with a green test suite
 on both sides of the rename.
 
 ## Stages
 
-| ID       | Title                                                 | File                                                                   |
-|----------|-------------------------------------------------------|------------------------------------------------------------------------|
-| S1.11.1  | Directory rename                                      | [s1.11.1_directory_rename.md](s1.11.1_directory_rename.md)            |
-| S1.11.2  | Codebase rename                                       | [s1.11.2_codebase_rename.md](s1.11.2_codebase_rename.md)              |
-| S1.11.3  | Demo merge                                            | [s1.11.3_demo_merge.md](s1.11.3_demo_merge.md)                        |
-| S1.11.4  | CLI split                                             | [s1.11.4_cli_split.md](s1.11.4_cli_split.md)                          |
-| S1.11.5  | Docs / plans / examples sweep                         | [s1.11.5_docs_sweep.md](s1.11.5_docs_sweep.md)                        |
-| S1.11.6  | Acceptance                                            | [s1.11.6_acceptance.md](s1.11.6_acceptance.md)                        |
+| ID       | Title                                                 | Status                          | File                                                                   |
+|----------|-------------------------------------------------------|---------------------------------|------------------------------------------------------------------------|
+| S1.11.1  | Directory rename                                      | ✅ pkg dir done; outer `ein.py/` deferred | [s1.11.1_directory_rename.md](s1.11.1_directory_rename.md)            |
+| S1.11.2  | Codebase rename                                       | ✅ DONE 2026-06-15              | [s1.11.2_codebase_rename.md](s1.11.2_codebase_rename.md)              |
+| S1.11.3  | Demo merge                                            | ⬜ pending                      | [s1.11.3_demo_merge.md](s1.11.3_demo_merge.md)                        |
+| S1.11.4  | CLI split                                             | ⬜ pending                      | [s1.11.4_cli_split.md](s1.11.4_cli_split.md)                          |
+| S1.11.5  | Docs / plans / examples sweep                         | ✅ DONE 2026-06-15              | [s1.11.5_docs_sweep.md](s1.11.5_docs_sweep.md)                        |
+| S1.11.6  | Acceptance                                            | ◐ rename verified; full pending | [s1.11.6_acceptance.md](s1.11.6_acceptance.md)                        |
 
 S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
+The rename spine (S1.11.1 package dir → S1.11.2 → S1.11.5) landed
+in one commit; S1.11.3/S1.11.4 + the outer-dir rename remain.
 
 ## Out of scope
 
@@ -67,7 +80,7 @@ S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
 ## Acceptance
 
 - `from ein.ir import parser` (or whatever the new import path
-  is) works; `from ein.ir import parser` does not.
+  is) works; `from ein_bot.ir import parser` does not.
 - `ein solve examples/zebra2.ein` works (renamed CLI entry).
 - `ein bench solve examples/zebra2.ein` works (merged-demo CLI
   subcommand).
@@ -92,13 +105,13 @@ S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
 
 ## Cross-links
 
-- `ein.py/src/ein/` — the package source affected by
+- `ein.py/src/ein_bot/` — the package source affected by
   the rename.
 - `ein.py/demo/` — the scratchpad that gets merged into
   the package.
 - [`CLAUDE.md`](../../../CLAUDE.md) — needs an update once the
   package name changes (the agent guide references `ein.py/` and
-  `ein/` paths).
+  `ein_bot/` paths).
 - [P1.20 Theme G](../p1.20_kernel_docs/README.md) — sibling
   housekeeping (rename `docs/index/` → `docs/lib/`); same
   scheduling concerns (do at a quiescent point).

@@ -64,7 +64,7 @@
 ;;                                     + relative cross-refs inside the file updated
 ;;   - P1.6 rename + CLI restructure → plans/m1_core_graph_reasoning/p1.11_package_restructure/README.md
 ;;                                     (NEW; labelled P1.11 because P1.6 was already taken by
-;;                                     rendering + trace. Ein/ein → ein, demo merge into
+;;                                     rendering + trace. ein-bot/ein_bot → ein, demo merge into
 ;;                                     package, cli.py split into folder.)
 ;;                                     + plans/m1_core_graph_reasoning/README.md (P1.11 row)
 ;;   - P1.5a ideas (hypgen scoring)  → plans/m1_core_graph_reasoning/p1.5a_zebra_solution/README.md
