@@ -439,7 +439,7 @@ def _add_solve_parser(sub) -> None:
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="ein",
-        description="Graph-based reasoner for Zebra-style puzzles.",
+        description="Graph-based relation algebra solver for Zebra-style logic puzzles.",
     )
     sub = p.add_subparsers(dest="cmd", required=True)
     _add_ir_parser(sub)
