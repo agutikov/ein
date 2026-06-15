@@ -31,11 +31,13 @@ from __future__ import annotations
 import argparse
 import sys
 import time
+from dataclasses import replace
 from pathlib import Path
 
 from ein.inference.config import SolverConfig
 from ein.inference.monotonic import (
     LatticeDumper,
+    ProgressDumper,
     contradictions_solve,
     gaps_solve,
 )
@@ -77,9 +79,9 @@ def _build_argparser() -> argparse.ArgumentParser:
     )
     ap.add_argument(
         "--dump-states", type=Path, default=None,
-        help="if set, write a per-set audit dump to this "
-             "directory (S1.5b.29 fills the real layout; "
-             "skeleton stage is a no-op).",
+        help="if set, write a per-set audit dump to this directory "
+             "(LatticeDumper; or, under --verbose, the ProgressDumper "
+             "timeline + per-layer snapshots).",
     )
     ap.add_argument(
         "--max-time", type=float, default=None,
@@ -107,6 +109,30 @@ def _build_argparser() -> argparse.ArgumentParser:
              "informed only when --hypgen-scoring is set to "
              "an informed mode like 'popularity'.",
     )
+    # ── Hypothesis-order shuffle (S1.5b.31) ──
+    ap.add_argument(
+        "--shuffle", action="store_true",
+        help="shuffle the within-layer commitment-candidate (hypothesis) "
+             "order before exploring — a per-layer random.Random(--seed)."
+             "shuffle applied on top of --lattice-order. The verdict is "
+             "shuffle-invariant (same answer, different traversal); use it "
+             "to probe order-dependence of the search.",
+    )
+    ap.add_argument(
+        "--seed", type=int, default=0,
+        help="RNG seed for --shuffle (default 0); ignored without --shuffle.",
+    )
+    # ── Verbose progress (parity with `ein search`) ──
+    ap.add_argument(
+        "--verbose", "-v", action="store_true",
+        help="stream per-layer + per-entering progress to stderr "
+             "(mirrors `ein search --verbose`).",
+    )
+    ap.add_argument(
+        "--progress-every", type=int, default=10,
+        help="under --verbose, log every N-th entering (default 10; "
+             "solution nodes + layer boundaries always log).",
+    )
     return ap
 
 
@@ -116,18 +142,32 @@ def main(argv: list[str] | None = None) -> int:
     kb = KnowledgeBase.from_ir(parse(text))
 
     config = kb.config or SolverConfig()
-    if args.lattice_sanity_check or args.lattice_order is not None:
-        from dataclasses import replace as _replace
-        replacements: dict = {}
-        if args.lattice_sanity_check:
-            replacements["lattice_sanity_check"] = True
-        if args.lattice_order is not None:
-            replacements["lattice_order"] = args.lattice_order
-        config = _replace(config, **replacements)
-    dumper = (
-        LatticeDumper(out_dir=args.dump_states)
-        if args.dump_states is not None else None
-    )
+    replacements: dict = {}
+    if args.lattice_sanity_check:
+        replacements["lattice_sanity_check"] = True
+    if args.lattice_order is not None:
+        replacements["lattice_order"] = args.lattice_order
+    if args.shuffle:
+        # A non-None lattice_order_seed makes the solver apply a per-layer
+        # random.Random(seed).shuffle to the candidate order (after
+        # --lattice-order); verdict-invariant (S1.5b.31).
+        replacements["lattice_order_seed"] = args.seed
+    if replacements:
+        config = replace(config, **replacements)
+
+    # --verbose streams progress via ProgressDumper (the canonical live
+    # emitter, shared with `ein search` / the acceptance runner); with
+    # --dump-states it also writes the filesystem timeline. Without
+    # --verbose, --dump-states keeps the LatticeDumper per-set audit dump.
+    if args.verbose:
+        dumper = ProgressDumper(
+            progress_every=args.progress_every,
+            out_dir=args.dump_states,
+        )
+    elif args.dump_states is not None:
+        dumper = LatticeDumper(out_dir=args.dump_states)
+    else:
+        dumper = None
 
     entry_fn = gaps_solve if args.gaps else contradictions_solve
     entry_name = "gaps_solve" if args.gaps else "contradictions_solve"
