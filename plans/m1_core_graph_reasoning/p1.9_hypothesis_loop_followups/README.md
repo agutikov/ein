@@ -50,6 +50,7 @@ Tasks / Acceptance / open-questions skeleton.
 | [s1.9.e4_symmetry_class.md](s1.9.e4_symmetry_class.md)                              | E4    |
 | [s1.9.e5_static_rule_conflict.md](s1.9.e5_static_rule_conflict.md)                  | E5    |
 | [s1.9.e6_transitive_premise_walk.md](s1.9.e6_transitive_premise_walk.md)            | E6    |
+| [s1.9.e6a_tree_solver_cleanup.md](s1.9.e6a_tree_solver_cleanup.md)                  | E6 prereq |
 | [s1.9.e7_learned_clause.md](s1.9.e7_learned_clause.md)                              | E7    |
 | [s1.9.e8_watched_fact.md](s1.9.e8_watched_fact.md)                                  | E8    |
 | [s1.9.e9_lcv.md](s1.9.e9_lcv.md)                                                    | E9    |

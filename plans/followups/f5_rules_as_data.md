@@ -135,9 +135,13 @@ rules-as-data exercise. Candidate kernel features to audit:
   witness (monotone fragment) — the existing saturator as the check, no new
   engine. The companion *taxonomy* is
   [F7 sub-track D](f7_rule_induction.md#sub-track-d--companion-rule-synthesis-property-duals).
-- **Back-prop** — `(not h)` writes on unconditional death.
-  Could this be a meta-rule that reacts to a
-  `(branch-died ?branch_id)` activator?
+- **Back-prop** — `(not h)` writes on unconditional death. **Audit resolved
+  2026-06-15: `back_prop.py` is dead tree-solver residue, not a kernel feature to
+  lift** (tree solver removed in `8d77b02`; the lattice does flat root-writes +
+  Apriori nogoods instead). Removing it is a **scheduled refactor, not a parked
+  audit item** —
+  [S1.9.E6a](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e6a_tree_solver_cleanup.md),
+  a hard prerequisite of E6 (verified inventory there).
 - **NAF re-eval** — fire-time check of `AbsentGuard`. This
   is probably load-bearing engine; document as such.
 
