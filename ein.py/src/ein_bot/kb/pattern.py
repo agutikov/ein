@@ -52,7 +52,7 @@ class Pattern:
         rels: list[str] = []
         types: list[str] = []
 
-        def walk(node: IRNode, position: str = "top") -> None:
+        def walk(node: IRNode) -> None:
             if isinstance(node, Var):
                 if node.name not in vars_:
                     vars_.append(node.name)
@@ -61,7 +61,7 @@ class Pattern:
                 # Walk the head first — when it's a Var like
                 # `(?rel ?a ?b)`, we must record `?rel` as bound.
                 if isinstance(node.head, Var):
-                    walk(node.head, "head-var")
+                    walk(node.head)
                 head_name = node.head.name if isinstance(node.head, Atom) else None
                 # `instance` is no longer special (S1.7.6): it falls
                 # through to the generic-relation handler below, which
@@ -74,22 +74,22 @@ class Pattern:
                     # names, but do NOT register the wrapper head as a
                     # relation name itself — it's not a fact relation.
                     for a in node.args:
-                        walk(a, head_name)
+                        walk(a)
                     return
                 if head_name == "=":
                     for a in node.args:
-                        walk(a, "=")
+                        walk(a)
                     return
                 # generic SForm with head Atom = relation name (or kw-pair carrier)
                 if head_name is not None and head_name not in {"@empty", "@params"}:
                     if head_name not in rels:
                         rels.append(head_name)
                 for a in node.args:
-                    walk(a, head_name or "")
+                    walk(a)
                 return
             if isinstance(node, KwPair):
                 # :where (...) carries a side condition; walk its value
-                walk(node.value, "kw")
+                walk(node.value)
                 return
             # Atom / Wildcard / literals: nothing to extract
             return

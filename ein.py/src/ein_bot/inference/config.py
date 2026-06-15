@@ -36,17 +36,6 @@ class SolverConfig:
     Defaults follow the per-task ship-stage call recorded in
     [s1.5.4_hypgen_improvements.md](../../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.4_hypgen_improvements.md):
 
-    - ``enable_alive_inherit`` (default **True**) — Topic D, the
-      inherit-alive-set mechanism (commit ``40b8dd4`` + T1.5.4.8
-      polish). Setting to ``False`` reverts to per-branch
-      ``generate_hypotheses(kb)`` — the pre-``40b8dd4`` shape.
-      Escape hatch for puzzles whose rule library violates the M1
-      invariant (no rule-created relations / objects).
-    - ``enable_pre_branch_negated`` (default **True**) — Topic B
-      Tier A, the O(1) ``_negated_facts`` filter inside
-      ``generate_hypotheses``. Setting to ``False`` lets every
-      generated hypothesis fork even when the parent KB already
-      derived its negation; useful for measuring the filter's win.
     - ``enable_pre_branch_lookahead`` (default **True** once S1.5.6
       ships; **False** until then) — Topic B Tier B, the
       ``_dies_immediately(kb, h)`` one-step rule simulator. Skipped
@@ -104,8 +93,6 @@ class SolverConfig:
       unsat-core union) is path-independent. Puzzle authors won't
       normally set it.
     """
-    enable_alive_inherit:            bool = True
-    enable_pre_branch_negated:       bool = True
     enable_pre_branch_lookahead:     bool = True
     enable_lookahead_kill_cache:     bool = True
     # `enable_auto_closure` was a declared-but-inert placeholder for an

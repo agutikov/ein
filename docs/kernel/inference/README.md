@@ -88,35 +88,20 @@ change when the engine arrives:
    `(instance …)` / `is-a` uniformly as facts — there is no
    `logical_types` / `logical_instances` bridge to consult.
 
-## M1 invariant — `enable_alive_inherit` soundness
+## M1 invariant — alive-set soundness
 
-> **Superseded mechanism (2026-06-15; P1.7a).** The *inherit-once* mechanism
-> described below — seed `kb.alive` at root, forks inherit it via `kb.fork()`,
-> `generate_hypotheses` runs once per `solve()` — is **no longer how the shipped
-> loop works.** The monotonic / lattice solver **recomputes** the alive set
-> per-KB via `_compute_alive` (`inference/monotonic/solver.py:455`,
-> = `open_hypotheses(kb)`) and **never consults `enable_alive_inherit`** — the
-> flag still exists (`config.py:128`) but is **vestigial / dead** in the solver.
-> What stays load-bearing is the **3-clause invariant** below: it is exactly the
-> "KB ⇒ alive-set" argument (alive is a pure function of the closed KB) that now
-> licenses *both* the per-KB recompute *and* the `canon.state_hash` KB-only dedup
-> ([reserved_engine_strings.md § Result-level invariants](reserved_engine_strings.md);
-> [architecture_and_algorithms.md §7](architecture_and_algorithms.md)). Read the
-> *mechanism* below as historical; the invariant it states still holds.
+The solver **recomputes** the alive-candidate set per-KB via
+[`_compute_alive`](../../../ein.py/src/ein_bot/inference/monotonic/solver.py)
+(`= open_hypotheses(kb)`) — the open hypotheses are a pure function of the
+closed KB. (Historical: an *inherit-once* optimization — seed `kb.alive` at
+root saturation, let forks inherit it via `kb.fork()`, run
+`generate_hypotheses` once per `solve()` — was gated by a
+`SolverConfig.enable_alive_inherit` flag, default on since S1.5.4 T1.5.4.8.
+P1.7a switched to the per-KB recompute and the flag was **removed 2026-06-15**.)
 
-[`SolverConfig.enable_alive_inherit`](../../../ein.py/src/ein_bot/inference/config.py)
-ships **on by default** as of S1.5.4 T1.5.4.8. With the flag on,
-the hypothesis loop seeds the alive-candidate set **once at root
-saturation** (via
-[`generate_hypotheses_with_stats`](../../../ein.py/src/ein_bot/inference/hypgen.py))
-and stashes it on `kb.alive`. Forks inherit `alive` through
-[`kb.fork()`](../../../ein.py/src/ein_bot/kb/store.py); each
-`_explore` entry re-prunes against the fork's KB and picks the
-next hypothesis from what remains. `generate_hypotheses` runs
-**once per `solve()` call**.
-
-This is sound iff three pre-conditions hold across the puzzle's
-rule library — collectively the **M1 invariant**:
+That "alive is a pure function of the closed KB" property is sound iff three
+pre-conditions hold across the puzzle's rule library — collectively the
+**M1 invariant**:
 
 1. **No new objects.** Rules don't `:assert` facts whose args
    introduce names that weren't already in the ontology /
@@ -130,21 +115,16 @@ rule library — collectively the **M1 invariant**:
    nested-Fact hypothesis args.
 
 Under these clauses, every admissible hypothesis is enumerable
-from the root state; deeper branches **eliminate** candidates,
-never extend the space.
+from the current KB state; deeper branches **eliminate** candidates,
+never extend the space. The same "alive ⇐ KB" argument licenses the
+[`canon.state_hash`](../../../ein.py/src/ein_bot/inference/canon.py)
+KB-only dedup — two KBs with identical facts have identical futures.
 
 **When the invariant breaks** (a rule library asserts new
 `(relation …)`; F5 rules-as-data; a future puzzle's matcher
-produces nested-Fact hypotheses):
-
-- The default-on flag becomes **unsound** — alive entries may
-  miss candidates introduced post-root.
-- The escape hatch: set
-  ``(config :enable-alive-inherit false)`` in the puzzle, or pass
-  ``solve(kb, config=SolverConfig(enable_alive_inherit=False))``
-  programmatically. The engine reverts to per-branch
-  `generate_hypotheses(kb)` — the pre-`40b8dd4` shape — at the
-  cost of re-enumerating every level.
+produces nested-Fact hypotheses), "alive is a pure function of the
+closed KB" no longer holds, and both the per-KB recompute and the
+state_hash dedup lose their soundness warrant.
 
 Tracked at
 [M1 Q-S1.5.4.D](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.4_hypgen_improvements.md#open-questions-parked-here)

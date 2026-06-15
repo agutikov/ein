@@ -47,7 +47,6 @@ _HAVE_DOT = shutil.which("dot") is not None
 
 SOL_GREEN = 'fillcolor="#e8f6e8"'
 DEAD_RED = 'fillcolor="#fdeaea"'
-ALIVE_GREY = 'fillcolor="#eeeeee"'
 
 
 def _kb(path: Path) -> KnowledgeBase:
