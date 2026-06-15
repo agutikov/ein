@@ -102,6 +102,7 @@ from ein_bot.inference.nogoods import emit_nogood
 from ein_bot.inference.saturator import Saturator
 from ein_bot.inference.solution import complete, open_hypotheses
 from ein_bot.inference.verdict import (
+    Aborted,
     Ambiguity,
     Contradiction,
     Mode,
@@ -288,7 +289,8 @@ def solve(
     dumper: MonotonicDumper | LatticeDumper | None = None,
     max_time: float | None = None,
     max_enterings: int | None = None,
-) -> tuple[Verdict, MonotonicStats]:
+    on_budget: Literal["raise", "verdict"] = "raise",
+) -> tuple[Verdict | Aborted, MonotonicStats]:
     """P1.7a sound search — the one entry whose verdict is *read* from the
     result rather than chosen up front.
 
@@ -310,17 +312,28 @@ def solve(
     ambiguity), this entry
     terminates only on lattice exhaustion, ``stop_after``, or budget. See
     ``plans/m1_core_graph_reasoning/p1.7a_solution_search_refactor/``.
+
+    ``on_budget`` (S1.9.E17.2): ``"raise"`` (default) raises
+    ``BudgetExceededError`` on a ``max_time`` / ``max_enterings`` cut;
+    ``"verdict"`` instead **returns** an
+    :class:`~ein_bot.inference.verdict.Aborted` verdict (carrying the partial
+    stats) so a caller needn't catch the exception.
     """
-    return _explore_layers(
-        root_kb,
-        entry="solve",
-        stop_after=stop_after,
-        max_set_size=max_set_size,
-        config=config,
-        dumper=dumper,
-        max_time=max_time,
-        max_enterings=max_enterings,
-    )
+    try:
+        return _explore_layers(
+            root_kb,
+            entry="solve",
+            stop_after=stop_after,
+            max_set_size=max_set_size,
+            config=config,
+            dumper=dumper,
+            max_time=max_time,
+            max_enterings=max_enterings,
+        )
+    except BudgetExceededError as e:
+        if on_budget == "verdict":
+            return Aborted(reason=e.reason, stats=e.stats), e.stats
+        raise
 
 
 def _finish(
@@ -748,24 +761,26 @@ def _finalise_solve(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
 def _check_budget(ctx: _LoopCtx) -> None:
     """Raise :class:`BudgetExceededError` if the entering-count or wall-time
     budget is spent (flushing the dumper first)."""
+    reason: str | None = None
     if (
         ctx.max_enterings is not None
         and ctx.stats.enterings_total >= ctx.max_enterings
     ):
-        if ctx.dumper is not None:
-            ctx.dumper.close()
-        raise BudgetExceededError(
-            f"max-enterings ({ctx.max_enterings}) reached", ctx.stats,
-        )
-    if (
+        reason = f"max-enterings ({ctx.max_enterings}) reached"
+    elif (
         ctx.max_time is not None
         and (time.perf_counter() - ctx.t_start) > ctx.max_time
     ):
-        if ctx.dumper is not None:
-            ctx.dumper.close()
-        raise BudgetExceededError(
-            f"max-time ({ctx.max_time}s) exceeded", ctx.stats,
-        )
+        reason = f"max-time ({ctx.max_time}s) exceeded"
+    if reason is None:
+        return
+    # S1.9.E17.2 — the abort raises before `_finalise_solve` runs, so record
+    # not-exhausted here; otherwise the partial stats keep the default `True`
+    # and an Aborted run would look fully explored.
+    ctx.stats.exhausted = False
+    if ctx.dumper is not None:
+        ctx.dumper.close()
+    raise BudgetExceededError(reason, ctx.stats)
 
 
 def _handle_dead(

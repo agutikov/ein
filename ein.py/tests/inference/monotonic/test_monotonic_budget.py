@@ -28,6 +28,7 @@ from ein_bot.inference.monotonic import (
     BudgetExceededError as _PkgBudgetError,
 )
 from ein_bot.inference.monotonic.state_dump import MonotonicDumper
+from ein_bot.inference.verdict import Aborted
 from ein_bot.ir import parse
 from ein_bot.kb.store import KnowledgeBase
 
@@ -126,6 +127,22 @@ def test_dumper_timeline_captures_events_up_to_abort(
     assert "summary" not in kinds
     # summary.json is intentionally not written on abort.
     assert not (tmp_path / "summary.json").exists()
+
+
+def test_on_budget_verdict_returns_aborted_instead_of_raising() -> None:
+    """S1.9.E17.2 — ``on_budget="verdict"`` surfaces the abort as an
+    :class:`Aborted` verdict (with the partial stats) rather than raising;
+    the default ``"raise"`` (the other tests) is unchanged."""
+    kb = _kb(_FIXTURE)
+    verdict, stats = solve(
+        kb, max_set_size=3, config=_NO_LOOKAHEAD,
+        max_enterings=2, on_budget="verdict",
+    )
+    assert isinstance(verdict, Aborted)
+    assert "max-enterings (2)" in verdict.reason
+    assert verdict.stats is stats              # the partial stats, not a copy
+    assert stats.enterings_total == 2
+    assert stats.exhausted is False            # not a proven verdict
 
 
 def test_no_budget_completes_normally() -> None:

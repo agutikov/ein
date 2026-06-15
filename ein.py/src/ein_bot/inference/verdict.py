@@ -95,6 +95,24 @@ class Contradiction:
     proof:      LatticeProof | None = None
 
 
+@dataclass(frozen=True)
+class Aborted:
+    """Search cut short by a budget (``max_enterings`` / ``max_time``) before it
+    completed — **not** a proven verdict (S1.9.E17). ``reason`` is the abort
+    message; ``stats`` is the partial run (``stats.solution_nodes`` is a lower
+    bound, ``stats.exhausted`` is False). Distinct from :class:`Contradiction`:
+    ``solution_nodes == 0`` here means *unexplored*, not *proven unsatisfiable*.
+
+    Returned by :func:`solve` only when called with ``on_budget="verdict"``;
+    the default ``on_budget="raise"`` keeps raising ``BudgetExceededError``
+    instead. Kept **out** of the :data:`Verdict` union so exhaustive verdict
+    handling is unaffected — an opt-in caller matches ``Aborted`` explicitly.
+    """
+
+    reason: str
+    stats:  object = None     # MonotonicStats — `object` dodges the import cycle
+
+
 Verdict = Solution | Ambiguity | Contradiction
 
 
@@ -155,6 +173,7 @@ def query_value(query, kw_name: str):
 
 
 __all__ = [
+    "Aborted",
     "Ambiguity",
     "Contradiction",
     "Mode",
