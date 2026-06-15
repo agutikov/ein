@@ -1,9 +1,0 @@
-digraph G {
-    Drink [style=filled];
-
-    Juice -> Drink [label="is instance of"]
-
-    Subject [shape=point];
-
-    Subject -> Juice [label="drinks"];
-}

@@ -1,9 +1,0 @@
-digraph G {
-    House [style=filled];
-
-    House -> House-1 [dir=none];
-    House -> House-2 [dir=none];
-
-    House-1 -> House-2 [label="right" color="red"];
-    House-1 -> House-2 [dir=none label="next" color="blue" style=dashed]
-}
