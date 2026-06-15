@@ -98,10 +98,6 @@ def _layer_of(form: SForm, errors: list[str]) -> Layer:
 # ── Utility extractors ─────────────────────────────────────────────
 
 
-def _is_form(node: IRNode, head: str) -> bool:
-    return isinstance(node, SForm) and isinstance(node.head, Atom) and node.head.name == head
-
-
 def _atom_name(node: IRNode) -> str | None:
     return node.name if isinstance(node, Atom) else None
 
