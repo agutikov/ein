@@ -51,8 +51,8 @@
   :why    "(converse {?R1} {?R2}): mirror {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
 
 ;; ── imply1 — (imply1 R1 R2): (R1 a) ⇒ (R2 a), a 1-arg (property) implication.
-;; Doubles as property→property: (imply1 functional closed) turns a
-;; (functional R) marker into a (closed R) one — no new rule shape needed.
+;; Doubles as property→property: (imply1 functional __closed__) turns a
+;; (functional R) marker into a (__closed__ R) one — no new rule shape needed.
 (rule imply1 (?R1 ?R2)
   :match  (?R1 ?a)
   :assert (?R2 ?a)

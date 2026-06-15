@@ -1,7 +1,7 @@
 ;;; P1.5 demo 8 — relation whitelist (S1.5.6b T1.5.6b.1).
 ;;;
 ;;; The closed-relation inference already removes relations no rule
-;;; can ever conclude — here `is-a`, emitted as `(closed is-a)`
+;;; can ever conclude — here `is-a`, emitted as `(__closed__ is-a)`
 ;;; before saturation. The `:hypothesis-relations` whitelist is the
 ;;; *query-scoped* complement: it can exclude a relation that IS
 ;;; rule-propagated, when this particular query has no use for

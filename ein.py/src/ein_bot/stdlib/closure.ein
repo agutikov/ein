@@ -1,6 +1,6 @@
-;;; ein-bot stdlib — `std.closure`: auto-infer `(closed R)` (P1.8 S1.8.A6).
+;;; ein-bot stdlib — `std.closure`: auto-infer `(__closed__ R)` (P1.8 S1.8.A6).
 ;;;
-;;; `(closed R)` tells the hypothesis generator never to speculate R-facts —
+;;; `(__closed__ R)` tells the hypothesis generator never to speculate R-facts —
 ;;; R's extension is taken as fixed. `infer-closure` derives it from the
 ;;; operational witness **functional ∧ total**: a relation that is a total
 ;;; function has exactly one image per domain element, so (given enough
@@ -30,6 +30,6 @@
 
 (rule infer-closure ()
   :match  (and (functional ?R) (total ?R))
-  :assert (closed ?R)
+  :assert (__closed__ ?R)
   :priority 90
   :why    "{?R} is functional + total → its extension is fixed (operational closure)")

@@ -106,11 +106,15 @@ puzzle may even redefine them. A puzzle that wants them imports them
 
 | name | form | meaning | engine site |
 |------|------|---------|-------------|
-| `closed` | `(closed R)` | suppress hypothesis generation for R (its extension is fixed). Author-writable, but usually **auto-inferred** by `emit_closed` for any relation no rule produces. Kept kernel mechanism for M1 ([S1.7.10](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.10_closed.md)). | `inference/closed.py` (`CLOSED`); `hypgen._is_closed` |
+| `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-writable, but usually **auto-inferred** by `emit_closed` for any relation no rule produces, or derived by `std.closure`. Kept kernel mechanism for M1 ([S1.7.10](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.10_closed.md)). | `inference/closed.py` (`CLOSED = "__closed__"`); `hypgen._is_closed` |
 | `hypothesis-relations` | `(query … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
+| `no-hypothesis` | `(query … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
 
 ## Not reserved (removed)
 
+- **`closed`** (bare) — no longer a kernel trigger since the 2026-06-15 dunder
+  split; the kernel keys on `__closed__` (above) and the bare `closed` is free
+  for the stdlib/user to define.
 - **`is-a` / `T`** — ordinary relation / atom since
   [S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md);
   a puzzle's inheritance rules ARE its type system, in user space.

@@ -1,8 +1,8 @@
-"""`std.closure` auto-closure — `functional ∧ total ⇒ (closed R)` (P1.8 S1.8.A6).
+"""`std.closure` auto-closure — `functional ∧ total ⇒ (__closed__ R)` (P1.8 S1.8.A6).
 
 `infer-closure` is a parameter-less stdlib rule (opt-in by import; there is no
-config flag) that derives `(closed R)` for any single-arg functional+total
-relation. `(closed R)` makes the hypothesis generator skip R (`hypgen._is_closed`).
+config flag) that derives `(__closed__ R)` for any single-arg functional+total
+relation. `(__closed__ R)` makes the hypothesis generator skip R (`hypgen._is_closed`).
 
 Soundness: this is an *operational* witness, safe only when R's extension is
 determined by saturation — NOT for relations needing hypgen branching (the
@@ -55,7 +55,7 @@ def test_infer_closure_is_parameterless():
 
 
 def test_closed_relation_skipped_by_hypgen():
-    """End-to-end hand-off: once `infer-closure` derives `(closed r)`, hypgen's
+    """End-to-end hand-off: once `infer-closure` derives `(__closed__ r)`, hypgen's
     pre-candidate skip fires for r (no hypotheses generated for it)."""
     from ein_bot.inference import hypgen
 

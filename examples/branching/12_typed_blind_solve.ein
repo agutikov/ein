@@ -150,7 +150,7 @@
 ;; lattice would blow up — the normal solve path does not auto-close
 ;; (that is a bench-only `emit_closed` convenience), so the fixture
 ;; declares it. (`color-of` is intentionally NOT closed.)
-(closed is-a)
+(__closed__ is-a)
 
 ;; Type + instance hierarchy (3 houses, 3 colours).
 (is-a House T) (is-a Color T)

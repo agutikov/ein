@@ -10,6 +10,13 @@ type, or removing the hardcode) is a **post-M1** question — the routes are
 parked in S1.7.19–.22. The point of this doc is that *a name is reserved
 iff it appears here or in the surface doc*, and nothing is undocumented.
 
+**Dunder convention (2026-06-15).** A name that triggers kernel-hardcoded
+*behaviour* is written `__dunder__`, lexically distinct from userspace
+rule/relation names (the grammar admits a leading `__`; a bare name never
+triggers kernel behaviour). `__closed__` is the first; `__symmetric__` is
+planned. The bookkeeping carrier heads and the surface task-class / control
+keywords below predate the convention and keep their bare names.
+
 ## Bookkeeping carrier heads
 
 Synthetic fact heads the search uses to carry structure; excluded from the
@@ -47,22 +54,26 @@ post-M1.
 | dead kind | `dead-pre` · `dead-post` | `monotonic/lattice.py` (`DeadCommitment.kind`) |
 | hypgen scoring | `most-constrained` · `popularity` (`branch-info` reserved) | `hypgen.score_hypothesis` |
 
-## `closed` — engine effect
+## `__closed__` — engine effect
 
-The author-facing `(closed R)` (see the [surface doc](../ir/03-ein-lang/06_reserved_names.md))
-has two engine sides, both isolated in
+The kernel trigger `(__closed__ R)` (a **dunder** name per the convention above;
+the bare `closed` is now a free userspace name) has two engine sides, both
+isolated in
 [`inference/closed.py`](../../../ein.py/src/ein_bot/inference/closed.py)
-(constant `CLOSED`):
+(constant `CLOSED = "__closed__"`):
 
-- **Auto-inference** — `emit_closed` writes `(closed R)` for every declared
+- **Auto-inference** — `emit_closed` writes `(__closed__ R)` for every declared
   relation no compiled rule positively asserts (`producible_relations`),
   run once before the initial saturation.
-- **Hypgen suppression** — `hypgen._is_closed` reads `(closed R)` facts and
+- **Hypgen suppression** — `hypgen._is_closed` reads `(__closed__ R)` facts and
   contributes zero candidates for R.
 
-Kept kernel mechanism for M1 — it is load-bearing for hypgen scoping / NAF
-soundness ([S1.7.10](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.10_closed.md));
-the de-hardcode question is parked post-M1.
+**Genuinely kernel** (a saturation rule can neither suppress hypgen generation
+nor introspect "no rule asserts R" — see the symmetric contrast in the
+`__symmetric__` design). Load-bearing for hypgen scoping / NAF soundness
+([S1.7.10](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.10_closed.md)).
+Renamed `closed → __closed__` 2026-06-15 per the dunder convention;
+`std.closure`'s `infer-closure` asserts `(__closed__ ?R)`.
 
 ## Query-scoping keys
 
@@ -78,7 +89,7 @@ scope the *blind enumerator* only (hrule-driven generation ignores them).
 | `no-hypothesis` | **blacklist** (S1.9.E3) — never guess on the listed relations; saturation rules on them still fire | `hypgen._no_hypothesis_relations` |
 
 A relation named by both is excluded (blacklist wins). Neither touches the
-saturator — hypgen-only scoping, distinct from `(closed R)` above (which also
+saturator — hypgen-only scoping, distinct from `(__closed__ R)` above (which also
 blocks rule-derivation).
 
 ## Result-level invariants (S1.7.24)

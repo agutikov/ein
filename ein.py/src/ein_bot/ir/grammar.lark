@@ -209,7 +209,14 @@ or_form:       "(" "or" value+ kw_pair* ")"
 // letter-anchored; maximal munch makes `std.macro.forall` one atom. The `\b`
 // lookahead is start-anchored, so a dotted atom may not *begin* with a reserved
 // word (`rule.x` is rejected, `std.rule` is fine).
-SYMBOL:   /(?!(?:not|and|or|neq|rule|hrule|query|config|trace|macro|import)\b)[A-Za-z][A-Za-z0-9_*.-]*/
+//
+// A leading `__` is allowed (2026-06-15) so kernel **dunder** names
+// (`__closed__`, `__symmetric__`; see
+// docs/kernel/inference/reserved_engine_strings.md) lex as ordinary atoms,
+// lexically distinct from userspace names. The `(?:__)?` prefix still requires
+// a following letter, so a bare `_` stays WILDCARD and a single leading `_`
+// (`_x`) is still not a SYMBOL.
+SYMBOL:   /(?!(?:not|and|or|neq|rule|hrule|query|config|trace|macro|import)\b)(?:__)?[A-Za-z][A-Za-z0-9_*.-]*/
 VAR:      /\?[A-Za-z][A-Za-z0-9_*-]*/
 KEYWORD:  /:[a-z][A-Za-z0-9_-]*/
 WILDCARD: "_"

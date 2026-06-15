@@ -1,4 +1,4 @@
-"""Closed-relation inference — auto `(closed R)` before saturation.
+"""Closed-relation inference — auto `(__closed__ R)` before saturation.
 
 A relation R is *closed* — the hypothesis generator must never
 speculate facts of it — when **no rule can positively conclude an
@@ -12,9 +12,9 @@ the Zebra puzzle are closed by this test; `co-located` and
 `next-to` — propagated by `symmetric` / `transitive` / `implies` /
 `square-*` — are not.
 
-This replaces hand-written `(closed R)` declarations. :func:`emit_closed`
+This replaces hand-written `(__closed__ R)` declarations. :func:`emit_closed`
 runs once, before the engine's initial saturation, and writes a
-`(closed R)` fact for every declared relation no rule positively
+`(__closed__ R)` fact for every declared relation no rule positively
 asserts. The facts land in the KB like any other — hypgen's
 `_is_closed`, a KB dump, etc. all see them with no further wiring.
 
@@ -32,12 +32,13 @@ from ein_bot.kb.store import KnowledgeBase
 from .compile import asserted_relation
 from .engine import Engine
 
-# S1.7.25 T1.7.25.2 — the single source for the `closed` relation name.
-# `closed` is a KEPT kernel mechanism for M1 (S1.7.10): `(closed R)`
-# suppresses hypothesis generation for R; it is author-writable but
-# usually auto-inferred by `emit_closed`. See
-# docs/kernel/inference/reserved_engine_strings.md.
-CLOSED = "closed"
+# S1.7.25 T1.7.25.2 — the single source for the kernel's closed-relation
+# trigger. Per the dunder convention (2026-06-15) the kernel-hardcoded
+# behaviour keys on the `__dunder__` name `__closed__`, NOT the bare `closed`
+# (now a free userspace name): `(__closed__ R)` suppresses hypothesis
+# generation for R; it is author-writable but usually auto-inferred by
+# `emit_closed`. See docs/kernel/inference/reserved_engine_strings.md.
+CLOSED = "__closed__"
 
 
 def producible_relations(kb: KnowledgeBase) -> frozenset[str]:
@@ -61,10 +62,10 @@ def producible_relations(kb: KnowledgeBase) -> frozenset[str]:
 
 
 def emit_closed(kb: KnowledgeBase) -> list[str]:
-    """Write a ``(closed R)`` fact for every declared relation no
+    """Write a ``(__closed__ R)`` fact for every declared relation no
     rule can positively conclude. Returns the newly-closed names.
 
-    Idempotent: a relation already carrying ``(closed R)`` is left
+    Idempotent: a relation already carrying ``(__closed__ R)`` is left
     alone, so an authored declaration (should one survive) and a
     re-run both no-op. Run before the initial saturation so
     ``hypgen`` sees the facts.

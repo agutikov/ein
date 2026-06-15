@@ -1,9 +1,10 @@
 """Closed-relation inference — `emit_closed` / `producible_relations`.
 
-A declared relation is `(closed)` iff no rule can positively
-conclude it. The closed-inference step emits `(closed R)` before
+A declared relation is *closed* iff no rule can positively
+conclude it. The closed-inference step emits `(__closed__ R)` before
 saturation so the hypothesis generator skips R — replacing the
-hand-written `(closed …)` declarations.
+hand-written `(__closed__ …)` declarations. (Dunder convention: the
+kernel trigger is `__closed__`, not the bare userspace `closed`.)
 """
 from ein_bot.inference.closed import emit_closed, producible_relations
 from ein_bot.ir import parse
@@ -40,22 +41,22 @@ def test_producible_relations():
 
 
 def test_emit_closed_closes_inert_relation():
-    """`is-a` — concluded by no rule — gets a `(closed is-a)` fact."""
+    """`is-a` — concluded by no rule — gets a `(__closed__ is-a)` fact."""
     kb = _kb(_PUZZLE)
     newly = emit_closed(kb)
     assert "is-a" in newly
-    assert kb._fact_by_id("closed", ("is-a",)) is not None
+    assert kb._fact_by_id("__closed__", ("is-a",)) is not None
 
 
 def test_emit_closed_keeps_producible_open():
     """`co-located` — rule-propagated — is left open."""
     kb = _kb(_PUZZLE)
     emit_closed(kb)
-    assert kb._fact_by_id("closed", ("co-located",)) is None
+    assert kb._fact_by_id("__closed__", ("co-located",)) is None
 
 
 def test_emit_closed_idempotent():
-    """A second pass is a no-op — a relation already `(closed …)`
+    """A second pass is a no-op — a relation already `(__closed__ …)`
     is not re-emitted."""
     kb = _kb(_PUZZLE)
     emit_closed(kb)

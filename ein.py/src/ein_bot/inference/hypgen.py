@@ -69,7 +69,7 @@ class HypGenStats:
 
     - **pre_candidate**: structural skips at the relation/slot level,
       before any single candidate fact is constructed. Today:
-      ``closed_relation`` (relation skipped because `(closed R)`),
+      ``closed_relation`` (relation skipped because `(__closed__ R)`),
       ``relation_not_whitelisted`` (relation absent from the
       `(query :hypothesis-relations …)` whitelist),
       ``no_hypothesis_relation`` (relation on the
@@ -253,7 +253,7 @@ def _raw_candidates(
         if not rel.signature:
             continue
         if _is_closed(kb, rel.name):
-            # T1.5.4.1 — `(closed R)` activator. The whole
+            # T1.5.4.1 — `(__closed__ R)` activator. The whole
             # relation contributes zero candidates.
             stats.pre_candidate["closed_relation"] += 1
             continue
@@ -340,10 +340,10 @@ def _is_excluded(kb: KnowledgeBase, fact: Fact) -> bool:
 
 
 def _is_closed(kb: KnowledgeBase, r_name: str) -> bool:
-    """True iff `(closed R)` is asserted in the KB (any layer).
+    """True iff `(__closed__ R)` is asserted in the KB (any layer).
 
     T1.5.4.1 — a closed relation contributes zero hypotheses; the
-    puzzle author has fully populated it. The `(closed R)` fact may be
+    puzzle author has fully populated it. The `(__closed__ R)` fact may be
     authored directly, emitted by :func:`ein_bot.inference.closed.emit_closed`
     (the rule-inert auto-closure), or derived by a rule firing — e.g.
     `std.closure`'s `infer-closure` (functional ∧ total ⇒ closed; P1.8

@@ -16,7 +16,7 @@
 ;;;
 ;;; Expected shape: verdict Solution, ?c=Blue. Node count is more
 ;;; than one — every is-a-alternate death is a separate dead leaf
-;;; until S1.5.4's `(closed is-a)` short-circuits the enumeration.
+;;; until S1.5.4's `(__closed__ is-a)` short-circuits the enumeration.
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
