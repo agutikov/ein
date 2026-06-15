@@ -17,7 +17,7 @@ All `render`/`dot` commands emit DOT to stdout only; rasterising to SVG
 is a shell-script concern (see utils/render_examples.sh). `solve`
 writes a self-contained markdown trace with inline `dot` blocks.
 
-Invoked via the ``Ein`` console script or ``python -m ein.cli``.
+Invoked via the ``ein`` console script or ``python -m ein.cli``.
 """
 from __future__ import annotations
 
@@ -438,7 +438,7 @@ def _add_solve_parser(sub) -> None:
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        prog="Ein",
+        prog="ein",
         description="Graph-based reasoner for Zebra-style puzzles.",
     )
     sub = p.add_subparsers(dest="cmd", required=True)

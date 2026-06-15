@@ -1,43 +1,60 @@
 # Ein
 
-> **Personal learn-and-research project.** Not production software, not
-> a library, not a benchmark. Code, notes, and the topic catalogue here
-> exist to explore neuro-symbolic / constrained-reasoning ideas
-> end-to-end, not to be reused as-is. Expect rough edges and frequent
-> rewrites.
-
-Graph-based Zebra-puzzle solver — a 2021 prototype now being
+Graph-based relation algebra solver — a prototype now being
 modernised in light of neuro-symbolic and constrained-reasoning research.
+
+Ein loads a puzzle as a **typed hypergraph** of relations, facts and
+rules (written in [ein-lang](docs/kernel/ir/03-ein-lang/), an
+S-expression IR), **saturates** the rules to a least fixpoint
+(Datalog-style forward chaining), then **searches a commitment lattice**
+(CSP/SAT-style branch-and-prune, with ATMS-style provenance and no-good
+learning) to read three answers off one run:
+
+- **solve** — is there a unique complete model? (`k = 1`)
+- **gaps** — which cells are forced vs. contingent? (`k > 1`, the residual)
+- **contradictions** — a minimal unsat core for an over-constrained KB. (`k = 0`)
+
+Every derived fact carries provenance, so a solve can emit a
+self-contained, human-readable markdown derivation trace. The engine's
+design — and where each operation sits against the CS literature
+(Datalog · CDCL/CSP · ATMS · Apriori) — is mapped in
+[`docs/kernel/inference/architecture_and_algorithms.md`](docs/kernel/inference/architecture_and_algorithms.md).
+
+The classic Zebra/Einstein puzzle is the running fixture:
+
+```sh
+$ ein solve examples/zebra2.ein --mode=solve
+The Norwegian drinks the water; the Japanese keeps the zebra.  (a solution — pass --exhaustive to certify uniqueness)
+```
 
 ## Layout
 
-| path                 | what's in it                                                                 |
-|----------------------|------------------------------------------------------------------------------|
-| `ein.py/`               | Python implementation (package, tests, pyproject, demo scripts)              |
-| `ein.py/src/ein/ir/` | the IR — Lark grammar, typed AST, parser, dump, DOT renderer                |
-| `ein.py/src/ein/cli.py` | console script: `ein ir parse | lint | dot`                          |
-| `ein.py/tests/`         | pytest suite (~500 tests)                                                    |
-| `ein.py/demo/`          | runnable demo scripts (bench_saturate.py, …)                                 |
-| `ein.py/pyproject.toml` | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff` |
-| `examples/zebra.ein`    | the Zebra puzzle as IR (the smoke-test fixture)                              |
-| `examples/zebra2.ein`   | same puzzle in the unified-`is-a` / `*-loc` encoding (the active acceptance target) |
-| [`examples/README.md`](examples/README.md) | human Zebra solution traced step-by-step as ein.py inference (NL↔ein↔branch-depth table) — **M1 target** for the engine, **M2 target** for the surrounding NL ⇄ IR round-trip |
-| `examples/broken/`      | curated parse-failure fixtures (file:line:col error messages)                |
-| `plans/`                | milestone / phase / stage roadmap (M1 active)                                |
-| `docs/kernel/`          | kernel documentation — graph semantics, data model, surface language, inference engine |
-| `docs/ir.md`            | thin redirect into `docs/kernel/` (kept for stable cross-references)         |
-| `docs/index/`           | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph |
-| `docs/ideas/`           | ideas extracted from research notes (9 files)                                |
-| `utils/`                | renderers for the knowledge graph (Graphviz + Cytoscape)                     |
-| `nlp/`, `smt/`          | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)       |
-| `venv_install.sh`       | bootstrap: create `.venv/` and install the project editable with dev extras  |
-| `AGENTS.md`             | guidance for AI coding agents (`CLAUDE.md` is a symlink to it)               |
-| `TODO.md`               | live worklist                                                                |
+| path                          | what's in it                                                                          |
+|-------------------------------|---------------------------------------------------------------------------------------|
+| `ein.py/`                     | Python implementation (package, tests, pyproject, demo scripts)                       |
+| `ein.py/src/ein/ir/`          | ein-lang IR — Lark grammar, typed AST, parser, canonical dump, DOT renderer           |
+| `ein.py/src/ein/kb/`          | typed-entity knowledge base — store + 7 indexes, entities, provenance DAG, imports    |
+| `ein.py/src/ein/inference/`   | the engine — saturator, matcher/join-compiler, commitment-lattice search, no-goods, contradiction detector, verdict |
+| `ein.py/src/ein/render/`, `trace/` | Graphviz DOT renderers + the markdown derivation-trace builder                   |
+| `ein.py/src/ein/stdlib/`      | ein-lang standard library — relation-algebra rules (`closure`, `bijection`, `elim`, `algebra`, `typing`, `macro`) |
+| `ein.py/src/ein/cli.py`       | console script `ein` (`ir` \| `kb` \| `render` \| `solve`)                            |
+| `ein.py/tests/`               | pytest suite (~1,300 tests)                                                           |
+| `ein.py/demo/`                | benchmark / probe scripts (to be merged into the package — [P1.11](plans/m1_core_graph_reasoning/p1.11_package_restructure/README.md)) |
+| `ein.py/pyproject.toml`       | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff`     |
+| `examples/zebra.ein`, `zebra2.ein` | the Zebra puzzle as ein-lang; `zebra2.ein` (unified-`is-a` / `*-loc`) is the active acceptance target |
+| [`examples/README.md`](examples/README.md) | the Wikipedia human Zebra solution traced step-by-step as Ein inference — **M1 target** for the engine, **M2 target** for the NL ⇄ IR round-trip |
+| `examples/{features,branching,saturation,lattice,domain_elim}/` | focused fixtures per engine feature                              |
+| `examples/broken/`            | curated parse-failure fixtures (`file:line:col` error messages)                       |
+| `plans/`                      | milestone / phase / stage roadmap (M1 active)                                         |
+| `docs/kernel/`                | kernel documentation — graph semantics, data model, surface language, inference engine |
+| `docs/index/`                 | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph     |
+| `docs/ideas/`                 | ideas extracted from research notes                                                   |
+| `utils/`                      | renderers for the knowledge graph (Graphviz + Cytoscape) + the VS Code ein-lang grammar |
+| `nlp/`, `smt/`                | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)                |
+| `AGENTS.md`                   | guidance for AI coding agents (`CLAUDE.md` is a symlink to it)                         |
+| `TODO.md`                     | live worklist                                                                         |
 
-## Quickstart — Python CLI
-
-The package installs a console script `ein` with three subcommands
-on the IR.
+## Quickstart
 
 ### Install
 
@@ -48,78 +65,81 @@ on the IR.
 source .venv/bin/activate
 ```
 
-The script needs Python ≥ 3.10. It's safe to re-run — an existing
-`.venv/` is reused.
+Needs Python ≥ 3.10. Safe to re-run — an existing `.venv/` is reused. The
+console script `ein` lands on the venv's PATH.
 
-### Usage
+### Solve
 
 ```sh
-ein ir parse <file>                              # canonical re-dump
-ein ir lint  <file>                              # parse-only check
-ein ir dot   <file> [--rule-mode=a|c] [--trace-view=a|b|c]
+ein solve <file> --mode=solve            # answer the puzzle in English
+ein solve <file> --mode=solve --exhaustive   # certify unique / ambiguous / unsat
+ein solve <file> --mode=gaps             # which cells are forced vs. contingent
+ein solve <file> --mode=contradictions   # minimal unsat core of an over-constrained KB
+ein solve <file> --mode=solve --trace out.md  # + self-contained markdown derivation trace
 ```
 
-| subcommand    | effect                                                       |
-|---------------|--------------------------------------------------------------|
-| `ir parse`    | parse the file and emit the canonical text form to stdout (round-trippable through `dump_canonical`) |
-| `ir lint`     | parse-only check; non-zero exit + `file:line:col` on stderr if malformed |
-| `ir dot`      | render the parsed IR as a Graphviz `digraph` per [`docs/kernel/ir/03-ein-lang/04_dot_rendering.md`](docs/kernel/ir/03-ein-lang/04_dot_rendering.md) |
-| `--rule-mode` | `a` side-by-side LHS/RHS clusters, `c` (default) overlay with dashed RHS |
-| `--trace-view` | `a` (default) per-step, `b` aggregate, `c` derivation DAG    |
+`--mode` defaults to `gaps`. Other knobs: `--max-set-size N` (commitment-set
+depth cap), `--relevant` (prune the trace to the goal-relevant slice),
+`--reorder` (cluster trace steps by target entity), `--no-diagrams`.
 
-### Examples
+### Inspect the IR / KB
 
 ```sh
-# round-trip the bundled Zebra puzzle through the canonical printer
-ein ir parse examples/zebra.ein | head -20
+ein ir parse <file>     # parse → canonical re-dump (round-trippable; --resolve splices imports)
+ein ir lint  <file>     # parse-only check; non-zero exit + file:line:col on error
+ein ir dot   <file>     # the parsed IR as Graphviz DOT (one digraph per top-level form)
+ein kb dot   <file>     # the loaded KB as one unified DOT graph (--layers, --colour-by)
+ein render rules|rule|constraints|lattice <file>   # DOT views of rules / the search lattice
+```
 
-# render it as an SVG
-ein ir dot examples/zebra.ein | dot -Tsvg -o /tmp/zebra.svg
+All `dot` / `render` commands emit Graphviz to stdout; rasterising to SVG is
+a shell concern (see [`utils/render_examples.sh`](utils/render_examples.sh)).
 
-# from Python — typed AST
+```sh
+# render the Zebra KB as an SVG
+ein kb dot examples/zebra2.ein | dot -Tsvg -o /tmp/zebra.svg
+
+# from Python — the typed AST
 python -c '
 from pathlib import Path
 from ein.ir import parse, dump_canonical
 forms = parse(Path("examples/zebra.ein").read_text())
 print(len(forms), "top-level forms")
-for f in forms:
-    print(" ", f.head.name, "→", len(f.args), "children")
 '
 ```
 
-### IR file format
+### ein-lang at a glance
 
-S-expression intermediate representation; the grammar is
-`ein.py/src/ein/ir/grammar.lark` and the spec is
-[`docs/kernel/`](docs/kernel/) (graph semantics, data model, surface
-language, inference engine — split per
-[`docs/kernel/README.md`](docs/kernel/README.md)). Six top-level forms:
+A `.ein` file is a **flat** sequence of S-expression forms — no block
+wrappers (since P1.7c). Each form is classified by its head:
 
-| head          | role (block name == provenance layer)                                |
-|---------------|----------------------------------------------------------------------|
-| `ontology`    | **implicit** assumptions: schema + reader-supplied context           |
-| `facts`       | **explicit** problem statements (numbered conditions, `:source "(N)"`) |
-| `reasoning`   | **derived** facts — engine working memory after a solve               |
-| `rules`       | inference-rule definitions                                            |
-| `query`       | what to ask the engine (`:mode` solve/gaps/contradictions)            |
-| `trace`       | engine output — derivation log + branches                             |
+| head                  | role                                                                              |
+|-----------------------|-----------------------------------------------------------------------------------|
+| `relation`            | declare a typed relation + signature                                              |
+| `rule` / `hrule`      | inference / hypothesis rule (`:match` → `:assert`, with `:why`)                   |
+| `query`               | what to ask the engine (`:mode solve\|gaps\|contradictions`, `:goal`)             |
+| `config`              | engine knobs                                                                      |
+| `import` / `macro`    | module include / pattern-macro sugar (P1.8)                                       |
+| `trace`               | engine-emitted derivation log (parsed back for rendering)                         |
+| *anything else*       | a **fact** (`(is-a …)`, `(right-of …)`, …), layered `ontology`/`fact`/`reasoning` from its provenance (`:source` → fact, `:rule`/`:using` → reasoning, else ontology) |
 
-Kernel meta-primitives (`=`, `instance`, `not`, `and`, `or`, `neq`)
-are shape-pinned reserved words: wrong arity is a parse error.
+Kernel meta-primitives (`=`, `instance`, `not`, `and`, `or`, `neq`) are
+shape-pinned reserved words: wrong arity is a parse error. The full spec is
+[`docs/kernel/`](docs/kernel/README.md) (graph semantics, data model,
+surface language, inference engine).
 
 ### Development loop
 
 ```sh
-pytest -q                  # ~200 tests
+pytest -q                  # ~1,300 tests
 ruff check .               # lint
 ruff check . --fix         # auto-fix what's safe
 ```
 
 ## Knowledge graph
 
-The 11 topic files under `docs/index/` are summarised as a single graph in
-[`docs/index/knowledge-graph.dot`](docs/index/knowledge-graph.dot)
-(77 clusters, 318 nodes, 256 edges). Two views:
+The topic files under `docs/index/` are summarised as a single graph in
+[`docs/index/knowledge-graph.dot`](docs/index/knowledge-graph.dot). Two views:
 
 ```sh
 # static SVGs (dot / fdp / sfdp / osage) — requires graphviz
@@ -131,16 +151,24 @@ python utils/render_knowledge_graph_cy.py
 
 ## Status
 
-M1 P1.1 (IR language) is complete: grammar, typed AST, parser/dump,
-golden snapshot tests, DOT renderer. Next up is P1.2 — the entity-
-typed knowledge base (`Type`/`Relation`/`Rule`/`Instance`/`Fact` with
-cross-references). The deep rewrite is tracked in
-[`plans/`](plans/README.md); see [`AGENTS.md`](AGENTS.md) for context
+The **M1 engine runs end-to-end**: ein-lang IR (P1.1), the typed-hypergraph
+KB with provenance (P1.2), the saturation engine (P1.3), contradiction
+detection (P1.4), the hypothesis loop / commitment-lattice search
+(P1.5–P1.5b), DOT + markdown trace rendering (P1.6), the bootstrapped Zebra
+solve (P1.7), and ein-lang modules + the relation-algebra stdlib (P1.8) are
+in place, with semi-naive saturation for performance (P1.8a). The Zebra
+puzzle solves in all three modes; ~1,300 tests are green.
+
+In flight: [P1.11](plans/m1_core_graph_reasoning/p1.11_package_restructure/README.md)
+package/CLI restructure (the `ein-bot` → `ein` rename has shipped;
+demo-merge + CLI-split remain). Next milestones are **M2** (NL ⇄ IR
+round-trip) and **M3** (SMT integration). The whole roadmap is tracked under
+[`plans/`](plans/README.md); see [`AGENTS.md`](AGENTS.md) for orientation
 aimed at coding agents.
 
-The end-to-end target — what the engine must reproduce by the close of
-M1, and what NL ⇄ IR completes by the close of M2 — is annotated step by
-step in [`examples/README.md`](examples/README.md): the Wikipedia
-human-style Zebra solution, every NL sentence paired with the firing
-ein rule, branch-depth labels for the four hypothesis points, and the
-no-good clauses learnt on contradiction.
+The end-to-end target — what the engine reproduces by the close of M1, and
+what NL ⇄ IR completes by the close of M2 — is annotated step by step in
+[`examples/README.md`](examples/README.md): the Wikipedia human-style Zebra
+solution, each NL sentence paired with the firing ein rule, branch-depth
+labels for the hypothesis points, and the no-good clauses learnt on
+contradiction.
