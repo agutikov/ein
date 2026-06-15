@@ -301,9 +301,7 @@ def reaches(
     above it. Pass a shared set to memoise across several roots.
 
     Factored (F-KER-10) so the caller supplies the terminal test — e.g.
-    commitment's ``_is_unconditional`` (commitment terminal). The tree
-    solver's hypothesis-terminal walk also used it, before S1.9.E6a
-    removed ``back_prop``.
+    commitment's ``_is_unconditional`` (commitment terminal).
     """
     key: FactId = (fact.relation_name, fact.args)
     if key in visited:

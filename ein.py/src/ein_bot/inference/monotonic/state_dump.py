@@ -1,7 +1,6 @@
 """MonotonicDumper — per-layer filesystem snapshots of the monotonic solve.
 
-Engine-agnostic renderers + JSON serialisers (formerly shared with
-the removed tree-side ``StateDumper``), with no per-set storage
+Engine-agnostic renderers + JSON serialisers, with no per-set storage
 (monotonic doesn't carry SetNodes, so there's nothing to dump per
 set). The output layout is:
 
@@ -47,12 +46,11 @@ from ein_bot.kb.store import KnowledgeBase
 
 # ── Serialisation helpers ────────────────────────────────────
 #
-# Migrated 2026-05-29 out of ``inference.tree.state_dump`` as part
-# of the tree-solver removal. The renderers + JSON serialisers are
-# engine-agnostic: they project a :class:`Fact` / :class:`Firing` /
-# :class:`KnowledgeBase` into ein source text or machine-parseable
-# JSON, used by both :class:`MonotonicDumper` and
-# :class:`LatticeDumper` below.
+# Migrated 2026-05-29 out of ``inference.tree.state_dump``. The
+# renderers + JSON serialisers are engine-agnostic: they project a
+# :class:`Fact` / :class:`Firing` / :class:`KnowledgeBase` into ein
+# source text or machine-parseable JSON, used by both
+# :class:`MonotonicDumper` and :class:`LatticeDumper` below.
 
 
 def _arg_to_node(arg: Any) -> Any:

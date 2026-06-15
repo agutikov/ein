@@ -417,9 +417,10 @@ def _promote_forced_positives(
     conditional.
 
     Soundness: ``alive = {h}`` means every other slot-mate has
-    been refuted (back-prop wrote ``(not h_other)`` at root, or
-    hypgen filtered it). Combined with the puzzle's slot
-    exclusivity constraint, ``h`` must be true. The
+    been refuted (the singleton-death writeback wrote
+    ``(not h_other)`` at root, or hypgen filtered it). Combined
+    with the puzzle's slot exclusivity constraint, ``h`` must be
+    true. The
     post-promotion :class:`ContradictionDetector` catches any
     surfacing inconsistency.
     """

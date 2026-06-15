@@ -44,8 +44,8 @@ Direct ⊥ dedup caveat: ``Fact`` identity is by ``(relation, args)``,
 so the second-and-later ``(false)`` firings within a single
 fork collapse onto the first — only the first firing's provenance
 is preserved. That's sufficient for "is this branch dead?" and
-for back-prop to identify the responsible hypothesis (the first
-firing's premise chain reaches it). Promote to ``(false <witness>)``
+for the unsat-core walk to identify the responsible hypothesis (the
+first firing's premise chain reaches it). Promote to ``(false <witness>)``
 with per-firing args if a future puzzle needs all parallel
 contradictions reported.
 """

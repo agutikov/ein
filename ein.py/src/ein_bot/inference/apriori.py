@@ -75,8 +75,8 @@ def filter_candidate(
     Drops ``candidate`` if:
 
       - any element is not in the current alive set (covers
-        single-element negatives back-propagated since
-        ``a_prev`` was computed);
+        single-element negatives written by singleton-death
+        writeback since ``a_prev`` was computed);
       - any nogood clause is a subset of the candidate (covers
         multi-element conditional deaths whose clauses propagated
         up from earlier layers).

@@ -42,7 +42,7 @@ saturation-determined (the `std.closure` caveat), so not for branching puzzles.
 
 The universal kernel rules (`symmetric` / `transitive` / `includes`) now live
 here as the property-closure section, and the `zebra2*` fixtures + the two
-backprop `branching/` demos import them
+`branching/` demos import them
 (`(import std.algebra :symbols (symmetric transitive includes))`) rather than
 inlining — the S1.8.A5-tail. Example files whose inline copy is *byte-identical*
 were migrated; files carrying a **variant** copy (a different `:why` text) and

@@ -25,9 +25,8 @@ Cross-refs:
 - :mod:`ein_bot.inference.apriori` — produces the
   :data:`CanonicalSetId` inputs.
 - :func:`ein_bot.kb.provenance.reaches` — the shared provenance DFS
-  :func:`_is_unconditional` runs with a commitment-set terminal. It is
-  now the only hypothesis-terminal walk; the tree solver's ``back_prop``
-  analogue was removed in S1.9.E6a.
+  :func:`_is_unconditional` runs with a commitment-set terminal; now the
+  only hypothesis-terminal walk (``back_prop`` removed, S1.9.E6a).
 """
 from __future__ import annotations
 
@@ -188,9 +187,7 @@ def _is_unconditional(
 
     Runs the shared :func:`~ein_bot.kb.provenance.reaches` DFS (F-KER-10)
     with a commitment-set terminal: the chain is "conditional" iff it
-    reaches a FactId in the commitment. (The tree solver's global
-    "any speculative-kind fact" terminal went with ``back_prop`` in
-    S1.9.E6a; this is now the sole hypothesis-walk consumer.)
+    reaches a FactId in the commitment.
     """
     def _commitment_terminal(key: FactId, _fact: Fact) -> bool | None:
         return True if key in hypothesis_ids else None

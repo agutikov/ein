@@ -365,7 +365,7 @@
 
 ;; symmetric (negative) — the dual of the positive mirror: an impossible edge
 ;; mirrors too. `(symmetric R)` + `(not (R a b))` ⇒ `(not (R b a))`. Matching a
-;; stored `(not (R a b))` (back-prop's on-death `(not h)` writes land in the KB
+;; stored `(not (R a b))` (the singleton-death writeback's `(not h)` writes land in the KB
 ;; as facts) derives the mirror negation, which lands in `_negated_facts` so
 ;; hypgen skips the symmetric counterpart. Reinstates, in pure userspace, the
 ;; on-death mirror S1.7.24 removed from the kernel.

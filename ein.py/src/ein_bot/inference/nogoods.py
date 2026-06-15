@@ -56,9 +56,10 @@ def emit_nogood(
       subsumes them), insert ``clause``, return True.
 
     ``min_size`` (default 2) preserves the
-    "size-1 clauses are back-prop's domain" split — the
-    ``(not h)`` writeback already filters those candidates via
-    ``_negated_facts`` before any nogood check would fire.
+    "size-1 clauses are the singleton-death writeback's domain"
+    split — the ``(not h)`` writeback already filters those
+    candidates via ``_negated_facts`` before any nogood check
+    would fire.
     Set-indexed engines (monotonic / lattice — Q1.5b.5.c) pass
     ``min_size=1`` so layer-1 singleton deaths land too,
     because the `apriori.filter_candidate` subset check runs

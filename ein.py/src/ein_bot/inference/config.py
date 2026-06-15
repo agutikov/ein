@@ -56,9 +56,8 @@ class SolverConfig:
       candidate, cache it as a ``(not h)`` REASONING fact so subsequent
       enumerations skip ``h`` via the O(1) ``_negated_facts`` filter
       instead of re-running the lookahead's match. ``False`` re-runs the
-      lookahead each time. (Renamed 2026-06-15 from the misnamed
-      ``enable_back_prop_unconditional`` — the tree-solver parent
-      back-prop it once gated was removed in ``8d77b02``; S1.9.E6a.)
+      lookahead each time. (Renamed 2026-06-15 from
+      ``enable_back_prop_unconditional``.)
     - ``hypgen_scoring`` (default ``"popularity"``, flipped from
       ``"most-constrained"`` 2026-05-25 once S1.5a.7 measurement
       ratified the popularity heuristic) — S1.5a.7. Values:

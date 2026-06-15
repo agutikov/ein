@@ -44,10 +44,9 @@ storage by design).
 generated layer-by-layer via the Apriori prefix-join
 (:mod:`ein_bot.inference.apriori`) and entered via the common
 :func:`ein_bot.inference.commitment.try_commitment_set`
-primitive. Flat root-writes on every outcome (no per-parent
-bubble; saturation commutativity makes the bubble
-mechanically redundant — see ``algorithm_layer_n.md`` § What
-this algorithm no longer does).
+primitive. Flat root-writes on every outcome — saturation
+commutativity makes a per-parent bubble redundant (see
+``algorithm_layer_n.md``).
 
 **Augmentations** (default-on, gated by SolverConfig):
 

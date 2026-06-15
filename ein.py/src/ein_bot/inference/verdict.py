@@ -2,11 +2,9 @@
 inference engine entries (``solve``, ``gaps_solve``,
 ``contradictions_solve``).
 
-Migrated 2026-05-29 out of ``inference.tree.solver`` as part of the
-tree-solver removal that closes P1.5b. The tree-side ``SearchTree``
-/ ``SearchNode`` types — and their ``tree`` / ``unresolved`` fields
-on the verdict classes — were dropped in the move; the lattice
-engines never populated them and the P1.6 NL renderer consumes
+Migrated 2026-05-29 out of ``inference.tree.solver`` (P1.5b). The
+tree-side ``SearchTree`` / ``SearchNode`` types and their ``tree`` /
+``unresolved`` verdict fields were dropped; the NL renderer consumes
 ``proof: LatticeProof`` instead.
 
 What survives:

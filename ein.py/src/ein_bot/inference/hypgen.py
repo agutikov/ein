@@ -322,9 +322,8 @@ def _write_negated(kb: KnowledgeBase, hypothesis: Fact) -> None:
     fact (idempotent), so the O(1) `_negated_facts` filter skips it next time.
 
     The kill rests on the saturated KB alone (a one-step simulation, no
-    speculative commitment), so the provenance cites no premises. (Was
-    `back_prop._write_negation` before S1.9.E6a removed the dead tree-solver
-    back-prop module; this is the only surviving caller.)
+    speculative commitment), so the provenance cites no premises.
+    (Formerly `back_prop._write_negation`, inlined here in S1.9.E6a.)
     """
     if kb._fact_by_id(primitives.NOT, (hypothesis,)) is not None:
         return
@@ -350,8 +349,8 @@ def _is_excluded(kb: KnowledgeBase, fact: Fact) -> bool:
     `rebuild_indexes` and maintained incrementally in `_index_fact`.
     The set IS the dead-hypothesis cache (S1.5.4 T1.5.4.3): every
     `(not h)` derived during saturation, asserted by a rule, or
-    back-propagated from a dying branch lands here and stops the
-    generator from re-emitting `h` on future levels.
+    written by the singleton-death writeback lands here and stops
+    the generator from re-emitting `h` on future levels.
     """
     return (fact.relation_name, fact.args) in kb._negated_facts
 
@@ -439,7 +438,7 @@ def score_hypothesis(fact: Fact, kb: KnowledgeBase) -> float:
       useful rules or be quickly contradicted". Per-branch by
       construction — reads ``kb._facts_by_relation`` and ``kb.names``
       (the arg-participation index) which carry the branch's own
-      facts (including back-propped negatives).
+      facts (including singleton-death negatives).
     - ``"branch-info"`` / ``"popularity+branch-info"``: reserved
       for a future stage; raise ``NotImplementedError`` to surface
       misconfigurations at first call. Branch-info ordering
@@ -520,8 +519,9 @@ def _candidate_objects(kb: KnowledgeBase) -> Iterator:
     (:func:`ein_bot.inference.primitives.non_object_names` — the rule-body /
     ⊥ vocabulary `not`/`false`/`and`/`or`/`absent` plus the
     `eq`/`neq` predicates; these can appear as a fact HEAD, e.g. a `(not h)`
-    fact back-propagated DURING generation, but are never puzzle objects —
-    without the guard the enumerator would propose `(R x not)` garbage).
+    fact written DURING generation by the lookahead cache, but are never
+    puzzle objects — without the guard the enumerator would propose
+    `(R x not)` garbage).
     The kernel no longer keys this on the `is-a` name or the
     `kb.instances` view (the old "instance-like = `is-a` leaf" rule, a
     kernel-imposed type system); it reads only `category` + the relation
