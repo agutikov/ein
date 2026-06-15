@@ -10,9 +10,8 @@ the "hard-slice" annotation).
 
 ## Goal
 
-Re-build the 2021 PoC ([`docs/PoC/README.md`](../../docs/PoC/README.md))
-as a *properly engineered, traceable, graph-native* reasoner. The
-acceptance criterion is the one set by
+Re-build the 2021 prototype as a *properly engineered, traceable,
+graph-native* reasoner. The acceptance criterion is the one set by
 [`docs/ideas/08-human-style-deductive-trace.md`](../../docs/ideas/08-human-style-deductive-trace.md):
 the engine should not merely return the answer to the Zebra puzzle —
 it should reproduce a deductive trace, with named reasoning moves at
@@ -36,7 +35,7 @@ Concretely, M1 ships:
    pairs and feeds the hypothesis loop (P1.4 — shrunk from the
    original "structural + spatial constraints" scope; the
    structural cases collapsed into `type-exclusivity` shipped by
-   P1.3, and the spatial PoC open question resolved declaratively
+   P1.3, and the spatial open question resolved declaratively
    via `right-of` / `next-to` + `square-fwd` / `square-bwd` /
    `square-unique` rules per Q17).
 5. The **saturate-then-hypothesise loop**, multilevel branching,

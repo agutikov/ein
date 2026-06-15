@@ -186,7 +186,7 @@ R + co-located + R  ⇒  co-located
 ```
 
 So they classify a *relation bundle*, not just a relation. This is
-the conceptual content of the PoC's square rule, already
+the conceptual content of the 2021 prototype's square rule, already
 implemented in zebra.ein but worth naming.
 
 ### The negative-companion column

@@ -176,7 +176,7 @@ and the updated
 ## Connections
 
 - [Idea 05 §Hypothesis mechanism](../../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#hypothesis-mechanism)
-  — the PoC's sketch, done right.
+  — the 2021 prototype's sketch, done right.
 - [Idea 06 row 5](../../../docs/ideas/06-inference-rules-completeness.md)
   — hypothesis-and-contradiction as a *rule*; M1 ships it as
   P1.3's `hypothesis-contradiction` rule, P1.5 supplies the

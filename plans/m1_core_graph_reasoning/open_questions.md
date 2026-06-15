@@ -132,7 +132,7 @@ declarative answer to [Q17](#q17--spatial-relation-formalisation).
 
 ## Q17 — Spatial-relation formalisation
 
-The PoC's 2021 open question
+The 2021 prototype's open question
 ([idea 05 §Open question recorded in the README](../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)).
 
 **Options:**
@@ -142,8 +142,8 @@ The PoC's 2021 open question
 - Ad-hoc 1-D position lattice with `pos(x) ∈ {1..N}` and integer
   arithmetic on `pos`.
 - **Declarative graph-only:** materialise the spatial structure as
-  pairwise `(right-of House_{i+1} House_i)` facts; reuse the PoC's
-  *square rule* (now `square-fwd` / `square-bwd` rules + property
+  pairwise `(right-of House_{i+1} House_i)` facts; reuse the 2021
+  prototype's *square rule* (now `square-fwd` / `square-bwd` rules + property
   facts) to project spatial relations across `co-located`. No
   integer arithmetic; no position lattice; no `:spatial-via` Python
   hardcode.
@@ -203,8 +203,8 @@ S1.2.3 T1.2.3.4.
 
 ## Q19 — Hypothesis branching strategy
 
-PoC's algorithm branches whenever `solved(s)` returns false. Modern
-CDCL solvers branch only when propagation saturates.
+The 2021 prototype's algorithm branches whenever `solved(s)` returns
+false. Modern CDCL solvers branch only when propagation saturates.
 
 **Working answer**: lazy branching — saturate first with all
 propagation rules; branch only when no rule fires and the graph is

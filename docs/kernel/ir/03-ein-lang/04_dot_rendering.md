@@ -229,8 +229,8 @@ identity is fused across forms — `Norwegian` (instance) appears
 - its `(co-located Norwegian House-1)` fact edge (fact layer),
 - any derived edges that mention it (reasoning layer).
 
-This is the PoC's *linked.svg* aesthetic — all the entity types on
-one canvas, related by labelled arrows, coloured by relation. See
+This is the 2021 prototype's *linked.svg* aesthetic — all the entity
+types on one canvas, related by labelled arrows, coloured by relation. See
 [S1.2.4](../../../../plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.4_graph_representation.md)
 for the design plan; the implementation is
 [`src/ein_bot/kb/render.py`](../../../../src/ein_bot/kb/render.py).
@@ -330,8 +330,8 @@ ein-bot kb dot examples/zebra.ein --no-instances                # types-only
 ```
 
 `utils/render_examples.sh` produces `_unified.dot` + `_unified.svg`
-per example, rendered with `fdp` (force-directed) for the PoC's
-spread-out aesthetic.
+per example, rendered with `fdp` (force-directed) for the 2021
+prototype's spread-out aesthetic.
 
 ### Encoding-agnostic
 
@@ -343,10 +343,9 @@ shapes as `zebra.ein` (classic `(type …)` / `(instance …)`). `is-a`
 facts get the type-edge styling rather than the regular coloured-arrow
 styling.
 
-### PoC comparison (T1.2.4.5 — deferred)
+### 2021-prototype comparison (T1.2.4.5 — deferred)
 
-The PoC's *linked.svg* is the visual target. Side-by-side
-comparison images live under [`docs/PoC/`](../../../PoC/); a
+The 2021 prototype's *linked.svg* is the visual target. A
 checklist of deliberate divergences (new reasoning-layer dashed
 styling, per-relation colour-palette change) lands when the
 renderer's output is reviewed visually.

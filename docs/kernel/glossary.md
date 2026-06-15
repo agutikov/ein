@@ -233,10 +233,6 @@ The KB loader tolerates references to undeclared types and relations
 — they auto-vivify with a `declared=False` flag rather than fail. See
 [`ir/02-data-model/01_entities.md` §1.3](ir/02-data-model/01_entities.md).
 
-### PoC
-The 2021 single-file proof-of-concept under
-[`docs/PoC/`](PoC/). Authoritative historical reference; not active code.
-
 ### Three task classes
 Solve / find-gaps / find-contradictions — the three modes a
 constraint engine should support. From

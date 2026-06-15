@@ -14,7 +14,7 @@ instance, …). Layer the entities across three knowledge populations
 (ontology / fact / reasoning), and attach **per-fact provenance** so
 a contradiction can name which premises clashed.
 
-The PoC's `State` was a pair of dicts with no notion of Rule or
+The 2021 prototype's `State` was a pair of dicts with no notion of Rule or
 Relation. The S1.2.1 entity model is the public API; a hyperedge
 store sits underneath only as far as facts have ≥ 2 args. The "graph"
 framing from `docs/ideas/02` describes the *visualisation* of the
@@ -50,7 +50,7 @@ the provenance records are non-optional — they're what makes the
 - `kb.derivation_dag(fact)` returns the recoverable provenance DAG;
   `kb.unsat_core(facts)` returns the minimal source-fact frontier.
 - DOT export of each view returns syntactically-valid Graphviz —
-  per-form forward by `to_dot` (S1.1.4), the PoC-style **unified
+  per-form forward by `to_dot` (S1.1.4), the single-canvas **unified
   view** with fused entity identity by `kb.to_dot()` (S1.2.4),
   reverse by `from_dot` (this phase).
 

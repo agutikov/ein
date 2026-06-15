@@ -10,7 +10,7 @@ instance node is emitted **once** and participates in:
   (fact layer),
 - any inferred edges (reasoning layer).
 
-This is the visual target from the 2021 PoC's `linked.svg` — types,
+This is the visual target from the 2021 prototype's `linked.svg` — types,
 instances, and inferred edges merged onto one canvas, not stacked
 tiles. See [`docs/kernel/ir/03-ein-lang/04_dot_rendering.md` §Unified
 KB graph](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md).

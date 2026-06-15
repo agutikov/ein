@@ -68,7 +68,6 @@ Zebra-acceptance milestone.
 - Plans roadmap: [`plans/m1_core_graph_reasoning/`](../../plans/m1_core_graph_reasoning/).
 - Ideas (the user's framing of the project's *goals*): [`docs/ideas/`](../ideas/).
 - External tech index: [`docs/index/`](../index/).
-- PoC (the 2021 prototype, preserved): [`docs/PoC/`](../PoC/).
 - Source of truth for parsing: [`src/ein_bot/ir/grammar.lark`](../../src/ein_bot/ir/grammar.lark).
 - Source of truth for the KB: [`src/ein_bot/kb/`](../../src/ein_bot/kb/).
 - **End-to-end target trace**:

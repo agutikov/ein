@@ -25,7 +25,7 @@
 # file per top-level form / rule. **Rule diagrams land in a `rules/`
 # subfolder** (numbered on their own); every other form stays flat in
 # the example dir. Two whole-example views are added per example:
-#   * `_unified.dot` — the PoC-style unified "everything-on-one-page"
+#   * `_unified.dot` — the unified "everything-on-one-page"
 #     view (`ein-bot kb dot`, S1.2.4), rendered through `fdp`.
 #   * `_lattice.dot` — the commitment-lattice / proof-DAG
 #     (`ein-bot render lattice`, S1.6.3), rendered through `dot`. This
@@ -317,7 +317,7 @@ for ein in "${ein_files[@]}"; do
     printf "    %2d dot, %2d %s\n" "${n_dot}" "${n_img}" "${raster_first:-(no raster)}"
 
     # ── Unified KB view (S1.2.4) — one DOT per example, all layers,
-    #    rendered with `fdp` to match the PoC's aesthetic. ──
+    #    rendered with `fdp` for the spread-out aesthetic. ──
     unified_dot="${out}/_unified.dot"
     if "${EIN_CMD[@]}" kb dot "${ein}" > "${unified_dot}" 2>/dev/null; then
         total_unified_dot=$((total_unified_dot + 1))

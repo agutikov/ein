@@ -5,9 +5,8 @@ Guidance for AI coding agents working in this repo.
 ## What this project is
 
 `ein-bot` is a graph-based reasoner for Zebra-style logic puzzles. The
-2021 proof-of-concept (`reasoning.py`, with worked examples and
-inference rules under `docs/PoC/`) is being modernised in light of
-neuro-symbolic / constrained-reasoning research.
+2021 prototype is being modernised in light of neuro-symbolic /
+constrained-reasoning research.
 
 ## Where things live
 
@@ -19,10 +18,6 @@ neuro-symbolic / constrained-reasoning research.
   See [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
 - **`docs/ir.md`** — thin redirect into `docs/kernel/`; kept so stable
   cross-references resolve.
-- **`docs/PoC/`** — original 2021 PoC. README explains the graph encoding,
-  the *triangle* and *square* inference rules, and the hypothesis-testing
-  loop. Treat as historical reference; don't modify unless explicitly
-  asked.
 - **`docs/index/`** — catalogue of external tech relevant to the rewrite
   (LLM constrained generation, CSP/SAT/SMT, theorem proving, category
   theory, graphs & rewrite systems, reasoning benchmarks, …). 12
@@ -44,11 +39,12 @@ neuro-symbolic / constrained-reasoning research.
   detector + hypothesis loop under `inference/`. `ein.py/tests/` is the
   pytest suite, `ein.py/demo/` holds runnable demo scripts
   (`bench_saturate.py`, …), `ein.py/pyproject.toml` is the build
-  config. The 2021 `reasoning.py` is archived under `docs/PoC/`.
+  config.
 - **`utils/`** — renderers (`render_knowledge_graph.sh` for Graphviz,
   `render_knowledge_graph_cy.py` for Cytoscape).
 - **`nlp/`, `smt/`** — scratch areas with submodules
-  (`nlp/link-grammar`, `smt/CVC4`). Not used by `reasoning.py`.
+  (`nlp/link-grammar`, `smt/CVC4`). Not wired into the active
+  `ein.py/` package.
 
 ## Regenerating the knowledge graph
 

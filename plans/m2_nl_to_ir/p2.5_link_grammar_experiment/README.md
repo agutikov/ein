@@ -36,7 +36,7 @@ assume.
 - If verdict = ship, P2.4's pipeline gains a link-grammar pre-pass
   + flag.
 - If verdict = deprecate, the submodule reference under `nlp/`
-  is moved to `docs/PoC/nlp/` and noted as historical.
+  is left in place as a historical reference (not active code).
 
 ## Connections
 

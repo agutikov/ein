@@ -1,9 +1,8 @@
 # Plans
 
-Forward-looking roadmap for ein-bot. The 2021 proof-of-concept
-(`docs/PoC/`) is preserved unchanged; the cleaned-up package skeleton
-(`src/ein_bot/`) just unblocks the work — the actual *implementation*
-of the design lives here.
+Forward-looking roadmap for ein-bot. The 2021 prototype informs the
+design; the cleaned-up package skeleton (`src/ein_bot/`) just unblocks
+the work — the actual *implementation* of the design lives here.
 
 The companion research notes (no implementation steps, no schedule)
 stay in [`docs/ideas/`](../docs/ideas/). Plans cross-link to those
@@ -87,7 +86,7 @@ plans/
 ├── README.md                         this file (schema + index)
 ├── open_questions.md                 cross-milestone questions; sticky Q ids
 ├── ideas.md                          rolling scratchpad
-├── m1_core_graph_reasoning/          MVP — the PoC, done properly
+├── m1_core_graph_reasoning/          MVP — the 2021 prototype, done properly
 │   ├── README.md                     milestone overview (goal, phases, acceptance)
 │   ├── open_questions.md             milestone-scoped questions
 │   ├── p1.1_ir_language/
@@ -164,7 +163,6 @@ Stage files have a stable shape:
 | **fact layer**    | the relations stated by the problem text                                |
 | **reasoning layer** | derived relations, rejected hypotheses, hypothesis branches            |
 | **task class**    | A=solve, B=gaps, C=contradictions (per [idea 03](../docs/ideas/03-three-task-classes.md)) |
-| **PoC**           | the 2021 single-file proof of concept under `docs/PoC/`                |
 
 ## How to use this directory
 

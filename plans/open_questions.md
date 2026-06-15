@@ -54,8 +54,8 @@ file it keeps its id; do not reuse a closed id.
 Per [idea 02 §Open questions](../docs/ideas/02-graph-as-formal-substrate.md)
 the candidates are: plain directed graph, typed multigraph, typed
 hypergraph (relations span >2 vars), adhesive category, e-graph on
-top. The PoC is a typed digraph with set-valued edges; it cannot
-natively express `next_to(a, b, c)`-style ternary or `allDifferent`
+top. The 2021 prototype is a typed digraph with set-valued edges; it
+cannot natively express `next_to(a, b, c)`-style ternary or `allDifferent`
 constraints without faking them.
 
 **Working answer**: **typed hypergraph with provenance and equality

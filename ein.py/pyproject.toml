@@ -74,7 +74,7 @@ src = ["src", "tests"]
 extend-exclude = [
     "nlp",            # vendored submodule (link-grammar + scratch scripts)
     "smt",            # vendored submodule (CVC4 + scratch scripts)
-    "docs",           # PoC + index/ideas notes; reasoning.py is archived & known-broken
+    "docs",           # index / ideas / kernel notes (no lintable Python)
     "whitelist_vulture.py",  # vulture stub (bare names by design — not real code)
 ]
 

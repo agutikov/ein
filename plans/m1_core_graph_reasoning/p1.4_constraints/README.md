@@ -86,5 +86,5 @@ for where each of its use cases now lives.
   the "contradictions" task class consumes the detector's output
   directly.
 - [Idea 05 §Open question](../../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)
-  — the PoC's spatial open question, resolved by Q17 + P1.3's
+  — the 2021 prototype's spatial open question, resolved by Q17 + P1.3's
   square rules (not by P1.4 any more).

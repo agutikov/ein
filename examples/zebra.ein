@@ -44,7 +44,7 @@
 ;;;   · `all-different` is NOT a kernel primitive — pairwise
 ;;;     distinctness within a category is derived by `type-exclusivity`
 ;;;     from the `(instance X T)` facts.
-;;;   · The PoC's *square rule* (right-of propagation across
+;;;   · The *square rule* (right-of propagation across
 ;;;     co-located) is expressed declaratively as `square-fwd` /
 ;;;     `square-bwd` rules + rule-application facts — no `:spatial-via`
 ;;;     kw-pair, no hardcoded Python projection. Square applies ONLY
@@ -87,7 +87,7 @@
   :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
   :priority 100)
 
-;; ── PoC's "square rule" — declarative formulation. The rule
+;; ── The "square rule" — declarative formulation. The rule
 ;; ── fires for every relation marked `(square-fwd …)` /
 ;; ── `(square-bwd …)`. Together they project the spatial
 ;; ── relation R across the co-located bridge:

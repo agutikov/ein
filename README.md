@@ -6,7 +6,7 @@
 > end-to-end, not to be reused as-is. Expect rough edges and frequent
 > rewrites.
 
-Graph-based Zebra-puzzle solver — a 2021 proof-of-concept now being
+Graph-based Zebra-puzzle solver — a 2021 prototype now being
 modernised in light of neuro-symbolic and constrained-reasoning research.
 
 ## Layout
@@ -26,7 +26,6 @@ modernised in light of neuro-symbolic and constrained-reasoning research.
 | `plans/`                | milestone / phase / stage roadmap (M1 active)                                |
 | `docs/kernel/`          | kernel documentation — graph semantics, data model, surface language, inference engine |
 | `docs/ir.md`            | thin redirect into `docs/kernel/` (kept for stable cross-references)         |
-| `docs/PoC/`             | 2021 proof-of-concept — original `reasoning.py` archived                     |
 | `docs/index/`           | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph |
 | `docs/ideas/`           | ideas extracted from research notes (9 files)                                |
 | `utils/`                | renderers for the knowledge graph (Graphviz + Cytoscape)                     |
@@ -135,9 +134,7 @@ python utils/render_knowledge_graph_cy.py
 M1 P1.1 (IR language) is complete: grammar, typed AST, parser/dump,
 golden snapshot tests, DOT renderer. Next up is P1.2 — the entity-
 typed knowledge base (`Type`/`Relation`/`Rule`/`Instance`/`Fact` with
-cross-references). The original single-file PoC
-([`docs/PoC/reasoning.py`](docs/PoC/reasoning.py)) is preserved for
-reference. The deep rewrite is tracked in
+cross-references). The deep rewrite is tracked in
 [`plans/`](plans/README.md); see [`AGENTS.md`](AGENTS.md) for context
 aimed at coding agents.
 

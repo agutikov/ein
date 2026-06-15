@@ -1,6 +1,6 @@
 ;;; houses — spatial bridge: right-of propagates co-located forward.
 ;;;
-;;; This is the PoC's *square rule* in its forward direction. Two
+;;; This is the *square rule* in its forward direction. Two
 ;;; houses sit side by side; each has an attribute (A on the left of
 ;;; B, C on the left of D). A co-located bridge ties the two
 ;;; right-hand sides (B ↔ D — "they're in the same house"); the rule
