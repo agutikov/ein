@@ -136,17 +136,20 @@ def _resolved_config(kb, args):
 
 
 def _make_dumper(args):
-    """Pick the lifecycle dumper. ``--timing`` takes precedence (it needs the
-    hook timestamps); else ``--verbose`` streams progress; ``--dump-states``
-    persists the dump tree."""
-    if args.timing:
-        return _TimingDumper()
+    """Pick the lifecycle dumper. ``--verbose`` takes precedence and streams
+    live progress (per-layer + per-entering = the branch-testing search) — and
+    because :class:`ProgressDumper` captures ``t0/t_root/t_end/root_facts`` it
+    also feeds ``--timing``, so ``-v -t`` shows the live search AND the phase
+    table. Plain ``--timing`` uses the quiet ``_TimingDumper``; ``--dump-states``
+    persists the tree."""
     from ..inference.monotonic import ProgressDumper
     from ..inference.monotonic.state_dump import MonotonicDumper
 
     out_dir = Path(args.dump_states) if args.dump_states else None
     if args.verbose:
         return ProgressDumper(progress_every=args.progress_every, out_dir=out_dir)
+    if args.timing:
+        return _TimingDumper()
     if out_dir is not None:
         return MonotonicDumper(out_dir=out_dir)
     return None

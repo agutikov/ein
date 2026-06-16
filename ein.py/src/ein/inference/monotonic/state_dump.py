@@ -378,6 +378,22 @@ class MonotonicDumper(_TimelineMixin):
         )
 
 
+def _fmt_commitment(commitment: tuple) -> str:
+    """Render a commitment (CanonicalSetId — a tuple of ``(rel, args)``
+    FactIds) as its hypothesis fact(s): ``(color-loc Green House-4)``. Multiple
+    facts (layer ≥ 2) are space-joined; the empty set shows as ``∅``."""
+    out: list[str] = []
+    for fid in commitment:
+        if (isinstance(fid, tuple) and len(fid) == 2
+                and isinstance(fid[1], tuple)):
+            rel, args = fid
+            inner = " ".join(str(a) for a in args)
+            out.append(f"({rel} {inner})" if inner else f"({rel})")
+        else:
+            out.append(str(fid))
+    return " ".join(out) if out else "∅"
+
+
 class ProgressDumper(MonotonicDumper):
     """Live progress emitter for slow ``solve`` runs.
 
@@ -408,6 +424,17 @@ class ProgressDumper(MonotonicDumper):
         # Distinct solution-node states (deduped by state_hash) — matches
         # the verdict's k, not the raw count of solution-outcome events.
         self._node_hashes: set[int] = set()
+        # Phase wall-clock (perf_counter), so this dumper doubles as the CLI
+        # `--timing` source — lets `-v` and `-t` compose (the CLI's
+        # `_TimingDumper` duck-type: t0 / t_root / t_end / root_facts).
+        self.t0 = time.perf_counter()
+        self.t_root: float | None = None
+        self.t_end: float | None = None
+        self.root_facts = 0
+        # Throttle for root-saturation progress: surfaced only once saturation
+        # runs > 1s, then ≤ 1/s — so a fast root saturation adds no noise ahead
+        # of the branch-testing search (the progress that matters here).
+        self._last_sat_say = self.t0
 
     def _say(self, msg: str) -> None:
         print(msg, file=self.stream, flush=True)
@@ -416,11 +443,19 @@ class ProgressDumper(MonotonicDumper):
         return f"{time.time() - self.started_at:5.0f}s"
 
     def root_saturating(self, n_firings: int) -> None:  # type: ignore[override]
+        # Quiet while root saturation is fast; only speak when it's slow enough
+        # to look like a hang (≥ 1s in, then at most once a second).
+        now = time.perf_counter()
+        if now - self._last_sat_say < 1.0:
+            return
+        self._last_sat_say = now
         head = f"[{self.label}] " if self.label else ""
         self._say(f"{head}  saturating root: {n_firings} firings  ({self._el()})")
 
     def root_initial(self, kb: KnowledgeBase) -> None:  # type: ignore[override]
         super().root_initial(kb)
+        self.t_root = time.perf_counter()
+        self.root_facts = len(kb.facts)
         head = f"[{self.label}] " if self.label else ""
         self._say(f"{head}root saturated: {len(kb.facts)} facts  ({self._el()})")
 
@@ -454,7 +489,8 @@ class ProgressDumper(MonotonicDumper):
             self._node_hashes.add(state_hash(result.kb))
         if outcome == "solution" or self._enterings % self.progress_every == 0:
             self._say(
-                f"    e={self._enterings:>5d} layer={layer} -> {outcome:<9s}"
+                f"    e={self._enterings:>5d} layer={layer}"
+                f"  {_fmt_commitment(commitment)}  -> {outcome:<9s}"
                 f" solution-nodes={len(self._node_hashes)}  ({self._el()})",
             )
 
@@ -474,6 +510,7 @@ class ProgressDumper(MonotonicDumper):
 
     def summary(self, verdict: Any, stats: Any) -> None:  # type: ignore[override]
         super().summary(verdict, stats)
+        self.t_end = time.perf_counter()
         k = getattr(stats, "solution_nodes", "?")
         ex = getattr(stats, "exhausted", "?")
         self._say(
