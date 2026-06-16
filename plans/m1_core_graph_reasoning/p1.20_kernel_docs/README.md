@@ -4,8 +4,11 @@
 unestimated (a bench matrix, a full Python API reference, and a
 long-form Zebra guide — each multi-day). A multi-week,
 **non-M1-gating** investment to schedule against M2.
-**Status:** **elaborated; parked (not started)** — created
-2026-05-24 from the TODO.md scratchpad, stages written 2026-06-15.
+**Status:** **executed 2026-06-16** — all 12 staged stages (A0, A1, A2,
+B–G, H1–H3) done; only the unstaged themes **I/J/K** remain (feature×config
+bench matrix, Python-embedding API ref, long-form Zebra guide — each needs the
+engine or substantial new writing). Created 2026-05-24 from the TODO.md
+scratchpad, stages written 2026-06-15, executed 2026-06-16.
 The phase parks kernel-doc reorgs that emerged after the M1
 implementation surface stabilised. None of these gate M1
 acceptance; they make the kernel docs reflect what M1 actually
