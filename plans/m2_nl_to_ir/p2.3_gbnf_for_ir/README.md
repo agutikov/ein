@@ -12,7 +12,7 @@ task-specific GBNFs (extracting ontology, extracting facts,
 resolving definite descriptions, flagging ambiguity) that the
 pipeline switches between.
 
-Per [idea 01](../../../docs/ideas/01-self-modifying-constraint-language.md)
+Per [idea 01](../../ideas/01-self-modifying-constraint-language.md)
 GBNF is the *syntactic firewall*. Semantic validity (type-correctness,
 ontology coverage) is checked in P2.4.
 
@@ -36,8 +36,8 @@ ontology coverage) is checked in P2.4.
 
 ## Connections
 
-- [Idea 01](../../../docs/ideas/01-self-modifying-constraint-language.md) —
+- [Idea 01](../../ideas/01-self-modifying-constraint-language.md) —
   GBNF as syntactic substrate; the self-modifying loop ([F2](../../followups/f2_self_modifying_language.md))
   builds on this.
-- [Idea 04](../../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md) —
+- [Idea 04](../../ideas/04-nlp-to-graph-to-solver-pipeline.md) —
   the GBNFs are the *constrained output* step of the pipeline.

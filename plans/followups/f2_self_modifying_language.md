@@ -4,13 +4,13 @@
 **Trigger:** M2 (LLM infra + GBNF for IR) is complete and stable.
 
 This is **rung 1** of the three-rung self-modification ladder — see
-[`docs/ideas/10-generic-self-modification.md`](../../docs/ideas/10-generic-self-modification.md)
+[`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-modification.md)
 for the umbrella view alongside [F5 (rules as data)](f5_rules_as_data.md)
 and [F6 (modify own harness)](f6_modify_own_harness.md).
 
 ## What this is
 
-Per [`docs/ideas/01-self-modifying-constraint-language.md`](../../docs/ideas/01-self-modifying-constraint-language.md):
+Per [`docs/ideas/01-self-modifying-constraint-language.md`](../ideas/01-self-modifying-constraint-language.md):
 put the GBNF meta-grammar, the *currently applied* output-constraint
 grammar, an explanation that the harness will apply modifications,
 and a task on the syntax itself into the LLM's system prompt; then
@@ -70,7 +70,7 @@ A new milestone `m_followups_self_modifying/` with phases:
 
 ## Prior art / connections
 
-- [Idea 01](../../docs/ideas/01-self-modifying-constraint-language.md) — the full description.
+- [Idea 01](../ideas/01-self-modifying-constraint-language.md) — the full description.
 - [`docs/lib/01-llm-constrained-generation.md`](../../docs/lib/01-llm-constrained-generation.md) — GBNF / parser-guided decoding.
 - Existing nearby work: SMT-LIB (clean S-expression IR), PLT Redex,
   K Framework, ACL2, miniKanren.

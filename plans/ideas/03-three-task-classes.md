@@ -79,9 +79,9 @@ generation / testing in the `Ein` README implies it.
 
 - Solver-level support for each class — `(check-sat)` / model
   enumeration / unsat-core / MUS:
-  [02-solvers-csp-sat-smt.md](../lib/02-solvers-csp-sat-smt.md), §8.
+  [02-solvers-csp-sat-smt.md](../../docs/lib/02-solvers-csp-sat-smt.md), §8.
 - Provenance + explanation graph:
-  [10-nlp-semantic-parsing.md](../lib/10-nlp-semantic-parsing.md), §5.
+  [10-nlp-semantic-parsing.md](../../docs/lib/10-nlp-semantic-parsing.md), §5.
 - Why the explanation graph belongs on the IR rather than inside the
   solver:
   [02-graph-as-formal-substrate.md](02-graph-as-formal-substrate.md).

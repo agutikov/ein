@@ -7,7 +7,7 @@ of human-style logic puzzles. This note catalogues the classes worth
 keeping in view as Ein grows, and what each one stresses that
 Zebra does not.
 
-The companion file [`docs/lib/12-llm-and-reasoning-benchmarks.md`](../lib/12-llm-and-reasoning-benchmarks.md)
+The companion file [`docs/lib/12-llm-and-reasoning-benchmarks.md`](../../docs/lib/12-llm-and-reasoning-benchmarks.md)
 catalogues LLM/neuro-symbolic *benchmarks*. This file is about
 *puzzles people enjoy solving* — ones with an insight, a recognisable
 named-move repertoire, or a beautiful piece of reasoning. The
@@ -115,7 +115,7 @@ formulation (`right-of` / `next-to` + `square-fwd` / `square-bwd` /
 `square-unique` rules) is 1-D only and adjacency-flavoured; it
 handles none of these geometry-heavy puzzles. They're explicitly out
 of scope for the current engine and return in
-[followups F4 Q32 (2-D / N-D spatial)](../../plans/followups/f4_cross_cutting.md).
+[followups F4 Q32 (2-D / N-D spatial)](../followups/f4_cross_cutting.md).
 
 ## Lateral thinking
 
@@ -172,7 +172,7 @@ Rows 4 (probability) and 9 (lateral) are out of scope.
    schema, or as a planning test for the hypothesis loop?
 4. Is there value in the spatial / visual cluster *before* a 2-D
    position lattice exists? Probably not — defer with
-   [F4 Q32](../../plans/followups/f4_cross_cutting.md).
+   [F4 Q32](../followups/f4_cross_cutting.md).
 
 ## Connections
 
@@ -180,7 +180,7 @@ Rows 4 (probability) and 9 (lateral) are out of scope.
   the current target class.
 - [`docs/ideas/06-inference-rules-completeness.md`](06-inference-rules-completeness.md) —
   rule families that recur across these puzzles.
-- [`docs/lib/12-llm-and-reasoning-benchmarks.md`](../lib/12-llm-and-reasoning-benchmarks.md) —
+- [`docs/lib/12-llm-and-reasoning-benchmarks.md`](../../docs/lib/12-llm-and-reasoning-benchmarks.md) —
   the *machine-evaluation* counterpart to this human-facing catalogue.
-- [`plans/followups/f4_cross_cutting.md`](../../plans/followups/f4_cross_cutting.md)
+- [`plans/followups/f4_cross_cutting.md`](../followups/f4_cross_cutting.md)
   Q32 — 2-D / N-D spatial puzzles parked there.

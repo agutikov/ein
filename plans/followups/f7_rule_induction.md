@@ -97,7 +97,7 @@ For richer cases, the property itself can be inferred from sample
 facts (statistical induction — if `(R a b)` and `(R b c)` always
 appear with `(R a c)`, R is *probably* transitive). This is the
 **ontology induction** thread from
-[`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md`](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md);
+[`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md`](../ideas/04-nlp-to-graph-to-solver-pipeline.md);
 it's a research direction, not a small refactor.
 
 This sub-track is the natural endpoint of M2's NL → IR pipeline:
@@ -141,7 +141,7 @@ Cross-cuts:
 - Composes with sub-track B (property induction at the relation
   level) — instance-property induction can *feed* relation-property
   induction once a partial pattern is enriched enough.
-- Composes with [Idea 04](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md)
+- Composes with [Idea 04](../ideas/04-nlp-to-graph-to-solver-pipeline.md)
   ontology deduction — the NL pipeline likely produces partial
   facts; instance-property induction is how the engine *responds*
   to that partiality with structure.
@@ -223,12 +223,12 @@ companion is a column of
 - [F5 — Rules as data](f5_rules_as_data.md) — rung 2 of
   self-modification; F5 mechanises *how* rules get rewritten, F7
   motivates *which* rewrites are worthwhile.
-- [Idea 04 — NL → IR](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md)
+- [Idea 04 — NL → IR](../ideas/04-nlp-to-graph-to-solver-pipeline.md)
   — the M2 pipeline that consumes B.
-- [Idea 07 — Categorical formulation](../../docs/ideas/07-categorical-formulation.md)
+- [Idea 07 — Categorical formulation](../ideas/07-categorical-formulation.md)
   — the formal underpinning for the *invariance-under-R* reading
   of square-fwd / square-unique.
-- [Idea 10 — Generic self-modification](../../docs/ideas/10-generic-self-modification.md)
+- [Idea 10 — Generic self-modification](../ideas/10-generic-self-modification.md)
   — the umbrella for F2 / F5 / F6 and now F7.
 
 ## Connection to M2

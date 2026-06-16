@@ -7,7 +7,7 @@
 ## Goal
 
 Implement the three task classes from
-[`docs/ideas/03-three-task-classes.md`](../../../docs/ideas/03-three-task-classes.md)
+[`docs/ideas/03-three-task-classes.md`](../../ideas/03-three-task-classes.md)
 on the SMT backend, mirroring the M1 graph-native implementations
 so the user can switch backends transparently:
 
@@ -35,4 +35,4 @@ so the user can switch backends transparently:
 
 ## Connections
 
-- [Idea 03 §Why distinguishing these matters](../../../docs/ideas/03-three-task-classes.md#why-distinguishing-these-matters) — the table is the source of truth.
+- [Idea 03 §Why distinguishing these matters](../../ideas/03-three-task-classes.md#why-distinguishing-these-matters) — the table is the source of truth.

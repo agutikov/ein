@@ -14,7 +14,7 @@ NL frontend and the SMT emitter all read and write.
 
 The design is locked here so the rest of M1 has something stable to
 build against. Per
-[`docs/ideas/02-graph-as-formal-substrate.md`](../../../docs/ideas/02-graph-as-formal-substrate.md)
+[`docs/ideas/02-graph-as-formal-substrate.md`](../../ideas/02-graph-as-formal-substrate.md)
 the IR is *also* the working memory of the reasoner — not a discarded
 intermediate.
 
@@ -41,9 +41,9 @@ intermediate.
 
 ## Connections
 
-- [Idea 01](../../../docs/ideas/01-self-modifying-constraint-language.md) §point 3:
+- [Idea 01](../../ideas/01-self-modifying-constraint-language.md) §point 3:
   Lisp / SMT-LIB / miniKanren reference templates.
-- [Idea 04](../../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md):
+- [Idea 04](../../ideas/04-nlp-to-graph-to-solver-pipeline.md):
   the IR is the *target* of the NL frontend (M2).
 - The SMT-LIB analogy is intentional — M3's translator stays close
   to a structural rewrite.

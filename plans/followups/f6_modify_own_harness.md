@@ -91,9 +91,9 @@ working, with an explicit research bound:
   research; few have a controlled-domain success story.
 - F2 + F5 (the syntactic + semantic prerequisites). F6 doesn't make
   sense without them.
-- [`docs/ideas/01-self-modifying-constraint-language.md`](../../docs/ideas/01-self-modifying-constraint-language.md)
+- [`docs/ideas/01-self-modifying-constraint-language.md`](../ideas/01-self-modifying-constraint-language.md)
   — F2 lineage; F6 is the maximal extension of that thread.
-- [`docs/ideas/10-generic-self-modification.md`](../../docs/ideas/10-generic-self-modification.md)
+- [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-modification.md)
   — the umbrella view of the three followups.
 - [`docs/lib/01-llm-constrained-generation.md`](../../docs/lib/01-llm-constrained-generation.md)
   — constrained-generation infrastructure F6 might emit through.

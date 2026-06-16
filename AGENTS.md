@@ -16,15 +16,19 @@ constrained-reasoning research.
   to be `docs/ir.md`), inference engine (`inference/`, stub before P1.3).
   Start here for any "what does Ein reason about / how" question.
   See [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
-- **`docs/ir.md`** — thin redirect into `docs/kernel/`; kept so stable
-  cross-references resolve.
+- **`docs/api/`** — the **Python embedding API** reference (P1.20 Theme J):
+  how to drive Ein *as a library* (`parse` → `KnowledgeBase` → `solve` →
+  read verdict/trace). `ein.md` is the contract + worked example; per-module
+  pages for `ir`/`kb`/`inference`/`trace`. Distinct from `docs/kernel/`
+  (the IR *language*) and the engine internals.
 - **`docs/lib/`** — catalogue of external tech relevant to the rewrite
   (LLM constrained generation, CSP/SAT/SMT, theorem proving, category
   theory, graphs & rewrite systems, reasoning benchmarks, …). 12
   thematic files + a knowledge graph (`knowledge-graph.dot` → SVGs
   and a Cytoscape.js page).
-- **`docs/ideas/`** — the user's *own* ideas (9 files); each preserves
-  user quotes and open questions. Authoritative on intent.
+- **`plans/ideas/`** — the user's *own* ideas (10 numbered files +
+  README; moved here from `docs/ideas/`); each preserves user quotes and
+  open questions. Authoritative on intent.
 - **`examples/`** — encoded Zebra puzzles (`zebra.ein` classic,
   `zebra2.ein` unified-is-a / `*-loc`, `zebra2-hints.ein` partial-state
   fixture) plus [`examples/README.md`](examples/README.md): the
@@ -64,7 +68,7 @@ loads Cytoscape + fcose from unpkg CDN.
 
 ## Working priorities
 
-The biggest unrealised idea is `docs/ideas/01-self-modifying-constraint-language.md`
+The biggest unrealised idea is `plans/ideas/01-self-modifying-constraint-language.md`
 (LLM ↔ harness loop on GBNF). The current-implementation-vs-target axis
 is `05-zebra-puzzle-graph-reasoner` → `04-nlp-to-graph-to-solver-pipeline`
 / `06-inference-rules-completeness` / `08-human-style-deductive-trace`.
@@ -73,7 +77,7 @@ is `05-zebra-puzzle-graph-reasoner` → `04-nlp-to-graph-to-solver-pipeline`
 
 - The user is bilingual RU/EN but prefers EN in code and docs.
 - Prefers dense, link-rich answers; few-but-substantive over many-but-thin.
-- For docs/ideas/* extensions: keep the user's framing intact; do not
+- For plans/ideas/* extensions: keep the user's framing intact; do not
   cite "conversation-N msg M" (raw conversations were removed 2026-05-17).
 
 `CLAUDE.md` is a symlink to this file — both AI tools see the same guidance.

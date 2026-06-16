@@ -21,7 +21,7 @@
 Ein answers **finite-domain constraint-satisfaction** questions over a
 [typed hypergraph](../ir/01-ein-graph/01_kb.md) of facts and
 [rules](../ir/01-ein-graph/02_rules.md) — the Zebra puzzle and its kin. Per
-[idea 03](../../../docs/ideas/03-three-task-classes.md) it answers three
+[idea 03](../../../plans/ideas/03-three-task-classes.md) it answers three
 shapes of one question, all read off a single search (P1.7a):
 
 - **solve** — is there a unique complete model? (k = 1)

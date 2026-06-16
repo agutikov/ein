@@ -26,6 +26,6 @@ encodings to use.
 
 ## Connections
 
-- [Idea 04 §Open questions](../../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions).
-- [Idea 02](../../../docs/ideas/02-graph-as-formal-substrate.md) —
+- [Idea 04 §Open questions](../../ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions).
+- [Idea 02](../../ideas/02-graph-as-formal-substrate.md) —
   sort choices affect *whether* SMT is faster than the graph engine.

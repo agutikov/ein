@@ -12,7 +12,7 @@ the "hard-slice" annotation).
 
 Re-build the 2021 prototype as a *properly engineered, traceable,
 graph-native* reasoner. The acceptance criterion is the one set by
-[`docs/ideas/08-human-style-deductive-trace.md`](../../docs/ideas/08-human-style-deductive-trace.md):
+[`docs/ideas/08-human-style-deductive-trace.md`](../ideas/08-human-style-deductive-trace.md):
 the engine should not merely return the answer to the Zebra puzzle —
 it should reproduce a deductive trace, with named reasoning moves at
 every step, of the kind a human would write. The concrete target is
@@ -27,10 +27,10 @@ Concretely, M1 ships:
    queries, and traces (P1.1).
 2. A **typed-hypergraph** core (`ontology` + `fact` +
    `reasoning` layers, provenance-bearing) — per
-   [idea 02](../../docs/ideas/02-graph-as-formal-substrate.md) and
-   [idea 05](../../docs/ideas/05-zebra-puzzle-graph-reasoner.md) (P1.2).
+   [idea 02](../ideas/02-graph-as-formal-substrate.md) and
+   [idea 05](../ideas/05-zebra-puzzle-graph-reasoner.md) (P1.2).
 3. A **rule registry** with the ten rule families catalogued in
-   [idea 06](../../docs/ideas/06-inference-rules-completeness.md) (P1.3).
+   [idea 06](../ideas/06-inference-rules-completeness.md) (P1.3).
 4. A **contradiction detector** that scans the KB for `(X, (not X))`
    pairs and feeds the hypothesis loop (P1.4 — shrunk from the
    original "structural + spatial constraints" scope; the
@@ -45,7 +45,7 @@ Concretely, M1 ships:
    threads them (P1.6).
 7. **The Zebra puzzle, end-to-end**, with a generated trace
    matched against the human walkthrough in
-   [idea 08 §Target trace](../../docs/ideas/08-human-style-deductive-trace.md) (P1.7).
+   [idea 08 §Target trace](../ideas/08-human-style-deductive-trace.md) (P1.7).
 
 ## Phases
 
@@ -124,7 +124,7 @@ M1 ships when **all** of the following pass:
    writes `zebra.md` + a `zebra/` folder of DOT snapshots, and emits
    the unique solution (Zebra → Japanese; Water → Norwegian).
 3. **Trace**: the markdown trace matches the
-   [target trace](../../docs/ideas/08-human-style-deductive-trace.md#the-target-trace-paraphrased)
+   [target trace](../ideas/08-human-style-deductive-trace.md#the-target-trace-paraphrased)
    to within a checklist of *named rule firings* — every move in the
    human walkthrough has a corresponding rule firing in the engine
    trace (matching is structural, not literal).
@@ -134,7 +134,7 @@ M1 ships when **all** of the following pass:
    puzzle plus `(fact (= (color House-1) Green))` returns a minimal
    contradiction with provenance back to that fact and to (5).
 5. **Rules**: a `rules.ein` file lists ten named rule families
-   ([idea 06](../../docs/ideas/06-inference-rules-completeness.md)
+   ([idea 06](../ideas/06-inference-rules-completeness.md)
    row-for-row); each is exercised by a Zebra step in the trace
    (P1.7 checks this).
 6. **Tests**: pytest suite ≥ 100 tests covering IR / graph / rules /
@@ -204,11 +204,11 @@ makes this self-hosting structure formal.
   hand-picking a small golden trace (5-10 steps) and treating it as
   a regression target.
 - **Rule completeness creep**: each family in
-  [idea 06](../../docs/ideas/06-inference-rules-completeness.md) is
+  [idea 06](../ideas/06-inference-rules-completeness.md) is
   small; the integration interactions are not. Budget 30% of P1.3 to
   Zebra-on-a-half-rule-set debugging, not 100% to "implement all ten".
 - **Constraint formalisation for spatial**: the [idea 05 open
-  question](../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)
+  question](../ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)
   ("Ivory to the left of Green") was unresolved in 2021. **Resolved
   2026-05-18** by [Q17](open_questions.md#q17--spatial-relation-formalisation):
   declarative graph-only via `right-of` / `next-to` + the

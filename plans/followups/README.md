@@ -2,7 +2,7 @@
 
 Themes that are neither MVP-blocking nor on the M1-M2-M3 schedule.
 Park here so the ideas don't get lost between
-[`docs/ideas/`](../../docs/ideas/) (raw notes) and
+[`docs/ideas/`](../ideas) (raw notes) and
 [`plans/m*/`](../) (scheduled work).
 
 Each file is one *theme* — a coherent direction of follow-up work
@@ -23,7 +23,7 @@ strikes.
 | F7  | [Rule taxonomy + rule induction](f7_rule_induction.md)            | when the rule library grows past hand-management OR M2's NL → IR needs activator induction (sub-track B on the M2 critical path) |
 
 The three self-modification followups (F2 / F5 / F6) share a unifying
-view: [`docs/ideas/10-generic-self-modification.md`](../../docs/ideas/10-generic-self-modification.md).
+view: [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-modification.md).
 
 ## Working agreement
 
@@ -39,7 +39,7 @@ view: [`docs/ideas/10-generic-self-modification.md`](../../docs/ideas/10-generic
 ## Connections
 
 The four followups span the *parking lot* set of
-[`docs/ideas/`](../../docs/ideas/) topics — specifically the
+[`docs/ideas/`](../ideas) topics — specifically the
 categorical formulation (07), self-modifying language (01),
 three task classes (03), and the cross-cutting questions that
 recurred across multiple ideas.

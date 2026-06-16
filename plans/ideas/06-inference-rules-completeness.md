@@ -90,10 +90,10 @@ The user's framing is closest to (3) and (4): the question presumes
 ## Connections (context, not answers)
 
 - Rules as graph rewrites (DPO/SPO):
-  [05-category-theory.md](../lib/05-category-theory.md).
+  [05-category-theory.md](../../docs/lib/05-category-theory.md).
 - CSP-side propagation rules (arc / path consistency,
-  `allDifferent`): [02-solvers-csp-sat-smt.md](../lib/02-solvers-csp-sat-smt.md), §7.
+  `allDifferent`): [02-solvers-csp-sat-smt.md](../../docs/lib/02-solvers-csp-sat-smt.md), §7.
 - Categorical equivalence of "triangle" with composition:
   [07-categorical-formulation.md](07-categorical-formulation.md).
 - TMS / ATMS — natural home for the hypothesis-contradiction rule:
-  [09-cognitive-architectures-neurosymbolic.md](../lib/09-cognitive-architectures-neurosymbolic.md).
+  [09-cognitive-architectures-neurosymbolic.md](../../docs/lib/09-cognitive-architectures-neurosymbolic.md).

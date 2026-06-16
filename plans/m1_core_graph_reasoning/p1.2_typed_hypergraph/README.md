@@ -20,11 +20,11 @@ store sits underneath only as far as facts have ≥ 2 args. The "graph"
 framing from `docs/ideas/02` describes the *visualisation* of the
 entity model, not its in-memory shape — see `docs/ir.md` §6.
 
-Per [`docs/ideas/02-graph-as-formal-substrate.md`](../../../docs/ideas/02-graph-as-formal-substrate.md)
+Per [`docs/ideas/02-graph-as-formal-substrate.md`](../../ideas/02-graph-as-formal-substrate.md)
 the knowledge base is *the* working memory, not a discarded
-intermediate. Per [`docs/ideas/05-zebra-puzzle-graph-reasoner.md`](../../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#the-three-implicit-layers)
+intermediate. Per [`docs/ideas/05-zebra-puzzle-graph-reasoner.md`](../../ideas/05-zebra-puzzle-graph-reasoner.md#the-three-implicit-layers)
 the three layers are made explicit so they can be queried
-separately. Per [`docs/ideas/03-three-task-classes.md`](../../../docs/ideas/03-three-task-classes.md)
+separately. Per [`docs/ideas/03-three-task-classes.md`](../../ideas/03-three-task-classes.md)
 the provenance records are non-optional — they're what makes the
 *contradictions* task class human-readable.
 
@@ -96,13 +96,13 @@ what the data model commits to (rationale in S1.2.1):
 
 ## Connections
 
-- [Idea 02](../../../docs/ideas/02-graph-as-formal-substrate.md) —
+- [Idea 02](../../ideas/02-graph-as-formal-substrate.md) —
   why the graph is primary, not the solver.
-- [Idea 05](../../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#the-three-implicit-layers) —
+- [Idea 05](../../ideas/05-zebra-puzzle-graph-reasoner.md#the-three-implicit-layers) —
   the three layers worth naming explicitly.
-- [Idea 06 row 2](../../../docs/ideas/06-inference-rules-completeness.md) —
+- [Idea 06 row 2](../../ideas/06-inference-rules-completeness.md) —
   equality-class hooks reserved (e-graph promotion later).
-- [Idea 03](../../../docs/ideas/03-three-task-classes.md) — provenance is
+- [Idea 03](../../ideas/03-three-task-classes.md) — provenance is
   the substrate for the contradictions task class.
 - [F4 Q34 / Q35 / Q36](../../followups/f4_cross_cutting.md) —
   algebraic-property cartesian product, typed vars, rule polymorphism;

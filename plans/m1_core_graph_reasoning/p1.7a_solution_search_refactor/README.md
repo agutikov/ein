@@ -148,10 +148,10 @@ stays in P1.7 and is **not** part of this gate.
 
 ## Connections
 
-- [Idea 03 — three task classes](../../../docs/ideas/03-three-task-classes.md):
+- [Idea 03 — three task classes](../../ideas/03-three-task-classes.md):
   this phase makes solve/gaps/contradictions *one* operation with three
   readings — exactly idea 03's "different shapes of the same graph question".
-- [Idea 08 — human-style trace](../../../docs/ideas/08-human-style-deductive-trace.md):
+- [Idea 08 — human-style trace](../../ideas/08-human-style-deductive-trace.md):
   the answer path + reductio rendering are the trace's closing.
 - [`examples/README.md`](../../../examples/README.md): the M1 target trace,
   unchanged — P1.7a is what makes the engine actually reach its end state

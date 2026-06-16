@@ -14,7 +14,7 @@ GBNF + LLM in a feedback loop; the LLM proposes grammar updates, the
 harness applies them, the LLM's next call is constrained by the new
 grammar.
 
-- Followup: [F2 — Self-modifying constraint language](../../plans/followups/f2_self_modifying_language.md).
+- Followup: [F2 — Self-modifying constraint language](../followups/f2_self_modifying_language.md).
 - Lineage: [`docs/ideas/01-self-modifying-constraint-language.md`](01-self-modifying-constraint-language.md)
   — the original "most ambitious idea" framing.
 
@@ -27,7 +27,7 @@ rules, induce new rules from fact patterns, simplify proofs by
 rewriting trace nodes. The substrate is the same graph engine; the
 modification target is the rule entities in the KB.
 
-- Followup: [F5 — Operate IR rules as data](../../plans/followups/f5_rules_as_data.md).
+- Followup: [F5 — Operate IR rules as data](../followups/f5_rules_as_data.md).
 - Lineage: F4 Q34 (rule property cartesian product), F4 Q37
   (induction from facts), F4 Q36 (rule polymorphism).
 
@@ -41,7 +41,7 @@ The system mutates **its own Python source code** under
 already in place to confine the feedback loop to a known formal
 substrate.
 
-- Followup: [F6 — Engine reads + modifies its own harness code](../../plans/followups/f6_modify_own_harness.md).
+- Followup: [F6 — Engine reads + modifies its own harness code](../followups/f6_modify_own_harness.md).
 
 This is the **procedural** rung. It changes what the system can *do*.
 
@@ -119,12 +119,12 @@ without rework.
 
 ## Connections
 
-- [F2](../../plans/followups/f2_self_modifying_language.md) — rung 1.
-- [F5](../../plans/followups/f5_rules_as_data.md) — rung 2.
-- [F6](../../plans/followups/f6_modify_own_harness.md) — rung 3.
+- [F2](../followups/f2_self_modifying_language.md) — rung 1.
+- [F5](../followups/f5_rules_as_data.md) — rung 2.
+- [F6](../followups/f6_modify_own_harness.md) — rung 3.
 - [Idea 01](01-self-modifying-constraint-language.md) — the original
   framing (predates the three-rung decomposition).
 - [Idea 02](02-graph-as-formal-substrate.md) — the graph-as-formal-
   computation substrate that makes F5's "rules-as-data" coherent.
-- [F4 Q34 / Q36 / Q37](../../plans/followups/f4_cross_cutting.md) —
+- [F4 Q34 / Q36 / Q37](../followups/f4_cross_cutting.md) —
   the rule-polymorphism / induction threads that feed F5.

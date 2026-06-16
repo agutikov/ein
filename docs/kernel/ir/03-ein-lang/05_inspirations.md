@@ -3,7 +3,7 @@
 ein-lang takes from several traditions and diverges from each in
 specific places. This document records the lineage.
 
-This was [`docs/ir.md` §4](../../../ir.md) before the kernel-
+This was [`docs/ir.md` §4](../../README.md) before the kernel-
 documentation split.
 
 ---
@@ -14,7 +14,7 @@ documentation split.
 | **miniKanren**                                                  | relational atom shape, `?var` convention, conjunctive patterns                 | no first-class `fresh` / unification syntax — the validator handles binding  |
 | **AtomSpace**                                                   | explicit `(type …)` / `(instance …)` declarations; atom typing                | no probabilistic truth values; no built-in node weights                       |
 | **Datalog / Soufflé**                                           | rule shape `head :- body` as inspiration for `:match` / `:assert` separation  | S-expressions over infix; `:why` templates for human-readable firings        |
-| **DPO graph rewriting** ([idea 07](../../../ideas/07-categorical-formulation.md)) | `:match` / `:assert` as before / after sub-graphs                              | not yet expressed as `L ← K → R` span — DPO render mode is opt-in       |
+| **DPO graph rewriting** ([idea 07](../../../../plans/ideas/07-categorical-formulation.md)) | `:match` / `:assert` as before / after sub-graphs                              | not yet expressed as `L ← K → R` span — DPO render mode is opt-in       |
 
 ## Why S-expressions
 
@@ -48,14 +48,14 @@ fact-form syntax, plus variables.
 The split makes the rule-application semantics legible: a rule's
 LHS is *only* a pattern, never an expression with side effects or
 arbitrary calls. This is what enables the trace fidelity acceptance
-([idea 08](../../../ideas/08-human-style-deductive-trace.md)): every
+([idea 08](../../../../plans/ideas/08-human-style-deductive-trace.md)): every
 firing has a structurally observable cause.
 
 ## What we'd revisit
 
 If M1 acceptance proves the explanation-completeness criterion
 durable across the ten rule families, the obvious post-M1 evolution
-is the **DPO categorical reading** ([idea 07](../../../ideas/07-categorical-formulation.md))
+is the **DPO categorical reading** ([idea 07](../../../../plans/ideas/07-categorical-formulation.md))
 where rules become `L ← K → R` spans and the engine becomes a graph-
 rewriting morphism. The `04_dot_rendering.md` §Rule rendering mode
 (b) is the visual anchor for that direction.

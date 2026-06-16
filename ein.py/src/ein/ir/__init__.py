@@ -11,7 +11,8 @@ Designed in `plans/m1_core_graph_reasoning/p1.1_ir_language/`.
 - `dump.py` — `dump_canonical()` / `dump_compact()`; round-trips
   with `parse` modulo `Loc`.
 
-- `to_dot.py` — IR → DOT renderer per `docs/ir.md` §6 (S1.1.4).
+- `to_dot.py` — IR → DOT renderer per
+  `docs/kernel/ir/03-ein-lang/04_dot_rendering.md` (was `docs/ir.md` §6; S1.1.4).
 """
 from .dump import dump, dump_canonical, dump_compact
 from .parser import IRParseError, parse, parse_tree

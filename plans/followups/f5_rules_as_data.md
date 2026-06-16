@@ -53,7 +53,7 @@ them. What's *not* yet in M1:
 ## What promotion would look like
 
 A new milestone `m_followups_self_modifying/` (shared with F2 and
-F6 — see [`../../docs/ideas/10-generic-self-modification.md`](../../docs/ideas/10-generic-self-modification.md))
+F6 — see [`../../docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-modification.md))
 with phases:
 
 - **PF5.1** — extend `:assert` to allow rule-shaped RHS; loader and
@@ -170,5 +170,5 @@ audit's conclusions.
   is one natural F5 substrate.
 - F2 (self-modifying language) is the *syntactic* analogue at the
   grammar level; F5 is the *semantic* analogue at the rule level.
-  See [docs/ideas/10-generic-self-modification.md](../../docs/ideas/10-generic-self-modification.md)
+  See [docs/ideas/10-generic-self-modification.md](../ideas/10-generic-self-modification.md)
   for the umbrella view.

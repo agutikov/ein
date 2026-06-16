@@ -26,7 +26,7 @@ snapshots and structures, plus a markdown narrative that threads
 the diagrams together.
 
 The acceptance criterion is set by
-[`docs/ideas/08-human-style-deductive-trace.md`](../../../docs/ideas/08-human-style-deductive-trace.md):
+[`docs/ideas/08-human-style-deductive-trace.md`](../../ideas/08-human-style-deductive-trace.md):
 "the solver should reproduce a deductive trace of the kind a
 human would write". Every named reasoning move in the Zebra
 walkthrough must surface as a named rule firing with its premises
@@ -95,7 +95,7 @@ The renderer no longer walks a search tree. Its inputs are:
   for the lattice diagram (S1.6.3).
 
 **The conceptual shift.** The human walkthrough
-([idea-08](../../../docs/ideas/08-human-style-deductive-trace.md),
+([idea-08](../../ideas/08-human-style-deductive-trace.md),
 [`examples/README.md`](../../../examples/README.md)) is a *linear
 story keyed to branch-depth `d`*; the engine now produces an
 *unordered commitment lattice* (`(layer, commitment-set)`). So
@@ -229,7 +229,7 @@ work, not the DOT renderer. The DOT renderers (S1.6.1–.4) stay in P1.6.
   slice (default on; `--no-diagrams` to suppress); the final section
   embeds the lattice/proof DAG `dot` block (S1.6.3) + solution grid.
 - The trace's named rule firings match
-  [the target walkthrough](../../../docs/ideas/08-human-style-deductive-trace.md#the-target-trace-paraphrased)
+  [the target walkthrough](../../ideas/08-human-style-deductive-trace.md#the-target-trace-paraphrased)
   one-to-one (P1.7 enforces this) — in the same order **or a
   recognisably equivalent one** (the lattice imposes no hypothesis
   order; the renderer linearizes by `(layer, lattice_order)`).
@@ -238,9 +238,9 @@ work, not the DOT renderer. The DOT renderers (S1.6.1–.4) stay in P1.6.
 
 ## Connections
 
-- [Idea 08](../../../docs/ideas/08-human-style-deductive-trace.md) —
+- [Idea 08](../../ideas/08-human-style-deductive-trace.md) —
   the whole phase is about delivering its acceptance criterion.
-- [Idea 03 §The implicit fourth class](../../../docs/ideas/03-three-task-classes.md) —
+- [Idea 03 §The implicit fourth class](../../ideas/03-three-task-classes.md) —
   the *explanation* task class falls out of this rendering work.
 - [P1.5b](../p1.5b_lattice_search/README.md) — the monotonic-lattice
   engine producing the `LatticeProof` this phase renders; S1.5b.29

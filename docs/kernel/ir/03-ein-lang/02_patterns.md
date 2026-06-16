@@ -4,7 +4,7 @@ The mini-language used inside rule `:match` / `:assert` clauses. The
 **surface** form of the three rule types from
 [`../01-ein-graph/02_rules.md`](../01-ein-graph/02_rules.md).
 
-This was [`docs/ir.md` §3](../../../ir.md) before the kernel-
+This was [`docs/ir.md` §3](../../README.md) before the kernel-
 documentation split.
 
 ---

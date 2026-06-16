@@ -28,7 +28,7 @@ witness the surviving branch's uniqueness. P1.6's trace renderer
 serialises the whole tree; idea-03's three task classes (solve /
 gaps / contradictions) all read the same artefact.
 
-Per [`docs/ideas/03-three-task-classes.md`](../../../docs/ideas/03-three-task-classes.md),
+Per [`docs/ideas/03-three-task-classes.md`](../../ideas/03-three-task-classes.md),
 the same loop services all three task classes; the difference is
 what the loop *records* and what it returns at quiescence.
 
@@ -175,15 +175,15 @@ and the updated
 
 ## Connections
 
-- [Idea 05 §Hypothesis mechanism](../../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#hypothesis-mechanism)
+- [Idea 05 §Hypothesis mechanism](../../ideas/05-zebra-puzzle-graph-reasoner.md#hypothesis-mechanism)
   — the 2021 prototype's sketch, done right.
-- [Idea 06 row 5](../../../docs/ideas/06-inference-rules-completeness.md)
+- [Idea 06 row 5](../../ideas/06-inference-rules-completeness.md)
   — hypothesis-and-contradiction as a *rule*; M1 ships it as
   P1.3's `hypothesis-contradiction` rule, P1.5 supplies the
   protocol that triggers it (Q40 Option A).
-- [Idea 03 §The implicit fourth class](../../../docs/ideas/03-three-task-classes.md)
+- [Idea 03 §The implicit fourth class](../../ideas/03-three-task-classes.md)
   — *explanation* falls out of the SearchTree-as-proof artefact.
-- [Idea 08 — human-style trace](../../../docs/ideas/08-human-style-deductive-trace.md)
+- [Idea 08 — human-style trace](../../ideas/08-human-style-deductive-trace.md)
   — the walkthrough corresponds to a traversal of the SearchTree
   (including dead branches).
 - ATMS prior art:

@@ -19,7 +19,7 @@ Milestone-scoped. Cross-milestone questions live in
 
 ## Q7 — LLM as surface generator?
 
-Per [idea 08 §Open questions point 4](../../docs/ideas/08-human-style-deductive-trace.md#open-questions).
+Per [idea 08 §Open questions point 4](../ideas/08-human-style-deductive-trace.md#open-questions).
 
 **Options:**
 
@@ -35,8 +35,8 @@ P2.1 S2.1.4.
 
 ## Q8 — Ambiguous parses
 
-Per [idea 04 §Multiple-variant complication](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md#multiple-variant-complication)
-and [idea 04 §Open questions point 3](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions).
+Per [idea 04 §Multiple-variant complication](../ideas/04-nlp-to-graph-to-solver-pipeline.md#multiple-variant-complication)
+and [idea 04 §Open questions point 3](../ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions).
 
 **Working answer**: branched on the IR. The NL frontend emits all
 plausible parses, each guarded by a `(hypothesis-parse ?id …)`
@@ -46,7 +46,7 @@ Decided in P2.1 S2.1.2.
 
 ## Q9 — Ontology provenance
 
-Per [idea 04 §Open questions point 2](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions).
+Per [idea 04 §Open questions point 2](../ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions).
 
 **Options:**
 
@@ -63,7 +63,7 @@ as escape hatch. Decided in P2.1 S2.1.3.
 
 ## Q10 — Direct LLM → constraint?
 
-Per [idea 04 §Open questions point 4](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions).
+Per [idea 04 §Open questions point 4](../ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions).
 
 **Working answer**: never the *default*. Allow as a
 `--no-ir` debugging flag that prompts the LLM to emit SMT-LIB

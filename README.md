@@ -81,7 +81,7 @@ there is no built-in relation→verb vocabulary.
 | `plans/`                      | milestone / phase / stage roadmap (M1 active)                                         |
 | `docs/kernel/`                | kernel documentation — graph semantics, data model, surface language, inference engine |
 | `docs/lib/`                 | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph     |
-| `docs/ideas/`                 | ideas extracted from research notes                                                   |
+| `plans/ideas/`                | ideas extracted from research notes (moved from `docs/ideas/`)                        |
 | `utils/`                      | renderers for the knowledge graph (Graphviz + Cytoscape) + the VS Code ein-lang grammar + ad-hoc engine probe/measure scripts (moved from `demo/` in P1.11) |
 | `nlp/`, `smt/`                | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)                |
 | `AGENTS.md`                   | guidance for AI coding agents (`CLAUDE.md` is a symlink to it)                         |

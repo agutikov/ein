@@ -6,7 +6,7 @@
 
 ## Goal
 
-Per [`idea 02`](../../../docs/ideas/02-graph-as-formal-substrate.md),
+Per [`idea 02`](../../ideas/02-graph-as-formal-substrate.md),
 *"the philosophical difference is who owns the proof"* — even when
 SMT did the heavy lifting, the *trace* lives on the IR. This phase
 lifts SMT outputs back into IR-shaped derivations the M1 trace
@@ -29,7 +29,7 @@ renderer can consume.
 
 ## Connections
 
-- [Idea 02 §Where it lands](../../../docs/ideas/02-graph-as-formal-substrate.md#where-it-lands-compared-to-graph--ir-for-solver) —
+- [Idea 02 §Where it lands](../../ideas/02-graph-as-formal-substrate.md#where-it-lands-compared-to-graph--ir-for-solver) —
   "the philosophical difference is who owns the proof".
-- [Idea 03](../../../docs/ideas/03-three-task-classes.md) — the trace
+- [Idea 03](../../ideas/03-three-task-classes.md) — the trace
   is what makes the contradictions class useful.

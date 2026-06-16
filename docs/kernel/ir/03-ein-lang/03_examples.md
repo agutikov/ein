@@ -4,7 +4,7 @@ Worked ein-lang fragments. The complete puzzles live in
 [`examples/`](../../../../examples/) and exercise the engine's
 acceptance tests.
 
-This was [`docs/ir.md` §5](../../../ir.md) before the kernel-
+This was [`docs/ir.md` §5](../../README.md) before the kernel-
 documentation split.
 
 ---

@@ -4,7 +4,7 @@ Theme owner: parking lot.
 Trigger: opportunistic — none of these blocks any milestone.
 
 This file collects ideas that recur across multiple
-[`docs/ideas/`](../../docs/ideas/) notes but don't belong to any
+[`docs/ideas/`](../ideas) notes but don't belong to any
 one of them. Each gets a short stanza; promote individual items
 to their own followup file when they grow.
 
@@ -28,7 +28,7 @@ to their own followup file when they grow.
 
 ## Rule learning from human walkthroughs (Q14)
 
-Per [idea 06 §Open sub-questions point 5](../../docs/ideas/06-inference-rules-completeness.md#open-sub-questions).
+Per [idea 06 §Open sub-questions point 5](../ideas/06-inference-rules-completeness.md#open-sub-questions).
 M1's rules are hand-written; the user asks whether they could be
 *learned* by observing human walkthroughs.
 
@@ -43,8 +43,8 @@ M1's rules are hand-written; the user asks whether they could be
   for problem classes the user hasn't yet looked at; learned rules
   would close gaps automatically.
 
-Connection: [idea 06](../../docs/ideas/06-inference-rules-completeness.md),
-[idea 08](../../docs/ideas/08-human-style-deductive-trace.md).
+Connection: [idea 06](../ideas/06-inference-rules-completeness.md),
+[idea 08](../ideas/08-human-style-deductive-trace.md).
 
 ## E-graph promotion (Q30)
 
@@ -57,7 +57,7 @@ whether promoting the reasoning layer to a full e-graph
 - **Plausibly no** for Zebra — the equality structure is shallow.
 
 Connection: [idea 02 §What "compute directly on the graph" can
-mean](../../docs/ideas/02-graph-as-formal-substrate.md#what-compute-directly-on-the-graph-can-mean),
+mean](../ideas/02-graph-as-formal-substrate.md#what-compute-directly-on-the-graph-can-mean),
 [`docs/lib/06-graphs-rewrite-systems.md §egraph`](../../docs/lib/06-graphs-rewrite-systems.md).
 
 ## LLM-as-policy in search-tree (Q31)
@@ -306,10 +306,10 @@ drives the solution. Likely candidates: proof-graph theorem proving
 2-D spatial puzzles ([Q32](#2-d--n-d-spatial-q32)) where adjacency
 is more than 1-D `next-to`.
 
-Connection: [idea 06](../../docs/ideas/06-inference-rules-completeness.md)
+Connection: [idea 06](../ideas/06-inference-rules-completeness.md)
 §rule families, [M1 P1.3 S1.3.1](../m1_core_graph_reasoning/p1.3_inference_rules/)
 (rule presentation language), [`docs/ir.md` §3 predicate
-registry](../../docs/ir.md), [F1](f1_categorical_formulation.md).
+registry](../../docs/kernel/README.md), [F1](f1_categorical_formulation.md).
 
 ## Variable typing via `:match (is-a ?var Type)` (Q35)
 
@@ -419,7 +419,7 @@ symmetric closure preservation); others aren't (transitivity of
 subtype-of is NOT functorial along an instance-of inclusion).
 
 Connection: [f1_categorical_formulation.md](f1_categorical_formulation.md),
-[docs/ideas/07-categorical-formulation.md](../../docs/ideas/07-categorical-formulation.md).
+[docs/ideas/07-categorical-formulation.md](../ideas/07-categorical-formulation.md).
 
 **Promotion trigger**: a puzzle where the engine has to manage two
 different inheritance-like relations *and* a non-trivial rule that
@@ -454,7 +454,7 @@ the LLM proposes; the induction engine validates against a corpus
 of facts. The induced rule library is then a measurement target
 for [Q34's "minimal rule set"](#algebraic-properties-beyond-symmetric-transitive--and-the-2-7-cartesian-product-q34).
 
-Connection: [docs/ideas/01](../../docs/ideas/01-self-modifying-constraint-language.md),
+Connection: [docs/ideas/01](../ideas/01-self-modifying-constraint-language.md),
 [Q14](#rule-learning-from-human-walkthroughs-q14).
 
 ## LLM as fact/relation/type/rule extractor (Q38)
@@ -476,7 +476,7 @@ relations, types, and rules?" Proposal: drive the LLM with a
 
 The output is a structured stream of `(type …)`, `(instance …)`,
 `(relation …)`, `(rel …)`, `(rule …)` IR forms — a constrained
-generation problem (cf. [idea 01](../../docs/ideas/01-self-modifying-constraint-language.md)).
+generation problem (cf. [idea 01](../ideas/01-self-modifying-constraint-language.md)).
 
 This is the M2 territory ([NL → IR](../m2_nl_to_ir/README.md)) — at
 F4 here only as the *cross-cutting research question*. The concrete
@@ -491,7 +491,7 @@ M2 implementation choice. It is the *rosetta stone* between the
 two surfaces.
 
 Connection: [M2 P2.4](../m2_nl_to_ir/p2.4_nl_to_ir_pipeline/),
-[idea 01](../../docs/ideas/01-self-modifying-constraint-language.md),
+[idea 01](../ideas/01-self-modifying-constraint-language.md),
 [docs/lib/10 NLP & semantic parsing](../../docs/lib/10-nlp-semantic-parsing.md).
 
 ## Facts as variables-with-context (M1+ proposal, Q39)

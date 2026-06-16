@@ -7,7 +7,7 @@
 
 ## Goal
 
-Per [`docs/ideas/02-graph-as-formal-substrate.md`](../../docs/ideas/02-graph-as-formal-substrate.md),
+Per [`docs/ideas/02-graph-as-formal-substrate.md`](../ideas/02-graph-as-formal-substrate.md),
 the graph engine is *primary*; solvers are *optional accelerators
 for slices the graph engine declares hard*. This milestone wires the
 slice handoff:
@@ -20,7 +20,7 @@ IR → graph engine (M1) → "this sub-problem is solver-shaped" → SMT-LIB →
 ```
 
 Three task classes per
-[`docs/ideas/03-three-task-classes.md`](../../docs/ideas/03-three-task-classes.md)
+[`docs/ideas/03-three-task-classes.md`](../ideas/03-three-task-classes.md)
 all get solver back-ends:
 
 - **A. Solve** — `(check-sat) + model extraction`.
@@ -56,11 +56,11 @@ See [`open_questions.md`](open_questions.md) for M3-scoped.
 
 ## Connections
 
-- [Idea 02](../../docs/ideas/02-graph-as-formal-substrate.md) —
+- [Idea 02](../ideas/02-graph-as-formal-substrate.md) —
   solver-as-accelerator philosophy.
-- [Idea 03](../../docs/ideas/03-three-task-classes.md) — the table
+- [Idea 03](../ideas/03-three-task-classes.md) — the table
   in §Why distinguishing these matters drives P3.3.
-- [Idea 04](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md) —
+- [Idea 04](../ideas/04-nlp-to-graph-to-solver-pipeline.md) —
   IR → solver as one branch of the pipeline.
 - The existing `smt/CVC4` submodule is a candidate backend; Z3 is
   primary.

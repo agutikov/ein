@@ -5,7 +5,7 @@
 > This document explains intent and structure; the grammar file is
 > canonical for what parses.
 
-This was [`docs/ir.md` §1 + §2](../../../ir.md) before the kernel-
+This was [`docs/ir.md` §1 + §2](../../README.md) before the kernel-
 documentation split.
 
 ---
@@ -81,8 +81,8 @@ would disagree with intent (e.g. a structural ONTOLOGY fact that *also*
 wants a `:source`, or an unsourced explicit FACT). Fact identity is
 `(relation_name, args)`; the layer only records origin. See
 [`../02-data-model/01_entities.md` §1.5](../02-data-model/01_entities.md)
-and [`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md` §Ontology
-deduction by common sense](../../../ideas/04-nlp-to-graph-to-solver-pipeline.md)
+and [`plans/ideas/04-nlp-to-graph-to-solver-pipeline.md` §Ontology
+deduction by common sense](../../../../plans/ideas/04-nlp-to-graph-to-solver-pipeline.md)
 for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 
 ### Relation declarator
@@ -312,7 +312,7 @@ to avoid the race.
 ```
 
 The engine answers idea 03's three task classes —
-[`docs/ideas/03-three-task-classes.md`](../../../ideas/03-three-task-classes.md)
+[`docs/ideas/03-three-task-classes.md`](../../../../plans/ideas/03-three-task-classes.md)
 — *solve* (a unique model), *gaps* (under-determined: many models), and
 *contradictions* (inconsistency + provenance). But these are **three answers
 to one problem, read off the result `k`** (the count of distinct complete

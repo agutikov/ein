@@ -15,7 +15,7 @@ What "reasoning" means depends on the benchmark. Roughly:
 
 This file catalogues benchmarks; the *human-facing* puzzle classes (Zebra,
 Knights/Knaves, hat puzzles, Monty Hall, paradoxes) live in
-[`docs/ideas/09-puzzles-beyond-zebra.md`](../ideas/09-puzzles-beyond-zebra.md)
+[`docs/ideas/09-puzzles-beyond-zebra.md`](../../plans/ideas/09-puzzles-beyond-zebra.md)
 because they motivate the engine's *target capabilities*, not its tooling.
 
 ---
@@ -191,8 +191,8 @@ search, correctness guarantees, structured deduction.
 Almost every frontier reasoning system today combines the two: the
 *pattern-completion* part is delegated to the LLM, the *exhaustive-
 correctness* part to a solver. This is the framing
-[idea 04](../ideas/04-nlp-to-graph-to-solver-pipeline.md) commits to, and the
+[idea 04](../../plans/ideas/04-nlp-to-graph-to-solver-pipeline.md) commits to, and the
 benchmarks on this page are how progress along that axis gets measured.
 
-Cross-references: [`docs/ideas/02-graph-as-formal-substrate.md`](../ideas/02-graph-as-formal-substrate.md),
-[`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md`](../ideas/04-nlp-to-graph-to-solver-pipeline.md).
+Cross-references: [`docs/ideas/02-graph-as-formal-substrate.md`](../../plans/ideas/02-graph-as-formal-substrate.md),
+[`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md`](../../plans/ideas/04-nlp-to-graph-to-solver-pipeline.md).

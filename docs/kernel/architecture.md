@@ -35,6 +35,10 @@ Each arrow names the **package** that owns the transform:
 loads + stores, [`inference/`](../../ein.py/src/ein/inference/) saturates and
 searches, [`trace/`](../../ein.py/src/ein/trace/) + `cli/` render. The verdict is
 read from the model count `k` — never chosen by a flag (see [`README.md`](README.md)).
+Each arrow is a public Python call: driving this pipeline from another
+project is the **embedding contract** in [`docs/api/`](../api/) (`parse` →
+`KnowledgeBase.from_ir` → `Saturator.saturate` → `monotonic.solve` →
+`trace.linearize`).
 
 ## Package dependency map
 
@@ -121,5 +125,6 @@ The per-module detail behind these is
 - [`inference/architecture_and_algorithms.md`](inference/architecture_and_algorithms.md)
   — the engine's algorithmic (O1–O9) view.
 - [`inference/python_impl.md`](inference/python_impl.md) — the engine's file map.
+- [`../api/`](../api/) — the Python embedding contract (this pipeline as a library API).
 - [`glossary.md`](glossary.md) — kernel vocabulary.
 - [`plans/README.md`](../../plans/README.md) — the milestone roadmap.

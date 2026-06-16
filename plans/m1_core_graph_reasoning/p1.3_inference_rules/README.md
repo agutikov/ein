@@ -19,7 +19,7 @@ shipped P1.1 + P1.2:
 - **Scope narrowed** to the 6 zebra.ein rules + `hypothesis-contradiction`
   (promoted by [Q40 Option A](s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13))
   = **7 rules total**. The other 4 from the original 10-rule
-  taxonomy ([idea 06](../../../docs/ideas/06-inference-rules-completeness.md))
+  taxonomy ([idea 06](../../ideas/06-inference-rules-completeness.md))
   are deferred to followups by [Q33](../open_questions.md#q33--predicate-primitives--minimal-set-for-m1):
   M1 ships only `eq` + `neq` predicates; no numeric / set /
   variadic primitives.
@@ -34,7 +34,7 @@ shipped P1.1 + P1.2:
   `tests/inference/`.
 
 The acceptance criterion remains the
-[idea 08](../../../docs/ideas/08-human-style-deductive-trace.md)
+[idea 08](../../ideas/08-human-style-deductive-trace.md)
 target: every named reasoning move in the human Zebra walkthrough
 has a corresponding rule in zebra.ein and a corresponding firing
 in the trace.
@@ -82,10 +82,10 @@ scope.
 
 - [S1.3.0 review](s1.3.0_review_and_revisions.md) — the audit +
   9 open-question resolutions that reshaped this phase.
-- [Idea 06](../../../docs/ideas/06-inference-rules-completeness.md) —
+- [Idea 06](../../ideas/06-inference-rules-completeness.md) —
   the original 10-rule taxonomy. M1 ships 6+1; the other 4 land
   in a followup adjacent to F4.
-- [Idea 07 Reading C](../../../docs/ideas/07-categorical-formulation.md) —
+- [Idea 07 Reading C](../../ideas/07-categorical-formulation.md) —
   the DSL is a typed pattern → pattern rewrite; in CT terms a DPO
   rewrite. We don't *implement* DPO; we implement enough that an
   F1 formalisation can recognise it later.

@@ -7,7 +7,7 @@
 ;;; Question: Who drinks water? Who owns the zebra?
 ;;; Answer:   Norwegian drinks Water; Japanese owns Zebra.
 ;;;
-;;; M1 S1.1.1 acceptance smoke test. See docs/ir.md.
+;;; M1 S1.1.1 acceptance smoke test. See docs/kernel/ir/03-ein-lang/.
 ;;;
 ;;; File order: rules → ontology → facts → query.
 ;;; Rules come first because the ontology declarations and the facts

@@ -10,7 +10,7 @@ render is mandatory (`ein.ir.to_dot`,
 reverse parse (`ein.ir.from_dot`) is a P1.2 deliverable
 alongside the typed-hypergraph data model.
 
-This was [`docs/ir.md` §6](../../../ir.md) before the kernel-
+This was [`docs/ir.md` §6](../../README.md) before the kernel-
 documentation split. The conceptual content overlaps with the
 **detailed (Levi-bipartite) view** in
 [`../01-ein-graph/01_kb.md` §2.2](../01-ein-graph/01_kb.md) —
@@ -120,7 +120,7 @@ but the **label** is always the clean name — both panels show `?a`.
 Variables are diamonds, ground atoms rectangles (the shape legend).
 
 **(b) DPO span `L ← K → R`** — categorical reading
-([idea 07](../../../ideas/07-categorical-formulation.md)). Three
+([idea 07](../../../../plans/ideas/07-categorical-formulation.md)). Three
 sub-clusters share the interface graph K (the bindings preserved by
 the rule); the left morphism deletes nothing for our pattern
 language (positive conjunctive), the right morphism adds the RHS.
@@ -154,7 +154,7 @@ nodes are derived facts (one per `:derives`), edges connect each
 derived fact to its `:using` premises (chaining through earlier steps),
 the edge labelled by the firing `:rule`. The natural "explanation
 graph" view per
-[idea 08](../../../ideas/08-human-style-deductive-trace.md):
+[idea 08](../../../../plans/ideas/08-human-style-deductive-trace.md):
 
 ```dot
 digraph derivation {
@@ -215,7 +215,7 @@ together. [`ein.trace`](../../../../ein.py/src/ein/trace/)
 
 Every diagram is an inline fenced `dot` block — no SVG. The trace is
 the **M1 acceptance artefact** (criterion #3): every named move in the
-[idea-08 walkthrough](../../../ideas/08-human-style-deductive-trace.md)
+[idea-08 walkthrough](../../../../plans/ideas/08-human-style-deductive-trace.md)
 must surface as a named rule firing (P1.7 / S1.6.5 enforce this).
 
 ## Unified KB view (S1.2.4)

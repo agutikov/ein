@@ -513,9 +513,9 @@ authoring rules is in
   branching engine.
 - [`../03-ein-lang/02_patterns.md`](../03-ein-lang/02_patterns.md) —
   the surface pattern language.
-- [`../../../ideas/06-inference-rules-completeness.md`](../../../ideas/06-inference-rules-completeness.md) —
+- [`../../../ideas/06-inference-rules-completeness.md`](../../../../plans/ideas/06-inference-rules-completeness.md) —
   the rule-family taxonomy that motivates the M1 rule registry.
-- [`../../../ideas/07-categorical-formulation.md`](../../../ideas/07-categorical-formulation.md) —
+- [`../../../ideas/07-categorical-formulation.md`](../../../../plans/ideas/07-categorical-formulation.md) —
   rules as DPO morphisms (F1 followup).
 - [`../../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/`](../../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/) —
   the implementation plan for M1's ten rule families.

@@ -51,7 +51,7 @@ file it keeps its id; do not reuse a closed id.
 
 ## Q1 — What kind of graph is the IR?
 
-Per [idea 02 §Open questions](../docs/ideas/02-graph-as-formal-substrate.md)
+Per [idea 02 §Open questions](ideas/02-graph-as-formal-substrate.md)
 the candidates are: plain directed graph, typed multigraph, typed
 hypergraph (relations span >2 vars), adhesive category, e-graph on
 top. The 2021 prototype is a typed digraph with set-valued edges; it
@@ -61,12 +61,12 @@ constraints without faking them.
 **Working answer**: **typed hypergraph with provenance and equality
 class IDs**. Hyperedges accommodate global constraints; equality-class
 IDs leave the door open to e-graph promotion if equality saturation
-becomes relevant (per [idea 06 row 2](../docs/ideas/06-inference-rules-completeness.md)).
+becomes relevant (per [idea 06 row 2](ideas/06-inference-rules-completeness.md)).
 The decision is finalised in M1.P1.2 S1.2.1.
 
 ## Q2 — When does the graph engine hand off?
 
-[Idea 02 §When does the graph stop being enough](../docs/ideas/02-graph-as-formal-substrate.md)
+[Idea 02 §When does the graph stop being enough](ideas/02-graph-as-formal-substrate.md)
 names three threshold conditions: arithmetic-dominated constraints,
 large combinatorial search, and global cardinality where a real
 solver dominates. The split is *not* "graph-engine for everything
@@ -82,7 +82,7 @@ the default in M3 is hybrid.
 
 Decided in M1.P1.1 S1.1.1. The leading candidate is a small
 S-expression dialect with named atoms carrying most of the semantic
-load (per [idea 01 §Open questions point 3](../docs/ideas/01-self-modifying-constraint-language.md)
+load (per [idea 01 §Open questions point 3](ideas/01-self-modifying-constraint-language.md)
 recommendation), so a future GBNF grammar (M2.P2.3) is trivial.
 Counter-arguments and richer-DSL alternatives are listed there.
 

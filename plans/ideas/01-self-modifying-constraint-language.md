@@ -125,12 +125,12 @@ Closest existing references (per the discussion that followed):
 ## Connections (context, not answers)
 
 - LLM-side mechanics and existing constrained-reasoning frameworks:
-  [01-llm-constrained-generation.md](../lib/01-llm-constrained-generation.md).
+  [01-llm-constrained-generation.md](../../docs/lib/01-llm-constrained-generation.md).
 - Surface-syntax recommendation (S-expression / homoiconic):
-  [04-programming-languages.md](../lib/04-programming-languages.md).
+  [04-programming-languages.md](../../docs/lib/04-programming-languages.md).
 - Semantics layer choices (Z3, miniKanren, K, PLT Redex, ACL2):
-  [02-solvers-csp-sat-smt.md](../lib/02-solvers-csp-sat-smt.md),
-  [03-theorem-proving-formal-methods.md](../lib/03-theorem-proving-formal-methods.md).
+  [02-solvers-csp-sat-smt.md](../../docs/lib/02-solvers-csp-sat-smt.md),
+  [03-theorem-proving-formal-methods.md](../../docs/lib/03-theorem-proving-formal-methods.md).
 
 ## Concrete next step possibilities
 

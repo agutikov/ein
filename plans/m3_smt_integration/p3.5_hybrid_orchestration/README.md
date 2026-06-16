@@ -8,7 +8,7 @@
 
 The default mode. Graph engine drives; SMT handles slices the
 engine declares hard. Per
-[`docs/ideas/02 §Pragmatic note`](../../../docs/ideas/02-graph-as-formal-substrate.md#pragmatic-note),
+[`docs/ideas/02 §Pragmatic note`](../../ideas/02-graph-as-formal-substrate.md#pragmatic-note),
 this is the most honest realisation of the design: the IR owns the
 proof; solvers contribute, they don't replace.
 
@@ -31,6 +31,6 @@ proof; solvers contribute, they don't replace.
 
 ## Connections
 
-- [Idea 02 §When does the graph stop being enough](../../../docs/ideas/02-graph-as-formal-substrate.md#open-questions) —
+- [Idea 02 §When does the graph stop being enough](../../ideas/02-graph-as-formal-substrate.md#open-questions) —
   the threshold criterion.
-- [Idea 02 §Where it lands](../../../docs/ideas/02-graph-as-formal-substrate.md#where-it-lands-compared-to-graph--ir-for-solver) — the philosophical position.
+- [Idea 02 §Where it lands](../../ideas/02-graph-as-formal-substrate.md#where-it-lands-compared-to-graph--ir-for-solver) — the philosophical position.

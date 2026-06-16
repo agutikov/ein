@@ -148,5 +148,5 @@ These are explicitly parked in their stage files for "decide later" without bloc
   - [P1.5b set-indexed engines](../p1.5b_lattice_search/) — supersedes S1.5a.17 + S1.5a.20.
 - Followups catalog: [P1.9](../p1.9_hypothesis_loop_followups/).
 - Acceptance gates: [M1 README — acceptance](../README.md#acceptance).
-- Trace fidelity target: [`docs/ideas/08-human-style-deductive-trace.md`](../../../docs/ideas/08-human-style-deductive-trace.md).
+- Trace fidelity target: [`docs/ideas/08-human-style-deductive-trace.md`](../../ideas/08-human-style-deductive-trace.md).
 - Engine doc: [`docs/kernel/inference/README.md`](../../../docs/kernel/inference/README.md) (carries the NAF / determinism / eager-bubble notes that several of these stages need to update on ship).

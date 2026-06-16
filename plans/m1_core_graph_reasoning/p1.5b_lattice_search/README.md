@@ -645,7 +645,7 @@ work (S1.5b.11–.19) can land without renumbering.
   - [P1.5](../p1.5_hypothesis_loop/) — the ordered-tree search.
   - [P1.5a](../p1.5a_zebra_solution/) — the perf-lever chain
     whose downstream stages share infrastructure.
-  - [idea-08](../../../docs/ideas/08-human-style-deductive-trace.md)
+  - [idea-08](../../ideas/08-human-style-deductive-trace.md)
     — the NL trace target.
 - Open questions for design phase:
   [`open_questions.md`](open_questions.md).

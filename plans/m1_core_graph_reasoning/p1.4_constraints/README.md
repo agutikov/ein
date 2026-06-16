@@ -82,9 +82,9 @@ for where each of its use cases now lives.
   `hypothesis-contradiction` rule shipped in P1.3.
 - [Q17 — spatial-relation formalisation](../open_questions.md#q17--spatial-relation-formalisation)
   — the resolution that obsoleted the original S1.4.2.
-- [Idea 03 — three task classes](../../../docs/ideas/03-three-task-classes.md) —
+- [Idea 03 — three task classes](../../ideas/03-three-task-classes.md) —
   the "contradictions" task class consumes the detector's output
   directly.
-- [Idea 05 §Open question](../../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)
+- [Idea 05 §Open question](../../ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)
   — the 2021 prototype's spatial open question, resolved by Q17 + P1.3's
   square rules (not by P1.4 any more).

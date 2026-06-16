@@ -37,7 +37,7 @@ container digest + model file SHA pinning.
 
 - [acva](../../../acva/README.md) — same pattern, Python client
   this time instead of C++.
-- [Idea 01 §Self-modifying constraint language](../../../docs/ideas/01-self-modifying-constraint-language.md) —
+- [Idea 01 §Self-modifying constraint language](../../ideas/01-self-modifying-constraint-language.md) —
   the future GBNF-self-modification work
   ([F2](../../followups/f2_self_modifying_language.md)) reuses
   this infra unchanged.

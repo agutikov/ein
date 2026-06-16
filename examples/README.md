@@ -8,6 +8,11 @@ each NL step corresponds to. The encoding under analysis is
 `Old_Gold`, `Lucky_Strike`, `Chesterfields`) follow the ein spelling; in
 prose `H_i` abbreviates `House-i`.
 
+To reproduce this solve **programmatically** from Python — load
+`zebra2.ein`, run `solve`, read the answer and a rendered trace — see the
+embedding contract in [`docs/api/ein.md`](../docs/api/ein.md) (its worked
+example produces exactly the answer this trace derives).
+
 ## How to read the trace
 
 - **Branch depth `d`.** `d = 0` is unconditional saturation. `d = 1` is the
@@ -333,7 +338,7 @@ water and tea on the previous step"* pattern in step 3).
 ## Variant fixtures (P1.7 three-task-class acceptance)
 
 Two thin diffs of `zebra2.ein` (same ontology + rules) exercise the other
-two task classes from [idea 03](../docs/ideas/03-three-task-classes.md). They
+two task classes from [idea 03](../plans/ideas/03-three-task-classes.md). They
 run through the **same** `ein solve` — the verdict is read from the result
 `k` (the count of distinct complete models), never selected by a flag:
 

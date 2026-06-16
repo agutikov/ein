@@ -246,10 +246,10 @@ The KB loader tolerates references to undeclared types and relations
 ### Three task classes
 Solve / find-gaps / find-contradictions — the three modes a
 constraint engine should support. From
-[`docs/ideas/03-three-task-classes.md`](../ideas/03-three-task-classes.md).
+[`docs/ideas/03-three-task-classes.md`](../../plans/ideas/03-three-task-classes.md).
 
 ### Trace fidelity
 The acceptance criterion that every reasoning step in the engine's
 output has a recoverable, named cause — no opaque Python firings, no
 "because solver said so". The M1 acceptance gate. See
-[`docs/ideas/08-human-style-deductive-trace.md`](../ideas/08-human-style-deductive-trace.md).
+[`docs/ideas/08-human-style-deductive-trace.md`](../../plans/ideas/08-human-style-deductive-trace.md).

@@ -7,7 +7,7 @@ M1's acceptance); M3 connects all three to SMT. F3 is about
 
 ## What this is
 
-Per [`docs/ideas/03-three-task-classes.md`](../../docs/ideas/03-three-task-classes.md):
+Per [`docs/ideas/03-three-task-classes.md`](../ideas/03-three-task-classes.md):
 three distinct things you can ask of a constraint graph —
 **solve**, **gaps**, **contradictions**. M1 + M3 implement all
 three as engine modes. F3 promotes them from "modes you pass via
@@ -28,9 +28,9 @@ and adds the implicit *fourth* class the user named (explain).
 - **First-class CLI verbs**:
   `ein solve …` / `ein gaps …` / `ein why-not …`
   (this last one is the "what's wrong with my puzzle" verb from
-  [idea 03 §Open questions point 4](../../docs/ideas/03-three-task-classes.md#open-questions)).
+  [idea 03 §Open questions point 4](../ideas/03-three-task-classes.md#open-questions)).
 - **Explain** (the implicit fourth class —
-  [idea 03 §The implicit fourth class](../../docs/ideas/03-three-task-classes.md#the-implicit-fourth-class)) —
+  [idea 03 §The implicit fourth class](../ideas/03-three-task-classes.md#the-implicit-fourth-class)) —
   `ein explain --fact "..."` shows the derivation DAG ending
   at a target fact.
 - **Specialised trace UX per mode**:
@@ -56,9 +56,9 @@ to make the engine *delightful* to use.
 
 ## Prior art / connections
 
-- [Idea 03](../../docs/ideas/03-three-task-classes.md) — the full
+- [Idea 03](../ideas/03-three-task-classes.md) — the full
   argument and the table.
-- [Idea 02](../../docs/ideas/02-graph-as-formal-substrate.md) — the
+- [Idea 02](../ideas/02-graph-as-formal-substrate.md) — the
   underlying *graph as primary* claim is what makes all three
   classes natural on the same substrate.
 - [`docs/lib/02-solvers-csp-sat-smt.md`](../../docs/lib/02-solvers-csp-sat-smt.md) §8 — solver-side support.

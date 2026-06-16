@@ -432,9 +432,9 @@ pruned*.
   reflexive substrate.
 - [`04_jack_drinks_coffee.md`](04_jack_drinks_coffee.md) — the
   worked example illustrating type-as-relation-holder.
-- [Idea 02](../../../ideas/02-graph-as-formal-substrate.md) — graph
+- [Idea 02](../../../../plans/ideas/02-graph-as-formal-substrate.md) — graph
   is the formal substrate.
-- [Idea 10](../../../ideas/10-generic-self-modification.md) — what
+- [Idea 10](../../../../plans/ideas/10-generic-self-modification.md) — what
   the reflexive root unlocks (F2 / F5 / F6).
 - [F4 Q34](../../../../plans/followups/f4_cross_cutting.md) — the
   rule-property cartesian product.

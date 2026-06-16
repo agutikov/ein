@@ -93,7 +93,7 @@ change when the engine arrives:
    the matcher must enumerate relation variables.
 3. **Every firing leaves provenance.** Rule-kind provenance with
    `premises_raw` and `bindings` is mandatory; trace fidelity
-   ([idea 08](../../ideas/08-human-style-deductive-trace.md)) is an
+   ([idea 08](../../../plans/ideas/08-human-style-deductive-trace.md)) is an
    M1 acceptance gate.
 4. **Lazy branching.** Saturate first with all propagation rules;
    branch only when no rule fires and the puzzle is not yet solved.
@@ -685,8 +685,8 @@ The complete plan, including task breakdown and acceptance criteria:
 - Plan phase [P1.3 — Inference rules](../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/).
 - Plan phase [P1.5 — Hypothesis loop](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/).
 - Plan phase [P1.6 — Rendering + trace](../../../plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/).
-- Idea: [`docs/ideas/06-inference-rules-completeness.md`](../../ideas/06-inference-rules-completeness.md).
-- Idea: [`docs/ideas/08-human-style-deductive-trace.md`](../../ideas/08-human-style-deductive-trace.md).
+- Idea: [`docs/ideas/06-inference-rules-completeness.md`](../../../plans/ideas/06-inference-rules-completeness.md).
+- Idea: [`docs/ideas/08-human-style-deductive-trace.md`](../../../plans/ideas/08-human-style-deductive-trace.md).
 
 When P1.3 work begins, this stub becomes a hub for the
 implementation reality.

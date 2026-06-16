@@ -38,7 +38,7 @@ Milestone-scoped. Cross-milestone questions live in
 
 ## Q4 — Rule presentation language
 
-Per [idea 06 §Open sub-questions point 1](../../docs/ideas/06-inference-rules-completeness.md).
+Per [idea 06 §Open sub-questions point 1](../ideas/06-inference-rules-completeness.md).
 
 **Options:**
 
@@ -46,7 +46,7 @@ Per [idea 06 §Open sub-questions point 1](../../docs/ideas/06-inference-rules-c
   trace generation (the rule "fires" with no structured premise list).
 - **B** — Graph-rewrite DSL (LHS pattern → RHS pattern, à la DPO).
   Structural, formal, slightly heavy. Matches
-  [idea 07 Reading C](../../docs/ideas/07-categorical-formulation.md).
+  [idea 07 Reading C](../ideas/07-categorical-formulation.md).
 - **C** — Horn-clause / Datalog encoding. Familiar declarative;
   loses the "graph rewrite" intuition.
 
@@ -62,20 +62,20 @@ Locked in P1.3 S1.3.1.
 
 ## Q5 — What "enough" means
 
-Per [idea 06 §What "enough" should mean](../../docs/ideas/06-inference-rules-completeness.md):
+Per [idea 06 §What "enough" should mean](../ideas/06-inference-rules-completeness.md):
 four non-equivalent answers — functional, propagation, explanation,
 domain.
 
 **Working answer**: M1's target is **explanation-complete on Zebra**
 (every step of the human walkthrough in
-[idea 08](../../docs/ideas/08-human-style-deductive-trace.md) maps to
+[idea 08](../ideas/08-human-style-deductive-trace.md) maps to
 a named rule firing). Propagation-completeness is desirable but not
 required to ship. Domain-completeness is out of scope; revisit per
 problem class.
 
 ## Q6 — Symmetry breaking
 
-Per [idea 08 §Open questions point 3](../../docs/ideas/08-human-style-deductive-trace.md).
+Per [idea 08 §Open questions point 3](../ideas/08-human-style-deductive-trace.md).
 Two paths initially considered:
 (a) pre-trace — engine enforces a canonicalisation (e.g. house
 numbering); (b) post-trace — engine explores both, trace planner
@@ -105,7 +105,7 @@ remain a research direction — beyond M1's scope.
 
 ## Q15 — Rule ordering
 
-Per [idea 06 §Open sub-questions point 3](../../docs/ideas/06-inference-rules-completeness.md).
+Per [idea 06 §Open sub-questions point 3](../ideas/06-inference-rules-completeness.md).
 
 **Working answer**: forward-chaining queue with a static priority
 class per rule (cheap propagation rules fire before expensive
@@ -114,7 +114,7 @@ ordering. Decided in P1.3 S1.3.3.
 
 ## Q16 — Universal vs per-puzzle rules
 
-Per [idea 06 §Open sub-questions point 4](../../docs/ideas/06-inference-rules-completeness.md).
+Per [idea 06 §Open sub-questions point 4](../ideas/06-inference-rules-completeness.md).
 
 **Working answer**: ship with a *universal core* (composition,
 equality, exclusivity, exhaustion, hypothesis-contradiction,
@@ -133,7 +133,7 @@ declarative answer to [Q17](#q17--spatial-relation-formalisation).
 ## Q17 — Spatial-relation formalisation
 
 The 2021 prototype's open question
-([idea 05 §Open question recorded in the README](../../docs/ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)).
+([idea 05 §Open question recorded in the README](../ideas/05-zebra-puzzle-graph-reasoner.md#open-question-recorded-in-the-readme)).
 
 **Options:**
 
@@ -167,7 +167,7 @@ Trade-offs:
 
 - *For:* IR-native, no Python fallback. The trace renderer reads each
   spatial step as a square-rule firing — fully visible to
-  [idea 08](../../docs/ideas/08-human-style-deductive-trace.md).
+  [idea 08](../ideas/08-human-style-deductive-trace.md).
   M3's SMT translation maps `square-fwd` / `square-bwd` to two
   universally-quantified clauses with no integer theory required.
 - *Against:* problems with continuous or multi-dimensional spatial
@@ -181,8 +181,8 @@ integer-arithmetic spatial encoding for Zebra.
 
 ## Q18 — Provenance granularity
 
-Per [idea 03 §What "contradictions" specifically means](../../docs/ideas/03-three-task-classes.md)
-and [idea 08](../../docs/ideas/08-human-style-deductive-trace.md).
+Per [idea 03 §What "contradictions" specifically means](../ideas/03-three-task-classes.md)
+and [idea 08](../ideas/08-human-style-deductive-trace.md).
 
 **Working answer**: per-derived-edge provenance — each edge carries
 a tuple `(rule, premise_edges, source_or_rule_id)`. The full
@@ -212,7 +212,7 @@ still incomplete. Mirrors human walkthroughs. Decided in P1.5 S1.5.1.
 
 ## Q20 — Trace reordering
 
-Per [idea 08 §Why this is a hard problem — Ordering](../../docs/ideas/08-human-style-deductive-trace.md).
+Per [idea 08 §Why this is a hard problem — Ordering](../ideas/08-human-style-deductive-trace.md).
 
 **Working answer**: emit engine-order trace + a `--reorder` flag
 that runs a planner pass clustering by entity. Defer full

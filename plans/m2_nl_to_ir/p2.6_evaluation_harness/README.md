@@ -15,7 +15,7 @@ measures:
 - trace quality (human review checklist, plus a structural
   audit against the gold trace where one exists).
 
-Mirrors [idea 08 §Open questions point 1](../../../docs/ideas/08-human-style-deductive-trace.md#open-questions):
+Mirrors [idea 08 §Open questions point 1](../../ideas/08-human-style-deductive-trace.md#open-questions):
 *"What evaluation harness? Compare generated traces against a
 small corpus of human walkthroughs."*
 
@@ -37,5 +37,5 @@ small corpus of human walkthroughs."*
 
 ## Connections
 
-- [Idea 08](../../../docs/ideas/08-human-style-deductive-trace.md) —
+- [Idea 08](../../ideas/08-human-style-deductive-trace.md) —
   the harness operationalises the evaluation question.

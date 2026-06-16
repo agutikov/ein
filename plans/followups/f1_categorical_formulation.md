@@ -6,7 +6,7 @@ the post-hoc categorical reading becomes possible.
 
 ## What this is
 
-Per [`docs/ideas/07-categorical-formulation.md`](../../docs/ideas/07-categorical-formulation.md):
+Per [`docs/ideas/07-categorical-formulation.md`](../ideas/07-categorical-formulation.md):
 the triangle rule is *literally* categorical composition. Once we
 notice that, the natural question is whether the whole engine has
 a clean CT presentation — and what (if anything) the formal
@@ -52,7 +52,7 @@ A new milestone `m_followups_categorical/` with phases:
 
 ## Prior art / connections
 
-- [Idea 07](../../docs/ideas/07-categorical-formulation.md) — the
+- [Idea 07](../ideas/07-categorical-formulation.md) — the
   question and the three readings.
 - [`docs/lib/05-category-theory.md`](../../docs/lib/05-category-theory.md) — CT primitives, DPO/SPO, Catlab.jl.
 - [`docs/lib/06-graphs-rewrite-systems.md`](../../docs/lib/06-graphs-rewrite-systems.md) — DPO/SPO graph rewriting.

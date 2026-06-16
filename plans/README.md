@@ -5,7 +5,7 @@ design; the cleaned-up package skeleton (`src/ein/`) just unblocks
 the work — the actual *implementation* of the design lives here.
 
 The companion research notes (no implementation steps, no schedule)
-stay in [`docs/ideas/`](../docs/ideas/). Plans cross-link to those
+stay in [`docs/ideas/`](ideas). Plans cross-link to those
 ideas where they originate; they do not duplicate them.
 
 ## Roadmap at a glance
@@ -126,7 +126,7 @@ Stage files have a stable shape:
 **Phase:** P<m>.<p> (<title>)
 **Estimate:** N days
 **Depends on:** ...
-**Implements idea:** [<idea>](../../../docs/ideas/<file>.md)
+**Implements idea:** [<idea>](../../ideas/<file>.md)
 
 ## Context
 ...
@@ -162,7 +162,7 @@ Stage files have a stable shape:
 | **ontology layer** | types, instances, value domains, a-priori inter-type relations           |
 | **fact layer**    | the relations stated by the problem text                                |
 | **reasoning layer** | derived relations, rejected hypotheses, hypothesis branches            |
-| **task class**    | A=solve, B=gaps, C=contradictions (per [idea 03](../docs/ideas/03-three-task-classes.md)) |
+| **task class**    | A=solve, B=gaps, C=contradictions (per [idea 03](ideas/03-three-task-classes.md)) |
 
 ## How to use this directory
 

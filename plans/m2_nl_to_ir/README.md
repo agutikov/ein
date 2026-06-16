@@ -24,7 +24,7 @@ realises the input side of this table; the explanation side (IR
 trace → NL paragraphs) is M2's stretch goal and the natural lead-in
 to [M2b](../m2b_presentation/README.md).
 
-Per [`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md`](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md):
+Per [`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md`](../ideas/04-nlp-to-graph-to-solver-pipeline.md):
 **do NOT go directly from NLP-tree to SMT**. The IR is the *third*
 artefact in the pipeline:
 
@@ -77,9 +77,9 @@ See [`open_questions.md`](open_questions.md) for the M2-scoped set
 
 ## Connections
 
-- [Idea 04](../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md) —
+- [Idea 04](../ideas/04-nlp-to-graph-to-solver-pipeline.md) —
   the architecture sketch this milestone realises.
-- [Idea 01](../../docs/ideas/01-self-modifying-constraint-language.md) —
+- [Idea 01](../ideas/01-self-modifying-constraint-language.md) —
   GBNF; the *self-modifying* loop is deferred to
   [followup F2](../followups/f2_self_modifying_language.md).
 - [`/home/user/work/acva/`](../../../acva/) — runtime pattern;

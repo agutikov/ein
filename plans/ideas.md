@@ -2,9 +2,9 @@
 
 A working surface for half-formed thoughts that are *not yet* ready
 to land in a stage file. Cheaper than spawning a new
-`docs/ideas/<n>-…md`, faster than figuring out which milestone owns
+`plans/ideas/<n>-…md`, faster than figuring out which milestone owns
 it. The intent is: ideas live here briefly, then either get
-promoted into a stage (`plans/`), a research note (`docs/ideas/`),
+promoted into a stage (`plans/`), a research note (`plans/ideas/`),
 or pruned.
 
 When promoting, leave a one-line stub here with a forward-pointer
@@ -58,7 +58,7 @@ scope. What's left is a focused contradiction detector
 **Cross-links retained:**
 - [S1.3.0 §F (scope reconsideration)](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#f-scope-reconsideration)
 - [Q40 — hypothesis-rule premises](m1_core_graph_reasoning/open_questions.md) (P1.5)
-- [Idea 03 — three task classes](../docs/ideas/03-three-task-classes.md) — "contradictions" task class consumes the detector's output.
+- [Idea 03 — three task classes](ideas/03-three-task-classes.md) — "contradictions" task class consumes the detector's output.
 - [Q33 resolution](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13) — `not` is a structural wrapper handled by matcher/asserter; the detector reads its output, not the wrapper machinery.
 
 ### P1.2b audit — closed 2026-05-19, verdict: no phase needed

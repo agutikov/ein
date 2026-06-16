@@ -7,7 +7,7 @@
 ## Goal
 
 Realise the pipeline sketched in
-[`docs/ideas/04 §Sketch of the pipeline`](../../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md#sketch-of-the-pipeline)
+[`docs/ideas/04 §Sketch of the pipeline`](../../ideas/04-nlp-to-graph-to-solver-pipeline.md#sketch-of-the-pipeline)
 end-to-end:
 
 ```
@@ -52,5 +52,5 @@ re-prompts.
 
 ## Connections
 
-- [Idea 04](../../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md) — the architecture.
-- [Idea 03](../../../docs/ideas/03-three-task-classes.md) — the three task classes get exercised at the NL boundary.
+- [Idea 04](../../ideas/04-nlp-to-graph-to-solver-pipeline.md) — the architecture.
+- [Idea 03](../../ideas/03-three-task-classes.md) — the three task classes get exercised at the NL boundary.

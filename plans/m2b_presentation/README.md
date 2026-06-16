@@ -61,7 +61,7 @@ section, plus head-to-head numbers where applicable.
 Concrete measurement tracks:
 
 - **Zebra family** — the canonical puzzle + the variants under
-  [`docs/ideas/09-puzzles-beyond-zebra.md`](../../docs/ideas/09-puzzles-beyond-zebra.md).
+  [`docs/ideas/09-puzzles-beyond-zebra.md`](../ideas/09-puzzles-beyond-zebra.md).
   Ein's home turf; should solve cleanly.
 - **NL → IR end-to-end** — feed problem text via M2's pipeline,
   solve with M1's engine, report accuracy + ambiguity + time.
@@ -72,7 +72,7 @@ Concrete measurement tracks:
 Mode coverage: report both `solve` and `prove` results (cf.
 [P1.9 modes idea](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/README.md)),
 plus the `gaps` / `contradictions` task classes
-([Idea 03](../../docs/ideas/03-three-task-classes.md)).
+([Idea 03](../ideas/03-three-task-classes.md)).
 
 ### Track C — results write-up
 
@@ -97,7 +97,7 @@ Codify the open followups as "future work" for the paper:
 - Categorical formulation ([F1](../followups/f1_categorical_formulation.md))
   and the FOL / relation-algebra angle ([F1b](../followups/f1b_logical_formulation.md)).
 - Rule induction ([F7](../followups/f7_rule_induction.md)).
-- The umbrella [`docs/ideas/10-generic-self-modification.md`](../../docs/ideas/10-generic-self-modification.md).
+- The umbrella [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-modification.md).
 
 Each gets a paragraph in §Future Work that's honest about the
 known unknowns rather than aspirational.
@@ -136,9 +136,9 @@ known unknowns rather than aspirational.
   results the write-up reports on.
 - [docs/lib/](../../docs/lib/) — the structured comparison
   axis (12 thematic files + knowledge graph).
-- [docs/ideas/](../../docs/ideas/) — the user's framing of the
+- [docs/ideas/](../ideas) — the user's framing of the
   contributions; the paper's "what we built" leans on this.
-- [docs/ideas/09 — puzzles beyond Zebra](../../docs/ideas/09-puzzles-beyond-zebra.md)
+- [docs/ideas/09 — puzzles beyond Zebra](../ideas/09-puzzles-beyond-zebra.md)
   — the benchmark menu for Track B.
 - [docs/lib/12 — LLM and reasoning benchmarks](../../docs/lib/12-llm-and-reasoning-benchmarks.md)
   — external benchmarks Track B anchors against.

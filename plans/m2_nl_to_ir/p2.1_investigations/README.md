@@ -39,5 +39,5 @@ and the relevant decision file.
 ## Connections
 
 - All four required ideas inform this phase, but specifically:
-  [idea 04 §Open questions](../../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions),
-  [idea 01](../../../docs/ideas/01-self-modifying-constraint-language.md).
+  [idea 04 §Open questions](../../ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions),
+  [idea 01](../../ideas/01-self-modifying-constraint-language.md).

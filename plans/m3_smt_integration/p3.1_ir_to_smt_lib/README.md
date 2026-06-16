@@ -29,7 +29,7 @@ re-encoding.
 
 ## Connections
 
-- [Idea 04 §Sketch of the pipeline](../../../docs/ideas/04-nlp-to-graph-to-solver-pipeline.md#sketch-of-the-pipeline) —
+- [Idea 04 §Sketch of the pipeline](../../ideas/04-nlp-to-graph-to-solver-pipeline.md#sketch-of-the-pipeline) —
   the solver back-end branch.
-- [Idea 02](../../../docs/ideas/02-graph-as-formal-substrate.md) —
+- [Idea 02](../../ideas/02-graph-as-formal-substrate.md) —
   solver as accelerator, not authority.

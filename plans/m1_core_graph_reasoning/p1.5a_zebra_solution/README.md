@@ -73,7 +73,7 @@ House×Color signature). So no comparable pruning exists.
 ### (c) idea-08 trace fidelity
 
 M1 acceptance #3 requires every "Therefore X" in the
-[idea-08 target trace](../../../docs/ideas/08-human-style-deductive-trace.md#the-target-trace-paraphrased)
+[idea-08 target trace](../../ideas/08-human-style-deductive-trace.md#the-target-trace-paraphrased)
 to correspond to a named saturation-rule firing in the engine
 trace. Until the puzzle actually solves, this criterion can't
 be checked. After solve works, the trace's named-rule firings
@@ -400,7 +400,7 @@ The phase ships when:
   the structural refactor and rule design this phase builds on.
 - [M1 README — acceptance](../README.md#acceptance) — the gates
   this phase exists to close.
-- [idea-08](../../../docs/ideas/08-human-style-deductive-trace.md)
+- [idea-08](../../ideas/08-human-style-deductive-trace.md)
   — the trace fidelity target.
 - [P1.5 README](../p1.5_hypothesis_loop/README.md) — P1.5's stage
   list; this phase is a spin-out of the original S1.5.8c.7.

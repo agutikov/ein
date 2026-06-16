@@ -4,11 +4,14 @@
 unestimated (a bench matrix, a full Python API reference, and a
 long-form Zebra guide — each multi-day). A multi-week,
 **non-M1-gating** investment to schedule against M2.
-**Status:** **executed 2026-06-16** — all 12 staged stages (A0, A1, A2,
-B–G, H1–H3) done; only the unstaged themes **I/J/K** remain (feature×config
-bench matrix, Python-embedding API ref, long-form Zebra guide — each needs the
-engine or substantial new writing). Created 2026-05-24 from the TODO.md
-scratchpad, stages written 2026-06-15, executed 2026-06-16.
+**Status:** **executed 2026-06-16** — all 12 originally-staged stages
+(A0, A1, A2, B–G, H1–H3) plus **Theme J** (J1/J2/J3, decomposed + executed
+2026-06-16) done. Theme J shipped the [`docs/api/`](../../../docs/api/)
+Python-embedding subtree (contract + 4 per-module pages + a verified
+worked example), re-based against the live surface. Themes **I/K** remain
+theme-only (feature×config bench matrix, long-form Zebra guide — each
+needs the engine or substantial new writing). Created 2026-05-24 from the
+TODO.md scratchpad, stages written 2026-06-15, executed 2026-06-16.
 The phase parks kernel-doc reorgs that emerged after the M1
 implementation surface stabilised. None of these gate M1
 acceptance; they make the kernel docs reflect what M1 actually
@@ -60,16 +63,21 @@ takes that structure further:
 | S1.20.H2   | Ein-model: 4-level KB representation                                        | [s1.20.h2_four_level_kb.md](s1.20.h2_four_level_kb.md)                |
 | S1.20.H3   | Ein-model: self-describing KB types                                         | [s1.20.h3_self_describing_kb.md](s1.20.h3_self_describing_kb.md)      |
 | S1.20.I    | Kernel feature × config matrix *(theme only — not yet decomposed)*           | [README §Theme I](#theme-i--kernel-feature--config-matrix)            |
-| S1.20.J    | Ein Python API reference *(theme only — not yet decomposed)*                 | [README §Theme J](#theme-j--ein-api-reference)                        |
+| S1.20.J1   | Embedding contract + entry-point reference                                  | [s1.20.j1_embedding_contract.md](s1.20.j1_embedding_contract.md)      |
+| S1.20.J2   | Per-module Python API reference pages                                       | [s1.20.j2_per_module_reference.md](s1.20.j2_per_module_reference.md)  |
+| S1.20.J3   | Worked embedding example + integration                                      | [s1.20.j3_worked_example.md](s1.20.j3_worked_example.md)              |
 | S1.20.K    | Ein Zebra guide *(theme only — not yet decomposed)*                          | [README §Theme K](#theme-k--ein-zebra-guide)                          |
 
 Suggested order: **A0 first** (reconcile drift — it re-bases every
 other theme). Then H1 → H2 → H3 (vocabulary first, then schema)
 ∥ A1 → A2 (data-model split, then backfill); B + C + D can
 follow once A2 + H2 are in; E and F land after the bulk of
-content stabilises; G can ship any time before M2b. Themes I/J/K
-(feature matrix, Python API, Zebra guide) are independent and
-unstaged — schedule each after A0 confirms the live surface.
+content stabilises; G can ship any time before M2b. Theme J
+(Python embedding API) is now staged J1 → J2 → J3 (J1 first — it
+re-bases the surface and fixes the location/facade decisions the
+other two build on). Themes I/K (feature matrix, Zebra guide) remain
+independent and unstaged — schedule each after A0 confirms the live
+surface.
 
 ## Themes
 
@@ -353,6 +361,30 @@ Lands as `docs/api/ein.md` (top-level Python package surface)
 plus `docs/api/<module>.md` per public module. Composes with
 Theme E (user vs developer split) — Theme J is *user-facing
 embedding docs*, distinct from Theme D's engine internals.
+
+> **Re-base (audited 2026-06-16, decomposing this theme).** The
+> 2026-05-27 sketch above names APIs that have since moved. The live
+> surface: `import ein` exposes **only `__version__`** (no facade —
+> the contract is per-subpackage `ein.ir` / `ein.kb` /
+> `ein.inference.*` / `ein.trace`); `solve` lives in
+> `ein.inference.monotonic.solver` and takes **no `mode=`** (the
+> verdict type is read from the solution count) —
+> `solve(root_kb, *, stop_after=None, max_set_size=5, config=None, …)`.
+> The full audit table (with file:line anchors) lives in
+> [S1.20.J1](s1.20.j1_embedding_contract.md).
+
+Likely stages:
+
+- **S1.20.J1** — [embedding contract + entry-point reference](s1.20.j1_embedding_contract.md):
+  re-base the surface, resolve the facade/location questions, write
+  `docs/api/ein.md` (the five-step load → solve → read-verdict flow).
+- **S1.20.J2** — [per-module reference pages](s1.20.j2_per_module_reference.md):
+  `docs/api/{ir,kb,inference,trace}.md`, one entry per public symbol
+  (signature · params · returns · semantics · example) + the
+  `SolverConfig` knob table.
+- **S1.20.J3** — [worked example + integration](s1.20.j3_worked_example.md):
+  a copy-paste, verified-to-run zebra2 script; reading-order wiring;
+  the `inference/__init__.py` docstring reconcile.
 
 If [M1a Rust port](../../m1a_rust/README.md) ships, the API
 reference moves to ein.rs's surface (PyO3 binding + native

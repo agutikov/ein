@@ -73,6 +73,7 @@ explicit audience banner.
 |----------|-------|
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`); `ir/02-data-model/{01_entities,02_store}` (the abstract model) |
 | **dev**  | `ir/02-data-model/03_python_impl.md`; `inference/python_impl.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md) |
+| **embedder** | [`../api/`](../api/) — the Python embedding contract ([`ein.md`](../api/ein.md) + per-module `ir`/`kb`/`inference`/`trace` pages). Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). |
 | **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs |
 
 - **User path** (author a puzzle): glossary → `01-ein-graph` →
@@ -81,6 +82,9 @@ explicit audience banner.
 - **Dev path** (change the engine): the user path, then
   `architecture.md` → `02-data-model/03_python_impl` → `inference/`
   (`architecture_and_algorithms` → `python_impl` → the README invariants).
+- **Embedder path** (call Ein from Python): [`../api/ein.md`](../api/ein.md)
+  (the five-step flow + worked example), then the per-module pages as
+  needed; `01-ein-graph` + `03-ein-lang` for the puzzles you load.
 
 ## Cross-references
 
@@ -91,7 +95,7 @@ explicit audience banner.
   structural "where does X live?" map: data-flow, package
   dependencies, milestone boundaries, and a change cookbook.
 - Plans roadmap: [`plans/m1_core_graph_reasoning/`](../../plans/m1_core_graph_reasoning/).
-- Ideas (the user's framing of the project's *goals*): [`docs/ideas/`](../ideas/).
+- Ideas (the user's framing of the project's *goals*): [`plans/ideas/`](../../plans/ideas).
 - External tech index: [`docs/lib/`](../lib/).
 - Source of truth for parsing: [`ein.py/src/ein/ir/grammar.lark`](../../ein.py/src/ein/ir/grammar.lark).
 - Source of truth for the KB: [`ein.py/src/ein/kb/`](../../ein.py/src/ein/kb/).
