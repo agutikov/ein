@@ -21,6 +21,11 @@ constrained-reasoning research.
   read verdict/trace). `ein.md` is the contract + worked example; per-module
   pages for `ir`/`kb`/`inference`/`trace`. Distinct from `docs/kernel/`
   (the IR *language*) and the engine internals.
+- **`docs/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
+  Zebra puzzle"): objects/relations/facts → rules → the full solve, four
+  chapters (P1.20 Theme K). User-facing; references `docs/kernel/` +
+  `docs/api/`, never explains internals; complements
+  `inference/zebra_walkthrough.md`.
 - **`docs/lib/`** — catalogue of external tech relevant to the rewrite
   (LLM constrained generation, CSP/SAT/SMT, theorem proving, category
   theory, graphs & rewrite systems, reasoning benchmarks, …). 12

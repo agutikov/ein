@@ -71,11 +71,14 @@ explicit audience banner.
 
 | audience | pages |
 |----------|-------|
+| **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`); `ir/02-data-model/{01_entities,02_store}` (the abstract model) |
 | **dev**  | `ir/02-data-model/03_python_impl.md`; `inference/python_impl.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md) |
 | **embedder** | [`../api/`](../api/) — the Python embedding contract ([`ein.md`](../api/ein.md) + per-module `ir`/`kb`/`inference`/`trace` pages). Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). |
 | **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs |
 
+- **Newcomer path** (never seen Ein): the [guide](../guide/) end-to-end
+  (Ch.1 → Ch.4), then the user path below for depth.
 - **User path** (author a puzzle): glossary → `01-ein-graph` →
   `03-ein-lang` (grammar → patterns → `06_reserved_names` →
   `07_stdlib_api`) → `02-data-model/01_entities`.

@@ -134,8 +134,8 @@ def snapshot(kb: KnowledgeBase, eng: Engine | None = None) -> dict[str, Any]:
     s["index_facts_by_relation"] = sum(
         len(v) for v in kb._facts_by_relation.values()
     )
-    s["index_facts_by_instance"] = sum(
-        len(v) for v in kb._facts_by_instance.values()
+    s["index_facts_by_rel_slot_val"] = sum(
+        len(v) for v in kb._facts_by_rel_slot_val.values()
     )
     s["index_rule_apps_by_rule"] = sum(
         len(v) for v in kb._rule_apps_by_rule.values()
@@ -192,7 +192,7 @@ SCALAR_KEYS = [
     ("facts_with_nested_args",         "facts with nested-Fact args (Q40)"),
     (None,                             None),
     ("index_facts_by_relation",        "index entries: facts_by_relation"),
-    ("index_facts_by_instance",        "index entries: facts_by_instance"),
+    ("index_facts_by_rel_slot_val",    "index entries: facts_by_rel_slot_val"),
     ("index_rule_apps_by_rule",        "index entries: rule_apps_by_rule"),
     ("index_rule_apps_on_relation",    "index entries: rule_apps_on_relation"),
     (None,                             None),
@@ -295,7 +295,8 @@ def print_firings(firings: Iterable[Firing]) -> None:
         per_rule_total[f.rule] += 1
         if not f.redundant:
             per_rule_productive[f.rule] += 1
-            per_relation[f.derived.relation_name] += 1
+            for d in f.derived:                 # `derived` is a tuple of Facts (S1.8.A13)
+                per_relation[d.relation_name] += 1
 
     print()
     print("── saturation: firing breakdown ──")

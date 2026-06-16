@@ -80,6 +80,7 @@ there is no built-in relation→verb vocabulary.
 | [`docs/kernel/inference/zebra_walkthrough.md`](docs/kernel/inference/zebra_walkthrough.md) | the Wikipedia human Zebra solution traced step-by-step as Ein inference — **M1 target** for the engine, **M2 target** for the NL ⇄ IR round-trip (moved here from `examples/README.md`) |
 | `examples/broken/`            | curated parse-failure fixtures (`file:line:col` error messages)                       |
 | `plans/`                      | milestone / phase / stage roadmap (M1 active)                                         |
+| [`docs/guide/`](docs/guide/)  | **start here** — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial (objects → rules → full solve) |
 | `docs/kernel/`                | kernel documentation — graph semantics, data model, surface language, inference engine |
 | `docs/lib/`                 | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph     |
 | `plans/ideas/`                | ideas extracted from research notes (moved from `docs/ideas/`)                        |
@@ -89,6 +90,9 @@ there is no built-in relation→verb vocabulary.
 | `TODO.md`                     | live worklist                                                                         |
 
 ## Quickstart
+
+**New to Ein?** Start with the **[tutorial](docs/guide/)** — *Learn Ein by
+solving the Zebra puzzle* — then come back here to install and run.
 
 ### Install
 

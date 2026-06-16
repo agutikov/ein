@@ -8,6 +8,10 @@ each NL step corresponds to. The encoding under analysis is
 `Old_Gold`, `Lucky_Strike`, `Chesterfields`) follow the ein spelling; in
 prose `H_i` abbreviates `House-i`.
 
+New to Ein? Start with the [guide](../../guide/) — *Learn Ein by solving the
+Zebra puzzle* — and return here for the full deductive trace its Chapter 4
+hands off to.
+
 To reproduce this solve **programmatically** from Python — load
 `zebra2.ein`, run `solve`, read the answer and a rendered trace — see the
 embedding contract in [`docs/api/ein.md`](../../api/ein.md) (its worked

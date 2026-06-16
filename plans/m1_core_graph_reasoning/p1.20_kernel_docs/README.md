@@ -14,8 +14,11 @@ preserving `enable_*` flags added + full gate green (I2, the one P1.20
 engine-code change); feature×config sweep via `utils/feature_matrix.py`
 (I3); and [`docs/kernel/inference/features.md`](../../../docs/kernel/inference/features.md)
 (I4). Measured headline: on zebra2 the fast path is lever-insensitive; only
-`enable_singleton_writeback` is load-bearing (exhaustive search). Theme **K** remains theme-only (long-form Zebra guide —
-substantial new writing). Created 2026-05-24 from the TODO.md scratchpad,
+`enable_singleton_writeback` is load-bearing (exhaustive search). **Theme K
+executed 2026-06-17** (K1–K4) — the [`docs/guide/`](../../../docs/guide/)
+learn-Ein-by-example tutorial (objects/relations/facts → rules → full solve,
+four chapters), wired in as the newcomer entry point. **All P1.20 themes are
+now executed.** Created 2026-05-24 from the TODO.md scratchpad,
 stages written 2026-06-15, executed 2026-06-16.
 The phase parks kernel-doc reorgs that emerged after the M1
 implementation surface stabilised. None of these gate M1
@@ -74,7 +77,10 @@ takes that structure further:
 | S1.20.J1   | Embedding contract + entry-point reference                                  | [s1.20.j1_embedding_contract.md](s1.20.j1_embedding_contract.md)      |
 | S1.20.J2   | Per-module Python API reference pages                                       | [s1.20.j2_per_module_reference.md](s1.20.j2_per_module_reference.md)  |
 | S1.20.J3   | Worked embedding example + integration                                      | [s1.20.j3_worked_example.md](s1.20.j3_worked_example.md)              |
-| S1.20.K    | Ein Zebra guide *(theme only — not yet decomposed)*                          | [README §Theme K](#theme-k--ein-zebra-guide)                          |
+| S1.20.K1   | Guide on-ramp: objects, relations, facts (NL ↔ IR ↔ graph)                  | [s1.20.k1_onramp.md](s1.20.k1_onramp.md)                              |
+| S1.20.K2   | Guide: first rules (graph before / after)                                   | [s1.20.k2_first_rules.md](s1.20.k2_first_rules.md)                    |
+| S1.20.K3   | Guide: the rule families (on zebra2)                                        | [s1.20.k3_rule_families.md](s1.20.k3_rule_families.md)                |
+| S1.20.K4   | Guide: solving the whole puzzle + integration                              | [s1.20.k4_full_solve.md](s1.20.k4_full_solve.md)                      |
 
 Suggested order: **A0 first** (reconcile drift — it re-bases every
 other theme). Then H1 → H2 → H3 (vocabulary first, then schema)
@@ -85,7 +91,8 @@ content stabilises; G can ship any time before M2b. Theme J
 re-bases the surface and fixes the location/facade decisions the
 other two build on). Theme I (feature matrix) is staged I1 → I2 → I3
 → I4 (I1 audit/decide → I2 code, gated by I1's decision → I3 measure
-→ I4 write). Theme K (Zebra guide) remains independent and unstaged.
+→ I4 write). Theme K (Zebra guide) shipped K1 → K4 (on-ramp → first rules →
+rule families → full solve) — the learn-by-example tutorial in `docs/guide/`.
 
 ## Themes
 
@@ -428,28 +435,46 @@ Rust) and Theme J's Python-side becomes the legacy reference.
 
 ### Theme K — Ein Zebra guide
 
-User direction 2026-05-27. A long-form walkthrough of
-`examples/zebra2.ein`, grouping rules into related families
-(propagation / negative-completion / disjunctive-prune /
-domain-elimination / spatial-endpoint / typecheck …). For
-each rule:
+User direction 2026-05-27, **re-framed 2026-06-17**: the Ein Zebra Guide is
+a **learn-Ein-by-example tutorial** — "how to solve a Zebra puzzle with
+Ein", for a complete beginner. It is **user-facing** and **references** the
+kernel + api docs and the inference explanation rather than re-deriving
+them; it never explains kernel internals or the search process. It is the
+designed **complement** of
+[`inference/zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md):
+the guide teaches the pieces incrementally; the walkthrough is the full
+solved trace it hands off to.
 
-- **Ein-lang form** — the literal `(rule …)` block from
-  `zebra2.ein` plus a one-paragraph plain-English summary.
-- **NL framing** — how the rule's intent reads in the
-  Wikipedia Zebra walkthrough (cross-link `examples/README.md`).
-- **Compact graph before / after** — small DOT showing the
-  KB state immediately before and after the rule fires.
-  Single-instance illustration, not full puzzle state.
-- **Canonical Levi-bipartite graph before / after** — same
-  pair under the Levi rendering, so the reader can flip
-  between the two views. (See P1.6's
-  default-compact-Levi-by-flag framing.)
+> **Re-base note.** The 2026-05-27 spec was a *rule reference catalogue*
+> (rules grouped by family, each with ein-form + NL + compact/Levi graph
+> pairs). That survives — as the guide's *middle* chapters
+> ([K2](s1.20.k2_first_rules.md)/[K3](s1.20.k3_rule_families.md)) — but the
+> re-frame adds a **from-zero on-ramp** ([K1](s1.20.k1_onramp.md): objects →
+> relations → facts in NL ↔ IR ↔ graph, *before* any rule), orders by
+> **difficulty** not family, and lands in a new **`docs/guide/`** (a
+> newcomer entry point, sibling of `kernel/`/`api/`/`lib/`) — not
+> `docs/kernel/zebra_guide.md` (a tutorial reads awkwardly inside the kernel
+> "contract" tree). The per-rule unit is unchanged: **ein-lang `(rule …)`
+> form + plain-English + compact & Levi graph before/after** (P1.6's rule
+> renderer).
 
-Lands as `docs/kernel/zebra_guide.md` (or a small folder
-under `docs/kernel/` if the rule families warrant per-family
-pages). Composes with P1.6 S1.6.1 (rule rendering) — the
-graph pairs reuse the same rule renderer.
+The guide's recurring teaching device is the **NL ↔ ein-lang IR ↔ graph**
+triad, established on objects/relations (K1) and reused per rule (K2/K3).
+
+Likely stages:
+
+- **S1.20.K1** — [on-ramp](s1.20.k1_onramp.md): objects → relations →
+  facts, tri-representation, on a tiny example; creates `docs/guide/`.
+- **S1.20.K2** — [first rules](s1.20.k2_first_rules.md): symmetric /
+  transitive / co-located, each with graph before/after.
+- **S1.20.K3** — [rule families](s1.20.k3_rule_families.md): domain-
+  elimination, disjunctive-prune, spatial adjacent-via, negative-completion
+  on real `zebra2` fragments (stdlib machinery vs puzzle-specific rules).
+- **S1.20.K4** — [the whole puzzle](s1.20.k4_full_solve.md): assemble +
+  `ein solve` + hand off to the walkthrough; `docs/guide/` integration.
+
+Composes with P1.6 S1.6.1 (rule rendering) — the graph pairs reuse the same
+renderer.
 
 ## Out of scope
 
@@ -489,9 +514,12 @@ graph pairs reuse the same rule renderer.
   surface. A downstream user can import `ein`,
   load a `.ein`, run `solve`, and read the verdict without
   reading the kernel internals.
-- **K:** `docs/kernel/zebra_guide.md` walks every rule
-  family in `zebra2.ein` with ein form + NL + compact +
-  Levi graphs before/after.
+- **K:** `docs/guide/` is a learn-Ein-by-example tutorial — a newcomer
+  authors objects/relations/facts (NL ↔ IR ↔ graph), then rules (simple →
+  the zebra2 families, each with compact & Levi graph before/after), then
+  solves the whole puzzle and hands off to
+  `inference/zebra_walkthrough.md`. User-facing; references the kernel/api
+  docs, never explains internals.
 
 ## Open questions
 
