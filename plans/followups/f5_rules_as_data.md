@@ -159,7 +159,7 @@ audit's conclusions.
 - [F4 Q37](f4_cross_cutting.md) — induction from facts; F5 is the
   general case.
 - AtomSpace's *Hebbian learning* over atom truth-values (see
-  [`docs/index/09-cognitive-architectures-neurosymbolic.md`](../../docs/index/09-cognitive-architectures-neurosymbolic.md))
+  [`docs/lib/09-cognitive-architectures-neurosymbolic.md`](../../docs/lib/09-cognitive-architectures-neurosymbolic.md))
   — different mechanism (statistical, not deductive) but same
   ambition.
 - ACL2's *macro hygiene* and `defaxiom` machinery — closest formal

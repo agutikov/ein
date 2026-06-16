@@ -13,7 +13,7 @@ concrete result to write up.
 
 Write up the Ein system for an external audience. Frame the
 contributions, compare to the systems catalogued in
-[`docs/index/`](../../docs/index/), measure on shared benchmarks,
+[`docs/lib/`](../../docs/lib/), measure on shared benchmarks,
 and document the directions worth pursuing next.
 
 The intended outputs:
@@ -30,26 +30,26 @@ The intended outputs:
 
 ### Track A — comparison to prior art
 
-Use the existing catalogue under [`docs/index/`](../../docs/index/)
+Use the existing catalogue under [`docs/lib/`](../../docs/lib/)
 (12 thematic files, 2026-05-18 catalogue) as the structured
 comparison axis:
 
-- **CSP / SAT / SMT solvers** ([`02`](../../docs/index/02-solvers-csp-sat-smt.md))
+- **CSP / SAT / SMT solvers** ([`02`](../../docs/lib/02-solvers-csp-sat-smt.md))
   — Z3, MiniZinc, OR-tools. How does Ein's graph + rules
   approach compare on a Zebra-class puzzle: encoding effort,
   solve time, trace quality, explainability?
-- **Theorem provers / proof assistants** ([`03`](../../docs/index/03-theorem-proving-formal-methods.md))
+- **Theorem provers / proof assistants** ([`03`](../../docs/lib/03-theorem-proving-formal-methods.md))
   — Coq, Lean, Isabelle. Ein is rule-driven but not a
   proof assistant; characterise the difference.
-- **Graphs + rewrite systems** ([`06`](../../docs/index/06-graphs-rewrite-systems.md))
+- **Graphs + rewrite systems** ([`06`](../../docs/lib/06-graphs-rewrite-systems.md))
   — Catlab.jl, GP 2, etc. Graph-rewriting is the closest
   formal relative; ein's twist is the typed-hypergraph + the
   three-layer structure + the human-style trace.
-- **Cognitive architectures / neuro-symbolic** ([`09`](../../docs/index/09-cognitive-architectures-neurosymbolic.md))
+- **Cognitive architectures / neuro-symbolic** ([`09`](../../docs/lib/09-cognitive-architectures-neurosymbolic.md))
   — ATMS, SOAR, ACT-R, and modern neuro-symbolic stacks. Ein's
   hypothesis loop is ATMS-adjacent; the human-trace target is
   a deliberate departure.
-- **LLM + reasoning benchmarks** ([`12`](../../docs/index/12-llm-and-reasoning-benchmarks.md))
+- **LLM + reasoning benchmarks** ([`12`](../../docs/lib/12-llm-and-reasoning-benchmarks.md))
   — ProofWriter, FOLIO, BIG-Bench, etc. M2's NL → IR pipeline
   is the bridge into these suites.
 
@@ -65,7 +65,7 @@ Concrete measurement tracks:
   Ein's home turf; should solve cleanly.
 - **NL → IR end-to-end** — feed problem text via M2's pipeline,
   solve with M1's engine, report accuracy + ambiguity + time.
-- **Existing reasoning benchmarks** ([`docs/index/12`](../../docs/index/12-llm-and-reasoning-benchmarks.md))
+- **Existing reasoning benchmarks** ([`docs/lib/12`](../../docs/lib/12-llm-and-reasoning-benchmarks.md))
   — at least one external benchmark to anchor against published
   numbers.
 
@@ -134,11 +134,11 @@ known unknowns rather than aspirational.
   [M2 — NL → IR](../m2_nl_to_ir/README.md),
   [M3 — SMT integration](../m3_smt_integration/README.md) — the
   results the write-up reports on.
-- [docs/index/](../../docs/index/) — the structured comparison
+- [docs/lib/](../../docs/lib/) — the structured comparison
   axis (12 thematic files + knowledge graph).
 - [docs/ideas/](../../docs/ideas/) — the user's framing of the
   contributions; the paper's "what we built" leans on this.
 - [docs/ideas/09 — puzzles beyond Zebra](../../docs/ideas/09-puzzles-beyond-zebra.md)
   — the benchmark menu for Track B.
-- [docs/index/12 — LLM and reasoning benchmarks](../../docs/index/12-llm-and-reasoning-benchmarks.md)
+- [docs/lib/12 — LLM and reasoning benchmarks](../../docs/lib/12-llm-and-reasoning-benchmarks.md)
   — external benchmarks Track B anchors against.

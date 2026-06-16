@@ -80,7 +80,7 @@ there is no built-in relation→verb vocabulary.
 | `examples/broken/`            | curated parse-failure fixtures (`file:line:col` error messages)                       |
 | `plans/`                      | milestone / phase / stage roadmap (M1 active)                                         |
 | `docs/kernel/`                | kernel documentation — graph semantics, data model, surface language, inference engine |
-| `docs/index/`                 | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph     |
+| `docs/lib/`                 | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph     |
 | `docs/ideas/`                 | ideas extracted from research notes                                                   |
 | `utils/`                      | renderers for the knowledge graph (Graphviz + Cytoscape) + the VS Code ein-lang grammar + ad-hoc engine probe/measure scripts (moved from `demo/` in P1.11) |
 | `nlp/`, `smt/`                | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)                |
@@ -180,14 +180,14 @@ ruff check . --fix         # auto-fix what's safe
 
 ## Knowledge graph
 
-The topic files under `docs/index/` are summarised as a single graph in
-[`docs/index/knowledge-graph.dot`](docs/index/knowledge-graph.dot). Two views:
+The topic files under `docs/lib/` are summarised as a single graph in
+[`docs/lib/knowledge-graph.dot`](docs/lib/knowledge-graph.dot). Two views:
 
 ```sh
 # static SVGs (dot / fdp / sfdp / osage) — requires graphviz
 utils/render_knowledge_graph.sh svg all
 
-# interactive Cytoscape.js page — open docs/index/knowledge-graph.cy/index.html
+# interactive Cytoscape.js page — open docs/lib/knowledge-graph.cy/index.html
 python utils/render_knowledge_graph_cy.py
 ```
 

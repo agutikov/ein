@@ -31,7 +31,7 @@ motivated by:
 - **GBNF lift.** A future M2 GBNF for LLM-constrained decoding is
   a near-mechanical translation from `grammar.lark`. SMT-LIB-style
   syntax is the easiest target for grammar-based constrained
-  generation (see [`docs/index/01-llm-constrained-generation.md`](../../../index/01-llm-constrained-generation.md)).
+  generation (see [`docs/lib/01-llm-constrained-generation.md`](../../../lib/01-llm-constrained-generation.md)).
 - **Comments + naming.** Hyphenated names and `;` comments make
   hand-authored puzzle files readable; PascalCase types vs
   hyphen-relation names visually distinguish entity kinds without a
@@ -68,9 +68,9 @@ needs.
 
 ## See also
 
-- [`docs/index/02-solvers-csp-sat-smt.md`](../../../index/02-solvers-csp-sat-smt.md)
+- [`docs/lib/02-solvers-csp-sat-smt.md`](../../../lib/02-solvers-csp-sat-smt.md)
   — the SMT-LIB / Datalog / Prolog lineage in detail.
-- [`docs/index/05-category-theory.md`](../../../index/05-category-theory.md)
+- [`docs/lib/05-category-theory.md`](../../../lib/05-category-theory.md)
   — DPO and the categorical framing.
-- [`docs/index/10-nlp-semantic-parsing.md`](../../../index/10-nlp-semantic-parsing.md)
+- [`docs/lib/10-nlp-semantic-parsing.md`](../../../lib/10-nlp-semantic-parsing.md)
   — why a homoiconic IR helps with NL → IR.

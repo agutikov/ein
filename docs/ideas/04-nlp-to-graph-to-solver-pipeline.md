@@ -167,7 +167,7 @@ the engine on its own can't reason without the ontology. Idea 09's
 benchmarks all-but-confirm this: every reasoning benchmark that
 involves NL puts ontology induction as the implicit first step.
 
-Connection: [`docs/index/10-nlp-semantic-parsing.md`](../index/10-nlp-semantic-parsing.md)
+Connection: [`docs/lib/10-nlp-semantic-parsing.md`](../lib/10-nlp-semantic-parsing.md)
 for semantic-frame parsing (which produces the same type
 disambiguation as a by-product).
 
@@ -180,10 +180,10 @@ What's the difference between deduction and induction of the ontology?
 ## Connections (context, not answers)
 
 - NLP layer recipes (semantic frames, AMR, NER, coreference):
-  [10-nlp-semantic-parsing.md](../index/10-nlp-semantic-parsing.md).
+  [10-nlp-semantic-parsing.md](../lib/10-nlp-semantic-parsing.md).
 - Constraint hypergraph as IR substrate:
-  [06-graphs-rewrite-systems.md](../index/06-graphs-rewrite-systems.md).
+  [06-graphs-rewrite-systems.md](../lib/06-graphs-rewrite-systems.md).
 - LLM constrained to emit valid JSON via GBNF:
-  [01-llm-constrained-generation.md](../index/01-llm-constrained-generation.md).
+  [01-llm-constrained-generation.md](../lib/01-llm-constrained-generation.md).
 - The graph-native engine half:
   [02-graph-as-formal-substrate.md](02-graph-as-formal-substrate.md).

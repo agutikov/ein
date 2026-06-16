@@ -92,8 +92,8 @@ A new milestone `m_followups_logical/` with phases:
 - [P1.8 Theme A — stdlib](../m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md)
   — the `converse` rule, the `imply` family, `symmetric ⟺ converse R R`
   are the relation-algebra encodings F1b §PFL.3 would systematise.
-- [docs/index/03 — theorem-proving / formal methods](../../docs/index/03-theorem-proving-formal-methods.md)
+- [docs/lib/03 — theorem-proving / formal methods](../../docs/lib/03-theorem-proving-formal-methods.md)
   — external tech: Coq, Lean, Isabelle/HOL — the formalisations
   whose ein equivalent F1b would document.
-- [docs/index/02 — solvers / CSP / SAT / SMT](../../docs/index/02-solvers-csp-sat-smt.md)
+- [docs/lib/02 — solvers / CSP / SAT / SMT](../../docs/lib/02-solvers-csp-sat-smt.md)
   — the boundary case PFL.4 names.

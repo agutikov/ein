@@ -58,11 +58,11 @@ whether promoting the reasoning layer to a full e-graph
 
 Connection: [idea 02 §What "compute directly on the graph" can
 mean](../../docs/ideas/02-graph-as-formal-substrate.md#what-compute-directly-on-the-graph-can-mean),
-[`docs/index/06-graphs-rewrite-systems.md §egraph`](../../docs/index/06-graphs-rewrite-systems.md).
+[`docs/lib/06-graphs-rewrite-systems.md §egraph`](../../docs/lib/06-graphs-rewrite-systems.md).
 
 ## LLM-as-policy in search-tree (Q31)
 
-Per [idea 09 §LLMAsPolicy](../../docs/index/09-cognitive-architectures-neurosymbolic.md):
+Per [idea 09 §LLMAsPolicy](../../docs/lib/09-cognitive-architectures-neurosymbolic.md):
 the LLM picks *which hypothesis branch to explore first* in
 M1.P1.5. AlphaZero-style guided proof search.
 
@@ -71,7 +71,7 @@ M1.P1.5. AlphaZero-style guided proof search.
 - **Why hard**: serialising the search state for the LLM is
   itself a research problem; mid-search LLM calls are expensive.
 
-Connection: [`docs/index/11-search-optimization-algorithms.md`](../../docs/index/11-search-optimization-algorithms.md) §MCTS / AlphaZero.
+Connection: [`docs/lib/11-search-optimization-algorithms.md`](../../docs/lib/11-search-optimization-algorithms.md) §MCTS / AlphaZero.
 
 ## 2-D / N-D spatial (Q32)
 
@@ -97,7 +97,7 @@ debugging the trace planner (M1.P1.6) and for live demos. Probably
 a Cytoscape.js page driven by the trace IR.
 
 Connection: M1.P1.6, the existing
-[`docs/index/knowledge-graph.cy/`](../../docs/index/knowledge-graph.cy/)
+[`docs/lib/knowledge-graph.cy/`](../../docs/lib/knowledge-graph.cy/)
 Cytoscape view as a template.
 
 ## Algebraic properties beyond symmetric/transitive — and the 2^7 cartesian product (Q34)
@@ -492,7 +492,7 @@ two surfaces.
 
 Connection: [M2 P2.4](../m2_nl_to_ir/p2.4_nl_to_ir_pipeline/),
 [idea 01](../../docs/ideas/01-self-modifying-constraint-language.md),
-[docs/index/10 NLP & semantic parsing](../../docs/index/10-nlp-semantic-parsing.md).
+[docs/lib/10 NLP & semantic parsing](../../docs/lib/10-nlp-semantic-parsing.md).
 
 ## Facts as variables-with-context (M1+ proposal, Q39)
 

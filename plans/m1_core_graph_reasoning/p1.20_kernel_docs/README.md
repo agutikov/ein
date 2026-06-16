@@ -439,8 +439,8 @@ graph pairs reuse the same rule renderer.
   reorganises.
 - [`docs/kernel/ir/01-ein-graph/03_ein_model.md`](../../../docs/kernel/ir/01-ein-graph/03_ein_model.md)
   — Theme H's primary target.
-- [`docs/index/`](../../../docs/index/) — Theme G's rename
-  target.
+- [`docs/lib/`](../../../docs/lib/) — Theme G's rename
+  result (formerly `docs/index/`).
 - [`docs/kernel/inference/README.md`](../../../docs/kernel/inference/README.md)
   — Theme D's empty target page.
 - [P1.8 Theme A — stdlib](../p1.8_ein_lang_modules/README.md) —

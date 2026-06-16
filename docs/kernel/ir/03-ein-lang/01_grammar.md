@@ -361,7 +361,7 @@ template renders the *headline result* from the goal bindings.
 Per [Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21),
 `(trace …)` is the **same IR** as input — same parser, same AST,
 same dumper. The engine can reason about its own traces; rules can
-match `(step …)` forms ([TMS/ATMS analogue](../../../index/09-cognitive-architectures-neurosymbolic.md)).
+match `(step …)` forms ([TMS/ATMS analogue](../../../lib/09-cognitive-architectures-neurosymbolic.md)).
 Per [Q18](../../../../plans/m1_core_graph_reasoning/open_questions.md#q18)
 each derived edge's provenance tuple `(rule, premise_edges, source)`
 is literally a `(step …)` form — provenance and trace are the same

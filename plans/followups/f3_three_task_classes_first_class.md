@@ -61,4 +61,4 @@ to make the engine *delightful* to use.
 - [Idea 02](../../docs/ideas/02-graph-as-formal-substrate.md) — the
   underlying *graph as primary* claim is what makes all three
   classes natural on the same substrate.
-- [`docs/index/02-solvers-csp-sat-smt.md`](../../docs/index/02-solvers-csp-sat-smt.md) §8 — solver-side support.
+- [`docs/lib/02-solvers-csp-sat-smt.md`](../../docs/lib/02-solvers-csp-sat-smt.md) §8 — solver-side support.

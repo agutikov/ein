@@ -7,7 +7,7 @@ authoritative discussion.
 > **Scope.** This is a *kernel-internal* glossary — terms Ein
 > uses with a specific technical meaning. Broader external concepts
 > (LLM, CSP, SMT solver, …) live in
-> [`docs/index/`](../index/).
+> [`docs/lib/`](../lib/).
 
 ---
 
@@ -203,19 +203,19 @@ See [`ir/03-ein-lang/04_dot_rendering.md` §Rule rendering mode (b)](ir/03-ein-l
 A data structure that maintains equivalence classes of terms with
 shared sub-terms compressed — the canonical substrate for *equality
 saturation*. Ein ships a union-find placeholder; full e-graph
-is F4 Q30. See [`docs/index/06-graphs-rewrite-systems.md`](../index/06-graphs-rewrite-systems.md).
+is F4 Q30. See [`docs/lib/06-graphs-rewrite-systems.md`](../lib/06-graphs-rewrite-systems.md).
 
 ### Equality saturation
 Apply all known equality rewrites without committing to a normal
 form; an e-graph compresses redundant terms. Powerful for
 verification and superoptimisation. F4 promotion target. See
-[`docs/index/06-graphs-rewrite-systems.md`](../index/06-graphs-rewrite-systems.md).
+[`docs/lib/06-graphs-rewrite-systems.md`](../lib/06-graphs-rewrite-systems.md).
 
 ### ATMS (Assumption-based Truth Maintenance System)
 A truth-maintenance variant where every fact carries the set of
 assumptions it depends on. Ein's per-fact provenance (S1.2.3)
 is the ATMS-style substrate; the trace renderer + hypothesis loop
-read it. See [`docs/index/09-cognitive-architectures-neurosymbolic.md`](../index/09-cognitive-architectures-neurosymbolic.md).
+read it. See [`docs/lib/09-cognitive-architectures-neurosymbolic.md`](../lib/09-cognitive-architectures-neurosymbolic.md).
 
 ### Functoriality
 A categorical property: a rule R is *functorial* in a relation P if R

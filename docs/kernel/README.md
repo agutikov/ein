@@ -70,7 +70,7 @@ Zebra-acceptance milestone.
   dependencies, milestone boundaries, and a change cookbook.
 - Plans roadmap: [`plans/m1_core_graph_reasoning/`](../../plans/m1_core_graph_reasoning/).
 - Ideas (the user's framing of the project's *goals*): [`docs/ideas/`](../ideas/).
-- External tech index: [`docs/index/`](../index/).
+- External tech index: [`docs/lib/`](../lib/).
 - Source of truth for parsing: [`ein.py/src/ein/ir/grammar.lark`](../../ein.py/src/ein/ir/grammar.lark).
 - Source of truth for the KB: [`ein.py/src/ein/kb/`](../../ein.py/src/ein/kb/).
 - **End-to-end target trace**:

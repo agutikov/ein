@@ -83,11 +83,11 @@ philosophical difference is who *owns* the proof.
 ## Connections (context, not answers)
 
 - Graph / hypergraph / e-graph machinery:
-  [06-graphs-rewrite-systems.md](../index/06-graphs-rewrite-systems.md).
+  [06-graphs-rewrite-systems.md](../lib/06-graphs-rewrite-systems.md).
 - Solver back-ends, if/when you do hand off:
-  [02-solvers-csp-sat-smt.md](../index/02-solvers-csp-sat-smt.md).
+  [02-solvers-csp-sat-smt.md](../lib/02-solvers-csp-sat-smt.md).
 - Categorical formalisation of graph rewriting (DPO/SPO):
-  [05-category-theory.md](../index/05-category-theory.md).
+  [05-category-theory.md](../lib/05-category-theory.md).
 - Existing graph-native system (closest large prior art):
   OpenCog / AtomSpace —
-  [09-cognitive-architectures-neurosymbolic.md](../index/09-cognitive-architectures-neurosymbolic.md).
+  [09-cognitive-architectures-neurosymbolic.md](../lib/09-cognitive-architectures-neurosymbolic.md).

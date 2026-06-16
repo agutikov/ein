@@ -147,14 +147,14 @@ specialised inference rule. A clean formalisation is missing.
 - Truth-maintenance / ATMS — the hypothesis branching with rollback
   is structurally what ATMS does; CDCL is the same loop with clause
   learning bolted on. See
-  [09-cognitive-architectures-neurosymbolic.md](../index/09-cognitive-architectures-neurosymbolic.md).
+  [09-cognitive-architectures-neurosymbolic.md](../lib/09-cognitive-architectures-neurosymbolic.md).
 - Graph rewriting (DPO/SPO) — the inference rules are graph rewrites
   in disguise. See
-  [05-category-theory.md](../index/05-category-theory.md).
+  [05-category-theory.md](../lib/05-category-theory.md).
 - Constraint propagation (arc / path consistency,
   `allDifferent`) — the constraints map onto well-studied CSP
   notions. See
-  [02-solvers-csp-sat-smt.md](../index/02-solvers-csp-sat-smt.md).
+  [02-solvers-csp-sat-smt.md](../lib/02-solvers-csp-sat-smt.md).
 
 ## Connections to the other ideas
 

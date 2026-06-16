@@ -81,7 +81,7 @@ The R1-R4 rejected entries stay in the README catalog only.
 | ✅ E1 | `(functional R)` activator       | **resolved by P1.8 stdlib** — `functional`/`injective`/`bijective` ship across `std.algebra`/`std.bijection`/`std.elim`/`std.closure` ([§Resolution](s1.9.e1_functional_activator.md#resolution-2026-06-15)); `single-parent` retired | S | M | DL `funcProp` |
 | ✅ E2 | `(at-most-one R slot)` activator | **resolved a different way** — at-most-one = `functional`/`injective` (incl. positional `(functional R 0 1)`) + `std.closure` saturating to `(closed R)`; no dedicated activator needed ([§Resolution](s1.9.e2_at_most_one.md#resolution-2026-06-15)) | M | M | CSP cardinality |
 | ✅ E3 | `:no-hypothesis` query key       | **implemented** — query key `:no-hypothesis`, the exclusion dual of the `:hypothesis-relations` whitelist; blind-enumerator-scoped, saturation untouched ([§Implemented](s1.9.e3_no_hypotheses.md#implemented-2026-06-15)) | S | L | engineering convenience |
-| ⛔ E4 | `(symmetry-class R T)`           | **superseded 2026-06-15** by the symmetric **D/A/B/C decomposition** (Phase 2a/2b) — the dedicated activator is overtaken: E4(a) gen-time pruning → a user hrule (B); E4(b) uniqueness-up-to-symmetry → the positive mirror (C subsumed by D — stdlib `symmetric` + kernel `__symmetric__`). Residual = *object*-value-symmetry (lex-leader SBP/SBDD, L-effort, unexercised) ([§Superseded](s1.9.e4_symmetry_class.md#superseded-by-the-dabc-decomposition-2026-06-15)) | M | M | CSP value-symmetry breaking ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
+| ⛔ E4 | `(symmetry-class R T)`           | **superseded 2026-06-15** by the symmetric **D/A/B/C decomposition** (Phase 2a/2b) — the dedicated activator is overtaken: E4(a) gen-time pruning → a user hrule (B); E4(b) uniqueness-up-to-symmetry → the positive mirror (C subsumed by D — stdlib `symmetric` + kernel `__symmetric__`). Residual = *object*-value-symmetry (lex-leader SBP/SBDD, L-effort, unexercised) ([§Superseded](s1.9.e4_symmetry_class.md#superseded-by-the-dabc-decomposition-2026-06-15)) | M | M | CSP value-symmetry breaking ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)) |
 | ⛔ E5 | Static rule-conflict pre-analysis | **reframed 2026-06-15 → rule induction (F4-Q34 / F5 / F7)**: a mutex is a *negative hrule* (zebra2 already ships it as `functional-negative`), so this is `property → negative-companion rule` synthesis (cf. `symmetric → symmetric-negative`), not a hypgen table; only a *dominated* Python-table residual stays in P1.9 ([§Reframed](s1.9.e5_static_rule_conflict.md#reframed-as-rule-induction-2026-06-15)) | M | M | rule-set sufficiency, [F7 §C](../../followups/f7_rule_induction.md) |
 
 ### Conflict-driven learning (SAT/CDCL-inspired)
@@ -89,7 +89,7 @@ The R1-R4 rejected entries stay in the README catalog only.
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
 | ✅ E6 | Transitive premise walk for "unconditional" | **DONE 2026-06-15** — `walk_premises` (set-collecting dual of `reaches`) shipped in `provenance.py`; `store.unsat_core` refactored onto it (parity-verified); the substrate E19 / the trace consume ([§Executed](s1.9.e6_transitive_premise_walk.md#executed-2026-06-15)) | S | **H** (correctness) | — |
-| ✅ E7 | Learned-clause from unsat-core   | **largely resolved 2026-06-15** — deriving half ships (`DeadCommitment.unsat_core`, now on E6); pruning half **measured vacuous** (all 49 zebra2 deaths are singletons → nogoods already Apriori-minimal) + unsound-under-NAF → closed; only minimise (E19) remains ([§Resolved](s1.9.e7_learned_clause.md#resolved-2026-06-15)) | L | H (long-term) | CDCL ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)); ATMS justification cache ([docs/index/09](../../../docs/index/09-cognitive-architectures-neurosymbolic.md)) |
+| ✅ E7 | Learned-clause from unsat-core   | **largely resolved 2026-06-15** — deriving half ships (`DeadCommitment.unsat_core`, now on E6); pruning half **measured vacuous** (all 49 zebra2 deaths are singletons → nogoods already Apriori-minimal) + unsound-under-NAF → closed; only minimise (E19) remains ([§Resolved](s1.9.e7_learned_clause.md#resolved-2026-06-15)) | L | H (long-term) | CDCL ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)); ATMS justification cache ([docs/lib/09](../../../docs/lib/09-cognitive-architectures-neurosymbolic.md)) |
 | ⛔ E8 | Watched-fact rule applicability   | **motivation superseded by P1.8a** — delta-driven semi-naive saturation (alpha-memory index + seeded delta join) already kills the re-iterate cost; literal watched-literals judged premature ([§Superseded](s1.9.e8_watched_fact.md#superseded-by-p18a-2026-06-15)) | L | M | DPLL watched literals |
 
 ### Search heuristics
@@ -98,7 +98,7 @@ The R1-R4 rejected entries stay in the README catalog only.
 |-----|------|-----------|--------|-------|------------|
 | ❌ E9  | Least-constraining-value (LCV)   | **rejected 2026-06-15** (measured): worst ordering on zebra2 — first completer at rank 35/56 (vs lex 11); completers are heavy pruners, LCV prefers least-pruning ([§Rejected](s1.9.e9_lcv.md#rejected-measured-2026-06-15); `demo/score_hypotheses.py`) | M | M | CSP textbook |
 | ⛔ E10 | Iterative deepening              | **inapplicable to the lattice BFS** — cardinality layering *is* breadth-first deepening; no DFS depth bound to re-raise ([§Inapplicable](s1.9.e10_iterative_deepening.md#inapplicable-to-the-lattice-bfs-2026-06-15)) | S | M | IDA* idiom |
-| ❌ E11 | Goal-driven hypothesis filter    | **rejected 2026-06-15** (per user): can't filter a hypothesis without testing it — unsound (drops contradiction-pruning candidates); sound variant is cold on the connected corpus + changes the `solve()` contract ([§Rejected](s1.9.e11_goal_driven_filter.md#rejected-2026-06-15)) | M | M | Prolog SLD-resolution; [docs/index/03](../../../docs/index/03-theorem-proving-formal-methods.md) |
+| ❌ E11 | Goal-driven hypothesis filter    | **rejected 2026-06-15** (per user): can't filter a hypothesis without testing it — unsound (drops contradiction-pruning candidates); sound variant is cold on the connected corpus + changes the `solve()` contract ([§Rejected](s1.9.e11_goal_driven_filter.md#rejected-2026-06-15)) | M | M | Prolog SLD-resolution; [docs/lib/03](../../../docs/lib/03-theorem-proving-formal-methods.md) |
 | ❌ E12 | Hypothesis ordering by "informativeness" | **rejected 2026-06-15** (measured): "max cascade" is dominated by dead-post singletons → first completer at rank 19/56 (vs lex 11); discriminating signal is irreducibly post-fork ([§Rejected](s1.9.e12_informativeness.md#rejected-measured-2026-06-15); `demo/score_hypotheses.py`) | M | L (heuristic gain) | CSP value ordering |
 | ❌ E13 | Per-hypothesis saturation budget | **dropped 2026-06-15** (per user): saturation is correctness-critical — a per-fork budget aborts before quiescence, so the fork's verdict is unsound even on the fast path ([§Dropped](s1.9.e13_per_hyp_budget.md#dropped-2026-06-15)) | M | L (UX) | branch-and-bound |
 
@@ -106,7 +106,7 @@ The R1-R4 rejected entries stay in the README catalog only.
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| ❌ E14 | Arc-consistency pre-pass         | **rejected 2026-06-15** — **subsumed by rule-saturation**: the engine is append-only (no domains to prune) and the puzzle's elimination rules already propagate the `(not h)` negatives AC-3 would derive ([§"Prune"…](s1.9.e14_arc_consistency.md#prune-in-an-append-only-engine-2026-06-15)) | L | M | CSP AC-3 ([docs/index/02](../../../docs/index/02-solvers-csp-sat-smt.md)) |
+| ❌ E14 | Arc-consistency pre-pass         | **rejected 2026-06-15** — **subsumed by rule-saturation**: the engine is append-only (no domains to prune) and the puzzle's elimination rules already propagate the `(not h)` negatives AC-3 would derive ([§"Prune"…](s1.9.e14_arc_consistency.md#prune-in-an-append-only-engine-2026-06-15)) | L | M | CSP AC-3 ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)) |
 | ❌ E15 | Path-consistency (k-consistency) | **rejected 2026-06-15** — k-tuple generalisation of the (also-rejected) E14; just **eagerly** computes multi-literal nogoods `_nogoods` already builds **lazily + Apriori-minimal** ([§…weird here](s1.9.e15_path_consistency.md#what-it-is-and-why-its-weird-here-2026-06-15)) | L | L | k-consistency |
 
 > **Lattice re-grounding (2026-06-15).** Re-judged against the engine's actual
@@ -219,9 +219,9 @@ Without one of those signals, P1.9 stays cold.
 - [F7 rule induction](../../followups/f7_rule_induction.md) — the
   long-term framing that many P1.9 entries (especially E1-E5,
   E11) are interim workarounds for.
-- [docs/index/02 — solvers / CSP / SAT / SMT](../../../docs/index/02-solvers-csp-sat-smt.md)
+- [docs/lib/02 — solvers / CSP / SAT / SMT](../../../docs/lib/02-solvers-csp-sat-smt.md)
   — external tech background for E4, E7, E14.
-- [docs/index/09 — cognitive architectures / neurosymbolic](../../../docs/index/09-cognitive-architectures-neurosymbolic.md)
+- [docs/lib/09 — cognitive architectures / neurosymbolic](../../../docs/lib/09-cognitive-architectures-neurosymbolic.md)
   — ATMS justification-cache framing for E7.
 
 ## Open questions

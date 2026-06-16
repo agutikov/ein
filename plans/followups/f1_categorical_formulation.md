@@ -54,5 +54,5 @@ A new milestone `m_followups_categorical/` with phases:
 
 - [Idea 07](../../docs/ideas/07-categorical-formulation.md) — the
   question and the three readings.
-- [`docs/index/05-category-theory.md`](../../docs/index/05-category-theory.md) — CT primitives, DPO/SPO, Catlab.jl.
-- [`docs/index/06-graphs-rewrite-systems.md`](../../docs/index/06-graphs-rewrite-systems.md) — DPO/SPO graph rewriting.
+- [`docs/lib/05-category-theory.md`](../../docs/lib/05-category-theory.md) — CT primitives, DPO/SPO, Catlab.jl.
+- [`docs/lib/06-graphs-rewrite-systems.md`](../../docs/lib/06-graphs-rewrite-systems.md) — DPO/SPO graph rewriting.

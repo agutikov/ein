@@ -18,7 +18,7 @@ constrained-reasoning research.
   See [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
 - **`docs/ir.md`** — thin redirect into `docs/kernel/`; kept so stable
   cross-references resolve.
-- **`docs/index/`** — catalogue of external tech relevant to the rewrite
+- **`docs/lib/`** — catalogue of external tech relevant to the rewrite
   (LLM constrained generation, CSP/SAT/SMT, theorem proving, category
   theory, graphs & rewrite systems, reasoning benchmarks, …). 12
   thematic files + a knowledge graph (`knowledge-graph.dot` → SVGs
@@ -52,7 +52,7 @@ constrained-reasoning research.
 
 ## Regenerating the knowledge graph
 
-When `docs/index/knowledge-graph.dot` changes, re-render both views:
+When `docs/lib/knowledge-graph.dot` changes, re-render both views:
 
 ```sh
 utils/render_knowledge_graph.sh svg all     # 4 SVGs (dot/fdp/sfdp/osage)

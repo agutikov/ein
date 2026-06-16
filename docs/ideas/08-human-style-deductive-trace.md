@@ -124,12 +124,12 @@ already does, modulo provenance. The other two stages are missing.
 ## Connections (context, not answers)
 
 - ATMS / TMS as the architectural sweet spot:
-  [09-cognitive-architectures-neurosymbolic.md](../index/09-cognitive-architectures-neurosymbolic.md).
+  [09-cognitive-architectures-neurosymbolic.md](../lib/09-cognitive-architectures-neurosymbolic.md).
 - Why SMT proof traces aren't useful as-is:
-  [02-solvers-csp-sat-smt.md](../index/02-solvers-csp-sat-smt.md) §2 +
-  [11-search-optimization-algorithms.md](../index/11-search-optimization-algorithms.md) §1.
+  [02-solvers-csp-sat-smt.md](../lib/02-solvers-csp-sat-smt.md) §2 +
+  [11-search-optimization-algorithms.md](../lib/11-search-optimization-algorithms.md) §1.
 - Tableau / natural deduction style of proofs:
-  [03-theorem-proving-formal-methods.md](../index/03-theorem-proving-formal-methods.md) §4.
+  [03-theorem-proving-formal-methods.md](../lib/03-theorem-proving-formal-methods.md) §4.
 - The provenance graph required to make this possible:
-  [10-nlp-semantic-parsing.md](../index/10-nlp-semantic-parsing.md) §5,
+  [10-nlp-semantic-parsing.md](../lib/10-nlp-semantic-parsing.md) §5,
   [03-three-task-classes.md](03-three-task-classes.md).

@@ -9,7 +9,7 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 18144.75)">
 <title>KnowledgeGraph</title>
 <polygon fill="white" stroke="none" points="-4,4 -4,-18144.75 2661.21,-18144.75 2661.21,4 -4,4"/>
-<text xml:space="preserve" text-anchor="middle" x="1328.61" y="-18126.3" font-family="Helvetica,sans-Serif" font-size="11.00">ein&#45;bot / docs/index — Knowledge Graph of all topics</text>
+<text xml:space="preserve" text-anchor="middle" x="1328.61" y="-18126.3" font-family="Helvetica,sans-Serif" font-size="11.00">Ein / docs/lib — Knowledge Graph of all topics</text>
 <g id="clust1" class="cluster">
 <title>cluster_01</title>
 <path fill="#f4f8ff" stroke="#3a5fb0" d="M240.1,-16875C240.1,-16875 1499.84,-16875 1499.84,-16875 1505.84,-16875 1511.84,-16881 1511.84,-16887 1511.84,-16887 1511.84,-17020 1511.84,-17020 1511.84,-17026 1505.84,-17032 1499.84,-17032 1499.84,-17032 240.1,-17032 240.1,-17032 234.1,-17032 228.1,-17026 228.1,-17020 228.1,-17020 228.1,-16887 228.1,-16887 228.1,-16881 234.1,-16875 240.1,-16875"/>
@@ -322,8 +322,8 @@
 </g>
 <g id="clust63" class="cluster">
 <title>cluster_09_adj</title>
-<polygon fill="white" stroke="#aa55cc" stroke-dasharray="5,2" points="248.23,-12721 248.23,-13026 737.24,-13026 737.24,-12721 248.23,-12721"/>
-<text xml:space="preserve" text-anchor="middle" x="492.73" y="-13008.7" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#5a2078">Adjacent graph+cognition</text>
+<polygon fill="white" stroke="#aa55cc" stroke-dasharray="5,2" points="249.41,-12721 249.41,-13026 737.24,-13026 737.24,-12721 249.41,-12721"/>
+<text xml:space="preserve" text-anchor="middle" x="493.33" y="-13008.7" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#5a2078">Adjacent graph+cognition</text>
 </g>
 <g id="clust64" class="cluster">
 <title>cluster_09_buzz</title>
@@ -3872,43 +3872,43 @@
 <!-- EinBot -->
 <g id="node264" class="node">
 <title>EinBot</title>
-<polygon fill="lightcoral" stroke="black" points="380.01,-12952.38 380.01,-12973.62 344.93,-12988.64 295.31,-12988.64 260.23,-12973.62 260.23,-12952.38 295.31,-12937.36 344.93,-12937.36 380.01,-12952.38"/>
-<polygon fill="none" stroke="black" points="384.01,-12949.74 384.01,-12976.26 345.75,-12992.64 294.49,-12992.64 256.23,-12976.26 256.23,-12949.74 294.49,-12933.36 345.75,-12933.36 384.01,-12949.74"/>
-<text xml:space="preserve" text-anchor="middle" x="320.12" y="-12966.25" font-family="Helvetica,sans-Serif" font-size="10.00">ein&#45;bot itself</text>
+<polygon fill="lightcoral" stroke="black" points="370.82,-12952.38 370.82,-12973.62 341.12,-12988.64 299.12,-12988.64 269.41,-12973.62 269.41,-12952.38 299.12,-12937.36 341.12,-12937.36 370.82,-12952.38"/>
+<polygon fill="none" stroke="black" points="374.82,-12949.92 374.82,-12976.08 342.07,-12992.64 298.16,-12992.64 265.41,-12976.08 265.41,-12949.92 298.16,-12933.36 342.07,-12933.36 374.82,-12949.92"/>
+<text xml:space="preserve" text-anchor="middle" x="320.12" y="-12966.25" font-family="Helvetica,sans-Serif" font-size="10.00">Ein itself</text>
 <text xml:space="preserve" text-anchor="middle" x="320.12" y="-12953.5" font-family="Helvetica,sans-Serif" font-size="10.00">(this repo)</text>
 </g>
 <!-- EinBot&#45;&gt;Tableau -->
 <g id="edge232" class="edge">
 <title>EinBot&#45;&gt;Tableau</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M372.92,-12944.69C409.21,-12931.86 451.24,-12917 451.24,-12917 451.24,-12917 473.61,-10718.75 473.61,-10718.75 473.61,-10718.75 552.36,-10718.75 552.36,-10718.75 552.36,-10718.75 560.36,-12025 560.36,-12025 560.36,-12025 596.09,-12034.63 629.51,-12043.64"/>
+<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M368.46,-12946.26C405.67,-12933.11 451.24,-12917 451.24,-12917 451.24,-12917 473.61,-10718.75 473.61,-10718.75 473.61,-10718.75 552.36,-10718.75 552.36,-10718.75 552.36,-10718.75 560.36,-12025 560.36,-12025 560.36,-12025 596.09,-12034.63 629.51,-12043.64"/>
 <polygon fill="blue" stroke="blue" points="628.21,-12046.92 638.78,-12046.14 630.03,-12040.16 628.21,-12046.92"/>
 <text xml:space="preserve" text-anchor="middle" x="512.99" y="-10721.45" font-family="Helvetica,sans-Serif" font-size="9.00">trace goal</text>
 </g>
 <!-- EinBot&#45;&gt;NaturalDeduction -->
 <g id="edge231" class="edge">
 <title>EinBot&#45;&gt;NaturalDeduction</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M372.92,-12944.69C409.21,-12931.86 451.24,-12917 451.24,-12917 451.24,-12917 473.61,-10699.75 473.61,-10699.75 473.61,-10699.75 552.36,-10699.75 552.36,-10699.75 552.36,-10699.75 560.36,-11957 560.36,-11957 560.36,-11957 607.67,-11969.75 644.33,-11979.64"/>
+<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M368.46,-12946.26C405.67,-12933.11 451.24,-12917 451.24,-12917 451.24,-12917 473.61,-10699.75 473.61,-10699.75 473.61,-10699.75 552.36,-10699.75 552.36,-10699.75 552.36,-10699.75 560.36,-11957 560.36,-11957 560.36,-11957 607.67,-11969.75 644.33,-11979.64"/>
 <polygon fill="blue" stroke="blue" points="643.28,-11982.98 653.85,-11982.2 645.1,-11976.22 643.28,-11982.98"/>
 <text xml:space="preserve" text-anchor="middle" x="512.99" y="-10702.45" font-family="Helvetica,sans-Serif" font-size="9.00">trace goal</text>
 </g>
 <!-- EinBot&#45;&gt;AtomSpace -->
 <g id="edge229" class="edge">
 <title>EinBot&#45;&gt;AtomSpace</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M384.46,-12969.23C426.36,-12973.35 473.61,-12978 473.61,-12978 473.61,-12978 552.36,-12978 552.36,-12978 552.36,-12978 560.36,-12224 560.36,-12224 560.36,-12224 604.44,-12212.12 640.48,-12202.4"/>
+<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M375.31,-12968.33C419.14,-12972.64 473.61,-12978 473.61,-12978 473.61,-12978 552.36,-12978 552.36,-12978 552.36,-12978 560.36,-12224 560.36,-12224 560.36,-12224 604.44,-12212.12 640.48,-12202.4"/>
 <polygon fill="blue" stroke="blue" points="641.15,-12205.85 649.89,-12199.86 639.33,-12199.09 641.15,-12205.85"/>
 <text xml:space="preserve" text-anchor="middle" x="512.99" y="-12980.7" font-family="Helvetica,sans-Serif" font-size="9.00">kin to</text>
 </g>
 <!-- EinBot&#45;&gt;ATMS -->
 <g id="edge230" class="edge">
 <title>EinBot&#45;&gt;ATMS</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M365.54,-12984.5C403.23,-13002.76 451.24,-13026 451.24,-13026 451.24,-13026 473.61,-13291 473.61,-13291 473.61,-13291 552.36,-13291 552.36,-13291 552.36,-13291 560.36,-12726 560.36,-12726 560.36,-12726 584.55,-12719.48 611.75,-12712.15"/>
+<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M362.29,-12982.93C400.41,-13001.39 451.24,-13026 451.24,-13026 451.24,-13026 473.61,-13291 473.61,-13291 473.61,-13291 552.36,-13291 552.36,-13291 552.36,-13291 560.36,-12726 560.36,-12726 560.36,-12726 584.55,-12719.48 611.75,-12712.15"/>
 <polygon fill="blue" stroke="blue" points="612.48,-12715.58 621.22,-12709.59 610.66,-12708.82 612.48,-12715.58"/>
 <text xml:space="preserve" text-anchor="middle" x="512.99" y="-13293.7" font-family="Helvetica,sans-Serif" font-size="9.00">kin to</text>
 </g>
 <!-- EinBot&#45;&gt;ConstrHGraphIR -->
 <g id="edge228" class="edge">
 <title>EinBot&#45;&gt;ConstrHGraphIR</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M372.92,-12944.69C409.21,-12931.86 451.24,-12917 451.24,-12917 451.24,-12917 473.61,-10692 473.61,-10692 473.61,-10692 552.36,-10421 552.36,-10421 552.36,-10421 560.36,-6504 560.36,-6504 560.36,-6504 815.61,-5878 815.61,-5878 815.61,-5878 823.61,-733 823.61,-733 823.61,-733 1306.1,-721 1306.1,-721 1306.1,-721 1520.91,-721 1520.91,-721 1520.91,-721 1616.91,-726 1616.91,-726 1616.91,-726 1722.49,-1313.64 1749.54,-1464.19"/>
+<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M368.46,-12946.26C405.67,-12933.11 451.24,-12917 451.24,-12917 451.24,-12917 473.61,-10692 473.61,-10692 473.61,-10692 552.36,-10421 552.36,-10421 552.36,-10421 560.36,-6504 560.36,-6504 560.36,-6504 815.61,-5878 815.61,-5878 815.61,-5878 823.61,-733 823.61,-733 823.61,-733 1306.1,-721 1306.1,-721 1306.1,-721 1520.91,-721 1520.91,-721 1520.91,-721 1616.91,-726 1616.91,-726 1616.91,-726 1722.49,-1313.64 1749.54,-1464.19"/>
 <polygon fill="blue" stroke="blue" points="1746.08,-1464.73 1751.29,-1473.95 1752.97,-1463.49 1746.08,-1464.73"/>
 <text xml:space="preserve" text-anchor="middle" x="1058.35" y="-744.18" font-family="Helvetica,sans-Serif" font-size="9.00">typed relational</text>
 <text xml:space="preserve" text-anchor="middle" x="1058.35" y="-732.93" font-family="Helvetica,sans-Serif" font-size="9.00">hypergraph</text>
@@ -3916,7 +3916,7 @@
 <!-- EinBot&#45;&gt;HypothesisBranching -->
 <g id="edge227" class="edge">
 <title>EinBot&#45;&gt;HypothesisBranching</title>
-<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M372.92,-12944.69C409.21,-12931.86 451.24,-12917 451.24,-12917 451.24,-12917 473.61,-10524 473.61,-10524 473.61,-10524 552.36,-10268 552.36,-10268 552.36,-10268 560.36,-6165 560.36,-6165 560.36,-6165 815.61,-5540 815.61,-5540 815.61,-5540 823.61,-646.75 823.61,-646.75 823.61,-646.75 933.1,-614 933.1,-614 933.1,-614 1184.6,-614 1184.6,-614 1184.6,-614 1266.1,-1026 1266.1,-1026 1266.1,-1026 1306.1,-1669 1306.1,-1669 1306.1,-1669 1384.3,-2619.38 1401.28,-2825.76"/>
+<path fill="none" stroke="blue" stroke-dasharray="5,2" d="M368.46,-12946.26C405.67,-12933.11 451.24,-12917 451.24,-12917 451.24,-12917 473.61,-10524 473.61,-10524 473.61,-10524 552.36,-10268 552.36,-10268 552.36,-10268 560.36,-6165 560.36,-6165 560.36,-6165 815.61,-5540 815.61,-5540 815.61,-5540 823.61,-646.75 823.61,-646.75 823.61,-646.75 933.1,-614 933.1,-614 933.1,-614 1184.6,-614 1184.6,-614 1184.6,-614 1266.1,-1026 1266.1,-1026 1266.1,-1026 1306.1,-1669 1306.1,-1669 1306.1,-1669 1384.3,-2619.38 1401.28,-2825.76"/>
 <polygon fill="blue" stroke="blue" points="1397.78,-2826.01 1402.09,-2835.69 1404.76,-2825.44 1397.78,-2826.01"/>
 <text xml:space="preserve" text-anchor="middle" x="867.86" y="-649.45" font-family="Helvetica,sans-Serif" font-size="9.00">implements</text>
 </g>

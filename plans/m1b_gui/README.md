@@ -122,5 +122,5 @@ Composed:
 - [utils/render_knowledge_graph_cy.py](../../utils/render_knowledge_graph_cy.py)
   — the existing browser-Cytoscape renderer; closest existing
   point to View 2.
-- [docs/index/08 — diagramming / visualization libraries](../../docs/index/08-diagramming-visualization-libraries.md)
+- [docs/lib/08 — diagramming / visualization libraries](../../docs/lib/08-diagramming-visualization-libraries.md)
   — external tech that could host M1b's views.

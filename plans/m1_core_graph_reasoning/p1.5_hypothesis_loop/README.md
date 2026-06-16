@@ -187,7 +187,7 @@ and the updated
   — the walkthrough corresponds to a traversal of the SearchTree
   (including dead branches).
 - ATMS prior art:
-  [docs/index/09-cognitive-architectures-neurosymbolic.md](../../../docs/index/09-cognitive-architectures-neurosymbolic.md).
+  [docs/lib/09-cognitive-architectures-neurosymbolic.md](../../../docs/lib/09-cognitive-architectures-neurosymbolic.md).
 - [P1.4 contradiction detector](../p1.4_constraints/s1.4.1_contradiction_detector.md)
   — the dead-leaf test for each branch.
 - [P1.8 Theme B2 (COW fork)](../p1.8_ein_lang_modules/README.md)

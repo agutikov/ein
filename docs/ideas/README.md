@@ -2,7 +2,7 @@
 
 The user's own ideas, intuitions, and open questions — distinct from
 the assistant's elaborations or the external systems catalogued in
-`docs/index/`.
+`docs/lib/`.
 
 Each file records:
 - the **idea** in 1–3 sentences,
@@ -53,7 +53,7 @@ These are seeds for further work, not specifications.
    children, hat puzzles, Tower of Hanoi, paradoxes, …) and what each
    one stresses that Zebra does not — the *capability map* the engine
    should grow into. Companion benchmarks file:
-   [`docs/index/12`](../index/12-llm-and-reasoning-benchmarks.md).
+   [`docs/lib/12`](../lib/12-llm-and-reasoning-benchmarks.md).
 
 10. [Generic self-modification — three rungs](10-generic-self-modification.md)
     Three rungs of a ladder: grammar (F2), rules (F5), harness (F6).
@@ -70,13 +70,13 @@ visible:
 - **"Graphs are everywhere"** — most of the systems discussed (CT,
   e-graphs, SAT, CSP, abstract interpretation, theorem provers, …)
   either are graphs or hide graphs internally. Picked up and extended
-  in [06-graphs-rewrite-systems.md](../index/06-graphs-rewrite-systems.md).
+  in [06-graphs-rewrite-systems.md](../lib/06-graphs-rewrite-systems.md).
 
 - **Surprising convergence with current research** — the architecture
   parallels modern constrained-reasoning frameworks (Const-o-T, GCR,
   CRANE, SGR). Not a *new* idea, but it validates the older ones and
   locates them on the current research map. See
-  [01-llm-constrained-generation.md](../index/01-llm-constrained-generation.md).
+  [01-llm-constrained-generation.md](../lib/01-llm-constrained-generation.md).
 
 ## How to use these files
 

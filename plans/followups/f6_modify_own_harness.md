@@ -95,5 +95,5 @@ working, with an explicit research bound:
   — F2 lineage; F6 is the maximal extension of that thread.
 - [`docs/ideas/10-generic-self-modification.md`](../../docs/ideas/10-generic-self-modification.md)
   — the umbrella view of the three followups.
-- [`docs/index/01-llm-constrained-generation.md`](../../docs/index/01-llm-constrained-generation.md)
+- [`docs/lib/01-llm-constrained-generation.md`](../../docs/lib/01-llm-constrained-generation.md)
   — constrained-generation infrastructure F6 might emit through.

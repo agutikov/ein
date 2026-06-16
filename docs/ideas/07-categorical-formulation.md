@@ -96,12 +96,12 @@ engine living in [02-graph-as-formal-substrate.md](02-graph-as-formal-substrate.
 ## Connections (context, not answers)
 
 - CT primitives, diagram languages, monoidal/string-diagram
-  variants: [05-category-theory.md](../index/05-category-theory.md).
+  variants: [05-category-theory.md](../lib/05-category-theory.md).
 - DPO/SPO graph rewriting:
-  [05-category-theory.md](../index/05-category-theory.md) §5,
-  [06-graphs-rewrite-systems.md](../index/06-graphs-rewrite-systems.md) §4.
+  [05-category-theory.md](../lib/05-category-theory.md) §5,
+  [06-graphs-rewrite-systems.md](../lib/06-graphs-rewrite-systems.md) §4.
 - Catlab.jl as a possible host for a categorical IR:
-  [04-programming-languages.md](../index/04-programming-languages.md) §5.
+  [04-programming-languages.md](../lib/04-programming-languages.md) §5.
 - The user's intuition that "graphs are everywhere" — supplies the
   raw material for any categorical reading:
-  [06-graphs-rewrite-systems.md](../index/06-graphs-rewrite-systems.md).
+  [06-graphs-rewrite-systems.md](../lib/06-graphs-rewrite-systems.md).

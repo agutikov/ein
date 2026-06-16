@@ -71,7 +71,7 @@ A new milestone `m_followups_self_modifying/` with phases:
 ## Prior art / connections
 
 - [Idea 01](../../docs/ideas/01-self-modifying-constraint-language.md) — the full description.
-- [`docs/index/01-llm-constrained-generation.md`](../../docs/index/01-llm-constrained-generation.md) — GBNF / parser-guided decoding.
+- [`docs/lib/01-llm-constrained-generation.md`](../../docs/lib/01-llm-constrained-generation.md) — GBNF / parser-guided decoding.
 - Existing nearby work: SMT-LIB (clean S-expression IR), PLT Redex,
   K Framework, ACL2, miniKanren.
 - **Not** arbitrary direct GBNF mutation — better an immutable
