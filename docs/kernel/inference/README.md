@@ -45,8 +45,9 @@ docs/kernel/inference/
 │                                     (Datalog / RETE / CDCL / ATMS), fast algos
 ├── domain_elim_vs_hypothesis.md   ← the domain-elimination vs guess duals
 ├── lattice_dump.md                ← the commitment-lattice dump format
-└── reserved_engine_strings.md     ← engine-internal reserved atoms
-                                      (__closed__, __symmetric__, false, …)
+├── reserved_engine_strings.md     ← engine-internal reserved atoms
+│                                     (__closed__, __symmetric__, false, …)
+└── python_impl.md                 ← the file-by-file Python module map (S1.20.D)
 ```
 
 Source for the engine lives under
@@ -304,8 +305,18 @@ direction's NAF explicit in its own match clause.
 
 ## Determinism — content-based candidate ordering (S1.5a.1a)
 
+> **Reconcile note.** The names in this section are the **removed tree
+> solver's** (`_candidates_for` / `_candidate_sort_key`, old
+> `inference/solver.py`). The live ordering is
+> [`apriori.order_candidates`](../../../ein.py/src/ein/inference/apriori.py)
+> (+ `_set_score`), applied by
+> [`monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py);
+> [`hypgen.score_hypothesis`](../../../ein.py/src/ein/inference/hypgen.py) is the
+> score key. The *principle* below — sort candidates by a content key, never by
+> `frozenset` / hash iteration order — is unchanged.
+
 `solve()` visits hypothesis branches in the order
-[`_candidates_for`](../../../ein.py/src/ein/inference/solver.py)
+`_candidates_for`
 returns them. Pre-S1.5a.1a that list was the iteration of a
 `frozenset` (the root alive-set stashed on `kb.alive`), which
 reaches `hash(Fact)`, which reaches `hash(str)` — randomised
@@ -313,7 +324,7 @@ per process by Python since 3.3. The visible symptom: every
 `bench_solve` invocation explored branches in a different order.
 
 The fix sorts the result of `_candidates_for` by
-[`_candidate_sort_key`](../../../ein.py/src/ein/inference/solver.py):
+`_candidate_sort_key`:
 
 ```python
 (-score_hypothesis(fact, kb), fact.args, fact.relation_name)
