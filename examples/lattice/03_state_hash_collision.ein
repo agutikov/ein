@@ -82,7 +82,6 @@
 (is-a X    Item)
 
 (query
-  :mode solve
   :goal (h1 ?x)
   :hrules (
     guess (h1 Item)

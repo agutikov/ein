@@ -165,5 +165,4 @@
 (color-of H1 Red :source "(1) H1 is Red")
 
 (query
-  :mode solve
   :goal (color-of ?h ?c))

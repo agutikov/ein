@@ -32,4 +32,4 @@
 (relation co-located T T)
 (type-exclusivity co-located)
 
-(query :mode solve :goal (not (co-located Red Blue)))
+(query :goal (not (co-located Red Blue)))

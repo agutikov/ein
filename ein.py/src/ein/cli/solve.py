@@ -283,7 +283,7 @@ def _write_trace(verdict: object, args: argparse.Namespace) -> None:
 def _cmd_solve(args: argparse.Namespace) -> int:
     from ..inference.monotonic import solve
     from ..inference.monotonic.solver import BudgetExceededError
-    from ..trace import render_answer
+    from ..trace import render_solution_table
 
     kb, parse_ms, load_ms, n_forms = _timed_load(Path(args.file))
     if kb is None:
@@ -330,9 +330,11 @@ def _cmd_solve(args: argparse.Namespace) -> int:
         return 2
     elapsed_ms = (time.perf_counter() - t0) * 1000.0
 
-    # Result-driven: render_answer maps the verdict to its answer — the
-    # solution, "ambiguous — k models", or "no solution — unsat core …".
-    print(render_answer(verdict, exhausted=stats.exhausted))
+    # Result-driven: the table reports k / verdict / query bindings / rendered
+    # query facts / NL result — all text from puzzle templates (per-relation
+    # :why + per-query :goal-text), nothing hardcoded here.
+    print(render_solution_table(
+        verdict, stats, exhausted=stats.exhausted, source=args.file))
     _print_final(verdict, kb, args)
     if args.stats:
         _print_stats(stats, elapsed_ms)

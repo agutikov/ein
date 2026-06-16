@@ -30,4 +30,4 @@
 
 (right-of H2 H1 :source "(1)")
 
-(query :mode solve :goal (next-to H2 H1))
+(query :goal (next-to H2 H1))

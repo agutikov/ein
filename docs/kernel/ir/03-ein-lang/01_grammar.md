@@ -45,7 +45,7 @@ key on it).
 | `relation` | declare a relation-type + its arg-type signature | `(relation <name> <T1> <T2> [<T3> …] [:kw v]*)` |
 | `rule` | a saturation rewrite rule | `(rule <name> (<param-vars>*) :match … :assert … …)` |
 | `hrule` | a hypothesis-generation rule (drives the blind enumerator) | same shape as `rule` |
-| `query` | what to ask the engine | `(query :mode … :goal … …)` |
+| `query` | what to ask the engine | `(query :goal … [:goal-text …] [:hrules …])` |
 | `config` | solver knobs | `(config [:flag v]*)` |
 | `trace` | **engine output** — derivation log (engine-emitted, not authored) | `(trace <step\|branch-open\|…>*)` |
 | *anything else* | **a fact** | `(= …)` · `(not …)` · generic `(<NAME> <args>* [:kw v]*)` |
@@ -89,7 +89,8 @@ for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 
 ```lisp
 (relation <name> <T1> <T2> [<T3> ...]    ; relation signature, arity ≥ 2
-  [:cardinality <RANGE>] [...])           ; optional metadata kw-pairs
+  [:why <STRING>] [:cardinality <RANGE>]  ; optional metadata kw-pairs
+  [...])
 ```
 
 `relation` declares a relation-type node + its arg-type signature
@@ -100,6 +101,21 @@ rules can introspect signatures via a `(relation ?R ?A ?B)` pattern in
 `:match`. Because of that, `relation` is **not** SYMBOL-excluded, so the
 malformed wrapped-arg form `(relation R (T1 T2))` parses but is rejected at
 LOAD time (not parse time).
+
+**`:why` render template (optional).** A `:why "<tmpl>"` string turns a fact
+of this relation into natural-language text — used by `ein solve`'s result
+table (the *rendered query facts* column). It reuses the rule `:why` engine
+but references the fact's argument **slots positionally**: `{?1}` is arg 0,
+`{?2}` is arg 1, … (a leading digit is the relation-template form;
+rule/goal `:why` uses letter-led var names). A relation with **no** `:why`
+renders as its raw IR s-expression `(R a b)` — there is no built-in
+relation→verb vocabulary, so untemplated relations stay in IR. Example:
+
+```lisp
+(relation drink-loc Drink House :why "{?1} is drunk in {?2}")
+;; (drink-loc Water House-1)  →  "Water is drunk in House-1"
+(relation right-of House House)            ; no :why → renders as (right-of …)
+```
 
 A schema + implicit-assumption example (all flat forms; the property tags
 and enumerations derive ONTOLOGY, so no `:layer` is needed):
@@ -290,16 +306,40 @@ to avoid the race.
 
 ```lisp
 (query
-  :mode (solve | gaps | contradictions)   ; task class — idea 03
-  :goal <expr>)                            ; what to find / verify
+  :goal <expr>                             ; what to find / verify
+  [:goal-text <STRING>]                    ; NL headline template (optional)
+  [:hrules (<activator> …)])               ; hypothesis-generator activators
 ```
 
-The three modes correspond to the three task classes from
-[`docs/ideas/03-three-task-classes.md`](../../../ideas/03-three-task-classes.md):
+The engine answers idea 03's three task classes —
+[`docs/ideas/03-three-task-classes.md`](../../../ideas/03-three-task-classes.md)
+— *solve* (a unique model), *gaps* (under-determined: many models), and
+*contradictions* (inconsistency + provenance). But these are **three answers
+to one problem, read off the result `k`** (the count of distinct complete
+models: `k = 1` / `k > 1` / `k = 0`) — **not** chosen up front. There is one
+`ein solve`, no `--mode` flag, and the engine's goal test is hardwired to
+SOLVE. A `:mode` keyword on the query is **obsolete** (vestigial; the engine
+ignores it) — omit it.
 
-- `solve` — derive a unique model.
-- `gaps` — what cannot be derived from the given facts.
-- `contradictions` — find inconsistencies + provenance.
+**`:goal-text` headline template (optional).** A `:goal-text "<tmpl>"` string
+renders the one-line natural-language answer for `ein solve`'s result table,
+referencing the goal's **own variables** by name — the same `{?var}` engine as
+rule `:why`, bound from the solution. The vocabulary lives entirely in the
+puzzle; nothing is hardcoded in the renderer. The value is a **single** string
+literal (ein-lang does not concatenate adjacent strings). Example (the Zebra
+goal binds `?who_water` / `?h_zebra` / …):
+
+```lisp
+(query
+  :goal (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water)
+             (pet-loc Zebra ?h_zebra)   (nation-loc ?who_zebra ?h_zebra))
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}")
+;;  →  "The Norwegian drinks water in House-1; the Japanese owns zebra in House-5"
+```
+
+The division of labour: a `(relation … :why)` template renders an individual
+*fact* to text (the rendered-facts column); the `(query … :goal-text)`
+template renders the *headline result* from the goal bindings.
 
 ### Trace
 

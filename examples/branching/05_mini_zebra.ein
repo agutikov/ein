@@ -72,7 +72,6 @@
 (co-located Alice Cat :source "(2) Alice has the Cat")
 
 (query
-  :mode solve
   :goal (and (co-located ?n Coffee)
              (co-located ?n ?p)
              (is-a ?p Pet))

@@ -68,7 +68,7 @@ _GENERIC_HRULE = """
 (is-a H1 House)
 (is-a Red Color)
 (is-a Dog Pet)
-(query :mode solve :goal (co-located Red H1)
+(query :goal (co-located Red H1)
        :hrules (guess (co-located Color) (co-located Pet)))
 """
 
@@ -88,7 +88,7 @@ def test_query_whitelist_restricts_enumerator():
     """`(query :hypothesis-relations (co-located))` keeps the
     enumerator to `co-located`; `likes` counts as a
     `relation_not_whitelisted` pre-candidate skip."""
-    kb = _kb(_TWO_REL + "(query :mode solve :goal (co-located A B)"
+    kb = _kb(_TWO_REL + "(query :goal (co-located A B)"
                         "        :hypothesis-relations (co-located))")
     facts, stats = generate_hypotheses_with_stats(kb)
     assert facts
@@ -98,7 +98,7 @@ def test_query_whitelist_restricts_enumerator():
 
 def test_query_single_relation_whitelist():
     """A bare SYMBOL value is a one-relation whitelist."""
-    kb = _kb(_TWO_REL + "(query :mode solve :goal (co-located A B)"
+    kb = _kb(_TWO_REL + "(query :goal (co-located A B)"
                         "        :hypothesis-relations co-located)")
     facts, _stats = generate_hypotheses_with_stats(kb)
     assert all(f.relation_name == "co-located" for f in facts)
@@ -118,7 +118,7 @@ def test_query_no_hypothesis_excludes_relation():
     """`(query :no-hypothesis (likes))` drops `likes` from the
     enumerator while `co-located` still runs; the skip counts as a
     `no_hypothesis_relation` pre-candidate skip."""
-    kb = _kb(_TWO_REL + "(query :mode solve :goal (co-located A B)"
+    kb = _kb(_TWO_REL + "(query :goal (co-located A B)"
                         "        :no-hypothesis (likes))")
     facts, stats = generate_hypotheses_with_stats(kb)
     assert facts
@@ -129,7 +129,7 @@ def test_query_no_hypothesis_excludes_relation():
 
 def test_query_no_hypothesis_single_relation():
     """A bare SYMBOL value is a one-relation blacklist."""
-    kb = _kb(_TWO_REL + "(query :mode solve :goal (co-located A B)"
+    kb = _kb(_TWO_REL + "(query :goal (co-located A B)"
                         "        :no-hypothesis likes)")
     facts, _stats = generate_hypotheses_with_stats(kb)
     assert facts
@@ -139,7 +139,7 @@ def test_query_no_hypothesis_single_relation():
 def test_no_hypothesis_overrides_whitelist():
     """The blacklist applies on top of the whitelist: a relation named
     by both `:hypothesis-relations` and `:no-hypothesis` is excluded."""
-    kb = _kb(_TWO_REL + "(query :mode solve :goal (co-located A B)"
+    kb = _kb(_TWO_REL + "(query :goal (co-located A B)"
                         "        :hypothesis-relations (co-located likes)"
                         "        :no-hypothesis (likes))")
     facts, _stats = generate_hypotheses_with_stats(kb)

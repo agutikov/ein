@@ -42,4 +42,4 @@
 (before-of FridayCall ThursdayCall :source "(2)")
 (co-located TuesdayMeeting FridayCall :source "(3)")
 
-(query :mode solve :goal (co-located MondayMeeting ThursdayCall))
+(query :goal (co-located MondayMeeting ThursdayCall))

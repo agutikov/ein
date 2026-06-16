@@ -199,5 +199,4 @@
 (next-to Norwegian Blue :source "condition (15)")
 
 (query
-  :mode solve
   :goal (and (co-located ?water-drinker Water) (co-located ?zebra-owner Zebra)))

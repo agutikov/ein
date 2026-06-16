@@ -333,18 +333,23 @@ water and tea on the previous step"* pattern in step 3).
 ## Variant fixtures (P1.7 three-task-class acceptance)
 
 Two thin diffs of `zebra2.ein` (same ontology + rules) exercise the other
-two task classes from [idea 03](../docs/ideas/03-three-task-classes.md):
+two task classes from [idea 03](../docs/ideas/03-three-task-classes.md). They
+run through the **same** `ein solve` — the verdict is read from the result
+`k` (the count of distinct complete models), never selected by a flag:
 
-- [`zebra2-minus-15.ein`](zebra2-minus-15.ein) — **GAPS**: drops condition
-  (15) (the only fact pinning Blue at `H_2`), leaving the colours
-  under-determined. `--mode=gaps` reports ≥ 1 diverging goal node.
-- [`ein-bugs/zebra2-bad.ein`](ein-bugs/zebra2-bad.ein) — **CONTRADICTIONS**:
-  adds an injected `(color-loc Green House-1)` that collides with condition
-  (6)'s spatial endpoint (Green is `right-of` Ivory, so it cannot sit in the
-  leftmost house). `--mode=contradictions` returns a 2-3 edge unsat core
-  pairing the injection with (6). It lives under `ein-bugs/` rather than
-  `broken/` because it parses cleanly — it is semantically unsatisfiable,
-  not malformed IR.
+- [`zebra2-minus-15.ein`](zebra2-minus-15.ein) — **GAPS** (`k > 1`): drops
+  condition (15) (the only fact pinning Blue at `H_2`), leaving the colours
+  under-determined. `ein solve … --exhaustive` reports `Ambiguous — k distinct
+  complete models`.
+- [`ein-bugs/zebra2-bad.ein`](ein-bugs/zebra2-bad.ein) — **CONTRADICTIONS**
+  (`k = 0`): adds an injected `(color-loc Green House-1)` that collides with
+  condition (6)'s spatial endpoint (Green is `right-of` Ivory, so it cannot sit
+  in the leftmost house). `ein solve` reports `No solution` with the unsat
+  core. It lives under `ein-bugs/` rather than `broken/` because it parses
+  cleanly — it is semantically unsatisfiable, not malformed IR.
 
-Parse + thin-diff invariants are pinned by
+Both variants are **generated** from `zebra2.ein` by
+[`gen_zebra2_variants.py`](gen_zebra2_variants.py) (so the shared ontology /
+rules / `:why` / `:goal-text` can't drift); parse + thin-diff invariants are
+pinned by
 [`tests/integration/test_zebra_parse.py`](../ein.py/tests/integration/test_zebra_parse.py).

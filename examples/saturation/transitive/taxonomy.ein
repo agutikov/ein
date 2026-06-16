@@ -28,4 +28,4 @@
 (is-a Cat Mammal :source "taxonomy")
 (is-a Mammal Animal :source "taxonomy")
 
-(query :mode solve :goal (is-a Cat Animal))
+(query :goal (is-a Cat Animal))

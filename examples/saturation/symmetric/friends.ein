@@ -24,4 +24,4 @@
 
 (friend-of Carol Dave :source "demo")
 
-(query :mode solve :goal (friend-of Dave Carol))
+(query :goal (friend-of Dave Carol))

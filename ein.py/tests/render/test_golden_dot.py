@@ -139,7 +139,7 @@ _TRACE = parse(
 _FACT_TEXT = '(co-located Norwegian House-1 :source "(10)")'
 _NEG_TEXT = '(not (co-located Spaniard Coffee) :source "(1)")'
 _REASONING_TEXT = "(co-located Blue House-2 :rule square-fwd :using (c10))"
-_QUERY_TEXT = "(query :mode solve :goal (drinks Water ?h))"
+_QUERY_TEXT = "(query :goal (drinks Water ?h))"
 
 
 # ── the cases: (name, zero-arg render thunk) ───────────────────────

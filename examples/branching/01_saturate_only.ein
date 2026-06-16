@@ -58,5 +58,4 @@
 (co-located Blue Coffee :source "(2)")
 
 (query
-  :mode solve
   :goal (co-located ?c Coffee))

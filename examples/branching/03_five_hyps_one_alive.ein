@@ -73,5 +73,4 @@
 (co-located Yellow H4 :source "(4)")
 
 (query
-  :mode solve
   :goal (co-located White ?h))

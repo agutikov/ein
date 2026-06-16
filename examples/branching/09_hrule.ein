@@ -68,7 +68,6 @@
 (co-located Green H2 :source "(2)")
 
 (query
-  :mode solve
   :goal (co-located Blue ?h)
   :hrules (
     guess (co-located Color House)

@@ -55,4 +55,4 @@
 (co-located Alice Lot_3 :source "(1)")
 (next-to Alice Bob :source "(2)")
 
-(query :mode solve :goal (co-located Bob Lot_2))
+(query :goal (co-located Bob Lot_2))

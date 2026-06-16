@@ -31,4 +31,4 @@
 
 (parent-of Anne Bob :source "demo")
 
-(query :mode solve :goal (ancestor-of Anne Bob))
+(query :goal (ancestor-of Anne Bob))

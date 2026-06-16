@@ -25,4 +25,4 @@
 
 (next-to House-1 House-2 :source "demo")
 
-(query :mode solve :goal (next-to House-2 House-1))
+(query :goal (next-to House-2 House-1))

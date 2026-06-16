@@ -74,6 +74,5 @@
 
 
 (query
-  :mode solve
   :goal (color-of ?h ?c)
 )

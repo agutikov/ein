@@ -121,7 +121,7 @@ def test_p16_contract_root_contradiction():
     (relation trigger T)
     (instance a T)
     (trigger a :source "(1)")
-    (query :mode solve :goal (trigger ?x))
+    (query :goal (trigger ?x))
     """))
     verdict, _ = _solve(kb, max_set_size=1)
     assert isinstance(verdict, Contradiction)

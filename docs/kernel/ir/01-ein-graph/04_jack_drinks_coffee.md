@@ -96,7 +96,7 @@ separate rule. See §2.
 ;; Fact (4): the explicit puzzle statement (:source → FACT layer).
 (drinks Jack Coffee :source "puzzle text")
 
-(query :mode solve :goal (drinks Jack Coffee))
+(query :goal (drinks Jack Coffee))
 ```
 
 Note: this is a *sketch* of the rule library, not a tested M1 file

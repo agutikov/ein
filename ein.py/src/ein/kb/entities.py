@@ -117,6 +117,11 @@ class Relation:
     name: str
     signature: tuple[str, ...] = ()
     declared: bool = True
+    #: Optional ``:why`` render template — a `{?1}`/`{?2}` positional-slot
+    #: string (see :func:`ein.inference.why.render_why`) used to translate a
+    #: fact of this relation into text (the CLI ``solve`` table's *rendered
+    #: query facts* column). Metadata, not identity (``compare=False``).
+    why: str = field(default="", compare=False, hash=False, repr=False)
     loc: Loc | None = field(default=None, compare=False, hash=False, repr=False)
     _kb: KnowledgeBase | None = field(default=None, compare=False, hash=False, repr=False)
 

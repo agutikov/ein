@@ -87,7 +87,6 @@
 (co-located Red Pipe :source "(3) the Red house smokes a Pipe")
 
 (query
-  :mode solve
   :goal (and (co-located ?x Milk) (co-located ?x ?p) (is-a ?p Pet))
   :hrules (
     guess (Color Drink) guess (Color Pet) guess (Color Smoke)

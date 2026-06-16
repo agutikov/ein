@@ -36,7 +36,7 @@ same set.
 | `relation` | `(relation R A B …)` | declare a relation-type node + its arg-type signature | `kb.from_ir`; `entities.KERNEL_META_RELATIONS` |
 | `rule` | `(rule N (?p…) :match … :assert …)` | declare a saturation rewrite rule | `kb.from_ir` |
 | `hrule` | `(hrule N (?p…) :match … :assert …)` | declare a hypothesis-generation rule (drives `hypgen`, never fired by the saturator) | `kb.from_ir`; `hypgen` |
-| `query` | `(query :mode … :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
+| `query` | `(query :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
 | `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
 | `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation expands to BODY before compilation ([P1.8 S1.5.9](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)) | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
 | `import` | `(import M [:as A \| :symbols (S…)])` | pull in a library module `M` (a dotted logical name, e.g. `std.macro`); qualified-by-default, or aliased/flat-selective ([P1.8 S1.8.A1–A2](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.8.a1_module_system_design.md)) | `kb.from_ir` (grammar A2; resolve A3) |

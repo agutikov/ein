@@ -60,4 +60,4 @@
 (co-located Express Terminus :source "(1)")
 (next-to Express LocalShuttle :source "(2)")
 
-(query :mode solve :goal (co-located LocalShuttle Bridge))
+(query :goal (co-located LocalShuttle Bridge))

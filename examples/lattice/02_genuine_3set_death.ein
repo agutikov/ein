@@ -65,7 +65,6 @@
 (is-a X    Item)
 
 (query
-  :mode solve
   :goal (a-prop ?x)
   :hrules (
     guess (a-prop Item)

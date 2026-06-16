@@ -14,7 +14,7 @@ Every demo file has the same shape:
 3. **`(ontology …)`** — minimum schema + activator facts.
 4. **`(facts …)`** or **`(reasoning …)`** — the premises that
    trigger the rule.
-5. **`(query :mode solve :goal …)`** — the derived fact the engine
+5. **`(query :goal …)`** — the derived fact the engine
    should produce when it fires the named rule.
 
 Running the engine on any demo produces ≥ 1 firing whose `:rule`

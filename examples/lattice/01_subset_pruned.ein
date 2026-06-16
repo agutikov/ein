@@ -77,7 +77,6 @@
 (incompat a b :source "(only the {a, b} pair is forbidden)")
 
 (query
-  :mode solve
   :goal (proposed ?x)
   :hrules (
     guess (proposed Custom)))

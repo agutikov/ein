@@ -42,4 +42,4 @@
 (hypothesis (co-located Norwegian House-2) :layer reasoning)
 (contradiction-under (co-located Norwegian House-2) :layer reasoning)
 
-(query :mode solve :goal (not (co-located Norwegian House-2)))
+(query :goal (not (co-located Norwegian House-2)))

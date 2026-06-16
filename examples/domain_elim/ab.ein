@@ -112,6 +112,5 @@
 (color-loc Green H3 :source "(2) Green is in house 3")
 
 (query
-  :mode solve
   :goal (color-loc Blue ?h)
   :hrules (guess (color-loc Color House)))

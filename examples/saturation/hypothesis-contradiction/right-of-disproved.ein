@@ -29,4 +29,4 @@
 (hypothesis (right-of A B) :layer reasoning)
 (contradiction-under (right-of A B) :layer reasoning)
 
-(query :mode solve :goal (not (right-of A B)))
+(query :goal (not (right-of A B)))

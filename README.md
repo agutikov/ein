@@ -36,8 +36,30 @@ The classic Zebra/Einstein puzzle is the running fixture:
 
 ```sh
 $ ein solve examples/zebra2.ein
-The Norwegian drinks the water; the Japanese keeps the zebra.  (a solution — pass --exhaustive to certify uniqueness)
+solve · examples/zebra2.ein
+──────────────────────────────────────────────────────────────
+  solutions (k)   1   (not certified — pass --exhaustive)
+  verdict         Solution
+
+  query bindings
+    ?h_water    = House-1      ?who_water  = Norwegian
+    ?h_zebra    = House-5      ?who_zebra  = Japanese
+
+  query facts                       rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-5)         the Zebra is kept in House-5
+    (nation-loc Japanese House-5)   the Japanese lives in House-5
+
+  result
+    The Norwegian drinks water in House-1; the Japanese owns zebra in House-5
 ```
+
+Every word of that answer comes from the **puzzle**, not the engine: each
+`(relation … :why "{?1} … {?2}")` template renders a fact, and the
+`(query … :goal-text "…")` template renders the headline from the goal
+variables. A relation with no `:why` simply prints as its IR s-expression —
+there is no built-in relation→verb vocabulary.
 
 ## Layout
 

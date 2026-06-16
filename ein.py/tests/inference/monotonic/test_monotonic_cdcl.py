@@ -77,7 +77,7 @@ SINGLETON_FIXTURE = """
 (is-a Thing T)
 (is-a Red Thing) (is-a Blue Thing)
 
-(query :mode solve
+(query
        :goal  (never ?x)
        :hypothesis-relations paint)
 """
@@ -120,7 +120,7 @@ MULTI_FIXTURE = """
 (is-a Thing T)
 (is-a a Thing) (is-a b Thing) (is-a c Thing)
 
-(query :mode solve
+(query
        :goal  (never ?x)
        :hypothesis-relations R)
 """
@@ -219,7 +219,7 @@ ALL_DIE_FIXTURE = """
 (relation h Thing Thing)
 (is-a a Thing) (is-a b Thing)
 
-(query :mode solve
+(query
        :goal  (h ?x ?y)
        :hypothesis-relations h)
 """

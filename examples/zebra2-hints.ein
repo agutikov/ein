@@ -684,7 +684,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (query
-  :mode solve
   :goal (and (drink-loc Water ?h_water)
              (pet-loc   Zebra ?h_zebra))
   ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per

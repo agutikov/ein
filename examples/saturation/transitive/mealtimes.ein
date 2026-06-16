@@ -28,4 +28,4 @@
 (before-of Breakfast Lunch :source "demo")
 (before-of Lunch Dinner :source "demo")
 
-(query :mode solve :goal (before-of Breakfast Dinner))
+(query :goal (before-of Breakfast Dinner))

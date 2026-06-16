@@ -29,4 +29,4 @@
 (hypothesis (next-to X Y) :layer reasoning)
 (contradiction-under (next-to X Y) :layer reasoning)
 
-(query :mode solve :goal (not (next-to X Y)))
+(query :goal (not (next-to X Y)))

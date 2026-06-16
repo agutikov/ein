@@ -133,15 +133,15 @@
 
 (relation is-a* T T)
 
-(relation color-loc Color House)
+(relation color-loc Color House :why "{?2} is painted {?1}")
 
-(relation nation-loc Nationality House)
+(relation nation-loc Nationality House :why "the {?1} lives in {?2}")
 
-(relation drink-loc Drink House)
+(relation drink-loc Drink House :why "{?1} is drunk in {?2}")
 
-(relation smoke-loc Cigarette House)
+(relation smoke-loc Cigarette House :why "{?1} is smoked in {?2}")
 
-(relation pet-loc Pet House)
+(relation pet-loc Pet House :why "the {?1} is kept in {?2}")
 
 (relation right-of House House)
 
@@ -288,6 +288,6 @@
   :source "condition (15)")
 
 (query
-  :mode solve
   :goal (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}"
   :hrules (guess (color-loc Color House) (nation-loc Nationality House) (drink-loc Drink House) (smoke-loc Cigarette House) (pet-loc Pet House)))

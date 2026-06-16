@@ -152,7 +152,7 @@ def test_emit_silent_on_declared_only():
 
 # ── Wired path: SolverConfig flag → solve() → _phase1_root emit ──────
 
-_SOLVE_DERIVED = _DERIVED + "\n(query :mode solve :goal (out ?x ?y))\n"
+_SOLVE_DERIVED = _DERIVED + "\n(query :goal (out ?x ?y))\n"
 
 
 def test_solve_emits_when_flag_on():

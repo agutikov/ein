@@ -27,4 +27,4 @@
 
 (boss-of Manager Engineer :source "demo")
 
-(query :mode solve :goal (leads Manager Engineer))
+(query :goal (leads Manager Engineer))

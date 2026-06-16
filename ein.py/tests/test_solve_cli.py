@@ -68,7 +68,7 @@ def test_removed_mode_flags_error():
 
 def test_trace_goes_to_a_file(tmp_path):
     """--trace writes the markdown derivation trace to a file (never stdout);
-    stdout keeps the one-line answer."""
+    stdout keeps the solve table."""
     out_md = tmp_path / "trace.md"
     proc = _run(str(FIXTURE), "--max-set-size", "2", "--trace", str(out_md))
     assert proc.returncode == 0, proc.stderr

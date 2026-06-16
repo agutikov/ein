@@ -237,7 +237,7 @@ class TestQueryLoading:
         assert zebra_kb.query is not None
         # kw_pairs is a tuple of KwPair objects.
         keys = sorted(kw.key.name for kw in zebra_kb.query.kw_pairs)
-        assert keys == ["goal", "mode"]
+        assert keys == ["goal"]  # :mode removed (obsolete — verdict read from result)
 
 
 # ═══════════════════════ EqClasses placeholder ═════════════════════

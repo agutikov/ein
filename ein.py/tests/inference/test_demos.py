@@ -75,7 +75,7 @@ def test_demo_fires_named_rule(path: Path):
 
 @pytest.mark.parametrize("path", DEMO_PATHS, ids=_demo_id)
 def test_demo_has_query_block(path: Path):
-    """Every demo carries a `(query :mode solve :goal …)` block.
+    """Every demo carries a `(query :goal …)` block.
 
     The goal pattern names the derived fact the demo's rule is
     expected to produce; consumers (P1.5 hypothesis loop, P1.6
@@ -84,12 +84,11 @@ def test_demo_has_query_block(path: Path):
     """
     kb = KnowledgeBase.from_ir(parse(path.read_text()))
     assert kb.query is not None, f"{_demo_id(path)}: missing (query …) block"
-    # The query has at least :mode and :goal kw_pairs.
+    # The query has a :goal kw_pair (`:mode` is obsolete — removed).
     keys = {
         kp.key.name for kp in kb.query.kw_pairs
         if hasattr(kp, "key")
     }
-    assert "mode" in keys, f"{_demo_id(path)}: query missing :mode"
     assert "goal" in keys, f"{_demo_id(path)}: query missing :goal"
 
 

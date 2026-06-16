@@ -211,10 +211,10 @@ def test_unknown_rule_mode_raises():
 # ═══════════ Query and trace ═══════════
 
 def test_query_renders_keyword_args():
-    (form,) = parse("(query :mode solve :goal (drinks Water ?h))")
+    (form,) = parse("(query :goal (drinks Water ?h))")
     dot = render_query(form)
     assert "digraph query" in dot
-    assert ":mode" in dot or "mode" in dot
+    assert ":goal" in dot or "goal" in dot
 
 
 def test_trace_step_has_box_node():

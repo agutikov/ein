@@ -11,6 +11,15 @@ Example:
     ...            {"rel": "co-located", "a": "Norwegian", "b": "House-1"})
     'co-located is transitive: Norwegian →co-located→ House-1'
 
+The same machinery renders ``(relation …)`` ``:why`` templates, which
+reference argument *slots positionally* — ``{?1}`` is the first arg,
+``{?2}`` the second — so a leading digit is admitted in a reference
+(the rule ``:why`` case never uses one; bound var names always start
+with a letter):
+
+    >>> render_why("{?1} is drunk in {?2}", {"1": "Water", "2": "House-1"})
+    'Water is drunk in House-1'
+
 Unbound vars leave their reference text in place. A future
 strictness flag could promote this to an error, but the trace
 renderer (P1.6) prefers a partial-render over a hard fail.
@@ -20,9 +29,10 @@ from __future__ import annotations
 import re
 from typing import Any
 
-# Match `{?<var-name>}` where var-name follows the IR's VAR regex
-# (an identifier with letters / digits / `_` / `-`, leading letter).
-_TEMPLATE_REF = re.compile(r"\{\?([A-Za-z][A-Za-z0-9_-]*)\}")
+# Match `{?<ref>}`. A ref is a rule/goal var name (letter-led, per the IR's
+# VAR regex) OR a positional slot index (`{?1}`, `{?2}` …) used by
+# `(relation …)` `:why` templates — hence the leading char admits a digit.
+_TEMPLATE_REF = re.compile(r"\{\?([A-Za-z0-9][A-Za-z0-9_-]*)\}")
 
 
 def render_why(template: str, bindings: dict[str, Any]) -> str:

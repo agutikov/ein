@@ -51,7 +51,7 @@
 //
 // Deferred to the semantic validator (S1.1.2):
 //   · which keywords are required per form (:match/:assert/:why in
-//     rules; :rule/:using/:derives in steps; :mode/:goal in query)
+//     rules; :rule/:using/:derives in steps; :goal in query)
 //   · the named structural-predicate registry (A.4 closure)
 //   · arity rules, ground-vs-pattern, type-checking of instance args,
 //     unbound-variable checks, etc.

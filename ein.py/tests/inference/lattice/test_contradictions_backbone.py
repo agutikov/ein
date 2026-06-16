@@ -150,7 +150,7 @@ def test_solve_root_contradiction_records_root_dead():
     (relation trigger T)
     (instance a T)
     (trigger a :source "(1)")
-    (query :mode solve :goal (trigger ?x))
+    (query :goal (trigger ?x))
     """)
     verdict, stats = _solve(kb, max_set_size=1)
     assert isinstance(verdict, Contradiction)

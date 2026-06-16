@@ -301,16 +301,16 @@ def test_range_still_lexes_despite_dotted_atoms():
 
 # ═══════════ Query ═══════════
 
-def test_query_solve():
-    _ok("(query :mode solve :goal (drinks Water ?h))")
+def test_query_goal():
+    _ok("(query :goal (drinks Water ?h))")
 
 
-def test_query_gaps():
-    _ok("(query :mode gaps :goal (lives-in _ House-1))")
+def test_query_goal_text():
+    _ok('(query :goal (drinks Water ?h) :goal-text "who drinks at {?h}")')
 
 
-def test_query_contradictions():
-    _ok("(query :mode contradictions :goal (lives-in Englishman ?h))")
+def test_query_conjunctive_goal():
+    _ok("(query :goal (and (drinks Water ?h) (lives-in Norwegian ?h)))")
 
 
 # ═══════════ Trace ═══════════
@@ -380,7 +380,7 @@ def test_flat_top_level_forms():
     (lives-in a b :source "(1)")
     (lives-in c d :rule symmetric :using (s1))
     (rule x () :match a :assert b)
-    (query :mode solve :goal X)
+    (query :goal X)
     (trace)
     """)
     assert len(tree.children) == 7
@@ -439,7 +439,7 @@ def test_reject_top_level_string():
 
 
 def test_reject_keyword_followed_by_keyword():
-    _bad("(query :mode :solve :goal X)")
+    _bad("(query :goal :solve)")
 
 
 def test_ontology_accepts_implicit_facts():

@@ -51,4 +51,4 @@
 (next-to Norwegian Blue :source "(15)")
 (next-to House-1 House-2 :source "(1)")
 
-(query :mode solve :goal (co-located Blue House-2))
+(query :goal (co-located Blue House-2))

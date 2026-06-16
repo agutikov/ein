@@ -33,4 +33,4 @@
 (above-of Floor5 Floor4 :source "(2)")
 (co-located Floor1 Floor4 :source "(3)")
 
-(query :mode solve :goal (co-located Floor2 Floor5))
+(query :goal (co-located Floor2 Floor5))

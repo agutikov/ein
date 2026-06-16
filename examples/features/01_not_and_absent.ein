@@ -69,6 +69,5 @@
 
 
 (query
-  :mode solve
   :goal (unknown-feeling ?a ?b)
 )

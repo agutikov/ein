@@ -56,7 +56,7 @@ _FIXTURE = """
 (is-a a Thing) (is-a b Thing)
 (is-a c Thing) (is-a d Thing)
 
-(query :mode solve
+(query
        :goal  (never ?x)
        :hypothesis-relations R)
 """

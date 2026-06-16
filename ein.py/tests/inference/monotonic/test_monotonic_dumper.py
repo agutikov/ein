@@ -49,7 +49,7 @@ SINGLETON_FIXTURE = """
 (is-a Thing T)
 (is-a Red Thing) (is-a Blue Thing)
 
-(query :mode solve
+(query
        :goal  (never ?x)
        :hypothesis-relations paint)
 """
@@ -168,7 +168,7 @@ _TRIVIAL_FIXTURE = """
 (relation r T T)
 (instance a T) (instance b T)
 (r a b :source "(1)")
-(query :mode solve :goal (r b ?x))
+(query :goal (r b ?x))
 """
 
 
@@ -266,7 +266,7 @@ def test_dumper_summary_records_contradiction_verdict(
     (relation trigger T)
     (instance a T)
     (trigger a :source "(1)")
-    (query :mode solve :goal (trigger ?x))
+    (query :goal (trigger ?x))
     """)
     dumper = MonotonicDumper(out_dir=tmp_path)
     solve(kb, max_set_size=1, dumper=dumper)

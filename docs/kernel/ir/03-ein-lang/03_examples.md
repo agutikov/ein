@@ -46,7 +46,7 @@ FACT layer.
 (right-of   Green Ivory       :source "condition (6)")
 (co-located Norwegian House-1 :source "condition (10)")
 
-(query :mode solve :goal (co-located ?nationality Water))
+(query :goal (co-located ?nationality Water))
 ```
 
 The complete puzzle — 15 conditions + ten rule families — lives in

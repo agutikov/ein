@@ -195,8 +195,13 @@ def _ingest_relation(child: SForm, kb: KnowledgeBase, errors: list[str]) -> bool
     if name in kb.relations:
         errors.append(f"duplicate relation '{name}' at {child.loc}")
         return True
+    # Optional `:why "<template>"` — a positional-slot render template
+    # ({?1}/{?2} → arg 0/1) used by the CLI solve table. The signature scan
+    # above only collects Atom args, so the kw-pair never leaks into `sig`.
+    why_node = _kw_pairs(child.args).get("why")
+    why = why_node.value if isinstance(why_node, String) else ""
     kb.add_relation(Relation(
-        name=name, signature=sig, declared=True, loc=child.loc,
+        name=name, signature=sig, declared=True, why=why, loc=child.loc,
     ))
     # Also store the declaration as an ordinary fact so rules can
     # introspect signatures via (relation ?R ?A ?B) patterns. The

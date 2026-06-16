@@ -1,3 +1,3 @@
 digraph query {
-  "query" [shape=note, label=":mode solve\n:goal (drinks Water ?h)"];
+  "query" [shape=note, label=":goal (drinks Water ?h)"];
 }

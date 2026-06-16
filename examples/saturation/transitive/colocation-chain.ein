@@ -30,4 +30,4 @@
 (co-located A B :source "(1)")
 (co-located B C :source "(2)")
 
-(query :mode solve :goal (co-located A C))
+(query :goal (co-located A C))

@@ -56,11 +56,11 @@ def test_var_and_wildcard():
 
 
 def test_keyword_kwpair():
-    (form,) = parse("(query :mode solve :goal (lives-in _ House-1))")
+    (form,) = parse("(foo :bar baz)")
     args = form.args
     assert isinstance(args[0], KwPair)
-    assert args[0].key == Keyword("mode")
-    assert args[0].value == Atom("solve")
+    assert args[0].key == Keyword("bar")
+    assert args[0].value == Atom("baz")
 
 
 def test_string_escapes():
@@ -92,7 +92,7 @@ def test_top_level_heads():
     (type Person)
     (lives-in a b)
     (rule x () :match a :assert b)
-    (query :mode solve :goal X)
+    (query :goal X)
     (trace)
     """)
     assert tuple(f.head.name for f in forms) == (
@@ -231,7 +231,7 @@ ROUNDTRIP_CASES = [
     " :why \"sym\")",
     "(rule t () :match (and (?r ?a ?b) (?r ?b ?c)"
     " :where (transitive ?r)) :assert (?r ?a ?c) :why \"tr\")",
-    "(query :mode solve :goal (drinks Water ?h))",
+    "(query :goal (drinks Water ?h))",
     "(trace (step s1 :rule from-condition :using (c10)"
     " :derives (lives-in Norwegian House-1)))",
     "(trace (branch-open s3 :on (lives-in Englishman ?h)"
@@ -365,7 +365,7 @@ def test_dump_compact_one_line():
 @pytest.mark.parametrize("src,marker", [
     ("(rule x () :match a", "1:"),              # unclosed paren
     ("Norwegian", "1:"),                         # top-level bare atom
-    ("(query :mode :solve)", "1:"),              # keyword as value
+    ("(query :goal :solve)", "1:"),              # keyword as value
     ("(neq Norwegian)", "1:"),                   # reserved-word arity (neq needs 2)
     ("(and a b)", "1:"),                          # `and` is not a top-level fact (P1.7c)
 ])

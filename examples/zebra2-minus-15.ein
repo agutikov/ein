@@ -345,13 +345,17 @@
   :why    "guess: ({?R} {?a} {?b})?")
 
 ;; ──── Relation signatures ──────────────────────────────────
+;; The `*-loc` relations carry a `:why` render template — a positional
+;; `{?1}`/`{?2}` string (arg 0 / arg 1) used to translate a fact into text
+;; in the `ein solve` table's "rendered query facts" column. Relations with
+;; no `:why` (is-a, right-of, next-to) render as their raw IR s-expression.
 (relation is-a         T T)
 (relation is-a*        T T)
-(relation color-loc    Color       House)
-(relation nation-loc   Nationality House)
-(relation drink-loc    Drink       House)
-(relation smoke-loc    Cigarette   House)
-(relation pet-loc      Pet         House)
+(relation color-loc    Color       House :why "{?2} is painted {?1}")
+(relation nation-loc   Nationality House :why "the {?1} lives in {?2}")
+(relation drink-loc    Drink       House :why "{?1} is drunk in {?2}")
+(relation smoke-loc    Cigarette   House :why "{?1} is smoked in {?2}")
+(relation pet-loc      Pet         House :why "the {?1} is kept in {?2}")
 (relation right-of     House House)
 (relation next-to      House House)
 
@@ -479,7 +483,8 @@
 ;; regenerate with examples/gen_zebra2_variants.py.
 
 (query
-  :mode solve
+  ;; (no :mode — obsolete: the verdict is read from the result `k`, never
+  ;; chosen up front; the engine's goal test is hardwired to SOLVE.)
   ;; The two puzzle questions are "who drinks water?" and "who owns the
   ;; zebra?" — a Nationality, not a House (S1.7.5 who-vs-where). The goal
   ;; binds the located house, then joins through the shared house to
@@ -491,6 +496,10 @@
              (nation-loc ?who_water ?h_water)
              (pet-loc    Zebra      ?h_zebra)
              (nation-loc ?who_zebra ?h_zebra))
+  ;; :goal-text renders the headline NL result from the bound goal vars
+  ;; (the rule/relation `:why` `{?var}` engine). This — not any hardcoded
+  ;; verb table — is what prints "The Norwegian drinks…" on the solve table.
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}"
   ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per
   ;; *-loc relation; the hrule emits (?R ?v ?h) candidates for
   ;; every (v, h) of the corresponding types.

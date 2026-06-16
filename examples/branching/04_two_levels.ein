@@ -78,5 +78,4 @@
 (co-located Red H1 :source "(1)")
 
 (query
-  :mode solve
   :goal (co-located ?c H3))

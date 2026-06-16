@@ -26,4 +26,4 @@
 
 (co-located Alice Bob :source "demo")
 
-(query :mode solve :goal (co-located Bob Alice))
+(query :goal (co-located Bob Alice))
