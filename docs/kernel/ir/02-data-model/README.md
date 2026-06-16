@@ -18,22 +18,26 @@ and the provenance + derivation-DAG machinery.
   indexes; the IR loader; layer views (`FactView`); `kb.fork()` for
   hypothesis branches; `derivation_dag` / `unsat_core`; equality
   classes placeholder.
+- [`03_python_impl.md`](03_python_impl.md) — the code-level companion
+  (**dev-facing**): the `kb/` module map, the frozen-dataclass
+  attachment mechanics, and the concrete collection shapes + complexity.
 
 ## Reading order
 
 Read `01_entities.md` first to understand the node-kind classes and
 how identity works (name vs `(rel, args)`, what's excluded from
 equality). Then `02_store.md` for how they're aggregated, indexed,
-and viewed.
+and viewed. `03_python_impl.md` is the implementer's deep-dive (module
+map + mechanics + complexity); skip it if you only need the abstract model.
 
 ## Where this maps to code
 
-- `src/ein/kb/entities.py` — Relation/Rule/Fact/NameRef/Layer.
-- `src/ein/kb/pattern.py` — Pattern.
-- `src/ein/kb/provenance.py` — Provenance, DerivationDAG.
-- `src/ein/kb/store.py` — KnowledgeBase, EqClasses, Query.
-- `src/ein/kb/views.py` — FactView.
-- `src/ein/kb/from_ir.py` — IR → KB loader.
+The `kb/` package under
+[`ein.py/src/ein/kb/`](../../../../ein.py/src/ein/kb/) — `entities.py`
+(the dataclasses), `pattern.py`, `provenance.py`, `store.py`
+(`KnowledgeBase`), `views.py`, `from_ir.py` (loader), `imports.py`,
+`render.py`. The file-by-file map with roles is
+[`03_python_impl.md` §1](03_python_impl.md).
 
 ## Stability
 

@@ -58,7 +58,29 @@ Zebra-acceptance milestone.
   `(type …)`/`(instance …)` vs unified `is-a`) is **explicitly
   deferred to P1.7 S1.7.2** — both encodings stay valid through every
   M1 stage.
-- `inference/` is a stub. The full design lands when P1.3 ships.
+- `inference/` is documented:
+  [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md)
+  (as-built O1–O9) + [`python_impl.md`](inference/python_impl.md) (module map).
+  The engine shipped P1.3–P1.5b.
+
+## Audience & reading paths
+
+Each page leans **user** (puzzle authors) or **dev** (engine
+contributors); some serve both. The dev-only pages carry an
+explicit audience banner.
+
+| audience | pages |
+|----------|-------|
+| **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`); `ir/02-data-model/{01_entities,02_store}` (the abstract model) |
+| **dev**  | `ir/02-data-model/03_python_impl.md`; `inference/python_impl.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md) |
+| **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs |
+
+- **User path** (author a puzzle): glossary → `01-ein-graph` →
+  `03-ein-lang` (grammar → patterns → `06_reserved_names` →
+  `07_stdlib_api`) → `02-data-model/01_entities`.
+- **Dev path** (change the engine): the user path, then
+  `architecture.md` → `02-data-model/03_python_impl` → `inference/`
+  (`architecture_and_algorithms` → `python_impl` → the README invariants).
 
 ## Cross-references
 
