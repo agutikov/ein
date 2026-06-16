@@ -81,15 +81,16 @@ below" relaxes to "consumes any level, including its own". The
 [reflexive root](03_ein_model.md) (§1 — *instance is-an instance of
 instance*) is the L-level statement of this: the schema can describe
 itself. What an **L4** (rules over rules) would be is left open —
-[`08_self_describing.md`](08_self_describing.md) sketches it; F5
-implements it.
+[`08_self_describing.md`](08_self_describing.md) isolates this L3-on-L3
+frontier (rules as data); F5 implements it.
 
 ## See also
 
 - [`03_ein_model.md`](03_ein_model.md) — the reflexive node algebra
   (atoms, objects, the five foundational terms) this stratifies.
 - [`08_self_describing.md`](08_self_describing.md) — expresses this
-  L0–L3 schema *in ein-lang* (`(meta …)`); design-only for M1.
+  L0–L3 schema *in ein-lang*, real syntax only; operational for L0/L1/L2,
+  design-only (F5) for L3-on-L3.
 - [`01_kb.md` §3](01_kb.md) — the three knowledge **layers**
   (orthogonal to these levels).
 - [F5 — rules as data](../../../../plans/followups/f5_rules_as_data.md)

@@ -38,9 +38,10 @@ model in [`../02-data-model/`](../02-data-model/).
   reference (macro / algebra / bijection / elim / typing / closure),
   companion to the module-level
   [`stdlib/README.md`](../../../../ein.py/src/ein/stdlib/README.md).
-- [`08_self_describing.md`](08_self_describing.md) — Design sketch:
-  the L0–L3 schema expressed in ein-lang itself (`(meta …)`);
-  design-only for M1, implemented by F5.
+- [`08_self_describing.md`](08_self_describing.md) — Ein's own model
+  expressed in ein-lang itself, using only real syntax (is-a kinds,
+  relation signatures, the property algebra). Operational for L0/L1/L2
+  today; the L3-on-L3 frontier (rules as data) is design-only, F5.
 
 ## Reading order
 
