@@ -86,6 +86,9 @@ class _TimingDumper:
         self.t_end: float | None = None
         self.root_facts = 0
 
+    def root_saturating(self, n_firings) -> None:
+        pass
+
     def root_initial(self, kb) -> None:
         self.t_root = time.perf_counter()
         self.root_facts = len(kb.facts)

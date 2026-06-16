@@ -289,6 +289,11 @@ class MonotonicDumper(_TimelineMixin):
 
     # ── Lifecycle hooks ──────────────────────────────────────────
 
+    def root_saturating(self, n_firings: int) -> None:
+        """Streamed periodically *during* Phase-1 root saturation, before
+        :meth:`root_initial`. Base dumper ignores it; :class:`ProgressDumper`
+        streams a live line so a slow root saturation isn't a silent gap."""
+
     def root_initial(self, kb: KnowledgeBase) -> None:
         if self.out_dir is not None:
             (self.out_dir / "00_root_initial.ein").write_text(
@@ -409,6 +414,10 @@ class ProgressDumper(MonotonicDumper):
 
     def _el(self) -> str:
         return f"{time.time() - self.started_at:5.0f}s"
+
+    def root_saturating(self, n_firings: int) -> None:  # type: ignore[override]
+        head = f"[{self.label}] " if self.label else ""
+        self._say(f"{head}  saturating root: {n_firings} firings  ({self._el()})")
 
     def root_initial(self, kb: KnowledgeBase) -> None:  # type: ignore[override]
         super().root_initial(kb)

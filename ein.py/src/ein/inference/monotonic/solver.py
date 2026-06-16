@@ -709,6 +709,12 @@ def _handle_dead(
         )
 
 
+#: Cadence (in firings) for the live root-saturation progress line under `-v`.
+#: Fixed, not tied to `--progress-every` (which paces enterings) so `-g1`
+#: can't flood with a line per firing.
+_ROOT_SAT_PROGRESS_EVERY = 50
+
+
 def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
     """Phase 1 — saturate the root and handle the terminal root states
     (contradictory / trivially-solved / forced-positive cascade /
@@ -718,7 +724,18 @@ def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
     dumper = ctx.dumper
 
     sat = Saturator(root_kb)
-    _ = list(sat.saturate())
+    # Root saturation is the slow part of a Phase-1 solve (a puzzle may resolve
+    # entirely here, with enterings=0). Stream firing-count progress so `-v`
+    # isn't silent meanwhile — but only when a dumper is attached; the common
+    # no-dumper path keeps the C-speed `list()` drain (saturation is hot).
+    if dumper is None:
+        _ = list(sat.saturate())
+    else:
+        n_fired = 0
+        for _fired in sat.saturate():
+            n_fired += 1
+            if n_fired % _ROOT_SAT_PROGRESS_EVERY == 0:
+                dumper.root_saturating(n_fired)
     stats.saturate_count += 1
     if ctx.cfg.warn_derived_naf:
         # S1.7.4 — once-per-solve, post-saturation so the cache holds
