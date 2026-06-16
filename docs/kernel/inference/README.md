@@ -1,8 +1,15 @@
 # Inference — the rule firing engine
 
-> **Stub.** Becomes load-bearing when [P1.3](../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/)
-> ships. This page sketches the planned structure so the rest of the
-> kernel tree can cross-link confidently.
+> **Status (2026-06-16).** The engine has **shipped** — P1.3
+> (saturation / rules), P1.4 (contradiction), P1.5–P1.5b (hypothesis
+> loop + commitment-lattice search) are all in place and `zebra2`
+> solves end-to-end. The **as-built** reference is
+> [`architecture_and_algorithms.md`](architecture_and_algorithms.md).
+> ⚠️ The "Planned structure" and "What lives where today (M1 stubs)"
+> sections below **predate that implementation and are stale** — they
+> list `01–05` files that were never created and mark shipped
+> features as "not yet". Reconciling them is tracked by
+> [P1.20 S1.20.D](../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.d_inference_engine_docs.md).
 
 The inference engine is what takes a populated
 [`KnowledgeBase`](../ir/02-data-model/02_store.md) and produces

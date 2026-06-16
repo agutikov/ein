@@ -1,12 +1,25 @@
 # P1.20 — Kernel documentation
 
-**Estimate:** TBD per theme.
-**Status:** **placeholder** — created 2026-05-24 from the
-TODO.md scratchpad. The phase parks kernel-doc reorgs that
-emerged after the M1 implementation surface stabilised. None of
-these gate M1 acceptance; they make the kernel docs reflect what
-M1 actually shipped (and what the user wants the M1 docs to teach
-post-hoc).
+**Estimate:** ≈ 21–30 person-days for Themes A–H; Themes I/J/K
+unestimated (a bench matrix, a full Python API reference, and a
+long-form Zebra guide — each multi-day). A multi-week,
+**non-M1-gating** investment to schedule against M2.
+**Status:** **elaborated; parked (not started)** — created
+2026-05-24 from the TODO.md scratchpad, stages written 2026-06-15.
+The phase parks kernel-doc reorgs that emerged after the M1
+implementation surface stabilised. None of these gate M1
+acceptance; they make the kernel docs reflect what M1 actually
+shipped (and what the user wants the M1 docs to teach post-hoc).
+
+> **Re-base note (2026-06-16).** This plan was authored against a
+> kernel snapshot that the late-May/June refactors have since moved
+> past — the flat-form grammar (P1.7c), the merged sound `solve`
+> (verdict read from `k`), the shipped stdlib (P1.8a S1.8a.f20), and
+> the now-substantial `docs/kernel/inference/` (≈1.7k lines). Several
+> themes were written as greenfield authoring over empty/stub docs;
+> the real starting state is **mature-but-drifting** docs.
+> **[S1.20.A0](s1.20.a0_reconcile_drift.md) is the pre-flight
+> reconcile that re-bases the rest of the phase — run it first.**
 **Depends on:** [P1.7](../p1.7_bootstrapping_zebra/) ships
 ("M1 done" — the kernel is locked) so documenting it doesn't
 chase a moving target.
@@ -15,8 +28,9 @@ M2b (paper) by giving them a stable doc surface to point at.
 
 The existing kernel docs at [`docs/kernel/`](../../../docs/kernel/)
 are organised into three sub-trees (`ir/01-ein-graph/`,
-`ir/02-data-model/`, `ir/03-ein-lang/`) plus a stub
-`inference/`. P1.20 takes that structure further:
+`ir/02-data-model/`, `ir/03-ein-lang/`) plus an `inference/`
+sub-tree (≈1.7k lines, but a stale README — see Theme D). P1.20
+takes that structure further:
 
 - splits data-model into idiomatic vs python-impl,
 - adds inference-engine docs to match,
@@ -30,6 +44,7 @@ are organised into three sub-trees (`ir/01-ein-graph/`,
 
 | ID         | Title                                                                       | File                                                                  |
 |------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| S1.20.A0   | **Reconcile kernel docs against the live kernel** (pre-flight re-base)       | [s1.20.a0_reconcile_drift.md](s1.20.a0_reconcile_drift.md)            |
 | S1.20.A1   | IR docs: split data-model into idiomatic + python-impl                      | [s1.20.a1_ir_doc_split.md](s1.20.a1_ir_doc_split.md)                  |
 | S1.20.A2   | Idiomatic data-model backfill                                               | [s1.20.a2_idiomatic_backfill.md](s1.20.a2_idiomatic_backfill.md)      |
 | S1.20.B    | Kernel API reference                                                        | [s1.20.b_kernel_api_reference.md](s1.20.b_kernel_api_reference.md)    |
@@ -41,15 +56,21 @@ are organised into three sub-trees (`ir/01-ein-graph/`,
 | S1.20.H1   | Ein-model: atoms vs objects                                                 | [s1.20.h1_atom_vs_object.md](s1.20.h1_atom_vs_object.md)              |
 | S1.20.H2   | Ein-model: 4-level KB representation                                        | [s1.20.h2_four_level_kb.md](s1.20.h2_four_level_kb.md)                |
 | S1.20.H3   | Ein-model: self-describing KB types                                         | [s1.20.h3_self_describing_kb.md](s1.20.h3_self_describing_kb.md)      |
+| S1.20.I    | Kernel feature × config matrix *(theme only — not yet decomposed)*           | [README §Theme I](#theme-i--kernel-feature--config-matrix)            |
+| S1.20.J    | Ein Python API reference *(theme only — not yet decomposed)*                 | [README §Theme J](#theme-j--ein-api-reference)                        |
+| S1.20.K    | Ein Zebra guide *(theme only — not yet decomposed)*                          | [README §Theme K](#theme-k--ein-zebra-guide)                          |
 
-Suggested order: H1 → H2 → H3 (vocabulary first, then schema)
+Suggested order: **A0 first** (reconcile drift — it re-bases every
+other theme). Then H1 → H2 → H3 (vocabulary first, then schema)
 ∥ A1 → A2 (data-model split, then backfill); B + C + D can
 follow once A2 + H2 are in; E and F land after the bulk of
-content stabilises; G can ship any time before M2b.
+content stabilises; G can ship any time before M2b. Themes I/J/K
+(feature matrix, Python API, Zebra guide) are independent and
+unstaged — schedule each after A0 confirms the live surface.
 
 ## Themes
 
-### Theme A — IR doc 4-level split
+### Theme A — data-model doc split (idiomatic vs python-impl)
 
 Today's [`docs/kernel/ir/`](../../../docs/kernel/ir/) has three
 levels:
@@ -87,12 +108,19 @@ Likely stages:
 ### Theme B — Kernel API reference
 
 Today the kernel's **primitives and semantically-loaded atoms**
-(`rule`, `relation`, `T`, `not`, `eq`, `neq`, `closed`, `absent`,
-`forall`, `open`, `false`, `true`, …) are documented piecemeal
-across the three sub-trees + the engine source. P1.20 ships a
-dedicated reference page that lists each, its arity / signature,
-its semantic role, and its rendering in `(rules …)` / `(facts …)`
-contexts.
+(`rule`, `relation`, `T`, `not`, `eq`, `neq`, `absent`, `forall`,
+`open`, `false`, … + the closed declarator set `relation` · `rule`
+· `hrule` · `query` · `config` · `trace` · `macro` · `import`) are
+documented piecemeal across the three sub-trees + the engine
+source. P1.20 ships a dedicated reference page that lists each, its
+arity / signature, its semantic role, and where it may appear
+(declarator vs `:match`/`:assert` vs fact).
+
+> **Re-base (S1.20.A0).** The grammar is **flat-form** since P1.7c —
+> the former `(ontology …)`/`(facts …)`/`(reasoning …)`/`(rules …)`
+> block wrappers are **gone** (`ir/grammar.lark`); a fact is any head
+> outside the closed declarator set, and its layer is per-fact. Drop
+> the "rendering in `(rules …)` / `(facts …)` contexts" framing.
 
 The reference should be **complete enough to author new puzzles
 without reading source** — the M1-end-of-life test for a
@@ -100,29 +128,49 @@ kernel API doc.
 
 ### Theme C — Stdlib API reference
 
-Parallel to Theme B but for the **stdlib** rules and macros
-(closure auto-inference, the `imply` family, `converse`, the
-general totality / `domain-elimination` library form, the macros
-under S1.5.9). Lands once [P1.8 Theme A](../p1.8_ein_lang_modules/README.md)
-ships the stdlib content — until then this is just an outline.
+Parallel to Theme B but for the **stdlib** rules and macros. The
+stdlib has **shipped** (P1.8a S1.8a.f20):
+[`ein.py/src/ein/stdlib/`](../../../ein.py/src/ein/stdlib/) carries
+`algebra`, `bijection`, `closure`, `elim`, `typing`, and `macro`
+modules (+ a README), imported and exercised by
+`examples/zebra2.ein`. So this theme is **unblocked** — write it
+against the real modules (the `bijective`/`functional`/`total`/…
+checks in `std.algebra`, the elimination + negative-completion in
+`std.bijection` / `std.elim`, the closure rules, the `forall` /
+`open` macros), not as an outline awaiting P1.8.
 
 ### Theme D — Inference engine documentation
 
-Today's [`docs/kernel/inference/`](../../../docs/kernel/inference/)
-is a stub. P1.20 fills it with two layers matching Theme A:
+> **Re-base (S1.20.A0).** `docs/kernel/inference/` is **not** a stub —
+> it already carries ≈1.7k lines across five files
+> (`architecture_and_algorithms.md`, `domain_elim_vs_hypothesis.md`,
+> `lattice_dump.md`, `reserved_engine_strings.md`, and a 665-line
+> `README.md`). But that `README.md` is itself **stale**: its banner
+> still said "Stub — becomes load-bearing when P1.3 ships" (P1.3
+> shipped), its "Planned structure" lists `01_matcher.md … 05_trace.md`
+> files that were never created, and its "What lives where today"
+> table claims shipped features are "not yet".
 
-- **Idiomatic** — collections (the rule-cache, the activator
-  index, the firing queue), indexes (`_facts_by_relation`,
-  `_negated_facts`, `_rule_apps_by_rule`), algorithm diagrams +
-  mathematical pseudocode for `compile_all` / `compile_for` /
-  `_apply` / `saturate` / hypothesis loop.
-- **Python implementation** — files, modules (`engine.py`,
+So Theme D is **reconcile + restructure**, not greenfield:
+
+- **Reconcile the stale `README.md`** — drop the stub banner,
+  replace the never-built `01–05` "planned structure" with the
+  as-built file list, and correct the "M1 stubs" table to the
+  shipped engine (cross-ref `architecture_and_algorithms.md`, which
+  is already the as-built reference).
+- **Idiomatic layer** — collections (rule-cache, activator index,
+  firing queue), indexes (`_facts_by_relation`, `_negated_facts`,
+  `_rule_apps_by_rule`), algorithm diagrams + pseudocode for
+  `compile_all` / `compile_for` / saturate / the commitment-lattice
+  search.
+- **Python implementation** — files / modules (`engine.py`,
   `saturator.py`, `hypgen.py`, `compile.py`, `match.py`,
-  `solver.py`), data types, functions, classes.
+  `monotonic/solver.py`), data types, classes.
 
-Composes with the closures-and-saturation invariants surfaced by
-[P1.5a](../p1.5a_zebra_solution/README.md) (the NAF-at-enqueue
-race in particular needs a written invariant).
+Composes with the NAF-at-enqueue invariant surfaced by
+[P1.5a](../p1.5a_zebra_solution/README.md) (which the live engine
+already resolves via fire-time `absents_still_pass` re-eval — that
+resolution needs a written invariant here).
 
 ### Theme E — User vs developer docs split
 
@@ -252,22 +300,36 @@ The output is a measurement-backed reference page (likely
 author: "these config knobs are load-bearing; disabling them
 slows / breaks zebra2 by ⟨factor⟩."
 
+> **Re-base (S1.20.A0).** The flag names below are **stale** (written
+> 2026-05-27, pre-lattice-rewrite): `enable_alive_inherit`,
+> `enable_eager_root_bubble`, and `enable_path_condition_nogoods` **no
+> longer exist** in `ein.py/src/ein/inference/config.py`. Audit from
+> the live config; the real levers are `enable_pre_branch_lookahead`,
+> `enable_lookahead_kill_cache`, `enable_back_prop_unconditional`,
+> `hypgen_scoring` (+ `hypgen_rel_weight` / `hypgen_obj_weight`),
+> `candidate_order_seed`, `lattice_order`, `lattice_sanity_check`.
+> Also re-scope the bench: post-rewrite `zebra2` solves in ≈2 s with
+> 0 nogoods, so a **3600 s per-cell** timeout is wildly oversized —
+> keep it only as the outer "broken if off" guard, bench perf levers
+> with a ≈60–120 s budget, and split the table into
+> **correctness-load-bearing** (puzzle breaks / won't terminate when
+> off) vs **perf-only** (measured slowdown factor).
+
 Steps:
 
-1. **Audit current `SolverConfig`.** Catalogue every flag
-   (`enable_back_prop_unconditional`, `enable_alive_inherit`,
-   `enable_eager_root_bubble`, `enable_path_condition_nogoods`,
-   `enable_pre_branch_lookahead`, `candidate_order_seed`,
-   `hypgen_scoring`, etc.). For every flag with a `True`
-   default, generate a paired `examples/zebra2-noFLAG.ein`
-   variant that flips the flag off via its `(config …)` block.
+1. **Audit current `SolverConfig`.** Catalogue every flag from the
+   live `config.py` (see the re-base note for the current set). For
+   every flag with a `True` default, generate a paired
+   `examples/zebra2-noFLAG.ein` variant that flips it off via its
+   `(config …)` block.
 2. **Add missing flags.** Any kernel feature whose impact we
    want to measure but which isn't behind a config flag yet
    gets one (default = current behaviour; the negation is the
    "feature off" case).
-3. **Bench matrix.** Run `bench_solve_pypy.sh` on every
-   variant with a 3600 s timeout. Record verdict, tree-node
-   count, solve time, RSS.
+3. **Bench matrix.** Run `ein_pypy.sh` (the bench runner; the old
+   `bench_solve_pypy.sh` was retired) on every variant. Record
+   verdict, enterings / layers (no more tree-node count — the search
+   is a commitment lattice), solve time, RSS.
 4. **Result table** in `features.md`: one row per flag,
    columns for [default-on solve, flag-off solve, slowdown
    factor, "broken if off" sentinel].
@@ -329,14 +391,16 @@ graph pairs reuse the same rule renderer.
 
 ## Acceptance (per theme; tentative)
 
-- **A:** `docs/kernel/ir/` shows the 4-level split; cross-links
-  resolve.
+- **A:** `docs/kernel/ir/` shows the data-model split
+  (01 / 02 / 02b / 03); cross-links resolve.
 - **B + C:** a puzzle author can implement an unfamiliar puzzle
   using only the API + stdlib reference pages (round-trip with
   the existing examples confirms).
-- **D:** the inference engine doc covers the same surface the
-  P1.3 + P1.5 stages described, but flattened into reference
-  form rather than chronological design notes.
+- **D:** the stale `inference/README.md` is reconciled (no "stub"
+  banner; as-built file list; corrected status table), and the
+  engine doc covers the same surface the P1.3 + P1.5 stages
+  described, flattened into reference form rather than
+  chronological design notes.
 - **E:** the user-vs-dev split is consistent across the tree;
   each page declares its intended audience.
 - **F:** a contributor reading only the architecture page can
