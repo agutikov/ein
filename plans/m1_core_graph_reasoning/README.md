@@ -16,7 +16,7 @@ graph-native* reasoner. The acceptance criterion is the one set by
 the engine should not merely return the answer to the Zebra puzzle —
 it should reproduce a deductive trace, with named reasoning moves at
 every step, of the kind a human would write. The concrete target is
-[`examples/README.md`](../../examples/README.md) — the Wikipedia
+[`examples/README.md`](../../docs/kernel/inference/zebra_walkthrough.md) — the Wikipedia
 solution already paired step-by-step with the firing ein rule, branch
 depth, and no-good clauses; M1 ships when the engine's emitted trace
 covers every row of that table.

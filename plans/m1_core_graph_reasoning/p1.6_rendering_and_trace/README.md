@@ -96,7 +96,7 @@ The renderer no longer walks a search tree. Its inputs are:
 
 **The conceptual shift.** The human walkthrough
 ([idea-08](../../ideas/08-human-style-deductive-trace.md),
-[`examples/README.md`](../../../examples/README.md)) is a *linear
+[`examples/README.md`](../../../docs/kernel/inference/zebra_walkthrough.md)) is a *linear
 story keyed to branch-depth `d`*; the engine now produces an
 *unordered commitment lattice* (`(layer, commitment-set)`). So
 **S1.6.4's new core task is to linearize the lattice into a

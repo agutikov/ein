@@ -192,7 +192,7 @@ answer: {'h_water': 'House-1', 'who_water': 'Norwegian', 'h_zebra': 'House-5', '
 
 The answer — *the Norwegian drinks water (House-1), the Japanese owns the
 zebra (House-5)* — is the canonical Zebra solution. The same solve is what
-[`examples/README.md`](../../examples/README.md) annotates as the M1 target
+[the Zebra walkthrough](../kernel/inference/zebra_walkthrough.md) annotates as the M1 target
 trace.
 
 ## Why no `import ein`
@@ -226,7 +226,7 @@ releases. To understand them, read
 - [`docs/api/README.md`](README.md) — the api-subtree index.
 - [`docs/kernel/architecture.md`](../kernel/architecture.md) — the
   data-flow / package-dependency map this surface is the programmatic face of.
-- [`examples/README.md`](../../examples/README.md) — the M1 target trace
+- [the Zebra walkthrough](../kernel/inference/zebra_walkthrough.md) — the M1 target trace
   this worked example reproduces.
 - [`utils/profile_solve.py`](../../utils/profile_solve.py) /
   [`utils/symmetric_bench.py`](../../utils/symmetric_bench.py) — the

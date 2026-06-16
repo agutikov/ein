@@ -31,7 +31,7 @@ framing 2026-05-24):
   common-sense implicits an NL statement leans on.
 
 The end-to-end target the milestone stack converges on is the
-worked solution in [`examples/README.md`](../examples/README.md): the
+worked solution in [`examples/README.md`](../docs/kernel/inference/zebra_walkthrough.md): the
 human Wikipedia walkthrough of the Zebra puzzle annotated as ein.py
 inference (NL ↔ ein rule ↔ branch-depth, plus learnt no-goods). M1
 must reproduce the *inference* column — the rule firings, branches,

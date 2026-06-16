@@ -170,7 +170,7 @@ the REASONING layer on reload):
 - Full encoded puzzles:
   [`examples/zebra.ein`](../../../../examples/zebra.ein),
   [`examples/zebra2.ein`](../../../../examples/zebra2.ein).
-- [`examples/README.md`](../../../../examples/README.md) — the
+- [`examples/README.md`](../../inference/zebra_walkthrough.md) — the
   Wikipedia human-style Zebra solution annotated step-by-step against
   `zebra2.ein`: NL sentence ↔ firing ein rule ↔ branch-depth ↔
   premises → conclusion, with the four `d=1` hypothesis branches and

@@ -75,8 +75,9 @@ there is no built-in relation→verb vocabulary.
 | `ein.py/tests/`               | pytest suite (~1,300 tests)                                                           |
 | `ein.py/pyproject.toml`       | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff`     |
 | `examples/zebra.ein`, `zebra2.ein` | the Zebra puzzle as ein-lang; `zebra2.ein` (unified-`is-a` / `*-loc`) is the active acceptance target |
-| [`examples/README.md`](examples/README.md) | the Wikipedia human Zebra solution traced step-by-step as Ein inference — **M1 target** for the engine, **M2 target** for the NL ⇄ IR round-trip |
+| [`examples/README.md`](examples/README.md) | catalog of the example fixtures — one-line description per file / sub-dir |
 | `examples/{features,branching,saturation,lattice,domain_elim}/` | focused fixtures per engine feature                              |
+| [`docs/kernel/inference/zebra_walkthrough.md`](docs/kernel/inference/zebra_walkthrough.md) | the Wikipedia human Zebra solution traced step-by-step as Ein inference — **M1 target** for the engine, **M2 target** for the NL ⇄ IR round-trip (moved here from `examples/README.md`) |
 | `examples/broken/`            | curated parse-failure fixtures (`file:line:col` error messages)                       |
 | `plans/`                      | milestone / phase / stage roadmap (M1 active)                                         |
 | `docs/kernel/`                | kernel documentation — graph semantics, data model, surface language, inference engine |
@@ -217,7 +218,7 @@ aimed at coding agents.
 
 The end-to-end target — what the engine reproduces by the close of M1, and
 what NL ⇄ IR completes by the close of M2 — is annotated step by step in
-[`examples/README.md`](examples/README.md): the Wikipedia human-style Zebra
+[`examples/README.md`](docs/kernel/inference/zebra_walkthrough.md): the Wikipedia human-style Zebra
 solution, each NL sentence paired with the firing ein rule, branch-depth
 labels for the hypothesis points, and the no-good clauses learnt on
 contradiction.

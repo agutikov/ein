@@ -100,7 +100,7 @@ explicit audience banner.
 - Source of truth for parsing: [`ein.py/src/ein/ir/grammar.lark`](../../ein.py/src/ein/ir/grammar.lark).
 - Source of truth for the KB: [`ein.py/src/ein/kb/`](../../ein.py/src/ein/kb/).
 - **End-to-end target trace**:
-  [`examples/README.md`](../../examples/README.md) — the human
+  [`inference/zebra_walkthrough.md`](inference/zebra_walkthrough.md) — the human
   Wikipedia Zebra solution annotated as ein.py inference (NL ↔ ein
   rule ↔ branch-depth, contradictions, learnt no-goods). The
   *inference* column is what the M1 kernel + engine must reproduce;

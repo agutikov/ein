@@ -31,11 +31,15 @@ constrained-reasoning research.
   open questions. Authoritative on intent.
 - **`examples/`** — encoded Zebra puzzles (`zebra.ein` classic,
   `zebra2.ein` unified-is-a / `*-loc`, `zebra2-hints.ein` partial-state
-  fixture) plus [`examples/README.md`](examples/README.md): the
-  Wikipedia human walkthrough annotated as ein.py inference (NL↔ein
-  rule↔branch-depth table, hypotheses with their contradictions and
-  no-good clauses). It is the **M1 target trace** for the engine and
-  the **M2 target** for the NL ⇄ IR round-trip (NL problem → facts →
+  fixture) plus focused per-feature fixtures (`features/`, `branching/`,
+  `saturation/`, `lattice/`, `domain_elim/`, `broken/`).
+  [`examples/README.md`](examples/README.md) is a **catalog** — one line
+  per file / sub-dir.
+- **`docs/kernel/inference/zebra_walkthrough.md`** — the Wikipedia human
+  Zebra walkthrough annotated as ein.py inference (NL↔ein rule↔branch-depth
+  table, hypotheses with their contradictions and no-good clauses; **moved
+  here from `examples/README.md`**). The **M1 target trace** for the engine
+  and the **M2 target** for the NL ⇄ IR round-trip (NL problem → facts →
   ontology+rules → solution → NL explanation).
 - **`ein.py/`** — Python implementation. `ein.py/src/ein/` is the
   package: IR parser + dumper under `ir/`; KB store + entities +

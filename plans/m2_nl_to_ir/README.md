@@ -17,7 +17,7 @@ milestone delivers — is the full round-trip:
 `NL problem → facts → ontology+rules → solution → NL explanation of
 solution steps`. Both endpoints are NL; the IR is the pivot. The
 worked Zebra example in
-[`examples/README.md`](../../examples/README.md) shows that target
+[`examples/README.md`](../../docs/kernel/inference/zebra_walkthrough.md) shows that target
 end to end: the Wikipedia NL text in one column, the corresponding
 ein facts / rule firings / branch-depth in the other. NL → IR
 realises the input side of this table; the explanation side (IR

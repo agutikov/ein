@@ -84,5 +84,5 @@ A refuted hypothesis, rendered as a foldable `<details>`: `.summary`,
 - [`ein.md`](ein.md) — the end-to-end flow (step 6).
 - [`inference.md`](inference.md) — the verdict types this consumes;
   `store_lattice` is what makes a verdict linearisable.
-- [`examples/README.md`](../../examples/README.md) — the human Zebra
+- [the Zebra walkthrough](../kernel/inference/zebra_walkthrough.md) — the human Zebra
   walkthrough this narrative aims to be "recognisably equivalent" to.

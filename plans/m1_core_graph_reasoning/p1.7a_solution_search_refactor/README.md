@@ -153,6 +153,6 @@ stays in P1.7 and is **not** part of this gate.
   readings — exactly idea 03's "different shapes of the same graph question".
 - [Idea 08 — human-style trace](../../ideas/08-human-style-deductive-trace.md):
   the answer path + reductio rendering are the trace's closing.
-- [`examples/README.md`](../../../examples/README.md): the M1 target trace,
+- [`examples/README.md`](../../../docs/kernel/inference/zebra_walkthrough.md): the M1 target trace,
   unchanged — P1.7a is what makes the engine actually reach its end state
   soundly.
