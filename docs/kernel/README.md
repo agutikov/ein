@@ -65,11 +65,14 @@ Zebra-acceptance milestone.
 - **Glossary**: [`glossary.md`](glossary.md) — definitions for terms
   this tree uses with technical meaning (homoiconic, Levi-bipartite,
   T1/T2/T3 rules, ATMS, e-graph, encoding-agnostic, …).
+- **Architecture**: [`architecture.md`](architecture.md) — the
+  structural "where does X live?" map: data-flow, package
+  dependencies, milestone boundaries, and a change cookbook.
 - Plans roadmap: [`plans/m1_core_graph_reasoning/`](../../plans/m1_core_graph_reasoning/).
 - Ideas (the user's framing of the project's *goals*): [`docs/ideas/`](../ideas/).
 - External tech index: [`docs/index/`](../index/).
-- Source of truth for parsing: [`src/ein/ir/grammar.lark`](../../src/ein/ir/grammar.lark).
-- Source of truth for the KB: [`src/ein/kb/`](../../src/ein/kb/).
+- Source of truth for parsing: [`ein.py/src/ein/ir/grammar.lark`](../../ein.py/src/ein/ir/grammar.lark).
+- Source of truth for the KB: [`ein.py/src/ein/kb/`](../../ein.py/src/ein/kb/).
 - **End-to-end target trace**:
   [`examples/README.md`](../../examples/README.md) — the human
   Wikipedia Zebra solution annotated as ein.py inference (NL ↔ ein
