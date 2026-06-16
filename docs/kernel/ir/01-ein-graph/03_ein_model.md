@@ -49,15 +49,21 @@ ways:
 3. **The grammar can mutate itself** (followup [F2](../../../../plans/followups/f2_self_modifying_language.md))
    without changing what *kind* of object the grammar is.
 
-## 2. The four foundational terms
+The same reflexive stack, read by *node kind* rather than by
+self-instantiation, is the **four-level KB** (objects / facts /
+relations / rules) — see [`05_four_level_kb.md`](05_four_level_kb.md).
 
-The user-stated definitions, nailed down to avoid future drift:
+## 2. The five foundational terms
+
+The user-stated definitions, nailed down to avoid future drift (the
+**atom** vs **object** split is S1.20.H1, 2026-05-24):
 
 | term     | definition                                                                  |
 |----------|-----------------------------------------------------------------------------|
+| **atom** | a *name* — a lexical token that identifies a node. `rule`, `not`, `T`, `relation`, `Alice`, `co-located` are all atoms. The atom is the *name*; the node it denotes is the *thing named*. Two occurrences of the same atom across the KB denote the **same** node (the identity rule below). |
 | **node** | a vertex in the graph. Has identity. Comes in two flavours (see §3).         |
 | **arrow** *(= link, arc, pointer, reference)* | a directed edge from one node to another. The four English terms are synonymous — pick one for any given context. |
-| **object** | a node pointed at by some arrow. Usually a *sink* — it doesn't point out itself. |
+| **object** | a *node* named by an atom and pointed at by some arrow — a graph vertex with no outbound arrows and in-arrows from facts. Usually a *sink*. (Distinguish the **object** — the node — from the **atom** — its name.) |
 | **relation** | a node *containing two or more outbound arrows*. Three sub-readings depending on context — see §4. |
 
 **Identity rule** (load-bearing): **no copies**. A graph node is
@@ -73,7 +79,9 @@ either:
   slot-name on a relation.
 
 The Python data model encodes this in `Fact.__eq__` (by `(rel,
-args)` tuple) and in `Instance.__eq__` (by `name`); see
+args)` tuple) and in name-identity for named objects — the `NameRef`
+index keyed by the atom (the former `Instance.__eq__`-by-name was
+removed with the type/instance entity-view, S1.7.23); see
 [`../02-data-model/01_entities.md` §1.5](../02-data-model/01_entities.md).
 
 ## 3. Two flavours of node
@@ -85,6 +93,8 @@ Every node is *either*:
 | **named**    | `Norwegian`, `House-1` | bare atom              |
 | **relational** | `(co-located Norwegian House-1)` | parenthesised list |
 
+A **named** node is labelled by an **atom** (§2): the atom is the
+lexical token you type, the node is the graph vertex it denotes.
 The relational form is **just a node with N outgoing slot-edges to
 its arguments**. Notably:
 
@@ -391,7 +401,7 @@ view*, not as new work.
 | no copies — globally unique names | `KnowledgeBase.add_*` is idempotent on name; `Fact` identity by `(rel, args)` |
 | relations are first-class nodes | `Relation` is an entity (S1.2.1); `Fact.relation` resolves to it |
 | facts are first-class nodes    | `Fact` is an entity                                              |
-| types are first-class nodes    | `Type` is an entity                                              |
+| types are first-class nodes    | types are plain atoms/nodes (no `Type` entity since S1.7.23 — see §6); reachable via `is-a` + the `NameRef` index |
 | rules are first-class nodes    | `Rule` is an entity; `Pattern` lifts `:match`/`:assert`            |
 | property-application is a fact | open-world relation auto-vivification + `_rule_apps_by_rule` index |
 | trace is same IR as input      | `(trace …)` reuses the parser ([Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21)) |

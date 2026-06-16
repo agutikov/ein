@@ -15,8 +15,8 @@ this tree describes Ein in graph-theory terms.
   T2 relation-polymorphic, T3 structural / aggregate); negative
   conclusions; rule rendering modes; saturation.
 - [`03_ein_model.md`](03_ein_model.md) — The reflexive ein algebra.
-  Instance-of-instance fixed point; the four foundational terms
-  (node / arrow / object / relation); two flavours of node;
+  Instance-of-instance fixed point; the five foundational terms
+  (atom / node / arrow / object / relation); two flavours of node;
   disambiguating "relation"; types as common-relation holders;
   reserved relation names; open design seams (empty `()`, declaration
   body form).
@@ -24,6 +24,12 @@ this tree describes Ein in graph-theory terms.
   worked example illustrating the type-as-relation-holder pattern.
   Stated four ways: natural language, ein-lang, compact graph,
   detailed Levi-bipartite graph.
+- [`05_four_level_kb.md`](05_four_level_kb.md) — The four-level KB
+  (L0 objects / L1 facts / L2 relations / L3 rules) and the
+  *consumes* stack; how the levels differ from the three layers.
+- [`06_self_describing.md`](06_self_describing.md) — Design sketch:
+  the L0–L3 schema expressed in ein-lang itself (`(meta …)`);
+  design-only for M1, implemented by F5.
 
 ## Reading order
 

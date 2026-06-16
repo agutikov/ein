@@ -284,6 +284,11 @@ graph nodes*, and every fact has an explicit `instance-of-rel`
 edge pointing at its declaration. The compact view from §3 hides
 those edges; the Levi-bipartite view makes them inspectable.
 
+In the §2 vocabulary of [`03_ein_model.md`](03_ein_model.md): `Jack`,
+`Coffee`, `Human`, `Drink` are **atoms** naming object/type nodes,
+each octagon is a **relational** node (a fact), and each hexagon is a
+relation declaration — the atom is the name, the node is the thing.
+
 ## 5. What this example demonstrates
 
 Each row of the §1 table maps onto a precise piece of the graph:

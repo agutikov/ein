@@ -13,9 +13,19 @@ authoritative discussion.
 
 ## Graph model
 
+### Atom
+A *name* — a lexical token that identifies a node (`Norwegian`,
+`House-1`, `Red`, `co-located`, `rule`, `not`, `T`). The atom is the
+name; the node it denotes is the thing named. Two occurrences of the
+same atom denote the same node. Distinguish from **Object** (the node
+itself). See
+[`ir/01-ein-graph/03_ein_model.md` §2](ir/01-ein-graph/03_ein_model.md).
+
 ### Object
-A graph node representing a concrete entity in a puzzle (Norwegian,
-House-1, Red). Drawn as an ellipse in the compact view. See
+A graph node *named by an atom* and representing a concrete entity in
+a puzzle (Norwegian, House-1, Red) — a vertex with no outbound arrows
+and in-arrows from facts. Drawn as an ellipse in the compact view.
+The atom is its name; the object is the node. See
 [`ir/01-ein-graph/01_kb.md` §1](ir/01-ein-graph/01_kb.md).
 
 ### Type
