@@ -228,9 +228,16 @@ def render_solution_table(
         lines.append("  solutions (k)   0")
         lines.append("  verdict         No solution — the constraints are "
                      "contradictory")
-        lines.append("")
         core = sorted(verdict.unsat_core,
                       key=lambda f: (f.relation_name, tuple(map(str, f.args))))
+        # Source frontier — the given conditions (`:source`) that jointly
+        # force the conflict. The human-meaningful "which inputs clash"; the
+        # raw fact list below is the full core.
+        srcs = sorted({s for f in core
+                       if (s := getattr(f.provenance, "source", None))})
+        if srcs:
+            lines.append(f"  conflicting sources: {', '.join(srcs)}")
+        lines.append("")
         lines.append(f"  unsat core ({len(core)} facts)")
         # Render each core fact through its relation :why (or IR fallback).
         kb = core[0]._kb if core else None
