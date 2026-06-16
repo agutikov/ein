@@ -1,7 +1,9 @@
 # M1 — Core graph reasoning module
 
 **Estimate:** ~3 months (~12 weeks).
-**Status:** active — MVP.
+**Status:** **shipped 2026-06-17** — acceptance gate green (P1.7a S1.7a.7).
+Closeout in [§M1 shipped](#m1-shipped); the non-gating cleanup (P1.7c Track B)
+and the P1.9 research backlog are deferred post-M1.
 **Depends on:** the refactored package skeleton already in `src/ein/`
 (commit `d37d039`); nothing else.
 **Blocks:** [M2](../m2_nl_to_ir/README.md) (NL frontend needs an IR
@@ -62,12 +64,12 @@ Concretely, M1 ships:
 | P1.7  | Bootstrapping — Zebra end-to-end       | 1-2 wk   | [`p1.7_bootstrapping_zebra/`](p1.7_bootstrapping_zebra/) (encoding + kernel-purity; the *gate* spun out to P1.7a) |
 | P1.7a | Sound solution model & search/result/stop refactor | 1-2 wk | [`p1.7a_solution_search_refactor/`](p1.7a_solution_search_refactor/) (spun out 2026-05-31 from P1.7 S1.7.3/.3a; **the corrected M1 gate**) |
 | P1.7b | Review & refactor — post-M1 debt paydown | 1-2.5 wk | [`p1.7b_review_and_refactor/`](p1.7b_review_and_refactor/) (created 2026-06-01; **non-gating**, behaviour-preserving cleanup of the M1 reference impl; 40-finding code-cited [review](p1.7b_review_and_refactor/findings.md)) |
-| P1.7c | Post-M1 cleanup — **Track A** retire the `(rules …)`/`(ontology …)`/`(facts …)` block heads (flat-form grammar; placeholder) + **Track B** the P1.7b deferred refactor tail (one stage per deferral, S1.7c.10–.32) | TBD | [`p1.7c_block_head_removal/`](p1.7c_block_head_removal/) (created 2026-06-02 from TODO.md; Track A = surface-syntax continuation of the P1.7 purity arc, Track B added 2026-06-02 from the [P1.7b deferrals](p1.7b_review_and_refactor/README.md#what-shipped-2026-06-01--and-whats-deferred)) |
-| P1.8  | Ein-language modules + standard library (imports / stdlib rules / relation-algebra / macros; placeholder) | TBD | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; perf split out to P1.8a 2026-06-02) |
+| P1.7c | Post-M1 cleanup — **Track A** retire the `(rules …)`/`(ontology …)`/`(facts …)` block heads (flat-form grammar; placeholder) + **Track B** the P1.7b deferred refactor tail (one stage per deferral, S1.7c.10–.32) | Track A ✅ / B pending | [`p1.7c_block_head_removal/`](p1.7c_block_head_removal/) (created 2026-06-02 from TODO.md; Track A = surface-syntax continuation of the P1.7 purity arc, Track B added 2026-06-02 from the [P1.7b deferrals](p1.7b_review_and_refactor/README.md#what-shipped-2026-06-01--and-whats-deferred)) |
+| P1.8  | Ein-language modules + standard library (imports / stdlib rules / relation-algebra / macros) | ✅ **complete** | [`p1.8_ein_lang_modules/`](p1.8_ein_lang_modules/) (directory name historical; perf split out to P1.8a 2026-06-02) |
 | P1.8a | Performance — **CLOSED 2026-06-15.** Levers measured: COW + negative-volume parked (not-a-lever); participation index + incremental saturation shipped; the S1.8a.f20 stdlib followup done | done | [`p1.8a_performance/`](p1.8a_performance/) (split from P1.8 2026-06-02; closed 2026-06-15) |
 | P1.9  | Hypothesis-loop follow-ups (E1-E23 catalog; placeholder) | TBD | [`p1.9_hypothesis_loop_followups/`](p1.9_hypothesis_loop_followups/) |
 | P1.11 | Package + CLI restructure (`Ein`/`ein` → `ein`, merge `ein.py/demo/` into the package, split `cli.py` into a folder) | ✅ **CLOSED 2026-06-16** | [`p1.11_package_restructure/`](p1.11_package_restructure/) (created 2026-05-24 from TODO.md) |
-| P1.20 | Kernel documentation (data-model doc split / user-vs-dev / architecture / `docs/index` → `docs/lib` rename / ein-model atoms-vs-objects refinement) | elaborated, parked | [`p1.20_kernel_docs/`](p1.20_kernel_docs/) (created 2026-05-24 from TODO.md; **renumbered P1.10 → P1.20 so docs sort last**, leaving P1.12–P1.19 for future phases; stages written 2026-06-15, **re-based 2026-06-16** — see [S1.20.A0](p1.20_kernel_docs/s1.20.a0_reconcile_drift.md)) |
+| P1.20 | Kernel documentation (data-model doc split / user-vs-dev / architecture / `docs/index` → `docs/lib` rename / ein-model atoms-vs-objects refinement) | ✅ **executed 2026-06-16/17** | [`p1.20_kernel_docs/`](p1.20_kernel_docs/) (created 2026-05-24 from TODO.md; **renumbered P1.10 → P1.20 so docs sort last**, leaving P1.12–P1.19 for future phases; stages written 2026-06-15, **re-based 2026-06-16** — see [S1.20.A0](p1.20_kernel_docs/s1.20.a0_reconcile_drift.md)) |
 
 Phases run roughly sequentially. P1.6 can start as soon as P1.2 is
 in (the renderer only needs the data model); P1.7 is the integration
@@ -82,9 +84,12 @@ transcribes the reference. **P1.7c** (created 2026-06-02 from
 TODO.md) is the surface-syntax continuation of P1.7's purity arc —
 retire the `(rules …)`/`(ontology …)`/`(facts …)` block heads for a
 flat-form grammar (facts = any head not in the closed declarator set).
-**P1.7c, P1.8, P1.9 are placeholders; P1.20 is elaborated (stages
-written 2026-06-15, re-based 2026-06-16, parked); P1.8a + P1.11 are CLOSED
-(2026-06-15 / 2026-06-16).** P1.8
+**Status (2026-06-17): all post-gate phases DONE except a non-gating tail.**
+P1.8 (stdlib + imports + macros), P1.8a (performance), P1.11 (package/CLI
+rename), and P1.20 (kernel docs, themes A–K) all shipped; P1.7c Track A
+(flat-form grammar) is done. The remaining non-gating work is **P1.7c
+Track B** (the P1.7b refactor-debt tail) and **P1.9** (the E1–E23
+hypothesis-loop research catalog) — see [§M1 shipped](#m1-shipped).** P1.8
 parks the **ein-language + standard-library** themes — modules+imports
 (the original Q30 deferral from the 2026-05-20 P1.3 review, broadened
 2026-05-22 to own the standard library: closure auto-inference deferred
@@ -139,6 +144,43 @@ M1 ships when **all** of the following pass:
    (P1.7 checks this).
 6. **Tests**: pytest suite ≥ 100 tests covering IR / graph / rules /
    constraints / hypothesis / rendering / Zebra; `ruff check .` green.
+
+## M1 shipped
+
+**Status: M1 complete — 2026-06-17.** The acceptance gate
+([P1.7a S1.7a.7](p1.7a_solution_search_refactor/README.md), `75bee52`) is
+**green**; re-confirmed this session via `./run_tests.sh` (the unit suite +
+the three P1.7a acceptance fixtures). The six acceptance criteria above are
+met — `zebra2.ein` solves to the unique answer (Japanese → Zebra,
+Norwegian → Water) across `solve` / `gaps` / `contradictions`, with the
+provenance-bearing trace and a green suite. Criterion #3 (trace fidelity to
+the human walkthrough) is the inherently *judgmental* arm, tracked at
+[P1.6 S1.6.5](p1.6_rendering_and_trace/s1.6.5_idea08_trace_acceptance.md).
+
+**What shipped beyond the gate** (all phases now closed): the sound solution
+model (P1.7a), the flat-form grammar (P1.7c Track A), the behaviour-preserving
+review/refactor (P1.7b), the lattice search engine (P1.5b), performance levers
+(P1.8a), the `std.*` standard library + imports + macros (P1.8), the
+package/CLI rename (P1.11), and all kernel-doc themes A–K (P1.20).
+
+**Non-gating remainder, carried into post-M1** (does *not* hold M1 open):
+
+- **P1.7c Track B** (S1.7c.10–.32) — the P1.7b deferred refactor-debt tail
+  (helper unifications, KB decomposition / typed-index wrappers, DOT-emitter /
+  cli / trace decomposition). Behaviour-preserving cleanup; recommended before
+  the [M1a Rust port](../m1a_rust/README.md).
+- **P1.9** (E1–E23) — the hypothesis-loop research catalog (CDCL no-good
+  learning, search heuristics, CSP-style preprocessing, mode taxonomy). A
+  parking lot, nothing executed.
+
+**Parked design questions** (deliberately open — see
+[`open_questions.md`](open_questions.md)): Q26 (compound / virtual node kinds —
+*don't foreclose*), Q28 (empty-parens `()` semantics), and Q22 (ontology
+sub-head split — now **moot**: the block heads it would split were removed by
+P1.7c).
+
+The M1-era raw-thought scratchpad is archived alongside this README at
+[`TODO.md`](TODO.md) (moved here from the repo root at completion).
 
 ## Out of scope (deferred)
 

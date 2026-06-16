@@ -17,7 +17,7 @@ Milestone-scoped. Cross-milestone questions live in
 | Q19 | Hypothesis branching — eager (every choice) vs lazy (only when saturation stalls)?    | P1.5 S1.5.1        |
 | Q20 | Trace reordering — engine order, planner-pass reorder, or human-template fitting?     | P1.6 S1.6.4        |
 | Q21 | IR ↔ DOT structural isomorphism — bidirectional, layout-free                          | S1.1.1 T1.1.1.6    |
-| Q22 | Ontology IR — three sub-heads (relation-decls / relation-defs / types-and-objects)?   | P1.1 (revisit) or P1.2 |
+| Q22 | Ontology IR — three sub-heads (relation-decls / relation-defs / types-and-objects)?   | **Moot** (P1.7c — block heads removed) |
 | Q23 | What carries an explicit type slot — only `Instance`, or also vars / relations?       | P1.2 S1.2.1 (decided) |
 | Q24 | `:where` clause in `sibling-exclusive` — what does it mean, and should it stay?       | P1.3 S1.3.1        |
 | Q25 | Cardinality + ordinality rules with vars — IR shape, graph representation             | P1.3 S1.3.2        |
@@ -302,6 +302,13 @@ people — readability may justify the split there.
 fine for Zebra-scale puzzles (one page). Premature factoring; wait
 for an instance where it bites.
 
+**Update (2026-06-17) — moot.** P1.7c removed the `(ontology …)` /
+`(facts …)` / `(rules …)` block heads entirely (flat-form grammar,
+[S1.7c.1/.4](p1.7c_block_head_removal/README.md)): a program is now a flat
+sequence of forms classified by head, layer attributed per fact. There is no
+longer an `(ontology …)` block to split into sub-heads, so this question is
+**closed as superseded**.
+
 ## Q23 — What carries an explicit type slot
 
 Direct question raised 2026-05-18: which entities in the data model
@@ -328,6 +335,14 @@ only as a fast-access cache on `Instance`.
 must be of two types, declare an intermediate intersection type or
 use additional `(is-a)` facts in the unified model. Revisit if the
 need is real.
+
+**Update (2026-06-17) — answer partly stale.** The *decision* stands (vars
+typed by premises, not a slot; relations carry a `signature`, not a type), but
+the `Instance.type` slot named above **no longer exists**: the `Type` /
+`Instance` entity-view was retired in
+[S1.7.23](p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md)
+(atoms-vs-objects unification). Type membership is now plain `is-a` facts over
+ordinary atoms; no entity caches a type slot.
 
 ## Q24 — `:where` clause in `sibling-exclusive`
 

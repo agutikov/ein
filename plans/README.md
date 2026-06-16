@@ -144,7 +144,7 @@ Stage files have a stable shape:
 
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
-| [M1](m1_core_graph_reasoning/README.md) | full (stages-as-files) | **active** — MVP scope | ~3 months |
+| [M1](m1_core_graph_reasoning/README.md) | full (stages-as-files) | **shipped** — done 2026-06-17 (gate green) | ~3 months |
 | [M1a](m1a_rust/README.md)               | placeholder README only | parked — Rust port (ein.rs); slots between M1 and M1b | TBD |
 | [M1b](m1b_gui/README.md)                | placeholder README only | parked — slots between M1a and M2 | TBD |
 | [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |
