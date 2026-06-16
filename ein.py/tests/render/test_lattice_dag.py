@@ -25,9 +25,7 @@ import pytest
 from ein.cli import main
 from ein.inference.config import SolverConfig
 from ein.inference.monotonic import (
-    contradictions_solve,
-    gaps_solve,
-    lattice_snapshot,
+    solve,
 )
 from ein.inference.monotonic.lattice import (
     DeadCommitment,
@@ -104,53 +102,63 @@ def test_verdict_raises_on_bad_view():
 def test_render_lattice_unwraps_a_verdict():
     """A Verdict carrying a proof is accepted directly."""
     kb = _kb(BRANCHING / "04_two_levels.ein")
-    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     dot = render_lattice(verdict, view="solution")  # not verdict.proof
     assert "digraph lattice" in dot
 
 
-# ── real gaps proof: frontier matches solutions ────────────────────
+# ── real solve proof: full view falls back to the solution frontier ─
 
-def test_gaps_full_solution_frontier_matches_proof():
+def test_full_view_falls_back_to_solution_frontier():
+    """``solve`` does not build the per-SetNode DAG (``proof.kb_index`` is
+    empty), so ``render_lattice(view="full")`` falls back to the
+    solution-frontier view: one green node per distinct MODEL
+    (``proof.solutions``, state_hash-deduped). branching/04 → 2 models →
+    2 green nodes."""
     kb = _kb(BRANCHING / "04_two_levels.ein")
-    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
+    assert verdict.proof.kb_index == {}
     dot = render_lattice(verdict.proof, view="full")
-    sol_nodes = [
-        n for n in verdict.proof.kb_index.values() if n.verdict == "solution"
-    ]
-    # The render shows one green node per satisfying COMMITMENT — the gaps
-    # kb_index is per-commitment (no state merge; the documented contract).
-    # S1.7.24: branching/04's `co-located` is symmetric, and with the
-    # kernel no longer canonicalising symmetric pairs both orientations
-    # are explored, so the two models surface as four satisfying
-    # commitments → four green nodes.
-    assert dot.count(SOL_GREEN) == len(sol_nodes)
     # `proof.solutions` reports distinct MODELS (state_hash-deduped): two.
     assert len(verdict.proof.solutions) == 2
-    # …and the green frontier covers exactly those two distinct states.
-    assert len({n.state_hash for n in sol_nodes}) == 2
+    # The fallback frontier shows one green node per distinct model.
+    assert dot.count(SOL_GREEN) == 2
 
 
-# ── state_hash collapse → one multilabel node ──────────────────────
+# ── state_hash collision fixture under solve ────────────────────────
 
-def test_state_hash_collision_renders_multilabel_node():
+def test_state_hash_collision_renders_single_model():
+    """``03_state_hash_collision`` resolves to ONE model under ``solve``
+    (committing h2 derives h1+h3 → complete). With no DAG built the full
+    view falls back to the solution frontier: a single green node.
+
+    TODO(P1.7a): the multilabel ``≡ same state`` DAG node that the removed
+    ``contradictions_solve`` produced is unreachable through ``solve``
+    (no per-SetNode kb_index). The merge view would need the DAG built
+    separately."""
     kb = _kb(LATTICE / "03_state_hash_collision.ein")
-    verdict, _ = contradictions_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     dot = render_lattice(verdict.proof, view="full")
-    assert "≡ same state" in dot          # ≥2 commitments collapsed
+    assert "≡ same state" not in dot      # no DAG → no multilabel marker
+    assert dot.count(SOL_GREEN) == 1      # the single model
 
 
-# ── shuffle invariance via the snapshot ────────────────────────────
+# ── shuffle invariance of the rendered proof ───────────────────────
 
 @pytest.mark.parametrize("fixture", [BRANCHING / "04_two_levels.ein",
                                      LATTICE / "03_state_hash_collision.ein"])
-def test_snapshot_render_is_shuffle_invariant(fixture: Path):
-    def _snap_dot(seed: int) -> str:
+def test_proof_render_is_shuffle_invariant(fixture: Path):
+    """The rendered lattice (solution view) is identical across
+    ``lattice_order_seed`` values — the traversal order changes, the answer
+    does not (S1.5b.31). `solve` records the lex-smallest commitment per
+    model state, so the reps are deterministic and the render is stable."""
+    def _dot(seed: int) -> str:
         kb = _kb(fixture)
         cfg = replace(kb.config or SolverConfig(), lattice_order_seed=seed)
-        verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True, config=cfg)
-        return render_lattice(lattice_snapshot(verdict, kb), view="full")
-    assert _snap_dot(0) == _snap_dot(3) == _snap_dot(9)
+        verdict, _ = solve(kb, stop_after=None, max_set_size=3,
+                           store_lattice=True, config=cfg)
+        return render_lattice(verdict, view="solution")
+    assert _dot(0) == _dot(3) == _dot(9)
 
 
 # ── DOT validity ───────────────────────────────────────────────────
@@ -159,7 +167,7 @@ def test_snapshot_render_is_shuffle_invariant(fixture: Path):
 def test_lattice_dot_parses():
     assert _parses(render_lattice(_synthetic_proof(), view="solution"))
     kb = _kb(LATTICE / "02_genuine_3set_death.ein")
-    verdict, _ = contradictions_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     assert _parses(render_lattice(verdict.proof, view="full"))
     assert _parses(render_lattice(verdict.proof, view="solution"))
 
@@ -207,9 +215,13 @@ def test_cli_render_lattice(capsys: pytest.CaptureFixture[str]):
     assert SOL_GREEN in out                # two_levels has solutions
 
 
-def test_cli_render_lattice_contradictions(capsys: pytest.CaptureFixture[str]):
-    rc = main(["render", "lattice", str(LATTICE / "02_genuine_3set_death.ein"),
-               "--mode", "contradictions"])
+def test_cli_render_lattice_shows_nogood(capsys: pytest.CaptureFixture[str]):
+    """``render lattice`` shows the learned no-good back-edge for a refuted
+    commitment. (The ``--mode contradictions`` flag was removed — there is one
+    lattice per solve; the default ``--view solution`` renders the deads with
+    their no-goods.) ``lattice/01_subset_pruned`` has the {a,b} death + its
+    nogood even though the puzzle as a whole is satisfiable."""
+    rc = main(["render", "lattice", str(LATTICE / "01_subset_pruned.ein")])
     assert rc == 0
     assert "no-good" in capsys.readouterr().out
 

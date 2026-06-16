@@ -535,13 +535,26 @@ path: layer N enumerates every size-N alive subset via
 Apriori-style prefix-join, enters each via the common
 [`try_commitment_set`](../../../ein.py/src/ein/inference/commitment.py)
 primitive, and merges only the unconditional consequences back
-into a single root KB. First goal-satisfying commitment wins
-(SOLVE mode — Q1.5b.7); GAPS / CONTRADICTIONS belong to the
-peer **lattice engine** (S1.5b.20+).
+into a single root KB. There is **one entry**,
+[`solve`](../../../ein.py/src/ein/inference/monotonic/solver.py): it
+records every solution node (`consistent ∧ complete`, `state_hash`-deduped)
+plus every refuted commitment, and
+[`verdict_of`](../../../ein.py/src/ein/inference/monotonic/solver.py)
+reads the verdict off the count `k` of distinct solution nodes —
+`k = 0` → Contradiction (unsat core), `k = 1` → Solution, `k > 1` →
+Ambiguity (gaps). These are **three answers to one problem**, selected
+by the input, not by which function was called (the unsound
+`gaps_solve` / `contradictions_solve` split was removed 2026-06-16 —
+Q1.5b.7). The orthogonal **stop policy** (`stop_after=1` single / `N` /
+`None` exhaustive) only bounds how far the lattice is walked;
+`store_lattice=True` attaches a sound
+[`LatticeProof`](../../../ein.py/src/ein/inference/monotonic/lattice.py)
+carrying both the gaps view (`proof.solutions`) and the contradictions
+view (`proof.dead_commitments` + `verdict.unsat_core`).
 
 ### Termination conditions, in order of precedence
 
-1. **Solution at a fork.** `is_solved(result.kb, mode)` on an
+1. **Solution at a fork.** `is_solved(result.kb, Mode.SOLVE)` on an
    alive entering — the fork's saturated kb carries the
    committed hypotheses + their derivations, which is the
    context the goal needs when it references hypothesis facts
@@ -593,17 +606,19 @@ dump/<puzzle>-<ts>/
 Six lifecycle hooks (`root_initial`, `layer_start`, `entering`,
 `layer_end`, `early_terminate`, `summary`) fire from the
 backbone; `dumper=None` is a no-op for every hook site. The
-`_VerboseDumper` subclass in `ein.py/src/ein/cli/search.py` streams
-the same events to stderr as `--verbose` progress lines without
+[`ProgressDumper`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
+subclass streams the same events to stderr as live progress lines
+(so a multi-minute exhaustive `solve` isn't a silent hang) without
 needing an on-disk dump.
 
 `MonotonicDumper` captures only the per-layer root snapshots —
-the solution-mode engine early-terminates, so most hypotheses are
-never reached and there's nothing per-hypothesis to record. For a
+on the default single-solution stop policy the engine
+early-terminates, so most hypotheses are never reached and there's
+nothing per-hypothesis to record. For a
 **complete per-hypothesis record** — every commitment tested at
 every layer, with the firings each one emitted, survivors and
-casualties alike — run the exhaustive lattice entries
-(`gaps_solve` / `contradictions_solve`) with a `LatticeDumper`:
+casualties alike — run `solve` exhaustively (`stop_after=None`) with
+a `LatticeDumper`:
 see [`lattice_dump.md`](lattice_dump.md). That dump groups
 `enterings/` and `kb_index/` by layer and writes
 `outcome.txt` + `firings.jsonl` + `unsat_core.jsonl` per
@@ -612,7 +627,7 @@ rules.
 
 ### Budget — `max_time` / `max_enterings`
 
-`monotonic_solve(..., max_time=N, max_enterings=K)` checks the
+`solve(..., max_time=N, max_enterings=K)` checks the
 caps before every `try_commitment_set` call; on exhaust raises
 `BudgetExceededError(reason, stats)` with the partial counters.
 The dumper's timeline is flushed via `MonotonicDumper.close()`

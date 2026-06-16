@@ -4,9 +4,9 @@
 :class:`LatticeProof` as the future P1.6 NL renderer would. It is
 intended for two usage sites:
 
-- **Tests** — every lattice-entry test combination (gaps /
-  contradictions x with / without ``store_lattice``) can call it
-  on the returned verdict's proof to lock in the structural
+- **Tests** — any :func:`solve` run with ``store_lattice=True``
+  (across the gaps / contradictions / solution verdict shapes) can
+  call it on the returned verdict's proof to lock in the structural
   invariants the renderer depends on.
 - **The P1.6 NL renderer's pre-flight check** — before walking
   ``proof.solutions[i].kb.derivation_dag(goal_fact)``, the
@@ -63,13 +63,13 @@ def validate_proof_for_explanation(
     5. Every :class:`SetNode` in ``kb_index``:
 
        - has ``state_hash`` matching its dict key (modulo the
-         per-entry keying — gaps uses ``hash(commitment)`` so
-         the key need not equal ``state_hash``);
+         per-mode keying — the gaps mode uses ``hash(commitment)``
+         so the key need not equal ``state_hash``);
        - has ``canonical_set in labels``;
-       - has ``len(labels) > 1`` only under
-         :func:`contradictions_solve` (multilabel collapse is
-         the contradictions-side merge; gaps must keep
-         distinct commitments distinct).
+       - has ``len(labels) > 1`` only for a :class:`Contradiction`
+         verdict (multilabel collapse is the contradictions-side
+         merge; the gaps side must keep distinct commitments
+         distinct).
 
     6. Stats coherence — ``stats.solutions_found ==
        len(proof.solutions)``; cumulative dead counter

@@ -10,16 +10,20 @@ Subcommands:
     ein render rule        <file> --name=N    # a single rule's DOT
     ein render constraints <file>             # constraint-scope DOT
     ein render lattice     <file>             # commitment-lattice DOT (runs a solve)
-    ein solve <file> --trace=out.md           # markdown trace (S1.6.4)
+    ein solve <file>                          # solve: print the solution(s) / unsat core
+    ein solve <file> --exhaustive             # certify unique / ambiguous / unsat
+    ein solve <file> --trace=out.md           # + markdown derivation trace (to a file)
 
 Engine-runner subcommands (promoted from the former ``demo/`` scripts in
 P1.11 S1.11.3; each delegates to its module's ``main(argv)``):
 
     ein saturate  <file>            # saturate to fixpoint + timing/state dump
-    ein search    <file>            # sound set-search solve() + engine stats
-    ein lattice   <file> --gaps     # gaps / contradictions lattice search + stats
     ein profile   <file>            # cProfile a solve() run
     ein symmetric                   # symmetric-closure micro-benchmark
+
+The former ``search`` (sound solve) and ``lattice`` (gaps / contradictions)
+engine-runner subcommands were merged into ``solve`` (2026-06-16) — one
+command, one sound engine, the verdict read from the result.
 
 All `render`/`dot` commands emit DOT to stdout only; rasterising to SVG
 is a shell-script concern (see utils/render_examples.sh). `solve`
@@ -45,8 +49,6 @@ from . import ir, kb, render, solve
 # name first, sidestepping argparse REMAINDER's leading-``-`` mishandling).
 _DELEGATED: dict[str, str] = {
     "saturate": "saturate to a least fixpoint + phase timings / state dump",
-    "search": "sound set-search solve() + engine stats (the ein.inference.monotonic entry)",
-    "lattice": "gaps / contradictions lattice search + stats",
     "profile": "cProfile a solve() run (perf diagnostic)",
     "symmetric": "symmetric-closure micro-benchmark (synthetic fixture)",
 }

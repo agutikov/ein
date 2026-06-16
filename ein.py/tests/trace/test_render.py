@@ -7,7 +7,7 @@ Covers `ein.trace`:
 - refuted hypotheses render as `<details>` reductio blocks;
 - each step's inline `dot` slice is valid DOT (Graphviz);
 - the `(trace …)` AST round-trips through the parser;
-- `linearize` on a real gaps_solve verdict yields a coherent trace;
+- `linearize` on a real (exhaustive) `solve` verdict yields a coherent trace;
 - the `solve --trace` CLI writes markdown.
 """
 from __future__ import annotations
@@ -21,7 +21,7 @@ from pathlib import Path
 import pytest
 
 from ein.cli import main
-from ein.inference.monotonic import contradictions_solve, gaps_solve
+from ein.inference.monotonic import solve
 from ein.ir import parse
 from ein.kb import KnowledgeBase
 from ein.trace import (
@@ -185,7 +185,7 @@ def test_trace_control_chars_escaped_on_emit():
 @pytest.mark.skipif(not _HAVE_DOT, reason="graphviz `dot` not installed")
 def test_each_step_diagram_is_valid_dot():
     kb = _kb(BRANCHING / "04_two_levels.ein")
-    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     md = render_markdown(linearize(verdict, diagrams=True), diagrams=True)
     blocks = re.findall(r"```dot\n(.*?)\n```", md, re.DOTALL)
     assert blocks, "expected inline dot blocks"
@@ -199,7 +199,7 @@ def test_each_step_diagram_is_valid_dot():
 
 def test_linearize_real_gaps_solution():
     kb = _kb(BRANCHING / "04_two_levels.ein")
-    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     trace = linearize(verdict, diagrams=False)
     assert trace.solved
     assert trace.steps                      # has a derivation spine
@@ -208,18 +208,21 @@ def test_linearize_real_gaps_solution():
 
 
 def test_linearize_real_contradictions_has_reductios():
-    kb = _kb(LATTICE / "02_genuine_3set_death.ein")
-    verdict, _ = contradictions_solve(kb, max_set_size=3, store_lattice=True)
+    # A genuinely UNSAT puzzle (k=0 → Contradiction): the trace has no
+    # solution spine and one reductio per refuted commitment.
+    kb = _kb(BRANCHING.parent / "ein-bugs" / "zebra2-bad.ein")
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     trace = linearize(verdict, diagrams=False)
+    assert not trace.solved
     assert trace.reductios
-    assert all("refuted" in r.summary for r in trace.reductios)
+    assert "refuted" in trace.summary
 
 
 # ── --relevant prune (S1.6.5) ──────────────────────────────────────
 
 def test_relevant_prune_reduces_and_dedupes():
     kb = _kb(BRANCHING / "04_two_levels.ein")
-    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     full = linearize(verdict, diagrams=False)
     pruned = linearize(verdict, diagrams=False, relevant=True)
     assert len(pruned.steps) < len(full.steps)        # the slice is smaller
@@ -231,7 +234,7 @@ def test_relevant_prune_reduces_and_dedupes():
 
 def test_relevant_marks_conditional_under_hypothesis():
     kb = _kb(BRANCHING / "04_two_levels.ein")
-    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     pruned = linearize(verdict, diagrams=False, relevant=True)
     # branching/04's solution needs the commitment, so kept steps are
     # under the hypothesis → the render shows the divider.
@@ -240,11 +243,14 @@ def test_relevant_marks_conditional_under_hypothesis():
     assert "## Under hypothesis —" in md
 
 
-def test_cli_solve_relevant(capsys: pytest.CaptureFixture[str]):
+def test_cli_solve_relevant(tmp_path: Path):
+    # --relevant is a trace shaper, so it applies to the --trace markdown
+    # (which now goes to a file, never stdout).
+    out = tmp_path / "trace.md"
     rc = main(["solve", str(BRANCHING / "04_two_levels.ein"),
-               "--relevant", "--no-diagrams"])
+               "--relevant", "--no-diagrams", "--trace", str(out)])
     assert rc == 0
-    assert "pruned to" in capsys.readouterr().out
+    assert "pruned to" in out.read_text(encoding="utf-8")
 
 
 # ── CLI ────────────────────────────────────────────────────────────
@@ -258,9 +264,11 @@ def test_cli_solve_writes_trace(tmp_path: Path, capsys: pytest.CaptureFixture[st
     assert "## Step 1 —" in text
 
 
-def test_cli_solve_no_diagrams(capsys: pytest.CaptureFixture[str]):
-    rc = main(["solve", str(BRANCHING / "04_two_levels.ein"), "--no-diagrams"])
+def test_cli_solve_no_diagrams(tmp_path: Path):
+    out = tmp_path / "trace.md"
+    rc = main(["solve", str(BRANCHING / "04_two_levels.ein"),
+               "--no-diagrams", "--trace", str(out)])
     assert rc == 0
-    out = capsys.readouterr().out
-    assert "# Solution trace" in out
-    assert "```dot" not in out               # all dot blocks suppressed
+    text = out.read_text(encoding="utf-8")
+    assert "# Solution trace" in text
+    assert "```dot" not in text               # all dot blocks suppressed

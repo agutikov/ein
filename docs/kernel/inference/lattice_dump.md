@@ -2,19 +2,23 @@
 
 > **Purpose.** When you need to know *which hypotheses the engine
 > tested at each layer* and *what every one of them derived —
-> survivors and casualties alike* — run a lattice entry with a
+> survivors and casualties alike* — run the exhaustive
+> [`solve`](../../../ein.py/src/ein/inference/monotonic/solver.py) sweep
+> with a
 > [`LatticeDumper`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
 > attached. The on-disk dump is the audit trail for debugging
 > **problem statements** (is the puzzle even consistent? which
 > committed pair kills it?) and **rules** (did the rule I expected
 > fire under this commitment? did it fire when it shouldn't?).
 
-This page covers the two exhaustive lattice entries —
-[`gaps_solve`](../../../ein.py/src/ein/inference/monotonic/solver.py)
-and `contradictions_solve` — which test *every* commitment set
-layer-by-layer and so produce a complete per-hypothesis record.
-The solution-mode [`monotonic_solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10)
-early-terminates on the first solution and uses the lighter
+This page covers the **exhaustive** lattice sweep —
+[`solve`](../../../ein.py/src/ein/inference/monotonic/solver.py) run
+with `store_lattice=True` and an unbounded stop policy (`stop_after=None`)
+— which tests *every* commitment set layer-by-layer and so produces a
+complete per-hypothesis record. The default single-solution
+[`solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10)
+(`stop_after=1`) early-terminates on the first solution and uses the
+lighter
 [`MonotonicDumper`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
 (timeline + per-layer root snapshots only — no per-hypothesis
 folders, since most hypotheses are never reached).
@@ -25,20 +29,28 @@ folders, since most hypotheses are never reached).
 
 ### From the CLI
 
-[`ein.py/src/ein/cli/lattice.py`](../../../ein.py/src/ein/cli/lattice.py)
-dispatches both lattice entries. Pass `--dump-states DIR` to attach
-a `LatticeDumper`; add `--store-lattice` to also materialise the
-per-SetNode `kb_index/`:
+[`ein solve`](../../../ein.py/src/ein/cli/solve.py) runs the exhaustive
+sweep under `--exhaustive` (the default stop policy is a single
+solution); `--trace FILE` builds the `store_lattice` `LatticeProof` and
+renders the reductio markdown (every refuted commitment, foldable, plus
+the lattice DAG):
 
 ```sh
-# Every dead commitment + its refutation, dumped:
-python -m ein.cli lattice examples/branching/04_two_levels.ein \
-    --contradictions --store-lattice --dump-states ./dump
-# Every satisfying commitment, dumped:
-python -m ein.cli lattice examples/branching/04_two_levels.ein \
-    --gaps --dump-states ./dump
-tree ./dump
+# Exhaustive sweep, both views written into the markdown trace:
+python -m ein.cli solve examples/branching/04_two_levels.ein \
+    --exhaustive --trace ./trace.md
 ```
+
+That one sweep records both views at once — the satisfying commitments
+and the dead ones with their refutations — because the proof carries
+`proof.solutions` (gaps) and `proof.dead_commitments` + the verdict's
+`unsat_core` (contradictions); there is no per-view command to choose
+between.
+
+The CLI does **not** surface the on-disk `LatticeDumper` tree
+(`enterings/`, `kb_index/`, …) — that per-hypothesis dump is driven
+**programmatically** (below). Use the programmatic path when you need
+the full per-commitment folder layout this page documents.
 
 Full zebra2 is too slow on CPython for an exhaustive lattice sweep —
 use [`./bench_solve_pypy.sh`](../../../ein.py/) / a PyPy interpreter,
@@ -49,14 +61,15 @@ and bound the sweep with `--max-set-size N`, `--max-time S`, or
 
 ```python
 from pathlib import Path
-from ein.inference.monotonic import LatticeDumper, contradictions_solve
+from ein.inference.monotonic import LatticeDumper, solve
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
 
 kb = KnowledgeBase.from_ir(parse(Path("examples/branching/04_two_levels.ein").read_text()))
 dumper = LatticeDumper(out_dir=Path("./dump"))
-verdict, stats = contradictions_solve(kb, max_set_size=3,
-                                      store_lattice=True, dumper=dumper)
+# stop_after=None ⇒ exhaustive sweep; store_lattice ⇒ sound LatticeProof + kb_index/.
+verdict, stats = solve(kb, max_set_size=3, stop_after=None,
+                       store_lattice=True, dumper=dumper)
 ```
 
 `out_dir=None` makes every hook a no-op (the call sites stay
@@ -163,9 +176,9 @@ on which bindings, in the context of each tested hypothesis.
 ## `kb_index/` — ordered ids, grouped by layer
 
 Under `store_lattice=True` the engine keeps a per-SetNode index
-(state-hash dedup; under `contradictions_solve` it drives the merge
-where distinct dead commitments with identical post-saturation KBs
-collapse). The dump folders use **per-layer ordered ids** —
+(state-hash dedup — it drives the merge where distinct dead
+commitments with identical post-saturation KBs collapse into one
+refutation node). The dump folders use **per-layer ordered ids** —
 `kb_index/layer_NN/kb_<i>/` — rather than hash-named folders: within
 each layer the nodes are sorted by `state_hash` (deterministic) and
 numbered `kb_0 … kb_n`. The raw hash is still available in
@@ -197,11 +210,13 @@ it's the entry point for "show me every refutation" tooling.
 
 ## Debugging workflows
 
-- **"Is my problem statement consistent?"** — run `--contradictions`.
-  If `00_root_initial.ein` already contains `(false)`, the puzzle is
-  inconsistent before any hypothesis (Phase-1 contradiction). Else,
-  scan `enterings/layer_01/*/outcome.txt`: a singleton that dies
-  `dead-post` means that one fact is incompatible with the givens.
+- **"Is my problem statement consistent?"** — run an exhaustive sweep
+  with a `LatticeDumper` attached. If `00_root_initial.ein` already
+  contains `(false)`, the puzzle is inconsistent before any hypothesis
+  (Phase-1 contradiction) and the verdict is `Contradiction` (k=0).
+  Else, scan `enterings/layer_01/*/outcome.txt`: a singleton that dies
+  `dead-post` means that one fact is incompatible with the givens. (For
+  the verdict alone, without the dump, `ein solve --exhaustive` suffices.)
 - **"Why did commitment {A,B} get pruned?"** — find its
   `learned_clause.json`; the clause is the minimal set whose
   conjunction is unsat. Its `unsat_core.jsonl` names the facts that
@@ -212,9 +227,9 @@ it's the entry point for "show me every refutation" tooling.
   [`(absent …)` NAF guard](README.md#naf-semantics--fire-time-re-evaluation-s15a1))
   didn't hold in that fork.
 - **"Two commitments should reach the same state but don't"** — under
-  `--store-lattice`, compare their `kb_index/layer_NN/kb_<i>/state_hash.txt`;
+  `store_lattice=True`, compare their `kb_index/layer_NN/kb_<i>/state_hash.txt`;
   different hashes with the same intended meaning point at a
-  non-confluent rule set (see the `--lattice-sanity-check` flag).
+  non-confluent rule set.
 
 ---
 
@@ -223,6 +238,8 @@ it's the entry point for "show me every refutation" tooling.
 - Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10).
 - Implementation: [`monotonic/state_dump.py`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
   (`LatticeDumper`, `MonotonicDumper`).
-- CLI: [`ein lattice`](../../../ein.py/src/ein/cli/lattice.py).
+- CLI: [`ein solve`](../../../ein.py/src/ein/cli/solve.py)
+  (`--exhaustive`; `--trace` for the reductio markdown). The on-disk
+  `LatticeDumper` tree is programmatic-only (see *How to run it*).
 - Tests: [`tests/inference/lattice/test_lattice_dumper.py`](../../../ein.py/tests/inference/lattice/test_lattice_dumper.py).
 - Algorithm spec: [`algorithm_layer_n.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md).

@@ -5,17 +5,16 @@ instance (root); each layer's candidates come from the Apriori
 prefix-join (:mod:`ein.inference.apriori`); each candidate
 is entered via the common
 :func:`ein.inference.commitment.try_commitment_set` primitive.
-Unconditional consequences of an alive commitment merge into
-root; the loop terminates on the first goal-satisfying fork
-(algorithm_layer_n.md §3d.vii — S1.5b.9), on a root contradiction,
-or on layer exhaustion.
+Every solution node (``consistent ∧ complete``) is recorded, deduped
+by ``state_hash``; the loop terminates on the ``stop_after`` count, on
+a root contradiction, or on layer exhaustion, and the verdict is read
+from the count ``k`` (:func:`verdict_of`) — one engine, three answers.
 
 Termination conditions
 ----------------------
 
-- :class:`Solution` at a fork — ``is_solution_node`` (solve) or
-  ``is_solved(result.kb, Mode.SOLVE)`` (gaps / contradictions)
-  on an alive entering. Returns ``Solution(kb=result.kb)`` so
+- :class:`Solution` at a fork — ``complete`` (consistent ∧ no open
+  hypothesis) on an alive entering. Returns ``Solution(kb=result.kb)`` so
   the caller sees the hypothesis-and-derivations context the
   goal depended on. **Required** for puzzles whose goal directly
   references hypothesis facts (e.g. branching/05_mini_zebra).
@@ -59,13 +58,15 @@ at five sites: ``root_initial``, ``layer_start``, ``entering``,
 ``layer_end``, ``summary``. The single ``_finish`` exit helper
 guarantees ``summary`` lands on every non-abort path.
 
-Three entries (Q1.5b.7 / P1.7a)
--------------------------------
+One entry (P1.7a)
+-----------------
 
-All three public entries — :func:`solve`, :func:`gaps_solve`,
-:func:`contradictions_solve` — dispatch through the shared
-per-candidate loop via the ``entry`` discriminator; they differ
-only in the outcome recording and the Phase-3 verdict synthesis.
+:func:`solve` is the single public entry. It records every solution node
+and every refuted commitment, then reads the verdict from the count ``k`` of
+distinct solution nodes via :func:`verdict_of` (``k = 0 / 1 / >1`` →
+Contradiction / Solution / Ambiguity). The former ``gaps_solve`` /
+``contradictions_solve`` sibling entries (which chose the verdict up front)
+were removed; their views are read off ``solve``'s optional ``LatticeProof``.
 """
 from __future__ import annotations
 
@@ -116,9 +117,8 @@ from ein.kb.store import KnowledgeBase
 
 
 class BudgetExceededError(RuntimeError):
-    """Raised by :func:`solve` / :func:`gaps_solve` /
-    :func:`contradictions_solve` when ``max_time`` or
-    ``max_enterings`` is hit before the solve completes.
+    """Raised by :func:`solve` when ``max_time`` or ``max_enterings`` is hit
+    before the solve completes.
 
     Carries the partial :class:`MonotonicStats` so callers can
     print the work done before the abort.
@@ -132,15 +132,14 @@ class BudgetExceededError(RuntimeError):
 
 @dataclass
 class MonotonicStats(_BaseStats):
-    """Cumulative counters for one set-search run (:func:`solve` /
-    :func:`gaps_solve` / :func:`contradictions_solve`).
+    """Cumulative counters for one :func:`solve` run.
 
     Inherits the shared per-candidate counters from :class:`_BaseStats`
     (defined in :mod:`ein.inference.monotonic.lattice`); adds the two
-    ``solve``-entry extras below. :class:`LatticeStats` is the sibling
-    subclass — neither inherits the other, so each public entry advertises
-    its own counter set at the type level. The base counters lead, so the
-    ``solve`` ``summary.json`` field order is unchanged."""
+    ``solve``-entry extras below. :class:`LatticeStats` (the proof's stats,
+    built by :func:`_build_lattice_stats`) is the sibling subclass — neither
+    inherits the other. The base counters lead, so the ``summary.json`` field
+    order is unchanged."""
 
     # P1.7a — solve entry: deduped solution-node count `k` and whether
     # the search was exhaustive (else `k` is a lower bound and a k=1
@@ -151,72 +150,32 @@ class MonotonicStats(_BaseStats):
 
 @dataclass
 class _LatticeLoopState:
-    """Mutable accumulator threaded through :func:`_explore_layers`
-    for ALL THREE entries (``solve`` / ``gaps`` / ``contradictions``).
-    One instance is built at the top of :func:`_explore_layers` and
-    threaded via :attr:`_LoopCtx.lstate`; each entry mutates and reads
-    only its own subset (below), so the return sites can hand a single
-    bag to :func:`verdict_of` (solve) or
-    :func:`_finalise_lattice_verdict` (gaps / contradictions).
+    """Mutable accumulator threaded through :func:`_explore_layers` via
+    :attr:`_LoopCtx.lstate`. Holds what the single ``solve`` loop collects:
 
-    The fields do NOT partition cleanly by entry — ``dead_commitments``
-    is shared by {solve, contradictions}, ``kb_index`` by {gaps,
-    contradictions}, and ``alive_at_end_tuple`` is written by all three
-    (empty triple-intersection) — so this stays ONE class, not an
-    entry-keyed split (S1.7c.15, assessed + rejected): the field sets
-    form a Venn lattice that a class tree can't express, and any split
-    forces the cross-entry mutators (:func:`_handle_dead`,
-    :func:`_record_setnode`, :func:`_finalise_lattice_verdict`) onto a
-    Union/Protocol observationally identical to this class — while
-    turning the structurally-safe unconditional writes (``:1222`` /
-    ``_handle_dead``) into a routing decision that could silently
-    misroute a verdict.
-
-    Field → owning entry (every field is read by ≥1 entry):
-
-    - :attr:`solution_nodes` / :attr:`truncated` — **SOLVE only**
-      (P1.7a). Deduped solution nodes (``state_hash`` → record); written
-      by :func:`_record_node`, read by :func:`verdict_of` /
-      :func:`_finalise_solve` / the ``stop_after`` + depth-cap gates.
-      ``truncated`` records a ``stop_after`` / depth-cap cut (→
-      ``stats.exhausted``).
-    - :attr:`solutions` / :attr:`root_was_solved` — **GAPS only**.
-      :attr:`solutions` is every satisfying commitment (each carries a
-      :meth:`KnowledgeBase.snapshot` so root-side mutation after return
-      doesn't corrupt the branch view), read by
-      :func:`_finalise_lattice_verdict`; :attr:`root_was_solved` guards
-      against double-recording the root-side solution in Phase 2.
-    - :attr:`dead_commitments` — **SOLVE + CONTRADICTIONS**. Every
-      refuted commitment; written by :func:`_root_dead` /
-      :func:`_handle_dead` (guard: ``entry ∈ {solve, contradictions}``),
-      read by :func:`verdict_of` (solve ``k=0`` core) and
-      :func:`_finalise_lattice_verdict` (contradictions core). Gaps
-      leaves it empty by contract.
-    - :attr:`kb_index` — **GAPS + CONTRADICTIONS** (``store_lattice``
-      only). Per-SetNode storage; empty when ``store_lattice=False``.
-      Key encoding differs by entry: under gaps it is :func:`hash` of
-      the canonical commitment tuple (distinct commitments stay
-      separate per the GAPS contract); under contradictions it is
-      :func:`state_hash` of the post-saturation kb (distinct
-      commitments collapse on a state-hash collision).
-    - :attr:`state_hash_merges` — **CONTRADICTIONS only**. Counter
-      ticked whenever the contradictions-side dedup folds a fresh
-      commitment into an existing :class:`SetNode`.
-    - :attr:`alive_at_end_tuple` — written by **all three** at the last
-      Phase 2 layer iff the depth cap was reached (``()`` otherwise; no
-      entry guard); read only by the lattice finaliser (gaps /
-      contradictions).
+    - :attr:`solution_nodes` / :attr:`truncated` — the deduped solution nodes
+      (``state_hash`` → record), written by :func:`_record_node`, read by
+      :func:`verdict_of` / :func:`_finalise_solve` / the ``stop_after`` +
+      depth-cap gates. ``truncated`` records a ``stop_after`` / depth-cap cut
+      (→ ``stats.exhausted = False``).
+    - :attr:`dead_commitments` — every refuted commitment, written by
+      :func:`_root_dead` / :func:`_handle_dead`, read by :func:`verdict_of`
+      for the ``k=0`` core and packaged into the proof's refutation map.
+    - :attr:`alive_at_end_tuple` — the size-N frontier left alive iff the
+      depth cap was the loop terminator (``()`` otherwise).
+    - :attr:`kb_index` / :attr:`state_hash_merges` — the per-SetNode DAG store
+      + its merge counter. ``solve`` builds no DAG, so these stay empty / 0;
+      they remain as the home of the merge semantics (:func:`_record_setnode`)
+      and keep the proof's :class:`LatticeStats` field populated.
     """
 
-    solutions:         list[SolutionRecord] = field(default_factory=list)
     dead_commitments:  list[DeadCommitment] = field(default_factory=list)
     kb_index:          dict[int, SetNode] = field(default_factory=dict)
     alive_at_end_tuple: tuple[CanonicalSetId, ...] = ()
     state_hash_merges: int = 0
-    root_was_solved:   bool = False
-    # P1.7a — solve entry: deduped solution nodes (state_hash → record)
-    # and whether the search ran out of lattice (exhausted) or was cut
-    # short by ``stop_after`` / the depth cap (``truncated``).
+    # Deduped solution nodes (state_hash → record) and whether the search ran
+    # out of lattice (exhausted) or was cut short by ``stop_after`` / the
+    # depth cap (``truncated``).
     solution_nodes:    dict[int, SolutionRecord] = field(default_factory=dict)
     truncated:         bool = False
 
@@ -289,10 +248,24 @@ def solve(
     dumper: MonotonicDumper | LatticeDumper | None = None,
     max_time: float | None = None,
     max_enterings: int | None = None,
+    store_lattice: bool = False,
     on_budget: Literal["raise", "verdict"] = "raise",
 ) -> tuple[Verdict | Aborted, MonotonicStats]:
-    """P1.7a sound search — the one entry whose verdict is *read* from the
-    result rather than chosen up front.
+    """The one solver entry — its verdict is *read* from the result
+    (``k`` distinct solution nodes) rather than chosen up front (P1.7a).
+
+    ``k = 0 / 1 / >1`` is read as ``Contradiction / Solution / Ambiguity``
+    by :func:`verdict_of` — three *answers* to one problem (unsat / unique /
+    gaps), never three problem statements. The former ``gaps_solve`` /
+    ``contradictions_solve`` sibling entries — which chose ``Ambiguity`` /
+    ``Contradiction`` by *which function was called* — are gone; their views
+    are now read off this one engine's result and optional proof.
+
+    ``store_lattice`` (opt-in) attaches a sound :class:`LatticeProof` to the
+    verdict — the full solution set (gaps view) + refutation map
+    (contradictions view) + the per-fact unsat cores — so ``render lattice``
+    and the reductio markdown trace read their views off this run. Off by
+    default (the fast path needn't pay for the proof packaging).
 
     Runs the set-indexed lattice exploration, recording every **solution
     node** (``consistent ∧ complete`` — no open hypothesis) deduped by
@@ -322,10 +295,10 @@ def solve(
     try:
         return _explore_layers(
             root_kb,
-            entry="solve",
             stop_after=stop_after,
             max_set_size=max_set_size,
             config=config,
+            store_lattice=store_lattice,
             dumper=dumper,
             max_time=max_time,
             max_enterings=max_enterings,
@@ -491,19 +464,11 @@ def _contradiction(kb: KnowledgeBase) -> Verdict:
     return Contradiction(unsat_core=_source_frontier_core(kb))
 
 
-# ── Shared core loop — _explore_layers ───────────────────────
+# ── Core loop — _explore_layers ──────────────────────────────
 #
-# S1.5b.21: extracted from the pre-refactor monotonic-loop
-# body. The `entry` discriminator dispatches outcomes for the
-# three public functions (solve, gaps_solve,
-# contradictions_solve). The shared core is NEVER DUPLICATED
-# across the three entries — they're all thin wrappers.
-#
-# New behaviour for `entry="gaps"`: instead of early-terminate
-# on is_solved, record into a local `solutions` list and
-# continue the search. Phase 3 synthesises
-# `Ambiguity(branches=[Solution for each recorded])`. The
-# `entry="contradictions"` branch is reserved for S1.5b.23.
+# S1.5b.21: extracted from the pre-refactor monotonic-loop body. The single
+# `solve` entry records solution nodes + refuted commitments and reads the
+# verdict from the count `k` via `verdict_of` (P1.7a).
 
 
 def _build_lattice_stats(
@@ -534,84 +499,6 @@ def _build_lattice_stats(
     )
 
 
-def _dedup_solutions_by_state(
-    records: list[SolutionRecord],
-) -> tuple[SolutionRecord, ...]:
-    """Collapse solution records that saturate to the same KB state, in
-    deterministic order. S1.7.24 — recovers correct model counting
-    generically (no symmetric-awareness): the two orientations of a
-    symmetric pair share a ``state_hash`` and count once. The kept
-    representative is the one with the lexicographically smallest
-    ``commitment`` (deterministic regardless of candidate order, so the
-    branch list is shuffle-invariant); records are returned in
-    ``state_hash`` order."""
-    best: dict[int, SolutionRecord] = {}
-    for r in records:
-        h = state_hash(r.kb)
-        cur = best.get(h)
-        if cur is None or tuple(sorted(r.commitment)) < tuple(sorted(cur.commitment)):
-            best[h] = r
-    return tuple(best[h] for h in sorted(best))
-
-
-def _finalise_lattice_verdict(
-    entry: Literal["gaps", "contradictions"],
-    *,
-    root_kb: KnowledgeBase,
-    lstate: _LatticeLoopState,
-    stats: MonotonicStats,
-    elapsed_seconds: float,
-    store_lattice: bool,
-) -> Verdict:
-    """Build the :class:`LatticeProof` from accumulated loop state
-    and wrap it in the per-entry verdict shape.
-
-    Under ``entry == "gaps"`` returns :class:`Ambiguity` whose
-    ``branches`` enumerate the satisfying snapshots; under
-    ``entry == "contradictions"`` returns :class:`Contradiction`
-    whose ``unsat_core`` unions every recorded dead's core.
-    ``kb_index`` is materialised on the proof only when
-    ``store_lattice`` is set (when off, the proof carries an
-    empty dict to keep the field's type stable).
-    """
-    # S1.7.24 — dedup recorded solutions by post-saturation `state_hash`
-    # (the generic signal SOLVE's `solution_nodes` dict already keys on).
-    # A model reached by two commitments — e.g. the two orientations
-    # `{(R a b)}` / `{(R b a)}` of a symmetric relation, which the user's
-    # `(rule symmetric)` saturates to the SAME KB — is ONE model. Distinct
-    # models keep distinct hashes (no-op for non-colliding gaps); the
-    # canonical (min-commitment) representative + state_hash ordering make
-    # the branch list deterministic, so the kernel needs no symmetric
-    # canonicalisation to count an undecided symmetric pair once.
-    solutions = _dedup_solutions_by_state(lstate.solutions)
-    lattice_stats = _build_lattice_stats(
-        stats,
-        solutions_found=len(solutions),
-        state_hash_merges=lstate.state_hash_merges,
-        elapsed_seconds=elapsed_seconds,
-    )
-    proof = LatticeProof(
-        solutions=solutions,
-        dead_commitments=tuple(lstate.dead_commitments),
-        kb_index=dict(lstate.kb_index) if store_lattice else {},
-        alive_at_end=lstate.alive_at_end_tuple,
-        learned_nogoods=frozenset(root_kb._nogoods),
-        stats=lattice_stats,
-    )
-    if entry == "gaps":
-        branches = tuple(
-            Solution(kb=s.kb, trace=s.firings)
-            for s in solutions
-        )
-        return Ambiguity(
-            branches=branches, proof=proof,
-        )
-    # entry == "contradictions"
-    return Contradiction(
-        unsat_core=_union_dead_cores(lstate.dead_commitments), proof=proof,
-    )
-
-
 def _record_setnode(
     lstate: _LatticeLoopState,
     *,
@@ -621,23 +508,15 @@ def _record_setnode(
     verdict_label: Literal["alive", "dead", "solution"],
     layer: int,
 ) -> bool:
-    """Insert or merge a :class:`SetNode` into ``lstate.kb_index``.
+    """The state-hash dedup MERGE primitive for the per-SetNode lattice DAG.
 
-    Under ``entry == "contradictions"`` the dict is keyed by the
-    post-saturation :func:`state_hash`; on collision the existing
-    node's ``labels`` tuple grows and ``state_hash_merges`` ticks.
-    Returns ``True`` if the call merged (caller may then skip
-    downstream handling — the prior arrival already did the
-    flat root-writes for this kb-state).
-
-    Under ``entry == "gaps"`` the dict is keyed by
-    ``hash(commitment)`` so distinct commitments stay separate
-    even when their post-saturation kbs collide
-    (:func:`gaps_solve` contract — multi-solution enumeration
-    requires every satisfying commitment to register on its own
-    node). The ``SetNode.state_hash`` field is still the
-    post-saturation hash.
-    """
+    ``solve`` does not build the DAG (so it never calls this), but this is the
+    home of the merge semantics, exercised directly at the unit level + reused
+    by any DAG builder. Under ``entry == "contradictions"`` the dict is keyed
+    by the post-saturation :func:`state_hash`; on collision the existing node's
+    ``labels`` tuple grows and ``state_hash_merges`` ticks (returns ``True``).
+    Under ``entry == "gaps"`` it is keyed by ``hash(commitment)`` so distinct
+    commitments stay separate even when their post-saturation kbs collide."""
     h_state = state_hash(result_kb)
     if entry == "contradictions":
         existing = lstate.kb_index.get(h_state)
@@ -676,7 +555,6 @@ class _LoopCtx:
     visible to the next; ``alive`` / ``a_prev`` carry the Phase-1 → Phase-2
     handoff."""
     root_kb: KnowledgeBase
-    entry: Literal["gaps", "contradictions", "solve"]
     cfg: SolverConfig
     stats: MonotonicStats
     lstate: _LatticeLoopState
@@ -692,34 +570,6 @@ class _LoopCtx:
     a_prev: list[CanonicalSetId] = field(default_factory=list)
 
 
-def _finalise_gaps(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
-    """Build the gaps-side Ambiguity verdict from ``ctx.lstate`` + emit the
-    dumper summary via :func:`_finish`."""
-    verdict = _finalise_lattice_verdict(
-        "gaps",
-        root_kb=ctx.root_kb,
-        lstate=ctx.lstate,
-        stats=ctx.stats,
-        elapsed_seconds=time.perf_counter() - ctx.t_start,
-        store_lattice=ctx.store_lattice,
-    )
-    return _finish(ctx.dumper, verdict, ctx.stats)
-
-
-def _finalise_contradictions(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
-    """Build the contradictions-side Contradiction verdict (``unsat_core``
-    = set union over every recorded dead's ``unsat_core``)."""
-    verdict = _finalise_lattice_verdict(
-        "contradictions",
-        root_kb=ctx.root_kb,
-        lstate=ctx.lstate,
-        stats=ctx.stats,
-        elapsed_seconds=time.perf_counter() - ctx.t_start,
-        store_lattice=ctx.store_lattice,
-    )
-    return _finish(ctx.dumper, verdict, ctx.stats)
-
-
 def _record_node(
     ctx: _LoopCtx,
     node_kb: KnowledgeBase,
@@ -729,9 +579,14 @@ def _record_node(
 ) -> None:
     """Record a solution node (consistent ∧ complete), deduped by
     :func:`state_hash`. Stores a :meth:`snapshot` so it survives later root
-    mutation."""
+    mutation. On a state_hash collision (the same model reached via two
+    commitment paths — e.g. the two orientations of a symmetric pair) the
+    lex-smallest commitment wins, so the recorded representative is
+    deterministic regardless of (shuffled) traversal order — the proof's
+    solution set, and any render of it, are shuffle-invariant (S1.5b.31)."""
     h = state_hash(node_kb)
-    if h not in ctx.lstate.solution_nodes:
+    cur = ctx.lstate.solution_nodes.get(h)
+    if cur is None or tuple(sorted(commitment)) < tuple(sorted(cur.commitment)):
         ctx.lstate.solution_nodes[h] = SolutionRecord(
             commitment=commitment,
             kb=node_kb.snapshot(),
@@ -750,11 +605,44 @@ def _root_dead(ctx: _LoopCtx) -> None:
     ))
 
 
+def _solve_proof(ctx: _LoopCtx) -> LatticeProof:
+    """Package the loop state into a sound :class:`LatticeProof`.
+
+    Everything here is already collected by the solve loop: the deduped
+    solution nodes (``lstate.solution_nodes``), the refuted commitments with
+    their per-commitment unsat cores (``lstate.dead_commitments``), and the
+    size-N frontier left alive at the depth cap. ``kb_index`` is left empty —
+    ``render_lattice`` falls back to the solution-frontier view when no
+    SetNode storage is present (the DAG's ``full`` view is a bench-only
+    nicety; the sound data is the solutions + deads)."""
+    solutions = tuple(ctx.lstate.solution_nodes.values())
+    return LatticeProof(
+        solutions=solutions,
+        dead_commitments=tuple(ctx.lstate.dead_commitments),
+        kb_index={},
+        alive_at_end=ctx.lstate.alive_at_end_tuple,
+        learned_nogoods=frozenset(ctx.root_kb._nogoods),
+        stats=_build_lattice_stats(
+            ctx.stats,
+            solutions_found=len(solutions),
+            state_hash_merges=ctx.lstate.state_hash_merges,
+            elapsed_seconds=time.perf_counter() - ctx.t_start,
+        ),
+    )
+
+
 def _finalise_solve(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
-    """Build the solve verdict from the deduped solution-node set."""
+    """Build the solve verdict from the deduped solution-node set.
+
+    The verdict *type* is read from the count ``k`` (:func:`verdict_of`):
+    ``k=0`` Contradiction, ``k=1`` Solution, ``k>1`` Ambiguity — three
+    answers to one problem. With ``store_lattice`` the sound proof (solution
+    set + refutation map) rides along for the trace / lattice-DAG views."""
     ctx.stats.solution_nodes = len(ctx.lstate.solution_nodes)
     ctx.stats.exhausted = not ctx.lstate.truncated
     verdict = verdict_of(ctx.lstate, exhausted=ctx.stats.exhausted)
+    if ctx.store_lattice:
+        verdict = replace(verdict, proof=_solve_proof(ctx))
     return _finish(ctx.dumper, verdict, ctx.stats)
 
 
@@ -787,33 +675,12 @@ def _handle_dead(
     ctx: _LoopCtx, c: CanonicalSetId, layer: int, result,
 ) -> None:
     """Record a dead commitment: count it, emit its nogood (+ size-1
-    ``(not h)`` writeback), append a :class:`DeadCommitment` for the
-    contradictions / solve entries, and log it. Under ``store_lattice`` a
-    contradictions-side state-hash merge may absorb it — then the downstream
-    writes are skipped (the earlier arrival already did them)."""
+    ``(not h)`` writeback), append a :class:`DeadCommitment` (the ``k=0``
+    verdict's core is the union of these), and log it."""
     if result.kind == "dead-pre":
         ctx.stats.enterings_dead_pre += 1
     else:
         ctx.stats.enterings_dead_post += 1
-
-    # S1.5b.22 state-hash dedup (contradictions) / SetNode storage (gaps).
-    # dead-post only — dead-pre's kb is the unsaturated fork.
-    skip_downstream = False
-    if (
-        ctx.store_lattice
-        and result.kind == "dead-post"
-        and (ctx.entry == "gaps" or ctx.entry == "contradictions")
-    ):
-        skip_downstream = _record_setnode(
-            ctx.lstate,
-            entry=ctx.entry,
-            commitment=c,
-            result_kb=result.kb,
-            verdict_label="dead",
-            layer=layer,
-        )
-    if skip_downstream:
-        return
 
     landed = emit_nogood(ctx.root_kb, frozenset(c), min_size=1)
     if landed:
@@ -823,17 +690,14 @@ def _handle_dead(
     if len(c) == 1:
         _emit_negated_fact_writeback(ctx.root_kb, c[0])
 
-    # contradictions collects every dead; solve collects them too — the
-    # k=0 verdict's core is the union of these.
-    if ctx.entry in ("contradictions", "solve"):
-        ctx.lstate.dead_commitments.append(DeadCommitment(
-            commitment=c,
-            unsat_core=result.unsat_core,
-            learned_clause=frozenset(c),
-            layer=layer,
-            kind=result.kind,
-            state_hash=state_hash(result.kb),
-        ))
+    ctx.lstate.dead_commitments.append(DeadCommitment(
+        commitment=c,
+        unsat_core=result.unsat_core,
+        learned_clause=frozenset(c),
+        layer=layer,
+        kind=result.kind,
+        state_hash=state_hash(result.kb),
+    ))
 
     if ctx.dumper is not None:
         ctx.dumper.entering(
@@ -845,105 +709,13 @@ def _handle_dead(
         )
 
 
-def _merge_and_recheck(
-    ctx: _LoopCtx, c: CanonicalSetId, layer: int, result, solved: bool,
-    alive: frozenset[FactId],
-) -> tuple[bool, frozenset[FactId]]:
-    """Merge an alive commitment's unconditional facts into root,
-    re-saturate, and re-check root. Returns ``(stop, alive)`` — ``stop`` is
-    True iff Phase 2 should stop (root went contradictory, was solved
-    (gaps), or got fully determined); ``alive`` is the recomputed open set
-    (unchanged when nothing merged). Only ``gaps`` / ``contradictions``
-    reach here; ``solve`` keeps root stable and never calls this."""
-    this_merged = 0
-    for f in result.unconditional_facts:
-        if ctx.root_kb._fact_by_id(
-            f.relation_name, f.args,
-        ) is None:
-            ctx.root_kb.add_and_index_fact(f)
-            ctx.stats.facts_merged += 1
-            this_merged += 1
-
-    if ctx.dumper is not None:
-        ctx.dumper.entering(
-            layer, c, result,
-            outcome="solution" if solved else "alive",
-            facts_merged=this_merged,
-            nogood_emitted=False,
-            nogood_subsumed=False,
-        )
-
-    if this_merged:
-        # Option A cadence (Q1.5b.2.a) — re-saturate + recompute alive
-        # after every alive entering.
-        _ = list(Saturator(ctx.root_kb).saturate())
-        ctx.stats.saturate_count += 1
-        # Merged facts could derive a contradiction at root.
-        if ContradictionDetector(ctx.root_kb).detect():
-            if ctx.entry == "solve":
-                # merged invariants contradict at root ⇒ no model; record
-                # the core and stop.
-                _root_dead(ctx)
-            # gaps / contradictions: root contradictory; stop.
-            return True, alive
-        alive = _compute_alive(ctx.root_kb)
-        alive, term = _promote_forced_positives(
-            ctx.root_kb, alive, ctx.stats, check_goal=True,
-        )
-        if term is not None:
-            if ctx.entry == "solve":
-                # cascade hit ⊥ at root mid-merge → stop.
-                _root_dead(ctx)
-                return True, alive
-            if ctx.entry == "gaps":
-                if isinstance(term, Solution):
-                    if not ctx.lstate.root_was_solved:
-                        ctx.lstate.solutions.append(SolutionRecord(
-                            commitment=c,
-                            kb=ctx.root_kb.snapshot(),
-                            firings=(), layer=layer,
-                        ))
-                        ctx.lstate.root_was_solved = True
-                # gaps: cascade hit a terminal (Solution: root satisfies;
-                # Contradiction: root contradictory) — exit Phase 2 either way.
-                return True, alive
-            # entry == "contradictions":
-            if isinstance(term, Contradiction):
-                # root contradicted by cascade — stop.
-                return True, alive
-            # Solution: continue exploring. Supersets extending the
-            # cascade's now-solved root may still die.
-
-        if ctx.entry == "solve" and not alive:
-            # root became fully determined mid-merge (every hypothesis
-            # decided by invariants alone) ⇒ unique model.
-            _record_node(ctx, ctx.root_kb, ())
-            return True, alive
-
-        if is_solved(ctx.root_kb, Mode.SOLVE):
-            if ctx.entry == "gaps":
-                # record once (root_was_solved guard) then terminate Phase 2
-                # — root satisfies, so remaining candidates would just
-                # re-confirm via fork-side is_solved.
-                if not ctx.lstate.root_was_solved:
-                    ctx.lstate.solutions.append(SolutionRecord(
-                        commitment=c, kb=ctx.root_kb.snapshot(),
-                        firings=(), layer=layer,
-                    ))
-                    ctx.lstate.root_was_solved = True
-                return True, alive
-            # entry == "contradictions": root is_solved is not a stop
-            # condition — supersets at higher layers may die.
-    return False, alive
-
-
 def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
     """Phase 1 — saturate the root and handle the terminal root states
     (contradictory / trivially-solved / forced-positive cascade /
     fully-determined). On fall-through, stash the open set + layer-1 frontier
     on ``ctx`` for Phase 2 and return None; otherwise return the verdict."""
-    root_kb, stats, lstate = ctx.root_kb, ctx.stats, ctx.lstate
-    dumper, entry = ctx.dumper, ctx.entry
+    root_kb, stats = ctx.root_kb, ctx.stats
+    dumper = ctx.dumper
 
     sat = Saturator(root_kb)
     _ = list(sat.saturate())
@@ -958,67 +730,26 @@ def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
     if dumper is not None:
         dumper.root_initial(root_kb)
     if ContradictionDetector(root_kb).detect():
-        if entry == "solve":
-            # root contradictory before any commitment (e.g. zebra2-bad:
-            # injected fact clashes with (6) during root saturation) →
-            # k=0, with the source-frontier core.
-            _root_dead(ctx)
-            return _finalise_solve(ctx)
-        if entry == "gaps":
-            # zero solutions; Ambiguity with empty branches.
-            return _finalise_gaps(ctx)
-        # contradictions: root itself is contradictory — empty
-        # ``proof.dead_commitments``, ``verdict.unsat_core`` is
-        # the empty frozenset (no commitments were tried).
-        return _finalise_contradictions(ctx)
-    if entry != "solve" and is_solved(root_kb, Mode.SOLVE):
-        if entry == "gaps":
-            # root satisfies trivially; record with empty commitment
-            # carrier + return Ambiguity with 1 branch.
-            lstate.solutions.append(SolutionRecord(
-                commitment=(), kb=root_kb.snapshot(),
-                firings=(), layer=0,
-            ))
-            return _finalise_gaps(ctx)
-        # contradictions: root is_solved before any commitment. No early
-        # return — supersets of singleton hypotheses can still surface
-        # deads; fall through to Phase 2.
+        # root contradictory before any commitment (e.g. zebra2-bad: injected
+        # fact clashes with (6) during root saturation) → k=0, with the
+        # source-frontier core.
+        _root_dead(ctx)
+        return _finalise_solve(ctx)
 
     alive = _compute_alive(root_kb)
     alive, term = _promote_forced_positives(
-        root_kb, alive, stats, check_goal=(entry != "solve"),
+        root_kb, alive, stats, check_goal=False,
     )
     if term is not None:
-        if entry == "solve":
-            # solve never goal-terminates the cascade (check_goal=False),
-            # so a term here is a Contradiction (cascade hit ⊥) → k=0.
-            _root_dead(ctx)
-            return _finalise_solve(ctx)
-        if entry == "gaps":
-            # if cascade landed Solution, that's one branch; if
-            # Contradiction, zero branches (Ambiguity with empty).
-            if isinstance(term, Solution):
-                lstate.solutions.append(SolutionRecord(
-                    commitment=(), kb=root_kb.snapshot(),
-                    firings=(), layer=0,
-                ))
-            return _finalise_gaps(ctx)
-        # contradictions:
-        if isinstance(term, Contradiction):
-            # root contradicted by cascade — no deads collected.
-            return _finalise_contradictions(ctx)
-        # Solution: root satisfies after a forced-positive cascade. Don't
-        # short-circuit — supersets may still die. Fall through to Phase 2.
+        # solve never goal-terminates the cascade (check_goal=False), so a
+        # term here is a Contradiction (cascade hit ⊥) → k=0.
+        _root_dead(ctx)
+        return _finalise_solve(ctx)
     if not alive:
-        if entry == "solve":
-            # empty alive + consistent (no contradiction above) ⇒ root is
-            # itself a complete, consistent model — the unique solution.
-            _record_node(ctx, root_kb, ())
-            return _finalise_solve(ctx)
-        if entry == "gaps":
-            return _finalise_gaps(ctx)
-        # contradictions: empty alive + no Phase-2 work to do.
-        return _finalise_contradictions(ctx)
+        # empty alive + consistent (no contradiction above) ⇒ root is itself a
+        # complete, consistent model — the unique solution.
+        _record_node(ctx, root_kb, ())
+        return _finalise_solve(ctx)
 
     ctx.alive = alive
     ctx.a_prev = layer_1(alive)
@@ -1026,17 +757,9 @@ def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
 
 
 def _phase3_verdict(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats]:
-    """Phase 3 — synthesise the entry's verdict from the accumulated
-    ``ctx.lstate`` (solve: count → verdict; gaps: Ambiguity; contradictions:
-    Contradiction)."""
-    if ctx.entry == "solve":
-        # P1.7a — verdict read from the deduped solution-node count k.
-        return _finalise_solve(ctx)
-    if ctx.entry == "gaps":
-        # always Ambiguity (mode contract).
-        return _finalise_gaps(ctx)
-    # entry == "contradictions": always Contradiction (mode contract).
-    return _finalise_contradictions(ctx)
+    """Phase 3 — synthesise the verdict from the accumulated ``ctx.lstate``:
+    P1.7a reads the type from the deduped solution-node count ``k``."""
+    return _finalise_solve(ctx)
 
 
 def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
@@ -1044,8 +767,8 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
     ``stop_after`` early-stop verdict (solve) or None (exhausted → Phase 3).
     Reads the Phase-1 handoff (``ctx.alive`` / ``ctx.a_prev``)."""
     root_kb, stats, lstate = ctx.root_kb, ctx.stats, ctx.lstate
-    dumper, entry, cfg = ctx.dumper, ctx.entry, ctx.cfg
-    store_lattice, max_set_size = ctx.store_lattice, ctx.max_set_size
+    dumper, cfg = ctx.dumper, ctx.cfg
+    max_set_size = ctx.max_set_size
     shuffle_rng, stop_after = ctx.shuffle_rng, ctx.stop_after
     alive, a_prev = ctx.alive, ctx.a_prev
 
@@ -1104,25 +827,7 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
             # back empty, and result.kb is that unmutated fork), so check
             # completeness directly — is_solution_node would re-run a
             # full detect() on a kb already proved consistent.
-            solved = (
-                complete(result.kb) if entry == "solve"
-                else is_solved(result.kb, Mode.SOLVE)
-            )
-
-            # SetNode recording: hoisted out of the entry-specific
-            # branches so each commitment lands in ``kb_index`` at
-            # most once per visit, with the correct kb-state
-            # verdict label. Skipped for monotonic and for
-            # ``store_lattice=False``.
-            if store_lattice and (entry == "gaps" or entry == "contradictions"):
-                _record_setnode(
-                    lstate,
-                    entry=entry,
-                    commitment=c,
-                    result_kb=result.kb,
-                    verdict_label="solution" if solved else "alive",
-                    layer=layer,
-                )
+            solved = complete(result.kb)
 
             # S1.5b.27 — saturation-commutativity sanity check.
             # Off by default; cfg.lattice_sanity_check triggers the
@@ -1138,86 +843,48 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
                 )
                 check_commutativity(root_kb, c)
 
-            # Fork-side is_solved (§3c.ii of algorithm_layer_n.md).
+            # Fork-side solution node (§3c.ii of algorithm_layer_n.md).
             if solved:
-                if entry == "solve":
-                    # Solution node (consistent ∧ complete): record it
-                    # (deduped by state_hash); do NOT merge its facts
-                    # (model-specific) and do NOT expand it (complete —
-                    # supersets would be redundant or dead).
-                    _record_node(ctx, result.kb, c, result.firings, layer)
-                    if dumper is not None:
-                        dumper.entering(
-                            layer, c, result,
-                            outcome="solution",
-                            facts_merged=0,
-                            nogood_emitted=False,
-                            nogood_subsumed=False,
-                        )
-                    if (
-                        stop_after is not None
-                        and len(lstate.solution_nodes) >= stop_after
-                    ):
-                        lstate.truncated = True
-                        return _finalise_solve(ctx)
-                    continue
-                if entry == "gaps":
-                    # record + continue, do NOT add to a_layer
-                    # (supersets of a satisfying commitment would
-                    # trivially also satisfy — bloating the
-                    # solutions list with redundant records).
-                    lstate.solutions.append(SolutionRecord(
-                        commitment=c, kb=result.kb.snapshot(),
-                        firings=result.firings, layer=layer,
-                    ))
-                    if dumper is not None:
-                        dumper.entering(
-                            layer, c, result,
-                            outcome="solution",
-                            facts_merged=0,
-                            nogood_emitted=False,
-                            nogood_subsumed=False,
-                        )
-                    continue  # don't merge; don't append to a_layer
-                # entry == "contradictions": no solution recording.
-                # Fall through to the alive flow so unconditional
-                # facts merge into root and ``c`` lands in
-                # ``a_layer`` for next-layer pair generation —
-                # supersets of a solved commitment can still die
-                # under additional hypotheses. The ``entering``
-                # call at the merge block below passes
-                # ``outcome="solution"`` because the kb is solved.
-
-            if entry == "solve":
-                # P1.7a — PURE PER-BRANCH search; keep root STABLE.
-                # Do NOT merge unconditional facts and do NOT promote
-                # forced-positives into the shared root mid-search:
-                #   * unconditional-fact extraction is UNSOUND under NAF
-                #     (`absent`) — a fork fact derived via `absent X`
-                #     looks unconditional by the provenance walk but
-                #     actually depends on the commitment having
-                #     suppressed X; merging it into root is wrong;
-                #   * cumulative shared-root promotion is the monotonic
-                #     SAT→⊥ pollution Phase A (S1.7a.1) flagged.
-                # Each commitment is evaluated independently against the
-                # post-Phase-1 root; nogoods (emitted above on deaths)
-                # prune supersets. This incomplete commitment just
-                # expands to the next layer.
+                # Solution node (consistent ∧ complete): record it (deduped by
+                # state_hash); do NOT merge its facts (model-specific) and do
+                # NOT expand it (complete — supersets would be redundant or
+                # dead).
+                _record_node(ctx, result.kb, c, result.firings, layer)
                 if dumper is not None:
                     dumper.entering(
-                        layer, c, result, outcome="alive",
-                        facts_merged=0, nogood_emitted=False,
+                        layer, c, result,
+                        outcome="solution",
+                        facts_merged=0,
+                        nogood_emitted=False,
                         nogood_subsumed=False,
                     )
-                a_layer.append(c)
+                if (
+                    stop_after is not None
+                    and len(lstate.solution_nodes) >= stop_after
+                ):
+                    lstate.truncated = True
+                    return _finalise_solve(ctx)
                 continue
 
-            stop, alive = _merge_and_recheck(
-                ctx, c, layer, result, solved, alive,
-            )
-            if stop:
-                phase_2_done = True
-                break
+            # P1.7a — PURE PER-BRANCH search; keep root STABLE. Do NOT merge
+            # unconditional facts and do NOT promote forced-positives into the
+            # shared root mid-search:
+            #   * unconditional-fact extraction is UNSOUND under NAF
+            #     (`absent`) — a fork fact derived via `absent X` looks
+            #     unconditional by the provenance walk but actually depends on
+            #     the commitment having suppressed X; merging it is wrong;
+            #   * cumulative shared-root promotion is the monotonic SAT→⊥
+            #     pollution Phase A (S1.7a.1) flagged.
+            # Each commitment is evaluated independently against the
+            # post-Phase-1 root; nogoods (emitted above on deaths) prune
+            # supersets. This incomplete commitment just expands to the next
+            # layer.
+            if dumper is not None:
+                dumper.entering(
+                    layer, c, result, outcome="alive",
+                    facts_merged=0, nogood_emitted=False,
+                    nogood_subsumed=False,
+                )
             a_layer.append(c)
 
         if dumper is not None:
@@ -1226,30 +893,28 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
             break
         if not a_layer:
             break
-        if entry == "solve":
-            # P1.7a — SOUND inter-layer prune. This layer's size-k
-            # deaths wrote ``¬g`` (sound: ``{g}`` is genuinely
-            # inconsistent with root). Recompute alive and promote any
-            # backbone singletons via the forced-positive cascade
-            # (sound: a sole-surviving slot value must hold) — NOT the
-            # NAF-unsound unconditional-fact merge skipped per commitment
-            # above. This collapses the candidate space the way the
-            # legacy engines prune, without the SAT→⊥ pollution.
-            alive = _compute_alive(root_kb)
-            alive, term = _promote_forced_positives(
-                root_kb, alive, stats, check_goal=False,
-            )
-            if term is not None:
-                _root_dead(ctx)       # cascade hit ⊥ → no model exists
-                break
-            if not alive:
-                _record_node(ctx, root_kb, ())  # backbone determines all cells
-                break
-            # drop commitments no longer entirely within `alive`
-            # (an element got promoted into root or refuted).
-            a_layer = [c for c in a_layer if all(e in alive for e in c)]
-            if not a_layer:
-                break
+        # P1.7a — SOUND inter-layer prune. This layer's size-k deaths wrote
+        # ``¬g`` (sound: ``{g}`` is genuinely inconsistent with root).
+        # Recompute alive and promote any backbone singletons via the
+        # forced-positive cascade (sound: a sole-surviving slot value must
+        # hold) — NOT the NAF-unsound unconditional-fact merge. This collapses
+        # the candidate space the way the legacy engines prune, without the
+        # SAT→⊥ pollution.
+        alive = _compute_alive(root_kb)
+        alive, term = _promote_forced_positives(
+            root_kb, alive, stats, check_goal=False,
+        )
+        if term is not None:
+            _root_dead(ctx)       # cascade hit ⊥ → no model exists
+            break
+        if not alive:
+            _record_node(ctx, root_kb, ())  # backbone determines all cells
+            break
+        # drop commitments no longer entirely within `alive`
+        # (an element got promoted into root or refuted).
+        a_layer = [c for c in a_layer if all(e in alive for e in c)]
+        if not a_layer:
+            break
         a_prev = a_layer
         # Capture the surviving size-N frontier when the depth cap
         # is the natural loop terminator. ``alive_at_end`` stays
@@ -1270,7 +935,6 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
 def _explore_layers(
     root_kb: KnowledgeBase,
     *,
-    entry: Literal["gaps", "contradictions", "solve"],
     max_set_size: int = 5,
     config: SolverConfig | None = None,
     store_lattice: bool = False,
@@ -1279,63 +943,26 @@ def _explore_layers(
     max_enterings: int | None = None,
     stop_after: int | None = None,
 ) -> tuple[Verdict, MonotonicStats]:
-    """The shared per-candidate loop. See
+    """The single ``solve`` per-candidate loop. See
     `plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md`
     for the per-step contract.
 
-    ``entry`` discriminator picks the outcome dispatch + Phase 3
-    verdict synthesis:
-
-    - ``"solve"`` (P1.7a) — exhaust the lattice (or stop after
-      ``stop_after`` distinct solution nodes), recording every
-      solution node (``consistent ∧ complete`` — keyed by
-      :func:`is_solution_node`, not goal match) deduped by
-      :func:`state_hash` into ``lstate.solution_nodes``; Phase 3
-      reads the verdict from the count ``k`` via
-      :func:`verdict_of`. Keeps root stable (no unconditional
-      merge mid-search — unsound under NAF). Ignores
-      ``store_lattice``.
-    - ``"gaps"`` — record every goal-sat (fork or root) into
-      ``lstate.solutions`` as :class:`SolutionRecord` (kb is a
-      :meth:`KnowledgeBase.snapshot` for isolation), do NOT add
-      satisfying commitments to ``a_layer`` so supersets aren't
-      generated; Phase 3 returns Ambiguity(branches=…). Once
-      root itself satisfies, Phase 2 terminates (further
-      exploration is redundant under monotone semantics). When
-      ``store_lattice=True`` every visited non-``dead-pre``
-      commitment also lands in ``lstate.kb_index`` (keyed by
-      ``hash(commitment)`` — distinct commitments stay
-      separate).
-    - ``"contradictions"`` (S1.5b.23) — every dead commitment is
-      recorded into ``lstate.dead_commitments`` as a
-      :class:`DeadCommitment`. Fork-side ``is_solved`` does NOT
-      short-circuit (we fall through to the alive flow, merge
-      unconditional facts, and add the commitment to
-      ``a_layer`` so its supersets are explored — supersets of
-      a solved commitment can still die under additional
-      hypotheses). Root-side ``is_solved`` and cascade-Solution
-      similarly do not terminate Phase 2 under contradictions.
-      Root contradictions and cascade-Contradictions DO
-      terminate (root is dead — no more commitments can land).
-      Under ``store_lattice=True`` the state-hash dedup MERGE
-      is active: distinct dead commitments saturating to the
-      same kb collapse into one multilabel SetNode and skip
-      downstream root-writes / DeadCommitment append.
-
-    Stats: :class:`MonotonicStats` is the internal counter type;
-    :func:`gaps_solve` / :func:`contradictions_solve` promote to
-    :class:`LatticeStats` at the public boundary by reading
-    ``verdict.proof.stats``.
+    Exhausts the lattice (or stops after ``stop_after`` distinct solution
+    nodes), recording every solution node (``consistent ∧ complete`` — keyed
+    by :func:`complete`, not goal match) deduped by :func:`state_hash` into
+    ``lstate.solution_nodes``, and every refuted commitment into
+    ``lstate.dead_commitments``. Phase 3 reads the verdict from the count
+    ``k`` via :func:`verdict_of`. Root is kept stable (no unconditional merge
+    mid-search — unsound under NAF). With ``store_lattice`` the verdict
+    carries a :class:`LatticeProof` (``verdict.proof``) whose ``stats`` is the
+    :class:`LatticeStats` view.
     """
     cfg = config or root_kb.config or SolverConfig()
     root_kb.config = cfg
 
-    # Goal satisfaction is checked with SOLVE-mode semantics, gated per
-    # entry: solve never goal-terminates (its signal is is_solution_node —
-    # consistent ∧ complete), so the is_solved checks are guarded by
-    # ``entry != "solve"`` / ``check_goal`` at their sites rather than via a
-    # neutralised Mode (F-KER-1 — the CONTRADICTIONS-as-always-False hack
-    # is gone).
+    # Solve never goal-terminates — its signal is a *solution node*
+    # (consistent ∧ complete, via :func:`complete`), not a goal-pattern match;
+    # the query ``:goal`` only projects an answer over the model afterwards.
     stats = MonotonicStats()
     t_start = time.perf_counter()
     lstate = _LatticeLoopState()
@@ -1348,7 +975,7 @@ def _explore_layers(
         if cfg.lattice_order_seed is not None else None
     )
     ctx = _LoopCtx(
-        root_kb=root_kb, entry=entry, cfg=cfg, stats=stats,
+        root_kb=root_kb, cfg=cfg, stats=stats,
         lstate=lstate, dumper=dumper, store_lattice=store_lattice,
         t_start=t_start, max_time=max_time, max_enterings=max_enterings,
         max_set_size=max_set_size, stop_after=stop_after,
@@ -1364,180 +991,3 @@ def _explore_layers(
 
     # ── Phase 3 — Verdict synthesis ──────────────────────────
     return _phase3_verdict(ctx)
-
-
-# ── Sibling entries — gaps_solve + contradictions_solve ──────
-#
-# Per project_set_search_unified memory (2026-05-28): the
-# engine is unified — all three public entries
-# (solve, gaps_solve, contradictions_solve) live
-# side-by-side in this package. They share the per-candidate
-# flow from `algorithm_layer_n.md` (Apriori prefix-join +
-# try_commitment_set + flat root-writes); the difference is
-# whether the loop records solution nodes and reads the verdict
-# from their count (solve) or exhausts to collect every
-# satisfying / refuted commitment (gaps / contradictions).
-# S1.5b.21 lifted the shared core into the private
-# `_explore_layers` helper that all three entries call;
-# S1.5b.23 filled `contradictions_solve`.
-
-
-def _lattice_public(
-    root_kb: KnowledgeBase,
-    *,
-    entry: Literal["gaps", "contradictions"],
-    expected_type: type[Verdict],
-    max_set_size: int,
-    config: SolverConfig | None,
-    store_lattice: bool,
-    dumper: LatticeDumper | None,
-    max_time: float | None,
-    max_enterings: int | None,
-) -> tuple[Verdict, LatticeStats]:
-    """Run the set-search loop under a lattice ``entry`` and apply the
-    shared public post-amble that ``gaps_solve`` / ``contradictions_solve``
-    used to carry verbatim.
-
-    Each mode contract guarantees a verdict of ``expected_type`` carrying a
-    non-None :class:`LatticeProof`, whose ``stats`` (the full
-    :class:`LatticeStats`, built by the entry's finaliser) is the advertised
-    counter set — the :class:`MonotonicStats` return of
-    :func:`_explore_layers` is discarded. The contract is enforced with an
-    explicit ``raise`` (not ``assert``) so a slip surfaces as a clear error
-    rather than an opaque ``AttributeError`` under ``python -O``
-    (F-ENG-5 / F-ENG-14).
-    """
-    verdict, _mstats = _explore_layers(
-        root_kb,
-        entry=entry,
-        max_set_size=max_set_size,
-        config=config,
-        store_lattice=store_lattice,
-        dumper=dumper,
-        max_time=max_time,
-        max_enterings=max_enterings,
-    )
-    if not isinstance(verdict, expected_type):
-        raise TypeError(
-            f"{entry} contract violated: expected "
-            f"{expected_type.__name__}, got {type(verdict).__name__}",
-        )
-    if verdict.proof is None:
-        raise RuntimeError(
-            f"{entry} contract violated: "
-            f"{expected_type.__name__} carries no LatticeProof",
-        )
-    return verdict, verdict.proof.stats
-
-
-def gaps_solve(
-    root_kb: KnowledgeBase,
-    *,
-    max_set_size: int = 5,
-    config: SolverConfig | None = None,
-    store_lattice: bool = False,
-    dumper: LatticeDumper | None = None,
-    max_time: float | None = None,
-    max_enterings: int | None = None,
-) -> tuple[Ambiguity, LatticeStats]:
-    """Run the unified set-search engine under the GAPS contract.
-
-    Exhaustive Apriori-gen — no early termination. Collects every
-    satisfying commitment into ``verdict.proof.solutions``;
-    returns :class:`Ambiguity` (always; mode contract) whose
-    branches enumerate the satisfying kbs (each carrying a
-    :meth:`KnowledgeBase.snapshot` so the branch view is stable
-    across later root mutations).
-
-    Caller interpretation:
-        - ``len(verdict.branches) == 0`` — no solution within
-          depth cap.
-        - ``len(verdict.branches) == 1`` — uniquely solvable.
-        - ``len(verdict.branches) > 1`` — genuine multi-solution.
-
-    ``store_lattice=True`` opts into per-SetNode
-    ``verdict.proof.kb_index`` storage; under :func:`gaps_solve`
-    the state-hash dedup MERGE step is auto-disabled (distinct
-    satisfying commitments must register separately per the
-    GAPS contract) — the dict is keyed by ``hash(commitment)`` so
-    two distinct commitments with the same post-saturation
-    :func:`state_hash` produce two separate :class:`SetNode`
-    entries. The :attr:`LatticeStats.state_hash_merges` counter
-    is guaranteed to stay zero under :func:`gaps_solve`
-    regardless of input.
-    """
-    # entry="gaps" always returns Ambiguity (per the mode contract)
-    # carrying a non-None proof whose LatticeProof.stats is the full
-    # LatticeStats (built by ``_finalise_gaps``); see _lattice_public.
-    return _lattice_public(
-        root_kb,
-        entry="gaps",
-        expected_type=Ambiguity,
-        max_set_size=max_set_size,
-        config=config,
-        store_lattice=store_lattice,
-        dumper=dumper,
-        max_time=max_time,
-        max_enterings=max_enterings,
-    )
-
-
-def contradictions_solve(
-    root_kb: KnowledgeBase,
-    *,
-    max_set_size: int = 5,
-    config: SolverConfig | None = None,
-    store_lattice: bool = False,
-    dumper: LatticeDumper | None = None,
-    max_time: float | None = None,
-    max_enterings: int | None = None,
-) -> tuple[Contradiction, LatticeStats]:
-    """Run the unified set-search engine under the CONTRADICTIONS
-    contract.
-
-    Exhaustive Apriori-gen — no early termination on goal
-    satisfaction. Collects every dead commitment into
-    ``verdict.proof.dead_commitments``; returns
-    :class:`Contradiction` (always; mode contract) whose
-    ``unsat_core`` is the union of every recorded dead's core.
-
-    Caller interpretation:
-        - ``len(verdict.proof.dead_commitments) == 0`` — no
-          deaths within depth cap (degenerate; possibly fully
-          solvable).
-        - non-empty — refutation map. Each
-          :class:`DeadCommitment` carries its
-          ``unsat_core`` + ``learned_clause`` + ``layer`` +
-          ``kind`` ("dead-pre" / "dead-post").
-
-    ``store_lattice=True`` activates state-hash dedup MERGE
-    (distinct dead commitments saturating to the same kb
-    collapse into one multilabel :class:`SetNode`; the
-    ``state_hash_merges`` counter ticks per collision).
-    Per the S1.5b.22 spec, on collision the per-commitment
-    ``DeadCommitment`` append is also skipped (the prior
-    arrival already covered the root-side writes); the
-    multilabel SetNode is the authoritative record of the
-    other commitments that landed in this kb-state.
-
-    Goal-satisfying commitments under contradictions_solve are
-    a no-op for solution-recording purposes (the contract
-    doesn't track ``proof.solutions``) but the unconditional
-    facts still merge into root via the alive flow, and the
-    commitment is added to ``a_layer`` so its supersets are
-    explored — supersets of a solved commitment can still die
-    under additional hypotheses.
-    """
-    # entry="contradictions" always returns Contradiction (per the mode
-    # contract) carrying a non-None LatticeProof; see _lattice_public.
-    return _lattice_public(
-        root_kb,
-        entry="contradictions",
-        expected_type=Contradiction,
-        max_set_size=max_set_size,
-        config=config,
-        store_lattice=store_lattice,
-        dumper=dumper,
-        max_time=max_time,
-        max_enterings=max_enterings,
-    )

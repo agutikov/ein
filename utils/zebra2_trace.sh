@@ -43,7 +43,7 @@ Options:
   --no-diagrams           omit the inline dot blocks
   --full-kb-snapshots     append a whole-KB snapshot of the final state
   -- <flags…>             forward arbitrary flags to `ein solve`
-                          (e.g. -- --mode contradictions --max-set-size 4)
+                          (e.g. -- --exhaustive --max-set-size 4)
   -h, --help              show this help
 
 OUT_DIR defaults to build/zebra2. Needs the PyPy venv (.venv-pypy);

@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections import Counter
 from pathlib import Path
 
-from ein.inference.monotonic import gaps_solve
+from ein.inference.monotonic import solve
 from ein.ir import parse
 from ein.kb import KnowledgeBase
 
@@ -25,7 +25,7 @@ def _key(f) -> tuple:
 
 def main() -> None:
     kb = KnowledgeBase.from_ir(parse((REPO / "examples" / "zebra2.ein").read_text()))
-    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     primary = min(verdict.proof.solutions,
                   key=lambda r: (len(r.commitment), r.commitment))
     firings = primary.firings

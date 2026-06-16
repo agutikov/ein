@@ -37,9 +37,8 @@ import pytest
 
 from ein.inference.config import SolverConfig
 from ein.inference.monotonic import (
-    contradictions_solve,
-    gaps_solve,
     lattice_snapshot,
+    solve,
 )
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
@@ -63,43 +62,44 @@ _FIXTURES = [
 ]
 
 
-# ── gaps_solve shuffle invariance ────────────────────────
+# ── solve shuffle invariance (solutions view) ────────────
 
 
 @pytest.mark.parametrize("fixture", _FIXTURES)
 @pytest.mark.parametrize("max_set_size", [1, 2, 3])
 @pytest.mark.parametrize("seed", _SEEDS)
-def test_gaps_shuffle_invariance(
+def test_solve_shuffle_invariance_solutions(
     fixture: Path, max_set_size: int, seed: int,
 ):
-    """For each ``(fixture, max_set_size, seed)`` triple,
-    :func:`gaps_solve` with ``lattice_order_seed=seed``
-    produces a :class:`LatticeSnapshotV1` equal to the
-    reference (unshuffled) snapshot.
+    """For each ``(fixture, max_set_size, seed)`` triple, :func:`solve`
+    (exhaustive, ``store_lattice=True``) with ``lattice_order_seed=seed``
+    produces a :class:`LatticeSnapshotV1` equal to the reference
+    (unshuffled) snapshot.
 
-    Solution-list ORDER inside ``proof.solutions`` may differ
-    between shuffled runs (set-vs-tuple), but the
-    snapshot's ``solutions`` field is a frozenset — so the
-    SET of satisfying commitments must be identical.
+    Solution-list ORDER inside ``proof.solutions`` may differ between
+    shuffled runs, but the snapshot's ``solutions`` field is a frozenset
+    of post-saturation state hashes — so the SET of distinct models must
+    be identical regardless of traversal order.
     """
     # Reference: default order.
     kb_ref = _kb_from(fixture)
-    verdict_ref, _ = gaps_solve(
-        kb_ref, max_set_size=max_set_size, store_lattice=True,
+    verdict_ref, _ = solve(
+        kb_ref, stop_after=None,
+        max_set_size=max_set_size, store_lattice=True,
     )
     snap_ref = lattice_snapshot(verdict_ref, kb_ref)
 
     # Shuffled.
     kb = _kb_from(fixture)
     cfg = replace(kb.config or SolverConfig(), lattice_order_seed=seed)
-    verdict, _ = gaps_solve(
-        kb, max_set_size=max_set_size,
+    verdict, _ = solve(
+        kb, stop_after=None, max_set_size=max_set_size,
         store_lattice=True, config=cfg,
     )
     snap = lattice_snapshot(verdict, kb)
 
     assert snap == snap_ref, (
-        f"shuffle leak on gaps_solve({fixture.name}, "
+        f"shuffle leak on solve({fixture.name}, "
         f"max_set_size={max_set_size}, seed={seed}):\n"
         f"  ref nodes={len(snap_ref.nodes_by_state_hash)} "
         f"vs shuffle nodes={len(snap.nodes_by_state_hash)}\n"
@@ -108,35 +108,35 @@ def test_gaps_shuffle_invariance(
     )
 
 
-# ── contradictions_solve shuffle invariance ──────────────
+# ── solve shuffle invariance (deads / refutation view) ───
 
 
 @pytest.mark.parametrize("fixture", _FIXTURES)
 @pytest.mark.parametrize("max_set_size", [1, 2, 3])
 @pytest.mark.parametrize("seed", _SEEDS)
-def test_contradictions_shuffle_invariance(
+def test_solve_shuffle_invariance_deads(
     fixture: Path, max_set_size: int, seed: int,
 ):
-    """For each ``(fixture, max_set_size, seed)`` triple,
-    :func:`contradictions_solve` with
-    ``lattice_order_seed=seed`` produces a snapshot equal to
-    the unshuffled reference."""
+    """Same shuffle-invariance check, emphasising the refutation view:
+    the snapshot's ``deads`` field (a frozenset of refuted state hashes)
+    must be identical across seeds for every fixture."""
     kb_ref = _kb_from(fixture)
-    verdict_ref, _ = contradictions_solve(
-        kb_ref, max_set_size=max_set_size, store_lattice=True,
+    verdict_ref, _ = solve(
+        kb_ref, stop_after=None,
+        max_set_size=max_set_size, store_lattice=True,
     )
     snap_ref = lattice_snapshot(verdict_ref, kb_ref)
 
     kb = _kb_from(fixture)
     cfg = replace(kb.config or SolverConfig(), lattice_order_seed=seed)
-    verdict, _ = contradictions_solve(
-        kb, max_set_size=max_set_size,
+    verdict, _ = solve(
+        kb, stop_after=None, max_set_size=max_set_size,
         store_lattice=True, config=cfg,
     )
     snap = lattice_snapshot(verdict, kb)
 
     assert snap == snap_ref, (
-        f"shuffle leak on contradictions_solve({fixture.name}, "
+        f"shuffle leak on solve({fixture.name}, "
         f"max_set_size={max_set_size}, seed={seed}):\n"
         f"  ref nodes={len(snap_ref.nodes_by_state_hash)} "
         f"vs shuffle nodes={len(snap.nodes_by_state_hash)}\n"
@@ -168,8 +168,8 @@ def test_lattice_snapshot_is_hashable():
     be hashable so test harnesses can pool snapshots into a
     set."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    verdict, _ = gaps_solve(
-        kb, max_set_size=3, store_lattice=True,
+    verdict, _ = solve(
+        kb, stop_after=None, max_set_size=3, store_lattice=True,
     )
     snap = lattice_snapshot(verdict, kb)
     # ``hash()`` must succeed — no unhashable nested types.
@@ -177,15 +177,15 @@ def test_lattice_snapshot_is_hashable():
 
 
 def test_lattice_snapshot_default_seed_idempotent():
-    """Re-running gaps_solve with ``lattice_order_seed=None``
-    twice produces identical snapshots (the default ordering
-    is deterministic regardless of randomisation)."""
+    """Re-running ``solve`` with ``lattice_order_seed=None`` twice produces
+    identical snapshots (the default ordering is deterministic regardless
+    of randomisation)."""
     kb1 = _kb_from(BRANCHING / "04_two_levels.ein")
-    v1, _ = gaps_solve(kb1, max_set_size=3, store_lattice=True)
+    v1, _ = solve(kb1, stop_after=None, max_set_size=3, store_lattice=True)
     snap1 = lattice_snapshot(v1, kb1)
 
     kb2 = _kb_from(BRANCHING / "04_two_levels.ein")
-    v2, _ = gaps_solve(kb2, max_set_size=3, store_lattice=True)
+    v2, _ = solve(kb2, stop_after=None, max_set_size=3, store_lattice=True)
     snap2 = lattice_snapshot(v2, kb2)
 
     assert snap1 == snap2

@@ -8,11 +8,23 @@ rules (written in [ein-lang](docs/kernel/ir/03-ein-lang/), an
 S-expression IR), **saturates** the rules to a least fixpoint
 (Datalog-style forward chaining), then **searches a commitment lattice**
 (CSP/SAT-style branch-and-prune, with ATMS-style provenance and no-good
-learning) to read three answers off one run:
+learning). One run, one verdict — **read from the result**, never chosen by a
+mode flag. The count of distinct complete models `k` *is* the answer:
 
-- **solve** — is there a unique complete model? (`k = 1`)
-- **gaps** — which cells are forced vs. contingent? (`k > 1`, the residual)
-- **contradictions** — a minimal unsat core for an over-constrained KB. (`k = 0`)
+- `k = 1` → **the solution** — a unique complete model (certified unique once
+  the search is exhausted).
+- `k > 1` → **gaps** — the puzzle is under-determined: `k` distinct models, the
+  residual ambiguity.
+- `k = 0` → **a contradiction** — an over-constrained KB, reported with a
+  minimal unsat core.
+
+`solve` / `gaps` / `contradictions` are **three answers to one problem**, not
+three different problem statements and not three commands. You run **`ein
+solve`** and read whichever answer the puzzle yields; the stop policy (single /
+`--solutions N` / `--exhaustive`) only controls how far the search runs. (An
+earlier design split these into three functions that each *chose* their verdict
+up front — and so disagreed with each other on the same input; that bug is what
+collapsing to one engine fixed.)
 
 Every derived fact carries provenance, so a solve can emit a
 self-contained, human-readable markdown derivation trace. The engine's
@@ -23,7 +35,7 @@ design — and where each operation sits against the CS literature
 The classic Zebra/Einstein puzzle is the running fixture:
 
 ```sh
-$ ein solve examples/zebra2.ein --mode=solve
+$ ein solve examples/zebra2.ein
 The Norwegian drinks the water; the Japanese keeps the zebra.  (a solution — pass --exhaustive to certify uniqueness)
 ```
 
@@ -37,7 +49,7 @@ The Norwegian drinks the water; the Japanese keeps the zebra.  (a solution — p
 | `ein.py/src/ein/inference/`   | the engine — saturator, matcher/join-compiler, commitment-lattice search, no-goods, contradiction detector, verdict |
 | `ein.py/src/ein/render/`, `trace/` | Graphviz DOT renderers + the markdown derivation-trace builder                   |
 | `ein.py/src/ein/stdlib/`      | ein-lang standard library — relation-algebra rules (`closure`, `bijection`, `elim`, `algebra`, `typing`, `macro`) |
-| `ein.py/src/ein/cli/`         | console script `ein` — `ir` \| `kb` \| `render` \| `solve`, plus the promoted engine runners `saturate` \| `search` \| `lattice` \| `profile` \| `symmetric` (P1.11) |
+| `ein.py/src/ein/cli/`         | console script `ein` — `ir` \| `kb` \| `render` \| `solve` (the one solver command), plus the engine runners `saturate` \| `profile` \| `symmetric` |
 | `ein.py/tests/`               | pytest suite (~1,300 tests)                                                           |
 | `ein.py/pyproject.toml`       | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff`     |
 | `examples/zebra.ein`, `zebra2.ein` | the Zebra puzzle as ein-lang; `zebra2.ein` (unified-`is-a` / `*-loc`) is the active acceptance target |
@@ -70,16 +82,22 @@ console script `ein` lands on the venv's PATH.
 ### Solve
 
 ```sh
-ein solve <file> --mode=solve            # answer the puzzle in English
-ein solve <file> --mode=solve --exhaustive   # certify unique / ambiguous / unsat
-ein solve <file> --mode=gaps             # which cells are forced vs. contingent
-ein solve <file> --mode=contradictions   # minimal unsat core of an over-constrained KB
-ein solve <file> --mode=solve --trace out.md  # + self-contained markdown derivation trace
+ein solve <file>                 # print the solution (or the unsat core)
+ein solve <file> --exhaustive    # certify unique / ambiguous / unsat
+ein solve <file> --solutions N   # stop after N distinct solutions
+ein solve <file> --stats         # + engine counters (k, enterings, layers, wall)
+ein solve <file> --trace out.md  # + a self-contained markdown derivation trace (to a file)
 ```
 
-`--mode` defaults to `gaps`. Other knobs: `--max-set-size N` (commitment-set
-depth cap), `--relevant` (prune the trace to the goal-relevant slice),
-`--reorder` (cluster trace steps by target entity), `--no-diagrams`.
+One command, one sound engine: the verdict is **read from the result** —
+`k = 0 / 1 / >1` distinct models is reported as *no solution (with an unsat
+core) / the solution / ambiguous (k models)*. There is no mode flag (those are
+three answers to one problem, [above](#ein)); the only choice is the **stop
+policy** — single (default) / `--solutions N` / `--exhaustive`. Other knobs:
+`--max-set-size N` (commitment-set depth cap), `--print-final-state` (dump the
+model facts, or the unsat-core facts), and the trace shapers `--relevant`
+(goal-relevant slice) / `--reorder` (cluster by target entity) /
+`--no-diagrams` — which apply to the `--trace` file.
 
 ### Inspect the IR / KB
 
@@ -156,12 +174,17 @@ detection (P1.4), the hypothesis loop / commitment-lattice search
 (P1.5–P1.5b), DOT + markdown trace rendering (P1.6), the bootstrapped Zebra
 solve (P1.7), and ein-lang modules + the relation-algebra stdlib (P1.8) are
 in place, with semi-naive saturation for performance (P1.8a). The Zebra
-puzzle solves in all three modes; ~1,300 tests are green.
+puzzle solves correctly — its solution, its gaps, and its contradiction (on an
+over-constrained variant) all read off one sound run; ~1,300 tests are green.
 
 [P1.11](plans/m1_core_graph_reasoning/p1.11_package_restructure/README.md)
 package/CLI restructure has shipped: the `ein-bot` → `ein` rename, the
 `cli.py` → `cli/` split, and the `demo/` cleanup (durable bench runners
-promoted to `ein` subcommands, one-off probes moved to `utils/`). Next
+promoted to `ein` subcommands, one-off probes moved to `utils/`). The `search`
+and `lattice` runner subcommands were then **merged into one sound `ein
+solve`** (one engine, the verdict read from the result), replacing the unsound
+`gaps_solve` / `contradictions_solve` entries that chose their verdict by
+*which function was called*. Next
 milestones are **M2** (NL ⇄ IR round-trip) and **M3** (SMT integration).
 The whole roadmap is tracked under
 [`plans/`](plans/README.md); see [`AGENTS.md`](AGENTS.md) for orientation

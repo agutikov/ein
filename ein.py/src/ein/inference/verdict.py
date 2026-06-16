@@ -1,6 +1,5 @@
-"""Verdict types + Mode + is_solved — the shared surface across the
-inference engine entries (``solve``, ``gaps_solve``,
-``contradictions_solve``).
+"""Verdict types + Mode + is_solved — the shared surface for the
+single inference engine entry (:func:`solve`).
 
 Migrated 2026-05-29 out of ``inference.tree.solver`` (P1.5b). The
 tree-side ``SearchTree`` / ``SearchNode`` types and their ``tree`` /
@@ -12,9 +11,10 @@ What survives:
 - :class:`Mode` — the three task classes from idea 03
   (SOLVE / GAPS / CONTRADICTIONS).
 - :class:`Solution`, :class:`Ambiguity`, :class:`Contradiction` —
-  the three verdict shapes. Each carries an optional
-  ``proof: LatticeProof | None`` that gaps_solve /
-  contradictions_solve attach.
+  the three verdict shapes (the three *answers* to one problem, not
+  three problem statements). Each carries an optional
+  ``proof: LatticeProof | None`` that :func:`solve` attaches when
+  called with ``store_lattice=True``.
 - :data:`Verdict` — the union type.
 - :func:`is_solved` — goal-pattern check against a kb (mode-aware:
   SOLVE expects exactly one binding, GAPS expects at least one,
@@ -58,10 +58,9 @@ class Mode(Enum):
 class Solution:
     """A surviving branch: KB satisfies the query goal (mode-aware).
 
-    ``proof`` is the optional :class:`LatticeProof` attached by the
-    set-search engine's lattice entries
-    (:func:`gaps_solve`, :func:`contradictions_solve`).
-    :func:`solve` leaves it None.
+    ``proof`` is the optional :class:`LatticeProof` attached by
+    :func:`solve` when called with ``store_lattice=True``; it is None
+    on the default fast path.
     """
 
     kb:    KnowledgeBase
@@ -71,12 +70,13 @@ class Solution:
 
 @dataclass(frozen=True)
 class Ambiguity:
-    """Multiple surviving branches — GAPS mode's normal verdict.
+    """Multiple surviving branches — the verdict :func:`solve` returns
+    when it finds ``k > 1`` distinct solution nodes (a genuine
+    ambiguity / gap).
 
-    Also returned by :func:`solve` when it finds ``k > 1`` distinct
-    solution nodes (a genuine ambiguity / gap).
-    ``proof`` is the optional :class:`LatticeProof` returned by
-    :func:`gaps_solve`.
+    ``proof`` is the optional :class:`LatticeProof` attached by
+    :func:`solve` when called with ``store_lattice=True`` (its
+    ``proof.solutions`` is the gaps view).
     """
 
     branches: tuple[Solution, ...]
@@ -88,7 +88,9 @@ class Contradiction:
     """No surviving branch — the puzzle is unsolvable under the
     given constraints. ``unsat_core`` is the source-frontier facts
     that jointly produce the conflict; ``proof`` is the optional
-    :class:`LatticeProof` returned by :func:`contradictions_solve`.
+    :class:`LatticeProof` attached by :func:`solve` when called with
+    ``store_lattice=True`` (its ``proof.dead_commitments`` +
+    ``unsat_core`` are the contradictions view).
     """
 
     unsat_core: frozenset[Fact] = frozenset()

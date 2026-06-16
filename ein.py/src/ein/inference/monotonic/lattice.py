@@ -1,41 +1,48 @@
 """Lattice data structures for the unified set-search engine.
 
-The :func:`gaps_solve` and :func:`contradictions_solve` entries
-(siblings of :func:`solve` in this same package)
-return verdicts wrapping a :class:`LatticeProof` artefact. This
+The single :func:`solve` entry attaches a :class:`LatticeProof`
+artefact to its verdict when called with ``store_lattice=True``. This
 module defines the proof's data shape + the per-record companion
-types + the cumulative-counters class :class:`LatticeStats`.
+types + the cumulative-counters class :class:`LatticeStats`. The proof
+carries BOTH views off the one run: the gaps view is
+:attr:`LatticeProof.solutions`, the contradictions view is
+:attr:`LatticeProof.dead_commitments` (+ the verdict's ``unsat_core``).
 
-Filled by which entry — quick lookup
-------------------------------------
+Field — quick lookup
+--------------------
 
 ================  ==========================  ============================
 Field             Filled by                   Notes
 ================  ==========================  ============================
-solutions          gaps_solve                 Every satisfying commitment.
-dead_commitments   contradictions_solve       Every refuted commitment.
-kb_index           store_lattice=True only    Under gaps: keyed per
-                                              commitment (no merge);
-                                              under contradictions: keyed
+solutions          solve (store_lattice)      Every satisfying commitment
+                                              (the gaps view).
+dead_commitments   solve (store_lattice)      Every refuted commitment
+                                              (the contradictions view).
+kb_index           store_lattice=True only    Empty under :func:`solve`'s
+                                              own packaging; populated only
+                                              by a DAG builder via
+                                              :func:`_record_setnode`,
+                                              keyed per commitment (gaps) or
                                               by post-saturation
                                               :func:`state_hash`
-                                              (collisions merge labels).
-alive_at_end       both                       Size-N alive sets at depth
+                                              (contradictions, collisions
+                                              merge labels).
+alive_at_end       solve (store_lattice)      Size-N alive sets at depth
                                               cap; ``()`` if not capped.
-learned_nogoods    both                       Snapshot of
+learned_nogoods    solve (store_lattice)      Snapshot of
                                               ``root_kb._nogoods`` at
                                               return.
-stats              both                       Cumulative counters.
+stats              solve (store_lattice)      Cumulative counters.
 ================  ==========================  ============================
 
 Cross-references:
 
-- Algorithm spec (which field is filled by which entry):
+- Algorithm spec (per-step contract):
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md``
   § Verdict synthesis.
 - Stage spec:
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.22_lattice_dedup.md``.
-- Engine layout rationale (one engine, three entries, unified
+- Engine layout rationale (one engine, one entry, unified
   monotonic+lattice in ``inference/monotonic/``):
   ``project_set_search_unified`` memory + the 2026-05-28
   conversation.
@@ -54,10 +61,10 @@ from ein.kb.store import KnowledgeBase
 
 @dataclass
 class _BaseStats:
-    """Per-candidate counters shared by every set-search entry — the
-    base of both :class:`MonotonicStats` (``solve``, in
+    """Per-candidate counters shared by the set-search engine — the
+    base of both :class:`MonotonicStats` (the :func:`solve` run, in
     :mod:`ein.inference.monotonic.solver`) and :class:`LatticeStats`
-    (``gaps`` / ``contradictions``).
+    (the ``store_lattice`` proof's stats).
 
     Factoring these here (F-ENG-9) retires a hand-maintained field-copy
     in ``solver._build_lattice_stats`` that silently went stale when a
@@ -81,16 +88,16 @@ class _BaseStats:
 
 @dataclass
 class LatticeStats(_BaseStats):
-    """Cumulative counters for one :func:`gaps_solve` /
-    :func:`contradictions_solve` run.
+    """Cumulative counters for the ``store_lattice`` proof of one
+    :func:`solve` run.
 
     Inherits the shared per-candidate counters from :class:`_BaseStats`;
     adds the lattice-only :attr:`solutions_found`,
     :attr:`state_hash_merges`, and :attr:`elapsed_seconds`.
     :class:`MonotonicStats` (in
     :mod:`ein.inference.monotonic.solver`) is the sibling subclass —
-    neither inherits the other, so each public entry advertises its own
-    full counter set at the type level.
+    neither inherits the other, so the run-level stats and the proof's
+    stats each advertise their own full counter set at the type level.
 
     NB: under the :class:`_BaseStats` split, :attr:`solutions_found` now
     serialises *after* the shared counters (it previously sat at field
@@ -108,11 +115,12 @@ class LatticeStats(_BaseStats):
 class SolutionRecord:
     """One satisfying commitment + its saturated kb snapshot.
 
-    Filled by :func:`gaps_solve` for every satisfying commitment
-    encountered (the only persisted per-set kb — alive
-    intermediates are not stored). The :attr:`kb` is a
-    :meth:`KnowledgeBase.snapshot` so it stays stable across
-    later mutations of root.
+    Collected by :func:`solve` (and surfaced in the
+    ``store_lattice`` proof's ``solutions`` — the gaps view) for
+    every satisfying commitment encountered (the only persisted
+    per-set kb — alive intermediates are not stored). The
+    :attr:`kb` is a :meth:`KnowledgeBase.snapshot` so it stays
+    stable across later mutations of root.
 
     :attr:`commitment` is the empty tuple ``()`` when root itself
     satisfied (Phase 1 short-circuit, or a forced-positive
@@ -129,11 +137,12 @@ class SolutionRecord:
 class DeadCommitment:
     """One refuted commitment + its unsat-core.
 
-    Filled by :func:`contradictions_solve` for every dead
-    commitment encountered (backbone lands in S1.5b.23).
-    ``kind`` records whether the contradiction surfaced
-    pre-saturation (``dead-pre``) or only after rule firing
-    (``dead-post``).
+    Collected by :func:`solve` (and surfaced in the
+    ``store_lattice`` proof's ``dead_commitments`` — the
+    contradictions view) for every dead commitment encountered
+    (backbone lands in S1.5b.23). ``kind`` records whether the
+    contradiction surfaced pre-saturation (``dead-pre``) or only
+    after rule firing (``dead-post``).
     """
 
     commitment:     CanonicalSetId
@@ -152,13 +161,14 @@ class DeadCommitment:
 class SetNode:
     """One cross-set state-hash merge target.
 
-    Populated when ``store_lattice=True``. Under
-    :func:`contradictions_solve` multiple labels may collapse
+    Populated by a DAG builder via :func:`_record_setnode` (not by
+    :func:`solve`'s own proof packaging). In the
+    ``contradictions`` keying mode multiple labels may collapse
     into one node (state-hash dedup merge — distinct dead
     commitments that saturate to identical kbs share a
-    refutation node); under :func:`gaps_solve` each commitment
-    keeps its own node (no merge — GAPS contract requires
-    distinct satisfying commitments to register separately).
+    refutation node); in the ``gaps`` keying mode each commitment
+    keeps its own node (no merge — distinct satisfying
+    commitments register separately).
 
     :attr:`state_hash` always carries
     :func:`ein.inference.canon.state_hash` of the
@@ -175,23 +185,26 @@ class SetNode:
 
 @dataclass(frozen=True)
 class LatticeProof:
-    """Set-search engine's proof artefact for non-monotonic entries.
+    """Set-search engine's proof artefact.
 
-    Returned in ``Ambiguity.proof`` from :func:`gaps_solve` or
-    ``Contradiction.proof`` from :func:`contradictions_solve`.
-    Carries the entry-specific collected records plus the
-    orthogonal ``store_lattice``-gated SetNode storage and the
+    Attached to the verdict (``Solution`` / ``Ambiguity`` /
+    ``Contradiction``) by :func:`solve` when called with
+    ``store_lattice=True``. Carries BOTH views off the one run —
+    :attr:`solutions` (the gaps view) and :attr:`dead_commitments`
+    (the contradictions view, paired with the verdict's
+    ``unsat_core``) — plus the orthogonal SetNode storage and the
     pair of derivation-state snapshots
     (:attr:`learned_nogoods`, :attr:`alive_at_end`) that survive
     the return.
 
-    The :attr:`kb_index` dict is *empty* when ``store_lattice``
-    is False (default) — distinct from "loop ran but found
-    nothing" (which is signalled by zero-length
-    :attr:`solutions` / :attr:`dead_commitments`). The dict
-    keying differs by entry: under :func:`gaps_solve` the keys
-    are per-commitment unique ids (so distinct commitments stay
-    separate); under :func:`contradictions_solve` the keys are
+    The :attr:`kb_index` dict is *empty* in :func:`solve`'s own
+    packaging — distinct from "loop ran but found nothing" (which
+    is signalled by zero-length
+    :attr:`solutions` / :attr:`dead_commitments`). When a DAG
+    builder populates it via :func:`_record_setnode`, the keying
+    differs by mode: in the ``gaps`` mode the keys are
+    per-commitment unique ids (so distinct commitments stay
+    separate); in the ``contradictions`` mode the keys are
     :func:`state_hash` values (so distinct commitments collapse
     on collision).
     """

@@ -85,12 +85,13 @@ class LatticeSnapshotV1:
         — the set of distinct satisfying *model states* (S1.7.24;
         keyed by post-saturation state_hash, NOT commitment path,
         so the two orientations of a symmetric pair count once).
-        ``frozenset(())`` under monotonic / contradictions.
+        ``frozenset(())`` when no commitment satisfied (a
+        ``Contradiction`` verdict).
     deads
         ``frozenset(d.state_hash for d in proof.dead_commitments)``
         — the set of distinct refuted *states* (S1.7.24; state-keyed
-        for the same orientation-invariance). ``frozenset(())`` under
-        monotonic / gaps.
+        for the same orientation-invariance). ``frozenset(())`` when
+        no commitment was refuted.
 
     Note (S1.7.24): learned **nogoods are NOT in the snapshot**. A
     learned clause ``{(R a b), …}`` and its symmetric mirror
@@ -125,9 +126,9 @@ def lattice_snapshot(
     """Project a completed lattice solve into a
     :class:`LatticeSnapshotV1`.
 
-    Requires ``verdict.proof`` to be non-None — call this on
-    verdicts from :func:`gaps_solve` or
-    :func:`contradictions_solve`, not :func:`solve`.
+    Requires ``verdict.proof`` to be non-None — call this on a
+    verdict from a :func:`solve` run with ``store_lattice=True``
+    (the default fast path leaves ``proof`` None).
     The ``root_kb`` argument is the kb at termination (the
     solver's ``root_kb`` after the call returns) — its
     ``state_hash`` records the cumulative root-side merges +

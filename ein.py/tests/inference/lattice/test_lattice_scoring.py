@@ -11,9 +11,9 @@ wiring into :func:`_explore_layers` via
   determinism. Reuses S1.5a.7's hypgen scorer — informed only
   under non-default ``hypgen_scoring``.
 
-The order switch changes which commitment monotonic_solve
-early-terminates on (and the proof's solution-list order on
-gaps), but never the set of commitments reachable within the
+The order switch changes which commitment ``solve``
+early-terminates on (and the proof's solution-list order),
+but never the SET of reachable commitments / models within the
 depth budget.
 
 Cross-references:
@@ -35,7 +35,7 @@ import pytest
 
 from ein.inference.apriori import order_candidates
 from ein.inference.config import SolverConfig
-from ein.inference.monotonic import contradictions_solve, gaps_solve
+from ein.inference.monotonic import solve
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
 
@@ -130,32 +130,33 @@ def test_order_candidates_score_sum_informed_under_popularity():
 # ── End-to-end: lex vs score-sum produce same visited set ─
 
 
-def test_lattice_order_changes_sequence_not_visited_set():
-    """The lattice_order knob affects *which order* commitments
-    are visited within a layer, but never *which* commitments
-    are visited. The set of visited commitments + their
-    verdicts must match across both modes."""
-    visited_per_mode: dict[str, set] = {}
+def test_lattice_order_changes_sequence_not_result_set():
+    """The lattice_order knob affects *which order* commitments are
+    visited within a layer, but never the RESULT. The set of distinct
+    models found (``proof.solutions``, keyed by state_hash) must match
+    across both modes.
+
+    (Pre-refit this compared the kb_index-visited set; ``solve`` does not
+    build that DAG, so the order-invariance is pinned on the model set —
+    the entry-independent, sound output.)"""
+    models_per_mode: dict[str, set] = {}
     for mode in ("lex", "score-sum"):
         kb = _kb_from(BRANCHING / "04_two_levels.ein")
         kb.config = replace(
             kb.config or SolverConfig(), lattice_order=mode,
         )
-        verdict, _ = contradictions_solve(
-            kb, max_set_size=3, store_lattice=True,
+        verdict, _ = solve(
+            kb, stop_after=None, max_set_size=3, store_lattice=True,
         )
-        # Collect every visited commitment via kb_index labels.
-        visited = set()
-        for node in verdict.proof.kb_index.values():
-            for c in node.labels:
-                visited.add(frozenset(c))
-        visited_per_mode[mode] = visited
-    assert visited_per_mode["lex"] == visited_per_mode["score-sum"]
+        from ein.inference.canon import state_hash
+        models_per_mode[mode] = {
+            state_hash(s.kb) for s in verdict.proof.solutions
+        }
+    assert models_per_mode["lex"] == models_per_mode["score-sum"]
 
 
 def test_lattice_order_deterministic_under_same_mode():
-    """Two runs with the same mode produce identical
-    proof.kb_index keysets + identical solution-list ordering.
+    """Two runs with the same mode produce an identical solution set.
     """
     runs = []
     for _ in range(2):
@@ -163,9 +164,12 @@ def test_lattice_order_deterministic_under_same_mode():
         kb.config = replace(
             kb.config or SolverConfig(), lattice_order="score-sum",
         )
-        verdict, _ = gaps_solve(kb, max_set_size=3)
-        runs.append(tuple(
-            s.commitment for s in verdict.proof.solutions
+        verdict, _ = solve(
+            kb, stop_after=None, max_set_size=3, store_lattice=True,
+        )
+        from ein.inference.canon import state_hash
+        runs.append(frozenset(
+            state_hash(s.kb) for s in verdict.proof.solutions
         ))
     assert runs[0] == runs[1]
 

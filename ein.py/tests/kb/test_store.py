@@ -368,8 +368,8 @@ class TestNestedFactArgsThroughLoader:
 
 class TestKBSnapshot:
     """:meth:`KnowledgeBase.snapshot` deep-copies the mutable state
-    so a satisfying-branch kb returned from :func:`gaps_solve` is
-    stable under later root mutations."""
+    so a satisfying-branch kb recorded in a :func:`solve` proof's
+    ``solutions`` is stable under later root mutations."""
 
     def test_kb_snapshot_isolation(self):
         from ein.ir import parse

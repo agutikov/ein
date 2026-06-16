@@ -5,14 +5,27 @@
 > engine: **(A)** a `domain-elimination` saturation rule that fires
 > at d=0 once every alternative is excluded, or **(B)** the
 > hypothesis loop forking on each candidate and refuting the wrong
-> ones. This page measures both across
-> [`monotonic_solve` / `gaps_solve` / `contradictions_solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10)
-> and records the audit conclusion + recommendation the stage owed.
+> ones. This page measures both with the single
+> [`solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10)
+> engine — the verdict read off `k` (0/1/>1 → contradiction / solution /
+> gaps), and the two **views** (`proof.solutions` / `proof.dead_commitments`)
+> read off the `store_lattice` proof of one exhaustive run — and records
+> the audit conclusion + recommendation the stage owed.
 >
-> Reproduce every number here with
-> [`utils/s1_5b_32_measure.py`](../../../utils/s1_5b_32_measure.py)
-> over the [`examples/domain_elim/`](../../../examples/domain_elim/)
-> fixtures. Long-form stage notes:
+> **Historical numbers.** The tables below were measured (S1.5b.32, mid-2025)
+> through the engine's then *three public entries* `solve` / `gaps_solve` /
+> `contradictions_solve` — the last two were removed 2026-06-16 when the
+> verdict became result-driven, so the measurement harness that produced the
+> tables below (`utils/s1_5b_32_measure.py`, since removed) is a period
+> record, not a live one. The work
+> counts — *how far the lattice is walked* per fixture — are what the
+> A-vs-B comparison turns on and are unchanged by the merge; the per-entry
+> `verdict` columns simply pre-date `verdict_of` reading the one verdict
+> from `k` (so the duplicate `gaps`/`contradictions` rows on a fixture are
+> now two views of that fixture's single exhaustive solve). Re-running over
+> the [`examples/domain_elim/`](../../../examples/domain_elim/) fixtures
+> today means `solve(..., stop_after=N, store_lattice=True)` and reading
+> the views off the proof. Long-form stage notes:
 > [`s1.5b.32_domain_elim_vs_hyp_exploration.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.32_domain_elim_vs_hyp_exploration.md).
 
 ## The fixtures
@@ -66,15 +79,25 @@ nothing — both need the hypothesis machinery.
 
 ## B. Default config (shipped — pre-branch lookahead ON)
 
-| fixture | engine | verdict | ent | dead | fp | sat | sets | answer-prov |
-|---------|--------|---------|----:|-----:|---:|----:|-----:|-------------|
-| `ab` | monotonic | Solution | **0** | 0 | **0** | **1** | — | `range-elimination` |
-| `ab` | gaps | Ambiguity | 0 | 0 | 0 | 1 | **0** | — |
-| `ab` | contradictions | Contradiction | 0 | 0 | 0 | 1 | **0** | — |
-| `b_only` | monotonic | Solution | 0 | 0 | 1 | 2 | — | `<forced-positive>` |
-| `b_only` | contradictions | Contradiction | 1 | 0 | 1 | 2 | 1 | — |
-| `b_branch` | monotonic | Solution | 0 | 0 | 1 | 2 | — | `<forced-positive>` |
-| `b_branch` | contradictions | Contradiction | 1 | 0 | 1 | 2 | 1 | — |
+The `run` column names the historical entry the row was measured
+through (the single-solution `solve`, or the exhaustive sweep read as
+the `gaps` / `contradictions` *view*); `verdict` is that entry's
+*old per-entry* verdict. Under the unified `solve`, the verdict is
+read from `k` instead, so every fixture here resolves to one verdict —
+all three have a model, so all three are **Solution** (`k=1`); the
+`Ambiguity` / `Contradiction` cells below are the removed entries'
+forced labels, kept to show the work each *view* did, not a verdict
+`solve` would now return.
+
+| fixture | run (historical entry) | verdict (pre-merge) | ent | dead | fp | sat | sets | answer-prov |
+|---------|------------------------|---------------------|----:|-----:|---:|----:|-----:|-------------|
+| `ab` | single (`solve`) | Solution | **0** | 0 | **0** | **1** | — | `range-elimination` |
+| `ab` | gaps view | Ambiguity | 0 | 0 | 0 | 1 | **0** | — |
+| `ab` | contradictions view | Contradiction | 0 | 0 | 0 | 1 | **0** | — |
+| `b_only` | single (`solve`) | Solution | 0 | 0 | 1 | 2 | — | `<forced-positive>` |
+| `b_only` | contradictions view | Contradiction | 1 | 0 | 1 | 2 | 1 | — |
+| `b_branch` | single (`solve`) | Solution | 0 | 0 | 1 | 2 | — | `<forced-positive>` |
+| `b_branch` | contradictions view | Contradiction | 1 | 0 | 1 | 2 | 1 | — |
 
 **Pathway A is strictly cheaper.** When the elimination rule is
 present (`ab`), the answer falls out of root saturation: **0
@@ -92,7 +115,8 @@ So pathway A **fully preempts** pathway B: there is no double-counting
 ## C. The real lever — `enable_pre_branch_lookahead`
 
 Toggling the [pre-branch lookahead](../../../ein.py/src/ein/inference/config.py)
-on the exhaustive `contradictions_solve` run isolates what is doing
+on the exhaustive sweep (`solve(..., stop_after=None, store_lattice=True)`,
+read as the contradictions view) isolates what is doing
 the elimination when A is absent:
 
 | config | fixture | ent | dead | fp | sets | nogoods |
@@ -136,7 +160,8 @@ fork-and-refute search only surfaces when **all three** are removed.
   without).
 - **Q2 — does A fire under commitment-set semantics?** Yes — §A and
   the `ab` rows of §B/§C show `range-elimination` firing inside
-  saturation and solving at root across all three entries.
+  saturation and solving at root, on the single-solution run and in
+  both proof views alike.
 - **Q3 — is B's per-set saturation wasted when A would have fired?**
   Yes, relative to A: `b_branch` enters 7 sets where `ab` enters 0.
   But A eliminates that work entirely whenever its rule is in scope,
@@ -187,7 +212,9 @@ is removed.
 
 ## Cross-links
 
-- Harness: [`utils/s1_5b_32_measure.py`](../../../utils/s1_5b_32_measure.py).
+- Harness: `utils/s1_5b_32_measure.py` (removed — it drove the now-deleted
+  `gaps_solve` / `contradictions_solve`; the numbers above are a period
+  record, see the *Historical numbers* note).
 - Fixtures: [`examples/domain_elim/`](../../../examples/domain_elim/).
 - Stage: [`s1.5b.32_…`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.32_domain_elim_vs_hyp_exploration.md).
 - Engine overview + the d=0 rules: [README](README.md#d0-negative-completion-s15a19).

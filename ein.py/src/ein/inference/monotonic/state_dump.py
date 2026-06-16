@@ -23,9 +23,8 @@ accumulated at root at each layer boundary. No
 ``set/<canonical-slug>/`` folders — that's a lattice-engine feature
 (S1.5b.23).
 
-The dumper's six lifecycle hooks fire from :func:`solve` (and the
-lattice entries :func:`gaps_solve` / :func:`contradictions_solve`)
-when the caller passes ``dumper=MonotonicDumper(out_dir=…)``.
+The dumper's six lifecycle hooks fire from :func:`solve` when the
+caller passes ``dumper=MonotonicDumper(out_dir=…)``.
 ``dumper=None`` is a no-op for every hook site; the backbone
 behaviour is identical to the pre-S1.5b.7 path.
 """
@@ -516,11 +515,13 @@ def _commitment_json(commitment: tuple) -> list[dict[str, Any]]:
 
 @dataclass
 class LatticeDumper(_TimelineMixin):
-    """Filesystem-snapshotting hooks attached to a :func:`gaps_solve`
-    or :func:`contradictions_solve` run.
+    """Filesystem-snapshotting hooks attached to a :func:`solve` run
+    with ``store_lattice=True``.
 
     Sibling of :class:`MonotonicDumper`; shares the same
-    lifecycle-hook pattern but adds entry-specific sections.
+    lifecycle-hook pattern but adds the lattice-proof sections
+    (per-commitment ``enterings/`` folders + the ``store_lattice``
+    ``kb_index/`` + ``proof_summary.json``).
 
     Dump layout::
 

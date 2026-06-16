@@ -28,7 +28,7 @@ from pathlib import Path
 import pytest
 
 from ein.inference.config import SolverConfig
-from ein.inference.monotonic import contradictions_solve
+from ein.inference.monotonic import solve
 from ein.inference.monotonic.sanity import (
     SanityError,
     check_commutativity,
@@ -55,7 +55,7 @@ def test_sanity_check_passes_on_branching_04():
     :exc:`SanityError`."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
     cfg = replace(kb.config or SolverConfig(), lattice_sanity_check=True)
-    verdict, _ = contradictions_solve(kb, max_set_size=3, config=cfg)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, config=cfg)
     # No exception → premise verified for this fixture.
     assert verdict is not None
 
@@ -67,7 +67,7 @@ def test_sanity_check_passes_on_03_state_hash_collision():
     in the same kb)."""
     kb = _kb_from(LATTICE / "03_state_hash_collision.ein")
     cfg = replace(kb.config or SolverConfig(), lattice_sanity_check=True)
-    verdict, _ = contradictions_solve(kb, max_set_size=2, config=cfg)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=2, config=cfg)
     assert verdict is not None
 
 
@@ -77,7 +77,7 @@ def test_sanity_check_passes_on_genuine_3set_death():
     (no commutativity violation on their saturated kbs)."""
     kb = _kb_from(LATTICE / "02_genuine_3set_death.ein")
     cfg = replace(kb.config or SolverConfig(), lattice_sanity_check=True)
-    verdict, _ = contradictions_solve(kb, max_set_size=3, config=cfg)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, config=cfg)
     assert verdict is not None
 
 
@@ -95,7 +95,7 @@ def test_sanity_check_off_by_default():
     # the check is skipped (the check is structurally absent
     # when the flag is False — no observable side effect).
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    verdict, _ = contradictions_solve(kb, max_set_size=3)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3)
     assert verdict is not None
 
 

@@ -28,17 +28,41 @@ source: `canon.BOOKKEEPING_HEADS`.
 | `hypothesis` | wraps a speculative fact introduced at a fork: `(hypothesis (R …))` | `canon.py`; `state_dump.py` |
 | `contradiction-under` | wraps the hypothesis a contradiction was found under | `canon.py` |
 
-## Task-class entries
+## Engine entry + verdict
 
-The three search modes. Single source: the `Mode` enum in
-[`inference/verdict.py`](../../../ein.py/src/ein/inference/verdict.py);
-the solver's `entry` discriminator uses the same string values.
+There is **one** engine entry, `solve` — the verdict is **read from the
+result**, not chosen by which function was called. From the count `k`
+of distinct (`state_hash`-deduped) solution nodes,
+[`verdict_of`](../../../ein.py/src/ein/inference/monotonic/solver.py)
+names the
+verdict; `solve(..., store_lattice=True)` attaches a sound `LatticeProof`
+carrying both the gaps view (`proof.solutions` — every model) and the
+contradictions view (`proof.dead_commitments` + `verdict.unsat_core`).
+The three verdicts are **three answers to one problem**, not three
+commands.
 
-| string | `Mode` | entry function | verdict shape |
-|--------|--------|----------------|---------------|
-| `solve` | `Mode.SOLVE` | `solve` | `Solution` / `Ambiguity` / `Contradiction` (k from state-deduped nodes) |
-| `gaps` | `Mode.GAPS` | `gaps_solve` | `Ambiguity` (distinct model states) |
-| `contradictions` | `Mode.CONTRADICTIONS` | `contradictions_solve` | `Contradiction` (unsat-core union) |
+| `k` (distinct solution nodes) | verdict | shape |
+|-------------------------------|---------|-------|
+| `k = 0` | `Contradiction` | minimal unsat core |
+| `k = 1` | `Solution` | the model |
+| `k > 1` | `Ambiguity` (gaps) | the distinct model states |
+
+(Historical: the unsound sibling entries `gaps_solve` /
+`contradictions_solve` — which fixed the verdict by *which function was
+called* and so disagreed on the same input — were removed 2026-06-16.)
+
+The `Mode` enum still exists as **engine-internal** vocabulary — not a
+caller-facing task switch. Single source: the `Mode` enum in
+[`inference/verdict.py`](../../../ein.py/src/ein/inference/verdict.py).
+Only `Mode.SOLVE` reaches the live `solve` path (`is_solved` uses it for
+the fork-side exactly-one-binding goal check); `GAPS` / `CONTRADICTIONS`
+survive as the enum's other members but no longer name an entry.
+
+| string | `Mode` | role |
+|--------|--------|------|
+| `solve` | `Mode.SOLVE` | goal check: exactly one binding (used by `solve` / `is_solved`) |
+| `gaps` | `Mode.GAPS` | goal check: ≥ 1 binding (enum member; no live entry) |
+| `contradictions` | `Mode.CONTRADICTIONS` | goal check: never solved (enum member; no live entry) |
 
 ## Protocol enums
 

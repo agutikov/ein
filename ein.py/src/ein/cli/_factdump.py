@@ -1,9 +1,7 @@
-"""Shared fact-dump helpers for the ``--print-final-*`` CLI options.
+"""Shared fact-dump helpers for the ``ein solve --print-final-*`` options.
 
-Render a solution / final-state KB slice as canonical s-expressions. Used by
-both ``ein search`` (the single solution model) and ``ein lattice`` (one dump
-per gaps branch / the contradictions unsat-core). Extracted from the search
-command in the P1.11 follow-up so the two commands share one implementation.
+Render a solution / final-state KB slice as canonical s-expressions — one dump
+per solution branch, or the unsat-core facts when there is no model.
 """
 from __future__ import annotations
 

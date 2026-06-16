@@ -181,14 +181,14 @@ def test_all_renderers_emit_valid_dot():
     assert _parses(render_solution(kb))
 
 
-# ── integration: a real gaps_solve cone ────────────────────────────
+# ── integration: a real solve solution cone ────────────────────────
 
 @pytest.mark.skipif(not _HAVE_DOT, reason="graphviz `dot` not installed")
-def test_real_gaps_solve_cone_parses():
-    from ein.inference.monotonic.solver import gaps_solve
+def test_real_solve_solution_cone_parses():
+    from ein.inference.monotonic import solve
     repo = Path(__file__).resolve().parents[3]
     kb = _kb((repo / "examples" / "branching" / "04_two_levels.ein").read_text())
-    verdict, _ = gaps_solve(kb, max_set_size=3)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     rec = max(verdict.proof.solutions, key=lambda r: len(r.firings))
     dot = render_slice(rec.commitment, rec.firings, rec.kb)
     assert _parses(dot)

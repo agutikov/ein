@@ -10,8 +10,9 @@ a linear sequence. :func:`linearize` turns a :class:`Verdict` (+ its
   fact, rendered ``:why``, quoted source sentences, and an inline
   derivation-slice diagram (S1.6.2);
 - **reductios** — one per refuted commitment
-  (`proof.dead_commitments`, from `contradictions_solve`): "Suppose X.
-  Then ⊥," closed by its lifted no-good (T1.6.4.6);
+  (`proof.dead_commitments`, the contradictions view of `solve`'s
+  `store_lattice` proof): "Suppose X. Then ⊥," closed by its lifted
+  no-good (T1.6.4.6);
 - the closing **lattice DAG** (S1.6.3) + **solution grid** (S1.6.2).
 
 This maps the human `(d, hypothesis)` framing onto `(layer,

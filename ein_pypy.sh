@@ -10,9 +10,9 @@
 #   ./ein_pypy.sh <subcommand> [args…]
 #
 # Examples:
-#   ./ein_pypy.sh search   examples/zebra2.ein --print-final-hfacts
-#   ./ein_pypy.sh lattice  examples/zebra2.ein --gaps --max-set-size 4
-#   ./ein_pypy.sh solve    examples/zebra2.ein --mode solve
+#   ./ein_pypy.sh solve    examples/zebra2.ein --print-final-hfacts
+#   ./ein_pypy.sh solve    examples/zebra2.ein --exhaustive --stats
+#   ./ein_pypy.sh solve    examples/zebra2.ein --trace /tmp/zebra.md
 #   ./ein_pypy.sh saturate examples/saturation/transitive/taxonomy.ein
 #
 # Setup (one-time):

@@ -1,32 +1,29 @@
-"""contradictions_solve backbone tests — S1.5b.23 T1.5b.23.5.
+"""Contradictions-view backbone tests — S1.5b.23 (P1.7a refit, 2026-06-16).
 
-Pins :func:`ein.inference.monotonic.contradictions_solve`
-across the CONTRADICTIONS-mode contract:
+The former ``contradictions_solve`` entry (which ALWAYS returned
+:class:`Contradiction` regardless of the real model count) was removed.
+The contradictions *view* — the refutation map (every refuted commitment
+with its unsat-core + learned clause) — is now read off the one sound
+entry :func:`solve` run exhaustively (``stop_after=None``) with
+``store_lattice=True``: the verdict TYPE is read from ``k`` and the
+refutation map rides along in ``verdict.proof.dead_commitments``
+(``solve`` collects deads for every run, not only ``k == 0`` ones).
 
-- Verdict is always :class:`Contradiction` (mode contract).
-- ``proof.dead_commitments`` collects every refuted commitment
-  with its unsat-core + learned clause + layer + kind.
-- ``verdict.unsat_core`` is the union of every recorded dead's
-  core (empty frozenset when no deads observed — the
-  degenerate "actually solvable" case).
-- Phase 1 root contradiction returns immediately with empty
-  ``proof.dead_commitments``.
-- State-hash dedup MERGE activates under
-  ``store_lattice=True`` — distinct dead commitments
-  saturating to the same kb collapse into one multilabel
-  :class:`SetNode` and the prior arrival's records subsume
-  the new one.
-- Fork-side ``is_solved`` does NOT short-circuit Phase 2 —
-  supersets of solved commitments may still die under
-  additional hypotheses.
+So a multi-model fixture (branching/04) is an :class:`Ambiguity` whose
+proof still carries the deads explored along the way; an UNSAT fixture
+(lattice/02, or a root-``(false)``) is a :class:`Contradiction` whose
+``unsat_core`` is the union of its deads' cores.
+
+``proof.kb_index`` is **always empty** for ``solve`` — it does not build
+the per-SetNode DAG (that was the removed lattice entries' job; the sound
+data is the solutions + deads). The state-hash dedup MERGE path is a
+contradictions-entry mechanism exercised here at the unit level via
+:func:`_record_setnode`.
 
 Cross-references:
 
-- Stage spec:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.23_lattice_dumper.md``
 - Algorithm:
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md``
-  §3c.i + § Verdict synthesis (contradictions_solve).
 - Sibling gaps tests:
   ``ein.py/tests/inference/lattice/test_gaps_backbone.py``
 - Sibling lattice-proof tests:
@@ -39,19 +36,20 @@ from pathlib import Path
 from ein.inference.monotonic import (
     DeadCommitment,
     LatticeProof,
-    LatticeStats,
-    contradictions_solve,
+    MonotonicStats,
+    solve,
 )
 from ein.inference.monotonic.solver import (
     _LatticeLoopState,
     _record_setnode,
 )
-from ein.inference.verdict import Contradiction
+from ein.inference.verdict import Ambiguity, Contradiction
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[4]
 BRANCHING = REPO / "examples" / "branching"
+LATTICE = REPO / "examples" / "lattice"
 
 
 def _kb_from(path: Path) -> KnowledgeBase:
@@ -62,33 +60,36 @@ def _kb_inline(text: str) -> KnowledgeBase:
     return KnowledgeBase.from_ir(parse(text))
 
 
+def _solve(kb: KnowledgeBase, **kw):
+    return solve(kb, stop_after=None, store_lattice=True, **kw)
+
+
 # ── Verdict shape ──────────────────────────────────────────
 
 
-def test_contradictions_solve_always_returns_contradiction_tuple():
-    """``(verdict, stats)`` shape; verdict is :class:`Contradiction`,
-    stats is :class:`LatticeStats`."""
+def test_solve_branching_04_is_ambiguity_with_proof():
+    """``(verdict, stats)`` shape; ``branching/04_two_levels`` has TWO
+    models (k=2) → :class:`Ambiguity`, ``stats`` a :class:`MonotonicStats`,
+    and ``verdict.proof`` a :class:`LatticeProof`."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    result = contradictions_solve(kb, max_set_size=3)
+    result = _solve(kb, max_set_size=3)
     assert isinstance(result, tuple)
     assert len(result) == 2
     verdict, stats = result
-    assert isinstance(verdict, Contradiction)
-    assert isinstance(stats, LatticeStats)
+    assert isinstance(verdict, Ambiguity)
+    assert isinstance(stats, MonotonicStats)
     assert isinstance(verdict.proof, LatticeProof)
 
 
-# ── Multi-dead enumeration ─────────────────────────────────
+# ── Dead enumeration (refutation map) ──────────────────────
 
 
-def test_contradictions_solve_branching_04_collects_deads():
-    """``branching/04_two_levels`` has 4 layer-2 dead
-    commitments (each pairing of Blue/Green ↔ H1/H2 against
-    Red↔H1 + sibling-exclusive). contradictions_solve
-    enumerates them in ``proof.dead_commitments``."""
+def test_solve_branching_04_collects_deads_in_proof():
+    """``branching/04_two_levels`` refutes several layer-2 commitments
+    along the way; ``solve`` records them in ``proof.dead_commitments``
+    even though the verdict is :class:`Ambiguity`."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    verdict, stats = contradictions_solve(kb, max_set_size=3)
-    assert isinstance(verdict, Contradiction)
+    verdict, _stats = _solve(kb, max_set_size=3)
     assert len(verdict.proof.dead_commitments) >= 1
     # Each dead carries an unsat_core + learned_clause.
     for d in verdict.proof.dead_commitments:
@@ -97,38 +98,49 @@ def test_contradictions_solve_branching_04_collects_deads():
         assert isinstance(d.unsat_core, frozenset)
         assert isinstance(d.learned_clause, frozenset)
         assert d.layer >= 1
-    # Stats coherence.
-    assert stats.enterings_dead_pre + stats.enterings_dead_post == (
+    # Stats coherence: every recorded dead is counted (solve does not run
+    # the contradictions-side state-hash merge that skips the append).
+    lstats = verdict.proof.stats
+    assert lstats.enterings_dead_pre + lstats.enterings_dead_post == (
         len(verdict.proof.dead_commitments)
     )
 
 
-# ── unsat_core is the union of dead cores ──────────────────
+# ── unsat_core is the union of dead cores (UNSAT fixture) ──
 
 
-def test_contradictions_solve_unsat_core_is_union_of_dead_cores():
-    """``verdict.unsat_core`` is the set union of every
-    recorded ``d.unsat_core`` across
-    ``proof.dead_commitments``. Holds by construction in
-    ``_finalise_lattice_verdict`` — this test pins the
-    invariant against the contract."""
-    kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    verdict, _ = contradictions_solve(kb, max_set_size=3)
+def test_solve_unsat_core_is_union_of_dead_cores():
+    """For a genuinely UNSAT fixture (``ein-bugs/zebra2-bad`` — an injected
+    ``(color-loc Green House-1)`` clashes with the spatial chain during root
+    saturation → no model → k=0 → :class:`Contradiction`),
+    ``verdict.unsat_core`` is the set union of every recorded ``d.unsat_core``
+    across ``proof.dead_commitments``."""
+    kb = _kb_from(REPO / "examples" / "ein-bugs" / "zebra2-bad.ein")
+    verdict, _ = _solve(kb, max_set_size=3)
+    assert isinstance(verdict, Contradiction)
     expected = frozenset()
     for d in verdict.proof.dead_commitments:
         expected = expected | d.unsat_core
     assert verdict.unsat_core == expected
+    assert verdict.unsat_core, "the unsat core must be non-empty"
 
 
 # ── Phase 1 root contradiction — empty deads ───────────────
 
 
-def test_contradictions_solve_root_contradiction_returns_empty_deads():
-    """A puzzle whose root saturates to ``(false)`` in Phase 1
-    returns :class:`Contradiction` with empty
-    ``proof.dead_commitments`` (no commitment was ever
-    tried). ``verdict.unsat_core`` is the empty frozenset
-    (no recorded dead's core to union)."""
+def test_solve_root_contradiction_records_root_dead():
+    """A puzzle whose root saturates to ``(false)`` in Phase 1 finds no
+    solution node (k=0) → :class:`Contradiction`. ``solve``'s Phase-1
+    root-contradiction path records a single root :class:`DeadCommitment`
+    (``commitment=()``) carrying the source-frontier core, so
+    ``verdict.unsat_core`` is non-empty (it traces back to the
+    ``(trigger a)`` source fact). No commitment was tried, so
+    ``enterings_total == 0``.
+
+    NB this is the one place ``solve`` differs from the removed
+    ``contradictions_solve`` Phase-1 path (which left deads empty): the
+    sound entry always packages the root core as a dead record.
+    """
     kb = _kb_inline("""
     (rule always-false ()
       :match (trigger ?x)
@@ -140,44 +152,39 @@ def test_contradictions_solve_root_contradiction_returns_empty_deads():
     (trigger a :source "(1)")
     (query :mode solve :goal (trigger ?x))
     """)
-    verdict, stats = contradictions_solve(kb, max_set_size=1)
+    verdict, stats = _solve(kb, max_set_size=1)
     assert isinstance(verdict, Contradiction)
-    assert verdict.proof.dead_commitments == ()
-    assert verdict.unsat_core == frozenset()
+    # Phase-1 root dead: one record with the empty commitment.
+    assert len(verdict.proof.dead_commitments) == 1
+    assert verdict.proof.dead_commitments[0].commitment == ()
+    # Its core traces back to the (trigger a) source → non-empty union.
+    assert verdict.unsat_core
     assert stats.enterings_total == 0
 
 
-# ── Solvable puzzle — degenerate "no deaths" case ──────────
+# ── Solvable puzzle — proof still attached ─────────────────
 
 
-def test_contradictions_solve_solvable_puzzle_may_have_no_deaths():
-    """``branching/01_saturate_only`` solves at Phase 1 root.
-    Under :func:`contradictions_solve` Phase 1 doesn't
-    short-circuit on root-is_solved — it proceeds to Phase 2.
-    There may or may not be deads; the contract is that
-    verdict is :class:`Contradiction` (degenerate case)."""
+def test_solve_solvable_puzzle_has_proof():
+    """``branching/01_saturate_only`` resolves to a unique model
+    (k=1 → :class:`Solution`); the proof rides along under
+    ``store_lattice=True`` with the (possibly empty) refutation map."""
+    from ein.inference.verdict import Solution
     kb = _kb_from(BRANCHING / "01_saturate_only.ein")
-    verdict, stats = contradictions_solve(kb)
-    assert isinstance(verdict, Contradiction)
-    # Phase 1 short-circuit suppressed for contradictions —
-    # the engine entered Phase 2 (layers_explored may be 0 if
-    # alive was empty post-Phase-1, but the verdict is still
-    # Contradiction by the mode contract).
-    _ = stats  # no specific stat assertion — counter values
-    # depend on Phase 1's forced-positive cascade behaviour
-    # for this specific fixture.
+    verdict, _ = _solve(kb)
+    assert isinstance(verdict, Solution)
+    assert isinstance(verdict.proof, LatticeProof)
 
 
-# ── State-hash dedup MERGE wires under store_lattice=True ──
+# ── State-hash dedup MERGE (contradictions-entry unit path) ──
 
 
-def test_contradictions_solve_state_hash_merge_via_unit_helper():
-    """The contradictions-side state-hash dedup MERGE path is
-    activated by S1.5b.23 lifting the upstream raise; this
-    test exercises the merge path directly through
-    :func:`_record_setnode`. A natural-collision integration
-    fixture lives under S1.5b.28's lattice fixtures
-    (TBD); the unit-level check here confirms the wiring."""
+def test_record_setnode_state_hash_merge_via_unit_helper():
+    """The contradictions-side state-hash dedup MERGE path (still present
+    on :func:`_record_setnode`, used by the lattice-DAG builders) collapses
+    distinct dead commitments saturating to the same kb into one
+    multilabel :class:`SetNode`. ``solve`` itself never builds the DAG, so
+    this exercises the recorder directly."""
     lstate = _LatticeLoopState()
     fake_kb = KnowledgeBase()
     c1 = (("p", ("a",)),)
@@ -200,47 +207,30 @@ def test_contradictions_solve_state_hash_merge_via_unit_helper():
     assert set(sole.labels) == {c1, c2}
 
 
-def test_contradictions_solve_store_lattice_populates_kb_index():
-    """Under ``store_lattice=True``, every visited non-``dead-pre``
-    commitment registers in ``proof.kb_index`` (keyed by state_hash).
-
-    S1.7.24 — branching/04's ``co-located`` is symmetric, so since the
-    kernel stopped canonicalising symmetric pairs both orientations
-    `(c, h)` / `(h, c)` are now explored as distinct commitments that
-    saturate (via the user's `(rule symmetric)`) to the SAME kb-state —
-    so the state_hash dedup MERGES them and ``state_hash_merges`` is
-    positive (it was 0 when canonicalisation kept one orientation)."""
+def test_solve_kb_index_is_always_empty():
+    """``solve`` does NOT build the per-SetNode DAG (intentional — the
+    sound proof data is the solutions + deads; ``render_lattice`` falls
+    back to the solution view when ``kb_index`` is empty). So
+    ``proof.kb_index`` is ``{}`` and ``stats.state_hash_merges`` is 0 even
+    under ``store_lattice=True``; the deads are still recorded."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    verdict, stats = contradictions_solve(
-        kb, max_set_size=3, store_lattice=True,
-    )
-    assert isinstance(verdict, Contradiction)
-    assert len(verdict.proof.kb_index) > 0
-    # Symmetric orientations collapse at the state_hash key → merges.
-    assert stats.state_hash_merges > 0
-
-
-def test_contradictions_solve_store_lattice_off_keeps_kb_index_empty():
-    """``store_lattice=False`` (default) — ``proof.kb_index``
-    stays an empty dict, but ``proof.dead_commitments`` is
-    still populated."""
-    kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    verdict, _ = contradictions_solve(kb, max_set_size=3)
+    verdict, _ = _solve(kb, max_set_size=3)
     assert verdict.proof.kb_index == {}
-    # dead_commitments collection is independent of
-    # store_lattice — it's the contradictions contract.
+    assert verdict.proof.stats.state_hash_merges == 0
+    # dead_commitments collection is independent of the DAG.
     assert len(verdict.proof.dead_commitments) >= 1
 
 
 # ── Learned nogoods snapshot ───────────────────────────────
 
 
-def test_contradictions_solve_learned_nogoods_present():
+def test_solve_learned_nogoods_present():
     """Every dead commitment emits a nogood; ``proof.learned_nogoods``
     mirrors ``root._nogoods`` at termination."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    verdict, stats = contradictions_solve(kb, max_set_size=3)
-    assert stats.nogoods_emitted >= 1
+    verdict, _ = _solve(kb, max_set_size=3)
+    lstats = verdict.proof.stats
+    assert lstats.nogoods_emitted >= 1
     assert len(verdict.proof.learned_nogoods) >= 1
     for clause in verdict.proof.learned_nogoods:
         assert isinstance(clause, frozenset)

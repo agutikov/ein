@@ -171,11 +171,11 @@ def test_sat_never_contradiction_unsat_never_solution():
 
 
 def test_cli_solve_emits_answer_in_words(capsys):
-    """`ein solve --mode=solve zebra2.ein` exits 0 and prints the
-    canonical answer in English (who, projected from the model)."""
+    """`ein solve zebra2.ein` exits 0 and prints the canonical answer in
+    English (who, projected from the model)."""
     from ein.cli import main
 
-    rc = main(["solve", "--mode=solve", str(ZEBRA2)])
+    rc = main(["solve", str(ZEBRA2)])
     assert rc == 0
     out = capsys.readouterr().out.lower()
     # who + what, both questions answered.
@@ -184,11 +184,11 @@ def test_cli_solve_emits_answer_in_words(capsys):
 
 
 def test_cli_solve_contradiction_reports_no_solution(capsys):
-    """`--mode=solve` on the unsat fixture reports no solution + names the
+    """`ein solve` on the unsat fixture reports no solution + names the
     injected fact in the core (exit 0 — the tool classified it correctly)."""
     from ein.cli import main
 
-    rc = main(["solve", "--mode=solve", str(BAD)])
+    rc = main(["solve", str(BAD)])
     assert rc == 0
     out = capsys.readouterr().out.lower()
     assert "no solution" in out and "contradict" in out

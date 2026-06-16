@@ -1,16 +1,13 @@
-"""Acceptance — the sound `solve` mode wired into `ein search`.
+"""Acceptance — `ein solve` on zebra2 (the merged solver command).
 
-`ein search` (the promoted `bench_monotonic` command — P1.11 S1.11.3; run
-via `./ein_pypy.sh search`) drives the sound `solve()` engine
-since `monotonic_solve` was removed (P1.7a). This pins that it solves
-`zebra2` **correctly** — the full, right 25/25 model — rather than the old
-`monotonic_solve` first-goal-match dead-end, which wrongly committed
-`(color-loc Green House-4)` and stopped.
+`ein solve` drives the sound `solve()` engine (the former `ein search`, merged
+into `solve` 2026-06-16). This pins that it solves `zebra2` **correctly** — the
+full, right 25/25 model — rather than the removed first-goal-match dead-end
+that wrongly committed `(color-loc Green House-4)` and stopped.
 
-Invoked as a subprocess, exactly as a user runs it
-(`ein search examples/zebra2.ein --print-final-state`). Slow (~6 s under
-PyPy: solve's `stop_after=1` fast path), hence in the acceptance phase, not
-the unit suite.
+Invoked as a subprocess, exactly as a user runs it. Slow (~6 s under PyPy for
+the `stop_after=1` fast path; ~25 s for `--exhaustive`), hence in the
+acceptance phase, not the unit suite.
 """
 from __future__ import annotations
 
@@ -20,33 +17,30 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-# `ein search` is the promoted bench_monotonic command (P1.11 S1.11.3).
-SEARCH = [sys.executable, "-m", "ein.cli", "search"]
+SOLVE = [sys.executable, "-m", "ein.cli", "solve"]
 ZEBRA2 = REPO / "examples" / "zebra2.ein"
 
 
-def _run_bench(*args: str) -> subprocess.CompletedProcess:
-    # sys.executable is whatever interpreter pytest runs under (PyPy via
-    # run_tests.sh); ein is importable there (installed in the venv).
+def _run(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run(
-        [*SEARCH, str(ZEBRA2), *args],
+        [*SOLVE, str(ZEBRA2), *args],
         capture_output=True, text=True, timeout=180,
     )
 
 
-def test_bench_solve_mode_solves_zebra2_correctly():
-    """Bench run (solve, stop_after=1) → the correct 25/25 model. Exercises
-    both --print-final-state (REASONING residue) and --print-final-hfacts (the
+def test_solve_solves_zebra2_correctly():
+    """`ein solve` (default stop_after=1) → the correct 25/25 model. Exercises
+    --print-final-state (REASONING residue) and --print-final-hfacts (the
     hypothesis commitments, all layers)."""
-    proc = _run_bench("--print-final-state", "--print-final-hfacts")
+    proc = _run("--print-final-state", "--print-final-hfacts", "--stats")
     assert proc.returncode == 0, proc.stderr
     out = proc.stdout
 
-    # Sound verdict + the fast-path solution-node count.
-    assert re.search(r"verdict\s+Solution", out), out[:500]
-    assert "solution_nodes (k) 1" in out
+    # The result-driven answer line + the fast-path solution count.
+    assert re.search(r"norwegian.*water.*japanese.*zebra", out, re.I | re.S), out[:300]
+    assert "solutions (k)    1" in out
 
-    # The CORRECT colour grid — the removed monotonic_solve put Green@House-4
+    # The CORRECT colour grid — the removed first-goal-match put Green@House-4
     # (and Ivory@House-3, Red@House-5); the sound engine gets Green@House-5.
     for cell in (
         "(color-loc Yellow House-1)",
@@ -70,10 +64,10 @@ def test_bench_solve_mode_solves_zebra2_correctly():
     assert re.search(r":hrules \[.*'nation-loc'.*\]", out), out[-800:]
 
 
-def test_bench_solve_mode_exhaustive_certifies_unique():
+def test_solve_exhaustive_certifies_unique():
     """`--exhaustive` exhausts the lattice → k=1, exhausted=true (unique)."""
-    proc = _run_bench("--exhaustive")
+    proc = _run("--exhaustive", "--stats")
     assert proc.returncode == 0, proc.stderr
     out = proc.stdout
-    assert "solution_nodes (k) 1" in out
+    assert "solutions (k)    1" in out
     assert re.search(r"exhausted\s+true", out), out[-500:]

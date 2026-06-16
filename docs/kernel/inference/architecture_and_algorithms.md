@@ -28,6 +28,19 @@ shapes of one question, all read off a single search (P1.7a):
 - **gaps** — which cells are forced vs contingent? (k > 1, the residual)
 - **contradictions** — a minimal unsat core for an over-constrained KB. (k = 0)
 
+These are **three answers to one problem, not three problem statements**: the
+verdict is *read from* the result — the count `k` of distinct
+`state_hash`-deduped solution nodes (`verdict_of`) — never *chosen* up front.
+There is **one** public entry, `solve()`; the stop policy (single /
+`stop_after=N` / exhaustive) only bounds how far the lattice is walked, and the
+optional `store_lattice` proof carries the gaps view (the full solution set)
+and the contradictions view (the refutation map) for whichever answer the
+puzzle yields. (An earlier design exposed sibling `gaps_solve` /
+`contradictions_solve` entries that hard-wired `Ambiguity` / `Contradiction` by
+*which function was called* — and so returned mutually contradictory verdicts
+on the same KB. They were removed 2026-06-16; this is the soundness story
+P1.7a's `verdict_of` always intended.)
+
 The engine is the confluence of **three classical paradigms**, and almost
 every component below is recognisable as a piece of one of them:
 

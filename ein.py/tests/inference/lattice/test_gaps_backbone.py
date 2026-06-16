@@ -1,12 +1,18 @@
-"""gaps_solve backbone tests — S1.5b.21 T1.5b.21.X.
+"""Gaps-view backbone tests — S1.5b.21 (P1.7a refit, 2026-06-16).
 
-Pins :func:`ein.inference.monotonic.gaps_solve` across
-the GAPS-mode contract:
+The former ``gaps_solve`` entry (which ALWAYS returned :class:`Ambiguity`
+regardless of the real model count) was removed. The gaps *view* — the
+full set of distinct models — is now read off the one sound entry
+:func:`solve` run exhaustively (``stop_after=None``) with
+``store_lattice=True``: the verdict TYPE is read from ``k`` (the number of
+distinct, state_hash-deduped solution nodes) and the model set rides along
+in ``verdict.proof.solutions``.
 
-- Verdict is always :class:`Ambiguity` (mode contract).
-- ``len(branches)`` interpretation: 0 = no solution within
-  cap; 1 = uniquely solvable; >1 = genuine multi-solution.
-- Each branch carries the kb that satisfied the goal.
+These tests pin, per fixture, the SOUND verdict (Solution / Ambiguity /
+Contradiction read from ``k``) and the gaps-view content
+(``proof.solutions``). The lattice counters live on
+``verdict.proof.stats`` (a :class:`LatticeStats`); ``solve``'s own second
+return value is a :class:`MonotonicStats`.
 
 Cross-references:
 
@@ -16,13 +22,6 @@ Cross-references:
   ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md``
 - Sibling monotonic tests:
   ``ein.py/tests/inference/monotonic/test_monotonic_skeleton.py``
-
-Zebra2 is not exercised here — gaps_solve on zebra2 with
-``max_set_size=1`` already runs ~90s (89 layer-1 candidates
-times ~1s saturation each) because gaps must exhaust where
-monotonic early-terminates on first fork-side ``is_solved``.
-The perf round (S1.5b.30) addresses this; for now the
-backbone tests stay on smaller branching fixtures.
 """
 from __future__ import annotations
 
@@ -30,9 +29,10 @@ from pathlib import Path
 
 from ein.inference.monotonic import (
     LatticeStats,
-    gaps_solve,
+    MonotonicStats,
+    solve,
 )
-from ein.inference.verdict import Ambiguity, Solution
+from ein.inference.verdict import Ambiguity, Contradiction, Solution
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
 
@@ -48,79 +48,66 @@ def _kb_inline(text: str) -> KnowledgeBase:
     return KnowledgeBase.from_ir(parse(text))
 
 
+def _gaps(kb: KnowledgeBase, **kw):
+    """Exhaustive solve with the lattice proof attached — the gaps view."""
+    return solve(kb, stop_after=None, store_lattice=True, **kw)
+
+
 # ── Verdict shape ──────────────────────────────────────────
 
 
-def test_gaps_solve_always_returns_ambiguity_tuple():
-    """``(verdict, stats)`` shape; verdict is :class:`Ambiguity`,
-    stats is :class:`LatticeStats` (per S1.5b.22 the public
-    ``gaps_solve`` returns the lattice-counter view)."""
+def test_solve_returns_verdict_stats_tuple():
+    """``(verdict, stats)`` shape; ``stats`` is a :class:`MonotonicStats`,
+    and the lattice counters live on ``verdict.proof.stats``
+    (:class:`LatticeStats`)."""
     kb = _kb_from(BRANCHING / "01_saturate_only.ein")
-    result = gaps_solve(kb)
+    result = _gaps(kb)
     assert isinstance(result, tuple)
     assert len(result) == 2
     verdict, stats = result
-    assert isinstance(verdict, Ambiguity)
-    assert isinstance(stats, LatticeStats)
+    assert isinstance(stats, MonotonicStats)
+    assert isinstance(verdict.proof.stats, LatticeStats)
 
 
-# ── Single-branch outcomes ─────────────────────────────────
+# ── Single-model outcomes ──────────────────────────────────
 
 
-def test_gaps_solve_root_satisfies_in_phase_1():
-    """``branching/01_saturate_only`` — root satisfies the goal
-    after the initial saturation; Phase 1 short-circuits to
-    Ambiguity with 1 branch (the empty-commitment carrier).
+def test_solve_branching_01_is_unique_solution():
+    """``branching/01_saturate_only`` — the goal is matched at root, but
+    the is-a-alternate hypotheses remain open until ``functional`` kills
+    each; once they all die the root is the unique complete∧consistent
+    model. ``solve`` (which records on consistent∧complete, NOT goal-match)
+    therefore returns :class:`Solution` (k=1) with one
+    ``proof.solutions`` record.
     """
     kb = _kb_from(BRANCHING / "01_saturate_only.ein")
-    verdict, stats = gaps_solve(kb)
-    assert len(verdict.branches) == 1
-    assert isinstance(verdict.branches[0], Solution)
-    # Phase 1 short-circuit — no candidates entered.
-    assert stats.enterings_total == 0
-    assert stats.layers_explored == 0
+    verdict, _ = _gaps(kb)
+    assert isinstance(verdict, Solution)
+    assert len(verdict.proof.solutions) == 1
 
 
-def test_gaps_solve_branching_03_returns_one_model():
-    """``branching/03_five_hyps_one_alive`` resolves to the single
-    model ``(co-located White H5)`` — gaps_solve reports 1 branch.
-
-    S1.7.24 — pre-removal this fired the forced-positive CASCADE at the
-    end of Phase 1: the symmetric open-set canonicalisation shrank
-    ``alive`` to the singleton ``{(co-located White H5)}``, so
-    ``_promote_forced_positives`` resolved it with zero Phase-2
-    enterings. With the canonicalisation gone, the sole viable
-    symmetric pair registers as TWO open entries, so the cascade
-    (which keys on a singleton ``alive``) no longer fires — the model
-    is instead found by a Phase-2 commitment. The VERDICT (1 distinct
-    model) is unchanged; only the mechanism is. This documents that
-    the cascade is a symmetric-canonicalisation-dependent optimisation,
-    not a correctness requirement.
-    """
+def test_solve_branching_03_returns_one_model():
+    """``branching/03_five_hyps_one_alive`` resolves to the single model
+    ``(co-located White H5)`` — :class:`Solution` (k=1), one
+    ``proof.solutions`` record."""
     kb = _kb_from(BRANCHING / "03_five_hyps_one_alive.ein")
-    verdict, stats = gaps_solve(kb, max_set_size=3)
-    assert len(verdict.branches) == 1
-    # The cascade no longer fires for symmetric pairs; the model is
-    # found via a Phase-2 commitment instead.
-    assert stats.forced_positives == 0
-    assert stats.enterings_total >= 1
+    verdict, _ = _gaps(kb, max_set_size=3)
+    assert isinstance(verdict, Solution)
+    assert len(verdict.proof.solutions) == 1
 
 
-# ── Multi-branch outcomes (the headline feature) ──────────
+# ── Multi-model outcomes (the headline feature) ───────────
 
 
-def test_gaps_solve_branching_04_returns_two_branches():
-    """``branching/04_two_levels`` has TWO valid commitments
-    (Blue↔H3 and Green↔H3). Monotonic SOLVE-mode terminates
-    on the first satisfying fork (lex order picks Blue);
-    gaps_solve continues past it and records the second.
-    Verdict: Ambiguity with 2 distinct Solution branches.
-
-    Each branch's kb satisfies the goal — verifiable via
-    re-checking is_solved.
+def test_solve_branching_04_returns_two_models():
+    """``branching/04_two_levels`` has TWO valid commitments (Blue↔H3 and
+    Green↔H3) → ``k == 2`` → :class:`Ambiguity` with 2 distinct Solution
+    branches. Each branch's kb satisfies the goal — verifiable by
+    re-running the goal pattern against each branch's kb.
     """
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    verdict, stats = gaps_solve(kb, max_set_size=3)
+    verdict, _ = _gaps(kb, max_set_size=3)
+    assert isinstance(verdict, Ambiguity)
     assert len(verdict.branches) == 2
     # Each branch's kb satisfies the goal; verify by re-running
     # the goal pattern against each branch's kb.
@@ -146,35 +133,32 @@ def test_gaps_solve_branching_04_returns_two_branches():
     assert colours == {"Blue", "Green"}, (
         f"expected branches binding ?c ∈ {{Blue, Green}}, got {colours}"
     )
-    # Stats: at least the 2 layer-1 candidates that satisfied
-    # were entered.
-    assert stats.enterings_total >= 2
-    assert stats.layers_explored >= 1
+    # The proof's solution set matches the branch set.
+    assert len(verdict.proof.solutions) == 2
 
 
-def test_gaps_solve_branching_05_returns_one_distinct_model():
-    """``branching/05_mini_zebra`` has a UNIQUE model (solve k=1: Bob
-    drinks Coffee, owns Dog) — gaps_solve reports ONE distinct model.
+def test_solve_branching_05_returns_one_distinct_model():
+    """``branching/05_mini_zebra`` has a UNIQUE model (k=1: Bob drinks
+    Coffee, owns Dog) — :class:`Solution`, one ``proof.solutions`` record.
 
-    S1.7.24 — pre-dedup this returned 3 *branches that all shared one
-    state_hash* (the same model recorded via three commitment paths — a
-    latent gaps over-count the symmetric retirement exposed). gaps now
-    dedups solution records by post-saturation state_hash (the generic
-    signal SOLVE already used), so the branch count reflects distinct
-    MODELS, not commitment paths.
+    The model is reached via two orientations of the symmetric
+    ``co-located`` commitment, but they saturate to the same KB and
+    collapse at the ``state_hash`` solution-node dedup → one model.
     """
     kb = _kb_from(BRANCHING / "05_mini_zebra.ein")
-    verdict, _stats = gaps_solve(kb, max_set_size=3)
-    assert len(verdict.branches) == 1
+    verdict, _ = _gaps(kb, max_set_size=3)
+    assert isinstance(verdict, Solution)
+    assert len(verdict.proof.solutions) == 1
 
 
-# ── Zero-branch outcomes (Contradiction degenerate) ───────
+# ── Unsat outcomes (k == 0 → Contradiction) ───────────────
 
 
-def test_gaps_solve_root_contradiction_returns_empty_branches():
-    """Root saturates to ``(false)`` directly → Phase 1
-    detects, gaps_solve returns Ambiguity with empty branches
-    (no satisfying commitment exists).
+def test_solve_root_contradiction_returns_contradiction():
+    """Root saturates to ``(false)`` directly → Phase 1 detects it → no
+    solution node is ever recorded → ``k == 0`` → :class:`Contradiction`
+    with empty ``proof.solutions``. Phase 1 detected the contradiction;
+    no candidates ran (``enterings_total == 0``).
     """
     kb = _kb_inline("""
     (rule always-false ()
@@ -187,35 +171,23 @@ def test_gaps_solve_root_contradiction_returns_empty_branches():
     (trigger a :source "(1)")
     (query :mode solve :goal (trigger ?x))
     """)
-    verdict, stats = gaps_solve(kb, max_set_size=1)
-    assert isinstance(verdict, Ambiguity)
-    assert verdict.branches == ()
+    verdict, stats = _gaps(kb, max_set_size=1)
+    assert isinstance(verdict, Contradiction)
+    assert verdict.proof.solutions == ()
     # Phase 1 detected the contradiction; no candidates ran.
     assert stats.enterings_total == 0
 
 
-# ── Stats correctness ─────────────────────────────────────
+# ── Stats coherence ───────────────────────────────────────
 
 
-def test_gaps_solve_stats_layers_explored_advances():
-    """``branching/04_two_levels`` requires depth 2 to find
-    both solutions. Verify ``layers_explored`` advances past
-    1 (the layer-1 candidates would alone capture each
-    singleton solution via fork-side is_solved, but layer 2
-    is needed for the non-trivial-commitment-pair check).
-    """
+def test_solve_stats_solutions_found_matches_proof():
+    """``branching/04_two_levels`` — ``verdict.proof.stats.solutions_found``
+    equals ``len(proof.solutions)`` (== 2 for this fixture)."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
-    _verdict, stats = gaps_solve(kb, max_set_size=3)
-    assert stats.layers_explored >= 1
-    assert stats.enterings_total >= 1
-
-
-def test_gaps_solve_max_set_size_zero_returns_phase_1_only():
-    """``max_set_size=0`` exits before Phase 2 starts.
-    For a Phase-1-solving puzzle, still returns Ambiguity
-    with 1 branch.
-    """
-    kb = _kb_from(BRANCHING / "01_saturate_only.ein")
-    verdict, stats = gaps_solve(kb, max_set_size=0)
-    assert len(verdict.branches) == 1
-    assert stats.layers_explored == 0
+    verdict, _ = _gaps(kb, max_set_size=3)
+    lstats = verdict.proof.stats
+    assert lstats.solutions_found == len(verdict.proof.solutions) == 2
+    # Layer-by-layer exploration happened (the two models are at depth ≥ 1).
+    assert lstats.layers_explored >= 1
+    assert lstats.enterings_total >= 1

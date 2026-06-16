@@ -10,8 +10,8 @@ Two levels:
 - **always** — every rule the walkthrough names is *defined* in the
   zebra2 library (a fast, static regression on the rule library);
 - **EIN_RUN_SLOW=1** (PyPy-friendly) — those rules actually *fire* on a
-  zebra2 solve. zebra2 gaps_solve is ~35s on CPython, so it is gated,
-  matching the existing slow-test convention.
+  zebra2 solve. The exhaustive zebra2 ``solve`` is ~35s on CPython, so it
+  is gated, matching the existing slow-test convention.
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-from ein.inference.monotonic import gaps_solve
+from ein.inference.monotonic import solve
 from ein.ir import Atom, SForm, parse
 from ein.kb import KnowledgeBase
 from ein.kb.imports import resolve_imports
@@ -73,11 +73,12 @@ def test_zebra2_library_defines_walkthrough_rules():
 
 @pytest.mark.skipif(
     not os.environ.get("EIN_RUN_SLOW"),
-    reason="zebra2 gaps_solve is ~35s on CPython; set EIN_RUN_SLOW=1 or run via PyPy",
+    reason="the exhaustive zebra2 solve is ~35s on CPython; "
+           "set EIN_RUN_SLOW=1 or run via PyPy",
 )
 def test_zebra2_fires_walkthrough_rules():
     kb = KnowledgeBase.from_ir(parse(ZEBRA2.read_text()))
-    verdict, _ = gaps_solve(kb, max_set_size=3, store_lattice=True)
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     fired = {f.rule for rec in verdict.proof.solutions for f in rec.firings}
     missing = FIRING_TARGET - fired
     assert not missing, (

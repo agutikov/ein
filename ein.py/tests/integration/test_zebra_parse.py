@@ -201,8 +201,8 @@ def test_bad_is_unsat_at_root_saturation():
     derives ``(not (color-loc Green House-1))``, and the co-located
     bridge for condition (4) (Coffee ↔ Green) carries both the positive
     and the negative onto ``drink-loc Coffee House-1`` — a same-layer
-    pair the detector flags at d=0. This is what lets
-    ``contradictions_solve`` return a tight 2-3 edge core fast."""
+    pair the detector flags at d=0. This is what lets ``solve`` return a
+    :class:`Contradiction` with a tight 2-3 edge unsat core fast."""
     assert _has_contradiction_during_saturation(_load(BAD))
 
 

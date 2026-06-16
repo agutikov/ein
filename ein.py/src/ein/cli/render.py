@@ -53,25 +53,26 @@ def _cmd_render_constraints(args: argparse.Namespace) -> int:
 
 
 def _cmd_render_lattice(args: argparse.Namespace) -> int:
-    """Run a proof-producing solve and render its commitment lattice.
+    """Run a solve and render its commitment lattice.
 
-    Unlike the static `render` views, this *runs the engine* — the
-    lattice DAG comes from a `LatticeProof`. ``gaps_solve`` /
-    ``contradictions_solve`` populate the proof; the full view needs
-    ``store_lattice`` (on by default).
+    Unlike the static `render` views, this *runs the engine* — the lattice
+    DAG comes from :func:`solve`'s :class:`LatticeProof` (``store_lattice``).
+    There is one lattice per solve; its nodes are coloured by outcome
+    (alive / dead / solution), so the solution-set and refutation views the
+    old ``--mode gaps`` / ``--mode contradictions`` split produced are just
+    two readings of the same DAG.
     """
     kb = _load_kb_or_exit(Path(args.file))
     if kb is None:
         return 1
-    from ..inference.monotonic import contradictions_solve, gaps_solve
-    solve = contradictions_solve if args.mode == "contradictions" else gaps_solve
+    from ..inference.monotonic import solve
     verdict, _ = solve(
-        kb, max_set_size=args.max_set_size,
-        store_lattice=not args.no_store_lattice,
+        kb, stop_after=None, max_set_size=args.max_set_size,
+        store_lattice=True,
     )
     proof = getattr(verdict, "proof", None)
     if proof is None:
-        print(f"{args.mode} produced no LatticeProof for {args.file}",
+        print(f"solve produced no LatticeProof for {args.file}",
               file=sys.stderr)
         return 1
     sys.stdout.write(render_lattice(proof, view=args.view))
@@ -114,13 +115,10 @@ def add_parser(sub) -> None:
         help="commitment-lattice / proof-DAG DOT (runs a solve, S1.6.3)",
     )
     r_lat.add_argument("file")
-    r_lat.add_argument("--mode", choices=["gaps", "contradictions"], default="gaps",
-                       help="proof-producing solve to run (default: gaps)")
-    r_lat.add_argument("--view", choices=["full", "solution"], default="full",
-                       help="'full' every commitment (default) or 'solution' frontier")
+    r_lat.add_argument("--view", choices=["full", "solution"], default="solution",
+                       help="'solution' survivors + pruned siblings (default) or "
+                            "'full' every commitment (falls back to 'solution' — "
+                            "solve doesn't store the per-commitment SetNode DAG)")
     r_lat.add_argument("--max-set-size", type=int, default=3,
                        help="commitment-set depth cap (default 3)")
-    r_lat.add_argument("--no-store-lattice", action="store_true",
-                       help="don't store the per-commitment lattice (full view "
-                            "then falls back to the solution frontier)")
     r_lat.set_defaults(func=_cmd_render_lattice)
