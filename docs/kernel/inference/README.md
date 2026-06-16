@@ -443,7 +443,7 @@ fork.
 
 S1.5a.19 fixes this with two cheap pre-fork checks plus a
 mid-sweep saturator pass
-([`solver.py:1075-1122`](../../../ein.py/src/ein/inference/solver.py)):
+(`solver.py:1075-1122`, the removed file):
 
 ```python
 for h in to_check:

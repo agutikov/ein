@@ -233,7 +233,7 @@ This is the 2021 prototype's *linked.svg* aesthetic — all the entity
 types on one canvas, related by labelled arrows, coloured by relation. See
 [S1.2.4](../../../../plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.4_graph_representation.md)
 for the design plan; the implementation is
-[`src/ein/kb/render.py`](../../../../src/ein/kb/render.py).
+[`src/ein/kb/render.py`](../../../../ein.py/src/ein/kb/render.py).
 
 ### Schema
 
@@ -396,4 +396,4 @@ the API will reject non-conforming inputs rather than guess.
   concrete DOT encoding.
 - [`../02-data-model/02_store.md`](../02-data-model/02_store.md) —
   `DerivationDAG.to_dot()` and (S1.2.4) `KnowledgeBase.to_dot()`.
-- Grammar: [`src/ein/ir/grammar.lark`](../../../../src/ein/ir/grammar.lark).
+- Grammar: [`src/ein/ir/grammar.lark`](../../../../ein.py/src/ein/ir/grammar.lark).

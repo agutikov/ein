@@ -6,10 +6,10 @@ and the derived-view machinery (layer views, hypothesis forks,
 derivation DAGs).
 
 **Sources of truth:**
-[`src/ein/kb/store.py`](../../../../src/ein/kb/store.py),
-[`src/ein/kb/views.py`](../../../../src/ein/kb/views.py),
-[`src/ein/kb/provenance.py`](../../../../src/ein/kb/provenance.py),
-[`src/ein/kb/from_ir.py`](../../../../src/ein/kb/from_ir.py).
+[`src/ein/kb/store.py`](../../../../ein.py/src/ein/kb/store.py),
+[`src/ein/kb/views.py`](../../../../ein.py/src/ein/kb/views.py),
+[`src/ein/kb/provenance.py`](../../../../ein.py/src/ein/kb/provenance.py),
+[`src/ein/kb/from_ir.py`](../../../../ein.py/src/ein/kb/from_ir.py).
 
 ---
 
