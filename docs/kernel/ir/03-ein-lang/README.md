@@ -7,7 +7,7 @@ S-expression dialect — a flat sequence of forms classified by head
 model in [`../02-data-model/`](../02-data-model/).
 
 > **Source of truth for what parses**:
-> [`src/ein/ir/grammar.lark`](../../../../src/ein/ir/grammar.lark).
+> [`ein.py/src/ein/ir/grammar.lark`](../../../../ein.py/src/ein/ir/grammar.lark).
 > This tree explains intent, examples, and rendering — the grammar
 > file is canonical.
 
@@ -31,8 +31,13 @@ model in [`../02-data-model/`](../02-data-model/).
 - [`06_reserved_names.md`](06_reserved_names.md) — the authoritative
   reserved surface-words reference: declarators, rule-body / ⊥
   primitives, predicates, `open`/`forall` sugar, `closed`,
-  `hypothesis-relations`. (Engine-internal strings:
+  `hypothesis-relations` — plus the author **intent → atom**
+  quick-reference card. (Engine-internal strings:
   [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md).)
+- [`07_stdlib_api.md`](07_stdlib_api.md) — the per-symbol `std.*`
+  reference (macro / algebra / bijection / elim / typing / closure),
+  companion to the module-level
+  [`stdlib/README.md`](../../../../ein.py/src/ein/stdlib/README.md).
 
 ## Reading order
 
