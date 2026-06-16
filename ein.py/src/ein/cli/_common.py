@@ -1,9 +1,9 @@
 """Shared helpers for the CLI subcommand modules.
 
-Parse / KB-load sentinels and small utilities reused across
-``ir`` / ``kb`` / ``render`` / ``solve``. Split out of the former
-monolithic ``cli.py`` in P1.11 (S1.11.4) so each subcommand module
-imports from one place rather than from a sibling command.
+Parse / KB-load sentinels reused by the ``render`` subcommand (and split out
+of the former monolithic ``cli.py`` in P1.11 S1.11.4). The ``ir`` / ``kb``
+inspection subcommands that also used these were removed; ``solve`` carries
+its own phase-split loader (``_timed_load``).
 """
 from __future__ import annotations
 
@@ -11,19 +11,7 @@ import sys
 from pathlib import Path
 
 from ..ir import IRParseError, parse
-from ..kb import KBLoadError, KnowledgeBase, Layer
-
-_LAYER_BY_NAME = {
-    "ontology": Layer.ONTOLOGY,
-    "fact": Layer.FACT,
-    "facts": Layer.FACT,   # alias — the IR top-level block is `(facts …)`.
-    "reasoning": Layer.REASONING,
-}
-
-
-def _env_truthy(value: str | None) -> bool:
-    """True for the usual affirmative env-var spellings."""
-    return (value or "").strip().lower() in ("1", "true", "yes", "on")
+from ..kb import KBLoadError, KnowledgeBase
 
 
 def _parse_or_exit(path: Path):
@@ -42,8 +30,7 @@ def _load_kb_or_exit(path: Path):
     Mirrors :func:`_parse_or_exit`'s sentinel convention — return None on
     error and let the caller ``return 1``; it does *not* call ``sys.exit``.
     Collapses the parse (IRParseError) + KB-build (KBLoadError) bail-out
-    the ``kb dot`` / ``render lattice`` / ``solve`` handlers each carried
-    verbatim.
+    the ``render lattice`` handler carries.
     """
     nodes = _parse_or_exit(path)
     if nodes is None:

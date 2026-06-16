@@ -17,7 +17,7 @@
 # After install:
 #   source .venv/bin/activate         # CPython
 #   source .venv-pypy/bin/activate    # PyPy
-#   ein ir parse examples/zebra.ein | head
+#   ein solve examples/zebra2.ein
 #   pytest
 
 set -euo pipefail
@@ -69,6 +69,6 @@ venv_rel="$(realpath --relative-to="${SCRIPT_DIR}" "${VENV_DIR}" 2>/dev/null || 
 echo
 echo "done."
 echo "  activate:   source ${venv_rel}/bin/activate"
-echo "  cli:        ein ir parse examples/zebra.ein | head"
+echo "  cli:        ein solve examples/zebra2.ein"
 echo "  tests:      pytest"
 echo "  lint:       ruff check ."

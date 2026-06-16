@@ -4,7 +4,8 @@
 # Includes nested demo files (examples/zebra/demos/<rule>/<name>.ein);
 # skips examples/broken/.
 #
-# One variant per file (S1.6.0): `ein ir dot` under the project
+# One variant per file (S1.6.0): the IR-graph DOT (`ein_ir_dot`, calling
+# `ein.ir.to_dot` — the `ein ir dot` subcommand was removed) under the project
 # defaults — compact entity-style facts/ontology/reasoning, rules as
 # side-by-side LHS|RHS clusters (rankdir=LR), per-step trace. The other
 # views are reachable per-file via flags/env for the rare cases that
@@ -21,12 +22,12 @@
 # Writes both `.dot` and rendered SVG by default; pass `--no-svg`
 # (alias `--dot-only`) to skip rasterising.
 #
-# The multi-digraph `ir dot` stream is split into one `NN_<name>.dot`
+# The multi-digraph IR-graph DOT stream is split into one `NN_<name>.dot`
 # file per top-level form / rule. **Rule diagrams land in a `rules/`
 # subfolder** (numbered on their own); every other form stays flat in
 # the example dir. Two whole-example views are added per example:
 #   * `_unified.dot` — the unified "everything-on-one-page"
-#     view (`ein kb dot`, S1.2.4), rendered through `fdp`.
+#     view (`ein_kb_dot` → `KnowledgeBase.to_dot`, S1.2.4), via `fdp`.
 #   * `_lattice.dot` — the commitment-lattice / proof-DAG
 #     (`ein render lattice`, S1.6.3), rendered through `dot`. This
 #     one RUNS the solver, so it uses the project's **PyPy venv**
@@ -147,6 +148,40 @@ else
     EIN_CMD=( python3 -m ein.cli )
 fi
 
+# The IR-graph / KB-graph DOT renders call the package API directly (the
+# `ir dot` / `kb dot` subcommands were removed; the `ein` CLI now carries only
+# `render` / `saturate` / `solve`). Pick a python interpreter: EIN_CMD's when it
+# is a `python -m ein.cli` form, else python3 (ein installed, or PYTHONPATH set).
+if [[ "${EIN_CMD[0]}" == *python* ]]; then EIN_PY="${EIN_CMD[0]}"; else EIN_PY="python3"; fi
+
+# `ir dot` replacement: parse → IR DOT. Honors the same env knobs the old
+# subcommand read (EIN_RENDER_LEVI / EINBOT_RULE_MODE / EINBOT_TRACE_VIEW).
+ein_ir_dot() {
+    "${EIN_PY}" -c '
+import os, sys
+from pathlib import Path
+from ein.ir import parse, to_dot
+kw = {"levi": (os.environ.get("EIN_RENDER_LEVI") or "").strip().lower()
+              in ("1", "true", "yes", "on")}
+if os.environ.get("EINBOT_RULE_MODE"):  kw["rule_mode"]  = os.environ["EINBOT_RULE_MODE"]
+if os.environ.get("EINBOT_TRACE_VIEW"): kw["trace_view"] = os.environ["EINBOT_TRACE_VIEW"]
+sys.stdout.write(to_dot(parse(Path(sys.argv[1]).read_text(encoding="utf-8")), **kw) + "\n")
+' "$1"
+}
+
+# `kb dot` replacement: load KB → one unified DOT (all layers, defaults).
+ein_kb_dot() {
+    "${EIN_PY}" -c '
+import sys
+from pathlib import Path
+from ein.ir import parse
+from ein.kb import KnowledgeBase
+p = Path(sys.argv[1])
+kb = KnowledgeBase.from_ir(parse(p.read_text(encoding="utf-8")), base_dir=p.parent)
+sys.stdout.write(kb.to_dot() + "\n")
+' "$1"
+}
+
 # `render lattice` RUNS the solver — use the project's PyPy venv when
 # present (CPython is too slow for the big puzzles; see the
 # feedback-use-pypy-bench convention). Falls back to EIN_CMD. Override
@@ -171,18 +206,13 @@ if [[ -n "${RASTER_FORMATS}" ]]; then
     done
 fi
 
-# Per-run view overrides (rare cases). EIN_RENDER_LEVI is read by the
-# CLI directly from the inherited environment; rule-mode / trace-view
-# are CLI flags, forwarded here from env for convenience.
-IR_DOT_ARGS=()
-[[ -n "${EINBOT_RULE_MODE:-}"  ]] && IR_DOT_ARGS+=( --rule-mode  "${EINBOT_RULE_MODE}" )
-[[ -n "${EINBOT_TRACE_VIEW:-}" ]] && IR_DOT_ARGS+=( --trace-view "${EINBOT_TRACE_VIEW}" )
-
+# Per-run IR-graph view overrides (rare cases) are read straight from the
+# environment by `ein_ir_dot` above: EIN_RENDER_LEVI / EINBOT_RULE_MODE /
+# EINBOT_TRACE_VIEW.
 echo "Ein:   ${EIN_CMD[*]}"
 echo "examples:  ${EXAMPLES_DIR}"
 echo "output:    ${OUT_DIR}"
 echo "raster:    ${RASTER_FORMATS:-<none — .dot only>}"
-echo "ir-dot:    ${IR_DOT_ARGS[*]:-<defaults: compact, rule=sidebyside, trace=a>}"
 if (( WANT_LATTICE )); then
     echo "lattice:   ${LATTICE_CMD[*]} (timeout ${LATTICE_TIMEOUT}s)"
 else
@@ -297,7 +327,7 @@ for ein in "${ein_files[@]}"; do
            -o -name '*.png' -o -name '*.gv' \) -delete
     rm -rf "${out}/rules"
 
-    "${EIN_CMD[@]}" ir dot "${ein}" "${IR_DOT_ARGS[@]+"${IR_DOT_ARGS[@]}"}" \
+    ein_ir_dot "${ein}" \
         | split_dot_stream "${out}"
     render_each "${out}"
     render_each "${out}/rules"
@@ -319,7 +349,7 @@ for ein in "${ein_files[@]}"; do
     # ── Unified KB view (S1.2.4) — one DOT per example, all layers,
     #    rendered with `fdp` for the spread-out aesthetic. ──
     unified_dot="${out}/_unified.dot"
-    if "${EIN_CMD[@]}" kb dot "${ein}" > "${unified_dot}" 2>/dev/null; then
+    if ein_kb_dot "${ein}" > "${unified_dot}" 2>/dev/null; then
         total_unified_dot=$((total_unified_dot + 1))
         for fmt in ${RASTER_FORMATS}; do
             unified_out="${out}/_unified.${fmt}"

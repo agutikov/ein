@@ -71,7 +71,7 @@ there is no built-in relation→verb vocabulary.
 | `ein.py/src/ein/inference/`   | the engine — saturator, matcher/join-compiler, commitment-lattice search, no-goods, contradiction detector, verdict |
 | `ein.py/src/ein/render/`, `trace/` | Graphviz DOT renderers + the markdown derivation-trace builder                   |
 | `ein.py/src/ein/stdlib/`      | ein-lang standard library — relation-algebra rules (`closure`, `bijection`, `elim`, `algebra`, `typing`, `macro`) |
-| `ein.py/src/ein/cli/`         | console script `ein` — `ir` \| `kb` \| `render` \| `solve` (the one solver command), plus the engine runners `saturate` \| `profile` \| `symmetric` |
+| `ein.py/src/ein/cli/`         | console script `ein` — `render` \| `saturate` \| `solve` (the operational commands; `ir`/`kb` removed, `profile`/`symmetric` → `utils/` scripts) |
 | `ein.py/tests/`               | pytest suite (~1,300 tests)                                                           |
 | `ein.py/pyproject.toml`       | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff`     |
 | `examples/zebra.ein`, `zebra2.ein` | the Zebra puzzle as ein-lang; `zebra2.ein` (unified-`is-a` / `*-loc`) is the active acceptance target |
@@ -121,22 +121,25 @@ model facts, or the unsat-core facts), and the trace shapers `--relevant`
 (goal-relevant slice) / `--reorder` (cluster by target entity) /
 `--no-diagrams` — which apply to the `--trace` file.
 
-### Inspect the IR / KB
+### Render (DOT) + inspect from Python
 
 ```sh
-ein ir parse <file>     # parse → canonical re-dump (round-trippable; --resolve splices imports)
-ein ir lint  <file>     # parse-only check; non-zero exit + file:line:col on error
-ein ir dot   <file>     # the parsed IR as Graphviz DOT (one digraph per top-level form)
-ein kb dot   <file>     # the loaded KB as one unified DOT graph (--layers, --colour-by)
 ein render rules|rule|constraints|lattice <file>   # DOT views of rules / the search lattice
 ```
 
-All `dot` / `render` commands emit Graphviz to stdout; rasterising to SVG is
-a shell concern (see [`utils/render_examples.sh`](utils/render_examples.sh)).
+`render` emits Graphviz to stdout; rasterising to SVG is a shell concern (see
+[`utils/render_examples.sh`](utils/render_examples.sh)). The IR / KB themselves
+are inspected from Python — the `ir parse|lint|dot` and `kb dot` subcommands
+were removed, but their renderers stay at `ein.ir.to_dot` /
+`KnowledgeBase.to_dot`:
 
 ```sh
-# render the Zebra KB as an SVG
-ein kb dot examples/zebra2.ein | dot -Tsvg -o /tmp/zebra.svg
+# render the Zebra KB as an SVG (the package renderer; was `ein kb dot`)
+python -c 'import sys; from pathlib import Path
+from ein.ir import parse; from ein.kb import KnowledgeBase
+p = Path("examples/zebra2.ein")
+sys.stdout.write(KnowledgeBase.from_ir(parse(p.read_text()), base_dir=p.parent).to_dot())' \
+  | dot -Tsvg -o /tmp/zebra.svg
 
 # from Python — the typed AST
 python -c '

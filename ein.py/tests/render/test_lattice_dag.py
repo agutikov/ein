@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import shutil
 import subprocess
-import tempfile
 from dataclasses import replace
 from pathlib import Path
 
@@ -224,14 +223,3 @@ def test_cli_render_lattice_shows_nogood(capsys: pytest.CaptureFixture[str]):
     rc = main(["render", "lattice", str(LATTICE / "01_subset_pruned.ein")])
     assert rc == 0
     assert "no-good" in capsys.readouterr().out
-
-
-def test_cli_trace_view_dag(capsys: pytest.CaptureFixture[str]):
-    with tempfile.NamedTemporaryFile("w", suffix=".ein", delete=False) as fh:
-        fh.write(_TRACE)
-        path = fh.name
-    rc = main(["ir", "dot", path, "--trace-view", "dag"])
-    assert rc == 0
-    out = capsys.readouterr().out
-    assert "digraph trace" in out
-    assert "exclusivity" in out

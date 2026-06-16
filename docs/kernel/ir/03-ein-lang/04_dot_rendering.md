@@ -52,13 +52,13 @@ also permitted; see
 
 **Default = compact (S1.6.0).** Faithful as it is, the
 list-node-per-relation Levi view is unreadable as a default. So
-`ein.ir.to_dot` (and `ein ir dot`) renders **compact** by
+`ein.ir.to_dot` renders **compact** by
 default: a binary fact `(rel a b)` collapses to one labelled,
 relation-coloured arrow `a → b [label="rel"]` (the colour is the
 shared per-relation palette — see §Unified KB view). n-ary facts stay
 Levi-bipartite (no native hyperedge to collapse). The canonical
 Levi-bipartite view of *every* relation is opt-in via
-`to_dot(…, levi=True)` / `ein ir dot --levi` / `EIN_RENDER_LEVI=1`.
+`to_dot(…, levi=True)` / `EIN_RENDER_LEVI=1`.
 
 ## Ontology — UML-ish
 
@@ -80,7 +80,7 @@ digraph ontology {
 cross-product (rule-mode × trace-view) collapsed to one diagram per
 rule: the side-by-side LHS|RHS view, the most readable for rule
 libraries. The overlay variant (c) is opt-in via
-`render_rule(…, mode="overlay")` / `ein ir dot --rule-mode=overlay`
+`render_rule(…, mode="overlay")`
 (the legacy single-letter names `"a"` / `"c"` are still accepted).
 **(b)** is opt-in.
 
@@ -320,13 +320,22 @@ digraph reasoning_edge_example {
 }
 ```
 
-### CLI
+### From Python
 
-```sh
-ein kb dot examples/zebra.ein                              # all layers
-ein kb dot examples/zebra.ein --layers=ontology,fact       # no reasoning
-ein kb dot examples/zebra.ein --colour-by=layer            # 3 layer colours
-ein kb dot examples/zebra.ein --no-instances                # types-only
+The `kb dot` CLI subcommand was removed; render the unified KB graph via
+`KnowledgeBase.to_dot` (the same renderer), which takes `layers=`,
+`colour_by=`, `include_instances=`, … as keyword arguments:
+
+```python
+from pathlib import Path
+from ein.ir import parse
+from ein.kb import KnowledgeBase, Layer
+p = Path("examples/zebra2.ein")
+kb = KnowledgeBase.from_ir(parse(p.read_text()), base_dir=p.parent)
+print(kb.to_dot())                                   # all layers
+print(kb.to_dot(layers=(Layer.ONTOLOGY, Layer.FACT)))  # no reasoning
+print(kb.to_dot(colour_by="layer"))                  # 3 layer colours
+print(kb.to_dot(include_instances=False))            # types-only
 ```
 
 `utils/render_examples.sh` produces `_unified.dot` + `_unified.svg`
