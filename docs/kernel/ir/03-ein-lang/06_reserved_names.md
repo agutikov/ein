@@ -14,6 +14,34 @@ and **no symmetric semantics** (`symmetric` is a plain user property tag —
 A name is reserved **iff** it appears in this table or the engine-strings
 doc — nothing else is special.
 
+## Author quick reference — intent → atom
+
+Start here. *"I want to express X — what do I write?"* The authoritative
+per-atom detail is in the sections below; this card is the reverse index.
+With it + [`01_grammar.md`](01_grammar.md) + [`02_patterns.md`](02_patterns.md)
+you can author a puzzle without reading engine source.
+
+| I want to…                                   | write                                   | see |
+|----------------------------------------------|-----------------------------------------|-----|
+| declare a relation + its arg types           | `(relation R A B)`                      | §declarators |
+| state a fact                                 | `(R a b)` *(any non-declarator head)*   | §else→fact |
+| negate a fact                                | `(not (R a b))` *(stored octagon)*      | §⊥ primitives |
+| declare an inference (saturation) rule       | `(rule N (?p…) :match … :assert …)`     | §declarators |
+| declare a hypothesis generator               | `(hrule N (?p…) :match … :assert …)`    | §declarators |
+| ask the engine something                     | `(query :goal … [:goal-text …])`        | §declarators |
+| set a solver knob                            | `(config :flag v)`                      | §declarators |
+| import a stdlib module                       | `(import std.X :symbols (…))`           | §declarators |
+| conjoin / disjoin premises in `:match`       | `(and …)` / `(or …)`                    | §⊥ primitives |
+| match only when a pattern is **absent** (NAF)| `(absent P)`                            | §⊥ primitives |
+| match a **stored** negative                  | `(not P)` in `:match`                   | §⊥ primitives |
+| require two slots differ / are equal         | `(neq ?a ?b)` / `(eq ?a ?b)`            | §predicates |
+| declare this branch contradictory            | `:assert (false)`                       | §⊥ primitives |
+| say "P is undecided"                          | `(open P)` *(import `std.macro`)*       | §macro sugar |
+| say "∀ b s.t. G, B holds"                    | `(forall ?b G B)` *(import `std.macro`)*| §macro sugar |
+| tag a relation symmetric / transitive / …    | `(symmetric R)` + the rule consuming it | §not-reserved |
+| freeze a relation (no guessing on it)        | `(__closed__ R)` *(usually auto)*       | §hypothesis control |
+| scope / exclude the blind enumerator         | `(query … :hypothesis-relations (…))` / `:no-hypothesis (…)` | §hypothesis control |
+
 ## Top-level declarators — the closed classifier set (P1.7c)
 
 A program is a **flat sequence of forms** (P1.7c — the `(ontology …)` /
