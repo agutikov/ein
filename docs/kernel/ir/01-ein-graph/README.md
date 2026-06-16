@@ -27,9 +27,6 @@ this tree describes Ein in graph-theory terms.
 - [`05_four_level_kb.md`](05_four_level_kb.md) — The four-level KB
   (L0 objects / L1 facts / L2 relations / L3 rules) and the
   *consumes* stack; how the levels differ from the three layers.
-- [`06_self_describing.md`](06_self_describing.md) — Design sketch:
-  the L0–L3 schema expressed in ein-lang itself (`(meta …)`);
-  design-only for M1, implemented by F5.
 
 ## Reading order
 

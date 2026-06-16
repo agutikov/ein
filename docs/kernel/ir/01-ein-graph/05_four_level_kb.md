@@ -4,7 +4,7 @@ Every node in the KB belongs to one of **four levels** — objects,
 facts, relations, rules. This file names the levels and the *consumes*
 relation between them, extending the reflexive algebra of
 [`03_ein_model.md`](03_ein_model.md). It is the schema that
-[`06_self_describing.md`](06_self_describing.md) then expresses *in
+[`08_self_describing.md`](08_self_describing.md) then expresses *in
 ein-lang itself*.
 
 > **Levels ≠ layers.** The four **levels** here (L0–L3, by *what kind
@@ -81,14 +81,14 @@ below" relaxes to "consumes any level, including its own". The
 [reflexive root](03_ein_model.md) (§1 — *instance is-an instance of
 instance*) is the L-level statement of this: the schema can describe
 itself. What an **L4** (rules over rules) would be is left open —
-[`06_self_describing.md`](06_self_describing.md) sketches it; F5
+[`08_self_describing.md`](08_self_describing.md) sketches it; F5
 implements it.
 
 ## See also
 
 - [`03_ein_model.md`](03_ein_model.md) — the reflexive node algebra
   (atoms, objects, the five foundational terms) this stratifies.
-- [`06_self_describing.md`](06_self_describing.md) — expresses this
+- [`08_self_describing.md`](08_self_describing.md) — expresses this
   L0–L3 schema *in ein-lang* (`(meta …)`); design-only for M1.
 - [`01_kb.md` §3](01_kb.md) — the three knowledge **layers**
   (orthogonal to these levels).

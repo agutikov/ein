@@ -38,6 +38,9 @@ model in [`../02-data-model/`](../02-data-model/).
   reference (macro / algebra / bijection / elim / typing / closure),
   companion to the module-level
   [`stdlib/README.md`](../../../../ein.py/src/ein/stdlib/README.md).
+- [`08_self_describing.md`](08_self_describing.md) — Design sketch:
+  the L0–L3 schema expressed in ein-lang itself (`(meta …)`);
+  design-only for M1, implemented by F5.
 
 ## Reading order
 

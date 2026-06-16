@@ -8,6 +8,21 @@
 > [F5](../../../../plans/followups/f5_rules_as_data.md)'s work. Nothing
 > here changes the M1 engine.
 
+renamed:    docs/kernel/ir/01-ein-graph/06_self_describing.md -> docs/kernel/ir/03-ein-lang/08_self_describing.md
+
+> This is a bad sketch
+> The task was to investigate how to describe Ein IR concepts in ein-lang itself
+> like EBNF grammar defined in EBNF
+> investigate if it is possible
+> only valid existing Ein syntax allowed
+> Like: basic objects are (object OBJECT) (object RELATION) (object FACT) (object RULE)
+> (is-a RELATION OBJECT)
+> (relation rel RELATION OBJECT FACT) ;; like a+b=c is (relation sum NUM NUM NUM)
+> something in this direction ...
+> and then, potentially, develop the representation, and allow to express feature of Ein in Ein
+> and do inference/reasoning about Ein in Ein
+
+
 ## 1. The `(meta …)` sketch
 
 A block that declares the L0–L3 levels using ein-lang, so the same
