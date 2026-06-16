@@ -3,13 +3,16 @@
 > **Status (2026-06-16).** The engine has **shipped** — P1.3
 > (saturation / rules), P1.4 (contradiction), P1.5–P1.5b (hypothesis
 > loop + commitment-lattice search) are all in place and `zebra2`
-> solves end-to-end. The **as-built** reference is
-> [`architecture_and_algorithms.md`](architecture_and_algorithms.md).
-> ⚠️ The "Planned structure" and "What lives where today (M1 stubs)"
-> sections below **predate that implementation and are stale** — they
-> list `01–05` files that were never created and mark shipped
-> features as "not yet". Reconciling them is tracked by
-> [P1.20 S1.20.D](../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.d_inference_engine_docs.md).
+> solves end-to-end. The **as-built** architecture reference is
+> [`architecture_and_algorithms.md`](architecture_and_algorithms.md);
+> this file holds the design principles, the M1 invariant, NAF
+> semantics, and determinism. The "as-built layout" + "what's
+> implemented" sections were reconciled by
+> [P1.20 S1.20.A0](../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.a0_reconcile_drift.md);
+> a deeper module-level walkthrough — and the still-stale "Determinism"
+> / "Superseded tree-solver" sections lower down (broken
+> `inference/solver.py` links; the file was split into `monotonic/`) —
+> is [S1.20.D](../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.d_inference_engine_docs.md)'s remit.
 
 The inference engine is what takes a populated
 [`KnowledgeBase`](../ir/02-data-model/02_store.md) and produces
@@ -27,48 +30,54 @@ chapter describes *how* it does it.
 
 ---
 
-## Planned structure (P1.3 — P1.5)
+## As-built layout
+
+The engine shipped across P1.3–P1.5b; the planned `01_matcher.md …
+05_trace.md` split was never created — the directory instead grew
+these reference docs:
 
 ```text
 docs/kernel/inference/
-├── README.md         ← this file (stub)
-├── 01_matcher.md     ← pattern matching: variable binding, predicate
-│                       evaluation, multi-pattern conjunction
-│                       (P1.3 S1.3.1)
-├── 02_saturation.md  ← the firing loop; priority ordering; quiescence
-│                       detection (P1.3 S1.3.3)
-├── 03_hypothesis.md  ← branching: choose-an-undetermined-slot;
-│                       fork + saturate + retract-on-contradiction;
-│                       commit-on-uniqueness (P1.5)
-├── 04_contradiction.md ← clash detection; unsat-core walk; trace
-│                       generation for failed branches (P1.5)
-└── 05_trace.md       ← step-by-step ein-lang trace generation;
-│                       reordering pass; per-step / aggregate / DAG
-│                       views (P1.6)
+├── README.md                      ← this file: design principles, the
+│                                     M1 invariant, NAF semantics, determinism
+├── architecture_and_algorithms.md ← the as-built architecture: the 9 core
+│                                     operations (O1–O9), their CS analogs
+│                                     (Datalog / RETE / CDCL / ATMS), fast algos
+├── domain_elim_vs_hypothesis.md   ← the domain-elimination vs guess duals
+├── lattice_dump.md                ← the commitment-lattice dump format
+└── reserved_engine_strings.md     ← engine-internal reserved atoms
+                                      (__closed__, __symmetric__, false, …)
 ```
 
-The five files map to plan phases; each ships when its phase does.
+Source for the engine lives under
+[`ein.py/src/ein/inference/`](../../../ein.py/src/ein/inference/) (+ the
+`monotonic/` lattice-search sub-package); a flattened module-level
+walkthrough is [S1.20.D](../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.d_inference_engine_docs.md)'s deliverable.
 
-## What lives where today (M1 stubs)
+## What's implemented (M1)
+
+The engine shipped end-to-end; `examples/zebra2.ein` solves with a full
+derivation trace. Where each piece lives (`ein.py/src/ein/inference/`
+unless noted):
 
 | concept                         | M1 state                                                         |
 |---------------------------------|------------------------------------------------------------------|
-| Pattern matcher                 | `Pattern` dataclass holds structural view; matcher in P1.3       |
-| Rule registry                   | `Rule` entity in [`02-data-model`](../ir/02-data-model/); rule definitions in `examples/rules.ein` (P1.3 T1.3.2.1-10) |
+| Pattern matcher                 | **shipped** — `compile.py` lowers each (rule, activator) to a `JoinPlan`; `match.py` `_run_steps` executes it |
+| Rule registry                   | `Rule` entity in [`02-data-model`](../ir/02-data-model/); puzzle rules authored inline or imported from the [stdlib](../../../ein.py/src/ein/stdlib/) |
 | Property-fact activation        | KB indexes `_rule_apps_by_rule` / `_rule_apps_on_relation` built at load |
-| Saturation loop                 | not yet — placeholder in P1.3 S1.3.3                              |
-| Hypothesis branching            | `kb.fork()` exists; full loop is P1.5                            |
-| Contradiction detection         | `kb.unsat_core()` exists; clash detection in P1.5                |
-| Trace generation                | `DerivationDAG.to_dot()` exists; markdown trace in P1.6           |
-| `(not P)` / `(absent P)` premises | S1.5.8c.1 shipped: `(not P)` in `:match` matches a STORED `(not P)` fact (uniform with all other patterns); `(absent P)` is the explicit NAF guard. The old NAF default on `(not P)` was dropped. |
-| `(forall ?b (G) (B))` / `(open P)` | S1.5.8c.3a/b parser sugars: `forall` desugars to `(absent (and G (absent B)))`; `open` desugars to `(and (absent P) (absent (not P)))`. No matcher addition — both compile to existing `AbsentGuard` machinery. |
-| Saturator cache-refresh         | S1.5.8c-followup: `_enqueue_pass` re-runs `engine.compile_all()` at the top of each pass so runtime-derived activator facts (e.g. produced by expansion rules) get their plans compiled and the rule fires. |
-| `AbsentGuard` re-evaluation at fire time | S1.5a.1 T1.5a.1.1: `Saturator._apply` calls `match.absents_still_pass(plan, bindings, kb)` before `fire()`. If a derivation between enqueue and dequeue has made an AbsentGuard's sub-plan match, the firing is dropped (counted in `Saturator.naf_dropped`). See § "NAF semantics" below. |
-| Hypothesis-branch order is deterministic | S1.5a.1a T1.5a.1a.1: `solver._candidates_for` sorts by `(-score_hypothesis(f, kb), f.args, f.relation_name)`. Content-based; `PYTHONHASHSEED` does not reach the iteration order. Score is a stub (`0`) in M1; S1.5a.7 fills it. See § "Determinism" below. |
+| Saturation loop                 | **shipped** — priority-banded, delta-driven `saturator.py` (P1.3 S1.3.3; semi-naive in P1.8a) |
+| Hypothesis branching            | **shipped** — `hypgen.py` enumerates candidates; the commitment-lattice search is `monotonic/solver.py` (P1.5–P1.5b) |
+| Contradiction detection         | **shipped** — `contradiction.py` (`(X, ¬X)` pairs + `(false)`); minimal unsat core via `min_core.py` + provenance |
+| Verdict                         | **shipped** — one `solve()`; `verdict.py` reports `Solution` / `Ambiguity` / `Contradiction`, read off the model count `k` |
+| Trace generation                | **shipped** — `DerivationDAG.to_dot()` + the markdown trace builder under [`trace/`](../../../ein.py/src/ein/trace/) (P1.6) |
+| `(not P)` / `(absent P)` premises | S1.5.8c.1: `(not P)` in `:match` matches a STORED `(not P)` fact (uniform with all other patterns); `(absent P)` is the explicit NAF guard. The old NAF default on `(not P)` was dropped. |
+| `(forall ?b (G) (B))` / `(open P)` | S1.5.8c.3a/b sugars (now in `std.macro`): `forall` ⇒ `(absent (and G (absent B)))`, `open` ⇒ `(and (absent P) (absent (not P)))`. Compile to existing `AbsentGuard` machinery. |
+| `AbsentGuard` re-evaluation at fire time | S1.5a.1: `Saturator._apply` calls `match.absents_still_pass(plan, bindings, kb)` before `fire()`. A firing whose NAF a later derivation invalidated is dropped (`Saturator.naf_dropped`). See § "NAF semantics" below. |
+| Hypothesis-branch order is deterministic | content-based sort, not hash-based (`PYTHONHASHSEED` does not reach iteration order); the score key is an M1 stub. See § "Determinism" below. |
 
 The data substrate (KB, entities, layer views, fork, provenance,
-derivation DAG) is **complete** through P1.2. The engine that
-*operates* on this substrate is the gap that P1.3 — P1.6 closes.
+derivation DAG) was complete at P1.2; the engine that *operates* on it
+shipped across P1.3–P1.6.
 
 ## Design principles (already locked in M1)
 
