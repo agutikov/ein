@@ -47,7 +47,9 @@ docs/kernel/inference/
 ├── lattice_dump.md                ← the commitment-lattice dump format
 ├── reserved_engine_strings.md     ← engine-internal reserved atoms
 │                                     (__closed__, __symmetric__, false, …)
-└── python_impl.md                 ← the file-by-file Python module map (S1.20.D)
+├── python_impl.md                 ← the file-by-file Python module map (S1.20.D)
+└── features.md                    ← measured feature×config matrix: which
+                                      SolverConfig knobs are load-bearing (S1.20.I)
 ```
 
 Source for the engine lives under

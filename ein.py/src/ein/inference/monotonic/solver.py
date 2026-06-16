@@ -241,9 +241,12 @@ def _phase1_root(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
         return _finalise_solve(ctx)
 
     alive = _compute_alive(root_kb)
-    alive, term = _promote_forced_positives(
-        root_kb, alive, stats, check_goal=False,
-    )
+    if ctx.cfg.enable_forced_positive:
+        alive, term = _promote_forced_positives(
+            root_kb, alive, stats, check_goal=False,
+        )
+    else:
+        term = None
     if term is not None:
         # solve never goal-terminates the cascade (check_goal=False), so a
         # term here is a Contradiction (cascade hit ⊥) → k=0.
@@ -405,9 +408,12 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
         # the candidate space the way the legacy engines prune, without the
         # SAT→⊥ pollution.
         alive = _compute_alive(root_kb)
-        alive, term = _promote_forced_positives(
-            root_kb, alive, stats, check_goal=False,
-        )
+        if ctx.cfg.enable_forced_positive:
+            alive, term = _promote_forced_positives(
+                root_kb, alive, stats, check_goal=False,
+            )
+        else:
+            term = None
         if term is not None:
             _root_dead(ctx)       # cascade hit ⊥ → no model exists
             break

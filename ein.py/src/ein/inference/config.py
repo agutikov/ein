@@ -142,6 +142,26 @@ class SolverConfig:
     # consumed in the ``lattice_order`` order without
     # randomisation.
     lattice_order_seed:              int | None = None
+    # S1.20.I2 — gates for previously-always-on engine features, added so
+    # P1.20 Theme I's feature×config matrix can measure each in isolation.
+    # All default True ⇒ the shipped solve is byte-identical; only the
+    # negation (the "feature off" case the matrix benches) is new behaviour.
+    #   enable_path_nogoods        — CDCL path-condition no-good emission
+    #     (nogoods.emit_nogood). Off ⇒ no clause is emitted, so
+    #     `_nogoods` stays empty and apriori.filter_candidate's superset
+    #     check is a no-op (subsumed dead commitments are re-explored).
+    #   enable_symmetric_mirror    — the `__symmetric__` native arg-swap
+    #     mirror (saturator). Off ⇒ marked relations are not closed under
+    #     swap by the kernel fast-path (see Q-S1.20.I2.C: pure-skip).
+    #   enable_singleton_writeback — size-1 dead-clause `(not h)` writeback
+    #     to `_negated_facts` (monotonic). Off ⇒ the negation is re-derived
+    #     rather than cached.
+    #   enable_forced_positive     — forced-positive promotion: a sole-
+    #     surviving alive singleton is promoted to a root fact (monotonic).
+    enable_path_nogoods:             bool = True
+    enable_symmetric_mirror:         bool = True
+    enable_singleton_writeback:      bool = True
+    enable_forced_positive:          bool = True
 
     @classmethod
     def from_kw_pairs(cls, kw_pairs: Iterable[Any]) -> SolverConfig:

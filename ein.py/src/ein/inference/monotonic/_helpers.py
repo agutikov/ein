@@ -426,12 +426,13 @@ def _handle_dead(
     else:
         ctx.stats.enterings_dead_post += 1
 
-    landed = emit_nogood(ctx.root_kb, frozenset(c), min_size=1)
-    if landed:
-        ctx.stats.nogoods_emitted += 1
-    else:
-        ctx.stats.nogoods_subsumed += 1
-    if len(c) == 1:
+    if ctx.cfg.enable_path_nogoods:
+        landed = emit_nogood(ctx.root_kb, frozenset(c), min_size=1)
+        if landed:
+            ctx.stats.nogoods_emitted += 1
+        else:
+            ctx.stats.nogoods_subsumed += 1
+    if len(c) == 1 and ctx.cfg.enable_singleton_writeback:
         _emit_negated_fact_writeback(ctx.root_kb, c[0])
 
     ctx.lstate.dead_commitments.append(DeadCommitment(

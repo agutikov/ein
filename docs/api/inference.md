@@ -153,13 +153,21 @@ block. **Resolution precedence:** explicit `solve(kb, config=…)` >
 | `lattice_sanity_check` | `False` | Verify saturation commutativity for size-`k≥2` commitments (release-regression only; costs `k+1` saturations each). |
 | `lattice_order` | `"lex"` | Within-layer candidate order. `"lex"` (canonical-tuple sort, the baseline) or `"score-sum"` (per-set score; needs `hypgen_scoring="popularity"` to differentiate). |
 | `lattice_order_seed` | `None` | Per-layer shuffle seed (traversal-order dependence probing); `None` disables. |
+| `enable_path_nogoods` | `True` | CDCL path-condition no-good emission. Off → no clause emitted, so subsumed dead commitments are re-explored. |
+| `enable_symmetric_mirror` | `True` | The `__symmetric__` native arg-swap mirror (kernel fast-path over the stdlib `symmetric` rule). Off → marked relations not closed under swap by the fast-path. |
+| `enable_singleton_writeback` | `True` | Size-1 dead-clause `(not h)` writeback to `_negated_facts`. Off → the negation is re-derived rather than cached. |
+| `enable_forced_positive` | `True` | Forced-positive promotion: a sole-surviving alive singleton is promoted to a root fact. |
+
+The last four (added S1.20.I2) gate features that were previously always-on,
+so P1.20 Theme I can measure each — all default `True`, so the shipped solve
+is unchanged.
 
 `SolverConfig.from_kw_pairs(kw_pairs)` builds one from a parsed `(config
 …)` body (the loader uses this; unknown flags raise `ValueError`).
 
 > The *measured* impact of these knobs against `zebra2` (which is
-> load-bearing, which is perf-only) is **Theme I**'s feature×config matrix
-> ([P1.20 README §Theme I](../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/README.md#theme-i--kernel-feature--config-matrix));
+> load-bearing, which is perf-only) is in
+> [`docs/kernel/inference/features.md`](../kernel/inference/features.md);
 > this page is the definitional side and does not duplicate the numbers.
 
 ## See also

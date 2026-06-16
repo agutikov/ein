@@ -8,10 +8,15 @@ long-form Zebra guide — each multi-day). A multi-week,
 (A0, A1, A2, B–G, H1–H3) plus **Theme J** (J1/J2/J3, decomposed + executed
 2026-06-16) done. Theme J shipped the [`docs/api/`](../../../docs/api/)
 Python-embedding subtree (contract + 4 per-module pages + a verified
-worked example), re-based against the live surface. Themes **I/K** remain
-theme-only (feature×config bench matrix, long-form Zebra guide — each
-needs the engine or substantial new writing). Created 2026-05-24 from the
-TODO.md scratchpad, stages written 2026-06-15, executed 2026-06-16.
+worked example), re-based against the live surface. **Theme I executed
+2026-06-17** (I1–I4): config audit + gating decision (I1); four behaviour-
+preserving `enable_*` flags added + full gate green (I2, the one P1.20
+engine-code change); feature×config sweep via `utils/feature_matrix.py`
+(I3); and [`docs/kernel/inference/features.md`](../../../docs/kernel/inference/features.md)
+(I4). Measured headline: on zebra2 the fast path is lever-insensitive; only
+`enable_singleton_writeback` is load-bearing (exhaustive search). Theme **K** remains theme-only (long-form Zebra guide —
+substantial new writing). Created 2026-05-24 from the TODO.md scratchpad,
+stages written 2026-06-15, executed 2026-06-16.
 The phase parks kernel-doc reorgs that emerged after the M1
 implementation surface stabilised. None of these gate M1
 acceptance; they make the kernel docs reflect what M1 actually
@@ -62,7 +67,10 @@ takes that structure further:
 | S1.20.H1   | Ein-model: atoms vs objects                                                 | [s1.20.h1_atom_vs_object.md](s1.20.h1_atom_vs_object.md)              |
 | S1.20.H2   | Ein-model: 4-level KB representation                                        | [s1.20.h2_four_level_kb.md](s1.20.h2_four_level_kb.md)                |
 | S1.20.H3   | Ein-model: self-describing KB types                                         | [s1.20.h3_self_describing_kb.md](s1.20.h3_self_describing_kb.md)      |
-| S1.20.I    | Kernel feature × config matrix *(theme only — not yet decomposed)*           | [README §Theme I](#theme-i--kernel-feature--config-matrix)            |
+| S1.20.I1   | Config audit + feature inventory + gating decision                          | [s1.20.i1_config_audit.md](s1.20.i1_config_audit.md)                  |
+| S1.20.I2   | Add the missing config flags (code)                                         | [s1.20.i2_add_flags.md](s1.20.i2_add_flags.md)                        |
+| S1.20.I3   | Variant fixtures + bench sweep                                              | [s1.20.i3_bench_sweep.md](s1.20.i3_bench_sweep.md)                    |
+| S1.20.I4   | `features.md` result table + narrative                                      | [s1.20.i4_features_doc.md](s1.20.i4_features_doc.md)                  |
 | S1.20.J1   | Embedding contract + entry-point reference                                  | [s1.20.j1_embedding_contract.md](s1.20.j1_embedding_contract.md)      |
 | S1.20.J2   | Per-module Python API reference pages                                       | [s1.20.j2_per_module_reference.md](s1.20.j2_per_module_reference.md)  |
 | S1.20.J3   | Worked embedding example + integration                                      | [s1.20.j3_worked_example.md](s1.20.j3_worked_example.md)              |
@@ -73,11 +81,11 @@ other theme). Then H1 → H2 → H3 (vocabulary first, then schema)
 ∥ A1 → A2 (data-model split, then backfill); B + C + D can
 follow once A2 + H2 are in; E and F land after the bulk of
 content stabilises; G can ship any time before M2b. Theme J
-(Python embedding API) is now staged J1 → J2 → J3 (J1 first — it
+(Python embedding API) is staged J1 → J2 → J3 (J1 first — it
 re-bases the surface and fixes the location/facade decisions the
-other two build on). Themes I/K (feature matrix, Zebra guide) remain
-independent and unstaged — schedule each after A0 confirms the live
-surface.
+other two build on). Theme I (feature matrix) is staged I1 → I2 → I3
+→ I4 (I1 audit/decide → I2 code, gated by I1's decision → I3 measure
+→ I4 write). Theme K (Zebra guide) remains independent and unstaged.
 
 ## Themes
 
@@ -347,6 +355,34 @@ Steps:
 
 Composes with Theme D (inference engine documentation) — the
 features table cross-links into the per-feature narrative.
+
+> **Re-base (audited 2026-06-16, decomposing this theme).** Two findings
+> the 2026-05-27 sketch missed: (1) only **two** fields are True-default
+> booleans (`enable_pre_branch_lookahead`, `enable_lookahead_kill_cache`) —
+> the rest of `SolverConfig` are value-choices (`hypgen_scoring`,
+> `lattice_order`), ints, or default-`False`, so "flip every True-default
+> flag" undercounts and mis-shapes the matrix; (2) the features most worth
+> measuring — **CDCL no-goods, the `__symmetric__` mirror, singleton-death
+> writeback, forced-positive promotion** — are **hardcoded always-on, not
+> behind any flag**, so measuring them requires *adding* flags (engine
+> code). That makes **I2 the one P1.20 stage that changes engine code**
+> (behaviour-preserving at default). Full audit in
+> [S1.20.I1](s1.20.i1_config_audit.md).
+
+Likely stages:
+
+- **S1.20.I1** — [config audit + feature inventory + gating decision](s1.20.i1_config_audit.md):
+  classify every lever (correctness / perf / value-choice / diagnostic),
+  inventory the un-gated always-on features, and decide which get a flag.
+- **S1.20.I2** — [add the missing config flags (code)](s1.20.i2_add_flags.md):
+  thread behaviour-preserving `enable_*` flags through the engine; prove
+  default-on is unchanged. *Conditional on I1's decision.*
+- **S1.20.I3** — [variant fixtures + bench sweep](s1.20.i3_bench_sweep.md):
+  one zebra2 variant per lever, run under `ein_pypy.sh solve --stats` with
+  a budget; capture the `MonotonicStats` counters + time + RSS.
+- **S1.20.I4** — [`features.md` result table + narrative](s1.20.i4_features_doc.md):
+  correctness-load-bearing vs perf-only tables, value-choice swaps,
+  SHA-stamped provenance; cross-link Theme D + Theme J.
 
 ### Theme J — Ein API reference
 

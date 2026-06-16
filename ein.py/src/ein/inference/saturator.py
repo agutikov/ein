@@ -49,6 +49,7 @@ from ein.kb.store import KnowledgeBase
 
 from . import match
 from .compile import AbsentGuard, Join, JoinPlan, Scan
+from .config import SolverConfig
 from .engine import Engine, _hashable
 from .firing import Firing, build_fact, fire
 
@@ -167,6 +168,11 @@ class Saturator:
         self._sym_n: int = -1
         self._mirror_queue: list[Fact] = []
         self._mirror_seeded: bool = False
+        # S1.20.I2 — native mirror gate (default on); read once from the
+        # resolved config on the kb (`solve` sets `kb.config`).
+        self._mirror_enabled: bool = (
+            kb.config or SolverConfig()
+        ).enable_symmetric_mirror
 
     # ── Public API ────────────────────────────────────────────────
 
@@ -182,7 +188,7 @@ class Saturator:
             self._delta_facts = None
         # `__symmetric__` native mirror — produced before rule firings so the
         # closure is available to them. A no-op when no relation is marked.
-        mirror = self._next_mirror_firing()
+        mirror = self._next_mirror_firing() if self._mirror_enabled else None
         if mirror is not None:
             return mirror
         while self._queue:
@@ -211,7 +217,8 @@ class Saturator:
                 else:
                     self._delta_facts.extend(firing.derived)
                 # A rule-derived marked fact needs its mirror too.
-                self._enqueue_mirror_sources(firing.derived)
+                if self._mirror_enabled:
+                    self._enqueue_mirror_sources(firing.derived)
             return firing
         return None
 
@@ -259,7 +266,7 @@ class Saturator:
         self._needs_enqueue = False
         # The queue may contain entries whose bindings have already
         # been fired — filter them out before claiming stalled.
-        if self._has_pending_mirror():
+        if self._mirror_enabled and self._has_pending_mirror():
             return False
         return not any(
             self._binding_key(p, b) not in self.engine._fired
