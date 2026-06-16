@@ -1,7 +1,7 @@
 # P1.11 — Package + CLI restructure
 
 **Estimate:** TBD (~1-2 days mechanical work + cross-ref update).
-**Status:** **DONE 2026-06-16** — rename shipped 2026-06-15 (commit
+**Status:** **CLOSED 2026-06-16** — rename shipped 2026-06-15 (commit
 `e49a325`: S1.11.1 package dir + S1.11.2 codebase + S1.11.5
 docs/plans/examples sweep; `ein_bot` → `ein`, `ein-bot` → `Ein`/`ein`
 by context). The CLI-split (S1.11.4) + demo-cleanup (S1.11.3) + final
@@ -9,8 +9,12 @@ acceptance (S1.11.6) landed 2026-06-16: `cli.py` → a `cli/` package; the
 former `demo/` (13 scripts, not the 2 the plan assumed) split into 5
 promoted `ein` subcommands (`saturate` / `search` / `lattice` / `profile`
 / `symmetric`) and 8 one-off probe/measure scripts relocated to repo-root
-`utils/`. **Still deferred:** the outer `ein.py/` dir rename
-(Q-S1.11.1.A — see [open questions](#open-questions)). Created 2026-05-24
+`utils/`. **One parked decision, now closed:** the outer `ein.py/` dir
+rename is **won't-do for M1** (Q-S1.11.1.A — leave as-is; both open questions
+resolved in [open questions](#open-questions)). The CLI surface promoted here
+has since been trimmed by post-M1 cleanup (`search`/`lattice` merged into
+`solve`; `ir`/`kb` removed; `profile`/`symmetric` moved to `utils/`) — those
+were not P1.11 stages. Created 2026-05-24
 from the TODO.md scratchpad. Pure housekeeping; does not gate M1
 acceptance, but touched every import in the package so it was scheduled at
 a quiescent point (between M1's P1.7 ship and the start of M2).
@@ -67,7 +71,9 @@ on both sides of the rename.
 
 S1.11.1 → S1.11.2 → (S1.11.3 ∥ S1.11.4) → S1.11.5 → S1.11.6.
 The rename spine (S1.11.1 package dir → S1.11.2 → S1.11.5) landed
-in one commit; S1.11.3/S1.11.4 + the outer-dir rename remain.
+in one commit (2026-06-15); S1.11.3/S1.11.4 + acceptance landed 2026-06-16.
+All six stages shipped; the only deferred item, the outer-dir rename, is
+closed as won't-do for M1 (see open questions).
 
 ## Out of scope
 
@@ -92,18 +98,21 @@ in one commit; S1.11.3/S1.11.4 + the outer-dir rename remain.
 - Pytest suite + ruff green; zebra E2E (M1 acceptance #2/#3)
   passes against the renamed package.
 
-## Open questions
+## Open questions — resolved at close (2026-06-16)
 
-- **Outer-dir rename — `ein.py/` → `ein/`?** The `ein.py`
-  directory name is also a holdover from when the repo's only
-  Python artefact was a single file. Renaming the directory
-  costs another wave of doc cross-link churn; the alternative
-  is to leave the dir name and rename only the package inside.
-  Pick at S1.11.1 time.
-- **CLI subcommand surface.** What subcommands does `ein` expose?
-  `solve`, `saturate`, `dump`, `query`, `bench solve`, `bench
-  saturate` are obvious; `validate`, `repl`, `trace` are possible.
-  Worth a short design pass at S1.11.4 time.
+- **Outer-dir rename — `ein.py/` → `ein/`?** **Resolved: won't-do for M1.**
+  The `ein.py/` directory name is a holdover from when the repo's only Python
+  artefact was a single file, but renaming it costs another wave of doc
+  cross-link churn (every `ein.py/src/…` path across README / AGENTS / docs /
+  plans / tests / pyproject / shell scripts) for zero functional gain. The
+  *package* inside was renamed (`ein_bot` → `ein`); the dir is left as-is.
+  Deferred at S1.11.1 (2026-06-15), closed here. Revisit only if the repo is
+  packaged for public release.
+- **CLI subcommand surface.** **Resolved.** S1.11.4 split `cli.py` into a
+  `cli/` package; the surface settled to **`render` / `saturate` / `solve`**.
+  (Post-M1 cleanup — *not* P1.11 stages — then merged `search`/`lattice` into
+  the one sound `solve`, removed the `ir`/`kb` inspectors, and moved
+  `profile`/`symmetric` to `utils/` scripts.)
 
 ## Cross-links
 
