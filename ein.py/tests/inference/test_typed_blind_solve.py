@@ -9,8 +9,6 @@ fixture the removal would be silent.
 
 These tests pin the INVARIANTS that survive the type-filter's removal —
 "solves on the blind path, one model, a genuine House→Color bijection".
-(`demo/probe_blind_fixture.py` dumps the open-set / consistent / complete
-signals per node for ad-hoc inspection.)
 """
 from __future__ import annotations
 

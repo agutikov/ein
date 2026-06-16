@@ -43,7 +43,7 @@ constrained-reasoning research.
   suite, `ein.py/pyproject.toml` is the build config.
 - **`utils/`** — renderers (`render_knowledge_graph.sh` for Graphviz,
   `render_knowledge_graph_cy.py` for Cytoscape) + ad-hoc engine
-  probe/measure scripts (`score_hypotheses.py`, `trace_relevance.py`, …)
+  probe/measure scripts (`find_dead_defs.py`, `relation_algebra_examples.py`, …)
   + the promoted engine runners `profile_solve.py` (cProfile a `solve()`)
   and `symmetric_bench.py` (symmetric-closure micro-benchmark).
 - **`nlp/`, `smt/`** — scratch areas with submodules
