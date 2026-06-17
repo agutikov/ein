@@ -77,7 +77,20 @@ render_one() {
     echo "      via ${engine} -T${FMT} ${extra_flags[*]:-}"
     echo "      to  ${out}"
 
-    "${engine}" "-T${FMT}" "${extra_flags[@]}" "${SRC}" -o "${out}"
+    # Graphviz can hit recoverable errors (e.g. dot's spline-routing
+    # `routesplines Pshortestpath failed`, or fdp segfaulting) yet still
+    # write a complete, valid file. Treat "non-zero exit but a non-empty
+    # output" as success-with-warning; only fail hard when no/empty output
+    # appears.
+    local rc=0
+    "${engine}" "-T${FMT}" "${extra_flags[@]}" "${SRC}" -o "${out}" || rc=$?
+    if [[ ! -s "${out}" ]]; then
+        echo "error: ${engine} produced no output (exit ${rc})" >&2
+        return 1
+    fi
+    if (( rc != 0 )); then
+        echo "warning: ${engine} exited ${rc} but wrote ${out}; continuing." >&2
+    fi
 
     local size
     size=$(stat -c '%s' "${out}" 2>/dev/null || stat -f '%z' "${out}")

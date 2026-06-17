@@ -65,8 +65,8 @@ _SUBSYSTEMS: list[tuple[str, tuple[str, ...]]] = [
 
 
 def _default_puzzle() -> Path:
-    # repo root = …/src/ein/cli/profile.py → parents[4]; examples/ lives there.
-    return Path(__file__).resolve().parents[4] / "examples" / "zebra2.ein"
+    # repo root = …/utils/profile_solve.py → parents[1]; examples/ lives there.
+    return Path(__file__).resolve().parents[1] / "examples" / "zebra2.ein"
 
 
 def _build_argparser() -> argparse.ArgumentParser:

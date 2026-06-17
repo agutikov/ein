@@ -19,7 +19,7 @@ derivations are actual engine output, not assertions:
    does not merely *query* relations, it *propagates* constraints, negatives
    included.
 
-Run from the package root:  python demo/relation_algebra_examples.py
+Run from the repo root:  PYTHONPATH=ein.py/src python3 utils/relation_algebra_examples.py
 """
 from __future__ import annotations
 
@@ -37,8 +37,8 @@ def saturate(src: str, max_steps: int = 4000):
 
 def show_positive(firings, rel: str) -> None:
     """Print every derived `(rel a b)` edge, sorted."""
-    edges = sorted({f.derived.args for f in firings
-                    if f.derived.relation_name == rel})
+    edges = sorted({d.args for f in firings for d in f.derived
+                    if d.relation_name == rel})
     for args in edges:
         print(f"    ({rel} {' '.join(args)})")
 
@@ -54,10 +54,11 @@ def _fact_str(fact) -> str:
 def show_negative(firings) -> None:
     """Print every derived `(not (rel a b))` octagon with its provenance."""
     for f in firings:
-        if f.derived.relation_name == "not":
-            premises = ", ".join(_fact_str(p) for p in f.premises)
-            print(f"    {_fact_str(f.derived)}")
-            print(f"        ⟸ rule `{f.rule}`  from  {premises}")
+        for d in f.derived:
+            if d.relation_name == "not":
+                premises = ", ".join(_fact_str(p) for p in f.premises)
+                print(f"    {_fact_str(d)}")
+                print(f"        ⟸ rule `{f.rule}`  from  {premises}")
 
 
 def banner(n: int, title: str) -> None:
@@ -107,8 +108,8 @@ MONOTONE = """
 (compose parent parent grandparent)      ; def:    grandparent := parent ; parent
 """
 fm = saturate(MONOTONE)
-gp = {f.derived.args for f in fm if f.derived.relation_name == "grandparent"}
-anc = {f.derived.args for f in fm if f.derived.relation_name == "ancestor"}
+gp = {d.args for f in fm for d in f.derived if d.relation_name == "grandparent"}
+anc = {d.args for f in fm for d in f.derived if d.relation_name == "ancestor"}
 print("\n  grandparent edges:", sorted(gp))
 print("  ancestor    edges:", sorted(anc))
 holds = gp <= anc

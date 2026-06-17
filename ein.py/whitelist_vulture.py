@@ -1,9 +1,33 @@
-root_state_hash  # unused variable (src/ein/inference/monotonic/snapshot.py:112)
+# Vulture whitelist — names vulture reports as dead but that ARE used in
+# ways its static name-analysis cannot see. Listed in [tool.vulture] `paths`
+# (and excluded from ruff) so `vulture` runs clean. Regenerate after code
+# changes with:
+#
+#     vulture --make-whitelist src tests \
+#         --min-confidence 60 --ignore-names 'test_*,Test*' \
+#         --ignore-decorators '@pytest.fixture,@fixture' > whitelist_vulture.py
+#
+# This file is data for vulture, not runnable code (`_` is an undefined
+# sentinel) — hence the ruff exclude. Two categories:
+#
+# 1. Field-iteration / dataclass-eq / documentation reads vulture misses:
+#    - forced_positives  — _BaseStats counter read via `for f in fields(stats)`
+#                          (_serialise.py, _lattice_dump.py, _helpers.py)
+#    - root_state_hash   — LatticeSnapshotV1 field; participates in dataclass
+#                          `==` (shuffle-invariance tests)
+#    - col               — Loc source-location field set by the parser
+#    - arity/role/site   — Primitive metadata table (inline kernel docs)
+#    - weird_flag        — synthetic test dataclass field read via fields()
+_.forced_positives  # unused attribute (src/ein/inference/monotonic/_helpers.py:169)
+forced_positives  # unused variable (src/ein/inference/monotonic/lattice.py:81)
+root_state_hash  # unused variable (src/ein/inference/monotonic/snapshot.py:113)
 arity  # unused variable (src/ein/inference/primitives.py:47)
 role  # unused variable (src/ein/inference/primitives.py:48)
 site  # unused variable (src/ein/inference/primitives.py:49)
 col  # unused variable (src/ein/ir/types.py:23)
 weird_flag  # unused variable (tests/inference/test_config.py:93)
+# 2. Lark Transformer methods — dispatched by name on grammar terminals/rules
+#    (ir/ast.py); never called directly from Python.
 _.SYMBOL  # unused method (src/ein/ir/ast.py:46)
 _.VAR  # unused method (src/ein/ir/ast.py:49)
 _.KEYWORD  # unused method (src/ein/ir/ast.py:52)

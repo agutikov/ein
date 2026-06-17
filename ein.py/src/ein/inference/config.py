@@ -143,7 +143,7 @@ class SolverConfig:
     # randomisation.
     lattice_order_seed:              int | None = None
     # S1.20.I2 — gates for previously-always-on engine features, added so
-    # P1.20 Theme I's feature×config matrix can measure each in isolation.
+    # P1.20 Theme I's feature*config matrix can measure each in isolation.
     # All default True ⇒ the shipped solve is byte-identical; only the
     # negation (the "feature off" case the matrix benches) is new behaviour.
     #   enable_path_nogoods        — CDCL path-condition no-good emission
