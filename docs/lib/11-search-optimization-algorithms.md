@@ -42,7 +42,7 @@ implication graph → learn clause → backjump non-chronologically.
 ### Hypothesis branching with rollback
 The "human style" version used in the `Ein` README — pick a
 candidate fact, propagate, look for contradiction, retract on failure.
-Structurally identical to CDCL + ATMS.
+Structurally akin to CDCL + ATMS.
 
 ---
 

@@ -1,4 +1,4 @@
-"""Monotonic CDCL tests — S1.5b.6 T1.5b.6.4.
+"""Monotonic no-good learning tests (CDCL-style) — S1.5b.6 T1.5b.6.4.
 
 Covers the four shapes called out in the stage doc:
 
@@ -24,7 +24,7 @@ Covers the four shapes called out in the stage doc:
    zero solution nodes (k=0) and the verdict is :class:`Contradiction`.
 
 Exercised through the sound, exhaustive ``solve`` entry (not the
-legacy first-goal-match ``monotonic_solve``); the CDCL nogoods and
+legacy first-goal-match ``monotonic_solve``); the learned no-goods and
 singleton-death writeback are emitted by the same shared loop, but
 counts reflect full lattice exploration up to ``max_set_size``.
 """
@@ -48,7 +48,7 @@ def _kb(text: str) -> KnowledgeBase:
 # Force deaths to surface through `try_commitment_set` rather than
 # being pre-empted by hypgen's lookahead (which would write
 # `(not h)` via the lookahead-kill cache before the monotonic loop sees the
-# candidate). The monotonic CDCL path is what S1.5b.6 exercises.
+# candidate). The monotonic no-good learning path is what S1.5b.6 exercises.
 _NO_LOOKAHEAD = SolverConfig(
     enable_pre_branch_lookahead=False,
     enable_lookahead_kill_cache=False,

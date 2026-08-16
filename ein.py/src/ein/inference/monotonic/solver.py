@@ -6,7 +6,7 @@ prefix-join (:mod:`ein.inference.apriori`); each candidate
 is entered via the common
 :func:`ein.inference.commitment.try_commitment_set` primitive.
 Every solution node (``consistent ∧ complete``) is recorded, deduped
-by ``state_hash``; the loop terminates on the ``stop_after`` count, on
+by canonical ``state_key``; the loop terminates on the ``stop_after`` count, on
 a root contradiction, or on layer exhaustion, and the verdict is read
 from the count ``k`` (:func:`verdict_of`) — one engine, three answers.
 
@@ -31,8 +31,8 @@ Termination conditions
 - :class:`Ambiguity` — layer cap reached with alive ≠ ∅ and no
   satisfying commitment found.
 
-CDCL (S1.5b.6)
---------------
+No-good learning (S1.5b.6, CDCL-style)
+--------------------------------------
 
 Every dead entering emits ``frozenset(C)`` into
 ``root_kb._nogoods`` via :func:`ein.inference.nogoods.emit_nogood`
@@ -41,7 +41,7 @@ Singleton dead clauses additionally write ``(not h)`` to
 ``root_kb._negated_facts`` via :func:`_emit_negated_fact_writeback`
 — a flat root-write, no ancestor-chain coupling. (S1.7.24 — no
 symmetric-mirror: the counterpart dies on
-its own branch, recovered at the generic state_hash dedup.)
+its own branch, recovered at the generic state_key dedup.)
 
 Budget (S1.5b.7 / bench CLI parity)
 -----------------------------------
@@ -157,7 +157,7 @@ def solve(
 
     Runs the set-indexed lattice exploration, recording every **solution
     node** (``consistent ∧ complete`` — no open hypothesis) deduped by
-    :func:`state_hash`, and derives the verdict via :func:`verdict_of` from
+    :func:`state_key`, and derives the verdict via :func:`verdict_of` from
     the count ``k``. ``stats.solution_nodes`` is ``k``; ``stats.exhausted``
     says whether the lattice was fully explored.
 
@@ -355,7 +355,7 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
             # Fork-side solution node (§3c.ii of algorithm_layer_n.md).
             if solved:
                 # Solution node (consistent ∧ complete): record it (deduped by
-                # state_hash); do NOT merge its facts (model-specific) and do
+                # canonical state_key); do NOT merge its facts (model-specific) and do
                 # NOT expand it (complete — supersets would be redundant or
                 # dead).
                 _record_node(ctx, result.kb, c, result.firings, layer)
@@ -383,7 +383,9 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
             #     derived via `absent X` leaves no provenance edge to the
             #     commitment that suppressed X, so the positive-chain walk
             #     misread it as root-true; see the historical note in
-            #     docs/kernel/inference/README.md;
+            #     docs/kernel/inference/README.md and corollaries C1
+            #     (no root-merge) / C2 (positive provenance is not
+            #     dependence) in docs/kernel/inference/absent_semantics.md;
             #   * cumulative shared-root promotion is the monotonic SAT→⊥
             #     pollution Phase A (S1.7a.1) flagged.
             # Each commitment is evaluated independently against the
@@ -464,7 +466,7 @@ def _explore_layers(
 
     Exhausts the lattice (or stops after ``stop_after`` distinct solution
     nodes), recording every solution node (``consistent ∧ complete`` — keyed
-    by :func:`complete`, not goal match) deduped by :func:`state_hash` into
+    by :func:`complete`, not goal match) deduped by :func:`state_key` into
     ``lstate.solution_nodes``, and every refuted commitment into
     ``lstate.dead_commitments``. Phase 3 reads the verdict from the count
     ``k`` via :func:`verdict_of`. Root is kept stable (no fork-fact merge

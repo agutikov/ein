@@ -13,7 +13,7 @@ Why this matters
 The lattice's ``d!``-redundancy elimination claim rests on this
 premise: if any path through a commitment lattice yields a
 different kb, the engine's "set determines kb" invariant
-collapses and the lattice's state-hash dedup MERGE (S1.5b.22)
+collapses and the lattice's state-key dedup MERGE (S1.5b.22)
 would silently erase distinguishable kbs. Under M1's monotone
 rule set the premise holds; this module ships the
 release-time regression net that verifies it.
@@ -26,10 +26,13 @@ or the ``--lattice-sanity-check`` CLI flag. On each alive
 size-``k`` commitment with ``k >= 2`` registered in the lattice
 (S1.5b.22's :func:`_record_setnode` site), the check forks
 ``root_kb`` for every ``(k-1)``-subset parent, adds the missing
-hypothesis, saturates, and asserts the resulting state_hash
-matches a direct :func:`try_commitment_set(root_kb, C)`.
+hypothesis, saturates, and asserts the resulting
+:func:`~ein.inference.canon.state_key` equals a direct
+:func:`try_commitment_set(root_kb, C)`'s — an exact
+canonical-representation comparison, so a digest collision can
+never mask a real commutativity violation (P1.21 R1).
 :exc:`SanityError` is raised on mismatch with the offending
-state_hashes attached for the caller to diagnose.
+state keys attached for the caller to diagnose.
 
 Cost is ``k+1`` saturations per checked commitment (one for the
 direct path, one per parent). That's why the flag is off by
@@ -40,7 +43,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ein.inference.apriori import CanonicalSetId
-from ein.inference.canon import state_hash
+from ein.inference.canon import StateKey, state_digest, state_key
 from ein.inference.commitment import try_commitment_set
 from ein.inference.saturator import Saturator
 from ein.kb.entities import Fact, Layer
@@ -52,35 +55,40 @@ from ein.kb.store import KnowledgeBase
 class SanityError(Exception):
     """Raised by :func:`check_commutativity` when two lattice
     paths to the same commitment produce kbs with distinct
-    state_hashes.
+    state keys.
 
     Attributes
     ----------
     commitment
         The size-``k`` commitment whose parent paths diverged.
-    direct_state_hash
-        ``state_hash`` of ``try_commitment_set(root, C).kb``
+    direct_state_key
+        ``state_key`` of ``try_commitment_set(root, C).kb``
         (the engine's actual saturation path).
-    parent_state_hashes
-        Dict mapping each ``(k-1)``-subset parent to the
-        ``state_hash`` of ``parent_result.kb`` + missing
+    parent_state_keys
+        Pairs mapping each ``(k-1)``-subset parent to the
+        ``state_key`` of ``parent_result.kb`` + missing
         hypothesis + re-saturation. Only mismatching parents
         are listed.
+
+    The message shows :func:`~ein.inference.canon.state_digest`
+    hex forms (display only); the comparison itself is exact
+    key equality.
     """
 
     commitment: CanonicalSetId
-    direct_state_hash: int
-    parent_state_hashes: tuple[tuple[CanonicalSetId, int], ...]
+    direct_state_key: StateKey
+    parent_state_keys: tuple[tuple[CanonicalSetId, StateKey], ...]
 
     def __str__(self) -> str:
         parent_lines = "\n".join(
-            f"    {p!r} -> {h:#x}"
-            for p, h in self.parent_state_hashes
+            f"    {p!r} -> {state_digest(k):#x}"
+            for p, k in self.parent_state_keys
         )
         return (
             "Saturation commutativity violated for "
             f"{self.commitment!r}\n"
-            f"  direct state_hash = {self.direct_state_hash:#x}\n"
+            "  direct state_key digest = "
+            f"{state_digest(self.direct_state_key):#x}\n"
             f"  parent paths:\n{parent_lines}"
         )
 
@@ -104,9 +112,10 @@ def check_commutativity(
          through a dead parent).
        - Fork ``parent_result.kb``, add the missing element
          from ``commitment \\ P``, saturate.
-       - Hash the result.
-    3. Assert every parent path's hash equals the direct
-       path's hash. Raise :exc:`SanityError` on mismatch.
+       - Take the result's canonical :func:`state_key`.
+    3. Assert every parent path's state key equals the direct
+       path's state key (exact canonical equality). Raise
+       :exc:`SanityError` on mismatch.
 
     No-op for ``len(commitment) < 2`` — singletons have no
     parents and the check is trivially satisfied.
@@ -122,9 +131,9 @@ def check_commutativity(
         # ``root + C`` set-union fact-equality), so no commutativity
         # check applies.
         return
-    direct_hash = state_hash(direct.kb)
+    direct_key = state_key(direct.kb)
 
-    mismatches: list[tuple[CanonicalSetId, int]] = []
+    mismatches: list[tuple[CanonicalSetId, StateKey]] = []
     for i in range(len(commitment)):
         parent = tuple(
             c for j, c in enumerate(commitment) if j != i
@@ -144,15 +153,15 @@ def check_commutativity(
         fork = parent_result.kb.fork()
         fork.add_and_index_fact(h_fact)
         _ = list(Saturator(fork).saturate())
-        parent_hash = state_hash(fork)
-        if parent_hash != direct_hash:
-            mismatches.append((parent, parent_hash))
+        parent_key = state_key(fork)
+        if parent_key != direct_key:
+            mismatches.append((parent, parent_key))
 
     if mismatches:
         raise SanityError(
             commitment=commitment,
-            direct_state_hash=direct_hash,
-            parent_state_hashes=tuple(mismatches),
+            direct_state_key=direct_key,
+            parent_state_keys=tuple(mismatches),
         )
 
 

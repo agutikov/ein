@@ -15,8 +15,9 @@ mode flag. The count of distinct complete models `k` *is* the answer:
   the search is exhausted).
 - `k > 1` → **gaps** — the puzzle is under-determined: `k` distinct models, the
   residual ambiguity.
-- `k = 0` → **a contradiction** — an over-constrained KB, reported with a
-  minimal unsat core.
+- `k = 0` → **a contradiction** — an over-constrained KB, reported with its
+  unsat core: the given facts on the recorded contradictions' derivation
+  frontier (provenance-based; not a subset-minimal MUS).
 
 `solve` / `gaps` / `contradictions` are **three answers to one problem**, not
 three different problem statements and not three commands. You run **`ein
@@ -29,7 +30,7 @@ collapsing to one engine fixed.)
 Every derived fact carries provenance, so a solve can emit a
 self-contained, human-readable markdown derivation trace. The engine's
 design — and where each operation sits against the CS literature
-(Datalog · CDCL/CSP · ATMS · Apriori) — is mapped in
+(Datalog · ATMS · Apriori — CDCL/CSP as analogs) — is mapped in
 [`docs/kernel/inference/architecture_and_algorithms.md`](docs/kernel/inference/architecture_and_algorithms.md).
 
 The classic Zebra/Einstein puzzle is the running fixture:

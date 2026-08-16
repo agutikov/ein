@@ -17,7 +17,7 @@ Two notes on the refit:
   required the DAG.
 - ``solve``'s per-layer traversal differs from the removed
   contradictions entry (no mid-search unconditional-fact merge, no
-  state-hash MERGE), so exact ``enterings_total`` counts are NOT pinned
+  state-key MERGE), so exact ``enterings_total`` counts are NOT pinned
   blindly — only the structural invariants that survive the entry change.
 
 Cross-references:
@@ -129,13 +129,13 @@ def test_state_hash_collision_on_03_solves_to_one_model():
     """``03_state_hash_collision.ein``: committing {h2} derives h1 and h3,
     so the fork becomes complete (every candidate decided) and consistent
     — a solution node. The two layer-2 paths {h1,h2} / {h2,h3} saturate to
-    the SAME state and collapse at the state_hash solution-node dedup, so
+    the SAME state and collapse at the state_key solution-node dedup, so
     there is exactly ONE distinct model → ``k == 1`` → :class:`Solution`.
     No commitment dies (no conflict rule), so ``proof.dead_commitments``
     is empty.
 
     NB the per-SetNode multilabel MERGE that the removed
-    ``contradictions_solve`` exposed (``state_hash_merges == 2``, a
+    ``contradictions_solve`` exposed (``state_key_merges == 2``, a
     multilabel kb_index node) is a DAG-builder artefact; ``solve`` does
     not build the DAG, so that view is no longer produced here. The
     sound, entry-independent fact is that the colliding commitments yield
@@ -149,7 +149,7 @@ def test_state_hash_collision_on_03_solves_to_one_model():
     assert verdict.proof.dead_commitments == ()
     # solve does not build the per-SetNode DAG.
     assert verdict.proof.kb_index == {}
-    assert verdict.proof.stats.state_hash_merges == 0
+    assert verdict.proof.stats.state_key_merges == 0
 
 
 def test_state_hash_collision_03_contract_validates():

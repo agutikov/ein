@@ -270,37 +270,34 @@ NAF / quantifier-style premises:
 |--------------------|-----------------------------------------------------|-------------|
 | `(not P)`          | matches a STORED `(not P)` fact in the KB           | S1.5.8c.1   |
 | `(absent P)`       | negation-as-failure — fires iff no fact matches P   | S1.5.8c.1   |
-| `(open P)`         | parser sugar for `(and (absent P) (absent (not P)))` — the third-state match: P is neither asserted nor negated | S1.5.8c.3b |
-| `(forall ?b (G) (B))` | parser sugar for `(absent (and G (absent B)))` — for every binding of `?b` satisfying guard G, body B must hold | S1.5.8c.3a |
+| `(open P)`         | `std.macro` macro for `(and (absent P) (absent (not P)))` — the third-state match: P is neither asserted nor negated | S1.5.8c.3b |
+| `(forall ?b (G) (B))` | `std.macro` macro for `(absent (and G (absent B)))` — for every binding of `?b` satisfying guard G, body B must hold | S1.5.8c.3a |
 
 The three-state model: at any moment, a potential fact P is
 **asserted** (matched by `(P)`), **negated** (matched by `(not P)`),
 or **open** (matched by `(open P)`). The earlier overloaded
 `(not P)` meaning (default NAF) was dropped in S1.5.8c — NAF must
 now be written explicitly as `(absent P)`. `forall` and `open` are
-parser sugars expressed in terms of `absent`; the matcher itself
-sees only `absent` + nested patterns.
+load-time `(macro …)` expansions in terms of `absent` (the
+[`std.macro`](../../../../ein.py/src/ein/stdlib/macro.ein) module since
+S1.5.9 — import them; see
+[`06_reserved_names.md` §macro sugar](06_reserved_names.md#pattern-macro-sugar-forall--open--not-reserved));
+the matcher itself sees only `absent` + nested patterns.
 
-#### NAF evaluation timing (known limitation)
+#### NAF evaluation timing
 
-`(absent P)` is evaluated at **enqueue time**, not at fire time.
-A rule's NAF premise sees the KB state at the moment the matcher
-first finds a binding. Once that binding is enqueued (with
-NAF=passes), the firing commits regardless of later KB state.
-
-This means **NAF on derived facts can race**: if a rule's `(absent
-(R ?x))` premise depends on a relation R that is itself populated
-by another rule's firings, the NAF might pass early (before R is
-fully derived), commit a firing that would be incorrect under the
-fully-derived KB. The race is benign when R is fully present at
-load time (e.g., enumerated facts), problematic when R is
-derived by `(symmetric)` / `(includes)` / `(transitive)` rules.
-
-Parked for engine-side resolution in
-[P1.5a](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/README.md).
-Until then, rules whose NAF depends on derived facts should
-pre-declare those facts explicitly (as ONTOLOGY- or FACT-layer forms)
-to avoid the race.
+`(absent P)` is a **query over the current fork-local world,
+decided at fire time** — evaluated at every match, decisively
+re-checked when the firing commits (`match.absents_still_pass`,
+S1.5a.1), and never revisited afterwards. The normative definition —
+worlds, evaluation points E1–E3, the corollaries the engine relies
+on, and what is explicitly *not* provided (stratification, stable
+models, retraction) — is
+[`inference/absent_semantics.md`](../../inference/absent_semantics.md);
+the operational narrative is the
+[inference README §NAF](../../inference/README.md#naf-semantics--fire-time-re-evaluation-s15a1).
+(An earlier revision of this section described enqueue-time-only
+evaluation — that limitation was fixed by S1.5a.1.)
 
 ### Query
 

@@ -5,7 +5,7 @@ Covers `ein.render.lattice_dag.render_lattice`:
 - a 3-commitment proof (1 solution + 2 dead) renders with the right
   verdict colours; dead nodes carry an unsat-core tooltip + a no-good
   back-edge;
-- a `state_hash`-collapsed `SetNode` renders as one multilabel node;
+- a `state_key`-collapsed `SetNode` renders as one multilabel node;
 - rendering from `lattice_snapshot` is invariant under
   `lattice_order_seed` (the S1.5b.31 shuffle harness);
 - both views render valid DOT (Graphviz, skipped if absent);
@@ -112,13 +112,13 @@ def test_full_view_falls_back_to_solution_frontier():
     """``solve`` does not build the per-SetNode DAG (``proof.kb_index`` is
     empty), so ``render_lattice(view="full")`` falls back to the
     solution-frontier view: one green node per distinct MODEL
-    (``proof.solutions``, state_hash-deduped). branching/04 → 2 models →
+    (``proof.solutions``, state_key-deduped). branching/04 → 2 models →
     2 green nodes."""
     kb = _kb(BRANCHING / "04_two_levels.ein")
     verdict, _ = solve(kb, stop_after=None, max_set_size=3, store_lattice=True)
     assert verdict.proof.kb_index == {}
     dot = render_lattice(verdict.proof, view="full")
-    # `proof.solutions` reports distinct MODELS (state_hash-deduped): two.
+    # `proof.solutions` reports distinct MODELS (state_key-deduped): two.
     assert len(verdict.proof.solutions) == 2
     # The fallback frontier shows one green node per distinct model.
     assert dot.count(SOL_GREEN) == 2

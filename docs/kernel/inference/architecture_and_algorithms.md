@@ -26,11 +26,11 @@ shapes of one question, all read off a single search (P1.7a):
 
 - **solve** — is there a unique complete model? (k = 1)
 - **gaps** — which cells are forced vs contingent? (k > 1, the residual)
-- **contradictions** — a minimal unsat core for an over-constrained KB. (k = 0)
+- **contradictions** — the unsat core (recorded-derivation source frontier) of an over-constrained KB. (k = 0)
 
 These are **three answers to one problem, not three problem statements**: the
 verdict is *read from* the result — the count `k` of distinct
-`state_hash`-deduped solution nodes (`verdict_of`) — never *chosen* up front.
+`state_key`-deduped solution nodes (`verdict_of`) — never *chosen* up front.
 There is **one** public entry, `solve()`; the stop policy (single /
 `stop_after=N` / exhaustive) only bounds how far the lattice is walked, and the
 optional `store_lattice` proof carries the gaps view (the full solution set)
@@ -95,7 +95,7 @@ monotone/non-monotone seam:
   │      try_commitment_set      fork+write+saturate+detect   │
   │      ├─ dead  → emit no-good (prunes supersets)           │
   │      └─ alive → record solution node iff complete∧consistent
-  │   verdict_of(k deduped solution nodes by state_hash)      │
+  │   verdict_of(k deduped solution nodes by state_key)       │
   └─────────────────────────────────────────────────────────┘
         ▼
   Verdict = Solution(k=1) | Ambiguity(k>1) | Contradiction(k=0)
@@ -123,7 +123,7 @@ candidate goes through `try_commitment_set`: `fork()` the root, write the
 hypotheses, saturate, detect. A **dead** branch emits a no-good clause (whose
 supersets Apriori then prunes — downward closure); an **alive** branch that is
 `complete ∧ consistent` (`solution.is_solution_node`) is recorded as a solution
-node, deduped by `state_hash`. The root stays stable mid-search — an alive
+node, deduped by `state_key`. The root stays stable mid-search — an alive
 branch's consequences never merge back (the "unconditional"-fact extraction
 was retired in P1.21 R2 as unsound under NAF). The verdict is read off
 the deduped count k (`verdict_of`).
@@ -143,7 +143,7 @@ the deduped count k (`verdict_of`).
 | `Provenance` + `DerivationDAG` (`kb/provenance`) | per-fact justification (`source`/`rule`/`hypothesis`), the derivation graph, source frontier | TMS justifications; database why-provenance; proof terms |
 | `CanonicalSetId` (`apriori`) | a sorted tuple of FactIds = one **commitment set** | a CSP partial assignment / an ATMS environment / an itemset |
 | no-good `Clause = frozenset[FactId]` (`nogoods`) | a learned "this combination is dead" clause, kept subsumption-minimal | CDCL conflict clause / CSP no-good |
-| `SolutionRecord` / `DeadCommitment` (`monotonic/lattice`) | a recorded model / refutation with its `state_hash` and core | model / unsat certificate |
+| `SolutionRecord` / `DeadCommitment` (`monotonic/lattice`) | a recorded model / refutation with its `state_key` and core | model / unsat certificate |
 | `Verdict` (`verdict`) | `Solution \| Ambiguity \| Contradiction` + optional `LatticeProof` | SAT/UNSAT/MULTIPLE + certificate |
 
 ---
@@ -172,7 +172,7 @@ and the fast/optimal algorithm known for it.
   prune), cache one-step lookahead kills as `(not h)`, prune by that lookahead.
   (`nogoods`, `apriori`, `lookahead`, `hypgen`.)
 - **O9 — Model canonicalisation / dedup.** Collapse equivalent models.
-  (`canon.state_hash`.)
+  (`canon.state_key`.)
 
 ---
 
@@ -191,7 +191,15 @@ and the fast/optimal algorithm known for it.
 | **O9** canonicalise | symmetry breaking; state canonicalisation; graph canon | order-insensitive hashing; SBDS/SBDD; nauty |
 
 The single most useful reframing: **the deductive layer is a Datalog
-engine, and the search layer is a CDCL/CSP solver with an ATMS underneath.**
+engine, and the search layer is an ATMS-style environment search with
+Apriori candidate generation and nogood learning** — commitment sets are
+assumption environments explored breadth-first by cardinality, a dead
+environment is learned whole as a no-good clause (kept
+subsumption-minimal), and Apriori's downward-closure filter suppresses
+its supersets. **CDCL/CSP is the analog** (no-good ≈ conflict clause /
+CSP no-good) **and an optimization direction**
+([P1.9 E-catalog](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/README.md)),
+not the mechanism.
 Two idiosyncrasies stand out against that backdrop, both in O7: Ein
 branches on **sets of commitments enumerated by cardinality (Apriori)**
 rather than one decision variable at a time (DPLL), and it keeps **explicit
@@ -268,7 +276,10 @@ search layer, not the deductive one**: retraction = "this assumption led to
 ⊥, fork without it." That makes the *whole* system an ATMS/default reasoner
 rather than a stratified-Datalog one. **Gap:** no well-founded/stable-model
 machinery — sound because the puzzle ruleset is effectively stratified +
-the hypothesis layer is monotone-per-branch.
+the hypothesis layer is monotone-per-branch. The **normative semantics**
+(worlds, the `W(t) ⊭ ∃x̄.Pθ` definition, evaluation points E1–E3,
+corollaries C1–C7, and the explicit non-guarantees this Gap gestures at)
+is [`absent_semantics.md`](absent_semantics.md) (P1.21 R4).
 
 ### O4 — Equality / congruence
 
@@ -310,8 +321,12 @@ UNSAT and **MUS** extraction finds a minimal unsatisfiable subset.
 and `store.unsat_core` returns the **source frontier** of a clash (the given
 facts that jointly force it) via a `walk_premises` closure walk. This is a faithful
 ATMS-style justification graph. **Gap:** the unsat-core is the source
-frontier, **not a minimal MUS** (flagged in P1.7a) — minimisation (e.g.
-deletion-based MUS) is a follow-up; provenance is not yet a semiring (no
+frontier per the *recorded* derivations, **not a minimal MUS** (flagged in
+P1.7a); `frontier.smallest_contradiction_frontier` picks the smallest
+single-witness frontier but inherits the same caveat (one justification per
+fact, first derivation wins). Deletion-based MUS minimisation is
+**NAF-unsound here** (S1.9.E19); true minimality needs multi-justification
+provenance — parked as P1.9 E25. Provenance is also not yet a semiring (no
 multiplicity/why-vs-how distinction, which M2-scale work might want).
 
 ### O7 — Hypothesis enumeration over a subset lattice
@@ -368,11 +383,12 @@ re-architecture (O7) would bring.
 exploring symmetric models; **graph canonicalisation** (nauty/bliss) for full
 structural symmetry.
 
-**Ein today.** `canon.state_hash` hashes the propositional fact set
-order-insensitively (excluding bookkeeping heads), so distinct branches that
-reach the same model collapse to one solution node — a lightweight
-canonicalisation that the S1.7.24 symmetric-removal made fully generic (no
-hard-coded symmetry). **Adequate** for Zebra-scale; full symmetry breaking
+**Ein today.** `canon.state_key` canonicalises the propositional fact set
+order-insensitively — the sorted, layer-free `(relation, args)` tuple; the
+representation *itself* is the identity (P1.21 R1 — any hash of it is a
+display digest, never identity), so distinct branches that reach the same
+model collapse to one solution node — a lightweight canonicalisation that
+the S1.7.24 symmetric-removal made fully generic (no hard-coded symmetry). **Adequate** for Zebra-scale; full symmetry breaking
 (nauty-style) would only matter for far larger or highly-symmetric instances.
 
 ---
@@ -391,7 +407,12 @@ levers map onto the literature precisely:
   don't yet).
 - **DPLL/CDCL re-architecture of O7/O8** — watched literals, VSIDS,
   non-chronological backjumping. The big structural change; deferred because
-  search is not the bottleneck (saturation is).
+  search is not the bottleneck (saturation is). The recorded forward
+  pointers are
+  [P1.9 E20](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e20_conflict_cache.md)
+  (conflict-cache cross-call ≈ incremental SAT) and
+  [E23](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e23_prove_speedup.md)
+  (exhaustive-search speedup umbrella).
 - **Congruence closure / e-graph (O4)** — only when equality reasoning earns
   its keep (F4).
 

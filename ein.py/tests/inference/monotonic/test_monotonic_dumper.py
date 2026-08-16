@@ -34,7 +34,7 @@ def _kb(text: str) -> KnowledgeBase:
 
 # Same `(paint Blue ?)` kill fixture as test_monotonic_cdcl —
 # guarantees at least one layer-1 dead-post entering when the
-# CDCL path is exercised under `_NO_LOOKAHEAD`.
+# no-good learning path is exercised under `_NO_LOOKAHEAD`.
 SINGLETON_FIXTURE = """
 (rule forbid-paint-Blue ()
   :match  (paint Blue ?y)

@@ -153,7 +153,7 @@ block. **Resolution precedence:** explicit `solve(kb, config=…)` >
 | `lattice_sanity_check` | `False` | Verify saturation commutativity for size-`k≥2` commitments (release-regression only; costs `k+1` saturations each). |
 | `lattice_order` | `"lex"` | Within-layer candidate order. `"lex"` (canonical-tuple sort, the baseline) or `"score-sum"` (per-set score; needs `hypgen_scoring="popularity"` to differentiate). |
 | `lattice_order_seed` | `None` | Per-layer shuffle seed (traversal-order dependence probing); `None` disables. |
-| `enable_path_nogoods` | `True` | CDCL path-condition no-good emission. Off → no clause emitted, so subsumed dead commitments are re-explored. |
+| `enable_path_nogoods` | `True` | Learned no-good emission (CDCL-style). Off → no clause emitted, so subsumed dead commitments are re-explored. |
 | `enable_symmetric_mirror` | `True` | The `__symmetric__` native arg-swap mirror (kernel fast-path over the stdlib `symmetric` rule). Off → marked relations not closed under swap by the fast-path. |
 | `enable_singleton_writeback` | `True` | Size-1 dead-clause `(not h)` writeback to `_negated_facts`. Off → the negation is re-derived rather than cached. |
 | `enable_forced_positive` | `True` | Forced-positive promotion: a sole-surviving alive singleton is promoted to a root fact. |

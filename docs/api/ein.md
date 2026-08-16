@@ -9,7 +9,7 @@ The Python surface for embedding Ein in another project: **parse** a
 > engine *internals* are
 > [`docs/kernel/inference/python_impl.md`](../kernel/inference/python_impl.md).
 > This page deliberately stops at the public surface — it never reaches
-> into the matcher, compiler, hypothesis generator, or CDCL machinery.
+> into the matcher, compiler, hypothesis generator, or no-good machinery.
 
 *Verified against commit `60c192b` (2026-06-16) — the worked example below
 was run end-to-end against [`examples/zebra2.ein`](../../examples/zebra2.ein).*
@@ -213,7 +213,7 @@ directly, as every example here does.
 
 The engine internals — the matcher (`match.py`), the per-rule compiler
 (`compile.py`), the hypothesis generator (`hypgen.py`), the contradiction
-detector, the CDCL no-goods, and the `monotonic/` lattice driver's private
+detector, the learned no-goods, and the `monotonic/` lattice driver's private
 helpers — are **not** part of the embedding surface. They change between
 releases. To understand them, read
 [`docs/kernel/inference/python_impl.md`](../kernel/inference/python_impl.md)

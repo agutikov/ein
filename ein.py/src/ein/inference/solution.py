@@ -40,7 +40,7 @@ def open_hypotheses(kb: KnowledgeBase) -> frozenset[FactId]:
     ``k`` is recovered generically: committing either orientation
     re-derives the other (the user's ``(rule symmetric)``), so both
     branches saturate to the **same** KB and collapse at the
-    ``canon.state_hash`` solution-node dedup — the pair counts once
+    ``canon.state_key`` solution-node dedup — the pair counts once
     because the *user's* rule established the equivalence, not the kernel.
     """
     return frozenset(

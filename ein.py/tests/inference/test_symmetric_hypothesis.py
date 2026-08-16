@@ -11,7 +11,7 @@ open-set canonicalisation). The 31 T1.7.6.4 fails are the warning that a
 naive removal double-counts pairs / leaves deaths un-propagated.
 
 These assertions must stay green across the S1.7.24 redesign — the
-generic `state_hash` solution-node dedup (both orderings saturate to the
+generic `state_key` solution-node dedup (both orderings saturate to the
 same KB via the user's `(rule symmetric)`) is what must recover the same
 `k` once the kernel stops special-casing the tag.
 """

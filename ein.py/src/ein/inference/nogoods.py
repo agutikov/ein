@@ -1,6 +1,7 @@
 """Path-condition no-good clause learning — S1.5a.18.
 
-CDCL flavour applied to the hypothesis search: every dead
+ATMS-style nogoods for the hypothesis search (CDCL conflict
+clauses are the SAT analog): every dead
 commitment's path condition (chain of ancestor hypotheses + own
 hyp) becomes a learned clause stored at ``root.kb._nogoods``. A
 prospective commitment set that is a superset of any learned

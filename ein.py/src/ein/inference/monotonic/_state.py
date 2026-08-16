@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from ein.inference.apriori import (
     CanonicalSetId,
 )
+from ein.inference.canon import StateKey
 from ein.inference.contradiction import ContradictionDetector
 from ein.inference.monotonic.lattice import (
     DeadCommitment,
@@ -68,7 +69,7 @@ class _LatticeLoopState:
     :attr:`_LoopCtx.lstate`. Holds what the single ``solve`` loop collects:
 
     - :attr:`solution_nodes` / :attr:`truncated` — the deduped solution nodes
-      (``state_hash`` → record), written by :func:`_record_node`, read by
+      (``state_key`` → record), written by :func:`_record_node`, read by
       :func:`verdict_of` / :func:`_finalise_solve` / the ``stop_after`` +
       depth-cap gates. ``truncated`` records a ``stop_after`` / depth-cap cut
       (→ ``stats.exhausted = False``).
@@ -77,20 +78,22 @@ class _LatticeLoopState:
       for the ``k=0`` core and packaged into the proof's refutation map.
     - :attr:`alive_at_end_tuple` — the size-N frontier left alive iff the
       depth cap was the loop terminator (``()`` otherwise).
-    - :attr:`kb_index` / :attr:`state_hash_merges` — the per-SetNode DAG store
+    - :attr:`kb_index` / :attr:`state_key_merges` — the per-SetNode DAG store
       + its merge counter. ``solve`` builds no DAG, so these stay empty / 0;
       they remain as the home of the merge semantics (:func:`_record_setnode`)
       and keep the proof's :class:`LatticeStats` field populated.
     """
 
     dead_commitments:  list[DeadCommitment] = field(default_factory=list)
-    kb_index:          dict[int, SetNode] = field(default_factory=dict)
+    kb_index:          dict[StateKey | CanonicalSetId, SetNode] = field(
+        default_factory=dict,
+    )
     alive_at_end_tuple: tuple[CanonicalSetId, ...] = ()
-    state_hash_merges: int = 0
-    # Deduped solution nodes (state_hash → record) and whether the search ran
+    state_key_merges:  int = 0
+    # Deduped solution nodes (state_key → record) and whether the search ran
     # out of lattice (exhausted) or was cut short by ``stop_after`` / the
     # depth cap (``truncated``).
-    solution_nodes:    dict[int, SolutionRecord] = field(default_factory=dict)
+    solution_nodes:    dict[StateKey, SolutionRecord] = field(default_factory=dict)
     truncated:         bool = False
 
 

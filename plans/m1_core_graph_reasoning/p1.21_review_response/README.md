@@ -122,3 +122,57 @@ Per the phase charter, each review point is processed as **two tasks**:
   chooses the rename path — parked as a P1.9/follow-up entry.
 - Any `absent` stratification checker — S1.21.4 documents semantics; a
   static stratification/dependency analysis is future work.
+
+## Divergences surfaced by investigation (2026-08-16)
+
+New engine-vs-semantics divergences found by the R4 investigation
+([`reports/r4_absent_semantics.md`](reports/r4_absent_semantics.md) §2,
+probes P6/P8) and — per the improvement gate ("behaviour unchanged; any
+divergence is reported, not silently fixed") — **recorded here, not
+fixed** by T1.21.4.2. Both are documented in
+[`docs/kernel/inference/absent_semantics.md` §Known divergences](../../../docs/kernel/inference/absent_semantics.md#known-divergences-open-questions-p121)
+and pinned in
+[`tests/inference/test_absent_semantics.py`](../../../ein.py/tests/inference/test_absent_semantics.py).
+D-R5-1 was surfaced by the R5 investigation and is likewise recorded
+here, not fixed by the docs-only T1.21.5.2.
+
+- **D3 — lookahead evaluates AbsentGuards against a world without the
+  candidate.** [`lookahead.py`](../../../ein.py/src/ein/inference/lookahead.py)
+  (`dies_immediately`, the probe construction at ~100-118) posits the
+  candidate `h` into one positive premise but runs the rule's *other*
+  premises — including `AbsentGuard`s — against `kb` **without** `h`: the
+  NAF queries a different world than the probe hypothesises. A rule whose
+  guard watches the candidate's own relation (probe P6:
+  `false ← (cand ?x) ∧ absent (cand ?x)`, unsatisfiable in any one world)
+  therefore kills a live hypothesis, violating the lookahead's own
+  "never reports a live hypothesis as dead" docstring — and with the
+  default-on kill cache, [`hypgen._write_negated`](../../../ein.py/src/ein/inference/hypgen.py)
+  writes `(not h)` back to the parent, making it verdict-affecting in
+  principle. M1's shipping rule library has no such rule (typecheck/elim
+  guards watch `is-a`; candidates are domain relations), so no fixture
+  misbehaves today. Pinned as *current behaviour* (not an endorsement) by
+  `test_lookahead_naf_world_excludes_candidate`.
+- **D5 — CONFIRMED unsound firing: or-disjunct `AbsentGuard`s skip
+  fire-time re-eval.** [`match.absents_still_pass`](../../../ein.py/src/ein/inference/match.py)
+  walks only `plan.steps`, while `match.run` also yields matches from the
+  S1.8.A13 `plan.extra_match_plans` or-disjuncts — so a firing admitted
+  via a disjunct whose `(absent …)` has since flipped commits on a stale
+  verdict (probe P8: plain `(or …)` + `(absent …)` + priorities, no
+  exotica). Candidate fix is ~3 lines: `absents_still_pass` also walks
+  `plan.extra_match_plans` (each disjunct re-checked like `plan.steps`).
+  Pinned `xfail(strict=True)` by
+  `test_or_disjunct_absent_not_reevaluated_at_fire_time`, so the fix
+  flips it loudly. **Promote-to-fix candidate** — phase owner: this is a
+  genuine soundness gap in the deductive layer, in scope for a follow-up
+  task of this phase (or P1.9) once the behaviour-unchanged gate lifts.
+- **D-R5-1 — `_handle_dead` NameError with `enable_path_nogoods=False`
+  and a dumper attached** (from the R5 investigation,
+  [`reports/r5_positioning.md`](reports/r5_positioning.md) §2).
+  [`_helpers.py:434`](../../../ein.py/src/ein/inference/monotonic/_helpers.py)
+  assigns `landed` only inside the `if ctx.cfg.enable_path_nogoods:`
+  gate, but the dumper call reads it unconditionally at `:456–457`
+  (`nogood_emitted=landed, nogood_subsumed=not landed`) — any dead
+  entering under that config raises `NameError`. Candidate fix (one
+  line): initialise `landed = False` before the gate. Behaviour change
+  on an off-default diagnostic path, so out of the docs-only T1.21.5.2
+  — left for the acceptance gate / follow-up.

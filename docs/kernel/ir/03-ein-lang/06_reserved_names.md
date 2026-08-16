@@ -32,7 +32,7 @@ you can author a puzzle without reading engine source.
 | set a solver knob                            | `(config :flag v)`                      | §declarators |
 | import a stdlib module                       | `(import std.X :symbols (…))`           | §declarators |
 | conjoin / disjoin premises in `:match`       | `(and …)` / `(or …)`                    | §⊥ primitives |
-| match only when a pattern is **absent** (NAF)| `(absent P)`                            | §⊥ primitives |
+| match only when a pattern is **absent** (NAF)| `(absent P)`                            | §⊥ primitives; [semantics](../../inference/absent_semantics.md) |
 | match a **stored** negative                  | `(not P)` in `:match`                   | §⊥ primitives |
 | require two slots differ / are equal         | `(neq ?a ?b)` / `(eq ?a ?b)`            | §predicates |
 | declare this branch contradictory            | `:assert (false)`                       | §⊥ primitives |
@@ -99,7 +99,7 @@ Declared once in [`inference/primitives.py`](../../../../ein.py/src/ein/inferenc
 | `false` | 0+ | direct ⊥ — `(false)` asserts the firing rule reached a contradiction (args empty by convention) | contradiction detector |
 | `and` | 2+ | conjunction; flattened into sibling premises of one plan | compiler (`compile.py`) |
 | `or` | 2+ | disjunction; a **top-level** `(or …)` in a `:match` is lowered to one rule per disjunct at load time | loader (`kb.from_ir._match_disjuncts`) |
-| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) | compiler + matcher |
+| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query* decided at fire time, never a stored atom; normative semantics in [`absent_semantics.md`](../../inference/absent_semantics.md) | compiler + matcher |
 
 ## Computed predicates
 
@@ -129,6 +129,12 @@ puzzle may even redefine them. A puzzle that wants them imports them
 |-------|------|------------|
 | `open` | `(open P)` | `(and (absent P) (absent (not P)))` — P is neither asserted nor negated |
 | `forall` | `(forall ?b G B)` | `(absent (and G (absent B)))` — guarded universal ∀b. G→B |
+
+Both expand to nested `absent`s, so their meaning is inherited from the
+[`absent` semantics](../../inference/absent_semantics.md): the ∀ arises
+as ¬∃¬ over the fire-time world, and a nested absent is the one guard
+shape that can flip false→true during saturation (handled by the
+saturator's full-match on watched relations, §C5 there).
 
 ## Hypothesis / query control
 

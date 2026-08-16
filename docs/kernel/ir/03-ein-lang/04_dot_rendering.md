@@ -178,7 +178,7 @@ renders it as a DAG (`render_lattice(proof | snapshot, view=)`):
 
 - `rankdir=LR`, ranked by **layer** (= commitment-set size); layer 0
   (root saturation) at the left, layers flowing rightward.
-- One node per visited commitment / `state_hash`; when several
+- One node per visited commitment / `state_key`; when several
   commitments collapse to one post-saturation state the node is a
   multilabel ("+N ≡ same state").
 - Colour by verdict — **alive** grey, **dead** red, **solution** green.

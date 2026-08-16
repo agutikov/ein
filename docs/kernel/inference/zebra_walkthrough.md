@@ -21,8 +21,9 @@ example produces exactly the answer this trace derives).
 
 - **Branch depth `d`.** `d = 0` is unconditional saturation. `d = 1` is the
   scope inside the outer-most hypothesis. A contradiction at depth `d`
-  backjumps to `d−1` and asserts the negation of the entering hypothesis as
-  a learnt no-good clause (S1.5a.18). The human solution stays flat — no
+  kills that branch — the engine returns to `d−1` (no backjump; the layer
+  sweep just continues) and learns the negation of the entering hypothesis
+  as a no-good clause (S1.5a.18). The human solution stays flat — no
   branch ever reaches `d = 2`.
   - **`d` → `(layer, set-size)` (P1.5b).** The engine no longer has an
     ordered tree; it has a commitment lattice. `d` maps to **commitment-set

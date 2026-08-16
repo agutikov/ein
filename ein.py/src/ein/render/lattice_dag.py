@@ -4,7 +4,7 @@ The engine no longer produces an ordered search tree; it produces a
 **set-indexed commitment lattice**. Each visited commitment is a
 `frozenset` of hypothesis facts (a `CanonicalSetId`); commitments are
 related by subset/cover (Apriori prefix-join) and collapse by
-post-saturation `state_hash`. :func:`render_lattice` draws that lattice
+post-saturation `state_key`. :func:`render_lattice` draws that lattice
 as a DAG — the analog of the old tree view, but a partial order.
 
 Inputs (either is accepted; a `Verdict` is unwrapped to its proof):
@@ -15,14 +15,14 @@ Inputs (either is accepted; a `Verdict` is unwrapped to its proof):
   with their ``unsat_core`` (tooltip) + ``learned_clause`` (the lifted
   no-good, drawn as a dashed back-edge).
 - :class:`~ein.inference.monotonic.snapshot.LatticeSnapshotV1` —
-  the permutation-invariant, `state_hash`-collapsed projection
+  the permutation-invariant, `state_key`-collapsed projection
   (S1.5b.31). **Order-stable** across ``lattice_order_seed`` → a
   reproducible diagram; the preferred input when determinism matters.
 
 Two views (``view=``):
 
 - ``"full"`` — every visited commitment / state (needs the
-  `kb_index` / `nodes_by_state_hash`; falls back to the solution view
+  `kb_index` / `nodes_by_state_key`; falls back to the solution view
   with a note when those are empty).
 - ``"solution"`` — the surviving solution commitment(s) + the dead
   siblings pruned at each layer; the small sub-DAG the trace embeds.
@@ -38,6 +38,7 @@ from .dot_util import digraph_open, fact_label, hashed_id, multiline, quote
 
 if TYPE_CHECKING:
     from ..inference.apriori import CanonicalSetId
+    from ..inference.canon import StateKey
     from ..inference.monotonic.lattice import DeadCommitment
     from ..kb.provenance import FactId
 
@@ -58,7 +59,7 @@ class _Cell:
     commitments:    tuple[CanonicalSetId, ...]
     verdict:        str
     layer:          int
-    state_hash:     int | None
+    state_key:      StateKey | None
     unsat_core:     frozenset | None
     learned_clause: frozenset[FactId] | None
 
@@ -67,12 +68,12 @@ def _combine(verdicts: frozenset[str] | set[str]) -> str:
     return max(verdicts, key=lambda v: _VERDICT_RANK.get(v, -1)) if verdicts else "alive"
 
 
-def _make_cell(commitments, verdict, state_hash, dc: DeadCommitment | None) -> _Cell:
+def _make_cell(commitments, verdict, state_key, dc: DeadCommitment | None) -> _Cell:
     commits = tuple(commitments)
     rep = min(commits, key=lambda c: (len(c), c)) if commits else ()
     return _Cell(
         rep=rep, commitments=commits, verdict=verdict, layer=len(rep),
-        state_hash=state_hash,
+        state_key=state_key,
         unsat_core=(dc.unsat_core if dc else None),
         learned_clause=(dc.learned_clause if dc else None),
     )
@@ -85,13 +86,13 @@ def _cells(source, view: str) -> tuple[list[_Cell], bool]:
     source had no stored lattice (so the solution view was used).
     """
     # Unwrap a Verdict to its proof.
-    if not hasattr(source, "kb_index") and not hasattr(source, "nodes_by_state_hash"):
+    if not hasattr(source, "kb_index") and not hasattr(source, "nodes_by_state_key"):
         proof = getattr(source, "proof", None)
         if proof is None:
             raise ValueError("render_lattice needs a LatticeProof or LatticeSnapshotV1")
         source = proof
 
-    if hasattr(source, "nodes_by_state_hash"):        # LatticeSnapshotV1
+    if hasattr(source, "nodes_by_state_key"):         # LatticeSnapshotV1
         return _snapshot_cells(source, view)
     return _proof_cells(source, view)                 # LatticeProof
 
@@ -101,9 +102,9 @@ def _proof_cells(proof, view: str) -> tuple[list[_Cell], bool]:
     if view == "full" and proof.kb_index:
         cells = []
         for node in proof.kb_index.values():
-            commits = tuple(sorted(node.labels))
+            commits = tuple(sorted(node.labels, key=repr))
             dc = next((dead_by[c] for c in commits if c in dead_by), None)
-            cells.append(_make_cell(commits, node.verdict, node.state_hash, dc))
+            cells.append(_make_cell(commits, node.verdict, node.state_key, dc))
         return _dedup(cells), True
     # solution view, or full-fallback when no stored lattice.
     cells = [_make_cell((s.commitment,), "solution", None, None)
@@ -115,15 +116,20 @@ def _proof_cells(proof, view: str) -> tuple[list[_Cell], bool]:
 
 
 def _snapshot_cells(snap, view: str) -> tuple[list[_Cell], bool]:
-    if view == "full" and snap.nodes_by_state_hash:
+    # NB every sort here is key=repr: state keys / label sets are tuples
+    # of heterogeneous tuples with no native total order (P1.21 R1).
+    if view == "full" and snap.nodes_by_state_key:
         cells = [
-            _make_cell(tuple(sorted(labels)), _combine(verdicts), sh, None)
-            for sh, labels, verdicts in snap.nodes_by_state_hash
+            _make_cell(tuple(sorted(labels, key=repr)), _combine(verdicts), sk, None)
+            for sk, labels, verdicts in snap.nodes_by_state_key
         ]
         return _dedup(cells), True
-    cells = [_make_cell((c,), "solution", None, None) for c in sorted(snap.solutions)]
-    cells += [_make_cell((c,), "dead", None, None) for c in sorted(snap.deads)]
-    cells += [_make_cell((c,), "alive", None, None) for c in sorted(snap.alive_at_end)]
+    cells = [_make_cell((c,), "solution", None, None)
+             for c in sorted(snap.solutions, key=repr)]
+    cells += [_make_cell((c,), "dead", None, None)
+              for c in sorted(snap.deads, key=repr)]
+    cells += [_make_cell((c,), "alive", None, None)
+              for c in sorted(snap.alive_at_end, key=repr)]
     return _dedup(cells), view != "full"
 
 
@@ -142,12 +148,14 @@ def _dedup(cells: list[_Cell]) -> list[_Cell]:
             rep=c.rep,
             commitments=tuple(dict.fromkeys((*prev.commitments, *c.commitments))),
             verdict=verdict, layer=c.layer,
-            state_hash=prev.state_hash if prev.state_hash is not None else c.state_hash,
+            state_key=prev.state_key if prev.state_key is not None else c.state_key,
             unsat_core=prev.unsat_core or c.unsat_core,
             learned_clause=prev.learned_clause or c.learned_clause,
         )
-    # deterministic order: by (layer, representative).
-    return sorted(by_rep.values(), key=lambda c: (c.layer, c.rep))
+    # deterministic order: by (layer, repr(representative)) — repr, not the
+    # raw tuple: a rep may be a StateKey / mixed-arg commitment, which has
+    # no native total order (P1.21 R1).
+    return sorted(by_rep.values(), key=lambda c: (c.layer, repr(c.rep)))
 
 
 # ── labels / ids ───────────────────────────────────────────────────

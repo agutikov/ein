@@ -13,14 +13,14 @@
 # 1. Field-iteration / dataclass-eq / documentation reads vulture misses:
 #    - forced_positives  — _BaseStats counter read via `for f in fields(stats)`
 #                          (_serialise.py, _lattice_dump.py, _helpers.py)
-#    - root_state_hash   — LatticeSnapshotV1 field; participates in dataclass
+#    - root_state_key    — LatticeSnapshotV1 field; participates in dataclass
 #                          `==` (shuffle-invariance tests)
 #    - col               — Loc source-location field set by the parser
 #    - arity/role/site   — Primitive metadata table (inline kernel docs)
 #    - weird_flag        — synthetic test dataclass field read via fields()
 _.forced_positives  # unused attribute (src/ein/inference/monotonic/_helpers.py:169)
 forced_positives  # unused variable (src/ein/inference/monotonic/lattice.py:81)
-root_state_hash  # unused variable (src/ein/inference/monotonic/snapshot.py:113)
+root_state_key  # unused variable (src/ein/inference/monotonic/snapshot.py:113)
 arity  # unused variable (src/ein/inference/primitives.py:47)
 role  # unused variable (src/ein/inference/primitives.py:48)
 site  # unused variable (src/ein/inference/primitives.py:49)

@@ -16,11 +16,11 @@ commitment PATHS or the learned-nogood clauses — both of which are
 legitimately order/orientation-sensitive once symmetric pairs are no
 longer canonicalised by the kernel.
 
-The snapshot canonicalises per-state_hash:
+The snapshot canonicalises per-state_key:
 
 - Group every :class:`SetNode` in ``proof.kb_index`` by
-  ``state_hash``.
-- For each ``state_hash``, union all observed labels into one
+  ``state_key``.
+- For each ``state_key``, union all observed labels into one
   frozenset (so under-gaps-multi-SetNodes-per-state collapse to
   one entry).
 - The verdict label per state is the union of observed
@@ -46,7 +46,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ein.inference.apriori import CanonicalSetId
-from ein.inference.canon import state_hash
+from ein.inference.canon import StateKey, state_key
 from ein.inference.monotonic.lattice import LatticeProof
 from ein.inference.verdict import Verdict
 from ein.kb.store import KnowledgeBase
@@ -62,18 +62,19 @@ class LatticeSnapshotV1:
 
     Attributes
     ----------
-    nodes_by_state_hash
-        Sorted tuple of ``(state_hash, union_labels,
-        verdict_labels)`` triples. One entry per distinct
-        ``state_hash`` observed in :attr:`LatticeProof.kb_index`.
+    nodes_by_state_key
+        Sorted tuple of ``(state_key, union_labels,
+        verdict_labels)`` triples (sorted ``key=repr`` — state
+        keys have no useful native order). One entry per distinct
+        ``state_key`` observed in :attr:`LatticeProof.kb_index`.
         ``union_labels`` collapses every label across SetNodes
-        that share the state_hash (a no-op under
+        that share the state_key (a no-op under
         contradictions+store_lattice merge; meaningful under
-        gaps where distinct commitments may hash-collide).
+        gaps where distinct commitments may reach one state).
         ``verdict_labels`` is the union of per-SetNode
-        ``SetNode.verdict`` values for that state_hash.
-    root_state_hash
-        ``state_hash(root_kb)`` at termination. Carries the
+        ``SetNode.verdict`` values for that state_key.
+    root_state_key
+        ``state_key(root_kb)`` at termination. Carries the
         accumulated singleton-death ``(not h)`` writebacks + the
         forced-positive promotions (the only root writes during
         search — P1.21 R2).
@@ -82,14 +83,14 @@ class LatticeSnapshotV1:
         ``"Ambiguity"`` / ``"Contradiction"``) — the mode
         contract's verdict shape.
     solutions
-        ``frozenset(state_hash(s.kb) for s in proof.solutions)``
+        ``frozenset(state_key(s.kb) for s in proof.solutions)``
         — the set of distinct satisfying *model states* (S1.7.24;
-        keyed by post-saturation state_hash, NOT commitment path,
+        keyed by post-saturation state_key, NOT commitment path,
         so the two orientations of a symmetric pair count once).
         ``frozenset(())`` when no commitment satisfied (a
         ``Contradiction`` verdict).
     deads
-        ``frozenset(d.state_hash for d in proof.dead_commitments)``
+        ``frozenset(d.state_key for d in proof.dead_commitments)``
         — the set of distinct refuted *states* (S1.7.24; state-keyed
         for the same orientation-invariance). ``frozenset(())`` when
         no commitment was refuted.
@@ -108,15 +109,15 @@ class LatticeSnapshotV1:
         terminator.
     """
 
-    nodes_by_state_hash: tuple[
-        tuple[int, frozenset[CanonicalSetId], frozenset[str]], ...,
+    nodes_by_state_key: tuple[
+        tuple[StateKey, frozenset[CanonicalSetId], frozenset[str]], ...,
     ]
-    root_state_hash:     int
+    root_state_key:      StateKey
     verdict_kind:        str
     # S1.7.24 — solutions / deads are sets of post-saturation STATE
-    # hashes (orientation-invariant), not commitment paths.
-    solutions:           frozenset[int]
-    deads:               frozenset[int]
+    # keys (orientation-invariant), not commitment paths.
+    solutions:           frozenset[StateKey]
+    deads:               frozenset[StateKey]
     alive_at_end:        frozenset[CanonicalSetId]
 
 
@@ -132,7 +133,7 @@ def lattice_snapshot(
     (the default fast path leaves ``proof`` None).
     The ``root_kb`` argument is the kb at termination (the
     solver's ``root_kb`` after the call returns) — its
-    ``state_hash`` records the cumulative root-side merges +
+    ``state_key`` records the cumulative root-side merges +
     forced-positive promotions.
     """
     proof = getattr(verdict, "proof", None)
@@ -143,35 +144,37 @@ def lattice_snapshot(
             f"{type(proof).__name__ if proof is not None else 'None'}",
         )
 
-    # Group SetNodes by state_hash so the snapshot collapses any
+    # Group SetNodes by state_key so the snapshot collapses any
     # per-commitment dict-keying artefacts (especially under gaps
-    # where the dict key is hash(commitment) rather than
-    # state_hash).
-    labels_by_state: dict[int, set[CanonicalSetId]] = {}
-    verdicts_by_state: dict[int, set[str]] = {}
+    # where the dict key is the commitment rather than the
+    # state_key).
+    labels_by_state: dict[StateKey, set[CanonicalSetId]] = {}
+    verdicts_by_state: dict[StateKey, set[str]] = {}
     for node in proof.kb_index.values():
-        labels_by_state.setdefault(node.state_hash, set()).update(
+        labels_by_state.setdefault(node.state_key, set()).update(
             node.labels,
         )
-        verdicts_by_state.setdefault(node.state_hash, set()).add(
+        verdicts_by_state.setdefault(node.state_key, set()).add(
             node.verdict,
         )
 
+    # Sort by repr — StateKeys are tuples of heterogeneous tuples with
+    # no useful native total order (P1.21 R1).
     nodes = tuple(sorted(
         (
             (
-                sh,
-                frozenset(labels_by_state[sh]),
-                frozenset(verdicts_by_state[sh]),
+                sk,
+                frozenset(labels_by_state[sk]),
+                frozenset(verdicts_by_state[sk]),
             )
-            for sh in labels_by_state
+            for sk in labels_by_state
         ),
-        key=lambda t: t[0],
+        key=lambda t: repr(t[0]),
     ))
 
     return LatticeSnapshotV1(
-        nodes_by_state_hash=nodes,
-        root_state_hash=state_hash(root_kb),
+        nodes_by_state_key=nodes,
+        root_state_key=state_key(root_kb),
         verdict_kind=type(verdict).__name__,
         # S1.7.24 — RESULT-level keys: a solution / dead is identified by
         # the post-saturation STATE it reaches, not the commitment PATH
@@ -184,8 +187,8 @@ def lattice_snapshot(
         # and the equivalence is unknowable without `is_symmetric`; the
         # final nogood SET is thus order/orientation-sensitive and is an
         # internal optimisation artifact, not part of the solve result.)
-        solutions=frozenset(state_hash(s.kb) for s in proof.solutions),
-        deads=frozenset(d.state_hash for d in proof.dead_commitments),
+        solutions=frozenset(state_key(s.kb) for s in proof.solutions),
+        deads=frozenset(d.state_key for d in proof.dead_commitments),
         alive_at_end=frozenset(proof.alive_at_end),
     )
 

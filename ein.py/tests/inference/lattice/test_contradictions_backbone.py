@@ -176,11 +176,11 @@ def test_solve_solvable_puzzle_has_proof():
     assert isinstance(verdict.proof, LatticeProof)
 
 
-# ── State-hash dedup MERGE (contradictions-entry unit path) ──
+# ── State-key dedup MERGE (contradictions-entry unit path) ──
 
 
-def test_record_setnode_state_hash_merge_via_unit_helper():
-    """The contradictions-side state-hash dedup MERGE path (still present
+def test_record_setnode_state_key_merge_via_unit_helper():
+    """The contradictions-side state-key dedup MERGE path (still present
     on :func:`_record_setnode`, used by the lattice-DAG builders) collapses
     distinct dead commitments saturating to the same kb into one
     multilabel :class:`SetNode`. ``solve`` itself never builds the DAG, so
@@ -194,14 +194,14 @@ def test_record_setnode_state_hash_merge_via_unit_helper():
         lstate, entry="contradictions", commitment=c1,
         result_kb=fake_kb, verdict_label="dead", layer=1,
     )
-    # Second arrival with same state_hash — merges labels.
+    # Second arrival with same state_key — merges labels.
     merged_2 = _record_setnode(
         lstate, entry="contradictions", commitment=c2,
         result_kb=fake_kb, verdict_label="dead", layer=1,
     )
     assert merged_1 is False
     assert merged_2 is True
-    assert lstate.state_hash_merges == 1
+    assert lstate.state_key_merges == 1
     assert len(lstate.kb_index) == 1
     sole = next(iter(lstate.kb_index.values()))
     assert set(sole.labels) == {c1, c2}
@@ -211,12 +211,12 @@ def test_solve_kb_index_is_always_empty():
     """``solve`` does NOT build the per-SetNode DAG (intentional — the
     sound proof data is the solutions + deads; ``render_lattice`` falls
     back to the solution view when ``kb_index`` is empty). So
-    ``proof.kb_index`` is ``{}`` and ``stats.state_hash_merges`` is 0 even
+    ``proof.kb_index`` is ``{}`` and ``stats.state_key_merges`` is 0 even
     under ``store_lattice=True``; the deads are still recorded."""
     kb = _kb_from(BRANCHING / "04_two_levels.ein")
     verdict, _ = _solve(kb, max_set_size=3)
     assert verdict.proof.kb_index == {}
-    assert verdict.proof.stats.state_hash_merges == 0
+    assert verdict.proof.stats.state_key_merges == 0
     # dead_commitments collection is independent of the DAG.
     assert len(verdict.proof.dead_commitments) >= 1
 

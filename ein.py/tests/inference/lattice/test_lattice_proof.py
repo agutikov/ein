@@ -3,7 +3,7 @@ S1.5b.22 (P1.7a refit, 2026-06-16).
 
 The proof is now attached to the one sound entry :func:`solve` under
 ``store_lattice=True``. ``solve`` records every distinct
-(state_hash-deduped) solution node into ``proof.solutions`` and every
+(state_key-deduped) solution node into ``proof.solutions`` and every
 refuted commitment into ``proof.dead_commitments``; the verdict TYPE is
 read from ``k = len(distinct solution nodes)``.
 
@@ -11,7 +11,7 @@ read from ``k = len(distinct solution nodes)``.
 the per-SetNode DAG — intentional; ``render_lattice`` falls back to the
 solution view). The per-SetNode recorder :func:`_record_setnode` still
 exists and is exercised here at the unit level for both the gaps keying
-(per-commitment, no merge) and the contradictions keying (state-hash
+(per-commitment, no merge) and the contradictions keying (state-key
 merge into multilabel nodes).
 
 Cross-references:
@@ -108,10 +108,10 @@ def test_solve_proof_kb_index_always_empty():
 
 
 def test_record_setnode_gaps_keeps_distinct_commitments():
-    """The gaps keying of :func:`_record_setnode` keys by
-    ``hash(commitment)``: two distinct commitments that share the same
-    post-saturation ``state_hash`` register as SEPARATE entries, and
-    ``state_hash_merges`` stays 0."""
+    """The gaps keying of :func:`_record_setnode` keys by the
+    commitment tuple itself: two distinct commitments that share the same
+    post-saturation ``state_key`` register as SEPARATE entries, and
+    ``state_key_merges`` stays 0."""
     lstate = _LatticeLoopState()
     fake_kb = KnowledgeBase()
     c1 = (("p", ("a",)),)
@@ -126,11 +126,11 @@ def test_record_setnode_gaps_keeps_distinct_commitments():
     )
     # Both entries present; merge counter unchanged.
     assert len(lstate.kb_index) == 2
-    assert lstate.state_hash_merges == 0
-    # Both nodes record the same post-saturation state_hash
+    assert lstate.state_key_merges == 0
+    # Both nodes record the same post-saturation state_key
     # (the field is per-kb, regardless of dict keying).
-    state_hashes = {n.state_hash for n in lstate.kb_index.values()}
-    assert len(state_hashes) == 1
+    state_keys = {n.state_key for n in lstate.kb_index.values()}
+    assert len(state_keys) == 1
     # Every entry is a SetNode.
     for node in lstate.kb_index.values():
         assert isinstance(node, SetNode)
@@ -139,7 +139,7 @@ def test_record_setnode_gaps_keeps_distinct_commitments():
 def test_record_setnode_contradictions_merges():
     """Contradictions-side dedup MERGE: two distinct commitments with
     identical fork kbs collapse into one multilabel SetNode, and
-    ``state_hash_merges`` ticks."""
+    ``state_key_merges`` ticks."""
     lstate = _LatticeLoopState()
     fake_kb = KnowledgeBase()
     c1 = (("p", ("a",)),)
@@ -154,7 +154,7 @@ def test_record_setnode_contradictions_merges():
     )
     assert merged_1 is False
     assert merged_2 is True
-    assert lstate.state_hash_merges == 1
+    assert lstate.state_key_merges == 1
     # One dict entry; labels carries both commitments.
     assert len(lstate.kb_index) == 1
     sole = next(iter(lstate.kb_index.values()))

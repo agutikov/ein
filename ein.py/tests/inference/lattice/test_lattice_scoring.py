@@ -133,7 +133,7 @@ def test_order_candidates_score_sum_informed_under_popularity():
 def test_lattice_order_changes_sequence_not_result_set():
     """The lattice_order knob affects *which order* commitments are
     visited within a layer, but never the RESULT. The set of distinct
-    models found (``proof.solutions``, keyed by state_hash) must match
+    models found (``proof.solutions``, keyed by state_key) must match
     across both modes.
 
     (Pre-refit this compared the kb_index-visited set; ``solve`` does not
@@ -148,9 +148,9 @@ def test_lattice_order_changes_sequence_not_result_set():
         verdict, _ = solve(
             kb, stop_after=None, max_set_size=3, store_lattice=True,
         )
-        from ein.inference.canon import state_hash
+        from ein.inference.canon import state_key
         models_per_mode[mode] = {
-            state_hash(s.kb) for s in verdict.proof.solutions
+            state_key(s.kb) for s in verdict.proof.solutions
         }
     assert models_per_mode["lex"] == models_per_mode["score-sum"]
 
@@ -167,9 +167,9 @@ def test_lattice_order_deterministic_under_same_mode():
         verdict, _ = solve(
             kb, stop_after=None, max_set_size=3, store_lattice=True,
         )
-        from ein.inference.canon import state_hash
+        from ein.inference.canon import state_key
         runs.append(frozenset(
-            state_hash(s.kb) for s in verdict.proof.solutions
+            state_key(s.kb) for s in verdict.proof.solutions
         ))
     assert runs[0] == runs[1]
 

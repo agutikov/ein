@@ -36,7 +36,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import IO, Any
 
-from ein.inference.canon import state_hash
+from ein.inference.canon import StateKey, state_key
 from ein.inference.monotonic._lattice_dump import LatticeDumper
 from ein.inference.monotonic._serialise import _kb_to_ein_text, _TimelineMixin
 from ein.kb.store import KnowledgeBase
@@ -202,9 +202,10 @@ class ProgressDumper(MonotonicDumper):
         self.progress_every = progress_every
         self.label = label
         self._enterings = 0
-        # Distinct solution-node states (deduped by state_hash) — matches
-        # the verdict's k, not the raw count of solution-outcome events.
-        self._node_hashes: set[int] = set()
+        # Distinct solution-node states (deduped by canonical state_key —
+        # exact, collision-proof) — matches the verdict's k, not the raw
+        # count of solution-outcome events.
+        self._node_keys: set[StateKey] = set()
         # Phase wall-clock (perf_counter), so this dumper doubles as the CLI
         # `--timing` source — lets `-v` and `-t` compose (the CLI's
         # `_TimingDumper` duck-type: t0 / t_root / t_end / root_facts).
@@ -267,12 +268,12 @@ class ProgressDumper(MonotonicDumper):
         )
         self._enterings += 1
         if outcome == "solution":
-            self._node_hashes.add(state_hash(result.kb))
+            self._node_keys.add(state_key(result.kb))
         if outcome == "solution" or self._enterings % self.progress_every == 0:
             self._say(
                 f"    e={self._enterings:>5d} layer={layer}"
                 f"  {_fmt_commitment(commitment)}  -> {outcome:<9s}"
-                f" solution-nodes={len(self._node_hashes)}  ({self._el()})",
+                f" solution-nodes={len(self._node_keys)}  ({self._el()})",
             )
 
     def layer_end(  # type: ignore[override]
@@ -285,7 +286,7 @@ class ProgressDumper(MonotonicDumper):
         super().layer_end(layer, kb, alive_size, survived_count)
         self._say(
             f"  layer {layer} done: survivors={survived_count}"
-            f" enterings={self._enterings} solution-nodes={len(self._node_hashes)}"
+            f" enterings={self._enterings} solution-nodes={len(self._node_keys)}"
             f"  ({self._el()})",
         )
 

@@ -257,7 +257,17 @@ def absents_still_pass(
     sub-plan saw zero matches at first-enqueue may now see matches
     because another rule has derived a fact satisfying P in the
     meantime. Without the re-check, the saturator commits the firing
-    on a stale verdict.
+    on a stale verdict. This is evaluation point E2 — the *decisive*
+    one — of the normative NAF semantics
+    (``docs/kernel/inference/absent_semantics.md``, corollary C4:
+    fire-time re-eval is required for any queued executor).
+
+    **Known gap (D5, P1.21 R4).** Only ``plan.steps`` is walked; the
+    S1.8.A13 ``extra_match_plans`` or-disjuncts are NOT — a firing
+    matched via an or-disjunct gets no fire-time protection for that
+    disjunct's guards (unsound; pinned ``xfail(strict=True)`` in
+    ``tests/inference/test_absent_semantics.py``; candidate fix: walk
+    ``plan.extra_match_plans`` too).
 
     Walks ``plan.steps`` once; for each :class:`AbsentGuard`, runs its
     ``sub_steps`` under the given ``bindings`` against ``kb``. Returns

@@ -94,8 +94,9 @@ fact, the directed acyclic graph of premise facts back to source-
 kind terminals. See [`ir/02-data-model/02_store.md` §7](ir/02-data-model/02_store.md).
 
 ### Unsat core
-The minimal source-kind frontier across a set of conflicting facts —
-the "given" premises that, together, derive the conflict. Output of
+The source-kind frontier across a set of conflicting facts, per the
+recorded derivations — the "given" premises that together derive the
+conflict. Not a subset-minimal MUS. Output of
 the *contradictions* task class (idea 03). See
 [`ir/02-data-model/02_store.md` §7.2](ir/02-data-model/02_store.md).
 
@@ -104,6 +105,14 @@ A hypothesis branch — a `KnowledgeBase` that shares ontology and
 fact-layer entities with its parent by reference, but isolates
 reasoning-layer additions. See
 [`ir/02-data-model/02_store.md` §5](ir/02-data-model/02_store.md).
+
+### World
+One `KnowledgeBase` instance under saturation: the root, or a fork
+carrying a commitment set (`KB_C = fork(root) ∪ C`). Append-only
+within a `saturate()` run; related to other worlds only by fork —
+an `absent` query answered in one world is meaningless in every
+other. The unit of evaluation for NAF and the search layer. See
+[`inference/absent_semantics.md` §Worlds](inference/absent_semantics.md#worlds).
 
 ### Equality class
 A union-find class of objects the engine has concluded are *the same*.
@@ -147,6 +156,17 @@ validator error. See
 The fixed-point of rule firing — applying every rule until no new
 fact is produced. The default M1 strategy is lazy: saturate before
 branching. See [`inference/`](inference/) (P1.3 stub).
+
+### Absent / negation-as-failure (NAF)
+`(absent P)` in a `:match` — a **query** "the current world, at this
+firing's fire time, holds no fact matching P" (¬∃ over P's unbound
+vars; membership, not derivability). Never a ground atom: world-
+relative, decided when the firing commits, never revisited after.
+Not closed-world, not stratified NAF — on non-stratified rulesets
+the result is defined by priority + FIFO order. Normative page:
+[`inference/absent_semantics.md`](inference/absent_semantics.md);
+operational how:
+[`inference/README.md` §NAF](inference/README.md#naf-semantics--fire-time-re-evaluation-s15a1).
 
 ---
 

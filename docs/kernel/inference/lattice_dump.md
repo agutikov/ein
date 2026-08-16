@@ -101,11 +101,11 @@ dump/
 │           ├── firings.jsonl            ← every rule firing in this fork  (non dead-pre)
 │           ├── kb.ein                   ← the fork's full saturated KB    (solution only)
 │           ├── unsat_core.jsonl         ← the contradiction witnesses     (dead-* only)
-│           └── learned_clause.json      ← the CDCL nogood emitted          (dead-* only)
+│           └── learned_clause.json      ← the learned no-good emitted     (dead-* only)
 ├── kb_index/                    ← only under store_lattice=True
 │   └── layer_NN/
-│       └── kb_<i>/              ← ordered ids (kb_0 … kb_n), sorted by state_hash within layer
-│           ├── state_hash.txt           ← 16-hex of the post-saturation state hash
+│       └── kb_<i>/              ← ordered ids (kb_0 … kb_n), sorted by repr(state_key) within layer
+│           ├── state_hash.txt           ← 16-hex display digest of the post-saturation state key
 │           ├── canonical_set.json       ← the SetNode's canonical commitment
 │           ├── labels.json              ← every commitment that mapped to this node
 │           └── verdict.txt              ← alive | dead | solution
@@ -149,7 +149,7 @@ are the emissions:
   can see the derivation that led to the clash); `unsat_core.jsonl`
   is the minimal witness set, and `learned_clause.json` is the
   `frozenset(C)` nogood emitted so no superset is re-entered
-  ([CDCL nogoods](README.md#cdcl-nogoods-s15b6)).
+  ([learned no-goods](README.md#learned-no-goods-s15b6)).
 - **`dead-pre`** — the commitment was rejected *before* saturation
   (apriori superset of a known nogood, or a `_negated_facts` hit), so
   there are no firings to record — only `unsat_core.jsonl` +
@@ -177,15 +177,19 @@ on which bindings, in the context of each tested hypothesis.
 ## `kb_index/` — ordered ids, grouped by layer
 
 Under `store_lattice=True` the engine keeps a per-SetNode index
-(state-hash dedup — it drives the merge where distinct dead
-commitments with identical post-saturation KBs collapse into one
-refutation node). The dump folders use **per-layer ordered ids** —
-`kb_index/layer_NN/kb_<i>/` — rather than hash-named folders: within
-each layer the nodes are sorted by `state_hash` (deterministic) and
-numbered `kb_0 … kb_n`. The raw hash is still available in
-`state_hash.txt` and `proof_summary.json`'s `state_hash_hex` for
-correlating a node across runs; `labels.json` lists every commitment
-that mapped onto the node (>1 means a state-hash merge happened).
+(state-**key** dedup, P1.21 R1 — exact canonical-representation
+equality drives the merge where distinct dead commitments with
+identical post-saturation KBs collapse into one refutation node). The
+dump folders use **per-layer ordered ids** — `kb_index/layer_NN/kb_<i>/`
+— rather than hash-named folders: within each layer the nodes are
+sorted by `repr(state_key)` (deterministic) and numbered `kb_0 … kb_n`.
+`state_hash.txt` and `proof_summary.json`'s `state_hash_hex` carry a
+16-hex **display digest** (`canon.state_digest` of the key) — an
+eyeball id for nodes *within one dump*, **process-local** (Python's
+seeded string hashing), so never compare it across runs; the identity
+the engine actually used is the key itself. `labels.json` lists every
+commitment that mapped onto the node (>1 means a state-key merge
+happened).
 
 ---
 
@@ -219,8 +223,9 @@ it's the entry point for "show me every refutation" tooling.
   `dead-post` means that one fact is incompatible with the givens. (For
   the verdict alone, without the dump, `ein solve --exhaustive` suffices.)
 - **"Why did commitment {A,B} get pruned?"** — find its
-  `learned_clause.json`; the clause is the minimal set whose
-  conjunction is unsat. Its `unsat_core.jsonl` names the facts that
+  `learned_clause.json`; the clause is the dead commitment set itself
+  (subset-minimal among *explored* sets by BFS + Apriori construction,
+  not a MUS). Its `unsat_core.jsonl` names the facts that
   clashed — chase their provenance back through `firings.jsonl`.
 - **"Did rule R fire where I expected?"** — `grep '"rule": "R"'`
   across `enterings/**/firings.jsonl`. Empty under a commitment where
@@ -228,9 +233,13 @@ it's the entry point for "show me every refutation" tooling.
   [`(absent …)` NAF guard](README.md#naf-semantics--fire-time-re-evaluation-s15a1))
   didn't hold in that fork.
 - **"Two commitments should reach the same state but don't"** — under
-  `store_lattice=True`, compare their `kb_index/layer_NN/kb_<i>/state_hash.txt`;
-  different hashes with the same intended meaning point at a
-  non-confluent rule set.
+  `store_lattice=True`, two commitments that reached the same state share
+  one `kb_index/layer_NN/kb_<i>/` folder (both appear in its
+  `labels.json`); two separate folders with the same intended meaning
+  point at a non-confluent rule set. Ground truth is the state itself —
+  `diff` the two forks' `kb.ein` under `enterings/`. The
+  `state_hash.txt` digests are display ids for *this* dump only
+  (process-local — never diff them across runs).
 
 ---
 

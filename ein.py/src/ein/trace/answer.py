@@ -23,7 +23,7 @@ result row (and kept for callers that want just the sentence).
 """
 from __future__ import annotations
 
-from ein.inference.canon import state_hash
+from ein.inference.canon import state_key
 from ein.inference.verdict import (
     Ambiguity,
     Contradiction,
@@ -118,7 +118,7 @@ def render_answer(verdict: Verdict, *, exhausted: bool = True) -> str:
             text += "  (a solution — pass --exhaustive to certify uniqueness)"
         return text
     if isinstance(verdict, Ambiguity):
-        k = (len({state_hash(b.kb) for b in verdict.branches})
+        k = (len({state_key(b.kb) for b in verdict.branches})
              or len(verdict.branches))
         return (f"Ambiguous — {k} distinct complete models; the puzzle is "
                 f"under-determined.")
@@ -215,7 +215,7 @@ def render_solution_table(
         lines += _solution_block(verdict.kb)
 
     elif isinstance(verdict, Ambiguity):
-        kk = (len({state_hash(b.kb) for b in verdict.branches})
+        kk = (len({state_key(b.kb) for b in verdict.branches})
               or len(verdict.branches))
         lines.append(f"  solutions (k)   {kk}")
         lines.append("  verdict         Ambiguous — distinct complete models; "

@@ -28,7 +28,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from ein.inference.canon import state_hash
+from ein.inference.canon import state_key
 from ein.inference.monotonic import ProgressDumper, solve
 from ein.inference.verdict import Ambiguity, Contradiction, Solution
 from ein.ir import parse
@@ -112,8 +112,8 @@ def test_minus15_is_ambiguous():
     )
     assert len(verdict.branches) >= 2
     # The branches must be genuinely distinct complete models.
-    hashes = {state_hash(b.kb) for b in verdict.branches}
-    assert len(hashes) >= 2, "the models must be distinct (different state)"
+    keys = {state_key(b.kb) for b in verdict.branches}
+    assert len(keys) >= 2, "the models must be distinct (different state)"
     for b in verdict.branches:
         assert _grid_cells(b.kb) == 25, "each model must be complete (25/25)"
 

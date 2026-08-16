@@ -146,7 +146,8 @@ class SolverConfig:
     # P1.20 Theme I's feature*config matrix can measure each in isolation.
     # All default True ⇒ the shipped solve is byte-identical; only the
     # negation (the "feature off" case the matrix benches) is new behaviour.
-    #   enable_path_nogoods        — CDCL path-condition no-good emission
+    #   enable_path_nogoods        — learned path-condition no-good
+    #     emission (CDCL-style)
     #     (nogoods.emit_nogood). Off ⇒ no clause is emitted, so
     #     `_nogoods` stays empty and apriori.filter_candidate's superset
     #     check is a no-op (subsumed dead commitments are re-explored).

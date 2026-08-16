@@ -3,7 +3,7 @@
 ;;; Demonstrates: distinct commitments saturating to identical
 ;;; post-saturation kbs collapse into one multilabel SetNode under
 ;;; ``contradictions_solve(store_lattice=True)``. This is the
-;;; canonical small-fixture instance of the state-hash dedup MERGE
+;;; canonical small-fixture instance of the state-key dedup MERGE
 ;;; path; the same phenomenon naturally occurs on
 ;;; ``examples/zebra2-hints.ein`` at scale (S1.5b.28's Findings
 ;;; section documents the larger case) but the saturation cost
@@ -26,27 +26,27 @@
 ;;; Saturation outcomes:
 ;;;
 ;;;   Layer 1 — commit {(h1 X)}: fork has h1 only; no rules fire
-;;;             (no h2). Kb = {h1}. State_hash = A.
+;;;             (no h2). Kb = {h1}. State_key = A.
 ;;;   Layer 1 — commit {(h2 X)}: fork has h2; both rules fire,
-;;;             derive h1 and h3. Kb = {h1, h2, h3}. State_hash = B.
+;;;             derive h1 and h3. Kb = {h1, h2, h3}. State_key = B.
 ;;;   Layer 1 — commit {(h3 X)}: fork has h3 only; no rules fire.
-;;;             Kb = {h3}. State_hash = C.
+;;;             Kb = {h3}. State_key = C.
 ;;;
 ;;;   Layer 2 — commit {(h1 X), (h2 X)}: fork has h1, h2; rules
-;;;             derive h3. Kb = {h1, h2, h3}. State_hash = B (!)
-;;;             → MERGE with {(h2 X)}'s SetNode. state_hash_merges += 1.
+;;;             derive h3. Kb = {h1, h2, h3}. State_key = B (!)
+;;;             → MERGE with {(h2 X)}'s SetNode. state_key_merges += 1.
 ;;;   Layer 2 — commit {(h1 X), (h3 X)}: no h2 → no rules.
-;;;             Kb = {h1, h3}. State_hash = D.
+;;;             Kb = {h1, h3}. State_key = D.
 ;;;   Layer 2 — commit {(h2 X), (h3 X)}: rules derive h1.
-;;;             Kb = {h1, h2, h3}. State_hash = B (!)
-;;;             → MERGE with {(h2 X)}'s SetNode. state_hash_merges += 1.
+;;;             Kb = {h1, h2, h3}. State_key = B (!)
+;;;             → MERGE with {(h2 X)}'s SetNode. state_key_merges += 1.
 ;;;
 ;;; Expected counts under ``contradictions_solve(store_lattice=True,
 ;;; max_set_size=2)``:
 ;;;
 ;;;   verdict           Contradiction (mode contract)
 ;;;   enterings_total   6   (3 + 3)
-;;;   state_hash_merges 2   (the two layer-2 collapses into the
+;;;   state_key_merges  2   (the two layer-2 collapses into the
 ;;;                          {h2}-SetNode)
 ;;;   kb_index size     4   (one node each for A, B, C, D)
 ;;;   multilabel nodes  1   (B has labels = (h2,), (h1,h2), (h2,h3))

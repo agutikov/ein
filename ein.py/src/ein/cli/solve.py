@@ -377,7 +377,7 @@ def add_parser(sub) -> None:
                    help="abort after N commitment tries")
     p.add_argument("-L", "--no-lookahead", action="store_true",
                    help="disable hypgen's one-step lookahead (forces deaths "
-                        "through the monotonic CDCL path)")
+                        "through the no-good learning path)")
     p.add_argument("-K", "--no-kill-cache", action="store_true",
                    help="disable the lookahead-kill (not h) cache (pairs with "
                         "--no-lookahead to exercise the raw loop)")

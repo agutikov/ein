@@ -59,7 +59,7 @@ _SUBSYSTEMS: list[tuple[str, tuple[str, ...]]] = [
     ("hypgen/branch", ("hypgen.py", "lookahead.py", "commitment.py")),
     ("alive/closed",  ("solver.py:_compute_alive", "closed.py",
                        "solution.py")),
-    ("canon/hash",    ("canon.py", "state_hash")),
+    ("canon/key",     ("canon.py", "state_key")),
     ("apriori/elim",  ("apriori.py", "predicates.py", "why.py")),
 ]
 

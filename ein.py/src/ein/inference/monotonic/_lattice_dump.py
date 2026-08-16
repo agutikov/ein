@@ -13,6 +13,7 @@ from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import IO, Any
 
+from ein.inference.canon import StateKey, state_digest
 from ein.inference.monotonic._serialise import (
     _fact_summary,
     _firing_to_dict,
@@ -92,7 +93,7 @@ class LatticeDumper(_TimelineMixin):
         ├── kb_index/             ← under store_lattice=True
         │   └── layer_NN/
         │       └── kb_<i>/
-        │           ├── state_hash.txt    ← hex of state_hash field
+        │           ├── state_hash.txt    ← hex state_digest of state_key
         │           ├── canonical_set.json
         │           ├── labels.json
         │           └── verdict.txt
@@ -290,35 +291,41 @@ class LatticeDumper(_TimelineMixin):
         ``verdict.proof`` is non-None. Materialises the
         ``kb_index/layer_NN/kb_<i>/`` folder hierarchy with
         per-layer ordered ids (i = 0..n within each layer,
-        deterministic via state_hash sort) when
-        ``proof.kb_index`` is populated."""
+        deterministic via repr-of-state_key sort) when
+        ``proof.kb_index`` is populated. The persisted
+        ``state_hash.txt`` / ``state_hash_hex`` values are the hex
+        :func:`~ein.inference.canon.state_digest` of the node's
+        ``state_key`` — display-only, process-local (never read
+        back as identity)."""
         if self.out_dir is None or proof is None:
             return
 
-        # Per-layer ordered ids: group by node.layer, sort
-        # within layer by state_hash for determinism, assign
-        # kb_0 ... kb_n.
-        kb_id_by_state_hash: dict[int, tuple[int, int]] = {}
+        # Per-layer ordered ids: group by node.layer, sort within
+        # layer by repr(state_key) for determinism (state keys have
+        # no useful native order — P1.21 R1), assign kb_0 ... kb_n.
+        kb_id_by_state_key: dict[StateKey, tuple[int, int]] = {}
         if proof.kb_index:
             (self.out_dir / "kb_index").mkdir(exist_ok=True)
             by_layer: dict[int, list[Any]] = {}
             for node in proof.kb_index.values():
                 by_layer.setdefault(node.layer, []).append(node)
             for layer_n, nodes in by_layer.items():
-                nodes_sorted = sorted(nodes, key=lambda n: n.state_hash)
+                nodes_sorted = sorted(
+                    nodes, key=lambda n: repr(n.state_key),
+                )
                 layer_dir = (
                     self.out_dir / "kb_index"
                     / f"layer_{layer_n:02d}"
                 )
                 layer_dir.mkdir(parents=True, exist_ok=True)
                 for idx, node in enumerate(nodes_sorted):
-                    kb_id_by_state_hash[node.state_hash] = (
+                    kb_id_by_state_key[node.state_key] = (
                         layer_n, idx,
                     )
                     folder = layer_dir / f"kb_{idx}"
                     folder.mkdir(exist_ok=True)
                     (folder / "state_hash.txt").write_text(
-                        f"{node.state_hash & 0xFFFFFFFFFFFFFFFF:016x}",
+                        f"{state_digest(node.state_key) & 0xFFFFFFFFFFFFFFFF:016x}",
                     )
                     (folder / "canonical_set.json").write_text(
                         json.dumps(
@@ -335,7 +342,7 @@ class LatticeDumper(_TimelineMixin):
                     (folder / "verdict.txt").write_text(node.verdict)
 
         def _kb_id_label(node: Any) -> str:
-            layer_n, idx = kb_id_by_state_hash[node.state_hash]
+            layer_n, idx = kb_id_by_state_key[node.state_key]
             return f"layer_{layer_n:02d}/kb_{idx}"
 
         # Top-level index.
@@ -369,7 +376,7 @@ class LatticeDumper(_TimelineMixin):
                 {
                     "kb_id": _kb_id_label(node),
                     "state_hash_hex": (
-                        f"{node.state_hash & 0xFFFFFFFFFFFFFFFF:016x}"
+                        f"{state_digest(node.state_key) & 0xFFFFFFFFFFFFFFFF:016x}"
                     ),
                     "canonical_set": _commitment_json(
                         node.canonical_set,

@@ -5,7 +5,7 @@ public entry. It runs the set-indexed lattice exploration (Apriori
 prefix-join over commitment sets, each entered via
 :func:`ein.inference.commitment.try_commitment_set`), recording every
 solution node (``consistent ∧ complete`` — no open hypothesis) deduped by
-:func:`state_hash` *and* every refuted commitment, then derives the verdict
+:func:`state_key` *and* every refuted commitment, then derives the verdict
 from the count ``k`` via :func:`verdict_of`:
 
 - ``k = 1`` → :class:`Solution` — the model (certified unique iff the
@@ -42,7 +42,7 @@ outcome — saturation commutativity makes a per-parent bubble redundant (see
 
 **Augmentations** (default-on, gated by SolverConfig):
 
-- CDCL nogoods — every dead entering emits ``frozenset(C)`` into
+- Learned no-goods (CDCL-style) — every dead entering emits ``frozenset(C)`` into
   ``root_kb._nogoods``; subsequent layers' candidate filter
   (:func:`ein.inference.apriori.filter_candidate`) catches supersets.
 - Singleton-death writeback — for size-1 dead clauses, writes ``(not h)`` to

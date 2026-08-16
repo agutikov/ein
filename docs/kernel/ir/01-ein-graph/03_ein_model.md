@@ -259,7 +259,7 @@ removed entirely, S1.9.E6a), and the open-set
 canonicalisation (`solution.open_hypotheses`). Correct model counting
 (`k`) is now recovered *generically* — the two orientations of an
 undecided pair saturate (via the user's rule) to the same KB and
-collapse at the `canon.state_hash` solution-node dedup; result-level
+collapse at the `canon.state_key` solution-node dedup; result-level
 lattice records (gaps solutions, contradictions deads, the shuffle
 snapshot) key on that state, not the commitment path. `store.is_symmetric`
 / `symmetric_relations` survive only as unprivileged property queries (no

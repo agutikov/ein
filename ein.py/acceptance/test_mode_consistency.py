@@ -37,7 +37,7 @@ from pathlib import Path
 
 import pytest
 
-from ein.inference.canon import state_hash
+from ein.inference.canon import state_key
 from ein.inference.monotonic import solve
 from ein.inference.verdict import Ambiguity, Contradiction, Solution
 from ein.ir import parse
@@ -67,9 +67,9 @@ def _solve(rel: str, stop_after):
 
 
 def _distinct_models(proof) -> int:
-    """Number of distinct (state_hash-deduped) complete models the proof
+    """Number of distinct (state_key-deduped) complete models the proof
     witnesses — the gaps view."""
-    return len({state_hash(r.kb) for r in proof.solutions})
+    return len({state_key(r.kb) for r in proof.solutions})
 
 
 # ── Per-fixture: verdict + both proof views ───────────────────────

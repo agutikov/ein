@@ -8,7 +8,7 @@ Pins the behaviour of
 - Off-by-default doesn't run the per-commitment check (no
   measurable cost).
 - ``SanityError`` raises when two paths to the same
-  commitment do produce distinct state_hashes — verified via
+  commitment do produce distinct state keys — verified via
   a direct call with a constructed mismatch.
 
 Cross-references:
@@ -103,8 +103,8 @@ def test_sanity_check_off_by_default():
 
 
 def test_sanity_failure_on_constructed_mismatch(monkeypatch):
-    """Force a state_hash mismatch by monkeypatching
-    :func:`state_hash` to return different values on each
+    """Force a state_key mismatch by monkeypatching
+    :func:`state_key` to return different values on each
     call — confirms the SanityError path fires correctly
     when the premise IS violated. The monkeypatch is the
     only way to construct the failure since M1's actual rule
@@ -114,15 +114,16 @@ def test_sanity_failure_on_constructed_mismatch(monkeypatch):
 
     call_count = {"n": 0}
 
-    def alternating_state_hash(_kb):
+    def alternating_state_key(_kb):
         call_count["n"] += 1
         # First call (direct path) returns 1; every subsequent
         # (parent paths) returns a unique increasing value, so
-        # the direct vs parent comparison fails.
+        # the direct vs parent comparison fails. (Any hashable
+        # sentinel works — the checker compares by equality.)
         return call_count["n"]
 
     monkeypatch.setattr(
-        sanity_mod, "state_hash", alternating_state_hash,
+        sanity_mod, "state_key", alternating_state_key,
     )
 
     kb = _kb_from(LATTICE / "03_state_hash_collision.ein")
@@ -135,7 +136,7 @@ def test_sanity_failure_on_constructed_mismatch(monkeypatch):
         check_commutativity(kb, commitment)
     failure = exc_info.value
     assert failure.commitment == commitment
-    assert len(failure.parent_state_hashes) >= 1
+    assert len(failure.parent_state_keys) >= 1
 
 
 def test_sanity_check_noop_for_singleton():
@@ -143,7 +144,7 @@ def test_sanity_check_noop_for_singleton():
     pure no-op + cannot fail."""
     kb = _kb_from(LATTICE / "03_state_hash_collision.ein")
     singleton = (("h1", ("X",)),)
-    # Should not raise; should not even invoke state_hash.
+    # Should not raise; should not even invoke state_key.
     check_commutativity(kb, singleton)
 
 

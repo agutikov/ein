@@ -35,7 +35,9 @@ and adds the implicit *fourth* class the user named (explain).
   at a target fact.
 - **Specialised trace UX per mode**:
   - `gaps` highlights divergent values per branch;
-  - `contradictions` foregrounds the minimal unsat core;
+  - `contradictions` foregrounds the smallest recorded contradiction
+    frontier (`frontier.smallest_contradiction_frontier`; not a
+    subset-minimal MUS);
   - `explain` shows only the relevant derivation slice.
 
 ## Open questions promoted

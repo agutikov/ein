@@ -24,9 +24,9 @@ kb_index           store_lattice=True only    Empty under :func:`solve`'s
                                               :func:`_record_setnode`,
                                               keyed per commitment (gaps) or
                                               by post-saturation
-                                              :func:`state_hash`
-                                              (contradictions, collisions
-                                              merge labels).
+                                              :func:`state_key`
+                                              (contradictions, same-state
+                                              arrivals merge labels).
 alive_at_end       solve (store_lattice)      Size-N alive sets at depth
                                               cap; ``()`` if not capped.
 learned_nogoods    solve (store_lattice)      Snapshot of
@@ -53,6 +53,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from ein.inference.apriori import CanonicalSetId
+from ein.inference.canon import StateKey
 from ein.inference.firing import Firing
 from ein.kb.entities import Fact
 from ein.kb.provenance import FactId
@@ -81,7 +82,7 @@ class _BaseStats:
     forced_positives:    int = 0
     saturate_count:      int = 0
     layers_explored:     int = 0
-    # S1.5b.6 — CDCL counters.
+    # S1.5b.6 — no-good counters.
     nogoods_emitted:     int = 0
     nogoods_subsumed:    int = 0
 
@@ -93,7 +94,7 @@ class LatticeStats(_BaseStats):
 
     Inherits the shared per-candidate counters from :class:`_BaseStats`;
     adds the lattice-only :attr:`solutions_found`,
-    :attr:`state_hash_merges`, and :attr:`elapsed_seconds`.
+    :attr:`state_key_merges`, and :attr:`elapsed_seconds`.
     :class:`MonotonicStats` (in
     :mod:`ein.inference.monotonic.solver`) is the sibling subclass —
     neither inherits the other, so the run-level stats and the proof's
@@ -107,7 +108,7 @@ class LatticeStats(_BaseStats):
     """
 
     solutions_found:     int = 0
-    state_hash_merges:   int = 0
+    state_key_merges:    int = 0
     elapsed_seconds:     float = 0.0
 
 
@@ -150,33 +151,40 @@ class DeadCommitment:
     learned_clause: frozenset[FactId]
     layer:          int
     kind:           Literal["dead-pre", "dead-post"]
-    # S1.7.23/.24 — `state_hash` of the (dead) post-saturation kb. The
-    # orientation-invariant key for result-level snapshots: two
-    # orientations of a symmetric dead commitment saturate to the same
-    # dead state. Defaults to 0 for records predating the field.
-    state_hash:     int = 0
+    # S1.7.23/.24, reworked P1.21 R1 — `state_key` of the (dead)
+    # post-saturation kb. The orientation-invariant key for result-level
+    # snapshots: two orientations of a symmetric dead commitment saturate
+    # to the same dead state. Defaults to `()` for records predating the
+    # field.
+    #
+    # NOTE(P1.21 R1): storing the full canonical key costs ~70 KiB per
+    # dead on zebra2 (67 deads ≈ 5 MiB — noise next to the per-record kb
+    # snapshots). If a future puzzle records >>1e3 dead states, demote
+    # this field to a display digest (`canon.state_digest`) plus an
+    # on-demand key — but a digest must NEVER become identity again.
+    state_key:      StateKey = ()
 
 
 @dataclass(frozen=True)
 class SetNode:
-    """One cross-set state-hash merge target.
+    """One cross-set same-state merge target.
 
     Populated by a DAG builder via :func:`_record_setnode` (not by
     :func:`solve`'s own proof packaging). In the
     ``contradictions`` keying mode multiple labels may collapse
-    into one node (state-hash dedup merge — distinct dead
+    into one node (state-key dedup merge — distinct dead
     commitments that saturate to identical kbs share a
     refutation node); in the ``gaps`` keying mode each commitment
     keeps its own node (no merge — distinct satisfying
     commitments register separately).
 
-    :attr:`state_hash` always carries
-    :func:`ein.inference.canon.state_hash` of the
+    :attr:`state_key` always carries
+    :func:`ein.inference.canon.state_key` of the
     post-saturation kb regardless of how the enclosing
     ``kb_index`` dict is keyed.
     """
 
-    state_hash:    int
+    state_key:     StateKey
     canonical_set: CanonicalSetId
     labels:        tuple[CanonicalSetId, ...]
     verdict:       Literal["alive", "dead", "solution"]
@@ -202,16 +210,19 @@ class LatticeProof:
     is signalled by zero-length
     :attr:`solutions` / :attr:`dead_commitments`). When a DAG
     builder populates it via :func:`_record_setnode`, the keying
-    differs by mode: in the ``gaps`` mode the keys are
-    per-commitment unique ids (so distinct commitments stay
+    differs by mode: in the ``gaps`` mode the keys are the
+    commitment tuples themselves (so distinct commitments stay
     separate); in the ``contradictions`` mode the keys are
-    :func:`state_hash` values (so distinct commitments collapse
-    on collision).
+    :func:`state_key` values (so distinct commitments reaching
+    the same state collapse — an exact-equality merge, never a
+    hash-collision one).
     """
 
-    solutions:        tuple[SolutionRecord, ...]      = ()
-    dead_commitments: tuple[DeadCommitment, ...]      = ()
-    kb_index:         dict[int, SetNode]              = field(default_factory=dict)
+    solutions:        tuple[SolutionRecord, ...]           = ()
+    dead_commitments: tuple[DeadCommitment, ...]           = ()
+    kb_index:         dict[StateKey | CanonicalSetId, SetNode] = field(
+        default_factory=dict,
+    )
     alive_at_end:     tuple[CanonicalSetId, ...]      = ()
     learned_nogoods:  frozenset[frozenset[FactId]]    = frozenset()
     stats:            LatticeStats                    = field(default_factory=LatticeStats)

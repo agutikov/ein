@@ -43,6 +43,9 @@ docs/kernel/inference/
 ├── architecture_and_algorithms.md ← the as-built architecture: the 9 core
 │                                     operations (O1–O9), their CS analogs
 │                                     (Datalog / RETE / CDCL / ATMS), fast algos
+├── absent_semantics.md            ← normative `(absent P)` semantics: worlds,
+│                                     fire-time epistemic NAF, corollaries
+│                                     C1–C7, non-guarantees (P1.21 R4)
 ├── domain_elim_vs_hypothesis.md   ← the domain-elimination vs guess duals
 ├── lattice_dump.md                ← the commitment-lattice dump format
 ├── reserved_engine_strings.md     ← engine-internal reserved atoms
@@ -70,7 +73,7 @@ unless noted):
 | Property-fact activation        | KB indexes `_rule_apps_by_rule` / `_rule_apps_on_relation` built at load |
 | Saturation loop                 | **shipped** — priority-banded, delta-driven `saturator.py` (P1.3 S1.3.3; semi-naive in P1.8a) |
 | Hypothesis branching            | **shipped** — `hypgen.py` enumerates candidates; the commitment-lattice search is `monotonic/solver.py` (P1.5–P1.5b) |
-| Contradiction detection         | **shipped** — `contradiction.py` (`(X, ¬X)` pairs + `(false)`); minimal unsat core via `min_core.py` + provenance |
+| Contradiction detection         | **shipped** — `contradiction.py` (`(X, ¬X)` pairs + `(false)`); smallest recorded contradiction frontier via `frontier.py` + provenance |
 | Verdict                         | **shipped** — one `solve()`; `verdict.py` reports `Solution` / `Ambiguity` / `Contradiction`, read off the model count `k` |
 | Trace generation                | **shipped** — `DerivationDAG.to_dot()` + the markdown trace builder under [`trace/`](../../../ein.py/src/ein/trace/) (P1.6) |
 | `(not P)` / `(absent P)` premises | S1.5.8c.1: `(not P)` in `:match` matches a STORED `(not P)` fact (uniform with all other patterns); `(absent P)` is the explicit NAF guard. The old NAF default on `(not P)` was dropped. |
@@ -136,14 +139,16 @@ pre-conditions hold across the puzzle's rule library — collectively the
 Under these clauses, every admissible hypothesis is enumerable
 from the current KB state; deeper branches **eliminate** candidates,
 never extend the space. The same "alive ⇐ KB" argument licenses the
-[`canon.state_hash`](../../../ein.py/src/ein/inference/canon.py)
-KB-only dedup — two KBs with identical facts have identical futures.
+[`canon.state_key`](../../../ein.py/src/ein/inference/canon.py)
+KB-only dedup — two KBs with identical facts have identical futures
+(P1.21 R1: the key IS the canonical fact set, compared exactly — a
+hash of it is display-only, never identity).
 
 **When the invariant breaks** (a rule library asserts new
 `(relation …)`; F5 rules-as-data; a future puzzle's matcher
 produces nested-Fact hypotheses), "alive is a pure function of the
 closed KB" no longer holds, and both the per-KB recompute and the
-state_hash dedup lose their soundness warrant.
+state-key dedup lose their soundness warrant.
 
 Tracked at
 [M1 Q-S1.5.4.D](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.4_hypgen_improvements.md#open-questions-parked-here)
@@ -151,6 +156,18 @@ as a long-term design seam; promote to a typed invariant check
 when F5 lands.
 
 ## NAF semantics — fire-time re-evaluation (S1.5a.1)
+
+> **Normative definition:**
+> [`absent_semantics.md`](absent_semantics.md) (P1.21 R4). `absent(P)`
+> is a **query** — "the current fork-local world, at this firing's fire
+> time, holds no fact matching P" — **never a ground atom** that could be
+> stored, cached, or carried between worlds. That page states the worlds
+> model, the evaluation points (E1 match / E2 fire-time decisive /
+> E3 never-after), the corollaries C1–C7 the engine relies on, and what
+> is explicitly *not* provided (stratification, stable models,
+> retraction) — each pinned by
+> [`test_absent_semantics.py`](../../../ein.py/tests/inference/test_absent_semantics.py).
+> This section is the operational how.
 
 `(absent P)` in a `:match` clause compiles to an
 [`AbsentGuard`](../../../ein.py/src/ein/inference/compile.py)
@@ -584,9 +601,11 @@ theorem genuinely holds: `premises_raw` is then a complete dependency
 record, and a chain grounding out at root facts replays at root by
 monotonicity. Any revival must gate on that *checked* precondition, or
 move to a dependency carrier that records negative support (ATMS-style
-environments). Fork-internal NAF *ordering* is a distinct hole and belongs
-to the `absent`-semantics formalisation
-([s1.21.4](../../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.4_absent_semantics.md)).
+environments). Fork-internal NAF *ordering* is a distinct hole, covered by
+the `absent`-semantics formalisation —
+[`absent_semantics.md`](absent_semantics.md) (§C1 no-root-merge /
+§C2 positive-provenance-insufficient are this section's two lessons,
+stated as corollaries of the fire-time epistemic definition).
 
 The negative dual — caching a forced `(not h)` — remains live and is
 deliberately narrow: only the **one-step lookahead kill**
@@ -611,7 +630,7 @@ Apriori-style prefix-join and enters each via the common
 primitive; the root KB stays stable mid-search (P1.21 R2 — see
 *Unconditional facts — retired* above). There is **one entry**,
 [`solve`](../../../ein.py/src/ein/inference/monotonic/solver.py): it
-records every solution node (`consistent ∧ complete`, `state_hash`-deduped)
+records every solution node (`consistent ∧ complete`, `state_key`-deduped)
 plus every refuted commitment, and
 [`verdict_of`](../../../ein.py/src/ein/inference/monotonic/solver.py)
 reads the verdict off the count `k` of distinct solution nodes —
@@ -653,7 +672,17 @@ view (`proof.dead_commitments` + `verdict.unsat_core`).
 5. **Ambiguity.** Layer cap reached with alive ≠ ∅ and no
    goal-satisfying commitment found.
 
-### CDCL nogoods (S1.5b.6)
+### Learned no-goods (S1.5b.6)
+
+Ein's search layer is an **ATMS-style environment search with Apriori
+candidate generation and nogood learning**: commitment sets are
+assumption environments explored breadth-first by cardinality, a dead
+environment is learned whole as a no-good clause (kept
+subsumption-minimal), and Apriori's downward-closure filter suppresses
+its supersets. **CDCL is the SAT-world analog** (no-good ≈ conflict
+clause) **and an optimization direction**
+([P1.9 E-catalog](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/README.md)),
+not the mechanism.
 
 Every dead entering emits `frozenset(C)` into
 `root_kb._nogoods` via `inference.nogoods.emit_nogood`
@@ -665,6 +694,26 @@ Singleton dead clauses additionally write `(not h)` into
 `root_kb._negated_facts` (plus the symmetric mirror if
 `(symmetric R)` is in the ontology) so subsequent
 `_compute_alive` calls drop h from `alive`.
+
+How this differs from CDCL, mechanically:
+
+| CDCL | Ein lattice search |
+|---|---|
+| ordered **decision trail**, one variable per decision level | unordered **commitment set C** (an ATMS environment); whole layers by cardinality (Apriori prefix-join) |
+| per-conflict **implication graph** + cut analysis | per-fact **provenance DAG** (ATMS justifications); no conflict-cut analysis |
+| learned clause = **1UIP-minimised** asserting clause | learned clause = **the full dead environment** (`learned_clause == frozenset(C)`, contract-pinned); shrinking measured vacuous + NAF-unsound ([E7](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e7_learned_clause.md)) |
+| asserting clause **propagates immediately** after backjump | clause only **filters future candidates** pre-fork (`filter_candidate`); size-1 clauses also write `(not h)` |
+| **non-chronological backjump** | **no backjump** — the BFS layer loop just continues; superset suppression prunes descendants |
+| VSIDS activity, restarts, watched literals | `lex`/`score-sum` candidate order; none of the rest |
+
+The genuine CDCL *direction* lives in
+[P1.9 E20](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e20_conflict_cache.md)
+(conflict-cache cross-call ≈ incremental SAT),
+[E23](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e23_prove_speedup.md)
+(the exhaustive-search speedup umbrella: learned-clause caching,
+goal-driven pruning, AC pre-pass), and the DPLL/CDCL re-architecture
+lever in [`architecture_and_algorithms.md`
+§7](architecture_and_algorithms.md#7-summary--where-the-bodies-are-and-the-levers).
 
 ### Diagnostics — `MonotonicDumper` (S1.5b.7)
 

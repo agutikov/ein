@@ -62,9 +62,9 @@ def validate_proof_for_explanation(
        root nogood store covers every per-record clause.
     5. Every :class:`SetNode` in ``kb_index``:
 
-       - has ``state_hash`` matching its dict key (modulo the
-         per-mode keying — the gaps mode uses ``hash(commitment)``
-         so the key need not equal ``state_hash``);
+       - has ``state_key`` matching its dict key (modulo the
+         per-mode keying — the gaps mode keys by the commitment
+         tuple itself, so the key need not equal ``state_key``);
        - has ``canonical_set in labels``;
        - has ``len(labels) > 1`` only for a :class:`Contradiction`
          verdict (multilabel collapse is the contradictions-side
@@ -122,14 +122,14 @@ def validate_proof_for_explanation(
     for key, node in proof.kb_index.items():
         # canonical_set ∈ labels — always.
         assert node.canonical_set in node.labels, (
-            f"SetNode at key {key:#x} has "
+            f"SetNode at key {key!r} has "
             f"canonical_set={node.canonical_set!r} not in "
             f"labels={node.labels!r}"
         )
         # Multi-label only under contradictions.
         if len(node.labels) > 1:
             assert is_contradictions, (
-                f"SetNode at key {key:#x} has {len(node.labels)} "
+                f"SetNode at key {key!r} has {len(node.labels)} "
                 "labels but verdict is not Contradiction — "
                 "gaps must keep distinct satisfying commitments "
                 "separate"

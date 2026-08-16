@@ -198,9 +198,10 @@ re-expanded.
 ### 7.2 `kb.unsat_core(conflicting) -> set[Fact]`
 
 For each fact in `conflicting`, walks its `derivation_dag` and
-accumulates the source-kind terminals. The union is the **minimal
-source-frontier** that derives the conflict — the input to the
-*contradictions* task class
+accumulates the source-kind terminals. The union is the **recorded
+source-frontier** that derives the conflict (per the recorded
+derivations — one justification per fact; not a subset-minimal MUS) —
+the input to the *contradictions* task class
 ([`docs/ideas/03-three-task-classes.md`](../../../../plans/ideas/03-three-task-classes.md)).
 
 ```python

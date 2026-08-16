@@ -24,7 +24,7 @@
 ;;; satisfy the goal and terminate at depth 1 — both paths lead to
 ;;; the same set of consistent answers.
 ;;;
-;;; Without S1.5.3's state-hash dedup the symmetric activator on
+;;; Without S1.5.3's state-key dedup the symmetric activator on
 ;;; `co-located` further inflates each path; that's a pruning issue,
 ;;; not a correctness one. The set of distinct bindings the demo
 ;;; prints is exactly the puzzle's solution set.

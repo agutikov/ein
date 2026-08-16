@@ -78,7 +78,7 @@ def test_solve_shuffle_invariance_solutions(
 
     Solution-list ORDER inside ``proof.solutions`` may differ between
     shuffled runs, but the snapshot's ``solutions`` field is a frozenset
-    of post-saturation state hashes — so the SET of distinct models must
+    of post-saturation state keys — so the SET of distinct models must
     be identical regardless of traversal order.
     """
     # Reference: default order.
@@ -101,8 +101,8 @@ def test_solve_shuffle_invariance_solutions(
     assert snap == snap_ref, (
         f"shuffle leak on solve({fixture.name}, "
         f"max_set_size={max_set_size}, seed={seed}):\n"
-        f"  ref nodes={len(snap_ref.nodes_by_state_hash)} "
-        f"vs shuffle nodes={len(snap.nodes_by_state_hash)}\n"
+        f"  ref nodes={len(snap_ref.nodes_by_state_key)} "
+        f"vs shuffle nodes={len(snap.nodes_by_state_key)}\n"
         f"  ref solutions={snap_ref.solutions}\n"
         f"  shuffle solutions={snap.solutions}"
     )
@@ -118,7 +118,7 @@ def test_solve_shuffle_invariance_deads(
     fixture: Path, max_set_size: int, seed: int,
 ):
     """Same shuffle-invariance check, emphasising the refutation view:
-    the snapshot's ``deads`` field (a frozenset of refuted state hashes)
+    the snapshot's ``deads`` field (a frozenset of refuted state keys)
     must be identical across seeds for every fixture."""
     kb_ref = _kb_from(fixture)
     verdict_ref, _ = solve(
@@ -138,8 +138,8 @@ def test_solve_shuffle_invariance_deads(
     assert snap == snap_ref, (
         f"shuffle leak on solve({fixture.name}, "
         f"max_set_size={max_set_size}, seed={seed}):\n"
-        f"  ref nodes={len(snap_ref.nodes_by_state_hash)} "
-        f"vs shuffle nodes={len(snap.nodes_by_state_hash)}\n"
+        f"  ref nodes={len(snap_ref.nodes_by_state_key)} "
+        f"vs shuffle nodes={len(snap.nodes_by_state_key)}\n"
         f"  ref deads={snap_ref.deads}\n"
         f"  shuffle deads={snap.deads}"
     )

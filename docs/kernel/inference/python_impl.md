@@ -47,7 +47,7 @@ KB ─▶ Engine.compile_all ─▶ JoinPlan ─▶ Saturator.saturate ─▶ re
 | [`apriori.py`](../../../ein.py/src/ein/inference/apriori.py) | commitment-lattice layer generation by set-size (prefix-join + no-good prune); `order_candidates` / `_set_score` — the deterministic candidate ordering |
 | [`commitment.py`](../../../ein.py/src/ein/inference/commitment.py) | `try_commitment_set`: fork + write hypotheses + saturate + detect |
 | [`nogoods.py`](../../../ein.py/src/ein/inference/nogoods.py) | no-good learning: dead set → `root_kb._nogoods`; singletons → `_negated_facts` |
-| [`monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py) | **the main loop**: `solve()` — BFS over the commitment lattice; `_phase1_root`, `_phase2_layers`; dedup by `state_hash` |
+| [`monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py) | **the main loop**: `solve()` — BFS over the commitment lattice; `_phase1_root`, `_phase2_layers`; dedup by canonical `state_key` |
 | [`monotonic/lattice.py`](../../../ein.py/src/ein/inference/monotonic/lattice.py) | `LatticeProof`, `Solution`, `DeadCommitment`, `LatticeStats` |
 | [`monotonic/_state.py`](../../../ein.py/src/ein/inference/monotonic/_state.py) · [`_helpers.py`](../../../ein.py/src/ein/inference/monotonic/_helpers.py) | loop state; `_compute_alive` / `_promote_forced_positives` / `_record_node` / `_handle_dead` |
 | `monotonic/{state_dump,_lattice_dump,_serialise,snapshot,sanity,contract}.py` | lattice/state dumps, commutativity sanity check, the solver contract |
@@ -57,10 +57,10 @@ KB ─▶ Engine.compile_all ─▶ JoinPlan ─▶ Saturator.saturate ─▶ re
 | module | role |
 |--------|------|
 | [`contradiction.py`](../../../ein.py/src/ein/inference/contradiction.py) | detector: same-layer `(X, ¬X)` pairs + `(false)` |
-| [`min_core.py`](../../../ein.py/src/ein/inference/min_core.py) | minimal unsat core (sound, provenance-based) |
+| [`frontier.py`](../../../ein.py/src/ein/inference/frontier.py) | smallest recorded contradiction frontier (provenance-based, NAF-safe; not a subset-minimal MUS) |
 | [`verdict.py`](../../../ein.py/src/ein/inference/verdict.py) | `Solution` / `Ambiguity` / `Contradiction`; verdict read from the model count `k`; `goal_bindings` |
 | [`solution.py`](../../../ein.py/src/ein/inference/solution.py) | solution-node tracking; `open_hypotheses` |
-| [`canon.py`](../../../ein.py/src/ein/inference/canon.py) | `state_hash` — order-insensitive KB dedup |
+| [`canon.py`](../../../ein.py/src/ein/inference/canon.py) | `state_key` — order-insensitive canonical state identity (the representation is the identity; `state_digest` is display-only) |
 | [`closed.py`](../../../ein.py/src/ein/inference/closed.py) | `__closed__` handling (`CLOSED` constant; suppress guessing) |
 | [`naf_deps.py`](../../../ein.py/src/ein/inference/naf_deps.py) | static NAF-dependency map; `DerivedNafWarning` |
 | [`why.py`](../../../ein.py/src/ein/inference/why.py) | `:why` / `:goal-text` template rendering |

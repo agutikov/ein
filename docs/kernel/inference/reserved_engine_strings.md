@@ -14,25 +14,28 @@ iff it appears here or in the surface doc*, and nothing is undocumented.
 *behaviour* is written `__dunder__`, lexically distinct from userspace
 rule/relation names (the grammar admits a leading `__`; a bare name never
 triggers kernel behaviour). `__closed__` and `__symmetric__` are the two so
-far. The bookkeeping carrier heads and the surface task-class / control
-keywords below predate the convention and keep their bare names.
+far. The surface task-class / control keywords below predate the
+convention and keep their bare names.
 
 ## Bookkeeping carrier heads
 
-Synthetic fact heads the search uses to carry structure; excluded from the
-`state_hash` canonical form so they don't perturb model identity. Single
-source: `canon.BOOKKEEPING_HEADS`.
-
-| head | meaning | where |
-|------|---------|-------|
-| `hypothesis` | wraps a speculative fact introduced at a fork: `(hypothesis (R …))` | `canon.py`; `state_dump.py` |
-| `contradiction-under` | wraps the hypothesis a contradiction was found under | `canon.py` |
+**None currently.** The search once wrapped speculative facts in
+synthetic carrier heads — `(hypothesis (R …))`,
+`(contradiction-under …)` — that the canonical state form had to
+exclude; both were retired for a provenance *kind*
+([`kb/provenance.py`](../../../ein.py/src/ein/kb/provenance.py)
+`kind="hypothesis"`), so the canonical
+[`canon.state_key`](../../../ein.py/src/ein/inference/canon.py)
+excludes nothing: it is the sorted, layer-free `(relation_name, args)`
+projection of the whole propositional fact set (P1.21 R1). Any future
+carrier head must be registered here **and** excluded in
+`canon.state_key` so it doesn't perturb model identity.
 
 ## Engine entry + verdict
 
 There is **one** engine entry, `solve` — the verdict is **read from the
 result**, not chosen by which function was called. From the count `k`
-of distinct (`state_hash`-deduped) solution nodes,
+of distinct (`state_key`-deduped) solution nodes,
 [`verdict_of`](../../../ein.py/src/ein/inference/monotonic/solver.py)
 names the
 verdict; `solve(..., store_lattice=True)` attaches a sound `LatticeProof`
@@ -43,7 +46,7 @@ commands.
 
 | `k` (distinct solution nodes) | verdict | shape |
 |-------------------------------|---------|-------|
-| `k = 0` | `Contradiction` | minimal unsat core |
+| `k = 0` | `Contradiction` | unsat core — recorded-derivation source frontier (not a subset-minimal MUS) |
 | `k = 1` | `Solution` | the model |
 | `k > 1` | `Ambiguity` (gaps) | the distinct model states |
 
@@ -141,7 +144,7 @@ blocks rule-derivation).
 
 Not strings, but recorded here as part of the engine contract: the
 lattice snapshot (`monotonic/snapshot.py`) is **result-level** — it keys
-solutions/deads on post-saturation `state_hash`, NOT commitment paths, and
+solutions/deads on the post-saturation `state_key`, NOT commitment paths, and
 **excludes learned nogoods** (a clause and its symmetric mirror are
 equivalent only under symmetry, so the final nogood set is an
 order/orientation-sensitive optimisation artifact, not part of the result).

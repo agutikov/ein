@@ -16,7 +16,7 @@ from ein.inference import primitives
 from ein.inference.apriori import (
     CanonicalSetId,
 )
-from ein.inference.canon import state_hash
+from ein.inference.canon import state_key
 from ein.inference.config import SolverConfig
 from ein.inference.contradiction import ContradictionDetector
 from ein.inference.monotonic._state import (
@@ -91,7 +91,7 @@ def _emit_negated_fact_writeback(
     independent open entries; the counterpart dies on its own branch
     (re-derivation via the user's `(rule symmetric)` hits the same
     ⊥), and the two branches collapse at the generic
-    `canon.state_hash` solution-node dedup. The kernel keys on
+    `canon.state_key` solution-node dedup. The kernel keys on
     ``is_symmetric`` nowhere.
 
     Writes ``(not h)`` into root with rule-provenance — no ancestor
@@ -219,7 +219,7 @@ def _build_lattice_stats(
     mstats: MonotonicStats,
     *,
     solutions_found: int,
-    state_hash_merges: int,
+    state_key_merges: int,
     elapsed_seconds: float,
 ) -> LatticeStats:
     """Project a :class:`MonotonicStats` plus the lattice-only
@@ -229,7 +229,7 @@ def _build_lattice_stats(
     :class:`_BaseStats` — no hand-maintained field list, so a counter
     added to the base can't silently go uncopied (F-ENG-9). The
     lattice-only triple
-    (``solutions_found`` / ``state_hash_merges`` / ``elapsed_seconds``)
+    (``solutions_found`` / ``state_key_merges`` / ``elapsed_seconds``)
     is supplied by the caller. Keeping :class:`MonotonicStats`
     free of the lattice counters preserves the :func:`solve`
     public surface unchanged.
@@ -238,7 +238,7 @@ def _build_lattice_stats(
     return LatticeStats(
         **shared,
         solutions_found=solutions_found,
-        state_hash_merges=state_hash_merges,
+        state_key_merges=state_key_merges,
         elapsed_seconds=elapsed_seconds,
     )
 
@@ -252,36 +252,39 @@ def _record_setnode(
     verdict_label: Literal["alive", "dead", "solution"],
     layer: int,
 ) -> bool:
-    """The state-hash dedup MERGE primitive for the per-SetNode lattice DAG.
+    """The same-state dedup MERGE primitive for the per-SetNode lattice DAG.
 
     ``solve`` does not build the DAG (so it never calls this), but this is the
     home of the merge semantics, exercised directly at the unit level + reused
     by any DAG builder. Under ``entry == "contradictions"`` the dict is keyed
-    by the post-saturation :func:`state_hash`; on collision the existing node's
-    ``labels`` tuple grows and ``state_hash_merges`` ticks (returns ``True``).
-    Under ``entry == "gaps"`` it is keyed by ``hash(commitment)`` so distinct
-    commitments stay separate even when their post-saturation kbs collide."""
-    h_state = state_hash(result_kb)
+    by the post-saturation :func:`state_key` — an exact canonical-equality
+    merge, never a hash-collision one; on a same-state arrival the existing
+    node's ``labels`` tuple grows and ``state_key_merges`` ticks (returns
+    ``True``). Under ``entry == "gaps"`` it is keyed by the commitment tuple
+    itself so distinct commitments stay separate even when their
+    post-saturation kbs coincide."""
+    k_state = state_key(result_kb)
     if entry == "contradictions":
-        existing = lstate.kb_index.get(h_state)
+        existing = lstate.kb_index.get(k_state)
         if existing is not None:
-            lstate.kb_index[h_state] = replace(
+            lstate.kb_index[k_state] = replace(
                 existing,
                 labels=(*existing.labels, commitment),
             )
-            lstate.state_hash_merges += 1
+            lstate.state_key_merges += 1
             return True
-        lstate.kb_index[h_state] = SetNode(
-            state_hash=h_state,
+        lstate.kb_index[k_state] = SetNode(
+            state_key=k_state,
             canonical_set=commitment,
             labels=(commitment,),
             verdict=verdict_label,
             layer=layer,
         )
         return False
-    # entry == "gaps"
-    lstate.kb_index[hash(commitment)] = SetNode(
-        state_hash=h_state,
+    # entry == "gaps" — keyed by the commitment itself (P1.21 R1: the
+    # tuple is hashable; hashing it first would readmit collision risk).
+    lstate.kb_index[commitment] = SetNode(
+        state_key=k_state,
         canonical_set=commitment,
         labels=(commitment,),
         verdict=verdict_label,
@@ -322,16 +325,17 @@ def _record_node(
     layer: int = 0,
 ) -> None:
     """Record a solution node (consistent ∧ complete), deduped by
-    :func:`state_hash`. Stores a :meth:`snapshot` so it survives later root
-    mutation. On a state_hash collision (the same model reached via two
-    commitment paths — e.g. the two orientations of a symmetric pair) the
-    lex-smallest commitment wins, so the recorded representative is
+    :func:`state_key` — exact canonical equality, so no hash collision can
+    ever collapse two distinct models (P1.21 R1). Stores a :meth:`snapshot`
+    so it survives later root mutation. When the same model state is reached
+    via two commitment paths (e.g. the two orientations of a symmetric pair)
+    the lex-smallest commitment wins, so the recorded representative is
     deterministic regardless of (shuffled) traversal order — the proof's
     solution set, and any render of it, are shuffle-invariant (S1.5b.31)."""
-    h = state_hash(node_kb)
-    cur = ctx.lstate.solution_nodes.get(h)
+    k = state_key(node_kb)
+    cur = ctx.lstate.solution_nodes.get(k)
     if cur is None or tuple(sorted(commitment)) < tuple(sorted(cur.commitment)):
-        ctx.lstate.solution_nodes[h] = SolutionRecord(
+        ctx.lstate.solution_nodes[k] = SolutionRecord(
             commitment=commitment,
             kb=node_kb.snapshot(),
             firings=tuple(firings),
@@ -345,7 +349,7 @@ def _root_dead(ctx: _LoopCtx) -> None:
     ctx.lstate.dead_commitments.append(DeadCommitment(
         commitment=(), unsat_core=core,
         learned_clause=frozenset(), layer=0, kind="dead-post",
-        state_hash=state_hash(ctx.root_kb),
+        state_key=state_key(ctx.root_kb),
     ))
 
 
@@ -369,7 +373,7 @@ def _solve_proof(ctx: _LoopCtx) -> LatticeProof:
         stats=_build_lattice_stats(
             ctx.stats,
             solutions_found=len(solutions),
-            state_hash_merges=ctx.lstate.state_hash_merges,
+            state_key_merges=ctx.lstate.state_key_merges,
             elapsed_seconds=time.perf_counter() - ctx.t_start,
         ),
     )
@@ -441,7 +445,7 @@ def _handle_dead(
         learned_clause=frozenset(c),
         layer=layer,
         kind=result.kind,
-        state_hash=state_hash(result.kb),
+        state_key=state_key(result.kb),
     ))
 
     if ctx.dumper is not None:

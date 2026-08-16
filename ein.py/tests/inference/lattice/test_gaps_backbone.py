@@ -5,7 +5,7 @@ regardless of the real model count) was removed. The gaps *view* — the
 full set of distinct models — is now read off the one sound entry
 :func:`solve` run exhaustively (``stop_after=None``) with
 ``store_lattice=True``: the verdict TYPE is read from ``k`` (the number of
-distinct, state_hash-deduped solution nodes) and the model set rides along
+distinct, state_key-deduped solution nodes) and the model set rides along
 in ``verdict.proof.solutions``.
 
 These tests pin, per fixture, the SOUND verdict (Solution / Ambiguity /
@@ -143,7 +143,7 @@ def test_solve_branching_05_returns_one_distinct_model():
 
     The model is reached via two orientations of the symmetric
     ``co-located`` commitment, but they saturate to the same KB and
-    collapse at the ``state_hash`` solution-node dedup → one model.
+    collapse at the ``state_key`` solution-node dedup → one model.
     """
     kb = _kb_from(BRANCHING / "05_mini_zebra.ein")
     verdict, _ = _gaps(kb, max_set_size=3)

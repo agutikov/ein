@@ -145,7 +145,7 @@ class KnowledgeBase:
         # > SolverConfig().
         self.config: SolverConfig | None = None
 
-        # S1.5a.18 — Learned no-good clauses (path-condition CDCL).
+        # S1.5a.18 — Learned no-good clauses (path-condition, CDCL-style).
         # Each clause is a frozenset of `(relation_name, args)`
         # FactIds; meaning: "any branch whose path condition is a
         # superset of this clause is dead". Populated by
@@ -572,10 +572,11 @@ class KnowledgeBase:
 
         For each conflicting fact, walk its derivation closure and
         accumulate the *frontier* terminals — source-kind, hypothesis-kind,
-        or un-provenanced givens. The union is the minimal set of facts
-        that jointly derive the conflict (the given clues, plus the
-        committed hypotheses when a branch is involved); it's what the
-        *contradictions* task class returns to the user (idea 03).
+        or un-provenanced givens. The union is the source-frontier set of
+        facts that jointly derive the conflict *per the recorded
+        derivations* (the given clues, plus the committed hypotheses when a
+        branch is involved); it's what the *contradictions* task class
+        returns to the user (idea 03).
 
         Built on the shared frontier collector
         :func:`~ein.kb.provenance.walk_premises` (E6) — the same

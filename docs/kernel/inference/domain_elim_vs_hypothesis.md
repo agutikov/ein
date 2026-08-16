@@ -141,8 +141,8 @@ Three regimes emerge:
    lookahead refutes the wrong candidates cheaply and feeds
    forced-positive (1 set, no recorded forks). With it **off**, the
    engine finally pays the genuine **pathway-B cost the stage
-   describes: 7 commitment sets entered, 6 contradicted, 6 CDCL
-   nogoods learned** — N branches with N−1 refutations.
+   describes: 7 commitment sets entered, 6 contradicted, 6
+   no-goods learned** — N branches with N−1 refutations.
 
 The headline: on this puzzle the engine has **three** elimination
 mechanisms — the declarative `domain-elimination` rule (A), the
