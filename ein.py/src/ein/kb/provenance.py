@@ -121,10 +121,31 @@ class DerivationDAG:
     revisited fact is not re-expanded — so the result is always a
     DAG. Cycles in user-authored provenance are also caught at load
     time and rejected with :class:`KBLoadError`.
+
+    ``and_nodes`` (S1.21.7) carries the conjunction structure ``edges``
+    cannot: one entry per *justification*, pairing a conclusion with the
+    premises of that one derivation. A flat premise→conclusion edge set
+    loses this — with several justifications the in-edges of a node are the
+    union over derivations, and which subset constitutes one proof is
+    unrecoverable. When a conclusion appears in more than one entry the DAG
+    is an AND/**OR** graph (:attr:`is_or_graph`), and :meth:`to_dot` then
+    draws a node per justification so the grouping stays legible.
     """
     root: Fact
     nodes: tuple[Fact, ...]
     edges: tuple[tuple[Fact, Fact], ...]
+    and_nodes: tuple[tuple[Fact, tuple[Fact, ...]], ...] = ()
+
+    @property
+    def is_or_graph(self) -> bool:
+        """True iff some fact here has more than one recorded derivation."""
+        seen: set[FactId] = set()
+        for conclusion, _premises in self.and_nodes:
+            key: FactId = (conclusion.relation_name, conclusion.args)
+            if key in seen:
+                return True
+            seen.add(key)
+        return False
 
     @property
     def sources(self) -> tuple[Fact, ...]:
@@ -148,6 +169,12 @@ class DerivationDAG:
           sentence (e.g. "condition (10)") or "hypothesis #N".
         - Rule-derived facts: ``box`` labelled with the rule name and
           the fact's compact form ``(rel args)``.
+
+        An AND/OR graph (:attr:`is_or_graph`) additionally draws one small
+        ``diamond`` per justification, with the premises feeding *it* and it
+        feeding the conclusion — so alternative derivations read as
+        alternatives instead of as one big conjunction. A single-derivation
+        DAG renders exactly as it did before S1.21.7.
         """
         lines: list[str] = ['digraph derivation {', '  rankdir=BT;']
         for f in self.nodes:
@@ -158,10 +185,19 @@ class DerivationDAG:
                 lines.append(f'  {nid} [shape=ellipse, label="{label}"];')
             else:
                 lines.append(f'  {nid} [shape=box, label="{label}"];')
-        for premise, conclusion in self.edges:
-            pid = _fact_dot_id(premise)
-            cid = _fact_dot_id(conclusion)
-            lines.append(f"  {pid} -> {cid};")
+        if self.is_or_graph:
+            for i, (conclusion, premises) in enumerate(self.and_nodes):
+                jid = f"j{i}"
+                lines.append(
+                    f'  {jid} [shape=diamond, width=.2, height=.2, label=""];')
+                for p in premises:
+                    lines.append(f"  {_fact_dot_id(p)} -> {jid};")
+                lines.append(f"  {jid} -> {_fact_dot_id(conclusion)};")
+        else:
+            for premise, conclusion in self.edges:
+                pid = _fact_dot_id(premise)
+                cid = _fact_dot_id(conclusion)
+                lines.append(f"  {pid} -> {cid};")
         lines.append("}")
         return "\n".join(lines)
 
@@ -208,6 +244,8 @@ def _esc(s: str) -> str:
 def build_derivation_dag(
     root: Fact,
     resolve: object,
+    *,
+    justifications: Callable[[Fact], tuple[Provenance, ...]] | None = None,
 ) -> DerivationDAG:
     """BFS over `premises_raw`, resolving ids via the `resolve` callback.
 
@@ -217,26 +255,42 @@ def build_derivation_dag(
 
     Cycles are broken by tracking visited facts; the revisited fact
     appears as a node but is not re-expanded.
+
+    ``justifications`` (S1.21.7) selects which derivations to expand — see
+    :func:`justifications_of`; the default is primary-only, so the DAG shape
+    and its DOT rendering are unchanged. Pass
+    :meth:`KnowledgeBase.justifications` for the AND/OR graph, whose
+    conjunction structure lands in :attr:`DerivationDAG.and_nodes` (``edges``
+    is still emitted, as the flattened union, for readers that only want
+    reachability).
     """
     nodes: list[Fact] = [root]
     edges: list[tuple[Fact, Fact]] = []
+    and_nodes: list[tuple[Fact, tuple[Fact, ...]]] = []
     seen: set[FactId] = {(root.relation_name, root.args)}
     queue: list[Fact] = [root]
     while queue:
         f = queue.pop(0)
-        if f.provenance is None or f.provenance.kind != "rule":
-            continue
-        for rid in f.provenance.premises_raw:
-            premise = resolve(*rid)
-            if premise is None:
+        for prov in justifications_of(f, justifications):
+            if prov.kind != "rule":
                 continue
-            edges.append((premise, f))
-            key = (premise.relation_name, premise.args)
-            if key not in seen:
-                seen.add(key)
-                nodes.append(premise)
-                queue.append(premise)
-    return DerivationDAG(root=root, nodes=tuple(nodes), edges=tuple(edges))
+            group: list[Fact] = []
+            for rid in prov.premises_raw:
+                premise = resolve(*rid)
+                if premise is None:
+                    continue
+                group.append(premise)
+                edges.append((premise, f))
+                key = (premise.relation_name, premise.args)
+                if key not in seen:
+                    seen.add(key)
+                    nodes.append(premise)
+                    queue.append(premise)
+            and_nodes.append((f, tuple(group)))
+    return DerivationDAG(
+        root=root, nodes=tuple(nodes), edges=tuple(edges),
+        and_nodes=tuple(and_nodes),
+    )
 
 
 def detect_provenance_cycles(facts: Iterable[Fact], resolve: object) -> list[list[FactId]]:
@@ -244,6 +298,17 @@ def detect_provenance_cycles(facts: Iterable[Fact], resolve: object) -> list[lis
 
     Used at load time; if non-empty, the loader raises
     :class:`KBLoadError` with the cycle path.
+
+    Deliberately **primary-justification only**, and deliberately load-time
+    only (S1.21.7). A cycle in *user-authored* provenance is a malformed
+    input and rightly rejects the KB. A cycle in *engine-recorded*
+    provenance is normal — once re-derivations are recorded, symmetric and
+    transitive closure make `(R a b)` and `(R b a)` justify each other in
+    any ordinary puzzle — so running this over a saturated KB would reject
+    well-founded knowledge bases. Consumers that need to reason over the
+    recorded AND/OR graph must handle cycles themselves; see
+    :mod:`ein.inference.explain`, whose least fixpoint from the frontier up
+    never grounds a fact in itself.
     """
     # Build adjacency on (rel, args) keys: premise -> conclusion.
     out: list[list[FactId]] = []
@@ -276,12 +341,35 @@ def detect_provenance_cycles(facts: Iterable[Fact], resolve: object) -> list[lis
     return out
 
 
+def justifications_of(
+    fact: Fact,
+    justifications: Callable[[Fact], tuple[Provenance, ...]] | None,
+) -> tuple[Provenance, ...]:
+    """The justifications a walk should expand for ``fact`` (S1.21.7).
+
+    ``justifications is None`` — the default everywhere — selects the
+    **primary** justification only (``Fact.provenance``), which is the
+    pre-S1.21.7 single-derivation reading every consumer was written
+    against. Passing :meth:`KnowledgeBase.justifications` makes the walk
+    OR-aware: the fact becomes an OR-node over every recorded derivation.
+
+    This exists so the choice is *explicit* at each call site. Before
+    S1.21.7 every walker took the first-recorded derivation by accident, as
+    a side effect of the dedup seam; now a walker either says "primary" or
+    says "all", and the docstring at that call site has to justify it.
+    """
+    if justifications is not None:
+        return justifications(fact)
+    return (fact.provenance,) if fact.provenance is not None else ()
+
+
 def walk_premises(
     root: Fact,
     resolve: Callable[[str, tuple[object, ...]], Fact | None],
     *,
     keep: Callable[[FactId, Fact], bool],
     visited: set[FactId] | None = None,
+    justifications: Callable[[Fact], tuple[Provenance, ...]] | None = None,
 ) -> set[Fact]:
     """Collect every fact in ``root``'s transitive premise closure for which
     ``keep`` is True (E6) — the shared premise-closure walk.
@@ -304,6 +392,21 @@ def walk_premises(
     pass (the union is identical to walking each separately — a fact is kept
     iff reachable from any root). Iterative (explicit stack) so a deep
     derivation chain can't blow the recursion limit.
+
+    ``justifications`` (S1.21.7) selects which derivations to expand — see
+    :func:`justifications_of`. The default (primary only) is what every
+    existing caller wants. With an OR-aware resolver the result is the union
+    over *all* recorded derivations, which is a strictly larger frontier:
+    useful as a soundness envelope ("no explanation can name a fact outside
+    this"), but **not** an explanation itself — no single derivation used all
+    of those premises. For a minimum-cardinality answer use
+    :mod:`ein.inference.explain`, which chooses one justification per fact
+    instead of unioning them.
+
+    ``visited`` stays sound under an OR walk for the *union* reading — a
+    fact is kept iff reachable through some derivation — but it is not a
+    per-environment walk, which is exactly why the minimality search does
+    not reuse this function.
     """
     if visited is None:
         visited = set()
@@ -317,8 +420,9 @@ def walk_premises(
         visited.add(key)
         if keep(key, f):
             out.add(f)
-        prov = f.provenance
-        if prov is not None and prov.kind == "rule":
+        for prov in justifications_of(f, justifications):
+            if prov.kind != "rule":
+                continue
             for rid in prov.premises_raw:
                 premise = resolve(*rid)
                 if premise is not None:
@@ -332,5 +436,6 @@ __all__ = [
     "Provenance",
     "build_derivation_dag",
     "detect_provenance_cycles",
+    "justifications_of",
     "walk_premises",
 ]

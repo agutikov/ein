@@ -32,7 +32,7 @@ KB ─▶ Engine.compile_all ─▶ JoinPlan ─▶ Saturator.saturate ─▶ re
 | [`compile.py`](../../../ein.py/src/ein/inference/compile.py) | lowers each (rule, activator) to a `JoinPlan` of opcodes: `Scan` / `Join` / `Guard` / `AbsentGuard` (NAF) / `NestedPattern` |
 | [`match.py`](../../../ein.py/src/ein/inference/match.py) | runtime matcher: `_run_steps` executes a `JoinPlan`; `_bind_arg` unification; `absents_still_pass` (fire-time NAF re-check) |
 | [`firing.py`](../../../ein.py/src/ein/inference/firing.py) | `Firing` record; `fire()` substitutes `:assert`, builds the derived `Fact` with `Provenance.from_rule` |
-| [`saturator.py`](../../../ein.py/src/ein/inference/saturator.py) | the fixpoint loop: priority-banded queue, delta-driven (semi-naive) re-enqueue, `_apply` (calls `absents_still_pass` before `fire`), `naf_dropped` |
+| [`saturator.py`](../../../ein.py/src/ein/inference/saturator.py) | the fixpoint loop: priority-banded queue, delta-driven (semi-naive) re-enqueue, `_apply` (calls `absents_still_pass` before `fire`), `naf_dropped`; `_record_alternative` — the redundant-firing branch is the real dedup seam, so a re-derivation is recorded there via `kb.record_justification` (also from the `__symmetric__` mirror) |
 | [`primitives.py`](../../../ein.py/src/ein/inference/primitives.py) | structural reserved atoms (`not` / `and` / `or` / `absent` / `false`) — `STRUCTURAL` |
 | [`predicates.py`](../../../ein.py/src/ein/inference/predicates.py) | computed-predicate registry (`eq` / `neq`) — the `Guard` evaluators |
 | [`resolve.py`](../../../ein.py/src/ein/inference/resolve.py) | leaf-node resolution in bindings |
@@ -57,14 +57,15 @@ KB ─▶ Engine.compile_all ─▶ JoinPlan ─▶ Saturator.saturate ─▶ re
 | module | role |
 |--------|------|
 | [`contradiction.py`](../../../ein.py/src/ein/inference/contradiction.py) | detector: same-layer `(X, ¬X)` pairs + `(false)` |
-| [`frontier.py`](../../../ein.py/src/ein/inference/frontier.py) | smallest recorded contradiction frontier (provenance-based, NAF-safe; not a subset-minimal MUS) |
+| [`frontier.py`](../../../ein.py/src/ein/inference/frontier.py) | `smallest_contradiction_frontier` — the verdict path's unsat core; delegates the search to `explain.py`, so the answer is independent of rule-firing order (provenance-based, NAF-safe, budgeted; not a subset-minimal MUS) |
+| [`explain.py`](../../../ein.py/src/ein/inference/explain.py) | minimum-cardinality explanation over the AND/OR proof graph (each fact an OR-node via [`kb.justifications`](../ir/02-data-model/02_store.md), each justification an AND-node over its `premises_raw`): ATMS-style least-fixpoint label propagation, cycle-safe by construction; `explain` / `minimal_contradiction_frontier`; `ExplanationBudget` caps the worst-case-exponential search and `Explanation.exhausted` reports truncation. Minimal over the **recorded** derivations — i.e. relative to the rule set and the saturation strategy |
 | [`verdict.py`](../../../ein.py/src/ein/inference/verdict.py) | `Solution` / `Ambiguity` / `Contradiction`; verdict read from the model count `k`; `goal_bindings` |
 | [`solution.py`](../../../ein.py/src/ein/inference/solution.py) | solution-node tracking; `open_hypotheses` |
 | [`canon.py`](../../../ein.py/src/ein/inference/canon.py) | `state_key` — order-insensitive canonical state identity (the representation is the identity; `state_digest` is display-only) |
 | [`closed.py`](../../../ein.py/src/ein/inference/closed.py) | `__closed__` handling (`CLOSED` constant; suppress guessing) |
 | [`naf_deps.py`](../../../ein.py/src/ein/inference/naf_deps.py) | static NAF-dependency map; `DerivedNafWarning` |
 | [`why.py`](../../../ein.py/src/ein/inference/why.py) | `:why` / `:goal-text` template rendering |
-| [`config.py`](../../../ein.py/src/ein/inference/config.py) | `SolverConfig` — the live solver flags (`enable_pre_branch_lookahead`, `enable_lookahead_kill_cache`, `hypgen_scoring`, `candidate_order_seed`, `lattice_order`, …) |
+| [`config.py`](../../../ein.py/src/ein/inference/config.py) | `SolverConfig` — the live solver flags (`enable_pre_branch_lookahead`, `enable_lookahead_kill_cache`, `record_alternative_justifications`, `hypgen_scoring`, `candidate_order_seed`, `lattice_order`, …) |
 
 ## Cross-cutting invariants
 
@@ -75,6 +76,18 @@ KB ─▶ Engine.compile_all ─▶ JoinPlan ─▶ Saturator.saturate ─▶ re
 - **Alive-set soundness** (the M1 invariant) — rules assert no new objects /
   relations / nested-Fact hypotheses, so `alive = f(closed KB)`; see
   [`README.md` § M1 invariant](README.md).
+- **Provenance is per derivation, not per fact** — `Fact.provenance` is the
+  primary justification and `kb.justifications(fact)` returns every recorded
+  one, so a fact is an OR-node over AND-nodes and the proof structure is an
+  AND/OR graph. The alternatives table is *history*, not a projection of
+  `facts`: `rebuild_indexes()` deliberately leaves it alone, and
+  `fork()` / `snapshot()` shallow-copy it per KB rather than sharing it by
+  reference (a fork-local justification may name hypothesis premises root
+  never assumed). Terminals take no alternatives — a `source` / `hypothesis`
+  primary is the frontier, and a rule-kind primary with empty `premises_raw`
+  is a synthetic engine writeback whose contract is that provenance walks
+  ground out on it
+  ([`reserved_engine_strings.md`](reserved_engine_strings.md)).
 
 ## See also
 

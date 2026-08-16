@@ -43,8 +43,18 @@ if TYPE_CHECKING:
     from ..inference.config import SolverConfig
     from ..ir.macros import Macro
     from ..ir.types import KwPair
-    from .provenance import DerivationDAG
+    from .provenance import DerivationDAG, FactId, Provenance
     from .views import FactView
+
+# S1.21.7 — per-fact cap on recorded ALTERNATIVE justifications. The proof
+# graph is an AND/OR graph and a hot fact can be re-derived hundreds of times
+# (an exhaustive `zebra2` solve makes ~194k redundant firings); keeping every
+# one costs memory for environments that repeat. The list is kept sorted by
+# premise count, so the cap retains the shortest — the ones a minimum-
+# cardinality explanation search can actually use. See
+# :meth:`KnowledgeBase.record_justification`.
+MAX_ALT_JUSTIFICATIONS = 32
+
 
 # ── Equality-class hooks (T1.2.1.6 placeholder) ───────────────────
 
@@ -192,6 +202,33 @@ class KnowledgeBase:
         # instead of an O(|not-facts|) scan over `_facts_by_relation`.
         self._negated_facts: set[tuple[str, tuple]] = set()
 
+        # S1.21.7 — ALTERNATIVE justifications (multi-justification
+        # provenance). `Fact.provenance` holds the *primary* (first-recorded)
+        # justification; this side table holds every OTHER derivation the
+        # saturator attempted for the same `(relation_name, args)` identity,
+        # in first-seen order. Together they form the fact's OR-node: the
+        # proof structure is an AND/OR graph, one AND-node per
+        # `Provenance.premises_raw` tuple.
+        #
+        # Why a side table and not a field: `Fact` is `frozen=True` and its
+        # identity is `(relation_name, args)` — every index shares the one
+        # canonical object, so growing the object per re-derivation would
+        # break identity-sharing. Keyed by FactId, so it survives the
+        # canonical object being shared across forks.
+        #
+        # Copy contract: this follows the *facts* contract — shallow-copied
+        # per fork/snapshot in `_copy_fact_indexes_into`, never shared by
+        # reference like `_nogoods`. A justification recorded inside a
+        # hypothesis fork may name `hypothesis`-kind premises that root never
+        # assumed; sharing would leak a phantom assumption into a root-level
+        # unsat core. Values are immutable tuples rebound on append (the same
+        # discipline `_index_fact` uses), so the shallow copy is safe.
+        #
+        # NOT rebuildable: unlike the six reverse indexes this is *history*,
+        # not a projection of `self.facts` — `rebuild_indexes` therefore
+        # leaves it alone rather than clearing it.
+        self._alt_justifications: dict[FactId, tuple[Provenance, ...]] = {}
+
     # ── from_ir convenience ───────────────────────────────────────
 
     @classmethod
@@ -299,11 +336,142 @@ class KnowledgeBase:
         """
         existing = self._fact_by_id(fact.relation_name, fact.args)
         if existing is not None:
+            # S1.21.7 — the dedup drop. The incoming fact's justification is
+            # a *second* derivation of the same proposition: keep it as an
+            # alternative rather than discarding it (this is the "partially
+            # novel multi-assert" seam; the bulk of re-derivations never get
+            # here because `Saturator._apply` short-circuits a wholly-
+            # redundant firing before `fire()` builds a Provenance — it calls
+            # :meth:`record_justification` directly).
+            if fact.provenance is not None:
+                self.record_justification(existing, fact.provenance)
             return existing
         _attach(fact, self)
         self.facts.append(fact)
         self._index_fact(fact)
         return fact
+
+    # ── Multi-justification provenance — S1.21.7 ──────────────────
+
+    def record_justification(self, fact: Fact, prov: Provenance) -> bool:
+        """Record an ALTERNATIVE justification for an already-known fact.
+
+        ``fact`` is the **canonical** (already-stored) object — both call
+        sites hold it, so this takes no `_fact_by_id` lookup on the
+        saturation hot path.
+
+        Returns True iff ``prov`` was newly recorded. The fact's *primary*
+        justification stays on ``Fact.provenance`` (first derivation wins,
+        unchanged); this appends to :attr:`_alt_justifications`, turning the
+        fact into an OR-node of the proof graph.
+
+        Only **rule-kind provenance with at least one premise** is recorded:
+
+        - ``source`` / ``hypothesis`` kinds are *assumptions*, not
+          derivations — an assumption has nothing to weigh alternatives
+          against, and re-declaring one must not make it look derived.
+        - a rule-kind record with an EMPTY ``premises_raw`` is a synthetic
+          engine writeback (``<forced-positive>``,
+          ``<monotonic-unconditional>``, ``<lookahead-dies-immediately>`` —
+          see ``docs/kernel/inference/reserved_engine_strings.md``) whose
+          stated contract is that provenance walks *ground out* on it.
+          Recording it as an alternative would give the fact the empty
+          environment — "derivable from nothing" — collapsing every
+          explanation that passes through it.
+
+        Symmetrically, a fact whose *primary* justification is already a
+        terminal takes no alternatives at all:
+
+        - ``source`` / ``hypothesis`` primaries are the derivation
+          **frontier** — what the engine treats as given. A clue that also
+          happens to be re-derivable is still a clue, and explanations that
+          expanded it would stop naming the premise the user actually
+          supplied.
+        - a rule-kind writeback primary keeps its ground-out contract no
+          matter what the following ``saturate()`` re-derives.
+
+        Identity of a justification here is its AND-node ``(rule,
+        premises_raw)``; ``bindings`` is display metadata and is not part of
+        it, so two firings that consumed the same premises collapse.
+
+        The per-fact list is capped at :data:`MAX_ALT_JUSTIFICATIONS` — an
+        unbounded list is the feature's one real memory cost and buys little
+        (the environments repeat). It is kept **sorted by premise count**,
+        so at the cap an arriving justification with fewer premises evicts
+        the longest recorded one: the cap biases towards the small
+        explanations the minimality search is looking for, rather than
+        towards whichever happened to fire first. Sorted order also makes
+        the saturation hot path O(1) — a full list rejects an
+        arrival no shorter than its last entry without scanning.
+        """
+        if prov.kind != "rule" or not prov.premises_raw:
+            return False
+        pp = fact.provenance
+        if pp is not None:
+            if pp.kind != "rule":
+                return False                      # given: a frontier terminal
+            if not pp.premises_raw:
+                return False                      # ground-out contract
+            if pp.rule == prov.rule and pp.premises_raw == prov.premises_raw:
+                return False                      # already the primary
+        fact_id: FactId = (fact.relation_name, fact.args)
+        current = self._alt_justifications.get(fact_id, ())
+        n = len(prov.premises_raw)
+        full = len(current) >= MAX_ALT_JUSTIFICATIONS
+        if full and n >= len(current[-1].premises_raw):
+            return False                          # the O(1) hot path
+        at = len(current)
+        for i, p in enumerate(current):
+            if p.rule == prov.rule and p.premises_raw == prov.premises_raw:
+                return False                      # already an alternative
+            if at == len(current) and len(p.premises_raw) > n:
+                at = i
+        # Rebind to a fresh tuple (never mutate in place) so the
+        # fork/snapshot shallow copy cannot alias into a live branch.
+        kept = current[:-1] if full else current
+        self._alt_justifications[fact_id] = (*kept[:at], prov, *kept[at:])
+        return True
+
+    def accepts_justification(self, fact: Fact, n_premises: int) -> bool:
+        """Cheap O(1) pre-check: could ``fact`` still take an alternative
+        justification with ``n_premises`` premises?
+
+        Lets the saturator's redundant-firing path skip *building* a
+        :class:`Provenance` (and stringifying its bindings) for the common
+        case of a hot fact whose alternative list is already full of shorter
+        derivations. A True answer is not a promise —
+        :meth:`record_justification` still applies the duplicate and
+        ground-out rules.
+        """
+        if n_premises <= 0:
+            return False
+        pp = fact.provenance
+        if pp is not None and (pp.kind != "rule" or not pp.premises_raw):
+            return False
+        current = self._alt_justifications.get(
+            (fact.relation_name, fact.args), ())
+        return (len(current) < MAX_ALT_JUSTIFICATIONS
+                or n_premises < len(current[-1].premises_raw))
+
+    def justifications(self, fact: Fact) -> tuple[Provenance, ...]:
+        """Every recorded justification of ``fact`` — primary first.
+
+        The fact's OR-node: one entry per derivation the engine recorded,
+        each an AND-node over its ``premises_raw``. A fact with no recorded
+        alternatives yields just its primary (or an empty tuple when it has
+        no provenance at all), so single-justification callers can migrate
+        to this accessor without behaviour change.
+        """
+        out: list[Provenance] = []
+        if fact.provenance is not None:
+            out.append(fact.provenance)
+        out.extend(self._alt_justifications.get(
+            (fact.relation_name, fact.args), ()))
+        return tuple(out)
+
+    def has_alternative_justifications(self) -> bool:
+        """True iff any fact carries a recorded alternative derivation."""
+        return bool(self._alt_justifications)
 
     # ── Index rebuild ─────────────────────────────────────────────
 
@@ -318,6 +486,13 @@ class KnowledgeBase:
         S1.7.23 — no type / instance derivation: `(type …)` / `(instance
         …)` are ordinary facts indexed like any other, with no
         type/instance entity-view built over them.
+
+        S1.21.7 — ``_alt_justifications`` is deliberately NOT touched here.
+        Every other index is a projection of ``self.facts`` and so is safe
+        to drop and recompute; the alternative-justification table is a
+        record of derivations the engine *attempted*, which no amount of
+        looking at the current fact set can reconstruct. Clearing it would
+        silently discard the OR-structure of the proof graph.
         """
         # Facts indexes — a single pass over `self.facts` feeds every
         # fact-derived grouping (S1.7c.20 — was two walks; the second
@@ -541,7 +716,9 @@ class KnowledgeBase:
                 return f
         return None
 
-    def derivation_dag(self, fact: Fact) -> DerivationDAG:
+    def derivation_dag(
+        self, fact: Fact, *, all_justifications: bool = False,
+    ) -> DerivationDAG:
         """Build the derivation DAG rooted at `fact`.
 
         BFS over ``fact.provenance.premises_raw``, resolving each id
@@ -551,9 +728,18 @@ class KnowledgeBase:
 
         Cycles are broken at re-visit (the revisited fact appears as a
         node but is not re-expanded).
+
+        ``all_justifications=True`` (S1.21.7) expands every recorded
+        derivation instead of the primary one, giving an AND/OR graph whose
+        conjunction structure is in :attr:`DerivationDAG.and_nodes`. The
+        default stays primary-only: the DAG is a *display* object, and one
+        derivation per fact is what a reader can follow.
         """
         from .provenance import build_derivation_dag
-        return build_derivation_dag(fact, self._fact_by_id)
+        return build_derivation_dag(
+            fact, self._fact_by_id,
+            justifications=self.justifications if all_justifications else None,
+        )
 
     # ── Unified DOT rendering — S1.2.4 ────────────────────────────
 
@@ -567,7 +753,9 @@ class KnowledgeBase:
         from .render import to_dot
         return to_dot(self, **kwargs)
 
-    def unsat_core(self, conflicting: Iterable[Fact]) -> set[Fact]:
+    def unsat_core(
+        self, conflicting: Iterable[Fact], *, all_justifications: bool = False,
+    ) -> set[Fact]:
         """Frontier of given/assumed facts across a set of conflicting facts.
 
         For each conflicting fact, walk its derivation closure and
@@ -583,6 +771,17 @@ class KnowledgeBase:
         premise-closure walk as :meth:`derivation_dag`, without
         materialising the edge set. One shared ``visited`` set memoises
         the walk across all the conflicting facts.
+
+        S1.21.7 — this stays **primary-justification only** by default, and
+        that is a deliberate choice, not leftover behaviour. Unioning over
+        alternative derivations makes the core monotonically *larger*, which
+        is the opposite of what a legible explanation needs; and the union
+        already over-states the conflict (one cause fanning out into many
+        witnesses). ``all_justifications=True`` gives that larger union,
+        whose use is as a soundness envelope: every explanation of these
+        conflicts is a subset of it. For a minimum-cardinality answer use
+        :func:`ein.inference.frontier.smallest_contradiction_frontier`,
+        which *chooses* one justification per fact rather than unioning them.
         """
         from .provenance import walk_premises
 
@@ -592,9 +791,11 @@ class KnowledgeBase:
 
         core: set[Fact] = set()
         visited: set = set()
+        justifications = self.justifications if all_justifications else None
         for f in conflicting:
             core |= walk_premises(
-                f, self._fact_by_id, keep=_is_frontier, visited=visited)
+                f, self._fact_by_id, keep=_is_frontier, visited=visited,
+                justifications=justifications)
         return core
 
     # ── Fork — S1.2.2 T1.2.2.3 ────────────────────────────────────
@@ -722,6 +923,18 @@ class KnowledgeBase:
         and rejected: post-S1.7.23 there is only one static index against
         six mutable, so the wrapper's mutable/static separation collapses to
         ceremony; this helper captures the whole remaining value.)
+
+        S1.21.7 adds a seventh entry, ``_alt_justifications``, on the same
+        rebind-to-fresh-tuple discipline — but it is **history, not a
+        projection**: :meth:`rebuild_indexes` cannot reconstruct it and
+        deliberately leaves it alone, so the "byte-identical to a rebuild"
+        argument above does not cover it. What makes the shallow copy correct
+        there is the same no-in-place-mutation rule
+        (:meth:`record_justification` rebinds the whole tuple), plus the
+        reason it must be COPIED rather than shared like ``_nogoods``: a
+        justification recorded inside a hypothesis fork can name
+        ``hypothesis``-kind premises root never assumed, and sharing would
+        surface that phantom assumption in a root-level unsat core.
         """
         new._rules_by_relation = self._rules_by_relation
         new._facts_by_relation = dict(self._facts_by_relation)
@@ -730,6 +943,7 @@ class KnowledgeBase:
         new.names = dict(self.names)
         new._negated_facts = set(self._negated_facts)
         new._facts_by_rel_slot_val = dict(self._facts_by_rel_slot_val)
+        new._alt_justifications = dict(self._alt_justifications)
 
     # ── Dunder ────────────────────────────────────────────────────
 

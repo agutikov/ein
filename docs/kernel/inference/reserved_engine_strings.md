@@ -31,6 +31,42 @@ projection of the whole propositional fact set (P1.21 R1). Any future
 carrier head must be registered here **and** excluded in
 `canon.state_key` so it doesn't perturb model identity.
 
+## Synthetic writeback rule names
+
+Three `Provenance(kind="rule", …)` records name a rule that does not
+exist in any `(rule …)` form. They are written by the **search** layer
+when it writes a conclusion back to root, and they all share one shape —
+**empty `premises_raw`**:
+
+| name | written by | means |
+|---|---|---|
+| `<monotonic-unconditional>` | [`_helpers._write_negation_local`](../../../ein.py/src/ein/inference/monotonic/_helpers.py) | a size-1 dead clause's `(not h)` writeback: every branch assuming `h` died |
+| `<forced-positive>` | [`_helpers._promote_forced_positives`](../../../ein.py/src/ein/inference/monotonic/_helpers.py) | a sole-surviving alive singleton promoted to a root fact |
+| `<lookahead-dies-immediately>` | [`hypgen._write_negated`](../../../ein.py/src/ein/inference/hypgen.py) | the lookahead kill-cache's `(not h)` |
+
+The empty premise tuple is the **contract**, not an omission: these facts
+have no fact-level premises because their real justification is
+*meta*-level — a property of the search (every alternative was refuted),
+not a derivation inside any one world. Every provenance walk therefore
+**grounds out** on them: they terminate the walk and contribute nothing
+to a frontier, so an unsat core never names a search conclusion as a
+given.
+
+Multi-justification provenance (S1.21.7) preserves this in both
+directions:
+[`store.record_justification`](../../../ein.py/src/ein/kb/store.py)
+refuses to record such a record as an alternative (it would give some
+fact the *empty* environment — "derivable from nothing" — collapsing
+every explanation through it), and refuses to attach alternatives *to* a
+fact whose primary is one (so a later `saturate()` re-deriving it by a
+real rule cannot silently re-open the ground-out).
+[`explain.py`](../../../ein.py/src/ein/inference/explain.py) treats them
+as terminals labelled with the empty environment, which is exactly the
+"contributes nothing" behaviour the single-justification walk had.
+
+A new writeback name must be registered here and must keep the
+empty-`premises_raw` shape, or the walks will try to expand it.
+
 ## Engine entry + verdict
 
 There is **one** engine entry, `solve` — the verdict is **read from the
@@ -46,9 +82,27 @@ commands.
 
 | `k` (distinct solution nodes) | verdict | shape |
 |-------------------------------|---------|-------|
-| `k = 0` | `Contradiction` | unsat core — recorded-derivation source frontier (not a subset-minimal MUS) |
+| `k = 0` | `Contradiction` | unsat core — the smallest contradiction frontier: a minimum-cardinality AND/OR search over every recorded derivation (provenance-based, NAF-safe, budgeted); **not** a subset-minimal MUS |
 | `k = 1` | `Solution` | the model |
 | `k > 1` | `Ambiguity` (gaps) | the distinct model states |
+
+The `k = 0` payload is per **witness**: the smallest set of *given* facts
+(`source` / `hypothesis` / un-provenanced) from which **one** recorded
+contradiction follows —
+[`frontier.smallest_contradiction_frontier`](../../../ein.py/src/ein/inference/frontier.py)
+delegating to
+[`inference/explain.py`](../../../ein.py/src/ein/inference/explain.py), ATMS
+label propagation over the AND/OR justification graph
+(`kb.justifications(fact)` — a fact is an OR-node over AND-nodes of premises),
+so the answer does not depend on which derivation fired first. Two caveats
+survive: minimality is relative to the **recorded** derivations (only the
+firings the saturator attempted, capped per fact at
+`store.MAX_ALT_JUSTIFICATIONS`), and the search is **budgeted**
+(`ExplanationBudget`; `Explanation.exhausted` reports whether it ran to
+completion — a truncated search is still sound, just possibly not smallest).
+Across several dead commitments the verdict still unions their cores (with an
+exhausted lattice no single dead explains unsat), but each dead's core is
+itself the smallest explanation of that dead.
 
 (Historical: the unsound sibling entries `gaps_solve` /
 `contradictions_solve` — which fixed the verdict by *which function was

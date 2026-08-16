@@ -15,6 +15,7 @@ from ein.inference.apriori import (
 )
 from ein.inference.canon import StateKey
 from ein.inference.contradiction import ContradictionDetector
+from ein.inference.frontier import smallest_contradiction_frontier
 from ein.inference.monotonic.lattice import (
     DeadCommitment,
     SetNode,
@@ -118,14 +119,25 @@ def _union_dead_cores(deads: Iterable[DeadCommitment]) -> frozenset[Fact]:
 
 
 def _source_frontier_core(kb: KnowledgeBase) -> frozenset[Fact]:
-    """The unsat core for a contradiction already present in ``kb``:
-    walk each witness's derivation DAG back to its ``source``-kind
-    terminals via :meth:`KnowledgeBase.unsat_core`. ``frozenset()``
-    when ``kb`` is in fact consistent."""
+    """The unsat core for a contradiction already present in ``kb``.
+
+    S1.21.7 companion — this is the **smallest** explanation of one witness
+    (:func:`~ein.inference.frontier.smallest_contradiction_frontier`), not
+    the union over every witness. It is the use-site E19 planned in 2026-06
+    and never wired: when one cause propagates it fans out into many
+    witnesses, so unioning their frontiers over-states the conflict — on
+    `zebra2-bad` a single injected fact produces 123 witnesses whose
+    frontiers union to 38 facts, while the smallest single witness is
+    exactly the injected culprit.
+
+    Sound: the result is one real derivation's leaves, and it is a subset of
+    what the union reported. ``frozenset()`` when ``kb`` is in fact
+    consistent.
+    """
     contras = ContradictionDetector(kb).detect()
     if not contras:
         return frozenset()
-    return frozenset(kb.unsat_core(c.witness for c in contras))
+    return smallest_contradiction_frontier(kb, [c.witness for c in contras])
 
 
 def verdict_of(lstate: _LatticeLoopState, *, exhausted: bool) -> Verdict:

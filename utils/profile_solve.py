@@ -50,11 +50,20 @@ from ein.kb.store import KnowledgeBase
 
 # Substrings grouping cProfile rows into engine subsystems. First match
 # wins (order matters — `monotonic/solver` before generic `match`).
+#
+# Needles are matched against ``<basename>:<funcname>`` and against the
+# basename alone — both directory-stripped — so a needle must NOT carry a
+# leading path separator. (`"/compile.py"` and `"/resolve.py"` did until
+# 2026-08-17 and could therefore never match, silently pushing those rows
+# into `other` and under-reporting `saturate`.)
 _SUBSYSTEMS: list[tuple[str, tuple[str, ...]]] = [
     ("fork/copy",     ("store.py:fork", "_copy_fact_indexes_into",
                        "snapshot")),
-    ("saturate",      ("saturator.py", "/compile.py", "firing.py")),
-    ("match/bind",    ("match.py", "/resolve.py")),
+    ("saturate",      ("saturator.py", "compile.py", "firing.py",
+                       "store.py:add_and_index_fact",
+                       "store.py:record_justification",
+                       "store.py:accepts_justification")),
+    ("match/bind",    ("match.py", "resolve.py")),
     ("contradiction", ("contradiction.py", "nogoods.py", "naf_deps.py")),
     ("hypgen/branch", ("hypgen.py", "lookahead.py", "commitment.py")),
     ("alive/closed",  ("solver.py:_compute_alive", "closed.py",
@@ -163,6 +172,12 @@ def _print_subsystems(pr: cProfile.Profile, total_wall: float) -> None:
         tgt[0] += tt        # tottime (self)
         tgt[1] += ct        # cumtime
         tgt[2] += nc        # ncalls
+    # NB the percentage column is a share of SELF time, not of the solve.
+    # Saturation *drives* essentially the whole run by cumulative time (its
+    # `saturate` frame is >99% of wall); most of that self-time lands in
+    # `match/bind`, which saturation calls. Read a small `saturate` % as
+    # "little time is spent in saturator frames themselves", never as
+    # "saturation is a small part of the solve".
     print("\n── time by subsystem (cProfile tottime, self) ─────────")
     print(f"  {'subsystem':<16s} {'tottime':>9s} {'%':>6s} "
           f"{'cumtime':>9s} {'ncalls':>10s}")

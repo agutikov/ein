@@ -1,9 +1,14 @@
-"""Smallest recorded contradiction frontier — S1.9.E19, renamed per R3."""
+"""Smallest contradiction frontier — S1.9.E19, renamed per R3, OR-aware per S1.21.7."""
 from __future__ import annotations
 
 from pathlib import Path
 
+from ein.inference.config import SolverConfig
 from ein.inference.contradiction import ContradictionDetector
+from ein.inference.explain import (
+    ExplanationBudget,
+    minimal_contradiction_frontier,
+)
 from ein.inference.frontier import smallest_contradiction_frontier
 from ein.inference.saturator import Saturator
 from ein.ir import parse
@@ -30,8 +35,10 @@ CONSISTENT = """
 
 # Two derivations of the same fact (X a) plus one clash — the R3 report's E3
 # fixture. Only the two deriving rules' :priority values are swapped between
-# runs; lower priority fires first, and the first derivation's provenance is
-# the one the KB records (store.add_and_index_fact — first derivation wins).
+# runs; lower priority fires first, so which derivation becomes (X a)'s
+# *primary* provenance flips between runs. Since S1.21.7 the loser is kept as
+# an alternative justification, so the reported frontier no longer flips
+# with it.
 TWO_DERIVATIONS = """
 (relation A T)
 (relation B T)
@@ -92,26 +99,72 @@ class TestSmallestContradictionFrontier:
         assert 0 < len(smallest) <= 5            # vs the 38-fact union
         assert len(smallest) < len(union)
 
-    def test_result_depends_on_recorded_derivation_order(self):
-        # The executable form of the "minimal only over recorded derivations"
-        # caveat (R3): one justification per fact — first derivation wins — so
-        # flipping the two deriving rules' priorities flips the recorded
-        # provenance of (X a) and with it the reported frontier: {C, Y} when
-        # chain fires first vs {A, B, Y} when join does, even though the
-        # 2-fact explanation still exists in the second run. Each result is
-        # still a sound frontier (⊆ the union core). A future
-        # multi-justification fix (P1.21 S1.21.7) should flip this test
-        # deliberately.
-        def run(join: int, chain: int) -> tuple[frozenset, set]:
+    def test_result_is_independent_of_derivation_order(self):
+        # S1.21.7 — the deliberate flip of
+        # `test_result_depends_on_recorded_derivation_order`, which pinned the
+        # R3 caveat as *current behaviour*: one justification per fact meant
+        # the reported frontier was {C, Y} when `chain` fired first but
+        # {A, B, Y} when `join` did, even though the 2-fact explanation still
+        # existed in the second run. Re-derivations are now recorded as
+        # alternative justifications and the frontier is searched over the
+        # AND/OR graph, so both runs report the genuinely smallest
+        # explanation. Priority no longer decides the answer.
+        def run(join: int, chain: int):
             kb = _saturated(TWO_DERIVATIONS.format(join=join, chain=chain))
-            return smallest_contradiction_frontier(kb), _union_core(kb)
+            return kb, smallest_contradiction_frontier(kb)
 
-        chain_first, union_a = run(join=100, chain=50)
-        join_first, union_b = run(join=50, chain=100)
-        assert chain_first <= union_a            # sound: real derivation leaves
-        assert join_first <= union_b
+        kb_a, chain_first = run(join=100, chain=50)
+        kb_b, join_first = run(join=50, chain=100)
         names_a = {f.relation_name for f in chain_first}
         names_b = {f.relation_name for f in join_first}
-        assert names_a == {"C", "Y"}             # the short recorded derivation
-        assert names_b == {"A", "B", "Y"}        # {C, Y} exists but is invisible
-        assert names_a != names_b                # priority alone flips the answer
+        assert names_a == {"C", "Y"}
+        assert names_b == {"C", "Y"}
+        assert names_a == names_b
+
+        # The primary provenance still flips — the fix is in the *search*,
+        # not in which derivation wins the dedup race.
+        prov_a = kb_a._fact_by_id("X", ("a",)).provenance
+        prov_b = kb_b._fact_by_id("X", ("a",)).provenance
+        assert (prov_a.rule, prov_b.rule) == ("chain", "join")
+
+        # ... and the loser is retained as an alternative justification.
+        assert [p.rule for p in kb_b._alt_justifications[("X", ("a",))]] \
+            == ["chain"]
+
+        # Soundness envelope: an explanation only ever names facts the
+        # OR-aware premise closure reaches. (It is NOT a subset of the
+        # primary-only union core — in run b that core is {A, B, Y}, which is
+        # exactly the over-report S1.21.7 removes.)
+        for kb, core in ((kb_a, chain_first), (kb_b, join_first)):
+            witnesses = [c.witness for c in ContradictionDetector(kb).detect()]
+            assert core <= kb.unsat_core(witnesses, all_justifications=True)
+        assert not join_first <= _union_core(kb_b)
+
+    def test_search_is_budgeted_and_reports_exhaustion(self):
+        # The minimality search is worst-case exponential, so it runs under an
+        # explicit anytime budget; a fully-explored search says so.
+        kb = _saturated(TWO_DERIVATIONS.format(join=50, chain=100))
+        result = minimal_contradiction_frontier(kb)
+        assert result.exhausted is True
+        assert {f.relation_name for f in result.frontier} == {"C", "Y"}
+        assert result.target is not None
+        assert result.rounds > 0
+
+        # A budget that keeps one environment per fact still returns a sound
+        # frontier, and admits it may not be the smallest.
+        tight = minimal_contradiction_frontier(
+            kb, budget=ExplanationBudget(max_rounds=1))
+        assert tight.exhausted is False
+        assert tight.frontier <= _union_core(kb) | {
+            f for f in kb.facts if f.relation_name == "C"}
+
+    def test_alternatives_off_restores_single_justification_behaviour(self):
+        # The config gate is a real off switch: with recording disabled the
+        # frontier is the pre-S1.21.7 recorded-primary answer, order and all.
+        text = TWO_DERIVATIONS.format(join=50, chain=100)
+        kb = KnowledgeBase.from_ir(parse(text))
+        kb.config = SolverConfig(record_alternative_justifications=False)
+        list(Saturator(kb).saturate())
+        assert kb._alt_justifications == {}
+        assert {f.relation_name for f in smallest_contradiction_frontier(kb)} \
+            == {"A", "B", "Y"}

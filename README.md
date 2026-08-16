@@ -16,8 +16,9 @@ mode flag. The count of distinct complete models `k` *is* the answer:
 - `k > 1` → **gaps** — the puzzle is under-determined: `k` distinct models, the
   residual ambiguity.
 - `k = 0` → **a contradiction** — an over-constrained KB, reported with its
-  unsat core: the given facts on the recorded contradictions' derivation
-  frontier (provenance-based; not a subset-minimal MUS).
+  unsat core: the smallest set of given facts from which one recorded
+  contradiction follows (provenance-based, searched across every recorded
+  derivation; not a subset-minimal MUS).
 
 `solve` / `gaps` / `contradictions` are **three answers to one problem**, not
 three different problem statements and not three commands. You run **`ein

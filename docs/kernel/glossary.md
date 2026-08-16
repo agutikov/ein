@@ -83,22 +83,55 @@ else it is derived from provenance.
 See [`ir/01-ein-graph/01_kb.md` §3](ir/01-ein-graph/01_kb.md).
 
 ### Provenance
-A per-fact record of *where the fact came from*. Four kinds: `source`
-(from IR), `rule` (from a firing), `hypothesis` (speculative branch),
-`rejected` (retracted). See
+A record of *where a fact came from*. Four kinds: `source` (from IR),
+`rule` (from a firing), `hypothesis` (speculative branch), `rejected`
+(retracted). Provenance is per **derivation**, not per fact:
+`Fact.provenance` is the primary justification and
+`kb.justifications(fact)` returns every recorded one, so a fact is an
+OR-node over AND-nodes — the proof structure is an AND/OR graph.
+Frontier terminals take no alternatives: a given stays given. See
 [`ir/02-data-model/01_entities.md` §3](ir/02-data-model/01_entities.md).
 
 ### Derivation DAG
 The transitive closure of `rule`-kind provenance — from a derived
-fact, the directed acyclic graph of premise facts back to source-
-kind terminals. See [`ir/02-data-model/02_store.md` §7](ir/02-data-model/02_store.md).
+fact, the graph of premise facts back to the frontier terminals
+(`source` / `hypothesis` / un-provenanced). `kb.derivation_dag(fact)`
+follows the primary justification only; `all_justifications=True`
+follows every recorded one, giving an AND/OR graph whose
+per-justification premise groups are in `and_nodes` (`is_or_graph`;
+`to_dot()` then draws a diamond per justification). Cycles are broken
+at re-visit — the revisited fact is a node but is not re-expanded. See
+[`ir/02-data-model/02_store.md` §7](ir/02-data-model/02_store.md).
 
 ### Unsat core
-The source-kind frontier across a set of conflicting facts, per the
-recorded derivations — the "given" premises that together derive the
-conflict. Not a subset-minimal MUS. Output of
-the *contradictions* task class (idea 03). See
+The frontier of given facts across a set of conflicting facts, per
+the recorded derivations — the "given" premises that together derive
+the conflict. Output of the *contradictions* task class (idea 03).
+`kb.unsat_core(conflicting)` unions the frontier of each conflicting
+fact's primary derivation; `all_justifications=True` unions over every
+recorded derivation, which is monotonically *larger* — a soundness
+envelope ("no explanation names a fact outside this"), not a better
+explanation. Not a subset-minimal MUS; for a minimum-cardinality
+answer see **Smallest contradiction frontier**. See
 [`ir/02-data-model/02_store.md` §7.2](ir/02-data-model/02_store.md).
+
+### Smallest contradiction frontier
+The smallest set of given facts from which **one** recorded
+contradiction follows — a minimum-cardinality AND/OR search over every
+recorded derivation (provenance-based, NAF-safe, budgeted); **not** a
+subset-minimal MUS. Independent of the order in which the rules
+fired, and what the `k = 0` verdict reports as its unsat core (unioned
+across dead commitments when no single dead one explains the unsat).
+Three caveats: no proper subset is checked for satisfiability; the
+alternatives searched are only the firings the saturator attempted,
+capped per fact (`store.MAX_ALT_JUSTIFICATIONS`), so minimality is
+relative to the rule set and the saturation strategy; and the search
+is budgeted — `Explanation.exhausted` reports whether it completed,
+and a truncated search is still sound. Computed by
+[`frontier.smallest_contradiction_frontier`](../../ein.py/src/ein/inference/frontier.py)
+over the **ATMS label** search in
+[`explain.py`](../../ein.py/src/ein/inference/explain.py). See
+[`inference/architecture_and_algorithms.md` §O6](inference/architecture_and_algorithms.md).
 
 ### Fork
 A hypothesis branch — a `KnowledgeBase` that shares ontology and
@@ -232,10 +265,27 @@ verification and superoptimisation. F4 promotion target. See
 [`docs/lib/06-graphs-rewrite-systems.md`](../lib/06-graphs-rewrite-systems.md).
 
 ### ATMS (Assumption-based Truth Maintenance System)
-A truth-maintenance variant where every fact carries the set of
-assumptions it depends on. Ein's per-fact provenance (S1.2.3)
-is the ATMS-style substrate; the trace renderer + hypothesis loop
-read it. See [`docs/lib/09-cognitive-architectures-neurosymbolic.md`](../lib/09-cognitive-architectures-neurosymbolic.md).
+A truth-maintenance variant where every fact carries its **label** —
+the sets of assumptions it depends on — maintained incrementally.
+Ein's provenance (S1.2.3) records *justifications*, not labels: a fact
+is an OR-node over the derivations the engine recorded, which is the
+ATMS-style justification graph the trace renderer + hypothesis loop
+read. A provenance record is not itself a label; labels are computed
+on demand (see **ATMS label**). See
+[`docs/lib/09-cognitive-architectures-neurosymbolic.md`](../lib/09-cognitive-architectures-neurosymbolic.md).
+
+### ATMS label
+The subset-minimal **environments** — sets of frontier facts — from
+which a fact follows. Ein computes labels on demand rather than
+storing them:
+[`explain.py`](../../ein.py/src/ein/inference/explain.py) propagates
+them by least fixpoint from the frontier upward over the AND/OR
+provenance graph (`explain(kb, targets) -> Explanation`), under an
+`ExplanationBudget`. Starting from empty labels that only grow makes a
+**cyclic** justification graph safe by construction — symmetric and
+transitive closure routinely make `(R a b)` and `(R b a)` justify each
+other — since a fact can never ground itself. The engine-facing use is
+the **Smallest contradiction frontier**.
 
 ### Functoriality
 A categorical property: a rule R is *functorial* in a relation P if R

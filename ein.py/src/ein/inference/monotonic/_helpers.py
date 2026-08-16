@@ -195,15 +195,19 @@ def _solution(kb: KnowledgeBase) -> Verdict:
 
 
 def _contradiction(kb: KnowledgeBase) -> Verdict:
-    """Contradiction verdict carrying the source-frontier unsat core.
+    """Contradiction verdict carrying the smallest-explanation unsat core.
 
-    P1.7a: walk each contradiction witness's derivation DAG back to
-    its ``source``-kind terminals via :meth:`KnowledgeBase.unsat_core`
-    — the same call ``try_commitment_set`` makes per-commitment
-    (``commitment.py``). Previously a stub returning ``frozenset()``,
-    which left root-level contradictions (e.g. ``zebra2-bad``, where
-    the clash fires during root saturation before any commitment)
-    with an empty core.
+    P1.7a: root-level contradictions (e.g. ``zebra2-bad``, where the clash
+    fires during root saturation before any commitment) used to get an empty
+    core; ``_source_frontier_core`` fills it by walking back to the
+    ``source``-kind frontier — the same shape ``try_commitment_set`` produces
+    per-commitment (``commitment.py``).
+
+    S1.21.7 companion: that walk is now
+    :func:`~ein.inference.frontier.smallest_contradiction_frontier` — the
+    smallest explanation of **one** witness across every recorded
+    derivation, not the union over all witnesses (``zebra2-bad``: 1 fact,
+    the injected culprit, rather than 38).
     """
     return Contradiction(unsat_core=_source_frontier_core(kb))
 

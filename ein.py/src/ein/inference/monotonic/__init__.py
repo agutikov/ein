@@ -11,8 +11,11 @@ from the count ``k`` via :func:`verdict_of`:
 - ``k = 1`` → :class:`Solution` — the model (certified unique iff the
   search exhausted).
 - ``k > 1`` → :class:`Ambiguity` — ``k`` distinct models (a *gap*).
-- ``k = 0`` → :class:`Contradiction` — unsat (``unsat_core`` = union of the
-  refuted commitments' source-frontier cores), when exhausted.
+- ``k = 0`` → :class:`Contradiction` — unsat, when exhausted. ``unsat_core``
+  is the union over the refuted commitments of each one's **smallest
+  explanation** (S1.21.7): per dead, the fewest givens from which one
+  recorded contradiction follows; the union survives across deads because
+  with an exhausted lattice no single dead explains unsat.
 
 These are three **answers to one problem** (unsat / unique / under-determined),
 selected by the *input*, never by which function was called. The former

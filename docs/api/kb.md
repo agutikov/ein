@@ -58,16 +58,46 @@ The attributes an embedder reads (all populated by the loader):
 To read the *answer* after solving, prefer
 [`goal_bindings(kb)`](inference.md) over walking `facts` by hand.
 
-### `derivation_dag(fact) -> DerivationDAG`
+### `justifications(fact) -> tuple[Provenance, ...]`
+
+Every derivation the engine recorded for `fact`, **primary first**.
+[Provenance](#provenance) is per *derivation*, not per fact: the fact is
+an OR-node and each entry an AND-node over its `premises_raw`. A fact
+with no recorded alternatives yields just its primary (an empty tuple if
+it has none), so single-justification callers read it unchanged.
+
+### `derivation_dag(fact, *, all_justifications=False) -> DerivationDAG`
 
 `kb.derivation_dag(fact)` returns the transitive-closure derivation DAG
 of a fact (over each fact's `provenance.premises_raw`). The substrate the
-[trace renderer](trace.md) reads.
+[trace renderer](trace.md) reads. `all_justifications=True` expands every
+recorded derivation instead of the primary one, giving the AND/OR graph
+whose conjunction structure lands in
+[`DerivationDAG.and_nodes`](#derivationdag). The default stays
+primary-only: the DAG is a *display* object, and one derivation per fact
+is what a reader can follow.
+
+### `unsat_core(conflicting, *, all_justifications=False) -> set[Fact]`
+
+The **source frontier** of a set of conflicting facts: walk each one's
+derivation closure and union the terminals the engine treats as *given*
+(`source`-kind, `hypothesis`-kind, or un-provenanced). Primary
+justification only by default, deliberately — unioning over alternative
+derivations makes the core monotonically *larger*, the opposite of a
+legible explanation, so `all_justifications=True` is a soundness envelope
+(every explanation of these conflicts is a subset of it) rather than a
+better answer. For a minimum-cardinality answer use
+[`ein.inference.frontier.smallest_contradiction_frontier`](inference.md),
+which *chooses* one justification per fact instead of unioning them
+(searched across every recorded derivation, budgeted; **not** a
+subset-minimal MUS); it is what a [`Contradiction`](inference.md) verdict
+reports as its `unsat_core`.
 
 > **Loader/engine-internal, not embedding surface:** `add_fact`,
-> `add_and_index_fact`, `rebuild_indexes`, `fork`, and the `_…`-prefixed
-> reverse indexes (`_facts_by_relation`, `_negated_facts`, …). These are
-> maintained by the loader and the engine; an embedder reads, never writes.
+> `add_and_index_fact`, `record_justification`, `rebuild_indexes`,
+> `fork`, and the `_…`-prefixed reverse indexes (`_facts_by_relation`,
+> `_negated_facts`, `_alt_justifications`, …). These are maintained by
+> the loader and the engine; an embedder reads, never writes.
 
 ## Entity dataclasses
 
@@ -115,7 +145,7 @@ Also exported from `ein.kb`: `Pattern` (a structural view of a `:match` /
 
 ### `Provenance`
 
-The per-fact origin record (`from ein.kb import Provenance`):
+The per-derivation origin record (`from ein.kb import Provenance`):
 
 | field | meaning |
 |-------|---------|
@@ -129,11 +159,34 @@ The per-fact origin record (`from ein.kb import Provenance`):
 Convenience constructors: `Provenance.from_source`, `.from_rule`,
 `.from_hypothesis`, `.rejected` (used by the loader/engine).
 
+Provenance is per **derivation**, not per fact: `Fact.provenance` is the
+primary justification and
+[`kb.justifications(fact)`](#reading-a-knowledgebase) returns every
+recorded one, so a fact is an OR-node over AND-nodes — the proof
+structure is an AND/OR graph. Re-derivations of an already-known fact are
+appended as alternatives (capped per fact, the shortest kept); terminals
+take none — a `source`/`hypothesis` primary *is* the frontier (a given
+stays given), and a `rule`-kind primary with empty `premises_raw` is a
+synthetic engine writeback whose contract is that provenance walks ground
+out on it. Recording is gated by
+`SolverConfig.record_alternative_justifications` (default `True` — see
+[`inference.md`](inference.md)).
+
 ### `DerivationDAG`
 
 The transitive-closure derivation graph of a fact — built by
 `kb.derivation_dag(fact)` over the `premises_raw` chains. Read by the
 trace generator to produce its "it follows that …" narrative.
+
+| field / property | meaning |
+|------------------|---------|
+| `root` | `Fact` — the fact the graph explains. |
+| `nodes` | `tuple[Fact, …]` — every fact reached (cycles broken at re-visit). |
+| `edges` | `tuple[(premise, conclusion), …]` — the flat premise→conclusion edges. |
+| `and_nodes` | `tuple[(conclusion, premises), …]` — one entry per *justification*: the conjunction structure a flat edge set cannot express. |
+| `is_or_graph` | `bool` — some fact here has more than one recorded derivation. |
+| `sources` | `tuple[Fact, …]` — the frontier terminals (`source` / `hypothesis` / un-provenanced). |
+| `to_dot()` | Graphviz `digraph` string; an OR graph draws one small diamond per justification, so alternative derivations read as alternatives instead of as one big conjunction. |
 
 ## See also
 

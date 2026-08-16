@@ -32,6 +32,7 @@ from typing import Literal
 from ein.inference.apriori import CanonicalSetId
 from ein.inference.contradiction import ContradictionDetector
 from ein.inference.firing import Firing
+from ein.inference.frontier import smallest_contradiction_frontier
 from ein.inference.saturator import Saturator
 from ein.kb.entities import Fact, Layer
 from ein.kb.provenance import Provenance
@@ -114,9 +115,8 @@ def try_commitment_set(
             kb=fork,
             firings=(),
             kind="dead-pre",
-            unsat_core=frozenset(
-                fork.unsat_core(c.witness for c in pre_contras)
-            ),
+            unsat_core=smallest_contradiction_frontier(
+                fork, [c.witness for c in pre_contras]),
             hypothesis_facts=tuple(hypothesis_facts),
         )
 
@@ -130,9 +130,8 @@ def try_commitment_set(
             kb=fork,
             firings=firings,
             kind="dead-post",
-            unsat_core=frozenset(
-                fork.unsat_core(c.witness for c in post_contras)
-            ),
+            unsat_core=smallest_contradiction_frontier(
+                fork, [c.witness for c in post_contras]),
             hypothesis_facts=tuple(hypothesis_facts),
         )
 

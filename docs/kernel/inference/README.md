@@ -73,8 +73,9 @@ unless noted):
 | Property-fact activation        | KB indexes `_rule_apps_by_rule` / `_rule_apps_on_relation` built at load |
 | Saturation loop                 | **shipped** — priority-banded, delta-driven `saturator.py` (P1.3 S1.3.3; semi-naive in P1.8a) |
 | Hypothesis branching            | **shipped** — `hypgen.py` enumerates candidates; the commitment-lattice search is `monotonic/solver.py` (P1.5–P1.5b) |
-| Contradiction detection         | **shipped** — `contradiction.py` (`(X, ¬X)` pairs + `(false)`); smallest recorded contradiction frontier via `frontier.py` + provenance |
-| Verdict                         | **shipped** — one `solve()`; `verdict.py` reports `Solution` / `Ambiguity` / `Contradiction`, read off the model count `k` |
+| Contradiction detection         | **shipped** — `contradiction.py` detects (`(X, ¬X)` pairs + `(false)`); `frontier.py` → `explain.py` explains: smallest contradiction frontier — a minimum-cardinality AND/OR search over every recorded derivation (provenance-based, NAF-safe, budgeted); **not** a subset-minimal MUS |
+| Multi-justification provenance  | **shipped** — provenance is per *derivation*: `Fact.provenance` is the primary justification, `kb.justifications(fact)` returns every recorded one (capped per fact, shortest kept), so a fact is an OR-node over AND-nodes. Gated by `SolverConfig.record_alternative_justifications` (default on) |
+| Verdict                         | **shipped** — one `solve()`; `verdict.py` reports `Solution` / `Ambiguity` / `Contradiction`, read off the model count `k`; the `k = 0` unsat core is that smallest explanation — of the root contradiction directly, or of each dead commitment, unioned across the deads |
 | Trace generation                | **shipped** — `DerivationDAG.to_dot()` + the markdown trace builder under [`trace/`](../../../ein.py/src/ein/trace/) (P1.6) |
 | `(not P)` / `(absent P)` premises | S1.5.8c.1: `(not P)` in `:match` matches a STORED `(not P)` fact (uniform with all other patterns); `(absent P)` is the explicit NAF guard. The old NAF default on `(not P)` was dropped. |
 | `(forall ?b (G) (B))` / `(open P)` | S1.5.8c.3a/b sugars (now in `std.macro`): `forall` ⇒ `(absent (and G (absent B)))`, `open` ⇒ `(and (absent P) (absent (not P)))`. Compile to existing `AbsentGuard` machinery. |
@@ -99,7 +100,12 @@ change when the engine arrives:
 3. **Every firing leaves provenance.** Rule-kind provenance with
    `premises_raw` and `bindings` is mandatory; trace fidelity
    ([idea 08](../../../plans/ideas/08-human-style-deductive-trace.md)) is an
-   M1 acceptance gate.
+   M1 acceptance gate. Provenance is per **derivation**, not per fact:
+   `Fact.provenance` is the primary justification and
+   `kb.justifications(fact)` returns every recorded one, so a fact is an
+   OR-node over AND-nodes — the proof structure is an AND/OR graph
+   ([`python_impl.md` § cross-cutting invariants](python_impl.md), searched by
+   [`explain.py`](../../../ein.py/src/ein/inference/explain.py)).
 4. **Lazy branching.** Saturate first with all propagation rules;
    branch only when no rule fires and the puzzle is not yet solved.
    ([Q19 working answer](../../../plans/m1_core_graph_reasoning/open_questions.md#q19).)
@@ -369,11 +375,16 @@ membership checks, `_fired`, `_negated_facts`, `_seen` — these
 are membership-only and don't need sorting. The audit point is
 the read site, not the storage site.
 
-[`tests/inference/test_branch_determinism.py`](../../../ein.py/tests/inference/test_branch_determinism.py)
-spawns two subprocesses with different `PYTHONHASHSEED` and
-asserts their solve output is byte-identical; any regression
-that re-leaks hash order into the candidate path fails the
-subprocess test.
+The subprocess pin this paragraph used to cite,
+`tests/inference/tree/test_branch_determinism.py` (two
+`PYTHONHASHSEED`s, byte-identical solve output), went with the tree
+solver in `8d77b02`. The surviving order-leak guard is
+[`tests/inference/lattice/test_shuffle_invariance.py`](../../../ein.py/tests/inference/lattice/test_shuffle_invariance.py),
+which shuffles each layer's candidate order and asserts the resulting
+`LatticeSnapshotV1` still compares equal to the unshuffled run's — a
+stronger statement about the lattice, but no longer a hash-seed test.
+Restoring an explicit `PYTHONHASHSEED` pin for the lattice engine is
+open work.
 
 ## d=0 negative-completion (S1.5a.19)
 
@@ -636,7 +647,8 @@ records every solution node (`consistent ∧ complete`, `state_key`-deduped)
 plus every refuted commitment, and
 [`verdict_of`](../../../ein.py/src/ein/inference/monotonic/solver.py)
 reads the verdict off the count `k` of distinct solution nodes —
-`k = 0` → Contradiction (unsat core), `k = 1` → Solution, `k > 1` →
+`k = 0` → Contradiction (unsat core — each dead commitment's *smallest*
+explanation, unioned across the deads), `k = 1` → Solution, `k > 1` →
 Ambiguity (gaps). These are **three answers to one problem**, selected
 by the input, not by which function was called (the unsound
 `gaps_solve` / `contradictions_solve` split was removed 2026-06-16 —
@@ -702,7 +714,7 @@ How this differs from CDCL, mechanically:
 | CDCL | Ein lattice search |
 |---|---|
 | ordered **decision trail**, one variable per decision level | unordered **commitment set C** (an ATMS environment); whole layers by cardinality (Apriori prefix-join) |
-| per-conflict **implication graph** + cut analysis | per-fact **provenance DAG** (ATMS justifications); no conflict-cut analysis |
+| per-conflict **implication graph** + cut analysis | per-fact **provenance AND/OR graph** (ATMS justifications — OR over every recorded derivation); ATMS labels are computed on demand by `explain.py` to *explain* a conflict, never to learn from one — no conflict-cut analysis |
 | learned clause = **1UIP-minimised** asserting clause | learned clause = **the full dead environment** (`learned_clause == frozenset(C)`, contract-pinned); shrinking measured vacuous + NAF-unsound ([E7](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e7_learned_clause.md)) |
 | asserting clause **propagates immediately** after backjump | clause only **filters future candidates** pre-fork (`filter_candidate`); size-1 clauses also write `(not h)` |
 | **non-chronological backjump** | **no backjump** — the BFS layer loop just continues; superset suppression prunes descendants |

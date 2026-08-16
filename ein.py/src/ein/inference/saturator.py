@@ -170,9 +170,12 @@ class Saturator:
         self._mirror_seeded: bool = False
         # S1.20.I2 — native mirror gate (default on); read once from the
         # resolved config on the kb (`solve` sets `kb.config`).
-        self._mirror_enabled: bool = (
-            kb.config or SolverConfig()
-        ).enable_symmetric_mirror
+        cfg = kb.config or SolverConfig()
+        self._mirror_enabled: bool = cfg.enable_symmetric_mirror
+        # S1.21.7 — record re-derivations as alternative justifications
+        # (default on). Read once: this is consulted on the redundant-firing
+        # path, the highest-volume path in the engine.
+        self._record_alternatives: bool = cfg.record_alternative_justifications
 
     # ── Public API ────────────────────────────────────────────────
 
@@ -361,7 +364,25 @@ class Saturator:
             if src.relation_name not in sym or len(src.args) != 2:
                 continue
             a, b = src.args
-            if a == b or self.kb._fact_by_id(src.relation_name, (b, a)) is not None:
+            if a == b:
+                continue
+            mirror = self.kb._fact_by_id(src.relation_name, (b, a))
+            if mirror is not None:
+                # S1.21.7 — the mirror already exists (typically because the
+                # stdlib `symmetric` rule, or the mirror of the mirror, got
+                # there first). Arg-swap is a real second derivation of it, so
+                # record it rather than dropping it. This is what makes the
+                # justification graph genuinely cyclic — `(R a b)` and
+                # `(R b a)` justify each other — which the explanation search
+                # handles by construction (a least fixpoint from the sources
+                # up never grounds a fact in itself).
+                if self._record_alternatives and self.kb.accepts_justification(
+                        mirror, 1):
+                    self.kb.record_justification(mirror, Provenance.from_rule(
+                        rule=SYMMETRIC,
+                        premises_raw=((src.relation_name, src.args),),
+                        bindings=(),
+                    ))
                 continue
             prov = Provenance.from_rule(
                 rule=SYMMETRIC,
@@ -494,6 +515,45 @@ class Saturator:
             (priority, self._tiebreaker, plan, dict(bindings), premises),
         )
 
+    def _record_alternative(
+        self,
+        plan: JoinPlan,
+        bindings: dict[str, Any],
+        premises: tuple[Fact, ...],
+        existing: list[Fact | None],
+    ) -> None:
+        """Record a redundant firing as an ALTERNATIVE justification (S1.21.7).
+
+        One `Provenance` per application, shared by every conclusion — the
+        same contract :func:`firing.fire` uses for a productive firing, so a
+        justification reads identically whether it won the race or not, with
+        one deliberate exception: ``bindings`` is left empty. This is the
+        highest-volume path in the engine (~194k redundant firings on an
+        exhaustive `zebra2`), stringifying every binding on it is the single
+        most expensive part of recording, and ``bindings`` is display
+        metadata that no consumer of an *alternative* reads — the explanation
+        search reads ``premises_raw``, and the trace renders the primary.
+
+        Built only once at least one conclusion can still take an
+        alternative, so a hot fact whose list is already full of shorter
+        derivations costs one O(1) check and nothing else.
+        """
+        n = len(premises)
+        if not n:
+            return
+        targets = [
+            f for f in existing
+            if f is not None and self.kb.accepts_justification(f, n)
+        ]
+        if not targets:
+            return
+        prov = Provenance.from_rule(
+            rule=plan.rule_name,
+            premises_raw=tuple((p.relation_name, p.args) for p in premises),
+        )
+        for fact in targets:
+            self.kb.record_justification(fact, prov)
+
     def _apply(
         self,
         plan: JoinPlan,
@@ -523,6 +583,16 @@ class Saturator:
             # Every conclusion already known → redundant (a partially-novel
             # multi-assert is productive and falls through to `fire`). The trace
             # renderer shows the firing was considered without re-asserting.
+            #
+            # S1.21.7 — this is the real dedup seam. Because we return here,
+            # BEFORE `fire()`, a wholly-redundant re-derivation never builds a
+            # Provenance and never reaches `store.add_and_index_fact` (an
+            # exhaustive zebra2 solve: ~194k redundant firings vs 8 store-level
+            # dedup hits). So the alternative justification has to be recorded
+            # here — it is exactly the derivation `Fact.provenance`'s
+            # first-derivation-wins rule would otherwise drop.
+            if self._record_alternatives:
+                self._record_alternative(plan, bindings, premises, existing)
             return Firing(
                 rule=plan.rule_name,
                 activator=tuple(str(a) for a in plan.activator_args),

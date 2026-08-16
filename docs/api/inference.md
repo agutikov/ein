@@ -107,8 +107,28 @@ called with `store_lattice=True`.
 |---------|--------|
 | `Solution` | `kb: KnowledgeBase`, `trace: tuple[Firing, …]`, `proof`. |
 | `Ambiguity` | `branches: tuple[Solution, …]`, `proof`. |
-| `Contradiction` | `unsat_core: frozenset[Fact]`, `proof`. |
+| `Contradiction` | `unsat_core: frozenset[Fact]` — the *source frontier* that forces the conflict, not the clashing facts themselves; `proof`. |
 | `Aborted` | `reason: str`, `stats` (partial `MonotonicStats`). |
+
+**`Contradiction.unsat_core`.** The smallest set of *given* facts
+(`source` / `hypothesis` / un-provenanced) from which one recorded
+contradiction follows — a minimum-cardinality AND/OR search over every
+recorded derivation (provenance-based, NAF-safe, budgeted); **not** a
+subset-minimal MUS: no proper subset is checked for satisfiability, and
+minimality is relative to the rule set and to the derivations the
+saturator recorded. It comes from
+`ein.inference.frontier.smallest_contradiction_frontier(kb)`. The search
+itself is `ein.inference.explain`, and an embedder can run it on any
+fact: `explain(kb, targets, *, budget=None)` and
+`minimal_contradiction_frontier(kb, witnesses=None, *, budget=None)`
+return an `Explanation` (`frontier`, `target`, `exhausted`, `rounds`,
+`facts_considered`) under an `ExplanationBudget(max_environments=64,
+max_rounds=64, max_env_size=None, max_facts=20_000)` — the problem is
+worst-case exponential, and `exhausted=False` says a cap was hit, so the
+frontier is still sound but possibly not the smallest. Contrast
+[`kb.unsat_core`](kb.md), which *unions* the frontiers of every
+conflicting fact and therefore grows, rather than shrinks, as more
+derivations are recorded.
 
 ### Reading the answer — `goal_bindings(kb, goal=None) -> list[dict[str, str]]`
 
@@ -157,10 +177,11 @@ block. **Resolution precedence:** explicit `solve(kb, config=…)` >
 | `enable_symmetric_mirror` | `True` | The `__symmetric__` native arg-swap mirror (kernel fast-path over the stdlib `symmetric` rule). Off → marked relations not closed under swap by the fast-path. |
 | `enable_singleton_writeback` | `True` | Size-1 dead-clause `(not h)` writeback to `_negated_facts`. Off → the negation is re-derived rather than cached. |
 | `enable_forced_positive` | `True` | Forced-positive promotion: a sole-surviving alive singleton is promoted to a root fact. |
+| `record_alternative_justifications` | `True` | Record a re-derivation of an already-known fact as an *alternative* justification ([`kb.justifications`](kb.md)) instead of dropping it, making the proof an AND/OR graph for the minimal-explanation search to traverse. Off → one justification per fact, and the reported `unsat_core` degrades to the recorded-primary walk (sound, but dependent on rule-firing order). |
 
-The last four (added S1.20.I2) gate features that were previously always-on,
-so P1.20 Theme I can measure each — all default `True`, so the shipped solve
-is unchanged.
+The last four `enable_*` flags (added S1.20.I2) gate features that were
+previously always-on, so P1.20 Theme I can measure each — all default `True`,
+so the shipped solve is unchanged.
 
 `SolverConfig.from_kw_pairs(kw_pairs)` builds one from a parsed `(config
 …)` body (the loader uses this; unknown flags raise `ValueError`).

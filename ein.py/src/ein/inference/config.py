@@ -163,6 +163,16 @@ class SolverConfig:
     enable_symmetric_mirror:         bool = True
     enable_singleton_writeback:      bool = True
     enable_forced_positive:          bool = True
+    # S1.21.7 — multi-justification provenance. On (the default), a
+    # re-derivation of an already-known fact is recorded as an ALTERNATIVE
+    # justification in `kb._alt_justifications` instead of being dropped by
+    # the first-derivation-wins dedup, making the proof structure an AND/OR
+    # graph and letting `inference.explain` search for a genuinely minimal
+    # explanation instead of one that depends on rule-firing order. Off ⇒
+    # the pre-S1.21.7 behaviour: one justification per fact, and
+    # `smallest_contradiction_frontier` falls back to the recorded-primary
+    # walk (sound, but order-dependent — see `tests/inference/test_frontier.py`).
+    record_alternative_justifications: bool = True
 
     @classmethod
     def from_kw_pairs(cls, kw_pairs: Iterable[Any]) -> SolverConfig:

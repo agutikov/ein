@@ -26,7 +26,10 @@ shapes of one question, all read off a single search (P1.7a):
 
 - **solve** — is there a unique complete model? (k = 1)
 - **gaps** — which cells are forced vs contingent? (k > 1, the residual)
-- **contradictions** — the unsat core (recorded-derivation source frontier) of an over-constrained KB. (k = 0)
+- **contradictions** — the unsat core of an over-constrained KB: the smallest
+  set of given facts from which one recorded contradiction follows
+  (provenance-based, searched across every recorded derivation; **not** a
+  subset-minimal MUS). (k = 0)
 
 These are **three answers to one problem, not three problem statements**: the
 verdict is *read from* the result — the count `k` of distinct
@@ -142,7 +145,7 @@ The **target** refinement of this picture — the closure/worlds seam with NAF l
 | `JoinPlan` + `Scan`/`Join`/`Guard`/`AbsentGuard` (`compile`) | a rule's `:match` compiled to a join program over relations | a query plan / RETE network / WAM-ish opcode list |
 | 7 KB indexes (`kb/store`) | `_facts_by_relation`, **`_facts_by_rel_slot_val`** (the participation index, `(rel,slot,val)→facts`), `_negated_facts`, `_rule_apps_*`, `names`, … | database join indexes; RETE alpha-memories |
 | `EqClasses` (`kb/store`) | union-find over names (a *placeholder* — no propagation yet) | disjoint-set / congruence classes / e-graph |
-| `Provenance` + `DerivationDAG` (`kb/provenance`) | per-fact justification (`source`/`rule`/`hypothesis`), the derivation graph, source frontier | TMS justifications; database why-provenance; proof terms |
+| `Provenance` + `DerivationDAG` (`kb/provenance`) | per-**derivation** justification (`source`/`rule`/`hypothesis`) — a fact is an OR-node over the ones recorded for it (`kb.justifications`); the derivation AND/OR graph, source frontier | TMS justifications; database why-provenance; proof terms |
 | `CanonicalSetId` (`apriori`) | a sorted tuple of FactIds = one **commitment set** | a CSP partial assignment / an ATMS environment / an itemset |
 | no-good `Clause = frozenset[FactId]` (`nogoods`) | a learned "this combination is dead" clause, kept subsumption-minimal | CDCL conflict clause / CSP no-good |
 | `SolutionRecord` / `DeadCommitment` (`monotonic/lattice`) | a recorded model / refutation with its `state_key` and core | model / unsat certificate |
@@ -166,8 +169,9 @@ and the fast/optimal algorithm known for it.
   `resolve_leaf` — currently a stub.)
 - **O5 — Contradiction detection.** Find `(X, ¬X)` or `(false)`.
   (`contradiction`.)
-- **O6 — Provenance & unsat-core.** Track why each fact holds; extract the
-  source frontier of a clash. (`provenance`, `store.unsat_core`.)
+- **O6 — Provenance & unsat-core.** Track every recorded derivation of each
+  fact; search that AND/OR graph for the smallest source frontier of a clash.
+  (`provenance`, `store.unsat_core`, `explain`, `frontier`.)
 - **O7 — Hypothesis enumeration over a subset lattice.** Generate undecided
   candidates and the size-k commitment sets. (`hypgen`, `apriori`.)
 - **O8 — Conflict-driven pruning.** Learn no-goods (Apriori downward-closure
@@ -318,18 +322,59 @@ record per-belief justifications and propagate (in)validity. Database
 for why/how-provenance. In SAT/SMT, **resolution proofs** (DRUP/DRAT) certify
 UNSAT and **MUS** extraction finds a minimal unsatisfiable subset.
 
-**Ein today.** Every derived `Fact` carries a `Provenance`
-(`source`/`rule`/`hypothesis`) with `premises_raw`; `DerivationDAG` walks it,
-and `store.unsat_core` returns the **source frontier** of a clash (the given
-facts that jointly force it) via a `walk_premises` closure walk. This is a faithful
-ATMS-style justification graph. **Gap:** the unsat-core is the source
-frontier per the *recorded* derivations, **not a minimal MUS** (flagged in
-P1.7a); `frontier.smallest_contradiction_frontier` picks the smallest
-single-witness frontier but inherits the same caveat (one justification per
-fact, first derivation wins). Deletion-based MUS minimisation is
-**NAF-unsound here** (S1.9.E19); true minimality needs multi-justification
-provenance — parked as P1.21 S1.21.7. Provenance is also not yet a semiring (no
-multiplicity/why-vs-how distinction, which M2-scale work might want).
+**Ein today.** Provenance is per **derivation**, not per fact:
+`Fact.provenance` is the primary justification and `kb.justifications(fact)`
+returns every recorded one, so a fact is an OR-node over AND-nodes — the proof
+structure is an AND/OR graph, a faithful ATMS justification network. A
+re-derivation is appended to a KB side table by `store.record_justification`
+(capped per fact at `MAX_ALT_JUSTIFICATIONS = 32`, kept sorted by premise count
+so the cap retains the *shortest*; terminals take none — a `source`/`hypothesis`
+primary is the frontier, and a rule-kind primary with empty `premises_raw` is a
+synthetic engine writeback whose contract is that provenance grounds out on it,
+[`reserved_engine_strings.md`](reserved_engine_strings.md)). Recording is gated
+by `SolverConfig.record_alternative_justifications` (default on; measured +2.5 %
+median on an exhaustive `zebra2` solve).
+
+Over that graph, `explain.py`'s `explain()` /
+`minimal_contradiction_frontier()` run ATMS-style **label propagation** — a
+least fixpoint from the frontier upward, which is what makes the routinely
+*cyclic* engine-recorded provenance (symmetric/transitive closure) safe by
+construction, and why `detect_provenance_cycles` stays a load-time check on
+user-authored provenance rather than something run over a saturated KB.
+`frontier.smallest_contradiction_frontier` is that search over the detector's
+witnesses: **a minimum-cardinality AND/OR search over every recorded derivation
+(provenance-based, NAF-safe, budgeted); not a subset-minimal MUS** — and,
+because it *chooses* a justification per fact by search instead of following
+whichever one fired first, **independent of rule-firing order**. It is what the
+k = 0 verdict and each dead commitment report: on `zebra2-bad` it names exactly
+1 fact, the injected `:source "injected contradiction"`, where the union core
+names 38. (The verdict still *unions* across dead commitments — with an
+exhausted lattice no single dead explains unsat — but each dead's core is the
+smallest explanation of that dead.) `store.unsat_core` — the *union* source
+frontier of a clash (the given facts that jointly force it, collected by a
+`walk_premises` closure walk) — and `store.derivation_dag` stay
+**primary-justification only** by default and deliberately so: unioning over
+alternatives makes a core monotonically *larger*, the opposite of a legible
+explanation; their `all_justifications=True` opt-in gives that union as a
+soundness envelope (every explanation is a subset of it), and
+`DerivationDAG.and_nodes` / `is_or_graph` carry the conjunction structure a
+flat edge set cannot express.
+
+**Gap:** minimality here is bounded three ways, and every claim of it must say
+so. (1) **Not a subset-minimal MUS** — no proper subset is checked for
+satisfiability (the caveat flagged in P1.7a), and the textbook deletion-based
+minimiser is **NAF-unsound here** (S1.9.E19; corollary C3 of
+[`absent_semantics.md`](absent_semantics.md)).
+(2) **Recorded, not all, derivations** — the alternatives searched are the
+firings the saturator attempted, capped per fact, so minimality stays relative
+to the rule set and the saturation strategy. (3) **Budgeted** — the
+minimum-axiom-set / ATMS-label problem is worst-case exponential, so the search
+runs under an `ExplanationBudget` and `Explanation.exhausted` reports whether it
+completed; a truncated search is still sound. Provenance is also not yet a
+semiring (no multiplicity/why-vs-how distinction, which M2-scale work might
+want) — though the AND/OR structure such an algebra would be interpreted over
+now exists. The plan record for the multi-justification machinery is
+[S1.21.7](../../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.7_multi_justification_provenance.md).
 
 ### O7 — Hypothesis enumeration over a subset lattice
 

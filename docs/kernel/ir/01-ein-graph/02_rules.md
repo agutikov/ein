@@ -316,8 +316,17 @@ asserts that A and B are NOT co-located"*.
 
 A subsequent positive `(co-located A B)` would clash with the
 negative fact: the contradiction detector sees the pair and reports
-the conflict. The unsat-core walk traces both back to their source
-frontiers and returns the minimal subset that produced the clash.
+the conflict. Both facts are then traced back through their
+provenance to the given facts they rest on — and because a fact may
+carry several recorded derivations, *which* givens get named is a
+search, not a walk. What the verdict reports is the smallest
+contradiction frontier — a minimum-cardinality AND/OR search over
+every recorded derivation (provenance-based, NAF-safe, budgeted);
+**not** a subset-minimal MUS, and minimal only relative to the
+derivations the saturator actually recorded. Unioning one
+justification per fact over every witness is the cheaper answer, and
+never a smaller one. See [`01_kb.md` §5](01_kb.md) for the AND/OR
+proof graph both of them read.
 
 ### 3.1 Three-state fact storage (S1.5.8c)
 
@@ -388,9 +397,19 @@ reasoning layer. Each new fact carries provenance:
   T2)>`
 - `bindings = <the var → node map used>`
 
+A firing whose conclusion is **already** in working memory adds no
+node — but it is not forgotten either: its rule + premises are
+recorded as an *alternative justification* on the fact that is already
+there, which is what makes that fact an OR-node of the proof graph
+([`01_kb.md` §5.1](01_kb.md)). The exception is a fact the engine
+treats as given (`source` / `hypothesis`): re-deriving one changes
+nothing.
+
 The full **derivation DAG** of any derived fact is built by walking
 each rule-kind fact's premises transitively until reaching `source`
-or `hypothesis` terminals. See [`01_kb.md` §5](01_kb.md).
+or `hypothesis` terminals — one justification per fact by default,
+every recorded one when the caller asks for the AND/OR graph. See
+[`01_kb.md` §5](01_kb.md).
 
 This is what makes the engine **explanation-complete**: every fact
 in the reasoning layer has a recoverable "why", in the form of a
@@ -476,7 +495,9 @@ produced. At each step:
 2. For each match, check `:where` guards.
 3. For each passing match, build the RHS substitution.
 4. If the resulting fact(s) aren't already in working memory, add
-   them in the reasoning layer with `rule`-kind provenance.
+   them in the reasoning layer with `rule`-kind provenance; if they
+   are, record this firing as an alternative justification on them
+   (§5) instead of dropping it.
 
 The order in which rules are tried is governed by
 **priority** — a static integer per rule, with cheap-propagation

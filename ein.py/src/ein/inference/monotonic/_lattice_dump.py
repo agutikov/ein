@@ -201,9 +201,11 @@ class LatticeDumper(_TimelineMixin):
         - ``kb.ein`` — for ``"solution"`` only (the saturated
           fork's full kb).
         - ``unsat_core.jsonl`` + ``learned_clause.json`` —
-          for ``"dead-pre"`` / ``"dead-post"`` (the
-          contradiction witnesses + the learned negative
-          clause).
+          for ``"dead-pre"`` / ``"dead-post"``: this dead's
+          **smallest explanation** (the givens — clues plus
+          committed hypotheses — from which one recorded
+          contradiction follows; S1.21.7, not the witnesses
+          themselves) + the learned negative clause.
 
         The timeline carries one record per call with counts.
         """

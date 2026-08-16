@@ -122,7 +122,7 @@ Fact(
     relation_name: str,
     args:          tuple[str | int | Fact, ...],   # argument identities (admits relational-node args)
     layer:         Layer,                          # ONTOLOGY | FACT | REASONING
-    provenance:    Provenance | None,              # where this fact came from
+    provenance:    Provenance | None,              # PRIMARY justification (§3.1)
     raw:           IRNode | None,                  # original IR node (metadata)
     loc:           Loc | None,
     _kb:           KnowledgeBase | None,
@@ -156,10 +156,13 @@ Cross-references:
   a declared rule name (i.e., the fact is a property activator).
 - `f.applied_rule` → `Rule | None` — the rule it activates.
 - `f.source` / `f.rule_name` / `f.using` — backward-compat shorthand
-  read through to `provenance`. See [§3 below](#3-provenance) and
-  [`02_store.md`](02_store.md).
-- `f.premises` → `tuple[Fact, ...]` — for rule-kind provenance,
-  resolved premise facts via the owning KB.
+  read through to the **primary** `provenance`. See
+  [§3 below](#3-provenance) and [`02_store.md`](02_store.md).
+- `f.premises` → `tuple[Fact, ...]` — for rule-kind provenance, the
+  premise facts of that **primary** justification, resolved via the
+  owning KB. A fact the engine derived a second way keeps that other
+  derivation in the KB, not on the entity — `kb.justifications(f)`
+  ([§3.1](#31-one-record-per-derivation--the-andor-proof-graph)).
 
 ### 1.4 `NameRef` — the global names index
 
@@ -265,8 +268,68 @@ Premises in a `rule`-kind record are stored as **fact-ids**
 circular structural references. Resolution to live `Fact` objects
 happens through the owning KB (`Fact.premises` property).
 
-The full derivation DAG falls out by walking premises transitively;
-see [`02_store.md` §derivation-dag](02_store.md).
+### 3.1 One record per derivation — the AND/OR proof graph
+
+Provenance is per **derivation**, not per fact: `Fact.provenance` is
+the primary justification and `kb.justifications(fact)` returns every
+recorded one, so a fact is an OR-node over AND-nodes — the proof
+structure is an AND/OR graph.
+
+A `Fact` is one canonical object per `(relation_name, args)` identity
+(§1.3), and several rules may derive it:
+
+- `Fact.provenance` — the **primary** justification: the first
+  derivation recorded for that identity. Re-derivation never changes
+  it, so everything reading a fact's `:rule` / `:using` / premises
+  keeps reading one stable story.
+- `kb.justifications(fact) -> tuple[Provenance, ...]` — the whole
+  OR-node, primary first, each entry an AND-node over its
+  `premises_raw`. The alternatives live in a KB side table
+  (`kb._alt_justifications`, keyed by fact-id), never on the entity:
+  `Fact` is frozen and its one canonical object is shared by every
+  index and every fork, so it cannot grow a field per re-derivation.
+  See [`02_store.md` §7](02_store.md).
+
+**Terminals take no alternatives.** Only rule-kind provenance with at
+least one premise is recordable, and only onto a fact whose primary is
+itself such a record:
+
+- a `source` / `hypothesis` primary is the derivation **frontier** —
+  what the engine treats as given. A clue that also happens to be
+  re-derivable is still a clue: a given stays given.
+- a rule-kind primary with an **empty** `premises_raw` is a synthetic
+  engine writeback (`<forced-positive>` and friends, see
+  [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md))
+  whose contract is that provenance walks *ground out* on it.
+
+Two firings that consumed the same premises are the same
+justification: the table dedups on the AND-node `(rule,
+premises_raw)`. `bindings` is display metadata the trace reads off the
+primary, so it is not part of that key — and an alternative recorded
+on the saturator's redundant path carries none at all. The per-fact
+list is capped at `store.MAX_ALT_JUSTIFICATIONS` (32) and kept sorted
+by premise count, so the cap retains the **shortest** derivations —
+the ones a minimum-cardinality explanation can use.
+
+Recording is engine-side. The saturator's share of it — a redundant
+firing (the bulk: ~194k of them on an exhaustive `zebra2` solve,
+against 8 store-level dedup hits) and the `__symmetric__` native
+mirror — is gated by
+`SolverConfig.record_alternative_justifications`, default on, measured
+at +2.5% median on that solve. With it off only the store's own dedup
+seam still records, so facts are back to one justification apiece for
+practical purposes and every walk below reads the primary.
+
+The derivation DAG falls out by walking premises transitively —
+primary-only (the default at every call site) for one derivation per
+fact, `all_justifications=True` for the AND/OR graph; see
+[`02_store.md` §7](02_store.md) for `derivation_dag` / `unsat_core`
+and that opt-in. Choosing the best *combination* of justifications is
+a different problem from walking one:
+[`inference/explain.py`](../../../../ein.py/src/ein/inference/explain.py)
+searches the AND/OR graph for a minimum-cardinality frontier under an
+explicit budget — **not** a subset-minimal MUS, and minimal only over
+the derivations the saturator actually recorded.
 
 ---
 
@@ -316,10 +379,20 @@ nested-fact args, equality cascades pointwise: outer Facts are
 equal iff their nested Fact args are equal (which they are iff
 *their* `(relation_name, args)` match, recursively).
 
+A fact's identity ignoring provenance is what makes the OR-node of
+[§3.1](#31-one-record-per-derivation--the-andor-proof-graph) possible:
+the same proposition derived twice is one `Fact` carrying two
+justifications, not two facts. Note the two different notions of
+"same justification" — `Provenance.__eq__` compares every data field
+(`bindings` included), while the alternatives table dedups on the
+coarser AND-node key `(rule, premises_raw)`, so two firings of one
+rule over the same premises collapse however they were bound.
+
 ## See also
 
 - [`02_store.md`](02_store.md) — the `KnowledgeBase` store, reverse
-  indexes, fork(), layer views, derivation DAG.
+  indexes, fork(), layer views, the justification table, derivation
+  DAG.
 - [`../01-ein-graph/01_kb.md`](../01-ein-graph/01_kb.md) — the
   conceptual model these dataclasses implement.
 - [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax that

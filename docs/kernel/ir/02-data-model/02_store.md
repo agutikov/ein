@@ -136,6 +136,10 @@ def fork(self) -> KnowledgeBase:
     new._rule_apps_by_rule     = dict(self._rule_apps_by_rule)
     new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
     new.names                  = dict(self.names)
+    # Recorded justifications (§7) follow the *facts* contract, not the
+    # shared-by-reference one: a branch-local derivation may name
+    # hypothesis premises the root never assumed.
+    new._alt_justifications    = dict(self._alt_justifications)
     # … (`_rules_by_relation` shared by reference; immutable post-load)
     return new
 ```
@@ -167,9 +171,52 @@ inheritance relation; the renderer reads `is-a` / `(type …)` /
 ## 7. Provenance + derivation DAG
 
 Per [`01_entities.md` §3](01_entities.md), every fact has a
-`Provenance` record. Two `KnowledgeBase` methods walk it:
+`Provenance` record — its **primary** justification. A fact the engine
+derived more than one way carries the other derivations too, in a KB
+side table reached through four methods:
 
-### 7.1 `kb.derivation_dag(fact) -> DerivationDAG`
+```python
+kb.justifications(fact)  -> tuple[Provenance, ...]  # the OR-node, primary first
+kb.record_justification(fact, prov) -> bool         # engine-side; True if newly kept
+kb.accepts_justification(fact, n_premises) -> bool  # O(1) hot-path pre-check
+kb.has_alternative_justifications()  -> bool
+```
+
+So a fact is an OR-node and each justification an AND-node over its
+`premises_raw` — the proof structure is an AND/OR **graph**, and the
+two walkers below take an `all_justifications` keyword saying which
+reading they want. Which records are keepable (rule-kind, at least one
+premise, onto a non-terminal primary), the `(rule, premises_raw)`
+dedup key and the `MAX_ALT_JUSTIFICATIONS` cap are in
+[`01_entities.md` §3.1](01_entities.md); the store-side contracts are:
+
+- **Where it is recorded.** `kb.add_and_index_fact` — the reasoning-
+  layer add — returns the pre-existing fact on a dedup hit and records
+  the incoming `provenance` as an alternative instead of dropping it.
+  That covers the partially-novel multi-assert case; the bulk of
+  re-derivations never reach it, because the saturator short-circuits
+  a wholly-redundant firing before it builds any fact and calls
+  `record_justification` itself, as does the `__symmetric__` native
+  mirror.
+- **Copy contract.** The table follows the *facts* contract —
+  shallow-copied per `fork()` (§5) and per `snapshot()`, never shared
+  by reference. A justification recorded inside a branch may name
+  `hypothesis`-kind premises the root never assumed, and sharing would
+  leak that phantom assumption into a root-level core.
+- **Not rebuildable.** `rebuild_indexes()` deliberately leaves it
+  alone. Every index in §2 is a projection of `kb.facts` and so is
+  safe to drop and recompute; this is a record of derivations the
+  engine *attempted*, which no amount of looking at the current fact
+  set reconstructs.
+
+A consumer writing its own walk gets the same choice explicitly:
+`provenance.walk_premises(…, justifications=…)` and
+`build_derivation_dag(…, justifications=…)` share the selector
+`provenance.justifications_of()` — `None` (the default) means the
+primary justification alone, `kb.justifications` makes the walk
+OR-aware.
+
+### 7.1 `kb.derivation_dag(fact, *, all_justifications=False) -> DerivationDAG`
 
 BFS from `fact` through `provenance.premises_raw`, resolving each id
 via `kb._fact_by_id(rel, args)` and recursing into `rule`-kind facts
@@ -179,9 +226,10 @@ The result is a `DerivationDAG` frozen dataclass:
 
 ```python
 DerivationDAG(
-    root:  Fact,
-    nodes: tuple[Fact, ...],
-    edges: tuple[tuple[Fact, Fact], ...],   # (premise, conclusion)
+    root:      Fact,
+    nodes:     tuple[Fact, ...],
+    edges:     tuple[tuple[Fact, Fact], ...],   # (premise, conclusion)
+    and_nodes: tuple[tuple[Fact, tuple[Fact, ...]], ...],  # one per justification
 )
 ```
 
@@ -189,19 +237,41 @@ with `.sources` returning the terminal frontier (source + hypothesis
 kinds) and `.to_dot()` producing a Graphviz `digraph` string —
 boxes for rule-derived, ellipses for source/hypothesis.
 
+`all_justifications=True` expands every recorded derivation rather
+than the primary one. `and_nodes` then carries the conjunction
+structure `edges` cannot: one entry per justification, pairing a
+conclusion with the premises of that *one* derivation — in a flat
+edge set the in-edges of a node are the union over derivations, so
+which subset constitutes one proof is unrecoverable. `.is_or_graph`
+is True once some fact has more than one justification, and `.to_dot()`
+then draws a small diamond per justification (premises feeding it, it
+feeding the conclusion) so alternatives read as alternatives instead
+of as one big conjunction. The default stays primary-only because the
+DAG is a *display* object: one derivation per fact is what a reader
+can follow.
+
 Cycles in user-authored provenance are caught at load time
-(`detect_provenance_cycles`) and raise `KBLoadError`. Cycles that
-arise during derivation (rule misuse) are *broken* by the BFS
-visited-set — the revisited fact appears as a node but isn't
-re-expanded.
+(`detect_provenance_cycles`, §3) and raise `KBLoadError`. That check
+is primary-only and load-time-only **on purpose**: engine-*recorded*
+provenance is legitimately cyclic — once re-derivations are recorded,
+symmetric / transitive closure has `(R a b)` and `(R b a)` justifying
+each other in any ordinary puzzle — so running it over a saturated KB
+would reject well-founded KBs. Cycles met during a walk are *broken*
+by the BFS visited-set — the revisited fact appears as a node but
+isn't re-expanded; an OR-aware consumer has to handle them itself,
+which `inference/explain.py` does by taking a least fixpoint from the
+frontier upward.
 
-### 7.2 `kb.unsat_core(conflicting) -> set[Fact]`
+### 7.2 `kb.unsat_core(conflicting, *, all_justifications=False) -> set[Fact]`
 
-For each fact in `conflicting`, walks its `derivation_dag` and
-accumulates the source-kind terminals. The union is the **recorded
-source-frontier** that derives the conflict (per the recorded
-derivations — one justification per fact; not a subset-minimal MUS) —
-the input to the *contradictions* task class
+For each fact in `conflicting`, walks its premise closure (the shared
+`provenance.walk_premises`, with one `visited` set memoising across
+the conflicting facts) and accumulates the frontier terminals —
+source-kind, hypothesis-kind, or un-provenanced givens. The union is
+the **recorded source-frontier** that derives the conflict (per the
+recorded derivations — by default the primary justification of each
+fact; not a subset-minimal MUS) — the input to the *contradictions*
+task class
 ([`docs/ideas/03-three-task-classes.md`](../../../../plans/ideas/03-three-task-classes.md)).
 
 ```python
@@ -209,6 +279,34 @@ core = kb.unsat_core([conflicting_fact_1, conflicting_fact_2])
 # core: set of source-kind Facts; their (rel, args) + source annotation
 # tell the user "these were the load-bearing premises".
 ```
+
+`all_justifications=True` walks every recorded derivation instead, so
+the frontier is the union over the whole AND/OR closure. The default
+is primary-only and stays that way deliberately: unioning over
+alternatives makes a core monotonically **larger**, the opposite of a
+legible explanation (and the union across *witnesses* already
+over-states a conflict — one cause fanning out into many witnesses).
+The OR-aware union's use is as a soundness envelope — no explanation
+of these conflicts can name a fact outside it.
+
+Neither reading is minimal — this method unions, it never chooses:
+across the conflicting facts always, and across each fact's
+justifications under the opt-in. For the smallest answer use
+[`inference/frontier.py`](../../../../ein.py/src/ein/inference/frontier.py)'s
+`smallest_contradiction_frontier` — a minimum-cardinality AND/OR
+search over every recorded derivation (provenance-based, NAF-safe,
+budgeted); **not** a subset-minimal MUS. It picks one justification
+per fact and one witness to explain, so its result is always a subset
+of the union core and is independent of the order in which the rules
+fired; it is what a `k = 0` verdict's `unsat_core` is built from (per
+dead commitment — with an exhausted lattice the verdict still unions
+across the dead commitments, since no single one explains the unsat).
+Two further caveats: the alternatives searched are only the firings
+the saturator attempted, capped per fact, so "minimal" stays relative
+to the rule set and the saturation strategy; and the search is
+budgeted — call `inference.explain.minimal_contradiction_frontier`
+directly to read `Explanation.exhausted`, which reports whether a cap
+was hit (a truncated search is still sound).
 
 ## 8. Equality classes — placeholder
 

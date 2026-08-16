@@ -22,7 +22,7 @@ was run end-to-end against [`examples/zebra2.ein`](../../examples/zebra2.ein).*
 | 2. load | `KnowledgeBase.from_file(path)` / `.from_ir(forms, *, base_dir=None)` / `ein.kb.load(forms, *, base_dir=None)` | `from ein.kb.store import KnowledgeBase` |
 | 3. saturate *(optional)* | `Saturator(kb).saturate(*, max_steps=None) -> Iterator[Firing]` | `from ein.inference.saturator import Saturator` |
 | 4. solve | `solve(root_kb, *, stop_after=None, max_set_size=5, config=None, …) -> tuple[Verdict \| Aborted, MonotonicStats]` | `from ein.inference.monotonic import solve` |
-| 5. read | `goal_bindings(kb)`, the `Solution`/`Ambiguity`/`Contradiction` fields, `Provenance`, `ein.trace.linearize` | `from ein.inference.verdict import …` / `from ein.trace import …` |
+| 5. read | `goal_bindings(kb)`, the `Solution`/`Ambiguity`/`Contradiction` fields, `Provenance` + `kb.justifications(fact)`, `explain`, `ein.trace.linearize` | `from ein.inference.verdict import …` / `from ein.inference.explain import …` / `from ein.trace import …` |
 
 Per-symbol detail lives in the module pages:
 [`ir.md`](ir.md) · [`kb.md`](kb.md) · [`inference.md`](inference.md) ·
@@ -118,15 +118,26 @@ if isinstance(verdict, Solution):
     for f in verdict.trace:                   # tuple[Firing, …] — the derivation
         ...                                   # f.rule, f.derived, f.premises, f.bindings
 elif isinstance(verdict, Contradiction):
-    core = verdict.unsat_core                 # frozenset[Fact] — the conflicting facts
+    core = verdict.unsat_core                 # frozenset[Fact] — the givens that force it
 elif isinstance(verdict, Ambiguity):
     models = verdict.branches                 # tuple[Solution, …]
 ```
 
+`unsat_core` is **not** the conflicting facts: it is the *source
+frontier* that derives them — the smallest set of given facts from which
+one recorded contradiction follows (provenance-based, searched across
+every recorded derivation; not a subset-minimal MUS). On
+[`examples/ein-bugs/zebra2-bad.ein`](../../examples/ein-bugs/zebra2-bad.ein)
+that is the single injected `:source "injected contradiction"` clue, not
+the 38-fact union over the 123 contradiction witnesses it fans out into.
+
 Every derived [`Fact`](kb.md) carries [`Provenance`](kb.md)
 (`fact.provenance.kind` ∈ `source` / `rule` / `hypothesis` / `rejected`,
 plus the firing `rule` and `premises_raw`) — the substrate for the
-human-readable explanation in step 6.
+human-readable explanation in step 6. Provenance is per **derivation**,
+not per fact: `Fact.provenance` is the primary justification and
+[`kb.justifications(fact)`](kb.md) returns every recorded one, so a fact
+is an OR-node over AND-nodes — the proof structure is an AND/OR graph.
 
 ### 6 — Explain (optional)
 
@@ -139,6 +150,30 @@ from ein.trace import linearize, render_markdown
 verdict, _ = solve(kb, stop_after=1, store_lattice=True)
 markdown = render_markdown(linearize(verdict), diagrams=False)
 ```
+
+For the *smallest* explanation of one fact — the minimum-cardinality set
+of givens that forces it — call `ein.inference.explain` directly. It is
+an ATMS-style label search over the AND/OR proof graph: it looks at every
+recorded derivation and *chooses* one per fact rather than unioning them.
+That is worst-case exponential, so it runs under an explicit budget:
+
+```python
+from ein.inference.explain import (
+    explain, minimal_contradiction_frontier, ExplanationBudget)
+
+fact = verdict.trace[-1].derived[0]              # any derived fact
+ex = explain(verdict.kb, [fact], budget=ExplanationBudget(max_environments=64))
+ex.frontier    # frozenset[Fact] — the givens; ex.target is the fact explained
+ex.exhausted   # False ⇒ a cap was hit: sound, but possibly not the smallest
+
+# the same search over every contradiction witness (empty when kb is consistent)
+minimal_contradiction_frontier(kb)
+```
+
+This is the search behind a `Contradiction`'s `unsat_core`, and its
+caveats carry over: minimality is relative to the rule set and to the
+derivations the saturator actually recorded, and the result is **not** a
+subset-minimal MUS. See [`inference.md`](inference.md).
 
 ## Worked example — solving `zebra2.ein`
 
@@ -207,7 +242,8 @@ directly, as every example here does.
 
 > **Heads-up:** `ein.inference.__init__` re-exports only `predicates`, so
 > `from ein.inference import solve` does **not** work — `solve` lives in
-> `ein.inference.monotonic`, and `Saturator` in `ein.inference.saturator`.
+> `ein.inference.monotonic`, `Saturator` in `ein.inference.saturator`, and
+> `explain` in `ein.inference.explain`.
 
 ## What's *not* the contract
 

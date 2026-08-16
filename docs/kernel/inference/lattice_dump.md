@@ -100,7 +100,7 @@ dump/
 │           ├── outcome.txt              ← alive | dead-pre | dead-post | solution
 │           ├── firings.jsonl            ← every rule firing in this fork  (non dead-pre)
 │           ├── kb.ein                   ← the fork's full saturated KB    (solution only)
-│           ├── unsat_core.jsonl         ← the contradiction witnesses     (dead-* only)
+│           ├── unsat_core.jsonl         ← smallest given-fact explanation (dead-* only)
 │           └── learned_clause.json      ← the learned no-good emitted     (dead-* only)
 ├── kb_index/                    ← only under store_lattice=True
 │   └── layer_NN/
@@ -147,12 +147,21 @@ are the emissions:
 - **`dead-post`** — the fork saturated *to a contradiction*.
   `firings.jsonl` still records what fired on the way down (so you
   can see the derivation that led to the clash); `unsat_core.jsonl`
-  is the minimal witness set, and `learned_clause.json` is the
-  `frozenset(C)` nogood emitted so no superset is re-entered
+  is this dead commitment's **smallest explanation** — the smallest
+  set of given facts (clues plus the committed hypotheses) from which
+  one recorded contradiction follows, searched across every recorded
+  derivation and so independent of firing order, though **not** a
+  subset-minimal MUS
+  ([`frontier.smallest_contradiction_frontier`](../../../ein.py/src/ein/inference/frontier.py),
+  the AND/OR search in
+  [`explain.py`](../../../ein.py/src/ein/inference/explain.py)); and
+  `learned_clause.json` is the `frozenset(C)` nogood emitted so no
+  superset is re-entered
   ([learned no-goods](README.md#learned-no-goods-s15b6)).
 - **`dead-pre`** — the commitment was rejected *before* saturation
   (apriori superset of a known nogood, or a `_negated_facts` hit), so
-  there are no firings to record — only `unsat_core.jsonl` +
+  there are no firings to record — only `unsat_core.jsonl` (same
+  smallest-explanation shape, over the pre-saturation clash) +
   `learned_clause.json`.
 
 `firings.jsonl` records, per line: the `rule` name, its `activator`
@@ -167,10 +176,11 @@ on which bindings, in the context of each tested hypothesis.
 > surviving (`alive`/`solution`) or refuted (`dead-*`) — read off
 > `outcome.txt` across the tree; and (2) within each fork, both the
 > positive firings and the derived negatives (`(not …)` facts appear
-> among `firings.jsonl`'s derived facts and in `unsat_core.jsonl`,
-> since the [d=0 negative-completion
-> rules](README.md#d0-negative-completion-s15a19) emit them as
-> ordinary REASONING-layer facts).
+> among `firings.jsonl`'s derived facts, since the [d=0
+> negative-completion rules](README.md#d0-negative-completion-s15a19)
+> emit them as ordinary REASONING-layer facts). A *derived* negative is
+> not a frontier fact, so it does not show up in `unsat_core.jsonl` —
+> a `(not …)` line there was **given**, not derived.
 
 ---
 
@@ -225,8 +235,10 @@ it's the entry point for "show me every refutation" tooling.
 - **"Why did commitment {A,B} get pruned?"** — find its
   `learned_clause.json`; the clause is the dead commitment set itself
   (subset-minimal among *explored* sets by BFS + Apriori construction,
-  not a MUS). Its `unsat_core.jsonl` names the facts that
-  clashed — chase their provenance back through `firings.jsonl`.
+  not a MUS). Its `unsat_core.jsonl` names the *givens* that force the
+  clash — the smallest such set the recorded derivations support, often
+  a single fact — so chase them forward through `firings.jsonl` to the
+  firing that closed the contradiction.
 - **"Did rule R fire where I expected?"** — `grep '"rule": "R"'`
   across `enterings/**/firings.jsonl`. Empty under a commitment where
   you expected it means a `:match` premise (often an

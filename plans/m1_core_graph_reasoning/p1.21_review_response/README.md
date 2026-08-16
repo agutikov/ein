@@ -5,8 +5,10 @@
 investigated (6 confirmed reports), improved, adversarially verified, and
 the acceptance gate below passed 2026-08-17 (suite 1302 passed + 1
 sanctioned strict-xfail (D5); acceptance 17/17, verdicts unchanged; ruff
-clean; closeout greps clean). Open remainder: the parked follow-up stages
-[S1.21.7](s1.21.7_multi_justification_provenance.md) /
+clean; closeout greps clean). Follow-up stage
+[S1.21.7](s1.21.7_multi_justification_provenance.md) (multi-justification
+provenance + the companion contradiction-answer wiring) was **activated and
+executed 2026-08-17**. Open remainder:
 [S1.21.8](s1.21.8_boundary_naf.md) (activation-gated) and the
 [§Divergences](#divergences-surfaced-by-investigation-2026-08-16)
 candidates (D5 promote-to-fix, D-R5-1 one-liner).
@@ -83,7 +85,7 @@ Per the phase charter, each review point is processed as **two tasks**:
 | S1.21.4 | §4 | P1 | [Formal semantics of `absent` — dedicated doc](s1.21.4_absent_semantics.md) | T1.21.4.1 / T1.21.4.2 |
 | S1.21.5 | §5 | P2 | [Reposition lattice search: ATMS-style, CDCL as analog](s1.21.5_lattice_positioning.md) | T1.21.5.1 / T1.21.5.2 |
 | S1.21.6 | §6 | P2 | [Record the closure/worlds seam; NAF at the boundary](s1.21.6_architecture_seam.md) | T1.21.6.1 / T1.21.6.2 |
-| S1.21.7 | §3 (b) | follow-up | [Multi-justification (OR/AND) provenance + true minimal explanation](s1.21.7_multi_justification_provenance.md) | 📅 parked (moved in from P1.9 E25, 2026-08-17) |
+| S1.21.7 | §3 (b) | follow-up | [Multi-justification (OR/AND) provenance + true minimal explanation](s1.21.7_multi_justification_provenance.md) | ✅ **executed 2026-08-17** (moved in from P1.9 E25; companion wiring shipped with it — `zebra2-bad` core 38 → 1) |
 | S1.21.8 | §6 | follow-up | [Purely-positive closure + boundary NAF re-eval](s1.21.8_boundary_naf.md) | 📅 parked (moved in from P1.9 E26, 2026-08-17; activation gates in stage file) |
 
 ## Scheduling
@@ -128,11 +130,12 @@ Per the phase charter, each review point is processed as **two tasks**:
   variable/value selection, backjumping) — the review's item 5 explicitly
   sequences it **after** this phase; it stays in
   [P1.9](../p1.9_hypothesis_loop_followups/README.md) (E-catalog).
-- Multi-justification proof DAG *implementation* — parked **in-phase** as
-  [S1.21.7](s1.21.7_multi_justification_provenance.md) (moved from P1.9
-  E25 on 2026-08-17; likewise the boundary-NAF track is
-  [S1.21.8](s1.21.8_boundary_naf.md), ex-E26 — new work is never scheduled
-  into previous phases).
+- ~~Multi-justification proof DAG *implementation*~~ — was parked **in-phase**
+  as [S1.21.7](s1.21.7_multi_justification_provenance.md) (moved from P1.9
+  E25 on 2026-08-17) and **executed the same day**, so it is no longer out of
+  scope; likewise the boundary-NAF track,
+  [S1.21.8](s1.21.8_boundary_naf.md) (ex-E26) — new work is never scheduled
+  into previous phases.
 - Any `absent` stratification checker — S1.21.4 documents semantics; a
   static stratification/dependency analysis is future work.
 
