@@ -123,8 +123,9 @@ candidate goes through `try_commitment_set`: `fork()` the root, write the
 hypotheses, saturate, detect. A **dead** branch emits a no-good clause (whose
 supersets Apriori then prunes — downward closure); an **alive** branch that is
 `complete ∧ consistent` (`solution.is_solution_node`) is recorded as a solution
-node, deduped by `state_hash`. An alive branch also merges its *unconditional*
-consequences (`commitment._is_unconditional`) into the root. The verdict is read off
+node, deduped by `state_hash`. The root stays stable mid-search — an alive
+branch's consequences never merge back (the "unconditional"-fact extraction
+was retired in P1.21 R2 as unsound under NAF). The verdict is read off
 the deduped count k (`verdict_of`).
 
 ---
@@ -307,7 +308,7 @@ UNSAT and **MUS** extraction finds a minimal unsatisfiable subset.
 **Ein today.** Every derived `Fact` carries a `Provenance`
 (`source`/`rule`/`hypothesis`) with `premises_raw`; `DerivationDAG` walks it,
 and `store.unsat_core` returns the **source frontier** of a clash (the given
-facts that jointly force it) via a `reaches` DFS. This is a faithful
+facts that jointly force it) via a `walk_premises` closure walk. This is a faithful
 ATMS-style justification graph. **Gap:** the unsat-core is the source
 frontier, **not a minimal MUS** (flagged in P1.7a) — minimisation (e.g.
 deletion-based MUS) is a follow-up; provenance is not yet a semiring (no
@@ -354,8 +355,8 @@ forward-checking) lookahead** that kills candidates which would die in one
 firing before paying for a fork+saturate, caching each kill as a learned unit
 `(not h)` (`hypgen._write_negated`, gated by `enable_lookahead_kill_cache` —
 ≈ a unit clause + unit propagation); the **forced-positive cascade** —
-merging an alive commitment's unconditional consequences
-(`commitment._is_unconditional`) into the root — is its positive dual. **Gap:** no backjumping (plain BFS), no VSIDS-style
+promoting a singleton-alive hypothesis to root and re-saturating
+(`_helpers._promote_forced_positives`) — is its positive dual. **Gap:** no backjumping (plain BFS), no VSIDS-style
 activity ordering (there is a `score_hypothesis` hook, S1.5a.7, mostly a
 stub), no watched-literals. These are exactly the pieces a DPLL/CDCL
 re-architecture (O7) would bring.

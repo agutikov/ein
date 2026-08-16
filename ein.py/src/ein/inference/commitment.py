@@ -1,32 +1,28 @@
 """Common commitment-set primitive — `try_commitment_set` + `CommitmentSetResult` — S1.5b.3.
 
 Forks `root_kb`, writes every hypothesis in `commitment` into the
-fork, saturates once, detects contradictions, and extracts
-unconditional facts (whose derivation chain doesn't touch any
-element of the commitment).
+fork, saturates once, and detects contradictions.
 
 Both monotonic and lattice engines call this. Pure-with-fork
 semantics — the fork is the function's output, never reused
 across calls. No state is shared between two
 :func:`try_commitment_set` invocations on the same root (modulo
 :meth:`KnowledgeBase.fork`'s shared-by-reference fields, which
-the P1.5b channel-isolation rewrite addresses).
+the P1.5b channel-isolation rewrite addresses), and the root is
+never mutated: every consequence stays in the fork.
 
-The unconditional-fact extraction is the soundness-critical
-novel piece. A fact whose entire derivation grounds out at root
-facts — never touching a committed hypothesis — is provably true
-at root level given ``root + rules``; the engine merges these
-into root before the next layer, monotonically shrinking the
-alive set.
+(The former "unconditional-fact extraction" — classifying fork
+facts whose positive provenance chain avoids the commitment as
+"provably true at root" — was retired in P1.21 R2: the
+classification is unsound under NAF (`absent`), whose
+dependencies leave no provenance edge. See the historical note in
+``docs/kernel/inference/README.md``.)
 
 Cross-refs:
 - ``Q1.5b.8`` (engine bridge — resolved 2026-05-25 — set-batch
   primitive shared by both engines).
 - :mod:`ein.inference.apriori` — produces the
   :data:`CanonicalSetId` inputs.
-- :func:`ein.kb.provenance.reaches` — the shared provenance DFS
-  :func:`_is_unconditional` runs with a commitment-set terminal; now the
-  only hypothesis-terminal walk (``back_prop`` removed, S1.9.E6a).
 """
 from __future__ import annotations
 
@@ -38,7 +34,7 @@ from ein.inference.contradiction import ContradictionDetector
 from ein.inference.firing import Firing
 from ein.inference.saturator import Saturator
 from ein.kb.entities import Fact, Layer
-from ein.kb.provenance import FactId, Provenance, reaches
+from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
 
@@ -47,8 +43,8 @@ class CommitmentSetResult:
     """Outcome of one commitment-set entering — :func:`try_commitment_set`'s return.
 
     Carries the commitment, the forked + saturated kb, and the
-    facts the parent (root, in monotonic mode) may want to
-    adopt.
+    per-entering audit fields. Fork facts stay in the fork — the
+    engine never adopts them into root (P1.21 R2).
     """
 
     commitment:          CanonicalSetId
@@ -56,12 +52,6 @@ class CommitmentSetResult:
     firings:             tuple[Firing, ...]
     kind:                Literal["alive", "dead-pre", "dead-post"]
     unsat_core:          frozenset[Fact] = frozenset()
-
-    # Facts derived during this commitment's saturation whose
-    # provenance chain doesn't touch any hypothesis in
-    # `commitment`. Provably true at root level given root +
-    # rules; engine merges these into root.
-    unconditional_facts: tuple[Fact, ...] = ()
 
     # The actual `(h_i)` writes for h_i ∈ commitment (NOT the
     # saturator's additions). Useful for the lattice's per-set
@@ -76,7 +66,7 @@ def try_commitment_set(
     saturator_steps: int | None = None,
 ) -> CommitmentSetResult:
     """Fork root, write every hypothesis in ``commitment``, saturate,
-    detect, extract unconditional facts.
+    detect.
 
     ``commitment`` is the canonical-tuple representation (sorted;
     see :data:`ein.inference.apriori.CanonicalSetId`). Each
@@ -93,8 +83,8 @@ def try_commitment_set(
       ``CommitmentSetResult(kind="dead-post", unsat_core=…)`` if
         saturation runs and the post-saturation kb has a
         contradiction.
-      ``CommitmentSetResult(kind="alive", unconditional_facts=…,
-        hypothesis_facts=…)`` otherwise.
+      ``CommitmentSetResult(kind="alive", hypothesis_facts=…)``
+        otherwise.
 
     Idempotency: ``try_commitment_set(root_kb, C)`` produces an
     independent result every call; calling it twice on the same
@@ -146,54 +136,13 @@ def try_commitment_set(
             hypothesis_facts=tuple(hypothesis_facts),
         )
 
-    # Alive — extract unconditional facts.
-    hyp_ids: frozenset[FactId] = frozenset(commitment)
-    unconditional: list[Fact] = []
-    for f in fork.facts:
-        if not _is_new_relative_to(f, root_kb):
-            continue
-        if _is_unconditional(f, fork, hyp_ids):
-            unconditional.append(f)
-
     return CommitmentSetResult(
         commitment=commitment,
         kb=fork,
         firings=firings,
         kind="alive",
-        unconditional_facts=tuple(unconditional),
         hypothesis_facts=tuple(hypothesis_facts),
     )
-
-
-# ── Helpers ─────────────────────────────────────────────────────
-
-
-def _is_new_relative_to(fact: Fact, root_kb: KnowledgeBase) -> bool:
-    """True iff ``fact`` exists in the fork but not in root.
-
-    Identity is ``(relation_name, args)`` — layer + provenance
-    are ignored, matching :meth:`KnowledgeBase.add_fact`'s dedup
-    contract.
-    """
-    return root_kb._fact_by_id(fact.relation_name, fact.args) is None
-
-
-def _is_unconditional(
-    fact: Fact, kb: KnowledgeBase,
-    hypothesis_ids: frozenset[FactId],
-) -> bool:
-    """True iff ``fact``'s derivation chain doesn't touch any
-    hypothesis in ``hypothesis_ids``.
-
-    Runs the shared :func:`~ein.kb.provenance.reaches` DFS (F-KER-10)
-    with a commitment-set terminal: the chain is "conditional" iff it
-    reaches a FactId in the commitment.
-    """
-    def _commitment_terminal(key: FactId, _fact: Fact) -> bool | None:
-        return True if key in hypothesis_ids else None
-
-    visited: set[FactId] = set()
-    return not reaches(fact, visited, kb._fact_by_id, _commitment_terminal)
 
 
 __all__ = [

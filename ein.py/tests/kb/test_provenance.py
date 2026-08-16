@@ -409,7 +409,7 @@ def _frontier(_key: object, fact: Fact) -> bool:
 
 
 class TestWalkPremises:
-    """E6 — ``walk_premises`` is the set-collecting dual of ``reaches``."""
+    """E6 — ``walk_premises`` collects over the transitive premise closure."""
 
     def _diamond_kb(self):
         """sources s1,s2 -> d1; s2 -> d2; d1,d2 -> top. Frontier(top)={s1,s2}."""

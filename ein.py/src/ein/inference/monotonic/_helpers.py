@@ -139,12 +139,12 @@ def _promote_forced_positives(
     Contradiction); the caller should return it immediately.
 
     The promoted Fact uses ``Provenance.from_rule(
-    "<forced-positive>", premises_raw=())`` so its provenance
-    kind is "rule" with empty premises — this makes
-    :func:`commitment._is_unconditional`'s walk pass through it as a
-    non-hypothesis terminal, so future commit chains that pass
-    through this fact don't get incorrectly flagged as
-    conditional.
+    "<forced-positive>", premises_raw=())`` — "rule" kind with
+    empty premises — so provenance walks (e.g. the
+    :func:`~ein.kb.provenance.walk_premises` closure behind
+    ``KnowledgeBase.unsat_core``) treat it as a root-level ground
+    fact: a derivation grounds out here rather than reading the
+    promotion as a speculative hypothesis.
 
     Soundness: ``alive = {h}`` means every other slot-mate has
     been refuted (the singleton-death writeback wrote

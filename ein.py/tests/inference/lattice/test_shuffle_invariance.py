@@ -4,21 +4,21 @@ Verifies that the lattice engine's per-layer traversal order
 does NOT leak into the final lattice content. For every
 (puzzle, max_set_size, seed) triple, the shuffled run's
 :class:`LatticeSnapshotV1` must compare equal to the reference
-(unshuffled) run's snapshot. A mismatch indicates one of three
+(unshuffled) run's snapshot. A mismatch indicates one of two
 likely leak sources:
 
-- forced-positive integration order (the order in which a
-  layer's alive commitments merge their unconditional facts
-  into root_kb),
 - nogood subsumption order (the order in which dead clauses
   hit ``emit_nogood``),
 - multilabel representative-id leak (a SetNode field's
   first-arrival semantics propagating into the snapshot).
 
-The snapshot serialiser at
+(Root writes cannot leak order: mid-search root mutation is
+limited to singleton-death ``(not h)`` writebacks + the
+forced-positive cascade — the retired unconditional-fact merge
+is gone, P1.21 R2.) The snapshot serialiser at
 :mod:`ein.inference.monotonic.snapshot` canonicalises the
-multilabel reps, so a real failure here points at one of the
-first two suspects.
+multilabel reps, so a real failure here points at the nogood
+subsumption order.
 
 Cross-references:
 

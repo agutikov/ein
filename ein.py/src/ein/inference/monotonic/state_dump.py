@@ -134,7 +134,6 @@ class MonotonicDumper(_TimelineMixin):
             kind=result.kind,
             firings=len(result.firings),
             facts_merged=facts_merged,
-            unconditional_count=len(result.unconditional_facts),
             unsat_core_size=len(result.unsat_core),
             nogood_emitted=nogood_emitted,
             nogood_subsumed=nogood_subsumed,

@@ -85,7 +85,6 @@ class LatticeDumper(_TimelineMixin):
         │       └── <C-slug>/
         │           ├── commitment.json
         │           ├── outcome.txt          ← alive | dead-pre | dead-post | solution
-        │           ├── unconditional_facts.jsonl   (non-dead-pre)
         │           ├── firings.jsonl               (non-dead-pre)
         │           ├── kb.ein                      (solution only)
         │           ├── unsat_core.jsonl            (dead-pre / dead-post)
@@ -195,10 +194,9 @@ class LatticeDumper(_TimelineMixin):
         artefacts relevant to the outcome:
 
         - ``commitment.json`` + ``outcome.txt`` — always.
-        - ``unconditional_facts.jsonl`` + ``firings.jsonl`` —
-          for non-``dead-pre`` outcomes (the fork saturated;
-          ``result.unconditional_facts`` / ``result.firings``
-          reflect that saturation).
+        - ``firings.jsonl`` — for non-``dead-pre`` outcomes
+          (the fork saturated; ``result.firings`` reflects
+          that saturation).
         - ``kb.ein`` — for ``"solution"`` only (the saturated
           fork's full kb).
         - ``unsat_core.jsonl`` + ``learned_clause.json`` —
@@ -223,7 +221,6 @@ class LatticeDumper(_TimelineMixin):
             rec.update({
                 "kind": result.kind,
                 "firings": len(result.firings),
-                "unconditional_count": len(result.unconditional_facts),
                 "unsat_core_size": len(result.unsat_core),
             })
         self._emit_timeline("entering", **rec)
@@ -239,11 +236,8 @@ class LatticeDumper(_TimelineMixin):
 
         if result.kind != "dead-pre":
             # Both alive and dead-post have saturated forks
-            # whose unconditional_facts + firings are
-            # meaningful per-hypothesis emissions.
-            with (folder / "unconditional_facts.jsonl").open("w") as fp:
-                for f in result.unconditional_facts:
-                    fp.write(json.dumps(_fact_summary(f)) + "\n")
+            # whose firings are meaningful per-hypothesis
+            # emissions.
             with (folder / "firings.jsonl").open("w") as fp:
                 for firing in result.firings:
                     fp.write(json.dumps(_firing_to_dict(firing)) + "\n")

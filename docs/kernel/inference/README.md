@@ -429,8 +429,10 @@ or, with every elimination path off, full branch-and-refute (7 sets,
 > `inference/solver.py` `_consume` loop, `try_branch`, `back_propagate`, and
 > `is_unconditional_death` named below no longer exist. The live engine is the
 > set-indexed **lattice** (see *Set-indexed search — monotonic engine* below),
-> which bakes the per-set saturate-from-root pattern in from the start; the
-> transitive unconditional walk now lives in `commitment._is_unconditional`.
+> which bakes the per-set saturate-from-root pattern in from the start. (The
+> transitive "unconditional" walk that briefly survived the tree solver in
+> `commitment.py` was itself retired in P1.21 R2 — see the
+> historical note *Unconditional facts — retired* below.)
 > Kept for the algorithmic intuition: each commitment closes its consequences
 > before the next decision.
 
@@ -517,40 +519,83 @@ The tree-side `_consume` keeps the explicit mid-sweep until
 P1.5b reaches parity; then the per-sibling re-check moves to
 whichever engine inherits the responsibility.
 
-## Unconditional facts — `_is_unconditional` soundness (S1.5.7 / S1.9.E6a)
+## Unconditional facts — retired (S1.5.7 → P1.21 R2)
 
-When a commitment's fork saturates, the engine asks of each newly-derived
-fact whether it is **unconditional** — derivable from the root KB's facts
-alone, with no committed hypothesis playing any part
+> **Historical note.** The mechanism this section used to document —
+> classify each alive fork's newly-derived facts as *unconditional* and
+> merge them into root mid-search — was **removed** in P1.21 R2
+> ([report](../../../plans/m1_core_graph_reasoning/p1.21_review_response/reports/r2_unconditional_facts.md)):
+> the classification is unsound under NAF (`absent`). Deleted with it:
+> `CommitmentSetResult.unconditional_facts`, `commitment._is_unconditional`,
+> `provenance.reaches`, both dumpers' `unconditional_count` fields, and the
+> `unconditional_facts.jsonl` lattice-dump writer. This note records what
+> was believed, the counterexample that falsified it, and the model that
+> replaced it.
+
+**What was believed (S1.5.7).** When a commitment's fork saturated, the
+engine asked of each newly-derived fact whether it was *unconditional* —
+its whole derivation chain grounding out at root facts, never touching a
+committed hypothesis
 ([S1.5.7](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md)).
-Unconditional facts are merged into the root
-(`try_commitment_set`'s `unconditional_facts`), where they monotonically
-shrink the alive set every later layer inherits.
+Such a fact was held "provably true at root given root + rules", so
+`try_commitment_set` extracted it (a positive-edge provenance DFS over
+`premises_raw` with a commitment-set terminal) for the engine to merge into
+root, monotonically shrinking the alive set. The predicate even erred
+carefully — an empty or unresolvable chain read as conditional, never
+unconditional — but the care was misdirected: the walk was sound over the
+*recorded* edges, and the recorded edges were not the dependencies.
 
-The test is **not** the shallow one — *"the fact's own provenance isn't
-`kind='hypothesis'`"*. That read is unsound: a `kind='rule'` fact can still
-derive, through a chain of firings, from a committed hypothesis — its own
-provenance is `'rule'`, but its premises are not.
-[`commitment._is_unconditional`](../../../ein.py/src/ein/inference/commitment.py)
-runs the shared
-[`provenance.reaches`](../../../ein.py/src/ein/kb/provenance.py) DFS over
-`premises_raw` transitively — resolving each id against the KB — with a
-*commitment-set terminal*: a chain is **conditional** iff it reaches a
-`FactId` in the committed set, and **unconditional** iff every chain grounds
-out at root facts first.
+**The NAF counterexample.** An `(absent P)` premise contributes **no
+premise fact** to a firing
+([`match.py`](../../../ein.py/src/ein/inference/match.py) — the guard
+passes silently), so a fork fact derived through NAF carries no provenance
+edge to the commitment whose absence licensed it. Concretely — rule
+`(and (seed ?s) (absent (x a))) → (y ?s)`, a second rule making any `x`
+clash with any `y`, and `(seed s)` at root:
 
-The asymmetry is load-bearing: a missed unconditional fact merely forgoes a
-root merge, but a *false* one promotes a hypothesis-dependent fact to the root
-irreversibly. The predicate therefore errs conditional — an empty or
-unresolvable chain reads as conditional, never unconditional.
+- under an unrelated commitment `{g(b)}` the fork derives `(y s)`; its
+  only recorded premise is the root fact `(seed s)`, so the walk
+  classified it **unconditional**;
+- yet the sibling commitment `{x(a)}` is a genuinely consistent world in
+  which `(y s)` does **not** hold — refuting "true at root" directly (a
+  root-true fact must hold in every consistent extension of root);
+- performing the documented merge (root′ = root + `(y s)`) flips `{x(a)}`
+  from alive to dead-post: a real model is refuted, the model count `k`
+  is undercounted, and the verdict read off `k` degrades (Ambiguity →
+  Solution, Solution → Contradiction).
 
-The negative dual — caching a forced `(not h)` — is deliberately narrower:
-only the **one-step lookahead kill** (`hypgen._write_negated`, gated by
-`enable_lookahead_kill_cache`) writes a `(not h)` REASONING fact, and only when
-a single rule firing already refutes `h` before any fork. (The former
-full-saturation "unconditional death → `(not h)` into the parent" —
-`back_prop.is_unconditional_death` / `reaches_hypothesis` — was tree-solver
-machinery: dead after the tree solver's removal, deleted in S1.9.E6a.)
+A sound test needs `Deps(Y) = PositiveDeps(Y) ∪ NegativeDeps(Y)`, and
+`premises_raw` carries only the positive half — no smarter walk over it
+can recover dependence-through-absence.
+
+**The model now (P1.7a — keep root stable).** Mid-search root writes are
+limited to two *sound* mechanisms: the singleton-death `(not h)` writeback
+and the forced-positive cascade (`_helpers._promote_forced_positives` — a
+sole-surviving slot value must hold). Everything else is per-branch: each
+commitment is evaluated independently against the post-Phase-1 root, and
+no fork fact ever merges back. Pinned by
+[`test_root_stability_naf.py`](../../../ein.py/tests/inference/monotonic/test_root_stability_naf.py).
+
+**Resurrection path, if ever needed.** On a ruleset with **no** `absent`
+guards — checkable as every compiled plan's
+[`naf_watched_relations`](../../../ein.py/src/ein/inference/compile.py)
+being empty, surfaced as `Engine.naf_dependency_map` — the extraction
+theorem genuinely holds: `premises_raw` is then a complete dependency
+record, and a chain grounding out at root facts replays at root by
+monotonicity. Any revival must gate on that *checked* precondition, or
+move to a dependency carrier that records negative support (ATMS-style
+environments). Fork-internal NAF *ordering* is a distinct hole and belongs
+to the `absent`-semantics formalisation
+([s1.21.4](../../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.4_absent_semantics.md)).
+
+The negative dual — caching a forced `(not h)` — remains live and is
+deliberately narrow: only the **one-step lookahead kill**
+(`hypgen._write_negated`, gated by `enable_lookahead_kill_cache`) writes a
+`(not h)` REASONING fact, and only when a single rule firing already
+refutes `h` before any fork. (The former full-saturation "unconditional
+death → `(not h)` into the parent" — `back_prop.is_unconditional_death` /
+`reaches_hypothesis` — was tree-solver machinery: dead after the tree
+solver's removal, deleted in S1.9.E6a.)
 
 ## Set-indexed search — monotonic engine (P1.5b S1.5b.0–.10)
 
@@ -561,10 +606,10 @@ engine** under
 [`ein.py/src/ein/inference/monotonic/`](../../../ein.py/src/ein/inference/monotonic/)
 collapses this by indexing by commitment **set** rather than
 path: layer N enumerates every size-N alive subset via
-Apriori-style prefix-join, enters each via the common
+Apriori-style prefix-join and enters each via the common
 [`try_commitment_set`](../../../ein.py/src/ein/inference/commitment.py)
-primitive, and merges only the unconditional consequences back
-into a single root KB. There is **one entry**,
+primitive; the root KB stays stable mid-search (P1.21 R2 — see
+*Unconditional facts — retired* above). There is **one entry**,
 [`solve`](../../../ein.py/src/ein/inference/monotonic/solver.py): it
 records every solution node (`consistent ∧ complete`, `state_hash`-deduped)
 plus every refuted commitment, and
@@ -591,13 +636,16 @@ view (`proof.dead_commitments` + `verdict.unsat_core`).
    Returns `Solution(kb=result.kb)` so the caller sees the
    hypothesis context the goal depended on. **Algorithm spec
    §3d.vii.**
-2. **Solution at root.** After merging unconditional facts from
-   an alive commitment, a forced-positive cascade may promote
-   remaining singleton hypotheses to root and `is_solved` fires
-   there. This is how `examples/zebra2.ein` solves —
-   `(color-loc Green House-4)` cascades into 30 unconditional
-   facts that complete the puzzle at root via the chain of
-   pre-emptive lookahead negatives.
+2. **Solution at root.** The forced-positive cascade
+   (`_helpers._promote_forced_positives`, matching
+   [solver.py](../../../ein.py/src/ein/inference/monotonic/solver.py)'s
+   sound inter-layer prune) promotes each singleton-alive
+   hypothesis to root, re-saturates, and repeats until the root
+   itself is complete ∧ consistent. This is how
+   `examples/zebra2.ein` solves — the layer-1 deaths (plus the
+   chain of pre-emptive lookahead negatives) leave one survivor
+   per slot, and the cascade starting at
+   `(color-loc Green House-4)` completes the puzzle at root.
 3. **Contradiction at Phase 1.** Root saturates to `(false)` —
    the puzzle is inconsistent before any hypothesis enters.
 4. **Contradiction at Phase 3.** Every layer-1 singleton died;

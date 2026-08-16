@@ -45,7 +45,7 @@ KB ─▶ Engine.compile_all ─▶ JoinPlan ─▶ Saturator.saturate ─▶ re
 | [`hrule.py`](../../../ein.py/src/ein/inference/hrule.py) | hypothesis-rule registry (`hrules` drive generation, never the saturator) |
 | [`lookahead.py`](../../../ein.py/src/ein/inference/lookahead.py) | pre-branch one-step death simulator (`enable_pre_branch_lookahead`) |
 | [`apriori.py`](../../../ein.py/src/ein/inference/apriori.py) | commitment-lattice layer generation by set-size (prefix-join + no-good prune); `order_candidates` / `_set_score` — the deterministic candidate ordering |
-| [`commitment.py`](../../../ein.py/src/ein/inference/commitment.py) | `try_commitment_set`: fork + write hypotheses + saturate + detect; `_is_unconditional` (transitive death walk) |
+| [`commitment.py`](../../../ein.py/src/ein/inference/commitment.py) | `try_commitment_set`: fork + write hypotheses + saturate + detect |
 | [`nogoods.py`](../../../ein.py/src/ein/inference/nogoods.py) | no-good learning: dead set → `root_kb._nogoods`; singletons → `_negated_facts` |
 | [`monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py) | **the main loop**: `solve()` — BFS over the commitment lattice; `_phase1_root`, `_phase2_layers`; dedup by `state_hash` |
 | [`monotonic/lattice.py`](../../../ein.py/src/ein/inference/monotonic/lattice.py) | `LatticeProof`, `Solution`, `DeadCommitment`, `LatticeStats` |

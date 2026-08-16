@@ -91,14 +91,14 @@ dump/
 ├── layers/
 │   └── layer_NN/
 │       ├── pre.ein              ← root.kb at the start of layer NN
-│       └── post.ein             ← root.kb at the end of layer NN (after merges)
+│       └── post.ein             ← root.kb at the end of layer NN (after the inter-layer
+│                                  (not h) writebacks + forced-positive promotions)
 ├── enterings/                   ← ★ per-hypothesis emission tracking
 │   └── layer_NN/
 │       └── <C-slug>/            ← one commitment tested at layer NN
 │           ├── commitment.json          ← the committed FactId list
 │           ├── outcome.txt              ← alive | dead-pre | dead-post | solution
 │           ├── firings.jsonl            ← every rule firing in this fork  (non dead-pre)
-│           ├── unconditional_facts.jsonl← facts merged back to root       (non dead-pre)
 │           ├── kb.ein                   ← the fork's full saturated KB    (solution only)
 │           ├── unsat_core.jsonl         ← the contradiction witnesses     (dead-* only)
 │           └── learned_clause.json      ← the CDCL nogood emitted          (dead-* only)
@@ -137,9 +137,10 @@ are the emissions:
 
 - **`alive`** — the fork saturated without contradiction and did not
   satisfy the goal. `firings.jsonl` is every rule that fired under
-  this commitment (the **positive** emissions);
-  `unconditional_facts.jsonl` is the subset that merged back into the
-  shared root (facts true regardless of the hypothesis).
+  this commitment (the **positive** emissions); the derived facts
+  stay in the fork — nothing merges back into the shared root
+  (P1.21 R2; see [the retired unconditional-facts
+  note](README.md#unconditional-facts--retired-s157--p121-r2)).
 - **`solution`** — same as alive plus the goal was satisfied;
   `kb.ein` is the fork's full saturated KB so you can read the
   solved state.
@@ -165,9 +166,9 @@ on which bindings, in the context of each tested hypothesis.
 > dump captures both: (1) every hypothesis the engine tested,
 > surviving (`alive`/`solution`) or refuted (`dead-*`) — read off
 > `outcome.txt` across the tree; and (2) within each fork, both the
-> positive firings (`firings.jsonl`) and the derived negatives
-> (`(not …)` facts appear in `unconditional_facts.jsonl` /
-> `unsat_core.jsonl`, since the [d=0 negative-completion
+> positive firings and the derived negatives (`(not …)` facts appear
+> among `firings.jsonl`'s derived facts and in `unsat_core.jsonl`,
+> since the [d=0 negative-completion
 > rules](README.md#d0-negative-completion-s15a19) emit them as
 > ordinary REASONING-layer facts).
 

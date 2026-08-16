@@ -74,8 +74,9 @@ class LatticeSnapshotV1:
         ``SetNode.verdict`` values for that state_hash.
     root_state_hash
         ``state_hash(root_kb)`` at termination. Carries the
-        accumulated unconditional-facts merges + the
-        forced-positive promotions.
+        accumulated singleton-death ``(not h)`` writebacks + the
+        forced-positive promotions (the only root writes during
+        search — P1.21 R2).
     verdict_kind
         ``type(verdict).__name__`` (``"Solution"`` /
         ``"Ambiguity"`` / ``"Contradiction"``) — the mode

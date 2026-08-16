@@ -290,8 +290,9 @@ The `(false)` fact's `args` are empty by convention — multiple
 firings within a single fork dedupe (`Fact` identity is
 `(relation, args)`), so only the first firing's provenance is
 preserved. That's enough for "is this branch dead?" and for
-the unconditional-death analysis (`commitment._is_unconditional`, S1.5.7) to
-identify the responsible hypothesis from the first firing's premise chain. Promote to `(false <witness>)`
+the unsat-core frontier walk (`KnowledgeBase.unsat_core` via
+`provenance.walk_premises`) to identify the responsible
+hypothesis from the first firing's premise chain. Promote to `(false <witness>)`
 with per-firing args if a future puzzle needs all parallel
 contradictions individually addressable.
 

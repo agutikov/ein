@@ -276,50 +276,6 @@ def detect_provenance_cycles(facts: Iterable[Fact], resolve: object) -> list[lis
     return out
 
 
-# ── Provenance-chain reachability ─────────────────────────────────
-
-
-def reaches(
-    fact: Fact,
-    visited: set[FactId],
-    resolve: object,
-    is_terminal: Callable[[FactId, Fact], bool | None],
-) -> bool:
-    """Provenance-chain DFS: True iff some premise chain from ``fact``
-    reaches a *terminal* fact, by the caller's ``is_terminal`` test.
-
-    ``is_terminal(key, fact)`` returns ``True`` / ``False`` to
-    short-circuit at ``fact`` (it is a terminal), or ``None`` to keep
-    walking its ``rule``-kind premises. ``resolve(rel, args) -> Fact |
-    None`` looks up a premise id (as in :func:`build_derivation_dag`),
-    so this module needn't import ``store.py``.
-
-    ``visited`` guards provenance cycles and memoises across sibling
-    walks: a fact left in ``visited`` was reached on a chain that did
-    not (yet) yield a terminal, so a revisit contributes nothing — sound
-    because a chain that *does* reach one short-circuits every caller
-    above it. Pass a shared set to memoise across several roots.
-
-    Factored (F-KER-10) so the caller supplies the terminal test — e.g.
-    commitment's ``_is_unconditional`` (commitment terminal).
-    """
-    key: FactId = (fact.relation_name, fact.args)
-    if key in visited:
-        return False
-    visited.add(key)
-    terminal = is_terminal(key, fact)
-    if terminal is not None:
-        return terminal
-    prov = fact.provenance
-    if prov is None or prov.kind != "rule":
-        return False
-    for rid in prov.premises_raw:
-        premise = resolve(*rid)
-        if premise is not None and reaches(premise, visited, resolve, is_terminal):
-            return True
-    return False
-
-
 def walk_premises(
     root: Fact,
     resolve: Callable[[str, tuple[object, ...]], Fact | None],
@@ -328,11 +284,12 @@ def walk_premises(
     visited: set[FactId] | None = None,
 ) -> set[Fact]:
     """Collect every fact in ``root``'s transitive premise closure for which
-    ``keep`` is True — the **set-collecting dual** of :func:`reaches` (E6).
+    ``keep`` is True (E6) — the shared premise-closure walk.
 
-    Where :func:`reaches` short-circuits at the first terminal and returns a
-    ``bool``, this walks the *whole* closure over rule-kind ``premises_raw``
-    and accumulates each kept fact. ``resolve(rel, args) -> Fact | None`` looks
+    Walks the *whole* closure over rule-kind ``premises_raw`` and accumulates
+    each kept fact. (Its boolean short-circuiting sibling ``reaches`` — a
+    terminal-test DFS — was retired with its sole caller, the P1.21 R2
+    unconditional-fact extraction.) ``resolve(rel, args) -> Fact | None`` looks
     up a premise id (as in :func:`build_derivation_dag`), so this module needn't
     import ``store.py``.
 
@@ -375,6 +332,5 @@ __all__ = [
     "Provenance",
     "build_derivation_dag",
     "detect_provenance_cycles",
-    "reaches",
     "walk_premises",
 ]

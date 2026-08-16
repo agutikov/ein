@@ -18,11 +18,13 @@ Termination conditions
   the caller sees the hypothesis-and-derivations context the
   goal depended on. **Required** for puzzles whose goal directly
   references hypothesis facts (e.g. branching/05_mini_zebra).
-- :class:`Solution` at root — after merging unconditional facts
-  from an alive commitment, a forced-positive cascade may
-  promote remaining singleton hypotheses to root and is_solved
-  fires there (e.g. zebra2 — one alive commitment cascades into
-  30 unconditional facts that complete the puzzle at root).
+- :class:`Solution` at root — the forced-positive cascade
+  (:func:`~ein.inference.monotonic._helpers._promote_forced_positives`)
+  promotes singleton-alive hypotheses to root, re-saturates, and
+  repeats until the root itself is complete ∧ consistent (e.g.
+  zebra2 — the layer-1 deaths leave one survivor per slot and the
+  cascade completes the puzzle at root). Root is otherwise kept
+  stable — no fork fact is ever merged back (P1.21 R2).
 - :class:`Contradiction` — root saturates to ``(false)`` in
   Phase 1, or every layer-1 singleton dies and ``_compute_alive``
   returns empty in Phase 3.
@@ -374,12 +376,14 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
                 continue
 
             # P1.7a — PURE PER-BRANCH search; keep root STABLE. Do NOT merge
-            # unconditional facts and do NOT promote forced-positives into the
+            # fork facts and do NOT promote forced-positives into the
             # shared root mid-search:
-            #   * unconditional-fact extraction is UNSOUND under NAF
-            #     (`absent`) — a fork fact derived via `absent X` looks
-            #     unconditional by the provenance walk but actually depends on
-            #     the commitment having suppressed X; merging it is wrong;
+            #   * the retired "unconditional-fact" extraction (deleted in
+            #     P1.21 R2) was UNSOUND under NAF (`absent`) — a fork fact
+            #     derived via `absent X` leaves no provenance edge to the
+            #     commitment that suppressed X, so the positive-chain walk
+            #     misread it as root-true; see the historical note in
+            #     docs/kernel/inference/README.md;
             #   * cumulative shared-root promotion is the monotonic SAT→⊥
             #     pollution Phase A (S1.7a.1) flagged.
             # Each commitment is evaluated independently against the
@@ -404,7 +408,8 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
         # ``¬g`` (sound: ``{g}`` is genuinely inconsistent with root).
         # Recompute alive and promote any backbone singletons via the
         # forced-positive cascade (sound: a sole-surviving slot value must
-        # hold) — NOT the NAF-unsound unconditional-fact merge. This collapses
+        # hold) — NOT a fork-fact merge (the NAF-unsound extraction was
+        # retired in P1.21 R2). This collapses
         # the candidate space the way the legacy engines prune, without the
         # SAT→⊥ pollution.
         alive = _compute_alive(root_kb)
@@ -462,8 +467,9 @@ def _explore_layers(
     by :func:`complete`, not goal match) deduped by :func:`state_hash` into
     ``lstate.solution_nodes``, and every refuted commitment into
     ``lstate.dead_commitments``. Phase 3 reads the verdict from the count
-    ``k`` via :func:`verdict_of`. Root is kept stable (no unconditional merge
-    mid-search — unsound under NAF). With ``store_lattice`` the verdict
+    ``k`` via :func:`verdict_of`. Root is kept stable (no fork-fact merge
+    mid-search — the retired extraction was unsound under NAF; P1.21 R2).
+    With ``store_lattice`` the verdict
     carries a :class:`LatticeProof` (``verdict.proof``) whose ``stats`` is the
     :class:`LatticeStats` view.
     """

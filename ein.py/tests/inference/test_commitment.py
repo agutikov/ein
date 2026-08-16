@@ -1,10 +1,11 @@
 """Commitment-set primitive tests — S1.5b.3 T1.5b.3.2.
 
 Pins :func:`ein.inference.commitment.try_commitment_set`
-across the trichotomy (alive / dead-pre / dead-post) + the
-unconditional-fact extraction (the soundness-critical novel
-piece) + isolation between two calls + the empty-commitment
-sentinel.
+across the trichotomy (alive / dead-pre / dead-post) +
+isolation between two calls + the empty-commitment sentinel.
+(The former unconditional-fact-extraction tests were removed
+with the extraction itself — P1.21 R2; root-stability under NAF
+is pinned in ``tests/inference/monotonic/test_root_stability_naf.py``.)
 """
 from __future__ import annotations
 
@@ -42,8 +43,8 @@ def _ids(facts) -> set[tuple[str, tuple]]:
 
 def test_alive_one_element_conditional_derivation():
     """A 1-element commitment whose hypothesis triggers a rule
-    derivation. The derived fact's chain reaches the hypothesis, so
-    it is conditional (NOT in unconditional_facts), but it IS in kb.
+    derivation. The derived fact stays in the fork's kb — nothing
+    is extracted or written back.
     """
     kb = _kb("""
     (rule swap ()
@@ -61,72 +62,10 @@ def test_alive_one_element_conditional_derivation():
     assert isinstance(result, CommitmentSetResult)
     assert result.kind == "alive"
     assert _ids(result.hypothesis_facts) == {("target", ("c", "d"))}
-    assert result.unconditional_facts == ()  # (other d c) is conditional
-    # kb DOES contain the derived (other d c) — just flagged conditional.
+    # kb DOES contain the derived (other d c) — fork-local only.
     assert ("other", ("d", "c")) in _ids(result.kb.facts)
-
-
-# ── Alive: derivation is unconditional ────────────────────────────
-
-
-def test_alive_unconditional_derivation_from_root_facts():
-    """A root fact + symmetric rule produces a new fact whose chain
-    is grounded entirely in root facts — even though a hypothesis
-    is committed in the same fork. Verifies _is_unconditional's
-    "chain doesn't touch the commitment" check.
-    """
-    kb = _kb("""
-    (rule sym-r ()
-      :match (r ?x ?y) :assert (r ?y ?x)
-      :why "symmetric r" :priority 100)
-    (type T)
-    (relation r T T)
-    (relation h T)
-    (instance a T) (instance b T)
-    (r a b :source "(1)")
-    """)
-    commitment = (("h", ("a",)),)
-    result = try_commitment_set(kb, commitment)
-    assert result.kind == "alive"
-    # (r b a) was derived from (r a b) alone — root fact, no
-    # hypothesis touched → unconditional.
-    assert ("r", ("b", "a")) in _ids(result.unconditional_facts)
-    # The hypothesis itself is never "unconditional" — it's a
-    # premise, not a derivation.
-    assert ("h", ("a",)) not in _ids(result.unconditional_facts)
-    # And the hypothesis IS in hypothesis_facts.
-    assert _ids(result.hypothesis_facts) == {("h", ("a",))}
-
-
-def test_alive_conditional_excluded_from_unconditional_facts():
-    """Same fixture; the (d a) derivation from the hypothesis is
-    conditional and must NOT appear in unconditional_facts."""
-    kb = _kb("""
-    (rule sym-r ()
-      :match (r ?x ?y) :assert (r ?y ?x)
-      :why "symmetric r" :priority 100)
-    (rule from-h ()
-      :match (h ?x) :assert (d ?x)
-      :why "h gives d" :priority 100)
-    (type T)
-    (relation r T T)
-    (relation h T)
-    (relation d T)
-    (instance a T) (instance b T)
-    (r a b :source "(1)")
-    """)
-    commitment = (("h", ("a",)),)
-    result = try_commitment_set(kb, commitment)
-
-    assert result.kind == "alive"
-    fork_ids = _ids(result.kb.facts)
-    # (d a) IS in kb (saturator derived it).
-    assert ("d", ("a",)) in fork_ids
-    # …but it must NOT be in unconditional_facts — its chain
-    # reaches (h a) which is in the commitment.
-    assert ("d", ("a",)) not in _ids(result.unconditional_facts)
-    # (r b a) IS unconditional (cross-check with previous test).
-    assert ("r", ("b", "a")) in _ids(result.unconditional_facts)
+    # …and the root was not touched by the entering.
+    assert ("other", ("d", "c")) not in _ids(kb.facts)
 
 
 # ── Dead-pre: root already has (not h) at REASONING ───────────────
@@ -252,8 +191,8 @@ def test_isolation_two_calls_yield_independent_forks():
 def test_empty_commitment_returns_alive_with_empty_results():
     """`try_commitment_set(root, ())` is the layer-0 sentinel —
     no hypothesis written, saturator runs on root-fork. With a
-    pre-saturated root, no new facts are produced; both
-    hypothesis_facts and unconditional_facts are empty.
+    pre-saturated root, no new facts are produced and
+    hypothesis_facts is empty.
     """
     kb = _kb("""
     (rule sym-r ()
@@ -272,7 +211,6 @@ def test_empty_commitment_returns_alive_with_empty_results():
 
     assert result.kind == "alive"
     assert result.hypothesis_facts == ()
-    assert result.unconditional_facts == ()
     # Saturator may have stepped (and yielded zero or some
     # already-redundant firings), but the kb content matches the
     # pre-saturated root.
