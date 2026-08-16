@@ -128,6 +128,8 @@ branch's consequences never merge back (the "unconditional"-fact extraction
 was retired in P1.21 R2 as unsound under NAF). The verdict is read off
 the deduped count k (`verdict_of`).
 
+The **target** refinement of this picture — the closure/worlds seam with NAF lifted out of the closure onto the boundary, plus the current leak list — is recorded in [`../architecture.md` §closure/worlds seam](../architecture.md#the-closureworlds-seam-target-architecture) (P1.21 R6; target, not shipped).
+
 ---
 
 ## 3. Data types
@@ -326,7 +328,7 @@ P1.7a); `frontier.smallest_contradiction_frontier` picks the smallest
 single-witness frontier but inherits the same caveat (one justification per
 fact, first derivation wins). Deletion-based MUS minimisation is
 **NAF-unsound here** (S1.9.E19); true minimality needs multi-justification
-provenance — parked as P1.9 E25. Provenance is also not yet a semiring (no
+provenance — parked as P1.21 S1.21.7. Provenance is also not yet a semiring (no
 multiplicity/why-vs-how distinction, which M2-scale work might want).
 
 ### O7 — Hypothesis enumeration over a subset lattice

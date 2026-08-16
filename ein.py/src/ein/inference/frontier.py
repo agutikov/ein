@@ -34,9 +34,9 @@ cheap (provenance walks via E6's `walk_premises`, no saturation).
 
 Lifting the recorded-derivations caveat needs OR/AND multi-justification
 provenance (record every derivation at the dedup seam, then search the proof
-DAG for a true minimum) — parked as P1.9 catalog entry **E25**
-(``plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/
-s1.9.e25_multi_justification_provenance.md``).
+DAG for a true minimum) — parked as P1.21 follow-up stage **S1.21.7**
+(``plans/m1_core_graph_reasoning/p1.21_review_response/
+s1.21.7_multi_justification_provenance.md``).
 """
 from __future__ import annotations
 

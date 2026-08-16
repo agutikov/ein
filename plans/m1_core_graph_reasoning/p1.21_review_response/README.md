@@ -1,7 +1,15 @@
 # P1.21 — Review response: REVIEW_M1-01 (claims vs guarantees)
 
-**Estimate:** ~1–2 weeks.
-**Status:** open (created 2026-08-16).
+**Estimate:** ~1–2 weeks (actual: 2 days).
+**Status:** ✅ **core executed 2026-08-16/17** — all six review points
+investigated (6 confirmed reports), improved, adversarially verified, and
+the acceptance gate below passed 2026-08-17 (suite 1302 passed + 1
+sanctioned strict-xfail (D5); acceptance 17/17, verdicts unchanged; ruff
+clean; closeout greps clean). Open remainder: the parked follow-up stages
+[S1.21.7](s1.21.7_multi_justification_provenance.md) /
+[S1.21.8](s1.21.8_boundary_naf.md) (activation-gated) and the
+[§Divergences](#divergences-surfaced-by-investigation-2026-08-16)
+candidates (D5 promote-to-fix, D-R5-1 one-liner).
 **Source:** [`../REVIEW_M1-01.md`](../REVIEW_M1-01.md) — an external
 architecture review of `master` *as a reasoning engine*. Its core thesis:
 the architecture is right (monotone deductive layer + non-monotone search
@@ -75,6 +83,8 @@ Per the phase charter, each review point is processed as **two tasks**:
 | S1.21.4 | §4 | P1 | [Formal semantics of `absent` — dedicated doc](s1.21.4_absent_semantics.md) | T1.21.4.1 / T1.21.4.2 |
 | S1.21.5 | §5 | P2 | [Reposition lattice search: ATMS-style, CDCL as analog](s1.21.5_lattice_positioning.md) | T1.21.5.1 / T1.21.5.2 |
 | S1.21.6 | §6 | P2 | [Record the closure/worlds seam; NAF at the boundary](s1.21.6_architecture_seam.md) | T1.21.6.1 / T1.21.6.2 |
+| S1.21.7 | §3 (b) | follow-up | [Multi-justification (OR/AND) provenance + true minimal explanation](s1.21.7_multi_justification_provenance.md) | 📅 parked (moved in from P1.9 E25, 2026-08-17) |
+| S1.21.8 | §6 | follow-up | [Purely-positive closure + boundary NAF re-eval](s1.21.8_boundary_naf.md) | 📅 parked (moved in from P1.9 E26, 2026-08-17; activation gates in stage file) |
 
 ## Scheduling
 
@@ -118,8 +128,11 @@ Per the phase charter, each review point is processed as **two tasks**:
   variable/value selection, backjumping) — the review's item 5 explicitly
   sequences it **after** this phase; it stays in
   [P1.9](../p1.9_hypothesis_loop_followups/README.md) (E-catalog).
-- Multi-justification proof DAG *implementation*, if the S1.21.3 report
-  chooses the rename path — parked as a P1.9/follow-up entry.
+- Multi-justification proof DAG *implementation* — parked **in-phase** as
+  [S1.21.7](s1.21.7_multi_justification_provenance.md) (moved from P1.9
+  E25 on 2026-08-17; likewise the boundary-NAF track is
+  [S1.21.8](s1.21.8_boundary_naf.md), ex-E26 — new work is never scheduled
+  into previous phases).
 - Any `absent` stratification checker — S1.21.4 documents semantics; a
   static stratification/dependency analysis is future work.
 

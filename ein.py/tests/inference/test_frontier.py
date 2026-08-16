@@ -100,7 +100,7 @@ class TestSmallestContradictionFrontier:
         # chain fires first vs {A, B, Y} when join does, even though the
         # 2-fact explanation still exists in the second run. Each result is
         # still a sound frontier (⊆ the union core). A future
-        # multi-justification fix (P1.9 E25) should flip this test
+        # multi-justification fix (P1.21 S1.21.7) should flip this test
         # deliberately.
         def run(join: int, chain: int) -> tuple[frozenset, set]:
             kb = _saturated(TWO_DERIVATIONS.format(join=join, chain=chain))

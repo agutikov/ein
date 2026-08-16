@@ -54,8 +54,9 @@ T1.22.2.2 — by design; commit history keeps them).
   `plans/m1a_rust/`, `plans/m1b_gui/` are *future* milestones — kept
   (their links into the deleted folder get rewired/dropped).
 - **Live backlog must not die with the history.** Known live content
-  inside the folder: the **P1.9 E-catalog** (E1–E26 — E25/E26 freshly
-  cross-linked from `frontier.py` and the kernel docs by P1.21), the
+  inside the folder: the **P1.9 E-catalog** (E1–E24), the **P1.21 parked
+  follow-up stages S1.21.7/S1.21.8** (ex-E25/E26, moved in-phase
+  2026-08-17; cross-linked from `frontier.py` and the kernel docs), the
   **P1.7c Track B** refactor-debt tail, the **P1.21 divergences** (D3, D5
   or-disjunct unsound firing, the `landed` NameError), and the M1
   [`open_questions.md`](../open_questions.md) still-open rows (Q26/Q28).

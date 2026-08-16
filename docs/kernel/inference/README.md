@@ -169,6 +169,8 @@ when F5 lands.
 > [`test_absent_semantics.py`](../../../ein.py/tests/inference/test_absent_semantics.py).
 > This section is the operational how.
 
+*Target architecture (parked, not shipped):* NAF's target position is the **closure/world boundary** — guards judged only against a saturated world — recorded in [`../architecture.md` §closure/worlds seam](../architecture.md#the-closureworlds-seam-target-architecture) (P1.21 R6; engineering track [P1.21 S1.21.8](../../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.8_boundary_naf.md)).
+
 `(absent P)` in a `:match` clause compiles to an
 [`AbsentGuard`](../../../ein.py/src/ein/inference/compile.py)
 step. The matcher's
