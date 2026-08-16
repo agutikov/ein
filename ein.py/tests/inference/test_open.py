@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from ein.inference import match
 from ein.inference.compile import AbsentGuard, compile_rule
+from ein.inference.world import World
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
 
@@ -23,10 +24,22 @@ def _kb(text: str) -> KnowledgeBase:
 
 
 def _run(kb: KnowledgeBase, rule_name: str) -> list:
+    """The rule's matches with its guards applied.
+
+    S1.21.8 — `open` expands to two `(absent …)`, which are lifted out of the
+    closure plan and evaluated on the closure/world boundary, so a bare
+    `match.run` would see the positive residue only. This mirrors what the
+    engine does at quiescence.
+    """
     rule = kb.rules[rule_name]
     activator = None if not rule.params else kb._facts_by_relation[rule_name][0]
     plan = compile_rule(rule, activator)
-    return list(match.run(plan, kb))
+    world = World(kb)
+    return [
+        (bindings, premises)
+        for bindings, premises, guards in match.run_guarded(plan, kb)
+        if world.admits(guards, bindings)
+    ]
 
 
 def _setup_three_states():
@@ -55,7 +68,9 @@ def test_open_desugars_to_two_absent_guards():
     kb = _setup_three_states()
     rule = kb.rules["find-open"]
     plan = compile_rule(rule, None)
-    absents = [s for s in plan.steps if isinstance(s, AbsentGuard)]
+    assert not any(isinstance(s, AbsentGuard) for s in plan.steps)
+    (guards,) = plan.naf_guards
+    absents = [g.guard for g in guards]
     assert len(absents) == 2
 
 

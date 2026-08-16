@@ -44,10 +44,11 @@ from ein.kb.entities import Fact, Layer
 from ein.kb.store import KnowledgeBase
 
 from . import match, primitives
-from .compile import Join, JoinPlan, NestedPattern, Scan
+from .compile import AbsentGuard, Join, JoinPlan, NafGuard, NestedPattern, Scan
 from .engine import Engine
 from .firing import build_fact
 from .match import _bind_args
+from .world import project
 
 
 class Lookahead:
@@ -84,38 +85,91 @@ class Lookahead:
             ]
             if not fact_templates:
                 continue
-            for idx, step in enumerate(plan.steps):
-                if not isinstance(step, (Scan, Join)):
+            for steps, guards in plan.disjuncts():
+                if _unjudgeable(guards):
+                    # S1.21.8 (D3) — a guard we cannot evaluate in the world
+                    # *with* `h` must not be assumed to pass. Skipping the
+                    # disjunct only loses a kill, which is the safe direction:
+                    # the contract is to under-approximate death.
                     continue
-                if step.relation != h.relation_name:
-                    continue
-                # Inject `h` into this premise — unify its args.
-                seed = _bind_args(
-                    step.arg_slots, h.args, dict(plan.bindings_seed),
-                )
-                if seed is None:
-                    continue
-                # Run the rule's other premises against the KB; the
-                # injected premise is supplied by `h`.
-                rest = plan.steps[:idx] + plan.steps[idx + 1:]
-                probe = JoinPlan(
-                    rule_name=plan.rule_name,
-                    activator_args=plan.activator_args,
-                    bindings_seed=seed,
-                    steps=rest,
-                    why=plan.why,
-                )
-                for bindings, _premises in match.run(probe, kb):
-                    for template in fact_templates:
-                        try:
-                            f = build_fact(template, bindings)
-                        except (KeyError, TypeError):
-                            # Defensive: a malformed assert template
-                            # never kills a candidate.
+                for idx, step in enumerate(steps):
+                    if not isinstance(step, (Scan, Join)):
+                        continue
+                    if step.relation != h.relation_name:
+                        continue
+                    # Inject `h` into this premise — unify its args.
+                    seed = _bind_args(
+                        step.arg_slots, h.args, dict(plan.bindings_seed),
+                    )
+                    if seed is None:
+                        continue
+                    # Run the rule's other premises against the KB; the
+                    # injected premise is supplied by `h`.
+                    rest = steps[:idx] + steps[idx + 1:]
+                    probe = JoinPlan(
+                        rule_name=plan.rule_name,
+                        activator_args=plan.activator_args,
+                        bindings_seed=seed,
+                        steps=rest,
+                        why=plan.why,
+                    )
+                    for bindings, _premises in match.run(probe, kb):
+                        if not _guards_pass_with(guards, bindings, kb, h):
                             continue
-                        if _is_contradiction(kb, f, h):
-                            return True
+                        for template in fact_templates:
+                            try:
+                                f = build_fact(template, bindings)
+                            except (KeyError, TypeError):
+                                # Defensive: a malformed assert template
+                                # never kills a candidate.
+                                continue
+                            if _is_contradiction(kb, f, h):
+                                return True
         return False
+
+
+def _unjudgeable(guards: tuple[NafGuard, ...]) -> bool:
+    """True iff some guard's verdict in ``kb`` plus ``h`` cannot be decided cheaply.
+
+    A guard containing a *nested* absent (what a ``forall`` desugars to) is
+    non-monotone in the KB: adding ``h`` can make the inner absent fail and so
+    make the outer **pass**. Deciding that needs the real world, which the
+    lookahead deliberately does not build. Report unjudgeable and skip.
+    """
+    return any(_has_nested_absent(g.sub_steps) for g in guards)
+
+
+def _has_nested_absent(steps: tuple[object, ...]) -> bool:
+    return any(isinstance(st, AbsentGuard) for st in steps)
+
+
+def _guards_pass_with(
+    guards: tuple[NafGuard, ...],
+    bindings: dict,
+    kb: KnowledgeBase,
+    h: Fact,
+) -> bool:
+    """Do ``guards`` still pass in the world ``kb`` plus ``h``?
+
+    This is the D3 fix (P1.21 R4). The probe *hypothesises* ``h`` into one
+    positive premise but the KB it runs against does not contain it, so
+    evaluating a guard against ``kb`` alone answers a question about a
+    different world — and a rule whose guard watches the candidate's own
+    relation would kill a live hypothesis, in violation of the "never reports
+    a live hypothesis as dead" contract.
+
+    Two checks, no mutation: the guard must find no match in ``kb``, **and**
+    ``h`` must not create one. `_unjudgeable` has already excluded the
+    non-monotone (nested-absent) shapes, so for what remains those two
+    together are exactly "no match in ``kb`` with ``h`` added".
+    """
+    for g in guards:
+        scoped = project(bindings, g.scope)
+        for _ in match.run_steps(g.sub_steps, dict(scoped), (), kb):
+            return False
+        for _ in match._seed_steps(g.sub_steps, scoped, h, kb):
+            return False
+    return True
 
 
 def _is_contradiction(kb: KnowledgeBase, f: Fact, h: Fact) -> bool:

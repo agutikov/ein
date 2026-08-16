@@ -21,6 +21,7 @@ from ein.kb.store import KnowledgeBase
 from . import match
 from .compile import JoinPlan, compile_rule
 from .firing import Firing, fire
+from .world import World
 
 CacheKey = tuple[str, tuple[str, ...]]
 
@@ -107,16 +108,18 @@ class Engine:
 
     # ── Firing ────────────────────────────────────────────────────
 
-    def _iter_pending(self) -> Iterator[tuple[JoinPlan, dict[str, Any], tuple[Fact, ...]]]:
-        """Yield every match that hasn't fired yet (any rule).
+    def _iter_pending(self) -> Iterator[
+        tuple[JoinPlan, dict[str, Any], tuple[Fact, ...], tuple]
+    ]:
+        """Yield every match that hasn't fired yet (any rule), with its guards.
 
-        Each match is the matcher's (bindings, premises) plus the
-        plan it came from. The saturation loop in S1.3.3 will turn
-        this into a banded-priority queue; for S1.3.1 we just yield
-        in insertion order of `self._cache`.
+        Each match is the matcher's (bindings, premises) plus the plan it came
+        from and **that disjunct's** `(absent …)` guards. The saturation loop
+        in S1.3.3 turns this into a banded-priority queue; for S1.3.1 we just
+        yield in insertion order of `self._cache`.
         """
         for plan in self._cache.values():
-            for bindings, premises in match.run(plan, self.kb):
+            for bindings, premises, guards in match.run_guarded(plan, self.kb):
                 key = (
                     plan.rule_name,
                     plan.activator_args,
@@ -124,28 +127,60 @@ class Engine:
                 )
                 if key in self._fired:
                     continue
-                yield plan, bindings, premises
+                yield plan, bindings, premises, guards
 
     def step(self) -> Firing | None:
         """Run one firing — the first match found across all plans.
 
         Returns the :class:`Firing` record, or None when no plan
-        produces a new (unfired) match. The full saturation loop
-        with banded priorities lives in S1.3.3.
+        produces a new (unfired) match.
+
+        S1.21.8 — two-phase, like the :class:`~ein.inference.saturator.Saturator`
+        it predates. Purely positive matches fire first; a NAF-guarded one is
+        considered only once no positive match remains, i.e. against a KB at
+        **positive quiescence** — the world the guard is supposed to be asked
+        about. Without the split this loop would evaluate `(absent …)` against
+        a half-built KB, which is exactly the placement the stage removes.
         """
-        for plan, bindings, premises in self._iter_pending():
-            firing = fire(plan, bindings, premises, self.kb)
-            if firing is None:
+        for plan, bindings, premises, guards in self._iter_pending():
+            if guards:
                 continue
-            # Mark this binding fired so step() makes progress.
-            key = (
-                plan.rule_name,
-                plan.activator_args,
-                frozenset((k, _hashable(v)) for k, v in bindings.items()),
+            firing = self._fire_match(plan, bindings, premises)
+            if firing is not None:
+                return firing
+        # Positive quiescence — now the boundary may speak.
+        world = World(self.kb)
+        for plan, bindings, premises, guards in self._iter_pending():
+            if not guards or not world.admits(guards, bindings):
+                continue
+            firing = self._fire_match(
+                plan, bindings, premises,
+                world.negative_premises(guards, bindings),
             )
-            self._fired.add(key)
-            return firing
+            if firing is not None:
+                return firing
         return None
+
+    def _fire_match(
+        self,
+        plan: JoinPlan,
+        bindings: dict[str, Any],
+        premises: tuple[Fact, ...],
+        absent_premises: tuple = (),
+    ) -> Firing | None:
+        firing = fire(
+            plan, bindings, premises, self.kb,
+            absent_premises=absent_premises,
+        )
+        if firing is None:
+            return None
+        # Mark this binding fired so step() makes progress.
+        self._fired.add((
+            plan.rule_name,
+            plan.activator_args,
+            frozenset((k, _hashable(v)) for k, v in bindings.items()),
+        ))
+        return firing
 
     def saturate(self, max_steps: int = 10_000) -> Iterator[Firing]:
         """Run firings until no plan produces a new match.

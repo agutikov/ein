@@ -99,7 +99,7 @@ Declared once in [`inference/primitives.py`](../../../../ein.py/src/ein/inferenc
 | `false` | 0+ | direct ⊥ — `(false)` asserts the firing rule reached a contradiction (args empty by convention) | contradiction detector |
 | `and` | 2+ | conjunction; flattened into sibling premises of one plan | compiler (`compile.py`) |
 | `or` | 2+ | disjunction; a **top-level** `(or …)` in a `:match` is lowered to one rule per disjunct at load time | loader (`kb.from_ir._match_disjuncts`) |
-| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query* decided at fire time, never a stored atom; normative semantics in [`absent_semantics.md`](../../inference/absent_semantics.md) | compiler + matcher |
+| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query*, never a stored atom; lifted out of the match plan at compile time and decided once at the closure/world boundary, against the positive fixpoint (S1.21.8); normative semantics in [`absent_semantics.md`](../../inference/absent_semantics.md) | compiler (`split_naf`) + boundary (`world.py`) |
 
 ## Computed predicates
 
@@ -132,9 +132,10 @@ puzzle may even redefine them. A puzzle that wants them imports them
 
 Both expand to nested `absent`s, so their meaning is inherited from the
 [`absent` semantics](../../inference/absent_semantics.md): the ∀ arises
-as ¬∃¬ over the fire-time world, and a nested absent is the one guard
-shape that can flip false→true during saturation (handled by the
-saturator's full-match on watched relations, §C5 there).
+as ¬∃¬ over the world at the closure boundary, and a nested absent is
+the one guard shape that can flip false→true during saturation — so its
+candidate stays parked and is re-judged at every later quiescence
+(S1.21.8; the saturator's absent-flip full-match, §C5 there, is retired).
 
 ## Hypothesis / query control
 

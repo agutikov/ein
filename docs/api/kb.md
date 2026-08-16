@@ -153,6 +153,7 @@ The per-derivation origin record (`from ein.kb import Provenance`):
 | `source` | for `source`-kind: the sentence id (`"(3)"`) or `None`. |
 | `rule` | for `rule`-kind: the firing rule's name. |
 | `premises_raw` | tuple of `(relation_name, args)` fact-ids the rule consumed. |
+| `absent_premises` | for `rule`-kind: the `(absent …)` queries that had to **fail** for the firing to be admitted — one `(relation, args)` pattern each, with `None` where the query ranged free. `()` for a firing with no NAF guard. |
 | `bindings` | the `var → name` binding used by the firing. |
 | `branch` | for `hypothesis`/`rejected`-kind: the branch id. |
 
@@ -171,6 +172,20 @@ synthetic engine writeback whose contract is that provenance walks ground
 out on it. Recording is gated by
 `SolverConfig.record_alternative_justifications` (default `True` — see
 [`inference.md`](inference.md)).
+
+**Negative premises (S1.21.8).** `premises_raw` says what a firing
+*consumed*; `absent_premises` says what had to be *missing*. A rule whose
+`:match` carries an `(absent …)` guard is admitted at the closure/world
+boundary — the guard is evaluated there against the positive fixpoint the
+closure quiesced to — and the queries it had to pass are recorded here, so a
+derivation's full dependence (positive ∪ negative) is finally representable.
+**Recorded, but not yet interpreted:** nothing reads the field —
+`derivation_dag`, `unsat_core`,
+[`smallest_contradiction_frontier`](inference.md) and the trace's "using"
+line are all positive-premise-only. It makes negative dependence *visible*,
+which is the precondition for honouring it; it does not by itself change what
+any explanation says. What the queries mean:
+[`docs/kernel/inference/absent_semantics.md`](../kernel/inference/absent_semantics.md).
 
 ### `DerivationDAG`
 

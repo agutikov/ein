@@ -71,7 +71,7 @@ P3.4.
 Added 2026-08-16 by P1.21 R6
 ([`r6_seam.md`](../m1_core_graph_reasoning/p1.21_review_response/reports/r6_seam.md);
 edge-by-edge table in its §3). The M1 target seam
-([`docs/kernel/architecture.md` §closure/worlds seam](../../docs/kernel/architecture.md#the-closureworlds-seam-target-architecture))
+([`docs/kernel/architecture.md` §closure/worlds seam](../../docs/kernel/architecture.md#the-closureworlds-seam))
 gives each side an SMT counterpart; three sub-questions to settle:
 
 - **NAF boundary → Clark completion.** SMT has no NAF: `(absent P)`

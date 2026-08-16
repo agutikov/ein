@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from ein.inference import match
 from ein.inference.compile import AbsentGuard, compile_rule
+from ein.inference.world import World
 from ein.ir import parse
 from ein.kb.store import KnowledgeBase
 
@@ -23,17 +24,33 @@ def _kb(text: str) -> KnowledgeBase:
     return KnowledgeBase.from_ir(parse(_SUGAR + text))
 
 
-def _run(kb: KnowledgeBase, rule_name: str) -> list:
-    """Return the (bindings, premises) list for a rule's compiled plan."""
+def _plan(kb: KnowledgeBase, rule_name: str):
     rule = kb.rules[rule_name]
     # Empty-param rules use a single None activator; param rules read
     # from kb._facts_by_relation[rule_name].
-    if not rule.params:
-        activator = None
-    else:
-        activator = kb._facts_by_relation[rule_name][0]
-    plan = compile_rule(rule, activator)
-    return list(match.run(plan, kb))
+    activator = (
+        None if not rule.params
+        else kb._facts_by_relation[rule_name][0]
+    )
+    return compile_rule(rule, activator)
+
+
+def _run(kb: KnowledgeBase, rule_name: str) -> list:
+    """The (bindings, premises) list for a rule's plan, guards applied.
+
+    S1.21.8 — `match.run` executes the **closure** plan, which is purely
+    positive: a `forall` is an `(absent …)` and so lives in `plan.naf_guards`,
+    evaluated on the closure/world boundary. This mirrors what the saturator
+    does at quiescence, so these tests still read as "what does this rule
+    match?" while going through the real boundary.
+    """
+    plan = _plan(kb, rule_name)
+    world = World(kb)
+    return [
+        (bindings, premises)
+        for bindings, premises, guards in match.run_guarded(plan, kb)
+        if world.admits(guards, bindings)
+    ]
 
 
 def test_forall_desugars_to_nested_absent_guards():
@@ -50,16 +67,23 @@ def test_forall_desugars_to_nested_absent_guards():
       :why "u")
     (relation player T T) (relation beats T T)
     """)
-    rule = kb.rules["undefeated"]
-    plan = compile_rule(rule, None)
-    # Find the outer AbsentGuard (the forall's outermost).
-    outer = next(s for s in plan.steps if isinstance(s, AbsentGuard))
+    plan = compile_rule(kb.rules["undefeated"], None)
+    # S1.21.8 — the outer AbsentGuard is no longer in `steps` (the closure
+    # plan is purely positive); it is lifted to `naf_guards`, where the
+    # boundary evaluates it.
+    assert not any(isinstance(s, AbsentGuard) for s in plan.steps)
+    (guards,) = plan.naf_guards
+    (outer,) = guards
     # Inside its sub_steps there must be ANOTHER AbsentGuard
-    # (the inner `(absent B)`).
+    # (the inner `(absent B)`) — a nested absent is part of the negative
+    # query, not of the closure, so it is NOT lifted.
     assert any(isinstance(s, AbsentGuard) for s in outer.sub_steps), (
         "forall must compile to (absent (and G (absent B))) — "
         "the inner absent is missing"
     )
+    # The guard sees `?p` (bound by the preceding `(player ?p)` premise) and
+    # nothing that came after it — that scope is what makes lifting safe.
+    assert outer.scope == frozenset({"p"})
 
 
 def test_forall_all_pass_fires():

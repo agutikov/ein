@@ -71,6 +71,25 @@ class Provenance:
     rule: str | None = None
     premises_raw: tuple[FactId, ...] = ()
     bindings: tuple[tuple[str, str], ...] = ()
+    # rule-kind, S1.21.8 — NEGATIVE premises: the `(absent …)` queries that
+    # had to fail on the closure/world boundary for this firing to be
+    # admitted. Each entry is a `(relation, args)` pattern with `None` where
+    # the query ranged free (`ein.inference.world.NafRef`).
+    #
+    # This is the missing half of `Deps(Y)`, the union of `PositiveDeps(Y)`
+    # and `NegativeDeps(Y)` (REVIEW_M1-01 §2). Without it a firing's
+    # dependence on an *absence* is invisible to every provenance walk — C2 of
+    # `docs/kernel/inference/absent_semantics.md`, and the root cause behind
+    # both the retired `unconditional_facts` extraction (a fact resting on an
+    # absence is not unconditionally true) and the NAF-unsoundness of
+    # deletion-based core minimisation (dropping a fact can flip an absence
+    # and fabricate a contradiction the full KB never had, C3).
+    #
+    # Recording it does NOT by itself make those revisitable: it makes the
+    # dependence *visible*, which is the precondition. A walk that wants to
+    # honour it must decide what a negative premise means for its own
+    # question — see the frontier discussion in `absent_semantics.md`.
+    absent_premises: tuple[tuple[str, tuple[object, ...]], ...] = ()
     # hypothesis-kind
     branch: int | None = None
     # IR location — excluded from compare/hash (metadata).
@@ -89,10 +108,12 @@ class Provenance:
         premises_raw: tuple[FactId, ...] = (),
         bindings: tuple[tuple[str, str], ...] = (),
         loc: Loc | None = None,
+        absent_premises: tuple[tuple[str, tuple[object, ...]], ...] = (),
     ) -> Provenance:
         return cls(
             kind="rule", rule=rule,
             premises_raw=premises_raw, bindings=bindings, loc=loc,
+            absent_premises=absent_premises,
         )
 
     @classmethod

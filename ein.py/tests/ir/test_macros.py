@@ -125,7 +125,9 @@ def test_macro_expands_in_rule_match():
     (relation player T T) (relation beats T T)
     """)
     plan = compile_rule(kb.rules["undefeated"], None)
-    outer = next(s for s in plan.steps if isinstance(s, AbsentGuard))
+    # S1.21.8 — guards are lifted out of the closure plan into
+    # `naf_guards`; a nested absent inside a guard stays nested.
+    ((outer,),) = plan.naf_guards
     assert any(isinstance(s, AbsentGuard) for s in outer.sub_steps)
 
 

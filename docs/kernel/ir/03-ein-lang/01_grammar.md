@@ -269,7 +269,7 @@ NAF / quantifier-style premises:
 | premise            | semantics                                           | added in    |
 |--------------------|-----------------------------------------------------|-------------|
 | `(not P)`          | matches a STORED `(not P)` fact in the KB           | S1.5.8c.1   |
-| `(absent P)`       | negation-as-failure — fires iff no fact matches P   | S1.5.8c.1   |
+| `(absent P)`       | negation-as-failure — holds iff no fact matches P in the world at the closure boundary (see below) | S1.5.8c.1   |
 | `(open P)`         | `std.macro` macro for `(and (absent P) (absent (not P)))` — the third-state match: P is neither asserted nor negated | S1.5.8c.3b |
 | `(forall ?b (G) (B))` | `std.macro` macro for `(absent (and G (absent B)))` — for every binding of `?b` satisfying guard G, body B must hold | S1.5.8c.3a |
 
@@ -282,22 +282,74 @@ load-time `(macro …)` expansions in terms of `absent` (the
 [`std.macro`](../../../../ein.py/src/ein/stdlib/macro.ein) module since
 S1.5.9 — import them; see
 [`06_reserved_names.md` §macro sugar](06_reserved_names.md#pattern-macro-sugar-forall--open--not-reserved));
-the matcher itself sees only `absent` + nested patterns.
+the compiler itself sees only `absent` + nested patterns, and lifts
+each *top-level* one out of the match plan (below).
 
-#### NAF evaluation timing
+#### NAF evaluation timing — the closure/world boundary
 
-`(absent P)` is a **query over the current fork-local world,
-decided at fire time** — evaluated at every match, decisively
-re-checked when the firing commits (`match.absents_still_pass`,
-S1.5a.1), and never revisited afterwards. The normative definition —
-worlds, evaluation points E1–E3, the corollaries the engine relies
-on, and what is explicitly *not* provided (stratification, stable
-models, retraction) — is
+`(absent P)` is a **query over the current fork-local world, answered
+at a positive fixpoint** (S1.21.8). The compiler *lifts* every
+top-level `(absent …)` out of the rule's match plan
+([`compile.split_naf`](../../../../ein.py/src/ein/inference/compile.py)),
+so what the matcher runs is purely positive and a match whose disjunct
+carries guards is **parked** instead of fired. When the positive
+closure quiesces, the saturator builds a
+[`World`](../../../../ein.py/src/ein/inference/world.py) over that
+fixpoint and asks the guards there — once, decisively — admitting the
+firing iff every one passes. That is the *only* evaluation point: the
+old fire-time re-check (`match.absents_still_pass`, S1.5a.1) is
+**deleted, not bypassed**, because exactly one candidate is admitted
+per boundary round into an empty queue, so it fires against precisely
+the world its guard was judged in.
+
+For a rule author, three consequences:
+
+- **`(absent P)` asks "is `P` missing from the finished positive
+  derivation?", not "has `P` not been derived *yet*?"** A rule that
+  used to fire because its watched fact simply had not been produced
+  yet no longer does.
+- **`:priority` no longer decides what is derivable.** On a stratified
+  rule set the result is priority-independent; priority still orders
+  firings (hence the trace), but the priority-band discipline zebra2
+  needed for soundness — every producer of a watched relation at a
+  strictly lower number than every watcher — is now **advisory**.
+- **Non-stratified rule sets are still answered by operational order.**
+  `p ← absent q` together with `q ← absent p` has two models; the
+  engine picks one (by boundary-admission order) and does not report
+  that the other exists. `(config :warn-derived-naf true)` warns on the
+  shape that can cause it — NAF over a *rule-derived* relation — and a
+  static stratification check remains future work.
+
+A **nested** `(absent …)` — what `forall` desugars to,
+`(absent (and G (absent B)))` — is not lifted separately: the whole
+double negation is one query, evaluated as a unit against that same
+world.
+
+The normative definition — worlds, the single evaluation point E1, the
+corollaries the engine relies on, and what is explicitly *not*
+provided (stratification, stable models, retraction) — is
 [`inference/absent_semantics.md`](../../inference/absent_semantics.md);
-the operational narrative is the
-[inference README §NAF](../../inference/README.md#naf-semantics--fire-time-re-evaluation-s15a1).
-(An earlier revision of this section described enqueue-time-only
-evaluation — that limitation was fixed by S1.5a.1.)
+the operational narrative is in the
+[inference README](../../inference/README.md).
+
+#### Premise order around a guard
+
+Lifting a guard to the boundary is **not** reordering it. Where an
+`(absent …)` sits among the positive premises still decides *what it
+asks* — a rule of the language, unchanged by S1.21.8:
+
+| written                        | asks                                                              |
+|--------------------------------|-------------------------------------------------------------------|
+| `(and (absent (P ?x)) (Q ?x))` | is there **no `P` at all**? — `?x` is still free where the guard stands |
+| `(and (Q ?x) (absent (P ?x)))` | is there **no `P` for this `?x`**? — `?x` was bound by the preceding `(Q ?x)` |
+
+The compiler records the variables bound by the premises that
+*preceded* each guard
+([`NafGuard.scope`](../../../../ein.py/src/ein/inference/compile.py)),
+and the boundary projects the completed bindings back down to that set
+— so a lifted guard is exactly as strong as it was in place, no more
+and no less. Write the binding premise **before** the guard when you
+mean "for this `?x`".
 
 ### Query
 

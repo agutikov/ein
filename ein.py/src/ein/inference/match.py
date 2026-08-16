@@ -32,6 +32,7 @@ from .compile import (
     Guard,
     Join,
     JoinPlan,
+    NafGuard,
     NestedPattern,
     Scan,
 )
@@ -163,6 +164,14 @@ def _run_steps(
 
     if isinstance(step, AbsentGuard):
         # Negation-as-failure: parent continues iff sub-plan yields zero.
+        #
+        # S1.21.8 — this arm no longer fires for a *closure* plan. Top-level
+        # guards are lifted out at compile time (`compile.split_naf`) and
+        # evaluated on the boundary (`world.World.absent`), so `plan.steps`
+        # is purely positive. What still reaches here is a guard **nested
+        # inside another guard's sub-plan** — what a `forall` desugars to,
+        # `(absent (and G (absent B)))` — which is part of the negative query,
+        # not of the closure, and is evaluated as one unit against one world.
         any_match = False
         for _ in _run_steps(step.sub_steps, bindings, premises, kb):
             any_match = True
@@ -193,6 +202,37 @@ def run(
     yield from _run_steps(plan.steps, dict(plan.bindings_seed), (), kb)
     for extra_steps in plan.extra_match_plans:
         yield from _run_steps(extra_steps, dict(plan.bindings_seed), (), kb)
+
+
+def run_guarded(
+    plan: JoinPlan,
+    kb: KnowledgeBase,
+) -> Iterator[tuple[dict[str, Any], tuple[Fact, ...], tuple[NafGuard, ...]]]:
+    """Like :func:`run`, but tags each match with **its disjunct's** guards.
+
+    S1.21.8. `run` flattens every disjunct into one stream, which is fine
+    while the guards live inside the steps — and wrong once they are lifted
+    out, because the caller then has no way to tell which disjunct produced a
+    match and therefore which guards must hold for it. Pairing them here is
+    what closes D5 structurally rather than by remembering to walk one more
+    tuple.
+    """
+    for steps, guards in plan.disjuncts():
+        for bindings, premises in _run_steps(
+                steps, dict(plan.bindings_seed), (), kb):
+            yield bindings, premises, guards
+
+
+def run_seeded_guarded(
+    plan: JoinPlan,
+    fact: Fact,
+    kb: KnowledgeBase,
+) -> Iterator[tuple[dict[str, Any], tuple[Fact, ...], tuple[NafGuard, ...]]]:
+    """:func:`run_seeded`'s guard-tagging twin — see :func:`run_guarded`."""
+    for steps, guards in plan.disjuncts():
+        for bindings, premises in _seed_steps(
+                steps, plan.bindings_seed, fact, kb):
+            yield bindings, premises, guards
 
 
 def _seed_steps(
@@ -245,50 +285,37 @@ def run_seeded(
         yield from _seed_steps(extra_steps, plan.bindings_seed, fact, kb)
 
 
-def absents_still_pass(
-    plan: JoinPlan,
+# S1.21.8 — `absents_still_pass` is **gone**, not bypassed.
+#
+# It was evaluation point E2, the fire-time re-check that closed the
+# enqueue/fire NAF race for a queued executor (S1.5a.1, corollary C4). The
+# race no longer exists: `(absent …)` premises are lifted out of the closure
+# plan at compile time and evaluated on the boundary at positive quiescence
+# (`world.World.absent`), so a guard is judged once, against a fixpoint, at
+# the moment the firing is admitted — there is no window between the verdict
+# and the firing for it to go stale, and `Saturator.naf_dropped` is
+# structurally 0.
+#
+# Deleting it also retires its known gap (D5, P1.21 R4): it walked
+# `plan.steps` only, so guards inside S1.8.A13 or-disjuncts got no fire-time
+# protection at all. The boundary iterates `plan.disjuncts()`, which pairs
+# every disjunct with its own guards.
+
+
+def run_steps(
+    steps: tuple[object, ...],
     bindings: dict[str, Any],
+    premises: tuple[Fact, ...],
     kb: KnowledgeBase,
-) -> bool:
-    """Re-evaluate every top-level ``AbsentGuard`` against current KB.
+) -> Iterator[tuple[dict[str, Any], tuple[Fact, ...]]]:
+    """Public entry to the step driver — the boundary's ``holds`` query.
 
-    The saturator calls this at fire time to close the enqueue-time
-    NAF race (S1.5a.1 T1.5a.1.1): an ``(absent P)`` premise whose
-    sub-plan saw zero matches at first-enqueue may now see matches
-    because another rule has derived a fact satisfying P in the
-    meantime. Without the re-check, the saturator commits the firing
-    on a stale verdict. This is evaluation point E2 — the *decisive*
-    one — of the normative NAF semantics
-    (``docs/kernel/inference/absent_semantics.md``, corollary C4:
-    fire-time re-eval is required for any queued executor).
-
-    **Known gap (D5, P1.21 R4).** Only ``plan.steps`` is walked; the
-    S1.8.A13 ``extra_match_plans`` or-disjuncts are NOT — a firing
-    matched via an or-disjunct gets no fire-time protection for that
-    disjunct's guards (unsound; pinned ``xfail(strict=True)`` in
-    ``tests/inference/test_absent_semantics.py``; candidate fix: walk
-    ``plan.extra_match_plans`` too).
-
-    Walks ``plan.steps`` once; for each :class:`AbsentGuard`, runs its
-    ``sub_steps`` under the given ``bindings`` against ``kb``. Returns
-    ``False`` as soon as any sub-plan yields a match (the AbsentGuard
-    would now fail); ``True`` if all AbsentGuards still pass.
-
-    Nested AbsentGuards (e.g. from a ``forall`` desugar to
-    ``(absent (and G (absent B)))``) are handled transparently: the
-    outer's ``sub_steps`` run through :func:`_run_steps`, which
-    recurses on the inner AbsentGuard against the same current KB.
-
-    Scan/Join/Guard steps are not re-checked. Saturation grows the KB
-    monotonically within a single ``saturate()`` run, so any Scan/Join
-    that succeeded at enqueue still has its premise facts present at
-    dequeue; Guard predicates (``neq``, …) are stateless over the KB.
+    :mod:`ein.inference.world` runs guard sub-plans through this rather than
+    reaching for the private ``_run_steps``.
     """
-    for step in plan.steps:
-        if isinstance(step, AbsentGuard):
-            for _ in _run_steps(step.sub_steps, bindings, (), kb):
-                return False
-    return True
+    return _run_steps(steps, bindings, premises, kb)
 
 
-__all__ = ["absents_still_pass", "run", "run_seeded"]
+__all__ = [
+    "run", "run_guarded", "run_seeded", "run_seeded_guarded", "run_steps",
+]

@@ -43,7 +43,9 @@ def test_import_symbols_is_flat():
     """)
     assert set(kb.macros) == {"forall", "open"}
     plan = compile_rule(kb.rules["undefeated"], None)
-    outer = next(s for s in plan.steps if isinstance(s, AbsentGuard))
+    # S1.21.8 — guards are lifted out of the closure plan into
+    # `naf_guards`; a nested absent inside a guard stays nested.
+    ((outer,),) = plan.naf_guards
     assert any(isinstance(s, AbsentGuard) for s in outer.sub_steps)
 
 
@@ -68,7 +70,9 @@ def test_qualified_macro_is_invokable():
     (relation player T T) (relation beats T T)
     """)
     plan = compile_rule(kb.rules["r"], None)
-    outer = next(s for s in plan.steps if isinstance(s, AbsentGuard))
+    # S1.21.8 — guards are lifted out of the closure plan into
+    # `naf_guards`; a nested absent inside a guard stays nested.
+    ((outer,),) = plan.naf_guards
     assert any(isinstance(s, AbsentGuard) for s in outer.sub_steps)
 
 
@@ -137,7 +141,9 @@ def test_transitive_reexport_requalified(tmp_path):
     kb = KnowledgeBase.from_file(main)
     assert {"mid.forall", "mid.wrap"} <= set(kb.macros)
     plan = compile_rule(kb.rules["r"], None)
-    assert any(isinstance(s, AbsentGuard) for s in plan.steps)
+    assert not any(isinstance(s, AbsentGuard) for s in plan.steps)
+    ((outer,),) = plan.naf_guards          # lifted, S1.21.8
+    assert isinstance(outer.guard, AbsentGuard)
 
 
 def test_import_cycle_rejected(tmp_path):

@@ -89,7 +89,11 @@ A record of *where a fact came from*. Four kinds: `source` (from IR),
 `Fact.provenance` is the primary justification and
 `kb.justifications(fact)` returns every recorded one, so a fact is an
 OR-node over AND-nodes — the proof structure is an AND/OR graph.
-Frontier terminals take no alternatives: a given stays given. See
+Frontier terminals take no alternatives: a given stays given. A
+`rule`-kind record additionally carries `absent_premises` (S1.21.8) —
+the `(absent …)` queries that had to *fail* at the boundary for the
+firing to be admitted; recorded to make negative dependence visible,
+not yet interpreted by any walk. See
 [`ir/02-data-model/01_entities.md` §3](ir/02-data-model/01_entities.md).
 
 ### Derivation DAG
@@ -144,7 +148,15 @@ One `KnowledgeBase` instance under saturation: the root, or a fork
 carrying a commitment set (`KB_C = fork(root) ∪ C`). Append-only
 within a `saturate()` run; related to other worlds only by fork —
 an `absent` query answered in one world is meaningless in every
-other. The unit of evaluation for NAF and the search layer. See
+other. The unit of evaluation for NAF and the search layer.
+Reified in S1.21.8 as
+[`World(kb, commitment)`](../../ein.py/src/ein/inference/world.py):
+every `(absent …)` query goes through it (`holds` / `absent` /
+`admits` / `first_failing` / `negative_premises`) and nothing else
+does. It is a **read-only view taken at a positive quiescence**, not
+a snapshot and not an owner of the KB — saturating past that point
+invalidates it, so the saturator builds a fresh one per boundary
+round. See
 [`inference/absent_semantics.md` §Worlds](inference/absent_semantics.md#worlds).
 
 ### Equality class
@@ -187,19 +199,50 @@ validator error. See
 
 ### Saturation
 The fixed-point of rule firing — applying every rule until no new
-fact is produced. The default M1 strategy is lazy: saturate before
-branching. See [`inference/`](inference/) (P1.3 stub).
+fact is produced. **Two-phase** since S1.21.8: a *closure* phase in
+which purely positive plans fire to quiescence consulting no
+negation, then a *boundary* phase in which the NAF-guarded candidates
+parked during the closure are judged against that fixpoint and at
+most one is admitted, re-entering the closure; the loop ends when a
+quiescence admits nothing. The default M1 strategy is still lazy:
+saturate before branching. See
+[`inference/README.md`](inference/README.md) and
+[`inference/absent_semantics.md` §Evaluation points](inference/absent_semantics.md#evaluation-points).
 
 ### Absent / negation-as-failure (NAF)
-`(absent P)` in a `:match` — a **query** "the current world, at this
-firing's fire time, holds no fact matching P" (¬∃ over P's unbound
-vars; membership, not derivability). Never a ground atom: world-
-relative, decided when the firing commits, never revisited after.
-Not closed-world, not stratified NAF — on non-stratified rulesets
-the result is defined by priority + FIFO order. Normative page:
+`(absent P)` in a `:match` — a **query** "this world holds no fact
+matching P" (¬∃ over P's unbound vars; membership, not derivability),
+**evaluated at the closure/world boundary against a positive
+fixpoint**: the guard is lifted out of the plan at compile time
+([`compile.split_naf`](../../ein.py/src/ein/inference/compile.py)),
+its candidate is parked while the closure runs, and it is asked once
+— at quiescence, of a [World](#world) — under the bindings projected
+to the variables its preceding positive premises bound
+(`NafGuard.scope`). Never a ground atom: world-relative, never
+revisited after the firing commits. There is no fire-time re-check
+(deleted, not bypassed). Not closed-world, not stratified NAF — but
+on **stratified** rule sets the result no longer depends on priority
+or firing order; on non-stratified ones it is fixed by
+boundary-admission order (see [Stratification](#stratification)).
+Normative page:
 [`inference/absent_semantics.md`](inference/absent_semantics.md);
 operational how:
-[`inference/README.md` §NAF](inference/README.md#naf-semantics--fire-time-re-evaluation-s15a1).
+[`inference/README.md` §NAF](inference/README.md#naf-semantics--the-closureworld-boundary-s1218).
+
+### Stratification
+The property of a rule set that no `(absent …)` guard watches a
+relation which (transitively) depends on the guarded rule's own
+conclusion — no recursion through negation. Ein does **not** check
+it: [`naf_deps`](../../ein.py/src/ein/inference/naf_deps.py) is the
+cheap static proxy (which guards watch a *rule-derived* relation
+rather than a declared-only one), behind the advisory
+`DerivedNafWarning` / `SolverConfig.warn_derived_naf` (default off).
+On stratified inputs the boundary makes the answer independent of
+rule priority and firing order; on unstratified ones
+(`p ← absent q; q ← absent p`) the engine still reports **one** model,
+picked by boundary-admission order, and does not say another exists.
+A real stratification checker is future work. See
+[`inference/absent_semantics.md` §Explicitly not provided](inference/absent_semantics.md#explicitly-not-provided).
 
 ---
 

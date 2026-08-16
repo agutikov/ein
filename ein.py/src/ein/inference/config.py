@@ -71,7 +71,10 @@ class SolverConfig:
       :func:`ein.inference.monotonic.solver._phase1_root` emits a
       :class:`ein.inference.naf_deps.DerivedNafWarning` for every
       rule whose ``(absent …)`` guard watches a rule-derived relation
-      (so its soundness leans on the S1.5a.1 fire-time re-eval).
+      — since S1.21.8 a **stratification** signal, not a soundness one
+      (the guard is evaluated on the closure/world boundary, so it is
+      sound either way; what a derived NAF risks is a rule set with
+      more than one model, of which the engine reports one).
       Default **off**, not on as the stage doc first proposed: the
       suite runs under ``filterwarnings=["error"]``, and while
       ``closed`` stays hardcoded the NAF is sound regardless so the

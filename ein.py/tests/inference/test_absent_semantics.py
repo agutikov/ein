@@ -2,21 +2,31 @@
 
 Each test pins one edge of the semantics stated in
 ``docs/kernel/inference/absent_semantics.md`` (the section it pins is
-named in its docstring). Seven tests assert *current* behaviour — they
-are executable law for the doc, not aspirations. The eighth
-(``test_or_disjunct_absent_not_reevaluated_at_fire_time``) pins the
-**D5 divergence** as ``xfail(strict=True)``: it asserts the *sound*
-behaviour, currently fails (the engine's ``absents_still_pass`` walks
-``plan.steps`` only, skipping ``extra_match_plans`` guards), and will
-flip loudly when the engine fix lands — at which point the doc's D5
-paragraph must be retired together with the marker.
+named in its docstring). Every test asserts *current* behaviour — they are
+executable law for the doc, not aspirations.
+
+**S1.21.8 rewrote four of them.** The closure/worlds split moved `(absent …)`
+off the closure and onto the boundary, so:
+
+- P1 (``test_guard_is_judged_against_the_positive_fixpoint``) and P2
+  (``test_priority_swap_does_not_change_outcome``) now agree with each other:
+  a guard is judged against the positive fixpoint, so rule priority no longer
+  decides what is derivable. P1's old outcome — ``q`` in the closure while
+  ``(absent (q ?x))`` had licensed ``p`` — was the anomaly being removed.
+- P6 (``test_lookahead_naf_world_includes_candidate``) flipped: the D3
+  divergence is fixed, and the lookahead's guard is evaluated in the world
+  that includes the candidate.
+- P8 (``test_or_disjunct_absent_is_evaluated_on_the_boundary``) was a
+  ``xfail(strict=True)`` pinning the D5 soundness gap. It passes now, and
+  the doc's D5 paragraph retires with it.
+
+P4 (``test_mutual_naf_picks_queue_order``) deliberately did NOT change — see
+its docstring for why boundary admission is one candidate per round.
 
 Probes P1..P8 are from the investigation report
 ``plans/m1_core_graph_reasoning/p1.21_review_response/reports/r4_absent_semantics.md`` §2.
 """
 from __future__ import annotations
-
-import pytest
 
 from ein.inference.commitment import try_commitment_set
 from ein.inference.lookahead import Lookahead
@@ -37,13 +47,22 @@ def _rels(kb: KnowledgeBase, name: str) -> set[tuple]:
 # ── P1 → §Evaluation points (E3: never after the firing) ───────────
 
 
-def test_fire_then_arrive_keeps_both():
-    """§Evaluation points (E3). A firing whose ``absent`` held at fire
-    time is never revisited: the gate (priority 100) fires before
-    ``derive-q`` (priority 200) populates the watched relation, and the
-    later arrival retracts nothing — the final KB holds BOTH ``p`` and
-    ``q``. This also rules out closed-world-over-the-final-closure:
-    ``q`` is in the closure, yet ``(absent (q ?x))`` licensed ``p``."""
+def test_guard_is_judged_against_the_positive_fixpoint():
+    """§Evaluation points. S1.21.8 — the deliberate flip of
+    ``test_fire_then_arrive_keeps_both``.
+
+    That test pinned the anomaly: the gate (priority 100) popped before
+    ``derive-q`` (priority 200) could populate the watched relation, its
+    ``absent`` held at that moment, and the later arrival retracted nothing —
+    so the final KB held BOTH ``p`` and ``q``, i.e. ``q`` was in the closure
+    while ``(absent (q ?x))`` had licensed ``p``.
+
+    The closure/worlds split removes it. ``derive-q`` is purely positive and
+    runs in the closure; the gate carries a guard and is parked until the
+    closure quiesces. By then ``(q A)`` exists, the guard fails on the
+    boundary, and the gate is never admitted. ``W ⊭ ∃x̄.Pθ`` is now literal:
+    the world the guard is asked about IS the closure.
+    """
     sat = Saturator(_kb("""
     (rule gate ()
       :match (and (seed ?x) (absent (q ?x)))
@@ -61,21 +80,30 @@ def test_fire_then_arrive_keeps_both():
     (t A :source "(2)")
     """))
     list(sat.saturate())
-    assert _rels(sat.kb, "p") == {("A",)}
+    assert _rels(sat.kb, "p") == set()
     assert _rels(sat.kb, "q") == {("A",)}
     assert sat.naf_dropped == 0
+    assert sat.naf_rounds >= 1          # the boundary was consulted
 
 
-# ── P2 → §Explicitly not provided (order-defined result) ───────────
+# ── P2 → §Evaluation points (the result no longer moves with priority) ─
 
 
-def test_priority_swap_changes_outcome():
-    """§Explicitly not provided. The SAME program as P1 with the two
-    priorities swapped yields a different model: ``q`` now arrives
-    before the gate pops, the fire-time re-eval (E2) drops the firing,
-    and ``p`` is never derived. On non-stratified programs the result
-    is defined by priority bands + FIFO order — operational, not
-    model-theoretic."""
+def test_priority_swap_does_not_change_outcome():
+    """§Evaluation points. S1.21.8 — the deliberate flip of
+    ``test_priority_swap_changes_outcome``.
+
+    The SAME program as P1 with the two priorities swapped. It used to yield
+    a *different* model — ``q`` arrived before the gate popped, the fire-time
+    re-eval dropped the firing, and the result was defined by priority bands
+    plus FIFO order rather than by the program.
+
+    Now both orderings agree (``{q}``, no ``p``): the closure is positive and
+    runs to a fixpoint no matter which rule has the lower band, and the guard
+    is judged once against that fixpoint. Priority-band discipline is demoted
+    from load-bearing to advisory — it still decides *firing order*, but no
+    longer decides *what is derivable*.
+    """
     sat = Saturator(_kb("""
     (rule gate ()
       :match (and (seed ?x) (absent (q ?x)))
@@ -95,7 +123,7 @@ def test_priority_swap_changes_outcome():
     list(sat.saturate())
     assert _rels(sat.kb, "p") == set()
     assert _rels(sat.kb, "q") == {("A",)}
-    assert sat.naf_dropped == 1
+    assert sat.naf_dropped == 0
 
 
 # ── P3 → §Explicitly not provided (no stable-model discipline) ─────
@@ -133,8 +161,20 @@ def test_mutual_naf_picks_queue_order():
     """§Explicitly not provided. ``p ← absent q; q ← absent p`` is
     unstratifiable and has TWO stable models ({p} and {q}); the engine
     accepts it and deterministically picks one by FIFO tiebreak at
-    equal priority — the first-declared rule fires, the second is
-    dropped by the fire-time re-eval (E2)."""
+    equal priority — the first-declared rule fires, and the second is
+    never admitted.
+
+    S1.21.8 kept this outcome, and it is the reason boundary admission is
+    **one candidate per round**. Both guards pass against the quiesced world
+    (neither ``p`` nor ``q`` exists yet), so admitting the whole batch would
+    derive BOTH — and ``{p, q}`` is not a model of this program under any
+    reading. Admitting one, then re-quiescing, re-asks ``derive-q``'s guard
+    in a world that now holds ``p``, where it correctly fails.
+
+    Note what did NOT survive: the *mechanism*. The loser is no longer
+    "dropped by a fire-time re-eval" — there is no fire-time re-eval, and
+    ``naf_dropped`` is 0. It is simply never admitted.
+    """
     sat = Saturator(_kb("""
     (rule derive-p ()
       :match (and (seed ?x) (absent (q ?x)))
@@ -152,7 +192,8 @@ def test_mutual_naf_picks_queue_order():
     list(sat.saturate())
     assert _rels(sat.kb, "p") == {("A",)}
     assert _rels(sat.kb, "q") == set()
-    assert sat.naf_dropped == 1
+    assert sat.naf_dropped == 0
+    assert sat.naf_admitted == 1       # one admitted, one never admitted
 
 
 # ── P5 → §Worlds / C6 (absent is world-relative) ───────────────────
@@ -187,16 +228,23 @@ def test_absent_is_branch_relative():
 # ── P6 → §Divergences (D3: lookahead's NAF world excludes h) ───────
 
 
-def test_lookahead_naf_world_excludes_candidate():
-    """§Divergences D3 — pins CURRENT behaviour, not an endorsement.
-    The rule ``false ← (cand ?x) ∧ (absent (cand ?x))`` can never fire
-    in any real match (its premises are jointly unsatisfiable in one
-    world), yet ``dies_immediately`` reports the candidate dead: the
-    probe posits ``h`` into the positive premise while running the
-    ``AbsentGuard`` against the KB *without* ``h`` — the NAF queries a
-    different world than the probe hypothesises. Recorded as open
-    question D3 in the P1.21 phase README; if the lookahead world is
-    ever unified, this assertion flips to ``False``."""
+def test_lookahead_naf_world_includes_candidate():
+    """§Divergences D3 — **fixed** by S1.21.8; this is the flip the old
+    ``test_lookahead_naf_world_excludes_candidate`` predicted.
+
+    The rule ``false ← (cand ?x) ∧ (absent (cand ?x))`` can never fire in any
+    real match — its premises are jointly unsatisfiable in one world — yet
+    ``dies_immediately`` used to report the candidate dead, because the probe
+    posited ``h`` into the positive premise while running the guard against a
+    KB *without* ``h``. The NAF answered about a different world than the
+    probe hypothesised, killing a live hypothesis in violation of the
+    lookahead's own "never reports a live hypothesis as dead" contract.
+
+    The guard is now evaluated in the world ``kb`` with ``h`` added: it must find no
+    match in ``kb`` **and** ``h`` must not create one. Here ``h`` is exactly
+    ``(cand A)``, so it creates one, the guard fails, and the candidate
+    survives.
+    """
     kb = _kb("""
     (rule self-block ()
       :match (and (cand ?x) (absent (cand ?x)))
@@ -206,7 +254,26 @@ def test_lookahead_naf_world_excludes_candidate():
     """)
     list(Saturator(kb).saturate())
     h = Fact("cand", ("A",), layer=Layer.REASONING)
-    assert Lookahead(kb).dies_immediately(kb, h) is True
+    assert Lookahead(kb).dies_immediately(kb, h) is False
+
+
+def test_lookahead_still_kills_on_a_positive_rule():
+    """The D3 fix must not disarm the filter: a purely positive rule that
+    derives ``(false)`` from the candidate still kills it."""
+    kb = _kb("""
+    (rule blow-up ()
+      :match (and (cand ?x) (bad ?x))
+      :assert (false)
+      :why "cand + bad is absurd" :priority 100)
+    (relation cand T)
+    (relation bad T)
+    (bad A :source "(1)")
+    """)
+    list(Saturator(kb).saturate())
+    assert Lookahead(kb).dies_immediately(
+        kb, Fact("cand", ("A",), layer=Layer.REASONING)) is True
+    assert Lookahead(kb).dies_immediately(
+        kb, Fact("cand", ("B",), layer=Layer.REASONING)) is False
 
 
 # ── P7 → §Definition (inner free vars are existential) ─────────────
@@ -239,23 +306,21 @@ def test_absent_nested_and_is_existential():
 # ── P8 → §Divergences (D5: or-disjunct guards skip fire-time) ──────
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="D5 (P1.21 R4): absents_still_pass walks plan.steps only, so "
-    "AbsentGuards inside extra_match_plans or-disjuncts (S1.8.A13) get no "
-    "fire-time re-eval — the firing commits on a stale NAF verdict. "
-    "Candidate fix: also walk plan.extra_match_plans. When the engine fix "
-    "lands this xfail flips (strict) — retire the doc's D5 paragraph with it.",
-)
-def test_or_disjunct_absent_not_reevaluated_at_fire_time():
-    """§Divergences D5 — asserts the SOUND behaviour (currently xfail).
+def test_or_disjunct_absent_is_evaluated_on_the_boundary():
+    """§Divergences D5 — **fixed** by S1.21.8; the strict xfail now passes.
+
     The gate matches via the second ``(or …)`` disjunct
-    ``(and (t2 ?x) (absent (r2 ?x)))``; ``derive-r2`` (priority 100)
-    populates ``r2`` before the gate (priority 200) pops. Sound
-    fire-time semantics (E2) must drop the firing exactly as in P2 —
-    today it fires, because the disjunct's guard lives in
-    ``plan.extra_match_plans`` which ``absents_still_pass`` never
-    walks."""
+    ``(and (t2 ?x) (absent (r2 ?x)))``, and ``derive-r2`` populates ``r2``.
+    The firing must not happen. It used to, because the disjunct's guard
+    lived in ``plan.extra_match_plans`` and the fire-time re-check walked
+    ``plan.steps`` only — a soundness gap that needed *remembering* to walk
+    one more tuple.
+
+    It is closed structurally rather than by remembering: guards are lifted
+    per disjunct into ``plan.naf_guards``, and every match is produced by
+    ``match.run_guarded``, which yields a match together with **its own
+    disjunct's** guards. There is no longer a tuple a caller could forget.
+    """
     sat = Saturator(_kb("""
     (rule gate ()
       :match (or (and (t1 ?x) (absent (r1 ?x)))
@@ -278,7 +343,7 @@ def test_or_disjunct_absent_not_reevaluated_at_fire_time():
     list(sat.saturate())
     assert _rels(sat.kb, "r2") == {("A",)}, "precondition: r2 derived first"
     assert _rels(sat.kb, "gated") == set(), (
-        "gate fired on a stale NAF verdict: (r2 A) was present at fire "
-        "time but the or-disjunct's AbsentGuard was not re-evaluated."
+        "the or-disjunct's AbsentGuard was not evaluated on the boundary: "
+        "(r2 A) is in the quiesced world, so the gate must not be admitted."
     )
-    assert sat.naf_dropped >= 1
+    assert sat.naf_dropped == 0     # never admitted, rather than dropped

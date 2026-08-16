@@ -44,8 +44,9 @@ docs/kernel/inference/
 │                                     operations (O1–O9), their CS analogs
 │                                     (Datalog / RETE / CDCL / ATMS), fast algos
 ├── absent_semantics.md            ← normative `(absent P)` semantics: worlds,
-│                                     fire-time epistemic NAF, corollaries
-│                                     C1–C7, non-guarantees (P1.21 R4)
+│                                     boundary epistemic NAF, corollaries
+│                                     C1–C7, non-guarantees (P1.21 R4,
+│                                     re-grounded by S1.21.8)
 ├── domain_elim_vs_hypothesis.md   ← the domain-elimination vs guess duals
 ├── lattice_dump.md                ← the commitment-lattice dump format
 ├── reserved_engine_strings.md     ← engine-internal reserved atoms
@@ -68,18 +69,19 @@ unless noted):
 
 | concept                         | M1 state                                                         |
 |---------------------------------|------------------------------------------------------------------|
-| Pattern matcher                 | **shipped** — `compile.py` lowers each (rule, activator) to a `JoinPlan`; `match.py` `_run_steps` executes it |
+| Pattern matcher                 | **shipped** — `compile.py` lowers each (rule, activator) to a `JoinPlan` whose steps are **purely positive** (S1.21.8: `split_naf` lifts every `(absent …)` into `plan.naf_guards`); `match.py` `_run_steps` executes it, `run_guarded` tags each match with its own disjunct's guards |
 | Rule registry                   | `Rule` entity in [`02-data-model`](../ir/02-data-model/); puzzle rules authored inline or imported from the [stdlib](../../../ein.py/src/ein/stdlib/) |
 | Property-fact activation        | KB indexes `_rule_apps_by_rule` / `_rule_apps_on_relation` built at load |
-| Saturation loop                 | **shipped** — priority-banded, delta-driven `saturator.py` (P1.3 S1.3.3; semi-naive in P1.8a) |
+| Saturation loop                 | **shipped** — priority-banded, delta-driven `saturator.py` (P1.3 S1.3.3; semi-naive in P1.8a); **two-phase since S1.21.8** — a purely positive closure runs to quiescence, then one boundary round admits at most one parked NAF-guarded candidate and the closure re-runs |
 | Hypothesis branching            | **shipped** — `hypgen.py` enumerates candidates; the commitment-lattice search is `monotonic/solver.py` (P1.5–P1.5b) |
 | Contradiction detection         | **shipped** — `contradiction.py` detects (`(X, ¬X)` pairs + `(false)`); `frontier.py` → `explain.py` explains: smallest contradiction frontier — a minimum-cardinality AND/OR search over every recorded derivation (provenance-based, NAF-safe, budgeted); **not** a subset-minimal MUS |
 | Multi-justification provenance  | **shipped** — provenance is per *derivation*: `Fact.provenance` is the primary justification, `kb.justifications(fact)` returns every recorded one (capped per fact, shortest kept), so a fact is an OR-node over AND-nodes. Gated by `SolverConfig.record_alternative_justifications` (default on) |
 | Verdict                         | **shipped** — one `solve()`; `verdict.py` reports `Solution` / `Ambiguity` / `Contradiction`, read off the model count `k`; the `k = 0` unsat core is that smallest explanation — of the root contradiction directly, or of each dead commitment, unioned across the deads |
 | Trace generation                | **shipped** — `DerivationDAG.to_dot()` + the markdown trace builder under [`trace/`](../../../ein.py/src/ein/trace/) (P1.6) |
 | `(not P)` / `(absent P)` premises | S1.5.8c.1: `(not P)` in `:match` matches a STORED `(not P)` fact (uniform with all other patterns); `(absent P)` is the explicit NAF guard. The old NAF default on `(not P)` was dropped. |
-| `(forall ?b (G) (B))` / `(open P)` | S1.5.8c.3a/b sugars (now in `std.macro`): `forall` ⇒ `(absent (and G (absent B)))`, `open` ⇒ `(and (absent P) (absent (not P)))`. Compile to existing `AbsentGuard` machinery. |
-| `AbsentGuard` re-evaluation at fire time | S1.5a.1: `Saturator._apply` calls `match.absents_still_pass(plan, bindings, kb)` before `fire()`. A firing whose NAF a later derivation invalidated is dropped (`Saturator.naf_dropped`). See § "NAF semantics" below. |
+| `(forall ?b (G) (B))` / `(open P)` | S1.5.8c.3a/b sugars (now in `std.macro`): `forall` ⇒ `(absent (and G (absent B)))`, `open` ⇒ `(and (absent P) (absent (not P)))`. Compile to the `AbsentGuard` machinery; a `forall`'s **nested** absent is not lifted — it stays part of the negative query and the boundary evaluates the whole guard as one unit. |
+| `(absent …)` evaluated at the closure/world boundary | **shipped** S1.21.8 — guards are lifted out of the closure plan and judged against the positive fixpoint by [`world.World`](../../../ein.py/src/ein/inference/world.py), never mid-saturation. The fire-time re-check (`match.absents_still_pass`) and the absent-flip full-match split (`saturator._absent_relations`) are **deleted**, not bypassed; `Saturator.naf_dropped` is structurally 0. See § "NAF semantics" below. |
+| Negative (NAF) provenance       | **shipped** S1.21.8 — [`Provenance.absent_premises`](../../../ein.py/src/ein/kb/provenance.py) records the `(absent …)` queries that had to fail for a firing to be admitted (`World.negative_premises`), one `(relation, args)` pattern each with `None` where the query ranged free. This is the missing half of `Deps(Y)` = `PositiveDeps(Y)` ∪ `NegativeDeps(Y)`; it makes negative dependence **visible**, and nothing interprets it yet — `unsat_core` and the trace's "using" line still read positive premises only. |
 | Hypothesis-branch order is deterministic | content-based sort, not hash-based (`PYTHONHASHSEED` does not reach iteration order); the score key is an M1 stub. See § "Determinism" below. |
 
 The data substrate (KB, entities, layer views, fork, provenance,
@@ -88,8 +90,9 @@ shipped across P1.3–P1.6.
 
 ## Design principles (already locked in M1)
 
-These are inherited from the graph + data-model docs and don't
-change when the engine arrives:
+1–5 are inherited from the graph + data-model docs and don't
+change when the engine arrives; 6 is the one the engine itself
+contributes, locked by S1.21.8:
 
 1. **The graph is canonical, the engine is dynamic.**
    [`feedback_graph_canonical`](../../../README.md). The engine
@@ -115,6 +118,16 @@ change when the engine arrives:
    type/instance entity-view, so the engine treats `(type …)` /
    `(instance …)` / `is-a` uniformly as facts — there is no
    `logical_types` / `logical_instances` bridge to consult.
+6. **Negation sits on the closure/world boundary.** The closure is
+   purely positive and monotone — it consults no negation at all —
+   and `(absent P)` is asked once, of a *saturated* world
+   ([`world.World`](../../../ein.py/src/ein/inference/world.py)),
+   never of a half-built KB (S1.21.8; normative contract:
+   [`absent_semantics.md`](absent_semantics.md), layering:
+   [`architecture.md` §closure/worlds seam](../architecture.md)).
+   The consequence rule authors feel: on a **stratified** rule set
+   the priority bands order the work but no longer decide what is
+   derivable — band discipline is advisory, not load-bearing.
 
 ## M1 invariant — alive-set soundness
 
@@ -161,90 +174,206 @@ Tracked at
 as a long-term design seam; promote to a typed invariant check
 when F5 lands.
 
-## NAF semantics — fire-time re-evaluation (S1.5a.1)
+## NAF semantics — the closure/world boundary (S1.21.8)
 
 > **Normative definition:**
-> [`absent_semantics.md`](absent_semantics.md) (P1.21 R4). `absent(P)`
-> is a **query** — "the current fork-local world, at this firing's fire
-> time, holds no fact matching P" — **never a ground atom** that could be
-> stored, cached, or carried between worlds. That page states the worlds
-> model, the evaluation points (E1 match / E2 fire-time decisive /
-> E3 never-after), the corollaries C1–C7 the engine relies on, and what
-> is explicitly *not* provided (stratification, stable models,
-> retraction) — each pinned by
+> [`absent_semantics.md`](absent_semantics.md) (P1.21 R4, re-grounded by
+> S1.21.8). `absent(P)` is a **query** — "the current fork-local world, at
+> the positive quiescence this firing was admitted at, holds no fact
+> matching P" — **never a ground atom** that could be stored, cached, or
+> carried between worlds. That page states the worlds model, the
+> evaluation points (**one**: E1 at the boundary; E2 fire-time **retired**,
+> E3 never-after unchanged), the corollaries C1–C7 the engine relies on
+> (C2 re-grounded, C4/C5 retired), and what is explicitly *not* provided
+> (stratification, stable models, retraction) — each pinned by
 > [`test_absent_semantics.py`](../../../ein.py/tests/inference/test_absent_semantics.py).
 > This section is the operational how.
 
-*Target architecture (parked, not shipped):* NAF's target position is the **closure/world boundary** — guards judged only against a saturated world — recorded in [`../architecture.md` §closure/worlds seam](../architecture.md#the-closureworlds-seam-target-architecture) (P1.21 R6; engineering track [P1.21 S1.21.8](../../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.8_boundary_naf.md)).
+*Shipped, no longer a target picture:* the **closure/world seam** — a
+purely positive closure with NAF on its boundary — was recorded by P1.21 R6
+in [`../architecture.md` §closure/worlds seam](../architecture.md) and
+implemented on 2026-08-17 by
+[P1.21 S1.21.8](../../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.8_boundary_naf.md).
 
-`(absent P)` in a `:match` clause compiles to an
-[`AbsentGuard`](../../../ein.py/src/ein/inference/compile.py)
-step. The matcher's
-[`_run_steps`](../../../ein.py/src/ein/inference/match.py)
-yields a binding only when the AbsentGuard's `sub_steps` produce
-zero matches against the current KB — classical NAF over the
-saturator's accumulating fact base.
+**The compile split.** `(absent P)` in a `:match` clause still compiles to
+an [`AbsentGuard`](../../../ein.py/src/ein/inference/compile.py) step, but
+[`compile.split_naf`](../../../ein.py/src/ein/inference/compile.py) then
+lifts every *top-level* one out of the plan. What remains in
+`JoinPlan.steps` — and in each S1.8.A13 `extra_match_plans` disjunct — is a
+purely positive Scan/Join/Guard plan, the **closure plan**. The guards
+become `NafGuard`s in `JoinPlan.naf_guards`, one tuple per disjunct, paired
+back up by `JoinPlan.disjuncts()` (`JoinPlan.has_naf` says whether any
+exist at all). Each `NafGuard` carries three things beyond the guard:
 
-**The race.** The saturator's enqueue pass evaluates every plan
-step (including AbsentGuards) when it admits a candidate firing
-to the priority queue. The firing then sits in the heap until its
-priority comes up. Between enqueue and dequeue, other rules may
-have derived new facts — and one of those facts may now satisfy
-an AbsentGuard's sub-plan, retroactively invalidating the NAF
-verdict that admitted the firing. Without a fire-time check the
-saturator commits the firing anyway, producing an *unsound*
-derivation against the closed KB.
+- **`scope`** — the variables bound by the positive premises that
+  *preceded* it. Boundary evaluation projects the completed bindings back
+  down to that set
+  ([`world.project`](../../../ein.py/src/ein/inference/world.py)), which is
+  what makes lifting exactly as strong as evaluating in place:
+  `(and (absent (P ?x)) (Q ?x))` still asks "is there no `P` at all?", and
+  `(and (Q ?x) (absent (P ?x)))` still asks "no `P` for *this* `x`?".
+- **`watched`** — every relation the negative query reads, nested guards
+  included. The boundary's invalidation key (below).
+- **`monotone`** — true iff the query contains no nested absent, hence is
+  anti-monotone in the KB: once it finds a match it finds one forever.
 
-Priority ordering hides the race when every rule that *derives*
-the watched relation runs at a strictly-lower priority than every
-rule that *NAFs* it. zebra2's `(includes right-of next-to)` +
-`(symmetric next-to)` chain runs at priority 100, fully draining
-before priority-200 cross-attr rules with NAFs over `next-to` are
-ever enqueued — so the race is structurally prevented for that
-shape. Bands ≥ 200 that derive facts another band-≥ 200 rule
-NAFs over don't have that protection, and neither does any
-branched saturation that starts with a non-empty queue.
+A **nested** `AbsentGuard` — what `forall` desugars to,
+`(absent (and G (absent B)))` — is *not* lifted: it is part of the negative
+query, and the boundary evaluates the whole guard as one unit. That is why
+`match._run_steps` keeps its `AbsentGuard` arm, now reachable only from
+inside a negative query.
 
-**The fix.**
-[`match.absents_still_pass(plan, bindings, kb)`](../../../ein.py/src/ein/inference/match.py)
-walks the plan's top-level `AbsentGuard` steps and re-runs each
-sub-plan against the *current* KB with the dequeued bindings.
-`Saturator._apply` calls it after the redundant-conclusion check
-and before
-[`fire()`](../../../ein.py/src/ein/inference/firing.py);
-on `False`, the binding is recorded in `engine._fired` (so the
-queue stops churning on it), `Saturator.naf_dropped` is
-incremented, and `_apply` returns `None`. The caller in `step()`
-treats `None` as "skip and pop again."
+**The boundary type.**
+[`world.py`](../../../ein.py/src/ein/inference/world.py) —
+`World(kb, commitment=())` with `holds(steps, bindings)`,
+`absent(guard, bindings)`, `admits(guards, bindings)`,
+`first_failing(guards, bindings)` and `negative_premises(guards, bindings)`
+(plus `project` and `root_world`). It is a **read-only view taken at a
+quiescence point, not a snapshot** — saturating past that point invalidates
+it, so the saturator builds a fresh one per round rather than mutating one.
+Every NAF query in the engine goes through it, and nothing else does.
 
-Nested AbsentGuards (e.g. from a `forall` desugar to
-`(absent (and G (absent B)))`) compose transparently — the outer's
-`sub_steps` flow through `_run_steps`, which recurses on the inner
-AbsentGuard against the same current KB. Only AbsentGuards are
-re-checked: `Scan`/`Join` steps can only narrow under monotonic
-fact growth, and `Guard` predicates are stateless over the KB.
+**Two-phase saturation.**
+[`Saturator.step()`](../../../ein.py/src/ein/inference/saturator.py)
+alternates:
 
-**Termination.** Within a single `saturate()` run the fact base
-grows monotonically (no retractions). Once an AbsentGuard fails
-at fire time, the watched fact it tripped on stays in the KB; the
-binding sits in `_fired` and is not re-enqueued. A dropped firing
-removes itself from the fixpoint candidate set without re-entering
-— termination is preserved.
+1. **Closure** (`_closure_step`) — purely positive plans fire to
+   quiescence, consulting no negation whatsoever. A match whose disjunct
+   carries guards never enters the firing queue: `_enqueue_binding` routes
+   it to `_parked` instead.
+2. **Boundary** (`_admit_from_boundary`) — at quiescence a `World` is built
+   over the stalled KB, the parked candidates are judged against that
+   fixpoint in the engine's own (priority, FIFO) order, and the **first**
+   whose guards all pass is admitted back into phase 1.
 
-The retracting flow that *does* exist (hypothesis branching's
-`kb.fork()`) takes a fresh saturator over the branch KB; the
-branch starts with an empty `_seen`/`_queue` and inherits no
-dropped-firing state from the parent. The branched saturator
-re-evaluates every plan against its own KB and so its
-`naf_dropped` count is independent.
+Repeat until a quiescence admits nothing. **One admission per round is the
+design, not a throttle:** the queue is empty at quiescence, so the admitted
+candidate fires immediately against exactly the world its guard was judged
+against — no window, nothing can go stale. Admitting the whole batch would
+re-create the race this stage removes, one layer up: on
+`p ← absent q; q ← absent p` both guards pass against the world in which
+neither holds, so a batch derives **both**, and `{p, q}` is not a model of
+that program under any reading. On a *stratified* program the two policies
+agree, whatever the rules' priorities.
 
-**Static NAF dependency map (S1.7.4).** The fire-time re-eval makes
-*every* derived-NAF rule sound, but it doesn't tell the author *which*
-of their rules rely on it. [`naf_deps`](../../../ein.py/src/ein/inference/naf_deps.py)
-answers that statically:
+A rejected candidate stays parked — a `forall`'s nested absent flips from
+failing to *passing* as the KB grows — with two economies the naive loop
+cannot do without (without them the same design ran ~80 % slower, at 233 k
+guard queries per solve):
+
+- a candidate whose *failing* guard is anti-monotone (`monotone`) is
+  **retired** outright (`naf_retired`): the KB only grows, so its query
+  keeps matching and it can never pass again — it is dead, not waiting;
+- otherwise the round stores a `_watch_stamp`, the extent sizes of the
+  guard's `watched` relations. An unchanged stamp means no watched relation
+  grew, so the verdict cannot have moved and the query is not re-run
+  (zebra2 root: 460 parked candidates over 40 rounds).
+
+Observables on the saturator: `naf_rounds`, `naf_admitted`, `naf_retired`,
+and `naf_dropped` — kept, and now **structurally 0**. `is_stalled()`
+consults the boundary too: a parked candidate whose guards now pass is an
+available firing, and answering from the positive queue alone would report
+"stalled" one round before a `forall` admits. The queue-less
+[`Engine.step()`](../../../ein.py/src/ein/inference/engine.py) implements
+the same two phases directly — every positive match first, the boundary
+only once none remain.
+
+**The race, retired.** The old design evaluated guards *inside* the
+closure, three times over: at enqueue-time matching, again at fire time to
+close the enqueue/fire race (`match.absents_still_pass` →
+`Saturator.naf_dropped`), and implicitly through the semi-naive enqueue,
+which had to full-match any plan whose delta relation landed inside a guard
+(`saturator._absent_relations` + its `_abs_index`). All three are
+**deleted, not bypassed**. There is no enqueue/fire race left to close,
+because a guard is asked once, of a fixpoint, at the moment its firing is
+admitted; and no delta can force a full re-match, because guards do not
+participate in matching at all. The `forall` false→true flip the
+absent-flip split existed for is caught by re-judging parked candidates at
+the boundary — cheaper *and* strictly more complete, since it also catches
+a flip with no delta in the watched relation.
+
+zebra2's priority discipline (the `(includes right-of next-to)` +
+`(symmetric next-to)` chain at priority 100 draining before the
+priority-200 cross-attr rules that NAF over `next-to`) used to be what
+*structurally* prevented the race for that shape — and bands ≥ 200 NAF-ing
+each other, or a branched saturation starting with a non-empty queue, had
+no such protection. The property is now an **engine** property rather than
+a ruleset one: the closure is complete before any guard is asked, whatever
+the bands say.
+
+**Termination.** Within a single `saturate()` run the fact base still grows
+monotonically (no retractions). A `(plan, bindings)` candidate is
+`_seen`-deduped when it is parked and recorded in `engine._fired` when it
+fires, so it is parked once and admitted at most once; an anti-monotone
+rejection retires it outright. The outer loop stops at the first quiescence
+that admits nothing.
+
+The retracting flow that *does* exist (hypothesis branching's `kb.fork()`)
+takes a fresh saturator over the branch KB, so `_queue`, `_parked`, `_seen`
+and the park stamps all start empty and no boundary verdict crosses a
+world — corollary C6 made structural.
+
+**Negative provenance.** A firing admitted through the boundary records
+what had to *not* hold:
+[`Provenance.absent_premises`](../../../ein.py/src/ein/kb/provenance.py) is
+a tuple of `(relation, args)` patterns — `None` marking a position the
+query left free — built by `World.negative_premises` (nested guards
+contribute their patterns too: the whole query is what had to fail) and
+handed to [`fire()`](../../../ein.py/src/ein/inference/firing.py) as a
+kwarg. This is the missing half of `Deps(Y)` = `PositiveDeps(Y)` ∪
+`NegativeDeps(Y)` (REVIEW_M1-01 §2) — the object whose absence sank the
+`unconditional_facts` extraction (below) and keeps deletion-based core
+minimisation unsound. **It makes negative dependence visible; no walk
+interprets it yet** — `unsat_core`,
+[`frontier.py`](../../../ein.py/src/ein/inference/frontier.py) and the
+trace's "using" line still read positive premises only, so
+[`absent_semantics.md`](absent_semantics.md) C3 stands as written.
+
+**The one guard evaluation outside the saturator.**
+[`Lookahead.dies_immediately`](../../../ein.py/src/ein/inference/lookahead.py)
+judges a rule's guards in the world **with** the probed candidate `h`: the
+guard must find no match in `kb` *and* `h` must not create one (divergence
+D3, fixed with this stage). A guard containing a nested absent is
+non-monotone and cannot be decided that cheaply, so the lookahead **skips
+that disjunct** rather than guessing — which only loses a kill, keeping the
+"never reports a live hypothesis as dead" contract.
+
+**What changed semantically**, all pinned in
+[`test_absent_semantics.py`](../../../ein.py/tests/inference/test_absent_semantics.py):
+a rule that used to fire because its watched fact had not been derived
+*yet* no longer does (the guard is judged against the fixpoint, in which it
+has); the result of a **stratified** program no longer depends on rule
+priority at all, which demotes band discipline from load-bearing to
+advisory; and a **non-stratified** program is still answered by operational
+order — now boundary-admission order rather than priority-then-FIFO — with
+the engine reporting one model where several exist and not saying so. A
+static stratification checker is the proper remedy and remains future work.
+
+**Measured** (S1.21.8): acceptance 17/17 with verdicts unchanged, 1342 unit
+tests, **zero** xfails (D5's `xfail(strict=True)` now passes). Faster, not
+slower — exhaustive `zebra2` solve ~10.4 s → ~8.5 s, acceptance gate 130 s
+→ 91 s: removing the absent-flip full-match split more than pays for the
+boundary evaluations.
+
+**Static NAF dependency map (S1.7.4) — re-grounded, not retired.** The map
+used to answer a *soundness* question: the fire-time re-eval made every
+derived-NAF rule sound, and this told the author which of their rules
+leaned on it (or on a strictly-lower deriving priority). That rationale
+died with the re-check. What the derived-vs-declared split still buys is
+**stratification** — NAF over a derived relation is exactly the shape that
+can make a rule set non-stratified, which is the one thing that can still
+go wrong (the engine then picks one model by boundary-admission order and
+does not report that others exist), while NAF over a declared-only relation
+cannot, its watched extent being fixed by the puzzle. So the map is now the
+cheap static proxy for "could this rule set have more than one answer?" —
+the input a real stratification checker would refine.
+[`naf_deps`](../../../ein.py/src/ein/inference/naf_deps.py) answers it
+statically:
 [`Engine.naf_dependency_map()`](../../../ein.py/src/ein/inference/engine.py)
 walks the compile cache and returns one `NafDep` per `(rule, activator)`
-that carries an `AbsentGuard`, splitting the watched relations into
+that carries a guard — since S1.21.8 via `plan.disjuncts()`, so an
+or-disjunct's guards are visible to it too (they were not before) —
+splitting the watched relations into
 `derived` (some rule positively asserts it — or, for an
 `(absent (not (R …)))` guard, some rule asserts `(not (R …))`) vs
 `declared_only` (extension fixed by enumerated ONTOLOGY-/FACT-layer
@@ -254,23 +383,35 @@ classification reuses [`compile.asserted_relation`](../../../ein.py/src/ein/infe
 and its `negated_relation` dual. Because the activator-bound head var
 (`?S` in `adjacent-via-*`) is baked to a literal relation per activator,
 the split is per-activator: zebra2's `adjacent-via-fwd` is derived-NAF on
-its `next-to` activator but declared-only on `right-of` — mirroring the
-priority-protection note above. **The map is only complete on a
-post-initial-saturation cache** — most NAF-bearing rules (the spatial and
+its `next-to` activator but declared-only on `right-of` — the same
+asymmetry the (now historical) priority-protection note above turned on.
+**The map is only complete on a post-initial-saturation
+cache** — most NAF-bearing rules (the spatial and
 elimination families) are activated by *derived* facts absent at load —
 so the warning is emitted once, after `_phase1_root`'s root saturation,
 gated by `SolverConfig.warn_derived_naf` (a `DerivedNafWarning`). That
-flag defaults **off**: while `closed` stays hardcoded the NAF is sound
-regardless, and the suite runs under `filterwarnings=["error"]`; it
-promotes to load-bearing under [S1.7.7](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.7_kernel_purity_analysis.md).
+flag defaults **off**: the warning is advisory — a derived-NAF rule is
+sound whatever the priorities say now that the guard is judged on the
+boundary — and the suite runs under `filterwarnings=["error"]`; it
+promotes to load-bearing under [S1.7.7](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.7_kernel_purity_analysis.md),
+and stays the only diagnostic for non-stratifiability until a real
+checker lands.
 
 **Open follow-ups.**
 
 - [Q-S1.5a.1.B](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.1_naf_semantic_rearch.md#open-questions)
   — caching per-(rule, binding) NAF results and invalidating on
-  watched-fact arrival. Composes with
+  watched-fact arrival. **Half shipped** as S1.21.8's `_watch_stamp`: a
+  parked candidate's guards are re-asked only when one of their `watched`
+  relations grew. What is still open is a *shared* verdict cache across
+  candidates. Composes with
   [P1.9 E8](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/)
   (watched-fact rule applicability).
+- **Static stratification checking** — the engine accepts unstratifiable
+  rule sets, answers them by boundary-admission order, and reports one
+  model without saying that others exist
+  ([`absent_semantics.md` §Explicitly not provided](absent_semantics.md)).
+  `warn_derived_naf` is the advisory proxy in the meantime.
 - [S1.7.4](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.4_naf_dependency_map.md)
   — static NAF dependency map: **shipped** 2026-06-01 (see "Static
   NAF dependency map" above). `Engine.naf_dependency_map()` +
@@ -598,6 +739,15 @@ A sound test needs `Deps(Y) = PositiveDeps(Y) ∪ NegativeDeps(Y)`, and
 `premises_raw` carries only the positive half — no smarter walk over it
 can recover dependence-through-absence.
 
+**Since S1.21.8 the other half exists**, on the same record:
+[`Provenance.absent_premises`](../../../ein.py/src/ein/kb/provenance.py)
+holds the `(absent …)` queries a firing was admitted through, so `Deps(Y)`
+is finally representable. That is the *precondition* for reviving the
+extraction, not the revival: nothing yet interprets those entries, so a
+walk that ignored them would be exactly as unsound as before. A revival
+would have to read them and refuse any fact whose chain passes through an
+absence root cannot also assert.
+
 **The model now (P1.7a — keep root stable).** Mid-search root writes are
 limited to two *sound* mechanisms: the singleton-death `(not h)` writeback
 and the forced-positive cascade (`_helpers._promote_forced_positives` — a
@@ -608,17 +758,20 @@ no fork fact ever merges back. Pinned by
 
 **Resurrection path, if ever needed.** On a ruleset with **no** `absent`
 guards — checkable as every compiled plan's
-[`naf_watched_relations`](../../../ein.py/src/ein/inference/compile.py)
-being empty, surfaced as `Engine.naf_dependency_map` — the extraction
+[`has_naf`](../../../ein.py/src/ein/inference/compile.py) being False
+(equivalently `naf_relation_refs` empty), surfaced as
+`Engine.naf_dependency_map` — the extraction
 theorem genuinely holds: `premises_raw` is then a complete dependency
 record, and a chain grounding out at root facts replays at root by
 monotonicity. Any revival must gate on that *checked* precondition, or
 move to a dependency carrier that records negative support (ATMS-style
 environments). Fork-internal NAF *ordering* is a distinct hole, covered by
 the `absent`-semantics formalisation —
-[`absent_semantics.md`](absent_semantics.md) (§C1 no-root-merge /
-§C2 positive-provenance-insufficient are this section's two lessons,
-stated as corollaries of the fire-time epistemic definition).
+[`absent_semantics.md`](absent_semantics.md) (§C1 no-root-merge and §C2
+negative-dependence are this section's two lessons, stated as corollaries
+of the boundary epistemic definition — C2 having been re-grounded by
+S1.21.8 from "positive provenance is not dependence" to "negative
+dependence is now recorded, and not yet interpreted").
 
 The negative dual — caching a forced `(not h)` — remains live and is
 deliberately narrow: only the **one-step lookahead kill**

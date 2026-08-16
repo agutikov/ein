@@ -105,10 +105,19 @@ def test_naf_dropped_when_derived_fact_arrives_between_enqueue_and_fire():
     )
 
 
-def test_naf_dropped_counter_visibility():
-    """The dropped-firing counter is incremented when NAF re-eval
-    rejects a firing. The plain count is enough for P1.5a tracing;
-    P1.9 may extend with per-rule breakdown."""
+def test_naf_dropped_is_structurally_zero():
+    """S1.21.8 — the deliberate flip of ``test_naf_dropped_counter_visibility``.
+
+    That test asserted ``naf_dropped >= 1``: the fire-time re-check existed to
+    catch a guard that had gone stale between enqueue and fire, and a drop was
+    the evidence it was working. There is no such window any more — the
+    closure is purely positive, and a guard is evaluated once, on the
+    boundary, at the instant the candidate is admitted. So the counter is 0
+    **by construction**, not by luck, and the same scenario reaches the same
+    verdict (``gated`` is not derived) through the boundary instead: the
+    candidate is parked, and by the time the closure quiesces ``(r X Y)``
+    exists, so it is never admitted.
+    """
     sat = _sat("""
     (rule derive-r ()
       :match (raw ?a ?b)
@@ -128,9 +137,16 @@ def test_naf_dropped_counter_visibility():
     (trigger X Y :source "(2)")
     """)
     list(sat.saturate())
-    assert sat.naf_dropped >= 1, (
-        f"expected at least one NAF-re-eval drop; got {sat.naf_dropped}"
+    assert sat.naf_dropped == 0, (
+        f"the fire-time NAF race is gone; naf_dropped must be 0 by "
+        f"construction, got {sat.naf_dropped}"
     )
+    assert not [f for f in sat.kb.facts if f.relation_name == "gated"], (
+        "the boundary must still refuse the firing — (r X Y) exists at "
+        "the positive fixpoint the guard is judged against"
+    )
+    # The boundary actually ran: the candidate was parked and re-judged.
+    assert sat.naf_rounds >= 1
 
 
 def test_naf_preserved_when_derive_does_not_apply():

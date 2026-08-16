@@ -25,14 +25,36 @@ deductive closure *without* the hypothesis search.
 | method | signature | returns |
 |--------|-----------|---------|
 | `saturate` | `saturate(*, max_steps=None)` | `Iterator[Firing]` — one per applied firing; drain to a list to run to fixpoint. |
-| `step` | `step()` | `Firing \| None` — apply the single highest-priority candidate (`None` when quiescent). |
-| `is_stalled` | `is_stalled()` | `bool` — no further firing possible. |
+| `step` | `step()` | `Firing \| None` — the highest-priority positive candidate, or, at positive quiescence, the one candidate the NAF boundary admits (`None` at the two-phase fixpoint). |
+| `is_stalled` | `is_stalled()` | `bool` — no further firing possible; consults the boundary too, so it means the two-phase fixpoint, not mere closure quiescence. |
 | `contradictions` | `contradictions()` | the same-layer `(X, (not X))` pairs found. |
 
 ```python
 from ein.inference.saturator import Saturator
 firings = list(Saturator(kb).saturate())
 ```
+
+**Two-phase saturation (S1.21.8).** `step` alternates a **closure** phase —
+purely positive plans fire to quiescence, consulting no negation — with a
+**boundary** phase: candidates whose disjunct carries an `(absent …)` guard
+never enter the firing queue, they are *parked*, and at quiescence they are
+judged against that fixpoint (an `ein.inference.world.World` over the stalled
+KB). At most **one** is admitted per round; it re-enters the closure, and the
+loop ends when a quiescence admits nothing. Consequence for embedders: on a
+**stratified** rule set the deductive closure no longer depends on rule
+priority (band discipline is advisory ordering, not semantics); on a
+non-stratified one the engine still reports one model, chosen by
+boundary-admission order. Normative page:
+[`docs/kernel/inference/absent_semantics.md`](../kernel/inference/absent_semantics.md).
+
+Counters on the `Saturator` — diagnostics, read after saturating:
+
+| attribute | meaning |
+|-----------|---------|
+| `naf_rounds` | boundary rounds run — one per positive quiescence at which candidates were parked. |
+| `naf_admitted` | parked candidates admitted (each re-entered the closure). |
+| `naf_retired` | candidates dropped for good: an anti-monotone guard found a match, and the KB only grows, so it can never pass again. |
+| `naf_dropped` | **structurally 0** — it counted firings dropped by the retired fire-time re-check; a guard is now decided once, at the moment its candidate is admitted, so there is no enqueue/fire race left to lose one to. |
 
 ### `Firing`
 
@@ -46,6 +68,10 @@ A frozen record of one rule application (`from ein.inference.firing import Firin
 | `derived` | `tuple[Fact, …]` — the fact(s) concluded (an `:assert (and …)` fans out to N). |
 | `premises` | `tuple[Fact, …]` — the facts the matcher consumed. |
 | `redundant` | `bool` — the conclusion was already present (shown in the trace, not re-inserted). |
+
+`premises` is positive-only. A firing the NAF boundary admitted also records
+what had to be *absent* — on its conclusions' provenance, as
+[`Provenance.absent_premises`](kb.md#provenance), not on the `Firing`.
 
 ## Solving
 
@@ -168,7 +194,7 @@ block. **Resolution precedence:** explicit `solve(kb, config=…)` >
 | `hypgen_rel_weight` | `1.0` | popularity coefficient for the relation's fact-count. |
 | `hypgen_obj_weight` | `1.0` | popularity coefficient for each object arg's fact-count. |
 | `print_alive` | `False` | Diagnostic — log inherited alive-set size + per-filter prune counts per `_explore`. |
-| `warn_derived_naf` | `False` | Emit a `DerivedNafWarning` per rule whose `(absent …)` guard watches a rule-derived relation. |
+| `warn_derived_naf` | `False` | Emit a `DerivedNafWarning` per rule whose `(absent …)` guard watches a rule-derived relation. Advisory: since S1.21.8 that shape is no longer a soundness question but a **stratification** one — NAF over a derived relation is what can make a rule set non-stratified, and the engine answers such a set with one model without saying others exist. |
 | `candidate_order_seed` | `-1` | `< 0` → deterministic content-sort branch order; `≥ 0` → a deterministic per-branch permutation (shuffle-invariance probing). |
 | `lattice_sanity_check` | `False` | Verify saturation commutativity for size-`k≥2` commitments (release-regression only; costs `k+1` saturations each). |
 | `lattice_order` | `"lex"` | Within-layer candidate order. `"lex"` (canonical-tuple sort, the baseline) or `"score-sum"` (per-set score; needs `hypgen_scoring="popularity"` to differentiate). |

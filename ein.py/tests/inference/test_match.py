@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from ein.inference import match
 from ein.inference.compile import compile_rule
+from ein.inference.world import World
 from ein.ir import parse
 from ein.kb.entities import Fact, Layer
 from ein.kb.provenance import Provenance
@@ -11,6 +12,24 @@ from ein.kb.store import KnowledgeBase
 
 def _kb(text: str) -> KnowledgeBase:
     return KnowledgeBase.from_ir(parse(text))
+
+
+def _guarded(kb: KnowledgeBase, rule_name: str) -> list:
+    """Matches of ``rule_name`` that also pass their `(absent …)` guards.
+
+    S1.21.8 split the two: `match.run` executes the purely positive closure
+    plan, and the guards are a boundary question (`world.World.absent`). This
+    helper is the pair, i.e. what the engine effectively asks.
+    """
+    rule = kb.rules[rule_name]
+    activator = None if not rule.params else kb._facts_by_relation[rule_name][0]
+    plan = compile_rule(rule, activator)
+    world = World(kb)
+    return [
+        (bindings, premises)
+        for bindings, premises, guards in match.run_guarded(plan, kb)
+        if world.admits(guards, bindings)
+    ]
 
 
 def test_single_scan_binds_binary_fact():
@@ -97,7 +116,13 @@ def test_neq_guard_in_transitive_prunes_2_cycles():
 
 def test_absent_succeeds_when_inner_empty():
     """`(absent P)` is the explicit NAF (S1.5.8c K-Δ.2):
-    the premise passes when no fact matches P."""
+    the premise passes when no fact matches P.
+
+    S1.21.8 — `match.run` executes the **closure** plan, which is purely
+    positive, so these two tests go through `_guarded` (the boundary) to ask
+    the question they are about. `match.run` alone would match regardless of
+    the guard, which is the point: negation is not the matcher's job.
+    """
     kb = _kb("""
     (rule guarded (?r)
       :match (and (?r ?a ?b) (absent (other ?a ?b)))
@@ -107,10 +132,7 @@ def test_absent_succeeds_when_inner_empty():
     (guarded r)
     (r X Y :source "(1)")
     """)
-    plan = compile_rule(
-        kb.rules["guarded"], kb._facts_by_relation["guarded"][0],
-    )
-    results = list(match.run(plan, kb))
+    results = _guarded(kb, "guarded")
     assert len(results) == 1
     assert results[0][0]["a"] == "X" and results[0][0]["b"] == "Y"
 
@@ -126,11 +148,12 @@ def test_absent_fails_when_inner_matches():
     (guarded r)
     (r X Y :source "(1)") (other X Y :source "(2)")
     """)
+    # The positive residue still matches — the guard is what refuses it.
     plan = compile_rule(
         kb.rules["guarded"], kb._facts_by_relation["guarded"][0],
     )
-    results = list(match.run(plan, kb))
-    assert results == []
+    assert len(list(match.run(plan, kb))) == 1
+    assert _guarded(kb, "guarded") == []
 
 
 def test_not_premise_matches_stored_neg_fact():

@@ -242,7 +242,7 @@ it's the entry point for "show me every refutation" tooling.
 - **"Did rule R fire where I expected?"** — `grep '"rule": "R"'`
   across `enterings/**/firings.jsonl`. Empty under a commitment where
   you expected it means a `:match` premise (often an
-  [`(absent …)` NAF guard](README.md#naf-semantics--fire-time-re-evaluation-s15a1))
+  [`(absent …)` NAF guard](README.md#naf-semantics--the-closureworld-boundary-s1218))
   didn't hold in that fork.
 - **"Two commitments should reach the same state but don't"** — under
   `store_lattice=True`, two commitments that reached the same state share

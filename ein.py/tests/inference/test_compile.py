@@ -107,8 +107,13 @@ def test_compile_absent_premise_emits_absent_guard():
     plan = compile_rule(
         kb.rules["guarded"], kb._facts_by_relation["guarded"][0],
     )
-    assert any(isinstance(s, AbsentGuard) for s in plan.steps)
-    neg = next(s for s in plan.steps if isinstance(s, AbsentGuard))
+    # S1.21.8 — the guard is lifted out of the closure plan into
+    # `naf_guards`, tagged with the vars its position had access to.
+    assert not any(isinstance(s, AbsentGuard) for s in plan.steps)
+    (guards,) = plan.naf_guards
+    (neg,) = guards
+    assert isinstance(neg.guard, AbsentGuard)
+    assert neg.scope == frozenset({"a", "b"})
     assert len(neg.sub_steps) == 1
     sub = neg.sub_steps[0]
     assert isinstance(sub, Join) and sub.relation == "other"

@@ -4,16 +4,23 @@ Pure, observability-only analysis: which ``(absent …)`` guards watch a
 **rule-derived** relation vs a **declared-only** one (a relation whose
 extension is fixed by the puzzle's ``(facts)`` / ``(ontology)``).
 
-Why it matters. S1.5a.1 closed the enqueue-vs-fire NAF race at runtime —
-:func:`ein.inference.match.absents_still_pass` re-evaluates every
-``AbsentGuard`` at fire time, so a rule whose NAF watches a derived
-relation is *sound* regardless. What the engine doesn't tell the author
-is **which** of their rules rely on that re-eval (or on a strictly-lower
-deriving priority). An ``(absent (R …))`` over a declared-only ``R``
-behaves identically under enqueue-time and fire-time semantics; one over
-a derived ``R`` is only sound because of the re-eval. The distinction
-drives trace explanations and priority tuning, and becomes the soundness
-instrument if S1.7.7 ever de-hardcodes ``closed``.
+Why it matters. **Re-grounded by S1.21.8.** The original rationale was a
+soundness one: S1.5a.1 closed the enqueue-vs-fire NAF race with a fire-time
+re-check, and this map told the author which of their rules leaned on it (or
+on a strictly-lower deriving priority). That re-check is gone — `(absent …)`
+is evaluated on the closure/world boundary against a positive fixpoint — so
+derived-NAF is no longer a soundness question and priority no longer decides
+what is derivable.
+
+What the distinction still buys is **stratification**. NAF over a derived
+relation is precisely the shape that can make a rule set non-stratified, and
+that is the remaining hazard: the engine answers an unstratifiable program by
+picking one model at boundary-admission order rather than reporting that
+several exist. NAF over a declared-only relation cannot do that — its watched
+extent is fixed by the puzzle. So this map is now the cheap static proxy for
+"could this rule set have more than one answer?", the input a real
+stratification checker would refine, and it still drives trace explanations
+and becomes the soundness instrument if S1.7.7 ever de-hardcodes ``closed``.
 
 **Completeness needs a saturated cache.** Most NAF-bearing rules in the
 Zebra family (``adjacent-via-*``, ``typecheck-arg-*``, the elimination /
@@ -68,11 +75,24 @@ class NafDep:
 class DerivedNafWarning(UserWarning):
     """A rule's ``(absent …)`` watches a rule-derived relation.
 
-    Its soundness leans on the S1.5a.1 fire-time NAF re-evaluation (or
-    on the deriving rule running at a strictly-lower priority). Advisory
-    — emitted only when ``SolverConfig.warn_derived_naf`` is set. A
-    dedicated category so callers / the pytest ``filterwarnings=error``
-    suite can target it precisely.
+    **What this means changed with S1.21.8.** It used to say "this rule's
+    soundness leans on the fire-time NAF re-evaluation (or on the deriving
+    rule running at a strictly-lower priority)". That reading is retired
+    along with the re-check: `(absent …)` is now evaluated on the
+    closure/world boundary against a positive fixpoint, so a derived-NAF rule
+    is sound whatever the priorities say.
+
+    What it flags now is **stratification**. NAF over a derived relation is
+    exactly the shape that can make a rule set non-stratified, and that is
+    the remaining hazard: on a genuinely unstratifiable program (``p ← absent
+    q; q ← absent p``) the engine still produces *an* answer, choosing one by
+    boundary-admission order, rather than reporting that two models exist.
+    Declared-only NAF cannot do that — its watched extent is fixed.
+
+    Advisory, and off by default (``SolverConfig.warn_derived_naf``); a
+    dedicated category so callers / the pytest ``filterwarnings=error`` suite
+    can target it precisely. A real static stratification checker is the
+    proper instrument and remains future work.
     """
 
 
@@ -142,8 +162,10 @@ def emit_derived_naf_warnings(cache: CacheLike) -> list[NafDep]:
         )
         warnings.warn(
             f"rule {d.rule_name!r}{act}: (absent …) watches rule-derived "
-            f"relation(s) {', '.join(d.derived)} — soundness relies on the "
-            f"fire-time NAF re-evaluation (S1.5a.1). See S1.7.4.",
+            f"relation(s) {', '.join(d.derived)} — the rule set may not be "
+            f"stratified, in which case the engine reports one model rather "
+            f"than the several that exist. Sound either way (the guard is "
+            f"evaluated on the closure/world boundary, S1.21.8). See S1.7.4.",
             DerivedNafWarning,
             stacklevel=2,
         )

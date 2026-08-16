@@ -124,12 +124,19 @@ def fire(
     bindings: dict[str, Any],
     premises: tuple[Fact, ...],
     kb: KnowledgeBase,
+    absent_premises: tuple[tuple[str, tuple[object, ...]], ...] = (),
 ) -> Firing | None:
     """Build the derived fact + provenance and write it to the KB.
 
     Returns the :class:`Firing` record on success. If the rule has
     no ``:assert`` template (defensive — shouldn't happen for a
     well-formed rule), returns None.
+
+    ``absent_premises`` (S1.21.8) are the `(absent …)` queries that had to
+    fail on the closure/world boundary for this firing to be admitted. They
+    ride on the same :class:`Provenance` as the positive premises, so a
+    conclusion records the *whole* of what it depends on — positive and
+    negative — rather than only the facts it consumed.
     """
     if not plan.assert_templates:
         return None
@@ -149,6 +156,7 @@ def fire(
         rule=plan.rule_name,
         premises_raw=premises_raw,
         bindings=binding_pairs,
+        absent_premises=absent_premises,
     )
 
     # Build + store each templated conclusion. add_and_index_fact dedups by

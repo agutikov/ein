@@ -341,10 +341,14 @@ A potential fact `P` is at any moment in one of three states:
 The three pattern shapes parallel the three storage states.
 `(not P)` in `:match` matches a stored `(not P)` fact, NOT NAF —
 NAF must be written explicitly as `(absent P)` (S1.5.8c K-Δ.1).
-`(open P)` is parser sugar for the conjunction of two absents,
-giving rules a way to gate on "P is undecided" — useful for
+`(open P)` is a `std.macro` expansion to the conjunction of two
+absents, giving rules a way to gate on "P is undecided" — useful for
 hypothesis-generation rules that should only propose candidates
-for slots that aren't yet committed either way.
+for slots that aren't yet committed either way. "Neither in KB" is
+read against the **positive fixpoint** of the branch, not against
+whatever had been derived when the match was found (§7, and
+[`../../inference/absent_semantics.md`](../../inference/absent_semantics.md)
+for the normative definition).
 
 ### 3.2 Transitive closure as a 2-fact idiom
 
@@ -384,7 +388,11 @@ Predicates allowed in `:where`:
 
 Guards are evaluated *after* the LHS pattern matches but *before*
 the RHS is asserted. They filter spurious matches; they don't
-participate in unification.
+participate in unification. All of them are **positive** — they are
+part of the closure plan (§7) and are decided during matching. The
+negative premise `(absent …)` is not a `:where` predicate and is not
+decided there: it is lifted out of the plan and asked at the closure
+boundary.
 
 ## 5. Provenance — every rule firing leaves a trace
 
@@ -396,6 +404,14 @@ reasoning layer. Each new fact carries provenance:
 - `premises = <the matched LHS facts (+ activating property fact for
   T2)>`
 - `bindings = <the var → node map used>`
+- `absent premises = <the (absent …) queries that had to find nothing
+  for this firing to be admitted>` (S1.21.8) — one `(relation, args)`
+  pattern per query, `None` where it ranged free
+
+The last one makes a firing's dependence on an *absence* visible, which
+positive premises alone cannot express — but nothing yet *reads* it: the
+derivation DAG below, the contradiction frontier and the trace's "using"
+line all still walk positive premises only.
 
 A firing whose conclusion is **already** in working memory adds no
 node — but it is not forgotten either: its rule + premises are
@@ -489,7 +505,10 @@ formulation* followup). Not used in M1 traces.
 ## 7. Saturation — the firing loop
 
 The **saturation loop** repeatedly fires rules until no new fact is
-produced. At each step:
+produced. Since S1.21.8 it runs in **two alternating phases**.
+
+**Closure** — purely positive firing, consulting no negation at all.
+At each step:
 
 1. For each rule, find all matches in working memory.
 2. For each match, check `:where` guards.
@@ -499,9 +518,32 @@ produced. At each step:
    are, record this firing as an alternative justification on them
    (§5) instead of dropping it.
 
-The order in which rules are tried is governed by
+A match whose rule branch carries a negative premise (`(absent …)`,
+hence also `(open …)` / `(forall …)`) is **parked** rather than fired:
+those premises are lifted out of the match plan before the closure ever
+runs it, so no negative question is asked of a half-built graph.
+
+**Boundary** — when the closure quiesces, its fact set *is* a world: a
+positive fixpoint. Each parked match is judged against that world, and
+the first one whose negative premises all still find nothing is
+admitted; the closure then re-runs. Admission is one match per
+quiescence, so the admitted firing sees exactly the world its premises
+were judged in. A negative premise that has become false stays false
+(the graph only grows) and retires its candidate — unless it is a
+*nested* absence, the shape `forall` expands to, which can become true
+again and so stays parked for the next quiescence. Saturation ends at
+a quiescence that admits nothing.
+
+The order in which rules are tried within the closure is governed by
 **priority** — a static integer per rule, with cheap-propagation
-rules earlier. The saturation loop's design is in P1.3 S1.3.3.
+rules earlier. Priority orders *firings* (and so the shape of the
+trace); on a **stratified** rule set it does not decide what is
+derivable, because every negative premise is asked only after the
+positive closure is complete. The normative reading of `(absent …)` —
+including what a non-stratified rule set still owes to operational
+order — is
+[`../../inference/absent_semantics.md`](../../inference/absent_semantics.md).
+The saturation loop's design is in P1.3 S1.3.3.
 
 When saturation stalls and the puzzle isn't yet solved, the engine
 **branches**: pick an undetermined slot, hypothesise each candidate
@@ -532,6 +574,9 @@ authoring rules is in
 - [`01_kb.md`](01_kb.md) — the graph that rules operate over.
 - [`../../inference/`](../../inference/) — the saturation /
   branching engine.
+- [`../../inference/absent_semantics.md`](../../inference/absent_semantics.md) —
+  what a negative premise means and where the closure/world boundary
+  decides it.
 - [`../03-ein-lang/02_patterns.md`](../03-ein-lang/02_patterns.md) —
   the surface pattern language.
 - [`../../../ideas/06-inference-rules-completeness.md`](../../../../plans/ideas/06-inference-rules-completeness.md) —

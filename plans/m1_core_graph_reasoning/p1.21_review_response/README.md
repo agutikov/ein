@@ -5,13 +5,16 @@
 investigated (6 confirmed reports), improved, adversarially verified, and
 the acceptance gate below passed 2026-08-17 (suite 1302 passed + 1
 sanctioned strict-xfail (D5); acceptance 17/17, verdicts unchanged; ruff
-clean; closeout greps clean). Follow-up stage
+clean; closeout greps clean). Both follow-up stages were then **activated
+and executed 2026-08-17**:
 [S1.21.7](s1.21.7_multi_justification_provenance.md) (multi-justification
-provenance + the companion contradiction-answer wiring) was **activated and
-executed 2026-08-17**. Open remainder:
-[S1.21.8](s1.21.8_boundary_naf.md) (activation-gated) and the
+provenance + the companion contradiction-answer wiring) and
+[S1.21.8](s1.21.8_boundary_naf.md) (purely-positive closure + boundary NAF),
+which also closed divergences **D3** and **D5**. Gate after both: 1342 unit
+tests, **zero** xfails, acceptance 17/17 verdicts unchanged, `ruff` clean —
+and faster than before (acceptance 130 s → 91 s). Open remainder: the
 [§Divergences](#divergences-surfaced-by-investigation-2026-08-16)
-candidates (D5 promote-to-fix, D-R5-1 one-liner).
+one-liner D-R5-1.
 **Source:** [`../REVIEW_M1-01.md`](../REVIEW_M1-01.md) — an external
 architecture review of `master` *as a reasoning engine*. Its core thesis:
 the architecture is right (monotone deductive layer + non-monotone search
@@ -86,7 +89,7 @@ Per the phase charter, each review point is processed as **two tasks**:
 | S1.21.5 | §5 | P2 | [Reposition lattice search: ATMS-style, CDCL as analog](s1.21.5_lattice_positioning.md) | T1.21.5.1 / T1.21.5.2 |
 | S1.21.6 | §6 | P2 | [Record the closure/worlds seam; NAF at the boundary](s1.21.6_architecture_seam.md) | T1.21.6.1 / T1.21.6.2 |
 | S1.21.7 | §3 (b) | follow-up | [Multi-justification (OR/AND) provenance + true minimal explanation](s1.21.7_multi_justification_provenance.md) | ✅ **executed 2026-08-17** (moved in from P1.9 E25; companion wiring shipped with it — `zebra2-bad` core 38 → 1) |
-| S1.21.8 | §6 | follow-up | [Purely-positive closure + boundary NAF re-eval](s1.21.8_boundary_naf.md) | 📅 parked (moved in from P1.9 E26, 2026-08-17; activation gates in stage file) |
+| S1.21.8 | §6 | follow-up | [Purely-positive closure + boundary NAF re-eval](s1.21.8_boundary_naf.md) | ✅ **executed 2026-08-17** (moved in from P1.9 E26; both activation gates met — D3 + D5 were the measured signal. Fixed both; engine got faster) |
 
 ## Scheduling
 
@@ -152,35 +155,36 @@ and pinned in
 D-R5-1 was surfaced by the R5 investigation and is likewise recorded
 here, not fixed by the docs-only T1.21.5.2.
 
-- **D3 — lookahead evaluates AbsentGuards against a world without the
-  candidate.** [`lookahead.py`](../../../ein.py/src/ein/inference/lookahead.py)
-  (`dies_immediately`, the probe construction at ~100-118) posits the
-  candidate `h` into one positive premise but runs the rule's *other*
-  premises — including `AbsentGuard`s — against `kb` **without** `h`: the
-  NAF queries a different world than the probe hypothesises. A rule whose
-  guard watches the candidate's own relation (probe P6:
-  `false ← (cand ?x) ∧ absent (cand ?x)`, unsatisfiable in any one world)
-  therefore kills a live hypothesis, violating the lookahead's own
-  "never reports a live hypothesis as dead" docstring — and with the
-  default-on kill cache, [`hypgen._write_negated`](../../../ein.py/src/ein/inference/hypgen.py)
-  writes `(not h)` back to the parent, making it verdict-affecting in
-  principle. M1's shipping rule library has no such rule (typecheck/elim
-  guards watch `is-a`; candidates are domain relations), so no fixture
-  misbehaves today. Pinned as *current behaviour* (not an endorsement) by
-  `test_lookahead_naf_world_excludes_candidate`.
-- **D5 — CONFIRMED unsound firing: or-disjunct `AbsentGuard`s skip
-  fire-time re-eval.** [`match.absents_still_pass`](../../../ein.py/src/ein/inference/match.py)
-  walks only `plan.steps`, while `match.run` also yields matches from the
-  S1.8.A13 `plan.extra_match_plans` or-disjuncts — so a firing admitted
-  via a disjunct whose `(absent …)` has since flipped commits on a stale
-  verdict (probe P8: plain `(or …)` + `(absent …)` + priorities, no
-  exotica). Candidate fix is ~3 lines: `absents_still_pass` also walks
-  `plan.extra_match_plans` (each disjunct re-checked like `plan.steps`).
-  Pinned `xfail(strict=True)` by
-  `test_or_disjunct_absent_not_reevaluated_at_fire_time`, so the fix
-  flips it loudly. **Promote-to-fix candidate** — phase owner: this is a
-  genuine soundness gap in the deductive layer, in scope for a follow-up
-  task of this phase (or P1.9) once the behaviour-unchanged gate lifts.
+- **D3 — lookahead evaluated AbsentGuards against a world without the
+  candidate.** ✅ **FIXED 2026-08-17 by [S1.21.8](s1.21.8_boundary_naf.md).**
+  [`lookahead.py`](../../../ein.py/src/ein/inference/lookahead.py) posited
+  the candidate `h` into one positive premise but ran the rule's *other*
+  premises — including `AbsentGuard`s — against `kb` **without** `h`, so the
+  NAF queried a different world than the probe hypothesised. A rule whose
+  guard watched the candidate's own relation (probe P6) therefore killed a
+  live hypothesis, violating the lookahead's own "never reports a live
+  hypothesis as dead" docstring; with the default-on kill cache writing
+  `(not h)` back to the parent, that was verdict-affecting in principle.
+  The guard is now evaluated in the world **with** `h` (no match in `kb`
+  *and* `h` creates none); a guard containing a nested absent is
+  non-monotone and cannot be decided that cheaply, so the lookahead skips
+  that disjunct rather than guessing — which only loses a kill, the safe
+  direction. `test_lookahead_naf_world_excludes_candidate` flipped to
+  `test_lookahead_naf_world_includes_candidate`.
+- **D5 — or-disjunct `AbsentGuard`s skipped fire-time re-eval.**
+  ✅ **FIXED 2026-08-17 by [S1.21.8](s1.21.8_boundary_naf.md)** — and it was
+  one of that stage's activation signals, not a separate point fix.
+  [`match.absents_still_pass`](../../../ein.py/src/ein/inference/match.py)
+  walked only `plan.steps` while `match.run` also yielded from the S1.8.A13
+  `plan.extra_match_plans` or-disjuncts, so a firing admitted via a
+  disjunct whose `(absent …)` had since flipped committed on a stale
+  verdict (probe P8). The candidate 3-line fix ("walk
+  `extra_match_plans` too") was **not** taken: it would have left the same
+  shape one tuple away from breaking again. Instead guards are lifted **per
+  disjunct** into `plan.naf_guards`, and `match.run_guarded` yields every
+  match paired with its own disjunct's guards — there is no longer a tuple
+  a caller can forget. `absents_still_pass` is deleted. The
+  `xfail(strict=True)` pin now passes, and the suite has zero xfails.
 - **D-R5-1 — `_handle_dead` NameError with `enable_path_nogoods=False`
   and a dumper attached** (from the R5 investigation,
   [`reports/r5_positioning.md`](reports/r5_positioning.md) §2).

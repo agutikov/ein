@@ -103,6 +103,50 @@ class AbsentGuard:
 
 
 @dataclass(frozen=True)
+class NafGuard:
+    """A top-level :class:`AbsentGuard` lifted out of a plan's steps — S1.21.8.
+
+    The closure runs purely positive plans; every ``(absent …)`` is evaluated
+    on the closure/world boundary instead, against a positive fixpoint. Which
+    means the guard is no longer evaluated *where it was written*, and that
+    matters: ``(and (absent (P ?x)) (Q ?x))`` asks "is there no P at all?",
+    while ``(and (Q ?x) (absent (P ?x)))`` asks "is there no P for *this* x?".
+
+    :attr:`scope` is what preserves the distinction — the variables bound by
+    the positive premises that *preceded* the guard. Boundary evaluation
+    projects the completed bindings back down to that set, so lifting a guard
+    to the boundary is exactly as strong as evaluating it in place, no more.
+    (Rule authors who intended the second reading were already relying on
+    premise order; nothing about that changes.)
+
+    :attr:`watched` is the set of relations the negative query reads, nested
+    guards included. It is the boundary's invalidation key: if none of those
+    relations grew, the sub-plan's match set is unchanged and so is the
+    guard's verdict, so a parked candidate can be skipped without re-running
+    the query. (This is the same relation set the retired
+    ``saturator._absent_relations`` computed — repurposed from "force a full
+    re-match" to "decide whether to re-ask", which is the cheaper half.)
+
+    :attr:`monotone` says the guard is **anti-monotone** in the KB: its query
+    is purely positive, so once it finds a match it finds one forever (the KB
+    only grows within a run) and the guard can never pass again. A candidate
+    it rejects is dead, not waiting. The exception — and the reason this is a
+    flag rather than an assumption — is a *nested* absent: a ``forall``'s
+    ``(absent (and G (absent B)))`` **passes** once enough ``B`` facts exist
+    to make the inner absent fail, so it can flip from failing to passing and
+    must stay parked.
+    """
+    guard: AbsentGuard
+    scope: frozenset[str]
+    watched: frozenset[str] = frozenset()
+    monotone: bool = True
+
+    @property
+    def sub_steps(self) -> tuple[object, ...]:
+        return self.guard.sub_steps
+
+
+@dataclass(frozen=True)
 class JoinPlan:
     """The compiled form of a rule's ``:match`` clause.
 
@@ -114,6 +158,17 @@ class JoinPlan:
     activator_args: tuple[str, ...]
     bindings_seed: dict[str, str | int] = field(default_factory=dict)
     steps: tuple[object, ...] = ()
+    # S1.21.8: `steps` is the disjunct's **purely positive** residue — the
+    # closure plan. Its `(absent …)` premises are lifted out to `naf_guards`
+    # and evaluated on the closure/world boundary instead
+    # (`ein.inference.world.World`), against a positive fixpoint rather than
+    # against whatever the KB happened to hold mid-saturation.
+    #
+    # `naf_guards[0]` belongs to `steps`; `naf_guards[i]` to
+    # `extra_match_plans[i-1]`. Use :meth:`disjuncts` rather than indexing —
+    # it pairs them and is what makes an or-disjunct's guards impossible to
+    # forget (the D5 gap: the old fire-time re-check walked `steps` only).
+    naf_guards: tuple[tuple[NafGuard, ...], ...] = ()
     # S1.8.A13: a `:match (or d1 … dm)` compiles to ONE plan with `steps` =
     # the first disjunct and `extra_match_plans` = the remaining disjuncts'
     # step tuples. `match.run` executes `steps` plus every entry here, so
@@ -135,6 +190,26 @@ class JoinPlan:
         (`fire`, the saturator's redundancy check, lookahead) walk
         `assert_templates` directly."""
         return self.assert_templates[0] if self.assert_templates else None
+
+    def disjuncts(self) -> tuple[tuple[tuple[object, ...], tuple[NafGuard, ...]], ...]:
+        """Every ``(positive_steps, naf_guards)`` pair — S1.21.8.
+
+        One entry for ``steps`` plus one per ``extra_match_plans`` disjunct.
+        Every caller that runs a match must iterate this rather than
+        ``steps``/``extra_match_plans`` separately: pairing the guards with
+        their disjunct is what makes the S1.8.A13 or-case impossible to miss.
+        """
+        seqs = (self.steps, *self.extra_match_plans)
+        guards = self.naf_guards
+        return tuple(
+            (s, guards[i] if i < len(guards) else ())
+            for i, s in enumerate(seqs)
+        )
+
+    @property
+    def has_naf(self) -> bool:
+        """True iff any disjunct carries an ``(absent …)`` guard."""
+        return any(g for g in self.naf_guards)
 
 
 # ── Compile entry points ───────────────────────────────────────────
@@ -318,6 +393,72 @@ def _compile_body(
     return _compile_premise(expr, bindings, known_vars)
 
 
+def _has_nested_absent(steps: tuple[object, ...]) -> bool:
+    """True iff a guard sub-plan contains another ``(absent …)``.
+
+    The one shape whose verdict is not anti-monotone in the KB — see
+    :attr:`NafGuard.monotone`.
+    """
+    return any(isinstance(st, AbsentGuard) for st in steps)
+
+
+def _watched_relations(steps: tuple[object, ...]) -> frozenset[str]:
+    """Every relation a guard sub-plan reads, through nested guards too.
+
+    The boundary's invalidation key — see :attr:`NafGuard.watched`. A
+    ``(not (R …))`` pattern contributes ``"not"``, which is right: the query
+    reads the *stored negative* fact, and that is the relation whose growth
+    can change the answer.
+    """
+    out: set[str] = set()
+
+    def walk(seq: tuple[object, ...]) -> None:
+        for st in seq:
+            if isinstance(st, (Scan, Join)):
+                out.add(st.relation)
+            elif isinstance(st, AbsentGuard):
+                walk(st.sub_steps)
+
+    walk(steps)
+    return frozenset(out)
+
+
+def split_naf(steps: tuple[object, ...]) -> tuple[
+    tuple[object, ...], tuple[NafGuard, ...],
+]:
+    """Partition a compiled step tuple into (positive residue, NAF guards).
+
+    S1.21.8 — the compile half of the closure/worlds split. Top-level
+    :class:`AbsentGuard` steps are lifted out; what remains is a purely
+    positive Scan/Join/Guard plan the closure can run to a fixpoint without
+    ever consulting negation.
+
+    Each lifted guard records the variables bound by the positive premises
+    *before* it (:attr:`NafGuard.scope`), so boundary evaluation can restore
+    the binding context the guard was written in — see :class:`NafGuard`.
+
+    Nested ``AbsentGuard``s inside a guard's own ``sub_steps`` (what a
+    ``forall`` desugars to: ``(absent (and G (absent B)))``) are **not**
+    lifted. They are part of the negative query, not of the closure, and the
+    boundary evaluates them as one unit.
+    """
+    positive: list[object] = []
+    guards: list[NafGuard] = []
+    bound: set[str] = set()
+    for st in steps:
+        if isinstance(st, AbsentGuard):
+            guards.append(NafGuard(
+                guard=st, scope=frozenset(bound),
+                watched=_watched_relations(st.sub_steps),
+                monotone=not _has_nested_absent(st.sub_steps),
+            ))
+            continue
+        positive.append(st)
+        if isinstance(st, (Scan, Join)):
+            _collect_vars(st.arg_slots, bound)
+    return tuple(positive), tuple(guards)
+
+
 def compile_pattern(
     expr: IRNode,
     bindings: dict[str, str | int],
@@ -393,10 +534,16 @@ def compile_rule(rule: Rule, activator: Fact | None) -> JoinPlan:
     # executes them all. Each disjunct compiles with the same activator bindings
     # and its own fresh body-var scope.
     if rule.match is None:
-        match_seqs: list[tuple[object, ...]] = [()]
+        raw_seqs: list[tuple[object, ...]] = [()]
     else:
-        match_seqs = [compile_pattern(d, bindings)
-                      for d in _match_disjuncts(rule.match.expr)]
+        raw_seqs = [compile_pattern(d, bindings)
+                    for d in _match_disjuncts(rule.match.expr)]
+    # S1.21.8: lift each disjunct's `(absent …)` premises out of the closure
+    # plan. `match_seqs` is what the matcher runs (purely positive);
+    # `guard_seqs` is what the closure/world boundary evaluates.
+    split = [split_naf(s) for s in raw_seqs]
+    match_seqs = [s for s, _g in split]
+    guard_seqs = tuple(g for _s, g in split)
 
     # Assert: a top-level `(and …)` lowers to one template per conjunct — Var
     # slots stay unbound (filled at firing time); Atom/Int/NestedPattern stay
@@ -414,6 +561,7 @@ def compile_rule(rule: Rule, activator: Fact | None) -> JoinPlan:
         activator_args=activator_args,
         bindings_seed=dict(bindings),
         steps=match_seqs[0],
+        naf_guards=guard_seqs,
         extra_match_plans=tuple(match_seqs[1:]),
         assert_templates=assert_templates,
         why=rule.why,
@@ -497,9 +645,12 @@ def naf_relation_refs(plan: JoinPlan) -> list[tuple[str, bool]]:
             elif isinstance(st, AbsentGuard):
                 walk(st.sub_steps)
 
-    for st in plan.steps:
-        if isinstance(st, AbsentGuard):
-            walk(st.sub_steps)
+    # S1.21.8 — guards now live in `naf_guards`, not in `steps`, and every
+    # disjunct's are covered (they were not before: the walk read `steps`
+    # only, so an or-disjunct's guards were invisible here too).
+    for _steps, guards in plan.disjuncts():
+        for g in guards:
+            walk(g.sub_steps)
     return out
 
 
@@ -508,6 +659,7 @@ __all__ = [
     "Guard",
     "Join",
     "JoinPlan",
+    "NafGuard",
     "NestedPattern",
     "Scan",
     "asserted_relation",
@@ -515,4 +667,5 @@ __all__ = [
     "compile_rule",
     "naf_relation_refs",
     "negated_relation",
+    "split_naf",
 ]

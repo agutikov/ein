@@ -48,10 +48,11 @@ from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
 from . import match
-from .compile import AbsentGuard, Join, JoinPlan, Scan
+from .compile import Join, JoinPlan, NafGuard, Scan
 from .config import SolverConfig
 from .engine import Engine, _hashable
 from .firing import Firing, build_fact, fire
+from .world import World
 
 # Default priority for rules with no :priority kw-pair. Sits between
 # eliminate (300) and hypothesis (900) — well-defined, but rarely
@@ -83,36 +84,20 @@ def _positive_relations(plan: JoinPlan) -> set[str]:
     return rels
 
 
-def _absent_relations(plan: JoinPlan) -> set[str]:
-    """Relations appearing inside any (nested) ``AbsentGuard`` of a plan.
-
-    A delta here can FLIP the absent — a ``forall`` desugars to a nested
-    absent ``(absent (and G (absent B)))``, so adding a ``B`` fact makes the
-    inner absent fail, the outer **pass**, and *enables* a firing (e.g.
-    ``domain-elimination`` once the last ``(not (R a b_other))`` exists). But
-    there is no positive premise to bind, so a plan whose delta relation lands
-    here must **full-match**, not seed (S1.8.B2v D5) — treating it as seedable
-    would re-introduce the D2 completeness bug (stalled eliminations →
-    lattice blow-up). Note ``_positive_relations`` and ``_absent_relations``
-    together are the full re-enqueue trigger set (a relation can be in both)."""
-    rels: set[str] = set()
-
-    def walk_absent(steps: tuple) -> None:
-        for step in steps:
-            if isinstance(step, (Scan, Join)):
-                rels.add(step.relation)
-            elif isinstance(step, AbsentGuard):
-                walk_absent(step.sub_steps)
-
-    def find_absents(steps: tuple) -> None:
-        for step in steps:
-            if isinstance(step, AbsentGuard):
-                walk_absent(step.sub_steps)
-
-    find_absents(plan.steps)
-    for extra in plan.extra_match_plans:
-        find_absents(extra)
-    return rels
+# S1.21.8 — `_absent_relations` is **gone**, not bypassed.
+#
+# It drove the absent-flip full-match split: a plan whose delta relation
+# appeared inside an `AbsentGuard` had to re-run `match.run` over the whole
+# extent, because a `forall`'s nested absent can flip from failing to passing
+# as the KB grows and there is no positive premise to seed at (S1.8.B2v D5;
+# skipping it was the D2 completeness bug).
+#
+# With guards lifted out of the closure, a flip is no longer something the
+# *matcher* has to notice. NAF-guarded candidates are parked, and every parked
+# candidate is re-evaluated against the world at each quiescence — which is
+# strictly more complete than the full-match split (it also catches a flip
+# with no delta in the watched relation at all) and costs one guard
+# evaluation instead of one full re-match.
 
 
 class Saturator:
@@ -132,8 +117,14 @@ class Saturator:
             self.engine.compile_all()
         # (rule_name, activator_args, hashable-bindings) -> already enqueued
         self._seen: set[tuple[str, tuple[str, ...], frozenset]] = set()
-        # heap entries: (priority, tiebreaker, plan, bindings, premises)
-        self._queue: list[tuple[int, int, JoinPlan, dict[str, Any], tuple[Fact, ...]]] = []
+        # heap entries: (priority, tiebreaker, plan, bindings, premises,
+        # naf_guards). Guards ride along so `_apply` can record them as the
+        # firing's negative premises; a queued entry's guards have already
+        # passed on the boundary (S1.21.8).
+        self._queue: list[
+            tuple[int, int, JoinPlan, dict[str, Any], tuple[Fact, ...],
+                  tuple[NafGuard, ...]]
+        ] = []
         self._tiebreaker = 0
         # Optimisation: enqueue_pass is needed only after a productive
         # firing (a new fact was written; new matches may exist) or
@@ -142,10 +133,35 @@ class Saturator:
         # Last yielded Firing — kept on the instance so a step-limit
         # raise can quote it without forcing every caller to track it.
         self._last_firing: Firing | None = None
-        # Count of firings dropped at dequeue because an AbsentGuard
-        # premise that passed at enqueue no longer holds against the
-        # current KB (S1.5a.1 fire-time NAF re-eval).
+        # S1.21.8 — structurally 0, kept as an observable so the old
+        # measurement gate still has something to assert. It counted firings
+        # dropped at dequeue because an AbsentGuard that passed at enqueue no
+        # longer held at fire time (S1.5a.1). There is no enqueue/fire NAF
+        # race any more: a guard is evaluated once, on the boundary, at the
+        # moment the candidate is admitted.
         self.naf_dropped: int = 0
+        # S1.21.8 two-phase saturation. Candidates whose disjunct carries
+        # `(absent …)` guards never enter `_queue` directly — they wait here
+        # until the positive closure quiesces, then are judged against that
+        # fixpoint (the world W). Entries: (priority, tiebreaker, plan,
+        # bindings, premises, guards). A candidate that fails stays parked:
+        # a `forall`'s nested absent can flip from failing to *passing* as
+        # the KB grows, so "failed once" is not "failed forever".
+        self._parked: list[
+            tuple[int, int, JoinPlan, dict[str, Any], tuple[Fact, ...],
+                  tuple[NafGuard, ...]]
+        ] = []
+        # tiebreaker -> the watch stamp at that candidate's last (failed)
+        # boundary judgement. See `_watch_stamp`: an unchanged stamp means the
+        # verdict cannot have moved, so the query is not re-run.
+        self._park_stamp: dict[int, tuple[int, ...]] = {}
+        # Rounds of the outer (boundary) loop, and admissions made — the
+        # observable that says the two-phase loop actually alternated.
+        self.naf_rounds: int = 0
+        self.naf_admitted: int = 0
+        # Candidates retired at the boundary because an anti-monotone guard
+        # failed — permanently unfirable, so never re-judged.
+        self.naf_retired: int = 0
         # S1.8.B2v — incremental (delta-driven) enqueue. After the cold full
         # pass, an enqueue pass processes only the DELTA — the facts the last
         # productive firing derived: positive-premise plans are SEEDED at the
@@ -155,11 +171,10 @@ class Saturator:
         # (cold start / is_stalled).
         self._delta_facts: list[Fact] | None = None
         self._matched_plan_ids: set[int] = set()
-        # relation → plans, split by premise polarity (positive Scan/Join vs
-        # inside an AbsentGuard); rebuilt when the compile cache grows. See
-        # `_indexes`.
+        # relation → plans with that relation as a positive Scan/Join premise;
+        # rebuilt when the compile cache grows. See `_indexes`. (S1.21.8
+        # removed the `absent`-polarity twin — guards are off the match path.)
         self._pos_index: dict[str, list[JoinPlan]] | None = None
-        self._abs_index: dict[str, list[JoinPlan]] | None = None
         self._index_n: int = -1
         # `__symmetric__` native mirror (kernel opt). Marked relations (cached,
         # refreshed when the marker count changes), and the queue of source
@@ -180,11 +195,31 @@ class Saturator:
     # ── Public API ────────────────────────────────────────────────
 
     def step(self) -> Firing | None:
-        """Pop the highest-priority candidate and apply it.
+        """Produce the next firing, or ``None`` at the two-phase fixpoint.
 
-        Returns the resulting :class:`Firing`, or ``None`` when the
-        queue is empty after a fresh enqueue pass.
+        S1.21.8 — the loop alternates two phases:
+
+        1. **Closure (inner).** Purely positive plans fire to quiescence.
+           No negation is consulted here at all.
+        2. **Boundary (outer).** At quiescence, every parked NAF-guarded
+           candidate is judged against that fixpoint — the world ``W`` — and
+           the ones whose guards pass are admitted back into phase 1.
+
+        Repeat until a quiescence admits nothing. Every `(absent …)` verdict
+        is therefore taken against a saturated world, which is what makes
+        `absent_semantics.md`'s ``W ⊭ ∃x̄.Pθ`` reading literal rather than
+        approximated by fire-time re-checking.
         """
+        while True:
+            firing = self._closure_step()
+            if firing is not None:
+                return firing
+            # Positive quiescence — the boundary gets to speak.
+            if not self._admit_from_boundary():
+                return None
+
+    def _closure_step(self) -> Firing | None:
+        """One purely-positive firing, or ``None`` at closure quiescence."""
         if self._needs_enqueue:
             self._enqueue_pass(self._delta_facts)
             self._needs_enqueue = False
@@ -195,7 +230,8 @@ class Saturator:
         if mirror is not None:
             return mirror
         while self._queue:
-            _priority, _tb, plan, bindings, premises = heapq.heappop(self._queue)
+            _priority, _tb, plan, bindings, premises, guards = heapq.heappop(
+                self._queue)
             key = self._binding_key(plan, bindings)
 
             # Engine._fired is the canonical "already fired" record —
@@ -205,7 +241,7 @@ class Saturator:
             if key in self.engine._fired:
                 continue
 
-            firing = self._apply(plan, bindings, premises, key)
+            firing = self._apply(plan, bindings, premises, key, guards)
             if firing is None:
                 continue
             # A productive (non-redundant) firing wrote a new fact;
@@ -224,6 +260,92 @@ class Saturator:
                     self._enqueue_mirror_sources(firing.derived)
             return firing
         return None
+
+    def _admit_from_boundary(self) -> int:
+        """Judge parked candidates against the quiesced world; admit at most one.
+
+        Returns the number admitted (0 or 1). Parked candidates are examined
+        in the engine's own (priority, FIFO) order and the **first** whose
+        guards pass is admitted; the rest stay parked and are re-judged after
+        the closure quiesces again.
+
+        Why one and not the batch. Admitting a whole round's worth would let
+        one admission invalidate another's guard *after* that guard's verdict
+        was taken — which is the enqueue/fire race this stage exists to
+        remove, merely relocated. It shows up on the classic unstratifiable
+        program ``p ← absent q; q ← absent p``: both guards pass against the
+        empty world, so a batch admission derives **both**, and ``{p, q}`` is
+        not a model of that program under any reading. Admitting one closes
+        the window completely — the queue is empty at quiescence, so the
+        admitted candidate fires immediately, against exactly the world its
+        guard was judged against. Nothing can go stale, which is why there is
+        no fire-time re-check to reinstate and ``naf_dropped`` is 0.
+
+        On a *stratified* program the choice is immaterial: no admission can
+        invalidate another's guard, so one-at-a-time and batch agree — and
+        both agree regardless of the rules' priorities, which is what demotes
+        the priority-band discipline from load-bearing to advisory.
+
+        Failures stay parked. A `forall`'s nested absent flips from failing
+        to passing as the KB grows (``(absent (and G (absent B)))``: adding a
+        ``B`` makes the inner fail and the outer pass), so a parked candidate
+        is a standing question, not a settled one.
+        """
+        if not self._parked:
+            return 0
+        world = World(self.kb)
+        self.naf_rounds += 1
+        rejected: list = []
+        admitted = 0
+        while self._parked:
+            entry = heapq.heappop(self._parked)
+            _priority, tb, plan, bindings, _premises, guards = entry
+            if self._binding_key(plan, bindings) in self.engine._fired:
+                self._park_stamp.pop(tb, None)
+                continue                     # fired by another route
+            # Invalidation: a guard's verdict can only move if one of the
+            # relations its query reads has grown. Most parked candidates are
+            # waiting on something that did not change this round, and
+            # re-running their queries is what makes a naive boundary
+            # quadratic (zebra2 root: 460 parked, 40 rounds).
+            stamp = self._watch_stamp(guards)
+            if self._park_stamp.get(tb) == stamp:
+                rejected.append(entry)
+                continue
+            failing = world.first_failing(guards, bindings)
+            if failing is None:
+                self._park_stamp.pop(tb, None)
+                heapq.heappush(self._queue, entry)
+                self.naf_admitted += 1
+                admitted = 1
+                break
+            if failing.monotone:
+                # Anti-monotone guard, and it found a match: the KB only
+                # grows, so it will keep finding one. This candidate is dead,
+                # not waiting — retire it rather than re-asking every round.
+                self._park_stamp.pop(tb, None)
+                self.naf_retired += 1
+                continue
+            self._park_stamp[tb] = stamp
+            rejected.append(entry)
+        for entry in rejected:
+            heapq.heappush(self._parked, entry)
+        return admitted
+
+    def _watch_stamp(self, guards: tuple[NafGuard, ...]) -> tuple[int, ...]:
+        """Extent sizes of every relation ``guards`` read, in a stable order.
+
+        Equal stamps ⇒ every watched relation holds exactly the facts it did
+        last time this candidate was judged ⇒ the guard sub-plan's match set
+        is unchanged ⇒ so is its verdict. Sizes suffice because the KB grows
+        monotonically within a saturation run: a relation cannot lose a fact,
+        so equal size means equal extent.
+        """
+        fbr = self.kb._facts_by_relation
+        return tuple(
+            len(fbr.get(rel, ()))
+            for g in guards for rel in sorted(g.watched)
+        )
 
     def saturate(
         self, *, max_steps: int | None = None,
@@ -256,12 +378,17 @@ class Saturator:
             yield f
 
     def is_stalled(self) -> bool:
-        """True iff no firing is currently available (the queue holds
-        no unfired binding).
+        """True iff no firing is currently available — at the *two-phase*
+        fixpoint, not merely at closure quiescence.
 
         Forces a fresh enqueue pass first — callers may have written
         facts directly to the KB outside ``step()``'s flow — so any
         newly-matchable binding is picked up before the stalled check.
+
+        S1.21.8: a parked NAF candidate whose guards now pass is a firing
+        that is available, so the check has to consult the boundary too.
+        Answering from the positive queue alone would report "stalled" while
+        a `forall` was one round away from admitting.
         """
         # Always force a fresh pass — callers may have written facts
         # directly to the KB outside of step()'s flow (e.g. P1.5).
@@ -271,10 +398,10 @@ class Saturator:
         # been fired — filter them out before claiming stalled.
         if self._mirror_enabled and self._has_pending_mirror():
             return False
-        return not any(
-            self._binding_key(p, b) not in self.engine._fired
-            for _pr, _tb, p, b, _pr_facts in self._queue
-        )
+        if any(self._binding_key(p, b) not in self.engine._fired
+               for _pr, _tb, p, b, _pf, _g in self._queue):
+            return False
+        return not self._admit_from_boundary()
 
     def contradictions(self) -> tuple:
         """Detect ``(X, (not X))`` same-layer pairs in the current KB.
@@ -419,9 +546,6 @@ class Saturator:
         - a plan never matched yet (e.g. a reflective rule's freshly-compiled
           plan) gets one FULL match — it may match existing facts, not just
           the delta;
-        - a plan whose delta relation lands inside an ``AbsentGuard`` FULL-
-          matches — a ``forall`` may have flipped and there is no positive
-          premise to seed (the D2 completeness case);
         - otherwise the plan is SEEDED at each delta fact
           (:func:`match.run_seeded`) — the matcher iterates the one new fact
           at its premise instead of re-scanning the relation's whole extent
@@ -438,7 +562,7 @@ class Saturator:
                 self._matched_plan_ids.add(id(plan))
                 self._full_match(plan)
             return
-        pos_index, abs_index = self._indexes()
+        pos_index = self._indexes()
         full_done: set[int] = set()
         # Never-matched plans (reflective): one full match each.
         for plan in cache.values():
@@ -446,52 +570,42 @@ class Saturator:
                 self._matched_plan_ids.add(id(plan))
                 full_done.add(id(plan))
                 self._full_match(plan)
-        # Absent-premise plans for any delta relation: full-match once
-        # (a forall may have flipped — not seedable).
-        for rel in {f.relation_name for f in delta_facts}:
-            for plan in abs_index.get(rel, ()):
-                if id(plan) not in full_done:
-                    full_done.add(id(plan))
-                    self._full_match(plan)
         # Positive-premise plans: seed each delta fact (semi-naive).
         for fact in delta_facts:
             for plan in pos_index.get(fact.relation_name, ()):
                 if id(plan) not in full_done:
                     self._seed_match(plan, fact)
 
-    def _indexes(
-        self,
-    ) -> tuple[dict[str, list[JoinPlan]], dict[str, list[JoinPlan]]]:
-        """(positive, absent) relation → plans indexes, rebuilt when the
-        compile cache grows. ``positive`` keys a plan's top-level Scan/Join
-        relations (seedable); ``absent`` keys relations inside its
-        AbsentGuards (must full-match). Cheap (plan-count * premise-count)."""
+    def _indexes(self) -> dict[str, list[JoinPlan]]:
+        """relation → plans index, rebuilt when the compile cache grows.
+
+        Keys a plan's top-level Scan/Join relations — the seedable ones.
+        S1.21.8 dropped the companion `absent` index: guards no longer
+        participate in matching, so no relation can force a full re-match.
+        Cheap (plan-count * premise-count)."""
         cache = self.engine.cache
         if self._pos_index is None or self._index_n != len(cache):
             pos: dict[str, list[JoinPlan]] = {}
-            absent: dict[str, list[JoinPlan]] = {}
             for plan in cache.values():
                 for rel in _positive_relations(plan):
                     pos.setdefault(rel, []).append(plan)
-                for rel in _absent_relations(plan):
-                    absent.setdefault(rel, []).append(plan)
             self._pos_index = pos
-            self._abs_index = absent
             self._index_n = len(cache)
-        return self._pos_index, self._abs_index
+        return self._pos_index
 
     def _full_match(self, plan: JoinPlan) -> None:
-        """Full re-match of a plan (cold pass / new plan / absent-flip)."""
+        """Full re-match of a plan (cold pass / new plan)."""
         priority = self._priority_for(plan)
-        for bindings, premises in match.run(plan, self.kb):
-            self._enqueue_binding(plan, bindings, premises, priority)
+        for bindings, premises, guards in match.run_guarded(plan, self.kb):
+            self._enqueue_binding(plan, bindings, premises, priority, guards)
 
     def _seed_match(self, plan: JoinPlan, fact: Fact) -> None:
         """Semi-naive seed (D5): enqueue plan matches in which ``fact`` plays
         a positive premise."""
         priority = self._priority_for(plan)
-        for bindings, premises in match.run_seeded(plan, fact, self.kb):
-            self._enqueue_binding(plan, bindings, premises, priority)
+        for bindings, premises, guards in match.run_seeded_guarded(
+                plan, fact, self.kb):
+            self._enqueue_binding(plan, bindings, premises, priority, guards)
 
     def _enqueue_binding(
         self,
@@ -499,9 +613,16 @@ class Saturator:
         bindings: dict[str, Any],
         premises: tuple[Fact, ...],
         priority: int,
+        guards: tuple[NafGuard, ...] = (),
     ) -> None:
-        """Dedup a (plan, bindings) match against ``_seen`` / ``_fired`` and
-        push it onto the priority queue if fresh."""
+        """Dedup a (plan, bindings) match and route it to queue or park.
+
+        S1.21.8 — a match whose disjunct carries `(absent …)` guards does NOT
+        enter the firing queue. It is *parked* for the boundary, because the
+        closure must be allowed to reach a fixpoint before any negation is
+        consulted; enqueuing it here would be asking "is P absent?" of a
+        half-built world, which is the placement the stage removes.
+        """
         key = self._binding_key(plan, bindings)
         if key in self._seen:
             return
@@ -510,10 +631,9 @@ class Saturator:
             return
         self._seen.add(key)
         self._tiebreaker += 1
-        heapq.heappush(
-            self._queue,
-            (priority, self._tiebreaker, plan, dict(bindings), premises),
-        )
+        entry = (priority, self._tiebreaker, plan, dict(bindings), premises,
+                 guards)
+        heapq.heappush(self._parked if guards else self._queue, entry)
 
     def _record_alternative(
         self,
@@ -560,8 +680,16 @@ class Saturator:
         bindings: dict[str, Any],
         premises: tuple[Fact, ...],
         key: tuple,
+        guards: tuple[NafGuard, ...] = (),
     ) -> Firing | None:
-        """Apply one popped candidate; build a Firing (productive or redundant)."""
+        """Apply one popped candidate; build a Firing (productive or redundant).
+
+        ``guards`` are the boundary conditions this candidate was admitted
+        under. They are **not** re-evaluated here — that was the fire-time
+        re-check S1.21.8 deleted — but they are recorded as the firing's
+        *negative* premises, so a provenance walk can see what the conclusion
+        depended on not holding.
+        """
         if not plan.assert_templates:
             # Defensive — no assert clause, nothing to derive. Mark
             # fired so the queue doesn't churn on it forever.
@@ -602,16 +730,14 @@ class Saturator:
                 redundant=True,
             )
 
-        # S1.5a.1 fire-time NAF re-evaluation. An AbsentGuard premise
-        # that passed at enqueue time may have been invalidated by a
-        # rule that derived the watched fact in the interim. Skip the
-        # firing in that case — the binding stays in `_fired` so the
-        # queue doesn't churn on it.
-        if not match.absents_still_pass(plan, bindings, self.kb):
-            self.naf_dropped += 1
-            return None
-
-        firing = fire(plan, bindings, premises, self.kb)
+        absent_premises = (
+            World(self.kb).negative_premises(guards, bindings)
+            if guards else ()
+        )
+        firing = fire(
+            plan, bindings, premises, self.kb,
+            absent_premises=absent_premises,
+        )
         # `fire()` already calls kb.add_fact + _index_fact; the new
         # fact participates in subsequent enqueue passes.
         return firing

@@ -49,7 +49,7 @@ every component below is recognisable as a piece of one of them:
 
 | paradigm | what Ein borrows | classic systems |
 |---|---|---|
-| **Deductive database** (Datalog) | bottom-up forward chaining to a least fixpoint; stratified negation | Soufflé, LogicBlox, DDlog, Datomic |
+| **Deductive database** (Datalog) | bottom-up forward chaining to a least fixpoint; negation evaluated stratum-at-a-time (here: at a closure/world boundary, §O3) | Soufflé, LogicBlox, DDlog, Datomic |
 | **CSP / SAT solver** | branch on undecided choices, propagate, detect clashes, learn no-goods | DPLL/CDCL (MiniSat, Chaff), CSP (Gecode), ASP (clingo) |
 | **Truth-maintenance system** (ATMS) | hypotheses as *assumptions*, no-goods, provenance/justifications, retract-on-contradiction | de Kleer's ATMS, JTMS |
 
@@ -57,8 +57,11 @@ The implementation splits cleanly into two layers along the
 monotone/non-monotone seam:
 
 - **Deductive layer (monotone, append-only).** Saturate: fire rules to
-  quiescence, never retract. `saturator.py`, `match.py`, `compile.py`,
-  `engine.py`, `firing.py`, `contradiction.py`, `resolve.py`,
+  quiescence, never retract. Since S1.21.8 it is itself two-phase — a
+  **purely positive closure** that consults no negation, and a **boundary**
+  at each closure quiescence where the `(absent …)` guards are judged
+  against that fixpoint (§O3). `saturator.py`, `match.py`, `compile.py`,
+  `engine.py`, `firing.py`, `world.py`, `contradiction.py`, `resolve.py`,
   `predicates.py`.
 - **Search layer (non-monotone).** Branch: enumerate candidate
   *commitments*, fork-and-saturate each, learn from deaths, dedup models,
@@ -79,12 +82,17 @@ monotone/non-monotone seam:
    + 7 reverse indexes  + EqClasses(union-find)  + provenance
         │
         │  Engine.compile_all()   rule × activator → JoinPlan
-        ▼                         (Scan/Join/Guard/AbsentGuard)
+        │                         positive Scan/Join/Guard steps
+        ▼                         + naf_guards (compile.split_naf)
   ┌─────────────────────────────────────────────────────────┐
   │  DEDUCTIVE LAYER  (monotone, per KB)                      │   ── inference ──
-  │   Saturator.saturate()  ── forward-chain to fixpoint ──   │
+  │   Saturator.saturate()  ── two phases to fixpoint ──      │
+  │    CLOSURE  (purely positive — no negation consulted)     │
   │     match (multi-way join)  → fire  → append fact         │
   │     ▲ priority queue, delta-driven (semi-naive, S1.8.B2v) │
+  │     │ a NAF-guarded match is PARKED, never enqueued       │
+  │    BOUNDARY  at quiescence: World(kb) judges the parked   │
+  │     └ candidates, admits ONE → back into the closure      │
   │   ContradictionDetector.detect()  (X,¬X) | (false)        │
   └─────────────────────────────────────────────────────────┘
         ▲ fork()                                  │ alive set
@@ -106,15 +114,27 @@ monotone/non-monotone seam:
 
 **The deductive inner loop** (one KB → fixpoint). `Engine.compile_all`
 compiles every `(rule, activator)` pair into a `JoinPlan` — a sequence of
-`Scan`/`Join`/`Guard`/`AbsentGuard` opcodes (`compile.py`). The
-`Saturator` runs a priority queue of enqueued `(plan, binding)` firings; each
-`step()` pops the highest-priority unfired binding, applies it (`firing.fire`
-→ append a reasoning-layer `Fact` with provenance), and re-enqueues the
-matches the new fact enables. It halts at quiescence (no new firing). Since
-S1.8.B2v the re-enqueue is **delta-driven**: only plans whose premises touch
-the just-derived fact's relation are re-matched, and they are **seeded** at
-the new fact rather than re-scanned (`saturator._enqueue_pass`,
-`match.run_seeded`).
+`Scan`/`Join`/`Guard` opcodes (`compile.py`). Since S1.21.8 that sequence is
+**purely positive**: `compile.split_naf` lifts every top-level `(absent …)`
+premise out into `JoinPlan.naf_guards`, one guard tuple per `(or …)`
+disjunct, which `JoinPlan.disjuncts()` pairs back with its steps. The
+`Saturator` then alternates two phases (`step()`). In the **closure** phase it
+runs a priority queue of enqueued `(plan, binding)` firings; each
+`_closure_step()` pops the highest-priority unfired binding, applies it
+(`firing.fire` → append a reasoning-layer `Fact` with provenance), and
+re-enqueues the matches the new fact enables — consulting no negation
+anywhere. A match whose disjunct carries guards never enters that queue: it is
+**parked** (`_enqueue_binding`). At closure quiescence the **boundary** phase
+builds a `World` over the stalled KB, judges the parked candidates against
+that fixpoint, and admits exactly **one** (`_admit_from_boundary`), which
+re-enters the closure. `step()` returns `None` — the real fixpoint — only when
+a quiescence admits nothing. Since S1.8.B2v the closure's re-enqueue is
+**delta-driven**: only plans whose premises touch the just-derived fact's
+relation are re-matched, and they are **seeded** at the new fact rather than
+re-scanned (`saturator._enqueue_pass`, `match.run_seeded_guarded`).
+`Engine.step()` — the queue-less loop the `Saturator` wraps — implements the
+same two phases directly: positive matches first, the boundary only once none
+remain.
 
 **The search outer loop** (many KBs → a verdict). `_phase1_root` saturates
 the root and runs the *forced-positive cascade* (while the alive set is a
@@ -131,7 +151,12 @@ branch's consequences never merge back (the "unconditional"-fact extraction
 was retired in P1.21 R2 as unsound under NAF). The verdict is read off
 the deduped count k (`verdict_of`).
 
-The **target** refinement of this picture — the closure/worlds seam with NAF lifted out of the closure onto the boundary, plus the current leak list — is recorded in [`../architecture.md` §closure/worlds seam](../architecture.md#the-closureworlds-seam-target-architecture) (P1.21 R6; target, not shipped).
+The **closure/worlds seam** this picture is drawn against — NAF lifted out of
+the closure onto an explicit boundary — is **shipped** as of S1.21.8; the seam
+census and the package-layout debt it names live in
+[`../architecture.md` §closure/worlds seam](../architecture.md) (P1.21 R6),
+and the normative reading of a boundary query is
+[`absent_semantics.md`](absent_semantics.md).
 
 ---
 
@@ -142,10 +167,11 @@ The **target** refinement of this picture — the closure/worlds seam with NAF l
 | `Fact` (`kb/entities`) | `(relation_name, args)` identity; `args ∈ str \| int \| Fact` (nested = a relational node); carries `layer` + `provenance` | a ground atom / tuple / labelled hyperedge |
 | `Relation` (`kb/entities`) | a named relation + `signature` (type atoms) | a database relation schema / predicate symbol |
 | `Rule` (`kb/entities`) | `params`, `match` pattern, `assert`, `priority`, activator | a Datalog/production rule (Horn-ish clause) |
-| `JoinPlan` + `Scan`/`Join`/`Guard`/`AbsentGuard` (`compile`) | a rule's `:match` compiled to a join program over relations | a query plan / RETE network / WAM-ish opcode list |
+| `JoinPlan` = `Scan`/`Join`/`Guard` steps + `NafGuard`s (`compile`) | a rule's `:match` compiled to a join program over relations; its `(absent …)` premises split off (`split_naf`) into a per-disjunct guard tuple, paired back by `disjuncts()` | a query plan / RETE network / WAM-ish opcode list, plus its negation side-conditions |
+| `World` (`world`) | a read-only view of a saturated KB taken at a quiescence point (not a snapshot), plus the commitment it assumes; the only thing an `(absent …)` is ever asked of (`holds` / `absent` / `admits` / `negative_premises`) | a possible world / an ATMS environment; the `W` of `W ⊭ ∃x̄.Pθ` |
 | 7 KB indexes (`kb/store`) | `_facts_by_relation`, **`_facts_by_rel_slot_val`** (the participation index, `(rel,slot,val)→facts`), `_negated_facts`, `_rule_apps_*`, `names`, … | database join indexes; RETE alpha-memories |
 | `EqClasses` (`kb/store`) | union-find over names (a *placeholder* — no propagation yet) | disjoint-set / congruence classes / e-graph |
-| `Provenance` + `DerivationDAG` (`kb/provenance`) | per-**derivation** justification (`source`/`rule`/`hypothesis`) — a fact is an OR-node over the ones recorded for it (`kb.justifications`); the derivation AND/OR graph, source frontier | TMS justifications; database why-provenance; proof terms |
+| `Provenance` + `DerivationDAG` (`kb/provenance`) | per-**derivation** justification (`source`/`rule`/`hypothesis`) — a fact is an OR-node over the ones recorded for it (`kb.justifications`); `absent_premises` records the queries that had to *fail* (recorded, not yet interpreted); the derivation AND/OR graph, source frontier | TMS justifications; database why-provenance; proof terms |
 | `CanonicalSetId` (`apriori`) | a sorted tuple of FactIds = one **commitment set** | a CSP partial assignment / an ATMS environment / an itemset |
 | no-good `Clause = frozenset[FactId]` (`nogoods`) | a learned "this combination is dead" clause, kept subsumption-minimal | CDCL conflict clause / CSP no-good |
 | `SolutionRecord` / `DeadCommitment` (`monotonic/lattice`) | a recorded model / refutation with its `state_key` and core | model / unsat certificate |
@@ -163,8 +189,10 @@ and the fast/optimal algorithm known for it.
   `(R ?a ?b) ∧ (S ?b ?c) ∧ …` against the KB. (`match._run_steps`.)
 - **O2 — Forward-chaining saturation to a fixpoint.** Fire rules until no
   new fact. (`saturator`.)
-- **O3 — Negation as failure.** `(absent P)` / `forall` premises.
-  (`match.absents_still_pass`, `AbsentGuard`.)
+- **O3 — Negation as failure.** `(absent P)` / `forall` premises — lifted out
+  of the closure plan at compile time, judged at the closure/world boundary.
+  (`compile.split_naf` → `NafGuard`, `world.World.absent`,
+  `saturator._admit_from_boundary`.)
 - **O4 — Equality / congruence.** Merge co-referent names. (`EqClasses`,
   `resolve_leaf` — currently a stub.)
 - **O5 — Contradiction detection.** Find `(X, ¬X)` or `(false)`.
@@ -257,8 +285,14 @@ order — a scheduling refinement over pure rounds). It was *naive* (re-match
 everything each pass); **S1.8.B2v D2** made the within-run re-enqueue
 delta-driven (semi-naive at the *which-plans* granularity), and **D5** made
 the delta application semi-naive at the *where-in-the-plan* granularity (seed
-from the new fact). Measured ~3.6× over naive. **Gap:** no magic-sets /
-goal-direction (it's fully bottom-up; the `hypgen` + lookahead layer is the
+from the new fact). Measured ~3.6× over naive. S1.21.8 then made the loop
+**two-phase** — a purely positive closure run to quiescence, then one boundary
+admission, repeat (§O3) — which is the stratum-at-a-time shape of stratified
+Datalog evaluation applied to one saturation, and it came out *faster*:
+dropping the absent-flip full-match split more than pays for the boundary
+evaluations that replace it (an exhaustive `zebra2` solve ~10.4 s → ~8.5 s;
+the acceptance gate 130 s → 91 s). **Gap:** no magic-sets / goal-direction
+(it's fully bottom-up; the `hypgen` + lookahead layer is the
 goal-direction substitute), no DRed (the append-only design means deletion
 never happens *within* a saturation — retraction is modelled by forking a
 fresh KB instead).
@@ -272,20 +306,63 @@ fresh KB instead).
 **Answer-Set Programming** (clingo/clasp, DLV) — the production answer to
 non-monotone rules.
 
-**Ein today.** `(absent P)` compiles to an `AbsentGuard`, re-checked at
-**fire time** (`match.absents_still_pass`) to close the enqueue-vs-fire race
-(S1.5a.1); `forall` desugars to a nested absent. Within one saturation the
-KB is append-only, so a once-true absent can only *flip to false* (more
-facts) — which the saturator handles by full-matching absent-premise plans
-(the S1.8.B2v "absent-flip" case). **The non-monotonicity lives in the
-search layer, not the deductive one**: retraction = "this assumption led to
-⊥, fork without it." That makes the *whole* system an ATMS/default reasoner
-rather than a stratified-Datalog one. **Gap:** no well-founded/stable-model
-machinery — sound because the puzzle ruleset is effectively stratified +
-the hypothesis layer is monotone-per-branch. The **normative semantics**
-(worlds, the `W(t) ⊭ ∃x̄.Pθ` definition, evaluation points E1–E3,
-corollaries C1–C7, and the explicit non-guarantees this Gap gestures at)
-is [`absent_semantics.md`](absent_semantics.md) (P1.21 R4).
+**Ein today — one evaluation point, at an explicit boundary (S1.21.8).**
+`(absent P)` still compiles to an `AbsentGuard`, but `compile.split_naf`
+**lifts** every top-level one out of the plan, so what the closure runs is a
+purely positive program and a match says nothing about negation. The lifted
+`NafGuard`s hang off `JoinPlan.naf_guards`, one tuple per disjunct; a match
+whose disjunct carries them is parked rather than enqueued. At closure
+quiescence the saturator builds a `World` over the stalled KB and asks it:
+`World.absent` runs the guard's sub-plan under the bindings *projected to*
+`NafGuard.scope` — the vars bound by the premises that **preceded** the guard,
+which is what makes lifting exactly as strong as evaluating in place
+(`(and (absent (P ?x)) (Q ?x))` still means "no `P` at all";
+`(and (Q ?x) (absent (P ?x)))` still means "no `P` for this `x`"). One passing
+candidate is admitted per round — `naf_rounds` / `naf_admitted` /
+`naf_retired` are that loop's observables, "retired" being a candidate whose
+*anti-monotone* guard has found a match and so can never pass again. `forall`
+still desugars to a nested absent, and that nesting is *not* lifted — it
+belongs to the negative query, which the boundary evaluates as one unit.
+
+Three consequences, all load-bearing:
+
+- **Nothing to re-check.** `match.absents_still_pass` (the fire-time re-check
+  that closed the enqueue-vs-fire race, S1.5a.1) and
+  `saturator._absent_relations` (the absent-flip full-match split, S1.8.B2v)
+  are **deleted, not bypassed**. Admission is one-at-a-time into an empty
+  queue, so the admitted candidate fires against precisely the world its
+  guard was judged against — no window in which a verdict can go stale, and
+  `Saturator.naf_dropped` is structurally 0. The `forall` false→true flip the
+  full-match split existed for is caught instead by re-judging parked
+  candidates at each quiescence, gated on the extent sizes of
+  `NafGuard.watched`: cheaper than a full re-match *and* strictly more
+  complete (it also catches a flip with no delta in the watched relation).
+- **Order-independence on stratified programs.** A guard is judged against a
+  positive fixpoint, so `W ⊭ ∃x̄.Pθ` is literal rather than approximated by
+  fire-time re-checking, and *what is derivable no longer depends on rule
+  priority*. The Q41 priority bands drop from load-bearing to **advisory**
+  scheduling.
+- **Negative dependence is recorded.** An admitted firing writes the queries
+  that had to fail into `Provenance.absent_premises` (§O6) — recorded, not
+  yet interpreted.
+
+**The non-monotonicity still lives in the search layer, not the deductive
+one**: retraction = "this assumption led to ⊥, fork without it." That makes
+the *whole* system an ATMS/default reasoner rather than a stratified-Datalog
+one — but the deductive layer now *evaluates* negation the way stratified
+Datalog does, one closure at a time. **Gap:** no well-founded/stable-model
+machinery and **no stratification checker**. A genuinely non-stratified rule
+set (`p ← absent q; q ← absent p`) is still answered by operational order —
+now boundary-admission order rather than priority-then-FIFO — and the engine
+reports one model where several exist without saying so;
+`naf_deps.DerivedNafWarning` (advisory, `SolverConfig.warn_derived_naf`,
+default off) flags the shape that can cause it, re-grounded by S1.21.8 from a
+soundness warning to a stratification one. The **normative semantics**
+(worlds, the `W ⊭ ∃x̄.Pθ` definition, the single evaluation point E1 with
+E2 retired, corollaries C1–C7 with C4/C5 retired and C2 re-grounded, and the
+explicit non-guarantees this Gap gestures at) is
+[`absent_semantics.md`](absent_semantics.md) (P1.21 R4, re-grounded by
+S1.21.8).
 
 ### O4 — Equality / congruence
 
@@ -333,7 +410,14 @@ primary is the frontier, and a rule-kind primary with empty `premises_raw` is a
 synthetic engine writeback whose contract is that provenance grounds out on it,
 [`reserved_engine_strings.md`](reserved_engine_strings.md)). Recording is gated
 by `SolverConfig.record_alternative_justifications` (default on; measured +2.5 %
-median on an exhaustive `zebra2` solve).
+median on an exhaustive `zebra2` solve). S1.21.8 added the *negative* half: a
+firing admitted at the NAF boundary (§O3) records the `(absent …)` queries
+that had to fail in `Provenance.absent_premises` — one `(relation, args)`
+pattern each, `None` where the query ranged free — so `Deps(Y)`, the union of
+`PositiveDeps(Y)` and `NegativeDeps(Y)` (REVIEW_M1-01 §2), is finally
+*representable*. It is recorded, **not interpreted**: `unsat_core`,
+`explain`, `frontier` and the trace's "using" line all still read positive
+premises only.
 
 Over that graph, `explain.py`'s `explain()` /
 `minimal_contradiction_frontier()` run ATMS-style **label propagation** — a
@@ -364,7 +448,10 @@ flat edge set cannot express.
 so. (1) **Not a subset-minimal MUS** — no proper subset is checked for
 satisfiability (the caveat flagged in P1.7a), and the textbook deletion-based
 minimiser is **NAF-unsound here** (S1.9.E19; corollary C3 of
-[`absent_semantics.md`](absent_semantics.md)).
+[`absent_semantics.md`](absent_semantics.md) — the recorded
+`absent_premises` make a *sound* variant conceivable, since a candidate
+subset would have to preserve every negative query as well, but nothing
+implements that and until something does the caveat stands).
 (2) **Recorded, not all, derivations** — the alternatives searched are the
 firings the saturator attempted, capped per fact, so minimality stays relative
 to the rule set and the saturation strategy. (3) **Budgeted** — the
@@ -418,7 +505,14 @@ firing before paying for a fork+saturate, caching each kill as a learned unit
 `(not h)` (`hypgen._write_negated`, gated by `enable_lookahead_kill_cache` —
 ≈ a unit clause + unit propagation); the **forced-positive cascade** —
 promoting a singleton-alive hypothesis to root and re-saturating
-(`_helpers._promote_forced_positives`) — is its positive dual. **Gap:** no backjumping (plain BFS), no VSIDS-style
+(`_helpers._promote_forced_positives`) — is its positive dual. The lookahead
+is the search layer's only direct reader of a rule's `(absent …)` guards, and
+S1.21.8 fixed the world it read them in (divergence D3): a guard
+must hold in the world **with** `h` — no match in `kb` *and* `h` creating
+none — and a guard whose verdict that test cannot decide (one with a nested
+absent, non-monotone in the KB) makes the lookahead skip the disjunct rather
+than guess, which only loses a kill and so keeps the "never reports a live
+hypothesis as dead" contract. **Gap:** no backjumping (plain BFS), no VSIDS-style
 activity ordering (there is a `score_hypothesis` hook, S1.5a.7, mostly a
 stub), no watched-literals. These are exactly the pieces a DPLL/CDCL
 re-architecture (O7) would bring.
@@ -462,13 +556,20 @@ levers map onto the literature precisely:
   (exhaustive-search speedup umbrella).
 - **Congruence closure / e-graph (O4)** — only when equality reasoning earns
   its keep (F4).
+- **Static stratification checking (O3)** — the boundary makes *stratified*
+  programs order-independent, but nothing yet tells an author their rule set
+  is not one; `naf_deps` is the advisory proxy in the meantime.
 
 The two-layer split also names the engine's **soundness story** cleanly: the
 deductive layer is monotone (a least fixpoint, trivially sound), and *all*
-non-monotonicity is quarantined in the search layer as
+retraction-shaped non-monotonicity is quarantined in the search layer as
 assumption-and-retract — which is why "a correct engine never exhausts a SAT
 problem to ⊥ and never calls a non-model a model" (P1.7a) is checkable as a
-property of the lattice, not of any single rule firing.
+property of the lattice, not of any single rule firing. S1.21.8 sharpened the
+deductive half: the *closure* is the least fixpoint, purely positive, and the
+one non-monotone question it has to answer — `(absent …)` — is asked only at
+the boundary between two closures, against a saturated world rather than a
+half-built KB (§O3).
 
 ---
 
