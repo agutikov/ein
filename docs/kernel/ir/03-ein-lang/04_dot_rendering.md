@@ -55,10 +55,16 @@ list-node-per-relation Levi view is unreadable as a default. So
 `ein.ir.to_dot` renders **compact** by
 default: a binary fact `(rel a b)` collapses to one labelled,
 relation-coloured arrow `a → b [label="rel"]` (the colour is the
-shared per-relation palette — see §Unified KB view). n-ary facts stay
-Levi-bipartite (no native hyperedge to collapse). The canonical
-Levi-bipartite view of *every* relation is opt-in via
-`to_dot(…, levi=True)` / `EIN_RENDER_LEVI=1`.
+shared per-relation palette — see §Unified KB view), and a **unary**
+fact `(rel a)` to a labelled self-loop `a → a [label="rel"]` — the same
+collapse with source == target (S1.22.4). That is the compact view's
+convention for the predicate-as-subset idiom `(symmetric R)` /
+`(bijective R)` / `(relation R)`; it keeps per-fact edge styling
+(derived → dashed, transition highlight → `penwidth`) that an octagon
+would scatter over two DOT elements. `not`-headed facts keep their own
+encoding. Remaining arities stay Levi-bipartite (no native hyperedge to
+collapse). The canonical Levi-bipartite view of *every* relation is
+opt-in via `to_dot(…, levi=True)` / `EIN_RENDER_LEVI=1`.
 
 ## Ontology — UML-ish
 
@@ -242,7 +248,8 @@ for the design plan; the implementation is
 | type-role node (from `is-a`/`type` facts) | `shape=box`                              |
 | instance/object node (leaf)         | `shape=oval`                                   |
 | Binary `Fact(rel, a, b)`            | direct edge `a → b [label=rel ...]`            |
-| n-ary `Fact` (arity ≠ 2)            | `shape=octagon` Levi node + n slot-edges       |
+| Unary `Fact(rel, a)`                | self-loop `a → a [label=rel ...]`              |
+| n-ary `Fact` (arity ∉ {1, 2})       | `shape=octagon` Levi node + n slot-edges       |
 | Instance-of (type-edge)             | `style=dashed, arrowhead=empty, label="is-a"`  |
 | `is-a` fact (zebra2 encoding)       | same as instance-of (dashed empty arrow)        |
 | background fact (no annotation)     | `style=solid`, plain                            |

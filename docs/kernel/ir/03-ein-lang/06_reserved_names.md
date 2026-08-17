@@ -61,7 +61,7 @@ same set.
 
 | name | form | meaning | engine site |
 |------|------|---------|-------------|
-| `relation` | `(relation R A B …)` | declare a relation-type node + its arg-type signature (name + **≥ 1** type atom; what the signature *means* — userspace types vs kernel structure — is [`01_grammar.md` §relation declarator](01_grammar.md#what-the-signature-means--userspace-types-kernel-structure), its one definitive home) | `kb.from_ir`; `entities.KERNEL_META_RELATIONS` |
+| `relation` | `(relation R [A B …])` | declare a relation-type node + its arg-type signature (name + **≥ 0** type atoms; also stores the arity-1 membership fact `(relation R)`. What the signature *means* — userspace types vs kernel structure — is [`01_grammar.md` §relation declarator](01_grammar.md#what-the-signature-means--userspace-types-kernel-structure), its one definitive home) | `kb.from_ir`; `entities.KERNEL_META_RELATIONS` |
 | `rule` | `(rule N (?p…) :match … :assert …)` | declare a saturation rewrite rule | `kb.from_ir` |
 | `hrule` | `(hrule N (?p…) :match … :assert …)` | declare a hypothesis-generation rule (drives `hypgen`, never fired by the saturator) | `kb.from_ir`; `hypgen` |
 | `query` | `(query :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
@@ -157,11 +157,13 @@ candidate stays parked and is re-judged at every later quiescence
   [S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md);
   a puzzle's inheritance rules ARE its type system, in user space.
   `T` is merely the conventional **"don't care" filler** for a signature
-  slot — any atom gives identical kernel behaviour. The slot cannot simply
-  be *dropped*, for two reasons: the grammar demands at least one type atom
-  (`relation_decl: … SYMBOL SYMBOL+ …`), and the kernel keys
-  hypothesis-eligibility on the signature being **non-empty**
-  ([`01_grammar.md` §what the signature means](01_grammar.md#what-the-signature-means--userspace-types-kernel-structure)).
+  slot — any atom gives identical kernel behaviour. The slot *may* be
+  dropped since S1.22.4 (`(relation R)` is a legal bare declaration), but
+  dropping it changes the semantics: the kernel keys
+  hypothesis-eligibility on the signature being **non-empty**, so a bare
+  declaration is never guessed. `T` is what you write when you want a
+  guessable relation and have no meaningful type to name
+  ([`01_grammar.md` §relation declarator](01_grammar.md#relation-declarator)).
   Because nothing is reserved here, **orthogonal type systems coexist** —
   in-tree proof: [`zebra.ein`](../../../../examples/zebra.ein) uses split
   `type` / `instance` relations while

@@ -21,8 +21,11 @@ relation-coloured arrow `a -> b [label="rel"]`. The canonical
 Levi-bipartite view — every relation a list-node (`octagon`) with
 role-labelled arrows to its participants — is faithful but unreadable
 as a default; it stays available via ``levi=True`` (CLI ``--levi`` /
-``EIN_RENDER_LEVI=1``). n-ary facts (arity ≠ 2) render Levi-bipartite
-in both modes (DOT has no native hyperedge).
+``EIN_RENDER_LEVI=1``). A **unary** fact `(rel a)` collapses to a
+labelled self-loop `a -> a [label="rel"]` — the degenerate case of the
+same rule, and the compact view's convention for the
+predicate-as-subset idiom (S1.22.4). Remaining arities render
+Levi-bipartite in both modes (DOT has no native hyperedge).
 
 The renderer is *structural*: only graph structure is fixed by the
 schema; layout (positions, rank, unspecified styles) is free.
@@ -133,10 +136,11 @@ def _emit_fact(b: _Builder, fact: SForm, *, derived: bool = False,
     """Emit one fact.
 
     Reserved-word facts (`=`, `instance`, `not`) get specialised
-    encodings. A generic *binary* relation collapses to one labelled
-    arrow in the default *compact* view, or — under ``levi=True`` —
-    keeps the canonical Levi-bipartite octagon. n-ary relations
-    (arity ≠ 2) are always Levi-bipartite (DOT has no native hyperedge).
+    encodings. In the default *compact* view a generic **binary**
+    relation collapses to one labelled arrow and a generic **unary**
+    relation to a labelled self-loop (S1.22.4); under ``levi=True`` both
+    keep the canonical Levi-bipartite octagon, as do all remaining
+    arities (DOT has no native hyperedge).
     """
     head = fact.head.name
     positional = tuple(a for a in fact.args if not isinstance(a, KwPair))
@@ -169,6 +173,25 @@ def _emit_fact(b: _Builder, fact: SForm, *, derived: bool = False,
     # Negative fact → recurse into the wrapped expression, mark dashed
     if head == "not" and len(positional) == 1 and isinstance(positional[0], SForm):
         _emit_fact(b, positional[0], derived=True, levi=levi)  # dashed
+        return
+
+    # Compact (default): a UNARY relation is a relation-coloured self-loop
+    # on its single argument — the degenerate case of the binary collapse
+    # below, with source == target (S1.22.4 T1.22.4.5). This is the compact
+    # view's convention for the predicate-as-subset idiom `(symmetric R)` /
+    # `(bijective R)`; the Levi view keeps the one-armed octagon. `not` is
+    # excluded — its own encoding is above, and a bare `(not X)` reads as a
+    # negation marker, not a property of `X`.
+    if (not levi and len(positional) == 1 and head != "not"
+            and isinstance(positional[0], (Atom, Var, Wildcard))):
+        (a,) = positional
+        _emit_atom(b, a)
+        colour = hash_color(head)
+        style = "dashed" if derived else "solid"
+        b.edge(_atom_id_for_value(a), _atom_id_for_value(a),
+               f'label="{head}", color="{colour}", '
+               f'fontcolor="{colour}", style={style}')
+        _ = kwpairs
         return
 
     # Compact (default): a binary relation is one relation-coloured

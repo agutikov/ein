@@ -94,7 +94,12 @@ start: form*
 // falls to `generic_fact`, which the loader then rejects as a malformed
 // relation. Token disambiguation works because trailing `:kw value` pairs
 // lex as KEYWORD, not SYMBOL.
-relation_decl: "(" "relation" SYMBOL SYMBOL+ kw_pair* ")"
+// S1.22.4 T1.22.4.4 — the signature is `SYMBOL*`, not `SYMBOL+`: a bare
+// `(relation R)` declares a relation node with NO declared arg types (and
+// is the same form as the membership fact T1.22.4.2 emits). `(relation)`
+// alone still fails to match (the name SYMBOL is mandatory) and falls to
+// `generic_fact`, which the loader rejects.
+relation_decl: "(" "relation" SYMBOL SYMBOL* kw_pair* ")"
 
 // ═══════════ Facts (the flat default — any non-declarator head) ═══════════
 // A fact is `=` / `not` / any generic `(NAME args*)` form. `(type …)` /

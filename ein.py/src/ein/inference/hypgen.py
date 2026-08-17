@@ -290,8 +290,18 @@ def _fill_slot(
     Its narrower replacement (``fact_already_exists``) lives in
     :func:`_apply_filters`.
     """
+    # S1.22.4 T1.22.4.3 — arity 1: the candidate IS `(R obj_ref)`; there is
+    # no second slot to fill, so no filler loop and no self-edge check. One
+    # candidate per focal object, versus |objects| for a binary relation.
+    if len(rel.signature) == 1:
+        yield Fact(
+            relation_name=rel.name,
+            args=(obj_ref.name,),
+            provenance=None,
+        )
+        return
     if len(rel.signature) != 2:
-        return     # M1 only handles arity-2 relations
+        return     # arity ≥ 3 is still unenumerated
     other_slot = 1 - fixed_slot
 
     # S1.7.24 — no kernel symmetric-awareness in generation: the

@@ -139,11 +139,19 @@ introspected by L3 rules in the live engine.
 
 This is the **userspace half** of the signature's meaning. The kernel
 reads the same declarations too — but only their *shape* (present /
-length-2 / the set of type atoms), never an atom's content-as-type. The
+length / the set of type atoms), never an atom's content-as-type. The
 two roles and their exact engine sites are tabulated in
 [`01_grammar.md` §what the signature means](01_grammar.md#what-the-signature-means--userspace-types-kernel-structure);
 without that split, "signatures are data rules consume" reads as if the
 engine were type-checking behind your back. It is not.
+
+**Mind the arity.** `(relation ?R ?A ?B)` matches only *binary*
+declarations — the pattern above is the schema-reading one, and a puzzle
+that declares `(relation adult Person)` is invisible to it. For the
+membership question — *"is `?R` a declared relation at all?"* — match the
+arity-1 companion fact `(relation ?R)`, which every declaration stores
+(S1.22.4). It is the reflective root of this file made matchable: the
+subset of nodes that are relations, expressed as an ordinary unary fact.
 
 **The property algebra *is* Ein-in-Ein.** `symmetric`, `transitive`,
 `functional`, `injective`, `total`, `surjective`, `bijective`,

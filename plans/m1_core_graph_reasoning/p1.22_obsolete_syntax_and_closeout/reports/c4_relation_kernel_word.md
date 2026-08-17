@@ -1,7 +1,8 @@
 # C4 — `relation` as a kernel word: decision memo
 
 **Stage:** [S1.22.4](../s1.22.4_relation_kernel_word.md), task T1.22.4.1
-(decision + park; no engine change). **Date:** 2026-08-17.
+(the decision; T1.22.4.2–.5 then implement what §5 found). **Date:**
+2026-08-17.
 **Tree:** post-S1.22.3 (`7a6b5f8`). **Decision input:**
 [S1.22.3's census](../s1.22.3_relation_signature_semantics.md), now placed
 prose in [`01_grammar.md` §what the signature means](../../../../docs/kernel/ir/03-ein-lang/01_grammar.md).
@@ -28,7 +29,7 @@ prose in [`01_grammar.md` §what the signature means](../../../../docs/kernel/ir
 | Does (ii) shrink the kernel? | **No.** The three structural signals (S1.22.3 census) survive verbatim; only the channel changes (§1). |
 | Is "`relation` as a **stdlib** word" available at all? | **No.** No rule in a `.ein` file can create an entity, assign `NameRef.category`, capture `:why`, or reject a duplicate at load (§1.2). |
 | Is the user's item-5 ask satisfied by (i)? | **Not yet** — but its blocker is *not* the kernel word's existence. It is an arity-coupling gap, fixable additively (§5). This is the memo's real finding. |
-| Anything deferred inside `plans/m1_core_graph_reasoning/`? | **No** — 4 items parked in [`plans/followups/f9_relation_declarator_and_arity.md`](../../../followups/f9_relation_declarator_and_arity.md) (§6). |
+| Anything deferred? | **Nothing** — the 4 ride-along items were implemented in this stage (T1.22.4.2–.5) rather than parked (§6). |
 
 ---
 
@@ -196,13 +197,14 @@ Three consequences, none of which the kernel-word decision touches:
    already accepts the shape; only the declarator's validation refuses it.
 
 **The fix is additive, not a demotion.** Emit a companion arity-1 fact
-`(relation R)` alongside the arity-N mirror, for every relation node
-(declared and auto-vivified), giving userspace exactly the predicate the
-user asked for while the declarator keeps its validation. Open design
-points: whether auto-vivified heads should be distinguishable from
-declared ones (a second head, e.g. `(declared-relation R)`), and the
-interaction with `hypgen`'s candidate-object exclusion. This is engine
-behaviour change — **parked, per P1.22 §Out of scope**, not executed here.
+`(relation R)` alongside the arity-N mirror, giving userspace exactly the
+predicate the user asked for while the declarator keeps its validation.
+Shipped as **T1.22.4.2**; the two design points this memo left open were
+settled there — the fact is emitted for **declared** relations only (so
+`(relation ?R)` means *declared relation*, and nothing must be emitted
+mid-saturation when a rule vivifies a head), and `hypgen`'s candidate set
+is unperturbed because the new fact's single arg is a relation-category
+name, which `_candidate_objects` already excludes.
 
 That the strongest result of a stage titled "decide the kernel word" is an
 *additive* change on the other side of the question is itself the argument
@@ -210,23 +212,25 @@ for (i): the friction the user hit was never the declarator.
 
 ---
 
-## 6. Parked
+## 6. Implemented, not parked
 
-All four items land in
-[`plans/followups/f9_relation_declarator_and_arity.md`](../../../followups/f9_relation_declarator_and_arity.md) —
-outside `plans/m1_core_graph_reasoning/`, so T1.22.99.2 deletes no live
-work:
+> **Superseded 2026-08-17.** This section originally parked four items as
+> a `plans/followups/` entry, per P1.22's out-of-scope rule. The user
+> ruled otherwise the same day — decide **and** implement — so all four
+> became tasks of this stage and shipped. The out-of-scope rule carries a
+> scoped exception ([P1.22 README](../README.md)); the followup file was
+> deleted rather than created. **The §0 decision is unaffected**: nothing
+> below demotes `relation`, and T1.22.4.2 is the additive move §5 argues
+> for.
 
-| # | item | source |
+| task | item | source |
 |---|---|---|
-| F9.1 | Generic relation reflection — the companion `(relation R)` fact | §5, the user's item 5 |
-| F9.2 | Unary hypothesis targets — hypgen's arity-2 cut | stage ride-along |
-| F9.3 | Bare untyped declaration `(relation R)` | stage ride-along |
-| F9.4 | Unary rendering in the compact DOT view | stage ride-along |
+| [T1.22.4.2](../s1.22.4_relation_kernel_word.md) | Generic relation reflection — the companion `(relation R)` fact | §5, the user's item 5 |
+| T1.22.4.3 | Unary hypothesis targets — hypgen's arity-2 cut | stage ride-along |
+| T1.22.4.4 | Bare untyped declaration `(relation R)` | stage ride-along |
+| T1.22.4.5 | Unary rendering in the compact DOT view | stage ride-along |
 
-If [T1.22.99.1](../s1.22.99_m1_plans_deletion.md) picks a different
-surviving-backlog scheme (e.g. `plans/backlog/`), this file moves with the
-rest of `plans/followups/`; nothing here depends on the location.
+T1.22.99.1 therefore inherits **no** new backlog from this stage.
 
 ---
 
@@ -237,7 +241,7 @@ rest of `plans/followups/`; nothing here depends on the location.
   error, not a parse error: `(relation r)` fails to match `relation_decl`,
   falls to `generic_fact`, and is rejected by `_ingest_relation`
   (`from_ir.py:165`). The distinction matters — it means the *fact* channel
-  already accepts the shape, so F9.3 is a loader decision, not a grammar
-  change (§5).
+  already accepts the shape, so T1.22.4.4 is a loader decision, not a
+  grammar change alone (§5).
 - Everything else in the brief's residue table and origin framing verified
   correct against HEAD; the line references had not drifted.

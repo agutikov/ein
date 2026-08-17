@@ -56,12 +56,13 @@ class TestFactViewFilters:
         assert ghost not in v
 
     def test_view_repr(self, zebra_kb):
-        # 5 relation-decl + 7 type + 30 instance + 6 property-application
-        # + 4 condition-(1) spatial = 52 background, + 14 authored
-        # conditions (2)-(15) = 66.
+        # 5 relation-decl + 5 relation-membership (S1.22.4 — one
+        # companion `(relation R)` fact per declaration) + 7 type
+        # + 30 instance + 6 property-application + 4 condition-(1)
+        # spatial = 57 background, + 14 authored conditions (2)-(15) = 71.
         r = repr(zebra_kb.all_facts())
         assert "all" in r
-        assert "len=66" in r
+        assert "len=71" in r
 
     def test_matching_stub_raises(self, zebra_kb):
         # P1.3 seam — until then, .matching() is intentionally a stub.

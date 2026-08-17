@@ -41,8 +41,8 @@ Two closeout debts, by user decision (2026-08-16):
 | S1.22.1 | P0 ✅ | [Obsolete-syntax census → purge](s1.22.1_obsolete_syntax.md) | T1.22.1.1 census+report / T1.22.1.2 purge |
 | S1.22.1b | **P0** ✅ | [Cross-layer contradiction bug; remove knowledge layers](s1.22.1b_layer_removal.md) | T1.22.1b.1 census+report / T1.22.1b.2 fix+pin / T1.22.1b.3 remove — **shipped 2026-08-17** |
 | S1.22.1a | P1 ✅ | [`zebra.ein`: modernise and make it solve](s1.22.1a_zebra_ein_modernisation.md) | T1.22.1a.1 investigate+report / T1.22.1a.2 execute |
-| S1.22.3 | P1 | [Relation-signature semantics: document the kernel/userspace split](s1.22.3_relation_signature_semantics.md) | T1.22.3.1 docs pass |
-| S1.22.4 | P1 | [`relation` as a kernel word: decide and rehome](s1.22.4_relation_kernel_word.md) | T1.22.4.1 decide+park |
+| S1.22.3 | P1 ✅ | [Relation-signature semantics: document the kernel/userspace split](s1.22.3_relation_signature_semantics.md) | T1.22.3.1 docs pass |
+| S1.22.4 | P1 | [`relation` as a kernel word: decide, then fix what the question exposed](s1.22.4_relation_kernel_word.md) | T1.22.4.1 decide / .2 membership fact / .3 unary hypotheses / .4 bare decl / .5 unary rendering |
 | S1.22.99 | P1 | [M1-plans preservation census → delete](s1.22.99_m1_plans_deletion.md) | T1.22.99.1 census+report / T1.22.99.2 migrate+delete |
 
 **Why `99`** (renumbered from S1.22.2, 2026-08-17): this stage deletes the
@@ -62,9 +62,10 @@ T1.22.99.1 → T1.22.99.2.
 the root-`TODO.md` scratchpad block on relation-signature semantics —
 quoted in full in S1.22.3, pruned from the scratchpad): the docs pass
 (S1.22.3) edits `docs/kernel/` and so must precede the deletion census;
-the decision stage (S1.22.4) consumes that pass's census, and — per this
-README's own out-of-scope rule — may *park* engine work but not execute
-it. `S1.22.2` stays unused: it was the deletion stage's number before the
+the decision stage (S1.22.4) consumes that pass's census. S1.22.4 was
+scoped to *park* engine work; the user reversed that on 2026-08-17
+(decide **and** implement), which is the out-of-scope exception recorded
+below. `S1.22.2` stays unused: it was the deletion stage's number before the
 S1.22.99 renumbering, and reusing it would collide with older commit
 messages.
 
@@ -140,6 +141,10 @@ T1.22.99.2 — by design; commit history keeps them).
 ## Out of scope
 
 - Any engine behaviour change (D5's fix stays a recorded divergence
-  wherever T1.22.99.1 rehomes it).
+  wherever T1.22.99.1 rehomes it) — **except S1.22.4 T1.22.4.2–.5**
+  (user ruling, 2026-08-17: decide *and implement*, rather than park a
+  followup). That exception is scoped to those four tasks: relation
+  membership fact, unary hypothesis targets, bare `(relation R)`, unary
+  compact-DOT rendering.
 - `nlp/`, `smt/` scratch areas; `plans/ideas/` (user's own ideas — never
   deleted); other milestones' folders.

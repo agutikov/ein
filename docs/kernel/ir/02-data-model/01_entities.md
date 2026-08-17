@@ -76,13 +76,18 @@ candidate-object pool keeps only `category == "object"` names, so the
 blind enumerator never guesses *about* a relation. That is a
 **tractability device, not a semantic stratification** — nothing stops a
 rule from asserting `(is-a co-located EquivalenceRelation)`, and nothing
-in the store treats such a fact differently. See
+in the store treats such a fact differently. Since S1.22.4 each
+declaration also stores the arity-1 fact `(relation R)`, so "R is a
+relation" is itself an ordinary matchable proposition about a relation
+node. See
 [`../03-ein-lang/08_self_describing.md`](../03-ein-lang/08_self_describing.md)
 for what userspace builds on top of it.
 
 The `signature` holds the argument-position type **names** (opaque
 atoms — S1.7.23 keeps no `Type` entities to resolve them to; hypgen
-uses them only as object-exclusion metadata). It is **not** a kernel
+uses them only as object-exclusion metadata). It may be **empty** — a
+bare `(relation R)` declares a relation node with no declared arg types,
+and is thereby not a hypothesis target (S1.22.4). It is **not** a kernel
 type annotation: rules read the atoms as types, the kernel reads only
 the tuple's shape. Definitive account of that split:
 [`../03-ein-lang/01_grammar.md` §what the signature means](../03-ein-lang/01_grammar.md#what-the-signature-means--userspace-types-kernel-structure).

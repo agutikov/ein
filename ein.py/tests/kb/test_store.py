@@ -144,16 +144,28 @@ class TestZebraRule:
 
 class TestZebraFact:
     def test_fact_count(self, zebra_kb):
-        # Background: 5 relation-decl + 7 type + 30 instance
-        #  + 6 property-application (2 symmetric, 1 includes,
-        #    1 slot-partition, 2 slot-spatial) + 4 condition-(1) spatial
-        #  = 52. zebra.ein declares `type` and `instance` as ordinary
-        #  relations, so their facts are ordinary background facts and
-        #  both appear among the 5 relation-decls (alongside co-located,
-        #  right-of, next-to).
+        # Background: 5 relation-decl + 5 relation-membership + 7 type
+        #  + 30 instance + 6 property-application (2 symmetric,
+        #    1 includes, 1 slot-partition, 2 slot-spatial)
+        #  + 4 condition-(1) spatial = 57. zebra.ein declares `type` and
+        #  `instance` as ordinary relations, so their facts are ordinary
+        #  background facts and both appear among the 5 relation-decls
+        #  (alongside co-located, right-of, next-to).
+        #  S1.22.4 T1.22.4.2: each declaration also emits the arity-1
+        #  membership fact `(relation R)`, hence the second group of 5.
         # Given: 14 (conditions 2..15).
-        # Total: 66.
-        assert len(zebra_kb.facts) == 66
+        # Total: 71.
+        assert len(zebra_kb.facts) == 71
+        # The membership facts cover exactly the *declared* relations —
+        # auto-vivified property-tag carriers have no declaration, so
+        # they get neither mirror nor membership fact.
+        membership = {
+            f.args[0] for f in zebra_kb.facts
+            if f.relation_name == "relation" and len(f.args) == 1
+        }
+        assert membership == {
+            "co-located", "right-of", "next-to", "type", "instance",
+        }
 
     def test_fact_resolves_relation(self, zebra_kb):
         fs = [f for f in zebra_kb.facts if f.source == "condition (10)"]
@@ -314,7 +326,7 @@ def test_kb_repr_summary(zebra_kb):
     # number — std.slots / std.algebra may gain rules without this being
     # a zebra.ein regression.
     assert "rules=" in r
-    assert "facts=66" in r
+    assert "facts=71" in r
 
 
 def test_kb_len_is_node_total(zebra_kb):

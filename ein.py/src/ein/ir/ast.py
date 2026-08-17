@@ -129,7 +129,8 @@ class _ToAST(Transformer):
     # the exact shape the old `type_decl` / `instance_form` methods
     # produced, so the AST is unchanged.
     def relation_decl(self, items: list) -> SForm:
-        # Grammar: `"(" "relation" SYMBOL SYMBOL+ kw_pair* ")"`.
+        # Grammar: `"(" "relation" SYMBOL SYMBOL* kw_pair* ")"` — the
+        # signature may be EMPTY (S1.22.4: bare `(relation R)`).
         # Args are flat (post-R10): (name, T1, T2, …, *kws). No inner
         # @sig SForm; kernel docs `01-ein-graph/03_ein_model.md` §7.2.
         return SForm(head=Atom(name="relation"), args=tuple(items))

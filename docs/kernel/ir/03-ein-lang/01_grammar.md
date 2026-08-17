@@ -81,7 +81,7 @@ for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 ### Relation declarator
 
 ```lisp
-(relation <name> <T1> [<T2> ...]         ; signature: one or more type atoms
+(relation <name> [<T1> <T2> ...]         ; signature: zero or more type atoms
   [:why <STRING>] [:cardinality <RANGE>]  ; optional metadata kw-pairs
   [...])
 ```
@@ -95,20 +95,48 @@ rules can introspect signatures via a `(relation ?R ?A ?B)` pattern in
 malformed wrapped-arg form `(relation R (T1 T2))` parses but is rejected at
 LOAD time (not parse time).
 
-**Arity — name + *one or more* type atoms.** The grammar is
-`relation_decl: "(" "relation" SYMBOL SYMBOL+ kw_pair* ")"`
+**Arity — name + *zero or more* type atoms.** The grammar is
+`relation_decl: "(" "relation" SYMBOL SYMBOL* kw_pair* ")"`
 ([`grammar.lark`](../../../../ein.py/src/ein/ir/grammar.lark)), and the
-loader requires exactly the same (name + a non-empty signature,
-[`kb/from_ir.py`](../../../../ein.py/src/ein/kb/from_ir.py)). So
-`(relation adult Person)` is a **legal unary declaration**; the signature
-may not be *omitted*, but it need not be binary. The familiar "arity 2"
-is an **engine** limit, not a grammar rule: the blind enumerator fills
-slots only when `len(signature) == 2`
+loader requires exactly the same. So `(relation adult Person)` is a legal
+**unary** declaration and `(relation opaque)` a legal **bare** one —
+a relation node with no declared arg types. Only the *name* is mandatory;
+`(relation)` is rejected at load. The wrapped-arg form
+`(relation R (T1 T2))` stays rejected too (P1.3 R10) — the loader checks
+that every arg after the name is a type atom or a kw-pair, so the inner
+group cannot pass itself off as a bare declaration.
+
+A bare declaration is **not a hypothesis target**: signature *presence* is
+the kernel's "declared domain relation" signal (the table below), and an
+empty signature deliberately fails it. Write `(relation R T)` — the
+don't-care atom — when you want a guessable relation with no meaningful
+type.
+
+The blind enumerator fills **arity 1 and 2**
 ([`inference/hypgen.py`](../../../../ein.py/src/ein/inference/hypgen.py),
-`_fill_slot`), so a declared unary or ternary relation loads, stores facts
-and saturates normally — it is simply never a hypothesis target under M1.
+`_fill_slot`): a unary relation yields one candidate per focal object,
+a binary one yields |objects| per focal object. Arity ≥ 3 declarations
+load, store facts and saturate normally but are never guessed — the one
+remaining M1 arity cut, and an *engine* limit rather than a grammar rule.
 See [`../01-ein-graph/03_ein_model.md` §5.1](../01-ein-graph/03_ein_model.md)
 for unary relations as subsets.
+
+**The membership fact.** Because matching is arity-coupled,
+`(relation ?R ?A ?B)` sees only *binary* declarations. Every declaration
+therefore also stores the arity-1 fact `(relation R)` — the
+arity-independent "is `?R` a declared relation?" pattern:
+
+```lisp
+(relation likes Person Drink)
+;; stores BOTH  (relation likes Person Drink)   ← the signature mirror
+;;        and   (relation likes)                ← the membership fact
+(rule needs-a-relation () :match (relation ?R) :assert (…))
+```
+
+For a bare declaration the two coincide, so exactly one fact is stored.
+Auto-vivified relations — property-tag carriers like `symmetric`, which
+have no declaration — get neither, so `(relation ?R)` means precisely
+*declared* relation.
 
 **`:why` render template (optional).** A `:why "<tmpl>"` string turns a fact
 of this relation into natural-language text — used by `ein solve`'s result
@@ -165,7 +193,7 @@ signature's shape only, and only in these places:
 | signal | site | effect |
 |---|---|---|
 | signature **non-empty** | `inference/hypgen.py` (`_raw_candidates`), `inference/closed.py` (`emit_closed`) | marks a *declared domain relation* — eligible for hypothesis generation and for `__closed__` auto-inference. Property / rule-name relations (auto-vivified, empty signature) are skipped by both. |
-| signature **length = 2** | `inference/hypgen.py` (`_fill_slot`) | slots are filled only for arity-2 relations — the M1 limit noted above. |
+| signature **length** | `inference/hypgen.py` (`_fill_slot`) | length 1 → one candidate per focal object; length 2 → the pairwise fill; length ≥ 3 → unenumerated (the M1 arity cut noted above). |
 | signature **atoms** | `inference/hypgen.py` (`_candidate_objects`) | the declared type-role names (`Attribute`, `House`, `T`, …) are subtracted from the candidate-**object** pool, so the enumerator never guesses *about* a type node. |
 
 Two further reads are ergonomic rather than semantic: the declaration's
@@ -194,12 +222,11 @@ their load-time `loc` (a conflicting re-declaration would become two stored
 facts and an ambiguous signature lookup feeding the enumerator, with no
 diagnostic), and `:why` would be silently dropped, since facts discard
 unrecognised kw-pairs. Userspace gives up nothing for this: the
-declaration is *already* published as the mirror fact. Reflection over
-declarations is nonetheless still **arity-coupled** — `(relation ?R ?A ?B)`
-matches only binary declarations, and no arity-1 `(relation R)` fact
-exists, so there is no generic "is `?R` a relation?" pattern; that gap and
-three arity ride-alongs are parked in
-[`plans/followups/f9_relation_declarator_and_arity.md`](../../../../plans/followups/f9_relation_declarator_and_arity.md).
+declaration is *already* published as the mirror fact — and, since the
+same decision, as the **membership fact** above, which is what the
+question "can a rule check that `?R` is a relation?" was really after. The
+friction was arity-coupling in the *published* schema, not the declarator;
+publishing more fixed it without demoting anything.
 
 ### Facts — `(NAME args*)`, the flat default
 

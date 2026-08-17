@@ -14,11 +14,13 @@ digraph kb {
   f_55b91239d1 -> "r" [label="#1", color="#bcbd22", style=solid];
   f_55b91239d1 -> "Thing" [label="#2", color="#bcbd22", style=solid];
   f_55b91239d1 -> "Thing" [label="#3", color="#bcbd22", style=solid];
+  "r" -> "r" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   f_8258b48950 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   f_8258b48950 -> "tern" [label="#1", color="#bcbd22", style=solid];
   f_8258b48950 -> "Thing" [label="#2", color="#bcbd22", style=solid];
   f_8258b48950 -> "Thing" [label="#3", color="#bcbd22", style=solid];
   f_8258b48950 -> "Thing" [label="#4", color="#bcbd22", style=solid];
+  "tern" -> "tern" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "a" -> "Thing" [style=dashed, arrowhead=empty, label="is-a"];
   "b" -> "Thing" [style=dashed, arrowhead=empty, label="is-a"];
   "c" -> "Thing" [style=dashed, arrowhead=empty, label="is-a"];

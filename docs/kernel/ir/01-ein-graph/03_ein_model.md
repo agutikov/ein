@@ -220,28 +220,33 @@ nodes too). That is what makes the property-tag idiom un-mysterious: it is
 not special syntax, it is a one-slot relational node.
 
 **De jure, too.** A unary *declaration* `(relation adult Person)` parses
-(the grammar takes name + `SYMBOL+`) and loads (the loader requires only a
-non-empty signature) — see
+and loads, as does the bare `(relation opaque)` — the grammar takes name +
+`SYMBOL*` — see
 [`../03-ein-lang/01_grammar.md` §relation declarator](../03-ein-lang/01_grammar.md).
 The property tags above simply don't bother: they are auto-vivified
 open-world relations, since the same atom is usually also a *rule* name.
 
-**Two limits, both outside the graph model:**
+**Unary relations are first-class across the three layers** (S1.22.4):
 
-- **Hypothesis generation is arity-2 only.** `hypgen._fill_slot` returns
-  immediately unless the signature has length 2, so a declared unary
-  relation loads, stores facts and saturates normally, but is never a
-  *guess* target under M1. Unary relations are therefore facts-and-rules
-  territory today, not search territory.
-- **Rendering has no unary convention — and needs none.** The compact DOT
-  view collapses only *binary* facts into a labelled arrow; a unary fact
-  falls through to the same Levi-bipartite path as any n-ary one — an
-  octagon node with a single incident slot-edge
+- **Search.** The blind enumerator fills arity 1 as well as arity 2
+  (`hypgen._fill_slot`): a unary relation contributes one candidate per
+  focal object, so `(adult Jack)` can be a branch point like any binary
+  guess. Arity ≥ 3 remains unenumerated — the one surviving M1 arity cut.
+  (A unary relation no rule produces is still auto-closed by
+  `emit_closed`, exactly as a binary one is, so the guess only arises where
+  a rule can produce the relation.)
+- **Rendering.** The compact DOT view draws a unary fact as a labelled
+  **self-loop** `a → a [label="rel"]` — the degenerate case of the binary
+  collapse, with source and target the same node
   ([`../03-ein-lang/04_dot_rendering.md`](../03-ein-lang/04_dot_rendering.md)).
-  In a strict node-and-arrow drawing a unary edge would have to start at
-  the object and end nowhere; the Levi encoding makes that non-problem
-  disappear, which is one more argument for its canonical status
-  ([`01_kb.md` §2.2](01_kb.md)).
+  The Levi view keeps the one-armed octagon. In a strict node-and-arrow
+  drawing a unary edge would otherwise have to start at the object and end
+  nowhere; the self-loop is the compact answer and the Levi encoding is the
+  canonical one ([`01_kb.md` §2.2](01_kb.md)).
+- **Reflection.** `(relation R)` — an arity-1 fact over a *relation* node —
+  is stored for every declaration, so the subset reading applies to Ein's
+  own schema: `(relation ?R)` carves the subset of nodes that are declared
+  relations, exactly as `(symmetric ?R)` carves the symmetric ones.
 
 ## 6. Reserved relation names
 

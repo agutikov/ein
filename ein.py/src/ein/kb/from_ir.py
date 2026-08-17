@@ -159,16 +159,29 @@ def _ingest_relation(child: SForm, kb: KnowledgeBase, errors: list[str]) -> bool
     head = _atom_name(child.head) if isinstance(child.head, Atom) else None
     if head != "relation":
         return False
-    # Flat args post-R10; grammar guarantees ≥ 2 SYMBOL args
-    # (name + at least one type), followed by optional kw_pairs.
-    if len(child.args) < 2:
-        errors.append(f"(relation) needs name + signature at {child.loc}")
+    # Flat args post-R10; grammar guarantees ≥ 1 SYMBOL arg (the name),
+    # followed by zero or more type atoms and optional kw_pairs. An EMPTY
+    # signature is legal since S1.22.4 T1.22.4.4 — `(relation R)` declares a
+    # relation node with no declared arg types. It is NOT a hypothesis
+    # target: the kernel's "declared domain relation" signal is signature
+    # *presence* (`hypgen._raw_candidates` / `closed.emit_closed`), which an
+    # empty signature deliberately fails.
+    if len(child.args) < 1:
+        errors.append(f"(relation) needs a name at {child.loc}")
         return True
     name = _atom_name(child.args[0])
-    sig = tuple(a.name for a in child.args[1:] if isinstance(a, Atom))
-    if name is None or not sig:
+    # Every arg after the name must be a type Atom or a kw-pair. The check
+    # is explicit because an empty signature is now legal (above): without
+    # it the wrapped-arg form `(relation R (T1 T2))` — an SForm arg the
+    # grammar routes to `generic_fact` — would silently load as a BARE
+    # declaration instead of being rejected (P1.3 S1.3.0 R10).
+    ill_formed = any(
+        not isinstance(a, (Atom, KwPair)) for a in child.args[1:]
+    )
+    if name is None or ill_formed:
         errors.append(f"malformed (relation) at {child.loc}")
         return True
+    sig = tuple(a.name for a in child.args[1:] if isinstance(a, Atom))
     if name in _reserved_names():
         errors.append(
             f"relation '{name}' shadows a reserved kernel name at {child.loc}")
@@ -192,6 +205,17 @@ def _ingest_relation(child: SForm, kb: KnowledgeBase, errors: list[str]) -> bool
         args=(name, *sig),
         loc=child.loc,
     ))
+    # S1.22.4 T1.22.4.2 — companion arity-1 *membership* fact. Matching is
+    # arity-coupled, so `(relation ?R ?A ?B)` sees only binary declarations;
+    # `(relation ?R)` is the arity-independent "is ?R a declared relation?"
+    # pattern. For a bare `(relation R)` the mirror above already IS this
+    # fact, so emit it only when the signature is non-empty.
+    if sig:
+        kb.add_fact(Fact(
+            relation_name="relation",
+            args=(name,),
+            loc=child.loc,
+        ))
     return True
 
 

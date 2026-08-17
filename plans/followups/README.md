@@ -22,7 +22,6 @@ strikes.
 | F6  | [Modify own harness code](f6_modify_own_harness.md)               | rung 3 of self-modification: engine emits patches to its own Python source    |
 | F7  | [Rule taxonomy + rule induction](f7_rule_induction.md)            | when the rule library grows past hand-management OR M2's NL → IR needs activator induction (sub-track B on the M2 critical path) |
 | F8  | [FCA / RCA, ODIS, TPTP](f8_FCA_RCA_odis_tptp/ideas.md)            | raw notes — formal concept analysis over the relation algebra, external corpora |
-| F9  | [Relation declarator: reflection + arity](f9_relation_declarator_and_arity.md) | when a puzzle declares a non-binary relation, or a rule needs "is `?R` a relation?" without knowing its arity (parked by P1.22 S1.22.4) |
 
 The three self-modification followups (F2 / F5 / F6) share a unifying
 view: [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-modification.md).

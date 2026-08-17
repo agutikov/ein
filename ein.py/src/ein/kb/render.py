@@ -21,7 +21,9 @@ KB graph](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md).
 - Each ``Instance`` → ``oval``.
 - Each binary ``Fact(rel, a, b)`` → ``a → b [label=rel ...]`` (one
   direct edge; no Levi node).
-- Each n-ary ``Fact`` (arity ≠ 2) → an ``octagon`` Levi-bipartite
+- Each unary ``Fact(rel, a)`` → ``a → a [label=rel ...]`` (a labelled
+  self-loop — the predicate-as-subset idiom; S1.22.4).
+- Each n-ary ``Fact`` (arity ∉ {1, 2}) → an ``octagon`` Levi-bipartite
   hyperedge node with slot-labelled edges.
 - ``is-a`` membership → ``style=dashed, arrowhead=empty``.
 - Provenance styling (S1.22.1b — was the `Layer` enum):
@@ -149,14 +151,42 @@ def _emit_binary_fact(
     return f"  {_q(str(src))} -> {_q(str(dst))} [{', '.join(attrs)}];"
 
 
+def _emit_unary_fact(
+    fact: Fact, *, colour: str, style: str, label_extra: str | None,
+    penwidth: int | None = None,
+) -> str:
+    """A unary fact as a labelled **self-loop** on its single argument.
+
+    S1.22.4 T1.22.4.5 — the compact view's convention for the
+    predicate-as-subset idiom (`(bijective color-loc)`, `(relation R)`):
+    the degenerate case of the binary collapse, with source == target.
+    Keeps the per-fact edge styling (derived → dashed, transition
+    highlight → penwidth) that dropping to an octagon would scatter over
+    two DOT elements. The Levi view keeps the one-armed octagon.
+    """
+    (only,) = fact.args
+    label_parts = [fact.relation_name]
+    if label_extra:
+        label_parts.append(label_extra)
+    attrs = [
+        f"label={_q(' '.join(label_parts))}",
+        f'color="{colour}"',
+        f'fontcolor="{colour}"',
+        f"style={style}",
+    ]
+    if penwidth:
+        attrs.append(f"penwidth={penwidth}")
+    return f"  {_q(str(only))} -> {_q(str(only))} [{', '.join(attrs)}];"
+
+
 def _emit_hyperedge(
     fact: Fact, *, colour: str, style: str, label_extra: str | None,
     penwidth: int | None = None,
 ) -> list[str]:
     """A non-binary fact: one octagon node + n labelled edges to args.
 
-    Arity 0 / 1 are also handled this way (no participants for arity 0;
-    one labelled edge for arity 1).
+    Arity 0 is also handled this way (no participants). Arity 1 goes to
+    :func:`_emit_unary_fact` in the compact view (S1.22.4).
     """
     nid = _fact_node_id(fact)
     head_label = f"({fact.relation_name})"
@@ -292,6 +322,11 @@ def _emit_fact_line(
         return [_emit_is_a_edge(str(child), str(parent), penwidth=penwidth)]
     if len(f.args) == 2:
         return [_emit_binary_fact(
+            f, colour=colour, style=style, label_extra=label_extra,
+            penwidth=penwidth,
+        )]
+    if len(f.args) == 1 and isinstance(f.args[0], str):
+        return [_emit_unary_fact(
             f, colour=colour, style=style, label_extra=label_extra,
             penwidth=penwidth,
         )]
