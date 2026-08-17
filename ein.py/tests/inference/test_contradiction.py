@@ -99,54 +99,85 @@ def test_same_layer_conflict_in_reasoning():
     pairs = d.detect()
     assert len(pairs) == 1
     c = pairs[0]
-    assert c.layer is Layer.REASONING
     assert c.positive is positive
     assert c.negative is negative
     assert d.has_contradiction()
 
 
-def test_same_layer_conflict_in_fact_layer():
-    """Same pair entirely in FACT layer — also a contradiction."""
+def test_conflict_between_two_stated_facts():
+    """Both X and (not X) authored with a `:source` — a contradiction."""
     kb = _kb('(relation r T T)')
     _put(kb, Fact(
-        relation_name="r", args=("A", "B"), layer=Layer.FACT,
+        relation_name="r", args=("A", "B"),
         provenance=Provenance.from_source(source="(1)"),
     ))
     _put(kb, Fact(
         relation_name="not",
-        args=(Fact(relation_name="r", args=("A", "B"), layer=Layer.FACT),),
-        layer=Layer.FACT,
+        args=(Fact(relation_name="r", args=("A", "B")),),
         provenance=Provenance.from_source(source="(2)"),
     ))
 
     pairs = ContradictionDetector(kb).detect()
     assert len(pairs) == 1
-    assert pairs[0].layer is Layer.FACT
 
 
-# ── Cross-layer non-conflict ───────────────────────────────────────
+# ── Origin-independence — S1.22.1b ─────────────────────────────────
 
 
-def test_cross_layer_non_conflict():
-    """Positive in FACT, negative in REASONING — NOT a contradiction
-    (engine-design choice; see ContradictionDetector docstring)."""
-    kb = _kb('(relation r T T)')
-    _put(kb, Fact(
-        relation_name="r", args=("A", "B"), layer=Layer.FACT,
-        provenance=Provenance.from_source(source="(1)"),
-    ))
-    _put(kb, Fact(
-        relation_name="not",
-        args=(Fact(relation_name="r", args=("A", "B"), layer=Layer.REASONING),),
-        layer=Layer.REASONING,
-        provenance=Provenance.from_rule(rule="type-exclusivity"),
-    ))
+def test_derived_negative_contradicts_stated_positive():
+    """A rule-derived `(not X)` against an authored, `:source`-carrying
+    `X` **is** a contradiction (S1.22.1b).
+
+    Until S1.22.1b the detector skipped this pair because the two facts
+    sat in different knowledge layers, so a KB that flatly contradicted
+    its own clues reported nothing. This is the unit-level pin of the
+    fix; :func:`test_mutually_negating_clues_are_detected` is the
+    end-to-end one.
+    """
+    kb = _kb("""
+    (relation r T T)
+    (rule deny () :match (r ?a ?b) :assert (not (r ?a ?b))
+      :why "deny" :priority 100)
+    (r A B :source "(1)")
+    """)
+    list(Saturator(kb).saturate())
 
     pairs = ContradictionDetector(kb).detect()
-    assert pairs == ()
+    assert len(pairs) == 1
+    assert pairs[0].positive.source == "(1)"
+    assert pairs[0].negative.rule_name == "deny"
 
 
-# ── Multi-pair + layer scoping ─────────────────────────────────────
+def test_mutually_negating_clues_are_detected():
+    """Two stated clues a rule mutually negates — the S1.22.1b reproducer.
+
+    `(sits A S1)` and `(sits B S1)` are both given; `one-per-seat`
+    derives `(not (sits B S1))` from the first and `(not (sits A S1))`
+    from the second. The saturated KB holds two `(X, ¬X)` pairs and must
+    report both. Before the fix it reported **zero** — the positives were
+    FACT-layer and the negatives REASONING-layer.
+    """
+    kb = _kb("""
+    (relation sits Person Seat)
+    (relation is-a Thing Thing)
+    (is-a A Person) (is-a B Person)
+    (rule one-per-seat ()
+      :match  (and (sits ?p1 ?s) (is-a ?p2 Person) (neq ?p1 ?p2))
+      :assert (not (sits ?p2 ?s))
+      :why "{?s} is taken by {?p1}" :priority 100)
+    (sits A S1 :source "clue (1)")
+    (sits B S1 :source "clue (2)")
+    """)
+    list(Saturator(kb).saturate())
+
+    pairs = ContradictionDetector(kb).detect()
+    assert len(pairs) == 2
+    assert {p.positive.args for p in pairs} == {("A", "S1"), ("B", "S1")}
+    assert all(p.positive.source is not None for p in pairs)
+    assert all(p.negative.rule_name == "one-per-seat" for p in pairs)
+
+
+# ── Multi-pair ─────────────────────────────────────────────────────
 
 
 def test_multi_contradiction_kb():
@@ -166,47 +197,9 @@ def test_multi_contradiction_kb():
 
     pairs = ContradictionDetector(kb).detect()
     assert len(pairs) == 3
-    derived_pairs = {(p.positive.args, p.negative.layer) for p in pairs}
-    assert derived_pairs == {
-        (("A", "B"), Layer.REASONING),
-        (("C", "D"), Layer.REASONING),
-        (("E", "F"), Layer.REASONING),
+    assert {p.positive.args for p in pairs} == {
+        ("A", "B"), ("C", "D"), ("E", "F"),
     }
-
-
-def test_detect_layer_scopes_correctly():
-    kb = _kb('(relation r T T)')
-    # One conflict in REASONING.
-    _put(kb, Fact(relation_name="r", args=("X", "Y"),
-                  layer=Layer.REASONING,
-                  provenance=Provenance.from_rule(rule="r1")))
-    _put(kb, Fact(
-        relation_name="not",
-        args=(Fact(relation_name="r", args=("X", "Y"), layer=Layer.REASONING),),
-        layer=Layer.REASONING,
-        provenance=Provenance.from_rule(rule="r2"),
-    ))
-    # One conflict in FACT.
-    _put(kb, Fact(relation_name="r", args=("P", "Q"),
-                  layer=Layer.FACT,
-                  provenance=Provenance.from_source(source="(1)")))
-    _put(kb, Fact(
-        relation_name="not",
-        args=(Fact(relation_name="r", args=("P", "Q"), layer=Layer.FACT),),
-        layer=Layer.FACT,
-        provenance=Provenance.from_source(source="(2)"),
-    ))
-
-    d = ContradictionDetector(kb)
-    assert len(d.detect()) == 2
-    in_reasoning = d.detect_layer(Layer.REASONING)
-    assert len(in_reasoning) == 1
-    assert in_reasoning[0].positive.args == ("X", "Y")
-    in_fact = d.detect_layer(Layer.FACT)
-    assert len(in_fact) == 1
-    assert in_fact[0].positive.args == ("P", "Q")
-    in_ontology = d.detect_layer(Layer.ONTOLOGY)
-    assert in_ontology == ()
 
 
 # ── Nested-fact safety ─────────────────────────────────────────────
@@ -309,16 +302,16 @@ def test_zebra_injected_conflict_caught():
         if p.positive.args == ("Norwegian", "Spaniard")
     ]
     assert len(matching) == 1
-    assert matching[0].layer is Layer.REASONING
+    assert matching[0].kind == "pair"
 
 
 # ── Direct ⊥ — S1.5.4a Part 2 ─────────────────────────────────────
 
 
 def test_direct_false_fact_is_contradiction():
-    """A `(false)` fact in any layer is a `kind='direct'`
-    contradiction — `positive` is None, `negative` is the fact
-    itself, `witness` returns the negative for unsat-core walks."""
+    """A `(false)` fact is a `kind='direct'` contradiction —
+    `positive` is None, `negative` is the fact itself, `witness`
+    returns the negative for unsat-core walks."""
     kb = _kb('(relation r T T)')
     false_fact = _put(kb, Fact(
         relation_name="false", args=(), layer=Layer.REASONING,
@@ -333,7 +326,6 @@ def test_direct_false_fact_is_contradiction():
     assert c.positive is None
     assert c.negative is false_fact
     assert c.witness is false_fact
-    assert c.layer is Layer.REASONING
     assert d.has_contradiction()
 
 

@@ -26,21 +26,20 @@ contradiction the P1.4 ``ContradictionDetector`` would flag:
 
 - ``f`` is ``(false)``                  — direct ⊥;
 - ``f`` is ``(not h)``                  — ``h`` self-falsified;
-- ``f`` is ``(not g)``, ``g`` already a REASONING-layer fact
-                                        — a same-layer ``(g, ¬g)`` pair;
-- ``f`` is positive and ``(not f)`` already a REASONING-layer fact
+- ``f`` is ``(not g)``, ``g`` already in the KB — a ``(g, ¬g)`` pair;
+- ``f`` is positive and ``(not f)`` already in the KB
                                         — ``h`` derives a forbidden fact.
 
-The REASONING-layer guards mirror the detector exactly: a
-cross-layer ``(X, ¬X)`` (a derived ``(not g)`` against an authored
-FACT-layer ``g``) is *not* a contradiction, so the lookahead must
-not kill on it. The filter only ever *under*-approximates death —
-a missed death just forks and dies normally; it never reports a
+The last two mirror the detector exactly, and since S1.22.1b that means
+*without* regard for how ``g`` / ``f`` got into the KB: a derived
+``(not g)`` against an authored ``g`` is a contradiction, so the
+lookahead kills on it too. The filter only ever *under*-approximates
+death — a missed death just forks and dies normally; it never reports a
 live hypothesis as dead.
 """
 from __future__ import annotations
 
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.store import KnowledgeBase
 
 from . import match, primitives
@@ -176,8 +175,8 @@ def _is_contradiction(kb: KnowledgeBase, f: Fact, h: Fact) -> bool:
     """True iff a KB holding ``h`` + the derived ``f`` is contradictory.
 
     Mirrors :class:`~ein.inference.contradiction.ContradictionDetector`
-    — the direct-⊥ shape and the same-layer ``(X, ¬X)`` pair. Both
-    ``h`` and any rule-derived ``f`` live at the REASONING layer.
+    — the direct-⊥ shape and the ``(X, ¬X)`` pair, which since S1.22.1b
+    is a contradiction regardless of how either side entered the KB.
     """
     # Direct ⊥ — a `(false …)` fact.
     if f.relation_name == primitives.FALSE:
@@ -190,17 +189,14 @@ def _is_contradiction(kb: KnowledgeBase, f: Fact, h: Fact) -> bool:
         # `(not h)` against `h` — both REASONING, a guaranteed pair.
         if (g.relation_name, g.args) == (h.relation_name, h.args):
             return True
-        # `(not g)` against an existing positive `g` — a pair only
-        # when `g` is itself REASONING-layer (cross-layer is not a
-        # contradiction; see the detector's module docstring).
-        existing = kb._fact_by_id(g.relation_name, g.args)
-        return existing is not None and existing.layer is Layer.REASONING
+        # `(not g)` against an existing positive `g` — a pair, whatever
+        # `g`'s origin (see the detector's module docstring).
+        return kb._fact_by_id(g.relation_name, g.args) is not None
     # `f` is positive — `h` would derive it. A contradiction iff
-    # `(not f)` already exists at the REASONING layer.
+    # `(not f)` is already in the KB.
     if (f.relation_name, f.args) not in kb._negated_facts:
         return False
-    neg = kb._fact_by_id(primitives.NOT, (f,))
-    return neg is not None and neg.layer is Layer.REASONING
+    return kb._fact_by_id(primitives.NOT, (f,)) is not None
 
 
 __all__ = ["Lookahead"]

@@ -4,10 +4,10 @@ Scans the KB for two contradiction shapes, both emitting
 :class:`Contradiction` records the hypothesis loop (P1.5) and trace
 renderer (P1.6) consume:
 
-1. **pair** — a same-layer ``(X, (not X))`` pair. The original P1.4
-   shape: a rule asserted ``(not X)`` and ``X`` is also in the KB
-   (typically seeded by a hypothesis fork). ``positive`` and
-   ``negative`` are both populated.
+1. **pair** — an ``(X, (not X))`` pair. The original P1.4 shape: a
+   rule asserted ``(not X)`` and ``X`` is also in the KB (typically
+   seeded by a hypothesis fork, but a stated clue counts too — see
+   below). ``positive`` and ``negative`` are both populated.
 2. **direct** — a ``(false)`` fact (S1.5.4a Part 2): a rule
    asserted contradiction directly without going through the
    self-negation idiom. ``positive`` is ``None``; ``negative`` is
@@ -25,20 +25,16 @@ entity kinds, no indexes, no incremental machinery. The
 Saturator's append-only ``_index_fact`` already keeps
 ``_facts_by_relation`` current; this module just reads it.
 
-Same-layer vs cross-layer (applies to the ``pair`` shape only):
-
-- A REASONING-layer ``(not X)`` derived from ``type-exclusivity``
-  is the *expected* output of saturation. If the matching
-  REASONING-layer positive ``X`` is also present (e.g. asserted
-  speculatively by a hypothesis), the pair is a branch failure.
-- A cross-layer pair (FACT-layer X + REASONING-layer ``(not X)``)
-  is **not** a contradiction in this design — layer separation is
-  the engine's way of marking "different epistemic statuses".
-  Both layers being co-present is by construction (the matcher
-  consults them jointly), and a FACT-layer positive shouldn't
-  cause a derived negative to flag it as broken. P1.5 will
-  introduce branch-scoped layers; the cross-source case becomes
-  meaningful there.
+**How a fact got into the KB is irrelevant** (S1.22.1b). A KB holding
+both ``X`` and ``(not X)`` is inconsistent, whether ``X`` is a stated
+clue, a background assumption or a rule derivation — so every such pair
+is reported. Until S1.22.1b the detector skipped pairs whose two facts
+sat in different *knowledge layers*, on the theory that a derived
+negative should not flag an authored positive as broken. That was a
+soundness bug: a flatly inconsistent puzzle (two clues that a rule
+mutually negates) was accepted in silence, and the branches that *were*
+killed were killed by the direct ``(false)`` shape happening to cover
+the same cases. Knowledge layers were removed with the restriction.
 
 Direct ⊥ dedup caveat: ``Fact`` identity is by ``(relation, args)``,
 so the second-and-later ``(false)`` firings within a single
@@ -55,7 +51,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Literal
 
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.store import KnowledgeBase
 
 from . import primitives
@@ -84,7 +80,6 @@ class Contradiction:
     """
     positive: Fact | None  # the X fact, or None for direct ⊥
     negative: Fact         # (not X) wrapper OR the (false …) fact itself
-    layer: Layer           # the layer the contradiction lives in
     kind: Literal["pair", "direct"] = "pair"
 
     @property
@@ -124,12 +119,8 @@ class ContradictionDetector:
     # ── Public API ────────────────────────────────────────────────
 
     def detect(self) -> tuple[Contradiction, ...]:
-        """All ``(X, (not X))`` same-layer pairs across the KB."""
+        """Every ``(X, (not X))`` pair + every ``(false)`` across the KB."""
         return tuple(self._iter())
-
-    def detect_layer(self, layer: Layer) -> tuple[Contradiction, ...]:
-        """Pairs scoped to a single layer."""
-        return tuple(c for c in self._iter() if c.layer is layer)
 
     def has_contradiction(self) -> bool:
         """Short-circuit yes/no — stops on the first pair found.
@@ -160,7 +151,6 @@ class ContradictionDetector:
             yield Contradiction(
                 positive=None,
                 negative=false_fact,
-                layer=false_fact.layer,
                 kind="direct",
             )
 
@@ -180,14 +170,9 @@ class ContradictionDetector:
             positive = self.kb._fact_by_id(inner.relation_name, inner.args)
             if positive is None:
                 continue
-            if positive.layer is not negative.layer:
-                # Cross-layer pair — by design, NOT a contradiction.
-                # See module docstring.
-                continue
             yield Contradiction(
                 positive=positive,
                 negative=negative,
-                layer=positive.layer,
                 kind="pair",
             )
 

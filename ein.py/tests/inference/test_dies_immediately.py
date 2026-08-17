@@ -3,8 +3,9 @@
 Tests :meth:`Lookahead.dies_immediately`: a candidate is killed iff
 adding it to the *already-saturated* KB yields a contradiction in
 a single rule firing. Covers the contradiction shapes (positive
-collision, direct ⊥, ``(not h)`` self-kill), the REASONING-layer
-soundness guard, and the ``:enable-pre-branch-lookahead`` gate.
+collision, direct ⊥, ``(not h)`` self-kill), the origin-independence
+of the pair shape (S1.22.1b), and the ``:enable-pre-branch-lookahead``
+gate.
 """
 from ein.inference.config import SolverConfig
 from ein.inference.hypgen import generate_hypotheses_with_stats
@@ -98,27 +99,34 @@ def test_self_negating_rule():
     assert Lookahead(kb).dies_immediately(kb, h) is True
 
 
-def test_is_contradiction_layer_guard():
-    """A derived `(not g)` against a FACT-layer `g` is a cross-layer
-    pair — NOT a contradiction; the same shape at REASONING is. The
-    guard is what stops the lookahead false-killing a live
-    hypothesis."""
+def test_is_contradiction_ignores_how_g_got_there():
+    """`(not g)` is a contradiction against *any* existing `g` — S1.22.1b.
+
+    The mirror of `ContradictionDetector`: the detector no longer exempts
+    a pair whose positive was authored and whose negative was derived, so
+    neither does the lookahead. Before S1.22.1b the `:source`-carrying
+    `(r A B)` was exempt (FACT vs REASONING layer) and the candidate
+    survived a step it could not survive; only the unannotated `(r C D)`
+    killed. Both kill now.
+    """
     kb = _saturated_kb("""
     (relation r T T)
     (r A B :source "given")
     """)
     g_fact = kb._fact_by_id("r", ("A", "B"))
-    assert g_fact is not None and g_fact.layer is Layer.FACT
+    assert g_fact is not None and g_fact.source == "given"
 
-    h = Fact("co-located", ("X", "Y"), layer=Layer.REASONING)
-    not_fact_layer = Fact("not", (Fact("r", ("A", "B")),))
-    assert _is_contradiction(kb, not_fact_layer, h) is False
+    h = Fact("co-located", ("X", "Y"))
+    assert _is_contradiction(kb, Fact("not", (Fact("r", ("A", "B")),)), h) is True
 
-    reasoning_g = Fact("r", ("C", "D"), layer=Layer.REASONING)
-    kb.add_fact(reasoning_g)
-    kb._index_fact(reasoning_g)
-    not_reasoning = Fact("not", (Fact("r", ("C", "D")),))
-    assert _is_contradiction(kb, not_reasoning, h) is True
+    other_g = Fact("r", ("C", "D"))
+    kb.add_fact(other_g)
+    kb._index_fact(other_g)
+    assert _is_contradiction(kb, Fact("not", (Fact("r", ("C", "D")),)), h) is True
+
+    # An absent `g` is still not a contradiction — the filter must not
+    # kill a candidate whose derived negative has no positive to clash with.
+    assert _is_contradiction(kb, Fact("not", (Fact("r", ("E", "F")),)), h) is False
 
 
 def test_config_off_keeps_doomed_candidate():
