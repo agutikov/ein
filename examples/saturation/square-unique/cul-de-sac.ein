@@ -5,7 +5,7 @@
 ;;; to Bob; Bob must therefore own Lot_2.
 ;;;
 ;;; The :T parameter for square-unique here is `Lot` — the type
-;;; whose instances have all their adjacency materialised.
+;;; whose members have all their adjacency materialised.
 ;;;
 ;;; Ontology (background):
 ;;;   - Three lots in a row: Lot_1 — Lot_2 — Lot_3 (cul-de-sac).
@@ -22,27 +22,26 @@
 ;;;
 ;;; Expected derivation:
 ;;;   (co-located Alice Lot_3) + (next-to Alice Bob)
-;;;   + (next-to Lot_3 Lot_2) + (instance Lot_3 Lot)
+;;;   + (next-to Lot_3 Lot_2) + (is-a Lot_3 Lot)
 ;;;   + ∄ z ≠ Lot_2 with (next-to Lot_3 z)
 ;;;   ⇒ (co-located Bob Lot_2).
 
 (rule square-unique (?R ?T)
   :match  (and (?R ?a ?b)
                (?R ?x ?y)
-               (instance ?x ?T)
+               (is-a ?x ?T)
                (co-located ?a ?x)
                (absent (and (?R ?x ?z) (neq ?y ?z))))
   :assert (co-located ?b ?y)
   :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
   :priority 200)
 
-(type Lot)
-(type Owner)
-(instance Lot_1 Lot)
-(instance Lot_2 Lot)
-(instance Lot_3 Lot)
-(instance Alice Owner)
-(instance Bob Owner)
+(relation is-a T T)
+(is-a Lot_1 Lot)
+(is-a Lot_2 Lot)
+(is-a Lot_3 Lot)
+(is-a Alice Owner)
+(is-a Bob Owner)
 (relation co-located T T)
 (relation next-to T T)
 (square-unique next-to Lot)

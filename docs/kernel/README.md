@@ -55,7 +55,7 @@ Zebra-acceptance milestone.
 - `02-data-model` is stable through M1; F4 promotion targets
   (compound node kinds, e-graph) are noted at the seams.
 - `03-ein-lang` is stable; the IR-encoding final call (classic
-  `(type …)`/`(instance …)` vs unified `is-a`) is **explicitly
+  one generic link relation vs typed attribute relations) is **explicitly
   deferred to P1.7 S1.7.2** — both encodings stay valid through every
   M1 stage.
 - `inference/` is documented:

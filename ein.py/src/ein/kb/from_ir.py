@@ -3,9 +3,9 @@
 Walks a **flat sequence** of parsed top-level forms and classifies each
 by its head (P1.7c): `relation` → relation decl; `rule` / `hrule` →
 rule; `query` / `config` → their handlers; `trace` → ignored; **any
-other head → a fact** (layer from :func:`_layer_of`). The four
-deprecated block wrappers (`ontology` / `facts` / `reasoning` / `rules`)
-are still accepted behind a back-compat shim until S1.7c.4.
+other head → a fact** (layer from :func:`_layer_of`). The former block
+wrappers are gone (S1.7c.4): a `(facts …)` form now loads as a fact
+whose relation is `facts`, like any other head.
 
 The load order matters because some entities reference others:
 0. Pass 0 — macros (P1.8 S1.5.9): build the `(macro …)` registry so the
@@ -26,12 +26,9 @@ Tolerance:
   declarations because they're the names of *rules*; the loader
   creates a relation auto-entity so the fact has a valid
   ``Fact.relation`` link, and the engine can still cross-reference.
-- Undeclared types referenced from an `(instance _ T)` are likewise
-  auto-created.
+- Undeclared atoms in an argument position are likewise auto-created.
 
 Errors:
-- Duplicate top-level block of the same kind (two `(ontology …)`) is
-  fine; they merge.
 - A malformed rule body (missing :match or :assert) is logged via
   :class:`KBLoadError` (raised at end of pass 2 so we don't fail on
   the first malformed rule).
@@ -173,7 +170,7 @@ def _ingest_relation(child: SForm, kb: KnowledgeBase, errors: list[str]) -> bool
     Returns ``True`` iff ``child`` is a `relation` form (handled — even
     if malformed, in which case an error is recorded); ``False`` if the
     head isn't `relation` (the caller treats it as a fact). Shared by
-    the wrapped `(ontology …)` pass and the flat top-level routing.
+    the relation pass and the flat top-level routing.
     """
     head = _atom_name(child.head) if isinstance(child.head, Atom) else None
     if head != "relation":
@@ -273,7 +270,7 @@ def _ingest_rules(
 ) -> None:
     """Ingest a sequence of `(rule …)` / `(hrule …)` declarations.
 
-    Fed either a deprecated `(rules …)` block's ``form.args`` or the flat
+    Fed the flat
     top-level stream of rule/hrule forms (S1.7c.3) — same logic both ways.
 
     S1.5.6b: a `(hrule …)` is structurally a rule but is routed to
@@ -292,7 +289,7 @@ def _ingest_rules(
     for child in rule_forms:
         head = _atom_name(child.head) if isinstance(child, SForm) else None
         if head not in ("rule", "hrule"):
-            errors.append(f"non-rule form in (rules …): {child}")
+            errors.append(f"non-rule form where a rule was expected: {child}")
             continue
         if len(child.args) < 2:
             errors.append(f"({head}) needs name + params at {child.loc}")

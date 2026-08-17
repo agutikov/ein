@@ -76,10 +76,9 @@ def test_compile_type_exclusivity_emits_negative_assert():
     """`:assert (not (co-located ?a ?b))` lowers to a nested-fact template."""
     kb = _kb_with("""
     (rule type-exclusivity ()
-      :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+      :match (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
       :assert (not (co-located ?a ?b))
       :why "x")
-    (type T)
     """)
     plan = compile_rule(kb.rules["type-exclusivity"], None)
     assert plan.activator_args == ()

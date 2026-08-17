@@ -81,16 +81,10 @@ class Layer(Enum):
 # ── Entities ───────────────────────────────────────────────────────
 
 
-# S1.7.23 — the `Type` and `Instance` entity classes were DELETED here.
-# They were the entity-view of the kernel-imposed type system: derived
-# from `(type …)` / `(instance …)` facts and read through the
-# `kb.types` / `kb.instances` registries + the `_types_by_parent` /
-# `_instances_by_type` / `_facts_by_instance` indexes. The kernel imposes
-# no type system (a puzzle's `is-a` rules ARE its type system, in user
-# space), so the registries, indexes, and these classes are gone. A
-# puzzle that wants a named-type view computes it with an ein-lang rule
-# over its own inheritance relation. See
-# plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md.
+# The kernel imposes no type system: a puzzle's own inheritance rules ARE
+# its type system, in user space. There is no type/instance entity-view,
+# no registries and no indexes for one. A puzzle that wants a named-type
+# view computes it with an ein-lang rule over its own relation.
 
 
 @dataclass(frozen=True)

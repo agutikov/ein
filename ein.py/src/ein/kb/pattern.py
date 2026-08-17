@@ -4,10 +4,8 @@ A `Pattern` lifts a rule's `:match` or `:assert` IR clause into a
 typed object that knows three things:
 
 - the variables bound by the pattern (``variables``),
-- the relation names mentioned by literal head (``relation_names`` —
-  this now includes ``instance``, an ordinary relation since S1.7.6),
-- ``type_names`` — vestigial; it was plucked from the old
-  ``(instance ?_ T)`` special-case and is now always empty.
+- the relation names mentioned by literal head (``relation_names``) —
+  every head is an ordinary relation; the kernel special-cases none.
 
 This is **structural** — no matching semantics, no binding, no
 backtracking. The pattern matcher lives in P1.3 and consumes these
@@ -38,19 +36,12 @@ class Pattern:
     expr: IRNode
     variables: tuple[str, ...]
     relation_names: tuple[str, ...]
-    # `type_names` is vestigial since S1.7.6: it used to be plucked from
-    # `(instance ?_ T)` patterns, but `instance` is now an ordinary
-    # relation (no special-case), so this stays empty until/unless a
-    # relation-signature-based type extractor repopulates it. Kept for
-    # the `Rule.types` / `_rules_by_type` / `Type.rules` API surface.
-    type_names: tuple[str, ...]
 
     @classmethod
     def from_ir(cls, expr: IRNode) -> Pattern:
         """Build a Pattern from a raw `:match` / `:assert` IR node."""
         vars_: list[str] = []
         rels: list[str] = []
-        types: list[str] = []
 
         def walk(node: IRNode) -> None:
             if isinstance(node, Var):
@@ -99,7 +90,6 @@ class Pattern:
             expr=expr,
             variables=tuple(vars_),
             relation_names=tuple(rels),
-            type_names=tuple(types),
         )
 
     def __iter__(self) -> Iterator[str]:

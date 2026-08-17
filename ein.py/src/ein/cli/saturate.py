@@ -69,8 +69,6 @@ def snapshot(kb: KnowledgeBase, eng: Engine | None = None) -> dict[str, Any]:
     s: dict[str, Any] = {}
 
     # ── Entity counts ────────────────────────────────────────────
-    # S1.7.23 — no `kb.types` / `kb.instances` registries; `(type …)` /
-    # `(instance …)` are ordinary facts, counted by relation below.
     s["type_facts"] = len(kb._facts_by_relation.get("type", ()))
     s["instance_facts"] = len(kb._facts_by_relation.get("instance", ()))
     s["relations"] = len(kb.relations)
@@ -376,23 +374,9 @@ def dump_kb(kb: KnowledgeBase) -> None:
     print("=  SATURATED KB DUMP")
     print("=" * 70)
 
-    # ── Schema (type/instance facts / relations / rules) ─────────
-    # S1.7.23 — `(type …)` / `(instance …)` are ordinary facts now;
-    # dump them straight from the fact index, not a type/instance view.
-    type_facts = kb._facts_by_relation.get("type", ())
-    if type_facts:
-        print()
-        print(f";; Type facts ({len(type_facts)})")
-        for f in type_facts:
-            print(f"(type {' '.join(str(a) for a in f.args)})")
-
-    instance_facts = kb._facts_by_relation.get("instance", ())
-    if instance_facts:
-        print()
-        print(f";; Instance facts ({len(instance_facts)})")
-        for f in instance_facts:
-            print(f"(instance {' '.join(str(a) for a in f.args)})")
-
+    # ── Schema (relations / rules) ───────────────────────────────
+    # No head is special-cased: a puzzle's membership relation is an
+    # ordinary relation, counted per-relation with every other.
     if kb.relations:
         declared = [r for r in kb.relations.values() if r.declared]
         open_w = [r for r in kb.relations.values() if not r.declared]

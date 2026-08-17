@@ -46,7 +46,7 @@ def _load_kb_or_exit(path: Path):
 
 def _rule_forms(nodes):
     """All flat `(rule …)` / `(hrule …)` declarations among parsed nodes
-    (P1.7c — the `(rules …)` block wrapper is gone)."""
+    Rules are flat top-level forms."""
     from ..ir import SForm
     return [n for n in nodes
             if isinstance(n, SForm) and n.head.name in ("rule", "hrule")]

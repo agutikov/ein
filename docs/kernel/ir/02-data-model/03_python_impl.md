@@ -24,7 +24,7 @@ Source root: [`ein.py/src/ein/kb/`](../../../../ein.py/src/ein/kb/).
 | [`views.py`](../../../../ein.py/src/ein/kb/views.py) | `FactView` — read-only layer views + the `relation` / `about` / `by_source` / `by_rule` filters |
 | [`from_ir.py`](../../../../ein.py/src/ein/kb/from_ir.py) | `KnowledgeBase.from_ir` — the flat-form loader (route by head, per-fact layer, open-world auto-vivify, cycle check) |
 | [`imports.py`](../../../../ein.py/src/ein/kb/imports.py) | the module-import resolver (`std.<path>` → `stdlib/<path>.ein`; `:as` / `:symbols` + auto-closure, P1.8) |
-| [`render.py`](../../../../ein.py/src/ein/kb/render.py) | `KnowledgeBase.to_dot` — the schema/fact DOT renderer (`_schema_nodes` reads `is-a` / `(type …)` / `(instance …)` facts directly) |
+| [`render.py`](../../../../ein.py/src/ein/kb/render.py) | `KnowledgeBase.to_dot` — the schema/fact DOT renderer (`_schema_nodes` reads the puzzle's `is-a` facts directly) |
 
 ## 2. Dataclass attachment mechanics
 

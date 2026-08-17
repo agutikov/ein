@@ -1,7 +1,7 @@
 """Rule-driven hypothesis generation — S1.5.6b T1.5.6b.2.
 
 A *hypothesis rule* (`hrule`) is declared by a ``(hrule …)`` form
-in the ``(rules …)`` block — the same shape as ``(rule …)``, but
+a flat top-level form — the same shape as ``(rule …)``, but
 the loader routes it to ``kb.hrules`` rather than ``kb.rules``.
 Its firing yields a *candidate hypothesis* instead of a derived
 fact: the puzzle declares which hypotheses are worth trying,
@@ -11,7 +11,7 @@ enumerator.
 A hrule may be **generic** — parameterised, e.g.
 ``(hrule guess (?rel ?type) …)`` — exactly like a generic
 ``(rule …)``. Its activators live in the ``(query …)`` block under
-``:hrules`` keywords (*not* in ``(ontology …)``: an hrule
+``:hrules`` keywords (an hrule
 activator steers the search, it is not puzzle state). A
 ``:hrules (NAME (a b) (c d) …)`` keyword binds ``NAME``'s
 parameters once per ``(a b)`` argument tuple. A parameter-less

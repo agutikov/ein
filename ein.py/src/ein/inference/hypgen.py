@@ -13,7 +13,7 @@ symmetric relations.
 restrict slot fillers to `is-a`-type-compatible objects
 (`_type_compatible` walking an `is-a` / `Type.parent` ancestry, plus the
 `T` universal-top short-circuit) and to select candidate objects from
-the `is-a` leaves / `kb.instances` view. Both keyed the kernel on the
+the `is-a` leaves. Both keyed the kernel on the
 `is-a` name and on a derived type lattice — a kernel-imposed type system.
 They are gone: the enumerator now proposes type-blind, and the puzzle's
 own rules (a `guess`-style hrule's `:match`, or `typecheck-arg-*` +
@@ -523,7 +523,7 @@ def _candidate_objects(kb: KnowledgeBase) -> Iterator:
     puzzle objects — without the guard the enumerator would propose
     `(R x not)` garbage).
     The kernel no longer keys this on the `is-a` name or the
-    `kb.instances` view (the old "instance-like = `is-a` leaf" rule, a
+    an entity view (the old "instance-like = `is-a` leaf" rule, a
     kernel-imposed type system); it reads only `category` + the relation
     *signatures* a puzzle already declares with `(relation R A B)` — A/B
     are the type-role nodes to exclude. (For a `(relation color-of House

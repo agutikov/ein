@@ -89,11 +89,10 @@ def test_engine_type_exclusivity_produces_negative_facts():
     binds ?R."""
     kb = KnowledgeBase.from_ir(parse("""
     (rule type-exclusivity (?R)
-      :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+      :match (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
       :assert (not (?R ?a ?b))
       :why "x")
-    (type T)
-    (instance A T) (instance B T)
+    (is-a A T) (is-a B T)
     (relation co-located T T)
     (type-exclusivity co-located)
     """))
@@ -101,8 +100,8 @@ def test_engine_type_exclusivity_produces_negative_facts():
     eng.compile_all()
     firings = list(eng.saturate())
     # Each ordered pair of distinct A/B instances produces one negative.
-    # (instance A T, instance B T, neq A B) → not (co-located A B).
-    # (instance B T, instance A T, neq B A) → not (co-located B A).
+    # (is-a A T, instance B T, neq A B) → not (co-located A B).
+    # (is-a B T, instance A T, neq B A) → not (co-located B A).
     rels = {f.derived[0].relation_name for f in firings}
     assert "not" in rels
     # Nested-Fact arg verification.

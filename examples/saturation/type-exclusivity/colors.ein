@@ -1,34 +1,34 @@
 ;;; colors — distinct Colors cannot co-locate.
 ;;;
 ;;; Ontology (background):
-;;;   - `Color` is a type whose instances are mutually exclusive
+;;;   - `Color` is a type whose members are mutually exclusive
 ;;;     attributes — a single house can have only one colour at a
 ;;;     time.
 ;;;   - The rule `type-exclusivity` enforces this for every type
 ;;;     uniformly; no per-type activator fact is needed.
 ;;;
 ;;; Facts (observed):
-;;;   - Red is an instance of Color.
-;;;   - Blue is an instance of Color.
+;;;   - Red is a Color.
+;;;   - Blue is a Color.
 ;;;
 ;;; Question:
 ;;;   Can Red and Blue be co-located in the same slot?  (No.)
 ;;;
 ;;; Expected derivation:
-;;;   (instance Red Color) + (instance Blue Color) + (neq Red Blue)
+;;;   (is-a Red Color) + (is-a Blue Color) + (neq Red Blue)
 ;;;   ⇒ (not (co-located Red Blue)).  [Fires twice — also (Blue, Red).]
 
 (rule type-exclusivity (?R)
-  :match  (and (instance ?a ?T)
-               (instance ?b ?T)
+  :match  (and (is-a ?a ?T)
+               (is-a ?b ?T)
                (neq ?a ?b))
   :assert (not (?R ?a ?b))
-  :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
+  :why    "{?a} and {?b} are distinct members of {?T} — exclusive under {?R}."
   :priority 300)
 
-(type Color)
-(instance Red Color)
-(instance Blue Color)
+(relation is-a T T)
+(is-a Red Color)
+(is-a Blue Color)
 (relation co-located T T)
 (type-exclusivity co-located)
 

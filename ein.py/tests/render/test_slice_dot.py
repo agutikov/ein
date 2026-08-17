@@ -137,7 +137,7 @@ def _kb(text: str) -> KnowledgeBase:
 
 def test_render_state_emits_full_graph():
     kb = _kb(
-        '(relation r A A) (instance A T) (instance B T) (r A B :source "(1)")'
+        '(relation r A A) (is-a A T) (is-a B T) (r A B :source "(1)")'
     )
     dot = render_state(kb, name="snap")
     assert dot.startswith("digraph snap")
@@ -160,7 +160,7 @@ def test_render_state_since_thickens_new_facts():
 
 def test_render_solution_renders_solved_state():
     kb = _kb(
-        '(relation co-located A H) (instance Blue A) (instance H3 H)'
+        '(relation co-located A H) (is-a Blue A) (is-a H3 H)'
         ' (co-located Blue H3 :source "(1)")'
     )
     dot = render_solution(kb)

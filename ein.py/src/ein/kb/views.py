@@ -9,7 +9,7 @@ attribute from S1.2.1.)
 
 S1.7.23 — the `logical_types` / `logical_instances` / `type_name` /
 `instance_name` helpers were DELETED. They were the encoding-agnostic
-`is-a`-bridge for the now-removed `kb.types` / `kb.instances` type-system
+`is-a`-bridge for the removed type-system
 entity-view; a puzzle that wants a named-type projection computes it with
 an ein-lang rule over its own inheritance relation, and the renderer reads
 `is-a` facts directly.

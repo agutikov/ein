@@ -24,28 +24,27 @@
 ;;;
 ;;; Expected derivation:
 ;;;   (co-located Express Terminus) + (next-to Express LocalShuttle)
-;;;   + (next-to Terminus Bridge) + (instance Terminus Station)
+;;;   + (next-to Terminus Bridge) + (is-a Terminus Station)
 ;;;   + ∄ z ≠ Bridge with (next-to Terminus z)
 ;;;   ⇒ (co-located LocalShuttle Bridge).
 
 (rule square-unique (?R ?T)
   :match  (and (?R ?a ?b)
                (?R ?x ?y)
-               (instance ?x ?T)
+               (is-a ?x ?T)
                (co-located ?a ?x)
                (absent (and (?R ?x ?z) (neq ?y ?z))))
   :assert (co-located ?b ?y)
   :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
   :priority 200)
 
-(type Station)
-(type Service)
-(instance Central Station)
-(instance Junction Station)
-(instance Bridge Station)
-(instance Terminus Station)
-(instance Express Service)
-(instance LocalShuttle Service)
+(relation is-a T T)
+(is-a Central Station)
+(is-a Junction Station)
+(is-a Bridge Station)
+(is-a Terminus Station)
+(is-a Express Service)
+(is-a LocalShuttle Service)
 (relation co-located T T)
 (relation next-to T T)
 (square-unique next-to Station)

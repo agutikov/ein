@@ -153,15 +153,17 @@ def _emit_fact(b: _Builder, fact: SForm, *, derived: bool = False,
         b.edge(eq_id, _atom_id_for_value(c))
         return
 
-    # Instance fact → dashed instance-of edge (UML-style)
-    if head == "instance" and len(positional) == 2:
+    # Membership fact → dashed is-a edge (UML-style). The convention is
+    # presentation knowledge, not kernel reasoning: `is-a` is an ordinary
+    # relation that the renderer happens to know how to draw.
+    if head == "is-a" and len(positional) == 2:
         ent, typ = positional
         if isinstance(ent, (Atom, Var, Wildcard)):
             b.node(_atom_id(ent), f"shape={INSTANCE_SHAPE}")
         if isinstance(typ, (Atom, Var, Wildcard)):
             b.node(_atom_id(typ), f"shape={TYPE_SHAPE}")
         b.edge(_atom_id_for_value(ent), _atom_id_for_value(typ),
-               'style=dashed, arrowhead=empty, label="instance-of"')
+               'style=dashed, arrowhead=empty, label="is-a"')
         return
 
     # Negative fact → recurse into the wrapped expression, mark dashed
@@ -232,19 +234,7 @@ def render_ontology(form: SForm, *, levi: bool = False) -> str:
         if not isinstance(decl, SForm):
             continue
         head = decl.head.name
-        if head == "type":
-            # (type Name [Parent])
-            args = [a for a in decl.args if isinstance(a, (Atom, Var, Wildcard))]
-            if not args:
-                continue
-            name = args[0]
-            b.node(_atom_id(name), f"shape={TYPE_SHAPE}")
-            if len(args) >= 2:
-                parent = args[1]
-                b.node(_atom_id(parent), f"shape={TYPE_SHAPE}")
-                b.edge(_atom_id(name), _atom_id(parent),
-                       "style=dashed, arrowhead=empty")
-        elif head == "relation":
+        if head == "relation":
             # (relation Name T1 T2 … [kw…]) — flat args post-R10.
             args = decl.args
             if not args or not isinstance(args[0], (Atom, Var)):

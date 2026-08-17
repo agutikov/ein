@@ -5,7 +5,7 @@
 ;;;     holds at most one of these pets.
 ;;;
 ;;; Facts (observed):
-;;;   - Dog, Cat, Bird are all instances of Pet.
+;;;   - Dog, Cat, Bird are all Pet.
 ;;;
 ;;; Question:
 ;;;   For each ordered pair of distinct Pets, is co-location ruled
@@ -13,23 +13,23 @@
 ;;;
 ;;; Expected derivation:
 ;;;   For every distinct (X, Y) ∈ Pet × Pet:
-;;;   (instance X Pet) + (instance Y Pet) + (neq X Y)
+;;;   (is-a X Pet) + (is-a Y Pet) + (neq X Y)
 ;;;   ⇒ (not (co-located X Y)).
 ;;;   Six firings total: (Dog,Cat), (Dog,Bird), (Cat,Dog), (Cat,Bird),
 ;;;   (Bird,Dog), (Bird,Cat).
 
 (rule type-exclusivity (?R)
-  :match  (and (instance ?a ?T)
-               (instance ?b ?T)
+  :match  (and (is-a ?a ?T)
+               (is-a ?b ?T)
                (neq ?a ?b))
   :assert (not (?R ?a ?b))
-  :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
+  :why    "{?a} and {?b} are distinct members of {?T} — exclusive under {?R}."
   :priority 300)
 
-(type Pet)
-(instance Dog Pet)
-(instance Cat Pet)
-(instance Bird Pet)
+(relation is-a T T)
+(is-a Dog Pet)
+(is-a Cat Pet)
+(is-a Bird Pet)
 (relation co-located T T)
 (type-exclusivity co-located)
 

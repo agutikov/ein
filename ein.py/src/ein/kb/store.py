@@ -256,8 +256,8 @@ class KnowledgeBase:
 
     # ── Registry mutation (used by the loader) ────────────────────
 
-    # S1.7.23 — no `types` / `instances` registries at all: `(type …)` /
-    # `(instance …)` are ordinary facts a puzzle may declare, but the
+    # No `types` / `instances` registries: membership is stated by an
+    # ordinary relation a puzzle declares, and the
     # kernel builds no type/instance entity-view over them. The loader
     # just ingests the facts; any named-type projection is a user rule.
 
@@ -483,9 +483,8 @@ class KnowledgeBase:
         single-fact additions in the reasoning layer is provided by
         :meth:`_index_fact` so a saturation loop need not rebuild.
 
-        S1.7.23 — no type / instance derivation: `(type …)` / `(instance
-        …)` are ordinary facts indexed like any other, with no
-        type/instance entity-view built over them.
+        No type / instance derivation: every fact is indexed the same
+        way, with no entity-view built over any particular head.
 
         S1.21.7 — ``_alt_justifications`` is deliberately NOT touched here.
         Every other index is a projection of ``self.facts`` and so is safe

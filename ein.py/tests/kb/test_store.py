@@ -17,10 +17,10 @@ from ein.kb import (
 class TestZebraCounts:
     """Top-level entity counts against the S1.2.1 acceptance.
 
-    S1.7.23 — the `test_seven_types` / `test_thirty_instances` cases were
-    DELETED with the `kb.types` / `kb.instances` entity-view; the
-    inheritance forest is now just `(type …)` / `(instance …)` facts in
-    the fact list (counted by `TestZebraFact.test_fact_count`).
+    The `test_seven_types` / `test_thirty_instances` cases were DELETED
+    with the type-system entity-view; a puzzle's inheritance forest is
+    now just ordinary facts in the fact list (counted by
+    `TestZebraFact.test_fact_count`).
     """
 
     def test_five_declared_relations(self, zebra_kb):
@@ -56,8 +56,8 @@ class TestZebraCounts:
 # S1.7.23 — `TestZebraTypeHierarchy` (Type.parent/children/instances/
 # ancestors) and `TestZebraInstance` (Instance.type/.facts) were DELETED
 # with the `Type` / `Instance` entity classes. The inheritance forest is
-# `is-a` / `(type …)` / `(instance …)` facts; a puzzle that wants a
-# typed view computes it with a user-space ein-lang rule.
+# whatever membership facts the puzzle declares; one that wants a typed
+# view computes it with a user-space ein-lang rule.
 
 
 class TestZebraRelation:
@@ -135,9 +135,10 @@ class TestZebraRule:
 class TestZebraFact:
     def test_fact_count(self, zebra_kb):
         # Ontology: 7 type-decl + 30 instance + 8 rule-app + 4 spatial
-        #  + 5 relation-decl = 54. (S1.7.6: type/instance are plain
-        #  relations now — the 7 (type …) decls are ONTOLOGY facts, and
-        #  relation-decls are co-located, right-of, next-to, type, instance.)
+        #  + 5 relation-decl = 54. zebra.ein declares `type` and
+        #  `instance` as ordinary relations, so their facts are ONTOLOGY
+        #  facts and both appear among the 5 relation-decls (alongside
+        #  co-located, right-of, next-to).
         # Facts: 14 (conditions 2..15).
         # Total: 68.
         assert len(zebra_kb.facts) == 68
@@ -189,12 +190,13 @@ class TestZebraFact:
 
 
 class TestZebra2:
-    """The unified `is-a` model uses no `(type …)` or `(instance …)`."""
+    """zebra2.ein states membership with `is-a` alone."""
 
     def test_zebra2_has_no_type_instance_facts(self, zebra2_kb):
-        # All inheritance is expressed via `is-a` facts; no `(type …)`
-        # or `(instance …)` facts. (S1.7.23 — there are no kb.types /
-        # kb.instances registries to check; assert over the fact list.)
+        # All inheritance is expressed via `is-a` facts — unlike
+        # zebra.ein, which declares `type` / `instance` relations of its
+        # own. (There are no kb.types / kb.instances registries to
+        # check; assert over the fact list.)
         rels = {f.relation_name for f in zebra2_kb.facts}
         assert "type" not in rels
         assert "instance" not in rels
@@ -217,8 +219,7 @@ class TestOpenWorld:
     def test_undeclared_relation_auto_vivifies(self):
         from ein.ir import parse
         text = """
-        (type Foo)
-        (instance A Foo)
+        (is-a A Foo)
         (mystery-relation A B :source "(1)")
         """
         kb = KnowledgeBase.from_ir(parse(text))
@@ -228,7 +229,7 @@ class TestOpenWorld:
         assert len(rel.facts) == 1
 
 # S1.7.23 — `test_undeclared_type_auto_vivifies` was DELETED: there is no
-# `kb.types` registry to auto-vivify into. An `(instance A NoSuchType)`
+# `kb.types` registry to auto-vivify into. An `(is-a A NoSuchType)`
 # fact is just a fact; `NoSuchType` is an ordinary node name.
 
 
@@ -272,8 +273,7 @@ class TestIncrementalIndex:
     def test_index_fact_appends(self):
         from ein.ir import parse
         text = """
-        (type T)
-        (instance A T)
+        (is-a A T)
         (relation r T T)
         """
         from ein.kb import Provenance
@@ -375,9 +375,8 @@ class TestKBSnapshot:
         from ein.ir import parse
         from ein.kb import Provenance
         text = """
-        (type T)
-        (instance a T)
-        (instance b T)
+        (is-a a T)
+        (is-a b T)
         (relation r T T)
         (r a b :source "(1)")
         """
@@ -417,8 +416,7 @@ class TestKBSnapshot:
         from ein.ir import parse
         from ein.kb import Provenance
         text = """
-        (type T)
-        (instance a T) (instance b T)
+        (is-a a T) (is-a b T)
         (relation p T T)
         (relation q T T)
         (p a b :source "(1)")
@@ -466,8 +464,7 @@ class TestKBSnapshot:
         (S1.7.23 — there are no `types` / `instances` registries.)"""
         from ein.ir import parse
         text = """
-        (type T)
-        (instance a T)
+        (is-a a T)
         (relation r T T)
         """
         kb = KnowledgeBase.from_ir(parse(text))
@@ -489,8 +486,7 @@ class TestKBSnapshot:
         from ein.ir import parse
         from ein.kb import Provenance
         text = """
-        (type T)
-        (instance a T) (instance b T)
+        (is-a a T) (is-a b T)
         (relation r T T)
         (relation s T T)
         (r a b :source "(1)")
@@ -525,8 +521,7 @@ class TestKBSnapshot:
         `_rules_by_relation` is shared by reference."""
         from ein.ir import parse
         text = """
-        (type T)
-        (instance a T) (instance b T)
+        (is-a a T) (is-a b T)
         (relation r T T)
         (r a b :source "(1)")
         """

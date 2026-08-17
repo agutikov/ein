@@ -50,10 +50,9 @@ def test_alive_one_element_conditional_derivation():
     (rule swap ()
       :match (target ?x ?y) :assert (other ?y ?x)
       :why "swap target → other" :priority 100)
-    (type T)
     (relation target T T)
     (relation other T T)
-    (instance c T) (instance d T)
+    (is-a c T) (is-a d T)
     
     """)
     commitment = (("target", ("c", "d")),)
@@ -78,9 +77,8 @@ def test_dead_pre_root_carries_negation_of_committed_hypothesis():
     a pre-saturation contradiction.
     """
     kb = _kb("""
-    (type T)
     (relation target T T)
-    (instance c T) (instance d T)
+    (is-a c T) (is-a d T)
     
     """)
     # Seed REASONING-layer (not (target c d)) — pattern from
@@ -122,9 +120,8 @@ def test_dead_post_two_hypotheses_derive_contradiction():
     (rule h2-forbids-x ()
       :match (h2 ?x) :assert (not (x ?x))
       :why "h2 → ¬x" :priority 100)
-    (type T)
     (relation h1 T) (relation h2 T) (relation x T)
-    (instance a T)
+    (is-a a T)
     
     """)
     commitment = (("h1", ("a",)), ("h2", ("a",)))
@@ -160,9 +157,8 @@ def test_isolation_two_calls_yield_independent_forks():
     fork's facts list doesn't affect the other or the root.
     """
     kb = _kb("""
-    (type T)
     (relation h1 T) (relation h2 T)
-    (instance a T)
+    (is-a a T)
     
     """)
     root_size = len(kb.facts)
@@ -198,9 +194,8 @@ def test_empty_commitment_returns_alive_with_empty_results():
     (rule sym-r ()
       :match (r ?x ?y) :assert (r ?y ?x)
       :why "symmetric r" :priority 100)
-    (type T)
     (relation r T T)
-    (instance a T) (instance b T)
+    (is-a a T) (is-a b T)
     (r a b :source "(1)")
     """)
     # Pre-saturate root so the empty-commitment fork has nothing

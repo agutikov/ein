@@ -199,9 +199,9 @@ def test_square_bwd_negative_no_activator():
 def test_type_exclusivity_positive():
     eng = _engine("""
     (rule type-exclusivity (?R)
-:match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+:match (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
 :assert (not (?R ?a ?b)) :why "x" :priority 300)
-    (type Color) (instance Red Color) (instance Blue Color)
+    (is-a Red Color) (is-a Blue Color)
     (relation co-located T T)
     (type-exclusivity co-located)
     """)
@@ -220,9 +220,9 @@ def test_type_exclusivity_negative_same_instance():
     """Only one instance → no neq-passing pair → no firing."""
     eng = _engine("""
     (rule type-exclusivity (?R)
-:match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
+:match (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))
 :assert (not (?R ?a ?b)) :why "x" :priority 300)
-    (type Color) (instance Red Color)
+    (is-a Red Color)
     (relation co-located T T)
     (type-exclusivity co-located)
     """)
@@ -241,14 +241,14 @@ def test_square_unique_corner_inference():
     """
     eng = _engine("""
     (rule square-unique (?R ?T)
-      :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
+      :match (and (?R ?a ?b) (?R ?x ?y) (is-a ?x ?T)
                   (co-located ?a ?x)
                   (absent (and (?R ?x ?z) (neq ?y ?z))))
       :assert (co-located ?b ?y)
       :why "u" :priority 200)
-    (type House) (type Nationality) (type Color)
-    (instance House-1 House) (instance House-2 House)
-    (instance Norwegian Nationality) (instance Blue Color)
+    
+    (is-a House-1 House) (is-a House-2 House)
+    (is-a Norwegian Nationality) (is-a Blue Color)
     (relation co-located T T) (relation next-to T T)
     (square-unique next-to House)
     (co-located Norwegian House-1 :source "(10)")
@@ -265,7 +265,7 @@ def test_square_unique_corner_inference():
 
 
 def test_square_unique_does_not_fire_on_attribute_pair():
-    """Soundness: the `(instance ?x ?T)` premise prevents the rule
+    """Soundness: the `(is-a ?x ?T)` premise prevents the rule
     from firing with ?x bound to an attribute (Norwegian, Blue) whose
     "uniqueness" is just *incidental* (only one stated next-to fact).
 
@@ -274,13 +274,13 @@ def test_square_unique_does_not_fire_on_attribute_pair():
     unique spatial neighbour."""
     eng = _engine("""
     (rule square-unique (?R ?T)
-      :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
+      :match (and (?R ?a ?b) (?R ?x ?y) (is-a ?x ?T)
                   (co-located ?a ?x)
                   (absent (and (?R ?x ?z) (neq ?y ?z))))
       :assert (co-located ?b ?y)
       :why "u" :priority 200)
-    (type House) (type Nationality)
-    (instance Norwegian Nationality)
+    
+    (is-a Norwegian Nationality)
     (relation co-located T T) (relation next-to T T)
     ;; NOTE: activator names House, but House has no instances here.
     (square-unique next-to House)
@@ -288,7 +288,7 @@ def test_square_unique_does_not_fire_on_attribute_pair():
     """)
     firings = list(eng.saturate())
     matched = [f for f in firings if f.rule == "square-unique"]
-    # No House instances → guard's (instance ?x House) never matches → no firing.
+    # No House instances → guard's (is-a ?x House) never matches → no firing.
     assert not matched
 
 
@@ -297,14 +297,14 @@ def test_square_unique_skips_middle_houses():
     fails for any binding with ?x = House-3."""
     eng = _engine("""
     (rule square-unique (?R ?T)
-      :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T)
+      :match (and (?R ?a ?b) (?R ?x ?y) (is-a ?x ?T)
                   (co-located ?a ?x)
                   (absent (and (?R ?x ?z) (neq ?y ?z))))
       :assert (co-located ?b ?y)
       :why "u" :priority 200)
-    (type House) (type Nationality)
-    (instance House-2 House) (instance House-3 House) (instance House-4 House)
-    (instance Spaniard Nationality)
+    
+    (is-a House-2 House) (is-a House-3 House) (is-a House-4 House)
+    (is-a Spaniard Nationality)
     (relation co-located T T) (relation next-to T T)
     (square-unique next-to House)
     (next-to House-2 House-3) (next-to House-3 House-2)

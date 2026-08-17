@@ -29,8 +29,8 @@ follows the table:
 > imposes no type system: there is no derived types-and-instances
 > entity-view (and no `kb.types` / `kb.instances` registries). Object
 > and type nodes are just **names** — they appear as `Fact` args and
-> as the heads/args of the puzzle's own `is-a` / `(type …)` /
-> `(instance …)` facts; the participation of every name is captured by
+> as the heads/args of the puzzle's own membership facts (`is-a`, or
+> whatever relation it declares); the participation of every name is captured by
 > the lightweight `NameRef` index (§1.4). A puzzle that wants a
 > named-type projection computes it with a user-space ein-lang rule
 > over its own inheritance relation. See
@@ -200,8 +200,6 @@ Pattern(
     expr:                  IRNode,           # the raw IR clause
     variables:             tuple[str, ...],  # ?vars bound by this pattern
     relation_names:        tuple[str, ...],  # relations named literally
-    type_names:            tuple[str, ...],  # types touched via instance forms
-    has_instance_pattern:  bool,             # any `(instance ?_ T)` premise
 )
 ```
 
@@ -209,9 +207,9 @@ The pattern object is **structural-only** for M1 — the matching
 semantics (binding, unification, backtracking) lives in P1.3 with
 the inference engine. The Pattern serves as the type-checker's view
 of a clause and as the data the `Rule.relations` cross-reference
-walks. (`type_names` / `has_instance_pattern` are now **vestigial** —
-S1.7.23 removed the `Rule.types` / `_rules_by_type` consumers with the
-`Type` entity; the fields remain only as structural metadata.)
+walks. (`type_names` / `has_instance_pattern` are **gone** — S1.7.23
+removed their `Rule.types` / `_rules_by_type` consumers with the `Type`
+entity, and S1.22.1 removed the now-dead fields.)
 
 A small example — the LHS `(and (?rel ?a ?b) (?rel ?b ?c))` of the
 `transitive` rule:
@@ -223,7 +221,7 @@ A small example — the LHS `(and (?rel ?a ?b) (?rel ?b ?c))` of the
 | `type_names`           | `()` — no instance premise     |
 | `has_instance_pattern` | `False`                        |
 
-Contrast with `type-exclusivity`'s LHS `(and (instance ?a ?T) (instance ?b ?T))`:
+Contrast with `type-exclusivity`'s LHS `(and (is-a ?a ?T) (is-a ?b ?T))`:
 
 | field                  | value                          |
 |------------------------|--------------------------------|

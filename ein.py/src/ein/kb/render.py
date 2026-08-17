@@ -23,7 +23,7 @@ KB graph](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md).
   direct edge; no Levi node).
 - Each n-ary ``Fact`` (arity ≠ 2) → an ``octagon`` Levi-bipartite
   hyperedge node with slot-labelled edges.
-- ``Instance → Type`` (instance-of) → ``style=dashed, arrowhead=empty``.
+- ``is-a`` membership → ``style=dashed, arrowhead=empty``.
 - Layer styling:
   - ONTOLOGY → plain solid.
   - FACT → solid; edge label includes the short ``(N)`` source id.
@@ -32,16 +32,13 @@ KB graph](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md).
   across layers so the eye groups by relation.
 - Rule-application meta-facts (``(symmetric R)`` etc.) are
   **suppressed** — they're meta, not data.
-- ``instance`` / ``type`` schema facts are suppressed in favour of the
-  derived instance-of edge (otherwise every instance would have a
-  duplicate edge).
 
-**Encoding-agnostic** (presentation reads the inheritance convention
-directly — S1.7.23, since the kernel no longer keeps a type/instance
-entity-view): :func:`_schema_nodes` scans the puzzle's `is-a` /
-`(type …)` / `(instance …)` facts to decide which node atoms are
-type-like (box) vs instance-like (oval), and the `is-a` facts are drawn
-with the type-edge style in the fact pass.
+**No head is special-cased.** :func:`_schema_nodes` scans the puzzle's
+`is-a` facts to decide which node atoms are type-like (box) vs
+instance-like (oval), and the `is-a` facts draw their own type-edge in
+the fact pass. `is-a` is an ordinary relation the renderer knows how to
+draw — a puzzle that spells membership some other way gets ordinary
+fact rendering, not a second convention.
 """
 from __future__ import annotations
 
@@ -89,49 +86,29 @@ def _short_source(source: str | None) -> str | None:
 # ── Edge / node emitters ──────────────────────────────────────────
 
 
-def _schema_nodes(
-    kb: KnowledgeBase,
-) -> tuple[set[str], set[str], list[tuple[str, str]]]:
-    """Derive the (type-names, instance-names, instance-of-edges) the
-    renderer draws, straight from the puzzle's inheritance facts.
+def _schema_nodes(kb: KnowledgeBase) -> tuple[set[str], set[str]]:
+    """The (type-names, instance-names) the renderer draws, from the
+    puzzle's own `(is-a Child Parent)` facts.
 
-    S1.7.23 — replaces the deleted `logical_types` / `logical_instances`
-    helpers (which read the removed `kb.types` / `kb.instances`
-    entity-view). Presentation may know the inheritance convention; it
-    is not kernel reasoning. Recognised:
-
-    - ``(is-a Child Parent)`` — Parent is a type, Child a leaf unless it
-      is itself a parent elsewhere; the edge Child→Parent is drawn by the
-      fact pass (type-edge style), so it is NOT returned here.
-    - ``(type X [P])`` — X (and P, if present) are types. No type→parent
-      edge is drawn (matching the pre-S1.7.23 renderer, which drew only
-      instance-of edges, not the type hierarchy).
-    - ``(instance I T)`` — I is an instance, T a type; edge I→T.
+    Presentation may know the inheritance convention; it is not kernel
+    reasoning — `is-a` is an ordinary relation the renderer happens to know
+    how to draw. Parent is a type; Child is a leaf unless it is itself a
+    parent elsewhere. The Child→Parent edge is NOT returned here: the `is-a`
+    *facts* draw their own type-edge in the per-fact pass.
     """
     types: set[str] = set()
     children: set[str] = set()
     parents: set[str] = set()
-    edges: list[tuple[str, str]] = []
 
     def _two_strs(args: tuple) -> bool:
         return len(args) >= 2 and isinstance(args[0], str) and isinstance(args[1], str)
 
     for f in kb.facts:
-        rn, args = f.relation_name, f.args
-        if rn == "is-a" and _two_strs(args):
-            children.add(args[0])
-            parents.add(args[1])
-            types.add(args[1])
-        elif rn == "type" and args and isinstance(args[0], str):
-            types.add(args[0])
-            if len(args) >= 2 and isinstance(args[1], str):
-                types.add(args[1])
-        elif rn == "instance" and _two_strs(args):
-            children.add(args[0])
-            types.add(args[1])
-            edges.append((args[0], args[1]))
-    instances = (children - parents) - types
-    return types, instances, edges
+        if f.relation_name == "is-a" and _two_strs(f.args):
+            children.add(f.args[0])
+            parents.add(f.args[1])
+            types.add(f.args[1])
+    return types, (children - parents) - types
 
 
 def _emit_type_node(name: str) -> str:
@@ -279,15 +256,13 @@ def _emit_schema_nodes(
     include_types: bool,
     include_instances: bool,
 ) -> list[str]:
-    """The type / instance / instance-of DOT lines (S1.7c.26).
+    """The type-box / instance-oval DOT lines (S1.7c.26).
 
-    S1.7.23 — read the puzzle's `is-a` / `(type …)` / `(instance …)` facts
-    directly (presentation knows the convention; the kernel no longer keeps
-    a type/instance entity-view). Instance-of edges are emitted only when
-    ONTOLOGY is requested; the `is-a` *facts* draw their own type-edge in
-    the per-fact pass.
+    Read from the puzzle's own `is-a` facts; the kernel keeps no
+    type/instance entity-view. Only the *nodes* are emitted here — each
+    `is-a` fact draws its own Child→Parent type-edge in the per-fact pass.
     """
-    schema_types, schema_insts, instanceof_edges = _schema_nodes(kb)
+    schema_types, schema_insts = _schema_nodes(kb)
     type_set = schema_types if include_types else set()
     type_names = sorted(type_set)
     # Skip ovals when a name is already a type box (avoid double-render).
@@ -300,11 +275,6 @@ def _emit_schema_nodes(
     if inst_names:
         out.append("  // instances")
         out.extend(_emit_instance_node(name_) for name_ in inst_names)
-    if Layer.ONTOLOGY in layers_set and include_types and include_instances:
-        for child, parent in instanceof_edges:
-            if parent in type_set:
-                out.append("")
-                out.append(_emit_is_a_edge(child, parent))
     return out
 
 
@@ -346,22 +316,21 @@ def _emit_fact_line(
 def _suppress(f: Fact, kb: KnowledgeBase) -> bool:
     """Return True iff this fact should NOT appear in the unified view.
 
-    Three classes of suppression:
+    Two classes of suppression:
     1. Rule-application meta-facts — head matches a Rule name
        (`(symmetric co-located)` etc.). Pure meta; not data.
-    2. `instance` / `type` schema facts — already rendered via the
-       derived entity nodes (type boxes, instance ovals) and the
-       instance-of / parent edges. Since S1.7.6 these are ordinary
-       facts (not kernel declarators); suppress them here so the
-       schema isn't drawn twice (entity node + octagon).
-    3. `not`-headed facts whose arg structure is collapsed by the
+    2. `not`-headed facts whose arg structure is collapsed by the
        loader — the inner proposition is lost, so we can't render
        them faithfully. M1 punt; revisit when the loader preserves
        nested SForm args in `Fact.raw`.
+
+    S1.22.1 — `instance` / `type` are no longer named here. They were
+    suppressed because the schema pass drew them as type boxes and
+    instance ovals; with that special-case gone, a puzzle that declares
+    `type` / `instance` as ordinary relations gets them rendered as
+    ordinary facts, like any other relation it declares.
     """
     if f.relation_name in kb.rules:
-        return True
-    if f.relation_name in ("instance", "type"):
         return True
     if f.relation_name == "not":
         # Negative facts — punt for M1 (see docstring).

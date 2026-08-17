@@ -130,26 +130,22 @@ def test_pattern_extracts_variables():
     p = Pattern.from_ir(match_node)
     assert p.variables == ("a", "b")
     assert p.relation_names == ("co-located",)
-    assert p.type_names == ()
 
 
-def test_pattern_instance_is_a_generic_relation():
-    # S1.7.6: `instance` is no longer a kernel meta-primitive — it is an
-    # ordinary relation. So `(instance ?a House)` in a pattern registers
-    # `instance` in `relation_names` (like any relation head) and no
-    # longer plucks `House` into `type_names` (which is now vestigial).
+def test_pattern_membership_head_is_an_ordinary_relation():
+    # The kernel builds no type-system entity-view: membership is stated by
+    # an ordinary relation (`is-a`), and a pattern treats its head exactly
+    # like any other relation head — it lands in `relation_names`, and the
+    # second argument is NOT plucked out as a type name.
     from ein.ir import parse
     forms = parse(
-        '(rule r () :match (and (instance ?a House) (co-located ?a ?b))'
-        ' :assert (instance ?b Nationality) :why "")'
+        '(rule r () :match (and (is-a ?a House) (co-located ?a ?b))'
+        ' :assert (is-a ?b Nationality) :why "")'
     )
     rule = forms[0]  # P1.7c: a flat top-level (rule …) form
     match_node = next(kw.value for kw in rule.args if hasattr(kw, "key") and kw.key.name == "match")
     p = Pattern.from_ir(match_node)
-    assert "instance" in p.relation_names
-    assert "co-located" in p.relation_names
-    assert "House" not in p.type_names
-    assert p.type_names == ()
+    assert p.relation_names == ("is-a", "co-located")
     assert set(p.variables) == {"a", "b"}
 
 

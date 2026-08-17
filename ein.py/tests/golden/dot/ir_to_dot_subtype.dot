@@ -1,5 +1,0 @@
-digraph ontology {
-  "Engineer" [shape=box];
-  "Person" [shape=box];
-  "Engineer" -> "Person" [style=dashed, arrowhead=empty];
-}

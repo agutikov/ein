@@ -29,7 +29,7 @@ What this renderer gets right that a naive edge-dump does not
   survives instead of being flattened into overlay arrows.
 
 This is the canonical rule renderer; :mod:`ein.ir.to_dot`
-delegates `(rule …)` / `(rules …)` rendering here.
+delegates `(rule …)` rendering here.
 """
 from __future__ import annotations
 
@@ -374,7 +374,7 @@ def _decl_lines(decls: dict[str, str]) -> list[str]:
 
 
 def render_rules(rules_sform: SForm, *, mode: str = "a") -> str:
-    """Render a `(rules …)` library — one digraph per child rule."""
+    """Render a rule library — one digraph per child rule."""
     chunks = [render_rule(r, mode=mode)
               for r in rules_sform.args if isinstance(r, SForm)]
     return "\n\n".join(chunks)

@@ -317,8 +317,8 @@ def _compile_relation(
     (genuinely relation-polymorphic matching across all relations) is
     unsupported in M1's activator model (Q29) and skipped silently.
     `(not P)` arrives here as relation "not" with the inner expression a
-    NestedPattern arg, matching stored `(not P)` facts (S1.5.8c K-Δ.1);
-    `(instance Ent Type)` is likewise an ordinary binary relation (S1.7.6).
+    NestedPattern arg, matching stored `(not P)` facts (S1.5.8c K-Δ.1).
+    Every other head is an ordinary relation; none is special-cased.
     """
     if isinstance(head, Atom):
         rel_name = head.name
@@ -435,8 +435,8 @@ def _compile_premise(
     # production), so it arrives with head Atom("neq"). It's also
     # in the predicate registry; the branch above handles it.
 
-    # Relation pattern `(REL args…)` / `(?rel args…)`. `(not P)` and
-    # `(instance Ent Type)` are ordinary relations here (S1.5.8c / S1.7.6).
+    # Relation pattern `(REL args…)` / `(?rel args…)`. `(not P)` is an
+    # ordinary relation here too (S1.5.8c).
     return _compile_relation(node, head, bindings, known_vars)
 
 

@@ -74,12 +74,11 @@ separate rule. See §2.
 
 ;; Schema + implicit assumptions (no :source → ONTOLOGY layer)
 ;; Types
-(type Human)
-(type Drink)
+(relation is-a T T)
 
 ;; Instances
-(instance Jack   Human)
-(instance Coffee Drink)
+(is-a Jack   Human)
+(is-a Coffee Drink)
 
 ;; Relation declarations — flat args (form b, no body follows;
 ;; see 03_ein_model.md §7.2).
@@ -318,7 +317,7 @@ cartesian closure.
 ## 6. What this example does NOT cover
 
 - **Equivalent encodings.** This example uses the classic
-  `(type …)` / `(instance …)` syntax. The same content could be
+  `is-a` membership facts. The same content could be
   expressed in zebra2.ein-style unified `is-a`:
 
   ```lisp

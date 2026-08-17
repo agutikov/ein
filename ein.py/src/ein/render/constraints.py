@@ -3,7 +3,7 @@
 A puzzle's *structural constraints* are the rule-application facts in
 the **ontology** layer — the implicit "co-located is symmetric /
 color-loc is a bijection" context the solver supplies, as opposed to
-the explicit puzzle conditions in `(facts …)`. They are identified
+the explicit puzzle conditions. They are identified
 structurally: an ontology fact whose head is **neither a kernel
 keyword (`relation` / `type` / `instance`) nor a declared
 relation name**. That captures property activators like `bijective`
@@ -99,7 +99,7 @@ def render_constraints(
     """Render the structural-constraint scopes of a parsed program.
 
     ``forms`` is the tuple of top-level forms (as from ``parse``). The
-    constraints are the rule-application facts in the `(ontology …)`
+    constraints are the rule-application facts in the ONTOLOGY layer
     form — heads that are neither kernel keywords nor declared
     relations (see the module docstring).
     """

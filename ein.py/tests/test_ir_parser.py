@@ -24,28 +24,25 @@ def _bad(text: str):
         parse_tree(text)
 
 
-# ═══════════ Ontology (schema only) ═══════════
+# ═══════════ Relation declarations + former-declarator heads ═══════
 
-def test_ontology_empty():
+def test_former_declarator_head_parses_as_a_generic_fact():
+    # `type` is not a declarator and not reserved: it parses like any
+    # other head. Whether it is *meaningful* is a loader question — the
+    # puzzle has to declare `(relation type …)` for it to resolve.
     _ok("(type Person)")
 
 
-def test_ontology_type_with_parent():
+def test_former_declarator_head_with_two_args():
     _ok("(type Person) (type Engineer Person)")
 
 
-def test_ontology_relation_binary():
-    _ok("""
-    (type Person) (type House)
-    (relation lives-in Person House :cardinality 1..1)
-    """)
+def test_relation_binary():
+    _ok('(relation lives-in Person House :cardinality 1..1)')
 
 
-def test_ontology_relation_nary():
-    _ok("""
-    (type Attribute)
-    (relation between-three Attribute Attribute Attribute)
-    """)
+def test_relation_nary():
+    _ok("(relation between-three Attribute Attribute Attribute)")
 
 
 def test_apriori_is_now_a_plain_symbol():
@@ -67,7 +64,7 @@ def test_facts_eq():
 
 
 def test_facts_instance():
-    """Instance is a fact, not an ontology decl."""
+    """`instance` is a fact head, not a declarator."""
     _ok("(instance Norwegian Nationality)")
 
 
@@ -103,16 +100,16 @@ def test_facts_meta_relation():
 # a dedicated grammar rule. `instance` left the reserved set in S1.7.6
 # (now a plain relation). Domain relations stay generic SYMBOL-headed.
 
-def test_instance_fact_arity_2():
+def test_former_declarator_head_arity_2():
     _ok("(instance Norwegian Nationality)")
 
 
-def test_instance_with_kwargs():
+def test_former_declarator_head_with_kwargs():
     _ok('(instance Norwegian Nationality :source "(8)")')
 
 
-def test_instance_in_pattern():
-    """`(instance ?a ?T)` works in :match patterns too."""
+def test_former_declarator_head_in_pattern():
+    """A `(instance ?a ?T)` premise is an ordinary relation pattern."""
     _ok("""
     (rule type-exclusivity ()
       :match (and (instance ?a ?T) (instance ?b ?T) :where (neq ?a ?b))
@@ -120,11 +117,11 @@ def test_instance_in_pattern():
     """)
 
 
-def test_instance_arity_now_unchecked():
-    """S1.7.6: `instance` is no longer a reserved declarator, so the
-    grammar no longer pins its arity. `(instance X)` (1 arg) and
-    `(instance X Y Z)` (3 args) both parse as ordinary generic facts
-    now — arity is a loader/validator concern, not a parse error."""
+def test_former_declarator_head_arity_unchecked():
+    """`instance` is not a reserved declarator, so the grammar does not
+    pin its arity. `(instance X)` (1 arg) and `(instance X Y Z)` (3 args)
+    both parse as ordinary generic facts — arity is a loader/validator
+    concern, not a parse error."""
     _ok("(instance Norwegian)")
     _ok("(instance Norwegian Nationality Spaniard)")
 

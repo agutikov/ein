@@ -2,105 +2,6 @@ digraph kb {
   // suggested layout: fdp
   rankdir=BT;
   node [fontname="Inter"];
-  // types
-  "Attribute" [shape=box, label="Attribute"];
-  "Cigarette" [shape=box, label="Cigarette"];
-  "Color" [shape=box, label="Color"];
-  "Drink" [shape=box, label="Drink"];
-  "House" [shape=box, label="House"];
-  "Nationality" [shape=box, label="Nationality"];
-  "Pet" [shape=box, label="Pet"];
-  // instances
-  "Blue" [shape=oval, label="Blue"];
-  "Chesterfields" [shape=oval, label="Chesterfields"];
-  "Coffee" [shape=oval, label="Coffee"];
-  "Dog" [shape=oval, label="Dog"];
-  "Englishman" [shape=oval, label="Englishman"];
-  "Fox" [shape=oval, label="Fox"];
-  "Green" [shape=oval, label="Green"];
-  "Horse" [shape=oval, label="Horse"];
-  "House-1" [shape=oval, label="House-1"];
-  "House-2" [shape=oval, label="House-2"];
-  "House-3" [shape=oval, label="House-3"];
-  "House-4" [shape=oval, label="House-4"];
-  "House-5" [shape=oval, label="House-5"];
-  "Ivory" [shape=oval, label="Ivory"];
-  "Japanese" [shape=oval, label="Japanese"];
-  "Juice" [shape=oval, label="Juice"];
-  "Kools" [shape=oval, label="Kools"];
-  "Lucky_Strike" [shape=oval, label="Lucky_Strike"];
-  "Milk" [shape=oval, label="Milk"];
-  "Norwegian" [shape=oval, label="Norwegian"];
-  "Old_Gold" [shape=oval, label="Old_Gold"];
-  "Parliament" [shape=oval, label="Parliament"];
-  "Red" [shape=oval, label="Red"];
-  "Snail" [shape=oval, label="Snail"];
-  "Spaniard" [shape=oval, label="Spaniard"];
-  "Tea" [shape=oval, label="Tea"];
-  "Ukrainian" [shape=oval, label="Ukrainian"];
-  "Water" [shape=oval, label="Water"];
-  "Yellow" [shape=oval, label="Yellow"];
-  "Zebra" [shape=oval, label="Zebra"];
-
-  "House-1" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "House-2" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "House-3" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "House-4" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "House-5" -> "House" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Red" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Green" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Ivory" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Yellow" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Blue" -> "Color" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Englishman" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Spaniard" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Ukrainian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Japanese" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Dog" -> "Pet" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Snail" -> "Pet" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Fox" -> "Pet" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Horse" -> "Pet" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Zebra" -> "Pet" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Old_Gold" -> "Cigarette" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Kools" -> "Cigarette" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Chesterfields" -> "Cigarette" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Lucky_Strike" -> "Cigarette" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Parliament" -> "Cigarette" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Coffee" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Tea" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Milk" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Juice" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
-
-  "Water" -> "Drink" [style=dashed, arrowhead=empty, label="is-a"];
 
   // facts
   f_37670ec3be [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
@@ -123,6 +24,43 @@ digraph kb {
   f_9f06e57054 -> "next-to" [label="#1", color="#bcbd22", style=solid];
   f_9f06e57054 -> "Attribute" [label="#2", color="#bcbd22", style=solid];
   f_9f06e57054 -> "Attribute" [label="#3", color="#bcbd22", style=solid];
+  "Attribute" -> "T" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "House" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Color" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Nationality" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Pet" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Cigarette" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Drink" -> "Attribute" [label="type", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "House-1" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-2" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-3" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-4" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-5" -> "House" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Red" -> "Color" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Green" -> "Color" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Ivory" -> "Color" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Yellow" -> "Color" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Blue" -> "Color" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Englishman" -> "Nationality" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Spaniard" -> "Nationality" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Ukrainian" -> "Nationality" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Norwegian" -> "Nationality" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Japanese" -> "Nationality" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Dog" -> "Pet" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Snail" -> "Pet" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Fox" -> "Pet" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Horse" -> "Pet" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Zebra" -> "Pet" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Old_Gold" -> "Cigarette" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Kools" -> "Cigarette" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Chesterfields" -> "Cigarette" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Lucky_Strike" -> "Cigarette" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Parliament" -> "Cigarette" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Coffee" -> "Drink" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Tea" -> "Drink" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Milk" -> "Drink" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Juice" -> "Drink" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
+  "Water" -> "Drink" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
   "House-2" -> "House-1" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
   "House-3" -> "House-2" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
   "House-4" -> "House-3" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];

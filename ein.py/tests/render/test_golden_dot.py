@@ -56,7 +56,7 @@ def _kb(text: str) -> KnowledgeBase:
 def _small_kb() -> KnowledgeBase:
     # binary fact + is-a edge + a hyperedge → exercises every node/edge path.
     return _kb(
-        "(type Thing)\n(instance a Thing) (instance b Thing) (instance c Thing)\n"
+        "(is-a a Thing) (is-a b Thing) (is-a c Thing)\n"
         "(relation r Thing Thing)\n(relation tern Thing Thing Thing)\n"
         '(r a b :source "(1)")\n(tern a b c :source "(2)")\n'
     )
@@ -65,7 +65,7 @@ def _small_kb() -> KnowledgeBase:
 def _prov_dag_dot() -> str:
     kb = _kb(
         "(relation p T T)\n(relation q T T)\n"
-        "(instance a T) (instance b T) (instance c T)\n"
+        "(is-a a T) (is-a b T) (is-a c T)\n"
         '(p a b :source "(1)")\n(p b c :source "(2)")\n'
     )
     derived = Fact(
@@ -145,8 +145,6 @@ _QUERY_TEXT = "(query :goal (drinks Water ?h))"
 # ── the cases: (name, zero-arg render thunk) ───────────────────────
 
 CASES = [
-    ("ir_to_dot_type",        lambda: to_dot(parse("(type Person)"))),
-    ("ir_to_dot_subtype",     lambda: to_dot(parse("(type Engineer Person)"))),
     ("ir_to_dot_fact",        lambda: to_dot(parse(_FACT_TEXT))),
     ("ir_to_dot_neg",         lambda: to_dot(parse(_NEG_TEXT))),
     ("ir_to_dot_reasoning",   lambda: to_dot(parse(_REASONING_TEXT))),

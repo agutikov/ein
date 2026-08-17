@@ -29,15 +29,15 @@ FACT layer.
   :why    "{?rel} is transitive.")
 
 ;; Schema + implicit assumptions (no :source → ONTOLOGY layer)
-(type Attribute)
-(type House Attribute) (type Color Attribute) (type Nationality Attribute)
+(relation is-a       T T)
 (relation co-located Attribute Attribute)
 (relation right-of   Attribute Attribute)
 (relation position   House House)                ; structural; a right-of derivation is a rule
-;; Implicit: instance enumeration
-(instance House-1 House) (instance House-2 House) (instance House-3 House)
-(instance Red Color) (instance Green Color) (instance Ivory Color)
-(instance Norwegian Nationality) (instance Englishman Nationality)
+;; The attribute hierarchy and its members are ordinary `is-a` facts.
+(is-a House Attribute) (is-a Color Attribute) (is-a Nationality Attribute)
+(is-a House-1 House) (is-a House-2 House) (is-a House-3 House)
+(is-a Red Color) (is-a Green Color) (is-a Ivory Color)
+(is-a Norwegian Nationality) (is-a Englishman Nationality)
 ;; Implicit: rule-application meta-facts
 (transitive co-located)
 
@@ -54,32 +54,42 @@ The complete puzzle — 15 conditions + ten rule families — lives in
 alongside this spec; see
 [M1 acceptance §1-2](../../../../plans/m1_core_graph_reasoning/README.md)).
 
-## The two encodings — classic vs unified is-a
+## Two ontologies for one puzzle
 
-The same puzzle is encoded **two ways** in `examples/`. The choice
-between them is **deferred to P1.7 S1.7.2 T1.7.2.5** — both stay
-valid through every M1 stage (memory: project — IR encoding choice
-deferred).
+The same puzzle is encoded **two ways** in `examples/`. Both are valid
+Ein; what differs is the *ontology* each commits to, which is what makes
+the pair worth keeping — it is the only way to see which of the engine's
+reasoning power is general and which is an artefact of how `zebra2.ein`
+happens to be written.
 
-### Classic (`zebra.ein`)
+### One generic link relation (`zebra.ein`)
 
-Uses the kernel `(type …)` and `(instance …)` declarations:
+Declares its own membership relations and links every attribute through a
+single generic `co-located`:
 
 ```lisp
+(relation type     T T)
+(relation instance T T)
 (type Nationality Attribute)
 (instance Norwegian Nationality)
 (instance Japanese  Nationality)
 ```
 
-`(type …)` / `(instance …)` are ordinary facts (S1.7.6); the kernel
-builds **no** `Type` / `Instance` entity-view over them (S1.7.23), so
-a type projection — if a puzzle wants one — is a user-space rule over
-these facts. `zebra.ein` is a non-solving demonstrator; `zebra2.ein`
-below is the canonical encoding.
+Nothing here is kernel syntax: `type` and `instance` are ordinary
+relations this puzzle declares, exactly like `co-located`. The kernel
+special-cases no head and builds no type/instance entity-view — a type
+projection, if a puzzle wants one, is a user-space rule over its own
+facts.
 
-### Unified is-a (`zebra2.ein`)
+`zebra.ein` does not currently solve, and the reason is ontological
+rather than linguistic: relation properties are declared *per relation*,
+so one universal `co-located` gives the elimination rules no
+per-attribute structure to bite on, and the hypothesis space does not
+close.
 
-Uses only the relation `is-a` with two recurring rules
+### Typed attribute relations (`zebra2.ein`)
+
+Uses the relation `is-a` with two recurring rules
 (`transitive is-a` and `asymmetric is-a`):
 
 ```lisp
@@ -94,9 +104,12 @@ Uses only the relation `is-a` with two recurring rules
 
 The inheritance hierarchy is just the `is-a` fact graph (closed under
 `transitive is-a` after saturation). The kernel keeps no derived
-type/instance view (S1.7.23); anything that needs "the type-like
-nodes" reads the `is-a` facts directly (e.g. the renderer's
-`_schema_nodes`) or via a user-space rule.
+type/instance view; anything that needs "the type-like nodes" reads the
+`is-a` facts directly (e.g. the renderer's `_schema_nodes`) or via a
+user-space rule. Alongside it, `zebra2.ein` splits `co-located` into five
+*typed* attribute relations (`nation-loc`, `drink-loc`, …), each carrying
+its own `bijective` declaration — that is what the elimination rules act
+on, and the substantive difference from `zebra.ein`.
 
 The categorical motivation (T as terminal object / limit of the
 order viewed as a category) is documented in `zebra2.ein`'s header.
@@ -126,11 +139,11 @@ forms from `zebra.ein`:
   :priority 3)
 
 (rule type-exclusivity ()
-  :match  (and (instance ?a ?T)
-               (instance ?b ?T)
-               :where (neq ?a ?b))
+  :match  (and (is-a ?a ?T)
+               (is-a ?b ?T)
+               (neq ?a ?b))
   :assert (not (co-located ?a ?b))
-  :why    "{?a} and {?b} are distinct instances of {?T} — distinct slots."
+  :why    "{?a} and {?b} are distinct members of {?T} — distinct slots."
   :priority 10)
 ```
 
@@ -138,7 +151,7 @@ forms from `zebra.ein`:
 ([`../01-ein-graph/02_rules.md` §2.2](../01-ein-graph/02_rules.md));
 `type-exclusivity` is **T1**
 ([`../01-ein-graph/02_rules.md` §2.1](../01-ein-graph/02_rules.md))
-— literal relation names (`instance`, `co-located`) appear in the
+— literal relation names (`is-a`, `co-located`) appear in the
 LHS and RHS.
 
 ## Reasoning-layer dump
@@ -154,10 +167,10 @@ the REASONING layer on reload):
                               :using ((co-located Norwegian House-1)))
 
 ;; Type-exclusivity: Norwegian and Japanese are distinct
-;; Nationality instances, so they're not co-located.
+;; Nationality members, so they're not co-located.
 (not (co-located Norwegian Japanese) :rule type-exclusivity
-                                     :using ((instance Norwegian Nationality)
-                                             (instance Japanese  Nationality)))
+                                     :using ((is-a Norwegian Nationality)
+                                             (is-a Japanese  Nationality)))
 ```
 
 > **Note** — the `:using` IR syntax above isn't yet round-trippable

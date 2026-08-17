@@ -115,8 +115,8 @@ contributes, locked by S1.21.8:
 5. **Encoding-agnostic.** The engine works over both `zebra.ein`
    (classic) and `zebra2.ein` (unified is-a). P1.7 resolved the
    encoding (`is-a` canonical) and S1.7.23 removed the kernel
-   type/instance entity-view, so the engine treats `(type …)` /
-   `(instance …)` / `is-a` uniformly as facts — there is no
+   type/instance entity-view, so the engine treats every membership
+   relation uniformly as facts — there is no
    `logical_types` / `logical_instances` bridge to consult.
 6. **Negation sits on the closure/world boundary.** The closure is
    purely positive and monotone — it consults no negation at all —

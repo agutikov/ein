@@ -32,7 +32,7 @@ validator (S1.1.2) enforces well-formedness against the rules below.
 | **disjunction**          | `(or  <p1> <p2> …)`                     | ✓ OR     | disjunctive match (grammar-reserved; engine semantics in P1.3) |
 | **negation**             | `(not <p>)`                             | ✓ NOT    | wrapped premise must not hold                    |
 | **equality**             | `(= ?a ?b)`                             | ✓ EQ     | bind / match equality                            |
-| **instance check**       | `(instance ?a ?T)`                      | ✓ INSTANCE | instance-of pattern                            |
+| **membership check**     | `(is-a ?a ?T)`                          | ✓ RELATION | ordinary relation pattern                      |
 | `:where` filter          | `:where (transitive ?r) (neq ?a ?b)`    | NEQ inside | type / inequality / structural-predicate filters |
 | named structural pred.   | `(unique-remaining ?slot ?type)`        | —         | aggregate-style premise; see §Predicate registry  |
 

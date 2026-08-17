@@ -233,7 +233,7 @@
 ;; square-unique above.
 
 ;; ── Type schema. Flat attribute hierarchy. ──
-(type Attribute)
+(type Attribute T)
 (type House       Attribute)
 (type Color       Attribute)
 (type Nationality Attribute)

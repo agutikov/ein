@@ -6,30 +6,30 @@
 ;;;     of zebra-class puzzles).
 ;;;
 ;;; Facts (observed):
-;;;   - Norwegian is an instance of Nationality.
-;;;   - Spaniard is an instance of Nationality.
+;;;   - Norwegian is a Nationality.
+;;;   - Spaniard is a Nationality.
 ;;;
 ;;; Question:
 ;;;   Can Norwegian and Spaniard be co-located in the same slot?
 ;;;   (No — two distinct nationalities can't share a slot.)
 ;;;
 ;;; Expected derivation:
-;;;   (instance Norwegian Nationality)
-;;;   + (instance Spaniard Nationality)
+;;;   (is-a Norwegian Nationality)
+;;;   + (is-a Spaniard Nationality)
 ;;;   + (neq Norwegian Spaniard)
 ;;;   ⇒ (not (co-located Norwegian Spaniard)).
 
 (rule type-exclusivity (?R)
-  :match  (and (instance ?a ?T)
-               (instance ?b ?T)
+  :match  (and (is-a ?a ?T)
+               (is-a ?b ?T)
                (neq ?a ?b))
   :assert (not (?R ?a ?b))
-  :why    "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
+  :why    "{?a} and {?b} are distinct members of {?T} — exclusive under {?R}."
   :priority 300)
 
-(type Nationality)
-(instance Norwegian Nationality)
-(instance Spaniard Nationality)
+(relation is-a T T)
+(is-a Norwegian Nationality)
+(is-a Spaniard Nationality)
 (relation co-located T T)
 (type-exclusivity co-located)
 

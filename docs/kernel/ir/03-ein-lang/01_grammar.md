@@ -121,11 +121,10 @@ A schema + implicit-assumption example (all flat forms; the property tags
 and enumerations derive ONTOLOGY, so no `:layer` is needed):
 
 ```lisp
-(type Attribute)
-(type House Attribute) (type Color Attribute)
+(is-a House Attribute) (is-a Color Attribute)
 (relation co-located Attribute Attribute)
-(instance Norwegian Nationality)
-(instance House-1 House)
+(is-a Norwegian Nationality)
+(is-a House-1 House)
 (symmetric  co-located)
 (transitive co-located)
 (right-of House-2 House-1 :source "condition (1)" :layer ontology)  ; "five in a row" — sourced but structural
@@ -168,7 +167,7 @@ symmetric"; that's universal context, the *meta* of the relation, while a
 `rule` is the meta of the *engine*.
 
 `all-different` is **not** a kernel primitive; pairwise distinctness within
-a category is derived by `type-exclusivity` from the `(instance X T)`
+a category is derived by `type-exclusivity` from the `(is-a X T)`
 facts. Genuinely puzzle-specific structural shapes (parity, budget, …) just
 take their own head: `(budget-total X Y)`.
 

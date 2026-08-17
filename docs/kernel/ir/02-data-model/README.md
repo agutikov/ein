@@ -45,7 +45,7 @@ Stable through M1. F4 promotion seams (compound node kinds, e-graph)
 are noted explicitly in `01_entities.md` / `02_store.md`; M1 doesn't
 implement them but the architecture stays open.
 
-The IR encoding choice (classic `(type …)`/`(instance …)` vs unified
+The IR encoding choice (one generic link relation vs typed attribute relations,
 `is-a`) was **resolved in P1.7**: the canonical encoding is `is-a`
 ([S1.7.6](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md)),
 and the kernel keeps no type/instance entity-view at all

@@ -43,32 +43,31 @@ def _dot_available() -> bool:
 
 
 class TestShapeMapping:
-    def test_zebra_has_type_boxes(self, zebra_kb):
-        dot = to_dot(zebra_kb)
+    def test_is_a_parents_are_type_boxes(self, zebra2_kb):
+        # Box/oval come from the puzzle's own `is-a` facts — the renderer
+        # special-cases no other head (S1.22.1).
+        dot = to_dot(zebra2_kb)
         boxes = [line for line in _node_decls(dot) if "shape=box" in line]
-        assert len(boxes) == 7
+        assert len(boxes) == 8
 
-    def test_zebra_has_instance_ovals(self, zebra_kb):
-        dot = to_dot(zebra_kb)
+    def test_is_a_leaves_are_instance_ovals(self, zebra2_kb):
+        dot = to_dot(zebra2_kb)
         ovals = [line for line in _node_decls(dot) if "shape=oval" in line]
         assert len(ovals) == 30
 
     def test_zebra_octagons_only_for_relation_decls(self, zebra_kb):
-        # Zebra's *domain* facts are all binary; the only ternary
-        # facts are the auto-stored relation declarations
-        # `(relation R T0 T1)` — co-located, right-of, next-to, and —
-        # since S1.7.6 — type, instance. Each renders as an octagon
-        # (n-ary-fact shape). The `(type …)` / `(instance …)` enumeration
-        # facts are suppressed (shown as type boxes / instance-of edges),
-        # so no other octagons should appear.
+        # Zebra's *domain* facts are all binary; the only ternary facts
+        # are the auto-stored relation declarations `(relation R T0 T1)`
+        # — co-located, right-of, next-to, type, instance. Each renders
+        # as an octagon (n-ary-fact shape), and nothing else does.
         dot = to_dot(zebra_kb)
         octagons = [line for line in _node_decls(dot) if "shape=octagon" in line]
         assert len(octagons) == 5  # one per relation declaration
 
     def test_ternary_fact_produces_octagon(self):
         text = """
-        (type T)
-        (instance A T) (instance B T) (instance C T)
+        (relation is-a T T)
+        (is-a A T) (is-a B T) (is-a C T)
         (relation r3 T T T)
         (r3 A B C :source "(1)")
         """
@@ -77,29 +76,30 @@ class TestShapeMapping:
         octagons = [line for line in _node_decls(dot) if "shape=octagon" in line]
         # Two octagons: the ternary domain fact (r3 A B C), and the
         # 4-ary relation declaration (relation r3 T T T) auto-stored
-        # alongside the kernel kb.relations registry.
-        assert len(octagons) == 2
+        # alongside the kernel kb.relations registry. (`(relation is-a
+        # T T)` is ternary-as-stored → also an octagon.)
+        assert len(octagons) == 3
 
 
 # ═══════════════════════ No duplication ════════════════════════════
 
 
 class TestNoDuplication:
-    def test_norwegian_appears_exactly_once(self, zebra_kb):
+    def test_norwegian_appears_exactly_once(self, zebra2_kb):
         # The gvpack regression: a name in ontology AND fact-layer
         # facts must NOT duplicate in the unified view.
-        dot = zebra_kb.to_dot()
+        dot = zebra2_kb.to_dot()
         norwegian_nodes = _nodes_named(dot, "Norwegian")
         assert len(norwegian_nodes) == 1
         assert "shape=oval" in norwegian_nodes[0]
 
-    def test_house_1_appears_exactly_once(self, zebra_kb):
-        dot = zebra_kb.to_dot()
+    def test_house_1_appears_exactly_once(self, zebra2_kb):
+        dot = zebra2_kb.to_dot()
         nodes = _nodes_named(dot, "House-1")
         assert len(nodes) == 1
 
-    def test_nationality_type_appears_exactly_once(self, zebra_kb):
-        dot = zebra_kb.to_dot()
+    def test_nationality_type_appears_exactly_once(self, zebra2_kb):
+        dot = zebra2_kb.to_dot()
         nodes = _nodes_named(dot, "Nationality")
         assert len(nodes) == 1
         assert "shape=box" in nodes[0]
@@ -109,8 +109,8 @@ class TestNoDuplication:
 
 
 class TestFusion:
-    def test_norwegian_has_type_edge_and_co_located_edge(self, zebra_kb):
-        dot = zebra_kb.to_dot()
+    def test_norwegian_has_type_edge_and_attribute_edge(self, zebra2_kb):
+        dot = zebra2_kb.to_dot()
         type_edges = [
             line for line in _edges(dot)
             if '"Norwegian"' in line and '"Nationality"' in line
@@ -120,7 +120,7 @@ class TestFusion:
         coloc_edges = [
             line for line in _edges(dot)
             if '"Norwegian"' in line and '"House-1"' in line
-            and "co-located" in line
+            and "nation-loc" in line
         ]
         assert len(coloc_edges) == 1
         assert "(10)" in coloc_edges[0]
@@ -258,19 +258,6 @@ class TestSuppressions:
         dot = zebra_kb.to_dot()
         symmetric_edges = [line for line in _edges(dot) if '"symmetric"' in line]
         assert symmetric_edges == []
-
-    def test_instance_facts_suppressed_in_favour_of_type_edges(self, zebra_kb):
-        # `(instance Norwegian Nationality)` is shown as a dashed
-        # type-edge; the `instance` enumeration fact is suppressed to
-        # avoid duplicate edges. We look for edges *labelled* with the
-        # instance relation (`label="instance"`) — a non-suppressed
-        # instance fact would draw `Norwegian -> Nationality
-        # [label="instance"]`. The `(relation instance T T)` schema
-        # octagon's edge to the `"instance"` name node is labelled
-        # `#1` (an arg position), so it is correctly excluded.
-        dot = zebra_kb.to_dot()
-        instance_edges = [line for line in _edges(dot) if 'label="instance"' in line]
-        assert instance_edges == []
 
 
 # ═══════════════════════ DOT round-trip ════════════════════════════

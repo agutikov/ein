@@ -286,3 +286,39 @@ Ordered so the suite stays green at each step.
 - Every `plans/m1_core_graph_reasoning/…` link in touched files
   (`grammar.lark:3`, `kb/entities.py:93`, and whatever the purge leaves) →
   **S1.22.2**'s inbound-link inventory, which runs on the post-purge tree.
+
+---
+
+## Corrections found while executing T1.22.1.2
+
+Recorded here rather than silently, since the purge inventory above is what
+T1.22.2.1 will read.
+
+1. **A sixth code site was missed: `kb/render.py::_suppress`.** It named
+   `instance` / `type` in a suppression list, on the argument that the schema
+   pass already drew them. With that pass reduced to `is-a`, the suppression
+   made those facts vanish from the render entirely — no boxes, no ovals, no
+   edges. Removed. This is why the `kb_zebra_unified.dot` golden diff is
+   large: 100 schema lines out, 38 ordinary-relation edges in. The census's
+   §(b) table should have had six rows.
+
+2. **17 test files load `examples/zebra.ein`**, not the 4 the §"Rewrite plan"
+   implied. Inspected individually: in all but three the `(type …)` /
+   `(instance …)` hits are *inline* fixture strings independent of that file,
+   so they were purged here. The genuinely zebra-derived ones are
+   `tests/kb/test_layers.py` (comments describing zebra.ein's fact counts —
+   left, still accurate), `tests/kb/test_render.py:263` (folded into the
+   re-point to `zebra2_kb`), and `tests/golden/zebra.golden`.
+
+3. **`tests/golden/zebra.golden` was regenerated after all**, though §"Goldens
+   that shift" deferred it to S1.22.1a. Not for a purge reason: `zebra.ein`
+   was edited to `(type Attribute T)`, giving the head the arity its own
+   `(relation type T T)` declares. The golden tracks the file.
+
+4. **The §(d) disposition for `tests/kb/test_render.py` was wrong.** It said
+   "its assertions change". What actually applies is the user's 2026-08-17
+   instruction — a removed special case takes its tests with it — so the two
+   shape-mapping tests and the suppression test were **deleted**, and the
+   no-duplication / fusion tests were **re-pointed** at `zebra2_kb` rather
+   than rewritten against zebra.ein. Same for the two `ir_to_dot_type` /
+   `ir_to_dot_subtype` golden cases, which were deleted with their goldens.

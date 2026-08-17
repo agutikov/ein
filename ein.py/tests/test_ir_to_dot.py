@@ -31,27 +31,19 @@ ZEBRA = REPO / "examples" / "zebra.ein"
 
 # ═══════════ Shape mapping ═══════════
 
-def test_type_decl_is_box():
-    dot = to_dot(parse("(type Person)"))
-    assert '"Person" [shape=box];' in dot
-
-
-def test_type_parent_is_dashed_arrow():
-    dot = to_dot(parse("(type Engineer Person)"))
-    assert "style=dashed, arrowhead=empty" in dot
-    assert '"Engineer" -> "Person"' in dot
-
-
-def test_instance_is_oval_with_instance_of_edge():
-    dot = to_dot(parse("(instance Norwegian Nationality)"))
+def test_membership_is_oval_with_is_a_edge():
+    # Membership is an ordinary relation (`is-a`); the renderer knows the
+    # UML-ish convention for drawing it, the kernel does not special-case it.
+    dot = to_dot(parse("(is-a Norwegian Nationality)"))
     assert '"Norwegian" [shape=oval];' in dot
     assert '"Nationality" [shape=box];' in dot
     assert '"Norwegian" -> "Nationality"' in dot
-    assert 'label="instance-of"' in dot
+    assert 'label="is-a"' in dot
+    assert "style=dashed, arrowhead=empty" in dot
 
 
 def test_relation_schema_is_dashed_edge():
-    dot = to_dot(parse("(type A) (type B) (relation r A B)"))
+    dot = to_dot(parse("(relation r A B)"))
     assert '"A" -> "B"' in dot
     assert 'label="r"' in dot
     assert "style=dashed" in dot
@@ -273,13 +265,16 @@ def test_to_dot_skips_config_form():
 # ═══════════ Zebra smoke test ═══════════
 
 def test_zebra_to_dot_is_non_empty():
+    # The oval/box assertions are gone with the `(type …)` / `(instance …)`
+    # rendering special-case (S1.22.1): zebra.ein declares `type` and
+    # `instance` as ordinary relations, so they draw ordinary fact edges.
+    # Membership shapes are pinned against `is-a`, the relation the renderer
+    # does know, by `test_membership_is_oval_with_is_a_edge`.
     forms = parse(ZEBRA.read_text(encoding="utf-8"))
     dot = to_dot(forms)
     assert dot
     assert "digraph" in dot
     assert "shape=octagon" in dot   # has hyperedges
-    assert "shape=oval" in dot       # has instances
-    assert "shape=box" in dot        # has types
 
 
 # ═══════════ `dot -Tcanon` parse-back (skipped if no graphviz) ═══════════

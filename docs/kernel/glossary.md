@@ -343,7 +343,7 @@ inclusion). See [F4 Q36](../../plans/followups/f4_cross_cutting.md).
 
 ### Encoding-agnostic
 A piece of code that works equally well over `zebra.ein` (classic
-`(type …)` / `(instance …)` declarations) and `zebra2.ein` (unified
+one generic `co-located`) and `zebra2.ein` (typed `*-loc` relations, unified
 `is-a` fact graph), without committing to either encoding. P1.7
 resolved the encoding question — `is-a` is canonical
 ([S1.7.6](../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md)),

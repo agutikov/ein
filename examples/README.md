@@ -12,8 +12,8 @@ saturation demos); see [`docs/api/`](../docs/api/) to drive them from Python.
 
 | file | description |
 |------|-------------|
-| [`zebra.ein`](zebra.ein) | classic Zebra/Einstein puzzle (the M1 S1.1.1 parse smoke test) |
-| [`zebra2.ein`](zebra2.ein) | Zebra, "B1" encoding (unified `is-a` / `*-loc`) — the **active M1 acceptance target** |
+| [`zebra.ein`](zebra.ein) | Zebra/Einstein, **one generic link relation** (`co-located`); declares its own `type` / `instance` relations. Does not solve yet — an *ontology* limit, not a language one (relation properties are per-relation, so one universal link gives the elimination rules nothing to bite on) |
+| [`zebra2.ein`](zebra2.ein) | Zebra, **typed attribute relations** (`is-a` + five `*-loc`, each `bijective`) — the **active M1 acceptance target** |
 | [`zebra2-hints.ein`](zebra2-hints.ein) | `zebra2` with solution hints injected (S1.5a.11 diagnostic) |
 | [`zebra2-minus-15.ein`](zebra2-minus-15.ein) | `zebra2` with condition (15) removed — a reduced, under-determined variant |
 | [`gen_zebra2_variants.py`](gen_zebra2_variants.py) | generator for `zebra2` clue-dropped variants |

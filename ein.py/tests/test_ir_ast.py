@@ -204,8 +204,8 @@ def test_former_wrapper_head_is_a_fact():
 
 def test_loc_recorded():
     forms = parse("\n(type Person)", filename="x.ein")
-    type_decl = forms[0]
-    name = type_decl.args[0]
+    form = forms[0]
+    name = form.args[0]
     assert name == Atom("Person")
     assert name.loc is not None
     assert name.loc.file == "x.ein"
@@ -284,7 +284,8 @@ ROUNDTRIP_CASES = [
     "(relation r A B :priority 0)",
     "(relation r A B :priority -7)",
     "(relation r A B :priority 9999)",
-    # Instance as fact + as pattern
+    # A former-declarator head is an ordinary fact head, and an ordinary
+    # relation pattern — the kernel special-cases neither.
     "(instance Norwegian Nationality)",
     "(rule i () :match (instance ?a ?T) :assert ?a :why \"i\")",
     # Macro declarators (P1.8 S1.5.9)

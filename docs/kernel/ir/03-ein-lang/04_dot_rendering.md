@@ -257,12 +257,6 @@ for the design plan; the implementation is
   they're meta, not data. (Their structural effect — making the
   `symmetric` rule fire on `co-located` — is visible in the
   derivation DAG, not in the unified KB view.)
-- **`instance` / `type` schema facts** — the
-  `(instance Norwegian Nationality)` proposition is already shown as a
-  dashed type-edge derived from the fact itself (S1.7.23 —
-  `render._schema_nodes` reads `is-a` / `(type …)` / `(instance …)`
-  facts directly; there is no `Instance.type_name` entity). Including
-  it again as a labelled edge would duplicate.
 - **`not`-headed facts** with collapsed arg structure — current
   loader limitation (S1.2.3 T1.2.3.4 deferral). Revisit when the
   loader preserves nested SForm args.
@@ -342,15 +336,19 @@ print(kb.to_dot(include_instances=False))            # types-only
 per example, rendered with `fdp` (force-directed) for the 2021
 prototype's spread-out aesthetic.
 
-### Encoding-agnostic
+### No head is special-cased
 
-The renderer derives node shapes by reading the puzzle's `is-a` /
-`(type …)` / `(instance …)` facts directly (`render._schema_nodes`,
-S1.7.23 — there is no `logical_types` / `kb.types` entity-view to
-consult), so `zebra2.ein` (unified `is-a`) renders to the same visual
-shapes as `zebra.ein` (classic `(type …)` / `(instance …)`). `is-a`
-facts get the type-edge styling rather than the regular coloured-arrow
-styling.
+The renderer derives node shapes by reading the puzzle's `is-a` facts
+directly (`render._schema_nodes`; there is no `logical_types` /
+`kb.types` entity-view to consult). `is-a` facts get the type-edge
+styling — box parent, oval leaf, dashed empty arrow — rather than the
+regular coloured-arrow styling.
+
+`is-a` is the one relation the *presentation* layer knows a convention
+for; that is not kernel reasoning, and nothing else is privileged. A
+puzzle that spells membership with a relation of its own (as
+`zebra.ein` does, declaring `type` and `instance`) renders those facts
+as ordinary coloured arrows, like every other relation it declares.
 
 ### 2021-prototype comparison (T1.2.4.5 — deferred)
 

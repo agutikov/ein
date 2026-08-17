@@ -17,8 +17,7 @@ from ein.kb.provenance import detect_provenance_cycles, walk_premises
 def _tiny_kb() -> KnowledgeBase:
     """Three-node ontology suitable for triangle-composition tests."""
     text = """
-    (type T)
-    (instance A T) (instance B T) (instance C T) (instance D T)
+    (is-a A T) (is-a B T) (is-a C T) (is-a D T)
     (relation r T T)
     (r A B :source "(1)")
     (r B C :source "(2)")

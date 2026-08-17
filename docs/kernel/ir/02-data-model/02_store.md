@@ -29,7 +29,7 @@ class KnowledgeBase:
 ```
 
 > **S1.7.23 — no `types` / `instances` registries.** The kernel keeps
-> no type-system entity-view; `(type …)` / `(instance …)` are ordinary
+> no type-system entity-view; a puzzle's membership facts are ordinary
 > facts and the inheritance forest is just `is-a` facts. See
 > [`01_entities.md` §1](01_entities.md).
 
@@ -68,7 +68,7 @@ routing each by its **head**:
      `Pattern` objects.
    - `(query …)` → the `Query` (last one wins).
 2. **Facts** (any other head — `=`, `not`, or a generic `(NAME …)`):
-   - `(type …)` / `(instance …)` are ordinary `Fact`s (S1.7.23 — no
+   - membership facts are ordinary `Fact`s (no
      `Type` / `Instance` entities; they are plain facts on user-space
      relations, see [`01_entities.md` §1](01_entities.md)).
    - The fact's **layer is per-fact** (P1.7c S1.7c.1): an explicit
@@ -105,7 +105,7 @@ supports the sequence protocol (`__iter__` / `__len__` /
 **iterators**:
 
 - `view.relation(name)` — facts whose head matches `name`.
-- `view.about(instance | name)` — facts mentioning an instance.
+- `view.about(name)` — facts mentioning a name.
 - `view.by_source(source)` — facts with the given `:source`
   annotation.
 - `view.by_rule(rule_name)` — facts with the given rule provenance.
@@ -165,8 +165,8 @@ of it is gone** ([S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootst
 the kernel imposes no type system, so there is no derived
 types-and-instances view to maintain. A puzzle that wants a named-type
 projection computes it with a user-space ein-lang rule over its own
-inheritance relation; the renderer reads `is-a` / `(type …)` /
-`(instance …)` facts directly (`kb/render.py:_schema_nodes`).
+inheritance relation; the renderer reads the puzzle's `is-a` facts
+directly (`kb/render.py:_schema_nodes`).
 
 ## 7. Provenance + derivation DAG
 
