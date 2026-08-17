@@ -204,3 +204,24 @@ def test_json_summary_on_abort(tmp_path):
     assert d["verdict"]["type"] == "Aborted"
     assert d["verdict"]["reason"] == "max-enterings (3) reached"
     assert d["verdict"]["exhausted"] is False
+
+
+def test_json_summary_is_shuffle_invariant(tmp_path):
+    """The verdict, the counters and the root shape are the same under every
+    `--shuffle` seed — the pinned property (S1.5b.31), now diffable.
+
+    The `solutions` array is sorted by model for exactly this reason: which of
+    k models is found first is a traversal fact, so leaving it in engine order
+    would make T0 report a difference on the runs whose point is that there is
+    none. Only `config.lattice-order-seed` — the *input* — differs.
+    """
+    import json
+    seen = []
+    for seed in ("7", "99", "1234"):
+        out = tmp_path / f"{seed}.json"
+        _run(str(FIXTURE), "-m", "3", "-e", "-z", "-d", seed,
+             "--json-summary", str(out))
+        d = json.loads(out.read_text(encoding="utf-8"))
+        assert d["verdict"]["k"] == 2
+        seen.append({k: d[k] for k in ("verdict", "stats", "root")})
+    assert seen[0] == seen[1] == seen[2]

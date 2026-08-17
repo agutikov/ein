@@ -65,10 +65,16 @@ def _verdict_block(verdict: Any) -> dict[str, Any]:
     block["unsat_core"] = []
     branches = (verdict.branches if isinstance(verdict, Ambiguity)
                 else (verdict,) if isinstance(verdict, Solution) else ())
-    block["solutions"] = [
-        {"facts": _facts(b.kb), "goal_bindings": _bindings(b.kb)}
-        for b in branches
-    ]
+    # Sorted by model, not left in `Ambiguity.branches` order: which of k
+    # models is found first is a *traversal* fact, and `--shuffle` reorders it
+    # while proving the answer unchanged. Leaving the engine's order here
+    # would make T0 report a difference on exactly the runs whose point is
+    # that there is none.
+    block["solutions"] = sorted(
+        ({"facts": _facts(b.kb), "goal_bindings": _bindings(b.kb)}
+         for b in branches),
+        key=lambda s: s["facts"],
+    )
     return block
 
 

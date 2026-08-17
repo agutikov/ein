@@ -132,6 +132,35 @@ def test_dumper_dead_folders(tmp_path: Path):
         assert (dump_dir / d["path"]).is_dir()
 
 
+def test_unsat_core_lines_are_sorted(tmp_path: Path):
+    """M1a hazard H4. The core is a `set[Fact]`, so writing it in iteration
+    order put this file's lines in a `PYTHONHASHSEED`-dependent order — the
+    same bug as `render/slice.py`'s `⊥` edges, in the other artefact. Both are
+    now `sorted(key=repr)`, which is also total over mixed arg types where a
+    bare `sorted` would raise (Q-M1a.4)."""
+    kb = _kb_from(BRANCHING / "04_two_levels.ein")
+    dump_dir = tmp_path / "sorted-core"
+    _solve(kb, max_set_size=3, dumper=LatticeDumper(out_dir=dump_dir))
+
+    by_outcome = _outcome_folders(dump_dir)
+    dead = by_outcome.get("dead-pre", []) + by_outcome.get("dead-post", [])
+    checked = 0
+    for sub in dead:
+        lines = (sub / "unsat_core.jsonl").read_text().splitlines()
+        if len(lines) < 2:
+            continue                      # a 1-fact core cannot be misordered
+        facts = [json.loads(ln) for ln in lines]
+        # Read back through the same `repr` the writer sorts by, rather than
+        # by a `(relation, args)` proxy: the two agree for flat string args
+        # and part ways on a nested-fact arg, and only one of them is the
+        # invariant the fix established.
+        keys = [f"Fact(relation_name={f['relation']!r}, args={tuple(f['args'])!r})"
+                for f in facts]
+        assert keys == sorted(keys), f"{sub.name}: core lines out of order"
+        checked += 1
+    assert checked, "no multi-fact core in the dump — the test proved nothing"
+
+
 # ── proof_summary.json indexes everything ─────────────────
 
 

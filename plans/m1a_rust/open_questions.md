@@ -24,6 +24,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.13](#q-m1a13--argparse-surface-parity) | Reproducing `argparse` `--help` and error text | open — blocking P1a.5 |
 | [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | open |
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | open |
+| [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 
 ---
 
@@ -84,6 +85,22 @@ affected candidate order; (c) reject such inputs at load time in both.
 
 **Recommendation: (a)**, unless a real puzzle needs mixed slot types —
 then (b), because a crash is not a semantics anyone wants to preserve.
+
+**S1a.0.1 — reproduced, and the scope is narrower than it looked.** Blind
+hypothesis generation *cannot* reach it: `hypgen._raw_candidates` builds
+candidates out of `kb.names`, and `store.rebuild_indexes` only enters an
+arg into that index `if isinstance(a, str)` — so every blind candidate is
+all-strings. Only an `hrule` can carry a non-string through, because its
+`:assert` args come from bindings. The reproducer is therefore one hrule,
+one variable, and two facts binding it to `1` and to `left`:
+[`examples/ein-bugs/mixed-type-hypothesis.ein`](../../examples/ein-bugs/mixed-type-hypothesis.ein),
+pinned by `ein.py/tests/inference/test_mixed_type_hypothesis.py` (which
+also pins the scope claim, so a future change that lets blind hypgen emit
+a non-string arg re-opens this question by failing).
+
+That strengthens (a): no puzzle without an hrule can hit this, and (b)
+would re-baseline every candidate order in the corpus to fix an input
+nobody has written.
 
 ## Q-M1a.5 — Reproducing CPython's `shuffle`
 
@@ -205,6 +222,21 @@ for crash cases and records them as a distinct corpus group
 (`crash-parity`), with the traceback body normalised away. Any input in
 that group is also a candidate ein.py bug report.
 
+**S1a.0.1 — the first-stderr-line half is wrong; implemented as exit code
++ exception class.** The first `crash-parity` fixture (Q-M1a.4's
+`mixed-type-hypothesis.ein`) raises `TypeError: '<' not supported between
+instances of 'int' and 'str'` — and *which operand is named first*
+depends on the `frozenset` iteration order inside `sorted`, so ein.py
+alternates between two messages across `PYTHONHASHSEED` values. A rule
+that compares that line makes the determinism sweep fail on a difference
+that is not one. `tier::compare_crash` therefore takes the exception
+class off the last traceback line and drops the message body.
+
+Still open: whether ein.rs should *name* the same class (it has no
+`TypeError`), or whether the group relaxes to "both sides failed" once a
+second implementation exists. Decide when ein.rs can first reach one of
+these inputs — P1a.4.
+
 ## Q-M1a.15 — Float formatting parity
 
 Several reported numbers are formatted floats — `--hyp-stats`'s
@@ -218,3 +250,41 @@ Proposal: a `pyfmt` helper beside `pyrepr`
 ([design/02](design/02_determinism_and_order.md) §7) covering `f`-format
 with width/precision, differentially tested over a wide float corpus.
 Small, and it removes a whole class of one-character T3 diffs.
+
+## Q-M1a.16 — How does the harness drive the lever matrix?
+
+[design/01](design/01_parity_contract.md) §4 puts "each `SolverConfig` lever
+flipped off (the same matrix [`utils/feature_matrix.py`](../../utils/feature_matrix.py)
+already drives)" in the corpus run matrix. Building the manifest at
+[S1a.0.1](p1a.0_conformance_harness/s1a.0.1_parity_contract_and_corpus.md)
+found that only **four of the ten** are reachable from the CLI — `-L`
+(`enable_pre_branch_lookahead`), `-K` (`enable_lookahead_kill_cache`), `-y`
+(`lattice_sanity_check`) and `-o score-sum` (`lattice_order`). The other six —
+`enable_path_nogoods`, `enable_symmetric_mirror`, `enable_singleton_writeback`,
+`enable_forced_positive`, `enable_fail_fast_fork`, `hypgen_scoring` — exist only
+as a Python kwarg or a puzzle's own `(config …)` block. `feature_matrix.py`
+reaches them because it imports the engine; the harness shells out, so it
+cannot.
+
+That matters more than it looks: those six gate exactly the optimisations
+[P1a.6](p1a.6_performance/README.md) will re-implement, and "lever off" is the
+cheapest way to isolate a parity failure to one of them.
+
+Options:
+
+- **(a) add `--config KEY=VALUE` to both CLIs** (repeatable, kebab-cased,
+  parsed by the same coercer `(config …)` uses). Additive, ~20 lines, makes
+  `levers = "all"` real. Costs: one more flag on the T3 surface both
+  implementations must match, and a way to set a lever that a puzzle file
+  cannot audit.
+- **(b) generate per-lever puzzle variants** — copy the fixture with a
+  `(config …)` block appended into a temp dir. No CLI change, but the corpus
+  entry is then not the file in `examples/`, which weakens the "both
+  implementations read the same bytes" guarantee for those runs.
+- **(c) leave the six unexercised** and note the gap. The corpus keeps four
+  levers; the other six are covered only by ein.py's own test suite.
+
+**Recommendation: (a)**, decided before [P1a.6](p1a.6_performance/README.md)
+rather than at it — the flag has to exist in *both* implementations, so it is
+cheapest to add while the Rust CLI is still a stub. Until then the manifest's
+`levers` lists the four, and `conformance/README.md` says why.

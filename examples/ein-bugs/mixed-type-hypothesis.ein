@@ -1,0 +1,56 @@
+;;; Ein — bug repro
+;;;
+;;; `TypeError: '<' not supported between instances of 'str' and 'int'`
+;;; from `apriori.layer_1`, on a KB that is otherwise perfectly well-formed.
+;;;
+;;; The bug. `apriori.layer_1` opens the commitment search with
+;;; `sorted(alive)`, where each element is a `FactId` — `(relation_name,
+;;; args)`. Tuple comparison walks into `args`, so two candidates of the same
+;;; relation whose slot *i* holds a `str` in one and an `int` in the other are
+;;; incomparable and CPython raises. `canon.state_key` avoids exactly this with
+;;; `key=repr`; `apriori` does not.
+;;;
+;;; Why it needs an hrule. Blind hypothesis generation cannot reach it:
+;;; `hypgen._raw_candidates` builds candidates out of `kb.names`, and
+;;; `store.rebuild_indexes` only enters an arg into that index
+;;; `if isinstance(a, str)` — so every blind candidate is all-strings. An
+;;; `hrule` has no such filter: its `:assert` args come from *bindings*, and a
+;;; variable that matched an int arg carries the int through. Hence the shape
+;;; below — one `hrule`, one variable, two facts that bind it to `1` and to
+;;; `left`.
+;;;
+;;; Status: **not fixed, pinned.** This is M1a hazard H2
+;;; (`plans/m1a_rust/design/02_determinism_and_order.md` §5) and open question
+;;; Q-M1a.4. ein.rs's `Value` is totally ordered by construction and cannot
+;;; raise, so on this input the two implementations must differ: one crashes,
+;;; one answers. Fixing ein.py to sort by `repr` here would change the
+;;; candidate order of every puzzle to buy nothing any real puzzle has asked
+;;; for. So the crash is recorded rather than repaired, and the corpus carries
+;;; it in the `crash-parity` group (Q-M1a.14).
+;;;
+;;; One more thing this fixture showed, which changed that group's comparison
+;;; rule: the message itself is not stable. Which operand lands on the left of
+;;; the failing `<` depends on the `frozenset` iteration order inside `sorted`,
+;;; so across `PYTHONHASHSEED` values ein.py alternates between
+;;; `'str' and 'int'` and `'int' and 'str'`. A crash is therefore compared by
+;;; exit code and exception *class*, never by its message.
+;;;
+;;; Pinned by `ein.py/tests/inference/test_mixed_type_hypothesis.py`.
+
+(relation slotval T T)
+(relation seat    T T)
+
+;; The two bindings. `?v` matches the int 1 from one and the symbol `left`
+;; from the other, and both reach `alive` as candidate `seat` facts.
+(slotval x 1)
+(slotval y left)
+
+(hrule guess ()
+  :match  (slotval ?k ?v)
+  :assert (seat Ann ?v)
+  :why    "guess that Ann sits at {?v}")
+
+(query
+  :goal   (seat Ann ?s)
+  :hrules (guess)
+)

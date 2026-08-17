@@ -251,7 +251,11 @@ class LatticeDumper(_TimelineMixin):
 
         if outcome in ("dead-pre", "dead-post"):
             with (folder / "unsat_core.jsonl").open("w") as fp:
-                for f in result.unsat_core:
+                # `sorted`: the core is a set, and its raw iteration order
+                # would put this file's lines in a `PYTHONHASHSEED`-dependent
+                # order (M1a hazard H4 — the same bug as `render/slice.py`'s
+                # `⊥` edges, in the other artefact).
+                for f in sorted(result.unsat_core, key=repr):
                     fp.write(json.dumps(_fact_summary(f)) + "\n")
             (folder / "learned_clause.json").write_text(
                 json.dumps(

@@ -135,13 +135,19 @@ Every `set`/`frozenset` in the engine, and its use:
 | `NafGuard.watched` / `scope` | `sorted()` before use in `_watch_stamp`; `scope` used as a filter | safe |
 | `JoinPlan…shared_vars` | informational only | safe |
 | `explain` env sets | sorted with `key=repr` before emission | safe |
-| `unsat_core` (`set[Fact]`) | sorted at every display site | safe |
+| `unsat_core` (`set[Fact]`) | sorted at *most* display sites | **hazard — §5 H4.** Two sites did not sort: `render/slice.py`'s `⊥` edges and `_lattice_dump.py`'s `unsat_core.jsonl`. Fixed at S1a.0.1 |
 | `alive` (`frozenset[FactId]`) | `sorted(alive)` in `layer_1`; membership elsewhere | safe *modulo* §5 |
 | `Saturator._symmetric_rels()` (`frozenset[str]`) | **iterated directly** in `_next_mirror_firing`'s cold seed and `_has_pending_mirror` | **hazard — §5** |
 
 ---
 
-## 5. The three real hazards
+## 5. The four real hazards
+
+> H1–H3 were predicted by this audit and confirmed at
+> [S1a.0.1](../p1a.0_conformance_harness/s1a.0.1_parity_contract_and_corpus.md).
+> **H4 was not** — the harness found it on its first Python-vs-Python run, on
+> the second corpus entry it looked at. That is the argument for building the
+> instrument before the thing it measures, restated as evidence.
 
 ### H1 — `frozenset` iteration in the symmetric mirror
 
@@ -168,6 +174,13 @@ make Python raise `TypeError: '<' not supported between instances of
 'str' and 'int'`. `canon.state_key` avoids this deliberately
 (`key=repr`); `apriori` does not.
 
+**Confirmed at S1a.0.1, with a narrower scope than expected.** Blind
+hypgen cannot reach it: `_raw_candidates` builds candidates out of
+`kb.names`, and `rebuild_indexes` only enters an arg there
+`if isinstance(a, str)`. Only an `hrule` can carry a non-string through,
+because its `:assert` args come from bindings. Reproducer:
+[`examples/ein-bugs/mixed-type-hypothesis.ein`](../../../examples/ein-bugs/mixed-type-hypothesis.ein).
+
 ein.rs's `Value` has a total order by construction (tag, then payload),
 so it cannot raise. The port must therefore decide what "parity" means
 for an input where Python crashes:
@@ -190,6 +203,40 @@ across layers. Reproducing that in Rust means porting MT19937 seeding
 and `_randbelow_with_getrandbits`. ≈ 60 lines, deterministic, testable
 against a table of `Random(seed).shuffle(list(range(n)))` outputs
 generated from Python. Recommended; see Q-M1a.5.
+
+**Confirmed at S1a.0.1**: two `--shuffle` runs at the same seed are
+byte-identical, and across seeds the verdict, every counter and the root
+shape agree — only the *order* the k models are found in moves. That is
+why `--json-summary` sorts its `solutions` array by model: leaving the
+engine's order there would make T0 report a difference on exactly the
+runs whose point is that there is none.
+
+### H4 — `unsat_core` iterated raw at two display sites
+
+The §4 audit recorded `unsat_core` as "sorted at every display site".
+Two sites were not:
+
+- `render/slice.py`'s refuted-branch block iterates the core to emit
+  `<fact> -> "⊥"` edges. That DOT lands verbatim in `solve --trace`
+  output, so **the same puzzle produced two different trace files across
+  runs** — `PYTHONHASHSEED=0` and `=42` differ by one transposed edge on
+  `examples/branching/04_two_levels.ein`.
+- `_lattice_dump.py` writes `unsat_core.jsonl` one line per core fact in
+  iteration order, so the `--dump-states` tree carried the same
+  instability.
+
+Both fixed at S1a.0.1 with `sorted(…, key=repr)` — `key=repr` rather than
+a bare `sorted` because it matches `inference.explain`'s existing
+convention and is total over the mixed arg types H2 describes. Pinned by
+`tests/render/test_slice_dot.py::test_bottom_edges_are_sorted_not_set_ordered`
+and `tests/inference/lattice/test_lattice_dumper.py::test_unsat_core_lines_are_sorted`,
+both of which fail on every hash seed without the fix.
+
+The audit was wrong in a specific and instructive way: it classified the
+container by what *most* of its consumers do. The rule that replaces it —
+for the port and for the remaining §4 rows — is that a `set` is safe only
+when **every** reader is checked, and "safe" is a claim about call sites,
+not about containers.
 
 ---
 

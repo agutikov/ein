@@ -52,6 +52,6 @@ Ambiguity and Contradiction task-class variants below);
 
 | dir | what it holds |
 |-----|---------------|
-| [`ein-bugs/`](ein-bugs/) | contradiction / bug-repro puzzles (`zebra2-bad.ein` — injected-fact contradiction) |
+| [`ein-bugs/`](ein-bugs/) | contradiction / bug-repro puzzles (`zebra2-bad.ein` — injected-fact contradiction; `mixed-type-hypothesis.ein` — an hrule that binds one variable to an `int` and a `str` crashes `apriori.layer_1`, recorded rather than repaired: M1a Q-M1a.4) |
 | [`broken/`](broken/) | curated **parse-failure** fixtures; each expects a `file:line:col` error (bare top-level atom, keyword-as-value, rule missing params, unclosed paren) |
 | [`broken/load/`](broken/load/) | curated **load-failure** fixtures — files that parse and then fail `KnowledgeBase.from_ir`; each carries the exact `KBLoadError` message in a `.expected` beside it (see [`broken/load/README.md`](broken/load/README.md)) |

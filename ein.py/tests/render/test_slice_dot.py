@@ -129,6 +129,34 @@ def test_contradiction_slice_has_bottom_and_nogood():
     assert '-> "⊥"' in dot
 
 
+def test_bottom_edges_are_sorted_not_set_ordered():
+    """M1a hazard H4. `unsat_core` is a `set[Fact]`; iterating it raw made the
+    `-> ⊥` edge order depend on `PYTHONHASHSEED`, and this DOT block lands
+    verbatim in `--trace` output — so the same puzzle produced two different
+    trace files across runs. The order is `sorted(key=repr)`, matching
+    `inference.explain`.
+
+    Six core facts, so a set order that happens to match sorted order is a
+    1-in-720 coincidence rather than a coin flip.
+    """
+    core = frozenset({
+        _f("co-located", "Blue", "H3"), _f("co-located", "Red", "H1"),
+        _f("co-located", "Green", "H2"), _f("co-located", "Ivory", "H4"),
+        _f("co-located", "Yellow", "H5"), _f("co-located", "Amber", "H6"),
+    })
+    dot = render_slice(COMMITMENT, FIRINGS, None,
+                       contradiction=(core, frozenset()))
+    bottom_edges = [ln for ln in dot.splitlines() if ln.endswith('-> "⊥" [color="#d62728"];')]
+    assert len(bottom_edges) == len(core)
+    # The node ids are content hashes, so read the order back off the graph:
+    # each edge's source id must appear in `sorted(core, key=repr)` order.
+    from ein.render.dot_util import hashed_id
+    expect = [hashed_id("f_", f"{f.relation_name}|{','.join(map(str, f.args))}")
+              for f in sorted(core, key=repr)]
+    got = [ln.strip().split()[0].strip('"') for ln in bottom_edges]
+    assert got == expect
+
+
 # ── whole-KB snapshot + transition highlight ───────────────────────
 
 def _kb(text: str) -> KnowledgeBase:

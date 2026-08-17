@@ -166,7 +166,12 @@ def render_slice(
             f'  {bottom} [shape=doublecircle, color="{_SEED_COLOUR}", '
             f'fontcolor="{_SEED_COLOUR}", label="⊥"];'
         )
-        for f in unsat_core:
+        # `sorted`, because `unsat_core` is a `set[Fact]`: iterating it raw
+        # made the `-> ⊥` edge order depend on `PYTHONHASHSEED`, and this
+        # block lands verbatim in `--trace` output (M1a hazard H4). `key=repr`
+        # matches `inference.explain`'s convention and is total over mixed
+        # arg types, where a bare `sorted` would raise (Q-M1a.4).
+        for f in sorted(unsat_core, key=repr):
             cid = _touch(f.relation_name, f.args)
             edges.append(f'  {cid} -> {bottom} [color="{_SEED_COLOUR}"];')
         if learned_clause:
