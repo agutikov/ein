@@ -1,0 +1,17 @@
+[package]
+name        = "ein-cli"
+description = "The `ein` binary — render / saturate / solve"
+version.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+repository.workspace = true
+
+[dependencies]
+ein-core   = { path = "../ein-core" }
+ein-ir     = { path = "../ein-ir" }
+ein-infer  = { path = "../ein-infer" }
+ein-render = { path = "../ein-render" }
+
+[[bin]]
+name = "ein"
+path = "src/main.rs"

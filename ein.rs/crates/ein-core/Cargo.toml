@@ -1,0 +1,9 @@
+[package]
+name        = "ein-core"
+description = "Values, interner, KB, indexes, provenance, python-repr compatibility"
+version.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+repository.workspace = true
+
+[dependencies]

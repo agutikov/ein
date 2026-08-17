@@ -1,6 +1,7 @@
 # P1a.0 — Conformance harness + shared assets
 
 **Milestone:** [M1a — Rust port](../README.md)
+**Status:** in progress — S1a.0.1 and S1a.0.2 landed 2026-08-17.
 **Estimate:** 2 weeks (10 days of stages)
 **Depends on:** nothing (M1 shipped)
 **Blocks:** every other phase — no engine code lands before the oracle
@@ -50,6 +51,8 @@ Three reasons, in order:
 
 - `ein-conformance run --impl-a python --impl-b python` is green at T3
   over the whole corpus × run matrix.
+  **2026-08-17: green — 438 cells, 0 differences** (the per-commit tier;
+  the 17 `slow` entries run in the nightly tier).
 - The determinism sweep (`PYTHONHASHSEED` ∈ {0, 1, 42, random}) is green,
   or every failure is fixed in ein.py and pinned by a test.
 - `stdlib-check` and the corpus-completeness check are in CI and fail on

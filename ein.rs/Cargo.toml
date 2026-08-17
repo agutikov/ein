@@ -1,0 +1,42 @@
+# ein.rs — the Rust port of the ein engine (M1a).
+#
+# The engine crates are in place and empty: P1a.0 builds only the parity
+# harness (`ein-conformance`, which shells out to both implementations and
+# links neither), and the rest fill in over P1a.1–P1a.5 in the order the
+# tiers gate them. Having them compile from the start means a stage adds
+# code rather than also adding a crate, and `cargo test` covers the shape of
+# the workspace before there is anything in it.
+#
+# `ein-server` (P1a.8) and `ein-py` (P1a.9) are NOT here: both carry heavy
+# dependencies (an async runtime, PyO3/maturin) whose cost the dependency
+# policy says to defer until something needs them.
+#
+# Layout and the dependency policy:
+# plans/m1a_rust/design/12_toolchain_and_layout.md.
+
+[workspace]
+resolver = "3"
+members = [
+    "crates/ein-core",
+    "crates/ein-ir",
+    "crates/ein-infer",
+    "crates/ein-render",
+    "crates/ein-cli",
+    "crates/ein-conformance",
+]
+
+[workspace.package]
+version    = "0.1.0"
+edition    = "2024"
+license    = "MIT"
+repository = "https://github.com/gutikoff/ein"
+
+[workspace.dependencies]
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml       = { version = "0.9", default-features = false, features = ["parse", "serde"] }
+
+# Optimised even in dev: every conformance run spawns hundreds of engine
+# processes, and the harness itself must never be the slow part.
+[profile.dev]
+opt-level = 1

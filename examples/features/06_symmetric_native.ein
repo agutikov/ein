@@ -67,6 +67,13 @@
 ;; direction is recorded as a second justification of the other rather than
 ;; re-derived. `is-a` is unmarked and untouched.
 
+;; `:no-hypothesis` because this is a *saturation* demo: every relation here
+;; is fully determined by the mirror, so there is nothing to hypothesise. Left
+;; out, the blind enumerator would offer every (name, name) pair of all four
+;; relations as a candidate and `ein solve` would spend minutes proving that
+;; none of them helps — a fixture that takes longer than `zebra2` to say
+;; "already solved at root".
 (query
   :goal (knows Bob Ann)
+  :no-hypothesis (knows rivals allies is-a)
 )

@@ -1,0 +1,30 @@
+# cargo-deny — licences, advisories, and the dependency budget.
+#
+# The engine's runtime dependency list is deliberately tiny
+# (plans/m1a_rust/design/12_toolchain_and_layout.md §2): every crate has to
+# earn its place, and a new runtime dependency needs a line of justification
+# in the commit that adds it. This file is the mechanical half of that rule —
+# it cannot judge whether a dependency is *warranted*, but it can refuse the
+# ones whose licence or advisory status make the question moot.
+
+[advisories]
+yanked = "deny"
+
+[licenses]
+# Permissive only. A copyleft dependency in the engine would attach terms to
+# every downstream embedding of it, which is a decision, not an accident.
+allow = ["MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-2-Clause",
+         "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib"]
+confidence-threshold = 0.9
+
+[bans]
+# Two versions of one crate in the tree means two copies in the binary and two
+# sets of behaviour to reason about. Warn rather than deny: it is usually a
+# transitive lag that resolves itself, and a hard failure here blocks work on
+# something nobody chose.
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

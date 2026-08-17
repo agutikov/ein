@@ -1,0 +1,543 @@
+# The parity corpus — M1a S1a.0.1 T1a.0.1.1.
+#
+# One entry per `.ein` file both implementations are compared on, with the runs
+# it is exercised under. Format, the group vocabulary and the run-name
+# convention: conformance/README.md. A file under examples/ or the stdlib with
+# no entry here fails a completeness check in BOTH test suites, so the corpus
+# cannot silently miss one.
+#
+# `slow = true` keeps an entry out of the per-commit tier. It is measured, not
+# guessed: an entry is slow when any of its runs took 3s or more in the
+# T1a.0.1.1 probe of the whole matrix (CPython 3.14, dev machine, 2026-08-17).
+# The per-commit tier is then everything else — 78 of 95 entries.
+#
+# Generated once from the tree; maintained by hand from here.
+
+schema = "ein-corpus/1"
+
+
+# ── positive ────────────────────────────────────────────────
+
+[[entry]]
+path   = "examples/branching/01_saturate_only.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/branching/02_one_dead_one_alive.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/branching/03_five_hyps_one_alive.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/branching/04_two_levels.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
+levers = ["-L", "-K", "-y", "-o score-sum"]
+
+[[entry]]
+path   = "examples/branching/05_mini_zebra.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
+levers = ["-L", "-K", "-y", "-o score-sum"]
+
+[[entry]]
+path   = "examples/branching/06_lookahead_on.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+
+[[entry]]
+path   = "examples/branching/07_lookahead_off.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+
+[[entry]]
+path   = "examples/branching/08_hypothesis_relation_whitelist.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/branching/09_hrule.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/branching/10_kill_cache_on.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/branching/11_kill_cache_off.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/branching/12_typed_blind_solve.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/domain_elim/ab.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
+levers = ["-L", "-K", "-y", "-o score-sum"]
+
+[[entry]]
+path   = "examples/domain_elim/b_branch.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/domain_elim/b_only.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/ein-bugs/zebra2-bad.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/ein-bugs/zebra2-hints.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/features/01_not_and_absent.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide."
+
+[[entry]]
+path   = "examples/features/02_star_in_identifiers.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+
+[[entry]]
+path   = "examples/features/03_forall.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/features/04_open.ein"
+group  = "positive"
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+note   = "a feature demo of `open`, not of search — nothing bounds the hypothesis space, so `solve` measures the blind enumerator. no solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+
+[[entry]]
+path   = "examples/features/05_stdlib_domain_elim.ein"
+group  = "positive"
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+note   = "same shape as 04: the demo is the stdlib elimination rules, and the unbounded hypothesis space is incidental to it. no solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+
+[[entry]]
+path   = "examples/features/06_symmetric_native.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "the only fixture that marks a relation `(__symmetric__ R)`, and the only one that marks three — the reproducer for hazard H1."
+
+[[entry]]
+path   = "examples/lattice/01_subset_pruned.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
+levers = ["-L", "-K", "-y", "-o score-sum"]
+
+[[entry]]
+path   = "examples/lattice/02_genuine_3set_death.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
+levers = ["-L", "-K", "-y", "-o score-sum"]
+
+[[entry]]
+path   = "examples/lattice/03_state_hash_collision.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
+levers = ["-L", "-K", "-y", "-o score-sum"]
+note   = "two commitments that share a `state_key` — the merge path."
+
+[[entry]]
+path   = "examples/saturation/hypothesis-contradiction/coloc-disproved.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/hypothesis-contradiction/next-to-disproved.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/hypothesis-contradiction/right-of-disproved.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/implies/org-chart.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/implies/parent-to-ancestor.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/implies/right-then-next.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/square-bwd/floors.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+
+[[entry]]
+path   = "examples/saturation/square-bwd/houses.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+
+[[entry]]
+path   = "examples/saturation/square-bwd/meetings.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+
+[[entry]]
+path   = "examples/saturation/square-fwd/floors.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+
+[[entry]]
+path   = "examples/saturation/square-fwd/houses.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+
+[[entry]]
+path   = "examples/saturation/square-fwd/meetings.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+
+[[entry]]
+path   = "examples/saturation/square-unique/corner-house.ein"
+group  = "positive"
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+note   = "no solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+
+[[entry]]
+path   = "examples/saturation/square-unique/cul-de-sac.ein"
+group  = "positive"
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+note   = "no solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+
+[[entry]]
+path   = "examples/saturation/square-unique/terminus.ein"
+group  = "positive"
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints"]
+note   = "no render lattice, solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+
+[[entry]]
+path   = "examples/saturation/symmetric/couple.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/symmetric/friends.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/symmetric/neighbours.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/transitive/colocation-chain.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/transitive/mealtimes.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/transitive/taxonomy.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/type-exclusivity/colors.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/type-exclusivity/nationalities.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/saturation/type-exclusivity/pets.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/zebra.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+note   = "the second ontology: one generic `co-located` where zebra2 has five typed projections. The pair agreeing is the check that the engine's reasoning is not an artefact of one encoding."
+
+[[entry]]
+path   = "examples/zebra2-hints.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+
+[[entry]]
+path   = "examples/zebra2-minus-15.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
+slow   = true
+note   = "zebra2 with condition (15) removed — genuinely under-determined, so the exhaustive search is large rather than pathological. no render lattice, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+
+[[entry]]
+path   = "examples/zebra2.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
+levers = ["-L", "-K", "-y", "-o score-sum"]
+slow   = true
+
+
+# ── crash-parity ────────────────────────────────────────────
+
+[[entry]]
+path   = "examples/ein-bugs/mixed-type-hypothesis.ein"
+group  = "crash-parity"
+runs   = ["solve -e"]
+note   = "M1a hazard H2 / Q-M1a.4 — an hrule binds one variable to an int and a str, and `apriori.layer_1`'s `sorted(alive)` raises. The message names its operands in a `PYTHONHASHSEED`-dependent order, which is why this group compares the exception class and not the line."
+
+
+# ── parse-negative ──────────────────────────────────────────
+
+[[entry]]
+path   = "examples/broken/bare_top_level_atom.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/keyword_as_value.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/rule_missing_params.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/unclosed_paren.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+
+# ── load-negative ───────────────────────────────────────────
+
+[[entry]]
+path   = "examples/broken/load/config_bad_value.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/config_unknown_flag.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "its message enumerates every legal `(config …)` flag, so this entry pins the `SolverConfig` field set as a byte-comparable surface."
+
+[[entry]]
+path   = "examples/broken/load/derivation_cycle.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/fact_layer_kwarg.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/hrule_duplicate_name.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/hrule_reserved_name.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_alias_not_a_name.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_as_and_symbols.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_bare_std.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_conflicting_definitions.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_cycle.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "pairs with `import_cycle_b.ein`; each end reports a different chain, because the chain is the resolution stack."
+
+[[entry]]
+path   = "examples/broken/load/import_cycle_b.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_module_not_found.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_relative_not_found.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_symbols_empty.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_symbols_not_a_list.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/import_symbols_not_provided.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/macro_arity_mismatch.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/macro_duplicate.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/macro_reserved_name.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/relation_duplicate.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/relation_malformed.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/relation_needs_a_name.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/relation_reserved_name.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/rule_duplicate_name.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/rule_missing_assert.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/rule_missing_match.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/rule_reserved_name.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/unimported_std_macro.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+
+
+# ── stdlib ──────────────────────────────────────────────────
+
+[[entry]]
+path   = "ein.py/src/ein/stdlib/algebra.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "ein.py/src/ein/stdlib/bijection.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "ein.py/src/ein/stdlib/closure.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "ein.py/src/ein/stdlib/elim.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "ein.py/src/ein/stdlib/macro.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "ein.py/src/ein/stdlib/slots.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "ein.py/src/ein/stdlib/typing.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]

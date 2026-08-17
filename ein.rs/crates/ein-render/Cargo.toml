@@ -1,0 +1,10 @@
+[package]
+name        = "ein-render"
+description = "DOT renderers, markdown trace, the solution table"
+version.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+repository.workspace = true
+
+[dependencies]
+ein-core = { path = "../ein-core" }

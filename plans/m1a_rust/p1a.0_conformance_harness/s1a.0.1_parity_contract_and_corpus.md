@@ -105,3 +105,83 @@ entry requires a written "what would make this unacceptable".
 - Keep the runner independent of the engine crates: it shells out. A
   harness that links the implementation it is testing can only find the
   bugs it does not share.
+
+---
+
+## Outcome — 2026-08-17
+
+Everything in Acceptance is met. What is worth recording is what the
+instrument found while being built, because the phase's premise ("it finds
+ein.py bugs") turned out to be literally true on the first Python-vs-Python
+run.
+
+### The determinism audit (T1a.0.1.5)
+
+| hazard | predicted? | outcome |
+|---|---|---|
+| **H1** — `frozenset` iteration in the symmetric-mirror seed | yes | reproduced with three `(__symmetric__ R)` markers; `ein saturate --dump` came out in three different orders across `PYTHONHASHSEED ∈ {0, 7, 42, 99}`. Fixed with `sorted(…)`; `examples/features/06_symmetric_native.ein` is the reproducer, since **nothing in `examples/` or the stdlib marked a relation** and the corpus could not have caught it. |
+| **H2** — `sorted()` over mixed-type fact args | yes | reproduced, and **narrower than the audit assumed**: blind hypgen cannot reach it (candidates come from `kb.names`, which `rebuild_indexes` only feeds `if isinstance(a, str)`), so it takes an `hrule` whose `:assert` carries a binding through. Recorded not repaired (Q-M1a.4). |
+| **H3** — `--shuffle` needs CPython's MT19937 | yes | confirmed benign in the direction that matters: same seed is byte-identical, and across seeds the verdict, every counter and the root shape agree. Only *which of k models is found first* moves — which is why `--json-summary` sorts its `solutions` array by model. |
+| **H4** — `unsat_core` iterated raw at two display sites | **no** | found by the harness. `render/slice.py`'s `⊥` edges land verbatim in `solve --trace`, so **the same puzzle produced two different trace files across runs**; `_lattice_dump.py` carried the same instability into `--dump-states`. Both `sorted(…, key=repr)` now. [design/02](../design/02_determinism_and_order.md) §4's "safe" row is corrected, and its rule replaced: a `set` is safe only when *every* reader is checked. |
+
+### Q-M1a.14's proposed rule was wrong
+
+The crash-parity fixture raises `TypeError: '<' not supported between instances
+of 'int' and 'str'` — and *which operand is named first* depends on the
+`frozenset` iteration order inside `sorted`, so ein.py alternates between two
+messages across hash seeds. "Exit code + the first line of stderr" would have
+made the determinism sweep fail on a difference that is not one. The group
+compares exit code + **exception class**.
+
+### The loader's error surface (T1a.0.1.2)
+
+29 fixtures, up from the ~20 cases the tests inlined — `:symbols`
+(not-a-list / empty), `:as` (not a bare name), file-relative not-found, a
+`(config …)` type error and the second end of the import cycle had no test at
+all. The census in [`examples/broken/load/README.md`](../../../examples/broken/load/README.md)
+records three things:
+
+- **ten loader messages are unreachable** from a `.ein` file — six because the
+  grammar rejects the shape first, four because they are internal-invariant
+  assertions the top-level router cannot reach;
+- **one is not expressible as a file** ("file-relative import needs a base
+  directory" fires only when `base_dir is None`), and says so;
+- **almost every message ends `at None`** — Q-M1a.6 as data, and the reason
+  load-error parity needs almost no path normalisation.
+
+Building the corpus also found the three entry points disagreeing about how to
+report one broken file: `solve` printed `kb load error: …`, **`saturate` raised
+through to a traceback**, and `render` said "no rule forms". The first two are
+now the same message (`render`'s views render the IR, never the KB — correct as
+it stands, and now pinned as such). Fixed in ein.py rather than ported, per the
+milestone's non-goals: ein.rs reproducing a Python traceback is not a behaviour
+anyone wants preserved.
+
+### The corpus (T1a.0.1.1)
+
+95 entries / 556 cells; 78 entries and 438 cells in the per-commit tier.
+`slow` is measured, not guessed — the whole 7-run matrix was probed under
+CPython 3.14 and an entry is slow at ≥ 3 s. Seven entries lose a run that
+outlives a 150 s budget, each with the reason recorded: a run nobody can finish
+is not coverage, and leaving it in would make the nightly tier report "timed
+out on both sides" forever.
+
+Q-M1a.16 is opened by this stage: only **four of the ten** `SolverConfig`
+levers `utils/feature_matrix.py` drives are reachable from the CLI, and a
+harness that shells out cannot flip the rest.
+
+### One bug in the harness itself
+
+The first whole-corpus run hung. Two cells the probe had measured at 0.3 s and
+1.6 s sat for two minutes with no output: `execute` polled `try_wait()` on a
+child whose stdout was a **pipe**, and `render lattice` writes more DOT than a
+pipe's ~64 KB will hold, so the child blocked on `write` while the harness
+waited for it to exit. `wait_with_output` does not fix it — the deadlock
+happens before the wait. The streams are redirected to files now, which has no
+such limit and leaves both sides' output on disk where a hand investigation
+wants it.
+
+Worth recording because it is the failure mode a harness is *least* able to
+report on itself: it does not crash, it does not diff, it simply never
+finishes — and on a corpus with `slow` entries in it, "still running" is not
+obviously wrong.

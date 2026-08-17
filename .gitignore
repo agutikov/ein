@@ -24,3 +24,9 @@ dump
 # Machine-specific bench artifact (the tables in docs/kernel/inference/
 # features.md are the committed record; regenerate with utils/feature_matrix.py)
 utils/feature_matrix_results.json
+
+# ── M1a (the Rust port + the parity harness) ──────────────────────
+# Cargo's build tree.
+ein.rs/target/
+# Harness artefacts: every run wipes and rewrites this.
+conformance/out/

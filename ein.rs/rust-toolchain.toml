@@ -1,0 +1,10 @@
+# Pinned so every checkout and every CI runner compiles with the same rustc.
+#
+# Read by rustup, which is what CI uses. A distro-packaged cargo (no rustup)
+# ignores this file entirely — it is a pin for the environments that can
+# honour it, not a guarantee, and CI asserts the version separately
+# (plans/m1a_rust/design/12_toolchain_and_layout.md §2, MSRV = stable-2).
+[toolchain]
+channel    = "1.97.1"
+components = ["rustfmt", "clippy"]
+profile    = "minimal"

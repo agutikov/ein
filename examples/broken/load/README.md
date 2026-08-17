@@ -46,6 +46,13 @@ oversight. Recorded so the gap is a decision and not a hole:
 | `non-rule form where a rule was expected` · `unexpected top-level form` · `unresolved (import …) — internal error` | **unreachable by construction.** The top-level router only sends `rule`/`hrule`-headed forms to the rule ingester, `parse` only yields `SForm`s, and `resolve_imports` consumes every import before the router runs. Each is an internal-invariant assertion. |
 | `(import M) — file-relative import needs a base directory` | **not expressible as a file.** It fires only when `base_dir is None`, i.e. `KnowledgeBase.from_ir(parse(src))` with no base — and loading a *file* always supplies one. Stays an inline unit test in `ein.py/tests/kb/test_imports.py`. |
 
+Almost every message ends `at None`. The loader interpolates `form.loc`, and
+the AST lowerer synthesises the heads of `relation` / `rule` / `macro` /
+`import` forms without one, so top-level forms carry no position. The single
+exception is `macro_arity_mismatch`, raised during expansion on a nested
+(located) node. That is **Q-M1a.6** as data — it is a real usability bug, and
+the port prints `at None` until both implementations are fixed together.
+
 Reserved-name shadowing has one fixture per declarator namespace
 (`relation` / `rule` / `hrule` / `macro`) rather than one per reserved word:
 the message differs by namespace, so the fixtures cover the message set, and
