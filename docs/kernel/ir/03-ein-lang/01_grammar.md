@@ -182,6 +182,25 @@ in its own right, and
 [`06_reserved_names.md` §Not reserved](06_reserved_names.md) for why `T` is
 a convention rather than a kernel atom.
 
+**Why `relation` is a kernel declarator and not a stdlib word** (decided
+2026-08-17): because demoting it would remove no kernel *interpretation* —
+the three structural signals above are what makes hypothesis generation
+terminate, so they survive any demotion, and the kernel would go on
+hardcoding the name `relation`, merely as a reserved *fact head* (the
+`__closed__` / `not` / `false` category) rather than a declarator. The
+reserved set would be renamed, not shrunk. What demotion *would* cost is
+concrete: the malformed / shadowed-name / duplicate-declaration checks lose
+their load-time `loc` (a conflicting re-declaration would become two stored
+facts and an ambiguous signature lookup feeding the enumerator, with no
+diagnostic), and `:why` would be silently dropped, since facts discard
+unrecognised kw-pairs. Userspace gives up nothing for this: the
+declaration is *already* published as the mirror fact. Reflection over
+declarations is nonetheless still **arity-coupled** — `(relation ?R ?A ?B)`
+matches only binary declarations, and no arity-1 `(relation R)` fact
+exists, so there is no generic "is `?R` a relation?" pattern; that gap and
+three arity ride-alongs are parked in
+[`plans/followups/f9_relation_declarator_and_arity.md`](../../../../plans/followups/f9_relation_declarator_and_arity.md).
+
 ### Facts — `(NAME args*)`, the flat default
 
 A fact is any top-level form whose head is **not** a declarator. Three
