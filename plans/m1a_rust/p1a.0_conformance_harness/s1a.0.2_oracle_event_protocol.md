@@ -92,3 +92,73 @@ the unsat core, goal bindings. Additive flag, stable field order.
   redundant firing is exactly the kind of thing a port drops.
 - The writer should flush per line; a crashed run's prefix is the most
   useful artefact it can leave.
+
+---
+
+## Outcome — 2026-08-17
+
+`--events FILE` and `--events-level {normal,verbose}` on both `solve` and
+`saturate`; 17 event kinds across both layers; the schema versioned as
+`ein-events/1` in [`conformance/EVENTS.md`](../../../conformance/EVENTS.md) and
+emitted in the `run` event. `ein-conformance diff` reads it by hand and
+`tier::compare` reads it as the T2 gate — the same comparison, so the tool and
+the gate cannot drift apart.
+
+Python-vs-Python at **T2** over the per-commit tier: **215 cells compared, 0
+differences**; the other 223 are `render …` and negative cells that never emit
+a log, and the tier reports those as *skipped* rather than as a green it did
+not earn.
+
+### What the schema gained over design/01 §3
+
+- **`hypskip`** — the pre-candidate skips (`closed_relation`,
+  `relation_not_whitelisted`, `no_hypothesis_relation`, `self_edge`) get their
+  own kind rather than a `hyp` with an invented `fact` field: at that point no
+  candidate exists, and three of the four are decisions about a *relation*.
+  Verbose-only; `self_edge` alone fires once per (object, filler, relation,
+  slot).
+- **`hyp`'s verdict is a filter name, not a boolean.** `_apply_filters` now
+  returns the name of the filter that dropped the candidate — the same name it
+  bumps in `stats.filtered` — so a counter difference between two
+  implementations locates itself instead of having to be bisected.
+- **A mirror emits `mirror` and not `fire`**, so a firing is reported exactly
+  once whichever path made it.
+
+### Three things the differ has to ignore, and why
+
+`n` is compared as a **position, not a field**: one extra event on either side
+renumbers every line after it, and reporting all of them would bury the
+difference that caused them. The `run` event's `impl` (which engine ran — the
+premise of the comparison) and `argv` (the artefact paths the *caller* chose)
+are excluded for the same class of reason. All three stay in the file, where
+they document the run.
+
+### Placement matters more than it looks
+
+The log opens immediately before `solve()`, not before the diagnostics.
+`--timing` runs an isolated `Engine.compile_all()` and `--hyp-stats` saturates
+a fork of root; with the writer already open, either would stream a second set
+of `compile` / `fire` events and make `--events` mean something different
+depending on which *other* flags were passed.
+
+### Cost when off
+
+`events.ON` is a module-level `bool` and every call site reads it before
+building anything, so with the flag absent the cost is one global read — no
+kwargs dict, no formatting. Writing `events.emit(...)` unguarded would pack a
+`dict` at every call whatever the flag says, which on the firing path
+(≈ 234 k calls on exhaustive zebra2) is not free.
+
+Measured, `solve_exhaustive` on `zebra2.ein` under CPython 3.14, three
+best-of-3 runs per side, the baseline taken from a `git worktree` at the
+pre-instrumentation commit (`utils/bench_baseline.py`, `EIN_SRC=`):
+
+| | run 1 | run 2 | run 3 | mean |
+|---|---:|---:|---:|---:|
+| pre-instrumentation | 5637.2 ms | 5607.5 ms | 5640.9 ms | 5628.5 ms |
+| instrumented, flag off | 5662.8 ms | 5645.2 ms | 5632.5 ms | 5646.8 ms |
+
+**+0.32 %** on the mean, against a ~0.6 % spread *within* each side — so the
+overhead is at or below this machine's noise floor, and well under the 1 %
+the stage asks for. The honest reading is not "0.32 % slower" but "not
+distinguishable from unchanged at three runs".

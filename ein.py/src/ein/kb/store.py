@@ -29,6 +29,8 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from ein import events
+
 from .entities import (
     KERNEL_META_RELATIONS,
     Fact,
@@ -428,6 +430,11 @@ class KnowledgeBase:
         # fork/snapshot shallow copy cannot alias into a live branch.
         kept = current[:-1] if full else current
         self._alt_justifications[fact_id] = (*kept[:at], prov, *kept[at:])
+        if events.ON:
+            events.emit(
+                "alt", fact=events.fact_id(fact_id), rule=prov.rule,
+                premises=[events.fact_id(p) for p in prov.premises_raw],
+            )
         return True
 
     def accepts_justification(self, fact: Fact, n_premises: int) -> bool:

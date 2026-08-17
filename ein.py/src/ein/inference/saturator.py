@@ -43,6 +43,7 @@ import heapq
 from collections.abc import Iterator
 from typing import Any
 
+from ein import events
 from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
@@ -219,6 +220,12 @@ class Saturator:
             if firing is not None:
                 return firing
             # Positive quiescence — the boundary gets to speak.
+            if events.ON:
+                events.emit(
+                    "quiesce", round=self.naf_rounds,
+                    n_facts=len(self.kb.facts), n_queue=len(self._queue),
+                    n_parked=len(self._parked),
+                )
             if not self._admit_from_boundary():
                 return None
 
@@ -248,6 +255,17 @@ class Saturator:
             firing = self._apply(plan, bindings, premises, key, guards)
             if firing is None:
                 continue
+            # `mirror` firings are emitted by `_next_mirror_firing`, so a
+            # firing is reported exactly once whichever path produced it.
+            if events.ON and (not firing.redundant or events.want_verbose()):
+                events.emit(
+                    "fire", rule=plan.rule_name,
+                    activator=list(plan.activator_args),
+                    bindings=events.bindings(bindings),
+                    premises=events.facts(firing.premises),
+                    derived=events.facts(firing.derived),
+                    redundant=firing.redundant,
+                )
             # A productive (non-redundant) firing wrote a new fact;
             # the next step needs a fresh enqueue pass to pick up
             # downstream matches. Redundant firings change nothing.
@@ -322,6 +340,9 @@ class Saturator:
                 heapq.heappush(self._queue, entry)
                 self.naf_admitted += 1
                 admitted = 1
+                if events.ON:
+                    events.emit("admit", tiebreaker=tb, round=self.naf_rounds,
+                                rule=plan.rule_name)
                 break
             if failing.monotone:
                 # Anti-monotone guard, and it found a match: the KB only
@@ -329,8 +350,16 @@ class Saturator:
                 # not waiting — retire it rather than re-asking every round.
                 self._park_stamp.pop(tb, None)
                 self.naf_retired += 1
+                if events.ON:
+                    events.emit("retire", tiebreaker=tb, round=self.naf_rounds,
+                                rule=plan.rule_name,
+                                watched=sorted(failing.watched))
                 continue
             self._park_stamp[tb] = stamp
+            if events.ON:
+                events.emit("park", tiebreaker=tb, round=self.naf_rounds,
+                            rule=plan.rule_name,
+                            watched=sorted(failing.watched))
             rejected.append(entry)
         for entry in rejected:
             heapq.heappush(self._parked, entry)
@@ -539,6 +568,9 @@ class Saturator:
             else:
                 self._delta_facts.append(stored)
             self._enqueue_mirror_sources((stored,))
+            if events.ON:
+                events.emit("mirror", relation=src.relation_name,
+                            src=events.fact(src), derived=events.fact(stored))
             return Firing(
                 rule=SYMMETRIC,
                 activator=(src.relation_name,),
@@ -665,6 +697,13 @@ class Saturator:
         self._tiebreaker += 1
         entry = (priority, self._tiebreaker, plan, dict(bindings), premises,
                  guards)
+        if events.ON:
+            events.emit(
+                "enqueue", rule=plan.rule_name,
+                activator=list(plan.activator_args),
+                bindings=events.bindings(bindings), priority=priority,
+                tiebreaker=self._tiebreaker, parked=bool(guards),
+            )
         heapq.heappush(self._parked if guards else self._queue, entry)
 
     def _record_alternative(

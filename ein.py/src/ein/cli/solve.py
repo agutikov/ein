@@ -321,6 +321,14 @@ def _cmd_solve(args: argparse.Namespace) -> int:
         compile_ms = (time.perf_counter() - t) * 1000.0
         n_plans = len(eng.cache)
 
+    # Last thing before the solve: `--timing`'s isolated compile pass and
+    # `--hyp-stats`' fork saturation are diagnostics *about* the run, not part
+    # of it, and recording them would make the event stream depend on which
+    # other flags were passed.
+    from . import _events
+    _events.start(args, config=config)
+    _events.load(kb)
+
     dumper = _make_dumper(args)
     stop_after = None if args.exhaustive else args.solutions
     t0 = time.perf_counter()
@@ -338,6 +346,7 @@ def _cmd_solve(args: argparse.Namespace) -> int:
             _summary.write(args.json_summary, _summary.build_aborted(
                 reason=e.reason, stats=e.stats, kb=kb, config=config,
                 source=args.file))
+        _events.finish()
         return 2
     elapsed_ms = (time.perf_counter() - t0) * 1000.0
 
@@ -357,11 +366,13 @@ def _cmd_solve(args: argparse.Namespace) -> int:
         _write_trace(verdict, args)
     # Last: the summary re-saturates a fork of root to fill its `root` block,
     # so it runs after every stdout-producing step rather than between two.
+    _events.verdict(verdict, stats)
     if args.json_summary:
         from . import _summary
         _summary.write(args.json_summary, _summary.build(
             verdict=verdict, stats=stats, kb=kb, config=config,
             source=args.file))
+    _events.finish()
     return 0
 
 
@@ -443,6 +454,10 @@ def add_parser(sub) -> None:
     p.add_argument("-f", "--print-final-hfacts", action="store_true",
                    help="dump only the hypothesis-target (query :hrules) facts "
                         "per solution")
+
+    # ── event log (file only) ──
+    from . import _events
+    _events.add_arguments(p)
 
     # ── machine-readable summary (file only) ──
     p.add_argument("--json-summary", default=None, metavar="FILE.json",

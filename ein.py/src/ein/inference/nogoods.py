@@ -30,6 +30,7 @@ pruning before the next ``_compute_alive`` recomputes ``alive``.
 """
 from __future__ import annotations
 
+from ein import events
 from ein.kb.provenance import FactId
 from ein.kb.store import KnowledgeBase
 
@@ -73,6 +74,9 @@ def emit_nogood(
     # Subsumed by an existing stronger clause?
     for c in nogoods:
         if c.issubset(clause):
+            if events.ON:
+                events.emit("nogood", clause=_clause_repr(clause),
+                            emitted=False, subsumed=True)
             return False
 
     # Remove any existing clauses this one subsumes.
@@ -80,7 +84,16 @@ def emit_nogood(
     for c in to_remove:
         nogoods.discard(c)
     nogoods.add(clause)
+    if events.ON:
+        events.emit("nogood", clause=_clause_repr(clause), emitted=True,
+                    subsumed=False, removed=len(to_remove))
     return True
+
+
+def _clause_repr(clause: Clause) -> list[str]:
+    """A clause as sorted s-expressions — it is a `frozenset`, so any order
+    but a sorted one would leak set iteration into the event stream."""
+    return sorted(events.fact_id(fid) for fid in clause)
 
 
 __all__ = [

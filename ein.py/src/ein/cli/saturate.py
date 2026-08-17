@@ -464,6 +464,7 @@ def bench(
     dump: bool = False,
     max_steps: int | None = None,
     progress_every: int = 500,
+    events_args: object = None,
 ) -> None:
     src = path.read_text()
     print(f"input:   {path}")
@@ -471,7 +472,9 @@ def bench(
 
     # ── Phase: parse ─────────────────────────────────────────────
     t0 = time.perf_counter()
-    forms = parse(src)
+    # `filename=` so a parse error reads `<file>:line:col` here too, rather
+    # than `<string>:line:col` — the same message `solve` produces.
+    forms = parse(src, filename=str(path))
     t1 = time.perf_counter()
     print(f"parse:    {(t1 - t0) * 1000:8.2f} ms  ({len(forms)} top-level forms)")
 
@@ -480,6 +483,14 @@ def bench(
     kb = KnowledgeBase.from_ir(forms)
     t1 = time.perf_counter()
     print(f"kb load:  {(t1 - t0) * 1000:8.2f} ms")
+
+    # The event log opens here, after the kb exists and before anything is
+    # compiled or fired — `saturate` has no verdict, so the stream is the
+    # deductive layer on its own: compile, enqueue, fire, mirror, the boundary.
+    if events_args is not None:
+        from . import _events
+        _events.start(events_args, config=kb.config)
+        _events.load(kb)
 
     # ── Phase: engine compile ────────────────────────────────────
     eng = Engine(kb)
@@ -575,18 +586,32 @@ def main(argv: list[str] | None = None) -> int:
         help="log a one-line progress sample every N steps "
              "(0 disables; default: 500).",
     )
+    from . import _events
+    _events.add_arguments(p)
     args = p.parse_args(argv)
 
     target = Path(args.file)
     if not target.exists():
         print(f"error: {target} not found", file=sys.stderr)
         return 1
-    bench(
-        target,
-        dump=args.dump,
-        max_steps=args.max_steps,
-        progress_every=args.progress_every,
-    )
+    from ein.ir import IRParseError
+    from ein.kb import KBLoadError
+    try:
+        bench(
+            target,
+            dump=args.dump,
+            max_steps=args.max_steps,
+            progress_every=args.progress_every,
+            events_args=args,
+        )
+    except IRParseError as e:
+        print(e, file=sys.stderr)
+        return 1
+    except KBLoadError as e:
+        print(f"kb load error: {e}", file=sys.stderr)
+        return 1
+    finally:
+        _events.finish()
     return 0
 
 

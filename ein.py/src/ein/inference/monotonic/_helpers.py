@@ -12,6 +12,7 @@ import time
 from dataclasses import dataclass, field, fields, replace
 from typing import Literal
 
+from ein import events
 from ein.inference import primitives
 from ein.inference.apriori import (
     CanonicalSetId,
@@ -100,6 +101,9 @@ def _emit_negated_fact_writeback(
     """
     rn, args = h_id
     _write_negation_local(root_kb, rn, args)
+    if events.ON:
+        events.emit("writeback", fact=f"(not {events.fact_id(h_id)})",
+                    reason="singleton-dead-clause")
 
 
 def _write_negation_local(
@@ -165,6 +169,9 @@ def _promote_forced_positives(
         root_kb.add_and_index_fact(promoted)
         stats.facts_merged += 1
         stats.forced_positives += 1
+        if events.ON:
+            events.emit("writeback", fact=events.fact(promoted),
+                        reason="forced-positive")
 
         _ = list(Saturator(root_kb).saturate())
         stats.saturate_count += 1

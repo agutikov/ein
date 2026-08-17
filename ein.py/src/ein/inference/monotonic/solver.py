@@ -76,6 +76,7 @@ import random
 import time
 from typing import Literal
 
+from ein import events
 from ein.inference.apriori import (
     CanonicalSetId,
     generate_layer,
@@ -319,6 +320,13 @@ def _phase2_layers(ctx: _LoopCtx) -> tuple[Verdict, MonotonicStats] | None:
             _check_budget(ctx)
             stats.enterings_total += 1
             result = try_commitment_set(root_kb, c)
+            if events.ON:
+                events.emit(
+                    "enter", layer=layer,
+                    commitment=[events.fact_id(fid) for fid in c],
+                    kind=result.kind, n_firings=len(result.firings),
+                    core=sorted(events.fact(f) for f in result.unsat_core),
+                )
 
             if result.kind in ("dead-pre", "dead-post"):
                 _handle_dead(ctx, c, layer, result)

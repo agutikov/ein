@@ -15,6 +15,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import Any
 
+from ein import events
 from ein.kb.entities import Fact, Rule
 from ein.kb.store import KnowledgeBase
 
@@ -93,6 +94,14 @@ class Engine:
             return self._cache[key]
         plan = compile_rule(rule, activator)
         self._cache[key] = plan
+        if events.ON:
+            events.emit(
+                "compile", rule=rule.name, activator=list(key[1]),
+                n_steps=len(plan.steps),
+                n_disjuncts=len(plan.extra_match_plans),
+                n_guards=len(plan.naf_guards),
+                asserts=len(plan.assert_templates),
+            )
         return plan
 
     def compile_all(self) -> None:

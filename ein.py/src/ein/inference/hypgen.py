@@ -36,6 +36,7 @@ from collections import defaultdict
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 
+from ein import events
 from ein.ir.types import Atom, SForm
 from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
@@ -164,8 +165,13 @@ def _generate(kb: KnowledgeBase, stats: HypGenStats) -> Iterator[Fact]:
 
     def _emit(fact: Fact) -> Iterator[Fact]:
         stats.raw += 1
-        if _apply_filters(kb, fact, seen, stats, lookahead, cfg):
+        dropped = _apply_filters(kb, fact, seen, stats, lookahead, cfg)
+        if dropped is None:
             stats.emitted += 1
+        if events.ON:
+            events.emit("hyp", fact=events.fact(fact),
+                        verdict=dropped or "emitted")
+        if dropped is None:
             yield fact
 
     # S1.5.6b — generation is rule-driven when the puzzle declares
@@ -194,8 +200,14 @@ def _apply_filters(
     stats: HypGenStats,
     lookahead: Lookahead | None,
     cfg: SolverConfig,
-) -> bool:
-    """Run the candidate-level filter pipeline; return True iff kept.
+) -> str | None:
+    """Run the candidate-level filter pipeline.
+
+    Returns ``None`` if the candidate is kept, else the **name of the filter
+    that dropped it** — the same name the filter bumps in ``stats.filtered``.
+    Returning the name rather than a bool is what lets the `hyp` event say
+    *why* a candidate went away (M1a S1a.0.2): a counter difference between
+    two implementations then locates itself instead of having to be bisected.
 
     Filter order matters only for the counter attribution — the
     first filter to drop a candidate gets the bump; later filters
@@ -204,11 +216,11 @@ def _apply_filters(
     # negated_fact (Tier A; O(1)).
     if _is_excluded(kb, fact):
         stats.filtered["negated_fact"] += 1
-        return False
+        return "negated_fact"
     # fact_already_exists (S1.5.4b narrower replacement for Filter B; O(1)).
     if _already_a_fact(kb, fact):
         stats.filtered["fact_already_exists"] += 1
-        return False
+        return "fact_already_exists"
     # lookahead_killed (S1.5.6 Tier B; one rule step, no fork). Runs
     # last of the per-candidate checks — it is the costliest.
     if lookahead is not None and lookahead.dies_immediately(kb, fact):
@@ -220,14 +232,14 @@ def _apply_filters(
         # the lookahead's match.
         if cfg.enable_lookahead_kill_cache:
             _write_negated(kb, fact)
-        return False
+        return "lookahead_killed"
     # seen_in_call dedup (stateful across the call).
     key = (fact.relation_name, fact.args)
     if key in seen:
         stats.filtered["seen_in_call"] += 1
-        return False
+        return "seen_in_call"
     seen.add(key)
-    return True
+    return None
 
 
 def _raw_candidates(
@@ -254,15 +266,21 @@ def _raw_candidates(
             # T1.5.4.1 — `(__closed__ R)` activator. The whole
             # relation contributes zero candidates.
             stats.pre_candidate["closed_relation"] += 1
+            if events.ON and events.want_verbose():
+                events.emit("hypskip", relation=rel.name, reason="closed_relation")
             continue
         if allowed is not None and rel.name not in allowed:
             # S1.5.6b T1.5.6b.1 — relation not on the whitelist.
             stats.pre_candidate["relation_not_whitelisted"] += 1
+            if events.ON and events.want_verbose():
+                events.emit("hypskip", relation=rel.name, reason="relation_not_whitelisted")
             continue
         if rel.name in excluded:
             # S1.9.E3 — `:no-hypothesis` blacklist: never guess on R
             # (saturation rules on R still fire; this is hypgen-only).
             stats.pre_candidate["no_hypothesis_relation"] += 1
+            if events.ON and events.want_verbose():
+                events.emit("hypskip", relation=rel.name, reason="no_hypothesis_relation")
             continue
         for slot_idx in range(len(rel.signature)):
             yield from _fill_slot(kb, rel, slot_idx, obj_ref, stats)
@@ -313,6 +331,9 @@ def _fill_slot(
     for filler in _candidate_objects(kb):
         if filler.name == obj_ref.name:
             stats.pre_candidate["self_edge"] += 1
+            if events.ON and events.want_verbose():
+                events.emit("hypskip", relation=rel.name, reason="self_edge",
+                            object=obj_ref.name)
             continue
 
         args = _build_args(obj_ref.name, fixed_slot, filler.name, other_slot)

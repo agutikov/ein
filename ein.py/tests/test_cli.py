@@ -61,3 +61,46 @@ def test_broken_fixtures_fail_to_parse(name: str):
     # error, so assert the located-prefix shape, not specific numbers.
     assert msg.startswith(f"{name}:"), msg
     assert msg[len(name) + 1:].count(":") >= 2, msg   # line + col fields present
+
+
+# ── one broken file, three entry points ────────────────────────────
+#
+# Building the load-negative corpus (M1a S1a.0.1) found the three commands
+# disagreeing about how to report a file that parses and then fails to load:
+# `solve` printed `kb load error: …`, `saturate` raised through to a
+# traceback, and `render` said "no rule forms". Two of those are now the same
+# message; the third is correct as it stands and says why.
+
+BROKEN_LOAD = REPO / "examples" / "broken" / "load" / "relation_duplicate.ein"
+
+
+@pytest.mark.parametrize("cmd", [
+    ["solve", str(BROKEN_LOAD)],
+    ["saturate", str(BROKEN_LOAD)],
+])
+def test_a_load_error_is_reported_not_raised(cmd, capsys):
+    """`solve` and `saturate` both take the KB path, so both must diagnose a
+    load failure the same way: one line on stderr, exit 1, no traceback."""
+    assert main(cmd) == 1
+    err = capsys.readouterr().err
+    assert "kb load error: duplicate relation 'opaque'" in err
+    assert "Traceback" not in err
+
+
+def test_render_views_the_ir_not_the_kb(capsys):
+    """`render` is the exception, and deliberately: its views render the
+    *parsed IR*, never the KB, so a file that would fail to load still has
+    rules to draw — or, here, does not. Reporting a load error it never
+    triggered would be the inconsistency."""
+    assert main(["render", "rules", str(BROKEN_LOAD)]) == 1
+    err = capsys.readouterr().err
+    assert "no rule forms" in err
+    assert "kb load error" not in err
+
+
+def test_a_parse_error_from_saturate_names_the_file(capsys):
+    """…and `saturate`'s parse errors carry the file name, like `solve`'s.
+    It parsed without `filename=`, so every location read `<string>:l:c`."""
+    broken = REPO / "examples" / "broken" / "unclosed_paren.ein"
+    assert main(["saturate", str(broken)]) == 1
+    assert str(broken) in capsys.readouterr().err
