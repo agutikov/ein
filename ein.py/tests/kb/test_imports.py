@@ -6,6 +6,11 @@ union. Covered here: the three tiers against the packaged `std.macro`; logical
 `std.*` resolution; file-relative two-file projects; transitive re-export;
 cycle / not-found / `:as`-XOR-`:symbols` diagnostics; and the D3 reserved-name
 guard (shared across declarators; facts may still carry reserved heads).
+
+The diagnostics read their input from `examples/broken/load/**` (S1a.0.1
+T1a.0.1.2) via :func:`tests.load_negative.load_error`, which also holds each
+message to the checked-in `.expected` — so the assertion below is the *claim*
+this test makes and the fixture is the anchor both implementations answer to.
 """
 from __future__ import annotations
 
@@ -15,6 +20,7 @@ from ein.inference.compile import AbsentGuard, compile_rule
 from ein.ir import parse
 from ein.kb.from_ir import KBLoadError
 from ein.kb.store import KnowledgeBase
+from tests.load_negative import load_error
 
 
 def _load(src: str) -> KnowledgeBase:
@@ -80,28 +86,48 @@ def test_qualified_macro_is_invokable():
 
 
 def test_as_and_symbols_mutually_exclusive():
-    with pytest.raises(KBLoadError, match=r":as and :symbols are mutually exclusive"):
-        _load("(import std.macro :as m :symbols (forall))")
+    assert ":as and :symbols are mutually exclusive" in \
+        load_error("import_as_and_symbols")
 
 
 def test_module_not_found():
-    with pytest.raises(KBLoadError, match=r"module not found"):
-        _load("(import std.nope)")
+    """A missing `std.*` module names its resolved path — the proof there is
+    no hidden fallback behind the stdlib root."""
+    msg = load_error("import_module_not_found")
+    assert "module not found" in msg
+    assert msg.endswith("nope.ein (None)")
 
 
 def test_bare_std_is_not_a_module():
-    with pytest.raises(KBLoadError, match=r"bare 'std' is not a module"):
-        _load("(import std)")
+    assert "bare 'std' is not a module" in load_error("import_bare_std")
 
 
 def test_symbols_not_provided():
-    with pytest.raises(KBLoadError, match=r"not provided by the module: nope"):
-        _load("(import std.macro :symbols (nope))")
+    assert "not provided by the module: nope" in \
+        load_error("import_symbols_not_provided")
+
+
+def test_symbols_must_be_a_non_empty_list():
+    assert "expected a (name …) list" in load_error("import_symbols_not_a_list")
+    assert "empty list" in load_error("import_symbols_empty")
+
+
+def test_alias_must_be_a_bare_name():
+    assert "alias must be a bare name" in load_error("import_alias_not_a_name")
 
 
 def test_file_relative_without_base_errors():
+    """The one loader diagnostic with no fixture: it fires only when
+    ``base_dir is None``, and loading a *file* always supplies one — so it is
+    reachable through `from_ir` alone (`examples/broken/load/README.md`)."""
     with pytest.raises(KBLoadError, match=r"file-relative import needs a base"):
         _load("(import mymod.x)")
+
+
+def test_file_relative_module_not_found():
+    """…whereas a file-relative import that *has* a base and still misses
+    reports the path it looked at, relative to the importing file."""
+    assert "module not found" in load_error("import_relative_not_found")
 
 
 # ── File-relative projects ─────────────────────────────────────────
@@ -146,11 +172,16 @@ def test_transitive_reexport_requalified(tmp_path):
     assert isinstance(outer.guard, AbsentGuard)
 
 
-def test_import_cycle_rejected(tmp_path):
-    _write(tmp_path, "a.ein", "(import b)\n(relation x T T)\n")
-    _write(tmp_path, "b.ein", "(import a)\n(relation y T T)\n")
-    with pytest.raises(KBLoadError, match=r"import cycle"):
-        KnowledgeBase.from_file(tmp_path / "a.ein")
+@pytest.mark.parametrize("entry,other", [
+    ("import_cycle", "import_cycle_b"),
+    ("import_cycle_b", "import_cycle"),
+])
+def test_import_cycle_rejected(entry: str, other: str):
+    """The reported chain is the resolution stack, so entering the same cycle
+    from either side is a different message — both ends are fixtures."""
+    msg = load_error(entry)
+    assert msg.startswith("import cycle: ")
+    assert msg.count(f"{other}.ein") == 2       # …/other -> …/entry -> …/other
 
 
 def test_existing_import_free_kb_unaffected():

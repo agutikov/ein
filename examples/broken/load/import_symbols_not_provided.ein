@@ -1,0 +1,4 @@
+;; `:symbols` may only name declarations the module actually makes —
+;; there is no re-export of the absent.
+
+(import std.macro :symbols (nope))

@@ -1,0 +1,6 @@
+;; Import is idempotent for *identical* declarations (diamonds collapse,
+;; S1.8a.f20); a same-name declaration with a different body is a
+;; genuine conflict.
+
+(import std.closure :symbols (infer-closure))
+(rule infer-closure () :match (foo ?x) :assert (bar ?x) :why "w")

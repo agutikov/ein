@@ -1,0 +1,4 @@
+;; One name, one declaration.
+
+(relation opaque)
+(relation opaque)

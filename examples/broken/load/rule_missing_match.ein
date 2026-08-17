@@ -1,0 +1,3 @@
+;; A rule needs both clauses.
+
+(rule r () :assert (y ?a) :why "w")

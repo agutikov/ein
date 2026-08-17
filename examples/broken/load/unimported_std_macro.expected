@@ -1,0 +1,1 @@
+rule 'undefeated': '(forall …)' is a std.macro pattern macro used without importing it — add (import std.macro :symbols (forall)); unexpanded it would silently never match

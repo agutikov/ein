@@ -1,0 +1,3 @@
+;; Reserved-name guard, macro namespace.
+
+(macro absent (?p) (rel ?p))

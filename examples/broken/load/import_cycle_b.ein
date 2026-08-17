@@ -1,0 +1,4 @@
+;; The other end of the `import_cycle.ein` pair.
+
+(import import_cycle)
+(relation y T T)

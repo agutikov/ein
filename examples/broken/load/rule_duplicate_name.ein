@@ -1,0 +1,4 @@
+;; `rule` and `hrule` share one namespace — two rules cannot share a name.
+
+(rule r () :match (x ?a) :assert (y ?a) :why "a")
+(rule r () :match (x ?a) :assert (z ?a) :why "b")

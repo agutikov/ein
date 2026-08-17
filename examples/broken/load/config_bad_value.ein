@@ -1,0 +1,4 @@
+;; …and a well-known key with an ill-typed value.
+
+(relation r T T)
+(config :enable-path-nogoods maybe)

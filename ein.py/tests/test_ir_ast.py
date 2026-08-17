@@ -181,11 +181,8 @@ def test_relation_wrapped_form_rejected_at_load():
     generic fact headed `relation`), but the loader's relation routing
     rejects it as malformed — validation at load time, with a clearer error.
     P1.7c: tested as a flat top-level form (no `(ontology …)` wrapper)."""
-    from ein.kb import KnowledgeBase
-    from ein.kb.from_ir import KBLoadError
-    forms = parse("(relation lives-in (Person House))")
-    with pytest.raises(KBLoadError, match=r"malformed .relation."):
-        KnowledgeBase.from_ir(forms)
+    from tests.load_negative import load_error
+    assert "malformed (relation)" in load_error("relation_malformed")
 
 
 def test_former_wrapper_head_is_a_fact():

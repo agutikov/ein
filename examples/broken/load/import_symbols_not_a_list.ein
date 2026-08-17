@@ -1,0 +1,3 @@
+;; `:symbols` takes a `(name …)` list, not a bare name.
+
+(import std.macro :symbols forall)

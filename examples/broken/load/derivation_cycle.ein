@@ -1,0 +1,7 @@
+;; User-authored `:using` provenance must be well-founded — the
+;; derivation-DAG walk would not terminate. (Engine-recorded
+;; provenance is allowed to be cyclic; this check is load-time only.)
+
+(relation r T T)
+(r a b :rule x :using (p (r c d)))
+(r c d :rule x :using (p (r a b)))

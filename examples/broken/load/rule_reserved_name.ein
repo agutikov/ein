@@ -1,0 +1,4 @@
+;; Reserved-name guard, rule namespace: a rule named `absent` would
+;; never fire (the compiler reads it as the primitive).
+
+(rule absent () :match (x ?a) :assert (y ?a) :why "w")

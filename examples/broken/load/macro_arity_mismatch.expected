@@ -1,0 +1,1 @@
+(rule x): macro m/2 invoked with 1 args at Loc(file='{FILE}', line=6, col=20)

@@ -583,11 +583,8 @@ class TestLayerKwargRejected:
     """
 
     def test_layer_kwarg_is_a_load_error(self):
-        from ein.ir import parse
-        from ein.kb.from_ir import KBLoadError
-        with pytest.raises(KBLoadError, match=r":layer` was removed in S1.22.1b"):
-            KnowledgeBase.from_ir(parse(
-                '(relation r T T)\n(r a b :layer fact)'))
+        from tests.load_negative import load_error
+        assert ":layer` was removed in S1.22.1b" in load_error("fact_layer_kwarg")
 
     def test_layer_kwarg_rejected_whatever_its_value(self):
         from ein.ir import parse

@@ -1,0 +1,3 @@
+;; `:as` and `:symbols` are mutually exclusive (A1 D3).
+
+(import std.macro :as m :symbols (forall))

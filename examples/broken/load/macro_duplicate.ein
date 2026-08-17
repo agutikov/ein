@@ -1,0 +1,4 @@
+;; Two macros, one name.
+
+(macro m (?a) (rel ?a))
+(macro m (?a) (other ?a))

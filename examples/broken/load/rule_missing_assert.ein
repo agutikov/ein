@@ -1,0 +1,3 @@
+;; …either one missing is the same error.
+
+(rule r () :match (x ?a) :why "w")

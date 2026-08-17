@@ -1,0 +1,9 @@
+;; A `std.macro` pattern macro used without importing it. Unexpanded,
+;; `(forall …)` would survive as an ordinary premise and the rule
+;; would silently never match — so the loader refuses it (S1.8a.f20).
+
+(rule undefeated (?Player)
+  :match (and (player ?p) (forall ?q (player ?q) (beats ?p ?q)))
+  :assert (ok ?p) :why "u")
+(relation player T T)
+(relation beats T T)

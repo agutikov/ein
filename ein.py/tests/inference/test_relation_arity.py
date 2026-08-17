@@ -9,13 +9,11 @@ answer it, and the invariants each one must not break.
 """
 from __future__ import annotations
 
-import pytest
-
 from ein.inference.hypgen import generate_hypotheses
 from ein.inference.saturator import Saturator
 from ein.ir import parse, to_dot
 from ein.kb import KnowledgeBase
-from ein.kb.from_ir import KBLoadError
+from tests.load_negative import load_error
 
 
 def _kb(text: str) -> KnowledgeBase:
@@ -120,20 +118,17 @@ def test_wrapped_arg_form_is_still_rejected():
     """R10 regression guard. `(relation R (T1 T2))` parses as a generic
     fact; with an empty signature now legal, only an explicit non-Atom-arg
     check keeps it from silently loading as a *bare* declaration."""
-    with pytest.raises(KBLoadError, match=r"malformed .relation."):
-        _kb("(relation lives-in (Person House))")
+    assert "malformed (relation)" in load_error("relation_malformed")
 
 
 def test_headless_relation_form_is_still_rejected():
-    with pytest.raises(KBLoadError, match=r"needs a name"):
-        _kb("(relation)")
+    assert "needs a name" in load_error("relation_needs_a_name")
 
 
 def test_bare_declaration_still_rejects_duplicates_and_shadowing():
-    with pytest.raises(KBLoadError, match=r"duplicate relation"):
-        _kb("(relation opaque)\n(relation opaque)")
-    with pytest.raises(KBLoadError, match=r"shadows a reserved kernel name"):
-        _kb("(relation eq)")
+    assert "duplicate relation" in load_error("relation_duplicate")
+    assert "shadows a reserved kernel name" in \
+        load_error("relation_reserved_name")
 
 
 # ── T1.22.4.3 — unary hypothesis targets ───────────────────────────

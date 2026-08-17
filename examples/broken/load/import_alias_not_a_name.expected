@@ -1,0 +1,1 @@
+(import std.macro :as …) — alias must be a bare name at None

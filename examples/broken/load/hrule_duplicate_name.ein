@@ -1,0 +1,6 @@
+;; …the same guard reached through two hrules.
+
+(hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "a")
+(hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "b")
+(relation is-a T T)
+(relation co-located T T)

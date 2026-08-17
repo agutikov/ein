@@ -14,8 +14,6 @@ Two ways to steer what `hypgen` enumerates:
 Rule, hrule, and relation names must be unique — a duplicate is a
 load error.
 """
-import pytest
-
 from ein.inference.hrule import Hrules
 from ein.inference.hypgen import (
     generate_hypotheses,
@@ -24,8 +22,8 @@ from ein.inference.hypgen import (
 from ein.inference.saturator import Saturator
 from ein.ir import dump_canonical, parse
 from ein.kb.entities import Fact
-from ein.kb.from_ir import KBLoadError
 from ein.kb.store import KnowledgeBase
+from tests.load_negative import load_error
 
 
 def _kb(text: str) -> KnowledgeBase:
@@ -71,15 +69,6 @@ _GENERIC_HRULE = """
 (query :goal (co-located Red H1)
        :hrules (guess (co-located Color) (co-located Pet)))
 """
-
-# Two hrules sharing a name — a load error.
-_DUP_HRULE = """
-(hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "a")
-(hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "b")
-(relation is-a T T) (relation co-located T T)
-(is-a House T) (is-a H1 House)
-"""
-
 
 # ── T1.5.6b.1 — query whitelist ────────────────────────────────────
 
@@ -215,13 +204,12 @@ def test_generic_hrule_via_query_hrules():
 
 
 def test_duplicate_hrule_name_rejected():
-    """Two hrules sharing a name is a load error."""
-    with pytest.raises(KBLoadError):
-        _kb(_DUP_HRULE)
+    """Two hrules sharing a name is a load error — `rule` and `hrule` share
+    one namespace, so the message does not distinguish them."""
+    assert "duplicate rule/hrule name 'g'" in load_error("hrule_duplicate_name")
 
 
 def test_duplicate_relation_rejected():
     """Two `(relation R …)` declarations for the same R is a load
     error."""
-    with pytest.raises(KBLoadError):
-        _kb("(relation co-located T T) (relation co-located T T)")
+    assert "duplicate relation 'opaque'" in load_error("relation_duplicate")

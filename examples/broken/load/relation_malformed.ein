@@ -1,0 +1,5 @@
+;; The pre-R10 wrapped-arg form. It PARSES (as a generic fact headed
+;; `relation`, since `relation` is not SYMBOL-excluded) and the loader
+;; rejects it — otherwise an empty signature would swallow it silently.
+
+(relation lives-in (Person House))

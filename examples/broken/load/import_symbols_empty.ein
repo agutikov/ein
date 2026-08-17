@@ -1,0 +1,3 @@
+;; …and not an empty one.
+
+(import std.macro :symbols ())

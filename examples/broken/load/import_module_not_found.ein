@@ -1,0 +1,5 @@
+;; A `std.*` module that does not exist. The message names the resolved
+;; path, so this fixture is also the proof that there is no hidden
+;; fallback behind the stdlib root.
+
+(import std.nope)

@@ -1,0 +1,6 @@
+;; An unknown `(config …)` key is a typo, not a silent default. The
+;; message enumerates every legal flag, so this fixture pins the
+;; SolverConfig field set as a byte-comparable surface.
+
+(relation r T T)
+(config :nope true)

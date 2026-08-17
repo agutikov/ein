@@ -1,0 +1,4 @@
+;; A declarator may not shadow kernel vocabulary. One representative of
+;; the reserved set; the full sweep stays a parametrized unit test.
+
+(relation eq)

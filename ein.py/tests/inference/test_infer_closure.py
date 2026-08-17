@@ -11,8 +11,6 @@ not full-solve correctness on a branching puzzle.
 """
 from __future__ import annotations
 
-import pytest
-
 from ein.inference.hypgen import _is_closed
 from ein.inference.saturator import Saturator
 from ein.ir import parse
@@ -72,17 +70,13 @@ def test_closed_relation_skipped_by_hypgen():
     assert cands == []
 
 
-@pytest.mark.parametrize("bad", [
-    "(import std.closure :symbols (infer-closure))\n"
-    "(rule infer-closure () :match (foo ?x) :assert (bar ?x) :why \"w\")\n",
-])
-def test_local_redefinition_conflicts(bad):
+def test_local_redefinition_conflicts():
     """Importing `infer-closure` and also defining it locally with a DIFFERENT
     body is a conflict (A1 D3, now via the S1.8a.f20 dedup: identical re-imports
     collapse, a differing same-name redefinition errors)."""
-    from ein.kb.from_ir import KBLoadError
-    with pytest.raises(KBLoadError, match=r"conflicting definitions of 'infer-closure'"):
-        KnowledgeBase.from_ir(parse(bad))
+    from tests.load_negative import load_error
+    assert "conflicting definitions of 'infer-closure'" in \
+        load_error("import_conflicting_definitions")
 
 
 def test_identical_redefinition_is_idempotent():

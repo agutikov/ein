@@ -1,0 +1,6 @@
+;; Mutual import, entered from this side. Pairs with
+;; `import_cycle_b.ein` — each is a fixture, and the two report
+;; different chains because the chain is the resolution stack.
+
+(import import_cycle_b)
+(relation x T T)

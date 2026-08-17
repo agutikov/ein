@@ -1,0 +1,4 @@
+;; A file-relative module that does not exist; resolution is relative to
+;; the importing file, so the message names this directory.
+
+(import nope.missing)

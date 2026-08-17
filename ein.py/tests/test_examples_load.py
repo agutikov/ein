@@ -9,9 +9,11 @@ loader change and the suite stayed green. Found exactly that in S1.9.E6b:
 and `features/03_forall` tripped an import-dedup bug. This test load-checks the
 whole tree so it can't recur.
 
-`examples/broken/` is the deliberate exception — curated parse/load *failures*,
-validated in detail (lint rc != 0, with file:line:col) by
-`tests/test_cli.py::test_broken_fixtures`. Here we only assert they do not
+`examples/broken/` is the deliberate exception — curated *failures*, validated
+in detail elsewhere: the parse-negatives by
+`tests/test_cli.py::test_broken_fixtures_fail_to_parse` (file:line:col), and
+`broken/load/**` by `tests/kb/test_load_negative.py` (exact `KBLoadError` text,
+one `.expected` per fixture). Here we only assert the parse-negatives do not
 *silently* load.
 """
 from __future__ import annotations

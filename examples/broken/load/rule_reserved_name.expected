@@ -1,0 +1,1 @@
+rule 'absent' shadows a reserved kernel name at None

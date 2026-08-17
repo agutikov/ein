@@ -1,0 +1,3 @@
+;; `:as` takes a bare name.
+
+(import std.macro :as "m")

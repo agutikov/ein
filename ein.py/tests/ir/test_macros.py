@@ -22,6 +22,7 @@ from ein.ir.macros import Macro, MacroError, expand_macros
 from ein.ir.types import Atom, SForm, Var
 from ein.kb.from_ir import KBLoadError
 from ein.kb.store import KnowledgeBase
+from tests.load_negative import load_error
 
 
 def _macro(src: str) -> Macro:
@@ -132,11 +133,12 @@ def test_macro_expands_in_rule_match():
 
 
 def test_macro_arity_mismatch_is_load_error():
-    with pytest.raises(KBLoadError, match=r"m/2 invoked with 1 args"):
-        _kb("""
-        (macro m (?a ?b) (rel ?a ?b))
-        (rule x () :match (m ?p) :assert (y ?p) :why "w")
-        """)
+    """The one loader message that carries a real `Loc`: expansion happens on
+    a nested (located) node, where every other check runs on a top-level form
+    whose `loc` is `None`."""
+    msg = load_error("macro_arity_mismatch")
+    assert "macro m/2 invoked with 1 args" in msg
+    assert "line=6, col=20" in msg
 
 
 @pytest.mark.parametrize("name", ["absent", "false", "relation", "eq"])
@@ -164,5 +166,4 @@ def test_forall_open_are_not_reserved_as_macro_names(name):
 
 
 def test_duplicate_macro_rejected():
-    with pytest.raises(KBLoadError, match=r"duplicate macro 'm'"):
-        _kb("(macro m (?a) (rel ?a)) (macro m (?a) (other ?a))")
+    assert "duplicate macro 'm'" in load_error("macro_duplicate")
