@@ -198,7 +198,7 @@ hypotheses — and the merge node in Diagram 2 captures that
 evidence directly.
 
 Recorded in
-[Q1.5b.4.a](open_questions.md#q15b4--set-equivalence-dedup--state-hash-dedup).
+Q1.5b.4.a.
 
 ### Multi-parent intrinsic to BFS-by-size
 
@@ -230,7 +230,7 @@ saturations per size-`k` set. The future commitment-set primitive
 `try_commitment_set(parent_kb, commitment)` would collapse those
 `k` saturations into 1 by adding all hypotheses at once;
 parked in F9 perf round (see
-[`open_questions.md` § Q1.5b.8](open_questions.md#q15b8--engine-bridge)).
+`open_questions.md` § Q1.5b.8).
 
 ### Dedup as primary structure, not optimisation
 
@@ -270,14 +270,14 @@ rendering tooling, same colour vocabulary.
 ## Cross-references
 
 - [`README.md`](README.md) — phase intro, motivation, scope.
-- [`open_questions.md`](open_questions.md) — all resolved
+- `open_questions.md` — all resolved
   design decisions; the diagrams here illustrate the
   Q1.5b.4 (multilabel + multi-parent), Q1.5b.7 (verdict
   trichotomy), and Q1.5b.5 (nogood emit) outcomes.
 - [`algorithm_layer_n.md`](algorithm_layer_n.md) — per-layer
   algorithm spec; the diagrams here are its data-model
   companion.
-- [S1.5a.20](../p1.5a_zebra_solution/s1.5a.20_branch_isolation_rearch.md)
+- S1.5a.20
   — the channel-isolation rewrite that makes per-set
   `BranchResult` + `integrate` the universal up/down channel
   the lattice orchestrator sits on.

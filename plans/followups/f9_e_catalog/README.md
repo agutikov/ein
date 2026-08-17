@@ -6,11 +6,11 @@ post-S1.5.4 hypothesis-loop ideas that didn't make the M1
 acceptance critical path. Created 2026-05-21 in response to the
 S1.5.4 implementation-order call (*"All Open ideas — defer to
 P1.9"*).
-**Depends on:** [S1.5.4](../p1.5_hypothesis_loop/s1.5.4_hypgen_improvements.md)
+**Depends on:** S1.5.4
 ship for the empirical baseline each entry would be measured
 against.
 **Blocks:** nothing within M1 acceptance. Like
-[P1.8](../p1.8_ein_lang_modules/README.md), P1.9 promotes a
+P1.8, P1.9 promotes a
 catalog entry into a stage file only when a puzzle's signal
 justifies the work.
 
@@ -44,31 +44,31 @@ Tasks / Acceptance / open-questions skeleton.
 
 | Stub file                                                                            | Entry |
 |--------------------------------------------------------------------------------------|-------|
-| [s1.9.e1_functional_activator.md](s1.9.e1_functional_activator.md)                  | E1    |
-| [s1.9.e2_at_most_one.md](s1.9.e2_at_most_one.md)                                    | E2    |
-| [s1.9.e3_no_hypotheses.md](s1.9.e3_no_hypotheses.md)                                | E3    |
-| [s1.9.e4_symmetry_class.md](s1.9.e4_symmetry_class.md)                              | E4    |
-| [s1.9.e5_static_rule_conflict.md](s1.9.e5_static_rule_conflict.md)                  | E5    |
-| [s1.9.e6_transitive_premise_walk.md](s1.9.e6_transitive_premise_walk.md)            | E6    |
-| [s1.9.e6a_tree_solver_cleanup.md](s1.9.e6a_tree_solver_cleanup.md)                  | E6 prereq |
-| [s1.9.e7_learned_clause.md](s1.9.e7_learned_clause.md)                              | E7    |
-| [s1.9.e8_watched_fact.md](s1.9.e8_watched_fact.md)                                  | E8    |
-| [s1.9.e9_lcv.md](s1.9.e9_lcv.md)                                                    | E9    |
-| [s1.9.e10_iterative_deepening.md](s1.9.e10_iterative_deepening.md)                  | E10   |
-| [s1.9.e11_goal_driven_filter.md](s1.9.e11_goal_driven_filter.md)                    | E11   |
-| [s1.9.e12_informativeness.md](s1.9.e12_informativeness.md)                          | E12   |
-| [s1.9.e13_per_hyp_budget.md](s1.9.e13_per_hyp_budget.md)                            | E13   |
-| [s1.9.e14_arc_consistency.md](s1.9.e14_arc_consistency.md)                          | E14   |
-| [s1.9.e15_path_consistency.md](s1.9.e15_path_consistency.md)                        | E15   |
-| [s1.9.e16_lazy_root_alive.md](s1.9.e16_lazy_root_alive.md)                          | E16   |
-| [s1.9.e17_branch_budget.md](s1.9.e17_branch_budget.md)                              | E17   |
-| [s1.9.e18_rule_applicability_pruning.md](s1.9.e18_rule_applicability_pruning.md)    | E18   |
-| [s1.9.e19_unsat_core_min.md](s1.9.e19_unsat_core_min.md)                            | E19   |
-| [s1.9.e20_conflict_cache.md](s1.9.e20_conflict_cache.md)                            | E20   |
-| [s1.9.e21_solve_vs_prove.md](s1.9.e21_solve_vs_prove.md)                            | E21   |
-| [s1.9.e22_alive_hyps_in_state_hash.md](s1.9.e22_alive_hyps_in_state_hash.md)        | E22   |
-| [s1.9.e23_prove_speedup.md](s1.9.e23_prove_speedup.md)                              | E23   |
-| [s1.9.e24_lattice_perf_optimisations.md](s1.9.e24_lattice_perf_optimisations.md)    | E24   |
+| s1.9.e1_functional_activator.md                  | E1    |
+| s1.9.e2_at_most_one.md                                    | E2    |
+| s1.9.e3_no_hypotheses.md                                | E3    |
+| s1.9.e4_symmetry_class.md                              | E4    |
+| s1.9.e5_static_rule_conflict.md                  | E5    |
+| s1.9.e6_transitive_premise_walk.md            | E6    |
+| s1.9.e6a_tree_solver_cleanup.md                  | E6 prereq |
+| s1.9.e7_learned_clause.md                              | E7    |
+| s1.9.e8_watched_fact.md                                  | E8    |
+| s1.9.e9_lcv.md                                                    | E9    |
+| s1.9.e10_iterative_deepening.md                  | E10   |
+| s1.9.e11_goal_driven_filter.md                    | E11   |
+| s1.9.e12_informativeness.md                          | E12   |
+| s1.9.e13_per_hyp_budget.md                            | E13   |
+| s1.9.e14_arc_consistency.md                          | E14   |
+| s1.9.e15_path_consistency.md                        | E15   |
+| s1.9.e16_lazy_root_alive.md                          | E16   |
+| s1.9.e17_branch_budget.md                              | E17   |
+| s1.9.e18_rule_applicability_pruning.md    | E18   |
+| s1.9.e19_unsat_core_min.md                            | E19   |
+| s1.9.e20_conflict_cache.md                            | E20   |
+| s1.9.e21_solve_vs_prove.md                            | E21   |
+| s1.9.e22_alive_hyps_in_state_hash.md        | E22   |
+| s1.9.e23_prove_speedup.md                              | E23   |
+| s1.9.e24_lattice_perf_optimisations.md    | E24   |
 
 The R1-R4 rejected entries stay in the README catalog only.
 
@@ -78,36 +78,36 @@ The R1-R4 rejected entries stay in the README catalog only.
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| ✅ E1 | `(functional R)` activator       | **resolved by P1.8 stdlib** — `functional`/`injective`/`bijective` ship across `std.algebra`/`std.bijection`/`std.elim`/`std.closure` ([§Resolution](s1.9.e1_functional_activator.md#resolution-2026-06-15)); `single-parent` retired | S | M | DL `funcProp` |
-| ✅ E2 | `(at-most-one R slot)` activator | **resolved a different way** — at-most-one = `functional`/`injective` (incl. positional `(functional R 0 1)`) + `std.closure` saturating to `(closed R)`; no dedicated activator needed ([§Resolution](s1.9.e2_at_most_one.md#resolution-2026-06-15)) | M | M | CSP cardinality |
-| ✅ E3 | `:no-hypothesis` query key       | **implemented** — query key `:no-hypothesis`, the exclusion dual of the `:hypothesis-relations` whitelist; blind-enumerator-scoped, saturation untouched ([§Implemented](s1.9.e3_no_hypotheses.md#implemented-2026-06-15)) | S | L | engineering convenience |
-| ⛔ E4 | `(symmetry-class R T)`           | **superseded 2026-06-15** by the symmetric **D/A/B/C decomposition** (Phase 2a/2b) — the dedicated activator is overtaken: E4(a) gen-time pruning → a user hrule (B); E4(b) uniqueness-up-to-symmetry → the positive mirror (C subsumed by D — stdlib `symmetric` + kernel `__symmetric__`). Residual = *object*-value-symmetry (lex-leader SBP/SBDD, L-effort, unexercised) ([§Superseded](s1.9.e4_symmetry_class.md#superseded-by-the-dabc-decomposition-2026-06-15)) | M | M | CSP value-symmetry breaking ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)) |
-| ⛔ E5 | Static rule-conflict pre-analysis | **reframed 2026-06-15 → rule induction (F4-Q34 / F5 / F7)**: a mutex is a *negative hrule* (zebra2 already ships it as `functional-negative`), so this is `property → negative-companion rule` synthesis (cf. `symmetric → symmetric-negative`), not a hypgen table; only a *dominated* Python-table residual stays in P1.9 ([§Reframed](s1.9.e5_static_rule_conflict.md#reframed-as-rule-induction-2026-06-15)) | M | M | rule-set sufficiency, [F7 §C](../f7_rule_induction.md) |
+| ✅ E1 | `(functional R)` activator       | **resolved by P1.8 stdlib** — `functional`/`injective`/`bijective` ship across `std.algebra`/`std.bijection`/`std.elim`/`std.closure` (§Resolution); `single-parent` retired | S | M | DL `funcProp` |
+| ✅ E2 | `(at-most-one R slot)` activator | **resolved a different way** — at-most-one = `functional`/`injective` (incl. positional `(functional R 0 1)`) + `std.closure` saturating to `(closed R)`; no dedicated activator needed (§Resolution) | M | M | CSP cardinality |
+| ✅ E3 | `:no-hypothesis` query key       | **implemented** — query key `:no-hypothesis`, the exclusion dual of the `:hypothesis-relations` whitelist; blind-enumerator-scoped, saturation untouched (§Implemented) | S | L | engineering convenience |
+| ⛔ E4 | `(symmetry-class R T)`           | **superseded 2026-06-15** by the symmetric **D/A/B/C decomposition** (Phase 2a/2b) — the dedicated activator is overtaken: E4(a) gen-time pruning → a user hrule (B); E4(b) uniqueness-up-to-symmetry → the positive mirror (C subsumed by D — stdlib `symmetric` + kernel `__symmetric__`). Residual = *object*-value-symmetry (lex-leader SBP/SBDD, L-effort, unexercised) (§Superseded) | M | M | CSP value-symmetry breaking ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)) |
+| ⛔ E5 | Static rule-conflict pre-analysis | **reframed 2026-06-15 → rule induction (F4-Q34 / F5 / F7)**: a mutex is a *negative hrule* (zebra2 already ships it as `functional-negative`), so this is `property → negative-companion rule` synthesis (cf. `symmetric → symmetric-negative`), not a hypgen table; only a *dominated* Python-table residual stays in P1.9 (§Reframed) | M | M | rule-set sufficiency, [F7 §C](../f7_rule_induction.md) |
 
 ### Conflict-driven learning (SAT/CDCL-inspired)
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| ✅ E6 | Transitive premise walk for "unconditional" | **DONE 2026-06-15** — `walk_premises` (set-collecting dual of `reaches`) shipped in `provenance.py`; `store.unsat_core` refactored onto it (parity-verified); the substrate E19 / the trace consume ([§Executed](s1.9.e6_transitive_premise_walk.md#executed-2026-06-15)) | S | **H** (correctness) | — |
-| ✅ E7 | Learned-clause from unsat-core   | **largely resolved 2026-06-15** — deriving half ships (`DeadCommitment.unsat_core`, now on E6); pruning half **measured vacuous** (all 49 zebra2 deaths are singletons → nogoods already Apriori-minimal) + unsound-under-NAF → closed; only minimise (E19) remains ([§Resolved](s1.9.e7_learned_clause.md#resolved-2026-06-15)) | L | H (long-term) | CDCL ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)); ATMS justification cache ([docs/lib/09](../../../docs/lib/09-cognitive-architectures-neurosymbolic.md)) |
-| ⛔ E8 | Watched-fact rule applicability   | **motivation superseded by P1.8a** — delta-driven semi-naive saturation (alpha-memory index + seeded delta join) already kills the re-iterate cost; literal watched-literals judged premature ([§Superseded](s1.9.e8_watched_fact.md#superseded-by-p18a-2026-06-15)) | L | M | DPLL watched literals |
+| ✅ E6 | Transitive premise walk for "unconditional" | **DONE 2026-06-15** — `walk_premises` (set-collecting dual of `reaches`) shipped in `provenance.py`; `store.unsat_core` refactored onto it (parity-verified); the substrate E19 / the trace consume (§Executed) | S | **H** (correctness) | — |
+| ✅ E7 | Learned-clause from unsat-core   | **largely resolved 2026-06-15** — deriving half ships (`DeadCommitment.unsat_core`, now on E6); pruning half **measured vacuous** (all 49 zebra2 deaths are singletons → nogoods already Apriori-minimal) + unsound-under-NAF → closed; only minimise (E19) remains (§Resolved) | L | H (long-term) | CDCL ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)); ATMS justification cache ([docs/lib/09](../../../docs/lib/09-cognitive-architectures-neurosymbolic.md)) |
+| ⛔ E8 | Watched-fact rule applicability   | **motivation superseded by P1.8a** — delta-driven semi-naive saturation (alpha-memory index + seeded delta join) already kills the re-iterate cost; literal watched-literals judged premature (§Superseded) | L | M | DPLL watched literals |
 
 ### Search heuristics
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| ❌ E9  | Least-constraining-value (LCV)   | **rejected 2026-06-15** (measured): worst ordering on zebra2 — first completer at rank 35/56 (vs lex 11); completers are heavy pruners, LCV prefers least-pruning ([§Rejected](s1.9.e9_lcv.md#rejected-measured-2026-06-15); `demo/score_hypotheses.py`) | M | M | CSP textbook |
-| ⛔ E10 | Iterative deepening              | **inapplicable to the lattice BFS** — cardinality layering *is* breadth-first deepening; no DFS depth bound to re-raise ([§Inapplicable](s1.9.e10_iterative_deepening.md#inapplicable-to-the-lattice-bfs-2026-06-15)) | S | M | IDA* idiom |
-| ❌ E11 | Goal-driven hypothesis filter    | **rejected 2026-06-15** (per user): can't filter a hypothesis without testing it — unsound (drops contradiction-pruning candidates); sound variant is cold on the connected corpus + changes the `solve()` contract ([§Rejected](s1.9.e11_goal_driven_filter.md#rejected-2026-06-15)) | M | M | Prolog SLD-resolution; [docs/lib/03](../../../docs/lib/03-theorem-proving-formal-methods.md) |
-| ❌ E12 | Hypothesis ordering by "informativeness" | **rejected 2026-06-15** (measured): "max cascade" is dominated by dead-post singletons → first completer at rank 19/56 (vs lex 11); discriminating signal is irreducibly post-fork ([§Rejected](s1.9.e12_informativeness.md#rejected-measured-2026-06-15); `demo/score_hypotheses.py`) | M | L (heuristic gain) | CSP value ordering |
-| ❌ E13 | Per-hypothesis saturation budget | **dropped 2026-06-15** (per user): saturation is correctness-critical — a per-fork budget aborts before quiescence, so the fork's verdict is unsound even on the fast path ([§Dropped](s1.9.e13_per_hyp_budget.md#dropped-2026-06-15)) | M | L (UX) | branch-and-bound |
+| ❌ E9  | Least-constraining-value (LCV)   | **rejected 2026-06-15** (measured): worst ordering on zebra2 — first completer at rank 35/56 (vs lex 11); completers are heavy pruners, LCV prefers least-pruning (§Rejected; `demo/score_hypotheses.py`) | M | M | CSP textbook |
+| ⛔ E10 | Iterative deepening              | **inapplicable to the lattice BFS** — cardinality layering *is* breadth-first deepening; no DFS depth bound to re-raise (§Inapplicable) | S | M | IDA* idiom |
+| ❌ E11 | Goal-driven hypothesis filter    | **rejected 2026-06-15** (per user): can't filter a hypothesis without testing it — unsound (drops contradiction-pruning candidates); sound variant is cold on the connected corpus + changes the `solve()` contract (§Rejected) | M | M | Prolog SLD-resolution; [docs/lib/03](../../../docs/lib/03-theorem-proving-formal-methods.md) |
+| ❌ E12 | Hypothesis ordering by "informativeness" | **rejected 2026-06-15** (measured): "max cascade" is dominated by dead-post singletons → first completer at rank 19/56 (vs lex 11); discriminating signal is irreducibly post-fork (§Rejected; `demo/score_hypotheses.py`) | M | L (heuristic gain) | CSP value ordering |
+| ❌ E13 | Per-hypothesis saturation budget | **dropped 2026-06-15** (per user): saturation is correctness-critical — a per-fork budget aborts before quiescence, so the fork's verdict is unsound even on the fast path (§Dropped) | M | L (UX) | branch-and-bound |
 
 ### CSP-style pre-processing
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| ❌ E14 | Arc-consistency pre-pass         | **rejected 2026-06-15** — **subsumed by rule-saturation**: the engine is append-only (no domains to prune) and the puzzle's elimination rules already propagate the `(not h)` negatives AC-3 would derive ([§"Prune"…](s1.9.e14_arc_consistency.md#prune-in-an-append-only-engine-2026-06-15)) | L | M | CSP AC-3 ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)) |
-| ❌ E15 | Path-consistency (k-consistency) | **rejected 2026-06-15** — k-tuple generalisation of the (also-rejected) E14; just **eagerly** computes multi-literal nogoods `_nogoods` already builds **lazily + Apriori-minimal** ([§…weird here](s1.9.e15_path_consistency.md#what-it-is-and-why-its-weird-here-2026-06-15)) | L | L | k-consistency |
+| ❌ E14 | Arc-consistency pre-pass         | **rejected 2026-06-15** — **subsumed by rule-saturation**: the engine is append-only (no domains to prune) and the puzzle's elimination rules already propagate the `(not h)` negatives AC-3 would derive (§"Prune"…) | L | M | CSP AC-3 ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)) |
+| ❌ E15 | Path-consistency (k-consistency) | **rejected 2026-06-15** — k-tuple generalisation of the (also-rejected) E14; just **eagerly** computes multi-literal nogoods `_nogoods` already builds **lazily + Apriori-minimal** (§…weird here) | L | L | k-consistency |
 
 > **Lattice re-grounding (2026-06-15).** Re-judged against the engine's actual
 > search — a *complete BFS over commitment-set cardinality* (Apriori), not a
@@ -132,18 +132,18 @@ The R1-R4 rejected entries stay in the README catalog only.
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| 📅 E16 | Lazy alive-set materialisation | stream `_compute_alive` instead of materialising a `frozenset[FactId]`; saves memory on huge puzzles. **Premise re-grounded** — no `root_alive`, and `state_hash` doesn't use the alive set ([E16 § Re-grounding](s1.9.e16_lazy_root_alive.md#re-grounding-2026-06-03)) — so the win is smaller than first framed | S | L (memory) | T1.5.4.5 alternative |
-| ✅ E17 | Engine-level branch budget       | **DONE 2026-06-15** — budget (`max_enterings`/`max_time`) was already shipped; the residual T1.9.E17.2 now ships: `solve(on_budget="verdict")` returns an `Aborted` verdict (partial stats, `exhausted=False`) instead of raising (opt-in; default raise unchanged) ([§Implemented](s1.9.e17_branch_budget.md#implemented-2026-06-15)) | S | L (UX) | already in the engine |
-| ❌ E18 | Rule-applicability pruning       | **rejected 2026-06-15** (measured): drops 0/30 rules on zebra2 — structurally dead, because generic rules' **variable assert-heads** can produce any relation, so nothing is ever provably-unreachable ([§Rejected](s1.9.e18_rule_applicability_pruning.md#rejected-2026-06-15)) | S | L | trim engine work |
-| ✅ E19 | Unsat-core minimisation          | **DONE 2026-06-15** — shipped in `min_core.py` (provenance, on E6): smallest single-witness frontier, not the witness-union (zebra2-bad 38→1, the injected culprit). Re-saturation deletion-MUS is **NAF-unsound** → not shipped ([§Implemented](s1.9.e19_unsat_core_min.md#implemented-2026-06-15)). **Renamed 2026-08-16 per [R3](../p1.21_review_response/reports/r3_min_core.md)** → `frontier.smallest_contradiction_frontier` (not a subset-minimal MUS, minimal only over recorded derivations). **Caveat lifted + use-site wired 2026-08-17** by [S1.21.7](../p1.21_review_response/s1.21.7_multi_justification_provenance.md) (executed in P1.21, not here): re-derivations are recorded, the frontier is an AND/OR search (order-independent, budgeted), and the `k = 0` verdict finally carries it | M | L (UX only) | P1.6 trace renderer; composes with E6 |
-| 📅 E20 | Conflict-cache cross-call        | persist `(not h)` learnings across `solve()` calls when the same puzzle re-runs | M | L | session-scoped speedup; composes with [S1.5.7](../p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md) |
+| 📅 E16 | Lazy alive-set materialisation | stream `_compute_alive` instead of materialising a `frozenset[FactId]`; saves memory on huge puzzles. **Premise re-grounded** — no `root_alive`, and `state_hash` doesn't use the alive set (E16 § Re-grounding) — so the win is smaller than first framed | S | L (memory) | T1.5.4.5 alternative |
+| ✅ E17 | Engine-level branch budget       | **DONE 2026-06-15** — budget (`max_enterings`/`max_time`) was already shipped; the residual T1.9.E17.2 now ships: `solve(on_budget="verdict")` returns an `Aborted` verdict (partial stats, `exhausted=False`) instead of raising (opt-in; default raise unchanged) (§Implemented) | S | L (UX) | already in the engine |
+| ❌ E18 | Rule-applicability pruning       | **rejected 2026-06-15** (measured): drops 0/30 rules on zebra2 — structurally dead, because generic rules' **variable assert-heads** can produce any relation, so nothing is ever provably-unreachable (§Rejected) | S | L | trim engine work |
+| ✅ E19 | Unsat-core minimisation          | **DONE 2026-06-15** — shipped in `min_core.py` (provenance, on E6): smallest single-witness frontier, not the witness-union (zebra2-bad 38→1, the injected culprit). Re-saturation deletion-MUS is **NAF-unsound** → not shipped (§Implemented). **Renamed 2026-08-16 per R3** → `frontier.smallest_contradiction_frontier` (not a subset-minimal MUS, minimal only over recorded derivations). **Caveat lifted + use-site wired 2026-08-17** by S1.21.7 (executed in P1.21, not here): re-derivations are recorded, the frontier is an AND/OR search (order-independent, budgeted), and the `k = 0` verdict finally carries it | M | L (UX only) | P1.6 trace renderer; composes with E6 |
+| 📅 E20 | Conflict-cache cross-call        | persist `(not h)` learnings across `solve()` calls when the same puzzle re-runs | M | L | session-scoped speedup; composes with S1.5.7 |
 
 ### Mode taxonomy + state-hash design (added 2026-05-24)
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| ⛔ E21 | `solve` vs `prove` mode split  | **Superseded by [P1.7a](../p1.7a_solution_search_refactor/README.md) (2026-05-31)** — shipped *differently*: the exhaustive-with-uniqueness side is now `solve()` (returns `Solution \| Ambiguity \| Contradiction`, 1/>1/0 verdict); the fast side is the monotonic `solve(stop_after=1)` path. `Mode` (in `inference/verdict.py`, not `solver.py`) is the orthogonal SOLVE/GAPS/CONTRADICTIONS task-class axis, not SOLVE/PROVE. See [E21 § Superseded](s1.9.e21_solve_vs_prove.md#superseded-by-p17a-2026-06-03) | M | M (UX) | [Idea 03 — three task classes](../../ideas/03-three-task-classes.md) |
-| ✅ E22 | Alive-hyps in canonical state hash | **Resolved in code:** `canon.state_hash` keys dedup on the KB facts ONLY, not the alive set — the engine relies on "KB ⇒ alive-set" and [S1.7.24](../p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md)'s state-hash-keyed lattice cements it. The "extend the hash with the alive set" fix was *not* taken; residual = document the invariant. See [E22 § Resolution](s1.9.e22_alive_hyps_in_state_hash.md#resolution-2026-06-03) | M | M (correctness) | [S1.5.3 canonicalisation](../p1.5_hypothesis_loop/s1.5.3_canonicalisation.md); T1.5.4.5 alive-inherit |
+| ⛔ E21 | `solve` vs `prove` mode split  | **Superseded by P1.7a (2026-05-31)** — shipped *differently*: the exhaustive-with-uniqueness side is now `solve()` (returns `Solution \| Ambiguity \| Contradiction`, 1/>1/0 verdict); the fast side is the monotonic `solve(stop_after=1)` path. `Mode` (in `inference/verdict.py`, not `solver.py`) is the orthogonal SOLVE/GAPS/CONTRADICTIONS task-class axis, not SOLVE/PROVE. See E21 § Superseded | M | M (UX) | [Idea 03 — three task classes](../../ideas/03-three-task-classes.md) |
+| ✅ E22 | Alive-hyps in canonical state hash | **Resolved in code:** `canon.state_hash` keys dedup on the KB facts ONLY, not the alive set — the engine relies on "KB ⇒ alive-set" and S1.7.24's state-hash-keyed lattice cements it. The "extend the hash with the alive set" fix was *not* taken; residual = document the invariant. See E22 § Resolution | M | M (correctness) | S1.5.3 canonicalisation; T1.5.4.5 alive-inherit |
 | 📅 E23 | Speed up the complete (exhaustive) search | **Re-anchored** from the never-shipped `Mode.PROVE` to `solve()` (P1.7a's complete entry — the actual bottleneck). Open question: is there a way to speed up *exhaustive* search without giving up the uniqueness guarantee? Candidates: learned-clause caching (composes with E7), goal-driven pruning (composes with E11 + [F7 §C rule-set sufficiency](../f7_rule_induction.md)), arc-consistency pre-pass (E14). Uniqueness is a global property; some form of full coverage is required. The design question is which form | L | M (perf) | E7 / E11 / E14 / F7 §C |
 
 ### Deductive-layer perf (not a hypothesis-loop item; added 2026-06-15)
@@ -161,10 +161,10 @@ highest-leverage perf lever has **no home here**. Recorded for visibility (the
 | 📌 D1 | RETE **beta-memories** | persist partial joins across firings (the one thing P1.8a's D5 semi-naive join still recomputes); the named next step up the Datalog ladder | M | **H** (perf) | Arch §6 O1 / §7; Forgy *Rete* (1982) |
 | 📌 D2 | Worst-case-optimal join | Leapfrog-Triejoin / Generic-Join — only if cyclic join patterns appear (they don't yet) | L | L (until cyclic) | AGM bound; NPRR (2012) |
 
-These belong to the **performance arc** ([P1.8a](../p1.8a_performance/README.md),
+These belong to the **performance arc** (P1.8a,
 now closed), not the hypothesis loop — promote into a reopened P1.8a tail or a
 new perf phase when saturation again dominates past the P1.8a gains, *not* into
-P1.9. (Cross-ref: [E23 § Re-anchor 2](s1.9.e23_prove_speedup.md#re-anchor-2-2026-06-15).)
+P1.9. (Cross-ref: E23 § Re-anchor 2.)
 
 ### Rejected / out-of-scope for M1
 
@@ -205,16 +205,16 @@ Without one of those signals, P1.9 stays cold.
 
 ## Cross-links
 
-- [S1.5.4](../p1.5_hypothesis_loop/s1.5.4_hypgen_improvements.md)
+- S1.5.4
   — the stage that spawned this catalog; the "Already shipped"
   / "Planned in S1.5.4" / "Deferred — own stages" sub-catalogs
   stay there.
-- [S1.5.5](../p1.5_hypothesis_loop/s1.5.5_closure_auto_inference.md),
-  [S1.5.6](../p1.5_hypothesis_loop/s1.5.6_one_step_lookahead.md),
-  [S1.5.7](../p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md)
+- S1.5.5,
+  S1.5.6,
+  S1.5.7
   — the *promoted* S1.5.4 follow-ups (those that ship inside M1).
   P1.9 entries are the ones that didn't promote.
-- [P1.8](../p1.8_ein_lang_modules/README.md) — sibling
+- P1.8 — sibling
   placeholder phase; same activation pattern.
 - [F7 rule induction](../f7_rule_induction.md) — the
   long-term framing that many P1.9 entries (especially E1-E5,

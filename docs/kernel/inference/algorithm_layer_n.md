@@ -242,7 +242,7 @@ just paid. Hash dedup pays off when:
 
 1. The puzzle has frequent cross-set kb-convergence
    (`examples/zebra2-hints.ein` is a candidate fixture per
-   [Q1.5b.4.c](open_questions.md#q15b4--set-equivalence-dedup--state-hash-dedup));
+   Q1.5b.4.c);
 2. Downstream processing (per-set storage + dumper writes)
    is non-trivial — i.e., `store_lattice=True`.
 
@@ -475,7 +475,7 @@ by `gaps_solve` only), `proof.dead_commitments` (filled by
 Dropped relative to earlier (multi-engine) drafts:
 
 - **`find_parents` / multi-parent integrate**
-  ([Q1.5b.4.b](open_questions.md#q15b4--set-equivalence-dedup--state-hash-dedup))
+  (Q1.5b.4.b)
   — under monotone saturation the parent bubble for nogoods
   is N-way idempotent and the bubble for unconditional facts
   is always-True. Flat root-writes are equivalent and cheaper.
@@ -522,8 +522,8 @@ What stays:
   [README § Motivation](README.md#motivation) +
   [`project-set-search-unified` memory].
 - Mode + verdict trichotomy:
-  [Q1.5b.7](open_questions.md#q15b7--termination--completeness--mode-handling).
+  Q1.5b.7.
 - Per-set storage policy (post-merge):
-  [S1.5b.21 LatticeProof](s1.5b.21_lattice_backbone.md).
-- Killed: [S1.5b.24 — multi-parent integrate](s1.5b.24_lattice_integrate.md),
-  [S1.5b.25 — per-set forced positives](s1.5b.25_lattice_forced_positives.md).
+  S1.5b.21 LatticeProof.
+- Killed: S1.5b.24 — multi-parent integrate,
+  S1.5b.25 — per-set forced positives.

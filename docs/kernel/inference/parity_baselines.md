@@ -1,11 +1,17 @@
 # Branching demos — tree-vs-monotonic parity baselines (2026-05-28)
 
-Recorded by [S1.5b.9](s1.5b.9_monotonic_branching_parity.md)
-T1.5b.9.1 + T1.5b.9.3. Each row was captured by running both
-`bench_solve.py` (tree) and `bench_monotonic.py` (monotonic) on
-the laptop reference under PyPy. The parity test
-[`tests/inference/monotonic/test_monotonic_parity.py`](../../../ein.py/tests/inference/monotonic/test_monotonic_parity.py)
-pins these per-fixture expectations as a regression target.
+> **Status: historical record.** The tree solver was removed after
+> S1.5b (`monotonic_solve` followed it in P1.7a, superseded by the sound
+> `solve()`), and the `test_monotonic_parity.py` regression pin went with
+> it — there is no longer a second engine to be at parity *with*. The
+> numbers below stay as the measured record of what the monotonic engine
+> replaced and by how much; they are not a live gate. Current per-fixture
+> behaviour is pinned by the branching tests under
+> [`ein.py/tests/inference/`](../../../ein.py/tests/inference/).
+
+Recorded by M1 S1.5b.9 T1.5b.9.1 + T1.5b.9.3. Each row was captured by
+running both `bench_solve.py` (tree) and `bench_monotonic.py` (monotonic)
+on the laptop reference under PyPy.
 
 ## Result table
 
@@ -37,7 +43,7 @@ parametrised pytest runs both engines for all 11 fixtures in
 ### 04_two_levels.ein — Tree Ambiguity vs Monotonic Solution
 
 By design, per
-[Q1.5b.7 — monotonic-vs-lattice equivalence](open_questions.md#q15b7--termination--completeness--mode-handling)
+Q1.5b.7 — monotonic-vs-lattice equivalence
 and the algorithm spec
 [`algorithm_layer_n.md` §3d.vii](algorithm_layer_n.md):
 
@@ -91,7 +97,7 @@ search pays.
 
 ## Test surface this baseline locks in
 
-- 11 parametrised cases in `test_monotonic_parity.py`.
+- 11 parametrised cases in the since-removed `test_monotonic_parity.py`.
 - Each case asserts: tree verdict type, monotonic verdict type,
   monotonic verdict bindings, and (when both engines return
   Solution) that monotonic's binding row appears in the tree
@@ -101,10 +107,10 @@ search pays.
 ## Cross-links
 
 - Stage doc:
-  [S1.5b.9](s1.5b.9_monotonic_branching_parity.md).
+  S1.5b.9.
 - Sibling acceptance (zebra2):
-  [S1.5b.8](s1.5b.8_monotonic_acceptance.md).
+  S1.5b.8.
 - Equivalence framing:
-  [Q1.5b.7 / open_questions.md](open_questions.md#q15b7--termination--completeness--mode-handling).
+  Q1.5b.7 / open_questions.md.
 - Per-engine details:
   [P1.5b README — Acceptance for the phase](README.md#acceptance-for-the-phase).
