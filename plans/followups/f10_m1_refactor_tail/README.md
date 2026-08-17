@@ -32,7 +32,7 @@ ordering never ranked.
 |---|---|---|---|
 | ~~1~~ | ~~`1_trivial/`~~ | `.10` `.11` `.16` `.17` `.19` `.24` `.32` | **drained 2026-08-17** — see [§Group 1](#group-1--trivial--low-risk-drained-2026-08-17) |
 | ~~2~~ | ~~`2_kb_store/`~~ | `.20` `.21` | **drained 2026-08-17** — see [§Group 2](#group-2--kbstorepy-drained-2026-08-17) |
-| 3 | [`3_dot_emitter/`](3_dot_emitter/) | `.25` → `.26` | the RTC DOT pair, in that order — `.26` routes through `.25`'s API |
+| ~~3~~ | ~~`3_dot_emitter/`~~ | `.25` → `.26` | **drained 2026-08-17** — see [§Group 3](#group-3--the-rtc-dot-pair-drained-2026-08-17) |
 | 4 | [`4_trace_depth/`](4_trace_depth/) | `.29` | last of the ranked waves |
 | 5 | [`5_unranked/`](5_unranked/) | `.12` `.13` `.14` `.18` `.27` | the five the suggested ordering does not rank — engine + CLI, `.18` is the only perf-shaped one |
 
@@ -42,8 +42,6 @@ ordering never ranked.
 | **S1.7c.13** | `_lattice_public` post-amble | F-ENG-5 (+14) | low |
 | **S1.7c.14** | Collapse unsat-core synthesis | F-ENG-7 | med |
 | **S1.7c.18** | Drop redundant `consistent()` (perf) | F-ENG-12 | perf |
-| **S1.7c.25** | Shared DOT emitter API | F-RTC-1 (+F-KB-8) | high (headline) |
-| **S1.7c.26** | Decompose `to_dot` | F-KB-10 ≡ F-RTC-6 | med |
 | **S1.7c.27** | Split `_build_parser` | F-RTC-2 | low–med |
 | **S1.7c.29** | Flatten `parse_trace_steps` (depth 9) | F-RTC-4 | med |
 
@@ -127,6 +125,37 @@ current-code evidence that its acceptance still holds.
   one behaviour delta is the `names` dict **key order**, now deterministic
   insertion order instead of the rebuild's per-process-random set order;
   never serialised, hence non-gated.
+
+### Group 3 — the RTC DOT pair (drained 2026-08-17)
+
+- **S1.7c.25** (shared DOT emitter API, F-RTC-1 + F-KB-8) — prep `c758e9f`,
+  refactor `10d0d75`. The headline — "route all six renderers through one
+  `node()/edge()/cluster()`" — was **measured and rejected**, and the stage
+  file carried that verdict in its own status block. The line builders
+  diverge past the point where one helper pays: `provenance` has neither a
+  quote-fn nor edge attrs, `ir/_Builder` is optional-attrs, `rules` and
+  `lattice` clusters are bespoke, and the preambles differ; a parameterised
+  emitter would carry more knobs than the call sites it replaced.
+  What did land, and holds today, is the byte-safe consolidation:
+  `dot_util.hashed_id` (the single `prefix + md5(seed)[:10]` scheme,
+  collapsing four hand-rolled copies), `dot_util.fact_key`, and
+  `dot_util.digraph_open` — used across `kb/render.py:52`,
+  `kb/provenance.py:38`, `render/slice.py:33`, `render/lattice_dag.py:37`,
+  `render/constraints.py:41`; `import hashlib` survives only in
+  `dot_util` itself and `palette` (unrelated colour hashing). **F-KB-8**
+  went with it: `provenance`'s id was `md5[:12]` against everyone else's
+  `[:10]`.
+  The lasting artifact is the golden harness the prep built —
+  `tests/render/test_golden_dot.py`, **15 cases** against
+  `tests/golden/dot/*.dot` with an `UPDATE_GOLDEN` refresh path. It is what
+  made byte-identity checkable at all (before it, only `kb/render.to_dot`
+  had a golden), and it is why `.26` below could be verified rather than
+  argued. Green on this run.
+- **S1.7c.26** (decompose `to_dot`, F-KB-10 ≡ F-RTC-6) — landed `3e2ba39`.
+  `to_dot` (`kb/render.py:211`) is **26 code lines** against a `< ~50` bar;
+  the phases moved out to `_emit_schema_nodes` (`:274`) and the per-fact
+  `is-a`/binary/hyperedge dispatch to `_emit_fact_line` (`:302`). Output
+  byte-identity is held by the `kb_render_to_dot` golden.
 
 ## Closed — no stage file
 
