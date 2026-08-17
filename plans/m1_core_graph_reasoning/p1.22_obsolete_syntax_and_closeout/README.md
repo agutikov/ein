@@ -37,14 +37,22 @@ Two closeout debts, by user decision (2026-08-16):
 
 | ID | prio | stage | tasks |
 |---|---|---|---|
+| S1.22.0 | **P0** | [Boundary verification debt: completeness + state parity](s1.22.0_boundary_verification.md) | T1.22.0.1 attack+report / T1.22.0.2 fix+pin |
 | S1.22.1 | P0 | [Obsolete-syntax census → purge](s1.22.1_obsolete_syntax.md) | T1.22.1.1 census+report / T1.22.1.2 purge |
 | S1.22.1a | P1 | [`zebra.ein`: modernise and make it solve](s1.22.1a_zebra_ein_modernisation.md) | T1.22.1a.1 investigate+report / T1.22.1a.2 execute |
 | S1.22.2 | P1 | [M1-plans preservation census → delete](s1.22.2_m1_plans_deletion.md) | T1.22.2.1 census+report / T1.22.2.2 migrate+delete |
 
-**Strictly serial** (unlike P1.21): the deletion census (T1.22.2.1) must run
-on the **post-purge** tree (the purge edits the very docs whose inbound
+**Strictly serial from S1.22.1 on**: the deletion census (T1.22.2.1) must
+run on the **post-purge** tree (the purge edits the very docs whose inbound
 links it inventories), and the deletion itself is terminal. Order:
 T1.22.1.1 → T1.22.1.2 → T1.22.2.1 → T1.22.2.2.
+
+**S1.22.0 is off that chain** and runs in parallel with the purge — it
+touches `ein.py/src/ein/inference/` and its tests, not fixtures or docs, so
+the doc-link constraint that forces the serial order does not apply. It
+must, however, **finish before T1.22.2.2**: it is unfinished verification of
+shipped engine code, and its findings are recorded in the P1.21 README that
+the deletion removes.
 
 Reports land in [`reports/`](reports/) (they die with the folder in
 T1.22.2.2 — by design; commit history keeps them).
@@ -55,19 +63,25 @@ T1.22.2.2 — by design; commit history keeps them).
   `plans/m1a_rust/`, `plans/m1b_gui/` are *future* milestones — kept
   (their links into the deleted folder get rewired/dropped).
 - **Live backlog must not die with the history.** Known live content
-  inside the folder: the **P1.9 E-catalog** (E1–E24), the **P1.21 parked
-  follow-up stages S1.21.7/S1.21.8** (ex-E25/E26, moved in-phase
-  2026-08-17; cross-linked from `frontier.py` and the kernel docs), the
-  **P1.7c Track B** refactor-debt tail, the **P1.21 divergences** (D3, D5
-  or-disjunct unsound firing, the `landed` NameError), and the M1
+  inside the folder: the **P1.9 E-catalog** (E1–E24), the **P1.7c Track B**
+  refactor-debt tail, and the M1
   [`open_questions.md`](../open_questions.md) still-open rows (Q26/Q28).
   T1.22.2.1 decides the surviving home (recommend: `plans/followups/` or a
   new `plans/backlog/`); T1.22.2.2 migrates before deleting.
+
+  *Updated 2026-08-17:* S1.21.7 / S1.21.8 are no longer parked backlog —
+  both **executed**, so they migrate as *record*, not as work. All five
+  P1.21 divergences are closed (D3/D5 by S1.21.8, D-R5-1 by its fix, and
+  D-S8-1/D-S8-2 — the two the follow-up stages introduced — by `95b3d36`).
+  What is still live from P1.21 is the **unfinished verification** those
+  divergences came out of, now [S1.22.0](s1.22.0_boundary_verification.md);
+  its findings land in the P1.21 README, so T1.22.2.1 must census that file
+  *after* S1.22.0 reports.
 - **Behaviour discipline**: `./run_tests.sh` + `ruff check .` green after
-  each improvement; acceptance verdicts/bindings unchanged. Deleting
-  `examples/zebra.ein` (if the census so recommends — the user has ruled
-  its syntax invalid) must take its test/bench/doc references with it in
-  the same change.
+  each improvement; acceptance verdicts/bindings unchanged. (`zebra.ein` is
+  **not** deleted — the user's 2026-08-17 clarification withdrew the
+  invalid-syntax premise; it is rewritten by
+  [S1.22.1a](s1.22.1a_zebra_ein_modernisation.md).)
 - Docs keep **no nostalgia**: obsolete forms are removed, not explained —
   the only sanctioned mention is a single line in the grammar doc's
   history note, if the census finds one is already there.
