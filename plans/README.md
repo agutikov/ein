@@ -46,7 +46,11 @@ Two adjacent secondary milestones surface Ein externally,
 plus a Rust port slotted before the GUI:
 
 - **M1a — Rust port (ein.rs)** ([m1a_rust/](m1a_rust/README.md))
-  between M1 and M1b — the engine that ships from M2 onward.
+  between M1 and M1b — the engine that ships from M2 onward. Two
+  invariants: a **1:1 observable surface** (same language, same CLI,
+  same bytes, with `ein.py` kept as the parity oracle) and a **free
+  hand inside** (integer-encoded atoms and facts, a register matcher,
+  copy-on-write forks, multi-core search, and a resident server mode).
 - **M1b — GUI** ([m1b_gui/](m1b_gui/README.md)) between M1a
   and M2.
 - **M2b — paper + presentation** ([m2b_presentation/](m2b_presentation/README.md))
@@ -130,7 +134,7 @@ Stage files have a stable shape:
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
-| [M1a](m1a_rust/README.md)               | placeholder README only | parked — Rust port (ein.rs); slots between M1 and M1b | TBD |
+| [M1a](m1a_rust/README.md)               | **full** — 12 design docs + 10 phases + 49 stage files | **planned** — Rust port (ein.rs): 1:1 surface parity + internal rewrite + server mode | ~6.5 months |
 | [M1b](m1b_gui/README.md)                | placeholder README only | parked — slots between M1a and M2 | TBD |
 | [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |
 | [M2b](m2b_presentation/README.md)       | placeholder README only | parked — paper + talk after M2 (or after M3) | TBD |

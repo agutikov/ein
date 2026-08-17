@@ -1,129 +1,245 @@
 # M1a — Rust port (ein.rs)
 
-**Estimate:** TBD.
-**Status:** **placeholder** — slotted between M1 and M1b. Reserved
-for the directional decision "the engine that ships from M2 onward
-is Rust, not Python." The Python implementation
-(`ein.py/`) stays as the reference / oracle through M2's NL → IR
-work, but compute-heavy paths (saturator hot loop, lattice
-backbone, hash/index work) move to a native-speed implementation.
-**Depends on:** M1 — needs
-the engine semantics frozen by M1 (kernel rules, NAF, branching,
-back-prop, set-indexed engines from P1.5b) before the port can
-target a stable surface.
-**Blocks:** [M1b](../m1b_gui/README.md) — GUI is a productivity
-multiplier on top of *the engine that ships*; landing the Rust
-port first means M1b binds to ein.rs and doesn't need a second
-re-target when ein.rs lands later.
-[M2](../m2_nl_to_ir/README.md)'s NL pipeline is unaffected (NL
-frontend is CPython for llama.cpp / Python bindings — see
-S1.5a.6 Q-S1.5a.6.B
-— but talks to ein.rs over a binding boundary).
+**Estimate:** ~6.5 months focused — 49 stages, ~27.5 weeks of stage
+estimates (parity gate at ~week 17).
+**Status:** **planned** — promoted from placeholder 2026-08-17 with the
+scope decision made (see § The decision). Slotted between M1 and M1b.
+**Depends on:** M1 (**shipped** 2026-06-17) — the engine semantics are
+frozen: kernel rules, NAF at the closure/world boundary (S1.21.8),
+branching, no-good learning, the set-indexed lattice engine.
+**Blocks:** [M1b](../m1b_gui/README.md) — the GUI binds to *the engine
+that ships*; landing ein.rs first means M1b binds once.
+[M2](../m2_nl_to_ir/README.md)'s NL frontend is unaffected (it stays
+CPython for llama.cpp) but talks to ein.rs across a binding boundary
+(P1a.9).
 
-## Why a port (not just PyPy)
+---
 
-The PyPy measurement landed in
-S1.5a.13.1
-2026-05-26: **6.0× on zebra2 d=1** over CPython, **6.7× on
-saturate-time alone**. That clears the ≥5× threshold for "PyPy is
-a viable primary perf path" — but PyPy is the wrong target for
-the next phase for three reasons:
+## The decision
 
-1. **Distribution / deployment.** M1b GUI + M2 NL frontend ship to
-   end-users; PyPy adds a second interpreter for the user to
-   install, ein.rs ships as a single binary.
-2. **Ergonomics for the hot loop.** PyPy's JIT helps but Python
-   data-model overhead persists (every Fact is a heap object,
-   every set membership is a hash table lookup). Rust's ownership
-   + struct layout removes both costs structurally.
-3. **Concurrency / parallelism.** P1.8 Theme B's COW + P1.5b's
-   per-set engine + future distributed search all want
-   data-parallel primitives that are awkward in Python (GIL) and
-   natural in Rust. Already a sketch in
-   S1.5a.20 § distributed
-   (dropped, but the contract is what P1.5b's set-batch primitive
-   delivers).
+The placeholder deferred "**Boundary A** (full port) vs **Boundary B**
+(hot-loop port behind PyO3)". **Resolved 2026-08-17: Boundary A.** ein.rs
+re-implements the whole stack — IR parser, KB, engine, renderers, CLI —
+as a standalone binary. PyO3 becomes an *output* of the port (P1a.9), not
+its boundary.
 
-## Scope (to refine on promotion)
+Two invariants govern every stage, and they pull in opposite directions
+on purpose:
 
-The promotion-time decision is **port everything** vs **port the
-hot loop and keep a Python harness**. Two candidate boundaries:
+> **I1 — Outside, nothing changes.** ein.rs is a drop-in replacement for
+> `ein`: same surface language, same CLI, same stdout bytes, same exit
+> codes, same DOT, same markdown trace, same verdicts, same counters,
+> same error messages. Any observable difference is a bug in ein.rs, not
+> a design liberty. `ein.py/` stays in the repo permanently as the
+> **oracle**.
+>
+> **I2 — Inside, everything is on the table.** Atoms and facts become
+> integers, tuples become flat interned rows, the fork becomes a
+> zero-copy layer, the matcher becomes a register machine, the search
+> layer runs on many cores, and the whole thing can be resident in a
+> server. None of that is allowed to leak through I1.
 
-### Boundary A — full port
+I1 is what makes I2 safe. A rewrite with a byte-exact oracle is a
+*measurable* rewrite: every optimisation is either parity-preserving or
+rejected, and "did I break the semantics?" is answered by a harness, not
+by reading. That is why P1a.0 (the conformance harness) comes before a
+single line of engine code.
 
-Native Rust crate `ein` re-implementing:
+### Why a port at all (recap)
 
-- IR parser (lalrpop or pest)
-- KB store + entity model
-- Saturator + matcher + back-prop
-- Solver (`_consume` + the P1.5b monotonic / lattice engines)
-- Dumper + DOT renderer hooks
-- CLI (`Ein`-equivalent)
+The placeholder's three reasons stand, and the numbers below sharpen the
+second:
 
-Python becomes the reference oracle for differential testing
-(`tests/golden/zebra2.golden` etc. cross-checked against
-ein.rs); M2 NL frontend talks to ein.rs over PyO3 or a stdin/JSON
-protocol.
+1. **Distribution.** M1b (GUI) and M2 (NL) ship to users; PyPy adds a
+   second interpreter to install, ein.rs ships one binary.
+2. **The hot loop is data-model-bound, not interpreter-bound.** See
+   § Baseline: `_bind_arg` allocates a fresh `dict` per bound variable
+   and compares interned-by-accident Python strings. That cost is
+   structural, and PyPy only shaves a constant off it.
+3. **Concurrency.** The lattice layer is embarrassingly parallel and the
+   GIL forbids it. P1a.7 turns 101 independent enterings into 101
+   independent tasks.
 
-### Boundary B — hot-loop port
+A fourth reason arrived with the F9/F11 ledgers: **the remaining named
+levers are ones Python cannot hold.** [F11](../followups/f11_deductive_layer_perf.md)
+parks RETE beta-memories precisely because "a memory that must be copied
+per fork can lose more than it saves" — a problem that dissolves the
+moment a fork is an `Arc` + a delta instead of a dict copy (see
+[design/03](design/03_data_model.md)). F11 names the Rust port as its own
+most likely promotion trigger.
 
-Keep CPython for IR parser + CLI + glue; native Rust only for:
+---
 
-- KB store (`Fact` / `Provenance` / `_facts_by_relation`)
-- Saturator's `_apply` + matcher's `_run_steps`
-- `back_propagate` + `_negated_facts`
+## Baseline — what ein.rs has to beat
 
-Surface via PyO3. Python `Saturator(kb)` becomes a thin wrapper
-over the Rust core. Smaller surface; preserves M1's tooling
-(state_dump, bench_solve) without re-implementation.
+Measured 2026-08-17 on the dev machine, `examples/` unmodified,
+`master` @ `601f002`. Read the *ratios*; the absolutes are
+machine-specific.
 
-Decision deferred until measurement says where the bottleneck
-*is* — likely Boundary B for the first cut, Boundary A on a
-second wave if the parser / solver gain enough native-side
-allocations to make crossing the FFI boundary expensive.
+| workload | CPython 3.14 | PyPy 3.11 |
+|---|---:|---:|
+| `solve zebra2.ein` (default, `stop_after=1`), end-to-end | 1.87 s | — |
+| `solve zebra2.ein -e` (exhaustive), end-to-end | 5.69 s | 4.07 s |
+| `solve zebra.ein -e` (exhaustive), end-to-end | — | 8.15 s |
+| — of which: parse | 0.20 s | 0.27 s |
+| — of which: kb load (imports + macro expansion + index build) | 0.43 s | 0.37 s |
+| — of which: root saturation | 0.09 s | 0.32 s |
+| — of which: hypothesis search | 4.96 s | 7.18 s |
 
-## Out of scope (deferred)
+Attribution (CPython + cProfile, `utils/profile_solve.py --exhaustive`,
+zebra2, 20.4 s profiled / 74 M calls):
 
-- **PyPy as a permanent constraint.** The PyPy path was the M1
-  measurement vehicle; once ein.rs lands, PyPy stays only as a
-  "Python users get a working solver" fallback. Not maintained as
-  a deployment target.
-- **Re-deriving M1's semantics.** Every M1 stage that established
-  invariants (S1.5a.1 NAF re-eval, S1.5a.1a determinism,
-  S1.5a.19 d=0 negative-completion, P1.5b set-indexed engines)
-  is a port target, not a redesign target. ein.rs implements
-  *the engine M1 delivers*, not a "Rust-y" reinterpretation.
+| site | self | cumulative | calls |
+|---|---:|---:|---:|
+| `match._bind_arg` | 20 % | 6.4 s | 6.0 M |
+| `match._bind_args` | 18 % | 10.7 s | 4.6 M |
+| `builtins.isinstance` | 14 % | — | 31.9 M |
+| `match._run_steps` | 6 % | 12.3 s | 1.0 M |
+| `saturator._binding_key` (+ genexpr) | 7 % | 2.7 s | 445 k |
+| `engine._hashable` | 4 % | 1.2 s | 2.5 M |
+| **`saturator._admit_from_boundary` → `World.first_failing`** | — | **14.7 s (72 %)** | 3.2 k rounds / 33 k guard queries |
+| `fork` / index copy | 0.01 % | 0.003 s | 206 |
+
+Three readings drive the design:
+
+- **The matcher is the machine.** 46 % of self time is the match/bind
+  subsystem, most of it unification — `isinstance` dispatch on IR node
+  types plus a `{**bindings, name: arg}` dict copy *per bound variable*.
+  [design/05](design/05_matcher.md) replaces both: slot-numbered
+  registers with a backtrack trail, and a 4-byte `Value` compared by
+  integer equality.
+- **NAF costs more than the closure.** `_admit_from_boundary` dominates
+  the exhaustive run: the same guard sub-plans are re-queried at every
+  quiescence, throttled only by the `_watch_stamp` invalidation check.
+  This is where an incremental negative index pays
+  ([design/06](design/06_saturation.md) § Boundary).
+- **The Python fork is already free** (0.003 s / 206 calls) — so the COW
+  work is *not* about beating the current fork, it is about making
+  hundreds of thousands of forks affordable so P1a.7 can run them in
+  parallel and P1a.6 can afford beta-memories.
+
+**Targets** (all at `--jobs 1`, so they measure the port and not the
+cores): ≥ 20× on `solve zebra2 -e` end-to-end vs PyPy, ≥ 50× on parse +
+load, and the [`ein.py`](../../ein.py) acceptance gate (three exhaustive
+fixtures; ~91 s under PyPy as recorded at S1.21.8) under 5 s. Re-measure
+it at [P1a.0](p1a.0_conformance_harness/README.md) before trusting the
+number. These are targets, not
+promises; each phase records what it actually got in
+[design/README](design/README.md) § Measured.
+
+---
+
+## Shared assets — one stdlib, one example corpus
+
+Both implementations read the **same** `.ein` files. That is a hard
+requirement, not a convenience: a forked stdlib would make every parity
+result meaningless.
+
+- `ein.py/src/ein/stdlib/*.ein` moves to repo-root **`stdlib/`**; the
+  Python package keeps a build-time *copy* so wheels are unaffected, and
+  a CI hash-manifest check fails if the copy drifts. ein.rs embeds the
+  same tree in the binary (`include_dir!`).
+- Resolution order is identical in both: `$EIN_STDLIB` → repo-root
+  `stdlib/` when running from a checkout → the packaged/embedded copy.
+- `examples/` stays where it is; both test suites enumerate it from the
+  repo root, and the conformance corpus is derived from
+  [`examples/README.md`](../../examples/README.md)'s catalog.
+
+Full contract: [design/11](design/11_shared_assets.md).
+
+---
+
+## Phases
+
+| phase | title | stages | est. | gate |
+|---|---|---|---|---|
+| [P1a.0](p1a.0_conformance_harness/README.md) | Conformance harness + shared assets | 4 | 2 w | the oracle can prove ein.py ≡ ein.py |
+| [P1a.1](p1a.1_ir_frontend/README.md) | IR frontend — lex, parse, AST, dump, macros, imports | 3 | 2 w | `ein render` / dump byte-parity on the corpus |
+| [P1a.2](p1a.2_kb_core/README.md) | KB core — interner, values, store, indexes, loader, provenance | 4 | 2.5 w | KB-shape parity + load errors byte-identical |
+| [P1a.3](p1a.3_deductive_core/README.md) | Deductive core — compile, match, saturate, world, contradiction | 4 | 3.5 w | **firing-sequence parity** on every saturation fixture |
+| [P1a.4](p1a.4_search_layer/README.md) | Search layer — hypgen, lookahead, apriori, nogoods, lattice solve | 6 | 4 w | **verdict + stats parity** incl. the acceptance gate |
+| [P1a.5](p1a.5_presentation/README.md) | Presentation — trace, DOT, dumps, CLI | 4 | 3 w | **byte parity** of every stdout/stderr/file artefact → *ein.rs is a drop-in* |
+| [P1a.6](p1a.6_performance/README.md) | Performance — the optimisation programme | 7 | 3.5 w | targets above, parity unbroken |
+| [P1a.7](p1a.7_parallelism/README.md) | Parallelism — deterministic multi-core search + match | 5 | 2.5 w | `--jobs N` verdict- **and** counter-identical |
+| [P1a.8](p1a.8_server_mode/README.md) | Server mode — daemon, sessions, `.einb`, solution store | 8 | 3 w | multi-query / multi-KB service with a versioned protocol |
+| [P1a.9](p1a.9_bindings_release/README.md) | Bindings + release — PyO3, packaging, docs | 4 | 1.5 w | M2 imports the engine and gets ein.rs |
+
+49 stages, 138 days of stage estimates ≈ 27.5 weeks. The **parity gate**
+(end of P1a.5) is at ~week 17; everything after it is speed, scale and
+distribution on an engine that is already a drop-in replacement.
+
+Ordering rationale: **parity first, speed second, scale third.** P1a.0–5
+land a slower-than-Python but byte-identical engine; only then does
+P1a.6 start trading representation for time, with the harness watching.
+Doing it the other way round means every regression is ambiguous.
+
+---
+
+## Non-goals
+
+- **Re-deriving M1's semantics.** Every invariant M1 established
+  (S1.5a.1 NAF re-eval, S1.5a.1a determinism, S1.7.23 no kernel type
+  system, S1.21.8 closure/boundary, P1.21 R2 root stability) is a *port
+  target*, not a redesign target. Where a Python behaviour looks wrong,
+  the fix belongs in ein.py first — then both ports move together.
+- **A "Rusty" reinterpretation of the IR.** No new syntax, no new
+  keywords, no relaxed grammar. `grammar.lark` stays the spec of record
+  (M2's GBNF lift reads it); the Rust parser is checked *against* it.
+- **Deleting ein.py.** It is the oracle and the reference for M2/M3
+  experiments. It stays, and stays green.
+- **Dropping PyPy support.** It keeps working; it is simply no longer
+  the deployment target.
+- **New reasoning features.** Anything that changes what the engine can
+  prove belongs in a followup ([F2](../followups/f2_self_modifying_language.md),
+  [F4](../followups/f4_cross_cutting.md), [F7](../followups/f7_rule_induction.md)),
+  not here.
+
+---
+
+## Design docs
+
+The technical substance lives in [`design/`](design/README.md):
+
+| doc | what it settles |
+|---|---|
+| [01 — Parity contract](design/01_parity_contract.md) | what "1:1" means, the four tiers, the oracle event protocol, the corpus |
+| [02 — Determinism & order](design/02_determinism_and_order.md) | every order-sensitive iteration site in ein.py, and how ein.rs reproduces it |
+| [03 — Data model](design/03_data_model.md) | interning, `Value`/`FactId` as integers, row storage, the layered COW KB |
+| [04 — IR frontend](design/04_ir_frontend.md) | hand-written lexer/parser, AST arena, dumper, macro expander, import resolver |
+| [05 — Matcher](design/05_matcher.md) | plan bytecode, register bindings + trail, indexes, beta-memories, WCOJ |
+| [06 — Saturation](design/06_saturation.md) | closure/boundary loop, semi-naive delta, queues, incremental NAF |
+| [07 — Search layer](design/07_search_layer.md) | hypgen, lookahead, apriori, nogoods, the monotonic loop |
+| [08 — Parallelism](design/08_parallelism.md) | the four parallel levels and how each stays deterministic |
+| [09 — Server mode](design/09_server_mode.md) | daemon, session model, protocol, multi-query, caching |
+| [10 — Binary format](design/10_binary_format.md) | `.einb` container, mmap, versioning, content addressing |
+| [11 — Shared assets](design/11_shared_assets.md) | one stdlib, one example corpus, drift checks |
+| [12 — Toolchain & layout](design/12_toolchain_and_layout.md) | crates, dependencies, build, CI, benches |
+
+---
 
 ## Open questions
 
-- **Boundary A vs B.** See § Scope. Decide on promotion.
-- **Build system.** `cargo` standalone, or `cargo` + `maturin`
-  for the PyO3 surface, or a hybrid where Ein the CLI stays
-  Python and only the engine crate is Rust.
-- **Memory model.** Append-only KB makes COW trivially correct
-  (P1.8 Theme B2). Rust's borrow checker turns this into a
-  structural property — a `KnowledgeBase` is an `Arc<KbCore>`
-  with per-fork lock-free additions.
-- **State sync with M1b GUI.** If M1b is Electron / browser, the
-  Rust engine talks over IPC; if it's Tauri, same crate; if it's
-  pure-Rust desktop (egui / iced), the engine is a library
-  dependency.
-- **M2 NL frontend boundary.** PyO3 or stdin/JSON? PyO3 is
-  faster but ties M2's release cadence to ein.rs ABI; JSON is
-  cleaner but adds serialisation overhead per round-trip.
+Live questions carry `Q-M1a.<n>` ids in
+[`open_questions.md`](open_questions.md). The load-bearing ones at
+promotion time: parse-error message parity (Q-M1a.3), whether
+`--jobs > 1` may move counters (Q-M1a.7), and the wire protocol choice
+for the server (Q-M1a.11).
 
 ## Cross-links
 
-- M1 — core graph reasoning
-  — the engine semantics this port is faithful to.
-- P1.5a S1.5a.6 PyPy measurement
-  — the 6× headline that motivated picking the native-port path
-  over PyPy-as-primary.
-- P1.8 Theme B PERFORMACE
-  — the Python-side perf work; some of this folds into the port,
-  some stays as Python-specific (COW, indexes, version-based KB).
-- [M1b GUI](../m1b_gui/README.md) — composes; the GUI's stack
-  choice ties to the engine's distribution shape.
-- [M2 — NL → IR](../m2_nl_to_ir/README.md) — the NL frontend
-  talks to ein.rs over a binding boundary; LLM infra
-  (llama.cpp / Python bindings) stays CPython.
+- [`docs/kernel/`](../../docs/kernel/README.md) — the specification
+  ein.rs implements. `inference/architecture_and_algorithms.md` §O1–O9 is
+  the operation-by-operation map every design doc here refers back to.
+- [`docs/api/ein.md`](../../docs/api/ein.md) — the Python embedding
+  contract P1a.9's PyO3 surface must keep.
+- [F11 — deductive-layer perf](../followups/f11_deductive_layer_perf.md)
+  — D1 (beta-memories) and D2 (WCOJ); this milestone is their promotion
+  trigger. Absorbed by [P1a.6](p1a.6_performance/README.md).
+- [F10 — M1 refactor-debt tail](../followups/f10_m1_refactor_tail/README.md)
+  — closed 2026-08-17; nothing left blocking the port.
+- [F9 — E-catalog](../followups/f9_e_catalog.md) — the *rejected*
+  search-layer optimisations. Read before proposing one here: most were
+  measured inert against a complete cardinality-BFS, and a Rust rewrite
+  does not change that arithmetic.
+- [M1b GUI](../m1b_gui/README.md) · [M2 NL → IR](../m2_nl_to_ir/README.md)
+  — the downstream consumers.
