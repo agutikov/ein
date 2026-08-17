@@ -65,9 +65,27 @@ fact heads without an accompanying `(relation …)` declaration
 are *also* rule names). Both flavours are graph nodes; the flag is
 metadata for the schema-validator.
 
+**Relations are objects — with one qualification.** Auto-vivification is
+what makes "a relation is just another node" operational rather than
+aspirational: declarations are mirrored as ordinary `(relation R A B)`
+facts, property tags take relation names as *arguments*, and any
+undeclared fact head gets a `Relation` entity so it can participate in
+the cross-reference indexes. The single place the kernel treats a
+relation name as *not* an object is `NameRef.category` (§1.4): hypgen's
+candidate-object pool keeps only `category == "object"` names, so the
+blind enumerator never guesses *about* a relation. That is a
+**tractability device, not a semantic stratification** — nothing stops a
+rule from asserting `(is-a co-located EquivalenceRelation)`, and nothing
+in the store treats such a fact differently. See
+[`../03-ein-lang/08_self_describing.md`](../03-ein-lang/08_self_describing.md)
+for what userspace builds on top of it.
+
 The `signature` holds the argument-position type **names** (opaque
 atoms — S1.7.23 keeps no `Type` entities to resolve them to; hypgen
-uses them only as object-exclusion metadata).
+uses them only as object-exclusion metadata). It is **not** a kernel
+type annotation: rules read the atoms as types, the kernel reads only
+the tuple's shape. Definitive account of that split:
+[`../03-ein-lang/01_grammar.md` §what the signature means](../03-ein-lang/01_grammar.md#what-the-signature-means--userspace-types-kernel-structure).
 
 Cross-references:
 - `rel.facts` → `tuple[Fact, ...]` — all facts whose head is this

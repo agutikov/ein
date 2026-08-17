@@ -199,6 +199,50 @@ The IR-encoding final call ([P1.7 T1.7.2.5](../../../../plans/m1_core_graph_reas
 will decide whether to keep the distinction syntactic (classic
 `zebra.ein`) or collapse it (unified `zebra2.ein`).
 
+### 5.1 Unary relations — arity 1, and the subset reading
+
+A type is a subset of the objects; a **unary relation is the same thing
+said as a predicate**. Ein does not need to *introduce* unary relations —
+it already has them, and has always used them:
+
+```lisp
+(bijective color-loc)      ;; unary fact over a *relation* node
+(symmetric next-to)        ;; …ditto
+(__closed__ right-of)      ;; …ditto, a kernel-trigger one
+(type-hierarchy is-a*)
+```
+
+Every **property tag** is a unary fact. Under the predicate-as-subset
+reading, `(symmetric R)` carves out the subset of relation-nodes that are
+symmetric, exactly as `(is-a Rex Dog)` carves out the dogs — the only
+difference is which nodes the subset is drawn from (§4: relations are
+nodes too). That is what makes the property-tag idiom un-mysterious: it is
+not special syntax, it is a one-slot relational node.
+
+**De jure, too.** A unary *declaration* `(relation adult Person)` parses
+(the grammar takes name + `SYMBOL+`) and loads (the loader requires only a
+non-empty signature) — see
+[`../03-ein-lang/01_grammar.md` §relation declarator](../03-ein-lang/01_grammar.md).
+The property tags above simply don't bother: they are auto-vivified
+open-world relations, since the same atom is usually also a *rule* name.
+
+**Two limits, both outside the graph model:**
+
+- **Hypothesis generation is arity-2 only.** `hypgen._fill_slot` returns
+  immediately unless the signature has length 2, so a declared unary
+  relation loads, stores facts and saturates normally, but is never a
+  *guess* target under M1. Unary relations are therefore facts-and-rules
+  territory today, not search territory.
+- **Rendering has no unary convention — and needs none.** The compact DOT
+  view collapses only *binary* facts into a labelled arrow; a unary fact
+  falls through to the same Levi-bipartite path as any n-ary one — an
+  octagon node with a single incident slot-edge
+  ([`../03-ein-lang/04_dot_rendering.md`](../03-ein-lang/04_dot_rendering.md)).
+  In a strict node-and-arrow drawing a unary edge would have to start at
+  the object and end nowhere; the Levi encoding makes that non-problem
+  disappear, which is one more argument for its canonical status
+  ([`01_kb.md` §2.2](01_kb.md)).
+
 ## 6. Reserved relation names
 
 > **Authoritative lists (S1.7.25):** the full reserved vocabulary lives in

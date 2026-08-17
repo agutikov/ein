@@ -81,7 +81,7 @@ for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 ### Relation declarator
 
 ```lisp
-(relation <name> <T1> <T2> [<T3> ...]    ; relation signature, arity ≥ 2
+(relation <name> <T1> [<T2> ...]         ; signature: one or more type atoms
   [:why <STRING>] [:cardinality <RANGE>]  ; optional metadata kw-pairs
   [...])
 ```
@@ -89,11 +89,26 @@ for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 `relation` declares a relation-type node + its arg-type signature
 (structural / spatial relations are plain `(relation …)`; a pattern-based
 derivation is an ordinary `rule`; `a-priori` removed in S1.7.6). The loader
-auto-stores each declaration as an ONTOLOGY fact `(relation R T1 T2 …)` so
+auto-stores each declaration as an ordinary fact `(relation R T1 T2 …)` so
 rules can introspect signatures via a `(relation ?R ?A ?B)` pattern in
 `:match`. Because of that, `relation` is **not** SYMBOL-excluded, so the
 malformed wrapped-arg form `(relation R (T1 T2))` parses but is rejected at
 LOAD time (not parse time).
+
+**Arity — name + *one or more* type atoms.** The grammar is
+`relation_decl: "(" "relation" SYMBOL SYMBOL+ kw_pair* ")"`
+([`grammar.lark`](../../../../ein.py/src/ein/ir/grammar.lark)), and the
+loader requires exactly the same (name + a non-empty signature,
+[`kb/from_ir.py`](../../../../ein.py/src/ein/kb/from_ir.py)). So
+`(relation adult Person)` is a **legal unary declaration**; the signature
+may not be *omitted*, but it need not be binary. The familiar "arity 2"
+is an **engine** limit, not a grammar rule: the blind enumerator fills
+slots only when `len(signature) == 2`
+([`inference/hypgen.py`](../../../../ein.py/src/ein/inference/hypgen.py),
+`_fill_slot`), so a declared unary or ternary relation loads, stores facts
+and saturates normally — it is simply never a hypothesis target under M1.
+See [`../01-ein-graph/03_ein_model.md` §5.1](../01-ein-graph/03_ein_model.md)
+for unary relations as subsets.
 
 **`:why` render template (optional).** A `:why "<tmpl>"` string turns a fact
 of this relation into natural-language text — used by `ein solve`'s result
@@ -122,6 +137,50 @@ and enumerations carry no annotation, so they read as background):
 (transitive co-located)
 (right-of House-2 House-1 :source "condition (1)")  ; "five in a row" — structural, but it *is* condition (1)
 ```
+
+#### What the signature means — userspace types, kernel structure
+
+The kernel imposes **no type system**
+([S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md)),
+yet a signature is not inert. It plays **two unrelated roles**, and they
+never mix: rules read the signature's *content* as types; the kernel reads
+its *shape* as structure. This subsection is the definitive statement of
+that split.
+
+**As types — userspace only.** The mirror fact is the whole mechanism:
+everything type-like keys off `(relation ?R ?A ?B)` **in rules**, never in
+the engine — [`std.bijection`](../../../../ein.py/src/ein/stdlib/bijection.ein)'s
+typecheck stack (`(and (relation ?R ?A ?B) (bijective ?R)
+(typecheck-hierarchy ?isa))`),
+[`std.algebra`](../../../../ein.py/src/ein/stdlib/algebra.ein)'s converse
+domain/range check, `std.typing`'s hierarchy wiring, zebra2's
+`disjunctive-prune`. The kernel never resolves a signature atom to
+anything: `Relation.signature` holds *opaque atoms*, and since S1.7.23
+there are no `Type` entities to resolve them **to**
+([`../02-data-model/01_entities.md` §1.1](../02-data-model/01_entities.md)).
+
+**As structure — kernel, three signals.** The engine reads the
+signature's shape only, and only in these places:
+
+| signal | site | effect |
+|---|---|---|
+| signature **non-empty** | `inference/hypgen.py` (`_raw_candidates`), `inference/closed.py` (`emit_closed`) | marks a *declared domain relation* — eligible for hypothesis generation and for `__closed__` auto-inference. Property / rule-name relations (auto-vivified, empty signature) are skipped by both. |
+| signature **length = 2** | `inference/hypgen.py` (`_fill_slot`) | slots are filled only for arity-2 relations — the M1 limit noted above. |
+| signature **atoms** | `inference/hypgen.py` (`_candidate_objects`) | the declared type-role names (`Attribute`, `House`, `T`, …) are subtracted from the candidate-**object** pool, so the enumerator never guesses *about* a type node. |
+
+Two further reads are ergonomic rather than semantic: the declaration's
+`:why` render template (above) and the signature column of `ein saturate`'s
+relation table (`cli/saturate.py`).
+
+So "are the signature's type atoms used explicitly through rules, or
+implicitly in the kernel?" — **both, in different roles.** As *types* they
+exist only for userspace rules; as *structure* (present / length-2 /
+name-set) they steer hypothesis generation. No kernel site ever interprets
+an atom like `Attribute` as a type. See also
+[`08_self_describing.md` §3](08_self_describing.md) for the userspace half
+in its own right, and
+[`06_reserved_names.md` §Not reserved](06_reserved_names.md) for why `T` is
+a convention rather than a kernel atom.
 
 ### Facts — `(NAME args*)`, the flat default
 
