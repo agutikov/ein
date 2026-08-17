@@ -583,5 +583,5 @@ authoring rules is in
   the rule-family taxonomy that motivates the M1 rule registry.
 - [`../../../ideas/07-categorical-formulation.md`](../../../../plans/ideas/07-categorical-formulation.md) —
   rules as DPO morphisms (F1 followup).
-- [`../../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/`](../../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/) —
+- `../../../../M1 P1.3` —
   the implementation plan for M1's ten rule families.

@@ -7,7 +7,7 @@ is Rust, not Python." The Python implementation
 (`ein.py/`) stays as the reference / oracle through M2's NL → IR
 work, but compute-heavy paths (saturator hot loop, lattice
 backbone, hash/index work) move to a native-speed implementation.
-**Depends on:** [M1](../m1_core_graph_reasoning/README.md) — needs
+**Depends on:** M1 — needs
 the engine semantics frozen by M1 (kernel rules, NAF, branching,
 back-prop, set-indexed engines from P1.5b) before the port can
 target a stable surface.
@@ -17,13 +17,13 @@ port first means M1b binds to ein.rs and doesn't need a second
 re-target when ein.rs lands later.
 [M2](../m2_nl_to_ir/README.md)'s NL pipeline is unaffected (NL
 frontend is CPython for llama.cpp / Python bindings — see
-[S1.5a.6 Q-S1.5a.6.B](../m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.6_pypy_compat_perf.md#open-questions)
+S1.5a.6 Q-S1.5a.6.B
 — but talks to ein.rs over a binding boundary).
 
 ## Why a port (not just PyPy)
 
 The PyPy measurement landed in
-[S1.5a.13.1](../m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.13_acceptance_zebra2_solves.md#task-t15a131--measurement-closed-2026-05-26)
+S1.5a.13.1
 2026-05-26: **6.0× on zebra2 d=1** over CPython, **6.7× on
 saturate-time alone**. That clears the ≥5× threshold for "PyPy is
 a viable primary perf path" — but PyPy is the wrong target for
@@ -40,7 +40,7 @@ the next phase for three reasons:
    per-set engine + future distributed search all want
    data-parallel primitives that are awkward in Python (GIL) and
    natural in Rust. Already a sketch in
-   [S1.5a.20 § distributed](../m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.20_branch_isolation_rearch.md)
+   S1.5a.20 § distributed
    (dropped, but the contract is what P1.5b's set-batch primitive
    delivers).
 
@@ -114,12 +114,12 @@ allocations to make crossing the FFI boundary expensive.
 
 ## Cross-links
 
-- [M1 — core graph reasoning](../m1_core_graph_reasoning/README.md)
+- M1 — core graph reasoning
   — the engine semantics this port is faithful to.
-- [P1.5a S1.5a.6 PyPy measurement](../m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.6_pypy_compat_perf.md)
+- P1.5a S1.5a.6 PyPy measurement
   — the 6× headline that motivated picking the native-port path
   over PyPy-as-primary.
-- [P1.8 Theme B PERFORMACE](../m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md#theme-b---performace)
+- P1.8 Theme B PERFORMACE
   — the Python-side perf work; some of this folds into the port,
   some stays as Python-specific (COW, indexes, version-based KB).
 - [M1b GUI](../m1b_gui/README.md) — composes; the GUI's stack

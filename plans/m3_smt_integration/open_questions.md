@@ -69,7 +69,7 @@ P3.4.
 ## Q30 — Seam ↔ SMT mapping (Clark completion at the NAF boundary)
 
 Added 2026-08-16 by P1.21 R6
-([`r6_seam.md`](../m1_core_graph_reasoning/p1.21_review_response/reports/r6_seam.md);
+(`r6_seam.md`;
 edge-by-edge table in its §3). The M1 target seam
 ([`docs/kernel/architecture.md` §closure/worlds seam](../../docs/kernel/architecture.md#the-closureworlds-seam))
 gives each side an SMT counterpart; three sub-questions to settle:
@@ -82,7 +82,7 @@ gives each side an SMT counterpart; three sub-questions to settle:
   completion axiom vs need stratified/ASP treatment (clingo as alternate
   backend). NAF buried inside closure `JoinPlan`s makes the translation
   non-compositional — the concrete reason the seam (and
-  [P1.21 S1.21.8](../m1_core_graph_reasoning/p1.21_review_response/s1.21.8_boundary_naf.md))
+  P1.21 S1.21.8)
   must be explicit before M3's translator.
 - **Worlds lattice → assumptions.** Commitments ↔ assumption literals +
   `check-sat-assuming`; `DeadCommitment.unsat_core` ↔ solver unsat cores

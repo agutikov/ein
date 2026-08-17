@@ -23,7 +23,7 @@ contradictions-entry mechanism exercised here at the unit level via
 Cross-references:
 
 - Algorithm:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md``
+  ``docs/kernel/inference/algorithm_layer_n.md``
 - Sibling gaps tests:
   ``ein.py/tests/inference/lattice/test_gaps_backbone.py``
 - Sibling lattice-proof tests:

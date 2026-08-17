@@ -44,7 +44,7 @@ This is the project's **homoiconic root**. It pays off in three
 ways:
 
 1. **Rules can match rules** (followup [F5](../../../../plans/followups/f5_rules_as_data.md)).
-2. **Traces can match traces** ([Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21)
+2. **Traces can match traces** ([Q21](../../../../plans/open_questions.md#q21)
    — the trace IR is the input IR).
 3. **The grammar can mutate itself** (followup [F2](../../../../plans/followups/f2_self_modifying_language.md))
    without changing what *kind* of object the grammar is.
@@ -195,7 +195,7 @@ In zebra2.ein's unified `is-a` encoding, these are *the same edge*
 distinction emerges from whether the target is a *leaf* (instance)
 or an *internal node* (subtype) of the is-a forest.
 
-The IR-encoding final call ([P1.7 T1.7.2.5](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.2_dynamic_vs_hardcoded.md))
+The IR-encoding final call (P1.7 T1.7.2.5)
 will decide whether to keep the distinction syntactic (classic
 `zebra.ein`) or collapse it (unified `zebra2.ein`).
 
@@ -291,8 +291,8 @@ and the `"T"` universal-top short-circuit), the candidate-object selector
 and the `Type` / `Instance` entity classes). A puzzle that wants a
 named-type *projection* computes it with an ein-lang rule over its own
 inheritance relation. See
-[S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md);
-its parent [S1.7.6](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md)
+S1.7.23;
+its parent S1.7.6
 had already removed `type` / `instance` / `a-priori` from the kernel
 forms.
 
@@ -317,7 +317,7 @@ or differently-named symmetric rule, and a precondition for sound rule
 *induction* ([F7](../../../../plans/followups/f7_rule_induction.md)) — a
 symmetric-aware kernel would presuppose the very property induction must
 learn. See
-[S1.7.24](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md).
+S1.7.24.
 
 ### `false` — direct ⊥ usage
 
@@ -369,7 +369,7 @@ Candidates:
 - **Forbidden** — `()` is a parse error and there's no syntactic
   hole notation.
 
-Parked at [M1 Q28](../../../../plans/m1_core_graph_reasoning/open_questions.md#q28--empty-parens-node-semantics).
+Parked at [M1 Q28](../../../../plans/open_questions.md#q28--empty-parens-node-semantics).
 The grammar currently parses `()` as a placeholder atom `@empty`
 (see [`src/ein/ir/grammar.lark`](../../../../ein.py/src/ein/ir/grammar.lark));
 no engine semantics are attached.
@@ -405,7 +405,7 @@ M1 ships **form (b)**: properties are first-class graph nodes
 | can rules modify properties | requires rewriting the declaration       | yes (asserting new property facts in REASONING) |
 | zebra2/zebra1 consistency  | needs a body-form spec across both        | M1's existing form; no new spec needed |
 
-See [M1 Q27](../../../../plans/m1_core_graph_reasoning/open_questions.md#q27--relation-body-form).
+See [M1 Q27](../../../../plans/open_questions.md#q27--relation-body-form).
 Form (a) is admitted as a possible *future syntactic sugar* that
 desugars into form (b) at load time.
 
@@ -426,7 +426,7 @@ any trailing `:kw value` pairs lex as KEYWORD; a `(...)` trailing
 group only appears under form (a) when properties are bundled.
 
 The grammar/parser flattening + example/doc migration is owned by
-[`P1.3 S1.3.0 R10`](../../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#r10--flatten-relation--a-priori-args-no-inner-group-when-no-body-follows).
+`P1.3 S1.3.0 R10`.
 
 ### 7.3 The "many meanings of relation" disambiguation
 
@@ -454,7 +454,7 @@ view*, not as new work.
 | types are first-class nodes    | types are plain atoms/nodes (no `Type` entity since S1.7.23 — see §6); reachable via `is-a` + the `NameRef` index |
 | rules are first-class nodes    | `Rule` is an entity; `Pattern` lifts `:match`/`:assert`            |
 | property-application is a fact | open-world relation auto-vivification + `_rule_apps_by_rule` index |
-| trace is same IR as input      | `(trace …)` reuses the parser ([Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21)) |
+| trace is same IR as input      | `(trace …)` reuses the parser ([Q21](../../../../plans/open_questions.md#q21)) |
 
 What's **not yet** implemented and what *might* warrant a follow-up
 implementation phase (P1.2b):
@@ -463,7 +463,7 @@ implementation phase (P1.2b):
 |--------------------------------------|---------------------------------------------------------------|
 | `(rule …)` can produce `(rule …)`     | F5 (rules-as-data); P1.3 matcher needs an extension           |
 | `()` empty paren has engine semantics | Q28 — no decision; grammar parses `@empty` as a no-op atom    |
-| relation-args flat (no inner group)   | §7.2 resolved; grammar/example migration owned by [P1.3 R10](../../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#r10--flatten-relation--a-priori-args-no-inner-group-when-no-body-follows) |
+| relation-args flat (no inner group)   | §7.2 resolved; grammar/example migration owned by P1.3 R10 |
 | declaration body form (a) is sugar    | Q27 — form (b) ships in M1; form (a) reserved as future sugar |
 
 **P1.2b audit** (closed 2026-05-19): the unified reflexive model

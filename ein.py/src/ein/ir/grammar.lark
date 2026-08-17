@@ -1,6 +1,6 @@
 // Ein IR — kernel grammar
 // Designed in S1.1.1 T1.1.1.1 + T1.1.1.2.
-// See plans/m1_core_graph_reasoning/p1.1_ir_language/s1.1.1_grammar_design.md
+// See M1 S1.1.1
 //
 // LEVEL B — structurally typed kernel, generic interiors. FLAT top level
 // (P1.7c): a program is a sequence of forms classified by head — no block

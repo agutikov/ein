@@ -24,7 +24,7 @@ Cross-references:
 
 - Fixture source: ``examples/lattice/0{1,2,3}_*.ein``.
 - Q1.5b.2.d (subset elimination) + Q1.5b.4.c (state-hash collision) in
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/open_questions.md``.
+  ``M1 P1.5b``.
 """
 from __future__ import annotations
 

@@ -209,7 +209,7 @@ in place, with semi-naive saturation for performance (P1.8a). The Zebra
 puzzle solves correctly — its solution, its gaps, and its contradiction (on an
 over-constrained variant) all read off one sound run; ~1,300 tests are green.
 
-[P1.11](plans/m1_core_graph_reasoning/p1.11_package_restructure/README.md)
+P1.11
 package/CLI restructure has shipped: the `ein-bot` → `ein` rename, the
 `cli.py` → `cli/` split, and the `demo/` cleanup (durable bench runners
 promoted to `ein` subcommands, one-off probes moved to `utils/`). The `search`

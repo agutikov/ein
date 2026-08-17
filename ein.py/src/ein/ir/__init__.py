@@ -1,6 +1,6 @@
 """Ein IR — S-expression intermediate representation.
 
-Designed in `plans/m1_core_graph_reasoning/p1.1_ir_language/`.
+Designed in `M1 P1.1`.
 
 - `grammar.lark` — Lark grammar; source of truth (M2.P2.3 GBNF lift
   derives from it).

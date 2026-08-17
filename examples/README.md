@@ -16,7 +16,7 @@ same model, and the pair is kept because the comparison is the only way to see
 which of the engine's reasoning power is general and which is an artefact of one
 encoding. `acceptance/test_zebra_two_ontologies.py` pins that they agree cell by
 cell; the design comparison and its measurements are in
-[C2](../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/reports/c2_zebra_ein_gap.md).
+C2.
 
 | | [`zebra.ein`](zebra.ein) | [`zebra2.ein`](zebra2.ein) |
 |---|---|---|

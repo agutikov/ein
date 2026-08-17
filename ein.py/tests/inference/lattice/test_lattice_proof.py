@@ -17,7 +17,7 @@ merge into multilabel nodes).
 Cross-references:
 
 - Algorithm:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md``
+  ``docs/kernel/inference/algorithm_layer_n.md``
   § Verdict synthesis.
 - Sibling backbone tests:
   ``ein.py/tests/inference/lattice/test_gaps_backbone.py``.

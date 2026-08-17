@@ -2,7 +2,7 @@
 
 Pins the counterexample that retired the "unconditional fact"
 extraction (P1.21 R2 report §3 —
-``plans/m1_core_graph_reasoning/p1.21_review_response/reports/``). An
+``M1 P1.21``). An
 ``absent`` guard contributes **no premise** to a firing
 (``match.py``), so a fork fact derived through NAF carries no
 provenance edge to the commitment whose absence licensed it — the

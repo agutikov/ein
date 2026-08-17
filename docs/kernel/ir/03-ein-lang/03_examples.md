@@ -52,7 +52,7 @@ a given (`:source`-carrying) fact.
 The complete puzzle — 15 conditions + ten rule families — lives in
 [`examples/zebra.ein`](../../../../examples/zebra.ein) (created
 alongside this spec; see
-[M1 acceptance §1-2](../../../../plans/m1_core_graph_reasoning/README.md)).
+M1 acceptance §1-2).
 
 ## Two ontologies for one puzzle
 

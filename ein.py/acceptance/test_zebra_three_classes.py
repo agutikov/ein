@@ -12,7 +12,7 @@ The three idea-03 task classes as **three readings of one sound search**
 
 The hard invariant: **a SAT puzzle never yields Contradiction; an UNSAT
 puzzle never yields Solution** (the soundness bug S1.7.3 found — see
-``plans/m1_core_graph_reasoning/p1.7a_solution_search_refactor/``).
+``M1 P1.7a``).
 
 This suite lives **outside** ``ein.py/tests/`` (the pytest ``testpaths``) on
 purpose: it is the slow (~1-2 min each under PyPy), end-to-end acceptance

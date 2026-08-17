@@ -8,7 +8,7 @@ It ships with the package via `pyproject.toml` `package-data`
 (`ein = ["stdlib/*.ein", "stdlib/**/*.ein"]`), so `(import std.…)`
 resolves whether Ein is run from a checkout or an install.
 
-## Location decision (S1.8.A4 — closes [Q30](../../../../plans/m1_core_graph_reasoning/open_questions.md#q30--universal-rule-library--import-mechanism))
+## Location decision (S1.8.A4 — closes [Q30](../../../../plans/open_questions.md#q30--universal-rule-library--import-mechanism))
 
 **Q30 → (c) hybrid.** Puzzle-*agnostic* vocabulary (the pattern macros today;
 the relation-algebra / type rule families as they land) lives here as
@@ -45,7 +45,7 @@ per pair would need one declaration per ordered pair of attribute types. The two
 Zebra encodings are the worked comparison: [`examples/zebra2.ein`](../../../../examples/zebra2.ein)
 uses `std.bijection`, [`examples/zebra.ein`](../../../../examples/zebra.ein)
 uses `std.slots`, and they reach the same model. See
-[C2](../../../../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/reports/c2_zebra_ein_gap.md)
+C2
 for the measurements, including why `std.slots` anchors its conclusions at the
 `Index` type instead of enumerating the equivalence closure.
 
@@ -100,7 +100,7 @@ a missing import rather than letting the rule silently never fire.)
 
 ## Importing
 
-Three tiers (Python-style — see the [A1 decision record](../../../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.8.a1_module_system_design.md#decision-record-2026-06-04)):
+Three tiers (Python-style — see the A1 decision record):
 
 ```lisp
 (import std.macro)                        ; → (std.macro.forall …)   fully qualified
@@ -135,4 +135,4 @@ ignored by the resolver (only `*.ein` files are modules).
 Each shipped stdlib symbol is exercised by a test (e.g. `forall` / `open` by
 `tests/inference/test_forall.py` / `test_open.py` and
 `tests/kb/test_imports.py`). The full per-symbol API reference is deferred to
-[S1.20.C](../../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.c_stdlib_api_reference.md).
+S1.20.C.

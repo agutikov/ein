@@ -5,8 +5,8 @@ language). No language server, no build step — just regex-based
 structural highlighting that any TextMate-grammar consumer can load:
 VSCode, Sublime Text, GitHub `linguist`, `bat`, etc.
 
-Built for [S1.7c.8](../../plans/m1_core_graph_reasoning/p1.7c_block_head_removal/s1.7c.8_vscode_syntax_highlighting.md);
-highlights the **flat** surface (post-[S1.7c.4](../../plans/m1_core_graph_reasoning/p1.7c_block_head_removal/s1.7c.4_migrate_and_drop_shim.md):
+Built for S1.7c.8;
+highlights the **flat** surface (post-S1.7c.4:
 no `(ontology …)` / `(facts …)` / `(reasoning …)` / `(rules …)` block
 wrappers).
 
@@ -57,7 +57,7 @@ the test will keep you honest.
 
 ### Known, intentional omissions
 
-- **`macro`** — forward-reserved for [P1.8 S1.5.9](../../plans/m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md);
+- **`macro`** — forward-reserved for P1.8 S1.5.9;
   until it lands it lexes as an ordinary symbol, so it is **not** yet a
   declarator here. Add it to the `declarator-other` alternation when the
   macro form ships.

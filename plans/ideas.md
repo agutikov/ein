@@ -35,7 +35,7 @@ scope. What's left is a focused contradiction detector
 - Structural constraints (single-type / all-different) → already
   handled by `type-exclusivity` (T2 on `co-located`) shipped in P1.3.
 - Spatial constraints (1-D position lattice + arithmetic
-  propagation) → rejected by [Q17](m1_core_graph_reasoning/open_questions.md#q17--spatial-relation-formalisation),
+  propagation) → rejected by [Q17](open_questions.md#q17--spatial-relation-formalisation),
   resolved declaratively by `right-of` / `next-to` relations +
   `square-fwd` / `square-bwd` / `square-unique` rules. The
   non-adjacent "Ivory left of Green" disjunctive case migrates to
@@ -47,19 +47,19 @@ scope. What's left is a focused contradiction detector
 `(X, (not X))` pairs in the same layer. Output feeds P1.5 directly.
 
 **Recorded in:**
-- [`p1.4_constraints/s1.4.0_review.md`](m1_core_graph_reasoning/p1.4_constraints/s1.4.0_review.md)
+- `p1.4_constraints/s1.4.0_review.md`
   — the full audit + revisions list.
-- [`p1.4_constraints/README.md`](m1_core_graph_reasoning/p1.4_constraints/README.md)
+- `p1.4_constraints/README.md`
   — rewritten phase overview (post-shrink).
-- [`p1.4_constraints/s1.4.1_contradiction_detector.md`](m1_core_graph_reasoning/p1.4_constraints/s1.4.1_contradiction_detector.md)
+- `p1.4_constraints/s1.4.1_contradiction_detector.md`
   — the surviving stage.
 - `p1.4_constraints/s1.4.2_spatial.md` — deleted.
 
 **Cross-links retained:**
-- [S1.3.0 §F (scope reconsideration)](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#f-scope-reconsideration)
-- [Q40 — hypothesis-rule premises](m1_core_graph_reasoning/open_questions.md) (P1.5)
+- S1.3.0 §F (scope reconsideration)
+- [Q40 — hypothesis-rule premises](open_questions.md) (P1.5)
 - [Idea 03 — three task classes](ideas/03-three-task-classes.md) — "contradictions" task class consumes the detector's output.
-- [Q33 resolution](m1_core_graph_reasoning/p1.3_inference_rules/s1.3.0_review_and_revisions.md#g-consolidated-open-questions-for-p13) — `not` is a structural wrapper handled by matcher/asserter; the detector reads its output, not the wrapper machinery.
+- Q33 resolution — `not` is a structural wrapper handled by matcher/asserter; the detector reads its output, not the wrapper machinery.
 
 ### P1.2b audit — closed 2026-05-19, verdict: no phase needed
 

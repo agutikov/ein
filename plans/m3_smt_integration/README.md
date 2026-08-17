@@ -2,7 +2,7 @@
 
 **Estimate:** ~1 month (~4 weeks).
 **Status:** planned.
-**Depends on:** [M1](../m1_core_graph_reasoning/README.md) (IR + engine).
+**Depends on:** M1 (IR + engine).
 **Blocks:** none.
 
 ## Goal

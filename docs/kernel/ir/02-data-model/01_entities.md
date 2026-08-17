@@ -34,7 +34,7 @@ follows the table:
 > the lightweight `NameRef` index (§1.4). A puzzle that wants a
 > named-type projection computes it with a user-space ein-lang rule
 > over its own inheritance relation. See
-> [S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md).
+> S1.7.23.
 
 Metadata fields (`loc`, `provenance`, `_kb`, `raw`) are
 **excluded** from identity — two facts with the same `(rel, args)`

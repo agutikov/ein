@@ -13,7 +13,7 @@ was called, regardless of the actual model count). The lattice views
 Cross-references:
 
 - Stage spec:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.20_lattice_skeleton.md``
+  ``M1 S1.5b.20``
 - Sibling tests (monotonic, already shipped):
   ``ein.py/tests/inference/monotonic/test_monotonic_skeleton.py``
 """

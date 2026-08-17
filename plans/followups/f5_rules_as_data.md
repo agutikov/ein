@@ -128,7 +128,7 @@ rules-as-data exercise. Candidate kernel features to audit:
 - **Hypfilter (lookahead-kill)** — already an opt-in feature
   (`enable_pre_branch_lookahead`); audit whether it's a
   natural rule rather than engine code.
-- **Static mutex pre-analysis (ex-[P1.9 E5](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e5_static_rule_conflict.md))**
+- **Static mutex pre-analysis (ex-[P1.9 E5](f9_e_catalog/s1.9.e5_static_rule_conflict.md))**
   — audit *already resolved*: a `(rel, argpos)` mutex is the negative-companion
   rule `functional-negative`, not a Python hypfilter table — express as a rule.
   Soundness of a synthesised companion is a bounded chase over a 2-atom abstract
@@ -140,7 +140,7 @@ rules-as-data exercise. Candidate kernel features to audit:
   lift** (tree solver removed in `8d77b02`; the lattice does flat root-writes +
   Apriori nogoods instead). Removing it is a **scheduled refactor, not a parked
   audit item** —
-  [S1.9.E6a](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e6a_tree_solver_cleanup.md),
+  [S1.9.E6a](f9_e_catalog/s1.9.e6a_tree_solver_cleanup.md),
   a hard prerequisite of E6 (verified inventory there).
 - **NAF re-eval** — fire-time check of `AbsentGuard`. This
   is probably load-bearing engine; document as such.

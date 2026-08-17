@@ -1,12 +1,12 @@
 """Ein knowledge base — typed entity views over the canonical graph.
 
-Designed in `plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/`.
+Designed in `M1 P1.2`.
 
 The graph is the data model (objects, types, and relations are all
 nodes; non-binary facts are Levi-bipartite hyperedge nodes); the
 entity classes exposed here are *typed views* over that store. See
 the framing note in
-``plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.1_data_model.md``.
+``M1 S1.2.1``.
 
 Public API:
 

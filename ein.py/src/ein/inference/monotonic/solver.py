@@ -172,7 +172,7 @@ def solve(
     unsound) and ``gaps_solve`` (stops at root goal-match — masks
     ambiguity), this entry
     terminates only on lattice exhaustion, ``stop_after``, or budget. See
-    ``plans/m1_core_graph_reasoning/p1.7a_solution_search_refactor/``.
+    ``M1 P1.7a``.
 
     ``on_budget`` (S1.9.E17.2): ``"raise"`` (default) raises
     ``BudgetExceededError`` on a ``max_time`` / ``max_enterings`` cut;
@@ -461,7 +461,7 @@ def _explore_layers(
     stop_after: int | None = None,
 ) -> tuple[Verdict, MonotonicStats]:
     """The single ``solve`` per-candidate loop. See
-    `plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md`
+    `docs/kernel/inference/algorithm_layer_n.md`
     for the per-step contract.
 
     Exhausts the lattice (or stops after ``stop_after`` distinct solution

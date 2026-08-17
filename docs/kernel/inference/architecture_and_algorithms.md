@@ -5,7 +5,7 @@
 > **analogs** in other fields of computer science, and the **fast / optimal
 > known algorithms** for each. It is a map from this puzzle reasoner to the
 > broader literature — written to orient optimization work
-> ([P1.8a](../../../plans/m1_core_graph_reasoning/p1.8a_performance/),
+> (P1.8a,
 > the [M1a Rust port](../../../plans/m1a_rust/)) and to make the engine's
 > design choices legible against the state of the art.
 >
@@ -232,7 +232,7 @@ environment is learned whole as a no-good clause (kept
 subsumption-minimal), and Apriori's downward-closure filter suppresses
 its supersets. **CDCL/CSP is the analog** (no-good ≈ conflict clause /
 CSP no-good) **and an optimization direction**
-([P1.9 E-catalog](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/README.md)),
+([P1.9 E-catalog](../../../plans/followups/f9_e_catalog/README.md)),
 not the mechanism.
 Two idiosyncrasies stand out against that backdrop, both in O7: Ein
 branches on **sets of commitments enumerated by cardinality (Apriori)**
@@ -461,7 +461,7 @@ completed; a truncated search is still sound. Provenance is also not yet a
 semiring (no multiplicity/why-vs-how distinction, which M2-scale work might
 want) — though the AND/OR structure such an algebra would be interpreted over
 now exists. The plan record for the multi-justification machinery is
-[S1.21.7](../../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.7_multi_justification_provenance.md).
+S1.21.7.
 
 ### O7 — Hypothesis enumeration over a subset lattice
 
@@ -550,9 +550,9 @@ levers map onto the literature precisely:
   non-chronological backjumping. The big structural change; deferred because
   search is not the bottleneck (saturation is). The recorded forward
   pointers are
-  [P1.9 E20](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e20_conflict_cache.md)
+  [P1.9 E20](../../../plans/followups/f9_e_catalog/s1.9.e20_conflict_cache.md)
   (conflict-cache cross-call ≈ incremental SAT) and
-  [E23](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e23_prove_speedup.md)
+  [E23](../../../plans/followups/f9_e_catalog/s1.9.e23_prove_speedup.md)
   (exhaustive-search speedup umbrella).
 - **Congruence closure / e-graph (O4)** — only when equality reasoning earns
   its keep (F4).
@@ -626,6 +626,6 @@ half-built KB (§O3).
 - Rule semantics: [`../ir/01-ein-graph/02_rules.md`](../ir/01-ein-graph/02_rules.md).
 - Planned how-to chapters: [`README.md`](README.md) (`01_matcher` … `05_trace`).
 - The optimisation work this analysis frames:
-  [P1.8a](../../../plans/m1_core_graph_reasoning/p1.8a_performance/) —
+  P1.8a —
   the participation index (S1.8.B-idx) and semi-naive saturation (S1.8.B2v).
-- The soundness model: [P1.7a](../../../plans/m1_core_graph_reasoning/p1.7a_solution_search_refactor/).
+- The soundness model: P1.7a.

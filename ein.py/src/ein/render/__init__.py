@@ -11,7 +11,7 @@ a readable *story* (the P1.6 goal). Stage map:
 - ``slice`` — per-hypothesis derivation cones + KB snapshots (S1.6.2).
 - ``lattice_dag`` — commitment-lattice / proof-DAG DOT (S1.6.3).
 
-See ``plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/``.
+See ``M1 P1.6``.
 """
 from __future__ import annotations
 

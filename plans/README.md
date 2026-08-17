@@ -16,7 +16,7 @@ framing 2026-05-24):
 - **M1 — solve the problem stated in ein.** The first step:
   given a puzzle already encoded in the IR, solve it with the
   graph-native engine. This is what the existing
-  [M1 core graph reasoning](m1_core_graph_reasoning/README.md)
+  M1 core graph reasoning
   delivers; the Zebra puzzle is the acceptance gate.
 - **M2 — convert NL problem statements into IR facts.** The
   second step: drop the *human encodes the puzzle* assumption.
@@ -86,22 +86,7 @@ plans/
 ├── README.md                         this file (schema + index)
 ├── open_questions.md                 cross-milestone questions; sticky Q ids
 ├── ideas.md                          rolling scratchpad
-├── m1_core_graph_reasoning/          MVP — the 2021 prototype, done properly
-│   ├── README.md                     milestone overview (goal, phases, acceptance)
-│   ├── open_questions.md             milestone-scoped questions
-│   ├── p1.1_ir_language/
-│   │   ├── README.md
-│   │   ├── s1.1.1_grammar_design.md
-│   │   ├── s1.1.2_parser_serialiser.md
-│   │   └── s1.1.3_round_trip_tests.md
-│   ├── p1.2_typed_hypergraph/        …
-│   ├── p1.3_inference_rules/         …
-│   ├── p1.4_constraints/             …
-│   ├── p1.5_hypothesis_loop/         …
-│   ├── p1.6_rendering_and_trace/     …
-│   ├── p1.7_bootstrapping_zebra/     …
-│   ├── p1.7a_solution_search_refactor/  sound solution model & search/result/stop refactor (the M1 gate)
-│   └── p1.7b_review_and_refactor/    post-M1 debt paydown — code-cited review + refactor (non-gating)
+├── m1_core_graph_reasoning/          (deleted at P1.22 — M1 shipped; see git history)
 ├── m2_nl_to_ir/                      NL → IR — link-grammar / GBNF / llama.cpp
 │   ├── README.md
 │   ├── open_questions.md
@@ -144,7 +129,7 @@ Stage files have a stable shape:
 
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
-| [M1](m1_core_graph_reasoning/README.md) | full (stages-as-files) | **shipped** — done 2026-06-17 (gate green) | ~3 months |
+| M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
 | [M1a](m1a_rust/README.md)               | placeholder README only | parked — Rust port (ein.rs); slots between M1 and M1b | TBD |
 | [M1b](m1b_gui/README.md)                | placeholder README only | parked — slots between M1a and M2 | TBD |
 | [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |

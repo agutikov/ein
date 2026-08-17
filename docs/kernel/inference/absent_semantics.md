@@ -1,9 +1,9 @@
 # `absent` — formal semantics (NAF)
 
 > **Status (2026-08-17).** Written for P1.21 R4
-> ([REVIEW_M1-01 §4](../../../plans/m1_core_graph_reasoning/REVIEW_M1-01.md);
+> (REVIEW_M1-01 §4;
 > investigation:
-> [`r4_absent_semantics.md`](../../../plans/m1_core_graph_reasoning/p1.21_review_response/reports/r4_absent_semantics.md)),
+> `r4_absent_semantics.md`),
 > then **re-grounded by S1.21.8**, which moved NAF evaluation off the
 > closure and onto an explicit closure/world boundary. This page is the
 > **normative definition** of what `(absent P)` means; the operational how
@@ -227,7 +227,7 @@ load.
 ## Divergences — both closed by S1.21.8
 
 Both were surfaced by the R4 investigation and recorded in the
-[phase README](../../../plans/m1_core_graph_reasoning/p1.21_review_response/README.md#divergences-surfaced-by-investigation-2026-08-16)
+phase README
 rather than fixed there (the documentation task ran under a
 behaviour-unchanged gate). The closure/worlds split fixed both, and both
 fixes are pinned.

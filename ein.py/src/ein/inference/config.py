@@ -33,7 +33,7 @@ class SolverConfig:
     """Solver-level knobs gating each S1.5.4-and-later pruning tier.
 
     Defaults follow the per-task ship-stage call recorded in
-    [s1.5.4_hypgen_improvements.md](../../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.4_hypgen_improvements.md):
+    s1.5.4_hypgen_improvements.md:
 
     - ``enable_pre_branch_lookahead`` (default **True** once S1.5.6
       ships; **False** until then) — Topic B Tier B, the
@@ -79,7 +79,7 @@ class SolverConfig:
       suite runs under ``filterwarnings=["error"]``, and while
       ``closed`` stays hardcoded the NAF is sound regardless so the
       warning is pure advisory. Promote to default-on when
-      [S1.7.7](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.7_kernel_purity_analysis.md)
+      S1.7.7
       de-hardcodes closure and the map becomes load-bearing. The map
       itself is always available via
       :meth:`ein.inference.engine.Engine.naf_dependency_map`.

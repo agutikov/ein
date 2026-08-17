@@ -353,10 +353,10 @@ A piece of code that works equally well over `zebra.ein` (one generic
 `*-loc` relations, unified `is-a` fact graph), without committing to
 either encoding — *two ontologies for one puzzle*, both solving to the
 same model since
-[S1.22.1a](../../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/s1.22.1a_zebra_ein_modernisation.md).
+S1.22.1a.
 P1.7
 resolved the encoding question — `is-a` is canonical
-([S1.7.6](../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md)),
+(S1.7.6),
 and S1.7.23 removed the kernel's type/instance entity-view entirely
 (the `logical_types` / `logical_instances` bridge is gone), so both
 forms are just facts and any type projection is a user-space rule.

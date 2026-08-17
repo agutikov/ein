@@ -55,14 +55,14 @@ inspirations chapter (`05_inspirations.md`) are reference material.
 
 - [Q3](../../../../plans/open_questions.md#q3--surface-ir-syntax) —
   homoiconic S-expressions over a heavier DSL.
-- [Q4](../../../../plans/m1_core_graph_reasoning/open_questions.md#q4) —
+- [Q4](../../../../plans/open_questions.md#q4) —
   pattern-rewrite DSL with `:match` / `:assert` clauses; no Python
   fallback for the M1 rule set.
-- [Q17](../../../../plans/m1_core_graph_reasoning/open_questions.md#q17--spatial-relation-formalisation) —
+- [Q17](../../../../plans/open_questions.md#q17--spatial-relation-formalisation) —
   spatial relations stay IR-native (declarative `square-fwd` /
   `square-bwd` rules + property facts; no integer-arithmetic
   position lattice).
-- [Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21) —
+- [Q21](../../../../plans/open_questions.md#q21) —
   IR ↔ DOT bidirectional, layout-free.
 
 ## Conventions

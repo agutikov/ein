@@ -124,7 +124,7 @@ survive as the enum's other members but no longer name an entry.
 ## Protocol enums
 
 Closed string sets the engine branches on internally (surveyed in
-[S1.7.22](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.22_engine_internal_strings.md)).
+S1.7.22).
 Each is a `Literal[...]` / enum in one place; de-naming → string-to-enum is
 post-M1.
 
@@ -152,7 +152,7 @@ isolated in
 **Genuinely kernel** (a saturation rule can neither suppress hypgen generation
 nor introspect "no rule asserts R" — see the symmetric contrast in the
 `__symmetric__` design). Load-bearing for hypgen scoping / NAF soundness
-([S1.7.10](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.10_closed.md)).
+(S1.7.10).
 Renamed `closed → __closed__` 2026-06-15 per the dunder convention;
 `std.closure`'s `infer-closure` asserts `(__closed__ ?R)`.
 
@@ -174,7 +174,7 @@ JoinPlan + `match.run` the rule pays per mirror (~1.2× on the synthetic
 zebra2 uses `co-located*` rules, not the generic closure). Opt-in by marking
 the relation; ordinary puzzles take the no-op path (the mirror queue is empty
 when nothing is marked, so zero overhead). Re-adds, behind the dunder, the
-kernel symmetric-awareness [S1.7.24](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md)
+kernel symmetric-awareness S1.7.24
 removed — now namespaced so it never masquerades as a userspace name.
 
 ## Query-scoping keys

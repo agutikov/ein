@@ -8,11 +8,11 @@
 > this file holds the design principles, the M1 invariant, NAF
 > semantics, and determinism. The "as-built layout" + "what's
 > implemented" sections were reconciled by
-> [P1.20 S1.20.A0](../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.a0_reconcile_drift.md);
+> P1.20 S1.20.A0;
 > a deeper module-level walkthrough — and the still-stale "Determinism"
 > / "Superseded tree-solver" sections lower down (broken
 > `inference/solver.py` links; the file was split into `monotonic/`) —
-> is [S1.20.D](../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.d_inference_engine_docs.md)'s remit.
+> is S1.20.D's remit.
 
 The inference engine is what takes a populated
 [`KnowledgeBase`](../ir/02-data-model/02_store.md) and produces
@@ -59,7 +59,7 @@ docs/kernel/inference/
 Source for the engine lives under
 [`ein.py/src/ein/inference/`](../../../ein.py/src/ein/inference/) (+ the
 `monotonic/` lattice-search sub-package); a flattened module-level
-walkthrough is [S1.20.D](../../../plans/m1_core_graph_reasoning/p1.20_kernel_docs/s1.20.d_inference_engine_docs.md)'s deliverable.
+walkthrough is S1.20.D's deliverable.
 
 ## What's implemented (M1)
 
@@ -111,7 +111,7 @@ contributes, locked by S1.21.8:
    [`explain.py`](../../../ein.py/src/ein/inference/explain.py)).
 4. **Lazy branching.** Saturate first with all propagation rules;
    branch only when no rule fires and the puzzle is not yet solved.
-   ([Q19 working answer](../../../plans/m1_core_graph_reasoning/open_questions.md#q19).)
+   ([Q19 working answer](../../../plans/open_questions.md#q19).)
 5. **Encoding-agnostic.** The engine works over both `zebra.ein`
    (one generic `co-located` link, `instance` / `type` membership) and
    `zebra2.ein` (five typed `*-loc` relations, unified `is-a`) —
@@ -174,7 +174,7 @@ closed KB" no longer holds, and both the per-KB recompute and the
 state-key dedup lose their soundness warrant.
 
 Tracked at
-[M1 Q-S1.5.4.D](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.4_hypgen_improvements.md#open-questions-parked-here)
+M1 Q-S1.5.4.D
 as a long-term design seam; promote to a typed invariant check
 when F5 lands.
 
@@ -197,7 +197,7 @@ when F5 lands.
 purely positive closure with NAF on its boundary — was recorded by P1.21 R6
 in [`../architecture.md` §closure/worlds seam](../architecture.md) and
 implemented on 2026-08-17 by
-[P1.21 S1.21.8](../../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.8_boundary_naf.md).
+P1.21 S1.21.8.
 
 **The compile split.** `(absent P)` in a `:match` clause still compiles to
 an [`AbsentGuard`](../../../ein.py/src/ein/inference/compile.py) step, but
@@ -397,26 +397,26 @@ gated by `SolverConfig.warn_derived_naf` (a `DerivedNafWarning`). That
 flag defaults **off**: the warning is advisory — a derived-NAF rule is
 sound whatever the priorities say now that the guard is judged on the
 boundary — and the suite runs under `filterwarnings=["error"]`; it
-promotes to load-bearing under [S1.7.7](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.7_kernel_purity_analysis.md),
+promotes to load-bearing under S1.7.7,
 and stays the only diagnostic for non-stratifiability until a real
 checker lands.
 
 **Open follow-ups.**
 
-- [Q-S1.5a.1.B](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.1_naf_semantic_rearch.md#open-questions)
+- Q-S1.5a.1.B
   — caching per-(rule, binding) NAF results and invalidating on
   watched-fact arrival. **Half shipped** as S1.21.8's `_watch_stamp`: a
   parked candidate's guards are re-asked only when one of their `watched`
   relations grew. What is still open is a *shared* verdict cache across
   candidates. Composes with
-  [P1.9 E8](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/)
+  [P1.9 E8](../../../plans/followups/f9_e_catalog)
   (watched-fact rule applicability).
 - **Static stratification checking** — the engine accepts unstratifiable
   rule sets, answers them by boundary-admission order, and reports one
   model without saying that others exist
   ([`absent_semantics.md` §Explicitly not provided](absent_semantics.md)).
   `warn_derived_naf` is the advisory proxy in the meantime.
-- [S1.7.4](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.4_naf_dependency_map.md)
+- S1.7.4
   — static NAF dependency map: **shipped** 2026-06-01 (see "Static
   NAF dependency map" above). `Engine.naf_dependency_map()` +
   the post-saturation `DerivedNafWarning` (default-off
@@ -508,7 +508,7 @@ reaches the tuple. With the M1 stub
 returning `0` for every fact, the effective order is
 ``(args, relation_name)`` — alphabetic on first arg, then
 second, then relation. The score primary key is the slot
-[S1.5a.7](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.7_hypgen_scoring_branch_info.md)
+S1.5a.7
 fills in (fact-popularity sum, weighted relation/object
 coefficients); when it lands, the solver doesn't move.
 
@@ -655,7 +655,7 @@ Measurements, including why `std.slots` anchors its conclusions at the
 densely multi-justified proof graph makes
 `:record-alternative-justifications` the most consequential config knob in
 that file, are in
-[C2](../../../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/reports/c2_zebra_ein_gap.md).
+C2.
 
 ## Mid-sweep saturation + per-sibling apriori re-check (S1.5a.19)
 
@@ -743,9 +743,9 @@ result is the 568 → 32 node collapse measured at S1.5a.19.
 
 **Future composition.** The mid-sweep saturator pass is the
 engine's "go up" channel; pre-2026-05-26 it was the motivation
-for the now-dropped [S1.5a.20 branch-isolation re-architecture](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.20_branch_isolation_rearch.md).
+for the now-dropped S1.5a.20 branch-isolation re-architecture.
 The
-[P1.5b](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/)
+P1.5b
 set-indexed engines (monotonic + lattice) bake the per-set
 saturate-from-root pattern in from the start, so the mid-sweep
 pass becomes the default control flow rather than an opt-in.
@@ -758,7 +758,7 @@ whichever engine inherits the responsibility.
 > **Historical note.** The mechanism this section used to document —
 > classify each alive fork's newly-derived facts as *unconditional* and
 > merge them into root mid-search — was **removed** in P1.21 R2
-> ([report](../../../plans/m1_core_graph_reasoning/p1.21_review_response/reports/r2_unconditional_facts.md)):
+> (report):
 > the classification is unsound under NAF (`absent`). Deleted with it:
 > `CommitmentSetResult.unconditional_facts`, `commitment._is_unconditional`,
 > `provenance.reaches`, both dumpers' `unconditional_count` fields, and the
@@ -770,7 +770,7 @@ whichever engine inherits the responsibility.
 engine asked of each newly-derived fact whether it was *unconditional* —
 its whole derivation chain grounding out at root facts, never touching a
 committed hypothesis
-([S1.5.7](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.7_back_prop_unconditional.md)).
+(S1.5.7).
 Such a fact was held "provably true at root given root + rules", so
 `try_commitment_set` extracted it (a positive-edge provenance DFS over
 `premises_raw` with a commitment-set terminal) for the engine to merge into
@@ -911,7 +911,7 @@ environment is learned whole as a no-good clause (kept
 subsumption-minimal), and Apriori's downward-closure filter suppresses
 its supersets. **CDCL is the SAT-world analog** (no-good ≈ conflict
 clause) **and an optimization direction**
-([P1.9 E-catalog](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/README.md)),
+([P1.9 E-catalog](../../../plans/followups/f9_e_catalog/README.md)),
 not the mechanism.
 
 Every dead entering emits `frozenset(C)` into
@@ -931,15 +931,15 @@ How this differs from CDCL, mechanically:
 |---|---|
 | ordered **decision trail**, one variable per decision level | unordered **commitment set C** (an ATMS environment); whole layers by cardinality (Apriori prefix-join) |
 | per-conflict **implication graph** + cut analysis | per-fact **provenance AND/OR graph** (ATMS justifications — OR over every recorded derivation); ATMS labels are computed on demand by `explain.py` to *explain* a conflict, never to learn from one — no conflict-cut analysis |
-| learned clause = **1UIP-minimised** asserting clause | learned clause = **the full dead environment** (`learned_clause == frozenset(C)`, contract-pinned); shrinking measured vacuous + NAF-unsound ([E7](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e7_learned_clause.md)) |
+| learned clause = **1UIP-minimised** asserting clause | learned clause = **the full dead environment** (`learned_clause == frozenset(C)`, contract-pinned); shrinking measured vacuous + NAF-unsound ([E7](../../../plans/followups/f9_e_catalog/s1.9.e7_learned_clause.md)) |
 | asserting clause **propagates immediately** after backjump | clause only **filters future candidates** pre-fork (`filter_candidate`); size-1 clauses also write `(not h)` |
 | **non-chronological backjump** | **no backjump** — the BFS layer loop just continues; superset suppression prunes descendants |
 | VSIDS activity, restarts, watched literals | `lex`/`score-sum` candidate order; none of the rest |
 
 The genuine CDCL *direction* lives in
-[P1.9 E20](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e20_conflict_cache.md)
+[P1.9 E20](../../../plans/followups/f9_e_catalog/s1.9.e20_conflict_cache.md)
 (conflict-cache cross-call ≈ incremental SAT),
-[E23](../../../plans/m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e23_prove_speedup.md)
+[E23](../../../plans/followups/f9_e_catalog/s1.9.e23_prove_speedup.md)
 (the exhaustive-search speedup umbrella: learned-clause caching,
 goal-driven pruning, AC pre-pass), and the DPLL/CDCL re-architecture
 lever in [`architecture_and_algorithms.md`
@@ -1034,9 +1034,9 @@ one is still alive at the cap without satisfying;
 
 The complete plan, including task breakdown and acceptance criteria:
 
-- Plan phase [P1.3 — Inference rules](../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/).
-- Plan phase [P1.5 — Hypothesis loop](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/).
-- Plan phase [P1.6 — Rendering + trace](../../../plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/).
+- Plan phase P1.3 — Inference rules.
+- Plan phase P1.5 — Hypothesis loop.
+- Plan phase P1.6 — Rendering + trace.
 - Idea: [`docs/ideas/06-inference-rules-completeness.md`](../../../plans/ideas/06-inference-rules-completeness.md).
 - Idea: [`docs/ideas/08-human-style-deductive-trace.md`](../../../plans/ideas/08-human-style-deductive-trace.md).
 

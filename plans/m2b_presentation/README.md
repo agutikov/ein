@@ -70,7 +70,7 @@ Concrete measurement tracks:
   numbers.
 
 Mode coverage: report both `solve` and `prove` results (cf.
-[P1.9 modes idea](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/README.md)),
+[P1.9 modes idea](../followups/f9_e_catalog/README.md)),
 plus the `gaps` / `contradictions` task classes
 ([Idea 03](../ideas/03-three-task-classes.md)).
 
@@ -130,7 +130,7 @@ known unknowns rather than aspirational.
 
 ## Cross-links
 
-- [M1 — core graph reasoning](../m1_core_graph_reasoning/README.md),
+- M1 — core graph reasoning,
   [M2 — NL → IR](../m2_nl_to_ir/README.md),
   [M3 — SMT integration](../m3_smt_integration/README.md) — the
   results the write-up reports on.

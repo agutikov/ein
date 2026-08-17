@@ -164,7 +164,7 @@ the entity API tells you *root* state, the view API tells you
 This section used to document `logical_types` / `logical_instances`
 (and `type_name` / `instance_name`) — the encoding-agnostic
 `is-a`-bridge over the `kb.types` / `kb.instances` entity-view. **All
-of it is gone** ([S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md)):
+of it is gone** (S1.7.23):
 the kernel imposes no type system, so there is no derived
 types-and-instances view to maintain. A puzzle that wants a named-type
 projection computes it with a user-space ein-lang rule over its own
@@ -355,4 +355,4 @@ discarded) rather than mutation.
   loader parses.
 - [`../../inference/`](../../inference/) — the P1.3 stub that will
   produce derived facts via rule firings.
-- Plan: [`plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/`](../../../../plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/).
+- Plan: `M1 P1.2`.

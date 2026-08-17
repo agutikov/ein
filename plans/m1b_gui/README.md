@@ -2,7 +2,7 @@
 
 **Estimate:** TBD.
 **Status:** **placeholder** — slotted between M1 and M2.
-**Depends on:** [M1](../m1_core_graph_reasoning/README.md) — needs
+**Depends on:** M1 — needs
 the kernel, IR parser, search-tree artefact, and DOT rendering
 hooks to be stable.
 **Blocks:** nothing on the M1-M3 critical path; M2 (NL → IR) can
@@ -50,7 +50,7 @@ Three principal views, composable into 2- or 3-pane layouts.
 
 ### View 3 — branches (search tree)
 
-The [SearchTree](../m1_core_graph_reasoning/p1.5_hypothesis_loop/README.md)
+The SearchTree
 proof artefact, rendered as either:
 
 - **Git mode** — DAG bottom-to-top, branches as dead-ends, the
@@ -115,9 +115,9 @@ Composed:
 
 ## Cross-links
 
-- [M1 — core graph reasoning](../m1_core_graph_reasoning/README.md)
+- M1 — core graph reasoning
   — the kernel + artefacts M1b reads.
-- [P1.6 rendering + trace](../m1_core_graph_reasoning/p1.6_rendering_and_trace/README.md)
+- P1.6 rendering + trace
   — the CLI-side rendering pipeline M1b reuses.
 - [utils/render_knowledge_graph_cy.py](../../utils/render_knowledge_graph_cy.py)
   — the existing browser-Cytoscape renderer; closest existing

@@ -102,7 +102,8 @@ explicit audience banner.
 - **Architecture**: [`architecture.md`](architecture.md) — the
   structural "where does X live?" map: data-flow, package
   dependencies, milestone boundaries, and a change cookbook.
-- Plans roadmap: [`plans/m1_core_graph_reasoning/`](../../plans/m1_core_graph_reasoning/).
+- Plans roadmap: [`plans/README.md`](../../plans/README.md) (M1 shipped
+  2026-06-17; its plan folder was removed at P1.22 — see git history).
 - Ideas (the user's framing of the project's *goals*): [`plans/ideas/`](../../plans/ideas).
 - External tech index: [`docs/lib/`](../lib/).
 - Source of truth for parsing: [`ein.py/src/ein/ir/grammar.lark`](../../ein.py/src/ein/ir/grammar.lark).

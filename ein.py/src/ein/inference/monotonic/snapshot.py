@@ -35,7 +35,7 @@ two snapshots for ``==`` equality.
 Cross-references:
 
 - Stage spec:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.31_lattice_shuffle_invariance.md``.
+  ``M1 S1.5b.31``.
 - Sibling test:
   ``ein.py/tests/inference/lattice/test_shuffle_invariance.py``.
 - Snapshot input: :class:`LatticeProof` (S1.5b.22) +

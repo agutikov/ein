@@ -26,7 +26,7 @@
 > the [`examples/domain_elim/`](../../../examples/domain_elim/) fixtures
 > today means `solve(..., stop_after=N, store_lattice=True)` and reading
 > the views off the proof. Long-form stage notes:
-> [`s1.5b.32_domain_elim_vs_hyp_exploration.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.32_domain_elim_vs_hyp_exploration.md).
+> `s1.5b.32_domain_elim_vs_hyp_exploration.md`.
 
 ## The fixtures
 
@@ -71,7 +71,7 @@ A plain `Saturator(kb).saturate()` — no solver loop, no branching:
 saturation — `ab` derives `(color-loc Blue H1)` at d=0 from the
 negatives, no branching, with provenance `range-elimination`. No
 commitment-set spec change is needed (the open worry in
-[T32.3](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.32_domain_elim_vs_hyp_exploration.md)
+T32.3
 about A failing to observe the integrated negatives does not
 materialise). `b_only` derives the negatives but, lacking the
 elimination rule, cannot assert the positive; `b_branch` derives
@@ -185,7 +185,7 @@ vs a hypothetical "elim rule present but no negatives": A cannot fire
 without the negatives in its `forall`). Pathway B is more robust — it
 manufactures the negatives by refutation as it forks. This argues for
 the static NAF-dependency warning parked at
-[S1.7.4](../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.4_naf_dependency_map.md):
+S1.7.4:
 warn at load time when an elimination rule's negatives are not
 derivable, so authors know A will silently fall back to B.
 
@@ -196,7 +196,7 @@ code: the rule shape (`forall alternative excluded ⇒ survivor`)
 carries the intent legibly, the measurement shows it is strictly
 cheaper than the procedural equivalent when present, and authors opt
 in by declaring `(bijective R)`. Feeds
-[F5 § kernel minimisation](../../../plans/m1_core_graph_reasoning/followups/f5_rules_as_data.md#kernel-minimisation--which-inference-features-belong-in-ein-lang-vs-kernel-code).
+F5 § kernel minimisation.
 
 ## Generalisation (Q-S1.5b.32.C)
 
@@ -216,6 +216,6 @@ is removed.
   `gaps_solve` / `contradictions_solve`; the numbers above are a period
   record, see the *Historical numbers* note).
 - Fixtures: [`examples/domain_elim/`](../../../examples/domain_elim/).
-- Stage: [`s1.5b.32_…`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.32_domain_elim_vs_hyp_exploration.md).
+- Stage: `s1.5b.32_…`.
 - Engine overview + the d=0 rules: [README](README.md#d0-negative-completion-s15a19).
 - The lookahead lever: [`SolverConfig.enable_pre_branch_lookahead`](../../../ein.py/src/ein/inference/config.py).

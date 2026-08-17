@@ -14,7 +14,7 @@ A **solution node** is a saturated KB that is *consistent* and *complete*:
 This is the signal P1.7a's search records on, replacing the old
 ``is_solved`` (goal-pattern match) — which accepted a partial dead-end as a
 solution (the severe bug S1.7.3 found). See
-``plans/m1_core_graph_reasoning/p1.7a_solution_search_refactor/``.
+``M1 P1.7a``.
 
 ``open_hypotheses`` is the canonical implementation; ``solver._compute_alive``
 delegates here so there is exactly one open-set definition.

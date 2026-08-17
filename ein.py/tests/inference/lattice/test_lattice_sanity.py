@@ -16,9 +16,9 @@ Cross-references:
 - Implementation:
   ``ein.py/src/ein/inference/monotonic/sanity.py``.
 - Stage spec:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.27_lattice_sanity_check.md``.
+  ``M1 S1.5b.27``.
 - Premise:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/README.md`` § Motivation.
+  ``M1 P1.5b`` § Motivation.
 """
 from __future__ import annotations
 

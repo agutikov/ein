@@ -95,7 +95,7 @@ one unified KB view per demo. Outputs land at
 
 ## See also
 
-- [S1.3.2 plan](../../../plans/m1_core_graph_reasoning/p1.3_inference_rules/s1.3.2_ten_core_rules.md) — the rule catalogue.
+- S1.3.2 plan — the rule catalogue.
 - [zebra.ein](../zebra.ein) — wait, it doesn't actually live here.
   The shipping puzzle is at [`examples/zebra.ein`](../../zebra.ein)
   (kept at top level to minimise reference churn; cf. the spec's

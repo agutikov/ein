@@ -24,7 +24,7 @@ module, ``ein/stdlib/macro.ein``) expanded at load time, so they are no
 longer kernel vocabulary and no longer appear in this registry.
 
 See ``docs/kernel/ir/03-ein-lang/06_reserved_names.md`` (surface) and
-``plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.25_reserved_names_encapsulate_document.md``.
+``M1 S1.7.25``.
 """
 from __future__ import annotations
 

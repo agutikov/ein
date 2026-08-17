@@ -24,7 +24,7 @@ P4 (``test_mutual_naf_picks_queue_order``) deliberately did NOT change — see
 its docstring for why boundary admission is one candidate per round.
 
 Probes P1..P8 are from the investigation report
-``plans/m1_core_graph_reasoning/p1.21_review_response/reports/r4_absent_semantics.md`` §2.
+``M1 P1.21`` §2.
 """
 from __future__ import annotations
 

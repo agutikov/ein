@@ -9,8 +9,8 @@
 > read (L2), and the entire relation-property algebra
 > (`symmetric` / `bijective` / `converse` / …) are Ein features *defined
 > in Ein* and reasoned about *by Ein*. The kernel-purity passes
-> ([S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md),
-> [S1.7.24](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md))
+> (S1.7.23,
+> S1.7.24)
 > put them there on purpose. The one piece that stays **design-only** is
 > L3-on-L3 — rules that match or generate rules — which is
 > [F5](../../../../plans/followups/f5_rules_as_data.md)'s work.
@@ -171,9 +171,9 @@ generic ein rules on the existing matcher"*; `std.bijection` adds the
 closed-world inference (elimination, negative-completion, typecheck).
 The kernel-purity passes were exactly the act of *moving Ein's type
 system and relation properties out of the engine and into ein-lang*:
-[S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md)
+S1.7.23
 retired the built-in type system (`is-a` / `T` became ordinary data),
-[S1.7.24](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.24_dehardcode_symmetric.md)
+S1.7.24
 de-hardcoded `symmetric` (symmetry now lives entirely in the user rule).
 Self-description of these features is not a future deliverable — it is
 the current architecture.

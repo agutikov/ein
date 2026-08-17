@@ -9,7 +9,7 @@ The KB owns:
 - the reverse indexes (``_facts_by_relation``, ``_rules_by_relation``,
   ``_rule_apps_by_rule`` / ``_rule_apps_on_relation``, ``names``) covering
   the cross-references documented in
-  ``plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.1_data_model.md``;
+  ``M1 S1.2.1``;
 - an optional :class:`Query` slot (set when an IR file contains
   ``(query …)``);
 - a placeholder :class:`EqClasses` union-find — reserved for F4

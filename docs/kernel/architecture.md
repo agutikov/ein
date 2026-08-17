@@ -104,11 +104,11 @@ Roadmap detail: [`plans/`](../../plans/README.md).
 
 > **Status: shipped 2026-08-17** — until then a parked target picture.
 > Recorded from
-> [REVIEW_M1-01 §6](../../plans/m1_core_graph_reasoning/REVIEW_M1-01.md) by
+> REVIEW_M1-01 §6 by
 > P1.21 R6 (investigation:
-> [`r6_seam.md`](../../plans/m1_core_graph_reasoning/p1.21_review_response/reports/r6_seam.md)),
+> `r6_seam.md`),
 > then **built** by
-> [P1.21 S1.21.8](../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.8_boundary_naf.md)
+> P1.21 S1.21.8
 > (purely-positive closure + boundary NAF re-eval). The *as-built* two-layer
 > picture stays in
 > [`inference/architecture_and_algorithms.md` §2](inference/architecture_and_algorithms.md#2-architecture-and-the-main-steps);
@@ -279,7 +279,7 @@ so, which is why [`naf_deps`](../../ein.py/src/ein/inference/naf_deps.py) /
 *stratification* one. A static stratification checker remains future work.
 
 Shipped and measured as
-[P1.21 S1.21.8](../../plans/m1_core_graph_reasoning/p1.21_review_response/s1.21.8_boundary_naf.md):
+P1.21 S1.21.8:
 acceptance 17/17 with verdicts unchanged, 1342 unit tests and **zero**
 xfails (the D5 `xfail(strict=True)` now passes), `naf_dropped` structurally
 0 — and *faster*, because dropping the absent-flip full-match split more
@@ -300,7 +300,7 @@ conclusion — rather than an implicit moment in the saturation order.
 Recorded as
 [M3 Q30](../../plans/m3_smt_integration/open_questions.md#q30--seam--smt-mapping-clark-completion-at-the-naf-boundary);
 the edge-by-edge table is in
-[`r6_seam.md` §3](../../plans/m1_core_graph_reasoning/p1.21_review_response/reports/r6_seam.md).
+`r6_seam.md` §3.
 
 ## "Where do I look?" — change cookbook
 

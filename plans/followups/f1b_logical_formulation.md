@@ -86,10 +86,10 @@ A new milestone `m_followups_logical/` with phases:
 - [F5 — Rules as data](f5_rules_as_data.md) — if rules-on-rules
   works, the rules of inference become *expressible* in ein
   itself; F1b becomes the proof obligation for that expressibility.
-- [S1.5.9 macros](../m1_core_graph_reasoning/p1.8_ein_lang_modules/s1.5.9_ein_lang_macros.md)
+- S1.5.9 macros
   — the `forall` / `open` macros are the syntactic precursors to
   the FOL fragment F1b would characterise.
-- [P1.8 Theme A — stdlib](../m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md)
+- P1.8 Theme A — stdlib
   — the `converse` rule, the `imply` family, `symmetric ⟺ converse R R`
   are the relation-algebra encodings F1b §PFL.3 would systematise.
 - [docs/lib/03 — theorem-proving / formal methods](../../docs/lib/03-theorem-proving-formal-methods.md)

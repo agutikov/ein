@@ -264,4 +264,4 @@ it's the entry point for "show me every refutation" tooling.
   (`--exhaustive`; `--trace` for the reductio markdown). The on-disk
   `LatticeDumper` tree is programmatic-only (see *How to run it*).
 - Tests: [`tests/inference/lattice/test_lattice_dumper.py`](../../../ein.py/tests/inference/lattice/test_lattice_dumper.py).
-- Algorithm spec: [`algorithm_layer_n.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md).
+- Algorithm spec: [`algorithm_layer_n.md`](algorithm_layer_n.md).

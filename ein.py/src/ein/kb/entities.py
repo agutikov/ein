@@ -47,7 +47,7 @@ NameCategory = Literal["object", "relation", "rule"]
 # ordinary relations a puzzle declares via `(relation instance T T)` /
 # `(relation type UserType Type)`, categorised as "relation" only when
 # so declared. See [[project-canonical-zebra2]] and
-# plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md.
+# M1 S1.7.6
 KERNEL_META_RELATIONS = frozenset({"relation", "rule"})
 
 

@@ -14,7 +14,7 @@ Cross-references:
 - Validator implementation:
   ``ein.py/src/ein/inference/monotonic/contract.py``
 - P1.6 consumer side:
-  ``plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/``
+  ``M1 P1.6``
 """
 from __future__ import annotations
 

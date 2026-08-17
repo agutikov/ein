@@ -75,7 +75,7 @@ Connection: [`docs/lib/11-search-optimization-algorithms.md`](../../docs/lib/11-
 
 ## 2-D / N-D spatial (Q32)
 
-M1 ships **no** position lattice — [Q17](../m1_core_graph_reasoning/open_questions.md#q17--spatial-relation-formalisation)
+M1 ships **no** position lattice — [Q17](../open_questions.md#q17--spatial-relation-formalisation)
 chose the declarative graph-only formulation: `right-of` / `next-to`
 relations + `square-fwd` / `square-bwd` / `square-unique` rules
 handle Zebra-class adjacency. *Logic-grid* puzzles in 2-D,
@@ -84,11 +84,11 @@ expressive spatial reasoning — Allen-style intervals, 2-D
 adjacency, or full arithmetic. F4 would introduce a 2-D positional
 encoding when a concrete puzzle motivates it.
 
-Connection: [P1.4 README](../m1_core_graph_reasoning/p1.4_constraints/README.md)
+Connection: P1.4 README
 documents the spatial scope decision; the original
 `s1.4.2_spatial.md` (1-D position-lattice stage) was deleted by the
 2026-05-21 P1.4 shrinkage — see
-[S1.4.0 review §A](../m1_core_graph_reasoning/p1.4_constraints/s1.4.0_review.md#a-obsolete-tasks--resolved-by-p13-ship).
+S1.4.0 review §A.
 
 ## Reasoning-graph differential rendering (Q33)
 
@@ -205,7 +205,7 @@ of the cartesian product, not a free design choice. Deriving it from the
 positive tag is rule-from-rule synthesis
 ([F7 sub-track D](f7_rule_induction.md#sub-track-d--companion-rule-synthesis-property-duals)),
 and it is the home of the former
-[P1.9 E5](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e5_static_rule_conflict.md)
+[P1.9 E5](f9_e_catalog/s1.9.e5_static_rule_conflict.md)
 "static mutex pre-analysis": the mutex *is* the `functional` / `injective`
 negative companion.
 
@@ -307,7 +307,7 @@ drives the solution. Likely candidates: proof-graph theorem proving
 is more than 1-D `next-to`.
 
 Connection: [idea 06](../ideas/06-inference-rules-completeness.md)
-§rule families, [M1 P1.3 S1.3.1](../m1_core_graph_reasoning/p1.3_inference_rules/)
+§rule families, M1 P1.3 S1.3.1
 (rule presentation language), [`docs/ir.md` §3 predicate
 registry](../../docs/kernel/README.md), [F1](f1_categorical_formulation.md).
 

@@ -4,9 +4,9 @@ Every kernel IR form has a **fixed DOT shape**. Only **graph
 structure** is fixed by this schema; layout (positions, rank,
 unspecified style choices) is free — `random_layout` is permitted.
 
-Per [Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21),
+Per [Q21](../../../../plans/open_questions.md#q21),
 render is mandatory (`ein.ir.to_dot`,
-[S1.1.4](../../../../plans/m1_core_graph_reasoning/p1.1_ir_language/s1.1.4_ir_to_dot.md));
+S1.1.4);
 reverse parse (`ein.ir.from_dot`) is a P1.2 deliverable
 alongside the typed-hypergraph data model.
 
@@ -39,7 +39,7 @@ DOT has no native hyperedges. Every n-ary relation fact `(name a b c)`
 is encoded **Levi-bipartite**: one `octagon` node for the hyperedge
 itself, with directed edges to each participant labelled by role index
 (or role name when declared). The hyperedge's node identity is what
-[Q18](../../../../plans/m1_core_graph_reasoning/open_questions.md#q18)
+[Q18](../../../../plans/open_questions.md#q18)
 provenance tuples reference; this anchors
 [Q1](../../../../plans/open_questions.md#q1--what-kind-of-graph-is-the-ir)'s
 typed-hypergraph + equality-class-ID answer visually.
@@ -145,7 +145,7 @@ digraph rule_triangle_overlay {
 ## Trace rendering — three views, configurable
 
 Default: **(a)** — matches
-[M1 acceptance §2](../../../../plans/m1_core_graph_reasoning/README.md)'s
+M1 acceptance §2's
 `zebra/` snapshot folder.
 
 **(a) Per-step DOT** — one file per step under
@@ -237,7 +237,7 @@ identity is fused across forms — `Norwegian` (instance) appears
 
 This is the 2021 prototype's *linked.svg* aesthetic — all the entity
 types on one canvas, related by labelled arrows, coloured by relation. See
-[S1.2.4](../../../../plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.4_graph_representation.md)
+S1.2.4
 for the design plan; the implementation is
 [`src/ein/kb/render.py`](../../../../ein.py/src/ein/kb/render.py).
 
@@ -365,7 +365,7 @@ renderer's output is reviewed visually.
 
 ## Derivation slices + KB snapshots (S1.6.2)
 
-The trace ([S1.6.4](../../../../plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/s1.6.4_markdown_trace.md))
+The trace (S1.6.4)
 does not embed the whole KB per step — it embeds a **provenance cone**:
 [`ein.render.slice`](../../../../ein.py/src/ein/render/slice.py).
 

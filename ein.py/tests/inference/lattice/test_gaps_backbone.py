@@ -17,9 +17,9 @@ return value is a :class:`MonotonicStats`.
 Cross-references:
 
 - Stage spec:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.21_lattice_backbone.md``
+  ``M1 S1.5b.21``
 - Algorithm:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md``
+  ``docs/kernel/inference/algorithm_layer_n.md``
 - Sibling monotonic tests:
   ``ein.py/tests/inference/monotonic/test_monotonic_skeleton.py``
 """

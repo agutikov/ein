@@ -14,7 +14,7 @@ documentation split.
 The pattern language is **positive conjunctive** + `:where` filters +
 a registry of **named structural predicates** (the rewrite-DSL +
 named-predicate fallback from
-[Q4](../../../../plans/m1_core_graph_reasoning/open_questions.md#q4)).
+[Q4](../../../../plans/open_questions.md#q4)).
 **Kernel meta-primitives** (`and`, `or`, `not`, `neq`, `instance`)
 are shape-pinned in the grammar — wrong arity is a parse error, not
 a validator error. Relation patterns (`(?r ?a ?b)`,
@@ -52,7 +52,7 @@ typos like `(instnce ?a ?T)` or `(neq ?a)` are caught at parse time.
 The line is governed by trace fidelity: anything the matcher can see,
 the trace planner can name. Opaque Python fallbacks would render as
 black-box firings, failing the
-[M1 acceptance §3](../../../../plans/m1_core_graph_reasoning/README.md)
+M1 acceptance §3
 explanation-completeness criterion.
 
 ## Predicate registry (initial)

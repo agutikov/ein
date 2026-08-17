@@ -24,7 +24,7 @@ Cross-references:
   ``ein.py/src/ein/inference/monotonic/solver.py`` (the
   call site in ``_explore_layers``).
 - Stage spec:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.26_lattice_scoring.md``.
+  ``M1 S1.5b.26``.
 """
 from __future__ import annotations
 

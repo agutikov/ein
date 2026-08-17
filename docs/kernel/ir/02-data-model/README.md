@@ -47,7 +47,7 @@ implement them but the architecture stays open.
 
 The IR encoding choice (one generic link relation vs typed attribute relations,
 `is-a`) was **resolved in P1.7**: the canonical encoding is `is-a`
-([S1.7.6](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md)),
+(S1.7.6),
 and the kernel keeps no type/instance entity-view at all
-([S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md)) —
+(S1.7.23) —
 both forms are just facts.

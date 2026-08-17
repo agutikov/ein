@@ -145,7 +145,7 @@ Cross-cuts:
   ontology deduction — the NL pipeline likely produces partial
   facts; instance-property induction is how the engine *responds*
   to that partiality with structure.
-- Composes with [P1.8 Theme C — negative-fact volume](../m1_core_graph_reasoning/p1.8_ein_lang_modules/README.md)
+- Composes with P1.8 Theme C — negative-fact volume
   — `(no-relation R A B)` at type level *replaces* the
   `|A| × |B|` negative-fact volume that would otherwise be
   materialised.
@@ -198,7 +198,7 @@ already has the *activation* half — `symmetric-negative-setup` derives
 `(symmetric-negative R)` from `(symmetric R)` (A9 reflective rule-implication);
 the missing half is emitting the companion *body* as data, which is
 [F5](f5_rules_as_data.md)'s `:assert <rule>` (PF5.1). This **subsumes the former
-[P1.9 E5](../m1_core_graph_reasoning/p1.9_hypothesis_loop_followups/s1.9.e5_static_rule_conflict.md)**
+[P1.9 E5](f9_e_catalog/s1.9.e5_static_rule_conflict.md)**
 ("static mutex pre-analysis"): a mutex *is* the `functional` / `injective`
 companion, so it is a derived rule, not a hypgen table. Soundness of a
 synthesised companion is decidable cheaply — a bounded chase of the existing

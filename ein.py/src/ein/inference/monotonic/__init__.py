@@ -56,7 +56,7 @@ outcome — saturation commutativity makes a per-parent bubble redundant (see
 **Diagnostics.** :class:`MonotonicDumper` (S1.5b.7) receives lifecycle
 callbacks; :class:`ProgressDumper` streams live progress.
 
-See [P1.5b README](../../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/README.md)
+See P1.5b README
 + ``project_set_search_unified`` memory for the design rationale.
 """
 from ein.inference.monotonic.contract import (

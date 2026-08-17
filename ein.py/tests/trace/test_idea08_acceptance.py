@@ -2,7 +2,7 @@
 
 Every named move in the human zebra walkthrough must correspond to a
 named rule firing in the engine. The mapping is frozen in
-``plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/s1.6.5_idea08_checklist.md``
+``M1 S1.6.5``
 (structural, not literal — see the equivalence notes there).
 
 Two levels:

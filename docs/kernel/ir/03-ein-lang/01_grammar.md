@@ -169,7 +169,7 @@ and enumerations carry no annotation, so they read as background):
 #### What the signature means — userspace types, kernel structure
 
 The kernel imposes **no type system**
-([S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md)),
+(S1.7.23),
 yet a signature is not inert. It plays **two unrelated roles**, and they
 never mix: rules read the signature's *content* as types; the kernel reads
 its *shape* as structure. This subsection is the definitive statement of
@@ -306,7 +306,7 @@ no residue needing a `:layer` patch. Example derived facts:
 > model uses internally but is *rejected* by the current grammar (a
 > kw-pair value must be a headed list). Both forms wait on a P1.1
 > grammar tweak or a `:id <atom>` annotation system — see
-> [S1.2.3 T1.2.3.4](../../../../plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/s1.2.3_provenance.md).
+> S1.2.3 T1.2.3.4.
 > Until then, rule-kind provenance is populated by the engine
 > programmatically via `Provenance.from_rule(...)`, which works
 > end-to-end — only the IR text round-trip is deferred.
@@ -326,7 +326,7 @@ same shape headed `hrule`). There is no `(rules …)` block (P1.7c).
 
 Each rule has one `:match` and one `:assert`. The pattern sub-language
 is in [`02_patterns.md`](02_patterns.md). `:priority` resolves
-[Q15](../../../../plans/m1_core_graph_reasoning/open_questions.md#q15)
+[Q15](../../../../plans/open_questions.md#q15)
 (rule ordering): static per-rule, cheap-propagation rules at lower
 numbers.
 
@@ -503,11 +503,11 @@ template renders the *headline result* from the goal bindings.
                        :note <STRING>))
 ```
 
-Per [Q21](../../../../plans/m1_core_graph_reasoning/open_questions.md#q21),
+Per [Q21](../../../../plans/open_questions.md#q21),
 `(trace …)` is the **same IR** as input — same parser, same AST,
 same dumper. The engine can reason about its own traces; rules can
 match `(step …)` forms ([TMS/ATMS analogue](../../../lib/09-cognitive-architectures-neurosymbolic.md)).
-Per [Q18](../../../../plans/m1_core_graph_reasoning/open_questions.md#q18)
+Per [Q18](../../../../plans/open_questions.md#q18)
 each derived edge's provenance tuple `(rule, premise_edges, source)`
 is literally a `(step …)` form — provenance and trace are the same
 data structure under different views.

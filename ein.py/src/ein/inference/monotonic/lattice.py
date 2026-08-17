@@ -38,10 +38,10 @@ stats              solve (store_lattice)      Cumulative counters.
 Cross-references:
 
 - Algorithm spec (per-step contract):
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md``
+  ``docs/kernel/inference/algorithm_layer_n.md``
   § Verdict synthesis.
 - Stage spec:
-  ``plans/m1_core_graph_reasoning/p1.5b_lattice_search/s1.5b.22_lattice_dedup.md``.
+  ``M1 S1.5b.22``.
 - Engine layout rationale (one engine, one entry, unified
   monotonic+lattice in ``inference/monotonic/``):
   ``project_set_search_unified`` memory + the 2026-05-28

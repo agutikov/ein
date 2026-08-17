@@ -28,7 +28,7 @@ example produces exactly the answer this trace derives).
 > `adjacent-via-fwd`, that one says `slot-adjacent-fwd`. Its root
 > saturation gets one step *further* than zebra2's (it places Water in
 > H_1 at `d = 0`), for reasons
-> [C2 §4](../../../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/reports/c2_zebra_ein_gap.md)
+> C2 §4
 > works through. Reading the two traces side by side is the point of
 > keeping both files.
 
@@ -46,7 +46,7 @@ example produces exactly the answer this trace derives).
     saturation), `d = 1` a size-1 commitment, and a `1→0` no-good is a
     `DeadCommitment.learned_clause`. The acceptance matches *named firing +
     position-in-layer*, "or a recognisably equivalent" order — see
-    [`s1.6.5_idea08_checklist.md`](../../../plans/m1_core_graph_reasoning/p1.6_rendering_and_trace/s1.6.5_idea08_checklist.md).
+    `s1.6.5_idea08_checklist.md`.
 - Each row names the **ein rule** firing and the **premises → conclusion**
   it consumes/produces. Rule names match the `(rule …)` blocks in
   [`zebra2.ein`](../../../examples/zebra2.ein).

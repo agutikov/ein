@@ -328,7 +328,7 @@ cartesian closure.
   ```
 
   Both encodings produce the same logical content; the IR-encoding
-  decision is [P1.7 T1.7.2.5](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.2_dynamic_vs_hardcoded.md).
+  decision is P1.7 T1.7.2.5.
 
 - **The relation between `can-drink` and `drinks`.** The example
   treats them as separate relations. In a real puzzle one would

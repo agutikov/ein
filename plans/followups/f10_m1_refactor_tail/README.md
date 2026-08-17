@@ -2,7 +2,7 @@
 
 The 23 decompositions / unifications P1.7b identified but deferred, one
 stage each. **Relocated verbatim** from `p1.7c_block_head_removal/` Track B
-when `plans/m1_core_graph_reasoning/` was deleted (P1.22 S1.22.99); Track A
+when the M1 plan folder was deleted (P1.22 S1.22.99); Track A
 (S1.7c.1–.5, .8 — the block-head removal) shipped 2026-06-02 and died with
 the folder.
 
@@ -11,7 +11,7 @@ with them: it is the source register every stage below cites.
 
 ## Trigger
 
-**Before the [M1a Rust port](../m1a_rust/README.md).** That is P1.7b's own
+**Before the [M1a Rust port](../../m1a_rust/README.md).** That is P1.7b's own
 recommendation and the strongest reason to drain this: `ein.rs` should
 transcribe the clean reference implementation, not the remaining scar
 tissue. Otherwise these are opportunistic — each is behaviour-preserving,
@@ -71,7 +71,7 @@ or deliberately dropped, so no stage exists:
 
 ## Connections
 
-- [M1a Rust port](../m1a_rust/README.md) — the trigger above.
+- [M1a Rust port](../../m1a_rust/README.md) — the trigger above.
 - [F9 — hypothesis-loop E-catalog](../f9_e_catalog/README.md) — the other
   body relocated out of the M1 plans; that one is *feature* backlog, this
   one is *structural* debt.

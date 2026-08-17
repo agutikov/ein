@@ -19,7 +19,7 @@ They are gone: the enumerator now proposes type-blind, and the puzzle's
 own rules (a `guess`-style hrule's `:match`, or `typecheck-arg-*` +
 `functional` contradiction rules on the blind path) do the type-pruning
 in user space over `is-a`-as-a-plain-relation. See
-`plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md`
+`M1 S1.7.23`
 and docs/kernel/ir/01-ein-graph/03_ein_model.md §6.
 
 T1.5.4.7 — the per-filter counter refactor. User observation
@@ -437,7 +437,7 @@ def score_hypothesis(fact: Fact, kb: KnowledgeBase) -> float:
     - ``"most-constrained"`` (default): returns ``0`` — the sort
       falls through to the content-based tiebreaker keys in
       ``solver._candidate_sort_key``, preserving the
-      [S1.5a.1a](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/s1.5a.1a_branch_order_determinism.md)
+      S1.5a.1a
       determinism property.
     - ``"popularity"`` (S1.5a.7 Idea 1): weighted fact-popularity
       sum. Higher-popularity relations + objects score higher;
@@ -453,8 +453,7 @@ def score_hypothesis(fact: Fact, kb: KnowledgeBase) -> float:
       requires a post-saturation signal (did the branch derive
       new positives?) which isn't cheaply available pre-fork —
       designing a proxy is its own measurement task and lives
-      with [S1.5.7b stable-alive
-      caching](../../../plans/m1_core_graph_reasoning/p1.5_hypothesis_loop/s1.5.7b_consume_loop_stable_alive.md)
+      with M1 S1.5.7b (stable-alive caching)
       as the natural integration point.
 
     Returns ``float`` — caller sort key uses ``-score_hypothesis(...)``
@@ -474,7 +473,7 @@ def score_hypothesis(fact: Fact, kb: KnowledgeBase) -> float:
             f"hypgen-scoring={mode!r} is reserved for a follow-up "
             f"stage; today only 'most-constrained' and 'popularity' "
             f"are wired. See "
-            f"plans/m1_core_graph_reasoning/p1.5a_zebra_solution/"
+            f"M1 P1.5a"
             f"s1.5a.7_hypgen_scoring_branch_info.md § T1.5a.7.3.",
         )
     raise ValueError(

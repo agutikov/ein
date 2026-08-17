@@ -17,7 +17,7 @@ Pins the identity contract of :func:`ein.inference.canon.state_key`
   fixture produce identical keys.
 
 Cross-references: report
-``plans/m1_core_graph_reasoning/p1.21_review_response/reports/r1_state_identity.md``;
+``M1 P1.21``;
 implementation ``ein.py/src/ein/inference/canon.py`` +
 ``monotonic/_helpers._record_node``.
 """

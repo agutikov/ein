@@ -2,7 +2,7 @@
 
 **Estimate:** ~2 months (~8 weeks).
 **Status:** next.
-**Depends on:** [M1](../m1_core_graph_reasoning/README.md) closed —
+**Depends on:** M1 closed —
 the IR (P1.1) and the engine acceptance (P1.7) are M2's preconditions.
 **Blocks:** none (M3 only needs the IR, not the NL pipeline).
 
