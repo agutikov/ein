@@ -86,7 +86,14 @@ class Hrules:
             # Generic hrule — one plan per `:hrules` activator; the
             # activator's args bind the hrule's parameters. With no
             # matching activator a generic hrule contributes nothing.
+            #
+            # S1.22.0 — arity-mismatched activators are skipped, as in
+            # `Engine._activators_for`: they cannot bind the parameters, so
+            # every parameter-headed premise would compile with an unbound
+            # head var (now a `CompileError`).
             for argtuple in activators.get(h.name, ()):
+                if len(argtuple) != len(h.params):
+                    continue
                 act = Fact(relation_name=h.name, args=argtuple)
                 plans.append(compile_rule(h, act))
         self._plans = tuple(plans)

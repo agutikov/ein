@@ -60,10 +60,26 @@ class Engine:
           rules derived *during* the fork's saturation. The
           stats-determinism violation tracked in S1.5a.2a was a
           direct consequence (see plans/.../s1.5a.2a_statistics_determinism.md).
+
+        S1.22.0 — activator facts whose **arity** does not match the rule's
+        parameter list are filtered out here. A rule name and a property
+        relation may coincide (zebra2 derives the 1-ary marker
+        ``(total color-loc)`` while `std.algebra`'s ``total`` rule takes two
+        parameters ``(?R ?isa)``), and a fact that cannot bind the parameters
+        does not authorise anything. Passing it through left every
+        parameter-headed premise with an unbound head var, which
+        `compile_rule` then dropped — silently, and in the vacuous direction:
+        a plan whose premises all drop has ``steps=()``, which the matcher
+        accepts as one match. That it never actually fired here was luck (an
+        `SForm` slot compares unequal to every stored `Fact`), not design.
         """
         if not rule.params:
             return (None,)
-        return self.kb._rule_apps_by_rule.get(rule.name, ())
+        n = len(rule.params)
+        return tuple(
+            f for f in self.kb._rule_apps_by_rule.get(rule.name, ())
+            if len(f.args) == n
+        )
 
     def compile_for(
         self, rule: Rule, activator: Fact | None,

@@ -70,6 +70,24 @@ class World:
     It is carried because a world is *branch-relative*: `absent(P)` means
     "P does not follow from the givens **and this commitment**", which is why
     a guard verdict taken in one branch says nothing about another.
+
+    **It is deliberately inert, and stays that way** (S1.22.0 angle C4). The
+    live engine always builds ``World(kb)`` — `Saturator` never passes a
+    commitment — and that is correct rather than an oversight: in a branch,
+    ``kb`` *is* the fork, whose facts already include the committed
+    hypotheses, so every query through :meth:`holds` is branch-relative by
+    construction. The parameter carries the contract for readers; no code
+    path reads it.
+
+    Wiring it was considered and rejected. The one consumer that would want
+    it is branch-relative *negative provenance* — recording that an
+    `absent_premises` entry holds only under this commitment — and that needs
+    a field on :class:`~ein.kb.provenance.Provenance`, which
+    :meth:`negative_premises` produces; populating ``World.commitment``
+    alone would not reach it. ``test_saturator_fork_parity.py::
+    test_the_live_engine_never_populates_world_commitment`` pins the
+    inertness, so starting to populate it is a deliberate act that comes with
+    saying what reads it.
     """
 
     __slots__ = ("commitment", "kb")

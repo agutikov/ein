@@ -115,8 +115,12 @@ class Saturator:
         self.engine = engine if engine is not None else Engine(kb)
         if not self.engine.cache:
             self.engine.compile_all()
-        # (rule_name, activator_args, hashable-bindings) -> already enqueued
-        self._seen: set[tuple[str, tuple[str, ...], frozenset]] = set()
+        # (binding_key, guards) -> already enqueued. S1.22.0 — the guards are
+        # part of the key, not decoration: see `_enqueue_binding`.
+        self._seen: set[
+            tuple[tuple[str, tuple[str, ...], frozenset],
+                  tuple[NafGuard, ...]]
+        ] = set()
         # heap entries: (priority, tiebreaker, plan, bindings, premises,
         # naf_guards). Guards ride along so `_apply` can record them as the
         # firing's negative premises; a queued entry's guards have already
@@ -622,14 +626,33 @@ class Saturator:
         closure must be allowed to reach a fixpoint before any negation is
         consulted; enqueuing it here would be asking "is P absent?" of a
         half-built world, which is the placement the stage removes.
+
+        S1.22.0 — the dedup key is ``(binding_key, guards)``, not
+        ``binding_key`` alone. :meth:`_binding_key` is
+        ``(rule, activator, bindings)`` and carries no disjunct index, while
+        ``naf_guards`` is **per disjunct**: two `(or …)` disjuncts that
+        produce the same bindings under *different* guards collided, so only
+        the first was ever admitted. A disjunct whose guards would pass was
+        masked by one whose guards failed — and permanently, because a failing
+        monotone guard retires its candidate. `(or …)` became order-dependent:
+        reproduced with `(or (and (a ?x) (absent (block ?x)))
+        (and (a ?x) (absent (other ?x))))`, which derived its conclusion in
+        one disjunct order and not the other.
+
+        Keying on the guards is exact rather than a proxy for the index: same
+        bindings *and* same guards really is the same candidate, so genuine
+        duplicates still collapse. ``engine._fired`` stays guard-free — once
+        the conclusion is derived, every other disjunct for those bindings is
+        redundant, which is what it already meant.
         """
         key = self._binding_key(plan, bindings)
-        if key in self._seen:
+        seen_key = (key, guards)
+        if seen_key in self._seen:
             return
         if key in self.engine._fired:
-            self._seen.add(key)
+            self._seen.add(seen_key)
             return
-        self._seen.add(key)
+        self._seen.add(seen_key)
         self._tiebreaker += 1
         entry = (priority, self._tiebreaker, plan, dict(bindings), premises,
                  guards)

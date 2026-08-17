@@ -1,14 +1,18 @@
 """Compiler tests — S1.3.1 T1.3.1.9."""
 from __future__ import annotations
 
+import pytest
+
 from ein.inference.compile import (
     AbsentGuard,
+    CompileError,
     Guard,
     Join,
     NestedPattern,
     Scan,
     compile_rule,
 )
+from ein.inference.engine import Engine
 from ein.ir import parse
 from ein.ir.types import Var
 from ein.kb.store import KnowledgeBase
@@ -191,3 +195,108 @@ def test_compile_drops_where_keyword():
     # Only the Scan(r) survives — the :where kw_pair is dropped.
     assert len(plan.steps) == 1
     assert isinstance(plan.steps[0], Scan)
+
+
+# ── S1.22.0 — premises that cannot be lowered are errors, not drops ────
+#
+# Every case below used to `return []` from `_compile_premise` /
+# `_compile_relation`, silently dropping the premise. All three were
+# reproduced end-to-end as wrong answers before becoming `CompileError`s.
+
+
+def test_nested_or_in_a_positive_premise_is_an_error():
+    """UNSOUND before S1.22.0: the dropped conjunct made the match set
+    LARGER, so the rule fired on a premise that was false.
+
+    Reproducer: `(and (a ?x) (or (p ?x) (q ?x)))` derived `(out X)` with
+    neither `(p X)` nor `(q X)` in the KB.
+    """
+    kb = _kb_with("""
+    (rule r ()
+      :match  (and (a ?x) (or (p ?x) (q ?x)))
+      :assert (out ?x) :why "a and (p or q)" :priority 100)
+    (relation a T) (relation p T) (relation q T) (relation out T)
+    """)
+    with pytest.raises(CompileError, match="nested `\\(or …\\)`"):
+        compile_rule(kb.rules["r"], None)
+
+
+def test_nested_or_inside_an_absent_is_an_error():
+    """INCOMPLETE before S1.22.0, and permanently so.
+
+    `(absent (or …))` left the guard's sub-plan EMPTY, and an empty step
+    tuple yields one match — so `World.holds` was True and the guard failed
+    against every possible KB. `monotone` was then True (no nested absent),
+    so `_admit_from_boundary` retired the candidate for good.
+    """
+    kb = _kb_with("""
+    (rule r ()
+      :match  (and (a ?x) (absent (or (p ?x) (q ?x))))
+      :assert (out ?x) :why "no p and no q" :priority 100)
+    (relation a T) (relation p T) (relation q T) (relation out T)
+    """)
+    with pytest.raises(CompileError, match="nested `\\(or …\\)`"):
+        compile_rule(kb.rules["r"], None)
+
+
+def test_an_absent_whose_sub_plan_is_empty_is_an_error():
+    """The general form of the case above: a guard that can never pass.
+
+    Reached here through an unbound relation head inside the `(absent …)`,
+    which is the other premise shape that used to compile to nothing.
+    """
+    kb = _kb_with("""
+    (rule r ()
+      :match  (and (a ?x) (absent (?R ?x)))
+      :assert (out ?x) :why "no ?R" :priority 100)
+    (relation a T) (relation out T)
+    """)
+    with pytest.raises(CompileError, match="unbound relation head"):
+        compile_rule(kb.rules["r"], None)
+
+
+def test_arity_mismatched_activator_is_an_error():
+    """UNSOUND before S1.22.0: a plan whose every premise dropped had
+    `steps=()`, which the matcher accepts as ONE VACUOUS match — so the rule
+    fired unconditionally.
+
+    Reproducer: a 1-param rule activated by a 2-arg fact, with a ground
+    `:assert`, stored its conclusion off an empty plan. (With a variable in
+    the `:assert` it instead died with a `KeyError` at firing time, which is
+    how it stayed invisible.)
+    """
+    kb = _kb_with("""
+    (rule copier (?R)
+      :match  (?R ?a ?b)
+      :assert (out SENTINEL) :why "ground" :priority 100)
+    (relation p T T) (relation out T) (relation copier T T)
+    (copier p q)
+    """)
+    activator = kb._facts_by_relation["copier"][0]
+    assert len(activator.args) == 2 and len(kb.rules["copier"].params) == 1
+    with pytest.raises(CompileError, match="does not activate this rule"):
+        compile_rule(kb.rules["copier"], activator)
+
+
+def test_arity_mismatched_activator_does_not_activate_the_rule():
+    """The engine never constructs that pair: an activator that cannot bind
+    the parameters does not authorise the rule.
+
+    This is live in `zebra2.ein` — it derives the 1-ary property marker
+    `(total color-loc)` while `std.algebra`'s `total` rule takes two
+    parameters `(?R ?isa)`. The mismatched pair used to compile to a plan
+    that never fired only by luck: an `SForm` slot (an unsubstituted head
+    var) compares unequal to every stored `Fact`.
+    """
+    kb = _kb_with("""
+    (rule total (?R ?isa)
+      :match  (and (?isa ?a ?A) (?R ?a ?a))
+      :assert (clash ?a) :why "t" :priority 110)
+    (relation total T) (relation is-a T T)
+    (relation colour-loc T T) (relation clash T)
+    (total colour-loc)
+    """)
+    engine = Engine(kb)
+    assert engine._activators_for(kb.rules["total"]) == ()
+    engine.compile_all()
+    assert not [k for k in engine.cache if k[0] == "total"]

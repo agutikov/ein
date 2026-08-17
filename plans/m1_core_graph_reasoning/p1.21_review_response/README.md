@@ -238,3 +238,66 @@ fixed with regression pins.
   `inference/explain.py` (cyclic and acyclic, varying justification and
   premise fan-out) found no unsoundness, no non-termination and no
   non-determinism.
+
+Three more were found when the **three attack angles that never ran** (their
+agents were killed by a rate limit at checkpoint `3dd6d28`) were completed by
+[S1.22.0](../p1.22_obsolete_syntax_and_closeout/s1.22.0_boundary_verification.md)
+on 2026-08-17 — full evidence in
+[`c0_boundary_verification.md`](../p1.22_obsolete_syntax_and_closeout/reports/c0_boundary_verification.md).
+All three are the same mistake in three places: **a premise the compiler
+cannot lower is silently dropped**, which is never safe — dropping a positive
+conjunct grows the match set (unsound), dropping one inside an `(absent …)`
+makes the guard fail where it should pass (incomplete, and permanently so
+once monotone retirement discards the candidate), and dropping *every*
+premise leaves `steps=()`, which the matcher accepts as one **vacuous** match
+(unsound). All three fixed, all three pinned, each pin verified to fail
+without its fix.
+
+- **D-S8-3 — `_seen` collapsed `(or …)` disjuncts carrying different
+  guards.** **Completeness bug, reproduced and fixed.** `_binding_key` is
+  `(rule, activator, bindings)` and carries no disjunct index, while
+  `naf_guards` is **per disjunct** — so two disjuncts producing the same
+  bindings under different guards collided, and only the first was ever
+  admitted. A disjunct whose guards would pass was masked by one whose
+  guards failed, permanently (a failing monotone guard retires its
+  candidate). `(or …)` became order-dependent: the same rule derived its
+  conclusion in one disjunct order and not the other. The dedup predates
+  S1.21.8; what S1.21.8 changed is that the two disjuncts now carry
+  *different* guards, turning a harmless duplicate into a lost firing — the
+  hypothesis S1.22.0 was written to test. Fixed by keying `_seen` on
+  `(binding_key, guards)`; pinned by
+  `test_world_boundary.py::test_or_disjuncts_with_the_same_bindings_keep_separate_candidates`.
+  The existing D5 tests miss it because their disjuncts scan *different*
+  trigger relations and so never produce the same bindings.
+- **D-S8-4 — a nested `(or …)` was silently deleted from the premise.**
+  **Soundness bug on the positive path, reproduced and fixed.**
+  `_compile_premise` returned `[]` for a non-top-level `(or …)`:
+  `(and (a ?x) (or (p ?x) (q ?x)))` fired with neither `p` nor `q` in the
+  KB. Inside a guard the same hole runs the other way — `(absent (or A B))`
+  left the sub-plan **empty**, and an empty step tuple yields one match, so
+  the guard failed against every possible KB and its candidates were retired
+  for good. Now a `CompileError`, along with the general case of an
+  `(absent …)` that compiles to no steps. Pinned by three tests in
+  `test_compile.py`.
+- **D-S8-5 — an arity-mismatched activator produced a vacuously-matching
+  plan.** **Soundness bug, reproduced and fixed.** `compile_rule`'s mismatch
+  branch claimed "the matcher will reject via the 'unbound head var'
+  branch"; no such branch exists in `match._run_steps`. The rejection was
+  `_compile_relation` returning `[]`, which for a single-premise rule left
+  `steps=()` — one vacuous match, so the rule fired unconditionally and a
+  ground `:assert` stored its conclusion. (With a variable in the `:assert`
+  it died with a `KeyError` instead, which is how it stayed invisible.)
+  **Live in `zebra2.ein`**: it derives the 1-ary marker `(total color-loc)`
+  while `std.algebra`'s `total` rule takes two parameters `(?R ?isa)`, so two
+  junk plans were compiled on every fork. They never fired only by luck — an
+  unsubstituted `SForm` slot compares unequal to every stored `Fact`. Fixed
+  by filtering arity-mismatched activators in `Engine._activators_for` and
+  `hrule.Hrules` (a fact that cannot bind the parameters does not authorise
+  the rule) and raising from `compile_rule` for a direct caller; pinned by
+  two tests in `test_compile.py`. Removing the junk plans also took the
+  acceptance phase from 95 s to 68 s.
+
+The other four items of that verification — `_watch_stamp`'s invalidation
+argument, nested-absent depth, fork parity / determinism / state leakage, and
+the `World.commitment` decision (**deliberately inert**, documented and
+pinned) — came back clean, with 8 further regression pins. See the report.

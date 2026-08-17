@@ -7,10 +7,21 @@ admitted through the boundary records.
 """
 from __future__ import annotations
 
-from ein.inference.compile import AbsentGuard, compile_rule, split_naf
+import inspect
+
+from ein.inference import match, predicates
+from ein.inference.compile import (
+    AbsentGuard,
+    JoinPlan,
+    Scan,
+    compile_rule,
+    split_naf,
+)
 from ein.inference.saturator import Saturator
 from ein.inference.world import World, project
 from ein.ir import parse
+from ein.ir.types import Atom, Var
+from ein.kb.entities import Fact
 from ein.kb.store import KnowledgeBase
 
 _MACRO = "(import std.macro :symbols (forall))\n"
@@ -291,6 +302,108 @@ class TestNegativeProvenance:
         by_rule = {p.rule: p for p in kb.justifications(target)}
         assert by_rule["r-pos"].absent_premises == ()      # purely positive
         assert by_rule["r-naf"].absent_premises == (("block", ("A",)),)
+
+    def test_or_disjuncts_with_the_same_bindings_keep_separate_candidates(self):
+        # REGRESSION (S1.22.0). `Saturator._binding_key` is
+        # (rule, activator, bindings) and carries no disjunct index, while
+        # `naf_guards` is per disjunct. Two disjuncts that produce the SAME
+        # bindings under DIFFERENT guards therefore collided in `_seen`, and
+        # only the first was ever admitted — so a disjunct whose guards pass
+        # was masked by one whose guards fail, permanently (a failing monotone
+        # guard retires its candidate).
+        #
+        # `test_each_or_disjunct_keeps_its_own_guards` above does not catch
+        # this: its disjuncts scan *different* trigger relations, so they
+        # never produce the same bindings.
+        prog = """
+        (rule gate ()
+          :match (or {d1} {d2})
+          :assert (gated ?x) :why "either" :priority 100)
+        (relation a T) (relation block T) (relation other T)
+        (relation gated T)
+        (a X :source "(1)")
+        (block X :source "(2)")
+        """
+        d_block = "(and (a ?x) (absent (block ?x)))"
+        d_other = "(and (a ?x) (absent (other ?x)))"
+
+        def gated(d1: str, d2: str) -> bool:
+            kb = _kb(prog.format(d1=d1, d2=d2))
+            list(Saturator(kb).saturate())
+            return kb._fact_by_id("gated", ("X",)) is not None
+
+        # `(other X)` is absent, so the other-guarded disjunct must fire —
+        # whichever order the disjuncts are written in. `(or …)` is
+        # commutative; before the fix the engine was not.
+        assert gated(d_block, d_other) is True
+        assert gated(d_other, d_block) is True
+
+    def test_watch_stamp_is_blind_to_predicate_guards(self):
+        # PIN (S1.22.0, angle A2). `_watch_stamp` skips re-judging a parked
+        # candidate when no relation in `NafGuard.watched` grew, and
+        # `compile._watched_relations` walks Scan/Join/AbsentGuard only — a
+        # predicate `Guard` contributes nothing. That is sound *because* the
+        # registry holds only KB-free predicates: `eq`/`neq` read bindings,
+        # never the store.
+        #
+        # This pins the coupling, not the spelling: registering a
+        # KB-**reading** predicate would make the stamp incomplete (a guard
+        # whose verdict moved would never be re-asked), so a new entry here
+        # has to come with a decision about `watched`.
+        assert predicates.names() == ("eq", "neq")
+        for name in predicates.names():
+            body = inspect.getsource(predicates.get(name))
+            assert "kb" not in body and "_facts_by" not in body, (
+                f"predicate `{name}` appears to read the KB; `_watch_stamp` "
+                f"cannot see that, so a parked candidate's verdict could "
+                f"move without its stamp changing"
+            )
+
+    def test_unifier_does_not_resolve_eq_classes(self):
+        # PIN (S1.22.0, angle A3). `_watch_stamp` compares extent SIZES and
+        # concludes match sets are unchanged. That step is only valid while
+        # matching is raw `==` on stored args: `match._candidates` documents
+        # that the participation index "does not apply eq-class resolution —
+        # neither does the unifier". If `kb.classes` ever goes live (F4), two
+        # atoms could become interchangeable without any extent growing, and
+        # the stamp would silently skip a candidate whose verdict moved.
+        kb = _kb("""
+        (relation r T T)
+        (r A B :source "(1)")
+        """)
+        kb.classes.union("A", "C")
+        assert kb.classes.equivalent("A", "C")
+        plan = JoinPlan(
+            rule_name="<probe>", activator_args=(), bindings_seed={},
+            steps=(Scan("r", (Atom(name="C"), Var(name="y"))),),
+        )
+        assert list(match.run(plan, kb)) == [], (
+            "the unifier now resolves eq-classes; `_watch_stamp`'s "
+            "extent-size argument no longer implies match-set equality"
+        )
+
+    def test_nested_pattern_guard_watches_the_outer_relation_only(self):
+        # PIN (S1.22.0, angle A4). A guard scanning `(not (R …))` is keyed on
+        # `not` alone. That is complete because a stored `(not …)` fact holds
+        # its inner pattern as a frozen `Fact` arg — growing `R` cannot add
+        # or change any `not` fact, so the scan's match set moves only when
+        # `not` itself grows.
+        kb = _kb("""
+        (rule gate () :match (and (seed ?x) (absent (not (r ?x ?y))))
+          :assert (ok ?x) :why "g" :priority 100)
+        (relation seed T) (relation r T T) (relation ok T)
+        (seed X :source "(1)")
+        (not (r X B) :source "(2)")
+        """)
+        ((guard,),) = _plan(kb, "gate").naf_guards
+        assert guard.watched == frozenset({"not"})
+        steps = guard.sub_steps
+        before = list(match.run_steps(steps, {"x": "X"}, (), kb))
+        kb.add_and_index_fact(Fact(relation_name="r", args=("X", "Q")))
+        kb.add_and_index_fact(Fact(relation_name="r", args=("Z", "W")))
+        assert len(kb._facts_by_relation["r"]) == 2      # `r` really grew
+        assert len(kb._facts_by_relation["not"]) == 1    # `not` did not
+        assert list(match.run_steps(steps, {"x": "X"}, (), kb)) == before
 
     def test_nested_guard_records_both_levels(self):
         kb = _kb("""

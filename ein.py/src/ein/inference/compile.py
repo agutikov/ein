@@ -39,6 +39,26 @@ from ein.kb.entities import Fact, Rule
 
 from . import predicates, primitives
 
+
+class CompileError(ValueError):
+    """A ``:match`` clause the compiler cannot lower to a faithful plan.
+
+    S1.22.0. Every branch that raises this used to return ``[]`` — silently
+    **dropping the premise**, which is never safe in either direction:
+
+    - a dropped positive conjunct makes the match set *larger*, so the rule
+      fires on a premise that is false (unsound);
+    - a dropped conjunct inside an ``(absent …)`` makes the negative query
+      match more often, so the guard fails when it should pass — and, being
+      anti-monotone, its candidate is then retired permanently (incomplete);
+    - and a plan whose every premise was dropped has ``steps=()``, which the
+      matcher treats as one vacuous match, so the rule fires unconditionally.
+
+    All three were reproduced end-to-end before this became an error. An
+    unsupported shape is an authoring error and has to say so.
+    """
+
+
 # ── Opcode types ───────────────────────────────────────────────────
 
 
@@ -305,7 +325,19 @@ def _compile_relation(
     elif isinstance(head, Var) and head.name in bindings:
         rel_name = str(bindings[head.name])
     else:
-        return []
+        # S1.22.0 — this used to `return []`, dropping the premise. An
+        # unbound head var reaches here only when the activator failed to
+        # bind the rule's parameter (`compile_rule`'s arity-mismatch path),
+        # and a dropped premise is silently wrong: if it was the plan's only
+        # one, `steps` is `()` and the matcher yields one vacuous match, so
+        # the rule fires unconditionally. Reproduced — a rule with a ground
+        # `:assert` stored its conclusion off an arity-mismatched activator.
+        raise CompileError(
+            f"unbound relation head ?{head.name} in a premise of "
+            f"`{node!r}` — M1 matches relations per activator (Q29), so the "
+            f"head var must be bound by the rule's activator. Check that the "
+            f"activator fact's arity matches the rule's parameter list."
+        )
     slots = tuple(_slot(a, bindings) for a in node.args if not isinstance(a, KwPair))
     shared = _shared_vars(slots, known_vars)
     step = Join(rel_name, slots, shared) if shared else Scan(rel_name, slots)
@@ -338,6 +370,18 @@ def _compile_premise(
     # `(absent P)` — explicit negation-as-failure. S1.5.8c K-Δ.2.
     if head_name == primitives.ABSENT and len(node.args) >= 1:
         sub_steps = _compile_body(node.args[0], bindings, known_vars)
+        if not sub_steps:
+            # S1.22.0 — an empty sub-plan is not "a query that finds nothing",
+            # it is a query that matches VACUOUSLY: `_run_steps(())` yields one
+            # match, so `World.holds` is True and the guard fails against every
+            # possible KB. `monotone` is then True (no nested absent), so the
+            # candidate is retired permanently on its first judgement. A
+            # guard that can never pass is always an authoring mistake.
+            raise CompileError(
+                f"`(absent …)` sub-plan compiled to no steps in {node!r} — "
+                f"the guard would fail against every KB and its candidates "
+                f"would be retired permanently."
+            )
         return [AbsentGuard(sub_steps=tuple(sub_steps))]
 
     # `(forall …)` / `(open …)` are no longer compiler-level sugar: since
@@ -365,10 +409,23 @@ def _compile_premise(
     # into one match plan per disjunct by `compile_rule` (S1.8.A13; via
     # `_match_disjuncts`) BEFORE `_compile_premise` runs, so each disjunct
     # arrives here already unwrapped — `_compile_premise` never sees the `or`.
-    # A *nested* `(or …)` (e.g. inside `(and …)`) would need DNF expansion and
-    # is unsupported; emit nothing so the compiler doesn't trip.
+    # A *nested* `(or …)` (e.g. inside `(and …)` or inside `(absent …)`) would
+    # need DNF expansion and is unsupported.
+    #
+    # S1.22.0 — this used to `return []`, which did not make the shape
+    # unsupported, it made it silently WRONG in both polarities. Reproduced:
+    # `(and (a ?x) (or (p ?x) (q ?x)))` fired with neither p nor q in the KB
+    # (unsound), and `(absent (or (p ?x) (q ?x)))` never fired with neither in
+    # the KB (incomplete, and permanently so — the empty sub-plan makes the
+    # guard fail, and a failing monotone guard retires its candidate).
     if head_name == primitives.OR:
-        return []
+        raise CompileError(
+            f"nested `(or …)` in a `:match` premise: {node!r}. Only a "
+            f"TOP-LEVEL `(or …)` is supported (S1.8.A13 splits it into one "
+            f"plan per disjunct); a nested one needs DNF expansion, which "
+            f"the M1 compiler does not do. Lift the disjunction to the top "
+            f"of the `:match`, or split the rule."
+        )
 
     # Predicate dispatch: head matches a registered built-in.
     if head_name is not None and predicates.is_predicate(head_name):
@@ -528,10 +585,25 @@ def compile_rule(rule: Rule, activator: Fact | None) -> JoinPlan:
         params = rule.params
         args = activator.args
         if len(params) != len(args):
-            # Shape mismatch — leave bindings empty so the compiler
-            # produces a plan with unbound head vars (which the
-            # matcher will reject via the "unbound head var" branch).
-            pass
+            # S1.22.0 — this used to leave `bindings` empty and comment that
+            # "the matcher will reject via the 'unbound head var' branch".
+            # There is no such branch in `match._run_steps`: the rejection was
+            # `_compile_relation` returning `[]`, i.e. dropping the premise —
+            # and a plan whose premises all drop has `steps=()`, which the
+            # matcher accepts as one VACUOUS match. Reproduced: an
+            # arity-mismatched activator fired its rule unconditionally and
+            # stored a ground conclusion.
+            #
+            # Both drivers now filter mismatched activators before they get
+            # here (`Engine._activators_for`, `hrule.Hrules`), because a fact
+            # that cannot bind the parameters does not authorise the rule.
+            # A direct caller that constructs the pair anyway gets told.
+            raise CompileError(
+                f"activator {activator.relation_name}{args!r} has "
+                f"{len(args)} argument(s) but rule `{rule.name}` declares "
+                f"{len(params)} parameter(s) {params!r} — it cannot bind "
+                f"them, so it does not activate this rule."
+            )
         else:
             for p, a in zip(params, args, strict=True):
                 if isinstance(a, (str, int)):
@@ -667,6 +739,7 @@ def naf_relation_refs(plan: JoinPlan) -> list[tuple[str, bool]]:
 
 __all__ = [
     "AbsentGuard",
+    "CompileError",
     "Guard",
     "Join",
     "JoinPlan",
