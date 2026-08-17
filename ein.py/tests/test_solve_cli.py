@@ -118,3 +118,89 @@ def test_short_keys_parse_like_long():
     assert proc.returncode == 0, proc.stderr
     assert "ambiguous" in proc.stdout.lower()
     assert "solutions (k)    2" in proc.stdout
+
+
+# ── --json-summary (M1a S1a.0.1 T1a.0.1.4) ─────────────────────────
+#
+# The structured T0/T1 surface the conformance harness diffs. What matters
+# here is not the numbers (the engine's own tests own those) but the four
+# properties the harness relies on: the file is written, it is additive, it
+# is order-free, and it is reproducible.
+
+
+def _summary(tmp_path, *args: str, check: bool = True) -> dict:
+    import json
+    out = tmp_path / "summary.json"
+    proc = _run(*args, "--json-summary", str(out), check=check)
+    assert out.is_file(), proc.stderr
+    return json.loads(out.read_text(encoding="utf-8"))
+
+
+def test_json_summary_carries_verdict_stats_root_and_config(tmp_path):
+    """One object per run: what was proved, every engine counter, the
+    root-saturation shape, and the resolved config."""
+    d = _summary(tmp_path, str(FIXTURE), "-m", "3", "-e")
+    assert d["schema"] == "ein-summary/1"
+    assert d["verdict"]["type"] == "Ambiguity"
+    assert d["verdict"]["k"] == 2 and d["verdict"]["exhausted"] is True
+    assert len(d["verdict"]["solutions"]) == 2
+    # T1's counter set: MonotonicStats, plus the three blocks that live
+    # outside it (root saturator NAF, hypgen filters, compiled plan count).
+    for counter in ("enterings_total", "enterings_alive", "enterings_dead_pre",
+                    "enterings_dead_post", "layers_explored", "saturate_count",
+                    "nogoods_emitted", "nogoods_subsumed", "facts_merged",
+                    "forced_positives"):
+        assert counter in d["stats"], counter
+    assert d["root"]["saturator"]["naf_dropped"] == 0   # structural since S1.21.8
+    assert set(d["root"]["hypgen"]) == {"raw", "emitted", "filtered",
+                                        "pre_candidate"}
+    assert d["root"]["plans"] > 0
+    assert d["config"]["lattice-order"] == "lex"
+
+
+def test_json_summary_is_additive(tmp_path):
+    """Writing it changes nothing else — same stdout, stderr and exit code,
+    so one invocation can serve every parity tier at once."""
+    # `-p` for a large stdout; not `-s`, whose `wall` line is wall-clock and
+    # so differs run-to-run for reasons that have nothing to do with the flag.
+    with_ = _run(str(FIXTURE), "-m", "2", "-p",
+                 "--json-summary", str(tmp_path / "s.json"))
+    without = _run(str(FIXTURE), "-m", "2", "-p")
+    assert (with_.stdout, with_.stderr, with_.returncode) == \
+           (without.stdout, without.stderr, without.returncode)
+
+
+def test_json_summary_is_order_free_and_reproducible(tmp_path):
+    """Every set-shaped observable is sorted, so two runs are byte-identical
+    and a diff reports semantics rather than iteration order."""
+    a = tmp_path / "a.json"
+    b = tmp_path / "b.json"
+    _run(str(FIXTURE), "-m", "3", "-e", "--json-summary", str(a))
+    _run(str(FIXTURE), "-m", "3", "-e", "--json-summary", str(b))
+    assert a.read_bytes() == b.read_bytes()
+    import json
+    d = json.loads(a.read_text(encoding="utf-8"))
+    facts = d["verdict"]["solutions"][0]["facts"]
+    assert facts == sorted(facts)
+    by_rel = list(d["root"]["facts_by_relation"])
+    assert by_rel == sorted(by_rel)
+
+
+def test_json_summary_on_contradiction_carries_the_core(tmp_path):
+    """A k=0 verdict has no model to report, so the core takes its place."""
+    d = _summary(tmp_path, str(EXAMPLES / "ein-bugs" / "zebra2-bad.ein"),
+                 "-E", "20")
+    assert d["verdict"]["type"] == "Contradiction"
+    assert d["verdict"]["solutions"] == []
+    assert d["verdict"]["unsat_core"]
+
+
+def test_json_summary_on_abort(tmp_path):
+    """A budget abort exits 2 and still writes a summary — partial stats,
+    `exhausted` false, and the reason. `--max-enterings` is the parity-safe
+    budget; `--max-time` is not (it depends on machine speed)."""
+    d = _summary(tmp_path, str(EXAMPLES / "zebra2.ein"), "-e", "-E", "3",
+                 check=False)
+    assert d["verdict"]["type"] == "Aborted"
+    assert d["verdict"]["reason"] == "max-enterings (3) reached"
+    assert d["verdict"]["exhausted"] is False

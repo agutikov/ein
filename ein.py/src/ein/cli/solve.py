@@ -333,6 +333,11 @@ def _cmd_solve(args: argparse.Namespace) -> int:
         )
     except BudgetExceededError as e:
         print(f"** aborted: {e.reason} **", file=sys.stderr)
+        if args.json_summary:
+            from . import _summary
+            _summary.write(args.json_summary, _summary.build_aborted(
+                reason=e.reason, stats=e.stats, kb=kb, config=config,
+                source=args.file))
         return 2
     elapsed_ms = (time.perf_counter() - t0) * 1000.0
 
@@ -350,6 +355,13 @@ def _cmd_solve(args: argparse.Namespace) -> int:
                       stats=stats)
     if args.trace:
         _write_trace(verdict, args)
+    # Last: the summary re-saturates a fork of root to fill its `root` block,
+    # so it runs after every stdout-producing step rather than between two.
+    if args.json_summary:
+        from . import _summary
+        _summary.write(args.json_summary, _summary.build(
+            verdict=verdict, stats=stats, kb=kb, config=config,
+            source=args.file))
     return 0
 
 
@@ -431,6 +443,14 @@ def add_parser(sub) -> None:
     p.add_argument("-f", "--print-final-hfacts", action="store_true",
                    help="dump only the hypothesis-target (query :hrules) facts "
                         "per solution")
+
+    # ── machine-readable summary (file only) ──
+    p.add_argument("--json-summary", default=None, metavar="FILE.json",
+                   help="write the structured run summary (verdict, model, "
+                        "every engine counter, the root-saturation shape, the "
+                        "resolved config) to FILE as JSON. Additive: stdout, "
+                        "stderr and the exit code are unchanged. Feeds the M1a "
+                        "conformance harness's T0/T1 parity tiers.")
 
     # ── markdown trace (file only) ──
     p.add_argument("-r", "--trace", default=None, metavar="FILE.md",
