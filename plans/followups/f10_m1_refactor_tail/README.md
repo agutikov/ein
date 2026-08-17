@@ -30,7 +30,7 @@ ordering never ranked.
 
 | # | group | stages | rationale |
 |---|---|---|---|
-| 1 | [`1_trivial/`](1_trivial/) | `.10` `.11` `.16` `.17` `.19` `.24` `.32` | trivial / low risk — drain first |
+| ~~1~~ | ~~`1_trivial/`~~ | `.10` `.11` `.16` `.17` `.19` `.24` `.32` | **drained 2026-08-17** — see [§Group 1](#group-1--trivial--low-risk-drained-2026-08-17) |
 | 2 | [`2_kb_store/`](2_kb_store/) | `.20` `.21` | `kb/store.py`; the typed-wrapper prerequisite was re-scoped and closed, so these two stand alone |
 | 3 | [`3_dot_emitter/`](3_dot_emitter/) | `.25` → `.26` | the RTC DOT pair, in that order — `.26` routes through `.25`'s API |
 | 4 | [`4_trace_depth/`](4_trace_depth/) | `.29` | last of the ranked waves |
@@ -38,28 +38,70 @@ ordering never ranked.
 
 | ID | title | finding | leverage / risk |
 |---|---|---|---|
-| **S1.7c.10** | `FactId` neutral home | F-KER-6 | trivial |
-| **S1.7c.11** | Unify the two swapped-arg `_resolve` | F-KER-7 | low |
 | **S1.7c.12** | Unify the provenance-chain DFS | F-KER-10 | low–med |
 | **S1.7c.13** | `_lattice_public` post-amble | F-ENG-5 (+14) | low |
 | **S1.7c.14** | Collapse unsat-core synthesis | F-ENG-7 | med |
-| **S1.7c.16** | Factor `_BaseStats` | F-ENG-9 | low |
-| **S1.7c.17** | `_TimelineMixin` for dumpers | F-ENG-11 | low |
 | **S1.7c.18** | Drop redundant `consistent()` (perf) | F-ENG-12 | perf |
-| **S1.7c.19** | Remove the two `type: ignore` | F-ENG-13 | trivial |
 | **S1.7c.20** | Decompose `rebuild_indexes` | F-KB-2 | med |
 | **S1.7c.21** | `snapshot` shallow-copy | F-KB-6 | med |
-| **S1.7c.24** | Restore `Query` annotations | F-KB-13 | low |
 | **S1.7c.25** | Shared DOT emitter API | F-RTC-1 (+F-KB-8) | high (headline) |
 | **S1.7c.26** | Decompose `to_dot` | F-KB-10 ≡ F-RTC-6 | med |
 | **S1.7c.27** | Split `_build_parser` | F-RTC-2 | low–med |
 | **S1.7c.29** | Flatten `parse_trace_steps` (depth 9) | F-RTC-4 | med |
-| **S1.7c.32** | Share the S-expr escaper (fixes a bug) | F-RTC-10 | low (+regression) |
 
 Reuse the P1.7b acceptance gate as the invariant for every stage —
 `run_tests.sh` (the `bench_solve_monotonic_pypy.sh` half of the original
 gate no longer exists; `utils/profile_solve.py` is its replacement for the
 perf-shaped `.18`).
+
+## Drained — measured against HEAD, stub deleted
+
+The stage files these replace were **not** open work: every one had already
+landed during Track B (2026-06-02/03) and the done-status died with the M1
+plan folder in P1.22 S1.22.99, which carried the *specs* across but not
+their verdicts. Each line below names the landing commit and the
+current-code evidence that its acceptance still holds.
+
+### Group 1 — trivial / low risk (drained 2026-08-17)
+
+- **S1.7c.10** (`FactId` neutral home, F-KER-6) — landed `a307f6b`.
+  `FactId = tuple[str, tuple[object, ...]]` is defined once, at
+  `kb/provenance.py:53`; `inference/apriori.py:31` now *imports* it from
+  there, so the accidental solution→BFS coupling is gone. `ruff` clean.
+- **S1.7c.11** (unify the swapped-arg `_resolve`, F-KER-7) — landed
+  `b0b6a6c`. One implementation, `inference/resolve.py::resolve_leaf(slot,
+  bindings, on_unbound)`, imported by `firing.py:32` and
+  `predicates.py:39`. The genuine divergence — firing fails loud on an
+  unbound `Var`, a predicate resolves it to `None` — became the
+  `on_unbound` policy argument rather than a second copy.
+- **S1.7c.16** (factor `_BaseStats`, F-ENG-9) — landed `56886a3`.
+  `lattice.py:64` holds `_BaseStats`; `MonotonicStats` (`_state.py:50`) and
+  `LatticeStats` (`lattice.py:91`) inherit it, and `_build_lattice_stats`
+  (`_helpers.py:239`) copies via `fields(_BaseStats)` — the hand-maintained
+  field list that could go stale is gone.
+- **S1.7c.17** (`_TimelineMixin`, F-ENG-11) — landed `3496535`.
+  `_serialise.py:147` carries `close` / `summary` / `_emit_timeline` once;
+  mixed into `MonotonicDumper` (`state_dump.py:47`) and `LatticeDumper`
+  (`_lattice_dump.py:66`).
+- **S1.7c.19** (drop the two `type: ignore[arg-type]`, F-ENG-13) — landed
+  `56886a3`. Zero `type: ignore` in `solver.py` and zero `[arg-type]`
+  anywhere under `inference/monotonic/`. (The six left in `state_dump.py`
+  are `[override]` on `ProgressDumper`'s narrowed signatures — a different
+  suppression, never F-ENG-13's subject.)
+- **S1.7c.24** (restore `Query` annotations, F-KB-13) — landed `78eca99`
+  (typing) + `fc098a6` (tail). No `Any`-typed field survives in
+  `store.py`: `Query` is just `kw_pairs: tuple[KwPair, ...]`, `config` is
+  `SolverConfig | None` behind a `TYPE_CHECKING` forward ref (checker-only
+  edge, no runtime cycle), and `alive` / `consume_stats` turned out to be
+  dead vestiges of the removed back-prop tree-solver — **deleted** rather
+  than typed, which is the stronger close.
+- **S1.7c.32** (share the S-expr escaper, F-RTC-10) — landed `9e3660a`.
+  `ir/strings.py::escape_string_literal` applies the full
+  `\` `"` `\n` `\t` `\r` set for both `ir/dump.py:20` and `trace/ast.py:19`.
+  The latent round-trip bug is locked by a **byte-level** regression test,
+  `tests/trace/test_render.py::test_trace_control_chars_escaped_on_emit` —
+  it asserts on emitted bytes precisely because a value round-trip alone is
+  green pre-fix and proves nothing.
 
 ## Closed — no stage file
 
