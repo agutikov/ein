@@ -38,6 +38,7 @@ Two closeout debts, by user decision (2026-08-16):
 | ID | prio | stage | tasks |
 |---|---|---|---|
 | S1.22.1 | P0 | [Obsolete-syntax census → purge](s1.22.1_obsolete_syntax.md) | T1.22.1.1 census+report / T1.22.1.2 purge |
+| S1.22.1a | P1 | [`zebra.ein`: modernise and make it solve](s1.22.1a_zebra_ein_modernisation.md) | T1.22.1a.1 investigate+report / T1.22.1a.2 execute |
 | S1.22.2 | P1 | [M1-plans preservation census → delete](s1.22.2_m1_plans_deletion.md) | T1.22.2.1 census+report / T1.22.2.2 migrate+delete |
 
 **Strictly serial** (unlike P1.21): the deletion census (T1.22.2.1) must run
