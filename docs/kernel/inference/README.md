@@ -542,8 +542,7 @@ needed branching to discover the same negatives: a known
 saturation pass, so the candidates lingered in hypgen's
 output and the solver split into 568 nodes searching for a
 contradiction that NL closes at d=0. After S1.5a.19 the tree
-collapses to 32 nodes at `--max-depth 1` (see
-[`STATUS.md`](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/STATUS.md)).
+collapses to 32 nodes at `--max-depth 1` (S1.5a.19).
 
 Six new rules ship in
 [`examples/zebra2.ein`](../../../examples/zebra2.ein) (mirrored
@@ -740,8 +739,7 @@ contradiction depends on the candidate's own consequences).
 Together the rules + mechanism implement at the engine level
 what the NL trace does at the cognitive level: each commitment
 unfolds its consequences fully before the next decision. The
-result is the 568 → 32 node collapse documented in
-[`STATUS.md`](../../../plans/m1_core_graph_reasoning/p1.5a_zebra_solution/STATUS.md).
+result is the 568 → 32 node collapse measured at S1.5a.19.
 
 **Future composition.** The mid-sweep saturator pass is the
 engine's "go up" channel; pre-2026-05-26 it was the motivation
@@ -1001,13 +999,36 @@ On the laptop reference (PyPy):
   `is_solved`. ~18× faster than tree on CPython; ~4× on PyPy.
 - `examples/branching/*` (11 fixtures): all 11 reach the
   tree-side bindings; combined parity-test wall ~3.5 s. See
-  [`parity_baselines.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/parity_baselines.md).
+  [`parity_baselines.md`](parity_baselines.md).
+
+### Two engines, two termination criteria
+
+The monotonic and lattice engines are **not** interchangeable
+implementations of one search — they terminate differently on purpose,
+and the verdict each can report follows from that (M1 P1.5b Q1.5b.7,
+resolved 2026-05-25; the user's framing: *"monotonic converges to first
+met solution if any, lattice converges to full map of all solutions"*).
+
+| engine | termination | modes it can serve |
+|---|---|---|
+| **monotonic** | **first goal-satisfaction** at root, or layer exhaustion, or the `max_set_size` cap | SOLVE only — the architecture stores no per-set state, so it can enumerate neither multiple solutions nor per-dead-set unsat cores |
+| **lattice** | **exhaustive** to `max_set_size`; no early exit | SOLVE / GAPS / CONTRADICTIONS |
+
+Monotonic's verdict is decided by *which* termination condition fired
+(the five outcomes above). Lattice computes its verdict at end-of-search
+from the accumulated alive/dead frontier plus per-set `is_solved`:
+**Solution** iff exactly one SetNode satisfies the goal and nothing alive
+remains unexplored above the cap; **Ambiguity** if several satisfy it, or
+one is still alive at the cap without satisfying;
+**Contradiction** otherwise. See
+[`algorithm_layer_n.md`](algorithm_layer_n.md) §3d.vii.
 
 ### Cross-links
 
-- Stage plan: [P1.5b S1.5b.0–.10 in p1.5b_lattice_search/](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/).
-- Equivalence claim: [Q1.5b.7 § monotonic vs lattice](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/open_questions.md#q15b7--termination--completeness--mode-handling).
-- Algorithm spec: [`algorithm_layer_n.md`](../../../plans/m1_core_graph_reasoning/p1.5b_lattice_search/algorithm_layer_n.md) §3d.
+- Algorithm spec: [`algorithm_layer_n.md`](algorithm_layer_n.md) §3d.
+- Diagrams: [`lattice_diagrams.md`](lattice_diagrams.md).
+- Stage plan: M1 P1.5b S1.5b.0–.10 (plans removed at P1.22; see git
+  history).
 
 ## Where the design lives today
 
