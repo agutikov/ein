@@ -37,10 +37,12 @@ Two closeout debts, by user decision (2026-08-16):
 
 | ID | prio | stage | tasks |
 |---|---|---|---|
-| S1.22.0 | **P0** | [Boundary verification debt: completeness + state parity](s1.22.0_boundary_verification.md) | T1.22.0.1 attack+report / T1.22.0.2 fix+pin |
-| S1.22.1 | P0 | [Obsolete-syntax census → purge](s1.22.1_obsolete_syntax.md) | T1.22.1.1 census+report / T1.22.1.2 purge |
+| S1.22.0 | **P0** ✅ | [Boundary verification debt: completeness + state parity](s1.22.0_boundary_verification.md) | T1.22.0.1 attack+report / T1.22.0.2 fix+pin |
+| S1.22.1 | P0 ✅ | [Obsolete-syntax census → purge](s1.22.1_obsolete_syntax.md) | T1.22.1.1 census+report / T1.22.1.2 purge |
 | S1.22.1b | **P0** ✅ | [Cross-layer contradiction bug; remove knowledge layers](s1.22.1b_layer_removal.md) | T1.22.1b.1 census+report / T1.22.1b.2 fix+pin / T1.22.1b.3 remove — **shipped 2026-08-17** |
-| S1.22.1a | P1 | [`zebra.ein`: modernise and make it solve](s1.22.1a_zebra_ein_modernisation.md) | T1.22.1a.1 investigate+report / T1.22.1a.2 execute |
+| S1.22.1a | P1 ✅ | [`zebra.ein`: modernise and make it solve](s1.22.1a_zebra_ein_modernisation.md) | T1.22.1a.1 investigate+report / T1.22.1a.2 execute |
+| S1.22.3 | P1 | [Relation-signature semantics: document the kernel/userspace split](s1.22.3_relation_signature_semantics.md) | T1.22.3.1 docs pass |
+| S1.22.4 | P1 | [`relation` as a kernel word: decide and rehome](s1.22.4_relation_kernel_word.md) | T1.22.4.1 decide+park |
 | S1.22.99 | P1 | [M1-plans preservation census → delete](s1.22.99_m1_plans_deletion.md) | T1.22.99.1 census+report / T1.22.99.2 migrate+delete |
 
 **Why `99`** (renumbered from S1.22.2, 2026-08-17): this stage deletes the
@@ -53,7 +55,18 @@ again.
 **Strictly serial from S1.22.1 on**: the deletion census (T1.22.99.1) must
 run on the **post-purge** tree (the purge edits the very docs whose inbound
 links it inventories), and the deletion itself is terminal. Order:
-T1.22.1.1 → T1.22.1.2 → **S1.22.1b** → S1.22.1a → … → T1.22.99.1 → T1.22.99.2.
+T1.22.1.1 → T1.22.1.2 → **S1.22.1b** → S1.22.1a → S1.22.3 → S1.22.4 →
+T1.22.99.1 → T1.22.99.2.
+
+**S1.22.3 / S1.22.4 slot into the reserved range** (added 2026-08-17, from
+the root-`TODO.md` scratchpad block on relation-signature semantics —
+quoted in full in S1.22.3, pruned from the scratchpad): the docs pass
+(S1.22.3) edits `docs/kernel/` and so must precede the deletion census;
+the decision stage (S1.22.4) consumes that pass's census, and — per this
+README's own out-of-scope rule — may *park* engine work but not execute
+it. `S1.22.2` stays unused: it was the deletion stage's number before the
+S1.22.99 renumbering, and reusing it would collide with older commit
+messages.
 
 **S1.22.1b precedes S1.22.1a** (added 2026-08-17, by user ruling): it changes
 what the search kills, so running it after `zebra.ein`'s solvability work
