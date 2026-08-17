@@ -24,6 +24,18 @@ independently landable, and gated by the same invariant (`run_tests.sh` +
 
 ## The tail
 
+The stage files are filed into **five group directories**, in the execution
+order P1.7b suggested — the four ranked waves, then the remainder the
+ordering never ranked.
+
+| # | group | stages | rationale |
+|---|---|---|---|
+| 1 | [`1_trivial/`](1_trivial/) | `.10` `.11` `.16` `.17` `.19` `.24` `.32` | trivial / low risk — drain first |
+| 2 | [`2_kb_store/`](2_kb_store/) | `.20` `.21` | `kb/store.py`; the typed-wrapper prerequisite was re-scoped and closed, so these two stand alone |
+| 3 | [`3_dot_emitter/`](3_dot_emitter/) | `.25` → `.26` | the RTC DOT pair, in that order — `.26` routes through `.25`'s API |
+| 4 | [`4_trace_depth/`](4_trace_depth/) | `.29` | last of the ranked waves |
+| 5 | [`5_unranked/`](5_unranked/) | `.12` `.13` `.14` `.18` `.27` | the five the suggested ordering does not rank — engine + CLI, `.18` is the only perf-shaped one |
+
 | ID | title | finding | leverage / risk |
 |---|---|---|---|
 | **S1.7c.10** | `FactId` neutral home | F-KER-6 | trivial |
@@ -44,12 +56,10 @@ independently landable, and gated by the same invariant (`run_tests.sh` +
 | **S1.7c.29** | Flatten `parse_trace_steps` (depth 9) | F-RTC-4 | med |
 | **S1.7c.32** | Share the S-expr escaper (fixes a bug) | F-RTC-10 | low (+regression) |
 
-**Suggested ordering.** `.10`/`.11`/`.16`/`.17`/`.19`/`.24`/`.32` first
-(trivial / low risk); then `.20`/`.21` (the typed-wrapper prerequisite was
-re-scoped and closed, so these two stand alone); the RTC DOT pair
-`.25 → .26`; then `.29`. Reuse the P1.7b acceptance gate
-(`run_tests.sh` + `bench_solve_monotonic_pypy.sh`) as the invariant for
-every stage.
+Reuse the P1.7b acceptance gate as the invariant for every stage —
+`run_tests.sh` (the `bench_solve_monotonic_pypy.sh` half of the original
+gate no longer exists; `utils/profile_solve.py` is its replacement for the
+perf-shaped `.18`).
 
 ## Closed — no stage file
 
