@@ -34,20 +34,11 @@ ordering never ranked.
 | ~~2~~ | ~~`2_kb_store/`~~ | `.20` `.21` | **drained 2026-08-17** — see [§Group 2](#group-2--kbstorepy-drained-2026-08-17) |
 | ~~3~~ | ~~`3_dot_emitter/`~~ | `.25` → `.26` | **drained 2026-08-17** — see [§Group 3](#group-3--the-rtc-dot-pair-drained-2026-08-17) |
 | ~~4~~ | ~~`4_trace_depth/`~~ | `.29` | **drained 2026-08-17** — see [§Group 4](#group-4--trace-depth-drained-2026-08-17) |
-| 5 | [`5_unranked/`](5_unranked/) | `.12` `.13` `.14` `.18` `.27` | the five the suggested ordering does not rank — engine + CLI, `.18` is the only perf-shaped one |
+| ~~5~~ | ~~`5_unranked/`~~ | `.12` `.13` `.14` `.18` `.27` | **drained 2026-08-17** — see [§Group 5](#group-5--the-unranked-remainder-drained-2026-08-17) |
 
-| ID | title | finding | leverage / risk |
-|---|---|---|---|
-| **S1.7c.12** | Unify the provenance-chain DFS | F-KER-10 | low–med |
-| **S1.7c.13** | `_lattice_public` post-amble | F-ENG-5 (+14) | low |
-| **S1.7c.14** | Collapse unsat-core synthesis | F-ENG-7 | med |
-| **S1.7c.18** | Drop redundant `consistent()` (perf) | F-ENG-12 | perf |
-| **S1.7c.27** | Split `_build_parser` | F-RTC-2 | low–med |
-
-Reuse the P1.7b acceptance gate as the invariant for every stage —
-`run_tests.sh` (the `bench_solve_monotonic_pypy.sh` half of the original
-gate no longer exists; `utils/profile_solve.py` is its replacement for the
-perf-shaped `.18`).
+Nothing is left in the table. The gate every stage was measured against is
+`run_tests.sh` — the `bench_solve_monotonic_pypy.sh` half of P1.7b's
+original invariant no longer exists (`utils/profile_solve.py` replaced it).
 
 ## Drained — measured against HEAD, stub deleted
 
@@ -169,6 +160,57 @@ current-code evidence that its acceptance still holds.
   `_atom_or_value` (`:102`). The round-trip gate the stage names,
   `tests/trace/test_render.py::test_trace_ast_round_trips`, is green
   (26 passed on this run).
+
+### Group 5 — the unranked remainder (drained 2026-08-17)
+
+Three landed and hold; two landed and were then **outlived by the code they
+targeted** — worth reading, because a reader who greps for the symbols the
+stage names will find nothing and could mistake that for a gap.
+
+- **S1.7c.12** (unify the provenance DFS, F-KER-10) — landed `28cbd51` as
+  one `_reaches(…, is_terminal)` with the two callers passing their
+  terminal predicate; then **retired outright**. P1.21 R2 removed the
+  unsound unconditional-fact extraction, which was `reaches`' sole caller,
+  and `inference/back_prop.py` went with it — `walk_premises`'
+  docstring in `kb/provenance.py` records exactly that. The two visited-set
+  walks left in that module are not the duplicated pair: `walk_premises` is
+  an accumulating closure walk, `find_provenance_cycles` a path-stack cycle
+  detector. Different algorithms, no shared body to extract.
+- **S1.7c.13** (`_lattice_public` post-amble, F-ENG-5 + F-ENG-14) — landed
+  `9f0f66d`, now **moot on both halves**. The `gaps_solve` /
+  `contradictions_solve` sibling entries — which chose the verdict up front
+  — were removed in favour of the single `solve()` (`solver.py:69-70`
+  carries the reasoning), so there is no duplicated post-amble left to
+  share. F-ENG-14 dissolved with it: `solve()` returns `_explore_layers(…)`
+  directly and there is no bare `assert isinstance` in the public return
+  path, so nothing degrades under `python -O`. The contract test the stage
+  demanded went out with the entries it guarded, which is the house rule —
+  removing a special case removes its tests.
+- **S1.7c.14** (collapse unsat-core synthesis, F-ENG-7) — landed `56886a3`
+  and intact. Both helpers live in `_state.py`: `_union_dead_cores`
+  (`:112`) and `_source_frontier_core` (`:121`), with the former called at
+  `_state.py:168` and the latter at `_helpers.py:210` and `:350`. The 2×2
+  duplication is one implementation each.
+- **S1.7c.18** (drop the redundant `consistent()`, F-ENG-12) — landed
+  `d0a9ac6`. The alive branch calls `complete(result.kb)` directly
+  (`solver.py:340`), and the comment above it states the invariant the
+  saving rests on: `try_commitment_set` returns `kind="alive"` only after
+  its post-saturation `ContradictionDetector.detect()` came back empty, and
+  `result.kb` is that unmutated fork — so `is_solution_node`'s consistency
+  half would re-run a full detect on a kb already proved consistent. The
+  same path got a second, independent win later: `complete()` now
+  short-circuits on the generator's first candidate (`b9e7a60`, F9 E16),
+  measured at 54 ms of a 1.7 s zebra2 solve.
+- **S1.7c.27** (split `_build_parser` + `_load_kb_or_exit`, F-RTC-2) —
+  landed `7ce72b0` and then carried cleanly through P1.11's `cli.py` →
+  `cli/` folder move, which is the stronger end state the stage's
+  "internal-only, does not pre-empt the P1.11 move" note anticipated.
+  `_build_parser` (`cli/__init__.py:56`) is 10 lines delegating to
+  `render.add_parser` / `solve.add_parser` / `_add_delegated`; each
+  subcommand owns its own parser in its own module. `_load_kb_or_exit` and
+  `_parse_or_exit` share `cli/_common.py` on one sentinel convention
+  (return `None`, never `sys.exit`). `ein --help` and both subcommand
+  helps render as expected.
 
 ## Closed — no stage file
 
