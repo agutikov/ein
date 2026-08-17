@@ -39,6 +39,7 @@ CELLS: dict[str, dict] = {
     "no-symmetric-mirror":      {"enable_symmetric_mirror": False},
     "no-singleton-writeback":   {"enable_singleton_writeback": False},
     "no-forced-positive":       {"enable_forced_positive": False},
+    "no-fail-fast-fork":        {"enable_fail_fast_fork": False},
     "hypgen-most-constrained":  {"hypgen_scoring": "most-constrained"},
     "lattice-score-sum":        {"lattice_order": "score-sum"},
 }

@@ -203,11 +203,13 @@ block. **Resolution precedence:** explicit `solve(kb, config=…)` >
 | `enable_symmetric_mirror` | `True` | The `__symmetric__` native arg-swap mirror (kernel fast-path over the stdlib `symmetric` rule). Off → marked relations not closed under swap by the fast-path. |
 | `enable_singleton_writeback` | `True` | Size-1 dead-clause `(not h)` writeback to `_negated_facts`. Off → the negation is re-derived rather than cached. |
 | `enable_forced_positive` | `True` | Forced-positive promotion: a sole-surviving alive singleton is promoted to a root fact. |
+| `enable_fail_fast_fork` | `True` | Stop a fork's saturation at the firing whose conclusion makes it inconsistent, instead of saturating to quiescence and only then scanning (sound: the KB is append-only, so a contradiction is never retracted). 2.4× on exhaustive `zebra2`. Off → dead forks run to the fixpoint, so `firings` is the full run and the dead fork's `state_key` the complete state — wanted when a *dead* fork's post-saturation KB is itself the artefact. |
 | `record_alternative_justifications` | `True` | Record a re-derivation of an already-known fact as an *alternative* justification ([`kb.justifications`](kb.md)) instead of dropping it, making the proof an AND/OR graph for the minimal-explanation search to traverse. Off → one justification per fact, and the reported `unsat_core` degrades to the recorded-primary walk (sound, but dependent on rule-firing order). |
 
-The last four `enable_*` flags (added S1.20.I2) gate features that were
-previously always-on, so P1.20 Theme I can measure each — all default `True`,
-so the shipped solve is unchanged.
+The four S1.20.I2 `enable_*` flags (`path_nogoods` … `forced_positive`) gate
+features that were previously always-on, so P1.20 Theme I can measure each;
+`enable_fail_fast_fork` (S1.9.E23) follows the same convention. All default
+`True`, so the shipped solve is the all-on configuration.
 
 `SolverConfig.from_kw_pairs(kw_pairs)` builds one from a parsed `(config
 …)` body (the loader uses this; unknown flags raise `ValueError`).

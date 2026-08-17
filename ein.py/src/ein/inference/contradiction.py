@@ -177,4 +177,45 @@ class ContradictionDetector:
             )
 
 
-__all__ = ["Contradiction", "ContradictionDetector"]
+# ── Incremental check (S1.9.E23 fail-fast) ────────────────────────
+
+
+def contradicts(kb: KnowledgeBase, fact: Fact) -> bool:
+    """True iff ``fact``, just written to ``kb``, makes it inconsistent.
+
+    The O(1) *incremental* dual of :meth:`ContradictionDetector.detect`:
+    the scan asks "does this KB hold a contradiction?", this asks "did
+    THIS fact create one?". Both recognise the same two shapes, so on a
+    KB that was consistent before ``fact`` landed the two agree —
+    ``contradicts(kb, f)`` is true exactly when ``detect()`` becomes
+    non-empty.
+
+    That equivalence is what lets the fork saturation fail fast
+    (:func:`ein.inference.commitment.try_commitment_set`): the KB is
+    append-only, so a contradiction can only be *created* by an
+    insertion, and once created it can never be retracted. Checking each
+    derived fact as it lands therefore finds every death a
+    post-fixpoint scan would, ~2.5k firings earlier on a zebra2 dead
+    fork (S1.9.E23 measurement: the clash lands after ~320 of ~2790
+    firings — 88% of a dying fork's saturation is waste).
+
+    Cost: one dict lookup. The positive case reads
+    ``kb._negated_facts`` — the index ``_index_fact`` maintains for every
+    ``(not X)`` fact as it lands (and ``rebuild_indexes`` recomputes), so
+    it is exactly the set of ``X`` the ``pair`` branch of :meth:`_iter`
+    would match against.
+    """
+    rn = fact.relation_name
+    if rn == primitives.FALSE:
+        return True                      # direct ⊥
+    if rn == primitives.NOT:
+        # `fact` is `(not X)` — dead iff the positive `X` is present.
+        inner = fact.args[0] if fact.args else None
+        if not isinstance(inner, Fact):
+            return False                 # malformed; detect() skips it too
+        return kb._fact_by_id(inner.relation_name, inner.args) is not None
+    # `fact` is positive — dead iff some `(not fact)` is present.
+    return (rn, fact.args) in kb._negated_facts
+
+
+__all__ = ["Contradiction", "ContradictionDetector", "contradicts"]

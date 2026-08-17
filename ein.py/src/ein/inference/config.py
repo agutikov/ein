@@ -176,6 +176,23 @@ class SolverConfig:
     # `smallest_contradiction_frontier` falls back to the recorded-primary
     # walk (sound, but order-dependent — see `tests/inference/test_frontier.py`).
     record_alternative_justifications: bool = True
+    # S1.9.E23 — fail-fast fork saturation. On (the default),
+    # `try_commitment_set` stops a fork's saturation at the firing whose
+    # conclusion makes the fork inconsistent instead of running to
+    # quiescence and only then scanning: the KB is append-only, so a
+    # contradiction can never be retracted and every firing past it is
+    # waste (zebra2 exhaustive: dead forks clash after ~320 of ~2790
+    # firings — ~64% of all fork-saturation time). The verdict is
+    # unchanged either way.
+    # Off ⇒ the pre-S1.9.E23 behaviour: dead forks saturate to the
+    # fixpoint, so `result.firings` is the full run and `result.kb` the
+    # complete dead state. Wanted when a *dead* fork's post-saturation
+    # state is itself the artefact — `solve` never reads it back (it
+    # builds no SetNode DAG), but a DAG builder that merges dead
+    # commitments by `canon.state_key` (`_record_setnode`) needs the
+    # fixpoint: two orientations of a symmetric dead commitment share
+    # that, not necessarily a fail-fast prefix.
+    enable_fail_fast_fork:           bool = True
 
     @classmethod
     def from_kw_pairs(cls, kw_pairs: Iterable[Any]) -> SolverConfig:

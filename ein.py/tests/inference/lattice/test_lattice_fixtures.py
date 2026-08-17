@@ -29,10 +29,12 @@ Cross-references:
 from __future__ import annotations
 
 import os
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
 
+from ein.inference.config import SolverConfig
 from ein.inference.monotonic import (
     solve,
     validate_proof_for_explanation,
@@ -182,3 +184,46 @@ def test_zebra2_hints_solves():
     verdict, _stats = _solve(kb, max_set_size=1)
     assert verdict.proof is not None
     validate_proof_for_explanation(verdict, verdict.proof)
+
+
+# ── Fail-fast fork saturation — verdict parity — S1.9.E23 ─
+
+
+@pytest.mark.parametrize("fixture,max_set_size", [
+    ("01_subset_pruned.ein", 3),
+    ("02_genuine_3set_death.ein", 3),
+    ("03_state_hash_collision.ein", 2),
+])
+def test_fail_fast_fork_is_verdict_and_proof_neutral(fixture, max_set_size):
+    """``enable_fail_fast_fork`` may not change *what* the search finds.
+
+    Stopping a dying fork's saturation at the clash is sound because the
+    KB is append-only — a fork inconsistent at firing *n* is inconsistent
+    at the fixpoint — so the flag is a pure work-saving. This pins that
+    on the three lattice fixtures: same verdict class, same stats
+    (enterings / deaths / solution count / exhausted), same refuted
+    commitments and same learned clauses.
+
+    What the flag *does* change is per-dead-fork detail the search never
+    reads back: ``result.firings`` is the prefix and ``DeadCommitment
+    .state_key`` the partial state (which is why the ``store_lattice``
+    DAG's same-state dead merge wants it off).
+    """
+    def run(on: bool):
+        kb = _kb_from(LATTICE / fixture)
+        kb.config = replace(
+            kb.config or SolverConfig(), enable_fail_fast_fork=on)
+        return _solve(kb, max_set_size=max_set_size)
+
+    (v_off, s_off), (v_on, s_on) = run(False), run(True)
+
+    assert type(v_on) is type(v_off)
+    assert s_on == s_off, "MonotonicStats must be identical"
+    assert (
+        {d.commitment for d in v_on.proof.dead_commitments}
+        == {d.commitment for d in v_off.proof.dead_commitments}
+    )
+    assert v_on.proof.learned_nogoods == v_off.proof.learned_nogoods
+    assert (
+        len(v_on.proof.solutions) == len(v_off.proof.solutions)
+    )

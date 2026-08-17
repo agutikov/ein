@@ -231,9 +231,11 @@ assumption environments explored breadth-first by cardinality, a dead
 environment is learned whole as a no-good clause (kept
 subsumption-minimal), and Apriori's downward-closure filter suppresses
 its supersets. **CDCL/CSP is the analog** (no-good ≈ conflict clause /
-CSP no-good) **and an optimization direction**
-([P1.9 E-catalog](../../../plans/followups/f9_e_catalog/README.md)),
-not the mechanism.
+CSP no-good) but, as an *optimization direction*, a measured dead end here:
+the whole reorderer / consistency-pre-pass cluster was tried and rejected
+against a complete cardinality-BFS
+([F9 ledger](../../../plans/followups/f9_e_catalog.md)). It is the analog,
+not the mechanism, and not the roadmap.
 Two idiosyncrasies stand out against that backdrop, both in O7: Ein
 branches on **sets of commitments enumerated by cardinality (Apriori)**
 rather than one decision variable at a time (DPLL), and it keeps **explicit
@@ -267,7 +269,10 @@ beta-memories, but re-joins only the *delta* and seeds at the new fact
 (semi-naive join). **Gap:** no persisted beta-memories (the partial-join
 products are recomputed every relevant firing — the thing RETE would cache),
 and no worst-case-optimal join (binary plans only). Beta-memories are the
-natural next step beyond D5; WCOJ matters only if cyclic joins appear.
+natural next step beyond D5; WCOJ matters only if cyclic joins appear. Both
+are parked as
+[F11](../../../plans/followups/f11_deductive_layer_perf.md), which carries
+the fork-state design problem a beta-memory has to answer first.
 
 ### O2 — Saturation (the fixpoint loop)
 
@@ -390,6 +395,18 @@ CSP it is constraint-violation checking under propagation.
 the O(1) `_negated_facts` index) plus the rule-asserted `(false)` sentinel
 (`contradiction.py`). Measured ~0 s — not a bottleneck, so the watched-literal
 machinery would be premature. **Adequate as-is.**
+
+*When* the scan runs, however, was worth ~2× (S1.9.E23). The fork used to
+saturate to quiescence and only then ask; since the KB is append-only a
+contradiction can never be retracted, so every firing past the clash is
+provably waste — and on zebra2 the clash lands after ~320 of ~2790 firings,
+i.e. **88 % of a dying fork's saturation** (64 % of *all* fork-saturation
+time across an exhaustive run). `contradiction.contradicts(kb, fact)` is the
+incremental dual of the scan — one dict lookup, asked of each derived fact as
+it lands — and `try_commitment_set` stops there
+(`enable_fail_fast_fork`, default on). That is the cheap end of what watched
+literals buy in SAT: not "cost-free until a literal flips", but "ask at
+insertion instead of at quiescence", which is where the waste actually was.
 
 ### O6 — Provenance & unsat-core
 
@@ -539,21 +556,35 @@ the S1.7.24 symmetric-removal made fully generic (no hard-coded symmetry). **Ade
 The measured cost (P1.8a) is **almost entirely O1+O2** — the matcher inside
 saturation (~95 % of a solve). The optimisation arc has been a walk *up the
 Datalog ladder*: naive → **semi-naive** (participation index = alpha-memory;
-D2 delta-driven; D5 seeded delta join), for ~3.6×. The remaining named
-levers map onto the literature precisely:
+D2 delta-driven; D5 seeded delta join), for ~3.6×. S1.9.E23 then took the
+other axis — not making a firing cheaper but **not firing at all** past the
+point where the fork is already dead (§O5): **~2×** on exhaustive zebra2
+(1.9× in [`features.md`](features.md)'s harness, 2.3–2.4× in a standalone
+fresh-process A/B at `max_set_size=5` — 8.5 s → 3.7 s; the fast path 1.3×).
+Note what that does to the profile: **over half** of an exhaustive solve was
+saturating forks already known to be dead, and is now ~0 — so what remains is
+saturation of forks that genuinely live, i.e. the matcher again. The remaining named levers map onto the literature precisely:
 
 - **RETE beta-memories** — persist partial joins across firings (the one
-  thing D5 still recomputes). The natural successor to D5 for O1.
+  thing D5 still recomputes). The natural successor to D5 for O1, and with
+  dead-fork waste gone it is now the single largest remaining lever
+  ([F11](../../../plans/followups/f11_deductive_layer_perf.md)).
 - **Worst-case-optimal joins** — only if cyclic join patterns appear (they
   don't yet).
 - **DPLL/CDCL re-architecture of O7/O8** — watched literals, VSIDS,
   non-chronological backjumping. The big structural change; deferred because
-  search is not the bottleneck (saturation is). The recorded forward
-  pointers are
-  [P1.9 E20](../../../plans/followups/f9_e_catalog/s1.9.e20_conflict_cache.md)
-  (conflict-cache cross-call ≈ incremental SAT) and
-  [E23](../../../plans/followups/f9_e_catalog/s1.9.e23_prove_speedup.md)
-  (exhaustive-search speedup umbrella).
+  search is not the bottleneck (saturation is). Both recorded forward pointers
+  are now settled and the reasons are the interesting part
+  ([F9 ledger](../../../plans/followups/f9_e_catalog.md)): the
+  exhaustive-search umbrella (ex-E23) cashed out **not** as branch-count
+  pruning — every candidate for that was measured inert against a complete
+  cardinality-BFS — but as *fail-fast fork saturation* (§O5), ~2× on
+  exhaustive zebra2 with the uniqueness verdict untouched; and the
+  cross-call conflict cache (ex-E20 ≈ incremental SAT) was rejected on
+  purpose — it memoises the puzzle rather than improving the reasoner (its
+  measured +57 % is available only when re-solving a byte-identical file,
+  which in-repo means the very benchmark and acceptance loops a warm cache
+  would falsify).
 - **Congruence closure / e-graph (O4)** — only when equality reasoning earns
   its keep (F4).
 - **Static stratification checking (O3)** — the boundary makes *stratified*

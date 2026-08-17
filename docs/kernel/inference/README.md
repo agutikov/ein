@@ -136,9 +136,13 @@ contributes, locked by S1.21.8:
 ## M1 invariant — alive-set soundness
 
 The solver **recomputes** the alive-candidate set per-KB via
-[`_compute_alive`](../../../ein.py/src/ein/inference/monotonic/solver.py)
+[`_compute_alive`](../../../ein.py/src/ein/inference/monotonic/_helpers.py)
 (`= open_hypotheses(kb)`) — the open hypotheses are a pure function of the
-closed KB. (Historical: an *inherit-once* optimization — seed `kb.alive` at
+closed KB. The *set* is materialised only where a set is what the caller
+needs (layer enumeration); the completeness test asks the same generator for
+its first element and stops (`solution.complete`, S1.9.E16 — 8 of 9 zebra2
+calls are answered by candidate #1, and the peak open set is ~38 fact-ids, so
+there is no memory case for streaming the materialised half). (Historical: an *inherit-once* optimization — seed `kb.alive` at
 root saturation, let forks inherit it via `kb.fork()`, run
 `generate_hypotheses` once per `solve()` — was gated by a
 `SolverConfig.enable_alive_inherit` flag, default on since S1.5.4 T1.5.4.8.
@@ -408,9 +412,9 @@ checker lands.
   watched-fact arrival. **Half shipped** as S1.21.8's `_watch_stamp`: a
   parked candidate's guards are re-asked only when one of their `watched`
   relations grew. What is still open is a *shared* verdict cache across
-  candidates. Composes with
-  [P1.9 E8](../../../plans/followups/f9_e_catalog)
-  (watched-fact rule applicability).
+  candidates. (The old companion entry — P1.9 E8, watched-fact rule
+  applicability — was closed as superseded by the semi-naive saturation;
+  [F9 ledger](../../../plans/followups/f9_e_catalog.md).)
 - **Static stratification checking** — the engine accepts unstratifiable
   rule sets, answers them by boundary-admission order, and reports one
   model without saying that others exist
@@ -910,9 +914,10 @@ assumption environments explored breadth-first by cardinality, a dead
 environment is learned whole as a no-good clause (kept
 subsumption-minimal), and Apriori's downward-closure filter suppresses
 its supersets. **CDCL is the SAT-world analog** (no-good ≈ conflict
-clause) **and an optimization direction**
-([P1.9 E-catalog](../../../plans/followups/f9_e_catalog/README.md)),
-not the mechanism.
+clause), not the mechanism — and, as a direction, measured out: the
+reorderer / consistency-pre-pass cluster was tried and rejected against a
+complete cardinality-BFS
+([F9 ledger](../../../plans/followups/f9_e_catalog.md)).
 
 Every dead entering emits `frozenset(C)` into
 `root_kb._nogoods` via `inference.nogoods.emit_nogood`
@@ -931,17 +936,20 @@ How this differs from CDCL, mechanically:
 |---|---|
 | ordered **decision trail**, one variable per decision level | unordered **commitment set C** (an ATMS environment); whole layers by cardinality (Apriori prefix-join) |
 | per-conflict **implication graph** + cut analysis | per-fact **provenance AND/OR graph** (ATMS justifications — OR over every recorded derivation); ATMS labels are computed on demand by `explain.py` to *explain* a conflict, never to learn from one — no conflict-cut analysis |
-| learned clause = **1UIP-minimised** asserting clause | learned clause = **the full dead environment** (`learned_clause == frozenset(C)`, contract-pinned); shrinking measured vacuous + NAF-unsound ([E7](../../../plans/followups/f9_e_catalog/s1.9.e7_learned_clause.md)) |
+| learned clause = **1UIP-minimised** asserting clause | learned clause = **the full dead environment** (`learned_clause == frozenset(C)`, contract-pinned); shrinking measured vacuous + NAF-unsound (ex-E7, [F9 ledger](../../../plans/followups/f9_e_catalog.md)) |
 | asserting clause **propagates immediately** after backjump | clause only **filters future candidates** pre-fork (`filter_candidate`); size-1 clauses also write `(not h)` |
 | **non-chronological backjump** | **no backjump** — the BFS layer loop just continues; superset suppression prunes descendants |
-| VSIDS activity, restarts, watched literals | `lex`/`score-sum` candidate order; none of the rest |
+| VSIDS activity, restarts, watched literals | `lex`/`score-sum` candidate order; none of the rest — the one watched-literal-shaped win is taken at insertion instead: a fork's saturation stops at the firing that kills it (`enable_fail_fast_fork`, S1.9.E23) |
 
-The genuine CDCL *direction* lives in
-[P1.9 E20](../../../plans/followups/f9_e_catalog/s1.9.e20_conflict_cache.md)
-(conflict-cache cross-call ≈ incremental SAT),
-[E23](../../../plans/followups/f9_e_catalog/s1.9.e23_prove_speedup.md)
-(the exhaustive-search speedup umbrella: learned-clause caching,
-goal-driven pruning, AC pre-pass), and the DPLL/CDCL re-architecture
+The genuine CDCL *direction* is closed out rather than pending. Both
+recorded entries settled in 2026-08 ([F9
+ledger](../../../plans/followups/f9_e_catalog.md)): the exhaustive-search
+umbrella (ex-E23) shipped as **fail-fast fork saturation** — 2.4× on
+exhaustive `zebra2`, uniqueness untouched — and not as any of its
+branch-count candidates (learned-clause caching, goal-driven pruning, AC
+pre-pass: each measured inert or unsound here); the cross-call conflict
+cache (ex-E20 ≈ incremental SAT) was rejected as puzzle memoisation rather
+than reasoning. What remains is the DPLL/CDCL re-architecture
 lever in [`architecture_and_algorithms.md`
 §7](architecture_and_algorithms.md#7-summary--where-the-bodies-are-and-the-levers).
 

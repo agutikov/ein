@@ -30,7 +30,8 @@ from dataclasses import dataclass
 from typing import Literal
 
 from ein.inference.apriori import CanonicalSetId
-from ein.inference.contradiction import ContradictionDetector
+from ein.inference.config import SolverConfig
+from ein.inference.contradiction import ContradictionDetector, contradicts
 from ein.inference.firing import Firing
 from ein.inference.frontier import smallest_contradiction_frontier
 from ein.inference.saturator import Saturator
@@ -120,7 +121,11 @@ def try_commitment_set(
         )
 
     sat = Saturator(fork)
-    firings = tuple(sat.saturate(max_steps=saturator_steps))
+    cfg = root_kb.config or SolverConfig()
+    if cfg.enable_fail_fast_fork:
+        firings = _saturate_until_dead(sat, fork, max_steps=saturator_steps)
+    else:
+        firings = tuple(sat.saturate(max_steps=saturator_steps))
 
     post_contras = ContradictionDetector(fork).detect()
     if post_contras:
@@ -141,6 +146,55 @@ def try_commitment_set(
         kind="alive",
         hypothesis_facts=tuple(hypothesis_facts),
     )
+
+
+def _saturate_until_dead(
+    sat: Saturator,
+    fork: KnowledgeBase,
+    *,
+    max_steps: int | None,
+) -> tuple[Firing, ...]:
+    """Saturate ``fork``, stopping at the firing that kills it — S1.9.E23.
+
+    The fail-fast half of the fork's saturation. Identical to
+    ``tuple(sat.saturate(max_steps=…))`` on a fork that survives; on a
+    fork that dies it returns the prefix up to and including the firing
+    whose conclusion made the KB inconsistent, and abandons the
+    generator there.
+
+    Sound because the KB is append-only: a contradiction is *created* by
+    an insertion and can never be retracted, so a fork that is
+    inconsistent at firing *n* is inconsistent at the fixpoint too. The
+    verdict is therefore unchanged — only the amount of dead-branch work
+    is (zebra2 exhaustive: 67 dead forks reach their clash after ~320 of
+    ~2790 firings, so ~64% of all fork-saturation time was spent
+    saturating KBs already known to be dead).
+
+    What the caller sees differently on a dead fork:
+
+    - ``firings`` is the prefix, not the full run — for the trace this is
+      an improvement (the dying branch stops at the clash instead of
+      grinding to quiescence past it);
+    - ``kb`` holds the partial post-clash state, so ``unsat_core`` is
+      drawn from the witnesses present at that point (usually the one
+      that fired) rather than every witness the fixpoint would hold, and
+      the ``DeadCommitment.state_key`` recorded for it is that partial
+      state. Nothing in ``solve`` reads a dead fork's state back — it
+      builds no per-SetNode DAG (``proof.kb_index`` is always empty) —
+      but a DAG builder that merges dead commitments by state
+      (``_record_setnode``) would see two orientations of a symmetric
+      dead commitment share a fixpoint without sharing a fail-fast
+      prefix. That is the case for ``enable_fail_fast_fork=False``.
+    """
+    firings: list[Firing] = []
+    for firing in sat.saturate(max_steps=max_steps):
+        firings.append(firing)
+        if firing.redundant:
+            continue          # wrote nothing; the KB cannot have changed
+        for derived in firing.derived:
+            if contradicts(fork, derived):
+                return tuple(firings)
+    return tuple(firings)
 
 
 __all__ = [

@@ -17,7 +17,9 @@ solution (the severe bug S1.7.3 found). See
 ``M1 P1.7a``.
 
 ``open_hypotheses`` is the canonical implementation; ``solver._compute_alive``
-delegates here so there is exactly one open-set definition.
+delegates here so there is exactly one open-set definition. ``complete``
+asks the same generator for its *first* element only — the open set is
+never materialised just to be truth-tested (S1.9.E16).
 """
 from __future__ import annotations
 
@@ -49,8 +51,18 @@ def open_hypotheses(kb: KnowledgeBase) -> frozenset[FactId]:
 
 
 def complete(kb: KnowledgeBase) -> bool:
-    """No open hypothesis — the generator proposes nothing undecided."""
-    return not open_hypotheses(kb)
+    """No open hypothesis — the generator proposes nothing undecided.
+
+    Short-circuits (S1.9.E16): the question is emptiness, so the first
+    candidate the generator yields answers it — building the whole
+    frozenset only to truth-test it re-ran the per-candidate filter
+    pipeline (the one-step lookahead included) for every *later*
+    candidate whose value was already irrelevant. Equivalent to
+    ``not open_hypotheses(kb)`` by construction; measured 54 ms of a
+    1.7 s zebra2 ``solve(stop_after=1)``, where 8 of 9 ``complete``
+    calls are answered by candidate #1.
+    """
+    return next(generate_hypotheses(kb), None) is None
 
 
 def consistent(kb: KnowledgeBase) -> bool:

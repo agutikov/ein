@@ -9,10 +9,13 @@ is pinned in ``tests/inference/monotonic/test_root_stability_naf.py``.)
 """
 from __future__ import annotations
 
+from dataclasses import replace
+
 from ein.inference.commitment import (
     CommitmentSetResult,
     try_commitment_set,
 )
+from ein.inference.config import SolverConfig
 from ein.inference.saturator import Saturator
 from ein.ir import parse
 from ein.kb.entities import Fact
@@ -208,3 +211,106 @@ def test_empty_commitment_returns_alive_with_empty_results():
     # already-redundant firings), but the kb content matches the
     # pre-saturated root.
     assert _ids(result.kb.facts) == _ids(kb.facts)
+
+
+# ── Fail-fast fork saturation — S1.9.E23 ──────────────────────────
+
+
+def _fail_fast_fixture() -> KnowledgeBase:
+    """A dying commitment with work queued *behind* the clash.
+
+    `(h1 a)` derives `(x a)` and `(h2 a)` derives `(not (x a))` — the
+    pair that kills the fork. `chain0 → chain1 → … → chain5` is an
+    independent derivation ladder the saturator would keep walking
+    after the clash: fail-fast is visible as the ladder not being
+    finished.
+    """
+    return _kb("""
+    (rule h1-implies-x ()
+      :match (h1 ?x) :assert (x ?x)
+      :why "h1 → x" :priority 100)
+    (rule h2-forbids-x ()
+      :match (h2 ?x) :assert (not (x ?x))
+      :why "h2 → ¬x" :priority 100)
+    (rule step1 () :match (chain0 ?x) :assert (chain1 ?x)
+      :why "ladder" :priority 200)
+    (rule step2 () :match (chain1 ?x) :assert (chain2 ?x)
+      :why "ladder" :priority 200)
+    (rule step3 () :match (chain2 ?x) :assert (chain3 ?x)
+      :why "ladder" :priority 200)
+    (rule step4 () :match (chain3 ?x) :assert (chain4 ?x)
+      :why "ladder" :priority 200)
+    (rule step5 () :match (chain4 ?x) :assert (chain5 ?x)
+      :why "ladder" :priority 200)
+    (relation h1 T) (relation h2 T) (relation x T)
+    (relation chain0 T) (relation chain1 T) (relation chain2 T)
+    (relation chain3 T) (relation chain4 T) (relation chain5 T)
+    (is-a a T)
+    (chain0 a :source "(1)")
+    """)
+
+
+def _with_fail_fast(kb: KnowledgeBase, on: bool) -> KnowledgeBase:
+    kb.config = replace(kb.config or SolverConfig(), enable_fail_fast_fork=on)
+    return kb
+
+
+def test_fail_fast_stops_the_dying_fork_early():
+    """With the flag on, a dead-post fork's saturation stops at the
+    firing that made it inconsistent — the ladder behind the clash is
+    left unwalked, so both the firing count and the fact set are
+    strict prefixes of the fixpoint run.
+    """
+    commitment = (("h1", ("a",)), ("h2", ("a",)))
+    full = try_commitment_set(_with_fail_fast(_fail_fast_fixture(), False),
+                              commitment)
+    fast = try_commitment_set(_with_fail_fast(_fail_fast_fixture(), True),
+                              commitment)
+
+    # Same verdict — that is the whole contract.
+    assert full.kind == fast.kind == "dead-post"
+    # …reached with strictly less work.
+    assert len(fast.firings) < len(full.firings)
+    assert _ids(fast.kb.facts) < _ids(full.kb.facts)
+    # The clash is present in the truncated fork (it is what stopped it).
+    assert ("x", ("a",)) in _ids(fast.kb.facts)
+    # The ladder finished only in the full run.
+    assert ("chain5", ("a",)) in _ids(full.kb.facts)
+    assert ("chain5", ("a",)) not in _ids(fast.kb.facts)
+    # A dying fork still explains itself: the core names a hypothesis.
+    assert _ids(fast.unsat_core) & {("h1", ("a",)), ("h2", ("a",))}
+
+
+def test_fail_fast_leaves_a_surviving_fork_fully_saturated():
+    """No contradiction ⇒ nothing to stop at, so the alive fork is
+    saturated to the fixpoint either way — identical firings and
+    identical facts.
+    """
+    commitment = (("h1", ("a",)),)   # no `(h2 a)`, so no clash
+    full = try_commitment_set(_with_fail_fast(_fail_fast_fixture(), False),
+                              commitment)
+    fast = try_commitment_set(_with_fail_fast(_fail_fast_fixture(), True),
+                              commitment)
+
+    assert full.kind == fast.kind == "alive"
+    assert len(fast.firings) == len(full.firings)
+    assert _ids(fast.kb.facts) == _ids(full.kb.facts)
+    assert ("chain5", ("a",)) in _ids(fast.kb.facts)
+
+
+def test_fail_fast_does_not_reach_dead_pre():
+    """A commitment that is already refuted at root dies *before* any
+    saturation, so the flag is irrelevant to it — pinned so a future
+    reordering of the pre-check can't silently move behind the
+    saturator.
+    """
+    kb = _fail_fast_fixture()
+    _put(kb, Fact(
+        relation_name="not",
+        args=(Fact(relation_name="h1", args=("a",)),),
+        provenance=Provenance.from_rule(rule="stated"),
+    ))
+    result = try_commitment_set(_with_fail_fast(kb, True), (("h1", ("a",)),))
+
+    assert result.kind == "dead-pre"
+    assert result.firings == ()

@@ -71,7 +71,8 @@ digraph { rankdir=LR; node [shape=box];
 
 This is the single **load-bearing** lever for proving the solution unique —
 [`features.md`](../kernel/inference/features.md) measures that disabling its
-backing (`enable_singleton_writeback`) blows the exhaustive search up ≥7×.
+backing (`enable_singleton_writeback`) blows the exhaustive search up ≥23×
+(101 → 3336+ commitments, and it does not finish).
 Domain-elimination needs negatives to eat, which is where the next family
 comes in.
 

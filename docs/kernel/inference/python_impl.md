@@ -47,7 +47,7 @@ KB ─▶ Engine.compile_all ─▶ JoinPlan ─▶ Saturator.saturate ─▶ re
 | [`hrule.py`](../../../ein.py/src/ein/inference/hrule.py) | hypothesis-rule registry (`hrules` drive generation, never the saturator) |
 | [`lookahead.py`](../../../ein.py/src/ein/inference/lookahead.py) | pre-branch one-step death simulator (`enable_pre_branch_lookahead`); walks `plan.disjuncts()` and evaluates each disjunct's guards in the world **with** the candidate `h` — `_guards_pass_with` asks for no match in `kb` *and* none created by `h` (the D3 fix). A guard with a nested absent is non-monotone and can't be decided that cheaply, so `_unjudgeable` skips the disjunct rather than guess — losing a kill keeps the "never reports a live hypothesis as dead" contract |
 | [`apriori.py`](../../../ein.py/src/ein/inference/apriori.py) | commitment-lattice layer generation by set-size (prefix-join + no-good prune); `order_candidates` / `_set_score` — the deterministic candidate ordering |
-| [`commitment.py`](../../../ein.py/src/ein/inference/commitment.py) | `try_commitment_set`: fork + write hypotheses + saturate + detect |
+| [`commitment.py`](../../../ein.py/src/ein/inference/commitment.py) | `try_commitment_set`: fork + write hypotheses + saturate + detect — the saturation stops at the killing firing when `enable_fail_fast_fork` (default on) |
 | [`nogoods.py`](../../../ein.py/src/ein/inference/nogoods.py) | no-good learning: dead set → `root_kb._nogoods`; singletons → `_negated_facts` |
 | [`monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py) | **the main loop**: `solve()` — BFS over the commitment lattice; `_phase1_root`, `_phase2_layers`; dedup by canonical `state_key` |
 | [`monotonic/lattice.py`](../../../ein.py/src/ein/inference/monotonic/lattice.py) | `LatticeProof`, `Solution`, `DeadCommitment`, `LatticeStats` |
@@ -58,11 +58,11 @@ KB ─▶ Engine.compile_all ─▶ JoinPlan ─▶ Saturator.saturate ─▶ re
 
 | module | role |
 |--------|------|
-| [`contradiction.py`](../../../ein.py/src/ein/inference/contradiction.py) | detector: `(X, ¬X)` pairs (whatever either side's origin — S1.22.1b) + `(false)` |
+| [`contradiction.py`](../../../ein.py/src/ein/inference/contradiction.py) | detector: `(X, ¬X)` pairs (whatever either side's origin — S1.22.1b) + `(false)`; `contradicts(kb, fact)` is the O(1) incremental dual asked of each fact as it lands, which is what lets a dying fork stop saturating (S1.9.E23) |
 | [`frontier.py`](../../../ein.py/src/ein/inference/frontier.py) | `smallest_contradiction_frontier` — the verdict path's unsat core; delegates the search to `explain.py`, so the answer is independent of rule-firing order (provenance-based, NAF-safe, budgeted; not a subset-minimal MUS) |
 | [`explain.py`](../../../ein.py/src/ein/inference/explain.py) | minimum-cardinality explanation over the AND/OR proof graph (each fact an OR-node via [`kb.justifications`](../ir/02-data-model/02_store.md), each justification an AND-node over its `premises_raw`): ATMS-style least-fixpoint label propagation, cycle-safe by construction; `explain` / `minimal_contradiction_frontier`; `ExplanationBudget` caps the worst-case-exponential search and `Explanation.exhausted` reports truncation. Minimal over the **recorded** derivations — i.e. relative to the rule set and the saturation strategy |
 | [`verdict.py`](../../../ein.py/src/ein/inference/verdict.py) | `Solution` / `Ambiguity` / `Contradiction`; verdict read from the model count `k`; `goal_bindings` |
-| [`solution.py`](../../../ein.py/src/ein/inference/solution.py) | solution-node tracking; `open_hypotheses` |
+| [`solution.py`](../../../ein.py/src/ein/inference/solution.py) | solution-node tracking; `open_hypotheses` (materialised) / `complete` (short-circuits on the generator's first element) |
 | [`canon.py`](../../../ein.py/src/ein/inference/canon.py) | `state_key` — order-insensitive canonical state identity (the representation is the identity; `state_digest` is display-only) |
 | [`closed.py`](../../../ein.py/src/ein/inference/closed.py) | `__closed__` handling (`CLOSED` constant; suppress guessing) |
 | [`naf_deps.py`](../../../ein.py/src/ein/inference/naf_deps.py) | static NAF-dependency map; `DerivedNafWarning` — **re-grounded** by S1.21.8: no longer "this rule leans on the fire-time re-eval" (that re-eval is gone) but "NAF over a derived relation is the shape that can make a rule set non-stratified", the case where the engine reports one model of several. Advisory, `SolverConfig.warn_derived_naf` off by default; a real stratification checker is future work |

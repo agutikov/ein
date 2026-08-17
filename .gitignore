@@ -20,3 +20,7 @@ venv/
 dumps
 .venv*
 dump
+
+# Machine-specific bench artifact (the tables in docs/kernel/inference/
+# features.md are the committed record; regenerate with utils/feature_matrix.py)
+utils/feature_matrix_results.json

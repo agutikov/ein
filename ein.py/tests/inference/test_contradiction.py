@@ -6,6 +6,7 @@ from pathlib import Path
 from ein.inference.contradiction import (
     Contradiction,
     ContradictionDetector,
+    contradicts,
 )
 from ein.inference.saturator import Saturator
 from ein.ir import parse
@@ -364,3 +365,106 @@ def test_pair_kind_defaults_to_pair():
     assert cs[0].kind == "pair"
     # witness falls back to positive when present:
     assert cs[0].witness is cs[0].positive
+
+
+# ── Incremental check — S1.9.E23 fail-fast ─────────────────────────
+
+
+def test_contradicts_direct_false():
+    """`(false)` kills on arrival, whatever else the KB holds."""
+    kb = _kb('(relation r T T)')
+    false_fact = _put(kb, Fact(
+        relation_name="false", args=(),
+        provenance=Provenance.from_rule(rule="functional"),
+    ))
+    assert contradicts(kb, false_fact)
+
+
+def test_contradicts_negative_lands_on_existing_positive():
+    """Deriving `(not X)` when `X` is present → the pair shape."""
+    kb = _kb('(relation r T T)')
+    _put(kb, Fact(
+        relation_name="r", args=("A", "B"),
+        provenance=Provenance.from_hypothesis(branch=1),
+    ))
+    negative = _put(kb, Fact(
+        relation_name="not",
+        args=(Fact(relation_name="r", args=("A", "B")),),
+        provenance=Provenance.from_rule(rule="sibling-exclusive"),
+    ))
+    assert contradicts(kb, negative)
+
+
+def test_contradicts_positive_lands_on_existing_negative():
+    """The mirror direction — `X` derived into a KB already holding
+    `(not X)`. The check reads `_negated_facts`, which
+    `_index_fact` maintains for exactly the `(not …)` facts
+    ``detect``'s pair branch scans."""
+    kb = _kb('(relation r T T)')
+    _put(kb, Fact(
+        relation_name="not",
+        args=(Fact(relation_name="r", args=("A", "B")),),
+        provenance=Provenance.from_rule(rule="sibling-exclusive"),
+    ))
+    positive = _put(kb, Fact(
+        relation_name="r", args=("A", "B"),
+        provenance=Provenance.from_hypothesis(branch=1),
+    ))
+    assert contradicts(kb, positive)
+
+
+def test_contradicts_is_false_for_an_innocent_fact():
+    """A fact with no counterpart is not a contradiction — and a
+    *different* argument tuple under the same relation doesn't
+    collide with the negated one."""
+    kb = _kb('(relation r T T)')
+    _put(kb, Fact(
+        relation_name="not",
+        args=(Fact(relation_name="r", args=("A", "B")),),
+        provenance=Provenance.from_rule(rule="sibling-exclusive"),
+    ))
+    other = _put(kb, Fact(
+        relation_name="r", args=("A", "C"),
+        provenance=Provenance.from_hypothesis(branch=1),
+    ))
+    assert not contradicts(kb, other)
+
+
+def test_contradicts_tolerates_malformed_negation():
+    """`(not 5)` has no inner Fact, so there is no proposition to
+    match — `detect` skips it defensively and so does this."""
+    kb = _kb('(relation r T T)')
+    malformed = _put(kb, Fact(
+        relation_name="not", args=(5,),
+        provenance=Provenance.from_rule(rule="whatever"),
+    ))
+    assert not contradicts(kb, malformed)
+    assert ContradictionDetector(kb).detect() == ()
+
+
+def test_contradicts_agrees_with_detect_across_a_saturation():
+    """The equivalence the fail-fast fork rests on: replaying a
+    saturation fact-by-fact, ``contradicts`` flips true exactly when
+    ``detect()`` first becomes non-empty.
+    """
+    kb = _kb("""
+    (rule h1-implies-x ()
+      :match (h1 ?x) :assert (x ?x)
+      :why "h1 → x" :priority 100)
+    (rule h2-forbids-x ()
+      :match (h2 ?x) :assert (not (x ?x))
+      :why "h2 → ¬x" :priority 100)
+    (relation h1 T) (relation h2 T) (relation x T)
+    (is-a a T)
+    (h1 a) (h2 a)
+    """)
+    first_incremental: int | None = None
+    first_scan: int | None = None
+    for i, firing in enumerate(Saturator(kb).saturate(), start=1):
+        if first_scan is None and ContradictionDetector(kb).detect():
+            first_scan = i
+        if first_incremental is None and not firing.redundant:
+            if any(contradicts(kb, d) for d in firing.derived):
+                first_incremental = i
+    assert first_incremental is not None, "the fixture must die"
+    assert first_incremental == first_scan
