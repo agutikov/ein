@@ -484,10 +484,19 @@ class Saturator:
         Cold-seeds from the existing marked-relation extents on first call;
         thereafter `_enqueue_mirror_sources` queues each productive firing's
         derived marked facts.
+
+        The cold seed iterates the marked relations **sorted by name**.
+        `_symmetric_rels()` is a `frozenset`, whose iteration order depends on
+        string hashes and so on `PYTHONHASHSEED`; with two or more
+        `(__symmetric__ R)` markers that leaked into the seed order, hence into
+        the mirror firing order, hence into every derivation-order observable
+        (`ein saturate --dump`'s per-relation derived counts, the trace, a
+        `--dump-states` tree). The sort makes the firing sequence a function of
+        the input alone (M1a hazard H1 — `plans/m1a_rust/design/02` §5).
         """
         if not self._mirror_seeded:
             self._mirror_seeded = True
-            for r in self._symmetric_rels():
+            for r in sorted(self._symmetric_rels()):
                 self._mirror_queue.extend(self.kb._facts_by_relation.get(r, ()))
         sym = self._symmetric_rels()
         while self._mirror_queue:

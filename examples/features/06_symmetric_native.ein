@@ -1,0 +1,72 @@
+;;; Ein — feature demo
+;;;
+;;; The kernel trigger `(__symmetric__ R)` — the native arg-swap mirror.
+;;;
+;;; `(__symmetric__ R)` is a **dunder kernel trigger**, not a rule: the
+;;; saturator closes R's extension under arg-swap directly (pop `(R a b)`,
+;;; write `(R b a)`), skipping the JoinPlan + matcher the stdlib `symmetric`
+;;; rule pays per mirror. Identical closure, one kernel fast-path —
+;;; `docs/kernel/ir/03-ein-lang/06_reserved_names.md` and
+;;; `utils/symmetric_bench.py` for the measurement.
+;;;
+;;; Contrast with `saturation/symmetric/*.ein`, which exercise the *userspace*
+;;; `symmetric` rule from `std.algebra`. Nothing else in `examples/` marks a
+;;; relation, so this file is the only fixture that reaches the mirror.
+;;;
+;;; THREE marked relations, on purpose. The mirror's cold seed walks the
+;;; marked-relation set once, and that set is a `frozenset[str]`: before the
+;;; M1a determinism audit (hazard H1 — `plans/m1a_rust/design/02` §5) the walk
+;;; order was CPython's set order, so which relation got mirrored first — and
+;;; hence the whole derivation order — depended on `PYTHONHASHSEED`. This file
+;;; is the fixture that reproduces it: with one marked relation the bug is
+;;; invisible, with three it shows up in `ein saturate --dump`'s "derived facts
+;;; by relation" block. The seed is sorted now, so the firing sequence is a
+;;; function of the input alone.
+;;;
+;;; The three relations are deliberately *unsorted* in the file (`knows`,
+;;; `rivals`, `allies` — sorted: allies, knows, rivals), so a seed that
+;;; happened to follow file order would not pass either.
+
+(relation knows  Person Person)
+(relation rivals Person Person)
+(relation allies Person Person)
+(relation is-a   T T)
+
+(__symmetric__ knows)
+(__symmetric__ rivals)
+(__symmetric__ allies)
+
+(is-a Ann  Person)
+(is-a Bob  Person)
+(is-a Cid  Person)
+(is-a Dee  Person)
+(is-a Eve  Person)
+(is-a Fay  Person)
+
+;; One edge per marked relation — each needs exactly one mirror, so the three
+;; mirror firings are the whole derivation and their order is the observable.
+(knows  Ann Bob)
+(rivals Cid Dee)
+(allies Eve Fay)
+
+;; A self-loop and an already-mirrored pair: the two cases the mirror skips
+;; (`a == b`) and records as an alternative justification rather than a new
+;; fact (`(R b a)` already present).
+(knows  Gil Gil)
+(allies Hal Ivy)
+(allies Ivy Hal)
+
+;; After saturation the three marked relations are closed under arg-swap:
+;;
+;;   (knows  Bob Ann)   ; mirror of (knows  Ann Bob)
+;;   (rivals Dee Cid)   ; mirror of (rivals Cid Dee)
+;;   (allies Fay Eve)   ; mirror of (allies Eve Fay)
+;;
+;; and nothing else — `(knows Gil Gil)` is its own mirror (skipped), and the
+;; `(allies Hal Ivy)` / `(allies Ivy Hal)` pair is already closed, so each
+;; direction is recorded as a second justification of the other rather than
+;; re-derived. `is-a` is unmarked and untouched.
+
+(query
+  :goal (knows Bob Ann)
+)
