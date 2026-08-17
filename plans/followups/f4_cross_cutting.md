@@ -205,7 +205,7 @@ of the cartesian product, not a free design choice. Deriving it from the
 positive tag is rule-from-rule synthesis
 ([F7 sub-track D](f7_rule_induction.md#sub-track-d--companion-rule-synthesis-property-duals)),
 and it is the home of the former
-[P1.9 E5](f9_e_catalog/s1.9.e5_static_rule_conflict.md)
+[P1.9 E5](f9_e_catalog.md)
 "static mutex pre-analysis": the mutex *is* the `functional` / `injective`
 negative companion.
 

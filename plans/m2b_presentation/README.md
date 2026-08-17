@@ -70,7 +70,7 @@ Concrete measurement tracks:
   numbers.
 
 Mode coverage: report both `solve` and `prove` results (cf.
-[P1.9 modes idea](../followups/f9_e_catalog/README.md)),
+[P1.9 modes idea](../followups/f9_e_catalog.md)),
 plus the `gaps` / `contradictions` task classes
 ([Idea 03](../ideas/03-three-task-classes.md)).
 

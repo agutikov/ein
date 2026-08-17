@@ -84,7 +84,7 @@ or deliberately dropped:
 ## Connections
 
 - [M1a Rust port](../../m1a_rust/README.md) — the trigger above.
-- [F9 — hypothesis-loop E-catalog](../f9_e_catalog/README.md) — the other
+- [F9 — hypothesis-loop E-catalog](../f9_e_catalog.md) (closed) — the other
   body relocated out of the M1 plans; that one is *feature* backlog, this
   one is *structural* debt.
 - [`docs/kernel/ir/03-ein-lang/06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)
