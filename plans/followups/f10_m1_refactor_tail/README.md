@@ -1,32 +1,42 @@
-# F10 — M1 refactor-debt tail (ex-P1.7c Track B)
+# F10 — M1 refactor-debt tail (ex-P1.7c Track B) — **closed 2026-08-17**
 
 The decompositions / unifications P1.7b identified but deferred, one stage
 each. **Relocated** from `p1.7c_block_head_removal/` Track B when the M1
 plan folder was deleted (P1.22 S1.22.99); Track A (S1.7c.1–.5, .8 — the
 block-head removal) shipped 2026-06-02 and died with the folder.
 
-**17 of the original 23 remain open.** The six that were assessed, done,
-re-scoped or dropped during Track B were deleted rather than carried as
-tombstones — see [§Closed](#closed--no-stage-file) for the one-line record
-of each.
+**All 23 are settled; nothing here is open.** The tail read as "17 open"
+only because the P1.22 relocation carried the stage *specs* across but not
+their verdicts, which lived in the deleted folder. Re-measuring all 17
+against HEAD on 2026-08-17 found every one already landed during Track B
+(2026-06-02/03) — **no code change was needed**, and the drain is a
+bookkeeping correction, not a refactor. See
+[§Drained](#drained--measured-against-head-stub-deleted) for the per-stage
+record and [§Closed](#closed--no-stage-file) for the six settled earlier.
 
-[`findings.md`](findings.md) — P1.7b's 40-finding, code-cited review — moved
-with them: it is the source register every stage below cites.
+Two entries are worth reading before touching the code they name:
+**`.20`** is the one acceptance criterion *retired* rather than met, and
+**`.25`**'s headline (one shared DOT emitter) was measured and **rejected**.
 
-## Trigger
+[`findings.md`](findings.md) — P1.7b's 40-finding, code-cited review — is
+what survives as the live artifact: the register every stage cited, plus
+the two latent correctness bugs the review surfaced and the axis map from
+"architecture / dead code / duplications / perf" to finding ids.
 
-**Before the [M1a Rust port](../../m1a_rust/README.md).** That is P1.7b's own
-recommendation and the strongest reason to drain this: `ein.rs` should
-transcribe the clean reference implementation, not the remaining scar
-tissue. Otherwise these are opportunistic — each is behaviour-preserving,
-independently landable, and gated by the same invariant (`run_tests.sh` +
-`bench_solve_monotonic_pypy.sh`).
+## Trigger — spent
 
-## The tail
+**Before the [M1a Rust port](../../m1a_rust/README.md)** was the trigger:
+`ein.rs` should transcribe the clean reference implementation, not the
+remaining scar tissue. That condition is now satisfied in advance — the
+port inherits the drained tree, so F10 imposes nothing on it. What the port
+should still read is `findings.md`, for the *shape* of the debt this
+codebase accumulates rather than any outstanding item.
 
-The stage files are filed into **five group directories**, in the execution
-order P1.7b suggested — the four ranked waves, then the remainder the
-ordering never ranked.
+## The tail — empty
+
+The stage files were filed into **five group directories** in the execution
+order P1.7b suggested (the four ranked waves, then the remainder the
+ordering never ranked), then drained group by group.
 
 | # | group | stages | rationale |
 |---|---|---|---|
@@ -242,11 +252,21 @@ or deliberately dropped:
   three fixed entries (a re-dispatch sentinel = more indirection than the
   localized ladders).
 
+## Why this directory survives its stages
+
+The followups working agreement retires a directory when its last stub
+goes. F10 keeps one because [`findings.md`](findings.md) is **not** a stage
+spec: it is a 40-finding code-cited review register, too long for the
+one-page rule and too specific to inline. The stage files were the parked
+detail and are gone; the register is the parked *evidence* and stays.
+
 ## Connections
 
-- [M1a Rust port](../../m1a_rust/README.md) — the trigger above.
+- [M1a Rust port](../../m1a_rust/README.md) — the (now spent) trigger
+  above; the port inherits a drained tree.
 - [F9 — hypothesis-loop E-catalog](../f9_e_catalog.md) (closed) — the other
-  body relocated out of the M1 plans; that one is *feature* backlog, this
-  one is *structural* debt.
+  body relocated out of the M1 plans, and closed the same way: measure,
+  delete the stub, keep the reason. That one is *feature* backlog, this one
+  is *structural* debt.
 - [`docs/kernel/ir/03-ein-lang/06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)
   — the declarator set the flat parser dispatches on (Track A's subject).
