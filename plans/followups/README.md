@@ -22,6 +22,8 @@ strikes.
 | F6  | [Modify own harness code](f6_modify_own_harness.md)               | rung 3 of self-modification: engine emits patches to its own Python source    |
 | F7  | [Rule taxonomy + rule induction](f7_rule_induction.md)            | when the rule library grows past hand-management OR M2's NL → IR needs activator induction (sub-track B on the M2 critical path) |
 | F8  | [FCA / RCA, ODIS, TPTP](f8_FCA_RCA_odis_tptp/ideas.md)            | raw notes — formal concept analysis over the relation algebra, external corpora |
+| F9  | [Hypothesis-loop E-catalog (E1–E24)](f9_e_catalog/README.md)      | when a puzzle's signal justifies a search/closure refinement — each entry has its own activation criteria (ex-M1 P1.9) |
+| F10 | [M1 refactor-debt tail](f10_m1_refactor_tail/README.md)           | **before the M1a Rust port** — `ein.rs` should transcribe the clean reference, not the scar tissue (ex-M1 P1.7c Track B) |
 
 The three self-modification followups (F2 / F5 / F6) share a unifying
 view: [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-modification.md).
@@ -33,6 +35,12 @@ view: [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-mo
 - Each file is a *one-page* placeholder: what the theme is, why
   we're not doing it now, what would trigger promotion, what
   prior art / connections matter.
+- **Exception — directory followups.** A followup may be a *directory*
+  with a `README.md` index when it carries already-written stage specs
+  that would be destroyed by flattening (F8, F9, F10). The README still
+  obeys the one-page rule; the stage files are the parked detail. This
+  is for content *relocated* out of a closed milestone, not a licence to
+  draft stages here.
 - If a followup starts to acquire concrete tasks, promote it: move
   to a milestone folder under `plans/m<n>_*/p<n>.<m>_*/` and write
   proper stage files.
