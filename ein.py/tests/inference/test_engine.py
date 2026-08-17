@@ -12,18 +12,29 @@ ZEBRA = REPO / "examples" / "zebra.ein"
 
 
 def test_engine_compiles_zebra_activator_count():
-    """Zebra.ein has 8 T2 activators + 1 non-generic rule; compile_all
-    should produce 9 entries in the cache."""
+    """zebra.ein compiles 3 T2 activators + 3 non-generic rules = 6 plans.
+
+    The rest of its library — the whole std.slots inference stack — is
+    activated REFLECTIVELY: `slot-partition-setup` / `slot-spatial-setup`
+    derive the activators during saturation, so at `compile_all` time
+    (which sees only stated facts) those rules have none. This is the
+    load-time signature of the reflective idiom, and worth pinning: a
+    regression that made the setup rules un-fireable would leave the
+    cache at exactly this size while the puzzle silently stopped solving.
+    """
     kb = KnowledgeBase.from_ir(parse(ZEBRA.read_text()))
     eng = Engine(kb)
     eng.compile_all()
-    # T2 activators (8): (symmetric co-located), (symmetric next-to),
-    #                    (transitive co-located), (implies right-of next-to),
-    #                    (square-fwd right-of), (square-bwd right-of),
-    #                    (square-unique next-to House),
-    #                    (type-exclusivity co-located).
-    # Non-generic (1): hypothesis-contradiction.
-    assert len(eng.cache) == 9
+    # T2 activators (3): (symmetric co-located), (symmetric next-to),
+    #                    (includes right-of next-to).
+    # Non-generic (3): slot-partition-setup, slot-spatial-setup,
+    #                  symmetric-negative-setup.
+    assert len(eng.cache) == 6
+    assert {name for (name, _args) in eng.cache} == {
+        "symmetric", "includes",
+        "slot-partition-setup", "slot-spatial-setup",
+        "symmetric-negative-setup",
+    }
     # Every key is well-formed.
     for (rule_name, args) in eng.cache:
         assert rule_name in kb.rules

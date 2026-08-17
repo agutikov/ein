@@ -31,6 +31,23 @@ always present and version-locked to the engine.
 | `std.algebra` | [`algebra.ein`](algebra.ein) | the full relation-algebra signature: relative (`converse` / `compose` / `identity`), Boolean (`meet` / `join` / `difference` / `complement` / `top` / `empty`), cardinality checks (`functional` / `injective` / `total` / `surjective` + the `bijective` fan-out — S1.8a.f20; `total`/`surjective` need `forall`), property checks (`irreflexive` / `antisymmetric` / `asymmetric` / `connex` / `difunctional`), property **closures** (`symmetric` (+ its `symmetric-negative` mirror via `symmetric-negative-setup`, S1.9) / `transitive` / `includes` — the universal kernel rules, S1.8.A5), `imply1` / `imply2-fwd` / `imply2-reverse`, the equational lemmas (`symmetric`⟺`converse R R`, Schröder `compose-negative-{r,s}`, contravariance, converse-over-join) + `converse-illtyped-{dom,ran}` signature typecheck (generic; lemmas use reflective rule-implication) | S1.8.A7 + A12 + A5 + f20 |
 | `std.typing` | [`typing.ein`](typing.ein) | `(type-hierarchy ?isR*)` one-knob converse-typecheck driver + `(reflexive R)` closure (non-generic fan-out; pairs with `std.algebra`'s `converse-illtyped-*`) | S1.8.A10 |
 | `std.bijection` | [`bijection.ein`](bijection.ein) | closed-world bijection inference, **signature-driven** (types read from `(relation R A B)`) and is-a-free: `bijective-setup` / `typecheck-setup` glue fan a `(bijective R)` + two hierarchy knobs into `domain-elimination` / `range-elimination` (survivor forcing), `functional-negative` / `injective-negative` (d=0 negative completion), `typecheck-arg-{0,1}`. The signature-driven counterpart of `std.elim`'s positional form; needs `forall`. The zebra2 formulation, generalised | S1.8a.f20 |
+| `std.slots` | [`slots.ein`](slots.ein) | closed-world inference for a **single generic co-location relation** whose equivalence classes are *slots*, one member per type. `slot-partition-setup` fans `(slot-partition R isa sub Super Index)` into `slot-locate` (index-anchored transitivity), `slot-exclusive` (all-different within a type), `slot-occupied` (a slot's type-seat is taken), `slot-negative` (the contrapositive), `slot-elimination` / `slot-fill` (survivor forcing, both directions) and `slot-no-room` / `slot-no-fill` (⊥). `slot-spatial-setup` fans `(slot-spatial R S isa PT)` into eight congruence rules — `slot-adjacent-{fwd,bwd}` (+ negatives), `slot-prune-{fwd,bwd}`, `slot-endpoint-{fwd,bwd}` — so one relation name can be both a constraint between values and the structure it resolves against. Needs `forall` + `symmetric` / `symmetric-negative-setup`. The zebra.ein formulation, generalised | S1.22.1a |
+
+**`std.bijection` vs `std.slots` — pick by how the puzzle names its links.**
+Both give the same closed-world inference (negative completion, elimination,
+no-room ⊥); they differ in what carries the property. `std.bijection` wants one
+relation per attribute, each a bijection onto the positions, and reads the arg
+types off `(relation R A B)` — so the property is per relation. `std.slots`
+wants *one* relation shared by every attribute, and the property is scoped by a
+type **family** (`Super`'s direct children) plus the type that names a slot
+(`Index`) — because `(bijective R)` has nowhere to put a type pair, and scoping
+per pair would need one declaration per ordered pair of attribute types. The two
+Zebra encodings are the worked comparison: [`examples/zebra2.ein`](../../../../examples/zebra2.ein)
+uses `std.bijection`, [`examples/zebra.ein`](../../../../examples/zebra.ein)
+uses `std.slots`, and they reach the same model. See
+[C2](../../../../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/reports/c2_zebra_ein_gap.md)
+for the measurements, including why `std.slots` anchors its conclusions at the
+`Index` type instead of enumerating the equivalence closure.
 
 `std.algebra`'s ops split **intrinsic** (read existing edges: `compose` / `meet`
 / `difference` / `converse` / `join` / `difunctional`) vs **extensive** (range

@@ -17,6 +17,21 @@ To reproduce this solve **programmatically** from Python — load
 embedding contract in [`docs/api/ein.md`](../../api/ein.md) (its worked
 example produces exactly the answer this trace derives).
 
+> **The other encoding.** [`zebra.ein`](../../../examples/zebra.ein) solves
+> the same puzzle over one generic `co-located` equivalence instead of five
+> typed relations, and since S1.22.1a it reaches the same model. It walks
+> *this same human solution*, rule for rule, under different names — the
+> correspondence table is in
+> [`README.md` §The same inference over ONE generic relation](README.md).
+> Where a row below says `domain-elimination` / `range-elimination`, that
+> encoding says `slot-elimination` / `slot-fill`; where it says
+> `adjacent-via-fwd`, that one says `slot-adjacent-fwd`. Its root
+> saturation gets one step *further* than zebra2's (it places Water in
+> H_1 at `d = 0`), for reasons
+> [C2 §4](../../../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/reports/c2_zebra_ein_gap.md)
+> works through. Reading the two traces side by side is the point of
+> keeping both files.
+
 ## How to read the trace
 
 - **Branch depth `d`.** `d = 0` is unconditional saturation. `d = 1` is the

@@ -266,8 +266,10 @@ the full 2⁷ cartesian product discussion.
 ### Reflexive
 `R(x,x)` holds for every `x` in the relation's domain. Example:
 `co-located` mathematically (every node is co-located with itself);
-Ein's M1 doesn't materialise the self-edges — see
-[zebra.ein §Future-work](../../examples/zebra.ein).
+Ein's M1 doesn't materialise the self-edges, since they add no inference
+power for Zebra-class puzzles ([F4
+Q34](../../plans/followups/f4_cross_cutting.md)). Where a genuine
+preorder is wanted, `std.typing`'s `(reflexive R)` closes one.
 
 ### Asymmetric
 `R(a,b) ⇒ ¬R(b,a)` for `a ≠ b`. Example: `is-a` (Norwegian is-a
@@ -346,9 +348,13 @@ inclusion). See [F4 Q36](../../plans/followups/f4_cross_cutting.md).
 ## Process / project terms
 
 ### Encoding-agnostic
-A piece of code that works equally well over `zebra.ein` (classic
-one generic `co-located`) and `zebra2.ein` (typed `*-loc` relations, unified
-`is-a` fact graph), without committing to either encoding. P1.7
+A piece of code that works equally well over `zebra.ein` (one generic
+`co-located` link, `instance` / `type` membership) and `zebra2.ein` (typed
+`*-loc` relations, unified `is-a` fact graph), without committing to
+either encoding — *two ontologies for one puzzle*, both solving to the
+same model since
+[S1.22.1a](../../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/s1.22.1a_zebra_ein_modernisation.md).
+P1.7
 resolved the encoding question — `is-a` is canonical
 ([S1.7.6](../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md)),
 and S1.7.23 removed the kernel's type/instance entity-view entirely

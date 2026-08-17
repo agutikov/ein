@@ -172,11 +172,13 @@ def test_constraints_surface_structural_properties():
     assert "Attribute" not in dot
 
 
-def test_constraints_zebra_classic():
+def test_constraints_zebra_generic_link():
     forms = parse(ZEBRA.read_text(encoding="utf-8"))
     dot = render_constraints(forms)
-    assert "type-exclusivity" in dot
-    assert 'label="implies"' in dot
+    # The property-application facts that drive the generic-link ontology.
+    assert "slot-partition" in dot
+    assert "slot-spatial" in dot
+    assert 'label="includes"' in dot
     # condition-(1) right-of facts (head is a declared relation) excluded
     assert "House-2" not in dot
 

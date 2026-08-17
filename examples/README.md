@@ -8,12 +8,32 @@ saturation demos); see [`docs/api/`](../docs/api/) to drive them from Python.
 > live here; it moved to
 > [`docs/kernel/inference/zebra_walkthrough.md`](../docs/kernel/inference/zebra_walkthrough.md).
 
-## Zebra puzzle
+## Zebra puzzle — two ontologies, one puzzle
+
+`zebra.ein` and `zebra2.ein` are not "classic vs modern". They encode the
+*same* Zebra puzzle over deliberately different vocabularies, both solve to the
+same model, and the pair is kept because the comparison is the only way to see
+which of the engine's reasoning power is general and which is an artefact of one
+encoding. `acceptance/test_zebra_two_ontologies.py` pins that they agree cell by
+cell; the design comparison and its measurements are in
+[C2](../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/reports/c2_zebra_ein_gap.md).
+
+| | [`zebra.ein`](zebra.ein) | [`zebra2.ein`](zebra2.ein) |
+|---|---|---|
+| attribute link | **one generic** `co-located` equivalence over all 30 values, whose classes *are* the houses | **five typed** projections (`color-loc : Color → House`, …) |
+| membership | split: `(instance V T)` + `(type Sub Super)` | unified `is-a` |
+| a cross-attribute clue | an ordinary fact: `(co-located Englishman Red)` | a 4-ary activator: `(co-located nation-loc Englishman color-loc Red)` |
+| a spatial clue | an ordinary fact: `(right-of Green Ivory)` | a 5-ary activator: `(adjacent-via right-of color-loc Ivory color-loc Green)` |
+| the property that drives it | type-scoped: `(slot-partition co-located instance type Attribute House)` + one `(slot-spatial …)` per spatial relation — `std.slots` | per-relation: `(bijective color-loc)` ×5 — `std.bijection` |
+| rules defined in the file | 0 (all imported) | 12 |
+| `solve --exhaustive` | Solution, k=1, exhausted — ~21 s (PyPy) | Solution, k=1, exhausted — ~9 s (PyPy) |
+
+`zebra2.ein` remains the **primary M1 acceptance target** (it also carries the
+Ambiguity and Contradiction task-class variants below);
+`zebra.ein` is the independent second reading.
 
 | file | description |
 |------|-------------|
-| [`zebra.ein`](zebra.ein) | Zebra/Einstein, **one generic link relation** (`co-located`); declares its own `type` / `instance` relations. Does not solve yet — an *ontology* limit, not a language one (relation properties are per-relation, so one universal link gives the elimination rules nothing to bite on) |
-| [`zebra2.ein`](zebra2.ein) | Zebra, **typed attribute relations** (`is-a` + five `*-loc`, each `bijective`) — the **active M1 acceptance target** |
 | [`zebra2-hints.ein`](zebra2-hints.ein) | `zebra2` with solution hints injected (S1.5a.11 diagnostic) |
 | [`zebra2-minus-15.ein`](zebra2-minus-15.ein) | `zebra2` with condition (15) removed — a reduced, under-determined variant |
 | [`gen_zebra2_variants.py`](gen_zebra2_variants.py) | generator for `zebra2` clue-dropped variants |

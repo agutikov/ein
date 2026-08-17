@@ -529,7 +529,7 @@ def test_star_in_both_atom_and_var():
 def test_examples_zebra_parses():
     """The full Zebra puzzle (examples/zebra.ein) parses under the flat
     kernel (P1.7c) — S1.1.1 acceptance smoke test. No block wrappers: a
-    sequence of rule decls, relation decls, facts, and one query."""
+    sequence of imports, relation decls, facts, one hrule and one query."""
     from pathlib import Path
 
     from ein.ir import parse
@@ -540,7 +540,9 @@ def test_examples_zebra_parses():
     forms = parse(zebra.read_text(encoding="utf-8"))
     heads = [f.head.name for f in forms]
     assert "query" in heads
-    assert heads.count("rule") >= 5            # property / square / exclusivity rules
+    assert "config" in heads                   # search-control block
+    assert heads.count("import") >= 2          # std.algebra + std.slots
+    assert heads.count("hrule") == 1           # rule-driven candidate generation
     assert "co-located" in heads               # a puzzle fact at top level
     assert not any(h in ("ontology", "facts", "reasoning", "rules")
                    for h in heads)             # wrappers are gone

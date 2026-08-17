@@ -54,10 +54,13 @@ Zebra-acceptance milestone.
 - `01-ein-graph` is stable: graph + 3 rule families.
 - `02-data-model` is stable through M1; F4 promotion targets
   (compound node kinds, e-graph) are noted at the seams.
-- `03-ein-lang` is stable; the IR-encoding final call (classic
-  one generic link relation vs typed attribute relations) is **explicitly
-  deferred to P1.7 S1.7.2** — both encodings stay valid through every
-  M1 stage.
+- `03-ein-lang` is stable; the IR-encoding final call (one generic link
+  relation vs typed attribute relations) was **explicitly deferred to
+  P1.7 S1.7.2** and stays deferred on purpose — the two are *two
+  ontologies for one puzzle*, both valid ein-lang and, since S1.22.1a,
+  both solving to the same model. Keeping the pair is how the project
+  tells which of the engine's reasoning power is general and which is an
+  artefact of one encoding.
 - `inference/` is documented:
   [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md)
   (as-built O1–O9) + [`python_impl.md`](inference/python_impl.md) (module map)

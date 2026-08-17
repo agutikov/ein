@@ -81,11 +81,30 @@ special-cases no head and builds no type/instance entity-view — a type
 projection, if a puzzle wants one, is a user-space rule over its own
 facts.
 
-`zebra.ein` does not currently solve, and the reason is ontological
-rather than linguistic: relation properties are declared *per relation*,
-so one universal `co-located` gives the elimination rules no
-per-attribute structure to bite on, and the hypothesis space does not
-close.
+Cross-attribute clues are *ordinary facts* here
+(`(co-located Englishman Red)`), and so are spatial ones
+(`(right-of Green Ivory)` = "Green's house is immediately right of
+Ivory's"); `zebra2.ein` has to restate each of those as a 4- or
+5-argument activator fact, because its two attribute relations share no
+argument to join on.
+
+For a long time `zebra.ein` did not solve, and the reason was
+ontological rather than linguistic. `bijective` and friends are
+properties **of a relation**, declared per relation — and one universal
+`co-located` is not the kind of relation any of them describe. It is an
+*equivalence relation whose classes hold exactly one member of each
+attribute type*. Restricted to one ordered pair of types it is a
+bijection (which is why `zebra2.ein`, whose relations *are* those
+restrictions, works), but `(bijective co-located)` has nowhere to put the
+type pair, so the elimination rules had no structure to bite on and the
+hypothesis space did not close.
+
+What closed it (S1.22.1a) is a property scoped by the type **family**
+rather than by the relation — [`std.slots`](../../../../ein.py/src/ein/stdlib/slots.ein),
+covered under [§Type-scoped relation
+properties](#type-scoped-relation-properties-slot-partition--slot-spatial)
+below. No relation was added: the file still reasons over `co-located`,
+`right-of`, `next-to`, `instance` and `type`.
 
 ### Typed attribute relations (`zebra2.ein`)
 
@@ -114,45 +133,103 @@ on, and the substantive difference from `zebra.ein`.
 The categorical motivation (T as terminal object / limit of the
 order viewed as a category) is documented in `zebra2.ein`'s header.
 
-## Worked rule library
+## Type-scoped relation properties (`slot-partition` / `slot-spatial`)
 
-Both encodings use the same property-rule pattern. The `(rule …)`
-forms from `zebra.ein`:
+A property vocabulary that does not fit "a property of one relation".
+Where `(bijective color-loc)` equips *one* relation, these equip *one
+relation over a family of types* — the shape a generic link relation
+has. Both are ordinary facts, consumed by
+[`std.slots`](../../../../ein.py/src/ein/stdlib/slots.ein):
 
 ```lisp
+(slot-partition co-located instance type Attribute House)
+```
+
+> *`co-located` is an equivalence relation; its classes are **slots**;
+> each slot holds exactly one `instance` of every type that is a direct
+> `type`-child of `Attribute`; and the `House` member of a slot is its
+> name.*
+
+Five arguments, and each carries weight. The membership relation
+(`instance`) and the subtype relation (`type`) arrive as *parameters*, so
+the rule bodies name no `is-a` literal and the module works for either
+membership convention (§Two ontologies above). `Attribute` names the
+family, so adding an attribute category is adding a `(type T Attribute)`
+fact — not a declaration per type *pair*, which is what scoping
+`bijective` per pair would have cost (six categories → 30 declarations
+for one relation). `House` is the **index**: the member that names a
+slot, which is what lets the derived facts be anchored on the
+value × index rectangle instead of enumerating the whole equivalence
+closure.
+
+```lisp
+(slot-spatial co-located right-of instance House)
+(slot-spatial co-located next-to  instance House)
+```
+
+> *`right-of` relates two values exactly when it relates their slots, and
+> the slot type carrying the structure is `House`.*
+
+This is what lets one relation name do double duty:
+`(right-of Green Ivory)` is a **constraint** between two Colors, and
+`(right-of House-2 House-1)` is the **structure** it resolves against.
+The rules tell them apart by `instance`-membership of `House`, never by
+name — so a puzzle states a spatial clue in the vocabulary it is written
+in, rather than re-encoding it as an activator.
+
+Both facts drive *reflective* rule activation
+([`../01-ein-graph/02_rules.md`](../01-ein-graph/02_rules.md)): a
+non-generic setup rule reads the property fact and derives the operational
+activators, which light up the generic inference rules on the next
+saturation pass. So at load time those rules have no applications at all
+— see [`../../inference/README.md`](../../inference/README.md) for the
+rule list and its priority bands.
+
+## Worked rule library
+
+Neither encoding defines property rules of its own any more; both import
+them, which is what `:symbols` flat import is for
+([`../../../../ein.py/src/ein/stdlib/README.md`](../../../../ein.py/src/ein/stdlib/README.md)):
+
+```lisp
+;; zebra.ein
+(import std.algebra :symbols (symmetric symmetric-negative-setup includes))
+(import std.slots   :symbols (slot-partition-setup slot-spatial-setup))
+```
+
+The imported closures are **T2** rules
+([`../01-ein-graph/02_rules.md` §2.2](../01-ein-graph/02_rules.md)) —
+parameterised over the relation, activated by a property fact:
+
+```lisp
+;; std.algebra
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)
   :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 1)
+  :priority 100)
 
-(rule transitive (?rel)
-  :match  (and (?rel ?a ?b) (?rel ?b ?c) :where (neq ?a ?c))
-  :assert (?rel ?a ?c)
-  :why    "{?rel} is transitive."
-  :priority 5)
-
-(rule implies (?p ?q)
-  :match  (?p ?a ?b)
-  :assert (?q ?a ?b)
-  :why    "{?p} implies {?q}."
-  :priority 3)
-
-(rule type-exclusivity ()
-  :match  (and (is-a ?a ?T)
-               (is-a ?b ?T)
+;; std.slots — the "all-different within a category" constraint, with the
+;; membership relation lifted to a parameter so the body stays is-a-free.
+;; ?T is a FREE match var, not a parameter: the rule fires once per type
+;; the membership relation mentions, so a puzzle adds a category by adding
+;; its members.
+(rule slot-exclusive (?R ?isa)
+  :match  (and (?isa ?a ?T)
+               (?isa ?b ?T)
                (neq ?a ?b))
-  :assert (not (co-located ?a ?b))
-  :why    "{?a} and {?b} are distinct members of {?T} — distinct slots."
-  :priority 10)
+  :assert (not (?R ?a ?b))
+  :why    "{?a} and {?b} are distinct {?T}s — they cannot share a slot under {?R}."
+  :priority 240)
 ```
 
-`symmetric`, `transitive`, `implies` are **T2** rules
-([`../01-ein-graph/02_rules.md` §2.2](../01-ein-graph/02_rules.md));
-`type-exclusivity` is **T1**
-([`../01-ein-graph/02_rules.md` §2.1](../01-ein-graph/02_rules.md))
-— literal relation names (`is-a`, `co-located`) appear in the
-LHS and RHS.
+`slot-exclusive` is the generic form of what `zebra.ein` used to spell
+`type-exclusivity` with a hardcoded `instance` head and a `co-located`
+literal in the conclusion. The **T1** shape (literal relation names in
+the LHS and RHS,
+[`../01-ein-graph/02_rules.md` §2.1](../01-ein-graph/02_rules.md)) is
+still legal and still what a genuinely puzzle-specific rule looks like;
+it is simply not what either Zebra encoding needs.
 
 ## Derived-fact dump
 
@@ -166,11 +243,11 @@ derivations on reload):
 (co-located House-1 Norwegian :rule symmetric
                               :using ((co-located Norwegian House-1)))
 
-;; Type-exclusivity: Norwegian and Japanese are distinct
-;; Nationality members, so they're not co-located.
-(not (co-located Norwegian Japanese) :rule type-exclusivity
-                                     :using ((is-a Norwegian Nationality)
-                                             (is-a Japanese  Nationality)))
+;; slot-exclusive: Norwegian and Japanese are distinct Nationality
+;; members, so they cannot share a slot.
+(not (co-located Norwegian Japanese) :rule slot-exclusive
+                                     :using ((instance Norwegian Nationality)
+                                             (instance Japanese  Nationality)))
 ```
 
 > **Note** — the `:using` IR syntax above isn't yet round-trippable

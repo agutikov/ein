@@ -12,7 +12,7 @@ from ein.kb import (
     KnowledgeBase,
 )
 
-# ═══════════════════════ zebra.ein (classic split) ════════════════
+# ═════════════════ zebra.ein (one generic link relation) ══════════
 
 
 class TestZebraCounts:
@@ -39,19 +39,28 @@ class TestZebraCounts:
         open_world = sorted(
             n for n, r in zebra_kb.relations.items() if not r.declared
         )
-        assert {"symmetric", "transitive", "implies", "square-fwd",
-                "square-bwd"} <= set(open_world)
+        assert {"symmetric", "includes",
+                "slot-partition", "slot-spatial"} <= set(open_world)
         assert "instance" not in open_world
 
-    def test_eight_rules(self, zebra_kb):
-        """S1.3.2 + square-unique addition for corner-house spatial inference."""
-        assert len(zebra_kb.rules) == 8
-        assert set(zebra_kb.rules) == {
-            "symmetric", "transitive", "implies",
-            "square-fwd", "square-bwd", "square-unique",
-            "type-exclusivity",
-            "hypothesis-contradiction",
-        }
+    def test_rules_all_come_from_the_stdlib(self, zebra_kb):
+        """S1.22.1a — zebra.ein defines NO rules of its own any more.
+
+        Its whole rule library is `(import …)`ed: the property closures
+        from `std.algebra` and the slot-partition / slot-spatial
+        machinery from `std.slots`. The only puzzle-local rule shape left
+        is the `(hrule guess …)`, which lives in `kb.hrules`.
+        """
+        assert set(zebra_kb.hrules) == {"guess"}
+        # The std.slots entry points and the std.algebra closures the
+        # puzzle's property facts name.
+        assert {"symmetric", "includes",
+                "slot-partition-setup", "slot-spatial-setup",
+                "slot-locate", "slot-exclusive", "slot-occupied",
+                "slot-negative", "slot-elimination", "slot-no-room",
+                "slot-adjacent-fwd", "slot-adjacent-bwd",
+                "slot-prune-fwd", "slot-prune-bwd",
+                "slot-endpoint-fwd", "slot-endpoint-bwd"} <= set(zebra_kb.rules)
 
 
 # S1.7.23 — `TestZebraTypeHierarchy` (Type.parent/children/instances/
@@ -63,30 +72,38 @@ class TestZebraCounts:
 
 class TestZebraRelation:
     def test_right_of_rules(self, zebra_kb):
+        # `(includes right-of next-to)` is right-of's only rule-named
+        # property fact; its spatial inference arrives through
+        # `(slot-spatial co-located right-of instance House)`, whose head
+        # is a std.slots ENTRY relation, not a rule name.
         names = {r.name for r in zebra_kb.relations["right-of"].rules}
-        assert names == {"implies", "square-fwd", "square-bwd"}
+        assert names == {"includes"}
 
     def test_next_to_rules(self, zebra_kb):
         # Acceptance: rules whose name is the head of a property fact
         # involving next-to, OR whose pattern names it.
-        # Property facts: `(symmetric next-to)`, `(implies right-of next-to)`.
+        # Property facts: `(symmetric next-to)`, `(includes right-of next-to)`.
         names = {r.name for r in zebra_kb.relations["next-to"].rules}
-        # `square-unique` joined the next-to rule list via the
-        # `(square-unique next-to House)` activator fact (S1.3.2+).
-        assert names == {"symmetric", "implies", "square-unique"}
+        assert names == {"symmetric", "includes"}
 
-    def test_co_located_in_type_exclusivity(self, zebra_kb):
-        # type-exclusivity body asserts `(not (co-located ?a ?b))` —
-        # so it names co-located by literal head.
-        names = {r.name for r in zebra_kb.relations["co-located"].rules}
-        assert "type-exclusivity" in names
+    def test_spatial_relations_are_slot_spatial(self, zebra_kb):
+        # Both spatial relations opt into std.slots' congruence machinery
+        # through one `(slot-spatial …)` fact each.
+        spatial = {
+            f.args[1]
+            for f in zebra_kb.facts
+            if f.relation_name == "slot-spatial"
+        }
+        assert spatial == {"right-of", "next-to"}
 
-    def test_right_of_properties(self, zebra_kb):
-        props = zebra_kb.relations["right-of"].properties
-        heads = sorted(f.relation_name for f in props)
-        # `(implies right-of next-to)`, `(square-fwd right-of)`,
-        # `(square-bwd right-of)`.
-        assert heads == ["implies", "square-bwd", "square-fwd"]
+    def test_co_located_is_the_slot_partition(self, zebra_kb):
+        # One `(slot-partition co-located instance type Attribute House)`
+        # fact carries the whole type-scoped property.
+        f = next(
+            fact for fact in zebra_kb.facts
+            if fact.relation_name == "slot-partition"
+        )
+        assert f.args == ("co-located", "instance", "type", "Attribute", "House")
 
     def test_relation_signature_is_opaque_names(self, zebra_kb):
         # S1.7.23 — `signature` is opaque type-name atoms; there is no
@@ -101,27 +118,19 @@ class TestZebraRule:
         apps = sorted(f.args for f in sym.applications)
         assert apps == [("co-located",), ("next-to",)]
 
-    def test_implies_applications(self, zebra_kb):
-        imp = zebra_kb.rules["implies"]
-        apps = [f.args for f in imp.applications]
+    def test_includes_applications(self, zebra_kb):
+        inc = zebra_kb.rules["includes"]
+        apps = [f.args for f in inc.applications]
         assert apps == [("right-of", "next-to")]
 
-    def test_type_exclusivity_has_one_application(self, zebra_kb):
-        # T2 rule: activator `(type-exclusivity co-located)` is the
-        # single property fact authorising the rule for co-located.
-        rule = zebra_kb.rules["type-exclusivity"]
-        assert len(rule.applications) == 1
-        app = rule.applications[0]
-        assert app.relation_name == "type-exclusivity"
-        assert app.args == ("co-located",)
-
-    def test_type_exclusivity_mentions_co_located(self, zebra_kb):
-        # ?R appears only in :assert (not (?R ?a ?b)), so the structural
-        # relation_names list doesn't include "co-located" — but the
-        # `applications` activator + the cross-reference via
-        # `kb.relations["co-located"].rules` does.
-        co_loc_rules = {r.name for r in zebra_kb.relations["co-located"].rules}
-        assert "type-exclusivity" in co_loc_rules
+    def test_slot_rules_have_no_authored_applications(self, zebra_kb):
+        # The std.slots inference rules are activated REFLECTIVELY: the
+        # `(slot-partition …)` fact fires `slot-partition-setup`, which
+        # *derives* their activators at saturation time. So at load time
+        # they carry none — unlike zebra2, where each `(bijective R)` is
+        # authored per relation.
+        for name in ("slot-locate", "slot-occupied", "slot-elimination"):
+            assert zebra_kb.rules[name].applications == ()
 
     def test_rule_has_pattern_objects(self, zebra_kb):
         sym = zebra_kb.rules["symmetric"]
@@ -135,14 +144,16 @@ class TestZebraRule:
 
 class TestZebraFact:
     def test_fact_count(self, zebra_kb):
-        # Ontology: 7 type-decl + 30 instance + 8 rule-app + 4 spatial
-        #  + 5 relation-decl = 54. zebra.ein declares `type` and
-        #  `instance` as ordinary relations, so their facts are ONTOLOGY
-        #  facts and both appear among the 5 relation-decls (alongside
-        #  co-located, right-of, next-to).
-        # Facts: 14 (conditions 2..15).
-        # Total: 68.
-        assert len(zebra_kb.facts) == 68
+        # Background: 5 relation-decl + 7 type + 30 instance
+        #  + 6 property-application (2 symmetric, 1 includes,
+        #    1 slot-partition, 2 slot-spatial) + 4 condition-(1) spatial
+        #  = 52. zebra.ein declares `type` and `instance` as ordinary
+        #  relations, so their facts are ordinary background facts and
+        #  both appear among the 5 relation-decls (alongside co-located,
+        #  right-of, next-to).
+        # Given: 14 (conditions 2..15).
+        # Total: 66.
+        assert len(zebra_kb.facts) == 66
 
     def test_fact_resolves_relation(self, zebra_kb):
         fs = [f for f in zebra_kb.facts if f.source == "condition (10)"]
@@ -240,9 +251,10 @@ class TestOpenWorld:
 class TestQueryLoading:
     def test_zebra_query_present(self, zebra_kb):
         assert zebra_kb.query is not None
-        # kw_pairs is a tuple of KwPair objects.
+        # kw_pairs is a tuple of KwPair objects. (:mode is long gone —
+        # the verdict is read from the result `k`, never chosen up front.)
         keys = sorted(kw.key.name for kw in zebra_kb.query.kw_pairs)
-        assert keys == ["goal"]  # :mode removed (obsolete — verdict read from result)
+        assert keys == ["goal", "goal-text", "hrules"]
 
 
 # ═══════════════════════ EqClasses placeholder ═════════════════════
@@ -298,8 +310,11 @@ class TestIncrementalIndex:
 
 def test_kb_repr_summary(zebra_kb):
     r = repr(zebra_kb)
-    assert "rules=8" in r
-    assert "facts=68" in r
+    # Rule count is the imported library's, so pin the shape not the
+    # number — std.slots / std.algebra may gain rules without this being
+    # a zebra.ein regression.
+    assert "rules=" in r
+    assert "facts=66" in r
 
 
 def test_kb_len_is_node_total(zebra_kb):

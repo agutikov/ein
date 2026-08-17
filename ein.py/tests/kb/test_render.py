@@ -55,14 +55,19 @@ class TestShapeMapping:
         ovals = [line for line in _node_decls(dot) if "shape=oval" in line]
         assert len(ovals) == 30
 
-    def test_zebra_octagons_only_for_relation_decls(self, zebra_kb):
-        # Zebra's *domain* facts are all binary; the only ternary facts
-        # are the auto-stored relation declarations `(relation R T0 T1)`
-        # — co-located, right-of, next-to, type, instance. Each renders
-        # as an octagon (n-ary-fact shape), and nothing else does.
+    def test_zebra_octagons_are_the_n_ary_facts(self, zebra_kb):
+        # Zebra's *domain* facts are all binary. The n-ary ones — each
+        # rendered as an octagon, and nothing else is — are:
+        #   5 relation declarations `(relation R T0 T1)` (co-located,
+        #     right-of, next-to, type, instance),
+        #   1 `(slot-partition co-located instance type Attribute House)`,
+        #   2 `(slot-spatial co-located <S> instance House)`.
         dot = to_dot(zebra_kb)
         octagons = [line for line in _node_decls(dot) if "shape=octagon" in line]
-        assert len(octagons) == 5  # one per relation declaration
+        assert len(octagons) == 8
+        assert sum("(relation)" in line for line in octagons) == 5
+        assert sum("(slot-partition)" in line for line in octagons) == 1
+        assert sum("(slot-spatial)" in line for line in octagons) == 2
 
     def test_ternary_fact_produces_octagon(self):
         text = """

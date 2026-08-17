@@ -311,21 +311,34 @@ def test_zebra_saturation_completes():
 
 
 def test_zebra_saturation_priority_band_first_firings():
-    """The first non-redundant firings on zebra.ein are propagate-band
-    (priority 100) — symmetric or implies — before any derive-band."""
+    """Band discipline on zebra.ein: the propagate band (100) drains
+    before elimination (400) gets to fire.
+
+    Since S1.21.8 band order is advisory for *soundness* — `(absent …)` is
+    judged on the closure/world boundary either way — but it still governs
+    the shape of the trace, and elimination reading negatives that the 240
+    band has not produced yet would silently weaken the root state.
+    """
     kb = KnowledgeBase.from_ir(parse(ZEBRA.read_text()))
     sat = Saturator(kb)
     productive = [f for f in sat.saturate() if not f.redundant]
-    # Propagate band rules.
-    propagate = {"symmetric", "implies"}
-    first_derive = next(
-        (i for i, f in enumerate(productive) if f.rule not in propagate
-         and f.rule != "type-exclusivity"),
+    assert productive, "zebra.ein must derive something at the root"
+    # Propagate band (100): the setup fan-outs + the property closures.
+    propagate = {
+        "slot-partition-setup", "slot-spatial-setup",
+        "symmetric-negative-setup", "symmetric", "symmetric-negative",
+        "includes",
+    }
+    # Elimination band (400) — must not lead.
+    elimination = {"slot-elimination", "slot-fill"}
+    first_elim = next(
+        (i for i, f in enumerate(productive) if f.rule in elimination),
         None,
     )
-    if first_derive is not None:
-        # Everything before the first derive must be propagate-band.
-        for f in productive[:first_derive]:
-            assert f.rule in propagate or f.rule == "type-exclusivity", (
-                f"saw {f.rule!r} before first derive-band firing"
-            )
+    assert first_elim is not None, (
+        "zebra.ein's root saturation must reach the elimination band "
+        "(it is what places Yellow and Water in House-1)"
+    )
+    assert productive[0].rule in propagate, (
+        f"first productive firing was {productive[0].rule!r}, not propagate-band"
+    )

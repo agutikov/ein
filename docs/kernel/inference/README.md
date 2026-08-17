@@ -113,7 +113,11 @@ contributes, locked by S1.21.8:
    branch only when no rule fires and the puzzle is not yet solved.
    ([Q19 working answer](../../../plans/m1_core_graph_reasoning/open_questions.md#q19).)
 5. **Encoding-agnostic.** The engine works over both `zebra.ein`
-   (classic) and `zebra2.ein` (unified is-a). P1.7 resolved the
+   (one generic `co-located` link, `instance` / `type` membership) and
+   `zebra2.ein` (five typed `*-loc` relations, unified `is-a`) —
+   *two ontologies for one puzzle*, and since S1.22.1a both solve to the
+   same model, which is what makes the claim testable rather than
+   aspirational (`acceptance/test_zebra_two_ontologies.py`). P1.7 resolved the
    encoding (`is-a` canonical) and S1.7.23 removed the kernel
    type/instance entity-view, so the engine treats every membership
    relation uniformly as facts — there is no
@@ -592,6 +596,67 @@ quantifies the trade-off — A leaves the exhaustive lattice at 0 sets;
 without it the engine falls back to forced-positive promotion (1 set)
 or, with every elimination path off, full branch-and-refute (7 sets,
 6 nogoods on the fixture).
+
+### The same inference over ONE generic relation (`std.slots`, S1.22.1a)
+
+Everything above is keyed to a property of *one relation* —
+`(bijective color-loc)` and its fan-out. `examples/zebra.ein` links every
+attribute through a single `co-located` equivalence, which is not that
+kind of relation: restricted to one ordered pair of types it is a
+bijection, but `bijective` has nowhere to put a type pair.
+[`std.slots`](../../../ein.py/src/ein/stdlib/slots.ein) supplies the same
+inference from a property scoped by the type **family** —
+`(slot-partition R isa sub Super Index)` — plus one
+`(slot-spatial R S isa PositionType)` per spatial relation. The
+correspondence, rule for rule:
+
+| `std.bijection` / zebra2 | `std.slots` / zebra.ein | note |
+|---|---|---|
+| the `co-located` 4-ary propagation rule | `slot-locate` | index-anchored transitivity; here a clue is a *fact*, not an activator |
+| `injective` (check) | `slot-exclusive` | all-different within a type, derived from the membership facts |
+| `functional-negative` + `injective-negative` | `slot-occupied` | one rule, because R is symmetric: the two argument positions collapse |
+| — | `slot-negative` | contrapositive of transitivity; carries a negative across an authored cross-attribute link |
+| `domain-elimination` | `slot-elimination` | every slot but one excluded for a value |
+| `range-elimination` | `slot-fill` | every member but one excluded for a slot |
+| `total` / `surjective` (⊥) | `slot-no-room` / `slot-no-fill` | the encoding's main branch killers |
+| `adjacent-via-{fwd,bwd}` | `slot-adjacent-{fwd,bwd}` | same unique-neighbour NAF gate |
+| `adjacent-via-{fwd,bwd}-negative` | `slot-adjacent-{fwd,bwd}-neg` | |
+| `disjunctive-prune-{fwd,bwd}` | `slot-prune-{fwd,bwd}` | |
+| `adjacent-via-endpoint-{fwd,bwd}` | `slot-endpoint-{fwd,bwd}` | |
+
+The priority bands are the same (100 setup, 200 propagation, 240 negative
+completion, 250 pruning + violation checks, 400 elimination), so the two
+libraries are interchangeable band-for-band.
+
+Two asymmetries are worth knowing, because they are what the second
+encoding exists to expose:
+
+- **`slot-elimination` and `slot-fill` are both needed, and they are not
+  each other's mirror.** R's symmetry makes the two *conclusions*
+  interchangeable — `(R a i)` and `(R i a)` are the same edge — but the
+  rules quantify over different domains, so they consume different
+  negatives and fire at different times. The Zebra opening needs
+  `slot-fill` ("House-1's colour seat has only Yellow left"); the endgame
+  needs `slot-elimination` ("Zebra has only House-5 left").
+- **A symmetric relation needs its negative mirror.** `std.algebra`'s
+  `symmetric-negative` is decoration for a directed encoding and
+  load-bearing here: most negatives are derived in one argument order
+  only, and without the mirror `(not (co-located House-2 Green))` never
+  reaches a rule matching `(not (co-located Green House-2))`.
+
+Both libraries also make the same *closed-world* bet, in the same place:
+the only NAF reads are on the position structure (the unique-neighbour,
+pruning and endpoint guards), which is sound exactly when that structure
+is saturation-determined — for Zebra, condition (1) fixes the row of
+houses. The attribute side is never read under NAF, so nothing prunes a
+branch the search still needs.
+
+Measurements, including why `std.slots` anchors its conclusions at the
+`Index` type instead of enumerating the equivalence closure, and why a
+densely multi-justified proof graph makes
+`:record-alternative-justifications` the most consequential config knob in
+that file, are in
+[C2](../../../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/reports/c2_zebra_ein_gap.md).
 
 ## Mid-sweep saturation + per-sibling apriori re-check (S1.5a.19)
 

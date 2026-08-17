@@ -1,92 +1,51 @@
-(rule
-  symmetric
-  (?rel)
-  :match (?rel ?a ?b)
-  :assert (?rel ?b ?a)
-  :why "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 100)
+(config
+  :enable-pre-branch-lookahead true
+  :enable-lookahead-kill-cache true
+  :enable-forced-positive true
+  :enable-path-nogoods true
+  :lattice-order lex
+  :record-alternative-justifications false)
 
-(rule
-  transitive
-  (?rel)
-  :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-  :assert (?rel ?a ?c)
-  :why "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}."
-  :priority 200)
+(import std.algebra :symbols (symmetric symmetric-negative-setup includes))
 
-(rule
-  implies
-  (?p ?q)
-  :match (?p ?a ?b)
-  :assert (?q ?a ?b)
-  :why "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-  :priority 100)
+(import std.slots :symbols (slot-partition-setup slot-spatial-setup))
 
-(rule
-  square-fwd
-  (?R)
-  :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?a ?x))
-  :assert (co-located ?b ?y)
-  :why "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
-  :priority 200)
+(hrule
+  guess
+  (?R ?T1 ?T2)
+  :match (and (instance ?a ?T1) (instance ?b ?T2))
+  :assert (?R ?a ?b)
+  :why "guess: ({?R} {?a} {?b})?")
 
-(rule
-  square-bwd
-  (?R)
-  :match (and (?R ?a ?b) (?R ?x ?y) (co-located ?b ?y))
-  :assert (co-located ?a ?x)
-  :why "square ({?R}, bwd): {?b}↔{?y} bridges {?a}↔{?x}."
-  :priority 200)
+(relation type T T :why "{?1} is a subtype of {?2}")
 
-(rule
-  square-unique
-  (?R ?T)
-  :match (and (?R ?a ?b) (?R ?x ?y) (instance ?x ?T) (co-located ?a ?x) (absent (and (?R ?x ?z) (neq ?y ?z))))
-  :assert (co-located ?b ?y)
-  :why "{?x} (an {?T}) has only {?y} as {?R}-neighbour; {?a}↔{?x} carries {?b}↔{?y}."
-  :priority 200)
+(relation instance T T :why "{?1} is an instance of {?2}")
 
-(rule
-  type-exclusivity
-  (?R)
-  :match (and (instance ?a ?T) (instance ?b ?T) (neq ?a ?b))
-  :assert (not (?R ?a ?b))
-  :why "{?a} and {?b} are distinct instances of {?T} — exclusive under {?R}."
-  :priority 300)
+(relation
+  co-located
+  Attribute
+  Attribute
+  :why "{?1} and {?2} are in the same house")
 
-(rule
-  hypothesis-contradiction
-  ()
-  :match (and (hypothesis ?h) (contradiction-under ?h))
-  :assert (not ?h)
-  :why "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
-  :priority 900)
+(relation
+  right-of
+  Attribute
+  Attribute
+  :why "{?1}'s house is immediately right of {?2}'s")
 
-(relation type T T)
-
-(relation instance T T)
-
-(relation co-located Attribute Attribute)
-
-(relation right-of Attribute Attribute)
-
-(relation next-to Attribute Attribute)
+(relation next-to Attribute Attribute :why "{?1}'s house is next to {?2}'s")
 
 (symmetric co-located)
 
-(transitive co-located)
-
 (symmetric next-to)
 
-(implies right-of next-to)
+(includes right-of next-to)
 
-(square-fwd right-of)
+(slot-partition co-located instance type Attribute House)
 
-(square-bwd right-of)
+(slot-spatial co-located right-of instance House)
 
-(square-unique next-to House)
-
-(type-exclusivity co-located)
+(slot-spatial co-located next-to instance House)
 
 (type Attribute T)
 
@@ -199,4 +158,6 @@
 (next-to Norwegian Blue :source "condition (15)")
 
 (query
-  :goal (and (co-located ?water-drinker Water) (co-located ?zebra-owner Zebra)))
+  :goal (and (co-located Water ?h_water) (instance ?h_water House) (co-located ?who_water ?h_water) (instance ?who_water Nationality) (co-located Zebra ?h_zebra) (instance ?h_zebra House) (co-located ?who_zebra ?h_zebra) (instance ?who_zebra Nationality))
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}"
+  :hrules (guess (co-located Color House) (co-located Nationality House) (co-located Drink House) (co-located Cigarette House) (co-located Pet House)))

@@ -1,0 +1,439 @@
+;;; Ein stdlib — `std.slots`: closed-world inference for a SINGLE generic
+;;; co-location relation whose equivalence classes are *slots*.
+;;;
+;;; The type-scoped counterpart of `std.bijection`. Where std.bijection
+;;; equips ONE relation per attribute — `(bijective color-loc)`,
+;;; `(bijective nation-loc)`, … each a bijection between its attribute type
+;;; and a position type — this module equips ONE relation shared by every
+;;; attribute: an equivalence relation R whose classes each hold exactly one
+;;; member of every attribute type.
+;;;
+;;; ── why this module has to exist ─────────────────────────────────────────────
+;;; `bijective` is a property of a RELATION. A single generic `co-located`
+;;; spanning all attribute types is not a bijection — restricted to one pair of
+;;; types it is, but `(bijective co-located)` cannot say "between Nationality
+;;; and House", so std.bijection's `functional-negative` would read
+;;; `(relation co-located Attribute Attribute)` and wrongly exclude a value
+;;; from every OTHER Attribute rather than from the other members of one type.
+;;; The property that actually holds is TYPE-SCOPED, and scoping it per type
+;;; PAIR would need one declaration per ordered pair (30 of them for the six
+;;; Zebra attribute types). So the property is scoped by the type FAMILY
+;;; instead — one declaration naming the family's common supertype and the
+;;; member type that *identifies* a slot:
+;;;
+;;;     (slot-partition R isa sub Super Index)
+;;;
+;;; reads: *R is an equivalence relation; its classes are slots; each slot
+;;; holds exactly one `isa`-member of every type that is a direct `sub`-child
+;;; of `Super`; and the `Index` member of a slot is its name.* For the Zebra
+;;; puzzle, with membership `instance`, subtyping `type`, and houses naming the
+;;; slots:
+;;;
+;;;     (slot-partition co-located instance type Attribute House)
+;;;
+;;; ── why Index, and not just the equivalence ─────────────────────────────────
+;;; An equivalence relation closed under transitivity materialises every pair
+;;; inside a class: for Zebra that is 6 members × 5 ordered partners × 5 slots =
+;;; 150 positive edges, where zebra2's five directed Attribute→House projections
+;;; hold the same information in 25. The negative side is worse — the
+;;; complement of a 30-element square is 900 ordered pairs against zebra2's 125
+;;; — and the negative-propagation rules join positives against negatives, so
+;;; the cost is the PRODUCT. Measured on the exhaustive Zebra solve, the fully
+;;; closed formulation costs ~4.3 s per hypothesis against zebra2's ~0.09 s.
+;;;
+;;; So `Index` is a MATERIALISATION policy, not a weakening of the property:
+;;; every derived edge is anchored at the slot's index, which puts the derived
+;;; facts on the same Attribute×Index rectangle zebra2's typed relations live
+;;; on, while the AUTHORED facts keep the freedom the generic relation exists
+;;; for (a clue may still link two attribute values directly, with no house
+;;; named). Transitivity still HOLDS — `slot-negative` and the eliminations are
+;;; justified by it — it is simply not enumerated off the rectangle. A puzzle
+;;; that genuinely needs the full closure declares `(transitive R)`
+;;; (std.algebra) alongside and pays for it; one whose clues are *only*
+;;; cross-attribute, with no index ever named, would have to.
+;;;
+;;; ── what it licenses ────────────────────────────────────────────────────────
+;;; The same inferences std.bijection derives from `(bijective R)`, all
+;;; re-derived from the partition property instead:
+;;;
+;;;   slot-locate       — transitivity anchored at the index: a value linked to
+;;;                       a value that sits at slot i, sits at slot i. This is
+;;;                       what turns an authored cross-attribute clue into a
+;;;                       placement (std.bijection has no counterpart — zebra2
+;;;                       needs a puzzle-local `co-located` propagation rule
+;;;                       and a 4-argument activator per clue)
+;;;   slot-exclusive    — distinct members of one type never share a slot
+;;;                       (the "all-different within a category" constraint;
+;;;                       std.bijection gets this from `injective`)
+;;;   slot-occupied     — a slot's seat for a type is taken: once a slot holds
+;;;                       one member of T, it holds no other (std.bijection:
+;;;                       `functional-negative` + `injective-negative`, which
+;;;                       are this one rule read in R's two argument orders)
+;;;   slot-negative     — the equivalence carries negatives: the contrapositive
+;;;                       of transitivity, likewise anchored at the index
+;;;   slot-elimination  — every SLOT but i is excluded for a value ⟹ it is at i
+;;;                       (std.bijection: `domain-elimination`)
+;;;   slot-fill         — every MEMBER of a type but v is excluded for a slot
+;;;                       ⟹ v is in it (std.bijection: `range-elimination`)
+;;;   slot-no-room      — a value with every slot excluded ⟹ ⊥
+;;;   slot-no-fill      — a slot with every member of some type excluded ⟹ ⊥
+;;;                       (the two together are std.algebra's
+;;;                       `total` / `surjective`)
+;;;
+;;; ── spatial congruence ──────────────────────────────────────────────────────
+;;; A second declaration handles relations that hold between attribute values
+;;; *because of where their slots are*:
+;;;
+;;;     (slot-spatial R S isa PositionType)
+;;;
+;;; reads: *S relates two values exactly when it relates their slots, and the
+;;; slot member type carrying S's structure is PositionType.* So one relation
+;;; name does double duty — `(right-of Green Ivory)` is a CONSTRAINT between
+;;; two Colors ("Green's house is immediately right of Ivory's"), while
+;;; `(right-of House-2 House-1)` is the STRUCTURE it is resolved against. The
+;;; rules tell them apart by `isa`-membership of PositionType, never by name.
+;;; This replaces zebra2's `adjacent-via` activator family: there, a clue's
+;;; spatial content had to be re-stated as a 5-argument activator fact
+;;; (`(adjacent-via right-of color-loc Ivory color-loc Green)`); here the clue
+;;; IS the fact.
+;;;
+;;; ── requirements on the caller ──────────────────────────────────────────────
+;;; `(slot-partition R …)` assumes R is SYMMETRIC, and that its negative mirror
+;;; is closed too — the symmetric closures are std.algebra's job, not this
+;;; module's:
+;;;
+;;;     (import std.algebra :symbols (symmetric symmetric-negative-setup))
+;;;     (symmetric R)
+;;;
+;;; Transitivity must HOLD of R semantically (it is what justifies `slot-locate`
+;;; / `slot-negative` / `slot-elimination`) but must NOT be declared: `slot-locate`
+;;; is the index-anchored form of it, and adding `(transitive R)` alongside
+;;; re-introduces exactly the off-rectangle closure described above.
+;;;
+;;; ── soundness ───────────────────────────────────────────────────────────────
+;;; Every rule here is a consequence of the partition property, and every
+;;; negative it derives is a *stated* consequence rather than a NAF reading of
+;;; the KB — with two exceptions, both `absent`-guarded and both on the
+;;; POSITION structure only: the unique-neighbour guards of
+;;; `slot-adjacent-{fwd,bwd}` and the pruning/endpoint guards. Those are sound
+;;; exactly when the position structure is saturation-determined (for Zebra,
+;;; condition (1) fixes the row of houses), which is the ordinary `std.closure`
+;;; caveat. The ATTRIBUTE side is never read under NAF, so nothing here prunes
+;;; a branch the hypothesis search still needs.
+;;;
+;;; ── priority bands ──────────────────────────────────────────────────────────
+;;;   100  setup fan-outs (the activators must exist before their consumers)
+;;;   200  positive propagation
+;;;   240  negative completion
+;;;   250  disjunctive pruning + violation checks
+;;;   400  elimination (reads the negatives the 240/250 bands produced)
+
+;; Dependency self-imported (idempotent — S1.8a.f20): the eliminations quantify
+;; with `forall` (std.macro).
+(import std.macro :symbols (forall))
+
+
+;; ══ glue ════════════════════════════════════════════════════════════════════
+;; Fan `(slot-partition R isa sub Super)` out into the four operational
+;; activators. None-activator (generic-by-premise, the `bijective-properties`
+;; idiom) so the multi-fact `:assert (and …)` is legal — S1.8.A11 rejects a
+;; multi-assert on a *generic* rule, since the load-time split renames it out of
+;; reach of its own activator.
+(rule slot-partition-setup ()
+  :match  (slot-partition ?R ?isa ?sub ?super ?index)
+  :assert (and (slot-locate      ?R ?isa ?index)
+               (slot-exclusive   ?R ?isa ?sub ?super)
+               (slot-occupied    ?R ?isa ?sub ?super)
+               (slot-negative    ?R ?isa ?index)
+               (slot-elimination ?R ?isa ?sub ?super ?index)
+               (slot-fill        ?R ?isa ?sub ?super ?index)
+               (slot-no-room     ?R ?isa ?sub ?super ?index)
+               (slot-no-fill     ?R ?isa ?sub ?super ?index))
+  :why    "(slot-partition {?R} …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill activators."
+  :priority 100)
+
+;; Fan `(slot-spatial R S isa PT)` out into the eight directional consumers:
+;; positive propagation, its contrapositive, the disjunctive pruner and the
+;; endpoint exclusion, each in a forward and a backward reading.
+(rule slot-spatial-setup ()
+  :match  (slot-spatial ?R ?S ?isa ?PT)
+  :assert (and (slot-adjacent-fwd     ?R ?S ?isa ?PT)
+               (slot-adjacent-bwd     ?R ?S ?isa ?PT)
+               (slot-adjacent-fwd-neg ?R ?S ?isa ?PT)
+               (slot-adjacent-bwd-neg ?R ?S ?isa ?PT)
+               (slot-prune-fwd        ?R ?S ?isa ?PT)
+               (slot-prune-bwd        ?R ?S ?isa ?PT)
+               (slot-endpoint-fwd     ?R ?S ?isa ?PT)
+               (slot-endpoint-bwd     ?R ?S ?isa ?PT))
+  :why    "(slot-spatial {?R} {?S} …) ⟹ the eight directional propagation / pruning / endpoint activators."
+  :priority 100)
+
+
+;; ══ the partition rules ═════════════════════════════════════════════════════
+
+;; ── slot-locate ─────────────────────────────────────────────────────────────
+;; Transitivity, anchored at the index: if ?a shares a slot with ?b and ?b's
+;; slot is ?i, then ?a's slot is ?i. This is the rule that consumes an AUTHORED
+;; cross-attribute link — "the Englishman lives in the red house", stated
+;; without naming a house — and turns it into a placement as soon as either end
+;; is placed. Both ends are covered without a second rule because R is
+;; symmetric: the mirror edge re-enters this same match with ?a and ?b swapped.
+;;
+;; The `(neq ?a ?i)` guard keeps the closure irreflexive, exactly as
+;; std.algebra's `transitive` does.
+(rule slot-locate (?R ?isa ?index)
+  :match  (and (?R ?a ?b)
+               (?R ?b ?i)
+               (?isa ?i ?index)
+               (neq ?a ?i))
+  :assert (?R ?a ?i)
+  :why    "{?a} shares a slot with {?b}, and {?b} is at {?i} ⟹ {?a} is at {?i}."
+  :priority 200)
+
+;; ── slot-exclusive ──────────────────────────────────────────────────────────
+;; Two DISTINCT members of the same type can never share a slot — a slot holds
+;; exactly one of each type. This is the puzzle-independent form of the
+;; "all-different within a category" constraint: it is derived from the
+;; membership facts, never authored pairwise.
+;;
+;; ?T is a free match var, not a parameter: the rule fires once per SLOT type,
+;; so a puzzle adds a category by adding its members, not by touching this rule.
+;; The `(?sub ?T ?super)` premise is what keeps ?T to the family — without it
+;; the rule would also fire on memberships that are not slot types at all (a
+;; puzzle whose `?isa` relation carries more than one kind of membership), and
+;; exclude values that may perfectly well share a slot.
+(rule slot-exclusive (?R ?isa ?sub ?super)
+  :match  (and (?isa ?a ?T)
+               (?sub ?T ?super)
+               (?isa ?b ?T)
+               (neq ?a ?b))
+  :assert (not (?R ?a ?b))
+  :why    "{?a} and {?b} are distinct {?T}s — they cannot share a slot under {?R}."
+  :priority 240)
+
+;; ── slot-occupied ───────────────────────────────────────────────────────────
+;; A slot has one seat per type, and a positive edge takes it: if ?a shares a
+;; slot with ?b, no other member of ?b's type shares that slot. This is
+;; std.bijection's `functional-negative` and `injective-negative` fused — they
+;; are the same statement about the two argument positions of a *directed*
+;; relation, and R's symmetry collapses them into one rule here.
+;;
+;; It is also the workhorse negative producer: every negative that matters
+;; downstream is either this, `slot-endpoint-*`, or `slot-negative` transporting
+;; one of those across an authored link.
+;; `(?sub ?T ?super)` gates ?T to the family, for the same reason it does in
+;; `slot-exclusive`: only a SLOT type has the one-seat-per-slot guarantee this
+;; rule reads off.
+(rule slot-occupied (?R ?isa ?sub ?super)
+  :match  (and (?R ?a ?b)
+               (?isa ?b ?T)
+               (?sub ?T ?super)
+               (?isa ?c ?T)
+               (neq ?c ?b))
+  :assert (not (?R ?a ?c))
+  :why    "{?a}'s slot already holds the {?T} {?b} ⟹ it does not hold {?c}."
+  :priority 240)
+
+;; ── slot-negative ───────────────────────────────────────────────────────────
+;; The contrapositive of transitivity, which is what makes the equivalence carry
+;; NEGATIVE information: if ?a shares a slot with ?b, then any slot ?b cannot be
+;; in, ?a cannot be in either. (Were ?a at ?i, then ?b↔?a↔?i would put ?b at ?i
+;; by symmetry + transitivity.)
+;;
+;; Anchored at the index for the same reason `slot-locate` is: the unanchored
+;; form concludes over the whole value square, and since the rule joins
+;; positives against negatives its cost is the product of the two.
+(rule slot-negative (?R ?isa ?index)
+  :match  (and (?R ?a ?b)
+               (not (?R ?b ?i))
+               (?isa ?i ?index))
+  :assert (not (?R ?a ?i))
+  :why    "{?a} shares a slot with {?b}, and {?b} cannot be at {?i} ⟹ neither can {?a}."
+  :priority 240)
+
+;; ── slot-elimination / slot-fill ────────────────────────────────────────────
+;; The positive half, in its two readings — std.bijection's
+;; `domain-elimination` and `range-elimination`:
+;;
+;;   slot-elimination  every SLOT but ?i is excluded for the value ?a ⟹ ?a at ?i
+;;   slot-fill         every ?Tv-MEMBER but ?v is excluded for slot ?i ⟹ ?v at ?i
+;;
+;; Both are needed, and they are not each other's mirror. R's symmetry makes the
+;; two CONCLUSIONS interchangeable — `(R a i)` and `(R i a)` are the same edge —
+;; but the two rules quantify over different domains, so they consume different
+;; negatives and fire at different times. The Zebra opening needs `slot-fill`
+;; ("House-1's colour seat has only Yellow left"); the endgame needs
+;; `slot-elimination` ("Zebra has only House-5 left").
+;;
+;; Both are pinned to the INDEX type — one type pair, not all of them. An
+;; elimination between two non-index types could only fire on off-rectangle
+;; negatives, which the index-anchored negative rules never produce, so
+;; quantifying over the whole family costs (family × family) guard evaluations
+;; per pass to no purpose: on Zebra that is 900 `forall` evaluations against 275.
+(rule slot-elimination (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?a ?Ta)
+               (?sub ?Ta ?super)
+               (neq ?Ta ?index)
+               (?isa ?i ?index)
+               (forall ?i_other
+                 (and (?isa ?i_other ?index) (neq ?i_other ?i))
+                 (not (?R ?a ?i_other))))
+  :assert (?R ?a ?i)
+  :why    "every slot except {?i} is excluded for {?a} ⟹ {?a} is at {?i}."
+  :priority 400)
+
+(rule slot-fill (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?i ?index)
+               (?sub ?Tv ?super)
+               (neq ?Tv ?index)
+               (?isa ?v ?Tv)
+               (forall ?v_other
+                 (and (?isa ?v_other ?Tv) (neq ?v_other ?v))
+                 (not (?R ?i ?v_other))))
+  :assert (?R ?i ?v)
+  :why    "every {?Tv} except {?v} is excluded for slot {?i} ⟹ {?v} is at {?i}."
+  :priority 400)
+
+;; ── slot-no-room / slot-no-fill ─────────────────────────────────────────────
+;; The violation duals, and the encoding's main branch killer: a value must have
+;; a slot, and a slot must have a member of every type. Open-world-safe — each
+;; fires only when the stored negatives cover the whole extent, never on a
+;; merely-undecided state.
+(rule slot-no-room (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?a ?Ta)
+               (?sub ?Ta ?super)
+               (neq ?Ta ?index)
+               (forall ?i (?isa ?i ?index) (not (?R ?a ?i))))
+  :assert (false)
+  :why    "{?a} has every slot excluded — there is nowhere left for it."
+  :priority 250)
+
+(rule slot-no-fill (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?i ?index)
+               (?sub ?Tv ?super)
+               (neq ?Tv ?index)
+               (forall ?v (?isa ?v ?Tv) (not (?R ?i ?v))))
+  :assert (false)
+  :why    "slot {?i} has every {?Tv} excluded — it has no {?Tv} left."
+  :priority 250)
+
+
+;; ══ the spatial rules ═══════════════════════════════════════════════════════
+;;
+;; Throughout: `(?S ?a ?b)` is read as "?a's slot is ?S-related to ?b's slot",
+;; in that argument order — so the constraint and the structure it resolves
+;; against have the SAME orientation, and `(?S ?p2 ?p1)` on positions is the
+;; structural witness for `(?S ?a ?b)` with ?a at ?p2 and ?b at ?p1.
+;;
+;; Every rule matches `(?S ?a ?b)` without asking whether ?a and ?b are
+;; positions or attribute values, because the position-membership premises make
+;; the distinction for free: a structure fact `(?S House-2 House-1)` cannot
+;; satisfy `(?R House-1 ?p1)` with ?p1 a position (that would need two
+;; positions in one slot, which `slot-exclusive` forbids), so structure facts
+;; are silent in the propagation and pruning rules, and produce only
+;; already-known negatives in the endpoint rules.
+
+;; ── slot-adjacent-fwd / -bwd ────────────────────────────────────────────────
+;; Positive propagation, gated on the neighbour being UNIQUE. The NAF guard is
+;; trivially satisfied when ?S is functional on positions (`right-of`), and
+;; selects the corner cases when it is not (`next-to`: interior positions have
+;; two neighbours, so the guard fails and the disjunction is left to the
+;; hypothesis search).
+;;
+;; These two subsume the "square rule" — projecting a directional spatial
+;; relation across the co-location bridge — as the special case where the
+;; uniqueness guard is vacuous.
+(rule slot-adjacent-fwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?R ?b ?p1) (?isa ?p1 ?PT)
+               (?S ?p2 ?p1) (?isa ?p2 ?PT)
+               (absent (and (?S ?p_o ?p1) (?isa ?p_o ?PT) (neq ?p_o ?p2))))
+  :assert (?R ?a ?p2)
+  :why    "{?b} is at {?p1}, whose only {?S}-source is {?p2}, and {?S}({?a},{?b}) ⟹ {?a} is at {?p2}."
+  :priority 200)
+
+(rule slot-adjacent-bwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?R ?a ?p2) (?isa ?p2 ?PT)
+               (?S ?p2 ?p1) (?isa ?p1 ?PT)
+               (absent (and (?S ?p2 ?p_o) (?isa ?p_o ?PT) (neq ?p_o ?p1))))
+  :assert (?R ?b ?p1)
+  :why    "{?a} is at {?p2}, whose only {?S}-target is {?p1}, and {?S}({?a},{?b}) ⟹ {?b} is at {?p1}."
+  :priority 200)
+
+;; ── slot-adjacent-fwd-neg / -bwd-neg ────────────────────────────────────────
+;; The contrapositives, under the same uniqueness witness: if ?a cannot be at
+;; the only ?S-source of ?p1, then ?b cannot be at ?p1. Without these, a
+;; negative on one side of a spatial clue never reaches the other, and the
+;; eliminations stall a pass behind where the human trace is.
+(rule slot-adjacent-fwd-neg (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (not (?R ?a ?p2)) (?isa ?p2 ?PT)
+               (?S ?p2 ?p1) (?isa ?p1 ?PT)
+               (absent (and (?S ?p_o ?p1) (?isa ?p_o ?PT) (neq ?p_o ?p2))))
+  :assert (not (?R ?b ?p1))
+  :why    "{?a} cannot be at {?p2}, the only {?S}-source of {?p1} ⟹ {?b} cannot be at {?p1}."
+  :priority 240)
+
+(rule slot-adjacent-bwd-neg (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (not (?R ?b ?p1)) (?isa ?p1 ?PT)
+               (?S ?p2 ?p1) (?isa ?p2 ?PT)
+               (absent (and (?S ?p2 ?p_o) (?isa ?p_o ?PT) (neq ?p_o ?p1))))
+  :assert (not (?R ?a ?p2))
+  :why    "{?b} cannot be at {?p1}, the only {?S}-target of {?p2} ⟹ {?a} cannot be at {?p2}."
+  :priority 240)
+
+;; ── slot-prune-fwd / -bwd ───────────────────────────────────────────────────
+;; Disjunctive pruning: unlike the positive rules these fire whether or not the
+;; neighbour is unique, restricting the partner's domain to the ?S-neighbourhood
+;; even when no single position can be pinned. This is what turns "Kools is next
+;; to the horse" into three exclusions the moment Kools is placed, instead of
+;; waiting for a corner.
+;;
+;; The two directions are NOT interchangeable when ?S is asymmetric: fwd
+;; excludes positions that are not ?S-SOURCES of ?b's position, bwd excludes
+;; those that are not ?S-TARGETS of ?a's — note the reversed operand order in
+;; the two guards.
+(rule slot-prune-fwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?R ?b ?p1) (?isa ?p1 ?PT)
+               (?isa ?p_o ?PT)
+               (neq ?p_o ?p1)
+               (absent (?S ?p_o ?p1)))
+  :assert (not (?R ?a ?p_o))
+  :why    "{?b} is at {?p1}, so {?a} is at an {?S}-source of {?p1}; {?p_o} is not one."
+  :priority 250)
+
+(rule slot-prune-bwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?R ?a ?p2) (?isa ?p2 ?PT)
+               (?isa ?p_o ?PT)
+               (neq ?p_o ?p2)
+               (absent (?S ?p2 ?p_o)))
+  :assert (not (?R ?b ?p_o))
+  :why    "{?a} is at {?p2}, so {?b} is at an {?S}-target of {?p2}; {?p_o} is not one."
+  :priority 250)
+
+;; ── slot-endpoint-fwd / -bwd ────────────────────────────────────────────────
+;; Prophylactic exclusions from the position structure's gaps ALONE — no
+;; positive needed, so these fire at d=0. A position with no ?S-source cannot
+;; hold ?b, and one with no ?S-target cannot hold ?a, whatever the other end of
+;; the clue does. For `right-of` on a row of houses that is *Ivory ≠ last* and
+;; *Green ≠ first*; for symmetric `next-to` both guards fail everywhere (every
+;; position has a neighbour), so nothing spurious fires.
+(rule slot-endpoint-fwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?isa ?p1 ?PT)
+               (absent (and (?isa ?p2 ?PT) (?S ?p2 ?p1))))
+  :assert (not (?R ?b ?p1))
+  :why    "{?p1} has no {?S}-source, and {?b} needs one ({?S}({?a},{?b})) ⟹ {?b} is not at {?p1}."
+  :priority 240)
+
+(rule slot-endpoint-bwd (?R ?S ?isa ?PT)
+  :match  (and (?S ?a ?b)
+               (?isa ?p2 ?PT)
+               (absent (and (?isa ?p1 ?PT) (?S ?p2 ?p1))))
+  :assert (not (?R ?a ?p2))
+  :why    "{?p2} has no {?S}-target, and {?a} needs one ({?S}({?a},{?b})) ⟹ {?a} is not at {?p2}."
+  :priority 240)
