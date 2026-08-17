@@ -104,7 +104,7 @@ Two need more than deletion:
 - **`kb/entities.py:84-93`** is the deletion note for the `Type` / `Instance`
   entity classes, and it **links to
   `plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_…md`**,
-  which S1.22.2 deletes. It has to change regardless of this stage; trim to
+  which S1.22.99 deletes. It has to change regardless of this stage; trim to
   the one fact that still matters (the kernel imposes no type system; a
   puzzle's `is-a` rules are its type system) with no form names and no plan
   link.
@@ -136,7 +136,7 @@ reword to name the flat top level.
 history note the phase README allows ("the only sanctioned mention is a single
 line in the grammar doc's history note, if the census finds one is already
 there"). **Keep**, but they cite `plans/m1_core_graph_reasoning/…` at line 3,
-which S1.22.2 must rewire.
+which S1.22.99 must rewire.
 
 ## (d) Docs prose — 14 files
 
@@ -180,7 +180,7 @@ Reword to the two-ontologies-for-one-puzzle framing S1.22.1a
 - **`test_vscode_grammar.py:16`** and `utils/vscode-ein/ein.tmLanguage.json`
   — the test asserts the former block heads must **NOT** be highlighted as
   keywords. That is a *negative* pin of the removal; keeping it is the point.
-- **All of `plans/m1_*`** — dies in S1.22.2; skipped per the stage brief.
+- **All of `plans/m1_*`** — dies in S1.22.99; skipped per the stage brief.
 - **`REVIEW_M1-01.md`** quotes.
 
 ## Kwargs ruling (stage item 3)
@@ -285,14 +285,14 @@ Ordered so the suite stays green at each step.
   condemns them; the file's problem is ontological.
 - Every `plans/m1_core_graph_reasoning/…` link in touched files
   (`grammar.lark:3`, `kb/entities.py:93`, and whatever the purge leaves) →
-  **S1.22.2**'s inbound-link inventory, which runs on the post-purge tree.
+  **S1.22.99**'s inbound-link inventory, which runs on the post-purge tree.
 
 ---
 
 ## Corrections found while executing T1.22.1.2
 
 Recorded here rather than silently, since the purge inventory above is what
-T1.22.2.1 will read.
+T1.22.99.1 will read.
 
 1. **A sixth code site was missed: `kb/render.py::_suppress`.** It named
    `instance` / `type` in a suppression list, on the argument that the schema

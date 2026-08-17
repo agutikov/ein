@@ -41,12 +41,19 @@ Two closeout debts, by user decision (2026-08-16):
 | S1.22.1 | P0 | [Obsolete-syntax census → purge](s1.22.1_obsolete_syntax.md) | T1.22.1.1 census+report / T1.22.1.2 purge |
 | S1.22.1b | **P0** ✅ | [Cross-layer contradiction bug; remove knowledge layers](s1.22.1b_layer_removal.md) | T1.22.1b.1 census+report / T1.22.1b.2 fix+pin / T1.22.1b.3 remove — **shipped 2026-08-17** |
 | S1.22.1a | P1 | [`zebra.ein`: modernise and make it solve](s1.22.1a_zebra_ein_modernisation.md) | T1.22.1a.1 investigate+report / T1.22.1a.2 execute |
-| S1.22.2 | P1 | [M1-plans preservation census → delete](s1.22.2_m1_plans_deletion.md) | T1.22.2.1 census+report / T1.22.2.2 migrate+delete |
+| S1.22.99 | P1 | [M1-plans preservation census → delete](s1.22.99_m1_plans_deletion.md) | T1.22.99.1 census+report / T1.22.99.2 migrate+delete |
 
-**Strictly serial from S1.22.1 on**: the deletion census (T1.22.2.1) must
+**Why `99`** (renumbered from S1.22.2, 2026-08-17): this stage deletes the
+folder every other stage documents itself in, so it is **terminal by
+construction** — anything scheduled later would have nowhere to land. The
+number reserves the whole `S1.22.2`…`S1.22.98` range for work that must
+precede it, so a new stage can be inserted without renumbering the deletion
+again.
+
+**Strictly serial from S1.22.1 on**: the deletion census (T1.22.99.1) must
 run on the **post-purge** tree (the purge edits the very docs whose inbound
 links it inventories), and the deletion itself is terminal. Order:
-T1.22.1.1 → T1.22.1.2 → **S1.22.1b** → S1.22.1a → T1.22.2.1 → T1.22.2.2.
+T1.22.1.1 → T1.22.1.2 → **S1.22.1b** → S1.22.1a → … → T1.22.99.1 → T1.22.99.2.
 
 **S1.22.1b precedes S1.22.1a** (added 2026-08-17, by user ruling): it changes
 what the search kills, so running it after `zebra.ein`'s solvability work
@@ -56,12 +63,12 @@ lines S1.22.1a would otherwise carry into its rewrite.
 **S1.22.0 is off that chain** and runs in parallel with the purge — it
 touches `ein.py/src/ein/inference/` and its tests, not fixtures or docs, so
 the doc-link constraint that forces the serial order does not apply. It
-must, however, **finish before T1.22.2.2**: it is unfinished verification of
+must, however, **finish before T1.22.99.2**: it is unfinished verification of
 shipped engine code, and its findings are recorded in the P1.21 README that
 the deletion removes.
 
 Reports land in [`reports/`](reports/) (they die with the folder in
-T1.22.2.2 — by design; commit history keeps them).
+T1.22.99.2 — by design; commit history keeps them).
 
 ## Hard constraints
 
@@ -72,8 +79,8 @@ T1.22.2.2 — by design; commit history keeps them).
   inside the folder: the **P1.9 E-catalog** (E1–E24), the **P1.7c Track B**
   refactor-debt tail, and the M1
   [`open_questions.md`](../open_questions.md) still-open rows (Q26/Q28).
-  T1.22.2.1 decides the surviving home (recommend: `plans/followups/` or a
-  new `plans/backlog/`); T1.22.2.2 migrates before deleting.
+  T1.22.99.1 decides the surviving home (recommend: `plans/followups/` or a
+  new `plans/backlog/`); T1.22.99.2 migrates before deleting.
 
   *Updated 2026-08-17:* S1.21.7 / S1.21.8 are no longer parked backlog —
   both **executed**, so they migrate as *record*, not as work. All five
@@ -81,7 +88,7 @@ T1.22.2.2 — by design; commit history keeps them).
   D-S8-1/D-S8-2 — the two the follow-up stages introduced — by `95b3d36`).
   What is still live from P1.21 is the **unfinished verification** those
   divergences came out of, now [S1.22.0](s1.22.0_boundary_verification.md);
-  its findings land in the P1.21 README, so T1.22.2.1 must census that file
+  its findings land in the P1.21 README, so T1.22.99.1 must census that file
   *after* S1.22.0 reports.
 - **Behaviour discipline**: `./run_tests.sh` + `ruff check .` green after
   each improvement; acceptance verdicts/bindings unchanged. **Exception —
@@ -120,6 +127,6 @@ T1.22.2.2 — by design; commit history keeps them).
 ## Out of scope
 
 - Any engine behaviour change (D5's fix stays a recorded divergence
-  wherever T1.22.2.1 rehomes it).
+  wherever T1.22.99.1 rehomes it).
 - `nlp/`, `smt/` scratch areas; `plans/ideas/` (user's own ideas — never
   deleted); other milestones' folders.
