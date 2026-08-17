@@ -34,7 +34,9 @@ repository = "https://github.com/gutikoff/ein"
 [workspace.dependencies]
 serde      = { version = "1", features = ["derive"] }
 serde_json = "1"
-toml       = { version = "0.9", default-features = false, features = ["parse", "serde"] }
+toml        = { version = "0.9", default-features = false, features = ["parse", "serde"] }
+include_dir = "0.7"
+sha2        = "0.10"
 
 # Optimised even in dev: every conformance run spawns hundreds of engine
 # processes, and the harness itself must never be the slow part.

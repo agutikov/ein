@@ -270,6 +270,21 @@ fn cmd_run(args: Args) -> Result<std::process::ExitCode, String> {
 
     let mut a = Impl::parse("a", args.impl_a.as_deref().ok_or("--impl-a is required")?)?;
     let mut b = Impl::parse("b", args.impl_b.as_deref().ok_or("--impl-b is required")?)?;
+    // Point both engines at one stdlib, explicitly. Each would find this
+    // directory on its own — but "each resolved to the same place" is a
+    // weaker claim than "both were told the same place", and the stdlib is
+    // the one input whose divergence no parity tier could diagnose: both
+    // engines would be *correct* about different programs.
+    // `--env EIN_STDLIB=…` still wins; this is a default, not a policy.
+    let shared_stdlib = repo.join("stdlib");
+    if shared_stdlib.is_dir() && !args.env.iter().any(|(k, _)| k == "EIN_STDLIB") {
+        let pair = (
+            "EIN_STDLIB".to_string(),
+            shared_stdlib.display().to_string(),
+        );
+        a.env.push(pair.clone());
+        b.env.push(pair);
+    }
     a.env.extend(args.env.iter().cloned());
     b.env.extend(args.env.iter().cloned());
     a.env.extend(args.env_a.iter().cloned());

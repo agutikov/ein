@@ -22,13 +22,15 @@ collides into a duplicate-name error, which is the intended strict policy
 (D3 — "atom re-definition → error"). Importing the same symbol twice is the
 same error.
 
-Module names are **logical**: ``std.<…>`` resolves under the packaged stdlib
-root (``ein/stdlib/``); any other name resolves file-relative to the
-importing file. The ``.ein`` suffix is implied (D4).
+Module names are **logical**: ``std.<…>`` resolves under the stdlib root (see
+:func:`_stdlib_root` for the three-step chain both implementations share); any
+other name resolves file-relative to the importing file. The ``.ein`` suffix is
+implied (D4).
 """
 from __future__ import annotations
 
 import functools
+import os
 from pathlib import Path
 
 import ein
@@ -42,19 +44,63 @@ STDLIB_ALIAS = "std"
 _DECLARATORS = ("rule", "hrule", "relation", "macro")
 
 
+#: Identifies a directory as the stdlib. Its content is checked by
+#: ``utils/stdlib_manifest.py``; its *presence* is what step 2 below tests,
+#: because a directory called `stdlib/` proves nothing on its own.
+_STDLIB_MARKER = "MANIFEST.sha256"
+
+
 def _stdlib_root() -> Path:
-    """The packaged standard-library directory (``ein/stdlib/``)."""
-    return Path(ein.__file__).resolve().parent / "stdlib"
+    """The standard-library directory, resolved in three steps (M1a S1a.0.3).
+
+    ein.rs resolves it identically — that is the point. The stdlib is not test
+    data, it is 1 231 lines of ein-lang that `zebra2.ein` imports from, so two
+    copies would make every parity result meaningless: a T2 diff would report
+    "the engines disagree" when in fact the *programs* differ. There is one
+    checked-in stdlib, at repo-root ``stdlib/``.
+
+    1. ``$EIN_STDLIB`` — an explicit override, always wins. This is what the
+       conformance harness sets so both engines demonstrably read the same
+       bytes.
+    2. **The checkout**, found by walking up from this package and confirmed
+       by :data:`_STDLIB_MARKER`. A source tree is authoritative, so editing a
+       module takes effect with no rebuild and no reinstall.
+    3. **The packaged copy** (``ein/stdlib/``), which ``ein.py/_build.py``
+       writes during ``build_py``. Keeps ``pip install ein`` self-contained.
+
+    A missing directory is *not* an error here: the caller
+    (:func:`_resolve_module_path`) reports "module not found at <path>", which
+    names the path it looked at — a better message than one this function
+    could give, and the one both implementations must produce.
+    """
+    override = os.environ.get("EIN_STDLIB")
+    if override:
+        return Path(override)
+    packaged = Path(ein.__file__).resolve().parent / "stdlib"
+    for parent in packaged.parents:
+        candidate = parent / "stdlib"
+        # Skip the packaged copy itself. It carries the marker too (it is a
+        # verbatim copy, manifest included), and `packaged.parents` starts at
+        # `…/ein`, so without this the *first* candidate the walk examines is
+        # the build product — and a stale one would shadow the checkout it was
+        # built from, which is the exact failure the single-source rule exists
+        # to prevent. Caught by building a wheel in a checkout and watching
+        # resolution move.
+        if candidate != packaged and (candidate / _STDLIB_MARKER).is_file():
+            return candidate
+    return packaged
 
 
 @functools.lru_cache(maxsize=1)
-def stdlib_macro_names() -> frozenset[str]:
-    """The pattern-macro names `std.macro` exports (`forall` / `open`), read
-    from the module rather than hardcoded. The loader uses this to flag a rule
-    that invokes one of them without importing `std.macro` — the invocation
-    would otherwise survive expansion and the rule would silently never fire
-    (S1.8a.f20). Empty if std.macro is somehow unreadable (degrade to no check)."""
-    path = _stdlib_root() / "macro.ein"
+def _cached_macro_names(root: str) -> frozenset[str]:
+    """:func:`stdlib_macro_names`, keyed on the resolved root.
+
+    Keyed rather than argument-less because tests set ``$EIN_STDLIB`` inside a
+    live process: an argument-less cache would answer the first root forever,
+    and the S1.8a.f20 unimported-macro check would silently consult the wrong
+    library.
+    """
+    path = Path(root) / "macro.ein"
     try:
         forms = parse(path.read_text(encoding="utf-8"), filename=str(path))
     except OSError:
@@ -63,6 +109,15 @@ def stdlib_macro_names() -> frozenset[str]:
         f.args[0].name for f in forms
         if isinstance(f, SForm) and isinstance(f.head, Atom)
         and f.head.name == "macro" and f.args and isinstance(f.args[0], Atom))
+
+
+def stdlib_macro_names() -> frozenset[str]:
+    """The pattern-macro names `std.macro` exports (`forall` / `open`), read
+    from the module rather than hardcoded. The loader uses this to flag a rule
+    that invokes one of them without importing `std.macro` — the invocation
+    would otherwise survive expansion and the rule would silently never fire
+    (S1.8a.f20). Empty if std.macro is somehow unreadable (degrade to no check)."""
+    return _cached_macro_names(str(_stdlib_root()))
 
 
 def _is_import(form: IRNode) -> bool:

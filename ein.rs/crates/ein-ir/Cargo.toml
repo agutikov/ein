@@ -7,4 +7,11 @@ license.workspace    = true
 repository.workspace = true
 
 [dependencies]
-ein-core = { path = "../ein-core" }
+ein-core    = { path = "../ein-core" }
+# The stdlib, embedded so the binary ships self-contained (design/11 §3).
+include_dir.workspace = true
+
+[dev-dependencies]
+# Verifying the embedded copy against `stdlib/MANIFEST.sha256`, in a test —
+# the digest is not needed at runtime.
+sha2.workspace = true

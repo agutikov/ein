@@ -100,7 +100,7 @@ type pair, so the elimination rules had no structure to bite on and the
 hypothesis space did not close.
 
 What closed it (S1.22.1a) is a property scoped by the type **family**
-rather than by the relation — [`std.slots`](../../../../ein.py/src/ein/stdlib/slots.ein),
+rather than by the relation — [`std.slots`](../../../../stdlib/slots.ein),
 covered under [§Type-scoped relation
 properties](#type-scoped-relation-properties-slot-partition--slot-spatial)
 below. No relation was added: the file still reasons over `co-located`,
@@ -139,7 +139,7 @@ A property vocabulary that does not fit "a property of one relation".
 Where `(bijective color-loc)` equips *one* relation, these equip *one
 relation over a family of types* — the shape a generic link relation
 has. Both are ordinary facts, consumed by
-[`std.slots`](../../../../ein.py/src/ein/stdlib/slots.ein):
+[`std.slots`](../../../../stdlib/slots.ein):
 
 ```lisp
 (slot-partition co-located instance type Attribute House)
@@ -189,7 +189,7 @@ rule list and its priority bands.
 
 Neither encoding defines property rules of its own any more; both import
 them, which is what `:symbols` flat import is for
-([`../../../../ein.py/src/ein/stdlib/README.md`](../../../../ein.py/src/ein/stdlib/README.md)):
+([`../../../../stdlib/README.md`](../../../../stdlib/README.md)):
 
 ```lisp
 ;; zebra.ein

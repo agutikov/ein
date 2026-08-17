@@ -88,7 +88,7 @@ structural primitives (`absent` / `false`), the computed predicates
 name at all (parse error). The guard is about *binding* a name; a **fact** may
 still carry a reserved head (a stored `(not X)` octagon). `open` / `forall`
 are deliberately *not* reserved — they migrated into the `std.macro` module
-([`ein.py/src/ein/stdlib/macro.ein`](../../../../ein.py/src/ein/stdlib/macro.ein)).
+([`stdlib/macro.ein`](../../../../stdlib/macro.ein)).
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 
@@ -119,7 +119,7 @@ bindings, not looked up in the KB.
 `forall` and `open` were compile-time desugars baked into `compile.py`.
 Since S1.5.9
 they are ordinary ein-lang `(macro …)` declarations (the `std.macro` module,
-[`ein.py/src/ein/stdlib/macro.ein`](../../../../ein.py/src/ein/stdlib/macro.ein))
+[`stdlib/macro.ein`](../../../../stdlib/macro.ein))
 expanded at **load** time (`kb.from_ir` → `ir.macros.expand_macros`) — they
 are **no longer kernel vocabulary**, no longer in `primitives.py`, and a
 puzzle may even redefine them. A puzzle that wants them imports them

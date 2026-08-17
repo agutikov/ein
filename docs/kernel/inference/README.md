@@ -70,7 +70,7 @@ unless noted):
 | concept                         | M1 state                                                         |
 |---------------------------------|------------------------------------------------------------------|
 | Pattern matcher                 | **shipped** — `compile.py` lowers each (rule, activator) to a `JoinPlan` whose steps are **purely positive** (S1.21.8: `split_naf` lifts every `(absent …)` into `plan.naf_guards`); `match.py` `_run_steps` executes it, `run_guarded` tags each match with its own disjunct's guards |
-| Rule registry                   | `Rule` entity in [`02-data-model`](../ir/02-data-model/); puzzle rules authored inline or imported from the [stdlib](../../../ein.py/src/ein/stdlib/) |
+| Rule registry                   | `Rule` entity in [`02-data-model`](../ir/02-data-model/); puzzle rules authored inline or imported from the [stdlib](../../../stdlib/) |
 | Property-fact activation        | KB indexes `_rule_apps_by_rule` / `_rule_apps_on_relation` built at load |
 | Saturation loop                 | **shipped** — priority-banded, delta-driven `saturator.py` (P1.3 S1.3.3; semi-naive in P1.8a); **two-phase since S1.21.8** — a purely positive closure runs to quiescence, then one boundary round admits at most one parked NAF-guarded candidate and the closure re-runs |
 | Hypothesis branching            | **shipped** — `hypgen.py` enumerates candidates; the commitment-lattice search is `monotonic/solver.py` (P1.5–P1.5b) |
@@ -607,7 +607,7 @@ Everything above is keyed to a property of *one relation* —
 attribute through a single `co-located` equivalence, which is not that
 kind of relation: restricted to one ordered pair of types it is a
 bijection, but `bijective` has nowhere to put a type pair.
-[`std.slots`](../../../ein.py/src/ein/stdlib/slots.ein) supplies the same
+[`std.slots`](../../../stdlib/slots.ein) supplies the same
 inference from a property scoped by the type **family** —
 `(slot-partition R isa sub Super Index)` — plus one
 `(slot-spatial R S isa PositionType)` per spatial relation. The

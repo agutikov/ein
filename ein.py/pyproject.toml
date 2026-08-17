@@ -51,7 +51,15 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "ein.ir" = ["*.lark"]
-"ein" = ["stdlib/*.ein", "stdlib/**/*.ein"]
+"ein" = ["stdlib/*.ein", "stdlib/**/*.ein", "stdlib/*.sha256", "stdlib/README.md"]
+
+# The stdlib is checked in ONCE, at repo-root `stdlib/`, because ein.py and
+# ein.rs must read the same bytes — two copies would make every parity result
+# meaningless (plans/m1a_rust/design/11_shared_assets.md). A wheel cannot reach
+# outside the package, so `build_py` copies it into `src/ein/stdlib/` on the
+# way to a distribution; that copy is git-ignored and is a build product.
+[tool.setuptools.cmdclass]
+build_py = "_build.build_py"
 
 # ---------------------------------------------------------------------------
 # pytest

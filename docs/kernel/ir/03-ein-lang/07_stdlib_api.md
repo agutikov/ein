@@ -3,7 +3,7 @@
 The **per-symbol** reference for the package-shipped standard library. The
 **module-level** overview — what each module is for, the import tiers,
 auto-closure, and the package layout — lives in
-[`ein.py/src/ein/stdlib/README.md`](../../../../ein.py/src/ein/stdlib/README.md);
+[`stdlib/README.md`](../../../../stdlib/README.md);
 this page documents each rule/macro's *activator form* and *effect*. For
 the kernel atoms these build on (`and`/`absent`/`not`/`neq`/`relation`/…),
 see [`06_reserved_names.md`](06_reserved_names.md).
@@ -181,7 +181,7 @@ One-knob auto-wiring for converse typecheck + a reflexive-closure rule.
 
 ## See also
 
-- [`ein.py/src/ein/stdlib/README.md`](../../../../ein.py/src/ein/stdlib/README.md)
+- [`stdlib/README.md`](../../../../stdlib/README.md)
   — module overview, import tiers, auto-closure, package layout.
 - [`06_reserved_names.md`](06_reserved_names.md) — the kernel atoms these build on
   (+ the author quick-reference card).

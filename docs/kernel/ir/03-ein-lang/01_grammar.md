@@ -177,10 +177,10 @@ that split.
 
 **As types — userspace only.** The mirror fact is the whole mechanism:
 everything type-like keys off `(relation ?R ?A ?B)` **in rules**, never in
-the engine — [`std.bijection`](../../../../ein.py/src/ein/stdlib/bijection.ein)'s
+the engine — [`std.bijection`](../../../../stdlib/bijection.ein)'s
 typecheck stack (`(and (relation ?R ?A ?B) (bijective ?R)
 (typecheck-hierarchy ?isa))`),
-[`std.algebra`](../../../../ein.py/src/ein/stdlib/algebra.ein)'s converse
+[`std.algebra`](../../../../stdlib/algebra.ein)'s converse
 domain/range check, `std.typing`'s hierarchy wiring, zebra2's
 `disjunctive-prune`. The kernel never resolves a signature atom to
 anything: `Relation.signature` holds *opaque atoms*, and since S1.7.23
@@ -375,7 +375,7 @@ or **open** (matched by `(open P)`). The earlier overloaded
 `(not P)` meaning (default NAF) was dropped in S1.5.8c — NAF must
 now be written explicitly as `(absent P)`. `forall` and `open` are
 load-time `(macro …)` expansions in terms of `absent` (the
-[`std.macro`](../../../../ein.py/src/ein/stdlib/macro.ein) module since
+[`std.macro`](../../../../stdlib/macro.ein) module since
 S1.5.9 — import them; see
 [`06_reserved_names.md` §macro sugar](06_reserved_names.md#pattern-macro-sugar-forall--open--not-reserved));
 the compiler itself sees only `absent` + nested patterns, and lifts

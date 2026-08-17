@@ -508,36 +508,36 @@ runs   = ["solve", "saturate", "render rules"]
 # ── stdlib ──────────────────────────────────────────────────
 
 [[entry]]
-path   = "ein.py/src/ein/stdlib/algebra.ein"
+path   = "stdlib/algebra.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
-path   = "ein.py/src/ein/stdlib/bijection.ein"
+path   = "stdlib/bijection.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
-path   = "ein.py/src/ein/stdlib/closure.ein"
+path   = "stdlib/closure.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
-path   = "ein.py/src/ein/stdlib/elim.ein"
+path   = "stdlib/elim.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
-path   = "ein.py/src/ein/stdlib/macro.ein"
+path   = "stdlib/macro.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
-path   = "ein.py/src/ein/stdlib/slots.ein"
+path   = "stdlib/slots.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
-path   = "ein.py/src/ein/stdlib/typing.ein"
+path   = "stdlib/typing.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]

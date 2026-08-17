@@ -98,7 +98,7 @@ Relation — and that is sayable, because `is-a` is not reserved:
 
 With `(is-a Relation Object)` above, the transitive-closure rules
 `(includes is-a is-a*)` + `(transitive is-a*)` — *also* ordinary ein
-rules ([`std.algebra`](../../../../ein.py/src/ein/stdlib/algebra.ein)) —
+rules ([`std.algebra`](../../../../stdlib/algebra.ein)) —
 derive `(is-a* is-a Object)`: the membership relation is, by its own
 machinery, an object. That is `03_ein_model` §1's fixed point —
 *instance is an instance of instance* — reached with nothing but
@@ -129,10 +129,10 @@ Three of the four levels describe Ein features *in Ein* and let Ein
 **Relation signatures are data rules consume.** Because `(relation ?R ?A
 ?B)` matches, real rules read the schema and act on it — the bijection
 typecheck reads each declaration's arg sorts
-([`std.bijection`](../../../../ein.py/src/ein/stdlib/bijection.ein)
+([`std.bijection`](../../../../stdlib/bijection.ein)
 `typecheck-setup`, `functional-negative`), the relation-algebra converse
 check reads *two* signatures to reject an ill-typed inverse
-([`std.algebra`](../../../../ein.py/src/ein/stdlib/algebra.ein)
+([`std.algebra`](../../../../stdlib/algebra.ein)
 `converse-illtyped-dom`), and zebra2's `disjunctive-prune` reads
 `(relation ?R2 ?A ?B)` to bound a partner's domain. The L2 layer is
 introspected by L3 rules in the live engine.
@@ -180,7 +180,7 @@ the current architecture.
 
 **The quantifier sugar is Ein-in-Ein too.** `forall` and `open` are not
 kernel forms; they are `(macro …)` declarations in
-[`stdlib/macro.ein`](../../../../ein.py/src/ein/stdlib/macro.ein):
+[`stdlib/macro.ein`](../../../../stdlib/macro.ein):
 
 ```lisp
 (macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))
@@ -260,9 +260,9 @@ to target.
   — the reflexive root (§1) that makes a self-describing schema coherent.
 - [`06_reserved_names.md`](06_reserved_names.md) — the closed declarator
   set + the reserved-name guard that bound this file's toolbox.
-- [`std.algebra`](../../../../ein.py/src/ein/stdlib/algebra.ein) /
-  [`std.bijection`](../../../../ein.py/src/ein/stdlib/bijection.ein) /
-  [`std.macro`](../../../../ein.py/src/ein/stdlib/macro.ein) — Ein
+- [`std.algebra`](../../../../stdlib/algebra.ein) /
+  [`std.bijection`](../../../../stdlib/bijection.ein) /
+  [`std.macro`](../../../../stdlib/macro.ein) — Ein
   features already written in Ein (§3).
 - [F5 — rules as data](../../../../plans/followups/f5_rules_as_data.md)
   — the implementation half (§5).

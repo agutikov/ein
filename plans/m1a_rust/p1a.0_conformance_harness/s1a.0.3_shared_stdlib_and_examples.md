@@ -80,3 +80,52 @@ embedded digest matches. Plus the corpus-completeness check from
 - `examples/` does **not** move. Both suites already reach it from the
   repo root.
 - Goldens stay put for now — Q-M1a.9.
+
+---
+
+## Outcome — 2026-08-17
+
+The stdlib is at repo-root `stdlib/` — seven modules, `README.md` and
+`MANIFEST.sha256` — and `ein.py/src/ein/stdlib/` is gone from git and
+`.gitignore`d. Both implementations resolve it the same three ways
+(`$EIN_STDLIB` → the checkout → the packaged/embedded copy), and both halves
+are pinned: `tests/kb/test_stdlib_resolution.py` and `ein-ir`'s
+`stdlib::tests`.
+
+Every acceptance item checked by running it, not by reading:
+
+| claim | how |
+|---|---|
+| a wheel still works from outside the repo | built one, installed it into a fresh venv, ran `ein solve <abs path>/zebra2.ein` from `/tmp` |
+| `EIN_STDLIB=<empty> ` fails with "module not found" | `(import std.algebra) — module not found at /tmp/empty-stdlib/algebra.ein` — no hidden fallback |
+| editing a module needs no rebuild | added a macro to `stdlib/macro.ein`, saw it in `stdlib_macro_names()` immediately |
+| the drift check fails on a corrupted copy | appended a line to `stdlib/typing.ein`; `cargo test -p ein-ir` failed with `typing.ein: embedded copy differs from the manifest` |
+| the corpus still agrees | `ein-conformance run … --tier T3`: **438 cells, 0 differences** after the move |
+
+The harness now sets `EIN_STDLIB` for both sides itself. Each engine would
+find the directory unaided, but "each resolved to the same place" is a weaker
+claim than "both were told the same place" — and the stdlib is the one input
+whose divergence no parity tier can diagnose, because both engines would be
+*correct* about different programs.
+
+### The bug this arrangement grows
+
+The build copy is verbatim, manifest included, and the checkout walk starts
+inside the package — so its **first** candidate is the build product. A stale
+one therefore outranked the checkout it was built from, which is precisely the
+failure the single-source rule exists to prevent. Found by building a wheel in
+a checkout and watching `_stdlib_root()` move from `<repo>/stdlib` to
+`<repo>/ein.py/src/ein/stdlib`. Fixed by skipping the packaged path in the
+walk, and pinned by `test_a_packaged_copy_does_not_shadow_the_checkout`.
+
+A second, smaller one: `stdlib_macro_names()`'s `lru_cache` was argument-less,
+so a process that changed `$EIN_STDLIB` — which every test in the new module
+does — would answer from the first root forever, and the S1.8a.f20
+unimported-macro check would silently consult the wrong library. Keyed on the
+resolved root now.
+
+### Not moved
+
+`examples/` stays where it is; both suites already reach it from the repo
+root. Goldens stay in `ein.py/tests/golden/` — Q-M1a.9, decided at the P1a.5
+gate when ein.rs starts producing them too.

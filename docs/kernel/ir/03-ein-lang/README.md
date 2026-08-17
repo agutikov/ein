@@ -37,7 +37,7 @@ model in [`../02-data-model/`](../02-data-model/).
 - [`07_stdlib_api.md`](07_stdlib_api.md) — the per-symbol `std.*`
   reference (macro / algebra / bijection / elim / typing / closure),
   companion to the module-level
-  [`stdlib/README.md`](../../../../ein.py/src/ein/stdlib/README.md).
+  [`stdlib/README.md`](../../../../stdlib/README.md).
 - [`08_self_describing.md`](08_self_describing.md) — Ein's own model
   expressed in ein-lang itself, using only real syntax (is-a kinds,
   relation signatures, the property algebra). Operational for L0/L1/L2

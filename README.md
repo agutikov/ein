@@ -72,7 +72,7 @@ there is no built-in relation→verb vocabulary.
 | `ein.py/src/ein/kb/`          | typed-entity knowledge base — store + 7 indexes, entities, provenance DAG, imports    |
 | `ein.py/src/ein/inference/`   | the engine — saturator, matcher/join-compiler, commitment-lattice search, no-goods, contradiction detector, verdict |
 | `ein.py/src/ein/render/`, `trace/` | Graphviz DOT renderers + the markdown derivation-trace builder                   |
-| `ein.py/src/ein/stdlib/`      | ein-lang standard library — relation-algebra rules (`closure`, `bijection`, `elim`, `algebra`, `typing`, `macro`) |
+| `stdlib/`                     | ein-lang standard library — relation-algebra rules (`closure`, `bijection`, `elim`, `algebra`, `typing`, `macro`). Shared by both implementations; `ein.py` ships a build-time copy |
 | `ein.py/src/ein/cli/`         | console script `ein` — `render` \| `saturate` \| `solve` (the operational commands; `ir`/`kb` removed, `profile`/`symmetric` → `utils/` scripts) |
 | `ein.py/tests/`               | pytest suite (~1,300 tests)                                                           |
 | `ein.py/pyproject.toml`       | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff`     |

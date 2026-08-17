@@ -75,7 +75,7 @@ Three consequences of the wording:
   sub-pattern's unbound variables (P7); the `forall` macro's ∀ arises
   from its double negation
   (`(forall ?b G B)` ⇒ `(absent (and G (absent B)))` —
-  [`std.macro`](../../../ein.py/src/ein/stdlib/macro.ein)).
+  [`std.macro`](../../../stdlib/macro.ein)).
 - **One question, one world.** A guard is asked once per world and its
   answer is used immediately; there is no interval in which it can go
   stale (E2 below).

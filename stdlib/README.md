@@ -1,14 +1,29 @@
 # Ein standard library (`std.*`)
 
-The canonical, **package-shipped** standard library. This directory *is* the
-stdlib root: the import resolver
-([`ein/kb/imports.py`](../kb/imports.py)) maps a logical module name
-`std.<path>` to `ein/stdlib/<path>.ein` (P1.8 S1.8.A1 §D4 / S1.8.A3).
-It ships with the package via `pyproject.toml` `package-data`
-(`ein = ["stdlib/*.ein", "stdlib/**/*.ein"]`), so `(import std.…)`
-resolves whether Ein is run from a checkout or an install.
+The canonical standard library, and the **single source of truth for both
+implementations**. The import resolver maps a logical module name
+`std.<path>` to `<stdlib-root>/<path>.ein` (P1.8 S1.8.A1 §D4 / S1.8.A3), and
+`<stdlib-root>` is found the same way in each engine
+([`ein.py`](../ein.py/src/ein/kb/imports.py) `_stdlib_root`,
+[`ein.rs`](../ein.rs/crates/ein-ir/src/stdlib.rs) `stdlib::resolve`):
 
-## Location decision (S1.8.A4 — closes [Q30](../../../../plans/open_questions.md#q30--universal-rule-library--import-mechanism))
+1. `$EIN_STDLIB` — an explicit override, always wins;
+2. **this directory**, found by walking up for a `stdlib/` carrying
+   `MANIFEST.sha256`. A checkout is authoritative, so editing a module below
+   takes effect with no rebuild and no reinstall;
+3. the **packaged copy** — `ein/stdlib/` in a Python wheel (written at build
+   time by `ein.py/_build.py`), the `include_dir!`-embedded tree in the Rust
+   binary. Both distribution promises stay intact: `pip install ein` works,
+   and `ein.rs` is one self-contained binary.
+
+`MANIFEST.sha256` is what makes a fork detectable — `utils/stdlib_manifest.py`
+verifies it, and both packaged copies are checked against it. This matters
+more than tidiness: the stdlib is not test data but part of the semantics
+under test, so two copies would make every parity result meaningless — a
+conformance diff would report "the engines disagree" when in fact the
+*programs* differ ([design/11](../plans/m1a_rust/design/11_shared_assets.md)).
+
+## Location decision (S1.8.A4 — closes [Q30](../plans/open_questions.md#q30--universal-rule-library--import-mechanism))
 
 **Q30 → (c) hybrid.** Puzzle-*agnostic* vocabulary (the pattern macros today;
 the relation-algebra / type rule families as they land) lives here as
@@ -17,9 +32,13 @@ its bespoke spatial/typecheck rules) stays inline in the puzzle file. A
 puzzle pulls the library in with one `(import …)` and declares only its own
 facts.
 
-Why the package (not `examples/`): `examples/` is user content and is not
-installed, so an install-relative import couldn't find it; the package dir is
-always present and version-locked to the engine.
+Why not `examples/`: that is user content and is not installed, so an
+install-relative import could not find it.
+
+Why the repo root and not inside `ein.py/` (moved there at M1a S1a.0.3): two
+implementations read this library, and a directory inside one of them would
+have made the other's copy a fork. The wheel still gets its copy — as a build
+product, from here.
 
 ## Modules
 
@@ -42,8 +61,8 @@ wants *one* relation shared by every attribute, and the property is scoped by a
 type **family** (`Super`'s direct children) plus the type that names a slot
 (`Index`) — because `(bijective R)` has nowhere to put a type pair, and scoping
 per pair would need one declaration per ordered pair of attribute types. The two
-Zebra encodings are the worked comparison: [`examples/zebra2.ein`](../../../../examples/zebra2.ein)
-uses `std.bijection`, [`examples/zebra.ein`](../../../../examples/zebra.ein)
+Zebra encodings are the worked comparison: [`examples/zebra2.ein`](../examples/zebra2.ein)
+uses `std.bijection`, [`examples/zebra.ein`](../examples/zebra.ein)
 uses `std.slots`, and they reach the same model. See
 C2
 for the measurements, including why `std.slots` anchors its conclusions at the
