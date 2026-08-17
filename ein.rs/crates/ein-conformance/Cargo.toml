@@ -11,6 +11,13 @@ serde.workspace      = true
 serde_json.workspace = true
 toml.workspace       = true
 
+[dev-dependencies]
+criterion.workspace = true
+
 [[bin]]
 name = "ein-conformance"
 path = "src/main.rs"
+
+[[bench]]
+name    = "engine"
+harness = false

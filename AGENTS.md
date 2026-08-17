@@ -46,6 +46,21 @@ constrained-reasoning research.
   here from `examples/README.md`**). The **M1 target trace** for the engine
   and the **M2 target** for the NL ⇄ IR round-trip (NL problem → facts →
   ontology+rules → solution → NL explanation).
+- **`stdlib/`** — the ein-lang standard library (`std.*`), **shared by
+  both implementations** and the single source of truth. `MANIFEST.sha256`
+  is what identifies a directory as the stdlib and what CI checks for
+  drift; `ein.py/src/ein/stdlib/` is a build-time copy (git-ignored) so a
+  wheel still works. Resolution in both engines: `$EIN_STDLIB` → the
+  checkout → the packaged/embedded copy.
+- **`conformance/`** — the **parity corpus**: `corpus.toml` (one entry per
+  `.ein`, with the runs it is exercised under) and `EVENTS.md` (the
+  `--events` protocol). A file under `examples/` or `stdlib/` with no entry
+  fails a completeness check in both suites.
+- **`ein.rs/`** — the Rust port ([M1a](plans/m1a_rust/README.md)), a
+  drop-in replacement for `ein`. `crates/ein-conformance` is the parity
+  harness — it shells out to both engines and links neither. **`ein.py/` is
+  the oracle**: any observable difference is a bug in ein.rs, and every
+  optimisation there is justified by "the harness says nothing changed".
 - **`ein.py/`** — Python implementation. `ein.py/src/ein/` is the
   package: IR parser + dumper under `ir/`; KB store + entities +
   provenance under `kb/`; inference engine + saturator + contradiction
@@ -62,6 +77,20 @@ constrained-reasoning research.
 - **`nlp/`, `smt/`** — scratch areas with submodules
   (`nlp/link-grammar`, `smt/CVC4`). Not wired into the active
   `ein.py/` package.
+
+## Running the parity harness
+
+```sh
+cd ein.rs && cargo build --release
+./target/release/ein-conformance run \
+    --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" --tier T3
+```
+
+Python-vs-Python is not a curiosity — it is the gate: a harness that cannot
+detect a difference between an implementation and itself cannot detect one
+between two implementations either. The same shape with `--env-a
+PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42` is the determinism sweep, which
+is how hazards H1 and H4 were found. `conformance/README.md` has the tiers.
 
 ## Regenerating the knowledge graph
 

@@ -1,0 +1,65 @@
+# Tier 3 of three — plans/m1a_rust/design/12_toolchain_and_layout.md §4.
+#
+# Everything nightly, plus the checks that only matter when something is about
+# to be handed to someone: does the parallel engine agree with the serial one,
+# does the build work without its default features, and do the artefacts
+# actually build on the platforms they claim.
+#
+# Most of this is inert until the phase that gives it something to check, and
+# says so rather than being added later — a release checklist assembled at
+# release time is a checklist nobody reviewed.
+
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  jobs-cross-diff:
+    name: --jobs {1,2,4,8} agree (P1a.7)
+    runs-on: ubuntu-latest
+    if: false   # enable with the `parallel` feature at P1a.7
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "cross-diff the same corpus at four --jobs values"
+
+  no-default-features:
+    name: builds without default features
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ein.rs } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      # The `events` feature compiles the event emitter out entirely, so a
+      # measurement build has no branch on the hot path at all. Both shapes
+      # are built, because "off" is a configuration nobody exercises by
+      # accident.
+      - run: cargo build --workspace --no-default-features
+      - run: cargo test --workspace --no-default-features
+
+  packaging:
+    name: wheels + binaries
+    strategy:
+      fail-fast: false
+      matrix: { os: [ubuntu-latest, macos-latest, windows-latest] }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - uses: dtolnay/rust-toolchain@stable
+      - run: pip install build
+      # The wheel carries a build-time copy of the shared stdlib
+      # (ein.py/_build.py); this is where a broken copy would surface.
+      - run: python -m build --wheel --outdir dist ein.py
+      - run: cargo build --release --bin ein
+        working-directory: ein.rs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.os }}
+          path: |
+            dist/*.whl
+            ein.rs/target/release/ein*
+          retention-days: 30

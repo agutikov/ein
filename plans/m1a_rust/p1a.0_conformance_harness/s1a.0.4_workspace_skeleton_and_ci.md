@@ -83,3 +83,66 @@ orientation map, not a summary of this plan.
   question of which binary ran.
 - `ein-cli` starts as a stub that prints a version and exits 2 on every
   subcommand; it becomes real in [P1a.5](../p1a.5_presentation/README.md).
+
+---
+
+## Outcome — 2026-08-17
+
+`cd ein.rs && cargo build && cargo test` is green over six crates, `cargo fmt
+--check` and `cargo clippy -- -D warnings` are clean, `criterion` benches
+compile and run, and `AGENTS.md` documents `stdlib/`, `conformance/` and
+`ein.rs/`.
+
+The workspace, `rust-toolchain.toml` and `deny.toml` (T1a.0.4.1/.2) landed
+early, with S1a.0.1: `ein-conformance` cannot be the only member of a
+workspace whose point is the other five, and the manifest has to list them to
+build at all. `ein-server` and `ein-py` are **not** here — both carry heavy
+dependencies (an async runtime, PyO3/maturin) that the dependency policy says
+to defer until something needs them, and a feature-gated stub buys nothing a
+`[[workspace]]` line at P1a.8 will not.
+
+### The determinism lint (T1a.0.4.3)
+
+`utils/check_hashmap_iteration.py`, a grep as design/02 §9 proposed, with the
+escape hatch `// determinism-ok: <reason>`. Two decisions worth naming:
+
+- **The rule is stronger than "don't use `RandomState`".** `FxHashMap` is
+  deterministic run-to-run, but its order is still an artefact of hash values
+  and insertion history, where ein.py's observables come from
+  insertion-ordered `dict`s and explicit `sorted()`. So the check is on
+  *iteration*, not on the hasher.
+- **An annotation without a reason does not count.** The point is not to
+  record that someone saw the warning but to record why the order cannot be
+  observed — which is the part that goes stale and the part a later reader
+  needs.
+
+Name resolution is *nearest preceding binding wins*, which is enough for two
+functions to each have a local called `m` of different types. What it cannot
+see is a map reached through a method call (`self.cache().iter()`); that is
+the grep's ceiling and the reason the `dylint` door stays open.
+
+### The benches (T1a.0.4.5)
+
+Eight `criterion` benches matching `utils/bench_baseline.py` name for name,
+every one of them **pending** until the engine it measures exists — reporting
+itself rather than a zero, because a zero in a report looks like a result.
+They land now for two reasons better than the numbers they do not yet produce:
+the harness compiles and runs in CI from the start, and the *set* is fixed
+before there is any result to be tempted by. A benchmark set chosen after
+seeing the numbers measures what the implementation happens to be good at.
+
+### CI (T1a.0.4.4) — a decision, not just a task
+
+**The repo had no CI at all.** "Add the three tiers" therefore means
+*introducing* a CI system, which is a bigger step than the stage implies, so
+it is called out rather than assumed. GitHub Actions, since the project's
+`Repository` URL is GitHub; three workflows matching design/12 §4's tiers.
+
+The per-commit tier's shape follows one rule: **the oracle runs first and on
+its own.** A parity failure is meaningless if ein.py moved, so its red is the
+one that makes every other red uninterpretable. Every step was run locally
+before being written down.
+
+Most of the release tier is inert — `--jobs` cross-diff waits for P1a.7 —
+and says so in place rather than being added later. A release checklist
+assembled at release time is a checklist nobody reviewed.

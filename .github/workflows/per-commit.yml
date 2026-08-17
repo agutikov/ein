@@ -1,0 +1,93 @@
+# Tier 1 of three — plans/m1a_rust/design/12_toolchain_and_layout.md §4.
+#
+# Budget: five minutes. Everything here answers a question that must not be
+# answered later: is the oracle still green, do the two implementations still
+# agree, and is the shared stdlib still one file set.
+#
+# The tier the harness runs at rises with the port: T3 on parse/dump surfaces
+# at P1a.1, load errors at P1a.2, and so on to T3 corpus-wide at P1a.5
+# (design/01 § Tier → phase map). Until ein.rs has an engine, it is
+# Python-vs-Python — which is not a placeholder but the calibration: a harness
+# that cannot detect a difference between an implementation and itself cannot
+# detect one between two implementations either.
+
+name: per-commit
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+concurrency:
+  group: per-commit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  oracle:
+    # ein.py first, and on its own: a parity failure is meaningless if the
+    # oracle moved, so this is the run whose red makes every other red
+    # uninterpretable.
+    name: ein.py — the oracle stays green
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - run: pip install -e 'ein.py[dev]'
+      - run: ./run_tests.sh --fast -j auto
+      - run: ruff check ein.py
+
+  shared-assets:
+    name: stdlib + corpus — no drift, no gaps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      # The stdlib is the one input whose divergence no parity tier can
+      # diagnose: both engines would be *correct* about different programs.
+      - run: python3 utils/stdlib_manifest.py
+      # No iteration over a hash map at an observable site (design/02 §9).
+      - run: python3 utils/check_hashmap_iteration.py
+
+  rust:
+    name: ein.rs — build, lint, test
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ein.rs } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: rustfmt, clippy }
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: ein.rs }
+      - run: cargo fmt --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      # Covers the corpus-completeness check and the embedded-stdlib digest.
+      - run: cargo test --workspace
+      - run: cargo bench --bench engine -- --test
+
+  conformance-fast:
+    name: conformance — the per-commit corpus tier
+    runs-on: ubuntu-latest
+    needs: [oracle, rust]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: ein.rs }
+      - run: pip install -e ein.py
+      - run: cargo build --release --bin ein-conformance
+        working-directory: ein.rs
+      # `slow` entries are excluded here by the manifest and run nightly.
+      - run: |
+          ein.rs/target/release/ein-conformance run \
+            --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
+            --tier T3 --timeout 200
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: conformance-out
+          path: conformance/out
+          retention-days: 7

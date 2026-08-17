@@ -1,0 +1,87 @@
+# Tier 2 of three — plans/m1a_rust/design/12_toolchain_and_layout.md §4.
+#
+# Budget: an hour. Everything the per-commit tier cannot afford, plus the two
+# checks that only make sense over time: does either implementation still
+# agree with itself, and does anything the corpus does not cover diverge.
+
+name: nightly
+
+on:
+  schedule: [{ cron: "0 3 * * *" }]
+  workflow_dispatch:
+
+jobs:
+  full-suite:
+    name: ein.py — full suite + the acceptance gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - run: pip install -e 'ein.py[dev]'
+      # No --fast: the EIN_RUN_SLOW tests and the three exhaustive zebra2
+      # task-class fixtures.
+      - run: ./run_tests.sh -j auto
+
+  hash-seed-sweep:
+    name: ein.py — self-parity under PYTHONHASHSEED
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: { seed: ["1", "42", "12345"] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - uses: dtolnay/rust-toolchain@stable
+      - run: pip install -e ein.py
+      - run: cargo build --release --bin ein-conformance
+        working-directory: ein.rs
+      # One implementation, two hash seeds. This is how hazards H1 and H4 were
+      # found, and it is the check that keeps a `set` from leaking into an
+      # observable again.
+      - run: |
+          ein.rs/target/release/ein-conformance run \
+            --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
+            --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=${{ matrix.seed }} \
+            --tier T3 --include-slow --timeout 600
+
+  conformance-full:
+    name: conformance — the whole corpus, every tier
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: { tier: [T1, T2, T3] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - uses: dtolnay/rust-toolchain@stable
+      - run: pip install -e ein.py
+      - run: cargo build --release --bin ein-conformance
+        working-directory: ein.rs
+      - run: |
+          ein.rs/target/release/ein-conformance run \
+            --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
+            --tier ${{ matrix.tier }} --include-slow --timeout 600
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: conformance-out-${{ matrix.tier }}
+          path: conformance/out
+          retention-days: 14
+
+  benches:
+    name: benchmarks — both implementations, one measurement set
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - uses: dtolnay/rust-toolchain@stable
+      - run: pip install -e ein.py
+      - run: python3 utils/bench_baseline.py --json bench-python.json
+      - run: cargo bench --bench engine
+        working-directory: ein.rs
+      - uses: actions/upload-artifact@v4
+        with: { name: benches, path: bench-python.json, retention-days: 30 }

@@ -55,6 +55,19 @@ Kept here so the milestone's claims stay falsifiable. Filled in per
 phase; the baseline row is the promotion-time measurement from the
 [milestone README](../README.md#baseline--what-einrs-has-to-beat).
 
+Refreshed by one command per implementation, producing the same
+measurement set (§4 of [12](12_toolchain_and_layout.md)) so the columns
+are comparable rather than merely adjacent:
+
+```sh
+python3 utils/bench_baseline.py --json /tmp/py.json   # or .venv-pypy/bin/python
+cd ein.rs && cargo bench                              # from P1a.6
+```
+
+`EIN_SRC=<other-checkout>/ein.py/src` points the Python benches at a
+different revision, which is how a before/after is taken without
+stashing the tree under test.
+
 | date | build | `zebra2 -e` e2e | `zebra -e` e2e | acceptance gate | note |
 |---|---|---|---|---|---|
 | 2026-08-17 | ein.py, CPython 3.14 | 5.69 s | — | — | baseline |
