@@ -33,7 +33,7 @@ ordering never ranked.
 | ~~1~~ | ~~`1_trivial/`~~ | `.10` `.11` `.16` `.17` `.19` `.24` `.32` | **drained 2026-08-17** — see [§Group 1](#group-1--trivial--low-risk-drained-2026-08-17) |
 | ~~2~~ | ~~`2_kb_store/`~~ | `.20` `.21` | **drained 2026-08-17** — see [§Group 2](#group-2--kbstorepy-drained-2026-08-17) |
 | ~~3~~ | ~~`3_dot_emitter/`~~ | `.25` → `.26` | **drained 2026-08-17** — see [§Group 3](#group-3--the-rtc-dot-pair-drained-2026-08-17) |
-| 4 | [`4_trace_depth/`](4_trace_depth/) | `.29` | last of the ranked waves |
+| ~~4~~ | ~~`4_trace_depth/`~~ | `.29` | **drained 2026-08-17** — see [§Group 4](#group-4--trace-depth-drained-2026-08-17) |
 | 5 | [`5_unranked/`](5_unranked/) | `.12` `.13` `.14` `.18` `.27` | the five the suggested ordering does not rank — engine + CLI, `.18` is the only perf-shaped one |
 
 | ID | title | finding | leverage / risk |
@@ -43,7 +43,6 @@ ordering never ranked.
 | **S1.7c.14** | Collapse unsat-core synthesis | F-ENG-7 | med |
 | **S1.7c.18** | Drop redundant `consistent()` (perf) | F-ENG-12 | perf |
 | **S1.7c.27** | Split `_build_parser` | F-RTC-2 | low–med |
-| **S1.7c.29** | Flatten `parse_trace_steps` (depth 9) | F-RTC-4 | med |
 
 Reuse the P1.7b acceptance gate as the invariant for every stage —
 `run_tests.sh` (the `bench_solve_monotonic_pypy.sh` half of the original
@@ -156,6 +155,20 @@ current-code evidence that its acceptance still holds.
   the phases moved out to `_emit_schema_nodes` (`:274`) and the per-fact
   `is-a`/binary/hyperedge dispatch to `_emit_fact_line` (`:302`). Output
   byte-identity is held by the `kb_render_to_dot` golden.
+
+### Group 4 — trace depth (drained 2026-08-17)
+
+- **S1.7c.29** (flatten `parse_trace_steps`, F-RTC-4) — landed `2d368c1`.
+  The repo's deepest function is no longer in `trace/ast.py` at all: an AST
+  scan puts the module's **maximum nesting at 3** (`step_to_ir`), with
+  `parse_trace_steps` itself at 2 — from the 9 the finding named, against a
+  `< 5` bar. The `:bind` sub-parser and the `:using` arm became
+  `_parse_bindings` (`:133`) and `_parse_using` (`:125`), the per-step body
+  became `_parse_step` (`:144`, nesting 0), and the recurring
+  `Atom→name / scalar→value / else str` ternary collapsed into
+  `_atom_or_value` (`:102`). The round-trip gate the stage names,
+  `tests/trace/test_render.py::test_trace_ast_round_trips`, is green
+  (26 passed on this run).
 
 ## Closed — no stage file
 
