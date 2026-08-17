@@ -71,14 +71,21 @@ stashing the tree under test.
 | date | build | `zebra2 -e` e2e | `zebra -e` e2e | acceptance gate | note |
 |---|---|---|---|---|---|
 | 2026-08-17 | ein.py, CPython 3.14 | 5.69 s | — | — | baseline |
-| 2026-08-17 | ein.py, PyPy 3.11 | 4.07 s | 8.15 s | ~91 s † | baseline |
+| 2026-08-17 | ein.py, PyPy 3.11 | 4.07 s | 8.15 s | **43.7 s** ‡ | baseline |
 | — | ein.rs P1a.5 (parity, unoptimised) | — | — | — | *expected slower than PyPy; that is fine* |
 | — | ein.rs P1a.6 (optimised, `--jobs 1`) | — | — | — | target ≤ 0.2 s / ≤ 0.4 s / ≤ 5 s |
 | — | ein.rs P1a.7 (`--jobs 8`) | — | — | — | — |
 
 † The `zebra2 -e` / `zebra -e` figures were measured 2026-08-17 on the
-dev machine; the acceptance-gate figure is the one recorded at S1.21.8
-and is re-measured in [P1a.0](../p1a.0_conformance_harness/README.md).
+dev machine.
+
+‡ **Re-measured at P1a.0, and it moved.** The milestone README carried
+~91 s from S1.21.8; `./run_tests.sh --acceptance-only` on the dev machine
+is 43.7 s for the 21 acceptance tests. Machine differences account for
+some of it and S1.9.E23's fail-fast fork saturation — which landed after
+that recording and removed ~64 % of dead-fork saturation time — for the
+rest. Recorded rather than reconciled: what the target is measured
+against has to be a number someone took, not one someone remembered.
 
 ## Conventions used in these docs
 

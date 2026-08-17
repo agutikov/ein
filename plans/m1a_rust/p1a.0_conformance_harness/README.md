@@ -1,7 +1,7 @@
 # P1a.0 — Conformance harness + shared assets
 
 **Milestone:** [M1a — Rust port](../README.md)
-**Status:** in progress — S1a.0.1 and S1a.0.2 landed 2026-08-17.
+**Status:** **shipped** 2026-08-17 — all four stages, acceptance below.
 **Estimate:** 2 weeks (10 days of stages)
 **Depends on:** nothing (M1 shipped)
 **Blocks:** every other phase — no engine code lands before the oracle
@@ -49,18 +49,46 @@ Three reasons, in order:
 
 ## Acceptance for the phase
 
-- `ein-conformance run --impl-a python --impl-b python` is green at T3
-  over the whole corpus × run matrix.
-  **2026-08-17: green — 438 cells, 0 differences** (the per-commit tier;
-  the 17 `slow` entries run in the nightly tier).
-- The determinism sweep (`PYTHONHASHSEED` ∈ {0, 1, 42, random}) is green,
-  or every failure is fixed in ein.py and pinned by a test.
-- `stdlib-check` and the corpus-completeness check are in CI and fail on
-  a deliberately introduced drift.
-- `cd ein.rs && cargo test` runs (an empty workspace with the
-  conformance crate compiling and the corpus manifest parsed).
-- `plans/m1a_rust/divergences.md` exists and is empty.
-- `AGENTS.md` documents `ein.rs/`, `stdlib/` and `conformance/`.
+All met, 2026-08-17. Each was run, not read:
+
+| item | result |
+|---|---|
+| `ein-conformance run --impl-a python --impl-b python` green at T3 over the corpus × run matrix | **the whole corpus: 556 cells over 95 entries, 0 differences** (34 min of engine time). The per-commit subset is 438 of those. T2 over the per-commit set: 215 compared, 0 differences, 223 correctly skipped as emitting no log |
+| the `PYTHONHASHSEED` sweep is green, or every failure is fixed in ein.py and pinned | green at T3 (0 vs 42, 438 cells) — **after** fixing H1 and H4, both pinned by regressions that fail on every seed without the fix |
+| `stdlib-check` and the corpus-completeness check are in CI and fail on a deliberate drift | both in the per-commit tier; the stdlib check was verified by corrupting `typing.ein` and watching `cargo test -p ein-ir` name the file |
+| `cd ein.rs && cargo test` runs | 6 crates, 37 tests |
+| `divergences.md` exists and is empty | empty — nothing has needed accepting yet |
+| `AGENTS.md` documents `ein.rs/`, `stdlib/`, `conformance/` | plus how to run the harness |
+
+The milestone README also asked this phase to re-measure the acceptance gate
+"before trusting the number", and it moved: **43.7 s under PyPy 3.11, not the
+~91 s recorded at S1.21.8**. So the "under 5 s" target is ~9×, not the ~18×
+the stale figure implied. The target stands; the claim about it did not.
+
+## What the phase found
+
+The premise was "building the harness first finds ein.py bugs". It found
+**five**, three of them predicted:
+
+| | |
+|---|---|
+| **H1** | the `__symmetric__` mirror seed iterated a `frozenset`, so with ≥ 2 markers the firing order depended on `PYTHONHASHSEED` |
+| **H2** | mixed `str`/`int` hypothesis args crash `apriori.layer_1` — confirmed, and narrowed to hrule-generated candidates only |
+| **H3** | `--shuffle` — confirmed benign: same seed byte-identical, across seeds only the order the k models are found in moves |
+| **H4** | *not predicted.* `unsat_core` iterated raw at two display sites, so **the same puzzle produced two different `--trace` files across runs** |
+| — | `ein saturate` raised `KBLoadError` through to a traceback where `solve` prints one line, and parsed without `filename=` |
+
+Two more that were decisions rather than defects: Q-M1a.14's proposed
+crash-parity rule ("exit code + first stderr line") turned out to compare a
+line that is not stable under `PYTHONHASHSEED`, and Q-M1a.16 opened because
+only four of the ten `SolverConfig` levers are reachable from a CLI.
+
+And one bug in the harness itself, found by its own first whole-corpus run:
+`execute` polled a child whose stdout was a pipe, so `render lattice` — which
+writes more DOT than a pipe holds — blocked on `write` while the harness waited
+for it to exit. Two 0.3 s cells sat for two minutes. It is the failure mode a
+harness is least able to report on itself: it does not crash and it does not
+diff, it simply never finishes.
 
 ## Cross-links
 

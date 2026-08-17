@@ -2,8 +2,9 @@
 
 **Estimate:** ~6.5 months focused — 49 stages, ~27.5 weeks of stage
 estimates (parity gate at ~week 17).
-**Status:** **planned** — promoted from placeholder 2026-08-17 with the
-scope decision made (see § The decision). Slotted between M1 and M1b.
+**Status:** **in progress** — promoted from placeholder 2026-08-17 with the
+scope decision made (see § The decision); [P1a.0](p1a.0_conformance_harness/README.md)
+shipped the same day. Slotted between M1 and M1b.
 **Depends on:** M1 (**shipped** 2026-06-17) — the engine semantics are
 frozen: kernel rules, NAF at the closure/world boundary (S1.21.8),
 branching, no-good learning, the set-indexed lattice engine.
@@ -120,12 +121,20 @@ Three readings drive the design:
 
 **Targets** (all at `--jobs 1`, so they measure the port and not the
 cores): ≥ 20× on `solve zebra2 -e` end-to-end vs PyPy, ≥ 50× on parse +
-load, and the [`ein.py`](../../ein.py) acceptance gate (three exhaustive
-fixtures; ~91 s under PyPy as recorded at S1.21.8) under 5 s. Re-measure
-it at [P1a.0](p1a.0_conformance_harness/README.md) before trusting the
-number. These are targets, not
-promises; each phase records what it actually got in
-[design/README](design/README.md) § Measured.
+load, and the [`ein.py`](../../ein.py) acceptance gate under 5 s.
+
+> **Re-measured at [P1a.0](p1a.0_conformance_harness/README.md), as this
+> section asked: the acceptance gate is 43.7 s under PyPy 3.11, not the
+> ~91 s recorded at S1.21.8** — 21 tests, `./run_tests.sh
+> --acceptance-only`, 2026-08-17. Some of the gap is the machine and some
+> is S1.9.E23's fail-fast fork saturation, which landed after that
+> recording and cut ~64 % of dead-fork saturation time; the split is not
+> worth chasing. What matters is that the "under 5 s" target is **~9×**,
+> not the ~18× the stale number implied. The target stands; the claim
+> about it does not.
+
+These are targets, not promises; each phase records what it actually got
+in [design/README](design/README.md) § Measured.
 
 ---
 
@@ -153,7 +162,7 @@ Full contract: [design/11](design/11_shared_assets.md).
 
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
-| [P1a.0](p1a.0_conformance_harness/README.md) | Conformance harness + shared assets | 4 | 2 w | the oracle can prove ein.py ≡ ein.py |
+| [P1a.0](p1a.0_conformance_harness/README.md) ✅ | Conformance harness + shared assets | 4 | 2 w | **shipped 2026-08-17** — whole corpus 556 cells, 0 diff at T3; same across hash seeds |
 | [P1a.1](p1a.1_ir_frontend/README.md) | IR frontend — lex, parse, AST, dump, macros, imports | 3 | 2 w | `ein render` / dump byte-parity on the corpus |
 | [P1a.2](p1a.2_kb_core/README.md) | KB core — interner, values, store, indexes, loader, provenance | 4 | 2.5 w | KB-shape parity + load errors byte-identical |
 | [P1a.3](p1a.3_deductive_core/README.md) | Deductive core — compile, match, saturate, world, contradiction | 4 | 3.5 w | **firing-sequence parity** on every saturation fixture |
