@@ -322,3 +322,28 @@ T1.22.2.1 will read.
    no-duplication / fusion tests were **re-pointed** at `zebra2_kb` rather
    than rewritten against zebra.ein. Same for the two `ir_to_dot_type` /
    `ir_to_dot_subtype` golden cases, which were deleted with their goldens.
+
+5. **The `:layer` ruling above is OVERTURNED.** §"Kwargs ruling" kept
+   `:layer` on the grounds that it is the modern per-fact mechanism that
+   *replaced* the block wrappers, not a leftover of them. That reasoning was
+   right about its provenance and wrong about its worth. Investigating it on
+   2026-08-17 (user request) found that the layer it sets feeds a **soundness
+   bug**: `contradiction.py` refuses to report a `(X, (not X))` pair whose
+   facts sit in different layers, so a derived negation never contradicts a
+   *stated* fact. User ruling: "cross-layer restriction is a BUG! it ignores
+   contradictions between facts in kb; remove `:layer` and completely remove
+   layers in the reasoning engine." Scheduled as
+   [S1.22.1b](../s1.22.1b_layer_removal.md), which runs before S1.22.1a.
+
+   The measurements behind it, for whoever executes that stage:
+   - stripping all 23 `:layer` occurrences changes no fact set and no
+     contradiction count — every current use is decorative;
+   - but `:layer reasoning` on a stated clue flips a contradiction from
+     silently ignored to reported (0 → 2 on a minimal reproducer);
+   - deleting the cross-layer restriction outright leaves acceptance 17/17
+     green and breaks exactly one test, the one that pins the restriction;
+   - `Layer` is a denormalisation of `Provenance`: over 3039 facts from every
+     `examples/**/*.ein`, a provenance-only predicate reproduces the layer
+     with 23 mismatches — and all 23 are precisely the facts carrying an
+     explicit `:layer`. Remove the kwarg and the concept becomes derivable,
+     hence removable without loss.

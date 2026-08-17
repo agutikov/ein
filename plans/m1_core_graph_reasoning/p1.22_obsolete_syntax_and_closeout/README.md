@@ -33,19 +33,25 @@ Two closeout debts, by user decision (2026-08-16):
    folder is deleted at the end of this phase — *after* anything still
    live is rehomed and every inbound link is rewired.
 
-## Structure — each point = two tasks
+## Structure
 
 | ID | prio | stage | tasks |
 |---|---|---|---|
 | S1.22.0 | **P0** | [Boundary verification debt: completeness + state parity](s1.22.0_boundary_verification.md) | T1.22.0.1 attack+report / T1.22.0.2 fix+pin |
 | S1.22.1 | P0 | [Obsolete-syntax census → purge](s1.22.1_obsolete_syntax.md) | T1.22.1.1 census+report / T1.22.1.2 purge |
+| S1.22.1b | **P0** | [Cross-layer contradiction bug; remove knowledge layers](s1.22.1b_layer_removal.md) | T1.22.1b.1 census+report / T1.22.1b.2 fix+pin / T1.22.1b.3 remove |
 | S1.22.1a | P1 | [`zebra.ein`: modernise and make it solve](s1.22.1a_zebra_ein_modernisation.md) | T1.22.1a.1 investigate+report / T1.22.1a.2 execute |
 | S1.22.2 | P1 | [M1-plans preservation census → delete](s1.22.2_m1_plans_deletion.md) | T1.22.2.1 census+report / T1.22.2.2 migrate+delete |
 
 **Strictly serial from S1.22.1 on**: the deletion census (T1.22.2.1) must
 run on the **post-purge** tree (the purge edits the very docs whose inbound
 links it inventories), and the deletion itself is terminal. Order:
-T1.22.1.1 → T1.22.1.2 → T1.22.2.1 → T1.22.2.2.
+T1.22.1.1 → T1.22.1.2 → **S1.22.1b** → S1.22.1a → T1.22.2.1 → T1.22.2.2.
+
+**S1.22.1b precedes S1.22.1a** (added 2026-08-17, by user ruling): it changes
+what the search kills, so running it after `zebra.ein`'s solvability work
+would invalidate that stage's tuning — and it removes the four `:layer`
+lines S1.22.1a would otherwise carry into its rewrite.
 
 **S1.22.0 is off that chain** and runs in parallel with the purge — it
 touches `ein.py/src/ein/inference/` and its tests, not fixtures or docs, so
@@ -78,7 +84,10 @@ T1.22.2.2 — by design; commit history keeps them).
   its findings land in the P1.21 README, so T1.22.2.1 must census that file
   *after* S1.22.0 reports.
 - **Behaviour discipline**: `./run_tests.sh` + `ruff check .` green after
-  each improvement; acceptance verdicts/bindings unchanged. (`zebra.ein` is
+  each improvement; acceptance verdicts/bindings unchanged. **Exception —
+  [S1.22.1b](s1.22.1b_layer_removal.md)**: it is a deliberate soundness fix,
+  so the *contradiction count* rises by design. Verdicts and bindings still
+  may not move. (`zebra.ein` is
   **not** deleted — the user's 2026-08-17 clarification withdrew the
   invalid-syntax premise; it is rewritten by
   [S1.22.1a](s1.22.1a_zebra_ein_modernisation.md).)
