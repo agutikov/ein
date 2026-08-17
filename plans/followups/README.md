@@ -22,8 +22,8 @@ strikes.
 | F6  | [Modify own harness code](f6_modify_own_harness.md)               | rung 3 of self-modification: engine emits patches to its own Python source    |
 | F7  | [Rule taxonomy + rule induction](f7_rule_induction.md)            | when the rule library grows past hand-management OR M2's NL → IR needs activator induction (sub-track B on the M2 critical path) |
 | F8  | [FCA / RCA, ODIS, TPTP](f8_FCA_RCA_odis_tptp/ideas.md)            | raw notes — formal concept analysis over the relation algebra, external corpora |
-| F9  | [Hypothesis-loop E-catalog (E1–E24)](f9_e_catalog/README.md)      | when a puzzle's signal justifies a search/closure refinement — each entry has its own activation criteria (ex-M1 P1.9) |
-| F10 | [M1 refactor-debt tail](f10_m1_refactor_tail/README.md)           | **before the M1a Rust port** — `ein.rs` should transcribe the clean reference, not the scar tissue (ex-M1 P1.7c Track B) |
+| F9  | [Hypothesis-loop E-catalog](f9_e_catalog/README.md)               | when a measured bottleneck matches one of the 4 live entries — 20 of the original 24 closed 2026-06-15 (ex-M1 P1.9) |
+| F10 | [M1 refactor-debt tail](f10_m1_refactor_tail/README.md)           | **before the M1a Rust port** — `ein.rs` should transcribe the clean reference, not the scar tissue; 17 stages open (ex-M1 P1.7c Track B) |
 
 The three self-modification followups (F2 / F5 / F6) share a unifying
 view: [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-modification.md).

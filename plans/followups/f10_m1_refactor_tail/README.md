@@ -1,10 +1,14 @@
 # F10 — M1 refactor-debt tail (ex-P1.7c Track B)
 
-The 23 decompositions / unifications P1.7b identified but deferred, one
-stage each. **Relocated verbatim** from `p1.7c_block_head_removal/` Track B
-when the M1 plan folder was deleted (P1.22 S1.22.99); Track A
-(S1.7c.1–.5, .8 — the block-head removal) shipped 2026-06-02 and died with
-the folder.
+The decompositions / unifications P1.7b identified but deferred, one stage
+each. **Relocated** from `p1.7c_block_head_removal/` Track B when the M1
+plan folder was deleted (P1.22 S1.22.99); Track A (S1.7c.1–.5, .8 — the
+block-head removal) shipped 2026-06-02 and died with the folder.
+
+**17 of the original 23 remain open.** The six that were assessed, done,
+re-scoped or dropped during Track B were deleted rather than carried as
+tombstones — see [§Closed](#closed--no-stage-file) for the one-line record
+of each.
 
 [`findings.md`](findings.md) — P1.7b's 40-finding, code-cited review — moved
 with them: it is the source register every stage below cites.
@@ -27,36 +31,44 @@ independently landable, and gated by the same invariant (`run_tests.sh` +
 | **S1.7c.12** | Unify the provenance-chain DFS | F-KER-10 | low–med |
 | **S1.7c.13** | `_lattice_public` post-amble | F-ENG-5 (+14) | low |
 | **S1.7c.14** | Collapse unsat-core synthesis | F-ENG-7 | med |
-| **S1.7c.15** | Split `_LatticeLoopState` | F-ENG-8 | med–high |
 | **S1.7c.16** | Factor `_BaseStats` | F-ENG-9 | low |
 | **S1.7c.17** | `_TimelineMixin` for dumpers | F-ENG-11 | low |
 | **S1.7c.18** | Drop redundant `consistent()` (perf) | F-ENG-12 | perf |
 | **S1.7c.19** | Remove the two `type: ignore` | F-ENG-13 | trivial |
 | **S1.7c.20** | Decompose `rebuild_indexes` | F-KB-2 | med |
 | **S1.7c.21** | `snapshot` shallow-copy | F-KB-6 | med |
-| **S1.7c.22** | Typed index wrappers | F-KB-9 | high |
-| **S1.7c.23** | Flatten `from_ir.load` | F-KB-7 | med |
 | **S1.7c.24** | Restore `Query` annotations | F-KB-13 | low |
 | **S1.7c.25** | Shared DOT emitter API | F-RTC-1 (+F-KB-8) | high (headline) |
 | **S1.7c.26** | Decompose `to_dot` | F-KB-10 ≡ F-RTC-6 | med |
 | **S1.7c.27** | Split `_build_parser` | F-RTC-2 | low–med |
-| **S1.7c.28** | Unify the two trace pipelines | F-RTC-3 | med |
 | **S1.7c.29** | Flatten `parse_trace_steps` (depth 9) | F-RTC-4 | med |
-| **S1.7c.30** | `linearize` dispatch table | F-RTC-5 | low–med |
-| **S1.7c.31** | Public KB/verdict accessors | F-RTC-9 | low |
 | **S1.7c.32** | Share the S-expr escaper (fixes a bug) | F-RTC-10 | low (+regression) |
 
-**Suggested ordering.** `.10`/`.11`/`.16`/`.17`/`.19`/`.24`/`.31`/`.32`
-first (trivial / low risk); the KB cluster `.22 → .20/.21` together (the
-typed wrappers make the decomposition + shallow-copy structurally safe);
-the RTC DOT pair `.25 → .26`; the trace chain `.29 → .28`; `.15 → .19`.
-`.23` was to be coordinated with Track A's `load` rewrite — Track A has
-since shipped, so it is now unblocked and standalone.
+**Suggested ordering.** `.10`/`.11`/`.16`/`.17`/`.19`/`.24`/`.32` first
+(trivial / low risk); then `.20`/`.21` (the typed-wrapper prerequisite was
+re-scoped and closed, so these two stand alone); the RTC DOT pair
+`.25 → .26`; then `.29`. Reuse the P1.7b acceptance gate
+(`run_tests.sh` + `bench_solve_monotonic_pypy.sh`) as the invariant for
+every stage.
 
-## Not carried over
+## Closed — no stage file
 
-Verified against the code during the 2026-06-02 breakdown — already closed
-or deliberately dropped, so no stage exists:
+Two groups, both verified against the code and **not** carried here.
+Recorded so a reader doesn't rediscover them as gaps.
+
+**Assessed and closed during Track B (2026-06-03):**
+
+- **S1.7c.15** (split `_LatticeLoopState`) — split *assessed and rejected*;
+  one documented class kept instead.
+- **S1.7c.22** (typed index wrappers) — re-scoped to a copy-helper and done.
+- **S1.7c.23** (flatten `from_ir.load`) — superseded by Track A's flat-form
+  loader rewrite.
+- **S1.7c.28** (unify the two trace pipelines) — re-scoped and done.
+- **S1.7c.30** (`linearize` dispatch table) — **won't-do**, user decision.
+- **S1.7c.31** (public KB/verdict accessors) — done, both halves.
+
+**Never opened, verified during the 2026-06-02 breakdown** — already closed
+or deliberately dropped:
 
 - **F-RTC-7** (`to_dot` unreachable return) — *done*: `_atom_arg_attrs` is a
   clean `Var`/`Wildcard`/default ladder; the trailing return is reachable.

@@ -1,231 +1,117 @@
-# P1.9 — Hypothesis-loop follow-ups
+# F9 — Hypothesis-loop follow-ups (the E-catalog)
 
-**Estimate:** TBD per entry.
-**Status:** **placeholder / catalog** — parking lot for the
-post-S1.5.4 hypothesis-loop ideas that didn't make the M1
-acceptance critical path. Created 2026-05-21 in response to the
-S1.5.4 implementation-order call (*"All Open ideas — defer to
-P1.9"*).
-**Depends on:** S1.5.4
-ship for the empirical baseline each entry would be measured
-against.
-**Blocks:** nothing within M1 acceptance. Like
-P1.8, P1.9 promotes a
-catalog entry into a stage file only when a puzzle's signal
-justifies the work.
+**Status:** parking lot for the post-S1.5.4 hypothesis-loop ideas that
+didn't make the M1 acceptance critical path. Created 2026-05-21 in
+response to the S1.5.4 implementation-order call (*"All Open ideas — defer
+to P1.9"*); **relocated** here from `m1_core_graph_reasoning/p1.9_…/` when
+the M1 plan folder was deleted (P1.22 S1.22.99).
 
-## Scope
+**4 of the original 24 entries remain open.** The 2026-06-15 review closed
+the other twenty — shipped, superseded, or measured-and-rejected — and
+those stubs were deleted rather than kept as tombstones.
+[§Closed](#closed) is the one-line record of each, so nothing gets
+rediscovered as a gap.
 
-The full E1-E20 catalog (closure refinements, conflict-driven
-learning, search heuristics, CSP-style pre-processing,
-engineering/UX) plus the R1-R4 rejected entries lives here,
-moved from S1.5.4 on 2026-05-21. Each entry promotes to a
-`s1.9.<n>_<title>.md` stage file when activation criteria below
-are met; until then this README is the authoritative spec.
+This README is the **authoritative spec** for a live entry until it
+promotes to a stage.
 
-**Legend.**
-*Status:* 📅 parked (awaiting activation signal) · ✅ resolved
-(closed by shipped work) · ⛔ superseded (overtaken by a later
-design; kept for the record) · ❌ rejected for M1 (parked here for
-visibility; will not promote without a fundamental scope change).
+**Legend.** 📅 parked (awaiting an activation signal) · 📌 recorded for
+visibility, not a P1.9 entry.
 *Effort:* S (≤ ½ day) · M (1-3 days) · L (> 3 days).
-*Value:* H / M / L — node-count reduction on the demo suite,
-with the qualifier "after the S1.5.4 ship lands" where relevant.
-Most entries are M/L because they compound on top of T1.5.4.1's
-headline win and the marginal returns diminish; the H entries
-are correctness-bearing (E6) or long-term-structural (E7).
 
-## Stage files
+## Live entries
 
-Each E-entry has a per-stage stub file (created 2026-05-24).
-The README catalog rows stay authoritative for the catalog
-description + effort/value/references; the stub files add a
-Tasks / Acceptance / open-questions skeleton.
+| ref | idea | mechanism | effort | value | stub |
+|-----|------|-----------|--------|-------|------|
+| 📅 E16 | Lazy alive-set materialisation | stream `_compute_alive` instead of materialising a `frozenset[FactId]`; saves memory on huge puzzles. **Premise re-grounded** — there is no `root_alive`, and `state_hash` doesn't use the alive set, so the win is smaller than first framed | S | L (memory) | [E16](s1.9.e16_lazy_root_alive.md) |
+| 📅 E20 | Conflict-cache cross-call | persist `(not h)` learnings across `solve()` calls when the same puzzle re-runs | M | L | [E20](s1.9.e20_conflict_cache.md) |
+| 📅 E23 | Speed up the complete (exhaustive) search | **Re-anchored** from the never-shipped `Mode.PROVE` to `solve()` — P1.7a's complete entry, the actual bottleneck. Open question: can exhaustive search go faster *without* giving up the uniqueness guarantee? Uniqueness is a global property, so some form of full coverage is required; the design question is which form | L | M (perf) | [E23](s1.9.e23_prove_speedup.md) |
+| 📅 E24 | Lattice perf optimisations | three optimisations deferred from S1.5b.30 — none passed the measurement-based decision rules on the zebra2 reference; **baseline re-measured 2026-06-15** post-P1.8a and the deferral was reinforced. Queued for re-evaluation if a workload pushes past the trigger thresholds | S each | — | [E24](s1.9.e24_lattice_perf_optimisations.md) |
 
-| Stub file                                                                            | Entry |
-|--------------------------------------------------------------------------------------|-------|
-| s1.9.e1_functional_activator.md                  | E1    |
-| s1.9.e2_at_most_one.md                                    | E2    |
-| s1.9.e3_no_hypotheses.md                                | E3    |
-| s1.9.e4_symmetry_class.md                              | E4    |
-| s1.9.e5_static_rule_conflict.md                  | E5    |
-| s1.9.e6_transitive_premise_walk.md            | E6    |
-| s1.9.e6a_tree_solver_cleanup.md                  | E6 prereq |
-| s1.9.e7_learned_clause.md                              | E7    |
-| s1.9.e8_watched_fact.md                                  | E8    |
-| s1.9.e9_lcv.md                                                    | E9    |
-| s1.9.e10_iterative_deepening.md                  | E10   |
-| s1.9.e11_goal_driven_filter.md                    | E11   |
-| s1.9.e12_informativeness.md                          | E12   |
-| s1.9.e13_per_hyp_budget.md                            | E13   |
-| s1.9.e14_arc_consistency.md                          | E14   |
-| s1.9.e15_path_consistency.md                        | E15   |
-| s1.9.e16_lazy_root_alive.md                          | E16   |
-| s1.9.e17_branch_budget.md                              | E17   |
-| s1.9.e18_rule_applicability_pruning.md    | E18   |
-| s1.9.e19_unsat_core_min.md                            | E19   |
-| s1.9.e20_conflict_cache.md                            | E20   |
-| s1.9.e21_solve_vs_prove.md                            | E21   |
-| s1.9.e22_alive_hyps_in_state_hash.md        | E22   |
-| s1.9.e23_prove_speedup.md                              | E23   |
-| s1.9.e24_lattice_perf_optimisations.md    | E24   |
+### Deductive-layer perf — 📌 not hypothesis-loop items
 
-The R1-R4 rejected entries stay in the README catalog only.
-
-## Catalog
-
-### Closure refinements (Q-S1.5.4.B descendants)
-
-| ref | idea | mechanism | effort | value | references |
-|-----|------|-----------|--------|-------|------------|
-| ✅ E1 | `(functional R)` activator       | **resolved by P1.8 stdlib** — `functional`/`injective`/`bijective` ship across `std.algebra`/`std.bijection`/`std.elim`/`std.closure` (§Resolution); `single-parent` retired | S | M | DL `funcProp` |
-| ✅ E2 | `(at-most-one R slot)` activator | **resolved a different way** — at-most-one = `functional`/`injective` (incl. positional `(functional R 0 1)`) + `std.closure` saturating to `(closed R)`; no dedicated activator needed (§Resolution) | M | M | CSP cardinality |
-| ✅ E3 | `:no-hypothesis` query key       | **implemented** — query key `:no-hypothesis`, the exclusion dual of the `:hypothesis-relations` whitelist; blind-enumerator-scoped, saturation untouched (§Implemented) | S | L | engineering convenience |
-| ⛔ E4 | `(symmetry-class R T)`           | **superseded 2026-06-15** by the symmetric **D/A/B/C decomposition** (Phase 2a/2b) — the dedicated activator is overtaken: E4(a) gen-time pruning → a user hrule (B); E4(b) uniqueness-up-to-symmetry → the positive mirror (C subsumed by D — stdlib `symmetric` + kernel `__symmetric__`). Residual = *object*-value-symmetry (lex-leader SBP/SBDD, L-effort, unexercised) (§Superseded) | M | M | CSP value-symmetry breaking ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)) |
-| ⛔ E5 | Static rule-conflict pre-analysis | **reframed 2026-06-15 → rule induction (F4-Q34 / F5 / F7)**: a mutex is a *negative hrule* (zebra2 already ships it as `functional-negative`), so this is `property → negative-companion rule` synthesis (cf. `symmetric → symmetric-negative`), not a hypgen table; only a *dominated* Python-table residual stays in P1.9 (§Reframed) | M | M | rule-set sufficiency, [F7 §C](../f7_rule_induction.md) |
-
-### Conflict-driven learning (SAT/CDCL-inspired)
-
-| ref | idea | mechanism | effort | value | references |
-|-----|------|-----------|--------|-------|------------|
-| ✅ E6 | Transitive premise walk for "unconditional" | **DONE 2026-06-15** — `walk_premises` (set-collecting dual of `reaches`) shipped in `provenance.py`; `store.unsat_core` refactored onto it (parity-verified); the substrate E19 / the trace consume (§Executed) | S | **H** (correctness) | — |
-| ✅ E7 | Learned-clause from unsat-core   | **largely resolved 2026-06-15** — deriving half ships (`DeadCommitment.unsat_core`, now on E6); pruning half **measured vacuous** (all 49 zebra2 deaths are singletons → nogoods already Apriori-minimal) + unsound-under-NAF → closed; only minimise (E19) remains (§Resolved) | L | H (long-term) | CDCL ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)); ATMS justification cache ([docs/lib/09](../../../docs/lib/09-cognitive-architectures-neurosymbolic.md)) |
-| ⛔ E8 | Watched-fact rule applicability   | **motivation superseded by P1.8a** — delta-driven semi-naive saturation (alpha-memory index + seeded delta join) already kills the re-iterate cost; literal watched-literals judged premature (§Superseded) | L | M | DPLL watched literals |
-
-### Search heuristics
-
-| ref | idea | mechanism | effort | value | references |
-|-----|------|-----------|--------|-------|------------|
-| ❌ E9  | Least-constraining-value (LCV)   | **rejected 2026-06-15** (measured): worst ordering on zebra2 — first completer at rank 35/56 (vs lex 11); completers are heavy pruners, LCV prefers least-pruning (§Rejected; `demo/score_hypotheses.py`) | M | M | CSP textbook |
-| ⛔ E10 | Iterative deepening              | **inapplicable to the lattice BFS** — cardinality layering *is* breadth-first deepening; no DFS depth bound to re-raise (§Inapplicable) | S | M | IDA* idiom |
-| ❌ E11 | Goal-driven hypothesis filter    | **rejected 2026-06-15** (per user): can't filter a hypothesis without testing it — unsound (drops contradiction-pruning candidates); sound variant is cold on the connected corpus + changes the `solve()` contract (§Rejected) | M | M | Prolog SLD-resolution; [docs/lib/03](../../../docs/lib/03-theorem-proving-formal-methods.md) |
-| ❌ E12 | Hypothesis ordering by "informativeness" | **rejected 2026-06-15** (measured): "max cascade" is dominated by dead-post singletons → first completer at rank 19/56 (vs lex 11); discriminating signal is irreducibly post-fork (§Rejected; `demo/score_hypotheses.py`) | M | L (heuristic gain) | CSP value ordering |
-| ❌ E13 | Per-hypothesis saturation budget | **dropped 2026-06-15** (per user): saturation is correctness-critical — a per-fork budget aborts before quiescence, so the fork's verdict is unsound even on the fast path (§Dropped) | M | L (UX) | branch-and-bound |
-
-### CSP-style pre-processing
-
-| ref | idea | mechanism | effort | value | references |
-|-----|------|-----------|--------|-------|------------|
-| ❌ E14 | Arc-consistency pre-pass         | **rejected 2026-06-15** — **subsumed by rule-saturation**: the engine is append-only (no domains to prune) and the puzzle's elimination rules already propagate the `(not h)` negatives AC-3 would derive (§"Prune"…) | L | M | CSP AC-3 ([docs/lib/02](../../../docs/lib/02-solvers-csp-sat-smt.md)) |
-| ❌ E15 | Path-consistency (k-consistency) | **rejected 2026-06-15** — k-tuple generalisation of the (also-rejected) E14; just **eagerly** computes multi-literal nogoods `_nogoods` already builds **lazily + Apriori-minimal** (§…weird here) | L | L | k-consistency |
-
-> **Lattice re-grounding (2026-06-15).** Re-judged against the engine's actual
-> search — a *complete BFS over commitment-set cardinality* (Apriori), not a
-> DPLL/DFS decision tree ([architecture_and_algorithms.md](../../../docs/kernel/inference/architecture_and_algorithms.md)
-> §O7) — the search/CSP entries are now **all closed** against it. **Reorderers**
-> (E9, E12) are inert for the complete/uniqueness search (within-layer order
-> can't change Apriori pruning) and — measured on zebra2 (`demo/score_hypotheses.py`)
-> — even **worse than lex** on the fast path: LCV ranks the first completer 35th,
-> informativeness 19th, vs lex's 11th, because completers are
-> pre-fork-indistinguishable and the dead-post singletons dominate every cascade
-> signal. **❌ rejected.** **E13 dropped** (aborting saturation is unsound).
-> **E10 inapplicable** (the cardinality layering already *is* the deepening). The
-> would-be **space-shrinkers** are gone too: **E11 ❌ rejected** (can't filter a
-> hypothesis without testing it — unsound, and the sound variant is cold +
-> changes the `solve()` contract); **E4/E5 ⛔ superseded**; **E14/E15 ❌ rejected**
-> (subsumed by append-only rule-saturation + the lazy Apriori-minimal nogood
-> store). Net: the whole §search-heuristics + §CSP-preprocessing cluster is
-> closed — a complete cardinality-BFS over a connected corpus leaves no purchase
-> for these. See each stub's status section.
-
-### Engineering / UX
-
-| ref | idea | mechanism | effort | value | references |
-|-----|------|-----------|--------|-------|------------|
-| 📅 E16 | Lazy alive-set materialisation | stream `_compute_alive` instead of materialising a `frozenset[FactId]`; saves memory on huge puzzles. **Premise re-grounded** — no `root_alive`, and `state_hash` doesn't use the alive set (E16 § Re-grounding) — so the win is smaller than first framed | S | L (memory) | T1.5.4.5 alternative |
-| ✅ E17 | Engine-level branch budget       | **DONE 2026-06-15** — budget (`max_enterings`/`max_time`) was already shipped; the residual T1.9.E17.2 now ships: `solve(on_budget="verdict")` returns an `Aborted` verdict (partial stats, `exhausted=False`) instead of raising (opt-in; default raise unchanged) (§Implemented) | S | L (UX) | already in the engine |
-| ❌ E18 | Rule-applicability pruning       | **rejected 2026-06-15** (measured): drops 0/30 rules on zebra2 — structurally dead, because generic rules' **variable assert-heads** can produce any relation, so nothing is ever provably-unreachable (§Rejected) | S | L | trim engine work |
-| ✅ E19 | Unsat-core minimisation          | **DONE 2026-06-15** — shipped in `min_core.py` (provenance, on E6): smallest single-witness frontier, not the witness-union (zebra2-bad 38→1, the injected culprit). Re-saturation deletion-MUS is **NAF-unsound** → not shipped (§Implemented). **Renamed 2026-08-16 per R3** → `frontier.smallest_contradiction_frontier` (not a subset-minimal MUS, minimal only over recorded derivations). **Caveat lifted + use-site wired 2026-08-17** by S1.21.7 (executed in P1.21, not here): re-derivations are recorded, the frontier is an AND/OR search (order-independent, budgeted), and the `k = 0` verdict finally carries it | M | L (UX only) | P1.6 trace renderer; composes with E6 |
-| 📅 E20 | Conflict-cache cross-call        | persist `(not h)` learnings across `solve()` calls when the same puzzle re-runs | M | L | session-scoped speedup; composes with S1.5.7 |
-
-### Mode taxonomy + state-hash design (added 2026-05-24)
-
-| ref | idea | mechanism | effort | value | references |
-|-----|------|-----------|--------|-------|------------|
-| ⛔ E21 | `solve` vs `prove` mode split  | **Superseded by P1.7a (2026-05-31)** — shipped *differently*: the exhaustive-with-uniqueness side is now `solve()` (returns `Solution \| Ambiguity \| Contradiction`, 1/>1/0 verdict); the fast side is the monotonic `solve(stop_after=1)` path. `Mode` (in `inference/verdict.py`, not `solver.py`) is the orthogonal SOLVE/GAPS/CONTRADICTIONS task-class axis, not SOLVE/PROVE. See E21 § Superseded | M | M (UX) | [Idea 03 — three task classes](../../ideas/03-three-task-classes.md) |
-| ✅ E22 | Alive-hyps in canonical state hash | **Resolved in code:** `canon.state_hash` keys dedup on the KB facts ONLY, not the alive set — the engine relies on "KB ⇒ alive-set" and S1.7.24's state-hash-keyed lattice cements it. The "extend the hash with the alive set" fix was *not* taken; residual = document the invariant. See E22 § Resolution | M | M (correctness) | S1.5.3 canonicalisation; T1.5.4.5 alive-inherit |
-| 📅 E23 | Speed up the complete (exhaustive) search | **Re-anchored** from the never-shipped `Mode.PROVE` to `solve()` (P1.7a's complete entry — the actual bottleneck). Open question: is there a way to speed up *exhaustive* search without giving up the uniqueness guarantee? Candidates: learned-clause caching (composes with E7), goal-driven pruning (composes with E11 + [F7 §C rule-set sufficiency](../f7_rule_induction.md)), arc-consistency pre-pass (E14). Uniqueness is a global property; some form of full coverage is required. The design question is which form | L | M (perf) | E7 / E11 / E14 / F7 §C |
-
-### Deductive-layer perf (not a hypothesis-loop item; added 2026-06-15)
-
-**Surfaced by the 2026-06-15 P1.9 review.** P1.8a's profiling established that
-**~95% of a solve is the matcher inside saturation (O1+O2 — the *deductive*
-layer), not search**
+P1.8a's profiling established that **~95% of a solve is the matcher inside
+saturation** (O1+O2 — the *deductive* layer), not search
 ([architecture_and_algorithms.md](../../../docs/kernel/inference/architecture_and_algorithms.md) §7).
-Every P1.9 entry above is a *search-layer* optimisation, so the catalog's
-highest-leverage perf lever has **no home here**. Recorded for visibility (the
-📌 marks these as not standard P1.9 parked entries):
+Every E-entry is a *search-layer* optimisation, so the catalog's
+highest-leverage perf lever has no home here. Recorded so it isn't lost:
 
 | ref | idea | mechanism | effort | value | references |
 |-----|------|-----------|--------|-------|------------|
-| 📌 D1 | RETE **beta-memories** | persist partial joins across firings (the one thing P1.8a's D5 semi-naive join still recomputes); the named next step up the Datalog ladder | M | **H** (perf) | Arch §6 O1 / §7; Forgy *Rete* (1982) |
+| 📌 D1 | RETE **beta-memories** | persist partial joins across firings (the one thing P1.8a's semi-naive join still recomputes); the named next step up the Datalog ladder | M | **H** (perf) | Arch §6 O1 / §7; Forgy *Rete* (1982) |
 | 📌 D2 | Worst-case-optimal join | Leapfrog-Triejoin / Generic-Join — only if cyclic join patterns appear (they don't yet) | L | L (until cyclic) | AGM bound; NPRR (2012) |
 
-These belong to the **performance arc** (P1.8a,
-now closed), not the hypothesis loop — promote into a reopened P1.8a tail or a
-new perf phase when saturation again dominates past the P1.8a gains, *not* into
-P1.9. (Cross-ref: E23 § Re-anchor 2.)
-
-### Rejected / out-of-scope for M1
-
-Listed here for visibility — these would need a fundamental
-scope change to promote, not a measurable activation signal.
-
-| ref | idea | reason |
-|-----|------|--------|
-| ❌ R1 | Soft-constraint / probabilistic weighting | M1 is hard-constraint only; soft constraints are an [M3 SMT](../../m3_smt_integration/) concern |
-| ❌ R2 | Cross-puzzle learning (failed-pattern transfer) | requires session/file persistence; out of scope until M2's NL pipeline gives us a stream of puzzles |
-| ❌ R3 | Parallel branch evaluation         | engineering; M1 is single-threaded; defer to a P1.7+ profiling pass if needed |
-| ❌ R4 | Domain-specific filters (e.g. spatial) | violates the canonical-zebra2 direction — all constraints should live in user rules, not engine hardcode |
-
-## Promotion mechanics
-
-Each entry promotes to a `s1.9.<n>_<title>.md` stage file when
-work starts. Numbering follows the catalog letter — `E6` →
-`s1.9.e6_*.md`, or re-numbered sequentially `s1.9.1_*.md`,
-`s1.9.2_*.md`, …; pick at promotion time and cross-reference the
-original E-id in the new file's header. The catalog row stays
-here as the index entry; the promoted stage file owns the
-detailed spec.
+Promote these into a reopened perf phase when saturation again dominates
+past the P1.8a gains — **not** into this catalog.
 
 ## Activation criteria
 
-P1.9 entries activate on **measurable need**, not on schedule:
+Entries activate on **measurable need**, not on schedule:
 
-- **A user-facing puzzle** (Zebra, M2 NL output, M3 SMT slice)
-  exceeds the current engine's ergonomic time/space envelope and
-  one of the catalog entries is the demonstrable bottleneck.
-- **A regression** from a downstream change re-opens the
-  efficiency hole one of these entries closes.
-- **An empirical study** (P1.7's Zebra acceptance, or a P1.8
-  Theme C measurement) surfaces a specific catalog entry as the
-  highest-leverage next move.
+- a user-facing puzzle (Zebra, M2 NL output, M3 SMT slice) exceeds the
+  engine's ergonomic time/space envelope **and** a catalog entry is the
+  demonstrable bottleneck;
+- a regression from a downstream change re-opens the efficiency hole an
+  entry closes;
+- an empirical study surfaces a specific entry as the highest-leverage
+  next move.
 
-Without one of those signals, P1.9 stays cold.
+Without one of those signals this stays cold.
+
+## Closed
+
+Deleted on 2026-08-17 (P1.22): the entry is settled, so the stub is
+history. Kept as one line each because the *reason* is what stops a
+future reader reopening it.
+
+**Why the whole search/CSP cluster closed.** Re-judged against the
+engine's actual search — a *complete BFS over commitment-set cardinality*
+(Apriori), not a DPLL/DFS decision tree — reorderers are inert (within-layer
+order cannot change Apriori pruning) and, measured on zebra2, even worse
+than lexicographic: LCV ranks the first completer 35th and informativeness
+19th, versus lex's 11th, because completers are pre-fork-indistinguishable
+and dead-post singletons dominate every cascade signal. The space-shrinkers
+went the same way. A complete cardinality-BFS over a connected corpus
+leaves no purchase for any of them.
+
+| ref | idea | outcome (2026-06-15 unless noted) |
+|-----|------|---|
+| E1 | `(functional R)` activator | ✅ resolved by the P1.8 stdlib — `functional`/`injective`/`bijective` ship across `std.algebra`/`std.bijection`/`std.elim`/`std.closure`; `single-parent` retired |
+| E2 | `(at-most-one R slot)` activator | ✅ resolved differently — at-most-one *is* `functional`/`injective` + `std.closure`; no dedicated activator needed |
+| E3 | `:no-hypothesis` query key | ✅ implemented — the exclusion dual of the `:hypothesis-relations` whitelist; blind-enumerator-scoped, saturation untouched |
+| E4 | `(symmetry-class R T)` | ⛔ superseded by the symmetric D/A/B/C decomposition. Residual = *object*-value symmetry (lex-leader SBP/SBDD), L-effort and unexercised |
+| E5 | Static rule-conflict pre-analysis | ⛔ reframed as rule induction ([F7 §C](../f7_rule_induction.md)) — a mutex is a *negative hrule* (zebra2 ships `functional-negative`), so this is companion-rule synthesis, not a hypgen table |
+| E6 | Transitive premise walk | ✅ done — `walk_premises` shipped in `provenance.py`; `store.unsat_core` refactored onto it, parity-verified |
+| E6a | Tree-solver cleanup | ✅ done — `back_prop.py` deleted, behaviour-identical |
+| E7 | Learned clause from unsat-core | ✅ largely resolved — the deriving half ships; the pruning half is **measured vacuous** (all 49 zebra2 deaths are singletons, so nogoods are already Apriori-minimal) *and* unsound under NAF. The remainder was E19, also closed |
+| E8 | Watched-fact rule applicability | ⛔ motivation superseded by P1.8a's delta-driven semi-naive saturation; literal watched-literals judged premature |
+| E9 | Least-constraining-value | ❌ rejected, measured — worst ordering on zebra2 (see cluster note) |
+| E10 | Iterative deepening | ⛔ inapplicable — cardinality layering already *is* breadth-first deepening; there is no DFS depth bound to raise |
+| E11 | Goal-driven hypothesis filter | ❌ rejected (user) — you cannot filter a hypothesis without testing it; unsound. The sound variant is cold on the corpus and changes the `solve()` contract |
+| E12 | Ordering by "informativeness" | ❌ rejected, measured — the discriminating signal is irreducibly post-fork |
+| E13 | Per-hypothesis saturation budget | ❌ dropped (user) — saturation is correctness-critical; a per-fork budget aborts before quiescence, so the fork's verdict is unsound |
+| E14 | Arc-consistency pre-pass | ❌ rejected — subsumed by rule saturation: the engine is append-only (no domains to prune) and the puzzle's elimination rules already derive the negatives AC-3 would |
+| E15 | Path-consistency | ❌ rejected — the k-tuple generalisation of E14; eagerly computes what `_nogoods` already builds lazily and Apriori-minimal |
+| E17 | Engine-level branch budget | ✅ done — `solve(on_budget="verdict")` returns an `Aborted` verdict with partial stats instead of raising (opt-in) |
+| E18 | Rule-applicability pruning | ❌ rejected, measured — drops 0/30 rules on zebra2; generic rules' variable assert-heads can produce any relation, so nothing is provably unreachable |
+| E19 | Unsat-core minimisation | ✅ done — shipped, then renamed `frontier.smallest_contradiction_frontier` (P1.21 R3: minimal only over recorded derivations, not a subset-minimal MUS). Re-saturation deletion-MUS is NAF-unsound and was not shipped. Use-site wired by S1.21.7 |
+| E21 | `solve` vs `prove` mode split | ⛔ superseded by P1.7a — shipped differently: `solve()` is the exhaustive-with-uniqueness side, `solve(stop_after=1)` the fast side. `Mode` is the orthogonal task-class axis |
+| E22 | Alive-hyps in the state hash | ✅ resolved in code — `canon.state_hash` keys on KB facts only; the "extend the hash" fix was deliberately *not* taken |
+| R1 | Soft-constraint / probabilistic weighting | ❌ out of scope — M1 is hard-constraint only; soft constraints are an [M3 SMT](../../m3_smt_integration/) concern |
+| R2 | Cross-puzzle learning | ❌ out of scope until M2's NL pipeline supplies a stream of puzzles (needs session persistence) |
+| R3 | Parallel branch evaluation | ❌ out of scope — engineering; the engine is single-threaded |
+| R4 | Domain-specific filters (e.g. spatial) | ❌ rejected — violates the canonical-zebra2 direction: constraints belong in user rules, not engine hardcode |
 
 ## Cross-links
 
-- S1.5.4
-  — the stage that spawned this catalog; the "Already shipped"
-  / "Planned in S1.5.4" / "Deferred — own stages" sub-catalogs
-  stay there.
-- S1.5.5,
-  S1.5.6,
-  S1.5.7
-  — the *promoted* S1.5.4 follow-ups (those that ship inside M1).
-  P1.9 entries are the ones that didn't promote.
-- P1.8 — sibling
-  placeholder phase; same activation pattern.
-- [F7 rule induction](../f7_rule_induction.md) — the
-  long-term framing that many P1.9 entries (especially E1-E5,
-  E11) are interim workarounds for.
+- M1 S1.5.4 — the stage that spawned this catalog (plans removed at P1.22;
+  see git history). S1.5.5 / S1.5.6 / S1.5.7 were the follow-ups that
+  *did* promote inside M1; these are the ones that didn't.
+- [F7 — rule induction](../f7_rule_induction.md) — the long-term framing
+  several closed entries (E1–E5, E11) were interim workarounds for.
+- [F10 — M1 refactor-debt tail](../f10_m1_refactor_tail/README.md) — the
+  other body relocated out of the M1 plans; that one is structural debt,
+  this one is feature backlog.
 - [docs/lib/02 — solvers / CSP / SAT / SMT](../../../docs/lib/02-solvers-csp-sat-smt.md)
-  — external tech background for E4, E7, E14.
-- [docs/lib/09 — cognitive architectures / neurosymbolic](../../../docs/lib/09-cognitive-architectures-neurosymbolic.md)
-  — ATMS justification-cache framing for E7.
-
-## Open questions
-
-Per-entry questions live alongside the entry's row above as
-references / commentary. Promotion to a stage file is where
-Q-numbered questions get assigned (e.g. `Q-S1.9.E6.A` etc.).
+  and [docs/lib/09 — cognitive architectures](../../../docs/lib/09-cognitive-architectures-neurosymbolic.md)
+  — external background for the closed CSP/CDCL entries.
