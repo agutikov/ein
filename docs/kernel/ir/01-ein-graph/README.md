@@ -7,7 +7,7 @@ this tree describes Ein in graph-theory terms.
 
 - [`01_kb.md`](01_kb.md) — Knowledge base. The five node kinds
   (object, type, relation, rule, fact); the two equivalent views
-  (compact + Levi-bipartite); the three layers (ontology / fact /
+  (compact + Levi-bipartite); a fact's origin (background / given /
   reasoning); provenance, hypothesis branches, equality classes,
   open-class node kinds.
 - [`02_rules.md`](02_rules.md) — Graph rewriting rules. Anatomy of a
@@ -26,7 +26,7 @@ this tree describes Ein in graph-theory terms.
   detailed Levi-bipartite graph.
 - [`05_four_level_kb.md`](05_four_level_kb.md) — The four-level KB
   (L0 objects / L1 facts / L2 relations / L3 rules) and the
-  *consumes* stack; how the levels differ from the three layers.
+  *consumes* stack; how the levels differ from a fact's origin.
 
 ## Reading order
 

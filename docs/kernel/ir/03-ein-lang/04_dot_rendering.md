@@ -225,9 +225,9 @@ single-form AST), it produces a **unified graph** where node
 identity is fused across forms — `Norwegian` (instance) appears
 **once** and participates in:
 
-- its `is-a` edge to `Nationality` (ontology layer),
-- its `(co-located Norwegian House-1)` fact edge (fact layer),
-- any derived edges that mention it (reasoning layer).
+- its `is-a` edge to `Nationality` (background),
+- its `(co-located Norwegian House-1)` fact edge (a given),
+- any derived edges that mention it.
 
 This is the 2021 prototype's *linked.svg* aesthetic — all the entity
 types on one canvas, related by labelled arrows, coloured by relation. See
@@ -245,11 +245,11 @@ for the design plan; the implementation is
 | n-ary `Fact` (arity ≠ 2)            | `shape=octagon` Levi node + n slot-edges       |
 | Instance-of (type-edge)             | `style=dashed, arrowhead=empty, label="is-a"`  |
 | `is-a` fact (zebra2 encoding)       | same as instance-of (dashed empty arrow)        |
-| ONTOLOGY-layer fact                 | `style=solid`, plain                            |
-| FACT-layer fact                     | `style=solid`, label includes `(N)` short source id |
-| REASONING-layer fact                | `style=dashed`, label includes `by <rule-name>` |
+| background fact (no annotation)     | `style=solid`, plain                            |
+| given fact (`:source`)              | `style=solid`, label includes `(N)` short source id |
+| derived fact (`:rule` / hypothesis) | `style=dashed`, label includes `by <rule-name>` |
 | per-relation colour (default)       | SHA1(`rel.name`) mod palette                    |
-| per-layer colour (opt-in)           | ontology grey, fact black, reasoning blue       |
+| per-origin colour (opt-in)          | background grey, given black, derived blue      |
 
 **Suppressed by default**:
 
@@ -287,7 +287,7 @@ digraph zebra_unified_fragment {
   "Nationality" -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
   "House"       -> "Attribute" [style=dashed, arrowhead=empty, label="is-a"];
 
-  // fact-layer edges (note short-source id "(10)" + per-relation colour)
+  // given-fact edges (note short-source id "(10)" + per-relation colour)
   "Norwegian" -> "House-1" [
     label="co-located (10)",
     color="#1f77b4", fontcolor="#1f77b4",
@@ -299,7 +299,7 @@ digraph zebra_unified_fragment {
 (The actual `co-located` colour is whatever
 ``SHA1("co-located") mod palette`` picks — stable across runs.)
 
-A reasoning-layer derivation `(co-located Japanese Zebra :rule
+A derivation `(co-located Japanese Zebra :rule
 forced-by-unique-position)` would render as a dashed edge:
 
 ```dot
@@ -317,18 +317,17 @@ digraph reasoning_edge_example {
 ### From Python
 
 The `kb dot` CLI subcommand was removed; render the unified KB graph via
-`KnowledgeBase.to_dot` (the same renderer), which takes `layers=`,
+`KnowledgeBase.to_dot` (the same renderer), which takes
 `colour_by=`, `include_instances=`, … as keyword arguments:
 
 ```python
 from pathlib import Path
 from ein.ir import parse
-from ein.kb import KnowledgeBase, Layer
+from ein.kb import KnowledgeBase
 p = Path("examples/zebra2.ein")
 kb = KnowledgeBase.from_ir(parse(p.read_text()), base_dir=p.parent)
-print(kb.to_dot())                                   # all layers
-print(kb.to_dot(layers=(Layer.ONTOLOGY, Layer.FACT)))  # no reasoning
-print(kb.to_dot(colour_by="layer"))                  # 3 layer colours
+print(kb.to_dot())                     # every fact
+print(kb.to_dot(colour_by="origin"))   # background / given / derived colours
 print(kb.to_dot(include_instances=False))            # types-only
 ```
 
@@ -353,7 +352,7 @@ as ordinary coloured arrows, like every other relation it declares.
 ### 2021-prototype comparison (T1.2.4.5 — deferred)
 
 The 2021 prototype's *linked.svg* is the visual target. A
-checklist of deliberate divergences (new reasoning-layer dashed
+checklist of deliberate divergences (new derived-fact dashed
 styling, per-relation colour-palette change) lands when the
 renderer's output is reviewed visually.
 
@@ -371,7 +370,7 @@ does not embed the whole KB per step — it embeds a **provenance cone**:
   `DeadCommitment`'s `contradiction=(unsat_core, learned_clause)` it
   becomes the refuted-branch slice terminating in a `⊥` node tagged
   with the lifted no-good.
-- `render_state(kb, *, layer_filter=, since=)` — the whole-KB snapshot
+- `render_state(kb, *, since=)` — the whole-KB snapshot
   (the §Unified KB view), flag-gated in the trace behind
   `--full-kb-snapshots`. `since=<kb_before>` thickens (`penwidth=3`) the
   facts a step added — the transition highlight.

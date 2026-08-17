@@ -56,7 +56,7 @@ _DECLARED_ONLY = """
 (relation seed   T T)
 (relation target T T)
 (relation out    T T)
-(seed A B :layer fact)
+(seed A B)
 """
 
 _DERIVED = """
@@ -70,7 +70,7 @@ _DERIVED = """
 (relation target T T)
 (relation out    T T)
 (relation src    T T)
-(seed A B :layer fact)
+(seed A B)
 """
 
 
@@ -97,7 +97,7 @@ _NEG_DECLARED_ONLY = """
 (relation seed   T T)
 (relation target T T)
 (relation out    T T)
-(seed A B :layer fact)
+(seed A B)
 """
 
 _NEG_DERIVED = """
@@ -111,7 +111,7 @@ _NEG_DERIVED = """
 (relation target T T)
 (relation out    T T)
 (relation src    T T)
-(seed A B :layer fact)
+(seed A B)
 """
 
 

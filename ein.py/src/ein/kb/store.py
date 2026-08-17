@@ -32,7 +32,6 @@ from typing import TYPE_CHECKING
 from .entities import (
     KERNEL_META_RELATIONS,
     Fact,
-    Layer,
     NameRef,
     Relation,
     Rule,
@@ -143,7 +142,7 @@ class KnowledgeBase:
         # after `load()`. Kept on the KB as an inspectable record (and
         # shared by reference across forks like the other registries).
         self.macros: dict[str, Macro] = {}
-        # Facts list (layer is a field on each Fact).
+        # Facts list (origin is on each Fact's `provenance`).
         self.facts: list[Fact] = []
         # Query (optional, only when the IR carries a `(query …)`).
         self.query: Query | None = None
@@ -305,13 +304,12 @@ class KnowledgeBase:
     def add_fact(self, fact: Fact) -> Fact:
         """Append a Fact; dedupe is by ``(relation_name, args)``.
 
-        Layer is excluded from identity — a single proposition lives
-        only once in the KB, and `layer` records its origin (ontology /
-        fact / reasoning). If a fact arrives twice with different
-        layers, the *first* occurrence wins; this preserves the most
-        primitive declaration. Duplicate-only-by-source/by-rule are
-        collapsed; provenance details (S1.2.3) attach to the canonical
-        Fact.
+        Provenance is excluded from identity — a single proposition
+        lives only once in the KB, and `provenance` records where it
+        came from. If a fact arrives twice with different provenance the
+        *first* occurrence wins; this preserves the most primitive
+        declaration. Duplicate-only-by-source/by-rule are collapsed;
+        provenance details (S1.2.3) attach to the canonical Fact.
         """
         _attach(fact, self)
         for existing in self.facts:
@@ -322,13 +320,13 @@ class KnowledgeBase:
         return fact
 
     def add_and_index_fact(self, fact: Fact) -> Fact:
-        """Reasoning-layer add: dedup against the live indexes and, on a
+        """Saturation-time add: dedup against the live indexes and, on a
         genuinely-new fact, append it *and* update the incremental indexes.
 
         The saturation hot path. Unlike :meth:`add_fact` — the loader's
         index-free append that dedups by scanning :attr:`facts` before
         :meth:`rebuild_indexes` runs — this dedups with the O(deg)
-        :meth:`_fact_by_id` lookup (the reasoning layer keeps
+        :meth:`_fact_by_id` lookup (saturation keeps
         ``_facts_by_relation`` current) and returns a pre-existing fact
         **without** re-indexing it. So a fact re-derived by a second rule
         lands in the indexes exactly once, rather than the ``add_fact`` +
@@ -480,7 +478,7 @@ class KnowledgeBase:
 
         Cheap enough on Zebra-scale (single-digit milliseconds);
         called once after batch ingest. Incremental maintenance for
-        single-fact additions in the reasoning layer is provided by
+        single-fact additions during saturation is provided by
         :meth:`_index_fact` so a saturation loop need not rebuild.
 
         No type / instance derivation: every fact is indexed the same
@@ -599,7 +597,7 @@ class KnowledgeBase:
     def _index_fact(self, fact: Fact) -> None:
         """Incrementally append a single fact to the reverse indexes.
 
-        Used by the reasoning layer (P1.3 / P1.5) so a saturation step
+        Used by the engine (P1.3 / P1.5) so a saturation step
         needn't call :meth:`rebuild_indexes`. Writes are **in place**:
         :meth:`fork` and :meth:`snapshot` give every kb its own index
         dicts (no kb aliases another's — every assignment is a fresh
@@ -674,33 +672,17 @@ class KnowledgeBase:
 
     # ── Convenience accessors ─────────────────────────────────────
 
-    def facts_in_layer(self, layer: Layer) -> tuple[Fact, ...]:
-        """All facts in a given layer."""
-        return tuple(f for f in self.facts if f.layer == layer)
+    # ── Fact view — S1.2.2 T1.2.2.2 ───────────────────────────────
 
-    # ── Layer views — S1.2.2 T1.2.2.2 ─────────────────────────────
+    def all_facts(self) -> FactView:
+        """Read-only filtered window over every fact.
 
-    def ontology(self) -> FactView:
-        """Read-only view of `ONTOLOGY`-layer facts."""
-        from .views import FactView
-        return FactView(self.facts_in_layer(Layer.ONTOLOGY), self, "ontology")
-
-    def fact_layer(self) -> FactView:
-        """Read-only view of `FACT`-layer facts.
-
-        Named `fact_layer` (not `facts`) to avoid collision with the
-        registry attribute :attr:`facts`.
+        S1.22.1b: the three layer-scoped siblings (`ontology()` /
+        `fact_layer()` / `reasoning()`) went with the `Layer` enum. They
+        had no caller in the engine, and :class:`FactView`'s
+        ``by_source`` / ``by_rule`` filters already express what they
+        selected — over the provenance itself rather than a copy of it.
         """
-        from .views import FactView
-        return FactView(self.facts_in_layer(Layer.FACT), self, "fact")
-
-    def reasoning(self) -> FactView:
-        """Read-only view of `REASONING`-layer facts."""
-        from .views import FactView
-        return FactView(self.facts_in_layer(Layer.REASONING), self, "reasoning")
-
-    def all_layers(self) -> FactView:
-        """Read-only view of every fact across layers."""
         from .views import FactView
         return FactView(tuple(self.facts), self, "all")
 
@@ -746,7 +728,7 @@ class KnowledgeBase:
         """Render the KB as a unified Graphviz ``digraph`` string.
 
         Delegates to :func:`ein.kb.render.to_dot`. Keyword args
-        forwarded — see that function for ``layers`` / ``colour_by`` /
+        forwarded — see that function for ``colour_by`` /
         ``include_types`` / ``include_instances`` / ``name``.
         """
         from .render import to_dot
@@ -805,14 +787,14 @@ class KnowledgeBase:
         Shares the immutable populations (`relations`, `rules`,
         `hrules`, `query`) **by reference**. The :attr:`facts` list and
         the reverse indexes are shallow-copied so the fork can append
-        :class:`Layer.REASONING` facts and rebuild its own incremental
-        indexes without leaking into the parent.
+        derived facts and rebuild its own incremental indexes without
+        leaking into the parent.
 
         Caveat about entity back-pointers: shared entities keep their
         ``_kb`` pointing at the **original** KB. This means a shared
         ``Relation``'s ``.facts`` returns the original KB's facts, NOT
         the fork's view. For fork-scoped queries use
-        ``fork.all_layers().about(name)`` or the explicit indexes on the
+        ``fork.all_facts().about(name)`` or the explicit indexes on the
         fork (``fork._facts_by_relation[name]``). This
         is intentional: hypothesis branches rarely introduce new
         entities, only new derived facts; the entity API tells you

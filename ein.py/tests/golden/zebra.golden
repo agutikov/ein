@@ -162,13 +162,13 @@
 
 (instance Water Drink)
 
-(right-of House-2 House-1 :source "condition (1)" :layer ontology)
+(right-of House-2 House-1 :source "condition (1)")
 
-(right-of House-3 House-2 :source "condition (1)" :layer ontology)
+(right-of House-3 House-2 :source "condition (1)")
 
-(right-of House-4 House-3 :source "condition (1)" :layer ontology)
+(right-of House-4 House-3 :source "condition (1)")
 
-(right-of House-5 House-4 :source "condition (1)" :layer ontology)
+(right-of House-5 House-4 :source "condition (1)")
 
 (co-located Englishman Red :source "condition (2)")
 

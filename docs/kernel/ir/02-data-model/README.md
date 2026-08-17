@@ -3,19 +3,19 @@
 How the graph from [`../01-ein-graph/`](../01-ein-graph/) is held in
 memory: frozen dataclasses for the entity kinds, the
 `KnowledgeBase` store that owns them, the reverse indexes that make
-cross-references O(1), the layer views, the hypothesis-fork mechanic,
+cross-references O(1), the fact view, the hypothesis-fork mechanic,
 and the provenance + derivation-DAG machinery.
 
 ## Files
 
 - [`01_entities.md`](01_entities.md) — the entity dataclasses
   (`Relation`, `Rule`, `Fact` + the `NameRef` index) plus `Pattern`,
-  `Provenance`, and `Layer`. Identity rules. Cross-reference
+  and `Provenance`. Identity rules. Cross-reference
   accessors. Pattern's structural-only view of `:match` / `:assert`.
   (S1.7.23 — no `Type` / `Instance` classes; the kernel imposes no
   type system.)
 - [`02_store.md`](02_store.md) — `KnowledgeBase` registries + reverse
-  indexes; the IR loader; layer views (`FactView`); `kb.fork()` for
+  indexes; the IR loader; the fact view (`FactView`); `kb.fork()` for
   hypothesis branches; `derivation_dag` / `unsat_core`; equality
   classes placeholder.
 - [`03_python_impl.md`](03_python_impl.md) — the code-level companion

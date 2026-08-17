@@ -33,7 +33,7 @@ from ein.ir import parse
 from ein.ir.to_dot import render_query, render_trace, to_dot
 from ein.ir.types import Atom, SForm
 from ein.kb import KnowledgeBase, Provenance
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.render import (
     render_constraints,
     render_rule,
@@ -69,7 +69,7 @@ def _prov_dag_dot() -> str:
         '(p a b :source "(1)")\n(p b c :source "(2)")\n'
     )
     derived = Fact(
-        relation_name="q", args=("a", "c"), layer=Layer.REASONING,
+        relation_name="q", args=("a", "c"),
         provenance=Provenance.from_rule(
             rule="triangle",
             premises_raw=(("p", ("a", "b")), ("p", ("b", "c"))),
@@ -82,8 +82,8 @@ def _prov_dag_dot() -> str:
 
 # Slice cone: hypothesis co-located(Blue, H3) + 3 firings (mirrors the
 # proven recipe in test_slice_dot.py — inlined to stay self-contained).
-def _f(rel: str, *args: object, layer: Layer = Layer.REASONING) -> Fact:
-    return Fact(relation_name=rel, args=tuple(args), layer=layer)
+def _f(rel: str, *args: object) -> Fact:
+    return Fact(relation_name=rel, args=tuple(args))
 
 
 def _firing(rule: str, premises: tuple[Fact, ...], derived: Fact) -> Firing:
@@ -91,7 +91,7 @@ def _firing(rule: str, premises: tuple[Fact, ...], derived: Fact) -> Firing:
                   premises=premises, redundant=False)
 
 
-_SEED = _f("co-located", "Blue", "H3", layer=Layer.FACT)
+_SEED = _f("co-located", "Blue", "H3")
 _NEG_RED = _f("not", _f("co-located", "Red", "H3"))
 _NEG_GREEN = _f("not", _f("co-located", "Green", "H3"))
 _SLICE_COMMITMENT = (("co-located", ("Blue", "H3")),)

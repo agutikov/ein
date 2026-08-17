@@ -101,16 +101,20 @@ A fact can record where it came from, which shows up in explanations:
 (nation-loc Norwegian House-1 :source "condition (10)")
 ```
 
-## Three layers of fact
+## Three kinds of fact
 
-Ein sorts facts into three populations (you rarely set this by hand — the
-loader infers it):
+Facts fall into three groups. You never declare which — the annotation
+you write (or don't) says it:
 
-| layer | what it holds |
-|-------|---------------|
-| **ontology** | background setup: the `(relation …)` schema, the `is-a` type tree |
-| **fact** | the puzzle's stated clues (each `:source "(N)"`) |
-| **reasoning** | everything Ein *derives* — the subject of the next chapters |
+| annotation | what it holds |
+|------------|---------------|
+| *none* | background setup: the `(relation …)` schema, the `is-a` type tree |
+| `:source "(N)"` | the puzzle's stated clues |
+| `:rule` / `:using` | everything Ein *derives* — the subject of the next chapters, and Ein writes these itself |
+
+The grouping is for *you*, not the engine: Ein reasons over every fact
+the same way, so a clue and a derivation contradict each other exactly as
+readily as two derivations do.
 
 That's the whole vocabulary. Put together, a tiny model reads:
 

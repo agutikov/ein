@@ -9,7 +9,7 @@ from ein.inference.contradiction import (
 )
 from ein.inference.saturator import Saturator
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -84,14 +84,11 @@ def test_same_layer_conflict_in_reasoning():
     positive = _put(kb, Fact(
         relation_name="r",
         args=("A", "B"),
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(rule="some-rule"),
     ))
     negative = _put(kb, Fact(
         relation_name="not",
-        args=(Fact(relation_name="r", args=("A", "B"),
-                   layer=Layer.REASONING),),
-        layer=Layer.REASONING,
+        args=(Fact(relation_name="r", args=("A", "B")),),
         provenance=Provenance.from_rule(rule="type-exclusivity"),
     ))
 
@@ -185,13 +182,12 @@ def test_multi_contradiction_kb():
     kb = _kb('(relation r T T)')
     for a, b in [("A", "B"), ("C", "D"), ("E", "F")]:
         _put(kb, Fact(
-            relation_name="r", args=(a, b), layer=Layer.REASONING,
+            relation_name="r", args=(a, b),
             provenance=Provenance.from_rule(rule="r1"),
         ))
         _put(kb, Fact(
             relation_name="not",
-            args=(Fact(relation_name="r", args=(a, b), layer=Layer.REASONING),),
-            layer=Layer.REASONING,
+            args=(Fact(relation_name="r", args=(a, b)),),
             provenance=Provenance.from_rule(rule="r2"),
         ))
 
@@ -216,13 +212,11 @@ def test_nested_inner_fact():
     kb = _kb('(relation hypothesis T) (relation co-located T T)')
     inner_inner = Fact(
         relation_name="co-located", args=("Norwegian", "House-2"),
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(rule="hyp"),
     )
     positive = _put(kb, Fact(
         relation_name="hypothesis",
         args=(inner_inner,),
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(rule="hyp"),
     ))
     negative = _put(kb, Fact(
@@ -230,11 +224,8 @@ def test_nested_inner_fact():
         args=(Fact(
             relation_name="hypothesis",
             args=(Fact(relation_name="co-located",
-                       args=("Norwegian", "House-2"),
-                       layer=Layer.REASONING),),
-            layer=Layer.REASONING,
+                       args=("Norwegian", "House-2")),),
         ),),
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(rule="rebuttal"),
     ))
 
@@ -251,12 +242,10 @@ def test_saturator_contradictions_helper():
     """Saturator.contradictions() delegates to ContradictionDetector."""
     kb = _kb('(relation r T T)')
     _put(kb, Fact(relation_name="r", args=("A", "B"),
-                  layer=Layer.REASONING,
                   provenance=Provenance.from_rule(rule="r1")))
     _put(kb, Fact(
         relation_name="not",
-        args=(Fact(relation_name="r", args=("A", "B"), layer=Layer.REASONING),),
-        layer=Layer.REASONING,
+        args=(Fact(relation_name="r", args=("A", "B")),),
         provenance=Provenance.from_rule(rule="r2"),
     ))
 
@@ -281,18 +270,17 @@ def test_zebra_clean_state_no_contradictions():
 
 
 def test_zebra_injected_conflict_caught():
-    """Inject a REASONING-layer positive that conflicts with a
+    """Inject a hypothesised positive that conflicts with a
     type-exclusivity derivation. The detector catches it after
     saturation."""
     kb = KnowledgeBase.from_ir(parse(ZEBRA.read_text()))
     sat = Saturator(kb)
     list(sat.saturate())
-    # type-exclusivity derives (not (co-located Norwegian Spaniard))
-    # in REASONING. Inject the positive in the same layer.
+    # type-exclusivity derives (not (co-located Norwegian Spaniard)).
+    # Inject the matching positive as a hypothesis.
     _put(kb, Fact(
         relation_name="co-located",
         args=("Norwegian", "Spaniard"),
-        layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=1),
     ))
     pairs = sat.contradictions()
@@ -314,7 +302,7 @@ def test_direct_false_fact_is_contradiction():
     returns the negative for unsat-core walks."""
     kb = _kb('(relation r T T)')
     false_fact = _put(kb, Fact(
-        relation_name="false", args=(), layer=Layer.REASONING,
+        relation_name="false", args=(),
         provenance=Provenance.from_rule(rule="functional"),
     ))
 
@@ -334,18 +322,16 @@ def test_direct_false_and_pair_coexist():
     Contradictions, one of each kind."""
     kb = _kb('(relation r T T)')
     positive = _put(kb, Fact(
-        relation_name="r", args=("A", "B"), layer=Layer.REASONING,
+        relation_name="r", args=("A", "B"),
         provenance=Provenance.from_hypothesis(branch=1),
     ))
     negative = _put(kb, Fact(
         relation_name="not",
-        args=(Fact(relation_name="r", args=("A", "B"),
-                   layer=Layer.REASONING),),
-        layer=Layer.REASONING,
+        args=(Fact(relation_name="r", args=("A", "B")),),
         provenance=Provenance.from_rule(rule="sibling-exclusive"),
     ))
     false_fact = _put(kb, Fact(
-        relation_name="false", args=(), layer=Layer.REASONING,
+        relation_name="false", args=(),
         provenance=Provenance.from_rule(rule="functional"),
     ))
 
@@ -365,14 +351,12 @@ def test_pair_kind_defaults_to_pair():
     behaviour change for unaware callers."""
     kb = _kb('(relation r T T)')
     _put(kb, Fact(
-        relation_name="r", args=("A", "B"), layer=Layer.REASONING,
+        relation_name="r", args=("A", "B"),
         provenance=Provenance.from_hypothesis(branch=1),
     ))
     _put(kb, Fact(
         relation_name="not",
-        args=(Fact(relation_name="r", args=("A", "B"),
-                   layer=Layer.REASONING),),
-        layer=Layer.REASONING,
+        args=(Fact(relation_name="r", args=("A", "B")),),
         provenance=Provenance.from_rule(rule="type-exclusivity"),
     ))
     cs = ContradictionDetector(kb).detect()

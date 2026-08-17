@@ -26,7 +26,7 @@ needs guessing would be mis-closed; revisit if one appears.
 """
 from __future__ import annotations
 
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.store import KnowledgeBase
 
 from .compile import asserted_relation
@@ -85,7 +85,7 @@ def emit_closed(kb: KnowledgeBase) -> list[str]:
             continue
         if name in producible or name in already:
             continue
-        fact = Fact(relation_name=CLOSED, args=(name,), layer=Layer.ONTOLOGY)
+        fact = Fact(relation_name=CLOSED, args=(name,))
         kb.add_and_index_fact(fact)
         newly.append(name)
     return newly

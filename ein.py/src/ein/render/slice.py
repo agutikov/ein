@@ -190,23 +190,17 @@ def render_slice(
 def render_state(
     kb: KnowledgeBase,
     *,
-    layer_filter: Iterable | None = None,
     since: KnowledgeBase | None = None,
     name: str = "state",
 ) -> str:
     """The complete KB graph at a moment (flag-gated `--full-kb-snapshots`).
 
-    Delegates to the unified KB renderer. ``layer_filter`` selects a
-    layer subset (e.g. fact-layer only); ``since`` thickens the facts
-    absent from that prior KB ("this step added E").
+    Delegates to the unified KB renderer. ``since`` thickens the facts
+    absent from that prior KB ("this step added E"). The `layer_filter`
+    parameter went with the `Layer` enum (S1.22.1b); it had no caller.
     """
-    from ..kb.entities import Layer
     from ..kb.render import to_dot
-    layers = (
-        tuple(layer_filter) if layer_filter is not None
-        else (Layer.ONTOLOGY, Layer.FACT, Layer.REASONING)
-    )
-    return to_dot(kb, layers=layers, since=since, name=name)
+    return to_dot(kb, since=since, name=name)
 
 
 def render_solution(kb: KnowledgeBase, *, name: str = "solution") -> str:

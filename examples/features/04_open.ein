@@ -27,7 +27,7 @@
 ;;; `(house-color ?h ?c)` ONLY for House-Color pairs still in
 ;;; the open state.
 
-;; Demonstration rule — fires reasoning-layer candidate facts.
+;; Demonstration rule — derives candidate facts.
 ;; In real puzzles this'd be an `hrule` (hypothesis rule); for
 ;; the demo we use `rule` so the firings land in (reasoning).
 ;; stdlib pattern-macro sugar — forall/open from the std.macro module (S1.8.A5).
@@ -50,15 +50,15 @@
 (is-a Yellow  Color)  (is-a Red     Color)  (is-a Blue    Color)
 
 ;; House-1's color is COMMITTED positive — Yellow.
-(house-color House-1 Yellow :layer fact)
+(house-color House-1 Yellow)
 
 ;; House-2's color is COMMITTED negative — NOT Red.
 ;; (the other two — Yellow/Blue — remain open for House-2.)
-(not (house-color House-2 Red) :layer fact)
+(not (house-color House-2 Red))
 
 ;; House-3 has no commitments — all three colors open.
 
-;; Expected reasoning-layer output:
+;; Expected derived output:
 ;;
 ;;   House-1 — no firings (Yellow asserted, others not negated
 ;;            but the rule only fires on `open` which requires

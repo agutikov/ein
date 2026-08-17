@@ -7,7 +7,7 @@ engine on the demo's KB produces at least one firing whose `:rule`
 field matches the directory name.
 
 Deviation from S1.3.2 spec: the spec asks for "exactly one new
-reasoning-layer fact". In practice, some rules legitimately fire
+derived fact". In practice, some rules legitimately fire
 more than once on minimal inputs:
 
 - `symmetric` matches its own conclusion (rule re-fires once over
@@ -95,19 +95,17 @@ def test_demo_has_query_block(path: Path):
 @pytest.mark.parametrize("path", DEMO_PATHS, ids=_demo_id)
 def test_demo_derived_fact_lands_in_reasoning(path: Path):
     """At least one of the named rule's firings must produce a new
-    REASONING-layer fact.
+    derived fact.
 
     Some rules legitimately re-fire on their own output: `symmetric`
     matches (rel A B), derives (rel B A), then matches (rel B A) and
-    tries to derive (rel A B) — which already exists in the FACT
-    layer, so add_fact's dedupe returns the FACT-layer instance. The
-    *first* firing lands in REASONING; subsequent firings may bounce
-    back to FACT via dedupe. Either way, the rule is doing useful
-    work; this test just confirms at least one REASONING-layer
-    derivation exists.
+    tries to derive (rel A B) — which is already an authored fact, so
+    add_fact's dedupe returns the authored instance (keeping its
+    provenance). The *first* firing produces a rule-derived fact;
+    subsequent firings may bounce back to the authored one. Either way
+    the rule is doing useful work; this test just confirms at least one
+    genuine derivation exists.
     """
-    from ein.kb.entities import Layer
-
     rule_name = path.parent.name
     kb = KnowledgeBase.from_ir(parse(path.read_text()))
     eng = Engine(kb)
@@ -115,9 +113,9 @@ def test_demo_derived_fact_lands_in_reasoning(path: Path):
     firings = list(eng.saturate())
     matched = [f for f in firings if f.rule == rule_name]
     assert matched
-    reasoning_firings = [f for f in matched if f.derived[0].layer == Layer.REASONING]
-    assert reasoning_firings, (
-        f"{_demo_id(path)}: rule fired but no firing produced a "
-        f"REASONING-layer fact. Layers seen: "
-        f"{[f.derived[0].layer.value for f in matched]}"
+    derived_firings = [f for f in matched if f.derived[0].is_derived]
+    assert derived_firings, (
+        f"{_demo_id(path)}: rule fired but no firing produced a derived "
+        f"fact. Provenance kinds seen: "
+        f"{[getattr(f.derived[0].provenance, 'kind', None) for f in matched]}"
     )

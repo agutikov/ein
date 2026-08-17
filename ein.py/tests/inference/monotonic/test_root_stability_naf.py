@@ -32,7 +32,7 @@ from ein.inference.commitment import try_commitment_set
 from ein.inference.config import SolverConfig
 from ein.inference.monotonic import solve
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -113,7 +113,6 @@ def test_simulated_merge_refutes_the_consistent_x_world():
     kb.add_and_index_fact(Fact(
         relation_name="y",
         args=("s",),
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(
             rule="<retired-merge-simulation>", premises_raw=(),
         ),

@@ -39,7 +39,7 @@ from ein.inference.monotonic.solver import (
 )
 from ein.inference.verdict import Ambiguity
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -177,7 +177,6 @@ def test_solution_record_kb_isolated_from_root_mutation():
     extra = Fact(
         relation_name="post-return-marker",
         args=("x",),
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(rule="<test>"),
     )
     kb.add_fact(extra)

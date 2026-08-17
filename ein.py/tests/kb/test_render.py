@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from ein.ir import parse
-from ein.kb import Fact, KnowledgeBase, Layer, Provenance, to_dot
+from ein.kb import Fact, KnowledgeBase, Provenance, to_dot
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 GOLDEN_DIR = REPO_ROOT / "ein.py" / "tests" / "golden"
@@ -86,7 +86,7 @@ class TestShapeMapping:
 
 class TestNoDuplication:
     def test_norwegian_appears_exactly_once(self, zebra2_kb):
-        # The gvpack regression: a name in ontology AND fact-layer
+        # The gvpack regression: a name in a background AND a given
         # facts must NOT duplicate in the unified view.
         dot = zebra2_kb.to_dot()
         norwegian_nodes = _nodes_named(dot, "Norwegian")
@@ -126,32 +126,9 @@ class TestFusion:
         assert "(10)" in coloc_edges[0]
 
 
-# ═══════════════════════ Layer filtering ═══════════════════════════
-
-
-class TestLayerFilter:
-    def test_ontology_only_has_fewer_edges_than_full(self, zebra_kb):
-        dot_full = zebra_kb.to_dot()
-        dot_ont = zebra_kb.to_dot(layers=(Layer.ONTOLOGY,))
-        # Ontology-only renders type-edges + ontology-layer facts (the
-        # spatial right-of pairs); the full view also includes the 14
-        # fact-layer condition edges. So ontology-only is strictly
-        # smaller.
-        assert len(_edges(dot_ont)) < len(_edges(dot_full))
-
-    def test_reasoning_only_starts_empty(self, zebra_kb):
-        dot = zebra_kb.to_dot(layers=(Layer.REASONING,))
-        # No reasoning-layer facts exist yet (engine hasn't run).
-        edges_from_facts = [
-            line for line in _edges(dot)
-            if "co-located" in line or "right-of" in line or "next-to" in line
-        ]
-        assert edges_from_facts == []
-
-    def test_no_type_edges_when_ontology_excluded(self, zebra_kb):
-        dot = zebra_kb.to_dot(layers=(Layer.FACT,))
-        is_a_edges = [line for line in _edges(dot) if "is-a" in line]
-        assert is_a_edges == []
+# S1.22.1b — the `TestLayerFilter` class was DELETED with `to_dot`'s
+# `layers=` parameter, which selected a subset of the removed `Layer`
+# enum. It had no caller outside these tests.
 
 
 # ═══════════════════════ Colour stability ══════════════════════════
@@ -179,8 +156,8 @@ class TestColourStability:
         assert colour_for_rel(dot1, "right-of") == colour_for_rel(dot2, "right-of")
         assert colour_for_rel(dot1, "co-located") != colour_for_rel(dot1, "right-of")
 
-    def test_colour_by_layer_overrides_relation_colour(self, zebra_kb):
-        dot = zebra_kb.to_dot(colour_by="layer")
+    def test_colour_by_origin_overrides_relation_colour(self, zebra_kb):
+        dot = zebra_kb.to_dot(colour_by="origin")
         for line in _edges(dot):
             if 'color="' in line:
                 m = re.search(r'color="(#[0-9A-Fa-f]{6})"', line)
@@ -188,15 +165,14 @@ class TestColourStability:
                     assert m.group(1) in ("#444444", "#000000", "#1f77b4")
 
 
-# ═══════════════════════ Reasoning-layer styling ═══════════════════
+# ═══════════════════════ Derived-fact styling ══════════════════════
 
 
-class TestReasoningStyling:
+class TestDerivedStyling:
     def test_derived_fact_renders_dashed_with_rule_label(self, zebra_kb):
         derived = Fact(
             relation_name="co-located",
             args=("Japanese", "Zebra"),
-            layer=Layer.REASONING,
             provenance=Provenance.from_rule(
                 rule="forced-by-unique-position",
                 premises_raw=(),
@@ -289,18 +265,6 @@ class TestDotParseRoundTrip:
         assert "<svg" in result.stdout
         assert "<ellipse" in result.stdout
         assert ">Norwegian</" in result.stdout
-
-    def test_zebra_layer_filter_yields_smaller_svg(self, zebra_kb):
-        dot_all = zebra_kb.to_dot()
-        dot_ont = zebra_kb.to_dot(layers=(Layer.ONTOLOGY,))
-        s_all = subprocess.run(
-            ["dot", "-Tsvg"], input=dot_all, capture_output=True, text=True,
-        ).stdout
-        s_ont = subprocess.run(
-            ["dot", "-Tsvg"], input=dot_ont, capture_output=True, text=True,
-        ).stdout
-        assert len(s_ont) < len(s_all)
-
 
 # ═══════════════════════ Visual regression (golden file) ═══════════
 

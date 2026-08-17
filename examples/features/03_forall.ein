@@ -37,15 +37,15 @@
 (relation beats  T T)
 (relation undefeated T)
 
-(player Alice :layer fact)
-(player Bob :layer fact)
-(player Carol :layer fact)
+(player Alice)
+(player Bob)
+(player Carol)
 
-(beats Alice Bob :layer fact)
-(beats Alice Carol :layer fact)
-(beats Carol Alice :layer fact)
+(beats Alice Bob)
+(beats Alice Carol)
+(beats Carol Alice)
 
-;; Expected reasoning-layer output (after saturation):
+;; Expected derived output (after saturation):
 ;;
 ;;   (undefeated Alice)   ; Alice beats both other players
 ;;

@@ -15,7 +15,7 @@ from ein.inference.commitment import (
 )
 from ein.inference.saturator import Saturator
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -71,7 +71,7 @@ def test_alive_one_element_conditional_derivation():
 
 
 def test_dead_pre_root_carries_negation_of_committed_hypothesis():
-    """If the root kb already has a REASONING-layer
+    """If the root kb already has a derived
     `(not (target c d))` (e.g., from a previous back-prop write
     that landed on root), committing `(target c d)` must trigger
     a pre-saturation contradiction.
@@ -81,15 +81,13 @@ def test_dead_pre_root_carries_negation_of_committed_hypothesis():
     (is-a c T) (is-a d T)
     
     """)
-    # Seed REASONING-layer (not (target c d)) — pattern from
+    # Seed a derived (not (target c d)) — pattern from
     # test_contradiction.test_pair_kind_defaults_to_pair.
     _put(kb, Fact(
         relation_name="not",
         args=(Fact(
             relation_name="target", args=("c", "d"),
-            layer=Layer.REASONING,
         ),),
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(rule="prior-back-prop"),
     ))
 

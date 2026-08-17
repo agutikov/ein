@@ -178,7 +178,7 @@ on which bindings, in the context of each tested hypothesis.
 > positive firings and the derived negatives (`(not …)` facts appear
 > among `firings.jsonl`'s derived facts, since the [d=0
 > negative-completion rules](README.md#d0-negative-completion-s15a19)
-> emit them as ordinary REASONING-layer facts). A *derived* negative is
+> emit them as ordinary derived facts). A *derived* negative is
 > not a frontier fact, so it does not show up in `unsat_core.jsonl` —
 > a `(not …)` line there was **given**, not derived.
 

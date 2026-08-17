@@ -66,7 +66,7 @@ digraph deps {
 
 - **`ir/`** depends on nothing else (pure parse/AST/dump/DOT).
 - **`kb/`** consumes the AST; owns entities, the 7 indexes, provenance, imports.
-- **`inference/`** is the only writer of reasoning-layer facts; depends on `kb`.
+- **`inference/`** is the only writer of derived facts; depends on `kb`.
 - **`render/` + `trace/`** read `kb` (+ `inference` for the lattice view).
 - **`cli/`** orchestrates; **`stdlib/`** is `.ein` *data* the loader pulls in.
 

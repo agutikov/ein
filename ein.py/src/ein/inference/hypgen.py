@@ -37,7 +37,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass, field
 
 from ein.ir.types import Atom, SForm
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -309,7 +309,6 @@ def _fill_slot(
         yield Fact(
             relation_name=rel.name,
             args=args,
-            layer=Layer.REASONING,
             provenance=None,
         )
 
@@ -330,7 +329,6 @@ def _write_negated(kb: KnowledgeBase, hypothesis: Fact) -> None:
     kb.add_and_index_fact(Fact(
         relation_name=primitives.NOT,
         args=(hypothesis,),
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(rule="<lookahead-dies-immediately>"),
     ))
 

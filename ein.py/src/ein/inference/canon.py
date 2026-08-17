@@ -20,7 +20,7 @@ from ein.kb.entities import Fact
 from ein.kb.store import KnowledgeBase
 
 # One fact in canonical form: ``(relation_name, hashable_args)`` —
-# layer-free, matching fact identity everywhere else in the KB
+# metadata-free, matching fact identity everywhere else in the KB
 # (`Fact.__eq__`/`__hash__`, `add_fact` dedup, `_is_new_relative_to`).
 CanonicalFact = tuple[str, tuple]
 
@@ -43,10 +43,12 @@ def state_key(kb: KnowledgeBase) -> StateKey:
     — a total order even when arg slots mix ``str``/``int``) to
     canonicalise the set.
 
-    Layer is **excluded** — fact identity is ``(relation_name, args)``
-    everywhere in the KB (``entities.Fact``, ``store.add_fact``,
-    ``commitment._is_new_relative_to``), so the state key says the
-    same. Nested-Fact args (Q40) recurse via `_hashable_args`.
+    Provenance is **excluded** — fact identity is
+    ``(relation_name, args)`` everywhere in the KB (``entities.Fact``,
+    ``store.add_fact``, ``commitment._is_new_relative_to``), so the
+    state key says the same: two branches that reached the same
+    propositions by different routes are the same node. Nested-Fact
+    args (Q40) recurse via `_hashable_args`.
     """
     return tuple(sorted(
         ((f.relation_name, _hashable_args(f.args)) for f in kb.facts),

@@ -26,7 +26,7 @@
 
 (relation next-to T T)
 
-(hypothesis (next-to X Y) :layer reasoning)
-(contradiction-under (next-to X Y) :layer reasoning)
+(hypothesis (next-to X Y))
+(contradiction-under (next-to X Y))
 
 (query :goal (not (next-to X Y)))

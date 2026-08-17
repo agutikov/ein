@@ -29,7 +29,6 @@ The Pattern entity (the `:match` / `:assert` clauses) lives in
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
 from ein.ir.types import IRNode, Loc
@@ -50,25 +49,6 @@ NameCategory = Literal["object", "relation", "rule"]
 # so declared. See [[project-canonical-zebra2]] and
 # plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.6_kernel_minimization.md.
 KERNEL_META_RELATIONS = frozenset({"relation", "rule"})
-
-
-# ── Layer enum ─────────────────────────────────────────────────────
-
-
-class Layer(Enum):
-    """Three knowledge populations the KB stratifies facts into.
-
-    ONTOLOGY  — implicit assumptions: schema, instance enumeration,
-                rule-application meta-facts, structural facts derived
-                from background context.
-    FACT      — explicit problem statements: the puzzle's numbered
-                conditions, each annotated with ``:source "(N)"``.
-    REASONING — derived facts the engine produces at runtime
-                (rule firings, hypotheses, contradictions).
-    """
-    ONTOLOGY = "ontology"
-    FACT = "fact"
-    REASONING = "reasoning"
 
 
 # ── Helpers ────────────────────────────────────────────────────────
@@ -121,7 +101,7 @@ class Relation:
 
     @property
     def facts(self) -> tuple[Fact, ...]:
-        """All facts whose head is this relation's name (any layer)."""
+        """All facts whose head is this relation's name."""
         if self._kb is None:
             return ()
         return self._kb._facts_by_relation.get(self.name, ())
@@ -208,11 +188,17 @@ class Rule:
 class Fact:
     """A fact: a hyperedge node in the canonical graph.
 
-    Identity is `(relation_name, args)`; `layer`, `loc`, and the
+    Identity is `(relation_name, args)`; `provenance`, `loc`, and the
     raw kw-pairs are not part of identity (two facts with the same
-    head + args but different layers / sources still count as the
-    "same" fact for de-duplication; the loader keeps the first
-    occurrence's metadata).
+    head + args but different sources still count as the "same" fact
+    for de-duplication; the loader keeps the first occurrence's
+    metadata).
+
+    Where a fact came from lives *only* in :attr:`provenance` — S1.22.1b
+    deleted the `layer` field, a denormalised copy of it that the
+    contradiction detector had been reading as an epistemic guard.
+    :attr:`is_given` / :attr:`is_derived` are the derived predicates
+    presentation reads in its place.
 
     Args admit three shapes — matching the kernel ein model's
     *named* vs *relational* node duality
@@ -234,7 +220,6 @@ class Fact:
     """
     relation_name: str
     args: tuple[str | int | Fact, ...]
-    layer: Layer = field(default=Layer.FACT, compare=False, hash=False)
     provenance: Provenance | None = field(default=None, compare=False, hash=False, repr=False)
     raw: IRNode | None = field(default=None, compare=False, hash=False, repr=False)
     loc: Loc | None = field(default=None, compare=False, hash=False, repr=False)
@@ -280,6 +265,26 @@ class Fact:
             if f is not None:
                 out.append(f)
         return tuple(out)
+
+    # ── Origin predicates (S1.22.1b) ──────────────────────────────
+    #
+    # What the `Layer` enum used to record, read straight off the
+    # provenance instead of a stored copy. Only *presentation* asks —
+    # the engine treats every fact alike (see `contradiction.py`).
+
+    @property
+    def is_given(self) -> bool:
+        """An authored problem statement — carries a ``:source``."""
+        return (self.provenance is not None
+                and self.provenance.kind == "source"
+                and self.provenance.source is not None)
+
+    @property
+    def is_derived(self) -> bool:
+        """Produced by the engine — a rule firing, a hypothesis, or a
+        rejected one. (Background assumptions are neither given nor
+        derived: no ``:source``, no firing.)"""
+        return self.provenance is not None and self.provenance.kind != "source"
 
     @property
     def relation(self) -> Relation | None:
@@ -386,7 +391,6 @@ class NameRef:
 __all__ = [
     "KERNEL_META_RELATIONS",
     "Fact",
-    "Layer",
     "NameCategory",
     "NameRef",
     "Relation",

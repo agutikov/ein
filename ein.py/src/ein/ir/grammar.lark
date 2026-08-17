@@ -17,10 +17,12 @@
 //      · ANY OTHER head — a fact: `=`, `not`, or a generic (NAME args*).
 //      "Detect facts by *not* being reserved." Source of truth for the
 //      declarator set: docs/kernel/ir/03-ein-lang/06_reserved_names.md.
-//   2. A fact's knowledge LAYER is per-fact, not positional (P1.7c S1.7c.1):
-//      an explicit `:layer ontology|fact|reasoning` wins; else it is derived
-//      from provenance — `:rule`/`:using` → REASONING, `:source` → FACT,
-//      neither → ONTOLOGY. `type` / `instance` are plain facts (S1.7.6).
+//   2. A fact's ORIGIN is its provenance annotation — `:source` (an
+//      authored condition) or `:rule`/`:using` (an engine derivation), and
+//      neither for a background assumption. There is no knowledge-layer
+//      concept: `:layer` was removed in S1.22.1b and the loader REJECTS it
+//      (it parses as an ordinary kw_pair; the reject is in kb.from_ir).
+//      `type` / `instance` are plain facts (S1.7.6).
 //   3. :keyword value pair alternation — KEYWORD is never a value,
 //      never appears twice in a row.
 //   4. Heads of expression lists (inside values and patterns) must be
@@ -97,9 +99,9 @@ relation_decl: "(" "relation" SYMBOL SYMBOL+ kw_pair* ")"
 // ═══════════ Facts (the flat default — any non-declarator head) ═══════════
 // A fact is `=` / `not` / any generic `(NAME args*)` form. `(type …)` /
 // `(instance …)` enumerations parse as ordinary generic_fact forms (S1.7.6 —
-// no longer kernel declarators). Layer is per-fact provenance (`:source` →
-// FACT, `:rule`/`:using` → REASONING, else ONTOLOGY) or an explicit `:layer`
-// (P1.7c S1.7c.1) — no longer a block wrapper.
+// no longer kernel declarators). Where a fact came from is its provenance
+// kw-pair (`:source` / `:rule` + `:using`), not a block wrapper and not a
+// `:layer` annotation (removed, S1.22.1b).
 ?fact_form: eq_fact | not_form | generic_fact
 eq_fact:      "(" EQ value value kw_pair* ")"
 generic_fact: "(" SYMBOL value* kw_pair* ")"

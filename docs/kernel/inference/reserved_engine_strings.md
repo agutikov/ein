@@ -26,7 +26,7 @@ exclude; both were retired for a provenance *kind*
 ([`kb/provenance.py`](../../../ein.py/src/ein/kb/provenance.py)
 `kind="hypothesis"`), so the canonical
 [`canon.state_key`](../../../ein.py/src/ein/inference/canon.py)
-excludes nothing: it is the sorted, layer-free `(relation_name, args)`
+excludes nothing: it is the sorted, provenance-free `(relation_name, args)`
 projection of the whole propositional fact set (P1.21 R1). Any future
 carrier head must be registered here **and** excluded in
 `canon.state_key` so it doesn't perturb model identity.

@@ -39,7 +39,7 @@ Two closeout debts, by user decision (2026-08-16):
 |---|---|---|---|
 | S1.22.0 | **P0** | [Boundary verification debt: completeness + state parity](s1.22.0_boundary_verification.md) | T1.22.0.1 attack+report / T1.22.0.2 fix+pin |
 | S1.22.1 | P0 | [Obsolete-syntax census → purge](s1.22.1_obsolete_syntax.md) | T1.22.1.1 census+report / T1.22.1.2 purge |
-| S1.22.1b | **P0** | [Cross-layer contradiction bug; remove knowledge layers](s1.22.1b_layer_removal.md) | T1.22.1b.1 census+report / T1.22.1b.2 fix+pin / T1.22.1b.3 remove |
+| S1.22.1b | **P0** ✅ | [Cross-layer contradiction bug; remove knowledge layers](s1.22.1b_layer_removal.md) | T1.22.1b.1 census+report / T1.22.1b.2 fix+pin / T1.22.1b.3 remove — **shipped 2026-08-17** |
 | S1.22.1a | P1 | [`zebra.ein`: modernise and make it solve](s1.22.1a_zebra_ein_modernisation.md) | T1.22.1a.1 investigate+report / T1.22.1a.2 execute |
 | S1.22.2 | P1 | [M1-plans preservation census → delete](s1.22.2_m1_plans_deletion.md) | T1.22.2.1 census+report / T1.22.2.2 migrate+delete |
 
@@ -100,11 +100,13 @@ T1.22.2.2 — by design; commit history keeps them).
 1. **Zero obsolete syntax**: repo-wide grep (excluding `.git` and commit
    history) finds no `(type …)`/`(instance …)` Ein forms, no
    `(rules …)/(ontology …)/(facts …)` block-head references in code
-   comments/docstrings/docs, no classic-encoding leftovers (`:layer` /
-   `:source` fact kwargs if the census rules them classic-only), in:
+   comments/docstrings/docs, no classic-encoding leftovers (`:source`
+   fact kwargs if the census rules them classic-only), in:
    `ein.py/src`, `ein.py/tests`, `ein.py/acceptance`, `examples/`,
-   `docs/`, `utils/`, top-level `README.md`. (`Layer.ONTOLOGY` /
-   `Layer.FACT` enum names are the *data model*, not syntax — kept.)
+   `docs/`, `utils/`, top-level `README.md`. (`:layer` and the `Layer`
+   enum are **already gone** —
+   [S1.22.1b](s1.22.1b_layer_removal.md) removed both; the only
+   surviving `layer` in the tree is the *lattice* one.)
 2. **`plans/m1_core_graph_reasoning/` no longer exists**; `git log`
    carries it. Live backlog relocated; every former inbound link
    (docs/kernel/**, tests' plan-path comments, `plans/README.md`,

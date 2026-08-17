@@ -19,8 +19,7 @@ wrappers).
 | Rule-body / ⊥ primitives (head only) | `not` `and` `or` `absent` `false` `open` `forall` | `keyword.control.primitive` |
 | Computed predicates (head only) | `eq` `neq` | `keyword.operator.predicate` |
 | Equality head | `=` in `(= a b)` | `keyword.operator.equality` |
-| `:keyword`s | `:match` `:assert` `:why` `:priority` `:source` `:layer` `:mode` `:goal` `:hrules` … | `entity.other.attribute-name` |
-| `:layer` value | `ontology` / `fact` / `reasoning` | `constant.language.layer` |
+| `:keyword`s | `:match` `:assert` `:why` `:priority` `:source` `:rule` `:using` `:goal` `:hrules` … | `entity.other.attribute-name` |
 | Variables | `?rel` `?h_other` `?R*` | `variable.parameter` |
 | Wildcard | `_` | `variable.language.wildcard` |
 | Strings (+ `{?var}` interpolation) | `"{?rel} is symmetric."` | `string.quoted.double` (+ `variable.other.interpolation`) |

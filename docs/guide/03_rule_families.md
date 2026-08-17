@@ -2,11 +2,11 @@
 
 The toy rules in Chapter 2 found one new fact each. The real Zebra puzzle
 needs rules that *eliminate* possibilities fast enough to avoid blind
-guessing. They split into two layers — and the split is the most useful
+guessing. They split into two families — and the split is the most useful
 lesson you'll take to your own puzzles:
 
-| layer | you… | examples |
-|-------|------|----------|
+| family | you… | examples |
+|--------|------|----------|
 | **stdlib property machinery** | *tag* a relation and *import* the logic | `(symmetric next-to)`, `(transitive is-a*)`, `(bijective color-loc)` |
 | **puzzle-specific rules** | *write* the rules unique to this puzzle | `co-located`, `adjacent-via-*`, `disjunctive-prune-*` |
 

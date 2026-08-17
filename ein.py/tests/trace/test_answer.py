@@ -35,10 +35,10 @@ _ZEBRA_SHAPED = """
 (relation drink-loc  Drink       House :why "{?1} is drunk in {?2}")
 (relation nation-loc Nationality House :why "the {?1} lives in {?2}")
 (relation pet-loc    Pet         House :why "the {?1} is kept in {?2}")
-(drink-loc  Water     House-1 :layer fact)
-(nation-loc Norwegian House-1 :layer fact)
-(pet-loc    Zebra     House-5 :layer fact)
-(nation-loc Japanese  House-5 :layer fact)
+(drink-loc  Water     House-1)
+(nation-loc Norwegian House-1)
+(pet-loc    Zebra     House-5)
+(nation-loc Japanese  House-5)
 (query
   :goal (and (drink-loc  Water      ?h_water)
              (nation-loc ?who_water ?h_water)
@@ -72,8 +72,8 @@ def test_goal_text_vars_not_hardcoded():
     text = """
     (relation drink-loc Drink House :why "{?1} drunk at {?2}")
     (relation owner-loc Owner House)
-    (drink-loc Water House-1 :layer fact)
-    (owner-loc Zaphod House-1 :layer fact)
+    (drink-loc Water House-1)
+    (owner-loc Zaphod House-1)
     (query
       :goal (and (drink-loc Water ?h) (owner-loc ?who ?h))
       :goal-text "{?who} drinks the water")
@@ -85,7 +85,7 @@ def test_no_goal_text_is_graceful():
     """No :goal-text → a neutral 'Solved.' headline (never invented prose)."""
     text = """
     (relation drink-loc Drink House :why "{?1} at {?2}")
-    (drink-loc Water House-1 :layer fact)
+    (drink-loc Water House-1)
     (query :goal (drink-loc Water ?h))
     """
     assert render_answer(_solution(text)) == "Solved."
@@ -110,8 +110,8 @@ def test_table_fact_without_why_falls_back_to_ir():
     text = """
     (relation drink-loc Drink House :why "{?1} drunk at {?2}")
     (relation owner-loc Owner House)
-    (drink-loc Water House-1 :layer fact)
-    (owner-loc Zaphod House-1 :layer fact)
+    (drink-loc Water House-1)
+    (owner-loc Zaphod House-1)
     (query :goal (and (drink-loc Water ?h) (owner-loc ?who ?h)))
     """
     table = render_solution_table(_solution(text), _stats())
@@ -125,7 +125,7 @@ def test_no_templates_at_all_has_zero_invented_prose():
     result line is the explicit no-template note."""
     text = """
     (relation drink-loc Drink House)
-    (drink-loc Water House-1 :layer fact)
+    (drink-loc Water House-1)
     (query :goal (drink-loc Water ?h))
     """
     table = render_solution_table(_solution(text), _stats())

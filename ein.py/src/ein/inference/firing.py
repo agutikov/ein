@@ -8,7 +8,7 @@ and the premise facts the matcher consumed.
 The asserter (:func:`fire`) substitutes the bindings into the rule's
 ``:assert`` template, builds the derived :class:`Fact` (recursing
 into :class:`NestedPattern` arg slots — Q40 Option A's nested-fact
-construction), and writes it to the KB on the REASONING layer with
+construction), and writes it to the KB with
 :class:`Provenance.from_rule` provenance threading the premise
 fact-ids.
 
@@ -16,7 +16,7 @@ A negative assertion ``:assert (not X)`` produces a :class:`Fact`
 with ``relation_name='not'`` and a single ``Fact``-typed arg — the
 inner positive proposition. The contradiction detector (S1.3.3 /
 P1.4 collapse, see :mod:`plans/ideas.md`) finds ``(X, (not X))``
-pairs in the same layer.
+pairs, whatever provenance either side carries.
 """
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from ein.ir.types import Var
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -38,7 +38,7 @@ from .resolve import resolve_leaf
 class Firing:
     """One rule application — successful or redundant.
 
-    `derived` is the new fact written to the REASONING layer (or, if
+    `derived` is the new fact written to the KB (or, if
     `redundant=True`, the pre-existing fact the matcher would have
     re-derived; no second insertion is performed).
 
@@ -90,7 +90,6 @@ def _resolve(slot: object, bindings: dict[str, Any]) -> Any:
         return Fact(
             relation_name=slot.relation,
             args=tuple(_resolve(a, bindings) for a in slot.arg_slots),
-            layer=Layer.REASONING,
         )
     return resolve_leaf(slot, bindings, _unbound_var)
 
@@ -98,7 +97,6 @@ def _resolve(slot: object, bindings: dict[str, Any]) -> Any:
 def build_fact(
     template: object,
     bindings: dict[str, Any],
-    layer: Layer = Layer.REASONING,
     provenance: Provenance | None = None,
 ) -> Fact:
     """Construct the derived :class:`Fact` from an ``:assert`` template.
@@ -114,7 +112,6 @@ def build_fact(
     return Fact(
         relation_name=template.relation,
         args=tuple(_resolve(a, bindings) for a in template.arg_slots),
-        layer=layer,
         provenance=provenance,
     )
 
@@ -143,7 +140,7 @@ def fire(
 
     # Stringify bindings for Provenance.bindings (tuple[(str, str), ...]).
     # Non-string values (int / Fact) are str()'d — losing detail but
-    # keeping the provenance record stable across layers.
+    # keeping the provenance record stable.
     binding_pairs: tuple[tuple[str, str], ...] = tuple(
         (k, str(v)) for k, v in bindings.items()
     )
@@ -164,7 +161,7 @@ def fire(
     # indexed) once — a partially-novel multi-assert still records every fact.
     stored = tuple(
         kb.add_and_index_fact(build_fact(
-            template, bindings, layer=Layer.REASONING, provenance=provenance,
+            template, bindings, provenance=provenance,
         ))
         for template in plan.assert_templates
     )

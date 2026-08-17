@@ -5,10 +5,11 @@ examples (zebra.ein and zebra2.ein).
 """
 from __future__ import annotations
 
+import pytest
+
 from ein.kb import (
     Fact,
     KnowledgeBase,
-    Layer,
 )
 
 # ═══════════════════════ zebra.ein (classic split) ════════════════
@@ -149,7 +150,7 @@ class TestZebraFact:
         f = fs[0]
         assert f.relation_name == "co-located"
         assert f.relation == zebra_kb.relations["co-located"]
-        assert f.layer == Layer.FACT
+        assert f.is_given and not f.is_derived
 
     def test_fact_arg_entities_resolution(self, zebra_kb):
         # S1.7.23 — object-name args resolve to raw strings (no
@@ -178,12 +179,15 @@ class TestZebraFact:
         assert f.is_rule_application is False
         assert f.applied_rule is None
 
-    def test_facts_in_layer_filter(self, zebra_kb):
-        # 14 explicit condition facts; the rest are ontology.
-        fact_layer = zebra_kb.facts_in_layer(Layer.FACT)
-        assert len(fact_layer) == 14
-        reasoning = zebra_kb.facts_in_layer(Layer.REASONING)
-        assert reasoning == ()
+    def test_origin_split(self, zebra_kb):
+        # 18 `:source`-carrying facts: the 14 numbered conditions (2)-(15)
+        # plus the four `(right-of House-N+1 House-N :source "condition
+        # (1)")` spatial facts. Those four used to be forced to the
+        # ONTOLOGY layer by an explicit `:layer ontology`; with the
+        # override gone (S1.22.1b) their `:source` speaks for itself.
+        # The rest are background; nothing is derived before the engine runs.
+        assert sum(1 for f in zebra_kb.facts if f.is_given) == 18
+        assert not any(f.is_derived for f in zebra_kb.facts)
 
 
 # ═══════════════════════ zebra2.ein (unified is-a) ═════════════════
@@ -278,15 +282,15 @@ class TestIncrementalIndex:
         """
         from ein.kb import Provenance
         kb = KnowledgeBase.from_ir(parse(text))
-        # Add a reasoning-layer fact incrementally.
+        # Add a derived fact incrementally.
         f = Fact(
-            relation_name="r", args=("A", "B"), layer=Layer.REASONING,
+            relation_name="r", args=("A", "B"),
             provenance=Provenance.from_rule(rule="my-rule"),
         )
         kb.add_fact(f)
         kb._index_fact(kb.facts[-1])
         assert kb.relations["r"].facts == (kb.facts[-1],)
-        assert any(fact.layer == Layer.REASONING for fact in kb.facts)
+        assert any(fact.is_derived for fact in kb.facts)
 
 
 # ═══════════════════════ Sanity ═══════════════════════════════════
@@ -323,7 +327,7 @@ class TestNestedFactArgsThroughLoader:
     def test_loader_constructs_nested_fact_in_args(self):
         from ein.ir import parse
         forms = parse(
-            '(hypothesis (co-located Norwegian House-2) :layer fact)'
+            '(hypothesis (co-located Norwegian House-2))'
         )
         kb = KnowledgeBase.from_ir(forms)
         # The outer fact is registered (top-level).
@@ -338,7 +342,7 @@ class TestNestedFactArgsThroughLoader:
     def test_nested_fact_equality_across_loads(self):
         """Two separate loads with identical IR produce equal nested facts."""
         from ein.ir import parse
-        src = '(hypothesis (co-located Norwegian House-2) :layer fact)'
+        src = '(hypothesis (co-located Norwegian House-2))'
         kb1 = KnowledgeBase.from_ir(parse(src))
         kb2 = KnowledgeBase.from_ir(parse(src))
         f1 = next(f for f in kb1.facts if f.relation_name == "hypothesis")
@@ -350,7 +354,7 @@ class TestNestedFactArgsThroughLoader:
     def test_two_levels_of_nesting_through_loader(self):
         from ein.ir import parse
         forms = parse(
-            '(contradiction-under     (hypothesis (co-located Norwegian House-2)) :layer fact)'
+            '(contradiction-under     (hypothesis (co-located Norwegian House-2)))'
         )
         kb = KnowledgeBase.from_ir(forms)
         outer = next(f for f in kb.facts if f.relation_name == "contradiction-under")
@@ -387,7 +391,6 @@ class TestKBSnapshot:
         # Mutate source: add a new fact + a nogood.
         new_fact = Fact(
             relation_name="r", args=("b", "a"),
-            layer=Layer.REASONING,
             provenance=Provenance.from_rule(rule="post-snapshot"),
         )
         kb.add_fact(new_fact)
@@ -427,7 +430,6 @@ class TestKBSnapshot:
         assert p_fact is not None
         derived = Fact(
             relation_name="q", args=("a", "b"),
-            layer=Layer.REASONING,
             provenance=Provenance.from_rule(
                 rule="p-to-q",
                 premises_raw=(("p", ("a", "b")),),
@@ -496,7 +498,6 @@ class TestKBSnapshot:
         # post-`_index_fact` state, not just a freshly-rebuilt one.
         derived = Fact(
             relation_name="s", args=("b", "a"),
-            layer=Layer.REASONING,
             provenance=Provenance.from_rule(rule="r-to-s"),
         )
         kb.add_fact(derived)
@@ -538,3 +539,38 @@ class TestKBSnapshot:
             assert copy._facts_by_relation is not kb._facts_by_relation
             assert copy.names is not kb.names
             assert copy._negated_facts is not kb._negated_facts
+
+
+# ═══════════════════ `:layer` rejection — S1.22.1b ═════════════════
+
+
+class TestLayerKwargRejected:
+    """`:layer` is REJECTED at load, not silently ignored.
+
+    It used to *override* the provenance-derived knowledge layer, and the
+    layer it set fed the contradiction detector's cross-layer restriction
+    — so dropping it in silence would change behaviour on an existing
+    file without saying so (the failure mode S1.22.0 traced the surviving
+    `(or …)` bugs to). Contrast `:where`, ignored silently because it
+    never did anything.
+    """
+
+    def test_layer_kwarg_is_a_load_error(self):
+        from ein.ir import parse
+        from ein.kb.from_ir import KBLoadError
+        with pytest.raises(KBLoadError, match=r":layer` was removed in S1.22.1b"):
+            KnowledgeBase.from_ir(parse(
+                '(relation r T T)\n(r a b :layer fact)'))
+
+    def test_layer_kwarg_rejected_whatever_its_value(self):
+        from ein.ir import parse
+        from ein.kb.from_ir import KBLoadError
+        for value in ("ontology", "fact", "reasoning", "nonsense"):
+            with pytest.raises(KBLoadError, match=r":layer"):
+                KnowledgeBase.from_ir(parse(
+                    f'(relation r T T)\n(r a b :layer {value})'))
+
+    def test_the_same_file_without_it_loads(self):
+        from ein.ir import parse
+        kb = KnowledgeBase.from_ir(parse('(relation r T T)\n(r a b)'))
+        assert kb._fact_by_id("r", ("a", "b")) is not None

@@ -5,7 +5,7 @@ from ein.inference import match
 from ein.inference.compile import compile_rule
 from ein.inference.world import World
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -212,13 +212,11 @@ def test_nested_fact_pattern_unifies_against_relational_arg():
     inner = Fact(
         relation_name="co-located",
         args=("Norwegian", "House-2"),
-        layer=Layer.REASONING,
         provenance=Provenance.from_source(source=None),
     )
     outer = Fact(
         relation_name="hypothesis",
         args=(inner,),
-        layer=Layer.REASONING,
         provenance=Provenance.from_source(source=None),
     )
     kb.add_fact(inner)

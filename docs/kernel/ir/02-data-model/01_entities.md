@@ -36,9 +36,9 @@ follows the table:
 > over its own inheritance relation. See
 > [S1.7.23](../../../../plans/m1_core_graph_reasoning/p1.7_bootstrapping_zebra/s1.7.23_retire_kernel_type_system.md).
 
-Metadata fields (`loc`, `provenance`, `layer`, `_kb`, `raw`) are
+Metadata fields (`loc`, `provenance`, `_kb`, `raw`) are
 **excluded** from identity — two facts with the same `(rel, args)`
-but different layers or sources are *the same fact* for dedup
+but different provenance are *the same fact* for dedup
 purposes (see [`../01-ein-graph/01_kb.md` §4](../01-ein-graph/01_kb.md)).
 
 ### 1.1 `Relation`
@@ -121,7 +121,6 @@ arguments. The proposition.
 Fact(
     relation_name: str,
     args:          tuple[str | int | Fact, ...],   # argument identities (admits relational-node args)
-    layer:         Layer,                          # ONTOLOGY | FACT | REASONING
     provenance:    Provenance | None,              # PRIMARY justification (§3.1)
     raw:           IRNode | None,                  # original IR node (metadata)
     loc:           Loc | None,
@@ -331,19 +330,26 @@ the derivations the saturator actually recorded.
 
 ---
 
-## 4. `Layer` — three knowledge populations
+## 4. Origin predicates — `Fact.is_given` / `Fact.is_derived`
 
 ```python
-class Layer(Enum):
-    ONTOLOGY  = 'ontology'
-    FACT      = 'fact'
-    REASONING = 'reasoning'
+f.is_given    # provenance.kind == 'source' and provenance.source is not None
+f.is_derived  # provenance is not None and provenance.kind != 'source'
+# neither → a background assumption (schema, is-a enumeration, tag)
 ```
 
-The same `(rel, args)` exists at most once in the KB; the `layer`
-records its origin. Loader populates ONTOLOGY and FACT; rule firings
-(P1.3) populate REASONING. Hypothesis branches add facts in
-REASONING with `kind='hypothesis'` provenance.
+The same `(rel, args)` exists at most once in the KB; its `provenance`
+records where it came from, and these two read that. They are for
+*presentation* — the engine treats every fact alike.
+
+> **S1.22.1b** replaced a stored `Layer` enum
+> (`ONTOLOGY`/`FACT`/`REASONING`) with these. The enum was a
+> denormalised copy of `Provenance` — measured over every
+> `examples/**/*.ein`, the only facts it disagreed with were the ones
+> carrying an explicit `:layer` override — and the contradiction
+> detector read it as an epistemic guard, which silently accepted a
+> puzzle whose own clues contradicted each other. `Fact.layer` and
+> `:layer` are both gone; the loader rejects the annotation.
 
 ---
 
@@ -372,7 +378,7 @@ return empty tuples / `None`.
 (S1.7.23 — no `Type` / `Instance` entities.)
 
 Two entities are equal iff their identity tuples are equal — `loc`,
-layer, provenance, and back-pointers never affect equality. For
+provenance, and back-pointers never affect equality. For
 nested-fact args, equality cascades pointwise: outer Facts are
 equal iff their nested Fact args are equal (which they are iff
 *their* `(relation_name, args)` match, recursively).
@@ -389,11 +395,11 @@ rule over the same premises collapse however they were bound.
 ## See also
 
 - [`02_store.md`](02_store.md) — the `KnowledgeBase` store, reverse
-  indexes, fork(), layer views, the justification table, derivation
+  indexes, fork(), the fact view, the justification table, derivation
   DAG.
 - [`../01-ein-graph/01_kb.md`](../01-ein-graph/01_kb.md) — the
   conceptual model these dataclasses implement.
 - [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax that
   produces these entities at load.
 - [`../../inference/`](../../inference/) — P1.3 engine that *adds*
-  reasoning-layer facts via rule firings.
+  derived facts via rule firings.

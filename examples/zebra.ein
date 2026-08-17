@@ -14,16 +14,15 @@
 ;;; reference rule names (e.g. `symmetric`, `transitive`, `implies`).
 ;;;
 ;;; Design notes:
-;;;   · Three knowledge layers (per `plans/README.md` glossary):
-;;;       (ontology  …) — IMPLICIT assumptions: schema, instance
-;;;                       enumerations, rule-application meta-facts,
-;;;                       structural facts derived from background
-;;;                       context (e.g. condition (1) "five in a row").
-;;;       (facts     …) — EXPLICIT problem statements: the numbered
-;;;                       puzzle conditions (2)-(15), each annotated
-;;;                       with `:source "condition (N)"`.
-;;;       (reasoning …) — DERIVED facts the engine produces at runtime.
-;;;                       Empty at authoring time; populated by solve.
+;;;   · A fact's ORIGIN is its provenance annotation, and nothing else:
+;;;       no annotation  — IMPLICIT assumptions: schema, instance
+;;;                        enumerations, rule-application meta-facts,
+;;;                        structural facts derived from background
+;;;                        context (e.g. condition (1) "five in a row").
+;;;       `:source "…"`  — EXPLICIT problem statements: the numbered
+;;;                        puzzle conditions (1)-(15).
+;;;       `:rule`/`:using` — DERIVED facts the engine produces at
+;;;                        runtime. None at authoring time.
 ;;;   · `type` / `instance` are ORDINARY relations since S1.7.6 (not
 ;;;     kernel declarators) — declared via `(relation …)` like
 ;;;     `co-located` / `right-of` / `next-to`, and consumed directly by
@@ -264,10 +263,10 @@
 ;; ── right-of facts. The cardinality statement IS explicit, but
 ;; ── the pairwise consequences are reader-supplied; hence here
 ;; ── (with `:source` pointing at the originating condition).
-(right-of House-2 House-1 :source "condition (1)" :layer ontology)
-(right-of House-3 House-2 :source "condition (1)" :layer ontology)
-(right-of House-4 House-3 :source "condition (1)" :layer ontology)
-(right-of House-5 House-4 :source "condition (1)" :layer ontology)
+(right-of House-2 House-1 :source "condition (1)")
+(right-of House-3 House-2 :source "condition (1)")
+(right-of House-4 House-3 :source "condition (1)")
+(right-of House-5 House-4 :source "condition (1)")
 
 ;; The 14 numbered puzzle conditions. Each is a direct rendering of
 ;; one sentence of the problem text. Condition (1) lives in ontology

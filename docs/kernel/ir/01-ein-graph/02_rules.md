@@ -8,7 +8,7 @@
 A **rule** is a graph rewriting rule over the knowledge base. The
 engine fires rules when their **left-hand-side pattern** matches a
 subgraph of working memory and adds the **right-hand-side
-conclusion** as new fact(s) in the reasoning layer.
+conclusion** as new derived fact(s).
 
 The graph is **monotonic** — rules add facts, they don't delete
 nodes or existing facts. The closest thing to deletion is a
@@ -190,7 +190,7 @@ digraph t2_activation {
   compound=true;
 
   subgraph cluster_ontology {
-    label="Ontology layer";
+    label="Background (un-annotated) facts";
     style=filled;
     fillcolor="#fffbea";
     rule_trans [shape=hexagon, label="Rule:\ntransitive"];
@@ -201,7 +201,7 @@ digraph t2_activation {
   }
 
   subgraph cluster_facts {
-    label="Fact layer (working memory)";
+    label="Working memory";
     style=filled;
     fillcolor="#eaf6ff";
     a [shape=diamond, label="?a"];
@@ -211,7 +211,7 @@ digraph t2_activation {
     b -> c [label="co-located"];
   }
 
-  note [shape=note, label="Engine action:\n 1. Sees transitive(co-located) in ontology → binds ?R := co-located.\n 2. Substitutes into the LHS pattern.\n 3. Matches working memory; finds (a, b, c) bindings.\n 4. Asserts (co-located ?a ?c) in the reasoning layer."];
+  note [shape=note, label="Engine action:\n 1. Sees transitive(co-located) in ontology → binds ?R := co-located.\n 2. Substitutes into the LHS pattern.\n 3. Matches working memory; finds (a, b, c) bindings.\n 4. Asserts (co-located ?a ?c) as a derived fact."];
 }
 ```
 
@@ -228,7 +228,7 @@ per-relation copies.
 **When the matcher uses T2:** enumerate `?R` over the relations
 that have a property fact for this rule, then proceed as T1 for the
 remaining bindings. The trace records the property fact (the
-*activation*) as a premise alongside the matched fact-layer facts.
+*activation*) as a premise alongside the matched facts.
 
 ### 2.3 Type 3 — structural / aggregate rules
 
@@ -297,7 +297,7 @@ search-pruning power that pure T1/T2 wouldn't reach.
 
 The RHS can assert a **negative** fact `(not X)`. This is *not* a
 deletion — it's a positive fact whose proposition is the negation of
-`X`. The reasoning layer accumulates both positive and negative
+`X`. The KB accumulates both positive and negative
 assertions; their *consistency* is what the contradiction detector
 checks.
 
@@ -397,7 +397,7 @@ boundary.
 ## 5. Provenance — every rule firing leaves a trace
 
 A rule firing produces zero or more **new fact nodes** in the
-reasoning layer. Each new fact carries provenance:
+KB. Each new fact carries provenance:
 
 - `kind = 'rule'`
 - `rule = <firing rule's name>`
@@ -428,7 +428,7 @@ every recorded one when the caller asks for the AND/OR graph. See
 [`01_kb.md` §5](01_kb.md).
 
 This is what makes the engine **explanation-complete**: every fact
-in the reasoning layer has a recoverable "why", in the form of a
+the engine derived has a recoverable "why", in the form of a
 DAG of premises + rule names. The trace renderer (P1.6) walks this
 DAG.
 
@@ -514,7 +514,7 @@ At each step:
 2. For each match, check `:where` guards.
 3. For each passing match, build the RHS substitution.
 4. If the resulting fact(s) aren't already in working memory, add
-   them in the reasoning layer with `rule`-kind provenance; if they
+   them with `rule`-kind provenance; if they
    are, record this firing as an alternative justification on them
    (§5) instead of dropping it.
 
@@ -558,7 +558,7 @@ branch, retract on contradiction, commit on uniqueness. This is the
   M1 they're structural-only views; the actual matcher lives in
   P1.3.
 - **Property facts** (the T2 activators) are ordinary `Fact` nodes
-  in the ontology layer, recognised by name match against the rule
+  as un-annotated facts, recognised by name match against the rule
   registry.
 - **Saturation + branching** is the inference engine
   ([`../../inference/`](../../inference/)), stubbed for M1, fleshed

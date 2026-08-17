@@ -55,31 +55,24 @@ The block wrappers `(ontology …)` / `(facts …)` / `(reasoning …)` /
 simply reads as a fact (e.g. `(facts X)` is a fact whose relation is
 `facts`).
 
-### Knowledge layer — per fact, not positional
+### Where a fact came from — its provenance annotation
 
-The three knowledge layers from
-[`../01-ein-graph/01_kb.md` §3](../01-ein-graph/01_kb.md) — ONTOLOGY
-(implicit assumptions), FACT (explicit problem statements), REASONING
-(engine-derived) — used to be carried by the enclosing block. Flat forms
-carry the layer **per fact** (P1.7c S1.7c.1): an explicit
-`:layer ontology|fact|reasoning` keyword is authoritative; otherwise the
-layer is **derived from provenance** — the same signal that picks the
-`Provenance` kind:
+A fact's origin is read off the annotation it carries, and nothing else
+(see [`../01-ein-graph/01_kb.md` §3](../01-ein-graph/01_kb.md)):
 
-| the fact carries… | layer | meaning |
+| the fact carries… | it is… | meaning |
 |---|---|---|
-| `:rule` / `:using` | REASONING | engine working-memory (a derived fact) |
-| `:source "(N)"` | FACT | an explicit, numbered problem statement |
-| neither | ONTOLOGY | an implicit background assumption (schema, type/instance enumeration, property tag) |
+| `:rule` / `:using` | **derived** | the engine produced it (a rule firing) |
+| `:source "(N)"` | **given** | an explicit, numbered problem statement |
+| neither | **background** | an implicit assumption (schema, `is-a` enumeration, property tag) |
 
-Only REASONING is inference-distinguished (the contradiction detector's
-cross-layer rule); ONTOLOGY-vs-FACT is render / provenance metadata and
-does not affect the search. Authored files rarely need an explicit
-`:layer` — a sourced condition derives FACT, an unannotated property tag or
-`relation` decl derives ONTOLOGY. Write `:layer` only where the derivation
-would disagree with intent (e.g. a structural ONTOLOGY fact that *also*
-wants a `:source`, or an unsourced explicit FACT). Fact identity is
-`(relation_name, args)`; the layer only records origin. See
+The distinction is **presentation only** — the engine treats every fact
+alike, and fact identity is `(relation_name, args)` regardless. There is
+no way to override it: `:layer ontology|fact|reasoning` used to, and
+was removed in S1.22.1b (the loader **rejects** it, because the layer it
+set fed a contradiction-detector restriction that silently accepted
+inconsistent puzzles). Write the annotation that is true — a numbered
+condition gets `:source`, a property tag gets nothing. See
 [`../02-data-model/01_entities.md` §1.5](../02-data-model/01_entities.md)
 and [`plans/ideas/04-nlp-to-graph-to-solver-pipeline.md` §Ontology
 deduction by common sense](../../../../plans/ideas/04-nlp-to-graph-to-solver-pipeline.md)
@@ -118,7 +111,7 @@ relation→verb vocabulary, so untemplated relations stay in IR. Example:
 ```
 
 A schema + implicit-assumption example (all flat forms; the property tags
-and enumerations derive ONTOLOGY, so no `:layer` is needed):
+and enumerations carry no annotation, so they read as background):
 
 ```lisp
 (is-a House Attribute) (is-a Color Attribute)
@@ -127,7 +120,7 @@ and enumerations derive ONTOLOGY, so no `:layer` is needed):
 (is-a House-1 House)
 (symmetric  co-located)
 (transitive co-located)
-(right-of House-2 House-1 :source "condition (1)" :layer ontology)  ; "five in a row" — sourced but structural
+(right-of House-2 House-1 :source "condition (1)")  ; "five in a row" — structural, but it *is* condition (1)
 ```
 
 ### Facts — `(NAME args*)`, the flat default
@@ -156,13 +149,13 @@ heads either (they're SYMBOL-excluded). Everything else — `instance`,
 `(SYMBOL value*)` fact, open-world: introduce a relation by declaring it
 with `(relation …)` and asserting it.
 
-The layer of each fact follows the
-[per-fact rule](#knowledge-layer--per-fact-not-positional): a `:source`
-makes it a FACT-layer problem statement; `:rule` / `:using` make it a
-REASONING-layer derived fact; no annotation makes it an ONTOLOGY-layer
-background assumption (an explicit `:layer` overrides). Rule-application
-facts (`(symmetric co-located)`, `(implies right-of next-to)`) carry no
-annotation → ONTOLOGY: the puzzle text never says "co-located is
+The origin of each fact follows the
+[annotation rule](#where-a-fact-came-from--its-provenance-annotation): a
+`:source` makes it a given problem statement; `:rule` / `:using` make it
+an engine derivation; no annotation makes it a background assumption.
+Rule-application facts (`(symmetric co-located)`,
+`(implies right-of next-to)`) carry no annotation → background: the
+puzzle text never says "co-located is
 symmetric"; that's universal context, the *meta* of the relation, while a
 `rule` is the meta of the *engine*.
 
@@ -171,21 +164,20 @@ a category is derived by `type-exclusivity` from the `(is-a X T)`
 facts. Genuinely puzzle-specific structural shapes (parity, budget, …) just
 take their own head: `(budget-total X Y)`.
 
-A flat explicit-conditions example (each numbered condition is FACT-layer
-via its `:source`; the property tag derives ONTOLOGY):
+A flat explicit-conditions example (each numbered condition is a given
+via its `:source`; the un-annotated property tag is background):
 
 ```lisp
 (lives-in Norwegian House-1 :source "condition (10)")
 (co-located Englishman Red  :source "condition (2)")
-(symmetric  co-located)                              ; property tag — implicit, ONTOLOGY
+(symmetric  co-located)                              ; property tag — implicit, background
 ```
 
-### Derived facts (REASONING layer — engine working memory)
+### Derived facts — engine working memory
 
 The engine *derives* facts at runtime and dumps them as flat forms
 annotated with `:rule` (which rule fired) + `:using` (which premises it
-consumed) instead of `:source` — so they re-classify to the REASONING
-layer on reload:
+consumed) instead of `:source` — so they read back as derivations:
 
 ```lisp
 (<name> <arg>* :rule <RuleName> :using (<premise-id>+))
@@ -193,9 +185,9 @@ layer on reload:
 ```
 
 A hand-authored puzzle has none; they appear in engine dumps, which
-round-trip through `parse` / `dump`. (A REASONING fact with no rule
-provenance — e.g. an authored hypothesis fixture — carries an explicit
-`:layer reasoning` instead.) Example derived facts:
+round-trip through `parse` / `dump` — exactly, since S1.22.1b: the dump
+carries the provenance and the provenance *is* the origin, so there is
+no residue needing a `:layer` patch. Example derived facts:
 
 ```lisp
 (co-located Blue House-2 :rule square-fwd :using (c10 c15))

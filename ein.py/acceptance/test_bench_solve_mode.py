@@ -57,7 +57,7 @@ def test_solve_solves_zebra2_correctly():
     assert "(nation-loc Japanese House-5)" in out
 
     # --print-final-hfacts spans every layer, so it DOES echo the given
-    # (nation-loc Norwegian House-1) — condition (10), a FACT-layer fact that
+    # (nation-loc Norwegian House-1) — condition (10), a given fact that
     # the REASONING-only --print-final-state omits. The hfacts header lists
     # exactly the five *-loc hypothesis-target relations.
     assert "(nation-loc Norwegian House-1)" in out

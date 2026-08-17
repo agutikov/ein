@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate the zebra2 *variant* fixtures from the canonical ``zebra2.ein``.
 
-The two variants are zebra2 ± exactly one FACT-layer fact, with an *identical*
+The two variants are zebra2 ± exactly one `:source`d fact, with an *identical*
 schema + rule set (the invariant ``tests/integration/test_zebra_parse.py``
 pins). Deriving them here — rather than hand-maintaining three near-copies —
 means a change to zebra2's rules never silently drifts the variants: just

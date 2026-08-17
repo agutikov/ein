@@ -18,7 +18,7 @@ from ein.inference.explain import (
 )
 from ein.inference.saturator import Saturator
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import MAX_ALT_JUSTIFICATIONS, KnowledgeBase
 
@@ -104,7 +104,7 @@ class TestRecording:
         # change every core that passes through it.
         kb = KnowledgeBase.from_ir(parse("(relation W T)"))
         w = Fact(
-            relation_name="W", args=("a",), layer=Layer.REASONING,
+            relation_name="W", args=("a",),
             provenance=Provenance.from_rule(rule="<forced-positive>"),
         )
         kb.add_and_index_fact(w)
@@ -116,7 +116,7 @@ class TestRecording:
     def test_alternatives_are_capped_keeping_the_shortest(self):
         kb = KnowledgeBase.from_ir(parse("(relation T2 T)"))
         target = Fact(
-            relation_name="T2", args=("a",), layer=Layer.REASONING,
+            relation_name="T2", args=("a",),
             provenance=Provenance.from_rule(
                 rule="primary", premises_raw=(("P", (0,)),)),
         )

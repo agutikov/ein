@@ -18,7 +18,7 @@ documentation split.
 ```
 
 The shortest meaningful IR — one fact whose `:source` derives the
-FACT layer.
+a given (`:source`-carrying) fact.
 
 ## A larger Zebra fragment
 
@@ -28,7 +28,7 @@ FACT layer.
   :assert (?rel ?a ?c)
   :why    "{?rel} is transitive.")
 
-;; Schema + implicit assumptions (no :source → ONTOLOGY layer)
+;; Schema + implicit assumptions (no :source → background)
 (relation is-a       T T)
 (relation co-located Attribute Attribute)
 (relation right-of   Attribute Attribute)
@@ -41,7 +41,7 @@ FACT layer.
 ;; Implicit: rule-application meta-facts
 (transitive co-located)
 
-;; Explicit puzzle conditions (each :source → FACT layer)
+;; Explicit puzzle conditions (each :source → a given)
 (co-located Englishman Red    :source "condition (2)")
 (right-of   Green Ivory       :source "condition (6)")
 (co-located Norwegian House-1 :source "condition (10)")
@@ -154,11 +154,11 @@ forms from `zebra.ein`:
 — literal relation names (`is-a`, `co-located`) appear in the
 LHS and RHS.
 
-## Reasoning-layer dump
+## Derived-fact dump
 
 After saturation, an engine dump of the derived facts looks like
 (flat forms; each carries `:rule` / `:using`, so it re-classifies to
-the REASONING layer on reload):
+derivations on reload):
 
 ```lisp
 ;; The engine derived (co-located House-1 Norwegian) from

@@ -424,7 +424,7 @@ def add_parser(sub) -> None:
     p.add_argument("-s", "--stats", action="store_true",
                    help="print engine counters (k, enterings, layers, wall)")
     p.add_argument("-p", "--print-final-state", action="store_true",
-                   help="dump each solution's REASONING-layer facts (for an "
+                   help="dump each solution's derived facts (for an "
                         "unsat verdict, the unsat-core facts instead)")
     p.add_argument("-P", "--print-final-positive", action="store_true",
                    help="like --print-final-state but drops the (not …) facts")

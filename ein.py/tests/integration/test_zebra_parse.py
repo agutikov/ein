@@ -33,7 +33,6 @@ import pytest
 from ein.inference.contradiction import ContradictionDetector
 from ein.inference.saturator import Saturator
 from ein.ir import IRParseError, parse
-from ein.kb.entities import Layer
 from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
@@ -70,11 +69,23 @@ def _load(path: Path) -> KnowledgeBase:
     return KnowledgeBase.from_ir(parse(path.read_text(), filename=str(path)))
 
 
-def _has(kb: KnowledgeBase, relation: str, args: tuple, *, layer: Layer = Layer.FACT) -> bool:
+def _has(kb: KnowledgeBase, relation: str, args: tuple) -> bool:
+    """Is ``(relation args)`` present as an authored, `:source`-carrying
+    fact? (Was `layer is Layer.FACT` before S1.22.1b.)"""
     return any(
-        f.relation_name == relation and f.args == args and f.layer is layer
+        f.relation_name == relation and f.args == args and f.is_given
         for f in kb.facts
     )
+
+
+def _given(kb: KnowledgeBase) -> list:
+    """The authored conditions — every `:source`-carrying fact."""
+    return [f for f in kb.facts if f.is_given]
+
+
+def _background(kb: KnowledgeBase) -> list:
+    """The un-annotated facts — schema, is-a enumerations, property tags."""
+    return [f for f in kb.facts if not f.is_given and not f.is_derived]
 
 
 # ── All three load ────────────────────────────────────────────────
@@ -109,43 +120,43 @@ def test_canonical_files_parse_and_load(path: Path):
 
 
 def test_zebra2_landmark_counts():
-    """Canonical baseline: 18 FACT-layer facts (the 15 numbered
-    conditions; (1) expands to 4 right-of facts). Anchors the relative
-    diffs below — if the encoding changes shape this fails loudly so the
-    variants get re-synced."""
+    """Canonical baseline: 18 authored conditions (the 15 numbered ones;
+    (1) expands to 4 right-of facts). Anchors the relative diffs below —
+    if the encoding changes shape this fails loudly so the variants get
+    re-synced."""
     z = _load(ZEBRA2)
-    assert len(z.fact_layer()) == 18
+    assert len(_given(z)) == 18
     assert _has(z, *COND_15)
     assert not _has(z, *INJECTED)
 
 
 def test_minus_15_is_zebra2_minus_one_fact():
-    """GAPS fixture: identical schema + rules, exactly one fewer
-    FACT-layer fact — condition (15) is gone, nothing else changed."""
+    """GAPS fixture: identical schema + rules, exactly one fewer authored
+    condition — (15) is gone, nothing else changed."""
     z, m = _load(ZEBRA2), _load(MINUS_15)
     assert m.relations.keys() == z.relations.keys()
     assert m.rules.keys() == z.rules.keys()
-    assert len(m.ontology()) == len(z.ontology())
-    assert len(m.fact_layer()) == len(z.fact_layer()) - 1
+    assert len(_background(m)) == len(_background(z))
+    assert len(_given(m)) == len(_given(z)) - 1
     assert not _has(m, *COND_15)
-    # The only difference is condition (15): every other FACT survives.
-    z_facts = {(f.relation_name, f.args) for f in z.fact_layer()}
-    m_facts = {(f.relation_name, f.args) for f in m.fact_layer()}
+    # The only difference is condition (15): every other one survives.
+    z_facts = {(f.relation_name, f.args) for f in _given(z)}
+    m_facts = {(f.relation_name, f.args) for f in _given(m)}
     assert z_facts - m_facts == {COND_15}
     assert m_facts - z_facts == set()
 
 
 def test_bad_is_zebra2_plus_one_fact():
     """CONTRADICTIONS fixture: identical schema + rules, exactly one
-    extra FACT-layer fact — the injected ``(color-loc Green House-1)``."""
+    extra authored condition — the injected ``(color-loc Green House-1)``."""
     z, b = _load(ZEBRA2), _load(BAD)
     assert b.relations.keys() == z.relations.keys()
     assert b.rules.keys() == z.rules.keys()
-    assert len(b.ontology()) == len(z.ontology())
-    assert len(b.fact_layer()) == len(z.fact_layer()) + 1
+    assert len(_background(b)) == len(_background(z))
+    assert len(_given(b)) == len(_given(z)) + 1
     assert _has(b, *INJECTED)
-    b_facts = {(f.relation_name, f.args) for f in b.fact_layer()}
-    z_facts = {(f.relation_name, f.args) for f in z.fact_layer()}
+    b_facts = {(f.relation_name, f.args) for f in _given(b)}
+    z_facts = {(f.relation_name, f.args) for f in _given(z)}
     assert b_facts - z_facts == {INJECTED}
     assert z_facts - b_facts == set()
 

@@ -46,7 +46,7 @@ from ein.inference.apriori import CanonicalSetId
 from ein.inference.canon import StateKey, state_digest, state_key
 from ein.inference.commitment import try_commitment_set
 from ein.inference.saturator import Saturator
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -147,7 +147,6 @@ def check_commutativity(
         rn, args = missing
         h_fact = Fact(
             relation_name=rn, args=args,
-            layer=Layer.REASONING,
             provenance=Provenance.from_hypothesis(branch=0),
         )
         fork = parent_result.kb.fork()

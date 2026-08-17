@@ -121,7 +121,7 @@ disjunct, which `JoinPlan.disjuncts()` pairs back with its steps. The
 `Saturator` then alternates two phases (`step()`). In the **closure** phase it
 runs a priority queue of enqueued `(plan, binding)` firings; each
 `_closure_step()` pops the highest-priority unfired binding, applies it
-(`firing.fire` → append a reasoning-layer `Fact` with provenance), and
+(`firing.fire` → append a derived `Fact` with provenance), and
 re-enqueues the matches the new fact enables — consulting no negation
 anywhere. A match whose disjunct carries guards never enters that queue: it is
 **parked** (`_enqueue_binding`). At closure quiescence the **boundary** phase
@@ -164,7 +164,7 @@ and the normative reading of a boundary query is
 
 | type (`module`) | what it is | analog |
 |---|---|---|
-| `Fact` (`kb/entities`) | `(relation_name, args)` identity; `args ∈ str \| int \| Fact` (nested = a relational node); carries `layer` + `provenance` | a ground atom / tuple / labelled hyperedge |
+| `Fact` (`kb/entities`) | `(relation_name, args)` identity; `args ∈ str \| int \| Fact` (nested = a relational node); carries `provenance` | a ground atom / tuple / labelled hyperedge |
 | `Relation` (`kb/entities`) | a named relation + `signature` (type atoms) | a database relation schema / predicate symbol |
 | `Rule` (`kb/entities`) | `params`, `match` pattern, `assert`, `priority`, activator | a Datalog/production rule (Horn-ish clause) |
 | `JoinPlan` = `Scan`/`Join`/`Guard` steps + `NafGuard`s (`compile`) | a rule's `:match` compiled to a join program over relations; its `(absent …)` premises split off (`split_naf`) into a per-disjunct guard tuple, paired back by `disjuncts()` | a query plan / RETE network / WAM-ish opcode list, plus its negation side-conditions |
@@ -386,7 +386,7 @@ union-find → congruence closure → e-graph, in that order of ambition.
 **2-watched-literals** make it cost-free until a watched literal flips. In
 CSP it is constraint-violation checking under propagation.
 
-**Ein today.** An explicit scan for same-layer `(X, ¬X)` pairs (using
+**Ein today.** An explicit scan for `(X, ¬X)` pairs (using
 the O(1) `_negated_facts` index) plus the rule-asserted `(false)` sentinel
 (`contradiction.py`). Measured ~0 s — not a bottleneck, so the watched-literal
 machinery would be premature. **Adequate as-is.**
@@ -525,7 +525,7 @@ exploring symmetric models; **graph canonicalisation** (nauty/bliss) for full
 structural symmetry.
 
 **Ein today.** `canon.state_key` canonicalises the propositional fact set
-order-insensitively — the sorted, layer-free `(relation, args)` tuple; the
+order-insensitively — the sorted, provenance-free `(relation, args)` tuple; the
 representation *itself* is the identity (P1.21 R1 — any hash of it is a
 display digest, never identity), so distinct branches that reach the same
 model collapse to one solution node — a lightweight canonicalisation that

@@ -34,7 +34,8 @@ from ein.inference.monotonic import solve
 from ein.inference.saturator import Saturator
 from ein.inference.verdict import Ambiguity
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
+from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
@@ -55,33 +56,44 @@ def _kb_with(*facts: Fact) -> KnowledgeBase:
     return kb
 
 
-# ── Layer-free identity ──────────────────────────────────────
+# ── Provenance-free identity ─────────────────────────────────
+#
+# S1.22.1b: these two pinned "different :class:`Layer`s, same key" before
+# the enum was deleted. The invariant they exist for — a KB's state key
+# keys the propositions and nothing else — is unchanged; `Provenance` is
+# now the metadata that must not leak into it.
 
 
-def test_same_facts_different_layers_same_key():
-    """Two KBs holding the same ``(R, args)`` propositions installed at
-    different :class:`Layer`s have EQUAL state keys — layer is not part
-    of fact identity anywhere in the KB (``Fact.__eq__``, ``add_fact``
+def test_same_facts_different_provenance_same_key():
+    """Two KBs holding the same ``(R, args)`` propositions, reached by
+    different routes, have EQUAL state keys — provenance is not part of
+    fact identity anywhere in the KB (``Fact.__eq__``, ``add_fact``
     dedup), and the state key says the same (P1.21 R1 §2)."""
-    kb_fact = _kb_with(
-        Fact("color-loc", ("Green", "House-1"), layer=Layer.FACT),
-        Fact("pet-loc", ("Zebra", "House-5"), layer=Layer.ONTOLOGY),
+    kb_authored = _kb_with(
+        Fact("color-loc", ("Green", "House-1"),
+             provenance=Provenance.from_source("(6)")),
+        Fact("pet-loc", ("Zebra", "House-5"),
+             provenance=Provenance.from_source("(9)")),
     )
-    kb_reasoning = _kb_with(
-        Fact("color-loc", ("Green", "House-1"), layer=Layer.REASONING),
-        Fact("pet-loc", ("Zebra", "House-5"), layer=Layer.REASONING),
+    kb_derived = _kb_with(
+        Fact("color-loc", ("Green", "House-1"),
+             provenance=Provenance.from_rule(rule="square-fwd")),
+        Fact("pet-loc", ("Zebra", "House-5"),
+             provenance=Provenance.from_hypothesis(branch=3)),
     )
-    assert state_key(kb_fact) == state_key(kb_reasoning)
+    assert state_key(kb_authored) == state_key(kb_derived)
 
 
-def test_nested_fact_arg_layer_is_also_excluded():
-    """A nested-Fact arg's layer is excluded exactly like a top-level
-    fact's — the canonical form is internally consistent."""
+def test_nested_fact_arg_provenance_is_also_excluded():
+    """A nested-Fact arg's provenance is excluded exactly like a
+    top-level fact's — the canonical form is internally consistent."""
     kb_a = _kb_with(
-        Fact("not", (Fact("p", ("a",), layer=Layer.FACT),)),
+        Fact("not", (Fact("p", ("a",),
+                          provenance=Provenance.from_source("(1)")),)),
     )
     kb_b = _kb_with(
-        Fact("not", (Fact("p", ("a",), layer=Layer.REASONING),)),
+        Fact("not", (Fact("p", ("a",),
+                          provenance=Provenance.from_rule(rule="r")),)),
     )
     assert state_key(kb_a) == state_key(kb_b)
 

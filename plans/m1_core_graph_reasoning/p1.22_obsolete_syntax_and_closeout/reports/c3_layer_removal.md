@@ -4,6 +4,16 @@
 (read-only). **Date:** 2026-08-17. **Tree:** post-S1.22.1 (`3de7af0`).
 **Interpreter:** `.venv-pypy/bin/python` (PyPy 7.3.23 / 3.11.15).
 
+> **Executed.** T1.22.1b.2/3 shipped on 2026-08-17; the results (and three
+> corrections to the stage brief) are in
+> [S1.22.1b §Outcome](../s1.22.1b_layer_removal.md#outcome-2026-08-17).
+> The predictions below held: 2 goldens shifted and only those 2, no
+> verdict moved, no serialised format needed a bump. Two test dispositions
+> in §6.2 came out slightly wider than sketched — `kb/test_layers.py` lost
+> its whole `TestLayerViews` class (not just the accessors) and
+> `test_ir_ast.py`'s `:layer reasoning` round-trip case was dropped rather
+> than re-pointed, since `:rule`/`:using` already had its own case.
+
 ---
 
 ## 0. Summary

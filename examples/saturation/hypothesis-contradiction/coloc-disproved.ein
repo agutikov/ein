@@ -39,7 +39,7 @@
 
 (relation co-located T T)
 
-(hypothesis (co-located Norwegian House-2) :layer reasoning)
-(contradiction-under (co-located Norwegian House-2) :layer reasoning)
+(hypothesis (co-located Norwegian House-2))
+(contradiction-under (co-located Norwegian House-2))
 
 (query :goal (not (co-located Norwegian House-2)))

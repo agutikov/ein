@@ -25,7 +25,7 @@ The four sub-trees layer on each other:
    representation**. The Python dataclasses (`Type`, `Instance`,
    `Relation`, `Rule`, `Fact`, `Pattern`, `Provenance`, …) that hold
    the graph; the `KnowledgeBase` store with its registries, reverse
-   indexes, layer views, hypothesis forks, derivation DAGs. Maps the
+   indexes, the fact view, hypothesis forks, derivation DAGs. Maps the
    semantics in (1) onto concrete code shapes.
 
 3. **[`ir/03-ein-lang/`](ir/03-ein-lang/)** — the **surface

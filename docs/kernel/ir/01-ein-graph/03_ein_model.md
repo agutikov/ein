@@ -215,7 +215,7 @@ will decide whether to keep the distinction syntactic (classic
 | `relation`   | declares a relation-type node (`(relation co-located T T)`).    |
 | `rule`       | declares a rewriting rule (head of a top-level `(rule …)` form). |
 | `hrule`      | declares a hypothesis-generation rule (drives `hypgen`; never fired by the saturator). |
-| `not`        | propositional negation; `(not X)` is an octagon fact whose single arg is the negated proposition. The contradiction detector pairs each `(not X)` against a same-layer positive `X`. |
+| `not`        | propositional negation; `(not X)` is an octagon fact whose single arg is the negated proposition. The contradiction detector pairs each `(not X)` against a positive `X`, whatever either side's origin. |
 | `false`      | direct ⊥ — a `(false)` fact asserts that the firing rule has reached a contradiction without needing the self-negation idiom. The contradiction detector treats every `(false …)` as a `kind="direct"` contradiction (see [`../02-data-model/02_store.md` §7.2 unsat-core](../02-data-model/02_store.md) for how the unsat-core walk handles it). Shipped S1.5.4a Part 2 (2026-05-21). |
 
 `not` and `false` are reserved at the **engine** level — the

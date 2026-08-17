@@ -69,18 +69,22 @@ Named after Friedrich Wilhelm Levi. In Ein, **the** canonical
 form of every fact, regardless of arity. See
 [`ir/01-ein-graph/01_kb.md` §2.2](ir/01-ein-graph/01_kb.md).
 
-### Layer (ontology / fact / reasoning)
-Three knowledge populations the KB stratifies facts into. The layer
-is **per fact** (P1.7c — no block wrappers): an explicit `:layer` wins,
-else it is derived from provenance.
-- **ontology** — implicit assumptions (schema, instance enumeration,
-  rule-application meta-facts). Derived when a fact carries neither
-  `:source` nor `:rule`/`:using`.
-- **fact** — explicit puzzle statements, each with a `:source`
-  annotation (which derives this layer).
-- **reasoning** — derived facts produced by rule firings or
-  hypotheses; carry `:rule`/`:using` (which derives this layer).
-See [`ir/01-ein-graph/01_kb.md` §3](ir/01-ein-graph/01_kb.md).
+### Layer
+**Two unrelated meanings; neither is a knowledge stratum any more.**
+1. **Lattice layer** — the depth of the monotonic solver's
+   breadth-first walk of the commitment lattice: layer *k* is the set of
+   size-*k* commitment sets. See
+   [`inference/architecture_and_algorithms.md`](inference/architecture_and_algorithms.md).
+2. **Architectural layer** — the deductive (monotone, saturating) half
+   of the engine vs the search (non-monotone, branching) half.
+
+The **knowledge layer** (ONTOLOGY / FACT / REASONING) is gone as of
+S1.22.1b. It was a `Layer` enum stored on every fact, and the
+contradiction detector read it as an epistemic guard — which silently
+accepted a puzzle whose own clues contradicted each other. It was also a
+denormalised copy of [Provenance](#provenance); what it recorded is read
+off the provenance instead. See
+[`ir/01-ein-graph/01_kb.md` §3](ir/01-ein-graph/01_kb.md).
 
 ### Provenance
 A record of *where a fact came from*. Four kinds: `source` (from IR),
@@ -138,9 +142,9 @@ over the **ATMS label** search in
 [`inference/architecture_and_algorithms.md` §O6](inference/architecture_and_algorithms.md).
 
 ### Fork
-A hypothesis branch — a `KnowledgeBase` that shares ontology and
-fact-layer entities with its parent by reference, but isolates
-reasoning-layer additions. See
+A hypothesis branch — a `KnowledgeBase` that shares the loaded entities
+with its parent by reference, but isolates the branch's own derivations.
+See
 [`ir/02-data-model/02_store.md` §5](ir/02-data-model/02_store.md).
 
 ### World

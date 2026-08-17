@@ -20,7 +20,7 @@ This is the programmatic face of the same pipeline
 |------|--------|
 | **[`ein.md`](ein.md)** | The **embedding contract** — the five-step flow (parse → load → saturate → solve → read) and a complete, verified worked example on `zebra2.ein`. **Start here.** |
 | [`ir.md`](ir.md) | `ein.ir` — `parse`, the AST nodes, `dump*` round-trip. |
-| [`kb.md`](kb.md) | `ein.kb` — `KnowledgeBase` (construction + read surface), the entity dataclasses (`Fact`, `Relation`, `Rule`, `Layer`), `Provenance` / `DerivationDAG`. |
+| [`kb.md`](kb.md) | `ein.kb` — `KnowledgeBase` (construction + read surface), the entity dataclasses (`Fact`, `Relation`, `Rule`), `Provenance` / `DerivationDAG`. |
 | [`inference.md`](inference.md) | `ein.inference` — `Saturator`, `solve`, the `Verdict` types, `SolverConfig` knobs, `Firing`. |
 | [`trace.md`](trace.md) | `ein.trace` — `linearize` + `render_markdown`, the answer renderers, the `Trace` AST. |
 

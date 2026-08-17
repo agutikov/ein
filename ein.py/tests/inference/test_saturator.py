@@ -18,7 +18,6 @@ from pathlib import Path
 from ein.inference.engine import Engine
 from ein.inference.saturator import Saturator
 from ein.ir import parse
-from ein.kb.entities import Layer
 from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
@@ -90,7 +89,7 @@ def test_single_fact_one_firing():
     assert len(productive) == 1
     assert productive[0].derived[0].relation_name == "r"
     assert productive[0].derived[0].args == ("B", "A")
-    assert productive[0].derived[0].layer == Layer.REASONING
+    assert productive[0].derived[0].is_derived
 
 
 def test_triangle_transitive_closure():
@@ -122,7 +121,7 @@ def test_chained_transitivity_four_nodes():
     derived = {
         (f.relation_name, f.args)
         for f in sat.kb.facts
-        if f.layer == Layer.REASONING
+        if f.is_derived
     }
     # Closure must include A-C, B-D, A-D.
     assert ("r", ("A", "C")) in derived
@@ -213,8 +212,8 @@ def test_redundant_firing_marked():
     redundant = [f for f in firings if f.redundant]
     assert len(productive) == 1
     assert len(redundant) >= 1
-    # KB has exactly two facts total: the FACT-layer (r A B) and the
-    # REASONING-layer (r B A). No third.
+    # KB has exactly two facts total: the authored (r A B) and the
+    # derived (r B A). No third.
     r_facts = [f for f in sat.kb.facts if f.relation_name == "r"]
     assert len(r_facts) == 2
 
@@ -268,7 +267,6 @@ def test_is_stalled_flips_after_new_fact():
     new_fact = Fact(
         relation_name="r",
         args=("X", "Y"),
-        layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=1),
     )
     sat.kb.add_fact(new_fact)

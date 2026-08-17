@@ -6,7 +6,6 @@ from ein.kb import (
     DerivationDAG,
     Fact,
     KnowledgeBase,
-    Layer,
     Provenance,
 )
 from ein.kb.provenance import detect_provenance_cycles, walk_premises
@@ -33,10 +32,9 @@ def _add_derived(
     rule: str,
     premises: tuple,
 ) -> Fact:
-    """Add a REASONING-layer fact with rule-kind provenance."""
+    """Add a derived fact with rule-kind provenance."""
     f = Fact(
         relation_name=relation_name, args=args,
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(
             rule=rule, premises_raw=premises,
         ),
@@ -204,7 +202,6 @@ class TestDerivationDAG:
         # r(A,B) cites r(B,A); r(B,A) cites r(A,B).
         ab_loop = Fact(
             relation_name="r", args=("A", "B_alt"),
-            layer=Layer.REASONING,
             provenance=Provenance.from_rule(
                 rule="self", premises_raw=(("r", ("A", "B_alt")),),
             ),
@@ -320,14 +317,12 @@ class TestCycleDetection:
         # Forge a two-node cycle directly.
         f_ab = Fact(
             relation_name="r", args=("A_c", "B_c"),
-            layer=Layer.REASONING,
             provenance=Provenance.from_rule(
                 rule="R1", premises_raw=(("r", ("B_c", "A_c")),),
             ),
         )
         f_ba = Fact(
             relation_name="r", args=("B_c", "A_c"),
-            layer=Layer.REASONING,
             provenance=Provenance.from_rule(
                 rule="R2", premises_raw=(("r", ("A_c", "B_c")),),
             ),
@@ -367,14 +362,12 @@ class TestLoaderRejectsCycles:
         kb = _tiny_kb()
         f_ab = Fact(
             relation_name="r", args=("A2", "B2"),
-            layer=Layer.REASONING,
             provenance=Provenance.from_rule(
                 rule="R1", premises_raw=(("r", ("B2", "A2")),),
             ),
         )
         f_ba = Fact(
             relation_name="r", args=("B2", "A2"),
-            layer=Layer.REASONING,
             provenance=Provenance.from_rule(
                 rule="R2", premises_raw=(("r", ("A2", "B2")),),
             ),
@@ -391,9 +384,9 @@ class TestLoaderRejectsCycles:
 
 
 def _src(kb: KnowledgeBase, rel: str, args: tuple, sid: str) -> Fact:
-    """Add a FACT-layer source fact; return the indexed instance."""
+    """Add a `:source`-carrying fact; return the indexed instance."""
     f = Fact(
-        relation_name=rel, args=args, layer=Layer.FACT,
+        relation_name=rel, args=args,
         provenance=Provenance.from_source(sid),
     )
     kb.add_fact(f)
@@ -451,11 +444,11 @@ class TestWalkPremises:
         # A provenance 2-cycle (rule-kind only, no frontier) must not loop.
         kb = KnowledgeBase.from_ir(parse("(relation r T T)"))
         f_ab = Fact(
-            relation_name="r", args=("A", "B"), layer=Layer.REASONING,
+            relation_name="r", args=("A", "B"),
             provenance=Provenance.from_rule(
                 rule="R1", premises_raw=(("r", ("B", "A")),)))
         f_ba = Fact(
-            relation_name="r", args=("B", "A"), layer=Layer.REASONING,
+            relation_name="r", args=("B", "A"),
             provenance=Provenance.from_rule(
                 rule="R2", premises_raw=(("r", ("A", "B")),)))
         kb.add_fact(f_ab)

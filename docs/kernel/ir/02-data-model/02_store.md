@@ -2,7 +2,7 @@
 
 `KnowledgeBase` is the registry that owns the entity dataclasses
 from [`01_entities.md`](01_entities.md), plus the reverse indexes
-and the derived-view machinery (layer views, hypothesis forks,
+and the derived-view machinery (the fact view, hypothesis forks,
 derivation DAGs).
 
 **Sources of truth:**
@@ -22,7 +22,7 @@ class KnowledgeBase:
     relations: dict[str, Relation]   # both declared and open-world
     rules:     dict[str, Rule]
     hrules:    dict[str, Rule]        # hypothesis-generation rules
-    facts:     list[Fact]             # all layers; `layer` is per-fact
+    facts:     list[Fact]             # every fact; origin is per-fact provenance
     names:     dict[str, NameRef]     # every distinct name + participation
     query:     Query | None           # optional, from (query …)
     classes:   EqClasses              # union-find placeholder
@@ -71,9 +71,10 @@ routing each by its **head**:
    - membership facts are ordinary `Fact`s (no
      `Type` / `Instance` entities; they are plain facts on user-space
      relations, see [`01_entities.md` §1](01_entities.md)).
-   - The fact's **layer is per-fact** (P1.7c S1.7c.1): an explicit
-     `:layer` wins, else derived — `:rule`/`:using` → REASONING,
-     `:source` → FACT, neither → ONTOLOGY.
+   - The fact's **origin is its provenance**: `:rule`/`:using` → a
+     `rule`-kind record, `:source` → a `source`-kind record with the id,
+     neither → a `source`-kind record with `source=None`. An explicit
+     `:layer` is a **load error** (S1.22.1b — knowledge layers gone).
    - Any fact whose head is *not* a declared relation auto-vivifies
      a `Relation(declared=False, …)`.
 3. **Indexes**: `rebuild_indexes()`.
@@ -84,20 +85,22 @@ The loader is **open-world tolerant**: undeclared types and
 relations auto-vivify rather than fail. Errors accumulate and raise
 once at the end with all problems concatenated.
 
-## 4. Layer views — `FactView`
+## 4. Fact view — `FactView`
 
-Four methods on `KnowledgeBase` return read-only filtered views over
-the fact list:
+One method on `KnowledgeBase` returns a read-only filtered view over the
+fact list:
 
 ```python
-kb.ontology()    -> FactView   # ONTOLOGY-layer facts
-kb.fact_layer()  -> FactView   # FACT-layer facts
-kb.reasoning()   -> FactView   # REASONING-layer facts
-kb.all_layers()  -> FactView   # every fact
+kb.all_facts()  -> FactView   # every fact
 ```
 
-`fact_layer()` is named that way — not `facts()` — because `kb.facts`
-is the registry list attribute (Python disallows shadowing).
+Named `all_facts()` — not `facts()` — because `kb.facts` is the registry
+list attribute (Python disallows shadowing). The three *layer-scoped*
+siblings (`ontology()` / `fact_layer()` / `reasoning()`) and
+`facts_in_layer()` were deleted with the `Layer` enum in S1.22.1b: they
+partitioned the list by a denormalised copy of the provenance, the
+`by_source` / `by_rule` filters below select the same facts from the
+provenance itself, and no engine code called them.
 
 `FactView` is a frozen dataclass wrapping a `tuple[Fact, ...]`. It
 supports the sequence protocol (`__iter__` / `__len__` /
@@ -152,7 +155,7 @@ scale at ~50-200 facts. If hypothesis branching becomes a hot path
 `_kb` pointing at the **original** KB, not the fork. So a shared
 `Relation`'s `.facts` (entity API) returns the root KB's facts, *not*
 the fork's view. Fork-scoped queries go through the explicit view
-API: `fork.all_layers().about(name)`. This is intentional —
+API: `fork.all_facts().about(name)`. This is intentional —
 the entity API tells you *root* state, the view API tells you
 *branch* state.
 
@@ -190,8 +193,8 @@ premise, onto a non-terminal primary), the `(rule, premises_raw)`
 dedup key and the `MAX_ALT_JUSTIFICATIONS` cap are in
 [`01_entities.md` §3.1](01_entities.md); the store-side contracts are:
 
-- **Where it is recorded.** `kb.add_and_index_fact` — the reasoning-
-  layer add — returns the pre-existing fact on a dedup hit and records
+- **Where it is recorded.** `kb.add_and_index_fact` — the
+  saturation-time add — returns the pre-existing fact on a dedup hit and records
   the incoming `provenance` as an alternative instead of dropping it.
   That covers the partially-novel multi-assert case; the bulk of
   re-derivations never reach it, because the saturator short-circuits
@@ -333,7 +336,7 @@ Loaders (and the inference engine, P1.3) mutate the KB through:
   beat *open-world* placeholders.
 - `kb.add_rule(rule)` — idempotent by name.
 - `kb.add_fact(f)` — dedupe by `(relation_name, args)`; first-seen
-  layer wins.
+  provenance wins.
 - `kb._index_fact(f)` — incremental index update; call after a
   single-fact `add_fact` to avoid a full `rebuild_indexes`.
 - `kb.rebuild_indexes()` — full rebuild from registries + fact list.
@@ -351,5 +354,5 @@ discarded) rather than mutation.
 - [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax the
   loader parses.
 - [`../../inference/`](../../inference/) — the P1.3 stub that will
-  produce reasoning-layer facts via rule firings.
+  produce derived facts via rule firings.
 - Plan: [`plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/`](../../../../plans/m1_core_graph_reasoning/p1.2_typed_hypergraph/).

@@ -9,7 +9,7 @@ from __future__ import annotations
 from ein.inference.compile import compile_rule
 from ein.inference.engine import Engine
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -326,11 +326,11 @@ def _add_synthetic_hyp(kb: KnowledgeBase, prop: Fact) -> None:
     pair the way P1.5 will eventually do."""
     hyp = Fact(
         relation_name="hypothesis", args=(prop,),
-        layer=Layer.REASONING, provenance=Provenance.from_hypothesis(branch=1),
+        provenance=Provenance.from_hypothesis(branch=1),
     )
     contra = Fact(
         relation_name="contradiction-under", args=(prop,),
-        layer=Layer.REASONING, provenance=Provenance.from_hypothesis(branch=1),
+        provenance=Provenance.from_hypothesis(branch=1),
     )
     kb.add_fact(prop)
     kb.add_fact(hyp)
@@ -351,7 +351,6 @@ def test_hypothesis_contradiction_positive():
     prop = Fact(
         relation_name="co-located",
         args=("Norwegian", "House-2"),
-        layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=1),
     )
     _add_synthetic_hyp(eng.kb, prop)
@@ -377,13 +376,11 @@ def test_hypothesis_contradiction_negative_no_contradiction_fact():
     prop = Fact(
         relation_name="co-located",
         args=("Norwegian", "House-2"),
-        layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=1),
     )
     eng.kb.add_fact(prop)
     eng.kb.add_fact(Fact(
         relation_name="hypothesis", args=(prop,),
-        layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=1),
     ))
     # No (contradiction-under …) fact added.

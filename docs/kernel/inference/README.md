@@ -16,7 +16,7 @@
 
 The inference engine is what takes a populated
 [`KnowledgeBase`](../ir/02-data-model/02_store.md) and produces
-**reasoning-layer facts** by firing
+**derived facts** by firing
 [rules](../ir/01-ein-graph/02_rules.md). Everything else in the
 kernel tree describes *what* the engine reads and writes; this
 chapter describes *how* it does it.
@@ -96,7 +96,7 @@ contributes, locked by S1.21.8:
 
 1. **The graph is canonical, the engine is dynamic.**
    [`feedback_graph_canonical`](../../../README.md). The engine
-   never replaces the KB; it appends to the reasoning layer.
+   never replaces the KB; it only appends.
 2. **Rules can be higher-order.** Three rule types
    ([`../ir/01-ein-graph/02_rules.md`](../ir/01-ein-graph/02_rules.md));
    the matcher must enumerate relation variables.
@@ -376,8 +376,8 @@ or-disjunct's guards are visible to it too (they were not before) —
 splitting the watched relations into
 `derived` (some rule positively asserts it — or, for an
 `(absent (not (R …)))` guard, some rule asserts `(not (R …))`) vs
-`declared_only` (extension fixed by enumerated ONTOLOGY-/FACT-layer
-facts — no rule produces it). The
+`declared_only` (extension fixed by the loaded facts — no rule
+produces it). The
 classification reuses [`compile.asserted_relation`](../../../ein.py/src/ein/inference/compile.py)
 (the same test behind [`closed.producible_relations`](../../../ein.py/src/ein/inference/closed.py))
 and its `negated_relation` dual. Because the activator-bound head var

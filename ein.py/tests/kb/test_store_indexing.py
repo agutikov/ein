@@ -13,11 +13,11 @@ fact exactly once.
 """
 from __future__ import annotations
 
-from ein.kb import Fact, KnowledgeBase, Layer
+from ein.kb import Fact, KnowledgeBase
 
 
 def _fact(rel: str, *args: str) -> Fact:
-    return Fact(relation_name=rel, args=tuple(args), layer=Layer.REASONING)
+    return Fact(relation_name=rel, args=tuple(args))
 
 
 def test_rederived_fact_indexed_exactly_once():
@@ -51,7 +51,7 @@ def test_two_rules_deriving_same_fact_index_once():
     kb = KnowledgeBase.from_ir(parse(
         """
         (relation r T T) (relation p T T) (relation q T T)
-        (r a b :layer fact) (p a b :layer fact)
+        (r a b) (p a b)
         (rule from-r () :match (r ?x ?y) :assert (q ?x ?y) :why "" :priority 100)
         (rule from-p () :match (p ?x ?y) :assert (q ?x ?y) :why "" :priority 100)
         """

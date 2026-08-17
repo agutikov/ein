@@ -9,7 +9,6 @@ from __future__ import annotations
 from ein.kb import (
     Fact,
     KnowledgeBase,
-    Layer,
     Pattern,
     Relation,
     Rule,
@@ -29,15 +28,41 @@ def test_relation_identity_by_name_and_signature():
     assert a == b
 
 
-def test_fact_identity_by_relation_and_args_not_layer_or_provenance():
+def test_fact_identity_by_relation_and_args_not_provenance():
     from ein.kb import Provenance
     a = Fact(
         relation_name="co-located", args=("A", "B"),
-        layer=Layer.FACT,
         provenance=Provenance.from_source("(2)"),
     )
-    b = Fact(relation_name="co-located", args=("A", "B"), layer=Layer.ONTOLOGY)
+    b = Fact(relation_name="co-located", args=("A", "B"))
     assert a == b
+
+
+def test_origin_predicates_read_provenance():
+    """S1.22.1b — `is_given` / `is_derived` replace the `Layer` enum.
+
+    Three cases, matching what the three layers used to record: an
+    authored condition, an engine derivation, and a background
+    assumption (no annotation, or a source-kind record with no source).
+    """
+    from ein.kb import Provenance
+    given = Fact(
+        relation_name="co-located", args=("A", "B"),
+        provenance=Provenance.from_source("(2)"),
+    )
+    assert (given.is_given, given.is_derived) == (True, False)
+
+    for prov in (Provenance.from_rule(rule="transitive"),
+                 Provenance.from_hypothesis(branch=1),
+                 Provenance.rejected(branch=1)):
+        derived = Fact(relation_name="co-located", args=("A", "B"),
+                       provenance=prov)
+        assert (derived.is_given, derived.is_derived) == (False, True)
+
+    for prov in (None, Provenance.from_source(None)):
+        background = Fact(relation_name="is-a", args=("Red", "Color"),
+                          provenance=prov)
+        assert (background.is_given, background.is_derived) == (False, False)
 
 
 def test_rule_identity_by_name_only():
@@ -63,7 +88,7 @@ def test_detached_rule_has_no_applications():
 
 
 def test_detached_fact_args_pass_through():
-    f = Fact(relation_name="co-located", args=("A", "B"), layer=Layer.FACT)
+    f = Fact(relation_name="co-located", args=("A", "B"))
     assert f.relation is None
     assert f.arg_entities == ("A", "B")
     assert f.is_rule_application is False
@@ -102,15 +127,10 @@ def test_attach_does_not_affect_repr_compare_hash():
     assert hash(a) == hash(b)
 
 
-# ── Layer enum coverage ────────────────────────────────────────────
-
-
-def test_layer_values_distinct():
-    assert {Layer.ONTOLOGY, Layer.FACT, Layer.REASONING} == set(Layer)
-    # str roundtrip
-    assert Layer.ONTOLOGY.value == "ontology"
-    assert Layer.FACT.value == "fact"
-    assert Layer.REASONING.value == "reasoning"
+# S1.22.1b — `test_layer_values_distinct` was DELETED with the `Layer`
+# enum. A fact's origin is its `Provenance`; `Fact.is_given` /
+# `Fact.is_derived` are the derived predicates presentation reads, covered
+# by `test_origin_predicates_read_provenance` above.
 
 
 # ── Pattern structural extraction ──────────────────────────────────
@@ -202,18 +222,16 @@ def test_nested_fact_distinct_inner_makes_outer_unequal():
     assert hash(a) != hash(b)
 
 
-def test_nested_fact_layer_excluded_from_identity():
-    # As with non-nested facts: layer/provenance is metadata, not part
-    # of identity. Two outer facts with nested facts in different
-    # layers are still equal.
+def test_nested_fact_provenance_excluded_from_identity():
+    # As with non-nested facts: provenance is metadata, not part of
+    # identity. Two outer facts whose nested facts came from different
+    # places are still equal.
     from ein.kb import Provenance
     inner_fact = Fact(
         relation_name="co-located", args=("Norwegian", "House-2"),
-        layer=Layer.FACT,
     )
     inner_reasoning = Fact(
         relation_name="co-located", args=("Norwegian", "House-2"),
-        layer=Layer.REASONING,
         provenance=Provenance.from_hypothesis(branch=42),
     )
     a = Fact(relation_name="hypothesis", args=(inner_fact,))

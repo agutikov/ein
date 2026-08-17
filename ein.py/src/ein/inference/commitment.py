@@ -34,7 +34,7 @@ from ein.inference.contradiction import ContradictionDetector
 from ein.inference.firing import Firing
 from ein.inference.frontier import smallest_contradiction_frontier
 from ein.inference.saturator import Saturator
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -98,7 +98,6 @@ def try_commitment_set(
         h_fact = Fact(
             relation_name=rn,
             args=args,
-            layer=Layer.REASONING,
             provenance=Provenance.from_hypothesis(branch=0),
         )
         stored = fork.add_and_index_fact(h_fact)

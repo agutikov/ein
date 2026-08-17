@@ -26,7 +26,6 @@
         { "include": "#predicate-form" },
         { "include": "#equality-form" },
         { "include": "#paren" },
-        { "include": "#layer-value" },
         { "include": "#keyword" },
         { "include": "#number" },
         { "include": "#boolean" },
@@ -149,15 +148,6 @@
       "end": "(\\))",
       "endCaptures": { "1": { "name": "punctuation.section.parens.end.ein" } },
       "patterns": [{ "include": "#expression" }]
-    },
-
-    "layer-value": {
-      "comment": "`:layer ontology|fact|reasoning` — the explicit per-fact layer override (S1.7c.1). Must precede #keyword.",
-      "match": "(:layer)\\b\\s+(ontology|fact|reasoning)\\b",
-      "captures": {
-        "1": { "name": "entity.other.attribute-name.ein" },
-        "2": { "name": "constant.language.layer.ein" }
-      }
     },
 
     "keyword": {

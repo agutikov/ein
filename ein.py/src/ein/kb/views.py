@@ -1,11 +1,16 @@
-"""Layer views — S1.2.2.
+"""Fact views — S1.2.2.
 
 :class:`FactView` — a read-only filtered window over a sequence of facts.
-Used by `kb.ontology()` / `kb.fact_layer()` / `kb.reasoning()` /
-`kb.all_layers()` to expose layer-scoped queries without rebuilding the
-underlying KB. (The `FACT` layer accessor is named `fact_layer()`, not
-`facts()`, to avoid shadowing the `kb.facts: list[Fact]` registry
-attribute from S1.2.1.)
+Returned by `kb.all_facts()` to expose the relation / participation /
+provenance filters without rebuilding the underlying KB. (Named
+`all_facts()`, not `facts()`, to avoid shadowing the
+`kb.facts: list[Fact]` registry attribute from S1.2.1.)
+
+S1.22.1b — the three *layer-scoped* accessors (`kb.ontology()` /
+`kb.fact_layer()` / `kb.reasoning()`) were DELETED with the `Layer` enum.
+They partitioned the fact list by a denormalised copy of the provenance;
+:meth:`FactView.by_source` and :meth:`FactView.by_rule` select the same
+facts from the provenance itself, and no engine code called them.
 
 S1.7.23 — the `logical_types` / `logical_instances` / `type_name` /
 `instance_name` helpers were DELETED. They were the encoding-agnostic
@@ -37,14 +42,14 @@ if TYPE_CHECKING:
 class FactView:
     """A read-only window over a tuple of facts.
 
-    Constructed by `KnowledgeBase.ontology()` etc.; the `_kb` field is
+    Constructed by `KnowledgeBase.all_facts()`; the `_kb` field is
     used so view methods can resolve names to entities (e.g.
     ``view.about(Instance(...))`` accepts an Instance OR its name str).
 
     The view is *eager* — `_facts` is materialised at construction
     time. Iteration order is the order in which facts were ingested
-    (i.e. the IR file order, plus any reasoning-layer additions in
-    insertion order).
+    (i.e. the IR file order, plus any derived facts in insertion
+    order).
     """
     _facts: tuple[Fact, ...]
     _kb: KnowledgeBase
@@ -83,20 +88,14 @@ class FactView:
                 yield f
 
     def by_source(self, source: str) -> Iterator[Fact]:
-        """Facts whose `:source` annotation matches.
-
-        Useful in the FACT view to find "condition (10)" etc.
-        """
+        """Facts whose `:source` annotation matches — e.g. "condition (10)"."""
         for f in self._facts:
             if f.source == source:
                 yield f
 
     def by_rule(self, rule_name: str) -> Iterator[Fact]:
-        """Facts whose `:rule` provenance equals `rule_name`.
-
-        Useful in the REASONING view to find all firings of a
-        specific rule.
-        """
+        """Facts whose `:rule` provenance equals `rule_name` — every
+        fact a specific rule derived."""
         for f in self._facts:
             if f.rule_name == rule_name:
                 yield f

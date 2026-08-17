@@ -61,10 +61,10 @@ digraph kb {
   "Milk" -> "Drink" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
   "Juice" -> "Drink" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
   "Water" -> "Drink" [label="instance", color="#d62728", fontcolor="#d62728", style=solid];
-  "House-2" -> "House-1" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
-  "House-3" -> "House-2" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
-  "House-4" -> "House-3" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
-  "House-5" -> "House-4" [label="right-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-2" -> "House-1" [label="right-of (1)", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-3" -> "House-2" [label="right-of (1)", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-4" -> "House-3" [label="right-of (1)", color="#d62728", fontcolor="#d62728", style=solid];
+  "House-5" -> "House-4" [label="right-of (1)", color="#d62728", fontcolor="#d62728", style=solid];
   "Englishman" -> "Red" [label="co-located (2)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Spaniard" -> "Dog" [label="co-located (3)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Coffee" -> "Green" [label="co-located (4)", color="#bcbd22", fontcolor="#bcbd22", style=solid];

@@ -387,15 +387,14 @@ def _render_trace_dag(form: SForm) -> str:
 
 # ── Top-level dispatch ─────────────────────────────────────────────
 
-def _flat_layer(form: SForm) -> str:
-    """Layer of a flat fact form for rendering (mirrors `kb.from_ir._layer_of`):
-    explicit `:layer` wins, else `:rule`/`:using`→reasoning, `:source`→fact,
-    else ontology."""
+def _render_group(form: SForm) -> str:
+    """Which DOT group a flat fact form belongs to, from its provenance
+    kw-pairs: `:rule`/`:using` → reasoning, `:source` → fact, else ontology.
+
+    S1.22.1b: these are *render bucket* names, not knowledge layers — the
+    `Layer` enum is gone and `:layer` is rejected at load. The grouping
+    survives only because the three sub-graphs read better than one."""
     kw = {a.key.name for a in form.args if isinstance(a, KwPair)}
-    for a in form.args:
-        if (isinstance(a, KwPair) and a.key.name == "layer"
-                and isinstance(a.value, Atom)):
-            return a.value.name
     if "rule" in kw or "using" in kw:
         return "reasoning"
     if "source" in kw:
@@ -408,10 +407,11 @@ def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "a",
     """Render an IR node (or a flat sequence of top-level forms) to DOT.
 
     Returns one `digraph { … }` per rendered group, joined by blank lines.
-    A flat program (P1.7c) is **regrouped** by head/layer back into the
-    layer views the renderers draw: `rule`/`hrule` → a rule library;
-    `relation` + ONTOLOGY-layer facts → the ontology view; FACT-layer →
-    facts; REASONING-layer → reasoning. (The deprecated `(ontology …)` /
+    A flat program (P1.7c) is **regrouped** by head + provenance
+    kw-pairs back into the three views the renderers draw: `rule`/`hrule`
+    → a rule library; `relation` + un-annotated facts → the ontology
+    view; `:source`d → facts; `:rule`-derived → reasoning. (The
+    deprecated `(ontology …)` /
     `(facts …)` / `(reasoning …)` / `(rules …)` wrapper forms still render
     directly if passed.)
 
@@ -438,14 +438,13 @@ def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "a",
         if head == "config":
             # Solver knobs — no graph structure to render.
             return ""
-        # A flat fact: render it via its layer's view (singleton group).
-        layer = _flat_layer(node)
+        # A flat fact: render it via its group's view (singleton group).
         wrapper = {"ontology": "ontology", "fact": "facts",
-                   "reasoning": "reasoning"}[layer]
+                   "reasoning": "reasoning"}[_render_group(node)]
         return to_dot(SForm(head=Atom(name=wrapper), args=(node,)),
                       rule_mode=rule_mode, trace_view=trace_view, levi=levi)
 
-    # A sequence of top-level forms — regroup flat forms into layer views.
+    # A sequence of top-level forms — regroup flat forms into the three views.
     forms = [f for f in node if isinstance(f, SForm)]
     rules: list[SForm] = []
     buckets: dict[str, list[SForm]] = {"ontology": [], "fact": [], "reasoning": []}
@@ -461,7 +460,7 @@ def to_dot(node: IRNode | Iterable[IRNode], *, rule_mode: str = "a",
         elif h == "relation":
             buckets["ontology"].append(f)
         else:
-            buckets[_flat_layer(f)].append(f)
+            buckets[_render_group(f)].append(f)
 
     rendered: list[str] = []
     if rules:

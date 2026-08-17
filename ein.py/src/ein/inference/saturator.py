@@ -43,7 +43,7 @@ import heapq
 from collections.abc import Iterator
 from typing import Any
 
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -522,7 +522,7 @@ class Saturator:
             )
             stored = self.kb.add_and_index_fact(Fact(
                 relation_name=src.relation_name, args=(b, a),
-                layer=Layer.REASONING, provenance=prov,
+                provenance=prov,
             ))
             self._needs_enqueue = True
             if self._delta_facts is None:

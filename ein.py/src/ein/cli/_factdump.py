@@ -56,18 +56,16 @@ def print_final_state(
 
     Three modes (the three ``--print-final-*`` flags):
 
-    - ``all`` — the full REASONING layer: the propositional residue of the
-      solve.
+    - ``all`` — everything the engine derived: the propositional residue
+      of the solve.
     - ``positive`` — ``all`` with the ``(not …)`` facts dropped too: the
       positive residue.
     - ``hfacts`` — only the positive facts whose relation is a query
-      ``:hrules`` target (``targets``), across *every* layer so the given
+      ``:hrules`` target (``targets``), *whatever their origin* so the given
       conditions count too — the hypothesis commitments (e.g. zebra2's 25
       ``*-loc``). Negatives have relation_name ``not`` ∉ targets, so they drop
       out for free.
     """
-    from ein.kb.entities import Layer
-
     if mode == "hfacts":
         targets = targets or set()
         facts = [f for f in kb.facts if f.relation_name in targets]
@@ -75,12 +73,12 @@ def print_final_state(
     else:
         facts = [
             f for f in kb.facts
-            if f.layer == Layer.REASONING
+            if f.is_derived
             and not (mode == "positive" and f.relation_name == "not")
         ]
         label = (
-            "REASONING layer, (not …) omitted" if mode == "positive"
-            else "REASONING layer"
+            "derived facts, (not …) omitted" if mode == "positive"
+            else "derived facts"
         )
     facts.sort(key=lambda f: (
         f.relation_name,

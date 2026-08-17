@@ -1,7 +1,7 @@
 """Constraint-scope → DOT renderer — S1.6.1 T1.6.1.2.
 
-A puzzle's *structural constraints* are the rule-application facts in
-the **ontology** layer — the implicit "co-located is symmetric /
+A puzzle's *structural constraints* are the **un-annotated**
+rule-application facts — the implicit "co-located is symmetric /
 color-loc is a bijection" context the solver supplies, as opposed to
 the explicit puzzle conditions. They are identified
 structurally: an ontology fact whose head is **neither a kernel
@@ -54,15 +54,14 @@ _NON_FACT_HEADS = frozenset({
 })
 
 
-def _flat_layer(form: SForm) -> str:
-    """Layer of a flat fact form (mirrors `kb.from_ir._layer_of`): explicit
-    `:layer` wins, else `:rule`/`:using`→reasoning, `:source`→fact, else
-    ontology."""
+def _render_group(form: SForm) -> str:
+    """Which DOT group a flat fact form belongs to, from its provenance
+    kw-pairs: `:rule`/`:using` → reasoning, `:source` → fact, else ontology.
+
+    S1.22.1b: these are *render bucket* names, not knowledge layers — the
+    `Layer` enum is gone and `:layer` is rejected at load. The grouping
+    survives only because the three sub-graphs read better than one."""
     kw = {a.key.name for a in form.args if isinstance(a, KwPair)}
-    for a in form.args:
-        if (isinstance(a, KwPair) and a.key.name == "layer"
-                and isinstance(a.value, Atom)):
-            return a.value.name
     if "rule" in kw or "using" in kw:
         return "reasoning"
     if "source" in kw:
@@ -73,13 +72,13 @@ def _flat_layer(form: SForm) -> str:
 def _is_ontology_form(f: object) -> bool:
     """A flat top-level form belonging to the ontology group (schema +
     property tags + type/is-a enumerations) — i.e. a relation decl or any
-    ONTOLOGY-layer fact, but not a rule / query / trace / config / sourced
-    (FACT) condition / derived (REASONING) fact."""
+    un-annotated fact, but not a rule / query / trace / config / a
+    `:source`d condition / a `:rule`-derived fact."""
     if not (isinstance(f, SForm) and isinstance(f.head, Atom)):
         return False
     if f.head.name in _NON_FACT_HEADS:
         return False
-    return _flat_layer(f) == "ontology"
+    return _render_group(f) == "ontology"
 
 
 def _declared_relations(ontology: SForm) -> set[str]:
@@ -99,9 +98,9 @@ def render_constraints(
     """Render the structural-constraint scopes of a parsed program.
 
     ``forms`` is the tuple of top-level forms (as from ``parse``). The
-    constraints are the rule-application facts in the ONTOLOGY layer
-    form — heads that are neither kernel keywords nor declared
-    relations (see the module docstring).
+    constraints are the un-annotated rule-application facts — heads that
+    are neither kernel keywords nor declared relations (see the module
+    docstring).
     """
     forms_l = [forms] if isinstance(forms, SForm) else list(forms)
     ontology = next(
@@ -110,7 +109,7 @@ def render_constraints(
     )
     if ontology is None:
         # Flat program (P1.7c): synthesise the ontology group from the
-        # relation decls + ONTOLOGY-layer facts among the top-level forms.
+        # relation decls + un-annotated facts among the top-level forms.
         ontology = SForm(
             head=Atom(name="ontology"),
             args=tuple(f for f in forms_l if _is_ontology_form(f)),

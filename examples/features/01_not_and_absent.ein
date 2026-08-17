@@ -48,14 +48,14 @@
 (is-a Carol      Person)
 
 ;; State 1 — Alice ↔ Bob — POSITIVE: (likes Alice Bob) stored.
-(likes Alice Bob :layer fact)
+(likes Alice Bob)
 
 ;; State 2 — Alice ↔ Carol — NEGATED: (not (likes Alice Carol)) stored.
-(not (likes Alice Carol) :layer fact)
+(not (likes Alice Carol))
 
 ;; State 3 — Bob ↔ Carol — UNDECIDED: neither stored.
 
-;; Expected reasoning-layer output (after saturation):
+;; Expected derived output (after saturation):
 ;;
 ;;   (explicitly-dislikes Alice Carol)  ; from see-stored-neg
 ;;   (unknown-feeling     Bob   Carol)  ; from unknown-feeling

@@ -58,7 +58,7 @@ KB ─▶ Engine.compile_all ─▶ JoinPlan ─▶ Saturator.saturate ─▶ re
 
 | module | role |
 |--------|------|
-| [`contradiction.py`](../../../ein.py/src/ein/inference/contradiction.py) | detector: same-layer `(X, ¬X)` pairs + `(false)` |
+| [`contradiction.py`](../../../ein.py/src/ein/inference/contradiction.py) | detector: `(X, ¬X)` pairs (whatever either side's origin — S1.22.1b) + `(false)` |
 | [`frontier.py`](../../../ein.py/src/ein/inference/frontier.py) | `smallest_contradiction_frontier` — the verdict path's unsat core; delegates the search to `explain.py`, so the answer is independent of rule-firing order (provenance-based, NAF-safe, budgeted; not a subset-minimal MUS) |
 | [`explain.py`](../../../ein.py/src/ein/inference/explain.py) | minimum-cardinality explanation over the AND/OR proof graph (each fact an OR-node via [`kb.justifications`](../ir/02-data-model/02_store.md), each justification an AND-node over its `premises_raw`): ATMS-style least-fixpoint label propagation, cycle-safe by construction; `explain` / `minimal_contradiction_frontier`; `ExplanationBudget` caps the worst-case-exponential search and `Explanation.exhausted` reports truncation. Minimal over the **recorded** derivations — i.e. relative to the rule set and the saturation strategy |
 | [`verdict.py`](../../../ein.py/src/ein/inference/verdict.py) | `Solution` / `Ambiguity` / `Contradiction`; verdict read from the model count `k`; `goal_bindings` |

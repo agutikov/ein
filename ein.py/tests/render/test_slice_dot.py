@@ -21,7 +21,7 @@ import pytest
 from ein.inference.firing import Firing
 from ein.ir import parse
 from ein.kb import KnowledgeBase
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.render import render_slice, render_solution, render_state
 
 _HAVE_DOT = shutil.which("dot") is not None
@@ -29,8 +29,8 @@ _HAVE_DOT = shutil.which("dot") is not None
 
 # ── synthetic fact / firing builders ───────────────────────────────
 
-def _f(rel: str, *args, layer: Layer = Layer.REASONING) -> Fact:
-    return Fact(relation_name=rel, args=tuple(args), layer=layer)
+def _f(rel: str, *args) -> Fact:
+    return Fact(relation_name=rel, args=tuple(args))
 
 
 def _firing(rule: str, premises: tuple[Fact, ...], derived: Fact,
@@ -48,7 +48,7 @@ def _parses(dot: str) -> bool:
 #   1. symmetric         → co-located(H3, Blue)
 #   2. type-exclusivity  → ¬co-located(Red, H3)        (an elimination)
 #   3. domain-elimination consumes the ¬-facts          (greyed premises)
-SEED = _f("co-located", "Blue", "H3", layer=Layer.FACT)
+SEED = _f("co-located", "Blue", "H3")
 NEG_RED = _f("not", _f("co-located", "Red", "H3"))
 NEG_GREEN = _f("not", _f("co-located", "Green", "H3"))
 COMMITMENT = (("co-located", ("Blue", "H3")),)
@@ -145,8 +145,8 @@ def test_render_state_emits_full_graph():
 
 
 def test_render_state_since_thickens_new_facts():
-    before = _kb('(relation r X X) (r a b :layer fact)')
-    after = _kb('(relation r X X) (r a b :layer fact) (r b c :layer fact)')
+    before = _kb('(relation r X X) (r a b)')
+    after = _kb('(relation r X X) (r a b) (r b c)')
     plain = render_state(after)
     highlighted = render_state(after, since=before)
     # the carried fact stays thin; the new one is thickened
@@ -176,7 +176,7 @@ def test_all_renderers_emit_valid_dot():
     assert _parses(render_slice(COMMITMENT, FIRINGS, None,
                                 contradiction=(frozenset({SEED}),
                                                frozenset({("co-located", ("Blue", "H3"))}))))
-    kb = _kb('(relation r X X) (r a b :layer fact) (r b c :layer fact)')
+    kb = _kb('(relation r X X) (r a b) (r b c)')
     assert _parses(render_state(kb))
     assert _parses(render_solution(kb))
 

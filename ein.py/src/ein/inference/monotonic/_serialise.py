@@ -14,7 +14,7 @@ from dataclasses import fields
 from typing import Any
 
 from ein.ir.types import Atom, Int, Keyword, KwPair, SForm, String
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.store import KnowledgeBase
 
 # ── Serialisation helpers ────────────────────────────────────
@@ -36,7 +36,7 @@ def _arg_to_node(arg: Any) -> Any:
 
 
 def _fact_to_sform(fact: Fact, *, with_kwargs: bool = True) -> SForm:
-    """Render a Fact as ``(rel arg0 arg1 ... :source "..." :rule "..." :layer ...)``.
+    """Render a Fact as ``(rel arg0 arg1 ... :source "..." :rule "...")``.
 
     Nested-Fact args are recursively lowered without their kwargs
     (so they read as bare ``(rel args...)`` inside the outer form).
@@ -60,48 +60,32 @@ def _fact_to_sform(fact: Fact, *, with_kwargs: bool = True) -> SForm:
                     key=Keyword(name="hypothesis"),
                     value=Int(value=prov.branch or 0),
                 ))
-        # Layer kw-pair only when provenance-derivation wouldn't recover
-        # it on reload (P1.7c S1.7c.1): a `:rule` fact derives REASONING
-        # and a `:source` fact derives FACT for free, so `:layer` is
-        # emitted only for the residue — a hypothesis/unannotated
-        # REASONING fact, an unsourced FACT, a sourced ONTOLOGY fact.
-        # Keeps the flat dump → reload layer round-trip exact (the
-        # wrapped loader silently dropped this annotation).
-        has_rule = prov is not None and prov.kind == "rule" and bool(prov.rule)
-        has_source = (
-            prov is not None and prov.kind == "source" and bool(prov.source)
-        )
-        derived = (
-            Layer.REASONING if has_rule
-            else Layer.FACT if has_source
-            else Layer.ONTOLOGY
-        )
-        if fact.layer is not derived:
-            args.append(KwPair(
-                key=Keyword(name="layer"),
-                value=Atom(name=fact.layer.value),
-            ))
+        # S1.22.1b — no `:layer` kw-pair. It used to be emitted for the
+        # facts whose knowledge layer the provenance alone would not
+        # re-derive on reload; with the layer gone the provenance IS the
+        # origin, so the dump → reload round-trip is exact by
+        # construction rather than by patching.
     return SForm(head=Atom(name=fact.relation_name), args=tuple(args))
 
 
 def _kb_to_ein_text(kb: KnowledgeBase) -> str:
     """Render a KB as a **flat** sequence of ein forms (P1.7c S1.7c.3).
 
-    The block wrappers are gone — each fact is a top-level form. Layer is
-    carried per fact: ONTOLOGY facts (the ``(relation ...)``, ``(is-a ...)``,
-    ``(bijective ...)`` schema) carry no annotation; FACT facts carry
-    ``:source``; REASONING facts (everything the saturator derived,
-    including ``(not ...)``) carry ``:rule`` / ``:using`` — or an explicit
-    ``:layer`` when provenance alone wouldn't re-derive the layer (see
-    :func:`_fact_to_sform`). ONTOLOGY facts are emitted first purely for
-    readability; the round-trip is order-independent.
+    The block wrappers are gone — each fact is a top-level form, and
+    where it came from rides on its provenance: background assumptions
+    (the ``(relation ...)``, ``(is-a ...)``, ``(bijective ...)`` schema)
+    carry no annotation, authored conditions carry ``:source``, and
+    everything the engine derived (including ``(not ...)``) carries
+    ``:rule`` / ``:using``. Un-annotated facts are emitted first purely
+    for readability; the round-trip is order-independent.
     """
     from ein.ir.dump import dump_canonical
 
     ont: list[SForm] = []
     rest: list[SForm] = []
     for f in kb.facts:
-        (ont if f.layer is Layer.ONTOLOGY else rest).append(_fact_to_sform(f))
+        bucket = rest if (f.is_given or f.is_derived) else ont
+        bucket.append(_fact_to_sform(f))
     return dump_canonical([*ont, *rest])
 
 

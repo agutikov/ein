@@ -7,7 +7,7 @@ relation between them, extending the reflexive algebra of
 [`08_self_describing.md`](08_self_describing.md) then expresses *in
 ein-lang itself*.
 
-> **Levels ≠ layers.** The four **levels** here (L0–L3, by *what kind
+> **Levels ≠ origins.** The four **levels** here (L0–L3, by *what kind
 > of node*) are orthogonal to the three **layers** (ontology / fact /
 > reasoning, by *where a fact came from* — see [`01_kb.md` §3](01_kb.md)
 > and the [glossary](../../glossary.md)). A single L1 fact node sits at
@@ -91,7 +91,7 @@ frontier (rules as data); F5 implements it.
 - [`08_self_describing.md`](08_self_describing.md) — expresses this
   L0–L3 schema *in ein-lang*, real syntax only; operational for L0/L1/L2,
   design-only (F5) for L3-on-L3.
-- [`01_kb.md` §3](01_kb.md) — the three knowledge **layers**
+- [`01_kb.md` §3](01_kb.md) — a fact's **provenance**
   (orthogonal to these levels).
 - [F5 — rules as data](../../../../plans/followups/f5_rules_as_data.md)
   — implements the reflexive edge cases (§4).

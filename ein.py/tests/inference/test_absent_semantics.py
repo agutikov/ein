@@ -32,7 +32,7 @@ from ein.inference.commitment import try_commitment_set
 from ein.inference.lookahead import Lookahead
 from ein.inference.saturator import Saturator
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.store import KnowledgeBase
 
 
@@ -253,7 +253,7 @@ def test_lookahead_naf_world_includes_candidate():
     (relation cand T)
     """)
     list(Saturator(kb).saturate())
-    h = Fact("cand", ("A",), layer=Layer.REASONING)
+    h = Fact("cand", ("A",))
     assert Lookahead(kb).dies_immediately(kb, h) is False
 
 
@@ -271,9 +271,9 @@ def test_lookahead_still_kills_on_a_positive_rule():
     """)
     list(Saturator(kb).saturate())
     assert Lookahead(kb).dies_immediately(
-        kb, Fact("cand", ("A",), layer=Layer.REASONING)) is True
+        kb, Fact("cand", ("A",))) is True
     assert Lookahead(kb).dies_immediately(
-        kb, Fact("cand", ("B",), layer=Layer.REASONING)) is False
+        kb, Fact("cand", ("B",))) is False
 
 
 # ── P7 → §Definition (inner free vars are existential) ─────────────

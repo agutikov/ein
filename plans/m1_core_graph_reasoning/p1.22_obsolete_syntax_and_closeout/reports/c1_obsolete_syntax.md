@@ -347,3 +347,9 @@ T1.22.2.1 will read.
      with 23 mismatches — and all 23 are precisely the facts carrying an
      explicit `:layer`. Remove the kwarg and the concept becomes derivable,
      hence removable without loss.
+
+   **Shipped 2026-08-17.** S1.22.1b landed both halves: the cross-layer
+   restriction (and its `lookahead` mirror) deleted, then `:layer` /
+   `Layer` / `Fact.layer` removed and every reader moved onto
+   `Provenance`. `:layer` is now a **load error**, not a silent drop.
+   Census: [`c3_layer_removal.md`](c3_layer_removal.md).

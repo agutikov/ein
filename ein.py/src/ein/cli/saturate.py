@@ -20,8 +20,8 @@ Prints, in order:
 5. Saturation-specific stats: total / productive / redundant
    firings, per-rule firing counts, per-relation derived counts.
 6. With ``--dump``: the saturated KB itself — schema + every fact
-   grouped by layer (ONTOLOGY / FACT / REASONING), with each
-   REASONING-layer fact annotated by the rule that produced it.
+   grouped by origin (BACKGROUND / GIVEN / DERIVED), with each
+   derived fact annotated by the rule that produced it.
 
 The snapshot is intentionally exhaustive — it's both a benchmark
 and a diagnostic for "what does the engine actually do on this
@@ -50,7 +50,7 @@ from ein.inference.engine import Engine
 from ein.inference.firing import Firing
 from ein.inference.saturator import Saturator
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.store import KnowledgeBase
 
 # ── Snapshot ────────────────────────────────────────────────────
@@ -101,12 +101,13 @@ def snapshot(kb: KnowledgeBase, eng: Engine | None = None) -> dict[str, Any]:
         if r.as_arg and not r.as_head
     )
 
-    # ── Facts (totals + per layer) ───────────────────────────────
+    # ── Facts (totals + per origin) ──────────────────────────────
     s["facts_total"] = len(kb.facts)
-    layers = Counter(f.layer for f in kb.facts)
-    s["facts_ontology"] = layers.get(Layer.ONTOLOGY, 0)
-    s["facts_fact"] = layers.get(Layer.FACT, 0)
-    s["facts_reasoning"] = layers.get(Layer.REASONING, 0)
+    s["facts_derived"] = sum(1 for f in kb.facts if f.is_derived)
+    s["facts_given"] = sum(1 for f in kb.facts if f.is_given)
+    s["facts_background"] = (
+        s["facts_total"] - s["facts_derived"] - s["facts_given"]
+    )
 
     # ── Fact-shape breakdowns ────────────────────────────────────
     arities = Counter(len(f.args) for f in kb.facts)
@@ -182,9 +183,9 @@ SCALAR_KEYS = [
     ("names_arg_only",                 "  appearing only as arg"),
     (None,                             None),
     ("facts_total",                    "facts (total)"),
-    ("facts_ontology",                 "  layer = ONTOLOGY"),
-    ("facts_fact",                     "  layer = FACT"),
-    ("facts_reasoning",                "  layer = REASONING"),
+    ("facts_background",               "  origin = BACKGROUND"),
+    ("facts_given",                    "  origin = GIVEN"),
+    ("facts_derived",                  "  origin = DERIVED"),
     (None,                             None),
     ("facts_negated",                  "facts whose head is `not`"),
     ("facts_with_nested_args",         "facts with nested-Fact args (Q40)"),
@@ -362,7 +363,7 @@ def _fact_text_with_provenance(f: Fact) -> str:
 
 
 def dump_kb(kb: KnowledgeBase) -> None:
-    """Print the saturated KB as text — schema + facts by layer.
+    """Print the saturated KB as text — schema + facts by origin.
 
     Output is **readable** but not strictly round-trippable through
     the parser (the `:source` / `:rule` annotation is grammar-clean;
@@ -403,26 +404,21 @@ def dump_kb(kb: KnowledgeBase) -> None:
                 f"  :params ({params})"
             )
 
-    # ── Facts grouped by layer ───────────────────────────────────
-    layer_buckets: dict[Layer, list[Fact]] = {
-        Layer.ONTOLOGY: [],
-        Layer.FACT: [],
-        Layer.REASONING: [],
+    # ── Facts grouped by origin (S1.22.1b — was the `Layer` enum) ──
+    buckets: dict[str, list[Fact]] = {
+        "BACKGROUND": [], "GIVEN": [], "DERIVED": [],
     }
     for f in kb.facts:
-        layer_buckets[f.layer].append(f)
+        key = "DERIVED" if f.is_derived else "GIVEN" if f.is_given else "BACKGROUND"
+        buckets[key].append(f)
 
-    for layer, label in [
-        (Layer.ONTOLOGY,  "ONTOLOGY"),
-        (Layer.FACT,      "FACT"),
-        (Layer.REASONING, "REASONING"),
-    ]:
-        facts = layer_buckets[layer]
+    for label in ("BACKGROUND", "GIVEN", "DERIVED"):
+        facts = buckets[label]
         if not facts:
             continue
         print()
         print(f";; ── {label} ({len(facts)} facts) ──")
-        # Group within a layer by relation name so the eye groups by
+        # Group within a bucket by relation name so the eye groups by
         # what's happening; preserve insertion order within each group.
         groups: dict[str, list[Fact]] = {}
         for f in facts:
@@ -562,7 +558,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument(
         "--dump",
         action="store_true",
-        help="after the benchmark, print the saturated KB grouped by layer",
+        help="after the benchmark, print the saturated KB grouped by origin",
     )
     p.add_argument(
         "--max-steps",

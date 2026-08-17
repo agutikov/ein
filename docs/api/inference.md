@@ -27,7 +27,7 @@ deductive closure *without* the hypothesis search.
 | `saturate` | `saturate(*, max_steps=None)` | `Iterator[Firing]` — one per applied firing; drain to a list to run to fixpoint. |
 | `step` | `step()` | `Firing \| None` — the highest-priority positive candidate, or, at positive quiescence, the one candidate the NAF boundary admits (`None` at the two-phase fixpoint). |
 | `is_stalled` | `is_stalled()` | `bool` — no further firing possible; consults the boundary too, so it means the two-phase fixpoint, not mere closure quiescence. |
-| `contradictions` | `contradictions()` | the same-layer `(X, (not X))` pairs found. |
+| `contradictions` | `contradictions()` | the `(X, (not X))` pairs found — whatever either side's origin (S1.22.1b). |
 
 ```python
 from ein.inference.saturator import Saturator
@@ -220,6 +220,6 @@ so the shipped solve is unchanged.
 ## See also
 
 - [`ein.md`](ein.md) — the end-to-end flow.
-- [`kb.md`](kb.md) — `Fact` / `Layer` / `Provenance` the verdicts carry.
+- [`kb.md`](kb.md) — `Fact` / `Provenance` the verdicts carry.
 - [`trace.md`](trace.md) — turning a verdict into a narrative.
 - [`docs/kernel/inference/`](../kernel/inference/) — the engine internals.

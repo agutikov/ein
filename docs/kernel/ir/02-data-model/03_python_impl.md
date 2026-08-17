@@ -17,12 +17,12 @@ Source root: [`ein.py/src/ein/kb/`](../../../../ein.py/src/ein/kb/).
 
 | module | role |
 |--------|------|
-| [`entities.py`](../../../../ein.py/src/ein/kb/entities.py) | the frozen entity dataclasses (`Relation`, `Rule`, `Fact`, `NameRef`) + `Layer`; `_attach` / `_detach`; `KERNEL_META_RELATIONS` |
+| [`entities.py`](../../../../ein.py/src/ein/kb/entities.py) | the frozen entity dataclasses (`Relation`, `Rule`, `Fact`, `NameRef`); `_attach` / `_detach`; `KERNEL_META_RELATIONS` |
 | [`pattern.py`](../../../../ein.py/src/ein/kb/pattern.py) | `Pattern` — the structural-only view of a rule's `:match` / `:assert` (variables, relation names; no matching) |
 | [`provenance.py`](../../../../ein.py/src/ein/kb/provenance.py) | `Provenance` (4 kinds) + its constructors; `DerivationDAG` + `.to_dot()`; `FactId` |
 | [`store.py`](../../../../ein.py/src/ein/kb/store.py) | `KnowledgeBase` — registries, the reverse indexes, `fork()`, `derivation_dag` / `unsat_core`, the mutation API; `EqClasses`; `Query` |
-| [`views.py`](../../../../ein.py/src/ein/kb/views.py) | `FactView` — read-only layer views + the `relation` / `about` / `by_source` / `by_rule` filters |
-| [`from_ir.py`](../../../../ein.py/src/ein/kb/from_ir.py) | `KnowledgeBase.from_ir` — the flat-form loader (route by head, per-fact layer, open-world auto-vivify, cycle check) |
+| [`views.py`](../../../../ein.py/src/ein/kb/views.py) | `FactView` — the read-only fact view + the `relation` / `about` / `by_source` / `by_rule` filters |
+| [`from_ir.py`](../../../../ein.py/src/ein/kb/from_ir.py) | `KnowledgeBase.from_ir` — the flat-form loader (route by head, per-fact provenance, open-world auto-vivify, cycle check) |
 | [`imports.py`](../../../../ein.py/src/ein/kb/imports.py) | the module-import resolver (`std.<path>` → `stdlib/<path>.ein`; `:as` / `:symbols` + auto-closure, P1.8) |
 | [`render.py`](../../../../ein.py/src/ein/kb/render.py) | `KnowledgeBase.to_dot` — the schema/fact DOT renderer (`_schema_nodes` reads the puzzle's `is-a` facts directly) |
 
@@ -38,7 +38,7 @@ owning-KB back-pointer is wired after construction:
   KBs — the property that makes `kb.fork()`'s by-reference sharing sound.
 - Identity tuples: `Relation` = `(name, signature)`, `Rule` = `(name,)`,
   `Fact` = `(relation_name, args)` (recursive — `args` may hold nested
-  `Fact`s), `Provenance` = all fields except `loc`. Metadata (`loc`, `layer`,
+  `Fact`s), `Provenance` = all fields except `loc`. Metadata (`loc`,
   `provenance`, `_kb`, `raw`) never affects equality.
 
 The per-entity attachment detail is [`01_entities.md` §5](01_entities.md);
@@ -51,7 +51,7 @@ What backs each store member, and the cost of using it:
 | member | shape | lookup | maintenance |
 |--------|-------|--------|-------------|
 | `relations` / `rules` / `hrules` / `names` | `dict[str, …]` | O(1) by name | idempotent `add_*` |
-| `facts` | `list[Fact]` | O(\|facts\|) scan | append-only; dedupe by `(rel, args)`, first-seen layer wins |
+| `facts` | `list[Fact]` | O(\|facts\|) scan | append-only; dedupe by `(rel, args)`, first-seen provenance wins |
 | `_facts_by_relation` | `dict[str, tuple[Fact,…]]` | O(1) by relation | full @ load + incremental on `add_fact` |
 | `_rule_apps_by_rule` / `_rule_apps_on_relation` | `dict[str, tuple[Fact,…]]` | O(1) | full + incremental |
 | `_rules_by_relation` | `dict[str, tuple[Rule,…]]` | O(1) | full rebuild (immutable post-load) |

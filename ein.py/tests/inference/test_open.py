@@ -57,8 +57,8 @@ def _setup_three_states():
     (relation likes T T) (relation is-a T T)
     (is-a Person T)
     (is-a Alice Person) (is-a Bob Person) (is-a Carol Person)
-    (likes Alice Bob :layer fact)
-    (not (likes Alice Carol) :layer fact)
+    (likes Alice Bob)
+    (not (likes Alice Carol))
     """)
 
 

@@ -55,11 +55,11 @@
 (is-a Red    Color)  (is-a Yellow Color)  (is-a Blue    Color)
 
 ;; House-1: Red (committed positive).
-(color-of House-1 Red :layer fact)
+(color-of House-1 Red)
 
 ;; House-2: NOT Red, NOT Yellow → Blue must be forced by domain-elim.
-(not (color-of House-2 Red) :layer fact)
-(not (color-of House-2 Yellow) :layer fact)
+(not (color-of House-2 Red))
+(not (color-of House-2 Yellow))
 
 ;; House-3: no commitments → all three Colors stay open.
 
@@ -69,8 +69,8 @@
 ;;   - domain-elimination fires once for House-2 → asserts (color-of House-2 Blue)
 ;;   - no-room-left silent (no fully-excluded House)
 ;;
-;; The result fact lands in the (reasoning) layer with the four
-;; negative facts + the Yellow is-a as its provenance premises.
+;; The result fact is derived, carrying the four negative facts + the
+;; Yellow is-a as its provenance premises.
 
 
 (query

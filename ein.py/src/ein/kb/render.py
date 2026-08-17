@@ -5,10 +5,10 @@ Unlike the per-form IR renderer in :mod:`ein.ir.to_dot`, this
 renderer **fuses** entity identity across forms: the `Norwegian`
 instance node is emitted **once** and participates in:
 
-- its type-edge to ``Nationality`` (ontology layer),
+- its type-edge to ``Nationality`` (a background assumption),
 - its `(co-located Norwegian House-1 :source "(10)")` fact edge
-  (fact layer),
-- any inferred edges (reasoning layer).
+  (an authored condition),
+- any inferred edges (engine derivations).
 
 This is the visual target from the 2021 prototype's `linked.svg` — types,
 instances, and inferred edges merged onto one canvas, not stacked
@@ -24,12 +24,14 @@ KB graph](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md).
 - Each n-ary ``Fact`` (arity ≠ 2) → an ``octagon`` Levi-bipartite
   hyperedge node with slot-labelled edges.
 - ``is-a`` membership → ``style=dashed, arrowhead=empty``.
-- Layer styling:
-  - ONTOLOGY → plain solid.
-  - FACT → solid; edge label includes the short ``(N)`` source id.
-  - REASONING → dashed; edge label includes the rule name.
-- Colour by relation: a stable hash → palette colour, consistent
-  across layers so the eye groups by relation.
+- Provenance styling (S1.22.1b — was the `Layer` enum):
+  - a background assumption (no annotation) → plain solid.
+  - an authored condition (``:source``) → solid; edge label includes
+    the short ``(N)`` source id.
+  - an engine derivation (``:rule`` / a hypothesis) → dashed; edge
+    label includes the rule name.
+- Colour by relation: a stable hash → palette colour, the same
+  wherever a relation appears so the eye groups by relation.
 - Rule-application meta-facts (``(symmetric R)`` etc.) are
   **suppressed** — they're meta, not data.
 
@@ -43,13 +45,12 @@ fact rendering, not a second convention.
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable
 from typing import Literal
 
 from ..render.dot_util import fact_key, hashed_id
 from ..render.dot_util import quote as _q
 from ..render.palette import hash_color as _hash_color
-from .entities import Fact, Layer
+from .entities import Fact
 from .store import KnowledgeBase
 
 # ── Colour helper ─────────────────────────────────────────────────
@@ -177,14 +178,10 @@ def _emit_hyperedge(
 # ── Main entry point ──────────────────────────────────────────────
 
 
-_ALL_LAYERS = (Layer.ONTOLOGY, Layer.FACT, Layer.REASONING)
-
-
 def to_dot(
     kb: KnowledgeBase,
     *,
-    layers: Iterable[Layer] = _ALL_LAYERS,
-    colour_by: Literal["relation", "layer", "none"] = "relation",
+    colour_by: Literal["relation", "origin", "none"] = "relation",
     include_types: bool = True,
     include_instances: bool = True,
     since: KnowledgeBase | None = None,
@@ -196,12 +193,9 @@ def to_dot(
     ----------
     kb
         The knowledge base to render.
-    layers
-        Which fact layers to include. Default: all three. Use
-        ``layers=(Layer.ONTOLOGY,)`` for a schema-only view, etc.
     colour_by
-        Per-relation deterministic colour (default), per-layer
-        colour, or no colour.
+        Per-relation deterministic colour (default), per-origin colour
+        (authored / derived / background), or no colour.
     include_types
         Emit `Type` nodes + type-edges. Default ``True``.
     include_instances
@@ -219,7 +213,6 @@ def to_dot(
     str
         Complete ``digraph`` string. Pass to ``dot -Tsvg`` for SVG.
     """
-    layers_set = set(layers)
     since_keys = (
         {(f.relation_name, f.args) for f in since.facts}
         if since is not None else None
@@ -234,15 +227,14 @@ def to_dot(
     ]
     # Type / instance / instance-of nodes from the schema facts.
     lines.extend(_emit_schema_nodes(
-        kb, layers_set=layers_set,
-        include_types=include_types, include_instances=include_instances,
+        kb, include_types=include_types, include_instances=include_instances,
     ))
     # Facts.
     if kb.facts:
         lines.append("")
         lines.append("  // facts")
     for f in kb.facts:
-        if f.layer not in layers_set or _suppress(f, kb):
+        if _suppress(f, kb):
             continue
         lines.extend(_emit_fact_line(f, colour_by=colour_by, since_keys=since_keys))
     lines.append("}")
@@ -252,7 +244,6 @@ def to_dot(
 def _emit_schema_nodes(
     kb: KnowledgeBase,
     *,
-    layers_set: set[Layer],
     include_types: bool,
     include_instances: bool,
 ) -> list[str]:
@@ -281,15 +272,15 @@ def _emit_schema_nodes(
 def _emit_fact_line(
     f: Fact,
     *,
-    colour_by: Literal["relation", "layer", "none"],
+    colour_by: Literal["relation", "origin", "none"],
     since_keys: set | None,
 ) -> list[str]:
     """The DOT line(s) for one fact: `is-a` → type-edge style, binary →
-    coloured arrow, else hyperedge (S1.7c.26). The caller filters by layer
-    and suppression. ``since_keys`` drives the S1.6.2 transition highlight
+    coloured arrow, else hyperedge (S1.7c.26). The caller applies
+    suppression. ``since_keys`` drives the S1.6.2 transition highlight
     (facts new since a prior KB drawn at ``penwidth=3``)."""
     colour = _pick_colour(f, colour_by)
-    style = _pick_style(f.layer)
+    style = "dashed" if f.is_derived else "solid"
     label_extra = _label_extra(f)
     penwidth = (
         3 if since_keys is not None
@@ -341,31 +332,23 @@ def _suppress(f: Fact, kb: KnowledgeBase) -> bool:
 def _pick_colour(f: Fact, colour_by: str) -> str:
     if colour_by == "relation":
         return _hash_color(f.relation_name)
-    if colour_by == "layer":
-        return {
-            Layer.ONTOLOGY: "#444444",
-            Layer.FACT: "#000000",
-            Layer.REASONING: "#1f77b4",
-        }[f.layer]
+    if colour_by == "origin":
+        if f.is_derived:
+            return "#1f77b4"
+        return "#000000" if f.is_given else "#444444"
     return "#000000"
-
-
-def _pick_style(layer: Layer) -> str:
-    if layer == Layer.REASONING:
-        return "dashed"
-    return "solid"
 
 
 def _label_extra(f: Fact) -> str | None:
     """The bit after the relation name on the edge label.
 
-    Fact-layer: `(N)` short source id.
-    Reasoning-layer: `by <rule-name>`.
-    Ontology-layer: nothing.
+    An authored condition: `(N)`, its short source id.
+    An engine derivation: `by <rule-name>`.
+    A background assumption: nothing.
     """
-    if f.layer == Layer.FACT and f.source:
+    if f.source:
         return _short_source(f.source)
-    if f.layer == Layer.REASONING and f.rule_name:
+    if f.rule_name:
         return f"by {f.rule_name}"
     return None
 

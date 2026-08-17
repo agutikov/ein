@@ -12,7 +12,7 @@ from ein.inference.hypgen import generate_hypotheses_with_stats
 from ein.inference.lookahead import Lookahead, _is_contradiction
 from ein.inference.saturator import Saturator
 from ein.ir import parse
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.store import KnowledgeBase
 
 
@@ -56,7 +56,7 @@ def test_transitive_join_death():
     (co-located Blue Red), which `sibling-exclusive` already
     forbade — a positive-fact-collides-with-a-negative kill."""
     kb = _saturated_kb(_PUZZLE)
-    h = Fact("co-located", ("Blue", "H1"), layer=Layer.REASONING)
+    h = Fact("co-located", ("Blue", "H1"))
     assert Lookahead(kb).dies_immediately(kb, h) is True
 
 
@@ -64,7 +64,7 @@ def test_survivor_is_alive():
     """(co-located Blue H2) has no one-step contradiction — H2
     carries no co-located fact to chain through."""
     kb = _saturated_kb(_PUZZLE)
-    h = Fact("co-located", ("Blue", "H2"), layer=Layer.REASONING)
+    h = Fact("co-located", ("Blue", "H2"))
     assert Lookahead(kb).dies_immediately(kb, h) is False
 
 
@@ -80,7 +80,7 @@ def test_direct_false_kill():
     (functional co-located)
     (co-located Red H1 :source "(1)")
     """)
-    h = Fact("co-located", ("Red", "H2"), layer=Layer.REASONING)
+    h = Fact("co-located", ("Red", "H2"))
     assert Lookahead(kb).dies_immediately(kb, h) is True
 
 
@@ -95,7 +95,7 @@ def test_self_negating_rule():
     (relation r T T)
     (deny r)
     """)
-    h = Fact("r", ("A", "B"), layer=Layer.REASONING)
+    h = Fact("r", ("A", "B"))
     assert Lookahead(kb).dies_immediately(kb, h) is True
 
 
@@ -153,5 +153,5 @@ def test_no_rules_never_kills():
     """A KB with no rules has no plans — nothing can die in one
     step, so every candidate is reported alive."""
     kb = _saturated_kb('(relation co-located T T)')
-    h = Fact("co-located", ("A", "B"), layer=Layer.REASONING)
+    h = Fact("co-located", ("A", "B"))
     assert Lookahead(kb).dies_immediately(kb, h) is False

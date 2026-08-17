@@ -5,7 +5,6 @@ from pathlib import Path
 
 from ein.inference.engine import Engine
 from ein.ir import parse
-from ein.kb.entities import Layer
 from ein.kb.store import KnowledgeBase
 
 REPO = Path(__file__).resolve().parents[3]
@@ -50,7 +49,7 @@ def test_engine_step_produces_one_firing():
     assert firing.rule == "symmetric"
     assert firing.derived[0].relation_name == "co-located"
     assert firing.derived[0].args == ("House-1", "Norwegian")
-    assert firing.derived[0].layer == Layer.REASONING
+    assert firing.derived[0].is_derived
     # Provenance threads the premise.
     prov = firing.derived[0].provenance
     assert prov is not None and prov.kind == "rule"

@@ -273,12 +273,11 @@ ROUNDTRIP_CASES = [
     "(not (not (lives-in a b)))",
     "(rule n () :match (rel ?a ?b) :assert (not (rel ?b ?a))"
     " :why \"n\")",
-    "(not (co-located N H) :rule type-exclusivity :using (s1)"
-    " :layer reasoning)",
+    "(not (co-located N H) :rule type-exclusivity :using (s1))",
     # Mixed kernel primitives
     "(rule mix () :match (and (or (rel ?a ?b) (rel ?b ?a))"
     " (not (rel ?a ?a)) :where (neq ?a ?b)) :assert ?a :why \"mx\")",
-    # Derived-fact provenance (re-classifies to REASONING via :rule)
+    # Derived-fact provenance
     "(co-located Blue House-2 :rule square-fwd :using (c10 c15))",
     # Numbers (positive, negative, zero)
     "(relation r A B :priority 0)",

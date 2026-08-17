@@ -71,11 +71,13 @@ same set.
 | `trace` | `(trace <event>*)` | **engine-emitted** derivation log — parsed by [`trace/ast.py`](../../../../ein.py/src/ein/trace/ast.py), ignored by `kb.from_ir`; a *sibling*, not part of the declarator-vs-fact dichotomy | `trace/` |
 
 **Else → fact.** A top-level form whose head is none of the above is a
-fact: `=`, `not`, or a generic `(NAME args*)`. Its knowledge **layer** is
-per-fact (no longer positional): an explicit `:layer ontology|fact|reasoning`
-wins, else it is derived — `:rule`/`:using` → REASONING, `:source` → FACT,
-neither → ONTOLOGY ([S1.7c.1](../../../../plans/m1_core_graph_reasoning/p1.7c_block_head_removal/s1.7c.1_layer_attribution_decision.md)).
-A former-wrapper head like `(facts …)` therefore now parses as a plain fact.
+fact: `=`, `not`, or a generic `(NAME args*)`. Where it came from is its
+**provenance annotation** — `:rule`/`:using` → an engine derivation,
+`:source` → a given condition, neither → a background assumption. There
+is no knowledge-layer concept and no override: `:layer` was removed in
+[S1.22.1b](../../../../plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/s1.22.1b_layer_removal.md)
+and the loader rejects it. A former-wrapper head like `(facts …)`
+therefore now parses as a plain fact.
 
 **Declared names are user-space**, with one guard (`_reserved_names`,
 P1.8 S1.8.A1 D3): a `(rule …)` / `(hrule …)` / `(relation …)` / `(macro …)`

@@ -166,7 +166,7 @@ def order_candidates(
         # store. Avoiding top-level imports keeps apriori
         # importable from cold without dragging the world.
         from ein.inference.hypgen import score_hypothesis
-        from ein.kb.entities import Fact, Layer
+        from ein.kb.entities import Fact
 
         def _fact_from_id(fid: FactId) -> Fact:
             rn, args = fid
@@ -178,7 +178,7 @@ def order_candidates(
             # ``fact.relation_name`` and ``fact.args``; provenance
             # / layer are immaterial for the scorer.
             return Fact(
-                relation_name=rn, args=args, layer=Layer.REASONING,
+                relation_name=rn, args=args,
             )
 
         def _set_score(c: CanonicalSetId) -> float:

@@ -3,9 +3,9 @@
 Walks a **flat sequence** of parsed top-level forms and classifies each
 by its head (P1.7c): `relation` → relation decl; `rule` / `hrule` →
 rule; `query` / `config` → their handlers; `trace` → ignored; **any
-other head → a fact** (layer from :func:`_layer_of`). The former block
-wrappers are gone (S1.7c.4): a `(facts …)` form now loads as a fact
-whose relation is `facts`, like any other head.
+other head → a fact**. The former block wrappers are gone (S1.7c.4): a
+`(facts …)` form now loads as a fact whose relation is `facts`, like any
+other head.
 
 The load order matters because some entities reference others:
 0. Pass 0 — macros (P1.8 S1.5.9): build the `(macro …)` registry so the
@@ -41,7 +41,7 @@ from pathlib import Path
 from ein.ir.macros import Macro, MacroError, expand_macros
 from ein.ir.types import Atom, Int, IRNode, KwPair, Range, SForm, String, Var
 
-from .entities import Fact, Layer, Relation, Rule
+from .entities import Fact, Relation, Rule
 from .pattern import Pattern
 from .provenance import Provenance
 from .store import KnowledgeBase, Query
@@ -57,39 +57,24 @@ class KBLoadError(ValueError):
 # / `query` / `config` is a declarator; `trace` is the engine-emitted
 # sibling (ignored on load); ANY OTHER head is a fact. Source of truth:
 # `docs/kernel/ir/03-ein-lang/06_reserved_names.md`.
-_LAYER_BY_NAME = {layer.value: layer for layer in Layer}  # "ontology"/"fact"/"reasoning"
 
 
-def _layer_of(form: SForm, errors: list[str]) -> Layer:
-    """The flat-form layer-attribution rule (S1.7c.1).
-
-    An explicit ``:layer <ontology|fact|reasoning>`` keyword is
-    **authoritative**; otherwise the layer is **derived** from the
-    provenance annotation already on the form — the same signal the
-    ``Provenance`` kind keys on:
-
-    - ``:rule`` / ``:using``  → REASONING (engine working-memory dump)
-    - ``:source``             → FACT      (an explicit numbered statement)
-    - neither                 → ONTOLOGY  (implicit background assumption)
-
-    `:layer` is consumed here only — ``_fact_args`` drops every kw-pair,
-    so it never becomes a fact arg, and the provenance arm is untouched.
-    """
-    kws = _kw_pairs(form.args)
-    explicit = kws.get("layer")
-    if explicit is not None:
-        name = _atom_name(explicit)
-        if name in _LAYER_BY_NAME:
-            return _LAYER_BY_NAME[name]
-        errors.append(
-            f"(:layer {name}) — unknown layer at {form.loc}; "
-            f"expected one of {', '.join(sorted(_LAYER_BY_NAME))}")
-        # fall through to derivation so loading continues
-    if "rule" in kws or "using" in kws:
-        return Layer.REASONING
-    if "source" in kws:
-        return Layer.FACT
-    return Layer.ONTOLOGY
+# S1.22.1b — `:layer ontology|fact|reasoning` is REJECTED, not ignored.
+#
+# Knowledge layers are gone: where a fact came from is its `Provenance`
+# (`:source` → an authored statement, `:rule`/`:using` → an engine
+# derivation, neither → a background assumption), and nothing in the
+# engine branches on it. `:layer` was *authoritative* — it overrode that
+# derivation, and the layer it set fed the contradiction detector's
+# cross-layer restriction, so silently dropping it would change behaviour
+# on an existing file without saying so. That is the failure mode S1.22.0
+# traced the surviving `(or …)` bugs to; the `:where` precedent
+# (silently ignored, Q32) does not apply — `:where` never did anything.
+_LAYER_REMOVED = (
+    "`:layer` was removed in S1.22.1b — knowledge layers no longer exist; "
+    "delete the annotation (a fact's origin is its `:source` / `:rule` "
+    "provenance)"
+)
 
 
 # ── Utility extractors ─────────────────────────────────────────────
@@ -133,7 +118,7 @@ def _fact_args(args: tuple[IRNode, ...]) -> tuple[str | int | Fact, ...]:
     nodes** (nested ``Fact`` instances). A nested SForm in arg
     position becomes a ``Fact`` with the corresponding head /
     args, recursively. The nested Fact is unregistered (``_kb=None``,
-    ``layer=Layer.FACT``); identity by ``(relation_name, args)`` is
+    no provenance); identity by ``(relation_name, args)`` is
     sufficient for equality with any registered fact of the same
     shape.
     """
@@ -153,7 +138,6 @@ def _fact_args(args: tuple[IRNode, ...]) -> tuple[str | int | Fact, ...]:
             nested = Fact(
                 relation_name=head,
                 args=_fact_args(a.args),
-                layer=Layer.FACT,
                 raw=a,
                 loc=a.loc,
             )
@@ -206,7 +190,6 @@ def _ingest_relation(child: SForm, kb: KnowledgeBase, errors: list[str]) -> bool
     kb.add_fact(Fact(
         relation_name="relation",
         args=(name, *sig),
-        layer=Layer.ONTOLOGY,
         loc=child.loc,
     ))
     return True
@@ -363,9 +346,9 @@ def _ingest_rules(
 
 
 def _ingest_one_fact(
-    child: IRNode, kb: KnowledgeBase, layer: Layer, errors: list[str]
+    child: IRNode, kb: KnowledgeBase, errors: list[str]
 ) -> None:
-    """Build one Fact entity at the given ``layer`` (from :func:`_layer_of`)."""
+    """Build one Fact entity from a flat top-level fact form."""
     if not isinstance(child, SForm):
         return
     head_name = _atom_name(child.head)
@@ -378,6 +361,8 @@ def _ingest_one_fact(
     # if they DO they become facts whose relation is the literal
     # head atom name. The KB treats them as ordinary relations.
     kws = _kw_pairs(child.args)
+    if "layer" in kws:
+        errors.append(f"(:layer …) at {child.loc}: {_LAYER_REMOVED}")
     source = (
         kws["source"].value if isinstance(kws.get("source"), String) else None
     )
@@ -409,19 +394,17 @@ def _ingest_one_fact(
             ids.append((inner.head.name, _fact_args(inner.args)))
         premises_raw = tuple(ids)
 
-    # Build the Provenance object — exactly one of source / rule
-    # populates a kind; ONTOLOGY layer with no annotation gets a
-    # source-kind record with source=None (the IR location alone
-    # marks the origin).
-    provenance: Provenance | None
+    # Build the Provenance object — `:rule` / `:using` make it a
+    # derivation; anything else is a source-kind record, with
+    # ``source=None`` for an unannotated background assumption (the IR
+    # location alone marks its origin).
+    provenance: Provenance
     if rule_name is not None:
         provenance = Provenance.from_rule(
             rule=rule_name, premises_raw=premises_raw, loc=child.loc,
         )
-    elif source is not None or layer in (Layer.FACT, Layer.ONTOLOGY):
-        provenance = Provenance.from_source(source=source, loc=child.loc)
     else:
-        provenance = None
+        provenance = Provenance.from_source(source=source, loc=child.loc)
 
     # Auto-vivify undeclared relations (open-world), UNLESS the
     # head is a built-in predicate (eq, neq — Q33). Predicates
@@ -438,7 +421,6 @@ def _ingest_one_fact(
     kb.add_fact(Fact(
         relation_name=head_name,
         args=args_tuple,
-        layer=layer,
         provenance=provenance,
         raw=child,
         loc=child.loc,
@@ -495,7 +477,7 @@ def load(forms: Iterable[SForm], *, base_dir: Path | None = None) -> KnowledgeBa
     by its head: ``relation`` → a relation declaration; ``rule`` /
     ``hrule`` → a rule; ``macro`` → a pattern macro (S1.5.9);
     ``query`` / ``config`` → their handlers; ``trace`` → ignored;
-    **anything else → a fact** with layer from :func:`_layer_of`. (A
+    **anything else → a fact**. (A
     former-wrapper head such as ``(facts …)`` is now just a fact whose
     relation is ``facts``.)
 
@@ -520,7 +502,7 @@ def load(forms: Iterable[SForm], *, base_dir: Path | None = None) -> KnowledgeBa
     flat_relations: list[SForm] = []
     flat_rules: list[SForm] = []
     flat_macros: list[SForm] = []
-    flat_facts: list[tuple[SForm, Layer]] = []   # each carries its own layer
+    flat_facts: list[SForm] = []
     query_blocks: list[SForm] = []
     config_blocks: list[SForm] = []
 
@@ -547,8 +529,7 @@ def load(forms: Iterable[SForm], *, base_dir: Path | None = None) -> KnowledgeBa
             pass  # engine-emitted output; parsed by trace/ast.py, not here.
         else:
             # The flat default: any non-reserved head is a fact, with its
-            # layer derived (or read off an explicit :layer) per S1.7c.1.
-            flat_facts.append((form, _layer_of(form, errors)))
+            flat_facts.append(form)
 
     # Pass 0 — macros (P1.8 S1.5.9). Built first so the rules pass can
     # expand `(macro …)` invocations in every clause. (Imports were already
@@ -562,9 +543,9 @@ def load(forms: Iterable[SForm], *, base_dir: Path | None = None) -> KnowledgeBa
     # Pass 2 — rules. After this, rule-name resolution is possible.
     _ingest_rules(flat_rules, kb, errors)
 
-    # Pass 3 — facts. Each flat fact carries its own layer (resolved above).
-    for fact_form, layer in flat_facts:
-        _ingest_one_fact(fact_form, kb, layer, errors)
+    # Pass 3 — facts.
+    for fact_form in flat_facts:
+        _ingest_one_fact(fact_form, kb, errors)
 
     # Query (last one wins if there are multiple).
     if query_blocks:

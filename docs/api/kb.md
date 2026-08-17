@@ -46,7 +46,7 @@ The attributes an embedder reads (all populated by the loader):
 
 | attribute | type | what it holds |
 |-----------|------|---------------|
-| `facts` | `list[Fact]` | every fact across all three layers. |
+| `facts` | `list[Fact]` | every fact — given, derived and background alike. |
 | `relations` | `dict[str, Relation]` | declared relations by name. |
 | `rules` | `dict[str, Rule]` | rules the saturator fires. |
 | `hrules` | `dict[str, Rule]` | hypothesis rules (hypgen only — never fired). |
@@ -109,13 +109,13 @@ A proposition over objects. Identity is `(relation_name, args)`.
 |-------|---------|
 | `relation_name` | `str` — the relation head. |
 | `args` | tuple of args (bare strings/ints, or nested `Fact`s for hyperedges). |
-| `layer` | a [`Layer`](#layer) — which population the fact belongs to. |
 | `provenance` | a [`Provenance`](#provenance) — where the fact came from. |
+| `is_given` / `is_derived` | `bool` — read off the provenance (see below). |
 
 ```python
 f = verdict.trace[-1].derived[0]
-f.relation_name, f.args, f.layer.name, f.provenance.kind
-# 'pet-loc', ('Fox', 'House-1'), 'REASONING', 'rule'
+f.relation_name, f.args, f.provenance.kind, f.is_derived
+# 'pet-loc', ('Fox', 'House-1'), 'rule', True
 ```
 
 ### `Relation`, `Rule`
@@ -125,15 +125,19 @@ Frozen dataclasses identified by `name`. They expose cross-reference
 delegate to the owning KB. Read them via `kb.relations[name]` /
 `kb.rules[name]`.
 
-### `Layer`
+### Where a fact came from
 
-`Enum` with three members — the populations the KB stratifies facts into:
+Two `Fact` properties, both read straight off `provenance`:
 
-- `ONTOLOGY` — implicit assumptions (schema, instance enumeration,
-  structural facts).
-- `FACT` — explicit problem statements (the puzzle's numbered conditions,
-  each `:source "(N)"`-annotated).
-- `REASONING` — facts the engine derives at runtime (firings, hypotheses).
+- `f.is_given` — an explicit problem statement (`:source "(N)"`).
+- `f.is_derived` — the engine produced it (a rule firing or a hypothesis).
+- neither — a background assumption (schema, `is-a` enumeration, tag).
+
+They are *presentation* only: the engine treats every fact alike. (Before
+S1.22.1b this was a stored `Layer` enum, and the contradiction detector
+read it — which silently accepted a puzzle whose own clues contradicted
+each other. Both the enum and the `:layer` annotation are gone; the
+loader rejects `:layer`.)
 
 ### `Pattern`, `Query`, `FactView`, `EqClasses`
 

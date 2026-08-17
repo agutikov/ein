@@ -14,14 +14,12 @@ Public API:
 - :class:`Relation`, :class:`Rule`, :class:`Fact` — entity dataclasses.
   (S1.7.23 — the `Type` / `Instance` entity classes were deleted with the
   kernel type system; the inheritance forest is just `is-a` facts.)
-- :class:`Layer` — three knowledge populations (ontology / fact /
-  reasoning).
 - :class:`Pattern` — structural view of a `:match` / `:assert` clause.
 - :class:`Query` — a `(query …)` block.
 - :func:`load` — build a KB from parsed IR forms (also exposed as
   ``KnowledgeBase.from_ir(forms)``).
 """
-from .entities import Fact, Layer, Relation, Rule
+from .entities import Fact, Relation, Rule
 from .from_ir import KBLoadError, load
 from .pattern import Pattern
 from .provenance import DerivationDAG, Provenance
@@ -36,7 +34,6 @@ __all__ = [
     "FactView",
     "KBLoadError",
     "KnowledgeBase",
-    "Layer",
     "Pattern",
     "Provenance",
     "Query",

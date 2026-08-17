@@ -48,7 +48,7 @@ from ein.inference.verdict import (
     Verdict,
     is_solved,
 )
-from ein.kb.entities import Fact, Layer
+from ein.kb.entities import Fact
 from ein.kb.provenance import FactId, Provenance
 from ein.kb.store import KnowledgeBase
 
@@ -107,14 +107,13 @@ def _write_negation_local(
 ) -> None:
     inner = Fact(
         relation_name=rn, args=args,
-        layer=Layer.REASONING, provenance=None,
+        provenance=None,
     )
     if root_kb._fact_by_id(primitives.NOT, (inner,)) is not None:
         return
     not_fact = Fact(
         relation_name=primitives.NOT,
         args=(inner,),
-        layer=Layer.REASONING,
         provenance=Provenance.from_rule(
             rule="<monotonic-unconditional>",
             premises_raw=(),
@@ -159,8 +158,7 @@ def _promote_forced_positives(
         promoted = Fact(
             relation_name=rn,
             args=args,
-            layer=Layer.REASONING,
-            provenance=Provenance.from_rule(
+                provenance=Provenance.from_rule(
                 rule="<forced-positive>", premises_raw=(),
             ),
         )
