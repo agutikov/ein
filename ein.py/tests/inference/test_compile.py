@@ -113,7 +113,10 @@ def test_compile_absent_premise_emits_absent_guard():
     (guards,) = plan.naf_guards
     (neg,) = guards
     assert isinstance(neg.guard, AbsentGuard)
-    assert neg.scope == frozenset({"a", "b"})
+    # `a`/`b` from the preceding positive premise, plus the rule's own
+    # parameter `?r` — activator-bound, so in scope at every premise
+    # position (see `split_naf`'s `seed_vars`).
+    assert neg.scope == frozenset({"a", "b", "r"})
     assert len(neg.sub_steps) == 1
     sub = neg.sub_steps[0]
     assert isinstance(sub, Join) and sub.relation == "other"

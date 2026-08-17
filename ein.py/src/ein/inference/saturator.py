@@ -641,6 +641,7 @@ class Saturator:
         bindings: dict[str, Any],
         premises: tuple[Fact, ...],
         existing: list[Fact | None],
+        guards: tuple[NafGuard, ...] = (),
     ) -> None:
         """Record a redundant firing as an ALTERNATIVE justification (S1.21.7).
 
@@ -670,6 +671,15 @@ class Saturator:
         prov = Provenance.from_rule(
             rule=plan.rule_name,
             premises_raw=tuple((p.relation_name, p.args) for p in premises),
+            # S1.21.8 — an alternative justification carries its OWN negative
+            # premises. Provenance is per derivation (S1.21.7), so a
+            # re-derivation admitted through the boundary depends on what
+            # *its* guards found missing; inheriting the primary's, or
+            # recording none, would misreport the alternative's dependencies.
+            absent_premises=(
+                World(self.kb).negative_premises(guards, bindings)
+                if guards else ()
+            ),
         )
         for fact in targets:
             self.kb.record_justification(fact, prov)
@@ -720,7 +730,8 @@ class Saturator:
             # here — it is exactly the derivation `Fact.provenance`'s
             # first-derivation-wins rule would otherwise drop.
             if self._record_alternatives:
-                self._record_alternative(plan, bindings, premises, existing)
+                self._record_alternative(
+                    plan, bindings, premises, existing, guards)
             return Firing(
                 rule=plan.rule_name,
                 activator=tuple(str(a) for a in plan.activator_args),

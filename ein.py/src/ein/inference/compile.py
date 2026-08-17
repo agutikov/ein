@@ -31,6 +31,7 @@ dispatches on type during unification.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 
 from ein.ir.types import Atom, Int, IRNode, KwPair, SForm, Var
@@ -423,9 +424,9 @@ def _watched_relations(steps: tuple[object, ...]) -> frozenset[str]:
     return frozenset(out)
 
 
-def split_naf(steps: tuple[object, ...]) -> tuple[
-    tuple[object, ...], tuple[NafGuard, ...],
-]:
+def split_naf(
+    steps: tuple[object, ...], seed_vars: Iterable[str] = (),
+) -> tuple[tuple[object, ...], tuple[NafGuard, ...]]:
     """Partition a compiled step tuple into (positive residue, NAF guards).
 
     S1.21.8 — the compile half of the closure/worlds split. Top-level
@@ -441,10 +442,20 @@ def split_naf(steps: tuple[object, ...]) -> tuple[
     ``forall`` desugars to: ``(absent (and G (absent B)))``) are **not**
     lifted. They are part of the negative query, not of the closure, and the
     boundary evaluates them as one unit.
+
+    ``seed_vars`` are the rule's **parameter** variables (the keys of
+    :attr:`JoinPlan.bindings_seed`, bound from the activator fact). They are
+    in scope for the *whole* match, at every premise position, so every
+    guard's scope starts from them. Omitting them is not cosmetic: a
+    predicate :class:`Guard` inside an ``(absent …)`` is compiled from the
+    **raw IR nodes** — unlike a relation slot, ``_slot`` never substitutes a
+    bound parameter into it — so an `(eq ?y ?PARAM)` under a guard would
+    resolve ``?PARAM`` to ``None`` at the boundary, the negative query would
+    find nothing, and the guard would pass when it must fail.
     """
     positive: list[object] = []
     guards: list[NafGuard] = []
-    bound: set[str] = set()
+    bound: set[str] = set(seed_vars)
     for st in steps:
         if isinstance(st, AbsentGuard):
             guards.append(NafGuard(
@@ -541,7 +552,7 @@ def compile_rule(rule: Rule, activator: Fact | None) -> JoinPlan:
     # S1.21.8: lift each disjunct's `(absent …)` premises out of the closure
     # plan. `match_seqs` is what the matcher runs (purely positive);
     # `guard_seqs` is what the closure/world boundary evaluates.
-    split = [split_naf(s) for s in raw_seqs]
+    split = [split_naf(s, bindings) for s in raw_seqs]
     match_seqs = [s for s, _g in split]
     guard_seqs = tuple(g for _s, g in split)
 

@@ -10,11 +10,17 @@ and executed 2026-08-17**:
 [S1.21.7](s1.21.7_multi_justification_provenance.md) (multi-justification
 provenance + the companion contradiction-answer wiring) and
 [S1.21.8](s1.21.8_boundary_naf.md) (purely-positive closure + boundary NAF),
-which also closed divergences **D3** and **D5**. Gate after both: 1342 unit
-tests, **zero** xfails, acceptance 17/17 verdicts unchanged, `ruff` clean —
-and faster than before (acceptance 130 s → 91 s). Open remainder: the
-[§Divergences](#divergences-surfaced-by-investigation-2026-08-16)
-one-liner D-R5-1.
+which also closed divergences **D3** and **D5**.
+
+**✅ PHASE COMPLETE 2026-08-17.** Every divergence is closed: D3 and D5 by
+S1.21.8, **D-R5-1** by its one-line fix (plus a second the report missed —
+see the entry), and the two defects the follow-up stages *introduced*,
+**D-S8-1** (a real soundness bug: `NafGuard.scope` dropped activator
+parameters, so a predicate guard under an `(absent …)` compared against
+`None` and passed on a false absence) and **D-S8-2**, both found by
+adversarially probing the shipped stages and both pinned. Final gate:
+**1345 unit tests, zero xfails**, acceptance 17/17 with verdicts unchanged,
+`ruff` clean — and faster than the phase started (acceptance 130 s → 91 s).
 **Source:** [`../REVIEW_M1-01.md`](../REVIEW_M1-01.md) — an external
 architecture review of `master` *as a reasoning engine*. Its core thesis:
 the architecture is right (monotone deductive layer + non-monotone search
@@ -188,11 +194,47 @@ here, not fixed by the docs-only T1.21.5.2.
 - **D-R5-1 — `_handle_dead` NameError with `enable_path_nogoods=False`
   and a dumper attached** (from the R5 investigation,
   [`reports/r5_positioning.md`](reports/r5_positioning.md) §2).
-  [`_helpers.py:434`](../../../ein.py/src/ein/inference/monotonic/_helpers.py)
-  assigns `landed` only inside the `if ctx.cfg.enable_path_nogoods:`
-  gate, but the dumper call reads it unconditionally at `:456–457`
-  (`nogood_emitted=landed, nogood_subsumed=not landed`) — any dead
-  entering under that config raises `NameError`. Candidate fix (one
-  line): initialise `landed = False` before the gate. Behaviour change
-  on an off-default diagnostic path, so out of the docs-only T1.21.5.2
-  — left for the acceptance gate / follow-up.
+  ✅ **FIXED 2026-08-17.**
+  [`_helpers._handle_dead`](../../../ein.py/src/ein/inference/monotonic/_helpers.py)
+  assigned `landed` only inside the `if ctx.cfg.enable_path_nogoods:` gate
+  while the dumper call read it unconditionally, so any dead entering under
+  that config raised `NameError`. Both features had tests; nothing
+  exercised them *together*. Fixed as the report proposed (`landed = False`
+  before the gate) plus one the report missed: `nogood_subsumed=not landed`
+  would then report **True** for a dead that never attempted a clause, so
+  it is now `enable_path_nogoods and not landed` — nothing attempted means
+  nothing subsumed. Pinned by
+  `test_monotonic_dumper.py::test_dead_entering_with_nogoods_disabled_and_dumper`,
+  verified to fail without the fix.
+
+## Divergences surfaced by executing S1.21.7 / S1.21.8 (2026-08-17)
+
+Found by adversarially probing the two follow-up stages *after* they
+landed — both were defects the stages themselves introduced, and both are
+fixed with regression pins.
+
+- **D-S8-1 — `NafGuard.scope` dropped the rule's activator parameters.**
+  **Soundness bug, reproduced and fixed.** `compile.split_naf` started
+  `bound = set()` and collected only vars bound by positive Scan/Join
+  steps, so a rule *parameter* — bound from the activator and in scope for
+  the entire match — was projected away before the boundary ran the guard.
+  Harmless for relation slots, because `_slot` substitutes a bound
+  parameter to a literal at compile time; **not** harmless for a predicate
+  `Guard`, which is built from the raw IR nodes. An `(eq ?y ?PARAM)` under
+  an `(absent …)` therefore resolved `?PARAM` to `None`, the negative query
+  found nothing, and the guard **passed when it had to fail** — the rule
+  fired on a false absence. Fixed by seeding `split_naf` with the plan's
+  `bindings_seed` keys; pinned by
+  `test_world_boundary.py::test_scope_includes_the_rules_activator_parameters`.
+- **D-S8-2 — alternative justifications lost their negative premises.**
+  `Saturator._apply` passed its guards to `fire()` on the productive path
+  but called `_record_alternative` without them, so a re-derivation
+  recorded as an alternative justification (S1.21.7) carried
+  `absent_premises=()` however many guards it had been admitted through.
+  Provenance is per *derivation*, so each derivation must carry its own
+  negative dependencies. Fixed; pinned by
+  `test_world_boundary.py::test_an_alternative_justification_carries_its_own_negative_premises`.
+- **Clean under attack:** a randomised AND/OR-graph fuzz of
+  `inference/explain.py` (cyclic and acyclic, varying justification and
+  premise fan-out) found no unsoundness, no non-termination and no
+  non-determinism.

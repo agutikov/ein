@@ -272,3 +272,42 @@ def test_dumper_summary_records_contradiction_verdict(
     solve(kb, max_set_size=1, dumper=dumper)
     summary = json.loads((tmp_path / "summary.json").read_text())
     assert summary["verdict"] == "Contradiction"
+
+
+# ── 5) D-R5-1: nogoods off + dumper attached ──────────────────────
+
+
+def test_dead_entering_with_nogoods_disabled_and_dumper(tmp_path: Path) -> None:
+    """Divergence D-R5-1 (P1.21 R5) — regression.
+
+    ``_handle_dead`` assigned ``landed`` only inside the
+    ``if ctx.cfg.enable_path_nogoods:`` gate but read it unconditionally in
+    the dumper call, so any dead entering under
+    ``enable_path_nogoods=False`` with a dumper attached raised
+    ``NameError``. The two features were each individually tested; nothing
+    exercised them together.
+
+    The record must also be *honest*: with no clause attempted, nothing was
+    emitted and nothing was subsumed either.
+    """
+    kb = _kb(SINGLETON_FIXTURE)
+    dumper = MonotonicDumper(out_dir=tmp_path)
+    solve(
+        kb, max_set_size=2, dumper=dumper,
+        config=SolverConfig(
+            enable_pre_branch_lookahead=False,
+            enable_lookahead_kill_cache=False,
+            enable_path_nogoods=False,
+        ),
+    )
+    events = [
+        json.loads(line)
+        for line in (tmp_path / "00_timeline.jsonl").read_text().splitlines()
+    ]
+    deads = [e for e in events
+             if e.get("event") == "entering"
+             and str(e.get("outcome", "")).startswith("dead")]
+    assert deads, "fixture must produce at least one dead entering"
+    for d in deads:
+        assert d["nogood_emitted"] is False
+        assert d["nogood_subsumed"] is False

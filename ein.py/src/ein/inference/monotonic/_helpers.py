@@ -434,6 +434,12 @@ def _handle_dead(
     else:
         ctx.stats.enterings_dead_post += 1
 
+    # D-R5-1 (P1.21 R5): `landed` is read unconditionally by the dumper call
+    # below, so it must exist even when no clause was attempted. With
+    # `enable_path_nogoods=False` and a dumper attached, any dead entering
+    # used to raise NameError. False is the honest value: nothing landed
+    # because nothing was emitted.
+    landed = False
     if ctx.cfg.enable_path_nogoods:
         landed = emit_nogood(ctx.root_kb, frozenset(c), min_size=1)
         if landed:
@@ -458,6 +464,9 @@ def _handle_dead(
             outcome=result.kind,  # "dead-pre" / "dead-post"
             facts_merged=0,
             nogood_emitted=landed,
-            nogood_subsumed=not landed,
+            # Not `not landed`: with nogoods off nothing was *attempted*, so
+            # nothing was subsumed either. "Subsumed" means we emitted a
+            # clause and an existing one already covered it.
+            nogood_subsumed=ctx.cfg.enable_path_nogoods and not landed,
         )
 

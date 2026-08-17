@@ -127,6 +127,32 @@ class TestCompileSplit:
         assert g.monotone is True
         assert g.watched == frozenset({"r"})
 
+    def test_scope_includes_the_rules_activator_parameters(self):
+        # REGRESSION. `scope` used to start empty and collect only vars bound
+        # by positive Scan/Join steps, so a rule *parameter* — bound from the
+        # activator, in scope for the whole match — was projected away at the
+        # boundary. Harmless for relation slots (`_slot` substitutes a bound
+        # param to a literal at compile time) but NOT for a predicate `Guard`,
+        # which is compiled from the raw IR: `(eq ?y ?P)` resolved `?P` to
+        # None, the negative query found nothing, and the guard passed when it
+        # had to fail.
+        kb = _kb("""
+        (rule gate (?P)
+          :match  (and (trigger ?a) (absent (and (r ?a ?y) (eq ?y ?P))))
+          :assert (gated ?a) :why "g" :priority 200)
+        (relation trigger T) (relation r T T) (relation gated T)
+        (relation gate T)
+        (gate BAD :source "activator")
+        (trigger X :source "(1)")
+        (r X BAD :source "(2)")
+        """)
+        ((g,),) = _plan(kb, "gate").naf_guards
+        assert "P" in g.scope
+        list(Saturator(kb).saturate())
+        assert not [f for f in kb.facts if f.relation_name == "gated"], (
+            "the guard must see ?P: (r X BAD) with BAD=?P blocks the firing"
+        )
+
     def test_split_naf_on_a_plan_with_no_guards_is_identity(self):
         steps = _plan(_kb("""
         (rule plain () :match (seed ?x) :assert (ok ?x) :why "p" :priority 100)
@@ -245,6 +271,26 @@ class TestNegativeProvenance:
         """)
         list(Saturator(kb).saturate())
         assert kb._fact_by_id("ok", ("A",)).provenance.absent_premises == ()
+
+    def test_an_alternative_justification_carries_its_own_negative_premises(self):
+        # REGRESSION. Provenance is per *derivation* (S1.21.7), so a
+        # re-derivation admitted through the boundary depends on what ITS
+        # guards found missing. The redundant-firing path used to record the
+        # alternative without guards, silently dropping that half.
+        kb = _kb("""
+        (rule r-pos () :match (other ?x) :assert (target ?x)
+          :why "p" :priority 100)
+        (rule r-naf () :match (and (seed ?x) (absent (block ?x)))
+          :assert (target ?x) :why "n" :priority 500)
+        (relation seed T) (relation other T) (relation block T)
+        (relation target T)
+        (seed A :source "(1)") (other A :source "(2)")
+        """)
+        list(Saturator(kb).saturate())
+        target = kb._fact_by_id("target", ("A",))
+        by_rule = {p.rule: p for p in kb.justifications(target)}
+        assert by_rule["r-pos"].absent_premises == ()      # purely positive
+        assert by_rule["r-naf"].absent_premises == (("block", ("A",)),)
 
     def test_nested_guard_records_both_levels(self):
         kb = _kb("""
