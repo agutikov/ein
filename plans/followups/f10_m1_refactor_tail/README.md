@@ -31,7 +31,7 @@ ordering never ranked.
 | # | group | stages | rationale |
 |---|---|---|---|
 | ~~1~~ | ~~`1_trivial/`~~ | `.10` `.11` `.16` `.17` `.19` `.24` `.32` | **drained 2026-08-17** — see [§Group 1](#group-1--trivial--low-risk-drained-2026-08-17) |
-| 2 | [`2_kb_store/`](2_kb_store/) | `.20` `.21` | `kb/store.py`; the typed-wrapper prerequisite was re-scoped and closed, so these two stand alone |
+| ~~2~~ | ~~`2_kb_store/`~~ | `.20` `.21` | **drained 2026-08-17** — see [§Group 2](#group-2--kbstorepy-drained-2026-08-17) |
 | 3 | [`3_dot_emitter/`](3_dot_emitter/) | `.25` → `.26` | the RTC DOT pair, in that order — `.26` routes through `.25`'s API |
 | 4 | [`4_trace_depth/`](4_trace_depth/) | `.29` | last of the ranked waves |
 | 5 | [`5_unranked/`](5_unranked/) | `.12` `.13` `.14` `.18` `.27` | the five the suggested ordering does not rank — engine + CLI, `.18` is the only perf-shaped one |
@@ -42,8 +42,6 @@ ordering never ranked.
 | **S1.7c.13** | `_lattice_public` post-amble | F-ENG-5 (+14) | low |
 | **S1.7c.14** | Collapse unsat-core synthesis | F-ENG-7 | med |
 | **S1.7c.18** | Drop redundant `consistent()` (perf) | F-ENG-12 | perf |
-| **S1.7c.20** | Decompose `rebuild_indexes` | F-KB-2 | med |
-| **S1.7c.21** | `snapshot` shallow-copy | F-KB-6 | med |
 | **S1.7c.25** | Shared DOT emitter API | F-RTC-1 (+F-KB-8) | high (headline) |
 | **S1.7c.26** | Decompose `to_dot` | F-KB-10 ≡ F-RTC-6 | med |
 | **S1.7c.27** | Split `_build_parser` | F-RTC-2 | low–med |
@@ -102,6 +100,33 @@ current-code evidence that its acceptance still holds.
   `tests/trace/test_render.py::test_trace_control_chars_escaped_on_emit` —
   it asserts on emitted bytes precisely because a value round-trip alone is
   green pre-fix and proves nothing.
+
+### Group 2 — `kb/store.py` (drained 2026-08-17)
+
+- **S1.7c.20** (decompose `rebuild_indexes`, F-KB-2) — landed `fc098a6`,
+  **half of it deliberately retired**. What shipped is the one live defect:
+  the two walks over `self.facts` are fused into a single pass
+  (`store.py:494-533`) that feeds every fact-derived index, the second walk
+  having only rebuilt the head→facts grouping the first already held.
+  What did *not* ship, and why: the spec's "164 ln / 8 indexes / split into
+  per-index helpers / F-KB-11 `_rules_by_type` early-skip" was already
+  stale when it was written — S1.7.23 had deleted `_rules_by_type`
+  outright, and the function measures **62 code lines** today, not 164.
+  fc098a6 assessed the helper-split as no longer load-bearing and dropped
+  it. **Residue, stated plainly:** the spec's `< ~50 ln` bar is therefore
+  unmet by ~12 lines, by decision rather than by omission. The three phases
+  left (fused fact pass → `names` → `_rules_by_relation`) are each linear
+  and distinct, so a split would buy naming, not structure.
+- **S1.7c.21** (`snapshot` shallow-copy, F-KB-6) — landed `fc098a6`.
+  `snapshot()` (`store.py:839`) routes through `_copy_fact_indexes_into`
+  (`:891`), the single fork/snapshot copy contract; the per-solution
+  `rebuild_indexes()` is gone. Soundness rests on `_index_fact` rebinding
+  each key to a fresh immutable tuple rather than mutating in place, so the
+  copy cannot leak across the source/snapshot boundary — and that is
+  asserted, not assumed, by `test_kb_snapshot_indexes_match_rebuild`. The
+  one behaviour delta is the `names` dict **key order**, now deterministic
+  insertion order instead of the rebuild's per-process-random set order;
+  never serialised, hence non-gated.
 
 ## Closed — no stage file
 
