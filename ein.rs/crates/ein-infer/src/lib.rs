@@ -27,6 +27,9 @@ pub mod engine;
 pub mod events;
 pub mod explain;
 pub mod firing;
+/// The T1a.6.9.2 verification instrument — off unless the build asked for it.
+#[cfg(feature = "fork-delta")]
+pub mod fork_audit;
 pub mod hrule;
 pub mod hypgen;
 pub mod lookahead;
@@ -76,7 +79,7 @@ pub use plan::{
 };
 pub use predicates::Pred;
 pub use sanity::{SanityError, check_commutativity};
-pub use saturator::{SaturateError, Saturator, Session};
+pub use saturator::{SaturateError, Saturator, Session, Snapshot};
 pub use shape::{
     commit_shape, explain_shape, hyp_shape, hyp_shape_with, lattice_shape, match_shape, naf_map,
     plan_shape, plan_shape_with, saturate_events, solve_shape,

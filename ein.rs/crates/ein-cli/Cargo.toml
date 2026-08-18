@@ -6,6 +6,11 @@ edition.workspace    = true
 license.workspace    = true
 repository.workspace = true
 
+[features]
+# Forwarded so `cargo build --features fork-delta` on the binary means the
+# same as on the engine — S1a.6.9 T1a.6.9.2.
+fork-delta = ["ein-infer/fork-delta"]
+
 [dependencies]
 ein-core   = { path = "../ein-core" }
 ein-ir     = { path = "../ein-ir" }

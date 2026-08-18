@@ -691,7 +691,7 @@ pub fn commit_shape(
     let mut out = vec![format!("ALIVE {n_alive} capped {}", alive.len())];
     let mut first: Option<String> = None;
     for c in &commitments {
-        let r = crate::commitment::try_commitment_set(kb, terms, ast, &mut off, &memo, c, None)?;
+        let r = crate::commitment::try_commitment_set(kb, terms, ast, &mut off, &memo, c, None, None)?;
         let text = enter_line(terms, c, &r);
         first.get_or_insert_with(|| text.clone());
         out.push(text);
@@ -704,6 +704,7 @@ pub fn commit_shape(
             &mut off,
             &memo,
             &commitments[0],
+            None,
             None,
         )?;
         let again = enter_line(terms, &commitments[0], &r);

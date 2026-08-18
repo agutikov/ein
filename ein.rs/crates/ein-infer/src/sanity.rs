@@ -103,7 +103,7 @@ pub fn check_commutativity(
     if commitment.len() < 2 {
         return Ok(None);
     }
-    let direct = try_commitment_set(root, terms, ast, events, memo, commitment, None)?;
+    let direct = try_commitment_set(root, terms, ast, events, memo, commitment, None, None)?;
     if direct.kind == Kind::DeadPre {
         return Ok(None);
     }
@@ -118,7 +118,7 @@ pub fn check_commutativity(
             .map(|(_, &f)| f)
             .collect();
         let missing = commitment[i];
-        let parent_result = try_commitment_set(root, terms, ast, events, memo, &parent, None)?;
+        let parent_result = try_commitment_set(root, terms, ast, events, memo, &parent, None, None)?;
         if parent_result.kind != Kind::Alive {
             // A dead parent means the lattice path through it does not exist;
             // skip rather than fail.

@@ -98,6 +98,7 @@ impl From<FireError> for SaturateError {
 /// One queued or parked candidate — ein.py's 6-tuple, with the payload in a
 /// side arena so the heap compares two integers
 /// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §2).
+#[derive(Clone)]
 struct Entry {
     plan: usize,
     disjunct: usize,
@@ -214,6 +215,56 @@ pub struct Saturator {
     pub naf_dropped: u32,
 }
 
+/// A saturation at its fixpoint, in a form another saturation can continue
+/// from — [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md).
+///
+/// The closure is semi-naive *within* a saturation (`pos_index` + `run_seeded`)
+/// and abandons that at the one boundary where the delta is smallest and known
+/// exactly: `try_commitment_set` forks the saturated root and builds a **fresh**
+/// `Saturator`, whose `delta = None` is a FULL pass, so the parent's whole
+/// deductive closure is re-derived inside the fork — 94.6 % of a fork's firings
+/// on `zebra -e` ([baseline.md §9](../../../../plans/m1a_rust/p1a.6_performance/baseline.md#9-the-fork-entry-re-derivation)).
+///
+/// What is carried is everything that answers "has this already been done":
+/// the plan list *in its order*, `fired`, `seen`, the candidate arena and the
+/// parked set with its watch stamps. What is **not** carried is the run's own
+/// account of itself — the observables and `last_firing` — because the fork's
+/// narration is its own.
+///
+/// `facts` is the parent's fact set at the snapshot. It is what makes the
+/// resumed delta computable without enumerating every site that writes to root
+/// (a forced positive, a singleton `(not h)` writeback, a lookahead kill
+/// cache): the fork's delta is *whatever root has that the snapshot did not*,
+/// plus the commitment. A site added later is covered by construction.
+#[derive(Clone)]
+pub struct Snapshot {
+    engine: Engine,
+    entries: Vec<Entry>,
+    queue: BinaryHeap<Ranked>,
+    parked: std::collections::BTreeSet<(i64, u64, u32)>,
+    seen: FxHashSet<(BindingKey, GuardSetId)>,
+    guard_sets: FxHashMap<Box<[u32]>, GuardSetId>,
+    tiebreaker: u64,
+    matched_plans: Vec<bool>,
+    pos_index: FxHashMap<Symbol, Vec<usize>>,
+    index_n: usize,
+    sym_rels: Vec<Symbol>,
+    sym_n: usize,
+    mirror_seeded: bool,
+    facts: FxHashSet<FactId>,
+}
+
+impl Snapshot {
+    /// The facts `kb` has and the snapshot did not — the first half of a
+    /// resumed fork's delta, in `FactId` order so the sequence is a function
+    /// of the input alone.
+    pub fn new_facts_of(&self, kb: &Kb) -> Vec<FactId> {
+        let mut out: Vec<FactId> = kb.facts().filter(|f| !self.facts.contains(f)).collect();
+        out.sort_unstable();
+        out
+    }
+}
+
 impl Saturator {
     pub fn new(s: &mut Session<'_>) -> Result<Saturator, SaturateError> {
         let cfg = s.kb.program().config.clone().unwrap_or_default();
@@ -259,6 +310,105 @@ impl Saturator {
         sat.engine
             .compile_all(s.ast, s.terms, s.kb, s.events)
             .map_err(SaturateError::Compile)?;
+        Ok(sat)
+    }
+
+    /// This saturation's state, for a fork that resumes it — [`Snapshot`].
+    ///
+    /// Taken at a fixpoint: `queue` is empty there, and `parked` holds exactly
+    /// the candidates whose guards still fail.
+    pub fn snapshot(&self, kb: &Kb) -> Snapshot {
+        Snapshot {
+            engine: self.engine.clone(),
+            entries: self.entries.clone(),
+            queue: self.queue.clone(),
+            parked: self.parked.clone(),
+            seen: self.seen.clone(),
+            guard_sets: self.guard_sets.clone(),
+            tiebreaker: self.tiebreaker,
+            matched_plans: self.matched_plans.clone(),
+            pos_index: self.pos_index.clone(),
+            index_n: self.index_n,
+            sym_rels: self.sym_rels.clone(),
+            sym_n: self.sym_n,
+            mirror_seeded: self.mirror_seeded,
+            facts: kb.facts().collect(),
+        }
+    }
+
+    /// Continue `snapshot`'s saturation over `s.kb`, seeded from `delta`.
+    ///
+    /// The counterpart of [`Saturator::new`], and the difference is the whole
+    /// stage: `new` starts with `delta = None`, which is a FULL enqueue pass
+    /// over a KB already at its parent's fixpoint. This starts with the delta
+    /// the caller knows exactly, and inherits `fired` / `seen` so the matches
+    /// that already fired are not re-offered.
+    ///
+    /// Three things make that the same fixpoint:
+    ///
+    /// - the parent was at quiescence, so every match over parent-only facts
+    ///   was enqueued and applied there; a match that is new here reads at
+    ///   least one delta fact, which is what `run_seeded` starts from;
+    /// - the parked set is carried with its watch stamps, so a candidate whose
+    ///   guard failed in the parent is re-judged here rather than forgotten —
+    ///   and the stamp is sound across the boundary because the KB only grows,
+    ///   so an equal extent size is an equal extent;
+    /// - `tiebreaker` continues from the parent's high-water mark, so this
+    ///   saturation's own candidates sort *after* the inherited ones at equal
+    ///   priority, which is what FIFO within a band means when the queue was
+    ///   not built from scratch.
+    ///
+    /// The observables start at zero: the fork's rounds are the fork's.
+    pub fn resume(
+        s: &mut Session<'_>,
+        snapshot: &Snapshot,
+        delta: Vec<FactId>,
+    ) -> Result<Saturator, SaturateError> {
+        let cfg = s.kb.program().config.clone().unwrap_or_default();
+        let sym_sym = s
+            .terms
+            .intern_text(SYMMETRIC)
+            .expect("room for the mirror marker");
+        let mut sat = Saturator {
+            engine: snapshot.engine.clone(),
+            matcher: Matcher::new(),
+            entries: snapshot.entries.clone(),
+            queue: snapshot.queue.clone(),
+            parked: snapshot.parked.clone(),
+            seen: snapshot.seen.clone(),
+            guard_sets: snapshot.guard_sets.clone(),
+            tiebreaker: snapshot.tiebreaker,
+            needs_enqueue: true,
+            delta: Some(delta),
+            matched_plans: snapshot.matched_plans.clone(),
+            pos_index: snapshot.pos_index.clone(),
+            index_n: snapshot.index_n,
+            stamp_scratch: Vec::new(),
+            guard_memo: FxHashMap::default(),
+            sym_rels: snapshot.sym_rels.clone(),
+            sym_n: snapshot.sym_n,
+            sym_sym,
+            mirror_queue: Vec::new(),
+            // The parent already seeded the mirror from the whole extent, so
+            // re-seeding would re-walk it; what the mirror has not seen is the
+            // delta, and a delta fact reaches the KB by a direct write rather
+            // than by a firing, so nothing else would offer it.
+            mirror_seeded: snapshot.mirror_seeded,
+            mirror_enabled: cfg.enable_symmetric_mirror,
+            record_alternatives: cfg.record_alternative_justifications,
+            last_firing: None,
+            naf_rounds: 0,
+            naf_admitted: 0,
+            naf_retired: 0,
+            naf_dropped: 0,
+            guard_evals: 0,
+            guard_evals_monotone: 0,
+            boundary_nanos: 0,
+        };
+        if sat.mirror_enabled && sat.mirror_seeded {
+            let delta = sat.delta.clone().unwrap_or_default();
+            sat.enqueue_mirror_sources(s, &delta);
+        }
         Ok(sat)
     }
 
@@ -1251,6 +1401,99 @@ mod tests {
         assert_eq!(order.len(), 1, "exactly one of p, q — got {order:?}");
         assert!(order[0] == "(p one)" || order[0] == "(q one)");
         assert!(rounds >= 1, "the boundary ran");
+    }
+
+    /// A resumed saturation reaches the same fixpoint as a fresh one —
+    /// [`Saturator::resume`], the mechanism
+    /// [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+    /// is about.
+    ///
+    /// Saturate, add a fact, then continue two ways: a **fresh** saturator
+    /// over the grown KB (a FULL pass, which is what a fork does today) and a
+    /// **resumed** one seeded with just the new fact. The two fact sets must
+    /// agree exactly. What the test deliberately does *not* assert is the
+    /// firing sequence: the resumed run skips the re-derivations, and that
+    /// difference is the stage's whole subject.
+    #[test]
+    fn a_resumed_saturation_reaches_the_same_fixpoint() {
+        let src = "(relation edge T T)\n(relation path T T)\n                   (rule step ()\n  :match (edge ?a ?b)\n  :assert (path ?a ?b))\n                   (rule trans ()\n  :match (and (path ?a ?b) (path ?b ?c))\n                     :assert (path ?a ?c))\n                   (rule tip ()\n  :match (and (path ?a ?b) (absent (edge ?b ?a)))\n                     :assert (path ?b ?b))\n                   (edge A B)\n(edge B C)\n";
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let mut ev = Events::off();
+        let memo = SharedMemo::default();
+
+        let snapshot = {
+            let mut s = Session {
+                kb: &mut kb,
+                terms: &mut terms,
+                ast: &ast,
+                events: &mut ev,
+                memo: memo.clone(),
+            };
+            let mut sat = Saturator::new(&mut s).expect("compiles");
+            sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+            sat.snapshot(s.kb)
+        };
+
+        // The delta: one new edge, written straight into two forks of the
+        // fixpoint, exactly as `try_commitment_set` writes a hypothesis.
+        let mut fresh = kb.fork();
+        let mut resumed = kb.fork();
+        let edge = terms.syms.get("edge").expect("interned");
+        let (c, d) = (
+            terms.intern_text("C").expect("room"),
+            terms.intern_text("D").expect("room"),
+        );
+        let args = [Value::sym(c), Value::sym(d)];
+        let added_fresh = fresh
+            .add_and_index_fact(&mut terms, edge, &args, None)
+            .expect("room");
+        let added_resumed = resumed
+            .add_and_index_fact(&mut terms, edge, &args, None)
+            .expect("room");
+        assert_eq!(added_fresh.id(), added_resumed.id(), "the same fact");
+
+        let mut n_fresh = 0usize;
+        {
+            let mut s = Session {
+                kb: &mut fresh,
+                terms: &mut terms,
+                ast: &ast,
+                events: &mut ev,
+                memo: memo.clone(),
+            };
+            let mut sat = Saturator::new(&mut s).expect("compiles");
+            sat.saturate(&mut s, None, &mut |_| n_fresh += 1)
+                .expect("saturates");
+        }
+        let mut n_resumed = 0usize;
+        {
+            let delta = snapshot.new_facts_of(&resumed);
+            assert_eq!(delta, vec![added_resumed.id()], "one new fact");
+            let mut s = Session {
+                kb: &mut resumed,
+                terms: &mut terms,
+                ast: &ast,
+                events: &mut ev,
+                memo: memo.clone(),
+            };
+            let mut sat = Saturator::resume(&mut s, &snapshot, delta).expect("resumes");
+            sat.saturate(&mut s, None, &mut |_| n_resumed += 1)
+                .expect("saturates");
+        }
+
+        let key = |kb: &Kb| {
+            let mut v: Vec<String> = kb.facts().map(|f| events::sexpr(&terms, f)).collect();
+            v.sort();
+            v
+        };
+        assert_eq!(key(&fresh), key(&resumed), "the fixpoints differ");
+        assert!(
+            n_resumed < n_fresh,
+            "the resumed run narrated {n_resumed} firings and the fresh one              {n_fresh} — the point is that it narrates fewer"
+        );
     }
 
     /// `naf_dropped` is **structurally** 0: a guard is judged once, on the

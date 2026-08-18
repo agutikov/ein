@@ -26,7 +26,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 | [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — at root scale they are 11–30 % | open — found at S1a.3.4, measured |
-| [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | open — found at S1a.6.9, measured |
+| [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | open — **built, measured and verified** at S1a.6.9; awaiting the decision |
 
 ---
 
@@ -536,19 +536,61 @@ milestone target.
 
 Resuming the saturator from the root's state (`engine`, `seen`, `fired`,
 `parked`, tiebreaker) with `delta = the commitment facts` removes them.
-The fixpoint, the alternative justifications, the verdict, `k`, the models
-and the unsat core are all argued to be unchanged
-([S1a.6.9](p1a.6_performance/s1a.6.9_fork_entry_delta.md) § What is *not*
-at risk, with the `alt` split measured). What changes is the
-**narration**:
 
-- **T2** at `verbose` loses ~108 k `fire` lines on `zebra -e` — and
-  `EVENTS.md` § Levels says the tier runs at verbose precisely to catch a
-  dropped redundant firing;
+**Built and measured 2026-08-18** (T1a.6.9.2/3): `Saturator::resume`, behind
+`--features fork-delta` and dormant without `EIN_FORK_DELTA=1`, so one binary
+produces both arms and the shipping path never takes it. Full numbers in
+[baseline.md §11](p1a.6_performance/baseline.md#11-the-resumed-fork-saturator-measured);
+the rendered before/after this question was to be decided against is
+[fork_delta_trace.md](p1a.6_performance/fork_delta_trace.md).
+
+**It works, and it is worth what §9 said.** Fork firings 38 136 → 9 834 on
+`zebra2 -e` and 113 746 → 26 656 on `zebra -e`; fork compiles → 0; identical
+productive firings. `solve zebra.ein -e` 525.6 → **392.6 ms — the phase's one
+unmet target, crossed**. The trace's solution node goes 561 → 240 steps and
+opens on the hypothesis's own first consequence instead of on eight
+`symmetric` closures of `next-to`.
+
+**Three claims held and one did not.** Over the whole corpus, 1.08 M
+enterings compared fact by fact and justification by justification
+(`utils/fork_delta_verify.py`):
+
+- ✅ **the fixpoint** — every alive fork's fact set is identical, and with
+  `enable_fail_fast_fork` off so is every *dead* fork's;
+- ✅ **the verdict, `k`, the models, the entering count, each entering's
+  `kind`** — stdout is byte-identical on every corpus entry;
+- ✅ **the unsat core** — identical with fail-fast off; with fail-fast on, 39
+  dead-post cores differ, which is the fail-fast *prefix* (a different clash
+  reached first ⇒ a different, equally minimal frontier), not a different
+  conflict;
+- ❌ **the provenance graph.** **90 002 facts get a different *primary*
+  justification.** A fresh fork renumbers root's parked candidates in plan
+  order; a resumed one inherits root's tiebreakers, so they sort first — and
+  the boundary admits at most one candidate per round, so a fact derivable
+  two ways (`functional-negative`/`injective-negative`,
+  `domain-elimination`/`range-elimination`, `total`/`surjective`) gets a
+  different **first** derivation, and first derivation wins. Matching a fresh
+  pass's numbering requires running a fresh pass, so this **cannot be
+  designed away**; it is the price, not a bug in the prototype.
+
+So the narration moves further than this question assumed:
+
+- **T2** loses 62.5 % / 75.9 % of its lines at `verbose` — **and 58.8 % /
+  74.2 % at `normal`**, which the question did not anticipate: a redundant
+  firing is not emitted at `normal`, but the ~1 790 `enqueue` lines per
+  entering that produce it are;
 - **T3** moves `n_firings` in `--trace`, the `("firings", len)` counts in
-  `--dump-states`, and the *first five firings* `render/shape.rs` prints
-  per solution;
-- **T0/T1** do not move: `BaseStats` never counts a firing.
+  `--dump-states`, the *first five firings* `render/shape.rs` prints — and,
+  for the 90 002 facts above, **which rule the proof names**;
+- **T0/T1** do not move: `BaseStats` never counts a firing, and every counter
+  it does keep is unchanged;
+- **`ein.py/tests/trace/test_idea08_acceptance.py::test_zebra2_fires_walkthrough_rules`
+  fails**: the solution's trace covers 12 rules instead of 24 and `symmetric`
+  is not among them, because `symmetric` closes `next-to` at *root*. `--trace`
+  gets root's whole closure for free today, by accident, because every fork
+  re-derives it. Adopting this means the trace has to render root saturation
+  as its own section — which is what a human walkthrough does anyway, and is a
+  change to the renderer rather than to the engine.
 
 **The options.**
 
@@ -558,25 +600,49 @@ at risk, with the `alt` split measured). What changes is the
   compile share and [S1a.6.3](p1a.6_performance/s1a.6.3_beta_memories.md)'s
   *root* beta-memories for the match share — same firings, same order,
   discovered by lookup instead of by rescanning.
-- **(b) Yes, in both engines.** ein.py changes first, ein.rs follows, T2/T3
-  goldens are regenerated once, and the change is recorded in
-  [divergences.md](divergences.md) as a *joint* change rather than a
-  divergence. This is a change to the M1 engine, so it is a followup and
-  a new stage, never a retrofit into a shipped phase.
+- **(b) Yes, in both engines.** ein.py changes first, ein.rs follows, and the
+  change is recorded in [divergences.md](divergences.md) as a *joint* change
+  rather than a divergence. There are no goldens to regenerate — the harness
+  diffs two live engines — so "both or neither" is literal. This is a change
+  to the M1 engine, so it is a followup and a new stage, never a retrofit into
+  a shipped phase. **It now also buys a renderer change** (root saturation as
+  its own trace section) and a re-baselined `test_idea08_acceptance`, and it
+  accepts that a fact's recorded proof may name a different one of its valid
+  derivations.
 - **(c) Yes, behind a flag** that is off in the parity build. Keeps I1 and
   gets the speed for the M1b/M2 consumers — at the cost of a second code
   path through the saturator's most delicate ordering, which is exactly
-  what P1a.6 Rule 3 (a wash is a revert) exists to discourage.
+  what P1a.6 Rule 3 (a wash is a revert) exists to discourage. The flag is
+  **already built** (`fork-delta` + `EIN_FORK_DELTA`), so this option is the
+  cheapest to take and the only one that is currently *true* of the tree.
 
-**Recommendation: (b), and the argument is not primarily speed.** A fork's
-firing list is what
+**Recommendation: still (b), and the argument is still not primarily speed —
+but it is now a bigger change than it looked.** A fork's firing list is what
 [`08-human-style-deductive-trace`](../ideas/08-human-style-deductive-trace.md)
-renders, and 960 re-derivations of what was already true before the
+renders, and 961 re-derivations of what was already true before the
 hypothesis is noise in it — the human walkthrough in
 [`zebra_walkthrough.md`](../../docs/kernel/inference/zebra_walkthrough.md)
-narrates what a hypothesis *adds*. If a shorter trace is the better trace,
-the shorter trace is the one both engines should produce, and the speed is
-a consequence. **Decide it against a rendered before/after**
-(T1a.6.9.3), not against a line count.
+narrates what a hypothesis *adds*, and the rendered after-trace does exactly
+that from its second step. The speed is a consequence, and it happens to be
+the consequence that closes the milestone's last open target.
 
-**Blocked on:** nothing — the flag in T1a.6.9.2 produces the evidence.
+What the evidence adds to the recommendation is the **cost line**: the M1
+engine would stop promising *which* derivation of a multiply-derivable fact
+it records first. That promise is not written down anywhere as a guarantee —
+`record_justification`'s contract is "first derivation wins", and which
+derivation is first was already a function of priority, FIFO order and the
+boundary's one-admission-per-round rule — but 90 002 facts is not a rounding
+error, and a proof that names `injective-negative` where it used to name
+`functional-negative` is a *different explanation of the same fact*, not a
+shorter one.
+
+**So the question is now sharper than "may the trace get shorter":** may the
+M1 engine record a different one of a fact's valid derivations as its primary,
+in exchange for a trace that starts at the hypothesis and a solver that meets
+its last target? **(a)** says no and takes the invisible half through
+[S1a.6.3](p1a.6_performance/s1a.6.3_beta_memories.md). **(c)** says not on the
+parity build.
+
+**Blocked on:** a decision. The evidence T1a.6.9.2/3 owed it is in
+[baseline.md §11](p1a.6_performance/baseline.md#11-the-resumed-fork-saturator-measured)
+and [fork_delta_trace.md](p1a.6_performance/fork_delta_trace.md).

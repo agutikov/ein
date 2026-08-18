@@ -30,7 +30,12 @@ use std::sync::Arc;
 use crate::plan::{Plan, PlanId};
 
 /// One engine's view of the compiled program.
-#[derive(Default)]
+///
+/// `Clone` because a fork that *resumes* the root's saturation
+/// ([`crate::saturator::Snapshot`]) inherits the plan list, its order and
+/// `fired` wholesale. The `Arc`s and the memo handle are shared, so what the
+/// clone actually copies is the index vectors and the `fired` set.
+#[derive(Clone, Default)]
 pub struct Engine {
     /// The plans, in ein.py's cache-insertion order.
     plans: Vec<PlanId>,

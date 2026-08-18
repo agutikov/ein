@@ -1,6 +1,14 @@
 # S1a.6.9 — The fork-entry delta (the resumed saturator)
 
 **Phase:** P1a.6 (Performance)
+**Status:** **T1a.6.9.1–3 shipped 2026-08-18.** The measurement is an
+instrument, the resumed saturator is built behind `--features fork-delta`,
+and the three invariants are verified over 1.08 M enterings — two hold, the
+third does not. T1a.6.9.4/5/6 wait on
+[Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint),
+which now has its evidence:
+[baseline.md §11](baseline.md#11-the-resumed-fork-saturator-measured) and
+[fork_delta_trace.md](fork_delta_trace.md).
 **Estimate:** 3 days (1 d measure + decide, 2 d conditional implementation)
 **Depends on:** [S1a.6.1](s1a.6.1_profile_baseline.md) — and it is the
 *upper bound* [S1a.6.3](s1a.6.3_beta_memories.md) is chasing, so the two
@@ -90,6 +98,18 @@ about the M1 engine that both implementations take together, or not at all.
 
 ## What is *not* at risk
 
+> **Verified 2026-08-18 (T1a.6.9.2), and claim 2 is wrong.** 1 and 3 hold
+> exactly, over 1.08 M enterings of the whole corpus compared fact by fact;
+> the provenance graph does **not** survive — 90 002 facts get a different
+> *primary* justification, because a resumed fork's inherited parked
+> candidates carry root's tiebreakers and the boundary admits one per round.
+> The mechanism is admission *order*, which no amount of argument about
+> duplicate rejection reaches, and which cannot be designed away: matching a
+> fresh pass's numbering needs a fresh pass.
+> [baseline.md §11](baseline.md#11-the-resumed-fork-saturator-measured) has
+> the sweep; the argument as originally written is kept below because the
+> half that survived is the half the fixpoint claim rests on.
+
 The argument that the verdict, the models and the provenance graph all
 survive, which T1a.6.9.2 has to verify rather than accept:
 
@@ -120,7 +140,10 @@ survive, which T1a.6.9.2 has to verify rather than accept:
 
 ## Tasks
 
-### Task T1a.6.9.1 — Land the measurement
+### Task T1a.6.9.1 — Land the measurement ✅
+
+**Shipped 2026-08-18** as `utils/fork_split.py`, which corrected two
+attributions in §9's first printing without moving the headline.
 
 Fold the tables above into [baseline.md §9](baseline.md#9-the-fork-entry-re-derivation)
 and make the split re-runnable from one command, like every other
@@ -131,7 +154,14 @@ badly). Re-run it at the end of every stage in the phase, because
 [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) removes the compile share
 of exactly this cost and the ratio will move.
 
-### Task T1a.6.9.2 — Verify the three invariants, offline
+### Task T1a.6.9.2 — Verify the three invariants, offline ✅
+
+**Shipped 2026-08-18.** `Saturator::resume` + `ein_infer::fork_audit` behind
+`--features fork-delta`; `utils/fork_delta_verify.py` runs one binary twice
+over every `solve`-family run of every `positive` / `stdlib` corpus entry.
+**Result: the fixpoint and the boundary hold; the provenance graph does not.**
+That is the counter-example this task asked for — and it did not end the
+stage, because everything the *verdict* rests on survived.
 
 Before proposing anything: build the resumed saturator behind a
 `fork-delta` feature flag that is **off by default**, and check the three
@@ -145,7 +175,14 @@ claims above by comparing artefacts that are *not* firing lists —
 If any of those move, the idea is wrong and this stage ends here with the
 counter-example written down. That is a successful outcome.
 
-### Task T1a.6.9.3 — Answer Q-M1a.18 with a diff, not an argument
+### Task T1a.6.9.3 — Answer Q-M1a.18 with a diff, not an argument ✅
+
+**Shipped 2026-08-18.** The rendered before/after is
+[fork_delta_trace.md](fork_delta_trace.md); the sizes (T2 at both levels, the
+T3 cells, the trace) are
+[baseline.md §11](baseline.md#11-the-resumed-fork-saturator-measured).
+Q-M1a.18 is restated there against what was measured rather than what was
+argued, and it is **not** answered here.
 
 With the flag on, produce the *size* of the divergence the decision is
 about: the T2 line-count delta, the T3 cells that move, and a
@@ -159,7 +196,15 @@ sets and what
 [`08-human-style-deductive-trace`](../../ideas/08-human-style-deductive-trace.md)
 asks for.
 
-### Task T1a.6.9.4 — The resumed saturator (conditional on Q-M1a.18)
+### Task T1a.6.9.4 — The resumed saturator (conditional on Q-M1a.18) ⏸
+
+**Waiting on the decision.** The mechanism is built and measured; what
+T1a.6.9.4 adds over the prototype is (a) sharing the snapshot by `Arc` with a
+layered delta instead of deep-copying it per entering — the prototype removes
+77 % of the firings for 34 % of the time, and that gap *is* the copy — (b) the
+ein.py half, and (c) the renderer change the evidence turned up: root
+saturation has to become its own trace section, or the solution's proof loses
+every rule that fires only at root.
 
 If the answer is yes, the mechanism is small because every piece exists:
 
@@ -176,7 +221,12 @@ ein.py gets the same change first, since it is the oracle. Both land in
 the same commit pair, with the T2/T3 goldens regenerated once and the
 reason recorded in [divergences.md](../divergences.md).
 
-### Task T1a.6.9.5 — If the answer is no: the salvage
+### Task T1a.6.9.5 — If the answer is no: the salvage ⏸
+
+**Number for S1a.6.3's acceptance, measured either way:** a resumed fork does
+**9 834** firings on `zebra2 -e` where a fresh one does 38 136, and **26 656**
+against 113 746 on `zebra -e`. Root beta-memories have to make that difference
+nearly free *without* changing the firing sequence.
 
 Two parts of the win are available without touching the narration, and
 they are worth taking either way:

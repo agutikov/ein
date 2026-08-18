@@ -792,6 +792,170 @@ cargo run --release --features counters -p ein-infer --example counter_cost
 cargo run --release -p ein-infer --example alloc_cost
 ```
 
+## 11. The resumed fork saturator, measured
+
+**[S1a.6.9](s1a.6.9_fork_entry_delta.md) T1a.6.9.2 + T1a.6.9.3, 2026-08-18**,
+same build and machine. §9 measured the cost; this measures what removing it
+buys and what it moves. Nothing here is on a shipping path: the mechanism is
+`Saturator::resume`, compiled only under `--features fork-delta` and dormant
+even there until `EIN_FORK_DELTA=1`, so **one binary produces both arms of
+every diff below** and the only difference between them is
+`Saturator::resume` against `Saturator::new`.
+
+### What it removes
+
+`utils/fork_split.py --bin ein.rs/target-fd/release/ein`, with and without
+the switch:
+
+| `-e` run | | fork firings | **redundant** | productive | fork enqueues | fork compiles |
+|---|---|---:|---:|---:|---:|---:|
+| `zebra2` | fresh | 38 136 | 36 442 (95.6 %) | 1 694 | 81 766 | 12 625 |
+| | **resumed** | **9 834** | **8 131 (82.7 %)** | 1 703 | **11 981** | **0** |
+| `zebra` | fresh | 113 746 | 107 610 (94.6 %) | 6 136 | 198 763 | 3 552 |
+| | **resumed** | **26 656** | **20 520 (77.0 %)** | 6 136 | **30 043** | **0** |
+
+The **productive** column is the check: 6 136 → 6 136 on `zebra`, and +9 on
+`zebra2` where fail-fast stops a dying fork at a different firing. The same
+facts get derived; what goes is the re-derivation, 74–77 % of the firings and
+85 % of the enqueues. Fork compiles go to **0** — §7's item 1 in full, because
+a resumed fork inherits root's plan list rather than rebuilding it.
+
+### What it costs, and what it gains
+
+Best of 5, same machine, `target-fd` binary both arms:
+
+| workload | fresh | **resumed** | | vs PyPy |
+|---|---:|---:|---:|---:|
+| `solve zebra2.ein` | 31.1 ms | **27.1 ms** | 1.15× | 93× |
+| `solve zebra2.ein -e` | 137.5 ms | **100.2 ms** | 1.37× | 49× |
+| `solve zebra.ein` | 115.1 ms | **97.3 ms** | 1.18× | 31× |
+| `solve zebra.ein -e` | 525.6 ms | **392.6 ms** | 1.34× | 22.4× |
+
+**`zebra -e` crosses its ≤ 400 ms target** — the phase's one unmet target,
+and the reason S1a.6.9 exists. Note the mismatch: 77 % of the firings for
+34 % of the time. The snapshot is deep-copied per entering (engine, candidate
+arena, `seen`, `parked`), which is what the `Arc`-shared layered snapshot of
+[T1a.6.9.4](s1a.6.9_fork_entry_delta.md) would remove.
+
+### What it moves — the narration
+
+| stream | `zebra2 -e` | `zebra -e` |
+|---|---:|---:|
+| `--events --events-level verbose` (T2) | 183 231 → 68 670 (**−62.5 %**) | 405 367 → 97 723 (**−75.9 %**) |
+| `--events` at `normal` | 146 689 → 60 439 (−58.8 %) | 297 287 → 76 733 (−74.2 %) |
+| `solve --trace` steps (the solution node) | 561 → **240** | — |
+| `solve --trace` file lines | 13 311 → 6 101 | — |
+
+**T2 moves at `normal` too**, not only at `verbose` — Q-M1a.18 was written
+expecting the verbose-only loss. A redundant firing is not emitted at
+`normal`, but the ~1 790 `enqueue` lines per entering that produce it are, and
+those go with it.
+
+The rendered before/after is [`fork_delta_trace.md`](fork_delta_trace.md).
+
+### What it does **not** move — verified, not argued
+
+`utils/fork_delta_verify.py`: one binary, two arms, every `solve`-family run
+of every `positive` / `stdlib` corpus entry, comparing artefacts that are not
+firing lists.
+
+| | fail-fast **on** (shipping) | fail-fast **off** |
+|---|---:|---:|
+| runs / entries | 139 / 65 | 139 / 65 |
+| enterings compared fact by fact | **1 078 997** | **1 061 235** |
+| entering count | **0** | **0** |
+| entering `kind` | **0** | **0** |
+| **alive** fork fixpoint, fact by fact | **0** | **0** |
+| stdout (verdict, `k`, models, bindings) | **0** | **0** |
+| `--dump-states` tree ¶ | **0** | **0** |
+| unsat core | 39 | **0** |
+| dead fork's *partial* state ‡ | 815 | **0** |
+
+¶ with the wall-clock fields and the firing counts normalised out — those are
+the narration, tabulated above.
+‡ `enable_fail_fast_fork` stops a *dying* fork at the firing that kills it, so
+two firing orders leave two different partial states **by design**. Both
+columns agree that the *fixpoint* is identical: with fail-fast off, every
+fork — alive and dead — reaches the same fact set, the same `kind` and the
+same core.
+
+All 39 core moves are `dead-post` and all disappear with fail-fast off, so
+they are the fail-fast prefix rather than a different conflict: on `zebra2`'s
+entering 68 the commitment is `{(color-loc Green House-5), (color-loc Red
+House-5)}` and the core is one of its two elements — each a correct
+single-element core, and which one you get is which clash you reach first.
+
+### What it *does* move, and §9 did not predict — the proof structure
+
+This is the finding. Over the same sweep, on artefacts that are **not** firing
+lists:
+
+| | corpus, ff on | corpus, ff off | `zebra2 -e` | `zebra -e` |
+|---|---:|---:|---:|---:|
+| facts whose **primary** justification changed | 90 002 | 81 268 | 17 | 198 |
+| facts whose alternatives changed **membership** | 39 | 83 | 2 | 76 |
+| facts whose alternatives changed **order** | 61 132 | 64 229 | 71 | 956 |
+
+The two puzzle columns are fail-fast off, so they are the *fixpoint's* proof
+graph rather than a fail-fast prefix's. Six corpus entries carry nine tenths
+of it — `examples/features/02_star_in_identifiers.ein` and the four
+`examples/saturation/square-*` fixtures, which are transitive-symmetric
+closures where every derived fact has many equally valid derivations.
+
+S1a.6.9 § What is *not* at risk argued that the alternative justifications
+survive because "a duplicate of a root-recorded justification is already
+rejected". That is true and it is not the mechanism that matters. The one that
+does is **admission order at the NAF boundary**:
+
+- a fresh fork rediscovers root's parked candidates in one FULL pass and
+  numbers them in *plan* order, interleaved with its own;
+- a resumed fork inherits them with root's tiebreakers, so they all sort
+  *before* the fork's own at equal priority.
+
+At most one candidate is admitted per boundary round, so a different order is
+a different admission sequence, and a fact derivable two ways — the engine is
+full of dual rules, `functional-negative`/`injective-negative`,
+`domain-elimination`/`range-elimination`, `total`/`surjective` — gets a
+different **first** derivation. First derivation wins, so the primary moves;
+and the alternatives list, which `record_justification` keeps sorted by
+premise count with ties in arrival order, permutes under it.
+
+**This cannot be designed away.** Matching a fresh pass's numbering requires
+running a fresh pass, which is the thing being removed. 4 of `zebra2 -e`'s 34
+alive enterings are affected; its **solution node is not**, so the rendered
+trace's proof is unchanged and only its step list is shorter. That is luck,
+not a property.
+
+### And one named test it breaks
+
+`ein.py/tests/trace/test_idea08_acceptance.py::test_zebra2_fires_walkthrough_rules`
+asserts that the solution's firing list exhibits the nine rules
+[`zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md)
+narrates. Under the resumed saturator the solution node's trace covers 12
+distinct rules instead of 24, and **`symmetric` is not among them** — it
+closes `next-to` at *root*, before any hypothesis, so a fork that does not
+re-derive the root's fixpoint never fires it.
+
+The trace is not wrong; it is *incomplete in a way it was not before*. Today
+`--trace` renders one node's firings and gets the root's whole closure for
+free, by accident, because every fork re-derives it. Removing the
+re-derivation means the root's own proof has to be rendered deliberately —
+which is what a human walkthrough does anyway ("here are the givens and what
+follows; *now* assume…"), and which is a change to
+[`08-human-style-deductive-trace`](../../ideas/08-human-style-deductive-trace.md)'s
+renderer rather than to the engine.
+
+### Reproducing this section
+
+```sh
+cd ein.rs && cargo build --release --features fork-delta --target-dir target-fd
+
+EIN_FORK_DELTA=1 python3 utils/fork_split.py --bin ein.rs/target-fd/release/ein
+python3 utils/fork_delta_verify.py --json ein.rs/bench-out/fork-delta.json
+python3 utils/fork_delta_verify.py --no-fail-fast
+python3 utils/fork_delta_verify.py -k zebra2.ein --with-trace
+```
+
 ## Reproducing all of it
 
 Every line from the repo root, every measurement through the fingerprint:
@@ -821,6 +985,11 @@ cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example all
 
 # §9 the fork-entry split — re-run at the end of every stage in the phase
 python3 utils/fork_split.py --json ein.rs/bench-out/fork-split.json
+
+# §11 the resumed fork saturator — a build of its own, off on every ship path
+cargo build --release --manifest-path ein.rs/Cargo.toml \
+    --features fork-delta --target-dir ein.rs/target-fd
+python3 utils/fork_delta_verify.py --json ein.rs/bench-out/fork-delta.json
 
 # §6 the bench set and its variance gate
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml

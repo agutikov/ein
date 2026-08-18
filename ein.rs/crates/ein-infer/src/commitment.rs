@@ -28,7 +28,7 @@ use ein_ir::Ast;
 use crate::compile::SharedMemo;
 use crate::events::Events;
 use crate::firing::Firing;
-use crate::saturator::{SaturateError, Saturator, Session};
+use crate::saturator::{SaturateError, Saturator, Session, Snapshot};
 
 /// How a commitment ended.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -81,6 +81,17 @@ pub struct CommitmentSetResult {
 /// would have compiled ([design/06](../../../../plans/m1a_rust/design/06_saturation.md)
 /// § Win A). The *order* plans enter an engine's list stays per-engine, which
 /// is the part the trace can see.
+///
+/// `resume` is `None` on every shipping path: with it the fork **continues**
+/// root's saturation from the delta instead of re-deriving root's fixpoint
+/// ([`Snapshot`], S1a.6.9). It is reachable only from a `fork-delta` build,
+/// because dropping those re-derivations changes what the engine narrates and
+/// that is [Q-M1a.18](../../../../plans/m1a_rust/open_questions.md)'s to
+/// decide, not this function's.
+// The eighth argument is `resume`, and bundling it with `memo` into a "run
+// state" struct would be the tidy fix for a parameter that may not survive
+// Q-M1a.18. It stays a parameter until that is decided.
+#[allow(clippy::too_many_arguments)]
 pub fn try_commitment_set(
     root: &mut Kb,
     terms: &mut Terms,
@@ -89,6 +100,7 @@ pub fn try_commitment_set(
     memo: &SharedMemo,
     commitment: &[FactId],
     saturator_steps: Option<usize>,
+    resume: Option<&Snapshot>,
 ) -> Result<CommitmentSetResult, SaturateError> {
     let cfg = root.program().config.clone().unwrap_or_default();
     let mut fork = root.fork();
@@ -117,7 +129,10 @@ pub fn try_commitment_set(
         };
 
     if let Some(core) = dead(&fork, terms) {
-        return Ok(done(fork, Vec::new(), Kind::DeadPre, core));
+        let result = done(fork, Vec::new(), Kind::DeadPre, core);
+        #[cfg(feature = "fork-delta")]
+        crate::fork_audit::record(terms, &result);
+        return Ok(result);
     }
 
     let mut s = Session {
@@ -127,7 +142,18 @@ pub fn try_commitment_set(
         events,
         memo: memo.clone(),
     };
-    let mut sat = Saturator::new(&mut s)?;
+    let mut sat = match resume {
+        // The delta is everything the fork has that the snapshot did not:
+        // this commitment's hypotheses, and whatever landed at root since —
+        // a forced positive, a singleton `(not h)` writeback, a lookahead
+        // kill cache. Asking the *fork* covers both in one question, which is
+        // the point of keeping the fact set on the snapshot.
+        Some(snap) => {
+            let delta = snap.new_facts_of(s.kb);
+            Saturator::resume(&mut s, snap, delta)?
+        }
+        None => Saturator::new(&mut s)?,
+    };
     let firings = if cfg.enable_fail_fast_fork {
         saturate_until_dead(&mut sat, &mut s, saturator_steps)?
     } else {
@@ -136,10 +162,14 @@ pub fn try_commitment_set(
         out
     };
 
-    if let Some(core) = dead(&fork, terms) {
-        return Ok(done(fork, firings, Kind::DeadPost, core));
-    }
-    Ok(done(fork, firings, Kind::Alive, Vec::new()))
+    let result = if let Some(core) = dead(&fork, terms) {
+        done(fork, firings, Kind::DeadPost, core)
+    } else {
+        done(fork, firings, Kind::Alive, Vec::new())
+    };
+    #[cfg(feature = "fork-delta")]
+    crate::fork_audit::record(terms, &result);
+    Ok(result)
 }
 
 /// The smallest source frontier of `kb`'s contradictions, or `None` when it
@@ -247,8 +277,9 @@ mod tests {
         // enterings share no *mutable* state, and an append-only plan cache is
         // the one thing they do share.
         let memo = SharedMemo::default();
-        let mut first = try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[h], None)
-            .expect("enters");
+        let mut first =
+            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[h], None, None)
+                .expect("enters");
         let root_facts = kb.n_facts();
         let first_facts = first.kb.n_facts();
 
@@ -259,8 +290,9 @@ mod tests {
             .add_and_index_fact(&mut terms, junk, &[], None)
             .expect("room");
 
-        let second = try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[h], None)
-            .expect("enters");
+        let second =
+            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[h], None, None)
+                .expect("enters");
         assert_eq!(second.kb.n_facts(), first_facts, "the forks are not shared");
         assert_eq!(second.kind, first.kind);
         assert_eq!(kb.n_facts(), root_facts, "root was written to");
@@ -290,6 +322,7 @@ mod tests {
             &mut ev,
             &SharedMemo::default(),
             &[h],
+            None,
             None,
         )
         .expect("enters");

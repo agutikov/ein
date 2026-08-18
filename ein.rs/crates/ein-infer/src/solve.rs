@@ -24,6 +24,7 @@
 //! [design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2 has to
 //! validate against.
 
+use std::sync::Arc;
 use std::time::Instant;
 
 use ein_core::{FactId, Kb, Prov, SolverConfig, Symbol, Terms, Value};
@@ -36,7 +37,7 @@ use crate::commitment::{Kind, try_commitment_set};
 use crate::compile::{CompileError, SharedMemo};
 use crate::events::Events;
 use crate::firing::Firing;
-use crate::saturator::{SaturateError, Saturator, Session};
+use crate::saturator::{SaturateError, Saturator, Session, Snapshot};
 use crate::verdict::{Answer, Solution, Verdict, union_dead_cores};
 
 // ── Counters ───────────────────────────────────────────────────────
@@ -298,6 +299,7 @@ pub fn solve(
         shuffle,
         cfg,
         memo: SharedMemo::default(),
+        root_snapshot: None,
         stats: MonotonicStats::new(),
         lstate: LoopState {
             nodes: Vec::new(),
@@ -351,10 +353,36 @@ struct Run<'o> {
     /// Each engine still keeps its own ordered plan list, which is the part
     /// that reaches the trace.
     memo: SharedMemo,
+    /// The root saturator at its fixpoint, for a fork that **resumes** it
+    /// instead of re-deriving it
+    /// ([S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)).
+    ///
+    /// `None` in every build that did not ask for `fork-delta`, and in one
+    /// that did until `EIN_FORK_DELTA=1` throws the switch — the change is
+    /// observable, so the shipping path may not take it until
+    /// [Q-M1a.18](../../../../plans/m1a_rust/open_questions.md) says so.
+    ///
+    /// Refreshed after every root *re*-saturation (a forced positive), and
+    /// otherwise left alone: root's other writers — the singleton `(not h)`
+    /// writeback, the lookahead kill cache — add a fact without re-reaching
+    /// the fixpoint, and `Snapshot::new_facts_of` hands those to the fork as
+    /// part of its delta rather than invalidating the snapshot.
+    root_snapshot: Option<Arc<Snapshot>>,
     stats: MonotonicStats,
     lstate: LoopState,
     t_start: Instant,
     opts: &'o SolveOptions,
+}
+
+/// Is the *resumed* fork saturator on?
+///
+/// Two locks, both deliberate. The `fork-delta` feature keeps the second code
+/// path out of a shipping build entirely; `EIN_FORK_DELTA=1` keeps it off even
+/// there unless a measurement asked for it, so one binary produces both arms
+/// of the T1a.6.9.2 diff and nothing but this switch differs between them.
+fn fork_delta_enabled() -> bool {
+    cfg!(feature = "fork-delta")
+        && std::env::var_os("EIN_FORK_DELTA").is_some_and(|v| v == "1")
 }
 
 impl Run<'_> {
@@ -418,6 +446,7 @@ impl Run<'_> {
                     });
                 }
             }
+            self.snapshot_root(&sat, s.kb);
         }
         dumper.root_initial(root, terms);
 
@@ -491,7 +520,16 @@ impl Run<'_> {
             for c in &candidates {
                 self.check_budget(dumper)?;
                 self.stats.base.enterings_total += 1;
-                let result = try_commitment_set(root, terms, ast, events, &self.memo, c, None)?;
+                let result = try_commitment_set(
+                    root,
+                    terms,
+                    ast,
+                    events,
+                    &self.memo,
+                    c,
+                    None,
+                    self.root_snapshot.as_deref(),
+                )?;
                 if events.on() {
                     let commitment: Vec<String> =
                         c.iter().map(|&f| crate::events::sexpr(terms, f)).collect();
@@ -642,6 +680,14 @@ impl Run<'_> {
 
     // ── Helpers ────────────────────────────────────────────────
 
+    /// Keep `sat`'s fixpoint for the next entering to resume from — a no-op
+    /// unless this build asked for `fork-delta` *and* the switch is on.
+    fn snapshot_root(&mut self, sat: &Saturator, kb: &Kb) {
+        if fork_delta_enabled() {
+            self.root_snapshot = Some(Arc::new(sat.snapshot(kb)));
+        }
+    }
+
     fn compute_alive(
         &mut self,
         kb: &mut Kb,
@@ -715,6 +761,7 @@ impl Run<'_> {
                 };
                 let mut sat = Saturator::new(&mut s)?;
                 sat.saturate(&mut s, None, &mut |_| {})?;
+                self.snapshot_root(&sat, s.kb);
             }
             self.stats.base.saturate_count += 1;
             if crate::contradiction::has_contradiction(root, terms) {

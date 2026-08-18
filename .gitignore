@@ -30,8 +30,11 @@ venv/
 utils/feature_matrix_results.json
 
 # ── M1a (the Rust port + the parity harness) ──────────────────────
-# Cargo's build tree.
+# Cargo's build tree — and the second one, for the `fork-delta` build of
+# S1a.6.9 (a feature build kept in its own target dir so it does not thrash
+# the shipping one; `utils/fork_delta_verify.py` reads its binary).
 ein.rs/target/
+ein.rs/target-fd/
 # Harness artefacts: every run wipes and rewrites this.
 conformance/out/
 # Bench and profile artefacts (S1a.6.1): raw JSON + perf data, machine-specific
