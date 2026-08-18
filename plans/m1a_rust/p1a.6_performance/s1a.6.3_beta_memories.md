@@ -25,13 +25,32 @@ that objection, which is why this stage exists here rather than staying
 parked. It is still a **gated** stage: it ships only if it is T2-green
 and measurably better on *both* puzzles.
 
+**What it is actually for, sharpened by
+[baseline.md §9](baseline.md#9-the-fork-entry-re-derivation).** Every
+entering re-derives the root's whole fixpoint — **94.6 %** of `zebra -e`'s
+fork firings and **95.6 %** of `zebra2 -e`'s are redundant — and
+`try_commitment_set` is 95.0 % of `zebra -e`. The cheapest way to remove
+that is to stop *narrating* it, which is
+[S1a.6.9](s1a.6.9_fork_entry_delta.md) and is **observable**
+([Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)).
+This stage is the *invisible* way to remove it: T1a.6.3.2's **root
+memories** are exactly "compute the root's matches once and replay them
+into every fork", producing the same firings in the same order from a
+table instead of from a rescan. So the target is not "make matching
+faster" — it is **make the 95 % that is re-derivation nearly free**, and
+the § 9 tables are what the before/after is read against.
+
 ## Acceptance
 
 - **T2 identical** on the whole corpus — same firing sequence, same
   order. A beta-memory that changes which of two equally-valid matches
   is found first is a divergence, not an optimisation.
 - Measurably better on `zebra2 -e` **and** `zebra -e` (they have very
-  different rule shapes: 19 plans vs 6).
+  different rule shapes: 19 plans vs 6). `zebra -e` is the one that
+  decides — it is the workload that misses its milestone target, and the
+  one whose fork re-derivation records **no** alternative justifications
+  at all (`alt` = 0), so the memory has nothing to reproduce there beyond
+  the match sequence itself.
 - Memory: per-fork delta memory bounded and reported; peak RSS at
   `--jobs 1` no worse than 1.5× the pre-stage build.
 - If either condition fails: **revert**, and update F11 with the numbers
@@ -94,6 +113,11 @@ deciding the default.
 
 ## Notes
 
+- The ordering argument in T1a.6.3.1 is the same argument
+  [S1a.6.9](s1a.6.9_fork_entry_delta.md) needs for its delta seeding, from
+  the other side: there, the claim is that every match over root-only
+  facts already fired at root; here, that replaying them from a memory
+  reproduces their order. Write it once and cite it twice.
 - Q-M1a.10 asks whether this is still the largest lever *after* the
   register matcher and the semi-naive boundary. It may not be — those two
   removed the costs that made partial-join recomputation expensive.

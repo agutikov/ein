@@ -4,8 +4,8 @@
 **Status:** **in progress** — [S1a.6.1](s1a.6.1_profile_baseline.md) shipped
 2026-08-18 and its measurements are in **[baseline.md](baseline.md)**, which
 is what the rest of the phase is chosen by.
-**Estimate:** 3.5 weeks (19 days of stages — S1a.6.1 added one worth 2 d and
-shortened another by 1 d)
+**Estimate:** 4 weeks (22 days of stages — S1a.6.1 added one worth 2 d and
+shortened another by 1 d; [S1a.6.9](s1a.6.9_fork_entry_delta.md) added 3 d)
 **Depends on:** [P1a.5](../p1a.5_presentation/README.md) — the byte gate
 must be closed first, so every change here is measured against a green
 harness.
@@ -52,31 +52,47 @@ phase.** `solve zebra.ein -e` is 1.46× short, and its profile is 66.9 %
 matcher against `zebra2 -e`'s 29.0 % — so the two puzzles do not agree about
 what to optimise, and the missed target is the one that decides.
 
+**And it now has a named cause.** 95.0 % of `zebra -e` is inside
+`try_commitment_set`, and **94.6 %** of what a fork does there is
+re-deriving the root's fixpoint, once per entering — measured at
+[baseline.md §9](baseline.md#9-the-fork-entry-re-derivation), which is
+where [S1a.6.9](s1a.6.9_fork_entry_delta.md) comes from. Removing it
+outright is *observable*
+([Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint));
+removing it invisibly is what [S1a.6.8](s1a.6.8_compile_cache_and_extents.md)
+and [S1a.6.3](s1a.6.3_beta_memories.md) do to its two halves.
+
 ## Stages
 
 Everything after S1a.6.1 is *chosen* by the table S1a.6.1 produces. The
-list was the expected shape, not a commitment — and the table changed it: one
-stage was **added**, one **shortened**, one **un-gated**, and the run order
+list was the expected shape, not a commitment — and the table changed it: **two
+stages were added**, one **shortened**, one **un-gated**, and the run order
 is now the profile's rather than the plan's. The reasoning is in
 [baseline.md §8](baseline.md#8-what-this-chooses-for-the-rest-of-the-phase);
-the numbers each row rests on are in [§7](baseline.md#7-the-top-five-costs).
+the numbers each row rests on are in [§7](baseline.md#7-the-top-five-costs)
+and [§9](baseline.md#9-the-fork-entry-re-derivation).
 
 | # | stage | title | est. | why now |
 |---|---|---|---|---|
 | 1 | [S1a.6.1](s1a.6.1_profile_baseline.md) ✅ | Fresh profile and bench baseline | 2 d | **shipped 2026-08-18** |
 | 2 | [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) 🆕 | The compile cache and the extent counts | 2 d | 21.1 % + 9.5 % of `zebra2 -e`, both parity-preserving by construction |
-| 3 | [S1a.6.2](s1a.6.2_memory_layout.md) | Memory layout | 3 d | 21 % of self time is `malloc` / `cfree` / libc, at ~53 bytes per allocation |
-| 4 | [S1a.6.3](s1a.6.3_beta_memories.md) | Beta-memories (F11 D1) — **gate opens** | 4 d | 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB — the fact F11 D1 was parked on |
-| 5 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) | Hypgen and lattice hot paths | 3 d | 7.3 % / 5.3 % self — real, smaller than written; T1a.6.4.1's argument re-aims at saturation |
-| 6 | [S1a.6.5](s1a.6.5_frontend.md) | Frontend and load path — **shortened** | 1 d | its acceptance is already met by 8×; reduced to a confirmation plus the allocation report |
+| 3 | [S1a.6.9](s1a.6.9_fork_entry_delta.md) 🆕 | The fork-entry delta — **measure + decide** | 3 d | 95.0 % of `zebra -e` is fork saturation and 94.6 % of that is re-derivation; the decision gates how S1a.6.3 is framed. Its implementation half is conditional and runs last |
+| 4 | [S1a.6.2](s1a.6.2_memory_layout.md) | Memory layout | 3 d | 21 % of self time is `malloc` / `cfree` / libc, at ~53 bytes per allocation — plus a system allocator (T1a.6.2.7) and a per-entering region (T1a.6.2.8), since ~0.15 % of what a fork allocates outlives it |
+| 5 | [S1a.6.3](s1a.6.3_beta_memories.md) | Beta-memories (F11 D1) — **gate opens** | 4 d | 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB — the fact F11 D1 was parked on |
+| 6 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) | Hypgen and lattice hot paths | 3 d | 7.3 % / 5.3 % self — real, smaller than written; T1a.6.4.1's argument re-aims at saturation |
+| 7 | [S1a.6.5](s1a.6.5_frontend.md) | Frontend and load path — **shortened** | 1 d | its acceptance is already met by 8×; reduced to a confirmation plus the allocation report |
 | — | [S1a.6.6](s1a.6.6_differential_fuzzer.md) | The differential fuzzer | 3 d | runs *throughout*, not at a position — it guards every row above |
-| 7 | [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d | last, as planned |
+| 8 | [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d | last, as planned |
 
 ## Rules for this phase
 
 1. **T3 stays green.** A perf change that needs a ledger entry is not a
    perf change, it is a semantics change, and it goes back to the
-   relevant phase.
+   relevant phase. [S1a.6.9](s1a.6.9_fork_entry_delta.md) is the one
+   stage that *starts* on the wrong side of this rule, which is why its
+   shipping half is gated on
+   [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+   and lands in both engines or in neither.
 2. **One change per commit, with its number.** The commit message
    carries the before/after for the benchmark it targeted.
 3. **A wash is a revert.** P1.8a's D3 cross-fork carry was built and
@@ -102,10 +118,15 @@ the numbers each row rests on are in [§7](baseline.md#7-the-top-five-costs).
 - `features.md` regenerated with an ein.rs column.
 - F11 closed or updated: D1 landed, or D1 measured and parked with the
   numbers.
+- [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+  answered against a rendered before/after trace, and its consequence
+  either landed in both engines or written down as declined.
 
 ## Cross-links
 
 - **[baseline.md](baseline.md) — the measurements this phase runs on.**
+- [baseline.md §9](baseline.md#9-the-fork-entry-re-derivation) — the fork-entry
+  re-derivation, and why three of the top five costs are one cost
 - [design/05 §7 — beta-memories](../design/05_matcher.md)
 - [design/06 §3–§4 — the two exact wins](../design/06_saturation.md)
 - [`architecture_and_algorithms.md` §7](../../../docs/kernel/inference/architecture_and_algorithms.md)

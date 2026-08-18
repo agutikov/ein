@@ -66,6 +66,10 @@ delta arenas (and the matcher's cursor/trail buffers) per worker so a
 fork reuses memory rather than asking the allocator. Must not change
 iteration order or contents — assert with the `flatten()` comparison.
 
+This is *pooling* — the weaker half of T1a.6.2.8's region. Do them in
+that order: if the region lands, most of what this task pools is inside
+it.
+
 ### Task T1a.6.2.5 — Delta-flatten threshold
 
 P1a.2 shipped "flatten when delta > 25 % of base" as a placeholder. Sweep
@@ -80,6 +84,86 @@ argued.
 with 2 wasted. Options: pack arity into the top bits of `args_at`
 (arity is tiny), giving 8-byte rows and 1.5× the rows per cache line; or
 leave it, if rows are not hot. The profile decides.
+
+### Task T1a.6.2.7 — A system allocator with per-thread caches
+
+Rust's default global allocator on Linux is glibc `malloc`, which is
+exactly the **15.2 % `[libc.so.6]` + 3.0 % `malloc` + 2.9 % `cfree`** the
+profile reports ([baseline.md §7](baseline.md#7-the-top-five-costs) item
+4) over 2.5–3.1 M allocations averaging ~53 bytes. That allocation profile —
+enormous counts, tiny sizes, extreme lifetime locality — is the one
+`jemalloc`, `mimalloc` and `snmalloc` are built for, and swapping it is
+four lines:
+
+```rust
+#[global_allocator]
+static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+```
+
+Measure all three (`tikv-jemallocator`, `mimalloc`, `snmalloc-rs`) against
+the default rather than picking one by reputation, on both puzzles, and
+report:
+
+- wall clock through `utils/e2e_baseline.py` and `cargo bench`;
+- **peak RSS**, which is the number that can regress — these allocators
+  buy speed with retained arenas. [§5](baseline.md#5-memory) already
+  records that the ~19 % RSS spread across runs of the *same* binary is
+  the allocator's high-water mark rather than the program's, so the noise
+  floor for this claim is known before the task starts;
+- allocation counts, which must not move at all — `examples/alloc_cost.rs`
+  counts through `GlobalAlloc`, so it measures the program, not the
+  allocator, and a change there means something else moved.
+
+**Parity is free here by inspection, not just by the harness:** nothing
+outside `#[cfg(test)]` orders, hashes or compares by address — no
+`ptr::eq`, no `as *const`, no `by_address`, and `matched_plans` is a
+bitset over plan indices where ein.py uses `id(plan)`. An allocator cannot
+reach an observable. T3 still runs, as the standard.
+
+Ship it as a default-on feature with an escape hatch, since a distro build
+may want the system allocator, and note the binary-size delta —
+[P1a.9](../p1a.9_bindings_release/README.md) ships one binary.
+
+### Task T1a.6.2.8 — A per-entering region
+
+The stronger form of T1a.6.2.4, and
+[§9](baseline.md#9-the-fork-entry-re-derivation) is its justification: a
+`zebra -e` entering allocates ≈ 28 000 times for ≈ 2.7 MB of churn, and
+what survives it is a **3.9 KB** delta — on the order of **0.15 %**. The
+other 99.85 % (registers, trails, `BindingKey` boxes, `Entry`s,
+`GuardSetId` tables, `plan_key`'s `Vec<String>`s, compile scratch) dies at
+one instant, and **64 % of enterings die entirely**, taking their KB delta
+with them.
+
+That is a textbook region: bump-allocate everything an entering owns into
+an arena, and release the arena when the node is dropped instead of
+freeing 28 000 objects one at a time. Design notes:
+
+- **The survivor is the constraint.** `CommitmentSetResult.kb` is handed
+  back for an *alive* fork — "which is what lets the caller keep an alive
+  fork without a second saturation" (`commitment.rs`). So either the KB
+  delta and its provenance live outside the region, or an alive fork pays
+  one copy-out of ~3.9 KB at the end. Measure both; the copy-out is
+  probably cheaper than splitting the allocation domain, and it is
+  certainly simpler.
+- **Scope it to the entering, not to the lattice node.** A node is a
+  search-layer concept; `try_commitment_set` is the unit that is pure with
+  respect to root, and it is the unit
+  [P1a.7](../p1a.7_parallelism/README.md) parallelises — so a region per
+  entering is also a region per worker task, with no sharing to reason
+  about.
+- **Ordering.** A bump arena hands out addresses in allocation order,
+  which is *more* deterministic than the general allocator, and nothing
+  reads an address anyway (see T1a.6.2.7). The `flatten()` comparison and
+  T3 are still the gate.
+- **Where it stops.** Interned symbols, the fact-text arena and the
+  provenance arena are process-global and append-only; they are not in
+  scope and must not be moved into a per-entering region.
+
+Report peak RSS with the region as well: trading 28 000 frees for one
+release can raise the high-water mark if a long-lived entering's arena
+grows to hold its whole churn. If it does, the region is chunked and the
+chunks are recycled through T1a.6.2.4's pool.
 
 ## Notes
 

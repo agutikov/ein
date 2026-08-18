@@ -208,6 +208,45 @@ arg-swap directly by the saturator — no plan, no matcher. Port notes:
 
 ---
 
+## 5b. Win C — the fork boundary (added 2026-08-18, **not settled**)
+
+§4 opens by saying the closure is already semi-naive and the boundary is
+not. There is a third boundary neither sentence covers: **the fork**.
+
+`try_commitment_set` forks the saturated root, writes `k ≤ 5` hypothesis
+facts, and constructs a *fresh* `Saturator` — fresh engine, empty `seen` /
+`fired` / `parked`, `delta = None`, which §5's table reads as a FULL pass.
+So every entering full-matches every plan against a KB that is already at
+a fixpoint, and re-derives the root's entire closure to discover that each
+conclusion is present. The delta at that boundary is the smallest and the
+best-known in the whole engine — it is the commitment set — and it is the
+one place the delta is thrown away.
+
+Measured
+([P1a.6 baseline §9](../p1a.6_performance/baseline.md#9-the-fork-entry-re-derivation)):
+**94.6 %** of `zebra -e`'s fork firings and **95.6 %** of `zebra2 -e`'s
+are redundant, and `try_commitment_set` is 95.0 % of `zebra -e`
+cumulatively. Win A's 17 430 compiles are a *symptom* of the same fresh
+saturator: 16 875 of them happen inside forks.
+
+Unlike Wins A and B this one is **not order-identical by construction**. A
+`Firing` is narrated — T2 emits one `fire` line per firing at `verbose`,
+and T3 compares `--trace`'s `n_firings`, `--dump-states`' per-node
+`firings` counts and the first five firings `render/shape.rs` prints. What
+the fixpoint, the models, the verdict and the alternative-justification
+set do is *unchanged*, and the argument for each is in
+[S1a.6.9](../p1a.6_performance/s1a.6.9_fork_entry_delta.md) § What is not
+at risk. So this is a decision about what the engine says it did, taken
+by both implementations together or by neither:
+[Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint).
+
+The parity-preserving half of it is §5's own table read at the fork
+boundary: the *root* beta-memories of
+[05 §7](05_matcher.md) reproduce the same match sequence from a table, so
+the firings still happen — they are just no longer re-discovered.
+
+---
+
 ## 6. Firing, redundancy, alternatives
 
 `_apply` builds every conclusion (`assert_templates` — A13 multi-assert),

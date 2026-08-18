@@ -469,12 +469,126 @@ changed" — which is the same shape as item 2 and probably the same commit.
 | stage | profile says | order |
 |---|---|---|
 | **[S1a.6.8](s1a.6.8_compile_cache_and_extents.md)** (new) | items 1 + 2: 21.1 % and 9.5 %, both parity-preserving by construction, both small | **first** |
-| [S1a.6.2](s1a.6.2_memory_layout.md) Memory layout | item 4 (21 % allocator) and item 3's `FactStore` indirection; T1a.6.2.5 gains a second reason (depth 35) | second |
-| [S1a.6.3](s1a.6.3_beta_memories.md) Beta-memories | **gate opens**: 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB, so F11's "a memory copied per fork can lose more than it saves" no longer holds | third |
-| [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) Hypgen and lattice | 7.3 % / 5.3 % self — real, smaller than written. **T1a.6.4.1's premise needs its own measurement first**: the interning on the profile's hot list is the *compiler's* (42 % `Compiler::slot`, 33 % `Compiler::premise`), so "18 k interns per `complete()` call" is not what this profile shows | fourth |
-| [S1a.6.5](s1a.6.5_frontend.md) Frontend and load | **already met**: `parse zebra2` 200 µs, `load` 1.04 ms, and the whole `saturate zebra2` process 5.0 ms against a ≤ 15 ms target. Reduce to a confirmation + the allocation report its acceptance asks for | fifth, short |
+| **[S1a.6.9](s1a.6.9_fork_entry_delta.md)** (new, added after this list) | [§9](#9-the-fork-entry-re-derivation): 95.0 % of `zebra -e` is fork saturation and 94.6 % of that is re-derivation. The measurement and the decision run **second**; the shipping half is gated on [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) and runs last | **second** |
+| [S1a.6.2](s1a.6.2_memory_layout.md) Memory layout | item 4 (21 % allocator) and item 3's `FactStore` indirection; T1a.6.2.5 gains a second reason (depth 35), and §9 adds two tasks — a system allocator (T1a.6.2.7) and a per-entering region (T1a.6.2.8) | third |
+| [S1a.6.3](s1a.6.3_beta_memories.md) Beta-memories | **gate opens**: 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB, so F11's "a memory copied per fork can lose more than it saves" no longer holds. §9 gives it its target: the *root* memories are the invisible way to remove the re-derivation | fourth |
+| [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) Hypgen and lattice | 7.3 % / 5.3 % self — real, smaller than written. **T1a.6.4.1's premise needs its own measurement first**: the interning on the profile's hot list is the *compiler's* (42 % `Compiler::slot`, 33 % `Compiler::premise`), so "18 k interns per `complete()` call" is not what this profile shows | fifth |
+| [S1a.6.5](s1a.6.5_frontend.md) Frontend and load | **already met**: `parse zebra2` 200 µs, `load` 1.04 ms, and the whole `saturate zebra2` process 5.0 ms against a ≤ 15 ms target. Reduce to a confirmation + the allocation report its acceptance asks for | sixth, short |
 | [S1a.6.6](s1a.6.6_differential_fuzzer.md) Differential fuzzer | unchanged — it guards everything above | throughout |
 | [S1a.6.7](s1a.6.7_relever_matrix.md) Re-lever matrix | unchanged | last |
+
+## 9. The fork-entry re-derivation
+
+**Added 2026-08-18, same build and machine**, after the § 7 list was
+written. It is not one of the five costs above — it is the *shape* three of
+them share, and it is measured here because it is bigger than any of them
+individually. [S1a.6.9](s1a.6.9_fork_entry_delta.md) is the stage;
+[Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+is the decision it needs.
+
+`commitment::try_commitment_set` forks the *saturated* root, writes the
+commitment's `k ≤ 5` hypothesis facts, and builds a **fresh** `Saturator`:
+fresh engine, empty `seen` / `fired` / `parked`, and `delta = None`, which
+is a FULL pass. The closure is semi-naive within a saturation
+([design/06](../design/06_saturation.md) §4: `pos_index` + `run_seeded`,
+D2 + D5) but **not across the fork boundary**, which is where the delta is
+smallest and known exactly.
+
+Split at the `enter` events of a `--events-level verbose` run:
+
+| `-e` run | enterings | alive / dead | fork firings | **redundant** | productive | fork enqueues | fork compiles |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `zebra2` | 101 | 34 / 67 | 37 647 | **35 996 (95.6 %)** | 1 651 | 80 892 | 16 875 |
+| `zebra` | 111 | 40 / 71 | 112 762 | **106 657 (94.6 %)** | 6 105 | 197 125 | 4 832 |
+
+Per entering, and the root for scale:
+
+| | firings | redundant | productive | enqueues | parks | compiles | quiesces |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `zebra2` root | 810 | 546 | 264 | 1 565 | 2 224 | 375 | 122 |
+| `zebra2` mean fork | 372.7 | 356.4 | **16.3** | 800.9 | 227.0 | 167.1 | 30.3 |
+| `zebra` root | 1 864 | 1 423 | 441 | 3 158 | 1 175 | 96 | 252 |
+| `zebra` mean fork | 1 015.9 | 960.9 | **55.0** | 1 775.9 | 203.6 | 43.5 | 106.3 |
+
+And the enclosing share (`utils/profile_ein_rs.py --cum-of`):
+
+| run | cumulative in `ein_infer::commitment` |
+|---|---:|
+| `zebra -e` | **95.0 %** |
+| `zebra2 -e` | **86.7 %** |
+
+**On `zebra -e` — the one workload that misses its target — 95 % of the run
+is fork saturation and 95 % of what fork saturation does is re-deriving the
+root's fixpoint, 111 times.** An entering contributes 55 productive
+firings and pays for 961 redundant ones.
+
+Three of § 7's five costs are this cost seen from different angles: item 1
+(21.1 % re-compilation) is 16 875 of the run's 17 250 `compile` events
+happening *inside* forks, ~167 per entering; item 3 (the matcher, 66.9 % of
+`zebra -e`) is where the re-derivation is actually paid; item 4's
+allocation churn is largely its by-product.
+
+### Is the re-derivation load-bearing?
+
+Partly, and the part that is stays reachable from the delta. `alt` fires
+when `Kb::record_justification` records a *new* alternative justification:
+
+| run | `alt` total | in forks | after a **redundant** firing | after a productive one |
+|---|---:|---:|---:|---:|
+| `zebra2 -e` | 5 111 | 4 894 | 4 335 | 776 |
+| `zebra -e` | **0** | 0 | 0 | 0 |
+
+So on `zebra2` about 4 335 of the 35 996 redundant fork firings record
+something — the ones whose *premises* include a fork fact while their
+*conclusion* is inherited from root, which a delta pass finds by
+construction — and the other ~32 000 record nothing. On `zebra` the
+redundant firings record nothing **at all**, which is why that puzzle shows
+the cost at its purest.
+
+### The same boundary, seen by the allocator
+
+[§5](#5-memory) measured a fork's surviving delta at a **3.9 KB** mean
+(`zebra -e`). The same run allocates 3 136 307 times for 299.9 MB of churn
+across 111 enterings — **≈ 28 000 allocations and ≈ 2.7 MB per entering**
+(root's share included, and it is ~5 %). So on the order of **0.15 % of what
+a fork allocates outlives it**: registers, trails, binding keys, guard-set
+ids, `Entry` boxes, plan-key `Vec<String>`s, compile scratch — all of it
+dies at the same instant, and 64 % of enterings die entirely.
+
+That is a region, not a heap, and it is why
+[S1a.6.2](s1a.6.2_memory_layout.md) gained T1a.6.2.7 (a system allocator
+with per-thread caches) and T1a.6.2.8 (a per-entering arena). Both are
+invisible to every observable, which is the opposite of the situation
+S1a.6.9 is in.
+
+### Reproducing this section
+
+```sh
+ein.rs/target/release/ein solve examples/zebra.ein -e \
+    --events /tmp/z.jsonl --events-level verbose > /dev/null
+python3 - /tmp/z.jsonl <<'EOF'
+import collections, json, statistics, sys
+per, cur, root = [], None, collections.Counter()
+for line in open(sys.argv[1]):
+    d = json.loads(line); e = d.get("e")
+    if e == "enter":
+        if cur is not None: per.append(cur)
+        cur = collections.Counter()
+    t = cur if cur is not None else root
+    t[e] += 1
+    if e == "fire": t["red" if d.get("redundant") else "prod"] += 1
+if cur: per.append(cur)
+print("enterings", len(per), "root", dict(root))
+for k in ("enqueue", "fire", "red", "prod", "park", "compile", "quiesce", "alt"):
+    xs = [f[k] for f in per]
+    print(f"{k:>9}: total {sum(xs):>8}  mean {statistics.mean(xs):9.1f}  max {max(xs)}")
+EOF
+
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 \
+    --cum-of ein_infer::commitment solve examples/zebra.ein -e
+```
+
+T1a.6.9.1 promotes that inline script to a named instrument.
 
 ## Reproducing all of it
 

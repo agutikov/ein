@@ -26,6 +26,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 | [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — at root scale they are 11–30 % | open — found at S1a.3.4, measured |
+| [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | open — found at S1a.6.9, measured |
 
 ---
 
@@ -516,3 +517,66 @@ mechanism here whose measured reach is a tenth of its stated one. If the
 exhaustive mix is monotone-dominated, it lands there with a number; if it
 is not, the boundary needs a different idea and this question is where
 that gets decided.
+
+---
+
+## Q-M1a.18 — May a fork stop re-narrating the root's fixpoint?
+
+**Found 2026-08-18 at [S1a.6.9](p1a.6_performance/s1a.6.9_fork_entry_delta.md),
+by measurement.** The numbers are in
+[baseline.md §9](p1a.6_performance/baseline.md#9-the-fork-entry-re-derivation).
+
+Every entering builds a fresh `Saturator` over the forked root, so its
+first enqueue pass is a FULL pass and the root's whole deductive closure
+is re-derived inside the fork. Measured on `-e` runs: **95.6 %**
+(`zebra2`, 35 996 / 37 647) and **94.6 %** (`zebra`, 106 657 / 112 762) of
+a fork's firings are redundant re-derivations, and `try_commitment_set` is
+**95.0 %** of `zebra -e` cumulatively — the one workload that misses its
+milestone target.
+
+Resuming the saturator from the root's state (`engine`, `seen`, `fired`,
+`parked`, tiebreaker) with `delta = the commitment facts` removes them.
+The fixpoint, the alternative justifications, the verdict, `k`, the models
+and the unsat core are all argued to be unchanged
+([S1a.6.9](p1a.6_performance/s1a.6.9_fork_entry_delta.md) § What is *not*
+at risk, with the `alt` split measured). What changes is the
+**narration**:
+
+- **T2** at `verbose` loses ~107 k `fire` lines on `zebra -e` — and
+  `EVENTS.md` § Levels says the tier runs at verbose precisely to catch a
+  dropped redundant firing;
+- **T3** moves `n_firings` in `--trace`, the `("firings", len)` counts in
+  `--dump-states`, and the *first five firings* `render/shape.rs` prints
+  per solution;
+- **T0/T1** do not move: `BaseStats` never counts a firing.
+
+**The options.**
+
+- **(a) No.** I1 is the milestone's spine and the trace is an observable.
+  The win is then taken only where it is invisible:
+  [S1a.6.8](p1a.6_performance/s1a.6.8_compile_cache_and_extents.md) for the
+  compile share and [S1a.6.3](p1a.6_performance/s1a.6.3_beta_memories.md)'s
+  *root* beta-memories for the match share — same firings, same order,
+  discovered by lookup instead of by rescanning.
+- **(b) Yes, in both engines.** ein.py changes first, ein.rs follows, T2/T3
+  goldens are regenerated once, and the change is recorded in
+  [divergences.md](divergences.md) as a *joint* change rather than a
+  divergence. This is a change to the M1 engine, so it is a followup and
+  a new stage, never a retrofit into a shipped phase.
+- **(c) Yes, behind a flag** that is off in the parity build. Keeps I1 and
+  gets the speed for the M1b/M2 consumers — at the cost of a second code
+  path through the saturator's most delicate ordering, which is exactly
+  what P1a.6 Rule 3 (a wash is a revert) exists to discourage.
+
+**Recommendation: (b), and the argument is not primarily speed.** A fork's
+firing list is what
+[`08-human-style-deductive-trace`](../ideas/08-human-style-deductive-trace.md)
+renders, and 960 re-derivations of what was already true before the
+hypothesis is noise in it — the human walkthrough in
+[`zebra_walkthrough.md`](../../docs/kernel/inference/zebra_walkthrough.md)
+narrates what a hypothesis *adds*. If a shorter trace is the better trace,
+the shorter trace is the one both engines should produce, and the speed is
+a consequence. **Decide it against a rendered before/after**
+(T1a.6.9.3), not against a line count.
+
+**Blocked on:** nothing — the flag in T1a.6.9.2 produces the evidence.
