@@ -75,6 +75,15 @@ Every lever-off run matches the baseline: **Solution, k=1, correct answer,
 | `enable_forced_positive` | Solution | 11 | 1.26 | 1.0× |
 | `enable_pre_branch_lookahead` | Solution | 11 | 1.10 | 0.9× |
 
+> **Re-measured against `ein.rs` at
+> [M1a P1a.4](../../../plans/m1a_rust/p1a.4_search_layer/README.md), 2026-08-18.**
+> Every entering count below reproduces exactly, and
+> `enable_singleton_writeback` is still the one load-bearing lever. Two
+> things the port could say that this table could not: the runaway cell
+> **finishes** there (3 831 enterings in 11.3 s, so the `3336+` is
+> confirmed rather than left open), and `enable_fail_fast_fork` is worth
+> *more* once saturation is 31× cheaper — 1.9× here, 3.0× there.
+
 ## Exhaustive (`stop_after=None`) — where the levers bite
 
 Baseline: Solution, k=1, **101 enterings (67 dead), 3.92 s**.

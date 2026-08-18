@@ -170,7 +170,7 @@ Full contract: [design/11](design/11_shared_assets.md).
 | [P1a.1](p1a.1_ir_frontend/README.md) ✅ | IR frontend — lex, parse, AST, dump, macros, imports | 3 | 2 w | **shipped 2026-08-18** — dump / resolve / minimise / expand byte-identical on the corpus; 2.2 M fuzzer mutations, 0 diff; parse 1 003× |
 | [P1a.2](p1a.2_kb_core/README.md) ✅ | KB core — interner, values, store, indexes, loader, provenance | 4 | 2.5 w | **shipped 2026-08-18** — 95 corpus files at KB-shape parity, every load error byte-identical; `fork` O(1) under a counting allocator; load 607×, RSS 15× |
 | [P1a.3](p1a.3_deductive_core/README.md) ✅ | Deductive core — compile, match, saturate, world, contradiction | 4 | 3.5 w | **shipped 2026-08-18** — T2 on 64 files / 23 848 events, 0 diff; zebra 502 and zebra2 378 facts; `saturate_root` 31×, `match_hot` 55× |
-| [P1a.4](p1a.4_search_layer/README.md) | Search layer — hypgen, lookahead, apriori, nogoods, lattice solve | 6 | 4 w | **verdict + stats parity** incl. the acceptance gate |
+| [P1a.4](p1a.4_search_layer/README.md) ✅ | Search layer — hypgen, lookahead, apriori, nogoods, lattice solve | 6 | 4 w | **shipped 2026-08-18** — 65 files at verdict + counter parity in three regimes; the three acceptance fixtures in 0.87 s; `solve zebra2 -e` 26× |
 | [P1a.5](p1a.5_presentation/README.md) | Presentation — trace, DOT, dumps, CLI | 4 | 3 w | **byte parity** of every stdout/stderr/file artefact → *ein.rs is a drop-in* |
 | [P1a.6](p1a.6_performance/README.md) | Performance — the optimisation programme | 7 | 3.5 w | targets above, parity unbroken |
 | [P1a.7](p1a.7_parallelism/README.md) | Parallelism — deterministic multi-core search + match | 5 | 2.5 w | `--jobs N` verdict- **and** counter-identical |
@@ -254,6 +254,15 @@ promotion time: parse-error message parity (Q-M1a.3) and whether
 2026-08-18** with the server itself. P1a.3 added one the design docs did
 not anticipate: [Q-M1a.17](open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate),
 where Win B's ≥ 80 % target met its own measurement and lost.
+
+P1a.4 closed the two it was blocking on. **Q-M1a.4** — `sorted()` over
+mixed-type fact args — became the ledger's
+[D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
+once `layer_1` was reachable: exactly one corpus file diverges, exactly
+the predicted one, and the parity sweep *asserts* the divergence rather
+than tolerating it. **Q-M1a.5** — CPython's `random.shuffle` — was
+resolved by porting MT19937, checked by table and then on every corpus
+entry through a seeded `solve` regime.
 
 ## Cross-links
 
