@@ -75,12 +75,29 @@ stashing the tree under test.
 | 2026-08-18 | ein.rs P1a.1 (frontend only) | — | — | — | `parse`: **758 µs** vs 760.6 ms CPython / 230.9 ms PyPy (1 003× / 305×). zebra2 parse + resolve + expand: **824 µs** vs 618.9 ms / 193.7 ms |
 | 2026-08-18 | ein.rs P1a.2 (KB core) | — | — | — | `load` zebra2 (parse + imports + macros + index build): **1.03 ms** vs 625.6 ms CPython (607×). `fork` + first delta write: **248 ns** vs 17.3 µs (70×). Peak RSS on `load(zebra2)`: **3.1 MB** vs 46.6 MB (15×); the load itself adds **0.73 MB** vs 16.2 MB (22×) |
 | 2026-08-18 | ein.rs P1a.3 (deductive core) | — | — | — | root saturation of zebra2 (load excluded): **2.89 ms** vs 90 ms CPython (31×). `match_hot`, every plan over the saturated zebra2 root: **38.6 µs** vs 2 110 µs (55×), over the same 2 075 premises. Compiling zebra2's 19 plans: **21.8 µs**. `boundary`, a zebra root saturation: 7.10 ms, of which **80 %** is the boundary |
+| 2026-08-18 | ein.rs P1a.4 (search layer) | **194 ms** § | **587 ms** § | **0.87 s** ¶ | `solve_fast` zebra2 (11 enterings): **43.0 ms** vs 1.22 s CPython (28×). `solve_exhaustive` (101): **194 ms** vs 5.00 s (26×). `solve zebra` fast (13): **119 ms** vs 6.99 s (59×); exhaustive (111): **587 ms** vs 30.4 s (52×). One hypgen pass, zebra2 hrule + lookahead: **656 µs** vs 18.3 ms (28×) |
 | — | ein.rs P1a.5 (parity, unoptimised) | — | — | — | *expected slower than PyPy; that is fine* |
 | — | ein.rs P1a.6 (optimised, `--jobs 1`) | — | — | — | target ≤ 0.2 s / ≤ 0.4 s / ≤ 5 s |
 | — | ein.rs P1a.7 (`--jobs 8`) | — | — | — | — |
 
 † The `zebra2 -e` / `zebra -e` figures were measured 2026-08-17 on the
 dev machine.
+
+§ **Search only, not end-to-end** — the baseline rows are whole runs, and
+the milestone's own attribution puts 200 ms of parse and 430 ms of load
+inside `solve zebra2 -e`'s 5.69 s. Those have their own rows above, at
+1 003× and 607×, so folding them in here would flatter this one with two
+others' results. End-to-end the port is ~195 ms against PyPy's 4.07 s —
+**21×**, the ≥ 20× target met.
+
+¶ **Not the same acceptance gate as the rows above it.** ein.py's is 21
+tests, 43.7 s under PyPy; this is the three P1a.4 fixtures
+(`test_zebra_two_ontologies` / `test_zebra_three_classes` /
+`test_mode_consistency`) re-expressed as
+`ein.rs/crates/ein-infer/tests/acceptance.rs`. The rest of that gate is
+CLI and trace surface, which is
+[P1a.5](../p1a.5_presentation/README.md)'s; this row will grow to the
+whole thing there.
 
 ‡ **Re-measured at P1a.0, and it moved.** The milestone README carried
 ~91 s from S1.21.8; `./run_tests.sh --acceptance-only` on the dev machine
