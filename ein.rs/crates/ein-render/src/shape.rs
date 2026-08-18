@@ -14,14 +14,14 @@
 //! trace calls it, so what the diff compares is the artefact a user sees —
 //! which is the whole point of the byte gate.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use ein_core::{Kb, Terms};
 use ein_ir::{Ast, NodeId};
 
 use crate::ir_dot::{DotOpts, TraceView, to_dot, to_dot_form};
 use crate::kb_dot::{ColourBy, KbDotOpts};
-use crate::lattice_dag::{LatticeView, render_lattice};
+use crate::lattice_dag::{LatticeSource, LatticeView, render_lattice};
 use crate::rules::{RuleMode, render_rules_forms};
 
 /// The views that need only the parsed forms.
@@ -48,6 +48,10 @@ pub const KB_VIEWS: [&str; 6] = [
 
 /// The views that run the engine.
 pub const SOLVE_VIEWS: [&str; 3] = ["lattice", "lattice-full", "slice"];
+
+/// The modes of the `--dump-states` diff —
+/// [S1a.5.3](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.3_state_dumps.md).
+pub const DUMP_MODES: [&str; 5] = ["monotonic", "lattice", "progress", "abort", "snapshot"];
 
 /// The modes of the trace / answer diff — [S1a.5.2](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.2_trace_and_answer.md).
 pub const TRACE_MODES: [&str; 3] = ["trace", "answer", "no-proof"];
@@ -200,10 +204,20 @@ fn solve_view(ast: &Ast, terms: &mut Terms, kb: &mut Kb, view: &str) -> Result<S
         return Ok("NO PROOF".to_string());
     };
     Ok(match view {
-        "lattice" => render_lattice(terms, proof, LatticeView::Solution, "lattice"),
+        "lattice" => render_lattice(
+            terms,
+            LatticeSource::Proof(proof),
+            LatticeView::Solution,
+            "lattice",
+        ),
         // Always the fallback-with-a-note path: `solve` never populates a
         // per-commitment SetNode DAG, which is what `--view full`'s help says.
-        "lattice-full" => render_lattice(terms, proof, LatticeView::Full, "lattice"),
+        "lattice-full" => render_lattice(
+            terms,
+            LatticeSource::Proof(proof),
+            LatticeView::Full,
+            "lattice",
+        ),
         // The three shapes `trace.linearize` builds, with its own arguments:
         // the whole-commitment cone, the per-firing step diagram, and the
         // reductio.
@@ -459,4 +473,274 @@ pub fn trace_shape(
 /// `str(bool)` — `True` / `False`, because the separator lines interpolate one.
 fn py_bool(b: bool) -> &'static str {
     if b { "True" } else { "False" }
+}
+
+// ── The `--dump-states` tree ───────────────────────────────────────
+
+/// A directory as one text: every file, sorted by path, with its bytes.
+///
+/// There is no way to diff a tree over a line protocol, so the tree is
+/// rendered. The rendering is deliberately dumb — it invents nothing — so a
+/// missing file, an extra file, a renamed directory and a changed byte all
+/// read the same way.
+fn render_tree(root: &Path) -> String {
+    let mut files: Vec<PathBuf> = Vec::new();
+    collect_files(root, &mut files);
+    files.sort();
+    let mut out: Vec<String> = Vec::new();
+    for path in files {
+        let rel = path
+            .strip_prefix(root)
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .replace('\\', "/");
+        out.push(format!("=== {rel}"));
+        let text = std::fs::read_to_string(&path).unwrap_or_default();
+        out.extend(text.lines().map(normalise_dump_line));
+        if !text.is_empty() && !text.ends_with('\n') {
+            out.push("=== (no trailing newline)".to_string());
+        }
+    }
+    out.join("\n")
+}
+
+fn collect_files(dir: &Path, out: &mut Vec<PathBuf>) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    for e in entries.flatten() {
+        let p = e.path();
+        if p.is_dir() {
+            collect_files(&p, out);
+        } else {
+            out.push(p);
+        }
+    }
+}
+
+/// Blank the clock readings — value, not presence, so a record that lost its
+/// `ts_ms` still fails. These fields are on the
+/// [normalisation list](../../../../plans/m1a_rust/design/01_parity_contract.md) §5.
+fn normalise_dump_line(line: &str) -> String {
+    let mut out = line.to_string();
+    for key in ["ts_ms", "elapsed_seconds"] {
+        let needle = format!("\"{key}\": ");
+        let mut from = 0;
+        while let Some(i) = out[from..].find(&needle).map(|j| from + j) {
+            let start = i + needle.len();
+            let end = out[start..]
+                .find(|c: char| !matches!(c, '0'..='9' | '.' | 'e' | 'E' | '+' | '-'))
+                .map_or(out.len(), |j| start + j);
+            out.replace_range(start..end, "<ts>");
+            from = start + "<ts>".len();
+        }
+    }
+    // The progress view's `(   12s)` elapsed column.
+    normalise_elapsed(&out)
+}
+
+fn normalise_elapsed(line: &str) -> String {
+    // `\(\s*\d+s\)` → `(<el>)`.
+    let bytes: Vec<char> = line.chars().collect();
+    let mut out = String::new();
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == '(' {
+            let mut j = i + 1;
+            while j < bytes.len() && bytes[j] == ' ' {
+                j += 1;
+            }
+            let digits = j;
+            while j < bytes.len() && bytes[j].is_ascii_digit() {
+                j += 1;
+            }
+            if j > digits && j + 1 < bytes.len() && bytes[j] == 's' && bytes[j + 1] == ')' {
+                out.push_str("(<el>)");
+                i = j + 2;
+                continue;
+            }
+        }
+        out.push(bytes[i]);
+        i += 1;
+    }
+    out
+}
+
+/// A fresh directory under the system temp dir, removed by the caller.
+fn temp_dir(tag: &str) -> PathBuf {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static N: AtomicU64 = AtomicU64::new(0);
+    let n = N.fetch_add(1, Ordering::Relaxed);
+    let p = std::env::temp_dir().join(format!("ein-dump-{}-{tag}-{n}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&p);
+    p
+}
+
+/// Render one mode of the state-dump surface.
+pub fn dump_shape(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    forms: &[NodeId],
+    base_dir: Option<&Path>,
+    mode: &str,
+) -> Result<String, String> {
+    use ein_infer::solve::{OnBudget, SolveError, SolveOptions, solve};
+
+    let mut kb = ein_ir::load(ast, terms, forms, base_dir).map_err(|e| e.to_string())?;
+    if mode == "snapshot" {
+        return snapshot_shape(ast, terms, &mut kb);
+    }
+
+    let tmp = temp_dir(mode);
+    let out_dir = tmp.join("states");
+    let buffer = ein_infer::events::Buffer::new();
+    let abort = mode == "abort";
+    let opts = SolveOptions {
+        stop_after: None,
+        max_set_size: 3,
+        max_enterings: Some(if abort { 3 } else { 60 }),
+        on_budget: if abort {
+            OnBudget::Raise
+        } else {
+            OnBudget::Verdict
+        },
+        store_lattice: matches!(mode, "lattice" | "abort"),
+        ..SolveOptions::default()
+    };
+    let mut events = ein_infer::events::Events::off();
+    let mut monotonic;
+    let mut lattice;
+    let mut progress;
+    let dumper: &mut dyn ein_infer::solve::Dumper = match mode {
+        "monotonic" => {
+            monotonic =
+                crate::dump::MonotonicDumper::new(Some(&out_dir)).map_err(|e| e.to_string())?;
+            &mut monotonic
+        }
+        "progress" => {
+            // `out_dir` too: `-v` and `--dump-states` compose, and the live
+            // view *is* the file dumper plus a stream, so this is the one mode
+            // that exercises both at once.
+            progress =
+                crate::dump::ProgressDumper::new(Some(&out_dir), Box::new(buffer.clone()), 3, "p")
+                    .map_err(|e| e.to_string())?;
+            &mut progress
+        }
+        _ => {
+            lattice = crate::dump::LatticeDumper::new(Some(&out_dir)).map_err(|e| e.to_string())?;
+            &mut lattice
+        }
+    };
+    let aborted = match solve(&mut kb, terms, ast, &mut events, dumper, &opts) {
+        Ok(_) => false,
+        Err(SolveError::Budget { .. }) if abort => true,
+        Err(e) => {
+            let _ = std::fs::remove_dir_all(&tmp);
+            return Err(e.to_string());
+        }
+    };
+    let mut out = vec![
+        format!("ABORTED {}", py_bool(aborted)),
+        render_tree(&out_dir),
+    ];
+    if mode == "progress" {
+        out.push("=== <stderr>".to_string());
+        out.extend(buffer.to_string_lossy().lines().map(normalise_dump_line));
+    }
+    let _ = std::fs::remove_dir_all(&tmp);
+    Ok(out.join("\n"))
+}
+
+/// The `LatticeSnapshot` projection, plus the lattice DOT rendered *from a
+/// snapshot* rather than from the live proof.
+///
+/// The two renders are not the same picture and are not meant to be: a
+/// snapshot's `solutions` are post-saturation state keys, so its solution view
+/// draws whole states where the proof's draws commitments. What matters is
+/// that both implementations draw the same one.
+fn snapshot_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, String> {
+    use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
+
+    let opts = SolveOptions {
+        stop_after: None,
+        max_set_size: 3,
+        max_enterings: Some(60),
+        on_budget: OnBudget::Verdict,
+        store_lattice: true,
+        ..SolveOptions::default()
+    };
+    let mut events = ein_infer::events::Events::off();
+    let solved =
+        solve(kb, terms, ast, &mut events, &mut NoDumper, &opts).map_err(|e| e.to_string())?;
+    let Some(proof) = solved.proof.as_ref() else {
+        return Ok("NO PROOF".to_string());
+    };
+    let snap = crate::dump::lattice_snapshot(&solved.answer, proof, kb, terms);
+
+    let show = |sets: Vec<&[ein_core::FactId]>| {
+        let mut rendered: Vec<(String, String)> = sets
+            .into_iter()
+            .map(|s| {
+                // Already in `repr` order — the snapshot stores it that way,
+                // which is the whole point of `repr_sorted`. Re-sorting the
+                // *text* here would hide a key that was not.
+                let ids: Vec<String> = s
+                    .iter()
+                    .map(|f| ein_infer::events::sexpr(terms, *f))
+                    .collect();
+                (
+                    // A *canonical* key's repr, not a commitment's — the two
+                    // shapes differ on a nested fact, and this is the sort
+                    // order ein.py's `sorted(sets, key=repr)` uses here.
+                    crate::dump::snapshot::canon_key_repr(terms, s),
+                    format!("{{{}}}", ids.join(" ")),
+                )
+            })
+            .collect();
+        rendered.sort();
+        format!(
+            "[{}]",
+            rendered
+                .into_iter()
+                .map(|(_, r)| r)
+                .collect::<Vec<_>>()
+                .join(", ")
+        )
+    };
+
+    let out = vec![
+        format!(
+            "SNAPSHOT verdict={} nodes={}",
+            snap.verdict_kind,
+            snap.nodes_by_state_key.len()
+        ),
+        format!("  root_state_key {}", show(vec![&snap.root_state_key])),
+        format!(
+            "  solutions      {}",
+            show(snap.solutions.iter().map(|s| &s[..]).collect())
+        ),
+        format!(
+            "  deads          {}",
+            show(snap.deads.iter().map(|s| &s[..]).collect())
+        ),
+        format!(
+            "  alive_at_end   {}",
+            show(snap.alive_at_end.iter().map(|s| &s[..]).collect())
+        ),
+        "=== dot solution".to_string(),
+        render_lattice(
+            terms,
+            LatticeSource::Snapshot(&snap),
+            LatticeView::Solution,
+            "lattice",
+        ),
+        "=== dot full".to_string(),
+        render_lattice(
+            terms,
+            LatticeSource::Snapshot(&snap),
+            LatticeView::Full,
+            "lattice",
+        ),
+    ];
+    Ok(out.join("\n"))
 }

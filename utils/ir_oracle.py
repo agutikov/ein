@@ -40,6 +40,7 @@ One JSON object per line in, one per line out, in order:
     {"op": "solve-shape",   "path": …, "mode": "shuffled"}   → … with `--shuffle --seed 7`
     {"op": "dot-shape",     "path": …, "view": "<view>"}     → one of the DOT views (below)
     {"op": "trace-shape",   "path": …, "mode": "<mode>"}     → the trace / answer surface
+    {"op": "dump-shape",    "path": …, "mode": "<mode>"}     → the `--dump-states` tree
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -1114,6 +1115,159 @@ def _trace_shape(kb: KnowledgeBase, mode: str) -> str:
     return "\n".join(out)
 
 
+# ── State dumps — S1a.5.3 ──────────────────────────────────────────
+#
+# `--dump-states DIR` persists a whole search as a directory tree. There is no
+# way to diff a tree over a line protocol, so the tree is *rendered* as one
+# text — every file, sorted by path, with its bytes — and the two texts are
+# diffed. The rendering is deliberately dumb: it invents nothing, so a missing
+# file, an extra file, a renamed directory and a changed byte all read the same
+# way.
+#
+# The timestamp fields are the one thing that cannot match, and they are on the
+# normalisation list (design/01 §5): `ts_ms`, `elapsed_seconds` and the
+# progress lines' elapsed column are replaced with a placeholder *here*, on
+# both sides, rather than tolerated by the differ.
+
+_DUMP_MODES = ("monotonic", "lattice", "progress", "abort")
+
+_TS_KEYS = ("ts_ms", "elapsed_seconds")
+
+
+def _normalise_dump_line(line: str) -> str:
+    """Blank the clock readings — value, not presence: a record that lost its
+    `ts_ms` still fails, which is the point of normalising rather than
+    dropping."""
+    import re
+    out = line
+    for key in _TS_KEYS:
+        # The character class needs the `-` for a negative exponent
+        # (`1.5e-05`), or the tail survives normalisation on one side only.
+        out = re.sub(rf'"{key}": [-0-9.eE+]+', f'"{key}": <ts>', out)
+    # The progress view's `(   12s)` elapsed column.
+    out = re.sub(r"\(\s*\d+s\)", "(<el>)", out)
+    return out
+
+
+def _render_tree(root) -> str:
+    """A directory as one text: every file, sorted by path, with its bytes."""
+    from pathlib import Path
+    root = Path(root)
+    out = []
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        rel = path.relative_to(root).as_posix()
+        out.append(f"=== {rel}")
+        text = path.read_text(encoding="utf-8")
+        out.extend(_normalise_dump_line(ln) for ln in text.splitlines())
+        if text and not text.endswith("\n"):
+            out.append("=== (no trailing newline)")
+    return "\n".join(out)
+
+
+def _dump_shape(kb: KnowledgeBase, mode: str) -> str:
+    import io
+    import tempfile
+    from pathlib import Path
+
+    from ein.inference.monotonic import solve
+    from ein.inference.monotonic._state import BudgetExceededError
+    from ein.inference.monotonic.state_dump import (
+        LatticeDumper, MonotonicDumper, ProgressDumper,
+    )
+
+    with tempfile.TemporaryDirectory() as tmp:
+        out_dir = Path(tmp) / "states"
+        stream = io.StringIO()
+        if mode == "monotonic":
+            dumper, budget = MonotonicDumper(out_dir=out_dir), 60
+        elif mode == "lattice":
+            dumper, budget = LatticeDumper(out_dir=out_dir), 60
+        elif mode == "progress":
+            # `out_dir` too: `-v` and `--dump-states` compose, and the live
+            # view is a *subclass* of the file dumper, so this is the one mode
+            # that exercises both at once.
+            dumper = ProgressDumper(stream=stream, progress_every=3,
+                                    label="p", out_dir=out_dir)
+            budget = 60
+        else:                                   # abort
+            # Small enough to trip the budget mid-search, with the raising
+            # policy — so `summary.json` must be absent and the timeline
+            # flushed anyway.
+            dumper, budget = LatticeDumper(out_dir=out_dir), 3
+        try:
+            solve(kb, stop_after=None, max_set_size=3, max_enterings=budget,
+                  on_budget="raise" if mode == "abort" else "verdict",
+                  store_lattice=mode in ("lattice", "abort"), dumper=dumper)
+            aborted = False
+        except BudgetExceededError:
+            aborted = True
+        out = [f"ABORTED {aborted}", _render_tree(out_dir)]
+        if mode == "progress":
+            out.append("=== <stderr>")
+            out.extend(_normalise_dump_line(ln)
+                       for ln in stream.getvalue().splitlines())
+        return "\n".join(out)
+
+
+def _snapshot_shape(kb: KnowledgeBase) -> str:
+    """The `LatticeSnapshotV1` projection, plus the lattice DOT rendered
+    *from a snapshot* rather than from the live proof.
+
+    The two renders are not the same picture and are not meant to be: a
+    snapshot's `solutions` are post-saturation **state keys**, so its solution
+    view draws whole states where the proof's draws commitments. What matters
+    is that both implementations draw the same one.
+    """
+    from ein.inference.monotonic import solve
+    from ein.inference.monotonic.snapshot import lattice_snapshot
+    from ein.render.lattice_dag import render_lattice
+
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3, max_enterings=60,
+                       on_budget="verdict", store_lattice=True)
+    proof = getattr(verdict, "proof", None)
+    if proof is None:
+        return "NO PROOF"
+    snap = lattice_snapshot(verdict, kb)
+
+    def canon_text(fid) -> str:
+        """One *canonical* fact as an s-expression.
+
+        Not `events.fact_id`: `canon._hashable_args` lowers a nested `Fact` to
+        its own `(rel, args)` tuple, and `fact_sexpr` renders a bare tuple with
+        `str()` — so a state key carrying `(not (color-loc Blue House-1))`
+        would print the tuple's repr where every other fact renderer prints an
+        s-expression. This one recurses into that shape.
+        """
+        rel, args = fid
+        parts = [
+            canon_text(a)
+            if (isinstance(a, tuple) and len(a) == 2
+                and isinstance(a[0], str) and isinstance(a[1], tuple))
+            else str(a)
+            for a in args
+        ]
+        return f"({rel} {' '.join(parts)})" if parts else f"({rel})"
+
+    def show(sets) -> str:
+        return "[" + ", ".join(
+            "{" + " ".join(canon_text(f) for f in s) + "}"
+            for s in sorted(sets, key=repr)
+        ) + "]"
+
+    out = [
+        f"SNAPSHOT verdict={snap.verdict_kind} nodes={len(snap.nodes_by_state_key)}",
+        f"  root_state_key {show([snap.root_state_key])}",
+        f"  solutions      {show(snap.solutions)}",
+        f"  deads          {show(snap.deads)}",
+        f"  alive_at_end   {show(snap.alive_at_end)}",
+        "=== dot solution",
+        render_lattice(snap, view="solution"),
+        "=== dot full",
+        render_lattice(snap, view="full"),
+    ]
+    return "\n".join(out)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -1172,6 +1326,12 @@ def _handle(req: dict) -> dict:
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True,
                 "out": _trace_shape(kb, str(req.get("mode", "trace")))}
+    if op == "dump-shape":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        mode = str(req.get("mode", "monotonic"))
+        return {"ok": True,
+                "out": (_snapshot_shape(kb) if mode == "snapshot"
+                        else _dump_shape(kb, mode))}
     if op == "accept":
         return {"ok": True}
     if op == "parse":

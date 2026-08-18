@@ -17,9 +17,13 @@ dist/
 # Virtualenvs
 .venv/
 venv/
-dumps
 .venv*
-dump
+# Engine dump trees (`--dump-states DIR`). **Anchored** to the repo root: the
+# bare `dump` / `dumps` these replace matched any path component, and silently
+# excluded `ein.rs/crates/ein-render/src/dump/` — a source module, ignored
+# because it shares a name with a scratch directory.
+/dump/
+/dumps/
 
 # Machine-specific bench artifact (the tables in docs/kernel/inference/
 # features.md are the committed record; regenerate with utils/feature_matrix.py)

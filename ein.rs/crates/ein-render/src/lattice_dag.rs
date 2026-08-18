@@ -22,6 +22,7 @@ use ein_core::{FactId, Terms};
 use ein_infer::solve::LatticeProof;
 
 use crate::dot_util::{digraph_open, fact_label, hashed_id, multiline, quote};
+use crate::dump::snapshot::LatticeSnapshot;
 
 /// `verdict → (border, fill)`.
 fn verdict_style(verdict: Verdict) -> (&'static str, &'static str) {
@@ -59,10 +60,30 @@ impl LatticeView {
     }
 }
 
+/// What [`render_lattice`] draws.
+///
+/// A proof is the richer input: its dead commitments carry the unsat core and
+/// the learned clause. A snapshot is the permutation-invariant projection, and
+/// it draws a *different picture on purpose* — its solutions and deads are
+/// post-saturation **state keys**, so each cell's "commitment" is a whole
+/// state. The preferred input when determinism matters, and the one whose
+/// picture is stable across `lattice_order_seed`.
+pub enum LatticeSource<'a> {
+    Proof(&'a LatticeProof),
+    Snapshot(&'a LatticeSnapshot),
+}
+
 /// One normalised lattice cell.
 struct Cell {
     /// The representative commitment.
     rep: Vec<FactId>,
+    /// `repr(rep)`, computed **by the caller**, because the two sources spell
+    /// it differently and the difference is load-bearing: a proof's
+    /// commitments carry raw `Fact.args`, where a nested fact reprs as
+    /// `Fact(relation_name=…)`; a snapshot's state keys carry
+    /// `canon._hashable_args`, where the same fact reprs as a tuple. The order
+    /// of the whole diagram follows this string.
+    rep_repr: String,
     commitments: Vec<Vec<FactId>>,
     verdict: Verdict,
     layer: usize,
@@ -72,6 +93,7 @@ struct Cell {
 
 fn make_cell(
     commitments: Vec<Vec<FactId>>,
+    rep_repr: String,
     verdict: Verdict,
     unsat_core: Vec<FactId>,
     learned_clause: Vec<FactId>,
@@ -82,6 +104,7 @@ fn make_cell(
     let layer = rep.len();
     Cell {
         rep,
+        rep_repr,
         commitments,
         verdict,
         layer,
@@ -94,7 +117,7 @@ fn make_cell(
 ///
 /// `repr`, not the raw tuple, because a representative can hold mixed-argument
 /// facts, which have no native total order (P1.21 R1).
-fn commitment_repr(terms: &Terms, commitment: &[FactId]) -> String {
+pub fn commitment_repr(terms: &Terms, commitment: &[FactId]) -> String {
     let items: Vec<PyValue> = commitment
         .iter()
         .map(|f| {
@@ -108,6 +131,31 @@ fn commitment_repr(terms: &Terms, commitment: &[FactId]) -> String {
     repr(&PyValue::Tuple(items))
 }
 
+fn snapshot_cells(terms: &Terms, snap: &LatticeSnapshot, view: LatticeView) -> (Vec<Cell>, bool) {
+    // Every sort here is by `repr`: state keys and label sets are tuples of
+    // heterogeneous tuples with no native total order. `dedup` re-sorts the
+    // survivors the same way, so the pre-sort only decides which of two equal
+    // representatives wins — and two equal representatives in the same verdict
+    // class are the same cell.
+    let cell = |c: &[FactId], v: Verdict| {
+        make_cell(
+            vec![c.to_vec()],
+            crate::dump::snapshot::canon_key_repr(terms, c),
+            v,
+            Vec::new(),
+            Vec::new(),
+        )
+    };
+    let mut cells: Vec<Cell> = snap
+        .solutions
+        .iter()
+        .map(|c| cell(c, Verdict::Solution))
+        .collect();
+    cells.extend(snap.deads.iter().map(|c| cell(c, Verdict::Dead)));
+    cells.extend(snap.alive_at_end.iter().map(|c| cell(c, Verdict::Alive)));
+    (cells, view != LatticeView::Full)
+}
+
 /// Normalise a proof into cells, and say whether a requested `full` view got
 /// a real lattice (it never does — see the module docs).
 fn proof_cells(terms: &Terms, proof: &LatticeProof, view: LatticeView) -> (Vec<Cell>, bool) {
@@ -117,6 +165,7 @@ fn proof_cells(terms: &Terms, proof: &LatticeProof, view: LatticeView) -> (Vec<C
         .map(|s| {
             make_cell(
                 vec![s.commitment.clone()],
+                commitment_repr(terms, &s.commitment),
                 Verdict::Solution,
                 Vec::new(),
                 Vec::new(),
@@ -126,23 +175,27 @@ fn proof_cells(terms: &Terms, proof: &LatticeProof, view: LatticeView) -> (Vec<C
     cells.extend(proof.dead_commitments.iter().map(|d| {
         make_cell(
             vec![d.commitment.clone()],
+            commitment_repr(terms, &d.commitment),
             Verdict::Dead,
             d.unsat_core.clone(),
             d.learned_clause.clone(),
         )
     }));
-    cells.extend(
-        proof
-            .alive_at_end
-            .iter()
-            .map(|a| make_cell(vec![a.clone()], Verdict::Alive, Vec::new(), Vec::new())),
-    );
-    (dedup(terms, cells), view != LatticeView::Full)
+    cells.extend(proof.alive_at_end.iter().map(|a| {
+        make_cell(
+            vec![a.clone()],
+            commitment_repr(terms, a),
+            Verdict::Alive,
+            Vec::new(),
+            Vec::new(),
+        )
+    }));
+    (cells, view != LatticeView::Full)
 }
 
 /// Collapse cells sharing a representative, keeping the highest-precedence
 /// verdict and any enriching unsat core / learned clause.
-fn dedup(terms: &Terms, cells: Vec<Cell>) -> Vec<Cell> {
+fn dedup(cells: Vec<Cell>) -> Vec<Cell> {
     let mut by_rep: Vec<Cell> = Vec::new();
     for c in cells {
         match by_rep.iter().position(|p| p.rep == c.rep) {
@@ -175,6 +228,7 @@ fn dedup(terms: &Terms, cells: Vec<Cell>) -> Vec<Cell> {
                 };
                 by_rep[i] = Cell {
                     rep: c.rep,
+                    rep_repr: c.rep_repr,
                     commitments,
                     verdict,
                     layer: c.layer,
@@ -185,12 +239,8 @@ fn dedup(terms: &Terms, cells: Vec<Cell>) -> Vec<Cell> {
         }
     }
     // Deterministic order: by `(layer, repr(representative))`.
-    let mut keyed: Vec<(usize, String, Cell)> = by_rep
-        .into_iter()
-        .map(|c| (c.layer, commitment_repr(terms, &c.rep), c))
-        .collect();
-    keyed.sort_by(|a, b| (a.0, &a.1).cmp(&(b.0, &b.1)));
-    keyed.into_iter().map(|(_, _, c)| c).collect()
+    by_rep.sort_by(|a, b| (a.layer, &a.rep_repr).cmp(&(b.layer, &b.rep_repr)));
+    by_rep
 }
 
 // ── labels / ids ───────────────────────────────────────────────────
@@ -224,11 +274,15 @@ fn is_proper_subset(p: &[FactId], rep: &[FactId]) -> bool {
 /// Render the commitment lattice as an inline `dot` block.
 pub fn render_lattice(
     terms: &Terms,
-    proof: &LatticeProof,
+    source: LatticeSource<'_>,
     view: LatticeView,
     name: &str,
 ) -> String {
-    let (cells, full_ok) = proof_cells(terms, proof, view);
+    let (cells, full_ok) = match source {
+        LatticeSource::Proof(proof) => proof_cells(terms, proof, view),
+        LatticeSource::Snapshot(snap) => snapshot_cells(terms, snap, view),
+    };
+    let cells = dedup(cells);
 
     let mut lines = digraph_open(name, Some("LR"), Some("fontname=\"Inter\", shape=box"));
     if view == LatticeView::Full && !full_ok {

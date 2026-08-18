@@ -19,7 +19,7 @@ use ein_ir::{Ast, parse};
 use ein_oracle::repo_root;
 use ein_render::ir_dot::{DotOpts, TraceView, render_query, render_trace, to_dot};
 use ein_render::kb_dot::KbDotOpts;
-use ein_render::lattice_dag::{LatticeView, render_lattice};
+use ein_render::lattice_dag::{LatticeSource, LatticeView, render_lattice};
 use ein_render::rules::{RuleMode, render_rule_form, render_rules_forms};
 use ein_render::slice::{render_slice, render_solution, render_state};
 use std::path::PathBuf;
@@ -283,7 +283,12 @@ fn the_lattice_golden_reproduces() {
         stats: LatticeStats::default(),
     };
     assert_eq!(
-        render_lattice(&terms, &proof, LatticeView::Solution, "lattice"),
+        render_lattice(
+            &terms,
+            LatticeSource::Proof(&proof),
+            LatticeView::Solution,
+            "lattice",
+        ),
         golden("lattice_render")
     );
 }

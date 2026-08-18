@@ -153,6 +153,19 @@ class LatticeDumper(_TimelineMixin):
 
     # ── Lifecycle hooks ──────────────────────────────────────
 
+    def root_saturating(self, n_firings: int) -> None:
+        """Streamed periodically *during* Phase-1 root saturation, before
+        :meth:`root_initial`.
+
+        A no-op here, exactly as it is on :class:`MonotonicDumper` — this
+        dumper writes no per-firing artefact. It has to *exist* because
+        :func:`solve` calls it unconditionally once a dumper is attached, and
+        every ~50 root firings: without it, `solve(dumper=LatticeDumper(…))`
+        raised ``AttributeError`` on any puzzle whose root saturation ran past
+        that, which is most of them. The existing tests all use fixtures small
+        enough to stay under it (found 2026-08-18 by M1a S1a.5.3, whose corpus
+        sweep does not)."""
+
     def root_initial(self, kb: KnowledgeBase) -> None:
         """Called once after Phase 1's initial saturation."""
         if self.out_dir is not None and kb is not None:

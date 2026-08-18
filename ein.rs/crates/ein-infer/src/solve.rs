@@ -192,25 +192,49 @@ impl From<CompileError> for SolveError {
     }
 }
 
-/// The six lifecycle hooks a state dumper receives. Implementations land in
-/// [S1a.5.3](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.3_state_dumps.md);
-/// what this stage owes is the call sites and the guarantee that `summary`
-/// lands on every non-abort path.
+/// What a dumper records about one entering.
+///
+/// ein.py hands its hook the whole `CommitmentSetResult`; here the fields are
+/// borrowed separately, because by the time the *solution* outcome is known
+/// the result has been partially moved — its KB into the completed fork, its
+/// firings into the recorded node. Same information, one borrow later.
+pub struct EnteringInfo<'a> {
+    pub kind: Kind,
+    pub firings: &'a [Firing],
+    pub unsat_core: &'a [FactId],
+    /// The saturated fork. Written out only for a solution, but passed on
+    /// every outcome so the hook, not the loop, decides.
+    pub kb: Option<&'a Kb>,
+    pub facts_merged: u64,
+    pub nogood_emitted: bool,
+    pub nogood_subsumed: bool,
+}
+
+/// The lifecycle hooks a state dumper receives — implemented in
+/// [S1a.5.3](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.3_state_dumps.md)
+/// by `ein-render`, which is where formatting lives.
+///
+/// Every hook that shows a fact takes `&Terms` as well, because a `FactId`
+/// means nothing without one: ein.py's `Fact` carries its own text and this
+/// port's does not.
 #[allow(unused_variables)]
 pub trait Dumper {
     fn root_saturating(&mut self, n_firings: usize) {}
-    fn root_initial(&mut self, kb: &Kb) {}
-    fn layer_start(&mut self, layer: u32, kb: &Kb, n_alive: usize) {}
+    fn root_initial(&mut self, kb: &Kb, terms: &Terms) {}
+    fn layer_start(&mut self, layer: u32, kb: &Kb, terms: &Terms, n_alive: usize) {}
     fn entering(
         &mut self,
         layer: u32,
         commitment: &[FactId],
+        terms: &Terms,
         outcome: &str,
-        nogood_emitted: bool,
-        nogood_subsumed: bool,
+        info: &EnteringInfo<'_>,
     ) {
     }
-    fn layer_end(&mut self, layer: u32, kb: &Kb, n_alive: usize, n_next: usize) {}
+    fn layer_end(&mut self, layer: u32, kb: &Kb, terms: &Terms, n_alive: usize, n_next: usize) {}
+    /// Written from the single exit hook when the verdict carries a proof, so
+    /// a `kb_index/` tree and its index land *before* the cumulative summary.
+    fn proof_summary(&mut self, proof: &LatticeProof, terms: &Terms) {}
     fn summary(&mut self, verdict: &Answer, stats: &MonotonicStats) {}
     fn close(&mut self) {}
 }
@@ -288,6 +312,12 @@ pub fn solve(
             } else {
                 None
             };
+            // The single exit hook, in ein.py's two-step order: the proof
+            // index first, so a `LatticeDumper` materialises `kb_index/` and
+            // `proof_summary.json` before the cumulative summary lands.
+            if let Some(proof) = proof.as_ref() {
+                dumper.proof_summary(proof, terms);
+            }
             dumper.summary(&answer, &run.stats);
             Ok(Solved {
                 answer,
@@ -376,7 +406,7 @@ impl Run<'_> {
                 }
             }
         }
-        dumper.root_initial(root);
+        dumper.root_initial(root, terms);
 
         if crate::contradiction::has_contradiction(root, terms) {
             // Root is contradictory before any commitment → `k = 0`, with the
@@ -425,7 +455,7 @@ impl Run<'_> {
                 break;
             }
             self.stats.base.layers_explored = layer as u64;
-            dumper.layer_start(layer, root, alive.len());
+            dumper.layer_start(layer, root, terms, alive.len());
 
             let candidates = if layer == 1 {
                 a_prev.clone()
@@ -492,8 +522,26 @@ impl Run<'_> {
                     crate::hypgen::complete(&mut s)?
                 };
                 if solved {
+                    // Before `record_node`, which takes the firings: ein.py
+                    // calls the hook after, but nothing between the two lines
+                    // is observable to it — `_record_node` writes no event and
+                    // only seals a layer the fact list spans anyway.
+                    dumper.entering(
+                        layer,
+                        c,
+                        terms,
+                        "solution",
+                        &EnteringInfo {
+                            kind: result.kind,
+                            firings: &result.firings,
+                            unsat_core: &result.unsat_core,
+                            kb: Some(&fork),
+                            facts_merged: 0,
+                            nogood_emitted: false,
+                            nogood_subsumed: false,
+                        },
+                    );
                     self.record_node(&mut fork, terms, c.clone(), result.firings, layer);
-                    dumper.entering(layer, c, "solution", false, false);
                     if self
                         .opts
                         .stop_after
@@ -504,11 +552,25 @@ impl Run<'_> {
                     }
                     continue;
                 }
-                dumper.entering(layer, c, "alive", false, false);
+                dumper.entering(
+                    layer,
+                    c,
+                    terms,
+                    "alive",
+                    &EnteringInfo {
+                        kind: result.kind,
+                        firings: &result.firings,
+                        unsat_core: &result.unsat_core,
+                        kb: Some(&fork),
+                        facts_merged: 0,
+                        nogood_emitted: false,
+                        nogood_subsumed: false,
+                    },
+                );
                 a_layer.push(c.clone());
             }
 
-            dumper.layer_end(layer, root, alive.len(), a_layer.len());
+            dumper.layer_end(layer, root, terms, alive.len(), a_layer.len());
             if phase_2_done {
                 break;
             }
@@ -739,11 +801,19 @@ impl Run<'_> {
         dumper.entering(
             layer,
             c,
+            terms,
             result.kind.as_str(),
-            landed,
-            // Not `!landed`: with no-goods off nothing was *attempted*, so
-            // nothing was subsumed either.
-            self.cfg.enable_path_nogoods && !landed,
+            &EnteringInfo {
+                kind: result.kind,
+                firings: &result.firings,
+                unsat_core: &result.unsat_core,
+                kb: Some(&result.kb),
+                facts_merged: 0,
+                nogood_emitted: landed,
+                // Not `!landed`: with no-goods off nothing was *attempted*, so
+                // nothing was subsumed either.
+                nogood_subsumed: self.cfg.enable_path_nogoods && !landed,
+            },
         );
     }
 

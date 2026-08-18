@@ -286,3 +286,39 @@ def test_dumper_timeline_records_events(tmp_path: Path):
     # Sequence numbers are monotonic.
     seqs = [e["seq"] for e in events]
     assert seqs == sorted(seqs)
+
+
+# ── the hook contract ─────────────────────────────────────
+
+
+def test_dumper_survives_a_long_root_saturation(tmp_path: Path):
+    """`solve` calls ``root_saturating`` every ~50 root firings once a dumper
+    is attached, so a dumper missing that hook raises ``AttributeError`` on any
+    puzzle whose root saturation runs past it.
+
+    Every other fixture in this file is under that threshold, which is why the
+    gap survived until M1a's corpus sweep walked into it.
+    """
+    from ein.inference.monotonic.solver import _ROOT_SAT_PROGRESS_EVERY
+    from ein.inference.saturator import Saturator
+
+    # Measure the fixture first: under the threshold the hook never fires and
+    # the test passes without exercising anything. Every *other* fixture in
+    # this file is under it — `branching/04` saturates in 16 firings and
+    # `05_mini_zebra` in 24 — which is why the gap survived; `zebra2` is 321.
+    puzzle = REPO / "examples" / "zebra2.ein"
+    n_root_firings = sum(1 for _ in Saturator(_kb_from(puzzle)).saturate())
+    assert n_root_firings > _ROOT_SAT_PROGRESS_EVERY, (
+        f"fixture saturates in {n_root_firings} firings — below the "
+        f"{_ROOT_SAT_PROGRESS_EVERY} threshold, so it proves nothing"
+    )
+
+    # Getting this far without an `AttributeError` is the whole test; the
+    # root snapshot is the witness that the run reached `root_initial`, which
+    # is the hook *after* the one that used to be missing. The budget is small
+    # on purpose — the search is not what is under test, and a budget abort
+    # writes no `summary.json` (`test_dumper_*` above covers that path).
+    dump_dir = tmp_path / "long-root"
+    _solve(_kb_from(puzzle), max_set_size=1, max_enterings=2,
+           on_budget="verdict", dumper=LatticeDumper(out_dir=dump_dir))
+    assert (dump_dir / "00_root_initial.ein").is_file()

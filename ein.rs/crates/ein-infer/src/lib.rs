@@ -80,7 +80,7 @@ pub use shape::{
     plan_shape, plan_shape_with, saturate_events, solve_shape,
 };
 pub use solve::{
-    Dumper, LatticeProof, LatticeStats, MonotonicStats, NoDumper, OnBudget, SolveError,
-    SolveOptions, Solved, solve,
+    DeadCommitment, Dumper, EnteringInfo, LatticeProof, LatticeStats, MonotonicStats, NoDumper,
+    OnBudget, SolveError, SolveOptions, Solved, solve,
 };
 pub use verdict::{Answer, Solution, Verdict, goal_bindings, query_value};

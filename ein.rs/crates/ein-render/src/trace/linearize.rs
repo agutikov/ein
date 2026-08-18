@@ -30,7 +30,7 @@ use ein_ir::Ast;
 use super::ast::{FactRef, TraceStep, fact_ref};
 use super::relevance::relevant_firings;
 use crate::dot_util::fact_label;
-use crate::lattice_dag::{LatticeView, render_lattice};
+use crate::lattice_dag::{LatticeSource, LatticeView, render_lattice};
 use crate::slice::{render_slice, render_solution, render_state};
 use crate::why::render_why;
 
@@ -404,7 +404,7 @@ pub fn linearize(
     let lattice_dot = match (opts.diagrams, proof) {
         (true, Some(p)) => Some(render_lattice(
             terms,
-            p,
+            LatticeSource::Proof(p),
             if solved_flag {
                 LatticeView::Solution
             } else {
