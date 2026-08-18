@@ -22,6 +22,9 @@ pub mod contradiction;
 pub mod engine;
 pub mod events;
 pub mod firing;
+pub mod hrule;
+pub mod hypgen;
+pub mod lookahead;
 pub mod match_;
 pub mod plan;
 pub mod predicates;
@@ -36,6 +39,12 @@ pub use contradiction::{Contradiction, contradicts, detect, has_contradiction};
 pub use engine::Engine;
 pub use events::{Events, Level};
 pub use firing::{ActivatorId, BindingKey, Env, FireError, Firing, build_fact, fire};
+pub use hrule::Hrules;
+pub use hypgen::{
+    CLOSED, Drop, HypGenStats, ScoreError, Skip, candidate_objects, complete, consistent, generate,
+    is_solution_node, open_hypotheses, score_hypothesis,
+};
+pub use lookahead::Lookahead;
 pub use match_::{Emit, Match, Matcher};
 pub use plan::{
     Disjunct, GuardArg, GuardArgKind, MAX_REGS, NafGuard, Plan, PlanId, Probe, ProbeSrc, Reg,
@@ -43,4 +52,4 @@ pub use plan::{
 };
 pub use predicates::Pred;
 pub use saturator::{SaturateError, Saturator, Session};
-pub use shape::{match_shape, plan_shape, plan_shape_with, saturate_events};
+pub use shape::{hyp_shape, match_shape, plan_shape, plan_shape_with, saturate_events};

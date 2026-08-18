@@ -211,6 +211,83 @@ pub fn saturate_events(
     Ok(buffer.to_string_lossy() + &absents + &clashes + &summary)
 }
 
+/// Every hypgen candidate, its verdict, and the stats — the S1a.4.1 diff.
+///
+/// Three phases, and the split is what keeps the stream readable: saturate
+/// with events off, generate with them on at `verbose`, then ask the two
+/// generator-backed predicates with them off again. Each [`generate`] call
+/// builds its own [`crate::Lookahead`], which compiles every plan and emits a
+/// `compile` event per pair, so running the tail with the log open would
+/// triple the file for no signal.
+///
+/// The event stream **is** the observable: candidate order decides `layer_1`'s
+/// singleton order and therefore the whole traversal, and which counter a drop
+/// lands in is a T1 observable in its own right. So there is no second
+/// rendering of the candidate list that would have to agree with this one.
+/// What the trailing block adds is what the events do not carry — the
+/// `--hyp-stats` report, its `raw == emitted + sum(filtered)` invariant, and
+/// two facts about the predicates built on the generator. `COMPLETE`'s `raw=`
+/// is the third line's point: the S1.9.E16 short-circuit is invisible in the
+/// boolean and visible in how many candidates were built to reach it.
+///
+/// `emit_closed` is deliberately not run — it is
+/// [S1a.4.2](../../../../plans/m1a_rust/p1a.4_search_layer/s1a.4.2_lookahead_and_closure.md)'s
+/// — so what this sees is the `(__closed__ R)` facts a puzzle authored or
+/// `std.closure` derived.
+pub fn hyp_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, String> {
+    let mut off = crate::events::Events::off();
+    {
+        let mut s = crate::saturator::Session {
+            kb,
+            terms,
+            ast,
+            events: &mut off,
+        };
+        let mut sat = crate::saturator::Saturator::new(&mut s).map_err(|e| e.to_string())?;
+        sat.saturate(&mut s, None, &mut |_| {})
+            .map_err(|e| e.to_string())?;
+    }
+
+    let buffer = crate::events::Buffer::new();
+    let mut events =
+        crate::events::Events::to(Box::new(buffer.clone()), crate::events::Level::Verbose);
+    let mut stats = crate::hypgen::HypGenStats::new();
+    {
+        let mut s = crate::saturator::Session {
+            kb,
+            terms,
+            ast,
+            events: &mut events,
+        };
+        crate::hypgen::generate(&mut s, &mut stats, &mut |_| {
+            std::ops::ControlFlow::Continue(())
+        })
+        .map_err(|e| e.to_string())?;
+    }
+
+    let mut short = crate::hypgen::HypGenStats::new();
+    let mut s = crate::saturator::Session {
+        kb,
+        terms,
+        ast,
+        events: &mut off,
+    };
+    let is_complete =
+        crate::hypgen::complete_counted(&mut s, &mut short).map_err(|e| e.to_string())?;
+    let open = crate::hypgen::open_hypotheses(&mut s).map_err(|e| e.to_string())?;
+
+    let mut lines = vec!["STATS".to_string()];
+    lines.extend(stats.report_lines());
+    lines.push(format!("BALANCE {}", py_bool(stats.balances())));
+    lines.push(format!(
+        "COMPLETE {} raw={}",
+        py_bool(is_complete),
+        short.raw
+    ));
+    lines.push(format!("OPEN {}", open.len()));
+    Ok(buffer.to_string_lossy() + &lines.join("\n"))
+}
+
 /// One [`NafRef`] as `repr((relation, args))` — the tuple `world._ground`
 /// builds, with `None` where the query ranged free.
 fn naf_repr(terms: &Terms, r: &ein_core::NafRef) -> String {

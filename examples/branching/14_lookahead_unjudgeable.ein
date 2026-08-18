@@ -1,0 +1,75 @@
+;;; S1.21.8 D3 / M1a S1a.4.1 — a guard the lookahead cannot judge pre-fork.
+;;;
+;;; The companion to 13_lookahead_naf_world.ein. That file is the case the
+;;; lookahead *can* decide in the world `kb` plus `h`: the guard reads the
+;;; candidate's own relation as a positive premise, so re-running it seeded
+;;; at `h` answers exactly. This file is the case it **cannot**.
+;;;
+;;; `premature-signoff`'s guard nests one absent inside another. Read from
+;;; the inside out:
+;;;
+;;;   (absent (and (needs-review ?y) (absent (signed ?y))))
+;;;       -- ?y has no unmet review need: "?y is review-clear"
+;;;   (absent (and (pending ?y) <review-clear ?y>))
+;;;       -- no pending item is review-clear
+;;;
+;;; so the rule reads "you signed something while nothing pending was ready",
+;;; and it is a contradiction.
+;;;
+;;; A nested absent is **non-monotone**: adding a fact can make the inner
+;;; absent fail, which makes the outer one *pass*, which adds a match the
+;;; two cheap checks cannot see. Here `(signed B)` is exactly such a fact —
+;;; it makes B review-clear, so the guard fails and the rule does not fire —
+;;; yet `kb` alone has no review-clear pending item, and `(signed B)` is not
+;;; a positive premise of the guard's query, so seeding it finds nothing
+;;; either. Judged by those two checks the guard "passes", the simulation
+;;; derives `(false)`, and a live hypothesis is killed.
+;;;
+;;; The lookahead therefore refuses to judge a disjunct whose guards contain
+;;; a nested absent and skips it. That only ever loses a kill — the branch
+;;; forks and dies normally — which is the safe direction for a filter whose
+;;; contract is that it may never report a live hypothesis as dead.
+;;;
+;;; The depth is the point, and the file cannot be simplified to a `forall`.
+;;; At **one** level of nesting the two cheap checks are already exact — a
+;;; blocked binding stays blocked, because the inner query is positive and
+;;; adding a fact can only give it more matches — so the skip is inert and a
+;;; `forall`-shaped fixture would pass either way. It takes **two** levels
+;;; for the flip to reach the outer absent.
+;;;
+;;; And the kill does not merely skip a branch: it is cached as
+;;; `(not (signed B))` in the root, so `auto-sign`'s later derivation of
+;;; `(signed B)` dies against it, every branch dies, and the verdict flips.
+;;;
+;;; Measured with `ein solve -e -s`, 2026-08-18:
+;;;
+;;;   as shipped                          Solution, ?x = B, 2 enterings
+;;;   nested guard judged eagerly         Contradiction, k = 0, 0 enterings
+
+(config :enable-pre-branch-lookahead true)
+
+(relation pending      T)
+(relation needs-review T)
+(relation waived       T)
+(relation signed       T)
+
+(rule auto-sign ()
+  :match  (and (pending ?y) (waived ?y))
+  :assert (signed ?y)
+  :why    "{?y} is waived, so it is signed"
+  :priority 100)
+
+(rule premature-signoff ()
+  :match  (and (signed ?x)
+               (absent (and (pending ?y)
+                            (absent (and (needs-review ?y)
+                                         (absent (signed ?y)))))))
+  :assert (false)
+  :why    "signed {?x} while nothing pending was review-clear"
+  :priority 200)
+
+(pending      B :source "(1)")
+(needs-review B :source "(2)")
+
+(query
+  :goal (signed ?x))

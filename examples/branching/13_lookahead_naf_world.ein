@@ -1,0 +1,61 @@
+;;; P1.21 R4 / M1a S1a.4.1 — the lookahead's NAF world includes the candidate.
+;;;
+;;; The one-step lookahead asks "does adding `h` to the saturated KB
+;;; produce a contradiction in a single rule firing?" by *positing* `h`
+;;; into a positive premise and running the rule's other premises against
+;;; the KB. Its contract is one-sided: it may miss a death (the branch
+;;; then forks and dies normally), but it must never report a live
+;;; hypothesis as dead — that loss is silent.
+;;;
+;;; `self-block` is the shape that used to break it. Its two premises are
+;;; jointly unsatisfiable in any one world, so it can never fire in a real
+;;; match — yet the probe posited `h` into `(cand ?x)` while evaluating
+;;; `(absent (cand ?x))` against a KB *without* `h`. The NAF answered
+;;; about a different world than the probe hypothesised, the guard
+;;; "passed", `(false)` was derived, and every `cand` candidate was killed.
+;;;
+;;; Since S1.21.8 the guard is judged in the world `kb` **plus** `h`: it
+;;; must find no match in `kb` *and* `h` must not create one. Here `h` is
+;;; exactly `(cand B)`, so it creates one, the guard fails, and the
+;;; candidate survives.
+;;;
+;;; What makes this a *whole-solve* fixture and not just a filter one is the
+;;; kill cache. A killed candidate is written back as `(not h)`, so a wrong
+;;; kill does not merely skip a branch — it poisons the root: `(not (cand B))`
+;;; lands there, the branch that would have derived `(cand B)` dies against
+;;; it, every branch dies, and the verdict flips.
+;;;
+;;; Measured with `ein solve -e -s`, 2026-08-18:
+;;;
+;;;   as shipped                          Solution, ?x = A, 2 enterings
+;;;   guard judged against `kb` alone     Contradiction, k = 0, 0 enterings
+;;;
+;;; `cand` is rule-producible (`promote` concludes it), so the auto-closure
+;;; would leave it guessable — though note `emit_closed` runs only on a fork
+;;; under `--hyp-stats` and the JSON summary, never on the `solve` path
+;;; itself, so what the search actually sees is every relation open.
+
+(config :enable-pre-branch-lookahead true)
+
+(relation ok      T)
+(relation blessed T)
+(relation cand    T)
+
+(rule promote ()
+  :match  (and (ok ?x) (blessed ?x))
+  :assert (cand ?x)
+  :why    "{?x} is ok and blessed, so it is a candidate"
+  :priority 100)
+
+(rule self-block ()
+  :match  (and (cand ?x) (absent (cand ?x)))
+  :assert (false)
+  :why    "unsatisfiable in any one world"
+  :priority 200)
+
+(ok      A :source "(1)")
+(ok      B :source "(2)")
+(blessed A :source "(3)")
+
+(query
+  :goal (cand ?x))

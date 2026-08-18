@@ -253,6 +253,98 @@ impl Matcher {
         }
     }
 
+    /// One disjunct, seeded at **one** named step — the lookahead's probe.
+    ///
+    /// ein.py builds a throwaway `JoinPlan(steps=rest)` and full-`run`s it;
+    /// this is the same enumeration through the seed machinery `run_seeded`
+    /// already has, which matters for more than tidiness: the injected fact
+    /// need not be in the KB, and here it is not — the lookahead is asking
+    /// what *would* follow from adding it.
+    ///
+    /// The caller chooses `(disjunct, at)` because it has already filtered
+    /// both — a disjunct whose guards cannot be judged pre-fork is skipped
+    /// entirely ([`crate::lookahead`]).
+    #[allow(clippy::too_many_arguments)]
+    pub fn run_seeded_at(
+        &mut self,
+        kb: &Kb,
+        terms: &Terms,
+        ast: &Ast,
+        plan: &Plan,
+        disjunct: usize,
+        at: usize,
+        fact: FactId,
+        f: Emit<'_>,
+    ) {
+        let c = Ctx {
+            kb,
+            terms,
+            ast,
+            plan,
+        };
+        let _ = self.run_disjunct(c, disjunct, Some((at, fact)), f);
+    }
+
+    /// `match._seed_steps` over a guard's sub-plan — does **`fact`** create a
+    /// match the KB alone does not have?
+    ///
+    /// [`Matcher::holds`] asks the guard of the world as it stands; this asks
+    /// it of the world plus one fact, which together are exactly "no match in
+    /// `kb` with `fact` added" for the monotone guards the lookahead has not
+    /// already excluded. Seeds at *each* sub-step on the fact's relation,
+    /// since the fact may play either role in `(R ?a ?b) ∧ (R ?b ?c)`.
+    #[allow(clippy::too_many_arguments)]
+    pub fn holds_seeded(
+        &mut self,
+        kb: &Kb,
+        terms: &Terms,
+        ast: &Ast,
+        plan: &Plan,
+        guard: &NafGuard,
+        parent: &[Value],
+        fact: FactId,
+    ) -> bool {
+        let rel = terms.facts.rel(fact);
+        let c = Ctx {
+            kb,
+            terms,
+            ast,
+            plan,
+        };
+        for (at, step) in plan.steps(guard.sub).iter().enumerate() {
+            let Step::Rel(r) = *step else { continue };
+            if r.rel != rel {
+                continue;
+            }
+            self.reset(guard.n_regs, guard.n_slots as usize, 0, 0);
+            // The scope projection, exactly as `holds` does it — and for the
+            // same reason untrailed: a guard produces no provenance.
+            for (reg, from) in guard.scope_of.iter().enumerate() {
+                if let Some(p) = from {
+                    self.regs[reg] = parent[*p as usize];
+                }
+            }
+            if !self.unify(terms, plan, r.slots, terms.facts.args(fact)) {
+                continue;
+            }
+            let mut found = false;
+            let w = Walk {
+                steps: guard.sub,
+                i: 0,
+                ordinal: 0,
+                skip: Some(at),
+            };
+            let _ = self.walk(c, w, &mut |_| {
+                found = true;
+                ControlFlow::Break(())
+            });
+            if found {
+                return true;
+            }
+        }
+        false
+    }
+
     /// `match.run_seeded_guarded` — see [`Matcher::run_guarded`].
     pub fn run_seeded_guarded(
         &mut self,

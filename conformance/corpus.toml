@@ -82,6 +82,25 @@ path   = "examples/branching/12_typed_blind_solve.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
+# The lookahead's D3 case (P1.21 R4). The levers are the point: with `-L`
+# (lookahead off) the candidate survives trivially, so only the ON row proves
+# the guard is re-judged in the world *with* `h`.
+[[entry]]
+path   = "examples/branching/13_lookahead_naf_world.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+levers = ["-L", "-K"]
+
+# The other half of D3: a guard the lookahead must refuse to judge. Judged
+# eagerly it kills a live hypothesis and the verdict flips to Contradiction,
+# so `solve` alone reads it — but the `-L` row is what says the verdict is the
+# *lookahead's* doing and not the puzzle's.
+[[entry]]
+path   = "examples/branching/14_lookahead_unjudgeable.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+levers = ["-L", "-K"]
+
 [[entry]]
 path   = "examples/domain_elim/ab.ein"
 group  = "positive"

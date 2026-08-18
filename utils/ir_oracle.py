@@ -27,6 +27,7 @@ One JSON object per line in, one per line out, in order:
     {"op": "plan-shape", "path": …, "filter": false}  → … without the arity filter
     {"op": "match-shape", "path": …}             → every match every plan produces
     {"op": "saturate-events", "path": …}         → the `--events` log of a root saturation
+    {"op": "hyp-shape", "path": …}               → every hypgen candidate + its verdict
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -58,6 +59,24 @@ first bound each variable and therefore the order `Provenance.bindings` records;
 premises go out as fact *positions*, so an order or identity difference names
 itself. Between them the two sweeps pin the three orders a matcher owes:
 matches, bindings, and premises through the semi-naive seed.
+
+`hyp-shape` is the search layer's first rung, for S1a.4.1: it saturates the
+root and runs the hypothesis generator over it, at `--events` `verbose`, so
+every constructed candidate goes out with the **name of the filter that dropped
+it** and every pre-candidate skip goes out as its own `hypskip`. That stream is
+the observable — candidate order decides `layer_1`'s singleton order and
+therefore the whole traversal, and filter *attribution* is a T1 counter — so
+there is no second rendering of the candidate list that would have to agree
+with it. The trailing block adds what the events do not carry: the
+`--hyp-stats` report (the same `as_report_lines`, field widths included), its
+`raw == emitted + sum(filtered)` invariant, and two facts about the predicates
+built on the generator — whether the KB is `complete` and **how many candidates
+the short-circuit built to decide it** (S1.9.E16 is invisible in the answer and
+visible in that count), and the size of `open_hypotheses`. Those three calls run
+with events off, since each builds its own `Lookahead` and would otherwise bury
+the stream in a second copy of every `compile` event. `emit_closed` is
+deliberately **not** run: it belongs to S1a.4.2, so what this op sees is the
+`(__closed__ R)` facts a puzzle authored or `std.closure` derived.
 
 `expand` is the one op with no single function behind it: `ein.ir.macros`
 provides `expand_macros` / `_substitute`, and the *loader* decides what to run
@@ -399,6 +418,59 @@ def _saturate_events(kb: KnowledgeBase) -> str:
     )
 
 
+def _hyp_shape(kb: KnowledgeBase) -> str:
+    """Every hypgen candidate, its verdict, and the stats — S1a.4.1.
+
+    Three phases, and the split is what keeps the stream readable: saturate
+    with events off, generate with them on at `verbose`, then ask the two
+    generator-backed predicates with them off again. Each `_generate` call
+    builds its own `Lookahead` — which compiles every plan and emits a
+    `compile` event per pair — so running the tail with the log open would
+    triple the file for no signal.
+
+    `COMPLETE`'s `raw=` is the point of the third line: `complete` is
+    `next(generator, None) is None`, and the short-circuit (S1.9.E16) is
+    invisible in the boolean and visible in how many candidates were built to
+    reach it.
+    """
+    import tempfile
+
+    from ein import events as ev
+    from ein.inference.hypgen import HypGenStats, _generate
+    from ein.inference.saturator import Saturator
+    from ein.inference.solution import open_hypotheses
+
+    sat = Saturator(kb)
+    for _ in sat.saturate():
+        pass
+
+    stats = HypGenStats()
+    fd, path = tempfile.mkstemp(suffix=".jsonl")
+    os.close(fd)
+    try:
+        ev.open_log(path, level="verbose")
+        try:
+            for _ in _generate(kb, stats):
+                pass
+        finally:
+            ev.close_log()
+        log = Path(path).read_text(encoding="utf-8")
+    finally:
+        Path(path).unlink(missing_ok=True)
+
+    short = HypGenStats()
+    is_complete = next(_generate(kb, short), None) is None
+    balanced = stats.raw == stats.emitted + sum(stats.filtered.values())
+    lines = [
+        "STATS",
+        *stats.as_report_lines(),
+        f"BALANCE {balanced}",
+        f"COMPLETE {is_complete} raw={short.raw}",
+        f"OPEN {len(open_hypotheses(kb))}",
+    ]
+    return log + "\n".join(lines)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -429,6 +501,9 @@ def _handle(req: dict) -> dict:
     if op == "saturate-events":
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True, "out": _saturate_events(kb)}
+    if op == "hyp-shape":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True, "out": _hyp_shape(kb)}
     if op == "accept":
         return {"ok": True}
     if op == "parse":
