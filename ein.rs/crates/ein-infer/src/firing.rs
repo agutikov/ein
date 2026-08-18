@@ -240,6 +240,7 @@ pub struct ActivatorId(pub u32);
 
 impl BindingKey {
     pub fn new(plan: &Plan, activator: ActivatorId, regs: &[Value]) -> BindingKey {
+        ein_core::counters::bump(|c| c.binding_key += 1);
         BindingKey {
             rule: plan.rule,
             activator,

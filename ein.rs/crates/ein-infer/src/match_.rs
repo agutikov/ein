@@ -462,6 +462,7 @@ impl Matcher {
     /// written. `skip` is the seeded step, which is bound before the walk and
     /// still counts towards the ordinal.
     fn walk(&mut self, c: Ctx<'_>, w: Walk, f: Emit<'_>) -> ControlFlow<()> {
+        ein_core::counters::bump(|c| c.walk += 1);
         let (terms, ast, plan) = (c.terms, c.ast, c.plan);
         let (steps, i, ordinal, skip) = (w.steps, w.i, w.ordinal, w.skip);
         if i == steps.len() {
@@ -538,6 +539,7 @@ impl Matcher {
         fact: FactId,
         f: Emit<'_>,
     ) -> ControlFlow<()> {
+        ein_core::counters::bump(|c| c.candidates += 1);
         let (terms, plan) = (c.terms, c.plan);
         let mark = self.trail.len();
         // **Every** slot is re-checked, even the one the probe narrowed on.
@@ -559,6 +561,7 @@ impl Matcher {
     // ── Unification ────────────────────────────────────────────────
 
     fn unify(&mut self, terms: &Terms, plan: &Plan, slots: Span, args: &[Value]) -> bool {
+        ein_core::counters::bump(|c| c.unify += 1);
         if slots.len() != args.len() {
             return false;
         }
@@ -572,6 +575,7 @@ impl Matcher {
     }
 
     fn unify_slot(&mut self, terms: &Terms, plan: &Plan, slot: Slot, arg: Value) -> bool {
+        ein_core::counters::bump(|c| c.unify_slot += 1);
         match slot {
             Slot::Const(v) => v == arg,
             Slot::Reg(r) => {
@@ -674,6 +678,10 @@ impl Matcher {
     // ── Register file ──────────────────────────────────────────────
 
     fn reset(&mut self, n_regs: u16, n_slots: usize, n_premises: usize, disjunct: usize) {
+        // Every entry point — `run_disjunct`, `holds`, `holds_seeded` — comes
+        // through here exactly once, which is why `plan_run` is counted here
+        // rather than at the seven public functions that would each need it.
+        ein_core::counters::bump(|c| c.plan_run += 1);
         self.n_premises = n_premises;
         self.disjunct = disjunct;
         let n = n_regs as usize;

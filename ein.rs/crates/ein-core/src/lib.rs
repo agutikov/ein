@@ -17,6 +17,7 @@
 
 pub mod bitset;
 pub mod config;
+pub mod counters;
 pub mod entities;
 pub mod facts;
 pub mod intern;
@@ -34,6 +35,7 @@ pub mod walks;
 
 pub use bitset::BitSet;
 pub use config::SolverConfig;
+pub use counters::Counters;
 pub use entities::{ExprRef, Loc, Macro, NameCategory, Pattern, Query, Registry, Relation, Rule};
 pub use facts::{FactId, FactStore, Row};
 pub use intern::{CAPACITY, Interner, Overflow, Symbol};

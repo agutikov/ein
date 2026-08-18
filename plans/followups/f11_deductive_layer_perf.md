@@ -31,13 +31,38 @@ Two measurements, both current as of 2026-08-17:
   doing work that has to happen. That makes D1 the largest remaining lever
   and, unlike before, the *only* one with a clear ceiling story.
 
-Re-run the baseline before starting either entry — this has moved twice:
+**Both measurements above are ein.py's, and
+[S1a.6.1](../m1a_rust/p1a.6_performance/s1a.6.1_profile_baseline.md) (2026-08-18)
+re-took them on ein.rs, where D1 will actually land.** What changed:
+
+- **The 95 % split does not carry over.** On the parity build an exhaustive
+  `zebra2` is 59.7 % saturation-side and 29.0 % matcher; an exhaustive `zebra`
+  is 66.9 % **matcher**. So D1's lever is real but puzzle-dependent, and the
+  workload that needs it is `zebra`, which is also the one still missing its
+  P1a.6 target.
+- **D1's catch dissolved, as this file predicted it would.** "A memory that
+  must be copied per fork can lose more than it saves" was the parking reason;
+  a fork's whole delta in ein.rs is **3.6 KB mean, 9 KB worst case** over 101
+  enterings ([baseline.md §5](../m1a_rust/p1a.6_performance/baseline.md#5-memory)),
+  so per-fork memories are affordable outright and the read-only-share
+  design is an optimisation rather than a precondition.
+- The gate on [S1a.6.3](../m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md)
+  is therefore **open**. It runs fourth in the phase, behind two cheaper wins
+  the profile found first.
+
+Re-run the baseline before starting either entry — this has moved twice, and
+four times counting the two above:
 
 ```sh
 PYTHONPATH=ein.py/src python3 utils/profile_solve.py examples/zebra2.ein --exhaustive   # attribution (CPython)
 .venv-pypy/bin/python utils/profile_solve.py examples/zebra2.ein --exhaustive --no-profile  # wall-clock (PyPy)
 PYTHONPATH=ein.py/src .venv-pypy/bin/python utils/feature_matrix.py                    # the lever matrix
 ```
+
+For ein.rs the equivalents are `utils/profile_ein_rs.py` (attribution),
+`utils/e2e_baseline.py` (wall-clock) and `cargo run -p ein-infer --example
+lever_matrix`; the whole set is listed in
+[baseline.md § Reproducing all of it](../m1a_rust/p1a.6_performance/baseline.md#reproducing-all-of-it).
 
 ## D1 — RETE beta-memories
 

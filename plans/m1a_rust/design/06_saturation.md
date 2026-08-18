@@ -104,6 +104,24 @@ distinct `(rule, activator)` pair, which on exhaustive zebra2 is ~170
 today). The exact figure is confirmed by the `compile` events rather
 than assumed.
 
+> **Win A was not implemented, and
+> [S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md) priced it
+> (2026-08-18).** `PlanMemo` exists — as a **field of `Engine`**, so each of
+> the engines a search builds still compiles every plan from scratch:
+> `compile_rule` runs **17 430** times on an exhaustive `zebra2`, the number
+> this section predicted, and **21.1 % of the run is inside
+> `ein_infer::compile`** with 19.7 % of it under `PlanMemo::intern`
+> ([baseline.md §7](../p1a.6_performance/baseline.md#7-the-top-five-costs)
+> item 1). ein.py compiles exactly as many times, so this is not a parity
+> defect — it is an unclaimed 21 %, which is nearly twice the 12 % this
+> section expected.
+>
+> The order caveat below is why it is safe to claim now: the `compile` **event**
+> fires on an *engine* miss and not a memo miss, and both implementations emit
+> **17 250** of them on that run (identical `--events` streams, 183 231 lines
+> each), so a memo underneath the engine is invisible to T2 by construction.
+> [S1a.6.8](../p1a.6_performance/s1a.6.8_compile_cache_and_extents.md) lands it.
+
 ---
 
 ## 4. Win B — a semi-naive boundary

@@ -192,6 +192,20 @@ pub struct Kb {
   becomes a new root, e.g. a forced-positive promotion), materialise
   `base + delta` into a fresh `KbCore`. Bounded work, amortised.
 
+> **What this section did not ask, and S1a.6.1 measured (2026-08-18).** A
+> read that *aggregates* over layers is O(depth), not O(1), and one of them is
+> hot: `Kb::n_facts_of` — a relation's extent **size**, which the NAF boundary
+> asks 644 166 times on an exhaustive `zebra2` and ein.py answers with one
+> `len()` on a flat dict. An exhaustive search reaches **35 layers**, and the
+> count is **9.5 % of the run**
+> ([baseline.md §7](../p1a.6_performance/baseline.md#7-the-top-five-costs)
+> item 2). The fork is O(1) as designed — a delta is 3.6 KB mean over 101
+> enterings, which is the number P1a.7 wanted — and the bill landed on the
+> other side of the trade.
+> [S1a.6.8](../p1a.6_performance/s1a.6.8_compile_cache_and_extents.md) keeps
+> per-relation counts so the answer is O(1) at any depth; the flatten
+> threshold above gains a second reason to be tuned rather than guessed.
+
 The registries (`relations`, `rules`, `hrules`, `macros`, `query`,
 `config`) are immutable after load and live in an `Arc<Program>` shared
 by every KB — matching ein.py's share-by-reference exactly, including its

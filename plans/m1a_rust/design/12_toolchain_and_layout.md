@@ -164,13 +164,27 @@ comparable with the Python baseline:
 | `load` | parse + imports + macro expansion + index build |
 | `saturate_root` | root saturation only |
 | `match_hot` | `match::run` over the saturated root, per plan |
-| `boundary` | a full `_admit_from_boundary` round |
+| `boundary` | a full `_admit_from_boundary` round — **both puzzles** |
 | `solve_fast` / `solve_exhaustive` | end-to-end, both puzzles |
 | `fork` | fork + first delta write |
 
 The Python side gets a matching runner (`utils/bench_baseline.py`) so
 `design/README.md § Measured` can be refreshed with one command per
 implementation.
+
+**Eight names, nine cases since [S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md).**
+`boundary` runs both puzzles because it had drifted: the Python runner timed
+`zebra2` and the criterion group timed `zebra`, and the two were put in one
+comparison table before anyone noticed they were different workloads. The
+lesson generalises — *a bench pair is only comparable if both halves name the
+same input* — which is why every row above says which.
+
+**Variance is a gate, not a footnote.** `criterion`'s console output prints no
+standard deviation; `utils/criterion_table.py` reads the `estimates.json` it
+leaves behind, prints mean / sd / relative sd / CI for every case, and exits
+non-zero if any exceeds `--max-rsd` (3 %, S1a.6.1's threshold). That is what
+the nightly "benches with regression thresholds" step should run, and it is
+what a phase-internal before/after must pass before its number is quoted.
 
 ---
 

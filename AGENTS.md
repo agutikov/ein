@@ -74,6 +74,18 @@ constrained-reasoning research.
   probe/measure scripts (`find_dead_defs.py`, `relation_algebra_examples.py`, …)
   + the promoted engine runners `profile_solve.py` (cProfile a `solve()`)
   and `symmetric_bench.py` (symmetric-closure micro-benchmark).
+  **The M1a measurement set** is here too, and every one of these compares the
+  two implementations rather than timing one:
+  `bench_env.sh` (prints the machine state and pins to a P-core — run the
+  others through it), `bench_baseline.py` (the eight-bench set, in-process,
+  the Python half of `cargo bench`), `e2e_baseline.py` (the same workloads as
+  *processes*, which is what the milestone's targets mean),
+  `profile_ein_rs.py` (`perf` self time by symbol and by subsystem, bucketed
+  like `profile_solve.py` so the two profiles read side by side),
+  `count_work.py` (what ein.py *did* — the counterpart of
+  `ein_core::counters`), `criterion_table.py` (criterion's standard
+  deviations, with the 3 % gate as an exit code). Results:
+  [`plans/m1a_rust/p1a.6_performance/baseline.md`](plans/m1a_rust/p1a.6_performance/baseline.md).
 - **`nlp/`, `smt/`** — scratch areas with submodules
   (`nlp/link-grammar`, `smt/CVC4`). Not wired into the active
   `ein.py/` package.

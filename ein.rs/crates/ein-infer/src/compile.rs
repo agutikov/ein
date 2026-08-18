@@ -198,6 +198,7 @@ pub fn compile_rule(
     rule: &Rule,
     activator: Option<FactId>,
 ) -> Result<Plan, CompileError> {
+    ein_core::counters::bump(|c| c.plan_compile += 1);
     Compiler::new(ast, terms).run(rule, activator)
 }
 

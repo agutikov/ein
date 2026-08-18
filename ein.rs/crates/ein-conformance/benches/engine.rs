@@ -203,31 +203,39 @@ fn deductive(c: &mut Criterion) {
     // without rebuilding the state that produced it, and the state is the
     // saturation. `examples/engine_cost.rs` reports the split, so the share
     // this bench measures is a number rather than an assumption.
+    // **Both puzzles**, because `utils/bench_baseline.py::boundary` times
+    // *zebra2* and this group timed only *zebra*: the two `boundary` rows were
+    // put side by side in a comparison table at S1a.6.1 and are not the same
+    // workload. Adding the missing case is cheaper than remembering the
+    // asymmetry, and `zebra` stays because design/README quotes its 80 % split.
     let mut group = c.benchmark_group("boundary");
-    group.bench_function("zebra", |b| {
-        let path = repo_root().join("examples/zebra.ein");
-        b.iter_batched(
-            || {
-                let mut ast = ein_ir::Ast::new();
-                let mut terms = ein_core::Terms::new();
-                let kb = ein_ir::load_file(&mut ast, &mut terms, &path).expect("loads");
-                (ast, terms, kb)
-            },
-            |(ast, mut terms, mut kb)| {
-                let mut events = ein_infer::Events::off();
-                let mut s = ein_infer::Session {
-                    kb: &mut kb,
-                    terms: &mut terms,
-                    ast: &ast,
-                    events: &mut events,
-                };
-                let mut sat = ein_infer::Saturator::new(&mut s).expect("compiles");
-                sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
-                std::hint::black_box(sat.boundary_nanos);
-            },
-            criterion::BatchSize::SmallInput,
-        )
-    });
+    for rel in ["examples/zebra.ein", "examples/zebra2.ein"] {
+        let name = rel.trim_start_matches("examples/").trim_end_matches(".ein");
+        group.bench_function(name, |b| {
+            let path = repo_root().join(rel);
+            b.iter_batched(
+                || {
+                    let mut ast = ein_ir::Ast::new();
+                    let mut terms = ein_core::Terms::new();
+                    let kb = ein_ir::load_file(&mut ast, &mut terms, &path).expect("loads");
+                    (ast, terms, kb)
+                },
+                |(ast, mut terms, mut kb)| {
+                    let mut events = ein_infer::Events::off();
+                    let mut s = ein_infer::Session {
+                        kb: &mut kb,
+                        terms: &mut terms,
+                        ast: &ast,
+                        events: &mut events,
+                    };
+                    let mut sat = ein_infer::Saturator::new(&mut s).expect("compiles");
+                    sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+                    std::hint::black_box(sat.boundary_nanos);
+                },
+                criterion::BatchSize::SmallInput,
+            )
+        });
+    }
     group.finish();
     // Fork + first delta write. Already free in ein.py (0.003 s / 206 calls)
     // — it is measured because P1a.7 needs hundreds of thousands of them,

@@ -6,6 +6,13 @@ edition.workspace    = true
 license.workspace    = true
 repository.workspace = true
 
+[features]
+# Work counters (T1a.6.1.3). Off by default and compiled out entirely — see
+# `src/counters.rs`: with the feature off the increment on the engine's hottest
+# path does not exist, which is the only way a counter can be added to
+# `unify_slot` without changing what it measures.
+counters = []
+
 [dependencies]
 rustc-hash.workspace = true
 

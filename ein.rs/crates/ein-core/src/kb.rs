@@ -112,6 +112,47 @@ impl Layer {
         self.facts.is_empty() && self.alts.is_empty()
     }
 
+    /// How many facts this layer added.
+    pub fn n_facts(&self) -> usize {
+        self.facts.len()
+    }
+
+    /// Heap bytes this layer holds — the **delta** a fork owns, which is the
+    /// number [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+    /// sizes `--jobs` by: a machine can hold `RAM / mean-delta` searches at
+    /// once, and design/03 §5's claim that a fork is O(1) is a claim about
+    /// exactly this quantity not growing with the KB.
+    ///
+    /// Capacity, not length, because a `Vec` that doubled holds the doubling;
+    /// and the hash maps are counted at their bucket cost, so an index of ten
+    /// one-element vectors is not mistaken for ten bytes. It is an estimate —
+    /// `hashbrown`'s control bytes and the allocator's rounding are not
+    /// visible from here — and `alloc_cost.rs` cross-checks the total against a
+    /// counting allocator, which is why an estimate is good enough.
+    pub fn footprint(&self) -> usize {
+        fn vec_map<K, V>(m: &FxHashMap<K, Vec<V>>) -> usize {
+            // One bucket per slot plus each vector's own allocation.
+            m.capacity() * (size_of::<K>() + size_of::<Vec<V>>())
+                + m.values()
+                    .map(|v| v.capacity() * size_of::<V>())
+                    .sum::<usize>()
+        }
+        self.facts.capacity() * size_of::<FactId>()
+            + (self.present.len() + self.negated.len()) * size_of::<u64>()
+            + vec_map(&self.by_rel)
+            + vec_map(&self.by_rel_slot_val)
+            + vec_map(&self.rule_apps_by_rule)
+            + vec_map(&self.rule_apps_on_rel)
+            + self.names.len() * (size_of::<Symbol>() + size_of::<NameEntry>())
+            + self.primary.capacity() * (size_of::<FactId>() + size_of::<ProvId>())
+            + self.alts.capacity() * (size_of::<FactId>() + size_of::<Box<[ProvId]>>())
+            + self
+                .alts
+                .values()
+                .map(|v| v.len() * size_of::<ProvId>())
+                .sum::<usize>()
+    }
+
     /// Field-by-field comparison, naming the first disagreement.
     ///
     /// `names` is compared **as a set** rather than in order, and that is not
@@ -423,6 +464,7 @@ impl Kb {
     /// top layer is what makes the two histories diverge — the parent's later
     /// appends land in a *new* top the child never sees.
     pub fn fork(&mut self) -> Kb {
+        crate::counters::bump(|c| c.fork += 1);
         self.seal();
         Kb {
             program: Arc::clone(&self.program),
@@ -526,6 +568,17 @@ impl Kb {
         self.layers()
             .filter_map(move |l| l.by_rel.get(&rel))
             .flat_map(|v| v.iter().copied())
+    }
+
+    /// The top layer — a fork's own delta, everything below it shared.
+    pub fn top(&self) -> &Layer {
+        &self.top
+    }
+
+    /// How many layers deep this KB is. `1` is a root; a fork of a fork is `3`,
+    /// because sealing the parent's `top` leaves it in `sealed`.
+    pub fn depth(&self) -> usize {
+        self.sealed.len() + 1
     }
 
     pub fn n_facts_of(&self, rel: Symbol) -> usize {
@@ -670,6 +723,10 @@ impl Kb {
         args: &[Value],
         prov: Option<ProvId>,
     ) -> Result<Added, Overflow> {
+        // Attempts, not writes: the dedup hit is the interesting half — it is a
+        // rule re-deriving something, which is what `saturator._binding_key`
+        // exists to avoid and what a beta-memory would remove outright.
+        crate::counters::bump(|c| c.fact_insert += 1);
         let id = terms.intern_fact(rel, args)?;
         if self.contains(id) {
             let alt = match prov {

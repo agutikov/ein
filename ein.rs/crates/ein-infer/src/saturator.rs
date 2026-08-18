@@ -840,9 +840,11 @@ impl Saturator {
     /// suffice because the KB grows monotonically within a run: a relation
     /// cannot lose a fact, so equal size means equal extent.
     fn watch_stamp_into(&mut self, s: &Session<'_>, plan: &Plan, guards: Span) {
+        ein_core::counters::bump(|c| c.watch_stamp += 1);
         self.stamp_scratch.clear();
         for g in plan.guards(guards) {
             for &rel in g.watched.iter() {
+                ein_core::counters::bump(|c| c.watch_stamp_rel += 1);
                 self.stamp_scratch.push(s.kb.n_facts_of(rel));
             }
         }
@@ -864,6 +866,7 @@ impl Saturator {
         let mut m = std::mem::take(&mut self.matcher);
         let mut out = None;
         for (i, g) in plan.guards(guards).iter().enumerate() {
+            ein_core::counters::bump(|c| c.guard_query += 1);
             // The question the guard actually asks: the parent's registers
             // restricted to its scope. Everything outside is invisible to the
             // query, so two candidates that differ only there share a verdict.

@@ -1,6 +1,6 @@
 # M1a — Rust port (ein.rs)
 
-**Estimate:** ~5.5 months focused — 42 stages, ~25 weeks of stage
+**Estimate:** ~5.5 months focused — 43 stages, ~25 weeks of stage
 estimates (parity gate at ~week 17).
 **Status:** **in progress** — promoted from placeholder 2026-08-17 with the
 scope decision made (see § The decision); [P1a.0](p1a.0_conformance_harness/README.md)
@@ -127,6 +127,18 @@ Three readings drive the design:
 cores): ≥ 20× on `solve zebra2 -e` end-to-end vs PyPy, ≥ 50× on parse +
 load, and the [`ein.py`](../../ein.py) acceptance gate under 5 s.
 
+> **Re-measured again at [S1a.6.1](p1a.6_performance/s1a.6.1_profile_baseline.md)
+> (2026-08-18), and this whole section is superseded by
+> [p1a.6_performance/baseline.md](p1a.6_performance/baseline.md).** Two of the
+> PyPy figures moved *up* — `zebra2 -e` 4.07 → **4.94 s**, `zebra -e` 8.15 →
+> **8.79 s** as processes — and one, the 0.78 s for parse + load, cannot be
+> derived from its own components on either interpreter. The attribution above
+> is ein.py's and still describes ein.py; **it does not describe ein.rs**,
+> whose exhaustive `zebra2` is 59.7 % saturation / 29.0 % matcher where the
+> table above says 46 % matcher and a 72 % boundary — and whose `zebra -e` is
+> 66.9 % matcher, so the two puzzles no longer agree either. Read the old numbers as
+> the reason the port was started, not as a description of what it became.
+>
 > **Re-measured at [P1a.0](p1a.0_conformance_harness/README.md), as this
 > section asked: the acceptance gate is 43.7 s under PyPy 3.11, not the
 > ~91 s recorded at S1.21.8** — 21 tests, `./run_tests.sh
@@ -172,12 +184,13 @@ Full contract: [design/11](design/11_shared_assets.md).
 | [P1a.3](p1a.3_deductive_core/README.md) ✅ | Deductive core — compile, match, saturate, world, contradiction | 4 | 3.5 w | **shipped 2026-08-18** — T2 on 64 files / 23 848 events, 0 diff; zebra 502 and zebra2 378 facts; `saturate_root` 31×, `match_hot` 55× |
 | [P1a.4](p1a.4_search_layer/README.md) ✅ | Search layer — hypgen, lookahead, apriori, nogoods, lattice solve | 6 | 4 w | **shipped 2026-08-18** — 65 files at verdict + counter parity in three regimes; the three acceptance fixtures in 0.87 s; `solve zebra2 -e` 26× |
 | [P1a.5](p1a.5_presentation/README.md) ✅ | Presentation — trace, DOT, dumps, CLI | 4 | 3 w | **shipped 2026-08-18** — T3 corpus-wide, 472/473 cells byte-identical, the one exception being D2; help *content* parity by structural diff (Q-M1a.13); **I1 discharged** |
-| [P1a.6](p1a.6_performance/README.md) | Performance — the optimisation programme | 7 | 3.5 w | targets above, parity unbroken |
+| [P1a.6](p1a.6_performance/README.md) 🔄 | Performance — the optimisation programme | 8 | 3.5 w | targets above, parity unbroken — **S1a.6.1 shipped 2026-08-18**: three of the four targets already met, `solve zebra -e` 1.46× short, T3 still 472/1 |
 | [P1a.7](p1a.7_parallelism/README.md) | Parallelism — deterministic multi-core search + match | 5 | 2.5 w | `--jobs N` verdict- **and** counter-identical |
 | [P1a.8](p1a.8_binary_container/README.md) | Binary KB container — `.einb`, mmap, solution store | 1 | 0.5 w | `ein solve x.einb` byte-identical to `ein solve x.ein` |
 | [P1a.9](p1a.9_bindings_release/README.md) | Bindings + release — PyO3, packaging, docs | 4 | 1.5 w | M2 imports the engine and gets ein.rs |
 
-42 stages, 125 days of stage estimates ≈ 25 weeks. The **parity gate**
+43 stages (S1a.6.8 added by S1a.6.1's profile, S1a.6.5 shortened by it),
+126 days of stage estimates ≈ 25 weeks. The **parity gate**
 (end of P1a.5) is at ~week 17; everything after it is speed, scale and
 distribution on an engine that is already a drop-in replacement.
 

@@ -67,3 +67,17 @@ clap        = { version = "4", default-features = false, features = ["std", "hel
 # processes, and the harness itself must never be the slow part.
 [profile.dev]
 opt-level = 1
+
+# `cargo build --profile profiling` — release codegen plus the one thing a
+# profiler needs and a shipped binary does not: line tables, so `perf` can put a
+# name on an address. Frame pointers are deliberately *not* forced: `perf
+# --call-graph fp` cannot unwind out of glibc, which has none, and S1a.6.1
+# measured what that costs — 57 % of an exhaustive `zebra2`'s samples arrived
+# with no caller. `utils/profile_ein_rs.py` uses LBR call stacks instead, which
+# need neither frame pointers nor DWARF. `debug = 1` changes no codegen, and the
+# script re-times `release` against this profile on every run so the claim that
+# it changes no codegen stays a measurement.
+[profile.profiling]
+inherits = "release"
+debug    = 1
+strip    = false

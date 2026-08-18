@@ -89,6 +89,7 @@ pub fn walk_premises(
         if !visited.insert(f.0) {
             continue;
         }
+        crate::counters::bump(|c| c.prov_node += 1);
         if keep(kb, terms, f) {
             out.push(f);
         }

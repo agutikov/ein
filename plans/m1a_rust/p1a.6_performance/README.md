@@ -1,7 +1,11 @@
 # P1a.6 — Performance
 
 **Milestone:** [M1a — Rust port](../README.md)
-**Estimate:** 3.5 weeks (18 days of stages)
+**Status:** **in progress** — [S1a.6.1](s1a.6.1_profile_baseline.md) shipped
+2026-08-18 and its measurements are in **[baseline.md](baseline.md)**, which
+is what the rest of the phase is chosen by.
+**Estimate:** 3.5 weeks (19 days of stages — S1a.6.1 added one worth 2 d and
+shortened another by 1 d)
 **Depends on:** [P1a.5](../p1a.5_presentation/README.md) — the byte gate
 must be closed first, so every change here is measured against a green
 harness.
@@ -16,35 +20,57 @@ re-measure, record.** A change that cannot be attributed is reverted.
 
 ## Targets
 
-Against PyPy on the same machine, at `--jobs 1`:
+Against PyPy on the same machine, at `--jobs 1`. **The PyPy column is
+re-measured** ([S1a.6.1](s1a.6.1_profile_baseline.md) T1a.6.1.5) — the
+numbers the phase was planned with were up to a year old and two of them
+moved:
 
-| workload | PyPy today | target |
-|---|---|---|
-| `solve zebra2.ein -e` end-to-end | 4.07 s | ≤ 0.20 s (≥ 20×) |
-| `solve zebra.ein -e` end-to-end | 8.15 s | ≤ 0.40 s |
-| parse + load `zebra2.ein` | 0.78 s | ≤ 0.015 s (≥ 50×) |
-| the acceptance gate (3 fixtures) | ~91 s | ≤ 5 s |
+| workload | PyPy as planned | PyPy today | target | **at S1a.6.1** |
+|---|---:|---:|---:|---:|
+| `solve zebra2.ein -e` end-to-end | 4.07 s | 4.94 s | ≤ 0.20 s (≥ 20×) | **198.8 ms ✅ 24.8×** |
+| `solve zebra.ein -e` end-to-end | 8.15 s | 8.79 s | ≤ 0.40 s | **585.8 ms ❌ 15.0×** |
+| parse + load `zebra2.ein` | 0.78 s ¶ | 0.43 s | ≤ 0.015 s (≥ 50×) | **1.04 ms ✅ 180×** |
+| the acceptance gate (3 fixtures) | ~91 s ‡ | 36.0 s | ≤ 5 s | **1.27 s ✅ 28×** |
 
 Much of this should already be true when the phase *starts* — the
 register matcher, integer facts, O(1) forks, compile-once and the
 semi-naive boundary all land in P1a.2–3. The phase exists to find what is
 left, not to assume it.
 
+‡ The planned ~91 s was the *21-test* gate; 36.0 s is the three fixtures the
+ein.rs column covers, and the whole gate is 49.3 s today. Three recorded
+values of that number so far, all real —
+[baseline.md §6](baseline.md#6-cargo-bench--variance-and-the-acceptance-gate).
+
+¶ The planned 0.78 s is not reproducible from its own components on either
+interpreter; see
+[baseline.md §1](baseline.md#where-the-milestones-denominators-moved). The
+target is met on any reading — a whole `saturate zebra2` *process* is 5.0 ms.
+
+**Three of the four were already met on day one; the fourth needs the
+phase.** `solve zebra.ein -e` is 1.46× short, and its profile is 66.9 %
+matcher against `zebra2 -e`'s 29.0 % — so the two puzzles do not agree about
+what to optimise, and the missed target is the one that decides.
+
 ## Stages
 
 Everything after S1a.6.1 is *chosen* by the table S1a.6.1 produces. The
-list below is the expected shape, not a commitment: a stage the profile
-does not justify is skipped, with the reason recorded.
+list was the expected shape, not a commitment — and the table changed it: one
+stage was **added**, one **shortened**, one **un-gated**, and the run order
+is now the profile's rather than the plan's. The reasoning is in
+[baseline.md §8](baseline.md#8-what-this-chooses-for-the-rest-of-the-phase);
+the numbers each row rests on are in [§7](baseline.md#7-the-top-five-costs).
 
-| stage | title | est. |
-|---|---|---|
-| [S1a.6.1](s1a.6.1_profile_baseline.md) | Fresh profile and bench baseline | 2 d |
-| [S1a.6.2](s1a.6.2_memory_layout.md) | Memory layout | 3 d |
-| [S1a.6.3](s1a.6.3_beta_memories.md) | Beta-memories (F11 D1) — **gated** | 4 d |
-| [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) | Hypgen and lattice hot paths | 3 d |
-| [S1a.6.5](s1a.6.5_frontend.md) | Frontend and load path | 2 d |
-| [S1a.6.6](s1a.6.6_differential_fuzzer.md) | The differential fuzzer | 3 d |
-| [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d |
+| # | stage | title | est. | why now |
+|---|---|---|---|---|
+| 1 | [S1a.6.1](s1a.6.1_profile_baseline.md) ✅ | Fresh profile and bench baseline | 2 d | **shipped 2026-08-18** |
+| 2 | [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) 🆕 | The compile cache and the extent counts | 2 d | 21.1 % + 9.5 % of `zebra2 -e`, both parity-preserving by construction |
+| 3 | [S1a.6.2](s1a.6.2_memory_layout.md) | Memory layout | 3 d | 21 % of self time is `malloc` / `cfree` / libc, at ~53 bytes per allocation |
+| 4 | [S1a.6.3](s1a.6.3_beta_memories.md) | Beta-memories (F11 D1) — **gate opens** | 4 d | 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB — the fact F11 D1 was parked on |
+| 5 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) | Hypgen and lattice hot paths | 3 d | 7.3 % / 5.3 % self — real, smaller than written; T1a.6.4.1's argument re-aims at saturation |
+| 6 | [S1a.6.5](s1a.6.5_frontend.md) | Frontend and load path — **shortened** | 1 d | its acceptance is already met by 8×; reduced to a confirmation plus the allocation report |
+| — | [S1a.6.6](s1a.6.6_differential_fuzzer.md) | The differential fuzzer | 3 d | runs *throughout*, not at a position — it guards every row above |
+| 7 | [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d | last, as planned |
 
 ## Rules for this phase
 
@@ -59,7 +85,14 @@ does not justify is skipped, with the reason recorded.
    measured that cluster inert against a complete cardinality-BFS. Rust
    does not change the branch count.
 5. **Record everything** in
-   [design/README.md § Measured](../design/README.md#measured).
+   [design/README.md § Measured](../design/README.md#measured) and, for this
+   phase's own tables, [baseline.md](baseline.md). Every instrument is
+   re-runnable by one command; the list is in
+   [baseline.md § Reproducing all of it](baseline.md#reproducing-all-of-it).
+6. **Re-measure before choosing the next stage.** S1a.6.1's own finding is
+   that the profile does not look like the one the phase was planned against,
+   and there is no reason to expect it to hold still after two stages either.
+   Every stage ends by re-running the S1a.6.1 instruments.
 
 ## Acceptance for the phase
 
@@ -72,6 +105,7 @@ does not justify is skipped, with the reason recorded.
 
 ## Cross-links
 
+- **[baseline.md](baseline.md) — the measurements this phase runs on.**
 - [design/05 §7 — beta-memories](../design/05_matcher.md)
 - [design/06 §3–§4 — the two exact wins](../design/06_saturation.md)
 - [`architecture_and_algorithms.md` §7](../../../docs/kernel/inference/architecture_and_algorithms.md)
