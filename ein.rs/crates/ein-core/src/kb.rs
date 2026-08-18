@@ -321,6 +321,21 @@ pub struct Kb {
     nogoods: Arc<RwLock<Nogoods>>,
 }
 
+/// `<KnowledgeBase relations=17 rules=30 facts=84>` — what ein.py's
+/// `__repr__` prints, which is also the most useful thing a failing test can
+/// show.
+impl std::fmt::Debug for Kb {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "<KnowledgeBase relations={} rules={} facts={}>",
+            self.program.relations.len(),
+            self.program.rules.len(),
+            self.n_facts()
+        )
+    }
+}
+
 impl Kb {
     pub fn new(program: Program) -> Kb {
         Kb {

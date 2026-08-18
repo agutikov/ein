@@ -108,6 +108,58 @@ impl Default for SolverConfig {
     }
 }
 
+/// Every field as `(kebab-name, repr(value))`, in declaration order — what
+/// `--dump-config` walks and what the KB-shape dump prints.
+///
+/// Floats go through Rust's shortest round-trip formatting, which agrees with
+/// CPython's `repr(float)` on everything a weight or a seed can be; the two
+/// part company only at magnitudes that need exponent notation.
+pub fn rendered_fields(c: &SolverConfig) -> Vec<(&'static str, String)> {
+    let b = |v: bool| {
+        if v {
+            "True".to_string()
+        } else {
+            "False".to_string()
+        }
+    };
+    let s = |v: &str| crate::pyrepr::repr_str(v);
+    vec![
+        (
+            "enable-pre-branch-lookahead",
+            b(c.enable_pre_branch_lookahead),
+        ),
+        (
+            "enable-lookahead-kill-cache",
+            b(c.enable_lookahead_kill_cache),
+        ),
+        ("hypgen-scoring", s(&c.hypgen_scoring)),
+        ("hypgen-rel-weight", format!("{:?}", c.hypgen_rel_weight)),
+        ("hypgen-obj-weight", format!("{:?}", c.hypgen_obj_weight)),
+        ("print-alive", b(c.print_alive)),
+        ("warn-derived-naf", b(c.warn_derived_naf)),
+        ("candidate-order-seed", c.candidate_order_seed.to_string()),
+        ("lattice-sanity-check", b(c.lattice_sanity_check)),
+        ("lattice-order", s(&c.lattice_order)),
+        (
+            "lattice-order-seed",
+            c.lattice_order_seed
+                .map_or("None".to_string(), |v| v.to_string()),
+        ),
+        ("enable-path-nogoods", b(c.enable_path_nogoods)),
+        ("enable-symmetric-mirror", b(c.enable_symmetric_mirror)),
+        (
+            "enable-singleton-writeback",
+            b(c.enable_singleton_writeback),
+        ),
+        ("enable-forced-positive", b(c.enable_forced_positive)),
+        (
+            "record-alternative-justifications",
+            b(c.record_alternative_justifications),
+        ),
+        ("enable-fail-fast-fork", b(c.enable_fail_fast_fork)),
+    ]
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -126,5 +178,11 @@ mod tests {
         for (name, _) in FIELDS {
             assert!(!name.contains('_'), "{name} should be kebab-case");
         }
+        let rendered = rendered_fields(&SolverConfig::default());
+        assert_eq!(
+            rendered.iter().map(|(n, _)| *n).collect::<Vec<_>>(),
+            FIELDS.iter().map(|(n, _)| *n).collect::<Vec<_>>(),
+            "the renderer and the flag table drifted"
+        );
     }
 }

@@ -112,8 +112,18 @@ fn frontend(c: &mut Criterion) {
     });
     group.finish();
 
-    // parse + import resolution + macro expansion + index build.
-    pending(c, "load", "P1a.2");
+    // parse + import resolution + macro expansion + index build (S1a.2.3).
+    let mut group = c.benchmark_group("load");
+    group.bench_function("zebra2", |b| {
+        let path = root.join("examples/zebra2.ein");
+        b.iter(|| {
+            let mut ast = ein_ir::Ast::new();
+            let mut terms = ein_core::Terms::new();
+            let kb = ein_ir::load_file(&mut ast, &mut terms, &path).expect("loads");
+            std::hint::black_box(kb.n_facts());
+        })
+    });
+    group.finish();
 }
 
 fn deductive(c: &mut Criterion) {
@@ -126,8 +136,31 @@ fn deductive(c: &mut Criterion) {
     pending(c, "boundary", "P1a.3");
     // Fork + first delta write. Already free in ein.py (0.003 s / 206 calls)
     // — it is measured because P1a.7 needs hundreds of thousands of them,
-    // which is a different question from "is one fork fast".
-    pending(c, "fork", "P1a.2");
+    // which is a different question from "is one fork fast" (S1a.2.2).
+    let root = repo_root();
+    let mut ast = ein_ir::Ast::new();
+    let mut terms = ein_core::Terms::new();
+    let mut kb =
+        ein_ir::load_file(&mut ast, &mut terms, &root.join("examples/zebra2.ein")).expect("loads");
+    let rel = terms.intern_text("__bench__").expect("room");
+    let args = [
+        terms.value_text("a").expect("room"),
+        terms.value_text("b").expect("room"),
+    ];
+    let mut group = c.benchmark_group("fork");
+    group.bench_function("zebra2", |b| {
+        b.iter(|| {
+            // Each fork is fresh, so the same fact is new every time — the
+            // shape `utils/bench_baseline.py::_fork_thunk` measures. Its root
+            // is *saturated*; this one is merely loaded, until P1a.3.
+            let mut child = kb.fork();
+            child
+                .add_and_index_fact(&mut terms, rel, &args, None)
+                .expect("room");
+            std::hint::black_box(child.n_facts());
+        })
+    });
+    group.finish();
 }
 
 fn search(c: &mut Criterion) {

@@ -27,6 +27,7 @@
 use std::collections::HashMap;
 
 pub use ein_core::pyrepr::canonical_int;
+use ein_core::pyrepr::repr_str;
 
 /// An interned string: an atom name, a variable name, a string body, or the
 /// canonical decimal text of an integer.
@@ -306,6 +307,45 @@ impl Ast {
         self.nodes.truncate(mark.0);
         self.locs.truncate(mark.0);
         self.args.truncate(mark.1);
+    }
+}
+
+/// `repr(node)` — the dataclass `repr` two loader messages interpolate.
+///
+/// `(config foo)` reports `got Atom(name='foo')`, and an ill-typed flag value
+/// reports the node it got; both are text a puzzle author reads, so the
+/// nesting and the one-tuple comma have to be right.
+pub fn node_repr(ast: &Ast, id: NodeId) -> String {
+    match ast.node(id) {
+        Node::Atom(s) => format!("Atom(name={})", repr_str(ast.sym(s))),
+        Node::Var(s) => format!("Var(name={})", repr_str(ast.sym(s))),
+        Node::Keyword(s) => format!("Keyword(name={})", repr_str(ast.sym(s))),
+        Node::Wildcard => "Wildcard()".to_string(),
+        Node::Str(s) => format!("String(value={})", repr_str(ast.sym(s))),
+        // `Int` and `Range` carry Python *integers*, so they print unquoted.
+        Node::Int(s) => format!("Int(value={})", ast.sym(s)),
+        Node::Range { low, high } => format!(
+            "Range(low={}, high={})",
+            ast.sym(low),
+            high.map_or("None".to_string(), |h| ast.sym(h).to_string())
+        ),
+        Node::KwPair { key, value } => format!(
+            "KwPair(key={}, value={})",
+            node_repr(ast, key),
+            node_repr(ast, value)
+        ),
+        Node::SForm { head, args } => {
+            let args = ast.args(args);
+            let mut inner: String = args
+                .iter()
+                .map(|&a| node_repr(ast, a))
+                .collect::<Vec<_>>()
+                .join(", ");
+            if args.len() == 1 {
+                inner.push(',');
+            }
+            format!("SForm(head={}, args=({inner}))", node_repr(ast, head))
+        }
     }
 }
 

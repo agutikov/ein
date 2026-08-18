@@ -25,7 +25,9 @@ mod printable;
 pub mod program;
 pub mod prov;
 pub mod pyfmt;
+pub mod pynum;
 pub mod pyrepr;
+pub mod shape;
 pub mod terms;
 pub mod value;
 pub mod walks;
@@ -38,7 +40,12 @@ pub use intern::{CAPACITY, Interner, Overflow, Symbol};
 pub use kb::{Added, EqClasses, FactView, Kb, Layer, NameEntry, Nogoods, SlotKey};
 pub use program::Program;
 pub use prov::{NafRef, Prov, ProvArena, ProvId, ProvKind};
-pub use terms::{Kernel, Terms};
+pub use pynum::{python_float, python_int};
+pub use shape::shape;
+pub use terms::{
+    Kernel, Kernel as KernelSymbols, PREDICATES, RESERVED, STRUCTURAL, Terms, is_predicate,
+    is_reserved,
+};
 pub use value::{IntId, IntPool, Tag, Value};
 pub use walks::{
     DerivationDag, Justifications, build_derivation_dag, detect_provenance_cycles, unsat_core,

@@ -41,6 +41,40 @@ impl Default for Terms {
     }
 }
 
+/// The rule-body / ⊥ structural primitives: the kernel's reserved
+/// non-relation vocabulary. Not relations (their truth is not data in the KB)
+/// and not predicates (computed guards) — the calculus the compiler, matcher
+/// and contradiction detector interpret directly.
+///
+/// `open` / `forall` used to live here as compile-time sugar; since P1.8
+/// S1.5.9 they are ordinary `(macro …)` declarations in `std.macro`, expanded
+/// at load time, so they are no longer kernel vocabulary.
+pub const STRUCTURAL: [&str; 5] = ["absent", "and", "false", "not", "or"];
+
+/// The built-in computed predicates.
+pub const PREDICATES: [&str; 2] = ["eq", "neq"];
+
+/// Names a declarator — `rule` / `hrule` / `relation` / `macro` — may not
+/// **bind**.
+///
+/// The grammar already SYMBOL-excludes `not` / `and` / `or` / `neq` / `rule` /
+/// `hrule` / `query` / `config` / `trace` / `macro` / `import`, so what still
+/// reaches the loader as a declared name is the structural primitives, the
+/// predicates, and `relation` — kept a plain SYMBOL so `(relation ?R ?A ?B)`
+/// stays a legal pattern. This is about *binding* a name: a fact may still
+/// have a reserved head, such as a stored `(not X)` octagon.
+pub const RESERVED: [&str; 8] = [
+    "absent", "and", "eq", "false", "neq", "not", "or", "relation",
+];
+
+pub fn is_predicate(name: &str) -> bool {
+    PREDICATES.contains(&name)
+}
+
+pub fn is_reserved(name: &str) -> bool {
+    RESERVED.contains(&name)
+}
+
 /// The names the kernel itself knows. Interning them first costs nothing:
 /// symbol ids are never observable, so their assignment order is free.
 #[derive(Clone, Copy, Debug)]
@@ -240,6 +274,17 @@ impl Terms {
             relation_name: self.sym(rel).to_string(),
             args: args.iter().map(|a| self.py_value(*a)).collect(),
         }
+    }
+
+    /// `({rel} {args…})` — the compact form the loader's derivation-cycle
+    /// message and the derivation DAG's labels both build.
+    ///
+    /// The space after the relation name is unconditional, so a nullary fact
+    /// renders as `(q )`; both ein.py sites build it with the same f-string.
+    pub fn compact(&self, id: FactId) -> String {
+        let (rel, args) = self.facts.get(id);
+        let args: Vec<String> = args.iter().map(|a| self.display(*a)).collect();
+        format!("({} {})", self.sym(rel), args.join(" "))
     }
 
     /// `str(value)` — what provenance bindings and the dumper's `_compact`
