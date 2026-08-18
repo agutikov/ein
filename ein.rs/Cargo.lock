@@ -184,6 +184,7 @@ version = "0.1.0"
 dependencies = [
  "criterion",
  "ein-core",
+ "ein-infer",
  "ein-ir",
  "serde",
  "serde_json",

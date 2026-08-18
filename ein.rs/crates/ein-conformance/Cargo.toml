@@ -17,6 +17,7 @@ criterion.workspace = true
 # implementation (it shells out to both). A dev-dependency keeps that true.
 ein-ir = { path = "../ein-ir" }
 ein-core = { path = "../ein-core" }
+ein-infer = { path = "../ein-infer" }
 
 [[bin]]
 name = "ein-conformance"

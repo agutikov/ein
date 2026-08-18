@@ -25,6 +25,7 @@ use ein_core::entities::Rule;
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_ir::{Ast, Node, NodeId, node_repr};
 use rustc_hash::{FxHashMap, FxHashSet};
+use std::sync::Arc;
 
 use crate::plan::{
     Disjunct, GuardArg, GuardArgKind, MAX_REGS, NafGuard, Plan, PlanId, Probe, ProbeSrc, Reg,
@@ -130,7 +131,11 @@ pub fn plan_key(terms: &mut Terms, rule: &Rule, activator: Option<FactId>) -> Pl
 /// put it behind a shared lock without any invalidation story.
 #[derive(Default, Debug)]
 pub struct PlanMemo {
-    plans: Vec<Plan>,
+    /// `Arc` because a plan outlives the borrow of the memo that produced it:
+    /// the saturator holds one while it mutates the engine around it, and
+    /// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) will
+    /// share the same plans across threads without copying them.
+    plans: Vec<Arc<Plan>>,
     by_key: FxHashMap<PlanKey, PlanId>,
 }
 
@@ -141,6 +146,11 @@ impl PlanMemo {
 
     pub fn get(&self, id: PlanId) -> &Plan {
         &self.plans[id.0 as usize]
+    }
+
+    /// A handle that outlives the borrow — see [`PlanMemo::plans`].
+    pub fn get_arc(&self, id: PlanId) -> Arc<Plan> {
+        Arc::clone(&self.plans[id.0 as usize])
     }
 
     pub fn lookup(&self, key: &PlanKey) -> Option<PlanId> {
@@ -169,7 +179,7 @@ impl PlanMemo {
         }
         let plan = compile_rule(ast, terms, rule, activator)?;
         let id = PlanId(self.plans.len() as u32);
-        self.plans.push(plan);
+        self.plans.push(Arc::new(plan));
         self.by_key.insert(key, id);
         Ok(id)
     }
@@ -234,6 +244,7 @@ struct Compiler<'a> {
     probes: Vec<Probe>,
     shared: Vec<Symbol>,
     guard_args: Vec<GuardArg>,
+    guard_keys: Vec<u32>,
     // The plan's register space, seeds first.
     plan_space: Space,
     seed: Vec<(Symbol, Value)>,
@@ -259,6 +270,7 @@ impl<'a> Compiler<'a> {
             probes: Vec::new(),
             shared: Vec::new(),
             guard_args: Vec::new(),
+            guard_keys: Vec::new(),
             plan_space: Space::default(),
             seed: Vec::new(),
             sub: None,
@@ -286,6 +298,7 @@ impl<'a> Compiler<'a> {
             disjuncts.push(Disjunct {
                 steps: Span::EMPTY,
                 guards: Span::EMPTY,
+                guard_key: Span::EMPTY,
                 n_premises: 0,
                 n_slots: 0,
             });
@@ -320,6 +333,7 @@ impl<'a> Compiler<'a> {
             probes: self.probes.into_boxed_slice(),
             shared: self.shared.into_boxed_slice(),
             guard_args: self.guard_args.into_boxed_slice(),
+            guard_keys: self.guard_keys.into_boxed_slice(),
         })
     }
 
@@ -427,12 +441,14 @@ impl<'a> Compiler<'a> {
         self.premise(body, true, &mut steps)?;
         let n_premises = steps.iter().filter(|s| matches!(s, Step::Rel(_))).count() as u16;
         let span = self.push_steps(steps);
+        let guards = Span {
+            start: guards_start,
+            len: self.guards.len() as u32 - guards_start,
+        };
         Ok(Disjunct {
             steps: span,
-            guards: Span {
-                start: guards_start,
-                len: self.guards.len() as u32 - guards_start,
-            },
+            guards,
+            guard_key: self.encode_guards(guards),
             n_premises,
             n_slots: self.rel_steps(span),
         })
@@ -901,6 +917,130 @@ impl<'a> Compiler<'a> {
         match &self.sub {
             Some(space) => space.names[r as usize],
             None => self.plan_space.names[r as usize],
+        }
+    }
+
+    // ── The structural guard key ───────────────────────────────────
+    //
+    // ein.py compares guards **by value** — they are frozen dataclasses — so
+    // two `(or …)` disjuncts asking the same negative question collapse in
+    // `_seen`. Encoding the guards into a flat `u32` vector reproduces that
+    // without any structural comparison at run time.
+    //
+    // Everything ein.py's `__eq__` reaches is encoded and nothing else:
+    // `Scan` vs `Join` (different classes) and a `Join`'s `shared_vars`
+    // included, register *indices* rather than variable names (identical
+    // sub-plans allocate registers in the same encounter order, so the indices
+    // agree exactly where the names do), and raw IR nodes **structurally**,
+    // because two `(neq ?p ?q)` nodes at different source positions are equal
+    // dataclasses and must key alike.
+
+    fn encode_guards(&mut self, guards: Span) -> Span {
+        let start = self.guard_keys.len() as u32;
+        for i in guards.range() {
+            let g = &self.guards[i];
+            let (sub, scope, watched, monotone) =
+                (g.sub, g.scope.clone(), g.watched.clone(), g.monotone);
+            self.guard_keys.push(monotone as u32);
+            self.guard_keys.push(scope.len() as u32);
+            self.guard_keys.extend(scope.iter().map(|s| s.0));
+            self.guard_keys.push(watched.len() as u32);
+            self.guard_keys.extend(watched.iter().map(|s| s.0));
+            self.encode_steps(sub);
+        }
+        Span {
+            start,
+            len: self.guard_keys.len() as u32 - start,
+        }
+    }
+
+    fn encode_steps(&mut self, span: Span) {
+        self.guard_keys.push(span.len);
+        for i in span.range() {
+            match self.steps[i] {
+                Step::Rel(r) => {
+                    self.guard_keys.push(0);
+                    self.guard_keys.push(r.join as u32);
+                    self.guard_keys.push(r.rel.0);
+                    let shared: Vec<u32> =
+                        self.shared[r.shared.range()].iter().map(|s| s.0).collect();
+                    self.guard_keys.push(shared.len() as u32);
+                    self.guard_keys.extend(shared);
+                    self.encode_slots(r.slots);
+                }
+                Step::Guard { pred, args } => {
+                    self.guard_keys.push(1);
+                    self.guard_keys.push(pred as u32);
+                    self.guard_keys.push(args.len);
+                    let nodes: Vec<NodeId> = self.guard_args[args.range()]
+                        .iter()
+                        .map(|a| a.node)
+                        .collect();
+                    for n in nodes {
+                        self.encode_node(n);
+                    }
+                }
+                Step::Absent { sub } => {
+                    self.guard_keys.push(2);
+                    self.encode_steps(sub);
+                }
+            }
+        }
+    }
+
+    fn encode_slots(&mut self, span: Span) {
+        self.guard_keys.push(span.len);
+        for i in span.range() {
+            match self.slots[i] {
+                Slot::Reg(r) => {
+                    self.guard_keys.push(0);
+                    self.guard_keys.push(r as u32);
+                }
+                Slot::Const(v) => {
+                    self.guard_keys.push(1);
+                    self.guard_keys.push(v.bits());
+                }
+                Slot::Nested { rel, slots } => {
+                    self.guard_keys.push(2);
+                    self.guard_keys.push(rel.0);
+                    self.encode_slots(slots);
+                }
+                Slot::Opaque(n) => {
+                    self.guard_keys.push(3);
+                    self.encode_node(n);
+                }
+            }
+        }
+    }
+
+    /// An IR node by **shape**, not by arena position — the AST interns its
+    /// strings, so two structurally equal nodes encode identically.
+    fn encode_node(&mut self, node: NodeId) {
+        match self.ast.node(node) {
+            Node::Atom(s) => self.guard_keys.extend([0, s.0]),
+            Node::Var(s) => self.guard_keys.extend([1, s.0]),
+            Node::Keyword(s) => self.guard_keys.extend([2, s.0]),
+            Node::Wildcard => self.guard_keys.push(3),
+            Node::Str(s) => self.guard_keys.extend([4, s.0]),
+            Node::Int(s) => self.guard_keys.extend([5, s.0]),
+            Node::Range { low, high } => {
+                self.guard_keys
+                    .extend([6, low.0, high.map(|h| h.0).unwrap_or(u32::MAX)]);
+            }
+            Node::KwPair { key, value } => {
+                self.guard_keys.push(7);
+                self.encode_node(key);
+                self.encode_node(value);
+            }
+            Node::SForm { head, args } => {
+                self.guard_keys.push(8);
+                self.encode_node(head);
+                let children: Vec<NodeId> = self.ast.args(args).to_vec();
+                self.guard_keys.push(children.len() as u32);
+                for c in children {
+                    self.encode_node(c);
+                }
+            }
         }
     }
 

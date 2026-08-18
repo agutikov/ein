@@ -86,6 +86,15 @@ pub struct Layer {
     /// `set` of `(relation, args)` tuples.
     negated: BitSet,
     rule_apps_by_rule: FxHashMap<Symbol, Vec<FactId>>,
+    /// How many facts this layer added whose head names a rule.
+    ///
+    /// `Engine.compile_all` walks `rules × activators` on every enqueue pass
+    /// and the walk is only *worth* repeating when a rule gained an activator
+    /// — which happens exactly when this grows
+    /// ([design/06](../../../../plans/m1a_rust/design/06_saturation.md) § Win A).
+    /// Counting it per layer keeps the question O(layers) instead of
+    /// O(rules × activators), which is the size of the walk being skipped.
+    rule_apps: u32,
     rule_apps_on_rel: FxHashMap<Symbol, Vec<FactId>>,
     names: Registry<NameEntry>,
     /// The first-recorded justification of each fact this layer added.
@@ -142,6 +151,12 @@ impl Layer {
         theirs.sort_by_key(|(s, _)| s.0);
         if mine != theirs {
             return Err("names differ".to_string());
+        }
+        if self.rule_apps != other.rule_apps {
+            return Err(format!(
+                "rule-application counts: {} vs {}",
+                self.rule_apps, other.rule_apps
+            ));
         }
         if self.primary != other.primary {
             return Err("primary provenance differs".to_string());
@@ -459,6 +474,7 @@ impl Kb {
                     .or_default()
                     .extend_from_slice(v);
             }
+            out.rule_apps += layer.rule_apps;
             for (k, v) in &layer.rule_apps_on_rel {
                 out.rule_apps_on_rel
                     .entry(*k)
@@ -532,6 +548,12 @@ impl Kb {
             .map(FactId)
             .collect::<std::collections::BTreeSet<_>>()
             .into_iter()
+    }
+
+    /// How many rule-application facts the KB holds — the version counter
+    /// `Engine::compile_all` skips its walk on. See [`Layer::rule_apps`].
+    pub fn n_rule_apps(&self) -> usize {
+        self.layers().map(|l| l.rule_apps as usize).sum()
     }
 
     /// Rule-application facts whose head is this rule's name.
@@ -673,6 +695,7 @@ impl Kb {
         self.top.by_rel.entry(rel).or_default().push(id);
         if is_rule_app {
             self.top.rule_apps_by_rule.entry(rel).or_default().push(id);
+            self.top.rule_apps += 1;
         }
         for (slot, value) in args.iter().enumerate() {
             // The join-key types only: a nested fact carries a
@@ -743,6 +766,7 @@ impl Kb {
             layer.by_rel.entry(rel).or_default().push(id);
             if is_rule_app {
                 layer.rule_apps_by_rule.entry(rel).or_default().push(id);
+                layer.rule_apps += 1;
             }
             layer.names.entry(rel).as_head.push(id);
             for (slot, value) in args.iter().enumerate() {

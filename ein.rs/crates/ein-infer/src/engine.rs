@@ -1,0 +1,234 @@
+//! The engine — the compile cache, its **order**, and the `_fired` record.
+//!
+//! ein.py's `Engine` is a dict from `(rule_name, activator_args)` to a
+//! `JoinPlan` plus a set of binding keys that have already fired. Two things
+//! about it are load-bearing and neither is the caching:
+//!
+//! 1. **The cache's iteration order is observable.** `_enqueue_pass`'s full
+//!    pass walks `cache.values()`, so the order plans were first compiled in
+//!    reaches the firing order and therefore the trace. A fork builds its cache
+//!    by iterating `rules × the fork's own activators`, so a fork-derived
+//!    activator for an early rule sorts *before* a root activator of a later
+//!    rule. Sharing one cache across forks and appending would be a different
+//!    order, which is why the process-wide memo holds the **plans** and each
+//!    engine keeps its own ordered list
+//!    ([design/06](../../../../plans/m1a_rust/design/06_saturation.md) § Win A).
+//! 2. **`_fired` is the canonical "already applied" record**, guard-free: once
+//!    the conclusion is derived, every other disjunct for those bindings is
+//!    redundant, which is what it already meant.
+
+use ein_core::entities::Rule;
+use ein_core::{FactId, Kb, Symbol, Terms};
+use ein_ir::Ast;
+use rustc_hash::{FxHashMap, FxHashSet};
+
+use crate::compile::{CompileError, PlanKey, PlanMemo, activators_for, plan_key};
+use crate::events::Events;
+use crate::firing::{ActivatorId, BindingKey};
+use crate::plan::{Plan, PlanId};
+
+/// One engine's view of the compiled program.
+#[derive(Default)]
+pub struct Engine {
+    /// The plans, in ein.py's cache-insertion order.
+    plans: Vec<PlanId>,
+    keys: Vec<PlanKey>,
+    by_key: FxHashMap<PlanKey, usize>,
+    /// The interned `plan.activator_args` of each plan, parallel to `plans`.
+    activators: Vec<ActivatorId>,
+    activator_ids: FxHashMap<Box<[Symbol]>, ActivatorId>,
+    /// Binding keys that have already been applied.
+    pub fired: FxHashSet<BindingKey>,
+    memo: PlanMemo,
+    /// The rule-application count the plan list was last built at — a walk of
+    /// `rules × activators` can only find something new when a rule gained an
+    /// activator, and nothing else adds one.
+    last_rule_apps: usize,
+}
+
+impl Engine {
+    pub fn new() -> Engine {
+        Engine {
+            last_rule_apps: usize::MAX,
+            ..Engine::default()
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.plans.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.plans.is_empty()
+    }
+
+    pub fn plan(&self, index: usize) -> &Plan {
+        self.memo.get(self.plans[index])
+    }
+
+    /// A handle the caller can hold while mutating the engine — which
+    /// `_apply` must, since it writes `fired` with the plan in hand.
+    pub fn plan_arc(&self, index: usize) -> std::sync::Arc<Plan> {
+        self.memo.get_arc(self.plans[index])
+    }
+
+    pub fn plan_id(&self, index: usize) -> PlanId {
+        self.plans[index]
+    }
+
+    pub fn activator(&self, index: usize) -> ActivatorId {
+        self.activators[index]
+    }
+
+    pub fn key(&self, index: usize) -> &PlanKey {
+        &self.keys[index]
+    }
+
+    pub fn memo(&self) -> &PlanMemo {
+        &self.memo
+    }
+
+    /// Walk `rules × activators` and cache one plan per pair.
+    ///
+    /// Skipped entirely when no rule gained an activator since the last walk —
+    /// which is exact, because the walk's *only* source of new pairs is
+    /// `rule_apps_by_rule`. The debug build checks the shortcut against a full
+    /// recompute rather than trusting the argument.
+    pub fn compile_all(
+        &mut self,
+        ast: &Ast,
+        terms: &mut Terms,
+        kb: &Kb,
+        events: &mut Events,
+    ) -> Result<(), CompileError> {
+        let n = kb.n_rule_apps();
+        if n == self.last_rule_apps {
+            debug_assert!(
+                self.would_not_grow(ast, terms, kb),
+                "the rule-application counter said nothing changed and a full \
+                 walk disagreed"
+            );
+            return Ok(());
+        }
+        self.last_rule_apps = n;
+        let rules: Vec<Rule> = kb.program().rules.values().cloned().collect();
+        for rule in &rules {
+            for activator in activators_for(kb, terms, rule) {
+                self.compile_for(ast, terms, rule, activator, events)?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Compile (and cache) one pair, returning its position in the plan list.
+    pub fn compile_for(
+        &mut self,
+        ast: &Ast,
+        terms: &mut Terms,
+        rule: &Rule,
+        activator: Option<FactId>,
+        events: &mut Events,
+    ) -> Result<usize, CompileError> {
+        let key = plan_key(terms, rule, activator);
+        if let Some(&at) = self.by_key.get(&key) {
+            return Ok(at);
+        }
+        let id = self.memo.intern(ast, terms, rule, activator)?;
+        let at = self.plans.len();
+        let plan = self.memo.get(id);
+        // The `compile` event fires on an **engine** miss, not a memo miss: it
+        // reports what this engine had to add to its cache, which is what
+        // ein.py's `compile_for` reports and what the cache order is about.
+        if events.on() {
+            let (rule_name, n_steps, n_disjuncts, n_guards, asserts) = (
+                terms.sym(plan.rule).to_string(),
+                plan.disjuncts[0].steps.len(),
+                plan.disjuncts.len() - 1,
+                // `len(plan.naf_guards)` — one guard *tuple* per disjunct,
+                // so this counts disjuncts, not guarded ones. Reproduced
+                // rather than corrected: the event is a comparison surface.
+                plan.disjuncts.len(),
+                plan.asserts.len(),
+            );
+            let activator_args: Vec<String> = key
+                .activator
+                .iter()
+                .map(|&s| terms.sym(s).to_string())
+                .collect();
+            events.emit("compile", |l| {
+                l.str("rule", &rule_name);
+                l.owned_strs("activator", activator_args);
+                l.num("n_steps", n_steps as i64);
+                l.num("n_disjuncts", n_disjuncts as i64);
+                l.num("n_guards", n_guards as i64);
+                l.num("asserts", asserts as i64);
+            });
+        }
+        let (rule_sym, activator_args, reg_names) = (
+            plan.rule,
+            plan.activator_args.clone(),
+            plan.reg_names.clone(),
+        );
+        let activator_id = self.intern_activator(&activator_args);
+        self.check_layout(rule_sym, activator_id, &reg_names);
+        self.plans.push(id);
+        self.keys.push(key.clone());
+        self.activators.push(activator_id);
+        self.by_key.insert(key, at);
+        Ok(at)
+    }
+
+    fn intern_activator(&mut self, args: &[Symbol]) -> ActivatorId {
+        if let Some(&id) = self.activator_ids.get(args) {
+            return id;
+        }
+        let id = ActivatorId(self.activator_ids.len() as u32);
+        self.activator_ids.insert(args.into(), id);
+        id
+    }
+
+    /// The invariant [`BindingKey`] leans on, checked where the plan list is
+    /// built.
+    ///
+    /// It holds because a register layout is a function of the rule and of
+    /// *which* parameters the activator bound, and two activators with the
+    /// same string arguments bind the same parameters — unless one carries a
+    /// nested fact where the other carries a name, which is a shape no rule
+    /// application has. Debug-only, because it is an argument about the data
+    /// rather than about the code, and an argument is what a debug assertion
+    /// is for.
+    fn check_layout(&self, rule: Symbol, activator: ActivatorId, reg_names: &[Symbol]) {
+        if cfg!(debug_assertions) {
+            for (i, &id) in self.plans.iter().enumerate() {
+                let other = self.memo.get(id);
+                if self.activators[i] == activator && other.rule == rule {
+                    assert_eq!(
+                        other.reg_names.as_ref(),
+                        reg_names,
+                        "two plans share (rule, activator) and disagree on \
+                         their register layout — `BindingKey` compares their \
+                         value vectors and would be comparing different \
+                         variables"
+                    );
+                }
+            }
+        }
+    }
+
+    /// Would a full walk add anything? The shortcut's proof obligation.
+    #[cfg(debug_assertions)]
+    fn would_not_grow(&self, _ast: &Ast, terms: &Terms, kb: &Kb) -> bool {
+        let mut n = 0;
+        for (_, rule) in kb.program().rules.iter() {
+            n += activators_for(kb, terms, rule).len();
+        }
+        // Every pair the walk would visit is already cached, so the *count* of
+        // pairs is the count of distinct keys — which the plan list holds.
+        n <= self.plans.len()
+    }
+
+    #[cfg(not(debug_assertions))]
+    fn would_not_grow(&self, _ast: &Ast, _terms: &Terms, _kb: &Kb) -> bool {
+        true
+    }
+}

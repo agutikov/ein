@@ -26,6 +26,7 @@ One JSON object per line in, one per line out, in order:
     {"op": "plan-shape", "path": …}              → every compiled JoinPlan (below)
     {"op": "plan-shape", "path": …, "filter": false}  → … without the arity filter
     {"op": "match-shape", "path": …}             → every match every plan produces
+    {"op": "saturate-events", "path": …}         → the `--events` log of a root saturation
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -79,6 +80,7 @@ an explicit `"filename"` (default `null` → ein.py's `<string>`).
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -339,6 +341,52 @@ def _match_shape(kb: KnowledgeBase) -> str:
     return "\n".join(out)
 
 
+def _saturate_events(kb: KnowledgeBase) -> str:
+    """The `--events` log of a root saturation, plus the counters — S1a.3.3.
+
+    This is the T2 protocol itself (`conformance/EVENTS.md`), not a second
+    rendering that agrees with it by inspection: the same `ein.events` writer
+    the CLI drives, at `verbose`, so a redundant firing is emitted rather than
+    only counted. The port produces the same lines from its own emitter.
+
+    The trailing `CLASH` and `SUMMARY` lines are the additions — the counters the phase
+    gates on (`naf_rounds` / `naf_admitted` / `naf_retired`, `naf_dropped == 0`)
+    and the compile-cache size, which are engine state rather than events.
+    """
+    import tempfile
+
+    from ein import events as ev
+    from ein.inference.saturator import Saturator
+
+    fd, path = tempfile.mkstemp(suffix=".jsonl")
+    os.close(fd)
+    try:
+        ev.open_log(path, level="verbose")
+        try:
+            sat = Saturator(kb)
+            for _ in sat.saturate():
+                pass
+        finally:
+            ev.close_log()
+        log = Path(path).read_text(encoding="utf-8")
+    finally:
+        Path(path).unlink(missing_ok=True)
+    from ein.inference.contradiction import ContradictionDetector
+    from ein.cli._factdump import fact_sexpr
+    clashes = "".join(
+        f"CLASH {c.kind} "
+        f"{fact_sexpr(c.positive) if c.positive is not None else '-'} "
+        f"{fact_sexpr(c.negative)}\n"
+        for c in ContradictionDetector(kb).detect()
+    )
+    return log + clashes + (
+        f"SUMMARY facts={len(kb.facts)} rounds={sat.naf_rounds} "
+        f"admitted={sat.naf_admitted} retired={sat.naf_retired} "
+        f"dropped={sat.naf_dropped} fired={len(sat.engine._fired)} "
+        f"seen={len(sat._seen)} plans={len(sat.engine.cache)}"
+    )
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -366,6 +414,9 @@ def _handle(req: dict) -> dict:
     if op == "match-shape":
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True, "out": _match_shape(kb)}
+    if op == "saturate-events":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True, "out": _saturate_events(kb)}
     if op == "accept":
         return {"ok": True}
     if op == "parse":

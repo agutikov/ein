@@ -18,16 +18,23 @@
 #![forbid(unsafe_code)]
 
 pub mod compile;
+pub mod contradiction;
+pub mod engine;
+pub mod events;
 pub mod firing;
 pub mod match_;
 pub mod plan;
 pub mod predicates;
+pub mod saturator;
 pub mod shape;
 
 pub use compile::{
     CompileError, PlanKey, PlanMemo, activators_for, asserted_relation, compile_rule,
     naf_relation_refs, negated_relation, plan_key,
 };
+pub use contradiction::{Contradiction, contradicts, detect, has_contradiction};
+pub use engine::Engine;
+pub use events::{Events, Level};
 pub use firing::{ActivatorId, BindingKey, Env, FireError, Firing, build_fact, fire};
 pub use match_::{Emit, Match, Matcher};
 pub use plan::{
@@ -35,4 +42,5 @@ pub use plan::{
     RelStep, Slot, Span, Step,
 };
 pub use predicates::Pred;
-pub use shape::{match_shape, plan_shape, plan_shape_with};
+pub use saturator::{SaturateError, Saturator, Session};
+pub use shape::{match_shape, plan_shape, plan_shape_with, saturate_events};

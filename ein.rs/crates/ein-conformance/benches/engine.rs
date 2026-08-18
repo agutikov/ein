@@ -126,11 +126,89 @@ fn frontend(c: &mut Criterion) {
     group.finish();
 }
 
+/// A loaded zebra2, and the same one saturated to its root fixpoint.
+fn zebra2_root() -> (ein_ir::Ast, ein_core::Terms, ein_core::Kb) {
+    let root = repo_root();
+    let mut ast = ein_ir::Ast::new();
+    let mut terms = ein_core::Terms::new();
+    let mut kb =
+        ein_ir::load_file(&mut ast, &mut terms, &root.join("examples/zebra2.ein")).expect("loads");
+    let mut events = ein_infer::Events::off();
+    let mut s = ein_infer::Session {
+        kb: &mut kb,
+        terms: &mut terms,
+        ast: &ast,
+        events: &mut events,
+    };
+    let mut sat = ein_infer::Saturator::new(&mut s).expect("compiles");
+    sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+    (ast, terms, kb)
+}
+
 fn deductive(c: &mut Criterion) {
-    pending(c, "saturate_root", "P1a.3");
-    // `match::run` over the saturated root, per plan. 46 % of ein.py's self
-    // time, and the bench the register matcher (design/05) has to move.
-    pending(c, "match_hot", "P1a.3");
+    // Root saturation from a freshly loaded KB — ein.py: 90 ms (S1a.3.3).
+    let mut group = c.benchmark_group("saturate_root");
+    group.bench_function("zebra2", |b| {
+        let path = repo_root().join("examples/zebra2.ein");
+        // Batched, so the load is setup and only the saturation is timed —
+        // the same split `utils/bench_baseline.py` reports on the Python side.
+        b.iter_batched(
+            || {
+                let mut ast = ein_ir::Ast::new();
+                let mut terms = ein_core::Terms::new();
+                let kb = ein_ir::load_file(&mut ast, &mut terms, &path).expect("loads");
+                (ast, terms, kb)
+            },
+            |(ast, mut terms, mut kb)| {
+                let mut events = ein_infer::Events::off();
+                let mut s = ein_infer::Session {
+                    kb: &mut kb,
+                    terms: &mut terms,
+                    ast: &ast,
+                    events: &mut events,
+                };
+                let mut sat = ein_infer::Saturator::new(&mut s).expect("compiles");
+                let n = sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+                std::hint::black_box(n);
+            },
+            criterion::BatchSize::SmallInput,
+        )
+    });
+    group.finish();
+
+    // `match::run` over the saturated root, every plan. 46 % of ein.py's self
+    // time, and the bench the register matcher (design/05) has to move. The
+    // comparable *work* is the call counts, not the wall clock: ein.py makes
+    // 6.0 M `_bind_arg` and 4.6 M `_bind_args` calls on the exhaustive solve
+    // this root feeds.
+    let (ast, terms, kb) = zebra2_root();
+    let rules: Vec<_> = kb.program().rules.values().cloned().collect();
+    let mut terms_mut = terms;
+    let mut plans = Vec::new();
+    for rule in &rules {
+        for activator in ein_infer::activators_for(&kb, &terms_mut, rule) {
+            plans.push(
+                ein_infer::compile_rule(&ast, &mut terms_mut, rule, activator).expect("compiles"),
+            );
+        }
+    }
+    let terms = terms_mut;
+    let mut group = c.benchmark_group("match_hot");
+    group.bench_function("zebra2", |b| {
+        let mut m = ein_infer::Matcher::new();
+        b.iter(|| {
+            let mut n = 0usize;
+            for plan in &plans {
+                m.run(&kb, &terms, &ast, plan, &mut |mt| {
+                    n += mt.premises().len();
+                    std::ops::ControlFlow::Continue(())
+                });
+            }
+            std::hint::black_box(n);
+        })
+    });
+    group.finish();
+
     // One `_admit_from_boundary` round. 72 % of ein.py's exhaustive profile
     // sits under this call (design/06 § Boundary).
     pending(c, "boundary", "P1a.3");

@@ -39,7 +39,7 @@ pub use facts::{FactId, FactStore, Row};
 pub use intern::{CAPACITY, Interner, Overflow, Symbol};
 pub use kb::{Added, EqClasses, FactView, Kb, Layer, NameEntry, Nogoods, SlotKey};
 pub use program::Program;
-pub use prov::{NafRef, Prov, ProvArena, ProvId, ProvKind};
+pub use prov::{NafArg, NafRef, Prov, ProvArena, ProvId, ProvKind};
 pub use pynum::{python_float, python_int};
 pub use shape::shape;
 pub use terms::{

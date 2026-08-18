@@ -244,6 +244,22 @@ pub struct Disjunct {
     /// Top-level relation steps — the length of the `premises` tuple a match
     /// of this disjunct reports.
     pub n_premises: u16,
+    /// A **structural** encoding of this disjunct's guards, into
+    /// [`Plan::guard_keys`].
+    ///
+    /// The saturator's `_seen` set is keyed on `(binding_key, guards)`, and in
+    /// ein.py `guards` is a tuple of frozen dataclasses — compared **by
+    /// value**. So two `(or …)` disjuncts whose guards happen to be the same
+    /// query really do collapse there, and a port that keyed on the disjunct
+    /// index would enqueue one candidate twice.
+    ///
+    /// Keying on the guards rather than on the disjunct is also the S1.22.0
+    /// fix in the other direction: without it, two disjuncts with equal
+    /// bindings but *different* guards collide, only the first is ever
+    /// admitted, and — because a failing monotone guard retires its candidate
+    /// — a disjunct whose guards would have passed is masked permanently.
+    /// `(or …)` became order-dependent.
+    pub guard_key: Span,
     /// Relation steps including those inside nested `(absent …)` queries — the
     /// size of the premise-slot array a run needs. A nested query writes into
     /// the slots the enclosing walk has not reached yet and every one of them
@@ -281,6 +297,9 @@ pub struct Plan {
     pub probes: Box<[Probe]>,
     pub shared: Box<[Symbol]>,
     pub guard_args: Box<[GuardArg]>,
+    /// Flat structural encodings of the disjuncts' guard tuples — see
+    /// [`Disjunct::guard_key`].
+    pub guard_keys: Box<[u32]>,
 }
 
 impl Plan {
@@ -306,6 +325,10 @@ impl Plan {
 
     pub fn guard_args(&self, span: Span) -> &[GuardArg] {
         &self.guard_args[span.range()]
+    }
+
+    pub fn guard_key(&self, span: Span) -> &[u32] {
+        &self.guard_keys[span.range()]
     }
 
     /// The first conclusion template — ein.py's `assert_template`, the

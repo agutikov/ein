@@ -135,6 +135,61 @@ pub fn match_shape(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Result<String, Comp
     Ok(out)
 }
 
+/// The `--events` log of a root saturation, plus the counters — the S1a.3.3
+/// diff.
+///
+/// The protocol itself, at `verbose`, so a redundant firing is emitted rather
+/// than only counted — a dropped one is exactly the kind of difference a port
+/// introduces, which is why T2 runs at that level. The trailing `SUMMARY` line
+/// carries what is engine state rather than an event: the NAF counters the
+/// phase gates on, and the compile-cache size Win A is measured in.
+pub fn saturate_events(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+) -> Result<String, crate::saturator::SaturateError> {
+    let buffer = crate::events::Buffer::new();
+    let mut events =
+        crate::events::Events::to(Box::new(buffer.clone()), crate::events::Level::Verbose);
+    let mut s = crate::saturator::Session {
+        kb,
+        terms,
+        ast,
+        events: &mut events,
+    };
+    let mut sat = crate::saturator::Saturator::new(&mut s)?;
+    sat.saturate(&mut s, None, &mut |_| {})?;
+    // The detector's own output, on the saturated KB: direct ⊥ first, then
+    // pairs in extent order — an order that reaches the unsat core, so it is
+    // compared rather than assumed.
+    let clashes: String = crate::contradiction::detect(s.kb, s.terms)
+        .iter()
+        .map(|c| {
+            format!(
+                "CLASH {} {} {}\n",
+                c.kind.as_str(),
+                c.positive
+                    .map(|f| crate::events::sexpr(s.terms, f))
+                    .unwrap_or_else(|| "-".to_string()),
+                crate::events::sexpr(s.terms, c.negative),
+            )
+        })
+        .collect();
+    let summary = format!(
+        "SUMMARY facts={} rounds={} admitted={} retired={} dropped={} \
+         fired={} seen={} plans={}",
+        s.kb.n_facts(),
+        sat.naf_rounds,
+        sat.naf_admitted,
+        sat.naf_retired,
+        sat.naf_dropped,
+        sat.engine.fired.len(),
+        sat.n_seen(),
+        sat.engine.len(),
+    );
+    Ok(buffer.to_string_lossy() + &clashes + &summary)
+}
+
 fn match_text(terms: &Terms, at: &FxHashMap<FactId, usize>, m: &Match<'_>) -> String {
     let bindings: Vec<String> = m
         .bindings()

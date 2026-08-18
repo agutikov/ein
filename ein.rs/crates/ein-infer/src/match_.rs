@@ -96,6 +96,12 @@ impl<'a> Match<'a> {
     pub fn regs(&self) -> &'a [Value] {
         self.regs
     }
+
+    /// The bound registers, in bind order — the raw form of
+    /// [`Match::bindings`], for a caller that snapshots rather than renders.
+    pub fn trail(&self) -> &'a [Reg] {
+        self.trail
+    }
 }
 
 /// What a callback returns: `Break` stops the enumeration.

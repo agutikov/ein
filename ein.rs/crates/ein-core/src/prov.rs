@@ -56,11 +56,28 @@ impl ProvKind {
 /// A negative premise — an `(absent …)` query that had to fail on the
 /// closure/world boundary for a firing to be admitted (S1.21.8).
 ///
-/// `None` in an argument position is where the query ranged free.
+/// The relation queried and the argument pattern it was queried with, with
+/// [`NafArg::Free`] where the query ranged free. It is the missing half of
+/// `Deps(Y)`: positive provenance records the facts a firing consumed, and
+/// without this a firing's dependence on an *absence* is invisible to every
+/// provenance walk.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct NafRef {
     pub rel: Symbol,
-    pub args: Box<[Option<Value>]>,
+    pub args: Box<[NafArg]>,
+}
+
+/// One argument position of a [`NafRef`].
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub enum NafArg {
+    /// The query ranged free here — ein.py's `None`.
+    Free,
+    /// A name or a number: a bound variable, an `Atom`'s name, an `Int`.
+    Value(Value),
+    /// A nested pattern, which `world._ground` renders as a
+    /// `(relation, (args…))` tuple — so it can be partly free, and cannot
+    /// collapse into a [`Value`].
+    Nested { rel: Symbol, args: Box<[NafArg]> },
 }
 
 /// One derivation record.
