@@ -35,7 +35,7 @@ fn main() {
         let mut kb = load_file(&mut ast, &mut terms, &root.join(rel)).expect("loads");
         let mut events = Events::off();
         let start = Instant::now();
-        let (firings, plans) = {
+        let (firings, plans, rounds, guard_evals, monotone, boundary) = {
             let mut s = Session {
                 kb: &mut kb,
                 terms: &mut terms,
@@ -44,7 +44,14 @@ fn main() {
             };
             let mut sat = Saturator::new(&mut s).expect("compiles");
             let n = sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
-            (n, sat.engine.len())
+            (
+                n,
+                sat.engine.len(),
+                sat.naf_rounds,
+                sat.guard_evals,
+                sat.guard_evals_monotone,
+                std::time::Duration::from_nanos(sat.boundary_nanos),
+            )
         };
         let saturate = start.elapsed();
 
@@ -78,6 +85,11 @@ fn main() {
         println!(
             "{rel}: {} facts, {firings} firings, {plans} plans — saturate {saturate:?}",
             kb.n_facts()
+        );
+        println!(
+            "  boundary: {rounds} rounds, {guard_evals} guard evaluations \
+             ({monotone} monotone), {boundary:?} ({:.0}% of saturation)",
+            100.0 * boundary.as_secs_f64() / saturate.as_secs_f64()
         );
         println!(
             "  match_hot: {} plans, {matches} matches, {premises} premises — {match_hot:?}",

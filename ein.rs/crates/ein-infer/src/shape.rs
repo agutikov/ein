@@ -159,6 +159,27 @@ pub fn saturate_events(
     };
     let mut sat = crate::saturator::Saturator::new(&mut s)?;
     sat.saturate(&mut s, None, &mut |_| {})?;
+    // S1.21.8 negative provenance: what each firing depended on *not* holding.
+    // Neither the event stream nor the KB shape carries it, so without this
+    // line `absent_premises` would be the one thing the boundary produces that
+    // nothing compares — and it is where a scope projection goes wrong.
+    let mut absents = String::new();
+    for (i, fact) in s.kb.facts().enumerate() {
+        let mut provs: Vec<(&str, ein_core::ProvId)> = Vec::new();
+        if let Some(p) = s.kb.primary(fact) {
+            provs.push(("primary", p));
+        }
+        provs.extend(s.kb.alternatives(fact).iter().map(|p| ("alt", *p)));
+        for (label, id) in provs {
+            let prov = s.terms.provs.get(id);
+            if prov.absent.is_empty() {
+                continue;
+            }
+            let refs: Vec<String> = prov.absent.iter().map(|r| naf_repr(s.terms, r)).collect();
+            absents.push_str(&format!("ABSENT {i} {label} [{}]\n", refs.join(", ")));
+        }
+    }
+
     // The detector's own output, on the saturated KB: direct ⊥ first, then
     // pairs in extent order — an order that reaches the unsat core, so it is
     // compared rather than assumed.
@@ -187,7 +208,39 @@ pub fn saturate_events(
         sat.n_seen(),
         sat.engine.len(),
     );
-    Ok(buffer.to_string_lossy() + &clashes + &summary)
+    Ok(buffer.to_string_lossy() + &absents + &clashes + &summary)
+}
+
+/// One [`NafRef`] as `repr((relation, args))` — the tuple `world._ground`
+/// builds, with `None` where the query ranged free.
+fn naf_repr(terms: &Terms, r: &ein_core::NafRef) -> String {
+    format!(
+        "({}, {})",
+        repr_str(terms.sym(r.rel)),
+        naf_args_repr(terms, &r.args)
+    )
+}
+
+fn naf_args_repr(terms: &Terms, args: &[ein_core::NafArg]) -> String {
+    let items: Vec<String> = args.iter().map(|a| naf_arg_repr(terms, a)).collect();
+    // Python's one-tuple comma: `('x',)` is a tuple, `('x')` is a string.
+    if items.len() == 1 {
+        format!("({},)", items[0])
+    } else {
+        format!("({})", items.join(", "))
+    }
+}
+
+fn naf_arg_repr(terms: &Terms, arg: &ein_core::NafArg) -> String {
+    match arg {
+        ein_core::NafArg::Free => "None".to_string(),
+        ein_core::NafArg::Value(v) => repr(&terms.py_value(*v)),
+        ein_core::NafArg::Nested { rel, args } => format!(
+            "({}, {})",
+            repr_str(terms.sym(*rel)),
+            naf_args_repr(terms, args)
+        ),
+    }
 }
 
 fn match_text(terms: &Terms, at: &FxHashMap<FactId, usize>, m: &Match<'_>) -> String {

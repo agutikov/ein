@@ -147,6 +147,12 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 note   = "the only fixture that marks a relation `(__symmetric__ R)`, and the only one that marks three — the reproducer for hazard H1."
 
 [[entry]]
+path   = "examples/features/07_unstratifiable.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "S1a.3.4 — `p ← absent q; q ← absent p`. Both guards pass against the empty world, so a batch boundary admission derives both; the fixture pins that exactly one is derived and the loser is retired."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]

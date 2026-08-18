@@ -373,13 +373,25 @@ def _saturate_events(kb: KnowledgeBase) -> str:
         Path(path).unlink(missing_ok=True)
     from ein.inference.contradiction import ContradictionDetector
     from ein.cli._factdump import fact_sexpr
+    # S1.21.8 negative provenance: what each firing depended on *not* holding.
+    # Not in the event stream and not in the KB shape, so it is emitted here —
+    # otherwise `absent_premises` is the one thing the boundary produces that
+    # nothing compares.
+    absents = ""
+    for i, f in enumerate(kb.facts):
+        provs = [("primary", f.provenance)] + [
+            ("alt", a) for a in kb._alt_justifications.get((f.relation_name, f.args), ())
+        ]
+        for label, prov in provs:
+            if prov is not None and getattr(prov, "absent_premises", ()):
+                absents += f"ABSENT {i} {label} {list(prov.absent_premises)!r}\n"
     clashes = "".join(
         f"CLASH {c.kind} "
         f"{fact_sexpr(c.positive) if c.positive is not None else '-'} "
         f"{fact_sexpr(c.negative)}\n"
         for c in ContradictionDetector(kb).detect()
     )
-    return log + clashes + (
+    return log + absents + clashes + (
         f"SUMMARY facts={len(kb.facts)} rounds={sat.naf_rounds} "
         f"admitted={sat.naf_admitted} retired={sat.naf_retired} "
         f"dropped={sat.naf_dropped} fired={len(sat.engine._fired)} "

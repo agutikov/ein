@@ -95,6 +95,27 @@ struct Entry {
     regs: Box<[Value]>,
     trail: Box<[Reg]>,
     premises: Box<[FactId]>,
+    /// This candidate's identity, built once at enqueue.
+    ///
+    /// ein.py recomputes `_binding_key` at every dequeue and at every boundary
+    /// round — a fresh `frozenset` per parked candidate per round, which on a
+    /// zebra root is ~60 000 of them. The answer cannot change (the registers
+    /// are a snapshot), so the only thing recomputing buys is the allocation.
+    key: BindingKey,
+    /// The extent sizes of this candidate's watched relations at its last
+    /// *failed* boundary judgement — S1a.3.4 T4.
+    ///
+    /// ein.py builds a fresh tuple per candidate per round and keeps it in a
+    /// dict keyed by tiebreaker: 324 492 calls and 0.77 s on an exhaustive
+    /// zebra2, most of it allocation. Sizes are the version counter design/06
+    /// asks for — the KB grows monotonically within a run, so a relation
+    /// cannot lose a fact and equal size means equal extent — so what the
+    /// refinement removes is the allocation, not the answer: the buffer lives
+    /// on the entry and is compared and overwritten in place.
+    stamp: Vec<usize>,
+    /// Has this candidate ever been judged and failed? `stamp` is meaningless
+    /// until it has, which is what ein.py's *absence* from `_park_stamp` says.
+    judged: bool,
 }
 
 /// `(priority, tiebreaker, entry)`. The tiebreaker is unique and monotone, so
@@ -111,7 +132,16 @@ pub struct Saturator {
     matcher: Matcher,
     entries: Vec<Entry>,
     queue: BinaryHeap<Ranked>,
-    parked: BinaryHeap<Ranked>,
+    /// The parked candidates, in (priority, FIFO) order — S1a.3.4 T7.
+    ///
+    /// A `BTreeSet` rather than a heap because a boundary round **reads** the
+    /// whole set in order and removes at most one entry from it. ein.py pops
+    /// every candidate and re-pushes the rejects, which on a zebra root is
+    /// ~60 000 heap operations across the run for ~1 000 actual judgements.
+    /// Ordered iteration gives the same sequence — so "the first candidate
+    /// whose guards pass" is the same candidate — without touching the ones
+    /// it skips.
+    parked: std::collections::BTreeSet<(i64, u64, u32)>,
     seen: FxHashSet<(BindingKey, GuardSetId)>,
     guard_sets: FxHashMap<Box<[u32]>, GuardSetId>,
     tiebreaker: u64,
@@ -120,8 +150,18 @@ pub struct Saturator {
     matched_plans: Vec<bool>,
     pos_index: FxHashMap<Symbol, Vec<usize>>,
     index_n: usize,
-    /// tiebreaker → the watch stamp at that candidate's last failed judgement.
-    park_stamp: FxHashMap<u64, Vec<usize>>,
+    /// Scratch for one candidate's watch stamp, reused across the round.
+    stamp_scratch: Vec<usize>,
+    /// `(plan, guard, projected env) → verdict`, for the duration of **one**
+    /// boundary round — Win B's first refinement
+    /// ([design/06](../../../../plans/m1a_rust/design/06_saturation.md) §4).
+    ///
+    /// Two parked candidates frequently share a guard and a projected
+    /// environment: `project(bindings, scope)` collapses everything the guard
+    /// does not read, so two candidates differing only in a variable outside
+    /// the scope ask the *same* question. Sound because the KB cannot change
+    /// mid-round — at most one admission, and it ends the round.
+    guard_memo: FxHashMap<(crate::plan::PlanId, u32, Box<[Value]>), bool>,
     sym_rels: Vec<Symbol>,
     sym_n: usize,
     sym_sym: Symbol,
@@ -135,6 +175,28 @@ pub struct Saturator {
     pub naf_rounds: u32,
     pub naf_admitted: u32,
     pub naf_retired: u32,
+    /// Guard sub-plan **evaluations** — how many times a negative query was
+    /// actually run. The boundary's cost is this number times the cost of one
+    /// query, and 72 % of an exhaustive solve sits under it
+    /// ([design/06](../../../../plans/m1a_rust/design/06_saturation.md) §2), so
+    /// it is the figure Win B is measured in. Not an ein.py observable: it is
+    /// the port's own instrument, and it is deliberately *not* in the T2 diff
+    /// — a number that must not change is not evidence that nothing changed.
+    pub guard_evals: u64,
+    /// Of those, the ones on a **monotone** guard — the only ones the
+    /// semi-naive re-evaluation of
+    /// [design/06](../../../../plans/m1a_rust/design/06_saturation.md) § Win B
+    /// can help, since a nested absent can flip from failing to passing and
+    /// has no "only a new fact can change this" argument.
+    pub guard_evals_monotone: u64,
+    /// Nanoseconds spent inside the boundary — one `Instant` pair per
+    /// quiescence, which is 40 of them on a zebra2 root and therefore free.
+    ///
+    /// It exists because the boundary's *share* is the question Win B is
+    /// answered against: 72 % of an exhaustive ein.py solve sits here, and an
+    /// optimisation aimed at 72 % is a different proposition from one aimed at
+    /// a tenth of that.
+    pub boundary_nanos: u64,
     /// Structurally 0 since S1.21.8, kept as an observable so the old
     /// measurement gate still has something to assert. It counted firings
     /// dropped at dequeue because a guard that passed at enqueue no longer
@@ -155,7 +217,7 @@ impl Saturator {
             matcher: Matcher::new(),
             entries: Vec::new(),
             queue: BinaryHeap::new(),
-            parked: BinaryHeap::new(),
+            parked: std::collections::BTreeSet::new(),
             seen: FxHashSet::default(),
             guard_sets: FxHashMap::default(),
             tiebreaker: 0,
@@ -164,7 +226,8 @@ impl Saturator {
             matched_plans: Vec::new(),
             pos_index: FxHashMap::default(),
             index_n: usize::MAX,
-            park_stamp: FxHashMap::default(),
+            stamp_scratch: Vec::new(),
+            guard_memo: FxHashMap::default(),
             sym_rels: Vec::new(),
             sym_n: usize::MAX,
             sym_sym,
@@ -180,6 +243,9 @@ impl Saturator {
             naf_admitted: 0,
             naf_retired: 0,
             naf_dropped: 0,
+            guard_evals: 0,
+            guard_evals_monotone: 0,
+            boundary_nanos: 0,
         };
         sat.engine
             .compile_all(s.ast, s.terms, s.kb, s.events)
@@ -210,7 +276,10 @@ impl Saturator {
                     l.num("n_parked", parked);
                 });
             }
-            if self.admit_from_boundary(s)? == 0 {
+            let start = std::time::Instant::now();
+            let admitted = self.admit_from_boundary(s)?;
+            self.boundary_nanos += start.elapsed().as_nanos() as u64;
+            if admitted == 0 {
                 return Ok(None);
             }
         }
@@ -273,7 +342,7 @@ impl Saturator {
         let unfired = self
             .queue
             .iter()
-            .any(|Reverse((_, _, e))| !self.engine.fired.contains(&self.entry_key(*e)));
+            .any(|Reverse((_, _, e))| !self.engine.fired.contains(self.entry_key(*e)));
         if unfired {
             return Ok(false);
         }
@@ -296,10 +365,10 @@ impl Saturator {
             return Ok(Some(firing));
         }
         while let Some(Reverse((_, _, entry))) = self.queue.pop() {
-            let key = self.entry_key(entry);
-            if self.engine.fired.contains(&key) {
+            if self.engine.fired.contains(self.entry_key(entry)) {
                 continue;
             }
+            let key = self.entry_key(entry).clone();
             let Some(firing) = self.apply(s, entry, key)? else {
                 continue;
             };
@@ -618,12 +687,14 @@ impl Saturator {
             regs: m.regs().into(),
             trail: m.trail().into(),
             premises: m.premises().into(),
+            key,
+            stamp: Vec::new(),
+            judged: false,
         });
-        let ranked = Reverse((priority, self.tiebreaker, entry));
         if parked {
-            self.parked.push(ranked);
+            self.parked.insert((priority, self.tiebreaker, entry));
         } else {
-            self.queue.push(ranked);
+            self.queue.push(Reverse((priority, self.tiebreaker, entry)));
         }
     }
 
@@ -658,13 +729,8 @@ impl Saturator {
         })
     }
 
-    fn entry_key(&self, entry: u32) -> BindingKey {
-        let e = &self.entries[entry as usize];
-        BindingKey::new(
-            self.engine.plan(e.plan),
-            self.engine.activator(e.plan),
-            &e.regs,
-        )
+    fn entry_key(&self, entry: u32) -> &BindingKey {
+        &self.entries[entry as usize].key
     }
 
     // ── The boundary ───────────────────────────────────────────────
@@ -686,13 +752,17 @@ impl Saturator {
             return Ok(0);
         }
         self.naf_rounds += 1;
-        let mut rejected: Vec<Ranked> = Vec::new();
+        self.guard_memo.clear();
         let mut admitted = 0;
-        while let Some(ranked) = self.parked.pop() {
-            let Reverse((_, tb, entry)) = ranked;
-            if self.engine.fired.contains(&self.entry_key(entry)) {
-                self.park_stamp.remove(&tb);
-                continue; // fired by another route
+        // A snapshot, because the round removes from `self.parked` as it goes
+        // and a candidate is admitted at most once. One allocation per round,
+        // against ein.py's two heap operations per parked candidate per round.
+        let order: Vec<(i64, u64, u32)> = self.parked.iter().copied().collect();
+        for key in order {
+            let (_, tb, entry) = key;
+            if self.engine.fired.contains(self.entry_key(entry)) {
+                self.parked.remove(&key); // fired by another route
+                continue;
             }
             let e = &self.entries[entry as usize];
             let plan = self.engine.plan_arc(e.plan);
@@ -702,16 +772,18 @@ impl Saturator {
             // on something that did not change this round, and re-running
             // their queries is what makes a naive boundary quadratic (zebra2
             // root: 460 parked over 40 rounds).
-            let stamp = self.watch_stamp(s, &plan, guards);
-            if self.park_stamp.get(&tb) == Some(&stamp) {
-                rejected.push(ranked);
+            self.watch_stamp_into(s, &plan, guards);
+            if self.entries[entry as usize].judged
+                && self.entries[entry as usize].stamp == self.stamp_scratch
+            {
                 continue;
             }
-            let failing = self.first_failing(s, &plan, entry, guards);
+            let plan_id = self.engine.plan_id(self.entries[entry as usize].plan);
+            let failing = self.first_failing(s, &plan, plan_id, entry, guards);
             match failing {
                 None => {
-                    self.park_stamp.remove(&tb);
-                    self.queue.push(ranked);
+                    self.parked.remove(&key);
+                    self.queue.push(Reverse(key));
                     self.naf_admitted += 1;
                     admitted = 1;
                     if s.events.on() {
@@ -726,24 +798,27 @@ impl Saturator {
                     break;
                 }
                 Some(g) if plan.guards(guards)[g].monotone => {
-                    self.park_stamp.remove(&tb);
+                    // Anti-monotone, and it found a match: the KB only grows,
+                    // so it will keep finding one. This candidate is dead, not
+                    // waiting — retire it rather than re-asking every round.
+                    self.parked.remove(&key);
                     self.naf_retired += 1;
                     if s.events.on() {
                         emit_boundary(s, "retire", tb, self.naf_rounds, &plan, guards, g);
                     }
-                    continue;
                 }
                 Some(g) => {
-                    self.park_stamp.insert(tb, stamp);
+                    let scratch = std::mem::take(&mut self.stamp_scratch);
+                    let e = &mut self.entries[entry as usize];
+                    e.stamp.clear();
+                    e.stamp.extend_from_slice(&scratch);
+                    e.judged = true;
+                    self.stamp_scratch = scratch;
                     if s.events.on() {
                         emit_boundary(s, "park", tb, self.naf_rounds, &plan, guards, g);
                     }
-                    rejected.push(ranked);
                 }
             }
-        }
-        for ranked in rejected {
-            self.parked.push(ranked);
         }
         Ok(admitted)
     }
@@ -754,12 +829,13 @@ impl Saturator {
     /// time ⇒ the sub-plan's match set is unchanged ⇒ so is the verdict. Sizes
     /// suffice because the KB grows monotonically within a run: a relation
     /// cannot lose a fact, so equal size means equal extent.
-    fn watch_stamp(&self, s: &Session<'_>, plan: &Plan, guards: Span) -> Vec<usize> {
-        plan.guards(guards)
-            .iter()
-            .flat_map(|g| g.watched.iter())
-            .map(|&rel| s.kb.n_facts_of(rel))
-            .collect()
+    fn watch_stamp_into(&mut self, s: &Session<'_>, plan: &Plan, guards: Span) {
+        self.stamp_scratch.clear();
+        for g in plan.guards(guards) {
+            for &rel in g.watched.iter() {
+                self.stamp_scratch.push(s.kb.n_facts_of(rel));
+            }
+        }
     }
 
     /// The first guard that does not pass here, or `None` if all do.
@@ -770,15 +846,38 @@ impl Saturator {
         &mut self,
         s: &mut Session<'_>,
         plan: &Plan,
+        plan_id: crate::plan::PlanId,
         entry: u32,
         guards: Span,
     ) -> Option<usize> {
         let regs = self.entries[entry as usize].regs.clone();
         let mut m = std::mem::take(&mut self.matcher);
-        let out = plan
-            .guards(guards)
-            .iter()
-            .position(|g| m.holds(s.kb, s.terms, s.ast, plan, g, &regs));
+        let mut out = None;
+        for (i, g) in plan.guards(guards).iter().enumerate() {
+            // The question the guard actually asks: the parent's registers
+            // restricted to its scope. Everything outside is invisible to the
+            // query, so two candidates that differ only there share a verdict.
+            let env: Box<[Value]> = g
+                .scope_of
+                .iter()
+                .map(|from| from.map_or(Value::UNBOUND, |p| regs[p as usize]))
+                .collect();
+            let key = (plan_id, guards.start + i as u32, env);
+            let holds = match self.guard_memo.get(&key) {
+                Some(&v) => v,
+                None => {
+                    self.guard_evals += 1;
+                    self.guard_evals_monotone += g.monotone as u64;
+                    let v = m.holds(s.kb, s.terms, s.ast, plan, g, &regs);
+                    self.guard_memo.insert(key, v);
+                    v
+                }
+            };
+            if holds {
+                out = Some(i);
+                break;
+            }
+        }
         self.matcher = m;
         out
     }

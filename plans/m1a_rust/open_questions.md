@@ -25,6 +25,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | open |
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
+| [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — at root scale they are 11–30 % | open — found at S1a.3.4, measured |
 
 ---
 
@@ -354,3 +355,54 @@ Options:
 rather than at it — the flag has to exist in *both* implementations, so it is
 cheapest to add while the Rust CLI is still a stub. Until then the manifest's
 `levers` lists the four, and `conformance/README.md` says why.
+
+## Q-M1a.17 — Win B's ≥ 80 % assumed monotone guards dominate
+
+**Found 2026-08-18 at [S1a.3.4](p1a.3_deductive_core/s1a.3.4_world_and_contradiction.md),
+by measurement rather than by argument.**
+
+[design/06](design/06_saturation.md) § Win B projects that guard sub-plan
+**evaluations** drop by ≥ 80 %, and names the mechanism: a *monotone*
+guard's query is purely positive, so if it found nothing at round *r* it
+can only start finding something through a fact added since — which is
+`run_seeded` on the guard's sub-plan, restricted to Δ ∩ watched.
+
+The port instruments that split (`Saturator::guard_evals` /
+`guard_evals_monotone`), and at **root scale the mix is the other way
+round**:
+
+| root | rounds | guard evaluations | of which monotone |
+|---|---:|---:|---:|
+| `zebra2` | 40 | 958 | **109 (11 %)** |
+| `zebra` | 119 | 945 | **280 (30 %)** |
+
+The reason is structural rather than incidental. A candidate that is
+*still parked* has a guard that **failed**, and a failing **monotone**
+guard retires its candidate on the spot — so every re-judged candidate is
+one whose failing guard is *non-monotone*, i.e. a `forall`'s
+`(absent (and G (absent B)))`, which design/06 excludes from the
+mechanism by name. What is left for the semi-naive path is the monotone
+guards that *passed* earlier in the same `first_failing` scan.
+
+The boundary is still where the time is — 80 % of a `zebra` root
+saturation and 34 % of a `zebra2` one, and essentially all of it inside
+the queries themselves (945 evaluations × 6.2 µs ≈ the whole 5.8 ms).
+The two refinements that do not depend on monotonicity **landed** and are
+T2-green: the per-round `(guard, projected env) → verdict` memo, and an
+allocation-free watch stamp on an ordered parked set instead of a
+pop-and-re-push heap. Together they moved the boundary by ~2 % at root
+scale, which is the honest number.
+
+**Open:** does the *exhaustive* mix differ? design/06's figure comes from
+an exhaustive `zebra2` (3 178 rounds, 33 113 queries), which
+[P1a.4](p1a.4_search_layer/README.md) is the first phase able to run. The
+instrument is already in place, so the question is answered by running it
+rather than by re-arguing it.
+
+**Recommendation:** carry the semi-naive guard re-evaluation
+(T1a.3.4.5) into [P1a.6](p1a.6_performance/README.md) as a *measured*
+optimisation with this as its trigger condition, rather than landing a
+mechanism here whose measured reach is a tenth of its stated one. If the
+exhaustive mix is monotone-dominated, it lands there with a number; if it
+is not, the boundary needs a different idea and this question is where
+that gets decided.

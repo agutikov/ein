@@ -209,9 +209,39 @@ fn deductive(c: &mut Criterion) {
     });
     group.finish();
 
-    // One `_admit_from_boundary` round. 72 % of ein.py's exhaustive profile
-    // sits under this call (design/06 § Boundary).
-    pending(c, "boundary", "P1a.3");
+    // The boundary. 72 % of ein.py's exhaustive profile sits under
+    // `_admit_from_boundary` (design/06 § Boundary), and **80 % of a `zebra`
+    // root saturation** in ein.rs — which is why the workload is that
+    // saturation rather than a single round: a round is not repeatable
+    // without rebuilding the state that produced it, and the state is the
+    // saturation. `examples/engine_cost.rs` reports the split, so the share
+    // this bench measures is a number rather than an assumption.
+    let mut group = c.benchmark_group("boundary");
+    group.bench_function("zebra", |b| {
+        let path = repo_root().join("examples/zebra.ein");
+        b.iter_batched(
+            || {
+                let mut ast = ein_ir::Ast::new();
+                let mut terms = ein_core::Terms::new();
+                let kb = ein_ir::load_file(&mut ast, &mut terms, &path).expect("loads");
+                (ast, terms, kb)
+            },
+            |(ast, mut terms, mut kb)| {
+                let mut events = ein_infer::Events::off();
+                let mut s = ein_infer::Session {
+                    kb: &mut kb,
+                    terms: &mut terms,
+                    ast: &ast,
+                    events: &mut events,
+                };
+                let mut sat = ein_infer::Saturator::new(&mut s).expect("compiles");
+                sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+                std::hint::black_box(sat.boundary_nanos);
+            },
+            criterion::BatchSize::SmallInput,
+        )
+    });
+    group.finish();
     // Fork + first delta write. Already free in ein.py (0.003 s / 206 calls)
     // — it is measured because P1a.7 needs hundreds of thousands of them,
     // which is a different question from "is one fork fast" (S1a.2.2).

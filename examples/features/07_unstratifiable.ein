@@ -1,0 +1,35 @@
+; The classic unstratifiable program — `p ← absent q; q ← absent p`.
+;
+; Both guards pass against the empty world, so a boundary that admitted a
+; whole round's worth of candidates would derive **both** — and `{p, q}` is
+; not a model of this program under any reading. S1.21.8 admits **at most one
+; candidate per round** for exactly this reason: the queue is empty at
+; quiescence, so the admitted candidate fires immediately, against exactly the
+; world its guard was judged against, and the other candidate is re-judged
+; against the world that firing made.
+;
+; What this fixture pins is therefore not *which* of the two is derived — that
+; is the engine's own (priority, FIFO) order and it is deterministic — but that
+; exactly one is, and that the second candidate is then **retired** rather than
+; left waiting: its guard is monotone, so once it finds a match it finds one
+; forever.
+;
+; The one-at-a-time discipline is a soundness requirement, not a throttle, and
+; the argument for it is a fixture rather than a comment.
+(relation thing Thing)
+(relation p Thing)
+(relation q Thing)
+
+(rule derive-p ()
+  :match  (and (thing ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :priority 200
+  :why    "no q for {?x}, so p")
+
+(rule derive-q ()
+  :match  (and (thing ?x) (absent (p ?x)))
+  :assert (q ?x)
+  :priority 200
+  :why    "no p for {?x}, so q")
+
+(thing one :source "the only object")
