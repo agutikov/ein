@@ -21,6 +21,15 @@ One JSON object per line in, one per line out, in order:
     {"op": "repr",   "v": {"s": "it's"}}          → {"out": "\\"it's\\""}
     {"op": "repr",   "v": {"t": [{"i": "-7"}]}}   → {"out": "(-7,)"}
     {"op": "format", "v": "3ff8000000000000", "spec": "9.2f"} → {"out": "     1.50"}
+    {"op": "sort",   "vs": ["b", "a", "b"]}       → {"out": "1 0 2"}
+    {"op": "int",    "v": "007"}                  → {"out": "7"}
+
+`sort` answers with the **permutation** rather than the sorted list, so a
+string containing a separator cannot be misread; it is `sorted()`'s own
+stability that makes the answer unique. It is how M1a S1a.2.1 checks that the
+interner's rank table — `Symbol` → position in the lexicographically sorted
+symbol list — orders names the way `sorted(names)` does. `int` is `str(int(v))`,
+the canonicalisation the int pool applies to every literal.
 
 Values are tagged: `{"s": …}` str · `{"i": "…"}` int (decimal text, so an
 arbitrary width survives JSON) · `{"t": [...]}` tuple · `{"f": [name, [args]]}`
@@ -78,6 +87,14 @@ def _handle(req: dict) -> dict:
         return {"ok": True, "out": repr(_value(req["v"]))}
     if op == "format":
         return {"ok": True, "out": format(_float(req["v"]), req["spec"])}
+    if op == "sort":
+        vs = req["vs"]
+        # `sorted` is stable, so equal strings keep their input order and the
+        # permutation is a function of the input alone.
+        order = sorted(range(len(vs)), key=lambda i: vs[i])
+        return {"ok": True, "out": " ".join(str(i) for i in order)}
+    if op == "int":
+        return {"ok": True, "out": str(int(req["v"]))}
     raise ValueError(f"unknown op {op!r}")
 
 

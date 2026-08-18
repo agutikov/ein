@@ -38,6 +38,12 @@ license    = "MIT"
 repository = "https://github.com/gutikoff/ein"
 
 [workspace.dependencies]
+# Deterministic, fast, non-DoS-resistant hashing. The engine's maps are keyed
+# by integers it assigned itself, so the adversarial-input resistance
+# `RandomState` buys is worthless here — and its per-process randomisation is
+# an active hazard, because a hash map that iterates in a run-dependent order
+# is exactly the failure design/02 §9 forbids.
+rustc-hash = "2"
 serde      = { version = "1", features = ["derive"] }
 serde_json = "1"
 toml        = { version = "0.9", default-features = false, features = ["parse", "serde"] }

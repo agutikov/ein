@@ -15,6 +15,15 @@
 
 #![forbid(unsafe_code)]
 
+pub mod facts;
+pub mod intern;
 mod printable;
 pub mod pyfmt;
 pub mod pyrepr;
+pub mod terms;
+pub mod value;
+
+pub use facts::{FactId, FactStore, Row};
+pub use intern::{CAPACITY, Interner, Overflow, Symbol};
+pub use terms::Terms;
+pub use value::{IntId, IntPool, Tag, Value};
