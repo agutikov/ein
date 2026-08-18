@@ -125,6 +125,17 @@ Alongside the harness:
   file or directory: '<path>'` and exit 1 on both — the *whole last line*,
   not just the class Q-M1a.14 compares.
 
+**Five flags the corpus does not reach**, checked by hand because
+`corpus.toml`'s run lists carry none of them: `-c/--dump-config`,
+`-H/--hyp-stats`, `-t/--timing`, `-v -g 1` (the live view at every entering),
+and a budget abort (`-E 5` → exit 2). All identical; `--timing`'s numbers are
+the normalised field and its labels, columns and parentheticals are not.
+`-H` on `features/01_not_and_absent.ein` is the one that had to be waited for:
+ein.rs answers instantly and CPython needs somewhere between 110 s and ~20
+minutes to enumerate the same preview. Identical when it lands. Adding these
+to the corpus is [P1a.6](../p1a.6_performance/README.md)'s to schedule — the
+matrix is shared, and widening it re-times every entry.
+
 ### Four things the checks corrected
 
 1. **The option counts** (above): 39, not 37; `saturate` 5, not 3.
