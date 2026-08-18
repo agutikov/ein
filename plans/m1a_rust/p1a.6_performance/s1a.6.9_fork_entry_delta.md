@@ -45,8 +45,12 @@ full tables and the one-line command.
 
 | `-e` run | enterings | fork firings | **redundant** | productive | fork enqueues |
 |---|---:|---:|---:|---:|---:|
-| `zebra2` | 101 | 37 647 | **35 996 (95.6 %)** | 1 651 | 80 892 |
-| `zebra` | 111 | 112 762 | **106 657 (94.6 %)** | 6 105 | 197 125 |
+| `zebra2` | 101 | 38 136 | **36 442 (95.6 %)** | 1 694 | 81 766 |
+| `zebra` | 111 | 113 746 | **107 610 (94.6 %)** | 6 136 | 198 763 |
+
+*(T1a.6.9.1 corrected two attributions in the first printing without moving
+the headline — `utils/fork_split.py`, and the note in
+[baseline.md §9](baseline.md#9-the-fork-entry-re-derivation).)*
 
 And the enclosing share, `utils/profile_ein_rs.py --cum-of`:
 
@@ -99,11 +103,16 @@ survive, which T1a.6.9.2 has to verify rather than accept:
    `Kb::record_justification` returns `true`, and the fork reads
    `alternatives(fact)` through the layered view, so a duplicate of a
    root-recorded justification is already rejected. Measured on
-   `zebra2 -e`: 5 111 `alt` records, 4 894 of them inside forks, 4 335
-   following a *redundant* firing — i.e. the redundant firings that matter
-   are the ones whose **premises** include a fork fact while their
+   `zebra2 -e`: 5 111 `alt` records, 5 015 of them inside forks, **all**
+   from a redundant firing (the first printing's "4 335 after a redundant
+   firing, 776 after a productive one" was an attribution artefact — `alt`
+   is emitted *before* its own `fire` line). 4 317 of the 5 015 are recorded
+   by a firing whose **premises** include a fork fact while its
    **conclusion** is inherited, and those are delta-reachable by
-   construction. The other ~32 000 record nothing.
+   construction. **698 are not**: premises and conclusion both pre-date the
+   fork. Those are reachable only through the inherited *parked* set, and
+   they are the reason this claim is verified rather than argued. The other
+   ~31 000 redundant firings record nothing.
 3. **The boundary.** A parked candidate is one whose guard *failed*, and
    the KB is append-only, so an `(absent P)` that failed cannot start
    passing. The root's parked set is inherited as a set of candidates that
@@ -203,9 +212,10 @@ which of the four targets moved.
 ## Notes
 
 - The same fresh-saturator shape is what makes item 1 of
-  [§7](baseline.md#7-the-top-five-costs) cost 21.1 %: 16 875 of the run's
-  17 250 `compile` events are inside forks, ~167 per entering, all of them
-  re-compiling plans the root already compiled. S1a.6.8 fixes the compile
+  [§7](baseline.md#7-the-top-five-costs) cost 21.1 %: 12 625 of the run's
+  17 250 `compile` events are inside forks, 125 per entering, all of them
+  re-compiling plans the root already compiled (another 4 375 are hypgen's,
+  which the corrected split separates). S1a.6.8 fixes the compile
   half by sharing the memo; this stage is the same observation applied to
   the *matching* half, and the reason they are separate stages is that
   only one of them is invisible.

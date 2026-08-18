@@ -529,7 +529,7 @@ by measurement.** The numbers are in
 Every entering builds a fresh `Saturator` over the forked root, so its
 first enqueue pass is a FULL pass and the root's whole deductive closure
 is re-derived inside the fork. Measured on `-e` runs: **95.6 %**
-(`zebra2`, 35 996 / 37 647) and **94.6 %** (`zebra`, 106 657 / 112 762) of
+(`zebra2`, 36 442 / 38 136) and **94.6 %** (`zebra`, 107 610 / 113 746) of
 a fork's firings are redundant re-derivations, and `try_commitment_set` is
 **95.0 %** of `zebra -e` cumulatively — the one workload that misses its
 milestone target.
@@ -542,7 +542,7 @@ and the unsat core are all argued to be unchanged
 at risk, with the `alt` split measured). What changes is the
 **narration**:
 
-- **T2** at `verbose` loses ~107 k `fire` lines on `zebra -e` — and
+- **T2** at `verbose` loses ~108 k `fire` lines on `zebra -e` — and
   `EVENTS.md` § Levels says the tier runs at verbose precisely to catch a
   dropped redundant firing;
 - **T3** moves `n_firings` in `--trace`, the `("firings", len)` counts in

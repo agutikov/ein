@@ -242,7 +242,7 @@ Measured
 **94.6 %** of `zebra -e`'s fork firings and **95.6 %** of `zebra2 -e`'s
 are redundant, and `try_commitment_set` is 95.0 % of `zebra -e`
 cumulatively. Win A's 17 430 compiles are a *symptom* of the same fresh
-saturator: 16 875 of them happen inside forks.
+saturator: 12 625 of them happen inside forks, and another 4 375 in hypgen.
 
 Unlike Wins A and B this one is **not order-identical by construction**. A
 `Firing` is narrated — T2 emits one `fire` line per firing at `verbose`,

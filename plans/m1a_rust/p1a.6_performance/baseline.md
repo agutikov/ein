@@ -517,21 +517,46 @@ is a FULL pass. The closure is semi-naive within a saturation
 D2 + D5) but **not across the fork boundary**, which is where the delta is
 smallest and known exactly.
 
-Split at the `enter` events of a `--events-level verbose` run:
+Split at the `enter` events of a `--events-level verbose` run —
+**`utils/fork_split.py`**, the T1a.6.9.1 instrument that replaced the inline
+script this section was first written with:
 
 | `-e` run | enterings | alive / dead | fork firings | **redundant** | productive | fork enqueues | fork compiles |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `zebra2` | 101 | 34 / 67 | 37 647 | **35 996 (95.6 %)** | 1 651 | 80 892 | 16 875 |
-| `zebra` | 111 | 40 / 71 | 112 762 | **106 657 (94.6 %)** | 6 105 | 197 125 | 4 832 |
+| `zebra2` | 101 | 34 / 67 | 38 136 | **36 442 (95.6 %)** | 1 694 | 81 766 | 12 625 |
+| `zebra` | 111 | 40 / 71 | 113 746 | **107 610 (94.6 %)** | 6 136 | 198 763 | 3 552 |
 
-Per entering, and the root for scale:
+Per entering, and the root for scale. `between` is the inter-layer work —
+`compute_alive`, the forced positives and the **root** re-saturations they
+run — which belongs to neither column:
 
 | | firings | redundant | productive | enqueues | parks | compiles | quiesces |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `zebra2` root | 810 | 546 | 264 | 1 565 | 2 224 | 375 | 122 |
-| `zebra2` mean fork | 372.7 | 356.4 | **16.3** | 800.9 | 227.0 | 167.1 | 30.3 |
-| `zebra` root | 1 864 | 1 423 | 441 | 3 158 | 1 175 | 96 | 252 |
-| `zebra` mean fork | 1 015.9 | 960.9 | **55.0** | 1 775.9 | 203.6 | 43.5 | 106.3 |
+| `zebra2` root | 321 | 100 | 221 | 691 | 835 | 250 | 40 |
+| `zebra2` between | 0 | 0 | 0 | 0 | 0 | 4 375 | 0 |
+| `zebra2` mean fork | 377.6 | 360.8 | **16.8** | 809.6 | 240.8 | 125.0 | 31.1 |
+| `zebra` root | 880 | 470 | 410 | 1 520 | 651 | 64 | 119 |
+| `zebra` between | 0 | 0 | 0 | 0 | 0 | 1 312 | 0 |
+| `zebra` mean fork | 1 024.7 | 969.5 | **55.3** | 1 790.7 | 208.3 | 32.0 | 107.5 |
+
+> **These are the corrected numbers; the first printing of this table was
+> mis-split**, and the instrument exists because the correction is not
+> visible by eye. The engine did not change — every firing count in the run
+> is identical to the one at `fe62f94` — but two attributions were wrong:
+>
+> - **`enter` closes the block it describes.** `solve.rs` emits it *after*
+>   `try_commitment_set` returns, so treating it as an opener folded the
+>   first entering into the root row (`zebra2` root: 810 firings against a
+>   true 321) and left a trailing tail that is not an entering at all. The
+>   corrected cut is checked against the `enter` event's own `n_firings`,
+>   which matches on every block of both runs.
+> - **`compile` events between enterings are hypgen's, not a fork's.**
+>   `compute_alive` and the pre-branch lookahead compile too: 4 375 of
+>   `zebra2`'s 17 250, which is why the fork share is 12 625 (**125 per
+>   entering**) rather than 16 875 (~167).
+>
+> The headline is unmoved — 95.6 % and 94.6 % to the tenth — because both
+> errors moved a numerator and its denominator together.
 
 And the enclosing share (`utils/profile_ein_rs.py --cum-of`):
 
@@ -546,27 +571,42 @@ root's fixpoint, 111 times.** An entering contributes 55 productive
 firings and pays for 961 redundant ones.
 
 Three of § 7's five costs are this cost seen from different angles: item 1
-(21.1 % re-compilation) is 16 875 of the run's 17 250 `compile` events
-happening *inside* forks, ~167 per entering; item 3 (the matcher, 66.9 % of
+(21.1 % re-compilation) is 12 625 of the run's 17 250 `compile` events
+happening *inside* forks, 125 per entering; item 3 (the matcher, 66.9 % of
 `zebra -e`) is where the re-derivation is actually paid; item 4's
 allocation churn is largely its by-product.
 
 ### Is the re-derivation load-bearing?
 
-Partly, and the part that is stays reachable from the delta. `alt` fires
-when `Kb::record_justification` records a *new* alternative justification:
+Partly, and **most — but not all — of the part that is stays reachable from
+the delta.** `alt` fires when `Kb::record_justification` records a *new*
+alternative justification:
 
-| run | `alt` total | in forks | after a **redundant** firing | after a productive one |
-|---|---:|---:|---:|---:|
-| `zebra2 -e` | 5 111 | 4 894 | 4 335 | 776 |
-| `zebra -e` | **0** | 0 | 0 | 0 |
+| run | `alt` total | at root | in forks | own firing **redundant** | premises include a fork fact | **root-only premises** |
+|---|---:|---:|---:|---:|---:|---:|
+| `zebra2 -e` | 5 111 | 96 | 5 015 | 5 015 (100 %) | 4 317 | **698** |
+| `zebra -e` | **0** | 0 | 0 | 0 | 0 | 0 |
 
-So on `zebra2` about 4 335 of the 35 996 redundant fork firings record
-something — the ones whose *premises* include a fork fact while their
-*conclusion* is inherited from root, which a delta pass finds by
-construction — and the other ~32 000 record nothing. On `zebra` the
-redundant firings record nothing **at all**, which is why that puzzle shows
-the cost at its purest.
+The first printing of this table read "4 335 after a redundant firing, 776
+after a productive one", and that split is an artefact of the direction of
+attribution: `record_alternative` emits its `alt` lines **before** the `fire`
+line of the firing that produced them, so pairing each `alt` with the
+*preceding* `fire` reports a productive share that cannot exist. Every `alt`
+in the engine comes from a redundant firing, because `record_alternative` is
+only reached on the `all_known` path.
+
+The split that does mean something is the last two columns. 4 317 of the 5 015
+fork alternatives are recorded by a firing that **reads a fork-local fact** —
+a hypothesis or something derived from one — and a delta-seeded pass finds
+those by construction. The other **698 read root facts only**: their premises
+and their conclusion all pre-date the fork, so a resumed saturator that
+inherits `fired` never re-enqueues them. They are not obviously lost either —
+a candidate that was *parked* at root and is admitted in the fork has
+root-only premises and is still found, because [T1a.6.9.4](s1a.6.9_fork_entry_delta.md)
+inherits the parked set — which is exactly why T1a.6.9.2 verifies the
+alternatives map rather than arguing about it. On `zebra` the redundant
+firings record nothing **at all**, which is why that puzzle shows the cost at
+its purest.
 
 ### The same boundary, seen by the allocator
 
@@ -587,31 +627,16 @@ S1a.6.9 is in.
 ### Reproducing this section
 
 ```sh
-ein.rs/target/release/ein solve examples/zebra.ein -e \
-    --events /tmp/z.jsonl --events-level verbose > /dev/null
-python3 - /tmp/z.jsonl <<'EOF'
-import collections, json, statistics, sys
-per, cur, root = [], None, collections.Counter()
-for line in open(sys.argv[1]):
-    d = json.loads(line); e = d.get("e")
-    if e == "enter":
-        if cur is not None: per.append(cur)
-        cur = collections.Counter()
-    t = cur if cur is not None else root
-    t[e] += 1
-    if e == "fire": t["red" if d.get("redundant") else "prod"] += 1
-if cur: per.append(cur)
-print("enterings", len(per), "root", dict(root))
-for k in ("enqueue", "fire", "red", "prod", "park", "compile", "quiesce", "alt"):
-    xs = [f[k] for f in per]
-    print(f"{k:>9}: total {sum(xs):>8}  mean {statistics.mean(xs):9.1f}  max {max(xs)}")
-EOF
+python3 utils/fork_split.py                      # both tables, both cells
+python3 utils/fork_split.py --json fork.json     # and the artefact
 
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 \
     --cum-of ein_infer::commitment solve examples/zebra.ein -e
 ```
 
-T1a.6.9.1 promotes that inline script to a named instrument.
+`fork_split.py --bin <other-ein>` runs the same split against a second
+binary, which is how [T1a.6.9.3](s1a.6.9_fork_entry_delta.md) sizes the
+resumed saturator's effect on the narration.
 
 ## 10. After S1a.6.8 — the same instruments, re-run
 
@@ -793,6 +818,9 @@ cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
 
 # §5 memory
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example alloc_cost
+
+# §9 the fork-entry split — re-run at the end of every stage in the phase
+python3 utils/fork_split.py --json ein.rs/bench-out/fork-split.json
 
 # §6 the bench set and its variance gate
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
