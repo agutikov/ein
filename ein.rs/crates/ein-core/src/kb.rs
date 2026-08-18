@@ -389,6 +389,17 @@ pub struct Kb {
     /// maintained incrementally — ein.py's contract exactly, which is why a
     /// property fact added during saturation does not extend it.
     rules_by_relation: Arc<Registry<Box<[Symbol]>>>,
+    /// `relation → |extent|`, across **every** layer.
+    ///
+    /// `n_facts_of` is asked 644 166 times on an exhaustive `zebra2` — once per
+    /// watched relation per parked boundary entry — and folding it over the
+    /// layer stack made it O(depth) where ein.py's flat index answers in O(1).
+    /// The search reaches depth 35, and that cost was 9.5 % of the run
+    /// ([baseline.md §7](../../../../plans/m1a_rust/p1a.6_performance/baseline.md)
+    /// item 2). Maintained wherever `by_rel` is, and cloned per fork: a map of
+    /// one `u32` per *declared relation* — 17 on the zebra puzzles — against a
+    /// delta that is already kilobytes.
+    n_by_rel: FxHashMap<Symbol, u32>,
     classes: EqClasses,
     /// Shared by reference across forks (live branches read each other's
     /// learned clauses) and **copied** for a snapshot, which is archival and
@@ -418,6 +429,7 @@ impl Kb {
             sealed: Vec::new(),
             top: Layer::default(),
             rules_by_relation: Arc::new(Registry::new()),
+            n_by_rel: FxHashMap::default(),
             classes: EqClasses::new(),
             nogoods: Arc::new(RwLock::new(Nogoods::default())),
         }
@@ -471,6 +483,7 @@ impl Kb {
             sealed: self.sealed.clone(),
             top: Layer::default(),
             rules_by_relation: Arc::clone(&self.rules_by_relation),
+            n_by_rel: self.n_by_rel.clone(),
             classes: self.classes.clone(),
             nogoods: Arc::clone(&self.nogoods),
         }
@@ -581,11 +594,15 @@ impl Kb {
         self.sealed.len() + 1
     }
 
+    /// A relation's extent size — **one** map lookup, whatever the depth.
+    ///
+    /// The counter is the acceptance instrument for that claim
+    /// ([S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)):
+    /// it counts probes, and a fold over the layers would make it grow with
+    /// `depth()`.
     pub fn n_facts_of(&self, rel: Symbol) -> usize {
-        self.layers()
-            .filter_map(|l| l.by_rel.get(&rel))
-            .map(|v| v.len())
-            .sum()
+        crate::counters::bump(|c| c.extent_probe += 1);
+        self.n_by_rel.get(&rel).copied().unwrap_or(0) as usize
     }
 
     /// The participation index: facts with `value` in argument `slot` of
@@ -756,6 +773,7 @@ impl Kb {
         let not = terms.kernel.not;
 
         self.top.by_rel.entry(rel).or_default().push(id);
+        *self.n_by_rel.entry(rel).or_default() += 1;
         if is_rule_app {
             self.top.rule_apps_by_rule.entry(rel).or_default().push(id);
             self.top.rule_apps += 1;
@@ -805,6 +823,11 @@ impl Kb {
         let layer = self.rebuild_layer(terms, self.materialise());
         self.rules_by_relation = Arc::new(self.build_rules_by_relation(terms, &layer));
         self.sealed.clear();
+        self.n_by_rel = layer
+            .by_rel
+            .iter()
+            .map(|(&rel, ids)| (rel, ids.len() as u32))
+            .collect();
         self.top = layer;
     }
 
@@ -912,7 +935,35 @@ impl Kb {
             flat.names.entry(name);
         }
         let rebuilt = self.rebuild_layer(terms, self.materialise());
-        flat.diff(&rebuilt)
+        flat.diff(&rebuilt)?;
+        self.check_extent_counts()
+    }
+
+    /// `n_by_rel` against a full walk of the layer stack — the invariant the
+    /// O(1) [`Kb::n_facts_of`] rests on, checked rather than argued
+    /// ([S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)
+    /// T1a.6.8.2). Part of `check_layering` because that is where every
+    /// KB-shape fixture already asks whether the layer stack still adds up.
+    pub fn check_extent_counts(&self) -> Result<(), String> {
+        let mut walked: FxHashMap<Symbol, u32> = FxHashMap::default();
+        for layer in self.layers() {
+            for (&rel, ids) in &layer.by_rel {
+                *walked.entry(rel).or_default() += ids.len() as u32;
+            }
+        }
+        let maintained: FxHashMap<Symbol, u32> = self
+            .n_by_rel
+            .iter()
+            .filter(|&(_, &n)| n > 0)
+            .map(|(&k, &v)| (k, v))
+            .collect();
+        if walked != maintained {
+            return Err(format!(
+                "n_by_rel disagrees with a walk of the layer stack: \
+                 maintained {maintained:?}, walked {walked:?}"
+            ));
+        }
+        Ok(())
     }
 
     /// Relations named in a rule's patterns, plus the property-fact side: a
@@ -1603,5 +1654,79 @@ mod tests {
         assert_eq!(view.about(norwegian).collect::<Vec<_>>(), vec![a]);
         assert_eq!(view.by_source(condition).collect::<Vec<_>>(), vec![a]);
         assert_eq!(view.by_rule(rule).collect::<Vec<_>>(), vec![b]);
+    }
+
+    /// S1a.6.8 T1a.6.8.2 — the extent count is one probe at any depth.
+    ///
+    /// The boundary asks `n_facts_of` once per watched relation per parked
+    /// candidate — 644 166 times on an exhaustive `zebra2` — and the search
+    /// reaches depth 35, so folding the answer over the layer stack was a
+    /// 35× multiplier on 9.5 % of the run. The probe counter is what makes
+    /// "one lookup" checkable rather than asserted: the previous
+    /// implementation would have made it grow with `depth()`.
+    #[test]
+    fn n_facts_of_costs_one_probe_at_any_depth() {
+        let (mut terms, mut kb) = fixture();
+        let rel = sym(&mut terms, "co-located");
+        let other = sym(&mut terms, "next-to");
+        add(&mut kb, &mut terms, "co-located", &["Norwegian", "House-1"]);
+
+        // One fork per level, one fact per level, forty levels deep.
+        let mut deep = kb.fork();
+        for i in 0..40 {
+            let mut next = deep.fork();
+            add(
+                &mut next,
+                &mut terms,
+                "co-located",
+                &[&format!("P{i}"), &format!("House-{i}")],
+            );
+            assert_eq!(next.n_facts_of(rel), i + 2, "depth {}", next.depth());
+            assert_eq!(next.n_facts_of(other), 0);
+            next.check_extent_counts()
+                .expect("counts agree with a walk");
+            deep = next;
+        }
+        // One layer per fact: `seal` skips an empty top, so the forty forks
+        // add forty layers on top of root's one.
+        assert_eq!(deep.depth(), 41, "the test is not actually deep");
+
+        // Shallow and deep pay the same, which is the whole claim. A no-op
+        // without `--features counters`, where both readings are zero and the
+        // assertion is vacuously true — as it is for every other counter.
+        crate::counters::reset();
+        for _ in 0..100 {
+            kb.n_facts_of(rel);
+        }
+        let shallow = crate::counters::snapshot().extent_probe;
+        crate::counters::reset();
+        for _ in 0..100 {
+            deep.n_facts_of(rel);
+        }
+        assert_eq!(crate::counters::snapshot().extent_probe, shallow);
+        if cfg!(feature = "counters") {
+            assert_eq!(shallow, 100, "one probe per call, not one per layer");
+        }
+    }
+
+    /// The batch path — `add_fact` without `index_fact`, then one rebuild —
+    /// leaves the same counts the incremental path would have.
+    #[test]
+    fn a_rebuild_reconstructs_the_extent_counts() {
+        let (mut terms, mut kb) = fixture();
+        let rel = sym(&mut terms, "co-located");
+        for i in 0..5 {
+            let args = [
+                Value::sym(sym(&mut terms, &format!("P{i}"))),
+                Value::sym(sym(&mut terms, &format!("House-{i}"))),
+            ];
+            kb.add_fact(&mut terms, rel, &args, None).expect("room");
+        }
+        // Un-indexed, so both readings are still 0 — the invariant is that
+        // they agree, not that either is right before the rebuild.
+        assert_eq!(kb.n_facts_of(rel), 0);
+        kb.rebuild_indexes(&terms);
+        assert_eq!(kb.n_facts_of(rel), 5);
+        kb.check_extent_counts().expect("counts agree with a walk");
     }
 }

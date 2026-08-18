@@ -58,14 +58,17 @@ pub struct Counters {
     /// Firing binding keys built — ein.py `saturator._binding_key` (445 k,
     /// 7 % of its self time).
     pub binding_key: u64,
-    /// Rule plans compiled. Both implementations cache per `Engine` and build
-    /// one engine per saturation, so both compile the same plan many times over
-    /// — **17 430** on an exhaustive `zebra2`, identically. That agreement is
-    /// the parity result; the cost is that `design/06` § Win A's process-wide
-    /// memo was never built
-    /// ([S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)
-    /// lands it, and the number should then drop to ~170 here and stay at
-    /// 17 430 in the oracle).
+    /// Rule plans compiled. ein.py caches per `Engine` and builds one engine
+    /// per saturation, so it compiles the same plan many times over — **17 430**
+    /// on an exhaustive `zebra2`, which is what ein.rs did too until
+    /// [S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)
+    /// built design/06 § Win A's per-run memo. **This is the one counter the
+    /// two implementations are expected to disagree on**: 305 here against
+    /// 17 430 in the oracle on that run, and 305 is the number of distinct
+    /// `(rule, activator)` pairs rather than a target — design/06 guessed ~170,
+    /// and the forks derive activators the root never had. The parity item next
+    /// to it is the `compile` **event** count (17 250, identical), because that
+    /// fires on an *engine* miss and not a memo miss.
     pub plan_compile: u64,
     /// Facts written and indexed — ein.py `store.add_and_index_fact`.
     pub fact_insert: u64,
@@ -84,6 +87,12 @@ pub struct Counters {
     /// answers it in O(1).
     pub watch_stamp: u64,
     pub watch_stamp_rel: u64,
+    /// Map probes performed by [`crate::kb::Kb::n_facts_of`] — the instrument
+    /// for its O(1)-in-depth claim, and the only counter here that measures
+    /// *this* implementation rather than the work both do. It equals
+    /// `watch_stamp_rel` plus the engine's other extent questions; a fold over
+    /// the layer stack would multiply it by `Kb::depth()`.
+    pub extent_probe: u64,
 
     // ── the search layer ───────────────────────────────────────────
     /// KB forks — ein.py `store.fork` (101 on an exhaustive `zebra2`, against
@@ -159,6 +168,7 @@ impl Counters {
             guard_query: 0,
             watch_stamp: 0,
             watch_stamp_rel: 0,
+            extent_probe: 0,
             fork: 0,
             prov_node: 0,
         }
@@ -166,7 +176,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 13] {
+    pub fn rows(&self) -> [(&'static str, u64); 14] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -179,6 +189,7 @@ impl Counters {
             ("guard_query", self.guard_query),
             ("watch_stamp", self.watch_stamp),
             ("watch_stamp_rel", self.watch_stamp_rel),
+            ("extent_probe", self.extent_probe),
             ("fork", self.fork),
             ("prov_node", self.prov_node),
         ]
