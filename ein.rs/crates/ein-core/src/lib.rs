@@ -6,6 +6,15 @@
 //! ([design/02](../../../plans/m1a_rust/design/02_determinism_and_order.md) §7).
 //! Everything depends on this crate; it depends on nothing.
 //!
-//! Empty until [P1a.2](../../../plans/m1a_rust/p1a.2_kb_core/README.md).
+//! The data model lands at
+//! [P1a.2](../../../plans/m1a_rust/p1a.2_kb_core/README.md); the two
+//! compatibility renderers land early, at
+//! [S1a.1.2](../../../plans/m1a_rust/p1a.1_ir_frontend/s1a.1.2_ast_and_dumper.md),
+//! because they are trivial to write and expensive to discover missing at
+//! [P1a.5](../../../plans/m1a_rust/p1a.5_presentation/README.md).
 
 #![forbid(unsafe_code)]
+
+mod printable;
+pub mod pyfmt;
+pub mod pyrepr;

@@ -7,3 +7,9 @@ license.workspace    = true
 repository.workspace = true
 
 [dependencies]
+
+[dev-dependencies]
+# `pyrepr` and `pyfmt` are re-implementations of CPython's rendering; they are
+# checked against CPython itself, not against a remembered string.
+ein-oracle = { path = "../ein-oracle" }
+serde_json.workspace = true

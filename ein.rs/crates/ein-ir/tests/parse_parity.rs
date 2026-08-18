@@ -5,11 +5,8 @@
 //! port, because the harness diffs stderr and a "better" diagnostic is a T3
 //! failure (design/04 §4, Q-M1a.3).
 
-#[path = "oracle.rs"]
-mod oracle;
-
 use ein_ir::{Ast, parse};
-use oracle::{Answer, Oracle, corpus_files, repo_root, skip};
+use ein_oracle::{Answer, IR_ORACLE, Oracle, corpus_files, repo_root, skip};
 
 /// What ein.rs answers, in the oracle's vocabulary, so the two are comparable
 /// without either side knowing about the other.
@@ -42,7 +39,7 @@ fn compare(got: &Answer, want: &Answer, what: &str) -> Option<String> {
 
 #[test]
 fn the_whole_corpus_parses_identically() {
-    let Some(mut py) = Oracle::start() else {
+    let Some(mut py) = Oracle::start(IR_ORACLE) else {
         return skip("the_whole_corpus_parses_identically");
     };
     let files = corpus_files();
@@ -68,7 +65,7 @@ fn the_whole_corpus_parses_identically() {
 
 #[test]
 fn the_broken_fixtures_reproduce_larks_message_byte_for_byte() {
-    let Some(mut py) = Oracle::start() else {
+    let Some(mut py) = Oracle::start(IR_ORACLE) else {
         return skip("the_broken_fixtures_reproduce_larks_message_byte_for_byte");
     };
     let dir = repo_root().join("examples/broken");
@@ -105,7 +102,7 @@ fn the_broken_fixtures_reproduce_larks_message_byte_for_byte() {
 /// `parse.rs`; if any drifts, this names which.
 #[test]
 fn the_documented_ambiguities_resolve_the_way_lark_resolves_them() {
-    let Some(mut py) = Oracle::start() else {
+    let Some(mut py) = Oracle::start(IR_ORACLE) else {
         return skip("the_documented_ambiguities_resolve_the_way_lark_resolves_them");
     };
     let cases = [

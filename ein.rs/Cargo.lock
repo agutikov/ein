@@ -192,6 +192,10 @@ dependencies = [
 [[package]]
 name = "ein-core"
 version = "0.1.0"
+dependencies = [
+ "ein-oracle",
+ "serde_json",
+]
 
 [[package]]
 name = "ein-infer"
@@ -205,9 +209,16 @@ name = "ein-ir"
 version = "0.1.0"
 dependencies = [
  "ein-core",
+ "ein-oracle",
  "include_dir",
- "serde_json",
  "sha2",
+]
+
+[[package]]
+name = "ein-oracle"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
 ]
 
 [[package]]

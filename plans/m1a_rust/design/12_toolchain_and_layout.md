@@ -30,7 +30,8 @@ ein/
 │       ├── ein-cli/            the `ein` binary
 │       ├── ein-server/         the daemon (feature-gated)          [P1a.8]
 │       ├── ein-py/             PyO3 bindings (maturin)             [P1a.9]
-│       └── ein-conformance/    corpus runner, event differ, fuzzer
+│       ├── ein-oracle/         ein.py + CPython as test oracles (dev-only)
+│       └── ein-conformance/    corpus runner, event differ
 └── utils/                      (existing scripts; gains a couple of runners)
 ```
 
@@ -47,8 +48,18 @@ Why this split:
   `ein-render`, so the T3 surface is one crate and can be diffed as a
   unit.
 - **`ein-conformance` is a normal crate, not a test harness bolted on.**
-  It has a binary (`ein-conformance run|diff|fuzz`) so it is usable by
+  It has a binary (`ein-conformance run|diff`) so it is usable by
   hand, which is how it will actually get used during the port.
+- **`ein-oracle` is dev-only** (`publish = false`, referenced only from
+  `[dev-dependencies]`). It keeps `ein.py` and CPython warm behind a
+  JSON-Lines protocol, because most of what the port has to prove — the
+  AST, the dumper, `repr()`, a float's field width — has no CLI surface
+  for `ein-conformance` to drive. Added at
+  [S1a.1.1](../p1a.1_ir_frontend/s1a.1.1_lexer_and_parser.md)/[S1a.1.2](../p1a.1_ir_frontend/s1a.1.2_ast_and_dumper.md);
+  the differential *fuzzer* lives beside the parser it fuzzes
+  (`ein-ir/tests/fuzz_parity.rs`) rather than in `ein-conformance`, so
+  `cargo test --workspace` runs it and the harness binary keeps linking
+  neither implementation.
 
 `ein.rs/` compiles to a binary named `ein`. It does **not** get installed
 onto `$PATH` during the port — the harness invokes both engines by

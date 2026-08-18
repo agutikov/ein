@@ -6,6 +6,10 @@
 //! nearly-well-formed inputs and asserts the two parsers agree on
 //! accept/reject **and on the message**.
 //!
+//! When both sides *accept*, the comparison is the **dumped AST**, not just
+//! the verdict — an agreement on "this is ein-lang" that disagrees on what it
+//! means would be the worse bug of the two.
+//!
 //! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
 //! the nightly tier raises it. `EIN_FUZZ_SEED` moves the stream. Both are
 //! deterministic: the same pair reproduces the same run, which is what makes a
@@ -15,13 +19,10 @@
 //! because a fuzzer whose finds are not checked in re-finds them forever
 //! (`conformance/README.md` § Growth rule).
 
-#[path = "oracle.rs"]
-mod oracle;
-
 use std::path::PathBuf;
 
 use ein_ir::{Ast, parse};
-use oracle::{Answer, Oracle, repo_root, skip};
+use ein_oracle::{Answer, IR_ORACLE, Oracle, repo_root, skip};
 
 fn rust_answer(text: &str) -> Answer {
     let mut ast = Ast::new();
@@ -188,7 +189,7 @@ fn mutate(seed: &str, rng: &mut Rng) -> String {
 /// lines while it still diverges, then characters.
 fn minimise(input: &str, py: &mut Oracle) -> String {
     let diverges =
-        |text: &str, py: &mut Oracle| !agrees(&rust_answer(text), &py.text("accept", text, None));
+        |text: &str, py: &mut Oracle| !agrees(&rust_answer(text), &py.text("parse", text, None));
     let mut best = input.to_string();
     let mut improved = true;
     while improved {
@@ -261,7 +262,7 @@ fn seeds() -> Vec<String> {
 
 #[test]
 fn mutations_of_the_corpus_parse_identically() {
-    let Some(mut py) = Oracle::start() else {
+    let Some(mut py) = Oracle::start(IR_ORACLE) else {
         return skip("mutations_of_the_corpus_parse_identically");
     };
     let iters: usize = std::env::var("EIN_FUZZ_ITERS")
@@ -278,7 +279,7 @@ fn mutations_of_the_corpus_parse_identically() {
     // Every recorded finding is a regression test in its own right, before a
     // single random byte is generated.
     for s in &seeds {
-        let (got, want) = (rust_answer(s), py.text("accept", s, None));
+        let (got, want) = (rust_answer(s), py.text("parse", s, None));
         assert!(
             agrees(&got, &want),
             "seed diverges:\n{s}\n  ein.rs {got:?}\n  ein.py {want:?}"
@@ -293,7 +294,7 @@ fn mutations_of_the_corpus_parse_identically() {
             text = mutate(&text, &mut rng);
         }
         let got = rust_answer(&text);
-        let want = py.text("accept", &text, None);
+        let want = py.text("parse", &text, None);
         if agrees(&got, &want) {
             continue;
         }
@@ -307,7 +308,7 @@ fn mutations_of_the_corpus_parse_identically() {
              ---\n{small}\n---\n  ein.rs: {:?}\n  ein.py: {:?}",
             path.display(),
             rust_answer(&small),
-            py.text("accept", &small, None),
+            py.text("parse", &small, None),
         );
     }
 }

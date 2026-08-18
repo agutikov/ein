@@ -69,3 +69,84 @@ blank line and appends a trailing newline when non-empty.
   and long `:why` strings.
 - `pyrepr`/`pyfmt` live in `ein-core` because both `ein-infer`
   (explanation tie-breaks) and `ein-render` (output) need them.
+
+---
+
+## Outcome — 2026-08-18
+
+The arena landed with [S1a.1.1](s1a.1.1_lexer_and_parser.md) (the parser has
+to build something). This stage is the three renderers and the gate that
+proves them: `ein-core::pyrepr`, `ein-core::pyfmt`, `ein-ir::dump`.
+
+| acceptance item | result |
+|---|---|
+| `dump_compact` / `dump_canonical` byte-identical for every corpus file | 91 files (the four parse-negative fixtures excluded), 0 differences, both renderings |
+| … and for `tests/golden/{zebra,zebra2}.golden` | reproduced exactly, compared against the **files** and not only through the oracle |
+| round-trip property green on both sides | `parse(dump(parse(x))) == parse(x)` structurally in ein.rs, and `dump ∘ parse` is a textual fixed point in *both* implementations over the same inputs |
+| `pyrepr` matches `repr()` over a generated corpus | 40 value shapes + a 1 700-code-point sweep, 0 differences |
+| `pyfmt` matches `f"{x:9.2f}"` &c. over a wide `f64` corpus | 230 values × 19 specs = 4 370 formattings, 0 differences |
+
+The dumper was byte-identical on the first run — unusual, and worth saying
+plainly: the transcription had no bugs because `dump.py` is 124 lines of
+straight-line rendering with one rule in it, and that rule was copied rather
+than re-derived.
+
+### `repr` needs a Unicode table, and it must be *CPython's*
+
+`repr(str)` escapes every non-printable character, and CPython's
+`Py_UNICODE_ISPRINTABLE` means "general category not in
+`Cc`/`Cf`/`Cs`/`Co`/`Cn`/`Zl`/`Zp`/`Zs`", with ASCII space excepted. Rust's
+standard library exposes only `is_control()` (that is `Cc` alone), and its
+own Unicode tables are `rustc`'s, not the interpreter's — so the classification
+comes from a table generated *from the oracle*:
+`utils/gen_unicode_printable.py` → `ein-core/src/printable.rs`, 737 ranges,
+Unicode 16.0.0. The differential test sweeps every code point where the
+classification changes, so a CPython upgrade that moves a category shows up as
+a named code point rather than as a mystery diff at P1a.5.
+
+That is a deliberate 6 KB and a deliberate regeneration obligation. The
+alternative — "non-ASCII is printable unless it is a control character" — is
+right for every string a Zebra puzzle contains and wrong for NBSP, for the
+zero-width space, for private-use and for unassigned code points, which is
+exactly the class of thing that surfaces once, late, in something else's
+golden.
+
+### Two things Python does that Rust does not
+
+- **`format!("{:.1}", f64::NAN)` is `NaN`.** Python's is `nan`, and a NaN never
+  carries a sign there — `format(-float('nan'), '.1f')` is `'nan'` — while an
+  infinity does. `pyfmt` handles sign, fill, alignment and zero-padding itself
+  and uses Rust only for the digits, where the two agree (both round-half-even
+  on the exact binary value; 4 370 differential formattings confirm it).
+- **An empty format spec is not `.6f`.** `format(1.5, '')` is `'1.5'` — Python
+  falls back to `str(x)`, a different algorithm — where `format(1.5, 'f')` is
+  `'1.500000'`. `Spec::parse` therefore *requires* the `f`, and returns `None`
+  for anything outside the supported subset rather than guessing: a site that
+  meets a spec this module does not cover should say so.
+
+### `canonical_int` moved to `ein-core`
+
+It was in `ein-ir::ast` because the lexer needed it. It is the same question
+`PyValue::Int` answers — what Python would have printed — and P1a.2's int pool
+stores exactly that form ([design/03](../design/03_data_model.md) §3), so it
+now lives in `ein-core::pyrepr` and `ein-ir` re-exports it. The move was
+prompted by the differential test failing on `PyValue::Int("-0")`: a
+non-canonical value cannot be constructed by accident if there is one
+canonicaliser and it is in the crate that defines what the value means.
+
+### The oracle became a crate
+
+`ein-oracle` (dev-only, `publish = false`): `ein.py` and CPython kept warm
+behind the JSON-Lines protocol, shared by `ein-ir` and `ein-core` and by every
+phase after this one. `utils/py_oracle.py` joins `utils/ir_oracle.py` —
+deliberately two scripts, because one is *ein.py's frontend* and the other is
+*CPython itself*, and only the first goes stale when the engine changes.
+`design/12` §1 records both, and why the fuzzer stayed next to the parser
+instead of moving into `ein-conformance`.
+
+### The fuzzer now compares trees, not verdicts
+
+`rust_answer` returns `dump_canonical` of the parse, so an agreement that "this
+is ein-lang" which disagreed on *what it means* would now fail. 1 000 000
+mutations at that strength, plus the 1 200 000 accept/reject mutations from
+S1a.1.1: 0 differences.

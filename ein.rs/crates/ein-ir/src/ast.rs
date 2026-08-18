@@ -26,6 +26,8 @@
 
 use std::collections::HashMap;
 
+pub use ein_core::pyrepr::canonical_int;
+
 /// An interned string: an atom name, a variable name, a string body, or the
 /// canonical decimal text of an integer.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
@@ -307,53 +309,9 @@ impl Ast {
     }
 }
 
-/// Canonical decimal text for an integer literal — `int(tok)` then `str()`.
-///
-/// `007` → `7`, `-007` → `-7`, `-0` → `0`. Done on the digits rather than
-/// through an integer type because `INT: /-?[0-9]+/` accepts any width and
-/// Python's `int` is unbounded; a `i64` parse would reject inputs ein.py
-/// accepts.
-pub fn canonical_int(text: &str) -> String {
-    let (neg, digits) = match text.strip_prefix('-') {
-        Some(rest) => (true, rest),
-        None => (false, text),
-    };
-    let trimmed = digits.trim_start_matches('0');
-    let body = if trimmed.is_empty() { "0" } else { trimmed };
-    if neg && body != "0" {
-        format!("-{body}")
-    } else {
-        body.to_string()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn canonical_int_matches_python_int_then_str() {
-        for (input, want) in [
-            ("0", "0"),
-            ("007", "7"),
-            ("-0", "0"),
-            ("-007", "-7"),
-            ("-000", "0"),
-            ("12", "12"),
-            ("-12", "-12"),
-            // Wider than i64 — the case that rules out parsing to an integer.
-            (
-                "123456789012345678901234567890",
-                "123456789012345678901234567890",
-            ),
-            (
-                "00123456789012345678901234567890",
-                "123456789012345678901234567890",
-            ),
-        ] {
-            assert_eq!(canonical_int(input), want, "canonical_int({input:?})");
-        }
-    }
 
     #[test]
     fn structural_equality_ignores_position() {

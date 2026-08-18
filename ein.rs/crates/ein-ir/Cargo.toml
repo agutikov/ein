@@ -15,6 +15,6 @@ include_dir.workspace = true
 # Verifying the embedded copy against `stdlib/MANIFEST.sha256`, in a test —
 # the digest is not needed at runtime.
 sha2.workspace = true
-# The frontend parity tests talk JSON Lines to `utils/ir_oracle.py`. A
+# The frontend parity tests talk to `ein.py` through the shared oracle. A
 # dev-dependency only: the engine's own dependency budget is unaffected.
-serde_json.workspace = true
+ein-oracle = { path = "../ein-oracle" }

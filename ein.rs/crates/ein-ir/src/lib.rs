@@ -17,9 +17,11 @@
 #![forbid(unsafe_code)]
 
 pub mod ast;
+pub mod dump;
 pub mod lex;
 pub mod parse;
 pub mod stdlib;
 
 pub use ast::{ArgSpan, Ast, FileId, Loc, Node, NodeId, SymId};
+pub use dump::{dump_canonical, dump_compact, dump_pretty};
 pub use parse::{ParseError, parse};
