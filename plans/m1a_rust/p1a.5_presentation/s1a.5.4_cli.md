@@ -158,6 +158,17 @@ matrix is shared, and widening it re-times every entry.
    `ein-conformance::normalise`, with the two-run test that would have caught
    it. `--timing`'s padded `{:9.2f}` keeps the width check it had.
 
+   **Not a port artefact — a latent harness bug the port only exposed
+   sooner.** The nightly's `ein.py — self-parity under PYTHONHASHSEED` job had
+   been failing on it independently the same day, one implementation against
+   *itself*: run 32096693185 on seed 42 at 03:46 and run 32134309352 on seed 1
+   at 11:57, both on `examples/branching/05_mini_zebra.ein :: solve -p -s`,
+   both on line 54, with the difference pointing opposite ways. Two different
+   seeds on two different runs is what makes it timing rather than hashing — a
+   seed that genuinely leaked into an observable would fail on its own seed,
+   every time, and not on a wall-clock field. The trigger is only ever a
+   `wall` value crossing 10.0 ms between two runs of identical code.
+
 ### And two the acceptance itself got wrong
 
 The item "every script under `utils/` works unchanged against the Rust
