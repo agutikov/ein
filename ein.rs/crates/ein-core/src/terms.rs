@@ -17,20 +17,91 @@
 
 use crate::facts::{FactId, FactStore};
 use crate::intern::{Interner, Overflow, Symbol};
+use crate::prov::ProvArena;
 use crate::pyrepr::{self, PyValue};
 use crate::value::{IntId, IntPool, Tag, Value};
 use std::cmp::Ordering;
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct Terms {
     pub syms: Interner,
     pub ints: IntPool,
     pub facts: FactStore,
+    /// Derivation records. Global for the same reason the fact store is —
+    /// see [`crate::prov`].
+    pub provs: ProvArena,
+    /// The kernel vocabulary, interned up front so a comparison against it is
+    /// an integer compare and no hot path needs a `&mut Terms` to ask.
+    pub kernel: Kernel,
+}
+
+impl Default for Terms {
+    fn default() -> Self {
+        Terms::new()
+    }
+}
+
+/// The names the kernel itself knows. Interning them first costs nothing:
+/// symbol ids are never observable, so their assignment order is free.
+#[derive(Clone, Copy, Debug)]
+pub struct Kernel {
+    /// The head of a stored negation, `(not X)`.
+    pub not: Symbol,
+    /// `KERNEL_META_RELATIONS` — the two heads that categorise as relations
+    /// whether or not a puzzle declares them.
+    pub relation: Symbol,
+    pub rule: Symbol,
+    pub hrule: Symbol,
+    pub macro_: Symbol,
+    pub query: Symbol,
+    pub config: Symbol,
+    pub trace: Symbol,
+    pub import: Symbol,
+    pub and: Symbol,
+    pub or: Symbol,
+    pub eq: Symbol,
+    pub neq: Symbol,
+    pub absent: Symbol,
+    pub r#false: Symbol,
+    /// `=`, which the grammar keeps as a *named* terminal so it survives token
+    /// filtering and arrives as an ordinary atom.
+    pub equals: Symbol,
+    /// The synthetic heads the parser gives `()` and a parameter list.
+    pub empty: Symbol,
+    pub params: Symbol,
 }
 
 impl Terms {
     pub fn new() -> Self {
-        Self::default()
+        let mut syms = Interner::new();
+        let mut intern = |s: &str| syms.intern(s).expect("room for the kernel names");
+        let kernel = Kernel {
+            not: intern("not"),
+            relation: intern("relation"),
+            rule: intern("rule"),
+            hrule: intern("hrule"),
+            macro_: intern("macro"),
+            query: intern("query"),
+            config: intern("config"),
+            trace: intern("trace"),
+            import: intern("import"),
+            and: intern("and"),
+            or: intern("or"),
+            eq: intern("eq"),
+            neq: intern("neq"),
+            absent: intern("absent"),
+            r#false: intern("false"),
+            equals: intern("="),
+            empty: intern("@empty"),
+            params: intern("@params"),
+        };
+        Terms {
+            syms,
+            ints: IntPool::new(),
+            facts: FactStore::new(),
+            provs: ProvArena::new(),
+            kernel,
+        }
     }
 
     // ── Interning ──────────────────────────────────────────────────

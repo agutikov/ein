@@ -15,15 +15,27 @@
 
 #![forbid(unsafe_code)]
 
+pub mod bitset;
+pub mod config;
+pub mod entities;
 pub mod facts;
 pub mod intern;
+pub mod kb;
 mod printable;
+pub mod program;
+pub mod prov;
 pub mod pyfmt;
 pub mod pyrepr;
 pub mod terms;
 pub mod value;
 
+pub use bitset::BitSet;
+pub use config::SolverConfig;
+pub use entities::{ExprRef, Loc, Macro, NameCategory, Pattern, Query, Registry, Relation, Rule};
 pub use facts::{FactId, FactStore, Row};
 pub use intern::{CAPACITY, Interner, Overflow, Symbol};
-pub use terms::Terms;
+pub use kb::{Added, EqClasses, FactView, Kb, Layer, NameEntry, Nogoods, SlotKey};
+pub use program::Program;
+pub use prov::{NafRef, Prov, ProvArena, ProvId, ProvKind};
+pub use terms::{Kernel, Terms};
 pub use value::{IntId, IntPool, Tag, Value};
