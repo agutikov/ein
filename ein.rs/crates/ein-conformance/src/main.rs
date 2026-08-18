@@ -254,6 +254,10 @@ struct CellResult {
     outcome: Outcome,
     wall_a: Duration,
     wall_b: Duration,
+    /// Exit codes, kept past the comparison for [`liveness`]. `i32::MIN` when
+    /// the harness itself failed to run the cell.
+    code_a: i32,
+    code_b: i32,
 }
 
 fn cmd_run(args: Args) -> Result<std::process::ExitCode, String> {
@@ -366,19 +370,23 @@ fn one_cell(
         run::execute(imp, &argv, repo, &out, timeout)
     };
     let (ca, cb) = (mk(a), mk(b));
-    let (outcome, wall_a, wall_b) = match (ca, cb) {
+    // The exit codes are kept past the comparison for the liveness check in
+    // `report`: two implementations that both failed to start agree perfectly.
+    let (outcome, wall_a, wall_b, code_a, code_b) = match (ca, cb) {
         (Ok(x), Ok(y)) => {
             let o = if cell.entry.group == "crash-parity" {
                 tier::compare_crash(&x, &y)
             } else {
                 tier::compare(tier, &x, &y)
             };
-            (o, x.wall, y.wall)
+            (o, x.wall, y.wall, x.code, y.code)
         }
         (Err(e), _) | (_, Err(e)) => (
             Outcome::Diff(vec![format!("harness error: {e}")]),
             Duration::ZERO,
             Duration::ZERO,
+            i32::MIN,
+            i32::MIN,
         ),
     };
     CellResult {
@@ -388,7 +396,54 @@ fn one_cell(
         outcome,
         wall_a,
         wall_b,
+        code_a,
+        code_b,
     }
+}
+
+/// Did each implementation ever actually *work*?
+///
+/// A parity harness has one failure mode that looks exactly like success: two
+/// implementations that both failed to start produce identical output on every
+/// cell and score a perfect run. It is not hypothetical — `python3 -m ein.cli`
+/// in a checkout with no `pip install -e ein.py` exits 1 with the same
+/// traceback on both sides, and the whole corpus reports `0 DIFF` in a tenth
+/// of the engine time (found at S1a.1.3, while running P1a.1's gate).
+///
+/// Every `positive` cell is an input both implementations are expected to
+/// solve, so a side that never exits 0 across the whole group did not run.
+/// Returns the complaint, or `None` when both sides are alive.
+fn liveness(results: &[CellResult]) -> Option<String> {
+    let positive: Vec<&CellResult> = results.iter().filter(|r| r.group == "positive").collect();
+    if positive.is_empty() {
+        return None; // a `--group`-restricted run makes no claim about this
+    }
+    let dead: Vec<&str> = [("a", 0), ("b", 1)]
+        .into_iter()
+        .filter(|&(_, i)| {
+            !positive
+                .iter()
+                .any(|r| if i == 0 { r.code_a } else { r.code_b } == 0)
+        })
+        .map(|(side, _)| side)
+        .collect();
+    if dead.is_empty() {
+        return None;
+    }
+    Some(
+        [
+            format!(
+                "implementation {} never exited 0 on any of the {} `positive` cells.",
+                dead.join(" and "),
+                positive.len()
+            ),
+            "That is not parity — it is an implementation that did not run, and two".to_string(),
+            "of them agree on everything. Check the command and its environment:".to_string(),
+            "`python3 -m ein.cli` needs `pip install -e ein.py` or `PYTHONPATH=<repo>/ein.py/src`."
+                .to_string(),
+        ]
+        .join("\n"),
+    )
 }
 
 fn report(results: &[CellResult], tier: Tier) -> std::process::ExitCode {
@@ -416,6 +471,10 @@ fn report(results: &[CellResult], tier: Tier) -> std::process::ExitCode {
     println!("{:<16} {same:>7} {diff:>7} {skip:>7}", "total");
     let wall: Duration = results.iter().map(|r| r.wall_a + r.wall_b).sum();
     println!("\ntier {tier}, {:.1}s of engine time", wall.as_secs_f64());
+    if let Some(complaint) = liveness(results) {
+        println!("\n{complaint}");
+        return std::process::ExitCode::from(2);
+    }
     if diff > 0 {
         println!("\n{diff} differing cells:");
         for r in results.iter().filter(|r| r.outcome.is_diff()) {
@@ -429,4 +488,56 @@ fn report(results: &[CellResult], tier: Tier) -> std::process::ExitCode {
         return std::process::ExitCode::from(1);
     }
     std::process::ExitCode::SUCCESS
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn cell(group: &str, code_a: i32, code_b: i32) -> CellResult {
+        CellResult {
+            path: "examples/x.ein".into(),
+            run: "solve".into(),
+            group: group.into(),
+            outcome: Outcome::Same,
+            wall_a: Duration::ZERO,
+            wall_b: Duration::ZERO,
+            code_a,
+            code_b,
+        }
+    }
+
+    #[test]
+    fn two_implementations_that_never_ran_are_not_parity() {
+        // The pathology: neither side started, so every cell matched.
+        let dead = vec![cell("positive", 1, 1), cell("positive", 1, 1)];
+        let complaint = liveness(&dead).expect("a complaint");
+        assert!(complaint.contains("a and b"), "{complaint}");
+        assert!(complaint.contains("2 `positive` cells"), "{complaint}");
+    }
+
+    #[test]
+    fn one_success_anywhere_in_the_group_is_enough() {
+        // A `positive` entry may still exit non-zero — a timeout, a fixture
+        // the run does not suit — so the bar is "ever", not "always".
+        let alive = vec![cell("positive", 0, 1), cell("positive", 1, 0)];
+        assert!(liveness(&alive).is_none());
+    }
+
+    #[test]
+    fn one_dead_side_is_named() {
+        let half = vec![cell("positive", 0, 1)];
+        let complaint = liveness(&half).expect("a complaint");
+        assert!(
+            complaint.starts_with("implementation b never exited 0"),
+            "{complaint}"
+        );
+    }
+
+    #[test]
+    fn a_group_restricted_run_makes_no_claim() {
+        // `--group parse-negative` is all non-zero exits by design.
+        let negatives = vec![cell("parse-negative", 1, 1)];
+        assert!(liveness(&negatives).is_none());
+    }
 }

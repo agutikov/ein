@@ -34,7 +34,7 @@ the one open question that could force a contract change.
 
 ## Acceptance for the phase
 
-All met, 2026-08-18. Each was run, not read — 87 tests in `cargo test
+All met, 2026-08-18. Each was run, not read — 91 tests in `cargo test
 --workspace`, of which 20 are differential against `ein.py`:
 
 | item | result |
@@ -62,6 +62,23 @@ failure while the harness is still finding bugs):
    matches — including inside a string literal, and including when nothing is
    listening — and a `defaultdict` entry holding an empty list is still
    truthy. So `(y";"{?` reports the `?`, not the `{`.
+
+### What closing the phase found
+
+Running the per-commit conformance tier as the last check reported **438
+cells, 0 differences, in 16.1 s of engine time** — against 311.5 s for the
+same command with `PYTHONPATH` set. Both sides had exited 1 with the same
+`ModuleNotFoundError` on every cell, and the harness called it perfect
+agreement.
+
+That is the one failure mode a parity harness must not have, so
+`ein-conformance` gained a **liveness check**: every `positive` entry is an
+input both implementations are expected to solve, so a side that never exits 0
+across that group did not run, and the run exits 2 saying so. Cheap, no extra
+invocation, and it also catches the T0 shape of the same nothing (438 `skip`,
+0 `DIFF`, exit 0). Pinned by four unit tests.
+
+The gate itself, re-run properly: **438 cells, 0 differences, T3**.
 
 ### Where the phase's scope moved
 

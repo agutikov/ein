@@ -11,6 +11,14 @@ and under which runs.
 - **`out/`** — artefacts from the last `ein-conformance run` (git-ignored; the
   runner wipes it at the start of every run, because a stale tree would let a
   run that wrote nothing look like a run that wrote the same thing as before).
+- **`fuzz_findings/`** — minimised inputs on which the two implementations'
+  *parsers* disagreed, written by `ein-ir`'s differential fuzzer
+  (`cargo test -p ein-ir --test fuzz_parity`, budget `EIN_FUZZ_ITERS`). The
+  fuzzer replays every file here as a seed **before** generating anything, so
+  a find that is checked in cannot come back unnoticed. Empty is the steady
+  state; a file here that no longer diverges has earned a promotion to
+  [`examples/broken/`](../examples/broken/) and a corpus entry, per the growth
+  rule below.
 
 The runner lives at [`ein.rs/crates/ein-conformance`](../ein.rs/crates/ein-conformance);
 the contract it enforces is [`plans/m1a_rust/design/01_parity_contract.md`](../plans/m1a_rust/design/01_parity_contract.md).
@@ -40,6 +48,30 @@ files T3 compares, so a T3 pass cannot hide a T1 difference.
 Both implementations run with the repo root as their working directory and are
 addressed by explicit path, so there is never a question of which `ein` ran.
 `ein.rs` is deliberately **not** installed onto `$PATH` during the port.
+
+`ein.py` has to be importable — `pip install -e ein.py`, or
+`PYTHONPATH=<repo>/ein.py/src`. It is not a footnote: **two implementations
+that both fail to start agree on every cell**, and before the liveness check
+below that scored a perfect run in a tenth of the engine time.
+
+## The liveness check
+
+A parity harness has one failure mode that looks exactly like success. Found
+at [S1a.1.3](../plans/m1a_rust/p1a.1_ir_frontend/s1a.1.3_macros_and_imports.md),
+while running P1a.1's gate in a checkout with no `ein` installed: every one of
+the 438 cells reported `same`, 0 `DIFF`, exit 0 — because both sides exited 1
+with the same `ModuleNotFoundError`. At T0 the same environment reports 438
+`skip`, which is the same nothing wearing a different hat.
+
+So the runner now asks a second question: **did either implementation ever
+work?** Every `positive` entry is an input both are expected to solve, so a
+side that never exits 0 across that whole group did not run, and the run exits
+2 with a message naming which side and why. The bar is "ever", not "always" —
+a `positive` cell may legitimately fail on a timeout — and a `--group`-restricted
+run that excludes `positive` makes no claim at all.
+
+Not a preflight probe: the check costs nothing, needs no extra invocation, and
+cannot itself be misconfigured.
 
 ## Manifest format
 
