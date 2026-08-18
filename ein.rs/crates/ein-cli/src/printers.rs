@@ -9,6 +9,7 @@ use std::time::Instant;
 
 use ein_core::pyfmt::format_spec;
 use ein_core::{Kb, SolverConfig, Terms};
+use ein_infer::SharedMemo;
 use ein_infer::solve::{Dumper, MonotonicStats};
 use ein_infer::verdict::Answer;
 use ein_ir::Ast;
@@ -206,6 +207,7 @@ pub fn print_root_hyp_preview(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Resu
         terms,
         ast,
         events: &mut events,
+        memo: SharedMemo::default(),
     };
     ein_infer::closed::emit_closed(&mut s).map_err(crate::common::compile_error_line)?;
     let mut sat = Saturator::new(&mut s).map_err(|e| crate::common::saturate_error_line(&e))?;

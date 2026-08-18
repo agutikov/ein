@@ -50,7 +50,7 @@ pub use canon::{state_digest, state_key};
 pub use closed::{emit_closed, producible_relations};
 pub use commitment::{CommitmentSetResult, Kind, try_commitment_set};
 pub use compile::{
-    CompileError, PlanKey, PlanMemo, activators_for, asserted_relation, compile_rule,
+    CompileError, PlanKey, PlanMemo, SharedMemo, activators_for, asserted_relation, compile_rule,
     naf_relation_refs, negated_relation, plan_key,
 };
 pub use contradiction::{Contradiction, contradicts, detect, has_contradiction};

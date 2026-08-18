@@ -33,7 +33,7 @@ use rustc_hash::{FxHashMap, FxHashSet};
 use crate::apriori::{CanonicalSetId, generate_layer, layer_1, order_candidates};
 use crate::canon::state_key;
 use crate::commitment::{Kind, try_commitment_set};
-use crate::compile::CompileError;
+use crate::compile::{CompileError, SharedMemo};
 use crate::events::Events;
 use crate::firing::Firing;
 use crate::saturator::{SaturateError, Saturator, Session};
@@ -297,6 +297,7 @@ pub fn solve(
     let mut run = Run {
         shuffle,
         cfg,
+        memo: SharedMemo::default(),
         stats: MonotonicStats::new(),
         lstate: LoopState {
             nodes: Vec::new(),
@@ -343,6 +344,13 @@ pub fn solve(
 struct Run<'o> {
     shuffle: Option<crate::mt19937::Mt19937>,
     cfg: SolverConfig,
+    /// The run's compiled plans, shared by the root saturation, every
+    /// entering, every `complete` / `open_hypotheses` probe and every
+    /// `lookahead` — design/06 § Win A, and the whole of
+    /// [S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md).
+    /// Each engine still keeps its own ordered plan list, which is the part
+    /// that reaches the trace.
+    memo: SharedMemo,
     stats: MonotonicStats,
     lstate: LoopState,
     t_start: Instant,
@@ -383,6 +391,7 @@ impl Run<'_> {
                 terms,
                 ast,
                 events,
+                memo: self.memo.clone(),
             };
             let mut sat = Saturator::new(&mut s)?;
             // Root saturation is the slow part of a Phase-1 solve, so the
@@ -482,7 +491,7 @@ impl Run<'_> {
             for c in &candidates {
                 self.check_budget(dumper)?;
                 self.stats.base.enterings_total += 1;
-                let result = try_commitment_set(root, terms, ast, events, c, None)?;
+                let result = try_commitment_set(root, terms, ast, events, &self.memo, c, None)?;
                 if events.on() {
                     let commitment: Vec<String> =
                         c.iter().map(|&f| crate::events::sexpr(terms, f)).collect();
@@ -522,6 +531,7 @@ impl Run<'_> {
                         terms,
                         ast,
                         events,
+                        memo: self.memo.clone(),
                     };
                     crate::hypgen::complete(&mut s)?
                 };
@@ -533,7 +543,7 @@ impl Run<'_> {
                 if self.cfg.lattice_sanity_check
                     && c.len() >= 2
                     && let Some(err) =
-                        crate::sanity::check_commutativity(root, terms, ast, events, c)?
+                        crate::sanity::check_commutativity(root, terms, ast, events, &self.memo, c)?
                 {
                     return Err(SolveError::Sanity(Box::new(err)));
                 }
@@ -649,6 +659,7 @@ impl Run<'_> {
             terms,
             ast,
             events,
+            memo: self.memo.clone(),
         };
         Ok(crate::hypgen::open_hypotheses(&mut s)?)
     }
@@ -700,6 +711,7 @@ impl Run<'_> {
                     terms,
                     ast,
                     events,
+                    memo: self.memo.clone(),
                 };
                 let mut sat = Saturator::new(&mut s)?;
                 sat.saturate(&mut s, None, &mut |_| {})?;

@@ -63,7 +63,7 @@ pub struct Lookahead {
 
 impl Lookahead {
     pub fn new(s: &mut Session<'_>) -> Result<Lookahead, CompileError> {
-        let mut engine = crate::engine::Engine::new();
+        let mut engine = crate::engine::Engine::with_memo(s.memo.clone());
         engine.compile_all(s.ast, s.terms, s.kb, s.events)?;
         let plans = (0..engine.len()).map(|i| engine.plan_arc(i)).collect();
         Ok(Lookahead { plans })
@@ -215,6 +215,7 @@ fn is_contradiction(kb: &Kb, terms: &Terms, f: FactId, h: FactId) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::compile::SharedMemo;
     use ein_core::Kb;
     use ein_ir::{Ast, from_ir::load, parse};
 
@@ -230,6 +231,7 @@ mod tests {
             terms: &mut terms,
             ast: &ast,
             events: &mut ev,
+            memo: SharedMemo::default(),
         };
         let mut sat = crate::saturator::Saturator::new(&mut s).expect("compiles");
         sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");

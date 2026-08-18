@@ -21,7 +21,7 @@
 use std::time::Instant;
 
 use ein_core::Terms;
-use ein_infer::{Events, Matcher, Saturator, Session};
+use ein_infer::{Events, Matcher, Saturator, Session, SharedMemo};
 use ein_ir::{Ast, load_file};
 
 fn main() {
@@ -41,6 +41,7 @@ fn main() {
                 terms: &mut terms,
                 ast: &ast,
                 events: &mut events,
+                memo: SharedMemo::default(),
             };
             let mut sat = Saturator::new(&mut s).expect("compiles");
             let n = sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");

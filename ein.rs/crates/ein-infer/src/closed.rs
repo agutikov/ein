@@ -40,7 +40,7 @@ pub const CLOSED: &str = crate::hypgen::CLOSED;
 /// rule contributes once per activator, so a relation reachable only through
 /// an *un-activated* rule is correctly absent.
 pub fn producible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, CompileError> {
-    let mut engine = crate::engine::Engine::new();
+    let mut engine = crate::engine::Engine::with_memo(s.memo.clone());
     engine.compile_all(s.ast, s.terms, s.kb, s.events)?;
     let terms = &*s.terms;
     Ok((0..engine.len())
@@ -90,6 +90,7 @@ pub fn emit_closed(s: &mut Session<'_>) -> Result<Vec<Symbol>, CompileError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::compile::SharedMemo;
     use ein_core::{Kb, Terms};
     use ein_ir::{Ast, from_ir::load, parse};
 
@@ -111,6 +112,7 @@ mod tests {
             terms: &mut terms,
             ast: &ast,
             events: &mut ev,
+            memo: SharedMemo::default(),
         };
         let first: Vec<String> = emit_closed(&mut s)
             .expect("compiles")

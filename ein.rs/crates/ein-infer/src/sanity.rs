@@ -19,6 +19,7 @@ use ein_ir::Ast;
 use crate::apriori::CanonicalSetId;
 use crate::canon::{state_digest, state_key};
 use crate::commitment::{Kind, try_commitment_set};
+use crate::compile::SharedMemo;
 use crate::events::Events;
 use crate::saturator::{SaturateError, Saturator, Session};
 
@@ -96,12 +97,13 @@ pub fn check_commutativity(
     terms: &mut Terms,
     ast: &Ast,
     events: &mut Events,
+    memo: &SharedMemo,
     commitment: &[FactId],
 ) -> Result<Option<SanityError>, SaturateError> {
     if commitment.len() < 2 {
         return Ok(None);
     }
-    let direct = try_commitment_set(root, terms, ast, events, commitment, None)?;
+    let direct = try_commitment_set(root, terms, ast, events, memo, commitment, None)?;
     if direct.kind == Kind::DeadPre {
         return Ok(None);
     }
@@ -116,7 +118,7 @@ pub fn check_commutativity(
             .map(|(_, &f)| f)
             .collect();
         let missing = commitment[i];
-        let parent_result = try_commitment_set(root, terms, ast, events, &parent, None)?;
+        let parent_result = try_commitment_set(root, terms, ast, events, memo, &parent, None)?;
         if parent_result.kind != Kind::Alive {
             // A dead parent means the lattice path through it does not exist;
             // skip rather than fail.
@@ -133,6 +135,7 @@ pub fn check_commutativity(
                 terms,
                 ast,
                 events,
+                memo: SharedMemo::default(),
             };
             let mut sat = Saturator::new(&mut s)?;
             sat.saturate(&mut s, None, &mut |_| {})?;

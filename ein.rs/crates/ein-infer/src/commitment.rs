@@ -25,6 +25,7 @@
 use ein_core::{FactId, Kb, Prov, Terms};
 use ein_ir::Ast;
 
+use crate::compile::SharedMemo;
 use crate::events::Events;
 use crate::firing::Firing;
 use crate::saturator::{SaturateError, Saturator, Session};
@@ -74,12 +75,18 @@ pub struct CommitmentSetResult {
 /// shipping path and exists for tests.
 ///
 /// Every call is independent: two calls on the same root return two results
-/// whose forks share no mutable state.
+/// whose forks share no mutable state. `memo` is the exception and is not
+/// mutable state in the sense that matters — it is an append-only cache of a
+/// pure function of `(rule, activator)`, so what a fork finds in it is what it
+/// would have compiled ([design/06](../../../../plans/m1a_rust/design/06_saturation.md)
+/// § Win A). The *order* plans enter an engine's list stays per-engine, which
+/// is the part the trace can see.
 pub fn try_commitment_set(
     root: &mut Kb,
     terms: &mut Terms,
     ast: &Ast,
     events: &mut Events,
+    memo: &SharedMemo,
     commitment: &[FactId],
     saturator_steps: Option<usize>,
 ) -> Result<CommitmentSetResult, SaturateError> {
@@ -118,6 +125,7 @@ pub fn try_commitment_set(
         terms,
         ast,
         events,
+        memo: memo.clone(),
     };
     let mut sat = Saturator::new(&mut s)?;
     let firings = if cfg.enable_fail_fast_fork {
@@ -235,8 +243,12 @@ mod tests {
             .intern_fact(r, &[Value::sym(c), Value::sym(d)])
             .expect("room");
 
-        let mut first =
-            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &[h], None).expect("enters");
+        // One memo across both calls, deliberately: the claim is that two
+        // enterings share no *mutable* state, and an append-only plan cache is
+        // the one thing they do share.
+        let memo = SharedMemo::default();
+        let mut first = try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[h], None)
+            .expect("enters");
         let root_facts = kb.n_facts();
         let first_facts = first.kb.n_facts();
 
@@ -247,8 +259,8 @@ mod tests {
             .add_and_index_fact(&mut terms, junk, &[], None)
             .expect("room");
 
-        let second =
-            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &[h], None).expect("enters");
+        let second = try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[h], None)
+            .expect("enters");
         assert_eq!(second.kb.n_facts(), first_facts, "the forks are not shared");
         assert_eq!(second.kind, first.kind);
         assert_eq!(kb.n_facts(), root_facts, "root was written to");
@@ -271,8 +283,16 @@ mod tests {
         let h = terms
             .intern_fact(r, &[Value::sym(c), Value::sym(d)])
             .expect("room");
-        let result =
-            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &[h], None).expect("enters");
+        let result = try_commitment_set(
+            &mut kb,
+            &mut terms,
+            &ast,
+            &mut ev,
+            &SharedMemo::default(),
+            &[h],
+            None,
+        )
+        .expect("enters");
         assert_eq!(result.kind, Kind::DeadPre);
         assert!(result.firings.is_empty(), "saturation ran anyway");
         assert!(!result.unsat_core.is_empty(), "a dead entering has a core");

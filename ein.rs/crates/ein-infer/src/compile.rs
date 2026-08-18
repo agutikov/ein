@@ -25,7 +25,7 @@ use ein_core::entities::Rule;
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_ir::{Ast, Node, NodeId, node_repr};
 use rustc_hash::{FxHashMap, FxHashSet};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use crate::plan::{
     Disjunct, GuardArg, GuardArgKind, MAX_REGS, NafGuard, Plan, PlanId, Probe, ProbeSrc, Reg,
@@ -174,6 +174,25 @@ impl PlanMemo {
         activator: Option<FactId>,
     ) -> Result<PlanId, CompileError> {
         let key = plan_key(terms, rule, activator);
+        self.intern_keyed(key, ast, terms, rule, activator)
+    }
+
+    /// The same, for a caller that already has the key.
+    ///
+    /// [`Engine::compile_for`](crate::engine::Engine::compile_for) computes it
+    /// to probe its own cache first, and `plan_key` renders and re-interns
+    /// every activator argument — so recomputing it here would allocate a
+    /// `Vec<String>` per compile for an answer already in hand
+    /// ([baseline.md §7](../../../../plans/m1a_rust/p1a.6_performance/baseline.md)
+    /// item 4 names `plan_key` among the top allocators).
+    pub fn intern_keyed(
+        &mut self,
+        key: PlanKey,
+        ast: &Ast,
+        terms: &mut Terms,
+        rule: &Rule,
+        activator: Option<FactId>,
+    ) -> Result<PlanId, CompileError> {
         if let Some(&id) = self.by_key.get(&key) {
             return Ok(id);
         }
@@ -184,6 +203,18 @@ impl PlanMemo {
         Ok(id)
     }
 }
+
+/// The memo, shared by every [`Engine`](crate::engine::Engine) of one run.
+///
+/// One handle lives on the [`Session`](crate::saturator::Session), so a fork's
+/// saturator, a `lookahead` probe and a `closed` marking all compile into the
+/// same table — which is the whole of design/06 § Win A. A `Mutex` rather than
+/// a `RefCell` because `Terms` is asserted `Send + Sync` from the start for
+/// exactly this reason: P1a.7 shares the plans across threads, and retrofitting
+/// that onto an `Rc` would touch every call site. The lock is taken **only on
+/// an engine cache miss**, never on the read path — [`Engine`] holds its own
+/// `Arc<Plan>` per cached pair.
+pub type SharedMemo = Arc<Mutex<PlanMemo>>;
 
 // ── Compile ────────────────────────────────────────────────────────
 

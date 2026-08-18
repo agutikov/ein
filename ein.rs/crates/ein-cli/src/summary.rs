@@ -12,6 +12,7 @@
 //! fixed by construction, `schema` versioned).
 
 use ein_core::{Kb, SolverConfig, Terms};
+use ein_infer::SharedMemo;
 use ein_infer::events::{sexpr, sexpr_value};
 use ein_infer::hypgen::{Drop, HypGenStats, Skip};
 use ein_infer::solve::MonotonicStats;
@@ -161,6 +162,7 @@ fn root_block(
             terms,
             ast,
             events,
+            memo: SharedMemo::default(),
         };
         ein_infer::closed::emit_closed(&mut s).map_err(crate::common::compile_error_line)?;
         let mut sat = Saturator::new(&mut s).map_err(|e| crate::common::saturate_error_line(&e))?;

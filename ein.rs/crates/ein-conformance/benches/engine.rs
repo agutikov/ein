@@ -27,6 +27,7 @@
 use std::path::PathBuf;
 
 use criterion::{Criterion, criterion_group, criterion_main};
+use ein_infer::SharedMemo;
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -126,6 +127,7 @@ fn zebra2_root() -> (ein_ir::Ast, ein_core::Terms, ein_core::Kb) {
         terms: &mut terms,
         ast: &ast,
         events: &mut events,
+        memo: SharedMemo::default(),
     };
     let mut sat = ein_infer::Saturator::new(&mut s).expect("compiles");
     sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
@@ -153,6 +155,7 @@ fn deductive(c: &mut Criterion) {
                     terms: &mut terms,
                     ast: &ast,
                     events: &mut events,
+                    memo: SharedMemo::default(),
                 };
                 let mut sat = ein_infer::Saturator::new(&mut s).expect("compiles");
                 let n = sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
@@ -227,6 +230,7 @@ fn deductive(c: &mut Criterion) {
                         terms: &mut terms,
                         ast: &ast,
                         events: &mut events,
+                        memo: SharedMemo::default(),
                     };
                     let mut sat = ein_infer::Saturator::new(&mut s).expect("compiles");
                     sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");

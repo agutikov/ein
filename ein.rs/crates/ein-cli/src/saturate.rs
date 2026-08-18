@@ -14,6 +14,7 @@ use std::time::Instant;
 
 use ein_core::pyfmt::format_spec;
 use ein_core::{Kb, NameCategory, ProvKind, SolverConfig, Terms};
+use ein_infer::SharedMemo;
 use ein_infer::events::{Events, Level};
 use ein_infer::firing::Firing;
 use ein_infer::saturator::{Saturator, Session};
@@ -699,6 +700,7 @@ fn bench(
             terms: &mut terms,
             ast: &ast,
             events,
+            memo: SharedMemo::default(),
         };
         // `step` is driven directly rather than through `saturate`, because
         // the progress line reads the KB's fact count *at that step* and the

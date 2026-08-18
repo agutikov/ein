@@ -22,9 +22,11 @@ use ein_core::{FactId, Kb, Symbol, Terms};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
-use crate::compile::{CompileError, PlanKey, PlanMemo, activators_for, plan_key};
+use crate::compile::{CompileError, PlanKey, SharedMemo, activators_for, plan_key};
 use crate::events::Events;
 use crate::firing::{ActivatorId, BindingKey};
+use std::sync::Arc;
+
 use crate::plan::{Plan, PlanId};
 
 /// One engine's view of the compiled program.
@@ -32,6 +34,12 @@ use crate::plan::{Plan, PlanId};
 pub struct Engine {
     /// The plans, in ein.py's cache-insertion order.
     plans: Vec<PlanId>,
+    /// The same plans, resolved — parallel to `plans`.
+    ///
+    /// Holding the `Arc` here rather than reaching into the memo is what keeps
+    /// the read path lock-free: `plan` / `plan_arc` run per enqueue pass, the
+    /// memo is only touched on a cache miss.
+    arcs: Vec<Arc<Plan>>,
     keys: Vec<PlanKey>,
     by_key: FxHashMap<PlanKey, usize>,
     /// The interned `plan.activator_args` of each plan, parallel to `plans`.
@@ -39,7 +47,10 @@ pub struct Engine {
     activator_ids: FxHashMap<Box<[Symbol]>, ActivatorId>,
     /// Binding keys that have already been applied.
     pub fired: FxHashSet<BindingKey>,
-    memo: PlanMemo,
+    /// Shared with every other engine of this run — design/06 § Win A. What
+    /// may **not** be shared is the order below it, which is why `plans` is
+    /// per-engine and this is not.
+    memo: SharedMemo,
     /// The rule-application count the plan list was last built at — a walk of
     /// `rules × activators` can only find something new when a rule gained an
     /// activator, and nothing else adds one.
@@ -47,9 +58,17 @@ pub struct Engine {
 }
 
 impl Engine {
+    /// An engine with a **private** memo — a one-shot caller that compiles
+    /// nothing anyone else will ask for again.
     pub fn new() -> Engine {
+        Engine::with_memo(SharedMemo::default())
+    }
+
+    /// An engine that compiles into `memo`, which outlives it.
+    pub fn with_memo(memo: SharedMemo) -> Engine {
         Engine {
             last_rule_apps: usize::MAX,
+            memo,
             ..Engine::default()
         }
     }
@@ -63,13 +82,13 @@ impl Engine {
     }
 
     pub fn plan(&self, index: usize) -> &Plan {
-        self.memo.get(self.plans[index])
+        &self.arcs[index]
     }
 
     /// A handle the caller can hold while mutating the engine — which
     /// `_apply` must, since it writes `fired` with the plan in hand.
-    pub fn plan_arc(&self, index: usize) -> std::sync::Arc<Plan> {
-        self.memo.get_arc(self.plans[index])
+    pub fn plan_arc(&self, index: usize) -> Arc<Plan> {
+        Arc::clone(&self.arcs[index])
     }
 
     pub fn plan_id(&self, index: usize) -> PlanId {
@@ -84,8 +103,11 @@ impl Engine {
         &self.keys[index]
     }
 
-    pub fn memo(&self) -> &PlanMemo {
-        &self.memo
+    /// How many plans this run has compiled, across every engine sharing the
+    /// memo — the number [S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)
+    /// reports in place of a prediction.
+    pub fn n_memoised(&self) -> usize {
+        self.memo.lock().expect("no compiler panicked").len()
     }
 
     /// Walk `rules × activators` and cache one plan per pair.
@@ -133,9 +155,12 @@ impl Engine {
         if let Some(&at) = self.by_key.get(&key) {
             return Ok(at);
         }
-        let id = self.memo.intern(ast, terms, rule, activator)?;
+        let (id, plan) = {
+            let mut memo = self.memo.lock().expect("no compiler panicked");
+            let id = memo.intern_keyed(key.clone(), ast, terms, rule, activator)?;
+            (id, memo.get_arc(id))
+        };
         let at = self.plans.len();
-        let plan = self.memo.get(id);
         // The `compile` event fires on an **engine** miss, not a memo miss: it
         // reports what this engine had to add to its cache, which is what
         // ein.py's `compile_for` reports and what the cache order is about.
@@ -172,6 +197,7 @@ impl Engine {
         let activator_id = self.intern_activator(&activator_args);
         self.check_layout(rule_sym, activator_id, &reg_names);
         self.plans.push(id);
+        self.arcs.push(plan);
         self.keys.push(key.clone());
         self.activators.push(activator_id);
         self.by_key.insert(key, at);
@@ -199,8 +225,7 @@ impl Engine {
     /// is for.
     fn check_layout(&self, rule: Symbol, activator: ActivatorId, reg_names: &[Symbol]) {
         if cfg!(debug_assertions) {
-            for (i, &id) in self.plans.iter().enumerate() {
-                let other = self.memo.get(id);
+            for (i, other) in self.arcs.iter().enumerate() {
                 if self.activators[i] == activator && other.rule == rule {
                     assert_eq!(
                         other.reg_names.as_ref(),

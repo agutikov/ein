@@ -30,7 +30,8 @@ use ein_ir::{Ast, node_repr};
 use rustc_hash::FxHashMap;
 
 use crate::compile::{
-    CompileError, activators_for, asserted_relation, naf_relation_refs, negated_relation, plan_key,
+    CompileError, SharedMemo, activators_for, asserted_relation, naf_relation_refs,
+    negated_relation, plan_key,
 };
 use crate::match_::{Match, Matcher};
 use crate::plan::{GuardArgKind, NafGuard, Plan, Slot, Span, Step};
@@ -156,6 +157,7 @@ pub fn saturate_events(
         terms,
         ast,
         events: &mut events,
+        memo: SharedMemo::default(),
     };
     let mut sat = crate::saturator::Saturator::new(&mut s)?;
     sat.saturate(&mut s, None, &mut |_| {})?;
@@ -247,6 +249,7 @@ pub fn hyp_shape_with(
     closed: bool,
 ) -> Result<String, String> {
     let mut off = crate::events::Events::off();
+    let memo = SharedMemo::default();
     let mut newly: Vec<String> = Vec::new();
     if closed {
         let mut s = crate::saturator::Session {
@@ -254,6 +257,7 @@ pub fn hyp_shape_with(
             terms,
             ast,
             events: &mut off,
+            memo: memo.clone(),
         };
         newly = crate::closed::emit_closed(&mut s)
             .map_err(|e| e.to_string())?
@@ -267,6 +271,7 @@ pub fn hyp_shape_with(
             terms,
             ast,
             events: &mut off,
+            memo: memo.clone(),
         };
         let mut sat = crate::saturator::Saturator::new(&mut s).map_err(|e| e.to_string())?;
         sat.saturate(&mut s, None, &mut |_| {})
@@ -283,6 +288,7 @@ pub fn hyp_shape_with(
             terms,
             ast,
             events: &mut events,
+            memo: memo.clone(),
         };
         crate::hypgen::generate(&mut s, &mut stats, &mut |_| {
             std::ops::ControlFlow::Continue(())
@@ -296,6 +302,7 @@ pub fn hyp_shape_with(
         terms,
         ast,
         events: &mut off,
+        memo: memo.clone(),
     };
     let is_complete =
         crate::hypgen::complete_counted(&mut s, &mut short).map_err(|e| e.to_string())?;
@@ -338,6 +345,7 @@ pub fn naf_map(
         terms,
         ast,
         events: &mut events,
+        memo: SharedMemo::default(),
     };
     let mut sat = crate::saturator::Saturator::new(&mut s)?;
     sat.saturate(&mut s, None, &mut |_| {})?;
@@ -400,12 +408,14 @@ pub fn lattice_shape(
     use rustc_hash::FxHashSet;
 
     let mut off = crate::events::Events::off();
+    let memo = SharedMemo::default();
     let (n_alive, alive) = {
         let mut s = crate::saturator::Session {
             kb,
             terms,
             ast,
             events: &mut off,
+            memo: memo.clone(),
         };
         let mut sat = crate::saturator::Saturator::new(&mut s)?;
         sat.saturate(&mut s, None, &mut |_| {})?;
@@ -516,6 +526,7 @@ pub fn explain_shape(
         terms,
         ast,
         events: &mut events,
+        memo: SharedMemo::default(),
     };
     let mut sat = crate::saturator::Saturator::new(&mut s)?;
     sat.saturate(&mut s, None, &mut |_| {})?;
@@ -649,12 +660,14 @@ pub fn commit_shape(
     kb.program_mut().config = Some(cfg);
 
     let mut off = crate::events::Events::off();
+    let memo = SharedMemo::default();
     let (n_alive, alive) = {
         let mut s = crate::saturator::Session {
             kb,
             terms,
             ast,
             events: &mut off,
+            memo: memo.clone(),
         };
         let mut sat = crate::saturator::Saturator::new(&mut s)?;
         sat.saturate(&mut s, None, &mut |_| {})?;
@@ -678,14 +691,21 @@ pub fn commit_shape(
     let mut out = vec![format!("ALIVE {n_alive} capped {}", alive.len())];
     let mut first: Option<String> = None;
     for c in &commitments {
-        let r = crate::commitment::try_commitment_set(kb, terms, ast, &mut off, c, None)?;
+        let r = crate::commitment::try_commitment_set(kb, terms, ast, &mut off, &memo, c, None)?;
         let text = enter_line(terms, c, &r);
         first.get_or_insert_with(|| text.clone());
         out.push(text);
     }
     if let Some(first) = first {
-        let r =
-            crate::commitment::try_commitment_set(kb, terms, ast, &mut off, &commitments[0], None)?;
+        let r = crate::commitment::try_commitment_set(
+            kb,
+            terms,
+            ast,
+            &mut off,
+            &memo,
+            &commitments[0],
+            None,
+        )?;
         let again = enter_line(terms, &commitments[0], &r);
         out.push(format!("REPEAT {}", py_bool(again == first)));
     }

@@ -31,7 +31,7 @@ use ein_core::{FactId, Kb, NafArg, NafRef, Prov, Symbol, Terms, Value};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
-use crate::compile::CompileError;
+use crate::compile::{CompileError, SharedMemo};
 use crate::engine::Engine;
 use crate::events::{self, Events};
 use crate::firing::{BindingKey, Env, FireError, Firing, build_fact, fire};
@@ -54,6 +54,15 @@ pub struct Session<'a> {
     pub terms: &'a mut Terms,
     pub ast: &'a Ast,
     pub events: &'a mut Events,
+    /// The run's compiled plans — design/06 § Win A.
+    ///
+    /// Every engine built from this session compiles into it: the saturator's,
+    /// a `lookahead` probe's, a `closed` marking's. A caller that hands the
+    /// *same* handle to a root saturation and to each of its forks compiles
+    /// each `(rule, activator)` pair once for the whole run instead of once per
+    /// fork; `SharedMemo::default()` is a private one, which is what a one-shot
+    /// caller wants.
+    pub memo: SharedMemo,
 }
 
 #[derive(Clone, Debug)]
@@ -213,7 +222,7 @@ impl Saturator {
             .intern_text(SYMMETRIC)
             .expect("room for the mirror marker");
         let mut sat = Saturator {
-            engine: Engine::new(),
+            engine: Engine::with_memo(s.memo.clone()),
             matcher: Matcher::new(),
             entries: Vec::new(),
             queue: BinaryHeap::new(),
@@ -1186,6 +1195,7 @@ mod tests {
                 terms: &mut terms,
                 ast: &ast,
                 events: &mut ev,
+                memo: SharedMemo::default(),
             };
             let mut sat = Saturator::new(&mut s).expect("compiles");
             let mut derived: Vec<FactId> = Vec::new();
@@ -1262,6 +1272,7 @@ mod tests {
             terms: &mut terms,
             ast: &ast,
             events: &mut ev,
+            memo: SharedMemo::default(),
         };
         let mut sat = Saturator::new(&mut s).expect("compiles");
         sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
@@ -1289,6 +1300,7 @@ mod tests {
             terms: &mut terms,
             ast: &ast,
             events: &mut ev,
+            memo: SharedMemo::default(),
         };
         let mut sat = Saturator::new(&mut s).expect("compiles");
         let err = sat
