@@ -39,6 +39,7 @@ One JSON object per line in, one per line out, in order:
     {"op": "solve-shape",   "path": …, "mode": "exhaustive"} → … without `stop_after`
     {"op": "solve-shape",   "path": …, "mode": "shuffled"}   → … with `--shuffle --seed 7`
     {"op": "dot-shape",     "path": …, "view": "<view>"}     → one of the DOT views (below)
+    {"op": "trace-shape",   "path": …, "mode": "<mode>"}     → the trace / answer surface
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -1014,6 +1015,105 @@ def _dot_shape(forms, base_dir, view: str) -> str:
     return _dot_solve_view(kb, view)
 
 
+# ── Trace and answer rendering — S1a.5.2 ───────────────────────────
+#
+# Three modes, each one solve. They are grouped this way because a solve is
+# the expensive part and the renderers are the cheap part: `trace` runs one
+# and renders the markdown in every flag combination plus the IR round-trip,
+# `answer` runs one and renders the headline and the table at both
+# `exhausted` values, and `no-proof` runs one *without* `store_lattice` to
+# reach `linearize`'s three proof-less branches, which the CLI never does
+# (`--trace` implies `store_lattice=True`).
+
+_TRACE_MODES = ("trace", "answer", "no-proof")
+
+
+def _solve_for_trace(kb: KnowledgeBase, *, store_lattice: bool, first: bool):
+    """The bounded solve a trace mode runs — budgeted like `solve-shape`, and
+    for the same reason.
+
+    ``first=True`` is the *fast* regime (`stop_after=1`), and it is what the
+    `trace` mode wants: a puzzle that stops at its first solution reaches one
+    in a dozen enterings and hands the renderer a spine of several hundred
+    firings, where the exhaustive regime spends its whole budget and aborts
+    with nothing to narrate. The exhaustive regime is what the `answer` mode
+    wants, for the opposite reason: `Ambiguity`, `Contradiction` and `Aborted`
+    are only reachable there, and they are three of the table's four shapes.
+    """
+    from ein.inference.monotonic import solve
+    return solve(kb, stop_after=1 if first else None, max_set_size=3,
+                 max_enterings=300 if first else 60,
+                 on_budget="verdict", store_lattice=store_lattice)
+
+
+def _trace_markdown(verdict, *, diagrams: bool, full_kb: bool,
+                    relevant: bool, reorder: bool) -> str:
+    from ein.trace import linearize, render_markdown
+    trace = linearize(verdict, diagrams=diagrams,
+                      full_kb_snapshots=full_kb, relevant=relevant)
+    return render_markdown(trace, mode="reorder" if reorder else "engine",
+                           diagrams=diagrams)
+
+
+def _trace_shape(kb: KnowledgeBase, mode: str) -> str:
+    from ein.ir import parse as _parse
+    from ein.trace import linearize, parse_trace_steps, trace_to_ir
+    from ein.trace.answer import render_answer, render_solution_table
+
+    if mode == "no-proof":
+        # `store_lattice=False` — the only way to reach `linearize`'s three
+        # proof-less branches, which the CLI never does (`--trace` implies it).
+        verdict, _ = _solve_for_trace(kb, store_lattice=False, first=False)
+        return _trace_markdown(verdict, diagrams=True, full_kb=False,
+                               relevant=False, reorder=False)
+
+    if mode == "answer":
+        verdict, stats = _solve_for_trace(kb, store_lattice=True, first=False)
+        out = []
+        for exhausted in (True, False):
+            out.append(f"--- answer exhausted={exhausted}")
+            out.append(render_answer(verdict, exhausted=exhausted))
+            out.append(f"--- table exhausted={exhausted}")
+            out.append(render_solution_table(
+                verdict, stats, exhausted=exhausted, source="<source>"))
+        # The exhaustive regime's own trace: this is where the unsat and
+        # many-solution lattice shapes are, and the `trace` mode never sees one.
+        out.append("--- markdown exhaustive")
+        out.append(_trace_markdown(verdict, diagrams=True, full_kb=False,
+                                   relevant=False, reorder=False))
+        return "\n".join(out)
+
+    verdict, stats = _solve_for_trace(kb, store_lattice=True, first=True)
+
+    # mode == "trace": the six flag combinations the CLI can produce, then
+    # the `(trace …)` round-trip through the parser.
+    flags = (
+        ("default",          dict(diagrams=True,  full_kb=False, relevant=False, reorder=False)),
+        ("no-diagrams",      dict(diagrams=False, full_kb=False, relevant=False, reorder=False)),
+        ("full-kb",          dict(diagrams=True,  full_kb=True,  relevant=False, reorder=False)),
+        ("reorder",          dict(diagrams=False, full_kb=False, relevant=False, reorder=True)),
+        ("relevant",         dict(diagrams=False, full_kb=False, relevant=True,  reorder=False)),
+        ("relevant-reorder", dict(diagrams=False, full_kb=False, relevant=True,  reorder=True)),
+    )
+    out = []
+    for name, kw in flags:
+        out.append(f"--- markdown {name}")
+        out.append(_trace_markdown(verdict, **kw))
+    # The round-trip is a *property*, and its witness is a text both
+    # implementations can print: dump the steps as IR, parse them back, dump
+    # again, and show both. Equal halves mean the round-trip held.
+    steps = linearize(verdict, diagrams=False).steps
+    ir = trace_to_ir(steps)
+    forms = _parse(ir)
+    again = trace_to_ir(parse_trace_steps(forms[0])) if forms else "(trace)"
+    out.append("--- ir")
+    out.append(ir)
+    out.append("--- ir-reparsed")
+    out.append(again)
+    out.append(f"--- round-trip {'ok' if ir == again else 'DIFFERS'}")
+    return "\n".join(out)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -1068,6 +1168,10 @@ def _handle(req: dict) -> dict:
     if op == "dot-shape":
         return {"ok": True,
                 "out": _dot_shape(forms, base_dir, str(req.get("view", "ir")))}
+    if op == "trace-shape":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True,
+                "out": _trace_shape(kb, str(req.get("mode", "trace")))}
     if op == "accept":
         return {"ok": True}
     if op == "parse":

@@ -9,7 +9,9 @@
 //! The query's `:goal` does not decide the verdict. It projects over the
 //! model(s) afterwards.
 
-use ein_core::{FactId, Kb};
+use ein_core::entities::{ExprRef, Pattern, Query, Rule};
+use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_ir::{Ast, Node, NodeId};
 
 use crate::firing::Firing;
 
@@ -75,4 +77,96 @@ pub fn union_dead_cores(cores: &[Vec<FactId>]) -> Vec<FactId> {
     out.sort_unstable();
     out.dedup();
     out
+}
+
+// ── The query's goal, projected ────────────────────────────────────
+
+/// A `(query …)` keyword's value, by keyword name.
+///
+/// The **first** match wins: ein.py returns out of the loop.
+pub fn query_value(ast: &Ast, query: &Query, kw_name: &str) -> Option<NodeId> {
+    for &pair in query.kw_pairs.iter() {
+        let Node::KwPair { key, value } = ast.node(NodeId(pair.0)) else {
+            continue;
+        };
+        if let Node::Keyword(name) = ast.node(key)
+            && ast.sym(name) == kw_name
+        {
+            return Some(value);
+        }
+    }
+    None
+}
+
+/// Run the query's `:goal` pattern against `kb` and return the binding rows.
+///
+/// The same matcher machinery the solve loop counts matches with — here the
+/// rows come back so a caller can project an answer, which is what the CLI's
+/// solution table and `:goal-text` do. `goal` defaults to the KB's own
+/// `(query :goal …)`; pass one explicitly to project a different question over
+/// a solved model.
+///
+/// ein.py hand-builds a `JoinPlan(rule_name="<query>", …)` around
+/// `compile_pattern(goal, {})`. There is no free-standing pattern compiler
+/// here — [`compile_rule`](crate::compile_rule) is the entry point — so the
+/// goal is wrapped in a parameter-less synthetic rule of the same name, which
+/// compiles to the same steps: no activator to bind, no `:assert` templates,
+/// no `:why`.
+pub fn goal_bindings(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &Kb,
+    goal: Option<NodeId>,
+) -> Vec<Vec<(Symbol, Value)>> {
+    let goal = match goal {
+        Some(g) => g,
+        None => {
+            let query = match kb.program().query.as_ref() {
+                Some(q) => q,
+                None => return Vec::new(),
+            };
+            match query_value(ast, query, "goal") {
+                Some(g) => g,
+                None => return Vec::new(),
+            }
+        }
+    };
+    let rule = Rule {
+        name: match terms.syms.get("<query>") {
+            Some(s) => s,
+            None => match terms.intern_text("<query>") {
+                Ok(s) => s,
+                Err(_) => return Vec::new(),
+            },
+        },
+        params: Box::new([]),
+        match_: Some(Pattern {
+            expr: ExprRef(goal.0),
+            variables: Box::new([]),
+            relation_names: Box::new([]),
+        }),
+        assert_: None,
+        why: None,
+        priority: None,
+        loc: None,
+    };
+    let Ok(plan) = crate::compile::compile_rule(ast, terms, &rule, None) else {
+        return Vec::new();
+    };
+    let mut rows: Vec<Vec<(Symbol, Value)>> = Vec::new();
+    let mut matcher = crate::match_::Matcher::new();
+    matcher.run(kb, terms, ast, &plan, &mut |m| {
+        // `dict(b)` — last binding of a repeated name wins, and the row keeps
+        // first-bind order, which is what the trace and the table print.
+        let mut row: Vec<(Symbol, Value)> = Vec::new();
+        for (name, value) in m.bindings() {
+            match row.iter_mut().find(|(n, _)| *n == name) {
+                Some(slot) => slot.1 = value,
+                None => row.push((name, value)),
+            }
+        }
+        rows.push(row);
+        std::ops::ControlFlow::Continue(())
+    });
+    rows
 }

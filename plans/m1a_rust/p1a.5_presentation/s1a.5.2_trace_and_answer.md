@@ -1,6 +1,9 @@
 # S1a.5.2 — Trace and answer rendering
 
 **Phase:** P1a.5 (Presentation and CLI)
+**Status:** **shipped** 2026-08-18 — acceptance below. T6 (`render_why`)
+landed early, at [S1a.5.1](s1a.5.1_dot_renderers.md), because `render/slice`
+labels every rule node with a rendered `:why`.
 **Estimate:** 4 days
 **Depends on:** [S1a.5.1](s1a.5.1_dot_renderers.md)
 **Implements:** `ein/trace/{ast,linearize,relevance,render,answer}.py`,
@@ -21,17 +24,60 @@ round-trip is a property test, not just a feature.
 
 ## Acceptance
 
-- `ein solve --trace out.md` byte-identical for every corpus entry, in
-  all four flag combinations (`--no-diagrams`, `--full-kb-snapshots`,
-  `--reorder`, `--relevant`).
-- `tests/golden/trace_3step.md` reproduces byte-for-byte.
-- The solution table (`render_solution_table`) byte-identical for every
-  verdict kind: Solution, Ambiguity (k>1, per-branch blocks),
-  Contradiction (core + sources), Aborted.
-- `render_why` substitution identical, including the positional `{?1}` /
-  `{?2}` form and unresolved-placeholder behaviour.
-- `parse(trace_to_ir(steps))` → `parse_trace_steps` round-trips on both
-  sides.
+All met. The instrument is a `trace-shape` op on `utils/ir_oracle.py` and
+its Rust half `ein-render`'s `shape::trace_shape` — **three modes per
+corpus entry, one solve each**, because the solve is the expensive part
+and the renderers are the cheap part. The regime differs per mode on
+purpose: `trace` solves *fast*, because that is what reaches a solution
+and hands the renderer a spine to narrate; `answer` solves *exhaustively*,
+because `Ambiguity` / `Contradiction` / `Aborted` live only there and they
+are three of the table's four shapes.
+
+| item | result |
+|---|---|
+| `--trace` byte-identical for every corpus entry, in all four flag combinations | **yes** — six markdown variants per file: the default, `--no-diagrams`, `--full-kb-snapshots`, `--reorder`, `--relevant`, and `--relevant --reorder`. The last two got their own rows because the stage said to; they are the ones nobody looks at |
+| `tests/golden/trace_3step.md` reproduces byte-for-byte | **yes**, `golden_trace.rs`, from the committed file — and with it the reorder property ein.py asserts: same steps, grouped, each emitted once |
+| The solution table for every verdict kind | **all four appear in the corpus** at this budget — Solution 36, Aborted 23, Ambiguity 4, Contradiction 2 — and each is rendered at *both* `exhausted` values, which is what exercises the `(not certified — pass --exhaustive)` qualifier |
+| `render_why`, including the positional `{?1}` / `{?2}` form | rendered by every step's `:why` (named) and by the table's *rendered query facts* column (positional). Unresolved placeholders are **left as-is**, not blanked — pinned by a fixture in `why.rs` |
+| `parse(trace_to_ir(steps))` → `parse_trace_steps` round-trips | **65 round-trips, all `ok`** — and asserted *separately* from the byte diff, because two implementations agreeing on `DIFFERS` would pass a byte diff and fail the property |
+| **The whole sweep** | **65 files, 195 modes, 14.5 MB, 0 differences** — the same 65 the search layer reaches at [P1a.4](../p1a.4_search_layer/README.md); the rest are the files both loaders refuse. The one file that diverges is [D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers), asserted in all three modes |
+
+The `--relevant` prune is not a formality: on `zebra2` the trace goes from
+**562 sections to 19**, which is the human-scale slice
+`trace/relevance.py` promises and the reason idea-08's walkthrough is
+comparable to an engine log at all.
+
+### Three shape departures
+
+- **A `TraceStep`'s facts are owned, not interned.** Everywhere else in
+  the port a fact is a `FactId`. `parse_trace_steps` is the exception: it
+  rebuilds facts naming relations and objects no KB ever held, so there
+  is nothing to intern them into. `FactRef` is the owned
+  `(relation_name, args)` shape ein.py's alias describes, and `fact_ref`
+  converts one *out* of the KB where the linearizer needs it.
+- **`linearize` takes a `root`.** ein.py reads provenance off the `Fact`
+  object, which travels out of a fork that no longer exists; here
+  provenance lives in the KB, so the linearizer needs one to resolve
+  against when there is no spine KB — the `Contradiction`-without-a-
+  solution case. It cannot change what is printed: the only field read is
+  `:source`, which none but a load-time fact carries, and a load-time
+  fact is in every fork's layer stack.
+- **`goal_bindings` and `query_value` went to `ein-infer`, not here.**
+  They are `inference/verdict.py`'s, they run the matcher, and
+  [design/12](../design/12_toolchain_and_layout.md) §1 says `ein-infer`
+  never formats — it does not say the renderer may reason. ein.py builds
+  a synthetic `JoinPlan` around `compile_pattern(goal, {})`; there is no
+  free-standing pattern compiler here, so the goal is wrapped in a
+  parameter-less synthetic rule named `<query>`, which compiles to the
+  same steps.
+
+### What the no-proof branches needed
+
+`linearize` has three branches for a verdict with no `LatticeProof`, and
+the CLI cannot reach any of them: `--trace` sets `store_lattice=True`. So
+the sweep has a third mode that solves *without* it — otherwise a third
+of the linearizer would have shipped uncompared, which is exactly how the
+port acquires a bug that only an embedder ever sees.
 
 ## Tasks
 

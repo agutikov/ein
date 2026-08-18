@@ -11,6 +11,10 @@ ein-core  = { path = "../ein-core" }
 ein-ir    = { path = "../ein-ir" }
 ein-infer = { path = "../ein-infer" }
 md-5.workspace = true
+# The relevance prune's `needed` / `conditional` / `seen` sets: membership
+# only, so their order never reaches the output — which is exactly the case
+# design/02 §9 wants a non-randomised hasher for.
+rustc-hash.workspace = true
 # `render/palette.hash_color` is `sha1(name)` mod the palette length — a
 # colour index, not a security claim, and stable across `PYTHONHASHSEED`
 # precisely because it is a digest and not Python's salted `hash()`.

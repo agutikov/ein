@@ -49,6 +49,9 @@ pub const KB_VIEWS: [&str; 6] = [
 /// The views that run the engine.
 pub const SOLVE_VIEWS: [&str; 3] = ["lattice", "lattice-full", "slice"];
 
+/// The modes of the trace / answer diff — [S1a.5.2](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.2_trace_and_answer.md).
+pub const TRACE_MODES: [&str; 3] = ["trace", "answer", "no-proof"];
+
 pub fn all_views() -> Vec<&'static str> {
     PARSE_VIEWS
         .iter()
@@ -264,4 +267,196 @@ pub fn dot_shape(
         return kb_view(ast, terms, &mut kb, view);
     }
     solve_view(ast, terms, &mut kb, view)
+}
+
+// ── The trace and answer surface ───────────────────────────────────
+
+/// The bounded solve a trace mode runs.
+///
+/// `first` is the *fast* regime, and it is what the `trace` mode wants: a
+/// puzzle that stops at its first solution reaches one in a dozen enterings
+/// and hands the renderer a spine of several hundred firings, where the
+/// exhaustive regime spends its whole budget and aborts with nothing to
+/// narrate. The exhaustive regime is what the `answer` mode wants, for the
+/// opposite reason: `Ambiguity`, `Contradiction` and `Aborted` are only
+/// reachable there, and they are three of the table's four shapes.
+fn solve_for_trace(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    store_lattice: bool,
+    first: bool,
+) -> Result<ein_infer::solve::Solved, String> {
+    use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
+    let opts = SolveOptions {
+        stop_after: if first { Some(1) } else { None },
+        max_set_size: 3,
+        max_enterings: Some(if first { 300 } else { 60 }),
+        on_budget: OnBudget::Verdict,
+        store_lattice,
+        ..SolveOptions::default()
+    };
+    let mut events = ein_infer::events::Events::off();
+    solve(kb, terms, ast, &mut events, &mut NoDumper, &opts).map_err(|e| e.to_string())
+}
+
+/// The four `solve --trace` flags, as one value.
+#[derive(Clone, Copy, Default)]
+struct Flags {
+    diagrams: bool,
+    full_kb: bool,
+    relevant: bool,
+    reorder: bool,
+}
+
+fn trace_markdown(
+    ast: &Ast,
+    terms: &Terms,
+    root: &Kb,
+    solved: &ein_infer::solve::Solved,
+    flags: Flags,
+) -> String {
+    let trace = crate::trace::linearize(
+        ast,
+        terms,
+        root,
+        solved,
+        crate::trace::LinearizeOpts {
+            diagrams: flags.diagrams,
+            full_kb_snapshots: flags.full_kb,
+            relevant: flags.relevant,
+        },
+    );
+    crate::trace::render_markdown(
+        &trace,
+        if flags.reorder {
+            crate::trace::Mode::Reorder
+        } else {
+            crate::trace::Mode::Engine
+        },
+        flags.diagrams,
+    )
+}
+
+/// Render one mode of the trace / answer surface.
+pub fn trace_shape(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    forms: &[NodeId],
+    base_dir: Option<&Path>,
+    mode: &str,
+) -> Result<String, String> {
+    let mut kb = ein_ir::load(ast, terms, forms, base_dir).map_err(|e| e.to_string())?;
+
+    if mode == "no-proof" {
+        let solved = solve_for_trace(ast, terms, &mut kb, false, false)?;
+        return Ok(trace_markdown(
+            ast,
+            terms,
+            &kb,
+            &solved,
+            Flags {
+                diagrams: true,
+                ..Flags::default()
+            },
+        ));
+    }
+
+    if mode == "answer" {
+        let solved = solve_for_trace(ast, terms, &mut kb, true, false)?;
+        let mut out: Vec<String> = Vec::new();
+        for exhausted in [true, false] {
+            out.push(format!("--- answer exhausted={}", py_bool(exhausted)));
+            out.push(crate::answer::render_answer(
+                ast,
+                terms,
+                &kb,
+                &solved.answer,
+                exhausted,
+            ));
+            out.push(format!("--- table exhausted={}", py_bool(exhausted)));
+            out.push(crate::answer::render_solution_table(
+                ast,
+                terms,
+                &kb,
+                &solved.answer,
+                Some(solved.stats.solution_nodes),
+                exhausted,
+                Some("<source>"),
+            ));
+        }
+        // The exhaustive regime's own trace: this is where the unsat and
+        // many-solution lattice shapes are, and `trace` never sees one.
+        out.push("--- markdown exhaustive".to_string());
+        out.push(trace_markdown(
+            ast,
+            terms,
+            &kb,
+            &solved,
+            Flags {
+                diagrams: true,
+                ..Flags::default()
+            },
+        ));
+        return Ok(out.join("\n"));
+    }
+
+    let solved = solve_for_trace(ast, terms, &mut kb, true, true)?;
+    let f = |diagrams, full_kb, relevant, reorder| Flags {
+        diagrams,
+        full_kb,
+        relevant,
+        reorder,
+    };
+    let flags = [
+        ("default", f(true, false, false, false)),
+        ("no-diagrams", f(false, false, false, false)),
+        ("full-kb", f(true, true, false, false)),
+        ("reorder", f(false, false, false, true)),
+        ("relevant", f(false, false, true, false)),
+        ("relevant-reorder", f(false, false, true, true)),
+    ];
+    let mut out: Vec<String> = Vec::new();
+    for (name, flags) in flags {
+        out.push(format!("--- markdown {name}"));
+        out.push(trace_markdown(ast, terms, &kb, &solved, flags));
+    }
+    // The round-trip is a *property*, and its witness is a text both
+    // implementations can print: dump the steps as IR, parse them back, dump
+    // again, and show both. Equal halves mean the round-trip held.
+    let steps = crate::trace::linearize(
+        ast,
+        terms,
+        &kb,
+        &solved,
+        crate::trace::LinearizeOpts {
+            diagrams: false,
+            full_kb_snapshots: false,
+            relevant: false,
+        },
+    )
+    .steps;
+    let ir = crate::trace::trace_to_ir(&steps);
+    let mut reparse = Ast::new();
+    // A parse failure is ein.py's `IRParseError`, propagating out of the op —
+    // so it propagates here too rather than degrading to an empty trace.
+    let forms = ein_ir::parse(&mut reparse, &ir, None).map_err(|e| e.to_string())?;
+    let again = match forms.first() {
+        Some(&f) => crate::trace::trace_to_ir(&crate::trace::parse_trace_steps(&reparse, f)),
+        None => "(trace)".to_string(),
+    };
+    out.push("--- ir".to_string());
+    out.push(ir.clone());
+    out.push("--- ir-reparsed".to_string());
+    out.push(again.clone());
+    out.push(format!(
+        "--- round-trip {}",
+        if ir == again { "ok" } else { "DIFFERS" }
+    ));
+    Ok(out.join("\n"))
+}
+
+/// `str(bool)` — `True` / `False`, because the separator lines interpolate one.
+fn py_bool(b: bool) -> &'static str {
+    if b { "True" } else { "False" }
 }

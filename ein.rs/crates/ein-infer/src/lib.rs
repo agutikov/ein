@@ -83,4 +83,4 @@ pub use solve::{
     Dumper, LatticeProof, LatticeStats, MonotonicStats, NoDumper, OnBudget, SolveError,
     SolveOptions, Solved, solve,
 };
-pub use verdict::{Answer, Solution, Verdict};
+pub use verdict::{Answer, Solution, Verdict, goal_bindings, query_value};

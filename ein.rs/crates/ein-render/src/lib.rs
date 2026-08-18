@@ -11,6 +11,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod answer;
 pub mod builder;
 pub mod constraints;
 pub mod derivation;
@@ -22,8 +23,10 @@ pub mod palette;
 pub mod rules;
 pub mod shape;
 pub mod slice;
+pub mod trace;
 pub mod why;
 
+pub use answer::{render_answer, render_solution_table};
 pub use constraints::render_constraints;
 pub use derivation::{derivation_dag_to_dot, fact_dot_id};
 pub use dot_util::{esc, fact_key, fact_label, hashed_id, multiline, quote, value_label};
@@ -34,4 +37,8 @@ pub use palette::{PALETTE, hash_color};
 pub use rules::{RuleMode, render_rule_form, render_rules_forms};
 pub use shape::dot_shape;
 pub use slice::{render_slice, render_solution, render_state};
+pub use trace::{
+    LinearizeOpts, Mode, Reductio, Trace, TraceStep, linearize, parse_trace_steps, render_markdown,
+    trace_to_ir,
+};
 pub use why::render_why;
