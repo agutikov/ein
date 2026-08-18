@@ -241,7 +241,20 @@ they are worth taking either way:
   should be judged against: it does not have to make matching faster, it
   has to make **the 95 % that is re-derivation** nearly free.
 
-### Task T1a.6.9.6 — Re-measure and record
+### Task T1a.6.9.6 — Re-measure and record ◐
+
+**The shipping build did not move, and that is the result to record.** The
+feature is off by default and `fork_delta_enabled()` is `false` without it, so
+`solve zebra2.ein -e` is 138.6 ms against S1a.6.8's 138.1 and `solve
+zebra.ein -e` is 530.5 against 539.9 — within the spread. T3 is 472/473 with
+[D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
+the only cell, as before. The §9 split was re-run and is in
+[baseline.md §9](baseline.md#9-the-fork-entry-re-derivation); what the
+*resumed* build measures is [§11](baseline.md#11-the-resumed-fork-saturator-measured).
+The four targets are re-stated once Q-M1a.18 decides whether §11's numbers are
+the phase's or a footnote.
+
+The task as originally written:
 
 The phase rule: re-run the S1a.6.1 instruments, record in
 [design/README.md § Measured](../design/README.md#measured), and state

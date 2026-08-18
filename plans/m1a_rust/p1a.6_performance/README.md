@@ -67,6 +67,14 @@ outright is *observable*
 removing it invisibly is what [S1a.6.8](s1a.6.8_compile_cache_and_extents.md)
 and [S1a.6.3](s1a.6.3_beta_memories.md) do to its two halves.
 
+**Removing it outright has now been built and measured**
+([§11](baseline.md#11-the-resumed-fork-saturator-measured), off by default):
+`zebra -e` **392.6 ms**, so the missed target is a decision rather than an
+engineering problem. What the decision costs is that 90 002 facts would record
+a different — equally valid — one of their derivations as the primary, which
+is [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)'s
+to weigh.
+
 ## Stages
 
 Everything after S1a.6.1 is *chosen* by the table S1a.6.1 produces. The
@@ -81,7 +89,7 @@ and [§9](baseline.md#9-the-fork-entry-re-derivation).
 |---|---|---|---|---|
 | 1 | [S1a.6.1](s1a.6.1_profile_baseline.md) ✅ | Fresh profile and bench baseline | 2 d | **shipped 2026-08-18** |
 | 2 | [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) ✅ | The compile cache and the extent counts | 2 d | **shipped 2026-08-18** — −30.5 % / −7.8 %, `plan_compile` 17 430 → 305, T3 unchanged |
-| 3 | [S1a.6.9](s1a.6.9_fork_entry_delta.md) 🆕 | The fork-entry delta — **measure + decide** | 3 d | 95.0 % of `zebra -e` is fork saturation and 94.6 % of that is re-derivation; the decision gates how S1a.6.3 is framed. Its implementation half is conditional and runs last |
+| 3 | [S1a.6.9](s1a.6.9_fork_entry_delta.md) ◐ | The fork-entry delta — **measure + decide** | 3 d | **T1a.6.9.1–3 shipped 2026-08-18**; T1a.6.9.4/5/6 wait on Q-M1a.18. Built behind `--features fork-delta`: fork firings −74 % / −77 %, `zebra -e` **392.6 ms — the target crossed** — the fixpoint, verdict, `k`, models and cores verified unchanged over 1.08 M enterings, and **90 002 facts' primary justification moved** |
 | 4 | [S1a.6.2](s1a.6.2_memory_layout.md) | Memory layout | 3 d | 21 % of self time is `malloc` / `cfree` / libc, at ~53 bytes per allocation — plus a system allocator (T1a.6.2.7) and a per-entering region (T1a.6.2.8), since ~0.15 % of what a fork allocates outlives it |
 | 5 | [S1a.6.3](s1a.6.3_beta_memories.md) | Beta-memories (F11 D1) — **gate opens** | 4 d | 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB — the fact F11 D1 was parked on |
 | 6 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) | Hypgen and lattice hot paths | 3 d | 7.3 % / 5.3 % self — real, smaller than written; T1a.6.4.1's argument re-aims at saturation |
