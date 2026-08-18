@@ -1,5 +1,8 @@
 # Ein
 
+[![per-commit](https://github.com/agutikov/ein/actions/workflows/per-commit.yml/badge.svg)](https://github.com/agutikov/ein/actions/workflows/per-commit.yml)
+[![nightly](https://github.com/agutikov/ein/actions/workflows/nightly.yml/badge.svg)](https://github.com/agutikov/ein/actions/workflows/nightly.yml)
+
 Graph-based relation algebra solver — a prototype now being
 modernised in light of neuro-symbolic and constrained-reasoning research.
 
