@@ -288,8 +288,10 @@ Revisit only if `python_repr` turns out to be a bug farm.
 
 ## 8. Hashes that reach the output
 
-Two hash functions surface in artefacts, and they are in opposite
-states — verified 2026-08-17:
+**Three** hash functions surface in artefacts — two verified 2026-08-17,
+the third at [S1a.5.1](../p1a.5_presentation/s1a.5.1_dot_renderers.md),
+which is where the renderer that uses it was ported. Two are portable
+and one is not:
 
 - **`render.dot_util.hashed_id(prefix, seed)` is portable.** It is
   `prefix + md5(seed.encode("utf-8")).hexdigest()[:10]`. ein.rs
@@ -300,6 +302,16 @@ states — verified 2026-08-17:
   (`fact_key`'s flat `rel|arg,arg` form, and `render/slice`'s recursive
   key) — ein.rs must match **those** string builders too, not just the
   digest.
+- **`render.palette.hash_color(name)` is portable.** T1a.5.1.1 asked
+  whether it hashes with a stable digest or with Python's salted
+  `hash()` — the latter would have put it on `state_digest`'s footing
+  and meant fixing ein.py before porting it. It is
+  `PALETTE[int(sha1(name).hexdigest(), 16) % 10]`: a digest, so stable
+  across `PYTHONHASHSEED`, and there is nothing to fix. It reaches every
+  DOT artefact as a colour attribute but never as a node *id*, so a
+  mismatch would be visible rather than structural. ein.rs folds the
+  20-byte digest under the modulus instead of building a 160-bit
+  integer — same residue, no bignum.
 - **`canon.state_digest` is *not* portable, and not stable across
   CPython runs either.** It is `hash(state_key)` — a tuple of `str`s
   through SipHash, salted by `PYTHONHASHSEED`. Its docstring says

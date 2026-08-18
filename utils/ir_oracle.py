@@ -38,6 +38,7 @@ One JSON object per line in, one per line out, in order:
     {"op": "solve-shape",   "path": …}           → the whole solve: verdict, counters, events
     {"op": "solve-shape",   "path": …, "mode": "exhaustive"} → … without `stop_after`
     {"op": "solve-shape",   "path": …, "mode": "shuffled"}   → … with `--shuffle --seed 7`
+    {"op": "dot-shape",     "path": …, "view": "<view>"}     → one of the DOT views (below)
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -888,6 +889,131 @@ def _solve_shape(kb: KnowledgeBase, mode: str = "fast") -> str:
     return "\n".join(out)
 
 
+# ── DOT renderers — S1a.5.1 ────────────────────────────────────────
+#
+# `dot-shape` renders one *view* of a file and hands back the bytes. Unlike
+# the shape ops above it invents no rendering of its own: every view is a
+# renderer entry point called exactly as a CLI subcommand or the trace calls
+# it, so what the diff compares is the artefact a user sees. The views split
+# three ways by what they need — the parsed forms, a loaded KB, or a whole
+# solve — and the Rust side enumerates the same names.
+
+_DOT_PARSE_VIEWS = (
+    "ir", "ir-levi", "ir-overlay", "ir-trace-dag", "ir-forms",
+    "rules", "rules-overlay", "constraints",
+)
+_DOT_KB_VIEWS = (
+    "kb", "kb-origin", "kb-none", "kb-no-types", "kb-no-instances",
+    "kb-since",
+)
+_DOT_SOLVE_VIEWS = ("lattice", "lattice-full", "slice")
+
+DOT_VIEWS = _DOT_PARSE_VIEWS + _DOT_KB_VIEWS + _DOT_SOLVE_VIEWS
+
+
+def _dot_parse_view(forms, view: str) -> str:
+    """The views that need only the parsed forms — `ein render rules |
+    constraints` and the per-form IR renderer in each of its modes."""
+    from ein.ir import Atom, SForm
+    from ein.ir.to_dot import to_dot
+    from ein.render import render_constraints, render_rules
+
+    if view == "ir":
+        return to_dot(forms)
+    if view == "ir-levi":
+        return to_dot(forms, levi=True)
+    if view == "ir-overlay":
+        return to_dot(forms, rule_mode="overlay")
+    if view == "ir-trace-dag":
+        return to_dot(forms, trace_view="dag")
+    if view == "ir-forms":
+        # One digraph per top-level form, through the single-node dispatch —
+        # which is the only way `(config …)`'s empty string is reachable.
+        out = []
+        for i, f in enumerate(forms):
+            head = f.head.name if isinstance(f, SForm) else "?"
+            out.append(f"--- {i} {head}\n{to_dot(f)}")
+        return "\n".join(out)
+    if view in ("rules", "rules-overlay"):
+        mode = "overlay" if view.endswith("overlay") else "sidebyside"
+        rules = [n for n in forms
+                 if isinstance(n, SForm) and n.head.name in ("rule", "hrule")]
+        return render_rules(SForm(head=Atom(name="rules"), args=tuple(rules)),
+                            mode=mode)
+    if view == "constraints":
+        return render_constraints(forms)
+    raise ValueError(f"unknown dot view {view!r}")
+
+
+def _dot_kb_view(kb: KnowledgeBase, view: str) -> str:
+    """`kb.to_dot`'s whole keyword surface, plus the `since=` transition
+    highlight — which needs a *pair* of KBs, so it saturates one."""
+    from ein.kb.render import to_dot
+
+    if view == "kb":
+        return to_dot(kb)
+    if view == "kb-origin":
+        return to_dot(kb, colour_by="origin")
+    if view == "kb-none":
+        return to_dot(kb, colour_by="none", name="plain")
+    if view == "kb-no-types":
+        return to_dot(kb, include_types=False)
+    if view == "kb-no-instances":
+        return to_dot(kb, include_instances=False)
+    if view == "kb-since":
+        from ein.inference.saturator import Saturator
+        root = kb.snapshot()
+        for _ in Saturator(kb).saturate():
+            pass
+        return to_dot(kb, since=root, name="state")
+    raise ValueError(f"unknown dot view {view!r}")
+
+
+def _dot_solve_view(kb: KnowledgeBase, view: str) -> str:
+    """The two views that *run the engine*: the commitment lattice `ein
+    render lattice` prints, and the per-commitment provenance cones the trace
+    embeds. Budgeted like `solve-shape`, and for the same reason."""
+    from ein.inference.monotonic import solve
+    from ein.render import render_slice
+    from ein.render.lattice_dag import render_lattice
+
+    verdict, _ = solve(kb, stop_after=None, max_set_size=3,
+                       max_enterings=60, on_budget="verdict",
+                       store_lattice=True)
+    proof = getattr(verdict, "proof", None)
+    if proof is None:
+        return "NO PROOF"
+    if view == "lattice":
+        return render_lattice(proof, view="solution")
+    if view == "lattice-full":
+        # Always the fallback-with-a-note path: `solve` never populates
+        # `kb_index`, which is what the `--view full` help text says.
+        return render_lattice(proof, view="full")
+    # The three shapes `trace.linearize` builds, with its own arguments: the
+    # whole-commitment cone, the per-firing step diagram, and the reductio.
+    out = []
+    for i, s in enumerate(proof.solutions):
+        out.append(f"--- solution {i}")
+        out.append(render_slice(s.commitment, s.firings, s.kb, name=f"sol{i}"))
+        for n, firing in enumerate(s.firings[:5], start=1):
+            out.append(f"--- step {i}.{n}")
+            out.append(render_slice((), (firing,), s.kb, name=f"step{n}"))
+    for i, d in enumerate(proof.dead_commitments):
+        out.append(f"--- dead {i}")
+        out.append(render_slice(d.commitment, (), kb, name="reductio",
+                                contradiction=(d.unsat_core, d.learned_clause)))
+    return "\n".join(out)
+
+
+def _dot_shape(forms, base_dir, view: str) -> str:
+    if view in _DOT_PARSE_VIEWS:
+        return _dot_parse_view(forms, view)
+    kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+    if view in _DOT_KB_VIEWS:
+        return _dot_kb_view(kb, view)
+    return _dot_solve_view(kb, view)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -939,6 +1065,9 @@ def _handle(req: dict) -> dict:
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True,
                 "out": _explain_shape(kb, bool(req.get("alts", True)))}
+    if op == "dot-shape":
+        return {"ok": True,
+                "out": _dot_shape(forms, base_dir, str(req.get("view", "ir")))}
     if op == "accept":
         return {"ok": True}
     if op == "parse":

@@ -79,6 +79,7 @@ if that ever matters.
 | `smallvec` | core, infer | premises, bindings, commitments — all small and hot |
 | `bitvec` *or* a hand-rolled `BitSet` | core | presence / negated / alive sets. Hand-rolled is ~80 lines; prefer it |
 | `md-5` | render | `hashed_id` parity ([02](02_determinism_and_order.md) §8) |
+| `sha1` | render | `palette.hash_color`'s index — the same argument one digest over ([S1a.5.1](../p1a.5_presentation/s1a.5.1_dot_renderers.md)) |
 | `blake3` | einb | content addressing |
 | `include_dir` | ir | embedded stdlib |
 | `memchr` | ir | lexer scanning |

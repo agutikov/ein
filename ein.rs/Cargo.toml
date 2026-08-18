@@ -52,6 +52,8 @@ include_dir = "0.7"
 # `render.dot_util.hashed_id` is `md5(seed)[:10]` and the checked-in DOT
 # goldens are its fixture (design/02 §8) — a node id, not a security claim.
 md-5        = "0.10"
+# `render.palette.hash_color` — the relation-colour index (design/02 §8).
+sha1        = "0.10"
 sha2        = "0.10"
 criterion   = { version = "0.7", default-features = false, features = ["cargo_bench_support"] }
 

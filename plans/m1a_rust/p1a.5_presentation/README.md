@@ -1,6 +1,7 @@
 # P1a.5 — Presentation and CLI
 
 **Milestone:** [M1a — Rust port](../README.md)
+**Status:** **in progress** — S1a.5.1 shipped 2026-08-18.
 **Estimate:** 3 weeks (14 days of stages)
 **Depends on:** [P1a.4](../p1a.4_search_layer/README.md)
 **Blocks:** [P1a.6](../p1a.6_performance/README.md) — nothing is
@@ -19,12 +20,12 @@ invariant I1 is discharged.
 
 ## Stages
 
-| stage | title | est. |
-|---|---|---|
-| [S1a.5.1](s1a.5.1_dot_renderers.md) | DOT renderers | 4 d |
-| [S1a.5.2](s1a.5.2_trace_and_answer.md) | Trace and answer rendering | 4 d |
-| [S1a.5.3](s1a.5.3_state_dumps.md) | State dumps | 2 d |
-| [S1a.5.4](s1a.5.4_cli.md) | The CLI | 4 d |
+| stage | title | est. | shipped |
+|---|---|---|---|
+| [S1a.5.1](s1a.5.1_dot_renderers.md) | DOT renderers | 4 d | ✅ |
+| [S1a.5.2](s1a.5.2_trace_and_answer.md) | Trace and answer rendering | 4 d | |
+| [S1a.5.3](s1a.5.3_state_dumps.md) | State dumps | 2 d | |
+| [S1a.5.4](s1a.5.4_cli.md) | The CLI | 4 d | |
 
 ## Acceptance for the phase
 

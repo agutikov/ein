@@ -7,10 +7,17 @@ license.workspace    = true
 repository.workspace = true
 
 [dependencies]
-ein-core = { path = "../ein-core" }
+ein-core  = { path = "../ein-core" }
+ein-ir    = { path = "../ein-ir" }
+ein-infer = { path = "../ein-infer" }
 md-5.workspace = true
+# `render/palette.hash_color` is `sha1(name)` mod the palette length — a
+# colour index, not a security claim, and stable across `PYTHONHASHSEED`
+# precisely because it is a digest and not Python's salted `hash()`.
+sha1.workspace = true
 
 [dev-dependencies]
 # The DOT goldens under `ein.py/tests/golden/dot/` are the fixture; reading
 # them needs nothing, but building the KB a golden was captured from does.
 ein-oracle = { path = "../ein-oracle" }
+serde_json.workspace = true

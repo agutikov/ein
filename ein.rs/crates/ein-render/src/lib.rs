@@ -11,8 +11,27 @@
 
 #![forbid(unsafe_code)]
 
+pub mod builder;
+pub mod constraints;
 pub mod derivation;
 pub mod dot_util;
+pub mod ir_dot;
+pub mod kb_dot;
+pub mod lattice_dag;
+pub mod palette;
+pub mod rules;
+pub mod shape;
+pub mod slice;
+pub mod why;
 
+pub use constraints::render_constraints;
 pub use derivation::{derivation_dag_to_dot, fact_dot_id};
-pub use dot_util::{esc, fact_key, hashed_id, quote};
+pub use dot_util::{esc, fact_key, fact_label, hashed_id, multiline, quote, value_label};
+pub use ir_dot::{DotOpts, TraceView, to_dot as ir_to_dot, to_dot_form};
+pub use kb_dot::{ColourBy, KbDotOpts, to_dot as kb_to_dot};
+pub use lattice_dag::{LatticeView, render_lattice};
+pub use palette::{PALETTE, hash_color};
+pub use rules::{RuleMode, render_rule_form, render_rules_forms};
+pub use shape::dot_shape;
+pub use slice::{render_slice, render_solution, render_state};
+pub use why::render_why;
