@@ -128,6 +128,15 @@ That strengthens (a): no puzzle without an hrule can hit this, and (b)
 would re-baseline every candidate order in the corpus to fix an input
 nobody has written.
 
+**The comparator (a) needs landed at
+[S1a.2.1](p1a.2_kb_core/s1a.2.1_interner_and_values.md)**:
+`Terms::cmp_semantic` orders `Int < Sym < Fact` across tags, as H2
+recommends, and within a tag by the interner's rank table or by numeric
+value at any width. `Value` deliberately has no `Ord`, so the identity
+order cannot reach a sort site by accident. What is still open is only
+the *ledger* entry, which needs the behaviour to be reachable — that is
+[P1a.4](p1a.4_search_layer/README.md), where `apriori.layer_1` runs.
+
 ## Q-M1a.5 — Reproducing CPython's `shuffle`
 
 `--shuffle` seeds `random.Random(seed)` and shuffles each layer's
@@ -159,6 +168,13 @@ dataclass `repr` (`Loc(file='…', line=6, col=20)`) otherwise, which is
 what makes the eleven `examples/broken/load/import_*.expected` messages
 byte-identical — every one of them ends `at None`. The fix, when it
 comes, re-baselines all of them in both implementations at once.
+
+**Confirmed across the whole loader at
+[P1a.2](p1a.2_kb_core/README.md)**: all eighteen remaining
+`examples/broken/load/` messages end `at None` too, and the one that does
+*not* — `macro_arity_mismatch`, whose error is raised inside macro
+expansion on a nested node — carries a real `Loc`. So the re-baseline is
+exactly "every loader message except one".
 
 ## Q-M1a.7 — May `--jobs > 1` move counters?
 
