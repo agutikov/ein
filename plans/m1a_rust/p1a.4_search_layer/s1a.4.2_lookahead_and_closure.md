@@ -1,38 +1,33 @@
 # S1a.4.2 — Lookahead, closure marking, NAF dependency map
 
 **Phase:** P1a.4 (Search layer)
+**Status:** **shipped** 2026-08-18 — acceptance below.
 **Estimate:** 3 days
 **Depends on:** [S1a.4.1](s1a.4.1_hypothesis_generation.md)
 **Implements:** `ein/inference/{lookahead,closed,naf_deps}.py`
 
-> **Two thirds of this stage landed with
-> [S1a.4.1](s1a.4.1_hypothesis_generation.md), 2026-08-18.** The filter
-> pipeline's own acceptance — "`HypGenStats` identical for every corpus
-> entry, every `filtered.*` key and every `pre_candidate.*` key" — is not
-> checkable without them: `enable_pre_branch_lookahead` defaults to
-> **true**, and on the corpus the lookahead accounts for **547 of 4 479**
-> raw candidates. A stage cannot meet its acceptance by leaving out the
-> filter that decides an eighth of it, so `lookahead.rs` (T1a.4.2.1–4) and
-> hypgen's own `_is_closed` reader (T1a.4.1.3) came forward, exactly as the
-> NAF boundary came forward to
-> [S1a.3.3](../p1a.3_deductive_core/s1a.3.3_saturator.md). Both are T2-green
-> through the `hyp-shape` diff, and both carry the fixtures the mutation
-> tests said the corpus was missing (below).
+> **Shipped 2026-08-18, in two commits.** Two thirds of it landed with
+> [S1a.4.1](s1a.4.1_hypothesis_generation.md): the filter pipeline's own
+> acceptance — "`HypGenStats` identical for every corpus entry, every
+> `filtered.*` key and every `pre_candidate.*` key" — is not checkable
+> without the lookahead, since `enable_pre_branch_lookahead` defaults to
+> **true** and it accounts for 547 of the corpus's 4 479 raw candidates. A
+> stage cannot meet its acceptance by leaving out the filter that decides an
+> eighth of it, so `lookahead.rs` (T1a.4.2.1–4) and hypgen's `_is_closed`
+> reader came forward, exactly as the NAF boundary came forward to
+> [S1a.3.3](../p1a.3_deductive_core/s1a.3.3_saturator.md). The rest —
+> `closed.rs`, `naf_deps.rs` and their two diffs — is this stage's own commit.
 >
-> **What is left here:** `emit_closed` / `producible_relations` — the
-> *producer* of `(__closed__ R)`, which is hypgen's input and not hypgen's
-> code — `naf_deps` whole, a second `hyp-shape` regime that runs it, and
-> the lever fixtures.
->
-> One thing to know before porting it: **`emit_closed` is not on the
-> `solve` path.** Both call sites (`cli/solve.py`'s `--hyp-stats` preview
-> and `cli/_summary.py`'s root observables) run it on a **fork**, so the
-> search itself sees every relation open. That is why S1a.4.1's instrument
-> does not run it and is nonetheless comparing what `solve` will compare —
-> and it is also why the regime matters, because it moves a lot: with
-> `emit_closed` the corpus totals go `closed_relation` 6 → 278,
-> `no_hypothesis_relation` 36 → 0, `lookahead_killed` 547 → 279 and `raw`
-> 4 479 → 3 022.
+> One thing worth knowing before reading the tasks: **`emit_closed` is not on
+> the `solve` path.** Both ein.py call sites (`cli/solve.py`'s `--hyp-stats`
+> preview and `cli/_summary.py`'s root observables) run it on a **fork**, so
+> the search itself sees every relation open. That is why S1a.4.1's instrument
+> did not run it and was nonetheless comparing what `solve` will compare — and
+> it is also why the second regime is a separate sweep rather than a better
+> one, because it moves a lot: `closed_relation` 6 → 278,
+> `no_hypothesis_relation` 36 → 0 (a closed relation is skipped before the
+> blacklist is consulted, so that counter is only *reachable* in the other
+> regime), `lookahead_killed` 547 → 279, `raw` 4 489 → 3 027.
 
 ## Context
 
@@ -68,12 +63,31 @@ propose*, and one that only warns.
   `filterwarnings=["error"]`, so text matters).
 - `examples/branching/{06,07,10,11}` (lookahead on/off, kill cache
   on/off) reproduce their T2 event traces.
-- **Already met at S1a.4.1** for everything but the kill-cache lever: the
-  `hyp` stream and the stats block agree on all 66 loadable corpus files
-  (4 489 candidates), `13_lookahead_naf_world.ein` and
-  `14_lookahead_unjudgeable.ein` pin the two D3 halves, and the kill-cache
-  writes are compared as the `negated_fact` verdicts they cause on later
-  candidates in the same call.
+
+**All met, 2026-08-18.** Three sweeps over the same 66 loadable corpus files,
+0 differences in each:
+
+| sweep | what it compares | items |
+|---|---|---:|
+| `hyp` | the `hyp` / `hypskip` stream + the `--hyp-stats` report | 4 489 candidates |
+| `hyp+closed` | the same after `emit_closed`, plus its `CLOSED` list | 3 027 candidates |
+| `naf` | every `NafDep` record + every `DerivedNafWarning` text | 326 records |
+
+The lever rows come free: `07_lookahead_off.ein` and `11_kill_cache_off.ein`
+carry their `(config …)` in the file, so the sweeps read them at both settings
+— `11` writes 0 `(not h)` facts against `10`'s 12, on the same 12 kills.
+The kill-cache writes are compared as the `negated_fact` verdicts they cause on
+later candidates in the *same* call, which is where they are observable.
+
+Each was mutation-checked rather than assumed: swapping the Scope B pool moves
+2 files, dropping `emit_closed`'s already-closed check moves 1, and removing
+the `NafDep` sort moves 7.
+
+**One thing is deliberately not here:** the `warn_derived_naf` *gate*. ein.py
+emits the warnings from `_phase1_root`, once per solve, post-root-saturation —
+so the flag belongs with the solve loop
+([S1a.4.5](s1a.4.5_solve_loop.md)). What is pinned here is the text and the
+records it is computed from, which is the part a port gets wrong.
 
 ## Tasks
 
@@ -112,7 +126,7 @@ provenance walks ground out on it
 ([reserved_engine_strings.md](../../../docs/kernel/inference/reserved_engine_strings.md)).
 Gated by `enable_lookahead_kill_cache`.
 
-### Task T1a.4.2.5 — `closed` — **half landed at S1a.4.1**
+### Task T1a.4.2.5 — `closed`
 
 `CLOSED = "__closed__"` and `hypgen._is_closed` — which reads
 `_facts_by_relation[CLOSED]` and matches `args == (r_name,)` — are

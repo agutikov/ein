@@ -17,6 +17,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod closed;
 pub mod compile;
 pub mod contradiction;
 pub mod engine;
@@ -26,11 +27,13 @@ pub mod hrule;
 pub mod hypgen;
 pub mod lookahead;
 pub mod match_;
+pub mod naf_deps;
 pub mod plan;
 pub mod predicates;
 pub mod saturator;
 pub mod shape;
 
+pub use closed::{emit_closed, producible_relations};
 pub use compile::{
     CompileError, PlanKey, PlanMemo, activators_for, asserted_relation, compile_rule,
     naf_relation_refs, negated_relation, plan_key,
@@ -46,10 +49,13 @@ pub use hypgen::{
 };
 pub use lookahead::Lookahead;
 pub use match_::{Emit, Match, Matcher};
+pub use naf_deps::{NafDep, compute_naf_map, derived_naf_warnings};
 pub use plan::{
     Disjunct, GuardArg, GuardArgKind, MAX_REGS, NafGuard, Plan, PlanId, Probe, ProbeSrc, Reg,
     RelStep, Slot, Span, Step,
 };
 pub use predicates::Pred;
 pub use saturator::{SaturateError, Saturator, Session};
-pub use shape::{hyp_shape, match_shape, plan_shape, plan_shape_with, saturate_events};
+pub use shape::{
+    hyp_shape, hyp_shape_with, match_shape, naf_map, plan_shape, plan_shape_with, saturate_events,
+};

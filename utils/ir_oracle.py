@@ -28,6 +28,8 @@ One JSON object per line in, one per line out, in order:
     {"op": "match-shape", "path": …}             → every match every plan produces
     {"op": "saturate-events", "path": …}         → the `--events` log of a root saturation
     {"op": "hyp-shape", "path": …}               → every hypgen candidate + its verdict
+    {"op": "hyp-shape", "path": …, "closed": true}    → … after the auto-closure pass
+    {"op": "naf-map",   "path": …}               → the static NAF dependency map
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -77,6 +79,24 @@ with events off, since each builds its own `Lookahead` and would otherwise bury
 the stream in a second copy of every `compile` event. `emit_closed` is
 deliberately **not** run: it belongs to S1a.4.2, so what this op sees is the
 `(__closed__ R)` facts a puzzle authored or `std.closure` derived.
+
+`hyp-shape`'s `closed` flag runs `closed.emit_closed` on the KB before the
+root saturation, which is the *other* regime the generator is asked in — the
+one `ein solve --hyp-stats` and the JSON summary use, on a fork. It moves a
+lot: over the corpus `closed_relation` goes from 6 pre-candidate skips to 278,
+`no_hypothesis_relation` from 36 to 0 (the blacklisted relations are closed
+before the blacklist is consulted), `lookahead_killed` from 547 to 279 and
+`raw` from 4 479 candidates to 3 022. The newly-closed names go out in registry
+order as a `CLOSED` block, because `emit_closed`'s return value is a list and
+its order is a relation-registry order that nothing else exposes.
+
+`naf-map` is `naf_deps.compute_naf_map` over a **saturated** engine cache, plus
+the `DerivedNafWarning` texts `emit_derived_naf_warnings` would raise. The
+cache must be saturated or the map is incomplete: most NAF-bearing rules in the
+Zebra family are activated by *derived* facts that do not exist at load, so
+their plan is compiled only once the enqueue pass has refreshed the cache. The
+warning text is compared rather than summarised because the suite runs under
+`filterwarnings=["error"]`, so a caller sees it verbatim.
 
 `expand` is the one op with no single function behind it: `ein.ir.macros`
 provides `expand_macros` / `_substitute`, and the *loader* decides what to run
@@ -418,7 +438,7 @@ def _saturate_events(kb: KnowledgeBase) -> str:
     )
 
 
-def _hyp_shape(kb: KnowledgeBase) -> str:
+def _hyp_shape(kb: KnowledgeBase, closed: bool = False) -> str:
     """Every hypgen candidate, its verdict, and the stats — S1a.4.1.
 
     Three phases, and the split is what keeps the stream readable: saturate
@@ -432,6 +452,11 @@ def _hyp_shape(kb: KnowledgeBase) -> str:
     `next(generator, None) is None`, and the short-circuit (S1.9.E16) is
     invisible in the boolean and visible in how many candidates were built to
     reach it.
+
+    `closed` runs the auto-closure pass first — S1a.4.2's regime, and the one
+    `--hyp-stats` uses. Its own output is a `CLOSED` line, since `emit_closed`
+    returns the newly-closed names in a relation-registry order nothing else
+    exposes.
     """
     import tempfile
 
@@ -439,6 +464,11 @@ def _hyp_shape(kb: KnowledgeBase) -> str:
     from ein.inference.hypgen import HypGenStats, _generate
     from ein.inference.saturator import Saturator
     from ein.inference.solution import open_hypotheses
+
+    newly: list[str] = []
+    if closed:
+        from ein.inference.closed import emit_closed
+        newly = emit_closed(kb)
 
     sat = Saturator(kb)
     for _ in sat.saturate():
@@ -462,6 +492,7 @@ def _hyp_shape(kb: KnowledgeBase) -> str:
     is_complete = next(_generate(kb, short), None) is None
     balanced = stats.raw == stats.emitted + sum(stats.filtered.values())
     lines = [
+        *([f"CLOSED {newly!r}"] if closed else []),
         "STATS",
         *stats.as_report_lines(),
         f"BALANCE {balanced}",
@@ -469,6 +500,38 @@ def _hyp_shape(kb: KnowledgeBase) -> str:
         f"OPEN {len(open_hypotheses(kb))}",
     ]
     return log + "\n".join(lines)
+
+
+def _naf_map(kb: KnowledgeBase) -> str:
+    """The static NAF dependency map over a **saturated** cache — S1a.4.2.
+
+    Saturating first is not a convenience: most NAF-bearing rules in the Zebra
+    family are activated by facts a rule derives, so their plan does not exist
+    until the enqueue pass has refreshed the cache, and a map taken at load
+    time silently omits exactly the rules the analysis is about.
+
+    The warning texts are compared verbatim rather than counted — the suite
+    runs under `filterwarnings=["error"]`, so a caller reads the string.
+    """
+    import warnings
+
+    from ein.inference.naf_deps import compute_naf_map, emit_derived_naf_warnings
+    from ein.inference.saturator import Saturator
+
+    sat = Saturator(kb)
+    for _ in sat.saturate():
+        pass
+    deps = compute_naf_map(sat.engine.cache)
+    out = [f"NAF {d.rule_name!r} {d.activator_args!r} "
+           f"derived={list(d.derived)!r} declared={list(d.declared_only)!r}"
+           for d in deps]
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        emit_derived_naf_warnings(sat.engine.cache)
+    out += [f"WARN {w.category.__name__} {w.message}" for w in caught]
+    out.append(f"SUMMARY plans={len(sat.engine.cache)} deps={len(deps)} "
+               f"warnings={len(caught)}")
+    return "\n".join(out)
 
 
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
@@ -503,7 +566,10 @@ def _handle(req: dict) -> dict:
         return {"ok": True, "out": _saturate_events(kb)}
     if op == "hyp-shape":
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
-        return {"ok": True, "out": _hyp_shape(kb)}
+        return {"ok": True, "out": _hyp_shape(kb, bool(req.get("closed", False)))}
+    if op == "naf-map":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True, "out": _naf_map(kb)}
     if op == "accept":
         return {"ok": True}
     if op == "parse":

@@ -230,12 +230,37 @@ pub fn saturate_events(
 /// is the third line's point: the S1.9.E16 short-circuit is invisible in the
 /// boolean and visible in how many candidates were built to reach it.
 ///
-/// `emit_closed` is deliberately not run — it is
-/// [S1a.4.2](../../../../plans/m1a_rust/p1a.4_search_layer/s1a.4.2_lookahead_and_closure.md)'s
-/// — so what this sees is the `(__closed__ R)` facts a puzzle authored or
-/// `std.closure` derived.
+/// `closed` runs the auto-closure pass first — the *other* regime the
+/// generator is asked in, and the one `--hyp-stats` and the JSON summary use.
+/// Without it what this sees is the `(__closed__ R)` facts a puzzle authored
+/// or `std.closure` derived, which is also what `solve` sees: both ein.py call
+/// sites run `emit_closed` on a **fork**.
 pub fn hyp_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, String> {
+    hyp_shape_with(ast, terms, kb, false)
+}
+
+/// [`hyp_shape`], optionally after the auto-closure pass.
+pub fn hyp_shape_with(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    closed: bool,
+) -> Result<String, String> {
     let mut off = crate::events::Events::off();
+    let mut newly: Vec<String> = Vec::new();
+    if closed {
+        let mut s = crate::saturator::Session {
+            kb,
+            terms,
+            ast,
+            events: &mut off,
+        };
+        newly = crate::closed::emit_closed(&mut s)
+            .map_err(|e| e.to_string())?
+            .into_iter()
+            .map(|n| repr_str(s.terms.sym(n)))
+            .collect();
+    }
     {
         let mut s = crate::saturator::Session {
             kb,
@@ -276,7 +301,11 @@ pub fn hyp_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, St
         crate::hypgen::complete_counted(&mut s, &mut short).map_err(|e| e.to_string())?;
     let open = crate::hypgen::open_hypotheses(&mut s).map_err(|e| e.to_string())?;
 
-    let mut lines = vec!["STATS".to_string()];
+    let mut lines = Vec::new();
+    if closed {
+        lines.push(format!("CLOSED [{}]", newly.join(", ")));
+    }
+    lines.push("STATS".to_string());
     lines.extend(stats.report_lines());
     lines.push(format!("BALANCE {}", py_bool(stats.balances())));
     lines.push(format!(
@@ -286,6 +315,70 @@ pub fn hyp_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, St
     ));
     lines.push(format!("OPEN {}", open.len()));
     Ok(buffer.to_string_lossy() + &lines.join("\n"))
+}
+
+/// The static NAF dependency map over a **saturated** cache — the S1a.4.2 diff.
+///
+/// Saturating first is not a convenience: most NAF-bearing rules in the Zebra
+/// family are activated by facts a rule derives, so their plan does not exist
+/// until the enqueue pass has refreshed the cache, and a map taken at load
+/// time silently omits exactly the rules the analysis is about.
+///
+/// The warning texts go out verbatim rather than counted — ein.py raises them
+/// through `warnings`, the suite runs under `filterwarnings=["error"]`, and a
+/// caller therefore reads the string.
+pub fn naf_map(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+) -> Result<String, crate::saturator::SaturateError> {
+    let mut events = crate::events::Events::off();
+    let mut s = crate::saturator::Session {
+        kb,
+        terms,
+        ast,
+        events: &mut events,
+    };
+    let mut sat = crate::saturator::Saturator::new(&mut s)?;
+    sat.saturate(&mut s, None, &mut |_| {})?;
+    let deps = crate::naf_deps::compute_naf_map(&sat.engine, s.terms);
+    let mut out: Vec<String> = deps
+        .iter()
+        .map(|d| {
+            format!(
+                "NAF {} {} derived={} declared={}",
+                repr_str(s.terms.sym(d.rule)),
+                repr(&PyValue::Tuple(
+                    d.activator
+                        .iter()
+                        .map(|&a| PyValue::Str(s.terms.sym(a).to_string()))
+                        .collect()
+                )),
+                py_list(&d.derived),
+                py_list(&d.declared_only),
+            )
+        })
+        .collect();
+    let warnings = crate::naf_deps::derived_naf_warnings(&sat.engine, s.terms);
+    out.extend(
+        warnings
+            .iter()
+            .map(|w| format!("WARN DerivedNafWarning {w}")),
+    );
+    out.push(format!(
+        "SUMMARY plans={} deps={} warnings={}",
+        sat.engine.len(),
+        deps.len(),
+        warnings.len()
+    ));
+    Ok(out.join("\n"))
+}
+
+/// `repr(list_of_str)` — `PyValue` has no list shape, and one is needed in
+/// exactly this one place.
+fn py_list(items: &[String]) -> String {
+    let rendered: Vec<String> = items.iter().map(|s| repr_str(s)).collect();
+    format!("[{}]", rendered.join(", "))
 }
 
 /// One [`NafRef`] as `repr((relation, args))` — the tuple `world._ground`

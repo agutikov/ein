@@ -12,6 +12,11 @@
 //!
 //! `n` is compared as a **position, not a field**, for the reason
 //! `saturate_parity` gives: one extra event renumbers every line after it.
+//!
+//! S1a.4.2 adds two more surfaces over the same corpus: the generator asked
+//! again **after the auto-closure pass** — a regime that moves `raw` from
+//! 4 489 candidates to 3 022 and is what `--hyp-stats` reports — and the
+//! static NAF dependency map with its warning text.
 
 use ein_core::Terms;
 use ein_ir::{Ast, load_file};
@@ -19,16 +24,115 @@ use ein_oracle::{Answer, IR_ORACLE, Oracle, corpus_files, repo_root, skip};
 use std::path::Path;
 
 fn rust_hyp(path: &Path) -> Option<Answer> {
+    rust_hyp_with(path, false)
+}
+
+fn rust_hyp_with(path: &Path, closed: bool) -> Option<Answer> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
-    Some(match ein_infer::hyp_shape(&ast, &mut terms, &mut kb) {
+    Some(
+        match ein_infer::hyp_shape_with(&ast, &mut terms, &mut kb, closed) {
+            Ok(text) => Answer::Ok(text),
+            Err(msg) => Answer::Err {
+                kind: "HypGenError".into(),
+                msg,
+            },
+        },
+    )
+}
+
+fn rust_naf(path: &Path) -> Option<Answer> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
+    Some(match ein_infer::naf_map(&ast, &mut terms, &mut kb) {
         Ok(text) => Answer::Ok(text),
-        Err(msg) => Answer::Err {
-            kind: "HypGenError".into(),
-            msg,
+        Err(e) => Answer::Err {
+            kind: "SaturateError".into(),
+            msg: e.to_string(),
         },
     })
+}
+
+/// One op over the whole corpus, comparing both sides line for line.
+fn sweep(
+    label: &str,
+    op: serde_json::Value,
+    rust: impl Fn(&Path) -> Option<Answer>,
+    count: impl Fn(&str) -> usize,
+    floors: (usize, usize),
+) {
+    let Some(mut py) = Oracle::start(IR_ORACLE) else {
+        return skip(label);
+    };
+    let (mut bad, mut compared, mut items) = (Vec::new(), 0, 0usize);
+    for path in &corpus_files() {
+        let Some(got) = rust(path) else { continue };
+        let mut req = op.clone();
+        req["path"] = serde_json::json!(path.to_str().expect("utf-8"));
+        let want = py.ask(req);
+        let name = path.strip_prefix(repo_root()).unwrap_or(path).display();
+        match (&got, &want) {
+            (Answer::Ok(a), Answer::Ok(b)) => {
+                compared += 1;
+                items += count(a);
+                if a != b {
+                    bad.push(format!("{name}\n{}", first_difference(a, b)));
+                }
+            }
+            (Answer::Err { .. }, Answer::Err { .. }) => {}
+            _ => bad.push(format!(
+                "{name}\n  rs: {}\n  py: {}",
+                brief(&got),
+                brief(&want)
+            )),
+        }
+    }
+    assert!(
+        bad.is_empty(),
+        "{} of {compared} files differ:\n\n{}",
+        bad.len(),
+        bad.join("\n\n")
+    );
+    eprintln!("{label}: {compared} files, {items} items, 0 differences");
+    // A gate that passes because nothing ran is not a gate; the floors exist
+    // only to catch a harness that silently stopped looking.
+    assert!(
+        compared >= floors.0 && items >= floors.1,
+        "only {compared} files / {items} items compared"
+    );
+}
+
+/// The same corpus after `emit_closed` — S1a.4.2's regime, and the one
+/// `--hyp-stats` and the JSON summary report.
+///
+/// It is not the same check with a flag flipped: closing a relation removes
+/// its candidates *before* the whitelist and blacklist are consulted, which is
+/// why `no_hypothesis_relation` goes to zero here and is only reachable at all
+/// in the other regime. Between them the two runs are the only way every
+/// pre-candidate counter is exercised.
+#[test]
+fn the_whole_corpus_generates_the_same_hypotheses_after_auto_closure() {
+    sweep(
+        "hyp+closed",
+        serde_json::json!({"op": "hyp-shape", "closed": true}),
+        |p| rust_hyp_with(p, true),
+        |a| a.lines().filter(|l| l.contains("\"hyp\"")).count(),
+        (60, 1500),
+    );
+}
+
+/// The static NAF dependency map, over a saturated cache.
+#[test]
+fn the_whole_corpus_reports_the_same_naf_dependencies() {
+    sweep(
+        "naf",
+        serde_json::json!({"op": "naf-map"}),
+        rust_naf,
+        |a| a.lines().filter(|l| l.starts_with("NAF ")).count(),
+        (60, 200),
+    );
 }
 
 #[test]
