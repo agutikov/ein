@@ -183,6 +183,7 @@ name = "ein-conformance"
 version = "0.1.0"
 dependencies = [
  "criterion",
+ "ein-ir",
  "serde",
  "serde_json",
  "toml",
@@ -205,6 +206,7 @@ version = "0.1.0"
 dependencies = [
  "ein-core",
  "include_dir",
+ "serde_json",
  "sha2",
 ]
 

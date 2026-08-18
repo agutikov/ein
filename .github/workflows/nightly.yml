@@ -71,6 +71,33 @@ jobs:
           path: conformance/out
           retention-days: 14
 
+  frontend-fuzz:
+    name: ein.rs — the IR differential fuzzer, at budget
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: { seed: ["1", "987654321"] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - uses: dtolnay/rust-toolchain@stable
+      - run: pip install -e ein.py
+      # 10^6 mutations is P1a.1's acceptance number; the per-commit tier runs
+      # 2 000 of them. A find is minimised and written to
+      # conformance/fuzz_findings/, which the failure artifact carries out.
+      - run: cargo test -p ein-ir --release --test fuzz_parity
+        working-directory: ein.rs
+        env:
+          EIN_FUZZ_ITERS: "1000000"
+          EIN_FUZZ_SEED: ${{ matrix.seed }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: fuzz-findings-${{ matrix.seed }}
+          path: conformance/fuzz_findings
+          retention-days: 30
+
   benches:
     name: benchmarks — both implementations, one measurement set
     runs-on: ubuntu-latest

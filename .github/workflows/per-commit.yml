@@ -60,9 +60,18 @@ jobs:
         with: { components: rustfmt, clippy }
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
+      # ein.py is a *test* dependency of ein.rs from P1a.1 on: the frontend
+      # has no CLI surface for the conformance harness to drive, so its parity
+      # tests talk to `utils/ir_oracle.py` instead. Without this they skip —
+      # loudly, but they skip, and a silent gate is not a gate.
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - run: pip install -e ein.py
+        working-directory: .
       - run: cargo fmt --check
       - run: cargo clippy --workspace --all-targets -- -D warnings
-      # Covers the corpus-completeness check and the embedded-stdlib digest.
+      # Covers the corpus-completeness check, the embedded-stdlib digest, and
+      # the IR frontend's differential tests against ein.py.
       - run: cargo test --workspace
       - run: cargo bench --bench engine -- --test
 

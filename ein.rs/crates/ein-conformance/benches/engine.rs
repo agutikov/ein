@@ -27,6 +27,8 @@
 //! Refresh both with one command each:
 //! `python3 utils/bench_baseline.py --json …` and `cargo bench`.
 
+use std::path::PathBuf;
+
 use criterion::{Criterion, criterion_group, criterion_main};
 
 /// Marks a bench whose engine has not landed. It reports itself once and
@@ -39,9 +41,60 @@ fn pending(c: &mut Criterion, name: &str, lands_in: &str) {
     group.finish();
 }
 
+fn repo_root() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../..")
+        .canonicalize()
+        .expect("repo root")
+}
+
+/// `parse` — zebra2.ein, zebra.ein and the seven stdlib modules, in one
+/// measurement, because that is the unit `utils/bench_baseline.py` times on
+/// the Python side (S1a.1.1).
 fn frontend(c: &mut Criterion) {
-    // zebra2.ein, zebra.ein and the seven stdlib modules.
-    pending(c, "parse", "P1a.1");
+    let root = repo_root();
+    let mut sources: Vec<(String, String)> = Vec::new();
+    for rel in ["examples/zebra2.ein", "examples/zebra.ein"] {
+        let path = root.join(rel);
+        sources.push((rel.to_string(), std::fs::read_to_string(&path).expect(rel)));
+    }
+    let stdlib = root.join("stdlib");
+    let mut modules: Vec<PathBuf> = std::fs::read_dir(&stdlib)
+        .expect("stdlib")
+        .flatten()
+        .map(|e| e.path())
+        .filter(|p| p.extension().is_some_and(|x| x == "ein"))
+        .collect();
+    modules.sort();
+    for path in modules {
+        let name = path
+            .file_name()
+            .expect("name")
+            .to_string_lossy()
+            .to_string();
+        sources.push((name, std::fs::read_to_string(&path).expect("module")));
+    }
+
+    let mut group = c.benchmark_group("parse");
+    group.bench_function("corpus", |b| {
+        b.iter(|| {
+            let mut ast = ein_ir::Ast::new();
+            for (name, text) in &sources {
+                ein_ir::parse(&mut ast, text, Some(name)).expect("parses");
+            }
+            std::hint::black_box(&ast);
+        })
+    });
+    group.bench_function("zebra2", |b| {
+        let text = &sources[0].1;
+        b.iter(|| {
+            let mut ast = ein_ir::Ast::new();
+            let forms = ein_ir::parse(&mut ast, text, Some("zebra2.ein")).expect("parses");
+            std::hint::black_box(forms.len());
+        })
+    });
+    group.finish();
+
     // parse + import resolution + macro expansion + index build.
     pending(c, "load", "P1a.2");
 }
