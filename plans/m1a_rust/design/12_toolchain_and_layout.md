@@ -141,6 +141,10 @@ Three tiers.
 - `./run_tests.sh` full, including the acceptance gate
 - benches (`criterion`) with regression thresholds
 - the differential fuzzer for a fixed budget, corpus-minimising any find
+- `ein.py` packaging: build the sdist + wheel and install from **each**.
+  Per-commit installs editable, which exercises one of the three build hooks;
+  an sdist that omits the in-tree backend ([11](11_shared_assets.md)
+  § Packaging) is unbuildable and nothing else would notice
 
 **Release**
 

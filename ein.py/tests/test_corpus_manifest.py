@@ -27,10 +27,16 @@ GROUPS = {"positive", "parse-negative", "load-negative", "stdlib",
 
 
 def _stdlib_dir() -> Path:
-    """Where the stdlib lives today. Moves to repo-root `stdlib/` in
-    S1a.0.3; the corpus paths move with it."""
-    import ein
-    return Path(ein.__file__).resolve().parent / "stdlib"
+    """The one checked-in stdlib — repo-root `stdlib/` since S1a.0.3.
+
+    Deliberately NOT `Path(ein.__file__).parent / "stdlib"`: that is the
+    build-time copy `_build.py` writes into the package, a git-ignored build
+    product the corpus does not list and must not be asked to. Reading it here
+    made this check fail the moment an editable install started working again
+    (2026-08-18) — seven `.ein` files "missing" from the manifest that are the
+    same seven it already lists under `stdlib/`.
+    """
+    return REPO / "stdlib"
 
 
 def _tracked() -> set[str]:

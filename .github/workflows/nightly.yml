@@ -112,3 +112,24 @@ jobs:
         working-directory: ein.rs
       - uses: actions/upload-artifact@v4
         with: { name: benches, path: bench-python.json, retention-days: 30 }
+
+  packaging:
+    name: ein.py — the sdist and wheel build, and install from them
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - run: pip install build
+      # The per-commit tier installs editable, which exercises `build_editable`
+      # and nothing else. These are the two paths a user gets — and the two
+      # that carry the stdlib copy out of the checkout (design/11 § Packaging).
+      # Installing FROM the sdist is the part that matters: an sdist that omits
+      # the in-tree backend cannot be built at all, and nothing else notices.
+      - run: python -m build --outdir dist ein.py
+      - run: pip install dist/*.whl
+      # Run from outside the repo, so the checkout cannot be what answers the
+      # import — this is the packaged copy or nothing.
+      - run: cd /tmp && ein saturate "$GITHUB_WORKSPACE/examples/features/05_stdlib_domain_elim.ein"
+      - run: pip uninstall -y ein && pip install dist/*.tar.gz
+      - run: cd /tmp && ein saturate "$GITHUB_WORKSPACE/examples/features/05_stdlib_domain_elim.ein"

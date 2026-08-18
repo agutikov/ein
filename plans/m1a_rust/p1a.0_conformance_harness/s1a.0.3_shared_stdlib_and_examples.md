@@ -124,6 +124,38 @@ does — would answer from the first root forever, and the S1.8a.f20
 unimported-macro check would silently consult the wrong library. Keyed on the
 resolved root now.
 
+### Correction — 2026-08-18: the hook was never wired
+
+`[tool.setuptools.cmdclass] build_py = "_build.build_py"` does not resolve.
+setuptools looks a cmdclass module up under `package-dir`, which
+`[tool.setuptools.packages.find] where = ["src"]` fills with `{"": "src"}`
+*before* the field is expanded — so `_build.py` at the project root was
+searched for at `src/_build.py`, found nowhere, and **every** install of
+`ein.py` failed with `ModuleNotFoundError: _build` while pip was still
+gathering build requirements. Not a regression: checked against setuptools
+70.0.0, 75.8.2, 78.1.1, 80.9.0 and 84.0.0, all five identical. It surfaced
+only when [S1a.0.4](s1a.0.4_workspace_skeleton_and_ci.md)'s CI ran
+`pip install -e 'ein.py[dev]'` on a runner with no `ein` already present.
+
+So the wheel this section reports building was not built by the hook, and the
+packaged copy it watched shadow the checkout came from somewhere else — the
+copy the `git mv` left on disk, most likely. The *finding* stands and its fix
+is still pinned by `test_a_packaged_copy_does_not_shadow_the_checkout`; what
+did not stand is "the packaging is verified".
+
+The mechanism is now an in-tree PEP 517 backend — `build-backend = "_build"`
+with `backend-path = ["."]`, delegating every hook to `setuptools.build_meta`
+and copying the stdlib in `build_wheel` / `build_sdist` / `build_editable`.
+`backend-path` puts the module on the build's import path explicitly, so
+nothing depends on where the package tree is rooted. Two things the change
+brings with it, both checked by running them: `MANIFEST.in` has to ship
+`_build.py` (an sdist without its own backend stops at
+`BackendUnavailable`), and the copy now appears in a checkout after an
+editable install — which broke `tests/test_corpus_manifest.py`, whose
+`_stdlib_dir()` still pointed at the package and had been passing on an empty
+glob. Details in [11 — Shared assets](../design/11_shared_assets.md)
+§ Packaging.
+
 ### Not moved
 
 `examples/` stays where it is; both suites already reach it from the repo

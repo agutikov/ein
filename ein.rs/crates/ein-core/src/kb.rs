@@ -165,6 +165,10 @@ fn diff_map<K: Eq + std::hash::Hash + std::fmt::Debug>(
             None => return Err(format!("{what}[{k:?}]: {v:?} vs absent")),
         }
     }
+    // The order picks which of several disagreements gets named first, in an `Err` that
+    // exists only once the layering invariant is already broken — and the loop above
+    // iterates `a` the same way.
+    // determinism-ok: `check_layering`'s diagnostic, never an engine output.
     for k in b.keys() {
         if !a.contains_key(k) {
             return Err(format!("{what}[{k:?}]: absent vs present"));
@@ -200,7 +204,16 @@ impl Nogoods {
         self.clauses.insert(clause)
     }
 
+    /// The clauses, in no particular order — see the annotation below before
+    /// using this from the search layer.
     pub fn iter(&self) -> impl Iterator<Item = &[FactId]> {
+        // The oracle's `_nogoods` is itself a `set[frozenset]` (`kb/store.py`), so hash
+        // order is what ein.py has here too and the PYTHONHASHSEED sweep says it reaches
+        // nothing: subsumption tests it with `any`/`all`, apriori filters supersets with
+        // it, and the proof snapshot's only observable is `learned_nogoods_count`, a
+        // count. P1a.4 inherits the constraint — consume this into something
+        // order-insensitive, or sort at the point of output.
+        // determinism-ok: every consumer of a no-good clause set is order-insensitive.
         self.clauses.iter().map(|c| &**c)
     }
 }

@@ -1,6 +1,11 @@
 [build-system]
 requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
+# An in-tree backend (`ein.py/_build.py`) that delegates every hook to
+# setuptools and copies the shared stdlib into the package first — see the
+# packaging note below. `backend-path` is what puts `_build` on the build's
+# import path; without it the module is unimportable at build time.
+build-backend = "_build"
+backend-path = ["."]
 
 [project]
 name = "ein"
@@ -56,10 +61,15 @@ where = ["src"]
 # The stdlib is checked in ONCE, at repo-root `stdlib/`, because ein.py and
 # ein.rs must read the same bytes — two copies would make every parity result
 # meaningless (plans/m1a_rust/design/11_shared_assets.md). A wheel cannot reach
-# outside the package, so `build_py` copies it into `src/ein/stdlib/` on the
-# way to a distribution; that copy is git-ignored and is a build product.
-[tool.setuptools.cmdclass]
-build_py = "_build.build_py"
+# outside the package, so the in-tree backend above copies it into
+# `src/ein/stdlib/` on the way to a wheel / sdist / editable install; that copy
+# is git-ignored and is a build product.
+#
+# It is a backend rather than a `[tool.setuptools.cmdclass]` entry because a
+# cmdclass module is resolved under `package-dir`, which `packages.find` fills
+# with `{"" = "src"}` before the field is expanded — so `_build.py` at the
+# project root was never findable, and every install died gathering build
+# requirements (fixed 2026-08-18; `_build.py` carries the full note).
 
 # ---------------------------------------------------------------------------
 # pytest

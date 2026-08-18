@@ -80,9 +80,22 @@ still works, and `ein.rs` still ships as one self-contained binary.
 ### Packaging
 
 - **Python**: `ein.py/src/ein/stdlib/` is removed from git and
-  `.gitignore`d; a build hook copies `stdlib/` into it during
-  `build_py`/sdist. `_stdlib_root()` becomes the three-step chain above.
-  Installed behaviour is unchanged.
+  `.gitignore`d; an **in-tree PEP 517 backend** (`ein.py/_build.py`,
+  `build-backend = "_build"` + `backend-path = ["."]`) delegates every hook
+  to setuptools and copies `stdlib/` into it on the way to a wheel, an sdist
+  or an editable install. `_stdlib_root()` becomes the three-step chain
+  above. Installed behaviour is unchanged.
+
+  It was a `[tool.setuptools.cmdclass] build_py` entry until 2026-08-18 and
+  that never worked: a cmdclass module is resolved under `package-dir`, which
+  `packages.find`'s `where = ["src"]` fills in *before* the field is expanded,
+  so `_build.py` at the project root was searched for at `src/_build.py` and
+  every install died with `ModuleNotFoundError: _build` while still gathering
+  build requirements. Two consequences of the mechanism are load-bearing and
+  are tested rather than assumed: `MANIFEST.in` must ship `_build.py` in the
+  sdist (an sdist that omits its own backend cannot be built at all), and the
+  copy now lands in a *checkout* too, so anything enumerating `.ein` files
+  must read `stdlib/` and not the package copy.
 - **Rust**: `include_dir!("$CARGO_MANIFEST_DIR/../../stdlib")` in
   `ein-ir`, exposed as an in-memory filesystem behind the same
   `StdlibSource` trait the on-disk path implements.
