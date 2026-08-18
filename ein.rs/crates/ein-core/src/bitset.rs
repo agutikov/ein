@@ -35,6 +35,19 @@ impl BitSet {
         !was
     }
 
+    /// Drop `id`; `true` if it was present.
+    pub fn remove(&mut self, id: u32) -> bool {
+        let (word, bit) = (id as usize / 64, id as usize % 64);
+        match self.words.get_mut(word) {
+            Some(w) => {
+                let was = *w & (1 << bit) != 0;
+                *w &= !(1 << bit);
+                was
+            }
+            None => false,
+        }
+    }
+
     pub fn contains(&self, id: u32) -> bool {
         let (word, bit) = (id as usize / 64, id as usize % 64);
         self.words.get(word).is_some_and(|w| w & (1 << bit) != 0)
@@ -91,6 +104,9 @@ mod tests {
         }
         assert_eq!(s.iter().collect::<Vec<_>>(), vec![0, 1, 63, 64, 65, 4095]);
         assert_eq!(s.len(), 6);
+        assert!(s.remove(64) && !s.remove(64) && !s.remove(1 << 20));
+        assert!(!s.contains(64) && s.contains(65));
+        s.insert(64);
         assert!(s.contains(4095));
         assert!(!s.contains(4094));
         assert!(!s.contains(1 << 20));

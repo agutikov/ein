@@ -8,3 +8,9 @@ repository.workspace = true
 
 [dependencies]
 ein-core = { path = "../ein-core" }
+md-5.workspace = true
+
+[dev-dependencies]
+# The DOT goldens under `ein.py/tests/golden/dot/` are the fixture; reading
+# them needs nothing, but building the KB a golden was captured from does.
+ein-oracle = { path = "../ein-oracle" }

@@ -28,6 +28,7 @@ pub mod pyfmt;
 pub mod pyrepr;
 pub mod terms;
 pub mod value;
+pub mod walks;
 
 pub use bitset::BitSet;
 pub use config::SolverConfig;
@@ -39,3 +40,7 @@ pub use program::Program;
 pub use prov::{NafRef, Prov, ProvArena, ProvId, ProvKind};
 pub use terms::{Kernel, Terms};
 pub use value::{IntId, IntPool, Tag, Value};
+pub use walks::{
+    DerivationDag, Justifications, build_derivation_dag, detect_provenance_cycles, unsat_core,
+    walk_premises,
+};
