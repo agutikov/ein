@@ -22,7 +22,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | **closed moot 2026-08-18 — no server** |
 | [Q-M1a.12](#q-m1a12--remote-access-and-auth) | Remote access and auth for `ein serve` | **closed moot 2026-08-18 — no server** |
 | [Q-M1a.13](#q-m1a13--argparse-surface-parity) | Reproducing `argparse` `--help` and error text | **resolved 2026-08-18 — (b): behaviour exact, presentation normalised** |
-| [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | open |
+| [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | **mostly resolved 2026-08-18 — ein.rs names the class** |
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 | [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — at root scale they are 11–30 % | open — found at S1a.3.4, measured |
@@ -380,10 +380,22 @@ argument errors. It belongs to this group instead, and it sharpens the
 open half below: the first fixture needs a mixed-type puzzle, this one
 needs a typo.
 
-Still open: whether ein.rs should *name* the same class (it has no
-`TypeError`), or whether the group relaxes to "both sides failed" once a
-second implementation exists. Decide when ein.rs can first reach one of
-these inputs — P1a.4.
+**S1a.5.4 — the open half, answered for every path the CLI reaches: name the
+class.** ein.rs now prints CPython's own last line, so the comparison passes
+on the whole line rather than only on the class it extracts:
+
+- a missing input file → `FileNotFoundError: [Errno 2] No such file or
+  directory: '<path>'`, exit 1;
+- a `CompileError` out of `solve` or `saturate` →
+  `ein.inference.compile.CompileError: <message>`, exit 1 — the *message*
+  was already at parity from P1a.3, so naming the class was the whole gap.
+
+That is 6 of the 7 `crash-parity` cells; the seventh is D2. Naming a Python
+class from Rust is not a category error here: the class is the *oracle's*
+observable, and reproducing it is what I1 asks for. What stays open is the
+narrower question the relaxation would answer — whether a future ein.rs-only
+error, with no Python counterpart to name, joins this group or a new one.
+Nothing in the corpus reaches one.
 
 ## Q-M1a.15 — Float formatting parity
 

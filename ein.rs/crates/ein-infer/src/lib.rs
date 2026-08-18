@@ -36,6 +36,7 @@ pub mod naf_deps;
 pub mod nogoods;
 pub mod plan;
 pub mod predicates;
+pub mod sanity;
 pub mod saturator;
 pub mod shape;
 pub mod solve;
@@ -74,6 +75,7 @@ pub use plan::{
     RelStep, Slot, Span, Step,
 };
 pub use predicates::Pred;
+pub use sanity::{SanityError, check_commutativity};
 pub use saturator::{SaturateError, Saturator, Session};
 pub use shape::{
     commit_shape, explain_shape, hyp_shape, hyp_shape_with, lattice_shape, match_shape, naf_map,

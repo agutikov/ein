@@ -11,7 +11,16 @@ ein-core   = { path = "../ein-core" }
 ein-ir     = { path = "../ein-ir" }
 ein-infer  = { path = "../ein-infer" }
 ein-render = { path = "../ein-render" }
+clap.workspace = true
+
+[lib]
+name = "ein_cli"
+path = "src/lib.rs"
 
 [[bin]]
 name = "ein"
 path = "src/main.rs"
+
+[dev-dependencies]
+ein-oracle = { path = "../ein-oracle" }
+serde_json.workspace = true

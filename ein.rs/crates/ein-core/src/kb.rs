@@ -813,6 +813,32 @@ impl Kb {
     ///
     /// `Err` carries the first disagreement. Cheap enough to call after every
     /// saturation in a debug build, which is where design/03 §10 puts it.
+    /// The four index-entry totals `cli/saturate.py`'s snapshot reports —
+    /// `facts_by_relation`, `facts_by_rel_slot_val`, `rule_apps_by_rule`,
+    /// `rule_apps_on_relation`, in that order.
+    ///
+    /// ein.py holds one flat dict per index, so its `sum(len(v) for v in …)`
+    /// ranges over the whole KB. Here the layers are summed through the
+    /// materialised view, which is the same set of entries with the
+    /// copy-on-write seams closed.
+    pub fn index_sizes(&self) -> [usize; 4] {
+        let m = self.materialise();
+        [
+            m.by_rel.values().map(Vec::len).sum(),
+            m.by_rel_slot_val.values().map(Vec::len).sum(),
+            m.rule_apps_by_rule.values().map(Vec::len).sum(),
+            m.rule_apps_on_rel.values().map(Vec::len).sum(),
+        ]
+    }
+
+    /// One name's index entry, for the snapshot's participation columns.
+    pub fn name_entry(&self, name: Symbol) -> (usize, usize) {
+        (
+            self.name_as_head(name).count(),
+            self.name_as_arg(name).count(),
+        )
+    }
+
     pub fn check_layering(&self, terms: &Terms) -> Result<(), String> {
         let mut flat = self.materialise();
         // A rebuild unions the registry names in, so a relation declared with

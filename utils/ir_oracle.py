@@ -41,6 +41,7 @@ One JSON object per line in, one per line out, in order:
     {"op": "dot-shape",     "path": …, "view": "<view>"}     → one of the DOT views (below)
     {"op": "trace-shape",   "path": …, "mode": "<mode>"}     → the trace / answer surface
     {"op": "dump-shape",    "path": …, "mode": "<mode>"}     → the `--dump-states` tree
+    {"op": "help-shape"}                         → the CLI argument surface (below)
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -1278,10 +1279,128 @@ def _source(req: dict) -> tuple[str, str | None, Path | None]:
     return req["text"], req.get("filename"), None
 
 
+# ── help-shape — the CLI argument surface (S1a.5.4 / Q-M1a.13) ──
+
+
+def _help_shape() -> str:
+    """Every parser, as one comparable text.
+
+    `--help` *layout* is on the normalisation list, so the byte diff of it is
+    gone — and the byte diff was the only thing checking that ein.rs had not
+    silently lost an option. This replaces it: the parser objects are walked
+    directly (the parser *is* the structure; scraping the formatted text back
+    would only re-import the layout the resolution exempts) and rendered as
+    `{command → {option → short, metavar, arity, default, choices, group,
+    help}}`.
+
+    Options are sorted, not emitted in declaration order: ordering within a
+    section is one of the things Q-M1a.13 freed.
+    """
+    from ein.cli import _build_parser
+    from ein.cli.saturate import main as _saturate_main  # noqa: F401  (import check)
+
+    out: list[str] = []
+    _render_parser(out, "ein", _build_parser())
+    _render_parser(out, "ein saturate", _saturate_parser())
+    return "\n".join(out) + "\n"
+
+
+def _saturate_parser():
+    """`saturate`'s own parser, built the way its `main` builds it."""
+    import argparse
+
+    from ein.cli import _events
+
+    p = argparse.ArgumentParser(
+        prog="ein saturate",
+        description="Benchmark + state dump for the Saturator.",
+    )
+    p.add_argument("file", help="path to a .ein file")
+    p.add_argument("--dump", action="store_true",
+                   help="after the benchmark, print the saturated KB grouped by origin")
+    p.add_argument("--max-steps", type=int, default=None,
+                   help="hard cap on saturator firings (raises SaturatorStepLimitError "
+                        "when exceeded); useful for runaway-debugging on a fresh "
+                        "input. Default: no cap.")
+    p.add_argument("--progress-every", type=int, default=500,
+                   help="log a one-line progress sample every N steps "
+                        "(0 disables; default: 500).")
+    _events.add_arguments(p)
+    return p
+
+
+def _squeeze(s: str) -> str:
+    return " ".join(s.split())
+
+
+def _render_parser(out: list[str], path: str, parser, about: str | None = None) -> None:
+    import argparse
+
+    # argparse splits what `clap` unifies: `add_parser(help=…)` is the line the
+    # *parent* lists, `description=` is the blurb the subcommand's own `--help`
+    # prints. The listed line is the content, so it is what travels.
+    out.append(f"COMMAND {path}")
+    out.append(f"  ABOUT {about if about is not None else (parser.description or '')}")
+
+    # dest → the mutually-exclusive group it belongs to. argparse names groups
+    # only positionally, so they are numbered in declaration order — which is
+    # what `clap`'s explicit `ArgGroup` id has to line up with.
+    group_of: dict[str, str] = {}
+    for g in parser._mutually_exclusive_groups:
+        name = getattr(g, "_ein_name", None) or "stop"
+        for a in g._group_actions:
+            group_of[a.dest] = name
+
+    rows: list[str] = []
+    subparsers = None
+    for a in parser._actions:
+        if isinstance(a, argparse._HelpAction):
+            continue
+        if isinstance(a, argparse._SubParsersAction):
+            subparsers = a
+            continue
+        arity = 0 if a.nargs == 0 else 1
+        metavar = "-" if arity == 0 else (a.metavar or a.dest.upper())
+        if arity == 0:
+            default = "False"
+        else:
+            default = "None" if a.default is None else repr(str(a.default))
+        choices = "|".join(str(c) for c in a.choices) if a.choices else "-"
+        group = group_of.get(a.dest, "-")
+        help_text = _squeeze(a.help or "")
+        if not a.option_strings:
+            rows.append(
+                f"  POSITIONAL {a.dest} required={a.required} help={help_text}"
+            )
+            continue
+        longs = [o for o in a.option_strings if o.startswith("--")]
+        shorts = [o for o in a.option_strings if not o.startswith("--")]
+        long = longs[0][2:] if longs else a.dest
+        short = shorts[0][1:] if shorts else "-"
+        rows.append(
+            f"  OPTION --{long} -{short} metavar={metavar} arity={arity} "
+            f"default={default} choices={choices} group={group} "
+            f"required={a.required} help={help_text}"
+        )
+    rows.sort()
+    out.extend(rows)
+
+    if subparsers is not None:
+        helps = {c.dest: (c.help or "") for c in subparsers._choices_actions}
+        for name in sorted(subparsers.choices):
+            if name == "saturate" and path == "ein":
+                out.append("  SUBCOMMAND saturate (delegated)")
+                continue
+            _render_parser(out, f"{path} {name}", subparsers.choices[name],
+                           helps.get(name, ""))
+
+
 def _handle(req: dict) -> dict:
     op = req.get("op", "parse")
     if op == "macro-names":
         return {"ok": True, "out": "\n".join(sorted(stdlib_macro_names()))}
+    if op == "help-shape":
+        return {"ok": True, "out": _help_shape()}
 
     text, filename, base_dir = _source(req)
     forms = parse(text, filename=filename)

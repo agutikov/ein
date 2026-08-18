@@ -85,7 +85,16 @@ else
     export PYTHONPATH="${REPO_ROOT}/ein.py/src${PYTHONPATH:+:${PYTHONPATH}}"
     PYBIN="python3"
 fi
-EIN=( "${PYBIN}" -m ein.cli )
+# The engine. `EINBOT` overrides it wholesale — same convention as
+# render_examples.sh — so this trace can be produced with ein.rs
+# (`EINBOT=ein.rs/target/release/ein`), which is the drop-in replacement
+# M1a ships. Without it, the in-tree Python module as before.
+if [[ -n "${EINBOT:-}" ]]; then
+    # shellcheck disable=SC2206
+    EIN=( ${EINBOT} )
+else
+    EIN=( "${PYBIN}" -m ein.cli )
+fi
 
 if [[ ! -f "${ZEBRA2}" ]]; then
     echo "error: ${ZEBRA2} not found" >&2

@@ -43,16 +43,34 @@ fn timing_header(line: &str) -> bool {
 /// up; a different *value* no longer does.
 fn canon_field(field: &str) -> String {
     let width = field.chars().count();
+    let core = canon_core(field);
+    let pad = width.saturating_sub(core.chars().count());
+    format!("{}{core}", " ".repeat(pad))
+}
+
+/// The value-free form on its own: `#.##` at the field's precision, with no
+/// width restored. What an *unpadded* number canonicalises to, since it has no
+/// width to preserve.
+fn canon_core(field: &str) -> String {
     let digits = field.split_once('.').map_or(0, |(_, frac)| {
         frac.chars().take_while(char::is_ascii_digit).count()
     });
-    let core = if digits > 0 {
+    if digits > 0 {
         format!("#.{}", "#".repeat(digits))
     } else {
         "#".to_string()
-    };
-    let pad = width.saturating_sub(core.chars().count());
-    format!("{}{core}", " ".repeat(pad))
+    }
+}
+
+/// `_print_stats`' `wall` is the one ms number printed **unpadded** —
+/// `{elapsed_ms:.1f}`, no field width — so the spaces in front of it are label
+/// separator, not padding. Walking back over them the way a padded field wants
+/// makes the "field" one character wider for a two-digit duration than for a
+/// one-digit one, and a *faster* engine then reads as a diff: found at
+/// S1a.5.4, where ein.rs solved `04_two_levels` in 0.9 ms against ein.py's
+/// 13.1. Its number is canonicalised in place instead, separator untouched.
+fn unpadded_ms(line: &str) -> bool {
+    line.starts_with("  wall ")
 }
 
 /// Canonicalise the numeric field that immediately precedes ` ms`.
@@ -60,6 +78,7 @@ fn canon_field(field: &str) -> String {
 /// Produced by `cli/saturate.py` (`parse:` / `kb load:` / `compile:` /
 /// `saturate:`) and `cli/solve.py::_print_stats` (`wall`).
 fn mask_ms(line: &str) -> String {
+    let unpadded = unpadded_ms(line);
     let mut out = String::with_capacity(line.len());
     let b: Vec<char> = line.chars().collect();
     let mut i = 0;
@@ -72,9 +91,23 @@ fn mask_ms(line: &str) -> String {
         {
             let keep = out.trim_end_matches(|c: char| c.is_ascii_digit() || c == '.');
             if keep.len() < out.len() {
-                // …and over its leading padding, which is part of the field.
-                let field_start = keep.trim_end_matches(' ');
-                let canon = canon_field(&out[field_start.len()..]);
+                // …and over its leading padding, which is part of the field —
+                // unless the number was printed with no field width at all, in
+                // which case those spaces belong to the label.
+                let field_start = if unpadded {
+                    keep
+                } else {
+                    keep.trim_end_matches(' ')
+                };
+                let field = out[field_start.len()..].to_string();
+                // An unpadded number has no width to preserve — only its
+                // precision, which `canon_field` reads and a wider magnitude
+                // does not change.
+                let canon = if unpadded {
+                    canon_core(&field)
+                } else {
+                    canon_field(&field)
+                };
                 out.truncate(field_start.len());
                 out.push_str(&canon);
             }
@@ -272,6 +305,23 @@ mod tests {
         assert_eq!(a.len(), "kb load:     10.23 ms".len());
         // A different precision is a format change and still shows up.
         assert_ne!(mask_ms("  wall  12.3 ms"), mask_ms("  wall  12.34 ms"));
+    }
+
+    #[test]
+    fn the_unpadded_wall_field_survives_a_faster_engine() {
+        // `_print_stats` prints `{:.1f}` with no field width, so the two runs
+        // below differ in the *number's* width and in nothing else. Absorbing
+        // the label separator into the field would report that as a diff —
+        // which is exactly what a 13.1 ms oracle and a 0.9 ms port produce.
+        let slow = mask_ms("  wall             13.1 ms");
+        let fast = mask_ms("  wall             0.9 ms");
+        assert_eq!(slow, fast);
+        assert_eq!(slow, "  wall             #.# ms");
+        // The padded fields keep the behaviour they were given.
+        assert_eq!(
+            mask_ms("kb load:     10.23 ms"),
+            mask_ms("kb load:      9.87 ms")
+        );
     }
 
     #[test]

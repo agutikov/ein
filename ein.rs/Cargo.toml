@@ -56,6 +56,12 @@ md-5        = "0.10"
 sha1        = "0.10"
 sha2        = "0.10"
 criterion   = { version = "0.7", default-features = false, features = ["cargo_bench_support"] }
+# The CLI's argument parser. Q-M1a.13 (resolved 2026-08-18) put `--help`
+# layout and usage-error text on the normalisation list, so this does not have
+# to reproduce `argparse`'s formatter — only its *surface*: same options, same
+# short keys, same defaults, same exclusions, same exit codes. `cli` only; the
+# engine crates stay dependency-light.
+clap        = { version = "4", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions"] }
 
 # Optimised even in dev: every conformance run spawns hundreds of engine
 # processes, and the harness itself must never be the slow part.

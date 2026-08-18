@@ -1,6 +1,11 @@
 # S1a.5.4 — The CLI
 
 **Phase:** P1a.5 (Presentation and CLI)
+**Status:** **shipped** 2026-08-18 — acceptance below. Three counts in this
+doc were wrong and the check that replaced the byte diff is what found them;
+one deferred engine feature (`check_commutativity`) landed here as
+[S1a.4.5](../p1a.4_search_layer/s1a.4.5_solve_loop.md) said it would; and one
+harness normalisation was under-specified for an *unpadded* float field.
 **Estimate:** 4 days
 **Depends on:** [S1a.5.3](s1a.5.3_state_dumps.md)
 **Implements:** `ein/cli/{__init__,solve,saturate,render,_common,_factdump}.py`
@@ -22,7 +27,7 @@ asserts these numbers:
 |---|---:|---|
 | `ein` | 0 | — |
 | `ein solve` | 29 | `--events`, `--events-level`, `--json-summary` |
-| `ein saturate` (its own) | 3 | all three |
+| `ein saturate` (its own) | 5 | all five |
 | `ein render` | 0 | — |
 | `render rules` | 1 | `--rule-mode` |
 | `render rule` | 2 | both |
@@ -31,7 +36,15 @@ asserts these numbers:
 
 `-h/--help` is excluded throughout; every parser has it.
 
-**Q-M1a.13 is settled ahead of the stage — 2026-08-18, option (b):
+**39, not 37**, and `saturate` has **5**, not 3: `_events.add_arguments` puts
+`--events` and `--events-level` on `saturate` as well as on `solve`, and a
+`grep` for `add_argument` in `saturate.py` does not see them. Found by
+[T1a.5.4.8](#task-t1a548--the-help-content-check) on its first run — which is
+the case *for* the check, since a byte diff of an 89-line help text would have
+reported "some lines differ" and this reports which option, in which parser,
+with which field wrong.
+
+**Q-M1a.13 was settled ahead of the stage — 2026-08-18, option (b):
 `clap`.** Help layout and usage-error text are on the
 [normalisation list](../design/01_parity_contract.md) §5; the *content* is
 not. Same subcommands, same options with the same short keys, metavars,
@@ -75,6 +88,82 @@ missing.
   matches ein's stderr (checked 2026-08-18), which is what makes the two
   normalised rows safe; a *new* script that does either is the trigger to
   reopen Q-M1a.13.
+
+## What the acceptance measured
+
+**The gate: `ein-conformance` over the corpus × run matrix, all four tiers.**
+
+| tier | cells | same | differ |
+|---|---:|---:|---:|
+| T0 — verdict | 473 | 150 | 1 |
+| T1 — counters | 473 | 150 | 1 |
+| T2 — event trace | 473 | 239 | 1 |
+| **T3 — bytes** | **473** | **472** | **1** |
+
+The one differing cell is the same one at every tier:
+`examples/ein-bugs/mixed-type-hypothesis.ein :: solve -e`, which is
+**[D2](../divergences.md)** — accepted, with a fixture, since S1a.4.
+
+T0/T1/T2 skip the cells whose runs produce no comparable artefact at that
+tier; T3 skips none, which is why it is the phase's gate and why its 473 is
+the number that matters.
+
+Alongside the harness:
+
+- **Help content parity** — 39 options across 8 parsers, every short key,
+  metavar, arity, default, `choices` value, exclusive group and help string
+  equal to `argparse`'s (T1a.5.4.8).
+- **`--json-summary`** byte-identical on every corpus entry — which is what
+  lets the harness drive ein.rs at T0/T1 at all.
+- **`--events`** at `verbose`: 58 341 lines on zebra, identical modulo `impl`
+  and `argv`, which [EVENTS.md](../../../conformance/EVENTS.md) excludes by
+  name.
+- **`--trace`**: 639 840 bytes identical on zebra2.
+- **`--dump-states`**: identical trees; only `ts_ms` and `elapsed_seconds`
+  differ, both on the normalisation list.
+- **Crash parity**: a missing file is `FileNotFoundError: [Errno 2] No such
+  file or directory: '<path>'` and exit 1 on both — the *whole last line*,
+  not just the class Q-M1a.14 compares.
+
+### Four things the checks corrected
+
+1. **The option counts** (above): 39, not 37; `saturate` 5, not 3.
+2. **`check_commutativity` was missing entirely.** `-y` parsed, ran, and
+   produced the right verdict — while doing none of the `k+1` saturations per
+   alive size-`k≥2` commitment that the flag exists to perform. Invisible at
+   T0, T1 and T3; **only the T2 event trace could see it**, because the extra
+   saturations show up as `compile` / `fire` events and nothing else. Ported
+   into `ein-infer::sanity`, wired at ein.py's call site, and T2 is clean.
+   S1a.4.5 had said it "moves to P1a.5" — it did.
+3. **`--json-summary`'s root block must run on the live event log.** ein.py
+   builds the summary between `_events.verdict` and `_events.finish`, so its
+   second root saturation is *recorded*: 92 further events on a fixture whose
+   whole solve is 96. A silent one here made every `--events --json-summary`
+   run diverge at T2.
+4. **The harness under-normalised an unpadded float field.** `_print_stats`
+   prints `{elapsed_ms:.1f}` with no field width, so the spaces before it are
+   label separator, not padding — and walking back over them made a *faster*
+   engine read as a diff (`13.1` vs `0.9`). Fixed in
+   `ein-conformance::normalise`, with the two-run test that would have caught
+   it. `--timing`'s padded `{:9.2f}` keeps the width check it had.
+
+### And two the acceptance itself got wrong
+
+The item "every script under `utils/` works unchanged against the Rust
+binary" named five scripts. Only **two** of them are CLI consumers at all:
+
+- `render_examples.sh` — **works**, 451 files, byte-identical trees. It needs
+  `PYTHONPATH` as well as `EINBOT`, because half of it (the per-form IR/KB
+  views) calls the *Python API* directly: those subcommands were removed from
+  the CLI in P1.11 and never came back.
+- `zebra2_trace.sh` — hardcoded `${PYBIN} -m ein.cli` with no override hook,
+  so no alias could reach it. Given the `EINBOT` hook `render_examples.sh`
+  already had; **works**, identical trace.
+- `profile_solve.py`, `symmetric_bench.py`, `feature_matrix.py` — **not CLI
+  consumers**. They `from ein… import` and drive the engine as a library, so
+  no binary can be substituted for them by any means. They are P1a.9's
+  (bindings), not this stage's, and the acceptance item should never have
+  listed them.
 
 ## Tasks
 

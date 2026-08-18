@@ -1,10 +1,11 @@
 # P1a.5 — Presentation and CLI
 
 **Milestone:** [M1a — Rust port](../README.md)
-**Status:** **in progress** — S1a.5.1, S1a.5.2 and S1a.5.3 shipped
-2026-08-18; the CLI (S1a.5.4) is what is left, with its blocking question
-[Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity)
-resolved the same day.
+**Status:** **shipped** 2026-08-18 — all four stages. The byte gate is
+closed: **T3 over the whole corpus × run matrix, 472 of 473 cells identical**,
+the one exception being [D2](../divergences.md), accepted with a fixture since
+S1a.4. Milestone invariant **I1 is discharged** — ein.rs is a drop-in
+replacement.
 **Estimate:** 3 weeks (14 days of stages)
 **Depends on:** [P1a.4](../p1a.4_search_layer/README.md)
 **Blocks:** [P1a.6](../p1a.6_performance/README.md) — nothing is
@@ -37,13 +38,14 @@ invariant I1 is discharged.
 | [S1a.5.1](s1a.5.1_dot_renderers.md) | DOT renderers | 4 d | ✅ |
 | [S1a.5.2](s1a.5.2_trace_and_answer.md) | Trace and answer rendering | 4 d | ✅ |
 | [S1a.5.3](s1a.5.3_state_dumps.md) | State dumps | 2 d | ✅ |
-| [S1a.5.4](s1a.5.4_cli.md) | The CLI | 4 d | |
+| [S1a.5.4](s1a.5.4_cli.md) | The CLI | 4 d | ✅ |
 
 ## Acceptance for the phase
 
 - **T3 on the whole corpus × run matrix**, with only the closed
   normalisation list from [design/01](../design/01_parity_contract.md) §5
-  applied.
+  applied. **Met: 472 / 473.** T0, T1 and T2 differ on the same one cell and
+  nothing else.
 - `plans/m1a_rust/divergences.md` is empty, or every entry has a written
   justification and a "what would make this unacceptable".
 - All 19 checked-in goldens reproduce byte-for-byte.

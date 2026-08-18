@@ -74,6 +74,14 @@ impl Events {
     /// so a consumer can reject a file it does not understand before reading
     /// further, and so a truncated file still identifies itself.
     pub fn to(sink: Box<dyn Write>, level: Level) -> Events {
+        Events::to_with(sink, level, |_| {})
+    }
+
+    /// [`Events::to`] with the CLI's own `run` fields appended — `impl`,
+    /// `file`, `argv` and the resolved config, which
+    /// [`EVENTS.md`](../../../../conformance/EVENTS.md) lists after `version`
+    /// and `level`. The engine has no argv, so the caller supplies them.
+    pub fn to_with(sink: Box<dyn Write>, level: Level, extra: impl FnOnce(&mut Line)) -> Events {
         let mut e = Events {
             sink: Some(sink),
             seq: 0,
@@ -82,6 +90,7 @@ impl Events {
         e.emit("run", |l| {
             l.str("version", SCHEMA);
             l.str("level", level.as_str());
+            extra(l);
         });
         e
     }
@@ -178,6 +187,42 @@ impl Line {
     /// `events.bindings` — ordered `[name, value]` pairs, a list rather than an
     /// object because **binding order is the observable** and a JSON object's
     /// key order is not something a differ should have to trust.
+    /// A list of string lists — the `verdict` event's `models`, one sorted
+    /// fact list per branch.
+    pub fn str_lists(&mut self, key: &str, values: &[Vec<String>]) {
+        self.key(key);
+        self.out.push('[');
+        for (i, inner) in values.iter().enumerate() {
+            if i > 0 {
+                self.out.push_str(", ");
+            }
+            self.out.push('[');
+            for (j, v) in inner.iter().enumerate() {
+                if j > 0 {
+                    self.out.push_str(", ");
+                }
+                push_json_str(&mut self.out, v);
+            }
+            self.out.push(']');
+        }
+        self.out.push(']');
+    }
+
+    /// An object of `key: value` string pairs — the `run` event's `config`.
+    pub fn obj_strs(&mut self, key: &str, pairs: &[(&str, String)]) {
+        self.key(key);
+        self.out.push('{');
+        for (i, (k, v)) in pairs.iter().enumerate() {
+            if i > 0 {
+                self.out.push_str(", ");
+            }
+            push_json_str(&mut self.out, k);
+            self.out.push_str(": ");
+            self.out.push_str(v);
+        }
+        self.out.push('}');
+    }
+
     pub fn bindings(&mut self, key: &str, pairs: impl IntoIterator<Item = (String, String)>) {
         self.key(key);
         self.out.push('[');
@@ -197,7 +242,7 @@ impl Line {
 
 /// `json.dumps(s, ensure_ascii=False)` for a string: escape what JSON requires
 /// and nothing else, so non-ASCII goes out as UTF-8 rather than `\uXXXX`.
-fn push_json_str(out: &mut String, s: &str) {
+pub fn push_json_str(out: &mut String, s: &str) {
     out.push('"');
     for ch in s.chars() {
         match ch {

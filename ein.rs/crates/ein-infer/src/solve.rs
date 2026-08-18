@@ -167,6 +167,9 @@ pub enum SolveError {
     /// `lattice_order_seed` is set and the traversal shuffle is not ported —
     /// see [`Q-M1a.5`](../../../../plans/m1a_rust/open_questions.md).
     Unsupported(String),
+    /// `-y` found two lattice paths to one commitment that saturate to
+    /// different KBs. Fatal in ein.py too — `check_commutativity` raises.
+    Sanity(Box<crate::sanity::SanityError>),
 }
 
 impl std::fmt::Display for SolveError {
@@ -176,6 +179,7 @@ impl std::fmt::Display for SolveError {
             SolveError::Saturate(e) => write!(f, "{e}"),
             SolveError::Compile(e) => write!(f, "{e}"),
             SolveError::Unsupported(m) => f.write_str(m),
+            SolveError::Sanity(e) => write!(f, "{e}"),
         }
     }
 }
@@ -521,6 +525,19 @@ impl Run<'_> {
                     };
                     crate::hypgen::complete(&mut s)?
                 };
+
+                // S1.5b.27 — the saturation-commutativity sanity check. Off by
+                // default; `-y` turns it on. Orthogonal to `store_lattice` and
+                // to the dumper: the premise applies to every alive
+                // commitment. Singletons are skipped inside — no parents.
+                if self.cfg.lattice_sanity_check
+                    && c.len() >= 2
+                    && let Some(err) =
+                        crate::sanity::check_commutativity(root, terms, ast, events, c)?
+                {
+                    return Err(SolveError::Sanity(Box::new(err)));
+                }
+
                 if solved {
                     // Before `record_node`, which takes the firings: ein.py
                     // calls the hook after, but nothing between the two lines
