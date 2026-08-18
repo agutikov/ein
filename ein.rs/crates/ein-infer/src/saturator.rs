@@ -326,6 +326,16 @@ impl Saturator {
         self.last_firing.as_ref()
     }
 
+    /// Record the firing a caller driving `step` itself just consumed.
+    ///
+    /// `saturate` does this internally; the fail-fast fork loop
+    /// ([`crate::commitment`]) drives `step` directly so it can stop at the
+    /// firing that kills the branch, and the runaway-budget message reads
+    /// `last_firing`.
+    pub fn set_last_firing(&mut self, firing: Firing) {
+        self.last_firing = Some(firing);
+    }
+
     /// True iff no firing is available — at the **two-phase** fixpoint, not
     /// merely at closure quiescence.
     ///

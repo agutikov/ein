@@ -1,0 +1,280 @@
+//! The commitment primitive — fork, write, detect, saturate, detect.
+//!
+//! `try_commitment_set(root, C)` is the one operation the whole search layer
+//! is built on, and it is **pure with respect to root**: every consequence
+//! stays in the fork (P1.21 R2). That is not a nicety — it is the unit
+//! [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+//! parallelises, and the reason nothing here writes a no-good, a `(not h)`
+//! writeback or a counter. Those are the caller's commit step
+//! ([design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2).
+//!
+//! ### Fail-fast
+//!
+//! `enable_fail_fast_fork` stops a dying fork's saturation at the firing that
+//! kills it instead of running to quiescence. It is the engine's one pure
+//! speed lever — same verdict, same enterings, same deaths, same clauses —
+//! worth 1.9–2.4× on an exhaustive `zebra2`, because ~88 % of a dying fork's
+//! saturation happens after the clash.
+//!
+//! Its *off* case is not dead configuration. A dead fork's `firings` then is
+//! the full run and its `kb` the complete dead state, which a DAG builder that
+//! merges dead commitments by `state_key` needs: two orientations of a
+//! symmetric dead commitment share a fixpoint without sharing a fail-fast
+//! prefix.
+
+use ein_core::{FactId, Kb, Prov, Terms};
+use ein_ir::Ast;
+
+use crate::events::Events;
+use crate::firing::Firing;
+use crate::saturator::{SaturateError, Saturator, Session};
+
+/// How a commitment ended.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Kind {
+    Alive,
+    /// Contradictory as soon as the hypotheses were written — no saturation
+    /// ran. This catches a negative that landed at root between the
+    /// candidate's generation and this fork, including one a mid-layer
+    /// singleton writeback produced.
+    DeadPre,
+    DeadPost,
+}
+
+impl Kind {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Kind::Alive => "alive",
+            Kind::DeadPre => "dead-pre",
+            Kind::DeadPost => "dead-post",
+        }
+    }
+}
+
+/// One entering's outcome.
+///
+/// The `kb` is owned — an `Arc` base plus a delta layer — so handing it back
+/// costs nothing, which is what lets the caller keep an alive fork without a
+/// second saturation.
+pub struct CommitmentSetResult {
+    pub commitment: Vec<FactId>,
+    pub kb: Kb,
+    pub firings: Vec<Firing>,
+    pub kind: Kind,
+    pub unsat_core: Vec<FactId>,
+    /// The `(h_i)` writes for `h_i ∈ commitment` — **not** the saturator's
+    /// additions.
+    pub hypothesis_facts: Vec<FactId>,
+}
+
+/// Fork root, write every hypothesis in `commitment`, saturate, detect.
+///
+/// `saturator_steps` caps the fork's firings; `None` runs to the fixpoint,
+/// which terminates because the M1 rule set is monotone. It is `None` on the
+/// shipping path and exists for tests.
+///
+/// Every call is independent: two calls on the same root return two results
+/// whose forks share no mutable state.
+pub fn try_commitment_set(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    events: &mut Events,
+    commitment: &[FactId],
+    saturator_steps: Option<usize>,
+) -> Result<CommitmentSetResult, SaturateError> {
+    let cfg = root.program().config.clone().unwrap_or_default();
+    let mut fork = root.fork();
+    let mut hypothesis_facts = Vec::with_capacity(commitment.len());
+    for &h in commitment {
+        let (rel, args) = terms.facts.get(h);
+        let args = args.to_vec();
+        // `branch=0` is not a placeholder to improve: the branch id is
+        // per-commitment context the lattice search does not use, and changing
+        // it changes provenance output.
+        let prov = terms.provs.push(Prov::from_hypothesis(0, None));
+        let added = fork
+            .add_and_index_fact(terms, rel, &args, Some(prov))
+            .expect("room for a hypothesis");
+        hypothesis_facts.push(added.id());
+    }
+
+    let done =
+        |fork: Kb, firings: Vec<Firing>, kind: Kind, core: Vec<FactId>| CommitmentSetResult {
+            commitment: commitment.to_vec(),
+            kb: fork,
+            firings,
+            kind,
+            unsat_core: core,
+            hypothesis_facts: hypothesis_facts.clone(),
+        };
+
+    if let Some(core) = dead(&fork, terms) {
+        return Ok(done(fork, Vec::new(), Kind::DeadPre, core));
+    }
+
+    let mut s = Session {
+        kb: &mut fork,
+        terms,
+        ast,
+        events,
+    };
+    let mut sat = Saturator::new(&mut s)?;
+    let firings = if cfg.enable_fail_fast_fork {
+        saturate_until_dead(&mut sat, &mut s, saturator_steps)?
+    } else {
+        let mut out = Vec::new();
+        sat.saturate(&mut s, saturator_steps, &mut |f| out.push(f.clone()))?;
+        out
+    };
+
+    if let Some(core) = dead(&fork, terms) {
+        return Ok(done(fork, firings, Kind::DeadPost, core));
+    }
+    Ok(done(fork, firings, Kind::Alive, Vec::new()))
+}
+
+/// The smallest source frontier of `kb`'s contradictions, or `None` when it
+/// has none.
+fn dead(kb: &Kb, terms: &Terms) -> Option<Vec<FactId>> {
+    let witnesses: Vec<FactId> = crate::contradiction::detect(kb, terms)
+        .iter()
+        .map(|c| c.witness())
+        .collect();
+    if witnesses.is_empty() {
+        return None;
+    }
+    Some(crate::explain::smallest_contradiction_frontier(
+        kb,
+        terms,
+        Some(&witnesses),
+    ))
+}
+
+/// Saturate, stopping at the firing that kills the fork.
+///
+/// Identical to a full `saturate` on a fork that survives; on one that dies it
+/// returns the prefix up to and including the firing whose conclusion made the
+/// KB inconsistent, and abandons the loop there.
+///
+/// **Sound because the KB is append-only**: a contradiction is *created* by an
+/// insertion and can never be retracted, so a fork inconsistent at firing *n*
+/// is inconsistent at the fixpoint too. The verdict is therefore unchanged;
+/// only the amount of dead-branch work is.
+fn saturate_until_dead(
+    sat: &mut Saturator,
+    s: &mut Session<'_>,
+    max_steps: Option<usize>,
+) -> Result<Vec<Firing>, SaturateError> {
+    let mut firings: Vec<Firing> = Vec::new();
+    loop {
+        if max_steps.is_some_and(|m| firings.len() >= m) {
+            return Err(SaturateError::StepLimit(format!(
+                "saturator hit max_steps={} without reaching fixed point — \
+                 last firing was {:?}; see Saturator::last_firing for the \
+                 runaway candidate.",
+                max_steps.expect("checked"),
+                sat.last_firing()
+            )));
+        }
+        let Some(firing) = sat.step(s)? else {
+            return Ok(firings);
+        };
+        let redundant = firing.redundant;
+        let derived = firing.derived.clone();
+        firings.push(firing.clone());
+        sat.set_last_firing(firing);
+        if redundant {
+            continue; // wrote nothing, so the KB cannot have changed
+        }
+        for d in derived.iter() {
+            if crate::contradiction::contradicts(s.kb, s.terms, *d) {
+                return Ok(firings);
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ein_core::Value;
+    use ein_ir::{from_ir::load, parse};
+
+    fn kb_of(src: &str) -> (Ast, Terms, Kb) {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
+        let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        (ast, terms, kb)
+    }
+
+    const SRC: &str = "(rule mirror (?rel)\n  :match (?rel ?a ?b)\n  :assert (?rel ?b ?a)\n\
+                       \x20 :priority 100)\n\
+                       (relation r T T)\n(mirror r)\n(r A B :source \"(1)\")";
+
+    /// Two calls on the same root are independent, and mutating one fork does
+    /// not reach the other — the property
+    /// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) runs on.
+    ///
+    /// The `REPEAT` line of the parity diff already says the two calls *agree*;
+    /// what it cannot say is that they agree because they are isolated rather
+    /// than because nothing happened to collide. This writes into the first
+    /// fork between the calls and checks the second is untouched.
+    #[test]
+    fn two_enterings_share_no_mutable_state() {
+        let (ast, mut terms, mut kb) = kb_of(SRC);
+        let mut ev = crate::events::Events::off();
+        let r = terms.syms.get("r").expect("interned");
+        let c = terms
+            .syms
+            .get("C")
+            .unwrap_or_else(|| terms.intern_text("C").expect("room"));
+        let d = terms.intern_text("D").expect("room");
+        let h = terms
+            .intern_fact(r, &[Value::sym(c), Value::sym(d)])
+            .expect("room");
+
+        let mut first =
+            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &[h], None).expect("enters");
+        let root_facts = kb.n_facts();
+        let first_facts = first.kb.n_facts();
+
+        // Mutate the first fork out from under the second call.
+        let junk = terms.intern_text("junk").expect("room");
+        first
+            .kb
+            .add_and_index_fact(&mut terms, junk, &[], None)
+            .expect("room");
+
+        let second =
+            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &[h], None).expect("enters");
+        assert_eq!(second.kb.n_facts(), first_facts, "the forks are not shared");
+        assert_eq!(second.kind, first.kind);
+        assert_eq!(kb.n_facts(), root_facts, "root was written to");
+        assert!(!kb.contains(h), "the hypothesis leaked into root");
+    }
+
+    /// The pre-saturation detect is not redundant with the post one: it is
+    /// what catches a negative that landed at root *after* the candidate was
+    /// generated, and it reports `dead-pre` with **no** firings.
+    #[test]
+    fn a_negated_hypothesis_dies_before_saturation() {
+        let (ast, mut terms, mut kb) =
+            kb_of("(relation r T T)\n(r A B :source \"(1)\")\n(not (r C D) :source \"(2)\")");
+        let mut ev = crate::events::Events::off();
+        let r = terms.syms.get("r").expect("interned");
+        let (c, d) = (
+            terms.intern_text("C").expect("room"),
+            terms.intern_text("D").expect("room"),
+        );
+        let h = terms
+            .intern_fact(r, &[Value::sym(c), Value::sym(d)])
+            .expect("room");
+        let result =
+            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &[h], None).expect("enters");
+        assert_eq!(result.kind, Kind::DeadPre);
+        assert!(result.firings.is_empty(), "saturation ran anyway");
+        assert!(!result.unsat_core.is_empty(), "a dead entering has a core");
+    }
+}

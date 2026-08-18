@@ -33,6 +33,8 @@ One JSON object per line in, one per line out, in order:
     {"op": "lattice-shape", "path": …}           → the Apriori join + the no-good store
     {"op": "explain-shape", "path": …}           → unsat cores + the ATMS label search
     {"op": "explain-shape", "path": …, "alts": false} → … with alternatives not recorded
+    {"op": "commit-shape",  "path": …}           → try_commitment_set over real candidates
+    {"op": "commit-shape",  "path": …, "fail-fast": false} → … saturating dead forks to quiescence
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -133,6 +135,20 @@ recorded-primary path the fallback and the pre-S1.21.7 core take.
 
 Frontiers go out **sorted**: ein.py's is a `frozenset`, so its own iteration
 order is not reproducible even run to run, and every display site sorts.
+
+`commit-shape` runs `try_commitment_set` over the layer-1 singletons and the
+first few layer-2 sets of a real alive frontier (capped at 8 alive, for the
+reason `lattice-shape` caps at 12), and reports what each entering produced:
+the kind, the firing count, the fork's fact count, the smallest contradiction
+frontier and the hypothesis writes. `fail-fast: false` is the second regime —
+a dead fork then saturates to quiescence, so its firing count and its fork
+state are the full ones, which is the configuration a DAG builder that merges
+dead commitments by state needs.
+
+The last two lines are the purity claims, checked rather than asserted:
+`REPEAT` re-enters the first commitment and compares the whole result against
+the first call, and `ROOT` reports root's fact count, which every entering must
+leave alone.
 
 `expand` is the one op with no single function behind it: `ein.ir.macros`
 provides `expand_macros` / `_substitute`, and the *loader* decides what to run
@@ -708,6 +724,60 @@ def _explain_shape(kb: KnowledgeBase, alts: bool = True) -> str:
     return "\n".join(out)
 
 
+def _commit_shape(kb: KnowledgeBase, fail_fast: bool = True) -> str:
+    """`try_commitment_set` over real candidates — S1a.4.4.
+
+    Bounded the same way `lattice-shape` is, and for the same reason: the
+    primitive is what is under test, not the size of the search.
+    """
+    from dataclasses import replace
+
+    from ein.inference.apriori import generate_layer, layer_1
+    from ein.inference.commitment import try_commitment_set
+    from ein.inference.config import SolverConfig
+    from ein.inference.saturator import Saturator
+    from ein.inference.solution import open_hypotheses
+
+    kb.config = replace(kb.config or SolverConfig(),
+                        enable_fail_fast_fork=fail_fast)
+    for _ in Saturator(kb).saturate():
+        pass
+    alive_all = open_hypotheses(kb)
+    alive = frozenset(sorted(alive_all)[:8])
+    l1 = layer_1(alive)
+    l2 = generate_layer(l1, alive=alive, nogoods=kb._nogoods)[:6]
+    commitments = l1 + l2
+
+    def show(facts) -> str:
+        return "[" + " ".join(sorted(events.fact(f) for f in facts)) + "]"
+
+    def line(c, r) -> str:
+        cs = " ".join(events.fact_id(fid) for fid in c)
+        # The hypothesis writes' provenance, because `branch=0` is a contract
+        # and not a placeholder: it is per-commitment context the lattice
+        # search does not use, and changing it changes provenance output.
+        prov = " ".join(
+            f"{f.provenance.kind}:{f.provenance.branch}" if f.provenance
+            else "-" for f in r.hypothesis_facts
+        )
+        return (f"ENTER {{{cs}}} kind={r.kind} firings={len(r.firings)} "
+                f"facts={len(r.kb.facts)} core={show(r.unsat_core)} "
+                f"hyps={show(r.hypothesis_facts)} prov=[{prov}]")
+
+    out = [f"ALIVE {len(alive_all)} capped {len(alive)}"]
+    first = None
+    for c in commitments:
+        r = try_commitment_set(kb, c)
+        if first is None:
+            first = line(c, r)
+        out.append(line(c, r))
+    if first is not None:
+        again = line(commitments[0], try_commitment_set(kb, commitments[0]))
+        out.append(f"REPEAT {again == first}")
+    out.append(f"ROOT facts={len(kb.facts)} commitments={len(commitments)}")
+    return "\n".join(out)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -747,6 +817,10 @@ def _handle(req: dict) -> dict:
     if op == "lattice-shape":
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True, "out": _lattice_shape(kb)}
+    if op == "commit-shape":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True,
+                "out": _commit_shape(kb, bool(req.get("fail-fast", True)))}
     if op == "explain-shape":
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True,

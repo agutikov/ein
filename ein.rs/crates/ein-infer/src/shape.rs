@@ -625,6 +625,118 @@ pub fn explain_shape(
     Ok(out.join("\n"))
 }
 
+/// `try_commitment_set` over real candidates — the S1a.4.4 diff.
+///
+/// Bounded the same way [`lattice_shape`] is, and for the same reason: the
+/// primitive is what is under test, not the size of the search. Layer-1
+/// singletons plus the first six layer-2 sets of an alive frontier capped at 8.
+///
+/// The last two lines are the **purity** claims, checked rather than asserted:
+/// `REPEAT` re-enters the first commitment and compares the whole result
+/// against the first call, and `ROOT` reports root's fact count, which every
+/// entering must leave alone.
+pub fn commit_shape(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    fail_fast: bool,
+) -> Result<String, crate::saturator::SaturateError> {
+    use crate::apriori::{generate_layer, layer_1};
+    use rustc_hash::FxHashSet;
+
+    let mut cfg = kb.program().config.clone().unwrap_or_default();
+    cfg.enable_fail_fast_fork = fail_fast;
+    kb.program_mut().config = Some(cfg);
+
+    let mut off = crate::events::Events::off();
+    let (n_alive, alive) = {
+        let mut s = crate::saturator::Session {
+            kb,
+            terms,
+            ast,
+            events: &mut off,
+        };
+        let mut sat = crate::saturator::Saturator::new(&mut s)?;
+        sat.saturate(&mut s, None, &mut |_| {})?;
+        let all = crate::hypgen::open_hypotheses(&mut s)
+            .map_err(crate::saturator::SaturateError::Compile)?;
+        let mut capped: Vec<FactId> = all.iter().copied().collect();
+        // determinism-ok: sorted by content immediately, as `sorted(alive)` is.
+        capped.sort_by(|&a, &b| s.terms.cmp_fact_semantic(a, b));
+        capped.truncate(8);
+        (all.len(), capped.into_iter().collect::<FxHashSet<FactId>>())
+    };
+    let l1 = layer_1(terms, &alive);
+    let store = kb.nogoods().clone();
+    let mut commitments = l1.clone();
+    commitments.extend(
+        generate_layer(terms, &l1, &alive, &store.read().expect("store"))
+            .into_iter()
+            .take(6),
+    );
+
+    let mut out = vec![format!("ALIVE {n_alive} capped {}", alive.len())];
+    let mut first: Option<String> = None;
+    for c in &commitments {
+        let r = crate::commitment::try_commitment_set(kb, terms, ast, &mut off, c, None)?;
+        let text = enter_line(terms, c, &r);
+        first.get_or_insert_with(|| text.clone());
+        out.push(text);
+    }
+    if let Some(first) = first {
+        let r =
+            crate::commitment::try_commitment_set(kb, terms, ast, &mut off, &commitments[0], None)?;
+        let again = enter_line(terms, &commitments[0], &r);
+        out.push(format!("REPEAT {}", py_bool(again == first)));
+    }
+    out.push(format!(
+        "ROOT facts={} commitments={}",
+        kb.n_facts(),
+        commitments.len()
+    ));
+    Ok(out.join("\n"))
+}
+
+fn enter_line(terms: &Terms, c: &[FactId], r: &crate::commitment::CommitmentSetResult) -> String {
+    let sorted_sexprs = |facts: &[FactId]| -> String {
+        let mut items: Vec<String> = facts
+            .iter()
+            .map(|&f| crate::events::sexpr(terms, f))
+            .collect();
+        items.sort();
+        format!("[{}]", items.join(" "))
+    };
+    let cs: Vec<String> = c.iter().map(|&f| crate::events::sexpr(terms, f)).collect();
+    // The hypothesis writes' provenance, because `branch=0` is a contract and
+    // not a placeholder: it is per-commitment context the lattice search does
+    // not use, and changing it changes provenance output.
+    let prov: Vec<String> = r
+        .hypothesis_facts
+        .iter()
+        .map(|&f| match r.kb.primary(f) {
+            None => "-".to_string(),
+            Some(p) => {
+                let p = terms.provs.get(p);
+                format!(
+                    "{}:{}",
+                    p.kind.as_str(),
+                    p.branch.map_or("None".to_string(), |b| b.to_string())
+                )
+            }
+        })
+        .collect();
+    format!(
+        "ENTER {{{}}} kind={} firings={} facts={} core={} hyps={} prov=[{}]",
+        cs.join(" "),
+        r.kind.as_str(),
+        r.firings.len(),
+        r.kb.n_facts(),
+        sorted_sexprs(&r.unsat_core),
+        sorted_sexprs(&r.hypothesis_facts),
+        prov.join(" ")
+    )
+}
+
 /// `repr(list_of_str)` — `PyValue` has no list shape, and one is needed in
 /// exactly this one place.
 fn py_list(items: &[String]) -> String {

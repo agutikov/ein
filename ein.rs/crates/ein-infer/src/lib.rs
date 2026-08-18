@@ -19,6 +19,7 @@
 
 pub mod apriori;
 pub mod closed;
+pub mod commitment;
 pub mod compile;
 pub mod contradiction;
 pub mod engine;
@@ -41,6 +42,7 @@ pub use apriori::{
     order_candidates,
 };
 pub use closed::{emit_closed, producible_relations};
+pub use commitment::{CommitmentSetResult, Kind, try_commitment_set};
 pub use compile::{
     CompileError, PlanKey, PlanMemo, activators_for, asserted_relation, compile_rule,
     naf_relation_refs, negated_relation, plan_key,
@@ -69,6 +71,6 @@ pub use plan::{
 pub use predicates::Pred;
 pub use saturator::{SaturateError, Saturator, Session};
 pub use shape::{
-    explain_shape, hyp_shape, hyp_shape_with, lattice_shape, match_shape, naf_map, plan_shape,
-    plan_shape_with, saturate_events,
+    commit_shape, explain_shape, hyp_shape, hyp_shape_with, lattice_shape, match_shape, naf_map,
+    plan_shape, plan_shape_with, saturate_events,
 };

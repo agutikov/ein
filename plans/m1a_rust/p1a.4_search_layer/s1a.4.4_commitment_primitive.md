@@ -1,8 +1,10 @@
 # S1a.4.4 — The commitment primitive
 
 **Phase:** P1a.4 (Search layer)
+**Status:** **shipped** 2026-08-18 — acceptance below.
 **Estimate:** 2 days
 **Depends on:** [S1a.4.3](s1a.4.3_apriori_and_nogoods.md),
+[S1a.4.6](s1a.4.6_explanation_and_cores.md) (see T1a.4.4.4),
 [P1a.3](../p1a.3_deductive_core/README.md)
 **Implements:** `ein/inference/{commitment,frontier}.py`,
 [design/07](../design/07_search_layer.md) §5
@@ -25,16 +27,28 @@ clash.
 
 ## Acceptance
 
-- `enter` events identical for every commitment on every corpus entry:
-  `kind` (`alive` / `dead-pre` / `dead-post`), firing count, and the
-  unsat core as a fact set.
-- With `enable_fail_fast_fork=false`, the firing prefix becomes the full
-  run and `result.kb` the complete dead state — that path is exercised
-  too, and its event trace also matches.
-- `hypothesis_facts` are the writes for `C` only, not the saturator's
-  additions.
-- Two calls on the same root produce independent results sharing no
-  mutable state (a test that mutates one fork and re-runs the other).
+The `commit-shape` diff enters the layer-1 singletons and the first six
+layer-2 sets of a real alive frontier — **65 files, 477 enterings, 0
+differences** — in both fail-fast regimes.
+
+| item | result |
+|---|---|
+| `kind`, firing count, unsat core identical for every commitment | the `ENTER` line, plus the fork's fact count and the hypothesis writes' *provenance*. Skipping the pre-saturation detect moves 1 file; returning the union core instead of the smallest frontier moves 9 |
+| `enable_fail_fast_fork=false` exercised too | the second sweep. It is genuinely a second check: forcing the slow path in the *fast* regime moves **11 files** and nothing in the slow one |
+| `hypothesis_facts` are the writes for `C` only | the `hyps=` column, against `facts=` for the fork's total |
+| Two calls independent, sharing no mutable state | `REPEAT` compares the whole result of a re-entering, and `two_enterings_share_no_mutable_state` writes into the first fork *between* the two calls and checks the second is untouched — because `REPEAT` alone cannot tell isolation from coincidence |
+
+`branch=0` is in the diff. T1a.4.4.2 says changing it changes provenance
+output, and that was true only once the instrument printed provenance:
+before it did, `branch=1` moved nothing; after, it moves **47 files**.
+
+### The dependency the stage table did not have
+
+T1a.4.4.4 needs `smallest_contradiction_frontier`, which is
+[S1a.4.6](s1a.4.6_explanation_and_cores.md)'s T1a.4.6.5 — and S1a.4.6
+declared a dependency on S1a.4.5, which depends on this stage. The cycle
+is only in the *acceptances*: S1a.4.6's machinery has no such dependency,
+so it shipped first. See its header.
 
 ## Tasks
 
@@ -84,6 +98,19 @@ everything it produces, with **no** root writes inside — the writes
 step. This is the seam
 [design/08](../design/08_parallelism.md) §2 needs, and building it now
 costs nothing.
+
+> **The "no root writes" half landed; the `&Arc<KbCore>` half did not,
+> and cannot yet.** `Kb::fork` takes `&mut self` on purpose — sealing the
+> parent's top layer is what makes the two histories diverge
+> ([design/03](../design/03_data_model.md) §5) — and the primitive also
+> needs `&mut Terms`, because interning a hypothesis and building a
+> conclusion both write the global tables. Turning either into a shared
+> handle is a change to the *data model*, not to this function, and it is
+> what [P1a.7](../p1a.7_parallelism/README.md) is for. What is true now
+> is the part that mattered: nothing inside writes root, nothing inside
+> emits a no-good or touches a counter, and
+> `two_enterings_share_no_mutable_state` checks it by mutating one fork
+> between two calls.
 
 ## Notes
 

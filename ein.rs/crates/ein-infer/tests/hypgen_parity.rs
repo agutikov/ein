@@ -55,6 +55,21 @@ fn rust_lattice(path: &Path) -> Option<Answer> {
     })
 }
 
+fn rust_commit(path: &Path, fail_fast: bool) -> Option<Answer> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
+    Some(
+        match ein_infer::commit_shape(&ast, &mut terms, &mut kb, fail_fast) {
+            Ok(text) => Answer::Ok(text),
+            Err(e) => Answer::Err {
+                kind: "SaturateError".into(),
+                msg: e.to_string(),
+            },
+        },
+    )
+}
+
 fn rust_explain(path: &Path, alts: bool) -> Option<Answer> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -195,6 +210,37 @@ fn the_whole_corpus_joins_the_same_layers() {
         // and `Value` is totally ordered, so ein.rs answers where ein.py
         // crashes. This is the *only* op that reaches it, and the only file
         // that can produce one.
+        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+    );
+}
+
+/// The commitment primitive, in both fail-fast regimes.
+///
+/// `enable_fail_fast_fork` is the engine's one pure speed lever, so the two
+/// runs must agree on every *verdict* and differ only in how much of a dying
+/// fork's saturation was done — which is exactly what the `kind` / `firings` /
+/// `facts` columns say.
+#[test]
+fn the_whole_corpus_enters_the_same_commitments() {
+    sweep(
+        "commit",
+        serde_json::json!({"op": "commit-shape"}),
+        |p| rust_commit(p, true),
+        |a| a.lines().filter(|l| l.starts_with("ENTER ")).count(),
+        (60, 100),
+        // D2 again: `layer_1` is how this op picks its candidates.
+        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+    );
+}
+
+#[test]
+fn the_whole_corpus_enters_the_same_commitments_without_fail_fast() {
+    sweep(
+        "commit-slow",
+        serde_json::json!({"op": "commit-shape", "fail-fast": false}),
+        |p| rust_commit(p, false),
+        |a| a.lines().filter(|l| l.starts_with("ENTER ")).count(),
+        (60, 100),
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
     );
 }
