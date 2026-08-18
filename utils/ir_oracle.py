@@ -25,6 +25,7 @@ One JSON object per line in, one per line out, in order:
     {"op": "kb-shape", "path": …}                → the loaded KB's shape (below)
     {"op": "plan-shape", "path": …}              → every compiled JoinPlan (below)
     {"op": "plan-shape", "path": …, "filter": false}  → … without the arity filter
+    {"op": "match-shape", "path": …}             → every match every plan produces
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -48,6 +49,14 @@ run to run. Registers and probes have no counterpart here and are deliberately
 absent: they are the port's own metadata. A `CompileError` comes back as the
 ordinary `{"ok": false, …}`, which is how the four S1.22.0 error messages are
 compared on the corpus rather than only on fixtures.
+
+`match-shape` is the layer below that, for S1a.3.2: it runs every plan over the
+loaded KB — a full run, and a `run_seeded` at every fact — and emits one line
+per match. Bindings go out in **dict order**, which is the order the matcher
+first bound each variable and therefore the order `Provenance.bindings` records;
+premises go out as fact *positions*, so an order or identity difference names
+itself. Between them the two sweeps pin the three orders a matcher owes:
+matches, bindings, and premises through the semi-naive seed.
 
 `expand` is the one op with no single function behind it: `ein.ir.macros`
 provides `expand_macros` / `_substitute`, and the *loader* decides what to run
@@ -288,6 +297,48 @@ def _plan_shape(kb: KnowledgeBase, filter_activators: bool = True) -> str:
     return "\n".join(out)
 
 
+def _match_shape(kb: KnowledgeBase) -> str:
+    """Every match every plan produces over the loaded KB — S1a.3.2.
+
+    Two sweeps per plan, because the matcher has two entry shapes and they owe
+    each other an identity: the full run, and a `run_seeded` at **every fact in
+    the KB**, which is what forces the premise-order contract (a seeded match's
+    provenance must read exactly like a full run's, seeded fact at its own
+    step's position).
+
+    Bindings go out in **dict order** — the order the matcher first bound each
+    variable, which is what `Provenance.bindings` records and the trace prints.
+    Premises go out as fact *positions*, so a premise-order or premise-identity
+    difference names itself.
+    """
+    from ein.inference import match
+    from ein.inference.compile import compile_rule
+    from ein.inference.engine import Engine
+
+    engine = Engine(kb)
+    facts = list(kb.facts)
+    at = {(f.relation_name, f.args): i for i, f in enumerate(facts)}
+    ids = lambda ps: [at[(p.relation_name, p.args)] for p in ps]   # noqa: E731
+    out: list[str] = []
+    for rule in kb.rules.values():
+        for activator in engine._activators_for(rule):
+            plan = compile_rule(rule, activator)
+            key = tuple(str(a) for a in (activator.args if activator else ()))
+            out.append(f"PLAN {plan.rule_name} key={key!r}")
+            for i, (steps, _guards) in enumerate(plan.disjuncts()):
+                for bindings, premises in match.run_steps(
+                        steps, dict(plan.bindings_seed), (), kb):
+                    out.append(f"  RUN D{i} b={list(bindings.items())!r} "
+                               f"p={ids(premises)!r}")
+            for j, fact in enumerate(facts):
+                for i, (steps, _guards) in enumerate(plan.disjuncts()):
+                    for bindings, premises in match._seed_steps(
+                            steps, plan.bindings_seed, fact, kb):
+                        out.append(f"  SEED {j} D{i} b={list(bindings.items())!r} "
+                                   f"p={ids(premises)!r}")
+    return "\n".join(out)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -312,6 +363,9 @@ def _handle(req: dict) -> dict:
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True,
                 "out": _plan_shape(kb, req.get("filter", True))}
+    if op == "match-shape":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True, "out": _match_shape(kb)}
     if op == "accept":
         return {"ok": True}
     if op == "parse":

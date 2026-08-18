@@ -286,6 +286,8 @@ impl<'a> Compiler<'a> {
             disjuncts.push(Disjunct {
                 steps: Span::EMPTY,
                 guards: Span::EMPTY,
+                n_premises: 0,
+                n_slots: 0,
             });
         }
         for body in bodies {
@@ -423,6 +425,7 @@ impl<'a> Compiler<'a> {
         let guards_start = self.guards.len() as u32;
         let mut steps: Vec<Step> = Vec::new();
         self.premise(body, true, &mut steps)?;
+        let n_premises = steps.iter().filter(|s| matches!(s, Step::Rel(_))).count() as u16;
         let span = self.push_steps(steps);
         Ok(Disjunct {
             steps: span,
@@ -430,6 +433,8 @@ impl<'a> Compiler<'a> {
                 start: guards_start,
                 len: self.guards.len() as u32 - guards_start,
             },
+            n_premises,
+            n_slots: self.rel_steps(span),
         })
     }
 
@@ -598,6 +603,7 @@ impl<'a> Compiler<'a> {
         self.guards.push(NafGuard {
             sub: span,
             n_regs: space.names.len() as Reg,
+            n_slots: self.rel_steps(span),
             reg_names: space.names.into_boxed_slice(),
             scope_of: space.scope_of.into_boxed_slice(),
             scope: scope.into_boxed_slice(),
@@ -896,6 +902,18 @@ impl<'a> Compiler<'a> {
             Some(space) => space.names[r as usize],
             None => self.plan_space.names[r as usize],
         }
+    }
+
+    /// Relation steps in a span, counting into nested `(absent …)` queries.
+    fn rel_steps(&self, span: Span) -> u16 {
+        self.steps(span)
+            .iter()
+            .map(|s| match s {
+                Step::Rel(_) => 1,
+                Step::Absent { sub } => self.rel_steps(*sub),
+                Step::Guard { .. } => 0,
+            })
+            .sum()
     }
 
     /// Every relation a guard sub-plan reads, through nested guards too — the

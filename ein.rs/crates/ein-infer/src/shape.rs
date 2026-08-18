@@ -25,12 +25,14 @@
 
 use ein_core::entities::Rule;
 use ein_core::pyrepr::{PyValue, repr, repr_str};
-use ein_core::{Kb, Symbol, Terms};
+use ein_core::{FactId, Kb, Symbol, Terms};
 use ein_ir::{Ast, node_repr};
+use rustc_hash::FxHashMap;
 
 use crate::compile::{
     CompileError, activators_for, asserted_relation, naf_relation_refs, negated_relation, plan_key,
 };
+use crate::match_::{Match, Matcher};
 use crate::plan::{GuardArgKind, NafGuard, Plan, Slot, Span, Step};
 
 /// Compile every `(rule, activator)` pair in `Engine.compile_all` order and
@@ -78,6 +80,74 @@ pub fn plan_shape_with(
         out.pop();
     }
     Ok(out)
+}
+
+/// Every match every plan produces over `kb` — the S1a.3.2 diff.
+///
+/// Two sweeps per plan, because the matcher has two entry shapes and they owe
+/// each other an identity: the full run, and a `run_seeded` at **every fact in
+/// the KB**, which is what forces the premise-order contract — a seeded match's
+/// provenance must read exactly like a full run's, seeded fact at its own
+/// step's position.
+///
+/// Bindings go out in bind order (the trail's order, which is
+/// `Provenance.bindings`') and premises as fact **positions**, so an order or
+/// identity difference names itself rather than showing up as a wall of
+/// re-rendered facts.
+pub fn match_shape(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Result<String, CompileError> {
+    let rules: Vec<Rule> = kb.program().rules.values().cloned().collect();
+    let facts: Vec<FactId> = kb.facts().collect();
+    let at: FxHashMap<FactId, usize> = facts.iter().enumerate().map(|(i, &f)| (f, i)).collect();
+    let mut matcher = Matcher::new();
+    let mut out = String::new();
+    for rule in &rules {
+        for activator in activators_for(kb, terms, rule) {
+            let key = plan_key(terms, rule, activator);
+            let plan = crate::compile::compile_rule(ast, terms, rule, activator)?;
+            let key_repr = repr(&PyValue::Tuple(
+                key.activator
+                    .iter()
+                    .map(|&s| PyValue::Str(terms.sym(s).to_string()))
+                    .collect(),
+            ));
+            out.push_str(&format!("PLAN {} key={key_repr}\n", terms.sym(plan.rule)));
+            for d in 0..plan.disjuncts.len() {
+                matcher.run_one(kb, terms, ast, &plan, d, &mut |m| {
+                    out.push_str(&format!("  RUN D{d} {}\n", match_text(terms, &at, m)));
+                    std::ops::ControlFlow::Continue(())
+                });
+            }
+            for (j, &fact) in facts.iter().enumerate() {
+                matcher.run_seeded(kb, terms, ast, &plan, fact, &mut |m| {
+                    out.push_str(&format!(
+                        "  SEED {j} D{} {}\n",
+                        m.disjunct,
+                        match_text(terms, &at, m)
+                    ));
+                    std::ops::ControlFlow::Continue(())
+                });
+            }
+        }
+    }
+    if out.ends_with('\n') {
+        out.pop();
+    }
+    Ok(out)
+}
+
+fn match_text(terms: &Terms, at: &FxHashMap<FactId, usize>, m: &Match<'_>) -> String {
+    let bindings: Vec<String> = m
+        .bindings()
+        .map(|(name, value)| {
+            format!(
+                "({}, {})",
+                repr_str(terms.sym(name)),
+                repr(&terms.py_value(value))
+            )
+        })
+        .collect();
+    let premises: Vec<String> = m.premises().iter().map(|f| at[f].to_string()).collect();
+    format!("b=[{}] p=[{}]", bindings.join(", "), premises.join(", "))
 }
 
 fn render_plan(out: &mut String, ast: &Ast, terms: &Terms, plan: &Plan, key: &[Symbol]) {

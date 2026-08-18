@@ -18,6 +18,8 @@
 #![forbid(unsafe_code)]
 
 pub mod compile;
+pub mod firing;
+pub mod match_;
 pub mod plan;
 pub mod predicates;
 pub mod shape;
@@ -26,9 +28,11 @@ pub use compile::{
     CompileError, PlanKey, PlanMemo, activators_for, asserted_relation, compile_rule,
     naf_relation_refs, negated_relation, plan_key,
 };
+pub use firing::{ActivatorId, BindingKey, Env, FireError, Firing, build_fact, fire};
+pub use match_::{Emit, Match, Matcher};
 pub use plan::{
     Disjunct, GuardArg, GuardArgKind, MAX_REGS, NafGuard, Plan, PlanId, Probe, ProbeSrc, Reg,
     RelStep, Slot, Span, Step,
 };
 pub use predicates::Pred;
-pub use shape::{plan_shape, plan_shape_with};
+pub use shape::{match_shape, plan_shape, plan_shape_with};

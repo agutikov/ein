@@ -206,6 +206,9 @@ pub struct NafGuard {
     pub sub: Span,
     /// The size of the sub-plan's own register space.
     pub n_regs: u16,
+    /// Relation steps in the query, nested guards included — see
+    /// [`Disjunct::n_slots`].
+    pub n_slots: u16,
     /// `reg_names[r]` for that space — the sub-plan's variables are *not* the
     /// parent's, so it carries its own table.
     pub reg_names: Box<[Symbol]>,
@@ -238,6 +241,15 @@ pub struct NafGuard {
 pub struct Disjunct {
     pub steps: Span,
     pub guards: Span,
+    /// Top-level relation steps — the length of the `premises` tuple a match
+    /// of this disjunct reports.
+    pub n_premises: u16,
+    /// Relation steps including those inside nested `(absent …)` queries — the
+    /// size of the premise-slot array a run needs. A nested query writes into
+    /// the slots the enclosing walk has not reached yet and every one of them
+    /// is overwritten before the emit reads it, so the array is sized for the
+    /// deepest write rather than the reported length.
+    pub n_slots: u16,
 }
 
 /// The compiled `(rule, activator)` pair.
