@@ -101,6 +101,20 @@ impl Source {
     }
 }
 
+/// [`resolve`] starting from the running executable — what a caller with no
+/// opinion about where to look should use.
+///
+/// In a test the executable lives under `target/`, which is inside the
+/// checkout, so the walk finds the source tree; in an installed binary it does
+/// not, and the embedded copy answers.
+pub fn resolve_default() -> Source {
+    let from = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(Path::to_path_buf))
+        .unwrap_or_else(|| PathBuf::from("."));
+    resolve(&from)
+}
+
 /// Resolve the stdlib source, in the three steps above.
 ///
 /// `from` is where to start the checkout walk — the running executable's

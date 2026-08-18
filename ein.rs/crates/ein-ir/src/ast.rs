@@ -309,6 +309,26 @@ impl Ast {
     }
 }
 
+/// `f"{loc}"` — the dataclass `repr` a loader message interpolates.
+///
+/// `None` for a **top-level** form, which is what makes ein.py's loader
+/// messages end in `at None`: `_topform`, `relation_decl`, `generic_fact`,
+/// `eq_fact`, … all build their `SForm` without a `loc` and only
+/// `generic_list` passes one. Q-M1a.6 — a real usability bug, fixed in both
+/// implementations *after* parity, because fixing it during the port would
+/// break T3 and hide regressions.
+pub fn loc_repr(ast: &Ast, loc: Option<Loc>) -> String {
+    match loc {
+        None => "None".to_string(),
+        Some(l) => format!(
+            "Loc(file={}, line={}, col={})",
+            ein_core::pyrepr::repr_str(ast.file(l.file)),
+            l.line,
+            l.col
+        ),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -338,6 +358,24 @@ mod tests {
         let fc = ast.sform_named("rule", &[c], here);
         assert!(ast.eq_nodes(fa, fb));
         assert!(!ast.eq_nodes(fa, fc));
+    }
+
+    #[test]
+    fn a_loc_renders_as_pythons_dataclass_repr() {
+        let mut ast = Ast::new();
+        let f = ast.intern_file(Some("examples/zebra2.ein"));
+        assert_eq!(loc_repr(&ast, None), "None");
+        assert_eq!(
+            loc_repr(
+                &ast,
+                Some(Loc {
+                    file: f,
+                    line: 6,
+                    col: 20
+                })
+            ),
+            "Loc(file='examples/zebra2.ein', line=6, col=20)"
+        );
     }
 
     #[test]

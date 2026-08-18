@@ -18,3 +18,4 @@ sha2.workspace = true
 # The frontend parity tests talk to `ein.py` through the shared oracle. A
 # dev-dependency only: the engine's own dependency budget is unaffected.
 ein-oracle = { path = "../ein-oracle" }
+serde_json.workspace = true

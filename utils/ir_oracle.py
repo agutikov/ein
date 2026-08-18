@@ -20,7 +20,17 @@ One JSON object per line in, one per line out, in order:
     {"op": "compact",  "path": …}                → one `dump_compact` per form, newline-joined
     {"op": "resolve",  "path": …}                → dump_canonical(resolve_imports(…))
     {"op": "minimize", "path": …}                → dump_canonical(resolve_and_minimize(…))
+    {"op": "expand",   "path": …}                → resolve, then expand rule clauses
     {"op": "macro-names"}                        → the names `std.macro` exports, sorted
+
+`expand` is the one op with no single function behind it: `ein.ir.macros`
+provides `expand_macros` / `_substitute`, and the *loader* decides what to run
+them over (each rule's `:match` and `:assert`, and nothing else — a
+`(forall …)` fact is left alone). The scaffolding below reproduces that
+decision so both implementations expand the same nodes; the loader's own
+checks around it — a duplicate macro name, one that shadows kernel vocabulary,
+the S1.8a.f20 unimported-macro guard — belong to `kb.from_ir` and are compared
+when the loader is ported (P1a.2).
 
 `accept` skips the dump, which is what makes the fuzzer affordable. A failure
 is `{"ok": false, "err": "<message>", "kind": "IRParseError"|"KBLoadError"|…}`
@@ -42,11 +52,54 @@ sys.path.insert(0, str(REPO / "ein.py" / "src"))
 
 from ein.ir import IRParseError, parse                      # noqa: E402
 from ein.ir.dump import dump_canonical, dump_compact        # noqa: E402
+from ein.ir.macros import Macro, expand_macros              # noqa: E402
+from ein.ir.types import Atom, KwPair, SForm, Var           # noqa: E402
 from ein.kb.imports import (                                # noqa: E402
     resolve_and_minimize,
     resolve_imports,
     stdlib_macro_names,
 )
+
+
+def _macro_registry(forms) -> dict[str, Macro]:
+    """`kb.from_ir._ingest_macros` minus its error checks — first wins."""
+    out: dict[str, Macro] = {}
+    for f in forms:
+        if not (isinstance(f, SForm) and isinstance(f.head, Atom)
+                and f.head.name == "macro" and len(f.args) >= 3):
+            continue
+        name, params_form, body = f.args[0], f.args[1], f.args[2]
+        if not isinstance(name, Atom) or not isinstance(params_form, SForm):
+            continue
+        if name.name in out:
+            continue
+        out[name.name] = Macro(
+            name=name.name,
+            params=tuple(a.name for a in params_form.args if isinstance(a, Var)),
+            body=body,
+            loc=f.loc,
+        )
+    return out
+
+
+def _expand_rule_clauses(forms, macros: dict[str, Macro]):
+    """What the loader runs the expander over: `:match` and `:assert`, on
+    `(rule …)` / `(hrule …)` forms only."""
+    if not macros:
+        return list(forms)
+    out = []
+    for f in forms:
+        if not (isinstance(f, SForm) and isinstance(f.head, Atom)
+                and f.head.name in ("rule", "hrule")):
+            out.append(f)
+            continue
+        args = tuple(
+            KwPair(key=a.key, value=expand_macros(a.value, macros), loc=a.loc)
+            if isinstance(a, KwPair) and a.key.name in ("match", "assert") else a
+            for a in f.args
+        )
+        out.append(SForm(head=f.head, args=args, loc=f.loc))
+    return out
 
 
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
@@ -77,6 +130,10 @@ def _handle(req: dict) -> dict:
     if op == "minimize":
         return {"ok": True,
                 "out": dump_canonical(resolve_and_minimize(forms, base_dir=base_dir))}
+    if op == "expand":
+        resolved = resolve_imports(forms, base_dir=base_dir)
+        expanded = _expand_rule_clauses(resolved, _macro_registry(resolved))
+        return {"ok": True, "out": dump_canonical(expanded)}
     raise ValueError(f"unknown op {op!r}")
 
 

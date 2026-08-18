@@ -18,10 +18,14 @@
 
 pub mod ast;
 pub mod dump;
+pub mod imports;
 pub mod lex;
+pub mod macros;
 pub mod parse;
 pub mod stdlib;
 
-pub use ast::{ArgSpan, Ast, FileId, Loc, Node, NodeId, SymId};
+pub use ast::{ArgSpan, Ast, FileId, Loc, Node, NodeId, SymId, loc_repr};
 pub use dump::{dump_canonical, dump_compact, dump_pretty};
+pub use imports::{LoadError, Resolver, resolve_and_minimize, resolve_imports};
+pub use macros::{Macro, MacroError, collect_macros, expand_macros};
 pub use parse::{ParseError, parse};

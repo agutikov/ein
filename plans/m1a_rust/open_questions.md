@@ -11,10 +11,10 @@ the two namespaces cannot collide. A closed id is never reused.
 |---|---|---|
 | [Q-M1a.1](#q-m1a1--port-boundary-a-full-vs-b-hot-loop) | Port boundary — A (full) vs B (hot loop behind PyO3) | **resolved 2026-08-17 — A** |
 | [Q-M1a.2](#q-m1a2--does-einpy-have-a-sunset) | Does ein.py have a sunset? | open — recommendation: no |
-| [Q-M1a.3](#q-m1a3--parse-error-message-parity) | Parse-error message parity, including `-1:-1` at EOF | open — blocking P1a.1 |
+| [Q-M1a.3](#q-m1a3--parse-error-message-parity) | Parse-error message parity, including `-1:-1` at EOF | **resolved 2026-08-18 — (a)** |
 | [Q-M1a.4](#q-m1a4--sorted-over-mixed-type-fact-args) | `sorted()` over mixed-type fact args raises in ein.py | open — blocking P1a.4 |
 | [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | open — recommendation: port MT19937 |
-| [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | open — post-parity fix |
+| [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | open — post-parity fix; reproduced at P1a.1 |
 | [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | open — recommendation: no, plus an opt-in escape |
 | [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | open — port as-is, flag upstream |
 | [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | open — decide at the P1a.5 gate |
@@ -23,7 +23,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.12](#q-m1a12--remote-access-and-auth) | Remote access and auth for `ein serve` | open — out of v1 scope |
 | [Q-M1a.13](#q-m1a13--argparse-surface-parity) | Reproducing `argparse` `--help` and error text | open — blocking P1a.5 |
 | [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | open |
-| [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | open |
+| [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 
 ---
@@ -67,6 +67,32 @@ fixtures.
 **Recommendation: (a) for the port, then (c) as a separate, deliberate
 change once T3 is green** — improving diagnostics while the harness is
 still finding bugs would hide regressions in noise.
+
+**Resolved 2026-08-18 at [S1a.1.1](p1a.1_ir_frontend/s1a.1.1_lexer_and_parser.md):
+(a), and it needed more than the EOF case.** Four behaviours had to be
+reproduced, and only the first was known when this question was written:
+
+1. **`-1:-1` at EOF**, with `get_context` rendering the last line and a
+   caret one past its end — Lark's `UnexpectedEOF` sets
+   `pos_in_stream = -1` and Python's negative slicing does the rest.
+2. **A ±40-character context window**, applied *before* the line is
+   trimmed, so an error past column 40 renders a **truncated** source
+   line.
+3. **The `%ignore` delayed-match quirk**: `xearley.py` writes a
+   `delayed_matches[m.end()]` key at every position where whitespace or a
+   comment matches — including inside a string literal, and including
+   when `to_scan` is empty, which still creates the key in a
+   `defaultdict`. A dict holding one empty list is truthy, so the error
+   is held back until the scanner walks past it. `(y";"{` reports the
+   `{`; `(y";"{?` reports the `?`. Found by the differential fuzzer, not
+   by reading, and simulated in `parse::death_position`.
+4. **Ambiguity resolution prefers the earlier alternative**, which is
+   what makes `(rulex …)` a rule named `x` rather than a fact named
+   `rulex`.
+
+All four are pinned by `parse_parity.rs` and by 2.2 M fuzzer mutations.
+The (c) half — improving the diagnostics in both implementations
+together — stays open and belongs after the P1a.5 byte gate.
 
 ## Q-M1a.4 — `sorted()` over mixed-type fact args
 
@@ -126,6 +152,13 @@ would naturally print it.
 **Recommendation: print `at None` during the port (T3), then fix both
 implementations together** in a post-parity stage. Tracked here so the
 fix is not forgotten; it is a genuine usability bug.
+
+**Reproduced at [S1a.1.3](p1a.1_ir_frontend/s1a.1.3_macros_and_imports.md)**:
+`ast::loc_repr` renders `None` for a top-level form and Python's
+dataclass `repr` (`Loc(file='…', line=6, col=20)`) otherwise, which is
+what makes the eleven `examples/broken/load/import_*.expected` messages
+byte-identical — every one of them ends `at None`. The fix, when it
+comes, re-baselines all of them in both implementations at once.
 
 ## Q-M1a.7 — May `--jobs > 1` move counters?
 
@@ -250,6 +283,23 @@ Proposal: a `pyfmt` helper beside `pyrepr`
 ([design/02](design/02_determinism_and_order.md) §7) covering `f`-format
 with width/precision, differentially tested over a wide float corpus.
 Small, and it removes a whole class of one-character T3 diffs.
+
+**Resolved 2026-08-18 at [S1a.1.2](p1a.1_ir_frontend/s1a.1.2_ast_and_dumper.md):
+`ein-core::pyfmt`**, covering `[[fill]align][sign][0][width][.precision]f`
+and rejecting anything outside that subset rather than guessing at it.
+230 values × 19 specs against CPython, 0 differences. Three findings
+beyond the proposal: Rust spells NaN `NaN`; a NaN never carries a sign in
+CPython while an infinity does; and an **empty** spec is `str(x)`, not
+`.6f` — so the `f` is required, not assumed. The digits themselves come
+from Rust's `{:.*}`, which agrees with Python on round-half-even over the
+exact binary value.
+
+`pyrepr` landed with it, and needed a **generated Unicode table**:
+`repr()` escapes by general category and `rustc` exposes only
+`is_control()`, so `printable.rs` is generated from CPython's own tables
+by `utils/gen_unicode_printable.py` (737 ranges, Unicode 16.0.0). A
+CPython upgrade that moves a category surfaces as a named code point in
+the differential test rather than as a mystery diff at P1a.5.
 
 ## Q-M1a.16 — How does the harness drive the lever matrix?
 

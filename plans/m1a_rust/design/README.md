@@ -72,7 +72,7 @@ stashing the tree under test.
 |---|---|---|---|---|---|
 | 2026-08-17 | ein.py, CPython 3.14 | 5.69 s | — | — | baseline |
 | 2026-08-17 | ein.py, PyPy 3.11 | 4.07 s | 8.15 s | **43.7 s** ‡ | baseline |
-| 2026-08-18 | ein.rs P1a.1 (frontend only) | — | — | — | `parse`: **758 µs** vs 760.6 ms CPython / 230.9 ms PyPy — same set, 1 003× / 305× |
+| 2026-08-18 | ein.rs P1a.1 (frontend only) | — | — | — | `parse`: **758 µs** vs 760.6 ms CPython / 230.9 ms PyPy (1 003× / 305×). zebra2 parse + resolve + expand: **824 µs** vs 618.9 ms / 193.7 ms |
 | — | ein.rs P1a.5 (parity, unoptimised) | — | — | — | *expected slower than PyPy; that is fine* |
 | — | ein.rs P1a.6 (optimised, `--jobs 1`) | — | — | — | target ≤ 0.2 s / ≤ 0.4 s / ≤ 5 s |
 | — | ein.rs P1a.7 (`--jobs 8`) | — | — | — | — |

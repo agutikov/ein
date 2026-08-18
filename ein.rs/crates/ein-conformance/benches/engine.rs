@@ -93,6 +93,23 @@ fn frontend(c: &mut Criterion) {
             std::hint::black_box(forms.len());
         })
     });
+    group.bench_function("zebra2_resolve", |b| {
+        // P1a.1's acceptance number: parse **plus** import resolution and
+        // macro expansion of zebra2, which pulls three stdlib modules in.
+        let text = &sources[0].1;
+        let base = root.join("examples");
+        b.iter(|| {
+            let mut ast = ein_ir::Ast::new();
+            let forms = ein_ir::parse(&mut ast, text, Some("zebra2.ein")).expect("parses");
+            let resolved = ein_ir::imports::Resolver::new()
+                .resolve_imports(&mut ast, &forms, Some(&base))
+                .expect("resolves");
+            let macros = ein_ir::macros::collect_macros(&ast, &resolved);
+            let expanded =
+                ein_ir::macros::expand_rule_clauses(&mut ast, &resolved, &macros).expect("expands");
+            std::hint::black_box(expanded.len());
+        })
+    });
     group.finish();
 
     // parse + import resolution + macro expansion + index build.

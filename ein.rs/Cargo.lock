@@ -211,6 +211,7 @@ dependencies = [
  "ein-core",
  "ein-oracle",
  "include_dir",
+ "serde_json",
  "sha2",
 ]
 
