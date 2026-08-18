@@ -591,6 +591,12 @@ impl<'a> Compiler<'a> {
         // `(eq ?y ?PARAM)` under a guard would otherwise resolve `?PARAM` to
         // nothing, the negative query would find nothing, and the guard would
         // pass when it must fail.
+        // `sort_names` totally orders this on the next line: symbols are
+        // interned, so distinct ids have distinct text and the comparison has
+        // no ties for the set's iteration order to break. What reaches
+        // `NafGuard.scope` is a function of *which* variables are bound, not
+        // of how the set was built.
+        // determinism-ok: sorted by name before it can reach `NafGuard.scope`.
         let mut scope: Vec<Symbol> = self.bound.iter().copied().collect();
         self.sort_names(&mut scope);
         self.sub_scope = self.bound.clone();
