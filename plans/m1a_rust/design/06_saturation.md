@@ -223,7 +223,25 @@ arg-swap directly by the saturator — no plan, no matcher. Port notes:
 
 ---
 
-## 5b. Win C — the fork boundary (added 2026-08-18, **not settled**)
+## 5b. Win C — the fork boundary (added 2026-08-18, **landed in ein.rs 2026-08-19**)
+
+> **Settled.** [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+> was answered **ein.rs-only**: `Saturator::resume` is the shipping path in
+> ein.rs, ein.py keeps the fresh saturator, and
+> [D3](../divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
+> records the difference. Fork firings −74 % / −77 %, fork compiles → 0,
+> `solve zebra.ein -e` 525.6 → 394.2 ms — the milestone's last unmet target.
+> The two paragraphs below about "both implementations together" are what was
+> expected before the evidence; what actually decided it is that the
+> **answers** are identical — every verdict, model, unsat core and
+> `summary.json` counter, over 3.2 M enterings — while the narration is not.
+> One prediction was wrong: the alternative-justification set does *not*
+> survive. 267 529 facts record a different, equally valid derivation first,
+> because a resumed fork inherits root's parked candidates with root's
+> tiebreakers and the boundary admits one per round.
+> [baseline.md §11](../p1a.6_performance/baseline.md#11-the-resumed-fork-saturator-measured)
+> has all of it.
+
 
 §4 opens by saying the closure is already semi-naive and the boundary is
 not. There is a third boundary neither sentence covers: **the fork**.

@@ -29,6 +29,51 @@ use std::path::Path;
 /// reached by every mode, because every mode runs the search.
 const DIVERGENT: [&str; 1] = ["examples/ein-bugs/mixed-type-hypothesis.ein"];
 
+/// Blocks whose body is a **rendered derivation** and is therefore
+/// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it):
+/// ein.rs's forks resume root's saturation where ein.py's re-derive it, so a
+/// solution's spine is a quarter the length — and, since the derivations that
+/// used to arrive by accident now have to be rendered on purpose, ein.rs's
+/// trace opens with a *Before any assumption* section that ein.py has no
+/// counterpart for.
+///
+/// Compared for **presence**, and everything else in the shape byte for byte:
+/// `--- answer` and `--- table` are the **answer** and do not move, and
+/// `--- round-trip` still asserts, on each side independently, that
+/// `trace_to_ir → parse → trace_to_ir` reproduces its input.
+///
+/// The bodies are owed an ein.rs golden by
+/// [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
+const NARRATION_BLOCKS: [&str; 3] = ["--- markdown", "--- ir", "--- ir-reparsed"];
+
+/// Replace the body of every [`NARRATION_BLOCKS`] block with a marker,
+/// keeping its header — a block that disappears still fails.
+///
+/// The `no-proof` mode has no blocks: it returns one rendered trace and
+/// nothing else, so the whole shape is narration.
+fn blind_narration(shape: &str, mode: &str) -> String {
+    if mode == "no-proof" {
+        return "<narrated>".to_string();
+    }
+    let mut out: Vec<String> = Vec::new();
+    let mut narrating = false;
+    for line in shape.lines() {
+        if let Some(rest) = line.strip_prefix("--- ") {
+            let head = format!("--- {}", rest.split_whitespace().next().unwrap_or(""));
+            narrating = NARRATION_BLOCKS.contains(&head.as_str());
+            out.push(line.to_string());
+            if narrating {
+                out.push("<narrated>".to_string());
+            }
+            continue;
+        }
+        if !narrating {
+            out.push(line.to_string());
+        }
+    }
+    out.join("\n")
+}
+
 fn rust_mode(path: &Path, mode: &str) -> Option<Answer> {
     let text = std::fs::read_to_string(path).ok()?;
     let mut ast = Ast::new();
@@ -78,8 +123,9 @@ fn the_trace_and_the_table_are_byte_identical_on_the_corpus() {
                 (Answer::Ok(a), Answer::Ok(b)) => {
                     compared += 1;
                     bytes += a.len();
-                    if a != b {
-                        bad.push(format!("{name} [{mode}]\n{}", first_difference(a, b)));
+                    let (x, y) = (blind_narration(a, mode), blind_narration(b, mode));
+                    if x != y {
+                        bad.push(format!("{name} [{mode}]\n{}", first_difference(&x, &y)));
                     }
                     // Agreeing on `DIFFERS` would pass the byte diff and fail
                     // the *property*, so the property is asserted separately:

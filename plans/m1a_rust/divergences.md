@@ -134,3 +134,143 @@ both ports moving together. The trigger is visible: this is the only entry in
 `crash-parity` that is a *search-layer* crash, and a second one would mean the
 scope claim above is wrong.
 
+
+### D3 — a fork resumes root's saturation; ein.py re-derives it
+
+**Found:** 2026-08-19, [S1a.6.9](p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+**Tier:** T2 — 97 cells of 240 — and T3 — **7** cells, exactly the seven
+corpus entries that declare a `solve --trace` or a `solve --dump-states` run.
+**T0 and T1 do not move at all**; see below, that is the whole argument.
+**Status:** accepted
+**Fixture:** `utils/fork_delta_verify.py` against a
+`cargo build --features fork-delta --target-dir target-fd` build, which
+compiles in the way back to the old path (`EIN_FORK_DELTA=0`) so both arms
+come out of one binary. Not a corpus entry: the divergence is not a property
+of any *input*, it is a property of every solve with more than one entering,
+so the fixture that keeps it from widening is the differ, not a file.
+
+**What.** `commitment::try_commitment_set` forks the saturated root. ein.py
+builds a fresh `Saturator` there, whose first enqueue pass is a FULL pass, so
+the fork re-derives root's entire deductive closure as `redundant` firings
+before doing any work of its own — 94.6 % of a fork's firings on `zebra -e`
+([baseline.md §9](p1a.6_performance/baseline.md#9-the-fork-entry-re-derivation)).
+ein.rs resumes root's saturation instead: the plan list in its order, `fired`,
+`seen`, the candidate arena and the parked set with its watch stamps are
+inherited, and the delta is what the fork has that root's snapshot did not.
+
+Three observables follow.
+
+1. **Fewer firings.** `zebra2 -e` 38 136 → 9 834, `zebra -e` 113 746 → 26 656.
+   The T2 stream loses 62.5 % / 75.9 % of its lines at `verbose` and 58.8 % /
+   74.2 % at `normal` — the second because the ~1 790 `enqueue` lines an
+   entering emits go with the firings that produced them.
+2. **A different one of a fact's valid derivations is recorded first.**
+   267 529 facts across the corpus (17 on `zebra2 -e`, 198 on `zebra -e`;
+   nine tenths of the total is six transitive-symmetric closure fixtures
+   where most facts have many equally valid derivations). A fresh fork renumbers root's parked
+   candidates in plan order; a resumed one inherits root's tiebreakers, so
+   they sort first — and the NAF boundary admits at most one candidate per
+   round, so a fact derivable two ways (`functional-negative` /
+   `injective-negative`, `domain-elimination` / `range-elimination`,
+   `total` / `surjective`) gets a different **first** derivation, and first
+   derivation wins.
+3. **A different partial state for a fork that dies.** `enable_fail_fast_fork`
+   stops a dying fork at the firing that kills it, so a different firing order
+   leaves a different prefix: 2 067 dead forks' `state_key`s, and 110 unsat
+   cores that are each still a correct minimal frontier of the same conflict. With
+   fail-fast **off** — every fork run to its fixpoint — all three of those go
+   to **zero**.
+
+**Why it is acceptable.** Because the answer does not move, and that was
+made a measurement rather than an argument. `utils/fork_delta_verify.py` runs
+one binary twice over every `solve`-family run of every `positive` and
+`stdlib` corpus entry, comparing per entering: the fork's fact set fact by
+fact, every recorded justification of every fact, the `kind` and the unsat
+core; and per run: stdout, `summary.json`, and the `--dump-states` tree.
+
+- **the verdict, `k`, the models, the query bindings and the printed unsat
+  core** — identical on every entry, including the twelve whose verdict is
+  *no solution* and whose answer therefore **is** the core;
+- **`summary.json`** — all 85 fields, i.e. **T0 and T1 in full**: the same
+  enterings, the same layers, the same saturations, the same merges, the same
+  learned clauses. The two engines run the same search;
+- **every alive fork's fixpoint**, fact for fact, over **3 228 853**
+  enterings — and with fail-fast off, every dead fork's too, across another
+  3 170 461.
+
+What changes is how much of that derivation each engine *narrates*, and this
+milestone's byte-level narration parity was a means to the answer, not the
+end. [Q-M1a.18](open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+records the decision and the alternatives.
+
+The trace does **not** lose the derivations, which was the near-miss: rendering
+only the solution node's firings used to pick up root's whole closure by
+accident, so removing the re-derivation dropped `symmetric` — a rule that fires
+only at root — out of the proof entirely, and
+`ein.py/tests/trace/test_idea08_acceptance.py::test_zebra2_fires_walkthrough_rules`
+is the test that catches exactly that. ein.rs's `--trace` therefore gained a
+**"Before any assumption"** section: 321 unconditional steps, then
+`Assuming …`, then the 240 the hypothesis adds. Same 24 rules as before,
+arranged the way `zebra_walkthrough.md` tells it.
+
+**Where it shows, and what was done about it.** Three cross-engine byte
+comparisons had to be narrowed, each to the smallest cut that removes the
+divergence and nothing else — and each one is a place
+[S1a.6.11](p1a.6_performance/s1a.6.11_fixture_goldens.md) owes an ein.rs
+fixture:
+
+| gate | cells | the cut |
+|---|---|---|
+| `ein-conformance --tier T3` | 7 of 473 | none yet — [S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md) |
+| `ein-conformance --tier T2` | 97 of 240 | none yet — S1a.6.10 |
+| `ein-render` `dot_parity` | the `slice` view, 16 entries | `NARRATION`: run on both sides, both must answer, not byte-compared |
+| `ein-infer` `hypgen_parity` | the three `solve-shape` sweeps | `Compare::IgnoringForkNarration`: blanks `firings=` / `"n_firings"` / the event ordinal `"n"`, and a **`dead-post`** entering's core |
+| `ein-render` `dump_parity` | 79 of 325 dumps | four, in `dump_shape` and its `ir_oracle.py` twin: the timeline's `"firings"`, the whole `enterings/` subtree (file set only), the snapshot's `deads` (count only) and its two lattice DOTs (presence only) |
+| `ein-render` `trace_parity` | 86 of 195 | `NARRATION_BLOCKS`: the `--- markdown`, `--- ir` and `--- ir-reparsed` bodies, and the whole `no-proof` mode, which is one rendered trace and nothing else. `--- answer`, `--- table` and `--- round-trip` stay exact — the **answer** does not move, and the trace-IR round-trip is still asserted on each side |
+
+**Six ad-hoc cuts is five too many, and that is the cost of the ordering.**
+Each is narrow, documented at its site and named here — but they were made one
+at a time, each revealed by the next test to go red, which is not how a
+contract change should be designed.
+[S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md)'s first job is to
+replace all five with **one** rule stated in
+[design/01 §5](design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list)
+and implemented once. The chain, in the order it surfaced, is the specification:
+
+1. `hypgen_parity` — `firings=` in `solve-shape`;
+2. and the event ordinal `"n"`, because the elided firings are what it counted;
+3. and a `dead-post` entering's unsat core, because fail-fast stops at a
+   different clash;
+4. `dot_parity` — the `slice` view, because a provenance cone is a derivation;
+5. `dump_parity` — the timeline's `firings`, then the per-entering dumps
+   (whose fact *order* and `:rule` annotation move), then the snapshot's dead
+   state keys, then the lattice DOT rendered from them, because the DAG merges
+   dead nodes by exactly that key;
+6. `trace_parity` — the rendered trace itself, in all six flag combinations
+   and both regimes, plus the trace-as-IR, because ein.rs's has a section
+   ein.py's does not and a spine a quarter the length.
+
+Read downwards it is one sentence: **a fork's derivation, and anything keyed
+on a dying fork's stopping point, is narration.** That is the rule S1a.6.10
+should write. Note where the chain *stops*: `--- answer`, `--- table`,
+`summary.json`, stdout, every state dump outside `enterings/`, and the
+round-trip property are all still byte-compared, and none of them moved.
+
+`commit-shape` is untouched and still compares its `firings=` exactly: it
+calls `try_commitment_set` without a snapshot, so it does not take the resumed
+path. That is not an oversight — it is the control.
+
+**What would make this unacceptable.** Any of:
+
+1. **a moved answer** — a verdict, a `k`, a model, a query binding, a printed
+   unsat core or any `summary.json` field differing between the two engines on
+   any corpus entry. That is what the fixture asserts, and it is the line the
+   milestone does not cross;
+2. **a moved fixpoint** — an alive fork whose fact set differs, or, with
+   fail-fast off, any fork's. The re-derivation would then be load-bearing
+   rather than redundant and the whole change is wrong;
+3. **a consumer of the primary justification that needs the *particular*
+   derivation** — the explanation search and the trace read whichever
+   derivation is recorded, and observation 2 above says which one that is may
+   differ. A feature that promises "the shortest proof" or "the proof through
+   rule R" makes this a bug rather than a divergence.

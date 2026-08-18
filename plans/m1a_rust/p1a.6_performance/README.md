@@ -2,11 +2,14 @@
 
 **Milestone:** [M1a — Rust port](../README.md)
 **Status:** **in progress** — [S1a.6.1](s1a.6.1_profile_baseline.md) and
-[S1a.6.8](s1a.6.8_compile_cache_and_extents.md) shipped 2026-08-18. The
-measurements are in **[baseline.md](baseline.md)**: §1–§9 are what the phase
-is chosen by, §10 is where it stands.
-**Estimate:** 4 weeks (22 days of stages — S1a.6.1 added one worth 2 d and
-shortened another by 1 d; [S1a.6.9](s1a.6.9_fork_entry_delta.md) added 3 d)
+[S1a.6.8](s1a.6.8_compile_cache_and_extents.md) shipped 2026-08-18,
+[S1a.6.9](s1a.6.9_fork_entry_delta.md) on 2026-08-19 with **all four targets
+met**. The measurements are in **[baseline.md](baseline.md)**: §1–§9 are what
+the phase is chosen by, §10 and §11 are where it stands.
+**Estimate:** 5 weeks (26 days of stages — S1a.6.1 added one worth 2 d and
+shortened another by 1 d; [S1a.6.9](s1a.6.9_fork_entry_delta.md) added 3 d,
+and its decision added [S1a.6.10](s1a.6.10_parity_contract.md) and
+[S1a.6.11](s1a.6.11_fixture_goldens.md) at 2 d each)
 **Depends on:** [P1a.5](../p1a.5_presentation/README.md) — the byte gate
 must be closed first, so every change here is measured against a green
 harness.
@@ -15,7 +18,9 @@ harness.
 
 ## Goal
 
-Turn the parity build into a fast one, with T3 green at every step.
+Turn the parity build into a fast one, with the **answer** identical at every
+step — and, until [S1a.6.9](s1a.6.9_fork_entry_delta.md), T3 green at every
+step too. That clause is where the phase learned something: see Rule 1.
 Method is fixed and non-negotiable: **profile, change one thing, re-diff,
 re-measure, record.** A change that cannot be attributed is reverted.
 
@@ -26,12 +31,22 @@ re-measured** ([S1a.6.1](s1a.6.1_profile_baseline.md) T1a.6.1.5) — the
 numbers the phase was planned with were up to a year old and two of them
 moved:
 
-| workload | PyPy today | target | at S1a.6.1 | **at S1a.6.8** |
-|---|---:|---:|---:|---:|
-| `solve zebra2.ein -e` end-to-end | 4.94 s | ≤ 0.20 s (≥ 20×) | 198.8 ms ✅ | **138.1 ms ✅ 37.0×** |
-| `solve zebra.ein -e` end-to-end | 8.79 s | ≤ 0.40 s | 585.8 ms ❌ | **539.9 ms ❌ 16.2×** |
-| parse + load `zebra2.ein` | 0.43 s ¶ | ≤ 0.015 s (≥ 50×) | 1.04 ms ✅ | **1.01 ms ✅ 185×** |
-| the acceptance gate (3 fixtures) | 36.0 s ‡ | ≤ 5 s | 1.27 s ✅ | **1.02 s ✅ 35×** |
+| workload | PyPy today | target | at S1a.6.1 | at S1a.6.8 | **at S1a.6.9** |
+|---|---:|---:|---:|---:|---:|
+| `solve zebra2.ein -e` end-to-end | 4.53 s | ≤ 0.20 s (≥ 20×) | 198.8 ms ✅ | 138.1 ms ✅ | **99.1 ms ✅ 45.7×** |
+| `solve zebra.ein -e` end-to-end | 8.33 s | ≤ 0.40 s | 585.8 ms ❌ | 539.9 ms ❌ | **397.2 ms ✅ 21.0×** |
+| parse + load `zebra2.ein` | 0.43 s ¶ | ≤ 0.015 s (≥ 50×) | 1.04 ms ✅ | 1.01 ms ✅ | **1.01 ms ✅ 185×** |
+| the acceptance gate (3 fixtures) | 36.0 s ‡ | ≤ 5 s | 1.27 s ✅ | 1.02 s ✅ | **0.62 s ✅ 58×** |
+
+**All four targets are met**, three stages into the phase. The one that needed
+it was `solve zebra.ein -e`, and what met it was
+[S1a.6.9](s1a.6.9_fork_entry_delta.md) — a fork resuming root's saturation
+instead of re-deriving it, which is also the first change in the port where
+matching ein.py byte for byte and building the better engine pulled apart. The
+phase continues: the targets were the floor, not the ceiling, and
+[§11](baseline.md#11-the-resumed-fork-saturator-measured) says the remaining
+cost is **80.5 % matcher** on `zebra -e` — which is
+[S1a.6.3](s1a.6.3_beta_memories.md).
 
 The planned PyPy column was 4.07 s / 8.15 s / 0.78 s / ~91 s; two of the four
 moved when re-measured, which is why the table carries today's.
@@ -51,11 +66,10 @@ interpreter; see
 [baseline.md §1](baseline.md#where-the-milestones-denominators-moved). The
 target is met on any reading — a whole `saturate zebra2` *process* is 5.0 ms.
 
-**Three of the four were already met on day one; the fourth needs the
-phase.** `solve zebra.ein -e` is **1.35× short** after S1a.6.8, where it was
-1.46×, and its profile is now **72.6 % matcher** against `zebra2 -e`'s 42.2 %
-— so the two puzzles still do not agree about what to optimise, and the
-missed target is the one that decides.
+**Three of the four were met on day one; the fourth was met at
+S1a.6.9.** `solve zebra.ein -e` went 585.8 → 539.9 → **397.2 ms** against a
+≤ 400 ms target, and its profile is now **80.5 % matcher** — the two puzzles
+finally agree about what to optimise next, and it is the join.
 
 **And it now has a named cause.** 95.0 % of `zebra -e` is inside
 `try_commitment_set`, and **94.6 %** of what a fork does there is
@@ -89,23 +103,31 @@ and [§9](baseline.md#9-the-fork-entry-re-derivation).
 |---|---|---|---|---|
 | 1 | [S1a.6.1](s1a.6.1_profile_baseline.md) ✅ | Fresh profile and bench baseline | 2 d | **shipped 2026-08-18** |
 | 2 | [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) ✅ | The compile cache and the extent counts | 2 d | **shipped 2026-08-18** — −30.5 % / −7.8 %, `plan_compile` 17 430 → 305, T3 unchanged |
-| 3 | [S1a.6.9](s1a.6.9_fork_entry_delta.md) ◐ | The fork-entry delta — **measure + decide** | 3 d | **T1a.6.9.1–3 shipped 2026-08-18**; T1a.6.9.4/5/6 wait on Q-M1a.18. Built behind `--features fork-delta`: fork firings −74 % / −77 %, `zebra -e` **392.6 ms — the target crossed** — the fixpoint, verdict, `k`, models and cores verified unchanged over 1.08 M enterings, and **90 002 facts' primary justification moved** |
-| 4 | [S1a.6.2](s1a.6.2_memory_layout.md) | Memory layout | 3 d | 21 % of self time is `malloc` / `cfree` / libc, at ~53 bytes per allocation — plus a system allocator (T1a.6.2.7) and a per-entering region (T1a.6.2.8), since ~0.15 % of what a fork allocates outlives it |
-| 5 | [S1a.6.3](s1a.6.3_beta_memories.md) | Beta-memories (F11 D1) — **gate opens** | 4 d | 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB — the fact F11 D1 was parked on |
-| 6 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) | Hypgen and lattice hot paths | 3 d | 7.3 % / 5.3 % self — real, smaller than written; T1a.6.4.1's argument re-aims at saturation |
-| 7 | [S1a.6.5](s1a.6.5_frontend.md) | Frontend and load path — **shortened** | 1 d | its acceptance is already met by 8×; reduced to a confirmation plus the allocation report |
+| 3 | [S1a.6.9](s1a.6.9_fork_entry_delta.md) ✅ | The fork-entry delta — the resumed saturator | 3 d | **shipped 2026-08-19** — fork firings −74 % / −77 %, fork compiles → 0, **`zebra -e` 394.2 ms: the last target met**. Q-M1a.18 answered: ein.rs resumes, ein.py does not, [D3](../divergences.md) records it. `--trace` gained a *Before any assumption* section |
+| 4 | [S1a.6.10](s1a.6.10_parity_contract.md) 🆕 | The parity contract relaxes | 2 d | D3 makes every `solve` cell of T2/T3 differ; the harness has to compare **answers** (T0, T1, stdout, everything that is not a firing list) rather than narration |
+| 5 | [S1a.6.11](s1a.6.11_fixture_goldens.md) 🆕 | ein.rs fixture goldens | 2 d | what S1a.6.10 stops comparing against ein.py has to be compared against something; also ports idea-08's walkthrough-rule assertion to ein.rs |
+| 6 | [S1a.6.2](s1a.6.2_memory_layout.md) | Memory layout | 3 d | 21 % of self time is `malloc` / `cfree` / libc, at ~53 bytes per allocation — plus a system allocator (T1a.6.2.7) and a per-entering region (T1a.6.2.8), since ~0.15 % of what a fork allocates outlives it |
+| 7 | [S1a.6.3](s1a.6.3_beta_memories.md) | Beta-memories (F11 D1) — **gate opens** | 4 d | **80.5 %** of `zebra -e` is the join after S1a.6.9 — the fork boundary's share went to the matcher rather than away, and the 77 % of a fork's firings that are still redundant are inside its *own* delta |
+| 8 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) | Hypgen and lattice hot paths | 3 d | 7.3 % / 5.3 % self — real, smaller than written; T1a.6.4.1's argument re-aims at saturation |
+| 9 | [S1a.6.5](s1a.6.5_frontend.md) | Frontend and load path — **shortened** | 1 d | its acceptance is already met by 8×; reduced to a confirmation plus the allocation report |
 | — | [S1a.6.6](s1a.6.6_differential_fuzzer.md) | The differential fuzzer | 3 d | runs *throughout*, not at a position — it guards every row above |
-| 8 | [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d | last, as planned |
+| 10 | [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d | last, as planned |
 
 ## Rules for this phase
 
-1. **T3 stays green.** A perf change that needs a ledger entry is not a
-   perf change, it is a semantics change, and it goes back to the
-   relevant phase. [S1a.6.9](s1a.6.9_fork_entry_delta.md) is the one
-   stage that *starts* on the wrong side of this rule, which is why its
-   shipping half is gated on
-   [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
-   and lands in both engines or in neither.
+1. **The answer stays identical, and T3 stays green.** ~~A perf change that
+   needs a ledger entry is not a perf change~~ — **amended 2026-08-19**, by
+   the decision on
+   [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint).
+   The previous phases built ein.rs equal enough to ein.py byte for byte; from
+   here the hard requirement is that **the final solutions are identical** —
+   the verdict, `k`, the models, the query bindings, the unsat core, and every
+   counter in `summary.json`, which is T0 and T1 in full. Byte-identical
+   *narration* is no longer the gate:
+   [S1a.6.9](s1a.6.9_fork_entry_delta.md) trades it for a quarter of the
+   firings and the last unmet target, [D3](../divergences.md) records the
+   trade, and [S1a.6.10](s1a.6.10_parity_contract.md) teaches the harness the
+   new line. A change that moves an **answer** is still not a perf change.
 2. **One change per commit, with its number.** The commit message
    carries the before/after for the benchmark it targeted.
 3. **A wash is a revert.** P1.8a's D3 cross-fork carry was built and

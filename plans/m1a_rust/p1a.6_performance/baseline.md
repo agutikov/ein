@@ -345,7 +345,7 @@ instruments really are measuring the same thing.
 
 | gate | tests | CPython | PyPy | ein.rs |
 |---|---:|---:|---:|---:|
-| the three fixtures (`zebra_two_ontologies`, `zebra_three_classes`, `mode_consistency`) | 19 py / 3 rs | — | **36.0 s** | **1.27 s** |
+| the three fixtures (`zebra_two_ontologies`, `zebra_three_classes`, `mode_consistency`) | 19 py / 3 rs | — | **36.0 s** | **1.27 s** → **0.62 s** at S1a.6.9 |
 | the whole `acceptance/` gate (`./run_tests.sh --acceptance-only`) | 21 | 140.2 s § | **49.3 s** | — |
 
 **The ≤ 5 s target is met at 1.27 s**, 28× against PyPy's 36.0 s on the
@@ -516,6 +516,15 @@ is a FULL pass. The closure is semi-naive within a saturation
 ([design/06](../design/06_saturation.md) §4: `pos_index` + `run_seeded`,
 D2 + D5) but **not across the fork boundary**, which is where the delta is
 smallest and known exactly.
+
+> **Historical from 2026-08-19.** This section measures the *fresh* fork
+> saturator, which is what ein.py does and what ein.rs did until
+> [S1a.6.9](s1a.6.9_fork_entry_delta.md). It is kept because it is the
+> measurement that stage was chosen by, and because it is still what
+> `utils/fork_split.py` reports for ein.py or for a `fork-delta` build under
+> `EIN_FORK_DELTA=0`. **For the shipping engine, read
+> [§11](#11-the-resumed-fork-saturator-measured)**: 9 834 fork firings on
+> `zebra2 -e` rather than 38 136, and 0 fork compiles rather than 12 625.
 
 Split at the `enter` events of a `--events-level verbose` run —
 **`utils/fork_split.py`**, the T1a.6.9.1 instrument that replaced the inline
@@ -794,18 +803,24 @@ cargo run --release -p ein-infer --example alloc_cost
 
 ## 11. The resumed fork saturator, measured
 
-**[S1a.6.9](s1a.6.9_fork_entry_delta.md) T1a.6.9.2 + T1a.6.9.3, 2026-08-18**,
-same build and machine. §9 measured the cost; this measures what removing it
-buys and what it moves. Nothing here is on a shipping path: the mechanism is
-`Saturator::resume`, compiled only under `--features fork-delta` and dormant
-even there until `EIN_FORK_DELTA=1`, so **one binary produces both arms of
-every diff below** and the only difference between them is
-`Saturator::resume` against `Saturator::new`.
+**[S1a.6.9](s1a.6.9_fork_entry_delta.md), 2026-08-19**, same machine. §9
+measured the cost; this measures what removing it buys and what it moves.
+**It shipped**: `Saturator::resume` is the path ein.rs takes, and
+[Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+was answered ein.rs-only, with
+[D3](../divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
+recording what that costs.
+
+Every diff below comes from **one binary**: a `--features fork-delta` build
+compiles in the way back to the old fresh-fork saturator (`EIN_FORK_DELTA=0`),
+so the two arms differ by `Saturator::new` against `Saturator::resume` and by
+nothing else. That build is D3's fixture, and `utils/fork_delta_verify.py` is
+how the divergence stays measured rather than merely accepted.
 
 ### What it removes
 
 `utils/fork_split.py --bin ein.rs/target-fd/release/ein`, with and without
-the switch:
+the switch (`EIN_FORK_DELTA=0` is the *fresh* row):
 
 | `-e` run | | fork firings | **redundant** | productive | fork enqueues | fork compiles |
 |---|---|---:|---:|---:|---:|---:|
@@ -832,10 +847,31 @@ Best of 5, same machine, `target-fd` binary both arms:
 | `solve zebra.ein -e` | 525.6 ms | **392.6 ms** | 1.34× | 22.4× |
 
 **`zebra -e` crosses its ≤ 400 ms target** — the phase's one unmet target,
-and the reason S1a.6.9 exists. Note the mismatch: 77 % of the firings for
-34 % of the time. The snapshot is deep-copied per entering (engine, candidate
-arena, `seen`, `parked`), which is what the `Arc`-shared layered snapshot of
-[T1a.6.9.4](s1a.6.9_fork_entry_delta.md) would remove.
+and the reason S1a.6.9 exists. On the shipping binary it is **394.2 ms** and
+`zebra2 -e` is **99.3 ms**.
+
+### The optimisation that was not worth building
+
+77 % of the firings for 34 % of the time is a suspicious ratio, and the
+obvious suspect was the snapshot: it is deep-copied per entering — engine,
+candidate arena, `seen`, `parked` — where an `Arc`-shared layered one would
+not be. That was going to be T1a.6.9.4's main work.
+
+**`perf` says it is 0.6 %.** `alloc::vec::Vec::clone<Entry>` is the only
+snapshot symbol on `zebra -e`'s top-20, and the whole `fork/copy` subsystem is
+**0.1 % self, 0.1 % cumulative**. What is left is the matcher, and it grew
+from 66.9 % of `zebra -e` to **80.5 %** — the fork boundary's share went *to*
+the join rather than away, which makes the remaining cost
+[S1a.6.3](s1a.6.3_beta_memories.md)'s subject and not this stage's. Building
+the layered snapshot would have been the wash
+[Rule 3](README.md#rules-for-this-phase) exists to prevent.
+
+| `zebra -e` self time | at S1a.6.8 | at S1a.6.9 |
+|---|---:|---:|
+| match/bind | 72.6 % | **80.5 %** |
+| saturate | — | 13.2 % |
+| hypgen/branch | — | 4.4 % |
+| fork/copy (the snapshot) | — | **0.1 %** |
 
 ### What it moves — the narration
 
@@ -843,33 +879,74 @@ arena, `seen`, `parked`), which is what the `Arc`-shared layered snapshot of
 |---|---:|---:|
 | `--events --events-level verbose` (T2) | 183 231 → 68 670 (**−62.5 %**) | 405 367 → 97 723 (**−75.9 %**) |
 | `--events` at `normal` | 146 689 → 60 439 (−58.8 %) | 297 287 → 76 733 (−74.2 %) |
-| `solve --trace` steps (the solution node) | 561 → **240** | — |
-| `solve --trace` file lines | 13 311 → 6 101 | — |
+| `solve --trace` steps under the hypothesis | 561 → **240** | — |
+| `solve --trace` steps, root section ‖ | 0 → **321** | — |
 
 **T2 moves at `normal` too**, not only at `verbose` — Q-M1a.18 was written
 expecting the verbose-only loss. A redundant firing is not emitted at
 `normal`, but the ~1 790 `enqueue` lines per entering that produce it are, and
 those go with it.
 
-The rendered before/after is [`fork_delta_trace.md`](fork_delta_trace.md).
+‖ **The trace gained a section rather than losing steps**, and that was not
+optional. Rendering only the solution node's firings used to pick up root's
+whole closure by accident — every fork re-derived it — so a resumed fork
+dropped `symmetric` out of the proof entirely, because `symmetric` closes
+`next-to` at root and nowhere else. `--trace` now opens with **"Before any
+assumption — 321 steps"**, then `Assuming …`, then the 240 the hypothesis
+adds, numbered as one sequence. Same 24 rules as before, in the order
+[`zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md)
+tells it. The rendered before/after is
+[`fork_delta_trace.md`](fork_delta_trace.md).
+
+### What it costs the parity harness
+
+Against ein.py, which keeps the fresh saturator:
+
+| tier | before | after | cells D3 costs |
+|---|---|---|---:|
+| T3 (artefacts) | 472 / 473 | **465 / 473** | **7** |
+| T2 (event stream) | 239 / 240 ‡ | **142 / 240** | **97** |
+| T1 (`summary.json`) | — | unchanged | **0** |
+| T0 (the verdict) | — | unchanged | **0** |
+
+‡ the one cell in each *before* column is
+[D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
+which predates this.
+
+The seven T3 cells are exactly the seven corpus entries that declare a
+`solve --trace` or a `solve --dump-states` run — every other artefact a solve
+writes is unmoved, stdout and `summary.json` included.
+[S1a.6.10](s1a.6.10_parity_contract.md) is the stage that teaches the harness
+to compare the productive subsequence instead of the whole firing list; until
+it lands, these are the numbers D3 stands for.
 
 ### What it does **not** move — verified, not argued
 
 `utils/fork_delta_verify.py`: one binary, two arms, every `solve`-family run
-of every `positive` / `stdlib` corpus entry, comparing artefacts that are not
+of every `positive` / `stdlib` corpus entry — plus `-p`, `-P`, `-f` and
+`-e -p`, the answer-printing forms the corpus does not declare and the twelve
+unsat entries' answers therefore live in — comparing artefacts that are not
 firing lists.
 
 | | fail-fast **on** (shipping) | fail-fast **off** |
 |---|---:|---:|
-| runs / entries | 139 / 65 | 139 / 65 |
-| enterings compared fact by fact | **1 078 997** | **1 061 235** |
+| runs / entries | 370 / 65 | 370 / 65 |
+| enterings compared fact by fact | **3 228 853** | **3 170 461** |
 | entering count | **0** | **0** |
 | entering `kind` | **0** | **0** |
 | **alive** fork fixpoint, fact by fact | **0** | **0** |
-| stdout (verdict, `k`, models, bindings) | **0** | **0** |
+| stdout (verdict, `k`, models, bindings, core) | **0** | **0** |
+| `summary.json` — **T0 + T1**, all 85 fields ° | **0** | **0** |
 | `--dump-states` tree ¶ | **0** | **0** |
-| unsat core | 39 | **0** |
-| dead fork's *partial* state ‡ | 815 | **0** |
+| unsat core, per entering | 110 | **0** |
+| dead fork's *partial* state ‡ | 2 067 | **0** |
+
+° every solve cell gets `--json-summary`, exactly as the conformance harness
+does, and only the clock is normalised out of it. This is the row the whole
+decision rests on: the two engines publish the same verdict, the same `k`, the
+same enterings, layers, saturations, merges and learned clauses. **They run
+the same search and reach the same answer**; they narrate different amounts of
+it.
 
 ¶ with the wall-clock fields and the firing counts normalised out — those are
 the narration, tabulated above.
@@ -879,7 +956,7 @@ columns agree that the *fixpoint* is identical: with fail-fast off, every
 fork — alive and dead — reaches the same fact set, the same `kind` and the
 same core.
 
-All 39 core moves are `dead-post` and all disappear with fail-fast off, so
+All 110 core moves are `dead-post` and all disappear with fail-fast off, so
 they are the fail-fast prefix rather than a different conflict: on `zebra2`'s
 entering 68 the commitment is `{(color-loc Green House-5), (color-loc Red
 House-5)}` and the core is one of its two elements — each a correct
@@ -892,15 +969,16 @@ lists:
 
 | | corpus, ff on | corpus, ff off | `zebra2 -e` | `zebra -e` |
 |---|---:|---:|---:|---:|
-| facts whose **primary** justification changed | 90 002 | 81 268 | 17 | 198 |
-| facts whose alternatives changed **membership** | 39 | 83 | 2 | 76 |
-| facts whose alternatives changed **order** | 61 132 | 64 229 | 71 | 956 |
+| facts whose **primary** justification changed | 267 529 | 238 211 | 17 | 198 |
+| facts whose alternatives changed **membership** | 80 | 168 | 2 | 76 |
+| facts whose alternatives changed **order** | 183 378 | 189 661 | 71 | 956 |
 
 The two puzzle columns are fail-fast off, so they are the *fixpoint's* proof
 graph rather than a fail-fast prefix's. Six corpus entries carry nine tenths
-of it — `examples/features/02_star_in_identifiers.ein` and the four
+of it — `examples/features/02_star_in_identifiers.ein` and the five
 `examples/saturation/square-*` fixtures, which are transitive-symmetric
-closures where every derived fact has many equally valid derivations.
+closures where every derived fact has many equally valid derivations. On the
+zebra puzzles it is 17 and 198 facts.
 
 S1a.6.9 § What is *not* at risk argued that the alternative justifications
 survive because "a duplicate of a root-recorded justification is already
@@ -926,24 +1004,26 @@ alive enterings are affected; its **solution node is not**, so the rendered
 trace's proof is unchanged and only its step list is shorter. That is luck,
 not a property.
 
-### And one named test it breaks
+### The near-miss
 
 `ein.py/tests/trace/test_idea08_acceptance.py::test_zebra2_fires_walkthrough_rules`
 asserts that the solution's firing list exhibits the nine rules
 [`zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md)
-narrates. Under the resumed saturator the solution node's trace covers 12
-distinct rules instead of 24, and **`symmetric` is not among them** — it
-closes `next-to` at *root*, before any hypothesis, so a fork that does not
-re-derive the root's fixpoint never fires it.
+narrates, and it is what caught this. With the resumed saturator and the
+renderer untouched, the solution node's trace covered **12 distinct rules
+instead of 24** and `symmetric` was not among them.
 
-The trace is not wrong; it is *incomplete in a way it was not before*. Today
-`--trace` renders one node's firings and gets the root's whole closure for
-free, by accident, because every fork re-derives it. Removing the
-re-derivation means the root's own proof has to be rendered deliberately —
-which is what a human walkthrough does anyway ("here are the givens and what
-follows; *now* assume…"), and which is a change to
-[`08-human-style-deductive-trace`](../../ideas/08-human-style-deductive-trace.md)'s
-renderer rather than to the engine.
+The trace was not wrong; it was *incomplete in a way it had not been before*,
+and the reason is worth writing down because it is the general shape of this
+whole stage: **`--trace` was getting root's proof for free, by accident.** It
+renders one node's firings, and every fork re-derived root's closure into
+them. Take the re-derivation away and the accident stops paying.
+
+The fix is the root section above, and it is better than what it replaced —
+the givens and the hypothesis are now distinguishable, which they never were.
+[T1a.6.11.2](s1a.6.11_fixture_goldens.md) ports the assertion to ein.rs, so
+the next change to either half meets the same alarm on the engine that
+ships.
 
 ### Reproducing this section
 

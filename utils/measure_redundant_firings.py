@@ -10,6 +10,12 @@ scratch, so it re-derives the root's facts as ``redundant=True`` firings
 Incremental fork-saturation (B2.v) would skip exactly those redundant
 re-derivations.
 
+**ein.rs took this win on 2026-08-19** (M1a S1a.6.9): its forks *resume* root's
+saturation rather than restarting it, so the ceiling below is realised there
+and not here. This still measures **ein.py**, which is unchanged and is the
+divergence's other side — see ``plans/m1a_rust/divergences.md`` D3 and
+``utils/fork_split.py`` for the ein.rs-side instrument.
+
 This wraps ``Saturator.saturate`` to tally, **per saturation run**,
 redundant vs productive firings, then reports the **B2.v ceiling** =
 redundant / total (the fraction of firing-work incremental saturation

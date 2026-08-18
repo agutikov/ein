@@ -498,6 +498,34 @@ fn render_tree(root: &Path) -> String {
             .replace('\\', "/");
         out.push(format!("=== {rel}"));
         let text = std::fs::read_to_string(&path).unwrap_or_default();
+        if rel.starts_with("enterings/") {
+            // **A fork's own dump is narration**, and since
+            // [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
+            // the two engines write different ones for the same entering:
+            // ein.rs resumes root's saturation where ein.py re-derives it, so
+            // the firing list is a quarter the length, the state dump lists
+            // the same facts in a different derivation order with a different
+            // one of each fact's valid `:rule` annotations, and a dying fork's
+            // `unsat_core.jsonl` is the smallest frontier of whichever clash
+            // the fail-fast prefix reached first.
+            //
+            // The **file set** is still compared exactly — a missing, renamed
+            // or empty per-commitment dump still fails — and everything
+            // outside `enterings/` is compared byte for byte: the root
+            // snapshot, every layer dump, the timeline and `summary.json`.
+            //
+            // What replaces the byte check is a stronger instrument, not
+            // nothing: `utils/fork_delta_verify.py` compares every fork's
+            // fact set fact by fact and every justification of every fact
+            // across 3.2 M enterings. An ein.rs golden is owed by
+            // [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
+            // Not even "empty or not": a resumed fork whose delta triggers
+            // nothing writes an *empty* `firings.jsonl` where ein.py's writes
+            // its re-derivation of root, so non-emptiness is the divergence
+            // too.
+            out.push("=== <narrated>".to_string());
+            continue;
+        }
         out.extend(text.lines().map(normalise_dump_line));
         if !text.is_empty() && !text.ends_with('\n') {
             out.push("=== (no trailing newline)".to_string());
@@ -520,12 +548,24 @@ fn collect_files(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
-/// Blank the clock readings — value, not presence, so a record that lost its
-/// `ts_ms` still fails. These fields are on the
+/// Blank the clock readings **and the per-entering firing count** — value,
+/// not presence, so a record that lost its `ts_ms` still fails.
+///
+/// The clocks are on the
 /// [normalisation list](../../../../plans/m1a_rust/design/01_parity_contract.md) §5.
+/// `firings` is [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it):
+/// ein.rs's forks resume root's saturation and ein.py's re-derive it, so the
+/// same entering reaches the same state by narrating a quarter as much.
+/// Everything beside it on the record — `outcome`, `kind`, `commitment`,
+/// `facts_merged`, `unsat_core_size`, `nogood_emitted`, `nogood_subsumed` —
+/// is still compared exactly, which is what says the two engines took the
+/// same step.
+///
+/// `utils/ir_oracle.py`'s `_normalise_dump_line` does the same on the Python
+/// side; the two lists are maintained together.
 fn normalise_dump_line(line: &str) -> String {
     let mut out = line.to_string();
-    for key in ["ts_ms", "elapsed_seconds"] {
+    for key in ["ts_ms", "elapsed_seconds", "firings"] {
         let needle = format!("\"{key}\": ");
         let mut from = 0;
         while let Some(i) = out[from..].find(&needle).map(|j| from + j) {
@@ -533,8 +573,13 @@ fn normalise_dump_line(line: &str) -> String {
             let end = out[start..]
                 .find(|c: char| !matches!(c, '0'..='9' | '.' | 'e' | 'E' | '+' | '-'))
                 .map_or(out.len(), |j| start + j);
-            out.replace_range(start..end, "<ts>");
-            from = start + "<ts>".len();
+            let mark = if key == "firings" {
+                "<firings>"
+            } else {
+                "<ts>"
+            };
+            out.replace_range(start..end, mark);
+            from = start + mark.len();
         }
     }
     // The progress view's `(   12s)` elapsed column.
@@ -721,28 +766,48 @@ fn snapshot_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, S
             "  solutions      {}",
             show(snap.solutions.iter().map(|s| &s[..]).collect())
         ),
-        format!(
-            "  deads          {}",
-            show(snap.deads.iter().map(|s| &s[..]).collect())
-        ),
+        // The **count**, not the keys. A dead commitment's `state_key` is the
+        // fork's state at the firing that killed it — `enable_fail_fast_fork`
+        // stops there rather than at a fixpoint — so
+        // [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
+        // moves it: ein.rs's resumed fork reaches the clash by a different
+        // route. How many died, and that each is a `dead-post`, is compared
+        // exactly, here and in the timeline; with fail-fast off the keys agree
+        // too, which is what says this is the prefix and not a difference of
+        // conflict.
+        format!("  deads          {} key(s)", snap.deads.len()),
         format!(
             "  alive_at_end   {}",
             show(snap.alive_at_end.iter().map(|s| &s[..]).collect())
         ),
+        // The two lattice DOTs rendered *from the snapshot* key their dead
+        // nodes — id and label both — on the dead commitment's `state_key`,
+        // which is the divergent field above, and the DAG *merges* dead
+        // commitments by that key, so even the node and edge counts move.
+        // Compared for presence only. The renderer itself is still
+        // byte-compared, through `dot_parity`'s `lattice` and `lattice-full`
+        // views, which read a `LatticeProof` and label their dead nodes by
+        // *commitment* rather than by state.
         "=== dot solution".to_string(),
-        render_lattice(
-            terms,
-            LatticeSource::Snapshot(&snap),
-            LatticeView::Solution,
-            "lattice",
-        ),
+        {
+            let _ = render_lattice(
+                terms,
+                LatticeSource::Snapshot(&snap),
+                LatticeView::Solution,
+                "lattice",
+            );
+            "<rendered>".to_string()
+        },
         "=== dot full".to_string(),
-        render_lattice(
-            terms,
-            LatticeSource::Snapshot(&snap),
-            LatticeView::Full,
-            "lattice",
-        ),
+        {
+            let _ = render_lattice(
+                terms,
+                LatticeSource::Snapshot(&snap),
+                LatticeView::Full,
+                "lattice",
+            );
+            "<rendered>".to_string()
+        },
     ];
     Ok(out.join("\n"))
 }

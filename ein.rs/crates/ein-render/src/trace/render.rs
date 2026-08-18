@@ -106,6 +106,20 @@ pub fn render_markdown(trace: &Trace, mode: Mode, diagrams: bool) -> String {
         format!("> {}", trace.summary),
         String::new(),
     ];
+    // Root's own derivations first, then the assumption — the order a human
+    // walkthrough uses, and since S1a.6.9 the only place they appear: a fork
+    // that resumes root's saturation no longer re-derives them into the
+    // solution's own firing list.
+    if !trace.root_steps.is_empty() {
+        lines.push(format!(
+            "## Before any assumption — {} steps",
+            trace.root_steps.len()
+        ));
+        lines.push(String::new());
+        for step in &trace.root_steps {
+            lines.extend(render_step(step, diagrams));
+        }
+    }
     if !trace.commitment.is_empty()
         && trace.commitment != "∅ (unconditional)"
         && trace.commitment != "—"

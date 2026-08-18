@@ -321,6 +321,20 @@ takes a fresh saturator over the branch KB, so `_queue`, `_parked`, `_seen`
 and the park stamps all start empty and no boundary verdict crosses a
 world — corollary C6 made structural.
 
+> **ein.rs does this differently, on purpose** (M1a
+> [S1a.6.9](../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md),
+> ledgered as [D3](../../../plans/m1a_rust/divergences.md)). A fork there
+> *resumes* the parent's saturation — the plan list, `fired`, `seen` and the
+> parked set with their stamps are inherited, and the delta is the commitment
+> — because a fresh saturator's first pass re-derives the parent's entire
+> closure, 94.6 % of a fork's firings on `zebra -e`. C6 still holds: the
+> parked set is carried *with* its watch stamps, and an inherited candidate is
+> re-judged against the fork's own world before it can be admitted, so no
+> boundary verdict crosses a world. What differs between the two engines is
+> how much of the derivation each narrates, not what either derives — the
+> verdict, `k`, the models, the unsat core and every published counter are
+> compared exactly and do not move.
+
 **Negative provenance.** A firing admitted through the boundary records
 what had to *not* hold:
 [`Provenance.absent_premises`](../../../ein.py/src/ein/kb/provenance.py) is

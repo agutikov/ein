@@ -1,21 +1,21 @@
 # S1a.6.9 — The fork-entry delta (the resumed saturator)
 
 **Phase:** P1a.6 (Performance)
-**Status:** **T1a.6.9.1–3 shipped 2026-08-18.** The measurement is an
-instrument, the resumed saturator is built behind `--features fork-delta`,
-and the three invariants are verified over 1.08 M enterings — two hold, the
-third does not. T1a.6.9.4/5/6 wait on
-[Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint),
-which now has its evidence:
-[baseline.md §11](baseline.md#11-the-resumed-fork-saturator-measured) and
-[fork_delta_trace.md](fork_delta_trace.md).
+**Status:** **shipped 2026-08-19.** T1a.6.9.1–3 landed the instrument, the
+mechanism and the evidence; [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+was then answered **ein.rs-only**, so T1a.6.9.4 flipped the resumed saturator
+on and gave `--trace` its root-saturation section.
+[D3](../divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
+records the divergence; [S1a.6.10](s1a.6.10_parity_contract.md) teaches the
+harness to hold it and [S1a.6.11](s1a.6.11_fixture_goldens.md) replaces what
+it stops comparing.
 **Estimate:** 3 days (1 d measure + decide, 2 d conditional implementation)
 **Depends on:** [S1a.6.1](s1a.6.1_profile_baseline.md) — and it is the
 *upper bound* [S1a.6.3](s1a.6.3_beta_memories.md) is chasing, so the two
 are read together.
-**Gated on:** [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
-— this stage may not land its own headline change until that question is
-answered, because the change is **observable**.
+**Was gated on:** [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+— this stage could not land its own headline change until that question was
+answered, because the change is **observable**. Answered 2026-08-19.
 **Relates to:** [design/06](../design/06_saturation.md) §4–§5,
 [design/05](../design/05_matcher.md) §7,
 [F11](../../followups/f11_deductive_layer_perf.md) D1
@@ -196,15 +196,29 @@ sets and what
 [`08-human-style-deductive-trace`](../../ideas/08-human-style-deductive-trace.md)
 asks for.
 
-### Task T1a.6.9.4 — The resumed saturator (conditional on Q-M1a.18) ⏸
+### Task T1a.6.9.4 — The resumed saturator ✅
 
-**Waiting on the decision.** The mechanism is built and measured; what
-T1a.6.9.4 adds over the prototype is (a) sharing the snapshot by `Arc` with a
-layered delta instead of deep-copying it per entering — the prototype removes
-77 % of the firings for 34 % of the time, and that gap *is* the copy — (b) the
-ein.py half, and (c) the renderer change the evidence turned up: root
-saturation has to become its own trace section, or the solution's proof loses
-every rule that fires only at root.
+**Shipped 2026-08-19**, and two of the three things it was expected to do
+turned out to be the wrong work:
+
+- **the flip** — `Saturator::resume` is the shipping path. The escape hatch is
+  a `fork-delta` build with `EIN_FORK_DELTA=0`, kept because
+  [D3](../divergences.md) needs both arms out of one binary to stay measured.
+- **the `Arc`-layered snapshot: not built, and that is a measurement.** The
+  prototype removed 77 % of the firings for 34 % of the time and the deep copy
+  was the obvious suspect. It is not: `perf` puts `Vec::clone<Entry>` at
+  **0.6 %** and the whole `fork/copy` subsystem at 0.1 %. What is left is the
+  matcher, at **80.5 %** of `zebra -e` — which is
+  [S1a.6.3](s1a.6.3_beta_memories.md)'s subject, not this stage's. Building
+  the layered snapshot would have been the wash [Rule 3](README.md#rules-for-this-phase)
+  exists to prevent.
+- **the ein.py half: not done, by decision.** Q-M1a.18 was answered ein.rs-only.
+- **the renderer change: done, and it was the important one.** `--trace` gains
+  a *Before any assumption* section — root's own 321 steps, then
+  `Assuming …`, then the 240 the hypothesis adds, numbered as one sequence.
+  Without it the solution's proof silently lost every rule that fires only at
+  root, which is what `test_idea08_acceptance` catches and what
+  [T1a.6.11.2](s1a.6.11_fixture_goldens.md) ports to ein.rs.
 
 If the answer is yes, the mechanism is small because every piece exists:
 
@@ -221,7 +235,14 @@ ein.py gets the same change first, since it is the oracle. Both land in
 the same commit pair, with the T2/T3 goldens regenerated once and the
 reason recorded in [divergences.md](../divergences.md).
 
-### Task T1a.6.9.5 — If the answer is no: the salvage ⏸
+### Task T1a.6.9.5 — If the answer is no: the salvage — **moot** ✕
+
+The answer was yes. The number stands as
+[S1a.6.3](s1a.6.3_beta_memories.md)'s target anyway, re-aimed: the fork
+boundary is no longer where the re-derivation is, so what beta-memories have
+to make free is the **77 %** of a *resumed* fork's firings that are still
+redundant — inside its own delta, where a symmetric-transitive rule set
+ping-pongs.
 
 **Number for S1a.6.3's acceptance, measured either way:** a resumed fork does
 **9 834** firings on `zebra2 -e` where a fresh one does 38 136, and **26 656**
@@ -241,18 +262,34 @@ they are worth taking either way:
   should be judged against: it does not have to make matching faster, it
   has to make **the 95 % that is re-derivation** nearly free.
 
-### Task T1a.6.9.6 — Re-measure and record ◐
+### Task T1a.6.9.6 — Re-measure and record ✅
 
-**The shipping build did not move, and that is the result to record.** The
-feature is off by default and `fork_delta_enabled()` is `false` without it, so
-`solve zebra2.ein -e` is 138.6 ms against S1a.6.8's 138.1 and `solve
-zebra.ein -e` is 530.5 against 539.9 — within the spread. T3 is 472/473 with
-[D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
-the only cell, as before. The §9 split was re-run and is in
-[baseline.md §9](baseline.md#9-the-fork-entry-re-derivation); what the
-*resumed* build measures is [§11](baseline.md#11-the-resumed-fork-saturator-measured).
-The four targets are re-stated once Q-M1a.18 decides whether §11's numbers are
-the phase's or a footnote.
+**All four targets are met**, and the one that needed the stage is
+`solve zebra.ein -e`: **397.2 ms** against ≤ 400 ms, from 539.9 at S1a.6.8.
+`solve zebra2.ein -e` is **99.1 ms** against ≤ 200. Both are `utils/e2e_baseline.py`
+*process* measurements, which is what the milestone's targets mean.
+
+| instrument | where |
+|---|---|
+| the four targets | [README § Targets](README.md#targets) |
+| what the fork does now | [baseline.md §11](baseline.md#11-the-resumed-fork-saturator-measured); §9 is marked historical |
+| the profile | `zebra -e` is **80.5 % matcher**, up from 72.6 — the fork boundary's share went *to* the join |
+| the ledger | [design/README § Measured](../design/README.md#measured) |
+| the gates | `cargo test` green, `./run_tests.sh` 1 506 + 21 green, T3 465/473 with D2 and D3's seven cells |
+
+**Six test comparisons had to be narrowed to keep the suites green**, and
+that is the honest cost of landing the engine change before the stage that
+relaxes the contract. Each cut is narrow and documented at its site, but they
+were made one at a time, each revealed by the next test to go red:
+`hypgen_parity` (firing counts → the event ordinal → a `dead-post` core),
+`dot_parity` (the `slice` view), `dump_parity` (the timeline's `firings` → the
+`enterings/` subtree → the snapshot's dead state keys → the lattice DOT
+rendered from them), `trace_parity` (the rendered trace itself). They are tabulated in
+[D3](../divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it),
+where the chain is also read as one sentence — *a fork's derivation, and
+anything keyed on a dying fork's stopping point, is narration* — which is what
+[T1a.6.10.0](s1a.6.10_parity_contract.md) writes down once and implements
+once, deleting all six.
 
 The task as originally written:
 
@@ -262,15 +299,24 @@ which of the four targets moved.
 
 ## Acceptance
 
-- The fork split is in baseline.md and re-runnable by one command.
-- The three invariants of § What is *not* at risk are **verified**, not
-  argued, on the whole corpus — or the counter-example is recorded.
-- Q-M1a.18 is answered with a rendered before/after trace attached.
-- If the answer is yes: both engines changed, T3 green on regenerated
-  goldens, `zebra -e` re-measured against its ≤ 400 ms target.
-- If the answer is no: the number is carried into
-  [S1a.6.3](s1a.6.3_beta_memories.md)'s acceptance as its target, and
-  this stage closes as a measurement.
+- ✅ The fork split is in baseline.md and re-runnable by one command —
+  `utils/fork_split.py`, which corrected two attributions on the way in.
+- ✅ The three invariants of § What is *not* at risk are **verified**, not
+  argued, on the whole corpus — 3 228 853 enterings, `utils/fork_delta_verify.py`.
+  Two hold; the third does not, and the counter-example is recorded in
+  [baseline.md §11](baseline.md#11-the-resumed-fork-saturator-measured) and
+  [D3](../divergences.md).
+- ✅ Q-M1a.18 is answered with a rendered before/after trace attached —
+  [fork_delta_trace.md](fork_delta_trace.md).
+- ✅ The answer was **yes, in ein.rs only** — so, adapted from the clause the
+  plan wrote for "yes in both": ein.rs changed, ein.py did not, the divergence
+  is ledgered rather than the goldens regenerated (there are no goldens — the
+  harness diffs two live engines), and `zebra -e` is **397.2 ms** against its
+  ≤ 400 ms target.
+- ✅ The number is carried into [S1a.6.3](s1a.6.3_beta_memories.md)'s
+  acceptance anyway, re-aimed at what is left rather than at what was removed.
+- ➕ Not in the original acceptance, and needed: `--trace` renders root's own
+  saturation, or the proof silently loses every rule that fires only there.
 
 ## Notes
 
@@ -286,4 +332,18 @@ which of the four targets moved.
   nothing at all, which is why that puzzle shows the cost at its purest.
 - This does not re-litigate the search layer ([Rule 4](README.md#rules-for-this-phase)):
   the branch count, the entering count and the traversal order are
-  untouched. What changes is the cost of one entering.
+  untouched. What changes is the cost of one entering — **and, once measured,
+  the proof it records.** `summary.json` says the search is identical, field
+  for field; the proof graph says which of a fact's derivations got there
+  first, and that is not identical. Both statements are true and the second
+  one is what Q-M1a.18 was really deciding.
+- **What was expected to be the work, and was not.** The prototype removed
+  77 % of the firings for 34 % of the time, so T1a.6.9.4 was scoped around
+  the per-entering snapshot copy. `perf` put that at 0.6 %. Measuring before
+  building saved the stage two days and handed the remainder to
+  [S1a.6.3](s1a.6.3_beta_memories.md), where the matcher now sits at 80.5 %.
+- **What was not expected to be the work, and was.** Landing the flip before
+  [S1a.6.10](s1a.6.10_parity_contract.md) meant narrowing six cross-engine
+  comparisons one at a time, each revealed by the next test to go red. Worth
+  recording as an ordering lesson: a change that moves an observable wants the
+  contract stage *first*, or it pays for the same relaxation twice.

@@ -63,6 +63,18 @@ emitted, which keeps a hand-readable file. **T2 comparisons run at `verbose`**:
 a dropped redundant firing is exactly the kind of difference a port introduces
 and the tier exists to catch.
 
+> **That last sentence is no longer the whole story.** Since M1a
+> [S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md),
+> ein.rs's forks *resume* root's saturation where ein.py's re-derive it, so
+> the two engines deliberately narrate different amounts of the same
+> derivation and 97 of T2's 240 cells report it —
+> [D3](../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it).
+> The difference the tier exists to catch is a dropped **productive** firing,
+> and that is what
+> [S1a.6.10](../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
+> narrows the comparison to. Until it lands, read a T2 `fire`/`enqueue`
+> difference on a `solve` cell as expected and everything else as a bug.
+
 ## Events
 
 ### Lifecycle

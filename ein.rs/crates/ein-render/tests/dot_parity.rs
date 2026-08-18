@@ -23,6 +23,17 @@ use std::path::Path;
 /// answer — [D2](../../../../plans/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
 /// reached through every view that runs the search. Asserted, not tolerated:
 /// a file listed here that stops diverging fails as loudly as one that starts.
+/// Views that render a **derivation** rather than a state, and are therefore
+/// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)'s
+/// territory: ein.rs's forks resume root's saturation and ein.py's re-derive
+/// it, so the two narrate different amounts of the same proof and a byte
+/// comparison of the cone is no longer the contract.
+///
+/// They are still *run* on both sides and both must answer — a view that
+/// starts erroring is still a failure. What replaces the byte check is an
+/// ein.rs golden, [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
+const NARRATION: [&str; 1] = ["slice"];
+
 const DIVERGENT: [(&str, &str); 3] = [
     ("examples/ein-bugs/mixed-type-hypothesis.ein", "lattice"),
     (
@@ -84,7 +95,7 @@ fn every_dot_view_of_every_corpus_file_is_byte_identical() {
                 (Answer::Ok(a), Answer::Ok(b)) => {
                     compared += 1;
                     bytes += a.len();
-                    if a != b {
+                    if a != b && !NARRATION.contains(view) {
                         bad.push(format!("{name} [{view}]\n{}", first_difference(a, b)));
                     }
                 }

@@ -120,6 +120,108 @@ fn rust_naf(path: &Path) -> Option<Answer> {
 /// asserted, not tolerated: a file listed here that stops diverging fails just
 /// as loudly as one that starts, because a ledger entry nobody can reproduce
 /// is not a decision.
+/// How closely the two shapes have to agree.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Compare {
+    /// Byte for byte.
+    Exact,
+    /// Byte for byte **except what a fork's own narration decides**:
+    /// two things, and nothing else.
+    /// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it):
+    /// ein.rs's forks resume root's saturation and ein.py's re-derive it, so
+    /// the same solution is reached by narrating a quarter as much.
+    ///
+    /// 1. **The firing counters** — `firings=N`, `"n_firings"`, and the event
+    ///    ordinal `"n"`, which moves because the elided firings are what it
+    ///    was counting.
+    /// 2. **A `dead-post` entering's unsat core.** `enable_fail_fast_fork`
+    ///    stops a dying fork at the firing that kills it, so a different
+    ///    firing order stops it at a different clash and the smallest frontier
+    ///    of *that* clash is a different — equally correct, equally
+    ///    minimal — set. On a two-element commitment whose elements conflict
+    ///    with each other it is literally one element or the other. Measured
+    ///    at 110 enterings across the corpus, and **zero** with fail-fast off;
+    ///    the run's own answer, `union_dead_cores` over every dead
+    ///    commitment, does not move on any corpus entry.
+    ///
+    /// Deliberately the narrowest cut that works. Still compared exactly: the
+    /// commitment, the `kind`, the layer, an **alive** entering's core, the
+    /// fact count, the verdict, every `STATS` counter, every learned `CLAUSE`,
+    /// the `EVENTS` total — which does not move, because the log is filtered
+    /// to `enter` / `nogood` / `writeback` / `warn` and none of those is a
+    /// firing — and `ROOT facts=`. `commit-shape` keeps `Compare::Exact`
+    /// including its `firings=`, because it calls `try_commitment_set` without
+    /// a snapshot and so does not take the resumed path at all.
+    IgnoringForkNarration,
+}
+
+/// Blank what [`Compare::IgnoringForkNarration`] elides, line by line so the
+/// `dead-post` condition is per record. `#` rather than deletion, so a
+/// *missing* field still shows as a difference.
+fn erase_firing_counts(s: &str) -> String {
+    s.lines()
+        .map(|line| {
+            let l = erase_counters(line);
+            if line.contains("kind=dead-post") || line.contains("\"kind\": \"dead-post\"") {
+                erase_after(&l, &["core=[", "\"core\": ["], ']')
+            } else {
+                l
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// Blank from just after `key` up to and including the first `close`.
+fn erase_after(s: &str, keys: &[&str], close: char) -> String {
+    let mut out = String::with_capacity(s.len());
+    let mut rest = s;
+    while let Some((at, key)) = keys
+        .iter()
+        .filter_map(|k| rest.find(k).map(|i| (i, *k)))
+        .min_by_key(|(i, _)| *i)
+    {
+        out.push_str(&rest[..at + key.len()]);
+        rest = &rest[at + key.len()..];
+        let end = rest.find(close).map_or(rest.len(), |i| i);
+        out.push('#');
+        rest = &rest[end..];
+    }
+    out.push_str(rest);
+    out
+}
+
+fn erase_counters(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    let mut rest = s;
+    'outer: while !rest.is_empty() {
+        for key in ["firings=", "\"n_firings\": ", "\"n\": "] {
+            if let Some(at) = rest.find(key) {
+                // Only the earliest of the three, or the counters interleave.
+                if ["firings=", "\"n_firings\": ", "\"n\": "]
+                    .iter()
+                    .filter_map(|k| rest.find(k))
+                    .min()
+                    != Some(at)
+                {
+                    continue;
+                }
+                out.push_str(&rest[..at + key.len()]);
+                rest = &rest[at + key.len()..];
+                let end = rest
+                    .find(|c: char| !c.is_ascii_digit())
+                    .unwrap_or(rest.len());
+                out.push('#');
+                rest = &rest[end..];
+                continue 'outer;
+            }
+        }
+        out.push_str(rest);
+        break;
+    }
+    out
+}
+
 fn sweep(
     label: &str,
     op: serde_json::Value,
@@ -127,6 +229,7 @@ fn sweep(
     count: impl Fn(&str) -> usize,
     floors: (usize, usize),
     divergent: &[&str],
+    how: Compare,
 ) {
     let Some(mut py) = Oracle::start(IR_ORACLE) else {
         return skip(label);
@@ -153,8 +256,14 @@ fn sweep(
             (Answer::Ok(a), Answer::Ok(b)) => {
                 compared += 1;
                 items += count(a);
-                if a != b {
-                    bad.push(format!("{name}\n{}", first_difference(a, b)));
+                let (x, y) = match how {
+                    Compare::Exact => (a.clone(), b.clone()),
+                    Compare::IgnoringForkNarration => {
+                        (erase_firing_counts(a), erase_firing_counts(b))
+                    }
+                };
+                if x != y {
+                    bad.push(format!("{name}\n{}", first_difference(&x, &y)));
                 }
             }
             (Answer::Err { .. }, Answer::Err { .. }) => {}
@@ -204,6 +313,7 @@ fn the_whole_corpus_generates_the_same_hypotheses_after_auto_closure() {
         |a| a.lines().filter(|l| l.contains("\"hyp\"")).count(),
         (60, 1500),
         &[],
+        Compare::Exact,
     );
 }
 
@@ -226,6 +336,7 @@ fn the_whole_corpus_joins_the_same_layers() {
         // crashes. This is the *only* op that reaches it, and the only file
         // that can produce one.
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        Compare::Exact,
     );
 }
 
@@ -244,6 +355,7 @@ fn the_whole_corpus_solves_the_same_way() {
         |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
         (60, 100),
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        Compare::IgnoringForkNarration,
     );
 }
 
@@ -256,6 +368,7 @@ fn the_whole_corpus_solves_the_same_way_exhaustively() {
         |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
         (60, 200),
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        Compare::IgnoringForkNarration,
     );
 }
 
@@ -276,6 +389,7 @@ fn the_whole_corpus_shuffles_the_same_way() {
         |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
         (60, 100),
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        Compare::IgnoringForkNarration,
     );
 }
 
@@ -295,6 +409,7 @@ fn the_whole_corpus_enters_the_same_commitments() {
         (60, 100),
         // D2 again: `layer_1` is how this op picks its candidates.
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        Compare::Exact,
     );
 }
 
@@ -307,6 +422,7 @@ fn the_whole_corpus_enters_the_same_commitments_without_fail_fast() {
         |a| a.lines().filter(|l| l.starts_with("ENTER ")).count(),
         (60, 100),
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        Compare::Exact,
     );
 }
 
@@ -325,6 +441,7 @@ fn the_whole_corpus_explains_the_same_way() {
         |a| a.lines().filter(|l| l.starts_with("EXPLAIN ")).count(),
         (60, 150),
         &[],
+        Compare::Exact,
     );
 }
 
@@ -337,6 +454,7 @@ fn the_whole_corpus_explains_the_same_way_without_alternatives() {
         |a| a.lines().filter(|l| l.starts_with("EXPLAIN ")).count(),
         (60, 150),
         &[],
+        Compare::Exact,
     );
 }
 
@@ -350,6 +468,7 @@ fn the_whole_corpus_reports_the_same_naf_dependencies() {
         |a| a.lines().filter(|l| l.starts_with("NAF ")).count(),
         (60, 200),
         &[],
+        Compare::Exact,
     );
 }
 

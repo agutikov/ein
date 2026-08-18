@@ -115,6 +115,18 @@ pub struct DeadCommitment {
 /// map, the frontier left alive at the depth cap, and the learned clauses.
 pub struct LatticeProof {
     pub solutions: Vec<SolutionRecord>,
+    /// Root's own saturation — the derivations that hold before any
+    /// hypothesis, in order, plus any a forced positive added later.
+    ///
+    /// Collected only under `store_lattice`, which is what `--trace` and
+    /// `--dump-states` set. Before
+    /// [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+    /// a trace did not need this: every fork re-derived root's fixpoint, so
+    /// the solution node's own firing list happened to contain root's whole
+    /// closure. A fork that *resumes* root's saturation does not, so the
+    /// unconditional half of the proof has to be carried deliberately — which
+    /// is also how a human walkthrough tells it, givens first.
+    pub root_firings: Vec<Firing>,
     pub dead_commitments: Vec<DeadCommitment>,
     pub alive_at_end: Vec<CanonicalSetId>,
     pub learned_nogoods: Vec<Box<[FactId]>>,
@@ -300,6 +312,7 @@ pub fn solve(
         cfg,
         memo: SharedMemo::default(),
         root_snapshot: None,
+        root_firings: Vec::new(),
         stats: MonotonicStats::new(),
         lstate: LoopState {
             nodes: Vec::new(),
@@ -357,32 +370,32 @@ struct Run<'o> {
     /// instead of re-deriving it
     /// ([S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)).
     ///
-    /// `None` in every build that did not ask for `fork-delta`, and in one
-    /// that did until `EIN_FORK_DELTA=1` throws the switch — the change is
-    /// observable, so the shipping path may not take it until
-    /// [Q-M1a.18](../../../../plans/m1a_rust/open_questions.md) says so.
-    ///
     /// Refreshed after every root *re*-saturation (a forced positive), and
     /// otherwise left alone: root's other writers — the singleton `(not h)`
     /// writeback, the lookahead kill cache — add a fact without re-reaching
     /// the fixpoint, and `Snapshot::new_facts_of` hands those to the fork as
     /// part of its delta rather than invalidating the snapshot.
     root_snapshot: Option<Arc<Snapshot>>,
+    /// See [`LatticeProof::root_firings`]. Empty unless `store_lattice`.
+    root_firings: Vec<Firing>,
     stats: MonotonicStats,
     lstate: LoopState,
     t_start: Instant,
     opts: &'o SolveOptions,
 }
 
-/// Is the *resumed* fork saturator on?
+/// Does a fork **resume** root's saturation? Yes, since
+/// [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+/// — this is the shipping path, and
+/// [D3](../../../../plans/m1a_rust/divergences.md) is what it costs.
 ///
-/// Two locks, both deliberate. The `fork-delta` feature keeps the second code
-/// path out of a shipping build entirely; `EIN_FORK_DELTA=1` keeps it off even
-/// there unless a measurement asked for it, so one binary produces both arms
-/// of the T1a.6.9.2 diff and nothing but this switch differs between them.
-fn fork_delta_enabled() -> bool {
-    cfg!(feature = "fork-delta")
-        && std::env::var_os("EIN_FORK_DELTA").is_some_and(|v| v == "1")
+/// The one way to get the old fresh-saturator path back is a `fork-delta`
+/// build with `EIN_FORK_DELTA=0`, and that exists for one reason: D3's rule 2
+/// wants a fixture that demonstrates the divergence and keeps it from
+/// silently widening. `utils/fork_delta_verify.py` is that fixture, and it
+/// needs both arms out of one binary.
+fn resume_forks() -> bool {
+    !(cfg!(feature = "fork-delta") && std::env::var_os("EIN_FORK_DELTA").is_some_and(|v| v == "0"))
 }
 
 impl Run<'_> {
@@ -428,8 +441,13 @@ impl Run<'_> {
             // the common path, and the split is a cost decision, not a
             // behavioural one.
             let mut n = 0usize;
-            sat.saturate(&mut s, None, &mut |_| {
+            let keep = self.opts.store_lattice;
+            let root_firings = &mut self.root_firings;
+            sat.saturate(&mut s, None, &mut |f| {
                 n += 1;
+                if keep {
+                    root_firings.push(f.clone());
+                }
                 if n.is_multiple_of(ROOT_SAT_PROGRESS_EVERY) {
                     dumper.root_saturating(n);
                 }
@@ -680,10 +698,9 @@ impl Run<'_> {
 
     // ── Helpers ────────────────────────────────────────────────
 
-    /// Keep `sat`'s fixpoint for the next entering to resume from — a no-op
-    /// unless this build asked for `fork-delta` *and* the switch is on.
+    /// Keep `sat`'s fixpoint for the next entering to resume from.
     fn snapshot_root(&mut self, sat: &Saturator, kb: &Kb) {
-        if fork_delta_enabled() {
+        if resume_forks() {
             self.root_snapshot = Some(Arc::new(sat.snapshot(kb)));
         }
     }
@@ -760,7 +777,13 @@ impl Run<'_> {
                     memo: self.memo.clone(),
                 };
                 let mut sat = Saturator::new(&mut s)?;
-                sat.saturate(&mut s, None, &mut |_| {})?;
+                let keep = self.opts.store_lattice;
+                let root_firings = &mut self.root_firings;
+                sat.saturate(&mut s, None, &mut |f| {
+                    if keep {
+                        root_firings.push(f.clone());
+                    }
+                })?;
                 self.snapshot_root(&sat, s.kb);
             }
             self.stats.base.saturate_count += 1;
@@ -980,6 +1003,7 @@ impl Run<'_> {
         learned.sort();
         LatticeProof {
             solutions: solutions.into_iter().map(|(_, r)| r).collect(),
+            root_firings: std::mem::take(&mut self.root_firings),
             dead_commitments: std::mem::take(&mut self.lstate.dead),
             alive_at_end: std::mem::take(&mut self.lstate.alive_at_end),
             learned_nogoods: learned,

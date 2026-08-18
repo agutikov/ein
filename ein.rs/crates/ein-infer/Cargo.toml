@@ -10,13 +10,11 @@ repository.workspace = true
 # Forwards to `ein-core/counters`, so `--features counters` on either crate
 # means the same build.
 counters = ["ein-core/counters"]
-# S1a.6.9 T1a.6.9.2 — the *resumed* fork saturator, and the per-entering audit
-# record that verifies it. **Off by default and not a shipping path**: the
-# change it makes is observable (it drops the redundant re-derivations T2
-# narrates), so it exists to produce the evidence Q-M1a.18 is decided against.
-# Even in a `fork-delta` build the resumed path is off until `EIN_FORK_DELTA=1`,
-# so one binary produces both arms of the diff and nothing else differs
-# between them.
+# S1a.6.9 — D3's fixture, not a feature of the engine. The resumed fork
+# saturator is the *shipping* path since Q-M1a.18 was answered; what this
+# compiles in is the way back to the old one (`EIN_FORK_DELTA=0`) plus the
+# per-entering audit record, so `utils/fork_delta_verify.py` can produce both
+# arms of the divergence out of one binary and prove it has not widened.
 fork-delta = []
 
 [dependencies]

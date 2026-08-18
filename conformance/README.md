@@ -38,7 +38,13 @@ cd ein.rs && cargo build --release
 ```
 
 Tiers: **T0** the verdict, **T1** every counter, **T2** the ordered event log,
-**T3** byte-identical artefacts. T0/T1 read the `summary.json` each `solve`
+**T3** byte-identical artefacts. **T0 and T1 are the hard requirement**; since
+M1a [S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+the two engines narrate different amounts of the same derivation on purpose
+([D3](../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
+so T2 reports 97 of 240 cells and T3 seven of 473 until
+[S1a.6.10](../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
+narrows both to the productive derivation. T0/T1 read the `summary.json` each `solve`
 cell is given (`--json-summary`); T2 adds `--events … --events-level verbose`
 to each `solve` / `saturate` cell and compares the two logs structurally; T3
 compares stdout, stderr, the exit code and every produced file. The

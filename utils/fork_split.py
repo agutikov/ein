@@ -14,12 +14,19 @@ promoted from the inline script that section was first written with
 compile share of this cost and S1a.6.3 is aimed at the match share, so the
 ratio moves under the phase's own work.
 
-**What it measures.** `commitment::try_commitment_set` forks the *saturated*
-root and builds a fresh `Saturator` — empty `seen` / `fired` / `parked` and
-`delta = None`, which is a FULL enqueue pass. So a fork's first act is to
-re-derive the parent's whole deductive closure as `redundant` firings. Split
-the `--events-level verbose` stream at its `enter` events and the root prefix
-and the per-entering suffixes separate exactly.
+**What it measures.** How much of a fork's work is re-derivation. Split the
+`--events-level verbose` stream at its `enter` events and the root prefix and
+the per-entering suffixes separate exactly.
+
+`commitment::try_commitment_set` forks the *saturated* root. ein.py builds a
+fresh `Saturator` there — empty `seen` / `fired` / `parked` and `delta = None`,
+a FULL enqueue pass — so a fork's first act is to re-derive the parent's whole
+deductive closure as `redundant` firings, 94.6 % of them on `zebra -e`. Since
+[S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+ein.rs **resumes** root's saturation instead
+([D3](../plans/m1a_rust/divergences.md)), and this is the instrument that says
+by how much: point `--bin` at a `--features fork-delta` build and set
+`EIN_FORK_DELTA=0` for the old shape.
 
 **Two attributions the inline script got wrong**, which is why this is a
 script and not a `grep`:

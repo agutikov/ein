@@ -31,10 +31,7 @@ use crate::events::{sexpr, sexpr_value};
 fn sink() -> &'static Mutex<Option<std::fs::File>> {
     static SINK: OnceLock<Mutex<Option<std::fs::File>>> = OnceLock::new();
     SINK.get_or_init(|| {
-        Mutex::new(
-            std::env::var_os("EIN_FORK_AUDIT")
-                .and_then(|p| std::fs::File::create(p).ok()),
-        )
+        Mutex::new(std::env::var_os("EIN_FORK_AUDIT").and_then(|p| std::fs::File::create(p).ok()))
     })
 }
 
@@ -126,8 +123,7 @@ pub fn record(terms: &Terms, r: &CommitmentSetResult) {
     // order gives exact set equality; across two *processes* the intern order
     // is not the same order, and a record that sorts by it reports a
     // difference where there is only a different arena.
-    let mut facts: Vec<(String, FactId)> =
-        r.kb.facts().map(|f| (sexpr(terms, f), f)).collect();
+    let mut facts: Vec<(String, FactId)> = r.kb.facts().map(|f| (sexpr(terms, f), f)).collect();
     facts.sort_unstable();
     let mut commitment: Vec<String> = r.commitment.iter().map(|&f| sexpr(terms, f)).collect();
     commitment.sort();

@@ -6,10 +6,14 @@
     python3 utils/fork_delta_verify.py -k zebra --json out.json
     python3 utils/fork_delta_verify.py --with-trace     # size the narration too
 
-Runs **one** binary twice over the whole parity corpus — `EIN_FORK_DELTA`
-unset, then `=1` — so the only difference between the arms is
-`Saturator::resume` against `Saturator::new`
+Runs **one** binary twice over the whole parity corpus — `EIN_FORK_DELTA=0`,
+then unset — so the only difference between the arms is `Saturator::new`
+against `Saturator::resume`
 ([S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)).
+The resumed saturator is the shipping path; a `fork-delta` build compiles in
+the way back to the old one, and this script is
+[D3](../plans/m1a_rust/divergences.md)'s fixture — the divergence stays
+measured, so it cannot silently widen.
 
 The point is to compare artefacts that are **not** firing lists, because the
 firing list is what the change is expected to move. Per entering, from
@@ -27,8 +31,10 @@ firing list is what the change is expected to move. Per entering, from
   because a reordering and a membership change are different findings.
 
 And per run, from the process itself: `stdout` (the verdict, `k`, the models,
-the query bindings) and the `--dump-states` tree (the lattice, the no-good
-clauses). Wall-clock fields and firing counts are normalised out of both and
+the query bindings, and for an unsat puzzle the core — the **answer**),
+`summary.json` (**T0 + T1**: the verdict and every counter the engine
+publishes, with only the clock normalised out) and the `--dump-states` tree
+(the lattice, the no-good clauses). Wall-clock fields and firing counts are normalised out of both and
 reported separately — those are the narration, which is
 [T1a.6.9.3](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)'s
 number rather than an invariant.
@@ -60,6 +66,12 @@ FD = REPO / "ein.rs" / "target-fd" / "release" / "ein"
 # The runs that fork. `saturate` and `render` never call `try_commitment_set`.
 SOLVE_RUNS = ("solve", "solve -e", "solve -n 3", "solve -m 2", "solve -p -s",
               "solve --dump-states {out}/states")
+# Answer-printing forms the corpus does not declare, added to every entry that
+# declares the run they extend. `-p` prints the model, or for an unsat verdict
+# the unsat core — which *is* the answer there, and the one artefact a
+# `solve`-only run would not have compared.
+ANSWER_RUNS = {"solve": ("solve -p", "solve -P", "solve -f"),
+               "solve -e": ("solve -e -p",)}
 TRACE_RUN = "solve --trace {out}/trace.md"
 
 
@@ -75,14 +87,28 @@ VOLATILE = [
     re.compile(r"^(\s*(?:firings|derivations)\s+)[\d ]+$", re.M),
 ]
 FIRINGS = re.compile(r'"(?:n_)?firings":\s*(\d+)')
+# `summary.json` is T0 + T1 — the verdict and **every counter the engine
+# publishes**. Only the clock is normalised out of it: a firing count in here
+# would be a T1 move, which is the one thing this class exists to catch.
+TIME_ONLY = [
+    re.compile(r'"elapsed_seconds":\s*[0-9.]+'),
+    re.compile(r'"wall_seconds":\s*[0-9.]+'),
+    re.compile(r'"[a-z_]*(?:ms|nanos|seconds)":\s*[0-9.]+'),
+]
 
 # The hard invariants — a move in one of these is a failure of the idea, not a
 # finding about the narration.
-HARD = ("enterings", "kind", "core", "state-alive", "stdout", "dump")
+HARD = ("enterings", "kind", "core", "state-alive", "stdout", "summary", "dump")
 
 
 def normalise(text: str) -> str:
     for r in VOLATILE:
+        text = r.sub("~", text)
+    return text
+
+
+def clock_only(text: str) -> str:
+    for r in TIME_ONLY:
         text = r.sub("~", text)
     return text
 
@@ -92,22 +118,27 @@ def arm(binary: Path, argv: list[str], out: Path, delta: bool,
     """One process. Returns everything the comparison reads."""
     out.mkdir(parents=True, exist_ok=True)
     env = {"EIN_FORK_AUDIT": str(audit), "PATH": "/usr/bin:/bin"}
-    if delta:
-        env["EIN_FORK_DELTA"] = "1"
+    if not delta:
+        # The way back to the pre-S1a.6.9 fresh fork saturator.
+        env["EIN_FORK_DELTA"] = "0"
     cmd = [str(binary)] + [t.replace("{out}", str(out)) for t in argv]
+    # `--json-summary` on every solve cell, exactly as `plan.rs` does: it is
+    # what T0 and T1 read, and comparing it is the difference between "the
+    # answers agree" and "the engines did the same search".
+    cmd += ["--json-summary", str(out / "summary.json")]
     p = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, env=env)
-    tree, firings = {}, 0
+    tree, firings, summary = {}, 0, ""
     for f in sorted(out.rglob("*")):
         if f.is_file():
             raw = f.read_text(errors="replace")
             firings += sum(int(m) for m in FIRINGS.findall(raw))
+            if f.name == "summary.json":
+                summary = clock_only(raw)
+                continue
             tree[str(f.relative_to(out))] = normalise(raw)
-    records = []
-    if audit.exists():
-        records = [json.loads(l) for l in audit.read_text().splitlines() if l]
     return {"code": p.returncode, "stdout": normalise(p.stdout),
-            "stderr": p.stderr, "tree": tree, "audit": records,
-            "firings": firings}
+            "stderr": p.stderr, "tree": tree, "audit": audit,
+            "firings": firings, "summary": summary}
 
 
 def compare(a: dict, b: dict, ex: dict[str, list[str]]) -> Counter:
@@ -122,16 +153,30 @@ def compare(a: dict, b: dict, ex: dict[str, list[str]]) -> Counter:
         hit("stdout", f"exit code {a['code']} → {b['code']}")
     if a["stdout"] != b["stdout"]:
         hit("stdout", "stdout text")
+    if a["summary"] != b["summary"]:
+        import difflib
+        d = [l for l in difflib.unified_diff(
+            a["summary"].splitlines(), b["summary"].splitlines(), n=0)
+            if l[:1] in "+-" and l[:3] not in ("---", "+++")]
+        hit("summary", "summary.json (T0+T1): " + " ".join(d[:6]))
     if a["tree"].keys() != b["tree"].keys():
         hit("dump", "the dump file set")
     else:
         for k in a["tree"]:
             if a["tree"][k] != b["tree"][k]:
                 hit("dump", f"dump {k}")
-    if len(a["audit"]) != len(b["audit"]):
-        hit("enterings", f"{len(a['audit'])} → {len(b['audit'])}")
-        return n
-    for i, (x, y) in enumerate(zip(a["audit"], b["audit"])):
+    # Streamed, one entering at a time: an exhaustive solve of the bigger
+    # saturation fixtures records hundreds of thousands of enterings, each
+    # carrying its whole fact set and every justification of every fact, and
+    # holding two of those lists in memory is how this script first died.
+    n_a = n_b = 0
+    for i, (x, y) in enumerate(records(a["audit"], b["audit"])):
+        if x is None or y is None:
+            n_a += x is not None
+            n_b += y is not None
+            continue
+        n_a += 1
+        n_b += 1
         where = f"entering {i} {' '.join(x['commitment']) or '<root>'}"
         if x["commitment"] != y["commitment"]:
             hit("enterings", f"{where}: a different commitment")
@@ -163,7 +208,28 @@ def compare(a: dict, b: dict, ex: dict[str, list[str]]) -> Counter:
                                f"+{sorted(set(jb) - set(ja))[:1]}")
             else:
                 hit("alt-order", f"{where}: {f} ({len(ja)} justifications)")
+    if n_a != n_b:
+        hit("enterings", f"{n_a} → {n_b}")
     return n
+
+
+def records(pa: Path, pb: Path):
+    """Both audit files, one entering at a time, padded with `None`."""
+    fa = pa.open(encoding="utf-8") if pa.exists() else None
+    fb = pb.open(encoding="utf-8") if pb.exists() else None
+    try:
+        while True:
+            la = fa.readline() if fa else ""
+            lb = fb.readline() if fb else ""
+            if not la and not lb:
+                return
+            yield (json.loads(la) if la.strip() else None,
+                   json.loads(lb) if lb.strip() else None)
+    finally:
+        if fa:
+            fa.close()
+        if fb:
+            fb.close()
 
 
 def variant_no_fail_fast(path: Path, tmp: Path) -> Path:
@@ -211,9 +277,12 @@ def main() -> int:
                 variants.append(v)
                 path = str(v.relative_to(REPO))
             runs = list(SOLVE_RUNS) + ([TRACE_RUN] if args.with_trace else [])
-            for r in e.get("runs", []):
+            declared = e.get("runs", [])
+            for r in declared:
                 if r in runs:
                     work.append((path, r.split() + [path]))
+                for extra in ANSWER_RUNS.get(r, ()):
+                    work.append((path, extra.split() + [path]))
 
         totals: Counter = Counter()
         per_entry: dict[str, Counter] = defaultdict(Counter)
@@ -226,7 +295,8 @@ def main() -> int:
                   file=sys.stderr, flush=True)
             a = arm(args.bin, argv, tmp / f"{i}a", False, tmp / f"{i}a.jsonl")
             b = arm(args.bin, argv, tmp / f"{i}b", True, tmp / f"{i}b.jsonl")
-            enterings += len(a["audit"])
+            enterings += sum(1 for _ in a["audit"].open(encoding="utf-8")) \
+                if a["audit"].exists() else 0
             checked += 1
             if "--trace" in argv:
                 trace_a += sum(len(v.splitlines()) for v in a["tree"].values())
@@ -238,6 +308,12 @@ def main() -> int:
             totals.update(n)
             for cls, v in n.items():
                 per_entry[path][cls] += v
+            # Reclaim as we go: the audit of one exhaustive run of the bigger
+            # fixtures is hundreds of megabytes.
+            a["audit"].unlink(missing_ok=True)
+            b["audit"].unlink(missing_ok=True)
+            shutil.rmtree(tmp / f"{i}a", ignore_errors=True)
+            shutil.rmtree(tmp / f"{i}b", ignore_errors=True)
     finally:
         for v in variants:
             v.unlink(missing_ok=True)

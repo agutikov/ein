@@ -26,7 +26,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 | [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — at root scale they are 11–30 % | open — found at S1a.3.4, measured |
-| [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | open — **built, measured and verified** at S1a.6.9; awaiting the decision |
+| [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3 |
 
 ---
 
@@ -522,6 +522,41 @@ that gets decided.
 
 ## Q-M1a.18 — May a fork stop re-narrating the root's fixpoint?
 
+**Resolved 2026-08-19: yes, in ein.rs only.** `Saturator::resume` is ein.rs's
+shipping path; ein.py keeps the fresh saturator and the narration divergence is
+permanent, recorded as
+[D3](divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it).
+
+The principle that moved with it, and it is bigger than this question: **the
+parity contract's hard requirement is that the two engines produce identical
+final solutions**, not identical bytes. P1a.1–P1a.5 built ein.rs equal to
+ein.py byte for byte, which is what made the port falsifiable; from P1a.6 on,
+byte-identical *narration* is a means that has served its purpose, and ein.rs's
+own regression coverage moves to checked-in fixtures
+([S1a.6.11](p1a.6_performance/s1a.6.11_fixture_goldens.md)) rather than to the
+oracle. T0 and T1 stay exact, and are now compared *more* carefully than
+before. [S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md) is the
+mechanism.
+
+Two things decided it, and neither was the speed. **The answers do not move** —
+3.2 M enterings compared fact by fact, every verdict, model, unsat core and all
+85 `summary.json` counters identical. And the trace gets *better*: it now opens
+with root's own derivations, then `Assuming …`, then what the hypothesis adds,
+which is how [`zebra_walkthrough.md`](../../docs/kernel/inference/zebra_walkthrough.md)
+tells it and what the accidental re-derivation was standing in for.
+
+The cost accepted, stated plainly: **267 529 facts record a different — equally
+valid — one of their derivations as the primary**, because a resumed fork
+inherits root's parked candidates with root's tiebreakers and the NAF boundary
+admits one per round. The engine never promised *which* derivation of a
+multiply-derivable fact it records first; it does now promise less than it
+happened to deliver.
+
+---
+
+*What follows is the question as it stood, with the evidence T1a.6.9.2/3
+produced. Kept because the reasoning is the record.*
+
 **Found 2026-08-18 at [S1a.6.9](p1a.6_performance/s1a.6.9_fork_entry_delta.md),
 by measurement.** The numbers are in
 [baseline.md §9](p1a.6_performance/baseline.md#9-the-fork-entry-re-derivation).
@@ -643,6 +678,11 @@ its last target? **(a)** says no and takes the invisible half through
 [S1a.6.3](p1a.6_performance/s1a.6.3_beta_memories.md). **(c)** says not on the
 parity build.
 
-**Blocked on:** a decision. The evidence T1a.6.9.2/3 owed it is in
+**Decided: a fourth option, (d) — yes in ein.rs, and the contract relaxes with
+it.** Not (b): ein.py does not follow, so the two engines narrate different
+amounts of the same derivation, permanently. Not (c): the flag is not the
+shipping configuration, it is [D3](divergences.md)'s fixture. The evidence is
 [baseline.md §11](p1a.6_performance/baseline.md#11-the-resumed-fork-saturator-measured)
-and [fork_delta_trace.md](p1a.6_performance/fork_delta_trace.md).
+and [fork_delta_trace.md](p1a.6_performance/fork_delta_trace.md); what it cost
+the harness — 7 T3 cells, 97 T2 — is the specification of
+[S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md).

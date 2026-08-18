@@ -274,6 +274,9 @@ fn the_lattice_golden_reproduces() {
             firings: Vec::new(),
             layer: 1,
         }],
+        // This fixture renders the *lattice*, which does not read root's own
+        // saturation.
+        root_firings: Vec::new(),
         dead_commitments: vec![
             dead(pb, vec![pb, qb], Kind::DeadPost),
             dead(pc, vec![pc], Kind::DeadPre),

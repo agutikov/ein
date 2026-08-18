@@ -49,6 +49,16 @@ pub struct Reductio {
 /// A linearised solve, ready for markdown rendering.
 #[derive(Default)]
 pub struct Trace {
+    /// Root's own derivations — everything true *before* the hypothesis, in
+    /// order. Rendered as its own section ahead of `Assuming …`.
+    ///
+    /// Empty before [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+    /// and not because there was nothing to say: a fork re-derived root's
+    /// whole closure, so `steps` carried it by accident. A fork that resumes
+    /// root's saturation does not, so the givens are told first — which is
+    /// what [`zebra_walkthrough.md`](../../../../docs/kernel/inference/zebra_walkthrough.md)
+    /// does and what the accident was standing in for.
+    pub root_steps: Vec<TraceStep>,
     pub steps: Vec<TraceStep>,
     pub reductios: Vec<Reductio>,
     pub summary: String,
@@ -354,6 +364,17 @@ pub fn linearize(
     let spine_kb = primary.map(|p| &p.kb);
     let prov_kb = spine_kb.unwrap_or(root);
 
+    let root_firings: &[Firing] = proof.map_or(&[], |p| &p.root_firings);
+    let root_steps = build_steps(
+        ast,
+        terms,
+        root_firings,
+        spine_kb,
+        prov_kb,
+        opts.diagrams,
+        opts.relevant,
+        &[],
+    );
     let mut steps: Vec<TraceStep> = Vec::new();
     let mut n_firings = 0usize;
     if let Some(p) = primary {
@@ -368,6 +389,11 @@ pub fn linearize(
             opts.relevant,
             &p.commitment,
         );
+        // One sequence across the two sections: the reader counts steps, not
+        // sections.
+        for (i, step) in steps.iter_mut().enumerate() {
+            step.n = (root_steps.len() + i + 1) as u64;
+        }
     }
 
     let reductios: Vec<Reductio> = deads
@@ -385,9 +411,15 @@ pub fn linearize(
     } else {
         String::new()
     };
+    let unconditional = if root_steps.is_empty() {
+        String::new()
+    } else {
+        format!(" after {} unconditional", root_steps.len())
+    };
     let summary = if solved_flag {
         format!(
-            "Solved in {} steps; commitment {commitment}; {} solution(s), {} refuted{pruned}.",
+            "Solved in {} steps{unconditional}; commitment {commitment}; \
+             {} solution(s), {} refuted{pruned}.",
             steps.len(),
             solutions.len(),
             reductios.len()
@@ -416,6 +448,7 @@ pub fn linearize(
     };
 
     Trace {
+        root_steps,
         steps,
         reductios,
         summary,
