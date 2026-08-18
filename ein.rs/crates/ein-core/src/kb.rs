@@ -215,6 +215,12 @@ impl Nogoods {
         self.clauses.contains(clause)
     }
 
+    /// Drop one clause — `set.discard`, which subsumption needs when a new
+    /// clause makes a stored superset redundant.
+    pub fn remove(&mut self, clause: &[FactId]) -> bool {
+        self.clauses.remove(clause)
+    }
+
     pub fn insert(&mut self, clause: Box<[FactId]>) -> bool {
         self.clauses.insert(clause)
     }

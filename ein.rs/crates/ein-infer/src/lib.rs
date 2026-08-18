@@ -17,6 +17,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod apriori;
 pub mod closed;
 pub mod compile;
 pub mod contradiction;
@@ -28,11 +29,16 @@ pub mod hypgen;
 pub mod lookahead;
 pub mod match_;
 pub mod naf_deps;
+pub mod nogoods;
 pub mod plan;
 pub mod predicates;
 pub mod saturator;
 pub mod shape;
 
+pub use apriori::{
+    CanonicalSetId, apriori_prefix_join, canonicalise, filter_candidate, generate_layer, layer_1,
+    order_candidates,
+};
 pub use closed::{emit_closed, producible_relations};
 pub use compile::{
     CompileError, PlanKey, PlanMemo, activators_for, asserted_relation, compile_rule,
@@ -50,6 +56,7 @@ pub use hypgen::{
 pub use lookahead::Lookahead;
 pub use match_::{Emit, Match, Matcher};
 pub use naf_deps::{NafDep, compute_naf_map, derived_naf_warnings};
+pub use nogoods::emit_nogood;
 pub use plan::{
     Disjunct, GuardArg, GuardArgKind, MAX_REGS, NafGuard, Plan, PlanId, Probe, ProbeSrc, Reg,
     RelStep, Slot, Span, Step,
@@ -57,5 +64,6 @@ pub use plan::{
 pub use predicates::Pred;
 pub use saturator::{SaturateError, Saturator, Session};
 pub use shape::{
-    hyp_shape, hyp_shape_with, match_shape, naf_map, plan_shape, plan_shape_with, saturate_events,
+    hyp_shape, hyp_shape_with, lattice_shape, match_shape, naf_map, plan_shape, plan_shape_with,
+    saturate_events,
 };

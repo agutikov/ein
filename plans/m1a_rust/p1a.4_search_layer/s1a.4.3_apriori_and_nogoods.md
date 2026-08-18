@@ -1,6 +1,8 @@
 # S1a.4.3 — Apriori candidate generation and the no-good store
 
 **Phase:** P1a.4 (Search layer)
+**Status:** **shipped** 2026-08-18 — acceptance below, with two items that
+[S1a.4.5](s1a.4.5_solve_loop.md) is the first stage able to run.
 **Estimate:** 3 days
 **Depends on:** [S1a.4.1](s1a.4.1_hypothesis_generation.md)
 **Implements:** `ein/inference/{apriori,nogoods}.py`,
@@ -22,18 +24,32 @@ with `enable_singleton_writeback` off, exhaustive zebra2 explodes from
 
 ## Acceptance
 
-- Candidate lists identical, in order, at every layer of every corpus
-  entry (compared through the `enter` event sequence).
-- `nogoods_emitted` / `nogoods_subsumed` identical.
-- The clause store is subsumption-minimal after every emission, matching
-  ein.py's set exactly (compared as a set of sorted `FactId` tuples,
-  translated back to fact s-expressions for the diff).
-- `order_candidates` in both modes: `lex` and `score-sum` (with
-  `hypgen_scoring="popularity"`, where the score actually differentiates)
-  produce identical orders.
-- A stress fixture with `enable_singleton_writeback=false` and a
-  `--max-enterings` budget reproduces the same candidate stream up to the
-  cut.
+The `lattice-shape` diff runs the whole arithmetic over a **real** alive
+set — the open hypotheses of a saturated root, capped at 12 by content
+order so the layers stay bounded — and compares layers 1–3, both
+ordering modes, every `nogood` event and the resulting store.
+**65 files, 2 043 clause emissions, 0 differences**, plus one accepted
+divergence below.
+
+| item | result |
+|---|---|
+| Candidate lists identical, in order, at every layer | `LAYER1` / `LAYER2` / `LAYER3` compared as text; the layer-*k* order is what `layer_1`'s comparator decides, and an id-ordered `layer_1` moves **33 of 65** files |
+| The clause store subsumption-minimal after every emission | the `STORE` block: a sorted list of sorted clauses. Dropping the superset removal moves **43 files**; taking `min_size` as a constant 2 moves **47** |
+| `order_candidates` in both modes | both are in the text, and `score_sum_orders_differently_from_lex_somewhere_in_the_corpus` asserts the two are not the same check — under `most-constrained` every score is `0.0` and `score-sum` *is* `lex`, which is the path 53 corpus files (no `(config …)` block) take. It differentiates on **7** |
+| `nogoods_emitted` / `nogoods_subsumed` identical | **moves to [S1a.4.5](s1a.4.5_solve_loop.md)** — they are `MonotonicStats` fields. What is pinned here is every `nogood` *event*, which is what they count |
+| The `enable_singleton_writeback=false` stress fixture | **moves to [S1a.4.5](s1a.4.5_solve_loop.md)** — it needs a solve to have a candidate stream to cut |
+
+### D2 — where the two implementations must differ
+
+[Q-M1a.4](../open_questions.md#q-m1a4--sorted-over-mixed-type-fact-args)
+was marked *blocking P1a.4* and this is the stage that reaches it:
+`layer_1`'s `sorted(alive)` is the one comparison in the engine ein.py
+cannot always make. Exactly one corpus file diverges, exactly the
+predicted one, and the port answers
+`[{(seat Ann 1)}, {(seat Ann left)}]` where ein.py raises `TypeError`.
+Recorded as [D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
+and **asserted** by the sweep — a file on the ledger that stopped
+diverging fails as loudly as one that started.
 
 ## Tasks
 
@@ -51,7 +67,15 @@ likely place for an interner-order leak.
 `apriori_prefix_join`: sort `a_prev`; for each `s` at index `i`, take
 `prefix = s[:-1]` and scan `sorted_prev[i+1:]`, **breaking** on the first
 `t` whose prefix differs, emitting `(*prefix, s[-1], t[-1])` when
-`s[-1] < t[-1]`. The `break` is load-bearing for both cost and order.
+`s[-1] < t[-1]`.
+
+> **"The `break` is load-bearing for both cost and order" — only cost.**
+> Every set in a layer has the same size, so sorting by the full tuple
+> sorts by the prefix as its primary key, and once a prefix differs no
+> later entry can match it again. Replacing the `break` with a
+> `continue` is byte-identical on all 65 files, which is how this was
+> settled rather than by re-reading the loop. It stays because ein.py
+> has it and because the scan is quadratic without it.
 
 ### Task T1a.4.3.3 — `filter_candidate`
 
@@ -70,6 +94,18 @@ Two representations behind one interface:
 
 Both must produce identical emitted/subsumed counts; add a property test
 that runs a randomised clause workload through both and compares.
+
+> **Only the sorted representation landed, deliberately.** The bitmask's
+> stated payoff is the `enable_singleton_writeback=false` regime, where
+> exhaustive `zebra2` grows from 101 enterings to 3 336+ — and nothing
+> can run an exhaustive solve until
+> [S1a.4.5](s1a.4.5_solve_loop.md). Landing a second representation
+> before the measurement that justifies it is the mistake Win B already
+> made once ([Q-M1a.17](../open_questions.md)), so the trigger condition
+> goes to [P1a.6](../p1a.6_performance/README.md) with the numbers
+> attached instead. The interface is one function
+> (`apriori::is_subset`), so the second representation is a swap when it
+> is earned.
 
 ### Task T1a.4.3.5 — `emit_nogood`
 

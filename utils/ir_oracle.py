@@ -30,6 +30,7 @@ One JSON object per line in, one per line out, in order:
     {"op": "hyp-shape", "path": …}               → every hypgen candidate + its verdict
     {"op": "hyp-shape", "path": …, "closed": true}    → … after the auto-closure pass
     {"op": "naf-map",   "path": …}               → the static NAF dependency map
+    {"op": "lattice-shape", "path": …}           → the Apriori join + the no-good store
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -98,6 +99,25 @@ their plan is compiled only once the enqueue pass has refreshed the cache. The
 warning text is compared rather than summarised because the suite runs under
 `filterwarnings=["error"]`, so a caller sees it verbatim.
 
+`lattice-shape` drives the layer arithmetic over a **real** alive set — the
+open hypotheses of a saturated root, capped at the first 12 by content order so
+the layer sizes stay bounded (`zebra2`'s 56 alive would otherwise make layer 3
+about 27 000 sets). The cap costs nothing the op is for: `apriori` never
+inspects a KB, so what is under test is the join, the comparator, the filter
+and the store, and 12 elements exercise all four.
+
+The no-good workload is deterministic and derived from the data rather than
+random, because both implementations have to run *the same* one: every 7th
+layer-3 set is emitted, then every 5th layer-2 set, then every 3rd singleton,
+then the layer-3 slice again. That order is chosen to make each of the three
+outcomes happen — a plain insert, an insert that *removes* stored supersets
+(the size-2 and size-1 clauses subsume the size-3 ones), and a clause that is
+itself subsumed and dropped (the re-emitted slice). `emit_nogood` is called
+with `min_size=1`, as the set-indexed engines call it. The store is then
+printed as a sorted list of sorted clauses, and the layer regenerated against
+it, so both the subsumption bookkeeping and its effect on candidate generation
+are compared.
+
 `expand` is the one op with no single function behind it: `ein.ir.macros`
 provides `expand_macros` / `_substitute`, and the *loader* decides what to run
 them over (each rule's `:match` and `:assert`, and nothing else — a
@@ -126,6 +146,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "ein.py" / "src"))
 
+from ein import events                                       # noqa: E402
 from ein.ir import IRParseError, parse                      # noqa: E402
 from ein.ir.dump import dump_canonical, dump_compact        # noqa: E402
 from ein.ir.macros import Macro, expand_macros              # noqa: E402
@@ -534,6 +555,73 @@ def _naf_map(kb: KnowledgeBase) -> str:
     return "\n".join(out)
 
 
+def _lattice_shape(kb: KnowledgeBase) -> str:
+    """The Apriori join, the ordering modes and the no-good store — S1a.4.3.
+
+    Pure set arithmetic over a real alive set. The layers are capped (see the
+    module docstring) and the no-good workload is a fixed recipe rather than a
+    random one, because the point is that two implementations agree on it.
+    """
+    import tempfile
+
+    from ein import events as ev
+    from ein.inference.apriori import (
+        generate_layer,
+        layer_1,
+        order_candidates,
+    )
+    from ein.inference.nogoods import emit_nogood
+    from ein.inference.saturator import Saturator
+    from ein.inference.solution import open_hypotheses
+
+    for _ in Saturator(kb).saturate():
+        pass
+    alive_all = open_hypotheses(kb)
+    capped = sorted(alive_all)[:12]
+    alive = frozenset(capped)
+
+    def show(sets) -> str:
+        return "[" + ", ".join(
+            "{" + " ".join(events.fact_id(f) for f in s) + "}" for s in sets
+        ) + "]"
+
+    l1 = layer_1(alive)
+    l2 = generate_layer(l1, alive=alive, nogoods=kb._nogoods)
+    l3 = generate_layer(l2, alive=alive, nogoods=kb._nogoods)
+    out = [
+        f"ALIVE {len(alive_all)} capped {len(alive)}",
+        f"LAYER1 {show(l1)}",
+        f"LAYER2 {show(l2)}",
+        f"LAYER3 {show(l3)}",
+        f"ORDER lex {show(order_candidates(l2, mode='lex'))}",
+        f"ORDER score-sum {show(order_candidates(l2, mode='score-sum', kb=kb))}",
+    ]
+
+    fd, path = tempfile.mkstemp(suffix=".jsonl")
+    os.close(fd)
+    try:
+        ev.open_log(path, level="verbose")
+        try:
+            for batch in (l3[::7], l2[::5], l1[::3], l3[::7]):
+                for c in batch:
+                    emit_nogood(kb, frozenset(c), min_size=1)
+        finally:
+            ev.close_log()
+        log = Path(path).read_text(encoding="utf-8")
+    finally:
+        Path(path).unlink(missing_ok=True)
+
+    store = sorted(
+        sorted(events.fact_id(f) for f in c) for c in kb._nogoods
+    )
+    out.append(f"STORE {len(store)}")
+    out += [f"  CLAUSE {{{' '.join(c)}}}" for c in store]
+    out.append(
+        f"FILTERED {show(generate_layer(l2, alive=alive, nogoods=kb._nogoods))}"
+    )
+    return log + "\n".join(out)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -570,6 +658,9 @@ def _handle(req: dict) -> dict:
     if op == "naf-map":
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True, "out": _naf_map(kb)}
+    if op == "lattice-shape":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True, "out": _lattice_shape(kb)}
     if op == "accept":
         return {"ok": True}
     if op == "parse":

@@ -12,7 +12,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.1](#q-m1a1--port-boundary-a-full-vs-b-hot-loop) | Port boundary — A (full) vs B (hot loop behind PyO3) | **resolved 2026-08-17 — A** |
 | [Q-M1a.2](#q-m1a2--does-einpy-have-a-sunset) | Does ein.py have a sunset? | open — recommendation: no |
 | [Q-M1a.3](#q-m1a3--parse-error-message-parity) | Parse-error message parity, including `-1:-1` at EOF | **resolved 2026-08-18 — (a)** |
-| [Q-M1a.4](#q-m1a4--sorted-over-mixed-type-fact-args) | `sorted()` over mixed-type fact args raises in ein.py | open — blocking P1a.4 |
+| [Q-M1a.4](#q-m1a4--sorted-over-mixed-type-fact-args) | `sorted()` over mixed-type fact args raises in ein.py | **resolved 2026-08-18 — (a), [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)** |
 | [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | open — recommendation: port MT19937 |
 | [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | open — post-parity fix; reproduced at P1a.1 |
 | [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | open — recommendation: no, plus an opt-in escape |
@@ -134,9 +134,17 @@ nobody has written.
 `Terms::cmp_semantic` orders `Int < Sym < Fact` across tags, as H2
 recommends, and within a tag by the interner's rank table or by numeric
 value at any width. `Value` deliberately has no `Ord`, so the identity
-order cannot reach a sort site by accident. What is still open is only
-the *ledger* entry, which needs the behaviour to be reachable — that is
-[P1a.4](p1a.4_search_layer/README.md), where `apriori.layer_1` runs.
+order cannot reach a sort site by accident.
+
+**Resolved 2026-08-18 at [S1a.4.3](p1a.4_search_layer/s1a.4.3_apriori_and_nogoods.md)
+— (a), and the behaviour is now reachable rather than argued.** The
+`lattice-shape` diff runs `layer_1` over every corpus file's alive set;
+exactly one file diverges, exactly the predicted one, and the port
+answers `[{(seat Ann 1)}, {(seat Ann left)}]` where ein.py raises. The
+ledger entry is [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
+and the parity sweep **asserts** the divergence rather than tolerating
+it, so a file that stopped diverging fails as loudly as one that
+started.
 
 ## Q-M1a.5 — Reproducing CPython's `shuffle`
 

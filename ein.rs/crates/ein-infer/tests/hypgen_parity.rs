@@ -42,6 +42,19 @@ fn rust_hyp_with(path: &Path, closed: bool) -> Option<Answer> {
     )
 }
 
+fn rust_lattice(path: &Path) -> Option<Answer> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
+    Some(match ein_infer::lattice_shape(&ast, &mut terms, &mut kb) {
+        Ok(text) => Answer::Ok(text),
+        Err(e) => Answer::Err {
+            kind: "SaturateError".into(),
+            msg: e.to_string(),
+        },
+    })
+}
+
 fn rust_naf(path: &Path) -> Option<Answer> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -56,24 +69,42 @@ fn rust_naf(path: &Path) -> Option<Answer> {
 }
 
 /// One op over the whole corpus, comparing both sides line for line.
+///
+/// `divergent` names the repo-relative paths where ein.py is **expected** to
+/// raise and ein.rs to answer — the accepted ledger entries. They are
+/// asserted, not tolerated: a file listed here that stops diverging fails just
+/// as loudly as one that starts, because a ledger entry nobody can reproduce
+/// is not a decision.
 fn sweep(
     label: &str,
     op: serde_json::Value,
     rust: impl Fn(&Path) -> Option<Answer>,
     count: impl Fn(&str) -> usize,
     floors: (usize, usize),
+    divergent: &[&str],
 ) {
     let Some(mut py) = Oracle::start(IR_ORACLE) else {
         return skip(label);
     };
     let (mut bad, mut compared, mut items) = (Vec::new(), 0, 0usize);
+    let mut seen_divergent: Vec<String> = Vec::new();
     for path in &corpus_files() {
         let Some(got) = rust(path) else { continue };
         let mut req = op.clone();
         req["path"] = serde_json::json!(path.to_str().expect("utf-8"));
         let want = py.ask(req);
-        let name = path.strip_prefix(repo_root()).unwrap_or(path).display();
+        let rel = path.strip_prefix(repo_root()).unwrap_or(path);
+        let name = rel.display();
+        let expected = divergent.contains(&rel.to_str().unwrap_or_default());
         match (&got, &want) {
+            (Answer::Ok(_), Answer::Err { .. }) if expected => {
+                seen_divergent.push(rel.to_str().unwrap_or_default().to_string());
+            }
+            _ if expected => bad.push(format!(
+                "{name} is a ledger entry and no longer diverges\n  rs: {}\n  py: {}",
+                brief(&got),
+                brief(&want)
+            )),
             (Answer::Ok(a), Answer::Ok(b)) => {
                 compared += 1;
                 items += count(a);
@@ -89,6 +120,13 @@ fn sweep(
             )),
         }
     }
+    seen_divergent.sort();
+    let mut want_divergent: Vec<String> = divergent.iter().map(|s| s.to_string()).collect();
+    want_divergent.sort();
+    assert_eq!(
+        seen_divergent, want_divergent,
+        "the ledger's divergent files are not the ones that diverged"
+    );
     assert!(
         bad.is_empty(),
         "{} of {compared} files differ:\n\n{}",
@@ -120,6 +158,29 @@ fn the_whole_corpus_generates_the_same_hypotheses_after_auto_closure() {
         |p| rust_hyp_with(p, true),
         |a| a.lines().filter(|l| l.contains("\"hyp\"")).count(),
         (60, 1500),
+        &[],
+    );
+}
+
+/// The lattice's arithmetic — the join, both ordering modes, and the no-good
+/// store's subsumption bookkeeping.
+///
+/// This is the sweep that reaches
+/// [D2](../../../../plans/m1a_rust/divergences.md): `layer_1`'s `sorted(alive)`
+/// is the one comparison in the engine that ein.py cannot always make.
+#[test]
+fn the_whole_corpus_joins_the_same_layers() {
+    sweep(
+        "lattice",
+        serde_json::json!({"op": "lattice-shape"}),
+        rust_lattice,
+        |a| a.lines().filter(|l| l.contains("\"nogood\"")).count(),
+        (60, 300),
+        // D2 — `apriori.layer_1`'s `sorted(alive)` raises on mixed-type args
+        // and `Value` is totally ordered, so ein.rs answers where ein.py
+        // crashes. This is the *only* op that reaches it, and the only file
+        // that can produce one.
+        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
     );
 }
 
@@ -132,6 +193,7 @@ fn the_whole_corpus_reports_the_same_naf_dependencies() {
         rust_naf,
         |a| a.lines().filter(|l| l.starts_with("NAF ")).count(),
         (60, 200),
+        &[],
     );
 }
 
@@ -218,6 +280,37 @@ fn every_filter_and_skip_fires_somewhere_in_the_corpus() {
             "pre.self_edge",
         ],
         "a counter never fired on the corpus, so its parity is untested"
+    );
+}
+
+/// `score-sum` must actually order differently from `lex` somewhere.
+///
+/// The two modes are compared line for line by the lattice sweep, but under
+/// `hypgen_scoring = "most-constrained"` every score is `0.0` and `score-sum`
+/// *is* `lex` — and a KB with no `(config …)` block takes that path (53 of the
+/// corpus's files do). If no file differentiated them, the sweep would be
+/// comparing `lex` twice and the mode's parity would be untested.
+#[test]
+fn score_sum_orders_differently_from_lex_somewhere_in_the_corpus() {
+    let mut differing = 0;
+    for path in &corpus_files() {
+        let Some(Answer::Ok(text)) = rust_lattice(path) else {
+            continue;
+        };
+        let line = |k: &str| {
+            text.lines()
+                .find(|l| l.starts_with(k))
+                .map(|l| l[k.len()..].to_string())
+        };
+        if let (Some(lex), Some(score)) = (line("ORDER lex "), line("ORDER score-sum "))
+            && lex != score
+        {
+            differing += 1;
+        }
+    }
+    assert!(
+        differing >= 5,
+        "score-sum differed from lex on only {differing} files"
     );
 }
 

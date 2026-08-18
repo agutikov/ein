@@ -374,6 +374,114 @@ pub fn naf_map(
     Ok(out.join("\n"))
 }
 
+/// The Apriori join, the ordering modes and the no-good store — the S1a.4.3
+/// diff.
+///
+/// Pure set arithmetic over a **real** alive set: the open hypotheses of a
+/// saturated root, capped at the first 12 by content order so the layer sizes
+/// stay bounded (`zebra2`'s 56 alive would make layer 3 about 27 000 sets).
+/// The cap costs nothing this is for — `apriori` never inspects a KB, so what
+/// is under test is the join, the comparator, the filter and the store, and 12
+/// elements exercise all four.
+///
+/// The no-good workload is a fixed recipe rather than a random one, because
+/// the point is that two implementations run *the same* one: every 7th layer-3
+/// set, then every 5th layer-2 set, then every 3rd singleton, then the layer-3
+/// slice again. That order makes each of the three outcomes happen — a plain
+/// insert, an insert that removes stored supersets, and a clause that is
+/// itself subsumed and dropped. On `zebra2` it is 15 removals and 32
+/// subsumed-drops.
+pub fn lattice_shape(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+) -> Result<String, crate::saturator::SaturateError> {
+    use crate::apriori::{generate_layer, layer_1, order_candidates};
+    use rustc_hash::FxHashSet;
+
+    let mut off = crate::events::Events::off();
+    let (n_alive, alive) = {
+        let mut s = crate::saturator::Session {
+            kb,
+            terms,
+            ast,
+            events: &mut off,
+        };
+        let mut sat = crate::saturator::Saturator::new(&mut s)?;
+        sat.saturate(&mut s, None, &mut |_| {})?;
+        let all = crate::hypgen::open_hypotheses(&mut s)
+            .map_err(crate::saturator::SaturateError::Compile)?;
+        let mut capped: Vec<FactId> = all.iter().copied().collect();
+        // determinism-ok: sorted by content immediately, as `sorted(alive)` is.
+        capped.sort_by(|&a, &b| s.terms.cmp_fact_semantic(a, b));
+        capped.truncate(12);
+        (all.len(), capped.into_iter().collect::<FxHashSet<FactId>>())
+    };
+
+    let show = |terms: &Terms, sets: &[Vec<FactId>]| -> String {
+        let rendered: Vec<String> = sets
+            .iter()
+            .map(|s| {
+                let items: Vec<String> =
+                    s.iter().map(|&f| crate::events::sexpr(terms, f)).collect();
+                format!("{{{}}}", items.join(" "))
+            })
+            .collect();
+        format!("[{}]", rendered.join(", "))
+    };
+
+    let store = kb.nogoods().clone();
+    let l1 = layer_1(terms, &alive);
+    let l2 = generate_layer(terms, &l1, &alive, &store.read().expect("store"));
+    let l3 = generate_layer(terms, &l2, &alive, &store.read().expect("store"));
+    let lex = order_candidates(kb, terms, &l2, "lex").expect("lex never errors");
+    let scored = order_candidates(kb, terms, &l2, "score-sum")
+        .map_err(|e| crate::saturator::SaturateError::Compile(CompileError(e.to_string())))?;
+    let mut out = vec![
+        format!("ALIVE {n_alive} capped {}", alive.len()),
+        format!("LAYER1 {}", show(terms, &l1)),
+        format!("LAYER2 {}", show(terms, &l2)),
+        format!("LAYER3 {}", show(terms, &l3)),
+        format!("ORDER lex {}", show(terms, &lex)),
+        format!("ORDER score-sum {}", show(terms, &scored)),
+    ];
+
+    let buffer = crate::events::Buffer::new();
+    let mut events =
+        crate::events::Events::to(Box::new(buffer.clone()), crate::events::Level::Verbose);
+    for batch in [&l3, &l2, &l1]
+        .into_iter()
+        .zip([7usize, 5, 3])
+        .map(|(v, step)| v.iter().step_by(step).cloned().collect::<Vec<_>>())
+        .chain(std::iter::once(
+            l3.iter().step_by(7).cloned().collect::<Vec<_>>(),
+        ))
+    {
+        for c in &batch {
+            crate::nogoods::emit_nogood(kb, terms, &mut events, c, 1);
+        }
+    }
+
+    let mut clauses: Vec<Vec<String>> = store
+        .read()
+        .expect("store")
+        .iter()
+        .map(|c| crate::nogoods::clause_repr(terms, c))
+        .collect();
+    // determinism-ok: the store is a set on both sides and this is its only
+    // rendering, sorted here exactly as ein.py sorts it at the same point.
+    clauses.sort();
+    out.push(format!("STORE {}", clauses.len()));
+    out.extend(
+        clauses
+            .iter()
+            .map(|c| format!("  CLAUSE {{{}}}", c.join(" "))),
+    );
+    let filtered = generate_layer(terms, &l2, &alive, &store.read().expect("store"));
+    out.push(format!("FILTERED {}", show(terms, &filtered)));
+    Ok(buffer.to_string_lossy() + &out.join("\n"))
+}
+
 /// `repr(list_of_str)` — `PyValue` has no list shape, and one is needed in
 /// exactly this one place.
 fn py_list(items: &[String]) -> String {

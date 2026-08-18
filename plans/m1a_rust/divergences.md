@@ -77,3 +77,60 @@ remedy rather than a panic or a silent truncation.
 within 8× of the ceiling. `compile_limits.rs::the_corpus_is_nowhere_near_the_ceiling`
 measures that distance on every corpus file and fails when it closes, so the
 condition is checked rather than remembered.
+
+### D2 — `sorted(alive)` raises in ein.py where ein.rs answers
+
+**Found:** 2026-08-18, [S1a.4.3](p1a.4_search_layer/s1a.4.3_apriori_and_nogoods.md)
+— predicted at S1a.0.1 as
+[design/02](design/02_determinism_and_order.md) § H2 and
+[Q-M1a.4](open_questions.md#q-m1a4--sorted-over-mixed-type-fact-args), and
+reached by the first op that runs the layer arithmetic.
+**Tier:** T1 (a search-layer counter; T0 as a crash)
+**Status:** accepted
+**Fixture:** [`examples/ein-bugs/mixed-type-hypothesis.ein`](../../examples/ein-bugs/mixed-type-hypothesis.ein),
+in the `crash-parity` group, pinned on the Python side by
+`ein.py/tests/inference/test_mixed_type_hypothesis.py` and on the Rust side by
+`hypgen_parity.rs`'s `divergent` list — which **asserts** the divergence, so a
+file that stopped diverging would fail as loudly as one that started.
+
+**What.** `apriori.layer_1` opens the search with `sorted(alive)` over
+`(relation_name, args)` tuples. Two candidates of one relation whose slot *i*
+holds a `str` in one and an `int` in the other are incomparable:
+
+```
+TypeError: '<' not supported between instances of 'str' and 'int'
+```
+
+ein.rs orders `Int < Sym < Fact` by tag and answers:
+
+```
+LAYER1 [{(seat Ann 1)}, {(seat Ann left)}]
+```
+
+**Why it is acceptable.** Three reasons, in order of weight.
+
+1. **Nothing can reach it without an `hrule`.** Blind hypgen builds candidates
+   out of `kb.names`, and `rebuild_indexes` only enters an argument there
+   `if isinstance(a, str)`, so every blind candidate is all-strings. Only an
+   hrule carries a non-string through, because its `:assert` args come from
+   bindings. That scope claim is itself a test
+   (`test_blind_hypgen_cannot_produce_a_non_string_arg`), so a change that
+   widened it would re-open this rather than quietly extend it.
+2. **A crash is not semantics anyone wants preserved.** Reproducing it would
+   mean making the port fail on an input it can answer, and answering is the
+   behaviour a user would ask for if asked.
+3. **The alternative costs the whole corpus.** Fixing ein.py to sort by `repr`
+   here — as `canon.state_key` already does — changes the candidate order of
+   every puzzle and re-baselines every T2 golden, to buy an input nobody has
+   written.
+
+The order ein.rs picks is not arbitrary: `Terms::cmp_semantic` agrees with
+Python's `sorted` on every pair Python *can* compare, and the cross-tag order
+is only consulted where Python raises.
+
+**What would make this unacceptable.** A real puzzle wanting mixed-type slots —
+at which point option (b) of Q-M1a.4 becomes right and ein.py is fixed first,
+both ports moving together. The trigger is visible: this is the only entry in
+`crash-parity` that is a *search-layer* crash, and a second one would mean the
+scope claim above is wrong.
+
