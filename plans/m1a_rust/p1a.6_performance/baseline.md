@@ -264,6 +264,12 @@ Read in three groups:
 > since a wrapper that saw nothing and a call site that ran nothing produce
 > the same zero.
 
+**`plan_compile` left the exact group at
+[S1a.6.8](s1a.6.8_compile_cache_and_extents.md)** — 17 430 → **305**, against
+ein.py's unchanged 17 430 — and a new `extent_probe` row joined the table.
+Every other counter above is still bit-identical after that stage;
+[§10](#10-after-s1a68--the-same-instruments-re-run) has both.
+
 ## 5. Memory
 
 `examples/alloc_cost.rs` — a counting global allocator plus the `Dumper`
@@ -399,6 +405,14 @@ at 12 %, where the Rust profile now says 21.1 %.
 which is why it is first: the cheapest 20 % in the phase, and the design
 work is already written.
 
+> **Claimed at [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) T1a.6.8.1**
+> (2026-08-18). `plan_compile` **17 430 → 305**, `ein_infer::compile`
+> **21.1 % → 2.4 %** cumulative, `solve zebra2 -e` −18.3 % from this half
+> alone — and half the run's allocations went with it, which is the part
+> item 4 below gets for free. The saving is 1.5× what design/06 estimated
+> and the distinct-pair count is 1.8× what it guessed.
+> [§10](#10-after-s1a68--the-same-instruments-re-run).
+
 ### 2. `Kb::n_facts_of` under the watch stamp — 9.5 %, and it grows with depth
 
 `watch_stamp_into` asks for 644 166 relation extent sizes on `zebra2 -e`.
@@ -415,6 +429,15 @@ assumes the stamp is free because it is in ein.py.
 **The fix is small:** a per-relation count maintained on insert, `O(1)`
 regardless of depth, or a flatten threshold (T1a.6.2.5) that keeps depth
 bounded. Both are invisible to every observable.
+
+> **Claimed at [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) T1a.6.8.2**
+> (2026-08-18), by the first of the two: `Kb` maintains the count, the fold
+> is gone, `n_facts_of` is **9.5 % → 1.2 %** self and off `zebra -e`'s top-20
+> entirely. Worth 13.9 % of `zebra2 -e` and **7.3 % of `zebra -e`** — the
+> larger share of the run that misses its target. `fork` pays 12 ns for it.
+> T1a.6.2.5's flatten threshold is still worth sweeping: the *other* layered
+> reads (`layers_rev` under `contains`, `Chain::try_fold` under `facts_of`)
+> are 4.2 % of `zebra2 -e` and this fix does not touch them.
 
 ### 3. The matcher — 66.9 % of `zebra -e`, 29.0 % of `zebra2 -e`
 
@@ -468,7 +491,7 @@ changed" — which is the same shape as item 2 and probably the same commit.
 
 | stage | profile says | order |
 |---|---|---|
-| **[S1a.6.8](s1a.6.8_compile_cache_and_extents.md)** (new) | items 1 + 2: 21.1 % and 9.5 %, both parity-preserving by construction, both small | **first** |
+| **[S1a.6.8](s1a.6.8_compile_cache_and_extents.md)** (new) ✅ | items 1 + 2: 21.1 % and 9.5 %, both parity-preserving by construction, both small | **shipped 2026-08-18** — −30.5 % / −7.8 %, [§10](#10-after-s1a68--the-same-instruments-re-run) |
 | **[S1a.6.9](s1a.6.9_fork_entry_delta.md)** (new, added after this list) | [§9](#9-the-fork-entry-re-derivation): 95.0 % of `zebra -e` is fork saturation and 94.6 % of that is re-derivation. The measurement and the decision run **second**; the shipping half is gated on [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) and runs last | **second** |
 | [S1a.6.2](s1a.6.2_memory_layout.md) Memory layout | item 4 (21 % allocator) and item 3's `FactStore` indirection; T1a.6.2.5 gains a second reason (depth 35), and §9 adds two tasks — a system allocator (T1a.6.2.7) and a per-entering region (T1a.6.2.8) | third |
 | [S1a.6.3](s1a.6.3_beta_memories.md) Beta-memories | **gate opens**: 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB, so F11's "a memory copied per fork can lose more than it saves" no longer holds. §9 gives it its target: the *root* memories are the invisible way to remove the re-derivation | fourth |
@@ -589,6 +612,160 @@ utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 \
 ```
 
 T1a.6.9.1 promotes that inline script to a named instrument.
+
+## 10. After S1a.6.8 — the same instruments, re-run
+
+**2026-08-18, `master` @ `d944c4a`, same machine.** The tables above are the
+S1a.6.1 baseline and stay as they were: they are what the phase is measured
+*against*, and overwriting them would leave the phase with no denominator.
+This section is the first re-measure, and every later stage adds its own.
+
+### The four targets
+
+| workload | target | at S1a.6.1 | **at S1a.6.8** | vs PyPy today |
+|---|---:|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 198.8 ms | **138.1 ms** (−30.5 %) ✅ | **37.0×** |
+| `solve zebra.ein -e` | ≤ 400 ms | 585.8 ms | **539.9 ms** (−7.8 %) ❌ | 16.2× |
+| parse + load `zebra2` | ≤ 15 ms | 1.04 ms | **1.01 ms** ✅ | 185× |
+| the acceptance gate (3 fixtures) | ≤ 5 s | 1.27 s | **1.02 s** (−19.7 %) ✅ | 35× |
+
+`zebra -e` is **1.35× short** where it was 1.46×. It is still the target the
+phase turns on, and § 9 says where the rest of it is.
+
+### End-to-end, and the two halves separately
+
+`utils/e2e_baseline.py`, best of 7, machine at loadavg 0.4:
+
+| workload | at S1a.6.1 | at S1a.6.8 | change |
+|---|---:|---:|---:|
+| `solve zebra2 -e` | 198.8 ms | **138.1 ms** | −30.5 % |
+| `solve zebra2` | 37.6 ms | **30.3 ms** | −19.4 % |
+| `solve zebra -e` | 585.8 ms | **539.9 ms** | −7.8 % |
+| `solve zebra` | 120.8 ms | **116.7 ms** | −3.4 % |
+| `render rules zebra2` | 1.1 ms | 1.0 ms | — |
+| `saturate zebra2` | 5.0 ms | 4.9 ms | — |
+| peak RSS (`zebra2 -e`) | 17.4 MB | **17.4 MB** | unchanged |
+
+The stage is two independent changes and they were built separately to keep
+them attributable — `taskset -c 4`, best of 4, one series:
+
+| build | `zebra2 -e` | `zebra -e` | `zebra2` | `zebra` |
+|---|---:|---:|---:|---:|
+| S1a.6.1 (P1a.5 parity build) | 198.8 ms | 585.8 ms | 37.6 ms | 120.8 ms |
+| **+ T1a.6.8.1** (per-run plan memo) | 162.4 ms | 585.0 ms | 33.1 ms | 122.4 ms |
+| **+ T1a.6.8.2** (O(1) extent count) | **139.8 ms** | **542.2 ms** | **31.2 ms** | **117.7 ms** |
+
+**The two puzzles are moved by different halves**, which is § 7's finding
+arriving as a result: the memo is worth 18.3 % on `zebra2 -e` and **0.1 %** on
+`zebra -e` (19 plans against 6), and the extent count is worth 7.3 % on
+`zebra -e` against 13.9 % on `zebra2 -e`. Either change alone would have
+looked like a wash on one of the two.
+
+### `cargo bench`
+
+| bench | at S1a.6.1 | at S1a.6.8 | change |
+|---|---:|---:|---:|
+| `parse/corpus` | 780.5 µs | 765.0 µs | −2.0 % |
+| `parse/zebra2` | 200.2 µs | 197.5 µs | −1.3 % |
+| `load/zebra2` | 1.04 ms | 1.014 ms | −2.5 % |
+| `saturate_root/zebra2` | 2.76 ms | 2.700 ms | −2.2 % |
+| `match_hot/zebra2` | 38.9 µs | 39.3 µs | +1.1 % |
+| `boundary/zebra` | 7.32 ms | 7.252 ms | −0.9 % |
+| `boundary/zebra2` | 2.79 ms | 2.710 ms | −2.9 % |
+| **`fork/zebra2`** | 257 ns | **268.9 ns** | **+4.6 %** |
+| `solve_fast/zebra2` | 35.59 ms | **28.37 ms** | −20.3 % |
+| `solve_exhaustive/zebra2` | 198.14 ms | **133.10 ms** | −32.8 % |
+
+Two rows are worth more than the two big ones.
+
+**`fork` regressed, and it should have.** T1a.6.8.2 clones a
+`relation → u32` map per fork; 12 ns against ~104 forks is 1.2 µs on a run it
+takes 43 ms off. Recorded because [rule 3](README.md#rules-for-this-phase)
+only works if a regression inside a win is still written down.
+
+**`boundary` barely moved** — −2.9 % and −0.9 % — while the same fix was worth
+7.3 % of `zebra -e` end-to-end. The bench saturates a **root**, where
+`Kb::depth()` is 1 and the fold it replaced was already O(1). The cost existed
+only for a search deep enough to have layers, which is why S1a.6.1's bench set
+could not see it and its profile could. A bench set that only measures roots
+cannot price a fix to the search.
+
+### Attribution
+
+`utils/profile_ein_rs.py`, self time by subsystem:
+
+| subsystem | `zebra2 -e` before | after | `zebra -e` before | after |
+|---|---:|---:|---:|---:|
+| saturate | 59.7 % | 44.7 % | 25.5 % | 19.8 % |
+| match/bind | 29.0 % | **42.2 %** | 66.9 % | **72.6 %** |
+| hypgen/branch | 7.3 % | 8.4 % | 5.1 % | 5.1 % |
+| frontend/load | — | 1.8 % | 0.5 % | 0.4 % |
+
+| symbol | `zebra2 -e` before | after |
+|---|---:|---:|
+| `ein_infer::compile` (cumulative) | **21.1 %** | **2.4 %** |
+| `Kb::n_facts_of` (self, via the fold) | **9.5 %** | **1.2 %** |
+| `Matcher::unify` (self) | 12.9 % | 15.8 % |
+| `[libc.so.6]` + `malloc` + `cfree` | 21.1 % | 17.9 % |
+
+On `zebra -e`, `Kb::n_facts_of` leaves the top-20 entirely and
+`ein_infer::compile` is 0.3 % cumulative. **The matcher is now 72.6 % of that
+run's self time** — the phase's remaining work is one subsystem, and it is the
+one [S1a.6.3](s1a.6.3_beta_memories.md) is for.
+
+### Work counters
+
+Only two rows moved, and one of them is new:
+
+| counter | before | after | note |
+|---|---:|---:|---|
+| `plan_compile` (`zebra2 -e`) | 17 430 | **305** | **the one counter the two implementations are meant to disagree on** — ein.py still compiles 17 430. 305 is the distinct `(rule, activator)` pair count on that run, reported rather than predicted; design/06 § Win A guessed ~170, and the forks derive activators the root never had |
+| `plan_compile` (`zebra -e`) | 5 138 | **242** | |
+| `extent_probe` (`zebra2 -e`) | — | 646 184 | new: map probes inside `n_facts_of`, the instrument for its O(1)-in-depth claim. 644 166 of them are the watch stamp's; the other 2 018 are hypgen's and apriori's |
+
+Every other counter is **bit-identical** — `unify_slot`, `unify`,
+`candidates`, `walk`, `plan_run`, `binding_key`, `fact_insert`,
+`guard_query`, `watch_stamp`, `watch_stamp_rel`, `fork`. Nothing about the
+search changed, which is the claim the stage had to support and the reason
+the counters exist.
+
+### Memory
+
+| cell | allocations before | after | churn before | after | peak live |
+|---|---:|---:|---:|---:|---:|
+| `zebra2` fast | 418 771 | **235 582** | 22.5 MB | 16.1 MB | 2.00 MB (=) |
+| `zebra2 -e` | 2 536 702 | **1 344 404** | 134.7 MB | 93.1 MB | 8.35 MB (=) |
+| `zebra` fast | 446 794 | **382 870** | 44.9 MB | 42.6 MB | 1.61 MB (=) |
+| `zebra -e` | 3 136 307 | **2 729 516** | 299.9 MB | 285.0 MB | 2.94 MB (=) |
+
+**Half of `zebra2 -e`'s allocations were the compiler's.** A memo hit
+allocates nothing, and § 7 item 4 predicted exactly this — `plan_key`'s
+`Vec<String>` and `Interner::intern` under `Compiler::slot` were on its
+caller list. Peak live is unchanged to the reported precision and process
+peak RSS is 9.7 MB, inside the 9.9–11.7 MB band § 5 recorded as this
+machine's noise. The per-fork delta distribution does not move at all: the
+saved allocations were transient by construction.
+
+### The gate
+
+**T3 472/473, with [D2](../divergences.md) the only differing cell** — the
+same 472/473 the P1a.5 parity build left. The `--events-level verbose` stream
+for `solve zebra2.ein -e` is **byte-identical** to the pre-change build,
+183 231 lines, which is the check that matters for T1a.6.8.1: a shared memo
+must change memo hits and nothing else, and the `compile` event fires on an
+*engine* miss.
+
+### Reproducing this section
+
+```sh
+utils/bench_env.sh python3 utils/e2e_baseline.py --impl ein.rs --runs 7
+utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 \
+    --cum-of ein_infer::compile solve examples/zebra2.ein -e
+cd ein.rs
+cargo run --release --features counters -p ein-infer --example counter_cost
+cargo run --release -p ein-infer --example alloc_cost
+```
 
 ## Reproducing all of it
 

@@ -1,6 +1,10 @@
 # S1a.6.8 — The compile cache and the extent counts
 
 **Phase:** P1a.6 (Performance)
+**Status:** **shipped 2026-08-18** — `391a506` (T1a.6.8.1) and `d944c4a`
+(T1a.6.8.2). Results in
+[baseline.md §10](baseline.md#10-after-s1a68--the-same-instruments-re-run);
+every acceptance item below is met.
 **Estimate:** 2 days
 **Depends on:** [S1a.6.1](s1a.6.1_profile_baseline.md)
 **Implements:** what [design/06](../design/06_saturation.md) § Win A already
@@ -101,6 +105,35 @@ threshold is a tuning knob that helps every other layered read as well.
   updated, so the next stage starts from counts that describe the build it
   is looking at.
 
+## What it did
+
+| | at S1a.6.1 | at S1a.6.8 |
+|---|---:|---:|
+| `solve zebra2 -e` | 198.8 ms | **138.1 ms** (−30.5 %) ✅ target |
+| `solve zebra -e` | 585.8 ms | **539.9 ms** (−7.8 %) ❌ 1.35× short, was 1.46× |
+| the acceptance gate | 1.27 s | **1.02 s** (−19.7 %) |
+| `plan_compile` (`zebra2 -e`) | 17 430 | **305** |
+| `ein_infer::compile` cumulative | 21.1 % | **2.4 %** |
+| `Kb::n_facts_of` self | 9.5 % | **1.2 %** |
+| allocations (`zebra2 -e`) | 2 536 702 | **1 344 404** |
+| `fork/zebra2` | 257 ns | **268.9 ns** (+4.6 %, and it should have) |
+| T3 | 472/473, D2 only | **472/473, D2 only** |
+
+Three things the stage found that its plan did not contain:
+
+1. **The two halves move different puzzles.** The memo is worth 18.3 % on
+   `zebra2 -e` and **0.1 %** on `zebra -e`; the extent count is worth 13.9 %
+   and **7.3 %**. Built together, either would have read as a wash on one of
+   the two — which is why they were built separately and measured as a
+   series.
+2. **`boundary` barely moved** (−2.9 % / −0.9 %) while the extent fix was
+   worth 7.3 % of `zebra -e` end-to-end. The bench saturates a *root*, where
+   depth is 1 and the fold was already O(1). A bench set that only measures
+   roots cannot price a fix to the search.
+3. **Half of `zebra2 -e`'s allocations were the compiler's** — 2.54 M → 1.34 M,
+   with no allocation work done. [§7](baseline.md#7-the-top-five-costs) item 4
+   predicted it in its caller list and item 1 collected it.
+
 ## Tasks
 
 ### Task T1a.6.8.1 — Hoist `PlanMemo`
@@ -111,10 +144,28 @@ forks — the solve loop for a search, the caller for a bare saturation.
 `Engine` keeps `plans` / `keys` / `by_key` / `activators` / `fired`
 unchanged, so its order and its `_fired` semantics are untouched.
 
+**Done, with two departures from the sketch.** The handle is
+`SharedMemo = Arc<Mutex<PlanMemo>>` and **not** `Rc<RefCell<_>>`: `terms.rs`
+asserts `Send + Sync` on the intern tables from the start, with a test whose
+comment says the point is to rule out "an `Rc` or a `RefCell` creeping in
+later", and the plans are exactly what P1a.7 shares across threads. The lock
+costs nothing because it is taken only on an *engine* cache miss — `Engine`
+now keeps its own `Arc<Plan>` per cached pair, so the read path never reaches
+the memo. And it lives on the `Session` rather than being threaded
+separately, which is what gives `lookahead` and `closed` the same memo for
+free; `try_commitment_set` takes it as one added parameter and forwards it.
+
 Watch: `PlanMemo::intern` takes `&mut Terms`, and a plan compiled during
 one fork's saturation interns symbols that outlive it. That is already true
 today and is why the memo can be shared at all — `Terms` is per-run, not
-per-fork.
+per-fork. It is also why the memo is per-**run** and not per-process: a
+`PlanKey` holds `Symbol`s, and symbols are only meaningful inside the `Terms`
+that interned them, so a genuinely process-global memo would be unsound the
+moment a second `Terms` existed — which is every test binary.
+
+While here: `compile_for` stops recomputing `plan_key` inside `intern`
+(`intern_keyed`). It already had the key, and building one renders and
+re-interns every activator argument.
 
 ### Task T1a.6.8.2 — Per-relation extent counts
 
@@ -125,7 +176,15 @@ count matches `by_rel[rel].len()` after every write, and the KB's sum
 matches a full walk (a debug assertion, so the parity build checks it on
 every corpus entry).
 
-### Task T1a.6.8.3 — Re-measure and re-choose
+**Done as one count per `Kb` rather than one per `Layer`** — a `Layer` is
+compared field-by-field by `Layer::diff` and sized by `Layer::footprint`, and
+a count is neither shape nor delta. The invariant is checked by
+`Kb::check_extent_counts`, called from `check_layering`, which is where every
+KB-shape fixture already asks whether the layer stack adds up. The cost lands
+on `fork`, which clones the map: +4.6 % on that bench, recorded in
+[§10](baseline.md#10-after-s1a68--the-same-instruments-re-run).
+
+### Task T1a.6.8.3 — Re-measure and re-choose ✅
 
 Re-run the S1a.6.1 instruments (`profile_ein_rs.py`, `counter_cost`,
 `alloc_cost`, `cargo bench`) and update [baseline.md](baseline.md). Both
@@ -141,4 +200,15 @@ one that chose this stage.
 - If the memo hoist does not move `solve zebra2 -e` by ≥ 10 %, that is a
   finding worth recording rather than a reason to keep it: it would mean
   compile time was dominated by something other than the compiler, and
-  `Compiler::premise`'s 2.1 % self time says otherwise.
+  `Compiler::premise`'s 2.1 % self time says otherwise. — **It moved it
+  18.3 %**, and moved `zebra -e` by 0.1 %. The threshold was the right
+  question asked of the wrong puzzle.
+- **What this leaves for the next stage.** `zebra -e` is now **72.6 %
+  match/bind** self time and `zebra2 -e` is 42.2 %; `ein_infer::compile` is
+  2.4 % and 0.3 %. The phase's remaining work is one subsystem. Re-read
+  [§8](baseline.md#8-what-this-chooses-for-the-rest-of-the-phase) against
+  [§10](baseline.md#10-after-s1a68--the-same-instruments-re-run) before
+  starting the next one, per rule 6 — the allocator share is down to 17.9 %
+  from 21 %, which slightly weakens S1a.6.2's own headline while
+  [§9](baseline.md#9-the-fork-entry-re-derivation) and S1a.6.3 are untouched
+  by this stage.

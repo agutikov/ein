@@ -1,9 +1,10 @@
 # P1a.6 — Performance
 
 **Milestone:** [M1a — Rust port](../README.md)
-**Status:** **in progress** — [S1a.6.1](s1a.6.1_profile_baseline.md) shipped
-2026-08-18 and its measurements are in **[baseline.md](baseline.md)**, which
-is what the rest of the phase is chosen by.
+**Status:** **in progress** — [S1a.6.1](s1a.6.1_profile_baseline.md) and
+[S1a.6.8](s1a.6.8_compile_cache_and_extents.md) shipped 2026-08-18. The
+measurements are in **[baseline.md](baseline.md)**: §1–§9 are what the phase
+is chosen by, §10 is where it stands.
 **Estimate:** 4 weeks (22 days of stages — S1a.6.1 added one worth 2 d and
 shortened another by 1 d; [S1a.6.9](s1a.6.9_fork_entry_delta.md) added 3 d)
 **Depends on:** [P1a.5](../p1a.5_presentation/README.md) — the byte gate
@@ -25,12 +26,15 @@ re-measured** ([S1a.6.1](s1a.6.1_profile_baseline.md) T1a.6.1.5) — the
 numbers the phase was planned with were up to a year old and two of them
 moved:
 
-| workload | PyPy as planned | PyPy today | target | **at S1a.6.1** |
+| workload | PyPy today | target | at S1a.6.1 | **at S1a.6.8** |
 |---|---:|---:|---:|---:|
-| `solve zebra2.ein -e` end-to-end | 4.07 s | 4.94 s | ≤ 0.20 s (≥ 20×) | **198.8 ms ✅ 24.8×** |
-| `solve zebra.ein -e` end-to-end | 8.15 s | 8.79 s | ≤ 0.40 s | **585.8 ms ❌ 15.0×** |
-| parse + load `zebra2.ein` | 0.78 s ¶ | 0.43 s | ≤ 0.015 s (≥ 50×) | **1.04 ms ✅ 180×** |
-| the acceptance gate (3 fixtures) | ~91 s ‡ | 36.0 s | ≤ 5 s | **1.27 s ✅ 28×** |
+| `solve zebra2.ein -e` end-to-end | 4.94 s | ≤ 0.20 s (≥ 20×) | 198.8 ms ✅ | **138.1 ms ✅ 37.0×** |
+| `solve zebra.ein -e` end-to-end | 8.79 s | ≤ 0.40 s | 585.8 ms ❌ | **539.9 ms ❌ 16.2×** |
+| parse + load `zebra2.ein` | 0.43 s ¶ | ≤ 0.015 s (≥ 50×) | 1.04 ms ✅ | **1.01 ms ✅ 185×** |
+| the acceptance gate (3 fixtures) | 36.0 s ‡ | ≤ 5 s | 1.27 s ✅ | **1.02 s ✅ 35×** |
+
+The planned PyPy column was 4.07 s / 8.15 s / 0.78 s / ~91 s; two of the four
+moved when re-measured, which is why the table carries today's.
 
 Much of this should already be true when the phase *starts* — the
 register matcher, integer facts, O(1) forks, compile-once and the
@@ -48,9 +52,10 @@ interpreter; see
 target is met on any reading — a whole `saturate zebra2` *process* is 5.0 ms.
 
 **Three of the four were already met on day one; the fourth needs the
-phase.** `solve zebra.ein -e` is 1.46× short, and its profile is 66.9 %
-matcher against `zebra2 -e`'s 29.0 % — so the two puzzles do not agree about
-what to optimise, and the missed target is the one that decides.
+phase.** `solve zebra.ein -e` is **1.35× short** after S1a.6.8, where it was
+1.46×, and its profile is now **72.6 % matcher** against `zebra2 -e`'s 42.2 %
+— so the two puzzles still do not agree about what to optimise, and the
+missed target is the one that decides.
 
 **And it now has a named cause.** 95.0 % of `zebra -e` is inside
 `try_commitment_set`, and **94.6 %** of what a fork does there is
@@ -75,7 +80,7 @@ and [§9](baseline.md#9-the-fork-entry-re-derivation).
 | # | stage | title | est. | why now |
 |---|---|---|---|---|
 | 1 | [S1a.6.1](s1a.6.1_profile_baseline.md) ✅ | Fresh profile and bench baseline | 2 d | **shipped 2026-08-18** |
-| 2 | [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) 🆕 | The compile cache and the extent counts | 2 d | 21.1 % + 9.5 % of `zebra2 -e`, both parity-preserving by construction |
+| 2 | [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) ✅ | The compile cache and the extent counts | 2 d | **shipped 2026-08-18** — −30.5 % / −7.8 %, `plan_compile` 17 430 → 305, T3 unchanged |
 | 3 | [S1a.6.9](s1a.6.9_fork_entry_delta.md) 🆕 | The fork-entry delta — **measure + decide** | 3 d | 95.0 % of `zebra -e` is fork saturation and 94.6 % of that is re-derivation; the decision gates how S1a.6.3 is framed. Its implementation half is conditional and runs last |
 | 4 | [S1a.6.2](s1a.6.2_memory_layout.md) | Memory layout | 3 d | 21 % of self time is `malloc` / `cfree` / libc, at ~53 bytes per allocation — plus a system allocator (T1a.6.2.7) and a per-entering region (T1a.6.2.8), since ~0.15 % of what a fork allocates outlives it |
 | 5 | [S1a.6.3](s1a.6.3_beta_memories.md) | Beta-memories (F11 D1) — **gate opens** | 4 d | 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB — the fact F11 D1 was parked on |

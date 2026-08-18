@@ -104,6 +104,21 @@ distinct `(rule, activator)` pair, which on exhaustive zebra2 is ~170
 today). The exact figure is confirmed by the `compile` events rather
 than assumed.
 
+> **Win A landed at
+> [S1a.6.8](../p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)
+> T1a.6.8.1, 2026-08-18** (`391a506`). `plan_compile` **17 430 → 305**,
+> `ein_infer::compile` **21.1 % → 2.4 %** cumulative, `solve zebra2 -e`
+> −18.3 % from this half alone — 1.5× the saving this section estimated —
+> and the verbose `--events` stream came out byte-identical, which is the
+> order caveat below discharged rather than argued. Two corrections to the
+> sketch above: the memo is `Arc<Mutex<PlanMemo>>` and lives on the
+> `Session`, because `Terms` is asserted `Send + Sync` from the start for
+> P1a.7's sake and an `Rc` would undo that; and it is per **run**, not
+> per process, because a `PlanKey` holds `Symbol`s and a symbol only means
+> something inside the `Terms` that interned it. The distinct-pair count is
+> **305**, not the ~170 guessed here: forks derive activators the root never
+> had. What follows is the pre-implementation record.
+>
 > **Win A was not implemented, and
 > [S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md) priced it
 > (2026-08-18).** `PlanMemo` exists — as a **field of `Engine`**, so each of
@@ -120,7 +135,7 @@ than assumed.
 > fires on an *engine* miss and not a memo miss, and both implementations emit
 > **17 250** of them on that run (identical `--events` streams, 183 231 lines
 > each), so a memo underneath the engine is invisible to T2 by construction.
-> [S1a.6.8](../p1a.6_performance/s1a.6.8_compile_cache_and_extents.md) lands it.
+> [S1a.6.8](../p1a.6_performance/s1a.6.8_compile_cache_and_extents.md) landed it.
 
 ---
 
