@@ -1,0 +1,1 @@
+`(absent …)` sub-plan compiled to no steps in SForm(head=Atom(name='absent'), args=(Var(name='x'),)) — the guard would fail against every KB and its candidates would be retired permanently.

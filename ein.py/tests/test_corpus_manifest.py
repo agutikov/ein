@@ -106,10 +106,32 @@ def test_negatives_are_grouped_by_where_they_fail(manifest: dict):
     for path, group in by_path.items():
         if path.startswith("examples/broken/load/"):
             assert group == "load-negative", path
+        elif path.startswith("examples/broken/compile/"):
+            # S1a.3.1 — they parse and load, then the compiler refuses. The CLI
+            # does not catch a `CompileError`, so a run dies with a traceback
+            # and `crash-parity`'s comparison (exit code + exception class) is
+            # the one that applies; the message is pinned byte-for-byte by the
+            # `.expected` files instead. `activator_arity` is the exception:
+            # the S1.22.0 arity filter makes its error unreachable through the
+            # engine, so its run succeeds and it is an ordinary `positive`.
+            assert group in ("crash-parity", "positive"), path
         elif path.startswith("examples/broken/"):
             assert group == "parse-negative", path
         elif path.startswith("examples/"):
             assert group in ("positive", "crash-parity"), path
+
+
+def test_every_compile_negative_fixture_has_its_expected(manifest: dict):
+    """The other half of S1a.3.1: every `examples/broken/compile/*.ein` is a
+    corpus entry and has its `.expected` beside it, and nothing else claims to
+    be one."""
+    d = REPO / "examples" / "broken" / "compile"
+    eins = sorted(p.stem for p in d.glob("*.ein"))
+    assert eins, f"no fixtures in {d}"
+    assert eins == sorted(p.stem for p in d.glob("*.expected"))
+    listed = {e["path"] for e in manifest["entry"]}
+    for stem in eins:
+        assert f"examples/broken/compile/{stem}.ein" in listed
 
 
 def test_the_load_negative_group_matches_the_fixture_directory(manifest: dict):

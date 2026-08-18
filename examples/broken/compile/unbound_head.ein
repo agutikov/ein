@@ -1,0 +1,14 @@
+; S1a.3.1 — an unbound relation head in a `:match` premise.
+;
+; `?R` is not a parameter, so the activator cannot bind it, and M1 matches
+; relations per activator (Q29). Until S1.22.0 `_compile_relation` returned
+; `[]` here — dropping the premise. The plan's only premise gone, `steps` is
+; empty, and the matcher reads an empty step tuple as one VACUOUS match, so
+; the rule fired unconditionally and stored its conclusion.
+(relation p Thing)
+
+(rule uses-free-head (?S)
+  :match  (?R ?x)
+  :assert (p ?x))
+
+(uses-free-head p)

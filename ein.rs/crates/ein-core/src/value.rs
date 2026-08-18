@@ -91,6 +91,22 @@ impl Value {
         (self.tag() == Tag::Fact).then(|| FactId(self.payload()))
     }
 
+    /// The register file's "nothing bound here yet" sentinel — S1a.3.2.
+    ///
+    /// It is not a fourth shape: the two tag bits have four states and
+    /// [`Tag`] uses three, so `0b11` is a bit pattern [`Value::pack`] can
+    /// never produce. `regs[r] == Value::UNBOUND` is therefore one integer
+    /// compare, and a real value cannot forge it.
+    ///
+    /// It is also what `resolve_leaf`'s lenient policy calls Python's `None`:
+    /// an unbound `Var` in a predicate guard resolves to it, and two of them
+    /// compare equal, exactly as `None == None`.
+    pub const UNBOUND: Value = Value(u32::MAX);
+
+    pub fn is_unbound(self) -> bool {
+        self.0 == u32::MAX
+    }
+
     /// A total order over *identity*, not over meaning.
     ///
     /// Correct wherever any total order would do — a `state_key`'s sorted
@@ -230,6 +246,17 @@ mod tests {
         // Same payload, three different values — the tag is identity too.
         assert_ne!(s, i);
         assert_ne!(i, f);
+    }
+
+    #[test]
+    fn the_unbound_sentinel_is_not_a_value() {
+        // `pack` only ever emits tags 0..2, so the all-ones word is
+        // unreachable from every (tag, payload) pair.
+        for tag in [Tag::Sym, Tag::Int, Tag::Fact] {
+            assert_ne!(Value::pack(tag, CAPACITY - 1), Value::UNBOUND);
+        }
+        assert!(Value::UNBOUND.is_unbound());
+        assert!(!Value::sym(Symbol(0)).is_unbound());
     }
 
     #[test]

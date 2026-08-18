@@ -331,6 +331,35 @@ group  = "crash-parity"
 runs   = ["solve -e"]
 note   = "M1a hazard H2 / Q-M1a.4 — an hrule binds one variable to an int and a str, and `apriori.layer_1`'s `sorted(alive)` raises. The message names its operands in a `PYTHONHASHSEED`-dependent order, which is why this group compares the exception class and not the line."
 
+# The three `CompileError` fixtures (S1a.3.1). The CLI does not catch one, so a
+# run dies with a traceback — `crash-parity`'s comparison. Their messages are
+# not left uncompared: each has a `.expected` beside it, held to byte-for-byte
+# by both suites (`examples/broken/compile/README.md`). `render rules` is
+# deliberately not among the runs: it never reaches the compiler, so the cell
+# would compare an exit code and discard the output.
+
+[[entry]]
+path   = "examples/broken/compile/empty_absent.ein"
+group  = "crash-parity"
+runs   = ["solve", "saturate"]
+
+[[entry]]
+path   = "examples/broken/compile/nested_or.ein"
+group  = "crash-parity"
+runs   = ["solve", "saturate"]
+
+[[entry]]
+path   = "examples/broken/compile/unbound_head.ein"
+group  = "crash-parity"
+runs   = ["solve", "saturate"]
+
+
+[[entry]]
+path   = "examples/broken/compile/activator_arity.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "saturate --dump", "render rules"]
+note   = "S1a.3.1's fourth compile-error fixture, and the one that is `positive` rather than `crash-parity`: `Engine._activators_for`'s S1.22.0 arity filter drops `(pairwise r)` before the compiler sees it, so the rule never runs and the file solves. That it derives nothing is the assertion — until S1.22.0 the mismatch dropped every premise and the rule fired unconditionally."
+
 
 # ── parse-negative ──────────────────────────────────────────
 

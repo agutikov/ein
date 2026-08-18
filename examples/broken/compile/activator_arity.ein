@@ -1,0 +1,19 @@
+; S1a.3.1 — an activator that cannot bind the rule's parameters.
+;
+; `(pairwise r)` has one argument; `pairwise` declares two parameters. A rule
+; name and a property relation may coincide, and a fact that cannot bind the
+; parameters does not authorise anything — so `Engine._activators_for` filters
+; this activator out by ARITY and the rule simply never runs. The
+; `CompileError` below is what a caller that builds the pair anyway is told;
+; reaching it needs the unfiltered walk (`plan-shape` with `"filter": false`).
+;
+; Until S1.22.0 neither guard existed: the mismatch left every
+; parameter-headed premise with an unbound head var, `_compile_relation`
+; dropped them all, and the rule fired unconditionally off `steps=()`.
+(relation r A B)
+
+(rule pairwise (?R ?T)
+  :match  (?R ?a ?b)
+  :assert (?T ?b ?a))
+
+(pairwise r)

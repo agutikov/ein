@@ -8,3 +8,9 @@ repository.workspace = true
 
 [dependencies]
 ein-core = { path = "../ein-core" }
+ein-ir   = { path = "../ein-ir" }
+rustc-hash.workspace = true
+
+[dev-dependencies]
+ein-oracle = { path = "../ein-oracle" }
+serde_json.workspace = true

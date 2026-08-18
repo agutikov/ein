@@ -1,0 +1,12 @@
+; S1a.3.1 — an `(absent …)` whose sub-plan compiles to nothing.
+;
+; `?x` is not a premise: `_compile_premise` returns no steps for it, and an
+; empty sub-plan does not mean "a query that finds nothing" — it matches
+; VACUOUSLY, so `World.holds` is true and the guard fails against every
+; possible KB. The guard is monotone (no nested absent), so the candidate is
+; retired permanently on its first judgement: a guard that can never pass.
+(relation p Thing)
+
+(rule vacuous-guard ()
+  :match  (and (p ?x) (absent ?x))
+  :assert (p ?x))

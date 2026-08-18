@@ -1,0 +1,15 @@
+; S1a.3.1 — a nested `(or …)` in a `:match` premise.
+;
+; Only a TOP-LEVEL `(or …)` is supported: S1.8.A13 splits one into a plan per
+; disjunct. Until S1.22.0 a nested one returned `[]`, which was silently wrong
+; in BOTH polarities — this rule fired with neither p nor q in the KB
+; (unsound), and its mirror `(absent (or (p ?x) (q ?x)))` never fired with
+; neither present (incomplete, and permanently: the empty sub-plan makes the
+; guard fail, and a failing monotone guard retires its candidate).
+(relation a Thing)
+(relation p Thing)
+(relation q Thing)
+
+(rule nested-disjunction ()
+  :match  (and (a ?x) (or (p ?x) (q ?x)))
+  :assert (p ?x))

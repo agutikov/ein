@@ -1,0 +1,1 @@
+unbound relation head ?R in a premise of `SForm(head=Var(name='R'), args=(Var(name='x'),))` — M1 matches relations per activator (Q29), so the head var must be bound by the rule's activator. Check that the activator fact's arity matches the rule's parameter list.

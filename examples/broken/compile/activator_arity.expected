@@ -1,0 +1,1 @@
+activator pairwise('r',) has 1 argument(s) but rule `pairwise` declares 2 parameter(s) ('R', 'T') — it cannot bind them, so it does not activate this rule.

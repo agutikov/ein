@@ -23,6 +23,8 @@ One JSON object per line in, one per line out, in order:
     {"op": "expand",   "path": …}                → resolve, then expand rule clauses
     {"op": "macro-names"}                        → the names `std.macro` exports, sorted
     {"op": "kb-shape", "path": …}                → the loaded KB's shape (below)
+    {"op": "plan-shape", "path": …}              → every compiled JoinPlan (below)
+    {"op": "plan-shape", "path": …, "filter": false}  → … without the arity filter
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -35,6 +37,17 @@ and `names` is emitted sorted because ein.py builds that dict over a *set*
 union, whose order is not reproducible even run to run. A `KBLoadError` comes
 back as the ordinary `{"ok": false, …}`, which is how the accumulated-message
 parity is compared on the whole corpus rather than only on the fixtures.
+
+`plan-shape` is the same idea one layer down, for M1a P1a.3: it walks
+`kb.rules` x `Engine._activators_for` — the order `compile_all` builds the cache
+in, which `_enqueue_pass` then iterates and so is itself observable — and
+renders each `JoinPlan`. Slot values go out with `repr`, so the atom `7` and the
+integer `7` cannot collide; `watched`, `scope` and a `Join`'s shared variables
+go out **sorted**, because they are `frozenset`s whose order is not reproducible
+run to run. Registers and probes have no counterpart here and are deliberately
+absent: they are the port's own metadata. A `CompileError` comes back as the
+ordinary `{"ok": false, …}`, which is how the four S1.22.0 error messages are
+compared on the corpus rather than only on fixtures.
 
 `expand` is the one op with no single function behind it: `ein.ir.macros`
 provides `expand_macros` / `_substitute`, and the *loader* decides what to run
@@ -66,7 +79,7 @@ sys.path.insert(0, str(REPO / "ein.py" / "src"))
 from ein.ir import IRParseError, parse                      # noqa: E402
 from ein.ir.dump import dump_canonical, dump_compact        # noqa: E402
 from ein.ir.macros import Macro, expand_macros              # noqa: E402
-from ein.ir.types import Atom, KwPair, SForm, Var           # noqa: E402
+from ein.ir.types import Atom, Int, KwPair, SForm, Var      # noqa: E402
 from ein.kb import KnowledgeBase                             # noqa: E402
 from ein.kb.imports import (                                # noqa: E402
     resolve_and_minimize,
@@ -190,6 +203,91 @@ def _kb_shape(kb: KnowledgeBase) -> str:
     return "\n".join(out)
 
 
+def _slot_text(s: object) -> str:
+    """One compiled slot, in the vocabulary `ein-infer::shape` mirrors."""
+    from ein.inference.compile import NestedPattern
+    if isinstance(s, Var):
+        return f"?{s.name}"
+    if isinstance(s, Atom):
+        return repr(s.name)
+    if isinstance(s, Int):
+        return repr(s.value)
+    if isinstance(s, NestedPattern):
+        inner = "".join(" " + _slot_text(x) for x in s.arg_slots)
+        return f"({s.relation}{inner})"
+    return repr(s)
+
+
+def _steps_text(out: list[str], steps: tuple, depth: int) -> None:
+    from ein.inference.compile import AbsentGuard, Guard, Join, Scan
+    pad = "  " * depth
+    for st in steps:
+        if isinstance(st, (Scan, Join)):
+            kind = "JOIN" if isinstance(st, Join) else "SCAN"
+            shared = (f" shared=({' '.join(sorted(st.shared_vars))})"
+                      if isinstance(st, Join) else "")
+            slots = " ".join(_slot_text(s) for s in st.arg_slots)
+            out.append(f"{pad}{kind} {st.relation}{shared} [{slots}]")
+        elif isinstance(st, Guard):
+            args = ", ".join(repr(a) for a in st.args)
+            out.append(f"{pad}GUARD {st.predicate} [{args}]")
+        elif isinstance(st, AbsentGuard):
+            out.append(f"{pad}ABSENT {len(st.sub_steps)}")
+            _steps_text(out, st.sub_steps, depth + 1)
+
+
+def _plan_shape(kb: KnowledgeBase, filter_activators: bool = True) -> str:
+    """Every `(rule, activator)` plan, in `compile_all` order.
+
+    `filter_activators=False` drops `_activators_for`'s S1.22.0 **arity**
+    filter and hands `compile_rule` every rule-application fact. Nothing in the
+    engine does that — both drivers filter first — which is exactly why the
+    arity `CompileError` is otherwise unreachable, and why the fixture for it
+    needs a way around the filter.
+    """
+    from ein.inference.compile import (
+        asserted_relation,
+        compile_rule,
+        naf_relation_refs,
+        negated_relation,
+    )
+    from ein.inference.engine import Engine
+
+    engine = Engine(kb)
+    out: list[str] = []
+    for rule in kb.rules.values():
+        if filter_activators:
+            activators = engine._activators_for(rule)
+        elif not rule.params:
+            activators = (None,)
+        else:
+            activators = tuple(kb._rule_apps_by_rule.get(rule.name, ()))
+        for activator in activators:
+            key = tuple(str(a) for a in (activator.args if activator else ()))
+            plan = compile_rule(rule, activator)
+            out.append(f"PLAN {plan.rule_name} key={key!r} "
+                       f"args={plan.activator_args!r} why={plan.why!r}")
+            for name, value in plan.bindings_seed.items():
+                out.append(f"  SEED {name} {value!r}")
+            for i, (steps, guards) in enumerate(plan.disjuncts()):
+                out.append(f"  D{i} STEPS {len(steps)}")
+                _steps_text(out, steps, 2)
+                for j, g in enumerate(guards):
+                    out.append(
+                        f"  D{i} GUARD {j} scope=({' '.join(sorted(g.scope))}) "
+                        f"watched=({' '.join(sorted(g.watched))}) "
+                        f"monotone={g.monotone}")
+                    _steps_text(out, g.sub_steps, 2)
+            for i, t in enumerate(plan.assert_templates):
+                out.append(f"  ASSERT {i} {_slot_text(t)}")
+            out.append(f"  ASSERTED {asserted_relation(plan)!r} "
+                       f"NEGATED {negated_relation(plan)!r}")
+            refs = naf_relation_refs(plan)
+            if refs:
+                out.append(f"  NAFREFS {refs!r}")
+    return "\n".join(out)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -210,6 +308,10 @@ def _handle(req: dict) -> dict:
     if op == "kb-shape":
         return {"ok": True,
                 "out": _kb_shape(KnowledgeBase.from_ir(forms, base_dir=base_dir))}
+    if op == "plan-shape":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True,
+                "out": _plan_shape(kb, req.get("filter", True))}
     if op == "accept":
         return {"ok": True}
     if op == "parse":
