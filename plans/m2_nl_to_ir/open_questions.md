@@ -65,10 +65,12 @@ as escape hatch. Decided in P2.1 S2.1.3.
 
 Per [idea 04 §Open questions point 4](../ideas/04-nlp-to-graph-to-solver-pipeline.md#open-questions).
 
-**Working answer**: never the *default*. Allow as a
-`--no-ir` debugging flag that prompts the LLM to emit SMT-LIB
-directly and compares the solver answer to the IR pipeline's
-answer; differences are bugs in the pipeline. Decided in P2.1 S2.1.5.
+**Working answer**: never the *default*, and with the SMT milestone
+dropped (2026-08-18) there is no in-repo solver path to compare against
+either. If the question is revisited it is as a *diagnostic*: prompt the
+LLM to emit constraints for an external solver and check that its answer
+agrees with the IR pipeline's; any difference is a bug in the pipeline.
+Decided in P2.1 S2.1.5.
 
 ## Q11 — Link-grammar value
 

@@ -54,7 +54,7 @@ would be silent on a single-platform CI.
 
 ### Task T1a.9.3.4 — Version reporting
 
-`ein --version` and the server's `server.hello` report the same tuple.
+`ein --version` and `ein_rs.__version__` report the same tuple.
 Include the stdlib manifest hash: it is the one input that can differ
 between a binary and a checkout, and a mismatch explains a whole class of
 confusing behaviour instantly.

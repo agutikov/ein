@@ -1,8 +1,10 @@
 # M1a design docs — ein.rs
 
 The *how* of the [M1a Rust port](../README.md). The milestone README
-carries scope, phases and status; these twelve documents carry the
-decisions.
+carries scope, phases and status; these eleven documents carry the
+decisions. (`09 — Server mode` was **deleted 2026-08-18** when the server
+was dropped; the numbering keeps its gap, like a closed question id. It
+is in git history.)
 
 ## Reading order
 
@@ -23,7 +25,6 @@ constrains the next:
 
 3. **The scale-out** — what the port unlocks.
    [08 Parallelism](08_parallelism.md) →
-   [09 Server mode](09_server_mode.md) →
    [10 Binary format](10_binary_format.md) →
    [12 Toolchain & layout](12_toolchain_and_layout.md)
 
@@ -44,8 +45,7 @@ match order" whose enforcement lives in [02](02_determinism_and_order.md).
 | [06 Saturation](06_saturation.md) | the two-phase closure/boundary loop, semi-naive delta, the two heaps, incremental NAF invalidation, the native mirror | [P1a.3](../p1a.3_deductive_core/README.md) |
 | [07 Search layer](07_search_layer.md) | hypgen enumeration, lookahead, apriori generation, no-good store, the layer loop, verdict synthesis | [P1a.4](../p1a.4_search_layer/README.md) |
 | [08 Parallelism](08_parallelism.md) | four parallel levels; speculate-and-validate with read-set tracking; the `--jobs` contract | [P1a.7](../p1a.7_parallelism/README.md) |
-| [09 Server mode](09_server_mode.md) | daemon lifecycle, session/KB/solve handles, JSON-RPC surface, streaming, caches | [P1a.8](../p1a.8_server_mode/README.md) |
-| [10 Binary format](10_binary_format.md) | `.einb` container layout, mmap-ability, versioning, content addressing, the solution store | [P1a.8](../p1a.8_server_mode/README.md) |
+| [10 Binary format](10_binary_format.md) | `.einb` container layout, mmap-ability, versioning, content addressing, the solution store | [P1a.8](../p1a.8_binary_container/README.md) |
 | [11 Shared assets](11_shared_assets.md) | repo-root `stdlib/`, resolution order in both impls, drift detection, the shared corpus | [P1a.0](../p1a.0_conformance_harness/README.md) |
 | [12 Toolchain & layout](12_toolchain_and_layout.md) | the `ein.rs/` workspace, crate split, dependency policy, MSRV, CI, benches | [P1a.0](../p1a.0_conformance_harness/README.md) |
 

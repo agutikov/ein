@@ -78,9 +78,8 @@ head is not an error.
   `(absent (and G (absent B)))` / `(and (absent P) (absent (not P)))`.
   Any Rust code that special-cases them is a bug.
 - Import resolution is the engine's only filesystem access; keep it
-  behind the `StdlibSource`/`FileSource` seam so
-  [`--sandbox`](../design/09_server_mode.md) §7 is a one-line change
-  later.
+  behind the `StdlibSource`/`FileSource` seam so any later policy on what
+  the engine may read is a one-line change rather than an audit.
 
 ---
 

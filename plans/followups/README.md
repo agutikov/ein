@@ -1,13 +1,13 @@
 # Followups
 
-Themes that are neither MVP-blocking nor on the M1-M2-M3 schedule.
+Themes that are neither MVP-blocking nor on the M1-M2 schedule.
 Park here so the ideas don't get lost between
 [`docs/ideas/`](../ideas) (raw notes) and
 [`plans/m*/`](../) (scheduled work).
 
 Each file is one *theme* — a coherent direction of follow-up work
-the user might pick up after M3, or in parallel if motivation
-strikes.
+the user might pick up after the scheduled milestones, or in parallel if
+motivation strikes.
 
 ## Index
 

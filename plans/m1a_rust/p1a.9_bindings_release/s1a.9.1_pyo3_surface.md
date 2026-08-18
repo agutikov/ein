@@ -2,8 +2,8 @@
 
 **Phase:** P1a.9 (Bindings and release)
 **Estimate:** 3 days
-**Depends on:** [P1a.5](../p1a.5_presentation/README.md) (parity is
-enough; the server is not required)
+**Depends on:** [P1a.5](../p1a.5_presentation/README.md) — parity is
+enough
 **Implements:** [`docs/api/ein.md`](../../../docs/api/ein.md)'s five
 steps, in Rust
 
@@ -95,5 +95,5 @@ message and base class. Where ein.py raises a bare `KeyError` or
   side — which is what
   [S1a.9.2](s1a.9.2_api_parity_tests.md)'s parameterised tests need.
 - If a hot loop ever needs to cross the boundary per fact, that is a
-  design smell: the right answer is a batch call or a server
+  design smell: the right answer is a batch call or an `--events`
   subscription, not a faster FFI.

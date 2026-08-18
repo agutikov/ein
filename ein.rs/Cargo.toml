@@ -12,9 +12,10 @@
 # P1a.1 onwards needs do not each re-implement the process plumbing. Nothing
 # outside a `[dev-dependencies]` block depends on it.
 #
-# `ein-server` (P1a.8) and `ein-py` (P1a.9) are NOT here: both carry heavy
-# dependencies (an async runtime, PyO3/maturin) whose cost the dependency
-# policy says to defer until something needs them.
+# `ein-py` (P1a.9) is NOT here: PyO3/maturin is a heavy dependency whose cost
+# the dependency policy says to defer until something needs it. (`ein-server`
+# used to be named here for the same reason; the server was dropped outright
+# on 2026-08-18 — the engine ships as a library plus this CLI.)
 #
 # Layout and the dependency policy:
 # plans/m1a_rust/design/12_toolchain_and_layout.md.

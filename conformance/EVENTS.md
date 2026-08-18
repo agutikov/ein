@@ -9,8 +9,9 @@ this file specifies: **one JSON object per line**, opt-in behind
 
 Design: [`plans/m1a_rust/design/01_parity_contract.md`](../plans/m1a_rust/design/01_parity_contract.md) §3.
 Built at [S1a.0.2](../plans/m1a_rust/p1a.0_conformance_harness/s1a.0.2_oracle_event_protocol.md).
-The same stream is what [the server](../plans/m1a_rust/design/09_server_mode.md) §5
-will publish, so it is designed once for two consumers.
+It is specified as a schema rather than as debug output, so every other
+observer — a trace viewer, a benchmark harness, an embedder — reads the same
+stream.
 
 ## Why not reuse `--dump-states`
 

@@ -80,10 +80,9 @@ digraph milestones {
   rankdir=LR; node [shape=box, fontname="monospace"];
   M1 [label="M1 (shipped)\nir · kb · inference\nrender · trace"];
   M2 [label="M2\nnl_to_ir · llm client · GBNF"];
-  M3 [label="M3\nsmt backend · hybrid driver"];
-  M1 -> M2 -> M3;
+  M1 -> M2;
   M1a [label="M1a · ein.rs (Rust port)"];
-  M1b [label="M1b · GUI"];
+  M1b [label="M1b · GUI (Tauri)"];
   M2b [label="M2b · paper"];
   M1 -> M1a -> M1b; M2 -> M2b;
 }
@@ -94,9 +93,10 @@ digraph milestones {
   off one run.
 - **M2** — NL → IR: an LLM extractor under GBNF constraint produces IR; no new
   *kernel* module, a new front-end consuming it.
-- **M3** — SMT slice: `IR → SMT-LIB`, a hybrid driver handing `(hard-slice …)`
-  to Z3/clingo with explanation recovery back to IR.
 - **M1a / M1b / M2b** — Rust port / GUI / paper (out of the kernel tree).
+- **M3** (SMT slice: `IR → SMT-LIB` with a hybrid driver) was **dropped
+  2026-08-18**. There is no solver back-end and no planned one; the kernel
+  is the whole reasoner.
 
 Roadmap detail: [`plans/`](../../plans/README.md).
 
@@ -286,21 +286,25 @@ xfails (the D5 `xfail(strict=True)` now passes), `naf_dropped` structurally
 than pays for the boundary evaluations (exhaustive `zebra2` solve ~10.4s →
 ~8.5s; acceptance gate 130s → 91s).
 
-### M3 implication
+### Why the seam is worth naming (ex-"M3 implication")
 
-Each seam side has an obvious SMT counterpart (closure → quantified Horn
-axioms / pre-grounding; worlds lattice → assumption literals +
+Written when M3 (SMT integration) was scheduled: each seam side has an
+obvious SMT counterpart (closure → quantified Horn axioms /
+pre-grounding; worlds lattice → assumption literals +
 `check-sat-assuming`, nogoods → learned clauses; `StateKey` → blocking
-clauses for model enumeration) — and the NAF boundary is *the* reason the
-seam had to be explicit before M3: SMT has no NAF, and `(absent P)`
-translates soundly only under a Clark-completion axiom scoped to the
-boundary's world. That scope is now a nameable object — the `World` a guard
-was judged in, with the queries it depended on failing recorded on the
-conclusion — rather than an implicit moment in the saturation order.
-Recorded as
-[M3 Q30](../../plans/m3_smt_integration/open_questions.md#q30--seam--smt-mapping-clark-completion-at-the-naf-boundary);
-the edge-by-edge table is in
-`r6_seam.md` §3.
+clauses for model enumeration), and the NAF boundary was *the* reason the
+seam had to be explicit before any such translation: classical logic has
+no NAF, and `(absent P)` is sound only under a Clark-completion axiom
+scoped to the boundary's world.
+
+**M3 was dropped 2026-08-18**, so no translation is planned — but the
+argument outlives its motivation, because it is really a statement about
+the kernel: the scope of a negative conclusion is a *nameable object*
+here — the `World` a guard was judged in, with the failing queries it
+depended on recorded on the conclusion — rather than an implicit moment
+in the saturation order. That is what makes the engine's negation
+explainable at all, whatever consumes it. The edge-by-edge table is in
+`r6_seam.md` §3 (and the dropped milestone's Q30 in git history).
 
 ## "Where do I look?" — change cookbook
 

@@ -252,9 +252,10 @@ Port obligations:
   `:symbols`, bare `std`) reproduce byte-for-byte.
 
 Because a resolved program is a pure function of `(source text, stdlib
-content, base_dir)`, the whole frontend is a natural fit for the server's
-content-addressed cache ([09](09_server_mode.md) § Caches) — but that is
-downstream; P1a.1 ships it stateless.
+content, base_dir)`, it is content-addressable — which is what
+[`.einb`](10_binary_format.md)'s `PROGRAM` section stores and what its
+`META` digests invalidate. P1a.1 ships the frontend stateless; caching is
+[P1a.8](../p1a.8_binary_container/README.md)'s concern.
 
 ---
 

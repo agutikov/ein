@@ -28,7 +28,6 @@ ein/
 │       ├── ein-infer/          compile, match, saturate, world, search, verdict, explain
 │       ├── ein-render/         DOT renderers, markdown trace, solution table
 │       ├── ein-cli/            the `ein` binary
-│       ├── ein-server/         the daemon (feature-gated)          [P1a.8]
 │       ├── ein-py/             PyO3 bindings (maturin)             [P1a.9]
 │       ├── ein-oracle/         ein.py + CPython as test oracles (dev-only)
 │       └── ein-conformance/    corpus runner, event differ
@@ -42,8 +41,8 @@ Why this split:
   ([02](02_determinism_and_order.md) §7). Everything depends on it;
   it depends on nothing.
 - **`ein-ir` owns the only filesystem access in the engine** (import
-  resolution + the embedded stdlib), which is what makes
-  `--sandbox` in [09](09_server_mode.md) a single seam.
+  resolution + the embedded stdlib), so any future policy on what the
+  engine may read is one seam rather than an audit.
 - **`ein-infer` never formats anything.** All rendering lives in
   `ein-render`, so the T3 surface is one crate and can be diffed as a
   unit.
@@ -80,18 +79,19 @@ if that ever matters.
 | `smallvec` | core, infer | premises, bindings, commitments — all small and hot |
 | `bitvec` *or* a hand-rolled `BitSet` | core | presence / negated / alive sets. Hand-rolled is ~80 lines; prefer it |
 | `md-5` | render | `hashed_id` parity ([02](02_determinism_and_order.md) §8) |
-| `blake3` | server, einb | content addressing |
+| `blake3` | einb | content addressing |
 | `include_dir` | ir | embedded stdlib |
 | `memchr` | ir | lexer scanning |
 | `rayon` | infer | [P1a.7](../p1a.7_parallelism/README.md) only, behind a `parallel` feature |
-| `serde` + `serde_json` | conformance, server, cli(`--events`) | the event protocol and JSON-RPC |
+| `serde` + `serde_json` | conformance, cli(`--events`) | the event protocol |
 | `zstd` | einb | optional section compression, behind a feature |
 | `pyo3` / `maturin` | ein-py | [P1a.9](../p1a.9_bindings_release/README.md) only |
 | `criterion`, `proptest`, `arbitrary` | dev-dependencies | benches and property tests |
 
 **Not used:** any parser generator (see [04](04_ir_frontend.md) §1), any
-async runtime in the engine (the server may use one; the engine stays
-synchronous and `Send`), `lazy_static`/`once_cell` in favour of
+async runtime *anywhere* (with the server dropped there is no consumer
+for one; the engine stays synchronous and `Send`),
+`lazy_static`/`once_cell` in favour of
 `std::sync::OnceLock`, and `unsafe` outside a single audited module for
 the `.einb` zero-copy casts (`#![forbid(unsafe_code)]` on every other
 crate).
@@ -106,7 +106,6 @@ crate).
 | feature | default | effect |
 |---|---|---|
 | `parallel` | off during P1a.0–6, on from P1a.7 | pulls `rayon`, enables `--jobs > 1` |
-| `server` | off | builds `ein-server` and the `serve` subcommand |
 | `einb` | on | `.einb` read/write |
 | `events` | on | `--events FILE` emission (compiled out entirely when off, for a zero-overhead measurement build) |
 | `python` | off | PyO3 bindings |

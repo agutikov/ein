@@ -106,10 +106,9 @@ still works, and `ein.rs` still ships as one self-contained binary.
 - CI runs `stdlib-check`: the manifest matches the files, the Python
   packaged copy (when built) matches, and the Rust embedded copy matches
   (a build-time `const` digest compared against the manifest).
-- The manifest hash also keys the server's program cache
-  ([09](09_server_mode.md) §6) and lands in `.einb`'s `META`
-  ([10](10_binary_format.md) §4), so a stdlib edit invalidates every
-  derived artefact automatically.
+- The manifest hash lands in `.einb`'s `META`
+   ([10](10_binary_format.md) §4), so a stdlib edit invalidates every
+   derived artefact automatically.
 
 ---
 
@@ -182,5 +181,4 @@ become confusing. Tracked as Q-M1a.9.
   manifest formalises.
 - [04 — IR frontend](04_ir_frontend.md) §6 — import resolution, the
   consumer of the stdlib root.
-- [09](09_server_mode.md) §6 / [10](10_binary_format.md) §4 — the
-  manifest hash as a cache key.
+- [10](10_binary_format.md) §4 — the manifest hash as a cache key.

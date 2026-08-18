@@ -2,8 +2,9 @@
 //!
 //! T2 parity is "the two engines took the same steps", and that needs both
 //! implementations to narrate what they did in a comparable format. The schema
-//! is fixed (`ein-events/1`) and was designed once for two consumers: this and
-//! [the server](../../../../plans/m1a_rust/design/09_server_mode.md) §5.
+//! is fixed (`ein-events/1`) and was designed as a schema rather than as debug
+//! output, so any other observer — a trace viewer, a benchmark harness, an
+//! embedder — reads the same stream.
 //!
 //! Three properties the protocol depends on, and how this module gets them:
 //!

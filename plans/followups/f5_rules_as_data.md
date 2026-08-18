@@ -1,8 +1,10 @@
 # F5 — Operate IR rules as data (graph self-rewriting)
 
 **Theme owner:** the user.
-**Trigger:** P1.3 ships (rule firing engine is real) + M3 partial
-(some self-reflection use-case in mind).
+**Trigger:** P1.3 ships (rule firing engine is real) + a concrete
+self-reflection use-case in mind. *(The second half used to read "M3
+partial"; M3 was dropped 2026-08-18 and was never what this depended
+on.)*
 
 ## What this is
 

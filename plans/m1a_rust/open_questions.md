@@ -19,8 +19,8 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | open — port as-is, flag upstream |
 | [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | open — decide at the P1a.5 gate |
 | [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | open — gated on measurement |
-| [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | open — recommendation: JSON-RPC 2.0 |
-| [Q-M1a.12](#q-m1a12--remote-access-and-auth) | Remote access and auth for `ein serve` | open — out of v1 scope |
+| [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | **closed moot 2026-08-18 — no server** |
+| [Q-M1a.12](#q-m1a12--remote-access-and-auth) | Remote access and auth for `ein serve` | **closed moot 2026-08-18 — no server** |
 | [Q-M1a.13](#q-m1a13--argparse-surface-parity) | Reproducing `argparse` `--help` and error text | open — blocking P1a.5 |
 | [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | open |
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
@@ -42,7 +42,7 @@ than an FFI seam through the hottest loop in the engine would have.
 ## Q-M1a.2 — Does ein.py have a sunset?
 
 Once ein.rs is the shipping engine, ein.py is (a) the parity oracle,
-(b) the reference implementation for M2/M3 experiments, and (c) the
+(b) the reference implementation for M2 experiments, and (c) the
 "Python users get a working solver" fallback. Keeping it green costs CI
 time and every semantic change has to land twice.
 
@@ -225,22 +225,24 @@ exactly as P1.8a's D3 was handled.
 
 ## Q-M1a.11 — Server wire protocol
 
-JSON-RPC 2.0 over stdio/unix/tcp is the recommendation
-([design/09](design/09_server_mode.md) §2): no codegen, debuggable,
-LSP-shaped. gRPC buys streaming ergonomics and typed schemas at the cost
-of a build-time dependency and a much heavier client story; a bespoke
-binary protocol is premature.
-
-Decide at [P1a.8](p1a.8_server_mode/README.md) kickoff, informed by what
-[M1b](../m1b_gui/README.md) picks for its stack.
+**Closed moot 2026-08-18: there is no server.** The question was to be
+decided at P1a.8 kickoff "informed by what M1b picks for its stack" —
+and that is exactly what dissolved it. M1b picked Tauri
+([M1b § Stack](../m1b_gui/README.md#stack)), whose backend is a Rust
+process linking `ein-core`/`ein-ir`/`ein-infer` directly; a wire protocol
+between the GUI and the engine would have been a serialisation boundary
+inside one process. With M2 crossing into CPython through PyO3
+([P1a.9](p1a.9_bindings_release/README.md)) and the CLI running in-process,
+no consumer was left. The JSON-RPC recommendation and the rest of
+`design/09` are in git history if a hosted use case ever revives them.
 
 ## Q-M1a.12 — Remote access and auth
 
-`ein serve` is local-only in v1 (unix socket 0600, TCP loopback,
-`--allow-remote` required to bind elsewhere, no authentication). If
-hosted use is ever wanted, the answer is a reverse proxy plus a token,
-not an auth system in the engine. Out of v1 scope; recorded so the v1
-posture is a decision rather than an oversight.
+**Closed moot 2026-08-18 with [Q-M1a.11](#q-m1a11--server-wire-protocol).**
+There is nothing to expose: the engine is a library and a CLI. If hosted
+use is ever wanted, the posture recorded here still holds as a starting
+point — a reverse proxy plus a token in front of a purpose-built service,
+never an auth system inside the engine.
 
 ## Q-M1a.13 — `argparse` surface parity
 

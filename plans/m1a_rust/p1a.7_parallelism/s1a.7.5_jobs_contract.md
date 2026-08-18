@@ -26,8 +26,9 @@ different computation, and because the whole parity apparatus assumes it.
 - `--unordered` is T0-identical (same verdict, same model set) and
   documented as *not* counter-identical, with a fixture demonstrating a
   counter difference so the distinction is visible rather than theoretical.
-- The CLI surface, `SolverConfig` interaction, and the server's
-  per-session `max_jobs` all agree on the same semantics.
+- The CLI surface and the `SolverConfig` interaction agree on the same
+  semantics, and the embedding API ([P1a.9](../p1a.9_bindings_release/README.md))
+  exposes the same knob under the same name.
 - `docs/api/inference.md` gains the flag with its guarantees; the
   guarantee table from [design/08](../design/08_parallelism.md) §1 lands
   in user-facing documentation, not only in the plan.
@@ -79,8 +80,8 @@ Decide and document: what happens on a worker panic (abort the solve
 with a clear message — do not silently drop a candidate); how
 `max_time` interacts with in-flight speculation (budget is checked at the
 commit point, so a cut is deterministic); and how cancellation
-propagates (the same cooperative flag the server will use —
-[design/09](../design/09_server_mode.md) §7).
+propagates (a cooperative flag checked at the same commit point, so an
+embedder can cancel a solve without a thread kill).
 
 ## Notes
 
@@ -88,5 +89,6 @@ propagates (the same cooperative flag the server will use —
   The default is a correctness-of-measurement choice, and the
   conformance harness, the benchmarks and the acceptance gate all depend
   on it.
-- The server sets jobs per session, so its default is a separate
-  decision and can reasonably be `auto`.
+- An embedder that drives many solves can reasonably default its own
+  jobs to `auto`; that is a caller-side decision and does not change the
+  CLI default.

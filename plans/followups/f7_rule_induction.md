@@ -235,7 +235,7 @@ companion is a column of
 
 If M2's goal is "fully automated model construction for NL problem
 text", sub-track B (rule induction) is on the M2 critical path —
-not a post-M3 followup. Without it, the NL pipeline produces
+not a later followup. Without it, the NL pipeline produces
 relations + facts but no activators; the engine sits idle. M2's
 plan should call out F7 sub-track B as a deliverable, not a
 parking-lot item.

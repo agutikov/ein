@@ -47,10 +47,10 @@ interner's text arena on a cold start.
 
 Resolving `zebra2.ein` pulls three stdlib modules, each parsed fresh.
 Cache parsed module ASTs by resolved path + content hash **within a
-process** — this is the same content-addressed idea
-[design/09](../design/09_server_mode.md) §6 formalises, just scoped to
-one run, and it is what makes the conformance runner's repeated loads
-cheap.
+process** — the same content-addressed key
+[design/10](../design/10_binary_format.md) §4 uses for `.einb`
+invalidation, just scoped to one run, and it is what makes the
+conformance runner's repeated loads cheap.
 
 Keep it off by default in the CLI if it perturbs anything observable; it
 should not, since resolution is a pure function of
@@ -78,9 +78,10 @@ here; a 5 ms engine behind a 40 ms startup is not a fast tool.
 
 ## Notes
 
-- The load path also runs on the server's cold path
-  ([design/09](../design/09_server_mode.md)), where it is amortised — so
-  do not over-invest here at the expense of
+- An embedder that loads once and asks many questions amortises this
+  path away entirely, and `.einb`
+  ([P1a.8](../p1a.8_binary_container/README.md)) skips it — so do not
+  over-invest here at the expense of
   [S1a.6.3](s1a.6.3_beta_memories.md). The user-visible win is
   bounded by "already imperceptible".
 - If `rebuild_indexes` shows up, check first whether the loader is

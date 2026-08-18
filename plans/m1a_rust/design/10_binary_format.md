@@ -2,7 +2,9 @@
 
 **Settles:** how a loaded/saturated KB, and the solutions derived from
 it, are stored on disk.
-**Phase:** [P1a.8](../p1a.8_server_mode/README.md).
+**Phase:** [P1a.8](../p1a.8_binary_container/README.md).
+**Scope note 2026-08-18:** the server (`design/09`) was dropped; this
+doc lost its second consumer and kept the other three.
 **New surface** — no ein.py counterpart. The `.ein` text format remains
 the only *authoring* format and the only thing anyone edits.
 
@@ -14,8 +16,6 @@ the only *authoring* format and the only thing anyone edits.
   zebra2 run and will still be the dominant fixed cost once the engine is
   fast. `kb.open` on a saturated `.einb` should be a `mmap` plus a symbol
   remap — microseconds.
-- **Give the server something to spill to.** Cache eviction
-  ([09](09_server_mode.md) §6) needs a cold entry to be cheap to revive.
 - **Store results.** A solved puzzle's models, stats and unsat core are
   worth keeping next to the KB that produced them.
 - **Ship a corpus.** A benchmark suite or an M2 evaluation set can ship
@@ -81,10 +81,10 @@ already holds other content.
   (with translated symbols) yields `file_fact → live_fact`.
 - Every other section refers to ids and is remapped through those two
   tables in one linear pass.
-- **Fast path:** when the live interner is empty (a fresh process
-  opening one file — the CLI case, and a server cache revival into a
-  private arena), both tables are the identity and the pass is skipped
-  entirely. That is the mmap-and-go case.
+- **Fast path:** when the live interner is empty — a fresh process
+  opening one file, which is the CLI case and therefore the *normal*
+  one — both tables are the identity and the pass is skipped entirely.
+  That is the mmap-and-go case.
 
 This is also why `.einb` cannot be shared between processes as raw
 memory: it is *position*-independent but not *interner*-independent. Good
@@ -99,8 +99,8 @@ enough — the cost model is "one linear remap or none".
   bumps can add sections).
 - `META` carries `stdlib_manifest_hash` and the source digest(s). A
   reader that has different inputs must treat the file as a **cache
-  miss**, not an error — the server does exactly that
-  ([09](09_server_mode.md) §6).
+  miss**, not an error: re-parse the `.ein` and carry on, so a stale
+  cache can never change a verdict.
 - `META` carries the engine semver. A `.einb` holding *derived* state
   (saturated facts, solutions) is only valid for the engine that produced
   it; on a version mismatch the reader keeps `PROGRAM` and drops the
@@ -118,13 +118,10 @@ bindings. Reconstituting a model is `base.fork()` + apply the delta,
 which is the same layered structure the engine already runs on
 ([03](03_data_model.md) §5).
 
-That makes the common server flow cheap end to end:
-
-```
-kb.open("zebra2.einb")        # mmap, no parse, no saturate
-solve.result(...)             # already stored: verdict + models
-kb.query(model, goal)         # a matcher run over a mapped KB
-```
+That makes the repeat-run flow cheap end to end — `ein solve
+zebra2.einb` on a file that already carries the saturated KB and its
+solutions is an mmap, a digest check and a render, with no parse, no
+load and no search.
 
 ---
 
@@ -144,6 +141,5 @@ kb.query(model, goal)         # a matcher run over a mapped KB
 ## Cross-links
 
 - [03 — Data model](03_data_model.md) — `.einb` is that layout, serialised.
-- [09 — Server mode](09_server_mode.md) — the consumer.
 - [11 — Shared assets](11_shared_assets.md) — the stdlib manifest hash
   that keys invalidation.

@@ -12,7 +12,7 @@ file it keeps its id; do not reuse a closed id.
 | Q   | Title                                                                  | Lives in |
 |-----|------------------------------------------------------------------------|----------|
 | Q1  | What kind of graph is the IR? Typed multigraph, hypergraph, or e-graph? | here (cross-milestone) |
-| Q2  | When does the graph engine hand off to a solver, and which one?         | here (cross-milestone; will be operationalised in M3) |
+| Q2  | When does the graph engine hand off to a solver, and which one?         | here — **closed 2026-08-18: never** (M3 dropped) |
 | Q3  | Surface IR syntax — heavy-semantic Lisp vs richer DSL?                  | here (decided in M1.P1.1 S1.1.1) |
 | Q4  | Rule presentation language — Python functions, graph-rewrite DSL, or Horn clauses? | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
 | Q5  | What "enough" means for the inference rule set                          | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
@@ -72,11 +72,16 @@ large combinatorial search, and global cardinality where a real
 solver dominates. The split is *not* "graph-engine for everything
 small, solver for everything large" — it's per-sub-problem.
 
-**Working answer**: M1 ships a pure graph-native engine.
-M3 introduces SMT-LIB emission for *slices* the graph engine
-declares hard (encoded as `(hard-slice ...)` forms in the IR).
-A query mode flag selects pure-graph / hybrid / solver-first;
-the default in M3 is hybrid.
+**Closed 2026-08-18 — it doesn't.** M1 shipped a pure graph-native
+engine, and M3 (which would have introduced SMT-LIB emission for
+`(hard-slice …)` slices, with a pure-graph / hybrid / solver-first mode
+flag) was dropped as an idea, not just descheduled. There is no handoff
+and no back-end to pick. Idea 02's threshold conditions
+(arithmetic-dominated constraints, large combinatorial search, global
+cardinality) still describe where a graph-native engine is *weakest* —
+they are now a statement about Ein's scope rather than a trigger for a
+solver call, and they are the honest limitations paragraph
+[M2b](m2b_presentation/README.md) Track A owes its readers.
 
 ## Q3 — Surface IR syntax
 
@@ -232,9 +237,12 @@ Trade-offs:
 
 - *For:* IR-native, no Python fallback. The trace renderer reads each
   spatial step as a square-rule firing — fully visible to
-  [idea 08](ideas/08-human-style-deductive-trace.md).
-  M3's SMT translation maps `square-fwd` / `square-bwd` to two
-  universally-quantified clauses with no integer theory required.
+  [idea 08](ideas/08-human-style-deductive-trace.md). (The original
+  entry also noted that an SMT translation would map `square-fwd` /
+  `square-bwd` to two universally-quantified clauses with no integer
+  theory required — moot since M3 was dropped 2026-08-18, but it is
+  still evidence that the encoding is a *logical* one rather than an
+  arithmetic trick.)
 - *Against:* problems with continuous or multi-dimensional spatial
   structure (Allen, RCC) will need a different formulation. Revisit
   for those problem classes; for Zebra-class puzzles the graph-only

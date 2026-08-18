@@ -216,8 +216,9 @@ promoted to `ein` subcommands, one-off probes moved to `utils/`). The `search`
 and `lattice` runner subcommands were then **merged into one sound `ein
 solve`** (one engine, the verdict read from the result), replacing the unsound
 `gaps_solve` / `contradictions_solve` entries that chose their verdict by
-*which function was called*. Next
-milestones are **M2** (NL ⇄ IR round-trip) and **M3** (SMT integration).
+*which function was called*. In flight now is **M1a** — `ein.rs`, a Rust port
+that is a byte-for-byte drop-in for `ein` (P1a.0–P1a.3 shipped); next are
+**M1b** (a Tauri GUI over the ported engine) and **M2** (NL ⇄ IR round-trip).
 The whole roadmap is tracked under
 [`plans/`](plans/README.md); see [`AGENTS.md`](AGENTS.md) for orientation
 aimed at coding agents.

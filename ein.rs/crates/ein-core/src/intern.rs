@@ -62,9 +62,9 @@ pub struct Symbol(pub u32);
 
 /// Text arena + span table + lookup, with a lazily-built lexicographic rank.
 ///
-/// One per process (per `Engine` in the server —
-/// [design/09](../../../../plans/m1a_rust/design/09_server_mode.md) § Interner
-/// scope).
+/// One per process. `.einb`
+/// ([design/10](../../../../plans/m1a_rust/design/10_binary_format.md) §3) is
+/// the only thing that crosses interner boundaries, and it remaps on open.
 #[derive(Default, Debug)]
 pub struct Interner {
     /// All text, one allocation family.

@@ -67,7 +67,7 @@ leaves no purchase for any of them.
 | E19 | Unsat-core minimisation | ✅ done — shipped, then renamed `frontier.smallest_contradiction_frontier` (P1.21 R3: minimal only over recorded derivations, not a subset-minimal MUS). Re-saturation deletion-MUS is NAF-unsound and was not shipped. Use-site wired by S1.21.7 |
 | E21 | `solve` vs `prove` mode split | ⛔ superseded by P1.7a — shipped differently: `solve()` is the exhaustive-with-uniqueness side, `solve(stop_after=1)` the fast side. `Mode` is the orthogonal task-class axis |
 | E22 | Alive-hyps in the state hash | ✅ resolved in code — `canon.state_hash` keys on KB facts only; the "extend the hash" fix was deliberately *not* taken |
-| R1 | Soft-constraint / probabilistic weighting | ❌ out of scope — M1 is hard-constraint only; soft constraints are an [M3 SMT](../m3_smt_integration/) concern |
+| R1 | Soft-constraint / probabilistic weighting | ❌ out of scope — M1 is hard-constraint only. Was parked as "an M3 SMT concern"; M3 was dropped 2026-08-18, so soft constraints now have no home at all — a fresh proposal would have to justify them on the graph engine's own terms |
 | R2 | Cross-puzzle learning | ❌ out of scope until M2's NL pipeline supplies a stream of puzzles (needs session persistence) |
 | R3 | Parallel branch evaluation | ❌ out of scope — engineering; the engine is single-threaded |
 | R4 | Domain-specific filters (e.g. spatial) | ❌ rejected — violates the canonical-zebra2 direction: constraints belong in user rules, not engine hardcode |

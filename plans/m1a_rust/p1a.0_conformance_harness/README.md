@@ -34,9 +34,12 @@ Three reasons, in order:
    surface at least one — the `frozenset` iteration in the symmetric
    mirror (H1). Those must be fixed in the oracle *before* the port
    copies them.
-3. **It is the server's event protocol too.**
-   ([design/09](../design/09_server_mode.md) §5.) Designing it once, for
-   two consumers, is cheaper than twice.
+3. **It is the protocol every other observer reuses.** The `--events`
+   stream is what a trace viewer, a benchmark harness or an embedder
+   subscribes to; designing it once, as a schema rather than as debug
+   output, is cheaper than growing a second one per consumer. *(Written
+   when the second consumer was the resident server, dropped 2026-08-18;
+   the reason survives it.)*
 
 ## Stages
 

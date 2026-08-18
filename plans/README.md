@@ -50,17 +50,28 @@ plus a Rust port slotted before the GUI:
   invariants: a **1:1 observable surface** (same language, same CLI,
   same bytes, with `ein.py` kept as the parity oracle) and a **free
   hand inside** (integer-encoded atoms and facts, a register matcher,
-  copy-on-write forks, multi-core search, and a resident server mode).
+  copy-on-write forks, multi-core search). It ships a **library and a
+  CLI**; server mode was dropped 2026-08-18.
 - **M1b — GUI** ([m1b_gui/](m1b_gui/README.md)) between M1a
-  and M2.
+  and M2 — **Tauri 2 + React + Monaco + Cytoscape.js**, linking the
+  ein.rs crates directly (stack decided 2026-08-18).
 - **M2b — paper + presentation** ([m2b_presentation/](m2b_presentation/README.md))
-  after M2, before or after M3.
+  after M2.
 
-M3 (SMT integration) is the parallel hard-slice escape hatch;
-the followups in [`followups/`](followups/README.md) park the
+The followups in [`followups/`](followups/README.md) park the
 research-level threads (self-modification F2/F5/F6, formal
 foundations F1/F1b, rule induction F7, cross-cutting F4, three
 task classes F3).
+
+**Dropped 2026-08-18 — M3 (SMT integration).** The milestone wired a
+`(hard-slice …)` handoff from the graph engine to Z3/CVC5 and lifted
+models and unsat cores back into the IR (5 phases, ~1 month, Q25–Q30).
+User decision: the *idea* is dropped, not merely the schedule — Ein
+stays a graph-native reasoner with no solver back-end. The plan folder
+is in git history. What stays: [`smt/`](../smt/) as a scratch area with
+its CVC4 submodule, and [`docs/lib/02`](../docs/lib/02-solvers-csp-sat-smt.md)
+as external-tech catalogue and [M2b](m2b_presentation/README.md) Track A's
+*comparison* axis.
 
 ## Schema
 
@@ -91,14 +102,21 @@ plans/
 ├── open_questions.md                 cross-milestone questions; sticky Q ids
 ├── ideas.md                          rolling scratchpad
 ├── m1_core_graph_reasoning/          (deleted at P1.22 — M1 shipped; see git history)
+├── m1a_rust/                         the Rust port — design docs + 10 phases
+│   ├── README.md
+│   ├── open_questions.md
+│   ├── divergences.md
+│   ├── design/ …                     11 numbered design docs
+│   └── p1a.0_conformance_harness/ …
+├── m1b_gui/                          the GUI — Tauri 2 + React + Monaco + Cytoscape
+│   └── README.md
 ├── m2_nl_to_ir/                      NL → IR — link-grammar / GBNF / llama.cpp
 │   ├── README.md
 │   ├── open_questions.md
 │   └── p2.1_investigations/ …
-├── m3_smt_integration/               graph engine → SMT slice; explanation recovery
-│   ├── README.md
-│   ├── open_questions.md
-│   └── p3.1_ir_to_smt_lib/ …
+├── m2b_presentation/                 paper + talk after M2
+│   └── README.md
+├── m3_smt_integration/               (deleted 2026-08-18 — dropped; see git history)
 └── followups/                        parking lot — neither MVP-blocking nor scheduled
     ├── README.md
     ├── f1_categorical_formulation.md
@@ -134,11 +152,11 @@ Stage files have a stable shape:
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
-| [M1a](m1a_rust/README.md)               | **full** — 12 design docs + 10 phases + 49 stage files | **planned** — Rust port (ein.rs): 1:1 surface parity + internal rewrite + server mode | ~6.5 months |
-| [M1b](m1b_gui/README.md)                | placeholder README only | parked — slots between M1a and M2 | TBD |
+| [M1a](m1a_rust/README.md)               | **full** — 11 design docs + 10 phases + 42 stage files | **in progress** — Rust port (ein.rs): 1:1 surface parity + internal rewrite; P1a.0–P1a.3 shipped | ~5.5 months |
+| [M1b](m1b_gui/README.md)                | README + stack decision | parked — slots between M1a and M2; Tauri stack settled 2026-08-18 | TBD |
 | [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |
-| [M2b](m2b_presentation/README.md)       | placeholder README only | parked — paper + talk after M2 (or after M3) | TBD |
-| [M3](m3_smt_integration/README.md)      | sketch (one stage per phase) | planned | ~1 month after M2 |
+| [M2b](m2b_presentation/README.md)       | placeholder README only | parked — paper + talk after M2 | TBD |
+| ~~M3 — SMT integration~~                | *(deleted 2026-08-18 — dropped; see git history)* | **dropped** | — |
 | [followups](followups/README.md)        | theme files only | parking lot | unscheduled |
 
 ## Glossary

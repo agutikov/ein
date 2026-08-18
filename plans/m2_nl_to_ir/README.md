@@ -4,7 +4,7 @@
 **Status:** next.
 **Depends on:** M1 closed —
 the IR (P1.1) and the engine acceptance (P1.7) are M2's preconditions.
-**Blocks:** none (M3 only needs the IR, not the NL pipeline).
+**Blocks:** none.
 
 ## Goal
 

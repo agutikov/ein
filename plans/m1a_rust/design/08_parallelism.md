@@ -160,8 +160,9 @@ the first chunk that contains a pass.
 ## 5. Level 4 — process level
 
 Independent work with no shared mutable state: the conformance corpus
-runner, the fuzzer, `feature_matrix`, and — the real one — the server
-([09](09_server_mode.md)) serving many sessions. Level 4 needs nothing
+runner, the fuzzer, `feature_matrix`, and any embedder that drives
+several engines at once — [M1b](../../m1b_gui/README.md)'s GUI holding
+one session per open puzzle is the concrete one. Level 4 needs nothing
 from the engine beyond `Send + Sync` on the shared `Arc<KbCore>` /
 `Arc<Program>` / `Arc<PlanMemo>`, which levels 1–3 already require.
 
@@ -216,4 +217,5 @@ outright. That is what makes the design safe rather than merely fast.
   precondition for all of this.
 - [06 — Saturation](06_saturation.md) — levels 2 and 3 live here.
 - [07 — Search layer](07_search_layer.md) — level 1 lives here.
-- [09 — Server mode](09_server_mode.md) — level 4's consumer.
+- [12 — Toolchain & layout](12_toolchain_and_layout.md) §2 — the crate
+  boundaries level 4's consumers link against.

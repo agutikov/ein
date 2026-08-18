@@ -34,8 +34,10 @@ The port's answer is uniform: **every one of those becomes a `u32`.**
 
 ## 2. Symbols
 
-One global interner per process (per `Engine` in the server —
-[09](09_server_mode.md) § Interner scope).
+One global interner per process — equivalently, one per `Engine`, since
+a process holds a single engine now that the resident server is dropped.
+`.einb` is the one place that crosses interner boundaries, and it remaps
+([10](10_binary_format.md) §3).
 
 ```rust
 pub struct Symbol(u32);                 // 4 bytes, Copy, Eq, Hash

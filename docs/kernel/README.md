@@ -5,11 +5,11 @@ graph it reasons over, the data structures that hold the graph in
 memory, the surface language users write, and (placeholder, P1.3)
 the inference engine that fires rules.
 
-Everything above the kernel — NL → IR (M2), SMT slice (M3), the
+Everything above the kernel — NL → IR (M2), the GUI (M1b), the
 self-modifying constraint language (followup F2) — *consumes* the
-kernel. Everything below — the Python implementation in
-`src/ein/` — *implements* the kernel. This tree is the contract
-between them.
+kernel. Everything below — the Python implementation in `src/ein/`, and
+the Rust port `ein.rs` (M1a) — *implements* the kernel. This tree is the
+contract between them.
 
 ## Reading order
 

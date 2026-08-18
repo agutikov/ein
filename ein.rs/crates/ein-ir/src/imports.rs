@@ -17,10 +17,10 @@
 //! its own prefix (`B.D.x` ≠ `C.D.x`), while a *flat* one collides into a
 //! duplicate-name error — the intended strict policy (D3).
 //!
-//! This module is the engine's **only** filesystem access, which is what makes
-//! `--sandbox` ([design/09](../../../../plans/m1a_rust/design/09_server_mode.md) §7)
-//! a single seam later: everything goes through [`Resolver`], and the stdlib
-//! half already does ([`crate::stdlib`]).
+//! This module is the engine's **only** filesystem access, which is what keeps
+//! any later policy on what the engine may read a single seam rather than an
+//! audit: everything goes through [`Resolver`], and the stdlib half already
+//! does ([`crate::stdlib`]).
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};

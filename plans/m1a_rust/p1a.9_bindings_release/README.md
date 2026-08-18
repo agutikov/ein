@@ -2,9 +2,9 @@
 
 **Milestone:** [M1a — Rust port](../README.md)
 **Estimate:** 1.5 weeks (8 days of stages)
-**Depends on:** [P1a.8](../p1a.8_server_mode/README.md) (or
-[P1a.5](../p1a.5_presentation/README.md), if M2 needs the binding
-earlier — the PyO3 surface only needs a parity engine, not a server)
+**Depends on:** [P1a.5](../p1a.5_presentation/README.md) — the PyO3
+surface needs a parity engine and nothing else, so this phase can land
+any time after the parity gate if M2 wants the binding early.
 
 ## Goal
 
@@ -44,10 +44,11 @@ record without orphaning ein.py.
 - Naming: the module is `ein_rs`, not `ein`, so both can be installed
   side by side — which is exactly what the parity tests need. A future
   `ein` meta-package that re-exports one of them is a separate decision.
-- The M2 boundary question (PyO3 vs stdin/JSON) is now answered by
-  *both* being available: PyO3 from this phase, the socket from
-  [P1a.8](../p1a.8_server_mode/README.md). M2 picks per use case rather
-  than committing once.
+- **PyO3 is the only boundary M2 gets.** The socket alternative went
+  with the server (dropped 2026-08-18), so this phase is not one of two
+  options — it is *the* way CPython drives the engine, and the M2
+  boundary question is closed by construction. A subprocess call to the
+  CLI remains available for anything batch-shaped.
 
 ## Cross-links
 

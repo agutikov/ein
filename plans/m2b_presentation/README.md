@@ -1,12 +1,12 @@
 # M2b — Presentation + paper
 
 **Estimate:** TBD.
-**Status:** **placeholder** — slotted between M2 and M3, or after
-M3 depending on which results read more cleanly.
+**Status:** **placeholder** — slotted after M2. (It used to read
+"between M2 and M3, or after M3"; M3 was dropped 2026-08-18.)
 **Depends on:** [M2](../m2_nl_to_ir/README.md) — needs the NL → IR
 pipeline working on at least one benchmark suite to have a
 concrete result to write up.
-**Blocks:** nothing on the M1-M3 critical path; this is the
+**Blocks:** nothing on the critical path; this is the
 "share what we built" milestone.
 
 ## Goal
@@ -37,7 +37,10 @@ comparison axis:
 - **CSP / SAT / SMT solvers** ([`02`](../../docs/lib/02-solvers-csp-sat-smt.md))
   — Z3, MiniZinc, OR-tools. How does Ein's graph + rules
   approach compare on a Zebra-class puzzle: encoding effort,
-  solve time, trace quality, explainability?
+  solve time, trace quality, explainability? This is a *comparison*
+  axis, not an integration one — Ein never hands a slice to a solver
+  (M3 was dropped 2026-08-18), which sharpens the question rather than
+  removing it: the graph engine has to stand on its own numbers.
 - **Theorem provers / proof assistants** ([`03`](../../docs/lib/03-theorem-proving-formal-methods.md))
   — Coq, Lean, Isabelle. Ein is rule-driven but not a
   proof assistant; characterise the difference.
@@ -131,9 +134,9 @@ known unknowns rather than aspirational.
 ## Cross-links
 
 - M1 — core graph reasoning,
-  [M2 — NL → IR](../m2_nl_to_ir/README.md),
-  [M3 — SMT integration](../m3_smt_integration/README.md) — the
-  results the write-up reports on.
+  [M1a — Rust port](../m1a_rust/README.md),
+  [M2 — NL → IR](../m2_nl_to_ir/README.md) — the results the write-up
+  reports on.
 - [docs/lib/](../../docs/lib/) — the structured comparison
   axis (12 thematic files + knowledge graph).
 - [docs/ideas/](../ideas) — the user's framing of the

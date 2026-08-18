@@ -1,9 +1,8 @@
 //! `ein-ir` — lexer, parser, AST, dumper, macros, imports, embedded stdlib.
 //!
 //! This crate owns the engine's only filesystem access — import resolution and
-//! the stdlib — which is what makes `--sandbox`
-//! ([design/09](../../../plans/m1a_rust/design/09_server_mode.md)) a single
-//! seam later.
+//! the stdlib — which is what keeps any later policy on what the engine may
+//! read a single seam.
 //!
 //! The frontend is a **pure function** (source → forms) with no engine state,
 //! which is why it is the first phase of the port

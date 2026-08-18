@@ -89,9 +89,9 @@ Veldhuizen, *Leapfrog Triejoin* (2014);
 
 Promote into a perf phase (not into this file) when **any** holds:
 
-- a user-facing workload — M2's NL output, an M3 SMT slice, a bigger puzzle
-  corpus — exceeds its ergonomic time envelope *and* a fresh profile puts
-  the matcher back on top;
+- a user-facing workload — M2's NL output, M1b's GUI turnaround, a bigger
+  puzzle corpus — exceeds its ergonomic time envelope *and* a fresh profile
+  puts the matcher back on top;
 - the [M1a Rust port](../m1a_rust/) reaches the matcher and wants the
   final algorithm rather than a transcription of the Python one (the port
   is the most likely trigger, and the reason this file exists rather than

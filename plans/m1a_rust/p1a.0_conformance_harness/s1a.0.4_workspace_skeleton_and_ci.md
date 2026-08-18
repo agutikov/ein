@@ -32,8 +32,8 @@ measurable.
 ### Task T1a.0.4.1 — Workspace and crates
 
 Create the workspace with `ein-core`, `ein-ir`, `ein-infer`,
-`ein-render`, `ein-cli`, `ein-conformance` (and stub manifests for
-`ein-server` / `ein-py`, feature-gated off). Pin `rust-toolchain.toml`.
+`ein-render`, `ein-cli`, `ein-conformance` (and a stub manifest for
+`ein-py`, feature-gated off). Pin `rust-toolchain.toml`.
 `#![forbid(unsafe_code)]` everywhere except the future `.einb` casting
 module. Add `deny.toml`.
 
@@ -96,10 +96,12 @@ compile and run, and `AGENTS.md` documents `stdlib/`, `conformance/` and
 The workspace, `rust-toolchain.toml` and `deny.toml` (T1a.0.4.1/.2) landed
 early, with S1a.0.1: `ein-conformance` cannot be the only member of a
 workspace whose point is the other five, and the manifest has to list them to
-build at all. `ein-server` and `ein-py` are **not** here — both carry heavy
+build at all. `ein-server` and `ein-py` are **not** here — both carried heavy
 dependencies (an async runtime, PyO3/maturin) that the dependency policy says
 to defer until something needs them, and a feature-gated stub buys nothing a
-`[[workspace]]` line at P1a.8 will not.
+`[[workspace]]` line at the phase that needs it will not. The `ein-server`
+half of that call was overtaken on 2026-08-18 when the server was dropped
+outright; deferring the manifest is why nothing has to be deleted.
 
 ### The determinism lint (T1a.0.4.3)
 

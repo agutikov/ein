@@ -83,10 +83,11 @@ question's resolution.
 ### Task T1a.9.4.6 — Downstream pointers
 
 [M1b](../../m1b_gui/README.md): note that the engine it binds to is
-ein.rs, and that the server ([P1a.8](../p1a.8_server_mode/README.md)) is
-available as a backend. [M2](../../m2_nl_to_ir/README.md): note that the
-boundary question is answered by *both* PyO3 and the socket, so M2 picks
-per use case rather than committing once.
+ein.rs, linked as ordinary crates (its Tauri backend *is* the Rust
+process — there is no server between them), and that `.einb`
+([P1a.8](../p1a.8_binary_container/README.md)) is available for saved
+sessions. [M2](../../m2_nl_to_ir/README.md): note that PyO3 is the
+boundary, the socket alternative having gone with the server.
 [F11](../../followups/f11_deductive_layer_perf.md): closed or updated by
 [S1a.6.7](../p1a.6_performance/s1a.6.7_relever_matrix.md).
 

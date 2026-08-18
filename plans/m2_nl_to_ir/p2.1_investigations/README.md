@@ -23,7 +23,7 @@ question.
 | S2.1.2   | Decision: ambiguous parses                     | 1 day    |
 | S2.1.3   | Decision: ontology provenance                  | 1-2 days |
 | S2.1.4   | Decision: NL-output via LLM?                   | 1 day    |
-| S2.1.5   | Decision: when (if ever) direct LLM → SMT      | 1 day    |
+| S2.1.5   | Decision: when (if ever) direct LLM → constraints | 1 day |
 | S2.1.6   | Decision: model + GBNF strategy                | 2-3 days |
 
 These are *investigations*, not implementations — each ends with a

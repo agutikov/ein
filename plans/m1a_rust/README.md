@@ -1,15 +1,19 @@
 # M1a — Rust port (ein.rs)
 
-**Estimate:** ~6.5 months focused — 49 stages, ~27.5 weeks of stage
+**Estimate:** ~5.5 months focused — 42 stages, ~25 weeks of stage
 estimates (parity gate at ~week 17).
 **Status:** **in progress** — promoted from placeholder 2026-08-17 with the
 scope decision made (see § The decision); [P1a.0](p1a.0_conformance_harness/README.md)
 shipped the same day. Slotted between M1 and M1b.
+**Scope change 2026-08-18:** server mode is **dropped** — see
+§ Non-goals; P1a.8 keeps only the `.einb` container.
 **Depends on:** M1 (**shipped** 2026-06-17) — the engine semantics are
 frozen: kernel rules, NAF at the closure/world boundary (S1.21.8),
 branching, no-good learning, the set-indexed lattice engine.
 **Blocks:** [M1b](../m1b_gui/README.md) — the GUI binds to *the engine
-that ships*; landing ein.rs first means M1b binds once.
+that ships*; landing ein.rs first means M1b binds once, and after M1b's
+2026-08-18 stack decision it binds by linking these crates into a Tauri
+backend rather than talking to a process.
 [M2](../m2_nl_to_ir/README.md)'s NL frontend is unaffected (it stays
 CPython for llama.cpp) but talks to ein.rs across a binding boundary
 (P1a.9).
@@ -37,8 +41,8 @@ on purpose:
 > **I2 — Inside, everything is on the table.** Atoms and facts become
 > integers, tuples become flat interned rows, the fork becomes a
 > zero-copy layer, the matcher becomes a register machine, the search
-> layer runs on many cores, and the whole thing can be resident in a
-> server. None of that is allowed to leak through I1.
+> layer runs on many cores, and a loaded KB can be stored and mapped
+> back from a binary file. None of that is allowed to leak through I1.
 
 I1 is what makes I2 safe. A rewrite with a byte-exact oracle is a
 *measurable* rewrite: every optimisation is either parity-preserving or
@@ -170,12 +174,22 @@ Full contract: [design/11](design/11_shared_assets.md).
 | [P1a.5](p1a.5_presentation/README.md) | Presentation — trace, DOT, dumps, CLI | 4 | 3 w | **byte parity** of every stdout/stderr/file artefact → *ein.rs is a drop-in* |
 | [P1a.6](p1a.6_performance/README.md) | Performance — the optimisation programme | 7 | 3.5 w | targets above, parity unbroken |
 | [P1a.7](p1a.7_parallelism/README.md) | Parallelism — deterministic multi-core search + match | 5 | 2.5 w | `--jobs N` verdict- **and** counter-identical |
-| [P1a.8](p1a.8_server_mode/README.md) | Server mode — daemon, sessions, `.einb`, solution store | 8 | 3 w | multi-query / multi-KB service with a versioned protocol |
+| [P1a.8](p1a.8_binary_container/README.md) | Binary KB container — `.einb`, mmap, solution store | 1 | 0.5 w | `ein solve x.einb` byte-identical to `ein solve x.ein` |
 | [P1a.9](p1a.9_bindings_release/README.md) | Bindings + release — PyO3, packaging, docs | 4 | 1.5 w | M2 imports the engine and gets ein.rs |
 
-49 stages, 138 days of stage estimates ≈ 27.5 weeks. The **parity gate**
+42 stages, 125 days of stage estimates ≈ 25 weeks. The **parity gate**
 (end of P1a.5) is at ~week 17; everything after it is speed, scale and
 distribution on an engine that is already a drop-in replacement.
+
+> **P1a.8 was "Server mode" until 2026-08-18** — 8 stages, 3 weeks:
+> daemon, sessions, JSON-RPC, streaming, a solution cache and `ein <cmd>
+> --server`. Dropped: nothing downstream needs a resident process.
+> [M1b](../m1b_gui/README.md) settled on Tauri, whose backend *is* a Rust
+> process linking these crates directly; [M2](../m2_nl_to_ir/README.md)
+> crosses into CPython through PyO3 (P1a.9); the CLI is the only other
+> consumer. The one deliverable that was never about the daemon — the
+> `.einb` container — stays as a single stage. The seven server stages and
+> `design/09` are in git history.
 
 Ordering rationale: **parity first, speed second, scale third.** P1a.0–5
 land a slower-than-Python but byte-identical engine; only then does
@@ -194,10 +208,15 @@ Doing it the other way round means every regression is ambiguous.
 - **A "Rusty" reinterpretation of the IR.** No new syntax, no new
   keywords, no relaxed grammar. `grammar.lark` stays the spec of record
   (M2's GBNF lift reads it); the Rust parser is checked *against* it.
-- **Deleting ein.py.** It is the oracle and the reference for M2/M3
+- **Deleting ein.py.** It is the oracle and the reference for M2
   experiments. It stays, and stays green.
 - **Dropping PyPy support.** It keeps working; it is simply no longer
   the deployment target.
+- **A resident server.** Dropped 2026-08-18 (see the phase table).
+  ein.rs ships a **library and a CLI**; an embedder that wants
+  load-once/ask-many holds the engine in its own process — which is
+  exactly what M1b's Tauri backend and M2's PyO3 binding do. No daemon,
+  no wire protocol, no solution cache, no `--server` flag.
 - **New reasoning features.** Anything that changes what the engine can
   prove belongs in a followup ([F2](../followups/f2_self_modifying_language.md),
   [F4](../followups/f4_cross_cutting.md), [F7](../followups/f7_rule_induction.md)),
@@ -219,7 +238,6 @@ The technical substance lives in [`design/`](design/README.md):
 | [06 — Saturation](design/06_saturation.md) | closure/boundary loop, semi-naive delta, queues, incremental NAF |
 | [07 — Search layer](design/07_search_layer.md) | hypgen, lookahead, apriori, nogoods, the monotonic loop |
 | [08 — Parallelism](design/08_parallelism.md) | the four parallel levels and how each stays deterministic |
-| [09 — Server mode](design/09_server_mode.md) | daemon, session model, protocol, multi-query, caching |
 | [10 — Binary format](design/10_binary_format.md) | `.einb` container, mmap, versioning, content addressing |
 | [11 — Shared assets](design/11_shared_assets.md) | one stdlib, one example corpus, drift checks |
 | [12 — Toolchain & layout](design/12_toolchain_and_layout.md) | crates, dependencies, build, CI, benches |
@@ -230,10 +248,11 @@ The technical substance lives in [`design/`](design/README.md):
 
 Live questions carry `Q-M1a.<n>` ids in
 [`open_questions.md`](open_questions.md). The load-bearing ones at
-promotion time: parse-error message parity (Q-M1a.3), whether
-`--jobs > 1` may move counters (Q-M1a.7), and the wire protocol choice
-for the server (Q-M1a.11). P1a.3 added one the design docs did not
-anticipate: [Q-M1a.17](open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate),
+promotion time: parse-error message parity (Q-M1a.3) and whether
+`--jobs > 1` may move counters (Q-M1a.7). The two server questions
+(Q-M1a.11 wire protocol, Q-M1a.12 remote access) were **closed moot
+2026-08-18** with the server itself. P1a.3 added one the design docs did
+not anticipate: [Q-M1a.17](open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate),
 where Win B's ≥ 80 % target met its own measurement and lost.
 
 ## Cross-links

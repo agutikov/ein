@@ -18,8 +18,8 @@ verdicts — which is where a port most easily drifts.
 
 This stage adds `--events FILE` to ein.py: one JSON object per line,
 opt-in, off by default, with no branch on the hot path when disabled.
-The same schema is what ein.rs emits and what
-[the server streams](../design/09_server_mode.md) §5.
+The same schema is what ein.rs emits, and it is the one narration
+format any other observer (viewer, benchmark, embedder) reads.
 
 > This edits ein.py source. That is planned M1a work, not a retro-fit
 > into a closed M1 phase: the flag exists to serve the port and lands

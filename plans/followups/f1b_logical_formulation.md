@@ -73,8 +73,10 @@ A new milestone `m_followups_logical/` with phases:
   `intersect`, `union`, `complement` as activator families;
   prove (or disprove) closure under composition for the rule set.
 - **PFL.4** — identify the **first-order fragment ein cannot
-  decide** without an SMT backend (cf. [M3](../m3_smt_integration/README.md));
-  document the boundary.
+  decide**; document the boundary. This used to be phrased as "without an
+  SMT backend, cf. M3" — M3 was dropped 2026-08-18, so the boundary is no
+  longer where a solver takes over but simply where Ein stops, which
+  makes documenting it more load-bearing, not less.
 
 ## Prior art / connections
 
