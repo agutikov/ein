@@ -21,7 +21,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | open — gated on measurement |
 | [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | **closed moot 2026-08-18 — no server** |
 | [Q-M1a.12](#q-m1a12--remote-access-and-auth) | Remote access and auth for `ein serve` | **closed moot 2026-08-18 — no server** |
-| [Q-M1a.13](#q-m1a13--argparse-surface-parity) | Reproducing `argparse` `--help` and error text | open — blocking P1a.5 |
+| [Q-M1a.13](#q-m1a13--argparse-surface-parity) | Reproducing `argparse` `--help` and error text | **resolved 2026-08-18 — (b): behaviour exact, presentation normalised** |
 | [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | open |
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
@@ -272,21 +272,81 @@ never an auth system inside the engine.
 
 ## Q-M1a.13 — `argparse` surface parity
 
+**Resolved 2026-08-18: (b), with (c)'s content half made binding.** ein.rs
+uses `clap`; `--help` layout *and* usage-error text go on the
+[normalisation list](design/01_parity_contract.md) §5. Everything a script
+or a habit can depend on stays exact — the difference is presentation, and
+only presentation.
+
 T3 includes `--help` output and CLI error messages. `argparse` has a very
 specific layout (usage line wrapping, `options:` heading, metavar
 rendering, two-space indent) and its own error text
 (`argument -n/--solutions: invalid int value: 'x'`). `clap` does not
 match it and cannot be configured to.
 
-Options: (a) hand-roll the argument parser and the help renderer to match
-`argparse` byte-for-byte; (b) use `clap` and put `--help`/CLI-error text
-on the normalisation list; (c) match the *semantics* (flags, defaults,
-mutual exclusion, exit codes) exactly and accept different help text.
+The options were: (a) hand-roll the argument parser and the help renderer
+to match `argparse` byte-for-byte; (b) use `clap` and put
+`--help`/CLI-error text on the normalisation list; (c) match the
+*semantics* (flags, defaults, mutual exclusion, exit codes) exactly and
+accept different help text.
 
-**Leaning (a) for the ~40 flags across four subcommands** — it is
-mechanical, and "drop-in replacement" is weakened noticeably if `--help`
-differs. But it is real work and (c) is defensible; decide at
-[P1a.5](p1a.5_presentation/README.md) kickoff with a prototype of both.
+### What stays exact
+
+- The three subcommands, the four `render` sub-subcommands, and the
+  delegated dispatch — `ein saturate --help` prints `saturate`'s own help
+  under `prog="ein saturate"`, and `saturate` still appears in
+  `ein --help` though the top parser never parses it.
+- Every option at every level: long name, short key, metavar, arity,
+  default, `choices`, mutually-exclusive group — and its help *string*,
+  which is content, not layout.
+- The accept/reject verdict on every invocation, and the exit code.
+- Which stream each byte goes to.
+
+Free: wrapping, indentation, headings, ordering within a section, and the
+wording of a diagnosis.
+
+### Why not (a)
+
+The two halves are not separable. `argparse` welds its wrapped `usage:`
+block onto *every* error, so exempting the layout exempts the message —
+measured 2026-08-18:
+
+    $ ein solve examples/zebra.ein -n x
+    usage: ein solve [-h] [-n N | -e] [-m MAX_SET_SIZE] [-T MAX_TIME]
+                     [-E MAX_ENTERINGS] [-L] [-K] [-o {lex,score-sum}] [-y] [-z]
+                     [-d SEED] [-v] [-g PROGRESS_EVERY] [-D DIR] [-c] [-H] [-t]
+                     [-s] [-p] [-P] [-f] [--events FILE.jsonl]
+                     [--events-level {normal,verbose}] [--json-summary FILE.json]
+                     [-r FILE.md] [-G] [-F] [-R] [-l]
+                     file
+    ein solve: error: argument -n/--solutions: invalid int value: 'x'
+    → exit 2
+
+A byte-exact error therefore needs argparse's usage formatter, which is
+most of what (a) was priced at. The middle option — reproduce the
+`ein solve: error: …` diagnosis line and drop the usage block — was
+offered and declined: half a formatter for a line nothing reads
+mechanically.
+
+### What replaces the byte diff
+
+The byte comparison of `--help` was the only thing checking that ein.rs
+had not silently *lost* an option, so it is replaced rather than dropped.
+Both engines' help is parsed into a structure —
+`{subcommand → {option → short, metavar, arity, default, choices, group,
+help}}` — and the structures are diffed. On the property that matters
+this is *stronger* than the byte diff: a renamed short key or a changed
+default fails on its own line, instead of somewhere inside an 89-line
+text blob. Same instrument shape as
+[S1a.5.3](p1a.5_presentation/s1a.5.3_state_dumps.md)'s `dump-shape` —
+when there is no line protocol to diff over, render one.
+
+### What would make this unacceptable
+
+A consumer that reads `ein --help` or matches on ein's stderr text. There
+is none as of 2026-08-18: no script under `utils/` parses either, and
+`feature_matrix.py` only *echoes* a failing child's stderr into a report
+field. The day one is written, this is the entry to revisit.
 
 ## Q-M1a.14 — Crash parity
 
@@ -309,6 +369,16 @@ alternates between two messages across `PYTHONHASHSEED` values. A rule
 that compares that line makes the determinism sweep fail on a difference
 that is not one. `tier::compare_crash` therefore takes the exception
 class off the last traceback line and drops the message body.
+
+**A second fixture, from the CLI surface itself (found 2026-08-18, while
+resolving Q-M1a.13).** A missing input file is not an argument error:
+`cli/_common._parse_or_exit` and `cli/solve._timed_load` both call
+`Path.read_text` unguarded, so `ein solve /nope.ein` is a
+`FileNotFoundError` traceback and exit 1 — not the clean message
+[S1a.5.4](p1a.5_presentation/s1a.5.4_cli.md) originally listed among its
+argument errors. It belongs to this group instead, and it sharpens the
+open half below: the first fixture needs a mixed-type puzzle, this one
+needs a typo.
 
 Still open: whether ein.rs should *name* the same class (it has no
 `TypeError`), or whether the group relaxes to "both sides failed" once a

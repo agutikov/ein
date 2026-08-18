@@ -84,6 +84,7 @@ if that ever matters.
 | `include_dir` | ir | embedded stdlib |
 | `memchr` | ir | lexer scanning |
 | `rayon` | infer | [P1a.7](../p1a.7_parallelism/README.md) only, behind a `parallel` feature |
+| `clap` (derive) | cli | 37 options across 8 parsers; [Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity) took help and usage-error *text* off the byte gate on 2026-08-18, so nothing has to reproduce `argparse`'s formatter |
 | `serde` + `serde_json` | conformance, cli(`--events`) | the event protocol |
 | `zstd` | einb | optional section compression, behind a feature |
 | `pyo3` / `maturin` | ein-py | [P1a.9](../p1a.9_bindings_release/README.md) only |

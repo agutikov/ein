@@ -2,7 +2,9 @@
 
 **Milestone:** [M1a — Rust port](../README.md)
 **Status:** **in progress** — S1a.5.1, S1a.5.2 and S1a.5.3 shipped
-2026-08-18; the CLI (S1a.5.4) is what is left.
+2026-08-18; the CLI (S1a.5.4) is what is left, with its blocking question
+[Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity)
+resolved the same day.
 **Estimate:** 3 weeks (14 days of stages)
 **Depends on:** [P1a.4](../p1a.4_search_layer/README.md)
 **Blocks:** [P1a.6](../p1a.6_performance/README.md) — nothing is
@@ -13,8 +15,17 @@ optimised until the byte gate is closed.
 **The gate: T3, corpus-wide.** Every byte ein.py writes, ein.rs writes:
 the solution table, `--stats`, `--timing`'s layout, `--print-final-*`,
 the markdown trace with its inline DOT, all four `render` subcommands,
-`saturate`'s output and `--dump`, the `--dump-states` tree, and every
-`--help` and error message.
+`saturate`'s output and `--dump`, and the `--dump-states` tree.
+
+**Two exceptions, decided 2026-08-18 by
+[Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity):** the
+`--help` layout and the usage-error *text* are normalised rather than
+compared — ein.rs uses `clap`, which cannot be configured into
+`argparse`'s formatter and is not asked to be. Their **content** is still
+compared, by a structural diff that is stricter than the byte one on the
+property the byte one was guarding: no subcommand, option, short key,
+metavar, arity, default, `choices` value or exclusive group may differ,
+and no accept/reject verdict or exit code may differ either.
 
 After this phase ein.rs *is* a drop-in replacement, and the milestone's
 invariant I1 is discharged.
@@ -36,8 +47,11 @@ invariant I1 is discharged.
 - `plans/m1a_rust/divergences.md` is empty, or every entry has a written
   justification and a "what would make this unacceptable".
 - All 19 checked-in goldens reproduce byte-for-byte.
-- `ein.rs --help` and every subcommand `--help` match (or Q-M1a.13 is
-  resolved the other way, in the ledger, deliberately).
+- `ein --help` and every subcommand `--help` match **in content**: the
+  `{option → short, metavar, arity, default, choices, group, help}` map is
+  equal at all 8 parsers, and the extractor is shown to find them (29 for
+  `solve`, 3 for `saturate`, 5 across `render`) before the diff is
+  believed.
 - A user can `alias ein=ein.rs/target/release/ein` and every script in
   `utils/` keeps working — including `feature_matrix.py`,
   `profile_solve.py --no-profile`, `zebra2_trace.sh`,

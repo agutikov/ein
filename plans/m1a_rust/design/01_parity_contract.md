@@ -205,6 +205,8 @@ it requires an entry in [`open_questions.md`](../open_questions.md).
 | DOT node ids | `hashed_id` is `md5(seed)[:10]` — portable and stable (verified 2026-08-17) | **none** — ein.rs must reproduce them exactly, including the `seed` builders |
 | `state_hash.txt` / `state_digest` in messages | `hash(tuple)` is `PYTHONHASHSEED`-salted, so ein.py is not even self-stable here | compared for shape, not value ([02](02_determinism_and_order.md) §8) |
 | `--shuffle` runs | RNG is `random.Random(seed)` | ein.rs must reimplement CPython's Mersenne-Twister `shuffle` **exactly** (see Q-M1a.5) or the harness skips shuffled runs at T2/T3 |
+| `--help` text, every level | `argparse` and `clap` lay it out differently and neither can be configured into the other ([Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity)) | compared **structurally**: the subcommand set, and per option its short key, metavar, arity, default, `choices`, exclusive group and help string — extracted from both and diffed. Layout elided |
+| CLI usage-error text | `argparse` welds its wrapped `usage:` block onto every error, so exempting layout exempts the message (Q-M1a.13) | the accept/reject verdict and the exit code compared exactly; the text elided |
 | dict iteration order | *not* a divergence — see [02](02_determinism_and_order.md) | ein.rs reproduces insertion order structurally |
 
 The `--shuffle` row is the only one with real risk. Options in
@@ -212,6 +214,15 @@ Q-M1a.5: (a) port MT19937 + CPython's `random.shuffle` loop (≈ 60 lines,
 fully deterministic, gives T3 everywhere); (b) declare shuffled runs
 T0-only, since the whole point of `--shuffle` is that the verdict is
 *shuffle-invariant*. (a) is cheap and is the recommendation.
+
+The two CLI rows were added on 2026-08-18 by Q-M1a.13 — the one time this
+list has been extended, and by the mechanism this section requires. They
+carry a risk of a different kind, and it is not wording but *loss*: a byte
+diff of `--help` was what would have caught a silently missing option, so
+it is replaced by the structural comparison in the normalisation column
+rather than dropped. Nothing else moves — a subcommand, an option, a
+default, a `choices` value, an accept/reject verdict and an exit code are
+all still compared exactly.
 
 ---
 

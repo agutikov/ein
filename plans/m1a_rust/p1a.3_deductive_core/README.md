@@ -148,7 +148,8 @@ quietly worked around:
   provenance-kind counters, a firing breakdown and a `--dump` of the
   whole KB — sitting behind an `argparse` surface whose own parity is
   [Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity),
-  open and marked blocking P1a.5. It moves there whole rather than
+  open and marked blocking P1a.5 at the time (resolved 2026-08-18 —
+  `clap`, content-parity). It moves there whole rather than
   landing half a CLI here. What the phase *does* pin is everything that
   renderer reads: the saturated KB, every firing, and every counter.
 - **The compile-call count on an **exhaustive** zebra2** (17 430 → ~170)
