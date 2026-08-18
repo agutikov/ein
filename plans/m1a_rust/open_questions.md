@@ -13,7 +13,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.2](#q-m1a2--does-einpy-have-a-sunset) | Does ein.py have a sunset? | open — recommendation: no |
 | [Q-M1a.3](#q-m1a3--parse-error-message-parity) | Parse-error message parity, including `-1:-1` at EOF | **resolved 2026-08-18 — (a)** |
 | [Q-M1a.4](#q-m1a4--sorted-over-mixed-type-fact-args) | `sorted()` over mixed-type fact args raises in ein.py | **resolved 2026-08-18 — (a), [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)** |
-| [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | open — recommendation: port MT19937 |
+| [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | **resolved 2026-08-18 — (a), ported** |
 | [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | open — post-parity fix; reproduced at P1a.1 |
 | [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | open — recommendation: no, plus an opt-in escape |
 | [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | open — port as-is, flag upstream |
@@ -159,6 +159,24 @@ T0-only, on the grounds that shuffle-invariance is the point.
 **Recommendation: (a).** It is cheap, it is testable, and `--shuffle`
 runs are exactly the ones where a silent ordering difference would be
 easiest to dismiss.
+
+**Resolved 2026-08-18 at [S1a.4.5](p1a.4_search_layer/s1a.4.5_solve_loop.md)
+— (a), and it took about the size the recommendation guessed.**
+`ein-infer/src/mt19937.rs` is CPython's `_randommodule.c`: the twister,
+`init_by_array` seeding (absolute value, split into 32-bit words —
+`Random(-7)` and `Random(7)` are the same generator), `getrandbits`
+including its multi-word path, `_randbelow`'s rejection loop, and
+`shuffle`'s downward Fisher–Yates.
+
+It is checked twice. A **table** against CPython 3.14 — the first three
+words for four seeds, one of them wider than a word and one negative,
+plus a two-shuffle sequence that pins the state carrying across calls.
+And on **real data**: `solve-shape`'s third regime runs every corpus
+entry with `lattice_order_seed = 7` and compares the whole `enter`
+sequence — **65 files, 5 207 enterings, 0 differences** — where the
+traversal differs from the unshuffled one on 9 of the 14
+`examples/branching` files, so the generator is doing something rather
+than agreeing by inertia.
 
 ## Q-M1a.6 — `at None` in loader messages
 

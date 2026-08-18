@@ -737,6 +737,160 @@ fn enter_line(terms: &Terms, c: &[FactId], r: &crate::commitment::CommitmentSetR
     )
 }
 
+/// One whole solve — the phase's own gate — the S1a.4.5 diff.
+///
+/// The verdict, `k`, `exhausted`, every counter, the proof's shape and the
+/// search layer's **event stream**. Both regimes cap `max_enterings` and take
+/// `OnBudget::Verdict`, so no file can run away and the abort path is compared
+/// rather than avoided.
+///
+/// The log is written at `verbose` and then **filtered** to `enter` /
+/// `nogood` / `writeback` / `warn`. Generating the rest is unavoidable — the
+/// writer has a level, not a kind filter — but comparing it is not: a
+/// `stop_after = 1` `zebra` solve emits 58 000 events of which 19 are the
+/// search layer's, and the other 58 000 are the saturator's, which
+/// `saturate_events` already compares one layer down.
+///
+/// The `n` field is **kept**, and it is the strongest line here: it counts
+/// every event including the filtered ones, so two implementations agreeing on
+/// it agree on the whole stream, not merely on the part that is printed.
+pub fn solve_shape(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    mode: &str,
+) -> Result<String, String> {
+    use crate::solve::{NoDumper, OnBudget, SolveOptions, solve};
+
+    let exhaustive = mode == "exhaustive";
+    if mode == "shuffled" {
+        // Traversal-order probe: the verdict is shuffle-invariant, so what
+        // this compares is the *traversal*.
+        let mut cfg = kb.program().config.clone().unwrap_or_default();
+        cfg.lattice_order_seed = Some(7);
+        kb.program_mut().config = Some(cfg);
+    }
+    let opts = SolveOptions {
+        stop_after: if exhaustive { None } else { Some(1) },
+        max_set_size: 5,
+        max_enterings: Some(if exhaustive { 60 } else { 300 }),
+        on_budget: OnBudget::Verdict,
+        store_lattice: true,
+        ..SolveOptions::default()
+    };
+    let buffer = crate::events::Buffer::new();
+    let mut events =
+        crate::events::Events::to(Box::new(buffer.clone()), crate::events::Level::Verbose);
+    let solved =
+        solve(kb, terms, ast, &mut events, &mut NoDumper, &opts).map_err(|e| e.to_string())?;
+
+    let kinds = ["\"enter\"", "\"nogood\"", "\"writeback\"", "\"warn\""];
+    let log = buffer.to_string_lossy();
+    let log: Vec<&str> = log
+        .lines()
+        .filter(|l| {
+            let head = &l[..l.len().min(24)];
+            kinds.iter().any(|k| head.contains(k))
+        })
+        .collect();
+
+    let s = &solved.stats;
+    let mut out = vec![format!(
+        "VERDICT {} k={} exhausted={}",
+        solved.answer.as_str(),
+        s.solution_nodes,
+        py_bool(s.exhausted)
+    )];
+    if let crate::verdict::Answer::Aborted { reason } = &solved.answer {
+        out.push(format!("ABORT {reason}"));
+    }
+    if let crate::verdict::Answer::Verdict(crate::verdict::Verdict::Contradiction { unsat_core }) =
+        &solved.answer
+    {
+        let mut core: Vec<String> = unsat_core
+            .iter()
+            .map(|&f| crate::events::sexpr(terms, f))
+            .collect();
+        core.sort();
+        out.push(format!("CORE {} [{}]", core.len(), core.join(" ")));
+    }
+    let b = &s.base;
+    out.push(format!(
+        "STATS enterings={} alive={} dead_pre={} dead_post={} merged={} \
+         forced={} saturate={} layers={} nogoods={}/{}",
+        b.enterings_total,
+        b.enterings_alive,
+        b.enterings_dead_pre,
+        b.enterings_dead_post,
+        b.facts_merged,
+        b.forced_positives,
+        b.saturate_count,
+        b.layers_explored,
+        b.nogoods_emitted,
+        b.nogoods_subsumed
+    ));
+    if let Some(p) = &solved.proof {
+        out.push(format!(
+            "PROOF solutions={} dead={} alive_at_end={} nogoods={}",
+            p.solutions.len(),
+            p.dead_commitments.len(),
+            p.alive_at_end.len(),
+            p.learned_nogoods.len()
+        ));
+        // The proof's *content*, not only its shape: a solution's commitment
+        // (which `record_node`'s lex-smallest rule decides), and each dead
+        // commitment with the core that refuted it.
+        for r in &p.solutions {
+            let cs: Vec<String> = r
+                .commitment
+                .iter()
+                .map(|&f| crate::events::sexpr(terms, f))
+                .collect();
+            out.push(format!(
+                "  SOLUTION {{{}}} layer={} firings={}",
+                cs.join(" "),
+                r.layer,
+                r.firings.len()
+            ));
+        }
+        for d in &p.dead_commitments {
+            let cs: Vec<String> = d
+                .commitment
+                .iter()
+                .map(|&f| crate::events::sexpr(terms, f))
+                .collect();
+            let mut core: Vec<String> = d
+                .unsat_core
+                .iter()
+                .map(|&f| crate::events::sexpr(terms, f))
+                .collect();
+            core.sort();
+            out.push(format!(
+                "  DEAD {{{}}} layer={} kind={} core=[{}]",
+                cs.join(" "),
+                d.layer,
+                d.kind.as_str(),
+                core.join(" ")
+            ));
+        }
+        let mut clauses: Vec<Vec<String>> = p
+            .learned_nogoods
+            .iter()
+            .map(|c| crate::nogoods::clause_repr(terms, c))
+            .collect();
+        clauses.sort();
+        out.extend(
+            clauses
+                .iter()
+                .map(|c| format!("  CLAUSE {{{}}}", c.join(" "))),
+        );
+    }
+    out.push(format!("EVENTS {}", log.len()));
+    out.extend(log.iter().map(|l| format!("  {l}")));
+    out.push(format!("ROOT facts={}", kb.n_facts()));
+    Ok(out.join("\n"))
+}
+
 /// `repr(list_of_str)` — `PyValue` has no list shape, and one is needed in
 /// exactly this one place.
 fn py_list(items: &[String]) -> String {

@@ -35,6 +35,9 @@ One JSON object per line in, one per line out, in order:
     {"op": "explain-shape", "path": …, "alts": false} → … with alternatives not recorded
     {"op": "commit-shape",  "path": …}           → try_commitment_set over real candidates
     {"op": "commit-shape",  "path": …, "fail-fast": false} → … saturating dead forks to quiescence
+    {"op": "solve-shape",   "path": …}           → the whole solve: verdict, counters, events
+    {"op": "solve-shape",   "path": …, "mode": "exhaustive"} → … without `stop_after`
+    {"op": "solve-shape",   "path": …, "mode": "shuffled"}   → … with `--shuffle --seed 7`
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -149,6 +152,20 @@ The last two lines are the purity claims, checked rather than asserted:
 `REPEAT` re-enters the first commitment and compares the whole result against
 the first call, and `ROOT` reports root's fact count, which every entering must
 leave alone.
+
+`solve-shape` is the phase's own gate: one `solve`, with the verdict, `k`,
+`exhausted`, every `MonotonicStats` counter, the `LatticeProof`'s shape and the
+search-layer **event stream**. Both regimes cap `max_enterings` and take
+`on_budget="verdict"`, so no file can run away and the abort path is compared
+rather than avoided — `zebra2-minus-15` exhausts its cap and comes back
+`Aborted` on both sides.
+
+The event log is written at `verbose` and then **filtered** to
+`enter` / `nogood` / `writeback` / `warn`. Generating the rest is unavoidable
+(the writer has a level, not a kind filter) but comparing it is not: a
+`stop_after=1` `zebra` solve emits 58 000 events of which 19 are the search
+layer's, and the other 58 000 are the saturator's, which `saturate-events`
+already compares one layer down.
 
 `expand` is the one op with no single function behind it: `ein.ir.macros`
 provides `expand_macros` / `_substitute`, and the *loader* decides what to run
@@ -778,6 +795,99 @@ def _commit_shape(kb: KnowledgeBase, fail_fast: bool = True) -> str:
     return "\n".join(out)
 
 
+def _solve_shape(kb: KnowledgeBase, mode: str = "fast") -> str:
+    """One whole solve — the verdict, the counters, the proof and the search
+    layer's events — S1a.4.5.
+
+    Both regimes are budgeted (`max_enterings` + `on_budget="verdict"`) so a
+    corpus sweep cannot be held hostage by one puzzle, and so the abort path
+    is compared rather than avoided.
+    """
+    import os
+    import tempfile
+
+    from ein import events as ev
+    from ein.inference.monotonic import solve
+    from ein.inference.verdict import Aborted, Contradiction
+
+    from dataclasses import replace
+
+    from ein.inference.config import SolverConfig
+
+    exhaustive = mode == "exhaustive"
+    if mode == "shuffled":
+        # Traversal-order probe. The verdict is shuffle-invariant (S1.5b.31),
+        # so what this compares is the *traversal*: the `enter` sequence is a
+        # permutation of the unshuffled one only if the two implementations
+        # draw the same numbers from the same generator (Q-M1a.5).
+        kb.config = replace(kb.config or SolverConfig(), lattice_order_seed=7)
+    kw = dict(
+        stop_after=None if exhaustive else 1,
+        max_set_size=5,
+        max_enterings=60 if exhaustive else 300,
+        on_budget="verdict",
+        store_lattice=True,
+    )
+    fd, path = tempfile.mkstemp(suffix=".jsonl")
+    os.close(fd)
+    try:
+        ev.open_log(path, level="verbose")
+        try:
+            verdict, stats = solve(kb, **kw)
+        finally:
+            ev.close_log()
+        kinds = ('"enter"', '"nogood"', '"writeback"', '"warn"')
+        log = [l for l in Path(path).read_text(encoding="utf-8").splitlines()
+               if any(k in l[:24] for k in kinds)]
+    finally:
+        Path(path).unlink(missing_ok=True)
+
+    def show(facts) -> str:
+        return "[" + " ".join(sorted(events.fact(f) for f in facts)) + "]"
+
+    out = [f"VERDICT {type(verdict).__name__} k={stats.solution_nodes} "
+           f"exhausted={stats.exhausted}"]
+    if isinstance(verdict, Aborted):
+        out.append(f"ABORT {verdict.reason}")
+    if isinstance(verdict, Contradiction):
+        out.append(f"CORE {len(verdict.unsat_core)} {show(verdict.unsat_core)}")
+    s = stats
+    out.append(
+        f"STATS enterings={s.enterings_total} alive={s.enterings_alive} "
+        f"dead_pre={s.enterings_dead_pre} dead_post={s.enterings_dead_post} "
+        f"merged={s.facts_merged} forced={s.forced_positives} "
+        f"saturate={s.saturate_count} layers={s.layers_explored} "
+        f"nogoods={s.nogoods_emitted}/{s.nogoods_subsumed}"
+    )
+    proof = getattr(verdict, "proof", None)
+    if proof is not None:
+        out.append(
+            f"PROOF solutions={len(proof.solutions)} "
+            f"dead={len(proof.dead_commitments)} "
+            f"alive_at_end={len(proof.alive_at_end)} "
+            f"nogoods={len(proof.learned_nogoods)}"
+        )
+        # The proof's *content*, not only its shape: a solution's commitment
+        # (which `_record_node`'s lex-smallest rule decides), and each dead
+        # commitment with the core that refuted it.
+        for r in proof.solutions:
+            cs = " ".join(events.fact_id(f) for f in r.commitment)
+            out.append(f"  SOLUTION {{{cs}}} layer={r.layer} "
+                       f"firings={len(r.firings)}")
+        for d in proof.dead_commitments:
+            cs = " ".join(events.fact_id(f) for f in d.commitment)
+            out.append(f"  DEAD {{{cs}}} layer={d.layer} kind={d.kind} "
+                       f"core={show(d.unsat_core)}")
+        clauses = sorted(
+            sorted(events.fact_id(f) for f in c) for c in proof.learned_nogoods
+        )
+        out += [f"  CLAUSE {{{' '.join(c)}}}" for c in clauses]
+    out.append(f"EVENTS {len(log)}")
+    out += [f"  {l}" for l in log]
+    out.append(f"ROOT facts={len(kb.facts)}")
+    return "\n".join(out)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -817,6 +927,10 @@ def _handle(req: dict) -> dict:
     if op == "lattice-shape":
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True, "out": _lattice_shape(kb)}
+    if op == "solve-shape":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True,
+                "out": _solve_shape(kb, str(req.get("mode", "fast")))}
     if op == "commit-shape":
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True,

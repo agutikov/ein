@@ -55,6 +55,21 @@ fn rust_lattice(path: &Path) -> Option<Answer> {
     })
 }
 
+fn rust_solve(path: &Path, mode: &str) -> Option<Answer> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
+    Some(
+        match ein_infer::solve_shape(&ast, &mut terms, &mut kb, mode) {
+            Ok(text) => Answer::Ok(text),
+            Err(msg) => Answer::Err {
+                kind: "SolveError".into(),
+                msg,
+            },
+        },
+    )
+}
+
 fn rust_commit(path: &Path, fail_fast: bool) -> Option<Answer> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -210,6 +225,56 @@ fn the_whole_corpus_joins_the_same_layers() {
         // and `Value` is totally ordered, so ein.rs answers where ein.py
         // crashes. This is the *only* op that reaches it, and the only file
         // that can produce one.
+        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+    );
+}
+
+/// The whole solve — the phase's gate.
+///
+/// Two regimes, both budgeted: `stop_after = 1` (what `ein solve` does) and
+/// exhaustive. The event lines keep their `n`, which counts **every** event
+/// including the ~58 000 saturator ones this text filters out — so agreeing on
+/// the printed 19 means agreeing on all of them.
+#[test]
+fn the_whole_corpus_solves_the_same_way() {
+    sweep(
+        "solve",
+        serde_json::json!({"op": "solve-shape"}),
+        |p| rust_solve(p, "fast"),
+        |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
+        (60, 100),
+        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+    );
+}
+
+#[test]
+fn the_whole_corpus_solves_the_same_way_exhaustively() {
+    sweep(
+        "solve-exhaustive",
+        serde_json::json!({"op": "solve-shape", "mode": "exhaustive"}),
+        |p| rust_solve(p, "exhaustive"),
+        |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
+        (60, 200),
+        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+    );
+}
+
+/// The seeded traversal shuffle — Q-M1a.5.
+///
+/// The verdict is shuffle-invariant by design, so what this compares is the
+/// **traversal**: the `enter` sequence is the same permutation on both sides
+/// only if both draw the same numbers from the same generator. That means
+/// CPython's Mersenne Twister, its `init_by_array` seeding, its
+/// `_randbelow` rejection loop and `shuffle`'s Fisher–Yates direction — one
+/// generator per solve, whose state carries across layers.
+#[test]
+fn the_whole_corpus_shuffles_the_same_way() {
+    sweep(
+        "solve-shuffled",
+        serde_json::json!({"op": "solve-shape", "mode": "shuffled"}),
+        |p| rust_solve(p, "shuffled"),
+        |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
+        (60, 100),
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
     );
 }

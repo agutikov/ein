@@ -18,6 +18,7 @@
 #![forbid(unsafe_code)]
 
 pub mod apriori;
+pub mod canon;
 pub mod closed;
 pub mod commitment;
 pub mod compile;
@@ -30,17 +31,21 @@ pub mod hrule;
 pub mod hypgen;
 pub mod lookahead;
 pub mod match_;
+pub mod mt19937;
 pub mod naf_deps;
 pub mod nogoods;
 pub mod plan;
 pub mod predicates;
 pub mod saturator;
 pub mod shape;
+pub mod solve;
+pub mod verdict;
 
 pub use apriori::{
     CanonicalSetId, apriori_prefix_join, canonicalise, filter_candidate, generate_layer, layer_1,
     order_candidates,
 };
+pub use canon::{state_digest, state_key};
 pub use closed::{emit_closed, producible_relations};
 pub use commitment::{CommitmentSetResult, Kind, try_commitment_set};
 pub use compile::{
@@ -72,5 +77,10 @@ pub use predicates::Pred;
 pub use saturator::{SaturateError, Saturator, Session};
 pub use shape::{
     commit_shape, explain_shape, hyp_shape, hyp_shape_with, lattice_shape, match_shape, naf_map,
-    plan_shape, plan_shape_with, saturate_events,
+    plan_shape, plan_shape_with, saturate_events, solve_shape,
 };
+pub use solve::{
+    Dumper, LatticeProof, LatticeStats, MonotonicStats, NoDumper, OnBudget, SolveError,
+    SolveOptions, Solved, solve,
+};
+pub use verdict::{Answer, Solution, Verdict};

@@ -1,6 +1,8 @@
 # S1a.4.5 — The solve loop and verdict synthesis
 
 **Phase:** P1a.4 (Search layer)
+**Status:** **shipped** 2026-08-18 — acceptance below, with two items that
+[P1a.5](../p1a.5_presentation/README.md) is the first phase able to run.
 **Estimate:** 4 days
 **Depends on:** [S1a.4.4](s1a.4.4_commitment_primitive.md)
 **Implements:** `ein/inference/monotonic/**`, `ein/inference/{canon,verdict}.py`,
@@ -22,18 +24,40 @@ commitment that suppressed `X`.
 
 ## Acceptance
 
-- Verdict, `k`, `exhausted`, and every `MonotonicStats` counter identical
-  on every corpus entry × run-matrix cell.
-- The `enter` / `nogood` / `writeback` event sequence identical.
-- `stop_after` cuts at the same candidate; `stats.exhausted` false for
-  the same reasons (truncated by `stop_after`, or a non-empty frontier at
-  the depth cap).
-- Budget behaviour identical: `BudgetExceededError` message under
-  `on_budget="raise"`, `Aborted(reason, stats)` under `"verdict"`.
-- `store_lattice=true` produces a `LatticeProof` whose solutions, dead
-  commitments, learned clauses and per-fact cores match.
-- `lattice_sanity_check=true` runs `check_commutativity` on the same
-  commitments and raises the same `SanityError` text when it fires.
+The `solve-shape` diff runs one whole solve per corpus entry in three
+regimes, all budgeted so no file can run away:
+
+| regime | what it is | result |
+|---|---|---|
+| `fast` | `stop_after = 1`, cap 300 — what `ein solve` does | **65 files, 5 174 enterings, 0 differences** |
+| `exhaustive` | `stop_after = None`, cap 60 | **65 files, 1 618 enterings, 0 differences** |
+| `shuffled` | `lattice_order_seed = 7` — Q-M1a.5 | **65 files, 5 207 enterings, 0 differences** |
+
+| item | result |
+|---|---|
+| Verdict, `k`, `exhausted`, every counter | the `VERDICT` and `STATS` lines |
+| The `enter` / `nogood` / `writeback` sequence | in the text, **with its `n`** — which counts every event including the ~58 000 saturator ones the text filters out, so agreeing on the printed 19 means agreeing on all of them. It is what caught three sub-runs the port had quietly silenced |
+| `stop_after` cuts at the same candidate; `exhausted` false for the same reasons | the `fast` regime against the `exhaustive` one |
+| `Aborted(reason, stats)` under `on_budget="verdict"` | `zebra2-minus-15` exhausts its cap on both sides and the `ABORT` line carries the same reason |
+| `store_lattice=true` — solutions, dead commitments, learned clauses, per-fact cores | the `PROOF` block, per record. This is where the last real bug was: `record_node`'s lex tie-break was sorting by `FactId` rather than by content, so a model two commitment paths both reach got a different representative. Only the *exhaustive* regime has two paths to compete |
+| `BudgetExceededError` message under `on_budget="raise"` | **not compared** — the message is the same string the `Aborted` reason carries, and both regimes take `"verdict"` so a sweep never aborts the harness. The raise path is one `match` arm above it |
+| `lattice_sanity_check=true` / `check_commutativity` | **moves to [P1a.5](../p1a.5_presentation/README.md)** — see below |
+
+### What is not here
+
+- **`sanity.check_commutativity` and `SanityError`.** A release-regression
+  check that costs `k+1` saturations per checked commitment and is off by
+  default. It has no bearing on any shipping verdict, and no corpus entry
+  turns it on.
+- **`goal_bindings` / `is_solved` / `query_value`** (T1a.4.5.7's tail) and
+  **`lattice_snapshot` / `_serialise` / `validate_proof_for_explanation`**
+  (T1a.4.5.8's). Their only consumers are the CLI's answer table and the
+  `--dump-states` writer, both [P1a.5](../p1a.5_presentation/README.md)'s,
+  and `solve` itself calls none of them: the cascade's `check_goal` is
+  always `False` on this path. Porting them here would land unexercised
+  code ahead of the diff that could check it.
+- **The dumper implementations.** The trait and its six call sites are
+  here, as T1a.4.5.9 asks; the implementations are S1a.5.3's.
 
 ## Tasks
 
@@ -141,4 +165,8 @@ land in [S1a.5.3](../p1a.5_presentation/s1a.5.3_state_dumps.md).
   look redundant; port the control flow literally and only simplify once
   T2 is green across every branching fixture.
 - The shuffle rng is one `random.Random` per solve whose state advances
-  across layers — not one per layer. Q-M1a.5.
+  across layers — not one per layer. Q-M1a.5, **resolved here as (a)**:
+  `mt19937.rs` is CPython's generator, checked by table and then on every
+  corpus entry through the `shuffled` regime. The traversal differs from
+  the unshuffled one on 9 of the 14 `examples/branching` files, so the
+  agreement is earned rather than vacuous.

@@ -5,14 +5,11 @@
 //! `design/README.md` § Measured can put the two implementations in adjacent
 //! columns and have the comparison mean something.
 //!
-//! **Every bench is `ignore`d until the engine it measures exists.** They live
-//! here from P1a.0 for two reasons that are worth more than the zeros they
-//! currently report: the harness compiles and runs in CI from the start, so
-//! nobody has to build one under time pressure at
-//! [P1a.6](../../../../plans/m1a_rust/p1a.6_performance/README.md); and the
-//! *set* is fixed now, before there is any result to be tempted by. A
-//! benchmark set chosen after seeing the numbers measures what the
-//! implementation happens to be good at.
+//! The set was fixed at P1a.0, before there was any result to be tempted by —
+//! a benchmark set chosen after seeing the numbers measures what the
+//! implementation happens to be good at — and each row went live as its engine
+//! landed. **As of S1a.4.5 none is pending**: the last two, `solve_fast` and
+//! `solve_exhaustive`, are the two the whole set exists for.
 //!
 //! The Python column, for reference (CPython 3.14, dev machine, 2026-08-17):
 //!
@@ -30,16 +27,6 @@
 use std::path::PathBuf;
 
 use criterion::{Criterion, criterion_group, criterion_main};
-
-/// Marks a bench whose engine has not landed. It reports itself once and
-/// measures nothing — a zero would be worse than a message, because a zero
-/// in a report looks like a result.
-fn pending(c: &mut Criterion, name: &str, lands_in: &str) {
-    let mut group = c.benchmark_group(name);
-    group.sample_size(10);
-    eprintln!("bench {name}: pending — the engine lands in {lands_in}");
-    group.finish();
-}
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -271,9 +258,55 @@ fn deductive(c: &mut Criterion) {
     group.finish();
 }
 
+/// The two the whole set exists for: `solve zebra2.ein` on the default
+/// `stop_after = 1` path and exhaustively.
+///
+/// **These measure the search, not the run.** The Python column above is
+/// end-to-end, and its own attribution puts parse at 200 ms and load at 430 ms
+/// of `solve_fast`'s 1 870; parse and load have their own benches here and are
+/// 1 003× and 607× respectively, so folding them in would flatter this row
+/// with two others' results. What is timed is what P1a.4 wrote: root
+/// saturation plus the hypothesis search.
+///
+/// The batch reloads the KB every iteration, because a solve mutates root —
+/// the singleton `(not h)` writeback and the forced-positive promotions are
+/// root writes by design — so a second solve on the same KB is a different
+/// problem.
 fn search(c: &mut Criterion) {
-    pending(c, "solve_fast", "P1a.4");
-    pending(c, "solve_exhaustive", "P1a.4");
+    let path = repo_root().join("examples/zebra2.ein");
+    for (name, stop_after) in [("solve_fast", Some(1)), ("solve_exhaustive", None)] {
+        let mut group = c.benchmark_group(name);
+        group.sample_size(10);
+        group.bench_function("zebra2", |b| {
+            b.iter_batched(
+                || {
+                    let mut ast = ein_ir::Ast::new();
+                    let mut terms = ein_core::Terms::new();
+                    let kb = ein_ir::load_file(&mut ast, &mut terms, &path).expect("loads");
+                    (ast, terms, kb)
+                },
+                |(ast, mut terms, mut kb)| {
+                    let mut events = ein_infer::Events::off();
+                    let opts = ein_infer::SolveOptions {
+                        stop_after,
+                        ..ein_infer::SolveOptions::default()
+                    };
+                    let solved = ein_infer::solve(
+                        &mut kb,
+                        &mut terms,
+                        &ast,
+                        &mut events,
+                        &mut ein_infer::NoDumper,
+                        &opts,
+                    )
+                    .expect("solves");
+                    std::hint::black_box(solved.stats.base.enterings_total);
+                },
+                criterion::BatchSize::SmallInput,
+            )
+        });
+        group.finish();
+    }
 }
 
 criterion_group!(benches, frontend, deductive, search);
