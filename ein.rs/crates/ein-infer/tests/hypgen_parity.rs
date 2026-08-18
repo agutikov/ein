@@ -55,6 +55,21 @@ fn rust_lattice(path: &Path) -> Option<Answer> {
     })
 }
 
+fn rust_explain(path: &Path, alts: bool) -> Option<Answer> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
+    Some(
+        match ein_infer::explain_shape(&ast, &mut terms, &mut kb, alts) {
+            Ok(text) => Answer::Ok(text),
+            Err(e) => Answer::Err {
+                kind: "SaturateError".into(),
+                msg: e.to_string(),
+            },
+        },
+    )
+}
+
 fn rust_naf(path: &Path) -> Option<Answer> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -181,6 +196,36 @@ fn the_whole_corpus_joins_the_same_layers() {
         // crashes. This is the *only* op that reaches it, and the only file
         // that can produce one.
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+    );
+}
+
+/// The three searches over the AND/OR justification graph.
+///
+/// Run twice, because `record_alternative_justifications` decides whether the
+/// graph *is* an OR-graph: with it off a fact has one derivation and the
+/// search degenerates to the pre-S1.21.7 recorded-primary walk, which is a
+/// different code path and a supported configuration.
+#[test]
+fn the_whole_corpus_explains_the_same_way() {
+    sweep(
+        "explain",
+        serde_json::json!({"op": "explain-shape"}),
+        |p| rust_explain(p, true),
+        |a| a.lines().filter(|l| l.starts_with("EXPLAIN ")).count(),
+        (60, 150),
+        &[],
+    );
+}
+
+#[test]
+fn the_whole_corpus_explains_the_same_way_without_alternatives() {
+    sweep(
+        "explain-noalts",
+        serde_json::json!({"op": "explain-shape", "alts": false}),
+        |p| rust_explain(p, false),
+        |a| a.lines().filter(|l| l.starts_with("EXPLAIN ")).count(),
+        (60, 150),
+        &[],
     );
 }
 

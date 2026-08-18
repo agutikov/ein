@@ -482,6 +482,149 @@ pub fn lattice_shape(
     Ok(buffer.to_string_lossy() + &out.join("\n"))
 }
 
+/// Unsat cores and the ATMS label search — the S1a.4.6 diff.
+///
+/// Contradictions first — but most corpus files have none, so an op that only
+/// explained contradictions would be empty on nearly all of them. It therefore
+/// also explains a deterministic sample of *derived* facts (every 5th by
+/// content order, capped at 12), which is where the label propagation actually
+/// gets exercised, and repeats the sample under a deliberately tight budget to
+/// pin where the caps cut.
+///
+/// `rounds` and `facts_considered` go out alongside the frontier because they
+/// say what the search *did*: a port can return the right frontier the wrong
+/// way, and this is the module where that is most likely.
+///
+/// Frontiers go out **sorted**. ein.py's is a `frozenset`, so its own
+/// iteration order is not reproducible even run to run, and every display site
+/// sorts.
+pub fn explain_shape(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    alts: bool,
+) -> Result<String, crate::saturator::SaturateError> {
+    use crate::explain::{Explanation, ExplanationBudget, explain};
+
+    let mut cfg = kb.program().config.clone().unwrap_or_default();
+    cfg.record_alternative_justifications = alts;
+    kb.program_mut().config = Some(cfg);
+
+    let mut events = crate::events::Events::off();
+    let mut s = crate::saturator::Session {
+        kb,
+        terms,
+        ast,
+        events: &mut events,
+    };
+    let mut sat = crate::saturator::Saturator::new(&mut s)?;
+    sat.saturate(&mut s, None, &mut |_| {})?;
+    let (kb, terms) = (&*s.kb, &*s.terms);
+
+    let show = |facts: &[FactId]| -> String {
+        let mut items: Vec<String> = facts
+            .iter()
+            .map(|&f| crate::events::sexpr(terms, f))
+            .collect();
+        items.sort();
+        format!("[{}]", items.join(" "))
+    };
+    let line = |tag: &str, e: &Explanation| -> String {
+        let target = e
+            .target
+            .map_or_else(|| "-".to_string(), |t| crate::events::sexpr(terms, t));
+        format!(
+            "{tag} {} target={target} exhausted={} rounds={} considered={} {}",
+            e.len(),
+            py_bool(e.exhausted),
+            e.rounds,
+            e.facts_considered,
+            show(&e.frontier)
+        )
+    };
+
+    let witnesses: Vec<FactId> = crate::contradiction::detect(kb, terms)
+        .iter()
+        .map(|c| c.witness())
+        .collect();
+    let mut core = ein_core::walks::unsat_core(
+        kb,
+        terms,
+        &witnesses,
+        ein_core::walks::Justifications::Primary,
+    );
+    core.sort_unstable();
+    core.dedup();
+    let scf = crate::explain::smallest_contradiction_frontier(kb, terms, Some(&witnesses));
+    let budget = ExplanationBudget::default();
+    let tight = ExplanationBudget {
+        max_environments: 1,
+        max_rounds: 2,
+        max_env_size: Some(1),
+        max_facts: 10,
+    };
+    let mut out = vec![
+        format!(
+            "ALTS {} witnesses={}",
+            py_bool(kb.has_alternative_justifications()),
+            witnesses.len()
+        ),
+        format!("CORE {} {}", core.len(), show(&core)),
+        format!("SCF {} {}", scf.len(), show(&scf)),
+        line("CONTRA", &explain(kb, terms, &witnesses, &budget)),
+        // The **multi-target** budget cut, which is the only way to reach
+        // `recorded_fallback`'s tie-break: with one target its key never has
+        // to break a tie, and `zebra2-bad` offers 126 witnesses.
+        line("CONTRA-TIGHT", &explain(kb, terms, &witnesses, &tight)),
+        // The fallback's tie-break, reached on purpose. It only decides when
+        // two targets tie on core *size*, and on this corpus the smallest tie
+        // is won by the same witness whichever way it is broken —
+        // `zebra2-bad` has four size-1 cores whose repr-smallest is also the
+        // first the detector found. Reversing the witness list separates the
+        // two, so dropping the `" ".join(sorted(repr(f)))` half of the key
+        // becomes visible instead of being a comment nobody can check.
+        line("FALLBACK-REV", &{
+            let mut rev = witnesses.clone();
+            rev.reverse();
+            crate::explain::recorded_fallback(kb, terms, &rev, 0, 0)
+        }),
+    ];
+
+    // `sorted(…, key=repr)` over the `Fact` dataclass repr, then `[::11][:8]`.
+    let mut derived: Vec<(String, FactId)> = kb
+        .facts()
+        .filter(|&f| {
+            kb.primary(f)
+                .is_some_and(|p| terms.provs.get(p).kind == ein_core::ProvKind::Rule)
+        })
+        .map(|f| (repr(&terms.py_fact(f)), f))
+        .collect();
+    derived.sort();
+    let sample: Vec<FactId> = derived
+        .iter()
+        .step_by(5)
+        .take(12)
+        .map(|(_, f)| *f)
+        .collect();
+    for &f in &sample {
+        let sexpr = crate::events::sexpr(terms, f);
+        out.push(line(
+            &format!("EXPLAIN {sexpr}"),
+            &explain(kb, terms, &[f], &budget),
+        ));
+        out.push(line(
+            &format!("TIGHT   {sexpr}"),
+            &explain(kb, terms, &[f], &tight),
+        ));
+    }
+    out.push(format!(
+        "SUMMARY facts={} derived={}",
+        kb.n_facts(),
+        sample.len()
+    ));
+    Ok(out.join("\n"))
+}
+
 /// `repr(list_of_str)` — `PyValue` has no list shape, and one is needed in
 /// exactly this one place.
 fn py_list(items: &[String]) -> String {

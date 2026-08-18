@@ -23,6 +23,7 @@ pub mod compile;
 pub mod contradiction;
 pub mod engine;
 pub mod events;
+pub mod explain;
 pub mod firing;
 pub mod hrule;
 pub mod hypgen;
@@ -47,6 +48,10 @@ pub use compile::{
 pub use contradiction::{Contradiction, contradicts, detect, has_contradiction};
 pub use engine::Engine;
 pub use events::{Events, Level};
+pub use explain::{
+    Explanation, ExplanationBudget, explain, minimal_contradiction_frontier,
+    smallest_contradiction_frontier,
+};
 pub use firing::{ActivatorId, BindingKey, Env, FireError, Firing, build_fact, fire};
 pub use hrule::Hrules;
 pub use hypgen::{
@@ -64,6 +69,6 @@ pub use plan::{
 pub use predicates::Pred;
 pub use saturator::{SaturateError, Saturator, Session};
 pub use shape::{
-    hyp_shape, hyp_shape_with, lattice_shape, match_shape, naf_map, plan_shape, plan_shape_with,
-    saturate_events,
+    explain_shape, hyp_shape, hyp_shape_with, lattice_shape, match_shape, naf_map, plan_shape,
+    plan_shape_with, saturate_events,
 };

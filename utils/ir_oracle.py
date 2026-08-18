@@ -31,6 +31,8 @@ One JSON object per line in, one per line out, in order:
     {"op": "hyp-shape", "path": …, "closed": true}    → … after the auto-closure pass
     {"op": "naf-map",   "path": …}               → the static NAF dependency map
     {"op": "lattice-shape", "path": …}           → the Apriori join + the no-good store
+    {"op": "explain-shape", "path": …}           → unsat cores + the ATMS label search
+    {"op": "explain-shape", "path": …, "alts": false} → … with alternatives not recorded
 
 `kb-shape` runs the **loader** and renders the resulting `KnowledgeBase` as one
 deterministic text: the registries in insertion order, the fact list in ingest
@@ -117,6 +119,20 @@ with `min_size=1`, as the set-indexed engines call it. The store is then
 printed as a sorted list of sorted clauses, and the layer regenerated against
 it, so both the subsumption bookkeeping and its effect on candidate generation
 are compared.
+
+`explain-shape` covers the three searches over the AND/OR justification graph.
+Most corpus files have **no** root contradiction, so an op that only explained
+contradictions would be empty on nearly all of them — it therefore also
+explains a deterministic sample of *derived* facts (every 5th by content
+order, capped at 12), which is where the label propagation actually gets
+exercised. Alongside the frontier it reports `rounds` and `facts_considered`,
+because those pin the search's behaviour rather than only its answer, and a
+second run under a deliberately tight budget pins where the caps cut. `alts:
+false` re-saturates with `record_alternative_justifications` off, which is the
+recorded-primary path the fallback and the pre-S1.21.7 core take.
+
+Frontiers go out **sorted**: ein.py's is a `frozenset`, so its own iteration
+order is not reproducible even run to run, and every display site sorts.
 
 `expand` is the one op with no single function behind it: `ein.ir.macros`
 provides `expand_macros` / `_substitute`, and the *loader* decides what to run
@@ -622,6 +638,76 @@ def _lattice_shape(kb: KnowledgeBase) -> str:
     return log + "\n".join(out)
 
 
+def _explain_shape(kb: KnowledgeBase, alts: bool = True) -> str:
+    """Unsat cores and the ATMS label search — S1a.4.6.
+
+    Contradictions first (most files have none), then a bounded, deterministic
+    sample of derived facts, then the same sample under a tight budget.
+    `rounds` / `facts_considered` are reported because they say what the search
+    *did*, and a port can return the right frontier the wrong way.
+    """
+    from dataclasses import replace
+
+    from ein.inference.config import SolverConfig
+    from ein.inference.contradiction import ContradictionDetector
+    from ein.inference.explain import (
+        ExplanationBudget,
+        _recorded_fallback,
+        explain,
+    )
+    from ein.inference.frontier import smallest_contradiction_frontier
+    from ein.inference.saturator import Saturator
+
+    kb.config = replace(kb.config or SolverConfig(),
+                        record_alternative_justifications=alts)
+    for _ in Saturator(kb).saturate():
+        pass
+
+    def show(facts) -> str:
+        return "[" + " ".join(sorted(events.fact(f) for f in facts)) + "]"
+
+    def line(tag: str, e) -> str:
+        target = events.fact(e.target) if e.target is not None else "-"
+        return (f"{tag} {len(e)} target={target} exhausted={e.exhausted} "
+                f"rounds={e.rounds} considered={e.facts_considered} "
+                f"{show(e.frontier)}")
+
+    tight = ExplanationBudget(max_environments=1, max_rounds=2,
+                              max_env_size=1, max_facts=10)
+    witnesses = [c.witness for c in ContradictionDetector(kb).detect()]
+    out = [
+        f"ALTS {kb._alt_justifications != {}} witnesses={len(witnesses)}",
+        f"CORE {len(kb.unsat_core(witnesses))} {show(kb.unsat_core(witnesses))}",
+        f"SCF {len(smallest_contradiction_frontier(kb, witnesses))} "
+        f"{show(smallest_contradiction_frontier(kb, witnesses))}",
+        line("CONTRA", explain(kb, witnesses)),
+        # The **multi-target** budget cut, which is the only way to reach
+        # `_recorded_fallback`'s tie-break: with one target its key never has
+        # to break a tie, and `zebra2-bad` offers 126 witnesses.
+        line("CONTRA-TIGHT", explain(kb, witnesses, budget=tight)),
+        # The fallback's tie-break, reached on purpose. It only decides when
+        # two targets tie on core *size*, and on this corpus the smallest tie
+        # is won by the same witness whichever way it is broken — `zebra2-bad`
+        # has four size-1 cores whose repr-smallest is also the first the
+        # detector found. Reversing the witness list separates the two, so
+        # dropping the `" ".join(sorted(repr(f)))` half of the key becomes
+        # visible instead of being a comment nobody can check.
+        line("FALLBACK-REV",
+             _recorded_fallback(kb, list(reversed(witnesses)), 0, 0)),
+    ]
+
+    derived = sorted(
+        (f for f in kb.facts
+         if f.provenance is not None and f.provenance.kind == "rule"),
+        key=repr,
+    )[::5][:12]
+    for f in derived:
+        out.append(line(f"EXPLAIN {events.fact(f)}", explain(kb, [f])))
+        out.append(line(f"TIGHT   {events.fact(f)}", explain(kb, [f], budget=tight)))
+    out.append(f"SUMMARY facts={len(kb.facts)} derived={len(derived)}")
+    return "\n".join(out)
+
+
 def _source(req: dict) -> tuple[str, str | None, Path | None]:
     """`(text, filename, base_dir)` for a request."""
     if "path" in req:
@@ -661,6 +747,10 @@ def _handle(req: dict) -> dict:
     if op == "lattice-shape":
         kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
         return {"ok": True, "out": _lattice_shape(kb)}
+    if op == "explain-shape":
+        kb = KnowledgeBase.from_ir(forms, base_dir=base_dir)
+        return {"ok": True,
+                "out": _explain_shape(kb, bool(req.get("alts", True)))}
     if op == "accept":
         return {"ok": True}
     if op == "parse":
