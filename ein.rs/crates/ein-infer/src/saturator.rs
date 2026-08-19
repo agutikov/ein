@@ -125,6 +125,62 @@ struct Entry {
     guard_set: GuardSetId,
 }
 
+/// The candidate arena, in two layers — the shape
+/// [design/03 §5](../../../../plans/m1a_rust/design/03_data_model.md) gives
+/// the KB, for the same reason.
+///
+/// A fork *resumes* its parent's saturation
+/// ([S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)),
+/// so it inherits every candidate the parent enqueued — and, before
+/// [T1a.6.12.5](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6125--the-per-entering-snapshot),
+/// deep-copied all of them once per entering: a `Vec` whose rows own three
+/// boxed slices and a `BindingKey`, so four allocations per candidate,
+/// **3.5 % of `zebra -e` in `Vec::clone` and 1.6 % more dropping it again**.
+///
+/// Nothing in the parent's half is ever written after enqueue — that was
+/// [T1a.6.12.1a](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6121--visit-what-changed-not-everything)'s
+/// side effect, moving `judged_at` out of the row — so the parent's half is
+/// shared behind an `Arc` and the fork appends to a local vector. Entry ids
+/// stay dense and stable: `base` first, then `local`.
+#[derive(Clone, Default)]
+struct Arena {
+    base: Arc<Vec<Entry>>,
+    local: Vec<Entry>,
+}
+
+impl Arena {
+    #[inline]
+    fn get(&self, i: u32) -> &Entry {
+        let n = self.base.len();
+        let i = i as usize;
+        if i < n { &self.base[i] } else { &self.local[i - n] }
+    }
+
+    #[inline]
+    fn len(&self) -> usize {
+        self.base.len() + self.local.len()
+    }
+
+    fn push(&mut self, e: Entry) {
+        self.local.push(e);
+    }
+
+    /// One flat vector of everything, for a snapshot a fork will share.
+    ///
+    /// Paid once per *snapshot* — one per root saturation — against the
+    /// per-entering copy it removes, of which `zebra -e` has 111 and
+    /// `features/05 -e` 384 167.
+    fn flattened(&self) -> Arc<Vec<Entry>> {
+        if self.local.is_empty() {
+            return self.base.clone();
+        }
+        let mut all = Vec::with_capacity(self.len());
+        all.extend_from_slice(&self.base);
+        all.extend_from_slice(&self.local);
+        Arc::new(all)
+    }
+}
+
 /// What each guard set watches — the structural half of the boundary's
 /// invalidation, and the half that a fork inherits unchanged.
 ///
@@ -153,7 +209,7 @@ struct GuardSetId(u32);
 pub struct Saturator {
     pub engine: Engine,
     matcher: Matcher,
-    entries: Vec<Entry>,
+    entries: Arena,
     queue: BinaryHeap<Ranked>,
     /// The parked candidates, in (priority, FIFO) order — S1a.3.4 T7.
     ///
@@ -273,7 +329,7 @@ pub struct Saturator {
 #[derive(Clone)]
 pub struct Snapshot {
     engine: Engine,
-    entries: Vec<Entry>,
+    entries: Arc<Vec<Entry>>,
     queue: BinaryHeap<Ranked>,
     parked: std::collections::BTreeSet<(i64, u64, u32)>,
     seen: FxHashSet<(BindingKey, GuardSetId)>,
@@ -319,7 +375,7 @@ impl Saturator {
         let mut sat = Saturator {
             engine: Engine::with_memo(s.memo.clone()),
             matcher: Matcher::new(),
-            entries: Vec::new(),
+            entries: Arena::default(),
             queue: BinaryHeap::new(),
             parked: std::collections::BTreeSet::new(),
             seen: FxHashSet::default(),
@@ -371,7 +427,7 @@ impl Saturator {
     pub fn snapshot(&self, kb: &Kb) -> Snapshot {
         Snapshot {
             engine: self.engine.clone(),
-            entries: self.entries.clone(),
+            entries: self.entries.flattened(),
             queue: self.queue.clone(),
             parked: self.parked.clone(),
             seen: self.seen.clone(),
@@ -430,7 +486,10 @@ impl Saturator {
         let mut sat = Saturator {
             engine: snapshot.engine.clone(),
             matcher: Matcher::new(),
-            entries: snapshot.entries.clone(),
+            entries: Arena {
+                base: snapshot.entries.clone(),
+                local: Vec::new(),
+            },
             queue: snapshot.queue.clone(),
             parked: snapshot.parked.clone(),
             seen: snapshot.seen.clone(),
@@ -638,7 +697,7 @@ impl Saturator {
         entry: u32,
         key: BindingKey,
     ) -> Result<Option<Firing>, SaturateError> {
-        let e = &self.entries[entry as usize];
+        let e = self.entries.get(entry);
         let (plan_at, disjunct) = (e.plan, e.disjunct);
         let plan = self.engine.plan_arc(plan_at);
         if plan.asserts.is_empty() {
@@ -676,7 +735,7 @@ impl Saturator {
             if self.record_alternatives {
                 self.record_alternative(s, &plan, entry, &tentative, guards);
             }
-            let e = &self.entries[entry as usize];
+            let e = self.entries.get(entry);
             return Ok(Some(Firing {
                 rule: plan.rule,
                 activator: plan.activator_args.clone(),
@@ -693,7 +752,7 @@ impl Saturator {
             }));
         }
         let absent = self.negative_premises(s, &plan, entry, guards);
-        let e = &self.entries[entry as usize];
+        let e = self.entries.get(entry);
         let env = Env {
             regs: &e.regs,
             trail: &e.trail,
@@ -718,7 +777,7 @@ impl Saturator {
         existing: &[FactId],
         guards: Span,
     ) {
-        let n = self.entries[entry as usize].premises.len();
+        let n = self.entries.get(entry).premises.len();
         if n == 0 {
             return;
         }
@@ -737,7 +796,7 @@ impl Saturator {
         // derivation, so a re-derivation admitted through the boundary depends
         // on what *its* guards found missing.
         let absent = self.negative_premises(s, plan, entry, guards);
-        let premises = self.entries[entry as usize].premises.clone();
+        let premises = self.entries.get(entry).premises.clone();
         let mut prov = Prov::from_rule(plan.rule, premises, None);
         prov.absent = absent;
         let id = s.terms.provs.push(prov);
@@ -748,7 +807,7 @@ impl Saturator {
                     events::sexpr(s.terms, fact),
                     s.terms.sym(plan.rule).to_string(),
                 );
-                let prems = events::sexpr_facts(s.terms, &self.entries[entry as usize].premises);
+                let prems = events::sexpr_facts(s.terms, &self.entries.get(entry).premises);
                 s.events.emit("alt", |l| {
                     l.str("fact", &fact_s);
                     l.str("rule", &rule_s);
@@ -990,7 +1049,7 @@ impl Saturator {
     }
 
     fn entry_key(&self, entry: u32) -> &BindingKey {
-        &self.entries[entry as usize].key
+        &self.entries.get(entry).key
     }
 
     // ── The boundary ───────────────────────────────────────────────
@@ -1047,7 +1106,7 @@ impl Saturator {
             // once for the whole round — two integer loads, against the two
             // extent probes and the vector compare a per-candidate stamp cost.
             ein_core::counters::bump(|c| c.watch_stamp += 1);
-            let e = &self.entries[entry as usize];
+            let e = self.entries.get(entry);
             let judged_at = self.judged_at[entry as usize];
             if judged_at != 0 && self.gs_epoch[e.guard_set.0 as usize] <= judged_at {
                 continue;
@@ -1199,7 +1258,7 @@ impl Saturator {
         entry: u32,
         guards: Span,
     ) -> Option<usize> {
-        let regs = self.entries[entry as usize].regs.clone();
+        let regs = self.entries.get(entry).regs.clone();
         let mut m = std::mem::take(&mut self.matcher);
         let mut out = None;
         for (i, g) in plan.guards(guards).iter().enumerate() {
@@ -1237,7 +1296,7 @@ impl Saturator {
         if guards.is_empty() {
             return Box::new([]);
         }
-        let regs = &self.entries[entry as usize].regs;
+        let regs = &self.entries.get(entry).regs;
         let mut out: Vec<NafRef> = Vec::new();
         for g in plan.guards(guards) {
             collect_refs(plan, g, g.sub, regs, &mut out);
