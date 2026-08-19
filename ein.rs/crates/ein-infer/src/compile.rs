@@ -95,20 +95,33 @@ pub struct PlanKey {
 }
 
 pub fn plan_key(terms: &mut Terms, rule: &Rule, activator: Option<FactId>) -> PlanKey {
+    ein_core::counters::bump(|c| c.plan_key += 1);
     let args: Vec<Symbol> = match activator {
         None => Vec::new(),
-        Some(f) => {
-            let rendered: Vec<String> = terms
-                .facts
-                .args(f)
-                .iter()
-                .map(|&a| terms.display(a))
-                .collect();
-            rendered
-                .iter()
-                .map(|s| terms.intern_text(s).expect("room for an activator arg"))
-                .collect()
-        }
+        // T1a.6.4.0 — a **symbol** argument round-trips to itself, and every
+        // activator argument in the corpus is one. `Terms::display` of a
+        // `Tag::Sym` value *is* that symbol's text and `intern_text` returns
+        // the symbol that text already has, so rendering it costs a `String`,
+        // a byte-wise hash and an allocation to arrive back where it started.
+        // An `int` or a nested fact still renders — which is what keeps the
+        // deliberate `7` / `'7'` collision above — so this is the same key,
+        // not a cheaper one: `plan_key_renders_only_what_needs_rendering`
+        // checks both shapes against the pre-shortcut path.
+        Some(f) => match terms.facts.args(f).iter().map(|a| a.as_sym()).collect() {
+            Some(syms) => syms,
+            None => {
+                let rendered: Vec<String> = terms
+                    .facts
+                    .args(f)
+                    .iter()
+                    .map(|&a| terms.display(a))
+                    .collect();
+                rendered
+                    .iter()
+                    .map(|s| terms.intern_text(s).expect("room for an activator arg"))
+                    .collect()
+            }
+        },
     };
     PlanKey {
         rule: rule.name,
@@ -1260,6 +1273,71 @@ mod tests {
             .expect("an activator");
         let plan = compile_rule(&ast, &mut terms, &rule, activator).expect("compiles");
         (ast, terms, plan)
+    }
+
+    /// T1a.6.4.0 — the key skips `display`/`intern_text` for a **symbol**
+    /// argument and still renders anything else, and the two paths agree on
+    /// every shape an activator can carry. The reference is the pre-shortcut
+    /// body, verbatim: what is being checked is that a cheaper route reaches
+    /// the same key, including the `7` / `'7'` collision the key keeps on
+    /// purpose.
+    #[test]
+    fn plan_key_renders_only_what_needs_rendering() {
+        fn reference(terms: &mut Terms, rule: &Rule, activator: Option<FactId>) -> PlanKey {
+            let args: Vec<Symbol> = match activator {
+                None => Vec::new(),
+                Some(f) => {
+                    let rendered: Vec<String> = terms
+                        .facts
+                        .args(f)
+                        .iter()
+                        .map(|&a| terms.display(a))
+                        .collect();
+                    rendered
+                        .iter()
+                        .map(|s| terms.intern_text(s).expect("room for an activator arg"))
+                        .collect()
+                }
+            };
+            PlanKey {
+                rule: rule.name,
+                activator: args.into_boxed_slice(),
+            }
+        }
+        let body = ":match (?R ?a ?b)\n  :assert (?R ?b ?a))\n";
+        // Coverage, asserted rather than hoped for: a differential test that
+        // never reaches one of its two branches passes for the wrong reason.
+        let (mut cheap, mut rendered) = (0, 0);
+        for src in [
+            // no activator at all, one symbol, an int, and a nested fact
+            format!("(relation edge A B)\n(rule walk ()\n  {body}"),
+            format!("(relation edge A B)\n(rule walk (?R)\n  {body}(walk edge)\n"),
+            // two symbols: the cheap path has an order, and this is what says so
+            format!("(relation edge A B)\n(relation link A B)\n(rule walk (?R ?S)\n  {body}(walk edge link)\n"),
+            format!("(relation edge A B)\n(rule walk (?R ?N)\n  {body}(walk edge 7)\n"),
+            format!("(relation edge A B)\n(rule walk (?R ?N)\n  {body}(walk edge (edge A B))\n"),
+        ] {
+            let mut ast = Ast::new();
+            let mut terms = Terms::new();
+            let forms = parse(&mut ast, &src, Some("<test>")).expect("parses");
+            let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+            let rule = kb.program().rules.values().next().expect("a rule").clone();
+            for activator in activators_for(&kb, &terms, &rule) {
+                match activator.map(|f| terms.facts.args(f).to_vec()) {
+                    Some(args) if args.iter().all(|a| a.as_sym().is_some()) && args.len() > 1 => {
+                        cheap += 1
+                    }
+                    Some(args) if args.iter().any(|a| a.as_sym().is_none()) => rendered += 1,
+                    _ => {}
+                }
+                assert_eq!(
+                    plan_key(&mut terms, &rule, activator),
+                    reference(&mut terms, &rule, activator),
+                    "the key moved on {src:?}"
+                );
+            }
+        }
+        assert!(cheap > 0 && rendered > 0, "cheap {cheap}, rendered {rendered}");
     }
 
     fn reg_named(terms: &Terms, plan: &Plan, name: &str) -> Reg {
