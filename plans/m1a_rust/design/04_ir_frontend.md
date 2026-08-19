@@ -254,8 +254,19 @@ Port obligations:
 Because a resolved program is a pure function of `(source text, stdlib
 content, base_dir)`, it is content-addressable — which is what
 [`.einb`](10_binary_format.md)'s `PROGRAM` section stores and what its
-`META` digests invalidate. P1a.1 ships the frontend stateless; caching is
-[P1a.8](../p1a.8_binary_container/README.md)'s concern.
+`META` digests invalidate. P1a.1 ships the frontend stateless; caching *across
+runs* is [P1a.8](../p1a.8_binary_container/README.md)'s concern.
+
+**Amended at [S1a.6.5](../p1a.6_performance/s1a.6.5_frontend.md) (T1a.6.5.3):
+one resolution now parses each module once.** "Stateless" had a cost the
+design did not price — resolution is a *tree* and the corpus's trees are
+diamonds, so a `zebra2` load parsed **3.30× the bytes on disk**, `std.macro`
+four times over. The cache is a map from resolved path to the parsed form list,
+threaded through the recursion rather than held on the `Resolver`, so it holds
+`NodeId`s into the arena that resolution is building and cannot outlive it. No
+content digest is needed at that scope — a file cannot change during its own
+load — and nothing downstream is disturbed, because qualification *builds*
+(`rename_atoms`) rather than rewrites. `load/zebra2` −19.8 %.
 
 ---
 

@@ -1993,6 +1993,220 @@ utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 \
     solve /tmp/zebra2-nowb.ein -e
 ```
 
+## 16. S1a.6.5 — the load path, and the modules it parsed twice
+
+**2026-08-19, `master` @ `358e1c5`, same machine.** The stage
+[§8](#8-what-this-chooses-for-the-rest-of-the-phase) shortened to "a
+confirmation plus the allocation report", because its acceptance was already
+met by 8×. The confirmation found that a load parsed **3.30× the bytes on
+disk**: import resolution parses a module once per *edge*, and the corpus's
+import trees are diamonds.
+
+### The four targets
+
+Frontend-only changes, so the targets are where they were and the row that
+moves is the one that is nearly all frontend. The six *process* rows are
+best-of-15 **in one series with both binaries present** — the S1a.6.4 one built
+from `99fac86` in a worktree and passed as `--bin` — so they are an A/B rather
+than two readings taken on different days. The `parse + load` row is
+`cargo bench`'s `load/zebra2` and the acceptance row is the three-fixture test
+binary, each measured the way [§15](#15-s1a64--the-per-call-setup-and-the-enumerator-the-targets-never-run)
+measured it.
+
+| workload | target | at S1a.6.4 | **at S1a.6.5** | vs PyPy ¤ |
+|---|---:|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 41.4 ms | **40.8 ms** ✅ | **121×** |
+| `solve zebra.ein -e` | ≤ 400 ms | 77.0 ms | **76.9 ms** ✅ | **114×** |
+| `solve zebra2.ein` | — | 10.3 ms | **10.0 ms** | 253× |
+| `solve zebra.ein` | — | 14.7 ms | **14.7 ms** | 207× |
+| parse + load `zebra2` | ≤ 15 ms | 0.89 ms | **0.66 ms** ✅ | 648× ⁂ |
+| the acceptance gate (3 fixtures) | ≤ 5 s | 0.196 s | **0.196 s** ✅ | 184× |
+| `saturate zebra2` | — | 3.9 ms | **3.6 ms** | — |
+| `render rules zebra2` | — | 1.6 ms | **1.5 ms** | — |
+
+¤ Against [§1](#1-end-to-end-process-against-process)'s PyPy column, as
+§10–§15 divide by; the [README's table](README.md#targets) carries a second
+reading of the same interpreter and its ratios run ~5 % lower.
+
+⁂ Against the README's 0.43 s, which is [§1](#where-the-milestones-denominators-moved)'s
+account of a planned denominator that is not reproducible from its own
+components — the target is met on any reading, and a whole `saturate zebra2`
+*process* is now 3.6 ms.
+
+The stage takes **0.23 ms off every invocation**, and the table is what that
+looks like from both ends: 6–8 % of a process that only loads and saturates,
+0.3 % of one that searches. The acceptance row is unmoved because three
+`zebra2` solves pay it three times — 0.7 ms of 196.
+
+### The load, phase by phase
+
+`examples/frontend_cost.rs`, the instrument this stage's acceptance asks for.
+Best of 50, **System allocator** (an example that counts allocations must not
+also link the allocator whose job is to make them cheap), so the absolute times
+run ~20 % above `cargo bench`'s snmalloc rows and the *shares* are the point:
+
+| phase | before | **after** | allocs | share of the load |
+|---|---:|---:|---:|---:|
+| `read` | 5.0 µs | 4.9 µs | 1 | 0.6 % |
+| `parse` (the puzzle's own) | 196.1 | **163.5** | 421 | 20.3 % |
+| `resolve imports` | 602.7 | **407.2** | 1 572 | 50.6 % |
+| ↳ of which macro expansion | — | 30.8 | 790 | 3.8 % |
+| `Resolver::new` ×2 | 6.2 | 6.3 | 46 | 0.8 % |
+| the S1.8a.f20 macro guard | 10.8 | 9.8 | 75 | 1.2 % |
+| ingest (residual) | 169.7 | **146.2** | 1 873 | 18.2 % |
+| `rebuild_indexes` | 34.3 | 34.5 | 586 | 4.3 % |
+| `detect_provenance_cycles` | 1.2 | 1.3 | 87 | 0.2 % |
+| **load (whole)** | **1022.9 µs** | **804.4 µs** | **5 451** | 100 % |
+
+`zebra.ein` is 720.1 µs / 4 570 allocations and `features/05` 127.1 µs / 1 264.
+Churn is 474 KB, 422 KB and 86 KB. The arenas a `zebra2` parse builds are
+**1 111 nodes, 619 args and 157 symbols** — 23.3 source bytes per node, which
+is the number T1a.6.5.2's pre-sizing was computed from and the reason it did
+not pay.
+
+### The diamond, counted
+
+`parse_call` / `parse_bytes`, six frontend counters added here and compiled out
+by default like the other twenty-four:
+
+| load | `parse_call` | `parse_bytes` | vs the file | `lex_match` | `lex_symbol` | `intern` (miss) |
+|---|---:|---:|---:|---:|---:|---:|
+| `zebra2` before | 8 | 85 412 | **3.30×** | 14 304 | 1 738 | 2 743 (288) |
+| `zebra2` after | **5** | **59 757** | 2.31× | 10 110 | 1 250 | 1 900 (288) |
+| `zebra` after | 5 | 69 887 | 3.68× | 10 272 | 1 254 | 1 890 (284) |
+| `features/05` after | 4 | 8 928 | 2.70× | 1 523 | 178 | 256 (72) |
+
+`zebra2` imports `std.algebra` (23 623 B) and `std.bijection` (8 183 B),
+`std.bijection` imports `std.algebra`, and all three import `std.macro`
+(1 016 B) — so `std.macro` was parsed four times and `std.algebra` twice.
+`zebra`'s tree shares only `std.macro` (`std.algebra` and `std.slots`, 25 265 B,
+side by side), so its diamond is worth 1 KB and its ratio barely moves: its
+`imports` phase stays 62.6 % of a load because those really are bytes it has to
+parse. **The size of this win is a property of the import graph, not of the
+loader** — which is why the cache alone was −24.1 % on `zebra2`'s
+parse + resolve and a wash on a `zebra` load.
+
+The one repeat left is the macro guard's, which builds its own `Ast` (9.8 µs).
+`intern_miss` is **288 before and after**, which is the check that the cache
+changed the parsing and not the program.
+
+### The bench set
+
+| bench | at S1a.6.4 | **at S1a.6.5** | change |
+|---|---:|---:|---:|
+| `parse/corpus` | 733.2 µs | **623.0 µs** | **−15.0 %** |
+| `parse/zebra2` | 187.1 µs | **146.4 µs** | **−21.7 %** |
+| `parse/zebra2_resolve` | 745.0 µs | **509.5 µs** | **−31.6 %** |
+| `load/zebra2` | 891.4 µs | **664.1 µs** | **−25.5 %** |
+| `saturate_root/zebra2` | 1.29 ms | 1.29 ms | −0.1 % |
+| `match_hot/zebra2` | 24.5 µs | 25.0 µs | +1.7 % |
+| `boundary/zebra` | 1.61 ms | 1.60 ms | −0.8 % |
+| `boundary/zebra2` | 1.28 ms | 1.28 ms | −0.1 % |
+| `fork/zebra2` | 281 ns | 289 ns | +2.8 % |
+| `solve_fast/zebra2` | 8.01 ms | 7.95 ms | −0.7 % |
+| `solve_exhaustive/zebra2` | 39.05 ms | 38.65 ms | −1.0 % |
+
+11 benches, worst relative sd **0.77 %** (gate 3 %). The four frontend rows
+were re-measured at the *start* of this stage as well and came back within
+0.2 % of S1a.6.4's recorded values, so the machine is in the state that stage
+left it in. The seven engine rows this stage does not touch land between
+−1.0 % and +2.8 %, in both directions — that is drift between two `cargo bench`
+runs a day apart, and it is the scale against which this stage's two reverts
+(−0.7 % and +1.2 %) were called washes.
+
+### Where the parse's time goes, before and after
+
+`perf` on the `parse/zebra2` bench, self time (criterion's own
+`sweep_and_estimate` + `exp` is ~15 % of each column and is excluded from the
+reading):
+
+| symbol | before | **after** |
+|---|---:|---:|
+| `lex::skip_trivia` | 26.3 % | **14.4 %** |
+| `lex::match_term` | 13.5 % | 12.3 % |
+| `lex::advance_to` | — | 7.9 % |
+| SipHash + `Ast::intern` | ~7 % | (removed) |
+| `Parser::{symbol,var,value,alt_generic_list,kw_pair}` | ~7 % | ~7 % |
+
+**65 % of `zebra2.ein`'s bytes are comment and blank line, and parsing it with
+all of them stripped is only 12 % faster** (25 919 → 9 055 bytes, 196.1 →
+175.9 µs, on the build before the lexer changes) — the two measurements
+together are what say the cost was the per-character cursor and the call
+frequency rather than the comment bytes, and either one alone would have been
+misread. What is left
+above 10 % is the backtracking itself: eleven alternatives per top-level form,
+each asking for a terminal at the same position.
+
+### Three changes built and reverted
+
+Rule 3 says a wash is a revert; these are the numbers behind three of them.
+
+| change | measured | why it lost |
+|---|---:|---|
+| `advance_to` vectorised — `is_ascii()`, `rposition`, `filter().count()` | **+10…+14 %** | the spans are one space and a two-character indent; three passes lose to one loop |
+| AST arena pre-sizing from source length (T1a.6.5.2's own subject) | **+1.2…+3.0 %** | 1 111 nodes and 157 symbols: eleven doublings of 13 KB cost less than one oversized allocation plus a rehash, and `parse/corpus` re-grows per file |
+| index-map pre-sizing in `rebuild_layer` (T1a.6.5.5's own subject) | **−0.7 %** | inside the drift above; the 586 allocations are per-key `Vec`s, which a map reserve does not touch |
+
+Two of the six tasks proposed pre-sizing and both lost, which is the stage's
+transferable finding: **at this scale the growth is cheaper than the estimate.**
+
+### Start-up
+
+`utils/e2e_baseline.py --startup`, the third row set after the milestone six
+and S1a.6.4's `--blind`. Best of 15 processes:
+
+| cell | ein.rs | ein.py CPython | ein.py PyPy |
+|---|---:|---:|---:|
+| `--help` | **1.02 ms** | 97.6 ms | 442.1 ms |
+| `solve friends` (651 B, one rule, one fact) | **1.15 ms** | 132.3 ms | 542.4 ms |
+| `saturate friends` | **1.20 ms** | 118.6 ms | 522.1 ms |
+
+`/bin/true` through the same timing loop is **0.23 ms**, so 0.8 ms is ein's
+own. The binary is 3 581 440 B, four shared libraries (`libstdc++` and
+`libgcc_s` are snmalloc's), and the embedded stdlib is 67 369 B of it — 1.9 %.
+
+**snmalloc is 0.59 ms of every process start.** The `--no-default-features`
+build does `--help` in 0.43 ms and `solve friends` in 0.60 ms. That is
+[§13](#13-s1a62--the-layout-stage-and-the-profile-it-starts-from)'s "0.5 ms off
+`render rules zebra2`" measured on a workload that does no engine work at all,
+so it is the arena set-up and nothing else. It does not change the decision —
+8–16 % of a `solve` repays it inside the first 5 ms of engine work — but a
+corpus cell that does nothing pays it, and the harness runs 473 of those per
+tier.
+
+### Reproducing this section
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
+    --example frontend_cost                    # the phase table + allocations
+cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
+    -p ein-infer --example frontend_cost -- --rounds 3   # the diamond, counted
+utils/bench_env.sh python3 utils/e2e_baseline.py --startup --runs 15
+# the same-day A/B of the milestone six, two binaries in one series
+git worktree add --detach /tmp/wt-prev 99fac86
+(cd /tmp/wt-prev && cargo build --release --manifest-path ein.rs/Cargo.toml)
+utils/bench_env.sh python3 utils/e2e_baseline.py --runs 15 \
+    --bin "prev=/tmp/wt-prev/ein.rs/target/release/ein" \
+    --bin "now=ein.rs/target/release/ein"
+# the parse profile: run the criterion binary itself, so perf sees one bench
+BIN=$(ls -t ein.rs/target/release/deps/engine-* | grep -v '\.d$' | head -1)
+CRITERION_HOME=ein.rs/target/criterion perf record -F 4999 -o /tmp/parse.perf -- \
+    taskset -c 4 "$BIN" --bench --measurement-time 4 'parse/zebra2$'
+perf report -i /tmp/parse.perf --stdio --no-children -F overhead,symbol | head -20
+# what the comments cost: the same file parsed with them stripped (a file under
+# examples/ needs a corpus entry, so this one is written and removed)
+python3 -c 'import pathlib; src=pathlib.Path("examples/zebra2.ein").read_text(); \
+out=[l.split(";")[0].rstrip() if chr(34) not in l else l for l in src.splitlines()]; \
+pathlib.Path("examples/.tmp-nc.ein").write_text("\n".join(l for l in out if l.strip())+"\n")'
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
+    --example frontend_cost -- examples/.tmp-nc.ein examples/zebra2.ein
+rm examples/.tmp-nc.ein
+# the acceptance gate, from its own binary
+cargo test --manifest-path ein.rs/Cargo.toml -p ein-infer --release \
+    --test acceptance --no-run
+time ein.rs/target/release/deps/acceptance-*[!d]
+```
+
 ## Reproducing all of it
 
 Every line from the repo root, every measurement through the fingerprint:
@@ -2022,6 +2236,13 @@ cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
     --example hypgen_calls
 utils/bench_env.sh python3 utils/e2e_baseline.py --blind --impl ein.rs --runs 5
 
+# §16 the load path, phase by phase, and what a process pays before it starts
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
+    --example frontend_cost
+cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
+    -p ein-infer --example frontend_cost -- --rounds 3
+utils/bench_env.sh python3 utils/e2e_baseline.py --startup --runs 15
+
 # §5 memory, and §13's distributions (arity, extents, plan width, fork depth)
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example alloc_cost
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example layout_shape
@@ -2047,6 +2268,8 @@ done
 ein.rs/target/release/ein-conformance run --tier T3 --strict \
     --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
     --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42
+# `python3 -m ein.cli` needs ein.py importable: `pip install -e ein.py`, or
+# `.venv-pypy/bin/python -m ein.cli`, or `--env-a PYTHONPATH=ein.py/src`.
 for M in productive redundant enqueue; do
   EIN_MUTANT=$M ein.rs/target/release/ein-conformance run --tier T2 \
       --filter branching --impl-a "python3 -m ein.cli" \
