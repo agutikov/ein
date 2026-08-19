@@ -105,6 +105,11 @@ cd ein.rs && cargo build --release
     --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" --tier T3
 ```
 
+The `ein` binary links `snmalloc` by default since S1a.6.2 (worth 8–16 % of a
+solve), so the build needs **`cmake` and a C++ compiler**;
+`cargo build --release -p ein-cli --no-default-features` builds against the
+system allocator and needs neither.
+
 Python-vs-Python is not a curiosity — it is the gate: a harness that cannot
 detect a difference between an implementation and itself cannot detect one
 between two implementations either. The same shape with `--env-a

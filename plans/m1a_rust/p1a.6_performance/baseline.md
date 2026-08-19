@@ -1155,12 +1155,12 @@ done
 **2026-08-19, `master` @ `66f24d5`, same machine.** [Rule
 6](README.md#rules-for-this-phase) says a stage begins by re-running
 [S1a.6.1](s1a.6.1_profile_baseline.md)'s instruments rather than by trusting
-the last stage's table, and this time it changed the stage: three of
+the last stage's table, and this time it rewrote the stage. Four of
 [S1a.6.2](s1a.6.2_memory_layout.md)'s eight tasks were written against a
-profile in which the allocator was 21 % and the compiler was 21 %, and
-[S1a.6.8](s1a.6.8_compile_cache_and_extents.md) plus
+profile in which the allocator was 21 % of self time over 2.5 M allocations
+averaging ~53 bytes; [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) and
 [S1a.6.9](s1a.6.9_fork_entry_delta.md) have since removed **half of every
-allocation the engine makes**.
+allocation the engine makes**, and the ones they removed were the small ones.
 
 ### Before any change — the same instruments, re-run
 
@@ -1230,10 +1230,15 @@ within 0.6 ms.
 
 **snmalloc ships.** It is the fastest on three of the four `solve` cells and
 within 0.5 ms on the fourth; `mimalloc` matches it and then costs **7.2 MB of
-peak RSS**, which the stage's acceptance names as a thing that may not get
-worse; `jemalloc` keeps the RSS and returns a third less of the win, and its
-own README gates it on `cfg(not(target_env = "msvc"))`, which
-[P1a.9](../p1a.9_bindings_release/README.md) ships binaries for.
+peak RSS** on `zebra -e`, which the stage's acceptance names as the one thing
+that may not get worse; `jemalloc` keeps the RSS, returns a third less of the
+win, and gates itself on `cfg(not(target_env = "msvc"))` by its own README,
+where [P1a.9](../p1a.9_bindings_release/README.md) ships a Windows binary.
+
+**snmalloc is not free of that charge either**, and the number is here rather
+than in a footnote: it costs **+1.2 MB (+6.9 %)** on `zebra -e` and nothing on
+the other five cells. Against `mimalloc`'s +42 % on the same cell that is the
+trade that was taken, not a clean sheet.
 
 ¶ **The one regression, and it is start-up.** `render rules` is 1.1 ms of
 which almost all is process start-up, and snmalloc's arena set-up costs
@@ -1270,9 +1275,13 @@ asserted.
 
 **`fork` regressed 11.7 %**, as it did at T1a.6.8.2 and for a different reason:
 a fork's first allocations touch fresh size classes, and snmalloc's slow path
-is slower than glibc's fastbins. 32 ns × 114 forks is 3.6 µs on a run that got
-29 ms faster. Recorded because [rule 3](README.md#rules-for-this-phase) only
-works if a regression inside a win is still written down.
+is slower than glibc's fastbins. 31.6 ns × 104 forks is 3.3 µs on a run that
+got 15.5 ms faster. Recorded because
+[rule 3](README.md#rules-for-this-phase) only works if a regression inside a
+win is still written down — and half-retracted at the end of the stage, where
+the same bench read **274 ns** with nothing in that path changed by
+T1a.6.2.6. A 30 ns bench at this scale is measuring code alignment as much as
+it is measuring an allocator.
 
 The variance gate: **11 benches, worst relative sd 2.83 %**, under the 3 %
 bar. Two earlier runs of the same set put a *different* bench over it each time
@@ -1343,7 +1352,7 @@ it lie, and it did so within an hour of arriving.
   binaries link no allocator either, which is the honest place to leave them —
   an embedder chooses its own.
 
-### Reproducing this section
+### Reproducing the bake-off
 
 ```sh
 # the bake-off — one binary per allocator, one series
@@ -1363,6 +1372,183 @@ python3 utils/criterion_table.py --max-rsd 3
 
 # the attribution, and the release-vs-profiling line that has to stay ±1 %
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 solve examples/zebra.ein -e
+```
+
+
+### T1a.6.2.2 and T1a.6.2.6 — the candidate loop, and the two tasks that swapped places
+
+The stage's two matcher-facing layout tasks were written as *bucket-major
+storage* (make the participation index's buckets contiguous) and *row packing*
+(shrink `Row` from 12 bytes to 8). Both premises were wrong, and one
+instrument said so before either was built.
+
+**Where the candidates come from** — `scan_bucket` / `scan_extent` /
+`cand_bucket` / `cand_extent`, added to the counter set:
+
+| | `zebra2 -e` | `zebra -e` |
+|---|---:|---:|
+| candidates | 4 570 900 | 25 160 149 |
+| …from a participation-index bucket | 107 193 (**2.3 %**) | 225 784 (**0.9 %**) |
+| …from a full extent scan | 4 463 707 | 24 934 365 |
+| bucket scans / extent scans | 39 994 / 73 642 | 171 189 / 67 803 |
+| mean extent walked | **61** | **368** |
+
+**The index does not key a nested-fact argument** — `index_fact`'s "the
+join-key types only", which is ein.py's S1.8.B-idx reproduced — and
+`(not (R …))` is what the corpus scans. So bucket-major storage would have
+been built for **0.9 %** of `zebra -e`'s candidates. T1a.6.2.2 is closed
+against that number, and the finding it leaves behind is
+[S1a.6.3](s1a.6.3_beta_memories.md)'s: the extent scan is not slow, it is
+*unnecessary*, and what would remove it is an index that reaches inside a
+nested argument.
+
+**What a candidate costs** — `examples/layout_shape.rs`, the distributions
+T1a.6.2.3 asks for:
+
+| | `zebra2` | `zebra` |
+|---|---:|---:|
+| facts interned, whole run | 558 | 1 104 |
+| the fact store | **12 KB** | **22 KB** |
+| arity ≤ 2 | 83.5 % | **96.6 %** |
+| registers per plan (max) | 5 | 5 |
+| premises per disjunct (max) | 3 | 1 |
+| facts per fork KB (mean) | 418 | 581 |
+| layers per fork KB (mean / max) | 23.8 / 35 | 24.1 / **34** |
+
+**The store has been in L1 the whole time**, and it does not grow between a
+fast solve and an exhaustive one. No cost in this engine is a fact-store
+cache-footprint cost, which retires T1a.6.2.2's SIMD-precondition argument and
+T1a.6.2.6's cache-line arithmetic in one line. What is left is the
+**dependency chain**: `rows[id]` then `args[row.args_at]`, a load whose
+address the previous load produces, twice per candidate — once for the
+premise and once for the fact inside its nested pattern.
+
+So the row got *bigger*, not smaller: **20 bytes, holding up to two arguments
+inline**. Three parts, measured in the order they were built, because the
+middle one is why they are one change:
+
+| build | `zebra2 -e` | `zebra -e` | note |
+|---|---:|---:|---|
+| after T1a.6.2.7 | 82.7 ms | 366.0 ms | |
+| + `unify` as a slice zip | 82.2 ms | 364.4 ms | −0.68 % `solve_fast`, p = 0.00 |
+| + the inline row | 82.8 ms ❌ | 353.0 ms | **+1.6 % on `zebra2`** (criterion, p = 0.00) |
+| + relation first, arguments second | 76.1 ms | 366.2 ms ❌ | `zebra`'s win gone: two row loads |
+| **+ one row read, then the branch** | **75.7 ms** | **348.8 ms** | both |
+
+The middle two rows are the point. `zebra2` dies on the nested relation
+comparison — **79 %** of its candidates — and an inline row makes resolving
+an argument list they never read *more* expensive, not less; `zebra`'s 25 M
+candidates almost all pass that comparison and want the arguments
+immediately. Asking `FactStore::rel` and then `FactStore::args` serves the
+first and loses the second, because it loads the row twice. `FactStore::row`
++ `args_of` — one load, then the branch — serves both, and exists for exactly
+that caller.
+
+`INLINE_ARGS = 2` is the histogram's number, and `inline_share()` is how it
+stays one rather than becoming a guess again.
+
+### T1a.6.2.5 — the flatten threshold was never built, and building it costs 7.6 %
+
+[design/03 §5](../design/03_data_model.md) specifies "flatten when a delta
+grows past a threshold"; P1a.2 shipped the layered KB without one, and
+`Kb::flatten` has exactly one caller, a test. So there was no threshold to
+sweep — the question is whether flattening pays at all, and a search at
+**depth 24 (mean), 34 (max)** whose every `facts_of` chains that many layers
+looks like it should.
+
+The experiment: a KB-level `flat_by_rel` maintained on insert and cloned per
+fork, so a relation's whole extent is one flat vector and `facts_of` is one
+hash lookup. Identical output, **identical work counters**, +3 682
+allocations (the per-fork clone).
+
+| | before | flat | change |
+|---|---:|---:|---:|
+| `match_hot/zebra2` | 38.1 µs | **35.0 µs** | **−8 %** |
+| `boundary/zebra` | 6.69 ms | **6.24 ms** | −6.7 % |
+| `boundary/zebra2` | 2.10 ms | 2.00 ms | −4.8 % |
+| `fork/zebra2` | 302 ns | 424 ns | +40 % |
+| **`solve zebra -e`** | 350.3 ms | **376.8 ms** | **+7.6 %** |
+| `solve zebra` | 89.1 ms | 96.9 ms | +8.8 % |
+| `solve zebra2 -e` | 77.1 ms | 77.8 ms | +0.9 % |
+
+**Every bench that does not fork got faster and the search got slower**, which
+is the whole result. The `fork` regression is real but too small to be the
+cause (122 ns × 114 forks = 14 µs against 27 ms), and a control build that
+*maintains and clones* the flat map while still reading through the layered
+path costs **0.3 %** — so the 7.6 % is in the reading, not the copying.
+
+The mechanism the control isolates: **a fork shares its parent's index
+memory.** `by_rel`'s vectors live in sealed layers behind an `Arc`, so the
+~450-fact extent the matcher scans is *one* copy that every one of the 24 live
+KBs on the search stack reads. A flat index gives each fork its own copy of
+that extent to fill a cache with. `match_hot` never forks, which is why it
+measured the opposite sign.
+
+Reverted, per [rule 3](README.md#rules-for-this-phase). design/03 §5's
+threshold is answered with a number rather than left open: **do not flatten**,
+and the reason generalises to [P1a.7](../p1a.7_parallelism/README.md), where
+sharing the base index across workers is worth more than shortening a chain.
+
+### T1a.6.2.1, T1a.6.2.3, T1a.6.2.4 and T1a.6.2.8 — closed against numbers
+
+| task | closed by |
+|---|---|
+| **T1a.6.2.1** the participation-index key | the index carries **0.9 %** of `zebra -e`'s candidates and 2.3 % of `zebra2 -e`'s. Hashing a 12-byte key better, or splitting it per relation, cannot reach a run through 1 % of it. The *contents* question — that a nested argument is not keyed at all — is real and is [S1a.6.3](s1a.6.3_beta_memories.md)'s |
+| **T1a.6.2.3** `SmallVec` sizing | the distributions are printed above; nothing on the hot path allocates. `tests/match_alloc.rs` already holds the matcher to zero allocations per candidate, and the allocation callers in the row below say the traffic that remains is *copied live state*, which an inline capacity cannot remove |
+| **T1a.6.2.4** arena reuse / **T1a.6.2.8** the per-entering region | after T1a.6.2.7 the allocator is **3.2 %** of `zebra -e` and **7.8 %** of `zebra2 -e`, and `--callers` puts it in the per-entering snapshot rather than in scratch: `Entry` drop glue is 44 % of the deallocations, `Vec::clone<Entry>` (from `Saturator::resume`) 1.0–1.6 % self, plus the `GuardSetId` and `BindingKey` table clones. A region would absorb those — it is the right shape — but its whole ceiling is now those few per cent, against threading an arena lifetime through the engine. **Parked with the number**, to be re-priced after S1a.6.3 moves the mix again |
+
+### The bench set, end of stage
+
+`cargo bench` after the two changes, against the S1a.6.8 column
+[§10](#10-after-s1a68--the-same-instruments-re-run) recorded — the gap
+includes S1a.6.9, which never took a criterion column of its own:
+
+| bench | at S1a.6.8 | at T1a.6.2.7 | **end of S1a.6.2** | vs S1a.6.8 |
+|---|---:|---:|---:|---:|
+| `parse/corpus` | 765.0 µs | 749.9 µs | **739.2 µs** | −3.4 % |
+| `parse/zebra2` | 197.5 µs | 189.8 µs | **187.7 µs** | −5.0 % |
+| `parse/zebra2_resolve` | — | 755.1 µs | **758.0 µs** | — |
+| `load/zebra2` | 1.014 ms | 910.8 µs | **898.4 µs** | −11.4 % |
+| `saturate_root/zebra2` | 2.700 ms | 2.10 ms | **1.99 ms** | −26.3 % |
+| `match_hot/zebra2` | 39.3 µs | 38.1 µs | **35.3 µs** ‖ | −10.2 % |
+| `boundary/zebra` | 7.252 ms | 6.69 ms | **6.37 ms** | −12.1 % |
+| `boundary/zebra2` | 2.710 ms | 2.10 ms | **2.00 ms** | −26.2 % |
+| `fork/zebra2` | 268.9 ns | 302 ns | **274 ns** | +1.9 % |
+| `solve_fast/zebra2` | 28.37 ms | 20.12 ms | **18.21 ms** | −35.8 % |
+| `solve_exhaustive/zebra2` | 133.10 ms | 79.89 ms | **73.51 ms** | −44.8 % |
+
+‖ `match_hot` read 3.98 % relative sd in the full-set run and **0.30 %** when
+re-run alone on a quiet machine (35.04 / 35.15 / 35.25 µs over three runs). At
+35 µs it is the shortest bench in the set and the most sensitive to what the
+machine was doing a second earlier; the gate reading is the quiet one, and the
+noisy one is recorded next to it rather than dropped.
+
+### Where `zebra -e` stands
+
+| subsystem | at S1a.6.9 | at T1a.6.2.7 | **after T1a.6.2.6** |
+|---|---:|---:|---:|
+| match/bind | 80.1 % | 86.5 % | **84.8 %** |
+| saturate | 13.6 % | 10.0 % | 11.1 % |
+| allocator | 9.4 % | 3.0 % | 3.2 % |
+| hypgen/branch | 4.3 % | 1.7 % | 2.2 % |
+
+`unify` 49.3 %, `try_candidate` 16.7 %, `walk` 9.4 % — **75.4 % of the run in
+three functions of the join**, and the counters say why: 25.16 M candidates,
+99.1 % of them from a 368-fact extent scan, 2 slot unifications each. Nothing
+about that is a layout problem any more. It is
+[S1a.6.3](s1a.6.3_beta_memories.md)'s.
+
+### Reproducing this section
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
+    --example layout_shape                       # the distributions
+cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
+    -p ein-infer --example counter_cost          # scan_bucket / cand_extent / nested_rel_*
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 8 --callers alloc \
+    solve examples/zebra.ein -e                  # who allocates
+utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml -p ein-conformance \
+    --bench engine -- solve --save-baseline before   # then edit, then --baseline before
 ```
 
 ## Reproducing all of it
@@ -1389,8 +1575,9 @@ utils/bench_env.sh python3 utils/count_work.py -v --json ein.rs/bench-out/work-p
 cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
     -p ein-infer --example counter_cost
 
-# §5 memory
+# §5 memory, and §13's distributions (arity, extents, plan width, fork depth)
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example alloc_cost
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example layout_shape
 
 # §9 the fork-entry split — re-run at the end of every stage in the phase
 python3 utils/fork_split.py --json ein.rs/bench-out/fork-split.json

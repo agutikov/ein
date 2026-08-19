@@ -40,6 +40,36 @@ table instead of from a rescan. So the target is not "make matching
 faster" — it is **make the 95 % that is re-derivation nearly free**, and
 the § 9 tables are what the before/after is read against.
 
+**Re-aimed by [S1a.6.2](s1a.6.2_memory_layout.md) (2026-08-19), which
+measured the loop this stage is for.** Three things changed since the
+paragraph above was written, and the third is the biggest:
+
+- **the re-derivation is already gone.** S1a.6.9 shipped, so a fork resumes
+  root's saturation rather than replaying it, and fork firings are down 74–77 %.
+  T1a.6.3.2's root memories are no longer "the invisible way to remove the
+  95 %" — that 95 % has been removed. What is left is the join *inside* a
+  fork's own delta, which is where the remaining redundant firings (77 % of a
+  fork's) live.
+- **the join is now 84.8 % of `solve zebra.ein -e`** — `unify` 49.3 %,
+  `try_candidate` 16.7 %, `walk` 9.4 % — because the allocator (T1a.6.2.7) and
+  the fact store (T1a.6.2.6) stopped being anything. This stage is the phase's
+  remaining work almost in full.
+- **the alpha-memory is not narrowing anything.** 25.16 M candidates on
+  `zebra -e`, **99.1 % of them from a full extent scan** of a 368-fact extent,
+  ~2 slot unifications each — because `index_fact` keys only *non-nested*
+  arguments and `(not (R …))` is most of what the corpus scans
+  ([baseline.md § 13](baseline.md#t1a622-and-t1a626--the-candidate-loop-and-the-two-tasks-that-swapped-places)).
+  **Price keying inside a nested argument before building anything else**: it
+  is a fraction of a beta-memory's cost, it reuses the index that already
+  exists, and 79 % of `zebra2`'s candidates die on precisely the comparison
+  such a key would have made unnecessary.
+
+And one constraint the same stage measured the hard way: **do not give a fork
+its own copy of anything it could read from root.** T1a.6.2.5 built a flat
+per-relation extent — the shape design/05 §7 calls the root memory — but
+cloned per fork, and it was 8 % *faster* on `match_hot` and **7.6 % slower on
+the search**. The `Arc`-shared root half is the half that pays.
+
 ## Acceptance
 
 - **T2 identical** on the whole corpus — same firing sequence, same

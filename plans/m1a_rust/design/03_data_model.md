@@ -113,6 +113,7 @@ a `sort` at an observable site. See [02](02_determinism_and_order.md) §3.
 pub struct FactId(u32);
 
 struct Row { rel: Symbol, args_at: u32, arity: u16, _pad: u16 }   // 12 B
+// …20 B since T1a.6.2.6, with `inline: [Value; 2]` — see the note below
 
 pub struct FactStore {
     rows:   Vec<Row>,
@@ -140,6 +141,21 @@ Consequences:
 Memory, zebra2 post-saturation (381 facts, mean arity ≈ 2.2):
 ~381 × 12 B rows + ~840 × 4 B args ≈ **8 KB**, contiguous. The
 equivalent Python object graph is ~60–80 KB scattered across the heap.
+
+> **The row is 20 bytes since T1a.6.2.6 (2026-08-19), and bigger on purpose.**
+> A whole exhaustive `zebra` interns 1 104 facts — the store is **22 KB** and
+> has never left L1 — so the size of a row was never a cache-footprint
+> question. What a candidate pays is a *dependency chain*: `rows[id]`, then
+> `args[row.args_at]`, whose address the first load produces, and twice over
+> because most premises are nested (`(not (R …))`). `Row` now carries
+> `inline: [Value; 2]`, which holds the arguments of **96.6 %** of `zebra`'s
+> facts and 83.5 % of `zebra2`'s outright — the arity histogram is bimodal at
+> 1 and 2 — and `FactStore::row` + `args_of` let the matcher read the row once
+> and take the relation and the arguments from it. Worth **−8.5 %** on
+> `solve zebra2 -e` and −4.7 % on `solve zebra -e`;
+> [baseline.md § 13](../p1a.6_performance/baseline.md#t1a622-and-t1a626--the-candidate-loop-and-the-two-tasks-that-swapped-places)
+> has the three-step measurement, including the two intermediate forms that
+> each lost one of the two puzzles.
 
 `CanonicalSetId` (a commitment) becomes `SmallVec<[FactId; 4]>`;
 no-good clauses become sorted `Box<[FactId]>` (or a `u64` bitmask when
@@ -191,6 +207,22 @@ pub struct Kb {
 - **Flatten** = when a delta grows past a threshold (or when a fork
   becomes a new root, e.g. a forced-positive promotion), materialise
   `base + delta` into a fresh `KbCore`. Bounded work, amortised.
+
+> **The threshold was never built, and S1a.6.2 measured why it should not be
+> (2026-08-19).** P1a.2 shipped the layered KB without one and `Kb::flatten`
+> has a single caller, a test. T1a.6.2.5 built the strongest form of the idea
+> — a KB-level flat extent per relation, so `facts_of` is one hash lookup
+> instead of a chain over 24 layers — and it is **+7.6 % on `solve zebra -e`**
+> at identical work, identical output and identical allocation counts, while
+> `match_hot` got **8 % faster** and `boundary` 5–7 %. The benches that
+> improved are the ones that never fork: a fork shares its parent's index
+> vectors behind an `Arc`, so the ~450-fact extent the matcher scans is *one*
+> copy read by all 24 live KBs on the search stack, and flattening hands each
+> fork a private copy to fill a cache with. Reverted;
+> [baseline.md § 13](../p1a.6_performance/baseline.md#t1a625--the-flatten-threshold-was-never-built-and-building-it-costs-76)
+> has the isolation control. The consequence is a *positive* one for
+> [P1a.7](../p1a.7_parallelism/README.md): sharing the base index across
+> workers is worth more than shortening the chain.
 
 > **What this section did not ask, and S1a.6.1 measured (2026-08-18).** A
 > read that *aggregates* over layers is O(depth), not O(1), and one of them is

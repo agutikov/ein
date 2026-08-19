@@ -283,6 +283,27 @@ lose more than it saves."
 and (b) measurably better on both zebra2 and zebra. If it is a wash, it
 is reverted, exactly as P1.8a's D3 cross-fork carry was.
 
+> **What S1a.6.2 measured for this stage (2026-08-19).** Three numbers, and
+> the third is a design constraint rather than a target:
+>
+> - **the join is 84.8 % of `solve zebra.ein -e`** — `unify` 49.3 %,
+>   `try_candidate` 16.7 %, `walk` 9.4 % — after the allocator and the fact
+>   store stopped being anything;
+> - **25.16 M candidates, and 99.1 % of them come from a full extent scan**
+>   of a 368-fact extent, at ~2 slot unifications each
+>   ([baseline.md § 13](../p1a.6_performance/baseline.md#t1a622-and-t1a626--the-candidate-loop-and-the-two-tasks-that-swapped-places)).
+>   The alpha-memory is *not* doing the work this section assumes it is:
+>   `index_fact` keys only non-nested arguments, so a `(not (R …))` premise —
+>   most of what the corpus scans — never narrows at all. Keying inside a
+>   nested argument is the cheapest form of this whole idea and should be
+>   priced before the beta-memory proper;
+> - **do not give a fork its own copy of anything it could read from root.**
+>   T1a.6.2.5 built the flat per-relation extent this section's "root memory"
+>   is shaped like, but *cloned per fork* instead of shared: 8 % faster on
+>   `match_hot`, **7.6 % slower on the search**. The `Arc`-shared root memory
+>   above is not merely convenient, it is the half that pays; a per-fork
+>   materialisation of the same data is measurably negative.
+
 **Ordering caveat to design against.** A memory that stores prefix
 tuples in *discovery* order and appends on delta reproduces the
 enumeration order of a full re-run only if the outer loop consumes the
