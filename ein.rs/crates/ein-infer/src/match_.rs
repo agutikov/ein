@@ -566,11 +566,14 @@ impl Matcher {
 
     fn unify(&mut self, terms: &Terms, plan: &Plan, slots: Span, args: &[Value]) -> bool {
         ein_core::counters::bump(|c| c.unify += 1);
+        // Both sides as slices, then one zip: 50.2 M calls on an exhaustive
+        // `zebra` average **1.02 slots each** (T1a.6.2.2), so what this loop
+        // costs is its prologue and its bounds checks, not its compares.
+        let slots = &plan.slots[slots.range()];
         if slots.len() != args.len() {
             return false;
         }
-        for (offset, &arg) in args.iter().enumerate() {
-            let slot = plan.slots[slots.start as usize + offset];
+        for (&slot, &arg) in slots.iter().zip(args) {
             if !self.unify_slot(terms, plan, slot, arg) {
                 return false;
             }
@@ -595,8 +598,20 @@ impl Matcher {
             Slot::Nested { rel, slots } => match arg.as_fact() {
                 None => false,
                 Some(id) => {
-                    let (arel, aargs) = terms.facts.get(id);
-                    arel == rel && self.unify(terms, plan, slots, aargs)
+                    // One row read, then the relation, and the arguments only
+                    // if it matched: **79 %** of an exhaustive `zebra2`'s
+                    // candidates die on this comparison (T1a.6.2.2) and never
+                    // look at the arguments, while an exhaustive `zebra`'s
+                    // almost all pass it and want them immediately. Reading
+                    // the row once serves both; either half alone loses one of
+                    // the two puzzles.
+                    let row = terms.facts.row(id);
+                    if row.rel != rel {
+                        ein_core::counters::bump(|c| c.nested_rel_reject += 1);
+                        return false;
+                    }
+                    ein_core::counters::bump(|c| c.nested_rel_hit += 1);
+                    self.unify(terms, plan, slots, terms.facts.args_of(row))
                 }
             },
             // `slot == arg` in ein.py, where `slot` is an IR node and `arg` is

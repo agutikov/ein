@@ -68,6 +68,16 @@ pub struct Counters {
     /// an exhaustive `zebra`, 61 on `zebra2`.
     pub cand_bucket: u64,
     pub cand_extent: u64,
+    /// A nested premise — `(not (R ?a ?b))` — descending into the fact its
+    /// argument names, split by whether the inner relation matched.
+    ///
+    /// The two puzzles are opposites here and it decided the shape of the
+    /// nested step: **79 %** of an exhaustive `zebra2`'s candidates die on the
+    /// relation comparison and never read the inner arguments, while an
+    /// exhaustive `zebra`'s 25 M candidates almost all pass it and want them
+    /// immediately.
+    pub nested_rel_reject: u64,
+    pub nested_rel_hit: u64,
     /// Plan steps entered — ein.py `match._run_steps` (1.0 M).
     pub walk: u64,
     /// Matcher entry points: one per `run` / `run_seeded` / `holds` call.
@@ -183,6 +193,8 @@ impl Counters {
             scan_extent: 0,
             cand_bucket: 0,
             cand_extent: 0,
+            nested_rel_reject: 0,
+            nested_rel_hit: 0,
             walk: 0,
             plan_run: 0,
             binding_key: 0,
@@ -199,7 +211,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 18] {
+    pub fn rows(&self) -> [(&'static str, u64); 20] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -208,6 +220,8 @@ impl Counters {
             ("scan_extent", self.scan_extent),
             ("cand_bucket", self.cand_bucket),
             ("cand_extent", self.cand_extent),
+            ("nested_rel_reject", self.nested_rel_reject),
+            ("nested_rel_hit", self.nested_rel_hit),
             ("walk", self.walk),
             ("plan_run", self.plan_run),
             ("binding_key", self.binding_key),
@@ -255,6 +269,8 @@ mod tests {
         c.scan_extent = 1;
         c.cand_bucket = 1;
         c.cand_extent = 1;
+        c.nested_rel_reject = 1;
+        c.nested_rel_hit = 1;
         c.walk = 1;
         c.plan_run = 1;
         c.binding_key = 1;
@@ -270,6 +286,6 @@ mod tests {
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 17);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 19);
     }
 }

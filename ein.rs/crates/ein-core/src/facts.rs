@@ -34,18 +34,41 @@ use std::hash::Hasher;
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct FactId(pub u32);
 
-/// One row: which relation, and where its arguments live.
+/// One row: which relation, and the arguments themselves when there are at
+/// most [`INLINE_ARGS`] of them.
 ///
-/// 12 bytes, and a fact's arguments are contiguous in [`FactStore::args`] —
-/// the two properties that make a match step a walk over integers instead of
-/// a pointer chase through a Python object graph.
+/// 20 bytes, and reading a fact's arguments is **one** load rather than two
+/// dependent ones — which is what T1a.6.2.6 turned out to be about. The store
+/// is 18 KB for an exhaustive `zebra` and lives in L1 entirely, so this was
+/// never a cache-footprint question ([baseline.md
+/// §13](../../../../plans/m1a_rust/p1a.6_performance/baseline.md)); it is a
+/// question about the *dependency chain* on the matcher's hot path, where
+/// every candidate resolves two argument lists — the premise's and, for a
+/// nested pattern, the fact inside it — before it can be rejected.
+///
+/// A fact of arity > [`INLINE_ARGS`] keeps its arguments in
+/// [`FactStore::args`] as before. Two covers **96.7 %** of an exhaustive
+/// `zebra`'s facts and **83.5 %** of `zebra2`'s, measured rather than guessed
+/// (`examples/layout_shape.rs`).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Row {
     pub rel: Symbol,
+    /// Where the arguments start in the arena — meaningful only when
+    /// `arity > INLINE_ARGS`.
     args_at: u32,
     arity: u16,
     _pad: u16,
+    /// The arguments, for the common case. Junk past `arity`.
+    inline: [Value; INLINE_ARGS],
 }
+
+/// How many arguments a row holds without reaching for the arena.
+///
+/// The arity histogram is bimodal at 1 and 2 — `(not <fact>)` and every
+/// binary relation — and the tail past 2 is 3.3 % of `zebra` and 16.5 % of
+/// `zebra2`. Three would buy another 1.1 % of `zebra` for 4 more bytes a row;
+/// two is where the mass is.
+pub const INLINE_ARGS: usize = 2;
 
 /// Rows, a flat argument arena, and the lookup that makes interning
 /// injective.
@@ -98,13 +121,19 @@ impl FactStore {
             return Err(Overflow::Facts);
         }
         let id = FactId(self.rows.len() as u32);
-        self.rows.push(Row {
+        let mut row = Row {
             rel,
             args_at: self.args.len() as u32,
             arity: u16::try_from(args.len()).expect("a fact's arity fits u16"),
             _pad: 0,
-        });
-        self.args.extend_from_slice(args);
+            inline: [Value::UNBOUND; INLINE_ARGS],
+        };
+        if args.len() <= INLINE_ARGS {
+            row.inline[..args.len()].copy_from_slice(args);
+        } else {
+            self.args.extend_from_slice(args);
+        }
+        self.rows.push(row);
         self.table[slot] = id.0 + 1;
         Ok(id)
     }
@@ -114,9 +143,7 @@ impl FactStore {
     }
 
     pub fn args(&self, id: FactId) -> &[Value] {
-        let row = self.rows[id.0 as usize];
-        let at = row.args_at as usize;
-        &self.args[at..at + row.arity as usize]
+        self.args_of(&self.rows[id.0 as usize])
     }
 
     pub fn arity(&self, id: FactId) -> usize {
@@ -124,7 +151,32 @@ impl FactStore {
     }
 
     pub fn get(&self, id: FactId) -> (Symbol, &[Value]) {
-        (self.rel(id), self.args(id))
+        let row = &self.rows[id.0 as usize];
+        (row.rel, self.args_of(row))
+    }
+
+    /// The row itself, for a caller that reads the relation, decides, and only
+    /// then wants the arguments.
+    ///
+    /// The matcher's nested-pattern step is that caller and it is 25 M calls
+    /// on an exhaustive `zebra`: `get` would resolve an argument list that
+    /// **79 %** of an exhaustive `zebra2`'s candidates never read, and asking
+    /// [`FactStore::rel`] first and [`FactStore::args`] second loads the row
+    /// twice — measured at −8.2 % on one puzzle and +0 % on the other, each
+    /// way round (T1a.6.2.2). One load, then the branch.
+    pub fn row(&self, id: FactId) -> &Row {
+        &self.rows[id.0 as usize]
+    }
+
+    /// A row's arguments — inline when it has at most [`INLINE_ARGS`] of them.
+    pub fn args_of<'a>(&'a self, row: &'a Row) -> &'a [Value] {
+        let arity = row.arity as usize;
+        if arity <= INLINE_ARGS {
+            &row.inline[..arity]
+        } else {
+            let at = row.args_at as usize;
+            &self.args[at..at + arity]
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -140,6 +192,18 @@ impl FactStore {
     /// an index over them rather than part of the store's contents.
     pub fn footprint(&self) -> usize {
         self.rows.len() * size_of::<Row>() + self.args.len() * size_of::<Value>()
+    }
+
+    /// How many facts hold their arguments inline — the acceptance number for
+    /// [`INLINE_ARGS`], so the choice stays a measurement.
+    pub fn inline_share(&self) -> (usize, usize) {
+        (
+            self.rows
+                .iter()
+                .filter(|r| r.arity as usize <= INLINE_ARGS)
+                .count(),
+            self.rows.len(),
+        )
     }
 
     /// `Ok(id)` when the proposition is present; `Err(slot)` names the empty
@@ -197,8 +261,18 @@ mod tests {
     }
 
     #[test]
-    fn a_row_is_twelve_bytes() {
-        assert_eq!(size_of::<Row>(), 12);
+    fn a_row_is_twenty_bytes_and_holds_two_arguments() {
+        assert_eq!(size_of::<Row>(), 20);
+        // The claim the size is spent on: a binary fact's arguments come back
+        // without touching the arena at all.
+        let mut s = FactStore::new();
+        let rel = Symbol(0);
+        let binary = s.intern(rel, &[v(1), v(2)]).expect("room");
+        let wide = s.intern(rel, &[v(1), v(2), v(3)]).expect("room");
+        assert_eq!(s.args(binary), &[v(1), v(2)]);
+        assert_eq!(s.args(wide), &[v(1), v(2), v(3)]);
+        assert_eq!(s.args.len(), 3, "only the wide fact reached the arena");
+        assert_eq!(s.inline_share(), (1, 2));
     }
 
     #[test]
