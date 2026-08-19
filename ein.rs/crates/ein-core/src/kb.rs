@@ -104,15 +104,36 @@ pub struct NameEntry {
     pub as_arg: Vec<FactId>,
 }
 
+/// Bits in a layer's participation-index Bloom filter — 256 bytes a layer.
+///
+/// A *hit* is never reported as a miss, so the filter can only skip a layer
+/// that provably lacks the key; what the size buys is how often a miss is
+/// recognised as one. [T1a.6.3.0's
+/// profile](../../../../plans/m1a_rust/p1a.6_performance/baseline.md) put
+/// **15.6 %** of an exhaustive `zebra` in the layer walk of `facts_with` —
+/// a fork 24 layers deep hashing its key 24 times to find the one or two
+/// layers that have it — and this takes 6–7 % of the run off.
+///
+/// Sized by sweep rather than by arithmetic: 512 bits is −6.0 %, 2048 is
+/// **−7.3 %**, and 8192 is −7.2 %, so the curve is flat past here and the
+/// extra 768 bytes a layer would buy nothing. A fork's layer is ~6 KB, which
+/// is what [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+/// sizes `--jobs` by, so 256 bytes is 4 % of it.
+const BLOOM_BITS: usize = 2048;
+const BLOOM_WORDS: usize = BLOOM_BITS / 64;
+
 /// Facts added at one point in a KB's history, with the indexes over them.
 ///
 /// Sealed layers are shared by `Arc`; the top layer is the only writable one.
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 pub struct Layer {
     facts: Vec<FactId>,
     present: BitSet,
     by_rel: FxHashMap<Symbol, Vec<FactId>>,
     by_rel_slot_val: FxHashMap<SlotKey, Vec<FactId>>,
+    /// A Bloom filter over `by_rel_slot_val`'s keys — derived state, rebuilt
+    /// wherever that map is written and never read for anything but skipping.
+    slot_bloom: [u64; BLOOM_WORDS],
     /// The **inner** id of every `(not X)` — a bitset, where ein.py keeps a
     /// `set` of `(relation, args)` tuples.
     negated: BitSet,
@@ -138,7 +159,47 @@ pub struct Layer {
     alts: FxHashMap<FactId, Box<[ProvId]>>,
 }
 
+impl Default for Layer {
+    fn default() -> Layer {
+        Layer {
+            facts: Vec::new(),
+            present: BitSet::default(),
+            by_rel: FxHashMap::default(),
+            by_rel_slot_val: FxHashMap::default(),
+            slot_bloom: [0; BLOOM_WORDS],
+            negated: BitSet::default(),
+            rule_apps_by_rule: FxHashMap::default(),
+            rule_apps: 0,
+            rule_apps_on_rel: FxHashMap::default(),
+            names: Registry::new(),
+            primary: FxHashMap::default(),
+            alts: FxHashMap::default(),
+        }
+    }
+}
+
+/// Where a key lands in a layer's Bloom filter — `(word, bit mask)`.
+///
+/// One hash, split: the low six bits pick the bit and the next three the word,
+/// which is `FxHasher`'s well-mixed output used twice rather than hashed twice.
+fn bloom_at(key: &SlotKey) -> (usize, u64) {
+    let mut h = rustc_hash::FxHasher::default();
+    std::hash::Hash::hash(key, &mut h);
+    let h = std::hash::Hasher::finish(&h);
+    (((h >> 6) as usize) % BLOOM_WORDS, 1u64 << (h & 63))
+}
+
 impl Layer {
+    /// `false` only when this layer certainly has no bucket for `key`.
+    fn bloom_may_have(&self, at: (usize, u64)) -> bool {
+        self.slot_bloom[at.0] & at.1 != 0
+    }
+
+    fn bloom_add(&mut self, key: &SlotKey) {
+        let (word, bit) = bloom_at(key);
+        self.slot_bloom[word] |= bit;
+    }
+
     fn is_empty(&self) -> bool {
         self.facts.is_empty() && self.alts.is_empty()
     }
@@ -170,6 +231,7 @@ impl Layer {
         }
         self.facts.capacity() * size_of::<FactId>()
             + (self.present.len() + self.negated.len()) * size_of::<u64>()
+            + size_of_val(&self.slot_bloom)
             + vec_map(&self.by_rel)
             + vec_map(&self.by_rel_slot_val)
             + vec_map(&self.rule_apps_by_rule)
@@ -560,6 +622,9 @@ impl Kb {
                     .or_default()
                     .extend_from_slice(v);
             }
+            for (word, bits) in layer.slot_bloom.iter().enumerate() {
+                out.slot_bloom[word] |= bits;
+            }
             for (k, v) in &layer.rule_apps_by_rule {
                 out.rule_apps_by_rule
                     .entry(*k)
@@ -639,7 +704,20 @@ impl Kb {
     /// The participation index: facts with `value` in argument `slot` of
     /// `rel`.
     pub fn facts_with(&self, key: SlotKey) -> impl Iterator<Item = FactId> + '_ {
+        // Hash once, then a bit test per layer instead of a lookup per layer:
+        // a fork 24 layers deep asks 24 times for a key one or two of them
+        // have, and the walk was 15.6 % of an exhaustive `zebra` after
+        // T1a.6.3.0 made the lookup the common case.
+        let at = bloom_at(&key);
         self.layers()
+            .filter(move |l| {
+                let may = l.bloom_may_have(at);
+                debug_assert!(
+                    may || !l.by_rel_slot_val.contains_key(&key),
+                    "the Bloom filter reported a miss for a key the layer has"
+                );
+                may
+            })
             .filter_map(move |l| l.by_rel_slot_val.get(&key))
             .flat_map(|v| v.iter().copied())
     }
@@ -815,6 +893,7 @@ impl Kb {
             if value.tag() != Tag::Fact {
                 let key = SlotKey::direct(rel, slot as u16, *value);
                 self.top.by_rel_slot_val.entry(key).or_default().push(id);
+                self.top.bloom_add(&key);
             } else if let Some(nested) = value.as_fact() {
                 // …so key one level in instead (T1a.6.3.0). Only one level:
                 // the corpus's nesting is `(not (R …))` and a second would
@@ -828,6 +907,7 @@ impl Kb {
                             value: *deep,
                         };
                         self.top.by_rel_slot_val.entry(key).or_default().push(id);
+                        self.top.bloom_add(&key);
                     }
                 }
             }
@@ -901,6 +981,8 @@ impl Kb {
                 if value.tag() != Tag::Fact {
                     let key = SlotKey::direct(rel, slot as u16, *value);
                     layer.by_rel_slot_val.entry(key).or_default().push(id);
+                    let (word, bit) = bloom_at(&key);
+                    layer.slot_bloom[word] |= bit;
                 } else if let Some(nested) = value.as_fact() {
                     for (inner, deep) in terms.facts.args(nested).iter().enumerate() {
                         if deep.tag() != Tag::Fact {
@@ -911,6 +993,8 @@ impl Kb {
                                 value: *deep,
                             };
                             layer.by_rel_slot_val.entry(key).or_default().push(id);
+                            let (word, bit) = bloom_at(&key);
+                            layer.slot_bloom[word] |= bit;
                         }
                     }
                 }
