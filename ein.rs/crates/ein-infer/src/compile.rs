@@ -22,7 +22,7 @@
 //! overstated how static the probe can be).
 
 use ein_core::entities::Rule;
-use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_core::{FactId, Kb, SlotKey, Symbol, Terms, Value};
 use ein_ir::{Ast, Node, NodeId, node_repr};
 use rustc_hash::{FxHashMap, FxHashSet};
 use std::sync::{Arc, Mutex};
@@ -1120,6 +1120,15 @@ impl<'a> Compiler<'a> {
     }
 
     /// The ordered probe candidates for one relation step — see [`Probe`].
+    ///
+    /// The top-level walk is `_candidates`', unchanged. What T1a.6.3.0 adds is
+    /// a **second level**: a `Nested` slot still contributes no key of its
+    /// own, but each of *its* slots does, appended at the outer slot's
+    /// position. The list stays in left-to-right order and the runtime still
+    /// takes the first usable entry, so wherever ein.py's scan would have
+    /// narrowed, this narrows on the same slot; the nested entries are reached
+    /// only when nothing before them was usable — which, for a
+    /// `(not (R …))` premise, is always.
     fn probes_for(&mut self, slots: Span) -> Span {
         let start = self.probes.len() as u32;
         for (i, idx) in slots.range().enumerate() {
@@ -1127,6 +1136,7 @@ impl<'a> Compiler<'a> {
                 Slot::Const(v) => {
                     self.probes.push(Probe {
                         slot: i as u16,
+                        inner: SlotKey::DIRECT,
                         src: ProbeSrc::Const(v),
                     });
                     // `_candidates` *returns* on the first known value, so no
@@ -1135,11 +1145,28 @@ impl<'a> Compiler<'a> {
                 }
                 Slot::Reg(r) => self.probes.push(Probe {
                     slot: i as u16,
+                    inner: SlotKey::DIRECT,
                     src: ProbeSrc::Reg(r),
                 }),
-                // Neither is keyed: a nested pattern has no single value, and
-                // an opaque slot has no value at all.
-                Slot::Nested { .. } | Slot::Opaque(_) => {}
+                Slot::Nested { slots: inner, .. } => {
+                    for (j, inner_idx) in inner.range().enumerate() {
+                        let src = match self.slots[inner_idx] {
+                            Slot::Const(v) => ProbeSrc::Const(v),
+                            Slot::Reg(r) => ProbeSrc::Reg(r),
+                            // A doubly-nested pattern would need a two-level
+                            // key the index does not hold; an opaque slot has
+                            // no value at all.
+                            Slot::Nested { .. } | Slot::Opaque(_) => continue,
+                        };
+                        self.probes.push(Probe {
+                            slot: i as u16,
+                            inner: j as u16,
+                            src,
+                        });
+                    }
+                }
+                // An opaque slot has no value at all.
+                Slot::Opaque(_) => {}
             }
         }
         Span {
@@ -1361,8 +1388,12 @@ mod tests {
         let _ = terms;
     }
 
+    /// T1a.6.3.0 — a nested pattern has no key of its own and two of its
+    /// slots'. Before it, this premise compiled to an empty probe list and
+    /// walked `not`'s whole extent, which was **99.1 %** of an exhaustive
+    /// `zebra`'s candidates.
     #[test]
-    fn a_nested_pattern_is_never_a_probe() {
+    fn a_nested_pattern_probes_one_level_in() {
         let (_, _terms, plan) = compile(
             "(relation likes A B)\n\
              (rule r ()\n  :match (not (likes ?a ?b))\n  :assert (likes ?b ?a))\n",
@@ -1371,9 +1402,37 @@ mod tests {
         let Step::Rel(first) = steps[0] else {
             panic!("expected a relation step")
         };
+        let probes = plan.probes(first.probe);
+        assert_eq!(
+            probes.len(),
+            2,
+            "one per inner slot, and none for the outer"
+        );
+        for (i, p) in probes.iter().enumerate() {
+            assert_eq!(p.slot, 0, "the outer position is the nested argument");
+            assert_eq!(p.inner, i as u16);
+            assert!(matches!(p.src, ProbeSrc::Reg(_)));
+        }
+    }
+
+    /// The same premise with nothing to key on inside it: an opaque inner slot
+    /// contributes no probe, so the step falls back to the extent scan.
+    #[test]
+    fn a_nested_pattern_with_no_keyable_slot_has_no_probe() {
+        let (_, _terms, plan) = compile(
+            "(relation likes A B)\n\
+             (rule r ()\n  :match (not (likes \"lit\" ?b))\n  :assert (likes ?b ?b))\n",
+        );
+        let steps = plan.steps(plan.disjuncts[0].steps);
+        let Step::Rel(first) = steps[0] else {
+            panic!("expected a relation step")
+        };
+        // A `String` literal is an opaque slot — it never matches anything, so
+        // it is not a key either; `?b` still is.
+        let probes = plan.probes(first.probe);
         assert!(
-            plan.probes(first.probe).is_empty(),
-            "a `(not (likes …))` premise has one nested slot and no key"
+            probes.iter().all(|p| p.slot == 0),
+            "every probe keys inside the nested argument"
         );
     }
 

@@ -157,6 +157,12 @@ pub struct Matcher {
     /// What the emit path reports, set by whichever entry point is running.
     n_premises: usize,
     disjunct: usize,
+    /// Test-only: take every candidate from the relation's whole extent, as
+    /// if no probe existed. The narrowing's whole claim is that this changes
+    /// nothing observable, and `narrowing_never_changes_the_match_sequence`
+    /// is that claim run against randomised insertion orders.
+    #[cfg(test)]
+    no_probe: bool,
 }
 
 impl Matcher {
@@ -511,11 +517,6 @@ impl Matcher {
     fn rel_step(&mut self, c: Ctx<'_>, w: Walk, step: RelStep, f: Emit<'_>) -> ControlFlow<()> {
         let plan = c.plan;
         let key = self.probe(plan, step);
-        debug_assert_eq!(
-            key,
-            candidates_scan(plan, &self.regs, step),
-            "the compiled probe list disagrees with a live `_candidates` scan"
-        );
         match key {
             Some(key) => {
                 ein_core::counters::bump(|c| c.scan_bucket += 1);
@@ -672,6 +673,23 @@ impl Matcher {
     /// The participation-index bucket this step narrows on, or `None` for the
     /// full extent — [`crate::plan::Probe`].
     fn probe(&self, plan: &Plan, step: RelStep) -> Option<SlotKey> {
+        let key = self.probe_key(plan, step);
+        debug_assert_eq!(
+            key,
+            candidates_scan(plan, &self.regs, step),
+            "the compiled probe list disagrees with a live `_candidates` scan"
+        );
+        // The differential harness of T1a.6.3.1 runs the same plans with the
+        // narrowing off, and "off" has to mean *only* off: the mirror above
+        // is checked either way.
+        #[cfg(test)]
+        if self.no_probe {
+            return None;
+        }
+        key
+    }
+
+    fn probe_key(&self, plan: &Plan, step: RelStep) -> Option<SlotKey> {
         for p in plan.probes(step.probe) {
             let value = match p.src {
                 ProbeSrc::Const(v) => v,
@@ -688,6 +706,7 @@ impl Matcher {
             return Some(SlotKey {
                 rel: step.rel,
                 slot: p.slot,
+                inner: p.inner,
                 value,
             });
         }
@@ -736,23 +755,37 @@ fn rel_ordinal(plan: &Plan, steps: Span, at: usize) -> usize {
 /// `match._candidates`, evaluated from the raw slots — the reference the
 /// compiled probe list is checked against in debug builds.
 fn candidates_scan(plan: &Plan, regs: &[Value], step: RelStep) -> Option<SlotKey> {
-    for (slot, i) in plan.slots(step.slots).iter().zip(0u16..) {
-        let value = match slot {
-            Slot::Const(v) => *v,
+    let usable = |slot: &Slot| -> Option<Value> {
+        match *slot {
+            Slot::Const(v) => Some(v),
             Slot::Reg(r) => {
-                let v = regs[*r as usize];
-                if v.is_unbound() || v.tag() == Tag::Fact {
-                    continue;
-                }
-                v
+                let v = regs[r as usize];
+                // Unbound: nothing to key on. A nested fact: the index does
+                // not hold one as a value of its own.
+                (!v.is_unbound() && v.tag() != Tag::Fact).then_some(v)
             }
-            Slot::Nested { .. } | Slot::Opaque(_) => continue,
-        };
-        return Some(SlotKey {
-            rel: step.rel,
-            slot: i,
-            value,
-        });
+            Slot::Nested { .. } | Slot::Opaque(_) => None,
+        }
+    };
+    for (slot, i) in plan.slots(step.slots).iter().zip(0u16..) {
+        if let Slot::Nested { slots, .. } = *slot {
+            // T1a.6.3.0's second level, in the same left-to-right order the
+            // compiled list is built in.
+            for (deep, j) in plan.slots(slots).iter().zip(0u16..) {
+                if let Some(value) = usable(deep) {
+                    return Some(SlotKey {
+                        rel: step.rel,
+                        slot: i,
+                        inner: j,
+                        value,
+                    });
+                }
+            }
+            continue;
+        }
+        if let Some(value) = usable(slot) {
+            return Some(SlotKey::direct(step.rel, i, value));
+        }
     }
     None
 }
@@ -762,6 +795,130 @@ mod tests {
     use super::*;
     use ein_core::Kb;
     use ein_ir::{from_ir::load, parse};
+
+    /// Every rule of a source, compiled — the differential harness runs all of
+    /// them rather than the first.
+    fn setup_all(src: &str) -> (Ast, Terms, Kb, Vec<Plan>) {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
+        let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let rules: Vec<_> = kb.program().rules.values().cloned().collect();
+        let plans = rules
+            .iter()
+            .map(|r| crate::compile_rule(&ast, &mut terms, r, None).expect("compiles"))
+            .collect();
+        (ast, terms, kb, plans)
+    }
+
+    /// The emitted match sequence of every plan, rendered — bindings in bind
+    /// order and premises in step order, which together are what provenance
+    /// and the trace are built from.
+    ///
+    /// `later` is added through the *incremental* index (`index_fact`), which
+    /// is the path a fork writes through; the source's own facts go through
+    /// the batch one (`rebuild_layer`). Both have to key the same things.
+    fn match_sequence(src: &str, later: &[(&str, &str, &str)], no_probe: bool) -> Vec<String> {
+        let (ast, mut terms, mut kb, plans) = setup_all(src);
+        for (kind, x, y) in later {
+            let a = terms.value_text(x).expect("room");
+            let b = terms.value_text(y).expect("room");
+            let likes = terms.intern_text("likes").expect("room");
+            let (rel, args) = match *kind {
+                "pal" => (terms.intern_text("pal").expect("room"), vec![a, b]),
+                _ => {
+                    let inner = terms.value_fact(likes, &[a, b]).expect("room");
+                    (terms.kernel.not, vec![inner])
+                }
+            };
+            kb.add_and_index_fact(&mut terms, rel, &args, None)
+                .expect("room");
+        }
+        let (terms, kb) = (terms, kb);
+        let mut matcher = Matcher::new();
+        matcher.no_probe = no_probe;
+        let mut out: Vec<String> = Vec::new();
+        for plan in &plans {
+            matcher.run(&kb, &terms, &ast, plan, &mut |m| {
+                let binds: Vec<String> = m
+                    .bindings()
+                    .map(|(n, v)| format!("{}={}", terms.sym(n), terms.display(v)))
+                    .collect();
+                out.push(format!(
+                    "{} [{}] {:?}",
+                    terms.sym(plan.rule),
+                    binds.join(" "),
+                    m.premises()
+                ));
+                ControlFlow::Continue(())
+            });
+        }
+        out
+    }
+
+    /// T1a.6.3.1 — the narrowing argument, executed rather than argued.
+    ///
+    /// A probe replaces "every fact of the relation" with "every fact in a
+    /// bucket", and that is sound iff two things hold: the bucket **contains
+    /// every fact that would have unified** (the index keys exactly what the
+    /// probe asks about, and the matcher re-checks every slot anyway), and it
+    /// **yields them in extent order** (buckets are appended in insertion
+    /// order and read oldest layer first, like the extent itself). Then the
+    /// subsequence that survives unification is the same subsequence, so the
+    /// emitted matches — bindings in bind order, premises in step order — are
+    /// identical and only the number of *rejected* candidates differs.
+    ///
+    /// The interesting case is T1a.6.3.0's second level: a `(not (likes …))`
+    /// premise used to have no key at all and now has one per inner slot. The
+    /// insertion order is randomised because "in extent order" is the half of
+    /// the argument that a single fixed order cannot test.
+    #[test]
+    fn narrowing_never_changes_the_match_sequence() {
+        let decls = "(relation likes T T)\n(relation pal T T)\n\
+                     (rule r ()\n  \
+                     :match (and (pal ?a ?b) (not (likes ?b ?c)))\n  \
+                     :assert (likes ?a ?c))\n\
+                     (rule s ()\n  \
+                     :match (and (not (likes ?x ?y)) (pal ?y ?z))\n  \
+                     :assert (pal ?x ?z))\n";
+        let names = ["Alice", "Bob", "Carol", "Dave"];
+        let mut facts: Vec<String> = Vec::new();
+        for (i, a) in names.iter().enumerate() {
+            for (j, b) in names.iter().enumerate() {
+                if i != j {
+                    facts.push(format!("(pal {a} {b})"));
+                }
+                if (i + j) % 3 != 0 {
+                    facts.push(format!("(not (likes {a} {b}))"));
+                }
+            }
+        }
+        // Some of the facts arrive through the incremental index instead, the
+        // way a fork's derivations do.
+        let later: &[(&str, &str, &str)] = &[
+            ("pal", "Erin", "Alice"),
+            ("not", "Alice", "Erin"),
+            ("not", "Erin", "Bob"),
+            ("pal", "Bob", "Erin"),
+        ];
+        for seed in 0..16 {
+            let mut shuffled = facts.clone();
+            crate::mt19937::Mt19937::seeded(seed).shuffle(&mut shuffled);
+            let src = format!("{decls}{}\n", shuffled.join("\n"));
+            for extra in [&[][..], later] {
+                let narrowed = match_sequence(&src, extra, false);
+                let scanned = match_sequence(&src, extra, true);
+                assert_eq!(
+                    narrowed, scanned,
+                    "seed {seed}: narrowing changed the match sequence"
+                );
+                assert!(
+                    !narrowed.is_empty(),
+                    "seed {seed}: the fixture still matches something"
+                );
+            }
+        }
+    }
 
     fn setup(src: &str) -> (Ast, Terms, Kb, Plan) {
         let mut ast = Ast::new();

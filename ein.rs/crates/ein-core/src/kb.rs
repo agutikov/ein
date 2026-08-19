@@ -49,17 +49,48 @@ use std::sync::{Arc, RwLock};
 pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 
 /// A key of the participation index (S1.8.B-idx): relation, argument
-/// position, and the value in it.
+/// position, and the value in it — or, since
+/// [T1a.6.3.0](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md),
+/// a position *inside* the fact in that argument.
 ///
 /// 12 bytes with padding. design/03 §6 notes that packing it into a `u64`
 /// does not fit — the `Value` needs 32 bits and the symbol another 32 — so
-/// this stays a struct key and P1a.6 measures whether hashing the triple is
-/// worth the collision check.
+/// this stays a struct key, and `inner` fits in the padding that was already
+/// there.
+///
+/// **Why the second level exists.** ein.py keys "the join-key types only": a
+/// `Fact`-valued argument is not indexed, so a `(not (R ?a ?b))` premise
+/// scans `not`'s whole extent. On an exhaustive `zebra` that is **99.1 %** of
+/// 25.16 M candidates walking a 368-fact extent to reject all but a handful
+/// ([baseline.md § 13](../../../../plans/m1a_rust/p1a.6_performance/baseline.md)).
+/// Keying one level in turns that scan into a bucket lookup. It is a
+/// *narrowing* — the matcher re-checks every slot regardless — so it changes
+/// which facts are offered and not which ones match, and buckets are appended
+/// in insertion order like every other index here, so the surviving order is
+/// the extent's.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct SlotKey {
     pub rel: Symbol,
     pub slot: u16,
+    /// The position inside the nested fact at `slot`, or [`SlotKey::DIRECT`]
+    /// for the argument itself.
+    pub inner: u16,
     pub value: Value,
+}
+
+impl SlotKey {
+    /// `inner` for a key on the argument itself rather than inside it.
+    pub const DIRECT: u16 = u16::MAX;
+
+    /// The ordinary one-level key — `(rel, slot) = value`.
+    pub fn direct(rel: Symbol, slot: u16, value: Value) -> SlotKey {
+        SlotKey {
+            rel,
+            slot,
+            inner: SlotKey::DIRECT,
+            value,
+        }
+    }
 }
 
 /// One name's participation: every fact it heads, and every fact it appears
@@ -779,15 +810,26 @@ impl Kb {
             self.top.rule_apps += 1;
         }
         for (slot, value) in args.iter().enumerate() {
-            // The join-key types only: a nested fact carries a
-            // `NestedPattern` slot and full-scans, so it is not keyed.
+            // The join-key types only: a nested fact has no single value of
+            // its own to key on…
             if value.tag() != Tag::Fact {
-                let key = SlotKey {
-                    rel,
-                    slot: slot as u16,
-                    value: *value,
-                };
+                let key = SlotKey::direct(rel, slot as u16, *value);
                 self.top.by_rel_slot_val.entry(key).or_default().push(id);
+            } else if let Some(nested) = value.as_fact() {
+                // …so key one level in instead (T1a.6.3.0). Only one level:
+                // the corpus's nesting is `(not (R …))` and a second would
+                // cost entries nothing asks for.
+                for (inner, deep) in terms.facts.args(nested).iter().enumerate() {
+                    if deep.tag() != Tag::Fact {
+                        let key = SlotKey {
+                            rel,
+                            slot: slot as u16,
+                            inner: inner as u16,
+                            value: *deep,
+                        };
+                        self.top.by_rel_slot_val.entry(key).or_default().push(id);
+                    }
+                }
             }
             if let Some(name) = value.as_sym()
                 && is_rule_app
@@ -857,12 +899,20 @@ impl Kb {
             layer.names.entry(rel).as_head.push(id);
             for (slot, value) in args.iter().enumerate() {
                 if value.tag() != Tag::Fact {
-                    let key = SlotKey {
-                        rel,
-                        slot: slot as u16,
-                        value: *value,
-                    };
+                    let key = SlotKey::direct(rel, slot as u16, *value);
                     layer.by_rel_slot_val.entry(key).or_default().push(id);
+                } else if let Some(nested) = value.as_fact() {
+                    for (inner, deep) in terms.facts.args(nested).iter().enumerate() {
+                        if deep.tag() != Tag::Fact {
+                            let key = SlotKey {
+                                rel,
+                                slot: slot as u16,
+                                inner: inner as u16,
+                                value: *deep,
+                            };
+                            layer.by_rel_slot_val.entry(key).or_default().push(id);
+                        }
+                    }
                 }
                 if let Some(name) = value.as_sym() {
                     layer.names.entry(name).as_arg.push(id);
@@ -901,11 +951,26 @@ impl Kb {
     /// ranges over the whole KB. Here the layers are summed through the
     /// materialised view, which is the same set of entries with the
     /// copy-on-write seams closed.
+    ///
+    /// **`facts_by_rel_slot_val` counts the `DIRECT` postings only.** Since
+    /// T1a.6.3.0 the index also holds keys *inside* a nested argument, which
+    /// ein.py's does not — 897 postings against 743 on `zebra2-hints`. This
+    /// line is a report about the **knowledge base**: how many `(relation,
+    /// slot, value)` join keys its facts produce, which is a property of the
+    /// data and identical in both engines. How ein.rs additionally indexes
+    /// those facts to answer a query faster is not what a reader of
+    /// `saturate`'s snapshot is being told, and letting it leak in would make
+    /// 43 corpus entries disagree about the *data* because the *engine*
+    /// changed.
     pub fn index_sizes(&self) -> [usize; 4] {
         let m = self.materialise();
         [
             m.by_rel.values().map(Vec::len).sum(),
-            m.by_rel_slot_val.values().map(Vec::len).sum(),
+            m.by_rel_slot_val
+                .iter()
+                .filter(|(k, _)| k.inner == SlotKey::DIRECT)
+                .map(|(_, v)| v.len())
+                .sum(),
             m.rule_apps_by_rule.values().map(Vec::len).sum(),
             m.rule_apps_on_rel.values().map(Vec::len).sum(),
         ]
@@ -1341,7 +1406,7 @@ mod tests {
     }
 
     #[test]
-    fn the_participation_index_keys_only_the_join_types() {
+    fn the_participation_index_keys_the_join_types_and_one_level_in() {
         let (mut terms, mut kb) = fixture();
         let co_located = sym(&mut terms, "co-located");
         let not = terms.kernel.not;
@@ -1355,24 +1420,44 @@ mod tests {
             .expect("room")
             .id();
 
-        // A nested-fact argument is not keyed — it carries a NestedPattern
-        // slot and full-scans — but a str and an int both are.
+        // A nested-fact argument still has no key of its *own* — there is no
+        // single value at that position…
+        assert_eq!(kb.facts_with(SlotKey::direct(not, 0, inner)).count(), 0);
+        // …but since T1a.6.3.0 its contents do, one level in, which is what a
+        // `(not (co-located ?x ?y))` premise probes with `?x` bound.
         assert_eq!(
             kb.facts_with(SlotKey {
                 rel: not,
                 slot: 0,
-                value: inner
+                inner: 0,
+                value: norwegian
+            })
+            .collect::<Vec<_>>(),
+            vec![f]
+        );
+        assert_eq!(
+            kb.facts_with(SlotKey {
+                rel: not,
+                slot: 0,
+                inner: 1,
+                value: one
+            })
+            .collect::<Vec<_>>(),
+            vec![f]
+        );
+        // A value that is not there is still not there.
+        assert_eq!(
+            kb.facts_with(SlotKey {
+                rel: not,
+                slot: 0,
+                inner: 0,
+                value: one
             })
             .count(),
             0
         );
         assert_eq!(
-            kb.facts_with(SlotKey {
-                rel: co_located,
-                slot: 1,
-                value: one
-            })
-            .count(),
+            kb.facts_with(SlotKey::direct(co_located, 1, one)).count(),
             0,
             "the nested fact is interned, not believed, so it is not indexed"
         );

@@ -106,11 +106,10 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
         let (rel, args) = terms.facts.get(f);
         for (slot, value) in args.iter().enumerate() {
             if value.tag() != crate::value::Tag::Fact {
-                let key = SlotKey {
-                    rel,
-                    slot: slot as u16,
-                    value: *value,
-                };
+                // `DIRECT` on purpose: this dump is a parity artefact and
+                // enumerates the keys ein.py's index has, not the ones
+                // T1a.6.3.0 added underneath it.
+                let key = SlotKey::direct(rel, slot as u16, *value);
                 slots.push((
                     format!("{} {} {}", terms.sym(rel), slot, render(terms, *value)),
                     key,

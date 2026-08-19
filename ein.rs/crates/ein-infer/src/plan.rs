@@ -155,6 +155,16 @@ pub struct RelStep {
 pub struct Probe {
     /// The argument position this probe keys on.
     pub slot: u16,
+    /// The position *inside* the nested fact at `slot`, or
+    /// [`SlotKey::DIRECT`](ein_core::SlotKey::DIRECT) when the probe keys on
+    /// the argument itself.
+    ///
+    /// T1a.6.3.0. A `Nested` slot contributes no direct key — there is no
+    /// single value at that position — but its own slots do, and the index
+    /// has held them since the same task. This is the compile-time half:
+    /// `(not (?R ?b ?i))` with `?b` already bound probes
+    /// `(not, slot 0, inner 0) = ?b` instead of walking `not`'s extent.
+    pub inner: u16,
     pub src: ProbeSrc,
 }
 
