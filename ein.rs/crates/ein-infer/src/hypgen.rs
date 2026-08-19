@@ -489,22 +489,39 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 /// type-wrong candidates that survive die downstream against the puzzle's own
 /// contradiction rules.
 pub fn candidate_objects(kb: &Kb, terms: &Terms) -> Vec<Symbol> {
-    let mut type_nodes: FxHashSet<Symbol> = FxHashSet::default();
+    // The same dense-id argument as `Kb::names` (T1a.6.4.2): every signature
+    // symbol is a `u32`, so the set of type roles is a bitset built with one
+    // OR per signature entry rather than a hash table filled per call.
+    let mut type_nodes = ein_core::BitSet::new();
     for rel in kb.program().relations.values() {
-        type_nodes.extend(rel.signature.iter().copied());
+        for &sym in rel.signature.iter() {
+            type_nodes.insert(sym.0);
+        }
     }
     let k = &terms.kernel;
     let reserved = [k.not, k.r#false, k.and, k.or, k.absent, k.eq, k.neq];
     let mut names = kb.names();
-    // `sorted(kb.names)` — by name, which the rank table turns into a `u32`
-    // sort. `kb.names` is a set-order dict in ein.py, so this sort is not a
-    // convenience: it is the only thing making the sequence reproducible.
-    names.sort_unstable_by_key(|&n| terms.syms.rank(n));
+    // T1a.6.4.2 — **drop first, then sort**. The two steps commute: the
+    // comparator is a total order (a rank is a distinct `u32` per symbol), so
+    // sorting the survivors and sorting-then-dropping give the same sequence
+    // — and on a blind-mode puzzle most of the list is relations, rules and
+    // type roles that the filter removes. `candidate_objects` is **10.7 %** of
+    // `solve examples/features/05_stdlib_domain_elim.ein -e`, which is what
+    // the search costs when there is no `(hrule …)` to narrow it.
     names.retain(|&n| {
-        !type_nodes.contains(&n)
+        !type_nodes.contains(n.0)
             && !reserved.contains(&n)
             && kb.category(terms, n) == NameCategory::Object
     });
+    // `sorted(kb.names)` — by name, which the rank table turns into a `u32`
+    // sort. `kb.names` is a set-order dict in ein.py, so this sort is not a
+    // convenience: it is the only thing making the sequence reproducible.
+    //
+    // The table is read **once**: `Interner::rank` re-enters its `OnceCell`
+    // per call and a sort calls its key function O(n log n) times, which was
+    // 70 % of that symbol's samples on the blind profile.
+    let ranks = terms.syms.ranks();
+    names.sort_unstable_by_key(|&n| ranks[n.0 as usize]);
     names
 }
 
@@ -515,7 +532,8 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms) -> Vec<Symbol> {
 /// nothing here.
 fn by_participation(kb: &Kb, terms: &Terms, objects: &[Symbol]) -> Vec<Symbol> {
     let mut out = objects.to_vec();
-    out.sort_by_key(|&n| (std::cmp::Reverse(kb.participation(n)), terms.syms.rank(n)));
+    let ranks = terms.syms.ranks();
+    out.sort_by_key(|&n| (std::cmp::Reverse(kb.participation(n)), ranks[n.0 as usize]));
     out
 }
 

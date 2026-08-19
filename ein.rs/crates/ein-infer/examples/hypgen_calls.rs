@@ -51,6 +51,7 @@ fn main() {
         "examples/zebra2.ein",
         "examples/zebra.ein",
         "examples/saturation/square-unique/terminus.ein",
+        "examples/features/05_stdlib_domain_elim.ein",
     ] {
         let mut ast = Ast::new();
         let mut terms = Terms::new();

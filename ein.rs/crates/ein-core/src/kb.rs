@@ -764,10 +764,14 @@ impl Kb {
     /// still not something to depend on.
     pub fn names(&self) -> Vec<Symbol> {
         let mut out = Vec::new();
-        let mut seen = FxHashSet::default();
+        // A `Symbol` is a dense `u32`, so the dedup is a bit test rather than
+        // a hash — the same set in the same first-seen order, at the cost of
+        // one `Vec<u64>` (T1a.6.4.2). It is called once per hypothesis-
+        // generation pass, and the deeper the fork the more layers it walks.
+        let mut seen = crate::bitset::BitSet::new();
         for layer in self.layers() {
             for name in layer.names.keys() {
-                if seen.insert(name) {
+                if seen.insert(name.0) {
                     out.push(name);
                 }
             }
