@@ -131,6 +131,25 @@ pub struct Counters {
     /// because `walk_premises` is a generator and cProfile attributes its work
     /// to whoever drains it.
     pub prov_node: u64,
+    /// Hypothesis-generation passes, and how many of them were the
+    /// short-circuiting `complete()` question rather than `open_hypotheses()`
+    /// — ein.py `hypgen.generate_hypotheses` calls, split by caller. The two
+    /// have very different costs per call and the same cost per *candidate*,
+    /// which is the split
+    /// [S1a.6.4](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)
+    /// exists to measure.
+    pub hypgen_call: u64,
+    pub hypgen_complete: u64,
+    /// One-step lookahead simulations — ein.py `lookahead.dies_immediately`.
+    /// The costliest candidate filter, and the reason a pass costs 14x more
+    /// with the lever on than off.
+    pub lookahead_probe: u64,
+    /// Compile-cache keys built — [`crate::terms::Terms`]-level bookkeeping
+    /// with **no ein.py counterpart**, like [`Self::extent_probe`]: ein.py's
+    /// key is a tuple of the strings it already has, while a `PlanKey` has to
+    /// intern them. It counts the *engine walk*, not the compiler:
+    /// `plan_compile` is what a key that missed the memo cost.
+    pub plan_key: u64,
 }
 
 #[cfg(feature = "counters")]
@@ -206,12 +225,16 @@ impl Counters {
             extent_probe: 0,
             fork: 0,
             prov_node: 0,
+            hypgen_call: 0,
+            hypgen_complete: 0,
+            lookahead_probe: 0,
+            plan_key: 0,
         }
     }
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 20] {
+    pub fn rows(&self) -> [(&'static str, u64); 24] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -233,6 +256,10 @@ impl Counters {
             ("extent_probe", self.extent_probe),
             ("fork", self.fork),
             ("prov_node", self.prov_node),
+            ("hypgen_call", self.hypgen_call),
+            ("hypgen_complete", self.hypgen_complete),
+            ("lookahead_probe", self.lookahead_probe),
+            ("plan_key", self.plan_key),
         ]
     }
 
@@ -281,11 +308,15 @@ mod tests {
         c.watch_stamp_rel = 1;
         c.fork = 1;
         c.prov_node = 1;
+        c.hypgen_call = 1;
+        c.hypgen_complete = 1;
+        c.lookahead_probe = 1;
+        c.plan_key = 1;
         assert_eq!(
             c,
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 19);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 23);
     }
 }

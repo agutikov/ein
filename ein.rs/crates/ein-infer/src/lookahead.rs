@@ -74,6 +74,7 @@ impl Lookahead {
     /// `kb` is expected to be saturated — the engine only calls this on a
     /// post-saturation KB. Read-only: no fork, and no mutation of the KB.
     pub fn dies_immediately(&self, s: &mut Session<'_>, m: &mut Matcher, h: FactId) -> bool {
+        ein_core::counters::bump(|c| c.lookahead_probe += 1);
         let rel = s.terms.facts.rel(h);
         let mut envs: Vec<(Vec<Value>, Vec<crate::plan::Reg>)> = Vec::new();
         for plan in &self.plans {

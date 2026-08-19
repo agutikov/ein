@@ -197,6 +197,7 @@ pub fn generate(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
+    ein_core::counters::bump(|c| c.hypgen_call += 1);
     let cfg = s.kb.program().config.clone().unwrap_or_default();
     // Built once per call (it compiles the rule plans, emitting `compile`
     // events as ein.py's `Engine(kb).compile_all()` does) and reused per
@@ -699,6 +700,7 @@ pub fn complete_counted(
     s: &mut Session<'_>,
     stats: &mut HypGenStats,
 ) -> Result<bool, CompileError> {
+    ein_core::counters::bump(|c| c.hypgen_complete += 1);
     let mut any = false;
     generate(s, stats, &mut |_| {
         any = true;
