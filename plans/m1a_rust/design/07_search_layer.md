@@ -76,6 +76,19 @@ two bit tests, and the `Fact` never gets built for a rejected candidate
 (intern-on-demand: compute the row key, probe, and only materialise on
 survival). Expect two orders of magnitude.
 
+**Measured at [S1a.6.4](../p1a.6_performance/s1a.6.4_hypgen_and_lattice.md),
+and the 18 k is the *blind* path's number.** zebra2 declares an `(hrule …)`,
+so it never runs that arm: a pass offers **125** raw candidates on zebra and
+zebra2, 336 on `terminus`, 120 on `features/05`. The intern-on-demand split is
+also moot here rather than won — `FactStore::intern` *is* the probe, plus a
+push on a miss, so splitting it buys a branch and costs the caller a second
+lookup; it is 0.69 % of the heaviest blind-mode run. What the calls do spend is
+**setup**: 71 % of a `complete()` on zebra2 was building a fresh `Lookahead`,
+whose `compile_all` walks `rules × activators` — 219 compile-cache keys per
+call against those 125 candidates. That is where the stage went, and the row
+above ("a `Symbol` bitset built once per call") became true there rather than
+before it.
+
 `complete(kb)` — "does the generator propose anything?" — short-circuits
 on the first candidate (S1.9.E16); keep the short-circuit, it is
 load-bearing for cost, and keep it distinct from `open_hypotheses`, which
@@ -150,6 +163,16 @@ This matters more than zebra2 suggests: with
 3 336+ enterings and a correspondingly large clause set
 ([`features.md`](../../../docs/kernel/inference/features.md)), and that
 is the regime where clause checking dominates.
+
+> **It does not — measured in exactly that regime at
+> [S1a.6.4](../p1a.6_performance/s1a.6.4_hypgen_and_lattice.md) (T1a.6.4.4),
+> and the mask is not built.** zebra2 with `:enable-singleton-writeback false`
+> explodes as predicted — **3 831 enterings, 2.38 s** — but into **354**
+> clauses, because the store is subsumption-minimal on emit, and the whole
+> apriori/no-good machinery is **0.3 %** of the run: `filter_candidate` 0.3 %,
+> `nogood` and `is_subset` 0.0 %. `admit_from_boundary` is 60.2 %. The
+> fall-back representation is therefore the only one, and the `u64` arm stays
+> unwritten until a workload makes the subset test cost something.
 
 **Do not** re-litigate the search-layer optimisations
 [F9](../../followups/f9_e_catalog.md) already measured and rejected

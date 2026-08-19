@@ -57,6 +57,23 @@ WORKLOADS: list[tuple[str, list[str]]] = [
 ]
 
 
+# The blind enumerator's own cells (S1a.6.4). **None of the six rows above
+# reaches it**: zebra and zebra2 both declare an `(hrule …)`, so `generate`
+# returns before `candidate_objects` ever runs, and the enumerator the rest of
+# the corpus uses was invisible to this table. These five are the corpus's
+# slowest `solve` cells — `features/05 -e` alone is 46x `solve zebra -e` — and
+# they are what a change to the blind path is measured on. Selected with
+# `--blind`; ein.py is minutes per cell, so pair it with `--impl ein.rs` or
+# `--bin`.
+BLIND_WORKLOADS: list[tuple[str, list[str]]] = [
+    ("features/05 -e", ["solve", "examples/features/05_stdlib_domain_elim.ein", "-e"]),
+    ("features/01 -e", ["solve", "examples/features/01_not_and_absent.ein", "-e"]),
+    ("branching/07 -e", ["solve", "examples/branching/07_lookahead_off.ein", "-e"]),
+    ("branching/06 -e", ["solve", "examples/branching/06_lookahead_on.ein", "-e"]),
+    ("sq-bwd/houses -e", ["solve", "examples/saturation/square-bwd/houses.ein", "-e"]),
+]
+
+
 def implementations(
     only: str | None, extra: list[str] | None = None
 ) -> list[tuple[str, list[str]]]:
@@ -109,6 +126,8 @@ def main() -> int:
     ap.add_argument("--bin", action="append", default=None, metavar="LABEL=PATH",
                     help="compare named ein binaries instead of the three "
                          "implementations; repeatable")
+    ap.add_argument("--blind", action="store_true",
+                    help="the blind-enumerator cells instead of the milestone six")
     ap.add_argument("--json", type=Path, default=None, metavar="FILE")
     args = ap.parse_args()
 
@@ -123,7 +142,7 @@ def main() -> int:
     print(f"{'workload':<18}{'impl':<{width}}{'best':>10}{'median':>10}"
           f"{'spread':>9}{'peak RSS':>11}", file=sys.stderr)
     print("─" * 75, file=sys.stderr)
-    for label, argv in WORKLOADS:
+    for label, argv in (BLIND_WORKLOADS if args.blind else WORKLOADS):
         if args.only and args.only not in label:
             continue
         for impl, prefix in impls:

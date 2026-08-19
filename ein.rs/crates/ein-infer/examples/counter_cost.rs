@@ -37,9 +37,29 @@ fn main() {
         return;
     }
 
+    // With no argument: the four milestone cells. With paths: those files,
+    // exhaustively — S1a.6.4 needed the counters of a *blind-mode* puzzle and
+    // the four cells are both hrule-driven, so the table could not see the
+    // enumerator the rest of the corpus runs.
+    let files: Vec<String> = std::env::args()
+        .skip(1)
+        .filter(|a| !a.starts_with("--"))
+        .collect();
+    let cases: Vec<(&str, Vec<(&str, Option<u64>)>)> = if files.is_empty() {
+        vec![
+            ("examples/zebra2.ein", vec![("fast", Some(1)), ("exhaustive", None)]),
+            ("examples/zebra.ein", vec![("fast", Some(1)), ("exhaustive", None)]),
+        ]
+    } else {
+        files
+            .iter()
+            .map(|f| (f.as_str(), vec![("exhaustive", None)]))
+            .collect()
+    };
+
     let mut cells: Vec<(String, ein_core::Counters, u64, String)> = Vec::new();
-    for rel in ["examples/zebra2.ein", "examples/zebra.ein"] {
-        for (label, stop_after) in [("fast", Some(1)), ("exhaustive", None)] {
+    for (rel, runs) in &cases {
+        for &(label, stop_after) in runs {
             let mut ast = Ast::new();
             let mut terms = Terms::new();
             let mut kb = load_file(&mut ast, &mut terms, &root.join(rel)).expect("loads");

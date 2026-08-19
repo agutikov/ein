@@ -43,7 +43,15 @@ Design: [design/08](../design/08_parallelism.md).
   whose fork reads a `(not h)` written mid-layer).
 - **Memory scales with jobs.** N live forks = N deltas over one shared
   base; measure peak RSS at `--jobs 16` on the worst corpus entry
-  (`enable_singleton_writeback=false`, 3 336+ enterings).
+  (`enable_singleton_writeback=false`, 3 336+ enterings). **And the base is
+  not the constant here.** [S1a.6.4](../p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)
+  measured the corpus's slowest `solve` cells, which no P1a.6 target covers:
+  `features/01_not_and_absent -e` peaks at **724 MB** at `--jobs 1`, and an
+  uncapped `saturation/square-unique/terminus.ein -e` reaches **12.3 GB** and
+  was OOM-killed on the dev machine — ~1 KB per entering, growing linearly,
+  over ~12 M enterings. That is the *search*'s state, not a fork's delta, and
+  it is what a job count multiplies against a machine's RAM
+  ([baseline.md §15](../p1a.6_performance/baseline.md#15-s1a64--the-per-call-setup-and-the-enumerator-the-targets-never-run)).
 - **Speculative waste at `stop_after`.** Bounded by the job count, but
   measure it: a `-n 1` solve that speculates 16 enterings to use 1 is
   fine; one that speculates 16 layers is not.

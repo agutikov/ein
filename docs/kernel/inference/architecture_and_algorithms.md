@@ -550,6 +550,22 @@ activity ordering (there is a `score_hypothesis` hook, S1.5a.7, mostly a
 stub), no watched-literals. These are exactly the pieces a DPLL/CDCL
 re-architecture (O7) would bring.
 
+> **Measured in the Rust port, 2026-08-19: the clause store is not where the
+> time is, in the one regime that was supposed to prove it was.** The port's
+> design named `enable-singleton-writeback false` on zebra2 — where the search
+> explodes from 101 enterings to 3 831 — as the case for a `u64` bitmask
+> clause representation. It explodes as predicted and learns **354** clauses,
+> because subsumption-minimality is what keeps those two numbers apart, and
+> the whole no-good/Apriori path is **0.3 %** of that 2.4-second run against
+> **60.2 %** for the NAF boundary. The watched-literals / bitmask family of
+> optimisations is therefore not the lever here either — the pruning is
+> already cheap; what costs is the *deduction* each surviving branch performs.
+> [S1a.6.4](../../../plans/m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)
+> has the profile, and the same stage measured the enumerator next door: one
+> hypothesis-generation pass offers ~125 candidates on the zebra puzzles, not
+> the ~18 k a blind combinatorial enumerator would, because an `(hrule …)`
+> replaces the enumeration outright.
+
 ### O9 — Model canonicalisation
 
 **SOTA.** Order-insensitive **canonical hashing** for memoised dedup;

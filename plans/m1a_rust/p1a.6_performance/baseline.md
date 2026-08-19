@@ -1786,6 +1786,204 @@ utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 20 solve examples/ze
 python3 utils/fork_split.py                # the redundant firings, unmoved
 ```
 
+## 15. S1a.6.4 — the per-call setup, and the enumerator the targets never run
+
+**2026-08-19, `master` @ `d40b1c0`, same machine.** The stage that was written
+against "18 k raw candidates per call" found **125**, and found the cost
+somewhere else entirely: in what a hypothesis-generation *call* sets up before
+it looks at a candidate, and in the blind enumerator that **no milestone
+workload reaches**. `solve examples/features/05_stdlib_domain_elim.ein -e`
+**4182.1 → 3559.7 ms (−14.9 %)**, `features/01 -e` **−15.1 %**,
+`branching/07 -e` −9.5 %; the four targets move by 1–2 % (and `solve zebra2`,
+which is not one, by 5.5 %) and stay met with room.
+
+### The four targets
+
+Both columns are best-of-15 processes measured today, so the middle one is a
+re-measurement of `322dd63` rather than S1a.6.3's recorded value — the machine
+was busier when this stage started than when the last one ended, and Rule 6
+exists because that is normal.
+
+| workload | target | at S1a.6.3 (re-run) | **at S1a.6.4** | vs PyPy ¤ |
+|---|---:|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 42.7 ms | **41.7 ms** ✅ | **118×** |
+| `solve zebra.ein -e` | ≤ 400 ms | 78.1 ms | **77.1 ms** ✅ | **114×** |
+| `solve zebra2.ein` | — | 10.9 ms | **10.3 ms** | 246× |
+| `solve zebra.ein` | — | 15.1 ms | **15.1 ms** | 202× |
+| parse + load `zebra2` | ≤ 15 ms | 0.90 ms | **0.89 ms** ✅ | 483× |
+| the acceptance gate (3 fixtures) | ≤ 5 s | 0.199 s | **0.196 s** ✅ | **184×** |
+
+¤ **Against [§1](#1-end-to-end-process-against-process)'s PyPy column**
+(4 938.0 / 2 529.9 / 8 787.4 / 3 045.1 ms), which is what §10–§14 divide by.
+The [README's target table](README.md#targets) carries a *different* PyPy
+reading from the same stage — 4.53 s and 8.33 s — so its ratio column reads
+~5 % lower for the same ein.rs number (109× and 108× for this row). Both are
+real and neither is wrong; they are two runs of the same thing, and the point
+of naming the denominator is that a reader can tell which is which.
+
+The acceptance row is a **fourth** reading of a quantity §6 already says has
+three, and it is smaller than S1a.6.3's 0.28 s because it is measured
+differently: the three `ein-infer` acceptance tests run from their own binary,
+unpinned, best of three, at *both* ends of this stage's own A/B (0.199 →
+0.196 s). The delta is what the stage claims; the absolute is what the method
+gives.
+
+### The cells the targets do not cover
+
+Every one of the four is `(hrule …)`-driven, so `generate` returns before
+`candidate_objects` and **none of them runs the blind enumerator at all**. The
+corpus's slowest `solve` cells all do, and `features/05 -e` alone is 46× `solve
+zebra -e`:
+
+| cell | at `322dd63` | **at S1a.6.4** | change | peak RSS |
+|---|---:|---:|---:|---:|
+| `features/05_stdlib_domain_elim -e` | 4182.1 ms | **3559.7 ms** | **−14.9 %** | 445 MB |
+| `features/01_not_and_absent -e` | 2184.0 ms | **1854.9 ms** | **−15.1 %** | 724 MB |
+| `branching/07_lookahead_off -e` | 1024.1 ms | **927.2 ms** | −9.5 % | 56 MB |
+| `branching/06_lookahead_on -e` | 217.6 ms | **208.0 ms** | −4.4 % | 62 MB |
+| `saturation/square-bwd/houses -e` | 272.2 ms | **260.8 ms** | −4.2 % | 97 MB |
+
+Best-of-5, spreads 0.2–1.2 % — these cells are seconds long and are a far
+quieter measurement surface than the 42 ms one the targets are written on.
+`utils/e2e_baseline.py --blind` is now the row set, so the next stage does not
+have to rediscover them.
+
+**Two of them are also where the memory is**, which nothing in this phase had
+looked at outside the four cells: `features/01 -e` peaks at **724 MB**, and
+uncapped `saturation/square-unique/terminus.ein -e` — a corpus file whose
+`solve` runs are deliberately *not* in `corpus.toml`, "a run nobody can finish
+is not coverage" — reaches **12.3 GB** and was OOM-killed on this machine at
+108 s. It is ~1 KB per entering and 12 M enterings; capped, the growth is
+exactly linear (400 k enterings → 404 MB, 2.3 s). Unchanged by this stage and
+identical on `322dd63`, so it is a property of the search rather than a
+regression — recorded because [P1a.7](../p1a.7_parallelism/README.md) sizes
+`--jobs` by per-search memory, and this is the number that bounds it.
+
+### What a call costs, and what it was spending it on
+
+`examples/hypgen_calls.rs`, the instrument this stage's acceptance asks for.
+Steady state — root saturated, one warm-up pass so the kill cache is written,
+which is the state every call in the search loop but the first sees:
+
+| cell | | at `322dd63` | T1a.6.4.0 | T1a.6.4.0b | **at S1a.6.4** |
+|---|---|---:|---:|---:|---:|
+| zebra2 | `complete()` | 61.5 µs | 47.0 | 38.3 | **38.4 µs** |
+| zebra2 | of which setup | 43.4 µs | 31.0 | 22.2 | **23.0 µs** |
+| zebra2 | `open_hypotheses()` | 327 µs | 287 | 276 | **268 µs** |
+| zebra | `complete()` | 29.2 µs | 23.1 | 19.0 | **18.8 µs** |
+| zebra | of which setup | 12.0 µs | 9.1 | 5.8 | **6.0 µs** |
+| terminus [blind] | setup | 373 ns | 312 | 236 | **234 ns** |
+
+**The setup was 71 % of a `complete()` call on zebra2.** A call that
+short-circuits on candidate #1 (S1.9.E16) still builds a fresh `Lookahead`,
+and a fresh `Lookahead` walks `rules × activators` through a fresh `Engine` —
+which the new `plan_key` counter prices exactly:
+
+| counter | zebra2 -e | zebra -e | features/05 -e | branching/07 -e | zebra2 no-writeback |
+|---|---:|---:|---:|---:|---:|
+| `hypgen_call` | 36 | 42 | 384 173 | 10 937 | 3 483 |
+| `hypgen_complete` | 34 | 40 | 384 167 | 10 931 | 3 477 |
+| `lookahead_probe` | 91 | 94 | 384 608 | 0 | 3 750 |
+| `plan_key` | **7 884** | 1 437 | 1 536 696 | **4** | 438 759 |
+| (enterings) | 101 | 111 | 384 167 | 11 501 | 3 831 |
+
+**219 compile-cache keys per call on zebra2, against 125 raw candidates for a
+whole pass.** `branching/07` is the control: its lookahead is off, so
+`Lookahead::new` never runs and its `plan_key` count is 4 for the entire
+solve — which is why T1a.6.4.0/0b did nothing there and T1a.6.4.3 did 9.5 %.
+
+Every other counter is **identical to the digit** on all four milestone cells,
+before and after: the stage did the same work more cheaply, four times.
+
+### The bench set
+
+| bench | at S1a.6.3 | **at S1a.6.4** | change |
+|---|---:|---:|---:|
+| `parse/corpus` | 748.1 µs | 733.2 µs | −2.0 % |
+| `parse/zebra2` | 190.8 µs | 187.1 µs | −1.9 % |
+| `parse/zebra2_resolve` | — | 745.0 µs | — |
+| `load/zebra2` | 904.5 µs | 891.4 µs | −1.4 % |
+| `saturate_root/zebra2` | 1.54 ms | **1.29 ms** | **−16.2 %** |
+| `match_hot/zebra2` | 24.4 µs | 24.5 µs | +0.4 % |
+| `boundary/zebra` | 1.65 ms | 1.61 ms | −2.4 % |
+| `boundary/zebra2` | 1.54 ms | **1.28 ms** | **−16.9 %** |
+| `fork/zebra2` | 290 ns | 281 ns | −3.1 % |
+| `solve_fast/zebra2` | 8.41 ms | **8.01 ms** | −4.8 % |
+| `solve_exhaustive/zebra2` | 40.17 ms | **39.05 ms** | −2.8 % |
+
+11 benches, worst relative sd **1.16 %** (gate 3 %). The two −16 % rows are
+root saturation, and they are T1a.6.4.0b rather than anything aimed at them:
+`Engine::compile_all` runs per enqueue pass, and it was cloning every `Rule`
+and allocating a `Vec` per rule before compiling anything. It scales with the
+rule count, which is why `boundary/zebra2` (30 rules) moved 7× as far as
+`boundary/zebra` (6). The three frontend rows moved −1.4…−2.0 % on paths this
+stage does not touch: that is the machine, and it is what a spread column is
+for.
+
+### Memory
+
+| cell | allocations | churn | peak live | per-fork delta (mean / max) |
+|---|---:|---:|---:|---:|
+| `zebra2 -e` | 837 431 (−5.0 %) | 61.6 MB | 2.70 MB | 4.5 K / 11.7 K |
+| `zebra -e` | 1 666 101 (−0.8 %) | 127.7 MB | 3.31 MB | 6.2 K / 10.8 K |
+
+Peak live, the per-fork delta and the fact counts are unchanged to the digit —
+the stage removed allocations, not state. Process peak RSS 17.3 MB.
+
+### The four planned tasks, closed against numbers
+
+| task | outcome |
+|---|---|
+| [T1a.6.4.1](s1a.6.4_hypgen_and_lattice.md) intern-on-probe | **not built — the premise is not true here.** ein.rs's row key *is* the identity, and `FactStore::intern` is a probe plus a push on a miss, so "probe first, materialise on survival" is one hash lookup either way. It is **0.69 %** of the blind-mode `features/05 -e` and 0.39 % of `zebra2 -e`, over 125–336 raw candidates per pass rather than the ~18 k design/07 §2 estimated. The `seen_in_call` table the task asks for is already `FxHashSet<FactId>` over the interned id, which is the open-addressed row-key table by another name |
+| T1a.6.4.4 no-good bitmask | **not built, measured in its own regime.** design/07 §4 names `enable_singleton_writeback=false` on zebra2 as where clause checking dominates. It does explode as predicted — **3 831 enterings, 354 clauses, 2.38 s** — and in that run the whole apriori/no-good machinery is **0.3 %**: `filter_candidate` 0.3 %, `nogood` and `is_subset` 0.0 %, the `contradiction` bucket 0.1 % self. `admit_from_boundary` is 60.2 % of it. A `u64` mask would replace an instruction that is not being executed |
+| T1a.6.4.5 incremental alive | **not built, and the profile says why.** The premise is that `_compute_alive` re-runs the generator per layer — true, and `hypgen_call − hypgen_complete` is **6** on every workload measured, against 384 167 `complete()` calls on `features/05 -e`. The `alive/closed` bucket is 0.5–2.6 % self and most of that is `solve.rs`'s own loop. The task's own gate ("only if the profile still shows `_compute_alive`") answers itself |
+| T1a.6.4.6 `complete()` fast path | **recorded as wrong, and now also as unnecessary.** Reordering the enumeration to find a survivor sooner would change which kill-cache writes the lookahead makes along the way — root-visible facts. The stage made the per-candidate path cheaper instead, and the *setup* it removed was 71 % of the call |
+
+### Where `zebra -e` stands, and what it chooses next
+
+| subsystem | at S1a.6.3 | **at S1a.6.4** |
+|---|---:|---:|
+| match/bind | 37.7 % | 39.1 % |
+| saturate | 47.4 % | 45.6 % |
+| hypgen/branch | 7.7 % | 7.7 % |
+| allocator | ~12 % | ~11 % |
+
+| cone | `zebra -e` | `features/05 -e` (blind) |
+|---|---:|---:|
+| `Saturator::admit_from_boundary` | **37.6 %** | **28.5 %** |
+| `Saturator::resume` (the per-entering snapshot) | **10.4 %** | **11.9 %** |
+| `hypgen::generate` | 2.1 % | 17.8 % (was 24.7 %) |
+| `candidate_objects` | — (hrule) | 3.1 % (was 10.7 %) |
+
+The hypgen cone on the milestone puzzles is **2.1 %** and there is nothing
+left in it worth a stage. What the profile names on *both* shapes of workload
+is the same pair it named at the end of S1a.6.3: the **NAF boundary**
+(`admit_from_boundary` plus the ordered walk of `parked`, 6.7 % self and 37.6 %
+cumulative on `zebra -e`) and the **per-entering snapshot**
+(`Vec::clone⟨Entry⟩` 3.8 % self, `Saturator::resume` 10.4 % cumulative). Both
+are saturation, and neither has a stage.
+
+### Reproducing this section
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
+    --example hypgen_calls                     # the per-call table
+utils/bench_env.sh python3 utils/e2e_baseline.py --blind --impl ein.rs --runs 5
+cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
+    -p ein-infer --example counter_cost        # add paths for other files:
+cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
+    -p ein-infer --example counter_cost -- examples/features/05_stdlib_domain_elim.ein
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 2 \
+    --cum-of hypgen --cum-of candidate_objects --cum-of admit_from_boundary \
+    solve examples/features/05_stdlib_domain_elim.ein -e
+# the no-good regime: zebra2 with :enable-singleton-writeback false
+sed 's/:enable-pre-branch-lookahead true)/:enable-pre-branch-lookahead true\n  :enable-singleton-writeback false)/' \
+    examples/zebra2.ein > /tmp/zebra2-nowb.ein
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 \
+    --cum-of apriori --cum-of nogood --cum-of admit_from_boundary \
+    solve /tmp/zebra2-nowb.ein -e
+```
+
 ## Reproducing all of it
 
 Every line from the repo root, every measurement through the fingerprint:
@@ -1809,6 +2007,11 @@ utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 \
 utils/bench_env.sh python3 utils/count_work.py -v --json ein.rs/bench-out/work-py.json
 cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
     -p ein-infer --example counter_cost
+
+# §15 the per-call hypgen table, and the blind-enumerator cells
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
+    --example hypgen_calls
+utils/bench_env.sh python3 utils/e2e_baseline.py --blind --impl ein.rs --runs 5
 
 # §5 memory, and §13's distributions (arity, extents, plan width, fork depth)
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example alloc_cost

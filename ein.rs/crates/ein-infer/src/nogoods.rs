@@ -34,6 +34,15 @@
 //! ([Q-M1a.17](../../../../plans/m1a_rust/open_questions.md)), so it carries
 //! its trigger condition into
 //! [P1a.6](../../../../plans/m1a_rust/p1a.6_performance/README.md) instead.
+//!
+//! **The trigger was pulled and the answer was no**
+//! ([S1a.6.4](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)
+//! T1a.6.4.4). That regime is 3 831 enterings and 2.38 s — and **354 clauses**,
+//! because the subsumption above is what keeps the two numbers apart. The whole
+//! apriori/no-good machinery is **0.3 %** of it (`filter_candidate` 0.3 %,
+//! `is_subset` and this module 0.0 %) against 60.2 % for the NAF boundary. So
+//! the sorted `Box<[FactId]>` is the only representation, and carrying the
+//! trigger rather than the code was the right call twice over.
 
 use ein_core::{FactId, Kb, Terms};
 
