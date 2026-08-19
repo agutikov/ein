@@ -114,9 +114,11 @@ struct StrTable {
 
 impl StrTable {
     fn intern(&mut self, s: &str) -> SymId {
+        ein_core::counters::bump(|k| k.intern += 1);
         if let Some(&id) = self.index.get(s) {
             return id;
         }
+        ein_core::counters::bump(|k| k.intern_miss += 1);
         let id = SymId(self.strings.len() as u32);
         self.strings.push(s.to_string());
         self.index.insert(s.into(), id);
@@ -189,6 +191,14 @@ impl Ast {
 
     pub fn loc(&self, id: NodeId) -> Option<Loc> {
         self.locs[id.0 as usize]
+    }
+
+    /// `(nodes, args, symbols)` — what the arenas hold. The instrument
+    /// [`frontend_cost`](../../ein-infer/examples/frontend_cost.rs) reports it
+    /// next to the allocation count, so "an arena grew" and "the program is
+    /// bigger" stay distinguishable.
+    pub fn arena_sizes(&self) -> (usize, usize, usize) {
+        (self.nodes.len(), self.args.len(), self.strs.strings.len())
     }
 
     pub fn args(&self, span: ArgSpan) -> &[NodeId] {

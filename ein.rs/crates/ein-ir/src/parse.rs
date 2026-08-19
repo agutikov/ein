@@ -53,6 +53,10 @@ impl std::error::Error for ParseError {}
 /// `filename` is recorded in every `Loc` and in the error message; `None`
 /// becomes `<string>`, as `parse(text)` does in ein.py.
 pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<NodeId>, ParseError> {
+    ein_core::counters::bump(|k| {
+        k.parse_call += 1;
+        k.parse_bytes += text.len() as u64;
+    });
     let file = ast.intern_file(filename);
     let mut p = Parser {
         src: text,

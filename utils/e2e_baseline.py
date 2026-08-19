@@ -74,6 +74,19 @@ BLIND_WORKLOADS: list[tuple[str, list[str]]] = [
 ]
 
 
+# Start-up (S1a.6.5 T1a.6.5.6). "A 5 ms engine behind a 40 ms start-up is not
+# a fast tool", and neither of the two rows above can see start-up: they are
+# dominated by the work. `--help` does no engine work at all, so it *is* the
+# floor — process creation, the dynamic loader, `clap`'s formatter — and
+# `solve friends` is that floor plus the smallest real program in the corpus
+# (651 bytes, one rule, one fact, no imports). Selected with `--startup`.
+STARTUP_WORKLOADS: list[tuple[str, list[str]]] = [
+    ("--help", ["--help"]),
+    ("solve friends", ["solve", "examples/saturation/symmetric/friends.ein"]),
+    ("saturate friends", ["saturate", "examples/saturation/symmetric/friends.ein"]),
+]
+
+
 def implementations(
     only: str | None, extra: list[str] | None = None
 ) -> list[tuple[str, list[str]]]:
@@ -128,6 +141,8 @@ def main() -> int:
                          "implementations; repeatable")
     ap.add_argument("--blind", action="store_true",
                     help="the blind-enumerator cells instead of the milestone six")
+    ap.add_argument("--startup", action="store_true",
+                    help="the start-up cells instead of the milestone six")
     ap.add_argument("--json", type=Path, default=None, metavar="FILE")
     args = ap.parse_args()
 
@@ -142,7 +157,12 @@ def main() -> int:
     print(f"{'workload':<18}{'impl':<{width}}{'best':>10}{'median':>10}"
           f"{'spread':>9}{'peak RSS':>11}", file=sys.stderr)
     print("─" * 75, file=sys.stderr)
-    for label, argv in (BLIND_WORKLOADS if args.blind else WORKLOADS):
+    selected = WORKLOADS
+    if args.blind:
+        selected = BLIND_WORKLOADS
+    elif args.startup:
+        selected = STARTUP_WORKLOADS
+    for label, argv in selected:
         if args.only and args.only not in label:
             continue
         for impl, prefix in impls:

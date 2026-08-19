@@ -144,6 +144,26 @@ pub struct Counters {
     /// The costliest candidate filter, and the reason a pass costs 14x more
     /// with the lever on than off.
     pub lookahead_probe: u64,
+    // ── the frontend ───────────────────────────────────────────────
+    /// `parse()` calls and the source bytes they were handed — one per
+    /// *module text*, so the pair prices the import diamond: `zebra2` pulls
+    /// `std.algebra` and `std.bijection`, and `std.bijection` pulls
+    /// `std.algebra` again. **No ein.py counterpart** — its loader re-parses
+    /// the same way, but nothing there counts it either.
+    pub parse_call: u64,
+    pub parse_bytes: u64,
+    /// Terminal match *attempts* — [`crate::counters`]'s view of a
+    /// backtracking parser. `lex_match / tokens` is how many readings a
+    /// position is tried under; `lex_symbol` is the subset that ran `SYMBOL`'s
+    /// eleven-word reserved-name walk.
+    pub lex_match: u64,
+    pub lex_symbol: u64,
+    /// Interner calls and misses. A miss is the only one that allocates, which
+    /// is what makes "the lexer allocates nothing per token" checkable rather
+    /// than asserted.
+    pub intern: u64,
+    pub intern_miss: u64,
+
     /// Compile-cache keys built — [`crate::terms::Terms`]-level bookkeeping
     /// with **no ein.py counterpart**, like [`Self::extent_probe`]: ein.py's
     /// key is a tuple of the strings it already has, while a `PlanKey` has to
@@ -229,12 +249,18 @@ impl Counters {
             hypgen_complete: 0,
             lookahead_probe: 0,
             plan_key: 0,
+            parse_call: 0,
+            parse_bytes: 0,
+            lex_match: 0,
+            lex_symbol: 0,
+            intern: 0,
+            intern_miss: 0,
         }
     }
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 24] {
+    pub fn rows(&self) -> [(&'static str, u64); 30] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -260,6 +286,12 @@ impl Counters {
             ("hypgen_complete", self.hypgen_complete),
             ("lookahead_probe", self.lookahead_probe),
             ("plan_key", self.plan_key),
+            ("parse_call", self.parse_call),
+            ("parse_bytes", self.parse_bytes),
+            ("lex_match", self.lex_match),
+            ("lex_symbol", self.lex_symbol),
+            ("intern", self.intern),
+            ("intern_miss", self.intern_miss),
         ]
     }
 
@@ -312,11 +344,17 @@ mod tests {
         c.hypgen_complete = 1;
         c.lookahead_probe = 1;
         c.plan_key = 1;
+        c.parse_call = 1;
+        c.parse_bytes = 1;
+        c.lex_match = 1;
+        c.lex_symbol = 1;
+        c.intern = 1;
+        c.intern_miss = 1;
         assert_eq!(
             c,
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 23);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 29);
     }
 }

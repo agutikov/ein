@@ -185,6 +185,7 @@ pub fn skip_trivia(src: &str, mut c: Cursor) -> Cursor {
 /// Lark's `PatternStr` carries no word boundary, which is precisely why
 /// `rulex` can be read as `rule` + `x`.
 pub fn match_literal(src: &str, c: Cursor, word: &str) -> Option<Lexeme> {
+    ein_core::counters::bump(|k| k.lex_match += 1);
     let at = skip_trivia(src, c);
     if !src[at.pos..].starts_with(word) {
         return None;
@@ -203,6 +204,10 @@ pub fn match_literal(src: &str, c: Cursor, word: &str) -> Option<Lexeme> {
 
 /// Match `term` at `c` (after trivia), or `None`.
 pub fn match_term(src: &str, c: Cursor, term: Term) -> Option<Lexeme> {
+    ein_core::counters::bump(|k| {
+        k.lex_match += 1;
+        k.lex_symbol += u64::from(matches!(term, Term::Symbol));
+    });
     let at = skip_trivia(src, c);
     let rest = &src[at.pos..];
     let len = match term {
