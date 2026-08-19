@@ -125,13 +125,16 @@ fn rust_naf(path: &Path) -> Option<Answer> {
 enum Compare {
     /// Byte for byte.
     Exact,
-    /// Byte for byte **except what a fork's own narration decides**:
-    /// two things, and nothing else.
+    /// Byte for byte **except a fork's own narration** — `ein-parity`'s rule,
+    /// applied to both sides, and the same one `ein-conformance` applies at
+    /// T2 and T3.
+    ///
     /// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it):
     /// ein.rs's forks resume root's saturation and ein.py's re-derive it, so
-    /// the same solution is reached by narrating a quarter as much.
+    /// the same solution is reached by narrating a quarter as much. Two things
+    /// move in this shape and nothing else:
     ///
-    /// 1. **The firing counters** — `firings=N`, `"n_firings"`, and the event
+    /// 1. **The firing counters** — `firings=`, `"n_firings"`, and the event
     ///    ordinal `"n"`, which moves because the elided firings are what it
     ///    was counting.
     /// 2. **A `dead-post` entering's unsat core.** `enable_fail_fast_fork`
@@ -144,82 +147,25 @@ enum Compare {
     ///    the run's own answer, `union_dead_cores` over every dead
     ///    commitment, does not move on any corpus entry.
     ///
-    /// Deliberately the narrowest cut that works. Still compared exactly: the
-    /// commitment, the `kind`, the layer, an **alive** entering's core, the
-    /// fact count, the verdict, every `STATS` counter, every learned `CLAUSE`,
-    /// the `EVENTS` total — which does not move, because the log is filtered
-    /// to `enter` / `nogood` / `writeback` / `warn` and none of those is a
-    /// firing — and `ROOT facts=`. `commit-shape` keeps `Compare::Exact`
-    /// including its `firings=`, because it calls `try_commitment_set` without
-    /// a snapshot and so does not take the resumed path at all.
-    IgnoringForkNarration,
+    /// Still compared exactly: the commitment, the `kind`, the layer, an
+    /// **alive** entering's core, the fact count, the verdict, every `STATS`
+    /// counter, every learned `CLAUSE`, the `EVENTS` total — which does not
+    /// move, because the log is filtered to `enter` / `nogood` / `writeback` /
+    /// `warn` and none of those is a firing — and `ROOT facts=`.
+    /// `commit-shape` keeps [`Compare::Exact`] including its `firings=`,
+    /// because it calls `try_commitment_set` without a snapshot and so does
+    /// not take the resumed path at all: the control, not an oversight.
+    Narrated,
 }
 
-/// Blank what [`Compare::IgnoringForkNarration`] elides, line by line so the
-/// `dead-post` condition is per record. `#` rather than deletion, so a
-/// *missing* field still shows as a difference.
-fn erase_firing_counts(s: &str) -> String {
-    s.lines()
-        .map(|line| {
-            let l = erase_counters(line);
-            if line.contains("kind=dead-post") || line.contains("\"kind\": \"dead-post\"") {
-                erase_after(&l, &["core=[", "\"core\": ["], ']')
-            } else {
-                l
-            }
-        })
-        .collect::<Vec<_>>()
-        .join("\n")
-}
-
-/// Blank from just after `key` up to and including the first `close`.
-fn erase_after(s: &str, keys: &[&str], close: char) -> String {
-    let mut out = String::with_capacity(s.len());
-    let mut rest = s;
-    while let Some((at, key)) = keys
-        .iter()
-        .filter_map(|k| rest.find(k).map(|i| (i, *k)))
-        .min_by_key(|(i, _)| *i)
-    {
-        out.push_str(&rest[..at + key.len()]);
-        rest = &rest[at + key.len()..];
-        let end = rest.find(close).map_or(rest.len(), |i| i);
-        out.push('#');
-        rest = &rest[end..];
-    }
-    out.push_str(rest);
-    out
-}
-
-fn erase_counters(s: &str) -> String {
-    let mut out = String::with_capacity(s.len());
-    let mut rest = s;
-    'outer: while !rest.is_empty() {
-        for key in ["firings=", "\"n_firings\": ", "\"n\": "] {
-            if let Some(at) = rest.find(key) {
-                // Only the earliest of the three, or the counters interleave.
-                if ["firings=", "\"n_firings\": ", "\"n\": "]
-                    .iter()
-                    .filter_map(|k| rest.find(k))
-                    .min()
-                    != Some(at)
-                {
-                    continue;
-                }
-                out.push_str(&rest[..at + key.len()]);
-                rest = &rest[at + key.len()..];
-                let end = rest
-                    .find(|c: char| !c.is_ascii_digit())
-                    .unwrap_or(rest.len());
-                out.push('#');
-                rest = &rest[end..];
-                continue 'outer;
-            }
+impl Compare {
+    fn apply(self, s: &str) -> String {
+        match self {
+            Compare::Exact => s.to_string(),
+            Compare::Narrated if ein_parity::strict() => s.to_string(),
+            Compare::Narrated => ein_parity::blank(s),
         }
-        out.push_str(rest);
-        break;
     }
-    out
 }
 
 fn sweep(
@@ -235,6 +181,7 @@ fn sweep(
         return skip(label);
     };
     let (mut bad, mut compared, mut items) = (Vec::new(), 0, 0usize);
+    let mut narrated = 0usize;
     let mut seen_divergent: Vec<String> = Vec::new();
     for path in &corpus_files() {
         let Some(got) = rust(path) else { continue };
@@ -256,14 +203,12 @@ fn sweep(
             (Answer::Ok(a), Answer::Ok(b)) => {
                 compared += 1;
                 items += count(a);
-                let (x, y) = match how {
-                    Compare::Exact => (a.clone(), b.clone()),
-                    Compare::IgnoringForkNarration => {
-                        (erase_firing_counts(a), erase_firing_counts(b))
-                    }
-                };
+                let (x, y) = (how.apply(a), how.apply(b));
                 if x != y {
                     bad.push(format!("{name}\n{}", first_difference(&x, &y)));
+                }
+                if a != b {
+                    narrated += 1;
                 }
             }
             (Answer::Err { .. }, Answer::Err { .. }) => {}
@@ -287,7 +232,13 @@ fn sweep(
         bad.len(),
         bad.join("\n\n")
     );
-    eprintln!("{label}: {compared} files, {items} items, 0 differences");
+    eprintln!("{label}: {compared} files, {items} items, {narrated} narration-only, 0 differences");
+    // The cut has to be load-bearing where it is applied, or it is a
+    // tolerance nobody is examining.
+    assert!(
+        how == Compare::Exact || ein_parity::strict() || narrated > 0,
+        "{label}: no file needed the narration cut — D3 no longer reaches it"
+    );
     // A gate that passes because nothing ran is not a gate; the floors exist
     // only to catch a harness that silently stopped looking.
     assert!(
@@ -355,7 +306,7 @@ fn the_whole_corpus_solves_the_same_way() {
         |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
         (60, 100),
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
-        Compare::IgnoringForkNarration,
+        Compare::Narrated,
     );
 }
 
@@ -368,7 +319,7 @@ fn the_whole_corpus_solves_the_same_way_exhaustively() {
         |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
         (60, 200),
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
-        Compare::IgnoringForkNarration,
+        Compare::Narrated,
     );
 }
 
@@ -389,7 +340,7 @@ fn the_whole_corpus_shuffles_the_same_way() {
         |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
         (60, 100),
         &["examples/ein-bugs/mixed-type-hypothesis.ein"],
-        Compare::IgnoringForkNarration,
+        Compare::Narrated,
     );
 }
 

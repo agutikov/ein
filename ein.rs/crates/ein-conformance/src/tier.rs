@@ -14,11 +14,65 @@
 //! A run with no verdict (`render …`, `saturate …`) has nothing for T0/T1 to
 //! read; those tiers compare its exit code and say so, rather than reporting
 //! a green they did not earn.
+//!
+//! # What T2 and T3 do **not** compare, and why
+//!
+//! Since [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+//! the two engines narrate different amounts of the same derivation on purpose
+//! ([D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
+//! and the rule that says which parts of an artefact that makes unreadable is
+//! `ein-parity` — one crate, shared with every crate's own parity tests, so
+//! the gate and the tests cannot drift apart. [`Ctx`] carries it here.
+//!
+//! **T0 and T1 are not relaxed in any direction**, and `summary.json` — which
+//! is what they read — is excluded from the normalisation by name, not by
+//! accident: a firing count appearing in it would be a T1 move, which is the
+//! one thing the relaxation must never hide.
 
 use serde_json::Value;
 use std::fmt;
 
 use crate::run::Capture;
+
+/// How strictly to compare, and what this cell wrote that is a rendered
+/// derivation.
+///
+/// `strict` is `--strict`: it restores the byte-identical contract
+/// P1a.1–P1a.5 was built against, and the determinism sweep runs under it.
+pub struct Ctx {
+    pub strict: bool,
+    /// Artefacts of this run that are rendered derivations — the `--trace`
+    /// markdown. From [`ein_parity::narrated_artefacts`].
+    pub narrated: Vec<String>,
+}
+
+impl Ctx {
+    /// The unrelaxed contract with no narrated artefacts. Only the tests
+    /// below construct one this way; `cmd_run` builds a `Ctx` per cell,
+    /// because `narrated` is a property of the run.
+    #[cfg(test)]
+    pub fn strict() -> Ctx {
+        Ctx {
+            strict: true,
+            narrated: Vec::new(),
+        }
+    }
+
+    /// The D3 normalisation of one captured stream or file. A `summary.json`
+    /// is never normalised; see the module note.
+    ///
+    /// By **basename**, because a run writes two of them: the
+    /// `--json-summary` T0/T1 reads, and the one inside a `--dump-states`
+    /// tree. Neither is narration, and matching only the first would have made
+    /// that a coincidence rather than a rule.
+    fn blank(&self, name: &str, text: &str) -> String {
+        let base = name.rsplit('/').next().unwrap_or(name);
+        if self.strict || base == "summary.json" {
+            return text.to_string();
+        }
+        ein_parity::blank(text)
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Tier {
@@ -115,7 +169,7 @@ fn exception_class(stderr: &str) -> Option<String> {
     ok.then(|| name.to_string())
 }
 
-pub fn compare(tier: Tier, a: &Capture, b: &Capture) -> Outcome {
+pub fn compare(tier: Tier, a: &Capture, b: &Capture, ctx: &Ctx) -> Outcome {
     let mut diffs = Vec::new();
     match (a.timed_out, b.timed_out) {
         // Nothing was compared, so nothing can be claimed. A cell that
@@ -142,7 +196,7 @@ pub fn compare(tier: Tier, a: &Capture, b: &Capture) -> Outcome {
             }
             _ => diffs.push("summary.json produced by only one side".into()),
         },
-        Tier::T2 => match event_diff(a, b) {
+        Tier::T2 => match event_diff(a, b, ctx) {
             Some(d) => diffs.extend(d),
             None => {
                 if diffs.is_empty() {
@@ -151,18 +205,21 @@ pub fn compare(tier: Tier, a: &Capture, b: &Capture) -> Outcome {
             }
         },
         Tier::T3 => {
-            if a.stdout != b.stdout {
-                diffs.push(first_line_diff("stdout", &a.stdout, &b.stdout));
-            }
-            if a.stderr != b.stderr {
-                diffs.push(first_line_diff("stderr", &a.stderr, &b.stderr));
+            for (what, x, y) in [
+                ("stdout", &a.stdout, &b.stdout),
+                ("stderr", &a.stderr, &b.stderr),
+            ] {
+                let (x, y) = (ctx.blank(what, x), ctx.blank(what, y));
+                if x != y {
+                    diffs.push(first_line_diff(what, &x, &y));
+                }
             }
             // The event log is JSON-per-line whose `n` renumbers after any
             // divergence and whose `run` event names the implementation, so a
             // byte comparison would report a wall of noise where the
             // structural differ reports one first difference.
-            diffs.extend(event_diff(a, b).unwrap_or_default());
-            diffs.extend(file_diff(a, b));
+            diffs.extend(event_diff(a, b, ctx).unwrap_or_default());
+            diffs.extend(file_diff(a, b, ctx));
         }
     }
     if diffs.is_empty() {
@@ -235,7 +292,7 @@ fn terse(v: &Value) -> String {
 
 /// Compare the two `--events` logs structurally, or `None` when neither side
 /// produced one.
-fn event_diff(a: &Capture, b: &Capture) -> Option<Vec<String>> {
+fn event_diff(a: &Capture, b: &Capture, ctx: &Ctx) -> Option<Vec<String>> {
     let (ea, eb) = (
         a.files.get(crate::plan::EVENTS_FILE),
         b.files.get(crate::plan::EVENTS_FILE),
@@ -245,21 +302,14 @@ fn event_diff(a: &Capture, b: &Capture) -> Option<Vec<String>> {
         (Some(_), None) | (None, Some(_)) => {
             Some(vec!["event log written by only one side".into()])
         }
-        (Some(x), Some(y)) => Some(match crate::events::diff_text(x, y) {
+        (Some(x), Some(y)) => Some(match crate::events::diff_text(x, y, ctx.strict) {
             Err(e) => vec![format!("events: {e}")],
-            Ok(r) => r
-                .first_diff
-                .map(|d| {
-                    let mut v = vec![format!("events: first difference at event {}", d.index)];
-                    v.extend(d.fields);
-                    v
-                })
-                .unwrap_or_default(),
+            Ok(r) => r.report(),
         }),
     }
 }
 
-fn file_diff(a: &Capture, b: &Capture) -> Vec<String> {
+fn file_diff(a: &Capture, b: &Capture, ctx: &Ctx) -> Vec<String> {
     let mut out = Vec::new();
     let mut names: Vec<&String> = a
         .files
@@ -271,8 +321,26 @@ fn file_diff(a: &Capture, b: &Capture) -> Vec<String> {
     names.dedup();
     for name in names {
         match (a.files.get(name), b.files.get(name)) {
-            (Some(x), Some(y)) if x == y => {}
-            (Some(x), Some(y)) => out.push(first_line_diff(name, x, y)),
+            (Some(x), Some(y)) => {
+                // A **rendered derivation** — the `--trace` markdown — is
+                // compared for presence: both sides wrote one, and neither
+                // wrote an empty one. What replaces the byte diff is an
+                // ein.rs golden (S1a.6.11), because there is no normalisation
+                // that makes the two texts agree: ein.rs's trace opens with a
+                // *Before any assumption* section ein.py has no counterpart
+                // for, and ein.py's spine carries its fork's re-derivation of
+                // root, redundant steps included.
+                if !ctx.strict && ctx.narrated.iter().any(|n| n == name) {
+                    if x.trim().is_empty() != y.trim().is_empty() {
+                        out.push(format!("{name}: empty on one side only"));
+                    }
+                    continue;
+                }
+                let (x, y) = (ctx.blank(name, x), ctx.blank(name, y));
+                if x != y {
+                    out.push(first_line_diff(name, &x, &y));
+                }
+            }
             (Some(_), None) => out.push(format!("{name}: written by a only")),
             (None, Some(_)) => out.push(format!("{name}: written by b only")),
             (None, None) => {}
@@ -350,7 +418,7 @@ mod tests {
             timed_out: false,
         };
         assert!(matches!(
-            compare(Tier::T2, &cap(0), &cap(0)),
+            compare(Tier::T2, &cap(0), &cap(0), &Ctx::strict()),
             Outcome::Skipped(_)
         ));
     }
@@ -370,8 +438,88 @@ mod tests {
         };
         let a = cap("{\"e\":\"fire\",\"n\":0,\"rule\":\"symmetric\"}\n");
         let b = cap("{\"e\":\"fire\",\"n\":0,\"rule\":\"transitive\"}\n");
-        assert!(matches!(compare(Tier::T2, &a, &a), Outcome::Same));
-        assert!(compare(Tier::T2, &a, &b).is_diff());
+        let ctx = Ctx::strict();
+        assert!(matches!(compare(Tier::T2, &a, &a, &ctx), Outcome::Same));
+        assert!(compare(Tier::T2, &a, &b, &ctx).is_diff());
+    }
+
+    fn cap_files(files: &[(&str, &str)]) -> Capture {
+        Capture {
+            code: 0,
+            stdout: String::new(),
+            stderr: String::new(),
+            files: files
+                .iter()
+                .map(|(n, t)| ((*n).to_string(), (*t).to_string()))
+                .collect(),
+            summary: None,
+            wall: std::time::Duration::ZERO,
+            timed_out: false,
+        }
+    }
+
+    /// D3 at T3: the timeline's firing count is narration, and the trace is a
+    /// rendered derivation. Everything beside them on the same record is not.
+    #[test]
+    fn t3_reads_the_timeline_past_its_firing_count() {
+        let relaxed = Ctx {
+            strict: false,
+            narrated: vec!["trace.md".into()],
+        };
+        let a = cap_files(&[
+            (
+                "states/00_timeline.jsonl",
+                "{\"kind\": \"alive\", \"firings\": 18}",
+            ),
+            ("trace.md", "# Solution trace\n> Solved in 20 steps"),
+        ]);
+        let b = cap_files(&[
+            (
+                "states/00_timeline.jsonl",
+                "{\"kind\": \"alive\", \"firings\": 2}",
+            ),
+            (
+                "trace.md",
+                "# Solution trace\n> Solved in 4 steps after 16 unconditional",
+            ),
+        ]);
+        assert!(matches!(compare(Tier::T3, &a, &b, &relaxed), Outcome::Same));
+        // …and the same pair is a difference on the unrelaxed contract, which
+        // is what `--strict` is for.
+        assert!(compare(Tier::T3, &a, &b, &Ctx::strict()).is_diff());
+        // A trace that *vanished* is still a difference, and so is one that
+        // came out empty.
+        let gone = cap_files(&[(
+            "states/00_timeline.jsonl",
+            "{\"kind\": \"alive\", \"firings\": 2}",
+        )]);
+        assert!(compare(Tier::T3, &a, &gone, &relaxed).is_diff());
+        let empty = cap_files(&[
+            (
+                "states/00_timeline.jsonl",
+                "{\"kind\": \"alive\", \"firings\": 2}",
+            ),
+            ("trace.md", "\n"),
+        ]);
+        assert!(compare(Tier::T3, &a, &empty, &relaxed).is_diff());
+    }
+
+    /// The line the relaxation must never cross: `summary.json` is T0 + T1 and
+    /// is compared exactly, whatever it happens to contain.
+    #[test]
+    fn summary_json_is_never_normalised() {
+        let relaxed = Ctx {
+            strict: false,
+            narrated: Vec::new(),
+        };
+        for name in ["summary.json", "states/summary.json"] {
+            let a = cap_files(&[(name, "{\"stats\": {\"firings\": 18}}")]);
+            let b = cap_files(&[(name, "{\"stats\": {\"firings\": 2}}")]);
+            assert!(
+                compare(Tier::T3, &a, &b, &relaxed).is_diff(),
+                "{name} was normalised"
+            );
+        }
     }
 
     fn cap_err(code: i32, stderr: &str) -> Capture {

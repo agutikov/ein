@@ -208,6 +208,7 @@ it requires an entry in [`open_questions.md`](../open_questions.md).
 | `--help` text, every level | `argparse` and `clap` lay it out differently and neither can be configured into the other ([Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity)) | compared **structurally**: the subcommand set, and per option its short key, metavar, arity, default, `choices`, exclusive group and help string — extracted from both and diffed. Layout elided |
 | CLI usage-error text | `argparse` welds its wrapped `usage:` block onto every error, so exempting layout exempts the message (Q-M1a.13) | the accept/reject verdict and the exit code compared exactly; the text elided |
 | dict iteration order | *not* a divergence — see [02](02_determinism_and_order.md) | ein.rs reproduces insertion order structurally |
+| **a fork's derivation, and anything keyed on a dying fork's stopping point** — the firing traffic of a solve (`fire` / `enqueue` / `park` / `admit` / `retire` / `alt` / `quiesce` / `compile` and every redundant firing); the counters that count it (`firings=`, `"firings"`, `n_firings`, an event's ordinal `n`, the CLI's `wrote … (N steps`); the artefacts that *render* one (the `--trace` markdown, the `slice` cone, a fork's `enterings/` dump, a lattice DOT drawn from a snapshot); and a `dead-post` entering's unsat core and state keys | ein.rs resumes root's saturation across the fork boundary where ein.py re-derives it ([Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint), [D3](../divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)), so for the same answer the two engines narrate different amounts of the same derivation, record a different one of each fact's equally valid justifications first, and — with `enable_fail_fast_fork` on — stop a dying fork at a different firing | the event stream is compared **per segment** — root's saturation, closed by the first hypgen event, then one per `enter` — for the **multiset of facts its non-redundant firings derived** and the **set of rules** that derived them; a `dead-post` segment's derivation is not compared at all, since it is a prefix by construction. Counters are blanked **by value**, so a record that lost one still fails. A rendered derivation is compared for **presence**, and its regression coverage moves to ein.rs's own goldens ([S1a.6.11](../p1a.6_performance/s1a.6.11_fixture_goldens.md)) |
 
 The `--shuffle` row is the only one with real risk. Options in
 Q-M1a.5: (a) port MT19937 + CPython's `random.shuffle` loop (≈ 60 lines,
@@ -215,14 +216,79 @@ fully deterministic, gives T3 everywhere); (b) declare shuffled runs
 T0-only, since the whole point of `--shuffle` is that the verdict is
 *shuffle-invariant*. (a) is cheap and is the recommendation.
 
-The two CLI rows were added on 2026-08-18 by Q-M1a.13 — the one time this
-list has been extended, and by the mechanism this section requires. They
-carry a risk of a different kind, and it is not wording but *loss*: a byte
-diff of `--help` was what would have caught a silently missing option, so
-it is replaced by the structural comparison in the normalisation column
-rather than dropped. Nothing else moves — a subcommand, an option, a
-default, a `choices` value, an accept/reject verdict and an exit code are
-all still compared exactly.
+The two CLI rows were added on 2026-08-18 by Q-M1a.13, and the fork row on
+2026-08-19 by Q-M1a.18 — the two times this list has been extended, both by
+the mechanism this section requires. They carry a risk of a different kind,
+and it is not wording but *loss*: a byte diff of `--help` was what would have
+caught a silently missing option, so it is replaced by the structural
+comparison in the normalisation column rather than dropped. Nothing else
+moves — a subcommand, an option, a default, a `choices` value, an
+accept/reject verdict and an exit code are all still compared exactly.
+
+### The fork row, stated once
+
+Read as one sentence it is: **a fork's derivation, and anything keyed on a
+dying fork's stopping point, is narration.** Three mechanical consequences
+follow — a firing *count* is narration, a rendered derivation is narration,
+and a dying fork's stopping point is narration — and they are implemented
+**once**, in [`ein.rs/crates/ein-parity`](../../../ein.rs/crates/ein-parity/src/lib.rs),
+which `ein-conformance` and every crate's own parity tests share. Before
+[S1a.6.10](../p1a.6_performance/s1a.6.10_parity_contract.md) the same decision
+existed six times, each cut made as the next test went red; a relaxation that
+has to be discovered by running the tests is not a contract.
+
+**What the segment cut is, and why that one.** Six definitions of "the
+derivation" were run over the same 240 captured T2 cells before one was
+written down: the whole stream agrees on 142, the ordered productive firings
+on 142, eliding `compile` too on 213, an ordered `(rule, premises, derived)` on
+214, that as a per-segment multiset on 232, and **the multiset of derived facts
+plus the set of rules on 239** — which is [D2](../divergences.md) and nothing
+else, the same standard T3 is held to. The cut is therefore the strongest one
+that reaches the standard rather than the first one that went green, and the
+row above it is the *proof-structure* move D3 measures at 267 529 facts and
+argues cannot be designed away. `ein-parity`'s `events` module carries that
+table.
+
+A segment is delimited by an `enter`, **and** by the first hypgen event, which
+is what closes root's saturation. Both boundaries are load-bearing: without
+the second, root's own derivation shares a segment with the first entering,
+and under `--lookahead` that entering is a probe that usually dies — so root's
+derivation would be skipped along with the fork's fail-fast prefix. The
+negative control is what found that, on
+`examples/branching/05_mini_zebra.ein :: solve -L`.
+
+**What it still catches, and this is checked rather than asserted.** A dropped
+productive firing, a productive firing that became redundant, a rule that
+stopped firing, an entering that vanished, and any change to the search layer
+are all failures under the relaxed comparison — one unit test each in
+`ein-parity`, and `utils/mutant_ein.py` is the end-to-end form: a wrapper that
+deletes one event from the *shipping* binary's log, which the gate must report
+for a productive firing and must not for a redundant one or an `enqueue`.
+
+**What it does not catch, stated rather than discovered.** A derivation lost
+inside a **dying** fork: that segment's firing list is a fail-fast prefix and
+is not compared, so a loss there is invisible until fail-fast is off. The
+control found this the honest way — it was the only escape left once root's
+saturation got a segment of its own, and it is the third clause of the rule
+doing exactly what it says.
+
+**Turning it off.** `ein-conformance run --strict`, or `EIN_PARITY_STRICT=1`
+for the crates' own tests, restores the byte-identical comparison
+P1a.1–P1a.5 was built against. The determinism sweep runs under it — one
+implementation against itself under two `PYTHONHASHSEED`s has no excuse to
+narrate differently, and running *that* relaxed would blind it to exactly the
+hazard class it exists for (H1, H4).
+
+Note what strict does **not** mean: `EIN_PARITY_STRICT=1 cargo test` is not a
+configuration the suite passes. `dot_parity`, `trace_parity`, `dump_parity`
+and `hypgen_parity` then report D3 — which is the point of the flag, since
+that report *is* the measurement of what the relaxation covers.
+
+**What does not move, in any direction.** T0 and T1. `summary.json` is
+excluded from the normalisation *by name* — a firing count appearing in it
+would be a T1 difference, which is the one thing this must never hide — and so
+are stdout's answer, the printed unsat core, an **alive** entering's core, and
+every state dump outside `enterings/`.
 
 ---
 

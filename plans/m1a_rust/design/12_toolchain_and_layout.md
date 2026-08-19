@@ -30,6 +30,7 @@ ein/
 │       ├── ein-cli/            the `ein` binary
 │       ├── ein-py/             PyO3 bindings (maturin)             [P1a.9]
 │       ├── ein-oracle/         ein.py + CPython as test oracles (dev-only)
+│       ├── ein-parity/         the normalisation list, executable (dev-only) [S1a.6.10]
 │       └── ein-conformance/    corpus runner, event differ
 └── utils/                      (existing scripts; gains a couple of runners)
 ```
@@ -59,6 +60,17 @@ Why this split:
   (`ein-ir/tests/fuzz_parity.rs`) rather than in `ein-conformance`, so
   `cargo test --workspace` runs it and the harness binary keeps linking
   neither implementation.
+- **`ein-parity` is the eighth workspace member, and it exists for a reason a
+  smaller repo would not have.** Added at
+  [S1a.6.10](../p1a.6_performance/s1a.6.10_parity_contract.md), it holds
+  [design/01 §5](01_parity_contract.md#5-legitimate-divergences-the-normalisation-list)'s
+  normalisation list as code — *what the two engines are not required to
+  agree on*. A crate rather than a module because both the harness binary
+  and four crates' own `tests/` need it, and before it existed the same
+  decision was implemented six times, in two languages, each cut made as
+  the next test went red. It is `publish = false` and no shipping crate
+  depends on it: a renderer that decides what a diff will look at is a
+  renderer with an opinion about the contract.
 
 `ein.rs/` compiles to a binary named `ein`. It does **not** get installed
 onto `$PATH` during the port — the harness invokes both engines by

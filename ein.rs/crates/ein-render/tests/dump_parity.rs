@@ -20,6 +20,15 @@
 //! [normalisation list](../../../../plans/m1a_rust/design/01_parity_contract.md) §5
 //! and are blanked *by value, not by presence*, on both sides — a record that
 //! lost its `ts_ms` still fails.
+//!
+//! Two things in the tree are **narration** rather than state, and `ein-parity`
+//! is what says so: the timeline's per-entering `firings` count, and — in the
+//! `snapshot` mode — the dead commitments' `state_key`s with the two lattice
+//! DOTs the DAG merges by them. Both are elided here, at comparison time, by
+//! the same rule the conformance harness applies at T3. The third,
+//! `dump_shape`'s `enterings/` subtree, is elided where it is *produced*, for
+//! the measured reason its comment gives; this test checks that the marker it
+//! writes is still the one `ein-parity` expects.
 
 use ein_core::Terms;
 use ein_ir::{Ast, parse};
@@ -52,7 +61,7 @@ fn the_dump_tree_is_byte_identical_on_the_corpus() {
     };
     let (mut bad, mut compared, mut bytes, mut files) = (Vec::new(), 0usize, 0usize, 0usize);
     let mut seen_divergent: Vec<String> = Vec::new();
-    let mut aborts = 0usize;
+    let (mut aborts, mut narrated) = (0usize, 0usize);
     for path in &corpus_files() {
         let rel = path.strip_prefix(repo_root()).unwrap_or(path);
         let name = rel.display();
@@ -80,8 +89,12 @@ fn the_dump_tree_is_byte_identical_on_the_corpus() {
                 (Answer::Ok(a), Answer::Ok(b)) => {
                     compared += 1;
                     bytes += a.len();
+                    let (x, y) = narrow(a, b);
+                    if x != y {
+                        bad.push(format!("{name} [{mode}]\n{}", first_difference(&x, &y)));
+                    }
                     if a != b {
-                        bad.push(format!("{name} [{mode}]\n{}", first_difference(a, b)));
+                        narrated += 1;
                     }
                     // The abort mode is only coverage when it *aborts*, and
                     // whether it does depends on the puzzle. Count it, so a
@@ -128,12 +141,39 @@ fn the_dump_tree_is_byte_identical_on_the_corpus() {
     );
     eprintln!(
         "T3 (dump): {files} files, {compared} modes, {bytes} bytes, \
-         {aborts} budget aborts, 0 differences"
+         {aborts} budget aborts, {narrated} narration-only, 0 differences"
     );
     assert!(
         compared >= 250 && aborts >= 10,
         "only {compared} modes / {aborts} aborts compared"
     );
+    // The relaxation has to be *load-bearing*, or it is not a decision about
+    // anything: if no dump differs before it is applied, D3 stopped showing up
+    // here and the cut should go rather than sit there unexamined.
+    assert!(
+        ein_parity::strict() || narrated > 0,
+        "no dump needed the narration cut — D3 no longer reaches this test"
+    );
+}
+
+/// The narration cut, applied to both sides — or nothing at all under
+/// `EIN_PARITY_STRICT=1`, which is the pre-S1a.6.9 byte contract.
+fn narrow(a: &str, b: &str) -> (String, String) {
+    if ein_parity::strict() {
+        return (a.to_string(), b.to_string());
+    }
+    (
+        ein_parity::blank_blocks(a, "=== "),
+        ein_parity::blank_blocks(b, "=== "),
+    )
+}
+
+/// `dump_shape` elides the `enterings/` subtree where it is produced, so its
+/// marker is the one thing about the rule that lives outside `ein-parity`.
+/// This is what keeps that from drifting.
+#[test]
+fn the_produced_marker_is_the_one_the_contract_expects() {
+    assert_eq!(ein_parity::NARRATED, "<narrated>");
 }
 
 fn brief(a: &Answer) -> String {

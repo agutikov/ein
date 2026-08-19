@@ -24,4 +24,7 @@ rustc-hash.workspace = true
 
 [dev-dependencies]
 ein-oracle = { path = "../ein-oracle" }
+# The one implementation of "what the parity contract stopped comparing",
+# shared with `ein-conformance` so a test and the gate cannot disagree.
+ein-parity = { path = "../ein-parity" }
 serde_json.workspace = true

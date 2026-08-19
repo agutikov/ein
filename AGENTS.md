@@ -58,9 +58,16 @@ constrained-reasoning research.
   fails a completeness check in both suites.
 - **`ein.rs/`** — the Rust port ([M1a](plans/m1a_rust/README.md)), a
   drop-in replacement for `ein`. `crates/ein-conformance` is the parity
-  harness — it shells out to both engines and links neither. **`ein.py/` is
-  the oracle**: any observable difference is a bug in ein.rs, and every
-  optimisation there is justified by "the harness says nothing changed".
+  harness — it shells out to both engines and links neither, and
+  `crates/ein-parity` is the one implementation of what the two engines are
+  *not* required to agree on ([design/01
+  §5](plans/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list);
+  `--strict` / `EIN_PARITY_STRICT=1` turns it off). **`ein.py/` is the
+  oracle**: any observable difference is a bug in ein.rs, and every
+  optimisation there is justified by "the harness says nothing changed" —
+  except a fork's *narration*, which since
+  [S1a.6.9](plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+  differs on purpose and is pinned by ein.rs's own goldens instead.
 - **`ein.py/`** — Python implementation. `ein.py/src/ein/` is the
   package: IR parser + dumper under `ir/`; KB store + entities +
   provenance under `kb/`; inference engine + saturator + contradiction

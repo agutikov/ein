@@ -7,6 +7,9 @@ license.workspace    = true
 repository.workspace = true
 
 [dependencies]
+# The parity contract's normalisation list, executable — so the harness and
+# the crates' own parity tests apply the *same* rule and cannot drift apart.
+ein-parity = { path = "../ein-parity" }
 serde.workspace      = true
 serde_json.workspace = true
 toml.workspace       = true

@@ -499,30 +499,31 @@ fn render_tree(root: &Path) -> String {
         out.push(format!("=== {rel}"));
         let text = std::fs::read_to_string(&path).unwrap_or_default();
         if rel.starts_with("enterings/") {
-            // **A fork's own dump is narration**, and since
-            // [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
-            // the two engines write different ones for the same entering:
-            // ein.rs resumes root's saturation where ein.py re-derives it, so
-            // the firing list is a quarter the length, the state dump lists
-            // the same facts in a different derivation order with a different
-            // one of each fact's valid `:rule` annotations, and a dying fork's
-            // `unsat_core.jsonl` is the smallest frontier of whichever clash
-            // the fail-fast prefix reached first.
+            // **A fork's own dump is narration** — `ein-parity`'s rule, and
+            // the one place it is applied where the artefact is *produced*
+            // rather than where it is compared.
+            //
+            // That exception is measured, not assumed: `zebra2-hints` writes
+            // **6.6 MiB** of per-entering dumps against 84 KiB for the rest of
+            // the tree, so rendering them into a shape that
+            // [S1a.6.10](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)'s
+            // normalisation immediately throws away would push hundreds of
+            // megabytes through the oracle's JSON-Lines pipe, twice, to
+            // compare nothing. `dump_parity` re-checks that this marker is
+            // exactly `ein_parity::NARRATED`, so the decision still has one
+            // owner. `utils/ir_oracle.py::_render_tree` is the other half.
             //
             // The **file set** is still compared exactly — a missing, renamed
             // or empty per-commitment dump still fails — and everything
             // outside `enterings/` is compared byte for byte: the root
             // snapshot, every layer dump, the timeline and `summary.json`.
-            //
-            // What replaces the byte check is a stronger instrument, not
-            // nothing: `utils/fork_delta_verify.py` compares every fork's
-            // fact set fact by fact and every justification of every fact
-            // across 3.2 M enterings. An ein.rs golden is owed by
-            // [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
             // Not even "empty or not": a resumed fork whose delta triggers
             // nothing writes an *empty* `firings.jsonl` where ein.py's writes
             // its re-derivation of root, so non-emptiness is the divergence
-            // too.
+            // too. What replaces the byte check is `utils/fork_delta_verify.py`
+            // — every fork's fact set, fact by fact, across 3.2 M enterings —
+            // and an ein.rs golden
+            // ([S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md)).
             out.push("=== <narrated>".to_string());
             continue;
         }
@@ -548,24 +549,23 @@ fn collect_files(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
-/// Blank the clock readings **and the per-entering firing count** — value,
-/// not presence, so a record that lost its `ts_ms` still fails.
+/// Blank the clock readings — value, not presence, so a record that lost its
+/// `ts_ms` still fails.
 ///
-/// The clocks are on the
-/// [normalisation list](../../../../plans/m1a_rust/design/01_parity_contract.md) §5.
-/// `firings` is [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it):
-/// ein.rs's forks resume root's saturation and ein.py's re-derive it, so the
-/// same entering reaches the same state by narrating a quarter as much.
-/// Everything beside it on the record — `outcome`, `kind`, `commitment`,
-/// `facts_merged`, `unsat_core_size`, `nogood_emitted`, `nogood_subsumed` —
-/// is still compared exactly, which is what says the two engines took the
-/// same step.
+/// The clocks, and only the clocks: they are on the
+/// [normalisation list](../../../../plans/m1a_rust/design/01_parity_contract.md) §5
+/// because no two runs can agree on them. The per-entering `firings` count
+/// used to be blanked here too and is not any more — it is
+/// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it),
+/// which is a *comparison* decision and now lives with the rest of them in
+/// `ein-parity`. A renderer that decides what a diff will look at is a
+/// renderer with an opinion about the contract.
 ///
 /// `utils/ir_oracle.py`'s `_normalise_dump_line` does the same on the Python
 /// side; the two lists are maintained together.
 fn normalise_dump_line(line: &str) -> String {
     let mut out = line.to_string();
-    for key in ["ts_ms", "elapsed_seconds", "firings"] {
+    for key in ["ts_ms", "elapsed_seconds"] {
         let needle = format!("\"{key}\": ");
         let mut from = 0;
         while let Some(i) = out[from..].find(&needle).map(|j| from + j) {
@@ -573,13 +573,8 @@ fn normalise_dump_line(line: &str) -> String {
             let end = out[start..]
                 .find(|c: char| !matches!(c, '0'..='9' | '.' | 'e' | 'E' | '+' | '-'))
                 .map_or(out.len(), |j| start + j);
-            let mark = if key == "firings" {
-                "<firings>"
-            } else {
-                "<ts>"
-            };
-            out.replace_range(start..end, mark);
-            from = start + mark.len();
+            out.replace_range(start..end, "<ts>");
+            from = start + "<ts>".len();
         }
     }
     // The progress view's `(   12s)` elapsed column.
@@ -766,48 +761,44 @@ fn snapshot_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, S
             "  solutions      {}",
             show(snap.solutions.iter().map(|s| &s[..]).collect())
         ),
-        // The **count**, not the keys. A dead commitment's `state_key` is the
-        // fork's state at the firing that killed it — `enable_fail_fast_fork`
-        // stops there rather than at a fixpoint — so
-        // [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
-        // moves it: ein.rs's resumed fork reaches the clash by a different
-        // route. How many died, and that each is a `dead-post`, is compared
-        // exactly, here and in the timeline; with fail-fast off the keys agree
-        // too, which is what says this is the prefix and not a difference of
-        // conflict.
-        format!("  deads          {} key(s)", snap.deads.len()),
+        // Rendered in full, and *compared* as a count: a dead commitment's
+        // `state_key` is the fork's state at the firing that killed it —
+        // `enable_fail_fast_fork` stops there rather than at a fixpoint — so
+        // it is a dying fork's stopping point, which `ein-parity` blanks.
+        // The blanking is that crate's job and not this renderer's; with
+        // fail-fast off the keys agree, which is what says this is the prefix
+        // and not a difference of conflict.
+        format!(
+            "  deads          {}",
+            show(snap.deads.iter().map(|s| &s[..]).collect())
+        ),
         format!(
             "  alive_at_end   {}",
             show(snap.alive_at_end.iter().map(|s| &s[..]).collect())
         ),
         // The two lattice DOTs rendered *from the snapshot* key their dead
         // nodes — id and label both — on the dead commitment's `state_key`,
-        // which is the divergent field above, and the DAG *merges* dead
-        // commitments by that key, so even the node and edge counts move.
-        // Compared for presence only. The renderer itself is still
-        // byte-compared, through `dot_parity`'s `lattice` and `lattice-full`
-        // views, which read a `LatticeProof` and label their dead nodes by
-        // *commitment* rather than by state.
+        // which is the field above, and the DAG *merges* dead commitments by
+        // that key, so even the node and edge counts move. Rendered in full
+        // here and named as a derivation in `ein-parity`'s closed list, which
+        // is what elides them. The renderer itself is still byte-compared,
+        // through `dot_parity`'s `lattice` and `lattice-full` views, which
+        // read a `LatticeProof` and label their dead nodes by *commitment*
+        // rather than by state.
         "=== dot solution".to_string(),
-        {
-            let _ = render_lattice(
-                terms,
-                LatticeSource::Snapshot(&snap),
-                LatticeView::Solution,
-                "lattice",
-            );
-            "<rendered>".to_string()
-        },
+        render_lattice(
+            terms,
+            LatticeSource::Snapshot(&snap),
+            LatticeView::Solution,
+            "lattice",
+        ),
         "=== dot full".to_string(),
-        {
-            let _ = render_lattice(
-                terms,
-                LatticeSource::Snapshot(&snap),
-                LatticeView::Full,
-                "lattice",
-            );
-            "<rendered>".to_string()
-        },
+        render_lattice(
+            terms,
+            LatticeSource::Snapshot(&snap),
+            LatticeView::Full,
+            "lattice",
+        ),
     ];
     Ok(out.join("\n"))
 }

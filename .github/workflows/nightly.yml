@@ -40,11 +40,17 @@ jobs:
       # One implementation, two hash seeds. This is how hazards H1 and H4 were
       # found, and it is the check that keeps a `set` from leaking into an
       # observable again.
+      #
+      # `--strict` on purpose: the D3 narration normalisation
+      # (design/01 §5's fork row) exists because *two engines* narrate
+      # differently, and one engine against itself has no such excuse. Running
+      # this sweep relaxed would blind it to exactly the class of hazard it is
+      # here for.
       - run: |
           ein.rs/target/release/ein-conformance run \
             --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
             --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=${{ matrix.seed }} \
-            --tier T3 --include-slow --timeout 600
+            --tier T3 --include-slow --timeout 600 --strict
 
   conformance-full:
     name: conformance — the whole corpus, every tier

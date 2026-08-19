@@ -23,16 +23,40 @@ use std::path::Path;
 /// answer — [D2](../../../../plans/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
 /// reached through every view that runs the search. Asserted, not tolerated:
 /// a file listed here that stops diverging fails as loudly as one that starts.
-/// Views that render a **derivation** rather than a state, and are therefore
-/// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)'s
-/// territory: ein.rs's forks resume root's saturation and ein.py's re-derive
-/// it, so the two narrate different amounts of the same proof and a byte
-/// comparison of the cone is no longer the contract.
+/// The entries whose `slice` view is a **rendered derivation** that
+/// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
+/// moves — ein.rs's forks resume root's saturation and ein.py's re-derive it,
+/// so the two draw different amounts of the same proof and the cone is no
+/// longer byte-comparable.
 ///
-/// They are still *run* on both sides and both must answer — a view that
-/// starts erroring is still a failure. What replaces the byte check is an
-/// ein.rs golden, [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
-const NARRATION: [&str; 1] = ["slice"];
+/// Which *views* are derivations is `ein-parity`'s closed list. Which
+/// **entries** actually exercise it is this, and it is asserted rather than
+/// tolerated — the same discipline [`DIVERGENT`] keeps: a file listed here
+/// that stops diverging fails as loudly as one that starts, so a slice that
+/// begins differing for an unrelated reason cannot hide behind the cut. The
+/// view is still *run* on both sides and both must answer; what replaces the
+/// byte check is an ein.rs golden,
+/// [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
+///
+/// A failure prints the list it measured, in this format, to paste back.
+const NARRATED_SLICES: [&str; 16] = [
+    "examples/branching/03_five_hyps_one_alive.ein",
+    "examples/branching/04_two_levels.ein",
+    "examples/branching/05_mini_zebra.ein",
+    "examples/branching/10_kill_cache_on.ein",
+    "examples/branching/11_kill_cache_off.ein",
+    "examples/branching/12_typed_blind_solve.ein",
+    "examples/branching/13_lookahead_naf_world.ein",
+    "examples/features/03_forall.ein",
+    "examples/lattice/01_subset_pruned.ein",
+    "examples/saturation/implies/org-chart.ein",
+    "examples/saturation/implies/parent-to-ancestor.ein",
+    "examples/saturation/implies/right-then-next.ein",
+    "examples/saturation/transitive/colocation-chain.ein",
+    "examples/saturation/transitive/mealtimes.ein",
+    "examples/saturation/transitive/taxonomy.ein",
+    "examples/zebra2-hints.ein",
+];
 
 const DIVERGENT: [(&str, &str); 3] = [
     ("examples/ein-bugs/mixed-type-hypothesis.ein", "lattice"),
@@ -65,6 +89,7 @@ fn every_dot_view_of_every_corpus_file_is_byte_identical() {
     let views = all_views();
     let (mut bad, mut compared, mut bytes) = (Vec::new(), 0usize, 0usize);
     let mut seen_divergent: Vec<(String, String)> = Vec::new();
+    let mut seen_narrated: Vec<String> = Vec::new();
     let mut files = 0usize;
     for path in &corpus_files() {
         let rel = path.strip_prefix(repo_root()).unwrap_or(path);
@@ -95,7 +120,10 @@ fn every_dot_view_of_every_corpus_file_is_byte_identical() {
                 (Answer::Ok(a), Answer::Ok(b)) => {
                     compared += 1;
                     bytes += a.len();
-                    if a != b && !NARRATION.contains(view) {
+                    if a == b {
+                    } else if ein_parity::is_narration(view) && !ein_parity::strict() {
+                        seen_narrated.push(rel.to_str().unwrap_or_default().to_string());
+                    } else {
                         bad.push(format!("{name} [{view}]\n{}", first_difference(a, b)));
                     }
                 }
@@ -123,6 +151,20 @@ fn every_dot_view_of_every_corpus_file_is_byte_identical() {
         seen_divergent, want_divergent,
         "the ledger's divergent views are not the ones that diverged"
     );
+    seen_narrated.sort();
+    seen_narrated.dedup();
+    if !ein_parity::strict() {
+        assert_eq!(
+            seen_narrated,
+            NARRATED_SLICES,
+            "the narrated slices are not the ones that were narrated; measured:\n{}",
+            seen_narrated
+                .iter()
+                .map(|f| format!("    \"{f}\","))
+                .collect::<Vec<_>>()
+                .join("\n")
+        );
+    }
     assert!(
         bad.is_empty(),
         "{} of {compared} views differ:\n\n{}",

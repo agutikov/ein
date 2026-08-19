@@ -28,28 +28,40 @@ cd ein.rs && cargo build --release
 # Python vs Python — the P1a.0 acceptance gate.
 ./target/release/ein-conformance run \
     --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" --tier T3
-# The determinism sweep: one implementation, two hash seeds.
+# The determinism sweep: one implementation, two hash seeds, unrelaxed.
 ./target/release/ein-conformance run \
     --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
-    --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42 --tier T3
+    --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42 --tier T3 --strict
 # One fixture, one difference, by hand — how the tool actually gets used.
 ./target/release/ein-conformance run … --filter zebra2 --tier T2 -v
 ./target/release/ein-conformance diff a.jsonl b.jsonl --classes
 ```
 
-Tiers: **T0** the verdict, **T1** every counter, **T2** the ordered event log,
-**T3** byte-identical artefacts. **T0 and T1 are the hard requirement**; since
-M1a [S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
-the two engines narrate different amounts of the same derivation on purpose
-([D3](../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
-so T2 reports 97 of 240 cells and T3 seven of 473 until
-[S1a.6.10](../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
-narrows both to the productive derivation. T0/T1 read the `summary.json` each `solve`
-cell is given (`--json-summary`); T2 adds `--events … --events-level verbose`
-to each `solve` / `saturate` cell and compares the two logs structurally; T3
-compares stdout, stderr, the exit code and every produced file. The
-subsumption is mechanical rather than claimed — `summary.json` is one of the
-files T3 compares, so a T3 pass cannot hide a T1 difference.
+Tiers: **T0** the verdict, **T1** every counter, **T2** the event log, **T3**
+byte-identical artefacts. **T0 and T1 are the hard requirement**, and neither
+is relaxed in any direction. T0/T1 read the `summary.json` each `solve` cell is
+given (`--json-summary`); T2 adds `--events … --events-level verbose` to each
+`solve` / `saturate` cell and compares the two logs structurally; T3 compares
+stdout, stderr, the exit code and every produced file. The subsumption is
+mechanical rather than claimed — `summary.json` is one of the files T3
+compares, so a T3 pass cannot hide a T1 difference.
+
+Since M1a [S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+the two engines narrate different amounts of the same derivation **on purpose**
+([D3](../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)):
+ein.rs's forks resume root's saturation where ein.py's re-derive it. So T2 and
+T3 compare a fork for **what it derived**, not for how much of deriving it each
+engine wrote down — the rule is
+[design/01 §5](../plans/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list)'s
+fork row, and `ein.rs/crates/ein-parity` is its one implementation, shared with
+every crate's own parity tests. Concretely: the event stream is compared per segment
+— root's saturation, then one per entering — for the multiset of facts its
+non-redundant firings derived and the set of rules that derived them; a firing *count* is blanked by
+value; a rendered derivation (the `--trace` markdown, the `slice` cone) is
+compared for presence and covered by ein.rs goldens
+([S1a.6.11](../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md)).
+`--strict`, or `EIN_PARITY_STRICT=1`, turns all of that off and restores the
+byte-identical comparison — **the determinism sweep runs under it**.
 
 Both implementations run with the repo root as their working directory and are
 addressed by explicit path, so there is never a question of which `ein` ran.

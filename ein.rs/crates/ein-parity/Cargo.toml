@@ -1,0 +1,11 @@
+[package]
+name        = "ein-parity"
+description = "The parity contract's normalisation list, executable — design/01 §5"
+publish     = false
+version.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+repository.workspace = true
+
+[dependencies]
+serde_json.workspace = true

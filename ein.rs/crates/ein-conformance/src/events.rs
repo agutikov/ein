@@ -14,6 +14,21 @@
 //!    preceding few from both sides for context, and a field-level diff of the
 //!    pair. Everything after the first divergence is downstream of it and is
 //!    not reported.
+//!
+//! Since [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+//! that second question has two forms, and which one is asked is the whole of
+//! `--strict`:
+//!
+//! - **relaxed** (the default) — `ein_parity::events` compares the stream for
+//!   *what each fork derived* rather than for how it narrated deriving it.
+//!   Its module doc is the measurement that chose the cut.
+//! - **strict** — the pre-S1a.6.9 comparison, event by event, in order. The
+//!   determinism sweep runs under it.
+//!
+//! The class summary is printed either way, and under the relaxed comparison
+//! it is doing more work than before: the counts are exactly where the elided
+//! narration shows up, so "a produced 452 `enqueue` events and b produced 228"
+//! is visible even though neither was read.
 
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -25,9 +40,50 @@ const CONTEXT: usize = 4;
 pub struct Report {
     pub classes_a: BTreeMap<String, usize>,
     pub classes_b: BTreeMap<String, usize>,
+    /// The strict comparison's finding — `None` under the relaxed one.
     pub first_diff: Option<FirstDiff>,
+    /// The relaxed comparison's finding: empty means agreement, `None` means
+    /// the relaxed comparison was not the one that ran.
+    pub relaxed: Option<Vec<String>>,
+    /// What the relaxed comparison elided, per side.
+    pub elided: Option<(String, String)>,
     pub len_a: usize,
     pub len_b: usize,
+}
+
+impl Report {
+    /// The lines the harness prints for one cell — empty when the two logs
+    /// agree at whichever contract ran.
+    pub fn report(&self) -> Vec<String> {
+        if let Some(rel) = &self.relaxed {
+            return rel
+                .iter()
+                .enumerate()
+                .map(|(i, l)| {
+                    if i == 0 {
+                        format!("events: {l}")
+                    } else {
+                        l.clone()
+                    }
+                })
+                .collect();
+        }
+        self.first_diff
+            .as_ref()
+            .map(|d| {
+                let mut v = vec![format!("events: first difference at event {}", d.index)];
+                v.extend(d.fields.clone());
+                v
+            })
+            .unwrap_or_default()
+    }
+
+    pub fn agrees(&self) -> bool {
+        match &self.relaxed {
+            Some(rel) => rel.is_empty(),
+            None => self.first_diff.is_none(),
+        }
+    }
 }
 
 pub struct FirstDiff {
@@ -59,39 +115,30 @@ fn classes(events: &[Value]) -> BTreeMap<String, usize> {
     out
 }
 
-/// Strip the fields that differ by construction rather than by behaviour.
-///
-/// - `n` is a per-run counter, so it differs the moment either side emits one
-///   extra event. It is reported as a *position*, not a field.
-/// - the `run` event's `impl` names which implementation ran, which is the
-///   whole point of the comparison, and its `argv` carries the artefact paths
-///   the *caller* chose — `--events a.jsonl` vs `--events b.jsonl` is not a
-///   divergence. Both stay in the file, where they document the run; neither
-///   is compared.
-fn comparable(e: &Value) -> Value {
-    let mut e = e.clone();
-    let is_run = e.get("e").and_then(Value::as_str) == Some("run");
-    if let Some(obj) = e.as_object_mut() {
-        obj.remove("n");
-        if is_run {
-            obj.remove("impl");
-            obj.remove("argv");
-        }
-    }
-    e
-}
-
-pub fn diff(a_path: &Path, b_path: &Path) -> Result<Report, String> {
-    compare(load(a_path)?, load(b_path)?)
+pub fn diff(a_path: &Path, b_path: &Path, strict: bool) -> Result<Report, String> {
+    compare(load(a_path)?, load(b_path)?, strict)
 }
 
 /// The same comparison over two in-memory logs — what the runner's T2 tier
 /// uses, so the hand tool and the harness cannot drift apart.
-pub fn diff_text(a: &str, b: &str) -> Result<Report, String> {
-    compare(parse(a, "a")?, parse(b, "b")?)
+pub fn diff_text(a: &str, b: &str, strict: bool) -> Result<Report, String> {
+    compare(parse(a, "a")?, parse(b, "b")?, strict)
 }
 
-fn compare(a: Vec<Value>, b: Vec<Value>) -> Result<Report, String> {
+fn compare(a: Vec<Value>, b: Vec<Value>, strict: bool) -> Result<Report, String> {
+    if !strict {
+        let (sa, sb) = (ein_parity::events::split(&a), ein_parity::events::split(&b));
+        return Ok(Report {
+            classes_a: classes(&a),
+            classes_b: classes(&b),
+            first_diff: None,
+            relaxed: Some(ein_parity::events::diff(&a, &b)),
+            elided: Some((sa.elided_summary(), sb.elided_summary())),
+            len_a: a.len(),
+            len_b: b.len(),
+        });
+    }
+    let comparable = ein_parity::events::comparable;
     let mut first_diff = None;
     for i in 0..a.len().max(b.len()) {
         let (ea, eb) = (a.get(i), b.get(i));
@@ -123,6 +170,8 @@ fn compare(a: Vec<Value>, b: Vec<Value>) -> Result<Report, String> {
         classes_a: classes(&a),
         classes_b: classes(&b),
         first_diff,
+        relaxed: None,
+        elided: None,
         len_a: a.len(),
         len_b: b.len(),
     })
@@ -168,7 +217,7 @@ fn field_diff(a: Option<&Value>, b: Option<&Value>) -> Vec<String> {
 
 /// Print the report; return true iff the two logs agree.
 pub fn print(report: &Report, show_classes: bool) -> bool {
-    if show_classes || report.first_diff.is_some() {
+    if show_classes || !report.agrees() {
         let mut kinds: Vec<&String> = report
             .classes_a
             .keys()
@@ -188,6 +237,23 @@ pub fn print(report: &Report, show_classes: bool) -> bool {
         }
         println!("{}", "─".repeat(32));
         println!("{:<12} {:>9} {:>9}", "total", report.len_a, report.len_b);
+    }
+    if let Some((ea, eb)) = &report.elided {
+        println!("\nelided as narration — a: {ea}\n                      b: {eb}");
+    }
+    if let Some(rel) = &report.relaxed {
+        if rel.is_empty() {
+            println!(
+                "\nthe same derivation — {} vs {} events",
+                report.len_a, report.len_b
+            );
+            return true;
+        }
+        println!();
+        for line in rel {
+            println!("{line}");
+        }
+        return false;
     }
     match &report.first_diff {
         None => {
@@ -235,7 +301,7 @@ mod tests {
         // divergence — and both stay in the file.
         let a = write("run_a.jsonl", &[RUN_A, FIRE]);
         let b = write("run_b.jsonl", &[RUN_B, FIRE]);
-        assert!(diff(&a, &b).expect("diff").first_diff.is_none());
+        assert!(diff(&a, &b, true).expect("diff").first_diff.is_none());
     }
 
     #[test]
@@ -251,7 +317,7 @@ mod tests {
             "seq_b.jsonl",
             &[RUN_A, r#"{"e":"quiesce","n":1,"round":1}"#],
         );
-        let d = diff(&a, &b)
+        let d = diff(&a, &b, true)
             .expect("diff")
             .first_diff
             .expect("a difference");
@@ -273,7 +339,7 @@ mod tests {
                 r#"{"e":"fire","n":1,"rule":"symmetric","derived":["(knows A B)"]}"#,
             ],
         );
-        let d = diff(&a, &b)
+        let d = diff(&a, &b, true)
             .expect("diff")
             .first_diff
             .expect("a difference");
@@ -287,7 +353,7 @@ mod tests {
         // whole class of thing?
         let a = write("cls_a.jsonl", &[RUN_A, FIRE, FIRE]);
         let b = write("cls_b.jsonl", &[RUN_A]);
-        let r = diff(&a, &b).expect("diff");
+        let r = diff(&a, &b, true).expect("diff");
         assert_eq!(r.classes_a.get("fire"), Some(&2));
         assert_eq!(r.classes_b.get("fire"), None);
     }

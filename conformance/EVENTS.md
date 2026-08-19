@@ -67,13 +67,16 @@ and the tier exists to catch.
 > [S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md),
 > ein.rs's forks *resume* root's saturation where ein.py's re-derive it, so
 > the two engines deliberately narrate different amounts of the same
-> derivation and 97 of T2's 240 cells report it —
+> derivation —
 > [D3](../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it).
 > The difference the tier exists to catch is a dropped **productive** firing,
-> and that is what
+> and since
 > [S1a.6.10](../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
-> narrows the comparison to. Until it lands, read a T2 `fire`/`enqueue`
-> difference on a `solve` cell as expected and everything else as a bug.
+> that is what the comparison is narrowed to — see § Comparison. `verbose` is
+> still what the harness asks for: the redundant firings are what the
+> *elided-count* report is counting, and an ein.rs golden
+> ([S1a.6.11](../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md))
+> is what pins them.
 
 ## Events
 
@@ -150,6 +153,31 @@ a wholesale divergence is obvious before the first-diff detail — "b emitted no
 `n` is compared as a **position, not a field**: one extra event on either side
 renumbers every line after it, and a differ that reported all of them would
 bury the one difference that caused them.
+
+### What "compared" means since S1a.6.10
+
+The stream is split into **segments** — root's saturation, then one per
+entering — at every `enter`, and at the **first hypgen event**, which is what
+closes root's. (That second boundary matters under `--lookahead`, where the
+first entering is a probe that usually dies: without it, root's whole
+derivation would share a segment with a `dead-post` fork and be skipped along
+with it.) Within a segment:
+
+| | compared |
+|---|---|
+| the **spine**: `run`, `load`, `hyp`, `hypskip`, `enter`, `nogood`, `writeback`, `warn`, `verdict` | in order, exactly — minus `enter`'s `n_firings`, and a `dead-post` `enter`'s `core` |
+| the **derivation**: every `fire` with `redundant = false`, and every `mirror` | the **multiset of facts derived** and the **set of rules** that derived them |
+| the scheduling traffic: `enqueue`, `park`, `admit`, `retire`, `quiesce`, `alt`, `compile`, and every redundant `fire` | nothing — counted per side and printed |
+
+A **`dead-post`** segment's derivation is not compared at all: fail-fast stops
+a dying fork at the firing that kills it, so its firing list is a prefix by
+construction. Its `kind` and its position still are.
+
+That is [design/01 §5](../plans/m1a_rust/design/01_parity_contract.md#the-fork-row-stated-once)'s
+fork row, implemented in `ein.rs/crates/ein-parity`, whose module doc carries
+the measurement that chose it (six candidate cuts over the same 240 cells;
+this one is the strongest that leaves D2 as the only differing cell).
+`--strict` restores the old event-by-event comparison.
 
 The harness runs the same comparison in-process for its T2 tier
 (`tier::compare`), on logs it produced by appending

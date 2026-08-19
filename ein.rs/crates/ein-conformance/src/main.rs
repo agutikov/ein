@@ -61,6 +61,9 @@ OPTIONS (run, list):
     --env-a K=V         env override for side a only (repeatable)
     --env-b K=V         env override for side b only (repeatable)
     --timeout SECS      per-cell timeout (default: 300)
+    --strict            compare byte for byte: turn off the D3 narration
+                        normalisation (design/01 §5) at T2 and T3. The
+                        determinism sweep runs under this.
     -v, --verbose       print every cell, not only the failures
 ";
 
@@ -92,6 +95,7 @@ struct Args {
     timeout: u64,
     verbose: bool,
     classes: bool,
+    strict: bool,
     rest: Vec<String>,
 }
 
@@ -116,6 +120,10 @@ fn parse_args() -> Result<Args, String> {
         timeout: 300,
         verbose: false,
         classes: false,
+        // `EIN_PARITY_STRICT` is the same switch the crates' own parity tests
+        // read, so one environment variable puts the whole repo back on the
+        // byte-identical contract.
+        strict: ein_parity::strict(),
         rest: Vec::new(),
     };
     let kv = |s: String| -> Result<(String, String), String> {
@@ -152,6 +160,7 @@ fn parse_args() -> Result<Args, String> {
             }
             "-v" | "--verbose" => a.verbose = true,
             "--classes" => a.classes = true,
+            "--strict" => a.strict = true,
             "-h" | "--help" => {
                 print!("{USAGE}");
                 std::process::exit(0);
@@ -193,6 +202,16 @@ fn find_repo(explicit: Option<PathBuf>) -> Result<PathBuf, String> {
     }
 }
 
+/// What every cell is run and compared under — the flags that are the same
+/// for the whole run, as one value.
+#[derive(Clone, Copy)]
+struct CellCfg {
+    tier: Tier,
+    timeout: Duration,
+    /// `--strict`: the byte-identical contract, D3 normalisation off.
+    strict: bool,
+}
+
 /// One unit of work: an entry, one of its runs.
 struct Cell<'a> {
     entry: &'a Entry,
@@ -214,7 +233,7 @@ fn cmd_diff(args: Args) -> Result<std::process::ExitCode, String> {
     let [a, b] = args.rest.as_slice() else {
         return Err("diff takes exactly two .jsonl paths".into());
     };
-    let report = events::diff(Path::new(a), Path::new(b))?;
+    let report = events::diff(Path::new(a), Path::new(b), args.strict)?;
     let same = events::print(&report, args.classes);
     Ok(if same {
         std::process::ExitCode::SUCCESS
@@ -306,8 +325,9 @@ fn cmd_run(args: Args) -> Result<std::process::ExitCode, String> {
     }
 
     eprintln!(
-        "ein-conformance {tier}: {n} cells over {e} entries, {j} jobs\n  a: {a:?}\n  b: {b:?}",
+        "ein-conformance {tier}{strict}: {n} cells over {e} entries, {j} jobs\n  a: {a:?}\n  b: {b:?}",
         tier = args.tier,
+        strict = if args.strict { " --strict" } else { "" },
         n = cells.len(),
         e = entries.len(),
         j = args.jobs,
@@ -315,10 +335,14 @@ fn cmd_run(args: Args) -> Result<std::process::ExitCode, String> {
         b = b.prefix.join(" "),
     );
 
+    let cfg = CellCfg {
+        tier: args.tier,
+        timeout: Duration::from_secs(args.timeout),
+        strict: args.strict,
+    };
     let cursor = AtomicUsize::new(0);
     let results: Mutex<Vec<CellResult>> = Mutex::new(Vec::with_capacity(cells.len()));
     let done = AtomicUsize::new(0);
-    let timeout = Duration::from_secs(args.timeout);
 
     std::thread::scope(|scope| {
         for _ in 0..args.jobs.max(1) {
@@ -326,7 +350,7 @@ fn cmd_run(args: Args) -> Result<std::process::ExitCode, String> {
                 loop {
                     let i = cursor.fetch_add(1, Ordering::Relaxed);
                     let Some(cell) = cells.get(i) else { break };
-                    let r = one_cell(cell, &a, &b, &repo, &out_root, args.tier, timeout);
+                    let r = one_cell(cell, &a, &b, &repo, &out_root, cfg);
                     let n = done.fetch_add(1, Ordering::Relaxed) + 1;
                     if args.verbose || r.outcome.is_diff() {
                         let mark = match &r.outcome {
@@ -358,18 +382,23 @@ fn one_cell(
     b: &Impl,
     repo: &Path,
     out_root: &Path,
-    tier: Tier,
-    timeout: Duration,
+    cfg: CellCfg,
 ) -> CellResult {
     let base = out_root
         .join(plan::slug(&cell.entry.path))
         .join(plan::slug(&cell.run));
     let mk = |imp: &Impl| -> Result<run::Capture, String> {
         let out = base.join(&imp.side);
-        let argv = plan::argv(&cell.run, &cell.entry.path, &out, tier == Tier::T2);
-        run::execute(imp, &argv, repo, &out, timeout)
+        let argv = plan::argv(&cell.run, &cell.entry.path, &out, cfg.tier == Tier::T2);
+        run::execute(imp, &argv, repo, &out, cfg.timeout)
     };
     let (ca, cb) = (mk(a), mk(b));
+    // What this run wrote that is a *rendered derivation* — the `--trace`
+    // markdown. `ein_parity` owns the list; the harness only asks.
+    let ctx = tier::Ctx {
+        strict: cfg.strict,
+        narrated: ein_parity::narrated_artefacts(&cell.run),
+    };
     // The exit codes are kept past the comparison for the liveness check in
     // `report`: two implementations that both failed to start agree perfectly.
     let (outcome, wall_a, wall_b, code_a, code_b) = match (ca, cb) {
@@ -377,7 +406,7 @@ fn one_cell(
             let o = if cell.entry.group == "crash-parity" {
                 tier::compare_crash(&x, &y)
             } else {
-                tier::compare(tier, &x, &y)
+                tier::compare(cfg.tier, &x, &y, &ctx)
             };
             (o, x.wall, y.wall, x.code, y.code)
         }

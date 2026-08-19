@@ -138,8 +138,12 @@ scope claim above is wrong.
 ### D3 — a fork resumes root's saturation; ein.py re-derives it
 
 **Found:** 2026-08-19, [S1a.6.9](p1a.6_performance/s1a.6.9_fork_entry_delta.md)
-**Tier:** T2 — 97 cells of 240 — and T3 — **7** cells, exactly the seven
-corpus entries that declare a `solve --trace` or a `solve --dump-states` run.
+**Tier:** T2 and T3 — and as of
+[S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md) **neither reports
+it**: the normalisation is on [design/01 §5](design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list)'s
+list, T3 is 472/473 and T2 239/240 with [D2](#d2--sortedalive-raises-in-einpy-where-einrs-answers)
+the only differing cell in both. Before that stage it cost 97 cells of 240 at
+T2 and 7 of 473 at T3.
 **T0 and T1 do not move at all**; see below, that is the whole argument.
 **Status:** accepted
 **Fixture:** `utils/fork_delta_verify.py` against a
@@ -147,7 +151,14 @@ corpus entries that declare a `solve --trace` or a `solve --dump-states` run.
 compiles in the way back to the old path (`EIN_FORK_DELTA=0`) so both arms
 come out of one binary. Not a corpus entry: the divergence is not a property
 of any *input*, it is a property of every solve with more than one entering,
-so the fixture that keeps it from widening is the differ, not a file.
+so the fixture that keeps it from widening is the differ, not a file. Since
+[S1a.6.11](p1a.6_performance/s1a.6.11_fixture_goldens.md) there are twelve
+more, of the other kind: ein.rs goldens over the trace, the `slice` cone, a
+fork's own `enterings/` dump, the snapshot projection and the event stream —
+everything this entry took out of the cross-engine diff, compared against
+checked-in bytes instead. `utils/mutant_ein.py` is the negative control: it
+deletes one productive firing from the shipping binary's event log, which the
+relaxed gate must still catch.
 
 **What.** `commitment::try_commitment_set` forks the saturated root. ein.py
 builds a fresh `Saturator` there, whose first enqueue pass is a FULL pass, so
@@ -213,52 +224,52 @@ is the test that catches exactly that. ein.rs's `--trace` therefore gained a
 `Assuming …`, then the 240 the hypothesis adds. Same 24 rules as before,
 arranged the way `zebra_walkthrough.md` tells it.
 
-**Where it shows, and what was done about it.** Three cross-engine byte
-comparisons had to be narrowed, each to the smallest cut that removes the
-divergence and nothing else — and each one is a place
-[S1a.6.11](p1a.6_performance/s1a.6.11_fixture_goldens.md) owes an ein.rs
-fixture:
+**Where it shows, and what was done about it.** S1a.6.9 shipped with six
+separate cuts, each made as the next test went red:
 
-| gate | cells | the cut |
+| gate | cells | the cut S1a.6.9 made |
 |---|---|---|
-| `ein-conformance --tier T3` | 7 of 473 | none yet — [S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md) |
-| `ein-conformance --tier T2` | 97 of 240 | none yet — S1a.6.10 |
+| `ein-conformance --tier T3` | 7 of 473 | none |
+| `ein-conformance --tier T2` | 97 of 240 | none |
 | `ein-render` `dot_parity` | the `slice` view, 16 entries | `NARRATION`: run on both sides, both must answer, not byte-compared |
 | `ein-infer` `hypgen_parity` | the three `solve-shape` sweeps | `Compare::IgnoringForkNarration`: blanks `firings=` / `"n_firings"` / the event ordinal `"n"`, and a **`dead-post`** entering's core |
 | `ein-render` `dump_parity` | 79 of 325 dumps | four, in `dump_shape` and its `ir_oracle.py` twin: the timeline's `"firings"`, the whole `enterings/` subtree (file set only), the snapshot's `deads` (count only) and its two lattice DOTs (presence only) |
-| `ein-render` `trace_parity` | 86 of 195 | `NARRATION_BLOCKS`: the `--- markdown`, `--- ir` and `--- ir-reparsed` bodies, and the whole `no-proof` mode, which is one rendered trace and nothing else. `--- answer`, `--- table` and `--- round-trip` stay exact — the **answer** does not move, and the trace-IR round-trip is still asserted on each side |
+| `ein-render` `trace_parity` | 86 of 195 | `NARRATION_BLOCKS`: the `--- markdown`, `--- ir` and `--- ir-reparsed` bodies, and the whole `no-proof` mode, which is one rendered trace and nothing else. `--- answer`, `--- table` and `--- round-trip` stay exact |
 
-**Six ad-hoc cuts is five too many, and that is the cost of the ordering.**
-Each is narrow, documented at its site and named here — but they were made one
-at a time, each revealed by the next test to go red, which is not how a
-contract change should be designed.
-[S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md)'s first job is to
-replace all five with **one** rule stated in
-[design/01 §5](design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list)
-and implemented once. The chain, in the order it surfaced, is the specification:
+Read downwards the chain is one sentence — **a fork's derivation, and anything
+keyed on a dying fork's stopping point, is narration** — and
+[S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md) is where it became
+one rule instead of six tolerances: written in
+[design/01 §5](design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list),
+implemented once in `ein.rs/crates/ein-parity`, and applied by the harness and
+by all four tests. **This entry is therefore no longer a set of failing
+cells** — T3 is 472/473 and T2 239/240, with D2 the only difference in either
+— and what each cut cost before that is the table above.
 
-1. `hypgen_parity` — `firings=` in `solve-shape`;
-2. and the event ordinal `"n"`, because the elided firings are what it counted;
-3. and a `dead-post` entering's unsat core, because fail-fast stops at a
-   different clash;
-4. `dot_parity` — the `slice` view, because a provenance cone is a derivation;
-5. `dump_parity` — the timeline's `firings`, then the per-entering dumps
-   (whose fact *order* and `:rule` annotation move), then the snapshot's dead
-   state keys, then the lattice DOT rendered from them, because the DAG merges
-   dead nodes by exactly that key;
-6. `trace_parity` — the rendered trace itself, in all six flag combinations
-   and both regimes, plus the trace-as-IR, because ein.rs's has a section
-   ein.py's does not and a spine a quarter the length.
+`--strict` (`EIN_PARITY_STRICT=1`) puts every one of them back, which is how
+the determinism sweep still runs on the unrelaxed contract.
 
-Read downwards it is one sentence: **a fork's derivation, and anything keyed
-on a dying fork's stopping point, is narration.** That is the rule S1a.6.10
-should write. Note where the chain *stops*: `--- answer`, `--- table`,
-`summary.json`, stdout, every state dump outside `enterings/`, and the
-round-trip property are all still byte-compared, and none of them moved.
+Note where the chain *stops*: `--- answer`, `--- table`, `summary.json`,
+stdout, every state dump outside `enterings/`, and the round-trip property are
+all still byte-compared, and none of them moved. S1a.6.10 also **narrowed** two
+of the six on the way past: the T2 stream is compared for the multiset of
+facts each `enter`-delimited segment derived and the set of rules that derived
+them rather than not at all, and the snapshot's dead state keys and lattice
+DOTs are now rendered in full by both sides and elided at comparison time, so
+`--strict` sees them.
 
 `commit-shape` is untouched and still compares its `firings=` exactly: it
 calls `try_commitment_set` without a snapshot, so it does not take the resumed
 path. That is not an oversight — it is the control.
+
+**One more observable moved than S1a.6.9 recorded, and S1a.6.10 found it by
+measuring rather than by reading.** `compile` events: a plan-memo *miss* is
+emitted once per enqueue pass that needs the rule, so a fresh fork that
+re-derives root's closure misses where a resumed one does not — 244 against
+128 on `examples/branching/02_one_dead_one_alive.ein`'s plain `solve`. The
+*distinct* compiles are identical on both sides, rule for rule and activator
+for activator; only how many times each was reached moves. It is on the elided
+list for the same reason as the rest.
 
 **What would make this unacceptable.** Any of:
 

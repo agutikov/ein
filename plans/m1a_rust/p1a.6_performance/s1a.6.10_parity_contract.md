@@ -121,6 +121,106 @@ Also re-run the determinism sweep under `--strict`: ein.py against itself with
 `PYTHONHASHSEED=0` / `=42`, which is how hazards H1 and H4 were found and
 which must keep working on the *unrelaxed* contract.
 
+## Outcome — shipped 2026-08-19
+
+**T3 472/473 and T2 239/240, with [D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
+the only differing cell in either.** T2 was the surprise: the stage's estimate
+was that it would stay partly red, and it did not.
+
+| tier | before S1a.6.9 | after S1a.6.9 | **after this stage** |
+|---|---|---|---|
+| T3 (473 cells) | 472 ‡ | 465 | **472** ‡ |
+| T2 (240 cells) | 239 ‡ | 142 | **239** ‡ |
+| T1 / T0 | unchanged | unchanged | **unchanged, and not relaxed in any direction** |
+
+‡ D2, which predates all of this.
+
+### What the stage actually built
+
+**One rule, one crate.** `ein.rs/crates/ein-parity` — "the parity contract's
+normalisation list, executable" — holds the sentence
+([design/01 §5](../design/01_parity_contract.md#the-fork-row-stated-once)) and
+its three mechanical consequences, and the six cuts became six call sites that
+decide nothing: `ein-conformance`'s T2 and T3, `dot_parity`, `trace_parity`,
+`dump_parity`, `hypgen_parity`. `--strict` / `EIN_PARITY_STRICT=1` turns the
+whole thing off in one place.
+
+**Two of the six were narrowed rather than moved.** `dump_shape`'s
+`normalise_dump_line` and `snapshot_shape` used to elide at *production* time,
+in Rust and again in `utils/ir_oracle.py` — two implementations kept in step by
+hand, inside a shipping renderer. They now render the truth and the elision
+happens once, at comparison time, which means `--strict` can see what they
+produce. The one exception is `dump_shape`'s `enterings/` subtree, still
+elided where it is produced, and the reason is measured rather than assumed:
+`zebra2-hints` writes **6.6 MiB** of per-entering dumps against 84 KiB for the
+rest of the tree, so rendering them into a shape the normalisation immediately
+discards would push hundreds of megabytes through the oracle's pipe to compare
+nothing. `dump_parity` asserts that its marker is still `ein_parity::NARRATED`.
+
+### The T2 cut, chosen by measurement
+
+Six definitions of "the derivation" were run over the same 240 captured cells
+before one was written down:
+
+| the derivation is … | cells agreeing |
+|---|---:|
+| the whole stream (the contract before this) | 142 / 240 |
+| the ordered non-redundant firings | 142 / 240 |
+| … also eliding `compile` | 213 / 240 |
+| … as an ordered `(rule, premises, derived)` | 214 / 240 |
+| … as a **multiset** of `(rule, premises, derived)`, per segment, `dead-post` excluded | 232 / 240 |
+| **… as a multiset of derived facts + the set of rules, per segment, `dead-post` excluded** | **239 / 240** |
+
+So the shipped cut is the strongest one that reaches T3's standard, not the
+first one that went green. Three findings the task list did not predict:
+
+1. **The ordered productive subsequence is not identical**, and T1a.6.10.1's
+   row assumed it was. The 6 136 → 6 136 measurement S1a.6.9 made is a
+   *count*; the order moves for the same reason the primary justification
+   does, and 26 cells still differ under an ordered comparison.
+2. **`compile` moves too** — 244 events against 128 on
+   `examples/branching/02_one_dead_one_alive.ein`'s plain `solve`. A `compile`
+   is emitted on a plan-memo **miss**, so it is downstream of how many enqueue
+   passes ran. The *distinct* compiles are identical, rule for rule and
+   activator for activator; only the multiplicity moves.
+3. **A dying fork's derivation has to be excluded outright**, not just its
+   core. Every remaining mismatch after the multiset cut was a `dead-post`
+   segment, which is exactly what the rule's second clause says: fail-fast
+   stops it at the firing that kills it, so its firing list is a prefix and
+   not a claim.
+4. **Root's saturation needs a segment of its own**, closed by the first
+   hypgen event. Splitting only at `enter` puts root's derivation in the same
+   segment as the first entering — and under `--lookahead` that entering is a
+   probe that usually dies, so root's whole derivation would be skipped with
+   it. The negative control found that, which is the argument for having one.
+
+### The negative control
+
+[`utils/mutant_ein.py`](../../../utils/mutant_ein.py) is a wrapper that runs
+the *shipping* binary and then deletes one event from the log it wrote —
+`EIN_MUTANT=productive` a real derivation, `redundant` / `enqueue` the
+narration the cut elides. Over the `branching` subset (70 comparable T2
+cells):
+
+| `EIN_MUTANT` | the gate must | measured |
+|---|---|---|
+| `productive` | report | **68 of 68** cells where the deletion applied; exit 1 |
+| `redundant` | pass | 70 / 70, exit 0 |
+| `enqueue` | pass | 70 / 70, exit 0 |
+
+Two of the 70 have no productive firing to delete
+(`14_lookahead_unjudgeable :: saturate`), so the deletion is a no-op there and
+the cell rightly agrees. The **first** run of the control also let two `-L`
+cells through, and that was the finding above: root's saturation shared a
+segment with a dying lookahead probe. With the hypgen boundary in, nothing
+escapes but what the rule says will — a derivation lost inside a *dying* fork,
+whose firing list is a prefix and is not compared.
+
+The unit tests in `ein-parity` are the permanent form: a dropped productive
+firing, a firing that became redundant, a rule that stopped firing, a vanished
+entering, a search-layer change, and root's saturation surviving a dying first
+entering are one test each.
+
 ## Acceptance
 
 - The `--tier T3` run is green with D2 the only differing cell.

@@ -29,49 +29,30 @@ use std::path::Path;
 /// reached by every mode, because every mode runs the search.
 const DIVERGENT: [&str; 1] = ["examples/ein-bugs/mixed-type-hypothesis.ein"];
 
-/// Blocks whose body is a **rendered derivation** and is therefore
-/// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it):
-/// ein.rs's forks resume root's saturation where ein.py's re-derive it, so a
-/// solution's spine is a quarter the length — and, since the derivations that
-/// used to arrive by accident now have to be rendered on purpose, ein.rs's
-/// trace opens with a *Before any assumption* section that ein.py has no
-/// counterpart for.
+/// The narration cut, applied to both sides.
 ///
-/// Compared for **presence**, and everything else in the shape byte for byte:
-/// `--- answer` and `--- table` are the **answer** and do not move, and
-/// `--- round-trip` still asserts, on each side independently, that
-/// `trace_to_ir → parse → trace_to_ir` reproduces its input.
+/// A trace block whose body is a **rendered derivation** is
+/// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)'s
+/// territory: ein.rs's forks resume root's saturation where ein.py's re-derive
+/// it, so a solution's spine is a quarter the length — and, since the
+/// derivations that used to arrive by accident now have to be rendered on
+/// purpose, ein.rs's trace opens with a *Before any assumption* section that
+/// ein.py has no counterpart for. Which blocks those are is
+/// `ein-parity`'s closed list and not this file's opinion; `--- answer`,
+/// `--- table` and `--- round-trip` are not on it, because the **answer** does
+/// not move and the trace-IR round-trip is still asserted on each side.
+///
+/// The mode is prefixed as a synthetic block head, which is how the
+/// `no-proof` mode — one rendered trace and nothing else, so no blocks at all
+/// — is covered by the same rule as the others rather than by a special case.
 ///
 /// The bodies are owed an ein.rs golden by
 /// [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
-const NARRATION_BLOCKS: [&str; 3] = ["--- markdown", "--- ir", "--- ir-reparsed"];
-
-/// Replace the body of every [`NARRATION_BLOCKS`] block with a marker,
-/// keeping its header — a block that disappears still fails.
-///
-/// The `no-proof` mode has no blocks: it returns one rendered trace and
-/// nothing else, so the whole shape is narration.
-fn blind_narration(shape: &str, mode: &str) -> String {
-    if mode == "no-proof" {
-        return "<narrated>".to_string();
+fn narrow(shape: &str, mode: &str) -> String {
+    if ein_parity::strict() {
+        return shape.to_string();
     }
-    let mut out: Vec<String> = Vec::new();
-    let mut narrating = false;
-    for line in shape.lines() {
-        if let Some(rest) = line.strip_prefix("--- ") {
-            let head = format!("--- {}", rest.split_whitespace().next().unwrap_or(""));
-            narrating = NARRATION_BLOCKS.contains(&head.as_str());
-            out.push(line.to_string());
-            if narrating {
-                out.push("<narrated>".to_string());
-            }
-            continue;
-        }
-        if !narrating {
-            out.push(line.to_string());
-        }
-    }
-    out.join("\n")
+    ein_parity::blank_blocks(&format!("--- {mode}\n{shape}"), "--- ")
 }
 
 fn rust_mode(path: &Path, mode: &str) -> Option<Answer> {
@@ -94,7 +75,7 @@ fn the_trace_and_the_table_are_byte_identical_on_the_corpus() {
         return skip("the_trace_and_the_table_are_byte_identical_on_the_corpus");
     };
     let (mut bad, mut compared, mut bytes, mut files) = (Vec::new(), 0usize, 0usize, 0usize);
-    let mut round_trips = 0usize;
+    let (mut round_trips, mut narrated) = (0usize, 0usize);
     let mut seen_divergent: Vec<String> = Vec::new();
     for path in &corpus_files() {
         let rel = path.strip_prefix(repo_root()).unwrap_or(path);
@@ -123,9 +104,12 @@ fn the_trace_and_the_table_are_byte_identical_on_the_corpus() {
                 (Answer::Ok(a), Answer::Ok(b)) => {
                     compared += 1;
                     bytes += a.len();
-                    let (x, y) = (blind_narration(a, mode), blind_narration(b, mode));
+                    let (x, y) = (narrow(a, mode), narrow(b, mode));
                     if x != y {
                         bad.push(format!("{name} [{mode}]\n{}", first_difference(&x, &y)));
+                    }
+                    if a != b {
+                        narrated += 1;
                     }
                     // Agreeing on `DIFFERS` would pass the byte diff and fail
                     // the *property*, so the property is asserted separately:
@@ -170,11 +154,18 @@ fn the_trace_and_the_table_are_byte_identical_on_the_corpus() {
     );
     eprintln!(
         "T3 (trace): {files} files, {compared} modes, {bytes} bytes, \
-         {round_trips} IR round-trips, 0 differences"
+         {round_trips} IR round-trips, {narrated} narration-only, 0 differences"
     );
     assert!(
         compared >= 150 && round_trips >= 50,
         "only {compared} modes / {round_trips} round-trips compared"
+    );
+    // The cut has to be load-bearing: if no rendered trace differs before it
+    // is applied, D3 stopped reaching this test and the cut should go rather
+    // than sit there unexamined.
+    assert!(
+        ein_parity::strict() || narrated > 0,
+        "no trace needed the narration cut — D3 no longer reaches this test"
     );
 }
 

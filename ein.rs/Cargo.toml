@@ -25,6 +25,7 @@ resolver = "3"
 members = [
     "crates/ein-core",
     "crates/ein-oracle",
+    "crates/ein-parity",
     "crates/ein-ir",
     "crates/ein-infer",
     "crates/ein-render",

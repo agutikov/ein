@@ -190,6 +190,7 @@ dependencies = [
  "ein-core",
  "ein-infer",
  "ein-ir",
+ "ein-parity",
  "serde",
  "serde_json",
  "toml",
@@ -211,6 +212,7 @@ dependencies = [
  "ein-core",
  "ein-ir",
  "ein-oracle",
+ "ein-parity",
  "rustc-hash",
  "serde_json",
 ]
@@ -234,6 +236,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "ein-parity"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+]
+
+[[package]]
 name = "ein-render"
 version = "0.1.0"
 dependencies = [
@@ -241,6 +250,7 @@ dependencies = [
  "ein-infer",
  "ein-ir",
  "ein-oracle",
+ "ein-parity",
  "md-5",
  "rustc-hash",
  "serde_json",

@@ -1134,28 +1134,25 @@ _DUMP_MODES = ("monotonic", "lattice", "progress", "abort")
 
 _TS_KEYS = ("ts_ms", "elapsed_seconds")
 
-# D3 (plans/m1a_rust/divergences.md): ein.rs's forks resume root's saturation
-# and ein.py's re-derive it, so the same entering reaches the same state by
-# narrating a quarter as much. Blanked here rather than tolerated by the
-# differ, and *only* this field — `outcome`, `kind`, `commitment`,
-# `facts_merged`, `unsat_core_size` and the two nogood flags sit on the same
-# record and are still compared exactly.
-# `ein-render/src/shape.rs`'s `normalise_dump_line` is the other half.
-_FIRING_KEYS = ("firings",)
-
-
 def _normalise_dump_line(line: str) -> str:
-    """Blank the clock readings and the firing count — value, not presence: a
-    record that lost its `ts_ms` still fails, which is the point of
-    normalising rather than dropping."""
+    """Blank the clock readings — value, not presence: a record that lost its
+    `ts_ms` still fails, which is the point of normalising rather than
+    dropping.
+
+    The clocks, and only the clocks. The per-entering ``firings`` count used to
+    be blanked here too and is not any more: it is D3
+    (``plans/m1a_rust/divergences.md``), which is a *comparison* decision and
+    since S1a.6.10 lives with the rest of them in ``ein.rs/crates/ein-parity``
+    — one implementation, applied to both sides' text, instead of two that
+    have to be kept in step. ``ein-render/src/shape.rs``'s
+    ``normalise_dump_line`` is the other half.
+    """
     import re
     out = line
     for key in _TS_KEYS:
         # The character class needs the `-` for a negative exponent
         # (`1.5e-05`), or the tail survives normalisation on one side only.
         out = re.sub(rf'"{key}": [-0-9.eE+]+', f'"{key}": <ts>', out)
-    for key in _FIRING_KEYS:
-        out = re.sub(rf'"{key}": [0-9]+', f'"{key}": <firings>', out)
     # The progress view's `(   12s)` elapsed column.
     out = re.sub(r"\(\s*\d+s\)", "(<el>)", out)
     return out
@@ -1171,13 +1168,20 @@ def _render_tree(root) -> str:
         out.append(f"=== {rel}")
         text = path.read_text(encoding="utf-8")
         if rel.startswith("enterings/"):
-            # D3: a fork's own dump is narration end to end — the firing list,
-            # the derivation order and `:rule` annotation of its state dump,
-            # and a dying fork's core. The file set is still compared exactly;
-            # everything outside `enterings/` is compared byte for byte.
-            # `utils/fork_delta_verify.py` is the stronger check that replaces
-            # it, and `ein-render/src/shape.rs`'s `render_tree` is this rule's
-            # other half.
+            # A fork's own dump is narration end to end — the firing list, the
+            # derivation order and `:rule` annotation of its state dump, and a
+            # dying fork's core. `ein.rs/crates/ein-parity` owns that rule and
+            # applies it at *comparison* time everywhere else; this is the one
+            # place it is applied at production, because `zebra2-hints` writes
+            # 6.6 MiB of per-entering dumps against 84 KiB for the rest of the
+            # tree and pushing that through the pipe to elide it would be
+            # hundreds of megabytes to compare nothing. The marker is
+            # `ein_parity::NARRATED`, and `dump_parity` asserts it still is.
+            # The file set is still compared exactly; everything outside
+            # `enterings/` is compared byte for byte.
+            # `ein-render/src/shape.rs`'s `render_tree` is this rule's other
+            # half, and `utils/fork_delta_verify.py` the stronger check that
+            # replaces the elided bytes.
             out.append("=== <narrated>")
             continue
         out.extend(_normalise_dump_line(ln) for ln in text.splitlines())
@@ -1280,21 +1284,24 @@ def _snapshot_shape(kb: KnowledgeBase) -> str:
         f"SNAPSHOT verdict={snap.verdict_kind} nodes={len(snap.nodes_by_state_key)}",
         f"  root_state_key {show([snap.root_state_key])}",
         f"  solutions      {show(snap.solutions)}",
-        # D3: a dead commitment's state key is the fork's state at the firing
-        # that killed it, and ein.rs's resumed fork reaches the clash by a
-        # different route. The count is compared; the keys are not.
+        # Rendered in full and *compared* as a count: a dead commitment's
+        # state key is the fork's state at the firing that killed it, and
+        # ein.rs's resumed fork reaches the clash by a different route. The
+        # blanking is `ein-parity`'s job, not this renderer's.
         # `ein-render/src/shape.rs`'s `snapshot_shape` is the other half.
-        f"  deads          {len(snap.deads)} key(s)",
+        f"  deads          {show(snap.deads)}",
         f"  alive_at_end   {show(snap.alive_at_end)}",
-        # D3: the snapshot's lattice DOT keys its dead nodes on the dead
-        # commitment's state_key, which is the divergent field above. Compared
-        # for shape, not bytes; the renderer itself is byte-compared through
+        # The snapshot's lattice DOT keys its dead nodes on the dead
+        # commitment's state_key, which is the field above, and the DAG merges
+        # dead commitments by it — so even the node count moves. Rendered in
+        # full and named as a derivation in `ein-parity`'s closed list, which
+        # is what elides it. The renderer itself is byte-compared through
         # dot_parity's `lattice` / `lattice-full` views, which read a
         # LatticeProof and label dead nodes by commitment.
         "=== dot solution",
-        ("<rendered>" if render_lattice(snap, view="solution") else "<empty>"),
+        render_lattice(snap, view="solution"),
         "=== dot full",
-        ("<rendered>" if render_lattice(snap, view="full") else "<empty>"),
+        render_lattice(snap, view="full"),
     ]
     return "\n".join(out)
 
