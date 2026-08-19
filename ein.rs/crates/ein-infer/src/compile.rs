@@ -67,14 +67,26 @@ impl std::error::Error for CompileError {}
 /// premise with an unbound head var, which the compiler then dropped —
 /// silently, and in the vacuous direction.
 pub fn activators_for(kb: &Kb, terms: &Terms, rule: &Rule) -> Vec<Option<FactId>> {
+    let mut out = Vec::new();
+    activators_into(kb, terms, rule, &mut out);
+    out
+}
+
+/// The same, into a caller's buffer — which `Engine::compile_all` reuses
+/// across every rule of the walk it repeats per hypgen call (T1a.6.4.0b).
+/// **Clears `out`**, so a caller may hand the same buffer over and over.
+pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option<FactId>>) {
+    out.clear();
     if rule.params.is_empty() {
-        return vec![None];
+        out.push(None);
+        return;
     }
     let n = rule.params.len();
-    kb.rule_apps_by_rule(rule.name)
-        .filter(|&f| terms.facts.arity(f) == n)
-        .map(Some)
-        .collect()
+    out.extend(
+        kb.rule_apps_by_rule(rule.name)
+            .filter(|&f| terms.facts.arity(f) == n)
+            .map(Some),
+    );
 }
 
 // ── The compile cache key ──────────────────────────────────────────

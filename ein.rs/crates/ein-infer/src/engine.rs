@@ -22,7 +22,7 @@ use ein_core::{FactId, Kb, Symbol, Terms};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
-use crate::compile::{CompileError, PlanKey, SharedMemo, activators_for, plan_key};
+use crate::compile::{CompileError, PlanKey, SharedMemo, activators_into, plan_key};
 use crate::events::Events;
 use crate::firing::{ActivatorId, BindingKey};
 use std::sync::Arc;
@@ -138,10 +138,18 @@ impl Engine {
             return Ok(());
         }
         self.last_rule_apps = n;
-        let rules: Vec<Rule> = kb.program().rules.values().cloned().collect();
-        for rule in &rules {
-            for activator in activators_for(kb, terms, rule) {
-                self.compile_for(ast, terms, rule, activator, events)?;
+        // T1a.6.4.0b — the walk allocated a `Vec<Rule>` (one `Box<[Symbol]>`
+        // per rule, cloned) and a `Vec<Option<FactId>>` per rule, on every
+        // call. Neither is needed: `rules` borrows the program and `compile_for`
+        // touches `self`, `terms` and `events`, so the two borrows never meet,
+        // and one buffer serves every rule. The engine a `Lookahead` throws
+        // away after one pass makes this walk ~120 pairs of pure setup, ~40
+        // times per solve ([S1a.6.4](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)).
+        let mut acts: Vec<Option<FactId>> = Vec::new();
+        for rule in kb.program().rules.values() {
+            activators_into(kb, terms, rule, &mut acts);
+            for i in 0..acts.len() {
+                self.compile_for(ast, terms, rule, acts[i], events)?;
             }
         }
         Ok(())
@@ -194,13 +202,13 @@ impl Engine {
                 l.num("asserts", asserts as i64);
             });
         }
-        let (rule_sym, activator_args, reg_names) = (
-            plan.rule,
-            plan.activator_args.clone(),
-            plan.reg_names.clone(),
-        );
-        let activator_id = self.intern_activator(&activator_args);
-        self.check_layout(rule_sym, activator_id, &reg_names);
+        // `plan` is a local `Arc`, not a borrow of `self`, so the two reads
+        // below need no copy of what they read (T1a.6.4.0b): `reg_names` is
+        // only ever read by `check_layout`, which is a debug-build assertion,
+        // and cloning it in the shipping build was one allocation per engine
+        // miss for nothing at all.
+        let activator_id = self.intern_activator(&plan.activator_args);
+        self.check_layout(plan.rule, activator_id, &plan.reg_names);
         self.plans.push(id);
         self.arcs.push(plan);
         self.keys.push(key.clone());
@@ -250,7 +258,7 @@ impl Engine {
     fn would_not_grow(&self, _ast: &Ast, terms: &Terms, kb: &Kb) -> bool {
         let mut n = 0;
         for (_, rule) in kb.program().rules.iter() {
-            n += activators_for(kb, terms, rule).len();
+            n += crate::compile::activators_for(kb, terms, rule).len();
         }
         // Every pair the walk would visit is already cached, so the *count* of
         // pairs is the count of distinct keys — which the plan list holds.
