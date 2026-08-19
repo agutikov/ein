@@ -144,6 +144,19 @@ pub struct Counters {
     /// The costliest candidate filter, and the reason a pass costs 14x more
     /// with the lever on than off.
     pub lookahead_probe: u64,
+    /// Guard sub-plan queries actually **run** — `guard_query` minus what the
+    /// per-round memo answered — and the monotone half of them.
+    ///
+    /// The `Saturator` counts both per saturation
+    /// (`guard_evals` / `guard_evals_monotone`); these are the same two summed
+    /// over every fork of a whole solve, which is what
+    /// [Q-M1a.17](../../../../plans/m1a_rust/open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate)
+    /// asks for and no per-saturation field can answer: design/06 § Win B's
+    /// mechanism only reaches a *monotone* guard, its projection is ≥ 80 %, and
+    /// at root scale the measured mix was 11–30 % the other way.
+    pub guard_eval: u64,
+    pub guard_eval_monotone: u64,
+
     // ── the frontend ───────────────────────────────────────────────
     /// `parse()` calls and the source bytes they were handed — one per
     /// *module text*, so the pair prices the import diamond: `zebra2` pulls
@@ -250,6 +263,8 @@ impl Counters {
             hypgen_complete: 0,
             lookahead_probe: 0,
             plan_key: 0,
+            guard_eval: 0,
+            guard_eval_monotone: 0,
             parse_call: 0,
             parse_bytes: 0,
             lex_match: 0,
@@ -261,7 +276,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 30] {
+    pub fn rows(&self) -> [(&'static str, u64); 32] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -287,6 +302,8 @@ impl Counters {
             ("hypgen_complete", self.hypgen_complete),
             ("lookahead_probe", self.lookahead_probe),
             ("plan_key", self.plan_key),
+            ("guard_eval", self.guard_eval),
+            ("guard_eval_monotone", self.guard_eval_monotone),
             ("parse_call", self.parse_call),
             ("parse_bytes", self.parse_bytes),
             ("lex_match", self.lex_match),
@@ -345,6 +362,8 @@ mod tests {
         c.hypgen_complete = 1;
         c.lookahead_probe = 1;
         c.plan_key = 1;
+        c.guard_eval = 1;
+        c.guard_eval_monotone = 1;
         c.parse_call = 1;
         c.parse_bytes = 1;
         c.lex_match = 1;
@@ -356,6 +375,6 @@ mod tests {
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 29);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 31);
     }
 }

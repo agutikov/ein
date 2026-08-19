@@ -1040,6 +1040,13 @@ impl Saturator {
                 None => {
                     self.guard_evals += 1;
                     self.guard_evals_monotone += g.monotone as u64;
+                    // The same two, summed over every fork of a solve —
+                    // Q-M1a.17's exhaustive half, which a per-saturation field
+                    // cannot answer.
+                    ein_core::counters::bump(|c| {
+                        c.guard_eval += 1;
+                        c.guard_eval_monotone += g.monotone as u64;
+                    });
                     let v = m.holds(s.kb, s.terms, s.ast, plan, g, &regs);
                     self.guard_memo.insert(key, v);
                     v
