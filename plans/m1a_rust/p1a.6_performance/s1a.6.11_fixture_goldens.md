@@ -80,6 +80,73 @@ engines and which nothing else would notice changing.
 command (`EIN_BLESS=1 cargo test -p ein-render`), because a golden without one
 gets edited by hand and drifts.
 
+## Outcome — shipped 2026-08-19
+
+Every artefact [S1a.6.10](s1a.6.10_parity_contract.md) took out of the
+cross-engine diff — and the three S1a.6.9 had already taken out — now has an
+ein.rs fixture that fails if it changes. **Twelve goldens, 2 188 lines**, none
+over 318, so a regeneration is reviewable.
+
+| golden | what it pins | lines |
+|---|---|---:|
+| `ein-render/tests/golden/trace_{unconditional,one-hypothesis,ambiguous,two-level,unsat}.md` | five real solves, one per trace shape, DOT blocks replaced by a marker | 185–245 |
+| `ein-render/tests/golden/slice_{forall,two-level}.dot` | the provenance cone, for two of the sixteen entries whose `slice` view D3 moves | 37, 313 |
+| `ein-render/tests/golden/dump_enterings_subset-pruned.txt` | a fork's **own** dump — the firing list, the state dump in the fork's derivation order, a dying fork's core — which `dump_shape` elides where it is produced and the diff therefore never sees; plus the timeline's per-entering `firings` count, the one field of `00_timeline.jsonl` that is blanked rather than elided | 318 |
+| `ein-render/tests/golden/dump_snapshot_subset-pruned.txt` | the snapshot's dead `state_key`s and both lattice DOTs the DAG merges by them | 33 |
+| `ein-infer/tests/golden/events_{symmetric-native,naf-boundary,unconditional}.jsonl` | the `--events` stream at `verbose`, covering **every** class the relaxed T2 elides | 41–277 |
+
+### The three that are not goldens
+
+A byte golden can be blessed away, so the properties that must never be
+blessed away are asserted separately:
+
+- **`the_root_section_is_rendered_and_numbered_as_one_sequence`** — an
+  unconditional solve narrates its 23 root steps; a hypothesis's steps
+  *continue* root's numbering (16 + 4 = steps 1…20, not 1…16 then 1…4); and
+  the root section comes before `Assuming …`. This is the shape
+  [T1a.6.9.4](s1a.6.9_fork_entry_delta.md) added and the reason the fork
+  boundary could move at all.
+- **`between_them_the_goldens_cover_every_elided_class`** — the event goldens
+  must contain a `park`, an `admit`, a `retire`, an `alt`, a `quiesce`, an
+  `enqueue`, a `compile`, a `mirror` and a redundant firing, iterating
+  `ein_parity::events::SCHEDULING` itself. Otherwise they are three more files
+  that happen to be stable rather than coverage of the elided half. Choosing
+  the fixtures *was* this assertion: `04_two_levels` emits 1 498 events and no
+  `park` at all, and `12_typed_blind_solve` turned out to be the only small
+  entry that emits the whole scheduling vocabulary.
+- **`dot_parity`'s `NARRATED_SLICES`** — the sixteen entries whose `slice`
+  view actually diverges, asserted rather than tolerated, so a cone that
+  starts differing for an unrelated reason cannot hide behind the cut. That
+  was S1a.6.10's Notes asking for the `DIVERGENT` discipline to survive the
+  relaxation; it did.
+
+### idea-08, on the engine that ships
+
+`ein-render/tests/idea08_acceptance.rs` ports
+`test_idea08_acceptance.py` in full — both puzzles, both levels — and asserts
+against the **rendered markdown** rather than the firing list, because since
+S1a.6.9 root's steps are a section of the document and not part of the
+solution node's firings. `symmetric` gets its own assertion beside the set
+one: it is the rule the near-miss dropped, and "one of nine missing" is a
+worse failure message than naming it. Both puzzles run unconditionally — the
+Python original gates the firing half behind `EIN_RUN_SLOW` because exhaustive
+zebra2 costs 35 s on CPython; on ein.rs the whole file is 0.15 s.
+
+### The gate
+
+`./run_tests.sh` gained a **Phase 3**: `cargo test --workspace`, after the
+pytest suite and the acceptance gate, skipped by `--fast` and by `--no-rust`,
+and **loudly** skipped when there is no cargo on `PATH` — a skipped phase that
+reads as green is how a gate stops being one. That is not tidiness: with the
+parity harness no longer diffing ein.rs's narration against ein.py's, a gate
+that runs only the Python half no longer covers the trace, the cone or the
+event stream at all. Regeneration is one documented command,
+`EIN_BLESS=1 cargo test --workspace`, implemented once in
+`ein_oracle::golden`.
+
+**The gates, run:** `./run_tests.sh` → **1 506** unit + **21** acceptance +
+**302** ein.rs tests, exit 0.
+
 ## Acceptance
 
 - Every artefact removed from the cross-engine diff has an ein.rs fixture that

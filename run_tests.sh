@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# run_tests.sh — two-phase test runner.
+# run_tests.sh — three-phase test runner.
 #
 #   Phase 1  the pytest unit/integration suite  (ein.py/tests, the testpaths).
 #            Run in PARALLEL by default (pytest-xdist, -j workers).
@@ -11,6 +11,14 @@
 #            as its own phase, SERIALLY with live progress (pytest -s +
 #            ProgressDumper) — kept serial so the progress lines don't
 #            interleave across workers.
+#   Phase 3  the ein.rs suite                    (`cargo test --workspace`).
+#            Added at M1a S1a.6.11, and not as a courtesy: since S1a.6.10 the
+#            parity harness no longer diffs ein.rs's *narration* against
+#            ein.py's, so the trace, the `slice` cone and the event stream are
+#            covered only by ein.rs's own checked-in goldens. A gate that runs
+#            one implementation is no longer the gate. Skipped, loudly, when
+#            there is no cargo on PATH, and skipped by --fast.
+#            Regenerate a golden with:  EIN_BLESS=1 cargo test --workspace
 #
 # The pytest config lives in ein.py/pyproject.toml ([tool.pytest.ini_options]
 # — testpaths=tests, pythonpath=src), so both phases invoke pytest from ein.py/.
@@ -24,27 +32,30 @@
 #   -j N | --jobs N     Phase 1 parallel workers (default 4; "auto" = #CPUs;
 #                       1 = serial). Needs pytest-xdist (in the dev extra:
 #                       pip install -e '.[dev]'); falls back to serial if absent.
-#   --fast              Quick run: skip the acceptance gate AND the unit
-#                       suite's EIN_RUN_SLOW-gated tests.
+#   --fast              Quick run: skip the acceptance gate, the ein.rs suite,
+#                       AND the unit suite's EIN_RUN_SLOW-gated tests.
 #   --acceptance-only   Phase 2 only — just the acceptance gate (with progress).
+#   --no-rust           Skip Phase 3 (the ein.rs suite).
 #   -h | --help         This help.
 #   <other args>        Forwarded to Phase 1's pytest (e.g. -k, -x, a path).
 #
 # By default a full run is performed: EIN_RUN_SLOW=1 is set so the unit
-# suite's slow zebra tests run in Phase 1, and Phase 2 (acceptance) runs
-# after. --fast turns both off for a quick inner-loop run.
+# suite's slow zebra tests run in Phase 1, then Phase 2 (acceptance), then
+# Phase 3 (ein.rs). --fast turns all three off for a quick inner-loop run.
 #
 # Usage:
 #   ./run_tests.sh                  # 4-way parallel suite, then acceptance
 #   ./run_tests.sh -j auto          # one worker per CPU
 #   ./run_tests.sh --fast -j8       # quick, 8-way, no acceptance
 #   ./run_tests.sh --acceptance-only
+#   ./run_tests.sh --no-rust        # the Python half only
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 FAST=0
 ACCEPTANCE_ONLY=0
+NO_RUST=0
 JOBS=4
 ARGS=()
 while [[ $# -gt 0 ]]; do
@@ -55,6 +66,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --fast)            FAST=1 ;;
         --acceptance-only) ACCEPTANCE_ONLY=1 ;;
+        --no-rust)         NO_RUST=1 ;;
         -j|--jobs)         shift; JOBS="${1:-4}" ;;
         -j*)               JOBS="${1#-j}" ;;
         --jobs=*)          JOBS="${1#*=}" ;;
@@ -113,6 +125,29 @@ if [[ "${FAST}" == "0" ]]; then
     # -v: name each task-class test as it runs. Serial (no -n) so the
     #     progress lines stay readable.
     "${PY}" -m pytest -s -v acceptance/ || RC=$?
+fi
+
+# Phase 3: ein.rs. `cargo test --workspace` covers the port's unit tests, its
+# differential tests against utils/ir_oracle.py, and — since S1a.6.11 — the
+# goldens that are the *only* coverage of what the parity contract stopped
+# diffing between the two engines.
+if [[ "${FAST}" == "0" && "${ACCEPTANCE_ONLY}" == "0" && "${NO_RUST}" == "0" ]]; then
+    echo "" >&2
+    echo "── Phase 3: the ein.rs suite (cargo test --workspace) ──────────" >&2
+    if ! command -v cargo >/dev/null 2>&1; then
+        # Loud, and not a pass: a skipped phase that reads as green is how a
+        # gate stops being one.
+        echo "   SKIPPED: no cargo on PATH — the ein.rs half of the gate did" >&2
+        echo "   not run. Install a Rust toolchain, or pass --no-rust to mean" >&2
+        echo "   it on purpose." >&2
+    else
+        # The differential tests shell out to `python3 utils/ir_oracle.py`,
+        # which puts `ein.py/src` on its own `sys.path` — so this phase needs
+        # a python3 on PATH but not an installed `ein`. When it cannot start
+        # one, those tests print SKIP and say so.
+        cargo test --manifest-path "${SCRIPT_DIR}/ein.rs/Cargo.toml" \
+            --workspace || RC=$?
+    fi
 fi
 
 exit "${RC}"

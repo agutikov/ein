@@ -1,0 +1,34 @@
+SNAPSHOT verdict=Ambiguity nodes=0
+  root_state_key [{(incompat a b) (incompat b a) (is-a Custom T) (is-a a Custom) (is-a b Custom) (is-a c Custom) (is-a d Custom) (relation incompat T T) (relation incompat) (relation is-a T T) (relation is-a) (relation proposed T) (relation proposed) (symmetric incompat)}]
+  solutions      [{(incompat a b) (incompat b a) (is-a Custom T) (is-a a Custom) (is-a b Custom) (is-a c Custom) (is-a d Custom) (not (proposed a)) (proposed b) (proposed c) (proposed d) (relation incompat T T) (relation incompat) (relation is-a T T) (relation is-a) (relation proposed T) (relation proposed) (symmetric incompat)}, {(incompat a b) (incompat b a) (is-a Custom T) (is-a a Custom) (is-a b Custom) (is-a c Custom) (is-a d Custom) (not (proposed b)) (proposed a) (proposed c) (proposed d) (relation incompat T T) (relation incompat) (relation is-a T T) (relation is-a) (relation proposed T) (relation proposed) (symmetric incompat)}]
+  deads          [{(false) (incompat a b) (incompat b a) (is-a Custom T) (is-a a Custom) (is-a b Custom) (is-a c Custom) (is-a d Custom) (proposed a) (proposed b) (relation incompat T T) (relation incompat) (relation is-a T T) (relation is-a) (relation proposed T) (relation proposed) (symmetric incompat)}]
+  alive_at_end   []
+=== dot solution
+digraph lattice {
+  rankdir=LR;
+  node [fontname="Inter", shape=box];
+  "root" [label="root\n(saturation)", style=filled, color="#7f7f7f", fillcolor="#eeeeee"];
+  "n_f0b985fc9f" [label="{false, incompat(a, b), incompat(b, a), is-a(Custom, T), is-a(a, Custom), is-a(b, Custom), is-a(c, Custom), is-a(d, Custom), proposed(a), proposed(b), relation(incompat, T, T), relation(incompat), relation(is-a, T, T), relation(is-a), relation(proposed, T), relation(proposed), symmetric(incompat)}", style=filled, color="#d62728", fillcolor="#fdeaea"];
+  "n_f144f8181f" [label="{incompat(a, b), incompat(b, a), is-a(Custom, T), is-a(a, Custom), is-a(b, Custom), is-a(c, Custom), is-a(d, Custom), not(proposed(a)), proposed(b), proposed(c), proposed(d), relation(incompat, T, T), relation(incompat), relation(is-a, T, T), relation(is-a), relation(proposed, T), relation(proposed), symmetric(incompat)}", style=filled, color="#2ca02c", fillcolor="#e8f6e8"];
+  "n_5eff7c5a98" [label="{incompat(a, b), incompat(b, a), is-a(Custom, T), is-a(a, Custom), is-a(b, Custom), is-a(c, Custom), is-a(d, Custom), not(proposed(b)), proposed(a), proposed(c), proposed(d), relation(incompat, T, T), relation(incompat), relation(is-a, T, T), relation(is-a), relation(proposed, T), relation(proposed), symmetric(incompat)}", style=filled, color="#2ca02c", fillcolor="#e8f6e8"];
+  "root" -> "n_f0b985fc9f" [style=dotted];
+  "root" -> "n_f144f8181f" [style=dotted];
+  "root" -> "n_5eff7c5a98" [style=dotted];
+  {rank=same; "n_f0b985fc9f"}
+  {rank=same; "n_f144f8181f" "n_5eff7c5a98"}
+}
+=== dot full
+digraph lattice {
+  rankdir=LR;
+  node [fontname="Inter", shape=box];
+  // no stored lattice (store_lattice=False) — showing the solution frontier instead
+  "root" [label="root\n(saturation)", style=filled, color="#7f7f7f", fillcolor="#eeeeee"];
+  "n_f0b985fc9f" [label="{false, incompat(a, b), incompat(b, a), is-a(Custom, T), is-a(a, Custom), is-a(b, Custom), is-a(c, Custom), is-a(d, Custom), proposed(a), proposed(b), relation(incompat, T, T), relation(incompat), relation(is-a, T, T), relation(is-a), relation(proposed, T), relation(proposed), symmetric(incompat)}", style=filled, color="#d62728", fillcolor="#fdeaea"];
+  "n_f144f8181f" [label="{incompat(a, b), incompat(b, a), is-a(Custom, T), is-a(a, Custom), is-a(b, Custom), is-a(c, Custom), is-a(d, Custom), not(proposed(a)), proposed(b), proposed(c), proposed(d), relation(incompat, T, T), relation(incompat), relation(is-a, T, T), relation(is-a), relation(proposed, T), relation(proposed), symmetric(incompat)}", style=filled, color="#2ca02c", fillcolor="#e8f6e8"];
+  "n_5eff7c5a98" [label="{incompat(a, b), incompat(b, a), is-a(Custom, T), is-a(a, Custom), is-a(b, Custom), is-a(c, Custom), is-a(d, Custom), not(proposed(b)), proposed(a), proposed(c), proposed(d), relation(incompat, T, T), relation(incompat), relation(is-a, T, T), relation(is-a), relation(proposed, T), relation(proposed), symmetric(incompat)}", style=filled, color="#2ca02c", fillcolor="#e8f6e8"];
+  "root" -> "n_f0b985fc9f" [style=dotted];
+  "root" -> "n_f144f8181f" [style=dotted];
+  "root" -> "n_5eff7c5a98" [style=dotted];
+  {rank=same; "n_f0b985fc9f"}
+  {rank=same; "n_f144f8181f" "n_5eff7c5a98"}
+}

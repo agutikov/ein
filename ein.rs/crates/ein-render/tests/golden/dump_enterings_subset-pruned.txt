@@ -1,0 +1,318 @@
+=== 00_timeline.jsonl
+{"seq": 0, "ts_ms": <ts>, "event": "root_initial", "facts": 14}
+{"seq": 1, "ts_ms": <ts>, "event": "layer_start", "layer": 1, "alive_size": 4}
+{"seq": 2, "ts_ms": <ts>, "event": "entering", "layer": 1, "outcome": "alive", "commitment": [{"relation": "proposed", "args": ["a"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 3, "ts_ms": <ts>, "event": "entering", "layer": 1, "outcome": "alive", "commitment": [{"relation": "proposed", "args": ["b"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 4, "ts_ms": <ts>, "event": "entering", "layer": 1, "outcome": "alive", "commitment": [{"relation": "proposed", "args": ["c"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 5, "ts_ms": <ts>, "event": "entering", "layer": 1, "outcome": "alive", "commitment": [{"relation": "proposed", "args": ["d"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 6, "ts_ms": <ts>, "event": "layer_end", "layer": 1, "facts": 14, "alive_size": 4, "survived_count": 4}
+{"seq": 7, "ts_ms": <ts>, "event": "layer_start", "layer": 2, "alive_size": 4}
+{"seq": 8, "ts_ms": <ts>, "event": "entering", "layer": 2, "outcome": "dead-post", "commitment": [{"relation": "proposed", "args": ["a"]}, {"relation": "proposed", "args": ["b"]}], "facts_merged": 0, "nogood_emitted": true, "nogood_subsumed": false, "kind": "dead-post", "firings": 1, "unsat_core_size": 3}
+{"seq": 9, "ts_ms": <ts>, "event": "entering", "layer": 2, "outcome": "alive", "commitment": [{"relation": "proposed", "args": ["a"]}, {"relation": "proposed", "args": ["c"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 10, "ts_ms": <ts>, "event": "entering", "layer": 2, "outcome": "alive", "commitment": [{"relation": "proposed", "args": ["a"]}, {"relation": "proposed", "args": ["d"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 11, "ts_ms": <ts>, "event": "entering", "layer": 2, "outcome": "alive", "commitment": [{"relation": "proposed", "args": ["b"]}, {"relation": "proposed", "args": ["c"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 12, "ts_ms": <ts>, "event": "entering", "layer": 2, "outcome": "alive", "commitment": [{"relation": "proposed", "args": ["b"]}, {"relation": "proposed", "args": ["d"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 13, "ts_ms": <ts>, "event": "entering", "layer": 2, "outcome": "alive", "commitment": [{"relation": "proposed", "args": ["c"]}, {"relation": "proposed", "args": ["d"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 14, "ts_ms": <ts>, "event": "layer_end", "layer": 2, "facts": 14, "alive_size": 4, "survived_count": 5}
+{"seq": 15, "ts_ms": <ts>, "event": "layer_start", "layer": 3, "alive_size": 4}
+{"seq": 16, "ts_ms": <ts>, "event": "entering", "layer": 3, "outcome": "solution", "commitment": [{"relation": "proposed", "args": ["a"]}, {"relation": "proposed", "args": ["c"]}, {"relation": "proposed", "args": ["d"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 17, "ts_ms": <ts>, "event": "entering", "layer": 3, "outcome": "solution", "commitment": [{"relation": "proposed", "args": ["b"]}, {"relation": "proposed", "args": ["c"]}, {"relation": "proposed", "args": ["d"]}], "facts_merged": 0, "nogood_emitted": false, "nogood_subsumed": false, "kind": "alive", "firings": 0, "unsat_core_size": 0}
+{"seq": 18, "ts_ms": <ts>, "event": "layer_end", "layer": 3, "facts": 14, "alive_size": 4, "survived_count": 0}
+{"seq": 19, "ts_ms": <ts>, "event": "proof_summary", "solutions": 2, "dead_commitments": 1, "kb_index_size": 0}
+{"seq": 20, "ts_ms": <ts>, "event": "summary", "verdict": "Ambiguity", "elapsed_seconds": <ts>}
+=== enterings/layer_01/proposed_a/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "a"
+    ]
+  }
+]
+=== enterings/layer_01/proposed_a/firings.jsonl
+=== enterings/layer_01/proposed_a/outcome.txt
+alive
+=== enterings/layer_01/proposed_b/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "b"
+    ]
+  }
+]
+=== enterings/layer_01/proposed_b/firings.jsonl
+=== enterings/layer_01/proposed_b/outcome.txt
+alive
+=== enterings/layer_01/proposed_c/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "c"
+    ]
+  }
+]
+=== enterings/layer_01/proposed_c/firings.jsonl
+=== enterings/layer_01/proposed_c/outcome.txt
+alive
+=== enterings/layer_01/proposed_d/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "d"
+    ]
+  }
+]
+=== enterings/layer_01/proposed_d/firings.jsonl
+=== enterings/layer_01/proposed_d/outcome.txt
+alive
+=== enterings/layer_02/proposed_a+proposed_b/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "a"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "b"
+    ]
+  }
+]
+=== enterings/layer_02/proposed_a+proposed_b/firings.jsonl
+{"rule": "incompat-block", "activator": [], "bindings": {"a": "a", "b": "b"}, "redundant": false, "derived": {"relation": "false", "args": []}, "premises": [{"relation": "incompat", "args": ["a", "b"]}, {"relation": "proposed", "args": ["a"]}, {"relation": "proposed", "args": ["b"]}]}
+=== enterings/layer_02/proposed_a+proposed_b/learned_clause.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "a"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "b"
+    ]
+  }
+]
+=== enterings/layer_02/proposed_a+proposed_b/outcome.txt
+dead-post
+=== enterings/layer_02/proposed_a+proposed_b/unsat_core.jsonl
+{"relation": "incompat", "args": ["a", "b"]}
+{"relation": "proposed", "args": ["a"]}
+{"relation": "proposed", "args": ["b"]}
+=== enterings/layer_02/proposed_a+proposed_c/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "a"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "c"
+    ]
+  }
+]
+=== enterings/layer_02/proposed_a+proposed_c/firings.jsonl
+=== enterings/layer_02/proposed_a+proposed_c/outcome.txt
+alive
+=== enterings/layer_02/proposed_a+proposed_d/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "a"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "d"
+    ]
+  }
+]
+=== enterings/layer_02/proposed_a+proposed_d/firings.jsonl
+=== enterings/layer_02/proposed_a+proposed_d/outcome.txt
+alive
+=== enterings/layer_02/proposed_b+proposed_c/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "b"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "c"
+    ]
+  }
+]
+=== enterings/layer_02/proposed_b+proposed_c/firings.jsonl
+=== enterings/layer_02/proposed_b+proposed_c/outcome.txt
+alive
+=== enterings/layer_02/proposed_b+proposed_d/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "b"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "d"
+    ]
+  }
+]
+=== enterings/layer_02/proposed_b+proposed_d/firings.jsonl
+=== enterings/layer_02/proposed_b+proposed_d/outcome.txt
+alive
+=== enterings/layer_02/proposed_c+proposed_d/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "c"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "d"
+    ]
+  }
+]
+=== enterings/layer_02/proposed_c+proposed_d/firings.jsonl
+=== enterings/layer_02/proposed_c+proposed_d/outcome.txt
+alive
+=== enterings/layer_03/proposed_a+proposed_c+proposed_d/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "a"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "c"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "d"
+    ]
+  }
+]
+=== enterings/layer_03/proposed_a+proposed_c+proposed_d/firings.jsonl
+=== enterings/layer_03/proposed_a+proposed_c+proposed_d/kb.ein
+(relation is-a T T)
+
+(relation is-a)
+
+(relation proposed T)
+
+(relation proposed)
+
+(relation incompat T T)
+
+(relation incompat)
+
+(symmetric incompat)
+
+(is-a Custom T)
+
+(is-a a Custom)
+
+(is-a b Custom)
+
+(is-a c Custom)
+
+(is-a d Custom)
+
+(incompat a b :source "(only the {a, b} pair is forbidden)")
+
+(incompat b a :rule "symmetric")
+
+(proposed a :hypothesis 0)
+
+(proposed c :hypothesis 0)
+
+(proposed d :hypothesis 0)
+
+(not (proposed b) :rule "<lookahead-dies-immediately>")
+=== enterings/layer_03/proposed_a+proposed_c+proposed_d/outcome.txt
+solution
+=== enterings/layer_03/proposed_b+proposed_c+proposed_d/commitment.json
+[
+  {
+    "relation": "proposed",
+    "args": [
+      "b"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "c"
+    ]
+  },
+  {
+    "relation": "proposed",
+    "args": [
+      "d"
+    ]
+  }
+]
+=== enterings/layer_03/proposed_b+proposed_c+proposed_d/firings.jsonl
+=== enterings/layer_03/proposed_b+proposed_c+proposed_d/kb.ein
+(relation is-a T T)
+
+(relation is-a)
+
+(relation proposed T)
+
+(relation proposed)
+
+(relation incompat T T)
+
+(relation incompat)
+
+(symmetric incompat)
+
+(is-a Custom T)
+
+(is-a a Custom)
+
+(is-a b Custom)
+
+(is-a c Custom)
+
+(is-a d Custom)
+
+(incompat a b :source "(only the {a, b} pair is forbidden)")
+
+(incompat b a :rule "symmetric")
+
+(proposed b :hypothesis 0)
+
+(proposed c :hypothesis 0)
+
+(proposed d :hypothesis 0)
+
+(not (proposed a) :rule "<lookahead-dies-immediately>")
+=== enterings/layer_03/proposed_b+proposed_c+proposed_d/outcome.txt
+solution

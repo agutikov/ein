@@ -179,3 +179,61 @@ pub fn skip(what: &str) {
          (need `python3` + lark; try `pip install -e ein.py`)"
     );
 }
+
+/// A checked-in **ein.rs** golden: compare, or rewrite under `EIN_BLESS=1`.
+///
+/// Distinct from the goldens under `ein.py/tests/golden/`, which are the
+/// *oracle's* and are read-only here — a port that shipped its own copy of the
+/// expected bytes would prove only that it agrees with itself. These are the
+/// other kind, and since
+/// [S1a.6.10](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
+/// they are the whole regression coverage of everything the parity contract
+/// stopped comparing: a shipping engine is compared against fixtures, not
+/// against an oracle.
+///
+/// Returns `None` when the golden matches (or was just written), and
+/// otherwise the message to fail with — naming the first differing line and
+/// the one command that regenerates it, because a golden without a documented
+/// regeneration gets edited by hand and drifts.
+///
+/// ```text
+/// EIN_BLESS=1 cargo test -p ein-render
+/// ```
+pub fn golden(path: &Path, got: &str) -> Option<String> {
+    let how = "regenerate with EIN_BLESS=1 cargo test";
+    if std::env::var("EIN_BLESS").as_deref() == Ok("1") {
+        if let Some(dir) = path.parent() {
+            let _ = std::fs::create_dir_all(dir);
+        }
+        std::fs::write(path, got).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+        return None;
+    }
+    let want = match std::fs::read_to_string(path) {
+        Ok(w) => w,
+        Err(e) => return Some(format!("{}: {e}\n  {how}", path.display())),
+    };
+    if got == want {
+        return None;
+    }
+    let name = path.file_name().unwrap_or_default().to_string_lossy();
+    let at = got
+        .lines()
+        .zip(want.lines())
+        .position(|(g, w)| g != w)
+        .unwrap_or_else(|| got.lines().count().min(want.lines().count()));
+    Some(format!(
+        "{name} differs at line {}:\n  got  {:?}\n  want {:?}\n  {how}",
+        at + 1,
+        got.lines().nth(at).unwrap_or("<end of file>"),
+        want.lines().nth(at).unwrap_or("<end of file>"),
+    ))
+}
+
+/// Where an ein.rs golden lives: `<crate>/tests/golden/<name>`.
+pub fn golden_path(krate: &str, name: &str) -> PathBuf {
+    repo_root()
+        .join("ein.rs/crates")
+        .join(krate)
+        .join("tests/golden")
+        .join(name)
+}

@@ -184,7 +184,7 @@ Full contract: [design/11](design/11_shared_assets.md).
 | [P1a.3](p1a.3_deductive_core/README.md) ✅ | Deductive core — compile, match, saturate, world, contradiction | 4 | 3.5 w | **shipped 2026-08-18** — T2 on 64 files / 23 848 events, 0 diff; zebra 502 and zebra2 378 facts; `saturate_root` 31×, `match_hot` 55× |
 | [P1a.4](p1a.4_search_layer/README.md) ✅ | Search layer — hypgen, lookahead, apriori, nogoods, lattice solve | 6 | 4 w | **shipped 2026-08-18** — 65 files at verdict + counter parity in three regimes; the three acceptance fixtures in 0.87 s; `solve zebra2 -e` 26× |
 | [P1a.5](p1a.5_presentation/README.md) ✅ | Presentation — trace, DOT, dumps, CLI | 4 | 3 w | **shipped 2026-08-18** — T3 corpus-wide, 472/473 cells byte-identical, the one exception being D2; help *content* parity by structural diff (Q-M1a.13); **I1 discharged** |
-| [P1a.6](p1a.6_performance/README.md) 🔄 | Performance — the optimisation programme | 8 | 3.5 w | targets above, parity unbroken — **S1a.6.1 shipped 2026-08-18**: three of the four targets already met, `solve zebra -e` 1.46× short, T3 still 472/1 |
+| [P1a.6](p1a.6_performance/README.md) 🔄 | Performance — the optimisation programme | 10 | 3.5 w | **all four targets met 2026-08-19** (S1a.6.8, S1a.6.9). Parity is no longer *byte*-unbroken and that is a decision: a fork resuming root's saturation narrates a quarter as much ([D3](divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it), [Q-M1a.18](open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)), so S1a.6.10 moved the contract to *what a fork derives* — **T3 472/473, T2 239/240, D2 the only cell** — and S1a.6.11 replaced the elided bytes with twelve ein.rs goldens |
 | [P1a.7](p1a.7_parallelism/README.md) | Parallelism — deterministic multi-core search + match | 5 | 2.5 w | `--jobs N` verdict- **and** counter-identical |
 | [P1a.8](p1a.8_binary_container/README.md) | Binary KB container — `.einb`, mmap, solution store | 1 | 0.5 w | `ein solve x.einb` byte-identical to `ein solve x.ein` |
 | [P1a.9](p1a.9_bindings_release/README.md) | Bindings + release — PyO3, packaging, docs | 4 | 1.5 w | M2 imports the engine and gets ein.rs |
@@ -267,6 +267,14 @@ promotion time: parse-error message parity (Q-M1a.3) and whether
 2026-08-18** with the server itself. P1a.3 added one the design docs did
 not anticipate: [Q-M1a.17](open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate),
 where Win B's ≥ 80 % target met its own measurement and lost.
+
+P1a.6 answered the one nobody had written down before S1a.6.9 forced it.
+**Q-M1a.18** — may a fork stop re-narrating the root's fixpoint? — resolved
+**yes, in ein.rs only**, and the principle that moved with it is bigger than
+the question: the contract's hard requirement is that the two engines produce
+the same *answer*, not the same bytes. T0 and T1 stay exact and are compared
+more carefully than before; narration parity was a means that had served its
+purpose, and ein.rs's regression coverage moved to checked-in goldens.
 
 P1a.4 closed the two it was blocking on. **Q-M1a.4** — `sorted()` over
 mixed-type fact args — became the ledger's

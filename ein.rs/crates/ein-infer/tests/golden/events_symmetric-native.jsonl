@@ -1,0 +1,41 @@
+{"e": "run", "n": 0, "version": "ein-events/1", "level": "verbose"}
+{"e": "mirror", "n": 1, "relation": "rivals", "src": "(rivals Cid Dee)", "derived": "(rivals Dee Cid)"}
+{"e": "mirror", "n": 2, "relation": "knows", "src": "(knows Ann Bob)", "derived": "(knows Bob Ann)"}
+{"e": "mirror", "n": 3, "relation": "allies", "src": "(allies Eve Fay)", "derived": "(allies Fay Eve)"}
+{"e": "quiesce", "n": 4, "round": 0, "n_facts": 26, "n_queue": 0, "n_parked": 0}
+{"e": "hypskip", "n": 5, "relation": "knows", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 6, "relation": "rivals", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 7, "relation": "allies", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 8, "relation": "is-a", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 9, "relation": "knows", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 10, "relation": "rivals", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 11, "relation": "allies", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 12, "relation": "is-a", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 13, "relation": "knows", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 14, "relation": "rivals", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 15, "relation": "allies", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 16, "relation": "is-a", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 17, "relation": "knows", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 18, "relation": "rivals", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 19, "relation": "allies", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 20, "relation": "is-a", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 21, "relation": "knows", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 22, "relation": "rivals", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 23, "relation": "allies", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 24, "relation": "is-a", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 25, "relation": "knows", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 26, "relation": "rivals", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 27, "relation": "allies", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 28, "relation": "is-a", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 29, "relation": "knows", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 30, "relation": "rivals", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 31, "relation": "allies", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 32, "relation": "is-a", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 33, "relation": "knows", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 34, "relation": "rivals", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 35, "relation": "allies", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 36, "relation": "is-a", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 37, "relation": "knows", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 38, "relation": "rivals", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 39, "relation": "allies", "reason": "no_hypothesis_relation"}
+{"e": "hypskip", "n": 40, "relation": "is-a", "reason": "no_hypothesis_relation"}

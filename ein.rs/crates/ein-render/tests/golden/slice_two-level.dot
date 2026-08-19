@@ -1,0 +1,314 @@
+--- solution 0
+digraph sol0 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_c77defc1e4" [label="co-located(Blue, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea", penwidth=2];
+  "f_2c51369d6b" [label="co-located(Green, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea", penwidth=2];
+  "f_e465c1dfd7" [label="co-located(H2, Blue)", shape=box, style=rounded, penwidth=2];
+  "f_c8001ebb27" [label="co-located(H3, Green)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "fire1_symmetric" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "fire2_symmetric" [shape=box, style="rounded,dashed", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "fire3_symmetric" [shape=box, style="rounded,dashed", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_c77defc1e4" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_e465c1dfd7" [color="#7f7f7f", style=bold];
+  "f_2c51369d6b" -> "fire1_symmetric" [color="#7f7f7f"];
+  "fire1_symmetric" -> "f_c8001ebb27" [color="#7f7f7f", style=bold];
+  "f_e465c1dfd7" -> "fire2_symmetric" [color="#7f7f7f"];
+  "fire2_symmetric" -> "f_c77defc1e4" [color="#7f7f7f", style=bold];
+  "f_c8001ebb27" -> "fire3_symmetric" [color="#7f7f7f"];
+  "fire3_symmetric" -> "f_2c51369d6b" [color="#7f7f7f", style=bold];
+}
+--- step 0.1
+digraph step1 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_c77defc1e4" [label="co-located(Blue, H2)", shape=box, style=rounded];
+  "f_e465c1dfd7" [label="co-located(H2, Blue)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_c77defc1e4" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_e465c1dfd7" [color="#7f7f7f", style=bold];
+}
+--- step 0.2
+digraph step2 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_2c51369d6b" [label="co-located(Green, H3)", shape=box, style=rounded];
+  "f_c8001ebb27" [label="co-located(H3, Green)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_2c51369d6b" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_c8001ebb27" [color="#7f7f7f", style=bold];
+}
+--- step 0.3
+digraph step3 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_e465c1dfd7" [label="co-located(H2, Blue)", shape=box, style=rounded];
+  "f_c77defc1e4" [label="co-located(Blue, H2)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,dashed", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_e465c1dfd7" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_c77defc1e4" [color="#7f7f7f", style=bold];
+}
+--- step 0.4
+digraph step4 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_c8001ebb27" [label="co-located(H3, Green)", shape=box, style=rounded];
+  "f_2c51369d6b" [label="co-located(Green, H3)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,dashed", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_c8001ebb27" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_2c51369d6b" [color="#7f7f7f", style=bold];
+}
+--- solution 1
+digraph sol1 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_754f8eabdf" [label="co-located(Blue, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea", penwidth=2];
+  "f_31020e3062" [label="co-located(Green, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea", penwidth=2];
+  "f_a2e6230da9" [label="co-located(H3, Blue)", shape=box, style=rounded, penwidth=2];
+  "f_7aa0dcb918" [label="co-located(H2, Green)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "fire1_symmetric" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "fire2_symmetric" [shape=box, style="rounded,dashed", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "fire3_symmetric" [shape=box, style="rounded,dashed", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_754f8eabdf" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_a2e6230da9" [color="#7f7f7f", style=bold];
+  "f_31020e3062" -> "fire1_symmetric" [color="#7f7f7f"];
+  "fire1_symmetric" -> "f_7aa0dcb918" [color="#7f7f7f", style=bold];
+  "f_a2e6230da9" -> "fire2_symmetric" [color="#7f7f7f"];
+  "fire2_symmetric" -> "f_754f8eabdf" [color="#7f7f7f", style=bold];
+  "f_7aa0dcb918" -> "fire3_symmetric" [color="#7f7f7f"];
+  "fire3_symmetric" -> "f_31020e3062" [color="#7f7f7f", style=bold];
+}
+--- step 1.1
+digraph step1 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_754f8eabdf" [label="co-located(Blue, H3)", shape=box, style=rounded];
+  "f_a2e6230da9" [label="co-located(H3, Blue)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_754f8eabdf" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_a2e6230da9" [color="#7f7f7f", style=bold];
+}
+--- step 1.2
+digraph step2 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_31020e3062" [label="co-located(Green, H2)", shape=box, style=rounded];
+  "f_7aa0dcb918" [label="co-located(H2, Green)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,bold", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_31020e3062" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_7aa0dcb918" [color="#7f7f7f", style=bold];
+}
+--- step 1.3
+digraph step3 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_a2e6230da9" [label="co-located(H3, Blue)", shape=box, style=rounded];
+  "f_754f8eabdf" [label="co-located(Blue, H3)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,dashed", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_a2e6230da9" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_754f8eabdf" [color="#7f7f7f", style=bold];
+}
+--- step 1.4
+digraph step4 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_7aa0dcb918" [label="co-located(H2, Green)", shape=box, style=rounded];
+  "f_31020e3062" [label="co-located(Green, H2)", shape=box, style=rounded, penwidth=2];
+  "fire0_symmetric" [shape=box, style="rounded,dashed", color="#7f7f7f", fontcolor="#7f7f7f", label="symmetric\nco-located sym"];
+  "f_7aa0dcb918" -> "fire0_symmetric" [color="#7f7f7f"];
+  "fire0_symmetric" -> "f_31020e3062" [color="#7f7f7f", style=bold];
+}
+--- dead 0
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_c77defc1e4" [label="co-located(Blue, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_754f8eabdf" [label="co-located(Blue, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Blue, H2) ∧ co-located(Blue, H3)"];
+  "f_c77defc1e4" -> "⊥" [color="#d62728"];
+  "f_754f8eabdf" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 1
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_c77defc1e4" [label="co-located(Blue, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_31020e3062" [label="co-located(Green, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Blue, H2) ∧ co-located(Green, H2)"];
+  "f_c77defc1e4" -> "⊥" [color="#d62728"];
+  "f_31020e3062" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 2
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_c77defc1e4" [label="co-located(Blue, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_7aa0dcb918" [label="co-located(H2, Green)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Blue, H2) ∧ co-located(H2, Green)"];
+  "f_c77defc1e4" -> "⊥" [color="#d62728"];
+  "f_7aa0dcb918" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 3
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_c77defc1e4" [label="co-located(Blue, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_a2e6230da9" [label="co-located(H3, Blue)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Blue, H2) ∧ co-located(H3, Blue)"];
+  "f_c77defc1e4" -> "⊥" [color="#d62728"];
+  "f_a2e6230da9" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 4
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_754f8eabdf" [label="co-located(Blue, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_2c51369d6b" [label="co-located(Green, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Blue, H3) ∧ co-located(Green, H3)"];
+  "f_754f8eabdf" -> "⊥" [color="#d62728"];
+  "f_2c51369d6b" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 5
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_754f8eabdf" [label="co-located(Blue, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_e465c1dfd7" [label="co-located(H2, Blue)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Blue, H3) ∧ co-located(H2, Blue)"];
+  "f_754f8eabdf" -> "⊥" [color="#d62728"];
+  "f_e465c1dfd7" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 6
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_754f8eabdf" [label="co-located(Blue, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_c8001ebb27" [label="co-located(H3, Green)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Blue, H3) ∧ co-located(H3, Green)"];
+  "f_754f8eabdf" -> "⊥" [color="#d62728"];
+  "f_c8001ebb27" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 7
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_31020e3062" [label="co-located(Green, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_2c51369d6b" [label="co-located(Green, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Green, H2) ∧ co-located(Green, H3)"];
+  "f_31020e3062" -> "⊥" [color="#d62728"];
+  "f_2c51369d6b" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 8
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_31020e3062" [label="co-located(Green, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_e465c1dfd7" [label="co-located(H2, Blue)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Green, H2) ∧ co-located(H2, Blue)"];
+  "f_31020e3062" -> "⊥" [color="#d62728"];
+  "f_e465c1dfd7" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 9
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_31020e3062" [label="co-located(Green, H2)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_c8001ebb27" [label="co-located(H3, Green)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Green, H2) ∧ co-located(H3, Green)"];
+  "f_31020e3062" -> "⊥" [color="#d62728"];
+  "f_c8001ebb27" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 10
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_2c51369d6b" [label="co-located(Green, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_7aa0dcb918" [label="co-located(H2, Green)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Green, H3) ∧ co-located(H2, Green)"];
+  "f_2c51369d6b" -> "⊥" [color="#d62728"];
+  "f_7aa0dcb918" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 11
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_2c51369d6b" [label="co-located(Green, H3)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_a2e6230da9" [label="co-located(H3, Blue)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(Green, H3) ∧ co-located(H3, Blue)"];
+  "f_2c51369d6b" -> "⊥" [color="#d62728"];
+  "f_a2e6230da9" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 12
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_e465c1dfd7" [label="co-located(H2, Blue)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_7aa0dcb918" [label="co-located(H2, Green)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(H2, Blue) ∧ co-located(H2, Green)"];
+  "f_e465c1dfd7" -> "⊥" [color="#d62728"];
+  "f_7aa0dcb918" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 13
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_e465c1dfd7" [label="co-located(H2, Blue)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_a2e6230da9" [label="co-located(H3, Blue)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(H2, Blue) ∧ co-located(H3, Blue)"];
+  "f_e465c1dfd7" -> "⊥" [color="#d62728"];
+  "f_a2e6230da9" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 14
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_7aa0dcb918" [label="co-located(H2, Green)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_c8001ebb27" [label="co-located(H3, Green)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(H2, Green) ∧ co-located(H3, Green)"];
+  "f_7aa0dcb918" -> "⊥" [color="#d62728"];
+  "f_c8001ebb27" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}
+--- dead 15
+digraph reductio {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_a2e6230da9" [label="co-located(H3, Blue)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_c8001ebb27" [label="co-located(H3, Green)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "⊥" [shape=doublecircle, color="#d62728", fontcolor="#d62728", label="⊥"];
+  "learned-nogood" [shape=note, label="learned no-good\nco-located(H3, Blue) ∧ co-located(H3, Green)"];
+  "f_a2e6230da9" -> "⊥" [color="#d62728"];
+  "f_c8001ebb27" -> "⊥" [color="#d62728"];
+  "⊥" -> "learned-nogood" [style=dashed, label="lifts to"];
+}

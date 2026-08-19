@@ -1,0 +1,277 @@
+{"e": "run", "n": 0, "version": "ein-events/1", "level": "verbose"}
+{"e": "compile", "n": 1, "rule": "functional", "activator": ["color-of"], "n_steps": 3, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 2, "rule": "injective", "activator": ["color-of"], "n_steps": 3, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 3, "rule": "derive-functional-negative", "activator": [], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 4, "rule": "derive-injective-negative", "activator": [], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 5, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "n_steps": 4, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 6, "rule": "no-room-left", "activator": ["color-of", "House", "Color"], "n_steps": 3, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 7, "rule": "typecheck-arg-0", "activator": ["color-of", "House"], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 8, "rule": "typecheck-arg-1", "activator": ["color-of", "Color"], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "enqueue", "n": 9, "rule": "derive-functional-negative", "activator": [], "bindings": [["R", "color-of"]], "priority": 100, "tiebreaker": 1, "parked": false}
+{"e": "enqueue", "n": 10, "rule": "derive-injective-negative", "activator": [], "bindings": [["R", "color-of"]], "priority": 100, "tiebreaker": 2, "parked": false}
+{"e": "enqueue", "n": 11, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H1"], ["v", "Red"]], "priority": 400, "tiebreaker": 3, "parked": true}
+{"e": "enqueue", "n": 12, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H1"], ["v", "Green"]], "priority": 400, "tiebreaker": 4, "parked": true}
+{"e": "enqueue", "n": 13, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H1"], ["v", "Blue"]], "priority": 400, "tiebreaker": 5, "parked": true}
+{"e": "enqueue", "n": 14, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H2"], ["v", "Red"]], "priority": 400, "tiebreaker": 6, "parked": true}
+{"e": "enqueue", "n": 15, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H2"], ["v", "Green"]], "priority": 400, "tiebreaker": 7, "parked": true}
+{"e": "enqueue", "n": 16, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H2"], ["v", "Blue"]], "priority": 400, "tiebreaker": 8, "parked": true}
+{"e": "enqueue", "n": 17, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H3"], ["v", "Red"]], "priority": 400, "tiebreaker": 9, "parked": true}
+{"e": "enqueue", "n": 18, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H3"], ["v", "Green"]], "priority": 400, "tiebreaker": 10, "parked": true}
+{"e": "enqueue", "n": 19, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H3"], ["v", "Blue"]], "priority": 400, "tiebreaker": 11, "parked": true}
+{"e": "enqueue", "n": 20, "rule": "no-room-left", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H1"]], "priority": 110, "tiebreaker": 12, "parked": true}
+{"e": "enqueue", "n": 21, "rule": "no-room-left", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H2"]], "priority": 110, "tiebreaker": 13, "parked": true}
+{"e": "enqueue", "n": 22, "rule": "no-room-left", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H3"]], "priority": 110, "tiebreaker": 14, "parked": true}
+{"e": "enqueue", "n": 23, "rule": "typecheck-arg-0", "activator": ["color-of", "House"], "bindings": [["R", "color-of"], ["Dom", "House"], ["a", "H1"], ["b", "Red"]], "priority": 110, "tiebreaker": 15, "parked": true}
+{"e": "enqueue", "n": 24, "rule": "typecheck-arg-1", "activator": ["color-of", "Color"], "bindings": [["R", "color-of"], ["Ran", "Color"], ["a", "H1"], ["b", "Red"]], "priority": 110, "tiebreaker": 16, "parked": true}
+{"e": "fire", "n": 25, "rule": "derive-functional-negative", "activator": [], "bindings": [["R", "color-of"]], "premises": ["(functional color-of)"], "derived": ["(functional-negative color-of)"], "redundant": false}
+{"e": "compile", "n": 26, "rule": "functional-negative", "activator": ["color-of"], "n_steps": 4, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "enqueue", "n": 27, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H1"], ["b", "Red"], ["A", "House"], ["B", "Color"], ["b_other", "Green"]], "priority": 240, "tiebreaker": 17, "parked": false}
+{"e": "enqueue", "n": 28, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H1"], ["b", "Red"], ["A", "House"], ["B", "Color"], ["b_other", "Blue"]], "priority": 240, "tiebreaker": 18, "parked": false}
+{"e": "fire", "n": 29, "rule": "derive-injective-negative", "activator": [], "bindings": [["R", "color-of"]], "premises": ["(injective color-of)"], "derived": ["(injective-negative color-of)"], "redundant": false}
+{"e": "compile", "n": 30, "rule": "injective-negative", "activator": ["color-of"], "n_steps": 4, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "enqueue", "n": 31, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H1"], ["b", "Red"], ["A", "House"], ["B", "Color"], ["a_other", "H2"]], "priority": 240, "tiebreaker": 19, "parked": false}
+{"e": "enqueue", "n": 32, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H1"], ["b", "Red"], ["A", "House"], ["B", "Color"], ["a_other", "H3"]], "priority": 240, "tiebreaker": 20, "parked": false}
+{"e": "fire", "n": 33, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H1"], ["b", "Red"], ["A", "House"], ["B", "Color"], ["b_other", "Green"]], "premises": ["(color-of H1 Red)", "(relation color-of House Color)", "(is-a Green Color)"], "derived": ["(not (color-of H1 Green))"], "redundant": false}
+{"e": "fire", "n": 34, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H1"], ["b", "Red"], ["A", "House"], ["B", "Color"], ["b_other", "Blue"]], "premises": ["(color-of H1 Red)", "(relation color-of House Color)", "(is-a Blue Color)"], "derived": ["(not (color-of H1 Blue))"], "redundant": false}
+{"e": "fire", "n": 35, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H1"], ["b", "Red"], ["A", "House"], ["B", "Color"], ["a_other", "H2"]], "premises": ["(color-of H1 Red)", "(relation color-of House Color)", "(is-a H2 House)"], "derived": ["(not (color-of H2 Red))"], "redundant": false}
+{"e": "fire", "n": 36, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H1"], ["b", "Red"], ["A", "House"], ["B", "Color"], ["a_other", "H3"]], "premises": ["(color-of H1 Red)", "(relation color-of House Color)", "(is-a H3 House)"], "derived": ["(not (color-of H3 Red))"], "redundant": false}
+{"e": "quiesce", "n": 37, "round": 0, "n_facts": 28, "n_queue": 0, "n_parked": 14}
+{"e": "park", "n": 38, "tiebreaker": 12, "round": 1, "rule": "no-room-left", "watched": ["is-a", "not"]}
+{"e": "park", "n": 39, "tiebreaker": 13, "round": 1, "rule": "no-room-left", "watched": ["is-a", "not"]}
+{"e": "park", "n": 40, "tiebreaker": 14, "round": 1, "rule": "no-room-left", "watched": ["is-a", "not"]}
+{"e": "retire", "n": 41, "tiebreaker": 15, "round": 1, "rule": "typecheck-arg-0", "watched": ["is-a"]}
+{"e": "retire", "n": 42, "tiebreaker": 16, "round": 1, "rule": "typecheck-arg-1", "watched": ["is-a"]}
+{"e": "admit", "n": 43, "tiebreaker": 3, "round": 1, "rule": "domain-elimination"}
+{"e": "fire", "n": 44, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H1"], ["v", "Red"]], "premises": ["(functional color-of 0 1)", "(total color-of 0)", "(is-a H1 House)", "(is-a Red Color)"], "derived": ["(color-of H1 Red)"], "redundant": true}
+{"e": "quiesce", "n": 45, "round": 1, "n_facts": 28, "n_queue": 0, "n_parked": 11}
+{"e": "park", "n": 46, "tiebreaker": 4, "round": 2, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 47, "tiebreaker": 5, "round": 2, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 48, "tiebreaker": 6, "round": 2, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 49, "tiebreaker": 7, "round": 2, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 50, "tiebreaker": 8, "round": 2, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 51, "tiebreaker": 9, "round": 2, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 52, "tiebreaker": 10, "round": 2, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 53, "tiebreaker": 11, "round": 2, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "compile", "n": 54, "rule": "functional", "activator": ["color-of"], "n_steps": 3, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 55, "rule": "injective", "activator": ["color-of"], "n_steps": 3, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 56, "rule": "functional-negative", "activator": ["color-of"], "n_steps": 4, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 57, "rule": "injective-negative", "activator": ["color-of"], "n_steps": 4, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 58, "rule": "derive-functional-negative", "activator": [], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 59, "rule": "derive-injective-negative", "activator": [], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 60, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "n_steps": 4, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 61, "rule": "no-room-left", "activator": ["color-of", "House", "Color"], "n_steps": 3, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 62, "rule": "typecheck-arg-0", "activator": ["color-of", "House"], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 63, "rule": "typecheck-arg-1", "activator": ["color-of", "Color"], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "hyp", "n": 64, "fact": "(color-of H1 Blue)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 65, "fact": "(color-of H1 Green)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 66, "relation": "color-of", "reason": "self_edge", "object": "H1"}
+{"e": "hyp", "n": 67, "fact": "(color-of H1 H2)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 68, "fact": "(color-of H1 H3)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 69, "fact": "(color-of H1 Red)", "verdict": "fact_already_exists"}
+{"e": "hyp", "n": 70, "fact": "(color-of Blue H1)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 71, "fact": "(color-of Green H1)", "verdict": "lookahead_killed"}
+{"e": "hypskip", "n": 72, "relation": "color-of", "reason": "self_edge", "object": "H1"}
+{"e": "hyp", "n": 73, "fact": "(color-of H2 H1)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 74, "fact": "(color-of H3 H1)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 75, "fact": "(color-of Red H1)", "verdict": "lookahead_killed"}
+{"e": "hypskip", "n": 76, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hyp", "n": 77, "fact": "(color-of Red Blue)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 78, "fact": "(color-of Red Green)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 79, "fact": "(color-of Red H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 80, "fact": "(color-of Red H2)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 81, "fact": "(color-of Red H3)", "verdict": "lookahead_killed"}
+{"e": "hypskip", "n": 82, "relation": "color-of", "reason": "self_edge", "object": "Red"}
+{"e": "hyp", "n": 83, "fact": "(color-of Blue Red)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 84, "fact": "(color-of Green Red)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 85, "fact": "(color-of H1 Red)", "verdict": "fact_already_exists"}
+{"e": "hyp", "n": 86, "fact": "(color-of H2 Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 87, "fact": "(color-of H3 Red)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 88, "relation": "color-of", "reason": "self_edge", "object": "Red"}
+{"e": "hypskip", "n": 89, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hypskip", "n": 90, "relation": "color-of", "reason": "self_edge", "object": "Blue"}
+{"e": "hyp", "n": 91, "fact": "(color-of Blue Green)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 92, "fact": "(color-of Blue H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 93, "fact": "(color-of Blue H2)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 94, "fact": "(color-of Blue H3)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 95, "fact": "(color-of Blue Red)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 96, "relation": "color-of", "reason": "self_edge", "object": "Blue"}
+{"e": "hyp", "n": 97, "fact": "(color-of Green Blue)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 98, "fact": "(color-of H1 Blue)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 99, "fact": "(color-of H2 Blue)", "verdict": "emitted"}
+{"e": "hyp", "n": 100, "fact": "(color-of H3 Blue)", "verdict": "emitted"}
+{"e": "hyp", "n": 101, "fact": "(color-of Red Blue)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 102, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hyp", "n": 103, "fact": "(color-of Green Blue)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 104, "relation": "color-of", "reason": "self_edge", "object": "Green"}
+{"e": "hyp", "n": 105, "fact": "(color-of Green H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 106, "fact": "(color-of Green H2)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 107, "fact": "(color-of Green H3)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 108, "fact": "(color-of Green Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 109, "fact": "(color-of Blue Green)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 110, "relation": "color-of", "reason": "self_edge", "object": "Green"}
+{"e": "hyp", "n": 111, "fact": "(color-of H1 Green)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 112, "fact": "(color-of H2 Green)", "verdict": "emitted"}
+{"e": "hyp", "n": 113, "fact": "(color-of H3 Green)", "verdict": "emitted"}
+{"e": "hyp", "n": 114, "fact": "(color-of Red Green)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 115, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hyp", "n": 116, "fact": "(color-of H2 Blue)", "verdict": "seen_in_call"}
+{"e": "hyp", "n": 117, "fact": "(color-of H2 Green)", "verdict": "seen_in_call"}
+{"e": "hyp", "n": 118, "fact": "(color-of H2 H1)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 119, "relation": "color-of", "reason": "self_edge", "object": "H2"}
+{"e": "hyp", "n": 120, "fact": "(color-of H2 H3)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 121, "fact": "(color-of H2 Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 122, "fact": "(color-of Blue H2)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 123, "fact": "(color-of Green H2)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 124, "fact": "(color-of H1 H2)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 125, "relation": "color-of", "reason": "self_edge", "object": "H2"}
+{"e": "hyp", "n": 126, "fact": "(color-of H3 H2)", "verdict": "lookahead_killed"}
+{"e": "hyp", "n": 127, "fact": "(color-of Red H2)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 128, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hyp", "n": 129, "fact": "(color-of H3 Blue)", "verdict": "seen_in_call"}
+{"e": "hyp", "n": 130, "fact": "(color-of H3 Green)", "verdict": "seen_in_call"}
+{"e": "hyp", "n": 131, "fact": "(color-of H3 H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 132, "fact": "(color-of H3 H2)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 133, "relation": "color-of", "reason": "self_edge", "object": "H3"}
+{"e": "hyp", "n": 134, "fact": "(color-of H3 Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 135, "fact": "(color-of Blue H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 136, "fact": "(color-of Green H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 137, "fact": "(color-of H1 H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 138, "fact": "(color-of H2 H3)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 139, "relation": "color-of", "reason": "self_edge", "object": "H3"}
+{"e": "hyp", "n": 140, "fact": "(color-of Red H3)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 141, "relation": "is-a", "reason": "closed_relation"}
+{"e": "enqueue", "n": 142, "rule": "typecheck-arg-0", "activator": ["color-of", "House"], "bindings": [["R", "color-of"], ["Dom", "House"], ["a", "H2"], ["b", "Blue"]], "priority": 110, "tiebreaker": 21, "parked": true}
+{"e": "enqueue", "n": 143, "rule": "typecheck-arg-1", "activator": ["color-of", "Color"], "bindings": [["R", "color-of"], ["Ran", "Color"], ["a", "H2"], ["b", "Blue"]], "priority": 110, "tiebreaker": 22, "parked": true}
+{"e": "enqueue", "n": 144, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H2"], ["b", "Blue"], ["A", "House"], ["B", "Color"], ["b_other", "Red"]], "priority": 240, "tiebreaker": 23, "parked": false}
+{"e": "enqueue", "n": 145, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H2"], ["b", "Blue"], ["A", "House"], ["B", "Color"], ["b_other", "Green"]], "priority": 240, "tiebreaker": 24, "parked": false}
+{"e": "enqueue", "n": 146, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H2"], ["b", "Blue"], ["A", "House"], ["B", "Color"], ["a_other", "H1"]], "priority": 240, "tiebreaker": 25, "parked": false}
+{"e": "enqueue", "n": 147, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H2"], ["b", "Blue"], ["A", "House"], ["B", "Color"], ["a_other", "H3"]], "priority": 240, "tiebreaker": 26, "parked": false}
+{"e": "alt", "n": 148, "fact": "(not (color-of H2 Red))", "rule": "functional-negative", "premises": ["(color-of H2 Blue)", "(relation color-of House Color)", "(is-a Red Color)"]}
+{"e": "fire", "n": 149, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H2"], ["b", "Blue"], ["A", "House"], ["B", "Color"], ["b_other", "Red"]], "premises": ["(color-of H2 Blue)", "(relation color-of House Color)", "(is-a Red Color)"], "derived": ["(not (color-of H2 Red))"], "redundant": true}
+{"e": "fire", "n": 150, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H2"], ["b", "Blue"], ["A", "House"], ["B", "Color"], ["b_other", "Green"]], "premises": ["(color-of H2 Blue)", "(relation color-of House Color)", "(is-a Green Color)"], "derived": ["(not (color-of H2 Green))"], "redundant": false}
+{"e": "alt", "n": 151, "fact": "(not (color-of H1 Blue))", "rule": "injective-negative", "premises": ["(color-of H2 Blue)", "(relation color-of House Color)", "(is-a H1 House)"]}
+{"e": "fire", "n": 152, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H2"], ["b", "Blue"], ["A", "House"], ["B", "Color"], ["a_other", "H1"]], "premises": ["(color-of H2 Blue)", "(relation color-of House Color)", "(is-a H1 House)"], "derived": ["(not (color-of H1 Blue))"], "redundant": true}
+{"e": "fire", "n": 153, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H2"], ["b", "Blue"], ["A", "House"], ["B", "Color"], ["a_other", "H3"]], "premises": ["(color-of H2 Blue)", "(relation color-of House Color)", "(is-a H3 House)"], "derived": ["(not (color-of H3 Blue))"], "redundant": false}
+{"e": "quiesce", "n": 154, "round": 0, "n_facts": 52, "n_queue": 0, "n_parked": 13}
+{"e": "park", "n": 155, "tiebreaker": 12, "round": 1, "rule": "no-room-left", "watched": ["is-a", "not"]}
+{"e": "park", "n": 156, "tiebreaker": 13, "round": 1, "rule": "no-room-left", "watched": ["is-a", "not"]}
+{"e": "park", "n": 157, "tiebreaker": 14, "round": 1, "rule": "no-room-left", "watched": ["is-a", "not"]}
+{"e": "retire", "n": 158, "tiebreaker": 21, "round": 1, "rule": "typecheck-arg-0", "watched": ["is-a"]}
+{"e": "retire", "n": 159, "tiebreaker": 22, "round": 1, "rule": "typecheck-arg-1", "watched": ["is-a"]}
+{"e": "park", "n": 160, "tiebreaker": 4, "round": 1, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 161, "tiebreaker": 5, "round": 1, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 162, "tiebreaker": 6, "round": 1, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "park", "n": 163, "tiebreaker": 7, "round": 1, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "admit", "n": 164, "tiebreaker": 8, "round": 1, "rule": "domain-elimination"}
+{"e": "fire", "n": 165, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H2"], ["v", "Blue"]], "premises": ["(functional color-of 0 1)", "(total color-of 0)", "(is-a H2 House)", "(is-a Blue Color)"], "derived": ["(color-of H2 Blue)"], "redundant": true}
+{"e": "quiesce", "n": 166, "round": 1, "n_facts": 52, "n_queue": 0, "n_parked": 10}
+{"e": "park", "n": 167, "tiebreaker": 9, "round": 2, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "admit", "n": 168, "tiebreaker": 10, "round": 2, "rule": "domain-elimination"}
+{"e": "fire", "n": 169, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "bindings": [["R", "color-of"], ["OT", "House"], ["VT", "Color"], ["a", "H3"], ["v", "Green"]], "premises": ["(functional color-of 0 1)", "(total color-of 0)", "(is-a H3 House)", "(is-a Green Color)"], "derived": ["(color-of H3 Green)"], "redundant": false}
+{"e": "enqueue", "n": 170, "rule": "typecheck-arg-0", "activator": ["color-of", "House"], "bindings": [["R", "color-of"], ["Dom", "House"], ["a", "H3"], ["b", "Green"]], "priority": 110, "tiebreaker": 27, "parked": true}
+{"e": "enqueue", "n": 171, "rule": "typecheck-arg-1", "activator": ["color-of", "Color"], "bindings": [["R", "color-of"], ["Ran", "Color"], ["a", "H3"], ["b", "Green"]], "priority": 110, "tiebreaker": 28, "parked": true}
+{"e": "enqueue", "n": 172, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H3"], ["b", "Green"], ["A", "House"], ["B", "Color"], ["b_other", "Red"]], "priority": 240, "tiebreaker": 29, "parked": false}
+{"e": "enqueue", "n": 173, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H3"], ["b", "Green"], ["A", "House"], ["B", "Color"], ["b_other", "Blue"]], "priority": 240, "tiebreaker": 30, "parked": false}
+{"e": "enqueue", "n": 174, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H3"], ["b", "Green"], ["A", "House"], ["B", "Color"], ["a_other", "H1"]], "priority": 240, "tiebreaker": 31, "parked": false}
+{"e": "enqueue", "n": 175, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H3"], ["b", "Green"], ["A", "House"], ["B", "Color"], ["a_other", "H2"]], "priority": 240, "tiebreaker": 32, "parked": false}
+{"e": "alt", "n": 176, "fact": "(not (color-of H3 Red))", "rule": "functional-negative", "premises": ["(color-of H3 Green)", "(relation color-of House Color)", "(is-a Red Color)"]}
+{"e": "fire", "n": 177, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H3"], ["b", "Green"], ["A", "House"], ["B", "Color"], ["b_other", "Red"]], "premises": ["(color-of H3 Green)", "(relation color-of House Color)", "(is-a Red Color)"], "derived": ["(not (color-of H3 Red))"], "redundant": true}
+{"e": "alt", "n": 178, "fact": "(not (color-of H3 Blue))", "rule": "functional-negative", "premises": ["(color-of H3 Green)", "(relation color-of House Color)", "(is-a Blue Color)"]}
+{"e": "fire", "n": 179, "rule": "functional-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H3"], ["b", "Green"], ["A", "House"], ["B", "Color"], ["b_other", "Blue"]], "premises": ["(color-of H3 Green)", "(relation color-of House Color)", "(is-a Blue Color)"], "derived": ["(not (color-of H3 Blue))"], "redundant": true}
+{"e": "alt", "n": 180, "fact": "(not (color-of H1 Green))", "rule": "injective-negative", "premises": ["(color-of H3 Green)", "(relation color-of House Color)", "(is-a H1 House)"]}
+{"e": "fire", "n": 181, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H3"], ["b", "Green"], ["A", "House"], ["B", "Color"], ["a_other", "H1"]], "premises": ["(color-of H3 Green)", "(relation color-of House Color)", "(is-a H1 House)"], "derived": ["(not (color-of H1 Green))"], "redundant": true}
+{"e": "alt", "n": 182, "fact": "(not (color-of H2 Green))", "rule": "injective-negative", "premises": ["(color-of H3 Green)", "(relation color-of House Color)", "(is-a H2 House)"]}
+{"e": "fire", "n": 183, "rule": "injective-negative", "activator": ["color-of"], "bindings": [["R", "color-of"], ["a", "H3"], ["b", "Green"], ["A", "House"], ["B", "Color"], ["a_other", "H2"]], "premises": ["(color-of H3 Green)", "(relation color-of House Color)", "(is-a H2 House)"], "derived": ["(not (color-of H2 Green))"], "redundant": true}
+{"e": "quiesce", "n": 184, "round": 2, "n_facts": 53, "n_queue": 0, "n_parked": 11}
+{"e": "retire", "n": 185, "tiebreaker": 27, "round": 3, "rule": "typecheck-arg-0", "watched": ["is-a"]}
+{"e": "retire", "n": 186, "tiebreaker": 28, "round": 3, "rule": "typecheck-arg-1", "watched": ["is-a"]}
+{"e": "park", "n": 187, "tiebreaker": 11, "round": 3, "rule": "domain-elimination", "watched": ["is-a", "not"]}
+{"e": "enter", "n": 188, "layer": 1, "commitment": ["(color-of H2 Blue)"], "kind": "alive", "n_firings": 10, "core": []}
+{"e": "compile", "n": 189, "rule": "functional", "activator": ["color-of"], "n_steps": 3, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 190, "rule": "injective", "activator": ["color-of"], "n_steps": 3, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 191, "rule": "functional-negative", "activator": ["color-of"], "n_steps": 4, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 192, "rule": "injective-negative", "activator": ["color-of"], "n_steps": 4, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 193, "rule": "derive-functional-negative", "activator": [], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 194, "rule": "derive-injective-negative", "activator": [], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 195, "rule": "domain-elimination", "activator": ["color-of", "House", "Color"], "n_steps": 4, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 196, "rule": "no-room-left", "activator": ["color-of", "House", "Color"], "n_steps": 3, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 197, "rule": "typecheck-arg-0", "activator": ["color-of", "House"], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "compile", "n": 198, "rule": "typecheck-arg-1", "activator": ["color-of", "Color"], "n_steps": 1, "n_disjuncts": 0, "n_guards": 1, "asserts": 1}
+{"e": "hypskip", "n": 199, "relation": "color-of", "reason": "self_edge", "object": "Blue"}
+{"e": "hyp", "n": 200, "fact": "(color-of Blue Green)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 201, "fact": "(color-of Blue H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 202, "fact": "(color-of Blue H2)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 203, "fact": "(color-of Blue H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 204, "fact": "(color-of Blue Red)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 205, "relation": "color-of", "reason": "self_edge", "object": "Blue"}
+{"e": "hyp", "n": 206, "fact": "(color-of Green Blue)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 207, "fact": "(color-of H1 Blue)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 208, "fact": "(color-of H2 Blue)", "verdict": "fact_already_exists"}
+{"e": "hyp", "n": 209, "fact": "(color-of H3 Blue)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 210, "fact": "(color-of Red Blue)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 211, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hyp", "n": 212, "fact": "(color-of Green Blue)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 213, "relation": "color-of", "reason": "self_edge", "object": "Green"}
+{"e": "hyp", "n": 214, "fact": "(color-of Green H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 215, "fact": "(color-of Green H2)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 216, "fact": "(color-of Green H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 217, "fact": "(color-of Green Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 218, "fact": "(color-of Blue Green)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 219, "relation": "color-of", "reason": "self_edge", "object": "Green"}
+{"e": "hyp", "n": 220, "fact": "(color-of H1 Green)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 221, "fact": "(color-of H2 Green)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 222, "fact": "(color-of H3 Green)", "verdict": "fact_already_exists"}
+{"e": "hyp", "n": 223, "fact": "(color-of Red Green)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 224, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hyp", "n": 225, "fact": "(color-of H1 Blue)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 226, "fact": "(color-of H1 Green)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 227, "relation": "color-of", "reason": "self_edge", "object": "H1"}
+{"e": "hyp", "n": 228, "fact": "(color-of H1 H2)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 229, "fact": "(color-of H1 H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 230, "fact": "(color-of H1 Red)", "verdict": "fact_already_exists"}
+{"e": "hyp", "n": 231, "fact": "(color-of Blue H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 232, "fact": "(color-of Green H1)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 233, "relation": "color-of", "reason": "self_edge", "object": "H1"}
+{"e": "hyp", "n": 234, "fact": "(color-of H2 H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 235, "fact": "(color-of H3 H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 236, "fact": "(color-of Red H1)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 237, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hyp", "n": 238, "fact": "(color-of H2 Blue)", "verdict": "fact_already_exists"}
+{"e": "hyp", "n": 239, "fact": "(color-of H2 Green)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 240, "fact": "(color-of H2 H1)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 241, "relation": "color-of", "reason": "self_edge", "object": "H2"}
+{"e": "hyp", "n": 242, "fact": "(color-of H2 H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 243, "fact": "(color-of H2 Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 244, "fact": "(color-of Blue H2)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 245, "fact": "(color-of Green H2)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 246, "fact": "(color-of H1 H2)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 247, "relation": "color-of", "reason": "self_edge", "object": "H2"}
+{"e": "hyp", "n": 248, "fact": "(color-of H3 H2)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 249, "fact": "(color-of Red H2)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 250, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hyp", "n": 251, "fact": "(color-of H3 Blue)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 252, "fact": "(color-of H3 Green)", "verdict": "fact_already_exists"}
+{"e": "hyp", "n": 253, "fact": "(color-of H3 H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 254, "fact": "(color-of H3 H2)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 255, "relation": "color-of", "reason": "self_edge", "object": "H3"}
+{"e": "hyp", "n": 256, "fact": "(color-of H3 Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 257, "fact": "(color-of Blue H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 258, "fact": "(color-of Green H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 259, "fact": "(color-of H1 H3)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 260, "fact": "(color-of H2 H3)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 261, "relation": "color-of", "reason": "self_edge", "object": "H3"}
+{"e": "hyp", "n": 262, "fact": "(color-of Red H3)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 263, "relation": "is-a", "reason": "closed_relation"}
+{"e": "hyp", "n": 264, "fact": "(color-of Red Blue)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 265, "fact": "(color-of Red Green)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 266, "fact": "(color-of Red H1)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 267, "fact": "(color-of Red H2)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 268, "fact": "(color-of Red H3)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 269, "relation": "color-of", "reason": "self_edge", "object": "Red"}
+{"e": "hyp", "n": 270, "fact": "(color-of Blue Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 271, "fact": "(color-of Green Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 272, "fact": "(color-of H1 Red)", "verdict": "fact_already_exists"}
+{"e": "hyp", "n": 273, "fact": "(color-of H2 Red)", "verdict": "negated_fact"}
+{"e": "hyp", "n": 274, "fact": "(color-of H3 Red)", "verdict": "negated_fact"}
+{"e": "hypskip", "n": 275, "relation": "color-of", "reason": "self_edge", "object": "Red"}
+{"e": "hypskip", "n": 276, "relation": "is-a", "reason": "closed_relation"}

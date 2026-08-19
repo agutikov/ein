@@ -1,0 +1,38 @@
+--- solution 0
+digraph sol0 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_b0ce7e8778" [label="beats(Bob, Alice)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_ce965a6d89" [label="beats(Bob, Carol)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_307f872a77" [label="beats(Carol, Bob)", shape=box, color="#d62728", fontcolor="#d62728", style="rounded,filled", fillcolor="#fdeaea"];
+  "f_8be68b1e49" [label="player(Bob)", shape=box, style=rounded];
+  "f_001e961b5a" [label="undefeated(Bob)", shape=box, style=rounded, penwidth=2];
+  "f_6ebdc62396" [label="player(Carol)", shape=box, style=rounded];
+  "f_e032462052" [label="undefeated(Carol)", shape=box, style=rounded, penwidth=2];
+  "fire0_undefeated" [shape=box, style="rounded,bold", color="#9467bd", fontcolor="#9467bd", label="undefeated\nBob beats every other player ⇒ undefeated"];
+  "fire1_undefeated" [shape=box, style="rounded,bold", color="#9467bd", fontcolor="#9467bd", label="undefeated\nCarol beats every other player ⇒ undefeated"];
+  "f_8be68b1e49" -> "fire0_undefeated" [color="#9467bd"];
+  "fire0_undefeated" -> "f_001e961b5a" [color="#9467bd", style=bold];
+  "f_6ebdc62396" -> "fire1_undefeated" [color="#9467bd"];
+  "fire1_undefeated" -> "f_e032462052" [color="#9467bd", style=bold];
+}
+--- step 0.1
+digraph step1 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_8be68b1e49" [label="player(Bob)", shape=box, style=rounded];
+  "f_001e961b5a" [label="undefeated(Bob)", shape=box, style=rounded, penwidth=2];
+  "fire0_undefeated" [shape=box, style="rounded,bold", color="#9467bd", fontcolor="#9467bd", label="undefeated\nBob beats every other player ⇒ undefeated"];
+  "f_8be68b1e49" -> "fire0_undefeated" [color="#9467bd"];
+  "fire0_undefeated" -> "f_001e961b5a" [color="#9467bd", style=bold];
+}
+--- step 0.2
+digraph step2 {
+  rankdir=LR;
+  node [fontname="Inter"];
+  "f_6ebdc62396" [label="player(Carol)", shape=box, style=rounded];
+  "f_e032462052" [label="undefeated(Carol)", shape=box, style=rounded, penwidth=2];
+  "fire0_undefeated" [shape=box, style="rounded,bold", color="#9467bd", fontcolor="#9467bd", label="undefeated\nCarol beats every other player ⇒ undefeated"];
+  "f_6ebdc62396" -> "fire0_undefeated" [color="#9467bd"];
+  "fire0_undefeated" -> "f_e032462052" [color="#9467bd", style=bold];
+}

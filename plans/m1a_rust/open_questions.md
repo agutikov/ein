@@ -26,7 +26,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 | [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — at root scale they are 11–30 % | open — found at S1a.3.4, measured |
-| [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3 |
+| [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
 
 ---
 
@@ -551,6 +551,17 @@ inherits root's parked candidates with root's tiebreakers and the NAF boundary
 admits one per round. The engine never promised *which* derivation of a
 multiply-derivable fact it records first; it does now promise less than it
 happened to deliver.
+
+**Both halves landed the same day.** S1a.6.10 wrote the rule once — a fork's
+derivation, and anything keyed on a dying fork's stopping point, is narration —
+into [design/01 §5](design/01_parity_contract.md#the-fork-row-stated-once) and
+into one crate, `ein.rs/crates/ein-parity`, replacing the six ad-hoc cuts
+S1a.6.9 had left behind; the harness went back to **T3 472/473 and T2 239/240**
+with [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
+the only differing cell in either, and `--strict` keeps the byte-identical
+contract one flag away for the determinism sweep. S1a.6.11 replaced the elided
+bytes with twelve ein.rs goldens and ported idea-08's walkthrough-rule
+assertion to the engine that ships. **This question is closed.**
 
 ---
 

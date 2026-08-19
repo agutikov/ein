@@ -917,8 +917,10 @@ The seven T3 cells are exactly the seven corpus entries that declare a
 `solve --trace` or a `solve --dump-states` run — every other artefact a solve
 writes is unmoved, stdout and `summary.json` included.
 [S1a.6.10](s1a.6.10_parity_contract.md) is the stage that teaches the harness
-to compare the productive subsequence instead of the whole firing list; until
-it lands, these are the numbers D3 stands for.
+to compare what a fork *derived* instead of the whole firing list, and
+[§12](#12-the-parity-contract-relaxed-and-re-measured) is what happened when
+it did: **472 / 473 and 239 / 240**, D2 the only cell in either. The numbers
+above are what D3 cost in between.
 
 ### What it does **not** move — verified, not argued
 
@@ -1036,6 +1038,118 @@ python3 utils/fork_delta_verify.py --no-fail-fast
 python3 utils/fork_delta_verify.py -k zebra2.ein --with-trace
 ```
 
+## 12. The parity contract, relaxed and re-measured
+
+**[S1a.6.10](s1a.6.10_parity_contract.md) + [S1a.6.11](s1a.6.11_fixture_goldens.md),
+2026-08-19.** §11 measured what the resumed fork saturator costs the harness;
+this is what it costs after the harness was taught the rule.
+
+| tier | before S1a.6.9 | after S1a.6.9 (§11) | **after S1a.6.10** |
+|---|---|---|---|
+| T3 — artefacts, 473 cells | 472 ‡ | 465 | **472** ‡ |
+| T2 — the event stream, 240 cells | 239 ‡ | 142 | **239** ‡ |
+| T1 — `summary.json` | — | unchanged | **unchanged** |
+| T0 — the verdict | — | unchanged | **unchanged** |
+
+‡ [D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
+which predates all of this and is the only differing cell in either tier.
+
+### The cut, chosen by measurement rather than by argument
+
+The T2 comparison could have been narrowed six ways. Each was run over the
+**same 240 captured logs** before one was written down — the corpus is the
+experiment, not the illustration:
+
+| the derivation is … | cells agreeing |
+|---|---:|
+| the whole stream (the contract before this) | 142 / 240 |
+| the ordered non-redundant firings | 142 / 240 |
+| … also eliding `compile` | 213 / 240 |
+| … as an ordered `(rule, premises, derived)` | 214 / 240 |
+| … as a **multiset** of `(rule, premises, derived)`, per `enter`-delimited segment, `dead-post` excluded | 232 / 240 |
+| **… as a multiset of derived facts + the set of rules, same segmentation** | **239 / 240** |
+
+Three things the plan did not predict, and each is why the row above it is not
+the answer:
+
+1. **The ordered productive subsequence is not identical.** S1a.6.9's 6 136 →
+   6 136 is a *count*; the order moves for the same reason the primary
+   justification does. 26 cells still differ under an ordered comparison.
+2. **`compile` moves.** A plan-memo *miss* is emitted once per enqueue pass
+   that needs the rule, so a fresh fork that re-derives root's closure misses
+   where a resumed one does not: **244 against 128** on
+   `examples/branching/02_one_dead_one_alive.ein`'s plain `solve`. The
+   *distinct* compiles are identical, rule for rule and activator for
+   activator.
+3. **A dying fork's derivation has to leave the comparison outright.** Every
+   mismatch left after the multiset cut was a `dead-post` segment.
+
+### The two controls
+
+A relaxation is only a decision if both directions are checked.
+
+**Negative — does it still catch a real loss?**
+[`utils/mutant_ein.py`](../../../utils/mutant_ein.py) runs the *shipping*
+binary and deletes one event from the log it wrote:
+
+| `EIN_MUTANT` | what it deletes | T2 must | measured, over `--filter branching` (70 comparable cells) |
+|---|---|---|---|
+| `productive` | the first `fire` with `redundant = false` | **report** | **68 / 68** cells where the deletion applied; exit 1 |
+| `redundant` | the first `fire` with `redundant = true` | pass | 70 / 70, exit 0 |
+| `enqueue` | the first `enqueue` | pass | 70 / 70, exit 0 |
+
+The other two of the 70 have no productive firing to delete
+(`14_lookahead_unjudgeable :: saturate` emits five events and none of them is
+a firing), so the mutation is a no-op and the cell rightly agrees. **The first
+run of this control was not 68/68 — it was 66, and the two escapes were the
+finding**: `solve -L` on `04_two_levels` and `05_mini_zebra`, where the first
+entering is a lookahead probe that dies, so root's saturation shared a
+`dead-post` segment and was skipped with it. That is what put the hypgen
+boundary in `split`. What still escapes is only what the rule says will: a
+derivation lost inside a *dying* fork.
+
+**Positive — is the old contract still available?** The determinism sweep,
+ein.py against itself under `PYTHONHASHSEED=0` / `=42`, run with `--strict`:
+**473 / 473, zero differences**, 673 s of engine time. That is the run that
+found hazards H1 and H4, and one engine against itself has no excuse to
+narrate differently — `.github/workflows/nightly.yml` passes `--strict` for
+exactly that reason.
+
+### What replaced the bytes
+
+[S1a.6.11](s1a.6.11_fixture_goldens.md): twelve ein.rs goldens, 2 188 lines —
+five real solves' traces, two `slice` cones, a fork's own `enterings/` dump
+with the timeline's firing counts, the snapshot projection, and three event
+streams that between them contain every class the relaxed T2 elides.
+`./run_tests.sh` gained a **Phase 3** (`cargo test --workspace`) so the repo's
+one documented gate runs both engines: **1 506 + 21 + 302** green.
+
+### Reproducing this section
+
+```sh
+cd ein.rs && cargo build --release
+
+# the two tiers, relaxed (the shipping contract)
+for T in T3 T2; do
+  ./target/release/ein-conformance run --tier $T \
+      --impl-a "../.venv-pypy/bin/python -m ein.cli" --impl-b ./target/release/ein
+done
+
+# the determinism sweep, unrelaxed
+./target/release/ein-conformance run --tier T3 --strict \
+    --impl-a "../.venv-pypy/bin/python -m ein.cli" \
+    --impl-b "../.venv-pypy/bin/python -m ein.cli" \
+    --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42
+
+# the negative control, from the repo root
+for M in productive redundant enqueue; do
+  EIN_MUTANT=$M ein.rs/target/release/ein-conformance run --tier T2 \
+      --filter branching \
+      --impl-a "$PWD/.venv-pypy/bin/python -m ein.cli" \
+      --impl-b "python3 $PWD/utils/mutant_ein.py $PWD/ein.rs/target/release/ein"
+done
+```
+
 ## Reproducing all of it
 
 Every line from the repo root, every measurement through the fingerprint:
@@ -1075,7 +1189,20 @@ python3 utils/fork_delta_verify.py --json ein.rs/bench-out/fork-delta.json
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 python3 utils/criterion_table.py --max-rsd 3 --json ein.rs/bench-out/criterion.json
 
+# §12 the parity contract — the two tiers, the determinism sweep, the control
+for T in T3 T2; do
+  ein.rs/target/release/ein-conformance run --tier $T \
+      --impl-a "python3 -m ein.cli" --impl-b ein.rs/target/release/ein
+done
+ein.rs/target/release/ein-conformance run --tier T3 --strict \
+    --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
+    --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42
+for M in productive redundant enqueue; do
+  EIN_MUTANT=$M ein.rs/target/release/ein-conformance run --tier T2 \
+      --filter branching --impl-a "python3 -m ein.cli" \
+      --impl-b "python3 $PWD/utils/mutant_ein.py $PWD/ein.rs/target/release/ein"
+done
+
 # the gate this all has to leave green
-ein.rs/target/release/ein-conformance run --tier T3 \
-    --impl-a "python3 -m ein.cli" --impl-b ein.rs/target/release/ein
+./run_tests.sh
 ```
