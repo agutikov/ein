@@ -236,8 +236,9 @@ pub fn generate(
     // byte-identical through the `hyp` stream.
     let objects = candidate_objects(s.kb, s.terms);
     let by_count = by_participation(s.kb, s.terms, &objects);
+    let relations = relation_plan(s, &allowed, &excluded);
     for focal in by_count {
-        if raw_candidates(s, &mut ctx, stats, focal, &objects, &allowed, &excluded, f)?.is_break() {
+        if raw_candidates(s, &mut ctx, stats, focal, &objects, &relations, f)?.is_break() {
             return Ok(());
         }
     }
@@ -358,40 +359,23 @@ fn write_negated(s: &mut Session<'_>, hypothesis: FactId) {
 /// S1.7.23 — no type filter: `focal` fills *every* slot of every open
 /// relation, type-blind. Type-wrong candidates are killed downstream by the
 /// puzzle's own contradiction rules, not by a kernel `is-a` walk.
-#[allow(clippy::too_many_arguments)]
 fn raw_candidates(
     s: &mut Session<'_>,
     ctx: &mut Ctx,
     stats: &mut HypGenStats,
     focal: Symbol,
     objects: &[Symbol],
-    allowed: &Option<FxHashSet<Symbol>>,
-    excluded: &FxHashSet<Symbol>,
+    relations: &[RelPlan],
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<ControlFlow<()>, CompileError> {
-    // `kb.relations.values()` in **insertion order** — a Python `dict`, whose
-    // order is a language guarantee and is observable right here.
-    let relations: Vec<(Symbol, usize)> =
-        s.kb.program()
-            .relations
-            .values()
-            .filter(|r| !r.signature.is_empty())
-            .map(|r| (r.name, r.signature.len()))
-            .collect();
-    for (rel, arity) in relations {
-        if is_closed(s.kb, s.terms, rel) {
-            stats.skip(Skip::ClosedRelation);
-            hypskip(s, rel, "closed_relation", None);
-            continue;
-        }
-        if allowed.as_ref().is_some_and(|a| !a.contains(&rel)) {
-            stats.skip(Skip::RelationNotWhitelisted);
-            hypskip(s, rel, "relation_not_whitelisted", None);
-            continue;
-        }
-        if excluded.contains(&rel) {
-            stats.skip(Skip::NoHypothesisRelation);
-            hypskip(s, rel, "no_hypothesis_relation", None);
+    for &RelPlan { rel, arity, skip } in relations {
+        // The verdict is per relation, the **counter** is per (focal,
+        // relation) — T1a.6.4.3 moves the first and leaves the second where
+        // it was, because `pre_candidate` and the `hypskip` stream are T1 and
+        // T2 observables and both count once per focal object.
+        if let Some(skip) = skip {
+            stats.skip(skip);
+            hypskip(s, rel, skip.as_str(), None);
             continue;
         }
         for slot_idx in 0..arity {
@@ -401,6 +385,51 @@ fn raw_candidates(
         }
     }
     Ok(ControlFlow::Continue(()))
+}
+
+/// One relation's standing in this call: how wide it is, and which
+/// pre-candidate skip — if any — it earns before a focal object is even
+/// chosen.
+#[derive(Clone, Copy)]
+struct RelPlan {
+    rel: Symbol,
+    arity: usize,
+    skip: Option<Skip>,
+}
+
+/// The relation walk, decided once per call rather than once per focal object.
+///
+/// Nothing it reads can change mid-call: the query keywords are fixed, and the
+/// only KB write a pass makes is the kill cache's `(not h)`, whose head is
+/// `not` and which therefore cannot add a `(__closed__ R)` fact. The three
+/// skips are tested in the order that decides which counter a skip lands in.
+///
+/// `kb.relations.values()` is walked in **insertion order** — a Python `dict`,
+/// whose order is a language guarantee and is observable right here.
+fn relation_plan(
+    s: &Session<'_>,
+    allowed: &Option<FxHashSet<Symbol>>,
+    excluded: &FxHashSet<Symbol>,
+) -> Vec<RelPlan> {
+    let closed = closed_relations(s.kb, s.terms);
+    s.kb.program()
+        .relations
+        .values()
+        .filter(|r| !r.signature.is_empty())
+        .map(|r| RelPlan {
+            rel: r.name,
+            arity: r.signature.len(),
+            skip: if closed.contains(&r.name) {
+                Some(Skip::ClosedRelation)
+            } else if allowed.as_ref().is_some_and(|a| !a.contains(&r.name)) {
+                Some(Skip::RelationNotWhitelisted)
+            } else if excluded.contains(&r.name) {
+                Some(Skip::NoHypothesisRelation)
+            } else {
+                None
+            },
+        })
+        .collect()
 }
 
 /// Enumerate candidate-object fillers for `focal` at `fixed_slot`.
@@ -531,19 +560,40 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms) -> Vec<Symbol> {
 /// but the port should not depend on the key alone, and `sort_by` costs
 /// nothing here.
 fn by_participation(kb: &Kb, terms: &Terms, objects: &[Symbol]) -> Vec<Symbol> {
-    let mut out = objects.to_vec();
+    // Decorate, sort, undecorate (T1a.6.4.3). `sort_by_key` evaluates its key
+    // on **every comparison**, and `Kb::participation` sums a name's entry
+    // over the whole layer stack — so a fork 20 deep re-walked 20 layers
+    // O(n log n) times per pass to order a list of a few dozen names.
     let ranks = terms.syms.ranks();
-    out.sort_by_key(|&n| (std::cmp::Reverse(kb.participation(n)), ranks[n.0 as usize]));
-    out
+    let mut keyed: Vec<((std::cmp::Reverse<usize>, u32), Symbol)> = objects
+        .iter()
+        .map(|&n| ((std::cmp::Reverse(kb.participation(n)), ranks[n.0 as usize]), n))
+        .collect();
+    keyed.sort_by_key(|&(k, _)| k);
+    keyed.into_iter().map(|(_, n)| n).collect()
 }
 
-/// True iff `(__closed__ R)` is asserted in the KB, on any layer.
-fn is_closed(kb: &Kb, terms: &Terms, rel: Symbol) -> bool {
+/// Every `R` with `(__closed__ R)` asserted on any layer.
+///
+/// Read once per generation pass. The predicate it replaces was
+/// `kb.facts_of(__closed__).any(args == [rel])`, run per (focal object,
+/// relation) — the whole extent, walked `|objects| × |relations|` times a pass
+/// to answer a question whose answer cannot change during one (T1a.6.4.3).
+/// Same membership: a `(__closed__ …)` fact whose single argument is that
+/// relation's name.
+fn closed_relations(kb: &Kb, terms: &Terms) -> FxHashSet<Symbol> {
+    let mut out = FxHashSet::default();
     let Some(closed) = terms.syms.get(CLOSED) else {
-        return false;
+        return out;
     };
-    kb.facts_of(closed)
-        .any(|f| terms.facts.args(f) == [Value::sym(rel)])
+    for f in kb.facts_of(closed) {
+        if let [arg] = terms.facts.args(f)
+            && let Some(rel) = arg.as_sym()
+        {
+            out.insert(rel);
+        }
+    }
+    out
 }
 
 // ── Query-scoped relation sets ─────────────────────────────────────
