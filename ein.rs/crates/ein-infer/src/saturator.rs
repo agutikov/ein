@@ -198,6 +198,14 @@ pub struct Saturator {
     watched_sizes: Vec<usize>,
     /// Scratch, parallel to `watch.rels`: which of them grew this round.
     watched_grew: Vec<bool>,
+    /// Scratch: what a boundary round takes out of `parked`, applied after the
+    /// walk so the walk can hold the set.
+    retired_scratch: Vec<(i64, u64, u32)>,
+    /// Can a parked candidate's binding key reach `fired`? — see
+    /// [`Saturator::refresh_collision_risk`].
+    may_collide: bool,
+    /// The plan count `may_collide` was last computed at.
+    plans_seen: usize,
     sym_rels: Vec<Symbol>,
     sym_n: usize,
     sym_sym: Symbol,
@@ -282,6 +290,8 @@ pub struct Snapshot {
     gs_epoch: Vec<u32>,
     watch: Arc<WatchTables>,
     watched_sizes: Vec<usize>,
+    may_collide: bool,
+    plans_seen: usize,
     sym_rels: Vec<Symbol>,
     sym_n: usize,
     mirror_seeded: bool,
@@ -326,6 +336,9 @@ impl Saturator {
             watch: Arc::new(WatchTables::default()),
             watched_sizes: Vec::new(),
             watched_grew: Vec::new(),
+            retired_scratch: Vec::new(),
+            may_collide: false,
+            plans_seen: usize::MAX,
             sym_rels: Vec::new(),
             sym_n: usize::MAX,
             sym_sym,
@@ -372,6 +385,8 @@ impl Saturator {
             gs_epoch: self.gs_epoch.clone(),
             watch: self.watch.clone(),
             watched_sizes: self.watched_sizes.clone(),
+            may_collide: self.may_collide,
+            plans_seen: self.plans_seen,
             sym_rels: self.sym_rels.clone(),
             sym_n: self.sym_n,
             mirror_seeded: self.mirror_seeded,
@@ -432,6 +447,9 @@ impl Saturator {
             watch: snapshot.watch.clone(),
             watched_sizes: snapshot.watched_sizes.clone(),
             watched_grew: vec![false; snapshot.watch.rels.len()],
+            retired_scratch: Vec::new(),
+            may_collide: snapshot.may_collide,
+            plans_seen: snapshot.plans_seen,
             sym_rels: snapshot.sym_rels.clone(),
             sym_n: snapshot.sym_n,
             sym_sym,
@@ -994,16 +1012,30 @@ impl Saturator {
             return Ok(0);
         }
         self.naf_rounds += 1;
+        self.refresh_collision_risk();
         self.refresh_epochs(s);
         let mut admitted = 0;
-        // A snapshot, because the round removes from `self.parked` as it goes
-        // and a candidate is admitted at most once. One allocation per round,
-        // against ein.py's two heap operations per parked candidate per round.
-        let order: Vec<(i64, u64, u32)> = self.parked.iter().copied().collect();
-        for key in order {
+        // The set itself, walked in place — no per-round copy of it.
+        //
+        // ein.py pops every parked candidate and re-pushes the rejects; the
+        // port replaced that with ordered iteration over a snapshot, because a
+        // round *removes* from the set as it goes. But the removals are known
+        // in advance to be at most one admission (which ends the round) plus
+        // whatever the walk retires, so they can be deferred to the end and
+        // the walk can hold the set instead of copying it. That matters
+        // because **a round almost never reaches the end**: 3 216 rounds of
+        // `zebra -e` copy 947 758 candidates to visit 248 043 of them, and
+        // stop early on the admission that ends each one.
+        let parked = std::mem::take(&mut self.parked);
+        let mut retired = std::mem::take(&mut self.retired_scratch);
+        for &key in parked.iter() {
             let (_, tb, entry) = key;
-            if self.engine.fired.contains(self.entry_key(entry)) {
-                self.parked.remove(&key); // fired by another route
+            // Fired by another route — impossible unless two entries can share
+            // a binding key, which is what `may_collide` decides. Asking costs
+            // a `BindingKey` hash per parked candidate per round, 3.8 % of
+            // `zebra -e`'s self time, for a branch no corpus program can take.
+            if self.may_collide && self.engine.fired.contains(self.entry_key(entry)) {
+                retired.push(key);
                 continue;
             }
             // Invalidation: a guard's verdict can only move if one of the
@@ -1025,7 +1057,7 @@ impl Saturator {
             let failing = self.first_failing(s, &plan, entry, guards);
             match failing {
                 None => {
-                    self.parked.remove(&key);
+                    retired.push(key);
                     self.queue.push(Reverse(key));
                     self.naf_admitted += 1;
                     admitted = 1;
@@ -1044,7 +1076,7 @@ impl Saturator {
                     // Anti-monotone, and it found a match: the KB only grows,
                     // so it will keep finding one. This candidate is dead, not
                     // waiting — retire it rather than re-asking every round.
-                    self.parked.remove(&key);
+                    retired.push(key);
                     self.naf_retired += 1;
                     if s.events.on() {
                         emit_boundary(s, "retire", tb, self.naf_rounds, &plan, guards, g);
@@ -1058,7 +1090,54 @@ impl Saturator {
                 }
             }
         }
+        self.parked = parked;
+        for key in retired.drain(..) {
+            self.parked.remove(&key);
+        }
+        self.retired_scratch = retired;
         Ok(admitted)
+    }
+
+    /// Whether a **parked** candidate's binding key can ever reach
+    /// `engine.fired`, recomputed when the plan list grows and never
+    /// otherwise.
+    ///
+    /// Only another entry with the same key — same rule, same activator, same
+    /// registers — can put it there, and it must carry a *different* guard
+    /// set, since `seen` dedups the pair. That needs either one plan whose
+    /// disjuncts ask different negative questions, or two plans sharing a
+    /// `(rule, activator)` binding-key space — the Q-M1a.8 asymmetry, where an
+    /// activator's `int` arguments do not reach the key. **Neither holds
+    /// anywhere in the corpus**: the branch is taken 0 times across every
+    /// `.ein` under `examples/` and `stdlib/`, and where a program does put it
+    /// in reach the round walks with the check, exactly as before.
+    ///
+    /// Sticky once true, because a plan that exists cannot stop existing — and
+    /// a candidate parked while it was false could not have collided with
+    /// anything, since the entry it would collide with needs a plan that was
+    /// not there.
+    fn refresh_collision_risk(&mut self) {
+        let n = self.engine.len();
+        if n == self.plans_seen || self.may_collide {
+            self.plans_seen = n;
+            return;
+        }
+        self.plans_seen = n;
+        let mut spaces: FxHashSet<(Symbol, crate::firing::ActivatorId)> = FxHashSet::default();
+        let mut risk = false;
+        for i in 0..n {
+            let plan = self.engine.plan(i);
+            let first = plan.guard_key(plan.disjuncts[0].guard_key);
+            if plan.disjuncts[1..]
+                .iter()
+                .any(|d| plan.guard_key(d.guard_key) != first)
+                || !spaces.insert((plan.rule, self.engine.activator(i)))
+            {
+                risk = true;
+                break;
+            }
+        }
+        self.may_collide = risk;
     }
 
     /// Advance the boundary's clock, and with it the guard sets whose world

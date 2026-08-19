@@ -172,6 +172,12 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 note   = "S1a.3.4 — `p ← absent q; q ← absent p`. Both guards pass against the empty world, so a batch boundary admission derives both; the fixture pins that exactly one is derived and the loser is retired."
 
 [[entry]]
+path   = "examples/features/08_disjunct_guard_sets.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "M1a S1a.6.12 — one rule, two `(or …)` disjuncts with different guards and the same binding key, so a parked candidate is already fired when the boundary reaches it. The only fixture in the corpus that takes that branch, and the one that pins ein.rs's `may_collide` fallback against ein.py's unconditional check."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]

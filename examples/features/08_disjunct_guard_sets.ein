@@ -1,0 +1,41 @@
+;;; Ein — feature demo
+;;;
+;;; Two `(or …)` disjuncts of one rule, asking **different** negative
+;;; questions — the shape where one candidate can be parked on the boundary
+;;; while another with the same bindings fires from the queue.
+;;;
+;;; `_seen` is keyed on `(binding_key, guards)`, not on the disjunct
+;;; (S1.22.0), so both disjuncts of a match are enqueued: the guarded one
+;;; parks until the closure quiesces, the unguarded one fires immediately.
+;;; When they share a binding key the parked one is already *fired* by the
+;;; time the boundary reaches it, and the round drops it rather than admitting
+;;; a second derivation of the same conclusion.
+;;;
+;;; Every other fixture in the corpus leaves that branch untaken — it is the
+;;; one path in `admit_from_boundary` that no zebra, no `features/*` and no
+;;; `stdlib` program reaches — and M1a
+;;; [S1a.6.12](../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md)
+;;; made a round's cost depend on it: ein.rs skips the per-candidate `fired`
+;;; probe on programs where no two entries *can* share a key, and this is the
+;;; fixture that says what happens when they can.
+;;;
+;;; Expected: `touched` for both people, one per person, each derived once.
+;;;   Alice — from the second disjunct, `(likes Alice Bob)` holds.
+;;;   Bob    — from the first, nothing says `(likes Bob Bob)`.
+
+(maybe-open Person)
+
+(is-a Person T)
+(is-a Alice  Person)
+(is-a Bob    Person)
+
+(likes Alice Bob)
+
+;; The two disjuncts bind `?a` the same way and differ only in what they ask
+;; of the world: one an `(absent …)` guard, the other a positive premise.
+(rule maybe-open (?Person)
+  :match  (or (and (is-a ?a ?Person) (absent (likes ?a Bob)))
+              (and (is-a ?a ?Person) (likes ?a Bob)))
+  :assert (touched ?a)
+  :why    "{?a} is either liked-by-nobody-named-Bob or likes Bob"
+  :priority 200)
