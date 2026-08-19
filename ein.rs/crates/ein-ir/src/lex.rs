@@ -137,8 +137,47 @@ fn is_word(ch: char) -> bool {
     ch.is_alphanumeric() || ch == '_'
 }
 
+/// The ASCII half of [`is_py_space`], as a byte test: `\t\n\v\f\r`, space,
+/// and the U+001C–U+001F `re` adds. Everything outside it — U+00A0 and the
+/// rest of `White_Space` — falls back to the `char` path, which is why this
+/// may be a fast path rather than a redefinition.
+const fn is_ascii_py_space(b: u8) -> bool {
+    matches!(b, b' ' | 0x09..=0x0d | 0x1c..=0x1f)
+}
+
 fn char_at(src: &str, pos: usize) -> Option<char> {
     src[pos..].chars().next()
+}
+
+/// Advance `c` to the byte offset `end`, which must be a `char` boundary.
+///
+/// A [`Cursor`] counts **characters** and lines, so the general case is one
+/// [`Cursor::bump`] per character — and that is what a parse spent its time
+/// on: `skip_trivia` was 26.3 % of a `parse/zebra2` profile and `match_term`
+/// 13.5 %, most of it decoding UTF-8 one character at a time to move a cursor
+/// over runs that are ASCII (T1a.6.5.1). A span that is ASCII has as many
+/// characters as bytes, so its whole traversal is three additions, and one
+/// more pass only when it contains a newline.
+#[inline]
+fn advance_to(src: &str, mut c: Cursor, end: usize) -> Cursor {
+    let bytes = src.as_bytes();
+    while c.pos < end {
+        let b = bytes[c.pos];
+        if b < 0x80 {
+            c.pos += 1;
+            c.chars += 1;
+            if b == b'\n' {
+                c.line += 1;
+                c.col = 1;
+            } else {
+                c.col += 1;
+            }
+        } else {
+            let ch = char_at(src, c.pos).expect("inside the span");
+            c.bump(ch);
+        }
+    }
+    c
 }
 
 /// Advance over `%ignore`d input: whitespace, `;…` to end of line, and
@@ -148,34 +187,75 @@ fn char_at(src: &str, pos: usize) -> Option<char> {
 /// closing `|#`, so the terminal does not match and the `#` becomes the
 /// position at which nothing can be scanned. Leaving the cursor on it is what
 /// makes the error land where Lark's lands.
-pub fn skip_trivia(src: &str, mut c: Cursor) -> Cursor {
+#[inline]
+pub fn skip_trivia(src: &str, c: Cursor) -> Cursor {
+    // Every alternative the parser tries asks for a terminal at the *same*
+    // position, so most calls have nothing to skip and this is one byte
+    // compare inlined into the caller — `skip_trivia` was 13-26 % of a parse
+    // profile largely as call overhead (T1a.6.5.1).
+    match src.as_bytes().get(c.pos) {
+        Some(&b) if is_trivia_start(b) => skip_trivia_from(src, c),
+        _ => c,
+    }
+}
+
+/// Could a token of trivia start with this byte? `#` only opens one as `#|`
+/// and a non-ASCII byte only when it decodes to `White_Space`; both are the
+/// slow path's business, and a false positive there costs nothing.
+const fn is_trivia_start(b: u8) -> bool {
+    is_ascii_py_space(b) || b == b';' || b == b'#' || b >= 0x80
+}
+
+fn skip_trivia_from(src: &str, mut c: Cursor) -> Cursor {
+    let bytes = src.as_bytes();
     loop {
-        let Some(ch) = char_at(src, c.pos) else {
+        let Some(&b) = bytes.get(c.pos) else {
             return c;
         };
-        if is_py_space(ch) {
-            c.bump(ch);
-            continue;
-        }
-        if ch == ';' {
-            while let Some(ch) = char_at(src, c.pos) {
-                if ch == '\n' {
-                    break;
-                }
-                c.bump(ch);
+        if is_ascii_py_space(b) {
+            c.pos += 1;
+            c.chars += 1;
+            if b == b'\n' {
+                c.line += 1;
+                c.col = 1;
+            } else {
+                c.col += 1;
             }
             continue;
         }
-        if ch == '#' && src[c.pos..].starts_with("#|") {
+        if b == b';' {
+            // `str::find` of a `char` is `memchr` — the line-comment scan the
+            // task asks for, without a dependency for it. A comment is the one
+            // long run in the file, and it cannot contain a newline, so an
+            // ASCII one is three additions rather than forty.
+            let end = src[c.pos..]
+                .find('\n')
+                .map_or(src.len(), |rel| c.pos + rel);
+            let span = &src[c.pos..end];
+            if span.is_ascii() {
+                c.pos = end;
+                c.chars += span.len();
+                c.col += span.len() as u32;
+            } else {
+                c = advance_to(src, c, end);
+            }
+            continue;
+        }
+        if b == b'#' && src[c.pos..].starts_with("#|") {
             let Some(rel) = src[c.pos + 2..].find("|#") else {
                 return c;
             };
-            let end = c.pos + 2 + rel + 2;
-            while c.pos < end {
-                let ch = char_at(src, c.pos).expect("inside the comment");
-                c.bump(ch);
-            }
+            c = advance_to(src, c, c.pos + 2 + rel + 2);
             continue;
+        }
+        // Non-ASCII: still possibly `White_Space` (U+00A0 and friends), which
+        // only a decode can tell.
+        if b >= 0x80 {
+            let ch = char_at(src, c.pos).expect("a char boundary");
+            if is_py_space(ch) {
+                c.bump(ch);
+                continue;
+            }
         }
         return c;
     }
@@ -190,10 +270,7 @@ pub fn match_literal(src: &str, c: Cursor, word: &str) -> Option<Lexeme> {
     if !src[at.pos..].starts_with(word) {
         return None;
     }
-    let mut next = at;
-    for ch in word.chars() {
-        next.bump(ch);
-    }
+    let next = advance_to(src, at, at.pos + word.len());
     Some(Lexeme {
         start: at.pos,
         end: next.pos,
@@ -222,11 +299,7 @@ pub fn match_term(src: &str, c: Cursor, term: Term) -> Option<Lexeme> {
         Term::Int => match_int(rest),
         Term::Str => match_string(rest),
     }?;
-    let mut next = at;
-    while next.pos < at.pos + len {
-        let ch = char_at(src, next.pos).expect("inside the match");
-        next.bump(ch);
-    }
+    let next = advance_to(src, at, at.pos + len);
     Some(Lexeme {
         start: at.pos,
         end: next.pos,
