@@ -26,6 +26,7 @@
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::ops::ControlFlow;
+use std::sync::Arc;
 
 use ein_core::{FactId, Kb, NafArg, NafRef, Prov, Symbol, Terms, Value};
 use ein_ir::Ast;
@@ -112,20 +113,32 @@ struct Entry {
     /// zebra root is ~60 000 of them. The answer cannot change (the registers
     /// are a snapshot), so the only thing recomputing buys is the allocation.
     key: BindingKey,
-    /// The extent sizes of this candidate's watched relations at its last
-    /// *failed* boundary judgement — S1a.3.4 T4.
+    /// The interned identity of this candidate's guards — the boundary's
+    /// invalidation unit.
     ///
-    /// ein.py builds a fresh tuple per candidate per round and keeps it in a
-    /// dict keyed by tiebreaker: 324 492 calls and 0.77 s on an exhaustive
-    /// zebra2, most of it allocation. Sizes are the version counter design/06
-    /// asks for — the KB grows monotonically within a run, so a relation
-    /// cannot lose a fact and equal size means equal extent — so what the
-    /// refinement removes is the allocation, not the answer: the buffer lives
-    /// on the entry and is compared and overwritten in place.
-    stamp: Vec<usize>,
-    /// Has this candidate ever been judged and failed? `stamp` is meaningless
-    /// until it has, which is what ein.py's *absence* from `_park_stamp` says.
-    judged: bool,
+    /// Every relation a candidate watches is a relation its *guard set*
+    /// watches, and [`Disjunct::guard_key`](crate::plan::Disjunct::guard_key)
+    /// encodes the watched symbols themselves, so two candidates that share an
+    /// id watch exactly the same relations and go stale at exactly the same
+    /// moment. That is what lets one epoch per guard set replace one stamp per
+    /// candidate — [T1a.6.12.1a](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6121--visit-what-changed-not-everything).
+    guard_set: GuardSetId,
+}
+
+/// What each guard set watches — the structural half of the boundary's
+/// invalidation, and the half that a fork inherits unchanged.
+///
+/// `rels` is every relation any guard set reads, `watched[spans[g]]` the
+/// indices into it for guard set `g`. Flat, because a fork clones the
+/// saturator's state once per entering and a `Vec<Box<[u32]>>` would be one
+/// allocation per guard set per fork; behind an `Arc`, because compiling a
+/// *new* guard set inside a fork is rare enough to pay for a copy when it
+/// happens.
+#[derive(Clone, Default)]
+struct WatchTables {
+    rels: Vec<Symbol>,
+    watched: Vec<u32>,
+    spans: Vec<(u32, u32)>,
 }
 
 /// `(priority, tiebreaker, entry)`. The tiebreaker is unique and monotone, so
@@ -160,8 +173,31 @@ pub struct Saturator {
     matched_plans: Vec<bool>,
     pos_index: FxHashMap<Symbol, Vec<usize>>,
     index_n: usize,
-    /// Scratch for one candidate's watch stamp, reused across the round.
-    stamp_scratch: Vec<usize>,
+    /// The boundary's clock: one tick per round, and what a judgement is
+    /// stamped with — [`Saturator::refresh_epochs`].
+    epoch: u32,
+    /// `judged_at[e]` is the epoch at which entry `e` was last judged and
+    /// *failed*, or 0 for a candidate that has never been judged — which is
+    /// what ein.py's *absence* from `_park_stamp` says.
+    ///
+    /// A side table rather than a field on [`Entry`] because a fork inherits
+    /// the arena and re-judges against its own world: this is the only part of
+    /// a candidate that a saturation writes after enqueue, and separating it
+    /// is what [T1a.6.12.5](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6125--the-per-entering-snapshot)
+    /// needs to share the arena instead of deep-copying it.
+    judged_at: Vec<u32>,
+    /// `gs_epoch[g]` — the last epoch at which some relation guard set `g`
+    /// watches was seen to grow. A candidate is stale exactly when this is
+    /// past its `judged_at`.
+    gs_epoch: Vec<u32>,
+    /// What each guard set watches — see [`WatchTables`].
+    watch: Arc<WatchTables>,
+    /// The extent size each watched relation had at the last round — the
+    /// stamp, taken **once per round** rather than once per parked candidate
+    /// per round. Parallel to `watch.rels`.
+    watched_sizes: Vec<usize>,
+    /// Scratch, parallel to `watch.rels`: which of them grew this round.
+    watched_grew: Vec<bool>,
     sym_rels: Vec<Symbol>,
     sym_n: usize,
     sym_sym: Symbol,
@@ -238,6 +274,14 @@ pub struct Snapshot {
     matched_plans: Vec<bool>,
     pos_index: FxHashMap<Symbol, Vec<usize>>,
     index_n: usize,
+    /// The boundary's clock and what it has judged — carried so a fork
+    /// re-judges exactly the parked candidates whose watched relations its own
+    /// delta grew, and skips the rest for the same reason the parent did.
+    epoch: u32,
+    judged_at: Vec<u32>,
+    gs_epoch: Vec<u32>,
+    watch: Arc<WatchTables>,
+    watched_sizes: Vec<usize>,
     sym_rels: Vec<Symbol>,
     sym_n: usize,
     mirror_seeded: bool,
@@ -276,7 +320,12 @@ impl Saturator {
             matched_plans: Vec::new(),
             pos_index: FxHashMap::default(),
             index_n: usize::MAX,
-            stamp_scratch: Vec::new(),
+            epoch: 0,
+            judged_at: Vec::new(),
+            gs_epoch: Vec::new(),
+            watch: Arc::new(WatchTables::default()),
+            watched_sizes: Vec::new(),
+            watched_grew: Vec::new(),
             sym_rels: Vec::new(),
             sym_n: usize::MAX,
             sym_sym,
@@ -318,6 +367,11 @@ impl Saturator {
             matched_plans: self.matched_plans.clone(),
             pos_index: self.pos_index.clone(),
             index_n: self.index_n,
+            epoch: self.epoch,
+            judged_at: self.judged_at.clone(),
+            gs_epoch: self.gs_epoch.clone(),
+            watch: self.watch.clone(),
+            watched_sizes: self.watched_sizes.clone(),
             sym_rels: self.sym_rels.clone(),
             sym_n: self.sym_n,
             mirror_seeded: self.mirror_seeded,
@@ -372,7 +426,12 @@ impl Saturator {
             matched_plans: snapshot.matched_plans.clone(),
             pos_index: snapshot.pos_index.clone(),
             index_n: snapshot.index_n,
-            stamp_scratch: Vec::new(),
+            epoch: snapshot.epoch,
+            judged_at: snapshot.judged_at.clone(),
+            gs_epoch: snapshot.gs_epoch.clone(),
+            watch: snapshot.watch.clone(),
+            watched_sizes: snapshot.watched_sizes.clone(),
+            watched_grew: vec![false; snapshot.watch.rels.len()],
             sym_rels: snapshot.sym_rels.clone(),
             sym_n: snapshot.sym_n,
             sym_sym,
@@ -845,9 +904,9 @@ impl Saturator {
             trail: m.trail().into(),
             premises: m.premises().into(),
             key,
-            stamp: Vec::new(),
-            judged: false,
+            guard_set: guards,
         });
+        self.judged_at.push(0);
         if parked {
             self.parked.insert((priority, self.tiebreaker, entry));
         } else {
@@ -864,6 +923,32 @@ impl Saturator {
         }
         let id = GuardSetId(self.guard_sets.len() as u32);
         self.guard_sets.insert(key.into(), id);
+        // A new set is a new row in the epoch tables. The relations it watches
+        // join `watched_rels` if no earlier set already watches them; a
+        // relation's size is therefore tracked from before any candidate that
+        // reads it can have been judged, which is what makes an epoch as sound
+        // as the per-candidate stamp it replaces.
+        let w = Arc::make_mut(&mut self.watch);
+        let start = w.watched.len() as u32;
+        for g in plan.guards(plan.disjuncts[disjunct].guards) {
+            for &rel in g.watched.iter() {
+                let at = match w.rels.iter().position(|&r| r == rel) {
+                    Some(i) => i as u32,
+                    None => {
+                        w.rels.push(rel);
+                        self.watched_sizes.push(0);
+                        self.watched_grew.push(false);
+                        (w.rels.len() - 1) as u32
+                    }
+                };
+                if !w.watched[start as usize..].contains(&at) {
+                    w.watched.push(at);
+                }
+            }
+        }
+        w.spans.push((start, w.watched.len() as u32 - start));
+        debug_assert_eq!(self.gs_epoch.len(), id.0 as usize);
+        self.gs_epoch.push(self.epoch);
         id
     }
 
@@ -909,6 +994,7 @@ impl Saturator {
             return Ok(0);
         }
         self.naf_rounds += 1;
+        self.refresh_epochs(s);
         let mut admitted = 0;
         // A snapshot, because the round removes from `self.parked` as it goes
         // and a candidate is admitted at most once. One allocation per round,
@@ -920,20 +1006,22 @@ impl Saturator {
                 self.parked.remove(&key); // fired by another route
                 continue;
             }
-            let e = &self.entries[entry as usize];
-            let plan = self.engine.plan_arc(e.plan);
-            let guards = plan.disjuncts[e.disjunct].guards;
             // Invalidation: a guard's verdict can only move if one of the
             // relations its query reads has grown. Most parked candidates wait
             // on something that did not change this round, and re-running
             // their queries is what makes a naive boundary quadratic (zebra2
-            // root: 460 parked over 40 rounds).
-            self.watch_stamp_into(s, &plan, guards);
-            if self.entries[entry as usize].judged
-                && self.entries[entry as usize].stamp == self.stamp_scratch
-            {
+            // root: 460 parked over 40 rounds). The question is asked of the
+            // candidate's *guard set*, whose clock `refresh_epochs` advanced
+            // once for the whole round — two integer loads, against the two
+            // extent probes and the vector compare a per-candidate stamp cost.
+            ein_core::counters::bump(|c| c.watch_stamp += 1);
+            let e = &self.entries[entry as usize];
+            let judged_at = self.judged_at[entry as usize];
+            if judged_at != 0 && self.gs_epoch[e.guard_set.0 as usize] <= judged_at {
                 continue;
             }
+            let plan = self.engine.plan_arc(e.plan);
+            let guards = plan.disjuncts[e.disjunct].guards;
             let failing = self.first_failing(s, &plan, entry, guards);
             match failing {
                 None => {
@@ -963,12 +1051,7 @@ impl Saturator {
                     }
                 }
                 Some(g) => {
-                    let scratch = std::mem::take(&mut self.stamp_scratch);
-                    let e = &mut self.entries[entry as usize];
-                    e.stamp.clear();
-                    e.stamp.extend_from_slice(&scratch);
-                    e.judged = true;
-                    self.stamp_scratch = scratch;
+                    self.judged_at[entry as usize] = self.epoch;
                     if s.events.on() {
                         emit_boundary(s, "park", tb, self.naf_rounds, &plan, guards, g);
                     }
@@ -978,21 +1061,52 @@ impl Saturator {
         Ok(admitted)
     }
 
-    /// Extent sizes of every relation the guards read, in a stable order.
+    /// Advance the boundary's clock, and with it the guard sets whose world
+    /// moved — the whole round's invalidation, in one pass over the watched
+    /// relations.
     ///
-    /// Equal stamps ⇒ every watched relation holds exactly what it did last
-    /// time ⇒ the sub-plan's match set is unchanged ⇒ so is the verdict. Sizes
-    /// suffice because the KB grows monotonically within a run: a relation
-    /// cannot lose a fact, so equal size means equal extent.
-    fn watch_stamp_into(&mut self, s: &Session<'_>, plan: &Plan, guards: Span) {
-        ein_core::counters::bump(|c| c.watch_stamp += 1);
-        self.stamp_scratch.clear();
-        for g in plan.guards(guards) {
-            for &rel in g.watched.iter() {
-                ein_core::counters::bump(|c| c.watch_stamp_rel += 1);
-                self.stamp_scratch.push(s.kb.n_facts_of(rel));
+    /// S1a.3.4 T4 asked this per parked candidate: build the extent sizes of
+    /// every relation its guards read, compare against the sizes at its last
+    /// failed judgement, skip if equal. The answer is the right one — the KB
+    /// grows monotonically within a run, so a relation cannot lose a fact and
+    /// equal size means equal extent — but the question was asked 248 043
+    /// times on `zebra -e` to reach 29 865 judgements
+    /// ([baseline.md §17](../../../../plans/m1a_rust/p1a.6_performance/baseline.md#17-the-boundary-measured-before-the-stage-that-aims-at-it)),
+    /// because *sizes* are a property of the world and only the comparison is
+    /// a property of the candidate.
+    ///
+    /// So the sizes are taken once per round, and a guard set whose relations
+    /// moved gets this round's epoch. A candidate is stale exactly when its
+    /// set's epoch is past the epoch it was judged at — the same predicate,
+    /// evaluated in two integer loads.
+    ///
+    /// Sound across a round because the KB **cannot change while the boundary
+    /// runs**: the guard queries are read-only, and an admission ends the
+    /// round without firing. Every judgement in a round therefore sees the
+    /// sizes this pass recorded, and any growth between rounds is caught by
+    /// the next one.
+    fn refresh_epochs(&mut self, s: &Session<'_>) {
+        self.epoch += 1;
+        let mut any = false;
+        for i in 0..self.watch.rels.len() {
+            ein_core::counters::bump(|c| c.watch_stamp_rel += 1);
+            let n = s.kb.n_facts_of(self.watch.rels[i]);
+            if n != self.watched_sizes[i] {
+                self.watched_sizes[i] = n;
+                self.watched_grew[i] = true;
+                any = true;
             }
         }
+        if !any {
+            return;
+        }
+        for (g, &(start, len)) in self.watch.spans.iter().enumerate() {
+            let watched = &self.watch.watched[start as usize..(start + len) as usize];
+            if watched.iter().any(|&i| self.watched_grew[i as usize]) {
+                self.gs_epoch[g] = self.epoch;
+            }
+        }
+        self.watched_grew.fill(false);
     }
 
     /// The first guard that does not pass here, or `None` if all do.
