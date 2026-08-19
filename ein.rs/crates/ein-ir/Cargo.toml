@@ -8,6 +8,11 @@ repository.workspace = true
 
 [dependencies]
 ein-core    = { path = "../ein-core" }
+# The interner's index. Its keys are strings the *source file* chose, so the
+# adversarial-input resistance `RandomState` buys is not worth 7 % of a parse
+# (T1a.6.5.2), and a per-process random seed is a determinism hazard the
+# workspace already refuses everywhere else — design/02 §9.
+rustc-hash.workspace = true
 # The stdlib, embedded so the binary ships self-contained (design/11 §3).
 include_dir.workspace = true
 

@@ -245,6 +245,7 @@ dependencies = [
  "ein-core",
  "ein-oracle",
  "include_dir",
+ "rustc-hash",
  "serde_json",
  "sha2",
 ]

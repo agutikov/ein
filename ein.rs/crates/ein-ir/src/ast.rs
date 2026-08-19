@@ -24,7 +24,7 @@
 //!   that interpolates `at {form.loc}` therefore prints `at None`, and so must
 //!   ein.rs (Q-M1a.6 — a real usability bug, fixed in *both* after parity).
 
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 pub use ein_core::pyrepr::canonical_int;
 use ein_core::pyrepr::repr_str;
@@ -105,11 +105,13 @@ pub enum Node {
 
 /// String interner. Never iterated — only `intern` and index lookups — so the
 /// hash map's order cannot reach an observable
-/// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §9).
+/// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §9),
+/// and it may therefore be hashed by whatever is fastest. SipHash was **7 %**
+/// of a `parse/zebra2` profile for a table of 157 entries (T1a.6.5.2).
 #[derive(Default, Debug)]
 struct StrTable {
     strings: Vec<String>,
-    index: HashMap<Box<str>, SymId>,
+    index: FxHashMap<Box<str>, SymId>,
 }
 
 impl StrTable {
