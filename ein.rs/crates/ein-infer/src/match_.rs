@@ -518,12 +518,16 @@ impl Matcher {
         );
         match key {
             Some(key) => {
+                ein_core::counters::bump(|c| c.scan_bucket += 1);
                 for fact in c.kb.facts_with(key) {
+                    ein_core::counters::bump(|c| c.cand_bucket += 1);
                     self.try_candidate(c, w, step, fact, f)?
                 }
             }
             None => {
+                ein_core::counters::bump(|c| c.scan_extent += 1);
                 for fact in c.kb.facts_of(step.rel) {
+                    ein_core::counters::bump(|c| c.cand_extent += 1);
                     self.try_candidate(c, w, step, fact, f)?
                 }
             }

@@ -49,6 +49,25 @@ pub struct Counters {
     /// each bucket as a tuple, so its `_candidates` sum is ~1.5× this even
     /// where the two try the same facts.
     pub candidates: u64,
+    /// How a premise reached its candidates: through a participation-index
+    /// bucket, or by walking the relation's whole extent. **No ein.py
+    /// counterpart** — this is a question about *this* implementation's data
+    /// layout, and it is the one that chose
+    /// [S1a.6.2](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.2_memory_layout.md)'s
+    /// remaining tasks: on an exhaustive `zebra` **99.1 %** of candidates come
+    /// from an extent scan and only 0.9 % from a bucket, because the index does
+    /// not key a nested-fact argument and `(not (R …))` is most of the corpus.
+    /// A bucket-major layout would therefore have been built for 0.9 % of the
+    /// work.
+    pub scan_bucket: u64,
+    pub scan_extent: u64,
+    /// The same split over `candidates` themselves — counted directly rather
+    /// than derived, which is what caught a `n_facts_of` histogram that had
+    /// been taken over *declared* relations and missed the two big ones.
+    /// `cand_extent / scan_extent` is the mean extent walked: **368** facts on
+    /// an exhaustive `zebra`, 61 on `zebra2`.
+    pub cand_bucket: u64,
+    pub cand_extent: u64,
     /// Plan steps entered — ein.py `match._run_steps` (1.0 M).
     pub walk: u64,
     /// Matcher entry points: one per `run` / `run_seeded` / `holds` call.
@@ -160,6 +179,10 @@ impl Counters {
             unify_slot: 0,
             unify: 0,
             candidates: 0,
+            scan_bucket: 0,
+            scan_extent: 0,
+            cand_bucket: 0,
+            cand_extent: 0,
             walk: 0,
             plan_run: 0,
             binding_key: 0,
@@ -176,11 +199,15 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 14] {
+    pub fn rows(&self) -> [(&'static str, u64); 18] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
             ("candidates", self.candidates),
+            ("scan_bucket", self.scan_bucket),
+            ("scan_extent", self.scan_extent),
+            ("cand_bucket", self.cand_bucket),
+            ("cand_extent", self.cand_extent),
             ("walk", self.walk),
             ("plan_run", self.plan_run),
             ("binding_key", self.binding_key),
@@ -224,6 +251,10 @@ mod tests {
         c.unify_slot = 1;
         c.unify = 1;
         c.candidates = 1;
+        c.scan_bucket = 1;
+        c.scan_extent = 1;
+        c.cand_bucket = 1;
+        c.cand_extent = 1;
         c.walk = 1;
         c.plan_run = 1;
         c.binding_key = 1;
@@ -239,6 +270,6 @@ mod tests {
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 13);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 17);
     }
 }
