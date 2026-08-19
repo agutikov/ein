@@ -48,3 +48,4 @@ ein.rs/bench-out/
 # self-contained without there being two stdlibs to keep in step
 # (plans/m1a_rust/design/11_shared_assets.md).
 ein.py/src/ein/stdlib/
+ein.rs/target-*

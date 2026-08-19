@@ -10,6 +10,11 @@ repository.workspace = true
 # Forwarded so `cargo build --features fork-delta` on the binary means the
 # same as on the engine — S1a.6.9 T1a.6.9.2.
 fork-delta = ["ein-infer/fork-delta"]
+# T1a.6.2.7 — the global allocator, on by default. `--no-default-features`
+# is the escape hatch: it builds against the system allocator and costs
+# 15.9 % of `solve zebra2 -e` and 7.5 % of `solve zebra -e`.
+default  = ["snmalloc"]
+snmalloc = ["dep:snmalloc-rs"]
 
 [dependencies]
 ein-core   = { path = "../ein-core" }
@@ -17,6 +22,7 @@ ein-ir     = { path = "../ein-ir" }
 ein-infer  = { path = "../ein-infer" }
 ein-render = { path = "../ein-render" }
 clap.workspace = true
+snmalloc-rs = { workspace = true, optional = true }
 
 [lib]
 name = "ein_cli"

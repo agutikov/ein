@@ -5,6 +5,13 @@
 **Depends on:** [S1a.6.1](s1a.6.1_profile_baseline.md)
 **Implements:** refinements to [design/03](../design/03_data_model.md)
 
+**Status:** in progress. [T1a.6.2.7](#task-t1a627--a-system-allocator-with-per-thread-caches)
+shipped 2026-08-19 — `snmalloc`, **−15.9 %** on `solve zebra2 -e` and
+**−7.5 %** on `solve zebra -e`, allocator self time 20.0 → **9.0 %** and 9.4 →
+**3.0 %**, peak RSS +1.2 MB on one cell. The numbers, the two rejected
+allocators and the control bench that did not move are
+[baseline.md § 13](baseline.md#13-s1a62--the-layout-stage-and-the-profile-it-starts-from).
+
 ## Context
 
 The data model landed in P1a.2 chose *correct and simple* over *optimal*
@@ -12,6 +19,14 @@ in four places, each flagged at the time as "measure in P1a.6". This
 stage revisits them with the profile in hand — and reverts any that do
 not pay, because a layout change with no measured win is pure risk to a
 T3-green build.
+
+**The re-measure changed the stage before it started** ([rule
+6](README.md#rules-for-this-phase)). Three tasks below were written against a
+profile in which the allocator was 21 % of self time over 2.5 M allocations
+averaging ~53 bytes. After S1a.6.8 and S1a.6.9 it is **20.0 % on `zebra2 -e`
+and 9.4 % on `zebra -e`**, over 0.88 M / 1.67 M allocations averaging **71–76**
+bytes — half the allocations gone, and the ones that went were the small ones.
+Where a task's premise moved, the task says so.
 
 ## Acceptance
 
@@ -100,6 +115,18 @@ four lines:
 static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 ```
 
+**Shipped 2026-08-19: `snmalloc`, default-on, `--no-default-features` to opt
+out.** All three were measured; the losers are recorded in
+[§13](baseline.md#13-s1a62--the-layout-stage-and-the-profile-it-starts-from)
+rather than kept as features, because a dependency nobody selects still has to
+be audited. `mimalloc` matched the speed and cost **+42 % peak RSS** on
+`zebra -e`; `tikv-jemallocator` kept the RSS, returned two thirds of the win,
+and gates itself on `cfg(not(target_env = "msvc"))`. Two things the task did
+not ask for and got: **`fork` +11.7 %** (a fresh arena's slow path — the
+regression is 3.6 µs a run), and a *profiling* binary that ran **+49.6 %**
+slower than release until `[profile.profiling.package.snmalloc-sys] debug =
+false` stopped `cmake`-rs building the vendored allocator as `RelWithDebInfo`.
+
 Measure all three (`tikv-jemallocator`, `mimalloc`, `snmalloc-rs`) against
 the default rather than picking one by reputation, on both puzzles, and
 report:
@@ -125,6 +152,15 @@ may want the system allocator, and note the binary-size delta —
 [P1a.9](../p1a.9_bindings_release/README.md) ships one binary.
 
 ### Task T1a.6.2.8 — A per-entering region
+
+> **Its premise moved twice.** The 28 000 allocations per entering below were
+> measured before S1a.6.9; the same run now allocates 1 674 387 times over 111
+> enterings — ≈ **15 000** — and T1a.6.2.7 has already taken the per-allocation
+> price down by roughly two thirds (`zebra -e`'s allocator self time is
+> **3.0 %**, not 9.4 %). A region can still remove allocations that a fast
+> allocator merely makes cheap, but the ceiling on this task is now ~3 % of
+> `zebra -e` and ~9 % of `zebra2 -e`, and it is measured against a bump
+> allocator's own cost, not against glibc's. Re-price it before building it.
 
 The stronger form of T1a.6.2.4, and
 [§9](baseline.md#9-the-fork-entry-re-derivation) is its justification: a

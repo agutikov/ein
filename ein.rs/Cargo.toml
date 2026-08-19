@@ -57,6 +57,18 @@ md-5        = "0.10"
 sha1        = "0.10"
 sha2        = "0.10"
 criterion   = { version = "0.7", default-features = false, features = ["cargo_bench_support"] }
+# The global allocator, default-on for the binary and the bench (T1a.6.2.7).
+# glibc `malloc` is 20.0 % of an exhaustive `zebra2`'s self time over 880 k
+# allocations averaging ~71 bytes, and that profile — enormous counts, tiny
+# sizes, extreme lifetime locality — is what the per-thread-cache allocators
+# exist for. All three were measured; snmalloc won on wall clock *and* kept
+# peak RSS, which mimalloc did not (+42 % on `zebra -e`), and it is the only
+# one of the two fastest that also builds on MSVC (`tikv-jemallocator` is
+# `cfg(not(target_env = "msvc"))` by its own README). `--no-default-features`
+# on `ein-cli` puts the system allocator back for a distro build that would
+# rather not have a vendored C++ one.
+# plans/m1a_rust/p1a.6_performance/baseline.md § 13.
+snmalloc-rs = "0.7"
 # The CLI's argument parser. Q-M1a.13 (resolved 2026-08-18) put `--help`
 # layout and usage-error text on the normalisation list, so this does not have
 # to reproduce `argparse`'s formatter — only its *surface*: same options, same
@@ -82,3 +94,19 @@ opt-level = 1
 inherits = "release"
 debug    = 1
 strip    = false
+
+# …but not for the vendored C++ allocator. `cmake`-rs picks `CMAKE_BUILD_TYPE`
+# from the `DEBUG` and `OPT_LEVEL` cargo passes each build script, so
+# `debug = 1` above quietly built snmalloc as `RelWithDebInfo` and the
+# profiling binary ran **+49.6 %** slower than the release one — a profile of a
+# different program, which is the one thing this profile exists not to be. The
+# script's release-vs-profiling line is what caught it (T1a.6.2.7).
+[profile.profiling.package.snmalloc-sys]
+debug = false
+
+# `cargo test` and the conformance harness run the dev profile, and an
+# allocator compiled with its own assertions on is not the allocator anything
+# ships. Same reason, same fix.
+[profile.dev.package.snmalloc-sys]
+debug     = false
+opt-level = 3

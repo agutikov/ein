@@ -27,6 +27,14 @@
 use std::path::PathBuf;
 
 use criterion::{Criterion, criterion_group, criterion_main};
+
+/// The allocator `ein` ships with — see `ein-cli/src/main.rs`. Without this
+/// line the bench set would time the system allocator while the binary ran on
+/// snmalloc, and §6's table would stop agreeing with §1's.
+/// `--no-default-features` is the system-allocator arm.
+#[cfg(feature = "snmalloc")]
+#[global_allocator]
+static GLOBAL: snmalloc_rs::SnMalloc = snmalloc_rs::SnMalloc;
 use ein_infer::SharedMemo;
 
 fn repo_root() -> PathBuf {

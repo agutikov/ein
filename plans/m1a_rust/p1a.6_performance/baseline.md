@@ -1150,6 +1150,221 @@ for M in productive redundant enqueue; do
 done
 ```
 
+## 13. S1a.6.2 — the layout stage, and the profile it starts from
+
+**2026-08-19, `master` @ `66f24d5`, same machine.** [Rule
+6](README.md#rules-for-this-phase) says a stage begins by re-running
+[S1a.6.1](s1a.6.1_profile_baseline.md)'s instruments rather than by trusting
+the last stage's table, and this time it changed the stage: three of
+[S1a.6.2](s1a.6.2_memory_layout.md)'s eight tasks were written against a
+profile in which the allocator was 21 % and the compiler was 21 %, and
+[S1a.6.8](s1a.6.8_compile_cache_and_extents.md) plus
+[S1a.6.9](s1a.6.9_fork_entry_delta.md) have since removed **half of every
+allocation the engine makes**.
+
+### Before any change — the same instruments, re-run
+
+| instrument | `zebra2 -e` | `zebra -e` |
+|---|---:|---:|
+| end-to-end, best of 7 | 98.3 ms | 395.7 ms |
+| allocations | 880 053 | 1 674 387 |
+| churn | 62.8 MB | 127.6 MB |
+| **bytes per allocation** | **71.4** | **76.2** |
+| peak live | 2.65 MB | 3.27 MB |
+| allocator self time | **20.0 %** | **9.4 %** |
+| match/bind self time | 52.9 % | **80.1 %** |
+
+Against [§10](#10-after-s1a68--the-same-instruments-re-run)'s figures the
+allocation count is down **35 %** and **39 %**, the churn **33 %** and **55 %**,
+and `zebra2 -e`'s peak live 8.35 → **2.65 MB** — a resumed fork holds no
+re-derivation. What did *not* fall with them is the mean allocation size: ~53
+bytes at S1a.6.1, **71–76** now, because what S1a.6.8 removed was the
+compiler's small ones. The 21 % of self time [§7](#7-the-top-five-costs) item 4
+attributed to glibc `malloc` is **20.0 %** on `zebra2 -e` and only **9.4 %** on
+`zebra -e`, whose remaining cost is 80.1 % one subsystem.
+
+The work counters, for the first time since S1a.6.9 moved them — this is what
+the two engines now do *differently*, and the row that matters is that they
+still agree on the answer:
+
+| counter | `zebra2` fast | `zebra2 -e` | `zebra` fast | `zebra -e` |
+|---|---:|---:|---:|---:|
+| `unify_slot` | 1 727 543 | 5 933 579 | 13 936 098 | **51 452 037** |
+| `unify` | 1 635 187 | 5 617 846 | 13 625 664 | 50 213 778 |
+| `candidates` | 1 344 197 | 4 570 900 | 6 827 109 | 25 160 149 |
+| `walk` | 106 598 | 355 843 | 118 708 | 530 405 |
+| `plan_run` | 20 422 | 123 254 | 19 471 | 104 409 |
+| `binding_key` | 2 077 | 12 694 | 4 890 | 31 563 |
+| `plan_compile` | 175 | 305 | 87 | 242 |
+| `fact_insert` | 641 | 2 184 | 1 248 | 6 766 |
+| `guard_query` | 9 978 | 30 691 | 8 827 | 29 865 |
+| `watch_stamp` | 36 943 | 204 158 | 41 040 | 248 043 |
+| `extent_probe` | 73 987 | 408 133 | 82 994 | 501 225 |
+| `fork` | 13 | 104 | 15 | 114 |
+
+`zebra -e`'s 60.2 M slot unifications at S1a.6.1 are **51.5 M** — S1a.6.9
+removed 14 % of the join's work along with the re-derivation — and `zebra2
+-e`'s `extent_probe` is 646 184 → 408 133 for the same reason. `plan_compile`
+is the one counter the two implementations are meant to disagree on
+([§10](#10-after-s1a68--the-same-instruments-re-run)).
+
+### T1a.6.2.7 — the global allocator, measured three ways
+
+Four binaries, one series, `utils/e2e_baseline.py --bin` (which this task
+added, so two builds can be compared without moving one of them aside):
+
+| workload | system | `mimalloc` | `jemalloc` | **`snmalloc`** |
+|---|---:|---:|---:|---:|
+| `solve zebra2.ein -e` | 98.3 ms | 84.4 ms | 87.9 ms | **82.7 ms (−15.9 %)** |
+| `solve zebra2.ein` | 24.9 ms | 22.9 ms | 23.2 ms | **22.5 ms (−9.6 %)** |
+| `solve zebra.ein -e` | 395.7 ms | **365.7 ms** | 377.7 ms | 366.2 ms (−7.5 %) |
+| `solve zebra.ein` | 97.0 ms | **93.5 ms** | 95.0 ms | **93.5 ms (−3.6 %)** |
+| `render rules zebra2` ¶ | **1.1 ms** | 1.3 ms | 1.3 ms | 1.6 ms (+45 %) |
+| `saturate zebra2` | 4.9 ms | 4.7 ms | **4.4 ms** | 4.6 ms |
+| **peak RSS, `zebra -e`** | **17.3 MB** | 24.5 MB (**+42 %**) | **17.3 MB** | 18.5 MB (+6.9 %) |
+| peak RSS, `zebra2 -e` | 17.3 MB | 22.5 MB | 17.3 MB | **17.3 MB** |
+| binary | 3 459 720 B | +4.9 % | +16.6 % | **+3.2 %** |
+
+Re-run at 9 samples the next series over, the four `solve` cells reproduce
+within 0.6 ms.
+
+**snmalloc ships.** It is the fastest on three of the four `solve` cells and
+within 0.5 ms on the fourth; `mimalloc` matches it and then costs **7.2 MB of
+peak RSS**, which the stage's acceptance names as a thing that may not get
+worse; `jemalloc` keeps the RSS and returns a third less of the win, and its
+own README gates it on `cfg(not(target_env = "msvc"))`, which
+[P1a.9](../p1a.9_bindings_release/README.md) ships binaries for.
+
+¶ **The one regression, and it is start-up.** `render rules` is 1.1 ms of
+which almost all is process start-up, and snmalloc's arena set-up costs
+**0.5 ms** of it — measured at 21 samples, spread 4.5 %, so it is real and not
+noise. Every workload with work in it repays that in the first millisecond;
+`saturate zebra2`, at 4.9 ms the shortest one that saturates anything, is
+already ahead.
+
+### The same change, in process
+
+`cargo bench`, both arms out of one tree — the bench target declares the
+binary's allocator, and `-p ein-conformance --no-default-features` is the
+system-allocator arm:
+
+| bench | system | **snmalloc** | change |
+|---|---:|---:|---:|
+| `parse/corpus` | 790.8 µs | 749.9 µs | −5.2 % |
+| `parse/zebra2` | 204.1 µs | 189.8 µs | −7.0 % |
+| `parse/zebra2_resolve` | 824.6 µs | 755.1 µs | −8.4 % |
+| `load/zebra2` | 1.041 ms | 910.8 µs | −12.5 % |
+| `saturate_root/zebra2` | 2.692 ms | 2.10 ms | **−22.0 %** |
+| **`match_hot/zebra2`** | 38.33 µs | 38.1 µs | **−0.6 %** |
+| `boundary/zebra` | 7.082 ms | 6.69 ms | −5.5 % |
+| `boundary/zebra2` | 2.702 ms | 2.10 ms | **−22.3 %** |
+| **`fork/zebra2`** | 270.4 ns | 302 ns | **+11.7 %** |
+| `solve_fast/zebra2` | 22.90 ms | 20.12 ms | −12.1 % |
+| `solve_exhaustive/zebra2` | 95.36 ms | 79.89 ms | −16.2 % |
+
+**`match_hot` is the control and it did not move.** It runs every plan over an
+already-saturated root and allocates nothing on the path it times; an allocator
+that changed it would be changing something else. That −0.6 % is what "this
+measurement is about allocation" looks like when it is checked rather than
+asserted.
+
+**`fork` regressed 11.7 %**, as it did at T1a.6.8.2 and for a different reason:
+a fork's first allocations touch fresh size classes, and snmalloc's slow path
+is slower than glibc's fastbins. 32 ns × 114 forks is 3.6 µs on a run that got
+29 ms faster. Recorded because [rule 3](README.md#rules-for-this-phase) only
+works if a regression inside a win is still written down.
+
+The variance gate: **11 benches, worst relative sd 2.83 %**, under the 3 %
+bar. Two earlier runs of the same set put a *different* bench over it each time
+(`match_hot` 3.68 %, then `load` 4.69 % and `parse/corpus` 3.61 %) while the
+machine was still settling from a build — the gate is a machine-state check as
+much as a bench check, and it is worth re-running before believing a failure.
+
+### Where the time went instead
+
+`utils/profile_ein_rs.py --repeat 10`, self time by subsystem:
+
+| | `zebra2 -e` before | after | `zebra -e` before | after |
+|---|---:|---:|---:|---:|
+| **allocator** ‡ | **20.0 %** | **9.0 %** | **9.4 %** | **3.0 %** |
+| match/bind | 52.9 % | **61.4 %** | 80.1 % | **86.5 %** |
+| saturate | 33.8 % | 28.3 % | 13.6 % | 10.0 % |
+| hypgen/branch | 8.5 % | 4.6 % | 4.3 % | 1.7 % |
+
+‡ `[libc.so.6]` + `malloc` + `cfree` + `__rdl_alloc`/`__rdl_dealloc` before;
+`sn_rust_alloc` + `sn_rust_dealloc` + the residual `[libc.so.6]` after.
+
+Every subsystem's share *fell* except the matcher's, which is the shape a
+smaller allocator bill has: the profiler charges allocation to whoever asked
+for the memory, so saturate and hypgen were carrying most of it. `zebra -e` is
+now **86.5 % match/bind** and its top five symbols are `unify` 49.3 %,
+`try_candidate` 14.8 %, `walk` 9.3 %, `FactStore::get` 5.0 % and
+`FactStore::args` 4.9 % — 83.3 % of the run in five functions, four of which
+are one loop and the fifth is the two-load indirection T1a.6.2.2 and T1a.6.2.6
+are about.
+
+### The profiling binary was not the shipping binary, for one hour
+
+The first profile taken after the allocator landed reported a `zebra -e` at
+**550.1 ms** where `release` ran 367.7 ms, and put seven snmalloc size-class
+helpers on the top-20 — functions an optimised build inlines.
+
+`cmake`-rs picks `CMAKE_BUILD_TYPE` from the `DEBUG` and `OPT_LEVEL` that cargo
+passes each build script, so `[profile.profiling] debug = 1` — a line whose
+whole purpose is to add line tables without touching codegen — built the
+vendored C++ allocator as `RelWithDebInfo` with its own assertions on. The fix
+is two package-scoped profile overrides
+([`ein.rs/Cargo.toml`](../../../ein.rs/Cargo.toml)), and the profiling binary
+is back to **+0.3 %** of release.
+
+Worth the paragraph because of what caught it: the release-vs-profiling line
+`utils/profile_ein_rs.py` prints on every run, added at S1a.6.1 on the argument
+that *"a profile taken on a binary that runs at a different speed from the
+shipped one is measuring a different program"*. It had printed ±0.3 % for a
+month. A vendored C dependency is the first thing in this port that could make
+it lie, and it did so within an hour of arriving.
+
+### What it does not move
+
+- **Allocation counts and the per-fork delta distribution are identical.**
+  `examples/alloc_cost.rs` counts through its own `GlobalAlloc` around
+  `System`, so it measures the program rather than the allocator, and 880 053 /
+  1 674 387 are the same numbers as before the change. A move there would have
+  meant something else changed.
+- **Every work counter is unchanged** — the `counters` build is `ein-infer`'s
+  example, which links no allocator at all.
+- **T3 472/473, [D2](../divergences.md) the only differing cell**, and
+  `cargo test --workspace` green including `tests/match_alloc.rs`, the
+  inner-loop allocation-count test the stage's notes ask for after every task.
+  Nothing outside `#[cfg(test)]` orders, hashes or compares by address, so an
+  allocator cannot reach an observable — but the gate ran anyway, as the
+  standard.
+- **The acceptance gate is 0.58 s** and was never going to move: ein.rs's test
+  binaries link no allocator either, which is the honest place to leave them —
+  an embedder chooses its own.
+
+### Reproducing this section
+
+```sh
+# the bake-off — one binary per allocator, one series
+for A in mimalloc jemalloc snmalloc; do
+  cargo build --release -p ein-cli --features $A --target-dir ein.rs/target-alloc-$A
+done
+cargo build --release -p ein-cli --no-default-features --target-dir ein.rs/target-alloc-system
+utils/bench_env.sh python3 utils/e2e_baseline.py --runs 7 \
+    --bin system=ein.rs/target-alloc-system/release/ein \
+    --bin snmalloc=ein.rs/target/release/ein
+
+# the in-process arms
+utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
+utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml \
+    -p ein-conformance --no-default-features
+python3 utils/criterion_table.py --max-rsd 3
+
+# the attribution, and the release-vs-profiling line that has to stay ±1 %
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 solve examples/zebra.ein -e
+```
+
 ## Reproducing all of it
 
 Every line from the repo root, every measurement through the fingerprint:
@@ -1185,7 +1400,8 @@ cargo build --release --manifest-path ein.rs/Cargo.toml \
     --features fork-delta --target-dir ein.rs/target-fd
 python3 utils/fork_delta_verify.py --json ein.rs/bench-out/fork-delta.json
 
-# §6 the bench set and its variance gate
+# §6 the bench set and its variance gate (§13 adds the system-allocator arm:
+# the same benches with `-p ein-conformance --no-default-features`)
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 python3 utils/criterion_table.py --max-rsd 3 --json ein.rs/bench-out/criterion.json
 

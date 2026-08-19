@@ -4,8 +4,9 @@
 **Status:** **in progress** — [S1a.6.1](s1a.6.1_profile_baseline.md) and
 [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) shipped 2026-08-18,
 [S1a.6.9](s1a.6.9_fork_entry_delta.md) on 2026-08-19 with **all four targets
-met**. The measurements are in **[baseline.md](baseline.md)**: §1–§9 are what
-the phase is chosen by, §10 and §11 are where it stands.
+met**, and [S1a.6.2](s1a.6.2_memory_layout.md) is running now. The
+measurements are in **[baseline.md](baseline.md)**: §1–§9 are what the phase is
+chosen by, §10–§13 are where it stands.
 **Estimate:** 5 weeks (26 days of stages — S1a.6.1 added one worth 2 d and
 shortened another by 1 d; [S1a.6.9](s1a.6.9_fork_entry_delta.md) added 3 d,
 and its decision added [S1a.6.10](s1a.6.10_parity_contract.md) and
@@ -31,12 +32,12 @@ re-measured** ([S1a.6.1](s1a.6.1_profile_baseline.md) T1a.6.1.5) — the
 numbers the phase was planned with were up to a year old and two of them
 moved:
 
-| workload | PyPy today | target | at S1a.6.1 | at S1a.6.8 | **at S1a.6.9** |
-|---|---:|---:|---:|---:|---:|
-| `solve zebra2.ein -e` end-to-end | 4.53 s | ≤ 0.20 s (≥ 20×) | 198.8 ms ✅ | 138.1 ms ✅ | **99.1 ms ✅ 45.7×** |
-| `solve zebra.ein -e` end-to-end | 8.33 s | ≤ 0.40 s | 585.8 ms ❌ | 539.9 ms ❌ | **397.2 ms ✅ 21.0×** |
-| parse + load `zebra2.ein` | 0.43 s ¶ | ≤ 0.015 s (≥ 50×) | 1.04 ms ✅ | 1.01 ms ✅ | **1.01 ms ✅ 185×** |
-| the acceptance gate (3 fixtures) | 36.0 s ‡ | ≤ 5 s | 1.27 s ✅ | 1.02 s ✅ | **0.62 s ✅ 58×** |
+| workload | PyPy today | target | at S1a.6.1 | at S1a.6.8 | at S1a.6.9 | **at T1a.6.2.7** |
+|---|---:|---:|---:|---:|---:|---:|
+| `solve zebra2.ein -e` end-to-end | 4.53 s | ≤ 0.20 s (≥ 20×) | 198.8 ms ✅ | 138.1 ms ✅ | 99.1 ms ✅ | **83.0 ms ✅ 59.5×** |
+| `solve zebra.ein -e` end-to-end | 8.33 s | ≤ 0.40 s | 585.8 ms ❌ | 539.9 ms ❌ | 397.2 ms ✅ | **366.1 ms ✅ 24.0×** |
+| parse + load `zebra2.ein` | 0.43 s ¶ | ≤ 0.015 s (≥ 50×) | 1.04 ms ✅ | 1.01 ms ✅ | 1.01 ms ✅ | **0.91 ms ✅ 472×** |
+| the acceptance gate (3 fixtures) | 36.0 s ‡ | ≤ 5 s | 1.27 s ✅ | 1.02 s ✅ | 0.62 s ✅ | **0.58 s ✅ 62×** |
 
 **All four targets are met**, three stages into the phase. The one that needed
 it was `solve zebra.ein -e`, and what met it was
@@ -106,7 +107,7 @@ and [§9](baseline.md#9-the-fork-entry-re-derivation).
 | 3 | [S1a.6.9](s1a.6.9_fork_entry_delta.md) ✅ | The fork-entry delta — the resumed saturator | 3 d | **shipped 2026-08-19** — fork firings −74 % / −77 %, fork compiles → 0, **`zebra -e` 394.2 ms: the last target met**. Q-M1a.18 answered: ein.rs resumes, ein.py does not, [D3](../divergences.md) records it. `--trace` gained a *Before any assumption* section |
 | 4 | [S1a.6.10](s1a.6.10_parity_contract.md) ✅ | The parity contract relaxes | 2 d | **shipped 2026-08-19** — one rule in `ein-parity` replaces six ad-hoc cuts, `--strict` puts them all back. **T3 472/473 and T2 239/240, D2 the only cell in either** (T2 was 142 the day before). The T2 cut was chosen by running six candidates over the captured logs |
 | 5 | [S1a.6.11](s1a.6.11_fixture_goldens.md) ✅ | ein.rs fixture goldens | 2 d | **shipped 2026-08-19** — twelve goldens over real solves (trace, `slice` cone, a fork's own dump, the snapshot, the event stream), idea-08's walkthrough assertion ported to ein.rs and un-gated, and `./run_tests.sh` gained a **Phase 3** so the repo's gate runs both engines: 1 506 + 21 + 302 green |
-| 6 | [S1a.6.2](s1a.6.2_memory_layout.md) | Memory layout | 3 d | 21 % of self time is `malloc` / `cfree` / libc, at ~53 bytes per allocation — plus a system allocator (T1a.6.2.7) and a per-entering region (T1a.6.2.8), since ~0.15 % of what a fork allocates outlives it |
+| 6 | [S1a.6.2](s1a.6.2_memory_layout.md) 🔵 | Memory layout | 3 d | **running** — the re-measure ([§13](baseline.md#13-s1a62--the-layout-stage-and-the-profile-it-starts-from)) put the allocator at 20.0 % / 9.4 %, not 21 %, and at **71–76** bytes rather than ~53. T1a.6.2.7 shipped first: `snmalloc`, −15.9 % / −7.5 %, allocator self time now **9.0 % / 3.0 %** |
 | 7 | [S1a.6.3](s1a.6.3_beta_memories.md) | Beta-memories (F11 D1) — **gate opens** | 4 d | **80.5 %** of `zebra -e` is the join after S1a.6.9 — the fork boundary's share went to the matcher rather than away, and the 77 % of a fork's firings that are still redundant are inside its *own* delta |
 | 8 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) | Hypgen and lattice hot paths | 3 d | 7.3 % / 5.3 % self — real, smaller than written; T1a.6.4.1's argument re-aims at saturation |
 | 9 | [S1a.6.5](s1a.6.5_frontend.md) | Frontend and load path — **shortened** | 1 d | its acceptance is already met by 8×; reduced to a confirmation plus the allocation report |

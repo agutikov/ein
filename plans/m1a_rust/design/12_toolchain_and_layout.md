@@ -101,6 +101,7 @@ if that ever matters.
 | `zstd` | einb | optional section compression, behind a feature |
 | `pyo3` / `maturin` | ein-py | [P1a.9](../p1a.9_bindings_release/README.md) only |
 | `criterion`, `proptest`, `arbitrary` | dev-dependencies | benches and property tests |
+| `snmalloc-rs` | cli (binary only), conformance (bench) | the global allocator — [T1a.6.2.7](../p1a.6_performance/s1a.6.2_memory_layout.md), added 2026-08-19. glibc `malloc` was **20.0 %** of an exhaustive `zebra2`'s self time; measured against `mimalloc` and `tikv-jemallocator`, this one is the fastest *and* the only fast one that does not cost peak RSS. On the **binary**, never on an engine crate: a library that installs a global allocator makes the choice for everything that links it. Build-time it pulls `cc` + `cmake` |
 
 **Not used:** any parser generator (see [04](04_ir_frontend.md) §1), any
 async runtime *anywhere* (with the server dropped there is no consumer
@@ -123,6 +124,9 @@ crate).
 | `einb` | on | `.einb` read/write |
 | `events` | on | `--events FILE` emission (compiled out entirely when off, for a zero-overhead measurement build) |
 | `python` | off | PyO3 bindings |
+| `snmalloc` | **on** (`ein-cli`) | the global allocator (T1a.6.2.7). `--no-default-features` builds against the system allocator, which is what a distro package that would rather not vendor a C++ allocator wants — and costs 15.9 % of `solve zebra2 -e` |
+| `fork-delta` | off | [D3](../divergences.md)'s fixture: compiles the pre-[S1a.6.9](../p1a.6_performance/s1a.6.9_fork_entry_delta.md) fresh-fork saturator back in, reachable with `EIN_FORK_DELTA=0` |
+| `counters` | off | the work counters ([S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md) T1a.6.1.3), compiled out entirely when off |
 
 The `events` flag matters: benchmarks build with `--no-default-features
 --features einb` so no branch on the hot path exists at all, and the

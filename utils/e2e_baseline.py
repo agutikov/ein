@@ -13,6 +13,9 @@ So this measures processes, three implementations against the same argv:
     utils/bench_env.sh python3 utils/e2e_baseline.py
     utils/bench_env.sh python3 utils/e2e_baseline.py --runs 7 --json out.json
     utils/bench_env.sh python3 utils/e2e_baseline.py -k 'zebra2 -e'
+    utils/bench_env.sh python3 utils/e2e_baseline.py \
+        --bin system=ein.rs/target-alloc-system/release/ein \
+        --bin snmalloc=ein.rs/target/release/ein          # two builds, one series
 
 Reported per cell: **best, median, spread** (max - min as a % of the median)
 and **peak RSS** of the child. Best-of-N is the estimator — the machine's
@@ -54,13 +57,29 @@ WORKLOADS: list[tuple[str, list[str]]] = [
 ]
 
 
-def implementations(only: str | None) -> list[tuple[str, list[str]]]:
+def implementations(
+    only: str | None, extra: list[str] | None = None
+) -> list[tuple[str, list[str]]]:
+    """The three implementations, or — with `--bin` — a named list of binaries.
+
+    `--bin LABEL=PATH` replaces the `ein.rs release` row rather than adding to
+    it, because the reason to name binaries is to compare two builds of ein.rs
+    against each other (an allocator, a layout, a feature) and a run that also
+    re-times PyPy for the fifth time today is a run nobody waits for.
+    """
     impls: list[tuple[str, list[str]]] = [
         ("ein.py CPython", [sys.executable, "-m", "ein.cli"]),
     ]
     if PYPY.exists():
         impls.append(("ein.py PyPy", [str(PYPY), "-m", "ein.cli"]))
-    if EIN_RS.exists():
+    if extra:
+        impls = []
+        for spec in extra:
+            label, _, path = spec.partition("=")
+            if not path:
+                label, path = Path(label).parent.parent.name, label
+            impls.append((label, [str(Path(path).resolve())]))
+    elif EIN_RS.exists():
         impls.append(("ein.rs release", [str(EIN_RS)]))
     if only:
         impls = [i for i in impls if only in i[0]]
@@ -87,6 +106,9 @@ def main() -> int:
                     help="only workloads whose label contains SUBSTR")
     ap.add_argument("--impl", default=None, metavar="SUBSTR",
                     help="only implementations whose label contains SUBSTR")
+    ap.add_argument("--bin", action="append", default=None, metavar="LABEL=PATH",
+                    help="compare named ein binaries instead of the three "
+                         "implementations; repeatable")
     ap.add_argument("--json", type=Path, default=None, metavar="FILE")
     args = ap.parse_args()
 
@@ -95,9 +117,10 @@ def main() -> int:
     env["PYTHONPATH"] = str(REPO / "ein.py" / "src")
     env["LC_ALL"] = "C"
 
-    impls = implementations(args.impl)
+    impls = implementations(args.impl, args.bin)
     rows: list[dict] = []
-    print(f"{'workload':<18}{'impl':<17}{'best':>10}{'median':>10}"
+    width = max(17, *(len(i[0]) + 1 for i in impls))
+    print(f"{'workload':<18}{'impl':<{width}}{'best':>10}{'median':>10}"
           f"{'spread':>9}{'peak RSS':>11}", file=sys.stderr)
     print("─" * 75, file=sys.stderr)
     for label, argv in WORKLOADS:
@@ -115,13 +138,13 @@ def main() -> int:
                 samples.append(t)
                 rss = max(rss, peak)
             if rc != 0 or not samples:
-                print(f"{label:<18}{impl:<17}   exit {rc} — skipped", file=sys.stderr)
+                print(f"{label:<18}{impl:<{width}}   exit {rc} — skipped", file=sys.stderr)
                 rows.append({"workload": label, "impl": impl, "error": f"exit {rc}",
                              "argv": shlex.join(full)})
                 continue
             best, med = min(samples), statistics.median(samples)
             spread = (max(samples) - min(samples)) / med * 100
-            print(f"{label:<18}{impl:<17}{best * 1e3:>8.1f}ms{med * 1e3:>8.1f}ms"
+            print(f"{label:<18}{impl:<{width}}{best * 1e3:>8.1f}ms{med * 1e3:>8.1f}ms"
                   f"{spread:>8.1f}%{rss / 1024:>9.1f}MB", file=sys.stderr)
             rows.append({
                 "workload": label, "impl": impl, "argv": shlex.join(full),
