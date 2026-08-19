@@ -162,16 +162,6 @@ pub struct Saturator {
     index_n: usize,
     /// Scratch for one candidate's watch stamp, reused across the round.
     stamp_scratch: Vec<usize>,
-    /// `(plan, guard, projected env) → verdict`, for the duration of **one**
-    /// boundary round — Win B's first refinement
-    /// ([design/06](../../../../plans/m1a_rust/design/06_saturation.md) §4).
-    ///
-    /// Two parked candidates frequently share a guard and a projected
-    /// environment: `project(bindings, scope)` collapses everything the guard
-    /// does not read, so two candidates differing only in a variable outside
-    /// the scope ask the *same* question. Sound because the KB cannot change
-    /// mid-round — at most one admission, and it ends the round.
-    guard_memo: FxHashMap<(crate::plan::PlanId, u32, Box<[Value]>), bool>,
     sym_rels: Vec<Symbol>,
     sym_n: usize,
     sym_sym: Symbol,
@@ -287,7 +277,6 @@ impl Saturator {
             pos_index: FxHashMap::default(),
             index_n: usize::MAX,
             stamp_scratch: Vec::new(),
-            guard_memo: FxHashMap::default(),
             sym_rels: Vec::new(),
             sym_n: usize::MAX,
             sym_sym,
@@ -384,7 +373,6 @@ impl Saturator {
             pos_index: snapshot.pos_index.clone(),
             index_n: snapshot.index_n,
             stamp_scratch: Vec::new(),
-            guard_memo: FxHashMap::default(),
             sym_rels: snapshot.sym_rels.clone(),
             sym_n: snapshot.sym_n,
             sym_sym,
@@ -921,7 +909,6 @@ impl Saturator {
             return Ok(0);
         }
         self.naf_rounds += 1;
-        self.guard_memo.clear();
         let mut admitted = 0;
         // A snapshot, because the round removes from `self.parked` as it goes
         // and a candidate is admitted at most once. One allocation per round,
@@ -947,8 +934,7 @@ impl Saturator {
             {
                 continue;
             }
-            let plan_id = self.engine.plan_id(self.entries[entry as usize].plan);
-            let failing = self.first_failing(s, &plan, plan_id, entry, guards);
+            let failing = self.first_failing(s, &plan, entry, guards);
             match failing {
                 None => {
                     self.parked.remove(&key);
@@ -1017,7 +1003,6 @@ impl Saturator {
         &mut self,
         s: &mut Session<'_>,
         plan: &Plan,
-        plan_id: crate::plan::PlanId,
         entry: u32,
         guards: Span,
     ) -> Option<usize> {
@@ -1026,33 +1011,15 @@ impl Saturator {
         let mut out = None;
         for (i, g) in plan.guards(guards).iter().enumerate() {
             ein_core::counters::bump(|c| c.guard_query += 1);
-            // The question the guard actually asks: the parent's registers
-            // restricted to its scope. Everything outside is invisible to the
-            // query, so two candidates that differ only there share a verdict.
-            let env: Box<[Value]> = g
-                .scope_of
-                .iter()
-                .map(|from| from.map_or(Value::UNBOUND, |p| regs[p as usize]))
-                .collect();
-            let key = (plan_id, guards.start + i as u32, env);
-            let holds = match self.guard_memo.get(&key) {
-                Some(&v) => v,
-                None => {
-                    self.guard_evals += 1;
-                    self.guard_evals_monotone += g.monotone as u64;
-                    // The same two, summed over every fork of a solve —
-                    // Q-M1a.17's exhaustive half, which a per-saturation field
-                    // cannot answer.
-                    ein_core::counters::bump(|c| {
-                        c.guard_eval += 1;
-                        c.guard_eval_monotone += g.monotone as u64;
-                    });
-                    let v = m.holds(s.kb, s.terms, s.ast, plan, g, &regs);
-                    self.guard_memo.insert(key, v);
-                    v
-                }
-            };
-            if holds {
+            self.guard_evals += 1;
+            self.guard_evals_monotone += g.monotone as u64;
+            // The same two, summed over every fork of a solve — Q-M1a.17's
+            // exhaustive half, which a per-saturation field cannot answer.
+            ein_core::counters::bump(|c| {
+                c.guard_eval += 1;
+                c.guard_eval_monotone += g.monotone as u64;
+            });
+            if m.holds(s.kb, s.terms, s.ast, plan, g, &regs) {
                 out = Some(i);
                 break;
             }

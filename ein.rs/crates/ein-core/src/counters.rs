@@ -144,8 +144,15 @@ pub struct Counters {
     /// The costliest candidate filter, and the reason a pass costs 14x more
     /// with the lever on than off.
     pub lookahead_probe: u64,
-    /// Guard sub-plan queries actually **run** — `guard_query` minus what the
-    /// per-round memo answered — and the monotone half of them.
+    /// Guard sub-plan queries actually **run**, and the monotone half of them.
+    ///
+    /// Equal to `guard_query` since
+    /// [T1a.6.12.2](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6122--the-per-round-guard-memo-priced)
+    /// removed the per-round memo that used to sit between them: its hit rate
+    /// was 0–1.2 %, because the watch stamp had already filtered out the
+    /// candidates that would have shared a question. The two counters are kept
+    /// apart because the *difference* is the measurement — a memo reinstated
+    /// here would have to earn the gap back.
     ///
     /// The `Saturator` counts both per saturation
     /// (`guard_evals` / `guard_evals_monotone`); these are the same two summed
