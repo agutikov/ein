@@ -71,6 +71,26 @@ impl From<ParseError> for LoadError {
     }
 }
 
+/// Parsed module forms, by resolved path — [T1a.6.5.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.5_frontend.md).
+///
+/// A resolution is a *tree*, and the corpus's trees are diamonds: `zebra2`
+/// imports `std.algebra` and `std.bijection`, `std.bijection` imports
+/// `std.algebra`, and all three import `std.macro`. Parsing each module once
+/// per *edge* meant a load parsed **3.3× the bytes on disk** (`parse_bytes`
+/// against the file's own length, [`ein_core::counters`]).
+///
+/// The cache lives for one resolution and holds [`NodeId`]s, which are indices
+/// into the `Ast` that resolution is building — so it is threaded through the
+/// recursion rather than kept on the [`Resolver`], and cannot outlive the arena
+/// its contents name.
+///
+/// Reusing the forms is sound because nothing downstream mutates a node:
+/// `qualify` rewrites by *building* (`rename_atoms`), `select` filters, and
+/// `dedup_declarations` compares with [`Ast::eq_nodes`], which is structural.
+/// Two importers already shared subtrees before this — `rename_atoms` returns
+/// the node it was given when no name in it is renamed.
+type ModuleCache = BTreeMap<String, Vec<NodeId>>;
+
 /// Where a module's text may come from. The stdlib half can be compiled into
 /// the binary; the file-relative half never is.
 enum Root {
@@ -176,7 +196,7 @@ impl Resolver {
         forms: &[NodeId],
         base_dir: Option<&Path>,
     ) -> Result<Vec<NodeId>, LoadError> {
-        self.resolve(ast, forms, base_dir, &mut Vec::new())
+        self.resolve(ast, forms, base_dir, &mut Vec::new(), &mut ModuleCache::new())
     }
 
     fn resolve(
@@ -185,6 +205,7 @@ impl Resolver {
         forms: &[NodeId],
         base_dir: Option<&Path>,
         loading: &mut Vec<String>,
+        cache: &mut ModuleCache,
     ) -> Result<Vec<NodeId>, LoadError> {
         let mut out: Vec<NodeId> = Vec::new();
         let mut had_import = false;
@@ -205,9 +226,17 @@ impl Resolver {
                     chain.join(" -> ")
                 )));
             }
-            let sub = parse(ast, &text, Some(&key))?;
+            // Parsed once per resolution, not once per edge.
+            let sub = match cache.get(&key) {
+                Some(sub) => sub.clone(),
+                None => {
+                    let sub = parse(ast, &text, Some(&key))?;
+                    cache.insert(key.clone(), sub.clone());
+                    sub
+                }
+            };
             loading.push(key);
-            let resolved = self.resolve(ast, &sub, dir.as_deref(), loading)?;
+            let resolved = self.resolve(ast, &sub, dir.as_deref(), loading, cache)?;
             loading.pop();
             match &spec.symbols {
                 Some(symbols) => out.extend(select(ast, &resolved, symbols, &spec.module, &loc)?),
@@ -298,9 +327,12 @@ impl Resolver {
         // `(form, is_imported)` — the puzzle's own forms are false, everything
         // an import brings in (transitively) is true.
         let mut tagged: Vec<(NodeId, bool)> = Vec::new();
+        let mut cache = ModuleCache::new();
         for &form in forms {
             if ast.head_name(form) == Some("import") {
-                for f in self.resolve_imports(ast, &[form], base_dir)? {
+                let resolved =
+                    self.resolve(ast, &[form], base_dir, &mut Vec::new(), &mut cache)?;
+                for f in resolved {
                     tagged.push((f, true));
                 }
             } else {

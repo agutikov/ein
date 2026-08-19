@@ -178,6 +178,42 @@ fn the_import_and_macro_failures_are_byte_identical() {
     assert_eq!(format!("(rule x): {}", err.0), expected);
 }
 
+/// One module, imported **twice under different qualifications** in a single
+/// resolution — the shape T1a.6.5.3's module cache makes sharing-sensitive.
+///
+/// Since that task a module is parsed once per resolution and *both* importers
+/// are handed the same nodes, so a qualification that rewrote a shared subtree
+/// in place instead of building a new one would leak `m.` into the flat import
+/// (or the other way round). `rename_atoms` builds; this is the test that says
+/// so, and it compares against `ein.py`, which has no cache at all.
+#[test]
+fn one_module_under_two_qualifications_does_not_leak_either_way() {
+    let base = repo_root().join("examples");
+    let src = "(import std.macro :as m)\n(import std.macro :symbols (forall))\n";
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, src, Some("<string>")).expect("parses");
+    let got = Resolver::new()
+        .resolve_imports(&mut ast, &forms, Some(&base))
+        .map(|f| dump_canonical(&ast, &f))
+        .expect("resolves");
+    // Both qualifications survive, each spelled its own way.
+    assert!(got.contains("(macro m.forall"), "the aliased copy is missing:\n{got}");
+    assert!(got.contains("(macro forall"), "the flat copy is missing:\n{got}");
+    assert!(!got.contains("(macro m.m."), "a rename was applied twice:\n{got}");
+    let Some(mut py) = Oracle::start(IR_ORACLE) else {
+        return skip("one_module_under_two_qualifications_does_not_leak_either_way");
+    };
+    let want = py.ask(serde_json::json!({
+        "op": "resolve",
+        "text": src,
+        "filename": base.join("probe.ein").to_str(),
+    }));
+    match want {
+        Answer::Ok(b) => assert_eq!(got, b),
+        other => panic!("ein.py did not resolve it: {other:?}"),
+    }
+}
+
 /// Module-name → file-path mangling is `pathlib`'s, and the places it is
 /// surprising (an empty segment, a trailing dot, a bare `std`) only show up in
 /// the "module not found" text. Compare the text.
