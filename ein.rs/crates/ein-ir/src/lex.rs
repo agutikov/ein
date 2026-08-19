@@ -151,13 +151,17 @@ fn char_at(src: &str, pos: usize) -> Option<char> {
 
 /// Advance `c` to the byte offset `end`, which must be a `char` boundary.
 ///
-/// A [`Cursor`] counts **characters** and lines, so the general case is one
-/// [`Cursor::bump`] per character — and that is what a parse spent its time
-/// on: `skip_trivia` was 26.3 % of a `parse/zebra2` profile and `match_term`
-/// 13.5 %, most of it decoding UTF-8 one character at a time to move a cursor
-/// over runs that are ASCII (T1a.6.5.1). A span that is ASCII has as many
-/// characters as bytes, so its whole traversal is three additions, and one
-/// more pass only when it contains a newline.
+/// A [`Cursor`] counts **characters** and lines, so this is still one step per
+/// character — but the step is a byte compare rather than a UTF-8 decode, and
+/// that is what a parse was spending its time on: `skip_trivia` was 26.3 % of a
+/// `parse/zebra2` profile and `match_term` 13.5 %, most of it
+/// `src[pos..].chars().next()` over runs that are ASCII (T1a.6.5.1).
+///
+/// Vectorising it instead — `is_ascii()`, then `rposition` for the last
+/// newline — was **+10 to +14 %**: the spans reaching here are one space and a
+/// two-character indent, where three passes lose to one loop. The one run long
+/// enough to pay for a bulk path is a line comment, and [`skip_trivia_from`]
+/// gives it one.
 #[inline]
 fn advance_to(src: &str, mut c: Cursor, end: usize) -> Cursor {
     let bytes = src.as_bytes();

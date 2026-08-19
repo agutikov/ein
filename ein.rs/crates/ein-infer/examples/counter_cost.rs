@@ -127,6 +127,13 @@ fn main() {
         print!("{v:>20}");
     }
     println!();
+    // The frontend six read zero here and that is the measurement, not a bug:
+    // this example resets the counters *after* `load_file`, because what it
+    // times is a solve. `--example frontend_cost` is where a load is counted.
+    println!(
+        "\nparse_* / lex_* / intern* are zero by construction — the KB is \
+         loaded before the reset;\nsee `--example frontend_cost` for the load."
+    );
 }
 
 /// `40123456` → `40 123 456`. The numbers here run to eight digits and the

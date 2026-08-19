@@ -152,10 +152,11 @@ pub struct Counters {
     /// the same way, but nothing there counts it either.
     pub parse_call: u64,
     pub parse_bytes: u64,
-    /// Terminal match *attempts* — [`crate::counters`]'s view of a
-    /// backtracking parser. `lex_match / tokens` is how many readings a
-    /// position is tried under; `lex_symbol` is the subset that ran `SYMBOL`'s
-    /// eleven-word reserved-name walk.
+    /// Terminal match *attempts* — the denominator a backtracking parser
+    /// needs, since it asks several terminals about the same position and most
+    /// of the asks fail. `lex_symbol` is the subset that ran `SYMBOL`'s
+    /// eleven-word reserved-name walk, which is how S1a.6.5 priced replacing
+    /// it (1 250 runs per load: not worth replacing).
     pub lex_match: u64,
     pub lex_symbol: u64,
     /// Interner calls and misses. A miss is the only one that allocates, which
