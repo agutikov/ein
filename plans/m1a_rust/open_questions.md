@@ -25,7 +25,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | **mostly resolved 2026-08-18 — ein.rs names the class** |
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
-| [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — they are 7–15 % | **resolved 2026-08-19: the mechanism is declined**, and [S1a.6.12](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md) aims elsewhere |
+| [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — they are 7–16 % | **closed 2026-08-20: the mechanism is declined at a measured 1.4–2.2 % ceiling**, in [S1a.6.12](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md), which took 38 % off `zebra -e` without it |
 | [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
 
 ---
@@ -554,6 +554,28 @@ the run — a **3.4 %** ceiling for the design's flagship saturation win.
 `Matcher::holds_seeded` exists and the lookahead uses it, so wiring it into the
 boundary stays available at [T1a.6.12.4](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6124--the-semi-naive-guard-re-evaluation-at-its-measured-reach)
 if the days are there; it is last in the stage and expected not to run.
+
+**Closed 2026-08-20. It did not run, and the ceiling is now measured on both
+sides of its product** rather than on one
+([baseline.md §18](p1a.6_performance/baseline.md#18-s1a612--the-boundary-and-the-premise-that-had-nothing-left-to-bind)):
+
+| cell | monotone share of guard evaluations | `Matcher::holds` share of the run | ceiling |
+|---|---:|---:|---:|
+| `solve zebra -e` | 16.3 % | 13.7 % | **2.2 %** |
+| `features/05 -e` | 11.1 % | 19.2 % | **2.1 %** |
+| `features/01 -e` | **100 %** | **1.4 %** | **1.4 %** |
+
+`features/01 -e` is the finding that settles it. Every one of its 599 375 guard
+evaluations *is* monotone — design/06's ≥ 80 % is not wrong about programs in
+general, it is wrong about which programs have a boundary worth optimising, and
+that cell's boundary is 2.9 % of its run. No cell in the corpus has both a
+monotone-dominated mix and a boundary that costs anything, and the structural
+argument above says why that is not a coincidence.
+
+The rest of S1a.6.12 took `zebra -e` from 76.7 to **47.5 ms** without the
+mechanism at all — and the ceiling shrank as it did, because the denominator
+did: `Matcher::holds` was 22.2 % of the run when this question was opened and
+is 13.7 % now.
 
 **What the boundary needs instead** — the second half of "if it is not, the
 boundary needs a different idea, and this question is where that gets decided"

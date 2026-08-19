@@ -287,8 +287,23 @@ the fork-state design problem a beta-memory has to answer first.
 > `slot-adjacent-fwd` contains the triangle `p1 — PT — p2 — p1` — but over
 > 30- and 16-fact relations, so the cost half of the trigger is still unmet.
 >
+> **And there is a step past the alpha-memory that is not a memory at all,
+> measured 2026-08-20.** Once the index narrows well, the question changes
+> from "which candidates" to "why a candidate list": **71.8 %** of the
+> premises the NAF boundary evaluates on an exhaustive `zebra` have *every*
+> slot bound by the time the walk reaches them, and 85.7 % of all candidates
+> are theirs. A premise with nothing left to bind is not a join — it asks
+> whether one proposition is in the KB, and an interned fact store answers
+> that in one lookup where the alpha-memory hands back a 9.96-fact bucket to
+> unify. `candidates` **1.17 M → 239 k**, `solve zebra.ein -e` **60 → 48 ms**
+> ([S1a.6.12](../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md)).
+> The RETE ladder has no rung for this because RETE's alpha network *is* the
+> proposition store; a system that keeps the two apart has to remember to ask.
+>
 > **ein.py has neither change.** The nested key is an ein.rs narrowing, and a
-> narrowing is invisible to the parity contract by construction.
+> narrowing is invisible to the parity contract by construction; the ground
+> lookup is the first place the two engines do measurably different work for
+> the same answer, and `scan_ground` counts it.
 
 ### O2 — Saturation (the fixpoint loop)
 

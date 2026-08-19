@@ -7,29 +7,37 @@
 [S1a.6.11](s1a.6.11_fixture_goldens.md), [S1a.6.2](s1a.6.2_memory_layout.md),
 [S1a.6.3](s1a.6.3_beta_memories.md),
 [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) and
-[S1a.6.5](s1a.6.5_frontend.md) on 2026-08-19. **All four targets are met with
-room** — the tightest by 4.9×. S1a.6.4 found that the phase had been measuring
-one shape of workload: the four targets are all `(hrule …)`-driven and never
-run the blind enumerator, which is 15 % of the corpus's slowest solves.
-S1a.6.5, a one-day confirmation of a path already 8× inside its acceptance,
-found a load parsing **3.30× the bytes on disk** and took **25 %** off it.
-Next is [S1a.6.12](s1a.6.12_boundary_and_snapshot.md), which the profile has
-been naming since S1a.6.3 and which is now **written against its own
-measurement** ([§17](baseline.md#17-the-boundary-measured-before-the-stage-that-aims-at-it)):
-the **NAF boundary** (37.7 % of `zebra -e` cumulatively, of which a *third* is
-not the queries) and the **per-entering snapshot** (10.3 %). That measurement
-also closes [Q-M1a.17](../open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate)
-— design/06 § Win B's headline mechanism reaches **7.3–15.3 %** of guard
-evaluations where it projected ≥ 80 %, so the stage spends its days on the
-refinement that never landed instead. The measurements are in
-**[baseline.md](baseline.md)**: §1–§9 are what the phase is chosen by,
-§10–§16 are where it stands, §17 is what it does next.
+[S1a.6.5](s1a.6.5_frontend.md) on 2026-08-19;
+[S1a.6.12](s1a.6.12_boundary_and_snapshot.md) on **2026-08-20**. **All four
+targets are met with room** — the tightest by 8.4×. S1a.6.4 found that the
+phase had been measuring one shape of workload: the four targets are all
+`(hrule …)`-driven and never run the blind enumerator, which is 15 % of the
+corpus's slowest solves. S1a.6.5, a one-day confirmation of a path already 8×
+inside its acceptance, found a load parsing **3.30× the bytes on disk** and
+took **25 %** off it.
+
+**S1a.6.12** was the stage the profile had been naming since S1a.6.3 — the NAF
+boundary and the per-entering snapshot — and it took `zebra -e` **76.7 →
+47.5 ms**. Four of its five tasks landed; the fifth,
+[Q-M1a.17](../open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate)'s
+semi-naive guard re-evaluation, is **declined in writing** at a measured 1.4–
+2.2 % ceiling. Two of the four went where §17 predicted (the stamp became one
+epoch per guard set; the fork stopped deep-copying the candidate arena). The
+other two did not: the *index* the stage was built to add was built twice and
+**reverted twice**, because a round stops at its first admission and the cost
+was copying the parked set rather than walking it — and the instrument that was
+only supposed to check whether the guards reach the index found that **71.8 %
+of them have every slot bound**, which makes them a hash lookup rather than a
+ten-fact bucket scan, and took another **20 %** off `zebra -e`. The
+measurements are in **[baseline.md](baseline.md)**: §1–§9 are what the phase is
+chosen by, §10–§16 are where it stood, §17 is what S1a.6.12 was written
+against and §18 is what it did.
 **Estimate:** 5 weeks (30 days of stages — S1a.6.1 added one worth 2 d and
 shortened another by 1 d; [S1a.6.9](s1a.6.9_fork_entry_delta.md) added 3 d,
 and its decision added [S1a.6.10](s1a.6.10_parity_contract.md) and
 [S1a.6.11](s1a.6.11_fixture_goldens.md) at 2 d each; every re-measurement since
 S1a.6.3 named the same next stage and
-[S1a.6.12](s1a.6.12_boundary_and_snapshot.md) is it, at 4 d)
+[S1a.6.12](s1a.6.12_boundary_and_snapshot.md) was it, at 4 d — shipped in one)
 **Depends on:** [P1a.5](../p1a.5_presentation/README.md) — the byte gate
 must be closed first, so every change here is measured against a green
 harness.
@@ -51,37 +59,46 @@ re-measured** ([S1a.6.1](s1a.6.1_profile_baseline.md) T1a.6.1.5) — the
 numbers the phase was planned with were up to a year old and two of them
 moved:
 
-| workload | PyPy today | target | at S1a.6.1 | at S1a.6.8 | at S1a.6.9 | at S1a.6.2 | at S1a.6.3 | at S1a.6.4 | **at S1a.6.5** |
+| workload | PyPy today | target | at S1a.6.1 | at S1a.6.9 | at S1a.6.2 | at S1a.6.3 | at S1a.6.4 | at S1a.6.5 | **at S1a.6.12** |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| `solve zebra2.ein -e` end-to-end | 4.53 s | ≤ 0.20 s (≥ 20×) | 198.8 ms ✅ | 138.1 ms ✅ | 99.1 ms ✅ | 75.8 ms ✅ | 44.0 ms ✅ | 41.7 ms ✅ | **40.8 ms ✅ 111×** |
-| `solve zebra.ein -e` end-to-end | 8.33 s | ≤ 0.40 s | 585.8 ms ❌ | 539.9 ms ❌ | 397.2 ms ✅ | 349.1 ms ✅ | 78.1 ms ✅ | 77.1 ms ✅ | **76.9 ms ✅ 108×** |
-| parse + load `zebra2.ein` | 0.43 s ¶ | ≤ 0.015 s (≥ 50×) | 1.04 ms ✅ | 1.01 ms ✅ | 1.01 ms ✅ | 0.90 ms ✅ | 0.90 ms ✅ | 0.89 ms ✅ | **0.66 ms ✅ 648×** |
-| the acceptance gate (3 fixtures) | 36.0 s ‡ | ≤ 5 s | 1.27 s ✅ | 1.02 s ✅ | 0.62 s ✅ | 0.58 s ✅ | 0.28 s ✅ | 0.20 s ✅ | **0.20 s ✅ 184× ⁋** |
+| `solve zebra2.ein -e` end-to-end | 4.53 s | ≤ 0.20 s (≥ 20×) | 198.8 ms ✅ | 99.1 ms ✅ | 75.8 ms ✅ | 44.0 ms ✅ | 41.7 ms ✅ | 40.8 ms ✅ | **28.9 ms ✅ 157×** |
+| `solve zebra.ein -e` end-to-end | 8.33 s | ≤ 0.40 s | 585.8 ms ❌ | 397.2 ms ✅ | 349.1 ms ✅ | 78.1 ms ✅ | 77.1 ms ✅ | 76.9 ms ✅ | **47.5 ms ✅ 175×** |
+| parse + load `zebra2.ein` | 0.43 s ¶ | ≤ 0.015 s (≥ 50×) | 1.04 ms ✅ | 1.01 ms ✅ | 0.90 ms ✅ | 0.90 ms ✅ | 0.89 ms ✅ | 0.66 ms ✅ | **0.67 ms ✅ 642×** |
+| the acceptance gate (3 fixtures) | 36.0 s ‡ | ≤ 5 s | 1.27 s ✅ | 0.62 s ✅ | 0.58 s ✅ | 0.28 s ✅ | 0.20 s ✅ | 0.20 s ✅ | **0.127 s ✅ 283× ⁋** |
 
-**All four targets are met with room**, seven stages into the phase. The one
+The S1a.6.8 column is dropped from this table for width (138.1 / 539.9 / 1.01 /
+1.02); every stage's own numbers are in its
+[baseline.md](baseline.md) section.
+
+**All four targets are met with room**, eight stages into the phase. The one
 that needed it was `solve zebra.ein -e`, and what met it was
 [S1a.6.9](s1a.6.9_fork_entry_delta.md) — a fork resuming root's saturation
 instead of re-deriving it, which is also the first change in the port where
 matching ein.py byte for byte and building the better engine pulled apart.
 [S1a.6.2](s1a.6.2_memory_layout.md) took another 23.5 % and 12.1 % off the two
 `-e` cells; [S1a.6.3](s1a.6.3_beta_memories.md) then took **4.5×** off
-`zebra -e` with an index key, and the tightest target now has **80 % of
-headroom** where it had 0.7 %. Both `-e` cells are **111×** and **108×** the
-PyPy column above — [baseline.md §16](baseline.md#16-s1a65--the-load-path-and-the-modules-it-parsed-twice)
-divides by [§1](baseline.md#1-end-to-end-process-against-process)'s PyPy run
-instead and reads 121× / 114×, which is the same ein.rs number against a
-5 %-slower reading of the same interpreter.
+`zebra -e` with an index key, and
+[S1a.6.12](s1a.6.12_boundary_and_snapshot.md) another **38 %** — the tightest
+target now has **88 % of headroom** where it had 0.7 %. Both `-e` cells are
+**157×** and **175×** the PyPy column above;
+[baseline.md §18](baseline.md#18-s1a612--the-boundary-and-the-premise-that-had-nothing-left-to-bind)
+names the same denominator, and [§1](baseline.md#1-end-to-end-process-against-process)'s
+PyPy run — 5 % slower, equally real — would read higher for the same ein.rs
+number.
 
 **The parse + load row is the one S1a.6.5 moved**, from 0.89 to 0.66 ms — and
 it moves every *process*, not just that cell: 0.23 ms off `saturate zebra2`
 (3.9 → 3.6 ms) and off each of the 473 cells the harness runs per tier.
 
-The phase's subject has moved with them. `zebra -e` was 84.8 % matcher at the
-end of S1a.6.2 and is **38.6 %** now; what is left is the NAF boundary
-(`admit_from_boundary`, **37.7 %** *cumulatively*) and the per-entering
-snapshot (`Saturator::resume`, 10.3 %) — the same two on the blind-mode
-workloads S1a.6.4 added, at 28.2 % and 12.4 %, and both are
-[S1a.6.12](s1a.6.12_boundary_and_snapshot.md).
+The phase's subject has moved with them, twice. `zebra -e` was 84.8 % matcher
+at the end of S1a.6.2 and 38.6 % after S1a.6.5, when the two blocks left were
+the NAF boundary (`admit_from_boundary`, **37.7 %** cumulatively) and the
+per-entering snapshot (`Saturator::resume`, 10.3 %). S1a.6.12 took those to
+**17.8 %** and **7.6 %** — 28.9 → 8.5 ms and 7.9 → 3.6 ms in absolute terms —
+and the profile now has **no block above 8 %** of self time. What is largest is
+the enqueue path (`enqueue_pass` + `enqueue_binding` + the `BindingKey` hashing
+under them), which is what [S1a.6.7](s1a.6.7_relever_matrix.md) re-levers
+against.
 
 **And the targets are not the whole corpus.** All four are
 `(hrule …)`-driven, so none of them runs the blind enumerator at all;
@@ -105,12 +122,12 @@ ein.rs column covers, and the whole gate is 49.3 s today. Three recorded
 values of that number so far, all real —
 [baseline.md §6](baseline.md#6-cargo-bench--variance-and-the-acceptance-gate).
 
-⁋ **Measured differently from the columns left of it**, and so is its 0.199 s
-predecessor: S1a.6.4 timed the three `ein-infer` acceptance tests from their
-own binary, unpinned, best of three, at *both* ends of its own A/B (0.199 →
-0.196 s). The delta is what that stage claims; the absolute is what the method
-gives, and it is the fourth recorded value of a quantity §6 already says has
-three.
+⁋ **Measured differently from the columns left of it**, and so are its 0.196 s
+and 0.199 s predecessors: S1a.6.4 timed the three `ein-infer` acceptance tests
+from their own binary, unpinned, best of three, at *both* ends of its own A/B
+(0.199 → 0.196 s), and S1a.6.12 the same way (0.135 / 0.131 / **0.127** s). The
+delta is what a stage claims; the absolute is what the method gives, and this
+is the fifth recorded value of a quantity §6 already says has three.
 
 ¶ The planned 0.78 s is not reproducible from its own components on either
 interpreter; see
@@ -164,7 +181,7 @@ and [§9](baseline.md#9-the-fork-entry-re-derivation).
 | 7 | [S1a.6.3](s1a.6.3_beta_memories.md) ✅ | Beta-memories (F11 D1) — **gate closed** | 4 d | **shipped 2026-08-19 without the memory.** The index now keys one level *inside* a nested argument (T1a.6.3.0): candidates 25.16 M → **1.17 M**, `zebra -e` **349 → 78 ms**, T2 239/240. Then a per-layer Bloom filter, −7.3 %. The gate says no to the memory: the intermediate it would materialise is **2.2 tuples wide**, and a per-fork copy of one measured **+7.6 %** at T1a.6.2.5. [F11 D1](../../followups/f11_deductive_layer_perf.md) re-priced, **Q-M1a.10 answered *no***, D2's trigger re-checked — the cyclic body exists, the cost does not |
 | 8 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) ✅ | Hypgen and lattice hot paths | 3 d | **shipped 2026-08-19, aimed elsewhere by its own measurement.** A call offers **125** raw candidates, not 18 k, and spends **71 %** of a `complete()` on setup — 219 compile-cache keys per call. Two new tasks took that; T1a.6.4.2/3 took **15 %** off the blind-mode cells no target covers. **Three planned tasks closed against numbers**: intern-on-probe (probe *is* intern here), the no-good bitmask (**0.3 %** in the regime design/07 §4 said it would dominate), incremental alive (**6** calls a solve) |
 | 9 | [S1a.6.5](s1a.6.5_frontend.md) ✅ | Frontend and load path — **shortened** | 1 d | **shipped 2026-08-19** — the confirmation found a load parsing **3.30× the bytes on disk**, because resolution parses a module once per *edge* of a diamond. `load/zebra2` **−25.5 %**, `parse/zebra2_resolve` −31.6 %; two of its six tasks proposed pre-sizing and **both lost** at this scale. Start-up is 1.02 ms, 0.59 ms of it snmalloc's |
-| 10 | [S1a.6.12](s1a.6.12_boundary_and_snapshot.md) | The NAF boundary and the per-entering snapshot | 4 d | **next**, and written against [§17](baseline.md#17-the-boundary-measured-before-the-stage-that-aims-at-it). The only two blocks left above 10 % on **both** workload shapes — `admit_from_boundary` 37.7 % / 28.2 % cumulative, `Saturator::resume` 10.3 % / 12.4 % — and the split inside the first is the finding: **a third of the boundary is not the queries**, it is visiting 248 043 parked candidates to ask 29 865 questions. Q-M1a.17 closes against Win B's headline (7.3–15.3 %, not ≥ 80 %); the snapshot is the change S1a.6.9 declined at **0.6 %** and is now 17× that |
+| 10 | [S1a.6.12](s1a.6.12_boundary_and_snapshot.md) ✅ | The NAF boundary and the per-entering snapshot | 4 d | **shipped 2026-08-20** — `zebra -e` **76.7 → 47.5 ms**, `zebra2 -e` 41.1 → 28.9, `features/05 -e` −18 %, no cell slower. The boundary is 37.7 % → **17.8 %** and the snapshot 10.3 % → 7.6 %. Two tasks went where §17 predicted; the *index* the stage was named for was built twice and **reverted twice** (a round stops at its first admission — the cost was copying the parked set, not walking it), and the instrument meant only to check the guards' index found **71.8 % of guard premises fully bound**, which is a hash lookup rather than a ten-fact scan: candidates 1 172 870 → **238 567**. Q-M1a.17 **closed**, its mechanism declined at a 1.4–2.2 % ceiling |
 | — | [S1a.6.6](s1a.6.6_differential_fuzzer.md) | The differential fuzzer | 3 d | runs *throughout*, not at a position — it guards every row above |
 | 11 | [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d | last, as planned |
 

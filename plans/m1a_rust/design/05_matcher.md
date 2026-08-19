@@ -223,6 +223,22 @@ The parity contract splits candidate optimisations cleanly.
 | callback emission | tuple/dict materialisation per match | allocation-free inner loop |
 | `_binding_key` as a fixed `[Value; n]` hashed with FxHash | `frozenset((k, _hashable(v)) …)` | 2.7 s cum, 445 k calls |
 | plan-local relation `Vec<FactId>` pointer cached per Scan | dict lookup per step | small, free |
+| **a fully bound premise resolved by one interned lookup** ([T1a.6.12.3](../p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6123--what-the-guard-queries-scan)) | fetching the participation bucket and unifying all of it | measured: candidates **1 172 870 → 238 567** on `zebra -e`, −20.6 % end-to-end |
+
+The last row is the one the parity argument has to be stated for, because it
+does not merely *narrow* the candidate stream — it replaces it. A premise every
+one of whose slots is bound denotes exactly one argument tuple; `unify` accepts
+a fact iff its arguments **are** that tuple; and the fact store interns
+propositions, so no two facts share one. The scan therefore emits the same
+one-or-none sequence with the same `FactId`, and a nested pattern naming a
+proposition that was never interned emits nothing without a lookup at all. It
+is the same argument the probe narrowing rests on (`_bind_args` re-checks every
+slot), taken to its limit: when the re-check is the *whole* test, the search
+around it is redundant.
+
+Its price is one slot inspection per premise on the path where nothing is
+bound — `+0.9 %` on `branching/07 -e`, which has no ground premise anywhere,
+and +4.0 % on the `match_hot` micro-bench.
 
 `_binding_key` deserves a note: the Python key is
 `(rule_name, plan.activator_args, frozenset(bindings.items()))`, and

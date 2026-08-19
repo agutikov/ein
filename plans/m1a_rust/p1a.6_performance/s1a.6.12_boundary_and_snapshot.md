@@ -1,6 +1,12 @@
 # S1a.6.12 — The NAF boundary and the per-entering snapshot
 
 **Phase:** P1a.6 (Performance)
+**Status:** **shipped 2026-08-20** — five tasks, four landed, one declined
+with its number, and one of the four aimed somewhere the stage did not
+predict. `solve zebra -e` **76.7 → 47.5 ms**, `zebra2 -e` 41.1 → 28.9,
+`features/05 -e` 3673 → 3010, and **no cell in either bench set slower**.
+The measurements are [baseline.md §18](baseline.md#18-s1a612--the-boundary-and-the-premise-that-had-nothing-left-to-bind);
+what each task did is at the end of its section below.
 **Estimate:** 4 days
 **Depends on:** [S1a.6.3](s1a.6.3_beta_memories.md) (which named it),
 [S1a.6.9](s1a.6.9_fork_entry_delta.md) (whose snapshot this halves the cost of)
@@ -127,6 +133,39 @@ ask, because its 384 167 forks each judge a small parked set once. The task is
 worth what it is worth on the deep saturations, and the blind cells are where
 T1a.6.12.5 pays instead.
 
+**Outcome — landed in two halves, and the index was not one of them.**
+
+*T1a.6.12.1a: the stamp is a property of the world, not of the candidate.*
+Sizes are taken **once per round** and every guard set whose relations grew
+gets that round's epoch; a candidate is stale exactly when its set's epoch is
+past the epoch it was judged at. The same predicate in two integer loads, and
+the same predicate *exactly* — the KB cannot change while the boundary runs, so
+every judgement sees the sizes its own round recorded. Boundary extent probes
+**494 566 → 12 864** on `zebra -e` (38×), 406 106 → 8 805 on `zebra2 -e`;
+`zebra -e` −7.2 %. Its side effect is the one T1a.6.12.5 needed: `judged_at`
+moved to a side table and `Entry` became written-once-at-enqueue.
+
+*T1a.6.12.1b: the index was built twice and reverted twice.* A per-candidate
+ordered work set reaches the ideal visit count — 29 865, one per judgement —
+and costs **+1.5 % instructions**, because a park is an ordered insert and
+there are more parks than the visits they save. Per-guard-set chains cost
+**+18 %**. Then the instrumentation nobody had taken said what the round
+actually spends: **3 216 rounds, 947 758 parked slots copied, 248 043
+visited**, because a round stops at its first admission a quarter of the way
+in. The cost was never the visits — it was copying the ordered set to walk a
+quarter of it. The walk now holds the set and defers its removals, and the
+`fired` probe (a `BindingKey` hash per candidate per round, **3.8 % of self
+time** for a branch no corpus program takes) is gated on `may_collide`.
+`zebra -e` **−8.1 %**, and `examples/features/08_disjunct_guard_sets.ein` is
+the fixture that takes the branch.
+
+**The gate, honestly:** `watch_stamp` is **unchanged at 248 043**. The ≥ 5× it
+asked for was written against a model where a visit costs two extent probes and
+a vector compare; T1a.6.12.1a made a visit two integer loads, and then the
+measurement said the ordered-set copy was the cost. Both work sets that would
+have moved the counter were built, measured and reverted — [Rule 3](README.md#rules-for-this-phase),
+with numbers.
+
 ### Task T1a.6.12.2 — The per-round guard memo, priced
 
 **The measurement.** `guard_query − guard_eval` is the memo's hit count:
@@ -154,6 +193,15 @@ lower the hit rate further.
 `features/05 -e` improves. If it does not, keep the memo and record the number
 next to design/06 § Win B refinement 1.
 
+**Outcome — removed, on the work rather than the clock.** Instructions retired
+**44.29 → 42.41 G** on `features/05 -e` (−4.3 %) and 1.0197 → 1.0049 G on
+`zebra -e`, with 4.7 M allocations gone; wall time unchanged either way. The
+control is what settles it: `branching/07 -e` has **zero guards**, executes the
+same 14.35 G instructions in both builds, and still differs by 1.3 % in cycles —
+this machine's layout noise is larger than the memo ever was. `guard_eval` now
+equals `guard_query` by construction, and the pair is kept so a memo proposed
+here again has to earn the gap back.
+
 ### Task T1a.6.12.3 — What the guard queries scan
 
 `Matcher::holds` is 22.2 % of `zebra -e` and 18.0 % of `features/05 -e`, and
@@ -174,6 +222,31 @@ with a 10 % price tag.
 **Gate:** the instrument lands regardless (it is four counter fields); the
 optimisation only if the split says there is one, at ≥ 3 % end-to-end.
 
+**Outcome — the split answered "no bug", and the counters found a bigger
+question.** `scan_extent_guard` is **0** on every cell: guard sub-plans reach
+S1a.6.3's index perfectly, and the 10.8 % of self time in `facts_with` was
+never an un-indexed scan. What the split showed instead is ownership —
+**85.7 %** of `zebra -e`'s candidates and **100 %** of `features/05 -e`'s come
+from guard sub-plans — and, with one more counter, that **71.8 %** of
+`zebra -e`'s guard premises had every slot bound by the time the walk reached
+them.
+
+A premise with nothing left to bind is not a search. It asks whether one exact
+proposition is in the KB; the fact store interns propositions, so at most one
+fact can answer it and the store names that fact in a hash lookup, where the
+scan fetched a ten-deep bucket and unified all of it. Identical by construction
+— the pattern denotes one argument tuple, `unify` accepts a fact iff its
+arguments *are* that tuple, no two facts share one — so the candidate sequence
+is the same one-or-none sequence.
+
+Candidates **1 172 870 → 238 567** on `zebra -e`, instructions 805 → 533 M,
+end-to-end **−20.6 %** (and −22.3 % on `solve zebra`). The two puzzles differ
+by 5× because `zebra`'s guard buckets are 9.96 facts deep and `zebra2`'s are
+2.72. `branching/07 -e` prices the check itself at **+0.9 %** — it has no
+ground premise anywhere and pays the slot inspection for nothing.
+`scan_ground` / `scan_ground_guard` / `cand_ground` land with it, and they are
+the first counters where the two engines stop doing the same work on purpose.
+
 ### Task T1a.6.12.4 — The semi-naive guard re-evaluation, at its measured reach
 
 `Matcher::holds_seeded` **already exists** and is wired into
@@ -185,6 +258,20 @@ evaluations are 22.2 % of the run, so a *perfect* implementation saves at most
 
 **Runs last, and may not run at all.** Build it only if T1a.6.12.1–3 leave the
 queries dominant *and* it costs under a day; otherwise decline it in writing.
+
+**Outcome — declined, and here is the writing.** Both sides of the product are
+now measured, and no cell in the corpus has both:
+
+| cell | monotone share of guard evaluations | `Matcher::holds` share of the run | ceiling |
+|---|---:|---:|---:|
+| `solve zebra -e` | 16.3 % | 13.7 % | **2.2 %** |
+| `features/05 -e` | 11.1 % | 19.2 % | **2.1 %** |
+| `features/01 -e` | **100 %** | **1.4 %** | **1.4 %** |
+
+`features/01 -e` is the program design/06 was describing — every one of its
+599 375 guard evaluations is monotone, the ≥ 80 % the design assumed — and its
+boundary is 2.9 % of the run. The mechanism is not wrong about programs; it is
+wrong about which programs have a boundary worth optimising.
 Either way [Q-M1a.17](../open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate)
 closes here with the exhaustive table above, and
 [design/06 § Win B](../design/06_saturation.md#4-win-b--a-semi-naive-boundary)
@@ -231,6 +318,25 @@ hash probe per fact, once per entering, to compute a delta that is usually a
 handful of facts. It is small on today's cells (617 root facts on `zebra`) and
 it is O(|KB|) per entering by construction, so measure it in the same pass and
 fix it if the blind cells say so.
+
+**Outcome — landed, and the blocker had already been removed.** T1a.6.12.1a
+moved `judged_at` off the row, so `Entry` was written once at enqueue and never
+again; the arena is now two layers — the parent's behind an `Arc`, the fork's
+appended locally, ids dense and stable across the seam — and the copy that
+remains is one `flattened()` per *snapshot*, one per root saturation, against
+111 enterings on `zebra -e` and 384 167 on `features/05 -e`.
+
+`Saturator::resume` **10.3 % → 5.5 %** cumulative when it was measured (7.6 %
+now, against a denominator T1a.6.12.3 shrank by another 20 %); absolutely,
+7.9 → 3.6 ms on `zebra -e` and 455 → 232 ms on `features/05 -e`. End-to-end
+−11.9 % / −8.7 %, and −4.3 % on `branching/07 -e`, which never enters the
+boundary at all and forks 11 501 times — the number that says this is what a
+fork costs rather than what a boundary costs.
+
+What is left in `resume` is `seen`, `fired` and `pos_index`: append-only, so
+the same layering applies, at 5.5 % total rather than the 10.3 % that made this
+task worth a day. `Snapshot::new_facts_of` never surfaced above 1 % on any
+profile and is not touched.
 
 ## Acceptance for this stage
 

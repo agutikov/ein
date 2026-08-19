@@ -189,28 +189,45 @@ behind a T2 diff on the whole corpus.
 **Not allowed:** batch admission (§1), or skipping the boundary when the
 queue is non-empty (the phases are ordered for a reason).
 
-### What each of them was worth — measured 2026-08-18 and 2026-08-19
+### What each of them was worth — measured 2026-08-18 to 2026-08-20
+
+All four are now closed, three of them against the measurement rather than for
+it ([S1a.6.12](../p1a.6_performance/s1a.6.12_boundary_and_snapshot.md),
+[baseline.md §18](../p1a.6_performance/baseline.md#18-s1a612--the-boundary-and-the-premise-that-had-nothing-left-to-bind)):
 
 | | projected | measured |
 |---|---|---|
-| the mechanism (monotone semi-naive) | ≥ 80 % of guard evaluations | **7.3–15.3 %** — [Q-M1a.17](../open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate), **declined** |
-| 1. per-round guard memo | "two parked candidates frequently share a guard and env" | **0–1.2 % hit rate** — landed at S1a.3.4, and refinement 2 is why it hits nothing |
-| 2. version counters, not size tuples | one comparison instead of a tuple | landed at S1a.3.4 as a stamp buffer on the entry; **sizes are the version counter**, since the KB only grows |
-| 3. dirty set instead of heap churn | walk in the same order, evaluate only what changed | **half landed** — the heap churn went (a `BTreeSet` read in order), the *walk* did not: 248 043 visits per `zebra -e` for 29 865 questions |
+| the mechanism (monotone semi-naive) | ≥ 80 % of guard evaluations | **7.3–16.3 %** on the puzzles, **100 %** on `features/01` — [Q-M1a.17](../open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate), **declined** at a 1.4–2.2 % ceiling |
+| 1. per-round guard memo | "two parked candidates frequently share a guard and env" | **0–1.2 % hit rate** — landed at S1a.3.4, **removed at T1a.6.12.2**; refinement 2 is why it hit nothing |
+| 2. version counters, not size tuples | one comparison instead of a tuple | landed at S1a.3.4 as a stamp buffer on the entry, **replaced at T1a.6.12.1a by one epoch per *guard set*** — sizes are a property of the world, so they are taken once per round rather than once per candidate: 494 566 → **12 864** extent probes |
+| 3. dirty set instead of heap churn | walk in the same order, evaluate only what changed | the heap churn went at S1a.3.4; the *index* was built twice at T1a.6.12.1b and **reverted twice**, at +1.5 % and +18 % |
 
-Together, 1 and 2 moved the boundary ~2 % at root scale, which was the honest
-number at the time. The half of 3 that never landed is worth ~15.5 % of an
-exhaustive `zebra`, and it is
-[S1a.6.12](../p1a.6_performance/s1a.6.12_boundary_and_snapshot.md)'s first
-task; the mechanism the whole section is named for is worth **3.4 %** at its
-ceiling and is that stage's last.
+Refinement 3 is the one worth reading twice. A per-candidate work set reaches
+the ideal visit count — one per judgement, 29 865 instead of 248 043 — and is
+**slower**, because a park is an ordered insert and a run parks more often than
+its rounds skip. What the round actually spends is upstream of the whole
+argument: `zebra -e` runs 3 216 rounds over 947 758 parked slots and visits
+248 043 of them, because **a round stops at its first admission**, a quarter of
+the way in. Not copying the ordered set to walk a quarter of it is worth 8 %;
+knowing which quarter to walk is worth less than it costs to know.
 
 **The lesson is about the shape of the projection, not the arithmetic.** Win B
 reasoned from what a monotone guard *permits* and never asked how many parked
 candidates have one — and the answer is structural: a failing monotone guard
 retires its candidate immediately, so the parked set is, by construction, the
 population the mechanism cannot serve. A projection over a set defined by the
-complement of your own precondition is the failure mode to look for.
+complement of your own precondition is the failure mode to look for. The
+section's second lesson is refinement 3's: an optimisation aimed at the loop
+body when the cost is in the loop's *setup* can be exactly right about the
+mechanism and still lose.
+
+**And what the boundary's remaining cost turned out to be**, once both were
+settled: not the visits and not the verdicts, but the *premises*. 85.7 % of an
+exhaustive `zebra`'s candidates come from guard sub-plans, and **71.8 % of
+those premises have every slot bound** by the time the walk reaches them — a
+question the fact store answers with one interned lookup, where the matcher was
+fetching a ten-deep participation bucket and unifying all of it
+(T1a.6.12.3, −20.6 % end-to-end).
 
 ---
 
