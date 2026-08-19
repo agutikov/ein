@@ -262,7 +262,7 @@ runs.
 | ein.py index | purpose | ein.rs |
 |---|---|---|
 | `_facts_by_relation` | relation extent; match candidates; `_watch_stamp` sizes | `Vec<FactId>` per `Symbol`; size = `base.len + delta.len` |
-| `_facts_by_rel_slot_val` | the participation index (RETE alpha-memory, S1.8.B-idx) | same key, `Vec<FactId>`; key packs to a `u64` (`sym:32 | slot:8 | value:24`… see note) |
+| `_facts_by_rel_slot_val` | the participation index (RETE alpha-memory, S1.8.B-idx) | `Vec<FactId>` per `SlotKey` — and since T1a.6.3.0 the key reaches one level *inside* a nested argument, which ein.py's does not (see note) |
 | `_negated_facts` | `(not X)` membership → hypgen Tier-A filter, `contradicts` | **`BitSet` over `FactId`** |
 | `_rule_apps_by_rule` | activators for a rule | `Vec<FactId>` per `Symbol` |
 | `_rule_apps_on_relation` | property facts targeting a relation | `Vec<FactId>` per `Symbol` |
@@ -275,6 +275,25 @@ symbol's 32, which overflows — so either keep the 12-byte key with
 `FxHash` (fine; it is one hash per Scan step) or hash the triple to a
 `u64` and keep the exact key in the bucket for collision checking. Start
 with the former; measure in [P1a.6](../p1a.6_performance/README.md).
+
+> **Measured, and the key grew a level instead of shrinking
+> ([T1a.6.3.0](../p1a.6_performance/s1a.6.3_beta_memories.md), 2026-08-19).**
+> The 12-byte key's *hashing* was never the cost; what it did not index was.
+> ein.py keys the join types only — a `Fact`-valued argument is not keyed — so
+> a `(not (R ?b ?i))` premise, which is `stdlib/slots.ein`'s and **99.1 %** of
+> an exhaustive `zebra`'s candidates, walked the whole `not` extent. The key is
+> now `(Symbol, slot: u16, inner: u16, Value)` — still 12 bytes, `inner` living
+> in the padding — where `inner` names a position *inside* the nested fact or
+> is `DIRECT`. Candidates 25.16 M → **1.17 M**, `solve zebra -e` 349 → 78 ms,
+> and the whole firing sequence unchanged (T2 239/240) because a narrowing
+> changes which facts are *offered*, not which ones match.
+>
+> Two consequences worth carrying: each layer also holds a **2048-bit Bloom
+> filter** over its keys, because with the lookup now the common case a fork 24
+> layers deep was spending 15.6 % of the run hashing the same key per layer;
+> and `Kb::index_sizes` reports the `DIRECT` postings only, so `saturate`'s
+> snapshot keeps describing the *knowledge base* rather than ein.rs's indexing
+> of it.
 
 `NameRef.category` (`object` / `relation` / `rule`) is computed exactly
 as `_categorise_name` does — including the S1.7.6 rule that `type` /

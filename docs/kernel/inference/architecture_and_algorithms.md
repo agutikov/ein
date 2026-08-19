@@ -268,11 +268,27 @@ delta-driven enqueue + `run_seeded` is **TREAT-like**: it keeps no
 beta-memories, but re-joins only the *delta* and seeds at the new fact
 (semi-naive join). **Gap:** no persisted beta-memories (the partial-join
 products are recomputed every relevant firing — the thing RETE would cache),
-and no worst-case-optimal join (binary plans only). Beta-memories are the
-natural next step beyond D5; WCOJ matters only if cyclic joins appear. Both
-are parked as
+and no worst-case-optimal join (binary plans only). Both are parked as
 [F11](../../../plans/followups/f11_deductive_layer_perf.md), which carries
 the fork-state design problem a beta-memory has to answer first.
+
+> **Measured in the Rust port, 2026-08-19, and both parks hardened.** The
+> alpha-memory turned out to be the lever, not the beta-memory:
+> `_facts_by_rel_slot_val` keys the join *types* only, so a `(not (R ?b ?i))`
+> premise — `std.slots`' rule 247, and **99.1 %** of an exhaustive `zebra`'s
+> candidates — narrowed on nothing and scanned the whole `not` extent. ein.rs
+> now keys **one level inside** a nested argument: candidates 25.16 M →
+> **1.17 M**, `solve zebra.ein -e` **349 → 78 ms**, with the firing sequence
+> unchanged. The partial-join product a beta-memory would cache is
+> consequently **2.2 tuples per step entered**, down from 47.4, which is why
+> [S1a.6.3](../../../plans/m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md)
+> ran its gate and declined to build one. And WCOJ's "only if cyclic joins
+> appear" needs correcting: they have appeared —
+> `slot-adjacent-fwd` contains the triangle `p1 — PT — p2 — p1` — but over
+> 30- and 16-fact relations, so the cost half of the trigger is still unmet.
+>
+> **ein.py has neither change.** The nested key is an ein.rs narrowing, and a
+> narrowing is invisible to the parity contract by construction.
 
 ### O2 — Saturation (the fixpoint loop)
 
@@ -567,10 +583,17 @@ saturation of forks that genuinely live, i.e. the matcher again. The remaining n
 
 - **RETE beta-memories** — persist partial joins across firings (the one
   thing D5 still recomputes). The natural successor to D5 for O1, and with
-  dead-fork waste gone it is now the single largest remaining lever
+  dead-fork waste gone it *was* the single largest remaining lever
   ([F11](../../../plans/followups/f11_deductive_layer_perf.md)).
-- **Worst-case-optimal joins** — only if cyclic join patterns appear (they
-  don't yet).
+  **It is not any more, measured 2026-08-19 in the Rust port:** deepening the
+  alpha-memory by one level (key inside a nested argument) cut an exhaustive
+  `zebra`'s candidates from 25.16 M to 1.17 M, leaving the partial join **2.2
+  tuples wide per step entered**. F11 D1 is re-priced rather than closed —
+  promotion now needs a workload whose per-step candidate count is large again.
+- **Worst-case-optimal joins** — only if cyclic join patterns appear ~~(they
+  don't yet)~~ **and are hot**. They *have* appeared: `std.slots`'
+  `slot-adjacent-fwd` binds the triangle `p1 — PT — p2 — p1`. What is missing
+  is the cost half — those relations hold 30 and 16 facts.
 - **DPLL/CDCL re-architecture of O7/O8** — watched literals, VSIDS,
   non-chronological backjumping. The big structural change; deferred because
   search is not the bottleneck (saturation is). Both recorded forward pointers

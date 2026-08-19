@@ -18,7 +18,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | open — recommendation: no, plus an opt-in escape |
 | [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | open — port as-is, flag upstream |
 | [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | open — decide at the P1a.5 gate |
-| [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | open — gated on measurement |
+| [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | **answered no** 2026-08-19 — an index key was the lever, not a memory |
 | [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | **closed moot 2026-08-18 — no server** |
 | [Q-M1a.12](#q-m1a12--remote-access-and-auth) | Remote access and auth for `ein serve` | **closed moot 2026-08-18 — no server** |
 | [Q-M1a.13](#q-m1a13--argparse-surface-parity) | Reproducing `argparse` `--help` and error text | **resolved 2026-08-18 — (b): behaviour exact, presentation normalised** |
@@ -249,6 +249,28 @@ and the semi-naive boundary land. It may not be — those two remove the
 costs that made partial-join recomputation expensive. **Decide by
 profile, not by plan**; if it is a wash, revert it and leave F11 open,
 exactly as P1.8a's D3 was handled.
+
+**Answered *no*, 2026-08-19, by the profile
+([S1a.6.3](p1a.6_performance/s1a.6.3_beta_memories.md)).** It is not the
+largest lever and it is not built. The gated stage ran and found that two
+cheaper changes had removed what the memory was for:
+
+- **the intermediate it would materialise is 2.2 tuples wide.** T1a.6.3.0
+  keyed the participation index one level inside a nested argument, and an
+  exhaustive `zebra`'s candidates went 25 160 149 → **1 171 385** — from 47.4
+  per step entered to **2.21** — while the run went 349 → **78 ms**;
+- **the per-fork copy is not free after all.** T1a.6.2.5 built the flat
+  per-relation table design/05 §7 calls the root memory and **cloning it per
+  fork cost 7.6 %**, while the fork-free bench got 8 % faster. A fork shares
+  the layered index by `Arc`; a materialised memory gives every live fork its
+  own copy of the thing the matcher scans;
+- **the re-derivation the root memories would replay is gone** — S1a.6.9's
+  resumed fork saturator removed it.
+
+F11 D1 stays open and re-priced rather than closed: promotion now needs a
+workload whose per-step candidate count is large again. The stage's other
+answer, D2's trigger, is recorded there too — the *cyclic body* half is met by
+`stdlib/slots.ein` and the *cost* half is not.
 
 ## Q-M1a.11 — Server wire protocol
 

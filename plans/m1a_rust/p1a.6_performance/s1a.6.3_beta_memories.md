@@ -7,6 +7,34 @@
 **Closes or updates:** [F11](../../followups/f11_deductive_layer_perf.md)
 D1, Q-M1a.10
 
+**Status: shipped 2026-08-19, and the beta-memory is not in it.** `solve
+zebra.ein -e` **349.1 → 78.1 ms (4.5×)** and `solve zebra2.ein -e`
+**75.8 → 44.0 ms (1.7×)**, on two changes to the *alpha*-memory — and then the
+gate below was answered against the profile they left. The acceptance gate's
+three fixtures went 0.58 → **0.28 s**, and the whole repo gate is green:
+1 506 pytest + 21 acceptance + the ein.rs suite.
+
+| task | outcome |
+|---|---|
+| **T1a.6.3.0** (new) the index keys one level in | **shipped** — `candidates` 25.16 M → **1.17 M** on `zebra -e`, extent scans → 581. T2 239/240, T3 472/473 |
+| **T1a.6.3.0b** (new) a Bloom filter per layer | **shipped** — `facts_with` 15.6 % → 10.1 %, −7.3 % end-to-end |
+| [T1a.6.3.1](#task-t1a631--the-ordering-argument-first) the ordering argument | **written and executed** — the randomised differential harness is what checks the narrowing |
+| [T1a.6.3.2](#task-t1a632--root-memories) root memories | **moot** — S1a.6.9 removed the re-derivation they would replay |
+| [T1a.6.3.3](#task-t1a633--fork-delta-memories) fork delta memories | **not built** — the join is **2.2 candidates per step entered**, down from 47.4 |
+| [T1a.6.3.4](#task-t1a634--which-prefixes-to-materialise) prefix policy | **not reached** |
+| [T1a.6.3.5](#task-t1a635--interaction-with-the-semi-naive-boundary) guards | **stands: no memories** — and the boundary is now the largest single block |
+| [T1a.6.3.6](#task-t1a636--feature-gate-and-measure) feature gate | **not needed** — nothing was gated; the A/B was two builds |
+
+**The gate did what a gate is for.** Its own acceptance says failing the test
+and recording why "is a successful outcome for this stage", and that is what
+[§14](baseline.md#14-s1a63--the-alpha-memory-and-the-gate-the-beta-memory-did-not-pass)
+records: a beta-memory exists to stop re-enumerating a large intermediate, the
+intermediate is now 2.2 tuples wide, and the per-fork copy it would need is the
+one thing this phase has already measured as harmful (T1a.6.2.5, **+7.6 %**).
+[F11](../../followups/f11_deductive_layer_perf.md) D1 is updated with the
+numbers rather than closed as done. **Q-M1a.10 is answered: no**, the
+beta-memory is not the largest remaining lever — an index key was.
+
 ## Context
 
 The named next rung on the Datalog ladder. The engine has walked
@@ -108,12 +136,24 @@ compares the emitted match sequences.
 
 ### Task T1a.6.3.2 — Root memories
 
+> **Moot.** [S1a.6.9](s1a.6.9_fork_entry_delta.md) made a fork *resume* root's
+> saturation instead of replaying it, so the re-derivation these memories
+> existed to replay from a table is already gone — fork firings −74 % / −77 %
+> before this stage started.
+
 Build during root saturation, store in `KbCore`, share read-only by
 `Arc` across every fork. Keyed `(PlanId, prefix_len)`; value is a packed
 tuple array (registers bound at that prefix) plus the premise `FactId`s
 needed to rebuild provenance.
 
 ### Task T1a.6.3.3 — Fork delta memories
+
+> **Not built, against a number.** After T1a.6.3.0 the join is **2.2
+> candidates per step entered** on `zebra -e` (0.86 on `zebra2 -e`), down from
+> 47.4. A table lookup that replaces 47 candidates is a lever; one that
+> replaces 2.2 is a constant factor with a per-fork table attached — and
+> [T1a.6.2.5](s1a.6.2_memory_layout.md) measured a per-fork copy of exactly
+> this shape at **+7.6 %**.
 
 Per-fork, holding only partial joins involving at least one fork-local
 fact. Enumeration walks root-then-delta. A fork is dropped wholesale, so
@@ -129,6 +169,11 @@ explicit and dumpable — a memory whose population is mysterious is
 impossible to debug.
 
 ### Task T1a.6.3.5 — Interaction with the semi-naive boundary
+
+> **The safe default stands, and it is now where the time is.**
+> `admit_from_boundary` plus the ordered walk of `parked` is ~10.4 % of
+> `zebra -e`, the largest single block after the allocator. If a memory ever
+> returns to this engine, this is the question it should be asked about.
 
 Guard sub-plans are also matched ([S1a.3.4](../p1a.3_deductive_core/s1a.3.4_world_and_contradiction.md)),
 and after that stage they are seeded at deltas too. Decide explicitly

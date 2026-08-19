@@ -1551,6 +1551,241 @@ utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml -p ein-conforma
     --bench engine -- solve --save-baseline before   # then edit, then --baseline before
 ```
 
+## 14. S1a.6.3 — the alpha-memory, and the gate the beta-memory did not pass
+
+**2026-08-19, `master` @ `14a7c47`, same machine.** The stage that was going to
+build beta-memories built two changes to the index instead, and then answered
+its own gate with the profile they left behind. `solve zebra.ein -e`
+**349.1 → 78.1 ms (4.5×)** and `solve zebra2.ein -e` **75.8 → 44.0 ms (1.7×)**.
+
+| workload | target | at S1a.6.2 | **at S1a.6.3** | vs PyPy today |
+|---|---:|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 75.8 ms | **44.0 ms** ✅ | **112×** |
+| `solve zebra.ein -e` | ≤ 400 ms | 349.1 ms | **78.1 ms** ✅ | **112×** |
+| `solve zebra2.ein` | — | 20.5 ms | **10.9 ms** | 232× |
+| `solve zebra.ein` | — | 89.2 ms | **14.8 ms** | 206× |
+| parse + load `zebra2` | ≤ 15 ms | 0.90 ms | **0.90 ms** ✅ | 478× |
+| the acceptance gate (3 fixtures) | ≤ 5 s | 0.58 s | **0.28 s** ✅ | **129×** |
+
+### T1a.6.3.0 — the index keys one level in
+
+[§13](#13-s1a62--the-layout-stage-and-the-profile-it-starts-from) measured that
+**99.1 %** of an exhaustive `zebra`'s 25.16 M candidates came from a full
+extent scan, because `index_fact` keys "the join-key types only" — a
+`Fact`-valued argument is not keyed — and the premise that does the scanning is
+`stdlib/slots.ein`'s
+
+```
+:match (and (?R ?a ?b) (not (?R ?b ?i)) (?isa ?i ?index))
+```
+
+whose middle premise walks `not`'s 368-fact extent to reject all but a handful.
+The index now holds `(rel, slot, inner) = value` one level inside a nested
+argument, and `probes_for` compiles a probe per inner slot.
+
+| counter | `zebra2 -e` before | after | `zebra -e` before | after |
+|---|---:|---:|---:|---:|
+| `candidates` | 4 570 900 | **306 725** | 25 160 149 | **1 171 385** |
+| …from an extent scan | 4 463 707 | **103** | 24 934 365 | **581** |
+| `unify_slot` | 5 933 579 | **929 997** | 51 452 037 | **3 474 509** |
+| `unify` | 5 617 846 | 614 264 | 50 213 778 | 2 236 250 |
+| `walk` | 355 843 | **355 843** | 530 405 | **530 405** |
+| `plan_run` | 123 254 | **123 254** | 104 409 | **104 409** |
+| `binding_key` | 12 694 | **12 694** | 31 563 | **31 563** |
+| `fact_insert` | 2 184 | **2 184** | 6 766 | **6 766** |
+| `guard_query` | 30 691 | **30 691** | 29 865 | **29 865** |
+| `watch_stamp` | 204 158 | **204 158** | 248 043 | **248 043** |
+| `fork` / enterings | 104 / 101 | **104 / 101** | 114 / 111 | **114 / 111** |
+
+**Every counter that measures a decision the engine made is identical to the
+digit; every counter that measures candidates it was offered fell by 93–95 %.**
+That split is the whole claim of a narrowing, and it is why T2 stayed at
+**239/240** and T3 at **472/473** with [D2](../divergences.md) the only cell in
+either.
+
+**Why it is sound** (T1a.6.3.1's argument, written before the code): a probe
+replaces "every fact of the relation" with "every fact in a bucket", and the
+emitted sequence is unchanged iff the bucket **contains every fact that would
+have unified** — it does, because the key is exactly one of the equalities
+`unify` will re-check, and the matcher re-checks *all* of them regardless — and
+**yields them in extent order** — it does, because buckets are appended in
+insertion order and read oldest-layer-first, exactly like the extent. Only the
+count of *rejected* candidates differs, and that is ein.rs's own instrument
+rather than an observable.
+
+**Why it is checked, not argued**:
+`match_::tests::narrowing_never_changes_the_match_sequence` runs both index
+write paths — the batch `rebuild_layer` and the incremental `index_fact`, which
+is the one a fork writes through — over **16 randomised insertion orders**,
+with the narrowing on and off, and compares the match sequences. It was
+verified to fail when either path keys the wrong inner position, which is the
+only way to know a differential test is testing anything.
+
+**One observable did move, and it was not a match.** `saturate`'s snapshot
+prints `facts_by_rel_slot_val`, and ein.rs's index now holds more postings than
+ein.py's — 897 against 743 on `zebra2-hints` — which broke **43** T3 cells.
+That line reports a property of the *knowledge base*: how many join keys its
+facts produce. How an engine chooses to index those facts to answer a query
+faster is not what a reader of the snapshot is being told, so `index_sizes`
+counts the `DIRECT` postings only and says why in the code.
+
+### T1a.6.3.0b — and then the lookup became the cost
+
+With the bucket lookup now the common case, `Kb::facts_with` was **15.6 %** of
+`zebra -e`: a fork 24 layers deep hashes its key 24 times to find the one or
+two layers that hold it. Each layer carries a 2048-bit Bloom filter over its
+participation-index keys, so the walk hashes once and bit-tests per layer.
+
+| bits per layer | `solve zebra -e` |
+|---:|---:|
+| none | 83.4 ms |
+| 512 | 78.4 ms (−6.0 %) |
+| **2048** | **77.6 ms (−7.3 %)** |
+| 8192 | 77.7 ms (−7.2 %) |
+
+Flat past 2048, so 256 bytes a layer — 4 % of the ~6 KB a fork owns, and
+`Layer::footprint` counts it so that number stays honest. `facts_with` is
+**10.1 %** after. A filter can only skip a layer that *provably* lacks the key,
+and the failure mode that would matter — a stale filter silently dropping
+matches — is guarded by a `debug_assert` in `facts_with`, by the differential
+test, and by T2.
+
+### The bench set
+
+| bench | at S1a.6.2 | **at S1a.6.3** | change |
+|---|---:|---:|---:|
+| `parse/corpus` | 739.2 µs | 748.1 µs | +1.2 % |
+| `parse/zebra2` | 187.7 µs | 190.8 µs | +1.7 % |
+| `load/zebra2` | 898.4 µs | 904.5 µs | +0.7 % |
+| `saturate_root/zebra2` | 1.99 ms | **1.54 ms** | −22.4 % |
+| `match_hot/zebra2` | 35.3 µs | **24.4 µs** | **−30.9 %** |
+| `boundary/zebra` | 6.37 ms | **1.65 ms** | **−74.1 %** |
+| `boundary/zebra2` | 2.00 ms | **1.54 ms** | −22.8 % |
+| `fork/zebra2` | 274 ns | 290 ns | +5.8 % |
+| `solve_fast/zebra2` | 18.21 ms | **8.41 ms** | **−53.8 %** |
+| `solve_exhaustive/zebra2` | 73.51 ms | **40.17 ms** | **−45.4 %** |
+
+11 benches, worst relative sd **1.25 %**. `boundary/zebra` at 3.9× is the row
+that names the win: the NAF boundary re-runs negative queries, and a negative
+query is exactly a `(not …)` scan. The three frontend rows moved by +1 % on a
+path this stage does not touch — that is the machine, and it is what a spread
+column is for. `fork` pays 16 ns for a bigger index to copy.
+
+### Where `zebra -e` stands now
+
+| subsystem | at S1a.6.2 | **at S1a.6.3** |
+|---|---:|---:|
+| match/bind | 84.8 % | **37.7 %** |
+| saturate | 11.1 % | **47.4 %** |
+| hypgen/branch | 2.2 % | 7.7 % |
+| allocator | 3.2 % | ~12 % |
+
+| symbol | share |
+|---|---:|
+| `Matcher::unify` | 11.6 % |
+| `Kb::facts_with` (the layer walk, both closures) | 10.1 % |
+| `Saturator::admit_from_boundary` | 7.3 % |
+| `Matcher::walk` | 6.8 % |
+| `Vec::clone ⟨Entry⟩` (the per-entering snapshot) | 3.7 % |
+| `Matcher::try_candidate` | 3.7 % |
+| `btree::set::Iter::next` (the parked set) | 3.1 % |
+
+The join is no longer the phase's subject. The run is 4.5× shorter and its two
+biggest remaining blocks are the **boundary** (`admit_from_boundary` + the
+ordered walk of `parked` ≈ 10.4 %) and the **allocator** (~12 %, of which the
+per-entering snapshot's copies are the largest single caller).
+
+### Memory
+
+| cell | allocations | churn | peak live | per-fork delta (mean / max) |
+|---|---:|---:|---:|---:|
+| `zebra2 -e` | 881 523 | 63.0 MB | 2.70 MB | **4.5 K** / 11.7 K |
+| `zebra -e` | 1 678 816 | 128.2 MB | 3.31 MB | **6.2 K** / 10.8 K |
+
+Allocations +0.26 % against S1a.6.2 — the new index entries — and the per-fork
+delta 3.9 → **6.2 KB** on `zebra -e`, which is the number
+[P1a.7](../p1a.7_parallelism/README.md) sizes `--jobs` by: a thousand
+concurrent searches is 6 MB of deltas rather than 4. Process peak RSS is
+unchanged at 17.5 MB.
+
+### The gate: the beta-memory is **not** built, and here is the number
+
+The stage ships a beta-memory only if it is T2-green **and** measurably better
+on both puzzles, and it says in as many words that failing that test and
+recording why "is a successful outcome for this stage". It fails it, and the
+reason is what the two changes above did to the thing a beta-memory
+materialises.
+
+**A beta-memory exists to stop re-enumerating a large intermediate.** The
+intermediate is now 2.2 tuples wide:
+
+| | before T1a.6.3.0 | after |
+|---|---:|---:|
+| candidates per step entered (`zebra -e`) | 25 160 149 / 530 405 = **47.4** | 1 171 385 / 530 405 = **2.21** |
+| candidates per step entered (`zebra2 -e`) | 4 570 900 / 355 843 = 12.8 | 306 725 / 355 843 = **0.86** |
+
+A table lookup replacing 47 candidates is a lever; a table lookup replacing 2.2
+is a constant factor with a per-fork table attached. And the cost side is not a
+guess either: [T1a.6.2.5](#t1a625--the-flatten-threshold-was-never-built-and-building-it-costs-76)
+built the exact shape design/05 §7 calls the *root memory* — a flat per-relation
+table — and cloning it per fork cost **7.6 %** while making the fork-free bench
+8 % faster. F11's original objection ("a memory that must be copied per fork can
+lose more than it saves") now has a measurement under it rather than a
+suspicion.
+
+**F11 D1 is therefore updated, not landed**, and the three tasks that were the
+memory itself are closed against numbers:
+
+| task | outcome |
+|---|---|
+| T1a.6.3.1 the ordering argument | **written and executed** — and it is the argument the *narrowing* needed, so it was worth writing whatever the memory's fate |
+| T1a.6.3.2 root memories | **moot**: [S1a.6.9](s1a.6.9_fork_entry_delta.md) made a fork resume root's saturation instead of replaying it, so there is no root re-derivation left to replay from a table |
+| T1a.6.3.3 fork delta memories | **not built**: the join inside a fork's delta is 2.2 candidates per step |
+| T1a.6.3.4 which prefixes to materialise | **not reached** |
+| T1a.6.3.5 guards get no memories | **stands** — and the boundary is now the biggest single block, so if this returns it returns there |
+| T1a.6.3.6 feature-gate and measure | **not needed**: nothing was gated, and the A/B was two builds |
+
+**Q-M1a.10** asked whether the beta-memory is still the largest lever after the
+register matcher and the semi-naive boundary. Answered: **no.** It was 66.9 %
+of `zebra -e` when the phase was planned; the same subsystem is 37.7 % of a run
+that is 7.5× shorter, and what took it there was an index key and a Bloom
+filter, neither of which is a memory.
+
+### D2's trigger, re-checked — and design/05 was wrong about the shape
+
+The stage asks to re-check the worst-case-optimal join's trigger and record the
+answer without implementing it. [design/05
+§6](../design/05_matcher.md) rejects D2 partly on "ein's rule bodies are
+acyclic chains/stars where a left-deep binary plan is already optimal". **The
+first half of that is false.** `stdlib/slots.ein`'s `slot-adjacent-fwd` binds
+
+```
+(?S ?a ?b) (?R ?b ?p1) (?isa ?p1 ?PT) (?S ?p2 ?p1) (?isa ?p2 ?PT)
+```
+
+whose variable graph contains the triangle `p1 — PT — p2 — p1`: a cyclic
+body, and the classic shape a Generic Join beats a binary plan on.
+
+The *cost* half of the trigger is still unmet, which is why D2 stays out of
+scope: the relations that triangle ranges over are `instance` (30 facts) and
+`right-of` / `next-to` (16) on `zebra`, so the AGM bound and the binary plan are
+within a small constant of each other, and matching is 37.7 % of a run that is
+now 78 ms. Recorded so the *next* re-check asks about the cost rather than
+re-deriving the shape — and so design/05 stops claiming a property the corpus
+does not have.
+
+### Reproducing this section
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
+    -p ein-infer --example counter_cost     # the candidate collapse
+cargo test --manifest-path ein.rs/Cargo.toml -p ein-infer --lib narrowing
+utils/bench_env.sh python3 utils/e2e_baseline.py --impl ein.rs --runs 9
+utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 20 solve examples/zebra.ein -e
+python3 utils/fork_split.py                # the redundant firings, unmoved
+```
+
 ## Reproducing all of it
 
 Every line from the repo root, every measurement through the fingerprint:

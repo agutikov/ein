@@ -242,7 +242,7 @@ it; the conformance fuzzer would catch it if that were ever wrong.
 | change | why it breaks parity |
 |---|---|
 | **join reordering** (cost-based or first-fail) | changes the *order* matches are produced → firing order → the trace. Legal only if the reorder is proven to preserve enumeration order, which reordering by definition does not. |
-| **worst-case-optimal join** (Leapfrog Triejoin / Generic Join, [F11 D2](../../followups/f11_deductive_layer_perf.md)) | same reason, plus its trigger has not appeared: ein rule bodies are acyclic chains/stars where a left-deep binary plan is already optimal. Keep the trigger condition (a cyclic step graph whose match cost dominates); revisit then. |
+| **worst-case-optimal join** (Leapfrog Triejoin / Generic Join, [F11 D2](../../followups/f11_deductive_layer_perf.md)) | same reason. Its trigger is *half* met — **not** none: `stdlib/slots.ein`'s `slot-adjacent-fwd` has the triangle `p1 — PT — p2 — p1`, so "ein rule bodies are acyclic chains/stars" was wrong (S1a.6.3's re-check, 2026-08-19). What is not met is the cost half: those relations hold 30 and 16 facts, and matching is 37.7 % of a 78 ms run. Revisit when a cyclic body is *hot*. |
 | **deduplicating matches inside the matcher** | the saturator's `_seen`/`_fired` sets already do it, and their counters are observable. |
 | **skipping the re-check of already-probed slots** | `_bind_args` re-checks *every* slot even after `_candidates` narrowed on one; the narrowing is documented as behaviour-preserving precisely because of that. Dropping the re-check would be equivalent only if the index and the unifier agreed on equality — they do — but the invariant is cheap to keep and expensive to lose. Measure before touching. |
 
@@ -282,6 +282,27 @@ lose more than it saves."
 **Gate.** It ships only if it is (a) T2-green — identical event traces —
 and (b) measurably better on both zebra2 and zebra. If it is a wash, it
 is reverted, exactly as P1.8a's D3 cross-fork carry was.
+
+> **The gate ran on 2026-08-19 and the memory was not built**
+> ([S1a.6.3](../p1a.6_performance/s1a.6.3_beta_memories.md)). Two cheaper
+> changes removed what it was for, and both are in this section's own terms:
+>
+> - the **alpha**-memory was not narrowing anything. `index_fact` keyed only
+>   non-nested arguments, so a `(not (R ?b ?i))` premise — most of what the
+>   corpus scans — walked a 368-fact extent. Keying **one level in** took
+>   `zebra -e`'s candidates from 25.16 M to **1.17 M** and the run from 349 to
+>   78 ms. The intermediate a beta-memory would materialise went from **47.4
+>   tuples per step entered to 2.21**;
+> - the **root memory** shape was built and measured — as a flat per-relation
+>   extent, cloned per fork ([T1a.6.2.5](../p1a.6_performance/s1a.6.2_memory_layout.md)) —
+>   and cost **7.6 %** on the search while making the fork-free bench 8 %
+>   faster. The `Arc`-shared half of the design above is not an optimisation
+>   over the copied half; it is the only half that pays.
+>
+> The section stays as the design a memory would follow. What changed is the
+> premise: it is no longer the largest lever (Q-M1a.10 → *no*), and its
+> promotion now needs a workload whose per-step candidate count is large
+> again.
 
 > **What S1a.6.2 measured for this stage (2026-08-19).** Three numbers, and
 > the third is a design constraint rather than a target:

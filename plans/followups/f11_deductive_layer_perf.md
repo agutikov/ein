@@ -68,6 +68,37 @@ lever_matrix`; the whole set is listed in
 
 **Effort:** M. **Value:** H (perf) — the named next rung.
 
+> **Measured and declined, 2026-08-19
+> ([S1a.6.3](../m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md)).** The
+> gated stage ran and the gate said no — not because the memory would not work,
+> but because two cheaper changes removed what it was for.
+>
+> - **The intermediate is 2.2 tuples wide.** An exhaustive `zebra` offers
+>   1 171 385 candidates over 530 405 steps entered, where before
+>   [T1a.6.3.0](../m1a_rust/p1a.6_performance/baseline.md#14-s1a63--the-alpha-memory-and-the-gate-the-beta-memory-did-not-pass)
+>   it offered 25 160 149 — **47.4 per step down to 2.21**. What T1a.6.3.0 did
+>   was key the participation index *one level inside a nested argument*, so a
+>   `(not (R ?b ?i))` premise probes a bucket instead of walking a 368-fact
+>   extent. A table lookup that replaces 47 candidates is a lever; one that
+>   replaces 2.2 is a constant factor with a per-fork table attached.
+> - **The catch came back, with a measurement this time.** This file recorded
+>   in August that the catch had "dissolved" because a fork's delta is only
+>   3.6 KB. [T1a.6.2.5](../m1a_rust/p1a.6_performance/s1a.6.2_memory_layout.md)
+>   then built the exact shape design/05 §7 calls the *root memory* — a flat
+>   per-relation table — and **cloning it per fork cost 7.6 %** while making the
+>   fork-free bench 8 % faster. Affordable in bytes is not the same as free in
+>   cache: a fork *shares* the layered index by `Arc`, and a materialised table
+>   gives every live fork its own copy.
+> - **The re-derivation it would have replayed is gone.**
+>   [S1a.6.9](../m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md) made a
+>   fork resume root's saturation rather than re-derive it, which was the
+>   "root memories" task's whole purpose.
+>
+> D1 stays **open but re-priced**: it is no longer the largest remaining lever
+> (Q-M1a.10, answered *no*), and a future promotion needs a workload where the
+> per-step candidate count is large again — a wider rule body, a bigger extent,
+> or a puzzle whose premises the index cannot key.
+
 Persist **partial joins** across firings. The optimisation arc so far has
 walked up the Datalog ladder — naive → semi-naive (participation index =
 alpha-memory; delta-driven; seeded delta join, P1.8a, ~3.6×) — and the one
@@ -98,10 +129,18 @@ Pattern/Many Object Pattern Match Problem* (1982);
 
 Leapfrog-Triejoin / Generic-Join: a join order-free algorithm whose runtime
 matches the AGM bound, beating any binary-join plan on **cyclic** join
-patterns. Ein's rule bodies are currently acyclic (chains and stars), where
-a good binary plan is already optimal — so this is **conditional work**:
-open it only when a rule set with a genuine cycle (e.g. a triangle over
-three relations) shows up and profiles badly.
+patterns. This is **conditional work**: open it only when a rule set with a
+genuine cycle shows up *and* profiles badly.
+
+> **Half the trigger is already met, 2026-08-19.** "Ein's rule bodies are
+> currently acyclic (chains and stars)" is **false**, and S1a.6.3's re-check is
+> what caught it: `stdlib/slots.ein`'s `slot-adjacent-fwd` binds
+> `(?S ?a ?b) (?R ?b ?p1) (?isa ?p1 ?PT) (?S ?p2 ?p1) (?isa ?p2 ?PT)`, whose
+> variable graph contains the triangle `p1 — PT — p2 — p1`. The *cost* half is
+> not met: those relations hold 30 and 16 facts on `zebra`, matching is 37.7 %
+> of a 78 ms run, and a binary plan is within a small constant of the AGM
+> bound at that size. So D2 stays closed — but the next re-check should ask
+> about the cost, not re-derive the shape.
 
 **Trigger.** A compiled `JoinPlan` whose step graph is cyclic *and* whose
 match cost dominates a solve.
@@ -121,7 +160,8 @@ Promote into a perf phase (not into this file) when **any** holds:
   final algorithm rather than a transcription of the Python one (the port
   is the most likely trigger, and the reason this file exists rather than
   being dropped);
-- a cyclic rule body appears (D2's specific trigger).
+- a cyclic rule body appears **and its match cost dominates** (D2's specific
+  trigger — the body exists already, see D2).
 
 ## Cross-links
 
