@@ -25,7 +25,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | **mostly resolved 2026-08-18 — ein.rs names the class** |
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
-| [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — at root scale they are 11–30 % | open — found at S1a.3.4, measured |
+| [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — they are 7–15 % | **resolved 2026-08-19: the mechanism is declined**, and [S1a.6.12](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md) aims elsewhere |
 | [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
 
 ---
@@ -526,19 +526,50 @@ allocation-free watch stamp on an ordered parked set instead of a
 pop-and-re-push heap. Together they moved the boundary by ~2 % at root
 scale, which is the honest number.
 
-**Open:** does the *exhaustive* mix differ? design/06's figure comes from
-an exhaustive `zebra2` (3 178 rounds, 33 113 queries), which
-[P1a.4](p1a.4_search_layer/README.md) is the first phase able to run. The
-instrument is already in place, so the question is answered by running it
-rather than by re-arguing it.
+~~**Open:** does the *exhaustive* mix differ?~~ **Answered 2026-08-19, by
+running it** — the recommendation below said the question would be settled that
+way and it was, at the head of
+[S1a.6.12](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md). `guard_eval`
+and `guard_eval_monotone` are the `Saturator`'s pair summed over every fork of a
+solve, which is the aggregation no per-saturation field could do
+([baseline.md §17](p1a.6_performance/baseline.md#17-the-boundary-measured-before-the-stage-that-aims-at-it)):
 
-**Recommendation:** carry the semi-naive guard re-evaluation
-(T1a.3.4.5) into [P1a.6](p1a.6_performance/README.md) as a *measured*
-optimisation with this as its trigger condition, rather than landing a
-mechanism here whose measured reach is a tenth of its stated one. If the
-exhaustive mix is monotone-dominated, it lands there with a number; if it
-is not, the boundary needs a different idea and this question is where
-that gets decided.
+| solve | guard evaluations | of which monotone |
+|---|---:|---:|
+| `zebra2` | 9 978 | 499 (5.0 %) |
+| `zebra2 -e` | 30 691 | **2 250 (7.3 %)** |
+| `zebra` | 8 645 | 906 (10.5 %) |
+| `zebra -e` | 29 505 | **4 505 (15.3 %)** |
+| `features/05 -e` (blind, 384 167 forks) | 4 719 834 | 493 985 (10.5 %) |
+
+**The exhaustive mix is worse than the root-scale one**, and the reason is the
+structural one above rather than an accident of these puzzles: a failing
+monotone guard retires its candidate on the spot, so a *longer* run retires
+more of them and what stays parked is more purely non-monotone. Scale moves
+this the wrong way, permanently.
+
+**Resolved: the mechanism is declined, and the number is its epitaph.** Win B's
+headline reaches 15.3 % of `zebra -e`'s guard evaluations, which are 22.2 % of
+the run — a **3.4 %** ceiling for the design's flagship saturation win.
+`Matcher::holds_seeded` exists and the lookahead uses it, so wiring it into the
+boundary stays available at [T1a.6.12.4](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6124--the-semi-naive-guard-re-evaluation-at-its-measured-reach)
+if the days are there; it is last in the stage and expected not to run.
+
+**What the boundary needs instead** — the second half of "if it is not, the
+boundary needs a different idea, and this question is where that gets decided"
+— is the refinement that never landed: **a third of the boundary is not the
+queries at all.** It is visiting 248 043 parked candidates per solve to ask
+29 865 questions, and ≥ 88 % of those visits are provably skippable. That is
+design/06 § Win B refinement 3, and it is
+[T1a.6.12.1](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6121--visit-what-changed-not-everything).
+
+**The recommendation that got here, kept for the record:** carry the semi-naive
+guard re-evaluation (T1a.3.4.5) into [P1a.6](p1a.6_performance/README.md) as a
+*measured* optimisation with this as its trigger condition, rather than landing
+a mechanism here whose measured reach is a tenth of its stated one. If the
+exhaustive mix is monotone-dominated, it lands there with a number; if it is
+not, the boundary needs a different idea and this question is where that gets
+decided.
 
 ---
 

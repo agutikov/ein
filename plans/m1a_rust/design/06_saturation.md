@@ -189,6 +189,29 @@ behind a T2 diff on the whole corpus.
 **Not allowed:** batch admission (§1), or skipping the boundary when the
 queue is non-empty (the phases are ordered for a reason).
 
+### What each of them was worth — measured 2026-08-18 and 2026-08-19
+
+| | projected | measured |
+|---|---|---|
+| the mechanism (monotone semi-naive) | ≥ 80 % of guard evaluations | **7.3–15.3 %** — [Q-M1a.17](../open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate), **declined** |
+| 1. per-round guard memo | "two parked candidates frequently share a guard and env" | **0–1.2 % hit rate** — landed at S1a.3.4, and refinement 2 is why it hits nothing |
+| 2. version counters, not size tuples | one comparison instead of a tuple | landed at S1a.3.4 as a stamp buffer on the entry; **sizes are the version counter**, since the KB only grows |
+| 3. dirty set instead of heap churn | walk in the same order, evaluate only what changed | **half landed** — the heap churn went (a `BTreeSet` read in order), the *walk* did not: 248 043 visits per `zebra -e` for 29 865 questions |
+
+Together, 1 and 2 moved the boundary ~2 % at root scale, which was the honest
+number at the time. The half of 3 that never landed is worth ~15.5 % of an
+exhaustive `zebra`, and it is
+[S1a.6.12](../p1a.6_performance/s1a.6.12_boundary_and_snapshot.md)'s first
+task; the mechanism the whole section is named for is worth **3.4 %** at its
+ceiling and is that stage's last.
+
+**The lesson is about the shape of the projection, not the arithmetic.** Win B
+reasoned from what a monotone guard *permits* and never asked how many parked
+candidates have one — and the answer is structural: a failing monotone guard
+retires its candidate immediately, so the parked set is, by construction, the
+population the mechanism cannot serve. A projection over a set defined by the
+complement of your own precondition is the failure mode to look for.
+
 ---
 
 ## 5. Queues, delta, and the mirror
@@ -341,8 +364,17 @@ pass, which changes `_tiebreaker` and therefore later ordering.
 - Win A: `compile_rule` invocation count on exhaustive zebra2 drops from
   ~17 430 to ≤ 60 (the distinct `(rule, activator)` pairs), with the
   event log proving the cache order is unchanged.
-- Win B: guard sub-plan *evaluations* on exhaustive zebra2 drop by ≥ 80 %
-  with an identical sequence of `park`/`admit`/`retire` events.
+- ~~Win B: guard sub-plan *evaluations* on exhaustive zebra2 drop by ≥ 80 %
+  with an identical sequence of `park`/`admit`/`retire` events.~~ **Retired
+  2026-08-19**: only **7.3 %** of an exhaustive zebra2's evaluations are on a
+  guard the mechanism can help ([Q-M1a.17](../open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate)),
+  so this clause measures a lever that is not there. The identical-sequence half
+  of it stands and is unconditional — it is T2. The boundary's *speed*
+  acceptance moves to
+  [S1a.6.12](../p1a.6_performance/s1a.6.12_boundary_and_snapshot.md)'s, stated
+  in cumulative profile share rather than in evaluations, because after the
+  refinement that never landed the evaluation count is no longer what the
+  boundary spends its time on.
 
 ## Cross-links
 

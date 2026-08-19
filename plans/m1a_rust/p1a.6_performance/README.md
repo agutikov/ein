@@ -13,15 +13,23 @@ one shape of workload: the four targets are all `(hrule …)`-driven and never
 run the blind enumerator, which is 15 % of the corpus's slowest solves.
 S1a.6.5, a one-day confirmation of a path already 8× inside its acceptance,
 found a load parsing **3.30× the bytes on disk** and took **25 %** off it.
-Next is the phase's one **unwritten** stage, and the profile has said the same
-thing since S1a.6.3: the **NAF boundary** (37.6 % of `zebra -e` cumulatively)
-and the **per-entering snapshot** (10.4 %), on both shapes of workload. The
-measurements are in **[baseline.md](baseline.md)**: §1–§9 are what the phase is
-chosen by, §10–§16 are where it stands.
-**Estimate:** 5 weeks (26 days of stages — S1a.6.1 added one worth 2 d and
+Next is [S1a.6.12](s1a.6.12_boundary_and_snapshot.md), which the profile has
+been naming since S1a.6.3 and which is now **written against its own
+measurement** ([§17](baseline.md#17-the-boundary-measured-before-the-stage-that-aims-at-it)):
+the **NAF boundary** (37.7 % of `zebra -e` cumulatively, of which a *third* is
+not the queries) and the **per-entering snapshot** (10.3 %). That measurement
+also closes [Q-M1a.17](../open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate)
+— design/06 § Win B's headline mechanism reaches **7.3–15.3 %** of guard
+evaluations where it projected ≥ 80 %, so the stage spends its days on the
+refinement that never landed instead. The measurements are in
+**[baseline.md](baseline.md)**: §1–§9 are what the phase is chosen by,
+§10–§16 are where it stands, §17 is what it does next.
+**Estimate:** 5 weeks (30 days of stages — S1a.6.1 added one worth 2 d and
 shortened another by 1 d; [S1a.6.9](s1a.6.9_fork_entry_delta.md) added 3 d,
 and its decision added [S1a.6.10](s1a.6.10_parity_contract.md) and
-[S1a.6.11](s1a.6.11_fixture_goldens.md) at 2 d each)
+[S1a.6.11](s1a.6.11_fixture_goldens.md) at 2 d each; every re-measurement since
+S1a.6.3 named the same next stage and
+[S1a.6.12](s1a.6.12_boundary_and_snapshot.md) is it, at 4 d)
 **Depends on:** [P1a.5](../p1a.5_presentation/README.md) — the byte gate
 must be closed first, so every change here is measured against a green
 harness.
@@ -69,10 +77,11 @@ it moves every *process*, not just that cell: 0.23 ms off `saturate zebra2`
 (3.9 → 3.6 ms) and off each of the 473 cells the harness runs per tier.
 
 The phase's subject has moved with them. `zebra -e` was 84.8 % matcher at the
-end of S1a.6.2 and is **39.1 %** now; what is left is the NAF boundary
-(`admit_from_boundary`, 37.6 % *cumulatively*) and the per-entering snapshot
-(`Saturator::resume`, 10.4 %) — the same two on the blind-mode workloads
-S1a.6.4 added, at 28.5 % and 11.9 %.
+end of S1a.6.2 and is **38.6 %** now; what is left is the NAF boundary
+(`admit_from_boundary`, **37.7 %** *cumulatively*) and the per-entering
+snapshot (`Saturator::resume`, 10.3 %) — the same two on the blind-mode
+workloads S1a.6.4 added, at 28.2 % and 12.4 %, and both are
+[S1a.6.12](s1a.6.12_boundary_and_snapshot.md).
 
 **And the targets are not the whole corpus.** All four are
 `(hrule …)`-driven, so none of them runs the blind enumerator at all;
@@ -155,9 +164,9 @@ and [§9](baseline.md#9-the-fork-entry-re-derivation).
 | 7 | [S1a.6.3](s1a.6.3_beta_memories.md) ✅ | Beta-memories (F11 D1) — **gate closed** | 4 d | **shipped 2026-08-19 without the memory.** The index now keys one level *inside* a nested argument (T1a.6.3.0): candidates 25.16 M → **1.17 M**, `zebra -e` **349 → 78 ms**, T2 239/240. Then a per-layer Bloom filter, −7.3 %. The gate says no to the memory: the intermediate it would materialise is **2.2 tuples wide**, and a per-fork copy of one measured **+7.6 %** at T1a.6.2.5. [F11 D1](../../followups/f11_deductive_layer_perf.md) re-priced, **Q-M1a.10 answered *no***, D2's trigger re-checked — the cyclic body exists, the cost does not |
 | 8 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) ✅ | Hypgen and lattice hot paths | 3 d | **shipped 2026-08-19, aimed elsewhere by its own measurement.** A call offers **125** raw candidates, not 18 k, and spends **71 %** of a `complete()` on setup — 219 compile-cache keys per call. Two new tasks took that; T1a.6.4.2/3 took **15 %** off the blind-mode cells no target covers. **Three planned tasks closed against numbers**: intern-on-probe (probe *is* intern here), the no-good bitmask (**0.3 %** in the regime design/07 §4 said it would dominate), incremental alive (**6** calls a solve) |
 | 9 | [S1a.6.5](s1a.6.5_frontend.md) ✅ | Frontend and load path — **shortened** | 1 d | **shipped 2026-08-19** — the confirmation found a load parsing **3.30× the bytes on disk**, because resolution parses a module once per *edge* of a diamond. `load/zebra2` **−25.5 %**, `parse/zebra2_resolve` −31.6 %; two of its six tasks proposed pre-sizing and **both lost** at this scale. Start-up is 1.02 ms, 0.59 ms of it snmalloc's |
-| — | *(unwritten)* | The boundary and the per-entering snapshot | — | **next**; what S1a.6.4's re-measurement names on **both** workload shapes, and the only two blocks left above 10 %: `admit_from_boundary` 37.6 % / 28.5 % cumulative, `Saturator::resume` 10.4 % / 11.9 %. [S1a.6.3](s1a.6.3_beta_memories.md)'s T1a.6.3.5 already points here |
+| 10 | [S1a.6.12](s1a.6.12_boundary_and_snapshot.md) | The NAF boundary and the per-entering snapshot | 4 d | **next**, and written against [§17](baseline.md#17-the-boundary-measured-before-the-stage-that-aims-at-it). The only two blocks left above 10 % on **both** workload shapes — `admit_from_boundary` 37.7 % / 28.2 % cumulative, `Saturator::resume` 10.3 % / 12.4 % — and the split inside the first is the finding: **a third of the boundary is not the queries**, it is visiting 248 043 parked candidates to ask 29 865 questions. Q-M1a.17 closes against Win B's headline (7.3–15.3 %, not ≥ 80 %); the snapshot is the change S1a.6.9 declined at **0.6 %** and is now 17× that |
 | — | [S1a.6.6](s1a.6.6_differential_fuzzer.md) | The differential fuzzer | 3 d | runs *throughout*, not at a position — it guards every row above |
-| 10 | [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d | last, as planned |
+| 11 | [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d | last, as planned |
 
 ## Rules for this phase
 

@@ -2207,6 +2207,110 @@ cargo test --manifest-path ein.rs/Cargo.toml -p ein-infer --release \
 time ein.rs/target/release/deps/acceptance-*[!d]
 ```
 
+## 17. The boundary, measured before the stage that aims at it
+
+**2026-08-19, `master` @ `e4d9e4e`, same machine.** The phase's one unwritten
+stage has been named by every re-measurement since
+[S1a.6.3](s1a.6.3_beta_memories.md), and this is the measurement it is written
+against — taken *before* any of it is built, which is the difference between a
+stage and a hope. It is [§9](#9-the-fork-entry-re-derivation)'s role for
+[S1a.6.9](s1a.6.9_fork_entry_delta.md), played for
+[S1a.6.12](s1a.6.12_boundary_and_snapshot.md).
+
+### The two cones, on both shapes of workload
+
+`utils/profile_ein_rs.py`, current build, LBR cumulative:
+
+| cone | `zebra -e` | `features/05 -e` (blind) |
+|---|---:|---:|
+| `Saturator::admit_from_boundary` | **37.7 %** (7.5 % self) | **28.2 %** (4.4 % self) |
+| ↳ `Matcher::holds` — the guard queries themselves | 22.2 % | 18.0 % |
+| ↳ the remainder — *visiting* parked candidates | **~15.5 %** | ~10.2 % |
+| `Saturator::resume` — the per-entering snapshot | **10.3 %** | **12.4 %** |
+| ↳ `Vec::clone⟨Entry⟩` alone, self | 3.5 % | 3.2 % |
+| `btree::map::Iter::next`, self (95 % under the boundary) | 3.2 % | — |
+| `Kb::facts_with`'s two iterator adapters, self | 10.8 % | 2.2 % |
+
+**A third of the boundary is not the queries.** That split is what the stage is
+built on, and neither of the two halves had been separated before: previous
+sections reported `admit_from_boundary` as one number.
+
+### What the boundary does, counted
+
+`guard_eval` / `guard_eval_monotone` are added here — the `Saturator`'s own
+`guard_evals` pair summed over **every fork of a solve**, which is what
+[Q-M1a.17](../open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate)
+asks for and no per-saturation field can answer.
+
+| cell | visits | extent probes | guards asked | queries run | memo hits | monotone |
+|---|---:|---:|---:|---:|---:|---:|
+| `solve zebra2` | 36 943 | 73 427 | 9 978 | 9 978 | 0 | 499 (5.0 %) |
+| `solve zebra2 -e` | 204 158 | 406 106 | 30 691 | 30 691 | **0** | 2 250 (**7.3 %**) |
+| `solve zebra` | 41 040 | 81 768 | 8 827 | 8 645 | 182 | 906 (10.5 %) |
+| `solve zebra -e` | 248 043 | 494 566 | 29 865 | 29 505 | 360 | 4 505 (**15.3 %**) |
+| `solve features/05 -e` | 4 755 421 | 8 981 278 | 4 755 413 | 4 719 834 | 35 579 | 493 985 (10.5 %) |
+| `solve branching/07 -e` | 0 | 0 | 0 | 0 | 0 | 0 |
+
+Visits are `watch_stamp` (one watch stamp built per parked candidate per
+round), extent probes are `watch_stamp_rel`. Three things fall out of it:
+
+**The walk is 6.7–8.3× oversubscribed on the deep saturations.** `guard_query`
+is an upper bound on candidates judged, so at most 12 % of `zebra -e`'s 248 043
+visits reach a query: the other 88 % exist to build a stamp, compare it, and
+discover that nothing this candidate watches has changed. `features/05 -e` is
+the opposite — 1.0 visits per ask, because its 384 167 forks each judge a small
+parked set once — and `branching/07 -e` is the control with **no guards at
+all**, where the boundary is inert.
+
+**The per-round guard memo answers nothing.** `guard_query − guard_eval` is its
+hit count: **0** on `zebra2 -e`, 1.2 % on `zebra -e`, 0.75 % on `features/05
+-e`. design/06 § Win B refinement 1 assumed two parked candidates frequently
+share a guard and a projected environment; the watch stamp — refinement 2 —
+filters them out before they can. The two overlap and the cheaper one wins,
+which leaves a `Box<[Value]>` allocation and a hash insert per evaluation,
+4.7 M of them on `features/05 -e`, for no returns.
+
+**Q-M1a.17 is answered, against Win B.** It asked whether the exhaustive
+monotone mix differs from the root-scale 11 % / 30 %. It does, in the wrong
+direction: **7.3 % on `zebra2 -e` and 15.3 % on `zebra -e`**, against
+design/06's ≥ 80 % projection. The structural reason the question already gave
+is why scale makes it worse rather than better — a failing *monotone* guard
+retires its candidate on the spot, so what stays parked is precisely what the
+mechanism cannot help. The ceiling on `zebra -e` is 15.3 % × 22.2 % = **3.4 %
+end-to-end**, for the headline win of the design's saturation chapter.
+
+Root scale, for the comparison (`--example engine_cost`, unchanged since
+S1a.3.4 measured it): `zebra2` 958 evaluations / 109 monotone, `zebra` 945 /
+280.
+
+### What this chooses
+
+| task | because |
+|---|---|
+| [T1a.6.12.1](s1a.6.12_boundary_and_snapshot.md#task-t1a6121--visit-what-changed-not-everything) visit only what changed | ~15.5 % of `zebra -e`, and 88 % of the visits are provably skippable — design/06 § Win B refinement 3, the one that never landed |
+| [T1a.6.12.2](s1a.6.12_boundary_and_snapshot.md#task-t1a6122--the-per-round-guard-memo-priced) the memo | 0–1.2 % hit rate, 4.7 M allocations on the blind cell. Free to measure, and it only gets more true after .1 |
+| [T1a.6.12.5](s1a.6.12_boundary_and_snapshot.md#task-t1a6125--the-per-entering-snapshot) the snapshot | 10.3 % / 12.4 %, against the **0.6 %** at which [S1a.6.9](s1a.6.9_fork_entry_delta.md) declined the same change — S1a.6.3 took 4.5× off everything around it |
+| [T1a.6.12.3](s1a.6.12_boundary_and_snapshot.md#task-t1a6123--what-the-guard-queries-scan) what the queries scan | `facts_with` is 10.8 % of `zebra -e`'s self time; the join was 4.5× faster after S1a.6.3 keyed its index, and whether the guards got that is unmeasured |
+| [T1a.6.12.4](s1a.6.12_boundary_and_snapshot.md#task-t1a6124--the-semi-naive-guard-re-evaluation-at-its-measured-reach) semi-naive guards | **last, and possibly not at all** — 3.4 % ceiling. `Matcher::holds_seeded` already exists (the lookahead uses it), so this is a wiring decision priced at its measured reach rather than a build |
+
+### Reproducing this section
+
+```sh
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 --top 14 \
+    --cum-of admit_from_boundary --cum-of Saturator::resume --cum-of holds \
+    solve examples/zebra.ein -e
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 2 --no-build \
+    --cum-of admit_from_boundary --cum-of Saturator::resume --cum-of holds \
+    --cum-of facts_with solve examples/features/05_stdlib_domain_elim.ein -e
+utils/bench_env.sh cargo run --release --manifest-path ein.rs/Cargo.toml \
+    --features counters -p ein-infer --example counter_cost
+utils/bench_env.sh cargo run --release --manifest-path ein.rs/Cargo.toml \
+    --features counters -p ein-infer --example counter_cost -- \
+    examples/features/05_stdlib_domain_elim.ein examples/branching/07_lookahead_off.ein
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
+    --example engine_cost          # the root-scale mix, for the comparison
+```
+
 ## Reproducing all of it
 
 Every line from the repo root, every measurement through the fingerprint:
@@ -2235,6 +2339,11 @@ cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
     --example hypgen_calls
 utils/bench_env.sh python3 utils/e2e_baseline.py --blind --impl ein.rs --runs 5
+
+# §17 the boundary and the snapshot — the two cones, and what they do
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 \
+    --cum-of admit_from_boundary --cum-of Saturator::resume --cum-of holds \
+    solve examples/zebra.ein -e
 
 # §16 the load path, phase by phase, and what a process pays before it starts
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
