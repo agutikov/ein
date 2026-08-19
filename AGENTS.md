@@ -100,10 +100,16 @@ constrained-reasoning research.
 ## Running the parity harness
 
 ```sh
-cd ein.rs && cargo build --release
-./target/release/ein-conformance run \
+cargo build --release --manifest-path ein.rs/Cargo.toml
+ein.rs/target/release/ein-conformance run \
     --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" --tier T3
 ```
+
+**From the repo root**: the harness gives both implementations the repo root as
+their working directory, so a relative `--impl-…` *path* (as opposed to a
+`python3 -m …` module invocation) is resolved against the root no matter where
+the runner was started — `cd ein.rs` with `--impl-b ./target/release/ein` is
+473 harness errors, caught by the liveness check.
 
 The `ein` binary links `snmalloc` by default since S1a.6.2 (worth 8–16 % of a
 solve), so the build needs **`cmake` and a C++ compiler**;

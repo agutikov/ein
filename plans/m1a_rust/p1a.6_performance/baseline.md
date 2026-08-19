@@ -1126,22 +1126,31 @@ one documented gate runs both engines: **1 506 + 21 + 302** green.
 
 ### Reproducing this section
 
+**From the repo root, and that is not a style choice:** the harness runs both
+implementations with the repo root as their working directory
+([conformance/README](../../../conformance/README.md)), so a *relative* impl
+path is resolved against the root no matter where the runner was launched.
+`cd ein.rs` plus `--impl-b ./target/release/ein` is the shape that looks right
+and reports 473 harness errors — which the liveness check catches, loudly, and
+which is why it exists.
+
 ```sh
-cd ein.rs && cargo build --release
+cargo build --release --manifest-path ein.rs/Cargo.toml
 
 # the two tiers, relaxed (the shipping contract)
 for T in T3 T2; do
-  ./target/release/ein-conformance run --tier $T \
-      --impl-a "../.venv-pypy/bin/python -m ein.cli" --impl-b ./target/release/ein
+  ein.rs/target/release/ein-conformance run --tier $T \
+      --impl-a ".venv-pypy/bin/python -m ein.cli" \
+      --impl-b ein.rs/target/release/ein
 done
 
 # the determinism sweep, unrelaxed
-./target/release/ein-conformance run --tier T3 --strict \
-    --impl-a "../.venv-pypy/bin/python -m ein.cli" \
-    --impl-b "../.venv-pypy/bin/python -m ein.cli" \
+ein.rs/target/release/ein-conformance run --tier T3 --strict \
+    --impl-a ".venv-pypy/bin/python -m ein.cli" \
+    --impl-b ".venv-pypy/bin/python -m ein.cli" \
     --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42
 
-# the negative control, from the repo root
+# the negative control
 for M in productive redundant enqueue; do
   EIN_MUTANT=$M ein.rs/target/release/ein-conformance run --tier T2 \
       --filter branching \

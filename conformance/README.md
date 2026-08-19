@@ -23,18 +23,24 @@ and under which runs.
 The runner lives at [`ein.rs/crates/ein-conformance`](../ein.rs/crates/ein-conformance);
 the contract it enforces is [`plans/m1a_rust/design/01_parity_contract.md`](../plans/m1a_rust/design/01_parity_contract.md).
 
+**Run it from the repo root.** Both implementations are launched with the repo
+root as their working directory (see below), so a *relative* `--impl-…` path is
+resolved against the root wherever the runner itself was started — `cd ein.rs`
+with `--impl-b ./target/release/ein` looks right and reports 473 harness
+errors. A module invocation (`python3 -m ein.cli`) is unaffected either way.
+
 ```sh
-cd ein.rs && cargo build --release
+cargo build --release --manifest-path ein.rs/Cargo.toml
 # Python vs Python — the P1a.0 acceptance gate.
-./target/release/ein-conformance run \
+ein.rs/target/release/ein-conformance run \
     --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" --tier T3
 # The determinism sweep: one implementation, two hash seeds, unrelaxed.
-./target/release/ein-conformance run \
+ein.rs/target/release/ein-conformance run \
     --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
     --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42 --tier T3 --strict
 # One fixture, one difference, by hand — how the tool actually gets used.
-./target/release/ein-conformance run … --filter zebra2 --tier T2 -v
-./target/release/ein-conformance diff a.jsonl b.jsonl --classes
+ein.rs/target/release/ein-conformance run … --filter zebra2 --tier T2 -v
+ein.rs/target/release/ein-conformance diff a.jsonl b.jsonl --classes
 ```
 
 Tiers: **T0** the verdict, **T1** every counter, **T2** the event log, **T3**
