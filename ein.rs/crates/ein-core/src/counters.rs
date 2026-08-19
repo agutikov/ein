@@ -68,6 +68,38 @@ pub struct Counters {
     /// an exhaustive `zebra`, 61 on `zebra2`.
     pub cand_bucket: u64,
     pub cand_extent: u64,
+    /// The same four again, restricted to the **guard sub-plans** the NAF
+    /// boundary runs — `join = total − guard`.
+    ///
+    /// [S1a.6.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md)
+    /// made the join 4.5× faster by keying the index one level inside a nested
+    /// argument, and guard sub-plans go through the same `Matcher::walk`
+    /// driver, so they should have got it too. Whole-run totals cannot say
+    /// whether they did: they are dominated by whichever caller runs more.
+    /// [T1a.6.12.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6123--what-the-guard-queries-scan)
+    /// splits them, because a guard that *could* key on a bound argument and
+    /// does not is a bug with a 30 % price tag, and one that offers nothing to
+    /// key on is a fact about the query.
+    pub scan_bucket_guard: u64,
+    pub scan_extent_guard: u64,
+    pub cand_bucket_guard: u64,
+    pub cand_extent_guard: u64,
+    /// Premises answered by **one interned lookup** rather than by a scan —
+    /// a step every one of whose slots was already bound, which asks whether
+    /// one exact proposition is in the KB
+    /// ([T1a.6.12.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6123--what-the-guard-queries-scan)).
+    /// `scan_ground` counts the questions and `cand_ground` the ones that
+    /// found their fact; `scan_bucket + scan_extent + scan_ground` is every
+    /// premise the matcher resolved.
+    ///
+    /// **No ein.py counterpart, and this is where the two engines stop doing
+    /// the same work**: ein.py fetches the participation bucket and unifies
+    /// every fact in it, so its `candidates` is larger here by construction —
+    /// 71.8 % of `zebra -e`'s *guard* premises are ground, and each was a
+    /// ~10-fact bucket walk.
+    pub scan_ground: u64,
+    pub scan_ground_guard: u64,
+    pub cand_ground: u64,
     /// A nested premise — `(not (R ?a ?b))` — descending into the fact its
     /// argument names, split by whether the inner relation matched.
     ///
@@ -253,6 +285,13 @@ impl Counters {
             scan_extent: 0,
             cand_bucket: 0,
             cand_extent: 0,
+            scan_bucket_guard: 0,
+            scan_extent_guard: 0,
+            cand_bucket_guard: 0,
+            cand_extent_guard: 0,
+            scan_ground: 0,
+            scan_ground_guard: 0,
+            cand_ground: 0,
             nested_rel_reject: 0,
             nested_rel_hit: 0,
             walk: 0,
@@ -283,7 +322,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 32] {
+    pub fn rows(&self) -> [(&'static str, u64); 39] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -292,6 +331,13 @@ impl Counters {
             ("scan_extent", self.scan_extent),
             ("cand_bucket", self.cand_bucket),
             ("cand_extent", self.cand_extent),
+            ("scan_bucket_guard", self.scan_bucket_guard),
+            ("scan_extent_guard", self.scan_extent_guard),
+            ("cand_bucket_guard", self.cand_bucket_guard),
+            ("cand_extent_guard", self.cand_extent_guard),
+            ("scan_ground", self.scan_ground),
+            ("scan_ground_guard", self.scan_ground_guard),
+            ("cand_ground", self.cand_ground),
             ("nested_rel_reject", self.nested_rel_reject),
             ("nested_rel_hit", self.nested_rel_hit),
             ("walk", self.walk),
@@ -353,6 +399,13 @@ mod tests {
         c.scan_extent = 1;
         c.cand_bucket = 1;
         c.cand_extent = 1;
+        c.scan_bucket_guard = 1;
+        c.scan_extent_guard = 1;
+        c.cand_bucket_guard = 1;
+        c.cand_extent_guard = 1;
+        c.scan_ground = 1;
+        c.scan_ground_guard = 1;
+        c.cand_ground = 1;
         c.nested_rel_reject = 1;
         c.nested_rel_hit = 1;
         c.walk = 1;
@@ -382,6 +435,6 @@ mod tests {
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 31);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 38);
     }
 }

@@ -149,6 +149,18 @@ impl Walk {
 ///
 /// One allocation apiece, grown to fit the widest plan the caller has run and
 /// never shrunk, so the inner loop's only writes are indexed stores.
+/// The widest premise the ground fast path resolves on the stack. Every
+/// relation in the corpus is far inside it; a wider one takes the scan.
+const GROUND_ARITY: usize = 8;
+
+/// What [`Matcher::ground_args`] found: one exact tuple, a tuple that cannot
+/// exist, or a premise still open to search.
+enum GroundArgs {
+    Closed([Value; GROUND_ARITY], usize),
+    Absent,
+    Open,
+}
+
 #[derive(Default, Debug)]
 pub struct Matcher {
     regs: Vec<Value>,
@@ -157,6 +169,11 @@ pub struct Matcher {
     /// What the emit path reports, set by whichever entry point is running.
     n_premises: usize,
     disjunct: usize,
+    /// Is the walk inside a guard sub-plan? Instrumentation only — it splits
+    /// [`ein_core::Counters::scan_bucket_guard`] and its three siblings off
+    /// the whole-run totals, so "does the boundary reach the index" is a
+    /// measured question rather than an argued one.
+    in_guard: bool,
     /// Test-only: take every candidate from the relation's whole extent, as
     /// if no probe existed. The narrowing's whole claim is that this changes
     /// nothing observable, and `narrowing_never_changes_the_match_sequence`
@@ -401,10 +418,12 @@ impl Matcher {
             ordinal: 0,
             skip: None,
         };
+        self.in_guard = true;
         let _ = self.walk(c, w, &mut |_| {
             found = true;
             ControlFlow::Break(())
         });
+        self.in_guard = false;
         found
     }
 
@@ -516,19 +535,85 @@ impl Matcher {
 
     fn rel_step(&mut self, c: Ctx<'_>, w: Walk, step: RelStep, f: Emit<'_>) -> ControlFlow<()> {
         let plan = c.plan;
+        // A premise every one of whose slots is already bound is not a search.
+        // It asks whether **one** proposition is in the KB, and the fact store
+        // interns propositions, so at most one fact can answer it and the
+        // store can name that fact in a hash lookup. The scan below reaches
+        // the same answer by fetching the whole participation bucket and
+        // unifying every fact in it — 9.96 facts per guard premise on
+        // `zebra -e`, of which 71.8 % of premises are ground
+        // ([T1a.6.12.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6123--what-the-guard-queries-scan)).
+        //
+        // Identical by construction, not by test: the pattern denotes one
+        // value tuple, `unify` accepts a fact iff its arguments *are* that
+        // tuple, and no two facts share one. So the candidate sequence is the
+        // same one-or-none sequence, with the same `FactId` in `prems`.
+        #[cfg(test)]
+        let ground = if self.no_probe { GroundArgs::Open } else { self.ground_args(c, plan, step.slots) };
+        #[cfg(not(test))]
+        let ground = self.ground_args(c, plan, step.slots);
+        match ground {
+            GroundArgs::Closed(args, n) => {
+                let g = self.in_guard as u64;
+                ein_core::counters::bump(|c| {
+                    c.scan_ground += 1;
+                    c.scan_ground_guard += g;
+                });
+                let hit = c
+                    .terms
+                    .facts
+                    .probe(step.rel, &args[..n])
+                    .filter(|&id| c.kb.contains(id));
+                return match hit {
+                    Some(fact) => {
+                        ein_core::counters::bump(|c| {
+                            c.candidates += 1;
+                            c.cand_ground += 1;
+                        });
+                        self.prems[w.ordinal] = fact;
+                        self.walk(c, w.at(w.i + 1, w.ordinal + 1), f)
+                    }
+                    None => ControlFlow::Continue(()),
+                };
+            }
+            // A nested pattern naming a proposition nobody ever interned:
+            // no fact holds it as an argument, so nothing can match.
+            GroundArgs::Absent => {
+                let g = self.in_guard as u64;
+                ein_core::counters::bump(|c| {
+                    c.scan_ground += 1;
+                    c.scan_ground_guard += g;
+                });
+                return ControlFlow::Continue(());
+            }
+            GroundArgs::Open => {}
+        }
         let key = self.probe(plan, step);
+        let g = self.in_guard as u64;
         match key {
             Some(key) => {
-                ein_core::counters::bump(|c| c.scan_bucket += 1);
+                ein_core::counters::bump(|c| {
+                    c.scan_bucket += 1;
+                    c.scan_bucket_guard += g;
+                });
                 for fact in c.kb.facts_with(key) {
-                    ein_core::counters::bump(|c| c.cand_bucket += 1);
+                    ein_core::counters::bump(|c| {
+                        c.cand_bucket += 1;
+                        c.cand_bucket_guard += g;
+                    });
                     self.try_candidate(c, w, step, fact, f)?
                 }
             }
             None => {
-                ein_core::counters::bump(|c| c.scan_extent += 1);
+                ein_core::counters::bump(|c| {
+                    c.scan_extent += 1;
+                    c.scan_extent_guard += g;
+                });
                 for fact in c.kb.facts_of(step.rel) {
-                    ein_core::counters::bump(|c| c.cand_extent += 1);
+                    ein_core::counters::bump(|c| {
+                        c.cand_extent += 1;
+                        c.cand_extent_guard += g;
+                    });
                     self.try_candidate(c, w, step, fact, f)?
                 }
             }
@@ -672,6 +757,41 @@ impl Matcher {
 
     /// The participation-index bucket this step narrows on, or `None` for the
     /// full extent — [`crate::plan::Probe`].
+    /// Resolve a premise's slots to the one argument tuple they denote, if
+    /// they denote one — the test [`Matcher::rel_step`]'s fast path rests on.
+    fn ground_args(&self, c: Ctx<'_>, plan: &Plan, slots: Span) -> GroundArgs {
+        let ss = plan.slots(slots);
+        if ss.is_empty() || ss.len() > GROUND_ARITY {
+            return GroundArgs::Open;
+        }
+        let mut out = [Value::UNBOUND; GROUND_ARITY];
+        for (i, &slot) in ss.iter().enumerate() {
+            out[i] = match slot {
+                Slot::Const(v) => v,
+                Slot::Reg(r) => {
+                    let v = self.regs[r as usize];
+                    if v.is_unbound() {
+                        return GroundArgs::Open;
+                    }
+                    v
+                }
+                Slot::Nested { rel, slots } => match self.ground_args(c, plan, slots) {
+                    GroundArgs::Closed(inner, n) => match c.terms.facts.probe(rel, &inner[..n]) {
+                        Some(id) => Value::fact(id),
+                        None => return GroundArgs::Absent,
+                    },
+                    GroundArgs::Absent => return GroundArgs::Absent,
+                    GroundArgs::Open => return GroundArgs::Open,
+                },
+                // Never unifies with anything, so it is not "ground" in any
+                // useful sense — leave it to the scan, which will reject every
+                // candidate exactly as it does today.
+                Slot::Opaque(_) => return GroundArgs::Open,
+            };
+        }
+        GroundArgs::Closed(out, ss.len())
+    }
+
     fn probe(&self, plan: &Plan, step: RelStep) -> Option<SlotKey> {
         let key = self.probe_key(plan, step);
         debug_assert_eq!(
