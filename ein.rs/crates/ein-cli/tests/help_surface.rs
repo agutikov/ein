@@ -17,7 +17,7 @@
 //! `corpus_shapes.md5` makes about every other rendering and the strongest one
 //! available with a single implementation.
 
-use ein_oracle::{golden, golden_path};
+use ein_corpus::{golden, golden_path};
 
 /// The surface, counted from the parsers themselves — 39 options across 8
 /// parsers, `-h` excluded. An extractor that silently returned nothing would

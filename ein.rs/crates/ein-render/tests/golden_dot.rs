@@ -12,11 +12,11 @@
 //! the provenance walk it renders.
 
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_corpus::repo_root;
 use ein_infer::commitment::Kind;
 use ein_infer::firing::Firing;
 use ein_infer::solve::{DeadCommitment, LatticeProof, LatticeStats, SolutionRecord};
 use ein_ir::{Ast, parse};
-use ein_oracle::repo_root;
 use ein_render::ir_dot::{DotOpts, TraceView, render_query, render_trace, to_dot};
 use ein_render::kb_dot::KbDotOpts;
 use ein_render::lattice_dag::{LatticeSource, LatticeView, render_lattice};

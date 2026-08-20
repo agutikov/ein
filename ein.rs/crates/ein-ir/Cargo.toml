@@ -20,7 +20,7 @@ include_dir.workspace = true
 # Verifying the embedded copy against `stdlib/MANIFEST.sha256`, in a test —
 # the digest is not needed at runtime.
 sha2.workspace = true
-# The frontend parity tests talk to `ein.py` through the shared oracle. A
-# dev-dependency only: the engine's own dependency budget is unaffected.
-ein-oracle = { path = "../ein-oracle" }
+# The corpus, the goldens and `repo_root()`. A dev-dependency only: the
+# engine's own dependency budget is unaffected.
+ein-corpus = { path = "../ein-corpus" }
 serde_json.workspace = true

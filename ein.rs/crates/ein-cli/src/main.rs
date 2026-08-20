@@ -14,7 +14,7 @@
 /// a global allocator makes the choice for every program that links it, and
 /// `ein-core` / `ein-infer` are meant to be embedded. The bench target
 /// declares the same one, so `cargo bench` measures the shipped program
-/// (`ein.rs/crates/ein-conformance/benches/engine.rs`).
+/// (`ein.rs/crates/ein-corpus/benches/engine.rs`).
 #[cfg(feature = "snmalloc")]
 #[global_allocator]
 static GLOBAL: snmalloc_rs::SnMalloc = snmalloc_rs::SnMalloc;

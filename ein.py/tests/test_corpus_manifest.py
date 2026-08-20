@@ -1,15 +1,17 @@
-"""The parity corpus is complete — `conformance/corpus.toml` (S1a.0.1).
+"""The corpus is complete — `corpus/corpus.toml` (S1a.0.1).
 
-The manifest lists every `.ein` file the two implementations are compared on.
-Its value depends entirely on being exhaustive: an unlisted file is a hole the
-harness reports as green. So the bijection between the tree and the manifest is
-checked here, and again on the Rust side
-(`ein.rs/crates/ein-conformance`) — both suites, because either one alone can
-be the suite nobody ran.
+The manifest lists every `.ein` file the engine is exercised over. Its value
+depends entirely on being exhaustive: an unlisted file is a hole every sweep
+reports as green. So the bijection between the tree and the manifest is checked
+here, and again on the Rust side (`ein.rs/crates/ein-corpus/src/manifest.rs`).
+
+The Rust twin owns all nine of these claims since T1a.10.1.1, so this file is a
+second copy of a settled contract rather than half of one — it goes with the
+suite at S1a.10.5.
 
 This is the mechanical version of the rule
 [`examples/README.md`](../../examples/README.md) already states in prose. Format
-and the group vocabulary: [`conformance/README.md`](../../conformance/README.md).
+and the group vocabulary: [`corpus/README.md`](../../corpus/README.md).
 """
 from __future__ import annotations
 
@@ -19,11 +21,11 @@ import pytest
 import tomllib
 
 REPO = Path(__file__).resolve().parents[2]
-MANIFEST = REPO / "conformance" / "corpus.toml"
+MANIFEST = REPO / "corpus" / "corpus.toml"
 
-SCHEMA = "ein-corpus/1"
-GROUPS = {"positive", "parse-negative", "load-negative", "stdlib",
-          "golden", "generated", "crash-parity"}
+SCHEMA = "ein-corpus/2"
+GROUPS = {"positive", "stdlib", "parse-negative", "load-negative",
+          "compile-negative", "regression", "generated"}
 
 
 def _stdlib_dir() -> Path:
@@ -61,7 +63,7 @@ def test_every_ein_file_has_an_entry(manifest: dict):
     listed = {e["path"] for e in manifest["entry"]}
     missing = sorted(_tracked() - listed)
     assert not missing, (
-        f"{len(missing)} .ein file(s) with no conformance/corpus.toml entry: "
+        f"{len(missing)} .ein file(s) with no corpus/corpus.toml entry: "
         f"{missing}"
     )
 
@@ -94,31 +96,33 @@ def test_every_entry_has_at_least_one_run(manifest: dict):
 
 
 def test_negatives_are_grouped_by_where_they_fail(manifest: dict):
-    """`broken/*.ein` fail at parse; `broken/load/*.ein` fail at load. The
-    split is what lets P1a.1 gate on one and P1a.2 on the other.
+    """A group is a directory: `broken/*.ein` fail at parse,
+    `broken/load/*.ein` at load, `broken/compile/*.ein` at compile — the split
+    is what lets P1a.1 gate on one, P1a.2 on the next and P1a.3 on the third —
+    and `ein-bugs/*.ein` are the bug-repro puzzles, which fail at no fixed
+    point because some of them no longer fail at all.
 
-    A file that *loads and then crashes the engine* is neither, and it is not
-    in `broken/`: it is a well-formed input the engine mishandles, so it lives
-    with the other bug-repro puzzles and carries the `crash-parity` group,
-    which compares exit code and exception class rather than output.
+    That last group was `crash-parity` until S1a.10.3, and its membership rule
+    was "ein.py raises an unhandled exception here" — neither a directory nor
+    a fact about the language.
     """
     by_path = {e["path"]: e["group"] for e in manifest["entry"]}
     for path, group in by_path.items():
         if path.startswith("examples/broken/load/"):
             assert group == "load-negative", path
         elif path.startswith("examples/broken/compile/"):
-            # S1a.3.1 — they parse and load, then the compiler refuses. The CLI
-            # does not catch a `CompileError`, so a run dies with a traceback
-            # and `crash-parity`'s comparison (exit code + exception class) is
-            # the one that applies; the message is pinned byte-for-byte by the
-            # `.expected` files instead. `activator_arity` is the exception:
-            # the S1.22.0 arity filter makes its error unreachable through the
-            # engine, so its run succeeds and it is an ordinary `positive`.
-            assert group in ("crash-parity", "positive"), path
+            # S1a.3.1 — they parse and load, then the compiler refuses; the
+            # message is pinned byte-for-byte by the `.expected` files beside
+            # them. `activator_arity` is the exception: the S1.22.0 arity
+            # filter makes its error unreachable through the engine, so its
+            # run succeeds and it is an ordinary `positive`.
+            assert group in ("compile-negative", "positive"), path
         elif path.startswith("examples/broken/"):
             assert group == "parse-negative", path
+        elif path.startswith("examples/ein-bugs/"):
+            assert group == "regression", path
         elif path.startswith("examples/"):
-            assert group in ("positive", "crash-parity"), path
+            assert group == "positive", path
 
 
 def test_every_compile_negative_fixture_has_its_expected(manifest: dict):

@@ -1,6 +1,6 @@
 [package]
 name        = "ein-parity"
-description = "The parity contract's normalisation list, executable — design/01 §5"
+description = "Test-only: what a derivation's narration is, executable — design/01 §5"
 publish     = false
 version.workspace    = true
 edition.workspace    = true

@@ -52,22 +52,25 @@ constrained-reasoning research.
   drift; `ein.py/src/ein/stdlib/` is a build-time copy (git-ignored) so a
   wheel still works. Resolution in both engines: `$EIN_STDLIB` → the
   checkout → the packaged/embedded copy.
-- **`conformance/`** — the **parity corpus**: `corpus.toml` (one entry per
-  `.ein`, with the runs it is exercised under) and `EVENTS.md` (the
-  `--events` protocol). A file under `examples/` or `stdlib/` with no entry
-  fails a completeness check in both suites.
+- **`corpus/`** — the **corpus**: `corpus.toml` (one entry per `.ein`, with
+  the runs it is exercised under) plus `fuzz_findings/`. A file under
+  `examples/` or `stdlib/` with no entry fails a completeness check. What
+  runs it is `cargo test`, and [`corpus/README.md`](corpus/README.md) has the
+  table of readers. It was `conformance/` until M1a S1a.10.3, and the
+  `--events` protocol it also held is now
+  [`docs/kernel/inference/events.md`](docs/kernel/inference/events.md).
 - **`ein.rs/`** — the Rust port ([M1a](plans/m1a_rust/README.md)), a
-  drop-in replacement for `ein`. `crates/ein-conformance` is the parity
-  harness — it shells out to both engines and links neither, and
-  `crates/ein-parity` is the one implementation of what the two engines are
-  *not* required to agree on ([design/01
+  drop-in replacement for `ein`, and since
+  [P1a.10](plans/m1a_rust/p1a.10_single_implementation/README.md) the only
+  implementation. Two of its seven crates are dev-only: `ein-corpus` (the
+  manifest, the fixture helpers, the bench set) and `ein-parity` (the one
+  implementation of what counts as a derivation's *narration* rather than
+  its content — [design/01
   §5](plans/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list);
-  `--strict` / `EIN_PARITY_STRICT=1` turns it off). **`ein.py/` is the
-  oracle**: any observable difference is a bug in ein.rs, and every
-  optimisation there is justified by "the harness says nothing changed" —
-  except a fork's *narration*, which since
-  [S1a.6.9](plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
-  differs on purpose and is pinned by ein.rs's own goldens instead.
+  `EIN_PARITY_STRICT=1` turns it off). **`ein.py/` was the oracle** until
+  S1a.10.2 banked what only it proved; what remains of that argument is
+  the ledger, the goldens under `tests/golden/from_ein_py/` — the last
+  independent provenance in the repo — and the divergence list.
 - **`ein.py/`** — Python implementation. `ein.py/src/ein/` is the
   package: IR parser + dumper under `ir/`; KB store + entities +
   provenance under `kb/`; inference engine + saturator + contradiction
@@ -97,30 +100,30 @@ constrained-reasoning research.
   (`nlp/link-grammar`, `smt/CVC4`). Not wired into the active
   `ein.py/` package.
 
-## Running the parity harness
+## Running the gate
 
 ```sh
-cargo build --release --manifest-path ein.rs/Cargo.toml
-ein.rs/target/release/ein-conformance run \
-    --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" --tier T3
+cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the whole gate
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 17 slow entries
+EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
+EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 ```
 
-**From the repo root**: the harness gives both implementations the repo root as
-their working directory, so a relative `--impl-…` *path* (as opposed to a
-`python3 -m …` module invocation) is resolved against the root no matter where
-the runner was started — `cd ein.rs` with `--impl-b ./target/release/ein` is
-473 harness errors, caught by the liveness check.
+Everything runs one engine. `cargo test --workspace` is the gate — the corpus
+sweep through the CLI, the shape digests, the goldens, the manifest's own
+invariants — and it needs **Graphviz** on `PATH`, because
+`dot_wellformed.rs` is the only authority the DOT views have on being
+well-formed and it fails rather than skips without it.
 
 The `ein` binary links `snmalloc` by default since S1a.6.2 (worth 8–16 % of a
 solve), so the build needs **`cmake` and a C++ compiler**;
 `cargo build --release -p ein-cli --no-default-features` builds against the
 system allocator and needs neither.
 
-Python-vs-Python is not a curiosity — it is the gate: a harness that cannot
-detect a difference between an implementation and itself cannot detect one
-between two implementations either. The same shape with `--env-a
-PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42` is the determinism sweep, which
-is how hazards H1 and H4 were found. `conformance/README.md` has the tiers.
+**The parity harness is gone** (M1a S1a.10.3). `ein-conformance run --impl-a …
+--impl-b … --tier T0…T3` ran two implementations over the corpus and diffed
+them; there is no second operand. What each tier proved and who owns it now is
+[the oracle ledger](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md).
 
 ## Regenerating the knowledge graph
 

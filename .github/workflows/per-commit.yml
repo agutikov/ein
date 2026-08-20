@@ -1,15 +1,13 @@
 # Tier 1 of three — plans/m1a_rust/design/12_toolchain_and_layout.md §4.
 #
-# Budget: five minutes. Everything here answers a question that must not be
-# answered later: is the oracle still green, do the two implementations still
-# agree, and is the shared stdlib still one file set.
+# Budget: five minutes.
 #
-# The tier the harness runs at rises with the port: T3 on parse/dump surfaces
-# at P1a.1, load errors at P1a.2, and so on to T3 corpus-wide at P1a.5
-# (design/01 § Tier → phase map). Until ein.rs has an engine, it is
-# Python-vs-Python — which is not a placeholder but the calibration: a harness
-# that cannot detect a difference between an implementation and itself cannot
-# detect one between two implementations either.
+# The `conformance-fast` job that used to close this file ran the parity
+# harness over the corpus, Python against Rust, at T3. It was retired with the
+# harness at M1a S1a.10.3: the corpus is still swept every commit, by
+# `cargo test --workspace`, which runs `ein-cli/tests/corpus_cli.rs` — every
+# entry under every declared run, as a process, against a banked exit golden —
+# in about three seconds rather than eight minutes of two engines.
 
 name: per-commit
 
@@ -73,35 +71,17 @@ jobs:
       # `cli_semantics.rs` runs to compare the zebra2 variants byte for byte.
       - uses: actions/setup-python@v5
         with: { python-version: "3.14" }
+      # `ein-render/tests/dot_wellformed.rs` runs every DOT view of every
+      # corpus file through `dot -Tsvg`, which is the only authority they have
+      # on being well-formed. It used to skip when Graphviz was absent — on a
+      # stderr line `cargo test` captures for a passing test, so this job had
+      # been reporting a pass for 5 209 renderings nothing checked. S1a.10.3
+      # made it fail instead, and this line is the other half of that.
+      - run: sudo apt-get update && sudo apt-get install -y graphviz
       - run: cargo fmt --check
       - run: cargo clippy --workspace --all-targets -- -D warnings
-      # Covers the corpus-completeness check, the embedded-stdlib digest, and
-      # since S1a.10.2 every claim the frontend's differential tests carried.
+      # The whole gate. Covers the corpus-completeness check, the corpus sweep
+      # through the CLI, the embedded-stdlib digest, and since S1a.10.2 every
+      # claim the frontend's differential tests carried.
       - run: cargo test --workspace
       - run: cargo bench --bench engine -- --test
-
-  conformance-fast:
-    name: conformance — the per-commit corpus tier
-    runs-on: ubuntu-latest
-    needs: [oracle, rust]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-        with: { workspaces: ein.rs }
-      - run: pip install -e ein.py
-      - run: cargo build --release --bin ein-conformance
-        working-directory: ein.rs
-      # `slow` entries are excluded here by the manifest and run nightly.
-      - run: |
-          ein.rs/target/release/ein-conformance run \
-            --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
-            --tier T3 --timeout 200
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: conformance-out
-          path: conformance/out
-          retention-days: 7

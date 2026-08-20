@@ -1,8 +1,26 @@
 # Tier 2 of three — plans/m1a_rust/design/12_toolchain_and_layout.md §4.
 #
-# Budget: an hour. Everything the per-commit tier cannot afford, plus the two
-# checks that only make sense over time: does either implementation still
-# agree with itself, and does anything the corpus does not cover diverge.
+# Budget: an hour. Everything the per-commit tier cannot afford, plus the check
+# that only makes sense over time: does anything the corpus does not cover
+# break.
+#
+# Three jobs left at M1a S1a.10.3, with the harness they drove. Each named a
+# question, and each question has an owner that runs without a second engine:
+#
+#   hash-seed-sweep    ein.py against itself under two PYTHONHASHSEEDs — the
+#                      check that found hazards H1 and H4. Successor:
+#                      `ein-render/tests/id_order_invariance.rs`, which
+#                      permutes the *id space* instead of a hash seed and is
+#                      stronger for it (the ledger §5). `EIN_ID_SEEDS=8` below.
+#   conformance-full   the whole corpus, both engines, T1 and T3. Successor:
+#                      `cargo test --workspace` per commit, plus the corpus
+#                      sweep at EIN_CORPUS_SLOW=1 below for the 17 slow
+#                      entries the per-commit tier skips.
+#   frontend-fuzz      the parser against lark, 10^6 mutations. Successor:
+#                      `ein-ir/tests/fuzz_properties.rs`, which checks the
+#                      frontend's own properties — nothing panics, everything
+#                      that parses round-trips, every recorded finding still
+#                      parses the way it was recorded.
 
 name: nightly
 
@@ -23,77 +41,40 @@ jobs:
       # task-class fixtures.
       - run: ./run_tests.sh -j auto
 
-  hash-seed-sweep:
-    name: ein.py — self-parity under PYTHONHASHSEED
+  deep-corpus:
+    name: ein.rs — the slow corpus entries, and the id space permuted
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: { seed: ["1", "42", "12345"] }
+    defaults: { run: { working-directory: ein.rs } }
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }
       - uses: dtolnay/rust-toolchain@stable
-      - run: pip install -e ein.py
-      - run: cargo build --release --bin ein-conformance
-        working-directory: ein.rs
-      # One implementation, two hash seeds. This is how hazards H1 and H4 were
-      # found, and it is the check that keeps a `set` from leaking into an
-      # observable again.
-      #
-      # `--strict` on purpose: the D3 narration normalisation
-      # (design/01 §5's fork row) exists because *two engines* narrate
-      # differently, and one engine against itself has no such excuse. Running
-      # this sweep relaxed would blind it to exactly the class of hazard it is
-      # here for.
-      - run: |
-          ein.rs/target/release/ein-conformance run \
-            --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
-            --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=${{ matrix.seed }} \
-            --tier T3 --include-slow --timeout 600 --strict
-
-  conformance-full:
-    name: conformance — the whole corpus, every tier
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: { tier: [T1, T3] } # T2 fails with oom
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }
-      - uses: dtolnay/rust-toolchain@stable
-      - run: pip install -e ein.py
-      - run: cargo build --release --bin ein-conformance
-        working-directory: ein.rs
-      - run: |
-          ein.rs/target/release/ein-conformance run \
-            --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
-            --tier ${{ matrix.tier }} --include-slow --timeout 600
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: conformance-out-${{ matrix.tier }}
-          path: conformance/out
-          retention-days: 14
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: ein.rs }
+      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      # The 17 `slow` entries — 118 cells the per-commit sweep skips, two
+      # minutes of exhaustive search including `zebra2` and `zebra2-minus-15`.
+      - run: cargo test -p ein-cli --release --test corpus_cli
+        env: { EIN_CORPUS_SLOW: "1" }
+      # Eight id-space permutations rather than one. The successor to the
+      # PYTHONHASHSEED sweep: same question — does any output depend on an
+      # ordering accident — asked of the one engine that is left.
+      - run: cargo test -p ein-render --release --test id_order_invariance
+        env: { EIN_ID_SEEDS: "8" }
 
   frontend-fuzz:
-    name: ein.rs — the IR differential fuzzer, at budget
+    name: ein.rs — the frontend fuzzer, at budget
     runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ein.rs } }
     strategy:
       fail-fast: false
       matrix: { seed: ["1", "987654321"] }
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }
       - uses: dtolnay/rust-toolchain@stable
-      - run: pip install -e ein.py
       # 10^6 mutations is P1a.1's acceptance number; the per-commit tier runs
       # 2 000 of them. A find is minimised and written to
-      # conformance/fuzz_findings/, which the failure artifact carries out.
-      - run: cargo test -p ein-ir --release --test fuzz_parity
-        working-directory: ein.rs
+      # corpus/fuzz_findings/, which the failure artifact carries out.
+      - run: cargo test -p ein-ir --release --test fuzz_properties
         env:
           EIN_FUZZ_ITERS: "1000000"
           EIN_FUZZ_SEED: ${{ matrix.seed }}
@@ -101,11 +82,11 @@ jobs:
         if: failure()
         with:
           name: fuzz-findings-${{ matrix.seed }}
-          path: conformance/fuzz_findings
+          path: corpus/fuzz_findings
           retention-days: 30
 
   benches:
-    name: benchmarks — both implementations, one measurement set
+    name: benchmarks — the M1a measurement set
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

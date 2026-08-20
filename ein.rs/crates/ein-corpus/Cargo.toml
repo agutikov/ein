@@ -1,0 +1,41 @@
+[package]
+name        = "ein-corpus"
+description = "Test-only: the corpus manifest, the fixture helpers every crate's tests share, and the M1a bench set"
+publish     = false
+version.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+repository.workspace = true
+
+[features]
+# The bench set runs under the binary's allocator by default (T1a.6.2.7).
+# `cargo bench -p ein-corpus --no-default-features` is the other arm of that
+# measurement — the same benches on the system allocator — and it is how the
+# allocator's share of each bench stays a number rather than a claim.
+#
+# The feature lives on this crate rather than on an engine crate for exactly
+# that reason: `default = ["snmalloc"]` on `ein-infer` would put a bench's
+# allocator choice into the dependency graph of everything that links the
+# engine.
+default  = ["snmalloc"]
+snmalloc = []
+
+[dependencies]
+serde.workspace      = true
+toml.workspace       = true
+
+[dev-dependencies]
+criterion.workspace = true
+# The bench runs under the *binary's* allocator (T1a.6.2.7); a bench set that
+# measures a different program from the one that ships is measuring nothing.
+snmalloc-rs.workspace = true
+# The engine, for the bench set only. A dev-dependency, so the engine crates
+# can dev-depend on this one for `golden()` and the manifest without either
+# side reaching the other's *library* graph.
+ein-ir = { path = "../ein-ir" }
+ein-core = { path = "../ein-core" }
+ein-infer = { path = "../ein-infer" }
+
+[[bench]]
+name    = "engine"
+harness = false

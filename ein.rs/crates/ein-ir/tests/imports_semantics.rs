@@ -19,11 +19,11 @@
 
 use std::path::{Path, PathBuf};
 
+use ein_corpus::{golden, golden_path, repo_root};
 use ein_ir::dump::dump_canonical;
 use ein_ir::imports::Resolver;
 use ein_ir::macros::{collect_macros, expand_rule_clauses};
 use ein_ir::{Ast, parse};
-use ein_oracle::{golden, golden_path, repo_root};
 
 fn parse_file(ast: &mut Ast, path: &Path) -> Vec<ein_ir::NodeId> {
     let text = std::fs::read_to_string(path).expect("readable");
@@ -74,7 +74,7 @@ fn stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list() {
 }
 
 /// The checked-in messages, compared against the **fixture files** — the same
-/// text `ein.py/tests/kb/test_load_negative.py` and the conformance runner
+/// text `ein.py/tests/kb/test_load_negative.py` and the corpus sweep
 /// hold ein.py to.
 #[test]
 fn the_import_and_macro_failures_are_byte_identical() {

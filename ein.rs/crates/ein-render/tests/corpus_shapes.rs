@@ -62,7 +62,7 @@ mod corpus_ops;
 
 use corpus_ops::{ops, run};
 use ein_core::Terms;
-use ein_oracle::{corpus_files, golden, golden_path, repo_root};
+use ein_corpus::{corpus_files, golden, golden_path, repo_root};
 
 /// Sixteen hex digits of `md5`, the same digest and the same truncation
 /// `render::hashed_id` uses for a DOT node id. Not a security claim: the

@@ -18,8 +18,8 @@
 //! diff; they are floors under a digest for exactly the same reason.
 
 use ein_core::Terms;
+use ein_corpus::corpus_files;
 use ein_ir::{Ast, load_file};
-use ein_oracle::corpus_files;
 use std::path::Path;
 
 fn hyp_shape(path: &Path) -> Option<String> {

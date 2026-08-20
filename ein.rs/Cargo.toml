@@ -1,16 +1,23 @@
-# ein.rs — the Rust port of the ein engine (M1a).
+# ein.rs — the Rust port of the ein engine (M1a), and since
+# plans/m1a_rust/p1a.10_single_implementation/ the only implementation.
 #
-# The engine crates are in place and empty: P1a.0 builds only the parity
-# harness (`ein-conformance`, which shells out to both implementations and
-# links neither), and the rest fill in over P1a.1–P1a.5 in the order the
-# tiers gate them. Having them compile from the start means a stage adds
-# code rather than also adding a crate, and `cargo test` covers the shape of
-# the workspace before there is anything in it.
+# Five engine crates and two dev-only ones. The engine crates were in place and
+# empty at P1a.0 and filled in over P1a.1–P1a.5, so that a stage added code
+# rather than also adding a crate.
 #
-# `ein-oracle` is dev-only (`publish = false`): it is `ein.py` and CPython kept
-# warm behind a JSON-Lines protocol, so the differential tests every phase from
-# P1a.1 onwards needs do not each re-implement the process plumbing. Nothing
-# outside a `[dev-dependencies]` block depends on it.
+# The two dev-only crates (`publish = false`, and nothing outside a
+# `[dev-dependencies]` block or a bench depends on either):
+#
+#   ein-corpus  the corpus manifest (`corpus/corpus.toml`), the fixture helpers
+#               every crate's tests share, and the eight-bench M1a measurement
+#               set. It is `ein-oracle` with its subject removed plus the
+#               surviving half of `ein-conformance`; the parity harness itself,
+#               which shelled out to two implementations and linked neither,
+#               was retired at S1a.10.3 with the second implementation.
+#   ein-parity  the D3 normalisation list, executable — what counts as a
+#               derivation's *narration* rather than its content. It outlived
+#               the harness that motivated it: the same three observables move
+#               inside one engine under a permuted id space.
 #
 # `ein-py` (P1a.9) is NOT here: PyO3/maturin is a heavy dependency whose cost
 # the dependency policy says to defer until something needs it. (`ein-server`
@@ -24,13 +31,12 @@
 resolver = "3"
 members = [
     "crates/ein-core",
-    "crates/ein-oracle",
+    "crates/ein-corpus",
     "crates/ein-parity",
     "crates/ein-ir",
     "crates/ein-infer",
     "crates/ein-render",
     "crates/ein-cli",
-    "crates/ein-conformance",
 ]
 
 [workspace.package]
@@ -76,8 +82,10 @@ snmalloc-rs = "0.7"
 # engine crates stay dependency-light.
 clap        = { version = "4", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions"] }
 
-# Optimised even in dev: every conformance run spawns hundreds of engine
-# processes, and the harness itself must never be the slow part.
+# Optimised even in dev: `cargo test` spawns hundreds of engine processes —
+# `ein-cli/tests/corpus_cli.rs` alone is 542 of them — and a debug-speed engine
+# would make the gate slow enough to skip. The corpus sweep is 2.7 s at
+# `opt-level = 1` and 2.6 s in release, so this is the whole of the difference.
 [profile.dev]
 opt-level = 1
 
@@ -104,9 +112,8 @@ strip    = false
 [profile.profiling.package.snmalloc-sys]
 debug = false
 
-# `cargo test` and the conformance harness run the dev profile, and an
-# allocator compiled with its own assertions on is not the allocator anything
-# ships. Same reason, same fix.
+# `cargo test` runs the dev profile, and an allocator compiled with its own
+# assertions on is not the allocator anything ships. Same reason, same fix.
 [profile.dev.package.snmalloc-sys]
 debug     = false
 opt-level = 3

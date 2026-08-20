@@ -35,5 +35,5 @@ name = "ein"
 path = "src/main.rs"
 
 [dev-dependencies]
-ein-oracle = { path = "../ein-oracle" }
+ein-corpus = { path = "../ein-corpus" }
 serde_json.workspace = true

@@ -28,8 +28,12 @@ Placeholders — the only machine-specific text any message contains:
 | `{STDLIB}` | the resolved stdlib root |
 
 Consumers: [`ein.py/tests/kb/test_load_negative.py`](../../../ein.py/tests/kb/test_load_negative.py)
-(one case per fixture; refresh with `UPDATE_GOLDEN=1`) and the conformance
-runner, which compares the two implementations' CLI output on each entry.
+(one case per fixture; refresh with `UPDATE_GOLDEN=1`),
+[`ein-ir/tests/load_semantics.rs`](../../../ein.rs/crates/ein-ir/tests/load_semantics.rs)
+(the same bytes, in Rust), and the corpus sweep
+([`ein-cli/tests/corpus_cli.rs`](../../../ein.rs/crates/ein-cli/tests/corpus_cli.rs)),
+which checks that each fixture is refused through the CLI as well as through
+the loader.
 
 `import_cycle.ein` and `import_cycle_b.ein` import each other. Both are
 fixtures: the reported chain is the resolution stack, so entering the cycle

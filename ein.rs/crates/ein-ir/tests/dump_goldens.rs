@@ -15,9 +15,9 @@
 //! `ir[dump-compact]` lines, and ein.py's own fixed-point check — a test that
 //! ran no ein.rs code at all, whose subject was `ein/ir/dump.py`.
 
+use ein_corpus::{corpus_files, repo_root};
 use ein_ir::dump::{dump_canonical, dump_compact};
 use ein_ir::{Ast, parse};
-use ein_oracle::{corpus_files, repo_root};
 
 fn parse_file(ast: &mut Ast, path: &std::path::Path) -> Vec<ein_ir::NodeId> {
     let text = std::fs::read_to_string(path).expect("readable");

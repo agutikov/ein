@@ -23,8 +23,9 @@ sha1.workspace = true
 [dev-dependencies]
 # The DOT goldens under `ein-render/tests/golden/from_ein_py/dot/` are the fixture; reading
 # them needs nothing, but building the KB a golden was captured from does.
-ein-oracle = { path = "../ein-oracle" }
+ein-corpus = { path = "../ein-corpus" }
 # The one implementation of "what the parity contract stopped comparing",
-# shared with `ein-conformance` so a test and the gate cannot disagree.
+# one implementation of what counts as narration, shared by every test that
+# has to know.
 ein-parity = { path = "../ein-parity" }
 serde_json.workspace = true

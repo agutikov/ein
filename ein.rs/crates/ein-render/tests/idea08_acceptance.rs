@@ -24,9 +24,9 @@
 //! markdown is what a reader gets and the root section is part of it.
 
 use ein_core::{Kb, Terms};
+use ein_corpus::repo_root;
 use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
 use ein_ir::{Ast, parse};
-use ein_oracle::repo_root;
 use std::collections::BTreeSet;
 use std::path::Path;
 

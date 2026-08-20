@@ -1,19 +1,25 @@
-# The parity corpus — M1a S1a.0.1 T1a.0.1.1.
+# The corpus — M1a S1a.0.1 T1a.0.1.1, re-based at S1a.10.3.
 #
-# One entry per `.ein` file both implementations are compared on, with the runs
+# One entry per `.ein` file the engine is exercised over, with the invocations
 # it is exercised under. Format, the group vocabulary and the run-name
-# convention: conformance/README.md. A file under examples/ or the stdlib with
-# no entry here fails a completeness check in BOTH test suites, so the corpus
-# cannot silently miss one.
+# convention: corpus/README.md. A file under examples/ or stdlib/ with no entry
+# here fails a completeness check, so the corpus cannot silently miss one.
 #
-# `slow = true` keeps an entry out of the per-commit tier. It is measured, not
+# `slow = true` keeps an entry out of the default sweep. It is measured, not
 # guessed: an entry is slow when any of its runs took 3s or more in the
 # T1a.0.1.1 probe of the whole matrix (CPython 3.14, dev machine, 2026-08-17).
-# The per-commit tier is then everything else — 78 of 95 entries.
+# That budget is now two engines out of date — ein.rs runs the whole default
+# sweep in ~3 s — and re-measuring it is a growth item, not a deletion.
 #
 # Generated once from the tree; maintained by hand from here.
+#
+# schema 2 (S1a.10.3) renamed the `crash-parity` group, whose claim was about
+# ein.py's exception classes, to `regression`, and split the compile-error
+# fixtures out as `compile-negative`. A schema-1 manifest names groups that no
+# longer exist, so the version is what refuses it rather than a stale entry
+# silently dropping out of every selection.
 
-schema = "ein-corpus/1"
+schema = "ein-corpus/2"
 
 
 # ── positive ────────────────────────────────────────────────
@@ -119,12 +125,12 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 
 [[entry]]
 path   = "examples/ein-bugs/zebra2-bad.ein"
-group  = "positive"
+group  = "regression"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/ein-bugs/zebra2-hints.ein"
-group  = "positive"
+group  = "regression"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
@@ -360,76 +366,84 @@ levers = ["-L", "-K", "-y", "-o score-sum"]
 slow   = true
 
 
-# ── crash-parity ────────────────────────────────────────────
+# ── regression: examples/ein-bugs/ ──────────────────────────
+#
+# Inputs that once broke an implementation, kept as fixtures. The group has
+# no uniform expectation and that is the point: seven of the ten answer on
+# every run, one answers under `saturate` and is refused under `solve`, and
+# two are refused outright. Which is which is the exit golden's to say
+# (`ein-cli/tests/golden/corpus_exits.txt`), not this column's.
 
 [[entry]]
 path   = "examples/ein-bugs/mixed-type-hypothesis.ein"
-group  = "crash-parity"
+group  = "regression"
 runs   = ["solve -e"]
 note   = "M1a hazard H2 / Q-M1a.4 — an hrule binds one variable to an int and a str, and `apriori.layer_1`'s `sorted(alive)` raises. The message names its operands in a `PYTHONHASHSEED`-dependent order, which is why this group compares the exception class and not the line."
 
 [[entry]]
 path   = "examples/ein-bugs/nested-fact-hypothesis.ein"
-group  = "crash-parity"
+group  = "regression"
 runs   = ["solve -e"]
 note   = "M1a hazard H2, second shape — the same `sorted(alive)`, over two `Fact` args instead of a str and an int, so it needs no mixed slot types: one hrule whose `:assert` is a `(not …)` is enough. Found by the S1a.6.6 fuzzer 2026-08-20; D2's reach, widened with a fixture rather than in prose."
 
 [[entry]]
 path   = "examples/ein-bugs/query-goal-free-head-unsat.ein"
-group  = "positive"
+group  = "regression"
 runs   = ["solve", "solve -e", "saturate", "render rules"]
 note   = "The `Contradiction` arm of `query-goal-free-head.ein`: the same uncompilable goal, but no solution block is rendered, so ein.py never compiles it and the run exits 0. Pins the asymmetry a too-eager fix broke for the length of one commit."
 
 [[entry]]
 path   = "examples/ein-bugs/query-goal-free-head.ein"
-group  = "crash-parity"
+group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "S1a.6.6's shortest find — `(query :goal (?R Rex Animal))`. A query goal has no activator, so a head variable can never be bound and the pattern is uncompilable; ein.py raises out of the table renderer after a successful solve, and ein.rs ran the program until this fixture."
 
 [[entry]]
 path   = "examples/ein-bugs/unbound-assert-var.ein"
-group  = "crash-parity"
+group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "Q-M1a.14's own first example, reached for the first time 2026-08-20 by the S1a.6.6 fuzzer — an `(or …)` whose arms bind different variables lets one reach the `:assert` unbound. ein.py raises `KeyError`, whose `str` is the repr of its key; ein.rs printed the message unquoted until this fixture."
 
 [[entry]]
 path   = "examples/ein-bugs/unbound-relation-head.ein"
-group  = "crash-parity"
+group  = "regression"
 runs   = ["solve"]
 note   = "Q-M1a.14 — `(?R ?x)` with `?R` unbound is a `CompileError` in both engines with the identical message and exit code; ein.py's CLI lets it escape as a traceback and ein.rs prints the line alone. Found by the S1a.6.6 fuzzer's mutation arm."
 
 [[entry]]
 path   = "examples/ein-bugs/int-goal-binding.ein"
-group  = "positive"
+group  = "regression"
 runs   = ["solve", "solve -e", "saturate", "render rules"]
 note   = "S1a.6.6 regression — an integer goal binding is a JSON *number* in `summary.json`, not a string. A T0 difference that five phases of byte parity missed because stdout is identical and no other corpus file binds a query variable to an int. Carries a value wider than i64 on purpose."
 
 [[entry]]
 path   = "examples/ein-bugs/fact-goal-binding.ein"
-group  = "positive"
+group  = "regression"
 runs   = ["solve", "solve -e", "saturate", "render rules"]
 note   = "S1a.6.6 regression — a *nested fact* goal binding. ein.py raised inside `json.dumps` and wrote no summary at all; it now renders the fact as an s-expression, which is what ein.rs already did."
 
-# The three `CompileError` fixtures (S1a.3.1). The CLI does not catch one, so a
-# run dies with a traceback — `crash-parity`'s comparison. Their messages are
-# not left uncompared: each has a `.expected` beside it, held to byte-for-byte
-# by both suites (`examples/broken/compile/README.md`). `render rules` is
-# deliberately not among the runs: it never reaches the compiler, so the cell
-# would compare an exit code and discard the output.
+# ── compile-negative: examples/broken/compile/ ──────────────
+#
+# The three `CompileError` fixtures (S1a.3.1) — files that parse and load and
+# are then refused by the compiler. Their messages are not left unchecked: each
+# has a `.expected` beside it, held byte-for-byte by
+# `ein-infer/tests/compile_semantics.rs` (`examples/broken/compile/README.md`).
+# `render rules` is deliberately not among the runs: it never reaches the
+# compiler, so the cell would record an exit code and discard the output.
 
 [[entry]]
 path   = "examples/broken/compile/empty_absent.ein"
-group  = "crash-parity"
+group  = "compile-negative"
 runs   = ["solve", "saturate"]
 
 [[entry]]
 path   = "examples/broken/compile/nested_or.ein"
-group  = "crash-parity"
+group  = "compile-negative"
 runs   = ["solve", "saturate"]
 
 [[entry]]
 path   = "examples/broken/compile/unbound_head.ein"
-group  = "crash-parity"
+group  = "compile-negative"
 runs   = ["solve", "saturate"]
 
 
@@ -437,7 +451,7 @@ runs   = ["solve", "saturate"]
 path   = "examples/broken/compile/activator_arity.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]
-note   = "S1a.3.1's fourth compile-error fixture, and the one that is `positive` rather than `crash-parity`: `Engine._activators_for`'s S1.22.0 arity filter drops `(pairwise r)` before the compiler sees it, so the rule never runs and the file solves. That it derives nothing is the assertion — until S1.22.0 the mismatch dropped every premise and the rule fired unconditionally."
+note   = "S1a.3.1's fourth compile-error fixture, and the one that is `positive` rather than `compile-negative`: `Engine._activators_for`'s S1.22.0 arity filter drops `(pairwise r)` before the compiler sees it, so the rule never runs and the file solves. That it derives nothing is the assertion — until S1.22.0 the mismatch dropped every premise and the rule fired unconditionally."
 
 
 # ── parse-negative ──────────────────────────────────────────

@@ -30,11 +30,11 @@ use ein_core::{
     BitSet, FactId, IntId, Justifications, Kb, Prov, ProvKind, Symbol, Tag, Terms, Value,
     build_derivation_dag, shape, unsat_core, walk_premises, walks::is_frontier,
 };
+use ein_corpus::{corpus_files, repo_root};
 use ein_ir::imports::Resolver;
 use ein_ir::macros::{collect_macros, expand_rule_clauses};
 use ein_ir::stdlib::{self, MARKER, Source};
 use ein_ir::{Ast, dump_canonical, load, load_file, parse};
-use ein_oracle::{corpus_files, repo_root};
 use std::path::{Path, PathBuf};
 
 // ── Fixtures ───────────────────────────────────────────────────────
@@ -651,7 +651,7 @@ fn the_unsat_core_frontier_is_the_derivation_dags_sources() {
 /// The resolved stdlib root is the **only** one consulted — the checkout being
 /// right there changes nothing.
 ///
-/// This is what `$EIN_STDLIB` buys the conformance harness: point it at a
+/// This is what `$EIN_STDLIB` buys: point it at a
 /// directory and that directory is the standard library, entire. The claim is
 /// asserted through the injection seam rather than through the environment,
 /// because `stdlib::resolve` maps the variable onto [`Source::Override`] in

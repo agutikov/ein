@@ -230,7 +230,7 @@ struct Census {
 /// pathological regression fails the floor rather than the CI wall clock.
 fn each_solved_corpus_file(mut f: impl FnMut(&Run)) -> Census {
     let mut census = Census::default();
-    for path in ein_oracle::corpus_files() {
+    for path in ein_corpus::corpus_files() {
         let mut ast = Ast::new();
         let mut terms = Terms::new();
         let Ok(mut kb) = load_file(&mut ast, &mut terms, &path) else {
@@ -287,7 +287,7 @@ fn assert_census(c: &Census) {
     );
     assert_eq!(
         c.checked + c.unloadable + c.uncompilable + c.over_budget,
-        ein_oracle::corpus_files().len(),
+        ein_corpus::corpus_files().len(),
         "a corpus file fell out of every bucket"
     );
 }

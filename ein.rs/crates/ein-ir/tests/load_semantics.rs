@@ -23,8 +23,8 @@
 //! is the only one available once the second engine is gone.
 
 use ein_core::{Terms, shape};
+use ein_corpus::{corpus_files, golden, golden_path, repo_root};
 use ein_ir::{Ast, load_file};
-use ein_oracle::{corpus_files, golden, golden_path, repo_root};
 use std::path::{Path, PathBuf};
 
 /// What one load answered, in the vocabulary the oracle used — kept because

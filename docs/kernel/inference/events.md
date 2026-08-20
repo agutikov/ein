@@ -1,17 +1,28 @@
-# The oracle event protocol — `--events FILE`
+# The `--events` protocol
 
 **Schema version:** `ein-events/1`
 
-T2 parity is "the two engines took the same steps". That needs both
-implementations to narrate what they did in a comparable format, which is what
-this file specifies: **one JSON object per line**, opt-in behind
-`--events FILE`, off by default.
+`ein solve --events FILE` and `ein saturate --events FILE` make the engine
+narrate what it did: **one JSON object per line**, opt-in, off by default.
+Every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence,
+alternative justification, hypothesis verdict, entering, no-good and writeback,
+in the order the engine performed them.
 
-Design: [`plans/m1a_rust/design/01_parity_contract.md`](../plans/m1a_rust/design/01_parity_contract.md) §3.
-Built at [S1a.0.2](../plans/m1a_rust/p1a.0_conformance_harness/s1a.0.2_oracle_event_protocol.md).
-It is specified as a schema rather than as debug output, so every other
-observer — a trace viewer, a benchmark harness, an embedder — reads the same
+It is specified as a schema rather than as debug output, so every observer — a
+trace viewer, a benchmark harness, an embedder,
+[M1b](../../../plans/m1b_gui/README.md)'s likely feed — reads the same
 stream.
+
+> **Where it came from.** The protocol was built at
+> [S1a.0.2](../../../plans/m1a_rust/p1a.0_conformance_harness/s1a.0.2_oracle_event_protocol.md)
+> as the operand of the Rust port's **T2 parity tier** — "the two engines took
+> the same steps" — and its design rationale is
+> [`design/01`](../../../plans/m1a_rust/design/01_parity_contract.md) §3. The
+> second engine left the tree at
+> [P1a.10](../../../plans/m1a_rust/p1a.10_single_implementation/README.md) and
+> the tier went with it; the *format* did not, because nothing about it was
+> ever about there being two engines. What reads it now is named in
+> [§ Comparison](#comparison).
 
 ## Why not reuse `--dump-states`
 
@@ -28,12 +39,12 @@ justifications: that is where a port drifts, and none of it is visible there.
    no branch on any hot path that did not already exist.
 2. **Emitting must not change behaviour.** In particular nothing here may
    advance `Saturator._tiebreaker`, consume a generator, or reorder a dict.
-   A protocol that perturbs the run it describes is not an oracle.
+   A protocol that perturbs the run it describes narrates a different run.
 3. **No internal ids.** Facts are rendered with `cli._factdump.fact_sexpr`,
    the same canonical s-expression the CLI prints. Interned integers, object
    identities and dict addresses stay inside their implementations.
-4. **Cost when enabled is irrelevant.** This is a debugging and parity mode,
-   never a benchmark mode; the harness never times an `--events` run.
+4. **Cost when enabled is irrelevant.** This is a debugging and comparison
+   mode, never a benchmark mode; nothing times an `--events` run.
 
 ## Line format
 
@@ -59,23 +70,24 @@ consumer can reject a file it does not understand before reading further.
 
 Exhaustive `zebra2` produces roughly 40 k productive firings and a further
 ~194 k redundant ones. At `normal` a redundant firing is counted but not
-emitted, which keeps a hand-readable file. **T2 comparisons run at `verbose`**:
-a dropped redundant firing is exactly the kind of difference a port introduces
-and the tier exists to catch.
+emitted, which keeps a hand-readable file. **Everything that compares two
+streams runs at `verbose`**: a dropped redundant firing is exactly the kind of
+difference a port or an optimisation introduces.
 
-> **That last sentence is no longer the whole story.** Since M1a
-> [S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md),
-> ein.rs's forks *resume* root's saturation where ein.py's re-derive it, so
-> the two engines deliberately narrate different amounts of the same
+> Not every difference at `verbose` is one. Since M1a
+> [S1a.6.9](../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+> a fork *resumes* root's saturation rather than re-deriving it, so two runs
+> that reach the same answer can narrate different amounts of the same
 > derivation —
-> [D3](../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it).
-> The difference the tier exists to catch is a dropped **productive** firing,
-> and since
-> [S1a.6.10](../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
+> [D3](../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it),
+> which [S1a.10.1 §5](../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#5-what-the-successor-found)
+> then reproduced *inside one engine* by permuting the id space. The difference
+> worth catching is a dropped **productive** firing, and since
+> [S1a.6.10](../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
 > that is what the comparison is narrowed to — see § Comparison. `verbose` is
-> still what the harness asks for: the redundant firings are what the
-> *elided-count* report is counting, and an ein.rs golden
-> ([S1a.6.11](../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md))
+> still what it reads: the redundant firings are what the *elided-count* report
+> counts, and an ein.rs golden
+> ([S1a.6.11](../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md))
 > is what pins them.
 
 ## Events
@@ -113,7 +125,7 @@ one premise, so a re-derived *source* fact records nothing and emits nothing.
 
 `enqueue`'s `tiebreaker` is the value `Saturator._tiebreaker` took for that
 entry. It is the engine's own total order over queue entries
-([design/02](../plans/m1a_rust/design/02_determinism_and_order.md) §2), so
+([design/02](../../../plans/m1a_rust/design/02_determinism_and_order.md) §2), so
 carrying it makes the heap's pop order checkable rather than inferred.
 
 ### Search layer
@@ -140,15 +152,16 @@ only — `self_edge` alone fires once per (object, filler, relation, slot).
 
 ## Comparison
 
-```sh
-ein-conformance diff a.jsonl b.jsonl
-```
-
-Reports the first differing event with a field-level diff plus the preceding
-four events from each side. `--classes` prints how many events of each kind
-each side produced (and it prints unasked whenever there *is* a difference), so
-a wholesale divergence is obvious before the first-diff detail — "b emitted no
-`park` events at all" is a more useful first sentence than a diff at line 4.
+Two streams are compared by
+[`ein_parity::events`](../../../ein.rs/crates/ein-parity/src/events.rs), a
+library function rather than a command: `split` cuts a log into segments and
+`diff` reports the first segment that disagrees. The `ein-conformance diff`
+subcommand that used to front it was retired with the second engine
+([S1a.10.3](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md));
+what calls it now is
+[`ein-infer/tests/event_cut_control.rs`](../../../ein.rs/crates/ein-infer/tests/event_cut_control.rs),
+which mutates a real stream and checks that the cut below still reports the
+mutation.
 
 `n` is compared as a **position, not a field**: one extra event on either side
 renumbers every line after it, and a differ that reported all of them would
@@ -173,18 +186,17 @@ A **`dead-post`** segment's derivation is not compared at all: fail-fast stops
 a dying fork at the firing that kills it, so its firing list is a prefix by
 construction. Its `kind` and its position still are.
 
-That is [design/01 §5](../plans/m1a_rust/design/01_parity_contract.md#the-fork-row-stated-once)'s
+That is [design/01 §5](../../../plans/m1a_rust/design/01_parity_contract.md#the-fork-row-stated-once)'s
 fork row, implemented in `ein.rs/crates/ein-parity`, whose module doc carries
 the measurement that chose it (six candidate cuts over the same 240 cells;
 this one is the strongest that leaves D2 as the only differing cell).
-`--strict` restores the old event-by-event comparison.
+`EIN_PARITY_STRICT=1` restores the event-by-event comparison.
 
-The harness runs the same comparison in-process for its T2 tier
-(`tier::compare`), on logs it produced by appending
-`--events {out}/events.jsonl --events-level verbose` to each `solve` /
-`saturate` cell — so the hand tool and the gate cannot drift apart. At T3 the
-event log is compared this way too rather than byte-wise, for the same
-renumbering reason.
+**A relaxation nothing exercises is a hole rather than a decision**, so the cut
+has a negative control: `event_cut_control.rs` builds a real verbose stream,
+deletes one event from it, and asserts that deleting a *productive* firing is
+reported while deleting a redundant one or an `enqueue` is not. It is
+`utils/mutant_ein.py`'s three mutations with the two processes taken out.
 
 ## Versioning
 

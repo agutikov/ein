@@ -24,12 +24,12 @@ COMMAND ein solve
   ABOUT solve a puzzle: print the solution(s) or the unsat core
   OPTION --dump-config -c metavar=- arity=0 default=False choices=- group=- required=False help=print the resolved SolverConfig before solving
   OPTION --dump-states -D metavar=DIR arity=1 default=None choices=- group=- required=False help=persist the engine dump tree (root snapshot per layer + timeline) to DIR
-  OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Feeds the M1a conformance harness's T2 parity tier.
+  OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
   OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.
   OPTION --exhaustive -e metavar=- arity=0 default=False choices=- group=stop required=False help=exhaust the lattice — certify unique / ambiguous / unsat (slower)
   OPTION --full-kb-snapshots -F metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) append a whole-KB snapshot of the final state
   OPTION --hyp-stats -H metavar=- arity=0 default=False choices=- group=- required=False help=print the root-hypothesis preview (total + per-relation breakdown + hypgen filter report)
-  OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the structured run summary (verdict, model, every engine counter, the root-saturation shape, the resolved config) to FILE as JSON. Additive: stdout, stderr and the exit code are unchanged. Feeds the M1a conformance harness's T0/T1 parity tiers.
+  OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the structured run summary (verdict, model, every engine counter, the root-saturation shape, the resolved config) to FILE as JSON. Additive: stdout, stderr and the exit code are unchanged.
   OPTION --lattice-order -o metavar=LATTICE_ORDER arity=1 default=None choices=lex|score-sum group=- required=False help=within-layer candidate ordering (S1.5b.26): 'lex' (canonical-tuple sort, the deterministic default) or 'score-sum' (S1.5a.7 hypgen scoring summed per set)
   OPTION --lattice-sanity-check -y metavar=- arity=0 default=False choices=- group=- required=False help=S1.5b.27 regression: for every alive size-k≥2 commitment, verify every (k-1)-subset parent path saturates to the same kb (costs k+1 saturations each)
   OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort after N commitment tries
@@ -55,7 +55,7 @@ COMMAND ein solve
 COMMAND ein saturate
   ABOUT Benchmark + state dump for the Saturator.
   OPTION --dump -- metavar=- arity=0 default=False choices=- group=- required=False help=after the benchmark, print the saturated KB grouped by origin
-  OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Feeds the M1a conformance harness's T2 parity tier.
+  OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
   OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.
   OPTION --max-steps -- metavar=MAX_STEPS arity=1 default=None choices=- group=- required=False help=hard cap on saturator firings (raises SaturatorStepLimitError when exceeded); useful for runaway-debugging on a fresh input. Default: no cap.
   OPTION --progress-every -- metavar=PROGRESS_EVERY arity=1 default='500' choices=- group=- required=False help=log a one-line progress sample every N steps (0 disables; default: 500).

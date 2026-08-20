@@ -74,7 +74,7 @@ fn one_variable_past_the_ceiling_is_an_error_and_not_a_panic() {
 fn the_corpus_is_nowhere_near_the_ceiling() {
     let mut widest = 0usize;
     let mut widest_rule = String::new();
-    for path in ein_oracle::corpus_files() {
+    for path in ein_corpus::corpus_files() {
         let mut ast = Ast::new();
         let mut terms = Terms::new();
         let Ok(kb) = ein_ir::load_file(&mut ast, &mut terms, &path) else {

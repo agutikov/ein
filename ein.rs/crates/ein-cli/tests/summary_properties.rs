@@ -23,10 +23,10 @@
 //! *reasons*, and they are the interesting ones: see [`STRUCTURAL_ZEROS`].
 
 use ein_core::{Kb, SolverConfig, Terms};
+use ein_corpus::{corpus_files, repo_root};
 use ein_infer::events::Events;
 use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
 use ein_ir::{Ast, load_file};
-use ein_oracle::{corpus_files, repo_root};
 use serde_json::Value as J;
 
 /// The counters that are **zero on every corpus cell**, and why — the half of

@@ -19,9 +19,9 @@ implementations**. The import resolver maps a logical module name
 `MANIFEST.sha256` is what makes a fork detectable — `utils/stdlib_manifest.py`
 verifies it, and both packaged copies are checked against it. This matters
 more than tidiness: the stdlib is not test data but part of the semantics
-under test, so two copies would make every parity result meaningless — a
-conformance diff would report "the engines disagree" when in fact the
-*programs* differ ([design/11](../plans/m1a_rust/design/11_shared_assets.md)).
+under test, so two copies would make every result meaningless — a diff would
+report "the engines disagree" when in fact the *programs* differ
+([design/11](../plans/m1a_rust/design/11_shared_assets.md)).
 
 ## Location decision (S1.8.A4 — closes [Q30](../plans/open_questions.md#q30--universal-rule-library--import-mechanism))
 

@@ -1,14 +1,27 @@
-//! The corpus manifest — `conformance/corpus.toml`.
+//! The corpus manifest — `corpus/corpus.toml`.
 //!
-//! One entry per `.ein` file the harness knows about, with the run matrix it
-//! is exercised under. The manifest is the mechanical version of the rule
-//! `examples/README.md` states in prose: a file with no entry is a coverage
-//! hole, and a completeness check in both test suites fails on one.
+//! One entry per `.ein` file, with the run matrix it is exercised under. The
+//! manifest is the mechanical version of the rule `examples/README.md` states
+//! in prose: a file with no entry is a coverage hole, and the completeness
+//! check below fails on one.
 //!
-//! Format and the group vocabulary: `conformance/README.md`.
+//! Format and the group vocabulary: `corpus/README.md`.
+//!
+//! The reader survived `ein-conformance`, which was retired with the second
+//! engine at
+//! [S1a.10.3](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md).
+//! What changed with it is what a `runs` entry *means*: an invocation the file
+//! is **exercised** under, not one two implementations are **compared** under.
+//! [`crate::plan::argv`] turns one into an argv and
+//! `ein-cli/tests/corpus_cli.rs` runs it.
 
 use serde::Deserialize;
 use std::path::Path;
+
+/// The manifest's path, repo-root-relative. One location, named once: a
+/// `--corpus` override was the harness's, and a corpus that can be pointed
+/// elsewhere is a completeness check that can be pointed at an empty file.
+pub const MANIFEST: &str = "corpus/corpus.toml";
 
 #[derive(Debug, Deserialize)]
 pub struct Corpus {
@@ -21,7 +34,7 @@ pub struct Corpus {
 pub struct Entry {
     /// Repo-root-relative path to the `.ein` file.
     pub path: String,
-    /// One of the groups in `conformance/README.md`.
+    /// One of the groups in `corpus/README.md`.
     pub group: String,
     /// Run names — see [`crate::plan::argv`] for how each becomes an argv.
     #[serde(default)]
@@ -89,54 +102,43 @@ impl Corpus {
     }
 }
 
-pub const SCHEMA: &str = "ein-corpus/1";
+/// Bumped to 2 at S1a.10.3, which renamed `crash-parity` (a claim about
+/// ein.py's exception classes) to `regression` and split the compile-error
+/// fixtures out as `compile-negative`. The version is what refuses a
+/// schema-1 manifest: an unknown group is an error, but a *renamed* one would
+/// otherwise reach [`Corpus::load`]'s vocabulary check as a typo, and the
+/// reader should say which of the two it is.
+pub const SCHEMA: &str = "ein-corpus/2";
 
-/// The group vocabulary — `conformance/README.md`.
+/// The group vocabulary — `corpus/README.md`.
 pub const GROUPS: [&str; 7] = [
     "positive",
+    "stdlib",
     "parse-negative",
     "load-negative",
-    "stdlib",
-    "golden",
+    "compile-negative",
+    "regression",
     "generated",
-    "crash-parity",
 ];
-
-/// The repo root, found by walking up from the crate directory. Test-only:
-/// at runtime the root is found by walking up from the *working* directory
-/// (`main::find_repo`), so a checked-out harness and an installed one behave
-/// the same.
-#[cfg(test)]
-pub fn repo_root() -> std::path::PathBuf {
-    let mut dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    while !dir.join("conformance/corpus.toml").is_file() {
-        assert!(dir.pop(), "no conformance/corpus.toml above the crate");
-    }
-    dir
-}
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{corpus, repo_root};
     use std::collections::BTreeSet;
 
-    fn corpus() -> Corpus {
-        Corpus::load(&repo_root().join("conformance/corpus.toml")).expect("corpus")
-    }
-
     /// Every `.ein` the corpus must cover, repo-root-relative.
+    ///
+    /// `stdlib/` is named, not searched for. It was searched for until
+    /// S1a.10.3, with `ein.py/src/ein/stdlib` as a fallback — a build-time
+    /// copy of the same files (design/11), and a fallback that would have
+    /// turned "the stdlib directory is gone" into "the check passes over
+    /// seven fewer files". The ledger's §4 lists it as the one relocation the
+    /// removal still owed.
     fn tracked() -> BTreeSet<String> {
         let repo = repo_root();
         let mut out = BTreeSet::new();
-        let mut stack = vec![repo.join("examples")];
-        // The stdlib is not a tree; S1a.0.3 moves it to repo-root `stdlib/`.
-        for dir in ["stdlib", "ein.py/src/ein/stdlib"] {
-            let p = repo.join(dir);
-            if p.is_dir() {
-                stack.push(p);
-                break;
-            }
-        }
+        let mut stack = vec![repo.join("examples"), repo.join("stdlib")];
         while let Some(dir) = stack.pop() {
             for entry in std::fs::read_dir(&dir).expect("read_dir").flatten() {
                 let path = entry.path();
@@ -155,9 +157,10 @@ mod tests {
         out
     }
 
-    /// The completeness check, Rust side. Its twin is
-    /// `ein.py/tests/test_corpus_manifest.py` — both suites, because either
-    /// one alone can be the suite nobody ran.
+    /// The completeness check. It had a Python twin
+    /// (`ein.py/tests/test_corpus_manifest.py`) while there were two suites;
+    /// the four claims that twin made and this module did not are the four
+    /// below, ported at T1a.10.1.1.
     #[test]
     fn every_ein_file_has_an_entry() {
         let corpus = corpus();
@@ -203,12 +206,12 @@ mod tests {
         }
     }
 
-    /// T1a.10.1.1 — the four claims the manifest check made **only** on the
-    /// Python side, ported so the corpus's contract survives the suite that
-    /// held it. `ein.py/tests/test_corpus_manifest.py` had nine tests and this
-    /// module had five; these are the other four, and the count is the point:
-    /// "the completeness check is duplicated in both suites" was true of the
-    /// completeness check and not of the manifest's other invariants.
+    /// T1a.10.1.1 — the first of the four claims the manifest check made
+    /// **only** on the Python side, ported so the corpus's contract survives
+    /// the suite that held it. `test_corpus_manifest.py` had nine tests and
+    /// this module had five; these are the other four, and the count is the
+    /// point: "the completeness check is duplicated in both suites" was true
+    /// of the completeness check and not of the manifest's other invariants.
     #[test]
     fn paths_are_unique() {
         let corpus = corpus();
@@ -222,11 +225,18 @@ mod tests {
         assert!(dupes.is_empty(), "duplicate entries: {dupes:?}");
     }
 
-    /// `broken/*.ein` fail at parse; `broken/load/*.ein` fail at load; the
-    /// split is what lets P1a.1 gate on one and P1a.2 on the other. A file
-    /// that loads and *then* crashes the engine is neither — it is a
-    /// well-formed input the engine mishandles, so it lives with the other
-    /// bug-repro puzzles under `crash-parity`.
+    /// **A group is a directory.** `broken/*.ein` fail at parse,
+    /// `broken/load/*.ein` at load, `broken/compile/*.ein` at compile — the
+    /// split is what lets P1a.1 gate on one, P1a.2 on the next and P1a.3 on
+    /// the third — and `ein-bugs/*.ein` are the bug-repro puzzles, which fail
+    /// at no fixed point because some of them no longer fail at all.
+    ///
+    /// That last group was `crash-parity` until S1a.10.3, and its membership
+    /// rule was "ein.py raises an unhandled exception here", which is neither
+    /// a directory nor a fact about the language. Two of its ten members
+    /// answer in ein.rs ([D2](../../../plans/m1a_rust/divergences.md)), which
+    /// is why the group no longer predicts an exit code and the sweep's
+    /// golden does.
     #[test]
     fn negatives_are_grouped_by_where_they_fail() {
         for e in &corpus().entry {
@@ -238,11 +248,16 @@ mod tests {
                 // `activator_arity` is the exception: the S1.22.0 arity filter
                 // makes its error unreachable through the engine, so its run
                 // succeeds and it is an ordinary `positive`.
-                &["crash-parity", "positive"]
+                &["compile-negative", "positive"]
             } else if path.starts_with("examples/broken/") {
                 &["parse-negative"]
+            } else if path.starts_with("examples/ein-bugs/") {
+                // S1a.10.3 — the whole directory, so the group is a fact about
+                // where a file lives rather than about what it does. What it
+                // does is mixed: seven answer, two are refused, one does both.
+                &["regression"]
             } else if path.starts_with("examples/") {
-                &["positive", "crash-parity"]
+                &["positive"]
             } else {
                 continue;
             };

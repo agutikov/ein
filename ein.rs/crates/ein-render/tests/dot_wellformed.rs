@@ -1,28 +1,40 @@
 //! S1a.5.1 acceptance — Graphviz accepts every file the port emits.
 //!
-//! The byte sweep in `dot_parity.rs` proves the two implementations agree. It
-//! cannot prove they agree on something *valid*: two identically broken files
-//! match just as well as two good ones. So every view of every corpus entry
-//! also goes through `dot -Tsvg`, which is the only authority on whether the
-//! grammar and the attribute values are real.
+//! A digest sweep (`corpus_shapes.md5`) proves every view still renders the
+//! bytes it rendered. It cannot prove those bytes are *valid*: a golden of a
+//! broken file reproduces just as well as a golden of a good one. So every
+//! view of every corpus entry also goes through `dot -Tsvg`, which is the only
+//! authority on whether the grammar and the attribute values are real.
 //!
-//! Skipped, loudly, when Graphviz is not installed — a check that quietly
-//! passes because the tool is missing is worse than no check.
+//! **It fails rather than skips when Graphviz is missing.** It used to skip —
+//! on a stderr line `cargo test` captures for a passing test, which is the
+//! shape the ledger's
+//! [§2](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)
+//! found 41 more of and S1a.10.3 removed the helper for. A check that reports
+//! a pass because its tool is absent is not a check, and "loudly" was the word
+//! doing the lying.
 
 use ein_core::Terms;
+use ein_corpus::{corpus_files, repo_root};
 use ein_ir::{Ast, parse};
-use ein_oracle::{corpus_files, repo_root, skip};
 use ein_render::shape::{all_views, dot_shape};
 use std::io::Write;
 use std::process::{Command, Stdio};
 
-fn have_graphviz() -> bool {
-    Command::new("dot")
+fn require_graphviz() {
+    let ok = Command::new("dot")
         .arg("-V")
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .status()
-        .is_ok_and(|s| s.success())
+        .is_ok_and(|s| s.success());
+    assert!(
+        ok,
+        "`dot -V` does not run: this test needs Graphviz (`apt-get install \
+         graphviz`, `pacman -S graphviz`). It is the only authority the DOT \
+         views have on being well-formed, so it is a missing gate rather than \
+         a missing convenience."
+    );
 }
 
 /// Feed one DOT text to `dot -Tsvg`, discarding the SVG. Returns Graphviz's
@@ -70,9 +82,7 @@ fn digraphs_only(view: &str) -> String {
 
 #[test]
 fn graphviz_accepts_every_view_of_every_corpus_file() {
-    if !have_graphviz() {
-        return skip("graphviz_accepts_every_view_of_every_corpus_file");
-    }
+    require_graphviz();
     let views = all_views();
     let (mut bad, mut checked) = (Vec::new(), 0usize);
     for path in &corpus_files() {

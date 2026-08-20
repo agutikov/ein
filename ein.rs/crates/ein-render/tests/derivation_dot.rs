@@ -6,7 +6,7 @@
 //! own copy of the expected bytes proves only that it agrees with itself.
 
 use ein_core::{Justifications, Kb, Program, Prov, Relation, Terms, Value, build_derivation_dag};
-use ein_oracle::repo_root;
+use ein_corpus::repo_root;
 use ein_render::derivation_dag_to_dot;
 
 /// `(relation p T T) (relation q T T) (is-a a T) … (p a b :source "(1)")

@@ -23,10 +23,10 @@
 //! ```
 
 use ein_core::Terms;
+use ein_corpus::{golden, golden_path, repo_root};
 use ein_infer::events::{Buffer, Events, Level};
 use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
 use ein_ir::{Ast, parse};
-use ein_oracle::{golden, golden_path, repo_root};
 use std::collections::BTreeMap;
 
 /// `(golden name, corpus entry, exhaustive)` — one per shape of *scheduling*,

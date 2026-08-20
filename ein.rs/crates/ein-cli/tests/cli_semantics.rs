@@ -8,7 +8,7 @@
 //! |---|---|
 //! | `tests/test_cli.py` | how a broken file is reported by each subcommand |
 //! | `tests/test_solve_cli.py` | the stop policy, the diagnostic flags, `--json-summary` |
-//! | `tests/test_events.py` | `--events`, whose spec is [`conformance/EVENTS.md`](../../../../conformance/EVENTS.md) |
+//! | `tests/test_events.py` | `--events`, whose spec is [`events.md`](../../../../docs/kernel/inference/events.md) |
 //! | `tests/integration/test_zebra_parse.py` | that `zebra2.ein` and its two variants stay one encoding |
 //!
 //! | `tests/test_vscode_grammar.py` | the editor grammar's three closed name sets |
@@ -38,10 +38,10 @@ use std::path::PathBuf;
 use std::process::Command;
 
 use ein_core::{Kb, ProvKind, Symbol, Terms};
+use ein_corpus::repo_root;
 use ein_infer::events::{Buffer, Events, Level, sexpr};
 use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
 use ein_ir::{Ast, load_file};
-use ein_oracle::repo_root;
 use serde_json::Value as J;
 
 // ── plumbing ───────────────────────────────────────────────────────
@@ -807,11 +807,11 @@ fn a_nested_fact_goal_binding_renders_as_an_s_expression() {
 
 /// **Writing an artefact changes nothing else.** Both flags, one claim.
 ///
-/// `--json-summary` and `--events` exist so the conformance harness can read a
-/// run without perturbing it, and that is only true if the run is *identical*
-/// with them and without: same stdout, same stderr, same exit code. One
-/// invocation can then serve every tier at once, which is why both flags are
-/// carried together here. `-p` for a large stdout and **not** `-s`, whose
+/// `--json-summary` and `--events` exist so that a caller can read a run
+/// without perturbing it, and that is only true if the run is *identical* with
+/// them and without: same stdout, same stderr, same exit code. One invocation
+/// can then answer every question at once, which is why both flags are carried
+/// together here. `-p` for a large stdout and **not** `-s`, whose
 /// `wall` row is wall-clock and differs run to run for reasons that have
 /// nothing to do with the flags.
 #[test]
@@ -979,8 +979,8 @@ fn events_off_formats_nothing_and_does_not_count() {
 }
 
 /// The corpus fixtures that between them emit every kind
-/// [`EVENTS.md`](../../../../conformance/EVENTS.md) defines, and the kind each
-/// is here for.
+/// [`events.md`](../../../../docs/kernel/inference/events.md) defines, and the
+/// kind each is here for.
 ///
 /// A five-file cover rather than the whole corpus: the sweep is 0.06 s this
 /// way and 40 s the other, and the question — *is any kind unreachable?* — is
@@ -1010,7 +1010,13 @@ const EVENT_COVER: [(&str, &str); 5] = [
     ),
 ];
 
-/// Every event kind `EVENTS.md` names, read out of the document itself.
+/// Where the `--events` schema lives. It was `conformance/EVENTS.md` until
+/// S1a.10.3: the protocol is a product surface — a debugging tool, and
+/// M1b's likely feed — and it outlived both the directory named after the
+/// two-engine harness and the tier that was its first reader.
+const EVENTS_DOC: &str = "docs/kernel/inference/events.md";
+
+/// Every event kind the schema names, read out of the document itself.
 ///
 /// Parsed rather than copied: the schema is the contract and a second list
 /// here would be the thing that drifts. The kind cells are the first column of
@@ -1020,8 +1026,7 @@ const EVENT_COVER: [(&str, &str); 5] = [
 const PAYLOAD_SECTIONS: [&str; 3] = ["### Lifecycle", "### Deductive layer", "### Search layer"];
 
 fn schema_kinds() -> BTreeSet<String> {
-    let doc = std::fs::read_to_string(repo_root().join("conformance/EVENTS.md"))
-        .expect("conformance/EVENTS.md");
+    let doc = std::fs::read_to_string(repo_root().join(EVENTS_DOC)).expect(EVENTS_DOC);
     let mut kinds = BTreeSet::new();
     let mut in_payload = false;
     for line in doc.lines() {

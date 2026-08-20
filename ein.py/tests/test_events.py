@@ -2,7 +2,7 @@
 
 The T2 parity surface: one JSON object per line describing what the engine did.
 The schema and its rationale are
-[`conformance/EVENTS.md`](../../conformance/EVENTS.md); what is pinned here is
+[`docs/kernel/inference/events.md`](../../docs/kernel/inference/events.md); what is pinned here is
 the contract the harness depends on.
 
 - **Additive.** stdout, stderr and the exit code are unchanged with the flag.
@@ -182,7 +182,7 @@ def test_the_stream_is_hash_seed_independent(tmp_path: Path, seed: str):
         events = [json.loads(line) for line in out.read_text().splitlines()]
         # The `run` event's `argv` names the file the *caller* chose, and its
         # `impl` names which engine ran; the differ excludes both for the same
-        # reason (`conformance/EVENTS.md` § Lifecycle).
+        # reason (`events.md` § Lifecycle).
         for e in events:
             if e["e"] == "run":
                 e.pop("argv"), e.pop("impl")

@@ -1,0 +1,660 @@
+0    examples/branching/01_saturate_only.ein :: render constraints
+0    examples/branching/01_saturate_only.ein :: render lattice
+0    examples/branching/01_saturate_only.ein :: render rules
+0    examples/branching/01_saturate_only.ein :: saturate
+0    examples/branching/01_saturate_only.ein :: saturate --dump
+0    examples/branching/01_saturate_only.ein :: solve
+0    examples/branching/01_saturate_only.ein :: solve -e
+0    examples/branching/02_one_dead_one_alive.ein :: render constraints
+0    examples/branching/02_one_dead_one_alive.ein :: render lattice
+0    examples/branching/02_one_dead_one_alive.ein :: render rules
+0    examples/branching/02_one_dead_one_alive.ein :: saturate
+0    examples/branching/02_one_dead_one_alive.ein :: saturate --dump
+0    examples/branching/02_one_dead_one_alive.ein :: solve
+0    examples/branching/02_one_dead_one_alive.ein :: solve -e
+0    examples/branching/03_five_hyps_one_alive.ein :: render constraints
+0    examples/branching/03_five_hyps_one_alive.ein :: render lattice
+0    examples/branching/03_five_hyps_one_alive.ein :: render rules
+0    examples/branching/03_five_hyps_one_alive.ein :: saturate
+0    examples/branching/03_five_hyps_one_alive.ein :: saturate --dump
+0    examples/branching/03_five_hyps_one_alive.ein :: solve
+0    examples/branching/03_five_hyps_one_alive.ein :: solve -e
+0    examples/branching/04_two_levels.ein :: render constraints
+0    examples/branching/04_two_levels.ein :: render lattice
+0    examples/branching/04_two_levels.ein :: render rules
+0    examples/branching/04_two_levels.ein :: saturate
+0    examples/branching/04_two_levels.ein :: saturate --dump
+0    examples/branching/04_two_levels.ein :: solve
+0    examples/branching/04_two_levels.ein :: solve --dump-states {out}/states
+0    examples/branching/04_two_levels.ein :: solve --trace {out}/trace.md
+0    examples/branching/04_two_levels.ein :: solve -K
+0    examples/branching/04_two_levels.ein :: solve -L
+0    examples/branching/04_two_levels.ein :: solve -e
+0    examples/branching/04_two_levels.ein :: solve -m 2
+0    examples/branching/04_two_levels.ein :: solve -n 3
+0    examples/branching/04_two_levels.ein :: solve -o score-sum
+0    examples/branching/04_two_levels.ein :: solve -p -s
+0    examples/branching/04_two_levels.ein :: solve -y
+0    examples/branching/05_mini_zebra.ein :: render constraints
+0    examples/branching/05_mini_zebra.ein :: render lattice
+0    examples/branching/05_mini_zebra.ein :: render rules
+0    examples/branching/05_mini_zebra.ein :: saturate
+0    examples/branching/05_mini_zebra.ein :: saturate --dump
+0    examples/branching/05_mini_zebra.ein :: solve
+0    examples/branching/05_mini_zebra.ein :: solve --dump-states {out}/states
+0    examples/branching/05_mini_zebra.ein :: solve --trace {out}/trace.md
+0    examples/branching/05_mini_zebra.ein :: solve -K
+0    examples/branching/05_mini_zebra.ein :: solve -L
+0    examples/branching/05_mini_zebra.ein :: solve -e
+0    examples/branching/05_mini_zebra.ein :: solve -m 2
+0    examples/branching/05_mini_zebra.ein :: solve -n 3
+0    examples/branching/05_mini_zebra.ein :: solve -o score-sum
+0    examples/branching/05_mini_zebra.ein :: solve -p -s
+0    examples/branching/05_mini_zebra.ein :: solve -y
+0    examples/branching/06_lookahead_on.ein :: render constraints
+0    examples/branching/06_lookahead_on.ein :: render lattice
+0    examples/branching/06_lookahead_on.ein :: render rules
+0    examples/branching/06_lookahead_on.ein :: saturate
+0    examples/branching/06_lookahead_on.ein :: saturate --dump
+0    examples/branching/06_lookahead_on.ein :: solve
+0    examples/branching/06_lookahead_on.ein :: solve -e
+0    examples/branching/07_lookahead_off.ein :: render constraints
+0    examples/branching/07_lookahead_off.ein :: render lattice
+0    examples/branching/07_lookahead_off.ein :: render rules
+0    examples/branching/07_lookahead_off.ein :: saturate
+0    examples/branching/07_lookahead_off.ein :: saturate --dump
+0    examples/branching/07_lookahead_off.ein :: solve
+0    examples/branching/07_lookahead_off.ein :: solve -e
+0    examples/branching/08_hypothesis_relation_whitelist.ein :: render constraints
+0    examples/branching/08_hypothesis_relation_whitelist.ein :: render lattice
+0    examples/branching/08_hypothesis_relation_whitelist.ein :: render rules
+0    examples/branching/08_hypothesis_relation_whitelist.ein :: saturate
+0    examples/branching/08_hypothesis_relation_whitelist.ein :: saturate --dump
+0    examples/branching/08_hypothesis_relation_whitelist.ein :: solve
+0    examples/branching/08_hypothesis_relation_whitelist.ein :: solve -e
+0    examples/branching/09_hrule.ein :: render constraints
+0    examples/branching/09_hrule.ein :: render lattice
+0    examples/branching/09_hrule.ein :: render rules
+0    examples/branching/09_hrule.ein :: saturate
+0    examples/branching/09_hrule.ein :: saturate --dump
+0    examples/branching/09_hrule.ein :: solve
+0    examples/branching/09_hrule.ein :: solve -e
+0    examples/branching/10_kill_cache_on.ein :: render constraints
+0    examples/branching/10_kill_cache_on.ein :: render lattice
+0    examples/branching/10_kill_cache_on.ein :: render rules
+0    examples/branching/10_kill_cache_on.ein :: saturate
+0    examples/branching/10_kill_cache_on.ein :: saturate --dump
+0    examples/branching/10_kill_cache_on.ein :: solve
+0    examples/branching/10_kill_cache_on.ein :: solve -e
+0    examples/branching/11_kill_cache_off.ein :: render constraints
+0    examples/branching/11_kill_cache_off.ein :: render lattice
+0    examples/branching/11_kill_cache_off.ein :: render rules
+0    examples/branching/11_kill_cache_off.ein :: saturate
+0    examples/branching/11_kill_cache_off.ein :: saturate --dump
+0    examples/branching/11_kill_cache_off.ein :: solve
+0    examples/branching/11_kill_cache_off.ein :: solve -e
+0    examples/branching/12_typed_blind_solve.ein :: render constraints
+0    examples/branching/12_typed_blind_solve.ein :: render lattice
+0    examples/branching/12_typed_blind_solve.ein :: render rules
+0    examples/branching/12_typed_blind_solve.ein :: saturate
+0    examples/branching/12_typed_blind_solve.ein :: saturate --dump
+0    examples/branching/12_typed_blind_solve.ein :: solve
+0    examples/branching/12_typed_blind_solve.ein :: solve -e
+0    examples/branching/13_lookahead_naf_world.ein :: render constraints
+0    examples/branching/13_lookahead_naf_world.ein :: render lattice
+0    examples/branching/13_lookahead_naf_world.ein :: render rules
+0    examples/branching/13_lookahead_naf_world.ein :: saturate
+0    examples/branching/13_lookahead_naf_world.ein :: saturate --dump
+0    examples/branching/13_lookahead_naf_world.ein :: solve
+0    examples/branching/13_lookahead_naf_world.ein :: solve -K
+0    examples/branching/13_lookahead_naf_world.ein :: solve -L
+0    examples/branching/13_lookahead_naf_world.ein :: solve -e
+0    examples/branching/14_lookahead_unjudgeable.ein :: render constraints
+0    examples/branching/14_lookahead_unjudgeable.ein :: render lattice
+0    examples/branching/14_lookahead_unjudgeable.ein :: render rules
+0    examples/branching/14_lookahead_unjudgeable.ein :: saturate
+0    examples/branching/14_lookahead_unjudgeable.ein :: saturate --dump
+0    examples/branching/14_lookahead_unjudgeable.ein :: solve
+0    examples/branching/14_lookahead_unjudgeable.ein :: solve -K
+0    examples/branching/14_lookahead_unjudgeable.ein :: solve -L
+0    examples/branching/14_lookahead_unjudgeable.ein :: solve -e
+1    examples/broken/bare_top_level_atom.ein :: render rules
+1    examples/broken/bare_top_level_atom.ein :: saturate
+1    examples/broken/bare_top_level_atom.ein :: solve
+0    examples/broken/compile/activator_arity.ein :: render rules
+0    examples/broken/compile/activator_arity.ein :: saturate
+0    examples/broken/compile/activator_arity.ein :: saturate --dump
+0    examples/broken/compile/activator_arity.ein :: solve
+1    examples/broken/compile/empty_absent.ein :: saturate
+1    examples/broken/compile/empty_absent.ein :: solve
+1    examples/broken/compile/nested_or.ein :: saturate
+1    examples/broken/compile/nested_or.ein :: solve
+1    examples/broken/compile/unbound_head.ein :: saturate
+1    examples/broken/compile/unbound_head.ein :: solve
+1    examples/broken/keyword_as_value.ein :: render rules
+1    examples/broken/keyword_as_value.ein :: saturate
+1    examples/broken/keyword_as_value.ein :: solve
+1    examples/broken/load/config_bad_value.ein :: render rules
+1    examples/broken/load/config_bad_value.ein :: saturate
+1    examples/broken/load/config_bad_value.ein :: solve
+1    examples/broken/load/config_unknown_flag.ein :: render rules
+1    examples/broken/load/config_unknown_flag.ein :: saturate
+1    examples/broken/load/config_unknown_flag.ein :: solve
+1    examples/broken/load/derivation_cycle.ein :: render rules
+1    examples/broken/load/derivation_cycle.ein :: saturate
+1    examples/broken/load/derivation_cycle.ein :: solve
+1    examples/broken/load/fact_layer_kwarg.ein :: render rules
+1    examples/broken/load/fact_layer_kwarg.ein :: saturate
+1    examples/broken/load/fact_layer_kwarg.ein :: solve
+0    examples/broken/load/hrule_duplicate_name.ein :: render rules
+1    examples/broken/load/hrule_duplicate_name.ein :: saturate
+1    examples/broken/load/hrule_duplicate_name.ein :: solve
+0    examples/broken/load/hrule_reserved_name.ein :: render rules
+1    examples/broken/load/hrule_reserved_name.ein :: saturate
+1    examples/broken/load/hrule_reserved_name.ein :: solve
+1    examples/broken/load/import_alias_not_a_name.ein :: render rules
+1    examples/broken/load/import_alias_not_a_name.ein :: saturate
+1    examples/broken/load/import_alias_not_a_name.ein :: solve
+1    examples/broken/load/import_as_and_symbols.ein :: render rules
+1    examples/broken/load/import_as_and_symbols.ein :: saturate
+1    examples/broken/load/import_as_and_symbols.ein :: solve
+1    examples/broken/load/import_bare_std.ein :: render rules
+1    examples/broken/load/import_bare_std.ein :: saturate
+1    examples/broken/load/import_bare_std.ein :: solve
+0    examples/broken/load/import_conflicting_definitions.ein :: render rules
+1    examples/broken/load/import_conflicting_definitions.ein :: saturate
+1    examples/broken/load/import_conflicting_definitions.ein :: solve
+1    examples/broken/load/import_cycle.ein :: render rules
+1    examples/broken/load/import_cycle.ein :: saturate
+1    examples/broken/load/import_cycle.ein :: solve
+1    examples/broken/load/import_cycle_b.ein :: render rules
+1    examples/broken/load/import_cycle_b.ein :: saturate
+1    examples/broken/load/import_cycle_b.ein :: solve
+1    examples/broken/load/import_module_not_found.ein :: render rules
+1    examples/broken/load/import_module_not_found.ein :: saturate
+1    examples/broken/load/import_module_not_found.ein :: solve
+1    examples/broken/load/import_relative_not_found.ein :: render rules
+1    examples/broken/load/import_relative_not_found.ein :: saturate
+1    examples/broken/load/import_relative_not_found.ein :: solve
+1    examples/broken/load/import_symbols_empty.ein :: render rules
+1    examples/broken/load/import_symbols_empty.ein :: saturate
+1    examples/broken/load/import_symbols_empty.ein :: solve
+1    examples/broken/load/import_symbols_not_a_list.ein :: render rules
+1    examples/broken/load/import_symbols_not_a_list.ein :: saturate
+1    examples/broken/load/import_symbols_not_a_list.ein :: solve
+1    examples/broken/load/import_symbols_not_provided.ein :: render rules
+1    examples/broken/load/import_symbols_not_provided.ein :: saturate
+1    examples/broken/load/import_symbols_not_provided.ein :: solve
+0    examples/broken/load/macro_arity_mismatch.ein :: render rules
+1    examples/broken/load/macro_arity_mismatch.ein :: saturate
+1    examples/broken/load/macro_arity_mismatch.ein :: solve
+1    examples/broken/load/macro_duplicate.ein :: render rules
+1    examples/broken/load/macro_duplicate.ein :: saturate
+1    examples/broken/load/macro_duplicate.ein :: solve
+1    examples/broken/load/macro_reserved_name.ein :: render rules
+1    examples/broken/load/macro_reserved_name.ein :: saturate
+1    examples/broken/load/macro_reserved_name.ein :: solve
+1    examples/broken/load/relation_duplicate.ein :: render rules
+1    examples/broken/load/relation_duplicate.ein :: saturate
+1    examples/broken/load/relation_duplicate.ein :: solve
+1    examples/broken/load/relation_malformed.ein :: render rules
+1    examples/broken/load/relation_malformed.ein :: saturate
+1    examples/broken/load/relation_malformed.ein :: solve
+1    examples/broken/load/relation_needs_a_name.ein :: render rules
+1    examples/broken/load/relation_needs_a_name.ein :: saturate
+1    examples/broken/load/relation_needs_a_name.ein :: solve
+1    examples/broken/load/relation_reserved_name.ein :: render rules
+1    examples/broken/load/relation_reserved_name.ein :: saturate
+1    examples/broken/load/relation_reserved_name.ein :: solve
+0    examples/broken/load/rule_duplicate_name.ein :: render rules
+1    examples/broken/load/rule_duplicate_name.ein :: saturate
+1    examples/broken/load/rule_duplicate_name.ein :: solve
+0    examples/broken/load/rule_half_declarators.ein :: render rules
+1    examples/broken/load/rule_half_declarators.ein :: saturate
+1    examples/broken/load/rule_half_declarators.ein :: solve
+0    examples/broken/load/rule_missing_assert.ein :: render rules
+1    examples/broken/load/rule_missing_assert.ein :: saturate
+1    examples/broken/load/rule_missing_assert.ein :: solve
+0    examples/broken/load/rule_missing_match.ein :: render rules
+1    examples/broken/load/rule_missing_match.ein :: saturate
+1    examples/broken/load/rule_missing_match.ein :: solve
+0    examples/broken/load/rule_reserved_name.ein :: render rules
+1    examples/broken/load/rule_reserved_name.ein :: saturate
+1    examples/broken/load/rule_reserved_name.ein :: solve
+0    examples/broken/load/unimported_std_macro.ein :: render rules
+1    examples/broken/load/unimported_std_macro.ein :: saturate
+1    examples/broken/load/unimported_std_macro.ein :: solve
+1    examples/broken/rule_missing_params.ein :: render rules
+1    examples/broken/rule_missing_params.ein :: saturate
+1    examples/broken/rule_missing_params.ein :: solve
+1    examples/broken/unclosed_paren.ein :: render rules
+1    examples/broken/unclosed_paren.ein :: saturate
+1    examples/broken/unclosed_paren.ein :: solve
+0    examples/domain_elim/ab.ein :: render constraints
+0    examples/domain_elim/ab.ein :: render lattice
+0    examples/domain_elim/ab.ein :: render rules
+0    examples/domain_elim/ab.ein :: saturate
+0    examples/domain_elim/ab.ein :: saturate --dump
+0    examples/domain_elim/ab.ein :: solve
+0    examples/domain_elim/ab.ein :: solve --dump-states {out}/states
+0    examples/domain_elim/ab.ein :: solve --trace {out}/trace.md
+0    examples/domain_elim/ab.ein :: solve -K
+0    examples/domain_elim/ab.ein :: solve -L
+0    examples/domain_elim/ab.ein :: solve -e
+0    examples/domain_elim/ab.ein :: solve -m 2
+0    examples/domain_elim/ab.ein :: solve -n 3
+0    examples/domain_elim/ab.ein :: solve -o score-sum
+0    examples/domain_elim/ab.ein :: solve -p -s
+0    examples/domain_elim/ab.ein :: solve -y
+0    examples/domain_elim/b_branch.ein :: render constraints
+0    examples/domain_elim/b_branch.ein :: render lattice
+0    examples/domain_elim/b_branch.ein :: render rules
+0    examples/domain_elim/b_branch.ein :: saturate
+0    examples/domain_elim/b_branch.ein :: saturate --dump
+0    examples/domain_elim/b_branch.ein :: solve
+0    examples/domain_elim/b_branch.ein :: solve -e
+0    examples/domain_elim/b_only.ein :: render constraints
+0    examples/domain_elim/b_only.ein :: render lattice
+0    examples/domain_elim/b_only.ein :: render rules
+0    examples/domain_elim/b_only.ein :: saturate
+0    examples/domain_elim/b_only.ein :: saturate --dump
+0    examples/domain_elim/b_only.ein :: solve
+0    examples/domain_elim/b_only.ein :: solve -e
+1    examples/ein-bugs/fact-goal-binding.ein :: render rules
+0    examples/ein-bugs/fact-goal-binding.ein :: saturate
+0    examples/ein-bugs/fact-goal-binding.ein :: solve
+0    examples/ein-bugs/fact-goal-binding.ein :: solve -e
+1    examples/ein-bugs/int-goal-binding.ein :: render rules
+0    examples/ein-bugs/int-goal-binding.ein :: saturate
+0    examples/ein-bugs/int-goal-binding.ein :: solve
+0    examples/ein-bugs/int-goal-binding.ein :: solve -e
+0    examples/ein-bugs/mixed-type-hypothesis.ein :: solve -e
+0    examples/ein-bugs/nested-fact-hypothesis.ein :: solve -e
+0    examples/ein-bugs/query-goal-free-head-unsat.ein :: render rules
+0    examples/ein-bugs/query-goal-free-head-unsat.ein :: saturate
+0    examples/ein-bugs/query-goal-free-head-unsat.ein :: solve
+0    examples/ein-bugs/query-goal-free-head-unsat.ein :: solve -e
+0    examples/ein-bugs/query-goal-free-head.ein :: saturate
+1    examples/ein-bugs/query-goal-free-head.ein :: solve
+1    examples/ein-bugs/unbound-assert-var.ein :: saturate
+1    examples/ein-bugs/unbound-assert-var.ein :: solve
+1    examples/ein-bugs/unbound-relation-head.ein :: solve
+0    examples/ein-bugs/zebra2-bad.ein :: render constraints
+0    examples/ein-bugs/zebra2-bad.ein :: render lattice
+0    examples/ein-bugs/zebra2-bad.ein :: render rules
+0    examples/ein-bugs/zebra2-bad.ein :: saturate
+0    examples/ein-bugs/zebra2-bad.ein :: saturate --dump
+0    examples/ein-bugs/zebra2-bad.ein :: solve
+0    examples/ein-bugs/zebra2-bad.ein :: solve -e
+0    examples/ein-bugs/zebra2-hints.ein :: render constraints
+0    examples/ein-bugs/zebra2-hints.ein :: render lattice
+0    examples/ein-bugs/zebra2-hints.ein :: render rules
+0    examples/ein-bugs/zebra2-hints.ein :: saturate
+0    examples/ein-bugs/zebra2-hints.ein :: saturate --dump
+0    examples/ein-bugs/zebra2-hints.ein :: solve
+0    examples/ein-bugs/zebra2-hints.ein :: solve -e
+0    examples/features/01_not_and_absent.ein :: render constraints
+0    examples/features/01_not_and_absent.ein :: render lattice
+0    examples/features/01_not_and_absent.ein :: render rules
+0    examples/features/01_not_and_absent.ein :: saturate
+0    examples/features/01_not_and_absent.ein :: saturate --dump
+0    examples/features/01_not_and_absent.ein :: solve
+0    examples/features/01_not_and_absent.ein :: solve -e
+0    examples/features/02_star_in_identifiers.ein :: render constraints
+0    examples/features/02_star_in_identifiers.ein :: render lattice
+0    examples/features/02_star_in_identifiers.ein :: render rules
+0    examples/features/02_star_in_identifiers.ein :: saturate
+0    examples/features/02_star_in_identifiers.ein :: saturate --dump
+0    examples/features/02_star_in_identifiers.ein :: solve
+0    examples/features/02_star_in_identifiers.ein :: solve -e
+0    examples/features/03_forall.ein :: render constraints
+0    examples/features/03_forall.ein :: render lattice
+0    examples/features/03_forall.ein :: render rules
+0    examples/features/03_forall.ein :: saturate
+0    examples/features/03_forall.ein :: saturate --dump
+0    examples/features/03_forall.ein :: solve
+0    examples/features/03_forall.ein :: solve -e
+0    examples/features/04_open.ein :: render constraints
+0    examples/features/04_open.ein :: render lattice
+0    examples/features/04_open.ein :: render rules
+0    examples/features/04_open.ein :: saturate
+0    examples/features/04_open.ein :: saturate --dump
+0    examples/features/05_stdlib_domain_elim.ein :: render constraints
+0    examples/features/05_stdlib_domain_elim.ein :: render lattice
+1    examples/features/05_stdlib_domain_elim.ein :: render rules
+0    examples/features/05_stdlib_domain_elim.ein :: saturate
+0    examples/features/05_stdlib_domain_elim.ein :: saturate --dump
+0    examples/features/06_symmetric_native.ein :: render constraints
+0    examples/features/06_symmetric_native.ein :: render lattice
+1    examples/features/06_symmetric_native.ein :: render rules
+0    examples/features/06_symmetric_native.ein :: saturate
+0    examples/features/06_symmetric_native.ein :: saturate --dump
+0    examples/features/06_symmetric_native.ein :: solve
+0    examples/features/06_symmetric_native.ein :: solve -e
+0    examples/features/07_unstratifiable.ein :: render constraints
+0    examples/features/07_unstratifiable.ein :: render lattice
+0    examples/features/07_unstratifiable.ein :: render rules
+0    examples/features/07_unstratifiable.ein :: saturate
+0    examples/features/07_unstratifiable.ein :: saturate --dump
+0    examples/features/07_unstratifiable.ein :: solve
+0    examples/features/07_unstratifiable.ein :: solve -e
+0    examples/features/08_disjunct_guard_sets.ein :: render constraints
+0    examples/features/08_disjunct_guard_sets.ein :: render lattice
+0    examples/features/08_disjunct_guard_sets.ein :: render rules
+0    examples/features/08_disjunct_guard_sets.ein :: saturate
+0    examples/features/08_disjunct_guard_sets.ein :: saturate --dump
+0    examples/features/08_disjunct_guard_sets.ein :: solve
+0    examples/features/08_disjunct_guard_sets.ein :: solve -e
+0    examples/features/09_adjacent_via_same_house.ein :: render constraints
+0    examples/features/09_adjacent_via_same_house.ein :: render lattice
+0    examples/features/09_adjacent_via_same_house.ein :: render rules
+0    examples/features/09_adjacent_via_same_house.ein :: saturate
+0    examples/features/09_adjacent_via_same_house.ein :: saturate --dump
+0    examples/features/09_adjacent_via_same_house.ein :: solve
+0    examples/features/09_adjacent_via_same_house.ein :: solve -e
+0    examples/lattice/01_subset_pruned.ein :: render constraints
+0    examples/lattice/01_subset_pruned.ein :: render lattice
+0    examples/lattice/01_subset_pruned.ein :: render rules
+0    examples/lattice/01_subset_pruned.ein :: saturate
+0    examples/lattice/01_subset_pruned.ein :: saturate --dump
+0    examples/lattice/01_subset_pruned.ein :: solve
+0    examples/lattice/01_subset_pruned.ein :: solve --dump-states {out}/states
+0    examples/lattice/01_subset_pruned.ein :: solve --trace {out}/trace.md
+0    examples/lattice/01_subset_pruned.ein :: solve -K
+0    examples/lattice/01_subset_pruned.ein :: solve -L
+0    examples/lattice/01_subset_pruned.ein :: solve -e
+0    examples/lattice/01_subset_pruned.ein :: solve -m 2
+0    examples/lattice/01_subset_pruned.ein :: solve -n 3
+0    examples/lattice/01_subset_pruned.ein :: solve -o score-sum
+0    examples/lattice/01_subset_pruned.ein :: solve -p -s
+0    examples/lattice/01_subset_pruned.ein :: solve -y
+0    examples/lattice/02_genuine_3set_death.ein :: render constraints
+0    examples/lattice/02_genuine_3set_death.ein :: render lattice
+0    examples/lattice/02_genuine_3set_death.ein :: render rules
+0    examples/lattice/02_genuine_3set_death.ein :: saturate
+0    examples/lattice/02_genuine_3set_death.ein :: saturate --dump
+0    examples/lattice/02_genuine_3set_death.ein :: solve
+0    examples/lattice/02_genuine_3set_death.ein :: solve --dump-states {out}/states
+0    examples/lattice/02_genuine_3set_death.ein :: solve --trace {out}/trace.md
+0    examples/lattice/02_genuine_3set_death.ein :: solve -K
+0    examples/lattice/02_genuine_3set_death.ein :: solve -L
+0    examples/lattice/02_genuine_3set_death.ein :: solve -e
+0    examples/lattice/02_genuine_3set_death.ein :: solve -m 2
+0    examples/lattice/02_genuine_3set_death.ein :: solve -n 3
+0    examples/lattice/02_genuine_3set_death.ein :: solve -o score-sum
+0    examples/lattice/02_genuine_3set_death.ein :: solve -p -s
+0    examples/lattice/02_genuine_3set_death.ein :: solve -y
+0    examples/lattice/03_state_hash_collision.ein :: render constraints
+0    examples/lattice/03_state_hash_collision.ein :: render lattice
+0    examples/lattice/03_state_hash_collision.ein :: render rules
+0    examples/lattice/03_state_hash_collision.ein :: saturate
+0    examples/lattice/03_state_hash_collision.ein :: saturate --dump
+0    examples/lattice/03_state_hash_collision.ein :: solve
+0    examples/lattice/03_state_hash_collision.ein :: solve --dump-states {out}/states
+0    examples/lattice/03_state_hash_collision.ein :: solve --trace {out}/trace.md
+0    examples/lattice/03_state_hash_collision.ein :: solve -K
+0    examples/lattice/03_state_hash_collision.ein :: solve -L
+0    examples/lattice/03_state_hash_collision.ein :: solve -e
+0    examples/lattice/03_state_hash_collision.ein :: solve -m 2
+0    examples/lattice/03_state_hash_collision.ein :: solve -n 3
+0    examples/lattice/03_state_hash_collision.ein :: solve -o score-sum
+0    examples/lattice/03_state_hash_collision.ein :: solve -p -s
+0    examples/lattice/03_state_hash_collision.ein :: solve -y
+0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: render constraints
+0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: render lattice
+0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: render rules
+0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: saturate
+0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: saturate --dump
+0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: solve
+0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: solve -e
+0    examples/saturation/hypothesis-contradiction/next-to-disproved.ein :: render constraints
+0    examples/saturation/hypothesis-contradiction/next-to-disproved.ein :: render lattice
+0    examples/saturation/hypothesis-contradiction/next-to-disproved.ein :: render rules
+0    examples/saturation/hypothesis-contradiction/next-to-disproved.ein :: saturate
+0    examples/saturation/hypothesis-contradiction/next-to-disproved.ein :: saturate --dump
+0    examples/saturation/hypothesis-contradiction/next-to-disproved.ein :: solve
+0    examples/saturation/hypothesis-contradiction/next-to-disproved.ein :: solve -e
+0    examples/saturation/hypothesis-contradiction/right-of-disproved.ein :: render constraints
+0    examples/saturation/hypothesis-contradiction/right-of-disproved.ein :: render lattice
+0    examples/saturation/hypothesis-contradiction/right-of-disproved.ein :: render rules
+0    examples/saturation/hypothesis-contradiction/right-of-disproved.ein :: saturate
+0    examples/saturation/hypothesis-contradiction/right-of-disproved.ein :: saturate --dump
+0    examples/saturation/hypothesis-contradiction/right-of-disproved.ein :: solve
+0    examples/saturation/hypothesis-contradiction/right-of-disproved.ein :: solve -e
+0    examples/saturation/implies/org-chart.ein :: render constraints
+0    examples/saturation/implies/org-chart.ein :: render lattice
+0    examples/saturation/implies/org-chart.ein :: render rules
+0    examples/saturation/implies/org-chart.ein :: saturate
+0    examples/saturation/implies/org-chart.ein :: saturate --dump
+0    examples/saturation/implies/org-chart.ein :: solve
+0    examples/saturation/implies/org-chart.ein :: solve -e
+0    examples/saturation/implies/parent-to-ancestor.ein :: render constraints
+0    examples/saturation/implies/parent-to-ancestor.ein :: render lattice
+0    examples/saturation/implies/parent-to-ancestor.ein :: render rules
+0    examples/saturation/implies/parent-to-ancestor.ein :: saturate
+0    examples/saturation/implies/parent-to-ancestor.ein :: saturate --dump
+0    examples/saturation/implies/parent-to-ancestor.ein :: solve
+0    examples/saturation/implies/parent-to-ancestor.ein :: solve -e
+0    examples/saturation/implies/right-then-next.ein :: render constraints
+0    examples/saturation/implies/right-then-next.ein :: render lattice
+0    examples/saturation/implies/right-then-next.ein :: render rules
+0    examples/saturation/implies/right-then-next.ein :: saturate
+0    examples/saturation/implies/right-then-next.ein :: saturate --dump
+0    examples/saturation/implies/right-then-next.ein :: solve
+0    examples/saturation/implies/right-then-next.ein :: solve -e
+0    examples/saturation/square-bwd/floors.ein :: render constraints
+0    examples/saturation/square-bwd/floors.ein :: render lattice
+0    examples/saturation/square-bwd/floors.ein :: render rules
+0    examples/saturation/square-bwd/floors.ein :: saturate
+0    examples/saturation/square-bwd/floors.ein :: saturate --dump
+0    examples/saturation/square-bwd/floors.ein :: solve
+0    examples/saturation/square-bwd/floors.ein :: solve -e
+0    examples/saturation/square-bwd/houses.ein :: render constraints
+0    examples/saturation/square-bwd/houses.ein :: render lattice
+0    examples/saturation/square-bwd/houses.ein :: render rules
+0    examples/saturation/square-bwd/houses.ein :: saturate
+0    examples/saturation/square-bwd/houses.ein :: saturate --dump
+0    examples/saturation/square-bwd/houses.ein :: solve
+0    examples/saturation/square-bwd/houses.ein :: solve -e
+0    examples/saturation/square-bwd/meetings.ein :: render constraints
+0    examples/saturation/square-bwd/meetings.ein :: render lattice
+0    examples/saturation/square-bwd/meetings.ein :: render rules
+0    examples/saturation/square-bwd/meetings.ein :: saturate
+0    examples/saturation/square-bwd/meetings.ein :: saturate --dump
+0    examples/saturation/square-bwd/meetings.ein :: solve
+0    examples/saturation/square-bwd/meetings.ein :: solve -e
+0    examples/saturation/square-fwd/floors.ein :: render constraints
+0    examples/saturation/square-fwd/floors.ein :: render lattice
+0    examples/saturation/square-fwd/floors.ein :: render rules
+0    examples/saturation/square-fwd/floors.ein :: saturate
+0    examples/saturation/square-fwd/floors.ein :: saturate --dump
+0    examples/saturation/square-fwd/floors.ein :: solve
+0    examples/saturation/square-fwd/floors.ein :: solve -e
+0    examples/saturation/square-fwd/houses.ein :: render constraints
+0    examples/saturation/square-fwd/houses.ein :: render lattice
+0    examples/saturation/square-fwd/houses.ein :: render rules
+0    examples/saturation/square-fwd/houses.ein :: saturate
+0    examples/saturation/square-fwd/houses.ein :: saturate --dump
+0    examples/saturation/square-fwd/houses.ein :: solve
+0    examples/saturation/square-fwd/houses.ein :: solve -e
+0    examples/saturation/square-fwd/meetings.ein :: render constraints
+0    examples/saturation/square-fwd/meetings.ein :: render lattice
+0    examples/saturation/square-fwd/meetings.ein :: render rules
+0    examples/saturation/square-fwd/meetings.ein :: saturate
+0    examples/saturation/square-fwd/meetings.ein :: saturate --dump
+0    examples/saturation/square-fwd/meetings.ein :: solve
+0    examples/saturation/square-fwd/meetings.ein :: solve -e
+0    examples/saturation/square-unique/corner-house.ein :: render constraints
+0    examples/saturation/square-unique/corner-house.ein :: render lattice
+0    examples/saturation/square-unique/corner-house.ein :: render rules
+0    examples/saturation/square-unique/corner-house.ein :: saturate
+0    examples/saturation/square-unique/corner-house.ein :: saturate --dump
+0    examples/saturation/square-unique/cul-de-sac.ein :: render constraints
+0    examples/saturation/square-unique/cul-de-sac.ein :: render lattice
+0    examples/saturation/square-unique/cul-de-sac.ein :: render rules
+0    examples/saturation/square-unique/cul-de-sac.ein :: saturate
+0    examples/saturation/square-unique/cul-de-sac.ein :: saturate --dump
+0    examples/saturation/square-unique/terminus.ein :: render constraints
+0    examples/saturation/square-unique/terminus.ein :: render rules
+0    examples/saturation/square-unique/terminus.ein :: saturate
+0    examples/saturation/square-unique/terminus.ein :: saturate --dump
+0    examples/saturation/symmetric/couple.ein :: render constraints
+0    examples/saturation/symmetric/couple.ein :: render lattice
+0    examples/saturation/symmetric/couple.ein :: render rules
+0    examples/saturation/symmetric/couple.ein :: saturate
+0    examples/saturation/symmetric/couple.ein :: saturate --dump
+0    examples/saturation/symmetric/couple.ein :: solve
+0    examples/saturation/symmetric/couple.ein :: solve -e
+0    examples/saturation/symmetric/friends.ein :: render constraints
+0    examples/saturation/symmetric/friends.ein :: render lattice
+0    examples/saturation/symmetric/friends.ein :: render rules
+0    examples/saturation/symmetric/friends.ein :: saturate
+0    examples/saturation/symmetric/friends.ein :: saturate --dump
+0    examples/saturation/symmetric/friends.ein :: solve
+0    examples/saturation/symmetric/friends.ein :: solve -e
+0    examples/saturation/symmetric/neighbours.ein :: render constraints
+0    examples/saturation/symmetric/neighbours.ein :: render lattice
+0    examples/saturation/symmetric/neighbours.ein :: render rules
+0    examples/saturation/symmetric/neighbours.ein :: saturate
+0    examples/saturation/symmetric/neighbours.ein :: saturate --dump
+0    examples/saturation/symmetric/neighbours.ein :: solve
+0    examples/saturation/symmetric/neighbours.ein :: solve -e
+0    examples/saturation/transitive/colocation-chain.ein :: render constraints
+0    examples/saturation/transitive/colocation-chain.ein :: render lattice
+0    examples/saturation/transitive/colocation-chain.ein :: render rules
+0    examples/saturation/transitive/colocation-chain.ein :: saturate
+0    examples/saturation/transitive/colocation-chain.ein :: saturate --dump
+0    examples/saturation/transitive/colocation-chain.ein :: solve
+0    examples/saturation/transitive/colocation-chain.ein :: solve -e
+0    examples/saturation/transitive/mealtimes.ein :: render constraints
+0    examples/saturation/transitive/mealtimes.ein :: render lattice
+0    examples/saturation/transitive/mealtimes.ein :: render rules
+0    examples/saturation/transitive/mealtimes.ein :: saturate
+0    examples/saturation/transitive/mealtimes.ein :: saturate --dump
+0    examples/saturation/transitive/mealtimes.ein :: solve
+0    examples/saturation/transitive/mealtimes.ein :: solve -e
+0    examples/saturation/transitive/taxonomy.ein :: render constraints
+0    examples/saturation/transitive/taxonomy.ein :: render lattice
+0    examples/saturation/transitive/taxonomy.ein :: render rules
+0    examples/saturation/transitive/taxonomy.ein :: saturate
+0    examples/saturation/transitive/taxonomy.ein :: saturate --dump
+0    examples/saturation/transitive/taxonomy.ein :: solve
+0    examples/saturation/transitive/taxonomy.ein :: solve -e
+0    examples/saturation/type-exclusivity/colors.ein :: render constraints
+0    examples/saturation/type-exclusivity/colors.ein :: render lattice
+0    examples/saturation/type-exclusivity/colors.ein :: render rules
+0    examples/saturation/type-exclusivity/colors.ein :: saturate
+0    examples/saturation/type-exclusivity/colors.ein :: saturate --dump
+0    examples/saturation/type-exclusivity/colors.ein :: solve
+0    examples/saturation/type-exclusivity/colors.ein :: solve -e
+0    examples/saturation/type-exclusivity/nationalities.ein :: render constraints
+0    examples/saturation/type-exclusivity/nationalities.ein :: render lattice
+0    examples/saturation/type-exclusivity/nationalities.ein :: render rules
+0    examples/saturation/type-exclusivity/nationalities.ein :: saturate
+0    examples/saturation/type-exclusivity/nationalities.ein :: saturate --dump
+0    examples/saturation/type-exclusivity/nationalities.ein :: solve
+0    examples/saturation/type-exclusivity/nationalities.ein :: solve -e
+0    examples/saturation/type-exclusivity/pets.ein :: render constraints
+0    examples/saturation/type-exclusivity/pets.ein :: render lattice
+0    examples/saturation/type-exclusivity/pets.ein :: render rules
+0    examples/saturation/type-exclusivity/pets.ein :: saturate
+0    examples/saturation/type-exclusivity/pets.ein :: saturate --dump
+0    examples/saturation/type-exclusivity/pets.ein :: solve
+0    examples/saturation/type-exclusivity/pets.ein :: solve -e
+1    examples/syntax/arg-kinds.ein :: render rules
+0    examples/syntax/arg-kinds.ein :: saturate
+1    examples/syntax/config.ein :: render rules
+0    examples/syntax/config.ein :: saturate
+1    examples/syntax/constraint-scopes.ein :: render rules
+0    examples/syntax/constraint-scopes.ein :: saturate
+1    examples/syntax/equality.ein :: render rules
+0    examples/syntax/equality.ein :: saturate
+1    examples/syntax/is-a-shapes.ein :: render rules
+0    examples/syntax/is-a-shapes.ein :: saturate
+1    examples/syntax/negation.ein :: render rules
+0    examples/syntax/negation.ein :: saturate
+1    examples/syntax/nullary.ein :: render rules
+0    examples/syntax/nullary.ein :: saturate
+1    examples/syntax/query-full.ein :: render rules
+0    examples/syntax/query-full.ein :: saturate
+1    examples/syntax/relation-decls.ein :: render rules
+0    examples/syntax/relation-decls.ein :: saturate
+0    examples/syntax/rule-forall-and-not.ein :: render rules
+0    examples/syntax/rule-forall-and-not.ein :: saturate
+0    examples/syntax/rule-guards.ein :: render rules
+0    examples/syntax/rule-guards.ein :: saturate
+0    examples/syntax/rule-nary-and-or.ein :: render rules
+0    examples/syntax/rule-nary-and-or.ein :: saturate
+0    examples/syntax/rule-shared-guard-var.ein :: render rules
+0    examples/syntax/rule-shared-guard-var.ein :: saturate
+1    examples/syntax/trace-empty.ein :: render rules
+0    examples/syntax/trace-empty.ein :: saturate
+1    examples/syntax/trace-steps.ein :: render rules
+0    examples/syntax/trace-steps.ein :: saturate
+1    examples/syntax/unary-and-nary.ein :: render rules
+0    examples/syntax/unary-and-nary.ein :: saturate
+1    examples/syntax/wrappers.ein :: render rules
+0    examples/syntax/wrappers.ein :: saturate
+0    examples/zebra.ein :: render constraints
+0    examples/zebra.ein :: render lattice
+0    examples/zebra.ein :: render rules
+0    examples/zebra.ein :: saturate
+0    examples/zebra.ein :: saturate --dump
+0    examples/zebra.ein :: solve
+0    examples/zebra.ein :: solve -e
+0    examples/zebra2-hints.ein :: render constraints
+0    examples/zebra2-hints.ein :: render lattice
+0    examples/zebra2-hints.ein :: render rules
+0    examples/zebra2-hints.ein :: saturate
+0    examples/zebra2-hints.ein :: saturate --dump
+0    examples/zebra2-hints.ein :: solve
+0    examples/zebra2-hints.ein :: solve -e
+0    examples/zebra2-minus-15.ein :: render constraints
+0    examples/zebra2-minus-15.ein :: render rules
+0    examples/zebra2-minus-15.ein :: saturate
+0    examples/zebra2-minus-15.ein :: saturate --dump
+0    examples/zebra2-minus-15.ein :: solve
+0    examples/zebra2.ein :: render constraints
+0    examples/zebra2.ein :: render lattice
+0    examples/zebra2.ein :: render rules
+0    examples/zebra2.ein :: saturate
+0    examples/zebra2.ein :: saturate --dump
+0    examples/zebra2.ein :: solve
+0    examples/zebra2.ein :: solve --dump-states {out}/states
+0    examples/zebra2.ein :: solve --trace {out}/trace.md
+0    examples/zebra2.ein :: solve -K
+0    examples/zebra2.ein :: solve -L
+0    examples/zebra2.ein :: solve -e
+0    examples/zebra2.ein :: solve -m 2
+0    examples/zebra2.ein :: solve -n 3
+0    examples/zebra2.ein :: solve -o score-sum
+0    examples/zebra2.ein :: solve -p -s
+0    examples/zebra2.ein :: solve -y
+0    stdlib/algebra.ein :: render constraints
+0    stdlib/algebra.ein :: render rules
+0    stdlib/algebra.ein :: saturate
+0    stdlib/algebra.ein :: solve
+0    stdlib/bijection.ein :: render constraints
+0    stdlib/bijection.ein :: render rules
+0    stdlib/bijection.ein :: saturate
+0    stdlib/bijection.ein :: solve
+0    stdlib/closure.ein :: render constraints
+0    stdlib/closure.ein :: render rules
+0    stdlib/closure.ein :: saturate
+0    stdlib/closure.ein :: solve
+0    stdlib/elim.ein :: render constraints
+0    stdlib/elim.ein :: render rules
+0    stdlib/elim.ein :: saturate
+0    stdlib/elim.ein :: solve
+0    stdlib/macro.ein :: render constraints
+1    stdlib/macro.ein :: render rules
+0    stdlib/macro.ein :: saturate
+0    stdlib/macro.ein :: solve
+0    stdlib/slots.ein :: render constraints
+0    stdlib/slots.ein :: render rules
+0    stdlib/slots.ein :: saturate
+0    stdlib/slots.ein :: solve
+0    stdlib/typing.ein :: render constraints
+0    stdlib/typing.ein :: render rules
+0    stdlib/typing.ein :: saturate
+0    stdlib/typing.ein :: solve

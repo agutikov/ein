@@ -19,8 +19,8 @@
 //! and the one a renderer breaks by emitting something prettier.
 
 use ein_core::Terms;
+use ein_corpus::{corpus_files, repo_root};
 use ein_ir::{Ast, parse};
-use ein_oracle::{corpus_files, repo_root};
 use ein_render::shape::trace_shape;
 
 /// **Every trace the corpus produces round-trips through the IR.**

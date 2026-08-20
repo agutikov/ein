@@ -25,7 +25,7 @@ Neither is reachable from a corpus entry: T3 is green corpus-wide apart from
 D2. Both are one command to reproduce —
 
 ```sh
-ein solve conformance/fuzz_findings/d3-unsat-core.ein --max-set-size 2
+ein solve corpus/fuzz_findings/d3-unsat-core.ein --max-set-size 2
 ```
 
 — against either implementation, and against

@@ -20,7 +20,7 @@
 //!    self-checkable property the frontend has, and it is the one that would
 //!    have caught a dumper/parser disagreement without a second engine.
 //! 3. **The recorded findings still parse the way they parsed.** Every seed
-//!    and every checked-in `conformance/fuzz_findings/*.ein` against a table —
+//!    and every checked-in `corpus/fuzz_findings/*.ein` against a table —
 //!    which is what makes a find a regression test rather than a souvenir.
 //!
 //! Property 2 is not weaker than the diff in every direction: the diff
@@ -35,9 +35,9 @@
 
 use std::path::PathBuf;
 
+use ein_corpus::{golden, golden_path, repo_root};
 use ein_ir::dump::dump_canonical;
 use ein_ir::{Ast, parse};
-use ein_oracle::{golden, golden_path, repo_root};
 
 /// One parse, as the text a table can hold.
 fn answer(text: &str) -> String {
@@ -278,7 +278,7 @@ fn seeds() -> Vec<String> {
     // `.md` files as *mutation* seeds; what is gained is that the seed list is
     // a function of the fixtures.
     let mut files: Vec<PathBuf> = Vec::new();
-    for dir in ["examples/broken", "conformance/fuzz_findings"] {
+    for dir in ["examples/broken", "corpus/fuzz_findings"] {
         if let Ok(entries) = std::fs::read_dir(root.join(dir)) {
             files.extend(
                 entries
@@ -355,8 +355,8 @@ fn generated_input_is_always_parsed_or_diagnosed() {
 ///
 /// `parse(dump(parse(x)))` dumps to the same text as `dump(parse(x))`. A
 /// failure is minimised before it is reported and written to
-/// `conformance/fuzz_findings/`, because a fuzzer whose finds are not checked
-/// in re-finds them forever (`conformance/README.md` § Growth rule).
+/// `corpus/fuzz_findings/`, because a fuzzer whose finds are not checked in
+/// re-finds them forever (`corpus/README.md` § Growth rule).
 #[test]
 fn everything_that_parses_round_trips_through_the_dumper() {
     let (iters, seed) = budget();
@@ -370,7 +370,7 @@ fn everything_that_parses_round_trips_through_the_dumper() {
             Some(Ok(())) => round_tripped += 1,
             Some(Err(why)) => {
                 let small = minimise(&text, |t| matches!(round_trip(t), Some(Err(_))));
-                let dir = repo_root().join("conformance/fuzz_findings");
+                let dir = repo_root().join("corpus/fuzz_findings");
                 let _ = std::fs::create_dir_all(&dir);
                 let path = dir.join(format!("roundtrip-seed{seed:x}-iter{i}.ein"));
                 let _ = std::fs::write(&path, &small);
@@ -391,7 +391,7 @@ fn everything_that_parses_round_trips_through_the_dumper() {
 /// **Every seed and every recorded finding parses the way it parsed.**
 ///
 /// The seed corpus is the twelve hand-written shapes plus every file under
-/// `examples/broken/` and `conformance/fuzz_findings/` — which is what makes a
+/// `examples/broken/` and `corpus/fuzz_findings/` — which is what makes a
 /// find a regression test. The differential arm checked each against lark on
 /// every run; the table checks each against the answer lark gave, blessed
 /// while that arm was green.

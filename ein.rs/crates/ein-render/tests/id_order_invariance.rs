@@ -46,8 +46,8 @@ mod corpus_ops;
 
 use corpus_ops::{ops, run};
 use ein_core::{FactId, IntId, Symbol, Tag, Terms, Value};
+use ein_corpus::{corpus_files, repo_root};
 use ein_infer::mt19937::Mt19937;
-use ein_oracle::{corpus_files, repo_root};
 use rustc_hash::FxHashMap;
 
 /// A `Terms` whose id space is a permutation of `after`'s.

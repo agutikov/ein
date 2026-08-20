@@ -10,22 +10,25 @@
 //!
 //! - `{out}` in any token expands to the run's own output directory, which is
 //!   how `--trace {out}/trace.md` and `--dump-states {out}/states` name their
-//!   artefacts without the manifest knowing where the harness writes.
-//! - every `solve` run gains `--json-summary {out}/summary.json`, because the
-//!   T0/T1 tiers read that file and there is no reason to make each manifest
-//!   entry ask for it.
+//!   artefacts without the manifest knowing where the runner writes.
+//! - every `solve` run gains `--json-summary {out}/summary.json`, so that
+//!   every solve cell leaves a machine-readable verdict behind and no manifest
+//!   entry has to ask for it.
+//!
+//! A third substitution used to happen here: at `--tier T2` the harness added
+//! `--events {out}/events.jsonl --events-level verbose` to every `solve` and
+//! `saturate` cell, because the event log was the tier's operand. The tiers
+//! were retired with the second engine at
+//! [S1a.10.3](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)
+//! and the substitution went with them — `--events` is not unowned, it is
+//! `ein-cli/tests/cli_semantics.rs`'s through the CLI and
+//! `ein-infer/tests/golden_events.rs`'s as three whole verbose streams, and
+//! neither needs the corpus swept at 78 MB of logs per run to say so.
 
 use std::path::Path;
 
-/// The event log's name inside a run's output directory.
-pub const EVENTS_FILE: &str = "events.jsonl";
-
-/// Build the argv (after the implementation's own command prefix).
-///
-/// `events` adds `--events {out}/events.jsonl --events-level verbose` to the
-/// subcommands that support it. Verbose, not normal: a dropped redundant
-/// firing is exactly what a port loses, and T2 exists to catch it.
-pub fn argv(run: &str, file: &str, out: &Path, events: bool) -> Vec<String> {
+/// Build the argv (after `ein`).
+pub fn argv(run: &str, file: &str, out: &Path) -> Vec<String> {
     let out = out.display().to_string();
     let toks: Vec<String> = run
         .split_whitespace()
@@ -48,12 +51,6 @@ pub fn argv(run: &str, file: &str, out: &Path, events: bool) -> Vec<String> {
     if toks.first().map(String::as_str) == Some("solve") {
         argv.push("--json-summary".into());
         argv.push(format!("{out}/summary.json"));
-    }
-    if events && matches!(toks.first().map(String::as_str), Some("solve" | "saturate")) {
-        argv.push("--events".into());
-        argv.push(format!("{out}/{EVENTS_FILE}"));
-        argv.push("--events-level".into());
-        argv.push("verbose".into());
     }
     argv
 }
@@ -78,21 +75,7 @@ mod tests {
     use super::*;
 
     fn v(run: &str) -> Vec<String> {
-        argv(run, "examples/x.ein", Path::new("/o"), false)
-    }
-
-    fn ve(run: &str) -> Vec<String> {
-        argv(run, "examples/x.ein", Path::new("/o"), true)
-    }
-
-    #[test]
-    fn events_are_requested_only_where_they_exist() {
-        assert!(ve("solve").contains(&"--events".to_string()));
-        assert!(ve("saturate").contains(&"--events".to_string()));
-        assert!(!ve("render rules").contains(&"--events".to_string()));
-        assert!(!v("solve").contains(&"--events".to_string()));
-        // T2 compares the algorithm, so it runs at the level that records it.
-        assert!(ve("solve").contains(&"verbose".to_string()));
+        argv(run, "examples/x.ein", Path::new("/o"))
     }
 
     #[test]

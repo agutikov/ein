@@ -1,15 +1,17 @@
 //! `ein solve --json-summary FILE` — the structured run summary (S1a.0.1).
 //!
-//! The Rust half of `ein/cli/_summary.py`. This file *is* the conformance
-//! harness's first two tiers — **T0** (the answer is the same) and **T1**
-//! (every counter the engine reports about its own work is the same) — so it
-//! is what lets the harness drive ein.rs at all.
+//! The Rust half of `ein/cli/_summary.py`. This file was the parity contract's
+//! first two tiers — **T0** (the answer is the same) and **T1** (every counter
+//! the engine reports about its own work is the same). The harness that read
+//! it retired at S1a.10.3; what reads it now is
+//! `ein-cli/tests/summary_properties.rs`, which holds the same fields to
+//! thirteen arithmetic identities instead of to a second engine.
 //!
-//! Three properties the harness depends on, all of them reproduced here:
-//! **additive** (writes a file, never stdout/stderr/the exit code),
-//! **order-free** (every set-shaped observable sorted, so a T0/T1 diff reports
-//! semantics and leaves order to T2/T3), and **self-describing** (field order
-//! fixed by construction, `schema` versioned).
+//! Three properties, all still worth having: **additive** (writes a file,
+//! never stdout/stderr/the exit code), **order-free** (every set-shaped
+//! observable sorted, so a difference reports semantics rather than order),
+//! and **self-describing** (field order fixed by construction, `schema`
+//! versioned).
 
 use ein_core::{Kb, SolverConfig, Terms, Value};
 use ein_infer::SharedMemo;

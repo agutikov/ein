@@ -31,7 +31,7 @@
 
 use ein_core::pyfmt::{Spec, format_float};
 use ein_core::pyrepr::{PyValue, repr};
-use ein_oracle::{golden, golden_path};
+use ein_corpus::{golden, golden_path};
 
 fn s(x: &str) -> PyValue {
     PyValue::Str(x.to_string())

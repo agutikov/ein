@@ -8,7 +8,7 @@
 //! per-commitment tree with its proof summary.
 //!
 //! Structurally this is the same idea as the
-//! [oracle event protocol](../../../../conformance/EVENTS.md) — a
+//! [`--events` protocol](../../../../docs/kernel/inference/events.md) — a
 //! chronological log of what the search did — with a different schema and a
 //! directory instead of one file. They are emitted from overlapping call
 //! sites, so they have to agree about what happened, which is a property this

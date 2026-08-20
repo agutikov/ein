@@ -1,4 +1,4 @@
-//! The oracle event protocol — `conformance/EVENTS.md`, ein.rs side.
+//! The `--events` protocol — `docs/kernel/inference/events.md`, engine side.
 //!
 //! T2 parity is "the two engines took the same steps", and that needs both
 //! implementations to narrate what they did in a comparable format. The schema
@@ -79,7 +79,7 @@ impl Events {
 
     /// [`Events::to`] with the CLI's own `run` fields appended — `impl`,
     /// `file`, `argv` and the resolved config, which
-    /// [`EVENTS.md`](../../../../conformance/EVENTS.md) lists after `version`
+    /// [`events.md`](../../../../docs/kernel/inference/events.md) lists after `version`
     /// and `level`. The engine has no argv, so the caller supplies them.
     pub fn to_with(sink: Box<dyn Write>, level: Level, extra: impl FnOnce(&mut Line)) -> Events {
         let mut e = Events {

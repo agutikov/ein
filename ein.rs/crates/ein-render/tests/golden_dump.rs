@@ -23,9 +23,9 @@
 //! ```
 
 use ein_core::Terms;
+use ein_corpus::{golden, golden_path, repo_root};
 use ein_infer::solve::{OnBudget, SolveOptions, solve};
 use ein_ir::{Ast, parse};
-use ein_oracle::{golden, golden_path, repo_root};
 use ein_render::dump::LatticeDumper;
 use ein_render::shape::dump_shape;
 use std::path::{Path, PathBuf};

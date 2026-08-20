@@ -18,8 +18,8 @@
 //! ```
 
 use ein_core::Terms;
+use ein_corpus::{golden, golden_path, repo_root};
 use ein_ir::{Ast, parse};
-use ein_oracle::{golden, golden_path, repo_root};
 use ein_render::shape::dot_shape;
 
 /// `(golden name, corpus entry)`. Both are on `dot_parity`'s

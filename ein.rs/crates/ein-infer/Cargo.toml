@@ -29,7 +29,7 @@ ein-ir   = { path = "../ein-ir" }
 rustc-hash.workspace = true
 
 [dev-dependencies]
-ein-oracle = { path = "../ein-oracle" }
+ein-corpus = { path = "../ein-corpus" }
 # A dev-only cycle (`ein-render` depends on `ein-infer`), which Cargo allows.
 # It is here for one claim: `LatticeDumper`'s contract — what a dump tree does
 # and does not contain — is a claim about the *lattice*, and the formatter that
@@ -38,6 +38,7 @@ ein-oracle = { path = "../ein-oracle" }
 # use of the hook. See `tests/lattice_semantics.rs`.
 ein-render = { path = "../ein-render" }
 # The one implementation of "what the parity contract stopped comparing",
-# shared with `ein-conformance` so a test and the gate cannot disagree.
+# one implementation of what counts as narration, shared by every test that
+# has to know.
 ein-parity = { path = "../ein-parity" }
 serde_json.workspace = true

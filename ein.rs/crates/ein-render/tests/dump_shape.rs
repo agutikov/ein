@@ -26,8 +26,8 @@
 //!   rendered from it.
 
 use ein_core::Terms;
+use ein_corpus::{corpus_files, repo_root};
 use ein_ir::{Ast, parse};
-use ein_oracle::{corpus_files, repo_root};
 use ein_render::shape::dump_shape;
 use std::path::Path;
 

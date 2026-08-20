@@ -5,7 +5,7 @@ enqueue, firing, mirror, park/admit/retire, quiescence, alternative
 justification, hypothesis verdict, entering, no-good and writeback, in order.
 It exists for the conformance harness's **T2** tier — "the two engines took the
 same steps" — which is the tier that pins the *algorithm* rather than its
-answer. The schema is [`conformance/EVENTS.md`](../../../conformance/EVENTS.md).
+answer. The schema is [`docs/kernel/inference/events.md`](../../../docs/kernel/inference/events.md).
 
 Three properties the protocol depends on, and how this module gets them:
 

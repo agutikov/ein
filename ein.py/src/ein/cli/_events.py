@@ -4,7 +4,7 @@ The flag pair, the argv/config-bearing `run` event, and the `load` and
 `verdict` events that bracket a run. The per-site instrumentation lives in the
 engine modules; this is only the seam that turns it on.
 
-Schema: [`conformance/EVENTS.md`](../../../../conformance/EVENTS.md).
+Schema: [`docs/kernel/inference/events.md`](../../../../docs/kernel/inference/events.md).
 """
 from __future__ import annotations
 

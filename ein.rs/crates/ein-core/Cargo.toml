@@ -17,7 +17,7 @@ counters = []
 rustc-hash.workspace = true
 
 [dev-dependencies]
-# `pyrepr` and `pyfmt` are re-implementations of CPython's rendering; they are
-# checked against CPython itself, not against a remembered string.
-ein-oracle = { path = "../ein-oracle" }
+# `pyrepr` and `pyfmt` are re-implementations of CPython's rendering; the
+# tables they were checked against are frozen beside them in `tests/golden/`.
+ein-corpus = { path = "../ein-corpus" }
 serde_json.workspace = true

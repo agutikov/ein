@@ -1,12 +1,13 @@
 //! Every plan a KB compiles, as one deterministic text — the S1a.3.1 diff.
 //!
-//! A `JoinPlan` has no CLI surface, so `ein-conformance` cannot see one: it
-//! compares two `ein` binaries, and nothing either of them prints exposes a
-//! step sequence, a guard's scope, or a `watched` set. So the compiler is
+//! A `JoinPlan` has no CLI surface, so a harness comparing two `ein`
+//! *processes* could not see one: nothing either of them printed exposed a
+//! step sequence, a guard's scope, or a `watched` set. So the compiler was
 //! compared the way the loader was at
-//! [S1a.2.3](../../../../plans/m1a_rust/p1a.2_kb_core/s1a.2.3_loader_and_provenance.md):
-//! both implementations render the same text and the texts are diffed
-//! (`utils/ir_oracle.py`'s `plan-shape` op is the other half).
+//! [S1a.2.3](../../../../plans/m1a_rust/p1a.2_kb_core/s1a.2.3_loader_and_provenance.md)
+//! — both implementations render the same text and the texts are diffed
+//! (`utils/ir_oracle.py`'s `plan-shape` op was the other half) — and since
+//! S1a.10.2 the text is digested into `corpus_shapes.md5` instead.
 //!
 //! Two rules make the text comparable, and they are the same two the KB shape
 //! settled on:

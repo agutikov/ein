@@ -10,8 +10,9 @@
 //! Two sources behind one trait, resolved in the same three steps `ein.py`'s
 //! `imports._stdlib_root()` uses:
 //!
-//! 1. `$EIN_STDLIB` — an explicit override, always wins. The conformance
-//!    harness sets it so both engines demonstrably read the same bytes.
+//! 1. `$EIN_STDLIB` — an explicit override, always wins. It is what points a
+//!    run at a stdlib that is not the checkout's, which is how a test can
+//!    prove the resolution order rather than assume it.
 //! 2. **The checkout**, found by walking up for a `stdlib/` carrying
 //!    [`MARKER`]. A source tree is authoritative, so editing a module takes
 //!    effect with no rebuild.

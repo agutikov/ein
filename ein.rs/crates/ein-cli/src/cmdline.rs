@@ -55,8 +55,8 @@ fn event_args(cmd: Command) -> Command {
                 "record the engine's step-by-step event log to FILE \
                  (one JSON object per line). Off by default and \
                  additive: stdout, stderr and the exit code are \
-                 unchanged. Feeds the M1a conformance harness's T2 \
-                 parity tier.",
+                 unchanged. Schema: \
+                 docs/kernel/inference/events.md.",
             ),
     )
     .arg(
@@ -316,8 +316,7 @@ fn solve_command() -> Command {
                     "write the structured run summary (verdict, model, \
                      every engine counter, the root-saturation shape, the \
                      resolved config) to FILE as JSON. Additive: stdout, \
-                     stderr and the exit code are unchanged. Feeds the M1a \
-                     conformance harness's T0/T1 parity tiers.",
+                     stderr and the exit code are unchanged.",
                 ),
         )
         // ── markdown trace (file only) ──

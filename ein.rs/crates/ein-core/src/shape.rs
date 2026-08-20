@@ -1,11 +1,12 @@
-//! The KB-shape dump — a parity instrument, not engine output.
+//! The KB-shape dump — a test instrument, not engine output.
 //!
-//! [P1a.2](../../../../plans/m1a_rust/p1a.2_kb_core/README.md)'s gate is
+//! [P1a.2](../../../../plans/m1a_rust/p1a.2_kb_core/README.md)'s gate was
 //! "every corpus file loads to the same KB", and a KB has no CLI surface of
-//! its own: the registries, the seven indexes and the participation counts are
-//! exactly the things `ein-conformance` cannot see. This renders all of them
-//! as one deterministic text so both implementations can be diffed on it, with
-//! `utils/ir_oracle.py`'s `kb-shape` op producing the same bytes from ein.py.
+//! its own: the registries, the seven indexes and the participation counts
+//! were exactly the things a harness comparing two `ein` *processes* could not
+//! see. This renders all of them as one deterministic text, which was diffed
+//! against `utils/ir_oracle.py`'s `kb-shape` op until S1a.10.2 and is
+//! `corpus_shapes.md5`'s `load` op since.
 //!
 //! Two rules make the text comparable:
 //!

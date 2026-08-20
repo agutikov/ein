@@ -1,14 +1,14 @@
-//! The parity contract's normalisation list, executable —
+//! What a derivation's **narration** is, executable —
 //! [design/01 §5](../../../../plans/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list).
 //!
 //! **Not part of the engine.** `publish = false`, and nothing outside a test
-//! or the conformance harness depends on it. It exists because
+//! depends on it. It exists because
 //! [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
-//! left the same decision implemented six times — in `ein-conformance`, in
+//! left the same decision implemented six times — in the parity harness, in
 //! three `tests/` files, in `ein-render`'s `shape.rs` and in its
 //! `utils/ir_oracle.py` twin — each cut made one at a time as the next test
 //! went red. A relaxation that has to be discovered by running the tests is
-//! not a contract, so this crate is where the decision lives and the six call
+//! not a contract, so this crate is where the decision lives and the call
 //! sites only say *what they are handing over*.
 //!
 //! # The rule
@@ -16,16 +16,37 @@
 //! > **A fork's derivation, and anything keyed on a dying fork's stopping
 //! > point, is narration.**
 //!
-//! Since S1a.6.9 ein.rs's forks *resume* root's saturation where ein.py's
-//! re-derive it
+//! Since S1a.6.9 a fork *resumes* root's saturation rather than re-deriving it
 //! ([D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
-//! so the two engines reach the same answer by narrating different amounts of
+//! so two runs can reach the same answer while narrating different amounts of
 //! the same derivation: a quarter of the firings, a different one of each
 //! fact's equally valid justifications recorded first, and — with
 //! `enable_fail_fast_fork` on — a different stopping point for a fork that
-//! dies. The contract's hard requirement is that the two engines produce the
-//! same **answer** and take the same **search**; that is T0 and T1, and they
-//! are not relaxed in any direction.
+//! dies. What is *not* relaxed in any direction is the **answer** and the
+//! **search**: the verdict, the model, the unsat core, every counter.
+//!
+//! # Why it outlived the harness
+//!
+//! The rule was written for two engines, and
+//! [S1a.10.3](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)
+//! retired the harness that compared them. This crate survived, because
+//! [S1a.10.1 §5](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#5-what-the-successor-found)
+//! showed the same three observables move **inside one engine**: run the
+//! corpus twice with the id space permuted and 66 renderings move, all of them
+//! a dying fork's stopping point, a firing count, or which of a fact's equally
+//! valid justifications was recorded first. Nothing had to be added to
+//! [`is_narration`] for that. So the rule stopped being a statement about two
+//! implementations and became one about what a derivation *is*, which is why
+//! it is a normalisation the engine's own goldens apply to themselves.
+//!
+//! Who applies it now:
+//!
+//! | call site | to what |
+//! |---|---|
+//! | `ein-render/tests/corpus_ops/mod.rs` | every op of every corpus file, before digesting it into `corpus_shapes.md5` |
+//! | `ein-render/tests/id_order_invariance.rs` | the same, twice, under a permuted id space — and it is what says the 66 are the narrated 66 |
+//! | `ein-render/src/shape.rs` | [`NARRATED`], so a shape and a golden agree on the word |
+//! | `ein-infer/tests/event_cut_control.rs` | [`events`], through a deliberately mutated stream |
 //!
 //! Read as three mechanical consequences, which is all this crate is:
 //!
@@ -50,11 +71,11 @@
 //!
 //! # Turning it off
 //!
-//! [`strict()`] — `EIN_PARITY_STRICT=1`, and `ein-conformance run --strict` —
-//! restores the byte-identical contract P1a.1–P1a.5 was built against. The
-//! determinism sweep (ein.py against itself under two `PYTHONHASHSEED`s) runs
-//! under it, because that hazard class has nothing to do with D3 and must
-//! keep being caught on the unrelaxed comparison.
+//! [`strict()`] — `EIN_PARITY_STRICT=1` — restores the byte-identical contract
+//! P1a.1–P1a.5 was built against. It is not a configuration the suite passes:
+//! it is how the relaxation gets *measured*, by running a sweep under it and
+//! reading off what the cut was covering. `id_order_invariance` prints the 66
+//! by op under it; relaxed, it asserts they are zero.
 
 pub mod events;
 
@@ -62,8 +83,7 @@ pub mod events;
 /// still fails, which is the point of substituting rather than dropping.
 pub const NARRATED: &str = "<narrated>";
 
-/// Is the D3 relaxation off? `EIN_PARITY_STRICT=1`, or
-/// `ein-conformance run --strict`.
+/// Is the D3 relaxation off? `EIN_PARITY_STRICT=1`.
 ///
 /// Everything else in this crate *is* the relaxation and applies it
 /// unconditionally; a strict call site does not call it. That is deliberate —
@@ -109,22 +129,6 @@ pub fn is_narration(name: &str) -> bool {
     ];
     let name = name.trim();
     NAMES.contains(&name) || name.starts_with("enterings/")
-}
-
-/// The artefacts a corpus **run** produces that are rendered derivations.
-///
-/// `ein-conformance` captures every file a run wrote and compares them by
-/// name, so it needs to know which of those names the run asked for as a
-/// trace. Derived from the run string rather than from the extension: the
-/// manifest says `solve --trace {out}/trace.md`, and the file is whatever
-/// token followed `--trace`.
-pub fn narrated_artefacts(run: &str) -> Vec<String> {
-    let toks: Vec<&str> = run.split_whitespace().collect();
-    toks.windows(2)
-        .filter(|w| w[0] == "--trace" || w[0] == "-t")
-        .filter_map(|w| w[1].rsplit('/').next())
-        .map(str::to_string)
-        .collect()
 }
 
 /// Blank the narration **values** on one line — consequences 1 and 3.
@@ -402,15 +406,5 @@ mod tests {
             blank_blocks(text, "--- "),
             "--- markdown (engine)\n<narrated>\n--- answer\nSolution\n--- round-trip ok"
         );
-    }
-
-    #[test]
-    fn the_trace_artefact_comes_from_the_run() {
-        assert_eq!(
-            narrated_artefacts("solve --trace {out}/trace.md"),
-            ["trace.md"]
-        );
-        assert!(narrated_artefacts("solve --dump-states {out}/states").is_empty());
-        assert!(narrated_artefacts("solve -e").is_empty());
     }
 }

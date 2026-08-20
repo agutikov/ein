@@ -140,9 +140,13 @@ def main() -> int:
               f"spec-audit --target-dir target-sa", file=sys.stderr)
         return 2
 
-    corpus = tomllib.load(open(REPO / "conformance" / "corpus.toml", "rb"))
+    corpus = tomllib.load(open(REPO / "corpus" / "corpus.toml", "rb"))
+    # `regression` was `positive` + `crash-parity` until S1a.10.3 regrouped
+    # `examples/ein-bugs/` as one directory; five of its ten entries were in
+    # this selection before and are again. Two of the rest are refused, which
+    # costs nothing here — a run that writes no audit rows contributes none.
     entries = [e for e in corpus["entry"]
-               if e["group"] in ("positive", "stdlib")
+               if e["group"] in ("positive", "stdlib", "regression")
                and not (args.only and args.only not in e["path"])
                and not (args.skip_slow and e.get("slow"))]
 

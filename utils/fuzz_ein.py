@@ -1,6 +1,26 @@
 #!/usr/bin/env python3
 """S1a.6.6 — the differential fuzzer: generate ein programs, diff two engines.
 
+**This script does not run.** Its second engine left the tree at
+[P1a.10](../plans/m1a_rust/p1a.10_single_implementation/README.md), and the
+harness it drove — `ein-conformance`, which is what decided whether two
+outputs differed — was retired with it at
+[S1a.10.3](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md).
+Rewriting it around the properties **one** engine can check on its own is
+[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+T1a.10.4.2: no panic, `dump → parse → dump` a fixed point, the same answer
+under a permuted id space, and `--jobs` invariance when P1a.7 resumes. The
+generator and the minimiser below are what that keeps.
+
+None of the four bugs this found were crashes — they were **wrong answers** —
+so the surviving arm cannot claim its predecessor's headline. What is left of
+that claim is [the ledger's L1](../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss),
+which calls it the single largest loss in the phase.
+
+Everything below describes the two-engine script as it was.
+
+---
+
 The corpus covers what someone wrote a fixture for. This covers the rest of
 the input space — the only mechanism that finds parity bugs in shapes no human
 authored ([design/01](../plans/m1a_rust/design/01_parity_contract.md) §7).
@@ -8,7 +28,7 @@ authored ([design/01](../plans/m1a_rust/design/01_parity_contract.md) §7).
     utils/fuzz_ein.py --iters 200                    # one pass, both engines
     utils/fuzz_ein.py --minutes 60 --mode mixed      # a session
     utils/fuzz_ein.py --seed 7 --iters 50 --tier T1  # replay a session
-    utils/fuzz_ein.py --replay conformance/fuzz_findings/f-0001.ein
+    utils/fuzz_ein.py --replay corpus/fuzz_findings/f-0001.ein
 
 ## What runs what
 
@@ -18,10 +38,10 @@ implementation of "what the two engines are not required to agree on"
 private idea of a difference would drift from the gate the day it was written.
 So a batch is written out as a **corpus**, and the harness runs it:
 
-    generate → conformance/out/fuzz/cases/*.ein
-             → conformance/out/fuzz/corpus.toml     (one entry per case)
+    generate → corpus/out/fuzz/cases/*.ein
+             → corpus/out/fuzz/corpus.toml     (one entry per case)
              → ein-conformance run --corpus … --tier T3
-             → minimise every reported cell, write it to conformance/fuzz_findings/
+             → minimise every reported cell, write it to corpus/fuzz_findings/
 
 Each batch carries one **canary** — a corpus fixture both engines are known to
 solve — in the `positive` group, so the harness's own liveness check applies:
@@ -65,11 +85,12 @@ findings in five are the answer we already know.
 A reported cell is **minimised** — forms deleted, conjuncts dropped, kw-pairs
 removed, while the divergence survives — then **re-judged**: the note records
 the harness's diff on the *minimum* rather than on the batch it came out of,
-and a case where ein.py raised is re-run in the `crash-parity` group, where
-the comparison is the exit code and the exception class. One that passes there
-is a corpus *candidate* (collected in `crash-parity-candidates.txt`), not a
-find. A 400-line generated program is not a bug report; an
-8-line one is. Nothing is added to `conformance/corpus.toml` automatically:
+and a case where ein.py raised is re-run in the `crash-parity` group (the
+group S1a.10.3 renamed `regression`), where the comparison is the exit code
+and the exception class. One that passes there is a corpus *candidate*
+(collected in `crash-candidates.txt`), not a find. A 400-line generated
+program is not a bug report; an 8-line one is. Nothing is added to
+`corpus/corpus.toml` automatically:
 that is the growth rule's step, and it happens in the commit that fixes the
 find or records it in the ledger.
 """
@@ -88,8 +109,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 HARNESS = REPO / "ein.rs" / "target" / "release" / "ein-conformance"
 EIN_RS = REPO / "ein.rs" / "target" / "release" / "ein"
-WORK = REPO / "conformance" / "out" / "fuzz"
-FINDINGS = REPO / "conformance" / "fuzz_findings"
+WORK = REPO / "corpus" / "out" / "fuzz"
+FINDINGS = REPO / "corpus" / "fuzz_findings"
 # A cell both engines are known to solve — the liveness check's subject.
 CANARY = "examples/saturation/symmetric/friends.ein"
 
@@ -569,7 +590,12 @@ def main() -> int:
     args = ap.parse_args()
 
     if not HARNESS.exists():
-        sys.exit(f"{HARNESS} — build it: cargo build --release -p ein-conformance")
+        sys.exit(
+            f"{HARNESS} does not exist and cannot be built: the parity "
+            f"harness was retired at S1a.10.3 with the second engine it "
+            f"compared. Re-aiming this script at one engine is S1a.10.4 "
+            f"T1a.10.4.2 — see the module docstring."
+        )
     cases_dir = WORK / "cases"
     shutil.rmtree(cases_dir, ignore_errors=True)
     cases_dir.mkdir(parents=True, exist_ok=True)
@@ -698,7 +724,7 @@ def main() -> int:
     el = time.time() - started
     rate = stats["loaded"] / max(stats["cases"], 1) * 100
     if candidates:
-        (FINDINGS / "crash-parity-candidates.txt").write_text(
+        (FINDINGS / "crash-candidates.txt").write_text(
             "\n;;; ─────────────\n".join(candidates), encoding="utf-8")
     print(json.dumps({**stats, "seconds": round(el, 1), "load_rate_pct": round(rate, 1),
                       "seed": args.seed, "mode": args.mode, "tier": args.tier,

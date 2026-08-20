@@ -20,8 +20,8 @@
 //! paths replaced by `{FILE}` the way `examples/broken/load/` already does it.
 //! They are lark's text, checked in, and nothing regenerates them from ein.rs.
 
+use ein_corpus::{golden, golden_path, repo_root};
 use ein_ir::{Ast, parse};
-use ein_oracle::{golden, golden_path, repo_root};
 
 /// One parse, as text: `ok` or the diagnostic.
 fn answer(text: &str, filename: Option<&str>) -> String {

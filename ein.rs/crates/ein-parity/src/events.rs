@@ -1,14 +1,24 @@
 //! The event stream, compared for the derivation rather than the narration.
 //!
+//! Two [`--events`](../../../../docs/kernel/inference/events.md) logs in,
+//! a list of differences out. The tier that used to call it (T2, "the two
+//! engines took the same steps") was retired with the second engine at
+//! [S1a.10.3](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md);
+//! what calls it now is `ein-infer/tests/event_cut_control.rs`, which mutates
+//! one real stream and checks the cut still reports the mutation. That test is
+//! not decoration: **a relaxation nothing exercises is a hole rather than a
+//! decision**, and it is the only thing standing between §2's measured cut and
+//! a comparison that quietly stopped comparing.
+//!
 //! # 1. Why the stream cannot simply be filtered
 //!
 //! [T2](../../../../plans/m1a_rust/design/01_parity_contract.md#t2--event-trace-parity)
-//! is the tier that pins *the algorithm*, and since
+//! was the tier that pinned *the algorithm*, and since
 //! [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
-//! the two engines run a deliberately different one at the fork boundary:
-//! ein.rs resumes root's saturation, ein.py re-derives it. 97 of T2's 240
+//! the two engines ran a deliberately different one at the fork boundary:
+//! ein.rs resumes root's saturation, ein.py re-derived it. 97 of T2's 240
 //! cells reported that as a difference, and eliding the firing traffic
-//! wholesale would have stopped catching the thing the tier exists for — a
+//! wholesale would have stopped catching the thing the tier existed for — a
 //! port that silently stopped deriving something.
 //!
 //! What survives the boundary is *what each fork derives*, so that is what is
@@ -244,8 +254,9 @@ pub fn split(events: &[Value]) -> Split {
 
 /// Compare two logs. An empty result is agreement.
 ///
-/// The report is built around the two questions a T2 failure actually raises,
-/// in the order they are worth asking: *which segment*, then *what in it*.
+/// The report is built around the two questions such a failure actually
+/// raises, in the order they are worth asking: *which segment*, then *what in
+/// it*.
 pub fn diff(a: &[Value], b: &[Value]) -> Vec<String> {
     let (sa, sb) = (split(a), split(b));
     let mut out = Vec::new();
