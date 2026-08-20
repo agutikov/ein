@@ -44,8 +44,8 @@ fn stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list() {
         .map(PathBuf::from)
         .unwrap_or_else(|_| repo_root().join("stdlib"))
         .join("macro.ein");
-    let text = std::fs::read_to_string(&module)
-        .unwrap_or_else(|e| panic!("{}: {e}", module.display()));
+    let text =
+        std::fs::read_to_string(&module).unwrap_or_else(|e| panic!("{}: {e}", module.display()));
     let mut ast = Ast::new();
     let forms = parse(&mut ast, &text, module.to_str()).expect("std.macro parses");
     let mut declared: Vec<String> = Vec::new();
@@ -160,9 +160,18 @@ fn one_module_under_two_qualifications_does_not_leak_either_way() {
         .map(|f| dump_canonical(&ast, &f))
         .expect("resolves");
     // Both qualifications survive, each spelled its own way.
-    assert!(got.contains("(macro m.forall"), "the aliased copy is missing:\n{got}");
-    assert!(got.contains("(macro forall"), "the flat copy is missing:\n{got}");
-    assert!(!got.contains("(macro m.m."), "a rename was applied twice:\n{got}");
+    assert!(
+        got.contains("(macro m.forall"),
+        "the aliased copy is missing:\n{got}"
+    );
+    assert!(
+        got.contains("(macro forall"),
+        "the flat copy is missing:\n{got}"
+    );
+    assert!(
+        !got.contains("(macro m.m."),
+        "a rename was applied twice:\n{got}"
+    );
     // Both copies expand the same body: the rename touched the *heads* only,
     // so `m.forall` and `forall` differ in exactly one token. This is the half
     // that was ein.py's — a resolver with no cache cannot leak, so the whole
@@ -229,7 +238,10 @@ fn module_paths_are_mangled_the_way_pathlib_mangles_them() {
             Ok(f) => dump_canonical(&ast, &f),
             Err(e) => e.0,
         };
-        for line in answer.replace(root.to_str().expect("utf-8"), "{ROOT}").lines() {
+        for line in answer
+            .replace(root.to_str().expect("utf-8"), "{ROOT}")
+            .lines()
+        {
             out.push_str(&format!("  {line}\n"));
         }
     }

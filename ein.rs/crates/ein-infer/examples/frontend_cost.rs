@@ -188,11 +188,12 @@ fn cell(root: &Path, rel: &str, rounds: u32) {
         detect_provenance_cycles(&kb, &terms)
     });
 
-    let accounted = phases[0].time + phases[3].time + rnew.time * 2 + guard.time
-        + index.time
-        + cycles.time;
+    let accounted =
+        phases[0].time + phases[3].time + rnew.time * 2 + guard.time + index.time + cycles.time;
     let ingest = load.time.saturating_sub(accounted);
-    let accounted_allocs = phases[0].allocs + phases[3].allocs + rnew.allocs * 2
+    let accounted_allocs = phases[0].allocs
+        + phases[3].allocs
+        + rnew.allocs * 2
         + guard.allocs
         + index.allocs
         + cycles.allocs;
@@ -223,7 +224,12 @@ fn cell(root: &Path, rel: &str, rounds: u32) {
         phases[2].bytes.saturating_sub(phases[1].bytes),
     );
     row("  macro expand", expand_only, expand_allocs, 0);
-    row("Resolver::new x2", rnew.time * 2, rnew.allocs * 2, rnew.bytes * 2);
+    row(
+        "Resolver::new x2",
+        rnew.time * 2,
+        rnew.allocs * 2,
+        rnew.bytes * 2,
+    );
     row("macro guard", guard.time, guard.allocs, guard.bytes);
     row("ingest (residual)", ingest, ingest_allocs, 0);
     row("rebuild_indexes", index.time, index.allocs, index.bytes);

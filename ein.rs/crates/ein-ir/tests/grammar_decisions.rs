@@ -52,26 +52,42 @@ fn the_parse_negative_fixtures_reproduce_larks_message() {
         .filter(|p| p.extension().is_some_and(|x| x == "ein"))
         .collect();
     fixtures.sort();
-    assert_eq!(fixtures.len(), 4, "the parse-negative group is four fixtures");
+    assert_eq!(
+        fixtures.len(),
+        4,
+        "the parse-negative group is four fixtures"
+    );
 
     let mut bad = Vec::new();
     for path in fixtures {
         let text = std::fs::read_to_string(&path).expect("readable");
-        let name = path.file_name().expect("a file").to_string_lossy().to_string();
+        let name = path
+            .file_name()
+            .expect("a file")
+            .to_string_lossy()
+            .to_string();
         let expected = std::fs::read_to_string(path.with_extension("expected"))
             .unwrap_or_else(|e| panic!("{name}: no .expected beside it: {e}"))
             .trim_end()
             .replace("{FILE}", path.to_str().expect("utf-8"));
         let got = answer(&text, path.to_str());
         if got.trim_end() != expected {
-            bad.push(format!("{name}
+            bad.push(format!(
+                "{name}
   want: {expected:?}
-  got:  {got:?}"));
+  got:  {got:?}"
+            ));
         }
     }
-    assert!(bad.is_empty(), "{}", bad.join("
+    assert!(
+        bad.is_empty(),
+        "{}",
+        bad.join(
+            "
 
-"));
+"
+        )
+    );
 }
 
 /// **The 78 cases that make the port non-obvious**, each one a decision in

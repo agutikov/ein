@@ -313,9 +313,7 @@ pub fn render_solution_table(
         answer,
         Answer::Verdict(Verdict::Solution(_)) | Answer::Verdict(Verdict::Ambiguity(_))
     );
-    if has_model
-        && let Some(e) = ein_infer::verdict::goal_plan_error(ast, terms, root, None)
-    {
+    if has_model && let Some(e) = ein_infer::verdict::goal_plan_error(ast, terms, root, None) {
         return Err(format!("ein.inference.compile.CompileError: {e}"));
     }
     let mut lines: Vec<String> = vec![

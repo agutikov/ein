@@ -75,8 +75,10 @@ fn main() {
         // Warm-up: the kill cache is written by the first pass, and every call
         // the search makes after the first sees it already written.
         let mut warm = HypGenStats::new();
-        ein_infer::generate(&mut s, &mut warm, &mut |_| std::ops::ControlFlow::Continue(()))
-            .expect("generates");
+        ein_infer::generate(&mut s, &mut warm, &mut |_| {
+            std::ops::ControlFlow::Continue(())
+        })
+        .expect("generates");
 
         let start = Instant::now();
         for _ in 0..ROUNDS {
@@ -86,7 +88,11 @@ fn main() {
 
         let start = Instant::now();
         for _ in 0..ROUNDS {
-            std::hint::black_box(ein_infer::open_hypotheses(&mut s).expect("enumerates").len());
+            std::hint::black_box(
+                ein_infer::open_hypotheses(&mut s)
+                    .expect("enumerates")
+                    .len(),
+            );
         }
         let per_open = start.elapsed() / ROUNDS;
 
@@ -97,8 +103,10 @@ fn main() {
         let per_setup = start.elapsed() / ROUNDS;
 
         let mut stats = HypGenStats::new();
-        ein_infer::generate(&mut s, &mut stats, &mut |_| std::ops::ControlFlow::Continue(()))
-            .expect("generates");
+        ein_infer::generate(&mut s, &mut stats, &mut |_| {
+            std::ops::ControlFlow::Continue(())
+        })
+        .expect("generates");
         let mode = if s.kb.program().hrules.is_empty() {
             "blind"
         } else {

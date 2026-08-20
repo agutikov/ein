@@ -87,7 +87,10 @@ fn rendered(terms: &Terms, ids: impl Iterator<Item = FactId>) -> Vec<String> {
 }
 
 fn names<V>(terms: &Terms, registry: &ein_core::Registry<V>) -> Vec<String> {
-    let mut out: Vec<String> = registry.iter().map(|(n, _)| terms.sym(n).to_string()).collect();
+    let mut out: Vec<String> = registry
+        .iter()
+        .map(|(n, _)| terms.sym(n).to_string())
+        .collect();
     out.sort();
     out
 }
@@ -195,7 +198,10 @@ fn a_facts_origin_is_a_three_way_split_over_its_provenance() {
     let text = shape(&kb, &terms);
     assert!(text.contains("source='(1)'"), "{text}");
     assert!(text.contains("source=None"), "{text}");
-    assert!(text.contains("rule=step using=[('r', ('a', 'b'))]"), "{text}");
+    assert!(
+        text.contains("rule=step using=[('r', ('a', 'b'))]"),
+        "{text}"
+    );
     assert_eq!(
         text.lines().filter(|l| l.starts_with("PROV ")).count(),
         5,
@@ -465,9 +471,15 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
 
     // Non-vacuity: the guard is live on the whole names those two extend.
     for (declarator, source) in [
-        ("rule", "(rule eq () :match (x ?a) :assert (y ?a) :why \"w\")"),
+        (
+            "rule",
+            "(rule eq () :match (x ?a) :assert (y ?a) :why \"w\")",
+        ),
         ("relation", "(relation absent T T)"),
-        ("hrule", "(hrule false () :match (x ?a) :assert (y ?a) :why \"w\")"),
+        (
+            "hrule",
+            "(hrule false () :match (x ?a) :assert (y ?a) :why \"w\")",
+        ),
     ] {
         let msg = load_error(source);
         assert!(
@@ -777,7 +789,9 @@ fn permuted(after: &Terms) -> Terms {
             .expect("room");
     }
     for i in (0..after.ints.len()).rev() {
-        terms.value_int(after.ints.text(IntId(i as u32))).expect("room");
+        terms
+            .value_int(after.ints.text(IntId(i as u32)))
+            .expect("room");
     }
 
     let n = after.facts.len();
@@ -850,7 +864,9 @@ fn the_kb_shape_does_not_move_when_the_id_space_is_permuted() {
         let kernel = Terms::new().syms.len();
         let permutable = terms.syms.len() - kernel;
         let stayed = (kernel..terms.syms.len())
-            .filter(|&i| shuffled.syms.get(terms.syms.text(Symbol(i as u32))) == Some(Symbol(i as u32)))
+            .filter(|&i| {
+                shuffled.syms.get(terms.syms.text(Symbol(i as u32))) == Some(Symbol(i as u32))
+            })
             .count();
         if permutable > 0 && weakest.is_none_or(|(m, p)| (permutable - stayed) * p < m * permutable)
         {
@@ -883,7 +899,10 @@ fn the_kb_shape_does_not_move_when_the_id_space_is_permuted() {
         files.len(),
         bad.iter().take(5).cloned().collect::<Vec<_>>().join("\n\n")
     );
-    assert!(loaded >= 60 && rejected >= 20, "{loaded} loaded, {rejected} rejected");
+    assert!(
+        loaded >= 60 && rejected >= 20,
+        "{loaded} loaded, {rejected} rejected"
+    );
     // A permutation that permuted nothing compares a run against itself.
     let (moved, permutable) = weakest.expect("some file interned a name");
     assert!(
@@ -1114,7 +1133,10 @@ fn zebra_loads_seventy_one_facts_eighteen_of_them_given_and_none_derived() {
         "nothing is derived before the engine runs"
     );
     let rules: Vec<Symbol> = kb.program().rules.keys().collect();
-    assert!(rules.len() >= 10, "std.slots and std.algebra brought rules in");
+    assert!(
+        rules.len() >= 10,
+        "std.slots and std.algebra brought rules in"
+    );
     for r in rules {
         assert_eq!(
             kb.all_facts(&terms).by_rule(r).count(),
@@ -1184,7 +1206,9 @@ fn a_snapshot_still_resolves_its_premises_after_the_source_moves_on() {
         .expect("room")
         .id();
     let late = terms.intern_text("late").expect("room");
-    let prov = terms.provs.push(Prov::from_rule(late, Box::new([new]), None));
+    let prov = terms
+        .provs
+        .push(Prov::from_rule(late, Box::new([new]), None));
     kb.add_and_index_fact(&mut terms, q, &[c, d], Some(prov))
         .expect("room");
     kb.rebuild_indexes(&terms);

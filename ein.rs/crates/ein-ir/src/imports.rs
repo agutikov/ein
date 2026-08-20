@@ -196,7 +196,13 @@ impl Resolver {
         forms: &[NodeId],
         base_dir: Option<&Path>,
     ) -> Result<Vec<NodeId>, LoadError> {
-        self.resolve(ast, forms, base_dir, &mut Vec::new(), &mut ModuleCache::new())
+        self.resolve(
+            ast,
+            forms,
+            base_dir,
+            &mut Vec::new(),
+            &mut ModuleCache::new(),
+        )
     }
 
     fn resolve(
@@ -330,8 +336,7 @@ impl Resolver {
         let mut cache = ModuleCache::new();
         for &form in forms {
             if ast.head_name(form) == Some("import") {
-                let resolved =
-                    self.resolve(ast, &[form], base_dir, &mut Vec::new(), &mut cache)?;
+                let resolved = self.resolve(ast, &[form], base_dir, &mut Vec::new(), &mut cache)?;
                 for f in resolved {
                     tagged.push((f, true));
                 }

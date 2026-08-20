@@ -495,6 +495,27 @@ them inline in a test, made by the corpus rather than by this document.
 Nothing outside `ein-oracle`'s own source now names `Oracle`, `IR_ORACLE` or
 `PY_ORACLE`.
 
+## The lint the stage found on its way out
+
+`cargo fmt --check` — the CI step before `clippy` and `test` — had been **red
+since `04c8b89` (T1a.6.4.0b, 2026-08-19)**, and this stage took it from 15
+hunks to 134 before noticing. Bisected rather than guessed: `f797363` is
+clean, `04c8b89` is 5 hunks, and it climbs one or two files at a time through
+P1a.6's measurement stages — the shape of hand-edits that were never
+formatted, not of a toolchain bump. There is one toolchain on the machine
+(no rustup; Arch `cargo 1.97.1`, `rustfmt 1.9.0`, which is what
+`rust-toolchain.toml` pins), and the same binary that reports 15 hunks at
+`3554b9e` reports 0 at `66f24d5`, so the formatter is CI's.
+
+`cargo fmt` over the workspace: 28 files, +612 −377, and the suite is
+unchanged at 566 — rustfmt does not touch string literals, so no golden
+moved. This is the third instance of the same failure mode in three stages:
+S1a.10.1 found the determinism grep red since S1a.5.4, this stage found
+clippy red on five warnings and `cargo fmt --check` red on fifteen. **A gate
+nobody watches is a gate that is already failing**, and the reason
+[§3.2](oracle_ledger.md#3-the-instruments-that-are-not-tiers) argues for
+tests over scripts applies to CI steps that nobody reads too.
+
 ## What S1a.10.2 did that the ledger had filed under S1a.10.5
 
 [§4](oracle_ledger.md#4-what-the-removal-must-relocate) is a defect list: five

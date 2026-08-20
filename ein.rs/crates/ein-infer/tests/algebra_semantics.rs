@@ -145,12 +145,10 @@ fn run(src: &str) -> Run {
 /// it to.
 #[test]
 fn converse_mirrors_each_edge_into_the_paired_relation() {
-    let r = run(
-        &(algebra("converse")
-            + "(relation r1 T T) (relation r2 T T)
+    let r = run(&(algebra("converse")
+        + "(relation r1 T T) (relation r2 T T)
                (converse r1 r2)
-               (r1 A B :source \"(1)\")"),
-    );
+               (r1 A B :source \"(1)\")"));
     assert!(r.was_derived("(r2 B A)"), "the mirror: {:?}", r.derived);
     assert_eq!(r.extent("r2"), extent(&["(r2 B A)"]), "and nothing else");
 }
@@ -165,12 +163,10 @@ fn converse_mirrors_each_edge_into_the_paired_relation() {
 /// reads, so this is userspace reaching a kernel switch.
 #[test]
 fn imply1_lifts_a_property_marker_onto_a_kernel_trigger() {
-    let r = run(
-        &(algebra("imply1")
-            + "(relation foo T T)
+    let r = run(&(algebra("imply1")
+        + "(relation foo T T)
                (imply1 functional __closed__)
-               (functional foo)"),
-    );
+               (functional foo)"));
     assert!(
         r.was_derived("(__closed__ foo)"),
         "the marker did not lift: {:?}",
@@ -189,13 +185,11 @@ fn imply1_lifts_a_property_marker_onto_a_kernel_trigger() {
 /// become the forward copy.
 #[test]
 fn the_two_arg_implications_copy_forward_and_swap() {
-    let r = run(
-        &(algebra("imply2-fwd imply2-reverse")
-            + "(relation r1 T T) (relation r2 T T) (relation r3 T T)
+    let r = run(&(algebra("imply2-fwd imply2-reverse")
+        + "(relation r1 T T) (relation r2 T T) (relation r3 T T)
                (imply2-fwd r1 r2)
                (imply2-reverse r1 r3)
-               (r1 A B :source \"(1)\")"),
-    );
+               (r1 A B :source \"(1)\")"));
     assert_eq!(r.extent("r2"), extent(&["(r2 A B)"]), "fwd copies");
     assert_eq!(r.extent("r3"), extent(&["(r3 B A)"]), "reverse swaps");
 }
@@ -217,12 +211,10 @@ const LEMMAS: &str = "converse symmetric-is-self-converse self-converse-is-symme
 /// other noticing.
 #[test]
 fn symmetric_and_self_converse_are_interderivable_and_reflective() {
-    let from_symmetric = run(
-        &(algebra(LEMMAS)
-            + "(relation knows T T)
+    let from_symmetric = run(&(algebra(LEMMAS)
+        + "(relation knows T T)
                (symmetric knows)
-               (knows A B :source \"(1)\")"),
-    );
+               (knows A B :source \"(1)\")"));
     assert!(
         from_symmetric.was_derived("(converse knows knows)"),
         "symmetric ⟹ self-converse: {:?}",
@@ -233,12 +225,10 @@ fn symmetric_and_self_converse_are_interderivable_and_reflective() {
         "the derived tag never fired the mirror"
     );
 
-    let from_converse = run(
-        &(algebra(LEMMAS)
-            + "(relation knows T T)
+    let from_converse = run(&(algebra(LEMMAS)
+        + "(relation knows T T)
                (converse knows knows)
-               (knows A B :source \"(1)\")"),
-    );
+               (knows A B :source \"(1)\")"));
     assert!(
         from_converse.was_derived("(symmetric knows)"),
         "self-converse ⟹ symmetric: {:?}",
@@ -261,12 +251,10 @@ fn symmetric_and_self_converse_are_interderivable_and_reflective() {
 /// table never picked up.
 #[test]
 fn converse_is_symmetric_on_its_pair_and_the_back_edge_mirrors() {
-    let r = run(
-        &(algebra(LEMMAS)
-            + "(relation r1 T T) (relation r2 T T)
+    let r = run(&(algebra(LEMMAS)
+        + "(relation r1 T T) (relation r2 T T)
                (converse r1 r2)
-               (r1 A B :source \"(1)\") (r2 C D :source \"(2)\")"),
-    );
+               (r1 A B :source \"(1)\") (r2 C D :source \"(2)\")"));
     assert!(
         r.was_derived("(converse r2 r1)"),
         "the swapped pair: {:?}",
@@ -319,14 +307,12 @@ const TYPECHECK: &str = "converse-illtyped-dom converse-illtyped-ran";
 /// `Color` is neither `Person` nor a subtype of it.
 #[test]
 fn converse_with_incompatible_signatures_derives_false() {
-    let r = run(
-        &(algebra(TYPECHECK)
-            + "(relation house-color House Color)
+    let r = run(&(algebra(TYPECHECK)
+        + "(relation house-color House Color)
                (relation pet-dog Person Pet)
                (converse house-color pet-dog)
                (converse-illtyped-dom house-color pet-dog is-a*)
-               (converse-illtyped-ran house-color pet-dog is-a*)"),
-    );
+               (converse-illtyped-ran house-color pet-dog is-a*)"));
     assert!(r.is_false(), "the ill-typed pairing was accepted");
 }
 
@@ -341,14 +327,12 @@ fn converse_with_incompatible_signatures_derives_false() {
 /// test that goes red if the guard is ever dropped in favour of that reading.
 #[test]
 fn converse_with_exactly_reversed_signatures_is_silent() {
-    let r = run(
-        &(algebra(TYPECHECK)
-            + "(relation right-of House House)
+    let r = run(&(algebra(TYPECHECK)
+        + "(relation right-of House House)
                (relation left-of House House)
                (converse right-of left-of)
                (converse-illtyped-dom right-of left-of is-a*)
-               (converse-illtyped-ran right-of left-of is-a*)"),
-    );
+               (converse-illtyped-ran right-of left-of is-a*)"));
     assert!(!r.is_false(), "an exact reverse was rejected");
 }
 
@@ -395,29 +379,28 @@ fn the_hierarchy_relation_is_genuinely_consulted() {
 /// alongside "the knob does not fire indiscriminately".
 #[test]
 fn the_type_hierarchy_knob_derives_the_per_pair_activators() {
-    let bad = run(
-        &(algebra(TYPECHECK)
-            + &typing("type-hierarchy-converse")
-            + "(relation house-color House Color)
+    let bad = run(&(algebra(TYPECHECK)
+        + &typing("type-hierarchy-converse")
+        + "(relation house-color House Color)
                (relation pet-dog Person Pet)
                (type-hierarchy is-a*)
-               (converse house-color pet-dog)"),
-    );
+               (converse house-color pet-dog)"));
     assert!(
         bad.was_derived("(converse-illtyped-dom house-color pet-dog is-a*)"),
         "the knob derived no activator: {:?}",
         bad.derived
     );
-    assert!(bad.is_false(), "the derived activator never fired the check");
+    assert!(
+        bad.is_false(),
+        "the derived activator never fired the check"
+    );
 
-    let good = run(
-        &(algebra(TYPECHECK)
-            + &typing("type-hierarchy-converse")
-            + "(relation right-of House House)
+    let good = run(&(algebra(TYPECHECK)
+        + &typing("type-hierarchy-converse")
+        + "(relation right-of House House)
                (relation left-of House House)
                (type-hierarchy is-a*)
-               (converse right-of left-of)"),
-    );
+               (converse right-of left-of)"));
     assert!(!good.is_false(), "a well-typed pair was rejected");
 }
 
@@ -432,12 +415,10 @@ fn the_type_hierarchy_knob_derives_the_per_pair_activators() {
 /// the domain side entirely.
 #[test]
 fn reflexive_closes_both_argument_positions() {
-    let r = run(
-        &(typing("derive-reflexive reflexive-dom reflexive-cod")
-            + "(relation is-a* T T)
+    let r = run(&(typing("derive-reflexive reflexive-dom reflexive-cod")
+        + "(relation is-a* T T)
                (reflexive is-a*)
-               (is-a* House-1 House :source \"(e)\")"),
-    );
+               (is-a* House-1 House :source \"(e)\")"));
     assert_eq!(
         r.extent("is-a*"),
         extent(&[
@@ -459,12 +440,10 @@ fn reflexive_closes_both_argument_positions() {
 /// `(two-right A B)` and the rest of the cross product alongside it.
 #[test]
 fn compose_chains_two_relations() {
-    let r = run(
-        &(algebra("compose")
-            + "(compose right-of right-of two-right)
+    let r = run(&(algebra("compose")
+        + "(compose right-of right-of two-right)
                (right-of A B :source \"(1)\")
-               (right-of B C :source \"(2)\")"),
-    );
+               (right-of B C :source \"(2)\")"));
     assert_eq!(
         r.extent("two-right"),
         extent(&["(two-right A C)"]),
@@ -483,11 +462,9 @@ fn compose_chains_two_relations() {
 /// would add.
 #[test]
 fn compose_into_self_is_the_transitive_closure() {
-    let r = run(
-        &(algebra("compose")
-            + "(compose lt lt lt)
-               (lt A B :source \"(1)\") (lt B C :source \"(2)\") (lt C D :source \"(3)\")"),
-    );
+    let r = run(&(algebra("compose")
+        + "(compose lt lt lt)
+               (lt A B :source \"(1)\") (lt B C :source \"(2)\") (lt C D :source \"(3)\")"));
     assert_eq!(
         r.extent("lt"),
         extent(&[
@@ -507,11 +484,9 @@ fn compose_into_self_is_the_transitive_closure() {
 /// by comparing the extent rather than by spot-checking one missing pair.
 #[test]
 fn identity_materialises_the_diagonal_of_the_extent() {
-    let r = run(
-        &(algebra("identity")
-            + "(is-a H1 House) (is-a H2 House)
-               (identity same is-a House)"),
-    );
+    let r = run(&(algebra("identity")
+        + "(is-a H1 House) (is-a H2 House)
+               (identity same is-a House)"));
     assert_eq!(
         r.extent("same"),
         extent(&["(same H1 H1)", "(same H2 H2)"]),
@@ -530,12 +505,10 @@ fn identity_materialises_the_diagonal_of_the_extent() {
 /// the private one — which only an extent comparison notices.
 #[test]
 fn meet_is_intersection() {
-    let r = run(
-        &(algebra("meet")
-            + "(meet owns rents both)
+    let r = run(&(algebra("meet")
+        + "(meet owns rents both)
                (owns A B :source \"(1)\") (owns A C :source \"(2)\")
-               (rents A B :source \"(3)\") (rents X Y :source \"(4)\")"),
-    );
+               (rents A B :source \"(3)\") (rents X Y :source \"(4)\")"));
     assert_eq!(
         r.extent("both"),
         extent(&["(both A B)"]),
@@ -554,12 +527,10 @@ fn meet_is_intersection() {
 /// subtraction.
 #[test]
 fn difference_is_set_minus() {
-    let r = run(
-        &(algebra("difference")
-            + "(difference owns rents only-owns)
+    let r = run(&(algebra("difference")
+        + "(difference owns rents only-owns)
                (owns A B :source \"(1)\") (owns A C :source \"(2)\")
-               (rents A B :source \"(3)\")"),
-    );
+               (rents A B :source \"(3)\")"));
     assert_eq!(
         r.extent("only-owns"),
         extent(&["(only-owns A C)"]),
@@ -579,12 +550,10 @@ fn difference_is_set_minus() {
 /// mechanism and the union is only its consequence.
 #[test]
 fn join_fans_out_into_copiers_that_then_union() {
-    let r = run(
-        &(algebra("derive-join join-l join-r")
-            + "(join owns rents has)
+    let r = run(&(algebra("derive-join join-l join-r")
+        + "(join owns rents has)
                (owns A B :source \"(1)\")
-               (rents C D :source \"(2)\")"),
-    );
+               (rents C D :source \"(2)\")"));
     assert!(
         r.was_derived("(join-l owns rents has)") && r.was_derived("(join-r owns rents has)"),
         "the fan-out did not happen: {:?}",
@@ -626,12 +595,10 @@ fn empty_fires_on_any_edge_of_its_own_relation_only() {
 /// is the claim — "every pair" is not observable from one pair.
 #[test]
 fn top_fills_the_rectangle() {
-    let r = run(
-        &(algebra("top")
-            + "(is-a A1 Dom) (is-a A2 Dom)
+    let r = run(&(algebra("top")
+        + "(is-a A1 Dom) (is-a A2 Dom)
                (is-a B1 Ran)
-               (top all is-a Dom Ran)"),
-    );
+               (top all is-a Dom Ran)"));
     assert_eq!(
         r.extent("all"),
         extent(&["(all A1 B1)", "(all A2 B1)"]),
@@ -649,13 +616,11 @@ fn top_fills_the_rectangle() {
 /// sound only while `R` is saturation-determined.
 #[test]
 fn complement_materialises_exactly_the_absent_pairs() {
-    let r = run(
-        &(algebra("complement")
-            + "(is-a A1 Dom) (is-a A2 Dom)
+    let r = run(&(algebra("complement")
+        + "(is-a A1 Dom) (is-a A2 Dom)
                (is-a B1 Ran) (is-a B2 Ran)
                (r A1 B1 :source \"(1)\")
-               (complement r co-r is-a Dom Ran)"),
-    );
+               (complement r co-r is-a Dom Ran)"));
     assert_eq!(
         r.extent("co-r"),
         extent(&["(co-r A1 B2)", "(co-r A2 B1)", "(co-r A2 B2)"]),
@@ -693,11 +658,9 @@ fn irreflexive_rejects_a_self_loop_and_passes_a_plain_edge() {
 /// still passes while the second goes red.
 #[test]
 fn antisymmetric_rejects_a_distinct_mutual_pair_but_allows_a_self_loop() {
-    let mutual = run(
-        &(algebra("antisymmetric")
-            + "(antisymmetric r)
-               (r A B :source \"(1)\") (r B A :source \"(2)\")"),
-    );
+    let mutual = run(&(algebra("antisymmetric")
+        + "(antisymmetric r)
+               (r A B :source \"(1)\") (r B A :source \"(2)\")"));
     assert!(mutual.is_false(), "a distinct mutual pair was accepted");
 
     let loop_only = run(&(algebra("antisymmetric") + "(antisymmetric r)\n(r A A :source \"(1)\")"));
@@ -733,19 +696,15 @@ fn asymmetric_rejects_the_self_loop_antisymmetry_allows() {
 /// which is the opposite of what connexity means.
 #[test]
 fn connex_rejects_an_incomparable_pair_and_accepts_one_orientation() {
-    let incomparable = run(
-        &(algebra("connex")
-            + "(is-a A Dom) (is-a B Dom)
-               (connex r is-a Dom)"),
-    );
+    let incomparable = run(&(algebra("connex")
+        + "(is-a A Dom) (is-a B Dom)
+               (connex r is-a Dom)"));
     assert!(incomparable.is_false(), "an incomparable pair was accepted");
 
-    let comparable = run(
-        &(algebra("connex")
-            + "(is-a A Dom) (is-a B Dom)
+    let comparable = run(&(algebra("connex")
+        + "(is-a A Dom) (is-a B Dom)
                (connex r is-a Dom)
-               (r A B :source \"(1)\")"),
-    );
+               (r A B :source \"(1)\")"));
     assert!(
         !comparable.is_false(),
         "one orientation should already make the pair comparable"
@@ -762,11 +721,9 @@ fn connex_rejects_an_incomparable_pair_and_accepts_one_orientation() {
 /// rows equal, and the extent is the only way to say that.
 #[test]
 fn difunctional_closes_overlapping_rows() {
-    let r = run(
-        &(algebra("difunctional")
-            + "(difunctional r)
-               (r A B :source \"(1)\") (r C B :source \"(2)\") (r C D :source \"(3)\")"),
-    );
+    let r = run(&(algebra("difunctional")
+        + "(difunctional r)
+               (r A B :source \"(1)\") (r C B :source \"(2)\") (r C D :source \"(3)\")"));
     assert_eq!(
         r.extent("r"),
         extent(&["(r A B)", "(r A D)", "(r C B)", "(r C D)"]),
@@ -787,12 +744,10 @@ fn difunctional_closes_overlapping_rows() {
 /// declaration rather than something `(compose …)` implies.
 #[test]
 fn schroder_reads_a_missing_composite_back_into_the_right_factor() {
-    let r = run(
-        &(algebra("compose-negative-s")
-            + "(compose-negative-s right-of right-of two-right)
+    let r = run(&(algebra("compose-negative-s")
+        + "(compose-negative-s right-of right-of two-right)
                (right-of A B :source \"(1)\")
-               (not (two-right A C) :source \"(2)\")"),
-    );
+               (not (two-right A C) :source \"(2)\")"));
     assert!(
         r.was_derived("(not (right-of B C))"),
         "¬T(A,C) ∧ R(A,B) should give ¬S(B,C): {:?}",
@@ -811,12 +766,10 @@ fn schroder_reads_a_missing_composite_back_into_the_right_factor() {
 /// factor.
 #[test]
 fn schroder_reads_a_missing_composite_back_into_the_left_factor() {
-    let r = run(
-        &(algebra("compose-negative-r")
-            + "(compose-negative-r right-of right-of two-right)
+    let r = run(&(algebra("compose-negative-r")
+        + "(compose-negative-r right-of right-of two-right)
                (right-of B C :source \"(1)\")
-               (not (two-right A C) :source \"(2)\")"),
-    );
+               (not (two-right A C) :source \"(2)\")"));
     assert!(
         r.was_derived("(not (right-of A B))"),
         "¬T(A,C) ∧ S(B,C) should give ¬R(A,B): {:?}",
@@ -834,11 +787,9 @@ fn schroder_reads_a_missing_composite_back_into_the_left_factor() {
 /// spelling is asserted absent rather than left unmentioned.
 #[test]
 fn contravariance_derives_the_converse_composite_as_a_new_activator() {
-    let r = run(
-        &(algebra("compose converse compose-contravariant")
-            + "(compose r s t)
-               (converse r rc) (converse s sc) (converse t tc)"),
-    );
+    let r = run(&(algebra("compose converse compose-contravariant")
+        + "(compose r s t)
+               (converse r rc) (converse s sc) (converse t tc)"));
     assert!(
         r.was_derived("(compose sc rc tc)"),
         "B7 should reverse the operands: {:?}",

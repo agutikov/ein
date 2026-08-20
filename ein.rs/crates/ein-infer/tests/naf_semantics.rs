@@ -137,7 +137,10 @@ impl Run {
         let f = self
             .fact(rel, args)
             .unwrap_or_else(|| panic!("({rel} {args:?}) was never derived"));
-        let p = self.kb.primary(f).expect("a derived fact has a primary record");
+        let p = self
+            .kb
+            .primary(f)
+            .expect("a derived fact has a primary record");
         self.terms
             .provs
             .get(p)
@@ -308,7 +311,9 @@ fn merging_a_fork_fact_into_root_kills_a_consistent_world() {
     let (ast, mut terms, mut kb) = load_src(PROBE);
     // Root' = root + (y s), under a synthetic rule provenance — exactly the
     // shape the extraction wrote.
-    let rule = terms.intern_text("<retired-merge-simulation>").expect("room");
+    let rule = terms
+        .intern_text("<retired-merge-simulation>")
+        .expect("room");
     let y = terms.intern_text("y").expect("room");
     let s_arg = Value::sym(terms.intern_text("s").expect("room"));
     let prov = terms.provs.push(Prov::from_rule(rule, Box::new([]), None));
@@ -394,15 +399,7 @@ fn a_naf_search_never_writes_a_fork_fact_to_root() {
         }),
         ..SolveOptions::default()
     };
-    let solved = solve(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &mut ev,
-        &mut NoDumper,
-        &opts,
-    )
-    .expect("solves");
+    let solved = solve(&mut kb, &mut terms, &ast, &mut ev, &mut NoDumper, &opts).expect("solves");
 
     assert!(
         solved.stats.base.enterings_dead_post >= 2,
@@ -610,7 +607,10 @@ fn an_or_disjuncts_guard_is_judged_on_the_boundary() {
         "(r2 A) is in the quiesced world the guard is judged against, so the \
          second disjunct must not be admitted"
     );
-    assert_eq!(run.naf_dropped, 0, "admitted and dropped, not never-admitted");
+    assert_eq!(
+        run.naf_dropped, 0,
+        "admitted and dropped, not never-admitted"
+    );
 }
 
 // ── The closure a guard is judged against ──────────────────────────
@@ -922,7 +922,10 @@ fn matching_does_not_resolve_equality_classes() {
             equivalent = kb.classes().equivalent(a, c);
         },
     );
-    assert!(equivalent, "the union did not take, so nothing is being tested");
+    assert!(
+        equivalent,
+        "the union did not take, so nothing is being tested"
+    );
     assert!(
         run.extent("found").is_empty(),
         "a scan for (r C ?y) matched the stored (r A B) — the unifier now \
@@ -1044,7 +1047,10 @@ fn a_guard_free_rule_parks_nothing() {
          (relation seed T)\n(relation r T)\n(relation ok T)\n(seed A :source \"(1)\")\n",
     );
     assert_eq!(guarded.extent("ok"), ["(ok A)"]);
-    assert!(guarded.naf_rounds >= 1, "one guard and still no boundary round");
+    assert!(
+        guarded.naf_rounds >= 1,
+        "one guard and still no boundary round"
+    );
     assert!(guarded.guard_evals >= 1);
     assert_eq!(guarded.naf_admitted, 1);
 }
@@ -1088,9 +1094,7 @@ fn open_admits_exactly_the_undecided_pairs() {
          ordered pair is undecided, and `neq` removes the diagonal"
     );
 
-    let empty = saturate(&format!(
-        "{rule}(is-a Alice Person)\n(is-a Bob Person)\n"
-    ));
+    let empty = saturate(&format!("{rule}(is-a Alice Person)\n(is-a Bob Person)\n"));
     assert_eq!(
         empty.extent("open-likes"),
         ["(open-likes Alice Bob)", "(open-likes Bob Alice)"],

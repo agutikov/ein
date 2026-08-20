@@ -232,9 +232,7 @@ fn skip_trivia_from(src: &str, mut c: Cursor) -> Cursor {
             // task asks for, without a dependency for it. A comment is the one
             // long run in the file, and it cannot contain a newline, so an
             // ASCII one is three additions rather than forty.
-            let end = src[c.pos..]
-                .find('\n')
-                .map_or(src.len(), |rel| c.pos + rel);
+            let end = src[c.pos..].find('\n').map_or(src.len(), |rel| c.pos + rel);
             let span = &src[c.pos..end];
             if span.is_ascii() {
                 c.pos = end;

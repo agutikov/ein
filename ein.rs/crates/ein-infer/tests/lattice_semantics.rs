@@ -56,7 +56,7 @@ use ein_infer::solve::{
     SolveOptions, Solved, solve,
 };
 use ein_infer::verdict::{Answer, Verdict, goal_bindings};
-use ein_infer::{Events, SharedMemo, Session};
+use ein_infer::{Events, Session, SharedMemo};
 use ein_ir::{Ast, load_file, parse};
 use ein_render::dump::LatticeDumper;
 
@@ -270,7 +270,11 @@ fn each_solved_corpus_file(mut f: impl FnMut(&Run)) -> Census {
 /// What [`each_solved_corpus_file`] must find, so that a shrinking sweep fails
 /// rather than passing on fewer files.
 fn assert_census(c: &Census) {
-    assert!(c.checked >= 55, "the sweep reached only {} files", c.checked);
+    assert!(
+        c.checked >= 55,
+        "the sweep reached only {} files",
+        c.checked
+    );
     assert!(
         c.uncompilable <= 6,
         "{} corpus files no longer compile",
@@ -335,7 +339,10 @@ fn the_verdict_core_is_the_union_of_the_dead_cores() {
     ] {
         let r = run(rel, m);
         let Answer::Verdict(Verdict::Contradiction { unsat_core }) = &r.solved.answer else {
-            panic!("{rel} is supposed to be a Contradiction, not {}", r.answer());
+            panic!(
+                "{rel} is supposed to be a Contradiction, not {}",
+                r.answer()
+            );
         };
         let union: BTreeSet<String> = r
             .proof()
@@ -426,20 +433,15 @@ fn a_satisfiable_puzzle_still_carries_its_refutations() {
 #[test]
 fn the_learned_nogoods_mirror_roots_store_at_return() {
     let r = run("examples/branching/04_two_levels.ein", 3);
-    let recorded: BTreeSet<Vec<String>> = r
-        .proof()
-        .learned_nogoods
-        .iter()
-        .map(|c| r.set(c))
-        .collect();
-    let store: BTreeSet<Vec<String>> = r
-        .kb
-        .nogoods()
-        .read()
-        .expect("the no-good store")
-        .iter()
-        .map(|c| r.set(c))
-        .collect();
+    let recorded: BTreeSet<Vec<String>> =
+        r.proof().learned_nogoods.iter().map(|c| r.set(c)).collect();
+    let store: BTreeSet<Vec<String>> =
+        r.kb.nogoods()
+            .read()
+            .expect("the no-good store")
+            .iter()
+            .map(|c| r.set(c))
+            .collect();
     assert_eq!(recorded, store, "the proof and the store disagree");
     assert!(!r.proof().dead_commitments.is_empty());
     assert!(
@@ -536,7 +538,10 @@ fn the_root_is_a_solution_node_when_nothing_is_open() {
     assert_eq!(r.answer(), "Solution");
     assert_eq!(r.stats().solution_nodes, 1, "k");
     assert_eq!(r.stats().base.enterings_total, 0, "nothing was entered");
-    assert!(r.stats().exhausted, "and the lattice was exhausted, trivially");
+    assert!(
+        r.stats().exhausted,
+        "and the lattice was exhausted, trivially"
+    );
     assert_eq!(r.proof().solutions.len(), 1);
     let rec = &r.proof().solutions[0];
     assert!(rec.commitment.is_empty(), "root commits to nothing");
@@ -560,7 +565,8 @@ fn the_proofs_counters_track_its_contents_on_every_corpus_file() {
             "solutions_found disagrees with the record"
         );
         assert_eq!(
-            p.stats.solutions_found, r.stats().solution_nodes,
+            p.stats.solutions_found,
+            r.stats().solution_nodes,
             "the proof's k disagrees with the run's"
         );
         if r.stats().base.enterings_total >= 1 {
@@ -750,18 +756,14 @@ fn a_dumper_with_no_output_directory_writes_nothing_and_still_hears_everything()
     };
     let opts = options(3, None);
     let mut events = Events::off();
-    let solved = solve(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &mut events,
-        &mut counting,
-        &opts,
-    )
-    .expect("the fixture solves");
+    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut counting, &opts)
+        .expect("the fixture solves");
     counting.close();
 
-    assert!(solved.proof.is_some(), "the verdict still carries its proof");
+    assert!(
+        solved.proof.is_some(),
+        "the verdict still carries its proof"
+    );
     let fired: BTreeSet<&str> = counting.hooks.keys().copied().collect();
     assert_eq!(
         fired,
@@ -1030,7 +1032,10 @@ fn a_solution_record_carries_its_commitment_layer_and_firings() {
     assert_eq!(r.proof().solutions.len(), 2);
     for i in 0..2 {
         let rec = &r.proof().solutions[i];
-        assert!(!rec.commitment.is_empty(), "a model that committed to nothing");
+        assert!(
+            !rec.commitment.is_empty(),
+            "a model that committed to nothing"
+        );
         assert!(rec.layer >= 1, "a branch model at root's layer");
         assert!(!rec.firings.is_empty(), "a model that derived nothing");
         assert!(
@@ -1100,8 +1105,15 @@ fn check(
     commitment: &[FactId],
 ) -> Option<ein_infer::sanity::SanityError> {
     let mut events = Events::off();
-    check_commutativity(kb, terms, ast, &mut events, &SharedMemo::default(), commitment)
-        .expect("the check saturates")
+    check_commutativity(
+        kb,
+        terms,
+        ast,
+        &mut events,
+        &SharedMemo::default(),
+        commitment,
+    )
+    .expect("the check saturates")
 }
 
 /// **the-sanity-check-passes-on-every-monotone-fixture.** The premise the
@@ -1294,7 +1306,10 @@ fn a_commutativity_violation_names_the_commitment_and_both_keys() {
         "parent paths",
         "('q', ('X',))",
     ] {
-        assert!(rendered.contains(want), "the message omits {want:?}:\n{rendered}");
+        assert!(
+            rendered.contains(want),
+            "the message omits {want:?}:\n{rendered}"
+        );
     }
 
     // End to end.
@@ -1350,9 +1365,8 @@ fn score_sum_orders_by_popularity_and_lex_does_not() {
         .iter()
         .map(|r| vec![unary(&mut terms, r, "X")])
         .collect();
-    let show = |v: &[Vec<FactId>]| -> Vec<String> {
-        v.iter().map(|c| sexpr(&terms, c[0])).collect()
-    };
+    let show =
+        |v: &[Vec<FactId>]| -> Vec<String> { v.iter().map(|c| sexpr(&terms, c[0])).collect() };
     let lex = order_candidates(&kb, &terms, &candidates, "lex").expect("lex orders");
     let scored = order_candidates(&kb, &terms, &candidates, "score-sum").expect("score-sum orders");
     assert_eq!(show(&lex), ["(p X)", "(q X)"], "lex is the tuple sort");
@@ -1498,7 +1512,10 @@ fn every_dead_record_is_well_formed() {
             .filter(|d| d.commitment.is_empty())
         {
             assert!(d.learned_clause.is_empty(), "{rel}: the root dead learned");
-            assert!(!d.unsat_core.is_empty(), "{rel}: the root dead blames nothing");
+            assert!(
+                !d.unsat_core.is_empty(),
+                "{rel}: the root dead blames nothing"
+            );
             assert_eq!(d.layer, 0);
         }
     }
@@ -1555,7 +1572,11 @@ fn the_proof_is_coherent_on_every_corpus_file() {
             "the dead counters and the dead records disagree"
         );
         assert_eq!(p.stats.solutions_found as usize, p.solutions.len());
-        for d in p.dead_commitments.iter().filter(|d| !d.commitment.is_empty()) {
+        for d in p
+            .dead_commitments
+            .iter()
+            .filter(|d| !d.commitment.is_empty())
+        {
             assert!(!d.unsat_core.is_empty(), "a core-less refutation");
             assert_eq!(
                 r.set(&d.learned_clause),
@@ -1572,7 +1593,10 @@ fn the_proof_is_coherent_on_every_corpus_file() {
             );
         }
         for c in &p.alive_at_end {
-            assert!(!c.is_empty(), "the empty commitment survived to the frontier");
+            assert!(
+                !c.is_empty(),
+                "the empty commitment survived to the frontier"
+            );
         }
     });
     assert_census(&checked);
@@ -1600,7 +1624,11 @@ fn the_refutation_half_of_the_record_is_shuffle_invariant() {
         let base = run(rel, 3);
         for seed in [1i64, 7, 42] {
             let shuffled = run_file(rel, 3, |c| c.lattice_order_seed = Some(seed));
-            assert_eq!(shuffled.answer(), base.answer(), "{rel}/{seed}: the verdict");
+            assert_eq!(
+                shuffled.answer(),
+                base.answer(),
+                "{rel}/{seed}: the verdict"
+            );
             assert_eq!(
                 shuffled.stats().solution_nodes,
                 base.stats().solution_nodes,

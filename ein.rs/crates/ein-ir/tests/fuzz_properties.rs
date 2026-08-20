@@ -62,7 +62,9 @@ fn round_trip(text: &str) -> Option<Result<(), String>> {
             if twice == once {
                 Ok(())
             } else {
-                Err(format!("not a fixed point:\n--- once\n{once}\n--- twice\n{twice}"))
+                Err(format!(
+                    "not a fixed point:\n--- once\n{once}\n--- twice\n{twice}"
+                ))
             }
         }
     })

@@ -52,8 +52,14 @@ fn main() {
         .collect();
     let cases: Vec<Case<'_>> = if files.is_empty() {
         vec![
-            ("examples/zebra2.ein", vec![("fast", Some(1)), ("exhaustive", None)]),
-            ("examples/zebra.ein", vec![("fast", Some(1)), ("exhaustive", None)]),
+            (
+                "examples/zebra2.ein",
+                vec![("fast", Some(1)), ("exhaustive", None)],
+            ),
+            (
+                "examples/zebra.ein",
+                vec![("fast", Some(1)), ("exhaustive", None)],
+            ),
         ]
     } else {
         files

@@ -153,7 +153,11 @@ impl Arena {
     fn get(&self, i: u32) -> &Entry {
         let n = self.base.len();
         let i = i as usize;
-        if i < n { &self.base[i] } else { &self.local[i - n] }
+        if i < n {
+            &self.base[i]
+        } else {
+            &self.local[i - n]
+        }
     }
 
     #[inline]

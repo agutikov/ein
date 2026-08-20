@@ -114,7 +114,9 @@ fn fact(terms: &mut Terms, rel: &str, args: &[&str]) -> FactId {
     let r = terms.intern_text(rel).expect("room for a relation name");
     let mut vals = Vec::with_capacity(args.len());
     for a in args {
-        vals.push(Value::sym(terms.intern_text(a).expect("room for an argument")));
+        vals.push(Value::sym(
+            terms.intern_text(a).expect("room for an argument"),
+        ));
     }
     terms.intern_fact(r, &vals).expect("room for a fact")
 }
@@ -153,7 +155,10 @@ fn primary_kind(kb: &Kb, terms: &Terms, f: FactId) -> Option<ProvKind> {
 /// reading of the OR-node — `_union_core` in the Python original, which took
 /// the `Primary` reading by default.
 fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> {
-    let w: Vec<FactId> = detect(kb, terms).iter().map(Contradiction::witness).collect();
+    let w: Vec<FactId> = detect(kb, terms)
+        .iter()
+        .map(Contradiction::witness)
+        .collect();
     unsat_core(kb, terms, &w, how).into_iter().collect()
 }
 
@@ -342,7 +347,10 @@ fn layer_1_of_an_empty_alive_set_is_empty() {
     let none: FxHashSet<FactId> = FxHashSet::default();
     let out = layer_1(&terms, &none);
     assert!(out.is_empty(), "got {out:?}");
-    assert!(!out.contains(&Vec::new()), "the empty commitment is not a candidate");
+    assert!(
+        !out.contains(&Vec::new()),
+        "the empty commitment is not a candidate"
+    );
 
     let some: FxHashSet<FactId> = [c, a, b].into_iter().collect();
     assert_eq!(
@@ -666,7 +674,12 @@ fn mutual_negation_is_detected_whatever_either_sides_origin() {
     saturate(&ast, &mut terms, &mut kb);
 
     let found = detect(&kb, &terms);
-    assert_eq!(found.len(), 2, "{:?}", sexprs(&terms, found.iter().map(|c| c.negative)));
+    assert_eq!(
+        found.len(),
+        2,
+        "{:?}",
+        sexprs(&terms, found.iter().map(|c| c.negative))
+    );
     assert_eq!(
         sexprs(&terms, found.iter().filter_map(|c| c.positive)),
         ["(sits A S1)", "(sits B S1)"]
@@ -893,7 +906,12 @@ fn the_demo_directory_layout_is_eight_rules_times_three_scenarios() {
         .expect("examples/saturation")
         .map(|e| e.expect("dir entry").path())
         .filter(|p| p.is_dir())
-        .map(|p| p.file_name().expect("a name").to_string_lossy().into_owned())
+        .map(|p| {
+            p.file_name()
+                .expect("a name")
+                .to_string_lossy()
+                .into_owned()
+        })
         .collect();
     dirs.sort();
     assert_eq!(dirs, DEMO_RULES);
@@ -1068,7 +1086,10 @@ fn a_derived_negative_kills_against_a_positive_of_any_origin() {
 fn a_kb_with_no_rules_never_kills() {
     let src = "(relation co-located T T)\n";
     let (_ast, _terms, kb) = kb_of(src);
-    assert!(kb.program().rules.is_empty(), "the fixture declares no rules");
+    assert!(
+        kb.program().rules.is_empty(),
+        "the fixture declares no rules"
+    );
     assert!(!dies(src, "co-located", &["A", "B"]));
 }
 
@@ -1260,7 +1281,10 @@ fn turning_alternative_recording_off_restores_the_primary_only_frontier() {
     );
 
     let (_ast, terms, kb) = saturated(&src);
-    assert!(kb.has_alternative_justifications(), "the control records them");
+    assert!(
+        kb.has_alternative_justifications(),
+        "the control records them"
+    );
     assert_eq!(
         rel_names(&terms, &smallest_contradiction_frontier(&kb, &terms, None)),
         ["C", "Y"]
@@ -1302,7 +1326,10 @@ fn candidates(src: &str) -> (BTreeSet<String>, Vec<String>, HypGenStats) {
 fn query_relation_keyword_accepts_a_bare_symbol() {
     let goal = "(query :goal (co-located A B)";
     for (bare, list) in [
-        (":hypothesis-relations co-located)", ":hypothesis-relations (co-located))"),
+        (
+            ":hypothesis-relations co-located)",
+            ":hypothesis-relations (co-located))",
+        ),
         (":no-hypothesis likes)", ":no-hypothesis (likes))"),
     ] {
         let (bare_facts, bare_rels, _) = candidates(&format!("{TWO_REL}{goal} {bare}"));
@@ -1517,18 +1544,21 @@ fn the_blind_model_is_a_total_bijection() {
         panic!("expected a Solution, got {}", solved.answer.as_str());
     };
     let color_of: Symbol = terms.syms.get("color-of").expect("interned");
-    let cells: Vec<(String, String)> = s
-        .kb
-        .facts_of(color_of)
-        .map(|f| {
-            let args = terms.facts.args(f);
-            assert_eq!(args.len(), 2, "color-of is binary");
-            let name = |v: Value| terms.sym(v.as_sym().expect("a symbol")).to_string();
-            (name(args[0]), name(args[1]))
-        })
-        .collect();
+    let cells: Vec<(String, String)> =
+        s.kb.facts_of(color_of)
+            .map(|f| {
+                let args = terms.facts.args(f);
+                assert_eq!(args.len(), 2, "color-of is binary");
+                let name = |v: Value| terms.sym(v.as_sym().expect("a symbol")).to_string();
+                (name(args[0]), name(args[1]))
+            })
+            .collect();
 
-    assert_eq!(cells.len(), 3, "a bijection has exactly 3 positives: {cells:?}");
+    assert_eq!(
+        cells.len(),
+        3,
+        "a bijection has exactly 3 positives: {cells:?}"
+    );
     let houses: BTreeSet<&str> = cells.iter().map(|(h, _)| h.as_str()).collect();
     let colours: BTreeSet<&str> = cells.iter().map(|(_, c)| c.as_str()).collect();
     assert_eq!(houses, ["H1", "H2", "H3"].into_iter().collect());

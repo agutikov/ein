@@ -549,7 +549,11 @@ impl Matcher {
         // tuple, and no two facts share one. So the candidate sequence is the
         // same one-or-none sequence, with the same `FactId` in `prems`.
         #[cfg(test)]
-        let ground = if self.no_probe { GroundArgs::Open } else { self.ground_args(c, plan, step.slots) };
+        let ground = if self.no_probe {
+            GroundArgs::Open
+        } else {
+            self.ground_args(c, plan, step.slots)
+        };
         #[cfg(not(test))]
         let ground = self.ground_args(c, plan, step.slots);
         match ground {

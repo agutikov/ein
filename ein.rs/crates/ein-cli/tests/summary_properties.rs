@@ -244,8 +244,7 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
             // `=` forms, no rule, no hypothesis that ever completes, and a
             // depth cap that cuts at layer 5 with every commitment still
             // alive. Nothing died, so nothing is blamed.
-            let deaths =
-                u(&s, "stats.enterings_dead_pre") + u(&s, "stats.enterings_dead_post");
+            let deaths = u(&s, "stats.enterings_dead_pre") + u(&s, "stats.enterings_dead_post");
             check(
                 "an unsat core is reported for nothing but a Contradiction",
                 core == 0 || kind == "Contradiction",

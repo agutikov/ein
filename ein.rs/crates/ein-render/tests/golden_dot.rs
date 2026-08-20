@@ -164,9 +164,10 @@ fn the_zebra_unified_golden_reproduces() {
     // `base_dir = None`, as ein.py's fixture does: `std.*` imports resolve
     // regardless, and nothing the renderer prints carries a file name.
     let (_ast, terms, kb) = loaded(&text);
-    let want =
-        std::fs::read_to_string(repo_root().join("ein.rs/crates/ein-render/tests/golden/from_ein_py/kb_zebra_unified.dot"))
-            .expect("the golden is checked in");
+    let want = std::fs::read_to_string(
+        repo_root().join("ein.rs/crates/ein-render/tests/golden/from_ein_py/kb_zebra_unified.dot"),
+    )
+    .expect("the golden is checked in");
     assert_eq!(
         ein_render::kb_to_dot(&kb, &terms, &KbDotOpts::default()),
         want

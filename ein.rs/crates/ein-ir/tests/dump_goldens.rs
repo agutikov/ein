@@ -28,8 +28,14 @@ fn parse_file(ast: &mut Ast, path: &std::path::Path) -> Vec<ein_ir::NodeId> {
 fn the_goldens_are_reproduced() {
     let root = repo_root();
     for (source, golden) in [
-        ("examples/zebra2.ein", "ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra2.golden"),
-        ("examples/zebra.ein", "ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra.golden"),
+        (
+            "examples/zebra2.ein",
+            "ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra2.golden",
+        ),
+        (
+            "examples/zebra.ein",
+            "ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra.golden",
+        ),
     ] {
         let mut ast = Ast::new();
         let forms = parse_file(&mut ast, &root.join(source));

@@ -113,15 +113,8 @@ fn solve_logged(rel: &str, store_lattice: bool, seed: Option<i64>) -> (Run, Stri
         }),
         ..SolveOptions::default()
     };
-    let solved = solve(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &mut events,
-        &mut NoDumper,
-        &opts,
-    )
-    .expect("solves");
+    let solved =
+        solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts).expect("solves");
     let log = buffer.to_string_lossy();
     (
         Run {
@@ -192,7 +185,10 @@ fn a_shuffled_traversal_draws_the_same_lattice() {
 fn the_lattice_keeps_a_refuted_commitment_in_a_satisfiable_puzzle() {
     let solutions = solve_file("examples/branching/04_two_levels.ein", true, None);
     let dot = solutions.lattice(LatticeView::Solution);
-    assert!(dot.starts_with("digraph lattice {"), "not a lattice digraph");
+    assert!(
+        dot.starts_with("digraph lattice {"),
+        "not a lattice digraph"
+    );
     assert!(dot.contains(SOLUTION_GREEN), "no solution cell is green");
 
     let pruned = solve_file("examples/lattice/01_subset_pruned.ein", true, None);
@@ -293,7 +289,10 @@ fn only_a_step_event_is_a_box_the_rest_are_ellipses() {
   (symmetry-class sc1))",
     );
     let dot = render_trace(&ast, forms[0], TraceView::PerStep);
-    assert!(dot.contains("\"s1\" [shape=box, label=\"step: s1\"];"), "{dot}");
+    assert!(
+        dot.contains("\"s1\" [shape=box, label=\"step: s1\"];"),
+        "{dot}"
+    );
     for (id, kind) in [
         ("b1", "branch-open"),
         ("b2", "branch-close"),
@@ -301,7 +300,9 @@ fn only_a_step_event_is_a_box_the_rest_are_ellipses() {
         ("sc1", "symmetry-class"),
     ] {
         assert!(
-            dot.contains(&format!("\"{id}\" [shape=ellipse, label=\"{kind}: {id}\"];")),
+            dot.contains(&format!(
+                "\"{id}\" [shape=ellipse, label=\"{kind}: {id}\"];"
+            )),
             "{kind} is not an ellipse labelled by its kind:\n{dot}"
         );
     }
@@ -367,8 +368,14 @@ fn a_wildcard_or_variable_pattern_head_still_labels_its_edge() {
         "the rule parameter did not become the edge label:\n{var}"
     );
     // Variable endpoints keep their `?` names — they are the nodes, not holes.
-    assert!(var.contains("\"?a\" [label=\"?a\", shape=diamond];"), "{var}");
-    assert!(var.contains("\"?b\" [label=\"?b\", shape=diamond];"), "{var}");
+    assert!(
+        var.contains("\"?a\" [label=\"?a\", shape=diamond];"),
+        "{var}"
+    );
+    assert!(
+        var.contains("\"?b\" [label=\"?b\", shape=diamond];"),
+        "{var}"
+    );
 }
 
 /// **mode-names-alias-and-an-unknown-one-is-refused** (absorbs
@@ -485,7 +492,10 @@ fn render_rules_is_a_static_view_of_the_forms_the_file_itself_holds() {
     let (empty_ast, empty_forms) = parsed("(relation r A B)\n(r a b :source \"(1)\")");
     let none = rule_forms(&empty_ast, &empty_forms);
     assert!(none.is_empty());
-    assert_eq!(render_rules_forms(&empty_ast, &none, RuleMode::SideBySide), "");
+    assert_eq!(
+        render_rules_forms(&empty_ast, &none, RuleMode::SideBySide),
+        ""
+    );
 }
 
 /// **cli-render-rule-by-name.** `--name X` draws X alone, and `--rule-mode
@@ -505,13 +515,23 @@ fn a_rule_renders_by_name_and_the_overlay_drops_the_panels() {
     let rule = rule_named(&ast, &forms, "co-located").expect("zebra2 defines co-located inline");
 
     let side = render_rule_form(&ast, rule, RuleMode::SideBySide);
-    assert!(side.starts_with("digraph rule_co_located_lhs_rhs {"), "{side}");
-    assert_eq!(side.matches("digraph ").count(), 1, "more than one rule drawn");
+    assert!(
+        side.starts_with("digraph rule_co_located_lhs_rhs {"),
+        "{side}"
+    );
+    assert_eq!(
+        side.matches("digraph ").count(),
+        1,
+        "more than one rule drawn"
+    );
     assert!(side.contains("subgraph cluster_lhs"), "{side}");
     assert!(side.contains("subgraph cluster_rhs"), "{side}");
 
     let overlay = render_rule_form(&ast, rule, RuleMode::Overlay);
-    assert!(overlay.starts_with("digraph rule_co_located_overlay {"), "{overlay}");
+    assert!(
+        overlay.starts_with("digraph rule_co_located_overlay {"),
+        "{overlay}"
+    );
     assert!(!overlay.contains("cluster_lhs"), "{overlay}");
     assert!(!overlay.contains("cluster_rhs"), "{overlay}");
 
@@ -675,7 +695,10 @@ fn the_headline_is_the_querys_own_goal_text() {
          (query :goal (drink-loc Water ?h))",
     );
     let answer = answer_of(&mut kb);
-    assert_eq!(render_answer(&ast, &mut terms, &kb, &answer, true), "Solved.");
+    assert_eq!(
+        render_answer(&ast, &mut terms, &kb, &answer, true),
+        "Solved."
+    );
 }
 
 /// **relation-why-positional-table.** Each goal conjunct is rendered through
@@ -764,10 +787,23 @@ fn the_certify_hint_rides_on_the_templated_headline() {
 #[test]
 fn the_trace_is_a_document_whose_spine_comes_from_the_stored_lattice() {
     let run = solve_file("examples/branching/04_two_levels.ein", true, None);
-    let trace = linearize(&run.ast, &run.terms, &run.kb, &run.solved, LinearizeOpts::new());
+    let trace = linearize(
+        &run.ast,
+        &run.terms,
+        &run.kb,
+        &run.solved,
+        LinearizeOpts::new(),
+    );
     let md = render_markdown(&trace, Mode::Engine, true);
-    assert!(md.starts_with("# Solution trace\n"), "{}", &md[..80.min(md.len())]);
-    assert!(md.contains("\n## Step 1 — "), "no numbered first step:\n{md}");
+    assert!(
+        md.starts_with("# Solution trace\n"),
+        "{}",
+        &md[..80.min(md.len())]
+    );
+    assert!(
+        md.contains("\n## Step 1 — "),
+        "no numbered first step:\n{md}"
+    );
     assert!(!trace.steps.is_empty(), "no derivation spine");
     assert!(!trace.reductios.is_empty(), "no refuted branch to narrate");
     assert!(trace.lattice_dot.is_some(), "no commitment lattice");
@@ -804,7 +840,10 @@ fn each_trace_shaping_flag_changes_the_document() {
 
     let full = trace(LinearizeOpts::new());
     let default_md = render_markdown(&full, Mode::Engine, true);
-    assert!(default_md.contains("```dot"), "the default trace has diagrams");
+    assert!(
+        default_md.contains("```dot"),
+        "the default trace has diagrams"
+    );
 
     // --no-diagrams
     let plain = trace(LinearizeOpts {
@@ -812,7 +851,10 @@ fn each_trace_shaping_flag_changes_the_document() {
         ..LinearizeOpts::new()
     });
     let plain_md = render_markdown(&plain, Mode::Engine, false);
-    assert!(!plain_md.contains("```dot"), "a dot block survived --no-diagrams");
+    assert!(
+        !plain_md.contains("```dot"),
+        "a dot block survived --no-diagrams"
+    );
 
     // --relevant
     let pruned = trace(LinearizeOpts {
@@ -835,7 +877,10 @@ fn each_trace_shaping_flag_changes_the_document() {
     // --reorder
     let reordered = render_markdown(&plain, Mode::Reorder, false);
     assert!(reordered.contains("\n## About "), "no by-entity grouping");
-    assert!(!plain_md.contains("\n## About "), "engine order grouped by entity");
+    assert!(
+        !plain_md.contains("\n## About "),
+        "engine order grouped by entity"
+    );
 
     // --full-kb-snapshots
     let snapshot = trace(LinearizeOpts {
@@ -848,5 +893,8 @@ fn each_trace_shaping_flag_changes_the_document() {
         snapshot_md.contains("## Full KB (final state)"),
         "no whole-KB section"
     );
-    assert!(!plain_md.contains("## Full KB"), "the KB snapshot is not opt-in");
+    assert!(
+        !plain_md.contains("## Full KB"),
+        "the KB snapshot is not opt-in"
+    );
 }

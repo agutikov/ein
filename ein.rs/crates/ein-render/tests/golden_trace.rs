@@ -113,8 +113,10 @@ fn synthetic_trace() -> Trace {
 
 #[test]
 fn the_three_step_trace_reproduces_the_committed_golden() {
-    let want = std::fs::read_to_string(repo_root().join("ein.rs/crates/ein-render/tests/golden/from_ein_py/trace_3step.md"))
-        .expect("the golden is checked in");
+    let want = std::fs::read_to_string(
+        repo_root().join("ein.rs/crates/ein-render/tests/golden/from_ein_py/trace_3step.md"),
+    )
+    .expect("the golden is checked in");
     assert_eq!(
         render_markdown(&synthetic_trace(), Mode::Engine, false),
         want

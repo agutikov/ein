@@ -1325,7 +1325,9 @@ mod tests {
             format!("(relation edge A B)\n(rule walk ()\n  {body}"),
             format!("(relation edge A B)\n(rule walk (?R)\n  {body}(walk edge)\n"),
             // two symbols: the cheap path has an order, and this is what says so
-            format!("(relation edge A B)\n(relation link A B)\n(rule walk (?R ?S)\n  {body}(walk edge link)\n"),
+            format!(
+                "(relation edge A B)\n(relation link A B)\n(rule walk (?R ?S)\n  {body}(walk edge link)\n"
+            ),
             format!("(relation edge A B)\n(rule walk (?R ?N)\n  {body}(walk edge 7)\n"),
             format!("(relation edge A B)\n(rule walk (?R ?N)\n  {body}(walk edge (edge A B))\n"),
         ] {
@@ -1349,7 +1351,10 @@ mod tests {
                 );
             }
         }
-        assert!(cheap > 0 && rendered > 0, "cheap {cheap}, rendered {rendered}");
+        assert!(
+            cheap > 0 && rendered > 0,
+            "cheap {cheap}, rendered {rendered}"
+        );
     }
 
     fn reg_named(terms: &Terms, plan: &Plan, name: &str) -> Reg {

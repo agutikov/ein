@@ -95,7 +95,8 @@ struct Scratch(PathBuf);
 
 impl Scratch {
     fn new(tag: &str) -> Scratch {
-        let dir = std::env::temp_dir().join(format!("ein-cli-semantics-{}-{tag}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("ein-cli-semantics-{}-{tag}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).expect("a scratch directory");
         Scratch(dir)
@@ -132,7 +133,8 @@ fn events_of(path: &str) -> Vec<J> {
 fn kinds(events: &[J]) -> BTreeMap<String, usize> {
     let mut out = BTreeMap::new();
     for e in events {
-        *out.entry(e["e"].as_str().unwrap_or("?").to_string()).or_insert(0) += 1;
+        *out.entry(e["e"].as_str().unwrap_or("?").to_string())
+            .or_insert(0) += 1;
     }
     out
 }
@@ -317,8 +319,14 @@ fn the_canonical_encoding_keeps_its_landmarks() {
     }
     let z = shape_of("examples/zebra2.ein");
     assert_eq!(z.given.len(), 18, "the 15 numbered conditions, (1) as four");
-    assert!(z.given.contains(COND_15), "condition (15) is in the canonical");
-    assert!(!z.given.contains(INJECTED), "the canonical carries no clash");
+    assert!(
+        z.given.contains(COND_15),
+        "condition (15) is in the canonical"
+    );
+    assert!(
+        !z.given.contains(INJECTED),
+        "the canonical carries no clash"
+    );
 }
 
 /// Root saturation, to the fixpoint, with no hypothesis at all — what `solve`
@@ -980,11 +988,26 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// notice a kind that stopped being emitted by a file **not** listed here,
 /// which is why each entry names its reason.
 const EVENT_COVER: [(&str, &str); 5] = [
-    ("examples/branching/01_saturate_only.ein", "the lifecycle and the deductive layer"),
-    ("examples/branching/02_one_dead_one_alive.ein", "enter / nogood / alt"),
-    ("examples/branching/07_lookahead_off.ein", "writeback — the singleton (not h)"),
-    ("examples/branching/12_typed_blind_solve.ein", "park / admit / retire — the NAF boundary"),
-    ("examples/features/06_symmetric_native.ein", "mirror — the native arg swap"),
+    (
+        "examples/branching/01_saturate_only.ein",
+        "the lifecycle and the deductive layer",
+    ),
+    (
+        "examples/branching/02_one_dead_one_alive.ein",
+        "enter / nogood / alt",
+    ),
+    (
+        "examples/branching/07_lookahead_off.ein",
+        "writeback — the singleton (not h)",
+    ),
+    (
+        "examples/branching/12_typed_blind_solve.ein",
+        "park / admit / retire — the NAF boundary",
+    ),
+    (
+        "examples/features/06_symmetric_native.ein",
+        "mirror — the native arg swap",
+    ),
 ];
 
 /// Every event kind `EVENTS.md` names, read out of the document itself.
@@ -1095,7 +1118,11 @@ fn the_events_level_gates_the_high_volume_kinds() {
     let (normal, verbose) = (events_of(&n), events_of(&v));
     let (kn, kv) = (kinds(&normal), kinds(&verbose));
 
-    assert_eq!(kn.get("hypskip"), None, "normal emitted a pre-candidate skip");
+    assert_eq!(
+        kn.get("hypskip"),
+        None,
+        "normal emitted a pre-candidate skip"
+    );
     assert!(kv.get("hypskip").is_some_and(|&n| n > 0), "verbose did not");
     let redundant = |events: &[J]| {
         events
@@ -1302,7 +1329,8 @@ fn lowercase_alternations(regex: &str) -> Vec<String> {
         let wordlike = |w: &&str| {
             !w.is_empty()
                 && w.starts_with(|c: char| c.is_ascii_lowercase())
-                && w.chars().all(|c| c.is_ascii_lowercase() || c == '*' || c == '-')
+                && w.chars()
+                    .all(|c| c.is_ascii_lowercase() || c == '*' || c == '-')
         };
         if words.iter().all(wordlike) {
             out.extend(words.iter().map(|w| w.to_string()));
@@ -1350,7 +1378,10 @@ fn the_grammars_declarators_are_the_closed_set() {
     names_for_scope(&grammar(), "keyword.control.declarator.ein", &mut found);
     assert_eq!(
         found,
-        DECLARATORS.iter().map(|s| s.to_string()).collect::<BTreeSet<String>>(),
+        DECLARATORS
+            .iter()
+            .map(|s| s.to_string())
+            .collect::<BTreeSet<String>>(),
         "the grammar's declarator set drifted"
     );
 }

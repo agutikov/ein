@@ -567,7 +567,12 @@ fn by_participation(kb: &Kb, terms: &Terms, objects: &[Symbol]) -> Vec<Symbol> {
     let ranks = terms.syms.ranks();
     let mut keyed: Vec<((std::cmp::Reverse<usize>, u32), Symbol)> = objects
         .iter()
-        .map(|&n| ((std::cmp::Reverse(kb.participation(n)), ranks[n.0 as usize]), n))
+        .map(|&n| {
+            (
+                (std::cmp::Reverse(kb.participation(n)), ranks[n.0 as usize]),
+                n,
+            )
+        })
         .collect();
     keyed.sort_by_key(|&(k, _)| k);
     keyed.into_iter().map(|(_, n)| n).collect()

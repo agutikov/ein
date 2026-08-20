@@ -123,7 +123,11 @@ fn value_corpus() -> Vec<PyValue> {
 #[test]
 fn repr_matches_cpython_for_every_reachable_value_shape() {
     let corpus = value_corpus();
-    assert!(corpus.len() >= 30, "the value corpus shrank to {}", corpus.len());
+    assert!(
+        corpus.len() >= 30,
+        "the value corpus shrank to {}",
+        corpus.len()
+    );
     let mut out = String::new();
     for v in &corpus {
         out.push_str(&format!("{}\n", repr(v)));
@@ -169,7 +173,10 @@ fn repr_escapes_the_same_code_points_cpython_escapes() {
         let Some(ch) = char::from_u32(c) else {
             continue;
         };
-        out.push_str(&format!("U+{c:04X} {}\n", repr(&PyValue::Str(ch.to_string()))));
+        out.push_str(&format!(
+            "U+{c:04X} {}\n",
+            repr(&PyValue::Str(ch.to_string()))
+        ));
     }
     if let Some(msg) = golden(&golden_path("ein-core", "repr_escapes.txt"), &out) {
         panic!("{msg}");

@@ -206,7 +206,9 @@ fn last_quiesce_parked(events: &str) -> i64 {
         .filter_map(|l| {
             let at = l.find("\"n_parked\": ")? + "\"n_parked\": ".len();
             let rest = &l[at..];
-            let end = rest.find(|c: char| !c.is_ascii_digit()).unwrap_or(rest.len());
+            let end = rest
+                .find(|c: char| !c.is_ascii_digit())
+                .unwrap_or(rest.len());
             rest[..end].parse::<i64>().ok()
         })
         .next_back()
@@ -310,8 +312,14 @@ fn the_search_finds_a_shared_optimum_a_greedy_pick_would_miss() {
     );
 
     let result = f.explain_contradiction(&ExplanationBudget::default());
-    assert!(result.exhausted, "the search gave up on a five-fact program");
-    assert_eq!(f.names(&result.frontier), ["A", "B"].map(String::from).into());
+    assert!(
+        result.exhausted,
+        "the search gave up on a five-fact program"
+    );
+    assert_eq!(
+        f.names(&result.frontier),
+        ["A", "B"].map(String::from).into()
+    );
     assert_eq!(
         result.len(),
         2,
@@ -344,14 +352,20 @@ fn the_search_terminates_and_grounds_out_on_a_cyclic_justification_graph() {
 
     let result = f.explain_contradiction(&ExplanationBudget::default());
     assert!(result.exhausted);
-    assert_eq!(f.names(&result.frontier), ["Q", "S"].map(String::from).into());
+    assert_eq!(
+        f.names(&result.frontier),
+        ["Q", "S"].map(String::from).into()
+    );
     for &fact in &result.frontier {
-        let kind = f
-            .kb
-            .primary(fact)
-            .map(|p| f.terms.provs.get(p).kind)
-            .expect("a frontier fact has provenance");
-        assert_eq!(kind, ProvKind::Source, "a derived fact reached the frontier");
+        let kind =
+            f.kb.primary(fact)
+                .map(|p| f.terms.provs.get(p).kind)
+                .expect("a frontier fact has provenance");
+        assert_eq!(
+            kind,
+            ProvKind::Source,
+            "a derived fact reached the frontier"
+        );
     }
 }
 
@@ -372,13 +386,11 @@ fn a_consistent_kb_and_an_underivable_target_explain_to_nothing() {
     assert_eq!(result.target, None);
 
     let orphan = f.intern("R", &["nope", "nope"]);
-    assert!(!f.kb.contains(orphan), "the fixture believes its own orphan");
-    let result = explain(
-        &f.kb,
-        &f.terms,
-        &[orphan],
-        &ExplanationBudget::default(),
+    assert!(
+        !f.kb.contains(orphan),
+        "the fixture believes its own orphan"
     );
+    let result = explain(&f.kb, &f.terms, &[orphan], &ExplanationBudget::default());
     assert!(
         result.frontier.is_empty(),
         "an underivable target was given a frontier: {:?}",
@@ -479,7 +491,10 @@ fn max_env_size_turns_the_search_into_a_decision_question() {
         ..ExplanationBudget::default()
     });
     assert_eq!(at_two.len(), 2);
-    assert_eq!(f.names(&at_two.frontier), ["A", "B"].map(String::from).into());
+    assert_eq!(
+        f.names(&at_two.frontier),
+        ["A", "B"].map(String::from).into()
+    );
 
     let at_one = f.explain_contradiction(&ExplanationBudget {
         max_env_size: Some(1),
@@ -508,20 +523,18 @@ fn a_rebuild_preserves_the_alternative_justifications() {
     let mut f = load_text(SHARED_OPTIMUM);
     f.saturate();
 
-    let before: BTreeMap<FactId, Vec<String>> = f
-        .kb
-        .facts()
-        .map(|id| {
-            let rules: Vec<String> = f
-                .kb
-                .justifications(id)
-                .iter()
-                .filter_map(|&p| f.terms.provs.get(p).rule)
-                .map(|r| f.terms.sym(r).to_string())
-                .collect();
-            (id, rules)
-        })
-        .collect();
+    let before: BTreeMap<FactId, Vec<String>> =
+        f.kb.facts()
+            .map(|id| {
+                let rules: Vec<String> =
+                    f.kb.justifications(id)
+                        .iter()
+                        .filter_map(|&p| f.terms.provs.get(p).rule)
+                        .map(|r| f.terms.sym(r).to_string())
+                        .collect();
+                (id, rules)
+            })
+            .collect();
     assert!(
         f.kb.has_alternative_justifications(),
         "nothing recorded an alternative — the test would be vacuous"
@@ -531,25 +544,26 @@ fn a_rebuild_preserves_the_alternative_justifications() {
 
     f.kb.rebuild_indexes(&f.terms);
 
-    let after: BTreeMap<FactId, Vec<String>> = f
-        .kb
-        .facts()
-        .map(|id| {
-            let rules: Vec<String> = f
-                .kb
-                .justifications(id)
-                .iter()
-                .filter_map(|&p| f.terms.provs.get(p).rule)
-                .map(|r| f.terms.sym(r).to_string())
-                .collect();
-            (id, rules)
-        })
-        .collect();
+    let after: BTreeMap<FactId, Vec<String>> =
+        f.kb.facts()
+            .map(|id| {
+                let rules: Vec<String> =
+                    f.kb.justifications(id)
+                        .iter()
+                        .filter_map(|&p| f.terms.provs.get(p).rule)
+                        .map(|r| f.terms.sym(r).to_string())
+                        .collect();
+                (id, rules)
+            })
+            .collect();
     assert_eq!(before, after, "a rebuild lost recorded derivations");
 
     // And the search still finds the shared optimum through them.
     let result = f.explain_contradiction(&ExplanationBudget::default());
-    assert_eq!(f.names(&result.frontier), ["A", "B"].map(String::from).into());
+    assert_eq!(
+        f.names(&result.frontier),
+        ["A", "B"].map(String::from).into()
+    );
 }
 
 // ── `std.closure` ──────────────────────────────────────────────────
@@ -669,14 +683,20 @@ fn an_identical_re_declaration_collapses() {
     let forms = parse(&mut ast, &text, Some("closure.ein")).expect("the stdlib parses");
     let verbatim = dump_canonical(&ast, &forms);
 
-    let mut f = load_text(&format!("{IMPORT_CLOSURE}{verbatim}(relation r A B)\n(functional r) (total r)\n"));
+    let mut f = load_text(&format!(
+        "{IMPORT_CLOSURE}{verbatim}(relation r A B)\n(functional r) (total r)\n"
+    ));
     let name = f.sym("infer-closure");
     assert!(
         f.kb.program().rules.get(name).is_some(),
         "the re-declared rule is gone"
     );
     assert_eq!(
-        f.kb.program().rules.iter().filter(|(n, _)| *n == name).count(),
+        f.kb.program()
+            .rules
+            .iter()
+            .filter(|(n, _)| *n == name)
+            .count(),
         1
     );
     // One rule, and it still fires.
@@ -726,7 +746,10 @@ fn saturation_is_idempotent() {
     let first = sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
     assert!(first > 0, "the first pass must do something");
     let second = sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
-    assert_eq!(second, 0, "re-saturating a fixpoint produced {second} firings");
+    assert_eq!(
+        second, 0,
+        "re-saturating a fixpoint produced {second} firings"
+    );
 }
 
 /// **is-stalled-reopens-after-a-write-outside-step.**
@@ -860,8 +883,12 @@ fn priority_bands_order_the_firing_sequence() {
     // The scale arm: the same discipline on a real puzzle.
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let mut kb = ein_ir::load_file(&mut ast, &mut terms, &repo_root().join("examples/zebra.ein"))
-        .expect("zebra.ein loads");
+    let mut kb = ein_ir::load_file(
+        &mut ast,
+        &mut terms,
+        &repo_root().join("examples/zebra.ein"),
+    )
+    .expect("zebra.ein loads");
     let run = saturate_kb(&ast, &mut terms, &mut kb);
     let rules = run.productive_rules(&terms);
     let propagate = [
@@ -962,12 +989,12 @@ fn fork_parity_extends_to_the_naf_boundary() {
     let a = saturate_kb(&ast, &mut terms, &mut direct);
     let b = saturate_kb(&ast, &mut terms, &mut forked);
     assert_eq!(a, b, "fork and direct disagree about the boundary");
-    assert_eq!(
-        ein_infer::state_key(&direct),
-        ein_infer::state_key(&forked)
-    );
+    assert_eq!(ein_infer::state_key(&direct), ein_infer::state_key(&forked));
 
-    assert!(a.rounds > 1, "the boundary spoke once — nothing was re-judged");
+    assert!(
+        a.rounds > 1,
+        "the boundary spoke once — nothing was re-judged"
+    );
     assert!(a.admitted > 0, "no candidate was ever admitted");
     assert!(
         a.parked > 0,
@@ -1046,8 +1073,11 @@ fn a_why_reference_name_may_carry_hyphens_and_underscores() {
     f.saturate();
 
     let derived = f.fact("q", &["A"]);
-    let prov = f.kb.primary(derived).expect("derived facts have provenance");
-    let bindings = ein_infer::firing::rendered_bindings(&f.terms, &f.terms.provs.get(prov).bindings);
+    let prov =
+        f.kb.primary(derived)
+            .expect("derived facts have provenance");
+    let bindings =
+        ein_infer::firing::rendered_bindings(&f.terms, &f.terms.provs.get(prov).bindings);
     assert_eq!(
         bindings,
         vec![("some-var".to_string(), "A".to_string())],
@@ -1056,15 +1086,17 @@ fn a_why_reference_name_may_carry_hyphens_and_underscores() {
 
     // And the template survived the loader with its references intact.
     let rule = f.sym("r");
-    let why = f
-        .kb
-        .program()
-        .rules
-        .get(rule)
-        .and_then(|r| r.why)
-        .map(|w| f.terms.sym(w).to_string())
-        .expect("the rule has a :why");
-    assert!(why.contains("{?some-var}"), "the template was rewritten: {why}");
+    let why =
+        f.kb.program()
+            .rules
+            .get(rule)
+            .and_then(|r| r.why)
+            .map(|w| f.terms.sym(w).to_string())
+            .expect("the rule has a :why");
+    assert!(
+        why.contains("{?some-var}"),
+        "the template was rewritten: {why}"
+    );
 }
 
 // ── Shared helpers ─────────────────────────────────────────────────
@@ -1084,7 +1116,8 @@ fn emit_closed_on(ast: &Ast, terms: &mut Terms, kb: &mut Kb) {
 fn counts_by_relation(kb: &Kb, terms: &Terms) -> BTreeMap<String, usize> {
     let mut out: BTreeMap<String, usize> = BTreeMap::new();
     for f in kb.facts() {
-        *out.entry(terms.sym(terms.fact(f).0).to_string()).or_default() += 1;
+        *out.entry(terms.sym(terms.fact(f).0).to_string())
+            .or_default() += 1;
     }
     out
 }

@@ -193,8 +193,9 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
                     ein_infer::lattice_shape(&ast, terms, &mut kb).map_err(|e| e.to_string())
                 }
                 Op::Naf => ein_infer::naf_map(&ast, terms, &mut kb).map_err(|e| e.to_string()),
-                Op::Saturate => ein_infer::saturate_events(&ast, terms, &mut kb)
-                    .map_err(|e| e.to_string()),
+                Op::Saturate => {
+                    ein_infer::saturate_events(&ast, terms, &mut kb).map_err(|e| e.to_string())
+                }
                 Op::Solve(mode) => ein_infer::solve_shape(&ast, terms, &mut kb, mode),
                 Op::Commit(ff) => {
                     ein_infer::commit_shape(&ast, terms, &mut kb, ff).map_err(|e| e.to_string())
