@@ -6,6 +6,9 @@
 constant, not the exponent, and this phase is about the exponent. Knowing
 which is which needs the parallel numbers first.
 
+---
+TODO: analyze plans/followups/f14_saturation_and_satisfiability
+
 ## Goal
 
 **Understand why an under-determined puzzle does not finish, and decide what

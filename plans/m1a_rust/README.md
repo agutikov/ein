@@ -174,6 +174,20 @@ Full contract: [design/11](design/11_shared_assets.md).
 
 ---
 
+
+TODO: add m1c milestone, move p1a.11 -> p1c.1
+TODO: add p1c.2 benchmarks against z3,cvc4,prolog,datalog,lean,and others
+  add corpus of problems in required languages
+  (smt and other), required dpendency packages to install natively (manjaro, debian, ...),
+  tooling that runs benchmarks and generates report
+  example problems:
+    https://rosettacode.org/wiki/Zebra_puzzle
+    https://rosettacode.org/wiki/N-queens_problem
+
+TODO: add m1d milestone, move p1a.12 there, together with plans/followups/f14_saturation_and_satisfiability
+
+---
+
 ## Phases
 
 | phase | title | stages | est. | gate |

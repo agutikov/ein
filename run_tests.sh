@@ -11,6 +11,14 @@
 #            as its own phase, SERIALLY with live progress (pytest -s +
 #            ProgressDumper) — kept serial so the progress lines don't
 #            interleave across workers.
+#
+#            **M1a S1a.10.2: this phase has been ported and has no successor.**
+#            All 21 of its tests are now ein.rs tests inside Phase 3 —
+#            ein-infer/tests/acceptance.rs (the 16 engine claims) and
+#            ein-cli/tests/acceptance_cli.rs (the 5 CLI ones) — where the same
+#            work takes 0.26 s instead of ~40 s. It was a separate phase
+#            because it was slow; it is not slow any more, so when ein.py goes
+#            (S1a.10.5) the runner loses a phase rather than a check.
 #   Phase 3  the ein.rs suite                    (`cargo test --workspace`).
 #            Added at M1a S1a.6.11, and not as a courtesy: since S1a.6.10 the
 #            parity harness no longer diffs ein.rs's *narration* against
@@ -61,7 +69,7 @@ ARGS=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -h|--help)
-            sed -n '2,41p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+            sed -n '2,50p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
         --fast)            FAST=1 ;;
