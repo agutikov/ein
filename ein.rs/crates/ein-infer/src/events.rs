@@ -1,10 +1,13 @@
 //! The `--events` protocol — `docs/kernel/inference/events.md`, engine side.
 //!
-//! T2 parity is "the two engines took the same steps", and that needs both
-//! implementations to narrate what they did in a comparable format. The schema
-//! is fixed (`ein-events/1`) and was designed as a schema rather than as debug
-//! output, so any other observer — a trace viewer, a benchmark harness, an
-//! embedder — reads the same stream.
+//! The engine narrates what it did: one JSON object per line, opt-in behind
+//! `--events FILE`. It was built as the operand of the Rust port's T2 parity
+//! tier — "the two engines took the same steps" — and the tier retired with
+//! the second engine at S1a.10.3 while the format did not, because nothing
+//! about it was ever about there being two of them. The schema is fixed
+//! (`ein-events/1`) and was designed as a schema rather than as debug output,
+//! so any other observer — a trace viewer, a benchmark harness, an embedder —
+//! reads the same stream.
 //!
 //! Three properties the protocol depends on, and how this module gets them:
 //!
