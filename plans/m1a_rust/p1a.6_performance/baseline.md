@@ -2745,6 +2745,30 @@ tuple per step, behind a per-fork table measured at **+7.6 %**, is not a
 lever. D2's cost half moved *away* from its trigger: the matcher's five hot
 functions are about a fifth of a 47 ms solve, where the phase began at 66.9 %.
 
+### The gate, at the close
+
+`./run_tests.sh` — **1 516 pytest + 21 acceptance + the whole ein.rs
+workspace, green** — and the corpus-wide parity run:
+
+```text
+group               same    DIFF    skip
+crash-parity          11       2       0
+load-negative         87       0       0
+parse-negative        12       0       0
+positive             358       0       0
+stdlib                28       0       0
+total                496       2       0     tier T3, 179.4s of engine time
+```
+
+The two are D2's two shapes. Seven of those cells are new this phase and all
+seven are the fuzzer's: two regressions for the bugs it found, four
+`crash-parity` entries, and one that exists only to pin an asymmetry — the
+`Contradiction` arm of `query-goal-free-head`, which exits **0** where its
+sibling exits 1 because no solution block is rendered and so the goal is never
+compiled. That distinction is not decoration: the first fix for the sibling
+missed it and traded one divergence for another, and `trace_parity` — which
+runs the renderer rather than the binary — caught it inside the hour.
+
 ### Reproducing this section
 
 ```sh

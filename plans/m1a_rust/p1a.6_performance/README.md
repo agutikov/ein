@@ -249,11 +249,13 @@ Six items; **five met, one is calendar time.**
   close ([§19](baseline.md#19-s1a67-and-s1a66--the-lever-matrix-in-two-engines-and-the-fuzzer)),
   not carried over.
 - ✅ **T3 green on the whole corpus at every commit**, under the contract
-  [S1a.6.10](s1a.6.10_parity_contract.md) moved it to — with
-  [D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
-  the only differing cell until 2026-08-20, when the fuzzer found D2's *second
-  shape* and it became two. Both are asserted, in six allowed-divergence lists
-  across four parity tests.
+  [S1a.6.10](s1a.6.10_parity_contract.md) moved it to. At the close:
+  **496 of 498 cells identical**, and the two are
+  [D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)'s
+  two shapes — the second found by the fuzzer on the last day. Both are
+  *asserted*, in six allowed-divergence lists across four parity tests, so a
+  cell that stopped diverging fails as loudly as one that started. The corpus
+  grew by seven entries in this phase, all of them the fuzzer's.
 - ⏳ **The fuzzer has run for ≥ 24 h with no unexplained T1 divergence** — the
   one item this phase cannot close by working harder, because it is wall-clock
   on a calendar. What is true instead: the fuzzer exists, it runs at ~700
