@@ -31,13 +31,39 @@ validator (S1.1.2) enforces well-formedness against the rules below.
 | **conjunction**          | `(and <p1> <p2> …)`                     | ✓ AND    | conjunctive match (kernel primitive)             |
 | **disjunction**          | `(or  <p1> <p2> …)`                     | ✓ OR     | disjunctive match (grammar-reserved; engine semantics in P1.3) |
 | **negation**             | `(not <p>)`                             | ✓ NOT    | wrapped premise must not hold                    |
-| **equality**             | `(= ?a ?b)`                             | ✓ EQ     | bind / match equality                            |
+| **equality fact**        | `(= ?a ?b)`                             | ✓ EQ     | matches a **stored** `(= …)` fact — see below     |
+| **computed equality**    | `(eq ?a ?b)` / `(neq ?a ?b)`            | —         | the two registered predicates: compare the bindings |
 | **membership check**     | `(is-a ?a ?T)`                          | ✓ RELATION | ordinary relation pattern                      |
 | `:where` filter          | `:where (transitive ?r) (neq ?a ?b)`    | NEQ inside | type / inequality / structural-predicate filters |
 | named structural pred.   | `(unique-remaining ?slot ?type)`        | —         | aggregate-style premise; see §Predicate registry  |
 
 The ✓-marked heads have dedicated grammar rules with fixed arities;
 typos like `(instnce ?a ?T)` or `(neq ?a)` are caught at parse time.
+
+### `=` is a fact head, not a unifier
+
+The ✓ on the equality row marks a **grammar** rule, not an engine step, and
+the distinction catches people out because the two spellings look
+interchangeable and are not:
+
+- **`(= ?a ?b)`** is an ordinary relation pattern whose head happens to be the
+  reserved `=`. It matches the `(= …)` *facts the KB holds* — including ones a
+  rule derived, since `:assert (= ?a ?a)` is a legal conclusion — and nothing
+  else. A rule `:match (and (p ?a ?b) (= ?a ?b))` does **not** fire on
+  `(p x x)`; it fires once `(= x x)` is in the KB.
+- **`(eq ?a ?b)`** is the computed test. It fires on `(p x x)` with no stored
+  fact at all, because it compares the bindings.
+
+Equality has no *semantics* in M1 beyond that: a stored `(= a b)` licenses no
+substitution and joins no congruence closure. Both engines carry an
+`EqClasses` union-find and neither drives it —
+[`../02-data-model/02_store.md` §8](../02-data-model/02_store.md) records the
+seam as deliberate, for a future e-graph promotion (F4 Q30). What `=` *does*
+have is a rendering: an arity-2 equality fact draws as a `doublecircle`
+equality-class node with an edge to each side
+([`04_dot_rendering.md`](04_dot_rendering.md)), which is why
+[`examples/syntax/equality.ein`](../../../../examples/syntax/equality.ein)
+exists at all — no puzzle in the corpus writes one.
 
 ## What is NOT in the pattern language
 
@@ -65,6 +91,7 @@ M1 starter set (T3 structural / aggregate predicates from
 |---------------------------------|-----------------------------------------------|
 | `(transitive ?r)`               | the named relation is transitive              |
 | `(symmetric ?r)`                | the named relation is symmetric               |
+| `(eq ?a ?b)`                    | the bindings refer to the same entity         |
 | `(neq ?a ?b)`                   | the bindings refer to distinct entities       |
 | `(unique-remaining ?slot ?type)` | only one slot of `?type` is unassigned        |
 | `(no-remaining-option ?x)`      | every candidate value for `?x` is excluded    |
