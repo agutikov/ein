@@ -13,8 +13,12 @@
 ;;; by one — the seam is deliberate, for a future e-graph promotion
 ;;; ([02_store.md § 8](../../docs/kernel/ir/02-data-model/02_store.md), F4 Q30).
 ;;; The *computed* equality is `eq` / `neq`, which are predicates inside a
-;;; `:match` and a different thing entirely; `ein-render/src/rules.rs` happens
-;;; to draw the `eq` predicate with the `=` glyph, which is presentation only.
+;;; `:match` and a different thing entirely. `(= ?a ?b)` in a `:match` is an
+;;; ordinary relation pattern over that same vivified `=` relation, so it
+;;; matches **stored** equality facts and nothing else — `(p x x)` alone does
+;;; not satisfy it, `(= x x)` in the KB does. `(eq ?a ?b)` computes.
+;;; (`ein-render/src/rules.rs` draws the `eq` predicate with the `=` glyph,
+;;; which is presentation and adds to the confusion rather than to the model.)
 ;;;
 ;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
 ;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
