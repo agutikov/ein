@@ -10,7 +10,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | Q | title | status |
 |---|---|---|
 | [Q-M1a.1](#q-m1a1--port-boundary-a-full-vs-b-hot-loop) | Port boundary — A (full) vs B (hot loop behind PyO3) | **resolved 2026-08-17 — A** |
-| [Q-M1a.2](#q-m1a2--does-einpy-have-a-sunset) | Does ein.py have a sunset? | open — recommendation: no |
+| [Q-M1a.2](#q-m1a2--does-einpy-have-a-sunset) | Does ein.py have a sunset? | **decided 2026-08-20 — yes**, reversing the recommendation; [P1a.10](p1a.10_single_implementation/README.md) |
 | [Q-M1a.3](#q-m1a3--parse-error-message-parity) | Parse-error message parity, including `-1:-1` at EOF | **resolved 2026-08-18 — (a)** |
 | [Q-M1a.4](#q-m1a4--sorted-over-mixed-type-fact-args) | `sorted()` over mixed-type fact args raises in ein.py | **resolved 2026-08-18 — (a), [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)** |
 | [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | **resolved 2026-08-18 — (a), ported** |
@@ -27,6 +27,9 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 | [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — they are 7–16 % | **closed 2026-08-20: the mechanism is declined at a measured 1.4–2.2 % ceiling**, in [S1a.6.12](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md), which took 38 % off `zebra -e` without it |
 | [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
+| [Q-M1a.19](#q-m1a19--in-file-expectations-or-a-sidecar) | Test expectations: in the `.ein` file, or beside it? | open — recommendation: in-file `(test …)`; [S1a.11.2](p1a.11_stdlib_conformance/s1a.11.2_test_form.md) decides |
+| [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | open — recommendation: four keys, each demanded by a rule |
+| [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1a.12](p1a.12_exhaustive_search/README.md); `exhausted` keeps its meaning either way |
 
 ---
 
@@ -52,6 +55,39 @@ falsifiable, and a second implementation of a research kernel is a
 feature, not debt. Revisit only if double-landing becomes the dominant
 cost of a semantic change — and note that M1 is *shipped*, so semantic
 changes should be rare.
+
+**Decided 2026-08-20 — yes, there is a sunset**, at the user's direction, and
+the recommendation above is overruled rather than satisfied: double-landing
+never became the dominant cost. [P1a.10](p1a.10_single_implementation/README.md)
+is the phase.
+
+What the recommendation got right is the price, and it is worth restating as
+the thing to watch rather than as an objection that was answered. **The oracle
+is what makes the port falsifiable**, and after P1a.10 the corpus's expected
+outputs are *self*-goldens: they say "ein.rs still does what ein.rs did", not
+"ein.rs does what the semantics say". The evidence that this is a real cost and
+not a theoretical one is
+[S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md) — four genuine
+parity bugs in the fuzzer's first twenty minutes, on a surface five phases of
+byte parity had signed off. Nothing that replaces the oracle would have found
+those.
+
+Three things follow, and they are the phase's shape:
+
+1. **Bank before deleting.**
+   [S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md) is a
+   gate, with an explicit *accepted-loss* list — the regressions that can now
+   pass unnoticed. A short list is a result; an empty one is a claim to be
+   suspicious of.
+2. **`docs/kernel/` becomes the only statement of intent that is not also the
+   implementation**, so the quirks that were defined as "whatever ein.py did"
+   — [Q-M1a.3](#q-m1a3--parse-error-message-parity)'s parse positions,
+   [D2](divergences.md)'s `sorted()` — have to be *stated*
+   ([S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md) T1a.10.6.3).
+   Undefined behaviour in a specification repo is worse than a quirk.
+3. **[P1a.11](p1a.11_stdlib_conformance/README.md) is the partial answer** to
+   what replaces it: an expectation written next to a rule is an *external*
+   check, and it is the only kind that gets stronger when the oracle leaves.
 
 ## Q-M1a.3 — Parse-error message parity
 
@@ -837,3 +873,77 @@ shipping configuration, it is [D3](divergences.md)'s fixture. The evidence is
 and [fork_delta_trace.md](p1a.6_performance/fork_delta_trace.md); what it cost
 the harness — 7 T3 cells, 97 T2 — is the specification of
 [S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md).
+
+## Q-M1a.19 — In-file expectations, or a sidecar?
+
+[P1a.11](p1a.11_stdlib_conformance/README.md) needs somewhere to state what a
+stdlib rule should derive. Two shapes:
+
+- **in-file** — a `(test …)` head, replacing `(query …)`, carried by the
+  program it describes;
+- **sidecar** — the expectation in `corpus.toml`, or a `.expect` file beside
+  the `.ein`.
+
+The sidecar costs no grammar. The in-file form costs a parser case, a dumper
+case, a macro pass, every AST walker, `grammar.lark` — and, because M2's GBNF
+lift reads that file, a cross-milestone edit.
+
+**Recommendation: in-file**, which is also what the user asked for, on one
+argument: an expectation that travels with the program cannot rot apart from
+it. A sidecar keyed by path is a second thing to keep in step, and this
+milestone has just spent a phase removing the last one.
+
+Note the ordering this implies. Adding a surface form to *two* implementations
+in step is expensive, so P1a.11 comes after
+[P1a.10](p1a.10_single_implementation/README.md) — which is also why the old
+non-goal ("no new syntax, no new keywords") is narrowed rather than simply
+broken: it was a rule about keeping two parsers in step.
+
+Decided in [S1a.11.2](p1a.11_stdlib_conformance/s1a.11.2_test_form.md).
+
+## Q-M1a.20 — What may an expectation say?
+
+The vocabulary question, and the one that decides whether P1a.11 stays a
+week's work or becomes a test framework. The proposed set, each key demanded
+by a rule in [S1a.11.1](p1a.11_stdlib_conformance/s1a.11.1_what_the_stdlib_promises.md)'s
+table:
+
+| key | what it asserts | why a rule needs it |
+|---|---|---|
+| `:derives (fact …)` | the fact is in the saturated state | the positive half of every rule |
+| `:absent (fact …)` | it is not | **the half that finds bugs** — `disjunctive-prune`'s guard was wrong in exactly this direction |
+| `:verdict V` / `:k N` | the search's answer | `std.elim`'s `no-room-left` asserts `(false)`; the verdict is its only observable |
+| `:fires R` / `:does-not-fire R` | which rule did the work | "the right fact by the wrong route" is what a stdlib test exists to catch |
+
+Everything past that waits for a rule that demands it. **Recommendation: ship
+the four, and treat a fifth as a finding about a rule** rather than a gap in
+the vocabulary.
+
+One sub-question with no obvious answer: `:fires` has two readings, because a
+rule that re-derives an existing fact *has* fired but is elided at `normal`
+event level. The verbose sense ("this rule produced this state") is the useful
+one; whichever is chosen has to be written down, because the two disagree.
+
+## Q-M1a.21 — May the search stop before the lattice is exhausted?
+
+[P1a.12](p1a.12_exhaustive_search/README.md)'s question, and the measurement
+that raises it: on `examples/zebra2-minus-15.ein` **every one of the 32 models
+is found by depth 3, and depths 4–5 exist only to prove there are no more** —
+which is where the run stops finishing.
+
+So: is there an argument that lets the search stop early?
+
+- **A sound criterion** proves the same thing sooner. In scope, and it does
+  not touch M1a's "no new reasoning features" non-goal because it changes the
+  cost of the proof, not the proof.
+- **A heuristic** ("no new model for k layers") changes the answer. It ships
+  behind a flag, off by default, reporting `Ambiguity (not certified)` — and
+  **never sets `exhausted = true`**. The word means the lattice was exhausted;
+  a second guarantee needs a second word.
+
+The candidates and their obligations are in
+[S1a.12.3](p1a.12_exhaustive_search/s1a.12.3_stopping_criterion.md), and a
+written refutation is as good an outcome as a proof — that is the discipline
+[F9](../followups/f9_e_catalog.md) established for this exact area, and F9's
+own judgements were all measured on puzzles with a unique model, which is the
+regime this question is not about.

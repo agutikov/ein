@@ -188,12 +188,16 @@ Full contract: [design/11](design/11_shared_assets.md).
 | [P1a.7](p1a.7_parallelism/README.md) 🔄 | Parallelism — deterministic multi-core search + match | 6 | 2.5 w | **in progress** — opened 2026-08-20 with [S1a.7.0](p1a.7_parallelism/s1a.7.0_speculation_audit.md), which measured the phase's central risk before building any of it: **1 078 704 enterings speculated against layer-start root**, the control clean on all 1 078 154 case-1 ones, and the re-validation rate **0.1 % corpus-wide but 36–50 % on the zebra family** — where **35** speculations return `alive` for an entering the sequential engine kills. Every one is in layer 1, which is the only layer that writes to root mid-layer, so [design/08](design/08_parallelism.md) §2's "case 1 is the whole of layer 1" is **inverted** and the layers where 98–100 % of a real search lives need no validator at all. Gate unchanged — `--jobs N` verdict- **and** counter-identical — but its scaling target moved off a 31 ms `zebra2 -e` and onto the entries that have a search ([scaling.md](p1a.7_parallelism/scaling.md)) |
 | [P1a.8](p1a.8_binary_container/README.md) | Binary KB container — `.einb`, mmap, solution store | 1 | 0.5 w | `ein solve x.einb` byte-identical to `ein solve x.ein` |
 | [P1a.9](p1a.9_bindings_release/README.md) | Bindings + release — PyO3, packaging, docs | 4 | 1.5 w | M2 imports the engine and gets ein.rs |
+| [P1a.10](p1a.10_single_implementation/README.md) | One implementation — port the suite, retire ein.py, the harness and the submodules | 6 | 3 w | `cargo test --workspace` is the whole gate, and coverage did not drop |
+| [P1a.11](p1a.11_stdlib_conformance/README.md) | stdlib conformance — a `(test …)` form, `ein test`, a corpus per rule | 5 | 2.5 w | every stdlib rule has a program that activates it and states what it derives |
+| [P1a.12](p1a.12_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 
-45 stages (S1a.6.8 added by S1a.6.1's profile, S1a.6.5 shortened by it,
+61 stages (S1a.6.8 added by S1a.6.1's profile, S1a.6.5 shortened by it,
 S1a.6.12 written at S1a.6.5 against the profile that had named it since
 S1a.6.3, and S1a.7.0 added at P1a.7's start by the same reflex that added
-S1a.6.1 — measure the premise before spending four days on it), 131 days of
-stage estimates ≈ 26 weeks. The **parity gate**
+S1a.6.1 — measure the premise before spending four days on it; **P1a.10–12
+added 2026-08-20** at the user's direction, 16 stages and 8.5 weeks), 175 days
+of stage estimates ≈ 35 weeks. The **parity gate**
 (end of P1a.5) is at ~week 17; everything after it is speed, scale and
 distribution on an engine that is already a drop-in replacement.
 
@@ -224,10 +228,29 @@ Doing it the other way round means every regression is ambiguous.
 - **A "Rusty" reinterpretation of the IR.** No new syntax, no new
   keywords, no relaxed grammar. `grammar.lark` stays the spec of record
   (M2's GBNF lift reads it); the Rust parser is checked *against* it.
-- **Deleting ein.py.** It is the oracle and the reference for M2
-  experiments. It stays, and stays green.
-- **Dropping PyPy support.** It keeps working; it is simply no longer
-  the deployment target.
+  **Narrowed 2026-08-20**: this was a rule about keeping *two* parsers in
+  step, and [P1a.11](p1a.11_stdlib_conformance/README.md) adds one form —
+  `(test …)` — after there is only one. The clause that survives is the one
+  that was never about the port: `grammar.lark` stays the spec of record, and
+  a new form is a **cross-milestone edit** because M2's GBNF lift reads it.
+- ~~**Deleting ein.py.**~~ **Reversed 2026-08-20 — it is now
+  [P1a.10](p1a.10_single_implementation/README.md).** It read: "It is the
+  oracle and the reference for M2 experiments. It stays, and stays green."
+  The case for the oracle was never that a second implementation is valuable
+  in itself — it was that a rewrite with a byte-exact oracle is a *measurable*
+  rewrite, and that argument expired when the byte gate closed at the end of
+  P1a.5. P1a.6 already lives past it: [D3](divergences.md) is a deliberate
+  divergence and [S1a.6.11](p1a.6_performance/s1a.6.11_fixture_goldens.md)
+  replaced the elided bytes with ein.rs's own goldens. What the reversal costs
+  is falsifiability, permanently, and
+  [S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md) is the
+  gate that prices it: nothing is deleted until every claim the harness
+  carries has a checked-in owner. **I1's "ein.py stays permanently as the
+  oracle" is amended the same way and for the same reason.**
+- ~~**Dropping PyPy support.**~~ **Reversed 2026-08-20 with the above** —
+  there is no Python engine left to run under PyPy. Python stays a supported
+  *consumer* through [P1a.9](p1a.9_bindings_release/README.md)'s PyO3 module,
+  which is the opposite of what P1a.10 removes.
 - **A resident server.** Dropped 2026-08-18 (see the phase table).
   ein.rs ships a **library and a CLI**; an embedder that wants
   load-once/ask-many holds the engine in its own process — which is
@@ -236,7 +259,10 @@ Doing it the other way round means every regression is ambiguous.
 - **New reasoning features.** Anything that changes what the engine can
   prove belongs in a followup ([F2](../followups/f2_self_modifying_language.md),
   [F4](../followups/f4_cross_cutting.md), [F7](../followups/f7_rule_induction.md)),
-  not here.
+  not here. **[P1a.12](p1a.12_exhaustive_search/README.md) sits on this line
+  and is scoped to stay inside it**: a *sound* stopping criterion proves the
+  same thing sooner and is in scope; a heuristic that changes the answer ships
+  behind a flag with a different verdict word, or not at all.
 
 ---
 
