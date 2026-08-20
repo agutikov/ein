@@ -916,11 +916,11 @@ fn the_demo_directory_layout_is_eight_rules_times_three_scenarios() {
     dirs.sort();
     assert_eq!(dirs, DEMO_RULES);
 
-    let all = demos();
-    assert_eq!(all.len(), 24, "8 rules × 3 scenarios");
+    let found = demos();
+    assert_eq!(found.len(), 24, "8 rules × 3 scenarios");
     for rule in DEMO_RULES {
         assert_eq!(
-            all.iter().filter(|(r, _)| r == rule).count(),
+            found.iter().filter(|(r, _)| r == rule).count(),
             3,
             "{rule}/ should hold three scenarios"
         );
@@ -1203,6 +1203,9 @@ fn an_explanation_is_a_subset_of_the_or_aware_closure_and_not_of_the_primary_onl
         frontier.iter().all(|f| all.contains(f)),
         "sound: {:?} ⊄ {:?}",
         sexprs(&terms, frontier.iter().copied()),
+        // The assertion above is `⊆`, which has no order; the set below is
+        // only rendered once it has already failed, and nothing reads it.
+        // determinism-ok: an `⊆` assertion's failure message.
         sexprs(&terms, all.iter().copied())
     );
     let primary = union_core(&kb, &terms, Justifications::Primary);
