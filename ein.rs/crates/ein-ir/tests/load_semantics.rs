@@ -1,98 +1,84 @@
-//! S1a.2.3 acceptance — every corpus file loads to the same KB, and every way
-//! of failing to load says the same thing.
+//! The loader's contract — S1a.2.3's acceptance, without the oracle.
 //!
-//! The KB has no CLI surface, so `ein-conformance` cannot see any of this:
+//! The KB has no CLI surface, so `ein-conformance` never saw any of this:
 //! `ein_core::shape` renders the registries, the fact list and the seven
-//! indexes as one deterministic text, `utils/ir_oracle.py`'s `kb-shape` op
-//! renders the same text from ein.py, and the two are diffed. A load *failure*
-//! is compared the same way, which is what extends the accumulated-message
-//! check from the eighteen fixtures to the whole corpus.
+//! indexes as one deterministic text, and until
+//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! this file diffed that text against `utils/ir_oracle.py`'s `kb-shape` op on
+//! every corpus file. What replaced each half:
+//!
+//! | was | now |
+//! |---|---|
+//! | the corpus-wide `kb-shape` diff | `ein-render`'s `corpus_shapes.md5`, 107 `::load` lines, carrying this test's `loaded >= 60` floor |
+//! | `kb.check_layering` riding inside the diff's helper | [`layering_holds_after_every_load`], its own sweep |
+//! | the 32-body `(config …)` coercion diff | [`the_config_coercion_table_is_stable`], against a checked-in table |
+//! | the accumulated-message diff | [`load_errors_accumulate_in_pass_order`], the same way |
+//! | the 18 `.expected` fixtures | unchanged — it never used the oracle |
+//!
+//! The two tables were **blessed from a tree where the differential half was
+//! green**: `the_whole_corpus_loads_to_the_same_kb` and
+//! `config_coercion_agrees_on_every_path` both passed against a live ein.py in
+//! the commit that wrote them, so what is checked in is text ein.py signed off
+//! on. That is the same provenance argument `corpus_shapes.md5` makes, and it
+//! is the only one available once the second engine is gone.
 
 use ein_core::{Terms, shape};
 use ein_ir::{Ast, load_file};
-use ein_oracle::{Answer, IR_ORACLE, Oracle, corpus_files, repo_root, skip};
+use ein_oracle::{corpus_files, golden, golden_path, repo_root};
 use std::path::{Path, PathBuf};
 
-/// What ein.rs answers, in the oracle's vocabulary.
+/// What one load answered, in the vocabulary the oracle used — kept because
+/// the tables below are *rendered* in it, and a renamed variant would
+/// invalidate a checked-in golden for no reason.
+enum Answer {
+    Ok(String),
+    Err { kind: &'static str, msg: String },
+}
+
+impl std::fmt::Display for Answer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Answer::Ok(text) => write!(f, "{text}"),
+            Answer::Err { kind, msg } => write!(f, "<{kind}> {msg}"),
+        }
+    }
+}
+
+/// One file, loaded.
 fn rust_shape(path: &Path) -> Answer {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     match load_file(&mut ast, &mut terms, path) {
-        Ok(kb) => {
-            kb.check_layering(&terms)
-                .expect("layering holds after load");
-            Answer::Ok(shape(&kb, &terms))
-        }
+        Ok(kb) => Answer::Ok(shape(&kb, &terms)),
         Err(e) => Answer::Err {
-            kind: "KBLoadError".into(),
+            kind: "KBLoadError",
             msg: e.0,
         },
     }
 }
 
+/// **Layering holds after every load.**
+///
+/// `check_layering` was an `expect` inside the differential helper, which made
+/// it a *precondition of the comparison* rather than a claim — a file whose
+/// layering broke would have panicked out of a test named for something else.
+/// Here it is the claim: every fact's layer is consistent with its provenance
+/// on every corpus file that loads, before any rule has run.
 #[test]
-fn the_whole_corpus_loads_to_the_same_kb() {
-    let Some(mut py) = Oracle::start(IR_ORACLE) else {
-        return skip("the_whole_corpus_loads_to_the_same_kb");
-    };
-    let files = corpus_files();
-    assert!(files.len() >= 90, "only {} corpus files found", files.len());
-    let (mut bad, mut loaded, mut rejected) = (Vec::new(), 0, 0);
-    for path in &files {
-        let got = rust_shape(path);
-        let want = py.file("kb-shape", path);
+fn layering_holds_after_every_load() {
+    let mut loaded = 0;
+    for path in &corpus_files() {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let Ok(kb) = load_file(&mut ast, &mut terms, path) else {
+            continue;
+        };
         let name = path.strip_prefix(repo_root()).unwrap_or(path).display();
-        match (&got, &want) {
-            (Answer::Ok(a), Answer::Ok(b)) => {
-                loaded += 1;
-                if a != b {
-                    bad.push(format!("{name}\n{}", first_difference(a, b)));
-                }
-            }
-            (Answer::Err { msg: a, .. }, Answer::Err { msg: b, .. }) => {
-                rejected += 1;
-                if a != b {
-                    bad.push(format!("{name}\n  ein.py: {b}\n  ein.rs: {a}"));
-                }
-            }
-            (Answer::Ok(_), Answer::Err { msg, .. }) => {
-                bad.push(format!("{name}\n  ein.py rejected: {msg}\n  ein.rs loaded"))
-            }
-            (Answer::Err { msg, .. }, Answer::Ok(_)) => {
-                bad.push(format!("{name}\n  ein.py loaded\n  ein.rs rejected: {msg}"))
-            }
-        }
+        kb.check_layering(&terms)
+            .unwrap_or_else(|e| panic!("{name}: layering broken after load: {e:?}"));
+        loaded += 1;
     }
-    assert!(
-        bad.is_empty(),
-        "{} of {} files differ:\n\n{}",
-        bad.len(),
-        files.len(),
-        bad.join("\n\n")
-    );
-    assert!(loaded >= 60, "only {loaded} files actually loaded");
-    assert!(rejected >= 20, "only {rejected} files were rejected");
-}
-
-/// The first differing line, with a little context — a whole-shape diff of
-/// `zebra2` is unreadable.
-fn first_difference(got: &str, want: &str) -> String {
-    let (g, w): (Vec<&str>, Vec<&str>) = (got.lines().collect(), want.lines().collect());
-    for i in 0..g.len().max(w.len()) {
-        let (a, b) = (g.get(i).copied(), w.get(i).copied());
-        if a != b {
-            let from = i.saturating_sub(2);
-            let context: Vec<String> = (from..i).map(|j| format!("    {}", w[j])).collect();
-            return format!(
-                "  line {}:\n{}\n  ein.py: {}\n  ein.rs: {}",
-                i + 1,
-                context.join("\n"),
-                b.unwrap_or("<end>"),
-                a.unwrap_or("<end>")
-            );
-        }
-    }
-    "  identical?".to_string()
+    assert!(loaded >= 60, "only {loaded} corpus files loaded");
 }
 
 /// The loader's own eighteen fixtures, against the committed `.expected`
@@ -147,12 +133,17 @@ fn the_load_negative_fixtures_are_byte_identical() {
 
 /// `SolverConfig.from_kw_pairs` — every coercion path and every message,
 /// driven through a `(config …)` body rather than through the Rust API, so
-/// what is compared is what a puzzle author would see.
+/// what is checked is what a puzzle author would see.
+///
+/// A table rather than a diff: the thirty-two bodies below were chosen to hit
+/// every branch of the coercion — the four field kinds, CPython's `int()` /
+/// `float()` tolerances (`"1_000"`, `" 7 "`, and the `"1_"` / `"1.5"` it
+/// refuses for an int), a malformed body, an unknown flag, and the
+/// last-one-wins rule — and each one's *answer* is the assertion. Rendered as
+/// one file so a change reads as a diff of the affected bodies rather than as
+/// thirty-two separate failures.
 #[test]
-fn config_coercion_agrees_on_every_path() {
-    let Some(mut py) = Oracle::start(IR_ORACLE) else {
-        return skip("config_coercion_agrees_on_every_path");
-    };
+fn the_config_coercion_table_is_stable() {
     let bodies = [
         // Booleans: the atoms, the strings, and the wrong shapes.
         "(config :print-alive true)",
@@ -193,20 +184,25 @@ fn config_coercion_agrees_on_every_path() {
         "(config :print-alive true) (config :warn-derived-naf true)",
         "(config :print-alive true :print-alive false)",
     ];
-    let mut bad = Vec::new();
+    let mut out = String::new();
     for body in bodies {
-        let got = rust_shape_text(body);
-        let want = py.text("kb-shape", body, None);
-        let same = match (&got, &want) {
-            (Answer::Ok(a), Answer::Ok(b)) => a == b,
-            (Answer::Err { msg: a, .. }, Answer::Err { msg: b, .. }) => a == b,
-            _ => false,
-        };
-        if !same {
-            bad.push(format!("{body}\n  ein.py: {want:?}\n  ein.rs: {got:?}"));
-        }
+        out.push_str(&format!("=== {body}\n{}", indented(&rust_shape_text(body))));
     }
-    assert!(bad.is_empty(), "{}", bad.join("\n\n"));
+    assert_eq!(bodies.len(), 32, "the table lost a coercion path");
+    if let Some(msg) = golden(&golden_path("ein-ir", "config_coercion.txt"), &out) {
+        panic!("{msg}");
+    }
+}
+
+/// One answer, every line indented — so a `=== ` header always starts a row
+/// and a multi-line diagnostic (a parse error carries its caret) cannot be
+/// mistaken for the next body.
+fn indented(answer: &Answer) -> String {
+    answer
+        .to_string()
+        .lines()
+        .map(|l| format!("  {l}\n"))
+        .collect()
 }
 
 fn rust_shape_text(text: &str) -> Answer {
@@ -216,7 +212,7 @@ fn rust_shape_text(text: &str) -> Answer {
         Ok(forms) => forms,
         Err(e) => {
             return Answer::Err {
-                kind: "IRParseError".into(),
+                kind: "IRParseError",
                 msg: e.to_string(),
             };
         }
@@ -224,7 +220,7 @@ fn rust_shape_text(text: &str) -> Answer {
     match ein_ir::load(&mut ast, &mut terms, &forms, None) {
         Ok(kb) => Answer::Ok(shape(&kb, &terms)),
         Err(e) => Answer::Err {
-            kind: "KBLoadError".into(),
+            kind: "KBLoadError",
             msg: e.0,
         },
     }
@@ -233,12 +229,12 @@ fn rust_shape_text(text: &str) -> Answer {
 /// Errors **accumulate**, and the order is the pass order — macros, then
 /// relations, then rules, then facts, then config, then the unimported-macro
 /// guard, then the derivation-cycle check. A reordered `; `-joined message is
-/// the failure mode this pins.
+/// the failure mode this pins, and it is invisible in any single fixture:
+/// each of the five programs below declares its errors in an order that is
+/// *not* the pass order, so a loader that reported them in encounter order
+/// would produce five plausible messages and fail here.
 #[test]
 fn load_errors_accumulate_in_pass_order() {
-    let Some(mut py) = Oracle::start(IR_ORACLE) else {
-        return skip("load_errors_accumulate_in_pass_order");
-    };
     let programs = [
         // One error per pass, declared in an order that is not the pass order.
         "(x a :layer fact)\n(rule r () :match (x ?a))\n(relation)\n\
@@ -255,18 +251,16 @@ fn load_errors_accumulate_in_pass_order() {
         // invokes it keeps the unexpanded form rather than expanding it.
         "(macro absent (?p) (rel ?p))\n(rule r () :match (absent ?a) :assert (y ?a))",
     ];
-    let mut bad = Vec::new();
+    let mut out = String::new();
     for program in programs {
-        let got = rust_shape_text(program);
-        let want = py.text("kb-shape", program, None);
-        let same = match (&got, &want) {
-            (Answer::Ok(a), Answer::Ok(b)) => a == b,
-            (Answer::Err { msg: a, .. }, Answer::Err { msg: b, .. }) => a == b,
-            _ => false,
-        };
-        if !same {
-            bad.push(format!("{program}\n  ein.py: {want:?}\n  ein.rs: {got:?}"));
-        }
+        out.push_str(&format!(
+            "=== {}\n{}",
+            program.replace('\n', " ⏎ "),
+            indented(&rust_shape_text(program))
+        ));
     }
-    assert!(bad.is_empty(), "{}", bad.join("\n\n"));
+    assert_eq!(programs.len(), 5, "the table lost a program");
+    if let Some(msg) = golden(&golden_path("ein-ir", "load_error_order.txt"), &out) {
+        panic!("{msg}");
+    }
 }

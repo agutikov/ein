@@ -1,0 +1,406 @@
+=== (config :print-alive true)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=True
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :print-alive false)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :print-alive "true")
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=True
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :print-alive TRUE)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=True
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :print-alive 1)
+  <KBLoadError> (config …): config flag :print-alive expects true/false, got Int(value=1)
+=== (config :print-alive maybe)
+  <KBLoadError> (config …): config flag :print-alive expects true/false, got Atom(name='maybe')
+=== (config :print-alive ?x)
+  <KBLoadError> (config …): config flag :print-alive expects true/false, got Var(name='x')
+=== (config :print-alive 1..5)
+  <KBLoadError> (config …): config flag :print-alive expects true/false, got Range(low=1, high=5)
+=== (config :print-alive (nested a))
+  <KBLoadError> (config …): config flag :print-alive expects true/false, got SForm(head=Atom(name='nested'), args=(Atom(name='a'),))
+=== (config :hypgen-scoring most-constrained)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='most-constrained'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :hypgen-scoring "popularity")
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :hypgen-scoring 7)
+  <KBLoadError> (config …): config flag :hypgen-scoring expects a string, got Int(value=7)
+=== (config :lattice-order score-sum)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='score-sum'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :candidate-order-seed 7)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=7
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :candidate-order-seed -1)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :candidate-order-seed 007)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=7
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :candidate-order-seed "7")
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=7
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :candidate-order-seed " 7 ")
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=7
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :candidate-order-seed "1_000")
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=1000
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :candidate-order-seed "1_")
+  <KBLoadError> (config …): config flag :candidate-order-seed expects an integer, got String(value='1_')
+=== (config :candidate-order-seed "1.5")
+  <KBLoadError> (config …): config flag :candidate-order-seed expects an integer, got String(value='1.5')
+=== (config :candidate-order-seed true)
+  <KBLoadError> (config …): config flag :candidate-order-seed expects an integer, got Atom(name='true')
+=== (config :lattice-order-seed 3)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=3
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :hypgen-rel-weight 2)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=2.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :hypgen-rel-weight "1.5")
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.5
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :hypgen-rel-weight "1_0.5")
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=10.5
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :hypgen-obj-weight "nope")
+  <KBLoadError> (config …): config flag :hypgen-obj-weight expects a number, got String(value='nope')
+=== (config foo)
+  <IRParseError> <string>:1:9: unexpected input
+  (config foo)
+          ^
+=== (config :nope true)
+  <KBLoadError> (config …): unknown config flag :nope (expected one of: candidate-order-seed, enable-fail-fast-fork, enable-forced-positive, enable-lookahead-kill-cache, enable-path-nogoods, enable-pre-branch-lookahead, enable-singleton-writeback, enable-symmetric-mirror, hypgen-obj-weight, hypgen-rel-weight, hypgen-scoring, lattice-order, lattice-order-seed, lattice-sanity-check, print-alive, record-alternative-justifications, warn-derived-naf)
+=== (config)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :print-alive true) (config :warn-derived-naf true)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=True
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True
+=== (config :print-alive true :print-alive false)
+  QUERY None
+  CONFIG enable-pre-branch-lookahead=True
+  CONFIG enable-lookahead-kill-cache=True
+  CONFIG hypgen-scoring='popularity'
+  CONFIG hypgen-rel-weight=1.0
+  CONFIG hypgen-obj-weight=1.0
+  CONFIG print-alive=False
+  CONFIG warn-derived-naf=False
+  CONFIG candidate-order-seed=-1
+  CONFIG lattice-sanity-check=False
+  CONFIG lattice-order='lex'
+  CONFIG lattice-order-seed=None
+  CONFIG enable-path-nogoods=True
+  CONFIG enable-symmetric-mirror=True
+  CONFIG enable-singleton-writeback=True
+  CONFIG enable-forced-positive=True
+  CONFIG record-alternative-justifications=True
+  CONFIG enable-fail-fast-fork=True

@@ -29,8 +29,18 @@ use std::path::Path;
 /// those are the renderings that were built to be *comparable*. An id leak
 /// that reaches an output reaches one of them, and one that reaches nothing
 /// here reaches nothing a user can see.
+///
+/// `Load` and `Saturate` were added by
+/// [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md).
+/// They are the two surfaces whose *only* owner was a differential sweep —
+/// `load_parity`'s `kb-shape` and `saturate_parity`'s verbose event stream —
+/// and the ledger's answer to "and then what asserts it" was this manifest.
+/// They were blessed while the two engines still agreed on both, which is the
+/// whole reason the blessing had to happen before the removal and not after.
 pub fn ops() -> Vec<Op> {
     let mut out = vec![
+        Op::Load,
+        Op::Saturate,
         Op::Plan,
         Op::Match,
         Op::Hyp(false),
@@ -62,6 +72,12 @@ pub const IR_MODES: [&str; 5] = ["parse", "dump-compact", "resolve", "minimize",
 #[derive(Clone, Copy)]
 pub enum Op {
     Ir(&'static str),
+    /// The KB after load: registries, fact list and the seven indexes.
+    Load,
+    /// Root saturation's whole `--events` stream at `Level::Verbose` — every
+    /// firing including the redundant ones, plus the ABSENT / CLASH / SUMMARY
+    /// tail.
+    Saturate,
     Plan,
     Match,
     Hyp(bool),
@@ -79,6 +95,8 @@ impl std::fmt::Display for Op {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Op::Ir(m) => write!(f, "ir[{m}]"),
+            Op::Load => write!(f, "load"),
+            Op::Saturate => write!(f, "saturate"),
             Op::Plan => write!(f, "plan"),
             Op::Match => write!(f, "match"),
             Op::Hyp(c) => write!(f, "hyp{}", if *c { "+closed" } else { "" }),
@@ -114,7 +132,12 @@ impl Op {
         }
         Some(match self {
             Op::Dot(view) if ein_parity::is_narration(view) => return None,
-            Op::Ir(_) => text.to_string(),
+            // The three ops the relaxation never touched, because their
+            // parity tests compared bytes: `ir_oracle.py`'s frontend modes,
+            // `load_parity`'s `kb-shape`, and `saturate_parity`'s event
+            // stream. Blanking a firing count here would weaken a self-golden
+            // to be lenient towards an engine that is not there.
+            Op::Ir(_) | Op::Load | Op::Saturate => text.to_string(),
             Op::Trace(mode) => ein_parity::blank_blocks(&format!("--- {mode}\n{text}"), "--- "),
             Op::Dump(_) => ein_parity::blank_blocks(text, "=== "),
             _ => ein_parity::blank(text),
@@ -146,6 +169,16 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
     if let Op::Ir(mode) = op {
         return Some(ir_op(&mut ast, &forms, base, mode));
     }
+    // `Load` is the one op whose *failure* is its answer: the load-negative
+    // corpus is a third of the files, and their messages are what
+    // `load_parity` compared. Every other op below treats a load failure as
+    // "nothing here".
+    if let Op::Load = op {
+        return Some(match ein_ir::load(&mut ast, terms, &forms, base) {
+            Ok(kb) => ein_core::shape(&kb, terms),
+            Err(e) => format!("<refused> {}", e.0),
+        });
+    }
     let outcome = match op {
         Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view),
         Op::Trace(mode) => trace_shape(&mut ast, terms, &forms, base, mode),
@@ -160,6 +193,8 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
                     ein_infer::lattice_shape(&ast, terms, &mut kb).map_err(|e| e.to_string())
                 }
                 Op::Naf => ein_infer::naf_map(&ast, terms, &mut kb).map_err(|e| e.to_string()),
+                Op::Saturate => ein_infer::saturate_events(&ast, terms, &mut kb)
+                    .map_err(|e| e.to_string()),
                 Op::Solve(mode) => ein_infer::solve_shape(&ast, terms, &mut kb, mode),
                 Op::Commit(ff) => {
                     ein_infer::commit_shape(&ast, terms, &mut kb, ff).map_err(|e| e.to_string())
@@ -167,7 +202,7 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
                 Op::Explain(alts) => {
                     ein_infer::explain_shape(&ast, terms, &mut kb, alts).map_err(|e| e.to_string())
                 }
-                Op::Ir(_) | Op::Dot(_) | Op::Trace(_) | Op::Dump(_) => {
+                Op::Ir(_) | Op::Load | Op::Dot(_) | Op::Trace(_) | Op::Dump(_) => {
                     unreachable!("handled above")
                 }
             }

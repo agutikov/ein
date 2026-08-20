@@ -1,3 +1,5 @@
+4d338d47513c1b77       93L  examples/branching/01_saturate_only.ein::load
+1f7792b379ad97b8       27L  examples/branching/01_saturate_only.ein::saturate
 e600b7c2c9f6171f       31L  examples/branching/01_saturate_only.ein::plan
 08f79238e0d1640e       26L  examples/branching/01_saturate_only.ein::match
 343a543a2ad7682c       79L  examples/branching/01_saturate_only.ein::hyp
@@ -41,6 +43,8 @@ a643132be63e5f6e       46L  examples/branching/01_saturate_only.ein::trace[no-pr
 20e7d6b2b9256530       75L  examples/branching/01_saturate_only.ein::dump[progress]
 544808fc91d22335      104L  examples/branching/01_saturate_only.ein::dump[abort]
 9959177c072c72f6       24L  examples/branching/01_saturate_only.ein::dump[snapshot]
+b29ee64967447a62       87L  examples/branching/02_one_dead_one_alive.ein::load
+501622f12eb2e7e3       23L  examples/branching/02_one_dead_one_alive.ein::saturate
 91f3bb638495c5a2       31L  examples/branching/02_one_dead_one_alive.ein::plan
 c56dd4932788e47e       24L  examples/branching/02_one_dead_one_alive.ein::match
 ec303873c91b3506      160L  examples/branching/02_one_dead_one_alive.ein::hyp
@@ -84,6 +88,8 @@ dceb4ae99f61dd33        5L  examples/branching/02_one_dead_one_alive.ein::trace[
 c388b2af134f0fbd      450L  examples/branching/02_one_dead_one_alive.ein::dump[progress]
 b68ffb2f09917f12      173L  examples/branching/02_one_dead_one_alive.ein::dump[abort]
 a238b6ab5251e071        1L  examples/branching/02_one_dead_one_alive.ein::dump[snapshot]
+1d501d7a4794f197      125L  examples/branching/03_five_hyps_one_alive.ein::load
+b6c5baa216bf05af      107L  examples/branching/03_five_hyps_one_alive.ein::saturate
 2433f9de409bed87       31L  examples/branching/03_five_hyps_one_alive.ein::plan
 1265839022ea8fda      138L  examples/branching/03_five_hyps_one_alive.ein::match
 ccec5ef31df96138      416L  examples/branching/03_five_hyps_one_alive.ein::hyp
@@ -127,6 +133,8 @@ b5982c87e0b76639      102L  examples/branching/03_five_hyps_one_alive.ein::trace
 974fbc96b9af110e      975L  examples/branching/03_five_hyps_one_alive.ein::dump[progress]
 10c7a1067dadfffc     1024L  examples/branching/03_five_hyps_one_alive.ein::dump[abort]
 222030bf071c3647       24L  examples/branching/03_five_hyps_one_alive.ein::dump[snapshot]
+84c536ac38923ff0       97L  examples/branching/04_two_levels.ein::load
+39481bc84d33afe6       39L  examples/branching/04_two_levels.ein::saturate
 1790d86f6b7ac99a       31L  examples/branching/04_two_levels.ein::plan
 5dd4880b8857b9e0       48L  examples/branching/04_two_levels.ein::match
 9eee0f39f3aef691      160L  examples/branching/04_two_levels.ein::hyp
@@ -170,6 +178,8 @@ afa021740d720aa9      970L  examples/branching/04_two_levels.ein::dump[monotonic
 caf17a89f1994156      996L  examples/branching/04_two_levels.ein::dump[progress]
 e5007099368a668e      229L  examples/branching/04_two_levels.ein::dump[abort]
 9e9b4395a696fded       62L  examples/branching/04_two_levels.ein::dump[snapshot]
+f35042c64735adfc      104L  examples/branching/05_mini_zebra.ein::load
+90e9e7f68e9cfd1a       59L  examples/branching/05_mini_zebra.ein::saturate
 1790d86f6b7ac99a       31L  examples/branching/05_mini_zebra.ein::plan
 5ede5b739a0972c4       44L  examples/branching/05_mini_zebra.ein::match
 6e05f327458fa363       25L  examples/branching/05_mini_zebra.ein::hyp
@@ -213,6 +223,8 @@ ff04310703e3b83f      432L  examples/branching/05_mini_zebra.ein::dump[monotonic
 d40647ba7f9950ee      443L  examples/branching/05_mini_zebra.ein::dump[progress]
 e5eda3009c974dd4      343L  examples/branching/05_mini_zebra.ein::dump[abort]
 f0259cf486df2576       24L  examples/branching/05_mini_zebra.ein::dump[snapshot]
+aed28dd79eee1dab      139L  examples/branching/06_lookahead_on.ein::load
+e430e028e769efcf      107L  examples/branching/06_lookahead_on.ein::saturate
 e47252bf8de065c4       31L  examples/branching/06_lookahead_on.ein::plan
 2966ed597d3e1cbb      138L  examples/branching/06_lookahead_on.ein::match
 b28666ba57b6083f      592L  examples/branching/06_lookahead_on.ein::hyp
@@ -256,6 +268,8 @@ dceb4ae99f61dd33        5L  examples/branching/06_lookahead_on.ein::trace[no-pro
 7386c20d5713417f     1623L  examples/branching/06_lookahead_on.ein::dump[progress]
 89ecf771d9336791      629L  examples/branching/06_lookahead_on.ein::dump[abort]
 a238b6ab5251e071        1L  examples/branching/06_lookahead_on.ein::dump[snapshot]
+ec2d51c2a21f8ec3      139L  examples/branching/07_lookahead_off.ein::load
+e430e028e769efcf      107L  examples/branching/07_lookahead_off.ein::saturate
 e47252bf8de065c4       31L  examples/branching/07_lookahead_off.ein::plan
 2966ed597d3e1cbb      138L  examples/branching/07_lookahead_off.ein::match
 012f2622f62a6c81      587L  examples/branching/07_lookahead_off.ein::hyp
@@ -299,6 +313,8 @@ bfdc13a926e72af0      816L  examples/branching/07_lookahead_off.ein::dump[lattic
 509af063b065a520      367L  examples/branching/07_lookahead_off.ein::dump[progress]
 87c0f7967374fabc      313L  examples/branching/07_lookahead_off.ein::dump[abort]
 a238b6ab5251e071        1L  examples/branching/07_lookahead_off.ein::dump[snapshot]
+4745d6e48c407bce      118L  examples/branching/08_hypothesis_relation_whitelist.ein::load
+47bdcc2b91a2c943       52L  examples/branching/08_hypothesis_relation_whitelist.ein::saturate
 a9c0672b0313591b       37L  examples/branching/08_hypothesis_relation_whitelist.ein::plan
 207ff5734061d804       55L  examples/branching/08_hypothesis_relation_whitelist.ein::match
 aec88c6553ec7831      162L  examples/branching/08_hypothesis_relation_whitelist.ein::hyp
@@ -342,6 +358,8 @@ f0a77ab9ae4c22b4      870L  examples/branching/08_hypothesis_relation_whitelist.
 6c75cb6df59015e7      492L  examples/branching/08_hypothesis_relation_whitelist.ein::dump[progress]
 43f764e3b0d5b2d3      213L  examples/branching/08_hypothesis_relation_whitelist.ein::dump[abort]
 a238b6ab5251e071        1L  examples/branching/08_hypothesis_relation_whitelist.ein::dump[snapshot]
+f3a863f776237a9b      100L  examples/branching/09_hrule.ein::load
+621058d0ca80adfd       43L  examples/branching/09_hrule.ein::saturate
 e47252bf8de065c4       31L  examples/branching/09_hrule.ein::plan
 5286fd316fc3f5bf       50L  examples/branching/09_hrule.ein::match
 e8c1868641075736       22L  examples/branching/09_hrule.ein::hyp
@@ -385,6 +403,8 @@ e4d53610fc6f1b51       92L  examples/branching/09_hrule.ein::dump[monotonic]
 2578f05f1a349035       95L  examples/branching/09_hrule.ein::dump[progress]
 9fa0a2cb3dd54a32      124L  examples/branching/09_hrule.ein::dump[abort]
 c1eacb58cf0f80c7       24L  examples/branching/09_hrule.ein::dump[snapshot]
+2c7f841a3b9868f0      136L  examples/branching/10_kill_cache_on.ein::load
+0a2828410c391953      137L  examples/branching/10_kill_cache_on.ein::saturate
 4e5659466af36edf       31L  examples/branching/10_kill_cache_on.ein::plan
 decb6daed311e457       70L  examples/branching/10_kill_cache_on.ein::match
 7a91d9efec85835f       37L  examples/branching/10_kill_cache_on.ein::hyp
@@ -428,6 +448,8 @@ c01fa4706830b210     1368L  examples/branching/10_kill_cache_on.ein::dump[lattic
 7041e2f9f623e7a4      976L  examples/branching/10_kill_cache_on.ein::dump[progress]
 db09236a4db50833      257L  examples/branching/10_kill_cache_on.ein::dump[abort]
 fd98d44919c76c9e       42L  examples/branching/10_kill_cache_on.ein::dump[snapshot]
+1f648ad3e166ed6a      136L  examples/branching/11_kill_cache_off.ein::load
+0a2828410c391953      137L  examples/branching/11_kill_cache_off.ein::saturate
 4e5659466af36edf       31L  examples/branching/11_kill_cache_off.ein::plan
 decb6daed311e457       70L  examples/branching/11_kill_cache_off.ein::match
 7a91d9efec85835f       37L  examples/branching/11_kill_cache_off.ein::hyp
@@ -471,6 +493,8 @@ c6a7c18965efa38b     1224L  examples/branching/11_kill_cache_off.ein::dump[latti
 54f594d7e1cfab96      832L  examples/branching/11_kill_cache_off.ein::dump[progress]
 b410574abbc3e661      233L  examples/branching/11_kill_cache_off.ein::dump[abort]
 d8e0508e5b9cab4e       42L  examples/branching/11_kill_cache_off.ein::dump[snapshot]
+bbed89401843739a      147L  examples/branching/12_typed_blind_solve.ein::load
+1e608308f95b05fc       55L  examples/branching/12_typed_blind_solve.ein::saturate
 dd2f969d4c5b9d93       78L  examples/branching/12_typed_blind_solve.ein::plan
 ff9e2aaf9d40020f       73L  examples/branching/12_typed_blind_solve.ein::match
 bee0836611d8d6f5      101L  examples/branching/12_typed_blind_solve.ein::hyp
@@ -514,6 +538,8 @@ a39aa2a86a7fb697      293L  examples/branching/12_typed_blind_solve.ein::trace[n
 a70da9b35d35a83a      291L  examples/branching/12_typed_blind_solve.ein::dump[progress]
 08d61c29ec01aefd      185L  examples/branching/12_typed_blind_solve.ein::dump[abort]
 47ec4d3ca8e683b5       28L  examples/branching/12_typed_blind_solve.ein::dump[snapshot]
+8536a9933c660607       57L  examples/branching/13_lookahead_naf_world.ein::load
+df676ce9b1b86629        9L  examples/branching/13_lookahead_naf_world.ein::saturate
 eb28bd088ebedca2       14L  examples/branching/13_lookahead_naf_world.ein::plan
 995dea2cff176ea3        5L  examples/branching/13_lookahead_naf_world.ein::match
 3c8b5dc523cc7668       16L  examples/branching/13_lookahead_naf_world.ein::hyp
@@ -557,6 +583,8 @@ ec8081669dab14c1      183L  examples/branching/13_lookahead_naf_world.ein::dump[
 db3683675b88c3a9      138L  examples/branching/13_lookahead_naf_world.ein::dump[progress]
 ec8081669dab14c1      183L  examples/branching/13_lookahead_naf_world.ein::dump[abort]
 c790e5e4616d415d       24L  examples/branching/13_lookahead_naf_world.ein::dump[snapshot]
+b17616451ef4b1a6       59L  examples/branching/14_lookahead_unjudgeable.ein::load
+d4997711894e44f6        5L  examples/branching/14_lookahead_unjudgeable.ein::saturate
 2daff85150aca053       18L  examples/branching/14_lookahead_unjudgeable.ein::plan
 e00827ae16b399b2        2L  examples/branching/14_lookahead_unjudgeable.ein::match
 18e6eaf401510c42       14L  examples/branching/14_lookahead_unjudgeable.ein::hyp
@@ -601,6 +629,8 @@ aa66e34020a53541      138L  examples/branching/14_lookahead_unjudgeable.ein::dum
 156d32a3a0144764      183L  examples/branching/14_lookahead_unjudgeable.ein::dump[abort]
 c6be0853abdb877e       24L  examples/branching/14_lookahead_unjudgeable.ein::dump[snapshot]
 18f9cc5e9a92d985        3L  examples/broken/bare_top_level_atom.ein::ir[parse]
+6ec9b0473d7d0c56       23L  examples/broken/compile/activator_arity.ein::load
+a8e57762d63c183b        3L  examples/broken/compile/activator_arity.ein::saturate
 d41d8cd98f00b204        0L  examples/broken/compile/activator_arity.ein::plan
 d41d8cd98f00b204        0L  examples/broken/compile/activator_arity.ein::match
 a683663a0a6e9898        7L  examples/broken/compile/activator_arity.ein::hyp
@@ -644,6 +674,8 @@ c6673a697b26e6d9       62L  examples/broken/compile/activator_arity.ein::dump[la
 667dd273918c46b2       33L  examples/broken/compile/activator_arity.ein::dump[progress]
 c6673a697b26e6d9       62L  examples/broken/compile/activator_arity.ein::dump[abort]
 6846fd5bc9fb2013       24L  examples/broken/compile/activator_arity.ein::dump[snapshot]
+3584dbd7bf60eba3       14L  examples/broken/compile/empty_absent.ein::load
+b452571abd14fe91        1L  examples/broken/compile/empty_absent.ein::saturate
 b452571abd14fe91        1L  examples/broken/compile/empty_absent.ein::plan
 b452571abd14fe91        1L  examples/broken/compile/empty_absent.ein::match
 b452571abd14fe91        1L  examples/broken/compile/empty_absent.ein::hyp
@@ -687,6 +719,8 @@ b452571abd14fe91        1L  examples/broken/compile/empty_absent.ein::dump[latti
 b452571abd14fe91        1L  examples/broken/compile/empty_absent.ein::dump[progress]
 b452571abd14fe91        1L  examples/broken/compile/empty_absent.ein::dump[abort]
 b452571abd14fe91        1L  examples/broken/compile/empty_absent.ein::dump[snapshot]
+e333107eb6769ef2       26L  examples/broken/compile/nested_or.ein::load
+fee0edd18314271d        1L  examples/broken/compile/nested_or.ein::saturate
 fee0edd18314271d        1L  examples/broken/compile/nested_or.ein::plan
 fee0edd18314271d        1L  examples/broken/compile/nested_or.ein::match
 fee0edd18314271d        1L  examples/broken/compile/nested_or.ein::hyp
@@ -730,6 +764,8 @@ fee0edd18314271d        1L  examples/broken/compile/nested_or.ein::dump[lattice]
 fee0edd18314271d        1L  examples/broken/compile/nested_or.ein::dump[progress]
 fee0edd18314271d        1L  examples/broken/compile/nested_or.ein::dump[abort]
 fee0edd18314271d        1L  examples/broken/compile/nested_or.ein::dump[snapshot]
+0c6f37c498d727a4       21L  examples/broken/compile/unbound_head.ein::load
+690b9728a80fcb4e        1L  examples/broken/compile/unbound_head.ein::saturate
 690b9728a80fcb4e        1L  examples/broken/compile/unbound_head.ein::plan
 690b9728a80fcb4e        1L  examples/broken/compile/unbound_head.ein::match
 690b9728a80fcb4e        1L  examples/broken/compile/unbound_head.ein::hyp
@@ -774,6 +810,7 @@ b498df5c6fbcc5b4        9L  examples/broken/compile/unbound_head.ein::dot[kb-ori
 690b9728a80fcb4e        1L  examples/broken/compile/unbound_head.ein::dump[abort]
 690b9728a80fcb4e        1L  examples/broken/compile/unbound_head.ein::dump[snapshot]
 6ddff415932ccd96        3L  examples/broken/keyword_as_value.ein::ir[parse]
+c4f7ff48ebeb038a        1L  examples/broken/load/config_bad_value.ein::load
 773b8b4f9a199bc5        3L  examples/broken/load/config_bad_value.ein::ir[parse]
 db1747cd4daf947f        2L  examples/broken/load/config_bad_value.ein::ir[dump-compact]
 773b8b4f9a199bc5        3L  examples/broken/load/config_bad_value.ein::ir[resolve]
@@ -804,6 +841,7 @@ c4f7ff48ebeb038a        1L  examples/broken/load/config_bad_value.ein::dump[latt
 c4f7ff48ebeb038a        1L  examples/broken/load/config_bad_value.ein::dump[progress]
 c4f7ff48ebeb038a        1L  examples/broken/load/config_bad_value.ein::dump[abort]
 c4f7ff48ebeb038a        1L  examples/broken/load/config_bad_value.ein::dump[snapshot]
+6143ed6b02106f4f        1L  examples/broken/load/config_unknown_flag.ein::load
 e12429a8be454c6a        3L  examples/broken/load/config_unknown_flag.ein::ir[parse]
 49c9120d4ca33875        2L  examples/broken/load/config_unknown_flag.ein::ir[dump-compact]
 e12429a8be454c6a        3L  examples/broken/load/config_unknown_flag.ein::ir[resolve]
@@ -834,6 +872,7 @@ d41d8cd98f00b204        0L  examples/broken/load/config_unknown_flag.ein::dot[ru
 6143ed6b02106f4f        1L  examples/broken/load/config_unknown_flag.ein::dump[progress]
 6143ed6b02106f4f        1L  examples/broken/load/config_unknown_flag.ein::dump[abort]
 6143ed6b02106f4f        1L  examples/broken/load/config_unknown_flag.ein::dump[snapshot]
+815eefdde13c258d        1L  examples/broken/load/derivation_cycle.ein::load
 9ad0af07a193c15e        5L  examples/broken/load/derivation_cycle.ein::ir[parse]
 3e3501727abed0d1        3L  examples/broken/load/derivation_cycle.ein::ir[dump-compact]
 9ad0af07a193c15e        5L  examples/broken/load/derivation_cycle.ein::ir[resolve]
@@ -864,6 +903,7 @@ d41d8cd98f00b204        0L  examples/broken/load/derivation_cycle.ein::dot[rules
 815eefdde13c258d        1L  examples/broken/load/derivation_cycle.ein::dump[progress]
 815eefdde13c258d        1L  examples/broken/load/derivation_cycle.ein::dump[abort]
 815eefdde13c258d        1L  examples/broken/load/derivation_cycle.ein::dump[snapshot]
+e3f02060def23096        1L  examples/broken/load/fact_layer_kwarg.ein::load
 7c75a168de46ec9f        3L  examples/broken/load/fact_layer_kwarg.ein::ir[parse]
 3c3ba105b8488a87        2L  examples/broken/load/fact_layer_kwarg.ein::ir[dump-compact]
 7c75a168de46ec9f        3L  examples/broken/load/fact_layer_kwarg.ein::ir[resolve]
@@ -894,6 +934,7 @@ e3f02060def23096        1L  examples/broken/load/fact_layer_kwarg.ein::dump[latt
 e3f02060def23096        1L  examples/broken/load/fact_layer_kwarg.ein::dump[progress]
 e3f02060def23096        1L  examples/broken/load/fact_layer_kwarg.ein::dump[abort]
 e3f02060def23096        1L  examples/broken/load/fact_layer_kwarg.ein::dump[snapshot]
+85c0025748a953a3        1L  examples/broken/load/hrule_duplicate_name.ein::load
 8230805d189575fd        7L  examples/broken/load/hrule_duplicate_name.ein::ir[parse]
 96c747a5238f140e        4L  examples/broken/load/hrule_duplicate_name.ein::ir[dump-compact]
 8230805d189575fd        7L  examples/broken/load/hrule_duplicate_name.ein::ir[resolve]
@@ -924,6 +965,7 @@ db008f121ae8e873       38L  examples/broken/load/hrule_duplicate_name.ein::dot[i
 85c0025748a953a3        1L  examples/broken/load/hrule_duplicate_name.ein::dump[progress]
 85c0025748a953a3        1L  examples/broken/load/hrule_duplicate_name.ein::dump[abort]
 85c0025748a953a3        1L  examples/broken/load/hrule_duplicate_name.ein::dump[snapshot]
+0636374f72d860a8        1L  examples/broken/load/hrule_reserved_name.ein::load
 6ab5f1e6d43ec2e8        1L  examples/broken/load/hrule_reserved_name.ein::ir[parse]
 5830632a9df24e95        1L  examples/broken/load/hrule_reserved_name.ein::ir[dump-compact]
 6ab5f1e6d43ec2e8        1L  examples/broken/load/hrule_reserved_name.ein::ir[resolve]
@@ -954,6 +996,7 @@ e97c627975f29381        8L  examples/broken/load/hrule_reserved_name.ein::dot[ru
 0636374f72d860a8        1L  examples/broken/load/hrule_reserved_name.ein::dump[progress]
 0636374f72d860a8        1L  examples/broken/load/hrule_reserved_name.ein::dump[abort]
 0636374f72d860a8        1L  examples/broken/load/hrule_reserved_name.ein::dump[snapshot]
+c20156d0de092afc        1L  examples/broken/load/import_alias_not_a_name.ein::load
 d53a22e673266fc0        1L  examples/broken/load/import_alias_not_a_name.ein::ir[parse]
 c314f0ae78950cc9        1L  examples/broken/load/import_alias_not_a_name.ein::ir[dump-compact]
 c20156d0de092afc        1L  examples/broken/load/import_alias_not_a_name.ein::ir[resolve]
@@ -984,6 +1027,7 @@ c20156d0de092afc        1L  examples/broken/load/import_alias_not_a_name.ein::du
 c20156d0de092afc        1L  examples/broken/load/import_alias_not_a_name.ein::dump[progress]
 c20156d0de092afc        1L  examples/broken/load/import_alias_not_a_name.ein::dump[abort]
 c20156d0de092afc        1L  examples/broken/load/import_alias_not_a_name.ein::dump[snapshot]
+5b8f2587c9419674        1L  examples/broken/load/import_as_and_symbols.ein::load
 4ffdd60e496e0a62        1L  examples/broken/load/import_as_and_symbols.ein::ir[parse]
 7fcf5cf78e697cfc        1L  examples/broken/load/import_as_and_symbols.ein::ir[dump-compact]
 5b8f2587c9419674        1L  examples/broken/load/import_as_and_symbols.ein::ir[resolve]
@@ -1014,6 +1058,7 @@ c4230dfbd5af5082        5L  examples/broken/load/import_as_and_symbols.ein::dot[
 5b8f2587c9419674        1L  examples/broken/load/import_as_and_symbols.ein::dump[progress]
 5b8f2587c9419674        1L  examples/broken/load/import_as_and_symbols.ein::dump[abort]
 5b8f2587c9419674        1L  examples/broken/load/import_as_and_symbols.ein::dump[snapshot]
+e83b720a0c815e90        1L  examples/broken/load/import_bare_std.ein::load
 5ed136214fd8c322        1L  examples/broken/load/import_bare_std.ein::ir[parse]
 68248f944756bd83        1L  examples/broken/load/import_bare_std.ein::ir[dump-compact]
 e83b720a0c815e90        1L  examples/broken/load/import_bare_std.ein::ir[resolve]
@@ -1044,6 +1089,7 @@ e83b720a0c815e90        1L  examples/broken/load/import_bare_std.ein::dump[latti
 e83b720a0c815e90        1L  examples/broken/load/import_bare_std.ein::dump[progress]
 e83b720a0c815e90        1L  examples/broken/load/import_bare_std.ein::dump[abort]
 e83b720a0c815e90        1L  examples/broken/load/import_bare_std.ein::dump[snapshot]
+1c9e0c2e10652dcb        1L  examples/broken/load/import_conflicting_definitions.ein::load
 651fc78756a5065a        3L  examples/broken/load/import_conflicting_definitions.ein::ir[parse]
 f2e97f006cdfbefb        2L  examples/broken/load/import_conflicting_definitions.ein::ir[dump-compact]
 1c9e0c2e10652dcb        1L  examples/broken/load/import_conflicting_definitions.ein::ir[resolve]
@@ -1074,6 +1120,7 @@ b6d422a505bb38d2        5L  examples/broken/load/import_conflicting_definitions.
 1c9e0c2e10652dcb        1L  examples/broken/load/import_conflicting_definitions.ein::dump[progress]
 1c9e0c2e10652dcb        1L  examples/broken/load/import_conflicting_definitions.ein::dump[abort]
 1c9e0c2e10652dcb        1L  examples/broken/load/import_conflicting_definitions.ein::dump[snapshot]
+7db47abace2e7c4f        1L  examples/broken/load/import_cycle.ein::load
 8a31ad1ba9cc7161        3L  examples/broken/load/import_cycle.ein::ir[parse]
 3af697b874f68060        2L  examples/broken/load/import_cycle.ein::ir[dump-compact]
 7db47abace2e7c4f        1L  examples/broken/load/import_cycle.ein::ir[resolve]
@@ -1104,6 +1151,7 @@ d41d8cd98f00b204        0L  examples/broken/load/import_cycle.ein::dot[rules-ove
 7db47abace2e7c4f        1L  examples/broken/load/import_cycle.ein::dump[progress]
 7db47abace2e7c4f        1L  examples/broken/load/import_cycle.ein::dump[abort]
 7db47abace2e7c4f        1L  examples/broken/load/import_cycle.ein::dump[snapshot]
+d0df20b5c63d179d        1L  examples/broken/load/import_cycle_b.ein::load
 30cfddb7367f017b        3L  examples/broken/load/import_cycle_b.ein::ir[parse]
 59f5eaf4898b8947        2L  examples/broken/load/import_cycle_b.ein::ir[dump-compact]
 d0df20b5c63d179d        1L  examples/broken/load/import_cycle_b.ein::ir[resolve]
@@ -1134,6 +1182,7 @@ d0df20b5c63d179d        1L  examples/broken/load/import_cycle_b.ein::dump[lattic
 d0df20b5c63d179d        1L  examples/broken/load/import_cycle_b.ein::dump[progress]
 d0df20b5c63d179d        1L  examples/broken/load/import_cycle_b.ein::dump[abort]
 d0df20b5c63d179d        1L  examples/broken/load/import_cycle_b.ein::dump[snapshot]
+0e35254d1be94133        1L  examples/broken/load/import_module_not_found.ein::load
 b27772194bf9e722        1L  examples/broken/load/import_module_not_found.ein::ir[parse]
 47e44577d522a2e4        1L  examples/broken/load/import_module_not_found.ein::ir[dump-compact]
 0e35254d1be94133        1L  examples/broken/load/import_module_not_found.ein::ir[resolve]
@@ -1164,6 +1213,7 @@ a20c89f7a4e1ec87        5L  examples/broken/load/import_module_not_found.ein::do
 0e35254d1be94133        1L  examples/broken/load/import_module_not_found.ein::dump[progress]
 0e35254d1be94133        1L  examples/broken/load/import_module_not_found.ein::dump[abort]
 0e35254d1be94133        1L  examples/broken/load/import_module_not_found.ein::dump[snapshot]
+02cae62720af9663        1L  examples/broken/load/import_relative_not_found.ein::load
 abdce1c87ad6fbf5        1L  examples/broken/load/import_relative_not_found.ein::ir[parse]
 bec91030752e6cfa        1L  examples/broken/load/import_relative_not_found.ein::ir[dump-compact]
 02cae62720af9663        1L  examples/broken/load/import_relative_not_found.ein::ir[resolve]
@@ -1194,6 +1244,7 @@ a1f3e446d72c9229        5L  examples/broken/load/import_relative_not_found.ein::
 02cae62720af9663        1L  examples/broken/load/import_relative_not_found.ein::dump[progress]
 02cae62720af9663        1L  examples/broken/load/import_relative_not_found.ein::dump[abort]
 02cae62720af9663        1L  examples/broken/load/import_relative_not_found.ein::dump[snapshot]
+1dfac33b3724f8e2        1L  examples/broken/load/import_symbols_empty.ein::load
 1867429e537b290b        1L  examples/broken/load/import_symbols_empty.ein::ir[parse]
 3c3a0fb7212c0c4f        1L  examples/broken/load/import_symbols_empty.ein::ir[dump-compact]
 1dfac33b3724f8e2        1L  examples/broken/load/import_symbols_empty.ein::ir[resolve]
@@ -1224,6 +1275,7 @@ c4230dfbd5af5082        5L  examples/broken/load/import_symbols_empty.ein::dot[c
 1dfac33b3724f8e2        1L  examples/broken/load/import_symbols_empty.ein::dump[progress]
 1dfac33b3724f8e2        1L  examples/broken/load/import_symbols_empty.ein::dump[abort]
 1dfac33b3724f8e2        1L  examples/broken/load/import_symbols_empty.ein::dump[snapshot]
+fa009a4ea7637033        1L  examples/broken/load/import_symbols_not_a_list.ein::load
 90c5ecffc9de4334        1L  examples/broken/load/import_symbols_not_a_list.ein::ir[parse]
 0b9004b25774df39        1L  examples/broken/load/import_symbols_not_a_list.ein::ir[dump-compact]
 fa009a4ea7637033        1L  examples/broken/load/import_symbols_not_a_list.ein::ir[resolve]
@@ -1254,6 +1306,7 @@ fa009a4ea7637033        1L  examples/broken/load/import_symbols_not_a_list.ein::
 fa009a4ea7637033        1L  examples/broken/load/import_symbols_not_a_list.ein::dump[progress]
 fa009a4ea7637033        1L  examples/broken/load/import_symbols_not_a_list.ein::dump[abort]
 fa009a4ea7637033        1L  examples/broken/load/import_symbols_not_a_list.ein::dump[snapshot]
+b00e6a06500a3af5        1L  examples/broken/load/import_symbols_not_provided.ein::load
 f895d5850d7a89b0        1L  examples/broken/load/import_symbols_not_provided.ein::ir[parse]
 9c9b926ff12e03d7        1L  examples/broken/load/import_symbols_not_provided.ein::ir[dump-compact]
 b00e6a06500a3af5        1L  examples/broken/load/import_symbols_not_provided.ein::ir[resolve]
@@ -1284,6 +1337,7 @@ b00e6a06500a3af5        1L  examples/broken/load/import_symbols_not_provided.ein
 b00e6a06500a3af5        1L  examples/broken/load/import_symbols_not_provided.ein::dump[progress]
 b00e6a06500a3af5        1L  examples/broken/load/import_symbols_not_provided.ein::dump[abort]
 b00e6a06500a3af5        1L  examples/broken/load/import_symbols_not_provided.ein::dump[snapshot]
+5867797aecadb0a8        1L  examples/broken/load/macro_arity_mismatch.ein::load
 1534c73057399d59        3L  examples/broken/load/macro_arity_mismatch.ein::ir[parse]
 2389a744d6b03de7        2L  examples/broken/load/macro_arity_mismatch.ein::ir[dump-compact]
 1534c73057399d59        3L  examples/broken/load/macro_arity_mismatch.ein::ir[resolve]
@@ -1314,6 +1368,7 @@ a22d5f211168499b       11L  examples/broken/load/macro_arity_mismatch.ein::dot[c
 5867797aecadb0a8        1L  examples/broken/load/macro_arity_mismatch.ein::dump[progress]
 5867797aecadb0a8        1L  examples/broken/load/macro_arity_mismatch.ein::dump[abort]
 5867797aecadb0a8        1L  examples/broken/load/macro_arity_mismatch.ein::dump[snapshot]
+061edfefc7573f80        1L  examples/broken/load/macro_duplicate.ein::load
 e4f7421fd09ed36a        3L  examples/broken/load/macro_duplicate.ein::ir[parse]
 8e0c43c72af414f9        2L  examples/broken/load/macro_duplicate.ein::ir[dump-compact]
 e4f7421fd09ed36a        3L  examples/broken/load/macro_duplicate.ein::ir[resolve]
@@ -1344,6 +1399,7 @@ c8d76d31b0eee5c2       16L  examples/broken/load/macro_duplicate.ein::dot[constr
 061edfefc7573f80        1L  examples/broken/load/macro_duplicate.ein::dump[progress]
 061edfefc7573f80        1L  examples/broken/load/macro_duplicate.ein::dump[abort]
 061edfefc7573f80        1L  examples/broken/load/macro_duplicate.ein::dump[snapshot]
+52e6bdcd9227fca4        1L  examples/broken/load/macro_reserved_name.ein::load
 7c3a59d92994c1fc        1L  examples/broken/load/macro_reserved_name.ein::ir[parse]
 86755ab13208b5f0        1L  examples/broken/load/macro_reserved_name.ein::ir[dump-compact]
 7c3a59d92994c1fc        1L  examples/broken/load/macro_reserved_name.ein::ir[resolve]
@@ -1374,6 +1430,7 @@ d41d8cd98f00b204        0L  examples/broken/load/macro_reserved_name.ein::dot[ru
 52e6bdcd9227fca4        1L  examples/broken/load/macro_reserved_name.ein::dump[progress]
 52e6bdcd9227fca4        1L  examples/broken/load/macro_reserved_name.ein::dump[abort]
 52e6bdcd9227fca4        1L  examples/broken/load/macro_reserved_name.ein::dump[snapshot]
+ce4c14b59ba2d1e6        1L  examples/broken/load/relation_duplicate.ein::load
 cf1dafb574f4ad5c        3L  examples/broken/load/relation_duplicate.ein::ir[parse]
 8c0f43d3be328c89        2L  examples/broken/load/relation_duplicate.ein::ir[dump-compact]
 cf1dafb574f4ad5c        3L  examples/broken/load/relation_duplicate.ein::ir[resolve]
@@ -1404,6 +1461,7 @@ ce4c14b59ba2d1e6        1L  examples/broken/load/relation_duplicate.ein::dump[la
 ce4c14b59ba2d1e6        1L  examples/broken/load/relation_duplicate.ein::dump[progress]
 ce4c14b59ba2d1e6        1L  examples/broken/load/relation_duplicate.ein::dump[abort]
 ce4c14b59ba2d1e6        1L  examples/broken/load/relation_duplicate.ein::dump[snapshot]
+33ed6c506682be1a        1L  examples/broken/load/relation_malformed.ein::load
 8563b46926169762        1L  examples/broken/load/relation_malformed.ein::ir[parse]
 ee351743129df791        1L  examples/broken/load/relation_malformed.ein::ir[dump-compact]
 8563b46926169762        1L  examples/broken/load/relation_malformed.ein::ir[resolve]
@@ -1434,6 +1492,7 @@ d41d8cd98f00b204        0L  examples/broken/load/relation_malformed.ein::dot[rul
 33ed6c506682be1a        1L  examples/broken/load/relation_malformed.ein::dump[progress]
 33ed6c506682be1a        1L  examples/broken/load/relation_malformed.ein::dump[abort]
 33ed6c506682be1a        1L  examples/broken/load/relation_malformed.ein::dump[snapshot]
+77cf7c6e9f4dd214        1L  examples/broken/load/relation_needs_a_name.ein::load
 23e55a7416be6961        1L  examples/broken/load/relation_needs_a_name.ein::ir[parse]
 da04ec437034c2f6        1L  examples/broken/load/relation_needs_a_name.ein::ir[dump-compact]
 23e55a7416be6961        1L  examples/broken/load/relation_needs_a_name.ein::ir[resolve]
@@ -1464,6 +1523,7 @@ d41d8cd98f00b204        0L  examples/broken/load/relation_needs_a_name.ein::dot[
 77cf7c6e9f4dd214        1L  examples/broken/load/relation_needs_a_name.ein::dump[progress]
 77cf7c6e9f4dd214        1L  examples/broken/load/relation_needs_a_name.ein::dump[abort]
 77cf7c6e9f4dd214        1L  examples/broken/load/relation_needs_a_name.ein::dump[snapshot]
+0160e151a0228bfc        1L  examples/broken/load/relation_reserved_name.ein::load
 63a5a6d29c57292c        1L  examples/broken/load/relation_reserved_name.ein::ir[parse]
 6a44f62d3f0211d8        1L  examples/broken/load/relation_reserved_name.ein::ir[dump-compact]
 63a5a6d29c57292c        1L  examples/broken/load/relation_reserved_name.ein::ir[resolve]
@@ -1494,6 +1554,7 @@ d41d8cd98f00b204        0L  examples/broken/load/relation_reserved_name.ein::dot
 0160e151a0228bfc        1L  examples/broken/load/relation_reserved_name.ein::dump[progress]
 0160e151a0228bfc        1L  examples/broken/load/relation_reserved_name.ein::dump[abort]
 0160e151a0228bfc        1L  examples/broken/load/relation_reserved_name.ein::dump[snapshot]
+533ddd8929ecf6f4        1L  examples/broken/load/rule_duplicate_name.ein::load
 a3743e27e4430f63        3L  examples/broken/load/rule_duplicate_name.ein::ir[parse]
 ff75140da5a42d6c        2L  examples/broken/load/rule_duplicate_name.ein::ir[dump-compact]
 a3743e27e4430f63        3L  examples/broken/load/rule_duplicate_name.ein::ir[resolve]
@@ -1524,6 +1585,7 @@ a3743e27e4430f63        3L  examples/broken/load/rule_duplicate_name.ein::ir[exp
 533ddd8929ecf6f4        1L  examples/broken/load/rule_duplicate_name.ein::dump[progress]
 533ddd8929ecf6f4        1L  examples/broken/load/rule_duplicate_name.ein::dump[abort]
 533ddd8929ecf6f4        1L  examples/broken/load/rule_duplicate_name.ein::dump[snapshot]
+50c8f93192ee774e        1L  examples/broken/load/rule_missing_assert.ein::load
 82f24b66942fe6da        1L  examples/broken/load/rule_missing_assert.ein::ir[parse]
 43bd7f7b691dfccd        1L  examples/broken/load/rule_missing_assert.ein::ir[dump-compact]
 82f24b66942fe6da        1L  examples/broken/load/rule_missing_assert.ein::ir[resolve]
@@ -1554,6 +1616,7 @@ e700a7126f22988e       11L  examples/broken/load/rule_missing_assert.ein::dot[ru
 50c8f93192ee774e        1L  examples/broken/load/rule_missing_assert.ein::dump[progress]
 50c8f93192ee774e        1L  examples/broken/load/rule_missing_assert.ein::dump[abort]
 50c8f93192ee774e        1L  examples/broken/load/rule_missing_assert.ein::dump[snapshot]
+50c8f93192ee774e        1L  examples/broken/load/rule_missing_match.ein::load
 cf12b504abdd3b4f        1L  examples/broken/load/rule_missing_match.ein::ir[parse]
 44acd6edf450fbb8        1L  examples/broken/load/rule_missing_match.ein::ir[dump-compact]
 cf12b504abdd3b4f        1L  examples/broken/load/rule_missing_match.ein::ir[resolve]
@@ -1584,6 +1647,7 @@ cf12b504abdd3b4f        1L  examples/broken/load/rule_missing_match.ein::ir[expa
 50c8f93192ee774e        1L  examples/broken/load/rule_missing_match.ein::dump[progress]
 50c8f93192ee774e        1L  examples/broken/load/rule_missing_match.ein::dump[abort]
 50c8f93192ee774e        1L  examples/broken/load/rule_missing_match.ein::dump[snapshot]
+f934568f3c0d1206        1L  examples/broken/load/rule_reserved_name.ein::load
 0aca1a0b76188cb4        1L  examples/broken/load/rule_reserved_name.ein::ir[parse]
 17c2e8aa9316b09e        1L  examples/broken/load/rule_reserved_name.ein::ir[dump-compact]
 0aca1a0b76188cb4        1L  examples/broken/load/rule_reserved_name.ein::ir[resolve]
@@ -1614,6 +1678,7 @@ f934568f3c0d1206        1L  examples/broken/load/rule_reserved_name.ein::dump[la
 f934568f3c0d1206        1L  examples/broken/load/rule_reserved_name.ein::dump[progress]
 f934568f3c0d1206        1L  examples/broken/load/rule_reserved_name.ein::dump[abort]
 f934568f3c0d1206        1L  examples/broken/load/rule_reserved_name.ein::dump[snapshot]
+485fee2b36252801        1L  examples/broken/load/unimported_std_macro.ein::load
 66f41d16581502c1       10L  examples/broken/load/unimported_std_macro.ein::ir[parse]
 7913bf6aabe6b748        3L  examples/broken/load/unimported_std_macro.ein::ir[dump-compact]
 66f41d16581502c1       10L  examples/broken/load/unimported_std_macro.ein::ir[resolve]
@@ -1646,6 +1711,8 @@ ddda34fa8324e82d       21L  examples/broken/load/unimported_std_macro.ein::dot[r
 485fee2b36252801        1L  examples/broken/load/unimported_std_macro.ein::dump[snapshot]
 3500f97715e5b5c3        3L  examples/broken/rule_missing_params.ein::ir[parse]
 f6ca4854d07b0aab        3L  examples/broken/unclosed_paren.ein::ir[parse]
+4e1b0d0c2d4749b1       97L  examples/domain_elim/ab.ein::load
+04d5ef37fc967ff5      105L  examples/domain_elim/ab.ein::saturate
 7144fd9d6fe249d2       30L  examples/domain_elim/ab.ein::plan
 f959930350b4b1a9        7L  examples/domain_elim/ab.ein::match
 c06ac9355d0299f4       29L  examples/domain_elim/ab.ein::hyp
@@ -1689,6 +1756,8 @@ d50b1dcc503960fb       52L  examples/domain_elim/ab.ein::trace[no-proof]
 3295f8464542bc91       87L  examples/domain_elim/ab.ein::dump[progress]
 913ea23b8162dba0      116L  examples/domain_elim/ab.ein::dump[abort]
 df66633f8699704e       24L  examples/domain_elim/ab.ein::dump[snapshot]
+367fa5a37717f226       81L  examples/domain_elim/b_branch.ein::load
+3f379e7688d2500e        8L  examples/domain_elim/b_branch.ein::saturate
 ae4afb0422561288        8L  examples/domain_elim/b_branch.ein::plan
 60a3ccdbdfb6d82f        3L  examples/domain_elim/b_branch.ein::match
 25d4b9a6769aff95       21L  examples/domain_elim/b_branch.ein::hyp
@@ -1732,6 +1801,8 @@ a9dacca63a1eded1       62L  examples/domain_elim/b_branch.ein::dump[monotonic]
 409eee258176537b       65L  examples/domain_elim/b_branch.ein::dump[progress]
 273022d981580b95       94L  examples/domain_elim/b_branch.ein::dump[abort]
 9e2764733784ea67       24L  examples/domain_elim/b_branch.ein::dump[snapshot]
+165a80fe50d5b89a       87L  examples/domain_elim/b_only.ein::load
+97c9b25b07686e68       34L  examples/domain_elim/b_only.ein::saturate
 816f0a7b1bfa3775       18L  examples/domain_elim/b_only.ein::plan
 c45c9e79ec2bb56c        5L  examples/domain_elim/b_only.ein::match
 02fc6d9dc3bca388       25L  examples/domain_elim/b_only.ein::hyp
@@ -1775,6 +1846,8 @@ fa40eaccdeb7ecf0        5L  examples/domain_elim/b_only.ein::dot[slice]
 9bc1976c682b09b9       81L  examples/domain_elim/b_only.ein::dump[progress]
 15a4ee778d4d7965      110L  examples/domain_elim/b_only.ein::dump[abort]
 953cf7f16ccb033a       24L  examples/domain_elim/b_only.ein::dump[snapshot]
+2b39c0bcd766a796       16L  examples/ein-bugs/fact-goal-binding.ein::load
+7d3e0cd821976106        3L  examples/ein-bugs/fact-goal-binding.ein::saturate
 d41d8cd98f00b204        0L  examples/ein-bugs/fact-goal-binding.ein::plan
 d41d8cd98f00b204        0L  examples/ein-bugs/fact-goal-binding.ein::match
 a683663a0a6e9898        7L  examples/ein-bugs/fact-goal-binding.ein::hyp
@@ -1818,6 +1891,8 @@ d44b8c84ace1d0e5       60L  examples/ein-bugs/fact-goal-binding.ein::dump[lattic
 833dfeb18af019db       31L  examples/ein-bugs/fact-goal-binding.ein::dump[progress]
 d44b8c84ace1d0e5       60L  examples/ein-bugs/fact-goal-binding.ein::dump[abort]
 c02a0da82d3987cd       24L  examples/ein-bugs/fact-goal-binding.ein::dump[snapshot]
+58fc29e34cfc4415       20L  examples/ein-bugs/int-goal-binding.ein::load
+a8e57762d63c183b        3L  examples/ein-bugs/int-goal-binding.ein::saturate
 d41d8cd98f00b204        0L  examples/ein-bugs/int-goal-binding.ein::plan
 d41d8cd98f00b204        0L  examples/ein-bugs/int-goal-binding.ein::match
 a683663a0a6e9898        7L  examples/ein-bugs/int-goal-binding.ein::hyp
@@ -1861,6 +1936,8 @@ c51245b1cb7cddac       30L  examples/ein-bugs/int-goal-binding.ein::dump[monoton
 7967d734cfcfc0d4       33L  examples/ein-bugs/int-goal-binding.ein::dump[progress]
 64983040ad5a9a7d       62L  examples/ein-bugs/int-goal-binding.ein::dump[abort]
 73f08305c7a2aac1       24L  examples/ein-bugs/int-goal-binding.ein::dump[snapshot]
+fb5899234519fd10       30L  examples/ein-bugs/mixed-type-hypothesis.ein::load
+e6b1f0414ef78cd8        3L  examples/ein-bugs/mixed-type-hypothesis.ein::saturate
 d41d8cd98f00b204        0L  examples/ein-bugs/mixed-type-hypothesis.ein::plan
 d41d8cd98f00b204        0L  examples/ein-bugs/mixed-type-hypothesis.ein::match
 441e2ed22d6f153a        9L  examples/ein-bugs/mixed-type-hypothesis.ein::hyp
@@ -1904,6 +1981,8 @@ bd2ee7993c31df8e       91L  examples/ein-bugs/mixed-type-hypothesis.ein::dump[mo
 079124b45c43cc61       99L  examples/ein-bugs/mixed-type-hypothesis.ein::dump[progress]
 8f6f5b90370873d9      158L  examples/ein-bugs/mixed-type-hypothesis.ein::dump[abort]
 239cdabd4db5ba87       24L  examples/ein-bugs/mixed-type-hypothesis.ein::dump[snapshot]
+56015e7b076c2f8c       16L  examples/ein-bugs/nested-fact-hypothesis.ein::load
+7d3e0cd821976106        3L  examples/ein-bugs/nested-fact-hypothesis.ein::saturate
 d41d8cd98f00b204        0L  examples/ein-bugs/nested-fact-hypothesis.ein::plan
 d41d8cd98f00b204        0L  examples/ein-bugs/nested-fact-hypothesis.ein::match
 f9c761d2a8e0e1aa        9L  examples/ein-bugs/nested-fact-hypothesis.ein::hyp
@@ -1947,6 +2026,8 @@ b0b1266da69b1fef       51L  examples/ein-bugs/nested-fact-hypothesis.ein::dump[m
 50cc9e4e31051969       59L  examples/ein-bugs/nested-fact-hypothesis.ein::dump[progress]
 78d9488c2aa65995      116L  examples/ein-bugs/nested-fact-hypothesis.ein::dump[abort]
 b3d373113e39bd38       24L  examples/ein-bugs/nested-fact-hypothesis.ein::dump[snapshot]
+4f8fa495fec31512       14L  examples/ein-bugs/query-goal-free-head-unsat.ein::load
+905eb10c27d2f7bb        7L  examples/ein-bugs/query-goal-free-head-unsat.ein::saturate
 416f4f12b0767602        5L  examples/ein-bugs/query-goal-free-head-unsat.ein::plan
 c8e9fb6b7ebef58a        3L  examples/ein-bugs/query-goal-free-head-unsat.ein::match
 ea6e59b5f526c905        8L  examples/ein-bugs/query-goal-free-head-unsat.ein::hyp
@@ -1990,6 +2071,8 @@ b31c32eb6fa1e5e0       28L  examples/ein-bugs/query-goal-free-head-unsat.ein::du
 eec364d45ad374c8       31L  examples/ein-bugs/query-goal-free-head-unsat.ein::dump[progress]
 8d4f4bc36bca5426       61L  examples/ein-bugs/query-goal-free-head-unsat.ein::dump[abort]
 1540ffbb1278f866       24L  examples/ein-bugs/query-goal-free-head-unsat.ein::dump[snapshot]
+35e0e3fafbae4699       11L  examples/ein-bugs/query-goal-free-head.ein::load
+22e055a3827adb70        3L  examples/ein-bugs/query-goal-free-head.ein::saturate
 d41d8cd98f00b204        0L  examples/ein-bugs/query-goal-free-head.ein::plan
 d41d8cd98f00b204        0L  examples/ein-bugs/query-goal-free-head.ein::match
 a683663a0a6e9898        7L  examples/ein-bugs/query-goal-free-head.ein::hyp
@@ -2033,6 +2116,8 @@ bf423ae7bb761046       58L  examples/ein-bugs/query-goal-free-head.ein::dump[lat
 e197cc72fe0c9b6a       29L  examples/ein-bugs/query-goal-free-head.ein::dump[progress]
 bf423ae7bb761046       58L  examples/ein-bugs/query-goal-free-head.ein::dump[abort]
 032afa41139ff72d       24L  examples/ein-bugs/query-goal-free-head.ein::dump[snapshot]
+e735eb9d26e08e40       14L  examples/ein-bugs/unbound-assert-var.ein::load
+784153ac53d5f1ed        1L  examples/ein-bugs/unbound-assert-var.ein::saturate
 b2a0468f34bf3970        7L  examples/ein-bugs/unbound-assert-var.ein::plan
 a9bb18799c5de7dc        3L  examples/ein-bugs/unbound-assert-var.ein::match
 784153ac53d5f1ed        1L  examples/ein-bugs/unbound-assert-var.ein::hyp
@@ -2076,6 +2161,8 @@ eeab35980f358599        8L  examples/ein-bugs/unbound-assert-var.ein::dot[kb-no-
 784153ac53d5f1ed        1L  examples/ein-bugs/unbound-assert-var.ein::dump[progress]
 784153ac53d5f1ed        1L  examples/ein-bugs/unbound-assert-var.ein::dump[abort]
 784153ac53d5f1ed        1L  examples/ein-bugs/unbound-assert-var.ein::dump[snapshot]
+060241662e8e4a47       11L  examples/ein-bugs/unbound-relation-head.ein::load
+690b9728a80fcb4e        1L  examples/ein-bugs/unbound-relation-head.ein::saturate
 690b9728a80fcb4e        1L  examples/ein-bugs/unbound-relation-head.ein::plan
 690b9728a80fcb4e        1L  examples/ein-bugs/unbound-relation-head.ein::match
 690b9728a80fcb4e        1L  examples/ein-bugs/unbound-relation-head.ein::hyp
@@ -2119,6 +2206,8 @@ ac49132c67a7c8e3        7L  examples/ein-bugs/unbound-relation-head.ein::dot[kb-
 690b9728a80fcb4e        1L  examples/ein-bugs/unbound-relation-head.ein::dump[progress]
 690b9728a80fcb4e        1L  examples/ein-bugs/unbound-relation-head.ein::dump[abort]
 690b9728a80fcb4e        1L  examples/ein-bugs/unbound-relation-head.ein::dump[snapshot]
+ec87f3eb3f536e3e      470L  examples/ein-bugs/zebra2-bad.ein::load
+83d17bc9043cc4a6    10352L  examples/ein-bugs/zebra2-bad.ein::saturate
 ac558acd26934a10      153L  examples/ein-bugs/zebra2-bad.ein::plan
 85c84dc6cb1e3743      170L  examples/ein-bugs/zebra2-bad.ein::match
 309cebebcf197707      258L  examples/ein-bugs/zebra2-bad.ein::hyp
@@ -2162,6 +2251,8 @@ bfbf3ac3da112a34        5L  examples/ein-bugs/zebra2-bad.ein::trace[no-proof]
 ac5b59cce2fbaee2     1391L  examples/ein-bugs/zebra2-bad.ein::dump[progress]
 5e130ebfca027e11     1421L  examples/ein-bugs/zebra2-bad.ein::dump[abort]
 98c3a7a830e594fc       24L  examples/ein-bugs/zebra2-bad.ein::dump[snapshot]
+6eb9d54bc4bfcb47      485L  examples/ein-bugs/zebra2-hints.ein::load
+1390be3095f95512     2298L  examples/ein-bugs/zebra2-hints.ein::saturate
 c66e0ba6db38a04f      157L  examples/ein-bugs/zebra2-hints.ein::plan
 fcaf91a6000238bc      184L  examples/ein-bugs/zebra2-hints.ein::match
 1457ae81dd2a5f9b      221L  examples/ein-bugs/zebra2-hints.ein::hyp
@@ -2205,6 +2296,8 @@ a1f82948af562599        5L  examples/ein-bugs/zebra2-hints.ein::trace[no-proof]
 1e75593c192c03cc      724L  examples/ein-bugs/zebra2-hints.ein::dump[progress]
 6218a89e1d3b66d3      754L  examples/ein-bugs/zebra2-hints.ein::dump[abort]
 17daeb55208caf0d       24L  examples/ein-bugs/zebra2-hints.ein::dump[snapshot]
+2bfa6514c57c8d95       60L  examples/features/01_not_and_absent.ein::load
+8db2f8bd1fe11320       31L  examples/features/01_not_and_absent.ein::saturate
 0a495321b0a342eb       18L  examples/features/01_not_and_absent.ein::plan
 e1e722ec25c85b05       22L  examples/features/01_not_and_absent.ein::match
 eaac17eab9121af0      113L  examples/features/01_not_and_absent.ein::hyp
@@ -2248,6 +2341,8 @@ d8c4fc5d3c16ff0e      194L  examples/features/01_not_and_absent.ein::dump[monoto
 066ff95cf8484af6      219L  examples/features/01_not_and_absent.ein::dump[progress]
 e88a01b655e868d7       89L  examples/features/01_not_and_absent.ein::dump[abort]
 a238b6ab5251e071        1L  examples/features/01_not_and_absent.ein::dump[snapshot]
+7308cd3888947cf9       59L  examples/features/02_star_in_identifiers.ein::load
+3c3d9c332d7747cb       37L  examples/features/02_star_in_identifiers.ein::saturate
 6f5dd2cb3b721384       14L  examples/features/02_star_in_identifiers.ein::plan
 d670f52e4c047fc6       10L  examples/features/02_star_in_identifiers.ein::match
 6169a1e5c77df064       76L  examples/features/02_star_in_identifiers.ein::hyp
@@ -2291,6 +2386,8 @@ dceb4ae99f61dd33        5L  examples/features/02_star_in_identifiers.ein::trace[
 e5265c444afb6cea      251L  examples/features/02_star_in_identifiers.ein::dump[progress]
 e8b76a8276ed015c      105L  examples/features/02_star_in_identifiers.ein::dump[abort]
 a238b6ab5251e071        1L  examples/features/02_star_in_identifiers.ein::dump[snapshot]
+b1479076484c9208       53L  examples/features/03_forall.ein::load
+58cf86ca3facb515       13L  examples/features/03_forall.ein::saturate
 48d3e53a9f4c2e64       11L  examples/features/03_forall.ein::plan
 e9d3eff06ae21738        7L  examples/features/03_forall.ein::match
 02a1963b3a6b191f       35L  examples/features/03_forall.ein::hyp
@@ -2334,6 +2431,8 @@ fce5b0e6c2875634      343L  examples/features/03_forall.ein::trace[trace]
 f9c1146ec678c6ca      255L  examples/features/03_forall.ein::dump[progress]
 32387248df1c4e7c       77L  examples/features/03_forall.ein::dump[abort]
 852813031e88fce6       62L  examples/features/03_forall.ein::dump[snapshot]
+d1acd126b4ef8d67       78L  examples/features/04_open.ein::load
+1da8dacb30a8bae4       43L  examples/features/04_open.ein::saturate
 39500354206266ed       11L  examples/features/04_open.ein::plan
 67aa2d517a58b64d       28L  examples/features/04_open.ein::match
 c2574cc4da6222e4      228L  examples/features/04_open.ein::hyp
@@ -2377,6 +2476,8 @@ aeaec8c7db080cee      156L  examples/features/04_open.ein::dump[monotonic]
 e4013466d35c8ba1      179L  examples/features/04_open.ein::dump[progress]
 ce310c31a533fa39      117L  examples/features/04_open.ein::dump[abort]
 a238b6ab5251e071        1L  examples/features/04_open.ein::dump[snapshot]
+889c3556488bdbd5      140L  examples/features/05_stdlib_domain_elim.ein::load
+bfe22bcf3ef781ee       42L  examples/features/05_stdlib_domain_elim.ein::saturate
 d294e3359a216153       56L  examples/features/05_stdlib_domain_elim.ein::plan
 0633cfced17dce0d       65L  examples/features/05_stdlib_domain_elim.ein::match
 01d251815a869266      160L  examples/features/05_stdlib_domain_elim.ein::hyp
@@ -2420,6 +2521,8 @@ dceb4ae99f61dd33        5L  examples/features/05_stdlib_domain_elim.ein::trace[n
 c3874938cf35c946      409L  examples/features/05_stdlib_domain_elim.ein::dump[progress]
 2f456cc9060f160f      163L  examples/features/05_stdlib_domain_elim.ein::dump[abort]
 a238b6ab5251e071        1L  examples/features/05_stdlib_domain_elim.ein::dump[snapshot]
+9a1c9db8015aab0a       98L  examples/features/06_symmetric_native.ein::load
+600aad56877d5f5a        6L  examples/features/06_symmetric_native.ein::saturate
 d41d8cd98f00b204        0L  examples/features/06_symmetric_native.ein::plan
 d41d8cd98f00b204        0L  examples/features/06_symmetric_native.ein::match
 9f00f23ecd80ed07       44L  examples/features/06_symmetric_native.ein::hyp
@@ -2463,6 +2566,8 @@ b6189dd2e6d78059      161L  examples/features/06_symmetric_native.ein::trace[ans
 10ddd59088d12c23       79L  examples/features/06_symmetric_native.ein::dump[progress]
 16163d5df328f407      108L  examples/features/06_symmetric_native.ein::dump[abort]
 33c1c7a7aade1a94       24L  examples/features/06_symmetric_native.ein::dump[snapshot]
+269ceebfaf45b575       33L  examples/features/07_unstratifiable.ein::load
+3ec4f1245d37edab       12L  examples/features/07_unstratifiable.ein::saturate
 b28517893909ce43       16L  examples/features/07_unstratifiable.ein::plan
 2873f448b524bc2c        6L  examples/features/07_unstratifiable.ein::match
 27409ec4f33b7b68       13L  examples/features/07_unstratifiable.ein::hyp
@@ -2506,6 +2611,8 @@ ae8b8fc169ad24a2       77L  examples/features/07_unstratifiable.ein::trace[answe
 720ec4422c224f09       43L  examples/features/07_unstratifiable.ein::dump[progress]
 1d5ac311bbf4217c       72L  examples/features/07_unstratifiable.ein::dump[abort]
 741c90b72ba9803f       24L  examples/features/07_unstratifiable.ein::dump[snapshot]
+1433551e785bf311       37L  examples/features/08_disjunct_guard_sets.ein::load
+029a1099f25a9eb0       12L  examples/features/08_disjunct_guard_sets.ein::saturate
 5d5a5928d1c01433       12L  examples/features/08_disjunct_guard_sets.ein::plan
 9a4bdd27fc33784c        8L  examples/features/08_disjunct_guard_sets.ein::match
 bf32f862ddc062bd        8L  examples/features/08_disjunct_guard_sets.ein::hyp
@@ -2549,6 +2656,8 @@ c2b56e130a19fa12       38L  examples/features/08_disjunct_guard_sets.ein::dump[m
 3538c84c2c5f766a       41L  examples/features/08_disjunct_guard_sets.ein::dump[progress]
 1c5caca8b22e3d90       70L  examples/features/08_disjunct_guard_sets.ein::dump[abort]
 8b9fac09262d745e       24L  examples/features/08_disjunct_guard_sets.ein::dump[snapshot]
+71914cffeea5e9e6      181L  examples/features/09_adjacent_via_same_house.ein::load
+f8059d08dc9cea9f       87L  examples/features/09_adjacent_via_same_house.ein::saturate
 11218c3d6b5e555d       84L  examples/features/09_adjacent_via_same_house.ein::plan
 f886d23a2fcf5dcd       40L  examples/features/09_adjacent_via_same_house.ein::match
 b4b68eb6a7dcb265      241L  examples/features/09_adjacent_via_same_house.ein::hyp
@@ -2592,6 +2701,8 @@ c49ae8a8c701b9f9      189L  examples/features/09_adjacent_via_same_house.ein::du
 a4329c39038ee05f      159L  examples/features/09_adjacent_via_same_house.ein::dump[progress]
 c49ae8a8c701b9f9      189L  examples/features/09_adjacent_via_same_house.ein::dump[abort]
 157f80b4e3cf0fa8       24L  examples/features/09_adjacent_via_same_house.ein::dump[snapshot]
+c0d2a149ca11f52a       64L  examples/lattice/01_subset_pruned.ein::load
+21ef988289acd4d2        9L  examples/lattice/01_subset_pruned.ein::saturate
 b18ba9aaf0bedaef       14L  examples/lattice/01_subset_pruned.ein::plan
 8b4a0a298898810f        4L  examples/lattice/01_subset_pruned.ein::match
 f985c2168198281b       13L  examples/lattice/01_subset_pruned.ein::hyp
@@ -2635,6 +2746,8 @@ c462fa6b4836d0bc      415L  examples/lattice/01_subset_pruned.ein::dump[lattice]
 773cf0e737c129a5      252L  examples/lattice/01_subset_pruned.ein::dump[progress]
 5ad8b949c88ea7a2       81L  examples/lattice/01_subset_pruned.ein::dump[abort]
 91cb88daae73ed01       34L  examples/lattice/01_subset_pruned.ein::dump[snapshot]
+362e2b8ad7223cf2       44L  examples/lattice/02_genuine_3set_death.ein::load
+c8ba1b1c10653661        4L  examples/lattice/02_genuine_3set_death.ein::saturate
 301c12d9e01fa8cf        7L  examples/lattice/02_genuine_3set_death.ein::plan
 94e60f14d410f53e        1L  examples/lattice/02_genuine_3set_death.ein::match
 c56f1e1922ba1b66       11L  examples/lattice/02_genuine_3set_death.ein::hyp
@@ -2678,6 +2791,8 @@ ef2bf7b900f87b33       37L  examples/lattice/02_genuine_3set_death.ein::trace[no
 e925fc3dd04522e4      145L  examples/lattice/02_genuine_3set_death.ein::dump[progress]
 a334f411949dd899      107L  examples/lattice/02_genuine_3set_death.ein::dump[abort]
 5664bcaf8e7c0832       32L  examples/lattice/02_genuine_3set_death.ein::dump[snapshot]
+fa2bfbed324fd4be       46L  examples/lattice/03_state_hash_collision.ein::load
+58fe5ff1003e86fc        5L  examples/lattice/03_state_hash_collision.ein::saturate
 19bff6793e2760ba       10L  examples/lattice/03_state_hash_collision.ein::plan
 095c90d5eb474bf8        2L  examples/lattice/03_state_hash_collision.ein::match
 255657e2e2849129       12L  examples/lattice/03_state_hash_collision.ein::hyp
@@ -2721,6 +2836,8 @@ a4754ae021aba7e7      239L  examples/lattice/03_state_hash_collision.ein::dump[l
 4f4e5372f0dfe811      185L  examples/lattice/03_state_hash_collision.ein::dump[progress]
 cc518c7342e69626      109L  examples/lattice/03_state_hash_collision.ein::dump[abort]
 96cd07d5f148b3cc       24L  examples/lattice/03_state_hash_collision.ein::dump[snapshot]
+97d7c0654ee38e4c       26L  examples/saturation/hypothesis-contradiction/coloc-disproved.ein::load
+e5bf47070783ded7        6L  examples/saturation/hypothesis-contradiction/coloc-disproved.ein::saturate
 3c545766dc123da9        6L  examples/saturation/hypothesis-contradiction/coloc-disproved.ein::plan
 2fc70be4e208a2a6        4L  examples/saturation/hypothesis-contradiction/coloc-disproved.ein::match
 83ba1258a4b33262        8L  examples/saturation/hypothesis-contradiction/coloc-disproved.ein::hyp
@@ -2764,6 +2881,8 @@ b71e17913f8120dc       34L  examples/saturation/hypothesis-contradiction/coloc-d
 67e7b84f9b38a983       37L  examples/saturation/hypothesis-contradiction/coloc-disproved.ein::dump[progress]
 0d0b766d7a7880d2       66L  examples/saturation/hypothesis-contradiction/coloc-disproved.ein::dump[abort]
 4e317938f1bf4ec3       24L  examples/saturation/hypothesis-contradiction/coloc-disproved.ein::dump[snapshot]
+5035c3f88423a2c4       26L  examples/saturation/hypothesis-contradiction/next-to-disproved.ein::load
+2cd14d4d82c83f79        6L  examples/saturation/hypothesis-contradiction/next-to-disproved.ein::saturate
 bad188c83d160539        6L  examples/saturation/hypothesis-contradiction/next-to-disproved.ein::plan
 95f3f162394a7b9c        4L  examples/saturation/hypothesis-contradiction/next-to-disproved.ein::match
 83ba1258a4b33262        8L  examples/saturation/hypothesis-contradiction/next-to-disproved.ein::hyp
@@ -2807,6 +2926,8 @@ c53f3fe02b993456       66L  examples/saturation/hypothesis-contradiction/next-to
 3f32a8fdd556f390       37L  examples/saturation/hypothesis-contradiction/next-to-disproved.ein::dump[progress]
 c53f3fe02b993456       66L  examples/saturation/hypothesis-contradiction/next-to-disproved.ein::dump[abort]
 b630e26ec9fe8981       24L  examples/saturation/hypothesis-contradiction/next-to-disproved.ein::dump[snapshot]
+ddaa7859bfb123ff       26L  examples/saturation/hypothesis-contradiction/right-of-disproved.ein::load
+616eb004f366ec55        6L  examples/saturation/hypothesis-contradiction/right-of-disproved.ein::saturate
 bad188c83d160539        6L  examples/saturation/hypothesis-contradiction/right-of-disproved.ein::plan
 02e13541a77b2e4b        4L  examples/saturation/hypothesis-contradiction/right-of-disproved.ein::match
 83ba1258a4b33262        8L  examples/saturation/hypothesis-contradiction/right-of-disproved.ein::hyp
@@ -2850,6 +2971,8 @@ e1b59a98e2fdcdc6       66L  examples/saturation/hypothesis-contradiction/right-o
 4cb4c04fc75a2f23       37L  examples/saturation/hypothesis-contradiction/right-of-disproved.ein::dump[progress]
 e1b59a98e2fdcdc6       66L  examples/saturation/hypothesis-contradiction/right-of-disproved.ein::dump[abort]
 14db02cb9c80bcae       24L  examples/saturation/hypothesis-contradiction/right-of-disproved.ein::dump[snapshot]
+670c894fab6d02ea       37L  examples/saturation/implies/org-chart.ein::load
+0114fa32111eee4f        6L  examples/saturation/implies/org-chart.ein::saturate
 0167bfe4f34653c2        7L  examples/saturation/implies/org-chart.ein::plan
 d6d9456f82a50e71        3L  examples/saturation/implies/org-chart.ein::match
 aa350b76d720b3b0       27L  examples/saturation/implies/org-chart.ein::hyp
@@ -2893,6 +3016,8 @@ f29462d1aded4881       49L  examples/saturation/implies/org-chart.ein::trace[no-
 f7eb6540f60f4823      108L  examples/saturation/implies/org-chart.ein::dump[progress]
 72c8887bbe18d99c      154L  examples/saturation/implies/org-chart.ein::dump[abort]
 736ddd13b57e7837       24L  examples/saturation/implies/org-chart.ein::dump[snapshot]
+abcb2d7c20a47fb9       37L  examples/saturation/implies/parent-to-ancestor.ein::load
+3f76801969913e34        6L  examples/saturation/implies/parent-to-ancestor.ein::saturate
 f3e9e03efb7d4977        7L  examples/saturation/implies/parent-to-ancestor.ein::plan
 7dea41d1f01caeae        3L  examples/saturation/implies/parent-to-ancestor.ein::match
 063f39b621a176a9       27L  examples/saturation/implies/parent-to-ancestor.ein::hyp
@@ -2936,6 +3061,8 @@ e4da74abe1977efc      100L  examples/saturation/implies/parent-to-ancestor.ein::
 2381f1d1aa549f5e      108L  examples/saturation/implies/parent-to-ancestor.ein::dump[progress]
 35337037630ad45c      154L  examples/saturation/implies/parent-to-ancestor.ein::dump[abort]
 3d14cd4f352f0ec6       24L  examples/saturation/implies/parent-to-ancestor.ein::dump[snapshot]
+5bda690384a7aa85       37L  examples/saturation/implies/right-then-next.ein::load
+d879a7319a8aefa0        6L  examples/saturation/implies/right-then-next.ein::saturate
 30456fb6d91e8609        7L  examples/saturation/implies/right-then-next.ein::plan
 c58f0fb46a0265f7        3L  examples/saturation/implies/right-then-next.ein::match
 a9ed9dc6debda749       27L  examples/saturation/implies/right-then-next.ein::hyp
@@ -2979,6 +3106,8 @@ ff506b250c1a4e8f      154L  examples/saturation/implies/right-then-next.ein::dum
 b79b0bd0a8c9b9ce      108L  examples/saturation/implies/right-then-next.ein::dump[progress]
 ff506b250c1a4e8f      154L  examples/saturation/implies/right-then-next.ein::dump[abort]
 f0fd7bb70dcab818       24L  examples/saturation/implies/right-then-next.ein::dump[snapshot]
+c8724e6667499d1b       46L  examples/saturation/square-bwd/floors.ein::load
+e65e59f868e670f2        6L  examples/saturation/square-bwd/floors.ein::saturate
 1cda9163acd32b80        8L  examples/saturation/square-bwd/floors.ein::plan
 a5b4b4010aee4c86        5L  examples/saturation/square-bwd/floors.ein::match
 97722744ec752704       75L  examples/saturation/square-bwd/floors.ein::hyp
@@ -3022,6 +3151,8 @@ dceb4ae99f61dd33        5L  examples/saturation/square-bwd/floors.ein::trace[no-
 c28943ac7d15c195      163L  examples/saturation/square-bwd/floors.ein::dump[progress]
 fccb17193ce76cbe       61L  examples/saturation/square-bwd/floors.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/square-bwd/floors.ein::dump[snapshot]
+cf78a034bbbc43cd       46L  examples/saturation/square-bwd/houses.ein::load
+69f2e1405a5601ec        6L  examples/saturation/square-bwd/houses.ein::saturate
 ae207166d6d06e60        8L  examples/saturation/square-bwd/houses.ein::plan
 8b24d06d3ca515eb        5L  examples/saturation/square-bwd/houses.ein::match
 34ff7ce29012ee8e       75L  examples/saturation/square-bwd/houses.ein::hyp
@@ -3065,6 +3196,8 @@ b7b49f6f7adf8e79      498L  examples/saturation/square-bwd/houses.ein::dump[latt
 88cdfc3673f5b896      163L  examples/saturation/square-bwd/houses.ein::dump[progress]
 85ab11bf07eef169       61L  examples/saturation/square-bwd/houses.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/square-bwd/houses.ein::dump[snapshot]
+c73b40c3e92085e5       46L  examples/saturation/square-bwd/meetings.ein::load
+77b390307570f4b1        6L  examples/saturation/square-bwd/meetings.ein::saturate
 0e71e6271f182303        8L  examples/saturation/square-bwd/meetings.ein::plan
 22d37257cd41fc48        5L  examples/saturation/square-bwd/meetings.ein::match
 bcd970296830593b       75L  examples/saturation/square-bwd/meetings.ein::hyp
@@ -3108,6 +3241,8 @@ fb4774f678ceac7c      498L  examples/saturation/square-bwd/meetings.ein::dump[la
 af4aaba90ea7e3d0      163L  examples/saturation/square-bwd/meetings.ein::dump[progress]
 f1c4c71790d82bdf       61L  examples/saturation/square-bwd/meetings.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/square-bwd/meetings.ein::dump[snapshot]
+4fc221fbaaa78224       46L  examples/saturation/square-fwd/floors.ein::load
+363e0ab5889dba6f        6L  examples/saturation/square-fwd/floors.ein::saturate
 201756db56a6b25b        8L  examples/saturation/square-fwd/floors.ein::plan
 c50ef02b88a31def        5L  examples/saturation/square-fwd/floors.ein::match
 9141c1e790b25a27       75L  examples/saturation/square-fwd/floors.ein::hyp
@@ -3151,6 +3286,8 @@ dceb4ae99f61dd33        5L  examples/saturation/square-fwd/floors.ein::trace[no-
 995fc9e60bcb986b      163L  examples/saturation/square-fwd/floors.ein::dump[progress]
 5700ca4e1868bfb0       61L  examples/saturation/square-fwd/floors.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/square-fwd/floors.ein::dump[snapshot]
+be7383aa58c4bb66       46L  examples/saturation/square-fwd/houses.ein::load
+30ceba8d4670db00        6L  examples/saturation/square-fwd/houses.ein::saturate
 9382d134248e5478        8L  examples/saturation/square-fwd/houses.ein::plan
 38254a4c5d450490        5L  examples/saturation/square-fwd/houses.ein::match
 033b523a4d136780       75L  examples/saturation/square-fwd/houses.ein::hyp
@@ -3194,6 +3331,8 @@ dceb4ae99f61dd33        5L  examples/saturation/square-fwd/houses.ein::trace[no-
 61b6f04a9a22f752      163L  examples/saturation/square-fwd/houses.ein::dump[progress]
 e678236023dd8d5f       61L  examples/saturation/square-fwd/houses.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/square-fwd/houses.ein::dump[snapshot]
+93076983d90f93ca       46L  examples/saturation/square-fwd/meetings.ein::load
+ccbfed05afa49804        6L  examples/saturation/square-fwd/meetings.ein::saturate
 57442bc856da9c5a        8L  examples/saturation/square-fwd/meetings.ein::plan
 f1dae56813e848da        5L  examples/saturation/square-fwd/meetings.ein::match
 88c5ec1529689e04       75L  examples/saturation/square-fwd/meetings.ein::hyp
@@ -3237,6 +3376,8 @@ a2b8ff1a17344316      498L  examples/saturation/square-fwd/meetings.ein::dump[la
 2facddb6cc7934c8      163L  examples/saturation/square-fwd/meetings.ein::dump[progress]
 a5d46adc19b9a701       61L  examples/saturation/square-fwd/meetings.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/square-fwd/meetings.ein::dump[snapshot]
+cf1540bb578b482a       72L  examples/saturation/square-unique/corner-house.ein::load
+b15b7697f956b006        9L  examples/saturation/square-unique/corner-house.ein::saturate
 17a1891ae093e9dd       14L  examples/saturation/square-unique/corner-house.ein::plan
 4eff746b83bf8827        6L  examples/saturation/square-unique/corner-house.ein::match
 a7a1307d68010018      305L  examples/saturation/square-unique/corner-house.ein::hyp
@@ -3280,6 +3421,8 @@ b05b23254cfdb388      484L  examples/saturation/square-unique/corner-house.ein::
 a73dd895452042d4      147L  examples/saturation/square-unique/corner-house.ein::dump[progress]
 c4787de660a35e77       85L  examples/saturation/square-unique/corner-house.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/square-unique/corner-house.ein::dump[snapshot]
+ae15f880610a159c       84L  examples/saturation/square-unique/cul-de-sac.ein::load
+7e6241694e6fc4de        9L  examples/saturation/square-unique/cul-de-sac.ein::saturate
 fc5c73c997e3cf13       14L  examples/saturation/square-unique/cul-de-sac.ein::plan
 3414c9e68c323a2d        6L  examples/saturation/square-unique/cul-de-sac.ein::match
 efd1f86e0fe9b918      305L  examples/saturation/square-unique/cul-de-sac.ein::hyp
@@ -3323,6 +3466,8 @@ f1fb218ec0d4b603      140L  examples/saturation/square-unique/cul-de-sac.ein::du
 fc3a02d6a60aacde      163L  examples/saturation/square-unique/cul-de-sac.ein::dump[progress]
 70f29df5d14bed3d      101L  examples/saturation/square-unique/cul-de-sac.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/square-unique/cul-de-sac.ein::dump[snapshot]
+ae3b83607d043d1c       94L  examples/saturation/square-unique/terminus.ein::load
+c6ed257fd7e43e04        9L  examples/saturation/square-unique/terminus.ein::saturate
 010b1cd256c0b632       14L  examples/saturation/square-unique/terminus.ein::plan
 2039601f4ea16157        6L  examples/saturation/square-unique/terminus.ein::match
 55f435d9b58d670b      395L  examples/saturation/square-unique/terminus.ein::hyp
@@ -3366,6 +3511,8 @@ dceb4ae99f61dd33        5L  examples/saturation/square-unique/terminus.ein::trac
 14a2351eda47a19a      175L  examples/saturation/square-unique/terminus.ein::dump[progress]
 380f20e832f385b8      113L  examples/saturation/square-unique/terminus.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/square-unique/terminus.ein::dump[snapshot]
+79b6192e85db5b5a       29L  examples/saturation/symmetric/couple.ein::load
+6d95a212284adf70        8L  examples/saturation/symmetric/couple.ein::saturate
 353aa7f8fd96d2c0        6L  examples/saturation/symmetric/couple.ein::plan
 e20b8c6db84257b7        3L  examples/saturation/symmetric/couple.ein::match
 69181915c923d059       18L  examples/saturation/symmetric/couple.ein::hyp
@@ -3409,6 +3556,8 @@ c4ebcf2f68372c83       66L  examples/saturation/symmetric/couple.ein::dump[latti
 c03937417b745f2e       37L  examples/saturation/symmetric/couple.ein::dump[progress]
 c4ebcf2f68372c83       66L  examples/saturation/symmetric/couple.ein::dump[abort]
 e185ecbd2a710a4a       24L  examples/saturation/symmetric/couple.ein::dump[snapshot]
+bcd90d02a4c5d2f9       29L  examples/saturation/symmetric/friends.ein::load
+70297f92630ce3ae        8L  examples/saturation/symmetric/friends.ein::saturate
 5c9930a95d11363f        6L  examples/saturation/symmetric/friends.ein::plan
 9af974ec0c5dd9f4        3L  examples/saturation/symmetric/friends.ein::match
 85fb64bd63482b4d       18L  examples/saturation/symmetric/friends.ein::hyp
@@ -3452,6 +3601,8 @@ a488301cda2bec89       34L  examples/saturation/symmetric/friends.ein::dump[mono
 c0e057f35adc75c1       37L  examples/saturation/symmetric/friends.ein::dump[progress]
 0d429ba139bf235a       66L  examples/saturation/symmetric/friends.ein::dump[abort]
 480f55c34f554f6d       24L  examples/saturation/symmetric/friends.ein::dump[snapshot]
+454e1303d9c9e9e4       29L  examples/saturation/symmetric/neighbours.ein::load
+32302b2a034a4fd6        8L  examples/saturation/symmetric/neighbours.ein::saturate
 82de816be42a80be        6L  examples/saturation/symmetric/neighbours.ein::plan
 bd2075011df4ce10        3L  examples/saturation/symmetric/neighbours.ein::match
 c0e2bde3cfe6957b       18L  examples/saturation/symmetric/neighbours.ein::hyp
@@ -3495,6 +3646,8 @@ a55d210594086ff6       24L  examples/saturation/symmetric/neighbours.ein::trace[
 961bd7dd7bb994f3       37L  examples/saturation/symmetric/neighbours.ein::dump[progress]
 9a2cb776523cf628       66L  examples/saturation/symmetric/neighbours.ein::dump[abort]
 9eb3d52943ab5e31       24L  examples/saturation/symmetric/neighbours.ein::dump[snapshot]
+0b7608a0ab014c94       34L  examples/saturation/transitive/colocation-chain.ein::load
+154c0a183a3d1cce        6L  examples/saturation/transitive/colocation-chain.ein::saturate
 e1120fb8f3c21080        8L  examples/saturation/transitive/colocation-chain.ein::plan
 94ec040eb3745788        4L  examples/saturation/transitive/colocation-chain.ein::match
 394591542ea26b80       29L  examples/saturation/transitive/colocation-chain.ein::hyp
@@ -3538,6 +3691,8 @@ c29d7608959f3c64      167L  examples/saturation/transitive/colocation-chain.ein:
 4d5d99fe8d6e8642      102L  examples/saturation/transitive/colocation-chain.ein::dump[progress]
 20bcb64f17de7c75       77L  examples/saturation/transitive/colocation-chain.ein::dump[abort]
 b9e343d1c3598181       24L  examples/saturation/transitive/colocation-chain.ein::dump[snapshot]
+65394c7124e2f328       34L  examples/saturation/transitive/mealtimes.ein::load
+9c3ca5c1c6fda37e        6L  examples/saturation/transitive/mealtimes.ein::saturate
 3c82d2567a0f2453        8L  examples/saturation/transitive/mealtimes.ein::plan
 bd03029bbbf650b8        4L  examples/saturation/transitive/mealtimes.ein::match
 d447496fd6f5db5d       29L  examples/saturation/transitive/mealtimes.ein::hyp
@@ -3581,6 +3736,8 @@ a18a80d22ceb4e59      206L  examples/saturation/transitive/mealtimes.ein::trace[
 52dd06b8d2545ad4      102L  examples/saturation/transitive/mealtimes.ein::dump[progress]
 0edccd4ccf278fef       77L  examples/saturation/transitive/mealtimes.ein::dump[abort]
 7430669ad7b0761e       24L  examples/saturation/transitive/mealtimes.ein::dump[snapshot]
+40bff15f813aa438       34L  examples/saturation/transitive/taxonomy.ein::load
+91406a7c810d40a2        6L  examples/saturation/transitive/taxonomy.ein::saturate
 db0a8fed0c415138        8L  examples/saturation/transitive/taxonomy.ein::plan
 48138863cb5b163b        4L  examples/saturation/transitive/taxonomy.ein::match
 ef2b566d4f2ad08b       29L  examples/saturation/transitive/taxonomy.ein::hyp
@@ -3624,6 +3781,8 @@ cb9b3c19309e12e6       20L  examples/saturation/transitive/taxonomy.ein::dot[kb-
 4cd9a6fa2d17b7cb      102L  examples/saturation/transitive/taxonomy.ein::dump[progress]
 6402f690a47f973e       77L  examples/saturation/transitive/taxonomy.ein::dump[abort]
 95b25cece5162c0e       24L  examples/saturation/transitive/taxonomy.ein::dump[snapshot]
+1d7e21a79c4c95f4       39L  examples/saturation/type-exclusivity/colors.ein::load
+2bd7052f63c9ea04        8L  examples/saturation/type-exclusivity/colors.ein::saturate
 5b1241cf99537d0b        8L  examples/saturation/type-exclusivity/colors.ein::plan
 14303e688bf94ab4        7L  examples/saturation/type-exclusivity/colors.ein::match
 b1900d41150f0b40       48L  examples/saturation/type-exclusivity/colors.ein::hyp
@@ -3667,6 +3826,8 @@ e93586cba95371bb      540L  examples/saturation/type-exclusivity/colors.ein::dum
 53f0a187859d4996      203L  examples/saturation/type-exclusivity/colors.ein::dump[progress]
 7bd6464c0d881199       61L  examples/saturation/type-exclusivity/colors.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/type-exclusivity/colors.ein::dump[snapshot]
+a454d42991de0887       39L  examples/saturation/type-exclusivity/nationalities.ein::load
+9a40e1a7c711bd62        8L  examples/saturation/type-exclusivity/nationalities.ein::saturate
 5b1241cf99537d0b        8L  examples/saturation/type-exclusivity/nationalities.ein::plan
 0cfa1c2b056600ef        7L  examples/saturation/type-exclusivity/nationalities.ein::match
 82fed4f9f18013dd       48L  examples/saturation/type-exclusivity/nationalities.ein::hyp
@@ -3710,6 +3871,8 @@ dceb4ae99f61dd33        5L  examples/saturation/type-exclusivity/nationalities.e
 f5cbbae4d33f91d3      203L  examples/saturation/type-exclusivity/nationalities.ein::dump[progress]
 670db37b32cf43f3       61L  examples/saturation/type-exclusivity/nationalities.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/type-exclusivity/nationalities.ein::dump[snapshot]
+55454d7df7b157df       43L  examples/saturation/type-exclusivity/pets.ein::load
+910d861de8a55734       16L  examples/saturation/type-exclusivity/pets.ein::saturate
 5b1241cf99537d0b        8L  examples/saturation/type-exclusivity/pets.ein::plan
 d6665c6955665155       19L  examples/saturation/type-exclusivity/pets.ein::match
 a9b0d19e01a4b092       76L  examples/saturation/type-exclusivity/pets.ein::hyp
@@ -3753,6 +3916,8 @@ dceb4ae99f61dd33        5L  examples/saturation/type-exclusivity/pets.ein::trace
 0d4b82ea665a92f8      203L  examples/saturation/type-exclusivity/pets.ein::dump[progress]
 e5ece78ebf1ffc04       81L  examples/saturation/type-exclusivity/pets.ein::dump[abort]
 a238b6ab5251e071        1L  examples/saturation/type-exclusivity/pets.ein::dump[snapshot]
+b7536ac95e8ea83d      376L  examples/zebra.ein::load
+41c402ad8f2f8d3a     3684L  examples/zebra.ein::saturate
 c569b9c66985e228       48L  examples/zebra.ein::plan
 2134afecd6a99143       52L  examples/zebra.ein::match
 67a94a99eba53a50      166L  examples/zebra.ein::hyp
@@ -3796,6 +3961,8 @@ d0f685c5661673e4     4466L  examples/zebra.ein::dump[monotonic]
 abf1e9dab307c502     4501L  examples/zebra.ein::dump[progress]
 a5e87ae1e73677fe     2161L  examples/zebra.ein::dump[abort]
 a238b6ab5251e071        1L  examples/zebra.ein::dump[snapshot]
+9b5cb233f848c6cb      481L  examples/zebra2-hints.ein::load
+d536b16f6c611e44     2621L  examples/zebra2-hints.ein::saturate
 b0a44ea14acdeb23      192L  examples/zebra2-hints.ein::plan
 4b9d07ebb49bb4fd      199L  examples/zebra2-hints.ein::match
 b18d014b55215735      269L  examples/zebra2-hints.ein::hyp
@@ -3839,6 +4006,8 @@ b5e341be6b4b2b0b     4244L  examples/zebra2-hints.ein::trace[no-proof]
 0f0a580a9538d787     3315L  examples/zebra2-hints.ein::dump[progress]
 8307492b1da45e4e     2155L  examples/zebra2-hints.ein::dump[abort]
 fc2afa407a4f3d96      140L  examples/zebra2-hints.ein::dump[snapshot]
+cd434dce8e543825      460L  examples/zebra2-minus-15.ein::load
+9e6b3eb7ee54d932     1439L  examples/zebra2-minus-15.ein::saturate
 ac558acd26934a10      153L  examples/zebra2-minus-15.ein::plan
 2b5831f533088498      168L  examples/zebra2-minus-15.ein::match
 23f39c01ca486e3a      251L  examples/zebra2-minus-15.ein::hyp
@@ -3882,6 +4051,8 @@ ff04890f96083f04     1760L  examples/zebra2-minus-15.ein::dump[monotonic]
 4f2bae640d46232c     1783L  examples/zebra2-minus-15.ein::dump[progress]
 3303a2aeaacf340b     1721L  examples/zebra2-minus-15.ein::dump[abort]
 a238b6ab5251e071        1L  examples/zebra2-minus-15.ein::dump[snapshot]
+6c24a2e1f0fe6d65      465L  examples/zebra2.ein::load
+9eacfdbf37d61e8e     2292L  examples/zebra2.ein::saturate
 ac558acd26934a10      153L  examples/zebra2.ein::plan
 85c84dc6cb1e3743      170L  examples/zebra2.ein::match
 3831693939907538      259L  examples/zebra2.ein::hyp
@@ -3925,6 +4096,8 @@ d73083558a6c9b52     4726L  examples/zebra2.ein::dump[lattice]
 07877d8680b6ecab     4229L  examples/zebra2.ein::dump[progress]
 7349a45f0d879cf2     2025L  examples/zebra2.ein::dump[abort]
 a238b6ab5251e071        1L  examples/zebra2.ein::dump[snapshot]
+69ed286f7e993e16       79L  stdlib/algebra.ein::load
+cf8a23637ad7ba2c       11L  stdlib/algebra.ein::saturate
 3be960c271b2e001       50L  stdlib/algebra.ein::plan
 683dd133e72d299d        8L  stdlib/algebra.ein::match
 9301852e02b72c51       15L  stdlib/algebra.ein::hyp
@@ -3968,6 +4141,8 @@ c3750ddd576b79ae       25L  stdlib/algebra.ein::dump[monotonic]
 d357f7aa975a98b2       28L  stdlib/algebra.ein::dump[progress]
 4bbc6311fc16e488       57L  stdlib/algebra.ein::dump[abort]
 21dc5ae279d5ee03       18L  stdlib/algebra.ein::dump[snapshot]
+29c42bc5cf9bb9e5       29L  stdlib/bijection.ein::load
+e7c0d3bfedb81d65        6L  stdlib/bijection.ein::saturate
 648c720ce16061ca       27L  stdlib/bijection.ein::plan
 501f1cdd585e75bd        3L  stdlib/bijection.ein::match
 5bcdeae9f4976891       10L  stdlib/bijection.ein::hyp
@@ -4011,6 +4186,8 @@ c3750ddd576b79ae       25L  stdlib/bijection.ein::dump[monotonic]
 d357f7aa975a98b2       28L  stdlib/bijection.ein::dump[progress]
 4bbc6311fc16e488       57L  stdlib/bijection.ein::dump[abort]
 21dc5ae279d5ee03       18L  stdlib/bijection.ein::dump[snapshot]
+cb7a8da6e912329a        4L  stdlib/closure.ein::load
+f5a4c619c1907891        4L  stdlib/closure.ein::saturate
 6e38f2e601eee22a        6L  stdlib/closure.ein::plan
 566cc0d8931147a8        1L  stdlib/closure.ein::match
 b4dcd62a01487be8        8L  stdlib/closure.ein::hyp
@@ -4054,6 +4231,8 @@ c3750ddd576b79ae       25L  stdlib/closure.ein::dump[monotonic]
 d357f7aa975a98b2       28L  stdlib/closure.ein::dump[progress]
 4bbc6311fc16e488       57L  stdlib/closure.ein::dump[abort]
 21dc5ae279d5ee03       18L  stdlib/closure.ein::dump[snapshot]
+942095af7bc8cce0       11L  stdlib/elim.ein::load
+87ccb5297ddb3199        3L  stdlib/elim.ein::saturate
 d41d8cd98f00b204        0L  stdlib/elim.ein::plan
 d41d8cd98f00b204        0L  stdlib/elim.ein::match
 a683663a0a6e9898        7L  stdlib/elim.ein::hyp
@@ -4097,6 +4276,8 @@ c3750ddd576b79ae       25L  stdlib/elim.ein::dump[monotonic]
 d357f7aa975a98b2       28L  stdlib/elim.ein::dump[progress]
 4bbc6311fc16e488       57L  stdlib/elim.ein::dump[abort]
 21dc5ae279d5ee03       18L  stdlib/elim.ein::dump[snapshot]
+b2e2b568cef16ea9        4L  stdlib/macro.ein::load
+87ccb5297ddb3199        3L  stdlib/macro.ein::saturate
 d41d8cd98f00b204        0L  stdlib/macro.ein::plan
 d41d8cd98f00b204        0L  stdlib/macro.ein::match
 a683663a0a6e9898        7L  stdlib/macro.ein::hyp
@@ -4140,6 +4321,8 @@ c3750ddd576b79ae       25L  stdlib/macro.ein::dump[monotonic]
 d357f7aa975a98b2       28L  stdlib/macro.ein::dump[progress]
 4bbc6311fc16e488       57L  stdlib/macro.ein::dump[abort]
 21dc5ae279d5ee03       18L  stdlib/macro.ein::dump[snapshot]
+2a9fb4d851d26344       39L  stdlib/slots.ein::load
+05d3f03de2cc3546        5L  stdlib/slots.ein::saturate
 171fd6c64178b99e       24L  stdlib/slots.ein::plan
 55cdddc78682b7c9        2L  stdlib/slots.ein::match
 ef2a17e67587fd6b        9L  stdlib/slots.ein::hyp
@@ -4183,6 +4366,8 @@ c3750ddd576b79ae       25L  stdlib/slots.ein::dump[monotonic]
 d357f7aa975a98b2       28L  stdlib/slots.ein::dump[progress]
 4bbc6311fc16e488       57L  stdlib/slots.ein::dump[abort]
 21dc5ae279d5ee03       18L  stdlib/slots.ein::dump[snapshot]
+7616c6e401efe916       10L  stdlib/typing.ein::load
+da65cdff9356a8c4        5L  stdlib/typing.ein::saturate
 598b1ce16f24a626       13L  stdlib/typing.ein::plan
 34cc3ad32d338320        2L  stdlib/typing.ein::match
 cbeca80f29f09293        9L  stdlib/typing.ein::hyp

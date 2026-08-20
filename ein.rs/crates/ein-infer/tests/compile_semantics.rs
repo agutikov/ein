@@ -19,10 +19,12 @@
 //! for: the facts a rule derives, the candidates the enumerator proposes, the
 //! message a rule author reads.
 //!
-//! `compile_parity.rs` covers the same four messages, but against the live
-//! oracle: once `ein.py/` is deleted `Oracle::start` returns `None` and that
-//! test skips forever. The `.expected`-file half is re-asserted here **with no
-//! oracle**, which is the form that outlives the delete.
+//! `compile_parity.rs` covered the same four messages against the live oracle,
+//! and S1a.10.2 deleted it: the `.expected`-file half is
+//! [`every_compile_error_says_what_its_expected_file_says`] below, which needs
+//! no second engine, and its corpus-wide `plan_shape` sweep is
+//! `corpus_shapes.md5`'s 78 `::plan` lines. What went with it is that sweep's
+//! `plans >= 200` floor, replaced by the manifest's own `>= 4 000` renderings.
 
 use std::collections::BTreeSet;
 use std::ops::ControlFlow;

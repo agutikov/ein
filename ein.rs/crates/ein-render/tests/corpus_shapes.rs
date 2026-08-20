@@ -30,6 +30,18 @@
 //! EIN_BLESS=1 cargo test -p ein-render --test corpus_shapes   # accept it
 //! ```
 //!
+//! ## The two ops that arrived with floors
+//!
+//! `load` and `saturate` were added by
+//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md),
+//! and they are the only two surfaces whose sole owner had been a differential
+//! sweep: `ein-ir/tests/load_parity.rs` diffed `ein_core::shape` against
+//! `ir_oracle.py`'s `kb-shape`, and `ein-infer/tests/saturate_parity.rs`
+//! diffed the whole verbose event stream. Both sweeps carried a **coverage
+//! floor** — "at least 60 files actually loaded", "at least 50 files and 3 000
+//! events" — because a sweep that compares nothing agrees about nothing, and
+//! those floors move here with the ops rather than dying with the tests.
+//!
 //! Twelve renderings *are* checked in whole
 //! ([S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md),
 //! `tests/golden/`), chosen because they are the ones the parity contract
@@ -74,6 +86,9 @@ fn every_corpus_rendering_reproduces_its_digest() {
     let ops = ops();
     let mut lines: Vec<String> = Vec::new();
     let mut bytes = 0usize;
+    // The two ops S1a.10.2 inherited from a differential sweep carry that
+    // sweep's own coverage floors — see [`SWEPT_FLOORS`].
+    let (mut loads, mut saturates, mut events) = (0usize, 0usize, 0usize);
     for path in &corpus_files() {
         let rel = path.strip_prefix(repo_root()).unwrap_or(path);
         for op in &ops {
@@ -81,6 +96,14 @@ fn every_corpus_rendering_reproduces_its_digest() {
             let Some(text) = run(&mut terms, path, *op) else {
                 continue;
             };
+            match op {
+                corpus_ops::Op::Load if !text.starts_with("<refused>") => loads += 1,
+                corpus_ops::Op::Saturate => {
+                    saturates += 1;
+                    events += text.lines().count();
+                }
+                _ => {}
+            }
             bytes += text.len();
             lines.push(line(&format!("{}::{op}", rel.display()), &text));
         }
@@ -88,9 +111,18 @@ fn every_corpus_rendering_reproduces_its_digest() {
     // The sweep's own floor: a manifest that shrank because a file stopped
     // parsing would otherwise be blessed as progress.
     assert!(
-        lines.len() >= 3_500,
+        lines.len() >= 4_000,
         "only {} renderings were produced — the sweep stopped looking",
         lines.len()
+    );
+    assert!(
+        loads >= 60,
+        "only {loads} corpus files loaded — `load_parity`'s floor was 60"
+    );
+    assert!(
+        saturates >= 50 && events >= 3_000,
+        "only {saturates} files / {events} events saturated — \
+         `saturate_parity`'s floor was 50 and 3 000"
     );
     eprintln!(
         "corpus shapes: {} renderings, {:.1} MB of text, {} KB of manifest",

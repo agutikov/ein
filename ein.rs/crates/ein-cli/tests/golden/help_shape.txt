@@ -1,0 +1,62 @@
+COMMAND ein
+  ABOUT Graph-based relation algebra solver for Zebra-style logic puzzles.
+COMMAND ein render
+  ABOUT DOT for rules / constraints (S1.6.1)
+COMMAND ein render constraints
+  ABOUT constraint-scope DOT (structural properties)
+  POSITIONAL file required=True help=
+COMMAND ein render lattice
+  ABOUT commitment-lattice / proof-DAG DOT (runs a solve, S1.6.3)
+  OPTION --max-set-size -- metavar=MAX_SET_SIZE arity=1 default='3' choices=- group=- required=False help=commitment-set depth cap (default 3)
+  OPTION --view -- metavar=VIEW arity=1 default='solution' choices=full|solution group=- required=False help='solution' survivors + pruned siblings (default) or 'full' every commitment (falls back to 'solution' — solve doesn't store the per-commitment SetNode DAG)
+  POSITIONAL file required=True help=
+COMMAND ein render rule
+  ABOUT a single rule's DOT, by name
+  OPTION --name -- metavar=NAME arity=1 default=None choices=- group=- required=True help=rule name to render
+  OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
+  POSITIONAL file required=True help=
+COMMAND ein render rules
+  ABOUT one DOT digraph per rule
+  OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
+  POSITIONAL file required=True help=
+  SUBCOMMAND saturate (delegated)
+COMMAND ein solve
+  ABOUT solve a puzzle: print the solution(s) or the unsat core
+  OPTION --dump-config -c metavar=- arity=0 default=False choices=- group=- required=False help=print the resolved SolverConfig before solving
+  OPTION --dump-states -D metavar=DIR arity=1 default=None choices=- group=- required=False help=persist the engine dump tree (root snapshot per layer + timeline) to DIR
+  OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Feeds the M1a conformance harness's T2 parity tier.
+  OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.
+  OPTION --exhaustive -e metavar=- arity=0 default=False choices=- group=stop required=False help=exhaust the lattice — certify unique / ambiguous / unsat (slower)
+  OPTION --full-kb-snapshots -F metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) append a whole-KB snapshot of the final state
+  OPTION --hyp-stats -H metavar=- arity=0 default=False choices=- group=- required=False help=print the root-hypothesis preview (total + per-relation breakdown + hypgen filter report)
+  OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the structured run summary (verdict, model, every engine counter, the root-saturation shape, the resolved config) to FILE as JSON. Additive: stdout, stderr and the exit code are unchanged. Feeds the M1a conformance harness's T0/T1 parity tiers.
+  OPTION --lattice-order -o metavar=LATTICE_ORDER arity=1 default=None choices=lex|score-sum group=- required=False help=within-layer candidate ordering (S1.5b.26): 'lex' (canonical-tuple sort, the deterministic default) or 'score-sum' (S1.5a.7 hypgen scoring summed per set)
+  OPTION --lattice-sanity-check -y metavar=- arity=0 default=False choices=- group=- required=False help=S1.5b.27 regression: for every alive size-k≥2 commitment, verify every (k-1)-subset parent path saturates to the same kb (costs k+1 saturations each)
+  OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort after N commitment tries
+  OPTION --max-set-size -m metavar=MAX_SET_SIZE arity=1 default='5' choices=- group=- required=False help=commitment-set depth cap (default: 5)
+  OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort after N wall-clock seconds
+  OPTION --no-diagrams -G metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) suppress all inline dot blocks
+  OPTION --no-kill-cache -K metavar=- arity=0 default=False choices=- group=- required=False help=disable the lookahead-kill (not h) cache (pairs with --no-lookahead to exercise the raw loop)
+  OPTION --no-lookahead -L metavar=- arity=0 default=False choices=- group=- required=False help=disable hypgen's one-step lookahead (forces deaths through the no-good learning path)
+  OPTION --print-final-hfacts -f metavar=- arity=0 default=False choices=- group=- required=False help=dump only the hypothesis-target (query :hrules) facts per solution
+  OPTION --print-final-positive -P metavar=- arity=0 default=False choices=- group=- required=False help=like --print-final-state but drops the (not …) facts
+  OPTION --print-final-state -p metavar=- arity=0 default=False choices=- group=- required=False help=dump each solution's derived facts (for an unsat verdict, the unsat-core facts instead)
+  OPTION --progress-every -g metavar=PROGRESS_EVERY arity=1 default='100' choices=- group=- required=False help=under --verbose, log every N-th entering (default 100; set 1 to log every entering)
+  OPTION --relevant -l metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) prune to the goal-relevant slice
+  OPTION --reorder -R metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) cluster steps by target entity instead of engine order
+  OPTION --seed -d metavar=SEED arity=1 default=None choices=- group=- required=False help=pin the --shuffle RNG seed for a reproducible permutation
+  OPTION --shuffle -z metavar=- arity=0 default=False choices=- group=- required=False help=shuffle the within-layer commitment order (a per-layer random permutation). Fresh seed each run unless --seed pins it; the seed used is printed to stderr. Changes the TRAVERSAL order, not the verdict — the answer is shuffle-invariant.
+  OPTION --solutions -n metavar=N arity=1 default='1' choices=- group=stop required=False help=stop after N distinct solutions (default: 1)
+  OPTION --stats -s metavar=- arity=0 default=False choices=- group=- required=False help=print engine counters (k, enterings, layers, wall)
+  OPTION --timing -t metavar=- arity=0 default=False choices=- group=- required=False help=print a per-phase wall-clock table: parse, kb load, compile, root saturation, hypothesis search (enterings, layers, saturations, per-hypothesis avg), and totals
+  OPTION --trace -r metavar=FILE.md arity=1 default=None choices=- group=- required=False help=write the self-contained markdown derivation trace to FILE (a file, not stdout)
+  OPTION --verbose -v metavar=- arity=0 default=False choices=- group=- required=False help=stream per-layer + per-entering progress to stderr
+  POSITIONAL file required=True help=
+COMMAND ein saturate
+  ABOUT Benchmark + state dump for the Saturator.
+  OPTION --dump -- metavar=- arity=0 default=False choices=- group=- required=False help=after the benchmark, print the saturated KB grouped by origin
+  OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Feeds the M1a conformance harness's T2 parity tier.
+  OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.
+  OPTION --max-steps -- metavar=MAX_STEPS arity=1 default=None choices=- group=- required=False help=hard cap on saturator firings (raises SaturatorStepLimitError when exceeded); useful for runaway-debugging on a fresh input. Default: no cap.
+  OPTION --progress-every -- metavar=PROGRESS_EVERY arity=1 default='500' choices=- group=- required=False help=log a one-line progress sample every N steps (0 disables; default: 500).
+  POSITIONAL file required=True help=path to a .ein file

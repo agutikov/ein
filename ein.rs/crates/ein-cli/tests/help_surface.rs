@@ -1,17 +1,23 @@
-//! S1a.5.4 acceptance — the CLI's argument surface, against `argparse`'s.
+//! The CLI's argument surface — S1a.5.4's acceptance, without `argparse`.
 //!
 //! [Q-M1a.13](../../../../plans/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
-//! took `--help` *layout* off the byte gate. This is what it put in its place:
-//! both parsers rendered as `{command → {option → short, metavar, arity,
-//! default, choices, group, help}}`, and the texts diffed. A renamed short
-//! key, a changed default, a dropped option or a new one fails on its own
-//! line.
+//! took `--help` *layout* off the byte gate. What replaced it was a
+//! comparison of *structure*: both parsers rendered as `{command → {option →
+//! short, metavar, arity, default, choices, group, help}}`, and the texts
+//! diffed, so a renamed short key, a changed default, a dropped option or a
+//! new one failed on its own line.
 //!
-//! Two floors keep it from passing vacuously: the counted surface below, and
-//! `a_renamed_short_key_fails`, which mutates the Rust side and asserts the
-//! rendering carries what the diff would have to notice.
+//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! removes the second parser. The
+//! [ledger](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md)
+//! calls the row **retired**, and the two oracle-free floors below are what it
+//! keeps — but a count is a weak successor to a diff, so the rendering itself
+//! is checked in as a golden. That is not "the surface is right"; it is "the
+//! surface has not moved without someone saying so", which is the same claim
+//! `corpus_shapes.md5` makes about every other rendering and the strongest one
+//! available with a single implementation.
 
-use ein_oracle::{Answer, IR_ORACLE, Oracle};
+use ein_oracle::{golden, golden_path};
 
 /// The surface, counted from the parsers themselves — 39 options across 8
 /// parsers, `-h` excluded. An extractor that silently returned nothing would
@@ -55,32 +61,21 @@ fn the_extractor_finds_the_whole_surface() {
     assert_eq!(total, 39, "39 options across 8 parsers");
 }
 
+/// **The whole rendering, checked in.**
+///
+/// 39 options across 8 parsers, each with its short key, metavar, arity,
+/// default, choices, group and help — the same text the diff against
+/// `argparse` consumed, blessed from a tree where that diff was green. A flag
+/// added, removed, renamed or re-defaulted shows up as a line.
+///
+/// ```text
+/// EIN_BLESS=1 cargo test -p ein-cli --test help_surface
+/// ```
 #[test]
-fn the_surface_matches_argparse() {
-    let mut oracle = Oracle::start(IR_ORACLE).expect("oracle starts");
-    let want = match oracle.ask(serde_json::json!({"op": "help-shape"})) {
-        Answer::Ok(s) => s,
-        other => panic!("oracle refused help-shape: {other:?}"),
-    };
-    let got = ein_cli::help_shape::help_shape();
-    if want != got {
-        let w: Vec<&str> = want.lines().collect();
-        let g: Vec<&str> = got.lines().collect();
-        let mut shown = 0;
-        for i in 0..w.len().max(g.len()) {
-            let (a, b) = (
-                w.get(i).copied().unwrap_or(""),
-                g.get(i).copied().unwrap_or(""),
-            );
-            if a != b {
-                eprintln!("line {i}:\n  py: {a}\n  rs: {b}");
-                shown += 1;
-                if shown == 12 {
-                    break;
-                }
-            }
-        }
-        panic!("the argument surface differs from argparse's");
+fn the_argument_surface_is_stable() {
+    let shape = ein_cli::help_shape::help_shape();
+    if let Some(msg) = golden(&golden_path("ein-cli", "help_shape.txt"), &shape) {
+        panic!("{msg}");
     }
 }
 
