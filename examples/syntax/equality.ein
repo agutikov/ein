@@ -1,7 +1,20 @@
 ;;; Syntax probe — equality.
 ;;;
-;;; `=` — the equality form, at both arities the grammar pins, and
-;;; with a nested fact on the left. Renders as a class node, never as an arrow.
+;;; `=` — the equality *fact*: a reserved head whose arity is pinned at two
+;;; ([01_grammar.md § Facts](../../docs/kernel/ir/03-ein-lang/01_grammar.md)),
+;;; so `(= a b c)` is a parse error while `(= a b :k 1)` is not. Both argument
+;;; shapes are here — an atom pair, and a nested fact on the left — because
+;;; that is what the renderer keys on: an arity-2 `=` draws a `doublecircle`
+;;; equality-class node with an edge to each side, never an arrow between them.
+;;;
+;;; It has **no engine semantics in M1**. The loader ingests it as an ordinary
+;;; fact and auto-vivifies `=` as an open-world relation; nothing in `ein-infer`
+;;; reads it, and the `EqClasses` union-find both engines carry is never driven
+;;; by one — the seam is deliberate, for a future e-graph promotion
+;;; ([02_store.md § 8](../../docs/kernel/ir/02-data-model/02_store.md), F4 Q30).
+;;; The *computed* equality is `eq` / `neq`, which are predicates inside a
+;;; `:match` and a different thing entirely; `ein-render/src/rules.rs` happens
+;;; to draw the `eq` predicate with the `=` glyph, which is presentation only.
 ;;;
 ;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
 ;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
