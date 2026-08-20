@@ -37,6 +37,11 @@ ein.rs/target/
 ein.rs/target-fd/
 # Harness artefacts: every run wipes and rewrites this.
 conformance/out/
+# A fuzz session's crash-parity candidates — inputs where ein.py raises and
+# the two engines agree on the class and the exit code. They are corpus
+# *candidates*, one session's worth at a time, not findings; a checked-in one
+# is a `crash-parity` entry with a name.
+conformance/fuzz_findings/crash-parity-candidates.txt
 # Bench and profile artefacts (S1a.6.1): raw JSON + perf data, machine-specific
 # and per-run. The committed record is the tables in
 # plans/m1a_rust/p1a.6_performance/baseline.md — the same split
