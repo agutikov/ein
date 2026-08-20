@@ -13,7 +13,12 @@ from ein.ir import parse
 from ein.kb import Fact, KnowledgeBase, Provenance, to_dot
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-GOLDEN_DIR = REPO_ROOT / "ein.py" / "tests" / "golden"
+# S1a.10.2 moved the checked-in goldens out of ein.py/tests/golden/ and
+# into ein.rs/crates/*/tests/golden/from_ein_py/, where they are read by
+# five ein.rs tests that never ran Python. They are still ein.py's own
+# bytes; only the directory moved. See that directory's README.
+GOLDEN_DIR = (REPO_ROOT / "ein.rs" / "crates" / "ein-render" / "tests"
+              / "golden" / "from_ein_py")
 
 
 # ── Helpers ────────────────────────────────────────────────────────

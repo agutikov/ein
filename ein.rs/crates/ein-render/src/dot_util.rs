@@ -159,7 +159,7 @@ mod tests {
 
     #[test]
     fn the_node_id_is_the_first_ten_hex_digits_of_the_md5() {
-        // The three ids in `ein.py/tests/golden/dot/kb_provenance_dag.dot`.
+        // The three ids in `ein-render/tests/golden/from_ein_py/dot/kb_provenance_dag.dot`.
         assert_eq!(hashed_id("f_", "q|a,c", false), "f_0b8a036bc4");
         assert_eq!(hashed_id("f_", "p|a,b", false), "f_69510aab53");
         assert_eq!(hashed_id("f_", "p|b,c", false), "f_b34b2c73fa");

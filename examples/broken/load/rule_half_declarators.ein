@@ -1,0 +1,16 @@
+;;; Load-negative — a `rule` with no `:assert` and an `hrule` with no `:match`.
+;;;
+;;; Both halves of a declarator are required, and the message accumulates:
+;;; two errors in the rule pass, in form order. `rule_missing_assert.ein` and
+;;; `rule_missing_match.ein` pin each one alone; this pins them together, and
+;;; it is also a **syntax probe** — the rule views draw a half-specified rule
+;;; from the parsed forms, which no loadable file contains.
+;;;
+;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
+;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
+;;; eight parse views and diffed against ein.py. As corpus entries they are
+;;; digested by `corpus_shapes.md5` instead — every view, every op, no
+;;; second engine. They exist because no *puzzle* contains these shapes.
+
+(rule only-match () :match (r ?a ?b))
+(hrule h () :assert (r a b))

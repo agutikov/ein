@@ -37,7 +37,12 @@ from ein.trace import (
 REPO = Path(__file__).resolve().parents[3]
 BRANCHING = REPO / "examples" / "branching"
 LATTICE = REPO / "examples" / "lattice"
-GOLDEN = REPO / "ein.py" / "tests" / "golden" / "trace_3step.md"
+# S1a.10.2 moved the checked-in goldens out of ein.py/tests/golden/ and
+# into ein.rs/crates/*/tests/golden/from_ein_py/, where they are read by
+# five ein.rs tests that never ran Python. They are still ein.py's own
+# bytes; only the directory moved. See that directory's README.
+GOLDEN = (REPO / "ein.rs" / "crates" / "ein-render" / "tests" / "golden"
+          / "from_ein_py" / "trace_3step.md")
 
 _HAVE_DOT = shutil.which("dot") is not None
 

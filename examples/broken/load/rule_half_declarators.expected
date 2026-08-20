@@ -1,0 +1,1 @@
+(rule only-match) missing :match or :assert at None; (hrule h) missing :match or :assert at None

@@ -21,7 +21,7 @@ rustc-hash.workspace = true
 sha1.workspace = true
 
 [dev-dependencies]
-# The DOT goldens under `ein.py/tests/golden/dot/` are the fixture; reading
+# The DOT goldens under `ein-render/tests/golden/from_ein_py/dot/` are the fixture; reading
 # them needs nothing, but building the KB a golden was captured from does.
 ein-oracle = { path = "../ein-oracle" }
 # The one implementation of "what the parity contract stopped comparing",

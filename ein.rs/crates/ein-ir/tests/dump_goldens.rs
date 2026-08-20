@@ -1,7 +1,7 @@
 //! The dumper's two checked-in goldens, and `parse ∘ dump` as a fixed point —
 //! S1a.1.2's acceptance, without the oracle.
 //!
-//! `ein.py/tests/golden/zebra2.golden` *is* `dump_canonical(parse(zebra2.ein))`
+//! `ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra2.golden` *is* `dump_canonical(parse(zebra2.ein))`
 //! as **ein.py wrote it**, checked in years before the port: 293 lines of deep
 //! nesting, long `:why` templates and non-ASCII. That makes it the last
 //! independent provenance the repo has, which is why
@@ -28,8 +28,8 @@ fn parse_file(ast: &mut Ast, path: &std::path::Path) -> Vec<ein_ir::NodeId> {
 fn the_goldens_are_reproduced() {
     let root = repo_root();
     for (source, golden) in [
-        ("examples/zebra2.ein", "ein.py/tests/golden/zebra2.golden"),
-        ("examples/zebra.ein", "ein.py/tests/golden/zebra.golden"),
+        ("examples/zebra2.ein", "ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra2.golden"),
+        ("examples/zebra.ein", "ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra.golden"),
     ] {
         let mut ast = Ast::new();
         let forms = parse_file(&mut ast, &root.join(source));

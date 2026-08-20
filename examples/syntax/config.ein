@@ -1,7 +1,9 @@
 ;;; Syntax probe — config.
 ;;;
 ;;; A `(config …)` block, which every view has to render as data rather
-;;; than as a fact.
+;;; than as a fact. The flag is a real one — the fixture is about the *form*,
+;;; and an unknown flag would make the file a load-negative, which is what
+;;; `examples/broken/load/config_unknown_flag.ein` is for.
 ;;;
 ;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
 ;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
@@ -9,4 +11,4 @@
 ;;; digested by `corpus_shapes.md5` instead — every view, every op, no
 ;;; second engine. They exist because no *puzzle* contains these shapes.
 
-(config :max-set-size 3)
+(config :lattice-order-seed 3)

@@ -182,10 +182,12 @@ pub fn skip(what: &str) {
 
 /// A checked-in **ein.rs** golden: compare, or rewrite under `EIN_BLESS=1`.
 ///
-/// Distinct from the goldens under `ein.py/tests/golden/`, which are the
-/// *oracle's* and are read-only here — a port that shipped its own copy of the
-/// expected bytes would prove only that it agrees with itself. These are the
-/// other kind, and since
+/// Distinct from the nineteen under `tests/golden/from_ein_py/`, which are the
+/// *oracle's* own output and are read-only — a golden re-blessed from ein.rs
+/// proves only that it agrees with itself. (They lived under
+/// `ein.py/tests/golden/` until
+/// [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+/// carried them across by `git mv`.) These are the other kind, and since
 /// [S1a.6.10](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
 /// they are the whole regression coverage of everything the parity contract
 /// stopped comparing: a shipping engine is compared against fixtures, not

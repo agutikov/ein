@@ -74,7 +74,7 @@ fn the_derivation_dag_renders_the_committed_golden() {
     let (terms, kb, derived) = fixture();
     let dag = build_derivation_dag(&kb, &terms, derived, Justifications::Primary);
     let got = derivation_dag_to_dot(&dag, &kb, &terms);
-    let golden = repo_root().join("ein.py/tests/golden/dot/kb_provenance_dag.dot");
+    let golden = repo_root().join("ein.rs/crates/ein-render/tests/golden/from_ein_py/dot/kb_provenance_dag.dot");
     let want = std::fs::read_to_string(&golden).expect("the committed golden");
     assert_eq!(got, want, "\n--- ein.rs ---\n{got}\n--- ein.py ---\n{want}");
 }

@@ -1,7 +1,7 @@
 //! S1a.5.1 acceptance — the checked-in DOT goldens, byte for byte.
 //!
 //! `ein.py/tests/render/test_golden_dot.py` locked the current bytes of every
-//! DOT emitter onto fifteen files under `ein.py/tests/golden/dot/`, plus
+//! DOT emitter onto fifteen files under `ein.rs/crates/ein-render/tests/golden/from_ein_py/dot/`, plus
 //! `kb_zebra_unified.dot` beside them. Those *committed* files are the
 //! fixture here: a port that shipped its own copy of the expected bytes would
 //! prove only that it agrees with itself.
@@ -26,7 +26,7 @@ use std::path::PathBuf;
 
 fn golden(name: &str) -> String {
     let path: PathBuf = repo_root()
-        .join("ein.py/tests/golden/dot")
+        .join("ein.rs/crates/ein-render/tests/golden/from_ein_py/dot")
         .join(format!("{name}.dot"));
     std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()))
 }
@@ -165,7 +165,7 @@ fn the_zebra_unified_golden_reproduces() {
     // regardless, and nothing the renderer prints carries a file name.
     let (_ast, terms, kb) = loaded(&text);
     let want =
-        std::fs::read_to_string(repo_root().join("ein.py/tests/golden/kb_zebra_unified.dot"))
+        std::fs::read_to_string(repo_root().join("ein.rs/crates/ein-render/tests/golden/from_ein_py/kb_zebra_unified.dot"))
             .expect("the golden is checked in");
     assert_eq!(
         ein_render::kb_to_dot(&kb, &terms, &KbDotOpts::default()),

@@ -1,7 +1,12 @@
 ;;; Syntax probe — rule-forall-and-not.
 ;;;
-;;; `forall`, `not` and `eq` in one `:match`, and a
-;;; conjunctive `:assert`.
+;;; `forall`, `not` and `eq` in one `:match`, and a conjunctive `:assert`.
+;;; The import is load-time necessity, not decoration: the loader refuses a
+;;; `(forall …)` it cannot expand, because unexpanded it would silently never
+;;; match. The rule *views* draw the un-expanded form either way — they render
+;;; the parsed forms — so the probe is unaffected and the file now loads.
+;;; `forall` takes three arguments (`?b`, the guard, the body); the one-arg
+;;; spelling the fixture carried was an arity error the loader catches.
 ;;;
 ;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
 ;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
@@ -9,8 +14,9 @@
 ;;; digested by `corpus_shapes.md5` instead — every view, every op, no
 ;;; second engine. They exist because no *puzzle* contains these shapes.
 
+(import std.macro :symbols (forall))
 (relation r T T)
 (rule f ()
-  :match  (and (r ?a ?b) (forall (r ?b ?c)) (not (r ?b ?a)) (eq ?a ?a))
+  :match  (and (r ?a ?b) (forall ?c (r ?b ?c) (r ?c ?b)) (not (r ?b ?a)) (eq ?a ?a))
   :assert (and (r ?b ?a) (not (r ?a ?a)))
   :why "forall")

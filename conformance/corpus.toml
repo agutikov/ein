@@ -593,6 +593,12 @@ group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
+path   = "examples/broken/load/rule_half_declarators.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "S1a.10.2. Two errors in one pass, in form order — `rule_missing_assert` and `rule_missing_match` pin each alone. It is also one of `dot_parity`'s eighteen node-kind probes: the rule views draw a half-specified declarator from the parsed forms, and no loadable file contains one."
+
+[[entry]]
 path   = "examples/broken/load/rule_missing_assert.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
@@ -712,11 +718,6 @@ runs   = ["render rules", "saturate"]
 
 [[entry]]
 path   = "examples/syntax/rule-guards.ein"
-group  = "positive"
-runs   = ["render rules", "saturate"]
-
-[[entry]]
-path   = "examples/syntax/rule-half.ein"
 group  = "positive"
 runs   = ["render rules", "saturate"]
 

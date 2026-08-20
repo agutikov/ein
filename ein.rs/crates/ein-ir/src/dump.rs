@@ -1,7 +1,7 @@
 //! The canonical IR printer — `ir/dump.py`, byte for byte.
 //!
 //! Three consumers make this a T3 surface rather than a convenience:
-//! `ein.py/tests/golden/*.golden` (which *is* `dump_canonical(parse(f))`),
+//! `ein-ir/tests/golden/from_ein_py/*.golden` (which *is* `dump_canonical(parse(f))`),
 //! `--dump-states`, and the markdown trace. The width-driven line breaking is
 //! where an off-by-one hides, so the rule is transcribed rather than
 //! re-derived:

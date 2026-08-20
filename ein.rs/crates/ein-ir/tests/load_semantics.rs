@@ -108,6 +108,7 @@ fn the_load_negative_fixtures_are_byte_identical() {
         "relation_needs_a_name",
         "relation_reserved_name",
         "rule_duplicate_name",
+        "rule_half_declarators",
         "rule_missing_assert",
         "rule_missing_match",
         "rule_reserved_name",

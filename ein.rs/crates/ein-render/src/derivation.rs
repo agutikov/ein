@@ -12,7 +12,7 @@ use crate::dot_util::{fact_key, hashed_id};
 use ein_core::{DerivationDag, FactId, Kb, ProvKind, Terms};
 
 /// Render `dag` — byte-identical to ein.py, which
-/// `ein.py/tests/golden/dot/kb_provenance_dag.dot` pins.
+/// `ein-render/tests/golden/from_ein_py/dot/kb_provenance_dag.dot` pins.
 pub fn derivation_dag_to_dot(dag: &DerivationDag, kb: &Kb, terms: &Terms) -> String {
     let mut lines = vec![
         "digraph derivation {".to_string(),

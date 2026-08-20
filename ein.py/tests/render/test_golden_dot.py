@@ -44,7 +44,12 @@ from ein.render import (
 )
 from ein.render.lattice_dag import render_lattice
 
-GOLDEN_DIR = Path(__file__).resolve().parents[1] / "golden" / "dot"
+# S1a.10.2 moved the checked-in goldens out of ein.py/tests/golden/ and
+# into ein.rs/crates/*/tests/golden/from_ein_py/, where they are read by
+# five ein.rs tests that never ran Python. They are still ein.py's own
+# bytes; only the directory moved. See that directory's README.
+GOLDEN_DIR = (Path(__file__).resolve().parents[3] / "ein.rs" / "crates"
+              / "ein-render" / "tests" / "golden" / "from_ein_py" / "dot")
 
 
 # ── deterministic input builders ───────────────────────────────────
