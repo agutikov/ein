@@ -48,6 +48,7 @@ impl Dumper for Extents {
             for id in kb.facts() {
                 *per.entry(terms.facts.rel(id)).or_default() += 1;
             }
+            // determinism-ok: the extents go to `hist`, which histograms them and sorts its own keys — a multiset.
             self.live.extend(per.values().copied());
         }
     }
@@ -62,6 +63,7 @@ fn hist(label: &str, values: &[usize]) {
     for v in values {
         *counts.entry(*v).or_default() += 1;
     }
+    // determinism-ok: sorted on the next line, before any use.
     let mut keys: Vec<usize> = counts.keys().copied().collect();
     keys.sort_unstable();
     let n = values.len();

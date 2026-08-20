@@ -225,6 +225,7 @@ impl Layer {
         fn vec_map<K, V>(m: &FxHashMap<K, Vec<V>>) -> usize {
             // One bucket per slot plus each vector's own allocation.
             m.capacity() * (size_of::<K>() + size_of::<Vec<V>>())
+                // determinism-ok: a sum over the values; no order reaches it.
                 + m.values()
                     .map(|v| v.capacity() * size_of::<V>())
                     .sum::<usize>()
@@ -1053,13 +1054,16 @@ impl Kb {
     pub fn index_sizes(&self) -> [usize; 4] {
         let m = self.materialise();
         [
+            // determinism-ok: a sum over the values; no order reaches it.
             m.by_rel.values().map(Vec::len).sum(),
             m.by_rel_slot_val
                 .iter()
                 .filter(|(k, _)| k.inner == SlotKey::DIRECT)
                 .map(|(_, v)| v.len())
                 .sum(),
+            // determinism-ok: a sum over the values; no order reaches it.
             m.rule_apps_by_rule.values().map(Vec::len).sum(),
+            // determinism-ok: a sum over the values; no order reaches it.
             m.rule_apps_on_rel.values().map(Vec::len).sum(),
         ]
     }
