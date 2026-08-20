@@ -6,8 +6,9 @@
 that five phases of byte parity had signed off. Also: D2's second shape (no
 mixed types needed after all), one new `crash-parity` cell that *passes*, and
 three bugs in the fuzzer's own controls, each of which is a way to look
-successful while proving nothing. Throughput ~700 cases/min at 20 jobs, 86 %
-of them loading. The measurements are
+successful while proving nothing. One session of 21.3 minutes and **12 080 cases** at
+20 jobs — 567–700 cases/min, **85.2 %** of them loading, eight cells reported
+in three classes and no fourth. The measurements are
 [baseline.md §19](baseline.md#19-s1a67-and-s1a66--the-lever-matrix-in-two-engines-and-the-fuzzer);
 what each task did is at the end.
 **Estimate:** 3 days

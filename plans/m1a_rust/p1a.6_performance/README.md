@@ -55,7 +55,11 @@ shortened another by 1 d; [S1a.6.9](s1a.6.9_fork_entry_delta.md) added 3 d,
 and its decision added [S1a.6.10](s1a.6.10_parity_contract.md) and
 [S1a.6.11](s1a.6.11_fixture_goldens.md) at 2 d each; every re-measurement since
 S1a.6.3 named the same next stage and
-[S1a.6.12](s1a.6.12_boundary_and_snapshot.md) was it, at 4 d — shipped in one)
+[S1a.6.12](s1a.6.12_boundary_and_snapshot.md) was it, at 4 d — shipped in one.
+**Twelve stages, all shipped**; the last two, S1a.6.6 and S1a.6.7 at 3 d and
+1 d, were the only ones whose deliverable was an instrument rather than a
+change, and between them they found four parity bugs and retired four
+conclusions)
 **Depends on:** [P1a.5](../p1a.5_presentation/README.md) — the byte gate
 must be closed first, so every change here is measured against a green
 harness.

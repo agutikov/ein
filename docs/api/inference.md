@@ -188,7 +188,7 @@ block. **Resolution precedence:** explicit `solve(kb, config=…)` >
 
 | field | default | effect |
 |-------|---------|--------|
-| `enable_pre_branch_lookahead` | `True` | One-step `_dies_immediately` rule simulator that prunes doomed candidates pre-branch. |
+| `enable_pre_branch_lookahead` | `True` | One-step `_dies_immediately` rule simulator that prunes doomed candidates pre-branch. **Not only a prune**: `complete()` asks the hypothesis generator whether anything is undecided, and the generator's candidates are lookahead-filtered — so a candidate this kills is *decided*, and turning the knob off can turn `Ambiguity` into `Contradiction` (measured on two corpus fixtures, both engines; [features.md](../kernel/inference/features.md), [F4 Q40](../../plans/followups/f4_cross_cutting.md)). |
 | `enable_lookahead_kill_cache` | `True` | Cache a lookahead-killed candidate as a `(not h)` fact for O(1) skip (vs re-running the lookahead). |
 | `hypgen_scoring` | `"popularity"` | Hypothesis ordering heuristic. `"popularity"` (weighted fact-count at relation+object level), `"most-constrained"` (escape hatch), `"branch-info"` / `"popularity+branch-info"` (reserved — raise today). |
 | `hypgen_rel_weight` | `1.0` | popularity coefficient for the relation's fact-count. |

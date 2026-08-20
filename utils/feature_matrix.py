@@ -42,7 +42,9 @@ around `solve()` and therefore comparable to the 2026-08-17 column in
 print); under PyPy those front phases are ~0.6 s of constant, which compresses
 every ratio, and under ein.rs they are ~2 ms.
 
-Best-of-`--runs`, spread reported next to it, one fresh process per run, and
+Best-of-`--runs`, the **process** spread reported next to it (`samples_ms` and
+`solve_samples_ms` in the artifact carry both series), one fresh process per
+run, and
 the runs go **round-robin over the cells** rather than finishing one cell
 before starting the next. That is not fastidiousness: measured cell-by-cell on
 this machine, PyPy's baseline — which runs first, on the coolest core — reads
@@ -368,7 +370,9 @@ def main() -> int:
                     help="puzzle to run the matrix on (repeatable; "
                          "default examples/zebra2.ein)")
     ap.add_argument("--cells", default=None, metavar="SUBSTR",
-                    help="only cells whose name contains SUBSTR (baseline always runs)")
+                    help="only cells whose name contains SUBSTR (`baseline` and "
+                         "`control` always run — the second is what states the "
+                         "column's resolution)")
     ap.add_argument("--modes", default=",".join(MODES), metavar="A,B")
     ap.add_argument("--runs", type=int, default=3, help="timed runs per cell (default 3)")
     ap.add_argument("--python", default=str(PYPY if PYPY.exists() else sys.executable),
