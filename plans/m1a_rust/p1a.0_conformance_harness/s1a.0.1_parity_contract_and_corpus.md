@@ -23,7 +23,7 @@ nondeterminism is not a thing that can be done.
 
 ## Acceptance
 
-- `conformance/corpus.toml` enumerates every `.ein` under `examples/`
+- `corpus/corpus.toml` enumerates every `.ein` under `examples/`
   and `stdlib/`, with a group and a run list; a CI check fails on any
   unlisted file.
 - `ein-conformance run --impl-a <cmd> --impl-b <cmd> [--tier T0..T3]`
@@ -42,7 +42,7 @@ nondeterminism is not a thing that can be done.
 
 Enumerate `examples/**` (57 `.ein` files — 53 positive + 4 parse-negative)
 and `stdlib/**` (7) into
-`conformance/corpus.toml` with `group`, `runs`, `levers`, `slow`. Groups:
+`corpus/corpus.toml` with `group`, `runs`, `levers`, `slow`. Groups:
 `positive`, `parse-negative`, `load-negative`, `stdlib`, `golden`,
 `generated`, `crash-parity` (Q-M1a.14). Derive the initial run list from
 [`examples/README.md`](../../../examples/README.md)'s catalog and from

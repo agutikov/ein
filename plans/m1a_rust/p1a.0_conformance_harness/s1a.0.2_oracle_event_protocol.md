@@ -35,14 +35,14 @@ format any other observer (viewer, benchmark, embedder) reads.
   event with a structural diff and a divergence-class summary.
 - Python-vs-Python T2 is green across the corpus, including under
   `--shuffle --seed N`.
-- The schema is documented in `conformance/EVENTS.md` with a version
+- The schema is documented in `docs/kernel/inference/events.md` with a version
   number, and the version is emitted in the `run` event.
 
 ## Tasks
 
 ### Task T1a.0.2.1 — Schema and writer
 
-Define the event schema (v1) as `conformance/EVENTS.md`. Implement a
+Define the event schema (v1) as `docs/kernel/inference/events.md`. Implement a
 tiny writer in ein.py — a module-level `Optional[TextIO]` plus
 `emit(kind, **fields)` that returns immediately when unset. Facts are
 rendered with the existing `cli._factdump.fact_sexpr`, so the protocol
@@ -99,7 +99,7 @@ the unsat core, goal bindings. Additive flag, stable field order.
 
 `--events FILE` and `--events-level {normal,verbose}` on both `solve` and
 `saturate`; 17 event kinds across both layers; the schema versioned as
-`ein-events/1` in [`conformance/EVENTS.md`](../../../conformance/EVENTS.md) and
+`ein-events/1` in [`docs/kernel/inference/events.md`](../../../docs/kernel/inference/events.md) and
 emitted in the `run` event. `ein-conformance diff` reads it by hand and
 `tier::compare` reads it as the T2 gate — the same comparison, so the tool and
 the gate cannot drift apart.

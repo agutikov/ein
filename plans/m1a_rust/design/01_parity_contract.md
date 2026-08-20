@@ -5,6 +5,24 @@ measured, and what happens when it cannot be met.
 **Phase:** [P1a.0](../p1a.0_conformance_harness/README.md) builds it;
 every later phase is gated by it.
 
+> **Read as history from §2 to §4.** The contract had one instrument — the
+> `ein-conformance` harness, two `ein` processes and a diff — and
+> [S1a.10.3](../p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)
+> retired it with the second implementation on 2026-08-21. **T0–T3 are not a
+> live vocabulary**: nothing defines a tier, no command takes `--tier`, and a
+> document that mentions one is describing 2026-08 and earlier. What each tier
+> proved and what asserts it now is the
+> [oracle ledger](../p1a.10_single_implementation/oracle_ledger.md) §1, row by
+> row.
+>
+> **§5 is not history.** The normalisation list — what counts as a
+> derivation's *narration* rather than its content — outlived the harness,
+> because [the ledger §5](../p1a.10_single_implementation/oracle_ledger.md#5-what-the-successor-found)
+> showed the same three observables moving inside **one** engine under a
+> permuted id space. `ein.rs/crates/ein-parity` is still its one
+> implementation, applied by the engine's own goldens to themselves, with a
+> negative control in `ein-infer/tests/event_cut_control.rs`.
+
 ---
 
 ## 1. Why this document is first

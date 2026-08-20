@@ -51,6 +51,16 @@ different switches — so they survive untouched and are the model for the rest.
 `py_oracle.py` / `ir_oracle.py` / `mutant_ein.py` are two-engine by
 construction and go with the oracle.
 
+> **What S1a.10.3 already did here.** `mutant_ein.py`'s *claim* — that the D3
+> event cut still catches a dropped productive firing — has a successor,
+> `ein-infer/tests/event_cut_control.rs`, so the script can be deleted with
+> nothing to bank; its header says so. `fork_delta_verify.py` and
+> `spec_audit.py` were re-pointed at `corpus/corpus.toml` and widened to
+> include the `regression` group, which is the same file set they had before
+> the regrouping. **`fuzz_ein.py` is dead right now** — its differ was
+> `ein-conformance` — and its docstring and its startup message both say so and
+> name T1a.10.4.2. That is the one script in the tree that does not run.
+
 ### Task T1a.10.4.2 — The fuzzer
 
 `fuzz_ein.py` keeps its generator and its self-checkable properties and loses
@@ -58,6 +68,19 @@ its differential arm — the decision is
 [S1a.10.1](s1a.10.1_bank_the_oracle.md)'s, and this task implements it. The
 header must not keep advertising "four parity bugs in twenty minutes" as
 something the current script can do.
+
+Two things S1a.10.3 leaves for this task to decide, both of them the same
+decision wearing different hats:
+
+- the corpus's **`generated`** group is empty-but-kept precisely because this
+  is open. If the rewritten fuzzer still writes a throwaway manifest and files
+  its cases under that group, the group stays; if it does not, the group goes
+  and `ein_corpus::manifest::GROUPS` loses a name.
+- the sweep the fuzzer used to drive is `ein-cli/tests/corpus_cli.rs` now, and
+  it takes a manifest. Pointing the fuzzer at it — generate a batch, write a
+  manifest, sweep it for panics and non-terminations — is the cheapest version
+  of properties 1 and 4 in the ledger's L1 list, and it needs no new
+  machinery.
 
 ### Task T1a.10.4.3 — The benches
 

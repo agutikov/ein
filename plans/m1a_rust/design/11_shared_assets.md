@@ -118,7 +118,7 @@ still works, and `ein.rs` still ships as one self-contained binary.
 so both suites enumerate the same entries with the same run matrix:
 
 ```toml
-# conformance/corpus.toml
+# corpus/corpus.toml
 [[entry]]
 path   = "examples/zebra2.ein"
 group  = "positive"

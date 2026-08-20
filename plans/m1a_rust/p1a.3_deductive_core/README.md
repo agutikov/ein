@@ -82,7 +82,7 @@ none of this has a CLI surface `ein-conformance` could see:
   and a `run_seeded` at every fact. Bindings in **bind order**, premises
   as fact **positions**, so an order difference names itself.
 - **`saturate-events`** — the `--events` protocol itself
-  ([`conformance/EVENTS.md`](../../../conformance/EVENTS.md)) at
+  ([`docs/kernel/inference/events.md`](../../../docs/kernel/inference/events.md)) at
   `verbose`, so a redundant firing is emitted rather than only counted.
   This is not a fourth rendering that agrees with T2 by inspection: it
   *is* T2, delivered through the oracle because the CLI that will carry

@@ -10,6 +10,20 @@ before deleteion convert lark grammar into EBNF and preserve in docs for future 
 
 ## Context
 
+> **Two of the defect list's rows are already closed.**
+> [S1a.10.2](s1a.10.2_port_the_suite.md) `git mv`-ed the nineteen goldens a
+> stage early, and [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) closed the
+> last one — `corpus.rs::tracked`'s fallback scan of `ein.py/src/ein/stdlib`,
+> which would have turned "the stdlib directory is gone" into "seven fewer
+> files to check". The completeness check names `stdlib/` and nothing else.
+>
+> Also already done: **CI no longer runs the harness** (per-commit's
+> `conformance-fast`, nightly's `hash-seed-sweep` and `conformance-full` are
+> gone), so what is left for T1a.10.5.3 is the `oracle`, `full-suite` and
+> `packaging` jobs, which are ein.py's own. `ein.py/tests/test_corpus_manifest.py`
+> was re-pointed rather than deleted; its nine claims are all owned by
+> `ein_corpus::manifest`, so it goes with the tree and banks nothing.
+
 One day, because by now it is `git rm` and the interesting work is behind it.
 It is listed as its own stage precisely so it *cannot* start early: a delete
 that happens before S1a.10.1's ledger is complete is the phase's one

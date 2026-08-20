@@ -17,7 +17,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | open — post-parity fix; reproduced at P1a.1 |
 | [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | open — recommendation stands; **measured 2026-08-20** at S1a.7.0: 0.1 % corpus-wide, 36–50 % where it matters |
 | [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | open — port as-is, flag upstream |
-| [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | open — decide at the P1a.5 gate |
+| [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | **answered 2026-08-21 — `ein.rs/crates/<crate>/tests/golden/`** |
 | [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | **answered no** 2026-08-19 — an index key was the lever, not a memory |
 | [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | **closed moot 2026-08-18 — no server** |
 | [Q-M1a.12](#q-m1a12--remote-access-and-auth) | Remote access and auth for `ein serve` | **closed moot 2026-08-18 — no server** |
@@ -331,6 +331,23 @@ in place, or promote to repo-root `testdata/golden/`?
 **Recommendation: read in place until the [P1a.5](p1a.5_presentation/README.md)
 gate; promote when ein.rs starts producing goldens too.**
 
+**Answered 2026-08-21: `ein.rs/crates/<crate>/tests/golden/`** — neither in
+place nor repo-root. The recommendation's trigger fired at
+[S1a.6.11](p1a.6_performance/s1a.6.11_fixture_goldens.md), when ein.rs started
+producing goldens of its own, and they landed beside the crate whose output
+they pin rather than in a shared tree: a golden is read by exactly one test,
+and `ein_corpus::golden_path(krate, name)` is the whole of the convention.
+[S1a.10.2](p1a.10_single_implementation/s1a.10.2_port_the_suite.md) then
+`git mv`-ed the nineteen cross-implementation artefacts into
+`tests/golden/from_ein_py/` — a directory of their own, read-only, because
+they are the last independent provenance in the repo and re-blessing one from
+ein.rs would turn "ein.rs reproduces what the other implementation produced"
+into "ein.rs agrees with itself".
+
+[S1a.10.3](p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)
+is what closes it, because the corpus's `golden` group was empty *pending this
+question* and an empty group is a question with a home. The group is gone.
+
 ## Q-M1a.10 — Does F11 D1 (beta-memories) land inside M1a?
 
 [F11](../followups/f11_deductive_layer_perf.md) parks RETE beta-memories
@@ -576,6 +593,17 @@ That matters more than it looks: those six gate exactly the optimisations
 [P1a.6](p1a.6_performance/README.md) will re-implement, and "lever off" is the
 cheapest way to isolate a parity failure to one of them.
 
+**Restated 2026-08-21 (S1a.10.3).** The harness is gone and the `levers` column
+outlived it: the sweep runs the four CLI-reachable levers as extra `solve`
+cells exactly as before. But the reason for the question moved. There is no
+parity failure to isolate any more, and the six unreachable levers are now
+reachable in the *only* way that matters — `ein-infer`'s tests construct a
+`SolverConfig` directly, which is how `search_semantics.rs` and
+`lattice_semantics.rs` already exercise them. What the CLI still cannot do is
+put a lever into a **corpus** cell, so what the question is asking has narrowed
+to "should the corpus sweep cover the other six?" — a coverage question about
+one test, not a gap in the gate.
+
 Options:
 
 - **(a) add `--config KEY=VALUE` to both CLIs** (repeatable, kebab-cased,
@@ -593,7 +621,7 @@ Options:
 **Recommendation: (a)**, decided before [P1a.6](p1a.6_performance/README.md)
 rather than at it — the flag has to exist in *both* implementations, so it is
 cheapest to add while the Rust CLI is still a stub. Until then the manifest's
-`levers` lists the four, and `conformance/README.md` says why.
+`levers` lists the four, and `corpus/README.md` says why.
 
 ## Q-M1a.17 — Win B's ≥ 80 % assumed monotone guards dominate
 

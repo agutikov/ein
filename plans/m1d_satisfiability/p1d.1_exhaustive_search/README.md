@@ -143,5 +143,5 @@ first stage here is a census, not a proposal.
 - [F9 — the rejected search optimisations](../../followups/f9_e_catalog.md) —
   read before proposing anything here
 - [`examples/zebra2-minus-15.ein`](../../../examples/zebra2-minus-15.ein) —
-  the case, and `conformance/corpus.toml`'s note on why `solve -e` is not one
+  the case, and `corpus/corpus.toml`'s note on why `solve -e` is not one
   of its runs

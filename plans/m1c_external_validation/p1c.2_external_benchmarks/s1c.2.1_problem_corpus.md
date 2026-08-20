@@ -79,7 +79,7 @@ is bad at is the only kind that tests the claim.
 - `bench/corpus.toml` — one entry per (problem, system) with the file, the
   provenance, the invocation, and the expected answer shape. A file with no
   entry fails a completeness check, the way
-  [`conformance/corpus.toml`](../../../conformance/corpus.toml) already works
+  [`corpus/corpus.toml`](../../../corpus/corpus.toml) already works
   for `.ein`.
 - Every problem has **an ein encoding and at least two non-Ein encodings**.
 - `bench/README.md` carries the five fairness rules and the per-problem

@@ -35,7 +35,7 @@ up here within minutes of running.
   "grammar-valid but semantically odd".
 - Both engines run each case under a budget; results diff at T1 (T2 for
   cases that terminate quickly).
-- Every find is corpus-minimised and lands in `conformance/corpus.toml`
+- Every find is corpus-minimised and lands in `corpus/corpus.toml`
   in the same commit as its fix or its ledger entry.
 - ≥ 24 h of fuzzing with no unexplained divergence is a phase gate.
 - The fuzzer runs nightly thereafter, seeded from the accumulated corpus.
@@ -94,10 +94,10 @@ written. So a batch is written out as a **corpus** and `ein-conformance` runs
 it — the same binary, the same tiers, the same normalisation:
 
 ```text
-generate / mutate → conformance/out/fuzz/cases/*.ein
-                  → conformance/out/fuzz/corpus.toml   (one entry per case)
+generate / mutate → corpus/out/fuzz/cases/*.ein
+                  → corpus/out/fuzz/corpus.toml   (one entry per case)
                   → ein-conformance run --corpus … --tier T3
-                  → minimise every reported cell → conformance/fuzz_findings/
+                  → minimise every reported cell → corpus/fuzz_findings/
 ```
 
 That reuse is what made the stage cheap: T1a.6.6.3's runner is `run.rs` +
@@ -171,7 +171,7 @@ first. Two lines.
   event log. Run against it at T2 the fuzzer reports every case and minimises
   to exactly the three forms that produce the deleted firing. A fuzzer that
   cannot detect a planted difference proves nothing — the same argument
-  `conformance/README.md` makes for Python-vs-Python.
+  `corpus/README.md` makes for Python-vs-Python.
 - **The generator's own blind spot.** A hypothesis whose argument is an int or
   a nested fact is D2, the ledger's own accepted entry. Four findings in five
   were D2 until `(hrule …)` stopped getting negative heads and int arguments,

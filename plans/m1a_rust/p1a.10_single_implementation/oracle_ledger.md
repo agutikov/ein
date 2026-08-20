@@ -42,6 +42,16 @@ tier ([design/01 §2](../design/01_parity_contract.md#2-the-four-tiers)). What
 each tier reads is mechanical, so the rows below are per *observable*, not per
 tier.
 
+> **The instrument is gone.** [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md)
+> deleted `ein-conformance` on 2026-08-21, and with it the tier vocabulary: no
+> live document defines a T0. Every "owner after" below is what actually runs.
+> One row gained a second owner that stage: **1.2, the exit code**, which the
+> table gave to `help_parity.rs` and the negative fixtures — a partial answer,
+> since neither covers the corpus. `ein-cli/tests/corpus_cli.rs` banks all 660
+> cells' exit codes and, more usefully, the three rules a table cannot state:
+> nothing crashes, every entry that should answer answers, every refusal
+> carries a diagnostic.
+
 | # | what the harness asserts | tier | disposition | owner after |
 |---|---|---|---|---|
 | 1.1 | the verdict type, `k`, `exhausted`, the model as a fact set, `goal_bindings`, the unsat core | T0 | **covered** + **banked** | `ein-infer/tests/acceptance.rs` asserts the *answer* on the three zebra fixtures; `ein-cli/tests/summary_properties.rs` asserts the verdict block is internally coherent on 365 cells; `ein-render/tests/golden/corpus_shapes.md5` pins the bytes |
@@ -145,7 +155,7 @@ and the answer is the manifest — which is why the manifest had to be blessed
 | 3.4 | **the parser fuzzer** (`ein-ir/tests/fuzz_parity.rs`, 2.2 M mutations) | ditto, for the frontend | **accepted loss**, same row; its *seed replay* survives — the checked-in `fuzz_findings/` still have to parse |
 | 3.5 | **the liveness check** — "did either implementation ever exit 0?" | a harness that cannot fail | **retired** | it exists because two dead engines agree. One engine that never runs is a test that never passes |
 | 3.6 | **the corpus completeness check** — every `.ein` under `examples/` and `stdlib/` has an entry | the corpus cannot silently miss a file | **covered** (5 claims) + **banked** (4) | `ein-conformance/src/corpus.rs`'s unit tests had 5 of the 9 `ein.py/tests/test_corpus_manifest.py` makes; the missing four — unique paths, negatives grouped by where they fail, every compile-negative has its `.expected`, the load-negative group matches its directory — landed here |
-| 3.7 | **`ein-parity`'s relaxation is load-bearing** — 8 + 10 unit tests, and `utils/mutant_ein.py` deleting one event from a shipping binary's log | the D3 cut still catches a dropped productive firing | **covered** | the unit tests need no oracle; `mutant_ein.py` runs one binary twice and is already single-engine |
+| 3.7 | **`ein-parity`'s relaxation is load-bearing** — 8 + 10 unit tests, and `utils/mutant_ein.py` deleting one event from a shipping binary's log | the D3 cut still catches a dropped productive firing | **covered** | the unit tests need no oracle. `mutant_ein.py` needed the harness to be its differ, so [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) moved the control into `cargo test`: `ein-infer/tests/event_cut_control.rs` runs the script's same three mutations against a stream it produces in-process. The mutation was always applied to the *artefact*, so the two processes bought nothing |
 | 3.8 | **the acceptance gate** — 21 tests, the three zebra2 task classes | the *answer*, not the agreement | **covered**, partly; the rest is [S1a.10.2](s1a.10.2_port_the_suite.md)'s | `ein-infer/tests/acceptance.rs` (3) + `ein-render/tests/idea08_acceptance.rs` (5) |
 
 ---
@@ -377,5 +387,7 @@ and two zeroes agree for the wrong reason.
   — the normalisation list, whose closed set §5 above re-uses unchanged
 - [divergences.md](../divergences.md) — D1–D3, re-read in
   [§8](#8-the-divergence-ledger-re-read)
-- [`conformance/README.md`](../../../conformance/README.md) — the harness,
-  retired by [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md)
+- [`corpus/README.md`](../../../corpus/README.md) — the corpus, and the five
+  things that read it. The harness described there was retired by
+  [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md), which also moved the
+  directory out of the name

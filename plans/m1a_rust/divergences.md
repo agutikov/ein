@@ -328,7 +328,7 @@ list for the same reason as the rest.
 **The unsat core moves too, and this one is on the list above.** Found
 2026-08-20 by [S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
 fuzzer, minimised to 11 forms
-(`conformance/fuzz_findings/`, and reproduced here):
+(`corpus/fuzz_findings/`, and reproduced here):
 
 ```lisp
 (relation r0 T T) (relation r1 T T) (relation is-a T T)
@@ -394,7 +394,7 @@ row, as `summary.json` already sorts, which would make the table
 implementation-independent and shuffle-invariant at the cost of one visible
 change to a checked-in fixture (`examples/branching/12_typed_blind_solve.ein`
 would print `?c = Blue` where it prints `?c = Red`). Recorded here rather than
-applied; the reproducer lives in `conformance/fuzz_findings/`.
+applied; the reproducer lives in `corpus/fuzz_findings/`.
 
 **What would make this unacceptable.** Any of:
 

@@ -1128,7 +1128,7 @@ one documented gate runs both engines: **1 506 + 21 + 302** green.
 
 **From the repo root, and that is not a style choice:** the harness runs both
 implementations with the repo root as their working directory
-([conformance/README](../../../conformance/README.md)), so a *relative* impl
+([conformance/README](../../../corpus/README.md)), so a *relative* impl
 path is resolved against the root no matter where the runner was launched.
 `cd ein.rs` plus `--impl-b ./target/release/ein` is the shape that looks right
 and reports 473 harness errors — which the liveness check catches, loudly, and
@@ -1259,7 +1259,7 @@ already ahead.
 ### The same change, in process
 
 `cargo bench`, both arms out of one tree — the bench target declares the
-binary's allocator, and `-p ein-conformance --no-default-features` is the
+binary's allocator, and `-p ein-corpus --no-default-features` is the
 system-allocator arm:
 
 | bench | system | **snmalloc** | change |
@@ -1376,7 +1376,7 @@ utils/bench_env.sh python3 utils/e2e_baseline.py --runs 7 \
 # the in-process arms
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml \
-    -p ein-conformance --no-default-features
+    -p ein-corpus --no-default-features
 python3 utils/criterion_table.py --max-rsd 3
 
 # the attribution, and the release-vs-profiling line that has to stay ±1 %
@@ -1556,7 +1556,7 @@ cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
     -p ein-infer --example counter_cost          # scan_bucket / cand_extent / nested_rel_*
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 8 --callers alloc \
     solve examples/zebra.ein -e                  # who allocates
-utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml -p ein-conformance \
+utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml -p ein-corpus \
     --bench engine -- solve --save-baseline before   # then edit, then --baseline before
 ```
 
@@ -2851,7 +2851,7 @@ cargo build --release --manifest-path ein.rs/Cargo.toml \
 python3 utils/fork_delta_verify.py --json ein.rs/bench-out/fork-delta.json
 
 # §6 the bench set and its variance gate (§13 adds the system-allocator arm:
-# the same benches with `-p ein-conformance --no-default-features`)
+# the same benches with `-p ein-corpus --no-default-features`)
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 python3 utils/criterion_table.py --max-rsd 3 --json ein.rs/bench-out/criterion.json
 

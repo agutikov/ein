@@ -55,5 +55,5 @@ No placeholders: unlike a `KBLoadError`, none of these messages names a path.
 Consumers:
 [`ein.py/tests/inference/test_compile_negative.py`](../../../ein.py/tests/inference/test_compile_negative.py)
 and
-[`ein.rs/crates/ein-infer/tests/compile_parity.rs`](../../../ein.rs/crates/ein-infer/tests/compile_parity.rs)
+[`ein.rs/crates/ein-infer/tests/compile_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/compile_semantics.rs)
 — both suites, because either one alone can be the suite nobody ran.

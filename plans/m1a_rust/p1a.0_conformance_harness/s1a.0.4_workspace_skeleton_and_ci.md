@@ -17,7 +17,7 @@ measurable.
 - `cd ein.rs && cargo build && cargo test` is green with the eight
   crates in place (most empty).
 - `ein.rs/target/release/ein --version` runs.
-- `ein-conformance` is a working binary that parses `conformance/corpus.toml`
+- `ein-conformance` is a working binary that parses `corpus/corpus.toml`
   and can run the Python-vs-Python comparison from
   [S1a.0.1](s1a.0.1_parity_contract_and_corpus.md).
 - CI has the three tiers from

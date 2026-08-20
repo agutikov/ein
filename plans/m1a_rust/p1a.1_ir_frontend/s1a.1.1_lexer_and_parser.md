@@ -148,8 +148,8 @@ drop/duplicate — chained one to three deep, over seeds that include every
 `examples/broken/` fixture and every previous find. `SPLICES` carries the
 reserved words deliberately, so the `rulex` class is hit on purpose rather
 than by luck. A divergence is delta-debugged to a minimal input and written to
-`conformance/fuzz_findings/`, which the next run replays as a seed *before*
-generating anything — the growth rule in `conformance/README.md`, applied to
+`corpus/fuzz_findings/`, which the next run replays as a seed *before*
+generating anything — the growth rule in `corpus/README.md`, applied to
 the fuzzer.
 
 ### Why the oracle is a script and not the harness

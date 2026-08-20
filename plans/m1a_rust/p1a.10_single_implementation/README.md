@@ -22,6 +22,16 @@ is **566 tests in 1 m 07 s**, none of which starts a Python process, where
 before it was 312 in 9 m 13 s of which 42 shelled out. What is left in the
 phase is the *tree*: the harness, the runner, `utils/`, and `ein.py/` itself.
 
+**[S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) shipped 2026-08-21.** The
+harness is gone — `ein-conformance`, `ein-oracle`, the four tiers, 2 164 lines
+and 29 unit tests of comparison machinery — and the corpus it read is
+[`corpus/`](../../../corpus/README.md), swept by
+`ein-cli/tests/corpus_cli.rs`: 542 cells as processes in 2.5 s, exit codes
+against a banked 660-line table, four rules that cannot rot, and a per-cell
+timeout so a program that stops terminating fails the gate instead of hanging
+it. `ein-parity` survived, reduced, and finally has a live consumer for its
+event cut. `cargo test --workspace` is **542 tests**.
+
 ## Goal
 
 **ein.rs is the only implementation.** `ein.py/`, the differential harness,
@@ -63,7 +73,7 @@ is the one way this phase can go wrong that cannot be undone by a revert.
 |---|---|---|---|
 | [S1a.10.1](s1a.10.1_bank_the_oracle.md) | Bank what only the oracle proves | 4 d | ✅ **shipped 2026-08-20** |
 | [S1a.10.2](s1a.10.2_port_the_suite.md) | Port the Python test suite | 5 d | ✅ **shipped 2026-08-20** — scope grew, see below |
-| [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) | The corpus without a second engine | 2 d | |
+| [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) | The corpus without a second engine | 2 d | ✅ **shipped 2026-08-21** — `corpus/`, and a sweep |
 | [S1a.10.4](s1a.10.4_utils.md) | `utils/`, re-aimed at one engine | 2 d | |
 | [S1a.10.5](s1a.10.5_removal.md) | The removal | 1 d | has a defect list |
 | [S1a.10.6](s1a.10.6_docs.md) | The docs after the oracle | 2 d | |
@@ -129,10 +139,13 @@ Three consequences, all recorded in the
   "ein.rs does what the semantics say". [P1c.1](../../m1c_external_validation/p1c.1_stdlib_conformance/README.md)
   exists partly because of this — a stdlib rule with a stated expectation is
   an external check that survives the oracle.
-- **The corpus keeps its value; the runner does not.** `conformance/corpus.toml`
+- **The corpus keeps its value; the runner does not.** `corpus/corpus.toml`
   is the *manifest* several ein.rs tests already read, and the completeness
   check it powers is worth keeping. What becomes moot is the two-engine
-  runner, not the list. S1a.10.3 separates them.
+  runner, not the list. S1a.10.3 separated them — and found that the runner
+  was carrying one claim the library tests structurally cannot make, which is
+  that the manifest's `runs` column still names invocations the CLI accepts.
+  The sweep keeps it.
 - **The fuzzer loses its differential mode.**
   [S1a.6.6](../p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s fuzzer found
   four real bugs by comparing engines. Without a second engine it can still
@@ -163,7 +176,7 @@ Three consequences, all recorded in the
 
 - [design/01 — Parity contract](../design/01_parity_contract.md) — the tiers
   this phase retires, and the ones it converts to goldens
-- [`conformance/README.md`](../../../conformance/README.md) — the harness and
+- [`corpus/README.md`](../../../corpus/README.md) — the harness and
   its tiers
 - [Q-M1a.2](../open_questions.md#q-m1a2--does-einpy-have-a-sunset) — the
   sunset question, resolved here

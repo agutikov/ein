@@ -207,7 +207,7 @@ what a phase-internal before/after must pass before its number is quoted.
 ## 5. Repo hygiene
 
 - `.gitignore`: `ein.rs/target/`, `ein.py/src/ein/stdlib/` (now
-  build-generated — [11](11_shared_assets.md) §3), `conformance/out/`.
+  build-generated — [11](11_shared_assets.md) §3), `corpus/out/`.
 - `AGENTS.md` (= `CLAUDE.md`) gains an `ein.rs/` entry under *Where
   things live* and a note that `stdlib/` is shared. Do this in P1a.0, not
   at the end — the file is how future sessions orient.

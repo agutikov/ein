@@ -106,7 +106,7 @@ silently stopped deriving something.
   away and the determinism sweep (ein.py against itself, two hash seeds) still
   runs under it.
 
-`conformance/README.md`'s tier paragraph and `EVENTS.md` § Levels both say
+`corpus/README.md`'s tier paragraph and `EVENTS.md` § Levels both say
 what the tiers compare, and both are now wrong; they move with the code.
 
 ### Task T1a.6.10.3 — Re-run the gate and record the number
@@ -229,7 +229,7 @@ entering are one test each.
 - A deliberately broken ein.rs — one productive firing dropped — is **caught**
   at T2 under the relaxed comparison. A relaxation that cannot be shown to
   still catch the thing it was relaxed around is a hole, not a decision.
-- design/01 §5, `conformance/README.md` and `EVENTS.md` agree with the code.
+- design/01 §5, `corpus/README.md` and `EVENTS.md` agree with the code.
 
 ## Notes
 

@@ -159,7 +159,7 @@ Worth formalising early, because it survives the later shift to live mode.
 Bulk graph data goes over `command → result`; progress and live-mode
 streams go over channels/events. When real-time engine integration
 arrives (currently deferred, below), the architecture does not change —
-the engine's `--events` stream ([`conformance/EVENTS.md`](../../conformance/EVENTS.md))
+the engine's `--events` stream ([`docs/kernel/inference/events.md`](../../docs/kernel/inference/events.md))
 is already the narration format to fan out.
 
 ---

@@ -116,7 +116,7 @@ Alongside the harness:
 - **`--json-summary`** byte-identical on every corpus entry — which is what
   lets the harness drive ein.rs at T0/T1 at all.
 - **`--events`** at `verbose`: 58 341 lines on zebra, identical modulo `impl`
-  and `argv`, which [EVENTS.md](../../../conformance/EVENTS.md) excludes by
+  and `argv`, which [EVENTS.md](../../../docs/kernel/inference/events.md) excludes by
   name.
 - **`--trace`**: 639 840 bytes identical on zebra2.
 - **`--dump-states`**: identical trees; only `ts_ms` and `elapsed_seconds`

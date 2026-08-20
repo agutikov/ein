@@ -49,6 +49,10 @@ docs/kernel/inference/
 │                                     re-grounded by S1.21.8)
 ├── domain_elim_vs_hypothesis.md   ← the domain-elimination vs guess duals
 ├── lattice_dump.md                ← the commitment-lattice dump format
+├── events.md                      ← the `--events` protocol: one JSON object
+│                                     per line, every step the engine took
+│                                     (schema `ein-events/1`; M1a S1a.0.2,
+│                                     re-homed here at S1a.10.3)
 ├── reserved_engine_strings.md     ← engine-internal reserved atoms
 │                                     (__closed__, __symmetric__, false, …)
 ├── python_impl.md                 ← the file-by-file Python module map (S1.20.D)

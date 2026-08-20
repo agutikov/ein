@@ -80,7 +80,7 @@ re-derivation is actually paid.
 A redundant firing is a `Firing`, and a `Firing` is narrated:
 
 - **T2 (`--events` at `verbose`)** emits a `fire` line per firing with its
-  `redundant` flag. `conformance/EVENTS.md` § Levels says T2 runs at
+  `redundant` flag. `docs/kernel/inference/events.md` § Levels says T2 runs at
   verbose *specifically* because "a dropped redundant firing is exactly the
   kind of difference a port introduces and the tier exists to catch."
 - **T3** compares `solve --trace {out}/trace.md` and
