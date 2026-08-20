@@ -1,0 +1,37 @@
+''
+'a'
+'co-located'
+"it's"
+'say "hi"'
+'both \' and "'
+'back\\slash'
+'tab\there'
+'nl\nhere'
+'cr\rhere'
+'\x00\x01\x1f\x7f'
+'\xa0nbsp'
+'\u200bzwsp'
+'\u2028\u2029'
+'Åsa'
+'中文'
+'😀'
+'\ue000private'
+'\u0378unassigned'
+'mixed \'quote" and \\ and \n'
+'House-1'
+'__closed__'
+0
+7
+-7
+123456789012345678901234567890
+-123456789012345678901234567890
+()
+('a',)
+(-7,)
+('a', 2, "it's")
+(('a',), ())
+Fact(relation_name='co-located', args=('Norwegian', 'House-2'))
+Fact(relation_name='hypothesis', args=(Fact(relation_name='co-located', args=('Norwegian', 'House-2')),))
+Fact(relation_name='arity-0', args=())
+Fact(relation_name="quote'd", args=(1, Fact(relation_name='co-located', args=('Norwegian', 'House-2')), 'x'))
+(Fact(relation_name='n', args=('a',)),)

@@ -1,29 +1,37 @@
-//! S1a.1.2 acceptance — `pyrepr` and `pyfmt` are checked against CPython
-//! itself, over a generated corpus, not against remembered strings.
+//! `pyrepr` and `pyfmt` against **frozen CPython answers** — S1a.1.2's
+//! acceptance, after the interpreter left.
 //!
 //! Both modules re-implement behaviour nobody wrote down as a spec: `repr()`'s
-//! quote choice and escape table, and `format()`'s sign/pad/align interaction.
-//! A differential test is the only kind that can be wrong in the direction
-//! that matters.
+//! quote choice and escape table, and `format()`'s sign/pad/align
+//! interaction. A differential test was the only kind that could be wrong in
+//! the direction that mattered, and
+//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! could not keep one. What it kept instead is the **corpus** — every
+//! generator below is unchanged, and every one is deterministic — with
+//! CPython's answers checked in beside it:
+//!
+//! | table | rows | what it covers |
+//! |---|---:|---|
+//! | `repr_values.txt` | 35 | every value shape reachable from a fact argument |
+//! | `repr_escapes.txt` | 1 500+ | every code point where this implementation's printability classification turns over, plus all of U+0000–U+02FF and U+2000–U+20FF |
+//! | `float_format.txt` | 2 584 | 136 seeded doubles × 19 format specs |
+//!
+//! This is the weakest of the substitutions the stage made and it is worth
+//! being plain about why: a frozen table cannot follow CPython. If a future
+//! Python changes `repr`'s escape set — as 3.0 did, and as a Unicode revision
+//! could again — these tables keep the old answer and nothing notices. They
+//! are a **regression** gate for ein.rs, not a parity gate against Python, and
+//! that is [accepted loss L2](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss)
+//! taking effect. What they still do is exactly what the sweeps did on every
+//! ordinary day: notice when this engine's answer moves.
+//!
+//! ```text
+//! EIN_BLESS=1 cargo test -p ein-core --test cpython_tables
+//! ```
 
 use ein_core::pyfmt::{Spec, format_float};
 use ein_core::pyrepr::{PyValue, repr};
-use ein_oracle::{Oracle, PY_ORACLE, skip};
-use serde_json::json;
-
-fn encode(v: &PyValue) -> serde_json::Value {
-    match v {
-        PyValue::Str(s) => json!({ "s": s }),
-        PyValue::Int(i) => json!({ "i": i }),
-        PyValue::Tuple(xs) => json!({ "t": xs.iter().map(encode).collect::<Vec<_>>() }),
-        PyValue::Fact {
-            relation_name,
-            args,
-        } => {
-            json!({ "f": [relation_name, args.iter().map(encode).collect::<Vec<_>>()] })
-        }
-    }
-}
+use ein_oracle::{golden, golden_path};
 
 fn s(x: &str) -> PyValue {
     PyValue::Str(x.to_string())
@@ -106,39 +114,37 @@ fn value_corpus() -> Vec<PyValue> {
     out
 }
 
+/// **`repr` of every reachable value shape.**
+///
+/// Quote choice (a `'` in the string flips CPython to `"`), the escape table,
+/// the one-tuple's trailing comma, a nested `Fact`'s dataclass repr, an
+/// arity-0 relation, and integers wider than an `i64` — 35 shapes, each with
+/// the answer CPython gave.
 #[test]
 fn repr_matches_cpython_for_every_reachable_value_shape() {
-    let Some(mut py) = Oracle::start(PY_ORACLE) else {
-        return skip("repr_matches_cpython_for_every_reachable_value_shape");
-    };
-    let mut bad = Vec::new();
-    for v in value_corpus() {
-        let got = repr(&v);
-        let want = py.ask(json!({"op": "repr", "v": encode(&v)}));
-        if got != want.unwrap() {
-            bad.push(format!(
-                "{v:?}\n  cpython: {}\n  ein.rs:  {got}",
-                want.unwrap()
-            ));
-        }
+    let corpus = value_corpus();
+    assert!(corpus.len() >= 30, "the value corpus shrank to {}", corpus.len());
+    let mut out = String::new();
+    for v in &corpus {
+        out.push_str(&format!("{}\n", repr(v)));
     }
-    assert!(
-        bad.is_empty(),
-        "{} value(s) differ:\n{}",
-        bad.len(),
-        bad.join("\n")
-    );
+    if let Some(msg) = golden(&golden_path("ein-core", "repr_values.txt"), &out) {
+        panic!("{msg}");
+    }
 }
 
-/// `repr`'s escape table is a Unicode-category question, and the table is
-/// generated from *CPython's* Unicode version — so sweep every code point
-/// where this implementation's classification changes, plus all of Latin-1
-/// and the general-punctuation block.
+/// **`repr`'s escape table, code point by code point.**
+///
+/// The table is a Unicode-category question and CPython's answer depends on
+/// *its* Unicode version, so the sweep is over every code point where this
+/// implementation's classification turns over — the boundaries, where a
+/// disagreement would live — plus all of U+0000–U+02FF and the
+/// general-punctuation block, where it would be most visible.
+///
+/// One line per point, so the golden is a diff of the points that changed
+/// rather than of a 1 500-character string.
 #[test]
 fn repr_escapes_the_same_code_points_cpython_escapes() {
-    let Some(mut py) = Oracle::start(PY_ORACLE) else {
-        return skip("repr_escapes_the_same_code_points_cpython_escapes");
-    };
     let mut points: Vec<u32> = (0..0x300).collect();
     points.extend(0x2000..0x2100);
     let mut prev = escapes(0x80);
@@ -158,38 +164,16 @@ fn repr_escapes_the_same_code_points_cpython_escapes() {
         points.len()
     );
 
-    // Batched 32 at a time — 1 500 round trips would not be a test, it would
-    // be a nightly job. A failing chunk is re-checked one code point at a time
-    // so the message names the offender.
-    let mut bad = Vec::new();
-    for chunk in points.chunks(32) {
-        let text: String = chunk.iter().filter_map(|&c| char::from_u32(c)).collect();
-        let v = PyValue::Str(text);
-        let want = py.ask(json!({"op": "repr", "v": encode(&v)}));
-        if repr(&v) == want.unwrap() {
+    let mut out = String::new();
+    for &c in &points {
+        let Some(ch) = char::from_u32(c) else {
             continue;
-        }
-        for &c in chunk {
-            let Some(ch) = char::from_u32(c) else {
-                continue;
-            };
-            let one = PyValue::Str(ch.to_string());
-            let want = py.ask(json!({"op": "repr", "v": encode(&one)}));
-            if repr(&one) != want.unwrap() {
-                bad.push(format!(
-                    "U+{c:04X}: cpython {} · ein.rs {}",
-                    want.unwrap(),
-                    repr(&one)
-                ));
-            }
-        }
+        };
+        out.push_str(&format!("U+{c:04X} {}\n", repr(&PyValue::Str(ch.to_string()))));
     }
-    assert!(
-        bad.is_empty(),
-        "{} code point(s) differ:\n{}",
-        bad.len(),
-        bad.join("\n")
-    );
+    if let Some(msg) = golden(&golden_path("ein-core", "repr_escapes.txt"), &out) {
+        panic!("{msg}");
+    }
 }
 
 /// Does this code point survive into a `repr` verbatim? `printable` is a
@@ -201,11 +185,16 @@ fn escapes(cp: u32) -> bool {
     repr(&PyValue::Str(ch.to_string())).contains('\\')
 }
 
+/// **`format_float` over 136 doubles × 19 specs.**
+///
+/// The seeded values are the ones a human would not think of — −0.0, ±inf,
+/// NaN and its sign, 5e-324, `f64::MAX`, and the `0x3F747AE147AE147B` near-tie
+/// — plus two hundred bit patterns from a fixed xorshift, so the corpus is not
+/// only the cases somebody wrote down. Each row carries the value's **bits**,
+/// because two doubles that print the same are not the same double and a diff
+/// has to be able to tell which one moved.
 #[test]
 fn float_formatting_matches_cpython() {
-    let Some(mut py) = Oracle::start(PY_ORACLE) else {
-        return skip("float_formatting_matches_cpython");
-    };
     let mut values: Vec<f64> = vec![
         0.0,
         -0.0,
@@ -256,30 +245,23 @@ fn float_formatting_matches_cpython() {
         "08.2f", "=9.2f", "_>9.2f", "020.10f", "-.3f", "0.2f", "*^12.3f",
     ];
 
-    let mut bad = Vec::new();
+    assert!(
+        values.len() >= 130,
+        "the float corpus shrank to {}",
+        values.len()
+    );
+    let mut out = String::new();
     for &v in &values {
         for spec in specs {
             let parsed = Spec::parse(spec).unwrap_or_else(|| panic!("spec {spec:?}"));
-            let got = format_float(v, &parsed);
-            let want = py.ask(json!({
-                "op": "format",
-                "v": format!("{:016x}", v.to_bits()),
-                "spec": spec,
-            }));
-            if got != want.unwrap() {
-                bad.push(format!(
-                    "{v:?} (bits {:016x}) as {spec:?}\n  cpython: {:?}\n  ein.rs:  {got:?}",
-                    v.to_bits(),
-                    want.unwrap()
-                ));
-            }
+            out.push_str(&format!(
+                "{:016x} {spec:>8} {:?}\n",
+                v.to_bits(),
+                format_float(v, &parsed)
+            ));
         }
     }
-    assert!(
-        bad.is_empty(),
-        "{} of {} formattings differ:\n{}",
-        bad.len(),
-        values.len() * specs.len(),
-        bad.join("\n")
-    );
+    if let Some(msg) = golden(&golden_path("ein-core", "float_format.txt"), &out) {
+        panic!("{msg}");
+    }
 }

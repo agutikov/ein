@@ -1,0 +1,192 @@
+=== "(rulex (?a) :match X :assert Y)"
+  ok (1 form(s))
+=== "(rulex A)"
+  ok (1 form(s))
+=== "(hrulex (?a) :match X :assert Y)"
+  ok (1 form(s))
+=== "(macrox (?a) B)"
+  ok (1 form(s))
+=== "(importx :as m)"
+  ok (1 form(s))
+=== "(importfoo.bar :as m)"
+  ok (1 form(s))
+=== "(notx)"
+  ok (1 form(s))
+=== "(notx A)"
+  ok (1 form(s))
+=== "(a (notx))"
+  ok (1 form(s))
+=== "(a (andx A B))"
+  ok (1 form(s))
+=== "(a (orx A B))"
+  ok (1 form(s))
+=== "(a (neqx A B))"
+  ok (1 form(s))
+=== "(relationx R A B)"
+  ok (1 form(s))
+=== "(relationx R (T1 T2))"
+  ok (1 form(s))
+=== "(queryx :goal Y)"
+  ok (1 form(s))
+=== "(configx)"
+  ok (1 form(s))
+=== "(tracex)"
+  ok (1 form(s))
+=== "(trace (stepx :a b))"
+  ok (1 form(s))
+=== "(trace (branch-openx :a b))"
+  ok (1 form(s))
+=== "(trace (branch-refx))"
+  ok (1 form(s))
+=== "(trace (contradictionx :a b))"
+  ok (1 form(s))
+=== "(trace (symmetry-classx :a b))"
+  ok (1 form(s))
+=== "(a (stepx :a b))"
+  ok (1 form(s))
+=== "(rule-x A)"
+  <string>:1:6: unexpected input
+  (rule-x A)
+       ^
+=== "(rule.x A)"
+  <string>:1:6: unexpected input
+  (rule.x A)
+       ^
+=== "(rule_x (?a) :match X :assert Y)"
+  ok (1 form(s))
+=== "(not_a X)"
+  ok (1 form(s))
+=== "(neq_test X)"
+  ok (1 form(s))
+=== "(std.rule X)"
+  ok (1 form(s))
+=== "(relation-x R)"
+  ok (1 form(s))
+=== "(relation R A B)"
+  ok (1 form(s))
+=== "(relation R (T1 T2))"
+  ok (1 form(s))
+=== "(relation)"
+  ok (1 form(s))
+=== "(relation R)"
+  ok (1 form(s))
+=== "(a 1 :k 2)"
+  ok (1 form(s))
+=== "(a :k 1 :k 2)"
+  ok (1 form(s))
+=== "(a :k 1 2)"
+  <string>:1:9: unexpected input
+  (a :k 1 2)
+          ^
+=== "(a 1 :k 2 3)"
+  <string>:1:11: unexpected input
+  (a 1 :k 2 3)
+            ^
+=== "(x (a 1 :k 2 3))"
+  ok (1 form(s))
+=== "(x (a :k 2 3))"
+  ok (1 form(s))
+=== "(= a b)"
+  ok (1 form(s))
+=== "(= a b c)"
+  <string>:1:8: unexpected input
+  (= a b c)
+         ^
+=== "(= a b :k 1)"
+  ok (1 form(s))
+=== "(x (= a b c))"
+  ok (1 form(s))
+=== "(not A B)"
+  <string>:1:8: unexpected input
+  (not A B)
+         ^
+=== "(not A :k 1)"
+  ok (1 form(s))
+=== "(query)"
+  <string>:1:7: unexpected input
+  (query)
+        ^
+=== "(config)"
+  ok (1 form(s))
+=== "(trace)"
+  ok (1 form(s))
+=== "(rule r ())"
+  <string>:1:11: unexpected input
+  (rule r ())
+            ^
+=== "(rule r () :match X)"
+  ok (1 form(s))
+=== "(macro m () B)"
+  <string>:1:11: unexpected input
+  (macro m () B)
+            ^
+=== "(macro m (?a) B)"
+  ok (1 form(s))
+=== "(a __closed__)"
+  ok (1 form(s))
+=== "(a _)"
+  ok (1 form(s))
+=== "(a _x)"
+  <string>:1:4: unexpected input
+  (a _x)
+     ^
+=== "(a 007)"
+  ok (1 form(s))
+=== "(a -0)"
+  ok (1 form(s))
+=== "(a 1..5)"
+  ok (1 form(s))
+=== "(a 1..*)"
+  ok (1 form(s))
+=== "(a 1..)"
+  <string>:1:5: unexpected input
+  (a 1..)
+      ^
+=== "(a \"h\\di\")"
+  ok (1 form(s))
+=== "(a \"a\nb\")"
+  ok (1 form(s))
+=== "(a \"a\\\nb\")"
+  <string>:1:4: unexpected input
+  (a "a\
+     ^
+=== "(a \"unterminated)"
+  <string>:1:4: unexpected input
+  (a "unterminated)
+     ^
+=== "(x (?p ?q))"
+  ok (1 form(s))
+=== "(x (_ ?a))"
+  ok (1 form(s))
+=== "()"
+  <string>:1:2: unexpected input
+  ()
+   ^
+=== "(x ())"
+  ok (1 form(s))
+=== "(x (()))"
+  <string>:1:5: unexpected input
+  (x (()))
+      ^
+=== "(x ; comment\n y)"
+  ok (1 form(s))
+=== "(x #| c |# y)"
+  ok (1 form(s))
+=== "(x #| never closed"
+  <string>:1:4: unexpected input
+  (x #| never closed
+     ^
+=== ""
+  ok (0 form(s))
+=== "   "
+  ok (0 form(s))
+=== ";; only a comment\n"
+  ok (0 form(s))
+=== "(a))"
+  <string>:1:4: unexpected input
+  (a))
+     ^
+=== "(a"
+  <string>:-1:-1: unexpected input
+  (a
+   ^

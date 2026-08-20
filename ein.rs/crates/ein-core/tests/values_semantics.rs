@@ -1,15 +1,30 @@
-//! S1a.2.1 acceptance — the two places the data model has to agree with
-//! CPython rather than with itself.
+//! S1a.2.1's acceptance — the two places the data model has to agree with
+//! CPython rather than with itself, checked without CPython.
 //!
 //! Both are re-implementations of behaviour that only exists as CPython
 //! source: `sorted(names)` (which the interner's rank table replaces with a
 //! `u32` sort) and `str(int(tok))` (which the int pool applies to every
 //! literal). Unit tests can only check the cases somebody thought of; these
-//! check a generated corpus against the thing being imitated.
+//! check a generated corpus against a **specification of the imitated
+//! behaviour**, which is what
+//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! substituted for asking the interpreter:
+//!
+//! - `sorted()` on `str` is code-point order, and so is Rust's `Ord` on
+//!   `String` — UTF-8 preserves code-point order — so the reference is
+//!   `Vec<String>::sort`, computed here rather than fetched.
+//! - `str(int(x))` is "strip the leading zeros, and `-0` is `0`", which is
+//!   nine lines of Rust that no more shares an implementation with `IntPool`
+//!   than CPython did.
+//! - `repr` of a nested `Fact` has no such specification, so the six shapes
+//!   the test builds are checked in as strings. Those six are ein.py's own
+//!   output, captured while the differential test was green.
+//!
+//! The generated corpora stay the size they were — ~900 names and ~400
+//! literals — because their job is to reach the neighbourhoods a hand-written
+//! case would miss, and that job does not change when the reference does.
 
 use ein_core::{IntPool, Interner, Symbol, Terms};
-use ein_oracle::{Oracle, PY_ORACLE, skip};
-use serde_json::json;
 
 /// A deterministic xorshift, so the corpus is the same on every run and on
 /// every machine — a differential test that fails only sometimes is not a
@@ -88,9 +103,6 @@ fn unicode_corpus() -> Vec<String> {
 
 #[test]
 fn the_rank_table_orders_names_the_way_python_sorted_does() {
-    let Some(mut py) = Oracle::start(PY_ORACLE) else {
-        return skip("the_rank_table_orders_names_the_way_python_sorted_does");
-    };
     let corpus = unicode_corpus();
     assert!(corpus.len() >= 900, "corpus is {} strings", corpus.len());
 
@@ -107,20 +119,19 @@ fn the_rank_table_orders_names_the_way_python_sorted_does() {
         syms[i] = Some(interner.intern(&corpus[i]).expect("room"));
     }
 
-    let answer = py.ask(json!({"op": "sort", "vs": corpus}));
-    let want: Vec<usize> = answer
-        .unwrap()
-        .split_whitespace()
-        .map(|x| x.parse().expect("an index"))
-        .collect();
-    assert_eq!(want.len(), corpus.len());
+    // CPython's `sorted()` on `str` is code-point order; Rust's `Ord` on
+    // `String` is byte order over UTF-8, and UTF-8 is order-preserving on code
+    // points. So the reference is a sort, and the only thing that could make
+    // it disagree is the rank table itself.
+    let mut want: Vec<usize> = (0..corpus.len()).collect();
+    want.sort_by(|&a, &b| corpus[a].cmp(&corpus[b]));
 
     let mut bad = Vec::new();
     for (position, &index) in want.iter().enumerate() {
         let got = interner.rank(syms[index].expect("interned"));
         if got as usize != position {
             bad.push(format!(
-                "{:?}: cpython position {position}, rank table {got}",
+                "{:?}: code-point position {position}, rank table {got}",
                 corpus[index]
             ));
         }
@@ -136,9 +147,6 @@ fn the_rank_table_orders_names_the_way_python_sorted_does() {
 
 #[test]
 fn the_int_pool_canonicalises_exactly_as_int_then_str_does() {
-    let Some(mut py) = Oracle::start(PY_ORACLE) else {
-        return skip("the_int_pool_canonicalises_exactly_as_int_then_str_does");
-    };
     // Widths either side of i64, leading zeros, both signs, and the two
     // spellings of zero.
     let mut literals: Vec<String> = Vec::new();
@@ -175,13 +183,10 @@ fn the_int_pool_canonicalises_exactly_as_int_then_str_does() {
         std::collections::HashMap::new();
     for literal in &literals {
         let id = pool.intern(literal).expect("room");
-        let want = py
-            .ask(json!({"op": "int", "v": literal}))
-            .unwrap()
-            .to_string();
+        let want = canonical(literal);
         if pool.text(id) != want {
             bad.push(format!(
-                "{literal:?}: cpython {want:?}, pool {:?}",
+                "{literal:?}: str(int(x)) is {want:?}, pool {:?}",
                 pool.text(id)
             ));
         }
@@ -205,13 +210,45 @@ fn the_int_pool_canonicalises_exactly_as_int_then_str_does() {
     assert_eq!(pool.len(), by_canonical.len());
 }
 
+/// `str(int(x))` for a decimal literal, written out rather than fetched.
+///
+/// The whole of CPython's behaviour on this input class: strip the sign,
+/// strip the leading zeros, and a value of zero has no sign. Nine lines,
+/// sharing no code with [`IntPool`] — which is what makes the comparison a
+/// comparison.
+fn canonical(literal: &str) -> String {
+    let (negative, digits) = match literal.strip_prefix('-') {
+        Some(rest) => (true, rest),
+        None => (false, literal),
+    };
+    let stripped = digits.trim_start_matches('0');
+    if stripped.is_empty() {
+        return "0".to_string();
+    }
+    if negative {
+        format!("-{stripped}")
+    } else {
+        stripped.to_string()
+    }
+}
+
+/// **`Terms::display` renders a value the way CPython's `str` does** — for the
+/// six shapes that reach a trace.
+///
+/// `display` is `str(v)`, which for a nested fact is its dataclass repr: the
+/// string that lands in provenance bindings and in a `:why` template. There is
+/// no short specification of that — it is `dataclasses`' generated `__repr__`
+/// over a tuple of values, with `repr` on each — so the six answers are
+/// checked in rather than re-derived. They are **ein.py's**, captured while
+/// `a_facts_repr_matches_cpythons_for_every_value_shape` was green against a
+/// live `utils/py_oracle.py`.
+///
+/// What each shape is for: an atom (no quotes, unlike `repr`), an atom with an
+/// apostrophe (which flips CPython's quote choice to `"`), a leading-zero int,
+/// a negative int wider than an `i64`, a nested fact, and a fact nested inside
+/// a fact — the last being the only place the recursion is visible.
 #[test]
 fn a_facts_repr_matches_cpythons_for_every_value_shape() {
-    let Some(mut py) = Oracle::start(PY_ORACLE) else {
-        return skip("a_facts_repr_matches_cpythons_for_every_value_shape");
-    };
-    // `Terms::display` is `str(v)`, which for a nested fact is its dataclass
-    // repr — the string that lands in provenance bindings and in the trace.
     let mut t = Terms::new();
     let co_located = t.intern_text("co-located").expect("room");
     let hypothesis = t.intern_text("hypothesis").expect("room");
@@ -227,44 +264,25 @@ fn a_facts_repr_matches_cpythons_for_every_value_shape() {
         .expect("room");
 
     let mut bad = Vec::new();
-    for v in [norwegian, quote, seven, big, inner, outer] {
+    for (v, want) in [
+        (norwegian, "Norwegian"),
+        (quote, "it's"),
+        (seven, "7"),
+        (big, "-123456789012345678901234567890"),
+        (
+            inner,
+            "Fact(relation_name='co-located', args=('Norwegian', 7))",
+        ),
+        (
+            outer,
+            "Fact(relation_name='hypothesis', args=(Fact(relation_name='co-located', \
+             args=('Norwegian', 7)), \"it's\", -123456789012345678901234567890))",
+        ),
+    ] {
         let got = t.display(v);
-        let want = match v.as_fact() {
-            Some(id) => {
-                let (rel, args) = t.fact(id);
-                py.ask(json!({"op": "repr", "v": encode_fact(&t, rel, args)}))
-            }
-            None => py.ask(json!({"op": "repr", "v": encode_value(&t, v)})),
-        };
-        // `str` of a str is the str itself; `repr` quotes it. Compare through
-        // `repr` only for the shapes where the two agree.
-        let want = want.unwrap();
-        let want = if v.as_sym().is_some() {
-            want[1..want.len() - 1].to_string()
-        } else {
-            want.to_string()
-        };
         if got != want {
             bad.push(format!("{v:?}\n  cpython: {want}\n  ein.rs:  {got}"));
         }
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
-}
-
-fn encode_value(t: &Terms, v: ein_core::Value) -> serde_json::Value {
-    match v.tag() {
-        ein_core::Tag::Sym => json!({ "s": t.sym(v.as_sym().expect("sym")) }),
-        ein_core::Tag::Int => json!({ "i": t.int_text(v.as_int().expect("int")) }),
-        ein_core::Tag::Fact => {
-            let (rel, args) = t.fact(v.as_fact().expect("fact"));
-            encode_fact(t, rel, args)
-        }
-    }
-}
-
-fn encode_fact(t: &Terms, rel: Symbol, args: &[ein_core::Value]) -> serde_json::Value {
-    json!({ "f": [
-        t.sym(rel),
-        args.iter().map(|a| encode_value(t, *a)).collect::<Vec<_>>(),
-    ]})
 }
