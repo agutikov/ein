@@ -600,9 +600,9 @@ the S1.7.24 symmetric-removal made fully generic (no hard-coded symmetry). **Ade
 
 ## 7. Summary — where the bodies are, and the levers
 
-The measured cost (P1.8a) is **almost entirely O1+O2** — the matcher inside
-saturation (~95 % of a solve). The optimisation arc has been a walk *up the
-Datalog ladder*: naive → **semi-naive** (participation index = alpha-memory;
+The measured cost (P1.8a, ein.py) is **almost entirely O1+O2** — the matcher
+inside saturation (~95 % of a solve). The optimisation arc has been a walk *up
+the Datalog ladder*: naive → **semi-naive** (participation index = alpha-memory;
 D2 delta-driven; D5 seeded delta join), for ~3.6×. S1.9.E23 then took the
 other axis — not making a firing cheaper but **not firing at all** past the
 point where the fork is already dead (§O5): **~2×** on exhaustive zebra2
@@ -610,7 +610,38 @@ point where the fork is already dead (§O5): **~2×** on exhaustive zebra2
 fresh-process A/B at `max_set_size=5` — 8.5 s → 3.7 s; the fast path 1.3×).
 Note what that does to the profile: **over half** of an exhaustive solve was
 saturating forks already known to be dead, and is now ~0 — so what remains is
-saturation of forks that genuinely live, i.e. the matcher again. The remaining named levers map onto the literature precisely:
+saturation of forks that genuinely live, i.e. the matcher again.
+
+**That 95 % is a property of the implementation, not of the algorithm, and the
+Rust port is what showed it.** [M1a P1a.6](../../../plans/m1a_rust/p1a.6_performance/README.md)
+re-took every measurement here on an engine 150–175× faster end-to-end, and
+the answer to "where are the bodies" moved three times inside one phase:
+
+| what dominates `solve zebra -e` | when | share |
+|---|---|---|
+| the matcher (O1) | ein.py (P1.8a), and ein.rs at byte parity | ~95 % / **66.9 %** |
+| the **NAF boundary** (O3) — visiting parked candidates and re-asking their guards | once the participation index keyed *inside* a nested argument | **37.7 %** cumulative |
+| nothing — no block above **8 %** of self time | after the boundary stage | the largest is the enqueue path (`enqueue_pass` + `enqueue_binding` + the `BindingKey` hashing under them) |
+
+Neither of those steps was a new algorithm. Indexing one level inside a nested
+argument took an exhaustive `zebra`'s candidate count from **25.2 M to
+1.17 M**; noticing that **71.8 % of guard premises have every slot bound** — so
+they are one interned-fact lookup rather than a scan of a ten-deep bucket —
+took it to **239 k**. Ein's O1 is a *better-asked* multi-way join, not a
+different one.
+
+**The levers, re-measured in both engines**
+([`features.md`](features.md), 2026-08-20, with a control row that states each
+column's resolution): `enable_singleton_writeback` is the largest by far —
+without it an exhaustive `zebra2` explores **3 831** commitments instead of
+101, which ein.py cannot finish in 90 s and ein.rs pays 56.6× for — and
+`enable_fail_fast_fork` is the one whose whole effect is price per branch, now
+**2.4× (ein.py) / 7.0–7.1× (ein.rs)** where the 2026-08-17 Python-only table
+read 1.9×. Its ratio *grew* as the engine got faster, which is the profile
+table above seen from the other side: what fail-fast removes is a fixed
+quantity of dead-fork saturation, and everything around it shrank.
+
+The remaining named levers map onto the literature precisely:
 
 - **RETE beta-memories** — persist partial joins across firings (the one
   thing D5 still recomputes). The natural successor to D5 for O1, and with

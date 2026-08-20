@@ -23,6 +23,7 @@ to their own followup file when they grow.
 | Q37 | Induction — facts → rules over relations; rules learned from fact patterns  |
 | Q38 | LLM as fact/relation/type/rule extractor — per-word/per-role question schemas |
 | Q39 | Facts as variables-with-context (M1+ proposal) — `(co-located (drink-loc Milk ?h) (smoke-loc Kools ?h))` |
+| Q40 | May a *performance* lever decide what counts as a complete model? (`enable_pre_branch_lookahead` filters the generator `complete()` asks) |
 
 ---
 
@@ -556,3 +557,62 @@ worked test puzzle, a measurable target — graduates to its own
 followup file (rename `qNN_<topic>.md` and link from the F4 index).
 When two related items appear in the same scope, bundle into a new
 milestone folder under `plans/m_followups_<topic>/`.
+
+## May a performance lever decide what a complete model is? (Q40)
+
+**Found by measurement, 2026-08-20, M1a
+[S1a.6.7](../m1a_rust/p1a.6_performance/s1a.6.7_relever_matrix.md)** — the
+stage that re-measured the lever matrix in both implementations. Both engines
+agree to the digit on every number below; this is a *kernel semantics*
+question, not a port question.
+
+`enable_pre_branch_lookahead` is documented, and priced, as a **prune**: a
+one-step rule simulation that kills a hypothesis candidate before the fork.
+Turning a prune off should cost time and change nothing else. It does not:
+
+| fixture | lookahead on | lookahead off |
+|---|---|---|
+| `examples/branching/06_lookahead_on.ein` | Solution k=1 (fast) / **Ambiguity k=22** (`-e`) | **Contradiction k=0**, both modes |
+| `examples/lattice/02_genuine_3set_death.ein` | **Ambiguity k=3**, 6 enterings | **Contradiction k=0**, 7 enterings |
+
+The mechanism is one line of
+[`inference/solution.py`](../../ein.py/src/ein/inference/solution.py):
+
+```python
+def complete(kb) -> bool:
+    """No open hypothesis — the generator proposes nothing undecided."""
+    return next(generate_hypotheses(kb), None) is None
+```
+
+`generate_hypotheses` yields the candidates that are "neither asserted nor
+refuted **nor immediately doomed (lookahead)**". So the lever decides which
+candidates count as *decided*, and therefore which commitment sets are
+solution nodes. With it off, a KB whose only survivors are doomed candidates
+is not a model, and `branching/06` reports `Contradiction` on a puzzle with 22
+models.
+
+**Why this is a question and not a bug.** Both readings are defensible:
+
+- *The lookahead is part of the semantics.* A candidate that provably dies in
+  one firing against the saturated KB **is** decided — the simulation is a
+  proof, not a heuristic — and a definition of "open" that ignores an
+  available refutation is the weaker one. On this reading the lever should not
+  be a lever at all: the filter belongs in `open_hypotheses` unconditionally,
+  and `enable_pre_branch_lookahead` should gate only the *caching*
+  (`enable_lookahead_kill_cache` already does) and the pre-fork skip.
+- *The lookahead is an optimisation.* Then `complete()` must not consult it,
+  the doomed candidates must be decided the honest way — by forking and dying
+  — and `06`'s k=22 with the lever on is the wrong answer rather than `07`'s
+  k=0 with it off. Note this reading costs 448× on that fixture's fast path
+  (2 ms → 896 ms in ein.rs).
+
+Either way **one of the two configurations is reporting the wrong verdict
+today**, and the corpus contains both as fixtures with a checked-in
+expectation. `examples/branching/06|07`'s headers claimed "same verdict either
+way" until 2026-08-20; they now record the measurement instead.
+
+**Trigger.** Any work that touches `open_hypotheses` / `complete` — or the
+first user who reports `Contradiction` on a satisfiable puzzle. Related:
+[`docs/kernel/inference/features.md`](../../docs/kernel/inference/features.md)
+(the measurement), [F9](f9_e_catalog.md) (where the search layer's other
+levers were settled).

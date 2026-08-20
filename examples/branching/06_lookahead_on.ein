@@ -23,12 +23,28 @@
 ;;; fork — the search tree collapses to the lone surviving placement.
 ;;; With it OFF (07_lookahead_off.ein) each doomed colour forks,
 ;;; saturates, and dies as its own branch, so the tree is an order of
-;;; magnitude larger. Compare the `tree nodes` line `bench_solve`
-;;; prints for the two files. Same verdict (Solution) and the same
-;;; binding (?h = H5) either way — only the node count differs.
+;;; magnitude larger.
 ;;;
-;;; Measured: ON (06) = 2 tree nodes; OFF (07) = 82 (80 dead
-;;; branches). Verdict Solution, binding ?h = H5, in both.
+;;; ~~Same verdict (Solution) and the same binding (?h = H5) either
+;;; way — only the node count differs. Measured: ON (06) = 2 tree
+;;; nodes; OFF (07) = 82 (80 dead branches).~~ **That was P1.5, and it
+;;; is no longer true** (re-measured 2026-08-20, M1a S1a.6.7, in BOTH
+;;; implementations, which agree to the digit):
+;;;
+;;;     ON  (06)  fast: Solution  k=1   67 enterings
+;;;               -e:   Ambiguity k=22  5173 enterings
+;;;     OFF (07)  fast: Contradiction k=0  11501 enterings
+;;;               -e:   Contradiction k=0  11501 enterings
+;;;
+;;; The lever changes the VERDICT, not just the node count, because
+;;; `complete(kb)` (inference/solution.py) asks the hypothesis
+;;; generator whether anything is undecided — and the generator's
+;;; candidate list is itself lookahead-filtered. A doomed candidate is
+;;; *decided* with the lookahead on and *open* with it off, so a KB
+;;; whose only survivors are doomed is a solution node in the first
+;;; case and no model at all in the second. See
+;;; docs/kernel/inference/features.md and plans/followups/
+;;; f4_cross_cutting.md Q40.
 
 (config :enable-pre-branch-lookahead true)
 

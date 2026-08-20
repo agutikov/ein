@@ -23,12 +23,27 @@
 ;;; own branch, inflating the search tree by an order of magnitude.
 ;;; With it ON (06_lookahead_on.ein) those four candidates are
 ;;; dropped before forking and the tree collapses to the lone
-;;; surviving placement. Compare the `tree nodes` line `bench_solve`
-;;; prints for the two files. Same verdict (Solution) and the same
-;;; binding (?h = H5) either way — only the node count differs.
+;;; surviving placement.
 ;;;
-;;; Measured: ON (06) = 2 tree nodes; OFF (07) = 82 (80 dead
-;;; branches). Verdict Solution, binding ?h = H5, in both.
+;;; ~~Same verdict (Solution) and the same binding (?h = H5) either
+;;; way — only the node count differs. Measured: ON (06) = 2 tree
+;;; nodes; OFF (07) = 82 (80 dead branches).~~ **That was P1.5, and it
+;;; is no longer true** (re-measured 2026-08-20, M1a S1a.6.7, in BOTH
+;;; implementations, which agree to the digit):
+;;;
+;;;     ON  (06)  fast: Solution  k=1   67 enterings
+;;;               -e:   Ambiguity k=22  5173 enterings
+;;;     OFF (07)  fast: Contradiction k=0  11501 enterings
+;;;               -e:   Contradiction k=0  11501 enterings
+;;;
+;;; This file is therefore the CONTRADICTION half of the pair, and the
+;;; reason is `complete(kb)` (inference/solution.py): it asks the
+;;; hypothesis generator whether anything is undecided, and the
+;;; generator's candidate list is lookahead-filtered. Without the
+;;; lookahead the four doomed placements stay *open* forever, so no
+;;; commitment set is ever complete and k = 0. See
+;;; docs/kernel/inference/features.md and plans/followups/
+;;; f4_cross_cutting.md Q40.
 
 (config :enable-pre-branch-lookahead false)
 
