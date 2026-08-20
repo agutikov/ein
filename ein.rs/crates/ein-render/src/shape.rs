@@ -399,7 +399,7 @@ pub fn trace_shape(
                 Some(solved.stats.solution_nodes),
                 exhausted,
                 Some("<source>"),
-            ));
+            )?);
         }
         // The exhaustive regime's own trace: this is where the unsat and
         // many-solution lattice shapes are, and `trace` never sees one.

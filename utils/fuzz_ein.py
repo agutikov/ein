@@ -46,20 +46,29 @@ Asserted heads never construct a nested term, so the derivable set is finite
 and a generated program terminates; the per-case `--max-enterings` /
 `--max-set-size 2` budgets bound the *search* on top of that.
 
+**What it deliberately does not generate: D2.** A hypothesis whose argument is
+an int or a nested fact is the ledger's own accepted divergence, so an
+`(hrule …)` never gets a negative `:assert` head and never sees int arguments,
+and the two D2 fixtures are out of the mutation seed set. Without that, four
+findings in five are the answer we already know.
+
 ## Modes
 
 - `gen` — pure generation.
 - `mutate` — take a corpus file and edit it: drop a form, swap two, rename an
   atom, flip a `:priority`, add a `(not …)` fact, toggle a config lever. Finds
   near-miss divergences on programs that are known to be meaningful.
-- `mixed` (default) — both, 50/50.
+- `mixed` (default) — both, 60/40.
 
 ## Findings
 
 A reported cell is **minimised** — forms deleted, conjuncts dropped, kw-pairs
-removed, while the divergence survives — and written to
-`conformance/fuzz_findings/` with a note naming the run, the tier and the
-harness's own diff lines. A 400-line generated program is not a bug report; an
+removed, while the divergence survives — then **re-judged**: the note records
+the harness's diff on the *minimum* rather than on the batch it came out of,
+and a case where ein.py raised is re-run in the `crash-parity` group, where
+the comparison is the exit code and the exception class. One that passes there
+is a corpus *candidate* (collected in `crash-parity-candidates.txt`), not a
+find. A 400-line generated program is not a bug report; an
 8-line one is. Nothing is added to `conformance/corpus.toml` automatically:
 that is the growth rule's step, and it happens in the commit that fixes the
 find or records it in the ledger.

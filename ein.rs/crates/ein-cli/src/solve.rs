@@ -508,33 +508,28 @@ pub fn run(m: &ArgMatches) -> i32 {
     };
     let elapsed_ms = t0.elapsed().as_secs_f64() * 1000.0;
 
-    // ein.py compiles the `:goal` pattern *inside* the table renderer, so a
-    // goal the compiler rejects — `(query :goal (?R Rex Animal))`, an unbound
-    // relation head — raises out of `render_solution_table` and ends the run
-    // after a successful solve. ein.rs has no exceptions to propagate through
-    // a renderer that returns a `String`, so the check happens here, in the
-    // same place and with the same effect: CPython's last traceback line and
-    // exit 1. Found by S1a.6.6's fuzzer on a two-line program.
-    if let Some(e) = ein_infer::verdict::goal_plan_error(&ast, &mut terms, &kb, None) {
-        eprintln!("{}", crate::common::compile_error_line(e));
-        return 1;
-    }
-
     // Result-driven: the table reports k / verdict / query bindings / rendered
     // query facts / NL result — all text from puzzle templates, nothing
     // hardcoded here.
-    println!(
-        "{}",
-        render_solution_table(
-            &ast,
-            &mut terms,
-            &kb,
-            &solved.answer,
-            Some(solved.stats.solution_nodes),
-            solved.stats.exhausted,
-            Some(&file),
-        )
-    );
+    // `render_solution_table` is fallible for one reason: ein.py compiles the
+    // `:goal` pattern inside it, so a goal the compiler rejects ends the run
+    // *after* a successful solve — and only when there is a model to render.
+    let table = match render_solution_table(
+        &ast,
+        &mut terms,
+        &kb,
+        &solved.answer,
+        Some(solved.stats.solution_nodes),
+        solved.stats.exhausted,
+        Some(&file),
+    ) {
+        Ok(t) => t,
+        Err(line) => {
+            eprintln!("{line}");
+            return 1;
+        }
+    };
+    println!("{table}");
     print_final(&ast, &terms, &kb, &solved.answer, m);
     if m.get_flag("stats") {
         printers::print_stats(&solved.stats, elapsed_ms);

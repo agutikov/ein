@@ -1,0 +1,22 @@
+;;; M1a S1a.6.6 — the *other* arm of `query-goal-free-head.ein`.
+;;;
+;;; Same broken goal, `(?R …)` with a head variable that nothing can bind —
+;;; but the puzzle is **contradictory**, so the solve table prints an unsat
+;;; core and never renders a solution block. ein.py compiles the goal inside
+;;; `_solution_block`, which is not called, so this file **exits 0** where its
+;;; sibling exits 1.
+;;;
+;;; That asymmetry is the whole reason this file exists. The first fix for
+;;; the sibling checked the goal in the CLI, before the verdict was known,
+;;; and turned one divergence into another: ein.rs rejected this file while
+;;; ein.py answered it. The check belongs where ein.py has it — inside the
+;;; renderer, on the path that renders a model.
+
+(is-a a T)
+
+(rule boom ()
+  :match  (is-a ?x T)
+  :assert (false))
+
+(query
+  :goal (?R a b))

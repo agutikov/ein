@@ -2685,6 +2685,22 @@ The first ten minutes produced 13 reported cells, and the triage is the point:
 | **D2's second shape** | 5 | `sorted(alive)` over two `Fact` args. **No mixed types needed** — one `(hrule … :assert (not …))`. Accepted, with a fixture and a re-stated ledger entry |
 | **a crash-parity cell** | 1 | `(?R ?x)` unbound: identical class, identical exit code, only ein.py's traceback wrapper. **Passes** — a corpus entry, not a divergence |
 
+Two more bugs landed in the same session and are worth the same table: an
+unbound `:assert` variable ended ein.py's traceback with `KeyError: "…"` —
+whose `str` is the *repr* of its key — where ein.rs printed the message bare
+(the case [Q-M1a.14](../open_questions.md#q-m1a14--crash-parity) named in its
+first paragraph and nothing had ever reached), and `(query :goal (?R Rex
+Animal))` — two lines — is a program ein.py rejects **inside its table
+renderer** and ein.rs ran to completion.
+
+The second of those is also where the phase's own gate earned its keep. The
+first fix checked the goal in the CLI, before the verdict was known, and
+turned one divergence into another: ein.py raises only when it *renders a
+solution block*, so a contradictory puzzle with the same broken goal exits 0
+on both sides and the eager check made ein.rs exit 1. `trace_parity` — which
+runs the renderer, not the CLI — reported it within the hour, and both arms
+are fixtures now (`query-goal-free-head.ein`, `…-unsat.ein`).
+
 Two of those are genuine parity bugs in a surface **five phases of byte parity
 had signed off**, and the reason both hid is the same: `stdout` is identical
 on all of them, and no corpus puzzle binds a query variable to anything but a

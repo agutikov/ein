@@ -369,6 +369,12 @@ runs   = ["solve -e"]
 note   = "M1a hazard H2, second shape — the same `sorted(alive)`, over two `Fact` args instead of a str and an int, so it needs no mixed slot types: one hrule whose `:assert` is a `(not …)` is enough. Found by the S1a.6.6 fuzzer 2026-08-20; D2's reach, widened with a fixture rather than in prose."
 
 [[entry]]
+path   = "examples/ein-bugs/query-goal-free-head-unsat.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render rules"]
+note   = "The `Contradiction` arm of `query-goal-free-head.ein`: the same uncompilable goal, but no solution block is rendered, so ein.py never compiles it and the run exits 0. Pins the asymmetry a too-eager fix broke for the length of one commit."
+
+[[entry]]
 path   = "examples/ein-bugs/query-goal-free-head.ein"
 group  = "crash-parity"
 runs   = ["solve", "saturate"]

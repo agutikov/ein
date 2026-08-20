@@ -301,7 +301,23 @@ pub fn render_solution_table(
     solution_nodes: Option<u64>,
     exhausted: bool,
     source: Option<&str>,
-) -> String {
+) -> Result<String, String> {
+    // ein.py compiles the `:goal` pattern inside `_solution_block`, so a goal
+    // the compiler rejects — `(query :goal (?R Rex Animal))`, an unbound
+    // relation head — raises out of the renderer. Note *where*: only a
+    // verdict with a model renders a block, so a `Contradiction` prints its
+    // unsat core and exits 0 with the same broken goal. Reproducing that is
+    // the whole subtlety, and getting it wrong turned one divergence into
+    // another for the length of one commit (S1a.6.6, 2026-08-20).
+    let has_model = matches!(
+        answer,
+        Answer::Verdict(Verdict::Solution(_)) | Answer::Verdict(Verdict::Ambiguity(_))
+    );
+    if has_model {
+        if let Some(e) = ein_infer::verdict::goal_plan_error(ast, terms, root, None) {
+            return Err(format!("ein.inference.compile.CompileError: {e}"));
+        }
+    }
     let mut lines: Vec<String> = vec![
         match source {
             Some(s) => format!("solve · {s}"),
@@ -383,5 +399,5 @@ pub fn render_solution_table(
         }
     }
 
-    lines.join("\n")
+    Ok(lines.join("\n"))
 }
