@@ -201,6 +201,7 @@ fn cells() -> &'static [Cell] {
 
 #[test]
 fn every_cell_reproduces_its_exit_code() {
+    let manifest = corpus();
     let cells = cells();
     let got: Vec<String> = cells.iter().map(Cell::line).collect();
     let text = format!("{}\n", got.join("\n"));
@@ -228,6 +229,31 @@ fn every_cell_reproduces_its_exit_code() {
         missing.len(),
         got.len(),
         moved(&got, &path)
+    );
+
+    // The other direction, which a subset comparison cannot make: a run
+    // deleted from an entry leaves its line in the table, and the default
+    // selection would never look at it again. Checked against the *manifest*
+    // rather than against the sweep, so a `slow` cell still counts as
+    // declared. This is `every_entry_names_a_real_file`'s twin, one level down.
+    let declared: std::collections::BTreeSet<String> = manifest
+        .entry
+        .iter()
+        .flat_map(|e| {
+            e.all_runs()
+                .into_iter()
+                .map(move |r| format!("{} :: {r}", e.path))
+        })
+        .collect();
+    let stale: Vec<&str> = want
+        .lines()
+        .filter_map(|l| l.split_once(' ').map(|(_, name)| name.trim()))
+        .filter(|name| !declared.contains(*name))
+        .collect();
+    assert!(
+        stale.is_empty(),
+        "{} banked cell(s) the manifest no longer declares: {stale:?}",
+        stale.len()
     );
 }
 
