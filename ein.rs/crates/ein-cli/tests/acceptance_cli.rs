@@ -61,7 +61,7 @@ fn field(out: &str, label: &str) -> Option<String> {
     out.lines()
         .find(|l| l.trim_start().starts_with(label))
         .and_then(|l| l.trim_start().strip_prefix(label))
-        .map(|v| v.trim().split_whitespace().next().unwrap_or("").to_string())
+        .map(|v| v.split_whitespace().next().unwrap_or("").to_string())
 }
 
 fn must_contain(out: &str, needles: &[&str], what: &str) {

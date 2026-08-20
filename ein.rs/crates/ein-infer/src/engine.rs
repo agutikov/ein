@@ -148,8 +148,8 @@ impl Engine {
         let mut acts: Vec<Option<FactId>> = Vec::new();
         for rule in kb.program().rules.values() {
             activators_into(kb, terms, rule, &mut acts);
-            for i in 0..acts.len() {
-                self.compile_for(ast, terms, rule, acts[i], events)?;
+            for act in acts.iter().copied() {
+                self.compile_for(ast, terms, rule, act, events)?;
             }
         }
         Ok(())

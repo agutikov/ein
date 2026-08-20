@@ -22,6 +22,11 @@ use ein_infer::Events;
 use ein_infer::solve::{NoDumper, SolveOptions, solve};
 use ein_ir::{Ast, load_file};
 
+/// One benchmarked file and the `(label, stop_after)` regimes it is run under.
+/// The path borrows from `argv` when one was given, so the lifetime is not
+/// `'static`; the labels are.
+type Case<'a> = (&'a str, Vec<(&'static str, Option<u64>)>);
+
 fn main() {
     let json = std::env::args().any(|a| a == "--json");
     let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -45,7 +50,7 @@ fn main() {
         .skip(1)
         .filter(|a| !a.starts_with("--"))
         .collect();
-    let cases: Vec<(&str, Vec<(&str, Option<u64>)>)> = if files.is_empty() {
+    let cases: Vec<Case<'_>> = if files.is_empty() {
         vec![
             ("examples/zebra2.ein", vec![("fast", Some(1)), ("exhaustive", None)]),
             ("examples/zebra.ein", vec![("fast", Some(1)), ("exhaustive", None)]),
