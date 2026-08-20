@@ -1,13 +1,29 @@
-# P1a.12 — Exhaustive search over many models
+# P1d.1 — Exhaustive search over many models
 
-**Milestone:** [M1a — Rust port](../README.md)
+**Milestone:** [M1d — From saturation to satisfiability](../README.md)
 **Estimate:** 3 weeks (15 days of stages)
-**Depends on:** [P1a.7](../p1a.7_parallelism/README.md) — cores change the
+**Depends on:** [M1a](../../m1a_rust/README.md)'s
+[P1a.7](../../m1a_rust/p1a.7_parallelism/README.md) — cores change the
 constant, not the exponent, and this phase is about the exponent. Knowing
-which is which needs the parallel numbers first.
+which is which needs the parallel numbers first. **P1a.7 is paused after one
+stage**, so this is now a decision rather than a wait: either it resumes
+first, or this phase starts without the parallel numbers and says so where a
+reading would have used them.
+**Was P1a.12; moved here 2026-08-21** at the user's direction, together with
+the note that is the other half of its question ([`ideas.md`](../ideas.md),
+ex-F14).
 
 ---
-TODO: analyze plans/followups/f14_saturation_and_satisfiability
+
+**The f14 analysis this file used to carry a TODO for is in the milestone
+README** — [§ What the note says the engine is
+missing](../README.md#what-the-note-says-the-engine-is-missing). Its bearing
+on *this* phase is one sentence: the layer-by-layer powerset measured below is
+what the engine does **because** it has no way to say that something is
+*required*, and a requirement is a choice point, not a subset.
+[P1d.2](../p1d.2_obligations/README.md) is that vocabulary; this phase
+measures the regime first, and its census is what tells P1d.2 whether the
+argument survives contact with the corpus.
 
 ## Goal
 
@@ -63,7 +79,7 @@ candidates and the pruning is what makes the search tractable; on
 zebra2-minus-15 layer 1 kills nothing at all. Those are different regimes, and
 F9 measured one of them.
 
-This is [S1a.6.4](../p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)'s lesson
+This is [S1a.6.4](../../m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)'s lesson
 a third time — the phase had been measuring one shape of workload — so the
 first stage here is a census, not a proposal.
 
@@ -71,11 +87,11 @@ first stage here is a census, not a proposal.
 
 | stage | title | est. |
 |---|---|---|
-| [S1a.12.1](s1a.12.1_why_it_does_not_finish.md) | Why it does not finish | 3 d |
-| [S1a.12.2](s1a.12.2_depth_required.md) | What depth is required, and for what | 2 d |
-| [S1a.12.3](s1a.12.3_stopping_criterion.md) | Is there a stopping criterion? | 4 d |
-| [S1a.12.4](s1a.12.4_conflict_mining.md) | Conflict mining when a layer is barren | 4 d |
-| [S1a.12.5](s1a.12.5_contract.md) | What `exhausted` means | 2 d |
+| [S1d.1.1](s1d.1.1_why_it_does_not_finish.md) | Why it does not finish | 3 d |
+| [S1d.1.2](s1d.1.2_depth_required.md) | What depth is required, and for what | 2 d |
+| [S1d.1.3](s1d.1.3_stopping_criterion.md) | Is there a stopping criterion? | 4 d |
+| [S1d.1.4](s1d.1.4_conflict_mining.md) | Conflict mining when a layer is barren | 4 d |
+| [S1d.1.5](s1d.1.5_contract.md) | What `exhausted` means | 2 d |
 
 ## Acceptance for the phase
 
@@ -83,7 +99,7 @@ first stage here is a census, not a proposal.
   a stated exhaustion claim — or the phase records, with numbers, why it
   cannot and what the honest verdict is instead.
 - The under-determined regime is a **named part of the measurement set**, the
-  way [P1a.7](../p1a.7_parallelism/README.md) had to re-aim its scaling target.
+  way [P1a.7](../../m1a_rust/p1a.7_parallelism/README.md) had to re-aim its scaling target.
   One under-determined entry in the corpus is not a regime, it is an anecdote.
 - **Nothing changes what the engine proves.** A sound criterion makes the same
   proof cheaper; an unsound one changes the answer. Anything in the second
@@ -97,28 +113,33 @@ first stage here is a census, not a proposal.
 ## Risks
 
 - **Changing the traversal changes the counters.**
-  [design/08](../design/08_parallelism.md) §7 rejected parallel depth-first for
+  [design/08](../../m1a_rust/design/08_parallelism.md) §7 rejected parallel depth-first for
   exactly this: "going depth-first changes which no-goods exist when, i.e. the
   pruning, i.e. the counters". The same is true of a sequential dive. This
   phase therefore needs the decision P1a.7 needed —
-  [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)'s
+  [Q-M1a.18](../../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)'s
   shape — before anything ships on by default.
 - **An unsound stopping rule is worse than a slow search.** "No new model for
   k layers, so stop" is a heuristic wearing a proof's clothes. If it ships it
   reports `Ambiguity (not certified)`, and the word `exhausted` stays false.
-- **This is the boundary of M1a's non-goals.** "Anything that changes what the
-  engine can prove belongs in a followup." A *sound* criterion does not — it
-  proves the same thing sooner. A heuristic mode does, and belongs in
-  [F4](../../followups/f4_cross_cutting.md) unless the phase argues otherwise
-  explicitly.
+- **The line this phase used to sit on is now the milestone's.** Under M1a the
+  rule was "anything that changes what the engine can prove belongs in a
+  followup", and this phase was its named exception. In
+  [M1d](../README.md) the distinction survives without the exception: a
+  *sound* criterion proves the same thing sooner and is ordinary work here; a
+  heuristic that changes the answer ships behind a flag with a different
+  verdict word, or goes to [F4](../../followups/f4_cross_cutting.md). What the
+  move does **not** relax is the second half —
+  [S1d.1.5](s1d.1.5_contract.md) still owns the vocabulary, and `exhausted`
+  still means the lattice was exhausted.
 - **Memory before time.** `features/01_not_and_absent -e` peaks at 724 MB and
   an uncapped `saturation/square-unique/terminus.ein -e` reached 12.3 GB before
-  being OOM-killed ([baseline.md §15](../p1a.6_performance/baseline.md)). A
+  being OOM-killed ([baseline.md §15](../../m1a_rust/p1a.6_performance/baseline.md)). A
   deeper search may not get the chance to be slow.
 
 ## Cross-links
 
-- [design/07 — Search layer](../design/07_search_layer.md)
+- [design/07 — Search layer](../../m1a_rust/design/07_search_layer.md)
 - [F9 — the rejected search optimisations](../../followups/f9_e_catalog.md) —
   read before proposing anything here
 - [`examples/zebra2-minus-15.ein`](../../../examples/zebra2-minus-15.ein) —

@@ -23,7 +23,7 @@ parallel path and none of it is scaffolding to be removed:
 - `ein-infer/src/spec_audit.rs` + [`utils/spec_audit.py`](../../../utils/spec_audit.py)
   — the speculation audit, `--features spec-audit`;
 - `SolveOptions::integrate_every` — the batch-synchronous integration mode,
-  and the shape [P1a.12](../p1a.12_exhaustive_search/README.md)'s conflict
+  and the shape [P1d.1](../../m1d_satisfiability/p1d.1_exhaustive_search/README.md)'s conflict
   mining will need when it decides where harvested clauses land;
 - `ein-infer/tests/search_invariants.rs` — six tests asserting that the answer
   depends on neither the entering order nor the integration time. These are
@@ -48,7 +48,7 @@ banked** before it writes any code. The invariants themselves are unaffected —
 itself and never needed an oracle — but the *vocabulary* they are written in
 goes away with it.
 
-[P1a.12](../p1a.12_exhaustive_search/README.md) touches it from the other
+[P1d.1](../../m1d_satisfiability/p1d.1_exhaustive_search/README.md) touches it from the other
 side: its conflict-mining dive writes learned clauses mid-layer, which is
 exactly the hazard [S1a.7.0](s1a.7.0_speculation_audit.md) measured
 (§ finding 4). Whichever of the two lands first owes the other the rule about

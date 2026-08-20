@@ -1,10 +1,10 @@
-# S1a.11.2 — How a program states what it expects
+# S1c.1.2 — How a program states what it expects
 
-**Phase:** P1a.11 (stdlib conformance)
+**Phase:** P1c.1 (stdlib conformance)
 **Estimate:** 3 days
-**Depends on:** [S1a.11.1](s1a.11.1_what_the_stdlib_promises.md)
-**Decides:** [Q-M1a.19](../open_questions.md#q-m1a19--how-does-a-program-state-what-it-expects),
-[Q-M1a.20](../open_questions.md#q-m1a20--what-may-an-expectation-say)
+**Depends on:** [S1c.1.1](s1c.1.1_what_the_stdlib_promises.md)
+**Decides:** [Q-M1c.1](../open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects),
+[Q-M1c.2](../open_questions.md#q-m1c2--what-may-an-expectation-say)
 
 ## Context
 
@@ -16,7 +16,7 @@ the first two were written, and it is the recommendation.
 Expectations in `corpus.toml`, or a `.expect` file beside the `.ein`. No
 grammar change at all. Rejected on one argument: an expectation keyed by path
 is a second thing to keep in step with the program, and this milestone has
-just spent a phase ([P1a.10](../p1a.10_single_implementation/README.md))
+just spent a phase ([P1a.10](../../m1a_rust/p1a.10_single_implementation/README.md))
 removing the last one.
 
 ### (b) A `(test …)` head replacing `(query …)`
@@ -70,7 +70,7 @@ form its teeth:
    what the query asked is not an expectation.
 2. **More is allowed.** Any fact may be listed, so a test can pin the
    consequence at a distance that
-   [S1a.11.4](s1a.11.4_stdlib_corpus.md) says is the only kind worth writing.
+   [S1c.1.4](s1c.1.4_stdlib_corpus.md) says is the only kind worth writing.
 3. **Naming a relation closes it.** If `:expect` mentions `pet-loc` at all,
    the listed `pet-loc` facts are the model's *complete* `pet-loc` extent —
    not a subset. Relations the expectation never mentions are unconstrained.
@@ -94,7 +94,7 @@ positive from opposite directions, and a test that cannot tell them apart is
 not testing either.
 
 **Recommendation: leave it out of the first cut**, and let
-[S1a.11.1](s1a.11.1_what_the_stdlib_promises.md)'s table say whether any rule
+[S1c.1.1](s1c.1.1_what_the_stdlib_promises.md)'s table say whether any rule
 actually needs it. If one does, `:fires` is a second keyword on the same query
 and costs nothing structurally — which is another way (c) beats (b): its
 vocabulary can grow one key at a time instead of arriving whole.
@@ -127,7 +127,7 @@ config is a *setting*, queries are *content*, and the two want opposite rules.
   message says which fact was unexpected.
 - `(or …)` compares model **sets**, not sequences — the order the search
   happens to find models in is exactly what
-  [S1a.7.0](../p1a.7_parallelism/s1a.7.0_speculation_audit.md)'s invariance
+  [S1a.7.0](../../m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md)'s invariance
   tests assert is not observable.
 - The `Contradiction` spelling is decided and is not `:expect ()` if that could
   be read as "expect the empty model". `:expect none` reads better; the stage
@@ -138,21 +138,21 @@ config is a *setting*, queries are *content*, and the two want opposite rules.
 
 ## Tasks
 
-### Task T1a.11.2.1 — Settle Q-M1a.19 and Q-M1a.20 in writing
-### Task T1a.11.2.2 — `Program.query` becomes plural
+### Task T1c.1.2.1 — Settle Q-M1c.1 and Q-M1c.2 in writing
+### Task T1c.1.2.2 — `Program.query` becomes plural
 
 The trap above, and the widest-reaching part of the stage: every reader of
 `program().query` in both the engine and the renderers.
 
-### Task T1a.11.2.3 — Grammar, AST, dumper, round-trip
-### Task T1a.11.2.4 — The comparison
+### Task T1c.1.2.3 — Grammar, AST, dumper, round-trip
+### Task T1c.1.2.4 — The comparison
 
 Relation-closure, `(or …)` as set equality, and the `Contradiction` case.
 Facts compare by content — rendered s-expressions — not by `FactId`, for
 [`fork_audit`](../../../ein.rs/crates/ein-infer/src/fork_audit.rs)'s reason:
 two runs do not share an interner.
 
-### Task T1a.11.2.5 — Validation at load
+### Task T1c.1.2.5 — Validation at load
 
 An `:expect` naming an undeclared relation is a load error. An `:expect` that
 omits the goal's relations is a load error (rule 1). A test that silently

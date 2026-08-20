@@ -54,7 +54,7 @@
 //! single-implementation repo is: a self-golden says "still what it was", and
 //! the claim "and what it was is what the semantics say" belongs to the
 //! acceptance fixtures and to
-//! [P1a.11](../../../../plans/m1a_rust/p1a.11_stdlib_conformance/README.md).
+//! [P1c.1](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/README.md).
 //! The manifest's job is to make a semantic change **visible**, not to judge
 //! it.
 

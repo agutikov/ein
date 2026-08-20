@@ -1,8 +1,8 @@
-# S1a.11.3 — `ein test`
+# S1c.1.3 — `ein test`
 
-**Phase:** P1a.11 (stdlib conformance)
+**Phase:** P1c.1 (stdlib conformance)
 **Estimate:** 2 days
-**Depends on:** [S1a.11.2](s1a.11.2_test_form.md)
+**Depends on:** [S1c.1.2](s1c.1.2_test_form.md)
 
 ## Context
 
@@ -33,12 +33,12 @@ result a status code.
 - `--events` / `--json-summary` still work under `test`, because a failing
   expectation is exactly when someone wants the trace.
 - The help surface grows one subcommand and stays in the shape
-  [Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity) settled.
+  [Q-M1a.13](../../m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity) settled.
 
 ## Tasks
 
-### Task T1a.11.3.1 — The subcommand
-### Task T1a.11.3.2 — The evaluator
+### Task T1c.1.3.1 — The subcommand
+### Task T1c.1.3.2 — The evaluator
 
 One pass per expectation kind. `:derives` / `:absent` are a fact-store probe
 against the saturated root. `:fires` / `:does-not-fire` read the firing list —
@@ -47,19 +47,19 @@ existing fact has fired, but at `normal` event level it is invisible.
 `:fires` should mean "this rule produced this state", which is the verbose
 sense. Say which, in the docs, because the two readings disagree.
 
-### Task T1a.11.3.3 — Failure reporting
+### Task T1c.1.3.3 — Failure reporting
 
 The output is read by a person debugging a rule, so it shows the expectation,
 the actual, and enough context to act — for `:absent`, the derivation of the
 fact that should not have been there. `explain` already computes that.
 
-### Task T1a.11.3.4 — Directory mode and the summary
-### Task T1a.11.3.5 — Tests for the tester
+### Task T1c.1.3.4 — Directory mode and the summary
+### Task T1c.1.3.5 — Tests for the tester
 
 A test runner that reports success on a broken expectation is the worst
 possible outcome here, so: fixtures that must fail, checked for *failing*,
 with the right exit code and the right message. The
-[S1a.6.6](../p1a.6_performance/s1a.6.6_differential_fuzzer.md) lesson — "the
+[S1a.6.6](../../m1a_rust/p1a.6_performance/s1a.6.6_differential_fuzzer.md) lesson — "the
 fuzzer's own three controls each failed once first" — is the precedent.
 
 ## Notes

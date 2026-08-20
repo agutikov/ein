@@ -1,0 +1,84 @@
+# S1c.2.2 — The systems: versions, and how they install
+
+**Phase:** P1c.2 (External benchmarks)
+**Estimate:** 2 days
+**Depends on:** [S1c.2.1](s1c.2.1_problem_corpus.md) — the corpus decides
+which systems have to run at all.
+
+## Context
+
+Six systems, two package managers, and a measured reason this is a stage
+rather than a paragraph. On the dev machine — Manjaro, `core`/`extra`/`multilib`,
+checked 2026-08-20:
+
+| system | class | dev machine, 2026-08-20 |
+|---|---|---|
+| **Z3** | SMT | installed, `4.16.0` |
+| **CVC5** | SMT | **not in the configured repos** — and the `cvc4` 1.8 binary that *is* installed is a different program, and so is the repo's `smt/CVC4` submodule |
+| **SWI-Prolog** + CLP(FD) | logic programming | in the sync db at `10.0.2-2`, not installed |
+| **Soufflé** | Datalog | not in the configured repos |
+| **Clingo** | ASP | not in the configured repos |
+| **Lean 4** | proof assistant | not in the configured repos (`elan` is the upstream path) |
+| *(optional)* MiniZinc / OR-Tools CP-SAT | CP | not in the configured repos |
+
+So half the field needs AUR, an upstream release tarball, or a build — on the
+distro the engine is developed on. On Debian the split will be different and
+is not guessable from here. **A benchmark whose install instructions are wrong
+is a benchmark nobody re-runs**, and the failure is silent: the harness
+reports six systems and prints numbers for three.
+
+## Acceptance
+
+- `bench/systems.toml` — per system: the role, the binary name, the version
+  the report pins, the invocation template, the per-distro package name
+  (Arch/Manjaro, Debian/Ubuntu), and the fallback when there is no package.
+- **A `doctor` command** — `ein-bench doctor` — that prints, per system:
+  found / not found / found-but-different-version, the version string it got,
+  and the install line for the distro it is running on. Machine-checked, not
+  prose in a README.
+- **Every claimed package name is verified on the distro it claims**, with the
+  date of the check recorded next to it (`pacman -Si`, `apt-cache policy`).
+  Package names rot, and an unverified one is worse than an admitted gap.
+- The harness **records** versions rather than requiring them: it runs what is
+  installed, writes the version string into the results file, and the report
+  header carries it. A pin that fails the run is a pin nobody updates.
+- The **containerisation question is answered explicitly**, not by default —
+  see Notes.
+- Nothing in this stage makes an external system a build dependency of ein.rs.
+  The harness shells out; `cargo build` never needs Z3.
+
+## Tasks
+
+### Task T1c.2.2.1 — The manifest
+### Task T1c.2.2.2 — `doctor`
+### Task T1c.2.2.3 — Verify on Manjaro
+
+The dev machine, and the one where the numbers will actually be taken. Two of
+six are already present; the other four get an install path that a person can
+follow and a note saying which of AUR / upstream / build it was.
+
+### Task T1c.2.2.4 — Verify on Debian/Ubuntu
+
+A container is fine **for the install check** — it is not fine for timing, and
+the stage must not let the two blur.
+
+### Task T1c.2.2.5 — CI's position
+
+The benchmarks do **not** run per-commit. `nightly.yml` already has a
+`benchmarks — both implementations, one measurement set` job; the
+answer-parity subset ([S1c.2.4](s1c.2.4_answers_not_only_times.md)) is the
+part worth running there, and only where the systems are installable in CI.
+Everything with a clock in it is run by a person on a quiet machine through
+[`utils/bench_env.sh`](../../../utils/bench_env.sh).
+
+## Notes
+
+- **Do not containerise the timing runs.** A container changes the timing
+  story — cgroup CPU limits, a different allocator environment, no P-core
+  pinning — and the whole measurement discipline this repo built
+  (`bench_env.sh` prints the machine state and pins to a P-core) assumes the
+  host. Containers are for *reproducing the install*, and the report says
+  which numbers came from where.
+- The version table above is a *snapshot of one machine*, not a distro
+  statement. Its value is that it is checked; its shelf life is short. The
+  `doctor` output in the report header is the durable form of the same fact.

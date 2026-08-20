@@ -1,10 +1,15 @@
-# P1a.11 — stdlib conformance
+# P1c.1 — stdlib conformance
 
-**Milestone:** [M1a — Rust port](../README.md)
+**Milestone:** [M1c — External validation](../README.md)
 **Estimate:** 2.5 weeks (13 days of stages)
-**Depends on:** [P1a.10](../p1a.10_single_implementation/README.md) — a new
+**Depends on:** [M1a](../../m1a_rust/README.md)'s
+[P1a.10](../../m1a_rust/p1a.10_single_implementation/README.md) — a new
 surface form is cheap to add to one implementation and expensive to add to two
 in step. Landing it before the oracle leaves means writing it twice.
+**Was P1a.11; moved here 2026-08-21** at the user's direction. Nothing in the
+phase changed — the dependency it was written against is simply a
+cross-milestone one now, and the reason for the move is that this phase adds
+*language surface*, which M1a's non-goals forbid the port itself.
 
 ## Goal
 
@@ -38,11 +43,11 @@ that gets **stronger** when the oracle leaves.
 
 | stage | title | est. |
 |---|---|---|
-| [S1a.11.1](s1a.11.1_what_the_stdlib_promises.md) | What the stdlib promises, and what is exercised | 3 d |
-| [S1a.11.2](s1a.11.2_test_form.md) | How a program states what it expects | 3 d |
-| [S1a.11.3](s1a.11.3_test_subcommand.md) | `ein test` | 2 d |
-| [S1a.11.4](s1a.11.4_stdlib_corpus.md) | The stdlib corpus | 4 d |
-| [S1a.11.5](s1a.11.5_gate.md) | In the gate | 1 d |
+| [S1c.1.1](s1c.1.1_what_the_stdlib_promises.md) | What the stdlib promises, and what is exercised | 3 d |
+| [S1c.1.2](s1c.1.2_test_form.md) | How a program states what it expects | 3 d |
+| [S1c.1.3](s1c.1.3_test_subcommand.md) | `ein test` | 2 d |
+| [S1c.1.4](s1c.1.4_stdlib_corpus.md) | The stdlib corpus | 4 d |
+| [S1c.1.5](s1c.1.5_gate.md) | In the gate | 1 d |
 
 ## Acceptance for the phase
 
@@ -63,12 +68,14 @@ that gets **stronger** when the oracle leaves.
 ## Risks
 
 - **The expectation form is language surface.** M1a's non-goals say "no new
-  syntax, no new keywords" — written to keep the *port* honest against an
-  oracle, and narrowed rather than broken now that there is one
-  implementation. The cost does not vanish: whatever the form is, it is
+  syntax, no new keywords" — a rule about keeping the *port* honest against an
+  oracle. It was narrowed on 2026-08-20 to let this phase add a form; the
+  narrowing was withdrawn on the 21st when the phase left M1a instead, which
+  is the cleaner arrangement and leaves the rule strict where it belongs. The
+  cost of the form does not vanish with the argument: whatever it is, it is
   parsed, dumped, macro-expanded, rendered and round-tripped, and
   `grammar.lark` is the spec of record that M2's GBNF lift reads.
-  [S1a.11.2](s1a.11.2_test_form.md) weighs three shapes and recommends the
+  [S1c.1.2](s1c.1.2_test_form.md) weighs three shapes and recommends the
   cheapest of them — **`:expect` on `query`, with several queries per file**
   (the user's, 2026-08-20) — which costs one keyword instead of a new head.
 - **…and it costs a loader change with a trap.** Today the **last `query`
@@ -93,8 +100,8 @@ that gets **stronger** when the oracle leaves.
   facts cannot say *which rule* derived them, and for the stdlib that matters:
   `domain-elimination` and `range-elimination` reach the same positive from
   opposite directions. It is deliberately out of the first cut
-  ([Q-M1a.20](../open_questions.md#q-m1a20--what-may-an-expectation-say)), and
-  [S1a.11.1](s1a.11.1_what_the_stdlib_promises.md)'s table is what decides
+  ([Q-M1c.2](../open_questions.md#q-m1c2--what-may-an-expectation-say)), and
+  [S1c.1.1](s1c.1.1_what_the_stdlib_promises.md)'s table is what decides
   whether any rule actually needs it.
 
 ## Cross-links
@@ -102,6 +109,6 @@ that gets **stronger** when the oracle leaves.
 - [`stdlib/`](../../../stdlib/) — the seven modules under test
 - [`docs/kernel/ir/03-ein-lang/`](../../../docs/kernel/ir/03-ein-lang/) — the
   surface language the new form joins
-- [P1a.10](../p1a.10_single_implementation/README.md) —
-  [S1a.10.1](../p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md)'s
+- [P1a.10](../../m1a_rust/p1a.10_single_implementation/README.md) —
+  [S1a.10.1](../../m1a_rust/p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md)'s
   accepted-loss list is this phase's first input

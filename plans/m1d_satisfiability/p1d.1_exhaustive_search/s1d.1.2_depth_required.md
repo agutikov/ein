@@ -1,8 +1,8 @@
-# S1a.12.2 — What depth is required, and for what
+# S1d.1.2 — What depth is required, and for what
 
-**Phase:** P1a.12 (Exhaustive search over many models)
+**Phase:** P1d.1 (Exhaustive search over many models)
 **Estimate:** 2 days
-**Depends on:** [S1a.12.1](s1a.12.1_why_it_does_not_finish.md)
+**Depends on:** [S1d.1.1](s1d.1.1_why_it_does_not_finish.md)
 
 ## Context
 
@@ -26,8 +26,8 @@ property of the under-determined regime, it is where the entire cost is.
 - **Whether `d_found` is knowable in advance.** Probably not in general; the
   useful form of the question is whether anything *observable at layer d*
   predicts that layer d+1 will yield nothing. If something does, it is
-  [S1a.12.3](s1a.12.3_stopping_criterion.md)'s input; if nothing does, that is
-  a result and S1a.12.3 has to look elsewhere.
+  [S1d.1.3](s1d.1.3_stopping_criterion.md)'s input; if nothing does, that is
+  a result and S1d.1.3 has to look elsewhere.
 - **What `max_set_size = 5` is doing.** It is a default nobody has re-examined
   in this regime: on zebra2-minus-15 it is the only reason the search
   terminates at all, and a run that stops because of the cap reports
@@ -36,16 +36,16 @@ property of the under-determined regime, it is where the entire cost is.
 
 ## Tasks
 
-### Task T1a.12.2.1 — Measure both depths across the corpus
-### Task T1a.12.2.2 — The gap's cost
-### Task T1a.12.2.3 — Predictors at layer d
+### Task T1d.1.2.1 — Measure both depths across the corpus
+### Task T1d.1.2.2 — The gap's cost
+### Task T1d.1.2.3 — Predictors at layer d
 
 Candidates to test against the census: models found this layer, new clauses
 this layer, the ratio of alive to entered, whether `alive` shrank. Report
 which correlate and which do not — a negative result here is worth as much as
 a positive one, and cheaper to trust.
 
-### Task T1a.12.2.4 — Is depth 5 ever needed?
+### Task T1d.1.2.4 — Is depth 5 ever needed?
 
 Across the corpus: does any entry find a model at depth 4 or 5? If none does,
 the default is doing nothing except making the under-determined regime

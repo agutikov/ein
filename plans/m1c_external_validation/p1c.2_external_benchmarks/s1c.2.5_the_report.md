@@ -1,0 +1,67 @@
+# S1c.2.5 — The report, and what it may claim
+
+**Phase:** P1c.2 (External benchmarks)
+**Estimate:** 2 days
+**Depends on:** [S1c.2.3](s1c.2.3_the_runner.md),
+[S1c.2.4](s1c.2.4_answers_not_only_times.md)
+
+## Context
+
+The artefact people quote, which is exactly why its job is to be quotable
+*and* hedged in the same sentence. [M2b](../../m2b_presentation/README.md)
+Track A wants "head-to-head numbers where applicable" and Track C wants a
+"threat-to-validity discussion"; this stage produces both at once, so the
+paper cites a measurement rather than commissioning one.
+
+## Acceptance
+
+- **`results.md` in this phase folder**, generated from the results JSON by
+  one command, the way [`baseline.md`](../../m1a_rust/p1a.6_performance/baseline.md)
+  sits in P1a.6. Regenerating from the same inputs is a no-op diff.
+- **The header carries the conditions**: `bench_env.sh`'s machine state, every
+  system's version string as `doctor` reported it, the date, the corpus's git
+  hash, and the thread-count rule
+  ([S1c.2.3](s1c.2.3_the_runner.md)).
+- **The table** is problem × system, and each cell carries: answer status
+  (`ok` / `disagrees` / `timeout` / `missing` / `error`), median wall clock
+  with spread, peak RSS, and encoding size.
+- **A prose section per problem** — what each language made the author *say*.
+  This is what a table cannot carry and what the comparison is actually about:
+  the SMT encoding writes `(!= q1 (+ q2 1))`, the ein encoding enumerates an
+  `attacks` relation, and the ratio of their solve times is the less
+  interesting of the two facts.
+- **A threats-to-validity section**, naming at minimum: encoding bias (rule 2
+  of [S1c.2.1](s1c.2.1_problem_corpus.md), and who wrote each file), version
+  drift, thread counts, what "cold" means here, Lean's column measuring a
+  different thing entirely, and the plain fact that the report's author also
+  wrote one of the systems being compared.
+- **Where Ein loses is stated in the summary**, not only in the table. The
+  expected shape — a CP-SAT or CDCL solver beating the graph engine by orders
+  of magnitude on n-queens, which is all arithmetic — is a result, not an
+  embarrassment, and a report that buries it is not worth citing.
+- **CI position, written down**: the timing report is run by a person; the
+  answer-parity subset from [S1c.2.4](s1c.2.4_answers_not_only_times.md) runs
+  in `nightly.yml` where the systems are installable, and reports `missing`
+  loudly where they are not.
+
+## Tasks
+
+### Task T1c.2.5.1 — The generator
+### Task T1c.2.5.2 — The prose sections
+### Task T1c.2.5.3 — Threats to validity
+### Task T1c.2.5.4 — Nightly wiring for the answer subset
+### Task T1c.2.5.5 — The M2b handoff
+
+One paragraph in [M2b](../../m2b_presentation/README.md) Track A pointing at
+`results.md` and saying what is already measured, so the paper's comparison
+axis starts from data instead of from a plan.
+
+## Notes
+
+- The strongest sentence this report can contain is not a ratio. It is "these
+  N systems agree on the answer to every problem in the corpus" — because
+  after [P1a.10](../../m1a_rust/p1a.10_single_implementation/README.md) that
+  is the only external evidence the project has that its answers are right.
+- The report is *dated*, not *current*. Whoever re-runs it writes a new file
+  and keeps the old one; a benchmark's history is the only way to notice that
+  a rival got 3× faster while nobody was looking.

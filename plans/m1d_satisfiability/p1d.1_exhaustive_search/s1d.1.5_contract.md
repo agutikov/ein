@@ -1,9 +1,9 @@
-# S1a.12.5 — What `exhausted` means
+# S1d.1.5 — What `exhausted` means
 
-**Phase:** P1a.12 (Exhaustive search over many models)
+**Phase:** P1d.1 (Exhaustive search over many models)
 **Estimate:** 2 days
-**Depends on:** [S1a.12.3](s1a.12.3_stopping_criterion.md),
-[S1a.12.4](s1a.12.4_conflict_mining.md)
+**Depends on:** [S1d.1.3](s1d.1.3_stopping_criterion.md),
+[S1d.1.4](s1d.1.4_conflict_mining.md)
 
 ## Context
 
@@ -22,7 +22,7 @@ unknown-many?
 - `Ambiguity` reports what is known about completeness. "k = 32, exhausted"
   and "k = 32, cap reached at depth 5" are different answers to the user's
   question and should not print the same.
-- If [S1a.12.3](s1a.12.3_stopping_criterion.md) found a sound criterion, the
+- If [S1d.1.3](s1d.1.3_stopping_criterion.md) found a sound criterion, the
   verdict says *which* argument closed the search — exhaustion, or the
   criterion — because they are different guarantees and a reader deserves to
   know which one they have.
@@ -34,10 +34,10 @@ unknown-many?
 
 ## Tasks
 
-### Task T1a.12.5.1 — The vocabulary
-### Task T1a.12.5.2 — The verdict surface
-### Task T1a.12.5.3 — Docs and help
-### Task T1a.12.5.4 — The corpus note, corrected
+### Task T1d.1.5.1 — The vocabulary
+### Task T1d.1.5.2 — The verdict surface
+### Task T1d.1.5.3 — Docs and help
+### Task T1d.1.5.4 — The corpus note, corrected
 
 The note excludes `solve -e` on the grounds that it "outlives a 150s budget
 under CPython, and a run nobody can finish is not coverage" — both still true,

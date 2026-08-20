@@ -126,7 +126,7 @@ Three consequences, all recorded in the
   implementation to disagree with. A semantic regression is caught by what
   S1a.10.1 banked and by nothing else, and the corpus's expected outputs
   become *self*-goldens: they say "ein.rs still does what ein.rs did", not
-  "ein.rs does what the semantics say". [P1a.11](../p1a.11_stdlib_conformance/README.md)
+  "ein.rs does what the semantics say". [P1c.1](../../m1c_external_validation/p1c.1_stdlib_conformance/README.md)
   exists partly because of this — a stdlib rule with a stated expectation is
   an external check that survives the oracle.
 - **The corpus keeps its value; the runner does not.** `conformance/corpus.toml`
@@ -167,5 +167,5 @@ Three consequences, all recorded in the
   its tiers
 - [Q-M1a.2](../open_questions.md#q-m1a2--does-einpy-have-a-sunset) — the
   sunset question, resolved here
-- [P1a.11](../p1a.11_stdlib_conformance/README.md) — the check that does not
+- [P1c.1](../../m1c_external_validation/p1c.1_stdlib_conformance/README.md) — the check that does not
   need a second engine

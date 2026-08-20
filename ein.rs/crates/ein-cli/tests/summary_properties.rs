@@ -13,7 +13,8 @@
 //! a counter set *coherent*, which hold for any correct run of any engine and
 //! do not have to be looked up. A regression that moves one number without
 //! moving the others fails here; one that moves them all consistently is a
-//! semantic change and is [P1a.11](../../../../plans/m1a_rust/p1a.11_stdlib_conformance/README.md)'s
+//! semantic change and is
+//! [P1c.1](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/README.md)'s
 //! to catch. That division is deliberate and it is on the ledger.
 //!
 //! Every identity below was **measured over the whole corpus before it was

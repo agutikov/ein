@@ -84,7 +84,7 @@ delete because afterwards there is no way to find out which row was which.
 Walk `conformance/` and classify. The mechanical part is cheap — the corpus
 manifest lists entries and runs — and the judgement is per *tier*: T3 on a DOT
 file is a golden ein.rs can own outright, T1 on a counter is a property, and
-T0 on a verdict is the thing P1a.11's stdlib corpus is about to assert from
+T0 on a verdict is the thing P1c.1's stdlib corpus is about to assert from
 the outside.
 
 ### Task T1a.10.1.2 — Bank the T3 bytes as ein.rs goldens
@@ -283,7 +283,7 @@ manifest is a byte string ein.py had signed off on.
   mechanical. Resist it in proportion to how much the golden would be
   *explaining*: a DOT file has no argument to make, a counter does.
 - Anything that cannot be banked is a candidate for
-  [P1a.11](../p1a.11_stdlib_conformance/README.md), which checks rules against
+  [P1c.1](../../m1c_external_validation/p1c.1_stdlib_conformance/README.md), which checks rules against
   stated expectations rather than against a second engine — the one kind of
   check that gets *stronger* when the oracle leaves.
 - **The three new instruments cost 18 seconds** — 5.4 s for the digests, 10.5 s

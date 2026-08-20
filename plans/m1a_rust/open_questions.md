@@ -27,9 +27,9 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 | [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — they are 7–16 % | **closed 2026-08-20: the mechanism is declined at a measured 1.4–2.2 % ceiling**, in [S1a.6.12](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md), which took 38 % off `zebra -e` without it |
 | [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
-| [Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | open — recommendation: **`:expect` on `query`, several queries per file**; [S1a.11.2](p1a.11_stdlib_conformance/s1a.11.2_test_form.md) decides |
-| [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | open — recommendation: four keys, each demanded by a rule |
-| [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1a.12](p1a.12_exhaustive_search/README.md); `exhausted` keeps its meaning either way |
+| [Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | **moved 2026-08-21 with P1a.11 → [Q-M1c.1](../m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)** |
+| [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | **moved 2026-08-21 with P1a.11 → [Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)** |
+| [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | **moved 2026-08-21 with P1a.12 → [Q-M1d.1](../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)** |
 | [Q-M1a.22](#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate) | Is `.einb`'s id remap order-preserving enough for its own gate? | open — **measured 2026-08-20** at [S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md): a permuted id space moves 0 answers and 66 renderings |
 
 ---
@@ -86,9 +86,13 @@ Three things follow, and they are the phase's shape:
    [D2](divergences.md)'s `sorted()` — have to be *stated*
    ([S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md) T1a.10.6.3).
    Undefined behaviour in a specification repo is worse than a quirk.
-3. **[P1a.11](p1a.11_stdlib_conformance/README.md) is the partial answer** to
-   what replaces it: an expectation written next to a rule is an *external*
-   check, and it is the only kind that gets stronger when the oracle leaves.
+3. **[P1c.1](../m1c_external_validation/p1c.1_stdlib_conformance/README.md)
+   is the partial answer** to what replaces it — it was P1a.11 until
+   2026-08-21 — and the argument is why it left: an expectation written next
+   to a rule is an *external* check, the only kind that gets stronger when the
+   oracle goes, and that makes it
+   [M1c](../m1c_external_validation/README.md)'s subject rather than the
+   port's.
 
 ## Q-M1a.3 — Parse-error message parity
 
@@ -877,99 +881,28 @@ the harness — 7 T3 cells, 97 T2 — is the specification of
 
 ## Q-M1a.19 — How does a program state what it expects?
 
-[P1a.11](p1a.11_stdlib_conformance/README.md) needs somewhere to say what a
-stdlib rule should derive. Three shapes; the third is the user's, proposed
-2026-08-20 after the first two, and it is the recommendation.
-
-| | (a) sidecar | (b) `(test …)` head | (c) `:expect` on `query` |
-|---|---|---|---|
-| grammar cost | none | new head, SYMBOL exclusion, every AST walker | **one keyword** |
-| travels with the program | no | yes | yes |
-| several checks per file | yes | needs a rule | **yes — one per query** |
-| the expectation's shape | assertions | assertions | **the engine's own output** |
-| verdict / `k` | separate keys | separate keys | **implied by the shape** |
-| exactness | per fact | per fact | **relation-closed** |
-| route (`:fires R`) | expressible | expressible | not expressible |
-| loader change | none | a new form | **`query` becomes plural** |
-
-**Recommendation: (c).** Not because it is cheapest — though it is — but
-because of the fourth and sixth rows. An expectation shaped like a *model* is
-written by running the program and reviewing the answer, and read as an
-answer; and **relation-closure** ("naming a relation asserts its complete
-extent, and says nothing about relations it does not name") sits exactly
-between the two useless extremes. A per-fact assertion cannot catch a
-*surplus* fact; a whole-state golden pins 250 facts of `is-a*` and activator
-noise no test means to assert.
-
-The concrete argument is this morning's bug: the 23 spurious models of
-`zebra2-minus-15` were surplus — Chesterfields and the Fox in one house. A
-per-fact `:derives` passes on every one. An `:expect` naming `smoke-loc` and
-`pet-loc` fails on all 23.
-
-**The cost is a loader change with a trap in it.** Today the last `query`
-silently wins (`from_ir.rs`, "Last one wins, for both blocks", pinned in both
-engines by `the_last_query_and_the_last_config_win`). A *test* file whose
-second check is silently discarded is worse than no test file, so
-`Program.query` becomes plural and every consumer says what it does with N.
-`config`'s last-wins stays: a config is a setting, a query is content, and the
-two want opposite rules.
-
-Decided in [S1a.11.2](p1a.11_stdlib_conformance/s1a.11.2_test_form.md).
+**Moved 2026-08-21 to [Q-M1c.1](../m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)**,
+with the phase that raised it: P1a.11 is now
+[P1c.1](../m1c_external_validation/p1c.1_stdlib_conformance/README.md) in
+[M1c](../m1c_external_validation/README.md). The text went unchanged apart
+from ids and paths. **The id stays reserved and is never reused.**
 
 ## Q-M1a.20 — What may an expectation say?
 
-Under (c) the question narrows sharply, because the *shape* is fixed — an
-expectation is a solution — and what is left is three semantic rules and one
-residue.
-
-The rules, as the user specified them: an expectation is **at least** the
-relations named by the query's `:goal`; it **may** carry further facts for
-verification; and **naming a relation closes it** — the listed facts are that
-relation's complete extent in the model. `(or S1 S2 …)` is the ambiguous case
-and compares model *sets*, with `k` implied by the count.
-
-Two sub-questions the stage has to settle:
-
-- **Do stored negatives count?** Does closing `pet-loc` also assert the
-  extent of `(not (pet-loc …))`? **Recommendation: no** — the positive extent
-  only, with a `(not …)` listable as an ordinary fact when a test means to pin
-  one. Otherwise every expectation drags in the negative-completion rules'
-  whole output, which is most of a model.
-- **How is `Contradiction` spelled?** Not `:expect ()` if that reads as "the
-  empty model". `:expect none` is clearer.
-
-**The residue is route.** `:fires R` / `:does-not-fire R` — "the right fact by
-the wrong rule" — has no home in a vocabulary of facts, and it matters for the
-stdlib: `domain-elimination` and `range-elimination` can derive the same
-positive from opposite directions. **Recommendation: leave it out of the first
-cut** and let [S1a.11.1](p1a.11_stdlib_conformance/s1a.11.1_what_the_stdlib_promises.md)'s
-table say whether a rule needs it. Under (c) it arrives as one more keyword on
-the same query, which is the other way (c) beats (b): the vocabulary grows a
-key at a time instead of arriving whole.
+**Moved 2026-08-21 to [Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)**,
+with Q-M1a.19 and for the same reason — the two are one decision and
+[S1c.1.2](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+still settles both.
 
 ## Q-M1a.21 — May the search stop before the lattice is exhausted?
 
-[P1a.12](p1a.12_exhaustive_search/README.md)'s question, and the measurement
-that raises it: on `examples/zebra2-minus-15.ein` **every one of the 32 models
-is found by depth 3, and depths 4–5 exist only to prove there are no more** —
-which is where the run stops finishing.
-
-So: is there an argument that lets the search stop early?
-
-- **A sound criterion** proves the same thing sooner. In scope, and it does
-  not touch M1a's "no new reasoning features" non-goal because it changes the
-  cost of the proof, not the proof.
-- **A heuristic** ("no new model for k layers") changes the answer. It ships
-  behind a flag, off by default, reporting `Ambiguity (not certified)` — and
-  **never sets `exhausted = true`**. The word means the lattice was exhausted;
-  a second guarantee needs a second word.
-
-The candidates and their obligations are in
-[S1a.12.3](p1a.12_exhaustive_search/s1a.12.3_stopping_criterion.md), and a
-written refutation is as good an outcome as a proof — that is the discipline
-[F9](../followups/f9_e_catalog.md) established for this exact area, and F9's
-own judgements were all measured on puzzles with a unique model, which is the
-regime this question is not about.
+**Moved 2026-08-21 to [Q-M1d.1](../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)**,
+with P1a.12, which is now
+[P1d.1](../m1d_satisfiability/p1d.1_exhaustive_search/README.md) in
+[M1d](../m1d_satisfiability/README.md) — the milestone that exists to answer
+it. What the move adds is a fourth candidate this framing did not have: a
+state that can report what it still *owes*
+([P1d.2](../m1d_satisfiability/p1d.2_obligations/README.md)).
 
 ## Q-M1a.22 — Is `.einb`'s id remap order-preserving enough for its own gate?
 

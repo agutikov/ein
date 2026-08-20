@@ -1,6 +1,6 @@
 # M1a — Rust port (ein.rs)
 
-**Estimate:** ~5.5 months focused — 45 stages, ~26 weeks of stage
+**Estimate:** ~7 months focused — 54 stages, ~32 weeks of stage
 estimates (parity gate at ~week 17).
 **Status:** **in progress** — promoted from placeholder 2026-08-17 with the
 scope decision made (see § The decision); [P1a.0](p1a.0_conformance_harness/README.md)
@@ -174,20 +174,6 @@ Full contract: [design/11](design/11_shared_assets.md).
 
 ---
 
-
-TODO: add m1c milestone, move p1a.11 -> p1c.1
-TODO: add p1c.2 benchmarks against z3,cvc4,prolog,datalog,lean,and others
-  add corpus of problems in required languages
-  (smt and other), required dpendency packages to install natively (manjaro, debian, ...),
-  tooling that runs benchmarks and generates report
-  example problems:
-    https://rosettacode.org/wiki/Zebra_puzzle
-    https://rosettacode.org/wiki/N-queens_problem
-
-TODO: add m1d milestone, move p1a.12 there, together with plans/followups/f14_saturation_and_satisfiability
-
----
-
 ## Phases
 
 | phase | title | stages | est. | gate |
@@ -203,17 +189,32 @@ TODO: add m1d milestone, move p1a.12 there, together with plans/followups/f14_sa
 | [P1a.8](p1a.8_binary_container/README.md) | Binary KB container — `.einb`, mmap, solution store | 1 | 0.5 w | `ein solve x.einb` byte-identical to `ein solve x.ein` |
 | [P1a.9](p1a.9_bindings_release/README.md) | Bindings + release — PyO3, packaging, docs | 4 | 1.5 w | M2 imports the engine and gets ein.rs |
 | [P1a.10](p1a.10_single_implementation/README.md) 🔨 | One implementation — port the suite, retire ein.py, the harness and the submodules | 6 | 3 w | `cargo test --workspace` is the whole gate, and coverage did not drop. **[S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md) shipped 2026-08-20** — run ahead of P1a.8/P1a.9 because the dependency is the *deletion*'s, and it found that the gate is already half differential: **42 of `cargo test --workspace`'s 91 integration tests start a Python process**, and skip invisibly when one will not start. The [ledger](p1a.10_single_implementation/oracle_ledger.md) banks the rest in three instruments — 4 228 renderings as digests, 13 counter identities, and a determinism sweep that permutes the **id space** instead of a hash seed and prices it at **0 answers and 66 renderings**, all of them [D3](divergences.md)'s. **[S1a.10.2](p1a.10_single_implementation/s1a.10.2_port_the_suite.md) shipped the same day**: the Python suite's 1 538 tests reduce to **275 behaviours** in fifteen new Rust files ([dispositions](p1a.10_single_implementation/suite_dispositions.md), per file, with the 96 dying subjects named), and all 42 differential tests are un-differential. `cargo test --workspace` is **566 tests in 1 m 07 s** where it was 312 in 9 m 13 s, and `PATH=<a python3 that exits 127>` now leaves all 566 passing where the same experiment found 41 silent skips |
-| [P1a.11](p1a.11_stdlib_conformance/README.md) | stdlib conformance — a `(test …)` form, `ein test`, a corpus per rule | 5 | 2.5 w | every stdlib rule has a program that activates it and states what it derives |
-| [P1a.12](p1a.12_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 
-61 stages (S1a.6.8 added by S1a.6.1's profile, S1a.6.5 shortened by it,
+**54 stages** (S1a.6.8 added by S1a.6.1's profile, S1a.6.5 shortened by it,
 S1a.6.12 written at S1a.6.5 against the profile that had named it since
 S1a.6.3, and S1a.7.0 added at P1a.7's start by the same reflex that added
 S1a.6.1 — measure the premise before spending four days on it; **P1a.10–12
-added 2026-08-20** at the user's direction, 16 stages and 8.5 weeks), 175 days
-of stage estimates ≈ 35 weeks. The **parity gate**
+added 2026-08-20** at the user's direction, 16 stages and 8.5 weeks, of which
+**P1a.11 and P1a.12 left the next evening** for M1c and M1d, 10 stages and
+5.5 weeks), 158 days of stage estimates ≈ 32 weeks. The count is a correction
+as well as a subtraction: the header read 45 and the table summed to 64, and
+after the P1a.10–12 batch neither was right. The **parity gate**
 (end of P1a.5) is at ~week 17; everything after it is speed, scale and
 distribution on an engine that is already a drop-in replacement.
+
+> **P1a.11 and P1a.12 became [M1c](../m1c_external_validation/README.md) and
+> [M1d](../m1d_satisfiability/README.md) on 2026-08-21** — added to this
+> milestone on the 20th, re-homed the next evening at the user's direction,
+> with their stage files, estimates and dependencies unchanged
+> ([P1c.1](../m1c_external_validation/p1c.1_stdlib_conformance/README.md),
+> [P1d.1](../m1d_satisfiability/p1d.1_exhaustive_search/README.md)). Neither
+> was the port. P1a.11 adds *language surface* — `:expect`, and `query`
+> becoming plural — and P1a.12 changes *when the search may stop*; both stood
+> in § Non-goals as named exceptions to the two rules that define this
+> milestone, and moving them out is a cleaner resolution than narrowing a rule
+> twice. What M1a keeps is exactly what I1 and I2 describe: an engine that
+> behaves like ein.py and is written differently inside. **Both exceptions are
+> gone from § Non-goals with them.**
 
 > **P1a.8 was "Server mode" until 2026-08-18** — 8 stages, 3 weeks:
 > daemon, sessions, JSON-RPC, streaming, a solution cache and `ein <cmd>
@@ -242,11 +243,12 @@ Doing it the other way round means every regression is ambiguous.
 - **A "Rusty" reinterpretation of the IR.** No new syntax, no new
   keywords, no relaxed grammar. `grammar.lark` stays the spec of record
   (M2's GBNF lift reads it); the Rust parser is checked *against* it.
-  **Narrowed 2026-08-20**: this was a rule about keeping *two* parsers in
-  step, and [P1a.11](p1a.11_stdlib_conformance/README.md) adds one form —
-  `(test …)` — after there is only one. The clause that survives is the one
-  that was never about the port: `grammar.lark` stays the spec of record, and
-  a new form is a **cross-milestone edit** because M2's GBNF lift reads it.
+  **The 2026-08-20 narrowing is withdrawn 2026-08-21**: it was written so that
+  P1a.11 could add one form once there was only one parser to add it to, and
+  P1a.11 is now [P1c.1](../m1c_external_validation/p1c.1_stdlib_conformance/README.md).
+  For M1a the rule is strict again. The half that was never about the port
+  travels with the phase: `grammar.lark` stays the spec of record, and a new
+  form is a **cross-milestone edit** because M2's GBNF lift reads it.
 - ~~**Deleting ein.py.**~~ **Reversed 2026-08-20 — it is now
   [P1a.10](p1a.10_single_implementation/README.md).** It read: "It is the
   oracle and the reference for M2 experiments. It stays, and stays green."
@@ -272,11 +274,13 @@ Doing it the other way round means every regression is ambiguous.
   no wire protocol, no solution cache, no `--server` flag.
 - **New reasoning features.** Anything that changes what the engine can
   prove belongs in a followup ([F2](../followups/f2_self_modifying_language.md),
-  [F4](../followups/f4_cross_cutting.md), [F7](../followups/f7_rule_induction.md)),
-  not here. **[P1a.12](p1a.12_exhaustive_search/README.md) sits on this line
-  and is scoped to stay inside it**: a *sound* stopping criterion proves the
-  same thing sooner and is in scope; a heuristic that changes the answer ships
-  behind a flag with a different verdict word, or not at all.
+  [F4](../followups/f4_cross_cutting.md), [F7](../followups/f7_rule_induction.md))
+  or in [M1d](../m1d_satisfiability/README.md), not here. The exception this
+  clause carried until 2026-08-21 — P1a.12, "sits on this line and is scoped
+  to stay inside it" — left with the phase, and the distinction it drew is
+  M1d's to keep: a *sound* stopping criterion proves the same thing sooner and
+  costs nothing here; a heuristic that changes the answer ships behind a flag
+  with a different verdict word, or not at all.
 
 ---
 
@@ -319,6 +323,13 @@ the same *answer*, not the same bytes. T0 and T1 stay exact and are compared
 more carefully than before; narration parity was a means that had served its
 purpose, and ein.rs's regression coverage moved to checked-in goldens.
 
+**Q-M1a.19, Q-M1a.20 and Q-M1a.21 left 2026-08-21** with their phases —
+they are [Q-M1c.1](../m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects),
+[Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)
+and [Q-M1d.1](../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)
+now. The M1a ids stay reserved and their entries redirect: a sticky id that
+disappears is worse than one that points somewhere.
+
 P1a.4 closed the two it was blocking on. **Q-M1a.4** — `sorted()` over
 mixed-type fact args — became the ledger's
 [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
@@ -346,3 +357,7 @@ entry through a seeded `solve` regime.
   does not change that arithmetic.
 - [M1b GUI](../m1b_gui/README.md) · [M2 NL → IR](../m2_nl_to_ir/README.md)
   — the downstream consumers.
+- [M1c — External validation](../m1c_external_validation/README.md) ·
+  [M1d — From saturation to satisfiability](../m1d_satisfiability/README.md)
+  — created 2026-08-21 out of this milestone's last two phases plus the F14
+  note; both depend on M1a and neither is part of the port.

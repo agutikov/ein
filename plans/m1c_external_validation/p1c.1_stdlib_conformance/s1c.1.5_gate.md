@@ -1,8 +1,8 @@
-# S1a.11.5 — In the gate
+# S1c.1.5 — In the gate
 
-**Phase:** P1a.11 (stdlib conformance)
+**Phase:** P1c.1 (stdlib conformance)
 **Estimate:** 1 day
-**Depends on:** [S1a.11.4](s1a.11.4_stdlib_corpus.md)
+**Depends on:** [S1c.1.4](s1c.1.4_stdlib_corpus.md)
 
 ## Context
 
@@ -13,7 +13,7 @@ makes the coverage claim self-enforcing.
 
 - The stdlib corpus runs in `cargo test --workspace`, and its runtime is
   reported. These are small programs; if the suite grows by more than a couple
-  of seconds, something in the corpus is bigger than S1a.11.4 intended.
+  of seconds, something in the corpus is bigger than S1c.1.4 intended.
 - **A stdlib rule with no activating program fails the gate.** The same
   completeness shape the corpus manifest already uses for `.ein` files, applied
   to rules — which requires the firing census to be a test rather than a
@@ -25,14 +25,14 @@ makes the coverage claim self-enforcing.
 
 ## Tasks
 
-### Task T1a.11.5.1 — The cargo test
-### Task T1a.11.5.2 — The rule-coverage check
+### Task T1c.1.5.1 — The cargo test
+### Task T1c.1.5.2 — The rule-coverage check
 
 The census as an assertion. Needs a list of stdlib rules the check can
 enumerate — parse the modules rather than hard-code the list, so adding a rule
 without a test fails rather than being invisible.
 
-### Task T1a.11.5.3 — Docs
+### Task T1c.1.5.3 — Docs
 
 ## Notes
 

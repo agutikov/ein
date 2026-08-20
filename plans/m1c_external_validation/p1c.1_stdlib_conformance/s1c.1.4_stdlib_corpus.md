@@ -1,20 +1,20 @@
-# S1a.11.4 — The stdlib corpus
+# S1c.1.4 — The stdlib corpus
 
-**Phase:** P1a.11 (stdlib conformance)
+**Phase:** P1c.1 (stdlib conformance)
 **Estimate:** 4 days
-**Depends on:** [S1a.11.3](s1a.11.3_test_subcommand.md)
+**Depends on:** [S1c.1.3](s1c.1.3_test_subcommand.md)
 
 ## Context
 
 The programs themselves — one per rule or tight family, each the smallest
 thing that activates it, each stating what it should and should not derive.
-[S1a.11.1](s1a.11.1_what_the_stdlib_promises.md)'s table is the work list and
+[S1c.1.1](s1c.1.1_what_the_stdlib_promises.md)'s table is the work list and
 its zero-firing set is the priority.
 
 ## Acceptance
 
 - **Every stdlib rule is activated by at least one program**, re-measured by
-  the same firing census S1a.11.1 used. The census, not a reading of the
+  the same firing census S1c.1.1 used. The census, not a reading of the
   directory, is what closes this.
 - Every program is **small enough to read** — the fixture that came out of this
   session's bug, [`features/09_adjacent_via_same_house.ein`](../../../examples/features/09_adjacent_via_same_house.ein),
@@ -27,13 +27,13 @@ its zero-firing set is the priority.
   what this program does to it, and what the expected result *means*.
   `examples/features/` is the model.
 - Registered in `conformance/corpus.toml` (or its successor from
-  [S1a.10.3](../p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md))
+  [S1a.10.3](../../m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md))
   and catalogued in the examples README, like every other fixture.
 
 ## Tasks
 
-### Task T1a.11.4.1 — `std.algebra` — `symmetric`, `transitive`, `includes`, the cardinality properties
-### Task T1a.11.4.2 — `std.bijection` — the setup glue, the negatives, the eliminations, the typechecks
+### Task T1c.1.4.1 — `std.algebra` — `symmetric`, `transitive`, `includes`, the cardinality properties
+### Task T1c.1.4.2 — `std.bijection` — the setup glue, the negatives, the eliminations, the typechecks
 
 The biggest module and the one whose rules chain: `bijective-setup` fans out
 into activators, the negatives feed the eliminations' `forall`, and the
@@ -41,21 +41,21 @@ priorities (240 negatives, 250 checks, 400 eliminations) are what make the
 order work. A test per rule *and* at least one that pins the chain, because
 the priorities are a promise nothing currently states.
 
-### Task T1a.11.4.3 — `std.elim` — `domain-elimination`, `no-room-left`
+### Task T1c.1.4.3 — `std.elim` — `domain-elimination`, `no-room-left`
 
 The two this session's bug ran through. `domain-elimination` asserting a
 positive from accumulated negatives is the mechanism that turned a mid-layer
 writeback into a refutation, and the fact that nothing tested it directly is
 why the guard survived.
 
-### Task T1a.11.4.4 — `std.closure`, `std.slots`, `std.typing`
-### Task T1a.11.4.5 — `std.macro` — `forall`, `open`
+### Task T1c.1.4.4 — `std.closure`, `std.slots`, `std.typing`
+### Task T1c.1.4.5 — `std.macro` — `forall`, `open`
 
 Macro expansion, so the expectations are about the *expanded* program. Whether
 `(test …)` sees pre- or post-expansion state is a decision
-[S1a.11.2](s1a.11.2_test_form.md) has to have made.
+[S1c.1.2](s1c.1.2_test_form.md) has to have made.
 
-### Task T1a.11.4.6 — The census, re-run
+### Task T1c.1.4.6 — The census, re-run
 
 The acceptance number. Report per module: rules, covered, still zero.
 

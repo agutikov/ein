@@ -1,12 +1,12 @@
-# S1a.12.4 — Conflict mining when a layer is barren
+# S1d.1.4 — Conflict mining when a layer is barren
 
-**Phase:** P1a.12 (Exhaustive search over many models)
+**Phase:** P1d.1 (Exhaustive search over many models)
 **Estimate:** 4 days
-**Depends on:** [S1a.12.1](s1a.12.1_why_it_does_not_finish.md)
+**Depends on:** [S1d.1.1](s1d.1.1_why_it_does_not_finish.md)
 
 ## Context
 
-The user's proposal, and it addresses the mechanism S1a.12.1 identifies rather
+The user's proposal, and it addresses the mechanism S1d.1.1 identifies rather
 than the symptom: **when a layer grows rapidly and emits no usable clauses,
 dive depth-first to mine facts.**
 
@@ -34,9 +34,9 @@ the diving half that is missing.
    would not be.
 3. **The counters move.** Enterings performed by the dive are enterings, and
    the clauses change which later candidates are filtered.
-   [design/08](../design/08_parallelism.md) §7 rejected parallel depth-first on
+   [design/08](../../m1a_rust/design/08_parallelism.md) §7 rejected parallel depth-first on
    exactly this ground. So the dive is a flag, and default-on requires the
-   [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped
+   [Q-M1a.18](../../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped
    decision, taken explicitly.
 4. **F9's E10 must be answered, not ignored** — "cardinality layering already
    *is* breadth-first deepening; there is no DFS depth bound to raise". True,
@@ -48,7 +48,7 @@ the diving half that is missing.
 
 - A **trigger**, measured rather than guessed: what makes a layer "barren"
   (deaths per entering, clauses per death, next-layer filter rate — all from
-  S1a.12.1's census) and what the threshold is.
+  S1d.1.1's census) and what the threshold is.
 - A **dive policy**: how deep, how many, which candidates to extend, and what
   happens when a dive finds a model instead of a conflict (it is a model —
   record it, deduped by `state_key`, exactly as the BFS would).
@@ -60,25 +60,25 @@ the diving half that is missing.
 - **Wasted-dive accounting.** A dive that finds nothing is pure cost; report
   dives attempted, clauses harvested, and candidates those clauses filtered.
   Without that third number this is unfalsifiable.
-- Interaction with [P1a.7](../p1a.7_parallelism/README.md) stated: a dive is
+- Interaction with [P1a.7](../../m1a_rust/p1a.7_parallelism/README.md) stated: a dive is
   independent work and an obvious thing to run on a spare core, but it writes
   clauses to the shared store, which is exactly the mid-layer root mutation
-  [S1a.7.0](../p1a.7_parallelism/s1a.7.0_speculation_audit.md) found to be the
+  [S1a.7.0](../../m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md) found to be the
   hard case. Do not discover that twice.
 
 ## Tasks
 
-### Task T1a.12.4.1 — The barren-layer trigger
-### Task T1a.12.4.2 — The dive
-### Task T1a.12.4.3 — Clause harvesting and integration
+### Task T1d.1.4.1 — The barren-layer trigger
+### Task T1d.1.4.2 — The dive
+### Task T1d.1.4.3 — Clause harvesting and integration
 
 Where the harvested clauses land, and when. Integrating them mid-layer is the
 same hazard P1a.7 measured; integrating at the layer barrier is the cheap and
 obviously-sound option, and its cost is that the current layer does not
 benefit from them.
 
-### Task T1a.12.4.4 — Measure both regimes
-### Task T1a.12.4.5 — The decision
+### Task T1d.1.4.4 — Measure both regimes
+### Task T1d.1.4.5 — The decision
 
 Ship on, ship behind a flag, or record as inert. All three are acceptable
 outcomes; only an unmeasured one is not.
