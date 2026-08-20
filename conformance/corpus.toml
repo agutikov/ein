@@ -369,6 +369,12 @@ runs   = ["solve -e"]
 note   = "M1a hazard H2, second shape — the same `sorted(alive)`, over two `Fact` args instead of a str and an int, so it needs no mixed slot types: one hrule whose `:assert` is a `(not …)` is enough. Found by the S1a.6.6 fuzzer 2026-08-20; D2's reach, widened with a fixture rather than in prose."
 
 [[entry]]
+path   = "examples/ein-bugs/unbound-assert-var.ein"
+group  = "crash-parity"
+runs   = ["solve", "saturate"]
+note   = "Q-M1a.14's own first example, reached for the first time 2026-08-20 by the S1a.6.6 fuzzer — an `(or …)` whose arms bind different variables lets one reach the `:assert` unbound. ein.py raises `KeyError`, whose `str` is the repr of its key; ein.rs printed the message unquoted until this fixture."
+
+[[entry]]
 path   = "examples/ein-bugs/unbound-relation-head.ein"
 group  = "crash-parity"
 runs   = ["solve"]

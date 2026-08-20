@@ -95,9 +95,30 @@ pub fn compile_error_line(msg: impl std::fmt::Display) -> String {
 }
 
 /// A `SaturateError` as the line ein.py's traceback would end with.
+///
+/// CPython prints a builtin exception by its bare name and anything else by
+/// its qualified one, and `KeyError`'s `str` is the **repr** of its key — so
+/// an unbound `:assert` variable ends a traceback as
+/// `KeyError: "unbound var ?v1 in :assert — bindings: {…}"`, quotes and all.
+/// ein.rs printed the message alone until 2026-08-20, when
+/// [S1a.6.6](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
+/// fuzzer produced the first input that reaches it —
+/// [Q-M1a.14](../../../../plans/m1a_rust/open_questions.md#q-m1a14--crash-parity)
+/// named this exact case ("a `KeyError` from an unbound `:assert` var is
+/// caught nowhere") and no corpus file had ever hit it.
+/// `examples/ein-bugs/unbound-assert-var.ein` is the fixture.
 pub fn saturate_error_line(e: &ein_infer::saturator::SaturateError) -> String {
+    use ein_infer::firing::FireError;
+    use ein_infer::saturator::SaturateError;
     match e {
-        ein_infer::saturator::SaturateError::Compile(c) => compile_error_line(c),
+        SaturateError::Compile(c) => compile_error_line(c),
+        SaturateError::Fire(FireError::UnboundVar(m)) => {
+            format!("KeyError: {}", ein_core::pyrepr::repr_str(m))
+        }
+        SaturateError::Fire(FireError::NotAFact(m)) => format!("TypeError: {m}"),
+        SaturateError::StepLimit(m) => {
+            format!("ein.inference.saturator.SaturatorStepLimitError: {m}")
+        }
         other => other.to_string(),
     }
 }

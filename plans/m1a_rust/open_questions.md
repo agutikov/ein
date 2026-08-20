@@ -429,13 +429,18 @@ on the whole line rather than only on the class it extracts:
   was already at parity from P1a.3, so naming the class was the whole gap.
 
 That was 6 of the 7 `crash-parity` cells; the seventh was D2. **2026-08-20
-added two more, both from [S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
-fuzzer**: `nested-fact-hypothesis.ein` (D2's second shape — it diverges) and
+added three more, all from [S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
+fuzzer**: `nested-fact-hypothesis.ein` (D2's second shape — it diverges),
 `unbound-relation-head.ein` (`(?R ?x)` with `?R` unbound, which **passes** —
 identical message, identical exit code, and only ein.py's traceback wrapper
-around it). The second is the interesting one: it is the first cell in this
-group that the fuzzer found rather than a human, and the machinery held
-without a change. Naming a Python class from Rust is not a category error
+around it) and `unbound-assert-var.ein`, which is **this question's own first
+example**: "a `KeyError` from an unbound `:assert` var is *caught* nowhere".
+Nothing in the corpus had ever reached it, and reaching it found the one gap
+left in the answer above — ein.rs printed the message alone where CPython
+prints `KeyError: "…"`, because `KeyError`'s `str` is the *repr* of its key.
+Fixed at the printer; the two other firing errors (`TypeError` for a
+non-fact `:assert` head, `SaturatorStepLimitError` for the step budget) were
+given their class names in the same edit, before an input reaches them. Naming a Python class from Rust is not a category error
 here: the class is the *oracle's* observable, and reproducing it is what I1
 asks for. What stays open is the
 narrower question the relaxation would answer — whether a future ein.rs-only

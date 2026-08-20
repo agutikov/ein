@@ -1,0 +1,28 @@
+;;; M1a S1a.6.6 — an unbound variable reaching an `:assert`.
+;;;
+;;; [Q-M1a.14](../../plans/m1a_rust/open_questions.md#q-m1a14--crash-parity)
+;;; named this case in its first paragraph — "a `KeyError` from an unbound
+;;; `:assert` var is *caught* nowhere and surfaces as a traceback" — and no
+;;; corpus file reached it until the fuzzer wrote one. Two forms:
+;;;
+;;; The rule's `:match` is a disjunction whose arms bind **different**
+;;; variables, and its `:assert` reads `?v0` and `?v1`. Matching the second
+;;; arm binds `?v0` and `?v2`, so `?v1` arrives at the assert template
+;;; unbound. Both engines detect it, with the identical message; ein.py
+;;; raises `KeyError`, whose `str` is the *repr* of its key, so the message
+;;; comes back quoted.
+;;;
+;;; Fixed 2026-08-20 in ein.rs, which printed the message alone where CPython
+;;; prints `KeyError: "…"` — the same treatment `CompileError` and
+;;; `FileNotFoundError` already had. `crash-parity`: exit code + exception
+;;; class, and both are 1 / `KeyError`.
+;;;
+;;; It is an *invariant violation* rather than a rejected input — the matcher
+;;; is supposed to guarantee no unbound var reaches a template — which is why
+;;; it is loud on both sides rather than a load-time diagnostic.
+
+(r0 o2 o1)
+
+(rule fire-3 ()
+  :match  (or (r1 ?v1 ?v3) (r0 ?v0 ?v2))
+  :assert (not (r1 ?v0 ?v1)))
