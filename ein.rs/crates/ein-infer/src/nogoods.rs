@@ -107,6 +107,24 @@ pub fn emit_nogood(
     true
 }
 
+/// Would `clause` be dropped as already-subsumed, without inserting it?
+///
+/// The read-only half of [`emit_nogood`], for the deferred-integration mode
+/// ([`crate::solve::SolveOptions::integrate_every`]): there the *insert*
+/// happens at a batch barrier, but the caller still has to report whether the
+/// clause was new at the point the entering died.
+pub fn subsumed(kb: &Kb, clause: &[FactId], min_size: usize) -> bool {
+    let mut sorted: Vec<FactId> = clause.to_vec();
+    sorted.sort_unstable();
+    sorted.dedup();
+    if sorted.len() < min_size {
+        return true;
+    }
+    let store = kb.nogoods();
+    let store = store.read().expect("the no-good store");
+    store.iter().any(|c| is_subset(c, &sorted))
+}
+
 /// A clause as **sorted** s-expressions — it is a set, so any order but a
 /// sorted one would leak the store's iteration into the event stream.
 pub fn clause_repr(terms: &Terms, clause: &[FactId]) -> Vec<String> {

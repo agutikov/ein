@@ -10,6 +10,8 @@ repository.workspace = true
 # Forwarded so `cargo build --features fork-delta` on the binary means the
 # same as on the engine — S1a.6.9 T1a.6.9.2.
 fork-delta = ["ein-infer/fork-delta"]
+# Same forwarding, for S1a.7.0's instrument.
+spec-audit = ["ein-infer/spec-audit"]
 # T1a.6.2.7 — the global allocator, on by default. `--no-default-features`
 # is the escape hatch: it builds against the system allocator and costs
 # 15.9 % of `solve zebra2 -e` and 7.5 % of `solve zebra -e`.

@@ -43,6 +43,9 @@ pub mod sanity;
 pub mod saturator;
 pub mod shape;
 pub mod solve;
+/// The S1a.7.0 measurement instrument — off unless the build asked for it.
+#[cfg(feature = "spec-audit")]
+pub mod spec_audit;
 pub mod verdict;
 
 pub use apriori::{

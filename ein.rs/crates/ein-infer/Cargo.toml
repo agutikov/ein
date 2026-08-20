@@ -16,6 +16,12 @@ counters = ["ein-core/counters"]
 # per-entering audit record, so `utils/fork_delta_verify.py` can produce both
 # arms of the divergence out of one binary and prove it has not widened.
 fork-delta = []
+# S1a.7.0 — the speculation audit. Runs every entering a second time
+# against root as of layer start, which is what a P1a.7 worker would have
+# forked, and reports where the two disagree. Off by default because it
+# doubles the enterings; inert even when compiled in unless
+# `$EIN_SPEC_AUDIT` names a file.
+spec-audit = []
 
 [dependencies]
 ein-core = { path = "../ein-core" }

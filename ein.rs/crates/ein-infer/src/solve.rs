@@ -153,6 +153,29 @@ pub struct SolveOptions {
     pub max_enterings: Option<u64>,
     pub store_lattice: bool,
     pub on_budget: OnBudget,
+    /// **Deferred integration** — how many enterings share one root
+    /// ([S1a.7.0](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md)
+    /// T1a.7.0.5).
+    ///
+    /// `None` is the sequential engine and the only shipping value: an
+    /// entering's root writes — the learned clause and the singleton
+    /// `(not h)` writeback — land before the next entering forks, so
+    /// candidate *i* sees what candidates `< i` learned.
+    ///
+    /// `Some(n)` holds those writes back and applies them every `n` enterings
+    /// and at every layer end, so a batch of candidates is tested against
+    /// **one** KB. `Some(usize::MAX)` is the whole layer.
+    ///
+    /// This is an **execution** knob, not a semantics one, which is why it
+    /// lives here and not in [`SolverConfig`] — a `(config …)` block in a
+    /// puzzle file must not be able to set it
+    /// ([S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+    /// T1a.7.5.1 makes the same call for `--jobs`). It changes the
+    /// **traversal** and therefore the counters; what it must *not* change is
+    /// the answer, which is what `tests/search_invariants.rs` asserts and what
+    /// [design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2a
+    /// proves.
+    pub integrate_every: Option<usize>,
 }
 
 impl Default for SolveOptions {
@@ -165,6 +188,7 @@ impl Default for SolveOptions {
             max_enterings: None,
             store_lattice: false,
             on_budget: OnBudget::Raise,
+            integrate_every: None,
         }
     }
 }
@@ -322,6 +346,7 @@ pub fn solve(
             state_key_merges: 0,
             truncated: false,
         },
+        deferred: Vec::new(),
         t_start: Instant::now(),
         opts,
     };
@@ -356,6 +381,20 @@ pub fn solve(
     }
 }
 
+/// A commit-time root write, held back by `integrate_every`.
+///
+/// These are the only two things an entering writes to root — everything else
+/// it produces is fork-local or lives in `LoopState`
+/// ([design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2a). So
+/// buffering exactly these two is what makes a batch of enterings share one
+/// KB.
+enum Deferred {
+    /// The learned clause, for [`crate::nogoods::emit_nogood`].
+    Nogood(Vec<FactId>),
+    /// `h`, for the singleton `(not h)` writeback.
+    Writeback(FactId),
+}
+
 struct Run<'o> {
     shuffle: Option<crate::mt19937::Mt19937>,
     cfg: SolverConfig,
@@ -380,6 +419,9 @@ struct Run<'o> {
     root_firings: Vec<Firing>,
     stats: MonotonicStats,
     lstate: LoopState,
+    /// Root writes waiting for the next integration barrier. Always empty
+    /// when `opts.integrate_every` is `None`.
+    deferred: Vec<Deferred>,
     t_start: Instant,
     opts: &'o SolveOptions,
 }
@@ -534,8 +576,22 @@ impl Run<'_> {
                 rng.shuffle(&mut candidates);
             }
 
+            // S1a.7.0 — the speculative arm, when the build asked for it.
+            // Opened *after* the order is fixed, because what it audits is
+            // this layer's candidates in this layer's order.
+            #[cfg(feature = "spec-audit")]
+            let mut audit = crate::spec_audit::LayerAudit::start(root, layer);
+
             let mut a_layer: Vec<CanonicalSetId> = Vec::new();
-            for c in &candidates {
+            for (i, c) in candidates.iter().enumerate() {
+                // The batch barrier, at the *top* of the iteration so every
+                // path out of the body below is covered by one check.
+                if let Some(n) = self.opts.integrate_every
+                    && i > 0
+                    && i % n == 0
+                {
+                    self.integrate(root, terms, events);
+                }
                 self.check_budget(dumper)?;
                 self.stats.base.enterings_total += 1;
                 let result = try_commitment_set(
@@ -548,6 +604,19 @@ impl Run<'_> {
                     None,
                     self.root_snapshot.as_deref(),
                 )?;
+                // Before the commit step, which is what grows `W`.
+                #[cfg(feature = "spec-audit")]
+                if let Some(a) = audit.as_mut() {
+                    a.check(
+                        root,
+                        terms,
+                        ast,
+                        &self.memo,
+                        c,
+                        &result,
+                        self.root_snapshot.as_deref(),
+                    );
+                }
                 if events.on() {
                     let commitment: Vec<String> =
                         c.iter().map(|&f| crate::events::sexpr(terms, f)).collect();
@@ -631,6 +700,9 @@ impl Run<'_> {
                         .is_some_and(|n| self.lstate.nodes.len() as u64 >= n)
                     {
                         self.lstate.truncated = true;
+                        // The proof reads root's no-good store, so what was
+                        // learned before the cut has to be in it.
+                        self.integrate(root, terms, events);
                         return Ok(());
                     }
                     continue;
@@ -653,6 +725,9 @@ impl Run<'_> {
                 a_layer.push(c.clone());
             }
 
+            // The layer barrier. With `integrate_every = Some(usize::MAX)`
+            // this is the *only* one, which is the "one KB per layer" mode.
+            self.integrate(root, terms, events);
             dumper.layer_end(layer, root, terms, alive.len(), a_layer.len());
             if phase_2_done {
                 break;
@@ -878,8 +953,21 @@ impl Run<'_> {
         // even when no clause was attempted. `false` is the honest value:
         // nothing landed because nothing was emitted.
         let mut landed = false;
+        let deferring = self.opts.integrate_every.is_some();
         if self.cfg.enable_path_nogoods {
-            landed = crate::nogoods::emit_nogood(root, terms, events, c, 1);
+            landed = if deferring {
+                // The store is *read* here and written at the barrier, so
+                // `landed` answers against the batch's own KB. That is the
+                // mode, not an approximation of it: a clause learned by an
+                // earlier candidate of the same batch is deliberately not
+                // visible yet, which is why the counters move and the answer
+                // does not.
+                let fresh = !crate::nogoods::subsumed(root, c, 1);
+                self.deferred.push(Deferred::Nogood(c.to_vec()));
+                fresh
+            } else {
+                crate::nogoods::emit_nogood(root, terms, events, c, 1)
+            };
             if landed {
                 self.stats.base.nogoods_emitted += 1;
             } else {
@@ -887,7 +975,11 @@ impl Run<'_> {
             }
         }
         if c.len() == 1 && self.cfg.enable_singleton_writeback {
-            write_negation(root, terms, events, c[0]);
+            if deferring {
+                self.deferred.push(Deferred::Writeback(c[0]));
+            } else {
+                write_negation(root, terms, events, c[0]);
+            }
         }
         self.lstate.dead.push(DeadCommitment {
             commitment: c.to_vec(),
@@ -914,6 +1006,24 @@ impl Run<'_> {
                 nogood_subsumed: self.cfg.enable_path_nogoods && !landed,
             },
         );
+    }
+
+    /// The integration barrier: apply every held-back root write, in the
+    /// order the enterings produced them.
+    ///
+    /// When `integrate_every` is `None` the buffer is always empty, so this is
+    /// a `mem::take` of an empty `Vec` and no iterations — the sequential path
+    /// stays the reference implementation rather than becoming a special case
+    /// of this one.
+    fn integrate(&mut self, root: &mut Kb, terms: &mut Terms, events: &mut Events) {
+        for d in std::mem::take(&mut self.deferred) {
+            match d {
+                Deferred::Nogood(c) => {
+                    crate::nogoods::emit_nogood(root, terms, events, &c, 1);
+                }
+                Deferred::Writeback(h) => write_negation(root, terms, events, h),
+            }
+        }
     }
 
     fn check_budget(&mut self, dumper: &mut dyn Dumper) -> Result<(), SolveError> {
