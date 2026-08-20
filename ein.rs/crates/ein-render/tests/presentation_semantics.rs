@@ -253,9 +253,23 @@ fn the_dag_trace_view_chains_through_derived_facts() {
     // The premise that is *not* a prior step keeps its rectangle: `c10` is an
     // input, and the dag has nowhere else to root the chain.
     assert!(dag.contains("\"c10\" [shape=rectangle];"), "{dag}");
-    // The per-step view is the other picture: steps are the nodes there.
+    // The per-step view is the other picture, and the contrast is total: its
+    // spine is the step ids and it never names a fact at all. `s2` is the step
+    // box; `s1` is drawn where it is *referenced*, as `s2`'s premise rectangle,
+    // which is the one place the two views draw the same id differently.
     let per_step = render_trace(&ast, forms[0], TraceView::PerStep);
-    assert!(per_step.contains("\"s1\" [shape=box, label=\"step: s1\"];"));
+    assert!(
+        per_step.contains("\"s2\" [shape=box, label=\"step: s2\"];"),
+        "{per_step}"
+    );
+    assert!(
+        per_step.contains("\"s1\" -> \"s2\" [style=dashed];"),
+        "the step chain is not drawn:\n{per_step}"
+    );
+    assert!(
+        !per_step.contains("lives-in"),
+        "a derived fact leaked into the per-step view:\n{per_step}"
+    );
     assert_ne!(dag, per_step);
 }
 

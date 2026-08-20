@@ -40,6 +40,15 @@ use std::path::{Path, PathBuf};
 // ── Fixtures ───────────────────────────────────────────────────────
 
 /// Parse and load inline source with no base directory — `from_ir`.
+///
+/// Fixtures here author rule provenance with `:rule R :using (via (p a b) …)`.
+/// The wrapper head — `via` throughout this file, `p` in
+/// `examples/broken/load/derivation_cycle.ein` — is read by nothing: `:using`
+/// takes one value, and the headless list `((p a b) …)` the engine's own dumps
+/// would prefer is [not in the
+/// grammar](../../../../docs/kernel/ir/03-ein-lang/05_inspirations.md). Every
+/// *inner* S-form is interned as a premise proposition, which is why a premise
+/// may name a fact this KB never held.
 fn kb_of(text: &str) -> (Terms, Kb) {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -102,7 +111,8 @@ fn write(dir: &Path, name: &str, text: &str) -> PathBuf {
 // ── A fact's origin ────────────────────────────────────────────────
 
 /// A fact's origin is a **three-way** split, not a two-way one — and the third
-/// case is the one that keeps catching people out.
+/// case is the one that keeps catching people out — and the declaration's own
+/// companion facts are in it.
 ///
 /// `is_given` and `is_derived` replaced the old `Layer` enum, and they are not
 /// complements: a `:source`-kind record *with* a source id is given, any
@@ -120,7 +130,7 @@ fn a_facts_origin_is_a_three_way_split_over_its_provenance() {
         r#"
         (relation r T T)
         (r a b :source "(1)")
-        (r c d :rule step :using ((r a b)))
+        (r c d :rule step :using (via (r a b)))
         (r e f)
         "#,
     );
@@ -161,8 +171,9 @@ fn a_facts_origin_is_a_three_way_split_over_its_provenance() {
     );
     assert_eq!(
         bucket((false, false)),
-        ["(r e f)", "(r k l)"],
-        "background — an unannotated fact and one with no record at all"
+        ["(r e f)", "(r k l)", "(relation r T T)", "(relation r)"],
+        "background — an unannotated fact, one with no record at all, and the \
+         two companion facts `(relation r T T)` emits about itself"
     );
     assert!(
         !kb.facts().any(|f| split(f) == (true, true)),
@@ -429,6 +440,11 @@ fn a_symbols_import_pulls_the_name_reference_closure() {
 /// engine records negative knowledge, so rejecting them would break the
 /// negation model. A guard written as a prefix test would reject `eq-elim` and
 /// `absent-of`, which are just names that begin with kernel words.
+///
+/// The names that can *reach* the guard are `absent`, `eq`, `false` and
+/// `relation` — the other four in [`ein_core::RESERVED`] (`and`, `neq`, `not`,
+/// `or`) are among the eleven words `SYMBOL`'s negative lookahead rejects, so
+/// `(hrule not …)` is a parse error and never becomes a load error at all.
 #[test]
 fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     let (terms, kb) = kb_of("(not (likes A B) :source \"(1)\") (relation likes T T)");
@@ -451,7 +467,7 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     for (declarator, source) in [
         ("rule", "(rule eq () :match (x ?a) :assert (y ?a) :why \"w\")"),
         ("relation", "(relation absent T T)"),
-        ("hrule", "(hrule not () :match (x ?a) :assert (y ?a) :why \"w\")"),
+        ("hrule", "(hrule false () :match (x ?a) :assert (y ?a) :why \"w\")"),
     ] {
         let msg = load_error(source);
         assert!(
@@ -519,9 +535,9 @@ fn diamond() -> (Terms, Kb) {
         (relation r T T) (relation d T T) (relation top T T)
         (r A B :source "(1)")
         (r B C :source "(2)")
-        (d A C :rule compose :using ((r A B) (r B C)))
-        (d C A :rule flip :using ((r B C)))
-        (top A A :rule join :using ((d A C) (d C A)))
+        (d A C :rule compose :using (via (r A B) (r B C)))
+        (d C A :rule flip :using (via (r B C)))
+        (top A A :rule join :using (via (d A C) (d C A)))
         "#,
     )
 }
@@ -1097,8 +1113,16 @@ fn zebra_loads_seventy_one_facts_eighteen_of_them_given_and_none_derived() {
         0,
         "nothing is derived before the engine runs"
     );
-    let transitive = terms.syms.get("transitive").expect("imported from std");
-    assert_eq!(kb.all_facts(&terms).by_rule(transitive).count(), 0);
+    let rules: Vec<Symbol> = kb.program().rules.keys().collect();
+    assert!(rules.len() >= 10, "std.slots and std.algebra brought rules in");
+    for r in rules {
+        assert_eq!(
+            kb.all_facts(&terms).by_rule(r).count(),
+            0,
+            "{} attributed a fact at load time",
+            terms.sym(r)
+        );
+    }
 
     let membership: Vec<String> = {
         let relation = terms.syms.get("relation").expect("interned");
@@ -1132,7 +1156,7 @@ fn a_snapshot_still_resolves_its_premises_after_the_source_moves_on() {
         r#"
         (relation p T T) (relation q T T)
         (p a b :source "(1)")
-        (q a b :rule p-to-q :using ((p a b)))
+        (q a b :rule p-to-q :using (via (p a b)))
         "#,
     );
     let derived = fact(&terms, &kb, "(q a b)");
@@ -1159,9 +1183,8 @@ fn a_snapshot_still_resolves_its_premises_after_the_source_moves_on() {
         .add_and_index_fact(&mut terms, p, &[c, d], Some(prov))
         .expect("room")
         .id();
-    let prov = terms
-        .provs
-        .push(Prov::from_rule(terms.intern_text("late").expect("room"), Box::new([new]), None));
+    let late = terms.intern_text("late").expect("room");
+    let prov = terms.provs.push(Prov::from_rule(late, Box::new([new]), None));
     kb.add_and_index_fact(&mut terms, q, &[c, d], Some(prov))
         .expect("room");
     kb.rebuild_indexes(&terms);

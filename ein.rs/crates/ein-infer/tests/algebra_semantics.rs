@@ -288,7 +288,9 @@ fn converse_is_symmetric_on_its_pair_and_the_back_edge_mirrors() {
 /// that already exists, so it fires once and is redundant forever after. The
 /// budget is the falsifier — a rule producing a *fresh* fact each time round
 /// would exhaust it — and the count bound catches a dedup that still works but
-/// has stopped being cheap.
+/// has stopped being cheap. The bound is the Python original's `n < 100`, over
+/// the same quantity (`saturate`'s step count, redundant firings included);
+/// this engine reaches the fixpoint in 7.
 #[test]
 fn the_algebra_lemma_loop_terminates() {
     let src = algebra(LEMMAS)
@@ -297,7 +299,7 @@ fn the_algebra_lemma_loop_terminates() {
            (knows A B :source \"(1)\")";
     let r = try_run(&src, 5000).unwrap_or_else(|e| panic!("the lemma loop ran away: {e}"));
     assert!(
-        r.firings < 0,
+        r.firings < 100,
         "converged, but in {} firings — the loop is no longer cheap",
         r.firings
     );
@@ -877,7 +879,8 @@ fn join_converse_derives_the_converse_union() {
 /// re-derives the original `(compose r s t)`. It terminates because that fact
 /// already exists — nothing about the rules themselves bounds the loop. The
 /// 8 000-step budget is the runaway detector; the firing count is the
-/// regression detector.
+/// regression detector, carried over from the Python original's `n < 400`.
+/// This engine reaches the fixpoint in 16.
 #[test]
 fn the_reflective_lemma_set_terminates() {
     let src = algebra("compose converse converse-pair-symmetric compose-contravariant")
@@ -886,7 +889,7 @@ fn the_reflective_lemma_set_terminates() {
            (r A B :source \"(1)\") (s B C :source \"(2)\")";
     let r = try_run(&src, 8000).unwrap_or_else(|e| panic!("the lemma set ran away: {e}"));
     assert!(
-        r.firings < 0,
+        r.firings < 400,
         "converged, but in {} firings — the lemma set is no longer cheap",
         r.firings
     );

@@ -311,7 +311,7 @@ fn domain_elimination_says_nothing_while_two_values_survive() {
         (domain-elimination color-of is-a)
         (is-a H1 House)
         (is-a Red Color) (is-a Blue Color) (is-a Green Color)
-        (not (color-of H1 Red) :source \"a\") (not (color-of H1 Blue) :source \"b\")
+        (not (color-of H1 Red) :source \"a\")
         "
     ));
     assert!(
