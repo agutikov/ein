@@ -60,18 +60,23 @@ jobs:
         with: { components: rustfmt, clippy }
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
-      # ein.py is a *test* dependency of ein.rs from P1a.1 on: the frontend
-      # has no CLI surface for the conformance harness to drive, so its parity
-      # tests talk to `utils/ir_oracle.py` instead. Without this they skip —
-      # loudly, but they skip, and a silent gate is not a gate.
+      # ein.py was a *test* dependency of ein.rs from P1a.1 to S1a.10.2: the
+      # frontend has no CLI surface for the conformance harness to drive, so 42
+      # of the workspace's integration tests talked to `utils/ir_oracle.py`
+      # instead, and without `pip install -e ein.py` they skipped — loudly, but
+      # they skipped, and a silent gate is not a gate.
+      #
+      # S1a.10.2 un-differentialled all 42, so **the install is gone and its
+      # absence is the check**: a test that reacquired an oracle would now fail
+      # rather than skip. `python3` itself stays, for one thing —
+      # `examples/gen_zebra2_variants.py --check`, a stdlib-only script that
+      # `cli_semantics.rs` runs to compare the zebra2 variants byte for byte.
       - uses: actions/setup-python@v5
         with: { python-version: "3.14" }
-      - run: pip install -e ein.py
-        working-directory: .
       - run: cargo fmt --check
       - run: cargo clippy --workspace --all-targets -- -D warnings
       # Covers the corpus-completeness check, the embedded-stdlib digest, and
-      # the IR frontend's differential tests against ein.py.
+      # since S1a.10.2 every claim the frontend's differential tests carried.
       - run: cargo test --workspace
       - run: cargo bench --bench engine -- --test
 

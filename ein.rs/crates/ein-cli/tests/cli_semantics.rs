@@ -270,6 +270,17 @@ fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
         .current_dir(repo_root())
         .output();
     match check {
+        // 127 is "the interpreter could not run the script at all" — the same
+        // situation as no `python3`, and it must not be reported as a stale
+        // fixture. This is the one place in the workspace where a Python
+        // process still runs, and after
+        // [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+        // it is the *only* one: `PATH=<a python3 that exits 127> cargo test
+        // --workspace` is 566 passed, and this line is why the count does not
+        // drop by one.
+        Ok(out) if out.status.code() == Some(127) => {
+            eprintln!("skipped the generator's byte check: python3 exited 127")
+        }
         Ok(out) => assert!(
             out.status.success(),
             "the on-disk variants are stale — run `python3 examples/gen_zebra2_variants.py`\n{}{}",

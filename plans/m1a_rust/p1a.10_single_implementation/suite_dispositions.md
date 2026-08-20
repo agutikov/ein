@@ -396,6 +396,27 @@ is the outcome, including the four places the plan was wrong.*
 | corpus entries | 111 | **129** |
 | pytest | 1 538 | 1 538 (unchanged — it dies in S1a.10.5, not here) |
 
+**The check S1a.10.1 used to find the problem, re-run.** The finding was
+measured by making `python3` unrunnable and reading the result: *318 passed, 1
+failed — and 41 of those passes asserted nothing.* The same experiment now:
+
+```text
+$ PATH=<a python3 that exits 127> cargo test --workspace --no-fail-fast
+566 passed; 0 failed
+```
+
+Nothing skips, because nothing has an oracle to miss. One test still starts a
+Python process — `cli_semantics.rs` runs `examples/gen_zebra2_variants.py
+--check`, a stdlib-only script, to compare the three zebra2 files byte for byte
+— and it degrades to a printed line when the interpreter cannot run, which is
+why the count above is 566 rather than 565. That degradation is deliberate and
+narrow: an *exit 127* is "there is no usable python3", and any other non-zero
+exit is a stale fixture and fails.
+
+`.github/workflows/per-commit.yml`'s Rust job no longer installs ein.py, and
+the absence is the check: a test that reacquired an oracle fails there now
+instead of skipping.
+
 **The runtime is the headline and it is not an optimisation.** Nine of those
 ten minutes were 42 tests starting a Python process per corpus file; the gate
 did not get faster, it stopped paying for a second engine. The stage's
