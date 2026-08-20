@@ -1,0 +1,11 @@
+;;; Syntax probe — query-full.
+;;;
+;;; A `(query …)` carrying all three of its keywords.
+;;;
+;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
+;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
+;;; eight parse views and diffed against ein.py. As corpus entries they are
+;;; digested by `corpus_shapes.md5` instead — every view, every op, no
+;;; second engine. They exist because no *puzzle* contains these shapes.
+
+(query :goal (drinks Water ?h) :hrules (h1 h2) :goal-text "who drinks water")

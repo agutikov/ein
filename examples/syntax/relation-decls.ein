@@ -1,0 +1,12 @@
+;;; Syntax probe — relation-decls.
+;;;
+;;; `(relation …)` at every arity, inside an ordinary fact head.
+;;; Since S1.7c.4 `ontology` is not a block: these are nested *values*.
+;;;
+;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
+;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
+;;; eight parse views and diffed against ein.py. As corpus entries they are
+;;; digested by `corpus_shapes.md5` instead — every view, every op, no
+;;; second engine. They exist because no *puzzle* contains these shapes.
+
+(ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))

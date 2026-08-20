@@ -1,0 +1,15 @@
+;;; Syntax probe — trace-steps.
+;;;
+;;; A `(trace …)` whose steps chain through step ids, through an
+;;; `(and …)` premise, and through the two half-specified shapes.
+;;;
+;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
+;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
+;;; eight parse views and diffed against ein.py. As corpus entries they are
+;;; digested by `corpus_shapes.md5` instead — every view, every op, no
+;;; second engine. They exist because no *puzzle* contains these shapes.
+
+(trace (step s1 :rule from-condition :using (c10) :derives (lives-in N H1))
+  (step s2 :rule adjacent :using (and s1 c15) :derives (color-loc Blue H2))
+  (step s3 :using (s2))
+  (step s4 :derives (final X)))

@@ -1,0 +1,14 @@
+;;; Syntax probe — wrappers.
+;;;
+;;; The three S1.7c.4 wrapper heads as what they are now: ordinary fact
+;;; heads with nested facts as arguments.
+;;;
+;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
+;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
+;;; eight parse views and diffed against ein.py. As corpus entries they are
+;;; digested by `corpus_shapes.md5` instead — every view, every op, no
+;;; second engine. They exist because no *puzzle* contains these shapes.
+
+(ontology (relation r T T) (is-a a T))
+(facts (r a b :source "(1)"))
+(reasoning (r b c :rule sym :using (x)))

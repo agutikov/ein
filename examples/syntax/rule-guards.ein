@@ -1,0 +1,17 @@
+;;; Syntax probe — rule-guards.
+;;;
+;;; A rule whose `:match` carries a nested `(absent (and …))` guard and
+;;; a `neq` predicate — the two shapes the rule views draw differently.
+;;;
+;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
+;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
+;;; eight parse views and diffed against ein.py. As corpus entries they are
+;;; digested by `corpus_shapes.md5` instead — every view, every op, no
+;;; second engine. They exist because no *puzzle* contains these shapes.
+
+(relation r T T)
+(relation s T T)
+(rule g ()
+  :match  (and (r ?a ?b) (absent (and (s ?a ?c) (r ?c ?b))) (neq ?a ?b))
+  :assert (s ?a ?b)
+  :why "guarded")

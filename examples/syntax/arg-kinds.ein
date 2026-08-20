@@ -1,0 +1,16 @@
+;;; Syntax probe — arg-kinds.
+;;;
+;;; Every argument kind a fact can carry — int, string, the two range
+;;; literals, the wildcard, a variable, and a nested fact.
+;;;
+;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
+;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
+;;; eight parse views and diffed against ein.py. As corpus entries they are
+;;; digested by `corpus_shapes.md5` instead — every view, every op, no
+;;; second engine. They exist because no *puzzle* contains these shapes.
+
+(relation r T T)
+(r 7 "a string")
+(r 1..5 1..*)
+(r _ ?x)
+(r (nested a b) c)

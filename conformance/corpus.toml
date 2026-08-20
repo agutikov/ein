@@ -649,3 +649,103 @@ runs   = ["solve", "saturate", "render rules", "render constraints"]
 path   = "stdlib/typing.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
+
+
+# ── syntax probes ───────────────────────────────────────────
+#
+# The eighteen node-kind fixtures S1a.10.2 moved out of
+# `ein.rs/crates/ein-render/tests/dot_parity.rs`. They were rendered under
+# all eight parse views and diffed against ein.py; as corpus entries the
+# manifest digests them under every view and every op instead. They are
+# syntax probes rather than puzzles — several declare no relation and would
+# not solve — so the runs are the two that read the forms.
+
+[[entry]]
+path   = "examples/syntax/arg-kinds.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/config.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/constraint-scopes.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/equality.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/is-a-shapes.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/negation.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/nullary.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/query-full.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/relation-decls.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/rule-forall-and-not.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/rule-guards.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/rule-half.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/rule-nary-and-or.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/rule-shared-guard-var.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/trace-empty.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/trace-steps.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/unary-and-nary.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/syntax/wrappers.ein"
+group  = "positive"
+runs   = ["render rules", "saturate"]

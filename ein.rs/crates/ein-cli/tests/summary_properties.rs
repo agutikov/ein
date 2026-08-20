@@ -158,6 +158,9 @@ fn u(v: &J, path: &str) -> i64 {
 fn the_counter_set_is_coherent_on_every_corpus_cell() {
     let mut bad: Vec<String> = Vec::new();
     let mut cells = 0usize;
+    // Non-vacuity for the two unsat-core implications: at least one cell has
+    // to report a core, or both hold because none ever does.
+    let mut cored = 0usize;
     // Every counter has to be non-zero *somewhere*, or it agrees for the wrong
     // reason — the discipline `hypgen_parity`'s
     // `every_filter_and_skip_fires_somewhere_in_the_corpus` already keeps for
@@ -229,11 +232,31 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
             // An unsat core is the *answer* of a contradictory root and is
             // reported for nothing else — the one place the core reaches
             // stdout, which is why design/01 §5 excludes it from every
-            // relaxation.
+            // relaxation. Stated as two implications rather than as an
+            // equivalence, because `Contradiction` covers two situations and
+            // only one of them has anything to blame: `k = 0` with the lattice
+            // exhausted is "no model exists", and `k = 0` with `exhausted
+            // false` is "no model **within the cap**", which is not a
+            // refutation and carries an empty core.
+            //
+            // The equivalence stood for 440 cells and was falsified the day
+            // S1a.10.2 added `examples/syntax/equality.ein` to the corpus: two
+            // `=` forms, no rule, no hypothesis that ever completes, and a
+            // depth cap that cuts at layer 5 with every commitment still
+            // alive. Nothing died, so nothing is blamed.
+            let deaths =
+                u(&s, "stats.enterings_dead_pre") + u(&s, "stats.enterings_dead_post");
             check(
-                "an unsat core is reported exactly for a Contradiction",
-                (core > 0) == (kind == "Contradiction"),
+                "an unsat core is reported for nothing but a Contradiction",
+                core == 0 || kind == "Contradiction",
             );
+            check(
+                "a Contradiction that refuted something blames something",
+                !(kind == "Contradiction" && deaths > 0) || core > 0,
+            );
+            if core > 0 {
+                cored += 1;
+            }
 
             // ── the search's own arithmetic ────────────────────────────
             check(
@@ -324,6 +347,11 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
     assert!(
         cells >= 300,
         "only {cells} cells ran — the sweep stopped looking"
+    );
+    assert!(
+        cored >= 5,
+        "only {cored} cells reported an unsat core, so both core implications \
+         hold for the wrong reason"
     );
 
     // The zeroes, asserted as zeroes with a reason, and everything else

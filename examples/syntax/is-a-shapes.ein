@@ -1,0 +1,15 @@
+;;; Syntax probe — is-a-shapes.
+;;;
+;;; The kernel `is-a` head with each argument kind in the subject
+;;; position — an atom, an int, a variable and the wildcard.
+;;;
+;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
+;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
+;;; eight parse views and diffed against ein.py. As corpus entries they are
+;;; digested by `corpus_shapes.md5` instead — every view, every op, no
+;;; second engine. They exist because no *puzzle* contains these shapes.
+
+(is-a a T)
+(is-a 7 T)
+(is-a ?x T)
+(is-a _ T)
