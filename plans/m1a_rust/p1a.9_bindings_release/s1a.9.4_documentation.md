@@ -31,6 +31,10 @@ implement).
   the old value labelled rather than deleted.
 - `./run_tests.sh` still green — the oracle is part of the deliverable.
 
+After p1a phase completion repository must not contain any reference to Python ein.py or earlier implementations, ein.rs become reference implementation.
+
+
+
 ## Tasks
 
 ### Task T1a.9.4.1 — Orientation

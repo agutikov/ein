@@ -5,6 +5,9 @@
 **Depends on:** [S1a.10.2](s1a.10.2_port_the_suite.md),
 [S1a.10.4](s1a.10.4_utils.md)
 
+
+before deleteion convert lark grammar into EBNF and preserve in docs for future use
+
 ## Context
 
 One day, because by now it is `git rm` and the interesting work is behind it.
