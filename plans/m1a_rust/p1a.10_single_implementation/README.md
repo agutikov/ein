@@ -8,6 +8,11 @@ surface is what `docs/api/` describes after the Python engine is gone, and
 stage that compares the two modules while both exist.
 **Decides:** [Q-M1a.2](../open_questions.md#q-m1a2--does-einpy-have-a-sunset)
 — reversing its recommendation.
+**Status:** **in progress** — [S1a.10.1](s1a.10.1_bank_the_oracle.md) shipped
+2026-08-20 and its ledger is [`oracle_ledger.md`](oracle_ledger.md). It ran
+before [P1a.9](../p1a.9_bindings_release/README.md) on purpose: the dependency
+is the *deletion*'s, and an inventory that deletes nothing is exactly what
+should happen while both engines still run.
 
 ## Goal
 
@@ -46,14 +51,40 @@ is the one way this phase can go wrong that cannot be undone by a revert.
 
 ## Stages
 
-| stage | title | est. |
-|---|---|---|
-| [S1a.10.1](s1a.10.1_bank_the_oracle.md) | Bank what only the oracle proves | 4 d |
-| [S1a.10.2](s1a.10.2_port_the_suite.md) | Port the Python test suite | 5 d |
-| [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) | The corpus without a second engine | 2 d |
-| [S1a.10.4](s1a.10.4_utils.md) | `utils/`, re-aimed at one engine | 2 d |
-| [S1a.10.5](s1a.10.5_removal.md) | The removal | 1 d |
-| [S1a.10.6](s1a.10.6_docs.md) | The docs after the oracle | 2 d |
+| stage | title | est. | |
+|---|---|---|---|
+| [S1a.10.1](s1a.10.1_bank_the_oracle.md) | Bank what only the oracle proves | 4 d | ✅ **shipped 2026-08-20** |
+| [S1a.10.2](s1a.10.2_port_the_suite.md) | Port the Python test suite | 5 d | scope grew — see below |
+| [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) | The corpus without a second engine | 2 d | |
+| [S1a.10.4](s1a.10.4_utils.md) | `utils/`, re-aimed at one engine | 2 d | |
+| [S1a.10.5](s1a.10.5_removal.md) | The removal | 1 d | has a defect list |
+| [S1a.10.6](s1a.10.6_docs.md) | The docs after the oracle | 2 d | |
+
+### What S1a.10.1 moved
+
+The stage was written as an inventory of `conformance/`. The inventory found
+that **the largest differential surface in the repo is not the harness — it is
+`cargo test --workspace` itself**: 42 of its 91 integration tests start a
+Python process, and when one cannot start they *skip*, on a stderr `cargo test`
+captures, so the suite reports 311 passed. That is the phase's own acceptance
+criterion quietly not being one.
+
+Three consequences, all recorded in the
+[ledger](oracle_ledger.md):
+
+- **S1a.10.2's subject doubles.** It is no longer only "port 1 517 pytest
+  tests"; it is also "un-differential 42 ein.rs tests", and the ledger already
+  says what each of them still owes.
+- **S1a.10.5 gets a defect list.** Five ein.rs tests read *files* under
+  `ein.py/` rather than running it, so no amount of removing Python finds
+  them — they are green until the commit that deletes the tree.
+  [§4](oracle_ledger.md#4-what-the-removal-must-relocate) names them and says
+  to `git mv` the 19 goldens rather than re-bless them, because ein.py's own
+  bytes are the last independent provenance the repo has.
+- **[P1a.8](../p1a.8_binary_container/README.md) gets a question.** The
+  determinism successor prices a permuted id space at *0 answers and 66
+  renderings*, and `.einb`'s remap is a permutation
+  ([Q-M1a.22](../open_questions.md#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate)).
 
 ## Acceptance for the phase
 

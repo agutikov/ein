@@ -26,6 +26,19 @@ much higher.
 4. When an entry is fixed, keep it with `**Status:** fixed in <stage>`.
    The trail is the memory.
 
+**Re-read 2026-08-20 at
+[S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md)**, the
+stage that banks what only the oracle proves. Each entry's disposition after
+the second engine leaves is
+[`oracle_ledger.md` §8](p1a.10_single_implementation/oracle_ledger.md#8-the-divergence-ledger-re-read):
+D1 is already an ein.rs-side fixture, D2 becomes historical — its two puzzles
+stay in the corpus as ordinary entries — and **D3 is promoted**. The same three
+observables it names move *inside ein.rs* under a permuted id space (0 answers,
+66 renderings, all of them already on `ein_parity::is_narration`'s closed
+list), so its rule stops being a statement about two engines and becomes one
+about what a derivation is. Nothing here is deleted: the ledger is the port's
+history and it stays, with the note that the second engine is gone.
+
 ## Template
 
 ```markdown

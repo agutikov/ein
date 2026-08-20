@@ -30,6 +30,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | open — recommendation: **`:expect` on `query`, several queries per file**; [S1a.11.2](p1a.11_stdlib_conformance/s1a.11.2_test_form.md) decides |
 | [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | open — recommendation: four keys, each demanded by a rule |
 | [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1a.12](p1a.12_exhaustive_search/README.md); `exhausted` keeps its meaning either way |
+| [Q-M1a.22](#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate) | Is `.einb`'s id remap order-preserving enough for its own gate? | open — **measured 2026-08-20** at [S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md): a permuted id space moves 0 answers and 66 renderings |
 
 ---
 
@@ -969,3 +970,50 @@ written refutation is as good an outcome as a proof — that is the discipline
 [F9](../followups/f9_e_catalog.md) established for this exact area, and F9's
 own judgements were all measured on puzzles with a unique model, which is the
 regime this question is not about.
+
+## Q-M1a.22 — Is `.einb`'s id remap order-preserving enough for its own gate?
+
+[P1a.8](p1a.8_binary_container/README.md)'s gate is `ein solve x.einb`
+**byte-identical** to `ein solve x.ein`, and
+[design/10 §3](design/10_binary_format.md#3-ids-across-the-boundary) answers
+the id problem with a translation table plus a fast path: "when the live
+interner is empty … both tables are the identity and the pass is skipped
+entirely. That is the mmap-and-go case."
+
+[S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md)'s
+determinism successor measured what happens when they are *not* the identity.
+Over 2 544 `(file, op)` pairs with the id space permuted:
+
+- **0 answers move** — verdict, model, counters, every non-derivation
+  rendering, at 1 and at 8 seeds;
+- **66 renderings move**, and all of them are what
+  [D3](divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
+  already calls narration: 44 where `enable_fail_fast_fork` stopped a dying
+  fork at a different firing, 22 in the body of a rendered derivation, where a
+  fact with two equally valid justifications recorded the other one first.
+
+So the gate as written is reachable on the fast path and **not** reachable off
+it: a `.einb` opened into a non-empty interner produces the same answer and may
+produce a different `--trace`.
+
+Two things follow, and neither is decided here.
+
+1. **The fast path's condition is stated wrongly.** `Terms::new` interns the
+   eighteen kernel names before any caller can reach the table, so the live
+   interner is never empty. The condition that actually makes both tables the
+   identity is that the live interner is a **prefix** of the file's — which it
+   is, for a fresh process opening a file written by the same build. Saying
+   "empty" and meaning "a prefix" is the kind of thing that holds until
+   somebody opens two files.
+2. **The gate needs a scope.** Either (a) `.einb` promises byte-identity only
+   on the fast path, and says so — cheap, honest, and enough for the CLI, which
+   is the case the gate was written for; or (b) the remap is required to be
+   order-preserving on the sections that reach a derivation, which is a
+   stronger promise than the engine makes to *itself* (§ above: id order
+   already decides which justification is recorded first), so it would have to
+   be bought somewhere other than the container.
+
+**Recommendation: (a)**, with `ein-render/tests/id_order_invariance.rs` as the
+measurement it rests on, and the answer-level invariance — which is what a user
+of a container cares about — asserted for `.einb` directly at
+[S1a.8.1](p1a.8_binary_container/README.md).

@@ -203,6 +203,111 @@ mod tests {
         }
     }
 
+    /// T1a.10.1.1 — the four claims the manifest check made **only** on the
+    /// Python side, ported so the corpus's contract survives the suite that
+    /// held it. `ein.py/tests/test_corpus_manifest.py` had nine tests and this
+    /// module had five; these are the other four, and the count is the point:
+    /// "the completeness check is duplicated in both suites" was true of the
+    /// completeness check and not of the manifest's other invariants.
+    #[test]
+    fn paths_are_unique() {
+        let corpus = corpus();
+        let mut seen = BTreeSet::new();
+        let dupes: Vec<&str> = corpus
+            .entry
+            .iter()
+            .filter(|e| !seen.insert(e.path.as_str()))
+            .map(|e| e.path.as_str())
+            .collect();
+        assert!(dupes.is_empty(), "duplicate entries: {dupes:?}");
+    }
+
+    /// `broken/*.ein` fail at parse; `broken/load/*.ein` fail at load; the
+    /// split is what lets P1a.1 gate on one and P1a.2 on the other. A file
+    /// that loads and *then* crashes the engine is neither — it is a
+    /// well-formed input the engine mishandles, so it lives with the other
+    /// bug-repro puzzles under `crash-parity`.
+    #[test]
+    fn negatives_are_grouped_by_where_they_fail() {
+        for e in &corpus().entry {
+            let (path, group) = (e.path.as_str(), e.group.as_str());
+            let want: &[&str] = if path.starts_with("examples/broken/load/") {
+                &["load-negative"]
+            } else if path.starts_with("examples/broken/compile/") {
+                // S1a.3.1 — they parse and load, then the compiler refuses.
+                // `activator_arity` is the exception: the S1.22.0 arity filter
+                // makes its error unreachable through the engine, so its run
+                // succeeds and it is an ordinary `positive`.
+                &["crash-parity", "positive"]
+            } else if path.starts_with("examples/broken/") {
+                &["parse-negative"]
+            } else if path.starts_with("examples/") {
+                &["positive", "crash-parity"]
+            } else {
+                continue;
+            };
+            assert!(
+                want.contains(&group),
+                "{path}: {group} (want one of {want:?})"
+            );
+        }
+    }
+
+    /// The other half of S1a.3.1: every `examples/broken/compile/*.ein` is a
+    /// corpus entry and has its `.expected` beside it, and nothing else claims
+    /// to be one.
+    #[test]
+    fn every_compile_negative_fixture_has_its_expected() {
+        let dir = repo_root().join("examples/broken/compile");
+        let stems = |ext: &str| -> BTreeSet<String> {
+            std::fs::read_dir(&dir)
+                .expect("examples/broken/compile")
+                .flatten()
+                .map(|e| e.path())
+                .filter(|p| p.extension().is_some_and(|x| x == ext))
+                .map(|p| p.file_stem().expect("stem").to_string_lossy().into_owned())
+                .collect()
+        };
+        let eins = stems("ein");
+        assert!(!eins.is_empty(), "no fixtures in {}", dir.display());
+        assert_eq!(eins, stems("expected"), "a fixture without its .expected");
+        let listed: BTreeSet<String> = corpus().entry.into_iter().map(|e| e.path).collect();
+        for stem in &eins {
+            let path = format!("examples/broken/compile/{stem}.ein");
+            assert!(listed.contains(&path), "{path} is not a corpus entry");
+        }
+    }
+
+    /// Every load-negative fixture is a corpus entry, and every load-negative
+    /// entry has its `.expected` beside it — the cross-check against the other
+    /// half of S1a.0.1.
+    #[test]
+    fn the_load_negative_group_matches_the_fixture_directory() {
+        let repo = repo_root();
+        let dir = repo.join("examples/broken/load");
+        let on_disk: BTreeSet<String> = std::fs::read_dir(&dir)
+            .expect("examples/broken/load")
+            .flatten()
+            .map(|e| e.path())
+            .filter(|p| p.extension().is_some_and(|x| x == "ein"))
+            .map(|p| p.strip_prefix(&repo).expect("prefix").display().to_string())
+            .collect();
+        let listed: BTreeSet<String> = corpus()
+            .entry
+            .into_iter()
+            .filter(|e| e.group == "load-negative")
+            .map(|e| e.path)
+            .collect();
+        assert_eq!(
+            listed, on_disk,
+            "the load-negative group is not the directory"
+        );
+        for path in &listed {
+            let expected = repo.join(path).with_extension("expected");
+            assert!(expected.is_file(), "{path} has no .expected");
+        }
+    }
+
     #[test]
     fn levers_become_extra_solve_runs() {
         let e = Entry {
