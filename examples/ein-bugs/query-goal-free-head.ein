@@ -1,0 +1,27 @@
+;;; M1a S1a.6.6 — a `(query :goal …)` whose relation head is a variable.
+;;;
+;;; Two lines, and the shortest divergence the fuzzer has produced. `(?R Rex
+;;; Animal)` is the same shape the compiler rejects inside a rule — M1 matches
+;;; relations per activator (Q29), so a head variable must be bound by one —
+;;; but a *query* goal has no activator at all, so it can never be bound and
+;;; the pattern is uncompilable by construction.
+;;;
+;;; ein.py compiles the goal **inside the table renderer**
+;;; (`trace/answer.py::_solution_block` → `verdict.goal_bindings` →
+;;; `compile.compile_pattern`), so the exception escapes after a successful
+;;; solve and ends the run. ein.rs returned no bindings and printed
+;;; "(no query goal to project)" — a program one engine runs and the other
+;;; rejects, which is an exit-code difference and therefore T0.
+;;;
+;;; Fixed 2026-08-20 in ein.rs: `verdict::goal_plan_error` asks the same
+;;; question the renderer would, and the CLI reports it in the same place with
+;;; CPython's own last traceback line. `saturate` and `render rules` were
+;;; already at parity here — the first ignores the query, the second rejects
+;;; the file for its own reason.
+;;;
+;;; `crash-parity`: exit code + exception class, both 1 / `CompileError`.
+
+(is-a Rex Animal)
+
+(query
+  :goal (?R Rex Animal))

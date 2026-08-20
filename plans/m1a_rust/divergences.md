@@ -301,12 +301,86 @@ re-derives root's closure misses where a resumed one does not — 244 against
 for activator; only how many times each was reached moves. It is on the elided
 list for the same reason as the rest.
 
+**The unsat core moves too, and this one is on the list above.** Found
+2026-08-20 by [S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
+fuzzer, minimised to 11 forms
+(`conformance/fuzz_findings/`, and reproduced here):
+
+```lisp
+(relation r0 T T) (relation r1 T T) (relation is-a T T)
+(is-a o2 T) (is-a o3 T) (r0 o2 o3)
+(rule fire-0 (?P) :match  (and (r1 ?v0 ?v1) (r0 ?v1 ?v0))
+                  :assert (not (r1 ?v0 ?v0)))
+(fire-0 T)
+(rule fire-1 () :match  (and (is-a ?v0 T) (r0 ?v0 ?v1) (r1 ?v2 ?v3)
+                             (absent (not (r1 o3 ?v1))))
+                :assert (r1 ?v2 ?v2))
+```
+
+`solve --max-set-size 2`: both engines answer `Contradiction`, `k = 0`, with
+**every counter identical** — 15 enterings, 13 alive, 2 dead, 2 no-goods, 2
+layers — and different **unsat cores**:
+
+| | core |
+|---|---|
+| ein.py | `(is-a o2 T) (is-a o3 T) (r0 o2 o3) (r0 o3 o2) (r1 o2 o3) (r1 o3 o2)` — 6 |
+| ein.rs | `(is-a o3 T) (r0 o3 o2) (r1 o2 o3) (r1 o3 o2)` — **4, a strict subset** |
+
+**It is this divergence and not another**, measured rather than argued:
+`EIN_FORK_DELTA=0` on the `fork-delta` build reproduces ein.py's six facts
+exactly. Observation 3 below predicted the mechanism — the explanation search
+reads the primary justification, and a resumed fork records a different one —
+and the unsat core is named in clause 1 as part of the line. Two things keep
+it a divergence rather than a failure, and both are worth stating plainly:
+
+- **No corpus entry reaches it.** T3 is green corpus-wide apart from D2, and
+  the printed core is identical on every entry that prints one. This is an
+  off-corpus input a fuzzer wrote.
+- **The difference has a direction.** ein.rs's core is a *subset*: the
+  explanation search finds a **shorter** frontier from the resumed fork's
+  justifications. A smaller core is a better core, so what the resume costs
+  here is agreement, not quality.
+
+That is still the closest the milestone has come to clause 1, and it is the
+first item that would change the D3 decision if a corpus puzzle reached it.
+
+**A reach nobody had looked for, found 2026-08-20 by
+[S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s fuzzer.** If a
+model satisfies the `(query :goal …)` pattern **more than once**, the solve
+table prints `rows[0]` of an *unsorted* match — and the row a matcher yields
+first depends on the order the facts went into the KB, which is precisely what
+resuming root's saturation changes. Seven forms are enough:
+
+```lisp
+(relation ok T) (relation blessed T) (relation cand T)
+(rule promote () :match (and (ok ?x) (blessed ?x)) :assert (cand ?x))
+(ok B) (blessed A)
+(query :goal (cand ?x))
+```
+
+ein.py prints `?x = B`, ein.rs prints `?x = A`. **Everything else is
+identical**: the verdict, `k = 1`, `exhausted`, the model as a *set*, all
+twelve counters and every byte of `summary.json` — whose `goal_bindings`
+carries **both** rows and sorts them, which is why T0 and T1 cannot see this
+and the answer table can. No corpus entry reaches it: 59 scanned, 8 with a
+multi-row goal, all stdout-identical.
+
+The fix is available and is a *decision*, not a repair: show the lex-smallest
+row, as `summary.json` already sorts, which would make the table
+implementation-independent and shuffle-invariant at the cost of one visible
+change to a checked-in fixture (`examples/branching/12_typed_blind_solve.ein`
+would print `?c = Blue` where it prints `?c = Red`). Recorded here rather than
+applied; the reproducer lives in `conformance/fuzz_findings/`.
+
 **What would make this unacceptable.** Any of:
 
 1. **a moved answer** — a verdict, a `k`, a model, a query binding, a printed
    unsat core or any `summary.json` field differing between the two engines on
    any corpus entry. That is what the fixture asserts, and it is the line the
-   milestone does not cross;
+   milestone does not cross. **Read "a query binding" as the binding *set*,
+   which is what `summary.json` carries and what is asserted** — the
+   observation above is the reason that distinction now has to be written
+   down;
 2. **a moved fixpoint** — an alive fork whose fact set differs, or, with
    fail-fast off, any fork's. The re-derivation would then be load-bearing
    rather than redundant and the whole change is wrong;

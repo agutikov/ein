@@ -150,8 +150,14 @@ pub fn goal_bindings(
         priority: None,
         loc: None,
     };
-    let Ok(plan) = crate::compile::compile_rule(ast, terms, &rule, None) else {
-        return Vec::new();
+    let plan = match crate::compile::compile_rule(ast, terms, &rule, None) {
+        Ok(plan) => plan,
+        // ein.py lets `compile_pattern` raise straight out of `goal_bindings`,
+        // so a goal the compiler rejects — `(query :goal (?R Rex Animal))`,
+        // an unbound relation head — ends the *whole run* there rather than
+        // projecting nothing. Callers that must reproduce that ask
+        // [`goal_plan_error`] first; this one keeps its infallible signature.
+        Err(_) => return Vec::new(),
     };
     let mut rows: Vec<Vec<(Symbol, Value)>> = Vec::new();
     let mut matcher = crate::match_::Matcher::new();
@@ -169,4 +175,42 @@ pub fn goal_bindings(
         std::ops::ControlFlow::Continue(())
     });
     rows
+}
+
+/// The error ein.py's `compile_pattern` would raise for this query goal.
+///
+/// `None` when there is no goal, or when it compiles. [`goal_bindings`] cannot
+/// report it — ein.py raises out of the same call and ein.rs has no exceptions
+/// — so the CLI asks this before it renders, and prints the line CPython's
+/// traceback would end with. Found by
+/// [S1a.6.6](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
+/// fuzzer on a two-line program; `examples/ein-bugs/query-goal-free-head.ein`
+/// is the fixture.
+pub fn goal_plan_error(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &Kb,
+    goal: Option<NodeId>,
+) -> Option<crate::compile::CompileError> {
+    let goal = match goal {
+        Some(g) => g,
+        None => query_value(ast, kb.program().query.as_ref()?, "goal")?,
+    };
+    let rule = Rule {
+        name: terms
+            .syms
+            .get("<query>")
+            .or_else(|| terms.intern_text("<query>").ok())?,
+        params: Box::new([]),
+        match_: Some(Pattern {
+            expr: ExprRef(goal.0),
+            variables: Box::new([]),
+            relation_names: Box::new([]),
+        }),
+        assert_: None,
+        why: None,
+        priority: None,
+        loc: None,
+    };
+    crate::compile::compile_rule(ast, terms, &rule, None).err()
 }
