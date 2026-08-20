@@ -2566,6 +2566,191 @@ utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 python3 utils/criterion_table.py --max-rsd 3 --json ein.rs/bench-out/criterion.json
 ```
 
+## 19. S1a.6.7 and S1a.6.6 — the lever matrix in two engines, and the fuzzer
+
+**2026-08-20, `master` @ `62381ba`, same machine.** The phase's last two
+stages ship **no engine change between them** — one re-measures, one
+generates — so the four targets below are a *confirmation* rather than a
+delta, and the interesting numbers are what the two instruments said about
+things the phase had been assuming.
+
+### The four targets, at the close
+
+Best-of-7 processes, `utils/bench_env.sh`, pinned:
+
+| workload | target | at S1a.6.12 | **at the close** | spread |
+|---|---:|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 28.9 ms | **29.0 ms** ✅ | 1.4 % |
+| `solve zebra.ein -e` | ≤ 400 ms | 47.5 ms | **47.2 ms** ✅ | 1.1 % |
+| `solve zebra2.ein` | — | 7.9 ms | **7.8 ms** | 2.2 % |
+| `solve zebra.ein` | — | 9.3 ms | **9.3 ms** | 4.4 % |
+| parse + load `zebra2` | ≤ 15 ms | 0.67 ms | **0.67 ms** ✅ | — |
+| the acceptance gate | ≤ 5 s | 0.127 s | **0.127 s** ✅ | — |
+
+Peak RSS 17.3 MB on every row. The last two are §18's, unchanged by
+construction: nothing between `6e077b3` and here touches the engine.
+
+### What the lever matrix says now — and what it says about itself
+
+[`utils/feature_matrix.py`](../../../utils/feature_matrix.py) drove ein.py
+in-process from S1.20.I3 until this stage; it now drives **both engines as
+processes**, delivers each lever through a generated `(config …)` block (five
+of the ten have no CLI flag), and reads the verdict and twelve counters back
+out of `--json-summary` — the T0/T1 surface itself. **Every cell of every
+matrix agrees between the engines** on the verdict, `k`, the goal bindings and
+those counters: 22 cells on `zebra2`, 22 on `zebra`, 22 on `lattice/02`, 6 on
+`branching/06`, with one exemption where ein.py stops on its 90 s budget and
+ein.rs does not.
+
+Two method changes were forced by the first run, and the second is the finding:
+
+| | what it was | what it is |
+|---|---|---|
+| order | one cell at a time, all its runs | **round-robin over the cells** |
+| resolution | asserted | a **`control` cell** — byte-identical to `baseline`, measured last |
+
+Measured cell-by-cell, PyPy's baseline — the divisor of every ratio in the
+table — runs first and reads ~20 % fast, which came out as a uniform 1.2×
+tax on eight levers that ein.rs measured at exactly 1.0× with identical
+entering counts. And with round-robin in place, the control still reads:
+
+| | ein.py (PyPy) | ein.rs |
+|---|---:|---:|
+| `zebra2` fast | 1.0× | 1.0× |
+| `zebra2` exhaustive | **1.2×** | **1.0×** |
+| `zebra` fast | 0.9× | 1.1× ‖ |
+| `zebra` exhaustive | 1.0× | 1.0× |
+
+‖ 8 ms against 7 — the resolution of an integer-millisecond column, not drift.
+
+**So the ein.py column cannot resolve anything below ~1.2×, and the ein.rs
+column resolves 1.0× exactly.** Four rows the 2026-08-17 table reported
+between 0.9× and 1.1× were never measurements. The two levers it named
+survive, and one of them grew:
+
+| lever off | `zebra2 -e` ein.py | ein.rs | `zebra -e` ein.py | ein.rs |
+|---|---:|---:|---:|---:|
+| `enable_singleton_writeback` | **∞** (3 358 @ 90 s) | **56.6×** (3 831 enterings) | **∞** (1 277 @ 90 s) | **43.8×** (3 834) |
+| `enable_fail_fast_fork` | **2.4×** | **7.1×** | **2.9×** | **7.0×** |
+| `lattice_order="score-sum"` | 1.0× (134) | 1.2× (134) | **0.6×** (62) | **0.6×** (62) |
+| `enable_pre_branch_lookahead` | 1.0× (111) | 1.0× (111) | 1.1× (134) | 1.1× (134) |
+| the other five | 1.0–1.1× | **1.0×** | 1.0× | **1.0×** |
+
+`enable_fail_fast_fork` is the phase's own result seen from the other side:
+what it removes is a fixed quantity of dead-fork saturation, everything around
+it shrank, so its ratio **rose** from 1.9× (ein.py, 2026-08-17) to 7.1×
+(ein.rs, today) — **86 %** of an exhaustive `zebra2` without it is saturating
+forks already known to be dead.
+
+### The lever that is not a prune
+
+[T1a.6.7.3](s1a.6.7_relever_matrix.md#task-t1a673--re-examine-the-lookahead)
+asked for the lookahead on a deeper puzzle. Two corpus fixtures answer, and
+the answer is not a ratio:
+
+| fixture | lookahead on | off |
+|---|---|---|
+| `branching/06` fast | Solution k=1, 67 enterings, **2 ms** | **Contradiction k=0**, 11 501, **896 ms** (448×) |
+| `branching/06 -e` | Ambiguity k=22, 5 173, 197 ms | **Contradiction k=0**, 11 501, 890 ms |
+| `lattice/02 -e` | Ambiguity k=3, 6 | **Contradiction k=0**, 7 |
+
+Both engines, to the digit. `complete(kb)` is "the generator proposes nothing
+undecided" and the generator's candidates are **lookahead-filtered**, so a
+candidate the one-step simulation kills is *decided* with the lever on and
+*open* with it off. With it off, `branching/06` reports `Contradiction` on a
+puzzle with 22 models. It is not a port bug and not a prune; it is a
+definition, and it is parked as [F4 Q40](../../followups/f4_cross_cutting.md).
+Not the kill *cache*: with `-K` the verdict is unchanged (5 192 enterings
+against 5 173).
+
+`lattice_order="score-sum"` at **0.6× on `zebra` and 1.2× on `zebra2`**, in
+both engines, is a candidate default change recorded with its own
+counter-example and left as a decision — Rule "resist changing a default in
+the same commit as the measurement", and here in the same *stage*.
+
+### The fuzzer, and the four things it found
+
+S1a.6.6 ran for the first time on the same day. One session of **21.3
+minutes, 12 080 cases** at 20 jobs — 567–700 cases/min, **85.2 %** of them
+loading (the stage asked for ≥ 80 %), the rest rejected by the frontend, which
+is material rather than waste: what two engines must agree on there is the
+*message*. Eight cells reported, in three classes and no fourth.
+
+The first ten minutes produced 13 reported cells, and the triage is the point:
+
+| what | how many | outcome |
+|---|---:|---|
+| **an integer goal binding** | 4 | **T0 bug in ein.rs** — `"y": "8"` where ein.py writes `8`. Fixed; `Json::BigInt` carries the IR's unbounded `INT` |
+| **a nested-fact goal binding** | 3 | **bug in ein.py** — `json.dumps` raised and wrote no summary. Fixed; renders the s-expression, as ein.rs already did |
+| **D2's second shape** | 5 | `sorted(alive)` over two `Fact` args. **No mixed types needed** — one `(hrule … :assert (not …))`. Accepted, with a fixture and a re-stated ledger entry |
+| **a crash-parity cell** | 1 | `(?R ?x)` unbound: identical class, identical exit code, only ein.py's traceback wrapper. **Passes** — a corpus entry, not a divergence |
+
+Two of those are genuine parity bugs in a surface **five phases of byte parity
+had signed off**, and the reason both hid is the same: `stdout` is identical
+on all of them, and no corpus puzzle binds a query variable to anything but a
+symbol. That is precisely the gap
+[design/01 §7](../design/01_parity_contract.md) predicted a fuzzer would
+cover.
+
+Three fuzzer bugs were found by the fuzzer's own controls, and they are worth
+recording because each is a way to *look* successful:
+
+1. **A canary that itself diverges** made every minimisation shrink to the
+   first form that parses — `still_diverges` accepted any reported cell, not
+   the case's own. Now it checks the path, and a diverging canary stops the
+   run.
+2. **A crash reported at T3 is not a finding.** Judged in the `crash-parity`
+   group — exit code + exception class — the `unbound-relation-head` shape
+   passes, and it was being re-found on every batch.
+3. **A generator that produces the ledger's own entry** reports the known
+   answer forever: four findings in five were D2 until `(hrule …)` stopped
+   getting negative heads and int arguments, and the two D2 fixtures left the
+   mutation seed set.
+
+After all three, the same 120 cases produce **0 findings and 4 crash-parity
+candidates**.
+
+### D1 and D2, re-priced at the close
+
+[F11](../../followups/f11_deductive_layer_perf.md) named this milestone as
+its own most likely promotion trigger. Neither entry landed, and D1's number
+moved twice more in the same direction:
+
+| when | candidates | steps entered (`walk`) | per step |
+|---|---:|---:|---:|
+| before T1a.6.3.0 | 25 160 149 | 530 405 | **47.4** |
+| after it | 1 171 385 | 530 405 | **2.21** |
+| **at the close** | **238 567** | 532 115 | **0.45** |
+
+`solve zebra -e`. The step count is flat to 0.3 % across all three rows, which
+is what makes them comparable: the matcher takes the same decisions and looks
+at 100× fewer facts to take them. A beta-memory materialising less than one
+tuple per step, behind a per-fork table measured at **+7.6 %**, is not a
+lever. D2's cost half moved *away* from its trigger: the matcher's five hot
+functions are about a fifth of a 47 ms solve, where the phase began at 66.9 %.
+
+### Reproducing this section
+
+```sh
+utils/bench_env.sh python3 utils/e2e_baseline.py --runs 7 --impl ein.rs
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 5 \
+    --python .venv-pypy/bin/python
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 3 \
+    --python .venv-pypy/bin/python --puzzle examples/zebra.ein
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 3 \
+    --python .venv-pypy/bin/python --cells lookahead \
+    --puzzle examples/branching/06_lookahead_on.ein
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 5 \
+    --python .venv-pypy/bin/python \
+    --puzzle examples/lattice/02_genuine_3set_death.ein
+utils/bench_env.sh cargo run --release --manifest-path ein.rs/Cargo.toml \
+    --features counters -p ein-infer --example counter_cost
+# the fuzzer: a session, and its own negative control
+python3 utils/fuzz_ein.py --minutes 150 --batch 80 --jobs 20
+python3 utils/fuzz_ein.py --iters 2 --batch 2 --tier T2 --canary "" \
+    --impl-b "python3 utils/mutant_ein.py ein.rs/target/release/ein"
+```
+
 ## Reproducing all of it
 
 Every line from the repo root, every measurement through the fingerprint:
@@ -2594,6 +2779,12 @@ cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
     --example hypgen_calls
 utils/bench_env.sh python3 utils/e2e_baseline.py --blind --impl ein.rs --runs 5
+
+# §19 the lever matrix, both engines, with the control row that prices it
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 5 \
+    --python .venv-pypy/bin/python
+# §19 the fuzzer — a session, and the mutant control that proves it can see
+python3 utils/fuzz_ein.py --minutes 150 --batch 80 --jobs 20
 
 # §17 / §18 the boundary and the snapshot — the two cones, and what they do
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 \

@@ -1,7 +1,8 @@
 # P1a.6 — Performance
 
 **Milestone:** [M1a — Rust port](../README.md)
-**Status:** **in progress** — [S1a.6.1](s1a.6.1_profile_baseline.md) and
+**Status:** **shipped 2026-08-20** — twelve stages, all of them.
+[S1a.6.1](s1a.6.1_profile_baseline.md) and
 [S1a.6.8](s1a.6.8_compile_cache_and_extents.md) shipped 2026-08-18;
 [S1a.6.9](s1a.6.9_fork_entry_delta.md), [S1a.6.10](s1a.6.10_parity_contract.md),
 [S1a.6.11](s1a.6.11_fixture_goldens.md), [S1a.6.2](s1a.6.2_memory_layout.md),
@@ -15,6 +16,23 @@ phase had been measuring one shape of workload: the four targets are all
 corpus's slowest solves. S1a.6.5, a one-day confirmation of a path already 8×
 inside its acceptance, found a load parsing **3.30× the bytes on disk** and
 took **25 %** off it.
+
+**The phase closes on its two instruments rather than on a change.**
+[S1a.6.7](s1a.6.7_relever_matrix.md) re-measured the lever matrix in *both*
+engines and added a **`control` row** — a cell byte-identical to the baseline —
+which reads 1.2× under PyPy and 1.0× under ein.rs, retiring four of the old
+table's conclusions and leaving the two levers that were always real. It also
+found that `enable_pre_branch_lookahead` **is not a prune**: `complete()` asks
+the hypothesis generator, and the generator's candidates are lookahead-filtered,
+so on two corpus fixtures turning it off changes `Ambiguity` into
+`Contradiction` in *both* engines (F4 Q40).
+[S1a.6.6](s1a.6.6_differential_fuzzer.md)'s fuzzer then found **four genuine
+parity bugs in its first twenty minutes** — two in `summary.json`'s
+`goal_bindings`, two in how an error is spelled or whether it is raised at all
+— on a surface five phases of byte parity had signed off, plus D2's second
+shape and two reaches of [D3](../divergences.md) that are written down rather
+than fixed. All four bugs are fixed and fixtured; the fuzzer's own three
+controls each failed once first, which is the part worth reading.
 
 **S1a.6.12** was the stage the profile had been naming since S1a.6.3 — the NAF
 boundary and the per-entering snapshot — and it took `zebra -e` **76.7 →
@@ -182,8 +200,8 @@ and [§9](baseline.md#9-the-fork-entry-re-derivation).
 | 8 | [S1a.6.4](s1a.6.4_hypgen_and_lattice.md) ✅ | Hypgen and lattice hot paths | 3 d | **shipped 2026-08-19, aimed elsewhere by its own measurement.** A call offers **125** raw candidates, not 18 k, and spends **71 %** of a `complete()` on setup — 219 compile-cache keys per call. Two new tasks took that; T1a.6.4.2/3 took **15 %** off the blind-mode cells no target covers. **Three planned tasks closed against numbers**: intern-on-probe (probe *is* intern here), the no-good bitmask (**0.3 %** in the regime design/07 §4 said it would dominate), incremental alive (**6** calls a solve) |
 | 9 | [S1a.6.5](s1a.6.5_frontend.md) ✅ | Frontend and load path — **shortened** | 1 d | **shipped 2026-08-19** — the confirmation found a load parsing **3.30× the bytes on disk**, because resolution parses a module once per *edge* of a diamond. `load/zebra2` **−25.5 %**, `parse/zebra2_resolve` −31.6 %; two of its six tasks proposed pre-sizing and **both lost** at this scale. Start-up is 1.02 ms, 0.59 ms of it snmalloc's |
 | 10 | [S1a.6.12](s1a.6.12_boundary_and_snapshot.md) ✅ | The NAF boundary and the per-entering snapshot | 4 d | **shipped 2026-08-20** — `zebra -e` **76.7 → 47.5 ms**, `zebra2 -e` 41.1 → 28.9, `features/05 -e` −18 %, no cell slower. The boundary is 37.7 % → **17.8 %** and the snapshot 10.3 % → 7.6 %. Two tasks went where §17 predicted; the *index* the stage was named for was built twice and **reverted twice** (a round stops at its first admission — the cost was copying the parked set, not walking it), and the instrument meant only to check the guards' index found **71.8 % of guard premises fully bound**, which is a hash lookup rather than a ten-fact scan: candidates 1 172 870 → **238 567**. Q-M1a.17 **closed**, its mechanism declined at a 1.4–2.2 % ceiling |
-| — | [S1a.6.6](s1a.6.6_differential_fuzzer.md) | The differential fuzzer | 3 d | runs *throughout*, not at a position — it guards every row above |
-| 11 | [S1a.6.7](s1a.6.7_relever_matrix.md) | Re-measure the lever matrix | 1 d | last, as planned |
+| 11 | [S1a.6.6](s1a.6.6_differential_fuzzer.md) ✅ | The differential fuzzer | 3 d | **shipped 2026-08-20** — ~700 cases/min, **86 %** loading, and **four parity bugs in the first twenty minutes**: an integer goal binding that was a string in ein.rs, a nested-fact one that *crashed* ein.py, an unnamed `KeyError`, and a query goal ein.rs would not reject. Plus D2's second shape (no mixed types needed) and two D3 reaches recorded in the ledger. Its own three controls — the canary, the mutant, the generator's blind spot — each failed once before they held |
+| 12 | [S1a.6.7](s1a.6.7_relever_matrix.md) ✅ | Re-measure the lever matrix | 1 d | **shipped 2026-08-20** — both engines, same day, same harness, with a **`control` row** that prices each column: 1.2× (PyPy) against 1.0× (ein.rs). `enable_fail_fast_fork` is **2.4× / 7.1×** where it was 1.9×; `score-sum` is **0.6× on `zebra`** and 1.2× on `zebra2`, written up and left as a decision; the lookahead turns out to decide what "complete" *means* |
 
 ## Rules for this phase
 
@@ -219,15 +237,54 @@ and [§9](baseline.md#9-the-fork-entry-re-derivation).
 
 ## Acceptance for the phase
 
-- Targets met, or a written account of which one was not and why.
-- T3 green on the whole corpus at every commit in the phase.
-- The fuzzer has run for ≥ 24 h with no unexplained T1 divergence.
-- `features.md` regenerated with an ein.rs column.
-- F11 closed or updated: D1 landed, or D1 measured and parked with the
-  numbers.
-- [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
-  answered against a rendered before/after trace, and its consequence
-  either landed in both engines or written down as declined.
+Six items; **five met, one is calendar time.**
+
+- ✅ **Targets met**, all four, with 86 % of headroom on the tightest —
+  `zebra2 -e` 29.0 ms against ≤ 200, `zebra -e` 47.2 against ≤ 400, parse +
+  load 0.67 ms against ≤ 15, the gate 0.127 s against ≤ 5. Re-confirmed at the
+  close ([§19](baseline.md#19-s1a67-and-s1a66--the-lever-matrix-in-two-engines-and-the-fuzzer)),
+  not carried over.
+- ✅ **T3 green on the whole corpus at every commit**, under the contract
+  [S1a.6.10](s1a.6.10_parity_contract.md) moved it to — with
+  [D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
+  the only differing cell until 2026-08-20, when the fuzzer found D2's *second
+  shape* and it became two. Both are asserted, in six allowed-divergence lists
+  across four parity tests.
+- ⏳ **The fuzzer has run for ≥ 24 h with no unexplained T1 divergence** — the
+  one item this phase cannot close by working harder, because it is wall-clock
+  on a calendar. What is true instead: the fuzzer exists, it runs at ~700
+  cases/min with 86 % of its output loading, it has produced **four fixed
+  parity bugs and three recorded divergence reaches**, its three controls are
+  themselves tested, and every divergence it now reports is explained. Hours,
+  not a day. [S1a.6.6](s1a.6.6_differential_fuzzer.md) § *What is not done*
+  says so in its own words and names the nightly as the mechanism.
+- ✅ **`features.md` regenerated with an ein.rs column** — and with a `control`
+  row the old table did not have, which is what makes the column readable.
+- ✅ **F11 updated with the numbers**: D1 measured and re-parked at **0.45
+  candidates per step entered** (47.4 → 2.21 → 0.45 across the phase), D2's
+  shape trigger met and its cost trigger further away than when the phase
+  started. The milestone that was F11's own most likely promotion trigger ran,
+  reached the matcher, and declined both entries.
+- ✅ **[Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+  answered** against a rendered before/after trace at
+  [S1a.6.9](s1a.6.9_fork_entry_delta.md), landed in ein.rs only, and
+  [D3](../divergences.md) records the trade — including, since the fuzzer,
+  two reaches D3's own entry had not listed.
+
+### What the phase leaves as decisions rather than work
+
+Three, each with its numbers and none of them applied:
+
+1. **`lattice_order = "score-sum"`** — 0.6× on `zebra`, 1.2× on `zebra2`, in
+   both engines to the digit ([features.md](../../../docs/kernel/inference/features.md)).
+2. **Whether a performance lever may decide what a complete model is** —
+   `enable_pre_branch_lookahead` filters the generator `complete()` asks, so
+   turning it off turns `Ambiguity` into `Contradiction` on two corpus
+   fixtures ([F4 Q40](../../followups/f4_cross_cutting.md)).
+3. **Whether the solve table should sort the binding row it prints** — it
+   shows `rows[0]` of an unsorted match today, which is the one place D3 can
+   change what a user reads ([D3](../divergences.md)); the fix costs one
+   visible change to a checked-in fixture.
 
 ## Cross-links
 

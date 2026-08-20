@@ -1,0 +1,10 @@
+(relation ok      T)
+(relation blessed T)
+(relation cand    T)
+(rule promote ()
+  :match  (and (ok ?x) (blessed ?x))
+  :assert (cand ?x))
+(ok      B)
+(blessed A)
+(query
+  :goal (cand ?x))

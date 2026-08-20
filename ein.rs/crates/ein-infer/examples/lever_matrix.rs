@@ -1,4 +1,14 @@
-//! The `features.md` lever matrix, regenerated against ein.rs.
+//! The `features.md` lever matrix, regenerated against ein.rs — **in process**.
+//!
+//! **Superseded as the instrument of record by
+//! [`utils/feature_matrix.py`](../../../../utils/feature_matrix.py)**, which
+//! since S1a.6.7 drives *both* engines as processes, delivers each lever
+//! through a generated `(config …)` block, cross-checks the two verdicts and
+//! twelve counters before comparing a millisecond, and carries a `control`
+//! row that states the column's resolution. That is what `features.md` is
+//! measured with now. This example stays because it is what P1a.4 measured
+//! with, because an in-process reading is a useful second opinion on a
+//! process-level one, and because it costs 100 lines.
 //!
 //! One cell per engine lever, flipped off against the all-on baseline, in the
 //! two modes `utils/feature_matrix.py` uses: `fast` (`stop_after = 1`, the

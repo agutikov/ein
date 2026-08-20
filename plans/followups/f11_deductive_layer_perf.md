@@ -10,6 +10,17 @@ on it. `zebra2` solves in ~1.3 s fast / ~3.9 s exhaustive under PyPy, which
 is inside every ergonomic envelope the project has. This is the file to
 promote when one isn't.
 
+> **Status after [M1a P1a.6](../m1a_rust/p1a.6_performance/README.md), which
+> was this file's own most likely promotion trigger (2026-08-20):** the phase
+> ran, the port reached the matcher, and **neither entry landed**. D1 was
+> gated, measured and declined twice — the second time at *0.45 candidates per
+> step entered*; D2's shape trigger fired and its cost trigger moved further
+> out of reach. What the phase shipped instead is in
+> [baseline.md](../m1a_rust/p1a.6_performance/baseline.md): an alpha-memory
+> keyed one level inside a nested argument, a ground-premise lookup, a resumed
+> fork saturator, a per-round watch stamp, and an allocator. Both entries stay
+> open with sharper triggers than they had; the sections below carry them.
+
 **Provenance.** Recorded 2026-06-15 inside the F9 E-catalog as 📌 rows —
 "for visibility, not a P1.9 entry" — because F9 was a *hypothesis-loop*
 backlog and these are saturation items. Moved here 2026-08-17 when F9
@@ -18,7 +29,8 @@ work and deserve their own theme rather than a footnote in a ledger.
 
 ## Where the time goes (measure before touching either entry)
 
-Two measurements, both current as of 2026-08-17:
+Two measurements, taken 2026-08-17 and **both superseded** — read the P1a.6
+status box above first, then this for the arc:
 
 - **P1.8a's split still holds: ~95 % of a solve is the matcher inside
   saturation** (O1+O2), not the search
@@ -60,8 +72,9 @@ PYTHONPATH=ein.py/src .venv-pypy/bin/python utils/feature_matrix.py             
 ```
 
 For ein.rs the equivalents are `utils/profile_ein_rs.py` (attribution),
-`utils/e2e_baseline.py` (wall-clock) and `cargo run -p ein-infer --example
-lever_matrix`; the whole set is listed in
+`utils/e2e_baseline.py` (wall-clock) and — since S1a.6.7 — the *same*
+`utils/feature_matrix.py`, which drives either implementation and cross-checks
+them; the whole set is listed in
 [baseline.md § Reproducing all of it](../m1a_rust/p1a.6_performance/baseline.md#reproducing-all-of-it).
 
 ## D1 — RETE beta-memories
@@ -98,6 +111,33 @@ lever_matrix`; the whole set is listed in
 > (Q-M1a.10, answered *no*), and a future promotion needs a workload where the
 > per-step candidate count is large again — a wider rule body, a bigger extent,
 > or a puzzle whose premises the index cannot key.
+>
+> **Re-priced again at the close of P1a.6, 2026-08-20
+> ([S1a.6.7](../m1a_rust/p1a.6_performance/s1a.6.7_relever_matrix.md)
+> T1a.6.7.5), and the number moved the same way twice more.** The intermediate
+> a beta-memory would materialise is now **below one tuple per step entered**:
+>
+> | when | candidates | steps entered (`walk`) | per step |
+> |---|---:|---:|---:|
+> | before [T1a.6.3.0](../m1a_rust/p1a.6_performance/baseline.md#14-s1a63--the-alpha-memory-and-the-gate-the-beta-memory-did-not-pass) | 25 160 149 | 530 405 | **47.4** |
+> | after it (S1a.6.3) | 1 171 385 | 530 405 | **2.21** |
+> | after [S1a.6.12](../m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md) | **238 567** | 532 115 | **0.45** |
+>
+> `solve zebra -e`, `--features counters`. The step count is flat to 0.3 %
+> across all three rows, which is what makes them comparable: the *decisions*
+> the matcher takes are the same, and what changed is how many facts it had to
+> look at to take them. A memory that persists a partial join worth less than
+> one tuple per step, at the cost of a per-fork table T1a.6.2.5 measured at
+> **+7.6 %**, is not a lever — and 71.8 % of the guard premises that produce
+> those steps are now answered by a single interned lookup, which is a memory
+> of a different and cheaper kind.
+>
+> **D1 is therefore closed for M1a and stays open as a followup**, with a
+> sharper promotion test than "the matcher dominates": *a workload whose
+> per-step candidate count is above ~10 again*. Nothing in the corpus is —
+> the blind-enumerator cells (`features/05 -e`, 21.5 M candidates before
+> S1a.6.12 and 9.98 M after) run 11.1 M guard scans for them, which is 1.9
+> candidates per scan, not 47.
 
 Persist **partial joins** across firings. The optimisation arc so far has
 walked up the Datalog ladder — naive → semi-naive (participation index =
@@ -141,6 +181,18 @@ genuine cycle shows up *and* profiles badly.
 > of a 78 ms run, and a binary plan is within a small constant of the AGM
 > bound at that size. So D2 stays closed — but the next re-check should ask
 > about the cost, not re-derive the shape.
+>
+> **The cost half, re-checked at the close of P1a.6 (2026-08-20).** It moved
+> *away* from the trigger. `solve zebra -e` is 47.5 ms rather than 78, and its
+> profile has no block above 8 % of self time; the matcher's own five
+> functions — `walk`, `ground_args`, `unify`, `FactStore::find`, `contains` —
+> sum to about a fifth of the run, where the phase began at 66.9 %. The
+> triangle is still there and still cheap: a join that is a fifth of a 47 ms
+> solve cannot be improved by more than that fifth, and 71.8 % of its premises
+> are not joins at all any more but single interned lookups. **D2 stays
+> closed**, and the trigger stays what it was — a cyclic body whose match cost
+> *dominates* — with the note that the port has now made "dominates" harder to
+> reach, not easier.
 
 **Trigger.** A compiled `JoinPlan` whose step graph is cyclic *and* whose
 match cost dominates a solve.
