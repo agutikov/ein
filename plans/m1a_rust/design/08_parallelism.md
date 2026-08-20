@@ -77,13 +77,18 @@ re-run in the common one:
 
 1. **`W = ∅`** (nothing was written back yet this layer). `result_i` was
    computed against exactly the root the sequential engine would have
-   used. Accept. *This is the whole of layer 1*, where every learned
-   clause is the candidate itself, so a writeback can only concern the
-   candidate that just died.
+   used. Accept. *This is the whole of every layer above the first* —
+   see § Which layers have a `W` at all.
 2. **`c ∩ {h : (not h) ∈ W} ≠ ∅`.** The sequential engine would have
    found the pre-saturation contradiction immediately. Emit `dead-pre`
    with the frontier computed from the clash, no saturation needed —
    which is precisely what `try_commitment_set`'s pre-check does.
+   [S1a.7.0](../p1a.7_parallelism/s1a.7.0_speculation_audit.md) measured
+   this case at **0 occurrences in 1 078 704 enterings**: layer 1's
+   candidates are distinct singletons, so a `(not h_j)` written by an
+   earlier death cannot name a later candidate, and no layer above has a
+   `W`. It stays in the design because a future `W` writer need not have
+   that shape; it is not a case to optimise for.
 3. **Otherwise** — `W` is non-empty but disjoint from `c`. The only way
    `W` changes the outcome is if fork *i*'s saturation could have
    *consumed* one of those `(not h)` facts. Rather than re-running, take
@@ -94,17 +99,87 @@ re-run in the common one:
    is one delta pass; if something is derived, the continuation *is* the
    corrected result.
 
+### Which layers have a `W` at all
+
+The search is a cardinality BFS: layer *L* enters commitment **sets of
+size L**. A dead commitment `{h_1 … h_L}` licenses `¬(h_1 ∧ … ∧ h_L)` — a
+clause of width *L*, and a clause is not a fact. It goes into the no-good
+store, where it prunes later candidate *generation*.
+
+At *L = 1*, and only there, that clause is a **unit**: `¬h_1`, which *is*
+a fact, and root gains `(not h_1)`. That is the writeback, and it is why
+both engines guard it on the **commitment's length** rather than on
+anything about the clause — `c.len() == 1` in `solve.rs`'s `handle_dead`,
+`len(c) == 1` in `_helpers.py`'s `_handle_dead`. Neither minimises a
+learned clause below the commitment (`learned_clause = frozenset(c)`), so
+"the learned clause is a singleton" and "the commitment is a singleton"
+are the same condition.
+
+Nothing else adds a **fact** to root inside a layer: `try_commitment_set`
+is pure with respect to root (P1.21 R2) and only forks it; `complete`,
+`record_node` and `check_commutativity` write into the *fork*;
+`order_candidates` and `emit_nogood` take `&Kb`; and `compute_alive` /
+`promote_forced_positives` run **between** layers. So:
+
+> **Layer 1 is the only layer that adds a fact to root mid-layer. Every
+> layer above it is case 1 by construction, and its validator is dead
+> code.**
+
+The one thing that *is* mutated mid-layer at every level is the **no-good
+store**, which forks share by `Arc` rather than copy. It is harmless here
+for a reason worth stating rather than assuming: **no fork reads it while
+saturating.** Its only readers are `generate_layer`, at layer start, and
+`emit_nogood`'s own subsumption check, at commit time on the committing
+thread. A no-good emitted mid-layer therefore cannot change what any fork
+of that layer derives — it changes the *next* layer's candidate list, and
+the ordered commit already serialises that.
+
+Measured rather than argued —
+[S1a.7.0](../p1a.7_parallelism/s1a.7.0_speculation_audit.md) counts
+`writeback` events by layer (`{1: 32}` on `zebra2 -e`, `{1: 31}` on
+`zebra -e`, `{1: 162}` on `branching/07 -e`) and finds every case 3 in
+layer 1. This is the inverse of what an earlier draft of case 1 above
+said, and the difference matters twice over: the parallel path needs a
+*debug assertion* that no root write reaches a layer above the first, and
+the workloads with a search big enough to want cores put **98.2–99.9 % of
+their enterings past layer 1**
+([scaling.md §2](../p1a.7_parallelism/scaling.md#2-the-layer-profile--where-the-enterings-and-the-firings-are)).
+
+### What case 3 costs — measured before it was built
+
+The rate is **0.1 % corpus-wide and 36–50 % on the zebra family**, and on
+**35** enterings the speculation returns `alive` where the sequential
+engine returns `dead-post`: a mid-layer `(not h)` is a *premise* of
+`std.elim`, whose `domain-elimination` asserts a **positive** once every
+other value is excluded and whose `no-room-left` asserts `(false)` once
+every value is. A fork without the accumulated writebacks fires neither. Case 3's continuation is therefore load-bearing, not
+a formality.
+
+And the identity below is about **fixpoints**, which
+`enable_fail_fast_fork` means a dying fork never reaches. With fail-fast
+off, the speculation's `core` errors collapse exactly onto its `kind`
+errors (35 = 35); with it on, 40 further cores differ purely because the
+two forks stopped at different firings of the same death. So a
+continuation recovers `kind` — a fork inconsistent at firing *n* is
+inconsistent at the fixpoint, and `W` only adds facts — but recovers
+`core` only where the fork ran to quiescence.
+[S1a.7.2](../p1a.7_parallelism/s1a.7.2_parallel_enterings.md) has to
+settle that interaction before `--jobs N` can claim T1.
+
 Case 3 is exact because the KB is append-only and saturation is a least
 fixpoint: `sat(base ∪ W ∪ c) = sat(sat(base ∪ c) ∪ W)`. The engine
 already relies on that identity — it is the same argument behind
 `is_stalled()` re-enqueueing after external writes, and behind
 fail-fast's "inconsistent at firing *n* ⇒ inconsistent at the fixpoint".
 
-**Cost.** Case 1 is free and covers layer 1. Case 2 is a bitset test.
-Case 3 costs a delta pass over a handful of facts and only fires when a
-singleton writeback happened earlier *in the same layer*, which on
-zebra2 means layer 2 only. Measured re-validation rate is a
-[P1a.7](../p1a.7_parallelism/README.md) acceptance number.
+**Cost.** Case 1 is free and covers every layer above the first. Case 2
+is a bitset test. Case 3 costs a delta pass over a handful of facts
+(`|W| ≤ 32` on the zebras, ≤ 161 corpus-wide) and fires only where a
+singleton writeback happened earlier *in the same layer*, which means
+layer 1 and only layer 1. Measured re-validation rate is a
+[P1a.7](../p1a.7_parallelism/README.md) acceptance number, and
+[S1a.7.0](../p1a.7_parallelism/s1a.7.0_speculation_audit.md) took it
+before the mechanism was built.
 
 **Memory.** N concurrent forks hold N deltas over one shared `Arc<KbCore>`.
 Per-fork delta on zebra2 is tens of facts, so `--jobs 16` costs kilobytes
@@ -114,6 +189,150 @@ Per-fork delta on zebra2 is tens of facts, so `--jobs 16` costs kilobytes
 sequential engine would. Committing in candidate order and breaking there
 does that; speculative work past the cut is discarded (a bounded waste,
 capped by the job count).
+
+---
+
+## 2a. Deferred integration — the batch-synchronous layer
+
+§2 speculates and then *repairs*. There is a second shape, and it is the one a
+parallel layer has whether or not anybody designs it: **test a batch of
+candidates against one KB, then integrate what the whole batch learned.**
+S1a.7.0 built it (`SolveOptions::integrate_every`) and measured it, because it
+is cheaper to answer "does the answer survive this?" with a test than with an
+argument.
+
+### The objects
+
+| symbol | what |
+|---|---|
+| `B` | root's fact set when the layer opens; already a fixpoint, `sat(B) = B` |
+| `C = (c_1 … c_m)` | the layer's candidates, in canonical order; `c_i` a set of hypothesis facts |
+| `sat(X)` | the engine's rule fixpoint over `X` — **monotone**, **inflationary** (`X ⊆ sat(X)`), **idempotent** |
+| `dead(X)` | `X` holds a contradiction. **Monotone**: `X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the KB is append-only and nothing retracts |
+| `W_i` | `{ ¬h : c_j = {h} for some j < i that died }` — the writebacks a candidate can see |
+
+Under **immediate** integration candidate *i* is entered against `B ∪ W_i`.
+Under **deferred** integration with barriers at `β`, it is entered against
+`B ∪ W_{β(i)}`, and `W_{β(i)} ⊆ W_i`.
+
+### Four claims
+
+**(1) A writeback prunes; it does not decide.** If `sat(B ∪ {h})` is dead then
+for every `c ⊇ {h}`, `sat(B ∪ c) ⊇ sat(B ∪ {h})` by monotonicity, so `c` dies
+whether or not `¬h` is at root. The writeback makes that death *cheaper* and
+*earlier*, never *possible*.
+
+**(2) …but it also derives.** `¬h` is a fact, and rules read it: `std.elim`'s
+`domain-elimination` matches `(forall ?v_other … (not (?R ?a ?v_other)))` and
+**asserts a positive**; `no-room-left` asserts `(false)`. So
+
+> `sat(B ∪ c) ⊆ sat(B ∪ W ∪ c)`, and the inclusion is **strict** in general.
+
+Which gives the asymmetry the whole section turns on:
+
+> - `dead(sat(B ∪ c))` **⇒** `dead(sat(B ∪ W ∪ c))` — a death under a
+>   *smaller* root is a real death;
+> - `dead(sat(B ∪ W ∪ c))` **⇏** `dead(sat(B ∪ c))` — an **alive** verdict
+>   under a smaller root is *provisional*.
+
+S1a.7.0 measured the second line on the corpus: **35 enterings** come back
+`alive` from `B ∪ c` where `B ∪ W ∪ c` says `dead-post`.
+
+**(3) The commutation identity.** For `W` a set of facts (never a retraction):
+
+> **`sat(B ∪ W ∪ c) = sat( sat(B ∪ c) ∪ W )`**
+
+*⊇*: `B ∪ c ⊆ B ∪ W ∪ c` gives `sat(B ∪ c) ⊆ sat(B ∪ W ∪ c)`, and
+`W ⊆ sat(B ∪ W ∪ c)`; so `sat(B ∪ c) ∪ W ⊆ sat(B ∪ W ∪ c)`, and applying
+`sat` with idempotence gives `sat(sat(B ∪ c) ∪ W) ⊆ sat(B ∪ W ∪ c)`.
+*⊆*: `B ∪ W ∪ c ⊆ sat(B ∪ c) ∪ W` because `B ∪ c ⊆ sat(B ∪ c)`; apply `sat`. ∎
+
+This is what licenses §2's case 3 — feed the quiesced fork `W` as a delta and
+it lands on exactly the fork the sequential engine had. It is the same
+identity behind `is_stalled()`'s re-enqueue after an external write, and the
+mechanism is the one [S1a.6.9](../p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+already built (`Saturator::resume`).
+
+**It is an identity about *fixpoints*, and `enable_fail_fast_fork` means a
+dying fork never reaches one.** So the continuation recovers `kind` (claim 1)
+and recovers the *fixpoint* (claim 3), but the **unsat core** it computes is
+read off wherever fail-fast stopped, and that is a different firing in the two
+runs. Measured: with fail-fast off, the speculation's `core` errors collapse
+exactly onto its `kind` errors (35 = 35); with it on, 40 further cores differ.
+
+**(4) What deferral does to the answer.** By claim 2, the deferred alive set is
+a **superset** of the sequential one. Three things happen to the extra members,
+and only one of them is not automatic:
+
+- **alive ∧ incomplete** → expanded to the next layer. By then the barrier has
+  run, `compute_alive` has dropped every refuted element and the no-good store
+  filters their supersets, so the branch dies out. **Cost: enterings. Effect on
+  the answer: none.**
+- **dead** → a real death, by the first line of claim 2's asymmetry: what
+  died under the smaller root dies under the bigger one. **Sound as
+  recorded.**
+- **alive ∧ complete** → recorded as a **solution node**, and that is the one
+  provisional verdict that reaches the answer — through `k`, through the
+  printed models, and through `stop_after`'s cut.
+
+So the rule is one line:
+
+> **A death found under deferral needs no re-check. A *solution* does.**
+
+`integrate_every` as it stands does **not** re-check, and the model set is
+therefore *measured* equal rather than equal by construction:
+`ein-infer/tests/search_invariants.rs` compares verdict + model set over **16
+files under 4 candidate orders and 3 integration policies**, plus two
+five-layer searches (5 173 and 11 501 enterings) under a whole-layer barrier,
+plus the composition of a shuffled order with a whole-layer barrier. Making it a theorem costs
+one re-entry per recorded solution node at the barrier — solutions are rare,
+so this is cheap — and it is [S1a.7.2](../p1a.7_parallelism/s1a.7.2_parallel_enterings.md)'s
+to build.
+
+### What it costs, measured
+
+Whole-layer deferral, exhaustive, against the sequential engine — same answer
+in every cell:
+
+| workload | enterings | root depth at exit | wall |
+|---|---:|---:|---:|
+| `zebra2 -e` sequential | 101 | 35 | 37 ms |
+| `zebra2 -e` batch 20 | 111 | 5 | 40 ms |
+| `zebra2 -e` whole layer | **617** | 3 | 163 ms |
+| `zebra -e` sequential → whole layer | 111 → **617** | 34 → 3 | 62 → 273 ms |
+| `branching/06 -e` (0 writebacks) | 5 173 → **5 173** | 2 → 2 | 263 → 259 ms |
+| `branching/07 -e` (162 writebacks) | 11 501 → **11 501** | **164 → 3** | **1 135 → 406 ms** |
+
+Three readings, and the third was not expected:
+
+1. **The cost of deferring is exactly the prune it defers.** On the zebras the
+   singleton writeback is doing enormous work in layer 1 — 6.1× the enterings
+   without it — and batching at 20 recovers almost all of it.
+2. **On the workloads that want cores it costs nothing.** `branching/06` has no
+   writebacks at all and `branching/07`'s prune nothing: same entering count to
+   the unit.
+3. **On `branching/07` deferral is 2.8× *faster*, single-threaded.** Every root
+   write seals another layer (`Kb::fork` seals the top so the parent's later
+   appends land in a new one) and **every fork inherits the whole stack**: 162
+   mid-layer writebacks put root at **depth 164**, and all 11 501 forks walk
+   it. A barrier coalesces them — depth 164 → 3 — for the same enterings and
+   the same answer. That is a P1a.6-shaped finding that fell out of a P1a.7
+   correctness experiment, and it is pinned by
+   `deferring_collapses_roots_layer_stack`.
+
+### Order
+
+The other half of what a parallel layer needs is that the *order* of the
+candidates does not reach the answer. That is not new — it is what `--shuffle`
+has always claimed (Q-M1a.5) — but the claim was only ever exercised through
+the traversal-parity sweep, which compares two runs of the *same* engine
+against ein.py. `the_answer_does_not_depend_on_the_entering_order` asserts the
+invariant directly: `lex`, `score-sum` and two seeded shuffles, same verdict
+and same model set.
+
+Order-invariance and integration-invariance **compose**, which is the property
+a parallel layer actually uses: it enters a batch in whatever order the workers
+finish and integrates at the barrier.
 
 ---
 

@@ -45,6 +45,16 @@ against: it is an execution knob, not a semantics knob, and every
 `(config …)`, which would let a *puzzle file* set the thread count.
 Recommendation: keep it CLI/API-only, not in `SolverConfig`.
 
+**The precedent is already set.**
+[S1a.7.0](s1a.7.0_speculation_audit.md) T1a.7.0.5 put
+`SolveOptions::integrate_every` — the batch barrier — exactly there, for
+exactly this reason, and left it without a flag on purpose: the mode it
+exposes is `--jobs`'s to name. If the batch-synchronous route wins in
+[S1a.7.2](s1a.7.2_parallel_enterings.md), the **batch size** is a second knob
+this task has to surface, and it is not a thread count: `--jobs 8` with a
+barrier every 10 000 enterings and `--jobs 8` with one per layer are different
+computations with the same worker count.
+
 ### Task T1a.7.5.2 — Mode plumbing
 
 One `ExecPolicy { jobs, ordered }` threaded to the three levels, with

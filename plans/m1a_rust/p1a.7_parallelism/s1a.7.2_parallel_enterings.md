@@ -2,8 +2,16 @@
 
 **Phase:** P1a.7 (Parallelism)
 **Estimate:** 4 days
-**Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md)
+**Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md),
+[S1a.7.0](s1a.7.0_speculation_audit.md)
 **Implements:** [design/08](../design/08_parallelism.md) §2
+**Decides:** whether `--jobs N` keeps T3 through layer 1, and how
+`enable_fail_fast_fork` interacts with a continued fork
+
+> **Re-shaped 2026-08-20 by [S1a.7.0](s1a.7.0_speculation_audit.md)**, which
+> measured this stage's premise before the stage started. Read
+> [scaling.md §3](scaling.md#3-the-audit) first; the short version is in
+> § What the audit changed, below.
 
 ## Context
 
@@ -27,14 +35,80 @@ The same identity is behind `is_stalled()`'s re-enqueue after external
 writes and behind fail-fast's "inconsistent at firing *n* ⇒ inconsistent
 at the fixpoint".
 
+## What the audit changed
+
+**The stage splits at the layer boundary.**
+
+- **Layers ≥ 2 need no validator at all.** The writeback fires only for a
+  singleton *commitment*, so layer 1 is the only layer that writes to root
+  mid-layer — and 98.2–99.9 % of the enterings of every workload big enough
+  to want cores are above it. That half of the stage is a fan-out and an
+  ordered commit, with nothing to validate and nothing to get wrong.
+- **Layer 1 is the whole of the difficulty**, and it is worse than the design
+  assumed: a writeback every ~1.8 enterings on the zebras, a case-3 rate of
+  36–50 %, and **35 speculations that come back `alive` where the sequential
+  engine says `dead-post`**. The mid-layer `(not h)` is a premise of the
+  domain-elimination rules, so a read-set filter that waved those forks
+  through would be unsound.
+- **Case 2 never fires** — 0 in 1 078 704 enterings. Layer 1's candidates are
+  distinct singletons, so `(not h_j)` cannot name a later candidate, and no
+  layer above has a `W`. Implement it (a future `W` writer need not have that
+  shape), do not tune it.
+- **`enable_fail_fast_fork` × speculation is an open correctness question**
+  the design does not mention. With fail-fast off, the speculation's `core`
+  errors collapse exactly onto its `kind` errors (35 = 35); with it on, 40
+  further cores differ because the two forks stopped at different firings of
+  the same death. The identity above is about **fixpoints**, and a dying fork
+  under fail-fast never reaches one. So the continuation recovers `kind` —
+  monotone growth, `W` only adds — and recovers `core` only where the fork ran
+  to quiescence. **This stage has to settle it**, and the three ways out are:
+  (a) run a continued fork to quiescence rather than fail-fast, and pay the
+  ~88 % of a dying fork's saturation that fail-fast exists to skip; (b) accept
+  a `--jobs`-scoped divergence in `core` and narration, the way
+  [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+  accepted one for the fork, with a ledger entry and goldens; (c) run layer 1
+  sequentially, which is exact and costs 42–53 % of a zebra's firings and
+  0.1–1.8 % of everything else's; or (d) **batch-synchronous integration**,
+  below.
+- **(d) is the measured option, and it is the one to beat.**
+  `SolveOptions::integrate_every` already exists
+  ([S1a.7.0](s1a.7.0_speculation_audit.md) T1a.7.0.5): test a batch of
+  candidates against one KB, integrate what the batch learned at a barrier.
+  Answer-identical over 16 files under 4 orders and 3 policies, **free** on the
+  workloads that want cores (5 173 → 5 173 and 11 501 → 11 501 enterings), and
+  **2.8× faster** on `branching/07 -e` at `--jobs 1`, because coalescing a
+  layer's root writes takes root's layer stack from depth 164 to 3 and every
+  fork walks that stack. What it costs is the prune it defers — 6.1× the
+  enterings on `zebra2 -e`, recovered to 1.1× by batching at 20. What it does
+  **not** yet have is the piece this stage owes it: by
+  [design/08 §2a](../design/08_parallelism.md#2a-deferred-integration--the-batch-synchronous-layer),
+  a death found under deferral is real but an **alive** verdict is provisional,
+  and the one provisional verdict that reaches the answer is a recorded
+  solution node. **Re-check those at the barrier** — one re-entry per solution,
+  and the model set is exact by construction rather than by measurement.
+  `stop_after` is the case that needs it most, and the case the tests do not
+  cover.
+
 ## Acceptance
 
 - `--jobs {2,4,8,16}` T3-identical to `--jobs 1` on the whole corpus.
+- **Layers ≥ 2 take the no-validator path, and a debug assertion holds the
+  invariant that lets them** — no root write between a layer opening and
+  closing, above layer 1.
 - The three validation cases each have a fixture that exercises them, and
-  the fixture for case 3 (a layer-2 commitment whose fork reads a
-  `(not h)` written mid-layer) is *constructed*, not hoped for.
-- Re-validation rate reported per run and ≤ a few percent on the corpus;
-  above that, refine the read-set before shipping (Q-M1a.7).
+  the fixture for case 3 is *constructed*, not hoped for. **It is a layer-1
+  fixture** (S1a.7.0: a layer-2 commitment cannot read a mid-layer write,
+  because there are none), and 35 real ones already exist in the corpus —
+  `solve -e examples/zebra.ein` layer 1 entering 11 is the worked example in
+  [scaling.md §3](scaling.md#the-speculation-is-wrong-not-merely-stale).
+- Re-validation rate reported **per run**, against S1a.7.0's numbers as the
+  before-column, so a mechanism that changes it is visible (Q-M1a.7).
+- The fail-fast interaction is **decided in writing** with its cost measured,
+  not left to the implementation.
+- If the batch-synchronous route is taken: the **barrier re-check of recorded
+  solution nodes** is implemented, and `stop_after` is covered by a test — the
+  one case [S1a.7.0](s1a.7.0_speculation_audit.md)'s invariance tests
+  deliberately do not claim.
 - Speculative waste at `stop_after` bounded by the job count and
   measured.
 - Peak RSS at `--jobs 16` on the worst corpus entry recorded.
@@ -109,4 +183,8 @@ entry — that is where `W` is largest and case 3 is most likely.
 - If the re-validation rate is high, the *first* refinement is a
   per-fork read-set of relations touched during saturation (cheap to
   record in the matcher's candidate lookup), not a finer-grained fact
-  read-set.
+  read-set. **S1a.7.0 makes this unpromising**: `W`'s facts are all
+  `(not …)`, every zebra-family rule set reads `not`, and the 35 wrong
+  speculations are wrong *because* their forks would have consumed a `W`
+  fact. A relation-level read-set would clear almost none of them, and one
+  that cleared any of the 35 would be unsound.

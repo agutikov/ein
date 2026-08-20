@@ -15,7 +15,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.4](#q-m1a4--sorted-over-mixed-type-fact-args) | `sorted()` over mixed-type fact args raises in ein.py | **resolved 2026-08-18 — (a), [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)** |
 | [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | **resolved 2026-08-18 — (a), ported** |
 | [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | open — post-parity fix; reproduced at P1a.1 |
-| [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | open — recommendation: no, plus an opt-in escape |
+| [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | open — recommendation stands; **measured 2026-08-20** at S1a.7.0: 0.1 % corpus-wide, 36–50 % where it matters |
 | [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | open — port as-is, flag upstream |
 | [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | open — decide at the P1a.5 gate |
 | [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | **answered no** 2026-08-19 — an index key was the lever, not a memory |
@@ -230,6 +230,44 @@ that matter (a large no-good store with frequent singleton writebacks).
 Measure the re-validation rate in [P1a.7](p1a.7_parallelism/README.md); if
 it is high, the fallback is to make `--unordered` the documented
 recommendation for large searches rather than to weaken the default.
+
+**Measured 2026-08-20 at
+[S1a.7.0](p1a.7_parallelism/s1a.7.0_speculation_audit.md), before any of the
+mechanism was built** — the sequential engine, and beside every entering the
+same entering re-run against layer-start root. 1 078 704 enterings over 69
+corpus entries. The decision is not made here; four things it needs are:
+
+1. **The rate is bimodal, and an average hides it.** 0.1 % corpus-wide;
+   **36–50 %** on the zebra family and **97.2 %** on `zebra2-hints -e`; 1.8 %
+   on `branching/07 -e`; **0 %** on the other 65 runs. The phase's "≤ a few
+   percent" criterion passes on the average while failing every workload a
+   reader would recognise, and is restated per workload.
+2. **Case 3 lives only in layer 1.** Layer *L* enters commitment sets of size
+   *L*, a death licenses a clause of width *L*, and only a width-1 clause is a
+   *fact* root can hold — so only layer 1 adds a fact to root mid-layer. Every
+   layer above the first is case 1 by construction — and 98.2–99.9 % of the enterings of a workload big enough to
+   want cores are there. So the question is not "is validation affordable"
+   but "**what happens to layer 1**".
+3. **The speculation is wrong, not stale.** 35 enterings come back `alive`
+   where the sequential engine says `dead-post` — the mid-layer `(not h)` is a
+   premise of the domain-elimination rules. No read-set filter that waved
+   these through would be sound.
+4. **Fail-fast is entangled with it, and design/08 never said so.** With
+   `enable_fail_fast_fork` off the speculation's `core` errors collapse
+   exactly onto its `kind` errors (35 = 35); with it on, 40 more cores differ
+   because the two forks stopped at different firings of the same death. A
+   continuation recovers `kind`; it recovers `core` only where the fork ran to
+   quiescence. **That interaction is what
+   [S1a.7.2](p1a.7_parallelism/s1a.7.2_parallel_enterings.md) has to settle**,
+   and it is what decides whether `--jobs N` can keep the T3 promise or has to
+   take a `--jobs`-scoped divergence the way
+   [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) took
+   one for the fork.
+
+The **recommendation is unchanged**: no counter movement, plus `--unordered`
+as the opt-in escape. What changed is that its price is now a number rather
+than a hope — see
+[scaling.md §3](p1a.7_parallelism/scaling.md#3-the-audit).
 
 ## Q-M1a.8 — `_binding_key` drops non-string activator args
 
