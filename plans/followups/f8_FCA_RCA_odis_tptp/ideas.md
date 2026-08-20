@@ -4,43 +4,43 @@
 
 Но ключевой вывод такой:
 
-[
+$$
 \boxed{\text{текущий Ein — не просто RA и не second-order logic}}
-]
+$$
 
 Он гораздо ближе к **Datalog / production-rule system с predicate variables и reified relation properties**.
 
 Почему не RA: RA строит выражения над отношениями, например
 
-[
+$$
 R;S,\quad R^{-1},\quad R\cap S
-]
+$$
 
 а Ein оперирует правилами вида
 
-[
+$$
 R(a,b)\land R(b,c)\rightarrow R(a,c)
-]
+$$
 
 и позволяет параметризовать само (R). Это другой computational model.
 
 Почему пока не полноценная second-order logic: наличие переменной `?r` ещё не означает
 
-[
+$$
 \forall R\subseteq D^2
-]
+$$
 
 в second-order смысле. Судя по текущей спецификации, `?r` матчится по **существующим именованным отношениям/фактам графа**, а не по всем математически возможным подмножествам (D^2). Это принципиальная разница. ([GitHub][1])
 
 То есть я бы сейчас поместил Ein примерно сюда:
 
-[
+$$
 \text{Datalog}
 ;<;
 \boxed{\text{Ein-like predicate-polymorphic rules}}
 ;<;
 \text{full second-order logic}
-]
+$$
 
 где знак `<` пока надо понимать концептуально, а не как уже доказанное строгое включение.
 
@@ -48,7 +48,7 @@ R(a,b)\land R(b,c)\rightarrow R(a,c)
 
 Пусть есть конечная библиотека generic rules:
 
-[
+$$
 P={
 \text{symmetric},
 \text{transitive},
@@ -57,47 +57,47 @@ P={
 \text{injective},
 \dots
 }.
-]
+$$
 
 И relation (R) определяется набором property applications:
 
-[
+$$
 Properties(R)\subseteq P.
-]
+$$
 
 Тогда профилей действительно максимум
 
-[
+$$
 \boxed{2^{|P|}}.
-]
+$$
 
 И твои документы Ein прямо идут в эту сторону: сейчас там даже обсуждается “(2^7) cartesian product” свойств отношений и `relation-profile`, классифицирующий комбинации как valid / inconsistent / degenerate / domain-specific / redundant. ([GitHub][2])
 
 Например:
 
-[
+$$
 {\text{reflexive,symmetric,transitive}}
 \rightarrow
 \text{equivalence}
-]
+$$
 
-[
+$$
 {\text{reflexive,transitive,antisymmetric}}
 \rightarrow
 \text{partial order}
-]
+$$
 
-[
+$$
 {\text{transitive,asymmetric}}
 \rightarrow
 \text{strict order}.
-]
+$$
 
 Так что **если именно это ты называешь типом отношения**, то да:
 
-[
+$$
 \boxed{\text{при конечной библиотеке primitive properties atlas конечен}.}
-]
+$$
 
 И это не зависит от количества объектов или фактов.
 
@@ -105,9 +105,9 @@ Properties(R)\subseteq P.
 
 Допустим есть два отношения (R,S) и правило
 
-[
+$$
 R(x,y)\land S(y,z)\rightarrow T(x,z).
-]
+$$
 
 Это уже не свойство одного (R). Это **свойство конфигурации нескольких отношений**.
 
@@ -115,7 +115,7 @@ R(x,y)\land S(y,z)\rightarrow T(x,z).
 
 Поэтому нужен не один atlas, а уровни:
 
-[
+$$
 \boxed{
 \begin{array}{l}
 \text{Unary relation properties}\
@@ -123,35 +123,35 @@ R(x,y)\land S(y,z)\rightarrow T(x,z).
 \text{Ternary relation interactions}\
 \cdots
 \end{array}}
-]
+$$
 
 Например unary:
 
-[
+$$
 P(R)
-]
+$$
 
 `symmetric`, `transitive`, `functional`.
 
 Binary:
 
-[
+$$
 P(R,S)
-]
+$$
 
 `inverse-of(R,S)`, `subrelation(R,S)`, compatible composition и т.п.
 
 Ternary:
 
-[
+$$
 P(R,S,T)
-]
+$$
 
 например
 
-[
+$$
 R;S\subseteq T.
-]
+$$
 
 И вот здесь появляется твоя фраза:
 
@@ -161,15 +161,15 @@ R;S\subseteq T.
 
 Например generic rule
 
-[
+$$
 R(x,y)\land S(y,z)\rightarrow T(x,z)
-]
+$$
 
 можно reify как мета-факт
 
-[
+$$
 ComposeInto(R,S,T).
-]
+$$
 
 Тогда у тебя возникает граф второго уровня:
 
@@ -181,7 +181,7 @@ S ─────┘
 
 а rule engine лишь интерпретирует этот мета-факт:
 
-[
+$$
 ComposeInto(R,S,T)
 \land
 R(x,y)
@@ -189,27 +189,27 @@ R(x,y)
 S(y,z)
 \rightarrow
 T(x,z).
-]
+$$
 
 То есть вместо бесконечного числа конкретных rules:
 
-[
+$$
 A;B\to C
-]
+$$
 
-[
+$$
 D;E\to F
-]
+$$
 
-[
+$$
 G;H\to I
-]
+$$
 
 у тебя один rule schema + набор relational facts:
 
-[
+$$
 ComposeInto(A,B,C)
-]
+$$
 
 и т.д.
 
@@ -223,25 +223,25 @@ ComposeInto(A,B,C)
 
 Если ограничиться **фиксированным конечным набором meta-relations**, например:
 
-[
+$$
 symmetric(R)
-]
+$$
 
-[
+$$
 transitive(R)
-]
+$$
 
-[
+$$
 inverse(R,S)
-]
+$$
 
-[
+$$
 subrelation(R,S)
-]
+$$
 
-[
+$$
 composeInto(R,S,T)
-]
+$$
 
 то vocabulary конечен.
 
@@ -249,9 +249,9 @@ composeInto(R,S,T)
 
 Это ровно как:
 
-[
+$$
 \boxed{\text{finite relational ontology} + \text{arbitrary instances}}
-]
+$$
 
 И это очень похоже на обычный язык: конечная грамматика порождает бесконечно много предложений.
 
@@ -275,14 +275,14 @@ composeInto(R,S,T)
 
 То есть:
 
-[
+$$
 \boxed{
 Theory =
 \text{instances}(G)
 +
 \text{facts}
 }
-]
+$$
 
 Если да, тогда NL/program/problem space может быть огромным, но **reasoning vocabulary** остаётся маленьким.
 
@@ -292,37 +292,37 @@ Theory =
 
 Но более практически интересное утверждение вполне может оказаться верным:
 
-[
+$$
 \boxed{
 |\text{generic reasoning primitives}|
 \ll
 |\text{programs / NL problems / theories}|
 }
-]
+$$
 
 причём **очень сильно меньше**.
 
 Это аналогия с машинными инструкциями:
 
-[
+$$
 \text{~100 instructions}
 \rightarrow
 \text{бесконечно много программ}.
-]
+$$
 
 Только у Ein это потенциально:
 
-[
+$$
 \text{несколько десятков relational rewrite schemas}
 \rightarrow
 \text{огромный класс reasoning tasks}.
-]
+$$
 
 И это уже можно проверить экспериментально, а не философски: взять набор логических бенчмарков, нормализовать все необходимые inference steps в generic Ein rules и строить кривую
 
-[
+$$
 C(n)=\text{число уникальных rule schemas после }n\text{ задач}.
-]
+$$
 
 Если (C(n)) быстро выходит на плато, у тебя появляется эмпирическое свидетельство существования маленького **reasoning basis**. Если продолжает расти примерно линейно — гипотеза не подтверждается.
 
@@ -361,47 +361,47 @@ C(n)=\text{число уникальных rule schemas после }n\text{ за
 
 Например, RuleTaker содержит задачи примерно такого вида:
 
-[
+$$
 red(x)\land rough(x)\rightarrow young(x)
-]
+$$
 
-[
+$$
 young(x)\rightarrow nice(x)
-]
+$$
 
 плюс факты. Для Ein это почти тривиальный случай. Ты обнаружишь несколько rule shapes и дальше практически ничего нового.
 
 Гораздо интереснее **Zebra / logic-grid puzzles**. Там естественно возникают:
 
-[
+$$
 nextTo(x,y)
-]
+$$
 
-[
+$$
 leftOf(x,y)
-]
+$$
 
-[
+$$
 owns(x,y)
-]
+$$
 
-[
+$$
 livesIn(x,y)
-]
+$$
 
 и свойства:
 
-[
+$$
 inverse(leftOf,rightOf)
-]
+$$
 
-[
+$$
 symmetric(nextTo)
-]
+$$
 
-[
+$$
 functional(owns^{-1})
-]
+$$
 
 различные `allDifferent`, bijection, ordering constraints и т. д.
 
@@ -423,28 +423,28 @@ functional(owns^{-1})
 
 И есть composition table:
 
-[
+$$
 before\circ before=before
-]
+$$
 
-[
+$$
 meets\circ meets=before
-]
+$$
 
 и более неоднозначные композиции:
 
-[
+$$
 R_i\circ R_j\subseteq
 R_{k_1}\cup R_{k_2}\cup\cdots
-]
+$$
 
 Это почти идеальный эксперимент для Ein, потому что можно посмотреть, насколько огромную таблицу конкретных случаев удаётся свернуть в небольшое количество **мета-правил над отношениями**.
 
 Аналогично существуют spatial calculi вроде **RCC8**:
 
-[
+$$
 DC, EC, PO, EQ, TPP, NTPP, TPP^{-1},NTPP^{-1}
-]
+$$
 
 для отношений между пространственными областями.
 
@@ -460,21 +460,21 @@ DC, EC, PO, EQ, TPP, NTPP, TPP^{-1},NTPP^{-1}
 
 Берём задачи последовательно:
 
-[
+$$
 T_1,T_2,\ldots,T_n
-]
+$$
 
 и для каждой определяем минимальный набор **generic Ein rule schemas**, необходимый для решения:
 
-[
+$$
 G_n=\bigcup_{i=1}^{n}Rules(T_i).
-]
+$$
 
 После чего смотрим:
 
-[
+$$
 |G_n|.
-]
+$$
 
 Есть две принципиально разные картины.
 
@@ -492,9 +492,9 @@ rules
 
 Это поддерживает твою гипотезу:
 
-[
+$$
 \boxed{\text{маленький reusable reasoning basis}}
-]
+$$
 
 Несмотря на тысячи совершенно разных задач, они оказываются комбинациями небольшого числа механизмов.
 
@@ -519,44 +519,44 @@ rules
 
 Например, вместо:
 
-[
+$$
 before(A,B)\land before(B,C)\to before(A,C)
-]
+$$
 
-[
+$$
 ancestor(A,B)\land ancestor(B,C)\to ancestor(A,C)
-]
+$$
 
-[
+$$
 greater(A,B)\land greater(B,C)\to greater(A,C)
-]
+$$
 
 Ein получает:
 
-[
+$$
 transitive(R),R(x,y),R(y,z)\to R(x,z).
-]
+$$
 
 Три domain rules превратились в **один rule schema + три facts**:
 
-[
+$$
 transitive(before)
-]
+$$
 
-[
+$$
 transitive(ancestor)
-]
+$$
 
-[
+$$
 transitive(greater).
-]
+$$
 
 Вот этот **compression ratio**
 
-[
+$$
 \frac{#\text{domain-specific inference rules}}
 {#\text{generic Ein rule schemas}}
-]
+$$
 
 я бы и измерял в первую очередь.
 
@@ -574,29 +574,29 @@ transitive(greater).
 
 Если взять твой конечный набор свойств отношений:
 
-[
+$$
 P={\text{reflexive},\text{symmetric},\text{transitive},
 \text{antisymmetric},\text{functional},\ldots}
-]
+$$
 
 и множество известных классов отношений:
 
-[
+$$
 G={\text{equivalence},\text{partial order},\text{total order},
 \text{function},\ldots},
-]
+$$
 
 то можно построить **formal context**
 
-[
+$$
 K=(G,P,I),
-]
+$$
 
 где
 
-[
+$$
 (g,p)\in I
-]
+$$
 
 означает «класс отношений (g) обладает свойством (p)».
 
@@ -619,17 +619,17 @@ K=(G,P,I),
 
 Тогда formal concept — это пара
 
-[
+$$
 (A,B)
-]
+$$
 
 где (B) — замкнутый набор свойств, а (A) — все отношения/теории, обладающие ровно соответствующим набором свойств.
 
 Например FCA обнаружит concept с intent
 
-[
+$$
 B={\text{reflexive},\text{symmetric},\text{transitive}}.
-]
+$$
 
 А человек уже может сказать:
 
@@ -637,27 +637,27 @@ B={\text{reflexive},\text{symmetric},\text{transitive}}.
 
 То есть получается именно тот **atlas**, о котором ты говорил:
 
-[
+$$
 \text{primitive properties}
 \rightarrow
 \text{valid combinations}
 \rightarrow
 \text{concept lattice}.
-]
+$$
 
 Причём FCA убирает часть проблемы (2^n): далеко не каждая произвольная комбинация свойств соответствует отдельному formal concept. Closure operator склеивает комбинации, между которыми существуют импликации.
 
 Например если из
 
-[
+$$
 A\land B
-]
+$$
 
 всегда следует (C), то FCA фиксирует dependency
 
-[
+$$
 A,B\rightarrow C.
-]
+$$
 
 ---
 
@@ -669,15 +669,15 @@ A,B\rightarrow C.
 
 Тогда можно сделать объектами FCA **сами relations**, а attributes — **generic Ein rules/properties, которые к ним применимы**:
 
-[
+$$
 R\ I\ P
 \iff
 P(R).
-]
+$$
 
 Получается:
 
-[
+$$
 \boxed{
 \text{Ein graph}
 \rightarrow
@@ -685,7 +685,7 @@ P(R).
 \rightarrow
 \text{FCA concept lattice}
 }
-]
+$$
 
 И concept lattice фактически становится **автоматически построенной taxonomy отношений**.
 
@@ -717,9 +717,9 @@ P(R).
 
 Из formal context можно получить набор импликаций вида
 
-[
+$$
 A\rightarrow B,
-]
+$$
 
 где (A,B\subseteq P).
 
@@ -731,11 +731,11 @@ A\rightarrow B,
 
 FCA буквально занимается:
 
-[
+$$
 \boxed{\text{данные} \rightarrow
 \text{concept lattice} +
 \text{implication basis}}
-]
+$$
 
 [Formal Concept Analysis — Wikipedia](https://en.wikipedia.org/wiki/Formal_concept_analysis?utm_source=chatgpt.com)
 
@@ -745,17 +745,17 @@ FCA **не доказывает**, что существует конечный 
 
 То есть:
 
-[
+$$
 \text{finite chosen Ein properties}
 \overset{FCA}{\longrightarrow}
 \text{finite complete lattice for those properties}.
-]
+$$
 
 А вопрос
 
-[
+$$
 \boxed{\text{существует ли конечный универсальный набор самих properties?}}
-]
+$$
 
 остаётся отдельным.
 

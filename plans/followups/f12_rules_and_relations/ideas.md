@@ -1603,33 +1603,33 @@ co-located(R, x, S, y)
 
 Это уже совершенно настоящее higher-order relation:
 
-[
+$$
 CoLocated(R,x,S,y)
-]
+$$
 
 потому что отношения занимают позиции аргументов.
 
 Но **relational combinator** в более строгом смысле я бы записал:
 
-[
+$$
 coLocated(R,S)=R\circ S^\smile
-]
+$$
 
 То есть:
 
-[
+$$
 coLocated:
 Relation(A,H)\times Relation(B,H)
 \rightarrow Relation(A,B)
-]
+$$
 
 и результатом является **новое отношение**:
 
-[
+$$
 coLocated(R,S)(x,y)
 \iff
 \exists h.;R(x,h)\land S(y,h)
-]
+$$
 
 Например:
 
@@ -1697,28 +1697,28 @@ grandparent(x,z)
 
 Но можно посмотреть **на само правило как на отношение**:
 
-[
+$$
 r(x,y,z)
-]
+$$
 
 которое существует между `x,y,z`, когда выполняется структура:
 
-[
+$$
 parent(x,y)\land parent(y,z)
-]
+$$
 
 То есть rule body задаёт отношение:
 
-[
+$$
 R_r = {(x,y,z)\mid parent(x,y)\land parent(y,z)}
-]
+$$
 
 А `assert` уже является **проекцией/эффектом этого отношения**:
 
-[
+$$
 (x,y,z)\in R_r
 \Rightarrow grandparent(x,z)
-]
+$$
 
 Это очень хорошо ложится на твою мысль.
 
@@ -1736,9 +1736,9 @@ R_r = {(x,y,z)\mid parent(x,y)\land parent(y,z)}
 
 определяет тернарное отношение:
 
-[
+$$
 SameLocationWitness(x,y,h)
-]
+$$
 
 даже если в программе **никогда нет символа** `SameLocationWitness`.
 
@@ -1750,27 +1750,27 @@ x ─located─▶ h ◀─located─ y
 
 Сам факт существования этой конфигурации уже означает:
 
-[
+$$
 R_{rule}(x,y,h)
-]
+$$
 
 То есть relation существует **интенсионально**, хотя не имеет имени.
 
 Можно затем спроецировать:
 
-[
+$$
 R_{rule}(x,y,h)
 \xrightarrow{\exists h}
 CoLocated(x,y)
-]
+$$
 
 Получаем:
 
-[
+$$
 CoLocated(x,y)
 \iff
 \exists h,R_{rule}(x,y,h)
-]
+$$
 
 И вот здесь твоя фраза
 
@@ -1797,41 +1797,41 @@ ASSERT Q(x,z)
 
 можно представить:
 
-[
+$$
 P(x,y,z)\Rightarrow Q(x,z)
-]
+$$
 
 Но:
 
-[
+$$
 P \subseteq X\times Y\times Z
-]
+$$
 
 и
 
-[
+$$
 Q \subseteq X\times Z
-]
+$$
 
 поэтому rule задаёт связь:
 
-[
+$$
 \pi_{x,z}(P)\subseteq Q
-]
+$$
 
 где (\pi) — проекция.
 
 Для `grandparent`:
 
-[
+$$
 Parent\circ Parent \subseteq Grandparent
-]
+$$
 
 А если это именно полное определение:
 
-[
+$$
 Grandparent = Parent\circ Parent
-]
+$$
 
 Получается, что rule можно рассматривать сразу на **двух уровнях**:
 
@@ -1843,15 +1843,15 @@ x ─parent→ y ─parent→ z
 
 создаёт неявное отношение:
 
-[
+$$
 P(x,y,z)
-]
+$$
 
 а rule в целом находится на **relation level**:
 
-[
+$$
 \pi_{xz}(P)\subseteq Grandparent
-]
+$$
 
 ---
 
@@ -1878,14 +1878,14 @@ relation co-located
 
 само определяет:
 
-[
+$$
 P(x,h)
 ======
 
 Color(x)
 \land CoLocated(x,h)
 \land House(h)
-]
+$$
 
 То есть это фактически неназванное:
 
@@ -1912,17 +1912,17 @@ drink-loc
 
 Условно:
 
-[
+$$
 ColorLoc(c,h)
 \equiv
 CoLocated(c,h)\land Color(c)\land House(h)
-]
+$$
 
-[
+$$
 NationLoc(n,h)
 \equiv
 CoLocated(n,h)\land Nationality(n)\land House(h)
-]
+$$
 
 То есть:
 
@@ -1970,13 +1970,13 @@ nation-loc(n,h)     ≅     co-located(n,h)
 
 Он может предложить:
 
-[
+$$
 R_1(x,h)
 \equiv
 instance(x,Color)
 \land coLocated(x,h)
 \land instance(h,House)
-]
+$$
 
 А затем semantic/name layer может назвать его:
 
@@ -1999,9 +1999,9 @@ color-loc
 
 И тогда можно сформулировать довольно фундаментальную для Ein штуку:
 
-[
+$$
 \boxed{\text{rule match} \equiv \text{intensional anonymous relation}}
-]
+$$
 
 а именованное `(relation R ...)` — это не обязательно другой *вид* сущности. Это может быть просто **reification/naming одного из таких relational patterns**.
 

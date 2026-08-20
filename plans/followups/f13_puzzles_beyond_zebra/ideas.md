@@ -86,15 +86,15 @@ FOLIO особенно ценен, потому что там можно сис�
 
 ARC-AGI называют «визуальным» скорее из-за **человеческого интерфейса представления**, а не потому, что задача принципиально требует pixels/vision. Вход там уже дискретизирован:
 
-[
+$$
 Grid : Position \to Color
-]
+$$
 
 или реляционно:
 
-[
+$$
 cell(x,y,c)
-]
+$$
 
 То есть никакого computer vision в обычном смысле нет: не требуется распознавать пиксели фотографии. Даны символические значения `0..9` на конечной решётке.
 
@@ -114,15 +114,15 @@ above(c3, c1)
 
 Это действительно очень похоже на Zebra:
 
-[
+$$
 house(h) \land position(h,3) \land color(h,red)
-]
+$$
 
 против
 
-[
+$$
 cell(c) \land position(c,(3,5)) \land color(c,red).
-]
+$$
 
 Разница скорее в **характере reasoning**.
 
@@ -147,12 +147,12 @@ input₄ → ?
 
 неизвестно даже **какое отношение/правило надо применить**. Например, система должна сама открыть что-то вроде:
 
-[
+$$
 connectedComponent(x)
 \land color(x,red)
 \land largest(x)
 \Rightarrow fillBoundingBox(x,blue)
-]
+$$
 
 Причём `connectedComponent`, `largest`, `boundingBox`, `inside`, возможно, вообще не присутствуют в исходном representation.
 
@@ -166,15 +166,15 @@ connectedComponent(x)
 
 По сути здесь возникают два уровня reasoning:
 
-[
+$$
 \text{object-level: } R(a,b)
-]
+$$
 
 и
 
-[
+$$
 \text{meta-level: } R_1,R_2,\ldots \Rightarrow \text{найти правило } F.
-]
+$$
 
 Поэтому я бы **вернул ARC-AGI-2 в список кандидатов**. Более того, если Ein умеет обращаться с отношениями как с объектами и правилами над отношениями, ARC может оказаться концептуально гораздо интереснее Zebra.
 
@@ -227,9 +227,9 @@ left_of(Bob, Eve)
 
 Это очень близко к твоему Zebra pipeline:
 
-[
+$$
 NL \rightarrow IR \rightarrow search/reasoning \rightarrow answer
-]
+$$
 
 ---
 
@@ -260,10 +260,10 @@ NL \rightarrow IR \rightarrow search/reasoning \rightarrow answer
 
 Это уже не столько CSP, сколько **state transition system**:
 
-[
+$$
 S_0 \xrightarrow{swap(A,B)} S_1
 \xrightarrow{swap(B,C)} S_2
-]
+$$
 
 Причём сами операции опять описаны NL.
 
@@ -286,17 +286,17 @@ S_0 \xrightarrow{swap(A,B)} S_1
 
 Здесь естественный IR:
 
-[
+$$
 library=[14,16]
-]
+$$
 
-[
+$$
 cafe > end(library)
-]
+$$
 
-[
+$$
 cafe < home
-]
+$$
 
 и дальше constraint reasoning.
 
@@ -334,14 +334,14 @@ False
 
 Концептуально задача проверяет вложенную структуру:
 
-[
+$$
 open([)
 \rightarrow open({)
 \rightarrow open(()
 \rightarrow close())
 \rightarrow close(})
 \rightarrow close(])
-]
+$$
 
 Это уже скорее parsing/stack reasoning, чем relational puzzle.
 
@@ -364,27 +364,27 @@ open([)
 
 Это можно представить:
 
-[
+$$
 state=(x,y,direction)
-]
+$$
 
 и каждое предложение задаёт transformation:
 
-[
+$$
 move : State \rightarrow State
-]
+$$
 
-[
+$$
 turnRight : State \rightarrow State
-]
+$$
 
 То есть опять композиция:
 
-[
+$$
 S_n =
 move_1 \circ turnLeft \circ move_3
 \circ turnRight \circ move_2(S_0)
-]
+$$
 
 ---
 
@@ -400,19 +400,19 @@ move_1 \circ turnLeft \circ move_3
 
 Нужно распознать ошибку affirming the consequent:
 
-[
+$$
 doctor(x)\Rightarrow educated(x)
-]
+$$
 
-[
+$$
 educated(John)
-]
+$$
 
 из чего **не следует**
 
-[
+$$
 doctor(John).
-]
+$$
 
 Это особенно интересно для prover-like части Ein, потому что надо отличать `R → S` от возможности применять правило обратно.
 
@@ -454,7 +454,7 @@ BBH не даёт тебе AST вроде:
 
 Я бы формализовал pipeline так:
 
-[
+$$
 \boxed{
 \text{BBH text}
 \xrightarrow{\text{semantic analysis}}
@@ -464,7 +464,7 @@ BBH не даёт тебе AST вроде:
 \xrightarrow{}
 \text{answer}
 }
-]
+$$
 
 Здесь полезно разделить два разных вида синтеза.
 
@@ -489,10 +489,10 @@ query leftmost ?
 
 **2. Синтез/выбор theory — правил решения.** Из самой структуры задачи нужно понять, какие свойства отношений нужны. Например:
 
-[
+$$
 leftOf(a,b)\land leftOf(b,c)
 \Rightarrow leftOf(a,c)
-]
+$$
 
 то есть обнаружить необходимость транзитивности `left-of`.
 
@@ -508,13 +508,13 @@ swap(A, B)
 
 Таким образом, benchmark можно разложить на три независимо измеряемых компонента:
 
-[
+$$
 \text{semantic parsing}
 \quad|\quad
 \text{theory construction}
 \quad|\quad
 \text{reasoning/search}
-]
+$$
 
 Это очень ценно экспериментально. Можно сделать **oracle ablations**:
 
@@ -527,21 +527,21 @@ swap(A, B)
 
 Ещё интереснее организовать rules не per-instance, а **per task family**. Например, дать системе несколько training examples `logical_deduction`, позволить вывести theory (T), после чего заморозить её:
 
-[
+$$
 examples_{train}
 \rightarrow T_{\text{logical-deduction}}
-]
+$$
 
 а затем:
 
-[
+$$
 NL_i \rightarrow P_i
-]
+$$
 
-[
+$$
 T_{\text{logical-deduction}} + P_i
 \rightarrow answer_i
-]
+$$
 
 на unseen instances.
 
@@ -561,7 +561,7 @@ T_{\text{logical-deduction}} + P_i
 
 Я бы описал Ein так:
 
-[
+$$
 \text{text}
 \to
 \text{semantic candidates}
@@ -574,7 +574,7 @@ T_{\text{logical-deduction}} + P_i
 \to
 \text{neural revision}
 \to \cdots
-]
+$$
 
 где (P) — формализованный instance задачи, а (T) — выбранная или синтезированная theory, то есть набор правил и свойств отношений.
 
@@ -582,31 +582,31 @@ T_{\text{logical-deduction}} + P_i
 
 Тогда один iteration можно мыслить примерно так:
 
-[
+$$
 (P_i,T_i)
 \xrightarrow{\text{Ein}}
 D_i
-]
+$$
 
-[
+$$
 (text,P_i,T_i,D_i)
 \xrightarrow{\text{LLM}}
 (P_{i+1},T_{i+1})
-]
+$$
 
 до
 
-[
+$$
 (P_{i+1},T_{i+1})=(P_i,T_i)
-]
+$$
 
 в некотором смысле fixed point, либо пока не получен достаточный formal result.
 
 Причём fixed point здесь, вероятно, лучше определять не как буквальное равенство текста программы, а как **семантическую стабилизацию**. Например, дальнейшие изменения не меняют closure теории:
 
-[
+$$
 Cl(T_{i+1},P_{i+1}) = Cl(T_i,P_i)
-]
+$$
 
 или не меняют множество допустимых моделей / ответ на query. Иначе LLM может бесконечно переписывать эквивалентные rules синтаксически.
 
@@ -635,33 +635,33 @@ Cl(T_{i+1},P_{i+1}) = Cl(T_i,P_i)
 
 Последнее особенно важно отделить от второго. Если система постоянно «синтезирует» транзитивность заново, это хуже, чем распознать:
 
-[
+$$
 leftOf \in TransitiveRelations.
-]
+$$
 
 И здесь твоя идея отношений между отношениями начинает играть центральную роль: neural layer может не генерировать низкоуровневый rule, а утверждать higher-order fact вроде:
 
-[
+$$
 transitive(leftOf)
-]
+$$
 
 или
 
-[
+$$
 inverse(leftOf,rightOf)
-]
+$$
 
 а Ein уже разворачивает это в конкретные rewrite rules.
 
 Тогда архитектура становится ещё чище:
 
-[
+$$
 \text{NL}
 \to
 \text{object-level facts}
 +
 \text{meta-level facts about relations}
-]
+$$
 
 а дальше kernel сам инстанцирует нужную theory.
 

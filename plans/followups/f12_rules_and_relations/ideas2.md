@@ -6,37 +6,37 @@
 
 Пусть бинарное отношение
 
-[
+$$
 R\subseteq X\times X.
-]
+$$
 
 ### 1. Композиция — бинарная операция над отношениями
 
 Для двух отношений (R,S):
 
-[
+$$
 S\circ R={(x,z)\mid \exists y:\ xRy\land ySz}.
-]
+$$
 
 То есть композиция имеет тип
 
-[
+$$
 \circ:\mathrm{Rel}(X)\times\mathrm{Rel}(X)\to\mathrm{Rel}(X).
-]
+$$
 
 Это **бинарная операция второго порядка**: её аргументы — сами отношения.
 
 Например:
 
-[
+$$
 R={a\to b,\ b\to c}
-]
+$$
 
 тогда
 
-[
+$$
 R\circ R={a\to c}.
-]
+$$
 
 ---
 
@@ -44,30 +44,30 @@ R\circ R={a\to c}.
 
 Классическое определение:
 
-[
+$$
 \operatorname{Transitive}(R)
 \iff
 \forall x,y,z:\quad
 xRy\land yRz\Rightarrow xRz.
-]
+$$
 
 Здесь `Transitive` принимает **одно отношение** и возвращает истину/ложь:
 
-[
+$$
 \operatorname{Transitive}:\mathrm{Rel}(X)\to\mathbb B.
-]
+$$
 
 Поэтому это действительно можно рассматривать как **унарное отношение/предикат второго порядка над отношениями**:
 
-[
+$$
 \operatorname{Transitive}\subseteq \mathrm{Rel}(X).
-]
+$$
 
 То есть
 
-[
+$$
 R\in\operatorname{Transitive}
-]
+$$
 
 означает «(R) является транзитивным».
 
@@ -77,37 +77,37 @@ R\in\operatorname{Transitive}
 
 Теперь становится особенно красиво:
 
-[
+$$
 R\text{ транзитивно}
 \iff
 R\circ R\subseteq R.
-]
+$$
 
 То есть транзитивность — это свойство отношения, выраженное через **бинарную операцию второго порядка** `∘` и отношение включения `⊆`:
 
-[
+$$
 \operatorname{Transitive}(R)
 \iff
 (R\circ R)\subseteq R.
-]
+$$
 
 В терминах relation algebra это буквально неравенство
 
-[
+$$
 R;R\le R.
-]
+$$
 
 Это хорошо показывает различие:
 
-[
+$$
 \boxed{\text{composition}:\ (R,S)\mapsto T}
-]
+$$
 
 против
 
-[
+$$
 \boxed{\text{transitivity}:\ R\mapsto \mathrm{true/false}}
-]
+$$
 
 ---
 
@@ -117,27 +117,27 @@ R;R\le R.
 
 Можно определить:
 
-[
+$$
 \operatorname{ComposesInto}(R,S)
 \iff
 R\circ R\subseteq S.
-]
+$$
 
 Это уже бинарное отношение второго порядка:
 
-[
+$$
 \operatorname{ComposesInto}
 \subseteq
 \mathrm{Rel}(X)\times\mathrm{Rel}(X).
-]
+$$
 
 И тогда обычная транзитивность оказывается **диагональю** этого бинарного отношения:
 
-[
+$$
 \operatorname{Transitive}(R)
 \iff
 \operatorname{ComposesInto}(R,R).
-]
+$$
 
 То есть структура очень похожа на твой старый вопрос про unary relation vs self-loop:
 
@@ -162,9 +162,9 @@ unary:
 
 где семантика:
 
-[
+$$
 R\circ R\subseteq R.
-]
+$$
 
 Таким образом, **унарное свойство отношения можно рассматривать как бинарное отношение над отношениями, применённое дважды к одному объекту**.
 
@@ -174,25 +174,25 @@ R\circ R\subseteq R.
 
 Можно определить отношение
 
-[
+$$
 \operatorname{ClosedUnder}(R,\odot)
-]
+$$
 
 где второй аргумент — уже **операция над отношениями**:
 
-[
+$$
 \operatorname{ClosedUnder}(R,\circ)
 \iff
 R\circ R\subseteq R.
-]
+$$
 
 Тогда транзитивность — частный случай **замкнутости**:
 
-[
+$$
 \operatorname{Transitive}(R)
 \iff
 \operatorname{ClosedUnder}(R,\circ).
-]
+$$
 
 Это уже на уровень выше и очень интересно для Ein:
 
@@ -217,29 +217,29 @@ Reflexive(R)
 
 Я бы сформулировал иерархию так:
 
-[
+$$
 \underbrace{xRy}_{\text{отношение между объектами}}
-]
+$$
 
-[
+$$
 \underbrace{T=R\circ S}_{\text{операция над отношениями}}
-]
+$$
 
-[
+$$
 \underbrace{R\circ R\subseteq R}_{\text{отношение/ограничение между отношениями}}
-]
+$$
 
-[
+$$
 \underbrace{\operatorname{Transitive}(R)}_{\text{унарное свойство отношения}}
-]
+$$
 
 Причём последняя строка — фактически **именование паттерна из предыдущей строки**.
 
 И это непосредственно связано с твоей идеей про Ein: `transitive(R)` необязательно считать фундаментальным свойством. Его можно рассматривать как **скомпилированное/свёрнутое имя структурного отношения**
 
-[
+$$
 (R\circ R)\subseteq R.
-]
+$$
 
 А это уже открывает путь к автоматическому обнаружению того, что «сложное отношение» является специализацией более общей higher-order relational конструкции.
 
@@ -251,97 +251,97 @@ Reflexive(R)
 
 Пусть
 
-[
+$$
 R\subseteq A\times B,\qquad S\subseteq B\times C.
-]
+$$
 
 Они **composable**, потому что тип выхода (R) совместим с типом входа (S):
 
-[
+$$
 S\circ R\subseteq A\times C.
-]
+$$
 
 Но это совершенно не означает, что результат композиции принадлежит (R), (S) или вообще тому же типу отношений.
 
 Например:
 
-[
+$$
 R:A\to B,\qquad S:B\to C
-]
+$$
 
 дают
 
-[
+$$
 S\circ R:A\to C.
-]
+$$
 
 Операция композиции **определена**, но никакой closure здесь нет.
 
 Для одного отношения ситуация особенно показательна. Пусть
 
-[
+$
 R\subseteq X\times X.
-]
+$$
 
 Оно composable **с самим собой**, поскольку
 
-[
+$$
 R\circ R
-]
+$$
 
 корректно определено. Например,
 
-[
+$$
 R={(a,b),(b,c)}.
-]
+$$
 
 Тогда
 
-[
+$$
 R\circ R={(a,c)}.
-]
+$$
 
 Но
 
-[
+$$
 (a,c)\notin R,
-]
+$$
 
 поэтому
 
-[
+$$
 R\circ R\nsubseteq R.
-]
+$$
 
 Следовательно, (R) **self-composable, но не transitive / not closed under its own composition**.
 
 И тут важное уточнение к предыдущему ответу. Есть три разных уровня:
 
-[
+$$
 \boxed{\operatorname{Composable}(R,S)}
-]
+$$
 
 означает «(R) и (S) можно скомпозировать»;
 
-[
+$$
 \boxed{T=S\circ R}
-]
+$$
 
 означает «(T) — результат композиции»;
 
-[
+$$
 \boxed{R\circ R\subseteq R}
-]
+$$
 
 означает «(R) замкнуто относительно собственной композиции», то есть **транзитивно**.
 
 Поэтому `Composable(R,R)` **не эквивалентно** `Transitive(R)`:
 
-[
+$$
 \operatorname{Transitive}(R)
 \Rightarrow
 \operatorname{Composable}(R,R),
-]
+$$
 
 но обратное неверно.
 
@@ -355,69 +355,69 @@ R\circ R\nsubseteq R.
 
 Например:
 
-[
+$$
 R={(a,b),(b,c)}.
-]
+$$
 
 Есть цепочка
 
-[
+$$
 aRb,\quad bRc,
-]
+$$
 
 поэтому (R) композируется само с собой:
 
-[
+$$
 R\circ R={(a,c)}.
-]
+$$
 
 Но:
 
-[
+$$
 (a,c)\notin R.
-]
+$$
 
 Следовательно,
 
-[
+$$
 R\circ R\nsubseteq R.
-]
+$$
 
 То есть:
 
-[
+$$
 \boxed{\text{self-composable}(R)\ \land\ \neg\text{closed-under-composition}(R)}
-]
+$$
 
 вполне возможно.
 
 Именно это отличает **наличие композиции** от **транзитивности**:
 
-[
+$$
 \exists x,y,z:\ xRy\land yRz
-]
+$$
 
 — (R) имеет хотя бы одну self-composition,
 
 а
 
-[
+$$
 \forall x,y,z:\ xRy\land yRz\Rightarrow xRz
-]
+$$
 
 — (R) транзитивно, то есть замкнуто относительно этой композиции.
 
 Поэтому можно даже записать транзитивность как:
 
-[
+$$
 \forall (x,z)\in R\circ R:\quad (x,z)\in R,
-]
+$$
 
 или компактно:
 
-[
+$$
 \boxed{R\circ R\subseteq R}.
-]
+$$
 
 Так что **composable — про существование/определённость шага (R;R)**, а **closed — про то, остаётся ли результат этого шага внутри (R)**.
 
@@ -432,27 +432,27 @@ R\circ R\nsubseteq R.
 
 Для
 
-[
+$$
 R\subseteq X\times X
-]
+$$
 
 транзитивность означает:
 
-[
+$$
 xRy\land yRz\Rightarrow xRz.
-]
+$$
 
 Эквивалентно:
 
-[
+$$
 \boxed{R\circ R\subseteq R}.
-]
+$$
 
 Например:
 
-[
+$$
 R={(a,b),(b,c),(a,c)}.
-]
+$$
 
 Поскольку композиция двух (R)-шагов снова даёт (R)-шаг, отношение транзитивно.
 
@@ -466,15 +466,15 @@ R={(a,b),(b,c),(a,c)}.
 
 Например, целые числа замкнуты относительно сложения:
 
-[
+$$
 a,b\in\mathbb Z\Rightarrow a+b\in\mathbb Z.
-]
+$$
 
 Но не замкнуты относительно деления:
 
-[
+$$
 1,2\in\mathbb Z,\qquad 1/2\notin\mathbb Z.
-]
+$$
 
 Поэтому говорить просто **«(R) замкнуто»** недостаточно. Нужно сказать:
 
@@ -488,42 +488,42 @@ a,b\in\mathbb Z\Rightarrow a+b\in\mathbb Z.
 
 У обычной алгебраической замкнутости операция действует **на элементах множества**:
 
-[
+$$
 f:A\times A\to A.
-]
+$$
 
 У (R) элементы — пары:
 
-[
+$$
 (x,y)\in R.
-]
+$$
 
 Можно определить частичную операцию композиции таких пар:
 
-[
+$$
 (x,y)\ ;\ (y,z)=(x,z).
-]
+$$
 
 Тогда замкнутость (R) относительно этой операции:
 
-[
+$$
 (x,y),(y,z)\in R
 \Rightarrow
 (x,z)\in R.
-]
+$$
 
 Но это **буквально определение транзитивности**.
 
 Поэтому:
 
-[
+$$
 \boxed{
 \text{transitivity of }R
 ========================
 
 \text{closure of }R\text{ under composition of composable edges}
 }
-]
+$$
 
 ---
 
@@ -531,18 +531,18 @@ f:A\times A\to A.
 
 Это та же самая идея, только композицию подняли с уровня отдельных стрелок на уровень целого отношения:
 
-[
+$$
 R\circ R
 ========
 
 {(x,z)\mid \exists y:xRy\land yRz}.
-]
+$$
 
 Требуем:
 
-[
+$$
 R\circ R\subseteq R.
-]
+$$
 
 То есть все новые рёбра, которые можно получить композиционированием существующих рёбер (R), **уже находятся в (R)**.
 
@@ -560,49 +560,49 @@ a ──R──▶ b ──R──▶ c
 
 **Замкнутость** — схема свойства:
 
-[
+$$
 \operatorname{Closed}(A,f)
-]
+$$
 
 «множество (A) замкнуто относительно операции (f)».
 
 **Транзитивность** — конкретная специализация этой схемы:
 
-[
+$$
 \operatorname{Transitive}(R)
 \equiv
 \operatorname{Closed}(R,\text{edge-composition}).
-]
+$$
 
 В терминах твоего интереса к higher-order relations это особенно интересно:
 
-[
+$$
 \operatorname{ClosedUnder}(R,\circ)
-]
+$$
 
 можно считать **бинарным отношением более высокого порядка** между объектом (R) и операцией (\circ).
 
 А
 
-[
+$$
 \operatorname{Transitive}(R)
-]
+$$
 
 — унарным свойством второго порядка, полученным специализацией второго аргумента:
 
-[
+$$
 \boxed{
 \operatorname{Transitive}(R)
 \iff
 \operatorname{ClosedUnder}(R,\operatorname{Composition})
 }
-]
+$$
 
 То есть **транзитивность не конкурирует с замкнутостью как другое свойство**. Это имя конкретного вида замкнутости.
 
 И отсюда, кстати, получается хороший ряд для Ein:
 
-[
+$$
 \text{composable}
 \rightarrow
 \text{composition}
@@ -610,7 +610,7 @@ a ──R──▶ b ──R──▶ c
 \text{closure under composition}
 \rightarrow
 \text{transitivity}.
-]
+$$
 
 Первые два говорят, **можно ли и как получить результат**, третье — **остаётся ли результат внутри исходного отношения**, а четвёрто — стандартное имя именно этой замкнутости для бинарного отношения.
 
@@ -628,9 +628,9 @@ a ──R──▶ b ──R──▶ c
 
 Уже разобрали:
 
-[
+$$
 R\circ R\subseteq R.
-]
+$$
 
 Это closure under composition, то есть транзитивность.
 
@@ -640,34 +640,34 @@ R\circ R\subseteq R.
 
 Для
 
-[
+$$
 R^{-1}={(y,x)\mid(x,y)\in R}
-]
+$$
 
 можно потребовать
 
-[
+$$
 R^{-1}\subseteq R.
-]
+$$
 
 Но поскольку инверсия инволютивна, отсюда фактически
 
-[
+$$
 R^{-1}=R.
-]
+$$
 
 Это **симметричность**:
 
-[
+$$
 xRy\Rightarrow yRx.
-]
+$$
 
 То есть:
 
-[
+$$
 \boxed{\operatorname{Symmetric}(R)
 \iff R^{-1}\subseteq R}
-]
+$$
 
 можно понимать как closure under edge reversal.
 
@@ -677,29 +677,29 @@ xRy\Rightarrow yRx.
 
 Возьмём identity relation:
 
-[
+$$
 I_X={(x,x)\mid x\in X}.
-]
+$$
 
 Требование
 
-[
+$$
 I_X\subseteq R
-]
+$$
 
 есть **рефлексивность**:
 
-[
+$$
 \forall x:xRx.
-]
+$$
 
 Это уже немного другой вид closure: мы не преобразуем существующие элементы (R), а требуем, чтобы (R) содержало единицу операции композиции.
 
 В алгебраической форме:
 
-[
+$$
 \boxed{I\le R}.
-]
+$$
 
 Поэтому reflexivity удобно считать не столько closure under operation, сколько **closure/completeness относительно identity**.
 
@@ -709,22 +709,22 @@ I_X\subseteq R
 
 Если мы рассматриваем уже **класс отношений** (\mathcal C), а не одно отношение, можно требовать:
 
-[
+$$
 R,S\in\mathcal C
 \Rightarrow
 R\cup S\in\mathcal C.
-]
+$$
 
 Это closure класса отношений under union.
 
 Аналогично:
 
-[
+$$
 R\cap S,\qquad
 R^{-1},\qquad
 R\circ S,\qquad
 \overline R
-]
+$$
 
 дают разные closure properties классов отношений.
 
@@ -736,25 +736,25 @@ R\circ S,\qquad
 
 Можно взять произвольный оператор
 
-[
+$$
 F:\mathcal P(X\times X)\to\mathcal P(X\times X)
-]
+$$
 
 и спросить:
 
-[
+$$
 F(R)\subseteq R?
-]
+$$
 
 Получается общая схема:
 
-[
+$$
 \boxed{\operatorname{ClosedUnder}(R,F)\iff F(R)\subseteq R.}
-]
+$$
 
 Тогда:
 
-[
+$$
 \begin{aligned}
 F(R)&=R\circ R
 &&\Rightarrow &&\text{transitive}\
@@ -763,27 +763,27 @@ F(R)&=R^{-1}
 F(R)&=I
 &&\Rightarrow &&\text{reflexive (с оговоркой выше)}
 \end{aligned}
-]
+$$
 
 А можно строить значительно более сложные (F).
 
 Например:
 
-[
+$$
 F(R)=R^{-1}\circ R
-]
+$$
 
 и потребовать
 
-[
+$$
 R^{-1}\circ R\subseteq R.
-]
+$$
 
 Или:
 
-[
+$$
 R\circ R^{-1}\subseteq R.
-]
+$$
 
 Это уже другие свойства отношения, хотя у них не обязательно есть такое общеупотребительное имя, как «транзитивность».
 
@@ -793,45 +793,45 @@ R\circ R^{-1}\subseteq R.
 
 Можно вообще рассматривать Horn-подобное правило
 
-[
+$$
 xRy\land yRz\Rightarrow xRz
-]
+$$
 
 как требование замкнутости.
 
 Транзитивность:
 
-[
+$$
 R(x,y),R(y,z)
 \Rightarrow R(x,z).
-]
+$$
 
 Симметричность:
 
-[
+$$
 R(x,y)
 \Rightarrow R(y,x).
-]
+$$
 
 Рефлексивность:
 
-[
+$$
 x\in X
 \Rightarrow R(x,x).
-]
+$$
 
 Euclidean property:
 
-[
+$$
 R(x,y),R(x,z)
 \Rightarrow R(y,z).
-]
+$$
 
 Это соответствует
 
-[
+$$
 R^{-1}\circ R\subseteq R
-]
+$$
 
 (с точностью до принятого порядка записи композиции).
 
@@ -853,11 +853,11 @@ euclidean
 
 оказываются не принципиально разными сущностями, а **разными шаблонами правил замыкания**:
 
-[
+$$
 \text{pattern over }R
 \quad\Longrightarrow\quad
 \text{required fact in }R.
-]
+$$
 
 Например:
 
@@ -890,55 +890,55 @@ euclidean:
 
 Да. Если есть множество/класс отношений (\mathcal R), можно задать некоторую бинарную операцию
 
-[
+$$
 \star:\mathcal R\times\mathcal R\to\mathcal R
-]
+$$
 
 и определить (\star)-транзитивность:
 
-[
+$$
 \boxed{R\star R\preceq R}
-]
+$$
 
 где (\preceq) — выбранный порядок между отношениями.
 
 Обычная транзитивность получается при
 
-[
+$$
 \star=\circ,\qquad \preceq=\subseteq:
-]
+$$
 
-[
+$$
 R\circ R\subseteq R.
-]
+$$
 
 Но можно заменить **обе составляющие**.
 
 Например, определить другую композицию (\star), соответствующую другому способу склеивания двух экземпляров отношения:
 
-[
+$$
 R(a,b),R(b,c)\leadsto R(a,c)
-]
+$$
 
 — обычная композиция;
 
 но можно взять шаблон
 
-[
+$$
 R(a,b),R(a,c)\leadsto R(b,c),
-]
+$$
 
 что алгебраически связано уже с
 
-[
+$$
 R^{-1}\circ R.
-]
+$$
 
 Требование
 
-[
+$$
 R^{-1}\circ R\subseteq R
-]
+$$
 
 даёт Euclidean-подобное свойство, а не обычную транзитивность.
 
@@ -950,21 +950,21 @@ R^{-1}\circ R\subseteq R
 
 Обычная relation algebra использует
 
-[
+$$
 R\le S\iff R\subseteq S.
-]
+$$
 
 Но абстрактно можно иметь другое
 
-[
+$$
 R\preceq S.
-]
+$$
 
 И тогда условие
 
-[
+$$
 R\star R\preceq R
-]
+$$
 
 остаётся осмысленным, но уже не обязано означать классическую транзитивность.
 
@@ -988,31 +988,31 @@ R\star R\preceq R
 
 операция
 
-[
+$$
 \circ:\mathcal R\times\mathcal R\rightarrow\mathcal R
-]
+$$
 
 и порядок
 
-[
+$$
 \subseteq;\subseteq\mathcal R\times\mathcal R.
-]
+$$
 
 Closure связывает их:
 
-[
+$$
 \boxed{R\circ R\subseteq R}.
-]
+$$
 
 Обрати внимание на уровни:
 
-[
+$$
 R
 \xrightarrow{\quad\circ(R,R)\quad}
 R\circ R
 \xrightarrow{\quad\subseteq\quad}
 R.
-]
+$$
 
 То есть closure действительно говорит **не просто что-то о композиции** и **не просто что-то о включении**, а связывает их.
 
@@ -1022,47 +1022,47 @@ R.
 
 Потому что
 
-[
+$$
 R\circ R\subseteq R
-]
+$$
 
 задаёт лишь одно ограничение на пару структур ((\circ,\subseteq)).
 
 Оно ничего само по себе не говорит, например, о монотонности композиции:
 
-[
+$$
 R\subseteq S
 \Rightarrow
 R\circ T\subseteq S\circ T,
-]
+$$
 
 или
 
-[
+$$
 R\subseteq S,\quad T\subseteq U
 \Rightarrow
 R\circ T\subseteq S\circ U.
-]
+$$
 
 А вот это уже **глобальное отношение между composition и inclusion**.
 
 Поэтому есть два существенно разных типа связи:
 
-[
+$$
 \boxed{R\circ R\subseteq R}
-]
+$$
 
 — локальное closure condition для конкретного (R);
 
 против
 
-[
+$$
 \boxed{
 R\subseteq S
 \Rightarrow
 R\circ T\subseteq S\circ T
 }
-]
+$$
 
 — закон совместимости `composition` и `inclusion` вообще.
 
@@ -1072,49 +1072,49 @@ R\circ T\subseteq S\circ T
 
 Если абстрагироваться:
 
-[
+$$
 (A,\le,\star)
-]
+$$
 
 где есть порядок (\le) и бинарная операция (\star), монотонная относительно порядка, то можно изучать элементы (a), удовлетворяющие
 
-[
+$$
 a\star a\le a.
-]
+$$
 
 Это уже не специфично для relations.
 
 Для отношений:
 
-[
+$$
 A=\mathcal P(X\times X),
 \qquad
 \le=\subseteq,
 \qquad
 \star=\circ.
-]
+$$
 
 И
 
-[
+$$
 R\circ R\le R
-]
+$$
 
 получает специальное имя **transitivity**.
 
 Если добавить identity (I), то
 
-[
+$$
 I\le R
-]
+$$
 
 — reflexivity.
 
 Вместе:
 
-[
+$$
 I\le R,\qquad R\circ R\le R
-]
+$$
 
 означают, что (R) — **preorder**.
 
@@ -1126,13 +1126,13 @@ I\le R,\qquad R\circ R\le R
 
 Вместо того чтобы считать
 
-[
+$$
 \operatorname{Transitive}(R)
-]
+$$
 
 атомарным higher-order relation, его можно разложить:
 
-[
+$$
 \operatorname{Transitive}
 =========================
 
@@ -1141,7 +1141,7 @@ I\le R,\qquad R\circ R\le R
 \underbrace{\operatorname{Composition}}*{\text{как объединяем}},
 \underbrace{\operatorname{Inclusion}}*{\text{как сравниваем}}
 ).
-]
+$$
 
 Схематически:
 
@@ -1157,20 +1157,20 @@ I\le R,\qquad R\circ R\le R
 
 Причём можно варьировать две оси независимо:
 
-[
+$$
 (\star_1,\subseteq),\quad
 (\star_2,\subseteq),\quad
 (\star_1,\preceq_2),\quad
 (\star_2,\preceq_2).
-]
+$$
 
 И получать семейство свойств
 
-[
+$$
 \boxed{\operatorname{Closed}_{\star,\preceq}(R)
 \iff
 R\star R\preceq R}.
-]
+$$
 
 Поэтому твоя идея в более общем виде верна: **«транзитивность» можно увидеть не как фундаментальное свойство (R), а как конкретную точку в пространстве `composition × comparison/order`**.
 
