@@ -75,6 +75,41 @@ Every minimised find becomes a permanent corpus entry
 ([design/01](../design/01_parity_contract.md) §4's growth rule). Keep a
 seed corpus so the nightly run starts from what already found bugs.
 
+## What was built — [`utils/fuzz_ein.py`](../../../utils/fuzz_ein.py)
+
+**It diffs nothing itself, and that is the design.** `ein-parity` is the one
+implementation of what the two engines are not required to agree on, and a
+fuzzer with a private idea of a difference drifts from the gate the day it is
+written. So a batch is written out as a **corpus** and `ein-conformance` runs
+it — the same binary, the same tiers, the same normalisation:
+
+```text
+generate / mutate → conformance/out/fuzz/cases/*.ein
+                  → conformance/out/fuzz/corpus.toml   (one entry per case)
+                  → ein-conformance run --corpus … --tier T3
+                  → minimise every reported cell → conformance/fuzz_findings/
+```
+
+That reuse is what made the stage cheap: T1a.6.6.3's runner is `run.rs` +
+`tier.rs`, already parallel, already timing out, already capturing every
+artefact both engines wrote.
+
+Three details worth naming:
+
+- **The canary.** Every batch corpus carries one real fixture in the
+  `positive` group, so the harness's own liveness check applies. Two engines
+  that both failed to start agree on every generated case too, and a fuzzer
+  that cannot tell that apart from a clean run proves nothing.
+- **The classifier.** One `ein solve --max-enterings 0` per case decides its
+  group: exit 0/2 is a program (`generated`), a parse or load error is a
+  `*-negative` entry, where what the engines must agree on is the *message*.
+  It costs a parse, a load and a root saturation — ~4 ms — and it is also how
+  the acceptance's "≥ 80 % parse and load" is counted.
+- **Crash parity is reported separately.** A Python traceback in either
+  side's captured stderr makes the find a
+  [Q-M1a.14](../open_questions.md#q-m1a14--crash-parity) `crash-parity` case,
+  not a T1 divergence, so the two classes do not drown each other.
+
 ## Notes
 
 - The fuzzer diffs *behaviour*, so it needs both engines. It cannot run

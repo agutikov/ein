@@ -11,12 +11,20 @@ and under which runs.
 - **`out/`** — artefacts from the last `ein-conformance run` (git-ignored; the
   runner wipes it at the start of every run, because a stale tree would let a
   run that wrote nothing look like a run that wrote the same thing as before).
-- **`fuzz_findings/`** — minimised inputs on which the two implementations'
-  *parsers* disagreed, written by `ein-ir`'s differential fuzzer
-  (`cargo test -p ein-ir --test fuzz_parity`, budget `EIN_FUZZ_ITERS`). The
-  fuzzer replays every file here as a seed **before** generating anything, so
-  a find that is checked in cannot come back unnoticed. Empty is the steady
-  state; a file here that no longer diverges has earned a promotion to
+- **`fuzz_findings/`** — minimised inputs on which the two implementations
+  disagreed, written by **two** fuzzers. `ein-ir`'s
+  (`cargo test -p ein-ir --test fuzz_parity`, budget `EIN_FUZZ_ITERS`) compares
+  *parsers* — accept/reject, the message, and the dumped AST when both accept.
+  [`utils/fuzz_ein.py`](../utils/fuzz_ein.py) (S1a.6.6) compares whole
+  *programs*: it generates or mutates `.ein` files, writes them out as a
+  throwaway corpus, and runs **this harness** over them, so what counts as a
+  difference is the same rule the gate uses rather than a fuzzer's private
+  one. Each find is minimised — forms deleted, conjuncts dropped, kw-pairs
+  removed, while the divergence survives — and lands here with a `.md` note
+  naming the run, the tier and the harness's own diff lines. The parser fuzzer
+  replays every file here as a seed **before** generating anything, so a find
+  that is checked in cannot come back unnoticed. Empty is the steady state; a
+  file here that no longer diverges has earned a promotion to
   [`examples/broken/`](../examples/broken/) and a corpus entry, per the growth
   rule below.
 
@@ -131,7 +139,7 @@ substitutions happen in the runner:
 | `load-negative` | `examples/broken/load/*.ein` | parse, then fail to load; the exact message is checked in beside each fixture ([README](../examples/broken/load/README.md)) |
 | `stdlib` | the stdlib modules, loaded standalone | exercises the import + macro machinery on its own terms |
 | `golden` | the artefacts `ein.py/tests/golden/**` pins | **empty until Q-M1a.9** decides where goldens live; the fixtures that produce them are already `positive` entries |
-| `generated` | `examples/gen_zebra2_variants.py` output | **empty**: the variants are generated, not checked in, so they join the nightly tier when the generator is wired to the harness |
+| `generated` | `examples/gen_zebra2_variants.py` and [`utils/fuzz_ein.py`](../utils/fuzz_ein.py) output | **empty in the manifest, used at run time**: the fuzzer writes a corpus of its own per batch (S1a.6.6) and files every case that loads under this group. A generated case is checked in only once it has *found* something, and then as a `positive` / `*-negative` entry with a name |
 | `crash-parity` | inputs where ein.py raises an unhandled exception | compared by **exit code + exception class**, never by message — see below |
 
 A negative fails whichever way you enter, so what varies is *which entry point
