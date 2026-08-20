@@ -1,0 +1,24 @@
+;;; M1a S1a.6.6 — an INTEGER in a goal binding.
+;;;
+;;; Found by the differential fuzzer (`utils/fuzz_ein.py`) in its first two
+;;; minutes, minimised to these two forms, and it was a **T0** difference —
+;;; the tier that is never relaxed:
+;;;
+;;;     ein.py  "y": 8       ← the stored arg is a Python int, so json.dumps
+;;;                            writes a NUMBER
+;;;     ein.rs  "y": "8"     ← every binding went through `sexpr_value`
+;;;
+;;; stdout was identical on both sides, which is why five phases of byte
+;;; parity never saw it: no corpus puzzle binds a query variable to an int.
+;;; The IR's INT is unbounded, so the fix carries arbitrary precision
+;;; (`Json::BigInt`) rather than clamping to i64 — `-2` and
+;;; `99999999999999999999999` both round-trip.
+;;;
+;;; Fixed 2026-08-20 in ein.rs (`ein-cli/src/summary.rs::binding_value`).
+;;; This file is the regression: `solve --json-summary` must agree.
+
+(r1 o3 8)
+(r1 o4 -7)
+(r1 o5 99999999999999999999999)
+
+(query :goal (r1 ?x ?y))

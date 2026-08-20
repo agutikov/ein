@@ -45,12 +45,33 @@ def _facts(kb: Any) -> list[str]:
     return sorted(fact_sexpr(f) for f in kb.facts)
 
 
-def _bindings(kb: Any) -> list[dict[str, str]]:
+def _binding_value(v: Any) -> Any:
+    """One binding value, as JSON can carry it.
+
+    ``goal_bindings`` returns the **stored** argument, so a slot holding an
+    IR ``INT`` is a Python ``int`` and stays a JSON *number* — that is the
+    shape ein.rs was taught to match. A slot holding a *nested fact* is a
+    :class:`Fact`, which ``json.dumps`` cannot serialise at all: before
+    2026-08-20 ``ein solve --json-summary`` **raised** on
+    ``(query :goal (r1 ?x ?y))`` over ``(r1 (u0 o1) o2)`` and wrote no
+    summary, where ein.rs answered. Render it the way every other fact in
+    this file is rendered. Found by
+    `S1a.6.6 <../../../../plans/m1a_rust/p1a.6_performance/s1a.6.6_differential_fuzzer.md>`_'s
+    differential fuzzer; ``examples/ein-bugs/fact-goal-binding.ein`` is the
+    fixture.
+    """
+    if isinstance(v, (str, int, float, bool)) or v is None:
+        return v
+    return fact_sexpr(v)
+
+
+def _bindings(kb: Any) -> list[dict[str, Any]]:
     """`(query :goal …)` binding rows, sorted; each row's keys sorted too."""
     from ..inference.verdict import goal_bindings
 
-    rows = [dict(sorted(row.items())) for row in goal_bindings(kb)]
-    return sorted(rows, key=lambda r: sorted(r.items()))
+    rows = [{k: _binding_value(v) for k, v in sorted(row.items())}
+            for row in goal_bindings(kb)]
+    return sorted(rows, key=lambda r: sorted((k, str(v)) for k, v in r.items()))
 
 
 def _verdict_block(verdict: Any) -> dict[str, Any]:

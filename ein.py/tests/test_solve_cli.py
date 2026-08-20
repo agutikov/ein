@@ -158,6 +158,33 @@ def test_json_summary_carries_verdict_stats_root_and_config(tmp_path):
     assert d["config"]["lattice-order"] == "lex"
 
 
+def test_json_summary_keeps_an_integer_binding_a_number(tmp_path):
+    """A goal binding is the *stored* argument, so an IR `INT` stays a JSON
+    number — including one wider than an `i64`, which the port has to carry
+    as text rather than clamp.
+
+    M1a S1a.6.6 found this from the other side: ein.rs rendered every binding
+    through its s-expression writer and wrote `"8"`, which is a **T0**
+    difference on a two-line program. `examples/ein-bugs/int-goal-binding.ein`
+    is the shared fixture; this pins the oracle's half of it.
+    """
+    d = _summary(tmp_path, str(EXAMPLES / "ein-bugs" / "int-goal-binding.ein"))
+    rows = d["verdict"]["solutions"][0]["goal_bindings"]
+    bound = {r["x"]: r["y"] for r in rows}
+    assert bound == {"o3": 8, "o4": -7, "o5": 99999999999999999999999}
+    assert all(isinstance(v, int) for v in bound.values())
+
+
+def test_json_summary_renders_a_nested_fact_binding(tmp_path):
+    """A goal binding may be a nested `Fact`, which `json.dumps` cannot
+    serialise: before 2026-08-20 this raised and wrote **no summary at all**.
+    It renders as the s-expression every other fact in the file renders as.
+    """
+    d = _summary(tmp_path, str(EXAMPLES / "ein-bugs" / "fact-goal-binding.ein"))
+    rows = d["verdict"]["solutions"][0]["goal_bindings"]
+    assert rows == [{"x": "(u0 o1)", "y": "o2"}]
+
+
 def test_json_summary_is_additive(tmp_path):
     """Writing it changes nothing else — same stdout, stderr and exit code,
     so one invocation can serve every parity tier at once."""

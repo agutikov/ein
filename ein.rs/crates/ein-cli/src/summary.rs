@@ -11,7 +11,7 @@
 //! semantics and leaves order to T2/T3), and **self-describing** (field order
 //! fixed by construction, `schema` versioned).
 
-use ein_core::{Kb, SolverConfig, Terms};
+use ein_core::{Kb, SolverConfig, Terms, Value};
 use ein_infer::SharedMemo;
 use ein_infer::events::{sexpr, sexpr_value};
 use ein_infer::hypgen::{Drop, HypGenStats, Skip};
@@ -30,25 +30,58 @@ fn facts(terms: &Terms, kb: &Kb) -> Json {
     Json::Array(out.into_iter().map(Json::Str).collect())
 }
 
+/// One goal binding, as `json.dumps` writes ein.py's.
+///
+/// `goal_bindings` returns the **stored** argument, and ein.py stores an IR
+/// `INT` as a Python `int` — so `json.dumps` writes it as a *number*. Every
+/// binding used to go through `sexpr_value`, which made it a string, and
+/// `summary.json` is T0: `(query :goal (r1 ?x ?y))` over `(r1 o3 8)` was a
+/// verdict-level difference on a two-line program. Found by
+/// [S1a.6.6](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
+/// fuzzer, 2026-08-20; `examples/ein-bugs/int-goal-binding.ein` is the
+/// fixture. A symbol stays a string and a nested fact its s-expression.
+fn binding_value(terms: &Terms, v: Value) -> Json {
+    match v.as_int() {
+        Some(id) => {
+            let text = terms.int_text(id);
+            text.parse::<i64>()
+                .map_or_else(|_| Json::BigInt(text.to_string()), Json::Int)
+        }
+        None => Json::Str(sexpr_value(terms, v)),
+    }
+}
+
 /// `(query :goal …)` binding rows, sorted; each row's keys sorted too.
 fn bindings(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Json {
     let rows = goal_bindings(ast, terms, kb, None);
-    let mut shown: Vec<Vec<(String, String)>> = rows
+    let mut shown: Vec<Vec<(String, Value)>> = rows
         .iter()
         .map(|row| {
-            let mut r: Vec<(String, String)> = row
+            let mut r: Vec<(String, Value)> = row
                 .iter()
-                .map(|(k, v)| (terms.sym(*k).to_string(), sexpr_value(terms, *v)))
+                .map(|(k, v)| (terms.sym(*k).to_string(), *v))
                 .collect();
-            r.sort();
+            r.sort_by(|a, b| a.0.cmp(&b.0));
             r
         })
         .collect();
-    shown.sort();
+    // Rows are ordered by their rendered form, which is what ein.py's
+    // `sorted(rows, key=…)` compares.
+    shown.sort_by_key(|r| {
+        r.iter()
+            .map(|(k, v)| (k.clone(), sexpr_value(terms, *v)))
+            .collect::<Vec<_>>()
+    });
     Json::Array(
         shown
             .into_iter()
-            .map(|r| Json::Object(r.into_iter().map(|(k, v)| (k, Json::Str(v))).collect()))
+            .map(|r| {
+                Json::Object(
+                    r.into_iter()
+                        .map(|(k, v)| (k, binding_value(terms, v)))
+                        .collect(),
+                )
+            })
             .collect(),
     )
 }

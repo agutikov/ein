@@ -286,7 +286,10 @@ fn the_whole_corpus_joins_the_same_layers() {
         // and `Value` is totally ordered, so ein.rs answers where ein.py
         // crashes. This is the *only* op that reaches it, and the only file
         // that can produce one.
-        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        &[
+            "examples/ein-bugs/mixed-type-hypothesis.ein",
+            "examples/ein-bugs/nested-fact-hypothesis.ein",
+        ],
         Compare::Exact,
     );
 }
@@ -305,7 +308,10 @@ fn the_whole_corpus_solves_the_same_way() {
         |p| rust_solve(p, "fast"),
         |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
         (60, 100),
-        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        &[
+            "examples/ein-bugs/mixed-type-hypothesis.ein",
+            "examples/ein-bugs/nested-fact-hypothesis.ein",
+        ],
         Compare::Narrated,
     );
 }
@@ -318,7 +324,10 @@ fn the_whole_corpus_solves_the_same_way_exhaustively() {
         |p| rust_solve(p, "exhaustive"),
         |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
         (60, 200),
-        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        &[
+            "examples/ein-bugs/mixed-type-hypothesis.ein",
+            "examples/ein-bugs/nested-fact-hypothesis.ein",
+        ],
         Compare::Narrated,
     );
 }
@@ -339,7 +348,10 @@ fn the_whole_corpus_shuffles_the_same_way() {
         |p| rust_solve(p, "shuffled"),
         |a| a.lines().filter(|l| l.contains("\"enter\"")).count(),
         (60, 100),
-        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        &[
+            "examples/ein-bugs/mixed-type-hypothesis.ein",
+            "examples/ein-bugs/nested-fact-hypothesis.ein",
+        ],
         Compare::Narrated,
     );
 }
@@ -359,7 +371,10 @@ fn the_whole_corpus_enters_the_same_commitments() {
         |a| a.lines().filter(|l| l.starts_with("ENTER ")).count(),
         (60, 100),
         // D2 again: `layer_1` is how this op picks its candidates.
-        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        &[
+            "examples/ein-bugs/mixed-type-hypothesis.ein",
+            "examples/ein-bugs/nested-fact-hypothesis.ein",
+        ],
         Compare::Exact,
     );
 }
@@ -372,7 +387,10 @@ fn the_whole_corpus_enters_the_same_commitments_without_fail_fast() {
         |p| rust_commit(p, false),
         |a| a.lines().filter(|l| l.starts_with("ENTER ")).count(),
         (60, 100),
-        &["examples/ein-bugs/mixed-type-hypothesis.ein"],
+        &[
+            "examples/ein-bugs/mixed-type-hypothesis.ein",
+            "examples/ein-bugs/nested-fact-hypothesis.ein",
+        ],
         Compare::Exact,
     );
 }

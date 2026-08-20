@@ -1,0 +1,21 @@
+;;; M1a S1a.6.6 — a NESTED FACT in a goal binding.
+;;;
+;;; The sibling of `int-goal-binding.ein`, found the same way and in the same
+;;; family: `goal_bindings` returns the *stored* argument, and a nested
+;;; argument is stored as a `Fact`. `json.dumps` cannot serialise one, so
+;;;
+;;;     ein.py   raised TypeError, wrote NO summary, exited 1
+;;;     ein.rs   rendered `(u0 o1)` and exited 0
+;;;
+;;; Here ein.py — the oracle — was the one that was wrong: a crash is not a
+;;; semantics anyone wants to preserve (Q-M1a.4's words for the same choice).
+;;; `cli/_summary.py::_binding_value` now renders a non-primitive binding the
+;;; way every other fact in that file is rendered, which is what ein.rs
+;;; already did.
+;;;
+;;; Fixed 2026-08-20 in ein.py. This file is the regression.
+
+(u0 o1)
+(r1 (u0 o1) o2)
+
+(query :goal (r1 ?x ?y))

@@ -1,0 +1,19 @@
+;;; M1a S1a.6.6 — a premise whose relation head is an unbound variable.
+;;;
+;;; `(?R ?x)` in a `:match` needs `?R` bound by the rule's activator (Q29 —
+;;; M1 matches relations per activator). Here the rule declares one parameter
+;;; `(?S)` and the activator `(uses-free-head p)` binds it, so `?R` is free
+;;; and the compiler rejects the rule. Both engines produce the identical
+;;; message and exit 1 — but ein.py's CLI lets the exception escape, so it
+;;; prints a Python traceback around it and ein.rs prints the line alone.
+;;;
+;;; That is Q-M1a.14's category exactly, which is why this is a
+;;; `crash-parity` entry: the group compares the exit code and the exception
+;;; class, and both are `CompileError` / 1. Found by the S1a.6.6 fuzzer's
+;;; mutation arm, minimised to two forms.
+
+(rule uses-free-head (?S)
+  :match  (?R ?x)
+  :assert (p ?x))
+
+(uses-free-head p)

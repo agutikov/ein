@@ -362,6 +362,30 @@ group  = "crash-parity"
 runs   = ["solve -e"]
 note   = "M1a hazard H2 / Q-M1a.4 — an hrule binds one variable to an int and a str, and `apriori.layer_1`'s `sorted(alive)` raises. The message names its operands in a `PYTHONHASHSEED`-dependent order, which is why this group compares the exception class and not the line."
 
+[[entry]]
+path   = "examples/ein-bugs/nested-fact-hypothesis.ein"
+group  = "crash-parity"
+runs   = ["solve -e"]
+note   = "M1a hazard H2, second shape — the same `sorted(alive)`, over two `Fact` args instead of a str and an int, so it needs no mixed slot types: one hrule whose `:assert` is a `(not …)` is enough. Found by the S1a.6.6 fuzzer 2026-08-20; D2's reach, widened with a fixture rather than in prose."
+
+[[entry]]
+path   = "examples/ein-bugs/unbound-relation-head.ein"
+group  = "crash-parity"
+runs   = ["solve"]
+note   = "Q-M1a.14 — `(?R ?x)` with `?R` unbound is a `CompileError` in both engines with the identical message and exit code; ein.py's CLI lets it escape as a traceback and ein.rs prints the line alone. Found by the S1a.6.6 fuzzer's mutation arm."
+
+[[entry]]
+path   = "examples/ein-bugs/int-goal-binding.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render rules"]
+note   = "S1a.6.6 regression — an integer goal binding is a JSON *number* in `summary.json`, not a string. A T0 difference that five phases of byte parity missed because stdout is identical and no other corpus file binds a query variable to an int. Carries a value wider than i64 on purpose."
+
+[[entry]]
+path   = "examples/ein-bugs/fact-goal-binding.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render rules"]
+note   = "S1a.6.6 regression — a *nested fact* goal binding. ein.py raised inside `json.dumps` and wrote no summary at all; it now renders the fact as an s-expression, which is what ein.rs already did."
+
 # The three `CompileError` fixtures (S1a.3.1). The CLI does not catch one, so a
 # run dies with a traceback — `crash-parity`'s comparison. Their messages are
 # not left uncompared: each has a `.expected` beside it, held to byte-for-byte

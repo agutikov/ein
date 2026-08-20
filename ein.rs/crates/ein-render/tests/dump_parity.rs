@@ -38,7 +38,13 @@ use std::path::Path;
 
 /// [D2](../../../../plans/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
 /// reached by every mode, because every mode runs the search.
-const DIVERGENT: [&str; 1] = ["examples/ein-bugs/mixed-type-hypothesis.ein"];
+// D2 reaches two files since 2026-08-20: the str-vs-int shape
+// Q-M1a.4 was written about, and the `Fact`-vs-`Fact` one the S1a.6.6
+// fuzzer found, which needs no mixed types at all.
+const DIVERGENT: [&str; 2] = [
+    "examples/ein-bugs/mixed-type-hypothesis.ein",
+    "examples/ein-bugs/nested-fact-hypothesis.ein",
+];
 
 fn rust_mode(path: &Path, mode: &str) -> Option<Answer> {
     let text = std::fs::read_to_string(path).ok()?;

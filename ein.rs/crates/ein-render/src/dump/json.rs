@@ -18,6 +18,10 @@ pub enum Json {
     Bool(bool),
     /// An integer, as its canonical decimal text.
     Int(i64),
+    /// An integer too wide for `i64`, as its canonical decimal text. The IR's
+    /// `INT` is unbounded and CPython writes a big integer as digits, so a
+    /// writer that fell back to a string here would differ from `json.dumps`.
+    BigInt(String),
     Float(f64),
     Str(String),
     Array(Vec<Json>),
@@ -65,6 +69,7 @@ fn write(out: &mut String, value: &Json, indent: Option<usize>, depth: usize, so
         Json::Null => out.push_str("null"),
         Json::Bool(b) => out.push_str(if *b { "true" } else { "false" }),
         Json::Int(n) => out.push_str(&n.to_string()),
+        Json::BigInt(text) => out.push_str(text),
         Json::Float(f) => out.push_str(&float_repr(*f)),
         Json::Str(s) => write_str(out, s),
         Json::Array(items) => {

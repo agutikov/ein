@@ -58,13 +58,22 @@ const NARRATED_SLICES: [&str; 16] = [
     "examples/zebra2-hints.ein",
 ];
 
-const DIVERGENT: [(&str, &str); 3] = [
+// D2 reaches two files since 2026-08-20 — the str-vs-int shape Q-M1a.4 was
+// written about, and the `Fact`-vs-`Fact` one the S1a.6.6 fuzzer found — and
+// each of them in the three views that run the search.
+const DIVERGENT: [(&str, &str); 6] = [
     ("examples/ein-bugs/mixed-type-hypothesis.ein", "lattice"),
     (
         "examples/ein-bugs/mixed-type-hypothesis.ein",
         "lattice-full",
     ),
     ("examples/ein-bugs/mixed-type-hypothesis.ein", "slice"),
+    ("examples/ein-bugs/nested-fact-hypothesis.ein", "lattice"),
+    (
+        "examples/ein-bugs/nested-fact-hypothesis.ein",
+        "lattice-full",
+    ),
+    ("examples/ein-bugs/nested-fact-hypothesis.ein", "slice"),
 ];
 
 fn rust_view(path: &Path, view: &str) -> Option<Answer> {

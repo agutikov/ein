@@ -87,10 +87,13 @@ condition is checked rather than remembered.
 reached by the first op that runs the layer arithmetic.
 **Tier:** T1 (a search-layer counter; T0 as a crash)
 **Status:** accepted
-**Fixture:** [`examples/ein-bugs/mixed-type-hypothesis.ein`](../../examples/ein-bugs/mixed-type-hypothesis.ein),
-in the `crash-parity` group, pinned on the Python side by
+**Fixtures:** [`examples/ein-bugs/mixed-type-hypothesis.ein`](../../examples/ein-bugs/mixed-type-hypothesis.ein)
+and, since 2026-08-20,
+[`examples/ein-bugs/nested-fact-hypothesis.ein`](../../examples/ein-bugs/nested-fact-hypothesis.ein)
+— both in the `crash-parity` group, pinned on the Python side by
 `ein.py/tests/inference/test_mixed_type_hypothesis.py` and on the Rust side by
-`hypgen_parity.rs`'s `divergent` list — which **asserts** the divergence, so a
+`hypgen_parity.rs`'s `divergent` list and the two `DIVERGENT` consts in
+`dump_parity.rs` / `trace_parity.rs` — which **assert** the divergence, so a
 file that stopped diverging would fail as loudly as one that started.
 
 **What.** `apriori.layer_1` opens the search with `sorted(alive)` over
@@ -106,6 +109,21 @@ ein.rs orders `Int < Sym < Fact` by tag and answers:
 ```
 LAYER1 [{(seat Ann 1)}, {(seat Ann left)}]
 ```
+
+**A second shape, found 2026-08-20 by
+[S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s fuzzer.** The
+same `sorted(alive)`, over two **`Fact`** arguments rather than a `str` and an
+`int`:
+
+```
+TypeError: '<' not supported between instances of 'Fact' and 'Fact'
+```
+
+design/02 § H2 named it in one clause — "and a `Fact` has no `__lt__` at all" —
+but no fixture covered it, because it takes an hrule whose `:assert` head is a
+`(not …)`, and **no corpus puzzle has one**. That is the part worth writing
+down: the shape needs *no mixed slot types*. One hrule, one negative
+conclusion, two candidates, and the search-layer sort raises.
 
 **Why it is acceptable.** Three reasons, in order of weight.
 
@@ -130,9 +148,21 @@ is only consulted where Python raises.
 
 **What would make this unacceptable.** A real puzzle wanting mixed-type slots —
 at which point option (b) of Q-M1a.4 becomes right and ein.py is fixed first,
-both ports moving together. The trigger is visible: this is the only entry in
+both ports moving together. ~~The trigger is visible: this is the only entry in
 `crash-parity` that is a *search-layer* crash, and a second one would mean the
-scope claim above is wrong.
+scope claim above is wrong.~~
+
+**The trigger half-fired, 2026-08-20.** There is now a second search-layer
+`crash-parity` entry, and it says something narrower than "the scope claim is
+wrong": claim 1 (**an `hrule` is necessary**) survives untouched — the new
+shape uses one — but the *reading* of claim 3 does not. "An input nobody has
+written" was true of mixed slot types and is not true of
+`:assert (not (R ?x c))`, which is ordinary ein. What has not changed is the
+price of fixing it: sorting `alive` by a total key re-baselines the candidate
+order of every puzzle in the corpus. So this stays **accepted**, with the
+acceptability now resting on claims 1 and 2 rather than on all three, and with
+the real trigger restated: **the first puzzle that wants a negative hypothesis
+head and is not willing to crash.**
 
 
 ### D3 — a fork resumes root's saturation; ein.py re-derives it

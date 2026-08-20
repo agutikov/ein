@@ -147,6 +147,21 @@ and the parity sweep **asserts** the divergence rather than tolerating
 it, so a file that stopped diverging fails as loudly as one that
 started.
 
+**Re-opened in scope — not in decision — 2026-08-20 by
+[S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s fuzzer.** "Two
+facts of the same relation have `str` in a slot for one and `int` for the
+other" is not the only way in. Two **`Fact`** arguments raise at the same
+sort (`'<' not supported between instances of 'Fact' and 'Fact'`, which
+design/02 § H2 named and nothing covered), and reaching that needs **no mixed
+types at all** — one `(hrule … :assert (not (R ?x c)))` produces candidates
+whose argument is a nested fact. No corpus puzzle had a negative hypothesis
+head, which is why five phases of parity never saw it;
+[`examples/ein-bugs/nested-fact-hypothesis.ein`](../../examples/ein-bugs/nested-fact-hypothesis.ein)
+is the fixture now. The **decision stands at (a)** — the fix still re-baselines
+every candidate order in the corpus — but the argument for it is one reason
+lighter, and D2's "what would make this unacceptable" is restated
+accordingly.
+
 ## Q-M1a.5 — Reproducing CPython's `shuffle`
 
 `--shuffle` seeds `random.Random(seed)` and shuffles each layer's
@@ -413,9 +428,16 @@ on the whole line rather than only on the class it extracts:
   `ein.inference.compile.CompileError: <message>`, exit 1 — the *message*
   was already at parity from P1a.3, so naming the class was the whole gap.
 
-That is 6 of the 7 `crash-parity` cells; the seventh is D2. Naming a Python
-class from Rust is not a category error here: the class is the *oracle's*
-observable, and reproducing it is what I1 asks for. What stays open is the
+That was 6 of the 7 `crash-parity` cells; the seventh was D2. **2026-08-20
+added two more, both from [S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
+fuzzer**: `nested-fact-hypothesis.ein` (D2's second shape — it diverges) and
+`unbound-relation-head.ein` (`(?R ?x)` with `?R` unbound, which **passes** —
+identical message, identical exit code, and only ein.py's traceback wrapper
+around it). The second is the interesting one: it is the first cell in this
+group that the fuzzer found rather than a human, and the machinery held
+without a change. Naming a Python class from Rust is not a category error
+here: the class is the *oracle's* observable, and reproducing it is what I1
+asks for. What stays open is the
 narrower question the relaxation would answer — whether a future ein.rs-only
 error, with no Python counterpart to name, joins this group or a new one.
 Nothing in the corpus reaches one.
