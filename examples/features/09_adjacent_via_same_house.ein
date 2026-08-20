@@ -1,0 +1,130 @@
+;;; Ein — feature demo (regression, 2026-08-20)
+;;;
+;;; **An `adjacent-via` constraint is not satisfied from the same house.**
+;;;
+;;; `(adjacent-via ?S R1 V1 R2 V2)` means `(?S V2_house V1_house)` — V2 sits
+;;; at the ?S-target of V1's house. `next-to` is irreflexive (it is derived
+;;; from `right-of` by `symmetric` + `includes`, and no house is right-of
+;;; itself), so V1 and V2 in ONE house must be a contradiction.
+;;;
+;;; It was not. `disjunctive-prune-{fwd,bwd}` in `examples/zebra2.ein` carried
+;;; a `(neq ?h_other ?h1)` premise that exempted `h_other = h1` from the
+;;; exclusion — redundant where ?S is reflexive, wrong where it is not, and it
+;;; silently skipped the one case it should have caught. The determinate
+;;; puzzles never showed it: condition (6) is colour↔colour, where
+;;; functional/injective already forbid two values in one house, and (11) /
+;;; (12) / (15) are cross-attribute but over-constrained. `zebra2-minus-15.ein`
+;;; showed it — under-determined, the exhaustive search reported **55** models
+;;; where the puzzle has **32**, and 23 of the extra ones put Chesterfields
+;;; with the Fox or Kools with the Horse.
+;;;
+;;; This is the smallest thing that reproduces it: three houses, two attribute
+;;; kinds, one `next-to` constraint between them, and both values placed in
+;;; House-2.
+;;;
+;;; Expected: **Contradiction**, at root, 0 enterings. Put the guard back and
+;;; this file answers **Ambiguity, k = 4** in 10 enterings instead — Red and
+;;; the Fox sharing House-2 is one of the four. That flip is the regression
+;;; this fixture exists to fail on.
+;;;
+;;; The `adjacent-via` machinery below is copied from `examples/zebra2.ein`
+;;; (it is puzzle-level, not stdlib) and must track it.
+
+(import std.algebra   :symbols (symmetric transitive includes))
+;; Argument typing, so the blind hypothesis generator stays inside the declared
+;; signatures. Without it `candidate_objects` offers `(colour-loc Fox T)` and
+;; `(colour-loc House-1 House-2)` — 99 candidates over this tiny ontology — and
+;; nothing refutes them. The fixture never reaches the search (root is ⊥), but a
+;; fixture whose hypothesis space is nonsense is a bad fixture either way.
+;;
+;; The activators are declared **directly** rather than through
+;; `(bijective …)`: this ontology has one Colour, one Pet and three Houses, so
+;; no bijection exists between them and `surjective` would fire `(false)` for a
+;; reason that has nothing to do with what is being tested. std.bijection's
+;; header names this case — "a relation that is a function but not a full
+;; bijection can skip `bijective-setup` and declare the individual activators
+;; directly".
+(import std.bijection :symbols (typecheck-arg-0 typecheck-arg-1))
+
+;; ──── Ontology ─────────────────────────────────────────────
+(is-a House    T)
+(is-a Colour   T)
+(is-a Pet      T)
+(is-a House-1  House)
+(is-a House-2  House)
+(is-a House-3  House)
+(is-a Red      Colour)
+(is-a Fox      Pet)
+
+(relation right-of   House House)
+(relation next-to    House House)
+(relation colour-loc Colour House)
+(relation pet-loc    Pet    House)
+
+(relation is-a*      T T)
+(includes   is-a is-a*)
+(transitive is-a*)
+
+(typecheck-arg-0 colour-loc is-a* Colour)
+(typecheck-arg-1 colour-loc is-a* House)
+(typecheck-arg-0 pet-loc    is-a* Pet)
+(typecheck-arg-1 pet-loc    is-a* House)
+
+(right-of House-2 House-1 :source "row")
+(right-of House-3 House-2 :source "row")
+(symmetric next-to)
+(includes  right-of next-to)
+
+;; ──── adjacent-via — copied from zebra2.ein ────────────────
+(rule derive-adjacent-via ()
+  :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (and (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+               (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2))
+  :why    "adjacent-via ⟹ both directional activators."
+  :priority 100)
+
+(rule derive-disjunctive-prune ()
+  :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (and (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
+               (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2))
+  :why    "adjacent-via-fwd ⟹ both pruners."
+  :priority 200)
+
+;; The two pruners, WITHOUT the `(neq ?h_other ?h1)` premise the fix removed.
+;; `(absent (?S ?h_other ?h1))` is what decides `h_other = h1`, and for an
+;; irreflexive ?S it decides it correctly.
+(rule disjunctive-prune-fwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (?R1 ?V1 ?h1)
+               (relation ?R2 ?A ?B)
+               (is-a ?h_other ?B)
+               (absent (?S ?h_other ?h1)))
+  :assert (not (?R2 ?V2 ?h_other))
+  :why    "({?V1} at {?h1}) restricts {?V2} to {?S}-neighbours; {?h_other} excluded."
+  :priority 250)
+
+(rule disjunctive-prune-bwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (?R2 ?V2 ?h1)
+               (relation ?R1 ?A ?B)
+               (is-a ?h_other ?B)
+               (absent (?S ?h1 ?h_other)))
+  :assert (not (?R1 ?V1 ?h_other))
+  :why    "({?V2} at {?h1}) restricts {?V1} to {?S}-preimages; {?h_other} excluded."
+  :priority 250)
+
+;; ──── The constraint, and the state that must break it ─────
+;; "Red is next to the Fox" — different houses, adjacent.
+(adjacent-via next-to colour-loc Red pet-loc Fox :source "the constraint")
+
+;; Both in House-2. House-2 is not next-to House-2, so this is ⊥.
+(colour-loc Red House-2 :source "same house")
+(pet-loc    Fox House-2 :source "same house")
+
+;; The whitelist keeps the *other* branch cheap. Root is contradictory, so the
+;; search never starts and none of this is reached — but if the guard comes
+;; back, root is consistent and the engine goes looking. Without the whitelist
+;; it would hypothesise `right-of` and `next-to` too and close over them
+;; symmetrically, which is a runaway rather than a failed assertion. Four
+;; candidates is enough to report a verdict and stop.
+(query
+  :goal (pet-loc Fox ?h)
+  :hypothesis-relations (colour-loc pet-loc))

@@ -36,6 +36,22 @@
 ;;; dump-tree harness immediately surfacing a real inference bug,
 ;;; which is exactly what S1.5a.11 was built for.
 ;;;
+;;; ── 2026-08-20 — this copy keeps its `neq ?h_other ?h1` guard ──
+;;;
+;;; The live puzzles dropped that guard on 2026-08-20: it exempted
+;;; `h_other = h1`, so V1 and V2 could satisfy an `adjacent-via`
+;;; from the SAME house, and the under-determined variant reported
+;;; 55 models where the puzzle has 32. See `examples/zebra2.ein`
+;;; for the reasoning and `examples/features/09_adjacent_via_same_house.ein`
+;;; for the fixture.
+;;;
+;;; This file is deliberately NOT updated. It is frozen at the
+;;; pre-S1.5a.2 encoding to reproduce a *different* bug — the
+;;; single `disjunctive-prune` rule with the wrong NAF operand
+;;; order — and editing its rules to match the live ones would
+;;; leave nothing reproducing it. An artefact that tracks the
+;;; current rule set is not an artefact.
+;;;
 ;;; ── Background ───────────────────────────────────────────────
 ;;;
 ;;; The pre-B1 zebra2 used a single symmetric+transitive

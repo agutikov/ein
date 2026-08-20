@@ -93,7 +93,7 @@
 (rule
   disjunctive-prune-fwd
   (?S ?R1 ?V1 ?R2 ?V2)
-  :match (and (?R1 ?V1 ?h1) (relation ?R2 ?A ?B) (is-a ?h_other ?B) (neq ?h_other ?h1) (absent (?S ?h_other ?h1)))
+  :match (and (?R1 ?V1 ?h1) (relation ?R2 ?A ?B) (is-a ?h_other ?B) (absent (?S ?h_other ?h1)))
   :assert (not (?R2 ?V2 ?h_other))
   :why "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded."
   :priority 250)
@@ -101,7 +101,7 @@
 (rule
   disjunctive-prune-bwd
   (?S ?R1 ?V1 ?R2 ?V2)
-  :match (and (?R2 ?V2 ?h1) (relation ?R1 ?A ?B) (is-a ?h_other ?B) (neq ?h_other ?h1) (absent (?S ?h1 ?h_other)))
+  :match (and (?R2 ?V2 ?h1) (relation ?R1 ?A ?B) (is-a ?h_other ?B) (absent (?S ?h1 ?h_other)))
   :assert (not (?R1 ?V1 ?h_other))
   :why "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded."
   :priority 250)

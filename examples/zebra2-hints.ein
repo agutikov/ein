@@ -36,6 +36,16 @@
 ;;; The broken pre-fix copy of this file lives at
 ;;; examples/ein-bugs/zebra2-hints.ein as a regression artefact.
 ;;;
+;;; ── 2026-08-20 — the `neq ?h_other ?h1` guard is gone ────────
+;;;
+;;; Both pruners used to exempt `h_other = h1`, which let V1 and
+;;; V2 satisfy an `adjacent-via` from the SAME house. Nothing
+;;; here moves — this file is determinate, and its search is the
+;;; same 36 enterings it always was — but the rules must track
+;;; `zebra2.ein`, which is where the reasoning is written down.
+;;; The under-determined variant is where it mattered: 55 reported
+;;; models against 32 real ones.
+;;;
 ;;; ── Background ───────────────────────────────────────────────
 ;;;
 ;;; The pre-B1 zebra2 used a single symmetric+transitive
@@ -297,7 +307,6 @@
   :match  (and (?R1 ?V1 ?h1)
                (relation ?R2 ?A ?B)
                (is-a ?h_other ?B)
-               (neq ?h_other ?h1)
                (absent (?S ?h_other ?h1)))
   :assert (not (?R2 ?V2 ?h_other))
   :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded."
@@ -307,7 +316,6 @@
   :match  (and (?R2 ?V2 ?h1)
                (relation ?R1 ?A ?B)
                (is-a ?h_other ?B)
-               (neq ?h_other ?h1)
                (absent (?S ?h1 ?h_other)))
   :assert (not (?R1 ?V1 ?h_other))
   :why    "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded."

@@ -266,12 +266,32 @@
 ;; ``(not (color-loc Ivory H_4))`` from a known Green@H_5,
 ;; contradicting the Wikipedia solution. The S1.5a.11 dump on
 ;; `zebra2-hints.ein` surfaced this in its first realistic outing.
+;;
+;; **h_other = h1 is not exempt** (2026-08-20). Both rules used to
+;; carry a `(neq ?h_other ?h1)` premise, which read as "a value
+;; cannot exclude its own house" — but the very next premise,
+;; `(absent (?S ?h_other ?h1))`, already decides that case, and
+;; decides it correctly: for an *irreflexive* ?S (both `right-of`
+;; and `next-to` are) h1 is not its own ?S-neighbour, so h1 is
+;; exactly the house the partner must be excluded from. The guard
+;; was redundant where ?S is reflexive and wrong where it is not,
+;; and it silently exempted the one case it should have caught:
+;; V1 and V2 in the SAME house satisfied an `adjacent-via`.
+;;
+;; It never showed on the determinate puzzles — condition (6) is
+;; colour↔colour, where functional/injective already forbid two
+;; values in one house, and (11)/(12)/(15) are cross-attribute but
+;; over-constrained. It showed on `zebra2-minus-15.ein`, which is
+;; under-determined: with the guard the exhaustive search reported
+;; **55** distinct models where the puzzle has **32** — 23 of them
+;; placing Chesterfields with the Fox, or Kools with the Horse.
+;; `examples/features/09_adjacent_via_same_house.ein` is the
+;; regression fixture.
 
 (rule disjunctive-prune-fwd (?S ?R1 ?V1 ?R2 ?V2)
   :match  (and (?R1 ?V1 ?h1)
                (relation ?R2 ?A ?B)
                (is-a ?h_other ?B)
-               (neq ?h_other ?h1)
                (absent (?S ?h_other ?h1)))
   :assert (not (?R2 ?V2 ?h_other))
   :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded."
@@ -281,7 +301,6 @@
   :match  (and (?R2 ?V2 ?h1)
                (relation ?R1 ?A ?B)
                (is-a ?h_other ?B)
-               (neq ?h_other ?h1)
                (absent (?S ?h1 ?h_other)))
   :assert (not (?R1 ?V1 ?h_other))
   :why    "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded."

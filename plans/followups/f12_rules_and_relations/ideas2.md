@@ -1177,3 +1177,11 @@ R\star R\preceq R}.
 Причём я бы даже сказал, что для Ein это потенциально важнее понятия «отношение второго порядка»: здесь появляется возможность автоматически классифицировать relation-properties по тому, **какой graph gluing/composition они используют и каким containment/order constraint проверяют результат**.
 
 
+------------------
+
+Questions:
+- If rule :match 2 relations R1 R2 and emit R3
+    - can we consider it as binary higher order operation?
+    - does it mean composition R3=R1*R2 ?
+    - does it mean R1*R2 included into R3 ?
+    - If R1==R2==R3==R means R closed over this composition operation/rule?

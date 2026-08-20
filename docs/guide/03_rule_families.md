@@ -166,7 +166,7 @@ out:
 ```lisp
 (rule disjunctive-prune-fwd (?S ?R1 ?V1 ?R2 ?V2)
   :match  (and (?R1 ?V1 ?h1) (relation ?R2 ?A ?B)
-               (is-a ?h_other ?B) (neq ?h_other ?h1)
+               (is-a ?h_other ?B)
                (absent (?S ?h_other ?h1)))
   :assert (not (?R2 ?V2 ?h_other))
   :priority 250)
@@ -185,6 +185,17 @@ digraph { rankdir=LR;
 **English:** "if V2 must be a `?S`-neighbour of V1, then every house that
 *isn't* a neighbour is excluded for V2." Those negatives feed
 negative-completion and domain-elimination — the families chain.
+
+**Including V1's own house.** The rule used to carry a `(neq ?h_other ?h1)`
+premise as well, on the reading "a value cannot exclude its own house". It
+can, and it must: `next-to` and `right-of` are irreflexive, so `?h1` is not
+its own `?S`-neighbour and `(absent (?S ?h_other ?h1))` already answers that
+case correctly. The guard exempted it instead, and V1 and V2 could sit in the
+*same* house and still satisfy the clue. Nothing determinate showed it — the
+canonical Zebra pins those cells by other clues — but the under-determined
+`zebra2-minus-15.ein` reported **55** models where the puzzle has **32**
+(2026-08-20). The lesson generalises past this rule: a hand-written guard
+that duplicates what a NAF premise decides will one day disagree with it.
 
 ## The takeaway
 
