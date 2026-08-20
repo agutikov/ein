@@ -3,6 +3,12 @@
 **Phase:** P1a.10 (One implementation)
 **Estimate:** 5 days
 **Depends on:** [S1a.10.1](s1a.10.1_bank_the_oracle.md)
+**Status:** ✅ **shipped 2026-08-20.** The record is
+[`suite_dispositions.md`](suite_dispositions.md) — the plan above the
+`What actually happened` rule, the outcome below it, including the four places
+the plan was wrong. `cargo test --workspace`: **566 tests, 1 m 07 s, 0
+differential**, where it was 312 in 9 m 13 s of which 42 started a Python
+process.
 
 ## Context
 
@@ -30,7 +36,12 @@ worse than deleting it: it manufactures a green check with nothing behind it.
   does not exist. Where the Rust design differs, the *behaviour* is what gets
   asserted.
 - `cargo test --workspace` runtime stays inside the gate's current budget, or
-  the slow tests are marked and the budget is restated.
+  the slow tests are marked and the budget is restated. *(**1 m 07 s**, a ninth
+  of the 9 m 13 s budget: nine of those ten minutes were the 42 differential
+  tests' Python subprocesses. Nothing needed marking `slow`, and the restated
+  budget is in `run_tests.sh`'s Phase 3 comment. The slowest single test is
+  `dot_wellformed` at 40 s — graphviz over 5 209 renderings — and the next is
+  `id_order_invariance` at 11 s.)*
 
 ## Tasks
 

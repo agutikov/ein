@@ -108,6 +108,12 @@ and, since 2026-08-20,
 `hypgen_parity.rs`'s `divergent` list and the two `DIVERGENT` consts in
 `dump_parity.rs` / `trace_parity.rs` — which **assert** the divergence, so a
 file that stopped diverging would fail as loudly as one that started.
+**Since [S1a.10.2](p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+(2026-08-20) none of those three tests exists**: the divergence is between two
+engines and there is one, so what is left is ein.rs's *answer* on both files,
+pinned by `corpus_shapes.md5` (43 ops each). Losing the assertion that ein.py
+raises is [the ledger's §8](p1a.10_single_implementation/oracle_ledger.md#8-the-divergence-ledger-re-read):
+"the point of the phase".
 
 **What.** `apriori.layer_1` opens the search with `sorted(alive)` over
 `(relation_name, args)` tuples. Two candidates of one relation whose slot *i*
@@ -268,7 +274,12 @@ is the test that catches exactly that. ein.rs's `--trace` therefore gained a
 arranged the way `zebra_walkthrough.md` tells it.
 
 **Where it shows, and what was done about it.** S1a.6.9 shipped with six
-separate cuts, each made as the next test went red:
+separate cuts, each made as the next test went red. The table below is
+**history**: [S1a.10.2](p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+retired every gate in it, and the cut itself survives — in
+`ein-render/tests/corpus_ops`, which applies `ein_parity`'s rule when it
+digests a rendering, and in `ein-render/tests/id_order_invariance.rs`, which
+reports the 66 movements it covers rather than eliding them.
 
 | gate | cells | the cut S1a.6.9 made |
 |---|---|---|

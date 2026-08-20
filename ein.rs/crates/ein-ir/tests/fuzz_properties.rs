@@ -269,10 +269,21 @@ fn seeds() -> Vec<String> {
         "(hrule h () :match (p ?a) :assert (q ?a) :why \"w\")".into(),
         "()".into(),
     ];
+    // `.ein` only. The differential arm took every file in these directories —
+    // any text is a legal fuzz seed — but S1a.10.2 turned the seed corpus into
+    // a checked-in table, and a table that moved when a README was edited
+    // would be a table nobody trusts. What is lost is a few `.expected` and
+    // `.md` files as *mutation* seeds; what is gained is that the seed list is
+    // a function of the fixtures.
     let mut files: Vec<PathBuf> = Vec::new();
     for dir in ["examples/broken", "conformance/fuzz_findings"] {
         if let Ok(entries) = std::fs::read_dir(root.join(dir)) {
-            files.extend(entries.flatten().map(|e| e.path()).filter(|p| p.is_file()));
+            files.extend(
+                entries
+                    .flatten()
+                    .map(|e| e.path())
+                    .filter(|p| p.is_file() && p.extension().is_some_and(|x| x == "ein")),
+            );
         }
     }
     files.sort();
@@ -388,7 +399,10 @@ fn everything_that_parses_round_trips_through_the_dumper() {
 #[test]
 fn every_seed_and_finding_parses_the_way_it_was_recorded() {
     let seeds = seeds();
-    assert!(seeds.len() >= 20, "only {} seeds", seeds.len());
+    // Twelve hand-written shapes, the four parse-negative fixtures and the two
+    // recorded findings. A floor rather than an equality, because a new
+    // finding is *supposed* to arrive here.
+    assert!(seeds.len() >= 18, "only {} seeds", seeds.len());
     let mut out = String::new();
     for seed in &seeds {
         out.push_str(&format!("=== {seed:?}\n  {}\n", answer(seed)));

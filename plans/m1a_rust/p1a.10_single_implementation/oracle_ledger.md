@@ -122,6 +122,17 @@ oracle arm. What S1a.10.1 owed was the answer to "and then what asserts it",
 and the answer is the manifest — which is why the manifest had to be blessed
 *here*, in a tree where the differential half was still running and green.
 
+> **Closed 2026-08-20 by [S1a.10.2](s1a.10.2_port_the_suite.md).** All 42 are
+> un-differential; nothing outside `ein-oracle`'s own source names `Oracle`,
+> `IR_ORACLE` or `PY_ORACLE`, and `cargo test --workspace` is 566 tests in
+> **1 m 07 s** where it was 312 in 9 m 13 s. Two rows of the table above needed
+> a manifest op that did not exist — `Op::Load` and `Op::Saturate`, blessed
+> with a live ein.py agreeing on 73 files and 24 276 saturation events — and
+> one needed the corpus to grow: `dot_parity`'s eighteen inline fixtures are
+> `examples/syntax/` entries now, digested under every op rather than the eight
+> parse views the diff used. The file-by-file record is
+> [`suite_dispositions.md` § What actually happened](suite_dispositions.md#what-actually-happened).
+
 ---
 
 ## 3. The instruments that are not tiers
@@ -161,6 +172,19 @@ afresh from ein.rs they would say "ein.rs reproduces itself", and the
 distinction is the only independent provenance the repo has left. Recommended
 destination: `ein.rs/crates/<crate>/tests/golden/`, beside the twelve
 S1a.6.11 goldens, with a header note naming their origin.
+
+> **Done in [S1a.10.2](s1a.10.2_port_the_suite.md), 2026-08-20**, a stage early
+> — the whole point of the row is that these five tests are green until the
+> commit that deletes the tree, so carrying the defect into the removal is the
+> one thing it warns against. The nineteen files are
+> `ein.rs/crates/{ein-ir,ein-render}/tests/golden/from_ein_py/`, in a directory
+> of their own with a README carrying the note (a `.dot` file cannot hold a
+> header without changing the bytes that are the point). The four Python tests
+> that read the same files were re-pointed rather than left to rot.
+>
+> **The row that remains** is the last one: `corpus.rs::tracked` scans
+> `ein.py/src/ein/stdlib` as a fallback stdlib location. That is a code path,
+> not a file, and it belongs to the removal.
 
 ---
 
@@ -255,6 +279,15 @@ None of the four bugs the fuzzer found would have been caught by any of
 those — they were all *wrong answers*, not crashes — and the script's header
 must stop advertising "four parity bugs in twenty minutes" as something the
 surviving arm can do.
+
+> **The frontend half landed in [S1a.10.2](s1a.10.2_port_the_suite.md)** as
+> `ein-ir/tests/fuzz_properties.rs`: properties 1 and 2 above, plus a third the
+> list did not have — every seed and every checked-in finding parses the way it
+> was recorded, against a table, which is what makes a find a regression test
+> rather than a souvenir. Property 2 is worth one correction to the framing
+> here: it is not strictly weaker than the diff. A *shared* misunderstanding of
+> the grammar satisfied the diff and cannot satisfy a round-trip.
+> `utils/fuzz_ein.py` and its header are still S1a.10.4's.
 *What could now pass unnoticed:* a wrong answer on a program shape nobody wrote
 a fixture for. This is the single largest loss in the phase and it has no
 mitigation other than [P1a.11](../p1a.11_stdlib_conformance/README.md)'s
@@ -268,6 +301,20 @@ renders are pinned.
 *What could now pass unnoticed:* a `repr` or float rendering that is wrong for
 a value no corpus file holds — a large negative integer, a code point in a
 plane the corpus does not use — surfacing the first time a real puzzle uses one.
+
+> **Softened, not avoided, by [S1a.10.2](s1a.10.2_port_the_suite.md).** The
+> sweeps' *corpora* survive with CPython's answers frozen beside them —
+> `ein-core/tests/golden/{repr_values,repr_escapes,float_format}.txt`, 35 value
+> shapes, 4 561 code points and 2 584 float formattings — so the unreached
+> shapes keep a pin. What the freeze cannot do is **follow** CPython: if a
+> future Python changes `repr`'s escape set, these keep the old answer and
+> nothing notices. They are a regression gate for ein.rs, not a parity gate
+> against Python, and `cpython_tables.rs` says so at the top.
+>
+> Two of the four sweeps turned out not to need CPython at all: `sorted()` on
+> `str` is code-point order and so is Rust's `Ord` on `String`, and
+> `str(int(x))` is nine lines. `values_semantics.rs` computes both references
+> instead of fetching them, over the same ~900 names and ~400 literals.
 
 **L3 — the second reading of the specification.** ein.py is an *implementation
 of the same document*, written by a different route, and every place the two

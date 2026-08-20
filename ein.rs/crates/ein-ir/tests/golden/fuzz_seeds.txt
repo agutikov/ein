@@ -26,51 +26,23 @@
   refused <string>:1:2: unexpected input
 ()
  ^
-=== "# fuzz_findings/\n\nMinimised inputs on which the two implementations disagree, written by the two\nfuzzers (`cargo test -p ein-ir --test fuzz_parity` for the frontend,\n[`utils/fuzz_ein.py`](../../utils/fuzz_ein.py) for whole programs). **Empty is\nthe steady state**: a find is either fixed — and promoted to a corpus fixture\nin the same commit — or accepted, and then it belongs to\n[`divergences.md`](../../plans/m1a_rust/divergences.md).\n\nWhat is here now, both from S1a.6.6's first session (2026-08-20), both\n**[D3](../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)**\nreaching further than its entry recorded, and both kept because the decision\nthey need is the user's rather than a fix:\n\n| file | what differs | what is identical |\n|---|---|---|\n| `d3-unsat-core.ein` | the printed **unsat core**: 6 facts in ein.py, 4 in ein.rs — a strict subset | the verdict, `k`, every counter. `EIN_FORK_DELTA=0` reproduces ein.py's six exactly, so it is the resumed fork saturator |\n| `d3-goal-row-order.ein` | which **binding row** the solve table shows, when one model satisfies the goal more than once | `summary.json`'s `goal_bindings`, which carries every row and sorts them |\n\nNeither is reachable from a corpus entry: T3 is green corpus-wide apart from\nD2. Both are one command to reproduce —\n\n```sh\nein solve conformance/fuzz_findings/d3-unsat-core.ein --max-set-size 2\n```\n\n— against either implementation, and against\n`ein.rs/target-fd/release/ein` with `EIN_FORK_DELTA=0` for the third reading.\n"
-  refused <string>:1:1: unexpected input
-# fuzz_findings/
-^
 === "(relation ok      T)\n(relation blessed T)\n(relation cand    T)\n(rule promote ()\n  :match  (and (ok ?x) (blessed ?x))\n  :assert (cand ?x))\n(ok      B)\n(blessed A)\n(query\n  :goal (cand ?x))\n"
   ok 7 form(s)
-=== "# d-1787188217-002\n\n- found: 2026-08-20 05:16:50\n- kind: **diff**\n- seed: 20260820, mode: mixed, tier: T3\n- run: `solve --max-set-size 2 --max-enterings 300`\n- minimised: 11 → 7 forms\n- from: `conformance/out/fuzz/cases/c003567.ein`\n\n```\n(relation ok      T)\n(relation blessed T)\n(relation cand    T)\n(rule promote ()\n  :match  (and (ok ?x) (blessed ?x))\n  :assert (cand ?x))\n(ok      B)\n(blessed A)\n(query\n  :goal (cand ?x))\n```\n\n## The harness's diff, on the minimum\n\n```\n  conformance/out/fuzz/cases/x-1787188217-002.ein :: solve --max-set-size 2 --max-enterings 300\n      stdout:7: \"    ?x  = B\" vs \"    ?x  = A\"\n  conformance/out/fuzz/cases/x-1787188217-002.ein :: solve -e --max-set-size 2 --max-enterings 300\n      stdout:7: \"    ?x  = B\" vs \"    ?x  = A\"\n[2/4] DIFF conformance/out/fuzz/cases/x-1787188217-002.ein :: solve --max-set-size 2 --max-enterings 300\n        stdout:7: \"    ?x  = B\" vs \"    ?x  = A\"\n[4/4] DIFF conformance/out/fuzz/cases/x-1787188217-002.ein :: solve -e --max-set-size 2 --max-enterings 300\n        stdout:7: \"    ?x  = B\" vs \"    ?x  = A\"\n```\n"
-  refused <string>:1:1: unexpected input
-# d-1787188217-002
-^
 === ";;; case 6710 (seed 20260820) — utils/fuzz_ein.py\n(relation r0 T T)\n(relation r1 T T)\n(relation is-a T T)\n(is-a o2 T)\n(is-a o3 T)\n(r0 o2 o3)\n(rule fire-0 (?P)\n  :match  (and (r1 ?v0 ?v1) (r0 ?v1 ?v0))\n  :assert (not (r1 ?v0 ?v0)))\n(fire-0 T)\n(rule fire-1 ()\n  :match  (and (is-a ?v0 T) (r0 ?v0 ?v1) (r1 ?v2 ?v3) (absent (not (r1 o3 ?v1))))\n  :assert (r1 ?v2 ?v2))\n"
   ok 9 form(s)
-=== "# d-1787188217-005\n\n- found: 2026-08-20 05:22:03\n- kind: **diff**\n- seed: 20260820, mode: mixed, tier: T3\n- run: `solve --max-set-size 2 --max-enterings 300`\n- minimised: 14 → 9 forms\n- from: `conformance/out/fuzz/cases/c006710.ein`\n\n```\n;;; case 6710 (seed 20260820) — utils/fuzz_ein.py\n(relation r0 T T)\n(relation r1 T T)\n(relation is-a T T)\n(is-a o2 T)\n(is-a o3 T)\n(r0 o2 o3)\n(rule fire-0 (?P)\n  :match  (and (r1 ?v0 ?v1) (r0 ?v1 ?v0))\n  :assert (not (r1 ?v0 ?v0)))\n(fire-0 T)\n(rule fire-1 ()\n  :match  (and (is-a ?v0 T) (r0 ?v0 ?v1) (r1 ?v2 ?v3) (absent (not (r1 o3 ?v1))))\n  :assert (r1 ?v2 ?v2))\n```\n\n## The harness's diff, on the minimum\n\n```\n  conformance/out/fuzz/cases/x-1787188217-005.ein :: solve --max-set-size 2 --max-enterings 300\n      stdout:6: \"  unsat core (6 facts)\" vs \"  unsat core (4 facts)\"\n      summary.json:9: \"      \\\"(is-a o2 T)\\\",\" vs \"      \\\"(is-a o3 T)\\\",\"\n  conformance/out/fuzz/cases/x-1787188217-005.ein :: solve -e --max-set-size 2 --max-enterings 300\n      stdout:6: \"  unsat core (6 facts)\" vs \"  unsat core (4 facts)\"\n      summary.json:9: \"      \\\"(is-a o2 T)\\\",\" vs \"      \\\"(is-a o3 T)\\\",\"\n[2/4] DIFF conformance/out/fuzz/cases/x-1787188217-005.ein :: solve --max-set-size 2 --max-enterings 300\n        stdout:6: \"  unsat core (6 facts)\" vs \"  unsat core (4 facts)\"\n        summary.json:9: \"      \\\"(is-a o2 T)\\\",\" vs \"      \\\"(is-a o3 T)\\\",\"\n[4/4] DIFF conformance/out/fuzz/cases/x-1787188217-005.ein :: solve -e --max-set-size 2 --max-enterings 300\n        stdout:6: \"  unsat core (6 facts)\" vs \"  unsat core (4 facts)\"\n        summary.json:9: \"      \\\"(is-a o2 T)\\\",\" vs \"      \\\"(is-a o3 T)\\\",\"\n```\n"
-  refused <string>:1:1: unexpected input
-# d-1787188217-005
-^
 === ";; Should fail: a bare atom is not a form. Every top-level form is a\n;; parenthesised list `(...)`; post-P1.7c the head need not be a reserved\n;; wrapper (any non-declarator head is a fact), but a lone atom is not a list.\nNorwegian\n"
   refused <string>:4:1: unexpected input
 Norwegian
-^
-=== "{FILE}:4:1: unexpected input\nNorwegian\n^\n"
-  refused <string>:1:1: unexpected input
-{FILE}:4:1: unexpected input
 ^
 === ";; Should fail: :solve is a KEYWORD, never a value — kw-pair\n;; alternation enforces :kw value :kw value …\n(query :goal :solve)\n"
   refused <string>:3:14: unexpected input
 (query :goal :solve)
              ^
-=== "{FILE}:3:14: unexpected input\n(query :goal :solve)\n             ^\n"
-  refused <string>:1:1: unexpected input
-{FILE}:3:14: unexpected input
-^
 === ";; Should fail: rule parameter list is mandatory — `()` for non-generic.\n;; Flat form (P1.7c): a top-level `(rule …)` declarator with no params.\n(rule symmetric\n  :match  (?rel ?a ?b)\n  :assert (?rel ?b ?a)\n  :why    \"test\")\n"
   refused <string>:4:3: unexpected input
   :match  (?rel ?a ?b)
   ^
-=== "{FILE}:4:3: unexpected input\n  :match  (?rel ?a ?b)\n  ^\n"
-  refused <string>:1:1: unexpected input
-{FILE}:4:3: unexpected input
-^
 === ";; Should fail: rule_decl body never closes.\n;; Flat form (P1.7c): a top-level `(rule …)` with an unterminated body.\n(rule x ()\n  :match a\n  :assert b\n"
   refused <string>:-1:-1: unexpected input
   :assert b
            ^
-=== "{FILE}:-1:-1: unexpected input\n  :assert b\n           ^\n"
-  refused <string>:1:1: unexpected input
-{FILE}:-1:-1: unexpected input
-^

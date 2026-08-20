@@ -11,10 +11,15 @@ and under which runs.
 - **`out/`** — artefacts from the last `ein-conformance run` (git-ignored; the
   runner wipes it at the start of every run, because a stale tree would let a
   run that wrote nothing look like a run that wrote the same thing as before).
-- **`fuzz_findings/`** — minimised inputs on which the two implementations
-  disagreed, written by **two** fuzzers. `ein-ir`'s
-  (`cargo test -p ein-ir --test fuzz_parity`, budget `EIN_FUZZ_ITERS`) compares
-  *parsers* — accept/reject, the message, and the dumped AST when both accept.
+- **`fuzz_findings/`** — minimised inputs a fuzzer found something on, written
+  by **two** fuzzers. `ein-ir`'s
+  (`cargo test -p ein-ir --test fuzz_properties`, budget `EIN_FUZZ_ITERS`)
+  compared *parsers* — accept/reject, the message, and the dumped AST when both
+  accepted — until
+  [S1a.10.2](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md);
+  it now checks the frontend's own properties (nothing panics, everything that
+  parses round-trips through the dumper, every checked-in finding still parses
+  the way it was recorded).
   [`utils/fuzz_ein.py`](../utils/fuzz_ein.py) (S1a.6.6) compares whole
   *programs*: it generates or mutates `.ein` files, writes them out as a
   throwaway corpus, and runs **this harness** over them, so what counts as a

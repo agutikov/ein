@@ -28,6 +28,16 @@
 #            there is no cargo on PATH, and skipped by --fast.
 #            Regenerate a golden with:  EIN_BLESS=1 cargo test --workspace
 #
+#            **Budget, restated at M1a S1a.10.2: 566 tests in ~1 m 07 s.**
+#            It was 312 tests in 9 m 13 s. Nine of those ten minutes were 42
+#            of the 91 integration tests starting a `python3` per corpus file
+#            — the stage un-differentialled all 42, so the gate stopped
+#            paying for a second engine rather than getting faster. No test
+#            is marked `slow`; the two that dominate are `dot_wellformed`
+#            (~40 s, graphviz over 5 209 renderings) and
+#            `id_order_invariance` (~11 s, the corpus twice per seed).
+#            `EIN_ID_SEEDS=8` and `EIN_FUZZ_ITERS` raise the two that scale.
+#
 # The pytest config lives in ein.py/pyproject.toml ([tool.pytest.ini_options]
 # — testpaths=tests, pythonpath=src), so both phases invoke pytest from ein.py/.
 # (The old root pytest.ini was removed in P1.7a.)
@@ -69,7 +79,7 @@ ARGS=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -h|--help)
-            sed -n '2,50p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+            sed -n '2,62p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
         --fast)            FAST=1 ;;

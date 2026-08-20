@@ -376,3 +376,117 @@ One new test file per subject, and one agent wrote each — the partition is by
 | `ein-infer/tests/acceptance.rs (done)` | 7 |
 | `ein-cli/tests/acceptance_cli.rs (done)` | 2 |
 | **total** | **275** |
+
+---
+
+# What actually happened
+
+*Written 2026-08-20, when the stage shipped. Everything above is the plan; this
+is the outcome, including the four places the plan was wrong.*
+
+## The numbers, after
+
+| | before | after |
+|---|---:|---:|
+| `cargo test --workspace` | 312 tests, 9 m 13 s | **566 tests, 1 m 07 s** |
+| — integration tests | 91, in 28 files | **341, in 41 files** |
+| — of them differential | **42** | **0** |
+| — unit tests | 221 | 225 |
+| `corpus_shapes.md5` | 4 228 renderings | **5 209** |
+| corpus entries | 111 | **129** |
+| pytest | 1 538 | 1 538 (unchanged — it dies in S1a.10.5, not here) |
+
+**The runtime is the headline and it is not an optimisation.** Nine of those
+ten minutes were 42 tests starting a Python process per corpus file; the gate
+did not get faster, it stopped paying for a second engine. The stage's
+acceptance asked that the runtime "stay inside the gate's current budget" and
+it is a ninth of it, so no test needed marking `slow` and the budget statement
+in `run_tests.sh` is a smaller number rather than a longer list.
+
+## The four places the plan above was wrong
+
+1. **`lattice_semantics.rs` and `cli_semantics.rs` were not written.** The
+   session that produced this document was interrupted; the first was a
+   corpus probe left over from measuring, the second had its plumbing and
+   three of its twenty-seven claims. Both are complete now — 29 and 26 tests.
+
+2. **Six ported claims did not run.** They compiled and asserted nothing, or
+   asserted something the engine does not do:
+   `:using ((p a b))` is not the grammar (the headless list is
+   [deferred syntax](../../../docs/kernel/ir/03-ein-lang/05_inspirations.md));
+   `(hrule not …)` is a *parse* error, so only `absent` / `eq` / `false` /
+   `relation` can reach the reserved-name guard; `zebra.ein` has no rule
+   called `transitive`; a declaration's own companion facts are background;
+   two `firings < 0` placeholders where the Python bounds are 100 and 400;
+   a "two survivors" fixture that excluded two of three colours. A port that
+   is not run is a port that has not been done.
+
+3. **The 42 needed more than a disposition.** The table above assigns each a
+   destination; six of them needed a *substitution* invented — a reference
+   computed rather than fetched (`sorted()` is code-point order; `str(int(x))`
+   is nine lines), a table frozen while the oracle agreed, or a corpus op that
+   did not exist. `Op::Load` and `Op::Saturate` are the second kind: the two
+   surfaces whose only owner was a differential sweep, added to
+   `corpus_ops` and blessed with a live ein.py agreeing on 73 files and
+   24 276 saturation events.
+
+4. **`dot_parity`'s eighteen fixtures were worth more than the plan said.**
+   Moved to `examples/syntax/` (seventeen; the eighteenth is a load-negative
+   and sits with its siblings), they are digested under **every** op rather
+   than the eight parse views the diff used — 768 renderings where the test
+   compared 144. They were verified against ein.py on all 43 ops before
+   blessing: 714 cells compared, 54 refused on both sides, 0 differences.
+
+## What the corpus found on its first day
+
+`examples/syntax/equality.ein` falsified a counter identity that had held for
+440 cells. `summary_properties.rs` said *an unsat core is reported exactly for
+a `Contradiction`*, and this file is a `Contradiction` with an empty core: two
+`=` forms, no rule, no hypothesis that ever completes, and a depth cap that
+cuts at layer 5 with every commitment still alive. `k = 0` with `exhausted
+false` is "no model **within the cap**", which is not a refutation — nothing
+died, so nothing is blamed. Restated as two implications, with a floor on the
+cells that do report a core so neither holds vacuously.
+
+That is the argument for moving fixtures into the corpus rather than keeping
+them inline in a test, made by the corpus rather than by this document.
+
+## Where the 42 went
+
+| was | is | what took the bytes |
+|---|---|---|
+| `ein-infer/tests/saturate_parity.rs` | *gone* | `corpus_shapes.md5` `::saturate`, with its 50-file / 3 000-event floor |
+| `ein-ir/tests/load_parity.rs` | `load_semantics.rs` | `::load`; plus `layering_holds_after_every_load` and two checked-in tables |
+| `ein-ir/tests/parse_parity.rs` | `grammar_decisions.rs` | `ir[parse]`; plus four `.expected` files **written from ein.py** and a 78-row decision table |
+| `ein-ir/tests/imports_parity.rs` | `imports_semantics.rs` | `ir[resolve|minimize|expand]`; plus a module-path table and a `stdlib/macro.ein` re-parse |
+| `ein-core/tests/values_parity.rs` | `values_semantics.rs` | a reference computed in the test |
+| `ein-core/tests/cpython_parity.rs` | `cpython_tables.rs` | three frozen tables — the stage's weakest substitution, and the file says so |
+| `ein-render/tests/dot_parity.rs` | *gone* | `dot[*]`; the 18 fixtures became corpus entries |
+| `ein-render/tests/trace_parity.rs` | `trace_roundtrip.rs` | `trace[*]` + `golden_trace.rs`; the IR round-trip survives |
+| `ein-render/tests/dump_parity.rs` | `dump_shape.rs` | `dump[*]` + `golden_dump.rs`; the abort policy survives |
+| `ein-infer/tests/compile_parity.rs` | *gone* | `::plan`; the four messages were already in `compile_semantics.rs` |
+| `ein-infer/tests/hypgen_parity.rs` | `hypgen_coverage.rs` | eleven sweeps → the manifest; the two coverage floors survive |
+| `ein-infer/tests/match_parity.rs` | *gone* | `::match` |
+| `ein-ir/tests/dump_parity.rs` | `dump_goldens.rs` | `ir[parse]` / `ir[dump-compact]`; the two ein.py goldens survive |
+| `ein-ir/tests/fuzz_parity.rs` | `fuzz_properties.rs` | accepted loss L1; three self-checkable properties survive |
+| `ein-cli/tests/help_parity.rs` | `help_surface.rs` | retired — but replaced with a golden of `help_shape()` rather than left to a count |
+
+Nothing outside `ein-oracle`'s own source now names `Oracle`, `IR_ORACLE` or
+`PY_ORACLE`.
+
+## What S1a.10.2 did that the ledger had filed under S1a.10.5
+
+[§4](oracle_ledger.md#4-what-the-removal-must-relocate) is a defect list: five
+ein.rs tests read files under `ein.py/` **without running Python**, so they
+would have stayed green until the commit that deleted the tree and failed
+there. The nineteen files are
+`ein.rs/crates/{ein-ir,ein-render}/tests/golden/from_ein_py/` now, moved by
+`git mv` and never regenerated, with a README that states the rule: *never
+re-bless a file in that directory* — every other golden in the tree says
+"ein.rs still renders what ein.rs rendered", and these are the only bytes in
+the repo a second implementation produced. The four Python tests that read the
+same files were re-pointed, so `./run_tests.sh` stayed green.
+
+The one item of §4 that remains is `ein-conformance/src/corpus.rs::tracked`
+scanning `ein.py/src/ein/stdlib` as a fallback stdlib location, which is a
+code path rather than a file and belongs to the removal.

@@ -1,8 +1,12 @@
 # fuzz_findings/
 
-Minimised inputs on which the two implementations disagree, written by the two
-fuzzers (`cargo test -p ein-ir --test fuzz_parity` for the frontend,
-[`utils/fuzz_ein.py`](../../utils/fuzz_ein.py) for whole programs). **Empty is
+Minimised inputs a fuzzer found something on, written by the two fuzzers
+(`cargo test -p ein-ir --test fuzz_properties` for the frontend,
+[`utils/fuzz_ein.py`](../../utils/fuzz_ein.py) for whole programs). "Something"
+was *a disagreement between the two implementations* until
+[S1a.10.2](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+retired the frontend fuzzer's oracle arm; for that fuzzer it is now a violated
+property, and every file here is one of its seeds either way. **Empty is
 the steady state**: a find is either fixed — and promoted to a corpus fixture
 in the same commit — or accepted, and then it belongs to
 [`divergences.md`](../../plans/m1a_rust/divergences.md).

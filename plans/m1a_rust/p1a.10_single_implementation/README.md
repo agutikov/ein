@@ -8,11 +8,19 @@ surface is what `docs/api/` describes after the Python engine is gone, and
 stage that compares the two modules while both exist.
 **Decides:** [Q-M1a.2](../open_questions.md#q-m1a2--does-einpy-have-a-sunset)
 — reversing its recommendation.
-**Status:** **in progress** — [S1a.10.1](s1a.10.1_bank_the_oracle.md) shipped
-2026-08-20 and its ledger is [`oracle_ledger.md`](oracle_ledger.md). It ran
-before [P1a.9](../p1a.9_bindings_release/README.md) on purpose: the dependency
-is the *deletion*'s, and an inventory that deletes nothing is exactly what
-should happen while both engines still run.
+**Status:** **in progress** — [S1a.10.1](s1a.10.1_bank_the_oracle.md) and
+[S1a.10.2](s1a.10.2_port_the_suite.md) shipped 2026-08-20; the ledger is
+[`oracle_ledger.md`](oracle_ledger.md) and the suite's file-by-file record is
+[`suite_dispositions.md`](suite_dispositions.md). They ran before
+[P1a.9](../p1a.9_bindings_release/README.md) on purpose: the dependency is the
+*deletion*'s, and an inventory that deletes nothing — followed by a port that
+banks its answers while the oracle can still be asked — is exactly what should
+happen while both engines still run.
+
+**After S1a.10.2 the gate is already single-engine.** `cargo test --workspace`
+is **566 tests in 1 m 07 s**, none of which starts a Python process, where
+before it was 312 in 9 m 13 s of which 42 shelled out. What is left in the
+phase is the *tree*: the harness, the runner, `utils/`, and `ein.py/` itself.
 
 ## Goal
 
@@ -54,7 +62,7 @@ is the one way this phase can go wrong that cannot be undone by a revert.
 | stage | title | est. | |
 |---|---|---|---|
 | [S1a.10.1](s1a.10.1_bank_the_oracle.md) | Bank what only the oracle proves | 4 d | ✅ **shipped 2026-08-20** |
-| [S1a.10.2](s1a.10.2_port_the_suite.md) | Port the Python test suite | 5 d | scope grew — see below |
+| [S1a.10.2](s1a.10.2_port_the_suite.md) | Port the Python test suite | 5 d | ✅ **shipped 2026-08-20** — scope grew, see below |
 | [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) | The corpus without a second engine | 2 d | |
 | [S1a.10.4](s1a.10.4_utils.md) | `utils/`, re-aimed at one engine | 2 d | |
 | [S1a.10.5](s1a.10.5_removal.md) | The removal | 1 d | has a defect list |
@@ -74,13 +82,18 @@ Three consequences, all recorded in the
 
 - **S1a.10.2's subject doubles.** It is no longer only "port 1 517 pytest
   tests"; it is also "un-differential 42 ein.rs tests", and the ledger already
-  says what each of them still owes.
+  says what each of them still owes. *(Done: all 42, plus the 275 behaviours
+  the Python suite's 1 538 tests reduce to.)*
 - **S1a.10.5 gets a defect list.** Five ein.rs tests read *files* under
   `ein.py/` rather than running it, so no amount of removing Python finds
   them — they are green until the commit that deletes the tree.
   [§4](oracle_ledger.md#4-what-the-removal-must-relocate) names them and says
   to `git mv` the 19 goldens rather than re-bless them, because ein.py's own
-  bytes are the last independent provenance the repo has.
+  bytes are the last independent provenance the repo has. *(S1a.10.2 did the
+  move a stage early — carrying a defect into the stage it warns about is the
+  one thing the row exists to prevent. They are
+  `tests/golden/from_ein_py/` now. What remains for S1a.10.5 is
+  `corpus.rs::tracked`'s fallback stdlib scan, which is a code path.)*
 - **[P1a.8](../p1a.8_binary_container/README.md) gets a question.** The
   determinism successor prices a permuted id space at *0 answers and 66
   renderings*, and `.einb`'s remap is a permutation
