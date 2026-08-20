@@ -30,6 +30,13 @@ rustc-hash.workspace = true
 
 [dev-dependencies]
 ein-oracle = { path = "../ein-oracle" }
+# A dev-only cycle (`ein-render` depends on `ein-infer`), which Cargo allows.
+# It is here for one claim: `LatticeDumper`'s contract — what a dump tree does
+# and does not contain — is a claim about the *lattice*, and the formatter that
+# implements `solve::Dumper` lives in `ein-render`. Asserting it from the
+# renderer's side would test the writer; asserting it here tests the search's
+# use of the hook. See `tests/lattice_semantics.rs`.
+ein-render = { path = "../ein-render" }
 # The one implementation of "what the parity contract stopped comparing",
 # shared with `ein-conformance` so a test and the gate cannot disagree.
 ein-parity = { path = "../ein-parity" }

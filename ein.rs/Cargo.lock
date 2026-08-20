@@ -234,6 +234,7 @@ dependencies = [
  "ein-ir",
  "ein-oracle",
  "ein-parity",
+ "ein-render",
  "rustc-hash",
  "serde_json",
 ]
