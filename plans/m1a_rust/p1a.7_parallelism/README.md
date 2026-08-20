@@ -1,11 +1,67 @@
 # P1a.7 — Parallelism
 
 **Milestone:** [M1a — Rust port](../README.md)
-**Status:** **in progress** — opened 2026-08-20 with
-[S1a.7.0](s1a.7.0_speculation_audit.md), a stage the plan did not have: the
-phase's central risk is measurable *before* any of it is built, so it was
-measured first. What it found is in [scaling.md](scaling.md) and it moves two
-of the four stages after it.
+**Status:** **paused 2026-08-20**, one stage in, at the user's direction.
+[S1a.7.0](s1a.7.0_speculation_audit.md) shipped — a stage the plan did not
+have: the phase's central risk is measurable *before* any of it is built, so
+it was measured first. What it found is in [scaling.md](scaling.md) and it
+moves two of the four stages after it. **Nothing is half-built**: S1a.7.0's
+deliverables are an instrument, a corpus sweep and two invariance tests, all
+committed and green, and no engine code is in an intermediate state. See
+§ Paused — what a resumer needs to know.
+
+## Paused — what a resumer needs to know
+
+**Where it stopped.** After [S1a.7.0](s1a.7.0_speculation_audit.md), before
+[S1a.7.1](s1a.7.1_sync_shared_state.md). The natural resumption point is
+S1a.7.1 unchanged: `Terms` is still threaded as `&mut` through ~78 sites and
+that is still the phase's first real work.
+
+**What shipped and stays useful regardless.** All of it is independent of the
+parallel path and none of it is scaffolding to be removed:
+
+- `ein-infer/src/spec_audit.rs` + [`utils/spec_audit.py`](../../../utils/spec_audit.py)
+  — the speculation audit, `--features spec-audit`;
+- `SolveOptions::integrate_every` — the batch-synchronous integration mode,
+  and the shape [P1a.12](../p1a.12_exhaustive_search/README.md)'s conflict
+  mining will need when it decides where harvested clauses land;
+- `ein-infer/tests/search_invariants.rs` — six tests asserting that the answer
+  depends on neither the entering order nor the integration time. These are
+  **not** parallelism tests; they are properties of the search, and they hold
+  whether or not this phase ever resumes;
+- `ein-infer/examples/defer_probe.rs` — which found that a root write seals a
+  layer every fork then walks, worth **2.8×** on `branching/07 -e` at
+  `--jobs 1`. That is a single-threaded finding sitting in a parallelism
+  phase, and it does not need the phase to be cashed.
+
+**What the interval changes, and this is the part that will be missed.**
+[P1a.10](../p1a.10_single_implementation/README.md) retires the conformance
+harness — and **this phase's acceptance is written in terms of it**: "`--jobs
+{1,2,4,8,16}` T3-identical on the whole corpus", "a 10 000-run randomised
+stress of `--jobs 8` vs `--jobs 1`", and every T-tier reference in
+[S1a.7.2](s1a.7.2_parallel_enterings.md) through
+[S1a.7.5](s1a.7.5_jobs_contract.md). After P1a.10 those criteria name an
+instrument that does not exist. A resumed P1a.7 **restates its acceptance
+against whatever [S1a.10.1](../p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md)
+banked** before it writes any code. The invariants themselves are unaffected —
+`--jobs N` agreeing with `--jobs 1` is a comparison of one engine against
+itself and never needed an oracle — but the *vocabulary* they are written in
+goes away with it.
+
+[P1a.12](../p1a.12_exhaustive_search/README.md) touches it from the other
+side: its conflict-mining dive writes learned clauses mid-layer, which is
+exactly the hazard [S1a.7.0](s1a.7.0_speculation_audit.md) measured
+(§ finding 4). Whichever of the two lands first owes the other the rule about
+when a clause becomes visible; the phases should not discover it twice.
+
+**What is still undecided.** [S1a.7.2](s1a.7.2_parallel_enterings.md)'s four
+options for layer 1 — continue-and-validate, `--jobs`-scoped divergence,
+sequential layer 1, or batch-synchronous integration — with **(d) the measured
+one** and the barrier re-check of recorded solution nodes the piece it still
+owes. And the fail-fast × speculation interaction, which design/08 never
+named. Neither has been decided; both are written up rather than left in
+someone's head, which is the point of pausing after an instrument stage rather
+than in the middle of a refactor.
 **Estimate:** 2.5 weeks (14 days of stages — S1a.7.0 added one worth 1 d)
 **Depends on:** [P1a.6](../p1a.6_performance/README.md) — parallelise a
 fast engine, not a slow one, or the speedup measures the wrong thing.

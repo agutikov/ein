@@ -1,90 +1,174 @@
-# S1a.11.2 — The `(test …)` form
+# S1a.11.2 — How a program states what it expects
 
 **Phase:** P1a.11 (stdlib conformance)
 **Estimate:** 3 days
 **Depends on:** [S1a.11.1](s1a.11.1_what_the_stdlib_promises.md)
-**Decides:** Q-M1a.19 (in-file expectations vs a sidecar), Q-M1a.20 (what an
-expectation may say)
+**Decides:** [Q-M1a.19](../open_questions.md#q-m1a19--how-does-a-program-state-what-it-expects),
+[Q-M1a.20](../open_questions.md#q-m1a20--what-may-an-expectation-say)
 
 ## Context
 
-The user's shape: **a `test` head that replaces `query`**, so a file is either
-a puzzle to solve or a program to check, and a `{solve,render,saturate,test}`
-subcommand set.
+Three shapes are on the table. The third is the user's, added 2026-08-20 after
+the first two were written, and it is the recommendation.
 
-That is a good shape and it needs three decisions before it is a form.
+### (a) A sidecar
 
-### Q-M1a.19 — in-file, or beside the file?
+Expectations in `corpus.toml`, or a `.expect` file beside the `.ein`. No
+grammar change at all. Rejected on one argument: an expectation keyed by path
+is a second thing to keep in step with the program, and this milestone has
+just spent a phase ([P1a.10](../p1a.10_single_implementation/README.md))
+removing the last one.
 
-| | in-file `(test …)` | sidecar (`corpus.toml`, `.expect`) |
-|---|---|---|
-| grammar change | yes — parser, dumper, macro pass, AST walkers, `grammar.lark`, M2's GBNF | none |
-| reads next to the rule | **yes** | no |
-| survives a file being copied | **yes** | no |
-| can a puzzle carry both a query and expectations? | needs a rule | trivially |
-| reserved word cost | `test` leaves SYMBOL | none |
+### (b) A `(test …)` head replacing `(query …)`
 
-**The user asked for the in-file form and that is the recommendation**, for
-the reason the table's third row names: an expectation that travels with the
-program is one that cannot rot apart from it. The grammar cost is real and is
-this stage's main work.
+A file is either a puzzle to solve or a program to check. Costs a parser case,
+a dumper case, a macro pass, every AST walker, a `grammar.lark` change and a
+SYMBOL exclusion for `test` — and needs its own vocabulary of assertion keys
+(`:derives`, `:absent`, `:verdict`, `:k`) because the form has no other shape
+to borrow.
 
-### Q-M1a.20 — what may an expectation say?
+### (c) `:expect` on `query`, and several queries per file — **recommended**
 
-Deliberately small, and each entry has to be demanded by a rule from
-[S1a.11.1](s1a.11.1_what_the_stdlib_promises.md):
+Keep `query`. Add one keyword:
 
-- **`:derives (fact …)`** — the fact is in the saturated state;
-- **`:absent (fact …)`** — it is not. This is the direction the
-  disjunctive-prune bug lived in and it is not optional;
-- **`:verdict Solution | Ambiguity | Contradiction`** — with `:k N` where the
-  count is the point;
-- **`:fires rule-name`** / **`:does-not-fire rule-name`** — which rule did the
-  work, because "the right fact by the wrong route" is exactly what a stdlib
-  test should catch.
+```lisp
+(query
+  :goal   (pet-loc Zebra ?h)
+  :expect ((pet-loc  Zebra House-5) (pet-loc Fox House-1) …
+           (nation-loc Japanese House-5) …))
+```
 
-Everything else waits for a rule that needs it.
+and allow **several `query` heads in one file**, each an independent check
+over the same ontology and rules.
 
-### Does `test` replace `query`, or coexist?
+Three things make this better than (b) rather than merely cheaper:
 
-Replacing is cleaner and matches the user's framing: a `test` program is
-checked, a `query` program is solved. But `:verdict` expectations need the
-search, and the search needs a query to have a goal. **Recommendation:** a
-`(test …)` form *may* carry the query keys it needs (`:goal`,
-`:hypothesis-relations`), so it subsumes `query` rather than sitting beside
-it, and a file with both is a load error.
+1. **The expectation is the engine's own output shape.** A model. Writing a
+   test is "run it, read the answer, review it"; reading a test is reading a
+   model rather than parsing a list of assertions.
+2. **The verdict is implied, not asserted.** One solution means `Solution`;
+   `(or S1 S2 …)` means `Ambiguity` with `k` equal to the number of disjuncts;
+   the empty expectation means `Contradiction`. Four keys collapse into one,
+   and a whole class of test — "says `:verdict Solution` but lists two models"
+   — becomes unwriteable.
+3. **Several checks per file.** The stdlib's rules are small and share
+   ontologies; one program with four queries beats four programs with one.
+   `:hypothesis-relations` is already per-query, so two queries over one KB can
+   be genuinely different searches — which is a *testing* capability, not an
+   accident.
+
+## The semantics of `:expect`, as the user specified it
+
+> a solution is in turn **at least** the relations from the query's `:goal`,
+> and may contain additional facts for verification, but requires checking
+> **all** relations in the final solution
+
+Read precisely, that is three rules, and the third is the one that gives the
+form its teeth:
+
+1. **The goal's relations are mandatory.** An expectation that does not pin
+   what the query asked is not an expectation.
+2. **More is allowed.** Any fact may be listed, so a test can pin the
+   consequence at a distance that
+   [S1a.11.4](s1a.11.4_stdlib_corpus.md) says is the only kind worth writing.
+3. **Naming a relation closes it.** If `:expect` mentions `pet-loc` at all,
+   the listed `pet-loc` facts are the model's *complete* `pet-loc` extent —
+   not a subset. Relations the expectation never mentions are unconstrained.
+
+Rule 3 is the design. It sits exactly between the two useless extremes: a
+per-fact assertion cannot catch a *surplus* fact, and a whole-state golden
+pins 250 facts of `is-a*` and activator noise that no test means to assert.
+Relation-closure is exact on what the test is about and silent on the rest.
+
+**And it would have caught this morning's bug.** The 23 spurious models of
+`zebra2-minus-15` were surplus: they placed Chesterfields and the Fox in one
+house. A per-fact `:derives` would have passed on every one of them. An
+`:expect` naming `smoke-loc` and `pet-loc` fails on all 23.
+
+## What (c) does not cover
+
+**Route.** `:fires R` / `:does-not-fire R` — "the right fact by the wrong
+rule" — has no home in a form whose vocabulary is facts. For the stdlib that
+matters: `domain-elimination` and `range-elimination` can derive the same
+positive from opposite directions, and a test that cannot tell them apart is
+not testing either.
+
+**Recommendation: leave it out of the first cut**, and let
+[S1a.11.1](s1a.11.1_what_the_stdlib_promises.md)'s table say whether any rule
+actually needs it. If one does, `:fires` is a second keyword on the same query
+and costs nothing structurally — which is another way (c) beats (b): its
+vocabulary can grow one key at a time instead of arriving whole.
+
+## The loader change is real, and it has a trap
+
+**Today the last `query` silently wins.** `from_ir.rs`'s "Last one wins, for
+both blocks", pinned in both engines by a test named
+`the_last_query_and_the_last_config_win`. So a file with two queries loads,
+runs one, and says nothing — which is precisely the failure mode a *test* file
+must not have. A test program whose second check is silently discarded is
+worse than no test program.
+
+So `Program.query` becomes plural, and every consumer of it has to say what it
+does with N: `solve` (one query is the run; N is either an error or N runs),
+`render`, `--json-summary`, the trace, and `shape.rs`'s parity views. The
+existing "last wins" behaviour for `config` is untouched and should stay —
+config is a *setting*, queries are *content*, and the two want opposite rules.
 
 ## Acceptance
 
-- `grammar.lark` carries the form, and the change is reviewed as a
-  cross-milestone edit — [M2](../../m2_nl_to_ir/README.md)'s GBNF lift reads
-  that file, and a form the NL frontend can emit but not mean is a trap.
-- Parse → dump → parse round-trips, like every other form
-  ([`docs/kernel/ir/`](../../../docs/kernel/ir/)).
-- A `(test …)` in a file run under `solve` is a **load error with a clear
-  message**, not silence. The failure mode to design against is a file whose
-  expectations nothing ever evaluates.
-- `test` as a relation name in an existing program is either still legal or
-  the breakage is enumerated. `grammar.lark`'s SYMBOL exclusion list is the
-  mechanism; the corpus says whether anything is affected.
-- The form is documented in `docs/kernel/ir/03-ein-lang/` alongside `query`.
+- `:expect` parses, dumps and round-trips like every other query keyword, and
+  `grammar.lark` — the spec of record — carries it. M2's GBNF lift reads that
+  file, so this is a **cross-milestone edit**, reviewed as one.
+- **Several `query` heads load, and all of them are reachable.** The silent
+  last-wins discard is gone, and a file that relied on it is either an error or
+  is enumerated. The corpus says how many such files exist.
+- Rule 3 (relation-closure) is implemented and **tested in the failing
+  direction**: a model with a surplus fact in a named relation fails, and the
+  message says which fact was unexpected.
+- `(or …)` compares model **sets**, not sequences — the order the search
+  happens to find models in is exactly what
+  [S1a.7.0](../p1a.7_parallelism/s1a.7.0_speculation_audit.md)'s invariance
+  tests assert is not observable.
+- The `Contradiction` spelling is decided and is not `:expect ()` if that could
+  be read as "expect the empty model". `:expect none` reads better; the stage
+  picks one and documents it.
+- A query carrying `:expect` under plain `solve` either checks it or errors —
+  **never ignores it**. Same reasoning as the last-wins trap.
+- The form is documented in `docs/kernel/ir/03-ein-lang/` next to `query`.
 
 ## Tasks
 
-### Task T1a.11.2.1 — Settle Q-M1a.19 and Q-M1a.20, in writing
-### Task T1a.11.2.2 — Grammar and AST
-### Task T1a.11.2.3 — Loader and validation
+### Task T1a.11.2.1 — Settle Q-M1a.19 and Q-M1a.20 in writing
+### Task T1a.11.2.2 — `Program.query` becomes plural
 
-An expectation naming an undeclared relation, or a `:fires` naming a rule that
-does not exist, is a **load error**. A test that silently checks nothing is
-worse than no test.
+The trap above, and the widest-reaching part of the stage: every reader of
+`program().query` in both the engine and the renderers.
 
-### Task T1a.11.2.4 — Dumper, macro pass, renderers
-### Task T1a.11.2.5 — Round-trip and error-message tests
+### Task T1a.11.2.3 — Grammar, AST, dumper, round-trip
+### Task T1a.11.2.4 — The comparison
+
+Relation-closure, `(or …)` as set equality, and the `Contradiction` case.
+Facts compare by content — rendered s-expressions — not by `FactId`, for
+[`fork_audit`](../../../ein.rs/crates/ein-infer/src/fork_audit.rs)'s reason:
+two runs do not share an interner.
+
+### Task T1a.11.2.5 — Validation at load
+
+An `:expect` naming an undeclared relation is a load error. An `:expect` that
+omits the goal's relations is a load error (rule 1). A test that silently
+checks nothing is the one outcome this phase cannot afford.
 
 ## Notes
 
-- The strongest argument for keeping the vocabulary small is that this phase
-  is not building a test framework — it is stating what seven modules of rules
-  promise. Every key that is not demanded by a rule in S1a.11.1's table is
-  speculative surface.
+- Most `std.*` rules fire during **saturation**, not search —
+  `functional-negative`, `domain-elimination`, `typecheck-arg-*`, `symmetric`,
+  `transitive`, `includes`. That is not an objection to a query-shaped
+  expectation: with no hypotheses the search degenerates to "`alive` is empty,
+  so root *is* the unique model", and the solution the expectation compares
+  against is the saturated root. It does mean every stdlib test pays a solve,
+  which for these programs is microseconds.
+- Rule 3 has one ambiguity worth nailing down: does closing a relation include
+  its stored negatives, `(not (R a b))`? **Recommendation: no** — the positive
+  extent only, with `(not …)` listable as an ordinary fact when a test means
+  to pin one. Otherwise every expectation drags in the negative-completion
+  rules' entire output, which is most of a model.

@@ -39,7 +39,7 @@ that gets **stronger** when the oracle leaves.
 | stage | title | est. |
 |---|---|---|
 | [S1a.11.1](s1a.11.1_what_the_stdlib_promises.md) | What the stdlib promises, and what is exercised | 3 d |
-| [S1a.11.2](s1a.11.2_test_form.md) | The `(test …)` form | 3 d |
+| [S1a.11.2](s1a.11.2_test_form.md) | How a program states what it expects | 3 d |
 | [S1a.11.3](s1a.11.3_test_subcommand.md) | `ein test` | 2 d |
 | [S1a.11.4](s1a.11.4_stdlib_corpus.md) | The stdlib corpus | 4 d |
 | [S1a.11.5](s1a.11.5_gate.md) | In the gate | 1 d |
@@ -62,29 +62,40 @@ that gets **stronger** when the oracle leaves.
 
 ## Risks
 
-- **A test form is language surface.** M1a's non-goals say "no new syntax, no
-  new keywords" — that was written to keep the *port* honest against an oracle.
-  With one implementation the constraint changes meaning, but the cost does
-  not vanish: `(test …)` has to be parsed, dumped, macro-expanded, rendered
-  and round-tripped like any other form, and every tool that walks an AST
-  grows a case. **The alternative is a sidecar** (expectations in
-  `corpus.toml`, or a `.expect` file beside the `.ein`) which costs no grammar
-  at all. [S1a.11.2](s1a.11.2_test_form.md) has to choose, and the user's
-  stated preference is the in-file form.
+- **The expectation form is language surface.** M1a's non-goals say "no new
+  syntax, no new keywords" — written to keep the *port* honest against an
+  oracle, and narrowed rather than broken now that there is one
+  implementation. The cost does not vanish: whatever the form is, it is
+  parsed, dumped, macro-expanded, rendered and round-tripped, and
+  `grammar.lark` is the spec of record that M2's GBNF lift reads.
+  [S1a.11.2](s1a.11.2_test_form.md) weighs three shapes and recommends the
+  cheapest of them — **`:expect` on `query`, with several queries per file**
+  (the user's, 2026-08-20) — which costs one keyword instead of a new head.
+- **…and it costs a loader change with a trap.** Today the **last `query`
+  silently wins**, pinned in both engines by a named test. A *test* file whose
+  second check is silently discarded is worse than no test file, so
+  `Program.query` becomes plural and every consumer of it says what it does
+  with N. That is the widest-reaching part of the phase and it is in the first
+  implementation stage, not the last.
 - **Expressive creep.** The moment expectations can say "this fact holds", the
   next request is "this fact holds *because*", then a quantifier, then a
-  little language. The stdlib's rules are the reason to stop early: what they
-  need is *derives / does not derive / verdict is*, and each addition past
-  that should have a rule that demanded it.
+  little language. The stdlib's rules are the reason to stop early — and the
+  recommended form resists it structurally, because an expectation shaped like
+  a *model* has only one thing it can say. The vocabulary then grows one
+  keyword at a time, each demanded by a rule.
 - **A test that only restates the rule.** `functional-negative` asserts
   `(not (R a b'))`; a test that says "and then `(not (R a b'))` holds" has
   checked that the engine can read. The expectations that matter state the
   *consequence at a distance* — what the rule makes possible two firings
   later — and the stage says so explicitly because the cheap kind is easy to
   write by the dozen.
-- **`test` as a head is not a reserved word today.** A puzzle may already use
-  it as a relation name. `grammar.lark`'s SYMBOL exclusions are the mechanism
-  and the change is not free.
+- **Route is not expressible in the recommended form.** An expectation made of
+  facts cannot say *which rule* derived them, and for the stdlib that matters:
+  `domain-elimination` and `range-elimination` reach the same positive from
+  opposite directions. It is deliberately out of the first cut
+  ([Q-M1a.20](../open_questions.md#q-m1a20--what-may-an-expectation-say)), and
+  [S1a.11.1](s1a.11.1_what_the_stdlib_promises.md)'s table is what decides
+  whether any rule actually needs it.
 
 ## Cross-links
 

@@ -66,7 +66,7 @@ nondeterminism the audit would otherwise have blamed on `W`. **1 078 154
 case-1 enterings over 69 corpus entries, zero differences** — which is also the
 first corpus-scale measurement of the property level 1's whole safety argument
 rests on: `try_commitment_set` is pure with respect to root
-([P1.21 R2](../../m1_engine_hardening/README.md)). `commitment.rs`'s
+(P1.21 R2). `commitment.rs`'s
 `two_enterings_share_no_mutable_state` asserted it on one fixture; this asserts
 it on every entering the corpus has.
 

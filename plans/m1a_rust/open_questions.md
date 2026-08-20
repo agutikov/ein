@@ -27,7 +27,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
 | [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — they are 7–16 % | **closed 2026-08-20: the mechanism is declined at a measured 1.4–2.2 % ceiling**, in [S1a.6.12](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md), which took 38 % off `zebra -e` without it |
 | [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
-| [Q-M1a.19](#q-m1a19--in-file-expectations-or-a-sidecar) | Test expectations: in the `.ein` file, or beside it? | open — recommendation: in-file `(test …)`; [S1a.11.2](p1a.11_stdlib_conformance/s1a.11.2_test_form.md) decides |
+| [Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | open — recommendation: **`:expect` on `query`, several queries per file**; [S1a.11.2](p1a.11_stdlib_conformance/s1a.11.2_test_form.md) decides |
 | [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | open — recommendation: four keys, each demanded by a rule |
 | [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1a.12](p1a.12_exhaustive_search/README.md); `exhausted` keeps its meaning either way |
 
@@ -874,55 +874,77 @@ and [fork_delta_trace.md](p1a.6_performance/fork_delta_trace.md); what it cost
 the harness — 7 T3 cells, 97 T2 — is the specification of
 [S1a.6.10](p1a.6_performance/s1a.6.10_parity_contract.md).
 
-## Q-M1a.19 — In-file expectations, or a sidecar?
+## Q-M1a.19 — How does a program state what it expects?
 
-[P1a.11](p1a.11_stdlib_conformance/README.md) needs somewhere to state what a
-stdlib rule should derive. Two shapes:
+[P1a.11](p1a.11_stdlib_conformance/README.md) needs somewhere to say what a
+stdlib rule should derive. Three shapes; the third is the user's, proposed
+2026-08-20 after the first two, and it is the recommendation.
 
-- **in-file** — a `(test …)` head, replacing `(query …)`, carried by the
-  program it describes;
-- **sidecar** — the expectation in `corpus.toml`, or a `.expect` file beside
-  the `.ein`.
+| | (a) sidecar | (b) `(test …)` head | (c) `:expect` on `query` |
+|---|---|---|---|
+| grammar cost | none | new head, SYMBOL exclusion, every AST walker | **one keyword** |
+| travels with the program | no | yes | yes |
+| several checks per file | yes | needs a rule | **yes — one per query** |
+| the expectation's shape | assertions | assertions | **the engine's own output** |
+| verdict / `k` | separate keys | separate keys | **implied by the shape** |
+| exactness | per fact | per fact | **relation-closed** |
+| route (`:fires R`) | expressible | expressible | not expressible |
+| loader change | none | a new form | **`query` becomes plural** |
 
-The sidecar costs no grammar. The in-file form costs a parser case, a dumper
-case, a macro pass, every AST walker, `grammar.lark` — and, because M2's GBNF
-lift reads that file, a cross-milestone edit.
+**Recommendation: (c).** Not because it is cheapest — though it is — but
+because of the fourth and sixth rows. An expectation shaped like a *model* is
+written by running the program and reviewing the answer, and read as an
+answer; and **relation-closure** ("naming a relation asserts its complete
+extent, and says nothing about relations it does not name") sits exactly
+between the two useless extremes. A per-fact assertion cannot catch a
+*surplus* fact; a whole-state golden pins 250 facts of `is-a*` and activator
+noise no test means to assert.
 
-**Recommendation: in-file**, which is also what the user asked for, on one
-argument: an expectation that travels with the program cannot rot apart from
-it. A sidecar keyed by path is a second thing to keep in step, and this
-milestone has just spent a phase removing the last one.
+The concrete argument is this morning's bug: the 23 spurious models of
+`zebra2-minus-15` were surplus — Chesterfields and the Fox in one house. A
+per-fact `:derives` passes on every one. An `:expect` naming `smoke-loc` and
+`pet-loc` fails on all 23.
 
-Note the ordering this implies. Adding a surface form to *two* implementations
-in step is expensive, so P1a.11 comes after
-[P1a.10](p1a.10_single_implementation/README.md) — which is also why the old
-non-goal ("no new syntax, no new keywords") is narrowed rather than simply
-broken: it was a rule about keeping two parsers in step.
+**The cost is a loader change with a trap in it.** Today the last `query`
+silently wins (`from_ir.rs`, "Last one wins, for both blocks", pinned in both
+engines by `the_last_query_and_the_last_config_win`). A *test* file whose
+second check is silently discarded is worse than no test file, so
+`Program.query` becomes plural and every consumer says what it does with N.
+`config`'s last-wins stays: a config is a setting, a query is content, and the
+two want opposite rules.
 
 Decided in [S1a.11.2](p1a.11_stdlib_conformance/s1a.11.2_test_form.md).
 
 ## Q-M1a.20 — What may an expectation say?
 
-The vocabulary question, and the one that decides whether P1a.11 stays a
-week's work or becomes a test framework. The proposed set, each key demanded
-by a rule in [S1a.11.1](p1a.11_stdlib_conformance/s1a.11.1_what_the_stdlib_promises.md)'s
-table:
+Under (c) the question narrows sharply, because the *shape* is fixed — an
+expectation is a solution — and what is left is three semantic rules and one
+residue.
 
-| key | what it asserts | why a rule needs it |
-|---|---|---|
-| `:derives (fact …)` | the fact is in the saturated state | the positive half of every rule |
-| `:absent (fact …)` | it is not | **the half that finds bugs** — `disjunctive-prune`'s guard was wrong in exactly this direction |
-| `:verdict V` / `:k N` | the search's answer | `std.elim`'s `no-room-left` asserts `(false)`; the verdict is its only observable |
-| `:fires R` / `:does-not-fire R` | which rule did the work | "the right fact by the wrong route" is what a stdlib test exists to catch |
+The rules, as the user specified them: an expectation is **at least** the
+relations named by the query's `:goal`; it **may** carry further facts for
+verification; and **naming a relation closes it** — the listed facts are that
+relation's complete extent in the model. `(or S1 S2 …)` is the ambiguous case
+and compares model *sets*, with `k` implied by the count.
 
-Everything past that waits for a rule that demands it. **Recommendation: ship
-the four, and treat a fifth as a finding about a rule** rather than a gap in
-the vocabulary.
+Two sub-questions the stage has to settle:
 
-One sub-question with no obvious answer: `:fires` has two readings, because a
-rule that re-derives an existing fact *has* fired but is elided at `normal`
-event level. The verbose sense ("this rule produced this state") is the useful
-one; whichever is chosen has to be written down, because the two disagree.
+- **Do stored negatives count?** Does closing `pet-loc` also assert the
+  extent of `(not (pet-loc …))`? **Recommendation: no** — the positive extent
+  only, with a `(not …)` listable as an ordinary fact when a test means to pin
+  one. Otherwise every expectation drags in the negative-completion rules'
+  whole output, which is most of a model.
+- **How is `Contradiction` spelled?** Not `:expect ()` if that reads as "the
+  empty model". `:expect none` is clearer.
+
+**The residue is route.** `:fires R` / `:does-not-fire R` — "the right fact by
+the wrong rule" — has no home in a vocabulary of facts, and it matters for the
+stdlib: `domain-elimination` and `range-elimination` can derive the same
+positive from opposite directions. **Recommendation: leave it out of the first
+cut** and let [S1a.11.1](p1a.11_stdlib_conformance/s1a.11.1_what_the_stdlib_promises.md)'s
+table say whether a rule needs it. Under (c) it arrives as one more keyword on
+the same query, which is the other way (c) beats (b): the vocabulary grows a
+key at a time instead of arriving whole.
 
 ## Q-M1a.21 — May the search stop before the lattice is exhausted?
 
