@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 """The parity gate's own negative control — a deliberately broken `ein`.
 
+**Superseded.** The control moved into `cargo test` at
+[S1a.10.3](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)
+as `ein.rs/crates/ein-infer/tests/event_cut_control.rs`, which applies these
+same three mutations to a stream it produced in-process. The mutation was
+always applied to the *artefact*, so the two processes and the harness that
+diffed them bought nothing but a way to produce one — and the harness is gone.
+This script no longer has a runner; deleting it is
+[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+T1a.10.4.1's.
+
     ein-conformance run --tier T2 \\
         --impl-a ".venv-pypy/bin/python -m ein.cli" \\
         --impl-b "python3 utils/mutant_ein.py ein.rs/target/release/ein"
