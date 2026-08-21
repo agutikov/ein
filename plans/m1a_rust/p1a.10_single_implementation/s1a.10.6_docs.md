@@ -11,9 +11,16 @@ way once the Python engine is gone:
 
 - **`docs/api/`** is *the Python embedding contract* — `parse` →
   `KnowledgeBase` → `solve` → verdict. Its subject moves from ein.py to
-  [P1a.9](../p1a.9_bindings_release/README.md)'s PyO3 module. The contract is
-  meant to survive unchanged; that is what
-  [S1a.9.2](../p1a.9_bindings_release/s1a.9.2_api_parity_tests.md) was for.
+  [P1a.9](../p1a.9_bindings_release/README.md)'s PyO3 module, and **that
+  module does not exist yet**: the phase dependency was reversed on
+  2026-08-21, so P1a.9 runs *after* this one. This stage therefore cannot
+  give `docs/api/` a subject. What it must do instead is say so **on the
+  pages themselves** — a documented API that quietly names a dead module is
+  the failure mode; one that names the stage where its implementation lands
+  ([S1a.9.1](../p1a.9_bindings_release/s1a.9.1_pyo3_surface.md), documented
+  by [S1a.9.4](../p1a.9_bindings_release/s1a.9.4_documentation.md)) is a
+  plan. The contract itself is meant to survive unchanged; that is what
+  [S1a.9.2](../p1a.9_bindings_release/s1a.9.2_api_parity_tests.md) is for.
 - **`docs/kernel/`** is the specification ein.rs implements, and it is now the
   *only* statement of intent that is not also the implementation. It gets more
   load-bearing. `docs/kernel/inference/python_impl.md` is the exception — it
@@ -23,8 +30,12 @@ way once the Python engine is gone:
 
 ## Acceptance
 
-- `docs/api/` describes the PyO3 surface, with the worked example verified
-  against it rather than against ein.py.
+- `docs/api/` no longer describes a module that can be imported from this
+  repo, and **every page says which stage gives it one** rather than reading
+  as current. Describing the PyO3 surface, and verifying the worked example
+  against it, is
+  [S1a.9.4](../p1a.9_bindings_release/s1a.9.4_documentation.md)'s — this
+  stage's job is that no page is *false* in the interval.
 - `docs/kernel/` contains no claim that rests on "ein.py does X" as evidence.
   Where the Python implementation *was* the specification of a quirk — the
   `%ignore` delayed-match parse-error positions

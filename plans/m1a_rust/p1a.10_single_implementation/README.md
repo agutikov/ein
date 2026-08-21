@@ -2,10 +2,25 @@
 
 **Milestone:** [M1a — Rust port](../README.md)
 **Estimate:** 3 weeks (16 days of stages)
-**Depends on:** [P1a.9](../p1a.9_bindings_release/README.md) — the PyO3
-surface is what `docs/api/` describes after the Python engine is gone, and
-[S1a.9.2](../p1a.9_bindings_release/s1a.9.2_api_parity_tests.md) is the last
-stage that compares the two modules while both exist.
+**Depends on:** nothing outstanding. It was
+[P1a.9](../p1a.9_bindings_release/README.md), **and that is reversed —
+2026-08-21**: P1a.9 depends on *this* phase and releases ein.rs alone.
+
+> The argument for the old order was that `docs/api/` documents the Python
+> embedding surface and the PyO3 module is its successor, so removing the
+> engine first would delete the only implementation of a documented contract.
+> True, and priced: `docs/api/` documents an unimplemented surface for the
+> length of one stage.
+>
+> The argument for the new order is that **there is nothing to release two
+> of**. A binding phase that ships while a second Python engine is in the
+> tree has to answer "which one does `import ein` get", keep two exception
+> hierarchies in step, publish two packages, and parameterise its test suite
+> over both — all of it work that exists only because the other engine does.
+> [S1a.10.6](s1a.10.6_docs.md) states the gap;
+> [S1a.9.4](../p1a.9_bindings_release/s1a.9.4_documentation.md) closes it,
+> and is the milestone's last documentation stage. The P1a.9 stages are
+> amended to match.
 **Decides:** [Q-M1a.2](../open_questions.md#q-m1a2--does-einpy-have-a-sunset)
 — reversing its recommendation.
 **Status:** **in progress** — [S1a.10.1](s1a.10.1_bank_the_oracle.md) and
@@ -147,10 +162,17 @@ Three consequences, all recorded in the
   the divergence ledger and this phase's own record.
 - The tree is `docs/ plans/ examples/ stdlib/ ein.rs/ utils/` plus the
   top-level files — nothing else.
-- **The `.einb` container ([P1a.8](../p1a.8_binary_container/README.md)) and
-  the PyO3 module ([P1a.9](../p1a.9_bindings_release/README.md)) still pass
-  their own gates**, which are the two surfaces that were checked against the
-  Python engine and now cannot be.
+- **Neither [P1a.8](../p1a.8_binary_container/README.md)'s `.einb` container
+  nor [P1a.9](../p1a.9_bindings_release/README.md)'s PyO3 module has started**,
+  so this criterion — "they still pass their own gates" — has nothing to
+  check and is **retired** rather than quietly met. What it was guarding is
+  real and moves to those phases: both are surfaces that would have been
+  checked against the Python engine and now cannot be, so each has to state
+  what it is checked against instead. P1a.9 answers *the CLI, and the
+  contract in `docs/api/`*
+  ([S1a.9.2](../p1a.9_bindings_release/s1a.9.2_api_parity_tests.md));
+  P1a.8's answer is
+  [Q-M1a.22](../open_questions.md#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate)'s.
 
 ## Risks
 
@@ -174,10 +196,17 @@ Three consequences, all recorded in the
   check *self*-consistency (no panic, round-trip, determinism across hash
   seeds) — strictly weaker, and the acceptance has to say so rather than keep
   the old headline.
-- **`docs/api/` changes subject.** It documents the Python embedding surface;
-  after this it documents the PyO3 one. If P1a.9 has not landed, this phase
-  deletes the only implementation of a documented contract.
-  **That is why the dependency is hard, not advisory.**
+- **`docs/api/` has no subject for one stage.** It documents the Python
+  embedding surface; after this it documents the PyO3 one, and the PyO3 one
+  does not exist yet. This was the reason the dependency on P1a.9 was called
+  hard; **the order is reversed instead** (see the amendment above), so the
+  risk is accepted rather than avoided: for the interval between
+  [S1a.10.6](s1a.10.6_docs.md) and
+  [S1a.9.4](../p1a.9_bindings_release/s1a.9.4_documentation.md), five pages
+  describe a contract nothing implements. S1a.10.6 must say so **on the
+  pages themselves** — a documented API that quietly names a dead module is
+  the failure mode; one that says "the implementation lands in S1a.9.1" is a
+  plan.
 - **M1 semantics have one home.** Today a semantic change lands twice and the
   harness checks the two agree. After this, "what the engine does" is
   whatever ein.rs does, and `docs/kernel/` is the only statement of intent

@@ -2,11 +2,16 @@
 
 **Phase:** P1a.10 (One implementation)
 **Estimate:** 4 days
-**Depends on:** [P1a.9](../p1a.9_bindings_release/README.md) — **for the
-deletion, not for this stage.** The phase's hard dependency is `docs/api/`
-losing its subject at [S1a.10.5](s1a.10.5_removal.md)/[.6](s1a.10.6_docs.md);
-an inventory that deletes nothing has none, and running it *first* is the whole
-point of the gate below. P1a.7 is paused and P1a.8/P1a.9 have not started.
+**Depends on:** nothing — an inventory that deletes nothing has no
+dependencies, and running it *first* is the whole point of the gate below.
+
+> It was recorded as depending on
+> [P1a.9](../p1a.9_bindings_release/README.md) "for the deletion, not for
+> this stage", because `docs/api/` loses its subject at
+> [S1a.10.5](s1a.10.5_removal.md)/[.6](s1a.10.6_docs.md). **That dependency
+> was reversed on 2026-08-21** — P1a.9 releases ein.rs alone and runs after
+> this phase — so the qualifier is moot and the gap is accepted and named in
+> the phase README. P1a.7 is paused; P1a.8 and P1a.9 have not started.
 **Gate:** nothing in this phase is deleted until this stage's ledger has an
 owner for every row.
 

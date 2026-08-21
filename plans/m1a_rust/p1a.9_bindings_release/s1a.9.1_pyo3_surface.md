@@ -2,8 +2,8 @@
 
 **Phase:** P1a.9 (Bindings and release)
 **Estimate:** 3 days
-**Depends on:** [P1a.5](../p1a.5_presentation/README.md) — parity is
-enough
+**Depends on:** [P1a.10](../p1a.10_single_implementation/README.md) — the
+phase's, and there is one engine to bind
 **Implements:** [`docs/api/ein.md`](../../../docs/api/ein.md)'s five
 steps, in Rust
 
@@ -31,11 +31,15 @@ results out, no callbacks into Python on a hot path.
   `solve(kb, *, stop_after=None, max_set_size=5, config=None, …)`,
   and the verdict readers.
 - Exceptions map: `IRParseError`, `KBLoadError`, `CompileError`,
-  `BudgetExceededError`, `SaturatorStepLimitError` — same names, same
-  message text, same inheritance where it matters (`IRParseError` is a
-  `SyntaxError` in ein.py).
+  `BudgetExceededError`, `SaturatorStepLimitError` — the names and message
+  text `docs/api/` documents and the CLI already prints, with the
+  inheritance that mattered in ein.py (`IRParseError` was a `SyntaxError`)
+  kept because consumers were written against it.
 - No GIL held during a solve; a `KeyboardInterrupt` interrupts one.
-- Round-trip: `dump(parse(x))` from `ein_rs` equals `ein`'s.
+- Round-trip: `dump(parse(x))` from `ein_rs` equals the CLI's, and
+  `dump → parse → dump` is a fixed point — the property
+  `ein-ir/tests/fuzz_properties.rs` already asserts in-process, asserted
+  again across the boundary.
 
 ## Tasks
 
@@ -52,8 +56,8 @@ documented uses; `dump` / `dump_compact` / `dump_canonical`.
 
 Decision to record: do **not** expose the full typed AST as Python
 objects in v1. Reconstructing `SForm` / `Atom` / `KwPair` on the Python
-side would be a second data model to keep in parity for no current
-consumer — M2 produces *text* and consumes *verdicts*. Add it when
+side would be a second data model to keep in step with the Rust one for no
+current consumer — M2 produces *text* and consumes *verdicts*. Add it when
 something needs it.
 
 ### Task T1a.9.1.3 — KB layer
@@ -80,20 +84,25 @@ checkpoints so `KeyboardInterrupt` works.
 ### Task T1a.9.1.5 — Trace layer
 
 `linearize(verdict, …)` and `render_markdown(trace, …)`,
-`render_solution_table`. These return strings, so they are cheap to
-bind and immediately comparable byte-for-byte with ein.py's.
+`render_solution_table`. These return strings, so they are cheap to bind
+and immediately comparable byte-for-byte with what `ein solve --trace`
+writes — and with the twelve S1a.6.11 goldens, which are the same bytes.
 
 ### Task T1a.9.1.6 — Errors and types
 
-Map every engine error to a Python exception class with ein.py's name,
-message and base class. Where ein.py raises a bare `KeyError` or
-`TypeError` (Q-M1a.14), match the *type* and message.
+Map every engine error to a Python exception class with the name, message
+and base class `docs/api/` records. Where the documented behaviour was a
+bare `KeyError` or `TypeError` (Q-M1a.14), match the *type* and message.
+The reference is the documentation plus `examples/broken/**/*.expected` —
+the checked-in diagnostics, which are ein.py's own text — since the engine
+that raised them is gone by the time this stage runs.
 
 ## Notes
 
-- The module is `ein_rs`, not `ein`, so both can be installed side by
-  side — which is what
-  [S1a.9.2](s1a.9.2_api_parity_tests.md)'s parameterised tests need.
+- The module is `ein_rs`, not `ein`. The reason was side-by-side
+  installation with the Python package; that package is gone, so the name
+  is an open choice — see the phase README's note and
+  [S1a.9.3](s1a.9.3_packaging.md).
 - If a hot loop ever needs to cross the boundary per fact, that is a
   design smell: the right answer is a batch call or an `--events`
   subscription, not a faster FFI.

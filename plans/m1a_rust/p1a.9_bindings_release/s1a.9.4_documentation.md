@@ -5,33 +5,54 @@
 **Depends on:** [S1a.9.3](s1a.9.3_packaging.md)
 **Implements:** the milestone's closing obligation
 
+> **Amended 2026-08-21.** This stage was written for a tree with two
+> implementations in it: it would have said "ein.py is the oracle, ein.rs is
+> what ships". [P1a.10](../p1a.10_single_implementation/README.md) removed
+> the first, and it runs *before* this phase now, so the "two
+> implementations, here is why" framing is gone. What is left is sharper and
+> smaller: **there is one engine, and the documentation has to describe its
+> two surfaces** — the CLI and `ein_rs`.
+>
+> The division of labour with
+> [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md) is the thing
+> to keep straight. S1a.10.6 removes what became false when the Python engine
+> left, and states the one gap it cannot close: `docs/api/` documents an
+> embedding API with no implementation until this phase ships. **S1a.9.4
+> closes that gap**, and it is the last documentation stage in the milestone.
+
 ## Context
 
-The repo's documentation currently describes ein.py as *the*
-implementation: `docs/kernel/inference/python_impl.md` is the engine
-internals page, `docs/api/` is "the Python embedding API", and
-`AGENTS.md` orients a reader entirely around `ein.py/`. After this
-milestone that is wrong in a specific way — ein.py is still real and
-still green, but it is the **oracle and reference**, and ein.rs is what
-ships.
+The repo's documentation described ein.py as *the* implementation:
+`docs/kernel/inference/python_impl.md` was the engine internals page,
+`docs/api/` is "the Python embedding API", and `AGENTS.md` oriented a reader
+entirely around `ein.py/`. S1a.10.6 took the false half out. What it could
+not do is give `docs/api/` a subject: the PyO3 module does not exist until
+[S1a.9.1](s1a.9.1_pyo3_surface.md).
 
-This stage makes the documentation say that, without rewriting the
-kernel docs (which are implementation-independent by design and stay
-exactly as they are — they are the specification both engines
-implement).
+This stage makes the documentation say what is true, without rewriting the
+kernel docs (which are implementation-independent by design and stay exactly
+as they are — they are the specification the engine implements).
 
 ## Acceptance
 
-- A reader arriving at the repo learns, within one screen, that there
-  are two implementations, which one ships, and why the other exists.
-- No documentation page claims ein.py is the only implementation.
-- `plans/README.md`'s status table records M1a as shipped, with its date
-  and its measured outcome.
+- A reader arriving at the repo learns, within one screen, what ein is,
+  that ein.rs is the implementation, and how to reach it — as a binary, as
+  crates, or as `ein_rs`.
+- **`docs/api/` documents `ein_rs`**, page for page, and every page's claims
+  are executed by [S1a.9.2](s1a.9.2_api_parity_tests.md)'s suite. This is
+  the gap S1a.10.6 recorded and could not close.
+- `plans/README.md`'s status table records M1a as shipped, with its date and
+  its measured outcome.
 - Every number this milestone changed is updated where it is quoted, with
-  the old value labelled rather than deleted.
-- `./run_tests.sh` still green — the oracle is part of the deliverable.
-
-After p1a phase completion repository must not contain any reference to Python ein.py or earlier implementations, ein.rs become reference implementation.
+  the old value **labelled** rather than deleted — and every CPython/PyPy
+  figure labelled *frozen*, since nothing can re-measure one
+  ([S1a.10.4](../p1a.10_single_implementation/s1a.10.4_utils.md)).
+- **`git grep -i 'ein\.py'` returns only history**: the divergence ledger,
+  the phase records, and dated measurements. No page describes it as
+  something a reader can run. (The user's standing requirement, recorded
+  here at the phase that closes the milestone: *after P1a completion the
+  repository must not contain any reference to the Python implementation
+  except as record; ein.rs is the reference implementation*.)
 
 
 
@@ -39,29 +60,39 @@ After p1a phase completion repository must not contain any reference to Python e
 
 ### Task T1a.9.4.1 — Orientation
 
-`AGENTS.md` (= `CLAUDE.md`): add `ein.rs/` beside `ein.py/` under *Where
-things live*, note that `stdlib/` and `examples/` are shared, that
-`conformance/` holds the parity harness, and that **ein.py is the parity
-oracle and must stay green**. Terse — the file is a map.
+`AGENTS.md` (= `CLAUDE.md`): S1a.10.5 and S1a.10.6 have already cut the
+Python tree out of *Where things live*. What this stage adds is the shipped
+surface — the binary, the crates, and `ein_rs` — and where each is
+documented. Terse; the file is a map.
 
-`README.md`: the same, plus install pointers.
+`README.md`: the same, plus install pointers (binary download,
+`cargo install`, `pip install`).
 
 ### Task T1a.9.4.2 — Engine internals
 
-Add `docs/kernel/inference/rust_impl.md` as a sibling of
-`python_impl.md`, describing ein.rs's internals at the same altitude:
-the integer data model, the register matcher, the layered KB, the
-parallel levels. Cross-link the two, and add a line to each saying that
+`docs/kernel/inference/` needs **one** engine-internals page describing
+ein.rs at the altitude `python_impl.md` used: the integer data model, the
+register matcher, the layered KB, the parallel levels. Whether that is a new
+`rust_impl.md` or the old page rewritten in place is S1a.10.6's call, since
+that stage decides what happens to `python_impl.md`; this one owns the
+*content* either way. A line at the top saying
 `architecture_and_algorithms.md` is the shared vocabulary.
 
 ### Task T1a.9.4.3 — Embedding docs
 
-`docs/api/README.md` gains a Rust-embedding page (using the crates
-directly) and a note that `ein_rs` mirrors the Python contract. Each
-existing page gets a line saying the same contract holds for `ein_rs`,
-linking the parity suite
-([S1a.9.2](s1a.9.2_api_parity_tests.md), written from `docs/api/`'s
-perspective as `../../plans/m1a_rust/…`).
+**The five `docs/api/` pages change subject rather than gaining a note.**
+They described `ein.ir` / `ein.kb` / `ein.inference` / `ein.trace`; they
+describe `ein_rs` after this. The contract is the same one — that is the
+point of having kept it — but the module it names is different, and a page
+that says "the same contract holds for `ein_rs`" beside a Python import is
+the shape to avoid.
+
+`docs/api/README.md` also gains a **Rust**-embedding page, using the crates
+directly, which is the surface M1b binds against and which nothing documents
+today.
+
+Every page's claims are executed by [S1a.9.2](s1a.9.2_api_parity_tests.md);
+link it from each.
 
 ### Task T1a.9.4.4 — Update the quoted numbers
 
@@ -80,9 +111,13 @@ and the headline measurement. `plans/m1a_rust/README.md`: a closing
 `**Status:** done — <date>` line under the heading, per the repo's
 "don't delete; the trail is the project's memory" rule.
 
-Update [`divergences.md`](../divergences.md) with its final state (ideally
-empty) and [`open_questions.md`](../open_questions.md) with each
-question's resolution.
+Update [`divergences.md`](../divergences.md) with its final state and
+[`open_questions.md`](../open_questions.md) with each question's resolution.
+"Ideally empty" is no longer the bar and should not be pretended to be:
+D1–D3 record where two implementations differed, one implementation is left,
+and the file is **history that stays** — the phase's own non-goal says so.
+What it should gain is a header saying that, and the note that a *new* entry
+now means two surfaces of one engine disagreeing rather than two engines.
 
 ### Task T1a.9.4.6 — Downstream pointers
 

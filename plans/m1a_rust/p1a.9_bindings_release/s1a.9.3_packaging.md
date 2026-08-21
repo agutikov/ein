@@ -12,20 +12,24 @@ Distribution was reason #1 for the port — "M1b GUI + M2 NL frontend ship
 to end-users; PyPy adds a second interpreter for the user to install,
 ein.rs ships as a single binary". This stage cashes that in: static
 binaries for three platforms, wheels for the PyO3 module, and a release
-process that cannot ship an engine whose parity is unverified.
+process that cannot ship an engine whose gate is red.
 
 ## Acceptance
 
 - `ein` binaries for Linux (x86_64 + aarch64, statically linked against
   musl where practical), macOS (universal2), and Windows (x86_64), each
-  running the corpus at T3 on its own platform.
+  sweeping the corpus on its own platform —
+  `cargo test -p ein-cli --test corpus_cli` with `EIN_CORPUS_SLOW=1`, which
+  is what "the corpus at T3" means after
+  [S1a.10.3](../p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md).
 - `ein_rs` wheels for CPython 3.10–3.13 on the same platforms, built by
   `maturin`, installable into a clean venv, passing
   [S1a.9.2](s1a.9.2_api_parity_tests.md)'s suite.
 - `ein --version` reports engine version, protocol version, feature
   flags, and the stdlib manifest hash.
-- Release artefacts carry checksums; the release job refuses to publish
-  if conformance-full or the acceptance gate is red.
+- Release artefacts carry checksums; the release job refuses to publish if
+  `cargo test --workspace`, the slow corpus sweep or the acceptance gate is
+  red.
 - A `--no-default-features` build still compiles and passes the unit
   suite (proving the feature gating is real).
 
@@ -61,10 +65,10 @@ confusing behaviour instantly.
 
 ### Task T1a.9.3.5 — Release workflow
 
-Tag → build matrix → conformance-full → acceptance gate → sign and
-publish. The gate ordering matters: artefacts are built first (so a
-failure is diagnosable) but published only after the parity run is
-green.
+Tag → build matrix → the full gate (`cargo test --workspace`, then the slow
+corpus sweep) → acceptance gate → sign and publish. The ordering matters:
+artefacts are built first (so a failure is diagnosable) but published only
+after the gate is green.
 
 ### Task T1a.9.3.6 — Install docs
 
@@ -75,9 +79,16 @@ stdlib (`EIN_STDLIB`) and how to verify a binary against the manifest.
 ## Notes
 
 - Do not install the `ein` binary onto `$PATH` in developer setups by
-  default; the conformance harness invokes both engines by explicit path
-  and an ambiguous `ein` on `$PATH` has burned every project that allowed
-  it.
-- The Python package `ein` (ein.py) keeps its own release cadence and
-  its own name. Any future meta-package that re-exports one of the two
-  is a separate decision, not part of this stage.
+  default. The reason used to be the conformance harness, which invoked
+  both engines by explicit path; the reason that outlives it is that
+  `utils/` names its binary (`$EIN_BIN` / `--bin`) precisely so a
+  measurement says which build it measured, and an ambiguous `ein` on
+  `$PATH` has burned every project that allowed it.
+- **The `ein` *package* name is free**, since the Python package left the
+  tree at
+  [S1a.10.5](../p1a.10_single_implementation/s1a.10.5_removal.md). Whether
+  the wheel stays `ein-rs` / `ein_rs` or claims `ein` is a decision about a
+  published name and it belongs here — it was previously forced, and is now
+  a choice. Note that the PyPI name and the import name can differ, and that
+  a released `ein-rs` is easier to rename before its first release than
+  after.

@@ -3,10 +3,17 @@
 **Phase:** P1a.10 (One implementation)
 **Estimate:** 1 day
 **Depends on:** [S1a.10.2](s1a.10.2_port_the_suite.md),
-[S1a.10.4](s1a.10.4_utils.md)
+[S1a.10.4](s1a.10.4_utils.md), and **T1a.10.5.0 below** — which is a
+precondition, not a step of the removal.
 
-
-before deleteion convert lark grammar into EBNF and preserve in docs for future use
+> **The phase's dependency on [P1a.9](../p1a.9_bindings_release/README.md) is
+> reversed, 2026-08-21.** It was hard — "if P1a.9 has not landed, this phase
+> deletes the only implementation of a documented contract" — and the answer
+> is that P1a.9 now runs *after* this phase and releases ein.rs alone. The
+> cost is one interval in which `docs/api/` documents an unimplemented
+> surface; [S1a.10.6](s1a.10.6_docs.md) states it on the pages and
+> [S1a.9.4](../p1a.9_bindings_release/s1a.9.4_documentation.md) closes it.
+> The full argument is in [the phase README](README.md).
 
 ## Context
 
@@ -46,6 +53,33 @@ unrecoverable mistake.
   behaviour change. The diff should be reviewable as "these things left".
 
 ## Tasks
+
+### Task T1a.10.5.0 — The grammar — ✅ **done 2026-08-21**, `7f10199`
+
+> *before deleteion convert lark grammar into EBNF and preserve in docs for
+> future use* — the user's own precondition, promoted from a floating line to
+> the task it always was, and done first because it is the one loss in this
+> stage a revert would not casually undo.
+
+`ein.py/src/ein/ir/grammar.lark` was 244 lines of Lark and
+`docs/kernel/ir/03-ein-lang/01_grammar.md` opened by calling it **the source
+of truth for syntax**. What would be left after the delete is a
+recursive-descent parser — an implementation, not a specification.
+
+It is [§3 of that document](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)
+now: W3C EBNF, lexical and phrase layers, plus three things the Lark carried
+in header comments and would have lost with the file — why the two layers are
+*not* separated by a scanner pass, what the grammar deliberately leaves to the
+loader, and what pins the spec. Verified rather than transcribed: every
+terminal read off `ein-ir/src/lex.rs`, all 41 Lark productions and its three
+`%ignore` directives mechanically confirmed present, and sixteen sharp-edge
+probes run against the binary — every one of which turns out to be in
+`grammar_decisions.rs`'s 78-case table already, blessed while both parsers
+ran. Twelve dangling links re-pointed.
+
+It also reports a coverage gap rather than leaving it implicit: `BranchOpen`,
+`BranchClose`, `BranchRef`, `ContradictionDecl` and `SymmetryDecl` are in the
+grammar, in no `.ein` file, and emitted by nothing.
 
 ### Task T1a.10.5.1 — The submodules
 
