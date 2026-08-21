@@ -371,7 +371,7 @@ Candidates:
 
 Parked at [M1 Q28](../../../../plans/open_questions.md#q28--empty-parens-node-semantics).
 The grammar currently parses `()` as a placeholder atom `@empty`
-(see [`src/ein/ir/grammar.lark`](../../../../ein.py/src/ein/ir/grammar.lark));
+(see [the grammar](../03-ein-lang/01_grammar.md#3-the-complete-grammar-ebnf));
 no engine semantics are attached.
 
 ### 7.2 Relation declaration shape — body form and args grouping

@@ -106,7 +106,8 @@ explicit audience banner.
   2026-06-17; its plan folder was removed at P1.22 — see git history).
 - Ideas (the user's framing of the project's *goals*): [`plans/ideas/`](../../plans/ideas).
 - External tech index: [`docs/lib/`](../lib/).
-- Source of truth for parsing: [`ein.py/src/ein/ir/grammar.lark`](../../ein.py/src/ein/ir/grammar.lark).
+- Source of truth for parsing: [`ir/03-ein-lang/01_grammar.md` §3](ir/03-ein-lang/01_grammar.md#3-the-complete-grammar-ebnf)
+  — the complete EBNF. It was `grammar.lark` until M1a S1a.10.5.
 - Source of truth for the KB: [`ein.py/src/ein/kb/`](../../ein.py/src/ein/kb/).
 - **End-to-end target trace**:
   [`inference/zebra_walkthrough.md`](inference/zebra_walkthrough.md) — the human

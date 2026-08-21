@@ -19,7 +19,9 @@
 //! ([`crate::parse`]). Each matcher is a pure function of `(&str, Cursor)`, so
 //! the lexer allocates nothing per token and is trivially fuzzable.
 //!
-//! Terminal definitions are `ein.py/src/ein/ir/grammar.lark`'s, verbatim; the
+//! Terminal definitions are `grammar.lark`'s, verbatim — transcribed to EBNF
+//! at [`01_grammar.md` §3.1](../../../../docs/kernel/ir/03-ein-lang/01_grammar.md)
+//! when that file went (S1a.10.5), which is the spec this scanner answers to; the
 //! comments below record only where the Rust differs in *form* from the
 //! regex.
 

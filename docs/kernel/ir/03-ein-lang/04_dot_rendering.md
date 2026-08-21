@@ -400,4 +400,4 @@ the API will reject non-conforming inputs rather than guess.
   concrete DOT encoding.
 - [`../02-data-model/02_store.md`](../02-data-model/02_store.md) —
   `DerivationDAG.to_dot()` and (S1.2.4) `KnowledgeBase.to_dot()`.
-- Grammar: [`src/ein/ir/grammar.lark`](../../../../ein.py/src/ein/ir/grammar.lark).
+- Grammar: [`01_grammar.md` §3](01_grammar.md#3-the-complete-grammar-ebnf).

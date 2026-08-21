@@ -7,7 +7,8 @@ S-expression dialect — a flat sequence of forms classified by head
 model in [`../02-data-model/`](../02-data-model/).
 
 > **Source of truth for what parses**:
-> [`ein.py/src/ein/ir/grammar.lark`](../../../../ein.py/src/ein/ir/grammar.lark).
+> [`01_grammar.md` §3](01_grammar.md#3-the-complete-grammar-ebnf) — the
+> complete EBNF, which is where `grammar.lark` went at M1a S1a.10.5.
 > This tree explains intent, examples, and rendering — the grammar
 > file is canonical.
 

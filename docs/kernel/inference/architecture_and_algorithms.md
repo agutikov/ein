@@ -75,7 +75,7 @@ monotone/non-monotone seam:
 
 ```text
   ein-lang (.ein)                       ── IR layer ──
-        │  parse  (ir/grammar.lark → SForm/Atom/Var/…)
+        │  parse  (ein-ir: lex + recursive descent → Ast)
         ▼
   KnowledgeBase  ───────────────────────────────────────────  ── data model ──
    relations · rules · hrules · facts(ontology|fact|reasoning)

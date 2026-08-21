@@ -2,7 +2,7 @@
 
 The S-expression front end: text → typed AST forms, and back. Source:
 [`ein.py/src/ein/ir/`](../../ein.py/src/ein/ir/) (grammar in
-[`grammar.lark`](../../ein.py/src/ein/ir/grammar.lark)).
+[the grammar](../kernel/ir/03-ein-lang/01_grammar.md#3-the-complete-grammar-ebnf)).
 
 > **Audience: embedders.** Most embedders treat the AST as opaque
 > `SForm`s passed straight to [`ein.kb`](kb.md); you only need `parse`

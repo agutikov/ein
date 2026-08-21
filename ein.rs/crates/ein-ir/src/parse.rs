@@ -1,4 +1,6 @@
-//! Recursive descent over `grammar.lark`, with the two ambiguities Earley
+//! Recursive descent over the grammar
+//! ([`01_grammar.md` §3](../../../../docs/kernel/ir/03-ein-lang/01_grammar.md),
+//! `grammar.lark` until S1a.10.5), with the two ambiguities Earley
 //! resolves implicitly resolved explicitly.
 //!
 //! **Backtracking, not lookahead.** Every production begins `"(" LITERAL`, and

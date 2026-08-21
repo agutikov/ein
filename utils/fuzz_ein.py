@@ -76,7 +76,8 @@ stated expectations — a stdlib rule whose result is written down.
 
 ## The generator
 
-Grammar-directed against `grammar.lark`, over a small universe (3–5 objects,
+Grammar-directed against [the grammar](../docs/kernel/ir/03-ein-lang/01_grammar.md),
+over a small universe (3–5 objects,
 2–4 relations), biased toward the shapes that stress the ordering-sensitive
 paths this port has actually broken on:
 
@@ -322,7 +323,7 @@ class Gen:
 
     def rule(self, i: int, kind: str = "rule") -> str:
         """One rule. The name may not *begin* with a reserved word plus `-`:
-        `rule-0` is a parse error in both engines (grammar.lark's SYMBOL
+        `rule-0` is a parse error (the grammar's SYMBOL
         lookahead is `\\b`-anchored), so the rules are `fire-i` / `hyp-i`."""
         name = f"{'hyp' if kind == 'hrule' else 'fire'}-{i}"
         match, bound = self.body()
