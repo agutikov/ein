@@ -37,6 +37,27 @@ is **566 tests in 1 m 07 s**, none of which starts a Python process, where
 before it was 312 in 9 m 13 s of which 42 shelled out. What is left in the
 phase is the *tree*: the harness, the runner, `utils/`, and `ein.py/` itself.
 
+**[S1a.10.5](s1a.10.5_removal.md) shipped 2026-08-21.** `ein.py/` is gone —
+183 files — along with `ein_pypy.sh`, `venv_install.sh`, three CI jobs and the
+ein.py wheel. `run_tests.sh` keeps its name as a wrapper over `cargo test
+--workspace`, and refuses to run at all without cargo or Graphviz rather than
+skipping a phase. The tag **`two-implementations`** marks the parent commit.
+
+Two things the stage plan did not have. **T1a.10.5.0** — the user's own
+floating precondition, that the Lark grammar become EBNF before the file
+holding it goes — ran first and is
+[§3 of `01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md).
+And **T1a.10.5.1's acceptance was wrong**: "`nlp/` and `smt/` gone, nothing in
+the active tree imports either" is true of the active tree and is the wrong
+test, because every file in them has a named dependent in M1c P1c.2 or M2
+P2.5. The two *submodules* are deinitialised — that is what they actually
+cost, a recursive clone fetching two large upstream repositories — and four
+plan documents were amended to match.
+
+The removal left **232 dangling links**; 18 were this stage's own breakage and
+are fixed, and the other **224 (`docs/kernel/` 220, `docs/api/` 4)** are
+[S1a.10.6](s1a.10.6_docs.md)'s, counted into its stage file.
+
 **[S1a.10.4](s1a.10.4_utils.md) shipped 2026-08-21.** `utils/` is **17
 scripts**, all driving `ein.rs`; the eleven that compared two engines or
 measured the Python one are gone, each either banked by a checked-in test or
@@ -112,7 +133,7 @@ is the one way this phase can go wrong that cannot be undone by a revert.
 | [S1a.10.2](s1a.10.2_port_the_suite.md) | Port the Python test suite | 5 d | ✅ **shipped 2026-08-20** — scope grew, see below |
 | [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) | The corpus without a second engine | 2 d | ✅ **shipped 2026-08-21** — `corpus/`, and a sweep |
 | [S1a.10.4](s1a.10.4_utils.md) | `utils/`, re-aimed at one engine | 2 d | ✅ **shipped 2026-08-21** — 28 scripts → 17, and three fuzz findings |
-| [S1a.10.5](s1a.10.5_removal.md) | The removal | 1 d | has a defect list |
+| [S1a.10.5](s1a.10.5_removal.md) | The removal | 1 d | ✅ **shipped 2026-08-21** — 183 files, and one acceptance line amended on evidence |
 | [S1a.10.6](s1a.10.6_docs.md) | The docs after the oracle | 2 d | |
 
 ### What S1a.10.1 moved
