@@ -111,10 +111,16 @@ algorithm compares to a CDCL solver on the same puzzle.
   repositories at all**. Half the field needs AUR, upstream binaries or a
   build, and that is what makes [S1c.2.2](s1c.2.2_systems_and_install.md) a
   stage rather than a line in a README.
-- **The repo's CVC4 submodule is not CVC5.** `smt/CVC4` is version 1.8 from
-  2021, kept as a scratch checkout after M3 was dropped. CVC5 is a different
-  program with a different name; the benchmark uses CVC5 and the submodule
-  stays where it is.
+- **The repo's CVC4 submodule was not CVC5, and is gone.** `smt/CVC4`
+  pointed at version 1.8 from 2021, kept as a scratch checkout after M3 was
+  dropped, and never checked out by anything. CVC5 is a different program
+  with a different name, and this benchmark uses **CVC5** — so the submodule
+  had no consumer here, and M1a
+  [S1a.10.5](../../m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+  deinitialised it rather than making every clone fetch it. The three
+  hand-written `.smt` files it sat beside **stay**, and are named below.
+  `smt/README.md` has the one command that re-adds it if a stage ever wants
+  1.8.
 - **Comparison invites integration.** Every time a table shows a solver
   winning by 100×, the next thought is "so call it". That is M3, it is
   dropped, and if the numbers argue otherwise the argument belongs in a

@@ -111,9 +111,16 @@ constrained-reasoning research.
     CPython and PyPy columns are frozen constants**, because the instruments
     that produced them (`bench_baseline.py`, `count_work.py`,
     `profile_solve.py`) went with the engine they measured.
-- **`nlp/`, `smt/`** — scratch areas with submodules
-  (`nlp/link-grammar`, `smt/CVC4`). Not wired into the active
-  `ein.py/` package.
+- **`nlp/`, `smt/`** — scratch areas, 56 KB, wired into nothing. `smt/` holds
+  three hand-written `.smt` encodings of the Zebra puzzle and 4-queens, which
+  [M1c P1c.2](plans/m1c_external_validation/p1c.2_external_benchmarks/README.md)
+  counts as part of its benchmark corpus; `nlp/` holds two throwaway
+  dependency-parsing scripts that
+  [M2 P2.5](plans/m2_nl_to_ir/p2.5_link_grammar_experiment/README.md) starts
+  from. **The two submodules they used to carry** (`opencog/link-grammar`,
+  `CVC4/CVC4`) were deinitialised at M1a S1a.10.5 — never checked out here,
+  and a cost on every recursive clone. Each README has the one
+  `git submodule add` that restores it.
 
 ## Running the gate
 

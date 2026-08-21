@@ -90,7 +90,7 @@ there is no built-in relation→verb vocabulary.
 | `docs/lib/`                 | "awesome-list" catalogue of external tech across 12 topic files + knowledge graph     |
 | `plans/ideas/`                | ideas extracted from research notes (moved from `docs/ideas/`)                        |
 | `utils/`                      | renderers for the knowledge graph (Graphviz + Cytoscape) + the VS Code ein-lang grammar + ad-hoc engine probe/measure scripts (moved from `demo/` in P1.11) |
-| `nlp/`, `smt/`                | scratch areas for the upcoming rewrite (link-grammar, CVC4 submodules)                |
+| `nlp/`, `smt/`                | scratch areas — dependency-parsing notes, and three hand-written `.smt` encodings (the link-grammar and CVC4 submodules were deinitialised at M1a S1a.10.5) |
 | `AGENTS.md`                   | guidance for AI coding agents (`CLAUDE.md` is a symlink to it)                         |
 | `TODO.md`                     | live worklist                                                                         |
 

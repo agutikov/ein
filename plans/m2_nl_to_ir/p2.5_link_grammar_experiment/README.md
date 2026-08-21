@@ -10,8 +10,16 @@ comparison).
 
 Run a *measured* experiment to answer the user's open question:
 **does feeding link-grammar output to the LLM improve NL → IR
-quality?** If yes, integrate. If no, deprecate the
-`nlp/link-grammar` submodule.
+quality?** If yes, integrate. If no, leave it deprecated.
+
+> **The submodule is not registered.** M1a
+> [S1a.10.5](../../m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+> deinitialised `nlp/link-grammar` — it had never been checked out, and every
+> `git clone --recurse-submodules` was fetching it for an experiment that has
+> not run. Registering it is this phase's first act:
+> `git submodule add https://github.com/opencog/link-grammar.git nlp/link-grammar`.
+> Nothing else about the phase changes; the two scratch scripts and the
+> reading list in `nlp/` are untouched.
 
 The hypothesis is plausible: link-grammar exposes head/dependent
 structure that an LLM might use to disambiguate sentences with

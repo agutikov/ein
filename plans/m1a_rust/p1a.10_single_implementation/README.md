@@ -160,8 +160,13 @@ Three consequences, all recorded in the
   the phase's own writing is the first place that has to be true.
 - `git grep -i 'ein\.py\|pypy\|\.venv\|conformance'` returns only history,
   the divergence ledger and this phase's own record.
-- The tree is `docs/ plans/ examples/ stdlib/ ein.rs/ utils/` plus the
-  top-level files — nothing else.
+- The tree is `docs/ plans/ examples/ stdlib/ ein.rs/ utils/ corpus/` plus
+  the top-level files, **and `nlp/` + `smt/`** — 56 KB of scratch that
+  S1a.10.5 was written to delete and that
+  [it keeps, amended](s1a.10.5_removal.md#acceptance): every file in them has
+  a named dependent in M1c P1c.2 or M2 P2.5. What goes is the two
+  *submodules*, which had none and made every recursive clone fetch two large
+  upstream repositories for work that has not started.
 - **Neither [P1a.8](../p1a.8_binary_container/README.md)'s `.einb` container
   nor [P1a.9](../p1a.9_bindings_release/README.md)'s PyO3 module has started**,
   so this criterion — "they still pass their own gates" — has nothing to

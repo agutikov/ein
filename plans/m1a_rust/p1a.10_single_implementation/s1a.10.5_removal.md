@@ -41,11 +41,31 @@ unrecoverable mistake.
 - `ein.py/` gone. `.venv`, `.venv-pypy`, `pyproject.toml` fragments,
   `run_tests.sh`, `pytest.ini`/`conftest.py` and every Python packaging file
   outside `utils/` gone.
-- `nlp/` and `smt/` gone, **as submodules** — `git submodule deinit -f`, the
-  `.gitmodules` entries removed, `.git/modules/` cleaned. Both are 24 KB of
-  scratch pointing at `opencog/link-grammar` and `CVC4/CVC4`; nothing in the
-  active tree imports either, and `CLAUDE.md` already describes them as "not
-  wired into the active `ein.py/` package".
+- **The two submodules** — `nlp/link-grammar` and `smt/CVC4` — deinitialised:
+  `git submodule deinit -f`, the `.gitmodules` entries removed, `.git/modules/`
+  cleaned. **The directories stay**, and the acceptance said otherwise.
+
+  > **Amended 2026-08-21, at the user's direction, on evidence.** This read
+  > "`nlp/` and `smt/` gone", on the grounds that they are "24 KB of scratch"
+  > and "nothing in the active tree imports either". The second clause is true
+  > and is the **wrong criterion**: both directories have named dependents in
+  > the *planned* tree.
+  >
+  > | | |
+  > |---|---|
+  > | `smt/{4-queens,einstain-problem,einstain-problem-minus-15}.smt` | [P1c.2 S1c.2.1](../../m1c_external_validation/p1c.2_external_benchmarks/s1c.2.1_problem_corpus.md) links all three as encodings its benchmark corpus already has |
+  > | `nlp/{xxx.py,xxx-link.py}` + the reading list | [M2 S2.5.1](../../m2_nl_to_ir/p2.5_link_grammar_experiment/s2.5.1_runner.md) names them as its starting point |
+  > | `nlp/link-grammar` | [M2 P2.5](../../m2_nl_to_ir/p2.5_link_grammar_experiment/README.md) **depends on** it, and exists to decide whether to deprecate it |
+  > | `smt/CVC4` | P1c.2 said "the benchmark uses CVC5 and the submodule stays where it is" |
+  >
+  > What the submodules actually cost is **a `git clone --recurse-submodules`
+  > fetching `opencog/link-grammar` and `CVC4/CVC4`** for work that has not
+  > started — neither was ever checked out here (`git submodule status` showed
+  > both unregistered). Deinitialising removes that cost and keeps every file
+  > with a dependent; each README carries the one `git submodule add` line
+  > that restores it, and P2.5's first act is to run its own. Deleting
+  > `nlp/link-grammar` outright would have pre-empted the stage whose whole
+  > purpose is that decision.
 - `.gitignore` loses the entries that named the removed trees, and keeps the
   ones that still describe something.
 - CI (whatever runs the gate) runs `cargo test --workspace` and nothing else.
