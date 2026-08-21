@@ -308,15 +308,25 @@ design question, not a measurement, and it is parked as
 These numbers drift as the engine evolves. Regenerate with
 
 ```sh
-utils/bench_env.sh python3 utils/feature_matrix.py --runs 5 \
-    --python .venv-pypy/bin/python
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 5
 ```
 
 and update the provenance line. `--puzzle P` runs the matrix on another
 puzzle, `--cells SUBSTR` on a subset (the `baseline` and `control` rows always
-run), `--impl SUBSTR` on one engine. The *definitional* knob list lives in
-[`docs/api/inference.md`](../../api/inference.md); add a row there and in
-[`config.py`](../../../ein.py/src/ein/inference/config.py) for any new flag.
+run), `$EIN_BIN` names a build other than `ein.rs/target/release/ein`. The
+*definitional* knob list lives in
+[`docs/api/inference.md`](../../api/inference.md); add a row there for any new
+flag.
+
+> **Only the ein.rs column can be refreshed.** The runner drove both engines
+> as processes and cross-checked them cell by cell until
+> [S1a.10.4](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md);
+> the `ein.py s` columns below — and the `control` row's `1.2× under ein.py`,
+> which is what states that column's resolution — are **frozen** at the
+> 2026-08-20 measurement. A re-run rewrites the ein.rs figures beside them and
+> leaves the ein.py ones exactly as they are, so the two halves of a row will
+> drift apart with time. That is the intended reading: one is a record, the
+> other is a measurement.
 
 ## History — the same table, before the port
 

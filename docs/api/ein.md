@@ -264,6 +264,11 @@ releases. To understand them, read
   data-flow / package-dependency map this surface is the programmatic face of.
 - [the Zebra walkthrough](../kernel/inference/zebra_walkthrough.md) — the M1 target trace
   this worked example reproduces.
-- [`utils/profile_solve.py`](../../utils/profile_solve.py) /
-  [`utils/symmetric_bench.py`](../../utils/symmetric_bench.py) — the
-  promoted engine runners; the same load → solve / load → saturate calls.
+- [`utils/`](../../utils/) — the measurement set drives this same
+  load → solve / load → saturate path through the `ein` binary rather than
+  through the module. The two in-process Python runners that used to be named
+  here, `profile_solve.py` and `symmetric_bench.py`, left with the engine they
+  imported at
+  [S1a.10.4](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md);
+  their successors are `profile_ein_rs.py` and `feature_matrix.py`'s
+  `no-symmetric-mirror` cell.

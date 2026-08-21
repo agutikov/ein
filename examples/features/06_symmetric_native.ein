@@ -6,8 +6,10 @@
 ;;; saturator closes R's extension under arg-swap directly (pop `(R a b)`,
 ;;; write `(R b a)`), skipping the JoinPlan + matcher the stdlib `symmetric`
 ;;; rule pays per mirror. Identical closure, one kernel fast-path —
-;;; `docs/kernel/ir/03-ein-lang/06_reserved_names.md` and
-;;; `utils/symmetric_bench.py` for the measurement.
+;;; `docs/kernel/ir/03-ein-lang/06_reserved_names.md` for the reference, and
+;;; `utils/feature_matrix.py`'s `no-symmetric-mirror` cell for what the mirror
+;;; is worth. (`utils/symmetric_bench.py` was the in-process Python
+;;; measurement, and left with the engine it imported at M1a S1a.10.4.)
 ;;;
 ;;; Contrast with `saturation/symmetric/*.ein`, which exercise the *userspace*
 ;;; `symmetric` rule from `std.algebra`. Nothing else in `examples/` marks a

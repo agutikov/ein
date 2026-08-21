@@ -4,40 +4,41 @@
 # Includes nested demo files (examples/zebra/demos/<rule>/<name>.ein);
 # skips examples/broken/.
 #
-# One variant per file (S1.6.0): the IR-graph DOT (`ein_ir_dot`, calling
-# `ein.ir.to_dot` — the `ein ir dot` subcommand was removed) under the project
-# defaults — compact entity-style facts/ontology/reasoning, rules as
-# side-by-side LHS|RHS clusters (rankdir=LR), per-step trace. The other
-# views are reachable per-file via flags/env for the rare cases that
-# need them:
-#   EIN_RENDER_LEVI=1   — Levi-bipartite hyperedge view
-#   EINBOT_RULE_MODE=overlay / EINBOT_TRACE_VIEW=b|c (see below)
-# The multi-variant cross-product (rule-mode × trace-view) this script
-# used to emit was dropped — the trace dimension is a no-op for the
-# example puzzles anyway (they carry no `(trace …)` blocks).
+# Three views per example, all of them `ein render`:
 #
-# Convention: the Python Ein tools emit DOT only (the CLI, the
-# S1.6.1-2 `render …` commands, the S1.6.4 trace). Turning that DOT
-# into SVG is a shell-script job — that's what this script is for.
-# Writes both `.dot` and rendered SVG by default; pass `--no-svg`
-# (alias `--dot-only`) to skip rasterising.
+#   rules/NN_rule_<name>.dot   one digraph per rule, LHS|RHS side-by-side
+#                              clusters (`--rule-mode overlay` for the other)
+#   _constraints.dot           the constraint-scope view (S1.6.2)
+#   _lattice.dot               the commitment-lattice / proof-DAG (S1.6.3).
+#                              This one RUNS a solve, so it is best-effort
+#                              under a timeout; `--no-lattice` skips it.
 #
-# The multi-digraph IR-graph DOT stream is split into one `NN_<name>.dot`
-# file per top-level form / rule. **Rule diagrams land in a `rules/`
-# subfolder** (numbered on their own); every other form stays flat in
-# the example dir. Two whole-example views are added per example:
-#   * `_unified.dot` — the unified "everything-on-one-page"
-#     view (`ein_kb_dot` → `KnowledgeBase.to_dot`, S1.2.4), via `fdp`.
-#   * `_lattice.dot` — the commitment-lattice / proof-DAG
-#     (`ein render lattice`, S1.6.3), rendered through `dot`. This
-#     one RUNS the solver, so it uses the project's **PyPy venv**
-#     (`.venv-pypy/`) when present — CPython is too slow for the big
-#     puzzles — and is best-effort under a timeout. `--no-lattice` skips
-#     it; `EINBOT_LATTICE` overrides the interpreter.
+# Convention: `ein` emits DOT only. Turning that DOT into SVG is a
+# shell-script job — that's what this script is for. Writes both `.dot` and
+# rendered SVG by default; pass `--no-svg` (alias `--dot-only`) to skip
+# rasterising.
 #
-# Layout engines per form (per readability):
-#   *ontology* / _unified → fdp   (force-directed; instances spread)
-#   everything else       → dot   (hierarchical default)
+# ── What this used to render, and does not ──────────────────────────────
+#
+# Until M1a S1a.10.4 the headline output was the **IR-graph** view — one
+# `NN_<name>.dot` per top-level form — plus `_unified.dot`, the whole-KB
+# "everything on one page" view. Neither is on the CLI: `ein ir dot` and
+# `ein kb dot` were removed in P1.11 and never came back, so this script
+# reached `ein.ir.to_dot` and `KnowledgeBase.to_dot` through `python3 -c`,
+# which is why it wanted `PYTHONPATH` as well as an engine.
+#
+# The Python engine left the tree at
+# [P1a.10](../plans/m1a_rust/p1a.10_single_implementation/README.md) and the
+# workaround left with it. Both renderers are **ported and alive** —
+# `ein_render::ir_dot` and `ein_render::kb_dot`, seventeen views between them,
+# rendered over the whole corpus by `ein-render/tests/dot_wellformed.rs` — but
+# nothing outside a test can ask for one. Making them browsable again means
+# putting them back on the CLI (`ein render ir|kb`), which is a decision about
+# the shipping surface and not one a `utils/` clean-up should take.
+#
+# Layout engines per view (per readability):
+#   *ontology* / *constraints* → fdp   (force-directed; instances spread)
+#   everything else            → dot   (hierarchical default)
 #
 # Usage:
 #   utils/render_examples.sh                 # .dot + .svg → build/dot/
@@ -47,22 +48,20 @@
 #   FORMATS="svg pdf" utils/render_examples.sh   # explicit raster formats
 #
 # Output layout:
-#   <out>/<example-rel-path>/NN_<digraph-name>.dot   (+ .<fmt> sibling)
 #   <out>/<example-rel-path>/rules/NN_rule_<name>.dot (+ .<fmt> sibling)
-#   <out>/<example-rel-path>/_unified.dot            (+ .<fmt> sibling)
-#   <out>/<example-rel-path>/_lattice.dot            (+ .<fmt> sibling)
+#   <out>/<example-rel-path>/_constraints.dot         (+ .<fmt> sibling)
+#   <out>/<example-rel-path>/_lattice.dot             (+ .<fmt> sibling)
 #
 # `<example-rel-path>` is the relative path under examples/ minus the
 # `.ein` extension — top-level "zebra", nested
 # "zebra/demos/symmetric/couple", etc.
 #
 # Environment overrides:
-#   EINBOT          — command for the static renders (default: `Ein`
-#                     if on PATH, else `python3 -m ein.cli`,
-#                     PYTHONPATH=ein.py/src).
-#   EINBOT_LATTICE  — command for the solver-run lattice render (default:
-#                     `.venv-pypy/bin/python -m ein.cli` when the
-#                     PyPy venv exists, else EINBOT).
+#   EIN_BIN         — the engine (default: ein.rs/target/release/ein). A path,
+#                     so a feature or allocator build is named the same way
+#                     `e2e_baseline.py --bin` names one.
+#   EIN_RULE_MODE   — `sidebyside` (default) or `overlay`, forwarded to
+#                     `ein render rules --rule-mode`.
 #   FORMATS         — space-separated Graphviz formats to rasterise
 #                     (e.g. "svg pdf"). Defaults to "svg"; `--no-svg`
 #                     forces dot-only.
@@ -76,6 +75,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 EXAMPLES_DIR="${REPO_ROOT}/examples"
+EIN_BIN="${EIN_BIN:-${REPO_ROOT}/ein.rs/target/release/ein}"
+RULE_MODE="${EIN_RULE_MODE:-sidebyside}"
 
 usage() {
     cat <<'USAGE'
@@ -83,15 +84,15 @@ render_examples.sh — render every examples/*.ein to DOT + SVG.
 
 Usage: utils/render_examples.sh [OPTIONS] [OUT_DIR]
 
-Default: .dot + SVG per form (rules in a rules/ subfolder), the unified
-KB view, and the commitment-lattice DAG (runs a solve under PyPy).
+Default: one .dot + SVG per rule (in a rules/ subfolder), the
+constraint-scope view, and the commitment-lattice DAG (runs a solve).
 
 Options:
   --no-svg, --dot-only    emit .dot only (skip rasterising)
   --no-lattice            skip the solver-run lattice DAG
   -h, --help              show this help
 
-OUT_DIR defaults to build/dot. Env: EINBOT, EINBOT_LATTICE, FORMATS,
+OUT_DIR defaults to build/dot. Env: EIN_BIN, EIN_RULE_MODE, FORMATS,
 LATTICE_TIMEOUT (see the file header).
 USAGE
 }
@@ -113,10 +114,9 @@ for arg in "$@"; do
 done
 OUT_DIR="${OUT_DIR:-${REPO_ROOT}/build/dot}"
 
-# Lattice DAG runs a solve per example — bound it so the big puzzles
-# (zebra/zebra2) finish on PyPy but not CPython; a timeout still guards
-# against a genuine hang. Default 60s: PyPy solves zebra2's lattice in
-# ~35s where CPython exceeds 90s.
+# The lattice DAG runs a solve per example. Bound it: `render lattice` on a
+# puzzle whose domain the demo never narrows is a blind enumeration, and the
+# corpus has one that takes 83 s (square-unique/cul-de-sac.ein). 60s default.
 LATTICE_TIMEOUT="${LATTICE_TIMEOUT:-60}"
 if command -v timeout >/dev/null 2>&1; then
     LATTICE_PREFIX=( timeout "${LATTICE_TIMEOUT}" )
@@ -133,67 +133,12 @@ else
     RASTER_FORMATS=""
 fi
 
-# Pick the Ein invocation: console script if installed, else the
-# in-tree module entrypoint. The static renders (`ir dot` / `kb dot`)
-# are startup-dominated, so they stay on this interpreter.
-if [[ -n "${EINBOT:-}" ]]; then
-    # shellcheck disable=SC2206
-    EIN_CMD=( ${EINBOT} )
-elif command -v Ein >/dev/null 2>&1; then
-    EIN_CMD=( Ein )
-else
-    # In-tree fallback: the package lives under ein.py/src after the
-    # P1.11 restructure.
-    export PYTHONPATH="${REPO_ROOT}/ein.py/src${PYTHONPATH:+:${PYTHONPATH}}"
-    EIN_CMD=( python3 -m ein.cli )
-fi
-
-# The IR-graph / KB-graph DOT renders call the package API directly (the
-# `ir dot` / `kb dot` subcommands were removed; the `ein` CLI now carries only
-# `render` / `saturate` / `solve`). Pick a python interpreter: EIN_CMD's when it
-# is a `python -m ein.cli` form, else python3 (ein installed, or PYTHONPATH set).
-if [[ "${EIN_CMD[0]}" == *python* ]]; then EIN_PY="${EIN_CMD[0]}"; else EIN_PY="python3"; fi
-
-# `ir dot` replacement: parse → IR DOT. Honors the same env knobs the old
-# subcommand read (EIN_RENDER_LEVI / EINBOT_RULE_MODE / EINBOT_TRACE_VIEW).
-ein_ir_dot() {
-    "${EIN_PY}" -c '
-import os, sys
-from pathlib import Path
-from ein.ir import parse, to_dot
-kw = {"levi": (os.environ.get("EIN_RENDER_LEVI") or "").strip().lower()
-              in ("1", "true", "yes", "on")}
-if os.environ.get("EINBOT_RULE_MODE"):  kw["rule_mode"]  = os.environ["EINBOT_RULE_MODE"]
-if os.environ.get("EINBOT_TRACE_VIEW"): kw["trace_view"] = os.environ["EINBOT_TRACE_VIEW"]
-sys.stdout.write(to_dot(parse(Path(sys.argv[1]).read_text(encoding="utf-8")), **kw) + "\n")
-' "$1"
-}
-
-# `kb dot` replacement: load KB → one unified DOT (all layers, defaults).
-ein_kb_dot() {
-    "${EIN_PY}" -c '
-import sys
-from pathlib import Path
-from ein.ir import parse
-from ein.kb import KnowledgeBase
-p = Path(sys.argv[1])
-kb = KnowledgeBase.from_ir(parse(p.read_text(encoding="utf-8")), base_dir=p.parent)
-sys.stdout.write(kb.to_dot() + "\n")
-' "$1"
-}
-
-# `render lattice` RUNS the solver — use the project's PyPy venv when
-# present (CPython is too slow for the big puzzles; see the
-# feedback-use-pypy-bench convention). Falls back to EIN_CMD. Override
-# with EINBOT_LATTICE.
-PYPY_PYTHON="${REPO_ROOT}/.venv-pypy/bin/python"
-if [[ -n "${EINBOT_LATTICE:-}" ]]; then
-    # shellcheck disable=SC2206
-    LATTICE_CMD=( ${EINBOT_LATTICE} )
-elif [[ -x "${PYPY_PYTHON}" ]]; then
-    LATTICE_CMD=( "${PYPY_PYTHON}" -m ein.cli )
-else
-    LATTICE_CMD=( "${EIN_CMD[@]}" )
+# shellcheck disable=SC2206
+EIN_CMD=( ${EIN_BIN} )
+if ! command -v "${EIN_CMD[0]}" >/dev/null 2>&1 && [[ ! -x "${EIN_CMD[0]}" ]]; then
+    echo "error: ${EIN_CMD[0]} is not executable — build it with" >&2
+    echo "       cargo build --release --manifest-path ein.rs/Cargo.toml" >&2
+    exit 1
 fi
 
 # Graphviz is only needed when rasterising.
@@ -206,28 +151,26 @@ if [[ -n "${RASTER_FORMATS}" ]]; then
     done
 fi
 
-# Per-run IR-graph view overrides (rare cases) are read straight from the
-# environment by `ein_ir_dot` above: EIN_RENDER_LEVI / EINBOT_RULE_MODE /
-# EINBOT_TRACE_VIEW.
-echo "Ein:   ${EIN_CMD[*]}"
+echo "ein:       ${EIN_CMD[*]}"
 echo "examples:  ${EXAMPLES_DIR}"
 echo "output:    ${OUT_DIR}"
 echo "raster:    ${RASTER_FORMATS:-<none — .dot only>}"
+echo "rule mode: ${RULE_MODE}"
 if (( WANT_LATTICE )); then
-    echo "lattice:   ${LATTICE_CMD[*]} (timeout ${LATTICE_TIMEOUT}s)"
+    echo "lattice:   on (timeout ${LATTICE_TIMEOUT}s)"
 else
     echo "lattice:   <disabled (--no-lattice)>"
 fi
 echo
 
-# Pick layout engine by filename. Ontology gets force-directed (fdp);
-# everything else uses the default hierarchical `dot`.
+# Pick layout engine by filename. Constraint / ontology views get
+# force-directed (fdp); everything else uses the default hierarchical `dot`.
 engine_for() {
     local name
     name=$(basename "$1" .dot)
     case "${name}" in
-        *ontology*) echo fdp ;;
-        *)          echo dot ;;
+        *ontology*|*constraints*) echo fdp ;;
+        *)                        echo dot ;;
     esac
 }
 
@@ -289,6 +232,30 @@ render_each() {
     shopt -u nullglob
 }
 
+# count_files <example-dir> <glob>
+#
+# How many files under <example-dir> and its rules/ subdir match <glob>.
+count_files() {
+    find "$1" -maxdepth 2 -type f -name "$2" 2>/dev/null | wc -l
+}
+
+# render_one <dot-file>
+#
+# Rasterise a single whole-example view (_constraints, _lattice) with the
+# engine `engine_for` picks. Prints one line per format.
+render_one() {
+    local d="$1" engine fmt
+    engine=$(engine_for "${d}")
+    for fmt in ${RASTER_FORMATS}; do
+        if "${engine}" "-T${fmt}" "${d}" -o "${d%.dot}.${fmt}" 2>/dev/null; then
+            printf "    %s 1 dot, 1 %s (%s)\n" "$(basename "${d}" .dot)" \
+                   "${fmt}" "${engine}"
+        else
+            echo "    warn: ${engine} -T${fmt} failed on ${d}" >&2
+        fi
+    done
+}
+
 # Recursive discovery — picks up the top-level examples (zebra.ein,
 # zebra2.ein, …) AND any nested demo directories under
 # examples/zebra/demos/<rule>/<scenario>.ein. Skips examples/broken/
@@ -306,9 +273,7 @@ fi
 
 total_dots=0
 total_imgs=0
-total_unified_dot=0
-total_unified=0
-total_lattice_dot=0
+total_constraints=0
 total_lattice=0
 raster_first="${RASTER_FORMATS%% *}"
 for ein in "${ein_files[@]}"; do
@@ -316,7 +281,7 @@ for ein in "${ein_files[@]}"; do
     # Top-level files keep their bare stem (e.g. "zebra"); nested
     # demo files preserve their path so outputs don't collide
     # (e.g. "zebra/demos/symmetric/couple").
-    rel="${ein#${EXAMPLES_DIR}/}"
+    rel="${ein#"${EXAMPLES_DIR}"/}"
     base="${rel%.ein}"
     echo "==> ${ein}"
     out="${OUT_DIR}/${base}"
@@ -327,41 +292,36 @@ for ein in "${ein_files[@]}"; do
            -o -name '*.png' -o -name '*.gv' \) -delete
     rm -rf "${out}/rules"
 
-    ein_ir_dot "${ein}" \
-        | split_dot_stream "${out}"
+    # ── Rules: a multi-digraph stream, one per rule. A file with no rule
+    #    forms exits 1 with a message on stderr, which is not an error here. ──
+    "${EIN_CMD[@]}" render rules "${ein}" --rule-mode "${RULE_MODE}" \
+        2>/dev/null | split_dot_stream "${out}" || true
+
     render_each "${out}"
     render_each "${out}/rules"
 
-    shopt -s nullglob
-    n_dot=$( ls "${out}"/[0-9][0-9]_*.dot "${out}"/rules/[0-9][0-9]_*.dot \
-                2>/dev/null | wc -l )
+    # `find`, not `ls`: under `nullglob` a glob that matches nothing expands to
+    # nothing at all, and `ls` with no arguments lists the *working directory*.
+    # A file with no rule forms therefore counted the repo root — 17 "dot
+    # files" for a fixture that produced none.
+    n_dot=$( count_files "${out}" '[0-9][0-9]_*.dot' )
     n_img=0
     if [[ -n "${raster_first}" ]]; then
-        n_img=$( ls "${out}"/[0-9][0-9]_*."${raster_first}" \
-                    "${out}"/rules/[0-9][0-9]_*."${raster_first}" \
-                    2>/dev/null | wc -l )
+        n_img=$( count_files "${out}" "[0-9][0-9]_*.${raster_first}" )
     fi
-    shopt -u nullglob
     total_dots=$((total_dots + n_dot))
     total_imgs=$((total_imgs + n_img))
     printf "    %2d dot, %2d %s\n" "${n_dot}" "${n_img}" "${raster_first:-(no raster)}"
 
-    # ── Unified KB view (S1.2.4) — one DOT per example, all layers,
-    #    rendered with `fdp` for the spread-out aesthetic. ──
-    unified_dot="${out}/_unified.dot"
-    if ein_kb_dot "${ein}" > "${unified_dot}" 2>/dev/null; then
-        total_unified_dot=$((total_unified_dot + 1))
-        for fmt in ${RASTER_FORMATS}; do
-            unified_out="${out}/_unified.${fmt}"
-            if fdp "-T${fmt}" "${unified_dot}" -o "${unified_out}" 2>/dev/null; then
-                total_unified=$((total_unified + 1))
-                printf "    _unified 1 dot, 1 %s (unified KB view, fdp)\n" "${fmt}"
-            else
-                echo "    warn: fdp -T${fmt} failed on ${unified_dot}" >&2
-            fi
-        done
+    # ── Constraint scope (S1.6.2) — one DOT per example. ──
+    constraints_dot="${out}/_constraints.dot"
+    if "${EIN_CMD[@]}" render constraints "${ein}" > "${constraints_dot}" \
+            2>/dev/null && [[ -s "${constraints_dot}" ]]; then
+        total_constraints=$((total_constraints + 1))
+        render_one "${constraints_dot}"
     else
-        echo "    warn: 'kb dot' failed on ${ein}; skipping unified view" >&2
+        echo "    warn: 'render constraints' failed on ${ein}" >&2
+        rm -f "${constraints_dot}"
     fi
 
     # ── Commitment-lattice / proof-DAG (S1.6.3) — RUNS a solve, so it
@@ -369,19 +329,10 @@ for ein in "${ein_files[@]}"; do
     if (( WANT_LATTICE )); then
         lattice_dot="${out}/_lattice.dot"
         if "${LATTICE_PREFIX[@]+"${LATTICE_PREFIX[@]}"}" \
-                "${LATTICE_CMD[@]}" render lattice "${ein}" \
+                "${EIN_CMD[@]}" render lattice "${ein}" \
                 > "${lattice_dot}" 2>/dev/null && [[ -s "${lattice_dot}" ]]; then
-            total_lattice_dot=$((total_lattice_dot + 1))
-            for fmt in ${RASTER_FORMATS}; do
-                # Lattice is rankdir=TB → hierarchical `dot`, not fdp.
-                if dot "-T${fmt}" "${lattice_dot}" -o "${out}/_lattice.${fmt}" \
-                        2>/dev/null; then
-                    total_lattice=$((total_lattice + 1))
-                    printf "    _lattice 1 dot, 1 %s (commitment lattice, dot)\n" "${fmt}"
-                else
-                    echo "    warn: dot -T${fmt} failed on ${lattice_dot}" >&2
-                fi
-            done
+            total_lattice=$((total_lattice + 1))
+            render_one "${lattice_dot}"
         else
             echo "    note: lattice skipped (slow >${LATTICE_TIMEOUT}s / no proof)" \
                  "for ${rel}" >&2
@@ -391,7 +342,6 @@ for ein in "${ein_files[@]}"; do
 done
 
 echo
-echo "done — ${total_dots} per-form DOT files (+${total_unified_dot} unified,"
-echo "       +${total_lattice_dot} lattice), ${total_imgs} per-form renders,"
-echo "       ${total_unified} unified + ${total_lattice} lattice renders"
+echo "done — ${total_dots} per-rule DOT files (+${total_constraints} constraints,"
+echo "       +${total_lattice} lattice), ${total_imgs} per-rule renders"
 echo "       under ${OUT_DIR}"

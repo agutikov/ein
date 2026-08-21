@@ -23,6 +23,43 @@ overview:
       - Ein, rule set as theory
       - LLMs + Ein, theory construction
 
+docs, 3 levels:
+  - Ein user surface: syntax and semantic
+    - syntax
+      - objects
+      - relations
+      - rules
+        - relations properties, relations definitions
+        - constraints (upper bound)
+        - requirements (lower bound)
+        - match
+          - ein-lang
+          - graph
+          - NL
+          - math
+    - semantic
+      - facts
+      - ontology (relations, hidden facts)
+      - theory (rules)
+      - query
+      - inference/search/solution
+  - reasoning architecture
+    - 3 levels:
+      - IR, KB
+        - objects, atoms, names
+        - relations, facts
+        - rules
+      - KB evolution
+        - rules application
+        - saturation and satisfiability
+        - hypothesis search lattice
+      - Rules evolution
+        - rules as data
+        - analysis of rules
+        - transformations of rules
+  - ein.rs implementation
+    - KB representation
+    - 
 
 
 ---

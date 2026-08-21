@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 #
-# Solve zebra2 under the project's PyPy venv and render its markdown
-# trace (S1.6.4) into build/zebra2/.
+# Solve zebra2 and render its markdown trace (S1.6.4) into build/zebra2/.
 #
-# `ein solve` runs the engine, so it wants PyPy — CPython is too
-# slow for the full zebra2 lattice solve (~35s PyPy vs >90s CPython).
-# See the feedback-use-pypy-bench convention + ein_pypy.sh.
+# The engine is `ein.rs/target/release/ein`; `$EIN_BIN` overrides it. It was
+# `.venv-pypy/bin/python -m ein.cli` until M1a S1a.10.4, for the reason the
+# PyPy venv existed at all — CPython took >90s over the full zebra2 lattice
+# solve where PyPy took ~35s. ein.rs takes ~40ms, so the interpreter choice
+# that shaped this script is not a choice any more.
 #
 # Output:
 #   build/zebra2/zebra2.md         — the trace (inline fenced `dot` blocks)
@@ -18,18 +19,18 @@
 # goal-pruned (~11-step) trace; `--full` gives the complete ~560-firing
 # saturation log.
 #
-# Setup (one-time):  ./venv_install.sh pypy3   # creates .venv-pypy/
+# Setup (one-time):  cargo build --release --manifest-path ein.rs/Cargo.toml
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-PYPY="${REPO_ROOT}/.venv-pypy/bin/python"
+EIN_BIN="${EIN_BIN:-${REPO_ROOT}/ein.rs/target/release/ein}"
 ZEBRA2="${REPO_ROOT}/examples/zebra2.ein"
 
 usage() {
     cat <<'USAGE'
-zebra2_trace.sh — solve zebra2 under PyPy, render its markdown trace.
+zebra2_trace.sh — solve zebra2, render its markdown trace.
 
 Usage: utils/zebra2_trace.sh [OPTIONS] [OUT_DIR]
 
@@ -46,8 +47,9 @@ Options:
                           (e.g. -- --exhaustive --max-set-size 4)
   -h, --help              show this help
 
-OUT_DIR defaults to build/zebra2. Needs the PyPy venv (.venv-pypy);
-create it with ./venv_install.sh pypy3.
+OUT_DIR defaults to build/zebra2. Needs the `ein` binary; build it with
+`cargo build --release --manifest-path ein.rs/Cargo.toml`, or name another
+one with $EIN_BIN.
 USAGE
 }
 
@@ -75,26 +77,18 @@ done
 OUT_DIR="${OUT_DIR:-${REPO_ROOT}/build/zebra2}"
 MD="${OUT_DIR}/zebra2.md"
 
-# ── Interpreter: PyPy venv, else CPython fallback with a warning.
-#    Used for BOTH the solve and the --svg post-processing. ──
-if [[ -x "${PYPY}" ]]; then
-    PYBIN="${PYPY}"
-else
-    echo "warn: PyPy venv not found at ${PYPY}; falling back to python3" >&2
-    echo "      (create it with ./venv_install.sh pypy3 — CPython is slow)" >&2
-    export PYTHONPATH="${REPO_ROOT}/ein.py/src${PYTHONPATH:+:${PYTHONPATH}}"
-    PYBIN="python3"
+# The engine. `$EIN_BIN` is a *path*, so a build with a feature or an
+# allocator arm is named the same way `e2e_baseline.py --bin` names one.
+# shellcheck disable=SC2206
+EIN=( ${EIN_BIN} )
+if ! command -v "${EIN[0]}" >/dev/null 2>&1 && [[ ! -x "${EIN[0]}" ]]; then
+    echo "error: ${EIN[0]} is not executable — build it with" >&2
+    echo "       cargo build --release --manifest-path ein.rs/Cargo.toml" >&2
+    exit 1
 fi
-# The engine. `EINBOT` overrides it wholesale — same convention as
-# render_examples.sh — so this trace can be produced with ein.rs
-# (`EINBOT=ein.rs/target/release/ein`), which is the drop-in replacement
-# M1a ships. Without it, the in-tree Python module as before.
-if [[ -n "${EINBOT:-}" ]]; then
-    # shellcheck disable=SC2206
-    EIN=( ${EINBOT} )
-else
-    EIN=( "${PYBIN}" -m ein.cli )
-fi
+# The --svg post-processing is plain Python: it shells out to `dot` and
+# rewrites markdown, and imports nothing from this repo.
+PYBIN="python3"
 
 if [[ ! -f "${ZEBRA2}" ]]; then
     echo "error: ${ZEBRA2} not found" >&2

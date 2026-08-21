@@ -66,8 +66,10 @@ Re-run the baseline before starting either entry — this has moved twice, and
 four times counting the two above:
 
 ```sh
-PYTHONPATH=ein.py/src python3 utils/profile_solve.py examples/zebra2.ein --exhaustive   # attribution (CPython)
-.venv-pypy/bin/python utils/profile_solve.py examples/zebra2.ein --exhaustive --no-profile  # wall-clock (PyPy)
+# Both lines below ran `utils/profile_solve.py`, which imported ein.py and
+# left with it at M1a S1a.10.4. The successor is one command, on the engine
+# that is left:
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 solve examples/zebra2.ein -e
 PYTHONPATH=ein.py/src .venv-pypy/bin/python utils/feature_matrix.py                    # the lever matrix
 ```
 
