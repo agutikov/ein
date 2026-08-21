@@ -55,18 +55,19 @@ Kept here so the milestone's claims stay falsifiable. Filled in per
 phase; the baseline row is the promotion-time measurement from the
 [milestone README](../README.md#baseline--what-einrs-has-to-beat).
 
-Refreshed by one command per implementation, producing the same
-measurement set (§4 of [12](12_toolchain_and_layout.md)) so the columns
-are comparable rather than merely adjacent:
+Refreshed by one command (§4 of [12](12_toolchain_and_layout.md)):
 
 ```sh
-python3 utils/bench_baseline.py --json /tmp/py.json   # or .venv-pypy/bin/python
 cd ein.rs && cargo bench                              # from P1a.6
 ```
 
-`EIN_SRC=<other-checkout>/ein.py/src` points the Python benches at a
-different revision, which is how a before/after is taken without
-stashing the tree under test.
+**The Python column is frozen.** `utils/bench_baseline.py` produced the same
+eight bench names from ein.py, so that the two columns were comparable rather
+than merely adjacent; with one implementation it collapsed into `cargo bench`
+and left the tree at
+[S1a.10.4](../p1a.10_single_implementation/s1a.10.4_utils.md). Every CPython
+and PyPy figure below, and every ratio against one, is a **historical
+constant** dated where it stands.
 
 [S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md) added five more,
 because a wall-clock pair cannot say *why* or *whether the two engines did
@@ -76,7 +77,6 @@ prints the machine state the numbers were taken under and pins to a P-core:
 ```sh
 utils/bench_env.sh python3 utils/e2e_baseline.py     # processes, not calls
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 solve examples/zebra2.ein -e
-utils/bench_env.sh python3 utils/count_work.py       # ein.py's work counters
 python3 utils/criterion_table.py --max-rsd 3         # criterion's sd, gated
 cd ein.rs
 cargo run --release --features counters -p ein-infer --example counter_cost
@@ -89,7 +89,7 @@ run the blind enumerator the rest of the corpus uses:
 
 ```sh
 cargo run --release -p ein-infer --example hypgen_calls   # cost per call, by caller
-utils/bench_env.sh python3 utils/e2e_baseline.py --blind --impl ein.rs
+utils/bench_env.sh python3 utils/e2e_baseline.py --blind
 ```
 
 [S1a.6.5](../p1a.6_performance/s1a.6.5_frontend.md) added two more — the load

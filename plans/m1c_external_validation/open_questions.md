@@ -151,7 +151,7 @@ worth more than a number, and it is the corpus's only link to
   `ein-conformance` + `conformance/`: a crate that shells out and links
   nothing.
 - **(b) A `utils/` script**, like the M1a measurement set (`bench_env.sh`,
-  `e2e_baseline.py`, `count_work.py`).
+  `e2e_baseline.py`, `profile_ein_rs.py`).
 - **(c) In-tree tests**, run by `cargo test --workspace`.
 
 **Recommendation: (a) for the code, and (c) for the answer half only.** After

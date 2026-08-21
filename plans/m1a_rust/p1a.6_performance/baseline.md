@@ -18,6 +18,22 @@ record, as with `features.md`).
 > spread is small (≤ 2 % on all but one cell); a bench script that asks for
 > `sudo` would be worse than a bench script that reports what it ran under.
 
+> **What can still be re-measured, since [S1a.10.4](../p1a.10_single_implementation/s1a.10.4_utils.md).**
+> Half of this file is a two-column comparison and one of the columns has no
+> instrument any more.
+>
+> | | |
+> |---|---|
+> | **live** | every ein.rs figure. `utils/e2e_baseline.py` (processes, and `--bin` for two builds of one engine), `cargo bench` + `utils/criterion_table.py`, `utils/profile_ein_rs.py`, `ein-infer`'s `counter_cost` / `alloc_cost` / `layout_shape` / `hypgen_calls` / `frontend_cost` examples, `utils/fork_split.py`, `utils/fork_delta_verify.py`, `utils/feature_matrix.py`, `utils/bench_env.sh` |
+> | **frozen** | every **CPython** and **PyPy** figure, and every ratio with one in the denominator — including the milestone's `24.8×` / `165×` and §4's whole ein.py column. Their instruments (`utils/bench_baseline.py`, `utils/count_work.py`, `e2e_baseline.py`'s two interpreter rows) left with the engine they measured |
+> | **gone** | every `ein-conformance` invocation below, and `utils/mutant_ein.py`. The tier counts (`T3 472/473`, `T2 239/240`) are a record of a gate that was green on the day, not a command. The event cut's control is `ein-infer/tests/event_cut_control.rs` now ([S1a.10.3](../p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)) |
+>
+> The per-section *"Reproducing this section"* blocks are left as they were
+> written — they say what produced the numbers above them, which is the point
+> of a record. **[§ Reproducing all of it](#reproducing-all-of-it) at the end
+> of the file is the one that is kept runnable**, and it is the only block
+> here that a reader should copy today.
+
 ---
 
 ## 1. End-to-end, process against process
@@ -792,7 +808,7 @@ must change memo hits and nothing else, and the `compile` event fires on an
 ### Reproducing this section
 
 ```sh
-utils/bench_env.sh python3 utils/e2e_baseline.py --impl ein.rs --runs 7
+utils/bench_env.sh python3 utils/e2e_baseline.py --runs 7
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 \
     --cum-of ein_infer::compile solve examples/zebra2.ein -e
@@ -1789,7 +1805,7 @@ does not have.
 cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
     -p ein-infer --example counter_cost     # the candidate collapse
 cargo test --manifest-path ein.rs/Cargo.toml -p ein-infer --lib narrowing
-utils/bench_env.sh python3 utils/e2e_baseline.py --impl ein.rs --runs 9
+utils/bench_env.sh python3 utils/e2e_baseline.py --runs 9
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 20 solve examples/zebra.ein -e
 python3 utils/fork_split.py                # the redundant firings, unmoved
@@ -1977,7 +1993,7 @@ are saturation, and neither has a stage.
 ```sh
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
     --example hypgen_calls                     # the per-call table
-utils/bench_env.sh python3 utils/e2e_baseline.py --blind --impl ein.rs --runs 5
+utils/bench_env.sh python3 utils/e2e_baseline.py --blind --runs 5
 cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
     -p ein-infer --example counter_cost        # add paths for other files:
 cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
@@ -2772,7 +2788,7 @@ runs the renderer rather than the binary — caught it inside the hour.
 ### Reproducing this section
 
 ```sh
-utils/bench_env.sh python3 utils/e2e_baseline.py --runs 7 --impl ein.rs
+utils/bench_env.sh python3 utils/e2e_baseline.py --runs 7
 utils/bench_env.sh python3 utils/feature_matrix.py --runs 5 \
     --python .venv-pypy/bin/python
 utils/bench_env.sh python3 utils/feature_matrix.py --runs 3 \
@@ -2793,38 +2809,39 @@ python3 utils/fuzz_ein.py --iters 2 --batch 2 --tier T2 --canary "" \
 
 ## Reproducing all of it
 
-Every line from the repo root, every measurement through the fingerprint:
+Every line from the repo root, every measurement through the fingerprint.
+**This block is maintained**; the per-section ones above are records. What it
+cannot reproduce is listed in the note at the top of the file — the CPython and
+PyPy columns and the four parity tiers, whose instruments left with the second
+engine at [P1a.10](../p1a.10_single_implementation/README.md).
 
 ```sh
 utils/bench_env.sh --report                    # the machine state, nothing else
 mkdir -p ein.rs/bench-out                      # git-ignored artefact root
 
-# §1 processes, §2 the Python halves of the bench set
+# §1 processes. §2's Python halves are frozen: `utils/bench_baseline.py` is
+# gone and `cargo bench` below is the whole in-process set.
 utils/bench_env.sh python3 utils/e2e_baseline.py --json ein.rs/bench-out/e2e.json
-utils/bench_env.sh python3 utils/bench_baseline.py --json ein.rs/bench-out/py-cpython.json
-utils/bench_env.sh .venv-pypy/bin/python utils/bench_baseline.py \
-    --json ein.rs/bench-out/py-pypy.json
 
 # §3 attribution (add `--callers SUBSTR` for a caller breakdown)
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 \
     --cum-of ein_infer::compile --json ein.rs/bench-out/prof-zebra2-e.json \
     solve examples/zebra2.ein -e
 
-# §4 work counters, both sides
-utils/bench_env.sh python3 utils/count_work.py -v --json ein.rs/bench-out/work-py.json
+# §4 work counters. The ein.py column was `utils/count_work.py`, which wrapped
+# module attributes on an engine that is gone; this half survives.
 cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
     -p ein-infer --example counter_cost
 
 # §15 the per-call hypgen table, and the blind-enumerator cells
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer \
     --example hypgen_calls
-utils/bench_env.sh python3 utils/e2e_baseline.py --blind --impl ein.rs --runs 5
+utils/bench_env.sh python3 utils/e2e_baseline.py --blind --runs 5
 
-# §19 the lever matrix, both engines, with the control row that prices it
-utils/bench_env.sh python3 utils/feature_matrix.py --runs 5 \
-    --python .venv-pypy/bin/python
-# §19 the fuzzer — a session, and the mutant control that proves it can see
-python3 utils/fuzz_ein.py --minutes 150 --batch 80 --jobs 20
+# §19 the lever matrix, with the control row that prices the method
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 5
+# §19 the fuzzer — a session over the properties one engine can check
+python3 utils/fuzz_ein.py --minutes 150 --batch 80
 
 # §17 / §18 the boundary and the snapshot — the two cones, and what they do
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 \
@@ -2855,22 +2872,16 @@ python3 utils/fork_delta_verify.py --json ein.rs/bench-out/fork-delta.json
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 python3 utils/criterion_table.py --max-rsd 3 --json ein.rs/bench-out/criterion.json
 
-# §12 the parity contract — the two tiers, the determinism sweep, the control
-for T in T3 T2; do
-  ein.rs/target/release/ein-conformance run --tier $T \
-      --impl-a "python3 -m ein.cli" --impl-b ein.rs/target/release/ein
-done
-ein.rs/target/release/ein-conformance run --tier T3 --strict \
-    --impl-a "python3 -m ein.cli" --impl-b "python3 -m ein.cli" \
-    --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42
-# `python3 -m ein.cli` needs ein.py importable: `pip install -e ein.py`, or
-# `.venv-pypy/bin/python -m ein.cli`, or `--env-a PYTHONPATH=ein.py/src`.
-for M in productive redundant enqueue; do
-  EIN_MUTANT=$M ein.rs/target/release/ein-conformance run --tier T2 \
-      --filter branching --impl-a "python3 -m ein.cli" \
-      --impl-b "python3 $PWD/utils/mutant_ein.py $PWD/ein.rs/target/release/ein"
-done
+# §12 the parity contract. The two tiers and the PYTHONHASHSEED sweep needed
+# two operands and have none; what asks their questions of the engine that is
+# left is `cargo test`, and the successors are named in the ledger:
+#   the tiers            -> tests/golden/corpus_exits.txt + corpus_shapes.md5
+#   the determinism sweep -> EIN_ID_SEEDS=8 cargo test -p ein-render \
+#                                --test id_order_invariance
+#   the mutant control    -> cargo test -p ein-infer --test event_cut_control
+EIN_ID_SEEDS=8 cargo test --manifest-path ein.rs/Cargo.toml \
+    -p ein-render --test id_order_invariance
 
 # the gate this all has to leave green
-./run_tests.sh
+cargo test --manifest-path ein.rs/Cargo.toml --workspace
 ```

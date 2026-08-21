@@ -88,17 +88,18 @@ jobs:
   benches:
     name: benchmarks — the M1a measurement set
     runs-on: ubuntu-latest
+    # The Python half (`utils/bench_baseline.py --json bench-python.json`, and
+    # the `pip install -e ein.py` it needed) went with the second engine at
+    # S1a.10.4. What it produced is a frozen column in
+    # plans/m1a_rust/p1a.6_performance/baseline.md §2; `cargo bench` is the
+    # whole set now. A shared runner is nobody's quiet machine, so this job
+    # exists to prove the benches still *run*, not to publish a timing —
+    # `--test` is one iteration per case, which is exactly that check.
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }
       - uses: dtolnay/rust-toolchain@stable
-      - run: pip install -e ein.py
-      - run: python3 utils/bench_baseline.py --json bench-python.json
-      - run: cargo bench --bench engine
+      - run: cargo bench --bench engine -- --test
         working-directory: ein.rs
-      - uses: actions/upload-artifact@v4
-        with: { name: benches, path: bench-python.json, retention-days: 30 }
 
   packaging:
     name: ein.py — the sdist and wheel build, and install from them

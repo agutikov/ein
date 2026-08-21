@@ -184,9 +184,12 @@ comparable with the Python baseline:
 | `solve_fast` / `solve_exhaustive` | end-to-end, both puzzles |
 | `fork` | fork + first delta write |
 
-The Python side gets a matching runner (`utils/bench_baseline.py`) so
-`design/README.md § Measured` can be refreshed with one command per
-implementation.
+The Python side got a matching runner (`utils/bench_baseline.py`) so
+`design/README.md § Measured` could be refreshed with one command per
+implementation. With one implementation the set is `cargo bench` alone; the
+runner left at
+[S1a.10.4](../p1a.10_single_implementation/s1a.10.4_utils.md) and its column
+is frozen where it stands.
 
 **Eight names, nine cases since [S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md).**
 `boundary` runs both puzzles because it had drifted: the Python runner timed

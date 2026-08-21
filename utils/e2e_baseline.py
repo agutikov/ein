@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """Process-level end-to-end timings — the denominators of P1a.6's targets.
 
-`utils/bench_baseline.py` times engine calls *inside* one warm interpreter,
-which is the right shape for comparing a `parse` against a `parse`. It is the
-wrong shape for the milestone's headline claim: "`solve zebra2.ein -e`
-end-to-end, 4.07 s under PyPy". End-to-end is a **process** — interpreter
-start-up, imports, a cold JIT, the run, the print — and that is what a user
-waits for and what `ein.rs` has to beat.
+`cargo bench` times engine calls *inside* one process, which is the right shape
+for comparing a `parse` against a `parse`. It is the wrong shape for the
+milestone's headline claim: "`solve zebra2.ein -e` end-to-end, 4.07 s under
+PyPy". End-to-end is a **process** — start-up, the run, the print — and that is
+what a user waits for and what `ein.rs` had to beat.
 
-So this measures processes, three implementations against the same argv:
+So this measures processes, one `ein` binary per series against the same argv:
 
     utils/bench_env.sh python3 utils/e2e_baseline.py
     utils/bench_env.sh python3 utils/e2e_baseline.py --runs 7 --json out.json
@@ -16,6 +15,17 @@ So this measures processes, three implementations against the same argv:
     utils/bench_env.sh python3 utils/e2e_baseline.py \
         --bin system=ein.rs/target-alloc-system/release/ein \
         --bin snmalloc=ein.rs/target/release/ein          # two builds, one series
+
+**One engine, still worth a process timing.** Until
+[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+the rows were three implementations — CPython, PyPy, ein.rs — and the ratio
+between them was the point. The PyPy and CPython columns in
+[baseline.md](../plans/m1a_rust/p1a.6_performance/baseline.md) are frozen
+constants now: nothing can re-measure them. What this still answers is the
+question `--bin` was added for and the one every P1a.6 stage asked — *did this
+change make the shipping binary faster?* — across builds (allocator arms,
+feature flags, `--profile`s) and across commits, which is why it survives the
+oracle instead of collapsing into `cargo bench`. `$EIN_BIN` moves the default.
 
 Reported per cell: **best, median, spread** (max - min as a % of the median)
 and **peak RSS** of the child. Best-of-N is the estimator — the machine's
@@ -26,7 +36,7 @@ request to re-run on a quieter machine.
 
 Per-child RSS comes from `os.wait4`, not from `resource.getrusage(CHILDREN)`,
 which reports the high-water mark over *all* children ever reaped and would
-therefore attribute PyPy's footprint to `ein.rs`.
+therefore attribute a previous series' footprint to this one.
 """
 from __future__ import annotations
 
@@ -41,10 +51,9 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-EIN_RS = REPO / "ein.rs" / "target" / "release" / "ein"
-PYPY = REPO / ".venv-pypy" / "bin" / "python"
+EIN_RS = Path(os.environ.get("EIN_BIN", REPO / "ein.rs" / "target" / "release" / "ein"))
 
-# One argv per row, expanded against every implementation. `-e` is the
+# One argv per row, expanded against every binary. `-e` is the
 # exhaustive path (`stop_after=None`), the bare form is the shipped default
 # (`stop_after=1`).
 WORKLOADS: list[tuple[str, list[str]]] = [
@@ -63,8 +72,7 @@ WORKLOADS: list[tuple[str, list[str]]] = [
 # the corpus uses was invisible to this table. These five are the corpus's
 # slowest `solve` cells — `features/05 -e` alone is 46x `solve zebra -e` — and
 # they are what a change to the blind path is measured on. Selected with
-# `--blind`; ein.py is minutes per cell, so pair it with `--impl ein.rs` or
-# `--bin`.
+# `--blind`.
 BLIND_WORKLOADS: list[tuple[str, list[str]]] = [
     ("features/05 -e", ["solve", "examples/features/05_stdlib_domain_elim.ein", "-e"]),
     ("features/01 -e", ["solve", "examples/features/01_not_and_absent.ein", "-e"]),
@@ -87,33 +95,32 @@ STARTUP_WORKLOADS: list[tuple[str, list[str]]] = [
 ]
 
 
-def implementations(
-    only: str | None, extra: list[str] | None = None
-) -> list[tuple[str, list[str]]]:
-    """The three implementations, or — with `--bin` — a named list of binaries.
+def binaries(extra: list[str] | None) -> list[tuple[str, list[str]]]:
+    """The `ein` binaries to time, as `(label, argv prefix)`.
 
-    `--bin LABEL=PATH` replaces the `ein.rs release` row rather than adding to
-    it, because the reason to name binaries is to compare two builds of ein.rs
-    against each other (an allocator, a layout, a feature) and a run that also
-    re-times PyPy for the fifth time today is a run nobody waits for.
+    Default: one row, `$EIN_BIN` or the release build. `--bin LABEL=PATH`
+    replaces it with a named series, which is the reason the flag exists —
+    two builds of the same engine against each other (an allocator, a layout,
+    a feature) with everything else held constant.
+
+    There is deliberately **no `--impl`**. It selected among three
+    implementations and there is one; a flag that takes a single value is an
+    invitation to look for the operand that is gone.
     """
-    impls: list[tuple[str, list[str]]] = [
-        ("ein.py CPython", [sys.executable, "-m", "ein.cli"]),
-    ]
-    if PYPY.exists():
-        impls.append(("ein.py PyPy", [str(PYPY), "-m", "ein.cli"]))
     if extra:
-        impls = []
+        out = []
         for spec in extra:
             label, _, path = spec.partition("=")
             if not path:
                 label, path = Path(label).parent.parent.name, label
-            impls.append((label, [str(Path(path).resolve())]))
-    elif EIN_RS.exists():
-        impls.append(("ein.rs release", [str(EIN_RS)]))
-    if only:
-        impls = [i for i in impls if only in i[0]]
-    return impls
+            out.append((label, [str(Path(path).resolve())]))
+        return out
+    if not EIN_RS.exists():
+        sys.exit(
+            f"{EIN_RS} does not exist — build it with `cargo build --release "
+            f"-p ein-cli`, or name one with --bin / $EIN_BIN"
+        )
+    return [("ein.rs release", [str(EIN_RS)])]
 
 
 def run_once(argv: list[str], env: dict[str, str]) -> tuple[float, int, int]:
@@ -134,11 +141,9 @@ def main() -> int:
     ap.add_argument("--warmup", type=int, default=1, help="untimed runs first (default 1)")
     ap.add_argument("-k", "--only", default=None, metavar="SUBSTR",
                     help="only workloads whose label contains SUBSTR")
-    ap.add_argument("--impl", default=None, metavar="SUBSTR",
-                    help="only implementations whose label contains SUBSTR")
     ap.add_argument("--bin", action="append", default=None, metavar="LABEL=PATH",
-                    help="compare named ein binaries instead of the three "
-                         "implementations; repeatable")
+                    help="compare named ein binaries instead of the default "
+                         "one; repeatable")
     ap.add_argument("--blind", action="store_true",
                     help="the blind-enumerator cells instead of the milestone six")
     ap.add_argument("--startup", action="store_true",
@@ -148,13 +153,12 @@ def main() -> int:
 
     env = dict(os.environ)
     env.pop("EIN_STDLIB", None)
-    env["PYTHONPATH"] = str(REPO / "ein.py" / "src")
     env["LC_ALL"] = "C"
 
-    impls = implementations(args.impl, args.bin)
+    bins = binaries(args.bin)
     rows: list[dict] = []
-    width = max(17, *(len(i[0]) + 1 for i in impls))
-    print(f"{'workload':<18}{'impl':<{width}}{'best':>10}{'median':>10}"
+    width = max(17, *(len(b[0]) + 1 for b in bins))
+    print(f"{'workload':<18}{'binary':<{width}}{'best':>10}{'median':>10}"
           f"{'spread':>9}{'peak RSS':>11}", file=sys.stderr)
     print("─" * 75, file=sys.stderr)
     selected = WORKLOADS
@@ -165,7 +169,7 @@ def main() -> int:
     for label, argv in selected:
         if args.only and args.only not in label:
             continue
-        for impl, prefix in impls:
+        for label_bin, prefix in bins:
             full = [*prefix, *argv]
             for _ in range(args.warmup):
                 run_once(full, env)
@@ -177,16 +181,17 @@ def main() -> int:
                 samples.append(t)
                 rss = max(rss, peak)
             if rc != 0 or not samples:
-                print(f"{label:<18}{impl:<{width}}   exit {rc} — skipped", file=sys.stderr)
-                rows.append({"workload": label, "impl": impl, "error": f"exit {rc}",
+                print(f"{label:<18}{label_bin:<{width}}   exit {rc} — skipped",
+                      file=sys.stderr)
+                rows.append({"workload": label, "binary": label_bin, "error": f"exit {rc}",
                              "argv": shlex.join(full)})
                 continue
             best, med = min(samples), statistics.median(samples)
             spread = (max(samples) - min(samples)) / med * 100
-            print(f"{label:<18}{impl:<{width}}{best * 1e3:>8.1f}ms{med * 1e3:>8.1f}ms"
+            print(f"{label:<18}{label_bin:<{width}}{best * 1e3:>8.1f}ms{med * 1e3:>8.1f}ms"
                   f"{spread:>8.1f}%{rss / 1024:>9.1f}MB", file=sys.stderr)
             rows.append({
-                "workload": label, "impl": impl, "argv": shlex.join(full),
+                "workload": label, "binary": label_bin, "argv": shlex.join(full),
                 "best_ms": round(best * 1e3, 2), "median_ms": round(med * 1e3, 2),
                 "spread_pct": round(spread, 2), "peak_rss_mb": round(rss / 1024, 2),
                 "runs": len(samples), "samples_ms": [round(s * 1e3, 2) for s in samples],

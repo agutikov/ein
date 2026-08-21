@@ -9,6 +9,27 @@ concrete result to write up.
 **Blocks:** nothing on the critical path; this is the
 "share what we built" milestone.
 
+
+
+---
+
+overview:
+  - article and presentation
+    - "from Zebra puzzle to Autoformalization"
+      - plain C: hardcoded predicates + search
+      - link grammar + SMT solver
+      - IR as data
+      - IR as reasoning substrate
+      - Ein, rule set as theory
+      - LLMs + Ein, theory construction
+
+
+
+---
+
+
+
+
 ## Goal
 
 Write up the Ein system for an external audience. Frame the

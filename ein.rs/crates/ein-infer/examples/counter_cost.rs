@@ -11,11 +11,17 @@
 //! and a measurement instrument that changes the measurement is worth less than
 //! no instrument at all.
 //!
-//! The comparable Python numbers come from `utils/count_work.py`, which reads
-//! the same quantities off a cProfile run's `ncalls` column and prints the same
-//! field names. Two engines that agree on a verdict but disagree on
-//! `candidates` by 3× are not the same search, and that is worth knowing before
-//! any speed claim is made about either.
+//! The comparable Python numbers came from `utils/count_work.py`, which wrapped
+//! the same call sites in ein.py and printed the same field names. Two engines
+//! that agree on a verdict but disagree on `candidates` by 3× are not the same
+//! search, and that was worth knowing before any speed claim was made about
+//! either — it is the argument this example was built for. The script left with
+//! its subject at
+//! [S1a.10.4](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md);
+//! its column is frozen in
+//! [baseline.md §4](../../../../plans/m1a_rust/p1a.6_performance/baseline.md#4-what-the-engine-did--the-work-counters).
+//! What this half is for now is the same question asked across *commits*:
+//! whether an optimisation moved the work or only the clock.
 
 use ein_core::{Terms, counters};
 use ein_infer::Events;
