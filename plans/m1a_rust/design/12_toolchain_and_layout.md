@@ -26,6 +26,7 @@ ein/
 │       ├── ein-core/           values, interner, KB, indexes, provenance, pyrepr
 │       ├── ein-ir/             lexer, parser, AST, dumper, macros, imports, stdlib embed
 │       ├── ein-infer/          compile, match, saturate, world, search, verdict, explain
+│       ├── ein-einb/           the `.einb` container            [P1a.8]
 │       ├── ein-render/         DOT renderers, markdown trace, solution table
 │       ├── ein-cli/            the `ein` binary
 │       ├── ein-py/             PyO3 bindings (maturin)             [P1a.9]
@@ -47,6 +48,15 @@ Why this split:
 - **`ein-infer` never formats anything.** All rendering lives in
   `ein-render`, so the T3 surface is one crate and can be diffed as a
   unit.
+- **`ein-einb` is a crate because of §2's `unsafe` rule, not because of its
+  size.** It could have been a module of `ein-infer`, except that every other
+  crate is `#![forbid(unsafe_code)]` and `forbid` cannot be lifted
+  per-module: a container inside `ein-infer` would have had to unforbid the
+  whole engine to get its zero-copy casts. A crate boundary is how "exactly
+  one audited module" stays a fact rather than a convention. It sits above
+  `ein-infer` (`SOLUTIONS` stores what a solve produced) and below `ein-cli`;
+  `ein-render` does not depend on it, so the stack is linear up to
+  `ein-infer` and forks there.
 - **`ein-conformance` is a normal crate, not a test harness bolted on.**
   It has a binary (`ein-conformance run|diff`) so it is usable by
   hand, which is how it will actually get used during the port.
@@ -92,13 +102,13 @@ if that ever matters.
 | `bitvec` *or* a hand-rolled `BitSet` | core | presence / negated / alive sets. Hand-rolled is ~80 lines; prefer it |
 | `md-5` | render | `hashed_id` parity ([02](02_determinism_and_order.md) §8) |
 | `sha1` | render | `palette.hash_color`'s index — the same argument one digest over ([S1a.5.1](../p1a.5_presentation/s1a.5.1_dot_renderers.md)) |
-| `blake3` | einb | content addressing |
+| `blake3` | ein-einb | the container's header digest — content addressing (design/10 §2) |
 | `include_dir` | ir | embedded stdlib |
 | `memchr` | ir | lexer scanning |
 | `rayon` | infer | [P1a.7](../p1a.7_parallelism/README.md) only, behind a `parallel` feature |
 | `clap` (derive) | cli | 37 options across 8 parsers; [Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity) took help and usage-error *text* off the byte gate on 2026-08-18, so nothing has to reproduce `argparse`'s formatter |
 | `serde` + `serde_json` | conformance, cli(`--events`) | the event protocol |
-| `zstd` | einb | optional section compression, behind a feature |
+| `zstd` | ein-einb | optional section compression. **Not taken up**: P1a.8 shipped the per-section `flags` word that would select it and no compressor, because a saturated `zebra2` is 56 KB uncompressed against a 64 KB budget and a compressed section forfeits the `mmap` the layout exists for. A reader refuses a non-zero `flags` rather than guessing |
 | `pyo3` / `maturin` | ein-py | [P1a.9](../p1a.9_bindings_release/README.md) only |
 | `criterion`, `proptest`, `arbitrary` | dev-dependencies | benches and property tests |
 | `snmalloc-rs` | cli (binary only), conformance (bench) | the global allocator — [T1a.6.2.7](../p1a.6_performance/s1a.6.2_memory_layout.md), added 2026-08-19. glibc `malloc` was **20.0 %** of an exhaustive `zebra2`'s self time; measured against `mimalloc` and `tikv-jemallocator`, this one is the fastest *and* the only fast one that does not cost peak RSS. On the **binary**, never on an engine crate: a library that installs a global allocator makes the choice for everything that links it. Build-time it pulls `cc` + `cmake` |
@@ -121,7 +131,7 @@ crate).
 | feature | default | effect |
 |---|---|---|
 | `parallel` | off during P1a.0–6, on from P1a.7 | pulls `rayon`, enables `--jobs > 1` |
-| `einb` | on | `.einb` read/write |
+| `einb` | on (`ein-cli`) | `.einb` read/write. Off, `ein kb` is not registered and a `.einb` argument is refused by the loader that would have opened it |
 | `events` | on | `--events FILE` emission (compiled out entirely when off, for a zero-overhead measurement build) |
 | `python` | off | PyO3 bindings |
 | `snmalloc` | **on** (`ein-cli`) | the global allocator (T1a.6.2.7). `--no-default-features` builds against the system allocator, which is what a distro package that would rather not vendor a C++ allocator wants — and costs 15.9 % of `solve zebra2 -e` |

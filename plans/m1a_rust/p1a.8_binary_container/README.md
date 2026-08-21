@@ -31,26 +31,42 @@ Design: [design/10](../design/10_binary_format.md).
 
 | stage | title | est. |
 |---|---|---|
-| [S1a.8.1](s1a.8.1_einb_container.md) | The `.einb` container | 3 d |
+| [S1a.8.1](s1a.8.1_einb_container.md) ✅ | The `.einb` container | 3 d |
 
-## Acceptance for the phase
+**Shipped 2026-08-21** — one stage, one crate (`ein-einb`, the eighth
+workspace member and the only one that is not `#![forbid(unsafe_code)]`), and
+`ein kb save`. Every acceptance item below is met; the numbers and the five
+decisions the design left open are in
+[the stage record](s1a.8.1_einb_container.md#what-shipped--2026-08-21).
 
-- `.einb` round-trip is T1-identical for every corpus entry, in both the
+## Acceptance for the phase — all met
+
+- ✅ `.einb` round-trip is T1-identical for every corpus entry, in both the
   empty-interner and shared-interner cases; cold open of a saturated
-  zebra2 under 1 ms.
-- `ein solve zebra2.einb` is byte-identical to `ein solve zebra2.ein` at
-  T3 — the strongest evidence the round-trip is faithful.
-- A stdlib byte change is a **cache miss**, not a stale hit (tested by
-  editing a temp stdlib copy).
-- Fuzzed `.einb` inputs are rejected by digest, never mis-parsed.
+  zebra2 under 1 ms. **95 files, 91 through the remap; 0.614 ms; 57 688
+  bytes.**
+- ✅ `ein solve zebra2.einb` is byte-identical to `ein solve zebra2.ein` at
+  T3 — the strongest evidence the round-trip is faithful. **Four puzzles,
+  five diagnostic flags, two normalised lines: the echoed path and the
+  wall clock.**
+- ✅ A stdlib byte change is a **cache miss**, not a stale hit (tested by
+  editing a temp stdlib copy). **Both ways — the digest directly, and a
+  child process with `$EIN_STDLIB` pointed at an edited copy.**
+- ✅ Fuzzed `.einb` inputs are rejected by digest, never mis-parsed.
+  **20 000 inputs with the digest off, 3 348 single-bit flips with it on;
+  the flips found a real gap — the header is not under the digest, so its
+  reserved words are now required to be zero.**
 
 ## Risks
 
 - **Storing a solution is a measurement hazard**, and
   [F9](../../followups/f9_e_catalog.md) says so explicitly about its
   ancestor: a stored answer memoises the puzzle rather than improving the
-  reasoner. Mitigation is structural — benchmarks read `.ein` text, and
-  a run that opened a `SOLUTIONS` section says so in its stats.
+  reasoner. Mitigation is structural, and it came out **stronger** than
+  planned: rather than a run that opened a `SOLUTIONS` section saying so in
+  its stats, there is no way for a run to open one. `ein kb save` will not
+  write the section and nothing in `ein solve` reads it — the store is a
+  library API with a test standing over the CLI to keep it that way.
 - **Scope creep back toward a server.** A cache format that grows a
   lookup protocol is the daemon again under another name. `.einb` is a
   file the CLI reads and writes; there is no resident process.

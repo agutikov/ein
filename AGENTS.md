@@ -73,17 +73,30 @@ constrained-reasoning research.
 - **`ein.rs/`** — the Rust port ([M1a](plans/m1a_rust/README.md)), a
   drop-in replacement for `ein`, and since
   [P1a.10](plans/m1a_rust/p1a.10_single_implementation/README.md) the only
-  implementation. Two of its seven crates are dev-only: `ein-corpus` (the
+  implementation. Two of its eight crates are dev-only: `ein-corpus` (the
   manifest, the fixture helpers, the bench set) and `ein-parity` (the one
   implementation of what counts as a derivation's *narration* rather than
   its content — [design/01
   §5](plans/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list);
-  `EIN_PARITY_STRICT=1` turns it off). The five that ship are `ein-core`
+  `EIN_PARITY_STRICT=1` turns it off). The six that ship are `ein-core`
   (interning, `Value`/`FactId`, the layered COW KB, provenance), `ein-ir`
   (lex → parse → macros → imports → load), `ein-infer` (compile → match →
-  saturate → the NAF boundary → the hypothesis loop), `ein-render` (DOT views,
-  the markdown trace, the state/lattice dumps, the JSON summary) and `ein-cli`.
-  They stack linearly, each depending on every crate below it.
+  saturate → the NAF boundary → the hypothesis loop), **`ein-einb`** (the
+  `.einb` binary KB container — [P1a.8](plans/m1a_rust/p1a.8_binary_container/README.md),
+  and the **only crate that is not `#![forbid(unsafe_code)]`**: its `cast.rs`
+  is the one audited module design/12 §2 permits `unsafe` in, which is why it
+  is a crate at all), `ein-render` (DOT views, the markdown trace, the
+  state/lattice dumps, the JSON summary) and `ein-cli`. They stack linearly up
+  to `ein-infer` and fork there — `ein-einb` and `ein-render` are siblings
+  above it, and `ein-cli` depends on both.
+
+  **`.einb` is a private cache format, never an interchange one.** `ein kb save
+  <file.ein> <out.einb>` writes one and every command that takes a `.ein` path
+  takes a `.einb` too, dispatching on the magic bytes rather than the
+  extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
+  from the path it echoes. Anything crossing a tool boundary is still `.ein`
+  text or the event protocol's JSON.
+
   **`ein.py/` was the oracle** until S1a.10.2 banked what only it proved, and
   was deleted at S1a.10.5; what remains of that argument is the ledger, the
   goldens under `tests/golden/from_ein_py/` — the last independent provenance
