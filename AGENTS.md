@@ -88,29 +88,16 @@ constrained-reasoning research.
   `spec_audit.py` → `target-sa`, `profile_ein_rs.py` → `--profile profiling`,
   which it builds). **None takes an `--impl`**: a flag with one value invites
   a reader to look for the operand that is gone.
-  - *renderers* — `render_knowledge_graph.sh` (Graphviz),
-    `render_knowledge_graph_cy.py` (Cytoscape), `render_examples.sh` (every
-    example's rules / constraints / lattice DOT + SVG), `zebra2_trace.sh`
-    (solve zebra2, render its markdown trace).
-  - *checks* — `stdlib_manifest.py` (writes `stdlib/MANIFEST.sha256`, which no
-    test can do, and verifies it per module without a toolchain),
-    `check_hashmap_iteration.py` (the determinism grep), `fuzz_ein.py` (the
-    engine fuzzer: five properties one engine can check, findings in
-    [`corpus/fuzz_findings/`](corpus/fuzz_findings/README.md)),
-    `gen_unicode_printable.py`, `package_vscode_ein.sh`.
-  - **the M1a measurement set** — `bench_env.sh` (prints the machine state and
-    pins to a P-core: run the others through it), `e2e_baseline.py` (the
-    milestone's workloads as *processes*; `--bin` compares two builds of the
-    engine, which is what it is for now), `profile_ein_rs.py` (`perf` self
-    time by symbol and by subsystem), `criterion_table.py` (criterion's
-    standard deviations, with the 3 % gate as an exit code),
-    `feature_matrix.py` (the `features.md` lever matrix), `fork_split.py`,
-    `fork_delta_verify.py`, `spec_audit.py`. Results:
-    [`baseline.md`](plans/m1a_rust/p1a.6_performance/baseline.md) and
-    [`scaling.md`](plans/m1a_rust/p1a.7_parallelism/scaling.md) — where **the
-    CPython and PyPy columns are frozen constants**, because the instruments
-    that produced them (`bench_baseline.py`, `count_work.py`,
-    `profile_solve.py`) went with the engine they measured.
+  [`utils/README.md`](utils/README.md) is the catalogue — one line per script
+  in three groups (*renderers*, *checks*, **the M1a measurement set**), plus
+  the census of the eleven that went and what answers each one's question now.
+  Two things worth knowing without opening it: run every measurement through
+  **`bench_env.sh`**, which prints the machine state the numbers were taken
+  under; and in
+  [`baseline.md`](plans/m1a_rust/p1a.6_performance/baseline.md) /
+  [`scaling.md`](plans/m1a_rust/p1a.7_parallelism/scaling.md) **the CPython
+  and PyPy columns are frozen constants**, because the instruments that
+  produced them left with the engine they measured.
 - **`nlp/`, `smt/`** — scratch areas, 56 KB, wired into nothing. `smt/` holds
   three hand-written `.smt` encodings of the Zebra puzzle and 4-queens, which
   [M1c P1c.2](plans/m1c_external_validation/p1c.2_external_benchmarks/README.md)
