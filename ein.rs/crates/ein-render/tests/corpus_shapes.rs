@@ -11,6 +11,12 @@
 //! --workspace` was green with the differential half running, so every line
 //! in it is a byte string ein.py had signed off on.
 //!
+//! **One edit to the banked bytes has happened since**: the 107 lines whose
+//! rendering quotes a *resolved path* were re-blessed with the checkout root
+//! replaced by `<repo>` ([`portable`]). Nothing semantic moved — the elided
+//! prefix was the blessing machine's directory, never the engine's answer,
+//! and it is what made this test green where it was blessed and red on CI.
+//!
 //! It sweeps the *shape* functions rather than the CLI, because they are a
 //! superset: `render rules` is one of `dot_shape`'s seventeen views, `solve`'s
 //! stdout is `trace_shape`'s `--- table`, and `plan_shape` / `match_shape`
@@ -81,6 +87,26 @@ fn line(name: &str, text: &str) -> String {
     format!("{}  {:>7}L  {name}", digest(text), text.lines().count())
 }
 
+/// The checkout directory, out of the rendering.
+///
+/// Two of the sweep's surfaces quote a *resolved* path back at the reader: a
+/// `ParseError` names the file it failed in, and `import cycle: …` names the
+/// chain, which `Resolver::locate` canonicalises so that two spellings of one
+/// file are one node in the cycle graph. Digested raw, both bank the blessing
+/// machine's checkout into a checked-in golden — green where it was blessed
+/// and red everywhere else, which is what CI caught on 107 of these lines
+/// while `cargo test --workspace` was clean locally.
+///
+/// `corpus_cli` gets the same normalisation for free by running the binary
+/// with the repo as its working directory and naming its cells relatively;
+/// this sweep calls the crates in-process with the absolute path
+/// [`corpus_files`] hands it, so it does the substitution itself. Only the
+/// root goes: a rendering that starts naming a *different* file still moves,
+/// because everything below `<repo>` is still in the digest.
+fn portable(root: &str, text: &str) -> String {
+    text.replace(root, "<repo>")
+}
+
 #[test]
 fn every_corpus_rendering_reproduces_its_digest() {
     let ops = ops();
@@ -89,8 +115,26 @@ fn every_corpus_rendering_reproduces_its_digest() {
     // The two ops S1a.10.2 inherited from a differential sweep carry that
     // sweep's own coverage floors — see [`SWEPT_FLOORS`].
     let (mut loads, mut saturates, mut events) = (0usize, 0usize, 0usize);
+    let root = repo_root();
+    let root_str = root.display().to_string();
+    // Twenty-one of the renderings below name the stdlib root, because
+    // `(import std.nope)` reports the path it looked at — and
+    // `stdlib::resolve_default` finds that root by walking up from the test
+    // executable. A target directory outside the checkout, or an
+    // `$EIN_STDLIB`, therefore resolves a *different* stdlib and moves all
+    // twenty-one. That is a difference in what ran rather than drift in what
+    // it produced, so it is said once here instead of arriving as twenty-one
+    // digests for someone to bless.
+    let stdlib = ein_ir::stdlib::resolve_default();
+    assert_eq!(
+        stdlib,
+        ein_ir::stdlib::Source::Checkout(root.join("stdlib")),
+        "the manifest is of the checkout's stdlib; this run resolved {} — \
+         build inside the checkout and leave $EIN_STDLIB unset",
+        stdlib.describe()
+    );
     for path in &corpus_files() {
-        let rel = path.strip_prefix(repo_root()).unwrap_or(path);
+        let rel = path.strip_prefix(&root).unwrap_or(path);
         for op in &ops {
             let mut terms = Terms::new();
             let Some(text) = run(&mut terms, path, *op) else {
@@ -105,6 +149,7 @@ fn every_corpus_rendering_reproduces_its_digest() {
                 _ => {}
             }
             bytes += text.len();
+            let text = portable(&root_str, &text);
             lines.push(line(&format!("{}::{op}", rel.display()), &text));
         }
     }
