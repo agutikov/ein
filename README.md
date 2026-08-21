@@ -70,15 +70,15 @@ there is no built-in relation→verb vocabulary.
 
 | path                          | what's in it                                                                          |
 |-------------------------------|---------------------------------------------------------------------------------------|
-| `ein.py/`                     | Python implementation (package, tests, pyproject)                                     |
-| `ein.py/src/ein/ir/`          | ein-lang IR — Lark grammar, typed AST, parser, canonical dump, DOT renderer           |
-| `ein.py/src/ein/kb/`          | typed-entity knowledge base — store + 7 indexes, entities, provenance DAG, imports    |
-| `ein.py/src/ein/inference/`   | the engine — saturator, matcher/join-compiler, commitment-lattice search, no-goods, contradiction detector, verdict |
-| `ein.py/src/ein/render/`, `trace/` | Graphviz DOT renderers + the markdown derivation-trace builder                   |
-| `stdlib/`                     | ein-lang standard library — relation-algebra rules (`closure`, `bijection`, `elim`, `algebra`, `typing`, `macro`). Shared by both implementations; `ein.py` ships a build-time copy |
-| `ein.py/src/ein/cli/`         | console script `ein` — `render` \| `saturate` \| `solve` (the operational commands; `ir`/`kb` removed, `profile`/`symmetric` → `utils/` scripts) |
-| `ein.py/tests/`               | pytest suite (~1,300 tests)                                                           |
-| `ein.py/pyproject.toml`       | PEP 621 metadata; deps `numpy`, `lark`; dev extras `pytest`, `pytest-cov`, `ruff`     |
+| `ein.rs/`                     | **the implementation** — a Cargo workspace of seven crates                            |
+| `ein.rs/crates/ein-ir/`       | ein-lang IR — lexer, recursive-descent parser, typed AST, canonical dump, imports, macros |
+| `ein.rs/crates/ein-core/`     | the value + fact model — interners, the layered KB store and its indexes, provenance   |
+| `ein.rs/crates/ein-infer/`    | the engine — saturator, matcher/join-compiler, commitment-lattice search, no-goods, contradiction detector, verdict |
+| `ein.rs/crates/ein-render/`   | Graphviz DOT renderers + the markdown derivation-trace builder                          |
+| `ein.rs/crates/ein-cli/`      | the `ein` binary — `render` \| `saturate` \| `solve`                                  |
+| `ein.rs/crates/{ein-corpus,ein-parity}/` | dev-only: the corpus manifest + fixture helpers, and the narration cut |
+| `stdlib/`                     | ein-lang standard library — relation-algebra rules (`closure`, `bijection`, `elim`, `algebra`, `typing`, `macro`). Checked in once; the binary embeds a copy and `MANIFEST.sha256` is what keeps the two the same |
+| [`corpus/`](corpus/README.md) | one entry per `.ein` file and the invocations it is exercised under                     |
 | `examples/zebra.ein`, `zebra2.ein` | the Zebra puzzle as ein-lang; `zebra2.ein` (unified-`is-a` / `*-loc`) is the active acceptance target |
 | [`examples/README.md`](examples/README.md) | catalog of the example fixtures — one-line description per file / sub-dir |
 | `examples/{features,branching,saturation,lattice,domain_elim}/` | focused fixtures per engine feature                              |
@@ -92,7 +92,7 @@ there is no built-in relation→verb vocabulary.
 | `utils/`                      | renderers for the knowledge graph (Graphviz + Cytoscape) + the VS Code ein-lang grammar + ad-hoc engine probe/measure scripts (moved from `demo/` in P1.11) |
 | `nlp/`, `smt/`                | scratch areas — dependency-parsing notes, and three hand-written `.smt` encodings (the link-grammar and CVC4 submodules were deinitialised at M1a S1a.10.5) |
 | `AGENTS.md`                   | guidance for AI coding agents (`CLAUDE.md` is a symlink to it)                         |
-| `TODO.md`                     | live worklist                                                                         |
+| [`utils/`](utils/)            | renderers, the VS Code ein-lang grammar, and the M1a measurement set                   |
 
 ## Quickstart
 
@@ -102,14 +102,21 @@ solving the Zebra puzzle* — then come back here to install and run.
 ### Install
 
 ```sh
-./venv_install.sh                  # creates .venv, installs ein[dev]
-# or pin an interpreter:
-./venv_install.sh /usr/bin/python3.12
-source .venv/bin/activate
+cargo build --release --manifest-path ein.rs/Cargo.toml
+ein.rs/target/release/ein --help
 ```
 
-Needs Python ≥ 3.10. Safe to re-run — an existing `.venv/` is reused. The
-console script `ein` lands on the venv's PATH.
+Needs a Rust toolchain, and — for the default build — `cmake` and a C++
+compiler, because the binary links `snmalloc` (worth 8–16 % of a solve).
+`cargo build --release -p ein-cli --no-default-features` builds against the
+system allocator and needs neither. Wheels, signed binaries and
+`pip install` are [P1a.9](plans/m1a_rust/p1a.9_bindings_release/README.md)'s.
+
+> **There was a Python implementation** — `ein.py/`, `./venv_install.sh`, a
+> console script on a venv's PATH — and it was the reference for five phases
+> of the port. It left the tree at M1a
+> [S1a.10.5](plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md);
+> `git show two-implementations` is the last revision that had both.
 
 ### Solve
 
@@ -131,34 +138,21 @@ model facts, or the unsat-core facts), and the trace shapers `--relevant`
 (goal-relevant slice) / `--reorder` (cluster by target entity) /
 `--no-diagrams` — which apply to the `--trace` file.
 
-### Render (DOT) + inspect from Python
+### Render (DOT)
 
 ```sh
 ein render rules|rule|constraints|lattice <file>   # DOT views of rules / the search lattice
 ```
 
 `render` emits Graphviz to stdout; rasterising to SVG is a shell concern (see
-[`utils/render_examples.sh`](utils/render_examples.sh)). The IR / KB themselves
-are inspected from Python — the `ir parse|lint|dot` and `kb dot` subcommands
-were removed, but their renderers stay at `ein.ir.to_dot` /
-`KnowledgeBase.to_dot`:
+[`utils/render_examples.sh`](utils/render_examples.sh)).
 
-```sh
-# render the Zebra KB as an SVG (the package renderer; was `ein kb dot`)
-python -c 'import sys; from pathlib import Path
-from ein.ir import parse; from ein.kb import KnowledgeBase
-p = Path("examples/zebra2.ein")
-sys.stdout.write(KnowledgeBase.from_ir(parse(p.read_text()), base_dir=p.parent).to_dot())' \
-  | dot -Tsvg -o /tmp/zebra.svg
-
-# from Python — the typed AST
-python -c '
-from pathlib import Path
-from ein.ir import parse, dump_canonical
-forms = parse(Path("examples/zebra.ein").read_text())
-print(len(forms), "top-level forms")
-'
-```
+**Two more views exist and have no CLI.** `ein_render::ir_dot` (the IR graph,
+five variants) and `ein_render::kb_dot` (the whole KB on one page, six) are
+ported, tested over the corpus by `dot_wellformed.rs`, and reachable only as
+library calls: `ein ir dot` and `ein kb dot` were removed in P1.7c and never
+came back. Until they do, `utils/render_examples.sh` renders what the CLI
+renders, and putting them back is a decision about the shipping surface.
 
 ### ein-lang at a glance
 
@@ -183,10 +177,14 @@ surface language, inference engine).
 ### Development loop
 
 ```sh
-pytest -q                  # ~1,300 tests
-ruff check .               # lint
-ruff check . --fix         # auto-fix what's safe
+./run_tests.sh             # the gate: cargo test --workspace, 542 tests, ~1 m
+./run_tests.sh --slow      # + the 118 slow corpus cells, + 8 id-space seeds
+cd ein.rs && cargo fmt && cargo clippy --workspace --all-targets -- -D warnings
 ```
+
+The gate needs **Graphviz** on `PATH`: `dot_wellformed.rs` is the only
+authority the DOT views have on being well-formed, and it fails rather than
+skips without it.
 
 ## Knowledge graph
 
@@ -210,7 +208,15 @@ detection (P1.4), the hypothesis loop / commitment-lattice search
 solve (P1.7), and ein-lang modules + the relation-algebra stdlib (P1.8) are
 in place, with semi-naive saturation for performance (P1.8a). The Zebra
 puzzle solves correctly — its solution, its gaps, and its contradiction (on an
-over-constrained variant) all read off one sound run; ~1,300 tests are green.
+over-constrained variant) all read off one sound run.
+
+**M1a rewrote the engine in Rust**, and since
+[S1a.10.5](plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+`ein.rs/` is the only implementation: `solve zebra2.ein -e` end-to-end went
+from 4.9 s under PyPy to **199 ms**, and the gate from 312 tests in 9 m 13 s
+to 542 in about a minute. What the Python engine proved that nothing else did
+is banked — [the oracle ledger](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md)
+is the row-by-row record, including its four accepted losses.
 
 P1.11
 package/CLI restructure has shipped: the `ein-bot` → `ein` rename, the
