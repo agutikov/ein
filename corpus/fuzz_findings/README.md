@@ -30,7 +30,7 @@ questions rather than fixes**, so they are here.
 |---|---|---|
 | [`hrule-reads-not.ein`](hrule-reads-not.md) | `no-crash` | an `(hrule …)` whose `:match` reads the `not` relation trips a `debug_assert!` in `Hrules::candidates`. Legal ein-lang; the release binary answers, the debug build aborts. The precondition is real and documented at the assertion — hypgen's kill cache writes `not` facts mid-enumeration — but nothing has decided what the right answer is |
 | [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `id-order` | which facts the **unsat core** names, and how many, moves under a permuted id space. Six of 45 ops, including `trace[answer]`'s "unsat core: 1 facts" vs "2 facts" |
-| [`d3-goal-row-order.ein`](d3-goal-row-order.md) | `id-order` | already here since 2026-08-20 as a cross-engine diff — **re-derived from a different seed to the identical seven forms**, and then shown to move inside one engine. See below: it is not D3 |
+| [`d3-goal-row-order.ein`](d3-goal-row-order.md) | `id-order` | already here since 2026-08-20 as a cross-engine diff — **re-derived from a different seed to the identical seven forms**, and then shown to move inside one engine with D3 held fixed. See below: D3 perturbs the row, it is not why the row is perturbable |
 
 The two `id-order` rows are the class
 [design/02](../../plans/m1a_rust/design/02_determinism_and_order.md) forbids,
@@ -49,7 +49,7 @@ minimum from a different seed and then failing it under a permuted id space:
 | file | what differs | what is identical |
 |---|---|---|
 | `d3-unsat-core.ein` | the printed **unsat core**: 6 facts in ein.py, 4 in ein.rs — a strict subset | the verdict, `k`, every counter. `EIN_FORK_DELTA=0` reproduces ein.py's six exactly, so it **is** the resumed fork saturator, and the id-space sweep is green on it |
-| `d3-goal-row-order.ein` | which **binding row** the solve table shows, when one model satisfies the goal more than once | `summary.json`'s `goal_bindings`, which carries every row and sorts them. **Not a divergence**: the row moves inside one engine under `EIN_ID_FILES`, so the two engines were each printing a legitimate row of an under-determined table — the name is kept for the links, the note corrects it |
+| `d3-goal-row-order.ein` | which **binding row** the solve table shows, when one model satisfies the goal more than once | `summary.json`'s `goal_bindings`, which carries every row and sorts them. **Not D3's, though D3 reaches it**: the row moves inside one engine under `EIN_ID_FILES` too, so the defect is the unsorted `rows[0]` and the two engines were each printing a legitimate row — the filename is kept for the links, the note corrects the attribution |
 
 Neither is reachable from a corpus entry: T3 was green corpus-wide apart from
 D2 when they were found. Both are one command to reproduce —

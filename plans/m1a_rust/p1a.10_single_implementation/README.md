@@ -22,6 +22,28 @@ is **566 tests in 1 m 07 s**, none of which starts a Python process, where
 before it was 312 in 9 m 13 s of which 42 shelled out. What is left in the
 phase is the *tree*: the harness, the runner, `utils/`, and `ein.py/` itself.
 
+**[S1a.10.4](s1a.10.4_utils.md) shipped 2026-08-21.** `utils/` is **17
+scripts**, all driving `ein.rs`; the eleven that compared two engines or
+measured the Python one are gone, each either banked by a checked-in test or
+superseded by a named instrument. `baseline.md`, `design/README.md`,
+`design/12` and `features.md` now say which of their numbers are **live** and
+which are **frozen constants** — every CPython and PyPy figure is the latter.
+The `generated` corpus group went with the fuzzer's throwaway manifest, so
+`GROUPS` is six and no group is empty.
+
+**The rewritten fuzzer found three things in its first twenty minutes**, which
+is the first work this phase has produced that is not clean-up: an `(hrule …)`
+reading `not` aborts a debug build on a `debug_assert!`; the **unsat core**'s
+contents move under a permuted id space; and the goal-binding row the solve
+table prints does too — re-deriving, from a different seed, the exact seven
+forms of a finding filed in August against [D3](../divergences.md), and
+showing that D3 is one perturbation of that row rather than why it is
+perturbable. All three are fixtures with notes in
+[`corpus/fuzz_findings/`](../../../corpus/fuzz_findings/README.md) and none is
+fixed: each is a semantics decision. They are also a small piece of evidence
+about [L1](oracle_ledger.md#6-accepted-loss) — the loss is real, and the
+instrument that replaced it re-judged a finding the oracle had mis-attributed.
+
 **[S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) shipped 2026-08-21.** The
 harness is gone — `ein-conformance`, `ein-oracle`, the four tiers, 2 164 lines
 and 29 unit tests of comparison machinery — and the corpus it read is
@@ -74,7 +96,7 @@ is the one way this phase can go wrong that cannot be undone by a revert.
 | [S1a.10.1](s1a.10.1_bank_the_oracle.md) | Bank what only the oracle proves | 4 d | ✅ **shipped 2026-08-20** |
 | [S1a.10.2](s1a.10.2_port_the_suite.md) | Port the Python test suite | 5 d | ✅ **shipped 2026-08-20** — scope grew, see below |
 | [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) | The corpus without a second engine | 2 d | ✅ **shipped 2026-08-21** — `corpus/`, and a sweep |
-| [S1a.10.4](s1a.10.4_utils.md) | `utils/`, re-aimed at one engine | 2 d | |
+| [S1a.10.4](s1a.10.4_utils.md) | `utils/`, re-aimed at one engine | 2 d | ✅ **shipped 2026-08-21** — 28 scripts → 17, and three fuzz findings |
 | [S1a.10.5](s1a.10.5_removal.md) | The removal | 1 d | has a defect list |
 | [S1a.10.6](s1a.10.6_docs.md) | The docs after the oracle | 2 d | |
 

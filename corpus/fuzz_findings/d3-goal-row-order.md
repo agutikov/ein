@@ -35,13 +35,16 @@ is not determined by the data:
     ?x  = A
 ```
 
-## The re-find changes what this file means
+## The re-find narrows what this file means
 
 It was filed as a
 **[D3](../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)**
-consequence: the two engines showed different rows, and D3 was the difference
-between them. **It is not a divergence at all.** The row moves inside *one*
-engine when the interner assigns ids in a different order:
+consequence, and that reading was too narrow. The cross-engine difference was
+real and D3 did cause it — a resumed fork puts facts into the KB in a
+different order, and the row is `rows[0]` of an unsorted match. But **D3 is
+one thing that perturbs the row, not what makes it perturbable.** With D3 held
+fixed — one engine, one build, `fork-delta` off in both runs — the row still
+moves when the interner assigns ids in a different order:
 
 ```sh
 mkdir -p /tmp/goal-row && cp corpus/fuzz_findings/d3-goal-row-order.ein /tmp/goal-row/
@@ -58,11 +61,16 @@ EIN_ID_FILES=/tmp/goal-row cargo test --manifest-path ein.rs/Cargo.toml \
 ```
 
 So the cross-engine difference was a *symptom* of an under-determined
-rendering rather than of the fork saturator, and the two engines were each
-reporting a legitimate row. This is the class
+rendering, and the two engines were each reporting a legitimate row. Filed
+against D3 the finding is a divergence to accept; filed against the renderer
+it is the class
 [design/02](../../plans/m1a_rust/design/02_determinism_and_order.md) forbids —
-an observable that depends on the order ids were assigned in — and it is the
-first one the id-space sweep has found that the corpus does not reach.
+an observable that depends on the order ids were assigned in — and one of the
+first two the id-space sweep has found that the corpus does not reach. The
+second framing is the one that survives losing the second engine, which is
+the practical difference: after
+[P1a.10](../../plans/m1a_rust/p1a.10_single_implementation/README.md) nothing
+can re-run the first.
 
 `summary.json` is already right: `goal_bindings` carries **both** rows,
 sorted. The table is the surface that picks one. Nobody has decided whether it

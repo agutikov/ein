@@ -374,8 +374,8 @@ first item that would change the D3 decision if a corpus puzzle reached it.
 [S1a.6.6](p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s fuzzer.** If a
 model satisfies the `(query :goal …)` pattern **more than once**, the solve
 table prints `rows[0]` of an *unsorted* match — and the row a matcher yields
-first depends on the order the facts went into the KB, which is precisely what
-resuming root's saturation changes. Seven forms are enough:
+first depends on the order the facts went into the KB, which resuming root's
+saturation changes. Seven forms are enough:
 
 ```lisp
 (relation ok T) (relation blessed T) (relation cand T)
@@ -397,6 +397,19 @@ implementation-independent and shuffle-invariant at the cost of one visible
 change to a checked-in fixture (`examples/branching/12_typed_blind_solve.ein`
 would print `?c = Blue` where it prints `?c = Red`). Recorded here rather than
 applied; the reproducer lives in `corpus/fuzz_findings/`.
+
+> **Re-attributed at [S1a.10.4](p1a.10_single_implementation/s1a.10.4_utils.md),
+> 2026-08-21.** This entry is **not D3's**, though D3 reaches it. The
+> rewritten fuzzer re-derived the same seven forms from a different seed and
+> then failed them under `ein-render`'s `id_order_invariance`: the row moves
+> in **one** engine, one build, `fork-delta` off in both runs, with only the
+> interner's assignment order permuted. So what D3 does here is perturb an
+> already-under-determined rendering, and the defect is the unsorted `rows[0]`
+> — a
+> [design/02](design/02_determinism_and_order.md) violation in its own right,
+> which is a claim that can still be re-run now that there is no second engine
+> to compare. The other reach above, the unsat core, was put through the same
+> check and **is** D3: the id-space sweep is green on it.
 
 **What would make this unacceptable.** Any of:
 

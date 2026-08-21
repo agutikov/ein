@@ -79,23 +79,38 @@ constrained-reasoning research.
   `ir` / `kb` inspectors were removed, and the `profile` / `symmetric`
   engine runners moved to `utils/` scripts). `ein.py/tests/` is the pytest
   suite, `ein.py/pyproject.toml` is the build config.
-- **`utils/`** — renderers (`render_knowledge_graph.sh` for Graphviz,
-  `render_knowledge_graph_cy.py` for Cytoscape) + ad-hoc engine
-  probe/measure scripts (`find_dead_defs.py`, `relation_algebra_examples.py`, …)
-  + the promoted engine runners `profile_solve.py` (cProfile a `solve()`)
-  and `symmetric_bench.py` (symmetric-closure micro-benchmark).
-  **The M1a measurement set** is here too, and every one of these compares the
-  two implementations rather than timing one:
-  `bench_env.sh` (prints the machine state and pins to a P-core — run the
-  others through it), `bench_baseline.py` (the eight-bench set, in-process,
-  the Python half of `cargo bench`), `e2e_baseline.py` (the same workloads as
-  *processes*, which is what the milestone's targets mean),
-  `profile_ein_rs.py` (`perf` self time by symbol and by subsystem, bucketed
-  like `profile_solve.py` so the two profiles read side by side),
-  `count_work.py` (what ein.py *did* — the counterpart of
-  `ein_core::counters`), `criterion_table.py` (criterion's standard
-  deviations, with the 3 % gate as an exit code). Results:
-  [`plans/m1a_rust/p1a.6_performance/baseline.md`](plans/m1a_rust/p1a.6_performance/baseline.md).
+- **`utils/`** — **seventeen scripts, all of them driving `ein.rs`** since M1a
+  [S1a.10.4](plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md),
+  which deleted the eleven that compared two engines or measured the Python
+  one. Every script that runs the engine names the binary — **`$EIN_BIN`** or
+  `--bin` — defaulting to `ein.rs/target/release/ein`, except the three that
+  want a build of their own (`fork_delta_verify.py` → `target-fd`,
+  `spec_audit.py` → `target-sa`, `profile_ein_rs.py` → `--profile profiling`,
+  which it builds). **None takes an `--impl`**: a flag with one value invites
+  a reader to look for the operand that is gone.
+  - *renderers* — `render_knowledge_graph.sh` (Graphviz),
+    `render_knowledge_graph_cy.py` (Cytoscape), `render_examples.sh` (every
+    example's rules / constraints / lattice DOT + SVG), `zebra2_trace.sh`
+    (solve zebra2, render its markdown trace).
+  - *checks* — `stdlib_manifest.py` (writes `stdlib/MANIFEST.sha256`, which no
+    test can do, and verifies it per module without a toolchain),
+    `check_hashmap_iteration.py` (the determinism grep), `fuzz_ein.py` (the
+    engine fuzzer: five properties one engine can check, findings in
+    [`corpus/fuzz_findings/`](corpus/fuzz_findings/README.md)),
+    `gen_unicode_printable.py`, `package_vscode_ein.sh`.
+  - **the M1a measurement set** — `bench_env.sh` (prints the machine state and
+    pins to a P-core: run the others through it), `e2e_baseline.py` (the
+    milestone's workloads as *processes*; `--bin` compares two builds of the
+    engine, which is what it is for now), `profile_ein_rs.py` (`perf` self
+    time by symbol and by subsystem), `criterion_table.py` (criterion's
+    standard deviations, with the 3 % gate as an exit code),
+    `feature_matrix.py` (the `features.md` lever matrix), `fork_split.py`,
+    `fork_delta_verify.py`, `spec_audit.py`. Results:
+    [`baseline.md`](plans/m1a_rust/p1a.6_performance/baseline.md) and
+    [`scaling.md`](plans/m1a_rust/p1a.7_parallelism/scaling.md) — where **the
+    CPython and PyPy columns are frozen constants**, because the instruments
+    that produced them (`bench_baseline.py`, `count_work.py`,
+    `profile_solve.py`) went with the engine they measured.
 - **`nlp/`, `smt/`** — scratch areas with submodules
   (`nlp/link-grammar`, `smt/CVC4`). Not wired into the active
   `ein.py/` package.

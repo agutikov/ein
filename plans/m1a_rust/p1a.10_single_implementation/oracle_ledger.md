@@ -151,7 +151,7 @@ and the answer is the manifest — which is why the manifest had to be blessed
 |---|---|---|---|---|
 | 3.1 | **the determinism sweep** — `--env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42 --strict`, which found hazards H1 and H4 | no output depends on a hash-order accident | **banked** | `ein-render/tests/id_order_invariance.rs`. One engine, the id space permuted instead of the hash seed — and it is *stronger*, because ein.rs has no salted hash to perturb: see [§5](#5-what-the-successor-found) |
 | 3.2 | **`utils/check_hashmap_iteration.py`** — the grep for an iteration whose order could reach an output | the static half of the same question | **covered**, and repaired | it reads Rust source and has no ein.py dependency; it is listed here because 3.1 is often mistaken for it. The grep finds what *could* leak, 3.1 finds what *does*. It was **red on `master`** when this row was written — six unannotated aggregate iterations, every one of them a `.sum()` or a histogram, arriving one at a time from S1a.5.4 (`index_sizes`), T1a.6.2.2 (`layout_shape`) and S1a.6.1 (`footprint`) — so the lint has been red since 2026-08-18, one day after it landed. All six now carry their `determinism-ok:` reason. That the CI check *for hash-order leaks* had itself been failing for two phases is a datum about the cost of a gate nobody watches, and the reason [§3](#3-the-instruments-that-are-not-tiers).1 is a `cargo test` rather than a script |
-| 3.3 | **the differential fuzzer** (`utils/fuzz_ein.py`) — four parity bugs in its first twenty minutes | the input space no fixture covers | **accepted loss** for the differential arm — [§6](#6-accepted-loss) L1; the generator, the minimiser and the self-checkable properties survive to S1a.10.4 | |
+| 3.3 | **the differential fuzzer** (`utils/fuzz_ein.py`) — four parity bugs in its first twenty minutes | the input space no fixture covers | **accepted loss** for the differential arm — [§6](#6-accepted-loss) L1 | the generator, the minimiser and five single-engine properties, rewritten at [S1a.10.4](s1a.10.4_utils.md). Three findings in its first sessions, all in `corpus/fuzz_findings/` |
 | 3.4 | **the parser fuzzer** (`ein-ir/tests/fuzz_parity.rs`, 2.2 M mutations) | ditto, for the frontend | **accepted loss**, same row; its *seed replay* survives — the checked-in `fuzz_findings/` still have to parse |
 | 3.5 | **the liveness check** — "did either implementation ever exit 0?" | a harness that cannot fail | **retired** | it exists because two dead engines agree. One engine that never runs is a test that never passes |
 | 3.6 | **the corpus completeness check** — every `.ein` under `examples/` and `stdlib/` has an entry | the corpus cannot silently miss a file | **covered** (5 claims) + **banked** (4) | `ein-conformance/src/corpus.rs`'s unit tests had 5 of the 9 `ein.py/tests/test_corpus_manifest.py` makes; the missing four — unique paths, negatives grouped by where they fail, every compile-negative has its `.expected`, the load-negative group matches its directory — landed here |
@@ -297,7 +297,36 @@ surviving arm can do.
 > rather than a souvenir. Property 2 is worth one correction to the framing
 > here: it is not strictly weaker than the diff. A *shared* misunderstanding of
 > the grammar satisfied the diff and cannot satisfy a round-trip.
-> `utils/fuzz_ein.py` and its header are still S1a.10.4's.
+>
+> **The engine half landed in [S1a.10.4](s1a.10.4_utils.md)**, and the list
+> above needed three corrections.
+>
+> - **Property 2 does not move to `utils/fuzz_ein.py`.** The round-trip is a
+>   *frontend* property with a generator of its own, and there is no dumper on
+>   the CLI to reach it through. The division is: `fuzz_properties.rs` owns the
+>   frontend, `fuzz_ein.py` owns what happens after it.
+> - **Property 4 has nothing to be invariant under yet.** There is no `--jobs`;
+>   [S1a.7.5](../p1a.7_parallelism/s1a.7.5_jobs_contract.md) is where the row
+>   lands.
+> - **Two properties the list did not have**, both cheap and both non-vacuous:
+>   *a refusal says why on stderr*, and *the same argv twice gives the same
+>   bytes* — the dynamic counterpart of `utils/check_hashmap_iteration.py`'s
+>   grep, with durations masked and nothing else.
+>
+> **Property 3 was the one worth the seam.** `EIN_ID_FILES` points
+> `ein-render/tests/id_order_invariance.rs` at a generated batch, and it found
+> two ordering defects the corpus does not reach in the first twenty minutes —
+> the **unsat core**'s contents, and the goal-binding row the solve table
+> prints. The second re-derived, from a different seed, the exact seven forms
+> of `corpus/fuzz_findings/d3-goal-row-order.ein`, filed in August as a
+> [D3](../divergences.md) consequence — and **D3 is one perturbation of that
+> row, not why the row is perturbable**: it moves inside one engine, with
+> `fork-delta` off in both runs, when the ids are assigned in a different
+> order. Both engines were printing a legitimate row of an under-determined
+> table. That is a small argument that L1's loss is real *and* that what
+> replaced it is not nothing: this instrument re-attributed a finding the
+> oracle had filed against the wrong cause, and — unlike the oracle's
+> reading — it is a claim that can still be re-run tomorrow.
 *What could now pass unnoticed:* a wrong answer on a program shape nobody wrote
 a fixture for. This is the single largest loss in the phase and it has no
 mitigation other than [P1c.1](../../m1c_external_validation/p1c.1_stdlib_conformance/README.md)'s

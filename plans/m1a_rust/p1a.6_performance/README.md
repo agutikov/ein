@@ -288,9 +288,15 @@ Three, each with its numbers and none of them applied:
    turning it off turns `Ambiguity` into `Contradiction` on two corpus
    fixtures ([F4 Q40](../../followups/f4_cross_cutting.md)).
 3. **Whether the solve table should sort the binding row it prints** — it
-   shows `rows[0]` of an unsorted match today, which is the one place D3 can
-   change what a user reads ([D3](../divergences.md)); the fix costs one
-   visible change to a checked-in fixture.
+   shows `rows[0]` of an unsorted match today; the fix costs one visible
+   change to a checked-in fixture. This was recorded as "the one place
+   [D3](../divergences.md) can change what a user reads", and
+   [S1a.10.4](../p1a.10_single_implementation/s1a.10.4_utils.md) narrowed the
+   attribution: the row moves inside **one** engine under a permuted id space,
+   with `fork-delta` off in both runs, so D3 reaches this defect but is not
+   what makes it one. It is an under-determined rendering, which makes the
+   decision one `design/02` already forbids leaving open rather than a
+   cosmetic preference.
 
 ## Cross-links
 
