@@ -109,9 +109,9 @@ example : zebraSolution = expectedSolution := by
 
 Для Zebra brute force в лоб пространство примерно:
 
-[
+$$
 (5!)^5 = 120^5 \approx 2.49 \cdot 10^{10},
-]
+$$
 
 если независимо перебирать пять категорий перестановок. Поэтому совсем тупой enumeration — плохая идея.
 
@@ -180,13 +180,13 @@ theorem solve_complete :
 
 Это уже очень близко к архитектуре:
 
-[
+$$
 \text{constraints}
 \rightarrow
 \text{search}
 \rightarrow
 \text{model}
-]
+$$
 
 ---
 
@@ -387,9 +387,9 @@ Brit is Red
 
 уже можно представить правилом композиции:
 
-[
+$$
 LivesAt(Brit,h) \land HasColor(h,Red)
-]
+$$
 
 или relation-level constraint.
 
@@ -403,17 +403,17 @@ Lean сам по себе не является CSP/SAT solver.
 
 Lean даёт тебе:
 
-[
+$$
 \text{dependent type theory}
 +
 \text{computation}
 +
 \text{proof construction}
-]
+$$
 
 А ты выбираешь procedure:
 
-[
+$$
 \boxed{
 \text{enumeration}
 \quad|\quad
@@ -423,7 +423,7 @@ Lean даёт тебе:
 \quad|\quad
 \text{external solver}
 }
-]
+$$
 
 В Lean можно даже написать:
 
@@ -449,7 +449,7 @@ def solve : List World := ...
 
 Там может получиться буквально такая цепочка:
 
-[
+$$
 \text{English clue}
 \rightarrow
 \text{Lean relation theory}
@@ -457,11 +457,11 @@ def solve : List World := ...
 \text{finite model search}
 \rightarrow
 \text{proof of solution}
-]
+$$
 
 против Ein:
 
-[
+$$
 \text{English clue}
 \rightarrow
 \text{Ein theory}
@@ -469,7 +469,7 @@ def solve : List World := ...
 \text{saturation/search}
 \rightarrow
 \text{fixed point/model}.
-]
+$$
 
 И тогда очень чётко станет видно, **чего именно Ein не хватает до конечного model finder / SAT-like semantics**: Lean позволяет отдельно формализовать `∃!`, totality, cardinality и отрицательные constraints, а не только генерировать положительные факты до saturation.
 
