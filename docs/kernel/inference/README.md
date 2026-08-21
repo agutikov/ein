@@ -9,10 +9,10 @@
 > semantics, and determinism. The "as-built layout" + "what's
 > implemented" sections were reconciled by
 > P1.20 S1.20.A0;
-> a deeper module-level walkthrough — and the still-stale "Determinism"
-> / "Superseded tree-solver" sections lower down (broken
-> `inference/solver.py` links; the file was split into `monotonic/`) —
-> is S1.20.D's remit.
+> the module-level walkthrough is
+> [`implementation.md`](implementation.md); the "Determinism" and
+> "Superseded tree-solver" sections lower down describe a solver that was
+> removed, and say so in their own banners.
 
 The inference engine is what takes a populated
 [`KnowledgeBase`](../ir/02-data-model/02_store.md) and produces
@@ -55,37 +55,37 @@ docs/kernel/inference/
 │                                     re-homed here at S1a.10.3)
 ├── reserved_engine_strings.md     ← engine-internal reserved atoms
 │                                     (__closed__, __symmetric__, false, …)
-├── python_impl.md                 ← the file-by-file Python module map (S1.20.D)
+├── implementation.md              ← the module-by-module engine map
+├── ../defined_behaviour.md        ← the behaviours the Python source used to
+│                                     be the only statement of (M1a S1a.10.6)
 └── features.md                    ← measured feature×config matrix: which
                                       SolverConfig knobs are load-bearing (S1.20.I)
 ```
 
 Source for the engine lives under
-[`ein.py/src/ein/inference/`](../../../ein.py/src/ein/inference/) (+ the
-`monotonic/` lattice-search sub-package); a flattened module-level
-walkthrough is S1.20.D's deliverable.
+[`ein-infer`](../../../ein.rs/crates/ein-infer/src/); the
+module-by-module walkthrough is [`implementation.md`](implementation.md).
 
 ## What's implemented (M1)
 
 The engine shipped end-to-end; `examples/zebra2.ein` solves with a full
-derivation trace. Where each piece lives (`ein.py/src/ein/inference/`
-unless noted):
+derivation trace. Where each piece lives (`ein-infer/src/` unless noted):
 
 | concept                         | M1 state                                                         |
 |---------------------------------|------------------------------------------------------------------|
-| Pattern matcher                 | **shipped** — `compile.py` lowers each (rule, activator) to a `JoinPlan` whose steps are **purely positive** (S1.21.8: `split_naf` lifts every `(absent …)` into `plan.naf_guards`); `match.py` `_run_steps` executes it, `run_guarded` tags each match with its own disjunct's guards |
+| Pattern matcher                 | **shipped** — `compile.rs` lowers each (rule, activator) to a `JoinPlan` whose steps are **purely positive** (S1.21.8: `split_naf` lifts every `(absent …)` into `plan.naf_guards`); `match_.rs` `_run_steps` executes it, `run_guarded` tags each match with its own disjunct's guards |
 | Rule registry                   | `Rule` entity in [`02-data-model`](../ir/02-data-model/); puzzle rules authored inline or imported from the [stdlib](../../../stdlib/) |
 | Property-fact activation        | KB indexes `_rule_apps_by_rule` / `_rule_apps_on_relation` built at load |
-| Saturation loop                 | **shipped** — priority-banded, delta-driven `saturator.py` (P1.3 S1.3.3; semi-naive in P1.8a); **two-phase since S1.21.8** — a purely positive closure runs to quiescence, then one boundary round admits at most one parked NAF-guarded candidate and the closure re-runs |
-| Hypothesis branching            | **shipped** — `hypgen.py` enumerates candidates; the commitment-lattice search is `monotonic/solver.py` (P1.5–P1.5b) |
-| Contradiction detection         | **shipped** — `contradiction.py` detects (`(X, ¬X)` pairs + `(false)`); `frontier.py` → `explain.py` explains: smallest contradiction frontier — a minimum-cardinality AND/OR search over every recorded derivation (provenance-based, NAF-safe, budgeted); **not** a subset-minimal MUS |
+| Saturation loop                 | **shipped** — priority-banded, delta-driven `saturator.rs` (P1.3 S1.3.3; semi-naive in P1.8a); **two-phase since S1.21.8** — a purely positive closure runs to quiescence, then one boundary round admits at most one parked NAF-guarded candidate and the closure re-runs |
+| Hypothesis branching            | **shipped** — `hypgen.rs` enumerates candidates; the commitment-lattice search is `solve.rs` (P1.5–P1.5b) |
+| Contradiction detection         | **shipped** — `contradiction.rs` detects (`(X, ¬X)` pairs + `(false)`); `explain.rs` → `explain.rs` explains: smallest contradiction frontier — a minimum-cardinality AND/OR search over every recorded derivation (provenance-based, NAF-safe, budgeted); **not** a subset-minimal MUS |
 | Multi-justification provenance  | **shipped** — provenance is per *derivation*: `Fact.provenance` is the primary justification, `kb.justifications(fact)` returns every recorded one (capped per fact, shortest kept), so a fact is an OR-node over AND-nodes. Gated by `SolverConfig.record_alternative_justifications` (default on) |
-| Verdict                         | **shipped** — one `solve()`; `verdict.py` reports `Solution` / `Ambiguity` / `Contradiction`, read off the model count `k`; the `k = 0` unsat core is that smallest explanation — of the root contradiction directly, or of each dead commitment, unioned across the deads |
-| Trace generation                | **shipped** — `DerivationDAG.to_dot()` + the markdown trace builder under [`trace/`](../../../ein.py/src/ein/trace/) (P1.6) |
+| Verdict                         | **shipped** — one `solve()`; `verdict.rs` reports `Solution` / `Ambiguity` / `Contradiction`, read off the model count `k`; the `k = 0` unsat core is that smallest explanation — of the root contradiction directly, or of each dead commitment, unioned across the deads |
+| Trace generation                | **shipped** — `DerivationDAG.to_dot()` + the markdown trace builder under [`ein-render/trace/`](../../../ein.rs/crates/ein-render/src/trace/) (P1.6) |
 | `(not P)` / `(absent P)` premises | S1.5.8c.1: `(not P)` in `:match` matches a STORED `(not P)` fact (uniform with all other patterns); `(absent P)` is the explicit NAF guard. The old NAF default on `(not P)` was dropped. |
 | `(forall ?b (G) (B))` / `(open P)` | S1.5.8c.3a/b sugars (now in `std.macro`): `forall` ⇒ `(absent (and G (absent B)))`, `open` ⇒ `(and (absent P) (absent (not P)))`. Compile to the `AbsentGuard` machinery; a `forall`'s **nested** absent is not lifted — it stays part of the negative query and the boundary evaluates the whole guard as one unit. |
-| `(absent …)` evaluated at the closure/world boundary | **shipped** S1.21.8 — guards are lifted out of the closure plan and judged against the positive fixpoint by [`world.World`](../../../ein.py/src/ein/inference/world.py), never mid-saturation. The fire-time re-check (`match.absents_still_pass`) and the absent-flip full-match split (`saturator._absent_relations`) are **deleted**, not bypassed; `Saturator.naf_dropped` is structurally 0. See § "NAF semantics" below. |
-| Negative (NAF) provenance       | **shipped** S1.21.8 — [`Provenance.absent_premises`](../../../ein.py/src/ein/kb/provenance.py) records the `(absent …)` queries that had to fail for a firing to be admitted (`World.negative_premises`), one `(relation, args)` pattern each with `None` where the query ranged free. This is the missing half of `Deps(Y)` = `PositiveDeps(Y)` ∪ `NegativeDeps(Y)`; it makes negative dependence **visible**, and nothing interprets it yet — `unsat_core` and the trace's "using" line still read positive premises only. |
+| `(absent …)` evaluated at the closure/world boundary | **shipped** S1.21.8 — guards are lifted out of the closure plan and judged against the positive fixpoint by [the boundary phase](../../../ein.rs/crates/ein-infer/src/saturator.rs), never mid-saturation. The fire-time re-check (`match.absents_still_pass`) and the absent-flip full-match split (`saturator._absent_relations`) are **deleted**, not bypassed; `Saturator.naf_dropped` is structurally 0. See § "NAF semantics" below. |
+| Negative (NAF) provenance       | **shipped** S1.21.8 — [`Prov::absent`](../../../ein.rs/crates/ein-core/src/prov.rs) records the `(absent …)` queries that had to fail for a firing to be admitted (`World.negative_premises`), one `(relation, args)` pattern each with `None` where the query ranged free. This is the missing half of `Deps(Y)` = `PositiveDeps(Y)` ∪ `NegativeDeps(Y)`; it makes negative dependence **visible**, and nothing interprets it yet — `unsat_core` and the trace's "using" line still read positive premises only. |
 | Hypothesis-branch order is deterministic | content-based sort, not hash-based (`PYTHONHASHSEED` does not reach iteration order); the score key is an M1 stub. See § "Determinism" below. |
 
 The data substrate (KB, entities, layer views, fork, provenance,
@@ -111,8 +111,8 @@ contributes, locked by S1.21.8:
    `Fact.provenance` is the primary justification and
    `kb.justifications(fact)` returns every recorded one, so a fact is an
    OR-node over AND-nodes — the proof structure is an AND/OR graph
-   ([`python_impl.md` § cross-cutting invariants](python_impl.md), searched by
-   [`explain.py`](../../../ein.py/src/ein/inference/explain.py)).
+   ([`implementation.md` § cross-cutting invariants](implementation.md), searched by
+   [`explain.rs`](../../../ein.rs/crates/ein-infer/src/explain.rs)).
 4. **Lazy branching.** Saturate first with all propagation rules;
    branch only when no rule fires and the puzzle is not yet solved.
    ([Q19 working answer](../../../plans/open_questions.md#q19).)
@@ -121,7 +121,7 @@ contributes, locked by S1.21.8:
    `zebra2.ein` (five typed `*-loc` relations, unified `is-a`) —
    *two ontologies for one puzzle*, and since S1.22.1a both solve to the
    same model, which is what makes the claim testable rather than
-   aspirational (`acceptance/test_zebra_two_ontologies.py`). P1.7 resolved the
+   aspirational (`ein-cli/tests/acceptance_cli.rs`). P1.7 resolved the
    encoding (`is-a` canonical) and S1.7.23 removed the kernel
    type/instance entity-view, so the engine treats every membership
    relation uniformly as facts — there is no
@@ -129,7 +129,7 @@ contributes, locked by S1.21.8:
 6. **Negation sits on the closure/world boundary.** The closure is
    purely positive and monotone — it consults no negation at all —
    and `(absent P)` is asked once, of a *saturated* world
-   ([`world.World`](../../../ein.py/src/ein/inference/world.py)),
+   ([the boundary phase](../../../ein.rs/crates/ein-infer/src/saturator.rs)),
    never of a half-built KB (S1.21.8; normative contract:
    [`absent_semantics.md`](absent_semantics.md), layering:
    [`architecture.md` §closure/worlds seam](../architecture.md)).
@@ -140,7 +140,7 @@ contributes, locked by S1.21.8:
 ## M1 invariant — alive-set soundness
 
 The solver **recomputes** the alive-candidate set per-KB via
-[`_compute_alive`](../../../ein.py/src/ein/inference/monotonic/_helpers.py)
+[`compute_alive`](../../../ein.rs/crates/ein-infer/src/solve.rs)
 (`= open_hypotheses(kb)`) — the open hypotheses are a pure function of the
 closed KB. The *set* is materialised only where a set is what the caller
 needs (layer enumeration); the completeness test asks the same generator for
@@ -170,7 +170,7 @@ pre-conditions hold across the puzzle's rule library — collectively the
 Under these clauses, every admissible hypothesis is enumerable
 from the current KB state; deeper branches **eliminate** candidates,
 never extend the space. The same "alive ⇐ KB" argument licenses the
-[`canon.state_key`](../../../ein.py/src/ein/inference/canon.py)
+[`canon::state_key`](../../../ein.rs/crates/ein-infer/src/canon.rs)
 KB-only dedup — two KBs with identical facts have identical futures
 (P1.21 R1: the key IS the canonical fact set, compared exactly — a
 hash of it is display-only, never identity).
@@ -198,7 +198,7 @@ when F5 lands.
 > E3 never-after unchanged), the corollaries C1–C7 the engine relies on
 > (C2 re-grounded, C4/C5 retired), and what is explicitly *not* provided
 > (stratification, stable models, retraction) — each pinned by
-> [`test_absent_semantics.py`](../../../ein.py/tests/inference/test_absent_semantics.py).
+> [`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs).
 > This section is the operational how.
 
 *Shipped, no longer a target picture:* the **closure/world seam** — a
@@ -208,8 +208,8 @@ implemented on 2026-08-17 by
 P1.21 S1.21.8.
 
 **The compile split.** `(absent P)` in a `:match` clause still compiles to
-an [`AbsentGuard`](../../../ein.py/src/ein/inference/compile.py) step, but
-[`compile.split_naf`](../../../ein.py/src/ein/inference/compile.py) then
+an [`NafGuard`](../../../ein.rs/crates/ein-infer/src/compile.rs) step, but
+[`compile.rs`](../../../ein.rs/crates/ein-infer/src/compile.rs) then
 lifts every *top-level* one out of the plan. What remains in
 `JoinPlan.steps` — and in each S1.8.A13 `extra_match_plans` disjunct — is a
 purely positive Scan/Join/Guard plan, the **closure plan**. The guards
@@ -220,7 +220,7 @@ exist at all). Each `NafGuard` carries three things beyond the guard:
 - **`scope`** — the variables bound by the positive premises that
   *preceded* it. Boundary evaluation projects the completed bindings back
   down to that set
-  ([`world.project`](../../../ein.py/src/ein/inference/world.py)), which is
+  ([`NafGuard::scope_of`](../../../ein.rs/crates/ein-infer/src/plan.rs)), which is
   what makes lifting exactly as strong as evaluating in place:
   `(and (absent (P ?x)) (Q ?x))` still asks "is there no `P` at all?", and
   `(and (Q ?x) (absent (P ?x)))` still asks "no `P` for *this* `x`?".
@@ -236,7 +236,7 @@ query, and the boundary evaluates the whole guard as one unit. That is why
 inside a negative query.
 
 **The boundary type.**
-[`world.py`](../../../ein.py/src/ein/inference/world.py) —
+[`saturator.rs`](../../../ein.rs/crates/ein-infer/src/saturator.rs) —
 `World(kb, commitment=())` with `holds(steps, bindings)`,
 `absent(guard, bindings)`, `admits(guards, bindings)`,
 `first_failing(guards, bindings)` and `negative_premises(guards, bindings)`
@@ -246,7 +246,7 @@ it, so the saturator builds a fresh one per round rather than mutating one.
 Every NAF query in the engine goes through it, and nothing else does.
 
 **Two-phase saturation.**
-[`Saturator.step()`](../../../ein.py/src/ein/inference/saturator.py)
+[`Saturator::step`](../../../ein.rs/crates/ein-infer/src/saturator.rs)
 alternates:
 
 1. **Closure** (`_closure_step`) — purely positive plans fire to
@@ -286,7 +286,7 @@ and `naf_dropped` — kept, and now **structurally 0**. `is_stalled()`
 consults the boundary too: a parked candidate whose guards now pass is an
 available firing, and answering from the positive queue alone would report
 "stalled" one round before a `forall` admits. The queue-less
-[`Engine.step()`](../../../ein.py/src/ein/inference/engine.py) implements
+[`Engine::step`](../../../ein.rs/crates/ein-infer/src/engine.rs) implements
 the same two phases directly — every positive match first, the boundary
 only once none remain.
 
@@ -341,22 +341,22 @@ world — corollary C6 made structural.
 
 **Negative provenance.** A firing admitted through the boundary records
 what had to *not* hold:
-[`Provenance.absent_premises`](../../../ein.py/src/ein/kb/provenance.py) is
+[`Prov::absent`](../../../ein.rs/crates/ein-core/src/prov.rs) is
 a tuple of `(relation, args)` patterns — `None` marking a position the
 query left free — built by `World.negative_premises` (nested guards
 contribute their patterns too: the whole query is what had to fail) and
-handed to [`fire()`](../../../ein.py/src/ein/inference/firing.py) as a
+handed to [`fire`](../../../ein.rs/crates/ein-infer/src/firing.rs) as a
 kwarg. This is the missing half of `Deps(Y)` = `PositiveDeps(Y)` ∪
 `NegativeDeps(Y)` (REVIEW_M1-01 §2) — the object whose absence sank the
 `unconditional_facts` extraction (below) and keeps deletion-based core
 minimisation unsound. **It makes negative dependence visible; no walk
 interprets it yet** — `unsat_core`,
-[`frontier.py`](../../../ein.py/src/ein/inference/frontier.py) and the
+[`explain.rs`](../../../ein.rs/crates/ein-infer/src/explain.rs) and the
 trace's "using" line still read positive premises only, so
 [`absent_semantics.md`](absent_semantics.md) C3 stands as written.
 
 **The one guard evaluation outside the saturator.**
-[`Lookahead.dies_immediately`](../../../ein.py/src/ein/inference/lookahead.py)
+[`Lookahead::dies_immediately`](../../../ein.rs/crates/ein-infer/src/lookahead.rs)
 judges a rule's guards in the world **with** the probed candidate `h`: the
 guard must find no match in `kb` *and* `h` must not create one (divergence
 D3, fixed with this stage). A guard containing a nested absent is
@@ -365,7 +365,7 @@ that disjunct** rather than guessing — which only loses a kill, keeping the
 "never reports a live hypothesis as dead" contract.
 
 **What changed semantically**, all pinned in
-[`test_absent_semantics.py`](../../../ein.py/tests/inference/test_absent_semantics.py):
+[`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs):
 a rule that used to fire because its watched fact had not been derived
 *yet* no longer does (the guard is judged against the fixpoint, in which it
 has); the result of a **stratified** program no longer depends on rule
@@ -393,9 +393,9 @@ does not report that others exist), while NAF over a declared-only relation
 cannot, its watched extent being fixed by the puzzle. So the map is now the
 cheap static proxy for "could this rule set have more than one answer?" —
 the input a real stratification checker would refine.
-[`naf_deps`](../../../ein.py/src/ein/inference/naf_deps.py) answers it
+[`naf_deps`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) answers it
 statically:
-[`Engine.naf_dependency_map()`](../../../ein.py/src/ein/inference/engine.py)
+[`naf_deps::compute_naf_map`](../../../ein.rs/crates/ein-infer/src/engine.rs)
 walks the compile cache and returns one `NafDep` per `(rule, activator)`
 that carries a guard — since S1.21.8 via `plan.disjuncts()`, so an
 or-disjunct's guards are visible to it too (they were not before) —
@@ -404,8 +404,8 @@ splitting the watched relations into
 `(absent (not (R …)))` guard, some rule asserts `(not (R …))`) vs
 `declared_only` (extension fixed by the loaded facts — no rule
 produces it). The
-classification reuses [`compile.asserted_relation`](../../../ein.py/src/ein/inference/compile.py)
-(the same test behind [`closed.producible_relations`](../../../ein.py/src/ein/inference/closed.py))
+classification reuses [`compile::asserted_relation`](../../../ein.rs/crates/ein-infer/src/compile.rs)
+(the same test behind [`closed::producible_relations`](../../../ein.rs/crates/ein-infer/src/closed.rs))
 and its `negated_relation` dual. Because the activator-bound head var
 (`?S` in `adjacent-via-*`) is baked to a literal relation per activator,
 the split is per-activator: zebra2's `adjacent-via-fwd` is derived-NAF on
@@ -448,11 +448,11 @@ checker lands.
 ## Hypgen pre-pruning — disjunctive-prune (S1.5a.2)
 
 The hypothesis generator
-([`generate_hypotheses`](../../../ein.py/src/ein/inference/hypgen.py))
+([`hypgen::generate`](../../../ein.rs/crates/ein-infer/src/hypgen.rs))
 emits one candidate `(?R ?A ?B)` per legal slot-fill at root
 saturation; each candidate becomes a hypothesis the solver
 might branch on. The generator's filter consults
-[`kb._negated_facts`](../../../ein.py/src/ein/kb/store.py)
+[`Kb::negated`](../../../ein.rs/crates/ein-core/src/kb.rs)
 to drop candidates whose negation is already known: a
 candidate ``(color-loc Yellow House-3)`` is dropped if
 ``(not (color-loc Yellow House-3))`` is in `_negated_facts`.
@@ -500,22 +500,26 @@ direction's NAF explicit in its own match clause.
 ## Determinism — content-based candidate ordering (S1.5a.1a)
 
 > **Reconcile note.** The names in this section are the **removed tree
-> solver's** (`_candidates_for` / `_candidate_sort_key`, old
-> `inference/solver.py`). The live ordering is
-> [`apriori.order_candidates`](../../../ein.py/src/ein/inference/apriori.py)
+> solver's** (`_candidates_for` / `_candidate_sort_key`). The live ordering is
+> [`apriori::order_candidates`](../../../ein.rs/crates/ein-infer/src/apriori.rs)
 > (+ `_set_score`), applied by
-> [`monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py);
-> [`hypgen.score_hypothesis`](../../../ein.py/src/ein/inference/hypgen.py) is the
+> [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs);
+> [`hypgen::score_hypothesis`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) is the
 > score key. The *principle* below — sort candidates by a content key, never by
 > `frozenset` / hash iteration order — is unchanged.
 
-`solve()` visits hypothesis branches in the order
-`_candidates_for`
-returns them. Pre-S1.5a.1a that list was the iteration of a
-`frozenset` (the root alive-set stashed on `kb.alive`), which
-reaches `hash(Fact)`, which reaches `hash(str)` — randomised
-per process by Python since 3.3. The visible symptom: every
-`bench_solve` invocation explored branches in a different order.
+`solve()` visits hypothesis branches in the order `_candidates_for`
+returns them. Pre-S1.5a.1a that list was the iteration order of a **hash
+set** of facts, and every invocation explored branches in a different one.
+
+> The *cause* was CPython's per-process string-hash randomisation; ein.rs's
+> hash maps are seeded identically on every run, so the same code would look
+> deterministic here and would still be wrong — the order would depend on
+> insertion history and on which ids the interner happened to assign. That is
+> exactly what
+> [`id_order_invariance.rs`](../../../ein.rs/crates/ein-render/tests/id_order_invariance.rs)
+> perturbs on purpose, and it is why the rule below is stated over *any* hash
+> iteration rather than over a randomised one.
 
 The fix sorts the result of `_candidates_for` by
 `_candidate_sort_key`:
@@ -526,7 +530,7 @@ The fix sorts the result of `_candidates_for` by
 
 All three components are content-derived; `hash(str)` never
 reaches the tuple. With the M1 stub
-[`score_hypothesis`](../../../ein.py/src/ein/inference/hypgen.py)
+[`score_hypothesis`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)
 returning `0` for every fact, the effective order is
 ``(args, relation_name)`` — alphabetic on first arg, then
 second, then relation. The score primary key is the slot
@@ -537,16 +541,19 @@ coefficients); when it lands, the solver doesn't move.
 **Determinism rule for new code.** Any `set` / `frozenset`
 whose iteration order influences user-visible output (branch
 IDs, trace ordering, log lines, fixture-dependent test
-assertions) must be sorted at the iteration boundary. `set`
-membership checks, `_fired`, `_negated_facts`, `_seen` — these
-are membership-only and don't need sorting. The audit point is
-the read site, not the storage site.
+assertions) must be sorted at the iteration boundary. Membership-only
+structures — the fired set, the negated index, the seen set — do not need
+sorting. The audit point is the read site, not the storage site. The rule is
+mechanically checked by
+[`check_hashmap_iteration.py`](../../../utils/check_hashmap_iteration.py),
+which fails on any hash-map iteration at a site whose order could reach an
+output unless it carries a `// determinism-ok:` reason.
 
 The subprocess pin this paragraph used to cite,
 `tests/inference/tree/test_branch_determinism.py` (two
 `PYTHONHASHSEED`s, byte-identical solve output), went with the tree
 solver in `8d77b02`. The surviving order-leak guard is
-[`tests/inference/lattice/test_shuffle_invariance.py`](../../../ein.py/tests/inference/lattice/test_shuffle_invariance.py),
+[`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs),
 which shuffles each layer's candidate order and asserts the resulting
 `LatticeSnapshotV1` still compares equal to the unshuffled run's — a
 stronger statement about the lattice, but no longer a hash-seed test.
@@ -682,13 +689,13 @@ C2.
 ## Mid-sweep saturation + per-sibling apriori re-check (S1.5a.19)
 
 > **Superseded — describes the removed tree solver** (tree engine removed in
-> `8d77b02`; its last dead residue, `back_prop.py`, deleted in S1.9.E6a). The
-> `inference/solver.py` `_consume` loop, `try_branch`, `back_propagate`, and
-> `is_unconditional_death` named below no longer exist. The live engine is the
+> `8d77b02`; its last dead residue deleted in S1.9.E6a). The `_consume` loop,
+> `try_branch`, `back_propagate`, and `is_unconditional_death` named below no
+> longer exist, in either engine. The live engine is the
 > set-indexed **lattice** (see *Set-indexed search — monotonic engine* below),
 > which bakes the per-set saturate-from-root pattern in from the start. (The
 > transitive "unconditional" walk that briefly survived the tree solver in
-> `commitment.py` was itself retired in P1.21 R2 — see the
+> `commitment.rs` was itself retired in P1.21 R2 — see the
 > historical note *Unconditional facts — retired* below.)
 > Kept for the algorithmic intuition: each commitment closes its consequences
 > before the next decision.
@@ -703,8 +710,8 @@ cost was paid for the contradiction to re-surface inside the
 fork.
 
 S1.5a.19 fixes this with two cheap pre-fork checks plus a
-mid-sweep saturator pass
-(`solver.py:1075-1122`, the removed file):
+mid-sweep saturator pass (in the removed tree solver; the listing below is
+its Python, kept because the *shape* is what the section explains):
 
 ```python
 for h in to_check:
@@ -803,7 +810,7 @@ unconditional — but the care was misdirected: the walk was sound over the
 
 **The NAF counterexample.** An `(absent P)` premise contributes **no
 premise fact** to a firing
-([`match.py`](../../../ein.py/src/ein/inference/match.py) — the guard
+([`match_.rs`](../../../ein.rs/crates/ein-infer/src/match_.rs) — the guard
 passes silently), so a fork fact derived through NAF carries no provenance
 edge to the commitment whose absence licensed it. Concretely — rule
 `(and (seed ?s) (absent (x a))) → (y ?s)`, a second rule making any `x`
@@ -825,7 +832,7 @@ A sound test needs `Deps(Y) = PositiveDeps(Y) ∪ NegativeDeps(Y)`, and
 can recover dependence-through-absence.
 
 **Since S1.21.8 the other half exists**, on the same record:
-[`Provenance.absent_premises`](../../../ein.py/src/ein/kb/provenance.py)
+[`Prov::absent`](../../../ein.rs/crates/ein-core/src/prov.rs)
 holds the `(absent …)` queries a firing was admitted through, so `Deps(Y)`
 is finally representable. That is the *precondition* for reviving the
 extraction, not the revival: nothing yet interprets those entries, so a
@@ -839,11 +846,11 @@ and the forced-positive cascade (`_helpers._promote_forced_positives` — a
 sole-surviving slot value must hold). Everything else is per-branch: each
 commitment is evaluated independently against the post-Phase-1 root, and
 no fork fact ever merges back. Pinned by
-[`test_root_stability_naf.py`](../../../ein.py/tests/inference/monotonic/test_root_stability_naf.py).
+[`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs).
 
 **Resurrection path, if ever needed.** On a ruleset with **no** `absent`
 guards — checkable as every compiled plan's
-[`has_naf`](../../../ein.py/src/ein/inference/compile.py) being False
+[`Plan::has_naf`](../../../ein.rs/crates/ein-infer/src/compile.rs) being False
 (equivalently `naf_relation_refs` empty), surfaced as
 `Engine.naf_dependency_map` — the extraction
 theorem genuinely holds: `premises_raw` is then a complete dependency
@@ -873,17 +880,17 @@ The tree engine's depth-first ordering over hypothesis branches
 prices in d! orderings of the same commitment set — for d=4 on
 zebra2 that's 24× redundant work on each set. The **monotonic
 engine** under
-[`ein.py/src/ein/inference/monotonic/`](../../../ein.py/src/ein/inference/monotonic/)
+[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
 collapses this by indexing by commitment **set** rather than
 path: layer N enumerates every size-N alive subset via
 Apriori-style prefix-join and enters each via the common
-[`try_commitment_set`](../../../ein.py/src/ein/inference/commitment.py)
+[`commitment::try_commitment_set`](../../../ein.rs/crates/ein-infer/src/commitment.rs)
 primitive; the root KB stays stable mid-search (P1.21 R2 — see
 *Unconditional facts — retired* above). There is **one entry**,
-[`solve`](../../../ein.py/src/ein/inference/monotonic/solver.py): it
+[`solve`](../../../ein.rs/crates/ein-infer/src/solve.rs): it
 records every solution node (`consistent ∧ complete`, `state_key`-deduped)
 plus every refuted commitment, and
-[`verdict_of`](../../../ein.py/src/ein/inference/monotonic/solver.py)
+[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
 reads the verdict off the count `k` of distinct solution nodes —
 `k = 0` → Contradiction (unsat core — each dead commitment's *smallest*
 explanation, unioned across the deads), `k = 1` → Solution, `k > 1` →
@@ -893,7 +900,7 @@ by the input, not by which function was called (the unsound
 Q1.5b.7). The orthogonal **stop policy** (`stop_after=1` single / `N` /
 `None` exhaustive) only bounds how far the lattice is walked;
 `store_lattice=True` attaches a sound
-[`LatticeProof`](../../../ein.py/src/ein/inference/monotonic/lattice.py)
+[`LatticeProof`](../../../ein.rs/crates/ein-infer/src/solve.rs)
 carrying both the gaps view (`proof.solutions`) and the contradictions
 view (`proof.dead_commitments` + `verdict.unsat_core`).
 
@@ -908,9 +915,8 @@ view (`proof.dead_commitments` + `verdict.unsat_core`).
    hypothesis context the goal depended on. **Algorithm spec
    §3d.vii.**
 2. **Solution at root.** The forced-positive cascade
-   (`_helpers._promote_forced_positives`, matching
-   [solver.py](../../../ein.py/src/ein/inference/monotonic/solver.py)'s
-   sound inter-layer prune) promotes each singleton-alive
+   ([`promote_forced_positives`](../../../ein.rs/crates/ein-infer/src/solve.rs),
+   the sound inter-layer prune) promotes each singleton-alive
    hypothesis to root, re-saturates, and repeats until the root
    itself is complete ∧ consistent. This is how
    `examples/zebra2.ein` solves — the layer-1 deaths (plus the
@@ -953,7 +959,7 @@ How this differs from CDCL, mechanically:
 | CDCL | Ein lattice search |
 |---|---|
 | ordered **decision trail**, one variable per decision level | unordered **commitment set C** (an ATMS environment); whole layers by cardinality (Apriori prefix-join) |
-| per-conflict **implication graph** + cut analysis | per-fact **provenance AND/OR graph** (ATMS justifications — OR over every recorded derivation); ATMS labels are computed on demand by `explain.py` to *explain* a conflict, never to learn from one — no conflict-cut analysis |
+| per-conflict **implication graph** + cut analysis | per-fact **provenance AND/OR graph** (ATMS justifications — OR over every recorded derivation); ATMS labels are computed on demand by `explain.rs` to *explain* a conflict, never to learn from one — no conflict-cut analysis |
 | learned clause = **1UIP-minimised** asserting clause | learned clause = **the full dead environment** (`learned_clause == frozenset(C)`, contract-pinned); shrinking measured vacuous + NAF-unsound (ex-E7, [F9 ledger](../../../plans/followups/f9_e_catalog.md)) |
 | asserting clause **propagates immediately** after backjump | clause only **filters future candidates** pre-fork (`filter_candidate`); size-1 clauses also write `(not h)` |
 | **non-chronological backjump** | **no backjump** — the BFS layer loop just continues; superset suppression prunes descendants |
@@ -988,7 +994,7 @@ dump/<puzzle>-<ts>/
 Six lifecycle hooks (`root_initial`, `layer_start`, `entering`,
 `layer_end`, `early_terminate`, `summary`) fire from the
 backbone; `dumper=None` is a no-op for every hook site. The
-[`ProgressDumper`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
+[the `Dumper` hook](../../../ein.rs/crates/ein-render/src/dump/state.rs)
 subclass streams the same events to stderr as live progress lines
 (so a multi-minute exhaustive `solve` isn't a silent hang) without
 needing an on-disk dump.
@@ -1018,9 +1024,13 @@ the abort suffice for diagnostic).
 
 ### Measured performance
 
-On the laptop reference (PyPy):
+> **Frozen constants.** Both figures below were taken on the Python engine
+> against the removed tree solver; neither instrument exists. What is live is
+> the same solve on ein.rs — milliseconds, re-measurable through
+> [`e2e_baseline.py`](../../../utils/e2e_baseline.py) and recorded in
+> [`baseline.md`](../../../plans/m1a_rust/p1a.6_performance/baseline.md).
 
-- `examples/zebra2.ein`: Solution in ~1.9 s (CPython ~2.8 s),
+- `examples/zebra2.ein`: Solution in ~1.9 s under PyPy (CPython ~2.8 s),
   1 alive entering, 0 nogoods — single-shot solve via fork-side
   `is_solved`. ~18× faster than tree on CPython; ~4× on PyPy.
 - `examples/branching/*` (11 fixtures): all 11 reach the

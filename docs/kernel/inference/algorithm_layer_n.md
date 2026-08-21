@@ -4,10 +4,10 @@ Companion to [`diagrams/algorithm_layer_n.dot`](diagrams/algorithm_layer_n.dot).
 Renders the per-candidate flow inside one BFS layer of the
 **unified set-search engine**'s shared private
 `_explore_layers` helper, called by all three public entries
-([`monotonic_solve`](../../../ein.py/src/ein/inference/monotonic/solver.py),
+([`monotonic_solve`](../../../ein.rs/crates/ein-infer/src/solve.rs),
 `gaps_solve`, `contradictions_solve`) which live side-by-side
 in
-[`inference/monotonic/`](../../../ein.py/src/ein/inference/monotonic/).
+[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs).
 The layer-wrapping loop (enumerate → process → close layer →
 recompute alive → next layer) sits one level above.
 
@@ -37,7 +37,7 @@ SOLUTION kbs always; dead unsat-cores under
 correction also collapsed the "two engines" framing into
 **one unified engine with three sibling public entries** —
 all in
-[`inference/monotonic/`](../../../ein.py/src/ein/inference/monotonic/),
+[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs),
 sharing the helper described here. See
 [`project-set-search-unified` memory] + the 2026-05-28
 conversation; [README](README.md) for the phase shape.
@@ -65,7 +65,7 @@ The diagram uses six colour bands:
 ## Engine surface — three sibling entries
 
 All three live in
-[`inference/monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py)
+[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
 and call the shared private
 ``_explore_layers(entry: Literal["monotonic","gaps","contradictions"], …)``
 helper (the per-candidate flow described in §3 below).
@@ -73,7 +73,7 @@ S1.5b.21 extracts the helper from today's `monotonic_solve`
 body; S1.5b.21 + S1.5b.23 add the two new wrappers.
 
 ```python
-# All three: inference/monotonic/solver.py
+# All three: ein-infer/src/solve.rs
 
 def monotonic_solve(
     root_kb,
@@ -167,7 +167,7 @@ Drop ``C`` if any of:
 #### 3a. `try_commitment_set(root, C)`
 
 The single all-in-one primitive
-([`commitment.py`](../../../ein.py/src/ein/inference/commitment.py)):
+([`commitment.rs`](../../../ein.rs/crates/ein-infer/src/commitment.rs)):
 
 ```
 fork ← root.fork()
@@ -201,7 +201,7 @@ walk of `provenance.premises_raw`) never hits any
 `h_id ∈ frozenset(C)`. Equivalently — the derivation is valid
 in `(root, rules)` alone. The walker terminates at non-rule
 provenances (raw facts, hypothesis facts, forced-positive
-promotions). See [`commitment._reaches_commitment`](../../../ein.py/src/ein/inference/commitment.py).
+promotions). See [`commitment::try_commitment_set`](../../../ein.rs/crates/ein-infer/src/commitment.rs).
 
 Note (user, 2026-05-25): under M1 all hypotheses are positive
 facts; negative hypotheses are a follow-up. The pre-sat
@@ -260,7 +260,7 @@ reaching root), so we write to root directly.
 
 ```
 emit_nogood(root, frozenset(C), min_size=1)
-    # Subsumption-aware (nogoods.py) — drops the clause if a
+    # Subsumption-aware (nogoods.rs) — drops the clause if a
     # strict subset is already in _nogoods; removes existing
     # superset clauses; otherwise inserts.
 
@@ -508,16 +508,15 @@ What stays:
 
 ## Cross-references
 
-- Engine entry: [`monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py)
-  (today's name; rename to `inference/solver.py` is queued
-  end-of-phase).
+- Engine entry: [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs) —
+  ein.py's whole `monotonic/` package in one module.
 - Filter helpers:
-  [`nogoods.py`](../../../ein.py/src/ein/inference/nogoods.py)
+  [`nogoods.rs`](../../../ein.rs/crates/ein-infer/src/nogoods.rs)
   (`matches_any_nogood`, `emit_nogood`).
 - Commitment primitive:
-  [`commitment.py`](../../../ein.py/src/ein/inference/commitment.py)
-  (`try_commitment_set`, `_reaches_commitment`).
-- State hash: [`canon.py`](../../../ein.py/src/ein/inference/canon.py).
+  [`commitment.rs`](../../../ein.rs/crates/ein-infer/src/commitment.rs)
+  (`try_commitment_set`).
+- State hash: [`canon.rs`](../../../ein.rs/crates/ein-infer/src/canon.rs).
 - Saturation commutativity premise:
   [README § Motivation](README.md#motivation) +
   [`project-set-search-unified` memory].

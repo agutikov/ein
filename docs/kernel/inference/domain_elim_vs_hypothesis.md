@@ -114,7 +114,7 @@ So pathway A **fully preempts** pathway B: there is no double-counting
 
 ## C. The real lever — `enable_pre_branch_lookahead`
 
-Toggling the [pre-branch lookahead](../../../ein.py/src/ein/inference/config.py)
+Toggling the [pre-branch lookahead](../../../ein.rs/crates/ein-core/src/config.rs)
 on the exhaustive sweep (`solve(..., stop_after=None, store_lattice=True)`,
 read as the contradictions view) isolates what is doing
 the elimination when A is absent:
@@ -218,4 +218,4 @@ is removed.
 - Fixtures: [`examples/domain_elim/`](../../../examples/domain_elim/).
 - Stage: `s1.5b.32_…`.
 - Engine overview + the d=0 rules: [README](README.md#d0-negative-completion-s15a19).
-- The lookahead lever: [`SolverConfig.enable_pre_branch_lookahead`](../../../ein.py/src/ein/inference/config.py).
+- The lookahead lever: [`SolverConfig.enable_pre_branch_lookahead`](../../../ein.rs/crates/ein-core/src/config.rs).

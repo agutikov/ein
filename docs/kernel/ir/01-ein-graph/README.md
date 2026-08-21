@@ -1,6 +1,6 @@
 # Ein graph — semantic core
 
-The graph the engine reasons over. **No language, no Python here** —
+The graph the engine reasons over. **No language, no code here** —
 this tree describes Ein in graph-theory terms.
 
 ## Files
@@ -42,7 +42,7 @@ the type-inheritance pattern is unfamiliar.
 
 ## Where this maps to code
 
-The graph here is *purely conceptual*. The Python implementation is
+The graph here is *purely conceptual*. The in-memory representation is
 in [`../02-data-model/`](../02-data-model/); the surface S-expression
 syntax that authors graphs is in [`../03-ein-lang/`](../03-ein-lang/);
 the engine that *applies* rules is in

@@ -6,6 +6,8 @@
 [S1a.0.3](../p1a.0_conformance_harness/s1a.0.3_shared_stdlib_and_examples.md)
 **Implements design:** [design/04](../design/04_ir_frontend.md) §§5–6
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `ir_oracle.py`. It is gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 `(import …)` is resolved at the **form** level before loading

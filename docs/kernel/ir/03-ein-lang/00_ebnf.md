@@ -185,6 +185,14 @@ compiler. A parse error and a load error are different exit paths with
 different messages, and the corpus has a fixture directory for each
 ([`examples/broken/`](../../../../examples/broken/)).
 
+> **What those messages look like is specified, and it is strange.** A parse
+> error's reported line/column follows Lark's Earley scanner — `-1:-1` at EOF,
+> a ±40-character context window applied before the line is trimmed, and a
+> column held back past any pending `%ignore` match. A loader error about a
+> top-level form ends `at None`. All five are ein's own defined behaviour now,
+> stated in [`defined_behaviour.md` §1](../../defined_behaviour.md), and every
+> `.expected` file under `examples/broken/` is baselined against them.
+
 - **Which keywords each form requires** — `:match` / `:assert` in a rule,
   `:goal` in a query, `:rule` / `:using` / `:derives` in a step.
 - **Arity, ground-vs-pattern, and type-checking** of a fact's arguments
@@ -207,7 +215,7 @@ them lark's answers rather than ein.rs agreeing with itself:
 
 | | |
 |---|---|
-| [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt`. It is where every sharp edge in §1 is nailed down: `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5` / `1..*` / `1..`, `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the four `examples/broken/*.ein` messages, whose `.expected` files hold ein.py's text |
+| [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt`. It is where every sharp edge in §1 is nailed down: `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5` / `1..*` / `1..`, `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the four `examples/broken/*.ein` messages, whose `.expected` files were baselined against ein.py and are now the engine's own defined output — [`defined_behaviour.md` §1](../../defined_behaviour.md) |
 | `corpus_shapes.md5`'s `ir[parse]` lines | every corpus file's parse, digested — the *structure* of an acceptance, not just the fact of one |
 
 **Corpus coverage of §2, counted** (files under `examples/` + `stdlib/`

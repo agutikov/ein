@@ -23,9 +23,9 @@ convention and keep their bare names.
 synthetic carrier heads — `(hypothesis (R …))`,
 `(contradiction-under …)` — that the canonical state form had to
 exclude; both were retired for a provenance *kind*
-([`kb/provenance.py`](../../../ein.py/src/ein/kb/provenance.py)
+([`ein-core/prov.rs`](../../../ein.rs/crates/ein-core/src/prov.rs)
 `kind="hypothesis"`), so the canonical
-[`canon.state_key`](../../../ein.py/src/ein/inference/canon.py)
+[`canon::state_key`](../../../ein.rs/crates/ein-infer/src/canon.rs)
 excludes nothing: it is the sorted, provenance-free `(relation_name, args)`
 projection of the whole propositional fact set (P1.21 R1). Any future
 carrier head must be registered here **and** excluded in
@@ -40,9 +40,9 @@ when it writes a conclusion back to root, and they all share one shape —
 
 | name | written by | means |
 |---|---|---|
-| `<monotonic-unconditional>` | [`_helpers._write_negation_local`](../../../ein.py/src/ein/inference/monotonic/_helpers.py) | a size-1 dead clause's `(not h)` writeback: every branch assuming `h` died |
-| `<forced-positive>` | [`_helpers._promote_forced_positives`](../../../ein.py/src/ein/inference/monotonic/_helpers.py) | a sole-surviving alive singleton promoted to a root fact |
-| `<lookahead-dies-immediately>` | [`hypgen._write_negated`](../../../ein.py/src/ein/inference/hypgen.py) | the lookahead kill-cache's `(not h)` |
+| `<monotonic-unconditional>` | [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs) | a size-1 dead clause's `(not h)` writeback: every branch assuming `h` died |
+| `<forced-positive>` | [`promote_forced_positives`](../../../ein.rs/crates/ein-infer/src/solve.rs) | a sole-surviving alive singleton promoted to a root fact |
+| `<lookahead-dies-immediately>` | [`hypgen::write_negated`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) | the lookahead kill-cache's `(not h)` |
 
 The empty premise tuple is the **contract**, not an omission: these facts
 have no fact-level premises because their real justification is
@@ -54,13 +54,13 @@ given.
 
 Multi-justification provenance (S1.21.7) preserves this in both
 directions:
-[`store.record_justification`](../../../ein.py/src/ein/kb/store.py)
+[`Kb::record_justification`](../../../ein.rs/crates/ein-core/src/kb.rs)
 refuses to record such a record as an alternative (it would give some
 fact the *empty* environment — "derivable from nothing" — collapsing
 every explanation through it), and refuses to attach alternatives *to* a
 fact whose primary is one (so a later `saturate()` re-deriving it by a
 real rule cannot silently re-open the ground-out).
-[`explain.py`](../../../ein.py/src/ein/inference/explain.py) treats them
+[`explain.rs`](../../../ein.rs/crates/ein-infer/src/explain.rs) treats them
 as terminals labelled with the empty environment, which is exactly the
 "contributes nothing" behaviour the single-justification walk had.
 
@@ -72,7 +72,7 @@ empty-`premises_raw` shape, or the walks will try to expand it.
 There is **one** engine entry, `solve` — the verdict is **read from the
 result**, not chosen by which function was called. From the count `k`
 of distinct (`state_key`-deduped) solution nodes,
-[`verdict_of`](../../../ein.py/src/ein/inference/monotonic/solver.py)
+[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
 names the
 verdict; `solve(..., store_lattice=True)` attaches a sound `LatticeProof`
 carrying both the gaps view (`proof.solutions` — every model) and the
@@ -89,9 +89,9 @@ commands.
 The `k = 0` payload is per **witness**: the smallest set of *given* facts
 (`source` / `hypothesis` / un-provenanced) from which **one** recorded
 contradiction follows —
-[`frontier.smallest_contradiction_frontier`](../../../ein.py/src/ein/inference/frontier.py)
+[`explain::smallest_contradiction_frontier`](../../../ein.rs/crates/ein-infer/src/explain.rs)
 delegating to
-[`inference/explain.py`](../../../ein.py/src/ein/inference/explain.py), ATMS
+[`explain.rs`](../../../ein.rs/crates/ein-infer/src/explain.rs), ATMS
 label propagation over the AND/OR justification graph
 (`kb.justifications(fact)` — a fact is an OR-node over AND-nodes of premises),
 so the answer does not depend on which derivation fired first. Two caveats
@@ -110,7 +110,7 @@ called* and so disagreed on the same input — were removed 2026-06-16.)
 
 The `Mode` enum still exists as **engine-internal** vocabulary — not a
 caller-facing task switch. Single source: the `Mode` enum in
-[`inference/verdict.py`](../../../ein.py/src/ein/inference/verdict.py).
+[`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs).
 Only `Mode.SOLVE` reaches the live `solve` path (`is_solved` uses it for
 the fork-side exactly-one-binding goal check); `GAPS` / `CONTRADICTIONS`
 survive as the enum's other members but no longer name an entry.
@@ -130,9 +130,9 @@ post-M1.
 
 | set | values | where |
 |-----|--------|-------|
-| provenance kind | `source` · `rule` · `hypothesis` · `rejected` | `kb/provenance.py` |
-| lattice node verdict | `alive` · `dead` · `solution` | `monotonic/lattice.py` (`SetNode.verdict`) |
-| dead kind | `dead-pre` · `dead-post` | `monotonic/lattice.py` (`DeadCommitment.kind`) |
+| provenance kind | `source` · `rule` · `hypothesis` · `rejected` | `ein-core/prov.rs` |
+| lattice node verdict | `alive` · `dead` · `solution` | `ein-infer/solve.rs` |
+| dead kind | `dead-pre` · `dead-post` | `ein-infer/solve.rs` (`DeadCommitment.kind`) |
 | hypgen scoring | `most-constrained` · `popularity` (`branch-info` reserved) | `hypgen.score_hypothesis` |
 
 ## `__closed__` — engine effect
@@ -140,7 +140,7 @@ post-M1.
 The kernel trigger `(__closed__ R)` (a **dunder** name per the convention above;
 the bare `closed` is now a free userspace name) has two engine sides, both
 isolated in
-[`inference/closed.py`](../../../ein.py/src/ein/inference/closed.py)
+[`closed.rs`](../../../ein.rs/crates/ein-infer/src/closed.rs)
 (constant `CLOSED = "__closed__"`):
 
 - **Auto-inference** — `emit_closed` writes `(__closed__ R)` for every declared
@@ -164,14 +164,16 @@ The kernel trigger `(__symmetric__ R)` closes R's extension under arg-swap
 `__symmetric__` threading the source edge as its premise. Single source:
 `SYMMETRIC = "__symmetric__"` + the mirror machinery
 (`_next_mirror_firing` / `_enqueue_mirror_sources`) in
-[`inference/saturator.py`](../../../ein.py/src/ein/inference/saturator.py).
+[`saturator.rs`](../../../ein.rs/crates/ein-infer/src/saturator.rs).
 
 **A performance optimization, NOT a capability.** It computes the *identical*
 closure as the stdlib `symmetric` rule (`std.algebra`) — pinned by
-`test_symmetric_native.py::test_parity_with_stdlib_symmetric` — but skips the
-JoinPlan + `match.run` the rule pays per mirror (~1.2× on the synthetic
-`ein.py/src/ein/cli/symmetric.py`; **no real symmetric-heavy puzzle exists yet** —
-zebra2 uses `co-located*` rules, not the generic closure). Opt-in by marking
+`stdlib_semantics.rs::the_native_mirror_computes_the_same_closure_as_the_stdlib_rule`
+— but skips the plan + match the rule pays per mirror. **No real
+symmetric-heavy puzzle exists yet** — zebra2 uses `co-located*` rules, not the
+generic closure — so the speed-up is measured only on a synthetic generator,
+and the ~1.2× that used to be quoted here came from a runner that left with
+the Python engine. Opt-in by marking
 the relation; ordinary puzzles take the no-op path (the mirror queue is empty
 when nothing is marked, so zero overhead). Re-adds, behind the dunder, the
 kernel symmetric-awareness S1.7.24
@@ -182,13 +184,13 @@ removed — now namespaced so it never masquerades as a userspace name.
 `(query …)`-block keywords the hypothesis generator reads to scope which
 relations it enumerates. Single source: the `HYPOTHESIS_RELATIONS` /
 `NO_HYPOTHESIS` constants in
-[`inference/hypgen.py`](../../../ein.py/src/ein/inference/hypgen.py); both
+[`hypgen.rs`](../../../ein.rs/crates/ein-infer/src/hypgen.rs); both
 scope the *blind enumerator* only (hrule-driven generation ignores them).
 
 | key | effect | where |
 |-----|--------|-------|
-| `hypothesis-relations` | **whitelist** — enumerate candidates *only* for the listed relations (`None` ⇒ all) | `hypgen._query_relations` |
-| `no-hypothesis` | **blacklist** (S1.9.E3) — never guess on the listed relations; saturation rules on them still fire | `hypgen._no_hypothesis_relations` |
+| `hypothesis-relations` | **whitelist** — enumerate candidates *only* for the listed relations (unset ⇒ all) | `ein-infer/hypgen.rs` |
+| `no-hypothesis` | **blacklist** (S1.9.E3) — never guess on the listed relations; saturation rules on them still fire | `ein-infer/hypgen.rs` |
 
 A relation named by both is excluded (blacklist wins). Neither touches the
 saturator — hypgen-only scoping, distinct from `(__closed__ R)` above (which also
@@ -197,7 +199,7 @@ blocks rule-derivation).
 ## Result-level invariants (S1.7.24)
 
 Not strings, but recorded here as part of the engine contract: the
-lattice snapshot (`monotonic/snapshot.py`) is **result-level** — it keys
+lattice snapshot (`ein-render/dump/snapshot.rs`) is **result-level** — it keys
 solutions/deads on the post-saturation `state_key`, NOT commitment paths, and
 **excludes learned nogoods** (a clause and its symmetric mirror are
 equivalent only under symmetry, so the final nogood set is an

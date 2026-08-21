@@ -10,7 +10,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | Q | title | status |
 |---|---|---|
 | [Q-M1a.1](#q-m1a1--port-boundary-a-full-vs-b-hot-loop) | Port boundary — A (full) vs B (hot loop behind PyO3) | **resolved 2026-08-17 — A** |
-| [Q-M1a.2](#q-m1a2--does-einpy-have-a-sunset) | Does ein.py have a sunset? | **decided 2026-08-20 — yes**, reversing the recommendation; [P1a.10](p1a.10_single_implementation/README.md) |
+| [Q-M1a.2](#q-m1a2--does-einpy-have-a-sunset) | Does ein.py have a sunset? | **decided 2026-08-20 — yes**, reversing the recommendation; [P1a.10](p1a.10_single_implementation/README.md) **shipped 2026-08-21** |
 | [Q-M1a.3](#q-m1a3--parse-error-message-parity) | Parse-error message parity, including `-1:-1` at EOF | **resolved 2026-08-18 — (a)** |
 | [Q-M1a.4](#q-m1a4--sorted-over-mixed-type-fact-args) | `sorted()` over mixed-type fact args raises in ein.py | **resolved 2026-08-18 — (a), [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)** |
 | [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | **resolved 2026-08-18 — (a), ported** |
@@ -60,7 +60,8 @@ changes should be rare.
 **Decided 2026-08-20 — yes, there is a sunset**, at the user's direction, and
 the recommendation above is overruled rather than satisfied: double-landing
 never became the dominant cost. [P1a.10](p1a.10_single_implementation/README.md)
-is the phase.
+is the phase, and it **shipped 2026-08-21** — six stages, `ein.py/` deleted,
+`cargo test --workspace` (542 tests) the whole gate.
 
 What the recommendation got right is the price, and it is worth restating as
 the thing to watch rather than as an objection that was answered. **The oracle
@@ -86,6 +87,15 @@ Three things follow, and they are the phase's shape:
    [D2](divergences.md)'s `sorted()` — have to be *stated*
    ([S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md) T1a.10.6.3).
    Undefined behaviour in a specification repo is worse than a quirk.
+   **Done 2026-08-21:**
+   [`docs/kernel/defined_behaviour.md`](../../docs/kernel/defined_behaviour.md)
+   is thirteen of them, and enumerating them found two that are *bugs* rather
+   than quirks — the binding key that drops non-string activator args
+   ([Q-M1a.8](#q-m1a8--binding_key-drops-non-string-activator-args)) and the
+   Python exception classes the CLI prints
+   ([Q-M1a.14](#q-m1a14--crash-parity)), which are now a name with no
+   referent. Neither is changed; both are checked-in expected output, and
+   changing either is a decision this phase had no standing to make.
 3. **[P1c.1](../m1c_external_validation/p1c.1_stdlib_conformance/README.md)
    is the partial answer** to what replaces it — it was P1a.11 until
    2026-08-21 — and the argument is why it left: an expectation written next
@@ -95,6 +105,8 @@ Three things follow, and they are the phase's shape:
    port's.
 
 ## Q-M1a.3 — Parse-error message parity
+
+> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §1.1–1.4](../../docs/kernel/defined_behaviour.md) (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)). This entry is the *decision*; that page is what the engine now promises.
 
 ein.py wraps Lark's `UnexpectedInput` as
 `{file}:{line}:{col}: unexpected input\n{context}` where `context` is
@@ -138,6 +150,8 @@ The (c) half — improving the diagnostics in both implementations
 together — stays open and belongs after the P1a.5 byte gate.
 
 ## Q-M1a.4 — `sorted()` over mixed-type fact args
+
+> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §2.1](../../docs/kernel/defined_behaviour.md) (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)). This entry is the *decision*; that page is what the engine now promises.
 
 `apriori.layer_1` does `sorted(alive)` over `(relation, args)` tuples;
 if two facts of the same relation have `str` in a slot for one and `int`
@@ -205,6 +219,8 @@ accordingly.
 
 ## Q-M1a.5 — Reproducing CPython's `shuffle`
 
+> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §3.1](../../docs/kernel/defined_behaviour.md) (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)). This entry is the *decision*; that page is what the engine now promises.
+
 `--shuffle` seeds `random.Random(seed)` and shuffles each layer's
 candidates, carrying RNG state across layers.
 
@@ -236,6 +252,8 @@ traversal differs from the unshuffled one on 9 of the 14
 than agreeing by inertia.
 
 ## Q-M1a.6 — `at None` in loader messages
+
+> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §1.5](../../docs/kernel/defined_behaviour.md) (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)). This entry is the *decision*; that page is what the engine now promises.
 
 Top-level `SForm`s are constructed without a `loc`
 ([design/04](design/04_ir_frontend.md) §3), so loader errors that
@@ -311,6 +329,8 @@ than a hope — see
 [scaling.md §3](p1a.7_parallelism/scaling.md#3-the-audit).
 
 ## Q-M1a.8 — `_binding_key` drops non-string activator args
+
+> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §3.2](../../docs/kernel/defined_behaviour.md) (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)). This entry is the *decision*; that page is what the engine now promises.
 
 `Saturator._binding_key` uses `plan.activator_args`, which
 `compile_rule` builds as `tuple(a for a in activator.args if
@@ -406,6 +426,8 @@ never an auth system inside the engine.
 
 ## Q-M1a.13 — `argparse` surface parity
 
+> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §5](../../docs/kernel/defined_behaviour.md) (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)). This entry is the *decision*; that page is what the engine now promises.
+
 **Resolved 2026-08-18: (b), with (c)'s content half made binding.** ein.rs
 uses `clap`; `--help` layout *and* usage-error text go on the
 [normalisation list](design/01_parity_contract.md) §5. Everything a script
@@ -484,6 +506,8 @@ field. The day one is written, this is the entry to revisit.
 
 ## Q-M1a.14 — Crash parity
 
+> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §4](../../docs/kernel/defined_behaviour.md) (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)). This entry is the *decision*; that page is what the engine now promises.
+
 Some inputs make ein.py raise an unhandled exception (Q-M1a.4's
 `TypeError`; a `KeyError` from an unbound `:assert` var is *caught*
 nowhere and surfaces as a traceback). ein.rs will not have Python
@@ -544,6 +568,8 @@ error, with no Python counterpart to name, joins this group or a new one.
 Nothing in the corpus reaches one.
 
 ## Q-M1a.15 — Float formatting parity
+
+> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §2.3](../../docs/kernel/defined_behaviour.md) (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)). This entry is the *decision*; that page is what the engine now promises.
 
 Several reported numbers are formatted floats — `--hyp-stats`'s
 `{100.0 * n / total:>5.1f}` percentages, `--timing`'s `{ms:9.2f}` (whose

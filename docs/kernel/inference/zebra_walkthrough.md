@@ -1,4 +1,4 @@
-# Zebra puzzle — human solution traced as `ein.py` inference
+# Zebra puzzle — human solution traced as `ein` inference
 
 The Wikipedia-style deductive solution to the Zebra puzzle, translated to
 English line-by-line and annotated with the ein facts, rules and hypotheses
@@ -12,10 +12,13 @@ New to Ein? Start with the [guide](../../guide/) — *Learn Ein by solving the
 Zebra puzzle* — and return here for the full deductive trace its Chapter 4
 hands off to.
 
-To reproduce this solve **programmatically** from Python — load
-`zebra2.ein`, run `solve`, read the answer and a rendered trace — see the
-embedding contract in [`docs/api/ein.md`](../../api/ein.md) (its worked
-example produces exactly the answer this trace derives).
+To reproduce this solve, run
+`ein solve examples/zebra2.ein --trace out.md`. Driving it
+**programmatically** — load, solve, read the answer and a rendered trace — is
+the embedding contract in [`docs/api/ein.md`](../../api/ein.md), whose worked
+example produces exactly the answer this trace derives; that contract's
+implementation lands in
+[P1a.9](../../../plans/m1a_rust/p1a.9_bindings_release/README.md).
 
 > **The other encoding.** [`zebra.ein`](../../../examples/zebra.ein) solves
 > the same puzzle over one generic `co-located` equivalence instead of five
@@ -377,4 +380,4 @@ Both variants are **generated** from `zebra2.ein` by
 [`gen_zebra2_variants.py`](../../../examples/gen_zebra2_variants.py) (so the shared ontology /
 rules / `:why` / `:goal-text` can't drift); parse + thin-diff invariants are
 pinned by
-[`tests/integration/test_zebra_parse.py`](../../../ein.py/tests/integration/test_zebra_parse.py).
+[`cli_semantics.rs`](../../../ein.rs/crates/ein-cli/tests/cli_semantics.rs).

@@ -11,6 +11,8 @@ says it is safe to.
 **Successor:** [S1a.6.11](s1a.6.11_fixture_goldens.md) — the narration that
 stops being compared against ein.py has to be compared against *something*.
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `ir_oracle.py`, `mutant_ein.py` and `ein-conformance`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 Through P1a.5 the parity contract was byte-identical everything, and that was

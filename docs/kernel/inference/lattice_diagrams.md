@@ -286,9 +286,9 @@ rendering tooling, same colour vocabulary.
   ``proof_summary.json`` + ``kb_index/`` audit folders for
   the same phenomena live under
   ``examples/lattice/``. Run
-  ``demo/bench_lattice.py --contradictions --store-lattice
-  examples/lattice/<N>_*.ein --dump-states <dir>`` to
-  produce the rendered version:
+  ``ein solve examples/lattice/<N>_*.ein --exhaustive --dump-states <dir>``
+  to produce the rendered version (the `demo/bench_lattice.py` runner this
+  line used to name went with the Python engine at M1a S1a.10.5):
 
   | Fixture | Phenomenon | Stage |
   |---------|------------|-------|

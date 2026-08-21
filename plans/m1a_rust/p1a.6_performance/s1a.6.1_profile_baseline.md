@@ -9,6 +9,8 @@ and the [phase README](README.md#stages).
 **Depends on:** [P1a.5](../p1a.5_presentation/README.md)
 **Implements:** the phase's method, before any of its content
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `bench_baseline.py`, `count_work.py` and `profile_solve.py`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 Every stage after this one is *chosen* by the table this stage produces.

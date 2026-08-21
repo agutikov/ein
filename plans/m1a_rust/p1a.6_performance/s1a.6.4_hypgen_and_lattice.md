@@ -5,13 +5,14 @@
 **Depends on:** [S1a.6.1](s1a.6.1_profile_baseline.md)
 **Implements:** refinements to
 [design/07](../design/07_search_layer.md) §§2, 4
-
 **Status: shipped 2026-08-19, and the cost was not where the stage was
 aimed.** The tasks were written against "~18 k raw candidates per call"; a
 call offers **125**. What it *does* spend is the setup it repeats per call and
 a blind enumerator that **no milestone workload reaches** — zebra and zebra2
 both declare an `(hrule …)`, so `generate` returns before
 `candidate_objects`, and the corpus's slowest solves are the ones that do not.
+
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `profile_solve.py`. It is gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
 
 `solve examples/features/05_stdlib_domain_elim.ein -e` **4182.1 → 3559.7 ms
 (−14.9 %)**, `features/01 -e` **−15.1 %**, `branching/07 -e` −9.5 %,

@@ -5,6 +5,8 @@ measured, and what happens when it cannot be met.
 **Phase:** [P1a.0](../p1a.0_conformance_harness/README.md) builds it;
 every later phase is gated by it.
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `mutant_ein.py` and `ein-conformance`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 > **Read as history from §2 to §4.** The contract had one instrument — the
 > `ein-conformance` harness, two `ein` processes and a diff — and
 > [S1a.10.3](../p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)

@@ -22,63 +22,78 @@ digraph dataflow {
   verd  [label="verdict\nSolution / Ambiguity / Contradiction"];
   out   [label="stdout table\n+ markdown trace", shape=note];
 
-  src  -> ast  [label="ir.parse"];
-  ast  -> kb   [label="kb.from_ir"];
-  kb   -> sat  [label="inference:\nEngine.compile_all\n→ Saturator.saturate"];
-  sat  -> verd [label="hypgen → apriori →\ncommitment → monotonic.solve"];
-  verd -> out  [label="trace/ + cli/"];
+  src  -> ast  [label="ein_ir::parse"];
+  ast  -> kb   [label="ein_ir::from_ir"];
+  kb   -> sat  [label="ein_infer:\nEngine::compile_all\n→ Saturator::saturate"];
+  sat  -> verd [label="hypgen → apriori →\ncommitment → solve"];
+  verd -> out  [label="ein_render + ein_cli"];
 }
 ```
 
-Each arrow names the **package** that owns the transform:
-[`ir/`](../../ein.py/src/ein/ir/) parses, [`kb/`](../../ein.py/src/ein/kb/)
-loads + stores, [`inference/`](../../ein.py/src/ein/inference/) saturates and
-searches, [`trace/`](../../ein.py/src/ein/trace/) + `cli/` render. The verdict is
-read from the model count `k` — never chosen by a flag (see [`README.md`](README.md)).
-Each arrow is a public Python call: driving this pipeline from another
-project is the **embedding contract** in [`docs/api/`](../api/) (`parse` →
-`KnowledgeBase.from_ir` → `Saturator.saturate` → `monotonic.solve` →
-`trace.linearize`).
+Each arrow names the **crate** that owns the transform:
+[`ein-ir`](../../ein.rs/crates/ein-ir/) parses and loads,
+[`ein-core`](../../ein.rs/crates/ein-core/) stores,
+[`ein-infer`](../../ein.rs/crates/ein-infer/) saturates and searches,
+[`ein-render`](../../ein.rs/crates/ein-render/) + `ein-cli` render. The verdict
+is read from the model count `k` — never chosen by a flag (see
+[`README.md`](README.md)).
 
-## Package dependency map
+> **Driving this pipeline from another program** is the **embedding contract**
+> in [`docs/api/`](../api/). Its implementation is the PyO3 module
+> [P1a.9](../../plans/m1a_rust/p1a.9_bindings_release/README.md) builds; until
+> that lands, the pipeline is reachable from outside only through the `ein`
+> binary.
+
+## Crate dependency map
 
 ```dot
 digraph deps {
   rankdir=BT;
   node [shape=box, fontname="monospace"];
   subgraph cluster_kernel {
-    label="kernel (ir + kb + inference)"; style=dashed;
-    ir; kb; inference;
+    label="kernel (core + ir + infer)"; style=dashed;
+    core [label="ein-core"]; ir [label="ein-ir"]; infer [label="ein-infer"];
   }
   stdlib [label="stdlib/\n(.ein data)", shape=folder];
-  render; trace; cli;
+  render [label="ein-render"]; cli [label="ein-cli"];
 
-  kb        -> ir        [label="consumes AST"];
-  inference -> kb        [label="reads/writes facts"];
-  render    -> kb;
-  render    -> inference [label="lattice DOT"];
-  trace     -> kb        [label="provenance DAG"];
-  cli       -> inference [label="solve / saturate"];
-  cli       -> render    [label="render"];
-  stdlib    -> kb        [label="(import std.…)", style=dashed];
+  ir     -> core   [label="builds the KB"];
+  infer  -> ir     [label="reads the AST"];
+  render -> infer  [label="lattice, trace, dumps"];
+  cli    -> render;
+  stdlib -> ir     [label="(import std.…)", style=dashed];
 }
 ```
 
-- **`ir/`** depends on nothing else (pure parse/AST/dump/DOT).
-- **`kb/`** consumes the AST; owns entities, the 7 indexes, provenance, imports.
-- **`inference/`** is the only writer of derived facts; depends on `kb`.
-- **`render/` + `trace/`** read `kb` (+ `inference` for the lattice view).
-- **`cli/`** orchestrates; **`stdlib/`** is `.ein` *data* the loader pulls in.
+The stack is **linear**: each crate depends on every crate below it and on
+nothing above.
 
-The **kernel boundary** (`ir` + `kb` + `inference`) is what every milestone
-builds on; everything else (`cli`, `render`, `trace`, tests) is the surface.
+- **`ein-core`** depends on nothing (workspace-internally): interning, `Value`
+  / `FactId`, the layered COW KB, provenance, the two CPython-compatibility
+  renderers.
+- **`ein-ir`** parses, expands macros, resolves imports, and loads — it builds
+  the KB directly rather than handing an AST to a separate loader, which is
+  why it sits *above* the data model where the Python `ir/` sat beside it.
+- **`ein-infer`** is the only writer of derived facts.
+- **`ein-render`** owns every rendering: the DOT views, the markdown trace, the
+  state and lattice dumps, the JSON summary.
+- **`ein-cli`** orchestrates; **`stdlib/`** is `.ein` *data* the loader pulls in.
 
-## Milestone boundaries — which modules each adds
+Two more crates are **dev-only** and no shipped binary links them: `ein-corpus`
+(the manifest, the fixture helpers, the bench set) and `ein-parity` (the one
+implementation of what counts as a derivation's *narration* rather than its
+content).
+
+The **kernel boundary** (`ein-core` + `ein-ir` + `ein-infer`) is what every
+milestone builds on; everything else (`ein-cli`, `ein-render`, tests) is the
+surface.
+
+## Milestone boundaries — which crates each adds
 
 ```dot
 digraph milestones {
   rankdir=LR; node [shape=box, fontname="monospace"];
-  M1 [label="M1 (shipped)\nir · kb · inference\nrender · trace"];
+  M1 [label="M1 (shipped)\ncore · ir · infer\nrender · cli"];
   M2 [label="M2\nnl_to_ir · llm client · GBNF"];
   M1 -> M2;
   M1a [label="M1a · ein.rs (Rust port)"];
@@ -134,38 +149,37 @@ The seam, as built:
        │                                   │
 ┌──────▼──────┐   NAF sits on this  ┌──────▼──────┐
 │ monotone    │◄─── boundary ──────►│ assumptions │
-│ closure     │   world.World       │ / worlds    │
-│ Datalog-ish │   (shipped S1.21.8) │ lattice     │
+│ closure     │  the admission      │ / worlds    │
+│ Datalog-ish │  phase (S1.21.8)    │ lattice     │
 └──────┬──────┘                     └──────┬──────┘
        │                                   │
        └───────────────┬───────────────────┘
                        │
                  complete model
                        │
-                 canonical key   ← canon.StateKey (shipped, P1.21 R1)
+                 canonical key   ← canon::state_key (shipped, P1.21 R1)
                        │
              models / refutations
 ```
 
 This was never an aspiration — it is a near-literal description of the
-as-built package layout, and since S1.21.8 the boundary itself is a *module*
-([`inference/world.py`](../../ein.py/src/ein/inference/world.py)) rather than
-an emergent property of evaluation order. Every seam node maps onto one or
-two modules; the residual debt is the **leak list** below, where the two
-layers still interpenetrate.
+as-built layout, and since S1.21.8 the boundary itself is a *phase* — the one
+place `(absent …)` is answered — rather than an emergent property of
+evaluation order. Every seam node maps onto one or two modules; the residual
+debt is the **leak list** below, where the two layers still interpenetrate.
 
 ### Module mapping
 
-| seam node | modules (`ein.py/src/ein/`) | state |
+| seam node | modules | state |
 |---|---|---|
-| ein-lang → typed IR | [`ir/`](../../ein.py/src/ein/ir/) (`parser.py`, `ast.py`, `types.py`, `macros.py`) | **clean** — `ir/` depends on nothing (dependency map above) |
-| typed IR → KB (ground atoms) | [`kb/from_ir.py`](../../ein.py/src/ein/kb/from_ir.py), [`kb/store.py`](../../ein.py/src/ein/kb/store.py), `kb/entities.py`, [`kb/provenance.py`](../../ein.py/src/ein/kb/provenance.py) | **leaks L2** — the ground-atom store carries worlds-layer state; provenance now also carries a firing's *negative* dependence (`absent_premises`, S1.21.8 — **L6** half) |
-| monotone closure (Datalog-ish) | [`inference/compile.py`](../../ein.py/src/ein/inference/compile.py), [`match.py`](../../ein.py/src/ein/inference/match.py), [`saturator.py`](../../ein.py/src/ein/inference/saturator.py), [`engine.py`](../../ein.py/src/ein/inference/engine.py), `firing.py`, [`contradiction.py`](../../ein.py/src/ein/inference/contradiction.py), `predicates.py`, `primitives.py`, `resolve.py` | **clean since S1.21.8** — `JoinPlan.steps` is the purely positive residue left by `compile.split_naf`; the closure runs to quiescence consulting no negation (**L1** closed) |
-| the NAF boundary itself | [`inference/world.py`](../../ein.py/src/ein/inference/world.py) (`World.absent` / `admits` / `first_failing` / `negative_premises`), [`compile.split_naf`](../../ein.py/src/ein/inference/compile.py) + `NafGuard`, [`saturator._admit_from_boundary`](../../ein.py/src/ein/inference/saturator.py), [`match.run_guarded`](../../ein.py/src/ein/inference/match.py) | **new, clean (S1.21.8)** — the one place `(absent …)` is answered, and only against a positive fixpoint |
-| assumptions / worlds lattice | [`monotonic/`](../../ein.py/src/ein/inference/monotonic/) (`solver.py`, `_helpers.py`, `_state.py`, `lattice.py`), [`commitment.py`](../../ein.py/src/ein/inference/commitment.py), [`apriori.py`](../../ein.py/src/ein/inference/apriori.py), [`nogoods.py`](../../ein.py/src/ein/inference/nogoods.py), [`hypgen.py`](../../ein.py/src/ein/inference/hypgen.py), [`lookahead.py`](../../ein.py/src/ein/inference/lookahead.py), `hrule.py`, `closed.py`, [`naf_deps.py`](../../ein.py/src/ein/inference/naf_deps.py) | **clean core, leaking rim** — `try_commitment_set` is a pure fork-write-saturate world transition and `apriori`/`nogoods` are pure set arithmetic; the rim still leaks **L3**, and **L6** is only half-closed (recorded, not interpreted) |
-| complete model | [`solution.py`](../../ein.py/src/ein/inference/solution.py) (`complete` / `open_hypotheses` / `is_solution_node`) | **leaks L4** — defined *operationally through the worlds-layer generator*; evaluating it can mutate the KB under test (its NAF half — the lookahead's world — is fixed, D3) |
-| canonical key | [`canon.py`](../../ein.py/src/ein/inference/canon.py) (`state_key` → `StateKey`) | **clean since P1.21 R1** — identity is the sorted canonical fact tuple itself, never a hash; but L4 taints its *input* |
-| models / refutations | [`verdict.py`](../../ein.py/src/ein/inference/verdict.py), [`monotonic/_state.py`](../../ein.py/src/ein/inference/monotonic/_state.py) (`verdict_of`), [`frontier.py`](../../ein.py/src/ein/inference/frontier.py), [`trace/`](../../ein.py/src/ein/trace/) | **clean** — the verdict is read off the deduped model count `k`; the query `:goal` only projects afterwards |
+| ein-lang → typed IR | [`ein-ir`](../../ein.rs/crates/ein-ir/src/) (`lex.rs`, `parse.rs`, `ast.rs`, `macros.rs`) | **clean** — the frontend reads no engine state |
+| typed IR → KB (ground atoms) | [`ein-ir/from_ir.rs`](../../ein.rs/crates/ein-ir/src/from_ir.rs), [`ein-core/kb.rs`](../../ein.rs/crates/ein-core/src/kb.rs), `ein-core/entities.rs`, [`ein-core/prov.rs`](../../ein.rs/crates/ein-core/src/prov.rs) | **leaks L2** — the ground-atom store carries worlds-layer state; provenance now also carries a firing's *negative* dependence (the boundary queries, S1.21.8 — **L6** half) |
+| monotone closure (Datalog-ish) | [`ein-infer/compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs), [`match_.rs`](../../ein.rs/crates/ein-infer/src/match_.rs), [`saturator.rs`](../../ein.rs/crates/ein-infer/src/saturator.rs), [`engine.rs`](../../ein.rs/crates/ein-infer/src/engine.rs), `firing.rs`, [`contradiction.rs`](../../ein.rs/crates/ein-infer/src/contradiction.rs), `predicates.rs`, `plan.rs` | **clean since S1.21.8** — `Plan::steps` is the purely positive residue compilation leaves after lifting the guards out; the closure runs to quiescence consulting no negation (**L1** closed) |
+| the NAF boundary itself | [`saturator.rs`](../../ein.rs/crates/ein-infer/src/saturator.rs) (`admit_from_boundary` / `first_failing` / `negative_premises`), the guard lift in [`compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs) + [`NafGuard`](../../ein.rs/crates/ein-infer/src/plan.rs), [`Matcher::holds`](../../ein.rs/crates/ein-infer/src/match_.rs) | **new, clean (S1.21.8)** — the one place `(absent …)` is answered, and only against a positive fixpoint. ein.py named it `world.World`; the port asks the KB at quiescence directly, which is the same three questions without the wrapper |
+| assumptions / worlds lattice | [`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs), [`commitment.rs`](../../ein.rs/crates/ein-infer/src/commitment.rs), [`apriori.rs`](../../ein.rs/crates/ein-infer/src/apriori.rs), [`nogoods.rs`](../../ein.rs/crates/ein-infer/src/nogoods.rs), [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs), [`lookahead.rs`](../../ein.rs/crates/ein-infer/src/lookahead.rs), `hrule.rs`, `closed.rs`, [`naf_deps.rs`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) | **clean core, leaking rim** — `try_commitment_set` is a pure fork-write-saturate world transition and `apriori`/`nogoods` are pure set arithmetic; the rim still leaks **L3**, and **L6** is only half-closed (recorded, not interpreted) |
+| complete model | [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs) (`complete` / `open_hypotheses` / `is_solution_node`) | **leaks L4** — defined *operationally through the worlds-layer generator*; evaluating it can mutate the KB under test (its NAF half — the lookahead's world — is fixed, D3) |
+| canonical key | [`canon.rs`](../../ein.rs/crates/ein-infer/src/canon.rs) (`state_key`) | **clean since P1.21 R1** — identity is the sorted canonical fact list itself, never a hash; but L4 taints its *input* |
+| models / refutations | [`verdict.rs`](../../ein.rs/crates/ein-infer/src/verdict.rs), [`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs), [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs), [`ein-render/trace/`](../../ein.rs/crates/ein-render/src/trace/) | **clean** — the verdict is read off the deduped model count `k`; the query `:goal` only projects afterwards |
 
 ### Leak list
 
@@ -173,39 +187,38 @@ The six places the layers interpenetrate (P1.21 R6 census; the headline
 closed by S1.21.8, one resolved by R2, one half-closed, three standing):
 
 - **L1 — NAF inside the closure matcher** (the headline) — ✅ **closed
-  2026-08-17** by S1.21.8. `(absent …)` used to compile to an `AbsentGuard`
-  opcode *inside* `JoinPlan.steps`, be evaluated by the matcher against the
-  transient mid-saturation KB, be re-evaluated at fire time
-  (`absents_still_pass`, `Saturator.naf_dropped`) and force a full re-match
-  of any plan watching a delta through a guard (`_absent_relations`) — so
-  the closure's output depended on what its world *lacked*. Now:
-  [`compile.split_naf`](../../ein.py/src/ein/inference/compile.py) lifts
-  every top-level guard out into `JoinPlan.naf_guards` (one tuple per
-  `or`-disjunct, paired by `JoinPlan.disjuncts()`), leaving a purely
-  positive Scan/Join/Guard plan; the saturator runs that closure to
+  2026-08-17** by S1.21.8. `(absent …)` used to compile to a guard opcode
+  *inside* the plan's steps, be evaluated by the matcher against the
+  transient mid-saturation KB, be re-evaluated at fire time, and force a full
+  re-match of any plan watching a delta through a guard — so the closure's
+  output depended on what its world *lacked*. Now:
+  [compilation](../../ein.rs/crates/ein-infer/src/compile.rs) lifts every
+  top-level guard out into the disjunct's
+  [`NafGuard`](../../ein.rs/crates/ein-infer/src/plan.rs) list, leaving a
+  purely positive Scan/Join/Guard plan; the saturator runs that closure to
   quiescence and only then judges parked candidates against the resulting
-  world ([`world.World`](../../ein.py/src/ein/inference/world.py),
-  `Saturator._admit_from_boundary`, one admission per round); the fire-time
-  re-check and the absent-flip full-match split are **deleted, not
-  bypassed**, leaving `naf_dropped` structurally 0 beside the new
-  `naf_rounds` / `naf_admitted` / `naf_retired` observables. Contract and
-  consequences: [`absent_semantics.md`](inference/absent_semantics.md) and
+  fixpoint
+  ([`admit_from_boundary`](../../ein.rs/crates/ein-infer/src/saturator.rs),
+  one admission per round); the fire-time re-check and the absent-flip
+  full-match split are **deleted, not bypassed**, leaving `naf_dropped`
+  structurally 0 beside the `naf_rounds` / `naf_admitted` / `naf_retired`
+  observables. Contract and consequences:
+  [`absent_semantics.md`](inference/absent_semantics.md) and
   [§NAF at the boundary](#naf-at-the-boundary--how-it-works) below.
 - **L2 — worlds state stored inside the KB** — **still open.**
-  `KnowledgeBase._nogoods` lives in the ground-atom store and is
-  **fork-shared by reference**
-  ([`store.fork`](../../ein.py/src/ein/kb/store.py); `snapshot` copies);
-  `_negated_facts` doubles as a closure index (contradiction detection,
-  matcher) *and* the search's dead-hypothesis cache
-  ([`hypgen`](../../ein.py/src/ein/inference/hypgen.py)); `kb.config` rides
-  along in the store.
+  The no-good store lives in the ground-atom store and is **fork-shared by
+  reference** ([`kb.rs`](../../ein.rs/crates/ein-core/src/kb.rs); a snapshot
+  copies); the negated-fact index doubles as a closure index (contradiction
+  detection, matcher) *and* the search's dead-hypothesis cache
+  ([`hypgen`](../../ein.rs/crates/ein-infer/src/hypgen.rs)); the solver config
+  rides along in the store.
 - **L3 — worlds → root writebacks keyed by magic provenance strings** —
   **still open** (S1.21.8 did not touch it).
   `<monotonic-unconditional>` (singleton-nogood death),
   `<lookahead-dies-immediately>` (kill cache), `<forced-positive>`
   (promotion) — each individually sound
-  ([`monotonic/_helpers.py`](../../ein.py/src/ein/inference/monotonic/_helpers.py),
-  [`hypgen.py`](../../ein.py/src/ein/inference/hypgen.py)), but each is an
+  ([`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs),
+  [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs)), but each is an
   unannounced world transition whose closure consequences are re-derived by
   ad-hoc re-saturations rather than by a declared boundary re-eval point.
   What did improve: each of those re-saturations is now a fresh two-phase
@@ -215,15 +228,15 @@ closed by S1.21.8, one resolved by R2, one half-closed, three standing):
   the writeback invalidates are not retracted (no truth maintenance, E3).
 - **L4 — `complete()` re-enters the worlds layer and can mutate the model
   under test** — **still open.** `complete(kb)` ≡ "hypgen proposes nothing"
-  ([`solution.py`](../../ein.py/src/ein/inference/solution.py));
-  `generate_hypotheses` runs the one-step lookahead and, with the
-  **default-on** `enable_lookahead_kill_cache`
-  ([`config.py`](../../ein.py/src/ein/inference/config.py)), writes
-  `(not h)` facts into the KB being checked — *before* `_record_node`
+  ([`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs)); generation
+  runs the one-step lookahead and, with the **default-on**
+  `enable_lookahead_kill_cache`
+  ([`config.rs`](../../ein.rs/crates/ein-core/src/config.rs)), writes
+  `(not h)` facts into the KB being checked — *before* the node record
   takes that same KB's `state_key`
-  ([`monotonic/solver.py`](../../ein.py/src/ein/inference/monotonic/solver.py)).
+  ([`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs)).
   S1.21.8 fixed the NAF half of the sharp edge (divergence **D3**:
-  [`lookahead.py`](../../ein.py/src/ein/inference/lookahead.py) now evaluates
+  [`lookahead.rs`](../../ein.rs/crates/ein-infer/src/lookahead.rs) now evaluates
   a rule's guards in the world *with* `h` — no match in `kb` **and** `h`
   creates none — and skips a disjunct whose nested absent it cannot decide,
   losing a kill rather than guessing). The writeback itself stands.
@@ -232,15 +245,15 @@ closed by S1.21.8, one resolved by R2, one half-closed, three standing):
   ([README §Unconditional facts — retired](inference/README.md#unconditional-facts--retired-s157--p121-r2)).
 - **L6 — no negative provenance** — **half-closed 2026-08-17.** The missing
   object now exists: a firing admitted at the boundary records the queries
-  that had to fail in
-  [`Provenance.absent_premises`](../../ein.py/src/ein/kb/provenance.py)
-  (built by `World.negative_premises`, passed through `firing.fire`), so
+  that had to fail on its
+  [provenance](../../ein.rs/crates/ein-core/src/prov.rs) (built by the
+  saturator's `negative_premises`, passed through `fire`), so
   `Deps(Y) = PositiveDeps(Y) ∪ NegativeDeps(Y)` is finally *representable*.
   What is **not** done is the other half: no walk interprets it.
-  `KnowledgeBase.unsat_core` and the trace's "using" line still read
+  The unsat core and the trace's "using" line still read
   positive premises only, so the two consequences this leak caused —
   `unconditional_facts` (retired as unsound, R2) and deletion-based MUS
-  minimisation ([`frontier.py`](../../ein.py/src/ein/inference/frontier.py),
+  minimisation ([`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs),
   corollary C3) — are now **revisit-able, not revisited**. Recording makes
   NAF-dependence visible; honouring it is future work
   ([`absent_semantics.md`](inference/absent_semantics.md) C2/C3).
@@ -262,10 +275,10 @@ The four moving parts, and where each lives:
 
 | step | module | what it does |
 |---|---|---|
-| compile split | [`compile.split_naf`](../../ein.py/src/ein/inference/compile.py) → `NafGuard` (`scope` / `watched` / `monotone`), `JoinPlan.naf_guards`, `JoinPlan.disjuncts()` | lifts every top-level `(absent …)` out of each disjunct, leaving a purely positive closure plan; `scope` re-projects the bindings at evaluation time, so lifting is exactly as strong as evaluating in place. A *nested* absent (what `forall` desugars to) is not lifted — it is part of the negative query |
-| the boundary type | [`world.World`](../../ein.py/src/ein/inference/world.py) (`holds` / `absent` / `admits` / `first_failing`), `project`, `root_world` | a read-only view of the KB at a quiescence point plus its commitment — not a snapshot; the saturator builds a fresh one per round |
-| two-phase saturation | [`Saturator.step`](../../ein.py/src/ein/inference/saturator.py) (`_closure_step` → `_admit_from_boundary`), mirrored by the queue-less [`Engine.step`](../../ein.py/src/ein/inference/engine.py) | closure fires to quiescence consulting no negation; parked candidates are then judged against that fixpoint and **one** is admitted, so it fires into an empty queue against exactly the world it was judged in. A candidate rejected by a purely positive guard is *retired* (that guard can never pass again); a `forall`-shaped one stays parked, re-asked only when a relation in its `watched` set has grown |
-| negative provenance | [`World.negative_premises`](../../ein.py/src/ein/inference/world.py) → [`Provenance.absent_premises`](../../ein.py/src/ein/kb/provenance.py) via `firing.fire` | records what the firing depended on *not* holding — see **L6**: recorded, not yet interpreted |
+| compile split | the guard lift in [`compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs) → [`NafGuard`](../../ein.rs/crates/ein-infer/src/plan.rs) (`scope_of` / `watched` / `monotone`), per-`Disjunct` | lifts every top-level `(absent …)` out of each disjunct, leaving a purely positive closure plan; `scope_of` re-projects the bindings at evaluation time, so lifting is exactly as strong as evaluating in place. A *nested* absent (what `forall` desugars to) is not lifted — it is part of the negative query |
+| the boundary query | [`Matcher::holds`](../../ein.rs/crates/ein-infer/src/match_.rs), and `first_failing` over a guard span | the existential the guard is judged by, asked of the KB **at a quiescence point** under the guard's projected bindings. ein.py wrapped this as a `World` value; the port asks the KB directly, because the boundary phase is the only code that runs there |
+| two-phase saturation | [`Saturator::step`](../../ein.rs/crates/ein-infer/src/saturator.rs) (`closure_step` → `admit_from_boundary`), mirrored by the queue-less [`Engine::step`](../../ein.rs/crates/ein-infer/src/engine.rs) | closure fires to quiescence consulting no negation; parked candidates are then judged against that fixpoint and **one** is admitted, so it fires into an empty queue against exactly the world it was judged in. A candidate rejected by a purely positive guard is *retired* (that guard can never pass again); a `forall`-shaped one stays parked, re-asked only when a relation in its `watched` set has grown |
+| negative provenance | `Saturator::negative_premises` → the firing's [provenance](../../ein.rs/crates/ein-core/src/prov.rs) via `fire` | records what the firing depended on *not* holding — see **L6**: recorded, not yet interpreted |
 
 Three consequences worth knowing before writing rules. Priority-band
 discipline is **advisory**: on a stratified program the result no longer
@@ -274,17 +287,22 @@ fire because its watched fact had not been derived *yet* no longer does —
 the closure is complete before any guard is asked. And a non-stratified
 program is still answered by operational order (now boundary-admission
 order): the engine reports one model where several exist and does not say
-so, which is why [`naf_deps`](../../ein.py/src/ein/inference/naf_deps.py) /
-`DerivedNafWarning` survive — re-grounded from a soundness warning into a
+so, which is why
+[`naf_deps`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) and its
+derived-NAF warning survive — re-grounded from a soundness warning into a
 *stratification* one. A static stratification checker remains future work.
 
 Shipped and measured as
 P1.21 S1.21.8:
 acceptance 17/17 with verdicts unchanged, 1342 unit tests and **zero**
-xfails (the D5 `xfail(strict=True)` now passes), `naf_dropped` structurally
-0 — and *faster*, because dropping the absent-flip full-match split more
-than pays for the boundary evaluations (exhaustive `zebra2` solve ~10.4s →
-~8.5s; acceptance gate 130s → 91s).
+xfails, `naf_dropped` structurally 0 — and *faster*, because dropping the
+absent-flip full-match split more than pays for the boundary evaluations
+(exhaustive `zebra2` solve ~10.4 s → ~8.5 s; acceptance gate 130 s → 91 s).
+
+> Those five numbers were **measured on the Python engine**, which is the one
+> S1.21.8 changed; they are frozen, and nothing in the tree can re-run them.
+> What is live is the *shape* of the claim — `naf_dropped` structurally 0, and
+> the verdicts — both of which `cargo test --workspace` still checks.
 
 ### Why the seam is worth naming (ex-"M3 implication")
 
@@ -300,8 +318,8 @@ scoped to the boundary's world.
 **M3 was dropped 2026-08-18**, so no translation is planned — but the
 argument outlives its motivation, because it is really a statement about
 the kernel: the scope of a negative conclusion is a *nameable object*
-here — the `World` a guard was judged in, with the failing queries it
-depended on recorded on the conclusion — rather than an implicit moment
+here — the saturated world a guard was judged in, with the failing queries
+it depended on recorded on the conclusion — rather than an implicit moment
 in the saturation order. That is what makes the engine's negation
 explainable at all, whatever consumes it. The edge-by-edge table is in
 `r6_seam.md` §3 (and the dropped milestone's Q30 in git history).
@@ -312,17 +330,21 @@ explainable at all, whatever consumes it. The edge-by-edge table is in
 |-------------------------------------|----------------|
 | add/adjust a **puzzle** rule        | the `.ein` file itself, or import from [`stdlib/`](../../stdlib/) |
 | add a **stdlib** rule/module        | `stdlib/<m>.ein` + a `tests/` exercise; document in [`ir/03-ein-lang/07_stdlib_api.md`](ir/03-ein-lang/07_stdlib_api.md) |
-| add a **kernel primitive** (`absent`-like) | `inference/primitives.py` or `predicates.py` + `compile.py` + `match.py` + tests; a *negative* one also touches `world.py` + the saturator's boundary phase |
+| add a **kernel primitive** (`absent`-like) | `ein-core/src/terms.rs` (the reserved atom) or `ein-infer/src/predicates.rs` + `compile.rs` + `match_.rs` + tests; a *negative* one also touches the saturator's boundary phase |
 | add a **top-level IR form**         | `ein-ir/src/{lex,parse,ast}.rs` + `from_ir.rs` (routing) + tests; update [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md) and [`06_reserved_names.md`](ir/03-ein-lang/06_reserved_names.md) |
-| change **saturation order**         | `inference/saturator.py` (priority bands) |
-| change **search / verdict**         | `inference/monotonic/solver.py` + `inference/verdict.py` |
-| add a **config knob**               | `inference/config.py` (`SolverConfig`) + its read site |
-| add a **contradiction shape**       | `inference/contradiction.py` |
-| add a **render target**             | `render/` + wire into `cli/render.py` |
-| add a **CLI subcommand**            | `cli/<cmd>.py` + dispatch in `cli/__init__.py` |
+| change **saturation order**         | `ein-infer/src/saturator.rs` (priority bands) |
+| change **search / verdict**         | `ein-infer/src/solve.rs` + `verdict.rs` |
+| add a **config knob**               | `ein-core/src/config.rs` (`SolverConfig`) + its read site + the CLI flag in `ein-cli/src/cmdline.rs` |
+| add a **contradiction shape**       | `ein-infer/src/contradiction.rs` |
+| add a **render target**             | `ein-render/src/` + wire into `ein-cli/src/render.rs` |
+| add a **CLI subcommand**            | `ein-cli/src/<cmd>.rs` + dispatch in `cmdline.rs` |
+
+Every one of these also lands in `cargo test --workspace`, which is the whole
+gate: the corpus sweep through the CLI, the shape digests, the goldens and the
+manifest's own invariants.
 
 The per-module detail behind these is
-[`inference/python_impl.md`](inference/python_impl.md) (engine) and
+[`inference/implementation.md`](inference/implementation.md) (engine) and
 [`ir/02-data-model/`](ir/02-data-model/) (KB).
 
 ## See also
@@ -330,7 +352,10 @@ The per-module detail behind these is
 - [`README.md`](README.md) — the reading-order companion to this structural doc.
 - [`inference/architecture_and_algorithms.md`](inference/architecture_and_algorithms.md)
   — the engine's algorithmic (O1–O9) view.
-- [`inference/python_impl.md`](inference/python_impl.md) — the engine's file map.
-- [`../api/`](../api/) — the Python embedding contract (this pipeline as a library API).
+- [`inference/implementation.md`](inference/implementation.md) — the engine's module map.
+- [`defined_behaviour.md`](defined_behaviour.md) — the thirteen behaviours the
+  Python source used to be the only statement of.
+- [`../api/`](../api/) — the Python embedding contract (this pipeline as a
+  library API; **implemented by [P1a.9](../../plans/m1a_rust/p1a.9_bindings_release/README.md)**, not yet by anything).
 - [`glossary.md`](glossary.md) — kernel vocabulary.
 - [`plans/README.md`](../../plans/README.md) — the milestone roadmap.

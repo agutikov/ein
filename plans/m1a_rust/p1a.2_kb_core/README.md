@@ -6,6 +6,8 @@
 **Depends on:** [P1a.1](../p1a.1_ir_frontend/README.md)
 **Blocks:** [P1a.3](../p1a.3_deductive_core/README.md)
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `ir_oracle.py` and `ein-conformance`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Goal
 
 The data model: interning, `Value`/`FactId` as integers, the fact row

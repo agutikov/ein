@@ -18,9 +18,10 @@ Every demo file has the same shape:
    should produce when it fires the named rule.
 
 Running the engine on any demo produces ≥ 1 firing whose `:rule`
-field matches the demo's directory name. The test
-[`tests/inference/test_demos.py`](../../../tests/inference/test_demos.py)
-enforces this for every demo, parametrised over the 21 files.
+field matches the demo's directory name. What enforces this for every demo is
+[`ein-infer/tests/search_semantics.rs`](../../ein.rs/crates/ein-infer/tests/search_semantics.rs),
+plus the `saturation` group of the
+[corpus sweep](../../ein.rs/crates/ein-cli/tests/corpus_cli.rs).
 
 ## Index
 
@@ -54,7 +55,7 @@ The three `hypothesis-contradiction/*.ein` demos carry **synthetic
 `(hypothesis …)` + `(contradiction-under …)` facts whose first
 argument is itself a fact** — a relational node, per the kernel ein
 model's "named vs relational" duality
-([`docs/kernel/ir/01-ein-graph/03_ein_model.md` §3](../../../docs/kernel/ir/01-ein-graph/03_ein_model.md)).
+([`docs/kernel/ir/01-ein-graph/03_ein_model.md` §3](../../docs/kernel/ir/01-ein-graph/03_ein_model.md)).
 
 R9's `Fact.args` widening (committed `0a783bc`) makes this load;
 S1.3.1's matcher (committed `d9778b0`) makes the rule unify against
@@ -96,9 +97,8 @@ one unified KB view per demo. Outputs land at
 ## See also
 
 - S1.3.2 plan — the rule catalogue.
-- [zebra.ein](../zebra.ein) — wait, it doesn't actually live here.
-  The shipping puzzle is at [`examples/zebra.ein`](../../zebra.ein)
-  (kept at top level to minimise reference churn; cf. the spec's
-  envisioned `examples/zebra/zebra.ein` location).
-- [`tests/inference/test_demos.py`](../../../tests/inference/test_demos.py)
-  — the test that exercises every demo here.
+- The shipping puzzle is [`examples/zebra.ein`](../zebra.ein), kept at top
+  level to minimise reference churn (cf. the spec's envisioned
+  `examples/zebra/zebra.ein` location).
+- [`ein-infer/tests/search_semantics.rs`](../../ein.rs/crates/ein-infer/tests/search_semantics.rs)
+  — what exercises every demo here.

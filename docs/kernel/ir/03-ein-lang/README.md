@@ -61,7 +61,7 @@ inspirations chapter (`05_inspirations.md`) are reference material.
 - [Q3](../../../../plans/open_questions.md#q3--surface-ir-syntax) —
   homoiconic S-expressions over a heavier DSL.
 - [Q4](../../../../plans/open_questions.md#q4) —
-  pattern-rewrite DSL with `:match` / `:assert` clauses; no Python
+  pattern-rewrite DSL with `:match` / `:assert` clauses; no host-language
   fallback for the M1 rule set.
 - [Q17](../../../../plans/open_questions.md#q17--spatial-relation-formalisation) —
   spatial relations stay IR-native (declarative `square-fwd` /

@@ -1,9 +1,9 @@
 // P1.5b — Unified engine per-candidate processing in layer N
 //
-// Shared private `_explore_layers` flow used by all THREE public
-// entries `monotonic_solve` + `gaps_solve` + `contradictions_solve`
-// (all sibling functions in inference/monotonic/solver.py — one
-// unified engine, three contracts). Entry-specific behaviour is
+// Shared layer-exploration flow used by all THREE public entries
+// `monotonic_solve` + `gaps_solve` + `contradictions_solve` (one
+// unified engine, three contracts; ein-infer/src/solve.rs).
+// Entry-specific behaviour is
 // annotated at the outcome nodes (record_solution, dead_collect):
 // monotonic adds early-terminate at record_solution; gaps + contra
 // always exhaust and collect.
@@ -65,7 +65,7 @@ digraph layer_n_processing {
   dead [label = "DEAD (pre-sat or post-sat)\nunsat_core = result.unsat_core",
         fillcolor = salmon];
 
-  dead_root_write [label = "Flat root-write:\n• emit_nogood(root, frozenset(C))\n  (subsumption-aware insert — nogoods.py)\n• if |C| = 1: write (not h) to root._negated_facts\n  (+ symmetric mirror if applicable)",
+  dead_root_write [label = "Flat root-write:\n• emit_nogood(root, frozenset(C))\n  (subsumption-aware insert — nogoods.rs)\n• if |C| = 1: write (not h) to root._negated_facts\n  (+ symmetric mirror if applicable)",
                    fillcolor = plum];
 
   dead_collect [label = "[contradictions_solve only]\nproof.dead_commitments.append(\n  DeadCommitment(C, unsat_core, ...)\n)\n[gaps_solve / monotonic_solve:\n nothing collected; clause suffices]",

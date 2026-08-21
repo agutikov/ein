@@ -1,7 +1,7 @@
 # Compile-negative fixtures
 
 Files that **parse** and **load** and then fail to **compile**: the four
-shapes ein.py's `ein/inference/compile.py`
+shapes [`ein-infer/src/compile.rs`](../../../ein.rs/crates/ein-infer/src/compile.rs)
 raises `CompileError` for. Each `<name>.ein` sits beside a `<name>.expected`
 holding the exact message.
 

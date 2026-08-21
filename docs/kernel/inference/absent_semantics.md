@@ -9,7 +9,7 @@
 > **normative definition** of what `(absent P)` means; the operational how
 > stays in the [inference README §NAF](README.md).
 > Every claim here is pinned by
-> [`tests/inference/test_absent_semantics.py`](../../../ein.py/tests/inference/test_absent_semantics.py)
+> [`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs)
 > — the doc is executable law, not prose.
 
 `absent` is what splits Ein into *positive monotone deduction* +
@@ -35,9 +35,9 @@ load-bearing to advisory.
 A **world** `W` is one [`KnowledgeBase`](../ir/02-data-model/02_store.md)
 instance under saturation: the root, or a fork
 `KB_C = fork(root) ∪ {h : h ∈ C}` for a commitment set `C`
-([`commitment.try_commitment_set`](../../../ein.py/src/ein/inference/commitment.py)
+([`commitment::try_commitment_set`](../../../ein.rs/crates/ein-infer/src/commitment.rs)
 — fork, write the hypothesis facts, hand the fork to a fresh
-[`Saturator`](../../../ein.py/src/ein/inference/saturator.py)).
+[`Saturator`](../../../ein.rs/crates/ein-infer/src/saturator.rs)).
 Within one `saturate()` run, `W` is **append-only**; `W(t)` denotes its
 fact set after `t` firings. Worlds are related only by fork: nothing
 evaluated in `KB_C` is meaningful in root or in any sibling `KB_C′`
@@ -53,11 +53,11 @@ run to a fixpoint — with bindings `θ`:
 > `P θ′` matches a stored fact of `W` — i.e. `W ⊭ ∃x̄. P θ`,
 > where `x̄` are `P`'s variables unbound by `θ` (micro-example P7) and
 > "matches" is the matcher's raw unification
-> ([`match._bind_args`](../../../ein.py/src/ein/inference/match.py)).
+> ([`Matcher`](../../../ein.rs/crates/ein-infer/src/match_.rs)).
 
 `θ` here is the guard's bindings **projected to its scope** — the
 variables bound by the positive premises that preceded it in the rule
-([`NafGuard.scope`](../../../ein.py/src/ein/inference/compile.py)). That
+([`NafGuard::scope_of`](../../../ein.rs/crates/ein-infer/src/plan.rs)). That
 projection is what makes lifting a guard to the boundary exactly as strong
 as evaluating it in place: `(and (absent (P ?x)) (Q ?x))` still asks "is
 there no `P` at all?", and `(and (Q ?x) (absent (P ?x)))` still asks "is
@@ -86,11 +86,11 @@ There is **one**, and it is the whole point of the S1.21.8 design.
 
 - **E1 — at the closure/world boundary, once.** A `(absent …)` premise is
   lifted out of its plan at compile time
-  ([`compile.split_naf`](../../../ein.py/src/ein/inference/compile.py)), so
+  ([`compile.rs`](../../../ein.rs/crates/ein-infer/src/compile.rs)), so
   the closure plan the matcher runs is purely positive and a match says
   nothing about negation. A candidate whose disjunct carries guards is
   **parked**. When the closure quiesces, the saturator builds a
-  [`World`](../../../ein.py/src/ein/inference/world.py) over the stalled KB
+  [the boundary phase](../../../ein.rs/crates/ein-infer/src/saturator.rs) over the stalled KB
   and asks it: `World.absent` runs the guard's sub-plan under the projected
   bindings, and the candidate is admitted iff every guard passes. **This is
   the decision, and there is no other.**
@@ -114,7 +114,7 @@ Monotonicity within one run, and what each case costs:
 - A **nested** absent (`forall`) can also flip false→true — adding a `B`
   makes the inner absent fail and the outer pass — so its candidate stays
   parked and is re-judged at every later quiescence. Re-judging is gated on
-  [`NafGuard.watched`](../../../ein.py/src/ein/inference/compile.py): if no
+  [`NafGuard::watched`](../../../ein.rs/crates/ein-infer/src/plan.rs): if no
   relation the query reads has grown, the verdict cannot have moved and the
   query is not re-run.
 - The **absent-index full-match** the old design needed for that flip
@@ -122,7 +122,7 @@ Monotonicity within one run, and what each case costs:
   matching at all, so no delta can force a re-match (C5, retired).
 
 The queue-less
-[`Engine.step()`](../../../ein.py/src/ein/inference/engine.py) implements
+[`Engine::step`](../../../ein.rs/crates/ein-infer/src/engine.rs) implements
 the same two phases directly: it fires purely positive matches first and
 consults the boundary only once none remain.
 
@@ -133,13 +133,13 @@ Each is already enforced locally; this page is the shared reason.
 - **C1 — no root-merge.** An alive fork's derived facts may depend on an
   absence that holds in `KB_C` but not in root's future; they are never
   merged mid-search
-  ([`monotonic/solver.py`](../../../ein.py/src/ein/inference/monotonic/solver.py)
+  ([`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
   "keep root STABLE"; history:
   [README §Unconditional facts — retired](README.md#unconditional-facts--retired-s157--p121-r2)).
 - **C2 — negative dependence is now recorded** (was: "positive provenance
   is not dependence"). A firing admitted through the boundary writes the
   queries that had to fail into
-  [`Provenance.absent_premises`](../../../ein.py/src/ein/kb/provenance.py),
+  [`Prov::absent`](../../../ein.rs/crates/ein-core/src/prov.rs),
   so `Deps(Y)` — the union of `PositiveDeps(Y)` and `NegativeDeps(Y)` — is
   finally representable. Note what this does and does not buy: the
   dependence is *visible*, which is the precondition for C1 and C3 to be
@@ -148,7 +148,7 @@ Each is already enforced locally; this page is the shared reason.
 - **C3 — deletion-based MUS minimisation is still unsound.** Removing a
   fact can flip an absent and *fabricate* a contradiction the full KB never
   had; recorded single-witness frontiers are used instead
-  ([`frontier.py`](../../../ein.py/src/ein/inference/frontier.py)). C2's
+  ([`explain.rs`](../../../ein.rs/crates/ein-infer/src/explain.rs)). C2's
   negative premises make a *sound* deletion minimiser conceivable — a
   candidate subset would have to preserve every recorded
   `absent_premises` query as well as the positive ones — but nothing
@@ -169,7 +169,7 @@ Each is already enforced locally; this page is the shared reason.
   worlds nor written back as facts (P5): the same ground query answers
   differently in root and in a fork.
 - **C7 — the verdict inherits the semantics.**
-  [`complete` / `open_hypotheses`](../../../ein.py/src/ein/inference/solution.py)
+  [`complete` / `open_hypotheses`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)
   are defined via `generate_hypotheses` → filters → lookahead → matcher,
   so the solution-node predicate — hence the model count `k`, hence the
   verdict — is downstream of the same boundary epistemic queries.
@@ -177,7 +177,7 @@ Each is already enforced locally; this page is the shared reason.
 ## Explicitly not provided
 
 - **Stratification checking.**
-  [`naf_deps`](../../../ein.py/src/ein/inference/naf_deps.py) is
+  [`naf_deps`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) is
   *advisory* (`warn_derived_naf` defaults off); unstratifiable programs
   are accepted (P3, P4).
 - **Stable / well-founded model computation.** The fixpoint is
@@ -209,7 +209,7 @@ and a real stratification checker remains future work.
 ## Worked micro-examples
 
 The investigation's probes P1–P8, each pinned 1:1 by a test in
-[`test_absent_semantics.py`](../../../ein.py/tests/inference/test_absent_semantics.py).
+[`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs).
 Programs are sketched `head ← body @priority`; all facts are given at
 load.
 
@@ -233,7 +233,7 @@ behaviour-unchanged gate). The closure/worlds split fixed both, and both
 fixes are pinned.
 
 - **D3 — lookahead world mismatch** (P6). ✅ **fixed 2026-08-17.**
-  [`Lookahead.dies_immediately`](../../../ein.py/src/ein/inference/lookahead.py)
+  [`Lookahead::dies_immediately`](../../../ein.rs/crates/ein-infer/src/lookahead.rs)
   used to posit the candidate `h` into a positive premise while running the
   rule's guards against the KB *without* `h`, so a rule watching the
   candidate's own relation could kill a hypothesis it could never refute in

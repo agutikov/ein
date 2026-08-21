@@ -7,9 +7,16 @@ the inference engine that fires rules.
 
 Everything above the kernel — NL → IR (M2), the GUI (M1b), the
 self-modifying constraint language (followup F2) — *consumes* the
-kernel. Everything below — the Python implementation in `src/ein/`, and
-the Rust port `ein.rs` (M1a) — *implements* the kernel. This tree is the
-contract between them.
+kernel. Below it there is one implementation, [`ein.rs`](../../ein.rs/)
+(M1a). This tree is the contract between them.
+
+> **Since M1a [P1a.10](../../plans/m1a_rust/p1a.10_single_implementation/README.md)
+> this tree is the only statement of intent that is not also the
+> implementation.** It was written when there were two engines and a harness
+> that checked they agreed; now a claim here is checked by
+> `cargo test --workspace` and by nothing else. Behaviours that used to be
+> defined by "whatever the Python engine does" are stated in
+> [`defined_behaviour.md`](defined_behaviour.md).
 
 ## Reading order
 
@@ -17,16 +24,15 @@ The four sub-trees layer on each other:
 
 1. **[`ir/01-ein-graph/`](ir/01-ein-graph/)** — the **semantics**.
    What Ein *reasons about*: nodes, edges, hyperedges, rewrite
-   rules. No syntax, no Python — pure graph theory tailored to the
+   rules. No syntax, no code — pure graph theory tailored to the
    project's needs. Read this first to understand what the system
    thinks in.
 
 2. **[`ir/02-data-model/`](ir/02-data-model/)** — the **in-memory
-   representation**. The Python dataclasses (`Type`, `Instance`,
-   `Relation`, `Rule`, `Fact`, `Pattern`, `Provenance`, …) that hold
-   the graph; the `KnowledgeBase` store with its registries, reverse
-   indexes, the fact view, hypothesis forks, derivation DAGs. Maps the
-   semantics in (1) onto concrete code shapes.
+   representation**. The entity kinds (`Relation`, `Rule`, `Fact`,
+   `Pattern`, `Provenance`, …) that hold the graph; the knowledge-base
+   store with its registries, indexes, the fact view, hypothesis forks,
+   derivation DAGs. Maps the semantics in (1) onto concrete shapes.
 
 3. **[`ir/03-ein-lang/`](ir/03-ein-lang/)** — the **surface
    syntax**. The S-expression IR that users author and the engine
@@ -41,10 +47,9 @@ The four sub-trees layer on each other:
    generation. The substrate is the data model (2); the language to
    define rules is (3); the engine is described here.
 
-The order is also the order of **conceptual precedence**: the graph
-is canonical (see [feedback memory `graph-canonical`](../../../.claude/projects/-home-user-work-ein/memory/feedback_graph_canonical.md)
-in your local memory store) — the data model and the syntax are
-*views* of it, the engine *transforms* it.
+The order is also the order of **conceptual precedence**: the graph is
+canonical — the data model and the syntax are *views* of it, the engine
+*transforms* it.
 
 ## What's M1 vs later milestones
 
@@ -63,7 +68,7 @@ Zebra-acceptance milestone.
   artefact of one encoding.
 - `inference/` is documented:
   [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md)
-  (as-built O1–O9) + [`python_impl.md`](inference/python_impl.md) (module map)
+  (as-built O1–O9) + [`implementation.md`](inference/implementation.md) (module map)
   + [`absent_semantics.md`](inference/absent_semantics.md) (the normative
   `(absent P)` / NAF semantics — worlds, fire-time evaluation, corollaries;
   P1.21 R4). The engine shipped P1.3–P1.5b.
@@ -78,8 +83,8 @@ explicit audience banner.
 |----------|-------|
 | **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`); `ir/02-data-model/{01_entities,02_store}` (the abstract model) |
-| **dev**  | `ir/02-data-model/03_python_impl.md`; `inference/python_impl.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md) |
-| **embedder** | [`../api/`](../api/) — the Python embedding contract ([`ein.md`](../api/ein.md) + per-module `ir`/`kb`/`inference`/`trace` pages). Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). |
+| **dev**  | `ir/02-data-model/03_implementation.md`; `inference/implementation.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
+| **embedder** | [`../api/`](../api/) — the Python embedding contract ([`ein.md`](../api/ein.md) + per-module `ir`/`kb`/`inference`/`trace` pages). Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). **The contract has no implementation right now** — it lands with the PyO3 module in [P1a.9](../../plans/m1a_rust/p1a.9_bindings_release/README.md); today the only way in from outside is the `ein` binary. |
 | **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs |
 
 - **Newcomer path** (never seen Ein): the [guide](../guide/) end-to-end
@@ -88,11 +93,14 @@ explicit audience banner.
   `03-ein-lang` (grammar → patterns → `06_reserved_names` →
   `07_stdlib_api`) → `02-data-model/01_entities`.
 - **Dev path** (change the engine): the user path, then
-  `architecture.md` → `02-data-model/03_python_impl` → `inference/`
-  (`architecture_and_algorithms` → `python_impl` → the README invariants).
+  `architecture.md` → `02-data-model/03_implementation` → `inference/`
+  (`architecture_and_algorithms` → `implementation` → the README
+  invariants), and `defined_behaviour.md` before you change any output.
 - **Embedder path** (call Ein from Python): [`../api/ein.md`](../api/ein.md)
   (the five-step flow + worked example), then the per-module pages as
-  needed; `01-ein-graph` + `03-ein-lang` for the puzzles you load.
+  needed; `01-ein-graph` + `03-ein-lang` for the puzzles you load. Read the
+  banner first — the module those pages describe is P1a.9's, and it is not
+  built yet.
 
 ## Cross-references
 
@@ -100,7 +108,7 @@ explicit audience banner.
   this tree uses with technical meaning (homoiconic, Levi-bipartite,
   T1/T2/T3 rules, ATMS, e-graph, encoding-agnostic, …).
 - **Architecture**: [`architecture.md`](architecture.md) — the
-  structural "where does X live?" map: data-flow, package
+  structural "where does X live?" map: data-flow, crate
   dependencies, milestone boundaries, and a change cookbook.
 - Plans roadmap: [`plans/README.md`](../../plans/README.md) (M1 shipped
   2026-06-17; its plan folder was removed at P1.22 — see git history).
@@ -108,10 +116,13 @@ explicit audience banner.
 - External tech index: [`docs/lib/`](../lib/).
 - Source of truth for parsing: [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md)
   — the complete grammar, in EBNF. It was `grammar.lark` until M1a S1a.10.5.
-- Source of truth for the KB: [`ein.py/src/ein/kb/`](../../ein.py/src/ein/kb/).
+- Source of truth for the KB: [`ein-core`](../../ein.rs/crates/ein-core/src/).
+- **Defined behaviour**: [`defined_behaviour.md`](defined_behaviour.md) — the
+  thirteen diagnostics, orderings and error strings whose only statement, until
+  the second engine left, was a Python source file.
 - **End-to-end target trace**:
   [`inference/zebra_walkthrough.md`](inference/zebra_walkthrough.md) — the human
-  Wikipedia Zebra solution annotated as ein.py inference (NL ↔ ein
+  Wikipedia Zebra solution annotated as ein inference (NL ↔ ein
   rule ↔ branch-depth, contradictions, learnt no-goods). The
   *inference* column is what the M1 kernel + engine must reproduce;
   the *whole row* (NL ⇄ IR ⇄ solution ⇄ NL explanation) is what M2

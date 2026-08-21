@@ -136,9 +136,9 @@ capped per fact (`store.MAX_ALT_JUSTIFICATIONS`), so minimality is
 relative to the rule set and the saturation strategy; and the search
 is budgeted — `Explanation.exhausted` reports whether it completed,
 and a truncated search is still sound. Computed by
-[`frontier.smallest_contradiction_frontier`](../../ein.py/src/ein/inference/frontier.py)
+[`explain::smallest_contradiction_frontier`](../../ein.rs/crates/ein-infer/src/explain.rs)
 over the **ATMS label** search in
-[`explain.py`](../../ein.py/src/ein/inference/explain.py). See
+[`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs). See
 [`inference/architecture_and_algorithms.md` §O6](inference/architecture_and_algorithms.md).
 
 ### Fork
@@ -154,7 +154,7 @@ within a `saturate()` run; related to other worlds only by fork —
 an `absent` query answered in one world is meaningless in every
 other. The unit of evaluation for NAF and the search layer.
 Reified in S1.21.8 as
-[`World(kb, commitment)`](../../ein.py/src/ein/inference/world.py):
+[`Saturator::admit_from_boundary`](../../ein.rs/crates/ein-infer/src/saturator.rs):
 every `(absent …)` query goes through it (`holds` / `absent` /
 `admits` / `first_failing` / `negative_premises`) and nothing else
 does. It is a **read-only view taken at a positive quiescence**, not
@@ -218,7 +218,7 @@ saturate before branching. See
 matching P" (¬∃ over P's unbound vars; membership, not derivability),
 **evaluated at the closure/world boundary against a positive
 fixpoint**: the guard is lifted out of the plan at compile time
-([`compile.split_naf`](../../ein.py/src/ein/inference/compile.py)),
+([`compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs)),
 its candidate is parked while the closure runs, and it is asked once
 — at quiescence, of a [World](#world) — under the bindings projected
 to the variables its preceding positive premises bound
@@ -237,7 +237,7 @@ operational how:
 The property of a rule set that no `(absent …)` guard watches a
 relation which (transitively) depends on the guarded rule's own
 conclusion — no recursion through negation. Ein does **not** check
-it: [`naf_deps`](../../ein.py/src/ein/inference/naf_deps.py) is the
+it: [`naf_deps`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) is the
 cheap static proxy (which guards watch a *rule-derived* relation
 rather than a declared-only one), behind the advisory
 `DerivedNafWarning` / `SolverConfig.warn_derived_naf` (default off).
@@ -327,7 +327,7 @@ on demand (see **ATMS label**). See
 The subset-minimal **environments** — sets of frontier facts — from
 which a fact follows. Ein computes labels on demand rather than
 storing them:
-[`explain.py`](../../ein.py/src/ein/inference/explain.py) propagates
+[`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs) propagates
 them by least fixpoint from the frontier upward over the AND/OR
 provenance graph (`explain(kb, targets) -> Explanation`), under an
 `ExplanationBudget`. Starting from empty labels that only grow makes a
@@ -373,6 +373,6 @@ constraint engine should support. From
 
 ### Trace fidelity
 The acceptance criterion that every reasoning step in the engine's
-output has a recoverable, named cause — no opaque Python firings, no
+output has a recoverable, named cause — no opaque firings, no
 "because solver said so". The M1 acceptance gate. See
 [`docs/ideas/08-human-style-deductive-trace.md`](../../plans/ideas/08-human-style-deductive-trace.md).

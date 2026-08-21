@@ -6,8 +6,15 @@
 > it — there is no longer a second engine to be at parity *with*. The
 > numbers below stay as the measured record of what the monotonic engine
 > replaced and by how much; they are not a live gate. Current per-fixture
-> behaviour is pinned by the branching tests under
-> [`ein.py/tests/inference/`](../../../ein.py/tests/inference/).
+> behaviour is pinned by the `branching` corpus group, swept by
+> [`corpus_cli.rs`](../../../ein.rs/crates/ein-cli/tests/corpus_cli.rs).
+>
+> **Every wall-clock number on this page is a frozen constant** (M1a
+> [S1a.10.6](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.6_docs.md)):
+> both instruments that produced them — `bench_solve.py` and
+> `bench_monotonic.py`, under PyPy — went with the engine they measured. What
+> is still re-measurable is the *verdict* column, and that is what the sweep
+> checks.
 
 Recorded by M1 S1.5b.9 T1.5b.9.1 + T1.5b.9.3. Each row was captured by
 running both `bench_solve.py` (tree) and `bench_monotonic.py` (monotonic)
@@ -34,9 +41,11 @@ Total combined wall (all 11 fixtures, sequential, PyPy):
 - tree:      ~2.6 s
 - monotonic: ~0.8 s
 
-Both well inside the S1.5b.9 T1.5b.9.4 < 60 s budget; the
-parametrised pytest runs both engines for all 11 fixtures in
-~3.5 s on the laptop reference (3.47 s observed).
+Both well inside the S1.5b.9 T1.5b.9.4 < 60 s budget; the parametrised
+pytest ran both engines for all 11 fixtures in ~3.5 s on the laptop reference
+(3.47 s observed). Today the same eleven fixtures are eleven cells of the
+`branching` corpus group, run as processes by
+[`corpus_cli.rs`](../../../ein.rs/crates/ein-cli/tests/corpus_cli.rs).
 
 ## Known divergences
 

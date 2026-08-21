@@ -91,7 +91,7 @@ libraries. The overlay variant (c) is opt-in via
 **(b)** is opt-in.
 
 The renderer lives in
-[`ein.render.rules`](../../../../ein.py/src/ein/render/rules.py)
+[`ein_render::rules`](../../../../ein.rs/crates/ein-render/src/rules.rs)
 (`ein render rules|rule …`); `ir.to_dot` delegates to it.
 
 **(a) Side-by-side LHS | RHS** — explicit; readable for rule libraries.
@@ -179,7 +179,7 @@ The view names accept friendly aliases: `per-step` (a), `aggregate`
 
 The P1.5 ordered search tree was removed with the tree solver
 (2026-05-29); the engine now produces a **set-indexed commitment
-lattice**. [`ein.render.lattice_dag`](../../../../ein.py/src/ein/render/lattice_dag.py)
+lattice**. [`ein_render::lattice_dag`](../../../../ein.rs/crates/ein-render/src/lattice_dag.rs)
 renders it as a DAG (`render_lattice(proof | snapshot, view=)`):
 
 - `rankdir=LR`, ranked by **layer** (= commitment-set size); layer 0
@@ -195,7 +195,7 @@ renders it as a DAG (`render_lattice(proof | snapshot, view=)`):
   embeds).
 
 Fed a `LatticeSnapshotV1`
-([`snapshot.py`](../../../../ein.py/src/ein/inference/monotonic/snapshot.py))
+([`dump/snapshot.rs`](../../../../ein.rs/crates/ein-render/src/dump/snapshot.rs))
 the diagram is **order-stable across `lattice_order_seed`** (reuses the
 S1.5b.31 shuffle-invariance guarantee).
 
@@ -203,7 +203,7 @@ S1.5b.31 shuffle-invariance guarantee).
 
 The capstone output — what makes Ein *not just a solver* (idea 08)
 — is not DOT but a **markdown narrative** that threads the diagrams
-together. [`ein.trace`](../../../../ein.py/src/ein/trace/)
+together. [`ein_render::trace`](../../../../ein.rs/crates/ein-render/src/trace/)
 (`ein solve <file> --trace=out.md`):
 
 - `linearize(verdict)` turns the *unordered* commitment lattice into a
@@ -239,7 +239,7 @@ This is the 2021 prototype's *linked.svg* aesthetic — all the entity
 types on one canvas, related by labelled arrows, coloured by relation. See
 S1.2.4
 for the design plan; the implementation is
-[`src/ein/kb/render.py`](../../../../ein.py/src/ein/kb/render.py).
+[`ein-render/kb_dot.rs`](../../../../ein.rs/crates/ein-render/src/kb_dot.rs).
 
 ### Schema
 
@@ -367,7 +367,7 @@ renderer's output is reviewed visually.
 
 The trace (S1.6.4)
 does not embed the whole KB per step — it embeds a **provenance cone**:
-[`ein.render.slice`](../../../../ein.py/src/ein/render/slice.py).
+[`ein_render::slice`](../../../../ein.rs/crates/ein-render/src/slice.rs).
 
 - `render_slice(commitment, firings, kb)` — one hypothesis's cone: the
   hypothesis fact(s) (red seeds), the premises each firing consumed,

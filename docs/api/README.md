@@ -1,5 +1,22 @@
 # Ein — Python embedding API
 
+> ### ⚠ This contract has no implementation right now
+>
+> **`import ein` does not work in this repo.** The Python package these pages
+> describe was deleted at M1a
+> [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+> (2026-08-21), when `ein.rs` became the only engine.
+>
+> The contract is not obsolete — it is the **specification** the PyO3 module
+> [S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md)
+> builds has to satisfy. What checks it is
+> [S1a.9.2](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.2_api_parity_tests.md);
+> what re-verifies these pages against the real module, sample by sample, is
+> [S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md).
+> Until those land, read every code block here as a contract rather than as a
+> runnable snippet. The surface that *does* run today is the CLI:
+> `ein solve <file>` · `ein saturate` · `ein render`.
+
 How to drive Ein **as a library from another Python project**: load a
 `.ein` puzzle, run the engine, and read the answer + its explanation.
 
@@ -8,7 +25,7 @@ How to drive Ein **as a library from another Python project**: load a
 > If you instead want to **author puzzles** in the S-expression language,
 > read [`docs/kernel/`](../kernel/) (the IR grammar, kernel API, stdlib).
 > If you want the **engine internals**, read
-> [`docs/kernel/inference/python_impl.md`](../kernel/inference/python_impl.md).
+> [`docs/kernel/inference/implementation.md`](../kernel/inference/implementation.md).
 
 This is the programmatic face of the same pipeline
 [`docs/kernel/architecture.md`](../kernel/architecture.md) diagrams:
@@ -46,10 +63,17 @@ There is **no top-level `ein` facade**: `import ein` gives only
 
 ## Stability
 
-Verified against commit **`60c192b`** (2026-06-16). The IR/kernel surface
-([`docs/kernel/`](../kernel/)) is locked by M1; this *Python* surface is
-less frozen — engine internals move under it. Each page carries a
-"verified for" SHA; if a signature here disagrees with the source, the
-source wins (file an issue). If the [M1a Rust port](../../plans/m1a_rust/README.md)
-ships, the embedding contract moves to ein.rs (PyO3 + native Rust) and
-this becomes the legacy Python reference.
+Verified against commit **`60c192b`** (2026-06-16), against the Python
+engine. The IR/kernel surface ([`docs/kernel/`](../kernel/)) is locked by M1;
+this *Python* surface was always the less frozen one — engine internals moved
+under it.
+
+**That conditional has resolved.** The [M1a Rust
+port](../../plans/m1a_rust/README.md) shipped, `ein.rs` is the only engine, and
+the embedding contract moves to a PyO3 module rather than staying a legacy
+Python reference. So the reading of these pages inverts: they no longer
+*describe* an implementation and are checked against it — they **specify** one,
+and [S1a.9.2](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.2_api_parity_tests.md)
+is what will hold the module to them. Where a page and the module end up
+disagreeing, that is a defect to file against one of them, not a doc to
+refresh quietly.

@@ -4,7 +4,6 @@ Differences between `ein` (Python, the oracle) and `ein.rs` that are
 **accepted** rather than fixed. Empty is the goal at the
 [P1a.5](p1a.5_presentation/README.md) byte gate; a non-empty ledger is
 allowed only with a written reason per entry.
-
 The precedent for this shape is
 [`docs/kernel/inference/parity_baselines.md`](../../docs/kernel/inference/parity_baselines.md),
 which recorded the tree-vs-monotonic divergences explicitly rather than
@@ -12,6 +11,8 @@ treating them as failures or hiding them behind `xfail`. The difference
 is the standard: that comparison was between two *different engines*;
 this one is between an engine and its port, so the bar for an entry is
 much higher.
+
+> **Instruments (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `mutant_ein.py` and `ein-conformance`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../utils/README.md#the-census).
 
 ## Rules
 

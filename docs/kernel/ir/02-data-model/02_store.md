@@ -6,10 +6,10 @@ and the derived-view machinery (the fact view, hypothesis forks,
 derivation DAGs).
 
 **Sources of truth:**
-[`src/ein/kb/store.py`](../../../../ein.py/src/ein/kb/store.py),
-[`src/ein/kb/views.py`](../../../../ein.py/src/ein/kb/views.py),
-[`src/ein/kb/provenance.py`](../../../../ein.py/src/ein/kb/provenance.py),
-[`src/ein/kb/from_ir.py`](../../../../ein.py/src/ein/kb/from_ir.py).
+[`ein-core/kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs),
+[`ein-core/kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs),
+[`ein-core/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs),
+[`ein-ir/from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs).
 
 ---
 
@@ -169,7 +169,7 @@ the kernel imposes no type system, so there is no derived
 types-and-instances view to maintain. A puzzle that wants a named-type
 projection computes it with a user-space ein-lang rule over its own
 inheritance relation; the renderer reads the puzzle's `is-a` facts
-directly (`kb/render.py:_schema_nodes`).
+directly (`ein-render/kb_dot.rs`).
 
 ## 7. Provenance + derivation DAG
 
@@ -262,7 +262,7 @@ each other in any ordinary puzzle — so running it over a saturated KB
 would reject well-founded KBs. Cycles met during a walk are *broken*
 by the BFS visited-set — the revisited fact appears as a node but
 isn't re-expanded; an OR-aware consumer has to handle them itself,
-which `inference/explain.py` does by taking a least fixpoint from the
+which `ein-infer/explain.rs` does by taking a least fixpoint from the
 frontier upward.
 
 ### 7.2 `kb.unsat_core(conflicting, *, all_justifications=False) -> set[Fact]`
@@ -295,7 +295,7 @@ of these conflicts can name a fact outside it.
 Neither reading is minimal — this method unions, it never chooses:
 across the conflicting facts always, and across each fact's
 justifications under the opt-in. For the smallest answer use
-[`inference/frontier.py`](../../../../ein.py/src/ein/inference/frontier.py)'s
+[`explain.rs`](../../../../ein.rs/crates/ein-infer/src/explain.rs)'s
 `smallest_contradiction_frontier` — a minimum-cardinality AND/OR
 search over every recorded derivation (provenance-based, NAF-safe,
 budgeted); **not** a subset-minimal MUS. It picks one justification

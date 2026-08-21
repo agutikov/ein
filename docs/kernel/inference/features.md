@@ -103,6 +103,11 @@ against the `control` row.*
 
 ## Fast path (`stop_after=1`) — robust
 
+> **Every `ein.py s` column on this page is a frozen constant.** The runner
+> that produced it drove two engines and there is one; only the `ein.rs`
+> columns can be refreshed. Full statement, and what that does to a row's two
+> halves over time: [§ Refresh](#refresh).
+
 Every lever-off run matches the baseline: **Solution, k=1, the correct
 answer, 11 enterings**. Both engines agree on all of it.
 
@@ -270,13 +275,11 @@ Turning a *pruning* aid off should cost time and change nothing else. Here it
 changes the **verdict**, identically in both engines, and the reason is in the
 definition rather than in the search:
 
-```python
-def complete(kb) -> bool:            # inference/solution.py
-    """No open hypothesis — the generator proposes nothing undecided."""
-    return next(generate_hypotheses(kb), None) is None
+```text
+complete(kb)  ≡  hypgen::generate(kb) proposes nothing        # ein-infer/hypgen.rs
 ```
 
-`generate_hypotheses` yields "the candidates that are neither asserted nor
+Generation yields "the candidates that are neither asserted nor
 refuted **nor immediately doomed (lookahead)**". So a candidate the one-step
 simulation kills is *decided* when the lever is on and *open* when it is off —
 and a KB whose only remaining candidates are doomed is a **solution node** in

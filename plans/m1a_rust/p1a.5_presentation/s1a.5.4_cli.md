@@ -11,6 +11,8 @@ harness normalisation was under-specified for an *unpadded* float field.
 **Implements:** `ein/cli/{__init__,solve,saturate,render,_common,_factdump}.py`
 **Decides:** Q-M1a.13 — **resolved 2026-08-18 before the stage: (b), `clap`**
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `ein-conformance`. It is gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 The last surface, and the one that makes "drop-in replacement" literal:

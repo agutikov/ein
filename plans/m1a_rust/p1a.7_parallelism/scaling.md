@@ -41,7 +41,9 @@ Two readings:
 
 - **The serial residue is small everywhere and negligible on the big
   workloads.** Amdahl is not what bounds this phase.
-- **The two zebras are 29 and 47 ms.** After P1a.6 took them 165× off PyPy,
+- **The two zebras are 29 and 47 ms.** After P1a.6 took them 165× off PyPy
+  — a ratio whose denominator is a [frozen
+  constant](../p1a.6_performance/baseline.md), the Python engine being gone —
   the absolute room left in them is a few tens of milliseconds — and §2 shows
   that less than half of it is in the part that parallelises exactly. The
   phase's stated scaling target (`≥ 6× on 8 cores for exhaustive zebra2's

@@ -576,7 +576,7 @@ Turning a prune off should cost time and change nothing else. It does not:
 | `examples/lattice/02_genuine_3set_death.ein` | **Ambiguity k=3**, 6 enterings | **Contradiction k=0**, 7 enterings |
 
 The mechanism is one line of
-[`inference/solution.py`](../../ein.py/src/ein/inference/solution.py):
+`inference/solution.py` (the Python engine's; the predicates are `hypgen.rs`'s now):
 
 ```python
 def complete(kb) -> bool:

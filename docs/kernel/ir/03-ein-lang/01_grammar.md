@@ -122,7 +122,7 @@ don't-care atom — when you want a guessable relation with no meaningful
 type.
 
 The blind enumerator fills **arity 1 and 2**
-([`inference/hypgen.py`](../../../../ein.py/src/ein/inference/hypgen.py),
+([`hypgen.rs`](../../../../ein.rs/crates/ein-infer/src/hypgen.rs),
 `_fill_slot`): a unary relation yields one candidate per focal object,
 a binary one yields |objects| per focal object. Arity ≥ 3 declarations
 load, store facts and saturate normally but are never guessed — the one
@@ -201,13 +201,13 @@ signature's shape only, and only in these places:
 
 | signal | site | effect |
 |---|---|---|
-| signature **non-empty** | `inference/hypgen.py` (`_raw_candidates`), `inference/closed.py` (`emit_closed`) | marks a *declared domain relation* — eligible for hypothesis generation and for `__closed__` auto-inference. Property / rule-name relations (auto-vivified, empty signature) are skipped by both. |
-| signature **length** | `inference/hypgen.py` (`_fill_slot`) | length 1 → one candidate per focal object; length 2 → the pairwise fill; length ≥ 3 → unenumerated (the M1 arity cut noted above). |
-| signature **atoms** | `inference/hypgen.py` (`_candidate_objects`) | the declared type-role names (`Attribute`, `House`, `T`, …) are subtracted from the candidate-**object** pool, so the enumerator never guesses *about* a type node. |
+| signature **non-empty** | `ein-infer/hypgen.rs` (candidate enumeration), `closed.rs` (`emit_closed`) | marks a *declared domain relation* — eligible for hypothesis generation and for `__closed__` auto-inference. Property / rule-name relations (auto-vivified, empty signature) are skipped by both. |
+| signature **length** | `ein-infer/hypgen.rs` (the slot fill) | length 1 → one candidate per focal object; length 2 → the pairwise fill; length ≥ 3 → unenumerated (the M1 arity cut noted above). |
+| signature **atoms** | `ein-infer/hypgen.rs` (`candidate_objects`) | the declared type-role names (`Attribute`, `House`, `T`, …) are subtracted from the candidate-**object** pool, so the enumerator never guesses *about* a type node. |
 
 Two further reads are ergonomic rather than semantic: the declaration's
 `:why` render template (above) and the signature column of `ein saturate`'s
-relation table (`cli/saturate.py`).
+relation table (`ein-cli/saturate.rs`).
 
 So "are the signature's type atoms used explicitly through rules, or
 implicitly in the kernel?" — **both, in different roles.** As *types* they
@@ -395,11 +395,11 @@ each *top-level* one out of the match plan (below).
 `(absent P)` is a **query over the current fork-local world, answered
 at a positive fixpoint** (S1.21.8). The compiler *lifts* every
 top-level `(absent …)` out of the rule's match plan
-([`compile.split_naf`](../../../../ein.py/src/ein/inference/compile.py)),
+([`compile.rs`](../../../../ein.rs/crates/ein-infer/src/compile.rs)),
 so what the matcher runs is purely positive and a match whose disjunct
 carries guards is **parked** instead of fired. When the positive
 closure quiesces, the saturator builds a
-[`World`](../../../../ein.py/src/ein/inference/world.py) over that
+[the boundary phase](../../../../ein.rs/crates/ein-infer/src/saturator.rs) over that
 fixpoint and asks the guards there — once, decisively — admitting the
 firing iff every one passes. That is the *only* evaluation point: the
 old fire-time re-check (`match.absents_still_pass`, S1.5a.1) is
@@ -450,7 +450,7 @@ asks* — a rule of the language, unchanged by S1.21.8:
 
 The compiler records the variables bound by the premises that
 *preceded* each guard
-([`NafGuard.scope`](../../../../ein.py/src/ein/inference/compile.py)),
+([`NafGuard::scope_of`](../../../../ein.rs/crates/ein-infer/src/plan.rs)),
 and the boundary projects the completed bindings back down to that set
 — so a lifted guard is exactly as strong as it was in place, no more
 and no less. Write the binding premise **before** the guard when you
@@ -532,5 +532,5 @@ data structure under different views.
   each form.
 - [`../01-ein-graph/`](../01-ein-graph/) — what these forms *mean*
   in graph terms.
-- [`../02-data-model/`](../02-data-model/) — Python entities the
+- [`../02-data-model/`](../02-data-model/) — the entities the
   loader produces from these forms.

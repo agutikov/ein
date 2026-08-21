@@ -5,6 +5,8 @@
 **Depends on:** [S1a.0.1](s1a.0.1_parity_contract_and_corpus.md)
 **Implements design:** [design/01](../design/01_parity_contract.md) §3
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `bench_baseline.py` and `ein-conformance`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 T2 parity — "the two engines took the same steps" — needs both

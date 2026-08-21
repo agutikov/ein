@@ -11,7 +11,7 @@
 
 A `Fact` is `(relation_name: str, args: tuple[str | int | Fact, ...])`
 with identity on exactly those two fields
-([`entities.py`](../../../ein.py/src/ein/kb/entities.py)). Everything
+(`kb/entities.py`). Everything
 else — `provenance`, `raw`, `loc`, `_kb` — is `compare=False`.
 
 Per fact, CPython holds: a `Fact` instance (frozen dataclass, ~56 B +

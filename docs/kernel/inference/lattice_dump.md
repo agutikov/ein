@@ -3,23 +3,23 @@
 > **Purpose.** When you need to know *which hypotheses the engine
 > tested at each layer* and *what every one of them derived —
 > survivors and casualties alike* — run the exhaustive
-> [`solve`](../../../ein.py/src/ein/inference/monotonic/solver.py) sweep
+> [`solve`](../../../ein.rs/crates/ein-infer/src/solve.rs) sweep
 > with a
-> [`LatticeDumper`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
+> [the `Dumper` hook](../../../ein.rs/crates/ein-render/src/dump/state.rs)
 > attached. The on-disk dump is the audit trail for debugging
 > **problem statements** (is the puzzle even consistent? which
 > committed pair kills it?) and **rules** (did the rule I expected
 > fire under this commitment? did it fire when it shouldn't?).
 
 This page covers the **exhaustive** lattice sweep —
-[`solve`](../../../ein.py/src/ein/inference/monotonic/solver.py) run
+[`solve`](../../../ein.rs/crates/ein-infer/src/solve.rs) run
 with `store_lattice=True` and an unbounded stop policy (`stop_after=None`)
 — which tests *every* commitment set layer-by-layer and so produces a
 complete per-hypothesis record. The default single-solution
 [`solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10)
 (`stop_after=1`) early-terminates on the first solution and uses the
 lighter
-[`MonotonicDumper`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
+[the `Dumper` hook](../../../ein.rs/crates/ein-render/src/dump/state.rs)
 (timeline + per-layer root snapshots only — no per-hypothesis
 folders, since most hypotheses are never reached).
 
@@ -29,7 +29,7 @@ folders, since most hypotheses are never reached).
 
 ### From the CLI
 
-[`ein solve`](../../../ein.py/src/ein/cli/solve.py) runs the exhaustive
+[`ein solve`](../../../ein.rs/crates/ein-cli/src/solve.rs) runs the exhaustive
 sweep under `--exhaustive` (the default stop policy is a single
 solution); `--trace FILE` builds the `store_lattice` `LatticeProof` and
 renders the reductio markdown (every refuted commitment, foldable, plus
@@ -52,10 +52,11 @@ The CLI does **not** surface the on-disk `LatticeDumper` tree
 **programmatically** (below). Use the programmatic path when you need
 the full per-commitment folder layout this page documents.
 
-Full zebra2 is too slow on CPython for an exhaustive lattice sweep —
-use [`./bench_solve_pypy.sh`](../../../ein.py/) / a PyPy interpreter,
-and bound the sweep with `--max-set-size N`, `--max-time S`, or
-`--max-enterings K` so the dump stays a manageable size.
+An exhaustive `zebra2` lattice sweep is large — bound it with
+`--max-set-size N`, `--max-time S`, or `--max-enterings K` so the dump stays a
+manageable size. (This paragraph used to recommend a PyPy interpreter to make
+the sweep finish at all; the engine that needed one left at M1a S1a.10.5, and
+the exhaustive solve is now seconds.)
 
 ### Programmatically
 
@@ -115,7 +116,7 @@ dump/
 
 ### `<C-slug>` — the commitment slug
 
-A commitment is a *set* of [`FactId`](../../../ein.py/src/ein/inference/commitment.py)s
+A commitment is a *set* of [`FactId`](../../../ein.rs/crates/ein-core/src/facts.rs)s
 `(relation_name, args)`. The slug joins each FactId as
 `relation_arg0_arg1`, with multiple FactIds joined by `+`, and `_`
 inside identifiers rewritten to `-` so the field separator stays
@@ -152,9 +153,9 @@ are the emissions:
   one recorded contradiction follows, searched across every recorded
   derivation and so independent of firing order, though **not** a
   subset-minimal MUS
-  ([`frontier.smallest_contradiction_frontier`](../../../ein.py/src/ein/inference/frontier.py),
+  ([`explain::smallest_contradiction_frontier`](../../../ein.rs/crates/ein-infer/src/explain.rs),
   the AND/OR search in
-  [`explain.py`](../../../ein.py/src/ein/inference/explain.py)); and
+  [`explain.rs`](../../../ein.rs/crates/ein-infer/src/explain.rs)); and
   `learned_clause.json` is the `frozenset(C)` nogood emitted so no
   superset is re-entered
   ([learned no-goods](README.md#learned-no-goods-s15b6)).
@@ -194,10 +195,11 @@ dump folders use **per-layer ordered ids** — `kb_index/layer_NN/kb_<i>/`
 — rather than hash-named folders: within each layer the nodes are
 sorted by `repr(state_key)` (deterministic) and numbered `kb_0 … kb_n`.
 `state_hash.txt` and `proof_summary.json`'s `state_hash_hex` carry a
-16-hex **display digest** (`canon.state_digest` of the key) — an
-eyeball id for nodes *within one dump*, **process-local** (Python's
-seeded string hashing), so never compare it across runs; the identity
-the engine actually used is the key itself. `labels.json` lists every
+16-hex **display digest** ([`canon::state_digest`](../../../ein.rs/crates/ein-infer/src/canon.rs)
+of the key) — an eyeball id for nodes *within one dump*. It is **not
+identity**: distinct states may share one, and the digest is taken over
+interned fact ids, so it moves whenever the ids do. Never compare it across
+runs; the identity the engine actually used is the key itself. `labels.json` lists every
 commitment that mapped onto the node (>1 means a state-key merge
 happened).
 
@@ -258,10 +260,10 @@ it's the entry point for "show me every refutation" tooling.
 ## Cross-links
 
 - Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10).
-- Implementation: [`monotonic/state_dump.py`](../../../ein.py/src/ein/inference/monotonic/state_dump.py)
+- Implementation: [`ein-render/dump/state.rs`](../../../ein.rs/crates/ein-render/src/dump/state.rs)
   (`LatticeDumper`, `MonotonicDumper`).
-- CLI: [`ein solve`](../../../ein.py/src/ein/cli/solve.py)
+- CLI: [`ein solve`](../../../ein.rs/crates/ein-cli/src/solve.rs)
   (`--exhaustive`; `--trace` for the reductio markdown). The on-disk
   `LatticeDumper` tree is programmatic-only (see *How to run it*).
-- Tests: [`tests/inference/lattice/test_lattice_dumper.py`](../../../ein.py/tests/inference/lattice/test_lattice_dumper.py).
+- Tests: [`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs).
 - Algorithm spec: [`algorithm_layer_n.md`](algorithm_layer_n.md).

@@ -20,6 +20,8 @@ answered, because the change is **observable**. Answered 2026-08-19.
 [design/05](../design/05_matcher.md) §7,
 [F11](../../followups/f11_deductive_layer_perf.md) D1
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `count_work.py`. It is gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 The engine already indexes plans by relation and drives the closure from

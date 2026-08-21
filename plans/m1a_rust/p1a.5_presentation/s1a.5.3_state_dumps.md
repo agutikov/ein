@@ -8,6 +8,8 @@ item that turned out to describe code that does not exist.
 **Depends on:** [S1a.5.2](s1a.5.2_trace_and_answer.md)
 **Implements:** `ein/inference/monotonic/{state_dump,_lattice_dump,_serialise,snapshot}.py`
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `ir_oracle.py`. It is gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 `--dump-states DIR` persists the whole search as a directory tree:

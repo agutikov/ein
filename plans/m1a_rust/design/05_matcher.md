@@ -87,7 +87,7 @@ Two compile-time additions, both pure metadata (no semantic change):
 - **`Probe`** — the precomputed answer to "which arg slot does
   `_candidates` narrow on?". ein.py recomputes this per call by walking
   `step.arg_slots` looking for the first slot with a known value
-  ([`match._candidates`](../../../ein.py/src/ein/inference/match.py)).
+  (`match._candidates`).
   The *rule* is static except for one thing — whether a `Reg` slot is
   already bound at that point — and that is also static, because bind
   order is static. So `Probe` is `{ slot_index, source: Const(Value) |

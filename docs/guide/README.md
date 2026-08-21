@@ -41,11 +41,17 @@ rules, then the whole puzzle solved end to end.
 
 ## Running the examples
 
-Install (`./venv_install.sh`), then every snippet is runnable:
+Build the engine once, then every snippet is runnable:
 
 ```sh
-ein solve <file>          # solve a puzzle and print the answer
+cargo build --release --manifest-path ein.rs/Cargo.toml -p ein-cli
+export PATH="$PWD/ein.rs/target/release:$PATH"
+
+ein solve <file>                    # solve a puzzle and print the answer
 ein render rule --name <R> <file>   # draw a rule as a graph (DOT)
 ```
+
+The build needs `cmake` and a C++ compiler for the bundled allocator; add
+`--no-default-features` to build against the system one instead.
 
 Each chapter ends with the exact command to reproduce what it shows.

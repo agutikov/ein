@@ -230,7 +230,7 @@ keeps the binary matrix — the stdlib copy that job existed to check is
 **Python linting left with the tree.** `ruff check ein.py` was the `oracle`
 job's last step and its config lived in `ein.py/pyproject.toml`. Nothing lints
 `utils/` today; it comes back with
-[P1a.9](../../p1a.9_bindings_release/README.md)'s binding suite, which is the
+[P1a.9](../p1a.9_bindings_release/README.md)'s binding suite, which is the
 next Python in the repo, and which also has to answer where a pytest suite
 lives now.
 

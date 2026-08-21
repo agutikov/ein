@@ -23,7 +23,8 @@
 > amended to match.
 **Decides:** [Q-M1a.2](../open_questions.md#q-m1a2--does-einpy-have-a-sunset)
 — reversing its recommendation.
-**Status:** **in progress** — [S1a.10.1](s1a.10.1_bank_the_oracle.md) and
+**Status:** ✅ **shipped 2026-08-21** — all six stages.
+[S1a.10.1](s1a.10.1_bank_the_oracle.md) and
 [S1a.10.2](s1a.10.2_port_the_suite.md) shipped 2026-08-20; the ledger is
 [`oracle_ledger.md`](oracle_ledger.md) and the suite's file-by-file record is
 [`suite_dispositions.md`](suite_dispositions.md). They ran before
@@ -57,6 +58,39 @@ plan documents were amended to match.
 The removal left **232 dangling links**; 18 were this stage's own breakage and
 are fixed, and the other **224 (`docs/kernel/` 220, `docs/api/` 4)** are
 [S1a.10.6](s1a.10.6_docs.md)'s, counted into its stage file.
+
+**[S1a.10.6](s1a.10.6_docs.md) shipped 2026-08-21, and closes the phase.**
+The 224 dangling links resolved into four jobs and the ratio is the finding:
+~150 module pointers with a 1:1 counterpart and ~60 `.py`-named link texts
+were mechanical, 46 were **symbols ein.rs does not have** (`world.World`,
+`compile.split_naf`, `Provenance.absent_premises`, `frontier.smallest_…`) and
+~20 were **claims that only made sense with two engines**. That last 9 % is
+what the stage was for, and it would have been invisible without walking all
+224.
+
+The substantive output is
+[`docs/kernel/defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md)
+— **thirteen behaviours whose only statement was a Python source file**, now
+normative: the four parse-error quirks and `at None`; the total order over
+fact arguments, CPython `repr()` and float formatting, and state identity;
+MT19937 for `--shuffle` and the binding key that drops non-string activator
+args; the six Python exception classes the CLI still prints; and what of the
+CLI surface is exact. Two of them the page names as **latent bugs rather than
+quirks** — the binding key (a puzzle with integer rule parameters can lose a
+firing, silently) and the class names, which are now a name without a
+referent — and §6 records the one rendering that is genuinely
+**under-determined**: the unsorted goal row.
+
+`python_impl.md` was retired by a third route the stage plan did not list —
+**renamed and re-aimed** (`inference/implementation.md`,
+`ir/02-data-model/03_implementation.md`), because deleting it would have left
+`docs/kernel/README.md`'s dev path pointing at nothing and ein.rs has no
+README of its own. Both open by saying they are a map and not a
+specification, which is the distinction the deletion argument was about.
+Twenty-four plan documents gained a one-line **instrument marker**; `AGENTS.md`
+lost its `ein.py/` bullet and gained the sentence that matters for anyone
+working here — *`docs/kernel/` is now the only statement of intent that is not
+also the implementation*.
 
 **[S1a.10.4](s1a.10.4_utils.md) shipped 2026-08-21.** `utils/` is **17
 scripts**, all driving `ein.rs`; the eleven that compared two engines or
@@ -134,7 +168,7 @@ is the one way this phase can go wrong that cannot be undone by a revert.
 | [S1a.10.3](s1a.10.3_corpus_without_an_oracle.md) | The corpus without a second engine | 2 d | ✅ **shipped 2026-08-21** — `corpus/`, and a sweep |
 | [S1a.10.4](s1a.10.4_utils.md) | `utils/`, re-aimed at one engine | 2 d | ✅ **shipped 2026-08-21** — 28 scripts → 17, and three fuzz findings |
 | [S1a.10.5](s1a.10.5_removal.md) | The removal | 1 d | ✅ **shipped 2026-08-21** — 183 files, and one acceptance line amended on evidence |
-| [S1a.10.6](s1a.10.6_docs.md) | The docs after the oracle | 2 d | |
+| [S1a.10.6](s1a.10.6_docs.md) | The docs after the oracle | 2 d | ✅ **shipped 2026-08-21** — 224 dangling links, and thirteen behaviours that had no statement |
 
 ### What S1a.10.1 moved
 
@@ -169,19 +203,22 @@ Three consequences, all recorded in the
 
 ## Acceptance for the phase
 
-- **`cargo test --workspace` is the whole gate.** No `run_tests.sh` phases, no
+**All met, 2026-08-21.** `cargo test --workspace` is **542 tests, 0 failures,
+58 targets**, no Python process anywhere in it.
+
+- ✅ **`cargo test --workspace` is the whole gate.** No `run_tests.sh` phases, no
   pytest, no PyPy, no venv, no `PYTHONPATH`.
-- **Coverage does not drop.** Every behaviour the Python suite asserted is
+- ✅ **Coverage does not drop.** Every behaviour the Python suite asserted is
   either (a) asserted by a Rust test, (b) demonstrably already covered — with
   the covering test named — or (c) deleted *with* the thing it tested, and
   named in the ledger with the reason. No behaviour moves to (c) because
   porting it was inconvenient.
-- **Every parity claim in `plans/` and `docs/` that cites the harness cites
+- ✅ **Every parity claim in `plans/` and `docs/` that cites the harness cites
   something that still runs.** A number whose instrument is gone is a story;
   the phase's own writing is the first place that has to be true.
-- `git grep -i 'ein\.py\|pypy\|\.venv\|conformance'` returns only history,
+- ✅ `git grep -i 'ein\.py\|pypy\|\.venv\|conformance'` returns only history,
   the divergence ledger and this phase's own record.
-- The tree is `docs/ plans/ examples/ stdlib/ ein.rs/ utils/ corpus/` plus
+- ✅ The tree is `docs/ plans/ examples/ stdlib/ ein.rs/ utils/ corpus/` plus
   the top-level files, **and `nlp/` + `smt/`** — 56 KB of scratch that
   S1a.10.5 was written to delete and that
   [it keeps, amended](s1a.10.5_removal.md#acceptance): every file in them has

@@ -56,7 +56,7 @@ design note). This set is **closed**: the parser keys on it (`rule` / `hrule` / 
 exception, kept a plain SYMBOL so rules can pattern-match
 `(relation ?R ?A ?B)`, so its malformed form is rejected at *load* time),
 and the loader
-([`kb.from_ir`](../../../../ein.py/src/ein/kb/from_ir.py)) routes by the
+([`ein_ir::from_ir`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs)) routes by the
 same set.
 
 | name | form | meaning | engine site |
@@ -68,7 +68,7 @@ same set.
 | `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
 | `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation expands to BODY before compilation (P1.8 S1.5.9) | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
 | `import` | `(import M [:as A \| :symbols (S…)])` | pull in a library module `M` (a dotted logical name, e.g. `std.macro`); qualified-by-default, or aliased/flat-selective (P1.8 S1.8.A1–A2) | `kb.from_ir` (grammar A2; resolve A3) |
-| `trace` | `(trace <event>*)` | **engine-emitted** derivation log — parsed by [`trace/ast.py`](../../../../ein.py/src/ein/trace/ast.py), ignored by `kb.from_ir`; a *sibling*, not part of the declarator-vs-fact dichotomy | `trace/` |
+| `trace` | `(trace <event>*)` | **engine-emitted** derivation log — parsed by [`ein-render/trace/ast.rs`](../../../../ein.rs/crates/ein-render/src/trace/ast.rs), ignored by `kb.from_ir`; a *sibling*, not part of the declarator-vs-fact dichotomy | `trace/` |
 
 **Else → fact.** A top-level form whose head is none of the above is a
 fact: `=`, `not`, or a generic `(NAME args*)`. Where it came from is its
@@ -92,20 +92,20 @@ are deliberately *not* reserved — they migrated into the `std.macro` module
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 
-Declared once in [`inference/primitives.py`](../../../../ein.py/src/ein/inference/primitives.py)
+Declared once in [`ein-core/terms.rs`](../../../../ein.rs/crates/ein-core/src/terms.rs)
 (`primitives.STRUCTURAL`); the deep behaviour lives at the *engine site*.
 
 | name | arity | meaning | engine site |
 |------|-------|---------|-------------|
-| `not` | 1 | propositional negation; `(not X)` is a stored octagon fact whose arg is the negated proposition | matcher (`match.py`) + contradiction detector (`contradiction.py`) |
+| `not` | 1 | propositional negation; `(not X)` is a stored octagon fact whose arg is the negated proposition | matcher (`match_.rs`) + contradiction detector (`contradiction.rs`) |
 | `false` | 0+ | direct ⊥ — `(false)` asserts the firing rule reached a contradiction (args empty by convention) | contradiction detector |
-| `and` | 2+ | conjunction; flattened into sibling premises of one plan | compiler (`compile.py`) |
+| `and` | 2+ | conjunction; flattened into sibling premises of one plan | compiler (`compile.rs`) |
 | `or` | 2+ | disjunction; a **top-level** `(or …)` in a `:match` is lowered to one rule per disjunct at load time | loader (`kb.from_ir._match_disjuncts`) |
-| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query*, never a stored atom; lifted out of the match plan at compile time and decided once at the closure/world boundary, against the positive fixpoint (S1.21.8); normative semantics in [`absent_semantics.md`](../../inference/absent_semantics.md) | compiler (`split_naf`) + boundary (`world.py`) |
+| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query*, never a stored atom; lifted out of the match plan at compile time and decided once at the closure/world boundary, against the positive fixpoint (S1.21.8); normative semantics in [`absent_semantics.md`](../../inference/absent_semantics.md) | compiler (the guard lift) + the saturator's boundary phase |
 
 ## Computed predicates
 
-Declared in [`inference/predicates.py`](../../../../ein.py/src/ein/inference/predicates.py)
+Declared in [`predicates.rs`](../../../../ein.rs/crates/ein-infer/src/predicates.rs)
 (`predicates.names()`). A predicate's truth is *computed* from the current
 bindings, not looked up in the KB.
 
@@ -116,12 +116,12 @@ bindings, not looked up in the KB.
 
 ## Pattern-macro sugar (`forall` / `open`) — NOT reserved
 
-`forall` and `open` were compile-time desugars baked into `compile.py`.
+`forall` and `open` were compile-time desugars baked into the compiler.
 Since S1.5.9
 they are ordinary ein-lang `(macro …)` declarations (the `std.macro` module,
 [`stdlib/macro.ein`](../../../../stdlib/macro.ein))
 expanded at **load** time (`kb.from_ir` → `ir.macros.expand_macros`) — they
-are **no longer kernel vocabulary**, no longer in `primitives.py`, and a
+are **no longer kernel vocabulary**, no longer in the `STRUCTURAL` table, and a
 puzzle may even redefine them. A puzzle that wants them imports them
 (S1.8.A1–A5):
 `(import std.macro :symbols (forall open))` (flat surface), or
@@ -143,8 +143,8 @@ candidate stays parked and is re-judged at every later quiescence
 
 | name | form | meaning | engine site |
 |------|------|---------|-------------|
-| `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-writable, but usually **auto-inferred** by `emit_closed` for any relation no rule produces, or derived by `std.closure`. Kept kernel mechanism for M1 (S1.7.10). | `inference/closed.py` (`CLOSED = "__closed__"`); `hypgen._is_closed` |
-| `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror) | `inference/saturator.py` (`SYMMETRIC`) |
+| `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-writable, but usually **auto-inferred** by `emit_closed` for any relation no rule produces, or derived by `std.closure`. Kept kernel mechanism for M1 (S1.7.10). | `ein-infer/closed.rs` (`CLOSED = "__closed__"`); the hypgen filter |
+| `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror) | `ein-infer/saturator.rs` (`SYMMETRIC`) |
 | `hypothesis-relations` | `(query … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(query … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
 

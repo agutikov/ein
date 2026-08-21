@@ -1,13 +1,30 @@
 # `ein.trace` — explanation rendering
 
+> ### ⚠ This contract has no implementation right now
+>
+> **`import ein` does not work in this repo.** The Python package these pages
+> describe was deleted at M1a
+> [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+> (2026-08-21), when `ein.rs` became the only engine.
+>
+> The contract is not obsolete — it is the **specification** the PyO3 module
+> [S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md)
+> builds has to satisfy. What checks it is
+> [S1a.9.2](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.2_api_parity_tests.md);
+> what re-verifies these pages against the real module, sample by sample, is
+> [S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md).
+> Until those land, read every code block here as a contract rather than as a
+> runnable snippet. The surface that *does* run today is the CLI:
+> `ein solve <file>` · `ein saturate` · `ein render`.
+
 Turn a solver [`Verdict`](inference.md) into a human-readable markdown
-narrative — the project's main human-facing output (idea 08). Source:
-[`ein.py/src/ein/trace/`](../../ein.py/src/ein/trace/).
+narrative — the project's main human-facing output (idea 08). The engine
+behind it is [`ein-render/trace/`](../../ein.rs/crates/ein-render/src/trace/).
 
 > **Audience: embedders.** Use this to surface *why* the engine reached its
 > answer. The rendered output is what a downstream UI shows the user.
 
-*Verified against commit `60c192b` (2026-06-16).*
+*Verified against commit `60c192b` (2026-06-16) — **against the Python engine, which no longer exists**. The signatures are the contract [S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md) implements, not a description of something in the tree.*
 
 ## The two-step render
 

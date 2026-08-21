@@ -1,20 +1,20 @@
 # Ein standard library (`std.*`)
 
-The canonical standard library, and the **single source of truth for both
-implementations**. The import resolver maps a logical module name
-`std.<path>` to `<stdlib-root>/<path>.ein` (P1.8 S1.8.A1 §D4 / S1.8.A3), and
-`<stdlib-root>` is found the same way in each engine
-([`ein.rs`](../ein.rs/crates/ein-ir/src/stdlib.rs) `stdlib::resolve`; it was
-ein.py's `kb/imports.py::_stdlib_root` too, until M1a S1a.10.5):
+The canonical standard library, and the **single source of truth**. The import
+resolver maps a logical module name `std.<path>` to `<stdlib-root>/<path>.ein`
+(P1.8 S1.8.A1 §D4 / S1.8.A3), and `<stdlib-root>` is found by
+[`ein-ir`](../ein.rs/crates/ein-ir/src/stdlib.rs)'s `stdlib::resolve` — the
+same three steps ein.py's `kb/imports.py::_stdlib_root` used, until M1a
+S1a.10.5:
 
 1. `$EIN_STDLIB` — an explicit override, always wins;
 2. **this directory**, found by walking up for a `stdlib/` carrying
    `MANIFEST.sha256`. A checkout is authoritative, so editing a module below
    takes effect with no rebuild and no reinstall;
-3. the **packaged copy** — `ein/stdlib/` in a Python wheel (written at build
-   time by `ein.py/_build.py`), the `include_dir!`-embedded tree in the Rust
-   binary. Both distribution promises stay intact: `pip install ein` works,
-   and `ein.rs` is one self-contained binary.
+3. the **embedded copy** — the `include_dir!` tree inside the Rust binary, so
+   `ein` is one self-contained file wherever it is installed. The third step
+   was two, while a Python wheel carried `ein/stdlib/` as well; both
+   distribution promises were kept, and one of them now has no package.
 
 `MANIFEST.sha256` is what makes a fork detectable. Two readers, since M1a
 [S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md):

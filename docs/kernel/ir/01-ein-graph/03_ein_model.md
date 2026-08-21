@@ -273,7 +273,7 @@ contradiction detector scans `_facts_by_relation["not"]` and
 The grammar parses both as ordinary `generic_fact` forms; the
 engine, not the parser, gives them meaning. (The full rule-body / ⊥
 calculus — `and` `or` `absent` + `eq` `neq` — is declared in
-`inference/primitives.py` / `predicates.py`; see the surface doc.)
+`ein-core/terms.rs` / `ein-infer/predicates.rs`; see the surface doc.)
 
 **`is-a` and `T` are NOT reserved (S1.7.23).** The kernel imposes no
 type system: it names no inheritance relation and keeps no universal-top

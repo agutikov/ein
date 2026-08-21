@@ -16,6 +16,8 @@ what each task did is at the end.
 [S1a.6.1](s1a.6.1_profile_baseline.md)
 **Implements:** [design/01](../design/01_parity_contract.md) §7
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `mutant_ein.py` and `ein-conformance`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 The corpus covers what someone wrote a fixture for. The fuzzer covers the

@@ -5,6 +5,8 @@
 **Depends on:** [P1a.0](../p1a.0_conformance_harness/README.md)
 **Implements design:** [design/04](../design/04_ir_frontend.md) §§1–4
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `ir_oracle.py` and `ein-conformance`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 Replace Lark/Earley with a hand-written maximal-munch lexer and a

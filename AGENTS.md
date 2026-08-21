@@ -11,16 +11,28 @@ constrained-reasoning research.
 ## Where things live
 
 - **`docs/kernel/`** — **canonical M1 kernel documentation**: graph
-  semantics (`ir/01-ein-graph/`), Python data model (`ir/02-data-model/`),
+  semantics (`ir/01-ein-graph/`), the data model (`ir/02-data-model/`),
   surface S-expression language (`ir/03-ein-lang/`, mostly what used
-  to be `docs/ir.md`), inference engine (`inference/`, stub before P1.3).
-  Start here for any "what does Ein reason about / how" question.
-  See [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
+  to be `docs/ir.md`), inference engine (`inference/`). Start here for any
+  "what does Ein reason about / how" question. See
+  [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
+  Since M1a S1a.10.6 two pages are new or renamed and worth knowing:
+  [`defined_behaviour.md`](docs/kernel/defined_behaviour.md) — the thirteen
+  diagnostics, orderings and error strings whose only statement used to be a
+  Python source file, now normative; and `inference/implementation.md` +
+  `ir/02-data-model/03_implementation.md`, the module maps that were
+  `python_impl.md`. **This tree is now the only statement of intent that is
+  not also the implementation**, so it is load-bearing: a claim here is
+  checked by `cargo test --workspace` and by nothing else.
 - **`docs/api/`** — the **Python embedding API** reference (P1.20 Theme J):
   how to drive Ein *as a library* (`parse` → `KnowledgeBase` → `solve` →
   read verdict/trace). `ein.md` is the contract + worked example; per-module
   pages for `ir`/`kb`/`inference`/`trace`. Distinct from `docs/kernel/`
-  (the IR *language*) and the engine internals.
+  (the IR *language*) and the engine internals. **Nothing implements it right
+  now** — every page says so in a banner: the module is P1a.9's PyO3 one, so
+  until [S1a.9.1](plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md)
+  these pages are a *specification*, not a description. Do not "fix" them to
+  match ein.rs's internals; a disagreement is a defect for S1a.9.2 to catch.
 - **`docs/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
   Zebra puzzle"): objects/relations/facts → rules → the full solve, four
   chapters (P1.20 Theme K). User-facing; references `docs/kernel/` +
@@ -41,17 +53,16 @@ constrained-reasoning research.
   [`examples/README.md`](examples/README.md) is a **catalog** — one line
   per file / sub-dir.
 - **`docs/kernel/inference/zebra_walkthrough.md`** — the Wikipedia human
-  Zebra walkthrough annotated as ein.py inference (NL↔ein rule↔branch-depth
+  Zebra walkthrough annotated as ein inference (NL↔ein rule↔branch-depth
   table, hypotheses with their contradictions and no-good clauses; **moved
   here from `examples/README.md`**). The **M1 target trace** for the engine
   and the **M2 target** for the NL ⇄ IR round-trip (NL problem → facts →
   ontology+rules → solution → NL explanation).
-- **`stdlib/`** — the ein-lang standard library (`std.*`), **shared by
-  both implementations** and the single source of truth. `MANIFEST.sha256`
-  is what identifies a directory as the stdlib and what CI checks for
-  drift; `ein.py/src/ein/stdlib/` is a build-time copy (git-ignored) so a
-  wheel still works. Resolution in both engines: `$EIN_STDLIB` → the
-  checkout → the packaged/embedded copy.
+- **`stdlib/`** — the ein-lang standard library (`std.*`), the single source
+  of truth. `MANIFEST.sha256` is what identifies a directory as the stdlib and
+  what CI checks for drift; `ein-ir` embeds a copy with `include_dir!`, so the
+  manifest is a build dependency and cannot go stale. Resolution: `$EIN_STDLIB`
+  → the checkout → the embedded copy.
 - **`corpus/`** — the **corpus**: `corpus.toml` (one entry per `.ein`, with
   the runs it is exercised under) plus `fuzz_findings/`. A file under
   `examples/` or `stdlib/` with no entry fails a completeness check. What
@@ -67,18 +78,18 @@ constrained-reasoning research.
   implementation of what counts as a derivation's *narration* rather than
   its content — [design/01
   §5](plans/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list);
-  `EIN_PARITY_STRICT=1` turns it off). **`ein.py/` was the oracle** until
-  S1a.10.2 banked what only it proved; what remains of that argument is
-  the ledger, the goldens under `tests/golden/from_ein_py/` — the last
-  independent provenance in the repo — and the divergence list.
-- **`ein.py/`** — Python implementation. `ein.py/src/ein/` is the
-  package: IR parser + dumper under `ir/`; KB store + entities +
-  provenance under `kb/`; inference engine + saturator + contradiction
-  detector + hypothesis loop under `inference/`; the `ein` console
-  script under `cli/` (subcommands `render` / `saturate` / `solve` — the
-  `ir` / `kb` inspectors were removed, and the `profile` / `symmetric`
-  engine runners moved to `utils/` scripts). `ein.py/tests/` is the pytest
-  suite, `ein.py/pyproject.toml` is the build config.
+  `EIN_PARITY_STRICT=1` turns it off). The five that ship are `ein-core`
+  (interning, `Value`/`FactId`, the layered COW KB, provenance), `ein-ir`
+  (lex → parse → macros → imports → load), `ein-infer` (compile → match →
+  saturate → the NAF boundary → the hypothesis loop), `ein-render` (DOT views,
+  the markdown trace, the state/lattice dumps, the JSON summary) and `ein-cli`.
+  They stack linearly, each depending on every crate below it.
+  **`ein.py/` was the oracle** until S1a.10.2 banked what only it proved, and
+  was deleted at S1a.10.5; what remains of that argument is the ledger, the
+  goldens under `tests/golden/from_ein_py/` — the last independent provenance
+  in the repo — the divergence list, and
+  [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
+  states what "whatever ein.py did" used to define.
 - **`utils/`** — **seventeen scripts, all of them driving `ein.rs`** since M1a
   [S1a.10.4](plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md),
   which deleted the eleven that compared two engines or measured the Python

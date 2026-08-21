@@ -6,7 +6,7 @@ the owning :class:`KnowledgeBase` via a `_kb` back-pointer for
 cross-reference lookups.
 
 **Source of truth:**
-[`src/ein/kb/entities.py`](../../../../ein.py/src/ein/kb/entities.py).
+[`ein-core/entities.rs`](../../../../ein.rs/crates/ein-core/src/entities.rs).
 This document explains the mapping graph-node ↔ Python class; the
 code is authoritative for field shapes.
 
@@ -346,7 +346,7 @@ fact, `all_justifications=True` for the AND/OR graph; see
 [`02_store.md` §7](02_store.md) for `derivation_dag` / `unsat_core`
 and that opt-in. Choosing the best *combination* of justifications is
 a different problem from walking one:
-[`inference/explain.py`](../../../../ein.py/src/ein/inference/explain.py)
+[`explain.rs`](../../../../ein.rs/crates/ein-infer/src/explain.rs)
 searches the AND/OR graph for a minimum-cardinality frontier under an
 explicit budget — **not** a subset-minimal MUS, and minimal only over
 the derivations the saturator actually recorded.
@@ -376,18 +376,21 @@ records where it came from, and these two read that. They are for
 
 ---
 
-## 5. Entity attachment — frozen, but back-pointed
+## 5. Entity attachment — the back-pointer, and why it is gone
 
-All entity dataclasses are **frozen** for hashability + identity
-guarantees. The owning-KB back-pointer (`_kb`) is set by the
-KnowledgeBase after construction via `object.__setattr__`. The
-back-pointer is **excluded** from `__eq__` / `__hash__` / `__repr__`:
-two entities of the same kind with the same name (or `(rel, args)`
-for facts) are equal across KBs.
+Entities are **immutable**, which is what makes them hashable and their
+identity stable. Nothing about the KB that owns them is part of that identity:
+two entities of the same kind with the same name (or `(rel, args)` for facts)
+are equal across KBs, which is what makes sharing them by reference across a
+fork sound.
 
-Detaching an entity (e.g., for serialisation) is supported via the
-`_detach()` helper; after detach, all cross-reference properties
-return empty tuples / `None`.
+> **Historical.** The Python implementation reached the owning KB through a
+> `_kb` back-pointer wired onto each frozen dataclass after construction and
+> excluded from equality, so `Relation.facts` could answer with no argument —
+> and answered *for the root* when asked on a fork, a caveat the store page
+> had to document. ein.rs passes the KB explicitly instead, so there is
+> nothing to attach, detach, or exclude, and the caveat has no subject. See
+> [`03_implementation.md` §2](03_implementation.md).
 
 ## 6. Identity rules — summary
 
@@ -401,7 +404,10 @@ return empty tuples / `None`.
 (S1.7.23 — no `Type` / `Instance` entities.)
 
 Two entities are equal iff their identity tuples are equal — `loc`,
-provenance, and back-pointers never affect equality. For
+provenance, and any owning-KB reference never affect equality. **Facts are
+also totally *ordered*** wherever the engine has to sort them, by a rule that
+is stated rather than inherited:
+[`defined_behaviour.md` §2.1](../../defined_behaviour.md). For
 nested-fact args, equality cascades pointwise: outer Facts are
 equal iff their nested Fact args are equal (which they are iff
 *their* `(relation_name, args)` match, recursively).

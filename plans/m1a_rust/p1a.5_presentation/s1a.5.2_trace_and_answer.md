@@ -9,6 +9,8 @@ labels every rule node with a rendered `:why`.
 **Implements:** `ein/trace/{ast,linearize,relevance,render,answer}.py`,
 `ein/inference/why.py`
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `ir_oracle.py`. It is gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 Two user-facing artefacts, and they are the ones the project is *about*

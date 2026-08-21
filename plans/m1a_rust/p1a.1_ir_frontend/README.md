@@ -6,6 +6,8 @@
 **Depends on:** [P1a.0](../p1a.0_conformance_harness/README.md)
 **Blocks:** [P1a.2](../p1a.2_kb_core/README.md)
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `ein-conformance` and `ein-oracle`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Goal
 
 Read `.ein` and write it back, byte-identically to ein.py — lexer,
@@ -98,6 +100,6 @@ The gate itself, re-run properly: **438 cells, 0 differences, T3**.
 
 - [design/04 — IR frontend](../design/04_ir_frontend.md)
 - [design/02 §7 — `python_repr`](../design/02_determinism_and_order.md)
-- [`ein.py/src/ein/ir/grammar.lark`](../../../ein.py/src/ein/ir/grammar.lark)
+- `ein.py/src/ein/ir/grammar.lark` (now [the EBNF](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md))
   — the spec of record
 - [`docs/kernel/ir/03-ein-lang/`](../../../docs/kernel/ir/03-ein-lang/README.md)

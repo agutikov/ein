@@ -5,6 +5,8 @@
 **Depends on:** [S1a.0.3](s1a.0.3_shared_stdlib_and_examples.md)
 **Implements design:** [design/12](../design/12_toolchain_and_layout.md)
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `bench_baseline.py` and `ein-conformance`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 Stand up `ein.rs/` so P1a.1 opens with a compiling workspace, a wired

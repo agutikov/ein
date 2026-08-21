@@ -1,16 +1,33 @@
 # `ein.inference` — saturate, solve, verdicts, config
 
+> ### ⚠ This contract has no implementation right now
+>
+> **`import ein` does not work in this repo.** The Python package these pages
+> describe was deleted at M1a
+> [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+> (2026-08-21), when `ein.rs` became the only engine.
+>
+> The contract is not obsolete — it is the **specification** the PyO3 module
+> [S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md)
+> builds has to satisfy. What checks it is
+> [S1a.9.2](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.2_api_parity_tests.md);
+> what re-verifies these pages against the real module, sample by sample, is
+> [S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md).
+> Until those land, read every code block here as a contract rather than as a
+> runnable snippet. The surface that *does* run today is the CLI:
+> `ein solve <file>` · `ein saturate` · `ein render`.
+
 The engine surface: forward-chaining saturation, the one solve entry, the
-verdict types it returns, and the `SolverConfig` knobs. Source:
-[`ein.py/src/ein/inference/`](../../ein.py/src/ein/inference/).
+verdict types it returns, and the `SolverConfig` knobs. The engine behind it is
+[`ein-infer`](../../ein.rs/crates/ein-infer/src/).
 
 > **Audience: embedders.** This page is the *public* engine surface — what
 > you call and what you read. The matcher / compiler / hypgen / lattice
-> *internals* are [`docs/kernel/inference/python_impl.md`](../kernel/inference/python_impl.md)
+> *internals* are [`docs/kernel/inference/implementation.md`](../kernel/inference/implementation.md)
 > (file map) + [`architecture_and_algorithms.md`](../kernel/inference/architecture_and_algorithms.md)
 > (algorithms).
 
-*Verified against commit `60c192b` (2026-06-16).*
+*Verified against commit `60c192b` (2026-06-16) — **against the Python engine, which no longer exists**. The signatures are the contract [S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md) implements, not a description of something in the tree.*
 
 ## Saturation
 

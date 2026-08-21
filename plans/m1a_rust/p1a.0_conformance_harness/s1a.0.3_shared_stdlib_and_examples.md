@@ -5,6 +5,8 @@
 **Depends on:** [S1a.0.1](s1a.0.1_parity_contract_and_corpus.md)
 **Implements design:** [design/11](../design/11_shared_assets.md)
 
+> **Instruments (M1a [S1a.10.6](../p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `ein-conformance`. It is gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../../utils/README.md#the-census).
+
 ## Context
 
 Both implementations must read the *same* `.ein` library. Today the

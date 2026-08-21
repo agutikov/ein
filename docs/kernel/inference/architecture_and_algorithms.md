@@ -9,10 +9,13 @@
 > the [M1a Rust port](../../../plans/m1a_rust/)) and to make the engine's
 > design choices legible against the state of the art.
 >
-> Source of truth for the code: `ein.py/src/ein/inference/` (engine),
-> `ein.py/src/ein/kb/` (data model). For the *planned* how-to chapters
-> (`01_matcher.md` … `05_trace.md`) see [`README.md`](README.md); this file
-> is the architecture + algorithms overview those chapters sit under.
+> Source of truth for the code:
+> [`ein-infer`](../../../ein.rs/crates/ein-infer/src/) (engine),
+> [`ein-core`](../../../ein.rs/crates/ein-core/src/) (data model), mapped
+> module by module in [`implementation.md`](implementation.md). For the
+> *planned* how-to chapters (`01_matcher.md` … `05_trace.md`) see
+> [`README.md`](README.md); this file is the architecture + algorithms
+> overview those chapters sit under.
 
 ---
 
@@ -60,14 +63,14 @@ monotone/non-monotone seam:
   quiescence, never retract. Since S1.21.8 it is itself two-phase — a
   **purely positive closure** that consults no negation, and a **boundary**
   at each closure quiescence where the `(absent …)` guards are judged
-  against that fixpoint (§O3). `saturator.py`, `match.py`, `compile.py`,
-  `engine.py`, `firing.py`, `world.py`, `contradiction.py`, `resolve.py`,
-  `predicates.py`.
+  against that fixpoint (§O3). `saturator.rs`, `match_.rs`, `compile.rs`,
+  `engine.rs`, `firing.rs`, `saturator.rs`, `contradiction.rs`, `firing.rs`,
+  `predicates.rs`.
 - **Search layer (non-monotone).** Branch: enumerate candidate
   *commitments*, fork-and-saturate each, learn from deaths, dedup models,
-  read a verdict. `monotonic/solver.py`, `commitment.py`, `hypgen.py`,
-  `apriori.py`, `nogoods.py`, `lookahead.py`,
-  `monotonic/solution.py`, `verdict.py`.
+  read a verdict. `solve.rs`, `commitment.rs`, `hypgen.rs`,
+  `apriori.rs`, `nogoods.rs`, `lookahead.rs`,
+  `hypgen.rs`, `verdict.rs`.
 
 ---
 
@@ -114,7 +117,7 @@ monotone/non-monotone seam:
 
 **The deductive inner loop** (one KB → fixpoint). `Engine.compile_all`
 compiles every `(rule, activator)` pair into a `JoinPlan` — a sequence of
-`Scan`/`Join`/`Guard` opcodes (`compile.py`). Since S1.21.8 that sequence is
+`Scan`/`Join`/`Guard` opcodes (`compile.rs`). Since S1.21.8 that sequence is
 **purely positive**: `compile.split_naf` lifts every top-level `(absent …)`
 premise out into `JoinPlan.naf_guards`, one guard tuple per `(or …)`
 disjunct, which `JoinPlan.disjuncts()` pairs back with its steps. The
@@ -424,7 +427,7 @@ CSP it is constraint-violation checking under propagation.
 
 **Ein today.** An explicit scan for `(X, ¬X)` pairs (using
 the O(1) `_negated_facts` index) plus the rule-asserted `(false)` sentinel
-(`contradiction.py`). Measured ~0 s — not a bottleneck, so the watched-literal
+(`contradiction.rs`). Measured ~0 s — not a bottleneck, so the watched-literal
 machinery would be premature. **Adequate as-is.**
 
 *When* the scan runs, however, was worth ~2× (S1.9.E23). The fork used to
@@ -467,7 +470,7 @@ pattern each, `None` where the query ranged free — so `Deps(Y)`, the union of
 `explain`, `frontier` and the trace's "using" line all still read positive
 premises only.
 
-Over that graph, `explain.py`'s `explain()` /
+Over that graph, `explain.rs`'s `explain()` /
 `minimal_contradiction_frontier()` run ATMS-style **label propagation** — a
 least fixpoint from the frontier upward, which is what makes the routinely
 *cyclic* engine-recorded provenance (symmetric/transitive closure) safe by
@@ -523,7 +526,7 @@ frequent-itemset mining) — the prefix-join + "every subset of a frequent set
 is frequent" pruning.
 
 **Ein today.** This is the most non-standard part, and named honestly:
-`apriori.py` does **literal Apriori** — `apriori_prefix_join` builds size-k
+`apriori.rs` does **literal Apriori** — `apriori_prefix_join` builds size-k
 commitment sets from size-(k-1) ones sharing a (k-1)-prefix, and
 `filter_candidate` prunes any candidate that is a superset of a learned
 no-good (the downward-closure principle: a superset of a dead set is dead).
@@ -545,9 +548,9 @@ activity heuristic, restarts, and clause-DB minimisation. CSP adds
 (Ginsberg), **MAC** (maintain arc consistency), **forward checking**, and
 **singleton arc consistency** (a one-variable lookahead).
 
-**Ein today.** A creditable CDCL-*flavoured* set: `nogoods.py` learns
+**Ein today.** A creditable CDCL-*flavoured* set: `nogoods.rs` learns
 subsumption-**minimal** conflict clauses and prunes by the subset test
-(O7's Apriori filter); `lookahead.py` is a **one-step (singleton-consistency /
+(O7's Apriori filter); `lookahead.rs` is a **one-step (singleton-consistency /
 forward-checking) lookahead** that kills candidates which would die in one
 firing before paying for a fork+saturate, caching each kill as a learned unit
 `(not h)` (`hypgen._write_negated`, gated by `enable_lookahead_kill_cache` —
@@ -599,6 +602,19 @@ the S1.7.24 symmetric-removal made fully generic (no hard-coded symmetry). **Ade
 ---
 
 ## 7. Summary — where the bodies are, and the levers
+
+> **Which numbers below are still re-measurable.** Every figure attributed to
+> **ein.rs** is: `utils/profile_ein_rs.py`, `criterion_table.py` and
+> `e2e_baseline.py` all still run, through
+> [`bench_env.sh`](../../../utils/bench_env.sh). Every figure attributed to
+> **ein.py** is a **frozen constant** — the instruments that produced them
+> (`profile_ein.py`, `bench_solve.py`, the two-engine feature matrix) left with
+> the engine they measured at M1a
+> [S1a.10.4](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+> / [S1a.10.5](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md).
+> They are kept because the *arc* is the argument — a claim about where a
+> reasoner's time goes is worth more with two implementations behind it than
+> one — and they are not a live gate.
 
 The measured cost (P1.8a, ein.py) is **almost entirely O1+O2** — the matcher
 inside saturation (~95 % of a solve). The optimisation arc has been a walk *up

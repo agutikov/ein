@@ -1,5 +1,22 @@
 # `ein` — the embedding contract
 
+> ### ⚠ This contract has no implementation right now
+>
+> **`import ein` does not work in this repo.** The Python package these pages
+> describe was deleted at M1a
+> [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+> (2026-08-21), when `ein.rs` became the only engine.
+>
+> The contract is not obsolete — it is the **specification** the PyO3 module
+> [S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md)
+> builds has to satisfy. What checks it is
+> [S1a.9.2](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.2_api_parity_tests.md);
+> what re-verifies these pages against the real module, sample by sample, is
+> [S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md).
+> Until those land, read every code block here as a contract rather than as a
+> runnable snippet. The surface that *does* run today is the CLI:
+> `ein solve <file>` · `ein saturate` · `ein render`.
+
 The Python surface for embedding Ein in another project: **parse** a
 `.ein` source → **load** it into a `KnowledgeBase` → (optionally
 **saturate**) → **solve** → **read** the verdict and its explanation.
@@ -7,12 +24,17 @@ The Python surface for embedding Ein in another project: **parse** a
 > **Audience: embedders** (downstream Python users). The IR-language
 > contract for *authoring* puzzles is [`docs/kernel/`](../kernel/); the
 > engine *internals* are
-> [`docs/kernel/inference/python_impl.md`](../kernel/inference/python_impl.md).
+> [`docs/kernel/inference/implementation.md`](../kernel/inference/implementation.md).
 > This page deliberately stops at the public surface — it never reaches
 > into the matcher, compiler, hypothesis generator, or no-good machinery.
 
-*Verified against commit `60c192b` (2026-06-16) — the worked example below
-was run end-to-end against [`examples/zebra2.ein`](../../examples/zebra2.ein).*
+*Verified against commit `60c192b` (2026-06-16) — **against the Python
+engine, which no longer exists**. The worked example below was run end-to-end
+against [`examples/zebra2.ein`](../../examples/zebra2.ein) then; re-running it
+against the PyO3 module is
+[S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md)'s
+first task, and any signature this page and that module disagree on is a bug in
+one of them rather than a stale doc.*
 
 ## The five steps
 
@@ -177,9 +199,12 @@ subset-minimal MUS. See [`inference.md`](inference.md).
 
 ## Worked example — solving `zebra2.ein`
 
-A complete, copy-pasteable script. Run it from the repo root under the
-project interpreter (`PYTHONPATH=ein.py/src .venv-pypy/bin/python script.py`,
-or the CLI equivalent `./ein_pypy.sh solve examples/zebra2.ein`).
+The script the contract has to make work. **It does not run today** — the
+module it imports lands at
+[S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md),
+and [S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md)
+is the stage that runs it and re-verifies the output below. The CLI equivalent,
+which does run, is `ein solve examples/zebra2.ein --trace out.md`.
 
 ```python
 import time
@@ -252,7 +277,7 @@ The engine internals — the matcher (`match.py`), the per-rule compiler
 detector, the learned no-goods, and the `monotonic/` lattice driver's private
 helpers — are **not** part of the embedding surface. They change between
 releases. To understand them, read
-[`docs/kernel/inference/python_impl.md`](../kernel/inference/python_impl.md)
+[`docs/kernel/inference/implementation.md`](../kernel/inference/implementation.md)
 (the file-by-file map) and
 [`architecture_and_algorithms.md`](../kernel/inference/architecture_and_algorithms.md)
 (the language-agnostic algorithm view).

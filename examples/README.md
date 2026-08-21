@@ -26,7 +26,11 @@ C2.
 | a spatial clue | an ordinary fact: `(right-of Green Ivory)` | a 5-ary activator: `(adjacent-via right-of color-loc Ivory color-loc Green)` |
 | the property that drives it | type-scoped: `(slot-partition co-located instance type Attribute House)` + one `(slot-spatial …)` per spatial relation — `std.slots` | per-relation: `(bijective color-loc)` ×5 — `std.bijection` |
 | rules defined in the file | 0 (all imported) | 12 |
-| `solve --exhaustive` | Solution, k=1, exhausted — ~21 s (PyPy) | Solution, k=1, exhausted — ~9 s (PyPy) |
+| `solve --exhaustive` | Solution, k=1, exhausted — **46.9 ms** | Solution, k=1, exhausted — **31.1 ms** |
+
+*(End-to-end, release build, one pinned P-core —
+[scaling.md §1](../plans/m1a_rust/p1a.7_parallelism/scaling.md). These were
+~21 s and ~9 s under PyPy before the port.)*
 
 `zebra2.ein` remains the **primary M1 acceptance target** (it also carries the
 Ambiguity and Contradiction task-class variants below);
