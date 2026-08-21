@@ -1,0 +1,25 @@
+# `.einb` — the binary knowledge-base container (P1a.8, design/10).
+#
+# The **eighth** workspace member and the one crate that is not
+# `#![forbid(unsafe_code)]`: design/12 §2 permits `unsafe` in exactly one
+# audited module, the zero-copy casts in `src/cast.rs`, and a crate boundary is
+# how "exactly one" is enforced rather than asserted — `forbid` cannot be
+# lifted per-module, so a container module inside `ein-infer` would have had to
+# unforbid the whole engine.
+[package]
+name    = "ein-einb"
+version.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+repository.workspace = true
+
+[dependencies]
+ein-core  = { path = "../ein-core" }
+ein-ir    = { path = "../ein-ir" }
+# `SOLUTIONS` stores what a solve produced — `Answer`, `MonotonicStats`, the
+# unsat core. Nothing else here needs the engine.
+ein-infer = { path = "../ein-infer" }
+blake3.workspace = true
+
+[dev-dependencies]
+ein-corpus = { path = "../ein-corpus" }

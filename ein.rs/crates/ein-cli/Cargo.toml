@@ -15,14 +15,19 @@ spec-audit = ["ein-infer/spec-audit"]
 # T1a.6.2.7 — the global allocator, on by default. `--no-default-features`
 # is the escape hatch: it builds against the system allocator and costs
 # 15.9 % of `solve zebra2 -e` and 7.5 % of `solve zebra -e`.
-default  = ["snmalloc"]
+default  = ["snmalloc", "einb"]
 snmalloc = ["dep:snmalloc-rs"]
+# P1a.8 — `.einb` read/write, on by default (design/12 §3). Off, `ein kb` is
+# not registered and a `.einb` argument is refused by the loader that would
+# have opened it, which is what a build with no container in it should say.
+einb     = ["dep:ein-einb"]
 
 [dependencies]
 ein-core   = { path = "../ein-core" }
 ein-ir     = { path = "../ein-ir" }
 ein-infer  = { path = "../ein-infer" }
 ein-render = { path = "../ein-render" }
+ein-einb   = { path = "../ein-einb", optional = true }
 clap.workspace = true
 snmalloc-rs = { workspace = true, optional = true }
 

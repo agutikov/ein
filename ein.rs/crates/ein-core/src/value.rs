@@ -74,9 +74,21 @@ impl Value {
         self.0 & PAYLOAD_MASK
     }
 
-    /// The whole 32-bit word — for hashing, and for nothing else.
+    /// The whole 32-bit word — for hashing, for `.einb`, and for nothing else.
     pub fn bits(self) -> u32 {
         self.0
+    }
+
+    /// The inverse of [`Value::bits`], for the one caller that has a stored
+    /// word and no other way to say what it meant: `.einb`'s remap
+    /// ([design/10 §3](../../../../plans/m1a_rust/design/10_binary_format.md)),
+    /// which reads the tag to decide *which* table the payload moves through
+    /// and re-packs the result. Not a general constructor — a value assembled
+    /// from a number nobody interned names an id that may not exist, which is
+    /// why the container checks every payload against its table before it
+    /// trusts one.
+    pub fn from_bits(bits: u32) -> Value {
+        Value(bits)
     }
 
     pub fn as_sym(self) -> Option<Symbol> {

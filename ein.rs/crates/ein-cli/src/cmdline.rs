@@ -397,7 +397,28 @@ pub fn saturate_command() -> Command {
 
 /// The whole tree.
 pub fn command() -> Command {
-    Command::new("ein")
+    /// `ein kb` — P1a.8's surface, and the only subcommand with no ein.py
+    /// counterpart. Registered only when the `einb` feature is on, so a build
+    /// without the container does not advertise it.
+    #[cfg(feature = "einb")]
+    fn kb_command() -> Command {
+        Command::new("kb")
+            .about("the .einb binary knowledge-base container (P1a.8)")
+            .subcommand_required(true)
+            .subcommand(
+                Command::new("save")
+                    .about("load FILE and write it as a .einb container")
+                    .arg(Arg::new("file").required(true))
+                    .arg(Arg::new("out").required(true).value_name("OUT.einb"))
+                    .arg(flag(
+                        's',
+                        "saturate",
+                        "bank the least fixpoint too, not just the loaded KB",
+                    )),
+            )
+    }
+
+    let cmd = Command::new("ein")
         .about("Graph-based relation algebra solver for Zebra-style logic puzzles.")
         .subcommand_required(true)
         .arg_required_else_help(false)
@@ -418,5 +439,8 @@ pub fn command() -> Command {
                         .allow_hyphen_values(true)
                         .hide(true),
                 ),
-        )
+        );
+    #[cfg(feature = "einb")]
+    let cmd = cmd.subcommand(kb_command());
+    cmd
 }

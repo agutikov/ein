@@ -15,7 +15,7 @@ use ein_render::{
     render_rules_forms,
 };
 
-use crate::common::{load_kb_or_exit, parse_or_exit, rule_forms};
+use crate::common::{load_any_or_exit, parse_or_exit, rule_forms};
 
 /// stdout with the trailing newline every `render` body writes after the DOT.
 fn emit(dot: &str) {
@@ -73,7 +73,7 @@ pub fn cmd_lattice(file: &str, view: LatticeView, max_set_size: i64) -> i32 {
 
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let Some(mut kb) = load_kb_or_exit(&mut ast, &mut terms, Path::new(file)) else {
+    let Some(mut kb) = load_any_or_exit(&mut ast, &mut terms, Path::new(file)) else {
         return 1;
     };
     let opts = SolveOptions {

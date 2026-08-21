@@ -38,6 +38,15 @@ const EXPECTED: [(&str, usize); 8] = [
     ("COMMAND ein render lattice\n", 2),
 ];
 
+/// P1a.8's surface, which has no ein.py counterpart at all: `.einb` is a new
+/// format and `ein kb` is a new command, so these two parsers were never in
+/// the `argparse` diff and are here for the same reason the other eight are —
+/// an extractor that stopped seeing a parser would otherwise pass.
+#[cfg(feature = "einb")]
+const CONTAINER: [(&str, usize); 2] = [("COMMAND ein kb\n", 0), ("COMMAND ein kb save\n", 1)];
+#[cfg(not(feature = "einb"))]
+const CONTAINER: [(&str, usize); 0] = [];
+
 fn options_under(shape: &str, header: &str) -> usize {
     let at = shape
         .find(header)
@@ -53,12 +62,16 @@ fn options_under(shape: &str, header: &str) -> usize {
 fn the_extractor_finds_the_whole_surface() {
     let shape = ein_cli::help_shape::help_shape();
     let mut total = 0;
-    for (header, n) in EXPECTED {
+    for (header, n) in EXPECTED.iter().chain(CONTAINER.iter()) {
         let found = options_under(&shape, header);
-        assert_eq!(found, n, "{header:?} has {found} options, expected {n}");
+        assert_eq!(found, *n, "{header:?} has {found} options, expected {n}");
         total += found;
     }
-    assert_eq!(total, 39, "39 options across 8 parsers");
+    assert_eq!(
+        total,
+        39 + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
+        "39 options across ein.py's eight parsers, plus `ein kb save --saturate`"
+    );
 }
 
 /// **The whole rendering, checked in.**
@@ -71,6 +84,10 @@ fn the_extractor_finds_the_whole_surface() {
 /// ```text
 /// EIN_BLESS=1 cargo test -p ein-cli --test help_surface
 /// ```
+/// The golden is of the **default** surface, container included. A
+/// `--no-default-features` build renders a smaller one on purpose and has
+/// nothing to compare it against, so it does not compare.
+#[cfg(feature = "einb")]
 #[test]
 fn the_argument_surface_is_stable() {
     let shape = ein_cli::help_shape::help_shape();

@@ -18,9 +18,26 @@ use ein_ir::{Ast, NodeId};
 /// (`tier::exception_class`), so the class is named, with CPython's `OSError`
 /// text for the errnos a CLI actually meets.
 pub fn read_text_or_crash(path: &Path) -> String {
-    use std::io::ErrorKind;
-    match std::fs::read_to_string(path) {
+    let bytes = read_bytes_or_crash(path);
+    match String::from_utf8(bytes) {
         Ok(text) => text,
+        Err(_) => {
+            // What `read_text` raises, and what `read_to_string` used to raise
+            // here before the bytes had to be sniffed for a `.einb` magic
+            // first: the decode is the same one, moved a line later.
+            let shown = ein_core::pyrepr::repr_str(&path.display().to_string());
+            eprintln!("UnicodeDecodeError: 'utf-8' codec can't decode bytes in {shown}");
+            std::process::exit(1);
+        }
+    }
+}
+
+/// The same read, undecoded — what a caller that may have been handed a binary
+/// container needs before it can tell which it is.
+pub fn read_bytes_or_crash(path: &Path) -> Vec<u8> {
+    use std::io::ErrorKind;
+    match std::fs::read(path) {
+        Ok(bytes) => bytes,
         Err(e) => {
             let shown = ein_core::pyrepr::repr_str(&path.display().to_string());
             let line = match e.kind() {
@@ -32,10 +49,6 @@ pub fn read_text_or_crash(path: &Path) -> String {
                 }
                 ErrorKind::IsADirectory => {
                     format!("IsADirectoryError: [Errno 21] Is a directory: {shown}")
-                }
-                // `read_to_string` rejects non-UTF-8 the way `read_text` does.
-                ErrorKind::InvalidData => {
-                    format!("UnicodeDecodeError: 'utf-8' codec can't decode bytes in {shown}")
                 }
                 _ => format!("OSError: {e}: {shown}"),
             };
@@ -57,14 +70,92 @@ pub fn parse_or_exit(ast: &mut Ast, path: &Path) -> Option<Vec<NodeId>> {
     }
 }
 
-/// `_load_kb_or_exit` — parse + build a `Kb`, or print the failure.
+/// `_load_kb_or_exit` — a `Kb` from a path, in **either** format.
 ///
 /// `base_dir` is the puzzle's own directory, so file-relative `(import …)`
 /// forms resolve against it (S1.8.A3).
-pub fn load_kb_or_exit(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Option<Kb> {
-    let forms = parse_or_exit(ast, path)?;
+///
+/// The `.einb` fork (T1a.8.1.7) is on the **magic bytes** and not on the
+/// extension: a container renamed `puzzle.ein` is still a container, and
+/// refusing to notice would be a parse error about a file that is not text.
+/// `ast` must be empty, because a container carries its own program and
+/// replaces it.
+///
+/// A container whose *inputs* have moved is opened anyway and said so on
+/// stderr. There is nothing else to do — the caller was handed the `.einb` and
+/// not the `.ein`, so "re-parse the source" (design/10 §4) is not available to
+/// it — and the one thing that must not happen is believing it silently.
+pub fn load_any_or_exit(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Option<Kb> {
+    let bytes = read_bytes_or_crash(path);
+    #[cfg(feature = "einb")]
+    if ein_einb::is_einb(&bytes) {
+        return open_einb(ast, terms, path, &bytes);
+    }
+    #[cfg(not(feature = "einb"))]
+    if bytes.starts_with(b"EINB\0") {
+        eprintln!(
+            "kb load error: {} is a .einb container and this build has no `einb` feature",
+            path.display()
+        );
+        return None;
+    }
+    let text = match String::from_utf8(bytes) {
+        Ok(t) => t,
+        Err(_) => {
+            let shown = ein_core::pyrepr::repr_str(&path.display().to_string());
+            eprintln!("UnicodeDecodeError: 'utf-8' codec can't decode bytes in {shown}");
+            std::process::exit(1);
+        }
+    };
+    let forms = match ein_ir::parse(ast, &text, path.to_str()) {
+        Ok(forms) => forms,
+        Err(e) => {
+            eprintln!("{e}");
+            return None;
+        }
+    };
     match ein_ir::load(ast, terms, &forms, path.parent()) {
         Ok(kb) => Some(kb),
+        Err(e) => {
+            eprintln!("kb load error: {e}");
+            None
+        }
+    }
+}
+
+#[cfg(feature = "einb")]
+fn open_einb(ast: &mut Ast, terms: &mut Terms, path: &Path, bytes: &[u8]) -> Option<Kb> {
+    let opts = ein_einb::OpenOptions {
+        // The paths the file names, re-hashed where they still exist. One that
+        // does not claims nothing: a container shipped without its source is
+        // the normal case, not a stale one.
+        sources: ein_einb::meta_of(bytes)
+            .map(|m| {
+                m.sources
+                    .iter()
+                    .filter_map(|s| ein_einb::Source::of(Path::new(&s.path)))
+                    .collect()
+            })
+            .unwrap_or_default(),
+        ..ein_einb::OpenOptions::default()
+    };
+    match ein_einb::open_bytes(bytes, terms, &opts) {
+        Ok(opened) => {
+            match opened.freshness {
+                ein_einb::Freshness::Fresh => {}
+                why => eprintln!(
+                    "warning: {} was written under different inputs ({why:?}){}",
+                    path.display(),
+                    if opened.derived_dropped {
+                        " — its derived state was dropped and the program re-loaded"
+                    } else {
+                        ""
+                    }
+                ),
+            }
+            *ast = opened.ast;
+            Some(opened.kb)
+        }
         Err(e) => {
             eprintln!("kb load error: {e}");
             None

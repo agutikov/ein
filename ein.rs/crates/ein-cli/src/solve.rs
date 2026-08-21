@@ -27,6 +27,14 @@ use crate::printers::{self, Phases, TimingDumper};
 /// without re-doing the work. `n_forms` counts the *parsed* top-level forms,
 /// before import resolution flattens them.
 fn timed_load(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Option<(Kb, f64, f64, usize)> {
+    // A `.einb` has no parse phase to time and no top-level forms to count:
+    // its whole open is the load, which is the point of it (T1a.8.1.7).
+    #[cfg(feature = "einb")]
+    if ein_einb::is_einb(&crate::common::read_bytes_or_crash(path)) {
+        let t = Instant::now();
+        let kb = crate::common::load_any_or_exit(ast, terms, path)?;
+        return Some((kb, 0.0, t.elapsed().as_secs_f64() * 1000.0, 0));
+    }
     let text = read_text_or_crash(path);
     let t = Instant::now();
     let forms = match ein_ir::parse(ast, &text, path.to_str()) {

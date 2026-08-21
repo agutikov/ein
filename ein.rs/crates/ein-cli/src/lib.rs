@@ -16,6 +16,8 @@ pub mod cmdline;
 mod common;
 mod factdump;
 pub mod help_shape;
+#[cfg(feature = "einb")]
+mod kb;
 mod printers;
 mod render;
 pub mod saturate;
@@ -71,6 +73,15 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                 _ => 2,
             }
         }
+        #[cfg(feature = "einb")]
+        Some(("kb", sm)) => match sm.subcommand() {
+            Some(("save", a)) => kb::cmd_save(
+                a.get_one::<String>("file").expect("required"),
+                a.get_one::<String>("out").expect("required"),
+                a.get_flag("saturate"),
+            ),
+            _ => 2,
+        },
         // Unreachable: `saturate` is intercepted above, and `clap` requires a
         // subcommand.
         _ => 2,

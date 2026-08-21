@@ -1,9 +1,11 @@
 # ein.rs — the Rust port of the ein engine (M1a), and since
 # plans/m1a_rust/p1a.10_single_implementation/ the only implementation.
 #
-# Five engine crates and two dev-only ones. The engine crates were in place and
+# Six engine crates and two dev-only ones. Five of the six were in place and
 # empty at P1a.0 and filled in over P1a.1–P1a.5, so that a stage added code
-# rather than also adding a crate.
+# rather than also adding a crate; `ein-einb` is the exception and arrived with
+# P1a.8, because it is the one crate whose *boundary* is load-bearing — see its
+# own manifest.
 #
 # The two dev-only crates (`publish = false`, and nothing outside a
 # `[dev-dependencies]` block or a bench depends on either):
@@ -35,6 +37,7 @@ members = [
     "crates/ein-parity",
     "crates/ein-ir",
     "crates/ein-infer",
+    "crates/ein-einb",
     "crates/ein-render",
     "crates/ein-cli",
 ]
@@ -62,6 +65,12 @@ md-5        = "0.10"
 # `render.palette.hash_color` — the relation-colour index (design/02 §8).
 sha1        = "0.10"
 sha2        = "0.10"
+# The `.einb` header digest (design/10 §2, §4) — content addressing, so the
+# question it answers is "are these the bytes that were written", which is what
+# a fast tree hash is for. `ein-einb` only; the engine crates stay
+# dependency-light, and the two digests already here are parity fixtures rather
+# than integrity checks (`md-5` is a DOT node id, `sha1` a colour index).
+blake3      = { version = "1", default-features = false, features = ["std"] }
 criterion   = { version = "0.7", default-features = false, features = ["cargo_bench_support"] }
 # The global allocator, default-on for the binary and the bench (T1a.6.2.7).
 # glibc `malloc` is 20.0 % of an exhaustive `zebra2`'s self time over 880 k

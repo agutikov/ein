@@ -529,8 +529,33 @@ impl Kb {
         }
     }
 
+    /// A KB over registries someone else already built.
+    ///
+    /// The `.einb` reader's, and only its ([design/10
+    /// §2](../../../../plans/m1a_rust/design/10_binary_format.md)): it rebuilds
+    /// the program by re-loading the file's `PROGRAM` section and then installs
+    /// the file's *own* fact state on top of those registries rather than the
+    /// loader's. Sharing the `Arc` is what makes that two KBs over one program
+    /// instead of two programs.
+    pub fn with_program(program: Arc<Program>) -> Kb {
+        Kb {
+            program,
+            sealed: Vec::new(),
+            top: Layer::default(),
+            rules_by_relation: Arc::new(Registry::new()),
+            n_by_rel: FxHashMap::default(),
+            classes: EqClasses::new(),
+            nogoods: Arc::new(RwLock::new(Nogoods::default())),
+        }
+    }
+
     pub fn program(&self) -> &Program {
         &self.program
+    }
+
+    /// The registries, shareable — the other half of [`Kb::with_program`].
+    pub fn program_arc(&self) -> Arc<Program> {
+        Arc::clone(&self.program)
     }
 
     /// The registries, mutably — **load time only**.
@@ -1096,6 +1121,26 @@ impl Kb {
         self.check_extent_counts()
     }
 
+    /// [`Kb::rebuild_indexes`], but keeping another KB's **load-time**
+    /// rules-by-relation snapshot instead of recomputing one.
+    ///
+    /// That map is taken once, at the end of `load`, and then shared by
+    /// reference — a property fact added during saturation deliberately does
+    /// not extend it (ein.py's contract, and the reason `rules_by_relation` is
+    /// an `Arc` rather than a maintained index). Recomputing it from a
+    /// saturated fact set therefore produces a *different, larger* map than the
+    /// KB ever had, which is what a `.einb` of a saturated KB would otherwise
+    /// come back with: `rule_apps_on_rel` has grown, so every relation a
+    /// derived rule application mentions gains rules the original never
+    /// associated with it.
+    ///
+    /// `template` is a fresh load of the same program, which is where the
+    /// snapshot comes from in the first place.
+    pub fn rebuild_indexes_from(&mut self, terms: &Terms, template: &Kb) {
+        self.rebuild_indexes(terms);
+        self.rules_by_relation = Arc::clone(&template.rules_by_relation);
+    }
+
     /// `n_by_rel` against a full walk of the layer stack — the invariant the
     /// O(1) [`Kb::n_facts_of`] rests on, checked rather than argued
     /// ([S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)
@@ -1189,6 +1234,70 @@ impl Kb {
 
     pub fn has_alternative_justifications(&self) -> bool {
         self.layers().any(|l| !l.alts.is_empty())
+    }
+
+    /// Believe an already-interned proposition, with the derivation a file
+    /// recorded for it.
+    ///
+    /// [`Kb::add_fact`]'s loader path takes `(rel, args)` because it is
+    /// answering "does this proposition have a number yet"; the `.einb` reader
+    /// already has the number — it re-interned the whole table in id order to
+    /// get it — so this is `push_fact`, exposed for the one caller that is
+    /// replaying a fact list rather than deriving one. The list it replays is
+    /// already deduped, and a file whose list is not is rejected by the reader
+    /// before it gets here.
+    pub fn restore_fact(&mut self, id: FactId, prov: Option<ProvId>) {
+        debug_assert!(!self.contains(id), "a replayed fact list must be deduped");
+        self.push_fact(id, prov);
+    }
+
+    /// Reinstate a fact's alternative-justification list verbatim.
+    ///
+    /// The `.einb` reader's counterpart to [`Kb::record_justification`], which
+    /// is the wrong door for it: that one applies the policy — the duplicate
+    /// test, the shortest-first insert,
+    /// [`MAX_ALT_JUSTIFICATIONS`] — and a list read back out of a file has
+    /// already been through it. Replaying it through the policy would sort a
+    /// sorted list and cap a capped one, which is a no-op on every list the
+    /// engine writes and a silent edit on any list it ever stops writing.
+    pub fn restore_alternatives(&mut self, fact: FactId, alts: Box<[ProvId]>) {
+        if alts.is_empty() {
+            return;
+        }
+        self.top.alts.insert(fact, alts);
+    }
+
+    /// Field-by-field comparison against another KB — what "T1-identical"
+    /// means when a round trip has to prove it
+    /// ([design/10 §6](../../../../plans/m1a_rust/design/10_binary_format.md)).
+    ///
+    /// Both sides are materialised first, so the answer is about *content* and
+    /// not about how many forks each one has been through — which is the same
+    /// equivalence [`Kb::check_layering`] rests on. The registries are compared
+    /// by identity rather than by value: two KBs over one `Arc<Program>` share
+    /// it, and a reader that rebuilt the registries from `PROGRAM` gets a
+    /// different `Arc` whose *contents* the fact set and the indexes already
+    /// witness.
+    pub fn diff(&self, other: &Kb) -> Result<(), String> {
+        self.materialise().diff(&other.materialise())?;
+        let (mine, theirs) = (
+            self.nogoods.read().expect("no writer panicked"),
+            other.nogoods.read().expect("no writer panicked"),
+        );
+        if mine.len() != theirs.len() {
+            return Err(format!(
+                "no-good counts: {} vs {}",
+                mine.len(),
+                theirs.len()
+            ));
+        }
+        // determinism-ok: a membership test per clause; no order reaches the answer.
+        for clause in mine.iter() {
+            if !theirs.contains(clause) {
+                return Err(format!("no-good clause {clause:?} is missing"));
+            }
+        }
+        Ok(())
     }
 
     /// Could `fact` still take an alternative justification with

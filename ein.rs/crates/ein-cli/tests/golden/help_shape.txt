@@ -1,5 +1,12 @@
 COMMAND ein
   ABOUT Graph-based relation algebra solver for Zebra-style logic puzzles.
+COMMAND ein kb
+  ABOUT the .einb binary knowledge-base container (P1a.8)
+COMMAND ein kb save
+  ABOUT load FILE and write it as a .einb container
+  OPTION --saturate -s metavar=- arity=0 default=False choices=- group=- required=False help=bank the least fixpoint too, not just the loaded KB
+  POSITIONAL file required=True help=
+  POSITIONAL out required=True help=
 COMMAND ein render
   ABOUT DOT for rules / constraints (S1.6.1)
 COMMAND ein render constraints
