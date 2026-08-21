@@ -76,7 +76,6 @@ about.
 | `load-negative` | `examples/broken/load/*.ein` | parse, then fail to load; the exact message is checked in beside each fixture ([README](../examples/broken/load/README.md)) |
 | `compile-negative` | `examples/broken/compile/*.ein` | parse and load, then the compiler refuses; `.expected` beside each ([README](../examples/broken/compile/README.md)). `activator_arity.ein` sits in that directory and is `positive`: its error is unreachable through the engine by design, so the file solves and derives nothing, which is what it pins |
 | `regression` | `examples/ein-bugs/*.ein` | **nothing uniform** — see below |
-| `generated` | [`utils/fuzz_ein.py`](../utils/fuzz_ein.py) output | empty in the manifest, used at run time |
 
 A negative fails whichever way you enter, so what varies is *which entry point
 reports it*: the negative groups run `solve`, `saturate` and `render rules` —
@@ -96,15 +95,22 @@ is refused under `solve`, two are refused outright — and the exit golden is th
 only statement of which. It was called `crash-parity` until S1a.10.3, when the
 claim it encoded (*ein.py raises here*) lost its subject.
 
-`generated` is empty rather than absent because the question it names is open:
-`utils/fuzz_ein.py` files each generated case that loads under this group, and
-whether it keeps doing so is
-[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)'s.
-A `golden` group was empty here for the same reason until
+**Six groups, and no empty ones.** There were two: `golden` until
 [Q-M1a.9](../plans/m1a_rust/open_questions.md#q-m1a9--where-do-goldens-live)
-was answered — goldens live in `ein.rs/crates/<crate>/tests/golden/` — and it
-is gone rather than empty now, because an empty group is a question with a
-home and an answered question is not one.
+was answered (goldens live in `ein.rs/crates/<crate>/tests/golden/`), and
+`generated` until
+[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md).
+`generated` named the throwaway manifest `utils/fuzz_ein.py` wrote to hand a
+batch to the parity harness; the rewritten fuzzer drives the `ein` binary
+directly and writes no manifest, so the name has no referent. **A corpus entry
+is a file the engine is *permanently* exercised over**, and a generated case
+lives for milliseconds — which is why the group could never have held one
+anyway. A fuzz find that is worth keeping goes to
+[`fuzz_findings/`](fuzz_findings/README.md) and, once its expectation
+settles, becomes a `regression` entry with a name.
+
+An empty group is a question with a home; both questions are answered, so
+neither group is here.
 
 ## Dropped runs
 

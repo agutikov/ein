@@ -1,0 +1,6 @@
+(relation r1 T T)
+(is-a o1 T)
+(r1 o4 o5)
+(rule fire-2 ()
+  :match  (or (and (r1 ?v0 ?v1) (r1 ?v4 ?v0)) (and (r1 ?v0 ?v1) (r1 ?v0 ?v1) (not (r1 ?v2 ?v3))))
+  :assert (false))

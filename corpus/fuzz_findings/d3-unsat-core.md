@@ -1,11 +1,17 @@
-# d-1787188217-005
+# d3-unsat-core
 
-- found: 2026-08-20 05:22:03
-- kind: **diff**
-- seed: 20260820, mode: mixed, tier: T3
+- found: 2026-08-20, `utils/fuzz_ein.py --seed 20260820`, mode `mixed`, as a
+  cross-engine **diff** at T3
 - run: `solve --max-set-size 2 --max-enterings 300`
 - minimised: 14 → 9 forms
-- from: `conformance/out/fuzz/cases/c006710.ein`
+
+Unlike its sibling `d3-goal-row-order`, this one **is** D3: `EIN_FORK_DELTA=0`
+reproduces ein.py's six-fact core exactly, so the difference is the resumed
+fork saturator and not an ordering accident. The id-space sweep is green on
+it.
+
+The diff below is the retired harness's output, kept verbatim as the record of
+what the second engine said — it is the last thing that can say it.
 
 ```
 ;;; case 6710 (seed 20260820) — utils/fuzz_ein.py
@@ -24,7 +30,7 @@
   :assert (r1 ?v2 ?v2))
 ```
 
-## The harness's diff, on the minimum
+## The harness's diff, on the minimum (2026-08-20)
 
 ```
   conformance/out/fuzz/cases/x-1787188217-005.ein :: solve --max-set-size 2 --max-enterings 300

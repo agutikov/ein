@@ -111,14 +111,20 @@ impl Corpus {
 pub const SCHEMA: &str = "ein-corpus/2";
 
 /// The group vocabulary — `corpus/README.md`.
-pub const GROUPS: [&str; 7] = [
+///
+/// `generated` was the seventh until
+/// [S1a.10.4](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md).
+/// It named the throwaway manifest `utils/fuzz_ein.py` wrote to hand a batch
+/// to the parity harness; the rewritten fuzzer runs the binary directly and
+/// writes no manifest, and a corpus entry is a file the engine is
+/// *permanently* exercised over rather than one that lives for milliseconds.
+pub const GROUPS: [&str; 6] = [
     "positive",
     "stdlib",
     "parse-negative",
     "load-negative",
     "compile-negative",
     "regression",
-    "generated",
 ];
 
 #[cfg(test)]

@@ -1,0 +1,3 @@
+(hrule hyp-0 ()
+  :match  (and (r0 ?v0 ?v1) (absent (not (r0 ?v1 ?v2))))
+  :assert (not (r1 ?v0 ?v0)))

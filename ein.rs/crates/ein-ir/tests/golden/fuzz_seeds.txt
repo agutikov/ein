@@ -30,6 +30,10 @@
   ok 7 form(s)
 === ";;; case 6710 (seed 20260820) — utils/fuzz_ein.py\n(relation r0 T T)\n(relation r1 T T)\n(relation is-a T T)\n(is-a o2 T)\n(is-a o3 T)\n(r0 o2 o3)\n(rule fire-0 (?P)\n  :match  (and (r1 ?v0 ?v1) (r0 ?v1 ?v0))\n  :assert (not (r1 ?v0 ?v0)))\n(fire-0 T)\n(rule fire-1 ()\n  :match  (and (is-a ?v0 T) (r0 ?v0 ?v1) (r1 ?v2 ?v3) (absent (not (r1 o3 ?v1))))\n  :assert (r1 ?v2 ?v2))\n"
   ok 9 form(s)
+=== "(hrule hyp-0 ()\n  :match  (and (r0 ?v0 ?v1) (absent (not (r0 ?v1 ?v2))))\n  :assert (not (r1 ?v0 ?v0)))\n"
+  ok 1 form(s)
+=== "(relation r1 T T)\n(is-a o1 T)\n(r1 o4 o5)\n(rule fire-2 ()\n  :match  (or (and (r1 ?v0 ?v1) (r1 ?v4 ?v0)) (and (r1 ?v0 ?v1) (r1 ?v0 ?v1) (not (r1 ?v2 ?v3))))\n  :assert (false))\n"
+  ok 4 form(s)
 === ";; Should fail: a bare atom is not a form. Every top-level form is a\n;; parenthesised list `(...)`; post-P1.7c the head need not be a reserved\n;; wrapper (any non-declarator head is a fact), but a lone atom is not a list.\nNorwegian\n"
   refused <string>:4:1: unexpected input
 Norwegian

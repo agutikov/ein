@@ -71,6 +71,20 @@ pub fn corpus_files() -> Vec<PathBuf> {
     out
 }
 
+/// Every `.ein` under one directory, sorted — [`corpus_files`] over a
+/// directory the caller names.
+///
+/// Its one caller is `ein-render/tests/id_order_invariance.rs`'s
+/// `EIN_ID_FILES` seam, which points that sweep at generated input instead of
+/// at the corpus. Public here rather than duplicated there so that "what
+/// counts as an input file" has one answer.
+pub fn ein_files_under(dir: &Path) -> Vec<PathBuf> {
+    let mut out = Vec::new();
+    collect(dir, &mut out);
+    out.sort();
+    out
+}
+
 fn collect(dir: &Path, out: &mut Vec<PathBuf>) {
     let Ok(entries) = std::fs::read_dir(dir) else {
         return;

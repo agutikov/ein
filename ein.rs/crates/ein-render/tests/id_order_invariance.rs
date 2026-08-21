@@ -38,15 +38,33 @@
 //! order. It is strictly weaker in one direction, and that is on the ledger:
 //! it only sees what the corpus reaches.
 //!
+//! ## The seam
+//!
+//! `EIN_ID_FILES=<dir>` sweeps every `.ein` under `<dir>` instead of the
+//! corpus. One caller: `utils/fuzz_ein.py`, whose third property is
+//! [the ledger's L1](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss)
+//! item 3 — *the same program under a permuted interner answers the same way*,
+//! **applied to generated input rather than to the corpus**. The instrument
+//! for that is this file and there is no second copy of it, so the fuzzer
+//! writes a batch to a directory and points this sweep at it.
+//!
+//! Two of the assertions below are about the *corpus* rather than about the
+//! engine — the coverage floor, and "some rendering moved" — and they are
+//! skipped under the override, named as skipped in the summary line. The
+//! invariance claim itself is not: that is the whole point of the seam.
+//!
 //! ```text
 //! EIN_ID_SEEDS=8 cargo test -p ein-render --test id_order_invariance
+//! EIN_ID_FILES=corpus/out/fuzz/cases cargo test -p ein-render --test id_order_invariance
 //! ```
 
 mod corpus_ops;
 
+use std::path::PathBuf;
+
 use corpus_ops::{ops, run};
 use ein_core::{FactId, IntId, Symbol, Tag, Terms, Value};
-use ein_corpus::{corpus_files, repo_root};
+use ein_corpus::{corpus_files, ein_files_under, repo_root};
 use ein_infer::mt19937::Mt19937;
 use rustc_hash::FxHashMap;
 
@@ -183,10 +201,29 @@ fn seeds() -> Vec<i64> {
     (0..n.max(1) as i64).map(|i| 1 + i * 7919).collect()
 }
 
+/// The file set, and whether it is the corpus.
+///
+/// `EIN_ID_FILES=<dir>` replaces it — see the module note. An override naming
+/// a directory with no `.ein` in it is an error rather than an empty sweep: a
+/// caller that mistyped a path would otherwise get a pass.
+fn files_under_test() -> (Vec<PathBuf>, bool) {
+    let Some(dir) = std::env::var_os("EIN_ID_FILES") else {
+        return (corpus_files(), true);
+    };
+    let dir = PathBuf::from(dir);
+    let files = ein_files_under(&dir);
+    assert!(
+        !files.is_empty(),
+        "EIN_ID_FILES={} holds no .ein files",
+        dir.display()
+    );
+    (files, false)
+}
+
 #[test]
 fn no_observable_depends_on_the_order_ids_were_assigned_in() {
     let ops = ops();
-    let files = corpus_files();
+    let (files, is_corpus) = files_under_test();
     let seeds = seeds();
     let (mut bad, mut compared, mut permutations) = (Vec::new(), 0usize, 0usize);
     // A pair whose op never interned anything has no ids to permute — every
@@ -301,22 +338,30 @@ fn no_observable_depends_on_the_order_ids_were_assigned_in() {
     // The cut has to be load-bearing here too, or it is a tolerance nobody is
     // examining: if no rendering moves under a permutation, the claim below
     // about *which* observables move has stopped being measured.
+    // …over the corpus. A caller-named file set is whatever it is: a batch of
+    // small generated programs can legitimately move nothing, and reporting
+    // that as a broken instrument would make the seam useless.
     assert!(
-        ein_parity::strict() || moved_at_all > 0,
+        !is_corpus || ein_parity::strict() || moved_at_all > 0,
         "no rendering moved under a permuted id space — \
          either the perturbation stopped perturbing or the proof stopped depending on it"
     );
     assert!(
-        compared - vacuous >= 1500,
+        !is_corpus || compared - vacuous >= 1500,
         "only {} (file, op) pairs had ids to permute — the sweep stopped looking",
         compared - vacuous
     );
     eprintln!(
-        "id-order invariance: {} pairs permuted ({vacuous} had no ids to permute) \
+        "id-order invariance{}: {} pairs permuted ({vacuous} had no ids to permute) \
          over {} files × {} ops × {} seeds, {permutations} permutations, \
          {moved_at_all} moved ({moved_stopping_point} only where a dying fork stopped, \
          {moved_proof} only in the derivation they narrate), 0 answers differ; \
          weakest permutation moved {moved}/{permutable}",
+        if is_corpus {
+            String::new()
+        } else {
+            " [EIN_ID_FILES; the corpus-shaped floors are skipped]".to_string()
+        },
         compared - vacuous,
         files.len(),
         ops.len(),

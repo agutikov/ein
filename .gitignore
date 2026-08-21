@@ -39,10 +39,12 @@ ein.rs/target/
 ein.rs/target-fd/
 # A fuzz session's scratch corpus: every run wipes and rewrites it.
 corpus/out/
-# A fuzz session's crash candidates — generated inputs the engine refuses in a
-# way worth a second look. They are corpus *candidates*, one session's worth at
-# a time, not findings; a checked-in one is a `regression` entry with a name.
-corpus/fuzz_findings/crash-candidates.txt
+# `crash-candidates.txt` used to be here: generated inputs both engines refused
+# with the same exception class, which was a corpus *candidate* rather than a
+# find. With one engine there is no class to agree on, so S1a.10.4's fuzzer
+# does not write it. Everything in `fuzz_findings/` is checked in on purpose
+# now — a violated property, with a note — and a settled one becomes a
+# `regression` entry with a name.
 # Bench and profile artefacts (S1a.6.1): raw JSON + perf data, machine-specific
 # and per-run. The committed record is the tables in
 # plans/m1a_rust/p1a.6_performance/baseline.md — the same split
