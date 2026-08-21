@@ -116,8 +116,8 @@ checkout". Keep it for that, or retire it and say what replaced the check.
 
 ## What shipped — 2026-08-21
 
-Six commits. **`utils/` went from 28 scripts to 17**, and every one of the 17
-drives `ein.rs`.
+Seven commits. **`utils/` went from 28 scripts to 17**, and every one of the
+17 drives `ein.rs`.
 
 | task | commit | |
 |---|---|---|
@@ -126,7 +126,8 @@ drives `ein.rs`.
 | T1a.10.4.4 | `8ef4f65` | six more deletions; `zebra2_trace.sh`, `feature_matrix.py`, `render_examples.sh` |
 | T1a.10.4.5 | `25d0f38` | `stdlib_manifest.py` narrowed |
 | T1a.10.4.2 | `ec51d42` | the fuzzer, and three findings |
-| — | this one | `CLAUDE.md`, the ledger, the record |
+| — | `cee018b` | `CLAUDE.md`, the ledger, the record, and the D3 re-attribution |
+| — | `8d71de8` | the last present-tense mentions of the five deleted instruments, including `bench_env.sh`'s own usage block |
 
 ### The eleven that went, and why each
 
