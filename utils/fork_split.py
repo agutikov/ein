@@ -18,9 +18,9 @@ ratio moves under the phase's own work.
 `--events-level verbose` stream at its `enter` events and the root prefix and
 the per-entering suffixes separate exactly.
 
-`commitment::try_commitment_set` forks the *saturated* root. ein.py builds a
+`commitment::try_commitment_set` forks the *saturated* root. ein.py built a
 fresh `Saturator` there — empty `seen` / `fired` / `parked` and `delta = None`,
-a FULL enqueue pass — so a fork's first act is to re-derive the parent's whole
+a FULL enqueue pass — so a fork's first act was to re-derive the parent's whole
 deductive closure as `redundant` firings, 94.6 % of them on `zebra -e`. Since
 [S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
 ein.rs **resumes** root's saturation instead

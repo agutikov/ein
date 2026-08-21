@@ -10,11 +10,17 @@ first suspicion always falls on the other implementation.
 `design/12` §2 answers it with `FxHashMap` everywhere — deterministic hashing,
 and the right choice here anyway since none of this is adversary-facing input.
 But `FxHashMap`'s iteration order, while stable run-to-run, is still an
-artefact of hash values and insertion history rather than of the data; ein.py's
-observables come from *insertion-ordered* `dict`s and explicit `sorted()`
+artefact of hash values and insertion history rather than of the data, where
+the observables this port had to reproduce came from *insertion-ordered*
+`dict`s and explicit `sorted()`
 ([design/02](../plans/m1a_rust/design/02_determinism_and_order.md) §2). So the
 rule is stronger than "don't use RandomState": **do not iterate a hash map at
 all** where the order can reach an output.
+
+The dynamic half of the question is two tests and a fuzzer:
+`ein-render/tests/id_order_invariance.rs` runs the corpus twice under
+permuted ids, and `utils/fuzz_ein.py` points it at generated input. This grep
+finds an order that *could* leak; those find one that *does*.
 
     python3 utils/check_hashmap_iteration.py            # exit 1 on a finding
     python3 utils/check_hashmap_iteration.py --list     # show the allow-list

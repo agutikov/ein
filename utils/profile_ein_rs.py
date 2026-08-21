@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""`perf` attribution for ein.rs — the Rust half of `utils/profile_solve.py`.
+"""`perf` attribution for ein.rs — the successor to `utils/profile_solve.py`.
 
     python3 utils/profile_ein_rs.py solve examples/zebra2.ein -e
     python3 utils/profile_ein_rs.py --repeat 5 --top 25 solve examples/zebra.ein -e
@@ -11,10 +11,14 @@ Two tables, and the second is the one that compares:
 sample. Directly comparable to cProfile's `tottime` column.
 
 **Self time by subsystem** — the same samples bucketed into
-`profile_solve.py`'s eight categories, so the Python and Rust profiles can be
-read side by side. Bucketing is by the **innermost enclosing engine frame**,
-not by the leaf, and the difference is the whole reason the table is
-trustworthy:
+`profile_solve.py`'s eight categories, which is what let the Python and Rust
+profiles be read side by side. That script (cProfile around one ein.py
+`solve()`) left with its subject at
+[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md);
+**the eight buckets stay**, because `baseline.md` §3 is written in them and a
+re-bucketing would silently rewrite every attribution in the file. Bucketing is
+by the **innermost enclosing engine frame**, not by the leaf, and the
+difference is the whole reason the table is trustworthy:
 
 - `FactStore::get` is called by the matcher *and* by the saturator. A leaf-only
   rule has to pick one and is wrong about the other half.
@@ -71,10 +75,12 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 EIN_RS = REPO / "ein.rs"
 
-# Mirrors `utils/profile_solve.py::_SUBSYSTEMS` — same names, same order, same
+# Mirrored `utils/profile_solve.py::_SUBSYSTEMS` — same names, same order, same
 # first-match-wins rule, needles rewritten as Rust paths. Where a Python module
 # became a differently-named Rust one the mapping is noted; where ein.rs has a
-# module Python does not, it joins the bucket its caller belongs to.
+# module Python did not, it joins the bucket its caller belongs to. The Python
+# original is gone (S1a.10.4) and this list is now the definition, so the
+# comments naming its modules are what is left of the mapping.
 _SUBSYSTEMS: list[tuple[str, tuple[str, ...]]] = [
     # `store.py:fork` + `_copy_fact_indexes_into` → the COW layer machinery.
     ("fork/copy",     ("Kb::fork", "Kb::layers", "kb::Layer::", "::snapshot")),

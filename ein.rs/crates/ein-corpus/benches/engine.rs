@@ -1,9 +1,13 @@
 //! The M1a benchmark set (T1a.0.4.5) —
 //! [design/12](../../../../plans/m1a_rust/design/12_toolchain_and_layout.md) §4.
 //!
-//! Eight benches, matching `utils/bench_baseline.py` name for name so
-//! `design/README.md` § Measured can put the two implementations in adjacent
-//! columns and have the comparison mean something.
+//! Eight benches. They match `utils/bench_baseline.py` name for name, so that
+//! `design/README.md` § Measured could put the two implementations in adjacent
+//! columns and have the comparison mean something. That script left with its
+//! engine at
+//! [S1a.10.4](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+//! and this is the whole set now; the names are kept because every table in
+//! `baseline.md` is written against them.
 //!
 //! The set was fixed at P1a.0, before there was any result to be tempted by —
 //! a benchmark set chosen after seeing the numbers measures what the
@@ -11,7 +15,8 @@
 //! landed. **As of S1a.4.5 none is pending**: the last two, `solve_fast` and
 //! `solve_exhaustive`, are the two the whole set exists for.
 //!
-//! The Python column, for reference (CPython 3.14, dev machine, 2026-08-17):
+//! The Python column, **frozen** at the day it was taken and no longer
+//! re-measurable (CPython 3.14, dev machine, 2026-08-17):
 //!
 //! | bench | ein.py |
 //! |---|---:|
@@ -21,8 +26,7 @@
 //! | load | 430 ms |
 //! | `saturate_root` | 90 ms |
 //!
-//! Refresh both with one command each:
-//! `python3 utils/bench_baseline.py --json …` and `cargo bench`.
+//! Refresh the live half with `cargo bench`.
 
 use std::path::PathBuf;
 
@@ -45,7 +49,7 @@ fn repo_root() -> PathBuf {
 }
 
 /// `parse` — zebra2.ein, zebra.ein and the seven stdlib modules, in one
-/// measurement, because that is the unit `utils/bench_baseline.py` times on
+/// measurement, because that is the unit `utils/bench_baseline.py` timed on
 /// the Python side (S1a.1.1).
 fn frontend(c: &mut Criterion) {
     let root = repo_root();
@@ -148,7 +152,7 @@ fn deductive(c: &mut Criterion) {
     group.bench_function("zebra2", |b| {
         let path = repo_root().join("examples/zebra2.ein");
         // Batched, so the load is setup and only the saturation is timed —
-        // the same split `utils/bench_baseline.py` reports on the Python side.
+        // the same split `utils/bench_baseline.py` reported on the Python side.
         b.iter_batched(
             || {
                 let mut ast = ein_ir::Ast::new();

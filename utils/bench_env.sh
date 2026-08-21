@@ -2,7 +2,7 @@
 # The M1a bench environment (T1a.6.1.1) — a fingerprint, then the command.
 #
 #     utils/bench_env.sh cargo bench                  # in ein.rs/
-#     utils/bench_env.sh python3 utils/bench_baseline.py
+#     utils/bench_env.sh python3 utils/e2e_baseline.py
 #     utils/bench_env.sh --core 6 ./target/release/ein solve ...
 #     utils/bench_env.sh --report                     # fingerprint only
 #

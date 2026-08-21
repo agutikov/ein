@@ -4,7 +4,7 @@
     utils/fuzz_ein.py --iters 200                     # one pass
     utils/fuzz_ein.py --minutes 60 --mode mixed       # a session
     utils/fuzz_ein.py --seed 7 --iters 50             # replay a session
-    utils/fuzz_ein.py --replay corpus/fuzz_findings/f-0001.ein
+    utils/fuzz_ein.py --replay corpus/fuzz_findings/hrule-reads-not.ein
 
 S1a.6.6 built this as a **differential** fuzzer: generate a program, run it on
 both engines, and let `ein-conformance` decide whether the two outputs
