@@ -13,6 +13,30 @@ otherwise have to run itself.
 are written when the phase starts, because the note this phase comes from is a
 discussion note and the decisions below are the user's to make.
 
+---
+Ideas
+
+How we generate hypothesis now:
+  - open world = any hypotheis
+  - open world + constraints (closed) = any hypothsis + filter
+  - hrule, :hrules - user defines hypothesis set
+    - while it is not part of the theory (rules + ontology)
+
+if we introduce rules emitting requirements/obligations
+so having:
+  - rules emitting relations = relations definitions
+  - rules emitting false or (not ...) = constraints, upper bound, limit max number of arrows
+  - rules emitting requirements/obligations = lower bound, min required number of arrows
+
+What requirements/obligations give us?
+  - effectively it is a set of L1 hypothesis
+  - structure of the set
+    - can use it with rules for hyps enumeration to filter incompatibles without saturation by domain/range elimination
+  - counter of how far we are from the solution
+    - one thing is a number of hypothesis, the other is number of required of open relations
+
+---
+
 ## Goal
 
 **The engine can record a requirement, narrow its witnesses, close it when one
