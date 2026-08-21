@@ -28,6 +28,26 @@ way once the Python engine is gone:
 - **`CLAUDE.md` / `AGENTS.md`** describe a two-implementation repo in almost
   every section.
 
+> **Sized by [S1a.10.5](s1a.10.5_removal.md), 2026-08-21.** The removal left
+> **224 dangling markdown links** into the deleted tree, and they are all in
+> the two trees this stage owns: **220 in `docs/kernel/`** and **4 in
+> `docs/api/`**. Everywhere else — `examples/`, `stdlib/`, `utils/`, `ein.rs`
+> source comments — was 8 links and S1a.10.5 fixed them, because they were
+> its own breakage rather than a documentation decision.
+>
+> The 220 are not a find-and-replace. Most are of the form
+> "[`world.py`](…/ein/inference/world.py) is the boundary", i.e. **a claim
+> about the specification, evidenced by a pointer into an implementation** —
+> which is precisely the shape the acceptance below says must go. Some have a
+> `ein-infer` counterpart to point at instead; some are describing behaviour
+> that is now specified nowhere else, and those are the interesting ones. The
+> count is here so the stage is estimated against the real number rather than
+> discovered mid-way.
+>
+> `docs/kernel/inference/python_impl.md` is **34** of the 220 on its own, and
+> is the one file whose subject is gone entirely — every row of its module
+> table points at a file that no longer exists.
+
 ## Acceptance
 
 - `docs/api/` no longer describes a module that can be imported from this

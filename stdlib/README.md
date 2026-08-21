@@ -4,8 +4,8 @@ The canonical standard library, and the **single source of truth for both
 implementations**. The import resolver maps a logical module name
 `std.<path>` to `<stdlib-root>/<path>.ein` (P1.8 S1.8.A1 §D4 / S1.8.A3), and
 `<stdlib-root>` is found the same way in each engine
-([`ein.py`](../ein.py/src/ein/kb/imports.py) `_stdlib_root`,
-[`ein.rs`](../ein.rs/crates/ein-ir/src/stdlib.rs) `stdlib::resolve`):
+([`ein.rs`](../ein.rs/crates/ein-ir/src/stdlib.rs) `stdlib::resolve`; it was
+ein.py's `kb/imports.py::_stdlib_root` too, until M1a S1a.10.5):
 
 1. `$EIN_STDLIB` — an explicit override, always wins;
 2. **this directory**, found by walking up for a `stdlib/` carrying

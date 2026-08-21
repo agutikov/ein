@@ -1,4 +1,6 @@
-# Python
+# Python. The engine left at M1a S1a.10.5; what is left that is Python is
+# `utils/`, `examples/gen_zebra2_variants.py`, and — from P1a.9 — the PyO3
+# module's own build tree and its pytest suite.
 *.pyc
 __pycache__/
 *.egg-info/
@@ -14,7 +16,9 @@ htmlcov/
 build/
 dist/
 
-# Virtualenvs
+# Virtualenvs. `.venv-pypy` was the project's PyPy interpreter, created by
+# `venv_install.sh pypy3`; both the script and the reason for it went with the
+# Python engine. The patterns stay: P1a.9's binding tests want a clean venv.
 .venv/
 venv/
 .venv*
@@ -51,9 +55,4 @@ corpus/out/
 # utils/feature_matrix_results.json uses. NOT wiped between runs: the next
 # re-measure wants a diff, not a fresh start.
 ein.rs/bench-out/
-# The stdlib's build-time copy. The checked-in one is repo-root `stdlib/`;
-# `ein.py/_build.py` writes this one during `build_py`, so a wheel is
-# self-contained without there being two stdlibs to keep in step
-# (plans/m1a_rust/design/11_shared_assets.md).
-ein.py/src/ein/stdlib/
 ein.rs/target-*

@@ -4,7 +4,7 @@
 //! activator fact binds the rule's parameter list **before** matching begins,
 //! so the compiler substitutes the parameters and bakes concrete relation
 //! names into the program. This is
-//! [`ein/inference/compile.py`](../../../../ein.py/src/ein/inference/compile.py)
+//! ein.py's `ein/inference/compile.py`
 //! with the slots lowered to [`Slot`]s and the variables numbered
 //! ([design/05](../../../../plans/m1a_rust/design/05_matcher.md) §2); the
 //! semantics are ported, not revisited.

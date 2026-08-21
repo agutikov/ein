@@ -1,7 +1,7 @@
 # Compile-negative fixtures
 
 Files that **parse** and **load** and then fail to **compile**: the four
-shapes [`ein/inference/compile.py`](../../../ein.py/src/ein/inference/compile.py)
+shapes ein.py's `ein/inference/compile.py`
 raises `CompileError` for. Each `<name>.ein` sits beside a `<name>.expected`
 holding the exact message.
 
@@ -54,7 +54,7 @@ therefore pins two things at once: the message a direct caller of
 No placeholders: unlike a `KBLoadError`, none of these messages names a path.
 
 Consumers:
-[`ein.py/tests/inference/test_compile_negative.py`](../../../ein.py/tests/inference/test_compile_negative.py)
+`ein.py/tests/inference/test_compile_negative.py` (gone since S1a.10.5)
 and
 [`ein.rs/crates/ein-infer/tests/compile_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/compile_semantics.rs)
 — both suites, because either one alone can be the suite nobody ran.

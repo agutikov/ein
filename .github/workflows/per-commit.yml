@@ -20,21 +20,12 @@ concurrency:
   group: per-commit-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
-  oracle:
-    # ein.py first, and on its own: a parity failure is meaningless if the
-    # oracle moved, so this is the run whose red makes every other red
-    # uninterpretable.
-    name: ein.py — the oracle stays green
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }
-      - run: pip install -e 'ein.py[dev]'
-      - run: ./run_tests.sh --fast -j auto
-      - run: ruff check ein.py
+# The `oracle` job — `pip install -e 'ein.py[dev]'`, `./run_tests.sh --fast`,
+# `ruff check ein.py` — went with its subject at S1a.10.5. It ran first and on
+# its own, because a parity failure is meaningless if the oracle moved; there
+# is no parity and no oracle, and `rust` below is the gate.
 
+jobs:
   shared-assets:
     name: stdlib + corpus — no drift, no gaps
     runs-on: ubuntu-latest

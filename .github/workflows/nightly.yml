@@ -28,19 +28,19 @@ on:
   schedule: [{ cron: "0 3 * * *" }]
   workflow_dispatch:
 
-jobs:
-  full-suite:
-    name: ein.py — full suite + the acceptance gate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }
-      - run: pip install -e 'ein.py[dev]'
-      # No --fast: the EIN_RUN_SLOW tests and the three exhaustive zebra2
-      # task-class fixtures.
-      - run: ./run_tests.sh -j auto
+# Two more went at S1a.10.5, with the tree they tested:
+#
+#   full-suite   ein.py's whole pytest suite plus the acceptance gate. The
+#                suite is 275 behaviours in fifteen Rust files now
+#                (suite_dispositions.md) and the acceptance gate is
+#                `ein-infer/tests/acceptance.rs` + `acceptance_cli.rs`, both
+#                inside the per-commit tier — it was nightly's because it took
+#                ~40 s and it takes 0.26 s.
+#   packaging    the sdist and wheel build, and install from them. There is no
+#                Python package; the wheel that replaces it is P1a.9's PyO3
+#                module and S1a.9.3 builds its own matrix.
 
+jobs:
   deep-corpus:
     name: ein.rs — the slow corpus entries, and the id space permuted
     runs-on: ubuntu-latest
@@ -100,24 +100,3 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo bench --bench engine -- --test
         working-directory: ein.rs
-
-  packaging:
-    name: ein.py — the sdist and wheel build, and install from them
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }
-      - run: pip install build
-      # The per-commit tier installs editable, which exercises `build_editable`
-      # and nothing else. These are the two paths a user gets — and the two
-      # that carry the stdlib copy out of the checkout (design/11 § Packaging).
-      # Installing FROM the sdist is the part that matters: an sdist that omits
-      # the in-tree backend cannot be built at all, and nothing else notices.
-      - run: python -m build --outdir dist ein.py
-      - run: pip install dist/*.whl
-      # Run from outside the repo, so the checkout cannot be what answers the
-      # import — this is the packaged copy or nothing.
-      - run: cd /tmp && ein saturate "$GITHUB_WORKSPACE/examples/features/05_stdlib_domain_elim.ein"
-      - run: pip uninstall -y ein && pip install dist/*.tar.gz
-      - run: cd /tmp && ein saturate "$GITHUB_WORKSPACE/examples/features/05_stdlib_domain_elim.ein"

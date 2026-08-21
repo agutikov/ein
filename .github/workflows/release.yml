@@ -40,26 +40,25 @@ jobs:
       - run: cargo test --workspace --no-default-features
 
   packaging:
-    name: wheels + binaries
+    name: binaries
     strategy:
       fail-fast: false
       matrix: { os: [ubuntu-latest, macos-latest, windows-latest] }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }
       - uses: dtolnay/rust-toolchain@stable
-      - run: pip install build
-      # The wheel carries a build-time copy of the shared stdlib
-      # (ein.py/_build.py); this is where a broken copy would surface.
-      - run: python -m build --wheel --outdir dist ein.py
       - run: cargo build --release --bin ein
         working-directory: ein.rs
       - uses: actions/upload-artifact@v4
         with:
           name: dist-${{ matrix.os }}
-          path: |
-            dist/*.whl
-            ein.rs/target/release/ein*
+          path: ein.rs/target/release/ein*
           retention-days: 30
+      # The **wheel** half of this job built ein.py's sdist/wheel, which
+      # carried a build-time copy of the shared stdlib and was where a broken
+      # copy surfaced. Both went at S1a.10.5. The wheel that replaces it is
+      # P1a.9's PyO3 module, built by `maturin` over the same matrix
+      # (S1a.9.3), and the stdlib copy it carries is `include_dir!`'s —
+      # already checked against `stdlib/MANIFEST.sha256` by
+      # `ein-ir`'s `the_embedded_copy_matches_the_manifest`, in the gate.

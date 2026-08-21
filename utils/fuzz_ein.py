@@ -525,10 +525,11 @@ def run_bounded(argv: list[str], timeout: float) -> tuple[int, str, str]:
         proc = subprocess.run(argv, cwd=REPO, capture_output=True, text=True,
                               errors="replace", timeout=timeout)
     except subprocess.TimeoutExpired as e:
-        out = e.stdout or b""
-        err = e.stderr or b""
-        decode = lambda b: b.decode("utf-8", "replace") if isinstance(b, bytes) else b
-        return -2, decode(out), decode(err)
+        # `TimeoutExpired` carries whatever the child wrote before it was
+        # killed, and carries it as *bytes* even under `text=True`.
+        def decode(b) -> str:
+            return b.decode("utf-8", "replace") if isinstance(b, bytes) else (b or "")
+        return -2, decode(e.stdout), decode(e.stderr)
     return proc.returncode, proc.stdout, proc.stderr
 
 

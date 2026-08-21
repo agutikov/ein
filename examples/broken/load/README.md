@@ -27,7 +27,7 @@ Placeholders — the only machine-specific text any message contains:
 | `{DIR}` | its directory — the base for file-relative imports |
 | `{STDLIB}` | the resolved stdlib root |
 
-Consumers: [`ein.py/tests/kb/test_load_negative.py`](../../../ein.py/tests/kb/test_load_negative.py)
+Consumers: `ein.py/tests/kb/test_load_negative.py` (gone since S1a.10.5)
 (one case per fixture; refresh with `UPDATE_GOLDEN=1`),
 [`ein-ir/tests/load_semantics.rs`](../../../ein.rs/crates/ein-ir/tests/load_semantics.rs)
 (the same bytes, in Rust), and the corpus sweep

@@ -46,8 +46,8 @@ the lexical surface.
 The three closed name sets mirror the kernel's single source of truth:
 
 - **declarators** — [`docs/kernel/ir/03-ein-lang/06_reserved_names.md`](../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)
-- **primitives** — [`ein.py/src/ein/inference/primitives.py`](../../ein.py/src/ein/inference/primitives.py) (`STRUCTURAL ∪ SUGAR`)
-- **predicates** — [`ein.py/src/ein/inference/predicates.py`](../../ein.py/src/ein/inference/predicates.py) (`names()`)
+- **primitives** — `ein-infer`'s primitive set, was `ein.py/src/ein/inference/primitives.py` (`STRUCTURAL ∪ SUGAR`)
+- **predicates** — `ein-infer`'s predicate registry, was `ein.py/src/ein/inference/predicates.py` (`names()`)
 
 `ein.py/tests/test_vscode_grammar.py` re-derives each list straight out
 of `ein.tmLanguage.json` and asserts it equals the authoritative set, so

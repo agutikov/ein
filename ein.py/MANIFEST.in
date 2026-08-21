@@ -1,6 +1,0 @@
-# The in-tree PEP 517 backend (`build-backend = "_build"`, `backend-path = ["."]`
-# in pyproject.toml). setuptools' sdist does not include it by default, and an
-# sdist without its own backend cannot be built at all — pip stops at
-# `BackendUnavailable: Cannot find module '_build'` before reading anything
-# else. Verified by building the sdist and installing from it.
-include _build.py

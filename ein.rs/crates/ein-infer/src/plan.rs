@@ -1,6 +1,6 @@
 //! The compiled form of a `(rule, activator)` pair — plan bytecode.
 //!
-//! ein.py's [`JoinPlan`](../../../../ein.py/src/ein/inference/compile.py) is a
+//! ein.py's `JoinPlan` (`ein/inference/compile.py`) was a
 //! frozen dataclass holding tuples of `Scan` / `Join` / `Guard` /
 //! `AbsentGuard` opcodes whose slots are **raw IR nodes**, dispatched by
 //! `isinstance` at every unification. This is the same shape with the encoding

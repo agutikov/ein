@@ -1,170 +1,84 @@
 #!/usr/bin/env bash
 #
-# run_tests.sh — three-phase test runner.
+# run_tests.sh — the gate.
 #
-#   Phase 1  the pytest unit/integration suite  (ein.py/tests, the testpaths).
-#            Run in PARALLEL by default (pytest-xdist, -j workers).
-#   Phase 2  the P1.7a acceptance gate           (ein.py/acceptance) — the
-#            three zebra2 task-class fixtures solved end-to-end. Slow
-#            (~1-2 min each under PyPy) and deliberately OUTSIDE the pytest
-#            testpaths, so it is NOT part of the unit suite; it runs AFTER it,
-#            as its own phase, SERIALLY with live progress (pytest -s +
-#            ProgressDumper) — kept serial so the progress lines don't
-#            interleave across workers.
+#     ./run_tests.sh                 # cargo test --workspace
+#     ./run_tests.sh --slow          # + the 118 slow corpus cells, + 8 id seeds
+#     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
-#            **M1a S1a.10.2: this phase has been ported and has no successor.**
-#            All 21 of its tests are now ein.rs tests inside Phase 3 —
-#            ein-infer/tests/acceptance.rs (the 16 engine claims) and
-#            ein-cli/tests/acceptance_cli.rs (the 5 CLI ones) — where the same
-#            work takes 0.26 s instead of ~40 s. It was a separate phase
-#            because it was slow; it is not slow any more, so when ein.py goes
-#            (S1a.10.5) the runner loses a phase rather than a check.
-#   Phase 3  the ein.rs suite                    (`cargo test --workspace`).
-#            Added at M1a S1a.6.11, and not as a courtesy: since S1a.6.10 the
-#            parity harness no longer diffs ein.rs's *narration* against
-#            ein.py's, so the trace, the `slice` cone and the event stream are
-#            covered only by ein.rs's own checked-in goldens. A gate that runs
-#            one implementation is no longer the gate. Skipped, loudly, when
-#            there is no cargo on PATH, and skipped by --fast.
-#            Regenerate a golden with:  EIN_BLESS=1 cargo test --workspace
+# **This was a three-phase runner until M1a S1a.10.5**, and each phase went
+# for a different reason. It is kept as a name rather than as a script: the
+# name is in `AGENTS.md`, in a dozen plan documents' "Gate:" lines and in the
+# user's habits, and a wrapper that still works is cheaper than re-teaching
+# the habit.
 #
-#            **Budget, restated at M1a S1a.10.2: 566 tests in ~1 m 07 s.**
-#            It was 312 tests in 9 m 13 s. Nine of those ten minutes were 42
-#            of the 91 integration tests starting a `python3` per corpus file
-#            — the stage un-differentialled all 42, so the gate stopped
-#            paying for a second engine rather than getting faster. No test
-#            is marked `slow`; the two that dominate are `dot_wellformed`
-#            (~40 s, graphviz over 5 209 renderings) and
-#            `id_order_invariance` (~11 s, the corpus twice per seed).
-#            `EIN_ID_SEEDS=8` and `EIN_FUZZ_ITERS` raise the two that scale.
+#   Phase 1  the pytest unit/integration suite (`ein.py/tests`). Its 1 538
+#            tests reduce to **275 behaviours** in fifteen Rust files —
+#            plans/m1a_rust/p1a.10_single_implementation/suite_dispositions.md
+#            has the file-by-file record, including the 96 subjects that died
+#            with their code. Ported at S1a.10.2.
+#   Phase 2  the P1.7a acceptance gate (`ein.py/acceptance`) — the three
+#            zebra2 task-class fixtures, ~40 s, deliberately outside the
+#            pytest testpaths because it was slow. All 21 tests are
+#            `ein-infer/tests/acceptance.rs` (16) and
+#            `ein-cli/tests/acceptance_cli.rs` (5) now, where the same work
+#            takes 0.26 s. It was a separate phase because it was slow; it is
+#            not slow any more, so the runner lost a phase rather than a
+#            check.
+#   Phase 3  `cargo test --workspace` — which is all of it.
 #
-# The pytest config lives in ein.py/pyproject.toml ([tool.pytest.ini_options]
-# — testpaths=tests, pythonpath=src), so both phases invoke pytest from ein.py/.
-# (The old root pytest.ini was removed in P1.7a.)
+# The interpreter selection (PyPy venv, then .venv, then python3, `EIN_PY` to
+# override) went with the engine that needed it, along with `-j`, `--fast`,
+# `--acceptance-only` and `--no-rust`. There is nothing left for them to
+# select between.
 #
-# Interpreter: prefers the project PyPy venv (.venv-pypy) — the engine is
-# CPU-bound on saturation and PyPy is ~3-6x faster (S1.5a.13). Falls back to
-# .venv, then system python3. Override with EIN_PY=/path/to/python.
+# **The gate needs Graphviz on `PATH`**: `ein-render/tests/dot_wellformed.rs`
+# is the only authority the DOT views have on being well-formed, and since
+# S1a.10.3 it *fails* rather than skips without it — a skip went to a stderr
+# line `cargo test` captures for a passing test, so CI had been reporting a
+# pass over 5 209 renderings nothing checked.
 #
-# Flags:
-#   -j N | --jobs N     Phase 1 parallel workers (default 4; "auto" = #CPUs;
-#                       1 = serial). Needs pytest-xdist (in the dev extra:
-#                       pip install -e '.[dev]'); falls back to serial if absent.
-#   --fast              Quick run: skip the acceptance gate, the ein.rs suite,
-#                       AND the unit suite's EIN_RUN_SLOW-gated tests.
-#   --acceptance-only   Phase 2 only — just the acceptance gate (with progress).
-#   --no-rust           Skip Phase 3 (the ein.rs suite).
-#   -h | --help         This help.
-#   <other args>        Forwarded to Phase 1's pytest (e.g. -k, -x, a path).
+# Budget: **542 tests in ~1 m 05 s**. It was 312 in 9 m 13 s before S1a.10.2,
+# of which nine minutes were 42 integration tests starting a `python3` per
+# corpus file. No test is marked slow; the two that dominate are
+# `dot_wellformed` (~40 s) and `id_order_invariance` (~11 s).
 #
-# By default a full run is performed: EIN_RUN_SLOW=1 is set so the unit
-# suite's slow zebra tests run in Phase 1, then Phase 2 (acceptance), then
-# Phase 3 (ein.rs). --fast turns all three off for a quick inner-loop run.
-#
-# Usage:
-#   ./run_tests.sh                  # 4-way parallel suite, then acceptance
-#   ./run_tests.sh -j auto          # one worker per CPU
-#   ./run_tests.sh --fast -j8       # quick, 8-way, no acceptance
-#   ./run_tests.sh --acceptance-only
-#   ./run_tests.sh --no-rust        # the Python half only
-set -uo pipefail
+#   EIN_BLESS=1 ./run_tests.sh          # re-bank every golden
+#   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the 17 slow corpus entries
+#   EIN_ID_SEEDS=8    ./run_tests.sh    # more id-space permutations
+
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MANIFEST="${SCRIPT_DIR}/ein.rs/Cargo.toml"
 
-FAST=0
-ACCEPTANCE_ONLY=0
-NO_RUST=0
-JOBS=4
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    sed -n '3,47p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    exit 0
+fi
+
+if ! command -v cargo >/dev/null 2>&1; then
+    # Loud, and not a pass: a skipped gate that reads as green is how a gate
+    # stops being one.
+    echo "error: no cargo on PATH — the gate did not run." >&2
+    exit 127
+fi
+if ! command -v dot >/dev/null 2>&1; then
+    echo "error: no Graphviz 'dot' on PATH — dot_wellformed.rs would fail." >&2
+    echo "       Install graphviz; it is a hard dependency of the gate." >&2
+    exit 127
+fi
+
+# `--slow` is the nightly tier in one flag: the 118 slow corpus cells and
+# eight id-space permutations instead of one.
 ARGS=()
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        -h|--help)
-            sed -n '2,62p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
-            exit 0
-            ;;
-        --fast)            FAST=1 ;;
-        --acceptance-only) ACCEPTANCE_ONLY=1 ;;
-        --no-rust)         NO_RUST=1 ;;
-        -j|--jobs)         shift; JOBS="${1:-4}" ;;
-        -j*)               JOBS="${1#-j}" ;;
-        --jobs=*)          JOBS="${1#*=}" ;;
-        *)                 ARGS+=("$1") ;;
+for arg in "$@"; do
+    case "${arg}" in
+        --slow) export EIN_CORPUS_SLOW=1 EIN_ID_SEEDS="${EIN_ID_SEEDS:-8}" ;;
+        *)      ARGS+=( "${arg}" ) ;;
     esac
-    shift
 done
 
-# Pick interpreter: EIN_PY override > PyPy venv > CPython venv > system.
-if [[ -n "${EIN_PY:-}" ]]; then
-    PY="${EIN_PY}"
-elif [[ -x "${SCRIPT_DIR}/.venv-pypy/bin/python" ]]; then
-    PY="${SCRIPT_DIR}/.venv-pypy/bin/python"
-elif [[ -x "${SCRIPT_DIR}/.venv/bin/python" ]]; then
-    PY="${SCRIPT_DIR}/.venv/bin/python"
-else
-    PY="python3"
-fi
-
-cd "${SCRIPT_DIR}/ein.py"
-
-# Full run by default: enable the unit suite's EIN_RUN_SLOW gates. --fast
-# leaves EIN_RUN_SLOW unset (a caller-provided value is still respected).
-if [[ "${FAST}" == "0" ]]; then
-    export EIN_RUN_SLOW=1
-fi
-
-# Parallelism for Phase 1: -n <JOBS> when pytest-xdist is installed and
-# JOBS != 1. "auto" and any integer > 1 parallelise; 0/1 stay serial.
-PAR=()
-if [[ "${JOBS}" =~ ^[0-9]+$ ]] && [[ "${JOBS}" -le 1 ]]; then
-    :  # serial
-elif "${PY}" -c "import xdist" >/dev/null 2>&1; then
-    PAR=(-n "${JOBS}")
-else
-    echo "note: pytest-xdist not installed — Phase 1 runs serially." >&2
-    echo "      install it with:  ${PY} -m pip install -e '.[dev]'" >&2
-fi
-
-echo "run_tests.sh: $("${PY}" --version 2>&1 | head -1) @ ${PY}" \
-     "(EIN_RUN_SLOW=${EIN_RUN_SLOW:-unset}, jobs=${PAR[*]:-1})" >&2
-
-RC=0
-
-if [[ "${ACCEPTANCE_ONLY}" == "0" ]]; then
-    echo "" >&2
-    echo "── Phase 1: unit / integration suite (tests/, parallel) ───────" >&2
-    "${PY}" -m pytest "${PAR[@]}" "${ARGS[@]}" || RC=$?
-fi
-
-if [[ "${FAST}" == "0" ]]; then
-    echo "" >&2
-    echo "── Phase 2: P1.7a acceptance gate (acceptance/, after the suite) ─" >&2
-    echo "   (slow, end-to-end, serial; live progress below)" >&2
-    # -s: don't capture, so ProgressDumper's live progress shows.
-    # -v: name each task-class test as it runs. Serial (no -n) so the
-    #     progress lines stay readable.
-    "${PY}" -m pytest -s -v acceptance/ || RC=$?
-fi
-
-# Phase 3: ein.rs. `cargo test --workspace` covers the port's unit tests, the
-# corpus sweep through the CLI, and — since S1a.6.11 — the goldens that are the
-# *only* coverage of what the parity contract stopped diffing between the two
-# engines. It has not been differential since S1a.10.2: no test here starts a
-# Python process.
-if [[ "${FAST}" == "0" && "${ACCEPTANCE_ONLY}" == "0" && "${NO_RUST}" == "0" ]]; then
-    echo "" >&2
-    echo "── Phase 3: the ein.rs suite (cargo test --workspace) ──────────" >&2
-    if ! command -v cargo >/dev/null 2>&1; then
-        # Loud, and not a pass: a skipped phase that reads as green is how a
-        # gate stops being one.
-        echo "   SKIPPED: no cargo on PATH — the ein.rs half of the gate did" >&2
-        echo "   not run. Install a Rust toolchain, or pass --no-rust to mean" >&2
-        echo "   it on purpose." >&2
-    else
-        # Nothing here needs python3 any more; it does need **Graphviz**,
-        # because `dot_wellformed.rs` fails rather than skips without it.
-        cargo test --manifest-path "${SCRIPT_DIR}/ein.rs/Cargo.toml" \
-            --workspace || RC=$?
-    fi
-fi
-
-exit "${RC}"
+echo "── cargo test --workspace ─────────────────────────────────────" >&2
+exec cargo test --manifest-path "${MANIFEST}" --workspace \
+     ${ARGS[@]+"${ARGS[@]}"}
