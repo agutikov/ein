@@ -52,14 +52,15 @@ docs, 3 levels:
       - KB evolution
         - rules application
         - saturation and satisfiability
-        - hypothesis search lattice
+        - hypothesis search, lattice, ATMS, learning clause, nogoods, naf
       - Rules evolution
         - rules as data
         - analysis of rules
         - transformations of rules
   - ein.rs implementation
-    - KB representation
-    - 
+    - ein.rs API
+    - ein.rs architecture
+    - inference algos and optimizations
 
 
 ---

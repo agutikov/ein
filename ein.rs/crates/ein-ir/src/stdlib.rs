@@ -27,9 +27,11 @@
 use include_dir::{Dir, include_dir};
 use std::path::{Path, PathBuf};
 
-/// Identifies a directory as the stdlib. Content is checked by
-/// `utils/stdlib_manifest.py`; *presence* is what the walk tests, because a
-/// directory called `stdlib/` proves nothing on its own.
+/// Identifies a directory as the stdlib. *Presence* is what the walk tests,
+/// because a directory called `stdlib/` proves nothing on its own; the
+/// content is checked by [`tests::the_embedded_copy_matches_the_manifest`],
+/// and written by `utils/stdlib_manifest.py --write`, which is the half no
+/// test can do (a test that rewrote the file it checks would check nothing).
 pub const MARKER: &str = "MANIFEST.sha256";
 
 /// The compiled-in tree. Path is relative to this crate's manifest, so it is

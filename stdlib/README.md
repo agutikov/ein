@@ -16,11 +16,20 @@ implementations**. The import resolver maps a logical module name
    binary. Both distribution promises stay intact: `pip install ein` works,
    and `ein.rs` is one self-contained binary.
 
-`MANIFEST.sha256` is what makes a fork detectable — `utils/stdlib_manifest.py`
-verifies it, and both packaged copies are checked against it. This matters
-more than tidiness: the stdlib is not test data but part of the semantics
-under test, so two copies would make every result meaningless — a diff would
-report "the engines disagree" when in fact the *programs* differ
+`MANIFEST.sha256` is what makes a fork detectable. Two readers, since M1a
+[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md):
+step 2 above tests only that the file is *present* (that is what identifies a
+directory as the stdlib), and `ein-ir`'s
+`the_embedded_copy_matches_the_manifest` digests the embedded tree against it
+— which is not stale-able, because `include_dir!` makes each module a build
+dependency. `utils/stdlib_manifest.py` writes the manifest and verifies it
+per-module without a toolchain; nothing else writes it, so editing a module
+here is two steps and the Rust test is what fails if you take only the first.
+
+This matters more than tidiness: the stdlib is not test data but part of the
+semantics under test, so a second, drifting copy would make every result
+meaningless — a diff would report "the engines disagree" when in fact the
+*programs* differ
 ([design/11](../plans/m1a_rust/design/11_shared_assets.md)).
 
 ## Location decision (S1.8.A4 — closes [Q30](../plans/open_questions.md#q30--universal-rule-library--import-mechanism))
