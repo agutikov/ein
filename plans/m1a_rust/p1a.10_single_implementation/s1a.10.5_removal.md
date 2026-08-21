@@ -86,8 +86,10 @@ unrecoverable mistake.
 of truth for syntax**. What would be left after the delete is a
 recursive-descent parser — an implementation, not a specification.
 
-It is [§3 of that document](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)
-now: W3C EBNF, lexical and phrase layers, plus three things the Lark carried
+It is [`docs/kernel/ir/03-ein-lang/00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)
+now — a file of its own, numbered `00` because it is a reference to reach for
+rather than a chapter to read first: W3C EBNF, lexical and phrase layers, plus
+three things the Lark carried
 in header comments and would have lost with the file — why the two layers are
 *not* separated by a scanner pass, what the grammar deliberately leaves to the
 loader, and what pins the spec. Verified rather than transcribed: every

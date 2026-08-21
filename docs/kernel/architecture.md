@@ -313,7 +313,7 @@ explainable at all, whatever consumes it. The edge-by-edge table is in
 | add/adjust a **puzzle** rule        | the `.ein` file itself, or import from [`stdlib/`](../../stdlib/) |
 | add a **stdlib** rule/module        | `stdlib/<m>.ein` + a `tests/` exercise; document in [`ir/03-ein-lang/07_stdlib_api.md`](ir/03-ein-lang/07_stdlib_api.md) |
 | add a **kernel primitive** (`absent`-like) | `inference/primitives.py` or `predicates.py` + `compile.py` + `match.py` + tests; a *negative* one also touches `world.py` + the saturator's boundary phase |
-| add a **top-level IR form**         | `ein-ir/src/{lex,parse,ast}.rs` + `from_ir.rs` (routing) + tests; update [`ir/03-ein-lang/01_grammar.md` §3](ir/03-ein-lang/01_grammar.md#3-the-complete-grammar-ebnf) and [`06_reserved_names.md`](ir/03-ein-lang/06_reserved_names.md) |
+| add a **top-level IR form**         | `ein-ir/src/{lex,parse,ast}.rs` + `from_ir.rs` (routing) + tests; update [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md) and [`06_reserved_names.md`](ir/03-ein-lang/06_reserved_names.md) |
 | change **saturation order**         | `inference/saturator.py` (priority bands) |
 | change **search / verdict**         | `inference/monotonic/solver.py` + `inference/verdict.py` |
 | add a **config knob**               | `inference/config.py` (`SolverConfig`) + its read site |

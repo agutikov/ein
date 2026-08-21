@@ -1,5 +1,5 @@
 //! Recursive descent over the grammar
-//! ([`01_grammar.md` §3](../../../../docs/kernel/ir/03-ein-lang/01_grammar.md),
+//! ([`00_ebnf.md`](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md),
 //! `grammar.lark` until S1a.10.5), with the two ambiguities Earley
 //! resolves implicitly resolved explicitly.
 //!

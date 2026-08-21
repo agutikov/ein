@@ -6,14 +6,18 @@ S-expression dialect — a flat sequence of forms classified by head
 [`../01-ein-graph/`](../01-ein-graph/), held in memory by the data
 model in [`../02-data-model/`](../02-data-model/).
 
-> **Source of truth for what parses**:
-> [`01_grammar.md` §3](01_grammar.md#3-the-complete-grammar-ebnf) — the
-> complete EBNF, which is where `grammar.lark` went at M1a S1a.10.5.
-> This tree explains intent, examples, and rendering — the grammar
-> file is canonical.
+> **Source of truth for what parses**: [`00_ebnf.md`](00_ebnf.md) — the
+> complete grammar, in EBNF, which is where `grammar.lark` went at M1a
+> S1a.10.5. This tree explains intent, examples, and rendering; that file
+> is canonical.
 
 ## Files
 
+- [`00_ebnf.md`](00_ebnf.md) — **the grammar**: the lexical layer
+  (terminals and their three lookaheads), the phrase layer, why the two
+  are not separated by a scanner pass, what the grammar leaves to the
+  loader, and the checked-in tests that pin it. Numbered `00` because it
+  is a reference to reach for, not a chapter to read first.
 - [`01_grammar.md`](01_grammar.md) — lexical rules (terminals,
   comments, naming convention) + the flat top-level form set: the
   declarators (`relation`, `rule`, `hrule`, `query`, `config`), the

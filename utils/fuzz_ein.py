@@ -76,7 +76,7 @@ stated expectations — a stdlib rule whose result is written down.
 
 ## The generator
 
-Grammar-directed against [the grammar](../docs/kernel/ir/03-ein-lang/01_grammar.md),
+Grammar-directed against [the grammar](../docs/kernel/ir/03-ein-lang/00_ebnf.md),
 over a small universe (3–5 objects,
 2–4 relations), biased toward the shapes that stress the ordering-sensitive
 paths this port has actually broken on:

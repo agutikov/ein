@@ -29,7 +29,7 @@ motivated by:
   rules can match traces, the trace renderer can manipulate IR, and
   M2's NL → IR LLM can emit one grammar instead of several.
 - **GBNF lift.** A future M2 GBNF for LLM-constrained decoding is
-  a near-mechanical translation from [§3](01_grammar.md#3-the-complete-grammar-ebnf)
+  a near-mechanical translation from [`00_ebnf.md`](00_ebnf.md)
   (it was `grammar.lark` until M1a S1a.10.5). SMT-LIB-style
   syntax is the easiest target for grammar-based constrained
   generation (see [`docs/lib/01-llm-constrained-generation.md`](../../../lib/01-llm-constrained-generation.md)).
