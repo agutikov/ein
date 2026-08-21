@@ -1,1 +1,0 @@
-(:layer …) at None: `:layer` was removed in S1.22.1b — knowledge layers no longer exist; delete the annotation (a fact's origin is its `:source` / `:rule` provenance)

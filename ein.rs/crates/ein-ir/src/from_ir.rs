@@ -54,13 +54,6 @@ impl From<Overflow> for KbLoadError {
     }
 }
 
-/// `:layer` was removed in S1.22.1b and is **rejected**, not ignored: it used
-/// to override a fact's derived origin and fed the contradiction detector, so
-/// dropping it silently would change behaviour on an existing file without
-/// saying so.
-const LAYER_REMOVED: &str = "`:layer` was removed in S1.22.1b — knowledge layers no longer exist; \
-     delete the annotation (a fact's origin is its `:source` / `:rule` provenance)";
-
 /// Parse and load a `.ein` file, resolving its imports file-relative.
 pub fn load_file(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Result<Kb, KbLoadError> {
     let text = std::fs::read_to_string(path)
@@ -599,9 +592,6 @@ fn ingest_fact(
     };
     let args = ast.form_args(form).to_vec();
     let pairs = kw_pairs(ast, &args);
-    if kw_get(&pairs, "layer").is_some() {
-        errors.push(format!("(:layer …) at {loc}: {LAYER_REMOVED}"));
-    }
     let source = string_value(ast, kw_get(&pairs, "source")).map(str::to_string);
     // Present-but-not-an-atom `:rule` reads as absent, and the record falls
     // back to source-kind — as it does in ein.py, where `_atom_name` answers

@@ -62,8 +62,7 @@ existing messages.
 `Range` flattened to atomic values (`Var` → `"?name"`, `Range` →
 `"lo..hi"` / `"lo..*"`); a nested `SForm` becomes a nested fact
 recursively, with `"<nested>"` as the head when the inner head is not a
-bare atom. Provenance from `:source` / `:rule` + `:using`. The `:layer`
-rejection (removed in S1.22.1b, and the loader still rejects it).
+bare atom. Provenance from `:source` / `:rule` + `:using`.
 
 ### Task T1a.2.3.5 — Query and config
 

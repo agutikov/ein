@@ -1,6 +1,0 @@
-;; `:layer` was removed in S1.22.1b and is REJECTED, not ignored: it used
-;; to feed the contradiction detector, so silence would change
-;; behaviour on an existing file without saying so.
-
-(relation r T T)
-(r a b :layer fact)

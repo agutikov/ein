@@ -79,9 +79,8 @@ fn fact_to_sform(scratch: &mut Ast, terms: &Terms, kb: Option<&Kb>, f: FactId) -
             ProvKind::Rejected => {}
         }
     }
-    // S1.22.1b — no `:layer` keyword. With the layer enum gone the provenance
-    // *is* the origin, so the dump → reload round trip is exact by
-    // construction rather than by patching.
+    // The provenance *is* the origin, so the dump → reload round trip is
+    // exact by construction rather than by patching.
     let name = scratch.intern(terms.sym(rel));
     let head = scratch.push(Node::Atom(name), None);
     scratch.sform(head, &children, None)

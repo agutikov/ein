@@ -97,7 +97,6 @@ fn the_load_negative_fixtures_are_byte_identical() {
         "config_bad_value",
         "config_unknown_flag",
         "derivation_cycle",
-        "fact_layer_kwarg",
         "hrule_duplicate_name",
         "hrule_reserved_name",
         "macro_arity_mismatch",
@@ -231,19 +230,22 @@ fn rust_shape_text(text: &str) -> Answer {
 /// relations, then rules, then facts, then config, then the unimported-macro
 /// guard, then the derivation-cycle check. A reordered `; `-joined message is
 /// the failure mode this pins, and it is invisible in any single fixture:
-/// each of the five programs below declares its errors in an order that is
-/// *not* the pass order, so a loader that reported them in encounter order
-/// would produce five plausible messages and fail here.
+/// each of the programs below declares its errors in an order that is *not*
+/// the pass order, so a loader that reported them in encounter order would
+/// produce plausible messages and fail here.
+///
+/// **The fact pass is absent from these programs because it cannot fail on
+/// anything the grammar accepts.** Its one error — a non-atom head — is
+/// reachable only by hand-building an AST, since `(?R a b)` is an
+/// `IRParseError`. Facts either parse or load.
 #[test]
 fn load_errors_accumulate_in_pass_order() {
     let programs = [
         // One error per pass, declared in an order that is not the pass order.
-        "(x a :layer fact)\n(rule r () :match (x ?a))\n(relation)\n\
+        "(rule r () :match (x ?a))\n(relation)\n\
          (macro m (?a) (rel ?a))\n(macro m (?a) (other ?a))\n(config :nope true)",
         // Several within one pass keep their form order.
         "(relation)\n(relation eq)\n(relation dup)\n(relation dup)\n(relation r (A B))",
-        // …and within the fact pass.
-        "(relation r T T)\n(r a :layer fact)\n(r b :layer reasoning)",
         // A rule error does not stop the following rules from loading.
         "(rule absent () :match (x ?a) :assert (y ?a))\n\
          (rule ok () :match (x ?a) :assert (y ?a))\n\
@@ -260,7 +262,7 @@ fn load_errors_accumulate_in_pass_order() {
             indented(&rust_shape_text(program))
         ));
     }
-    assert_eq!(programs.len(), 5, "the table lost a program");
+    assert_eq!(programs.len(), 4, "the table lost a program");
     if let Some(msg) = golden(&golden_path("ein-ir", "load_error_order.txt"), &out) {
         panic!("{msg}");
     }

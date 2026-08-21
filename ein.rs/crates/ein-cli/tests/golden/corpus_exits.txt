@@ -143,9 +143,6 @@
 1    examples/broken/load/derivation_cycle.ein :: render rules
 1    examples/broken/load/derivation_cycle.ein :: saturate
 1    examples/broken/load/derivation_cycle.ein :: solve
-1    examples/broken/load/fact_layer_kwarg.ein :: render rules
-1    examples/broken/load/fact_layer_kwarg.ein :: saturate
-1    examples/broken/load/fact_layer_kwarg.ein :: solve
 0    examples/broken/load/hrule_duplicate_name.ein :: render rules
 1    examples/broken/load/hrule_duplicate_name.ein :: saturate
 1    examples/broken/load/hrule_duplicate_name.ein :: solve

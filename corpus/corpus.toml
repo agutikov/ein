@@ -496,11 +496,6 @@ group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
-path   = "examples/broken/load/fact_layer_kwarg.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-
-[[entry]]
 path   = "examples/broken/load/hrule_duplicate_name.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
