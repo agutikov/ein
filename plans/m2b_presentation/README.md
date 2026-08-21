@@ -15,15 +15,15 @@ concrete result to write up.
 
 overview:
   - article and presentation
-    - "from Zebra puzzle to Autoformalization"
-      - plain C: hardcoded predicates + search
-      - link grammar + SMT solver
-      - IR as data
+    - "From Zebra puzzle to Autoformalization"
+      - enumeration with manually hardcoded predicates
+      - link grammar + SMT solver => IR
       - IR as reasoning substrate
-      - Ein, rule set as theory
-      - LLMs + Ein, theory construction
+      - Ein
+      - rule set as theory, theory construction
+      - neural-guided theory syntesis, autoformalization
 
-docs, 3 levels:
+Ein:
   - Ein user surface: syntax and semantic
     - syntax
       - objects
@@ -51,8 +51,8 @@ docs, 3 levels:
         - rules
       - KB evolution
         - rules application
-        - saturation and satisfiability
-        - hypothesis search, lattice, ATMS, learning clause, nogoods, naf
+        - saturation, satisfiability, deduction
+        - backpropagation, hypothesis search, lattice, ATMS, learning clause, nogoods, naf
       - Rules evolution
         - rules as data
         - analysis of rules
@@ -61,6 +61,27 @@ docs, 3 levels:
     - ein.rs API
     - ein.rs architecture
     - inference algos and optimizations
+    - benchmarks and tests
+      - random problems corpus, e.g. zebra, 8-queens, etc.
+      - tptp
+  - compare with:
+    - z3
+    - CVC4
+    - LEAN
+    - K
+    - OpenCog
+    - Prolog
+    - Certora
+
+
+EinAF:
+- with LLMs, autoformalization
+  - semantic analysis
+    - objects + relations -> facts
+    - facts -> ontology: relations, types, ...
+    - ontology -> rules, theory syntesis
+  - BBH
+  - 
 
 
 ---
