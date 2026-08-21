@@ -183,9 +183,10 @@ Three principal views, composable into 2- or 3-pane layouts.
 
 ### View 2 — ein-graph (Cytoscape.js + fCoSE)
 
-- **Unified vs separate parts**: render the whole graph or focus on
-  a single layer (ontology / fact / reasoning / rules) — mirrors
-  the existing DOT renderings but interactive.
+- **Unified vs separate parts**: render the whole graph or focus on one
+  population — given (`:source`), derived (`:rule`), background, or the
+  rules themselves, which is what the provenance already partitions —
+  mirrors the existing DOT renderings but interactive.
 - **Compact vs detailed (Levi-bipartite) view**: toggle between
   the abstract entity view (instances + arrows) and the underlying
   Levi-bipartite graph (relation nodes as first-class vertices).

@@ -32,8 +32,7 @@ already does.
 The trigger for promotion: when M1 ships and the rule set + IR
 are stable, the CT formulation becomes a *concrete* design-time
 sanity check — does every rule correspond to a clean DPO rewrite?
-Are the three layers (ontology / fact / reasoning) really a
-pushout? Etc.
+Is the saturation fixpoint really a colimit? Etc.
 
 ## What promotion would look like
 

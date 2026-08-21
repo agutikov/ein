@@ -76,12 +76,9 @@ A fact's origin is read off the annotation it carries, and nothing else
 | neither | **background** | an implicit assumption (schema, `is-a` enumeration, property tag) |
 
 The distinction is **presentation only** — the engine treats every fact
-alike, and fact identity is `(relation_name, args)` regardless. There is
-no way to override it: `:layer ontology|fact|reasoning` used to, and
-was removed in S1.22.1b (the loader **rejects** it, because the layer it
-set fed a contradiction-detector restriction that silently accepted
-inconsistent puzzles). Write the annotation that is true — a numbered
-condition gets `:source`, a property tag gets nothing. See
+alike, and fact identity is `(relation_name, args)` regardless. There is no
+way to override it, and no need for one: write the annotation that is true —
+a numbered condition gets `:source`, a property tag gets nothing. See
 [`../02-data-model/01_entities.md` §1.5](../02-data-model/01_entities.md)
 and [`plans/ideas/04-nlp-to-graph-to-solver-pipeline.md` §Ontology
 deduction by common sense](../../../../plans/ideas/04-nlp-to-graph-to-solver-pipeline.md)
@@ -299,9 +296,9 @@ consumed) instead of `:source` — so they read back as derivations:
 ```
 
 A hand-authored puzzle has none; they appear in engine dumps, which
-round-trip through `parse` / `dump` — exactly, since S1.22.1b: the dump
-carries the provenance and the provenance *is* the origin, so there is
-no residue needing a `:layer` patch. Example derived facts:
+round-trip through `parse` / `dump` **exactly**: the dump carries the
+provenance, the provenance *is* the origin, and no further annotation is
+needed to reproduce it. Example derived facts:
 
 ```lisp
 (co-located Blue House-2 :rule square-fwd :using (c10 c15))

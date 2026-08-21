@@ -73,8 +73,7 @@ routing each by its **head**:
      relations, see [`01_entities.md` §1](01_entities.md)).
    - The fact's **origin is its provenance**: `:rule`/`:using` → a
      `rule`-kind record, `:source` → a `source`-kind record with the id,
-     neither → a `source`-kind record with `source=None`. An explicit
-     `:layer` is a **load error** (S1.22.1b — knowledge layers gone).
+     neither → a `source`-kind record with `source=None`.
    - Any fact whose head is *not* a declared relation auto-vivifies
      a `Relation(declared=False, …)`.
 3. **Indexes**: `rebuild_indexes()`.
@@ -95,12 +94,9 @@ kb.all_facts()  -> FactView   # every fact
 ```
 
 Named `all_facts()` — not `facts()` — because `kb.facts` is the registry
-list attribute (Python disallows shadowing). The three *layer-scoped*
-siblings (`ontology()` / `fact_layer()` / `reasoning()`) and
-`facts_in_layer()` were deleted with the `Layer` enum in S1.22.1b: they
-partitioned the list by a denormalised copy of the provenance, the
-`by_source` / `by_rule` filters below select the same facts from the
-provenance itself, and no engine code called them.
+list attribute (Python disallows shadowing). To select a *part* of the fact
+set, use the `by_source` / `by_rule` filters below, which read the
+provenance directly.
 
 `FactView` is a frozen dataclass wrapping a `tuple[Fact, ...]`. It
 supports the sequence protocol (`__iter__` / `__len__` /

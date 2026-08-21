@@ -365,14 +365,9 @@ The same `(rel, args)` exists at most once in the KB; its `provenance`
 records where it came from, and these two read that. They are for
 *presentation* — the engine treats every fact alike.
 
-> **S1.22.1b** replaced a stored `Layer` enum
-> (`ONTOLOGY`/`FACT`/`REASONING`) with these. The enum was a
-> denormalised copy of `Provenance` — measured over every
-> `examples/**/*.ein`, the only facts it disagreed with were the ones
-> carrying an explicit `:layer` override — and the contradiction
-> detector read it as an epistemic guard, which silently accepted a
-> puzzle whose own clues contradicted each other. `Fact.layer` and
-> `:layer` are both gone; the loader rejects the annotation.
+> Both are computed from `Provenance`; a fact stores no origin field of
+> its own, and nothing in the engine — the contradiction detector
+> included — branches on which population a fact belongs to.
 
 ---
 

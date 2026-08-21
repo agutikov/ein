@@ -200,8 +200,6 @@ different messages, and the corpus has a fixture directory for each
 - **Unbound variables**: a `:assert` variable that no `:match` premise binds.
 - **`(relation R (T1 T2))`** — the wrapped-signature form, which parses as a
   `GenericFact` because `relation` is a `SYMBOL`.
-- **`:layer`** — removed in S1.22.1b. It parses as an ordinary `KwPair` and
-  the loader rejects it.
 - **The named structural-predicate registry**, and the `__closed__` /
   `__symmetric__` dunder triggers, which are ordinary atoms here and kernel
   meaning at load

@@ -73,11 +73,9 @@ same set.
 **Else → fact.** A top-level form whose head is none of the above is a
 fact: `=`, `not`, or a generic `(NAME args*)`. Where it came from is its
 **provenance annotation** — `:rule`/`:using` → an engine derivation,
-`:source` → a given condition, neither → a background assumption. There
-is no knowledge-layer concept and no override: `:layer` was removed in
-S1.22.1b
-and the loader rejects it. A former-wrapper head like `(facts …)`
-therefore now parses as a plain fact.
+`:source` → a given condition, neither → a background assumption. That is
+the only origin a fact has, and there is no way to override it. A
+former-wrapper head like `(facts …)` therefore parses as a plain fact.
 
 **Declared names are user-space**, with one guard (`_reserved_names`,
 P1.8 S1.8.A1 D3): a `(rule …)` / `(hrule …)` / `(relation …)` / `(macro …)`

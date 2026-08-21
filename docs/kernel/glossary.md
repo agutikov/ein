@@ -70,7 +70,7 @@ form of every fact, regardless of arity. See
 [`ir/01-ein-graph/01_kb.md` §2.2](ir/01-ein-graph/01_kb.md).
 
 ### Layer
-**Two unrelated meanings; neither is a knowledge stratum any more.**
+**Two unrelated meanings.**
 1. **Lattice layer** — the depth of the monotonic solver's
    breadth-first walk of the commitment lattice: layer *k* is the set of
    size-*k* commitment sets. See
@@ -78,12 +78,8 @@ form of every fact, regardless of arity. See
 2. **Architectural layer** — the deductive (monotone, saturating) half
    of the engine vs the search (non-monotone, branching) half.
 
-The **knowledge layer** (ONTOLOGY / FACT / REASONING) is gone as of
-S1.22.1b. It was a `Layer` enum stored on every fact, and the
-contradiction detector read it as an epistemic guard — which silently
-accepted a puzzle whose own clues contradicted each other. It was also a
-denormalised copy of [Provenance](#provenance); what it recorded is read
-off the provenance instead. See
+Neither is a stratum of *knowledge*: a fact's origin is its
+[provenance](#provenance) and nothing else. See
 [`ir/01-ein-graph/01_kb.md` §3](ir/01-ein-graph/01_kb.md).
 
 ### Provenance

@@ -150,11 +150,8 @@ Two `Fact` properties, both read straight off `provenance`:
 - `f.is_derived` — the engine produced it (a rule firing or a hypothesis).
 - neither — a background assumption (schema, `is-a` enumeration, tag).
 
-They are *presentation* only: the engine treats every fact alike. (Before
-S1.22.1b this was a stored `Layer` enum, and the contradiction detector
-read it — which silently accepted a puzzle whose own clues contradicted
-each other. Both the enum and the `:layer` annotation are gone; the
-loader rejects `:layer`.)
+They are *presentation* only: the engine treats every fact alike, and a
+fact's population is read from its provenance rather than stored on it.
 
 ### `Pattern`, `Query`, `FactView`, `EqClasses`
 
