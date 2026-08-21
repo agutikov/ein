@@ -8,9 +8,11 @@
 //! ([D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)).
 //! **A relaxation that cannot be shown to still catch the thing it was relaxed
 //! around is a hole rather than a decision**, so the cut has always had a
-//! control: [`utils/mutant_ein.py`](../../../../utils/mutant_ein.py), a wrapper
-//! that ran the shipping binary and then deleted one event from the log it
-//! wrote, which the gate had to report.
+//! control: `utils/mutant_ein.py`, a wrapper that ran the shipping binary and
+//! then deleted one event from the log it wrote, which the gate had to
+//! report. The script was deleted at
+//! [S1a.10.4](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+//! once this file had its three mutations.
 //!
 //! That wrapper needed two processes and a harness to be the second operand.
 //! Both are gone

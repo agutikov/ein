@@ -241,7 +241,8 @@ fn canonical(literal: &str) -> String {
 /// over a tuple of values, with `repr` on each — so the six answers are
 /// checked in rather than re-derived. They are **ein.py's**, captured while
 /// `a_facts_repr_matches_cpythons_for_every_value_shape` was green against a
-/// live `utils/py_oracle.py`.
+/// live `utils/py_oracle.py` — the batch CPython oracle, deleted with the
+/// second engine at S1a.10.4. These six answers are what is left of it here.
 ///
 /// What each shape is for: an atom (no quotes, unlike `repr`), an atom with an
 /// apostrophe (which flips CPython's quote choice to `"`), a leading-zero int,

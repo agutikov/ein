@@ -9,8 +9,15 @@ exposes `is_control()` (only `Cc`), so the rest has to come from a table, and
 the table has to be **the oracle's**: parity is against whatever Unicode
 version CPython was built with, not against whatever version `rustc` embeds.
 
-Regenerate after a CPython upgrade — `ein-core`'s differential test against
-`utils/py_oracle.py` is what tells you it is stale.
+Regenerate after a CPython upgrade. Nothing tells you it is stale any more:
+the differential test against `utils/py_oracle.py` went with the second engine
+at S1a.10.4, and what remains is
+`ein-core/tests/golden/repr_escapes.txt` — 4 561 code points with CPython's
+answer beside each, frozen on the day it was captured. A `repr` that differs
+because *CPython* changed is
+[accepted loss L2](../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss);
+re-running this script and re-blessing that golden together is the manual
+step that closes it.
 
     python3 utils/gen_unicode_printable.py
 """

@@ -6,7 +6,8 @@
 //! compared the way the loader was at
 //! [S1a.2.3](../../../../plans/m1a_rust/p1a.2_kb_core/s1a.2.3_loader_and_provenance.md)
 //! — both implementations render the same text and the texts are diffed
-//! (`utils/ir_oracle.py`'s `plan-shape` op was the other half) — and since
+//! (`utils/ir_oracle.py`'s `plan-shape` op was the other half, and left with
+//! the second engine at S1a.10.4) — and since
 //! S1a.10.2 the text is digested into `corpus_shapes.md5` instead.
 //!
 //! Two rules make the text comparable, and they are the same two the KB shape

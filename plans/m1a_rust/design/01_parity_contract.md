@@ -279,9 +279,11 @@ negative control is what found that, on
 productive firing, a productive firing that became redundant, a rule that
 stopped firing, an entering that vanished, and any change to the search layer
 are all failures under the relaxed comparison — one unit test each in
-`ein-parity`, and `utils/mutant_ein.py` is the end-to-end form: a wrapper that
-deletes one event from the *shipping* binary's log, which the gate must report
-for a productive firing and must not for a redundant one or an `enqueue`.
+`ein-parity`, and `utils/mutant_ein.py` was the end-to-end form: a wrapper
+that deletes one event from the *shipping* binary's log, which the gate must
+report for a productive firing and must not for a redundant one or an
+`enqueue`. The wrapper is gone with the second engine; its three mutations are
+`ein-infer/tests/event_cut_control.rs` (S1a.10.3), applied in-process.
 
 **What it does not catch, stated rather than discovered.** A derivation lost
 inside a **dying** fork: that segment's firing list is a fail-fast prefix and

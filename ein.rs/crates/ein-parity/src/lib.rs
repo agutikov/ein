@@ -6,7 +6,8 @@
 //! [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
 //! left the same decision implemented six times — in the parity harness, in
 //! three `tests/` files, in `ein-render`'s `shape.rs` and in its
-//! `utils/ir_oracle.py` twin — each cut made one at a time as the next test
+//! `utils/ir_oracle.py` twin (gone since S1a.10.4) — each cut made one at a
+//! time as the next test
 //! went red. A relaxation that has to be discovered by running the tests is
 //! not a contract, so this crate is where the decision lives and the call
 //! sites only say *what they are handing over*.

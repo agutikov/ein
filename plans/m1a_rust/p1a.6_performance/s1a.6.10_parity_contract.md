@@ -196,8 +196,8 @@ first one that went green. Three findings the task list did not predict:
 
 ### The negative control
 
-[`utils/mutant_ein.py`](../../../utils/mutant_ein.py) is a wrapper that runs
-the *shipping* binary and then deletes one event from the log it wrote —
+`utils/mutant_ein.py` is a wrapper that runs the *shipping* binary and then
+deletes one event from the log it wrote —
 `EIN_MUTANT=productive` a real derivation, `redundant` / `enqueue` the
 narration the cut elides. Over the `branching` subset (70 comparable T2
 cells):

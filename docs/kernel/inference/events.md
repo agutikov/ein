@@ -196,7 +196,8 @@ this one is the strongest that leaves D2 as the only differing cell).
 has a negative control: `event_cut_control.rs` builds a real verbose stream,
 deletes one event from it, and asserts that deleting a *productive* firing is
 reported while deleting a redundant one or an `enqueue` is not. It is
-`utils/mutant_ein.py`'s three mutations with the two processes taken out.
+the three mutations `utils/mutant_ein.py` applied until S1a.10.4, with the
+two processes taken out.
 
 ## Versioning
 

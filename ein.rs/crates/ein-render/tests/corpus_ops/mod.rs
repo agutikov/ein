@@ -65,8 +65,9 @@ pub fn ops() -> Vec<Op> {
 /// The frontend surfaces, which have no CLI of their own and are therefore
 /// invisible to a harness that compares two `ein` processes: `parse`'s
 /// accept/reject *and message*, the canonical and compact dumpers, and the
-/// three resolution ops `imports_parity` sweeps. Named as `ir_oracle.py` names
-/// them, since that is what the ledger's rows are written against.
+/// three resolution ops `imports_parity` sweeps. Named as `ir_oracle.py`
+/// named them — the script is gone since S1a.10.4, but the ledger's rows are
+/// written against its vocabulary and renaming the ops would orphan them.
 pub const IR_MODES: [&str; 5] = ["parse", "dump-compact", "resolve", "minimize", "expand"];
 
 #[derive(Clone, Copy)]
@@ -221,7 +222,7 @@ fn ir_op(ast: &mut Ast, forms: &[ein_ir::NodeId], base: Option<&Path>, mode: &st
     let r = Resolver::new();
     let out: Result<String, String> = match mode {
         // `parse` is the canonical dump of what parsed — the same op
-        // `ir_oracle.py` answers under that name, and the reason
+        // `ir_oracle.py` answered under that name, and the reason
         // `dump_parity` could compare a *parser* through a dumper at all.
         "parse" => Ok(dump_canonical(ast, forms)),
         "dump-compact" => Ok(forms

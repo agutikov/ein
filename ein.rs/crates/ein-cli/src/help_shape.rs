@@ -13,10 +13,11 @@
 //! headings, and the order options appear in — which is why the options are
 //! sorted here rather than emitted in declaration order.
 //!
-//! `utils/ir_oracle.py`'s `help-shape` op is the other half, walking
-//! `argparse`'s parser objects rather than re-parsing its formatted output:
-//! the parser *is* the structure, and scraping it back out of the text would
-//! only re-import the layout this stage exempts.
+//! `utils/ir_oracle.py`'s `help-shape` op was the other half until
+//! S1a.10.4 removed it with the second engine, and it walked `argparse`'s
+//! parser objects rather than re-parsing its formatted output: the parser
+//! *is* the structure, and scraping it back out of the text would only
+//! re-import the layout this stage exempts.
 
 use clap::Command;
 

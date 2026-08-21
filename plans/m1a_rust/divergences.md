@@ -205,9 +205,11 @@ so the fixture that keeps it from widening is the differ, not a file. Since
 more, of the other kind: ein.rs goldens over the trace, the `slice` cone, a
 fork's own `enterings/` dump, the snapshot projection and the event stream —
 everything this entry took out of the cross-engine diff, compared against
-checked-in bytes instead. `utils/mutant_ein.py` is the negative control: it
-deletes one productive firing from the shipping binary's event log, which the
-relaxed gate must still catch.
+checked-in bytes instead. The negative control is
+`ein-infer/tests/event_cut_control.rs` — it deletes one productive firing from
+a verbose stream the engine produced, which the relaxed cut must still catch.
+It was `utils/mutant_ein.py`, over two processes, until S1a.10.3 moved the
+mutation in-process and S1a.10.4 deleted the script.
 
 **What.** `commitment::try_commitment_set` forks the saturated root. ein.py
 builds a fresh `Saturator` there, whose first enqueue pass is a FULL pass, so

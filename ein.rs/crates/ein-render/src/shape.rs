@@ -7,7 +7,8 @@
 //! has not built yet. So the renderers are compared the way the loader and
 //! the compiler were: both implementations render the same views over the
 //! same corpus and the texts are diffed (`utils/ir_oracle.py`'s `dot-shape`
-//! op is the other half).
+//! op was the other half, until S1a.10.4 removed it with the engine it
+//! rendered).
 //!
 //! Unlike `plan-shape` or `kb-shape` this invents no rendering of its own.
 //! Every view calls a renderer entry point exactly as a CLI subcommand or the
@@ -511,7 +512,7 @@ fn render_tree(root: &Path) -> String {
             // megabytes through the oracle's JSON-Lines pipe, twice, to
             // compare nothing. `dump_parity` re-checks that this marker is
             // exactly `ein_parity::NARRATED`, so the decision still has one
-            // owner. `utils/ir_oracle.py::_render_tree` is the other half.
+            // owner. `utils/ir_oracle.py::_render_tree` was the other half.
             //
             // The **file set** is still compared exactly — a missing, renamed
             // or empty per-commitment dump still fails — and everything
@@ -561,8 +562,9 @@ fn collect_files(dir: &Path, out: &mut Vec<PathBuf>) {
 /// `ein-parity`. A renderer that decides what a diff will look at is a
 /// renderer with an opinion about the contract.
 ///
-/// `utils/ir_oracle.py`'s `_normalise_dump_line` does the same on the Python
-/// side; the two lists are maintained together.
+/// `utils/ir_oracle.py`'s `_normalise_dump_line` did the same on the Python
+/// side, and the two lists were maintained together until S1a.10.4 removed
+/// it. This one is now the whole list.
 fn normalise_dump_line(line: &str) -> String {
     let mut out = line.to_string();
     for key in ["ts_ms", "elapsed_seconds"] {

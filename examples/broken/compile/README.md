@@ -37,8 +37,9 @@ that is the point of it. S1.22.0 added *two* guards for the mismatch: the
 `CompileError` below, and `Engine._activators_for`'s arity filter, which drops
 the activator before the compiler ever sees it. The filter is what the engine
 relies on, so the error is unreachable through the engine — reaching it needs
-the unfiltered walk (`utils/ir_oracle.py`'s `plan-shape` with
-`"filter": false`, and `ein_infer::plan_shape_with(…, false)`). The fixture
+the unfiltered walk — `ein_infer::plan_shape_with(…, false)`, which is what
+`utils/ir_oracle.py`'s `plan-shape` had a `"filter": false` for until
+S1a.10.4 removed it. The fixture
 therefore pins two things at once: the message a direct caller of
 `compile_rule` gets, and — as an ordinary `positive` corpus entry — that
 `(pairwise r)` derives nothing.

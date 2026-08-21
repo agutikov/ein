@@ -145,10 +145,11 @@ if [[ "${FAST}" == "0" ]]; then
     "${PY}" -m pytest -s -v acceptance/ || RC=$?
 fi
 
-# Phase 3: ein.rs. `cargo test --workspace` covers the port's unit tests, its
-# differential tests against utils/ir_oracle.py, and — since S1a.6.11 — the
-# goldens that are the *only* coverage of what the parity contract stopped
-# diffing between the two engines.
+# Phase 3: ein.rs. `cargo test --workspace` covers the port's unit tests, the
+# corpus sweep through the CLI, and — since S1a.6.11 — the goldens that are the
+# *only* coverage of what the parity contract stopped diffing between the two
+# engines. It has not been differential since S1a.10.2: no test here starts a
+# Python process.
 if [[ "${FAST}" == "0" && "${ACCEPTANCE_ONLY}" == "0" && "${NO_RUST}" == "0" ]]; then
     echo "" >&2
     echo "── Phase 3: the ein.rs suite (cargo test --workspace) ──────────" >&2
@@ -159,10 +160,8 @@ if [[ "${FAST}" == "0" && "${ACCEPTANCE_ONLY}" == "0" && "${NO_RUST}" == "0" ]];
         echo "   not run. Install a Rust toolchain, or pass --no-rust to mean" >&2
         echo "   it on purpose." >&2
     else
-        # The differential tests shell out to `python3 utils/ir_oracle.py`,
-        # which puts `ein.py/src` on its own `sys.path` — so this phase needs
-        # a python3 on PATH but not an installed `ein`. When it cannot start
-        # one, those tests print SKIP and say so.
+        # Nothing here needs python3 any more; it does need **Graphviz**,
+        # because `dot_wellformed.rs` fails rather than skips without it.
         cargo test --manifest-path "${SCRIPT_DIR}/ein.rs/Cargo.toml" \
             --workspace || RC=$?
     fi

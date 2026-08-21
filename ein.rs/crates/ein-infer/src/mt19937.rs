@@ -15,8 +15,10 @@
 //!
 //! Ported from CPython's `_randommodule.c` — the reference implementation the
 //! standard library ships, unchanged since 2.4 — and checked against it by
-//! table rather than by reading: `utils/ir_oracle.py`'s `shuffle` op returns
-//! what `random.Random(seed).shuffle(list(range(n)))` produces.
+//! table rather than by reading: `utils/ir_oracle.py`'s `shuffle` op
+//! returned what `random.Random(seed).shuffle(list(range(n)))` produces, and
+//! the answers it gave are the tables in this file's own tests. The op left
+//! with the script at S1a.10.4; the tables are what remain of it.
 
 const N: usize = 624;
 const M: usize = 397;

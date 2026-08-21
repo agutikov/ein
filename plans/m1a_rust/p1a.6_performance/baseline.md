@@ -1089,8 +1089,8 @@ the answer:
 A relaxation is only a decision if both directions are checked.
 
 **Negative — does it still catch a real loss?**
-[`utils/mutant_ein.py`](../../../utils/mutant_ein.py) runs the *shipping*
-binary and deletes one event from the log it wrote:
+`utils/mutant_ein.py` runs the *shipping* binary and deletes one event from
+the log it wrote:
 
 | `EIN_MUTANT` | what it deletes | T2 must | measured, over `--filter branching` (70 comparable cells) |
 |---|---|---|---|
