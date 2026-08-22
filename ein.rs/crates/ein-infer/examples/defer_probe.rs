@@ -15,6 +15,14 @@
 //! writes into one burst, and on `branching/07 -e` that is the difference
 //! between depth 164 and depth 3, which is 2.8× of the run.
 //!
+//! **That win no longer needs this mode, which is why every column here sets
+//! [`SolveOptions::coalesce_root_at`] to `None`.** T1a.7.2.0 read the row
+//! below and took the depth directly — `Kb::flatten` at the layer barrier,
+//! integration still immediate — so with the shipping default on, all three
+//! columns are shallow and the probe measures nothing. Switching it off is
+//! what keeps [scaling.md §4](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)
+//! reproducible; the flatten's own numbers are `flatten_probe` and §6.
+//!
 //! That the *answer* is unchanged is not checked here: it is
 //! `tests/search_invariants.rs`'s job, and it is checked on more files than
 //! this probe times.
@@ -66,6 +74,9 @@ fn main() {
             let opts = SolveOptions {
                 stop_after: None,
                 integrate_every: batch,
+                // See the module doc: this probe's subject is the deferral,
+                // and the shipping barrier would collapse every column.
+                coalesce_root_at: None,
                 ..SolveOptions::default()
             };
             let mut events = Events::off();

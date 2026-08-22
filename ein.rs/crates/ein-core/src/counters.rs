@@ -216,6 +216,16 @@ pub struct Counters {
     /// KB forks — ein.py `store.fork` (101 on an exhaustive `zebra2`, against
     /// 104 here: the three extra are the root previews).
     pub fork: u64,
+    /// [`crate::kb::Kb::flatten`] calls and the facts each one copied — the
+    /// **cost** column of the layer-barrier coalesce
+    /// ([T1a.7.2.0](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+    /// `materialise` is O(facts) per layer and a fork's saving is one stack
+    /// walk, so the pair is what says whether the threshold is right: a search
+    /// with a large root and cheap layers pays `flatten_facts` to save
+    /// `fork × depth`, and only the ratio decides. **No ein.py counterpart** —
+    /// it never had a layer stack.
+    pub flatten: u64,
+    pub flatten_facts: u64,
     /// Provenance nodes visited by a justification walk — no single ein.py row,
     /// because `walk_premises` is a generator and cProfile attributes its work
     /// to whoever drains it.
@@ -372,6 +382,8 @@ impl Counters {
             watch_stamp_rel: 0,
             extent_probe: 0,
             fork: 0,
+            flatten: 0,
+            flatten_facts: 0,
             prov_node: 0,
             hypgen_call: 0,
             hypgen_complete: 0,

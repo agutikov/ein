@@ -1,7 +1,12 @@
 # S1a.7.2 — Level 1: parallel enterings
 
 **Phase:** P1a.7 (Parallelism)
-**Estimate:** 4 days
+**Estimate:** 4 days → **3 d.** The layer-1 question was decided on paper
+before any of the mechanism was built (§ The decision), which deleted the
+validator, the fail-fast ruling and two acceptance items; **T1a.7.2.0 is
+shipped** and is worth 3.17× at `--jobs 1` on the phase's deepest workload.
+What is left is the fan-out itself — .1, .2, .4, .5, .6 and .8 — and none of it
+has a thread yet.
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md),
 [S1a.7.0](s1a.7.0_speculation_audit.md)
 **Implements:** [design/08](../design/08_parallelism.md) §2
@@ -88,7 +93,7 @@ at the fixpoint".
   workloads that want cores (5 173 → 5 173 and 11 501 → 11 501 enterings), and
   **2.8× faster** on `branching/07 -e` at `--jobs 1`, because coalescing a
   layer's root writes takes root's layer stack from depth 164 to 3 and every
-  fork walks that stack. What it costs is the prune it defers — 6.1× the
+  fork walks that stack. What it costs is the prune it defers — 5.2× the
   enterings on `zebra2 -e`, recovered to 1.1× by batching at 20. What it does
   **not** yet have is the piece this stage owes it: by
   [design/08 §2a](../design/08_parallelism.md#2a-deferred-integration--the-batch-synchronous-layer),
@@ -178,12 +183,12 @@ concluded from the other side, before this question was asked.
 ### What it does not take — and what survives of it
 
 **(d) is rejected as the parallelism mechanism**, and for a reason that has
-nothing to do with its merits: it moves `enterings_total` — 101 → 617 under a
+nothing to do with its merits: it moves `enterings_total` — 101 → 521 under a
 whole-layer barrier, 111 at batch 20, on `zebra2 -e` — and a search counter
 that differs between `--jobs 1` and `--jobs N` is precisely what the restated
 acceptance does not admit. Applying one batch policy at *every* job count
 would satisfy invariance, but that is a **traversal change to the sequential
-engine**: not this phase's to take, and 6.1× the enterings at batch = ∞.
+engine**: not this phase's to take, and 5.2× the enterings at batch = ∞.
 
 **Its finding survives, and is worth more than the mechanism was.** Depth
 164 → 3 is **2.8×** on `branching/07 -e` at `--jobs 1` *with an identical
@@ -205,6 +210,11 @@ It is two lines, it is worth 2.8× at `--jobs 1`, and it is now **T1a.7.2.0** �
 the stage's first act, before any fan-out, because a stage that lands its
 parallelism first would be measuring speedup against a baseline it could have
 fixed.
+
+> **Shipped 2026-08-22, and it is 3.17×** rather than 2.8×: the barrier also
+> takes `compute_alive`'s probes and `promote_forced_positives`' re-saturation
+> off the deep stack, which the deferral experiment could not separate out.
+> Everything else held — same enterings, same answer, no golden re-blessed.
 
 **(b) is not needed and therefore not taken.** Q-M1a.7's recommendation — no
 counter movement, `--unordered` as the opt-in escape — stands unchanged, and is
@@ -263,7 +273,11 @@ now cheap rather than merely preferred.
 - **The layer-stack flatten is answer-neutral, or it is not taken.**
   `corpus_shapes` and `search_invariants` are the check, and the entering count
   of every corpus file is unchanged — that is what separates it from deferral,
-  which changes both. T1a.7.2.0.
+  which changes both. T1a.7.2.0. ✅ **shipped 2026-08-22**: the whole gate green
+  with **no `EIN_BLESS`**, and the entering count identical over the 49 non-slow
+  corpus files that reach a `solve -e` verdict, in all four threshold settings.
+  3.17× on `branching/07 -e`
+  ([scaling.md §6](scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
 - Speculative waste at `stop_after` bounded by the job count and measured.
 - Peak RSS at `--jobs 16` on the worst corpus entry recorded. **The baseline
   moved** —
@@ -273,7 +287,44 @@ now cheap rather than merely preferred.
 
 ## Tasks
 
-### Task T1a.7.2.0 — The layer stack, coalesced at the barrier
+### Task T1a.7.2.0 — The layer stack, coalesced at the barrier ✅
+
+**Shipped 2026-08-22, and it is 3.17× rather than the 2.8× that was predicted.**
+`SolveOptions::coalesce_root_at: Option<usize>` — the depth at which the layer
+barrier rebuilds root as one layer — defaulting to `Some(3)`, plus
+`ein-infer/examples/flatten_probe.rs`, two counters behind `--features
+counters`, and two tests. Numbers and the threshold's measurement:
+[scaling.md §6](scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier).
+
+Four things are worth carrying forward from it.
+
+- **It went in at the barrier, after `dumper.layer_end` and before
+  `compute_alive`** — not at the next layer's start, which was the other
+  candidate. The extra 0.4× over the prediction is that placement:
+  `compute_alive` forks root and `promote_forced_positives` **re-saturates**
+  it, and both run below the barrier on whatever stack the layer left. The
+  deferral experiment could not separate that out, because deferring collapsed
+  the stack before those ran too.
+- **The threshold is 3 and it is measured, not chosen.** A fork seals root's
+  top, so a layer with no mid-layer write leaves depth 2; 3 is the first depth a
+  writeback can produce. Over the 49 non-slow corpus files that reach a
+  `solve -e` verdict, `Some(3)` fires on **four** — the two zebras, the hints
+  fixture and `branching/07 -e`, which are exactly the four that write back —
+  once each, copying ≤ 533 facts. `Some(2)` fires on 33 for no measurable gain,
+  which is what a `bool` would have shipped.
+- **The entering count is identical in every setting on every one of the 49**,
+  which is the whole difference between this and route (d). The two tests that
+  hold it are `coalescing_at_the_barrier_collapses_roots_layer_stack` — which
+  also asserts that with the barrier *off* root still ends deeper than 100, so
+  it cannot pass vacuously the day the writebacks go — and
+  `coalescing_costs_no_prune_where_deferring_costs_many`, the same claim on the
+  two zebras where the deferral's price is visible.
+- **No `EIN_BLESS`.** `corpus_shapes`'s 5 178 renderings, the four golden sets
+  and `summary_properties`'s thirteen identities are all unchanged, which is the
+  acceptance item's real content.
+
+What follows is the task as written, kept because the reasoning is what a
+reader needs and it survived contact with the measurement.
 
 **First, and before any thread.** Every root write seals a layer and every fork
 inherits the whole stack: `branching/07 -e`'s 162 mid-layer writebacks put root

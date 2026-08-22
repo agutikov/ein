@@ -58,6 +58,16 @@ struct Answered {
     core: Vec<String>,
 }
 
+/// One run: what must not move, and the two numbers that say *how* it got
+/// there. `depth` is root's layer stack at exit — never an output
+/// ([`Kb::depth`] reaches four probes and no renderer), which is exactly why
+/// it needs a test rather than a golden.
+struct Ran {
+    answered: Answered,
+    enterings: u64,
+    depth: usize,
+}
+
 fn facts_of(kb: &Kb, terms: &Terms) -> Vec<String> {
     let mut out: Vec<String> = kb
         .facts()
@@ -72,6 +82,17 @@ fn answer(
     rel: &str,
     tweak: impl FnOnce(&mut SolveOptions, &mut ein_core::SolverConfig),
 ) -> Answered {
+    run(rel, tweak).answered
+}
+
+/// One solve, reporting both halves: the answer that must not move and the
+/// traversal that is allowed to.
+///
+/// The two used to be separate helpers running separate solves. They are one
+/// because T1a.7.2.0's claim needs both of the *same* run — a knob that keeps
+/// the answer while moving the entering count is a different animal from one
+/// that keeps both, and `coalesce_root_at` is the second kind.
+fn run(rel: &str, tweak: impl FnOnce(&mut SolveOptions, &mut ein_core::SolverConfig)) -> Ran {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = load_file(&mut ast, &mut terms, &repo_root().join(rel)).expect("loads");
@@ -105,10 +126,14 @@ fn answer(
         Answer::Aborted { reason } => panic!("{rel} aborted: {reason}"),
     };
     models.sort();
-    Answered {
-        verdict,
-        models,
-        core,
+    Ran {
+        answered: Answered {
+            verdict,
+            models,
+            core,
+        },
+        enterings: solved.stats.base.enterings_total,
+        depth: kb.depth(),
     }
 }
 
@@ -209,7 +234,7 @@ fn order_and_late_integration_compose() {
 ///
 /// | puzzle | sequential | whole layer | why |
 /// |---|---:|---:|---|
-/// | `zebra2 -e` | 101 | **617** | 32 layer-1 writebacks, each pruning hard |
+/// | `zebra2 -e` | 101 | **521** | 32 layer-1 writebacks, each pruning hard |
 /// | `branching/06 -e` | 5 173 | 5 173 | **0** writebacks — nothing to defer |
 /// | `branching/07 -e` | 11 501 | 11 501 | 162 writebacks that prune nothing |
 ///
@@ -222,8 +247,8 @@ fn what_late_integration_costs_is_the_prune_it_defers() {
         ("examples/zebra2.ein", true),
         ("examples/branching/06_lookahead_on.ein", false),
     ] {
-        let sequential = run_stats(rel, None);
-        let whole_layer = run_stats(rel, Some(usize::MAX));
+        let sequential = run(rel, |_, _| {});
+        let whole_layer = run(rel, |o, _| o.integrate_every = Some(usize::MAX));
         assert!(
             whole_layer.enterings >= sequential.enterings,
             "{rel}: late integration entered fewer commitments \
@@ -249,50 +274,117 @@ fn what_late_integration_costs_is_the_prune_it_defers() {
     }
 }
 
-/// **Deferring is also what keeps root's layer stack shallow** — the finding
-/// this test exists to pin, because it is the reason the mode is not merely
-/// tolerable.
+/// **T1a.7.2.0 — the layer barrier is what keeps root's layer stack shallow,
+/// and unlike a deferral it costs no prune to do it.**
 ///
-/// Every root write seals another layer (`Kb::fork` seals the top so the
-/// parent's later appends land in a new one), and **every fork inherits the
-/// whole stack**. On `branching/07 -e` the 162 mid-layer writebacks put root
-/// at depth 164, and all 11 501 forks walk it. Deferring collapses that to
-/// depth 3 — one sealed layer per layer barrier — for the *same* 11 501
-/// enterings and the same answer, and the run is ~2.8× faster single-threaded
-/// (1 117 ms → 401 ms on the dev machine; wall clock is not asserted here
-/// because a test must not depend on a machine).
+/// Every root write seals another layer — `Kb::fork` seals the top so the
+/// parent's later appends land in a new one — and **every fork inherits the
+/// whole stack**. On `branching/07 -e` the 162 mid-layer writebacks put root at
+/// depth 164 and all 11 501 forks walk it; coalescing the stack at the layer
+/// barrier takes the run from 899 ms to 278 ms on the dev machine at
+/// `--jobs 1` (wall clock is not asserted here — a test must not depend on a
+/// machine — and the numbers are
+/// [scaling.md §6](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)'s).
+///
+/// This test was `deferring_collapses_roots_layer_stack` until T1a.7.2.0, and
+/// the re-pointing **is** the finding. The depth collapse was first measured
+/// through [`SolveOptions::integrate_every`], which reached it by holding a
+/// layer's root writes back — so the natural reading was that a parallel
+/// engine had to defer to get it. The entering counts say otherwise: they are
+/// equal in all three arms below, so none of the win is the deferral and all
+/// of it is the read path. S1a.7.2 therefore takes the depth with
+/// `Kb::flatten`, integration stays immediate, and the deferral's price —
+/// 101 → 521 enterings on `zebra2 -e`,
+/// `what_late_integration_costs_is_the_prune_it_defers` — is never paid.
 #[test]
-fn deferring_collapses_roots_layer_stack() {
+fn coalescing_at_the_barrier_collapses_roots_layer_stack() {
     let rel = "examples/branching/07_lookahead_off.ein";
-    let sequential = run_stats(rel, None);
-    let batched = run_stats(rel, Some(20));
-    let whole_layer = run_stats(rel, Some(usize::MAX));
+    let uncoalesced = run(rel, |o, _| o.coalesce_root_at = None);
+    let shipping = run(rel, |_, _| {});
+    let deferred = run(rel, |o, _| {
+        o.coalesce_root_at = None;
+        o.integrate_every = Some(usize::MAX);
+    });
 
+    assert!(
+        uncoalesced.depth > 100,
+        "{rel}: with the barrier off, root should end deep — one sealed layer \
+         per writeback — got depth {}. This file was chosen for its 162 \
+         writebacks; if they have gone, so has the premise of the test",
+        uncoalesced.depth
+    );
+    assert!(
+        shipping.depth <= 8,
+        "{rel}: the layer barrier should leave at most about one sealed layer \
+         per search layer, got depth {}",
+        shipping.depth
+    );
+    // The load-bearing one: same traversal, not merely the same answer. It is
+    // what separates the flatten from the deferral, and what lets `--jobs N`
+    // promise identical counters later in the phase.
     assert_eq!(
-        sequential.enterings, whole_layer.enterings,
-        "{rel}: chosen because its writebacks prune nothing — if the entering \
-         counts now differ, the premise of the depth comparison is gone"
+        shipping.enterings, uncoalesced.enterings,
+        "{rel}: coalescing root moved the entering count — it rebuilds a \
+         representation and must not reach the traversal"
     );
+    assert_eq!(
+        shipping.answered, uncoalesced.answered,
+        "{rel}: coalescing root changed the answer"
+    );
+    // And the arm the finding came from: deferring reaches the same depth on
+    // this file for the same enterings, which is why it looked like the way to
+    // get there. Kept as the before-column, not as a shipping mode.
     assert!(
-        sequential.depth > 100,
-        "{rel}: expected root to end deep (one sealed layer per writeback), \
-         got depth {}",
-        sequential.depth
+        deferred.depth <= 8 && deferred.enterings == uncoalesced.enterings,
+        "{rel}: chosen because its writebacks prune nothing, so a whole-layer \
+         deferral collapses the stack for free — got depth {} and {} enterings \
+         against {}",
+        deferred.depth,
+        deferred.enterings,
+        uncoalesced.enterings
     );
-    assert!(
-        whole_layer.depth <= 8,
-        "{rel}: a whole-layer barrier should leave about one sealed layer per \
-         search layer, got depth {}",
-        whole_layer.depth
-    );
-    assert!(
-        batched.depth < sequential.depth && batched.depth > whole_layer.depth,
-        "{rel}: batching at 20 should land between the two — got {} against \
-         {} and {}",
-        batched.depth,
-        sequential.depth,
-        whole_layer.depth
-    );
+}
+
+/// The same claim where the deferral is *not* free — the pair of files that
+/// separates the two mechanisms in one table.
+///
+/// | | enterings | root depth at exit |
+/// |---|---:|---:|
+/// | `zebra2 -e`, barrier off | 101 | 35 |
+/// | `zebra2 -e`, shipping | **101** | **2** |
+/// | `zebra2 -e`, whole-layer deferral | **617** | 2 |
+///
+/// A deferral that buys depth by not pruning is a different trade from a
+/// flatten that buys it by rebuilding a layer, and on the zebra family the
+/// difference is 5.2× the enterings. Both zebras write back on almost every
+/// layer-1 candidate, which is why they are the cell where it shows.
+#[test]
+fn coalescing_costs_no_prune_where_deferring_costs_many() {
+    for rel in ["examples/zebra2.ein", "examples/zebra.ein"] {
+        let uncoalesced = run(rel, |o, _| o.coalesce_root_at = None);
+        let shipping = run(rel, |_, _| {});
+        let deferred = run(rel, |o, _| o.integrate_every = Some(usize::MAX));
+        assert!(
+            uncoalesced.depth > shipping.depth,
+            "{rel}: layer 1 writes back on nearly every candidate, so with the \
+             barrier off root must end deeper than {} — got {}",
+            shipping.depth,
+            uncoalesced.depth
+        );
+        assert_eq!(
+            shipping.enterings, uncoalesced.enterings,
+            "{rel}: coalescing root moved the entering count"
+        );
+        assert_eq!(
+            shipping.answered, uncoalesced.answered,
+            "{rel}: coalescing root changed the answer"
+        );
+        assert!(
+            deferred.enterings > shipping.enterings,
+            "{rel}: this puzzle was chosen because deferring costs prunes here \
+             — if the counts now agree, the comparison has lost its point"
+        );
+    }
 }
 
 /// A deep, multi-layer search is answer-identical under deferral too.
@@ -312,28 +404,5 @@ fn a_deep_search_is_answer_identical_under_deferral() {
             sequential, deferred,
             "{rel}: late integration changed the answer"
         );
-    }
-}
-
-struct Ran {
-    enterings: u64,
-    depth: usize,
-}
-
-fn run_stats(rel: &str, batch: Option<usize>) -> Ran {
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let mut kb = load_file(&mut ast, &mut terms, &repo_root().join(rel)).expect("loads");
-    let opts = SolveOptions {
-        stop_after: None,
-        integrate_every: batch,
-        ..SolveOptions::default()
-    };
-    let mut events = Events::off();
-    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-        .unwrap_or_else(|e| panic!("{rel} solves: {e:?}"));
-    Ran {
-        enterings: solved.stats.base.enterings_total,
-        depth: kb.depth(),
     }
 }

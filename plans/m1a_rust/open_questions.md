@@ -363,7 +363,7 @@ sequential engine would give it. The four points above resolve as follows.
    ledger.
 
 The one route that would have moved a counter is **batch-synchronous
-integration**, and it is rejected for that: 101 → 617 enterings on `zebra2 -e`
+integration**, and it is rejected for that: 101 → 521 enterings on `zebra2 -e`
 under a whole-layer barrier. Its 2.8× on `branching/07 -e` is the layer-stack
 depth rather than the deferral — identical entering count — and is taken
 separately by flattening root at the barrier.

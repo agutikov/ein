@@ -176,6 +176,32 @@ pub struct SolveOptions {
     /// [design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2a
     /// proves.
     pub integrate_every: Option<usize>,
+    /// **Coalesce root's layer stack** at the layer barrier once it is this
+    /// deep, or `None` never
+    /// ([T1a.7.2.0](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+    ///
+    /// Every mid-layer root write seals another layer — [`Kb::fork`] seals the
+    /// top so the parent's later appends land in a new one — and **every fork
+    /// inherits the whole stack**. `branching/07 -e`'s 162 singleton
+    /// writebacks put root at depth 164 and all 11 501 forks walk it;
+    /// [`Kb::flatten`] at the barrier puts the 11 297 forks of layers ≥ 2 back
+    /// on a stack of one.
+    ///
+    /// Unlike [`Self::integrate_every`] — which bought the same collapse by
+    /// *deferring* the writes, and moved `enterings_total` doing it — this
+    /// changes nothing about when a prune lands: root is written exactly when
+    /// it is today and only its representation is rebuilt. So it is the one
+    /// knob of the pair whose default is not `None`, and the invariance it
+    /// owes is the strong one: same answer **and** same counters
+    /// (`tests/search_invariants.rs`).
+    ///
+    /// The threshold is a measurement, not a constant: [`Kb::materialise`] is
+    /// O(facts), so a barrier that rebuilds a 30 000-fact root to save one
+    /// stack walk loses. `Some(3)` is "something was written during the
+    /// layer": a barrier with no mid-layer write leaves root at depth 2, so 3
+    /// is the first depth a writeback can produce
+    /// ([scaling.md §6](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+    pub coalesce_root_at: Option<usize>,
 }
 
 impl Default for SolveOptions {
@@ -189,6 +215,7 @@ impl Default for SolveOptions {
             store_lattice: false,
             on_budget: OnBudget::Raise,
             integrate_every: None,
+            coalesce_root_at: Some(3),
         }
     }
 }
@@ -777,6 +804,12 @@ impl Run<'_> {
             // this is the *only* one, which is the "one KB per layer" mode.
             self.integrate(root, terms, events);
             dumper.layer_end(layer, root, terms, alive.len(), a_layer.len());
+            // T1a.7.2.0 — and after the dumper, so what it renders is the KB
+            // it renders today. Coalescing here rather than at the next
+            // layer's start is worth the two lines' difference: `compute_alive`
+            // forks root and `promote_forced_positives` re-*saturates* it, and
+            // both run below on whatever stack this layer left behind.
+            self.coalesce_root(root);
             if phase_2_done {
                 break;
             }
@@ -1075,6 +1108,29 @@ impl Run<'_> {
                 }
                 Deferred::Writeback(h) => write_negation(root, terms, events, h),
             }
+        }
+    }
+
+    /// Rebuild root as a single layer once the layer's writes have stacked up
+    /// ([`SolveOptions::coalesce_root_at`], T1a.7.2.0).
+    ///
+    /// This is a *representation* change and nothing else: every fact root
+    /// holds it held a line ago, in the same order, with the same primary
+    /// justification. What it buys is the read path — a fork inherits the
+    /// stack and every `contains` / `facts_of` / `facts_with` walks it — and
+    /// the reason it belongs at the barrier rather than at each write is that
+    /// a layer's writebacks arrive one per candidate while its forks arrive
+    /// thousands per layer.
+    ///
+    /// Not called at the `stop_after` cut: there is no next layer to read the
+    /// flattened root, so the copy would be pure cost.
+    fn coalesce_root(&mut self, root: &mut Kb) {
+        if self
+            .opts
+            .coalesce_root_at
+            .is_some_and(|min| root.depth() >= min)
+        {
+            root.flatten();
         }
     }
 

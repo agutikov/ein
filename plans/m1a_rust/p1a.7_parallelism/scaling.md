@@ -304,9 +304,9 @@ write burst.
 | workload | sequential | | | barrier every 20 | | | one barrier per layer | | |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | | ent. | depth | wall | ent. | depth | wall | ent. | depth | wall |
-| `zebra2 -e` | 101 | 35 | 37 ms | 111 | 5 | 40 ms | **617** | 3 | 163 ms |
+| `zebra2 -e` | 101 | 35 | 37 ms | 111 | 5 | 40 ms | **521** | 3 | 163 ms |
 | `zebra -e` | 111 | 34 | 62 ms | 192 | 5 | 101 ms | **617** | 3 | 273 ms |
-| `zebra2-hints -e` | 36 | 25 | 13 ms | 46 | 4 | 16 ms | **72** | 3 | 21 ms |
+| `zebra2-hints -e` | 36 | 25 | 13 ms | 42 | 4 | 16 ms | **57** | 3 | 21 ms |
 | `branching/04 -e` | 36 | 2 | 1 ms | 36 | 2 | 1 ms | 36 | 2 | 1 ms |
 | `branching/06 -e` | 5 173 | 2 | 263 ms | 5 173 | 2 | 262 ms | **5 173** | 2 | 259 ms |
 | `sq-bwd/houses -e` | 21 699 | 2 | 349 ms | 21 699 | 2 | 349 ms | **21 699** | 2 | 348 ms |
@@ -315,10 +315,21 @@ write burst.
 Three readings, and the third is a finding rather than a confirmation.
 
 **1. What deferral costs is exactly the prune it defers.** On the zebras the
-singleton writeback is doing enormous work in layer 1 — 6.1× and 5.6× the
+singleton writeback is doing enormous work in layer 1 — 5.2× and 5.6× the
 enterings without it — and batching at 20 recovers almost all of it (1.1× and
 1.7×). So batch size is the knob that trades pruning for parallelism, and it is
 a per-workload knob, not a constant.
+
+> **Three of the entering cells above were wrong until 2026-08-22**, and this
+> is what a measurement document owes: `zebra2 -e` read 617 whole-layer where
+> the instrument says **521** — the row below's number, copied one line up —
+> and `zebra2-hints -e` read 46/72 where it says **42/57**. Found by re-running
+> `defer_probe` before writing §6 next to it. Nothing drifted: the same probe
+> on the pre-[S1a.7.1](s1a.7.1_sync_shared_state.md) build prints today's
+> numbers, so these were transcription slips on the day, not an engine change.
+> The wall-clock and depth columns reproduce, the reading above is 5.2× rather
+> than 6.1×, and the conclusion — deferral is rejected because it moves a
+> search counter at all — never depended on which multiple it was.
 
 **2. On the workloads that want cores it costs nothing.** `branching/06 -e` has
 no singleton writeback at all; `branching/07 -e` has 162 and they prune
@@ -352,7 +363,7 @@ decision, not a free optimisation. It is recorded here so
 
 > **What it chose** (2026-08-22): not deferral, and not nothing. Deferral is
 > rejected as the *parallelism* mechanism because it moves `enterings_total`
-> — 101 → 617 whole-layer, 111 at batch 20 on `zebra2 -e` — and a search
+> — 101 → 521 whole-layer, 111 at batch 20 on `zebra2 -e` — and a search
 > counter that differs between `--jobs 1` and `--jobs N` is the one thing the
 > restated acceptance does not admit. But the 2.8× above is **not** a
 > deferral result: the entering count is identical on `branching/07 -e`, so
@@ -363,8 +374,9 @@ decision, not a free optimisation. It is recorded here so
 > standing invariant that a flattened KB and a layered one agree. It recovers
 > the win for every layer above the first (11 297 of `branching/07 -e`'s
 > 11 501 forks) and leaves layer 1's own 204 paying a growing stack.
-> [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.1 measures it first,
-> because it is two lines and it is worth 2.8× at `--jobs 1`.
+> [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.0 measures it first,
+> because it is two lines and it is worth 2.8× at `--jobs 1`. **It is 3.2×**,
+> and § 6 is where it went.
 
 ### The `stop_after` caveat
 
@@ -406,7 +418,102 @@ not covered by the tests above and is not claimed here.
 > the four structures a worker shares: how hard each is read, how rarely each
 > is written, and which of design/08 §6's strategies survived being measured.
 
-## 6. Reproducing
+## 6. T1a.7.2.0 — the layer stack, coalesced at the barrier
+
+§4's third reading found a 2.8× that had nothing to do with the mode it was
+found in: `branching/07 -e` runs 1 135 ms at root depth 164 and 406 ms at depth
+3, **for the same 11 501 enterings**. Deferring is one way to get the depth. It
+is not the cheap one, because it also postpones every prune. Flattening root at
+the layer barrier is: integration stays immediate, no writeback moves, and only
+root's *representation* is rebuilt.
+
+That is `Kb::flatten()` at the end of each layer, gated on
+`SolveOptions::coalesce_root_at` — the depth at which a barrier is worth an
+O(facts) rebuild. `ein-infer/examples/flatten_probe.rs` is the instrument.
+
+### What it is worth
+
+`solve -e` through the CLI, best of five, the two binaries interleaved so a
+thermal drift cannot land on one column. `--cores P:1` on cpu0 of an i9-14900HX,
+governor `powersave`, turbo on.
+
+| workload | before | after | | peak RSS before → after |
+|---|---:|---:|---:|---|
+| `branching/07 -e` | 882 ms | **278 ms** | **3.17×** | 16.4 → 16.7 MB |
+| `zebra -e` | 48.8 ms | 45.2 ms | 1.08× | 16.6 → 16.7 MB |
+| `zebra2 -e` | 31.2 ms | 29.8 ms | 1.05× | 16.6 → 16.7 MB |
+| `zebra2-hints -e` | 13.0 ms | 13.1 ms | 0.99× | 14.6 → 14.6 MB |
+| `branching/06 -e` | 196 ms | 199 ms | 0.98× | 26.6 → 26.7 MB |
+| `sq-bwd/houses -e` | 252 ms | 250 ms | 1.01× | 16.4 → 16.7 MB |
+| `features/01 -e` | 1 680 ms | 1 636 ms | 1.03× | 94.4 → 94.7 MB |
+
+**3.17×, above the 2.8× §4 predicted**, and the last three rows are the reason
+to trust it rather than a reason to doubt it: those three workloads **flatten
+zero times** — their barriers leave root at depth 2, below the threshold — so
+their columns are the measurement's own noise floor, and it is ±2 %. The
+0.98× on `branching/06 -e` reproduces at nine repetitions and is not work: the
+only difference on that file's path is five `depth()` comparisons.
+
+### What it costs
+
+`materialise()` is O(facts) per layer, so the setting is a threshold and not a
+`bool`. The probe's cost columns, over all 49 non-slow corpus files that reach
+a `solve -e` verdict:
+
+| threshold | files that flatten | flattens | facts copied, worst file |
+|---|---:|---:|---:|
+| `None` — off | 0 | 0 | — |
+| `Some(2)` — every barrier | 33 | 1–5 each | 1 160 |
+| **`Some(3)` — shipping** | **4** | **1 each** | **533** |
+| `Some(20)` | 4 | 1 each | 533 |
+
+Three is "a mid-layer write happened": a fork seals root's top, so a layer with
+no writeback leaves depth 2, and 3 is the first depth a writeback can produce.
+The four files that reach it are exactly the four that write back — the two
+zebras, the hints fixture and `branching/07 -e` — and each flattens **once**,
+after layer 1, which is where §3a found all 248 of the corpus's writebacks.
+`Some(20)` behaves identically because no corpus layer stack lands between 3
+and 20; `Some(2)` costs 5× the copying for no measurable time, on files that
+were already at the depth it flattens.
+
+The cost case the threshold exists for — a large root, cheap layers, a
+writeback every layer — **is not in this corpus**: the worst `flatten_facts` in
+the sweep is 1 160, and 533 in the shipping configuration. If one arrives, the
+counter pair (`flatten`, `flatten_facts`, behind `--features counters`) is what
+prices it, and the threshold is where the answer goes.
+
+### What makes it safe
+
+Not an argument — three things that fail loudly.
+
+- **The entering count is identical in every column, on every one of the 49
+  files.** That is what separates this from deferral, which moves it by 5.2× on
+  `zebra2 -e`, and it is the property `--jobs N` will need later in the phase:
+  a knob that rebuilt a representation *and* moved a counter would be a
+  traversal change wearing a performance change's clothes.
+- **`cargo test --workspace` is green with no `EIN_BLESS`.** `corpus_shapes`'s
+  5 178 renderings of 128 files, the four golden sets, `summary_properties`'s
+  thirteen identities over every `solve` cell — a re-bless here would have been
+  the flatten announcing that it changed an observable, and there was none.
+- **Two tests hold the reason rather than the result.**
+  `search_invariants.rs`'s `coalescing_at_the_barrier_collapses_roots_layer_stack`
+  asserts that with the barrier *off* root still ends deeper than 100 on
+  `branching/07 -e` — so the day the writebacks go, the test says so rather than
+  passing vacuously — and that with it on the depth collapses **and the
+  enterings do not move**. `coalescing_costs_no_prune_where_deferring_costs_many`
+  is the same claim on the two zebras, where the deferral's price is visible and
+  the flatten's is zero. `Kb::depth()` reaches four probes and no renderer,
+  which is why this needs a test and not a golden.
+
+### Where the win is *not*
+
+Layer 1 keeps its growing stack: the barrier is a layer boundary, and the
+writebacks are all inside layer 1 (§3a, 248 of 248). On `branching/07 -e` that
+leaves 204 of 11 501 forks walking a stack that is still growing under them and
+puts 11 297 on a stack of one — which is the same 98/2 split every other number
+in this file has, arriving for the third time and from a third direction.
+
+## 7. Reproducing
 
 ```sh
 # §1
@@ -440,4 +547,18 @@ EOF
 cd ein.rs
 cargo run --release -p ein-infer --example defer_probe
 cargo test --release -p ein-infer --test search_invariants
+
+# §6 — the cost/benefit columns, and the corpus sweep behind the threshold
+cargo run --release --features counters -p ein-infer --example flatten_probe
+cargo run --release --features counters -p ein-infer --example flatten_probe -- \
+    $(python3 - <<'EOF'
+import re
+s = open('../corpus/corpus.toml').read()
+for b in s.split('[[entry]]')[1:]:
+    m, r = re.search(r'path\s*=\s*"([^"]+)"', b), re.search(r'runs\s*=\s*\[(.*?)\]', b, re.S)
+    if m and r and '"solve -e"' in r.group(1) and 'slow' not in b \
+       and m.group(1).startswith('examples/'):
+        print(m.group(1))
+EOF
+)
 ```

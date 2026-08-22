@@ -25,7 +25,7 @@ measurable **without a single thread**.
 | share of enterings in layers ≥ 2, on `zebra2 -e` — the phase's stated scaling target | **44.6 %** |
 | the answer under 4 candidate orders and 3 integration policies, 16 files + 2 deep searches | **identical** — verdict and model set |
 | what a whole-layer barrier costs on the workloads that want cores | **nothing** — 5 173 → 5 173 and 11 501 → 11 501 enterings |
-| what it costs on `zebra2 -e` | **6.1×** the enterings — the prune it defers |
+| what it costs on `zebra2 -e` | **5.2×** the enterings — the prune it defers |
 | and one nobody was looking for: `branching/07 -e` under a barrier | **1 135 → 406 ms** at `--jobs 1`, root depth **164 → 3** |
 
 Numbers, method and the raw tables:
@@ -179,12 +179,12 @@ solution node at the barrier, and it is
 
 | workload | sequential | whole-layer barrier |
 |---|---:|---:|
-| `zebra2 -e` | 101 enterings | **617** |
+| `zebra2 -e` | 101 enterings | **521** |
 | `zebra -e` | 111 | **617** |
 | `branching/06 -e` (0 writebacks) | 5 173 | **5 173** |
 | `branching/07 -e` (162 writebacks) | 11 501 | **11 501** |
 
-The zebras pay 6.1× and 5.6×, and batching at 20 gets them back to 1.1× and
+The zebras pay 5.2× and 5.6×, and batching at 20 gets them back to 1.1× and
 1.7×. The deep searches pay nothing at all — the same split finding 4 reaches
 from the other side, since layers ≥ 2 have no root write for a barrier to
 delay.
@@ -202,11 +202,21 @@ whole stack**. `branching/07 -e`'s 162 mid-layer writebacks leave root at
 | barrier every 20 | 11 501 | 13 | 447 ms |
 | one barrier per layer | 11 501 | **3** | **406 ms** |
 
-Same enterings, same answer, **2.8×** — at `--jobs 1`. It is pinned by
-`deferring_collapses_roots_layer_stack`, and it is a P1a.6-shaped result that a
-P1a.7 correctness experiment walked into. Whether the *sequential* engine
-should coalesce is not this stage's call: it changes the traversal, so it is a
-`--jobs`- or `--unordered`-scoped decision.
+Same enterings, same answer, **2.8×** — at `--jobs 1`. It is a P1a.6-shaped
+result that a P1a.7 correctness experiment walked into. Whether the *sequential*
+engine should coalesce is not this stage's call: it changes the traversal, so it
+is a `--jobs`- or `--unordered`-scoped decision.
+
+> **It does not change the traversal, and that was the mistake in the last
+> sentence.** Deferring changes it; coalescing the *representation* does not.
+> [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.0 flattens root at the layer
+> barrier with integration still immediate — every writeback prunes when it did
+> before, every entering count identical — and gets **3.17×** rather than 2.8×,
+> because the barrier also takes `compute_alive` and the forced-positive
+> re-saturation off the deep stack. The test that pins it is
+> `coalescing_at_the_barrier_collapses_roots_layer_stack`, which is this one
+> re-pointed: the entering counts are equal in all its arms, which is what says
+> none of the win was ever the deferral.
 
 ### 8. The workloads worth parallelising are not the ones the phase targets
 

@@ -650,9 +650,23 @@ impl Kb {
     }
 
     /// Collapse the layer stack into one — the operation design/03 §5 calls
-    /// flatten, used when a branch is promoted to a root and as the check
-    /// that layering changed nothing.
+    /// flatten, used when a branch is promoted to a root, as the check that
+    /// layering changed nothing, and — since
+    /// [T1a.7.2.0](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a720--the-layer-stack-coalesced-at-the-barrier)
+    /// — at the search's layer barrier, because every fork inherits the whole
+    /// stack and a mid-layer root write seals another one.
+    ///
+    /// Content-neutral and order-neutral, which is what makes it safe to call
+    /// mid-search: [`Kb::materialise`] concatenates the layers oldest-first,
+    /// so `facts()` and `facts_of()` yield the same sequences, and the two
+    /// last-wins maps (`primary`, `alts`) end up with the same winner a
+    /// newest-first lookup would have found. [`Kb::check_layering`] is the
+    /// standing assertion of exactly that.
     pub fn flatten(&mut self) {
+        crate::counters::bump(|c| {
+            c.flatten += 1;
+            c.flatten_facts += self.n_facts() as u64;
+        });
         let merged = self.materialise();
         self.sealed.clear();
         self.top = merged;

@@ -322,7 +322,7 @@ in every cell:
 |---|---:|---:|---:|
 | `zebra2 -e` sequential | 101 | 35 | 37 ms |
 | `zebra2 -e` batch 20 | 111 | 5 | 40 ms |
-| `zebra2 -e` whole layer | **617** | 3 | 163 ms |
+| `zebra2 -e` whole layer | **521** | 3 | 163 ms |
 | `zebra -e` sequential → whole layer | 111 → **617** | 34 → 3 | 62 → 273 ms |
 | `branching/06 -e` (0 writebacks) | 5 173 → **5 173** | 2 → 2 | 263 → 259 ms |
 | `branching/07 -e` (162 writebacks) | 11 501 → **11 501** | **164 → 3** | **1 135 → 406 ms** |
@@ -330,7 +330,7 @@ in every cell:
 Three readings, and the third was not expected:
 
 1. **The cost of deferring is exactly the prune it defers.** On the zebras the
-   singleton writeback is doing enormous work in layer 1 — 6.1× the enterings
+   singleton writeback is doing enormous work in layer 1 — 5.2× the enterings
    without it — and batching at 20 recovers almost all of it.
 2. **On the workloads that want cores it costs nothing.** `branching/06` has no
    writebacks at all and `branching/07`'s prune nothing: same entering count to
@@ -342,18 +342,20 @@ Three readings, and the third was not expected:
    it. A barrier coalesces them — depth 164 → 3 — for the same enterings and
    the same answer. That is a P1a.6-shaped finding that fell out of a P1a.7
    correctness experiment, and it is pinned by
-   `deferring_collapses_roots_layer_stack`.
+   `coalescing_at_the_barrier_collapses_roots_layer_stack` — which since
+   T1a.7.2.0 pins it against the *flatten* rather than the deferral, because
+   that is what took the win.
 
 ### Not the parallelism mechanism — and the part of it that is
 
 > **Decided 2026-08-22 at
 > [S1a.7.2](../p1a.7_parallelism/s1a.7.2_parallel_enterings.md).** Deferral is
 > not how `--jobs N` gets its layers, for a reason orthogonal to everything
-> above: it moves `enterings_total` — 101 → 617 whole-layer, 111 at batch 20 on
+> above: it moves `enterings_total` — 101 → 521 whole-layer, 111 at batch 20 on
 > `zebra2 -e` — and a search counter that differs between `--jobs 1` and
 > `--jobs N` is exactly what the phase's acceptance does not admit. Applying one
 > batch policy at *every* job count would satisfy invariance, but that is a
-> traversal change to the sequential engine and costs 6.1× the enterings at
+> traversal change to the sequential engine and costs 5.2× the enterings at
 > batch = ∞. So claim 4's re-check obligation is not incurred either: under
 > immediate integration no alive verdict is provisional.
 >
@@ -365,6 +367,16 @@ Three readings, and the third was not expected:
 > the first. It is S1a.7.2's **first** task rather than a later one, because a
 > stage that lands its parallelism first would be measuring speedup against a
 > baseline it could have fixed.
+>
+> **Shipped 2026-08-22 as T1a.7.2.0, and it is 3.17×** —
+> `SolveOptions::coalesce_root_at`, defaulting to a flatten once root is three
+> layers deep, which over the 49 non-slow corpus files that reach a `solve -e`
+> verdict fires on exactly the four that write back, once each. Above the
+> prediction because the barrier also takes `compute_alive`'s probes and
+> `promote_forced_positives`' re-saturation off the deep stack — work the
+> deferral experiment could not separate from the deferral. Entering counts
+> identical in every setting on all 49; the gate green with no re-bless
+> ([scaling.md §6](../p1a.7_parallelism/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
 
 ### Order
 
