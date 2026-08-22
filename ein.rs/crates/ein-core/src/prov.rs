@@ -179,11 +179,40 @@ impl Prov {
 #[derive(Default, Debug)]
 pub struct ProvArena {
     records: Vec<Prov>,
+    /// Ids a caller has declared finished with — see [`ProvArena::retire`].
+    /// Debug builds only: it is an assertion's evidence, not state the engine
+    /// reads.
+    #[cfg(debug_assertions)]
+    retired: crate::bitset::BitSet,
 }
 
 impl ProvArena {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Declare the records in `range` finished with — nothing may read one
+    /// again.
+    ///
+    /// The caller is the search layer, and what it declares is that a fork's
+    /// own derivation records die with the fork. That is the claim
+    /// [T1a.7.1.7](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)
+    /// rests on, and it is why an arena a worker writes need not be shared at
+    /// all: `features/01 -e` pushes **2 135 093** records and root references
+    /// **none** of them when the solve ends
+    /// ([shared_state.md §2b](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md)).
+    ///
+    /// **Nothing is freed.** Retiring is an assertion, not a deallocation: in
+    /// release it compiles to nothing at all, and in debug it arms
+    /// [`ProvArena::get`] to panic on a read that should be impossible. Making
+    /// it *actually* reclaim is the change this claim licenses, not one this
+    /// method performs.
+    pub fn retire(&mut self, range: std::ops::Range<usize>) {
+        #[cfg(debug_assertions)]
+        for id in range.clone() {
+            self.retired.insert(id as u32);
+        }
+        let _ = range;
     }
 
     /// No hash-consing: two firings with the same premises produce two
@@ -197,7 +226,53 @@ impl ProvArena {
     }
 
     pub fn get(&self, id: ProvId) -> &Prov {
+        crate::counters::bump(|c| c.prov_read += 1);
+        #[cfg(debug_assertions)]
+        assert!(
+            !self.retired.contains(id.0),
+            "provenance record {} was read after the fork that created it ended — \
+             see ProvArena::retire",
+            id.0
+        );
         &self.records[id.0 as usize]
+    }
+
+    /// Every record, **retired ones included**, for a consumer that is
+    /// *scanning* the arena rather than following a reference to one.
+    ///
+    /// The distinction is the whole of what [`ProvArena::retire`] measures,
+    /// and it is not academic: T1a.7.1.7 armed the assertion in
+    /// [`ProvArena::get`] over the whole gate and found **exactly one**
+    /// reader of a retired record — `ein-einb`'s writer, which walks the
+    /// arena end to end. So "no live structure references a dead fork's
+    /// record" is true, and "nothing reads one" is not, and a consumer that
+    /// scans says so here rather than by tripping an assertion.
+    ///
+    /// That the scan exists is itself a finding: `.einb` writes the arena in
+    /// full, so a saved KB carries every record a search left behind —
+    /// 2 135 093 of them on `features/01 -e`, of which twelve are live.
+    pub fn scan(&self) -> impl ExactSizeIterator<Item = &Prov> {
+        self.records.iter()
+    }
+
+    /// Has `id` been retired? Debug builds only; `false` everywhere else.
+    ///
+    /// [`ProvArena::get`]'s assertion answers "did anything *read* a dead
+    /// fork's record". This answers the stronger question a reclamation would
+    /// need — "does anything still *hold* one" — which a read-side assertion
+    /// cannot, because an id that is stored and never read trips nothing and
+    /// would still be corrupted by reuse. `ein-infer/tests/provenance.rs`
+    /// asks it of every corpus file that solves.
+    pub fn is_retired(&self, id: ProvId) -> bool {
+        #[cfg(debug_assertions)]
+        {
+            self.retired.contains(id.0)
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            let _ = id;
+            false
+        }
     }
 
     pub fn len(&self) -> usize {

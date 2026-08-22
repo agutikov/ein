@@ -74,7 +74,7 @@ fn main() {
         eprintln!("note: built without --features counters; the fact-store columns are zero");
     }
     println!(
-        "{:<40} {:>7} {:>5} {:>5} {:>12} {:>11} {:>9} {:>6} {:>10} {:>8} {:>16} {:>17} {:>6}",
+        "{:<40} {:>7} {:>5} {:>5} {:>12} {:>11} {:>9} {:>6} {:>10} {:>7} {:>9} {:>20} {:>8} {:>16} {:>17} {:>6}",
         "workload",
         "enter",
         "syms+",
@@ -83,7 +83,10 @@ fn main() {
         "intern",
         "probe",
         "new",
-        "provs",
+        "pushed",
+        "in tcs",
+        "reads",
+        "live: new (all)",
         "provMB",
         "e/fact",
         "e/prov",
@@ -99,6 +102,7 @@ fn main() {
         // search, which is the only region a worker shares anything across.
         ein_infer::saturate_events(&ast, &mut terms, &mut kb).expect("root saturates");
         let (syms, ints, facts) = (terms.syms.len(), terms.ints.len(), terms.facts.len());
+        let provs_before = terms.provs.len() as u32;
         counters::reset();
 
         let opts = SolveOptions {
@@ -108,6 +112,18 @@ fn main() {
         let solved =
             solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts).expect("solves");
         let c = counters::snapshot();
+        // How much of the arena is still reachable from **root** when the
+        // solve ends. The other retention point is a solution node, which
+        // snapshots the fork's KB (`Run::record_node`), so the `sol` column
+        // is what says whether the root figure is the whole live set.
+        let mut live: rustc_hash::FxHashSet<ein_core::ProvId> = Default::default();
+        for f in kb.facts() {
+            live.extend(kb.justifications(f));
+        }
+        // Of the records the *solve* created, how many is anything still
+        // holding? Ids below the mark are the loader's and root saturation's
+        // and were never in question.
+        let live_new = live.iter().filter(|p| p.0 >= provs_before).count();
         let pct = |n: u64| {
             if c.entering == 0 {
                 "n/a".to_string()
@@ -117,7 +133,7 @@ fn main() {
         };
         let _ = facts;
         println!(
-            "{:<40} {:>7} {:>5} {:>5} {:>12} {:>11} {:>9} {:>6} {:>10} {:>8} {:>16} {:>17} {:>6}",
+            "{:<40} {:>7} {:>5} {:>5} {:>12} {:>11} {:>9} {:>6} {:>10} {:>7} {:>9} {:>20} {:>8} {:>16} {:>17} {:>6}",
             rel,
             solved.stats.base.enterings_total,
             terms.syms.len() - syms,
@@ -127,6 +143,17 @@ fn main() {
             c.fact_probe,
             c.fact_new,
             c.prov_push,
+            format!(
+                "{:.1}%",
+                100.0 * c.prov_push_in_entering as f64 / c.prov_push.max(1) as f64
+            ),
+            c.prov_read,
+            format!(
+                "{} ({}) sol {}",
+                live_new,
+                live.len(),
+                solved.stats.solution_nodes
+            ),
             format!(
                 "{:.0}",
                 (terms.provs.len() * std::mem::size_of::<ein_core::Prov>()) as f64 / 1e6

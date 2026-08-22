@@ -298,8 +298,11 @@ impl ProvTables {
 pub fn write_prov(kb: &Kb, terms: &Terms) -> Vec<u8> {
     let mut w = Writer::new();
     w.u32(terms.provs.len() as u32);
-    for i in 0..terms.provs.len() {
-        write_record(&mut w, terms.provs.get(ProvId(i as u32)));
+    // `scan`, not `get`: this walks the arena end to end rather than
+    // following a reference, and a record a finished fork left behind is
+    // exactly what the comment above says it writes.
+    for record in terms.provs.scan() {
+        write_record(&mut w, record);
     }
     let believed: Vec<FactId> = kb.facts().collect();
     let primary: Vec<(FactId, ProvId)> = believed
@@ -554,8 +557,14 @@ pub fn program_section(
     let text = ein_ir::dump_canonical(ast, &resolved);
     // Only the file names provenance can name: the rebuilt registries' own
     // `Loc`s point into the canonical text and are not preserved.
-    let max = (0..terms.provs.len())
-        .filter_map(|i| terms.provs.get(ProvId(i as u32)).loc.map(|l| l.file))
+    // As `write_prov`: a scan of the arena, not a walk of what is live. It
+    // therefore sizes the file table against records a finished fork left
+    // behind too, which is a superset and so harmless — but it is why this
+    // reads through `scan`.
+    let max = terms
+        .provs
+        .scan()
+        .filter_map(|p| p.loc.map(|l| l.file))
         .max();
     let mut w = Writer::new();
     match max {

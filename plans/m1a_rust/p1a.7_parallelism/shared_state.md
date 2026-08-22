@@ -114,39 +114,75 @@ is no protocol. See [§5](#5-what-this-chooses).
 
 Every column of §2a's `provenance record` half is 100 %.
 
-| workload | provenance records pushed | per entering | `Vec<Prov>` bytes |
-|---|---:|---:|---:|
-| `zebra -e` | 6 335 | 57 | 0.6 MB |
-| `zebra2 -e` | 7 280 | 72 | 0.7 MB |
-| `branching/06 -e` | 201 902 | 39 | 19 MB |
-| `branching/07 -e` | 170 140 | 15 | 16 MB |
-| `sq-bwd/houses -e` | 271 909 | 13 | 26 MB |
-| `features/01 -e` | **2 135 093** | 5.6 | **205 MB** |
+| workload | records pushed | ≥ this share from inside `try_commitment_set` | records **read** | still referenced when the solve ends | `Vec<Prov>` bytes |
+|---|---:|---:|---:|---:|---:|
+| `zebra -e` | 6 335 | 99.5 % | 347 | **33** (1 solution) | 0.6 MB |
+| `zebra2 -e` | 7 280 | 95.1 % | 23 936 | **33** (1) | 0.7 MB |
+| `branching/06 -e` | 201 902 | 33.7 % | 125 238 | **162** (22) | 19 MB |
+| `branching/07 -e` | 170 140 | 99.9 % | 308 288 | **162** (0) | 16 MB |
+| `sq-bwd/houses -e` | 271 909 | 100.0 % | 291 032 | **0** (0) | 26 MB |
+| `features/01 -e` | **2 135 093** | 100.0 % | **15** | **0** (0) | **205 MB** |
 
 `Prov` is 96 bytes plus three boxed slices (premises, bindings, `absent`), so
 the byte column is a floor. [design/08
 §6](../design/08_parallelism.md#6-what-must-be-sync-and-how) does not list the
 arena at all, and it has exactly the fact store's borrow-returning read
-(`ProvArena::get` → `&Prov`) with a write rate four orders of magnitude
-higher.
+(`ProvArena::get` → `&Prov`).
 
-It is also the phase's memory risk, already written down and now attributable:
-`features/01 -e` peaks at **724 MB** at `--jobs 1`
-([S1a.6.4](../p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)), and ~28 % of
-that is an arena whose own module doc says the quiet part — *"a dead fork's
-records are not reclaimed until the run ends"*. A job count multiplies live
-forks, and every one of them writes here.
+Three readings, and each rules something out:
 
-What looked tractable is that a fork's records are its own: it writes them and
-reads them back for its unsat core, and no *sibling* ever names one — so a
-per-worker arena dropped at join would need no lock. What stops that is that
-`CommitmentSetResult` hands the fork's **`Kb` back**, so an entering that
-*lives* keeps a justification table pointing into the arena — and the alive
-rate is **92.3 % on `branching/06 -e` and 100 % on both `sq-bwd/houses -e` and
-`features/01 -e`**, so "promote only the survivors" promotes everything. That
-is [T1a.7.1.7](s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)'s
-to settle, with a sharper question than it started with, and it did not exist
-before this measurement.
+- **It is written by forks.** The share column is a *lower bound* — the
+  counter spans `try_commitment_set` only, and a fork stays alive through the
+  `complete()` probe and the commutativity check after it, whose pushes land
+  in the other column. On four of six it is already ≥ 99.5 %.
+- **It is barely read.** 15 reads against 2 135 093 pushes on `features/01 -e`;
+  308 288 against 170 140 at the other extreme. Unlike the fact store, there
+  is **no hot read path to protect here**, so a branch — or a second arena —
+  costs nothing.
+- **Almost none of it survives.** `features/01 -e` creates 2 135 093 records
+  and, when the solve ends, **nothing references one of them**. `sq-bwd/houses -e`:
+  271 909 created, none referenced. Neither has a solution node, so root's
+  count is the whole live set on both.
+
+The reason is structural rather than lucky, and it is one line of
+`Run::entering`: an alive entering's fork is used for the `complete()` probe
+and the dumper hook and then **dropped** — only `a_layer.push(c.clone())`
+survives it, and the next layer re-forks from root. A dying one keeps less
+still: an unsat core and a learned clause, both `FactId`s. The *only* thing
+that retains a fork's derivation is `record_node`, which snapshots the KB of
+an entering that turned out to be a solution.
+
+`prov.rs` already said half of this — *"a dead fork's records are not
+reclaimed until the run ends"* — and understated it. It is not the dead forks;
+it is nearly all of them.
+
+### The claim, and how it is checked
+
+> **A fork's derivation records die with the fork.**
+
+That is what lets a worker hold its own arena instead of sharing one, and it
+is too load-bearing to rest on a reading of the search loop. It is asserted,
+in two directions, because one of them is not enough:
+
+- **Nothing reads one.** `Run::entering` marks the range
+  `try_commitment_set` created and hands it to `ProvArena::retire` at the two
+  points where the fork is definitively gone; `ProvArena::get` panics on a
+  retired id in any debug build, so **the whole gate** — 582 tests, the 542-cell
+  corpus sweep as processes, every renderer — is the experiment. The solution
+  path deliberately does not retire.
+- **Nothing *holds* one.** A read-side assertion cannot see an id that is
+  stored and never read, and that id would still be corrupted by reuse — which
+  is exactly what a reclamation would do. `ein-infer/tests/provenance.rs` walks
+  every justification root believes after solving each corpus file: **5 328
+  live justifications over 90 files, none retired.**
+
+**Arming it found one reader**, and the finding is the distinction rather than
+the bug: `ein-einb`'s writer walks the arena **end to end** — `write_prov`
+says so in as many words, storing "records no *believed* fact points at any
+more, which a search leaves behind". That is a *scan*, not a reference, and it
+now goes through `ProvArena::scan`, which is the seam between the two kinds of
+read. It also means `.einb` writes the garbage: a saved `features/01 -e` would
+carry 2 135 093 records for the twelve that are live.
 
 ---
 
@@ -235,10 +271,16 @@ the committing thread, which
    touched**, there is no dependency, no `unsafe`, and fact-id assignment
    stays **deterministic**, because every assignment happens on one thread in
    candidate order. §5 has what this rejects and why.
-3. **The provenance arena is the one that needs a design**, and it did not
-   have a row in design/08 §6. 100 % of enterings write it, `features/01 -e`
-   writes 2.1 M records and 205 MB of them, and none of it is reclaimed until
-   the run ends.
+3. **The provenance arena is per-worker**, and it did not have a row in
+   design/08 §6. 100 % of enterings write it and `features/01 -e` writes
+   2 135 093 records and 205 MB — of which **nothing is referenced when the
+   solve ends**. A fork's records die with the fork, asserted from both the
+   read side (in every debug build, so the whole gate is the experiment) and
+   the holding side (`ein-infer/tests/provenance.rs`, 5 328 live
+   justifications, none retired). So a worker holds its own arena and the
+   ordered commit promotes only what a solution node keeps — 0 on four of the
+   six workloads. The same claim licenses reclaiming them at `--jobs 1`, which
+   is 205 MB on the file the phase's memory risk names.
 4. **The plan memo is already done** — `Arc<Mutex<PlanMemo>>` since S1a.6.8,
    for the unrelated reason that a memo shared across forks needed one owner.
 5. **The event sink is not `Send`.** `events::Buffer` is
@@ -287,8 +329,11 @@ it needed a mechanism, and it does not.**
 cd ein.rs
 cargo run --release -p ein-infer --features counters --example shared_state_probe
 
-# §3's assertion, over the whole corpus, and §4's audit
-cargo test -p ein-infer --test interning --test shareable
+# §2b's claim from the *holding* side, §3's assertion, §4's audit
+cargo test -p ein-infer --test provenance --test interning --test shareable
+
+# …and from the *read* side, which is every debug build there is
+cargo test --workspace
 
 # the machine state every number above was taken under
 utils/bench_env.sh --report

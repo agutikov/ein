@@ -1,9 +1,11 @@
 # S1a.7.1 — Making the shared state `Sync`
 
 **Phase:** P1a.7 (Parallelism)
-**Estimate:** 3 days — **1.5 d spent; five of the eight tasks are done, one
-was added by the measurement (T1a.7.1.7), and the three that remain are
-smaller than they were**
+**Estimate:** 3 days → **4.5 d.** 2 d spent; five of the eight tasks are done
+and two more are decided-not-built. The estimate moves because T1a.7.1.7 did
+not exist when it was written: the provenance arena is a shared structure
+design/08 §6 has no row for, and building the per-worker arena it now has a
+decision for is **~1.5 d** that the original three did not budget.
 **Depends on:** [P1a.6](../p1a.6_performance/README.md)
 **Implements:** [design/08](../design/08_parallelism.md) §6
 **Measures:** what a worker actually shares —
@@ -272,56 +274,70 @@ Two halves, and one of them exists.
   and delta isolation. It is the only test in this stage that needs a thread,
   and it is the one that decides whether T1a.7.1.2's route (a) is right.
 
-### Task T1a.7.1.7 — The provenance arena
+### Task T1a.7.1.7 — The provenance arena ◑ — *decided, not yet built*
 
-**Added 2026-08-22 by T1a.7.1.0**, which found the shared structure
+**Added 2026-08-22 by T1a.7.1.0** — the shared structure
 [design/08 §6](../design/08_parallelism.md#6-what-must-be-sync-and-how) has no
-row for. It has exactly the fact store's borrow-returning read
-(`ProvArena::get` → `&Prov`) and, unlike the fact store, a real write rate:
-**100 % of enterings push a record**, `branching/06 -e` at 39 per entering,
-`features/01 -e` at **2 135 093 records and 205 MB** of `Vec<Prov>` alone
-([shared_state.md §2b](shared_state.md#2b-the-structure-with-a-real-write-rate-is-the-one-design08-6-left-out)).
+row for — and **decided the same day** by the measurement it asked for.
 
-It is also the phase's own memory risk, now attributable rather than
-suspected: `features/01 -e` peaks at 724 MB at `--jobs 1`
-([S1a.6.4](../p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)) and ~28 % of
-that is an arena whose module doc already says *"a dead fork's records are not
-reclaimed until the run ends"*. A job count multiplies live forks and every
-one of them writes here, so this is the row where "memory scales with jobs"
-actually happens.
+| workload | records pushed | records read | still referenced when the solve ends |
+|---|---:|---:|---:|
+| `zebra -e` | 6 335 | 347 | **33** |
+| `branching/06 -e` | 201 902 | 125 238 | **162** |
+| `sq-bwd/houses -e` | 271 909 | 291 032 | **0** |
+| `features/01 -e` | **2 135 093** | **15** | **0** |
 
-**The obvious answer, and the measurement that kills it.** A fork's records
-are its own — it writes them and reads them back for its unsat core, and no
-*sibling* ever names one — so a **per-worker arena dropped at join** needs no
-lock, changes no read site, and fixes the leak as a side effect. What stops it
-is that `CommitmentSetResult` hands the fork's **`Kb` back**: an entering that
-*lives* keeps a justification table pointing into the arena, so only a dying
-fork's records are certainly garbage, and the survivors' would have to be
-promoted and remapped at the ordered commit.
+Three things fall out, and each rules something out
+([shared_state.md §2b](shared_state.md#2b-the-structure-with-a-real-write-rate-is-the-one-design08-6-left-out)):
 
-That would be free if survivors were rare. **They are not**, and this was
-worth ten seconds of `--json-summary` before it went into a plan:
+- ≥ 33.7 % of the pushes — and ≥ 99.5 % on four of the six — happen inside a
+  fork, so this is a **worker** write;
+- the arena is read 15 times against 2.1 M pushes on the largest workload, so
+  unlike the fact store there is **no hot read path to protect**;
+- and **almost nothing survives**: 2 135 093 records created and none
+  referenced at the end. An alive entering's fork is dropped after the
+  `complete()` probe and the dumper hook, a dying one keeps only `FactId`s,
+  and the sole retainer is `record_node`'s snapshot of a solution.
 
-| workload | enterings | alive |
-|---|---:|---:|
-| `branching/06 -e` | 5 173 | 4 774 (92.3 %) |
-| `sq-bwd/houses -e` | 21 699 | **21 699 (100 %)** |
-| `features/01 -e` | 384 167 | **384 167 (100 %)** |
+**The decision is that the arena is per-worker.** A fork's records die with
+the fork, so a worker holds its own and the ordered commit promotes only what
+a solution node keeps — **zero** on four of the six workloads. Nothing is
+shared, so nothing needs a lock and there is no protocol for `loom`.
 
-So "promote the survivors" promotes essentially everything, and the leak that
-per-worker arenas would have fixed is not a leak of *dead* forks' records —
-those are the minority. Which leaves the task genuinely open, and with a
-sharper question than it started with: **how many of the records a fork
-pushes does its own KB go on to record?** `ProvArena::push` creates one;
-`Kb::record_justification` decides whether any KB keeps it, and
-`accepts_justification` is the pre-check `prov.rs` credits with keeping the
-arena bounded. If the recorded fraction is small, the promotion is small and
-per-worker arenas stand. If it is not, the arena stays global — and then the
-question is whether a `push` can be made not to need `&mut`, on a path that
-fires 2.1 M times, which is the one thing §2's numbers say not to do casually.
+**And the claim is asserted, in both directions**, because it is too
+load-bearing to rest on a reading of the search loop:
 
-Measure that fraction first, as T1a.7.1.0 did. Nothing else about this task
-should be decided before it exists.
+- *nothing reads a retired record* — `Run::entering` marks the range
+  `try_commitment_set` created and hands it to `ProvArena::retire`;
+  `ProvArena::get` panics on a retired id in **any debug build**, so the whole
+  gate is the experiment. Arming it found exactly one reader, and it turned
+  out to be a *scan* rather than a reference: `ein-einb`'s writer walks the
+  arena end to end. Scans now go through `ProvArena::scan`, which is the seam
+  between the two kinds of read;
+- *nothing **holds** one* — the stronger claim a reclamation needs, since an
+  id that is stored and never read trips nothing and would still be corrupted
+  by reuse. `ein-infer/tests/provenance.rs`: **5 328 live justifications over
+  90 corpus files, none retired.**
+
+#### What is left, and why it is not a one-line truncate
+
+`ProvArena::retire` **frees nothing** today — it arms an assertion. Making it
+reclaim is the change the claim licenses, and it is *not* a `Vec::truncate`,
+for a reason worth writing down: on the dead path `handle_dead` pushes root's
+own records (the no-good, the singleton writeback) **after** the fork's, so
+the retired range is not the tail. Retiring earlier is not available either —
+`handle_dead` still reads the fork through `state_key` and the dumper hook,
+and under `--dump-states` that hook renders its justifications, which is
+precisely what the assertion would catch.
+
+So the reclamation *is* the per-worker arena rather than a shortcut to it:
+`Terms` gains a second arena for the fork in hand, `ProvId` distinguishes the
+two (the read is 15 to 308 288 calls, so the branch is free), and
+`record_node` promotes on the one path that retains. **~1.5 d**, and it pays
+twice: it removes the last shared mutable structure from a worker's path, and
+it reclaims **205 MB** on `features/01 -e` at `--jobs 1` — which is where the
+phase's "memory scales with jobs" risk turned out to live. It also stops
+`.einb` writing 2 135 093 records for the twelve that are live.
 
 ## Notes
 

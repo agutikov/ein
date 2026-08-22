@@ -594,6 +594,17 @@ impl Run<'_> {
                 }
                 self.check_budget(dumper)?;
                 self.stats.base.enterings_total += 1;
+                // T1a.7.1.7 — everything `try_commitment_set` records is the
+                // *fork's* own derivation, and dies with the fork. The mark is
+                // taken here and handed to `ProvArena::retire` at each of the
+                // three points below where the fork is definitively gone;
+                // reading one of those records afterwards is a panic in debug
+                // builds and impossible-by-construction is what the claim
+                // needs to be. Root's own records — the no-good, the singleton
+                // writeback, the forced-positive promotion — are pushed
+                // *after* the primitive returns and so lie above the mark's
+                // range, untouched.
+                let fork_provs = terms.provs.len();
                 // T1a.7.1.2 — what this entering appends to the *shared*
                 // tables, which is what decides whether a worker can be
                 // handed a `&Terms` and nothing else. Compiled out with the
@@ -621,6 +632,7 @@ impl Run<'_> {
                         c.entering += 1;
                         c.entering_fact_new += u64::from(facts);
                         c.entering_prov_new += u64::from(provs);
+                        c.prov_push_in_entering += after.prov_push - before.prov_push;
                         if facts {
                             c.entering_fact_new_max_i = c.entering_fact_new_max_i.max(i as u64 + 1);
                         }
@@ -658,8 +670,10 @@ impl Run<'_> {
                     });
                 }
 
+                let fork_provs_end = terms.provs.len();
                 if result.kind != Kind::Alive {
                     self.handle_dead(root, terms, events, dumper, c, layer, &result);
+                    terms.provs.retire(fork_provs..fork_provs_end);
                     continue;
                 }
 
@@ -744,6 +758,8 @@ impl Run<'_> {
                         nogood_subsumed: false,
                     },
                 );
+                drop(fork);
+                terms.provs.retire(fork_provs..fork_provs_end);
                 a_layer.push(c.clone());
             }
 

@@ -157,6 +157,11 @@ pub struct Counters {
     /// [design/08 §6](../../../../plans/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
     /// does not list it, so nobody had asked how hard it is written.
     pub prov_push: u64,
+    /// Records **read** — `ProvArena::get`, which returns a `&Prov`. The
+    /// counterpart to [`Self::fact_read`], and what prices a branch on the
+    /// read path if the arena ever splits into a global half and a fork-local
+    /// one (T1a.7.1.7).
+    pub prov_read: u64,
 
     // ── and the same two questions, *per entering* ─────────────────
     /// Enterings measured by the two counters below — a denominator that
@@ -180,6 +185,11 @@ pub struct Counters {
     /// K sequentially, fan out the rest" removes them all, and the bound on
     /// wasted work stops being `count × jobs`.
     pub entering_fact_new_max_i: u64,
+    /// Records pushed **from inside** an entering — the fork's own, as against
+    /// root's. `prov_push - prov_push_in_entering` is what the committing
+    /// thread wrote, and the split is the whole of T1a.7.1.7's question: a
+    /// fork's records die with the fork, root's do not.
+    pub prov_push_in_entering: u64,
 
     // ── negation at the boundary ───────────────────────────────────
     /// Guard sub-plan evaluations — one per guard, so ein.py's comparable site
@@ -351,10 +361,12 @@ impl Counters {
             fact_intern: 0,
             fact_new: 0,
             prov_push: 0,
+            prov_read: 0,
             entering: 0,
             entering_fact_new: 0,
             entering_prov_new: 0,
             entering_fact_new_max_i: 0,
+            prov_push_in_entering: 0,
             guard_query: 0,
             watch_stamp: 0,
             watch_stamp_rel: 0,
@@ -378,7 +390,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 48] {
+    pub fn rows(&self) -> [(&'static str, u64); 50] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -406,10 +418,12 @@ impl Counters {
             ("fact_intern", self.fact_intern),
             ("fact_new", self.fact_new),
             ("prov_push", self.prov_push),
+            ("prov_read", self.prov_read),
             ("entering", self.entering),
             ("entering_fact_new", self.entering_fact_new),
             ("entering_prov_new", self.entering_prov_new),
             ("entering_fact_new_max_i", self.entering_fact_new_max_i),
+            ("prov_push_in_entering", self.prov_push_in_entering),
             ("guard_query", self.guard_query),
             ("watch_stamp", self.watch_stamp),
             ("watch_stamp_rel", self.watch_stamp_rel),
@@ -483,10 +497,12 @@ mod tests {
         c.fact_intern = 1;
         c.fact_new = 1;
         c.prov_push = 1;
+        c.prov_read = 1;
         c.entering = 1;
         c.entering_fact_new = 1;
         c.entering_prov_new = 1;
         c.entering_fact_new_max_i = 1;
+        c.prov_push_in_entering = 1;
         c.guard_query = 1;
         c.watch_stamp = 1;
         c.watch_stamp_rel = 1;
@@ -509,6 +525,6 @@ mod tests {
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 47);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 49);
     }
 }
