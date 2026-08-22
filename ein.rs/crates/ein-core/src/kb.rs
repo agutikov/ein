@@ -211,6 +211,7 @@ impl Layer {
     fn cites_fork_provenance(&self) -> bool {
         // determinism-ok: an `any` over two maps; no order reaches it.
         self.primary.values().any(|p| p.is_fork())
+            // determinism-ok: the second of the two, and the same reason.
             || self.alts.values().flatten().any(|p| p.is_fork())
     }
 
@@ -220,11 +221,13 @@ impl Layer {
     /// shortest-premises-first and that order is what a minimum-cardinality
     /// explanation search reads.
     fn rewrite_provenance(&mut self, map: &FxHashMap<ProvId, ProvId>) {
+        // determinism-ok: every value is rewritten independently, so the visit order decides nothing.
         for p in self.primary.values_mut() {
             if let Some(&to) = map.get(p) {
                 *p = to;
             }
         }
+        // determinism-ok: as above.
         for a in self.alts.values_mut() {
             for p in a.iter_mut() {
                 if let Some(&to) = map.get(p) {
@@ -1300,12 +1303,14 @@ impl Kb {
         }
         let mut cited: FxHashSet<ProvId> = FxHashSet::default();
         for l in self.layers() {
-            // determinism-ok: a *set* of citations; the order the promotion
-            // assigns ids in comes off the fork's push order, not off this.
+            // The order the promotion assigns ids in comes off the fork's
+            // push order, not off this.
+            // determinism-ok: a *set* of citations.
             cited.extend(l.primary.values().copied().filter(|p| p.is_fork()));
             cited.extend(
                 l.alts
                     .values()
+                    // determinism-ok: the same set through the other map.
                     .flat_map(|a| a.iter().copied())
                     .filter(|p| p.is_fork()),
             );

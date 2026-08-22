@@ -1,13 +1,17 @@
 # S1a.7.1 — Making the shared state `Sync`
 
 **Phase:** P1a.7 (Parallelism)
-**Estimate:** 3 days → **4.5 d.** 3.5 d spent; **six of the eight tasks are
-done**, two of those by deletion, and what is left is T1a.7.1.5's ordering
-audit and the threaded half of T1a.7.1.6. The estimate moved because
-T1a.7.1.7 did not exist when it was written: the provenance arena is a shared
-structure design/08 §6 has no row for, and building the per-worker arena it
-had a decision for was **~1.5 d** the original three did not budget. It is
-built.
+**Estimate:** 3 days → **4.5 d. Closed 2026-08-22**; all eight tasks are done,
+**three of them by deletion** — the interner's lock, the fact store's
+concurrent append, and the multi-threaded stress, each removed by a measurement
+rather than by a judgement call. The estimate moved because T1a.7.1.7 did not
+exist when it was written: the provenance arena is a shared structure
+design/08 §6 has no row for, and building the per-worker arena it had a
+decision for was **~1.5 d** the original three did not budget. It is built.
+**What the stage hands on** is one refactor and no design: `&mut Terms` is
+threaded through 99 signatures and a worker needs a `&Terms`, which is
+[S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.1's first move because that
+is where the first thread is.
 **Depends on:** [P1a.6](../p1a.6_performance/README.md)
 **Implements:** [design/08](../design/08_parallelism.md) §6
 **Measures:** what a worker actually shares —
@@ -33,7 +37,18 @@ The one thing this stage must protect is the invariant that makes
 determinism affordable: **no observable ordering may depend on interner
 assignment order**. Under concurrency, `Symbol` and `FactId` ids get
 assigned nondeterministically, so any sort that reaches output must be
-content-based. That invariant already has an instrument —
+content-based.
+
+> **The second sentence turned out to be false, and it is the reason
+> [T1a.7.1.5](#task-t1a715--ordering-audit)
+> is not the task it was written as.** Nothing this phase builds assigns an id:
+> the symbol table does not grow during a search (T1a.7.1.1) and a worker
+> cannot append to the fact store (T1a.7.1.2), so a parallel run's ids are the
+> sequential run's, assigned at load on one thread. The *invariant* stands and
+> its instrument stands; what is gone is the concurrency that was supposed to
+> make it newly load-bearing.
+
+That invariant already has an instrument —
 `ein-render/tests/id_order_invariance.rs`, which runs the whole corpus under a
 deliberately hostile permutation of the id space and holds every search
 counter, every verdict and every model exactly. What this stage may not do is
@@ -94,6 +109,11 @@ concurrency question: **`&mut Terms` is threaded through 99 signatures**, and a
 worker needs a `&Terms`. The measurement says it needs nothing else, and
 provenance — the one structure that *did* need something — has it.
 
+> **And it is not this stage's question either**, decided when .5 and .6 closed
+> it: a signature refactor with no consumer is a refactor nobody can check.
+> S1a.7.2 T1a.7.2.1 is the first code that needs a `&Terms`, so it is where the
+> 99 signatures change and where a compile error means something.
+
 ## Acceptance
 
 > **Restated 2026-08-22.** The original criteria named `--features parallel`,
@@ -119,10 +139,17 @@ provenance — the one structure that *did* need something — has it.
   not add a rendering to the moved set, and may not remove one either: the
   test asserts both directions, and its `EIN_PARITY_STRICT=1` tally is the
   before-column.
-- A synthetic multi-threaded stress (N threads interning and forking
+- ~~A synthetic multi-threaded stress (N threads interning and forking
   concurrently) shows: interning is idempotent across threads, a
   `FactId` means the same proposition in every thread, and no thread sees
-  another's presence bits.
+  another's presence bits.~~ **Not built, because two of the three claims
+  stopped being claims.** No thread can intern — `intern` is `&mut` and a
+  worker holds `&` (T1a.7.1.2) — so "idempotent across threads" describes an
+  event the type system forbids; `FactId` agreement is a property of one store
+  shared by `&`, asserted by `shareable.rs`; and delta isolation is about fork
+  ownership rather than threads. The stress that *is* worth a thread is
+  `--jobs 8` against `--jobs 1`, and it is
+  [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.6. See T1a.7.1.6.
 - TSan clean; `loom` model checks pass for whatever protocol the shared
   structures end up with. ✅ **There is no protocol to model, and that is the
   finding rather than an evasion.** The fact store ends up with none
@@ -135,7 +162,12 @@ provenance — the one structure that *did* need something — has it.
   applies to the fan-out — which is S1a.7.2's, because there is no thread
   until then.
 - The determinism lint (no hash-map iteration at an observable site) is
-  green with an explicitly reviewed allow-list.
+  green with an explicitly reviewed allow-list. ✅ **and it was red.** Six
+  findings, all of them T1a.7.1.7's own — none a leak, none of them saying so.
+  `python3 utils/check_hashmap_iteration.py` exits 0 over 170 files with 39
+  reviewed annotations, twelve of which are T1a.7.1.5's classification of the
+  identity-order *sorts*, which live in the same list because they answer the
+  same question.
 - **The read path is not slower.** `cargo bench` on the eight-bench M1a
   measurement set, `--features parallel` against the default build, within
   noise. The 26 M reads are the reason this is an acceptance item and not a
@@ -265,30 +297,96 @@ thread-local `RefCell`, which is compiled out unless `--features counters` and
 is per-thread by construction — and which is *why* a per-worker counter merge
 is the established pattern rather than a new idea.
 
-### Task T1a.7.1.5 — Ordering audit under concurrency
+### Task T1a.7.1.5 — Ordering audit ✅
 
-Grep every `sort`, `sort_by_key`, `BTreeMap` and `min`/`max` in the
-engine and classify each as identity-order (fine) or content-order
-(must use the semantic comparator / rank table). Add the classification
-as a comment at each site — this is the audit that
-[design/02](../design/02_determinism_and_order.md) §3 started and that
-concurrency makes load-bearing.
+**Done 2026-08-22 — and it is not about concurrency.** The restatement comes first because it is what the
+stage's own measurements did to the task. It was written as an audit *under
+concurrency*: the premise, stated in § Context, is that "under concurrency,
+`Symbol` and `FactId` ids get assigned nondeterministically, so any sort that
+reaches output must be content-based". **That premise is gone.**
+[T1a.7.1.1](#task-t1a711--interner---and-it-is-not-a-lock) found the symbol
+table does not grow during the search and
+[T1a.7.1.2](#task-t1a712--fact-store) decided a worker cannot append to the
+fact store, so every id a parallel search will ever see is assigned **at load,
+on one thread, in file order** — exactly as today. Nothing this phase builds
+can perturb an id.
 
-The audit has an oracle now that it did not have when it was written:
-`id_order_invariance` finds a site that *does* leak, where the grep finds one
-that *could*. Use the grep to explain, and the sweep to decide.
+The audit is still worth having, because `id_order_invariance` exists and a
+permuted id space is reachable other ways (a different load order, a `.einb`,
+a generated file the fuzzer points the sweep at). What it is not is a
+concurrency obligation, and a task that keeps claiming to be one would have the
+next reader looking for a hazard that was removed two tasks ago.
 
-### Task T1a.7.1.6 — Verification harness
+**The compiler already forbids the dangerous half.** `Symbol` and `IntId` have
+**no `Ord`** — deliberately
+([`intern.rs`](../../../ein.rs/crates/ein-core/src/intern.rs)) — so a numeric
+sort on a name or an integer literal does not compile, and the whole class of
+"a sort that fell back on `Symbol`'s id" is a build error rather than a review
+item. `FactId` and `ProvId` do derive `Ord`, and that is the audit's surface.
 
-Two halves, and one of them exists.
+**138 ordering sites over the six shipping crates, in four classes:**
+
+| class | what it orders | sites | verdict |
+|---|---|---:|---|
+| 1 — content, through a comparator or the rank table | `cmp_fact_semantic`, `syms.rank(...)`, `sym(a).cmp(sym(b))`, and every sort of rendered `String`s | 18 + 34 | safe by construction |
+| 2 — string-keyed `BTreeMap` / `BTreeSet` | all of `ein-ir`'s loader: macro tables, the import graph, keyword maps | 28 | safe by construction, and they are `BTree` *because* a hash map's order would leak |
+| 3 — identity order as a canonical key or a set normalisation | `state_key`, `emit_nogood` / `subsumed`, `filter_candidate`, `union_dead_cores`, `Snapshot::new_facts_of`, `distinct_models`, the snapshot's three | 12 | safe **iff ids are a function of the input** — which is what T1a.7.1.1/.2 now guarantee for a parallel run too |
+| 4 — identity as a *tiebreak* inside a `(String, FactId)` sort | six render and audit sites, all sorting by the rendered text first | 6 | the residual — and it never fires, because interning is by content, so two distinct `FactId`s cannot render identically |
+| — | ordered collections (`BinaryHeap<Ranked>`, the boundary's `BTreeSet<(i64,u64,u32)>`) and `.max()` over lengths | 22 | not identity-ordered at all |
+
+Class 3 is the one a reader stops at, because a `.sort()` on a `Vec<FactId>`
+*looks* like it orders an output. It never does: every one of the twelve is a
+dedup precondition, a subsumption key or a set union, and every consumer
+re-sorts by text before printing — `clause_repr` for a clause,
+`canon_key_repr` for a state key, `sexpr` for a core. Each of the twelve now
+says so at the site, in the `determinism-ok:` form the lint already reads, so
+the classification is in the file a reader has open rather than in this one.
+
+**And the audit found something, which is why it was worth running rather than
+declaring.** The determinism lint — the phase acceptance's "no hash-map
+iteration at an observable site, green with an explicitly reviewed allow-list"
+— **was red**, with six findings, and all six were
+[T1a.7.1.7](#task-t1a717--the-provenance-arena)'s: `promote_provenance`'s walk
+for cited fork records, `rewrite_provenance`'s two remaps,
+`cites_fork_provenance`'s second operand, and the corresponding line in
+`tests/provenance.rs`. None is a leak — they are `any`, `extend` into a set,
+and an in-place remap — but none said so, and the lint is only worth having
+if it is green. `python3 utils/check_hashmap_iteration.py` now exits 0 with
+**39 annotations**.
+
+### Task T1a.7.1.6 — Verification harness ✅
+
+**One half built, one half gone.**
 
 - **The permuted-interner mode is built** —
   `ein-render/tests/id_order_invariance.rs`, corpus-wide, with `EIN_ID_SEEDS`
   and an `EIN_ID_FILES` seam the fuzzer already drives. Nothing to add.
-- **The multi-threaded stress is not.** N threads interning and forking
-  concurrently against one `Terms`, asserting idempotence, `FactId` agreement
-  and delta isolation. It is the only test in this stage that needs a thread,
-  and it is the one that decides whether T1a.7.1.2's route (a) is right.
+- **The multi-threaded stress is not built, and it is not deferred — its
+  subject was removed.** It was specified as *N threads interning and forking
+  concurrently against one `Terms`*, and the task said outright that it "is the
+  one that decides whether T1a.7.1.2's route (a) is right". Route (a) was not
+  taken. Of its three assertions:
+  - *interning is idempotent across threads* — **cannot be tested, because it
+    cannot happen.** `FactStore::intern` and `Interner::intern` take
+    `&mut self`; a worker holds `&`. A test would have to construct the
+    situation the type system forbids, and the type system is the enforcement
+    ([T1a.7.1.2](#task-t1a712--fact-store)).
+  - *a `FactId` means the same proposition in every thread* — true because
+    there is one store, shared by `&`, that nobody writes. `shareable.rs`
+    ([T1a.7.1.4](#task-t1a714--kbcore--program-audit)) is where that is
+    asserted, in the only form it has: the nine types are `Send + Sync`.
+  - *no thread sees another's presence bits* — a claim about **fork
+    ownership**, not about threads: each fork owns its delta, which
+    `ein-core/tests/fork_cost.rs` and `fork_audit` already hold, and which a
+    thread cannot make more or less true.
+
+  What a thread will genuinely be able to check is *`--jobs 8` answers as
+  `--jobs 1` does*, and that is [S1a.7.2](s1a.7.2_parallel_enterings.md)
+  T1a.7.2.6 — a sixth property of `utils/fuzz_ein.py` — with T1a.7.2.1 as the
+  first line of code in the repo that spawns one. Building a synthetic stress
+  here would be scaffolding for a design that was measured away, and it would
+  be the second time this stage was asked to build one: `loom` went the same
+  way, for the same reason, in the acceptance list above.
 
 ### Task T1a.7.1.7 — The provenance arena ✅
 

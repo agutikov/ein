@@ -115,6 +115,11 @@ pub fn lattice_snapshot(
         .iter()
         .map(|s| repr_sorted(terms, &state_key(&s.kb)))
         .collect();
+    // determinism-ok: identity order as `dedup`'s precondition — class A of the
+    // T1a.7.1.5 audit. The *elements* are already in `repr` order
+    // (`repr_sorted`); this outer sort compares them by id and never reaches
+    // an output, because every consumer re-sorts by `canon_key_repr` —
+    // `shape.rs`'s `show`, `lattice_dag`'s `by_rep`.
     solutions.sort();
     solutions.dedup();
     let mut deads: Vec<Box<[FactId]>> = proof
@@ -122,9 +127,13 @@ pub fn lattice_snapshot(
         .iter()
         .map(|d| repr_sorted(terms, &d.state_key))
         .collect();
+    // determinism-ok: as `solutions` above.
     deads.sort();
     deads.dedup();
     let mut alive_at_end: Vec<Vec<FactId>> = proof.alive_at_end.clone();
+    // determinism-ok: as above, and this one is not even `repr_sorted` — a
+    // frontier is a list of *commitments*, whose element order is the
+    // commitment's own and not a canonical key's.
     alive_at_end.sort();
     alive_at_end.dedup();
     LatticeSnapshot {

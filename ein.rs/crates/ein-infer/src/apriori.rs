@@ -117,6 +117,9 @@ pub fn filter_candidate(
         return false;
     }
     let mut set: Vec<FactId> = candidate.to_vec();
+    // determinism-ok: identity order as `is_subset`'s precondition — the
+    // predicate is a set question, so the order decides nothing and only has
+    // to agree with the one the clauses were normalised under (`nogoods`).
     set.sort_unstable();
     !nogoods.iter().any(|clause| is_subset(clause, &set))
 }

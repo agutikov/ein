@@ -74,6 +74,10 @@ impl Answer {
 /// commitment's core.
 pub fn union_dead_cores(cores: &[Vec<FactId>]) -> Vec<FactId> {
     let mut out: Vec<FactId> = cores.iter().flatten().copied().collect();
+    // determinism-ok: identity order as a set union's normalisation. The core
+    // *is* an answer, so this one is worth being explicit about: every site
+    // that renders it re-sorts by text first (`shape.rs`, `slice.rs`,
+    // `trace/linearize.rs`), and `ein-parity` compares it as a set.
     out.sort_unstable();
     out.dedup();
     out

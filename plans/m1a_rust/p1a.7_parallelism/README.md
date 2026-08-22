@@ -1,7 +1,9 @@
 # P1a.7 — Parallelism
 
 **Milestone:** [M1a — Rust port](../README.md)
-**Status:** **resumed 2026-08-22**, two stages in.
+**Status:** **resumed 2026-08-22**, three stages in —
+[S1a.7.1](s1a.7.1_sync_shared_state.md) is **closed** and
+[S1a.7.2](s1a.7.2_parallel_enterings.md)'s first task is shipped.
 [S1a.7.0](s1a.7.0_speculation_audit.md) shipped 2026-08-20 — a stage the plan
 did not have, because the phase's central risk was measurable *before* any of
 it was built. The phase then **paused for two days** at the user's direction
@@ -10,16 +12,27 @@ ran, and the pause is why § The acceptance, restated exists: P1a.10 retired the
 instrument four of the five remaining stages wrote their acceptance in terms
 of. On resumption that restatement came first, then
 [S1a.7.1](s1a.7.1_sync_shared_state.md), which measured *its* premise before
-building and lost two of its six original tasks to the result.
+building and lost **three of its eight** tasks to the result — the interner's
+lock, the fact store's concurrent append and the multi-threaded stress, none of
+them declined, each of them removed by a number.
 
 **Nothing is half-built.** No engine code is in an intermediate state and no
-scaffolding is waiting to be removed. What has shipped is two instruments
-(`spec_audit`, `shared_state_probe`), two measurement documents, three
-invariance tests, a batch-synchronous integration mode that is worth 2.8× at
-`--jobs 1` on its own, a core-set-aware bench harness — and two engine changes
-that are unconditional improvements rather than parallel scaffolding: the
-engine's own names interned once instead of per firing, and a load pass that
-does what the compiler would otherwise do mid-search.
+scaffolding is waiting to be removed. What has shipped is three instruments
+(`spec_audit`, `shared_state_probe`, `flatten_probe`), two measurement
+documents, five invariance tests, a batch-synchronous integration mode that is
+worth 2.8× at `--jobs 1` on its own, a core-set-aware bench harness — and
+**four** engine changes that are unconditional improvements rather than
+parallel scaffolding: the engine's own names interned once instead of per
+firing, a load pass that does what the compiler would otherwise do mid-search,
+the per-worker provenance region (`features/01 -e` from 684–708 MB to
+85–91 MB), and the layer barrier's root coalesce (`branching/07 -e` **3.17×**).
+
+**Not one thread yet, and that is deliberate.** Everything above is either a
+measurement or a sequential improvement the measurements found on the way. The
+first `std::thread::spawn` in the repo will be
+[S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.1's, against a baseline two
+stages of measurement have already made 3.17× faster on the workload the
+scaling target is quoted against.
 
 ## Resumed — what the interval changed
 
@@ -48,13 +61,23 @@ pairs** as of 2026-08-22, 31 of them a dying fork's stopping point and 20 the
 derivation it narrates, **0 answers**. That is exactly the comparison
 `--jobs N` needs, already built, already corpus-wide, and already priced.
 
-**What is still undecided is unchanged**, and both items are written down
-rather than left in someone's head, which was the point of pausing after an
+**What was still undecided when the phase resumed** was written down rather
+than left in someone's head, which was the point of pausing after an
 instrument stage rather than in the middle of a refactor:
 [S1a.7.2](s1a.7.2_parallel_enterings.md)'s four options for layer 1 — with
 **(d) batch-synchronous integration the measured one** and the barrier
-re-check of recorded solution nodes the piece it still owes — and the
+re-check of recorded solution nodes the piece it still owed — and the
 fail-fast × speculation interaction, which design/08 never named.
+
+> **Both closed 2026-08-22, and neither by choosing between the options.** The
+> layer-1 question is answered by *(c)*, sequential layer 1 — one more pass over
+> the event stream found the writebacks are 248 of 248 in layer 1 and that `W`
+> grows to the second-to-last candidate, so there is no head/tail split to take
+> and no fanned-out layer has a `W` at all. That deletes the validator, and with
+> it the fail-fast interaction, which was a question about *continued* forks.
+> (d) is not taken and its finding is: the 2.8× was the layer stack, and
+> T1a.7.2.0 takes it directly for 3.17×.
+> [S1a.7.2 § The decision](s1a.7.2_parallel_enterings.md#the-decision--a-layer-is-fanned-out-iff-it-cannot-write-to-root).
 
 ## The acceptance, restated
 
@@ -156,7 +179,7 @@ asymmetry that matters: `dead` is monotone, so **a death found under deferred
 integration is a real death and a *solution* is provisional**. The barrier
 re-check that turns the measured model-set equality into a constructed one is
 one re-entry per recorded solution node — **and it is not built, because the
-mode it protects is not taken**: deferral moves `enterings_total` (101 → 617
+mode it protects is not taken**: deferral moves `enterings_total` (101 → 521
 here), and a search counter differing by job count is what the acceptance
 forbids. Under immediate integration nothing is provisional.
 
@@ -164,7 +187,7 @@ What it costs, all cells answer-identical:
 
 | workload | sequential | whole-layer barrier |
 |---|---:|---:|
-| `zebra2 -e` | 101 enterings, 37 ms | **617**, 163 ms |
+| `zebra2 -e` | 101 enterings, 37 ms | **521**, 163 ms |
 | `branching/06 -e` (0 writebacks) | 5 173, 263 ms | **5 173**, 259 ms |
 | `branching/07 -e` (162 writebacks) | 11 501, **1 135 ms**, root depth **164** | **11 501**, **406 ms**, root depth **3** |
 
@@ -178,6 +201,15 @@ on the workloads that want cores; on the deepest of them it is a 2.8× discount.
 so all 2.8× is the depth column and none of it is the deferral. S1a.7.2 takes
 it by flattening root at the layer barrier — integration still immediate, no
 prune deferred, no counter moved — as its **first** task, T1a.7.2.0.
+
+> **Shipped 2026-08-22, and it is 3.17×.** `SolveOptions::coalesce_root_at`,
+> `Kb::flatten()` at the layer barrier once root is three layers deep. Above
+> the 2.8× predicted, because the barrier also takes `compute_alive`'s probes
+> and `promote_forced_positives`' re-saturation off the deep stack. Entering
+> counts identical over the 49 non-slow corpus files that reach a `solve -e`
+> verdict; the whole gate green with **no `EIN_BLESS`**; peak RSS within
+> 0.3 MB.
+> [scaling.md §6](scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier).
 
 ## Goal
 
@@ -204,8 +236,8 @@ Design: [design/08](../design/08_parallelism.md).
 | stage | title | est. |
 |---|---|---|
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
-| [S1a.7.1](s1a.7.1_sync_shared_state.md) ◑ | Making the shared state `Sync` — **T1a.7.1.0–.4 done, .7 built**; the ordering audit and the threaded stress are what is left, [shared_state.md](shared_state.md) | 3 d → 4.5 d |
-| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22, on paper: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items | 4 d → 3 d |
+| [S1a.7.1](s1a.7.1_sync_shared_state.md) ✅ | Making the shared state `Sync` — **closed 2026-08-22**, three of eight tasks deleted by measurement and no lock built, [shared_state.md](shared_state.md) | 3 d → 4.5 d |
+| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22, on paper: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items; **T1a.7.2.0 shipped**, 3.17× at `--jobs 1` | 4 d → 3 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) | Level 3: the parallel boundary round | 2 d |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) | Level 2: the parallel enqueue pass | 2 d |
 | [S1a.7.5](s1a.7.5_jobs_contract.md) | The `--jobs` contract | 2 d |
@@ -260,7 +292,20 @@ stays readable.
   write may occur between a layer opening and closing above layer 1. Today
   that is true because the writeback is singleton-only; it is an invariant the
   parallel path depends on and therefore one a debug assertion has to hold.
-- TSan and `loom` clean on the shared structures.
+- TSan and `loom` clean on the shared structures. **`loom` has nothing to
+  model**, and that is [S1a.7.1](s1a.7.1_sync_shared_state.md)'s finding rather
+  than an evasion: every structure design/08 §6 named ends up `&`-shared or
+  per-worker, so there is no protocol. TSan still applies, and applies to the
+  fan-out, which is where the first thread is.
+- **The determinism lint is green**, with 39 reviewed annotations — twelve of
+  them T1a.7.1.5's classification of the engine's identity-order *sorts*, which
+  live in the lint's allow-list because they answer the lint's question. It was
+  red until 2026-08-22, on six lines T1a.7.1.7 had added.
+- **The layer barrier's root coalesce is answer- and traversal-neutral.**
+  T1a.7.2.0: entering counts identical over the 49 non-slow corpus files that
+  reach a `solve -e` verdict, in every threshold setting, and the gate green
+  with no `EIN_BLESS`
+  ([scaling.md §6](scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
 
 ## Risks
 

@@ -125,6 +125,8 @@ fn query_goal(ast: &Ast, kb: Option<&Kb>) -> Option<NodeId> {
 /// makes an empty branch list report its own length.
 fn distinct_models(branches: &[ein_infer::Solution]) -> usize {
     let mut keys: Vec<Box<[FactId]>> = branches.iter().map(|b| state_key(&b.kb)).collect();
+    // determinism-ok: the sort is `dedup`'s precondition and nothing else —
+    // what leaves this function is a *count*, which no order can move.
     keys.sort();
     keys.dedup();
     if keys.is_empty() {

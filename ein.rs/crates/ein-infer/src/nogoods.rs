@@ -63,6 +63,9 @@ pub fn emit_nogood(
     min_size: usize,
 ) -> bool {
     let mut sorted: Vec<FactId> = clause.to_vec();
+    // determinism-ok: identity order as the set normalisation the subsumption
+    // scan compares under — never rendered. `clause_repr` is what the event
+    // stream sees, and it sorts the *strings*.
     sorted.sort_unstable();
     sorted.dedup();
     if sorted.len() < min_size {
@@ -115,6 +118,7 @@ pub fn emit_nogood(
 /// clause was new at the point the entering died.
 pub fn subsumed(kb: &Kb, clause: &[FactId], min_size: usize) -> bool {
     let mut sorted: Vec<FactId> = clause.to_vec();
+    // determinism-ok: as in `emit_nogood` — the same normalisation, read-only.
     sorted.sort_unstable();
     sorted.dedup();
     if sorted.len() < min_size {

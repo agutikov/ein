@@ -106,7 +106,7 @@ does not need to append to the fact store; it needs to be *told* when it
 would have to, and to hand that entering back. `FactStore::intern` takes
 `&mut self`, so a worker holding `&FactStore` cannot call it — the type system
 is the enforcement, and there is no protocol to model in `loom` because there
-is no protocol. See [§5](#5-what-this-chooses).
+is no protocol. See [§4](#4-what-this-chooses).
 
 ---
 
@@ -207,9 +207,16 @@ with the change stashed, so the columns differ by one commit.
 | `zebra -e` | 0.6 MB | **0** | 17 MB | 17 MB | 0.05 s | 0.05 s |
 | `zebra2 -e` | 0.7 MB | **0** | 17 MB | **10 MB** | 0.03 s | 0.03 s |
 | `branching/06 -e` | 19 MB | **6 MB** | 60 MB | **21 MB** | 0.21 s | 0.21 s |
-| `branching/07 -e` | 16 MB | **0** | 55 MB | **16 MB** | 0.92 s | 0.90 s |
+| `branching/07 -e` | 16 MB | **0** | 55 MB | **16 MB** | 0.92 s | 0.90 s ⁺ |
 | `sq-bwd/houses -e` | 26 MB | **0** | 93 MB | **17 MB** | 0.28 s | 0.25 s |
 | `features/01 -e` | **205 MB** | **0** | **684–708 MB** | **85–91 MB** | 1.97 s | **1.68 s** |
+
+⁺ **A dated column, and one cell has since moved.** These are the two sides of
+one commit, taken 2026-08-22 — not a claim about the engine today.
+`branching/07 -e` is **0.28 s** since T1a.7.2.0 coalesced root's layer stack
+([scaling.md §6](scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)),
+which also took the entry off the corpus's `slow` tier. Nothing else in the
+table changed by more than noise.
 
 - **The reclamation is nearly total.** Five of the six end with an arena under
   half a megabyte. `branching/06 -e` is the exception, and it is the one that
@@ -339,10 +346,22 @@ the committing thread, which
    counters already have: a per-worker buffer merged at the ordered commit, so
    the stream a reader sees is the sequential one. `ein-infer/tests/shareable.rs`
    pins it, in both directions.
-6. **`&mut Terms` is still threaded through 99 signatures**, and that is what
-   is left of this stage. The refactor is now a question about *those*
-   signatures rather than about concurrency: what a worker needs is a `&Terms`,
-   and the measurement says it needs nothing else.
+6. **`&mut Terms` is still threaded through 99 signatures**, and it is the one
+   thing the stage hands on rather than settles. The refactor is a question
+   about *those signatures* rather than about concurrency: what a worker needs
+   is a `&Terms`, and the measurement says it needs nothing else. It belongs to
+   [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.1, because that is the
+   first code that needs one and therefore the first place a compile error
+   means something.
+7. **Nothing this phase builds can perturb an id**, which is the corollary of
+   1 and 2 and which retired a task. The ordering audit
+   ([T1a.7.1.5](s1a.7.1_sync_shared_state.md#task-t1a715--ordering-audit))
+   was specified against "under concurrency, `Symbol` and `FactId` ids get
+   assigned nondeterministically"; they do not, because the tables do not grow
+   during a search and a worker cannot write them. The audit ran anyway — 138
+   ordering sites, four classes, twelve of them identity-order and now annotated
+   at the site — and found the thing a declaration would have missed: the
+   **determinism lint was red**, on six lines §2c's own mechanism had added.
 
 ---
 

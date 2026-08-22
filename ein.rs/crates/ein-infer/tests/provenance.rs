@@ -104,6 +104,10 @@ fn no_live_fact_is_justified_by_a_forks_record() {
         let mut check = |what: &str, kb: &Kb| {
             let live = cited(kb);
             checked += live.len();
+            // *Which* of several offenders names itself in the message would
+            // depend on the order; that there is one does not, and the
+            // assertion is the latter.
+            // determinism-ok: an existence question over a set.
             if let Some(p) = live.into_iter().find(|p| p.is_fork()) {
                 bad.push(format!(
                     "{}: {what} is justified by {p:?}, a record its fork took with it",

@@ -34,6 +34,13 @@ use ein_core::{FactId, Kb};
 /// sorted.
 pub fn state_key(kb: &Kb) -> Box<[FactId]> {
     let mut out: Vec<FactId> = kb.facts().collect();
+    // determinism-ok: identity order, and this is class A of the T1a.7.1.5
+    // audit — a canonical *key*, compared for equality and never rendered.
+    // Any total order gives the same equivalence classes (design/02 §6); what
+    // the order has to be is a function of the input, which it is, because
+    // ids are assigned at load and the search assigns none (T1a.7.1.1/.2).
+    // The dumper re-sorts by repr before printing — `dump::snapshot`'s
+    // `repr_sorted`, and the paragraph above.
     out.sort_unstable();
     out.into_boxed_slice()
 }
