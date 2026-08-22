@@ -21,8 +21,15 @@
 //!   `reads` is the borrow-returning path (`rel`/`args`/`row`/`get`),
 //!   `intern` is every interning call and `new` the ids they assigned. It is
 //!   the *ratio* that chooses the strategy. `provs` is the same question of
-//!   the provenance arena, which design/08 §6 does not list and which has the
+//!   the provenance arena, which design/08 §6 did not list and which has the
 //!   same borrow-returning read.
+//!
+//! **Since T1a.7.1.7 the `provMB` column is an *after* number.** `pushed` still
+//! counts every record the search created, in either region; `provMB` is the
+//! arena proper, which is what the run ends holding. The gap between them is
+//! the reclamation — 2 135 093 pushes and under half a megabyte left on
+//! `features/01 -e` — and where the column is not zero, it is what a solution
+//! node's promotion copied out (`branching/06 -e`, 22 nodes, 6 MB).
 //!
 //! And, because a total does not answer it, the same two questions **per
 //! entering**: `e/fact` and `e/prov` are the share of enterings that appended

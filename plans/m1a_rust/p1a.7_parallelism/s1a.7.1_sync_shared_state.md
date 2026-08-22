@@ -1,11 +1,13 @@
 # S1a.7.1 — Making the shared state `Sync`
 
 **Phase:** P1a.7 (Parallelism)
-**Estimate:** 3 days → **4.5 d.** 2 d spent; five of the eight tasks are done
-and two more are decided-not-built. The estimate moves because T1a.7.1.7 did
-not exist when it was written: the provenance arena is a shared structure
-design/08 §6 has no row for, and building the per-worker arena it now has a
-decision for is **~1.5 d** that the original three did not budget.
+**Estimate:** 3 days → **4.5 d.** 3.5 d spent; **six of the eight tasks are
+done**, two of those by deletion, and what is left is T1a.7.1.5's ordering
+audit and the threaded half of T1a.7.1.6. The estimate moved because
+T1a.7.1.7 did not exist when it was written: the provenance arena is a shared
+structure design/08 §6 has no row for, and building the per-worker arena it
+had a decision for was **~1.5 d** the original three did not budget. It is
+built.
 **Depends on:** [P1a.6](../p1a.6_performance/README.md)
 **Implements:** [design/08](../design/08_parallelism.md) §6
 **Measures:** what a worker actually shares —
@@ -82,14 +84,15 @@ of root saturation, and counted what the **search** does to each shared table.
   The **provenance arena** is written by 100 % of enterings — 39 records per
   entering on `branching/06 -e`, **2 135 093 records and 205 MB** on
   `features/01 -e` — and has the same borrow-returning read. It is also where
-  the phase's memory risk lives: that file peaks at 724 MB at `--jobs 1` and
-  ~28 % of it is an arena nothing reclaims until the run ends. New task,
-  T1a.7.1.7.
+  the phase's memory risk turned out to live: that file peaked at 684–708 MB
+  at `--jobs 1`, and nearly all of it was an arena nothing reclaimed until the
+  run ended. New task, T1a.7.1.7 — **built**, and the file now peaks at
+  85–91 MB.
 
 What is left of the stage is therefore one question, and it is not a
 concurrency question: **`&mut Terms` is threaded through 99 signatures**, and a
-worker needs a `&Terms`. The measurement says it needs nothing else — except
-for provenance, which is T1a.7.1.7's.
+worker needs a `&Terms`. The measurement says it needs nothing else, and
+provenance — the one structure that *did* need something — has it.
 
 ## Acceptance
 
@@ -121,12 +124,16 @@ for provenance, which is T1a.7.1.7's.
   `FactId` means the same proposition in every thread, and no thread sees
   another's presence bits.
 - TSan clean; `loom` model checks pass for whatever protocol the shared
-  structures end up with. **The fact store ends up with none** (T1a.7.1.2:
-  workers hold `&FactStore` and `intern` is `&mut`), so this criterion now
-  points at whatever T1a.7.1.7 gives the provenance arena — and if that is
-  also a per-worker structure with no cross-thread protocol, the criterion is
-  met by there being nothing to model and the stage says so rather than
-  shipping a `loom` test of a `Mutex`.
+  structures end up with. ✅ **There is no protocol to model, and that is the
+  finding rather than an evasion.** The fact store ends up with none
+  (T1a.7.1.2: workers hold `&FactStore` and `intern` is `&mut`); the interner
+  ends up with none (T1a.7.1.1: it does not grow); and the provenance arena
+  ends up with none either (T1a.7.1.7: the region a worker writes is its own).
+  Every structure design/08 §6 named is now `&`-shared or per-worker, so a
+  `loom` test here would be a model of scaffolding this stage invented for it.
+  design/08 §8's bullet is struck through to say so. TSan still applies, and
+  applies to the fan-out — which is S1a.7.2's, because there is no thread
+  until then.
 - The determinism lint (no hash-map iteration at an observable site) is
   green with an explicitly reviewed allow-list.
 - **The read path is not slower.** `cargo bench` on the eight-bench M1a
@@ -134,6 +141,15 @@ for provenance, which is T1a.7.1.7's.
   noise. The 26 M reads are the reason this is an acceptance item and not a
   note — and after T1a.7.1.2 the expected answer is *identical*, not *within
   noise*, because no read site is changed at all.
+  ✅ **for the one read site that did change.** T1a.7.1.7 put a branch in
+  `ProvArena::get`, so this item came due early and was answered in the
+  shipping build rather than in a bench: best-of-five `solve -e` on one
+  P-core, before/after one commit, on the two read-heaviest workloads —
+  `branching/07 -e` (308 288 arena reads) 0.92 → **0.90 s**,
+  `sq-bwd/houses -e` (291 032) 0.28 → **0.25 s**, and `features/01 -e`
+  1.97 → **1.68 s**. Not slower anywhere; 15 % faster where the arena was
+  largest ([shared_state.md §2c](shared_state.md#2c-what-the-region-did--the-after-column)).
+  The `--features parallel` half stays owed, because the flag does not exist.
 
 ## Tasks
 
@@ -274,11 +290,12 @@ Two halves, and one of them exists.
   and delta isolation. It is the only test in this stage that needs a thread,
   and it is the one that decides whether T1a.7.1.2's route (a) is right.
 
-### Task T1a.7.1.7 — The provenance arena ◑ — *decided, not yet built*
+### Task T1a.7.1.7 — The provenance arena ✅
 
-**Added 2026-08-22 by T1a.7.1.0** — the shared structure
-[design/08 §6](../design/08_parallelism.md#6-what-must-be-sync-and-how) has no
-row for — and **decided the same day** by the measurement it asked for.
+**Added, decided and shipped 2026-08-22** — the shared structure
+[design/08 §6](../design/08_parallelism.md#6-what-must-be-sync-and-how) had no
+row for. T1a.7.1.0 added it, the measurement it asked for decided it, and the
+assertion that decision rested on is what licensed building it.
 
 | workload | records pushed | records read | still referenced when the solve ends |
 |---|---:|---:|---:|
@@ -304,40 +321,104 @@ the fork, so a worker holds its own and the ordered commit promotes only what
 a solution node keeps — **zero** on four of the six workloads. Nothing is
 shared, so nothing needs a lock and there is no protocol for `loom`.
 
-**And the claim is asserted, in both directions**, because it is too
-load-bearing to rest on a reading of the search loop:
+**And the claim was asserted before it was built on**, in both directions,
+because it is too load-bearing to rest on a reading of the search loop. The
+first pass shipped `ProvArena::retire`, which freed nothing and armed an
+assertion instead:
 
-- *nothing reads a retired record* — `Run::entering` marks the range
-  `try_commitment_set` created and hands it to `ProvArena::retire`;
-  `ProvArena::get` panics on a retired id in **any debug build**, so the whole
-  gate is the experiment. Arming it found exactly one reader, and it turned
-  out to be a *scan* rather than a reference: `ein-einb`'s writer walks the
-  arena end to end. Scans now go through `ProvArena::scan`, which is the seam
-  between the two kinds of read;
+- *nothing reads a retired record* — `Run::entering` marked the range
+  `try_commitment_set` created; `ProvArena::get` panicked on a retired id in
+  any debug build, so the whole gate was the experiment. Arming it found
+  exactly one reader, and it turned out to be a *scan* rather than a
+  reference: `ein-einb`'s writer walks the arena end to end. Scans go through
+  `ProvArena::scan`, which is the seam between the two kinds of read;
 - *nothing **holds** one* — the stronger claim a reclamation needs, since an
   id that is stored and never read trips nothing and would still be corrupted
   by reuse. `ein-infer/tests/provenance.rs`: **5 328 live justifications over
   90 corpus files, none retired.**
 
-#### What is left, and why it is not a one-line truncate
+Both survive the build that followed, in stronger form — the region's monotone
+base replaces the debug-only bitset, and the test now asks its question of the
+recorded solutions too. `retire` is gone; the assertion it armed is what the
+mechanism now enforces.
 
-`ProvArena::retire` **frees nothing** today — it arms an assertion. Making it
-reclaim is the change the claim licenses, and it is *not* a `Vec::truncate`,
-for a reason worth writing down: on the dead path `handle_dead` pushes root's
-own records (the no-good, the singleton writeback) **after** the fork's, so
-the retired range is not the tail. Retiring earlier is not available either —
-`handle_dead` still reads the fork through `state_key` and the dumper hook,
-and under `--dump-states` that hook renders its justifications, which is
-precisely what the assertion would catch.
+#### What shipped, and why it was not a one-line truncate
 
-So the reclamation *is* the per-worker arena rather than a shortcut to it:
-`Terms` gains a second arena for the fork in hand, `ProvId` distinguishes the
-two (the read is 15 to 308 288 calls, so the branch is free), and
-`record_node` promotes on the one path that retains. **~1.5 d**, and it pays
-twice: it removes the last shared mutable structure from a worker's path, and
-it reclaims **205 MB** on `features/01 -e` at `--jobs 1` — which is where the
-phase's "memory scales with jobs" risk turned out to live. It also stops
-`.einb` writing 2 135 093 records for the twelve that are live.
+`ProvArena::retire` used to **free nothing** — it armed an assertion. Making it
+reclaim was not a `Vec::truncate`, for a reason worth keeping: on the dead path
+`handle_dead` pushes root's own records (the no-good, the singleton writeback)
+*after* the fork's, so the retired range is not the tail. Retiring earlier was
+not available either — `handle_dead` still reads the fork through `state_key`
+and the dumper hook, and under `--dump-states` that hook renders its
+justifications, which is precisely what the assertion would catch.
+
+So the reclamation **is** the per-worker arena rather than a shortcut to it.
+
+- **`ProvId` grew a tag.** Bit 31 says *fork region*; the remaining 31 bits
+  index the arena proper or position in the region's sequence. The tag
+  preserves the order the untagged ids had, because a fork's records are
+  pushed after everything that existed when it opened.
+- **`ProvArena` grew the region**, and `push` routes into it. Every existing
+  `terms.provs.push` / `get` call site — some thirty of them, down call stacks
+  the search does not own — is untouched, which is the whole reason the region
+  lives on the arena rather than being threaded through as a second parameter.
+- **Three verbs, not two.** `open_fork` starts routing; `close_fork` *stops
+  routing while the records stay readable*; `discard_fork` frees. The middle
+  one exists because `handle_dead` writes root's no-good and `(not h)` after
+  the fork is over but before the dumper has rendered the fork's own
+  justifications — routing has to stop one step earlier than reclamation does.
+- **Reuse is caught, in release too.** The region's base is monotone:
+  `discard_fork` advances it past every id that region issued, so a stale id
+  falls *below* the live base and `get` panics instead of silently addressing
+  the wrong record. That is strictly stronger than the debug-only bitset it
+  replaces, and it is the property a reclamation actually needs — an id that
+  is stored and never read trips no read-side check in any build.
+- **`Kb::promote_provenance` is the one retaining path.** `record_node`
+  snapshots a solution's KB, so before the snapshot the KB's citations are
+  copied into the arena proper and rewritten. It walks layers, and it
+  `Arc::make_mut`s only a layer that actually cites a fork record — so root's
+  shared sealed layers, which by construction cite none, are never cloned; in
+  practice one layer is touched, the fork's own top.
+- **Promotion order is the fork's push order**, not the caller's iteration
+  order, because the citations are collected from `FxHashMap`s and which ids a
+  promotion assigns may not depend on where a `FactId` hashed
+  ([design/02](../design/02_determinism_and_order.md) §3). `id_order_invariance`
+  is the instrument that would have found the other choice: 25 280 permutations,
+  478 moved, **0 answers differ**.
+- **`.einb` cannot save one.** The writer stores a `ProvId` as the record's
+  position in its own scan, which holds for the arena proper and for nothing
+  else. Saving happens between enterings so there are none — asserted rather
+  than assumed, because the failure mode is a saved KB whose derivations
+  silently point at the wrong records.
+
+**And it pays twice.** It removes the last shared mutable structure from a
+worker's path — nothing is shared, so there is no protocol for `loom` and the
+acceptance says so — and it reclaims the memory *sequentially*, which is where
+the phase's "memory scales with jobs" risk turned out to live:
+
+| | before | after |
+|---|---:|---:|
+| `features/01 -e` peak RSS at `--jobs 1` | 684–708 MB | **85–91 MB** |
+| …wall clock, best of five | 1.97 s | **1.68 s** |
+| `sq-bwd/houses -e` peak RSS | 93 MB | **17 MB** |
+| `branching/07 -e` peak RSS | 55 MB | **16 MB** |
+| arena bytes, five of the six workloads | 0.6–205 MB | **< 0.5 MB** |
+
+`branching/06 -e` is the sixth, and it is the one that proves the mechanism
+rather than breaking it: 22 solution nodes, so 6 MB of its 19 is what
+promotion copied out. Full table:
+[shared_state.md §2c](shared_state.md#2c-what-the-region-did--the-after-column).
+
+**What checks it.** `cargo test --workspace` is green in **both** profiles at
+587 tests with no `EIN_BLESS`, which is the acceptance item's real content — a
+re-bless would have been the refactor announcing that it changed an
+observable. `ein-infer/tests/provenance.rs` is re-pointed from "is this id
+retired" to "is this id a fork's", which is checkable in every build, and
+extended to the recorded solutions, because promotion is the step that could be
+incomplete: **7 037 live justifications over 90 files and 65 solution nodes,
+none of them a fork's, 6 773 records promoted.** Four unit tests in `prov.rs`
+hold the region's own contract, including that a stale id panics rather than
+aliasing.
 
 ## Notes
 

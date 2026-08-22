@@ -164,25 +164,73 @@ That is what lets a worker hold its own arena instead of sharing one, and it
 is too load-bearing to rest on a reading of the search loop. It is asserted,
 in two directions, because one of them is not enough:
 
-- **Nothing reads one.** `Run::entering` marks the range
-  `try_commitment_set` created and hands it to `ProvArena::retire` at the two
-  points where the fork is definitively gone; `ProvArena::get` panics on a
-  retired id in any debug build, so **the whole gate** — 582 tests, the 542-cell
-  corpus sweep as processes, every renderer — is the experiment. The solution
-  path deliberately does not retire.
+- **Nothing reads one.** The search opens a fork region per entering and
+  discards it at the three points where the fork is gone. The region's base is
+  **monotone**, so an id it issued addresses nothing once the region is gone
+  and `ProvArena::get` panics on it — in *every* build, not only where
+  `debug_assertions` are on, which matters because reuse is precisely what a
+  debug-only check would stop covering. **The whole gate** is the experiment:
+  587 tests in both profiles, the 542-cell corpus sweep as processes, every
+  renderer.
 - **Nothing *holds* one.** A read-side assertion cannot see an id that is
-  stored and never read, and that id would still be corrupted by reuse — which
-  is exactly what a reclamation would do. `ein-infer/tests/provenance.rs` walks
-  every justification root believes after solving each corpus file: **5 328
-  live justifications over 90 files, none retired.**
+  stored and never read, and that id is exactly what a reclamation would
+  corrupt. `ein-infer/tests/provenance.rs` walks every justification a solved
+  KB believes — root's **and every recorded solution's**, because promotion is
+  the step that could be incomplete: **7 037 live justifications over 90 files
+  and 65 solution nodes, none of them a fork's, 6 773 records promoted.**
 
 **Arming it found one reader**, and the finding is the distinction rather than
 the bug: `ein-einb`'s writer walks the arena **end to end** — `write_prov`
 says so in as many words, storing "records no *believed* fact points at any
 more, which a search leaves behind". That is a *scan*, not a reference, and it
 now goes through `ProvArena::scan`, which is the seam between the two kinds of
-read. It also means `.einb` writes the garbage: a saved `features/01 -e` would
-carry 2 135 093 records for the twelve that are live.
+read. It also meant `.einb` wrote the garbage: a saved `features/01 -e` would
+have carried 2 135 093 records for the twelve that are live. It no longer can
+— the region is not scanned, and the writer asserts that no id it stores is a
+fork's, because the failure mode is a saved KB whose derivations silently
+point at the wrong records.
+
+---
+
+## 2c. What the region did — the after column
+
+Same probe, same machine, same day. The `Vec<Prov>` column is §2b's, re-taken;
+the two on the right are the *shipping* build, which the preamble's caveat does
+not cover and which is the point: `cargo build --release -p ein-cli`, no
+counters, `ein solve -e` pinned to one P-core, best-of-five for wall and two
+runs for RSS. The before-side is the same binary built from the same `HEAD`
+with the change stashed, so the columns differ by one commit.
+
+| workload | arena bytes | | peak RSS | | wall | |
+|---|---:|---:|---:|---:|---:|---:|
+| | *before* | *after* | *before* | *after* | *before* | *after* |
+| `zebra -e` | 0.6 MB | **0** | 17 MB | 17 MB | 0.05 s | 0.05 s |
+| `zebra2 -e` | 0.7 MB | **0** | 17 MB | **10 MB** | 0.03 s | 0.03 s |
+| `branching/06 -e` | 19 MB | **6 MB** | 60 MB | **21 MB** | 0.21 s | 0.21 s |
+| `branching/07 -e` | 16 MB | **0** | 55 MB | **16 MB** | 0.92 s | 0.90 s |
+| `sq-bwd/houses -e` | 26 MB | **0** | 93 MB | **17 MB** | 0.28 s | 0.25 s |
+| `features/01 -e` | **205 MB** | **0** | **684–708 MB** | **85–91 MB** | 1.97 s | **1.68 s** |
+
+- **The reclamation is nearly total.** Five of the six end with an arena under
+  half a megabyte. `branching/06 -e` is the exception, and it is the one that
+  explains the rule: it has **22 solution nodes**, and 6 MB is what
+  `Kb::promote_provenance` copied out for them.
+- **The RSS win is larger than the arena.** 205 MB of `Vec<Prov>` is worth
+  ~600 MB of peak RSS, because §2b's byte column was explicitly a floor: each
+  `Prov` owns three boxed slices besides, and the allocator holds everything a
+  2.1 M-element vector's doublings touched.
+- **The read path is not slower; it is faster.** The branch `ProvArena::get`
+  gained is invisible on the two read-heavy workloads — 308 288 and 291 032
+  reads, 0.92 → 0.90 s and 0.28 → 0.25 s — and on `features/01 -e` *not*
+  building 205 MB of garbage is worth **15 %** of the solve. That settles
+  S1a.7.1's "the read path is not slower" acceptance item in the shipping
+  build rather than in a bench.
+
+**This is the phase's memory risk, and it was not where the risk register put
+it.** [README § Risks](README.md#risks) sizes `--jobs N` by a fork's ~6 KB
+delta and warns that "memory scales with jobs"; `features/01 -e` was spending
+600 MB at `--jobs 1` on records nothing would ever read again. Per-worker
+arenas do not make that cheaper N times over — they make it not happen.
 
 ---
 
@@ -271,16 +319,18 @@ the committing thread, which
    touched**, there is no dependency, no `unsafe`, and fact-id assignment
    stays **deterministic**, because every assignment happens on one thread in
    candidate order. §5 has what this rejects and why.
-3. **The provenance arena is per-worker**, and it did not have a row in
-   design/08 §6. 100 % of enterings write it and `features/01 -e` writes
-   2 135 093 records and 205 MB — of which **nothing is referenced when the
-   solve ends**. A fork's records die with the fork, asserted from both the
-   read side (in every debug build, so the whole gate is the experiment) and
-   the holding side (`ein-infer/tests/provenance.rs`, 5 328 live
-   justifications, none retired). So a worker holds its own arena and the
-   ordered commit promotes only what a solution node keeps — 0 on four of the
-   six workloads. The same claim licenses reclaiming them at `--jobs 1`, which
-   is 205 MB on the file the phase's memory risk names.
+3. **The provenance arena is per-worker** — and this one is *built*, not just
+   decided. It did not have a row in design/08 §6. 100 % of enterings write it
+   and `features/01 -e` writes 2 135 093 records and 205 MB, of which
+   **nothing is referenced when the solve ends**. A fork's records die with the
+   fork, asserted from both the read side (a monotone region base, so a stale
+   id panics in every build and the whole gate is the experiment) and the
+   holding side (`ein-infer/tests/provenance.rs`, 7 037 live justifications
+   over root and 65 solution nodes, none of them a fork's). So a worker holds
+   its own arena and the ordered commit promotes only what a solution node
+   keeps — 0 on four of the six workloads. The same claim reclaims them at
+   `--jobs 1` today: §2c, and 684–708 MB → 85–91 MB on the file the phase's
+   memory risk names.
 4. **The plan memo is already done** — `Arc<Mutex<PlanMemo>>` since S1a.6.8,
    for the unrelated reason that a memo shared across forks needed one owner.
 5. **The event sink is not `Send`.** `events::Buffer` is
@@ -332,8 +382,13 @@ cargo run --release -p ein-infer --features counters --example shared_state_prob
 # §2b's claim from the *holding* side, §3's assertion, §4's audit
 cargo test -p ein-infer --test provenance --test interning --test shareable
 
-# …and from the *read* side, which is every debug build there is
-cargo test --workspace
+# …and from the *read* side, which is every build there is, both profiles
+cargo test --workspace && cargo test --workspace --release
+
+# §2c's right-hand columns — the shipping build, one P-core, before/after
+cargo build --release -p ein-cli
+utils/bench_env.sh --core 6 ./target/release/ein solve -e \
+    ../examples/features/01_not_and_absent.ein
 
 # the machine state every number above was taken under
 utils/bench_env.sh --report

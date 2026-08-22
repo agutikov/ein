@@ -1884,6 +1884,17 @@ identical on `322dd63`, so it is a property of the search rather than a
 regression — recorded because [P1a.7](../p1a.7_parallelism/README.md) sizes
 `--jobs` by per-search memory, and this is the number that bounds it.
 
+> **Superseded as a bound, 2026-08-22.** The rows above stand as taken, but
+> most of what they measured was one structure, and it is gone.
+> [T1a.7.1.7](../p1a.7_parallelism/s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)
+> found that the peak was overwhelmingly a provenance arena nothing reclaimed
+> until the run ended — 2 135 093 records on `features/01 -e`, twelve of them
+> live — and gave it a per-worker region: the same cell now peaks at
+> **85–91 MB**, `sq-bwd/houses -e` at 17 MB and `branching/07 -e` at 16 MB.
+> `terminus.ein`'s 12.3 GB and the "~1 KB per entering" it implies have **not**
+> been re-measured and should be before anything is sized by them
+> ([shared_state.md §2c](../p1a.7_parallelism/shared_state.md#2c-what-the-region-did--the-after-column)).
+
 ### What a call costs, and what it was spending it on
 
 `examples/hypgen_calls.rs`, the instrument this stage's acceptance asks for.

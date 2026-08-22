@@ -188,7 +188,7 @@ Design: [design/08](../design/08_parallelism.md).
 | stage | title | est. |
 |---|---|---|
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
-| [S1a.7.1](s1a.7.1_sync_shared_state.md) ◑ | Making the shared state `Sync` — **T1a.7.1.0–.4 + .7 decided**, [shared_state.md](shared_state.md) | 3 d |
+| [S1a.7.1](s1a.7.1_sync_shared_state.md) ◑ | Making the shared state `Sync` — **T1a.7.1.0–.4 done, .7 built**; the ordering audit and the threaded stress are what is left, [shared_state.md](shared_state.md) | 3 d → 4.5 d |
 | [S1a.7.2](s1a.7.2_parallel_enterings.md) | Level 1: parallel enterings | 4 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) | Level 3: the parallel boundary round | 2 d |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) | Level 2: the parallel enqueue pass | 2 d |
@@ -266,12 +266,19 @@ stays readable.
   (`enable_singleton_writeback=false`, 3 336+ enterings). **And the base is
   not the constant here.** [S1a.6.4](../p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)
   measured the corpus's slowest `solve` cells, which no P1a.6 target covers:
-  `features/01_not_and_absent -e` peaks at **724 MB** at `--jobs 1`, and an
+  `features/01_not_and_absent -e` peaked at **724 MB** at `--jobs 1`, and an
   uncapped `saturation/square-unique/terminus.ein -e` reaches **12.3 GB** and
   was OOM-killed on the dev machine — ~1 KB per entering, growing linearly,
   over ~12 M enterings. That is the *search*'s state, not a fork's delta, and
   it is what a job count multiplies against a machine's RAM
   ([baseline.md §15](../p1a.6_performance/baseline.md#15-s1a64--the-per-call-setup-and-the-enumerator-the-targets-never-run)).
+  **And most of it was one structure.** [T1a.7.1.7](s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)
+  found that `features/01 -e`'s peak was overwhelmingly a provenance arena
+  nothing reclaimed until the run ended — 2 135 093 records, twelve of them
+  live — and the per-worker region it built takes the same file from
+  **684–708 MB to 85–91 MB** at `--jobs 1`. So the "~1 KB per entering" figure
+  is a pre-S1a.7.1 number and `terminus.ein` is worth re-measuring before it
+  is used to size anything ([shared_state.md §2c](shared_state.md#2c-what-the-region-did--the-after-column)).
 - **Speculative waste at `stop_after`.** Bounded by the job count, but
   measure it: a `-n 1` solve that speculates 16 enterings to use 1 is
   fine; one that speculates 16 layers is not.

@@ -204,6 +204,36 @@ impl Layer {
         self.facts.is_empty() && self.alts.is_empty()
     }
 
+    /// Does this layer cite a record from the arena's fork region?
+    ///
+    /// Asked before [`Layer::rewrite_provenance`] so a promotion does not
+    /// `Arc::make_mut` — and so clone — a layer it has nothing to do to.
+    fn cites_fork_provenance(&self) -> bool {
+        // determinism-ok: an `any` over two maps; no order reaches it.
+        self.primary.values().any(|p| p.is_fork())
+            || self.alts.values().flatten().any(|p| p.is_fork())
+    }
+
+    /// Re-point this layer's fork citations at the copies a promotion made.
+    ///
+    /// Positions are preserved, which matters for `alts`: the list is ordered
+    /// shortest-premises-first and that order is what a minimum-cardinality
+    /// explanation search reads.
+    fn rewrite_provenance(&mut self, map: &FxHashMap<ProvId, ProvId>) {
+        for p in self.primary.values_mut() {
+            if let Some(&to) = map.get(p) {
+                *p = to;
+            }
+        }
+        for a in self.alts.values_mut() {
+            for p in a.iter_mut() {
+                if let Some(&to) = map.get(p) {
+                    *p = to;
+                }
+            }
+        }
+    }
+
     /// How many facts this layer added.
     pub fn n_facts(&self) -> usize {
         self.facts.len()
@@ -1234,6 +1264,58 @@ impl Kb {
 
     pub fn has_alternative_justifications(&self) -> bool {
         self.layers().any(|l| !l.alts.is_empty())
+    }
+
+    /// Copy every fork-region record this KB still cites into the arena
+    /// proper, and rewrite the citations — so the KB outlives the fork that
+    /// built it.
+    ///
+    /// The one path in the engine that keeps a fork is `Run::record_node`: a
+    /// solution node snapshots the fork's KB, which is why
+    /// [`crate::prov::ProvArena::discard_fork`] cannot simply run on every
+    /// entering. Everything else — a dead commitment, an alive one promoted to
+    /// the next layer — drops the fork and its records with it.
+    ///
+    /// **What it does not clone.** A layer is rewritten only if it cites a
+    /// fork record, so root's shared sealed layers, which by construction cite
+    /// none, are left in the `Arc` they arrived in. In practice one layer is
+    /// touched: the fork's own top.
+    pub fn promote_provenance(&mut self, terms: &mut Terms) {
+        if terms.provs.fork_is_empty() {
+            return;
+        }
+        let mut cited: FxHashSet<ProvId> = FxHashSet::default();
+        for l in self.layers() {
+            // determinism-ok: a *set* of citations; the order the promotion
+            // assigns ids in comes off the fork's push order, not off this.
+            cited.extend(l.primary.values().copied().filter(|p| p.is_fork()));
+            cited.extend(
+                l.alts
+                    .values()
+                    .flat_map(|a| a.iter().copied())
+                    .filter(|p| p.is_fork()),
+            );
+        }
+        if cited.is_empty() {
+            return;
+        }
+        let map = terms.provs.promote(&cited);
+        for i in 0..self.sealed.len() {
+            if !self.sealed[i].cites_fork_provenance() {
+                continue;
+            }
+            Arc::make_mut(&mut self.sealed[i]).rewrite_provenance(&map);
+        }
+        self.top.rewrite_provenance(&map);
+    }
+
+    /// Does anything this KB believes cite a record that died with a fork?
+    ///
+    /// Always `false` on a KB the engine has finished with — which is the
+    /// claim, and which `ein-infer/tests/provenance.rs` asks of every corpus
+    /// file that solves, of root and of every recorded solution.
+    pub fn cites_fork_provenance(&self) -> bool {
+        self.layers().any(Layer::cites_fork_provenance)
     }
 
     /// Believe an already-interned proposition, with the derivation a file

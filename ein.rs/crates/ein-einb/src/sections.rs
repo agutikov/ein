@@ -293,8 +293,19 @@ impl ProvTables {
 /// The whole arena, then the primary map and the alternative lists.
 ///
 /// The arena is written in full — including records no *believed* fact points
-/// at any more, which a search leaves behind — because a `ProvId` is only
-/// meaningful as an index into it and every other section stores one.
+/// at any more — because a `ProvId` is only meaningful as an index into it and
+/// every other section stores one. Since T1a.7.1.7 that is a much smaller
+/// claim than it was: what a search left behind used to be every record every
+/// fork ever derived (2 135 093 of them on `features/01 -e`, of which twelve
+/// were live) and is now only what root itself wrote.
+///
+/// **A fork's id is not writable.** The id stored below is the record's
+/// position in the scan above, which holds for the arena proper and for
+/// nothing else; a `ProvId` from the fork region indexes a table this file
+/// does not carry and would not survive the run. Saving happens between
+/// enterings, so there are none — asserted rather than assumed, because the
+/// failure is a saved KB whose derivations silently point at the wrong
+/// records.
 pub fn write_prov(kb: &Kb, terms: &Terms) -> Vec<u8> {
     let mut w = Writer::new();
     w.u32(terms.provs.len() as u32);
@@ -311,6 +322,7 @@ pub fn write_prov(kb: &Kb, terms: &Terms) -> Vec<u8> {
         .collect();
     w.u32(primary.len() as u32);
     for (f, p) in primary {
+        assert!(!p.is_fork(), "a fork's provenance cannot be saved");
         w.u32(f.0);
         w.u32(p.0);
     }
@@ -324,6 +336,7 @@ pub fn write_prov(kb: &Kb, terms: &Terms) -> Vec<u8> {
         w.u32(f.0);
         w.u32(a.len() as u32);
         for p in a {
+            assert!(!p.is_fork(), "a fork's provenance cannot be saved");
             w.u32(p.0);
         }
     }

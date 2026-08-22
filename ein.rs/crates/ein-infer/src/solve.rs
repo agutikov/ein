@@ -594,17 +594,16 @@ impl Run<'_> {
                 }
                 self.check_budget(dumper)?;
                 self.stats.base.enterings_total += 1;
-                // T1a.7.1.7 — everything `try_commitment_set` records is the
-                // *fork's* own derivation, and dies with the fork. The mark is
-                // taken here and handed to `ProvArena::retire` at each of the
-                // three points below where the fork is definitively gone;
-                // reading one of those records afterwards is a panic in debug
-                // builds and impossible-by-construction is what the claim
-                // needs to be. Root's own records — the no-good, the singleton
-                // writeback, the forced-positive promotion — are pushed
-                // *after* the primitive returns and so lie above the mark's
-                // range, untouched.
-                let fork_provs = terms.provs.len();
+                // T1a.7.1.7 — everything derived from here to
+                // `close_fork` is the *fork's* own, and dies with the fork.
+                // The region covers the whole entering and not just
+                // `try_commitment_set`: `complete`'s lookahead kill-cache
+                // writes into the fork too, as do the nested forks a `-y`
+                // commutativity check makes. Root's own records — the no-good,
+                // the singleton writeback, the forced-positive promotion — are
+                // written after the region closes, and land in the arena
+                // proper.
+                terms.provs.open_fork();
                 // T1a.7.1.2 — what this entering appends to the *shared*
                 // tables, which is what decides whether a worker can be
                 // handed a `&Terms` and nothing else. Compiled out with the
@@ -670,10 +669,14 @@ impl Run<'_> {
                     });
                 }
 
-                let fork_provs_end = terms.provs.len();
                 if result.kind != Kind::Alive {
+                    // Closed, not discarded: `handle_dead` writes root's
+                    // no-good and `(not h)` — which belong to the arena proper
+                    // — and then hands the dead fork to a dumper that renders
+                    // its justifications.
+                    terms.provs.close_fork();
                     self.handle_dead(root, terms, events, dumper, c, layer, &result);
-                    terms.provs.retire(fork_provs..fork_provs_end);
+                    terms.provs.discard_fork();
                     continue;
                 }
 
@@ -729,7 +732,13 @@ impl Run<'_> {
                             nogood_subsumed: false,
                         },
                     );
+                    // The one path that keeps a fork, so the one that
+                    // promotes: `record_node` snapshots this KB, and a
+                    // snapshot citing a discarded region would be a KB whose
+                    // derivations had stopped meaning anything.
+                    terms.provs.close_fork();
                     self.record_node(&mut fork, terms, c.clone(), result.firings, layer);
+                    terms.provs.discard_fork();
                     if self
                         .opts
                         .stop_after
@@ -758,8 +767,9 @@ impl Run<'_> {
                         nogood_subsumed: false,
                     },
                 );
+                terms.provs.close_fork();
                 drop(fork);
-                terms.provs.retire(fork_provs..fork_provs_end);
+                terms.provs.discard_fork();
                 a_layer.push(c.clone());
             }
 
@@ -916,11 +926,17 @@ impl Run<'_> {
     fn record_node(
         &mut self,
         node_kb: &mut Kb,
-        terms: &Terms,
+        terms: &mut Terms,
         commitment: CanonicalSetId,
         firings: Vec<Firing>,
         layer: u32,
     ) {
+        // Before the snapshot, and before the dedup below decides whether
+        // this node is kept at all: promoting the handful of records a
+        // solution cites is cheaper than threading the region's lifetime
+        // through that decision, and a node that loses its dedup simply
+        // leaves them behind.
+        node_kb.promote_provenance(terms);
         let key = state_key(node_kb);
         let record = |kb: &mut Kb| SolutionRecord {
             commitment: commitment.clone(),

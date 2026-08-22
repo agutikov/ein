@@ -134,10 +134,18 @@ first stage here is a census, not a proposal.
   move does **not** relax is the second half —
   [S1d.1.5](s1d.1.5_contract.md) still owns the vocabulary, and `exhausted`
   still means the lattice was exhausted.
-- **Memory before time.** `features/01_not_and_absent -e` peaks at 724 MB and
-  an uncapped `saturation/square-unique/terminus.ein -e` reached 12.3 GB before
-  being OOM-killed ([baseline.md §15](../../m1a_rust/p1a.6_performance/baseline.md)). A
-  deeper search may not get the chance to be slow.
+- **Memory before time.** An uncapped
+  `saturation/square-unique/terminus.ein -e` reached 12.3 GB before being
+  OOM-killed ([baseline.md §15](../../m1a_rust/p1a.6_performance/baseline.md)).
+  A deeper search may not get the chance to be slow. **The companion figure
+  moved and this one has not been re-taken**:
+  `features/01_not_and_absent -e` peaked at 724 MB and now peaks at
+  **85–91 MB**, because
+  [T1a.7.1.7](../../m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)
+  found most of it was a provenance arena nothing reclaimed until the run
+  ended. Whether `terminus.ein`'s ~1 KB per entering was the same structure is
+  unmeasured, so this bullet's *shape* survives its numbers — but re-measure
+  before sizing anything by them.
 
 ## Cross-links
 
