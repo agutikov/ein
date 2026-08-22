@@ -575,17 +575,22 @@ the CLI.
 
 | workload | `-j 1` | `-j 2` | `-j 4` | `-j 8` | |
 |---|---:|---:|---:|---:|---:|
-| `sq-bwd/houses -e` | 258.0 ms | 202.4 | 124.6 | **89.2** | **2.89×** |
-| `branching/06 -e` | 209.0 ms | 165.1 | 111.2 | **78.6** | **2.66×** |
-| `features/01 -e` | 1 745.8 ms | 1 412.9 | 995.7 | **727.2** | **2.40×** |
-| `branching/07 -e` | 281.8 ms | 238.0 | 175.2 | **128.6** | **2.19×** |
-| `zebra -e` | 48.1 ms | 42.9 | 37.8 | 35.2 | 1.37× |
-| `zebra2 -e` | 33.2 ms | 31.5 | 30.1 | 27.6 | 1.21× |
+| `sq-bwd/houses -e` | 254.5 ms | 161.8 | 97.9 | **59.9** | **4.25×** |
+| `features/01 -e` | 1 669.9 ms | 1 173.6 | 776.7 | **552.5** | **3.02×** |
+| `branching/06 -e` | 205.2 ms | 152.7 | 101.3 | **71.1** | **2.89×** |
+| `branching/07 -e` | 284.1 ms | 218.3 | 144.4 | **109.3** | **2.60×** |
+| `zebra -e` | 46.3 ms | 41.3 | 36.1 | 34.7 | 1.34× |
+| `zebra2 -e` | 31.2 ms | 29.2 | 27.4 | 27.5 | 1.13× |
 
-**2.19–2.89× on the measurement set against a ≥ 6× target**, and the zebras at
-1.2–1.4× exactly as §5.4 said they would be — their layer 1 holds half their
+**2.60–4.25× on the measurement set against a ≥ 6× target**, and the zebras at
+1.1–1.3× exactly as §5.4 said they would be — their layer 1 holds half their
 firings and layer 1 is the one that cannot be fanned out. The gap is § Where
-the other 3× is, below, and it is not one thing.
+the other 2× is, below, and it is not one thing.
+
+> These are the numbers **after** § The commit's real cost, which took the
+> measurement set from 2.19–2.89× to the row above by moving one `drop` from
+> the committing thread to the worker. The first table this section had is kept
+> there, because the before-column is the finding.
 
 ### It is the same computation, and that is checked three ways
 
@@ -621,34 +626,90 @@ the entering where the tables can grow. Every counter still matches, which is
 the point: the fallback is not an approximation, it is the same entering
 computed where it can be. `JobStats::handed_back` is the running count.
 
-### Where the other 3× is
+### The commit's real cost, and it is not the commit
 
-Measured on `branching/06 -e` at `--jobs 8` by timing the two halves of each
-batch, and confirmed by CPU utilisation (382 % of 800 %, with total CPU time up
-only 29 % — so the threads are idle, not doing extra work):
+The first fan-out was **2.19–2.89×**, and CPU utilisation said why: 382 % of
+800 % at `--jobs 8`, with total CPU time up only 29 % — the threads were idle,
+not doing extra work. Timing the two halves of each batch on `branching/06 -e`
+put 20 ms of a 79 ms run in the ordered commit, which is a 26 % serial fraction
+and an Amdahl ceiling of 3.8× before the fan-out's own efficiency is counted.
 
-| | wall at `-j 8` |
+Timing the commit's *parts* found what it was, and it was not the learned
+clause, the subsumption or the `state_key`:
+
+| `features/01 -e`, `--jobs 8` | ms |
 |---|---:|
-| the fan-out itself | 37 ms |
-| **the ordered commit** | **20 ms** |
-| layer 1, the layer boundaries, Phase 1, output | ~19 ms |
+| the commit loop | 269 |
+| …of which `drop(result)` on the alive path | **156.7** |
+| …of which `discard_fork` — the region's records | **35.3** |
+| …of which `handle_dead` | 0.0 |
 
-Two separate problems, and neither is the design:
+**192 of 269 ms is freeing memory another thread allocated.** A fork's KB, its
+firings and its provenance region are built on a worker and returned on the
+committing thread, and every modern allocator makes a cross-thread free its
+slow path — `snmalloc` posts it to the owning thread's message queue, which is
+why `sn_rust_dealloc` and `handle_message_queue_slow` were 6 % of the profile.
 
-1. **A 26 % serial fraction**, of which the commit loop is the larger half.
-   Amdahl caps the whole run at 3.8× before the fan-out's own efficiency is
-   counted. What is in those 20 ms is the commit's own work — the learned
-   clause and its subsumption, the dead commitment's `state_key`, and
-   **dropping the fork**, which was allocated on a worker and freed here
-   (`snmalloc`'s remote-free path is 6 % of the profile's samples).
-2. **The fan-out is 5.2× on 8 cores**, not 8×. 65 % efficiency on work that
-   shares nothing but read-only tables, which points at memory rather than at
-   contention — there is one lock in the engine (`Arc<Mutex<PlanMemo>>`) and
-   `Lookahead::new` takes it once per plan per `complete()`.
+The fix is to free it where it was allocated, and the only question is *when
+that is allowed*. It is allowed whenever nothing at the commit will read the
+fork, which is: not a solution node (`record_node` snapshots one and promotes
+what it cites), no `store_lattice` (the proof reads dead forks' state keys),
+and a dumper that says it does not look (`Dumper::reads_forks`, `true` by
+default and `false` for `NoDumper`). The worker then drops the KB, the firings
+and the region, and does it **in parallel**.
+
+| workload | before | after | |
+|---|---:|---:|---:|
+| `sq-bwd/houses -e` | 2.89× | **4.25×** | +47 % |
+| `features/01 -e` | 2.40× | **3.02×** | +26 % |
+| `branching/07 -e` | 2.19× | **2.60×** | +19 % |
+| `branching/06 -e` | 2.66× | **2.89×** | +9 % |
+
+The general form: **in a fan-out, freeing is work too, and it belongs to
+whoever allocated.** A result that crosses a thread boundary should carry only
+what the far side reads.
+
+The hypothesis this replaced is worth recording as rejected. The dead
+commitment's `state_key` is a sort of the whole fork's fact list, computed on
+every death for a `LatticeProof` that a solve without `--trace` never builds —
+so it looked like the answer. Making it conditional measures **±2 %**, which is
+the noise floor: the corpus's forks are small enough that sorting their fact
+lists costs nothing. It is now conditional anyway, because `Entered::kb` is
+`None` where the worker dropped the fork, but that is a consequence and not a
+win.
+
+### Where the other 2× is
+
+With the commit's frees moved, `--jobs 8` breaks down like this — Phase 2 only,
+by timing each region:
+
+| | `branching/06` | `branching/07` | `features/01` | `houses` |
+|---|---:|---:|---:|---:|
+| the fan-out | 38.2 ms | 55.6 | 441.5 | 49.3 |
+| **candidate generation + ordering** | **10.8** | **39.5** | **55.8** | **3.1** |
+| the ordered commit | 13.8 | 3.0 | 54.6 | 3.2 |
+| layer 1, sequential | 0.9 | 7.4 | 0.2 | 0.1 |
+| the layer barrier | 0.3 | 0.3 | 8.9 | 0.4 |
+
+Two things are left, and neither is what design/08 has a level for:
+
+1. **`generate_layer` + `order_candidates` is the serial term now** — 39.5 ms
+   of `branching/07 -e`'s 109 ms, 36 % of the run. Building layer *L+1*'s
+   commitment sets from layer *L*'s survivors and filtering each against the
+   no-good store is per-candidate work with no shared state, so it is
+   parallelisable the same way the enterings are; the ordering is a sort whose
+   *keys* are independent. That is T1a.7.2.7.
+2. **The fan-out is ~5× on 8 cores**, not 8×. On `sq-bwd/houses -e` the serial
+   terms are down to 4 ms of 60 and the run is still 4.25×, so what is left is
+   the fan's own efficiency. The profile has no lock in it — the engine's one
+   `Arc<Mutex<PlanMemo>>` does not appear — and 11 % is allocator and libc, so
+   this reads as memory rather than contention: a fork allocates and frees a KB
+   delta and a saturator, and eight of them at once is a bandwidth question.
+   Reducing what a fork allocates is a
+   [P1a.6](../p1a.6_performance/README.md)-shaped answer, not a P1a.7 one.
 
 Neither is S1a.7.3's or S1a.7.4's — those parallelise root saturation and the
 boundary round, which are Phase *1* and are not in this denominator at all.
-Both are this stage's, and they are what stands between 2.7× and the target.
 
 ### The batch is a memory decision before it is a scheduling one
 

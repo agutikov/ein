@@ -32,14 +32,18 @@ the per-worker provenance region (`features/01 -e` from 684–708 MB to
 **And now there are threads.**
 [T1a.7.2.1](s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)
 shipped `--jobs N` — a `rayon` pool built once per solve, a bounded batch, an
-ordered commit — and it is **2.19–2.89× on 8 P-cores** with the answer, every
+ordered commit — and it is **2.60–4.25× on 8 P-cores** with the answer, every
 counter and the whole verbose event stream unchanged. That is short of the
-**≥ 6×** the acceptance asks for, and the gap is measured rather than guessed:
-a 26 % serial fraction of which the ordered commit is the larger half, and a
-fan-out that is 5.2× on 8 cores rather than 8×
-([scaling.md §8 § Where the other 3× is](scaling.md#where-the-other-3-is)).
-Both are S1a.7.2's to close; neither is what
-[S1a.7.3](s1a.7.3_parallel_boundary.md) and
+**≥ 6×** the acceptance asks for, and the gap is measured rather than guessed.
+It was 2.19–2.89× until the measurement found what the ordered commit was
+actually spending its time on: **192 of the 269 ms** `features/01 -e` spent
+there was *freeing memory a worker had allocated*, so a fork the commit will
+not read is now dropped on the worker, in parallel. What is left is a
+candidate-generation term that is now the serial one
+([T1a.7.2.7](s1a.7.2_parallel_enterings.md#task-t1a727--the-layers-own-serial-work),
+39.5 ms of `branching/07 -e`'s 109) and a fan-out that is ~5× on 8 cores rather
+than 8× ([scaling.md §8 § Where the other 2× is](scaling.md#where-the-other-2-is)).
+Neither is what [S1a.7.3](s1a.7.3_parallel_boundary.md) and
 [S1a.7.4](s1a.7.4_parallel_enqueue.md) are for, because those parallelise
 Phase 1 and Phase 1 is not in this denominator.
 
@@ -246,7 +250,7 @@ Design: [design/08](../design/08_parallelism.md).
 |---|---|---|
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
 | [S1a.7.1](s1a.7.1_sync_shared_state.md) ✅ | Making the shared state `Sync` — **closed 2026-08-22**, three of eight tasks deleted by measurement and no lock built, [shared_state.md](shared_state.md) | 3 d → 4.5 d |
-| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items. **.0, .8, .1, .2 shipped**: the layer stack coalesced (3.17× at `--jobs 1`), the predicate asserted, the seam, and the fan-out — **2.19–2.89× on 8 P-cores**, same computation on all 47 corpus entries, byte-identical event streams | 4 d → 3 d |
+| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items. **.0, .8, .1, .2 shipped**: the layer stack coalesced (3.17× at `--jobs 1`), the predicate asserted, the seam, and the fan-out — **2.60–4.25× on 8 P-cores**, same computation on all 47 corpus entries, byte-identical event streams. **.7 is new**, named by the fan-out's own measurements | 4 d → 3 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) | Level 3: the parallel boundary round | 2 d |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) | Level 2: the parallel enqueue pass | 2 d |
 | [S1a.7.5](s1a.7.5_jobs_contract.md) | The `--jobs` contract | 2 d |
@@ -264,9 +268,9 @@ stays readable.
   divergence, as a sixth property of the fuzzer rather than a harness run.
 - **≥ 6× on 8 P-cores** on the phase's measurement set — `branching/06 -e`,
   `branching/07 -e`, `saturation/square-bwd/houses -e`, `features/01 -e`.
-  ◑ **2.19–2.89× as of T1a.7.2.1**, and the shortfall is measured rather than
-  guessed: a 26 % serial fraction of which the ordered commit is the larger
-  half, and a fan-out that is 5.2× on 8 cores
+  ◑ **2.60–4.25× as of T1a.7.2.1**, and the shortfall is measured rather than
+  guessed: candidate generation is the serial term that is left (T1a.7.2.7),
+  and the fan-out itself is ~5× on 8 cores
   ([scaling.md §8](scaling.md#8-t1a721--the-fan-out-and-the-three-things-it-costs)).
   0.2–1.9 s runs with ≥ 98 % of their enterings past layer 1. **Restated
   2026-08-20 by [S1a.7.0](s1a.7.0_speculation_audit.md)**; it read "≥ 6× on 8

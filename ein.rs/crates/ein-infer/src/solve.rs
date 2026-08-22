@@ -302,10 +302,24 @@ pub struct EnteringInfo<'a> {
 /// Nothing in `speculate` touches the run's state; nothing in
 /// `commit_entering` looks at a fork it was not given.
 struct Entered {
+    kind: Kind,
+    unsat_core: Vec<FactId>,
+    /// The derivations, for the dumper hook and for a recorded solution.
+    /// Emptied by the worker when neither will read them — see [`Entered::kb`].
+    firings: Vec<Firing>,
     /// The fork, after `complete()` has probed it — an alive entering's KB is
     /// mutated by that probe (the lookahead kill cache writes into it), which
     /// is why the probe belongs to the speculative half and not to the commit.
-    result: CommitmentSetResult,
+    ///
+    /// **`None` when the worker dropped it**, which it does whenever nothing at
+    /// the commit would read it: not a solution node, no `store_lattice`, and a
+    /// dumper that does not ask ([`Dumper::reads_forks`]). That is not a
+    /// micro-optimisation — freeing a fork on the committing thread is freeing
+    /// memory some *other* thread allocated, which every modern allocator makes
+    /// the slow path, and it was **192 ms of `features/01 -e`'s 269 ms commit
+    /// loop** at `--jobs 8`
+    /// ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#the-commits-real-cost-and-it-is-not-the-commit)).
+    kb: Option<Kb>,
     /// Alive **and** complete: a solution node.
     solved: bool,
 }
@@ -348,6 +362,19 @@ pub trait Dumper {
     ) {
     }
     fn layer_end(&mut self, layer: u32, kb: &Kb, terms: &Terms, n_alive: usize, n_next: usize) {}
+    /// Does this dumper read [`EnteringInfo::kb`]?
+    ///
+    /// `true` by default, because a hook that is handed a fork may look at it
+    /// and a wrong `false` would hand it `None`. Answering `false` lets a
+    /// fanned-out layer's worker **drop the fork where it allocated it**, which
+    /// is worth 192 ms of `features/01 -e`'s 269 ms commit loop at `--jobs 8`
+    /// ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#the-commits-real-cost-and-it-is-not-the-commit)) —
+    /// so it is a claim about the hook, and [`NoDumper`] is the one that can
+    /// make it.
+    fn reads_forks(&self) -> bool {
+        true
+    }
+
     /// Written from the single exit hook when the verdict carries a proof, so
     /// a `kb_index/` tree and its index land *before* the cumulative summary.
     fn proof_summary(&mut self, proof: &LatticeProof, terms: &Terms) {}
@@ -358,7 +385,11 @@ pub trait Dumper {
 /// A dumper that does nothing — the common no-dumper path, without an
 /// `Option` at every call site.
 pub struct NoDumper;
-impl Dumper for NoDumper {}
+impl Dumper for NoDumper {
+    fn reads_forks(&self) -> bool {
+        false
+    }
+}
 
 // ── The loop ───────────────────────────────────────────────────────
 
@@ -794,6 +825,7 @@ impl Run<'_> {
                         terms,
                         ast,
                         events.narration(),
+                        self.opts.store_lattice || dumper.reads_forks(),
                         layer,
                         &candidates[i..end],
                     );
@@ -1053,12 +1085,14 @@ impl Run<'_> {
     /// Every argument but `jobs` is shared by `&`. That is not a style choice
     /// — it is the seam T1a.7.2.1 built, and the compiler is what checks it.
     #[cfg(feature = "parallel")]
+    #[allow(clippy::too_many_arguments)]
     fn fan_out(
         &self,
         root: &Kb,
         terms: &Terms,
         ast: &Ast,
         narration: Option<crate::events::Level>,
+        keep_forks: bool,
         layer: u32,
         batch: &[CanonicalSetId],
     ) -> Vec<Speculated> {
@@ -1070,11 +1104,25 @@ impl Run<'_> {
             let mut view = terms.worker();
             let mut narration = Events::worker_for(narration);
             view.provs.open_fork();
-            let entered = self.speculate(root, &mut view, ast, &mut narration, layer, c);
+            let mut entered = self.speculate(root, &mut view, ast, &mut narration, layer, c);
             // Asked before the region is taken and before anything is
             // believed: a refusal means what follows it is not this entering.
             let refused = view.refused();
-            let region = view.provs.take_fork();
+            let mut region = view.provs.take_fork();
+            // **Free it where it was allocated.** A fork the commit will not
+            // read is memory some *other* thread would otherwise return, and
+            // every modern allocator makes that its slow path: on
+            // `features/01 -e` at `--jobs 8` it was 192 ms of a 269 ms commit
+            // loop. A solution keeps its fork because `record_node` snapshots
+            // it and promotes what it cites; everything else is the worker's
+            // to drop, and dropping it here is also *parallel*.
+            if !keep_forks && !matches!(&entered, Ok(e) if e.solved) {
+                if let Ok(e) = entered.as_mut() {
+                    e.kb = None;
+                    e.firings = Vec::new();
+                }
+                region = ein_core::Region::default();
+            }
             Speculated {
                 entered: (!refused).then_some(entered),
                 region,
@@ -1165,7 +1213,10 @@ impl Run<'_> {
         }
         if result.kind != Kind::Alive {
             return Ok(Entered {
-                result,
+                kind: result.kind,
+                unsat_core: result.unsat_core,
+                firings: result.firings,
+                kb: Some(result.kb),
                 solved: false,
             });
         }
@@ -1185,7 +1236,13 @@ impl Run<'_> {
             };
             crate::hypgen::complete(&mut s)?
         };
-        Ok(Entered { result, solved })
+        Ok(Entered {
+            kind: result.kind,
+            unsat_core: result.unsat_core,
+            firings: result.firings,
+            kb: Some(result.kb),
+            solved,
+        })
     }
 
     /// Turn one entering into the run's state — counters, learned clause,
@@ -1207,18 +1264,30 @@ impl Run<'_> {
         entered: Entered,
         a_layer: &mut Vec<CanonicalSetId>,
     ) -> Result<bool, SolveError> {
-        let Entered { mut result, solved } = entered;
-        if result.kind != Kind::Alive {
+        let mut entered = entered;
+        if entered.kind != Kind::Alive {
             // Closed, not discarded: `handle_dead` writes root's no-good and
             // `(not h)` — which belong to the arena proper — and then hands the
             // dead fork to a dumper that renders its justifications.
             terms.provs.close_fork();
-            self.handle_dead(root, terms, events, dumper, c, layer, &result);
+            self.handle_dead(root, terms, events, dumper, c, layer, &entered);
             terms.provs.discard_fork();
             return Ok(false);
         }
 
         self.stats.base.enterings_alive += 1;
+
+        fn info(entered: &Entered) -> EnteringInfo<'_> {
+            EnteringInfo {
+                kind: entered.kind,
+                firings: &entered.firings,
+                unsat_core: &entered.unsat_core,
+                kb: entered.kb.as_ref(),
+                facts_merged: 0,
+                nogood_emitted: false,
+                nogood_subsumed: false,
+            }
+        }
 
         // S1.5b.27 — the saturation-commutativity sanity check. Off by
         // default; `-y` turns it on. Orthogonal to `store_lattice` and to the
@@ -1232,31 +1301,20 @@ impl Run<'_> {
             return Err(SolveError::Sanity(Box::new(err)));
         }
 
-        fn info(result: &CommitmentSetResult) -> EnteringInfo<'_> {
-            EnteringInfo {
-                kind: result.kind,
-                firings: &result.firings,
-                unsat_core: &result.unsat_core,
-                kb: Some(&result.kb),
-                facts_merged: 0,
-                nogood_emitted: false,
-                nogood_subsumed: false,
-            }
-        }
-
-        if solved {
+        if entered.solved {
             // Before `record_node`, which takes the firings: ein.py calls the
             // hook after, but nothing between the two lines is observable to
             // it — `_record_node` writes no event and only seals a layer the
             // fact list spans anyway.
-            dumper.entering(layer, c, terms, "solution", &info(&result));
+            dumper.entering(layer, c, terms, "solution", &info(&entered));
             // The one path that keeps a fork, so the one that promotes:
             // `record_node` snapshots this KB, and a snapshot citing a
             // discarded region would be a KB whose derivations had stopped
             // meaning anything.
             terms.provs.close_fork();
-            let firings = std::mem::take(&mut result.firings);
-            self.record_node(&mut result.kb, terms, c.clone(), firings, layer);
+            let firings = std::mem::take(&mut entered.firings);
+            let mut kb = entered.kb.take().expect("a solution keeps its fork");
+            self.record_node(&mut kb, terms, c.clone(), firings, layer);
             terms.provs.discard_fork();
             if self
                 .opts
@@ -1272,9 +1330,9 @@ impl Run<'_> {
             return Ok(false);
         }
 
-        dumper.entering(layer, c, terms, "alive", &info(&result));
+        dumper.entering(layer, c, terms, "alive", &info(&entered));
         terms.provs.close_fork();
-        drop(result);
+        drop(entered);
         terms.provs.discard_fork();
         a_layer.push(c.clone());
         Ok(false)
@@ -1496,9 +1554,9 @@ impl Run<'_> {
         dumper: &mut dyn Dumper,
         c: &[FactId],
         layer: u32,
-        result: &crate::commitment::CommitmentSetResult,
+        entered: &Entered,
     ) {
-        if result.kind == Kind::DeadPre {
+        if entered.kind == Kind::DeadPre {
             self.stats.base.enterings_dead_pre += 1;
         } else {
             self.stats.base.enterings_dead_post += 1;
@@ -1537,22 +1595,25 @@ impl Run<'_> {
         }
         self.lstate.dead.push(DeadCommitment {
             commitment: c.to_vec(),
-            unsat_core: result.unsat_core.clone(),
+            unsat_core: entered.unsat_core.clone(),
             learned_clause: c.to_vec(),
             layer,
-            kind: result.kind,
-            state_key: state_key(&result.kb),
+            kind: entered.kind,
+            // Empty exactly when the worker dropped the fork, which it does
+            // only when nothing reads one — `store_lattice` is the reader, and
+            // it keeps them.
+            state_key: entered.kb.as_ref().map(state_key).unwrap_or_default(),
         });
         dumper.entering(
             layer,
             c,
             terms,
-            result.kind.as_str(),
+            entered.kind.as_str(),
             &EnteringInfo {
-                kind: result.kind,
-                firings: &result.firings,
-                unsat_core: &result.unsat_core,
-                kb: Some(&result.kb),
+                kind: entered.kind,
+                firings: &entered.firings,
+                unsat_core: &entered.unsat_core,
+                kb: entered.kb.as_ref(),
                 facts_merged: 0,
                 nogood_emitted: landed,
                 // Not `!landed`: with no-goods off nothing was *attempted*, so
