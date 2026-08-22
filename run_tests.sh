@@ -3,7 +3,7 @@
 # run_tests.sh — the gate.
 #
 #     ./run_tests.sh                 # cargo test --workspace
-#     ./run_tests.sh --slow          # + the 19 slow corpus cells, + 8 id seeds
+#     ./run_tests.sh --slow          # + the 12 slow corpus cells, + 8 id seeds
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **This was a three-phase runner until M1a S1a.10.5**, and each phase went
@@ -71,8 +71,10 @@ if ! command -v dot >/dev/null 2>&1; then
     exit 127
 fi
 
-# `--slow` is the nightly tier in one flag: the 118 slow corpus cells and
-# eight id-space permutations instead of one.
+# `--slow` is the nightly tier in one flag: the 12 slow corpus cells and
+# eight id-space permutations instead of one. It read 118 until S1a.9.0
+# re-priced the tier and 19 until T1a.7.2.0 took `branching/07` out of it —
+# `corpus/corpus.toml` is the authority and `cost_ms` is the measurement.
 ARGS=()
 for arg in "$@"; do
     case "${arg}" in

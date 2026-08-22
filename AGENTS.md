@@ -141,6 +141,15 @@ constrained-reasoning research.
   [`scaling.md`](plans/m1a_rust/p1a.7_parallelism/scaling.md) **the CPython
   and PyPy columns are frozen constants**, because the instruments that
   produced them left with the engine they measured.
+- **`zebra.c` + `build.sh`** — the **plain-C baseline**: the same Zebra puzzle
+  `examples/zebra.ein` encodes, solved by brute-force enumeration over five
+  arrays with the fifteen clues hardcoded as C predicates. One translation
+  unit, no dependencies; `./build.sh` puts it in the gitignored `build/`. It is
+  a reading aid rather than a component — nothing depends on it and the gate
+  does not run it — and it earns its place by being the thing `ein solve
+  examples/zebra.ein` is *not*: same answer (Norwegian/water, Japanese/zebra),
+  6 840 assignments tested against a 24.9-billion space, and not one line of it
+  transferable to a puzzle it was not written for.
 - **`nlp/`, `smt/`** — scratch areas, 56 KB, wired into nothing. `smt/` holds
   three hand-written `.smt` encodings of the Zebra puzzle and 4-queens, which
   [M1c P1c.2](plans/m1c_external_validation/p1c.2_external_benchmarks/README.md)
