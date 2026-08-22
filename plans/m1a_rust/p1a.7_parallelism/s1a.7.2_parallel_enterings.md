@@ -6,12 +6,13 @@ before any of the mechanism was built (§ The decision), which deleted the
 validator, the fail-fast ruling and two acceptance items. **.0, .8, .1 and .2
 are shipped**: the layer stack coalesced (3.17× at `--jobs 1`), the predicate
 asserted, the seam, and the fan-out with its ordered commit —
-**2.60–4.25× on 8 P-cores**, the same computation on all 47 corpus entries and
-byte-identical event streams. What is left is **.7** (the layer's own serial
-work, which the fan-out's measurements found), .4 (early stop), .5
-(diagnostics) and .6 (the stress) — and the target is still **2×** away, which
-is not a missing task so much as a measured serial fraction
-([scaling.md §8 § Where the other 2× is](scaling.md#where-the-other-2-is)).
+**3.16–4.30× on 8 P-cores**, the same computation on all 47 corpus entries and
+byte-identical event streams. **.7** shipped with them — the layer's own serial
+work, which the fan-out's measurements found and which turned out to be three
+things. What is left is .4 (early stop), .5 (diagnostics) and .6 (the stress);
+the target is **1.5×** away and that is now the fan-out's own efficiency rather
+than a serial fraction
+([scaling.md §8 § Where the other 1.5× is](scaling.md#where-the-other-15-is)).
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md),
 [S1a.7.0](s1a.7.0_speculation_audit.md)
 **Implements:** [design/08](../design/08_parallelism.md) §2
@@ -387,16 +388,18 @@ at both job counts, `branching/06 -e`'s 2 200 561 lines included; and
 `search_invariants.rs` compares the whole `MonotonicStats` over 16 files at
 `--jobs {2,4,8}`.
 
-**It is 2.60–4.25× on 8 P-cores, against a ≥ 6× target.** That is the stage's
-honest number. It was 2.19–2.89× until the measurement found that **192 of the
-269 ms** `features/01 -e` spent in its ordered commit was *freeing memory a
-worker had allocated* — so a fork the commit will not read is now dropped on
-the worker, in parallel, and `sq-bwd/houses -e` went 2.89× → **4.25×**. What is
-left is a **candidate-generation** term that is now the serial one (39.5 ms of
-`branching/07 -e`'s 109 ms → T1a.7.2.7) and a fan-out that is ~5× on 8 cores
-rather than 8×. Neither is S1a.7.3's or S1a.7.4's — those parallelise Phase 1,
-which is not in this denominator — and
-[scaling.md §8 § Where the other 2× is](scaling.md#where-the-other-2-is) is
+**It is 3.16–4.30× on 8 P-cores, against a ≥ 6× target.** That is the stage's
+honest number, and the first fan-out was 2.19–2.89× — what closed the rest is
+four things the *measurement* found, none of them designed for and all of them
+sequential improvements too (T1a.7.2.7 and § Where the other 1.5× is). What is
+left is the fan-out's own **~5× on 8 cores**: on `sq-bwd/houses -e` the serial
+terms are 8 ms of a 60 ms run, so Amdahl would allow 7.5× and the fan is what
+does not deliver it. The profile has no lock in it and 11 % is the allocator,
+so that is a question about what a fork allocates —
+[P1a.6](../p1a.6_performance/README.md)-shaped, not P1a.7-shaped. None of it is
+S1a.7.3's or S1a.7.4's either, since those parallelise Phase 1, which is not in
+this denominator — and
+[scaling.md §8 § Where the other 1.5× is](scaling.md#where-the-other-15-is) is
 where they are measured.
 
 Five things are worth carrying forward.
@@ -490,40 +493,42 @@ what licenses `is_stalled()`'s re-enqueue after an external write and
 [design/08 §2a](../design/08_parallelism.md#2a-deferred-integration--the-batch-synchronous-layer)
 claim 3.
 
-### Task T1a.7.2.7 — The layer's own serial work
+### Task T1a.7.2.7 — The layer's own serial work ✅
 
-**Named by T1a.7.2.1's measurements**, which is why it has a number the plan
-did not reserve: with the fan-out in and the commit's frees moved to the
-workers, the largest serial term in Phase 2 is no longer the commit. It is
-**`generate_layer` + `order_candidates`** — 39.5 ms of `branching/07 -e`'s
-109 ms at `--jobs 8`, 55.8 ms of `features/01 -e`'s 552, 10.8 of
-`branching/06 -e`'s 71
-([scaling.md §8 § Where the other 2× is](scaling.md#where-the-other-2-is)).
+**Named and shipped by T1a.7.2.1's measurements**, which is why it has a number
+the plan did not reserve: with the fan-out in and the commit's frees moved to
+the workers, the largest serial term in Phase 2 was no longer the commit — it
+was candidate generation, 39.5 ms of `branching/07 -e`'s 109 ms at `--jobs 8`.
 
-Both halves are per-candidate work over shared, read-only state:
+Timing its parts split it into three, and **only one of the three is
+parallelism**:
 
-- **`generate_layer`** unions each surviving commitment with each alive
-  element and filters the result against the no-good store — independent per
-  candidate, so it fans out exactly the way the enterings do, with an
-  index-ordered collect to keep the order the traversal depends on. The store
-  is read behind an `RwLock` the layer already holds open.
-- **`order_candidates`** is a sort. The comparator is the cost, not the swap,
-  so the shape is a parallel *key* pass and a sequential sort — which also
-  removes the comparator from the hot path, the way `Interner::rank` did for
-  name order.
+- **`filter_candidate` fans out** — the easiest fan-out in the engine: it asks
+  whether every element is still alive and whether any learned clause is a
+  subset of the candidate, reads both by `&`, and writes nothing. Its cost is
+  `candidates × clauses`, which is why the file with the lookahead *off* pays
+  47.7 ms of it. Order is kept by an indexed **mask** rather than by trusting a
+  filtered collect: a layer's candidate order *is* the traversal. → 47.7 → 8.3 ms.
+- **`order_candidates` took a slice and cloned it.** A layer arrives in the
+  join's emission order, which is already `cmp_set` order, so the sort is a
+  linear scan and the 26 ms was the copy it needed somewhere to put. By value.
+- **`record_node` promoted before it deduped.** `branching/06 -e` calls it
+  **1 221 times to keep 22 nodes**, and each call was doing
+  `Kb::promote_provenance` and `Kb::snapshot` for a record the dedup then threw
+  away. The key is a function of the fact list and the promotion rewrites
+  justification tables, so computing the key first makes a losing node cost a
+  sort. The comment that put the promotion first said it beat *threading the
+  fork region's lifetime through the decision* — and T1a.7.2.1's region travels
+  with the entering, so there is nothing to thread. → 3.13× → **3.72×**.
 
-The acceptance is the same as the fan-out's and for the same reason: it must
-move no counter. A candidate list that differed by job count would change the
-traversal, and `jobs_does_not_move_the_answer_or_a_counter` is where that
-shows.
+The acceptance is the fan-out's and for the same reason: none of it may move a
+counter. A candidate list that differed by job count would be a traversal
+change, and `jobs_does_not_move_the_answer_or_a_counter` is where that shows.
 
-**What it does not buy.** `sq-bwd/houses -e` spends 3.1 ms here of 60, and it
-is already at 4.25×; the term is large on the two `branching` files and on
-`features/01 -e` and small elsewhere. So this is worth ~1.3× on the workloads
-that have it and nothing on the ones that do not, and the *rest* of the gap to
-6× is the fan-out's own ~5×-on-8-cores efficiency — which is a question about
-what a fork allocates, and therefore
-[P1a.6](../p1a.6_performance/README.md)-shaped rather than P1a.7-shaped.
+**Two of the three make `--jobs 1` faster too** — 2–3 % on the files they touch
+— which is the pattern this whole stage has: the parallel run is an instrument
+that finds sequential waste, because it is the one place a serial millisecond
+cannot hide.
 
 ### Task T1a.7.2.4 — Early stop
 

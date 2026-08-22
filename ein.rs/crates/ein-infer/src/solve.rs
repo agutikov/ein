@@ -31,7 +31,7 @@ use ein_core::{FactId, Kb, Prov, SolverConfig, Symbol, Terms, Value};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
-use crate::apriori::{CanonicalSetId, generate_layer, layer_1, order_candidates};
+use crate::apriori::{CanonicalSetId, layer_1, order_candidates};
 use crate::canon::state_key;
 use crate::commitment::{CommitmentSetResult, Kind, try_commitment_set};
 use crate::compile::{CompileError, SharedMemo};
@@ -745,11 +745,10 @@ impl Run<'_> {
             } else {
                 let store = root.nogoods().clone();
                 let guard = store.read().expect("the no-good store");
-                generate_layer(terms, &a_prev, &alive, &guard)
+                self.generate_layer(terms, &a_prev, &alive, &guard)
             };
-            let mut candidates =
-                order_candidates(root, terms, &candidates, &self.cfg.lattice_order)
-                    .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?;
+            let mut candidates = order_candidates(root, terms, candidates, &self.cfg.lattice_order)
+                .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?;
             // After `order_candidates`, never instead of it — the shuffle is a
             // permutation of the ordered list, and the harness that probes
             // traversal-order dependence needs both to have happened.
@@ -1042,6 +1041,56 @@ impl Run<'_> {
             let _ = &mut phase_2_done;
         }
         Ok(())
+    }
+
+    /// Layer *L+1*'s candidates — the prefix join, then the downward-closure
+    /// filter, **which is the fan-out's second one**.
+    ///
+    /// [`crate::apriori::filter_candidate`] asks two questions of a candidate:
+    /// is every element still alive, and is any learned clause a subset of it.
+    /// The second walks the whole no-good store, so the pass is
+    /// `candidates × clauses` — **47.7 ms of `branching/07 -e`'s 109 ms** at
+    /// `--jobs 8`, which is what made it the largest serial term in Phase 2
+    /// once the ordered commit stopped freeing the workers' memory
+    /// ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#t1a727--and-the-layers-own-serial-work-turned-out-to-be-three-things)).
+    ///
+    /// It parallelises for the same reason the enterings do and with less to
+    /// argue about: the predicate reads `alive` and the clause store by `&` and
+    /// writes nothing at all. The order is kept by computing a **mask** through
+    /// an indexed `collect_into_vec` and filtering with it, rather than by
+    /// trusting a filtered collect to be ordered — a layer's candidate order
+    /// *is* the traversal, so it is worth spending a `Vec<bool>` to make the
+    /// claim structural.
+    fn generate_layer(
+        &self,
+        terms: &Terms,
+        a_prev: &[CanonicalSetId],
+        alive: &FxHashSet<FactId>,
+        nogoods: &ein_core::Nogoods,
+    ) -> Vec<CanonicalSetId> {
+        let joined = crate::apriori::apriori_prefix_join(terms, a_prev);
+        #[cfg(feature = "parallel")]
+        if let Some(pool) = self.pool.as_ref()
+            && joined.len() > 1
+        {
+            use rayon::prelude::*;
+            let mut keep = Vec::with_capacity(joined.len());
+            pool.install(|| {
+                joined
+                    .par_iter()
+                    .map(|c| crate::apriori::filter_candidate(c, alive, nogoods))
+                    .collect_into_vec(&mut keep)
+            });
+            return joined
+                .into_iter()
+                .zip(keep)
+                .filter_map(|(c, keep)| keep.then_some(c))
+                .collect();
+        }
+        joined
+            .into_iter()
+            .filter(|c| crate::apriori::filter_candidate(c, alive, nogoods))
+            .collect()
     }
 
     /// The three things every candidate does before its result is committed,
@@ -1491,28 +1540,22 @@ impl Run<'_> {
         firings: Vec<Firing>,
         layer: u32,
     ) {
-        // Before the snapshot, and before the dedup below decides whether
-        // this node is kept at all: promoting the handful of records a
-        // solution cites is cheaper than threading the region's lifetime
-        // through that decision, and a node that loses its dedup simply
-        // leaves them behind.
-        node_kb.promote_provenance(terms);
+        // **The key first, and the promotion only if the node is kept.**
+        //
+        // `state_key` reads the fact list and `Kb::promote_provenance` rewrites
+        // justification tables, so the key is the same whichever runs first —
+        // and running the key first means a node the dedup throws away costs a
+        // sort rather than a promotion *and* a snapshot. This used to be the
+        // other way round, on the reasoning that promoting the handful of
+        // records a solution cites was cheaper than threading the fork
+        // region's lifetime through the decision. The region now travels with
+        // the entering (T1a.7.2.1), so there is nothing to thread — and the
+        // measurement says the ordering was worth 10 ms of `branching/06 -e`'s
+        // 64 ms at `--jobs 8`, because that file calls this **1 221 times to
+        // keep 22 nodes**.
         let key = state_key(node_kb);
-        let record = |kb: &mut Kb| SolutionRecord {
-            commitment: commitment.clone(),
-            // A snapshot, so it survives later root mutation.
-            kb: kb.snapshot(),
-            firings,
-            layer,
-        };
-        match self.lstate.node_at.get(&key).copied() {
-            None => {
-                self.lstate
-                    .node_at
-                    .insert(key.clone(), self.lstate.nodes.len());
-                let r = record(node_kb);
-                self.lstate.nodes.push((key, r));
-            }
+        let at = match self.lstate.node_at.get(&key).copied() {
+            None => None,
             Some(at) => {
                 // `tuple(sorted(commitment)) < tuple(sorted(cur.commitment))`
                 // — sorted and compared by **content**, not by `FactId`.
@@ -1523,13 +1566,33 @@ impl Run<'_> {
                 mine.sort_by(|&a, &b| terms.cmp_fact_semantic(a, b));
                 let mut theirs = self.lstate.nodes[at].1.commitment.clone();
                 theirs.sort_by(|&a, &b| terms.cmp_fact_semantic(a, b));
-                if crate::apriori::cmp_set(terms, &mine, &theirs) == std::cmp::Ordering::Less {
-                    // In place: ein.py assigns into the dict, which keeps the
-                    // original insertion position, and that position is an
-                    // `Ambiguity`'s branch order.
-                    self.lstate.nodes[at].1 = record(node_kb);
+                if crate::apriori::cmp_set(terms, &mine, &theirs) != std::cmp::Ordering::Less {
+                    // The stored representative wins; this path's derivation
+                    // is not kept, so neither are its records.
+                    return;
                 }
+                Some(at)
             }
+        };
+        node_kb.promote_provenance(terms);
+        let r = SolutionRecord {
+            commitment,
+            // A snapshot, so it survives later root mutation.
+            kb: node_kb.snapshot(),
+            firings,
+            layer,
+        };
+        match at {
+            None => {
+                self.lstate
+                    .node_at
+                    .insert(key.clone(), self.lstate.nodes.len());
+                self.lstate.nodes.push((key, r));
+            }
+            // In place: ein.py assigns into the dict, which keeps the original
+            // insertion position, and that position is an `Ambiguity`'s branch
+            // order.
+            Some(at) => self.lstate.nodes[at].1 = r,
         }
     }
 

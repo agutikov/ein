@@ -575,22 +575,21 @@ the CLI.
 
 | workload | `-j 1` | `-j 2` | `-j 4` | `-j 8` | |
 |---|---:|---:|---:|---:|---:|
-| `sq-bwd/houses -e` | 254.5 ms | 161.8 | 97.9 | **59.9** | **4.25×** |
-| `features/01 -e` | 1 669.9 ms | 1 173.6 | 776.7 | **552.5** | **3.02×** |
-| `branching/06 -e` | 205.2 ms | 152.7 | 101.3 | **71.1** | **2.89×** |
-| `branching/07 -e` | 284.1 ms | 218.3 | 144.4 | **109.3** | **2.60×** |
+| `sq-bwd/houses -e` | 257.6 ms | 168.6 | 95.2 | **59.9** | **4.30×** |
+| `branching/07 -e` | 280.0 ms | 193.1 | 111.0 | **69.0** | **4.06×** |
+| `branching/06 -e` | 198.2 ms | 136.9 | 81.7 | **53.3** | **3.72×** |
+| `features/01 -e` | 1 696.4 ms | 1 191.9 | 768.6 | **537.4** | **3.16×** |
 | `zebra -e` | 46.3 ms | 41.3 | 36.1 | 34.7 | 1.34× |
 | `zebra2 -e` | 31.2 ms | 29.2 | 27.4 | 27.5 | 1.13× |
 
-**2.60–4.25× on the measurement set against a ≥ 6× target**, and the zebras at
+**3.16–4.30× on the measurement set against a ≥ 6× target**, and the zebras at
 1.1–1.3× exactly as §5.4 said they would be — their layer 1 holds half their
-firings and layer 1 is the one that cannot be fanned out. The gap is § Where
-the other 2× is, below, and it is not one thing.
+firings and layer 1 is the one that cannot be fanned out.
 
-> These are the numbers **after** § The commit's real cost, which took the
-> measurement set from 2.19–2.89× to the row above by moving one `drop` from
-> the committing thread to the worker. The first table this section had is kept
-> there, because the before-column is the finding.
+> **The first fan-out was 2.19–2.89×**, and the three sections that follow are
+> what took it here — all three found by measuring the parallel run rather than
+> by designing for it, and all three *sequential* improvements as well. The
+> before-columns are kept because they are the finding.
 
 ### It is the same computation, and that is checked three ways
 
@@ -678,38 +677,76 @@ lists costs nothing. It is now conditional anyway, because `Entered::kb` is
 `None` where the worker dropped the fork, but that is a consequence and not a
 win.
 
-### Where the other 2× is
+### T1a.7.2.7 — and the layer's own serial work turned out to be three things
 
-With the commit's frees moved, `--jobs 8` breaks down like this — Phase 2 only,
-by timing each region:
+With the commit's frees moved to the workers, the largest serial term in Phase 2
+was **candidate generation**: 39.5 ms of `branching/07 -e`'s 109 at `--jobs 8`.
+Timing its parts split it, and the split is why the fix is three fixes:
+
+| ms at `--jobs 8` | `branching/07` | `branching/06` | `features/01` |
+|---|---:|---:|---:|
+| `apriori_prefix_join` | 1.0 | 0.4 | **20.6** |
+| **`filter_candidate`, the whole layer** | **47.7** | **11.3** | 9.1 |
+| `order_candidates` | 0.9 | 0.2 | **26.0** |
+
+1. **The filter fans out**, and it is the easiest fan-out in the engine:
+   `filter_candidate` asks whether every element is still alive and whether any
+   learned clause is a subset, reads `alive` and the clause store by `&`, and
+   writes nothing. What it costs is `candidates × clauses`, which is why the
+   file with the lookahead *off* — and therefore the largest no-good store —
+   pays 47.7 ms of it. Order is kept by computing a **mask** through an indexed
+   `collect_into_vec` and filtering with it, rather than by trusting a filtered
+   collect to be ordered: a layer's candidate order *is* the traversal, and it
+   is worth a `Vec<bool>` to make that structural. → 47.7 ms becomes **8.3**.
+2. **`order_candidates` took `&[CanonicalSetId]` and cloned it.** A layer
+   arrives in the join's emission order, which is already `cmp_set` order, so
+   the sort is a linear scan over already-sorted runs — and the 26 ms was the
+   *copy* the sort needed somewhere to put. Taking the vector by value is a
+   sequential win with no parallelism in it at all. → **18.5 ms**, and the rest
+   is the sort of a layer that really is 100 000 sets long.
+3. **`record_node` promoted a fork's provenance before asking whether the node
+   was a duplicate.** `branching/06 -e` calls it **1 221 times to keep 22
+   nodes** — the search reaches the same model down many commitment paths — and
+   each call was doing `Kb::promote_provenance` and `Kb::snapshot` for a record
+   the dedup then threw away, 7.3 ms of a 15 ms commit. `state_key` reads the
+   fact list and the promotion rewrites justification tables, so the key is the
+   same whichever runs first; computing it first makes a losing node cost a
+   sort. The comment that put the promotion first said it was cheaper than
+   *threading the fork region's lifetime through the decision* — and the region
+   now travels with the entering, so there is nothing to thread. → `branching/06
+   -e` 3.13× → **3.72×**.
+
+Together with the commit's frees: **2.19–2.89× → 3.16–4.30×**, and `--jobs 1`
+got faster too, by 2–3 % on the two files that (2) and (3) touch.
+
+### Where the other 1.5× is
+
+Phase 2 at `--jobs 8`, after all four fixes, by timing each region:
 
 | | `branching/06` | `branching/07` | `features/01` | `houses` |
 |---|---:|---:|---:|---:|
-| the fan-out | 38.2 ms | 55.6 | 441.5 | 49.3 |
-| **candidate generation + ordering** | **10.8** | **39.5** | **55.8** | **3.1** |
-| the ordered commit | 13.8 | 3.0 | 54.6 | 3.2 |
-| layer 1, sequential | 0.9 | 7.4 | 0.2 | 0.1 |
-| the layer barrier | 0.3 | 0.3 | 8.9 | 0.4 |
+| **the fan-out** | **41.3 ms** | **59.0** | **455.2** | **52.0** |
+| the ordered commit | 4.0 | 2.7 | 53.6 | 3.2 |
+| candidate generation | 2.6 | 8.3 | 22.2 | 1.4 |
+| the ordering | 0.2 | 0.4 | 18.4 | 1.0 |
+| layer 1, sequential | 0.9 | 5.1 | 0.1 | 0.1 |
 
-Two things are left, and neither is what design/08 has a level for:
+**The serial terms are down to 8–17 %** and what is left is the fan-out's own
+efficiency. On `sq-bwd/houses -e` it is 52 ms of a 60 ms run against 258 ms
+sequential — the fan is **~5× on 8 cores**, and Amdahl on 8 ms of serial would
+allow 7.5×.
 
-1. **`generate_layer` + `order_candidates` is the serial term now** — 39.5 ms
-   of `branching/07 -e`'s 109 ms, 36 % of the run. Building layer *L+1*'s
-   commitment sets from layer *L*'s survivors and filtering each against the
-   no-good store is per-candidate work with no shared state, so it is
-   parallelisable the same way the enterings are; the ordering is a sort whose
-   *keys* are independent. That is T1a.7.2.7.
-2. **The fan-out is ~5× on 8 cores**, not 8×. On `sq-bwd/houses -e` the serial
-   terms are down to 4 ms of 60 and the run is still 4.25×, so what is left is
-   the fan's own efficiency. The profile has no lock in it — the engine's one
-   `Arc<Mutex<PlanMemo>>` does not appear — and 11 % is allocator and libc, so
-   this reads as memory rather than contention: a fork allocates and frees a KB
-   delta and a saturator, and eight of them at once is a bandwidth question.
-   Reducing what a fork allocates is a
-   [P1a.6](../p1a.6_performance/README.md)-shaped answer, not a P1a.7 one.
+That last 1.5× is a different kind of question, and the profile says which:
+there is **no lock in it** — the engine's one `Arc<Mutex<PlanMemo>>` does not
+appear — and 11 % is the allocator and libc. So it reads as memory rather than
+contention: a fork allocates and frees a KB delta and a saturator, and eight of
+them at once is a bandwidth question. Reducing what a fork allocates is a
+[P1a.6](../p1a.6_performance/README.md)-shaped answer, not a P1a.7 one, and it
+is the honest statement of where the ≥ 6× target now stands.
 
-Neither is S1a.7.3's or S1a.7.4's — those parallelise root saturation and the
-boundary round, which are Phase *1* and are not in this denominator at all.
+None of the four is S1a.7.3's or S1a.7.4's either — those parallelise root
+saturation and the boundary round, which are Phase *1* and are not in this
+denominator at all.
 
 ### The batch is a memory decision before it is a scheduling one
 

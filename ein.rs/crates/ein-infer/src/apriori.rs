@@ -172,13 +172,19 @@ pub fn layer_1(terms: &Terms, alive: &FxHashSet<FactId>) -> Vec<CanonicalSetId> 
 /// `Fact` for it, because the scorer reads only the relation and the args.
 /// Here it needs no synthesis — a `FactId` exists whether or not any KB holds
 /// the proposition true.
+/// Takes the candidates **by value**, because it reorders them and cloning
+/// them to do it is not free: `features/01 -e` spends 26 ms per solve copying
+/// a layer's sets so that the sort has somewhere to put them, and a layer
+/// arrives here in [`apriori_prefix_join`]'s emission order — which is already
+/// `cmp_set` order, so `"lex"` is a linear scan over an owned vector rather
+/// than a sort over a copy.
 pub fn order_candidates(
     kb: &Kb,
     terms: &Terms,
-    candidates: &[CanonicalSetId],
+    candidates: Vec<CanonicalSetId>,
     mode: &str,
 ) -> Result<Vec<CanonicalSetId>, ScoreError> {
-    let mut out: Vec<CanonicalSetId> = candidates.to_vec();
+    let mut out: Vec<CanonicalSetId> = candidates;
     match mode {
         "lex" => {
             out.sort_by(|a, b| cmp_set(terms, a, b));
@@ -259,7 +265,7 @@ mod tests {
         let kb = Kb::new(ein_core::Program::new());
         let _ = ids(&mut terms, &["a"]);
         assert_eq!(
-            order_candidates(&kb, &terms, &[], "nonsense"),
+            order_candidates(&kb, &terms, Vec::new(), "nonsense"),
             Err(ScoreError::Unknown(
                 "unknown lattice_order mode: 'nonsense' (expected 'lex' or \
                  'score-sum')"

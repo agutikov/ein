@@ -446,8 +446,8 @@ pub fn lattice_shape(
     let l1 = layer_1(terms, &alive);
     let l2 = generate_layer(terms, &l1, &alive, &store.read().expect("store"));
     let l3 = generate_layer(terms, &l2, &alive, &store.read().expect("store"));
-    let lex = order_candidates(kb, terms, &l2, "lex").expect("lex never errors");
-    let scored = order_candidates(kb, terms, &l2, "score-sum")
+    let lex = order_candidates(kb, terms, l2.clone(), "lex").expect("lex never errors");
+    let scored = order_candidates(kb, terms, l2.clone(), "score-sum")
         .map_err(|e| crate::saturator::SaturateError::Compile(CompileError(e.to_string())))?;
     let mut out = vec![
         format!("ALIVE {n_alive} capped {}", alive.len()),

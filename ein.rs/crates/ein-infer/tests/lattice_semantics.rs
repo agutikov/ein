@@ -1367,8 +1367,9 @@ fn score_sum_orders_by_popularity_and_lex_does_not() {
         .collect();
     let show =
         |v: &[Vec<FactId>]| -> Vec<String> { v.iter().map(|c| sexpr(&terms, c[0])).collect() };
-    let lex = order_candidates(&kb, &terms, &candidates, "lex").expect("lex orders");
-    let scored = order_candidates(&kb, &terms, &candidates, "score-sum").expect("score-sum orders");
+    let lex = order_candidates(&kb, &terms, candidates.clone(), "lex").expect("lex orders");
+    let scored =
+        order_candidates(&kb, &terms, candidates.clone(), "score-sum").expect("score-sum orders");
     assert_eq!(show(&lex), ["(p X)", "(q X)"], "lex is the tuple sort");
     assert_eq!(
         show(&scored),
@@ -1376,7 +1377,7 @@ fn score_sum_orders_by_popularity_and_lex_does_not() {
         "the busier relation did not sort first"
     );
     assert_eq!(
-        show(&order_candidates(&kb, &terms, &candidates, "score-sum").expect("again")),
+        show(&order_candidates(&kb, &terms, candidates.clone(), "score-sum").expect("again")),
         show(&scored),
         "the same KB gave two orders"
     );
