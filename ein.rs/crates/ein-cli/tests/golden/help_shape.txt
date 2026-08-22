@@ -36,6 +36,7 @@ COMMAND ein solve
   OPTION --exhaustive -e metavar=- arity=0 default=False choices=- group=stop required=False help=exhaust the lattice — certify unique / ambiguous / unsat (slower)
   OPTION --full-kb-snapshots -F metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) append a whole-KB snapshot of the final state
   OPTION --hyp-stats -H metavar=- arity=0 default=False choices=- group=- required=False help=print the root-hypothesis preview (total + per-relation breakdown + hypgen filter report)
+  OPTION --jobs -j metavar=JOBS arity=1 default='1' choices=- group=- required=False help=threads for a layer's enterings (default: 1). Same verdict, same models, same counters
   OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the structured run summary (verdict, model, every engine counter, the root-saturation shape, the resolved config) to FILE as JSON. Additive: stdout, stderr and the exit code are unchanged.
   OPTION --lattice-order -o metavar=LATTICE_ORDER arity=1 default=None choices=lex|score-sum group=- required=False help=within-layer candidate ordering (S1.5b.26): 'lex' (canonical-tuple sort, the deterministic default) or 'score-sum' (S1.5a.7 hypgen scoring summed per set)
   OPTION --lattice-sanity-check -y metavar=- arity=0 default=False choices=- group=- required=False help=S1.5b.27 regression: for every alive size-k≥2 commitment, verify every (k-1)-subset parent path saturates to the same kb (costs k+1 saturations each)

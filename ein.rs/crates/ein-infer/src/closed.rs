@@ -77,8 +77,15 @@ pub fn emit_closed(s: &mut Session<'_>) -> Result<Vec<Symbol>, CompileError> {
         if producible.contains(&name) || already.contains(&name) {
             continue;
         }
-        s.kb.add_and_index_fact(s.terms, closed, &[Value::sym(name)], None)
-            .expect("room for a closure marker");
+        // The markers are a function of the program, so root numbered every
+        // one of them; a lent table refusing here means this entering is going
+        // back to the committing thread anyway (`Terms::refused`).
+        if s.kb
+            .add_and_index_fact(s.terms, closed, &[Value::sym(name)], None)
+            .is_err()
+        {
+            break;
+        }
         newly.push(name);
     }
     Ok(newly)

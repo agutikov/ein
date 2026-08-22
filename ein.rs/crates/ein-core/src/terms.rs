@@ -22,6 +22,7 @@ use crate::pyrepr::{self, PyValue};
 use crate::value::{IntId, IntPool, Tag, Value};
 use std::cmp::Ordering;
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering as Atomics};
 
 /// A table the committing thread owns outright and lends to workers for the
 /// duration of a fanned-out layer.
@@ -131,6 +132,22 @@ pub struct Terms {
     /// The kernel vocabulary, interned up front so a comparison against it is
     /// an integer compare and no hot path needs a `&mut Terms` to ask.
     pub kernel: Kernel,
+    /// Was an interning call refused because the tables are lent?
+    ///
+    /// **The single signal the fan-out reads.** An entering that needed to
+    /// number something cannot be finished on a worker, and the engine has a
+    /// dozen places that would have numbered it — the blind enumerator, the
+    /// lookahead kill cache, an `hrule` activator, a rule's conclusion. Rather
+    /// than teach each of them a new error to propagate, each stops what it is
+    /// doing and this says so: whatever the entering produced afterwards is
+    /// **not** the entering the sequential engine would have run, so the
+    /// fan-out discards it and re-runs it on the committing thread
+    /// ([shared_state.md §4.2](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#4-what-this-chooses)).
+    ///
+    /// Atomic only because [`Terms`] is `Sync`; it is written and read by the
+    /// one thread that owns this `Terms`, so `Relaxed` is the whole ordering
+    /// requirement.
+    refused: AtomicBool,
 }
 
 impl Default for Terms {
@@ -304,6 +321,7 @@ impl Terms {
             facts: Table::Own(FactStore::new()),
             provs: ProvArena::new(),
             kernel,
+            refused: AtomicBool::new(false),
         }
     }
 
@@ -364,6 +382,22 @@ impl Terms {
         matches!(self.facts, Table::Shared(_))
     }
 
+    /// Did anything ask this `Terms` to number something it could not — see
+    /// the field.
+    pub fn refused(&self) -> bool {
+        self.refused.load(Atomics::Relaxed)
+    }
+
+    /// Forget a refusal. The fan-out has re-run the entering that caused it.
+    pub fn clear_refused(&self) {
+        self.refused.store(false, Atomics::Relaxed);
+    }
+
+    fn refuse<T>(&self) -> Result<T, Overflow> {
+        self.refused.store(true, Atomics::Relaxed);
+        Err(Overflow::Shared)
+    }
+
     /// One worker's view — call [`Terms::share`] first.
     pub fn worker(&self) -> Terms {
         Terms {
@@ -372,6 +406,7 @@ impl Terms {
             facts: self.facts.holder(),
             provs: self.provs.share(),
             kernel: self.kernel,
+            refused: AtomicBool::new(false),
         }
     }
 
@@ -387,7 +422,7 @@ impl Terms {
     pub fn intern_text(&mut self, s: &str) -> Result<Symbol, Overflow> {
         match self.syms.own_mut() {
             Some(syms) => syms.intern(s),
-            None => self.syms.get(s).ok_or(Overflow::Shared),
+            None => self.syms.get(s).map_or_else(|| self.refuse(), Ok),
         }
     }
 
@@ -423,7 +458,7 @@ impl Terms {
     pub fn intern_int(&mut self, text: &str) -> Result<IntId, Overflow> {
         match self.ints.own_mut() {
             Some(ints) => ints.intern(text),
-            None => self.ints.get(text).ok_or(Overflow::Shared),
+            None => self.ints.get(text).map_or_else(|| self.refuse(), Ok),
         }
     }
 
@@ -436,7 +471,10 @@ impl Terms {
     pub fn intern_fact(&mut self, rel: Symbol, args: &[Value]) -> Result<FactId, Overflow> {
         match self.facts.own_mut() {
             Some(facts) => facts.intern(rel, args),
-            None => self.facts.probe(rel, args).ok_or(Overflow::Shared),
+            None => self
+                .facts
+                .probe(rel, args)
+                .map_or_else(|| self.refuse(), Ok),
         }
     }
 

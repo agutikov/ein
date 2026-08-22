@@ -71,6 +71,14 @@ sha2        = "0.10"
 # dependency-light, and the two digests already here are parity fixtures rather
 # than integrity checks (`md-5` is a DOT node id, `sha1` a colour index).
 blake3      = { version = "1", default-features = false, features = ["std"] }
+# P1a.7's work-stealing pool, `ein-infer` only and behind its `parallel`
+# feature (design/12 §2). What it buys over `std::thread::scope` is that the
+# threads **stay alive between batches**: a fanned-out layer runs in bounded
+# batches so that the results in flight cannot grow with the layer, and
+# spawning `jobs` threads per batch cost more than the parallelism returned —
+# 96 000 spawns and a 3x *slowdown* at `--jobs 2` on `features/01 -e`,
+# measured (plans/m1a_rust/p1a.7_parallelism/scaling.md §8).
+rayon       = "1"
 criterion   = { version = "0.7", default-features = false, features = ["cargo_bench_support"] }
 # The global allocator, default-on for the binary and the bench (T1a.6.2.7).
 # glibc `malloc` is 20.0 % of an exhaustive `zebra2`'s self time over 880 k

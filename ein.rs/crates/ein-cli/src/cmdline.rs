@@ -184,6 +184,21 @@ fn solve_command() -> Command {
                 .value_parser(py_int)
                 .help("abort after N commitment tries"),
         )
+        // T1a.7.2.1. The *contract* — what `--jobs N` promises, and the
+        // `--unordered` opt-out — is S1a.7.5's; this is the knob the engine
+        // already takes, so that the promise can be measured.
+        .arg(
+            Arg::new("jobs")
+                .short('j')
+                .long("jobs")
+                .value_name("JOBS")
+                .value_parser(py_int)
+                .default_value("1")
+                .help(
+                    "threads for a layer's enterings (default: 1). \
+                     Same verdict, same models, same counters",
+                ),
+        )
         .arg(flag(
             'L',
             "no-lookahead",

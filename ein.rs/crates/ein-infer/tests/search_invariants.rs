@@ -66,6 +66,11 @@ struct Ran {
     answered: Answered,
     enterings: u64,
     depth: usize,
+    /// Every search counter. `--jobs N` may move none of them, which is the
+    /// half of the promise a verdict comparison cannot see.
+    stats: ein_infer::solve::MonotonicStats,
+    /// What the fan-out did — and the one thing that is *allowed* to differ.
+    jobs: ein_infer::solve::JobStats,
 }
 
 fn facts_of(kb: &Kb, terms: &Terms) -> Vec<String> {
@@ -134,6 +139,8 @@ fn run(rel: &str, tweak: impl FnOnce(&mut SolveOptions, &mut ein_core::SolverCon
         },
         enterings: solved.stats.base.enterings_total,
         depth: kb.depth(),
+        stats: solved.stats,
+        jobs: solved.jobs,
     }
 }
 
@@ -529,4 +536,112 @@ fn with_the_writeback_off_no_layer_writes_to_root() {
             );
         }
     }
+}
+
+// ── T1a.7.2.1 — the fan-out ───────────────────────────────────────────────
+
+/// **`--jobs N` is the same computation as `--jobs 1`.**
+///
+/// Not merely the same answer: the same *every counter*, because a fanned-out
+/// layer computes against exactly the root the sequential engine gives it and
+/// every result is committed in candidate order. A parallel engine that moved
+/// `enterings_dead_pre` would be a different search wearing a performance
+/// change's clothes, which is the whole reason
+/// [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+/// fans out only layers that cannot write to root.
+///
+/// The corpus-wide form of this — every file × every op, through
+/// `ein-parity`'s cut — is `jobs_invariance`; this is the unit form, and it is
+/// here because it is the one that fails *first* and reads clearly when it
+/// does.
+#[test]
+fn jobs_does_not_move_the_answer_or_a_counter() {
+    let mut handed_back = 0u64;
+    for rel in FILES {
+        let one = run(rel, |_, _| {});
+        for jobs in [2usize, 4, 8] {
+            let many = run(rel, |o, _| o.jobs = jobs);
+            assert_eq!(
+                one.answered, many.answered,
+                "{rel}: --jobs {jobs} changed the answer"
+            );
+            assert_eq!(
+                one.stats, many.stats,
+                "{rel}: --jobs {jobs} moved a search counter"
+            );
+            assert_eq!(
+                one.depth, many.depth,
+                "{rel}: --jobs {jobs} changed root's layer stack"
+            );
+            handed_back += many.jobs.handed_back;
+        }
+    }
+    // **The hand-back path is exercised, and that is a finding rather than a
+    // detail.** [shared_state.md §2a](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+    // measured *zero* enterings appending a fact id on four of six workloads —
+    // but it measured `try_commitment_set` only, and a fork stays alive through
+    // the `complete()` probe, whose blind enumerator numbers the candidates it
+    // walks. Those are the ones that come back: `lattice/02_genuine_3set_death`
+    // hands three back per run. Every counter above still matches, which is the
+    // point — the fallback is not an approximation, it is the same entering
+    // computed where it can be.
+    assert!(
+        handed_back > 0,
+        "no entering was handed back anywhere in this file set, so the \
+         re-run path is untested. If the engine stopped numbering inside a \
+         fork that is worth knowing; if these files stopped covering it, \
+         pick one that does"
+    );
+}
+
+/// The same, on the two five-layer searches — where a layer holds thousands of
+/// enterings and the fan-out actually has something to schedule.
+#[test]
+fn a_deep_search_is_counter_identical_under_jobs() {
+    for rel in [
+        "examples/branching/06_lookahead_on.ein",
+        "examples/branching/07_lookahead_off.ein",
+    ] {
+        let one = run(rel, |_, _| {});
+        let many = run(rel, |o, _| o.jobs = 8);
+        assert_eq!(
+            one.answered, many.answered,
+            "{rel}: --jobs 8 changed the answer"
+        );
+        assert_eq!(
+            one.stats, many.stats,
+            "{rel}: --jobs 8 moved a search counter"
+        );
+        assert!(
+            many.jobs.speculated > 1_000,
+            "{rel}: only {} enterings reached a worker — this file was chosen \
+             for its five layers of thousands",
+            many.jobs.speculated
+        );
+    }
+}
+
+/// The predicate, from the fan-out's side: layer 1 runs sequentially exactly
+/// when it can write to root, and the count is the Amdahl numerator
+/// [scaling.md §3a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)
+/// quotes.
+#[test]
+fn only_a_layer_that_could_write_to_root_runs_sequentially() {
+    // 204 layer-1 candidates, and 162 of them write back.
+    let writes = run("examples/branching/07_lookahead_off.ein", |o, _| o.jobs = 8);
+    assert_eq!(
+        writes.jobs.sequential, 204,
+        "layer 1 writes back here, so its 204 candidates are the whole of \
+         what a fan-out may not touch"
+    );
+    // …and with the writeback off, nothing is sequential at all.
+    let quiet = run("examples/branching/07_lookahead_off.ein", |o, cfg| {
+        o.jobs = 8;
+        cfg.enable_singleton_writeback = false;
+    });
+    assert_eq!(
+        quiet.jobs.sequential, 0,
+        "with no writeback there is no layer that can write to root, so no \
+         entering has to run on the committing thread"
+    );
 }

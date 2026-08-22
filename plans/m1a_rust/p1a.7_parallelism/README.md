@@ -3,7 +3,8 @@
 **Milestone:** [M1a — Rust port](../README.md)
 **Status:** **resumed 2026-08-22**, three stages in —
 [S1a.7.1](s1a.7.1_sync_shared_state.md) is **closed** and
-[S1a.7.2](s1a.7.2_parallel_enterings.md)'s first task is shipped.
+[S1a.7.2](s1a.7.2_parallel_enterings.md) is four tasks in, **threads
+included**.
 [S1a.7.0](s1a.7.0_speculation_audit.md) shipped 2026-08-20 — a stage the plan
 did not have, because the phase's central risk was measurable *before* any of
 it was built. The phase then **paused for two days** at the user's direction
@@ -19,23 +20,28 @@ them declined, each of them removed by a number.
 **Nothing is half-built.** No engine code is in an intermediate state and no
 scaffolding is waiting to be removed. What has shipped is three instruments
 (`spec_audit`, `shared_state_probe`, `flatten_probe`), two measurement
-documents, seven invariance tests, a batch-synchronous integration mode that is
+documents, eleven invariance tests, a batch-synchronous integration mode that is
 worth 2.8× at `--jobs 1` on its own, a core-set-aware bench harness, the
-fan-out predicate and the assertion that holds it — and
+fan-out predicate and the assertion that holds it, **`--jobs N` itself** — and
 **four** engine changes that are unconditional improvements rather than
 parallel scaffolding: the engine's own names interned once instead of per
 firing, a load pass that does what the compiler would otherwise do mid-search,
 the per-worker provenance region (`features/01 -e` from 684–708 MB to
 85–91 MB), and the layer barrier's root coalesce (`branching/07 -e` **3.17×**).
 
-**Not one thread yet, and that is deliberate.** Everything above is either a
-measurement, a sequential improvement the measurements found on the way, or an
-invariant the parallel path will depend on and that is cheaper to establish
-while nothing depends on it. The first `std::thread::spawn` in the repo will be
-[S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.1's, against a baseline two
-stages of measurement have already made 3.17× faster on the workload the
-scaling target is quoted against — and against a predicate that already says,
-in the code and in the gate, which layers it may have.
+**And now there are threads.**
+[T1a.7.2.1](s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)
+shipped `--jobs N` — a `rayon` pool built once per solve, a bounded batch, an
+ordered commit — and it is **2.19–2.89× on 8 P-cores** with the answer, every
+counter and the whole verbose event stream unchanged. That is short of the
+**≥ 6×** the acceptance asks for, and the gap is measured rather than guessed:
+a 26 % serial fraction of which the ordered commit is the larger half, and a
+fan-out that is 5.2× on 8 cores rather than 8×
+([scaling.md §8 § Where the other 3× is](scaling.md#where-the-other-3-is)).
+Both are S1a.7.2's to close; neither is what
+[S1a.7.3](s1a.7.3_parallel_boundary.md) and
+[S1a.7.4](s1a.7.4_parallel_enqueue.md) are for, because those parallelise
+Phase 1 and Phase 1 is not in this denominator.
 
 ## Resumed — what the interval changed
 
@@ -240,7 +246,7 @@ Design: [design/08](../design/08_parallelism.md).
 |---|---|---|
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
 | [S1a.7.1](s1a.7.1_sync_shared_state.md) ✅ | Making the shared state `Sync` — **closed 2026-08-22**, three of eight tasks deleted by measurement and no lock built, [shared_state.md](shared_state.md) | 3 d → 4.5 d |
-| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22, on paper: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items; **T1a.7.2.0 shipped**, 3.17× at `--jobs 1`, and **T1a.7.2.8** with it — the predicate now exists, and asserts | 4 d → 3 d |
+| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items. **.0, .8, .1, .2 shipped**: the layer stack coalesced (3.17× at `--jobs 1`), the predicate asserted, the seam, and the fan-out — **2.19–2.89× on 8 P-cores**, same computation on all 47 corpus entries, byte-identical event streams | 4 d → 3 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) | Level 3: the parallel boundary round | 2 d |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) | Level 2: the parallel enqueue pass | 2 d |
 | [S1a.7.5](s1a.7.5_jobs_contract.md) | The `--jobs` contract | 2 d |
@@ -257,7 +263,11 @@ stays readable.
 - A 10 000-run randomised stress of `--jobs 8` vs `--jobs 1` with no
   divergence, as a sixth property of the fuzzer rather than a harness run.
 - **≥ 6× on 8 P-cores** on the phase's measurement set — `branching/06 -e`,
-  `branching/07 -e`, `saturation/square-bwd/houses -e`, `features/01 -e`:
+  `branching/07 -e`, `saturation/square-bwd/houses -e`, `features/01 -e`.
+  ◑ **2.19–2.89× as of T1a.7.2.1**, and the shortfall is measured rather than
+  guessed: a 26 % serial fraction of which the ordered commit is the larger
+  half, and a fan-out that is 5.2× on 8 cores
+  ([scaling.md §8](scaling.md#8-t1a721--the-fan-out-and-the-three-things-it-costs)).
   0.2–1.9 s runs with ≥ 98 % of their enterings past layer 1. **Restated
   2026-08-20 by [S1a.7.0](s1a.7.0_speculation_audit.md)**; it read "≥ 6× on 8
   cores for exhaustive zebra2's Phase 2 wall-clock", which was written when
@@ -341,9 +351,16 @@ stays readable.
   zebra fast, which [scaling.md §5.4](scaling.md#5-what-this-chooses) had
   already concluded from the other side when it moved the scaling target. The
   risk is not the number; it is quoting a zebra speedup as the phase's.
-- **Memory scales with jobs.** N live forks = N deltas over one shared
-  base; measure peak RSS at `--jobs 16` on the worst corpus entry
-  (`enable_singleton_writeback=false`, 3 336+ enterings). **And the base is
+- ~~**Memory scales with jobs.**~~ **Real, found, and bounded — 2026-08-22.**
+  It was not *N* live forks: the first fan-out held a whole layer's results
+  before committing any of them, and on `features/01 -e` — 384 167 enterings in
+  one layer — that is **1.9 GB** against 84 MB sequential, and *slower* than
+  `--jobs 1`. The batch is bounded at `jobs × 32` enterings in flight, measured
+  ([scaling.md §8](scaling.md#the-batch-is-a-memory-decision-before-it-is-a-scheduling-one)),
+  and peak RSS is then 79.8 → 82.8 → **90.3 MB** at `--jobs 1 / 8 / 16`. What
+  the risk register said to measure is what found it — though not where it said
+  to look: the risk was written as *N* live forks over one shared base, and the
+  quantity that actually grew was **the layer**, not the job count. **And the base is
   not the constant here.** [S1a.6.4](../p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)
   measured the corpus's slowest `solve` cells, which no P1a.6 target covers:
   `features/01_not_and_absent -e` peaked at **724 MB** at `--jobs 1`, and an

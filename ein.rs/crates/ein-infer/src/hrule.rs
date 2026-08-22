@@ -60,10 +60,11 @@ impl Hrules {
                 // The activator is a synthetic `Fact(h.name, argtuple)` that
                 // is deliberately **not** written to the KB — ein.py builds
                 // the same throwaway.
-                let act = s
-                    .terms
-                    .intern_fact(h.name, &args)
-                    .expect("room for a synthetic hrule activator");
+                // A lent table cannot number a synthetic activator it has
+                // not seen; `Terms::refused` sends the entering back.
+                let Ok(act) = s.terms.intern_fact(h.name, &args) else {
+                    continue;
+                };
                 plans.push(Arc::new(crate::compile::compile_rule(
                     s.ast,
                     s.terms,

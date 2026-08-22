@@ -342,8 +342,12 @@ fn write_negated(s: &mut Session<'_>, hypothesis: FactId) {
         .terms
         .provs
         .push(ein_core::Prov::from_rule(rule, Box::new([]), None));
-    s.kb.add_and_index_fact(s.terms, not, &arg, Some(prov))
-        .expect("room for a kill-cache negation");
+    // A worker may not be able to number `(not h)`, and the cache feeds
+    // forward within the call — so an entering that reaches here on a lent
+    // table is one whose *later* candidates would see a different world.
+    // `Terms::refused` is set by the refusal and the fan-out discards the
+    // whole entering; skipping the write keeps that discarded run cheap.
+    let _ = s.kb.add_and_index_fact(s.terms, not, &arg, Some(prov));
 }
 
 // ── Blind enumeration ──────────────────────────────────────────────
@@ -453,10 +457,14 @@ fn fill_slot(
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<ControlFlow<()>, CompileError> {
     if arity == 1 {
-        let fact = s
-            .terms
-            .intern_fact(rel, &[Value::sym(focal)])
-            .expect("room for a candidate");
+        // A worker cannot number a candidate nothing has numbered yet, and
+        // stopping the walk is what keeps the wasted work bounded.
+        // `Terms::refused` is what makes the partial enumeration unusable
+        // rather than merely short, so the fan-out re-runs the entering on the
+        // committing thread instead of believing it.
+        let Ok(fact) = s.terms.intern_fact(rel, &[Value::sym(focal)]) else {
+            return Ok(ControlFlow::Break(()));
+        };
         return Ok(emit(s, ctx, stats, fact, f));
     }
     if arity != 2 {
@@ -473,10 +481,11 @@ fn fill_slot(
         let mut args = [Value::UNBOUND; 2];
         args[fixed_slot] = Value::sym(focal);
         args[other_slot] = Value::sym(filler);
-        let fact = s
-            .terms
-            .intern_fact(rel, &args)
-            .expect("room for a candidate");
+        // See the arity-1 branch: a refusal ends the walk and `Terms::refused`
+        // is what says the result is not to be believed.
+        let Ok(fact) = s.terms.intern_fact(rel, &args) else {
+            return Ok(ControlFlow::Break(()));
+        };
         if emit(s, ctx, stats, fact, f).is_break() {
             return Ok(ControlFlow::Break(()));
         }

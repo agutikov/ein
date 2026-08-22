@@ -33,7 +33,7 @@ use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::apriori::{CanonicalSetId, generate_layer, layer_1, order_candidates};
 use crate::canon::state_key;
-use crate::commitment::{Kind, try_commitment_set};
+use crate::commitment::{CommitmentSetResult, Kind, try_commitment_set};
 use crate::compile::{CompileError, SharedMemo};
 use crate::events::Events;
 use crate::firing::Firing;
@@ -202,6 +202,20 @@ pub struct SolveOptions {
     /// is the first depth a writeback can produce
     /// ([scaling.md §6](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
     pub coalesce_root_at: Option<usize>,
+    /// How many threads evaluate a layer's enterings. `1` is the default and
+    /// is the sequential engine, line for line
+    /// ([T1a.7.2.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)).
+    ///
+    /// **`--jobs N` is the same computation as `--jobs 1`** — the same
+    /// verdict, the same models, the same unsat core and *the same counters* —
+    /// because a layer is fanned out only when it cannot write a fact to root
+    /// ([`Run::fan_out_this_layer`]) and because every result is committed in
+    /// candidate order. What differs is the wall clock, and nothing else.
+    ///
+    /// An **execution** knob, not a semantics one, which is why it lives here
+    /// and not in [`ein_core::SolverConfig`]: a `(config …)` block in a puzzle
+    /// file must not be able to set it.
+    pub jobs: usize,
 }
 
 impl Default for SolveOptions {
@@ -216,6 +230,7 @@ impl Default for SolveOptions {
             on_budget: OnBudget::Raise,
             integrate_every: None,
             coalesce_root_at: Some(3),
+            jobs: 1,
         }
     }
 }
@@ -278,6 +293,39 @@ pub struct EnteringInfo<'a> {
     pub nogood_subsumed: bool,
 }
 
+/// One entering, at the point where the committing thread takes over.
+///
+/// The split is [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)'s
+/// and it is where a fanned-out layer cuts: [`Run::speculate`] produces one of
+/// these against a root nobody may write to, and [`Run::commit_entering`]
+/// turns it into counters, clauses, events and nodes **in candidate order**.
+/// Nothing in `speculate` touches the run's state; nothing in
+/// `commit_entering` looks at a fork it was not given.
+struct Entered {
+    /// The fork, after `complete()` has probed it — an alive entering's KB is
+    /// mutated by that probe (the lookahead kill cache writes into it), which
+    /// is why the probe belongs to the speculative half and not to the commit.
+    result: CommitmentSetResult,
+    /// Alive **and** complete: a solution node.
+    solved: bool,
+}
+
+/// What one worker brought back: the entering, its records, its narration.
+///
+/// The record region travels **with** the result rather than in a side table,
+/// and that is what makes the ordered commit safe: an id issued inside a fork
+/// means something only against the region that issued it, and there is no way
+/// to install one entering's records and read another's.
+#[cfg(feature = "parallel")]
+struct Speculated {
+    /// `None` when the worker handed the entering back — it needed to number a
+    /// proposition and a lent table cannot ([`ein_core::Overflow::Shared`]).
+    /// Nothing else in this struct is usable then.
+    entered: Option<Result<Entered, SolveError>>,
+    region: ein_core::Region,
+    narration: Events,
+}
+
 /// The lifecycle hooks a state dumper receives — implemented in
 /// [S1a.5.3](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.3_state_dumps.md)
 /// by `ein-render`, which is where formatting lives.
@@ -329,10 +377,39 @@ struct LoopState {
     truncated: bool,
 }
 
+/// What the fan-out did — **deliberately not in [`MonotonicStats`]**.
+///
+/// Every counter in `MonotonicStats` is compared exactly between `--jobs 1`
+/// and `--jobs N`, so a number that *must* differ by job count cannot live
+/// there. These are the numbers
+/// [T1a.7.2.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+/// asks for, in the one place where differing is the point.
+#[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
+pub struct JobStats {
+    /// Threads a fanned-out layer used. `0` when no layer was fanned out.
+    pub workers: usize,
+    /// Enterings evaluated on a worker.
+    pub speculated: u64,
+    /// …of which committed as computed. `speculated - committed` is the waste:
+    /// a `stop_after` cut, a spent budget, or an entering handed back.
+    pub committed: u64,
+    /// Enterings a worker could not finish because it would have had to number
+    /// a proposition, and which the committing thread therefore re-ran
+    /// ([`ein_core::Overflow::Shared`]). The claim
+    /// [shared_state.md §2a](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+    /// rests on, as a running count rather than as a sweep.
+    pub handed_back: u64,
+    /// Enterings that ran on the sequential path because their layer could
+    /// write a fact to root — layer 1 with `enable_singleton_writeback` on.
+    /// Amdahl's numerator, per run.
+    pub sequential: u64,
+}
+
 pub struct Solved {
     pub answer: Answer,
     pub proof: Option<LatticeProof>,
     pub stats: MonotonicStats,
+    pub jobs: JobStats,
 }
 
 /// The one solver entry.
@@ -374,6 +451,17 @@ pub fn solve(
             truncated: false,
         },
         deferred: Vec::new(),
+        jobs: JobStats::default(),
+        #[cfg(feature = "parallel")]
+        pool: (opts.jobs > 1)
+            .then(|| {
+                rayon::ThreadPoolBuilder::new()
+                    .num_threads(opts.jobs)
+                    .thread_name(|i| format!("ein-worker-{i}"))
+                    .build()
+                    .ok()
+            })
+            .flatten(),
         t_start: Instant::now(),
         opts,
     };
@@ -395,6 +483,7 @@ pub fn solve(
                 answer,
                 proof,
                 stats: run.stats,
+                jobs: run.jobs,
             })
         }
         Err(SolveError::Budget { reason, stats }) if opts.on_budget == OnBudget::Verdict => {
@@ -402,6 +491,7 @@ pub fn solve(
                 answer: Answer::Aborted { reason },
                 proof: None,
                 stats: *stats,
+                jobs: JobStats::default(),
             })
         }
         Err(e) => Err(e),
@@ -449,9 +539,42 @@ struct Run<'o> {
     /// Root writes waiting for the next integration barrier. Always empty
     /// when `opts.integrate_every` is `None`.
     deferred: Vec<Deferred>,
+    /// What the fan-out did — see [`JobStats`], and note that it is not part
+    /// of [`MonotonicStats`] on purpose.
+    jobs: JobStats,
+    /// The fan-out's workers, **built once per solve and parked between
+    /// batches**.
+    ///
+    /// A layer runs in bounded batches so that the results in flight cannot
+    /// grow with the layer, and that makes the *cost of a batch* the thing to
+    /// watch: spawning `jobs` threads per batch cost 96 000 spawns and a 3×
+    /// **slowdown** at `--jobs 2` on `features/01 -e`, which is why this is a
+    /// pool and not a `std::thread::scope`
+    /// ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)).
+    ///
+    /// `None` at `--jobs 1`, which is the default: a sequential solve builds no
+    /// threads at all.
+    #[cfg(feature = "parallel")]
+    pool: Option<rayon::ThreadPool>,
     t_start: Instant,
     opts: &'o SolveOptions,
 }
+
+#[cfg(feature = "parallel")]
+/// Enterings in flight per worker — the fan-out's batch, over [`jobs`].
+///
+/// [`SolveOptions::jobs`]: SolveOptions::jobs
+/// [`jobs`]: SolveOptions::jobs
+fn batch_per_worker() -> usize {
+    std::env::var("EIN_BATCH_PER_WORKER")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .filter(|&n: &usize| n > 0)
+        .unwrap_or(BATCH_PER_WORKER)
+}
+
+#[cfg(feature = "parallel")]
+const BATCH_PER_WORKER: usize = 32;
 
 /// Does a fork **resume** root's saturation? Yes, since
 /// [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
@@ -620,30 +743,152 @@ impl Run<'_> {
             let facts_at_open = root.n_facts();
 
             let mut a_layer: Vec<CanonicalSetId> = Vec::new();
-            for (i, c) in candidates.iter().enumerate() {
-                // The batch barrier, at the *top* of the iteration so every
-                // path out of the body below is covered by one check.
-                if let Some(n) = self.opts.integrate_every
-                    && i > 0
-                    && i % n == 0
-                {
-                    self.integrate(root, terms, events);
+            let jobs = self.opts.jobs.max(1);
+            // T1a.7.2.1 — the fan-out, and the three things that turn it off.
+            // `fanned_out` is the predicate the whole decision rests on; the
+            // `spec-audit` arm compares each entering against `R0` *in order*
+            // and a fanned-out layer's forks already are `R0`; and one thread
+            // is the sequential engine, line for line.
+            #[allow(unused_mut, unused_variables)]
+            let mut fan_out = fanned_out && jobs > 1 && cfg!(feature = "parallel");
+            #[cfg(feature = "spec-audit")]
+            {
+                fan_out = fan_out && audit.is_none();
+            }
+            // **How many enterings are in flight**, and it is a memory
+            // question before it is a scheduling one: every speculated result
+            // holds a fork's KB and its record region until the commit reaches
+            // it, so a batch of the whole layer holds the whole layer. On
+            // `features/01 -e` — 384 167 enterings in one layer — that is 84 MB
+            // against **1.9 GB**, measured, which is also why it was *slower*
+            // at `--jobs 2` than at `--jobs 1`
+            // ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)).
+            //
+            // A bounded batch fixes both. It stays a multiple of `jobs` because
+            // the shared cursor needs slack to balance a layer whose enterings
+            // cost wildly different amounts — a `dead-pre` is a contradiction
+            // check and an alive one is a whole saturation.
+            //
+            // A cut narrows it further: `stop_after` and `max_enterings` both
+            // stop mid-layer, and everything speculated past the cut is waste,
+            // so the batch is one round of workers (T1a.7.2.4).
+            #[cfg(feature = "parallel")]
+            let batch = if self.opts.stop_after.is_some() || self.opts.max_enterings.is_some() {
+                jobs
+            } else {
+                jobs.saturating_mul(batch_per_worker())
+            };
+
+            let mut i = 0usize;
+            while i < candidates.len() {
+                #[cfg(feature = "parallel")]
+                if fan_out && candidates.len() - i > 1 {
+                    let end = i.saturating_add(batch).min(candidates.len());
+                    // Once for the batch, not once per worker: sealing is the
+                    // half of `Kb::fork` that mutates, and after it every
+                    // worker branches the same root through a `&`.
+                    root.seal_top();
+                    terms.share();
+                    let speculated = self.fan_out(
+                        root,
+                        terms,
+                        ast,
+                        events.narration(),
+                        layer,
+                        &candidates[i..end],
+                    );
+                    terms.reclaim();
+                    self.jobs.workers = self.jobs.workers.max(jobs.min(end - i));
+                    self.jobs.speculated += (end - i) as u64;
+
+                    for (k, sp) in speculated.into_iter().enumerate() {
+                        let c = &candidates[i + k];
+                        self.before_commit(i + k, root, terms, events, dumper)?;
+                        let Speculated {
+                            entered,
+                            region,
+                            narration,
+                        } = sp;
+                        let (entered, region) = match entered {
+                            Some(entered) => {
+                                // The worker's narration is the run's, and this
+                                // is where it gets the run's ordinals.
+                                events.replay(narration);
+                                self.jobs.committed += 1;
+                                (entered?, Some(region))
+                            }
+                            None => {
+                                // Handed back: the entering needed to number a
+                                // proposition and a lent table cannot. Nothing
+                                // the worker produced after the refusal is what
+                                // the sequential engine would have produced, so
+                                // none of it is used — its narration included.
+                                // Re-running here puts the records in root's own
+                                // region, so there is nothing to install.
+                                self.jobs.handed_back += 1;
+                                drop(region);
+                                drop(narration);
+                                terms.provs.open_fork();
+                                let result = try_commitment_set(
+                                    root.sealed(),
+                                    terms,
+                                    ast,
+                                    events,
+                                    &self.memo,
+                                    c,
+                                    None,
+                                    self.root_snapshot.as_deref(),
+                                )?;
+                                (
+                                    self.finish_entering(terms, ast, events, layer, c, result)?,
+                                    None,
+                                )
+                            }
+                        };
+                        // The region travels with the result, so installing it
+                        // is what makes the fork's derivations readable — and
+                        // swapping it back is what keeps root's own sequence
+                        // where it was.
+                        let saved = region.map(|r| terms.provs.swap_fork(r));
+                        let stop = self.commit_entering(
+                            root,
+                            terms,
+                            ast,
+                            events,
+                            dumper,
+                            layer,
+                            c,
+                            entered,
+                            &mut a_layer,
+                        );
+                        if let Some(saved) = saved {
+                            terms.provs.swap_fork(saved);
+                        }
+                        if stop? {
+                            return Ok(());
+                        }
+                    }
+                    i = end;
+                    continue;
                 }
-                self.check_budget(dumper)?;
-                self.stats.base.enterings_total += 1;
-                // T1a.7.1.7 — everything derived from here to
-                // `close_fork` is the *fork's* own, and dies with the fork.
-                // The region covers the whole entering and not just
-                // `try_commitment_set`: `complete`'s lookahead kill-cache
-                // writes into the fork too, as do the nested forks a `-y`
-                // commutativity check makes. Root's own records — the no-good,
-                // the singleton writeback, the forced-positive promotion — are
-                // written after the region closes, and land in the arena
-                // proper.
+
+                let c = &candidates[i];
+                if !fanned_out {
+                    self.jobs.sequential += 1;
+                }
+                self.before_commit(i, root, terms, events, dumper)?;
+                // T1a.7.1.7 — everything derived from here to `close_fork` is
+                // the *fork's* own, and dies with the fork. The region covers
+                // the whole entering and not just `try_commitment_set`:
+                // `complete`'s lookahead kill-cache writes into the fork too,
+                // as do the nested forks a `-y` commutativity check makes.
+                // Root's own records — the no-good, the singleton writeback,
+                // the forced-positive promotion — are written after the region
+                // closes, and land in the arena proper.
                 terms.provs.open_fork();
                 // T1a.7.1.2 — what this entering appends to the *shared*
-                // tables, which is what decides whether a worker can be
-                // handed a `&Terms` and nothing else. Compiled out with the
+                // tables, which is what decides whether a worker can be handed
+                // a `&Terms` and nothing else. Compiled out with the
                 // `counters` feature; `snapshot()` is a thread-local read.
                 #[cfg(feature = "counters")]
                 let before = ein_core::counters::snapshot();
@@ -687,127 +932,21 @@ impl Run<'_> {
                         self.root_snapshot.as_deref(),
                     );
                 }
-                if events.on() {
-                    let commitment: Vec<String> =
-                        c.iter().map(|&f| crate::events::sexpr(terms, f)).collect();
-                    let mut core: Vec<String> = result
-                        .unsat_core
-                        .iter()
-                        .map(|&f| crate::events::sexpr(terms, f))
-                        .collect();
-                    core.sort();
-                    let (kind, n) = (result.kind.as_str(), result.firings.len());
-                    events.emit("enter", |l| {
-                        l.num("layer", layer as i64);
-                        l.owned_strs("commitment", commitment);
-                        l.str("kind", kind);
-                        l.num("n_firings", n as i64);
-                        l.owned_strs("core", core);
-                    });
-                }
-
-                if result.kind != Kind::Alive {
-                    // Closed, not discarded: `handle_dead` writes root's
-                    // no-good and `(not h)` — which belong to the arena proper
-                    // — and then hands the dead fork to a dumper that renders
-                    // its justifications.
-                    terms.provs.close_fork();
-                    self.handle_dead(root, terms, events, dumper, c, layer, &result);
-                    terms.provs.discard_fork();
-                    continue;
-                }
-
-                self.stats.base.enterings_alive += 1;
-                // F-ENG-12 — consistency is already established on an alive
-                // branch (`try_commitment_set` returns `alive` only after its
-                // post-saturation detect came back empty, and `result.kb` is
-                // that unmutated fork), so ask completeness directly:
-                // `is_solution_node` would re-run a full `detect()` on a KB
-                // already proved consistent, which is both wasted work and a
-                // counter difference.
-                let mut fork = result.kb;
-                let solved = {
-                    let mut s = Session {
-                        kb: &mut fork,
-                        terms,
-                        ast,
-                        events,
-                        memo: self.memo.clone(),
-                    };
-                    crate::hypgen::complete(&mut s)?
-                };
-
-                // S1.5b.27 — the saturation-commutativity sanity check. Off by
-                // default; `-y` turns it on. Orthogonal to `store_lattice` and
-                // to the dumper: the premise applies to every alive
-                // commitment. Singletons are skipped inside — no parents.
-                if self.cfg.lattice_sanity_check
-                    && c.len() >= 2
-                    && let Some(err) =
-                        crate::sanity::check_commutativity(root, terms, ast, events, &self.memo, c)?
-                {
-                    return Err(SolveError::Sanity(Box::new(err)));
-                }
-
-                if solved {
-                    // Before `record_node`, which takes the firings: ein.py
-                    // calls the hook after, but nothing between the two lines
-                    // is observable to it — `_record_node` writes no event and
-                    // only seals a layer the fact list spans anyway.
-                    dumper.entering(
-                        layer,
-                        c,
-                        terms,
-                        "solution",
-                        &EnteringInfo {
-                            kind: result.kind,
-                            firings: &result.firings,
-                            unsat_core: &result.unsat_core,
-                            kb: Some(&fork),
-                            facts_merged: 0,
-                            nogood_emitted: false,
-                            nogood_subsumed: false,
-                        },
-                    );
-                    // The one path that keeps a fork, so the one that
-                    // promotes: `record_node` snapshots this KB, and a
-                    // snapshot citing a discarded region would be a KB whose
-                    // derivations had stopped meaning anything.
-                    terms.provs.close_fork();
-                    self.record_node(&mut fork, terms, c.clone(), result.firings, layer);
-                    terms.provs.discard_fork();
-                    if self
-                        .opts
-                        .stop_after
-                        .is_some_and(|n| self.lstate.nodes.len() as u64 >= n)
-                    {
-                        self.lstate.truncated = true;
-                        // The proof reads root's no-good store, so what was
-                        // learned before the cut has to be in it.
-                        self.integrate(root, terms, events);
-                        return Ok(());
-                    }
-                    continue;
-                }
-                dumper.entering(
+                let entered = self.finish_entering(terms, ast, events, layer, c, result)?;
+                if self.commit_entering(
+                    root,
+                    terms,
+                    ast,
+                    events,
+                    dumper,
                     layer,
                     c,
-                    terms,
-                    "alive",
-                    &EnteringInfo {
-                        kind: result.kind,
-                        firings: &result.firings,
-                        unsat_core: &result.unsat_core,
-                        kb: Some(&fork),
-                        facts_merged: 0,
-                        nogood_emitted: false,
-                        nogood_subsumed: false,
-                    },
-                );
-                terms.provs.close_fork();
-                drop(fork);
-                terms.provs.discard_fork();
-                a_layer.push(c.clone());
+                    entered,
+                    &mut a_layer,
+                )? {
+                    return Ok(());
+                }
+                i += 1;
             }
 
             debug_assert!(
@@ -871,6 +1010,274 @@ impl Run<'_> {
             let _ = &mut phase_2_done;
         }
         Ok(())
+    }
+
+    /// The three things every candidate does before its result is committed,
+    /// whoever computed it.
+    ///
+    /// It is *before* rather than *around* on purpose: a budget that fires
+    /// here has not counted this entering, which is the sequential engine's
+    /// order and therefore the one `--jobs N` has to reproduce.
+    fn before_commit(
+        &mut self,
+        i: usize,
+        root: &mut Kb,
+        terms: &mut Terms,
+        events: &mut Events,
+        dumper: &mut dyn Dumper,
+    ) -> Result<(), SolveError> {
+        // The batch barrier, at the top so every path out of the body below is
+        // covered by one check.
+        if let Some(n) = self.opts.integrate_every
+            && i > 0
+            && i.is_multiple_of(n)
+        {
+            self.integrate(root, terms, events);
+        }
+        self.check_budget(dumper)?;
+        self.stats.base.enterings_total += 1;
+        Ok(())
+    }
+
+    /// Evaluate a batch of candidates on `jobs` threads, and return what each
+    /// produced **in candidate order**.
+    ///
+    /// The scheduling is a shared cursor rather than a static split, because a
+    /// layer's enterings cost wildly different amounts — a `dead-pre` is a
+    /// contradiction check and an alive one is a whole saturation — so handing
+    /// worker *w* every `w`-th candidate would leave most of them idle. Order
+    /// is recovered by the index each worker records beside its result, not by
+    /// the order they finish in: that is the whole of what makes `--jobs N`
+    /// the same computation as `--jobs 1`.
+    ///
+    /// Every argument but `jobs` is shared by `&`. That is not a style choice
+    /// — it is the seam T1a.7.2.1 built, and the compiler is what checks it.
+    #[cfg(feature = "parallel")]
+    fn fan_out(
+        &self,
+        root: &Kb,
+        terms: &Terms,
+        ast: &Ast,
+        narration: Option<crate::events::Level>,
+        layer: u32,
+        batch: &[CanonicalSetId],
+    ) -> Vec<Speculated> {
+        use rayon::prelude::*;
+        let run = |c: &CanonicalSetId| {
+            // A view per entering, not per worker: a fresh record region every
+            // time is what makes a stale id from the previous entering unable
+            // to resolve against this one.
+            let mut view = terms.worker();
+            let mut narration = Events::worker_for(narration);
+            view.provs.open_fork();
+            let entered = self.speculate(root, &mut view, ast, &mut narration, layer, c);
+            // Asked before the region is taken and before anything is
+            // believed: a refusal means what follows it is not this entering.
+            let refused = view.refused();
+            let region = view.provs.take_fork();
+            Speculated {
+                entered: (!refused).then_some(entered),
+                region,
+                narration,
+            }
+        };
+        let mut out = Vec::with_capacity(batch.len());
+        // `collect_into_vec` on an **indexed** parallel iterator, never an
+        // unordered reduce: the vector is in candidate order whatever order the
+        // workers finished in, which is the whole of what makes `--jobs N` the
+        // same computation as `--jobs 1`.
+        match self.pool.as_ref() {
+            Some(pool) => pool.install(|| batch.par_iter().map(run).collect_into_vec(&mut out)),
+            // A pool that would not build. The fan-out predicate already said
+            // this layer *may* be evaluated in any order, so running it here is
+            // slower and not different.
+            None => out.extend(batch.iter().map(run)),
+        }
+        out
+    }
+
+    #[cfg(feature = "parallel")]
+    /// Everything a worker does: branch root, saturate, narrate, probe.
+    ///
+    /// Pure with respect to the run — no counter, no clause, no dumper hook,
+    /// no root write — which is what lets a fanned-out layer call it on many
+    /// threads at once and what makes [`Run::commit_entering`] the only place
+    /// order can be lost.
+    ///
+    /// The `spec-audit` arm is deliberately *not* here: it compares this
+    /// entering against `R0`, root as the layer opened, and on a fanned-out
+    /// layer every fork already **is** `R0`.
+    fn speculate(
+        &self,
+        root: &Kb,
+        terms: &mut Terms,
+        ast: &Ast,
+        events: &mut Events,
+        layer: u32,
+        c: &[FactId],
+    ) -> Result<Entered, SolveError> {
+        let result = try_commitment_set(
+            root,
+            terms,
+            ast,
+            events,
+            &self.memo,
+            c,
+            None,
+            self.root_snapshot.as_deref(),
+        )?;
+        self.finish_entering(terms, ast, events, layer, c, result)
+    }
+
+    /// Narrate the entering, and ask a survivor whether it is complete.
+    ///
+    /// The order matters and is ein.py's: the `enter` event lands **between**
+    /// the fork's own saturation events and the `hyp` events `complete` emits.
+    /// A worker records all three into its own buffer, so replaying that
+    /// buffer at the commit reproduces the sequential stream exactly — which
+    /// is why the event is emitted here rather than by the caller.
+    fn finish_entering(
+        &self,
+        terms: &mut Terms,
+        ast: &Ast,
+        events: &mut Events,
+        layer: u32,
+        c: &[FactId],
+        mut result: CommitmentSetResult,
+    ) -> Result<Entered, SolveError> {
+        if events.on() {
+            let commitment: Vec<String> =
+                c.iter().map(|&f| crate::events::sexpr(terms, f)).collect();
+            let mut core: Vec<String> = result
+                .unsat_core
+                .iter()
+                .map(|&f| crate::events::sexpr(terms, f))
+                .collect();
+            core.sort();
+            let (kind, n) = (result.kind.as_str(), result.firings.len());
+            events.emit("enter", |l| {
+                l.num("layer", layer as i64);
+                l.owned_strs("commitment", commitment);
+                l.str("kind", kind);
+                l.num("n_firings", n as i64);
+                l.owned_strs("core", core);
+            });
+        }
+        if result.kind != Kind::Alive {
+            return Ok(Entered {
+                result,
+                solved: false,
+            });
+        }
+        // F-ENG-12 — consistency is already established on an alive branch
+        // (`try_commitment_set` returns `alive` only after its post-saturation
+        // detect came back empty, and `result.kb` is that unmutated fork), so
+        // ask completeness directly: `is_solution_node` would re-run a full
+        // `detect()` on a KB already proved consistent, which is both wasted
+        // work and a counter difference.
+        let solved = {
+            let mut s = Session {
+                kb: &mut result.kb,
+                terms,
+                ast,
+                events,
+                memo: self.memo.clone(),
+            };
+            crate::hypgen::complete(&mut s)?
+        };
+        Ok(Entered { result, solved })
+    }
+
+    /// Turn one entering into the run's state — counters, learned clause,
+    /// `(not h)` writeback, dumper hooks, solution node, early stop.
+    ///
+    /// **Called in candidate order, always**, whether the entering was
+    /// computed here or on a worker. Returns `true` when `stop_after` cut the
+    /// search at this candidate.
+    #[allow(clippy::too_many_arguments)]
+    fn commit_entering(
+        &mut self,
+        root: &mut Kb,
+        terms: &mut Terms,
+        ast: &Ast,
+        events: &mut Events,
+        dumper: &mut dyn Dumper,
+        layer: u32,
+        c: &CanonicalSetId,
+        entered: Entered,
+        a_layer: &mut Vec<CanonicalSetId>,
+    ) -> Result<bool, SolveError> {
+        let Entered { mut result, solved } = entered;
+        if result.kind != Kind::Alive {
+            // Closed, not discarded: `handle_dead` writes root's no-good and
+            // `(not h)` — which belong to the arena proper — and then hands the
+            // dead fork to a dumper that renders its justifications.
+            terms.provs.close_fork();
+            self.handle_dead(root, terms, events, dumper, c, layer, &result);
+            terms.provs.discard_fork();
+            return Ok(false);
+        }
+
+        self.stats.base.enterings_alive += 1;
+
+        // S1.5b.27 — the saturation-commutativity sanity check. Off by
+        // default; `-y` turns it on. Orthogonal to `store_lattice` and to the
+        // dumper: the premise applies to every alive commitment. Singletons
+        // are skipped inside — no parents.
+        if self.cfg.lattice_sanity_check
+            && c.len() >= 2
+            && let Some(err) =
+                crate::sanity::check_commutativity(root, terms, ast, events, &self.memo, c)?
+        {
+            return Err(SolveError::Sanity(Box::new(err)));
+        }
+
+        fn info(result: &CommitmentSetResult) -> EnteringInfo<'_> {
+            EnteringInfo {
+                kind: result.kind,
+                firings: &result.firings,
+                unsat_core: &result.unsat_core,
+                kb: Some(&result.kb),
+                facts_merged: 0,
+                nogood_emitted: false,
+                nogood_subsumed: false,
+            }
+        }
+
+        if solved {
+            // Before `record_node`, which takes the firings: ein.py calls the
+            // hook after, but nothing between the two lines is observable to
+            // it — `_record_node` writes no event and only seals a layer the
+            // fact list spans anyway.
+            dumper.entering(layer, c, terms, "solution", &info(&result));
+            // The one path that keeps a fork, so the one that promotes:
+            // `record_node` snapshots this KB, and a snapshot citing a
+            // discarded region would be a KB whose derivations had stopped
+            // meaning anything.
+            terms.provs.close_fork();
+            let firings = std::mem::take(&mut result.firings);
+            self.record_node(&mut result.kb, terms, c.clone(), firings, layer);
+            terms.provs.discard_fork();
+            if self
+                .opts
+                .stop_after
+                .is_some_and(|n| self.lstate.nodes.len() as u64 >= n)
+            {
+                self.lstate.truncated = true;
+                // The proof reads root's no-good store, so what was learned
+                // before the cut has to be in it.
+                self.integrate(root, terms, events);
+                return Ok(true);
+            }
+            return Ok(false);
+        }
+
+        dumper.entering(layer, c, terms, "alive", &info(&result));
+        terms.provs.close_fork();
+        drop(result);
+        terms.provs.discard_fork();
+        a_layer.push(c.clone());
+        Ok(false)
     }
 
     // ── Helpers ────────────────────────────────────────────────

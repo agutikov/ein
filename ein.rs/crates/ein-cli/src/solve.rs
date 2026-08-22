@@ -465,6 +465,7 @@ pub fn run(m: &ArgMatches) -> i32 {
             .get_one::<i64>("max-enterings")
             .map(|n| (*n).max(0) as u64),
         store_lattice: trace_path.is_some(),
+        jobs: (*m.get_one::<i64>("jobs").unwrap_or(&1)).max(1) as usize,
         ..SolveOptions::default()
     };
 

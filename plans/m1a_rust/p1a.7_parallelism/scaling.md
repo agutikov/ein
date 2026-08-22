@@ -567,7 +567,144 @@ whose outcome is constant for the whole of a layer.
 The general form is worth keeping: *when a structure is read far more often
 than it is grown, put the sharing in the type and not in the pointer.*
 
-## 8. Reproducing
+## 8. T1a.7.2.1 — the fan-out, and the three things it costs
+
+**The first threads in the repo**, and the first numbers. `--jobs N` on 8
+physical P-cores (`cpu0,2,4,6,8,10,12,14`), best of five, `solve -e` through
+the CLI.
+
+| workload | `-j 1` | `-j 2` | `-j 4` | `-j 8` | |
+|---|---:|---:|---:|---:|---:|
+| `sq-bwd/houses -e` | 258.0 ms | 202.4 | 124.6 | **89.2** | **2.89×** |
+| `branching/06 -e` | 209.0 ms | 165.1 | 111.2 | **78.6** | **2.66×** |
+| `features/01 -e` | 1 745.8 ms | 1 412.9 | 995.7 | **727.2** | **2.40×** |
+| `branching/07 -e` | 281.8 ms | 238.0 | 175.2 | **128.6** | **2.19×** |
+| `zebra -e` | 48.1 ms | 42.9 | 37.8 | 35.2 | 1.37× |
+| `zebra2 -e` | 33.2 ms | 31.5 | 30.1 | 27.6 | 1.21× |
+
+**2.19–2.89× on the measurement set against a ≥ 6× target**, and the zebras at
+1.2–1.4× exactly as §5.4 said they would be — their layer 1 holds half their
+firings and layer 1 is the one that cannot be fanned out. The gap is § Where
+the other 3× is, below, and it is not one thing.
+
+### It is the same computation, and that is checked three ways
+
+- **The whole corpus.** All 47 non-slow entries that reach a `solve -e`
+  verdict, at `--jobs 1` and `--jobs 8`: same exit code, byte-identical stdout,
+  and **every field of `--json-summary`** — which is every engine counter —
+  equal. 0 divergences.
+- **The event stream, byte for byte.** `--events --events-level verbose` at
+  both job counts on four files, `run` line excluded because it echoes argv:
+  identical, including `branching/06 -e`'s **2 200 561** lines. That is the
+  ordered commit and the narration replay checked together, and it is the
+  strongest form the promise has — an event's ordinal is assigned at the
+  commit, not by the thread that emitted it.
+- **The counters, as a unit test.** `search_invariants.rs`'s
+  `jobs_does_not_move_the_answer_or_a_counter` compares the whole
+  `MonotonicStats` at `--jobs {2,4,8}` over 16 files, and
+  `a_deep_search_is_counter_identical_under_jobs` does it on the two five-layer
+  searches.
+
+### …and one entering in the corpus cannot be done on a worker
+
+`lattice/02_genuine_3set_death.ein` hands **three** enterings back per run, and
+that is a correction to
+[shared_state.md §2a](shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+rather than a surprise about it. That table measured `try_commitment_set` only,
+and a fork stays alive through the `complete()` probe — whose blind enumerator
+*numbers the candidates it walks*. Those are the ones that come back.
+
+What happens then is the mechanism working: `Terms::refused` is set at the
+single point where a lent table declines, everything the worker produced after
+it is discarded — its narration included — and the committing thread re-runs
+the entering where the tables can grow. Every counter still matches, which is
+the point: the fallback is not an approximation, it is the same entering
+computed where it can be. `JobStats::handed_back` is the running count.
+
+### Where the other 3× is
+
+Measured on `branching/06 -e` at `--jobs 8` by timing the two halves of each
+batch, and confirmed by CPU utilisation (382 % of 800 %, with total CPU time up
+only 29 % — so the threads are idle, not doing extra work):
+
+| | wall at `-j 8` |
+|---|---:|
+| the fan-out itself | 37 ms |
+| **the ordered commit** | **20 ms** |
+| layer 1, the layer boundaries, Phase 1, output | ~19 ms |
+
+Two separate problems, and neither is the design:
+
+1. **A 26 % serial fraction**, of which the commit loop is the larger half.
+   Amdahl caps the whole run at 3.8× before the fan-out's own efficiency is
+   counted. What is in those 20 ms is the commit's own work — the learned
+   clause and its subsumption, the dead commitment's `state_key`, and
+   **dropping the fork**, which was allocated on a worker and freed here
+   (`snmalloc`'s remote-free path is 6 % of the profile's samples).
+2. **The fan-out is 5.2× on 8 cores**, not 8×. 65 % efficiency on work that
+   shares nothing but read-only tables, which points at memory rather than at
+   contention — there is one lock in the engine (`Arc<Mutex<PlanMemo>>`) and
+   `Lookahead::new` takes it once per plan per `complete()`.
+
+Neither is S1a.7.3's or S1a.7.4's — those parallelise root saturation and the
+boundary round, which are Phase *1* and are not in this denominator at all.
+Both are this stage's, and they are what stands between 2.7× and the target.
+
+### The batch is a memory decision before it is a scheduling one
+
+The first fan-out ran a whole layer at once, and on `features/01 -e` — 384 167
+enterings in one layer — that meant **1.9 GB** of peak RSS against 84 MB
+sequential, because every speculated result holds a fork's KB and its record
+region until the commit reaches it. It was also *slower* than `--jobs 1`:
+
+| | `-j 1` | `-j 2` | `-j 8` | peak RSS |
+|---|---:|---:|---:|---:|
+| whole layer in flight | 1 704 ms | **1 833 ms** | 1 173 ms | **1.9 GB** |
+| batch = `jobs` × 32 | 1 746 ms | 1 413 ms | **727 ms** | **89 MB** |
+
+So the batch is bounded, and `BATCH_PER_WORKER` is a measured constant rather
+than a chosen one. The sweep, on `features/01 -e` at `--jobs 8` with the pool:
+
+| enterings in flight per worker | 8 | 32 | 128 | 512 |
+|---|---:|---:|---:|---:|
+| wall | 831 ms | **740 ms** | 730 ms | 856 ms |
+| peak RSS | 86 MB | **89 MB** | 93 MB | 122 MB |
+
+32 is the knee. A **cut** narrows it further — `stop_after` and
+`max_enterings` stop mid-layer and everything past the cut is waste — so the
+batch is one round of workers then (T1a.7.2.4).
+
+Peak RSS with the bound in place, which is [README § Risks](README.md#risks)'s
+"memory scales with jobs" answered:
+
+| workload | `-j 1` | `-j 8` | `-j 16` |
+|---|---:|---:|---:|
+| `features/01 -e` | 79.8 MB | 82.8 MB | **90.3 MB** |
+| `branching/06 -e` | 20.0 MB | 28.6 MB | 36.3 MB |
+| `sq-bwd/houses -e` | 11.6 MB | 19.0 MB | 24.8 MB |
+
+### And the pool is a measurement, not a dependency preference
+
+A bounded batch means many barriers per layer, which makes *the cost of a
+barrier* the thing to watch. The first implementation used
+`std::thread::scope`, spawning `jobs` threads per batch: on `features/01 -e`
+that is ~96 000 spawns, and at `--jobs 2` it was a **3× slowdown** —
+
+| batch/worker | `-j 2` with `std::thread::scope` | `-j 2` with a pool |
+|---|---:|---:|
+| 4 | 5 426 ms | — |
+| 16 | 3 543 ms | — |
+| 32 | 3 794 ms | **1 413 ms** |
+
+— so the threads have to stay alive between batches, which is what `rayon`'s
+pool is for. It is built **once per solve** and only when `jobs > 1`, so a
+default `--jobs 1` run creates no thread at all; it lives behind `ein-infer`'s
+`parallel` feature, on by default, per
+[design/12 §2](../design/12_toolchain_and_layout.md#2-dependency-policy).
+`collect_into_vec` over an *indexed* parallel iterator is what keeps the
+results in candidate order whatever order the workers finished in.
+
+## 9. Reproducing
 
 ```sh
 # §1
@@ -605,6 +742,22 @@ cargo test --release -p ein-infer --test search_invariants
 # §7 — the seam is types, so the gate is the check; the cost is a bench
 cargo test -p ein-infer --test worker_view --test shareable
 cargo build --release -p ein-cli   # …and time it against the parent commit
+
+# §8 — the scaling table, one row
+for j in 1 2 4 8; do
+  utils/bench_env.sh --cores P:8 ein.rs/target/release/ein \
+      solve -e examples/branching/06_lookahead_on.ein -j $j
+done
+# …the batch sweep
+EIN_BATCH_PER_WORKER=128 ein.rs/target/release/ein \
+    solve -e examples/features/01_not_and_absent.ein -j 8
+# …and the invariance, which is what the numbers are only worth having with
+cargo test -p ein-infer --test search_invariants
+ein.rs/target/release/ein solve -e examples/branching/06_lookahead_on.ein \
+    -j 1 --events /tmp/a.jsonl --events-level verbose
+ein.rs/target/release/ein solve -e examples/branching/06_lookahead_on.ein \
+    -j 8 --events /tmp/b.jsonl --events-level verbose
+diff <(tail -n +2 /tmp/a.jsonl) <(tail -n +2 /tmp/b.jsonl) && echo identical
 
 # §6 — the cost/benefit columns, and the corpus sweep behind the threshold
 cargo run --release --features counters -p ein-infer --example flatten_probe

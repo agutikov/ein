@@ -7,6 +7,11 @@ license.workspace    = true
 repository.workspace = true
 
 [features]
+default = ["parallel"]
+# P1a.7 — the fan-out. `SolveOptions::jobs` is inert without it and every
+# layer runs on the committing thread, which is a dependency-light build's
+# escape rather than a mode anybody chooses.
+parallel = ["dep:rayon"]
 # Forwards to `ein-core/counters`, so `--features counters` on either crate
 # means the same build.
 counters = ["ein-core/counters"]
@@ -27,6 +32,7 @@ spec-audit = []
 ein-core = { path = "../ein-core" }
 ein-ir   = { path = "../ein-ir" }
 rustc-hash.workspace = true
+rayon = { workspace = true, optional = true }
 
 [dev-dependencies]
 ein-corpus = { path = "../ein-corpus" }

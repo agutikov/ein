@@ -22,9 +22,17 @@
 #[cfg(feature = "einb")]
 use ein_corpus::{golden, golden_path};
 
-/// The surface, counted from the parsers themselves — 39 options across 8
+/// The surface, counted from the parsers themselves — 40 options across 8
 /// parsers, `-h` excluded. An extractor that silently returned nothing would
 /// pass an empty diff; it does not pass this.
+///
+/// **39 of them are ein.py's**, and the fortieth is `solve --jobs`
+/// ([T1a.7.2.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)),
+/// which has no counterpart there for the same reason `ein kb save` does not:
+/// it is a knob for something ein.py never had. The split is kept in the sum
+/// below rather than folded away, because "the surface has not moved" is a
+/// claim about the *ported* surface and a new option is a different event from
+/// a changed one.
 ///
 /// 39, not the "~40, every one with a short key" the stage plan carried: 26 of
 /// `solve`'s 29 have short keys, and none of `saturate`'s 5 or `render`'s 5
@@ -32,7 +40,8 @@ use ein_corpus::{golden, golden_path};
 /// `--events` and `--events-level` on it too.
 const EXPECTED: [(&str, usize); 8] = [
     ("COMMAND ein\n", 0),
-    ("COMMAND ein solve\n", 29),
+    // 29 of ein.py's, plus P1a.7's `--jobs`.
+    ("COMMAND ein solve\n", 30),
     ("COMMAND ein saturate\n", 5),
     ("COMMAND ein render\n", 0),
     ("COMMAND ein render rules\n", 1),
@@ -72,14 +81,15 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        39 + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "39 options across ein.py's eight parsers, plus `ein kb save --saturate`"
+        39 + 1 + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
+        "39 options across ein.py's eight parsers, plus `solve --jobs` and \
+         `ein kb save --saturate` — neither of which ein.py has"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// 39 options across 8 parsers, each with its short key, metavar, arity,
+/// 40 options across 8 parsers, each with its short key, metavar, arity,
 /// default, choices, group and help — the same text the diff against
 /// `argparse` consumed, blessed from a tree where that diff was green. A flag
 /// added, removed, renamed or re-defaulted shows up as a line.

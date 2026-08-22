@@ -3,11 +3,14 @@
 **Phase:** P1a.7 (Parallelism)
 **Estimate:** 4 days → **3 d.** The layer-1 question was decided on paper
 before any of the mechanism was built (§ The decision), which deleted the
-validator, the fail-fast ruling and two acceptance items; **T1a.7.2.0 is
-shipped** and is worth 3.17× at `--jobs 1` on the phase's deepest workload,
-and so is **T1a.7.2.8**, the assertion the decision rests on.
-What is left is the fan-out itself — .1, .2, .4, .5 and .6 — and none of it
-has a thread yet.
+validator, the fail-fast ruling and two acceptance items. **.0, .8, .1 and .2
+are shipped**: the layer stack coalesced (3.17× at `--jobs 1`), the predicate
+asserted, the seam, and the fan-out with its ordered commit —
+**2.19–2.89× on 8 P-cores**, the same computation on all 47 corpus entries and
+byte-identical event streams. What is left is .4 (early stop), .5
+(diagnostics), .6 (the stress) — and **the 3× the scaling target is still
+short**, which is not a missing task but a measured serial fraction
+([scaling.md §8 § Where the other 3× is](scaling.md#where-the-other-3-is)).
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md),
 [S1a.7.0](s1a.7.0_speculation_audit.md)
 **Implements:** [design/08](../design/08_parallelism.md) §2
@@ -239,7 +242,12 @@ now cheap rather than merely preferred.
   `id_order_invariance` already measures. **Unchanged, and now the cheap
   criterion rather than the hard one** — a fanned-out layer computes against
   exactly the root the sequential engine gives it, so there is no repair that
-  could be subtly wrong.
+  could be subtly wrong. ◑ **The property holds and the instrument is not
+  built**: 47 corpus entries agree on exit code, stdout and every
+  `--json-summary` field, the verbose event stream is byte-identical, and
+  `search_invariants.rs` compares the whole `MonotonicStats` over 16 files —
+  but `jobs_invariance` over `corpus_ops` × 45 ops, which is what the phase
+  README's table names, is still the sweep to write.
 - **The fan-out predicate is asserted, not assumed.** A debug assertion that no
   root fact write happens between a fanned-out layer opening and closing —
   which is the invariant the whole decision rests on, and which
@@ -283,11 +291,18 @@ now cheap rather than merely preferred.
   3.17× on `branching/07 -e`
   ([scaling.md §6](scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
 - Speculative waste at `stop_after` bounded by the job count and measured.
-- Peak RSS at `--jobs 16` on the worst corpus entry recorded. **The baseline
-  moved** —
+  ◑ **Bounded, not yet measured**: the batch is one round of workers whenever
+  `stop_after` or `max_enterings` is set, so nothing past the cut is speculated
+  beyond `jobs` enterings. `JobStats::speculated - committed` is the number and
+  T1a.7.2.4 is where it gets taken.
+- Peak RSS at `--jobs 16` on the worst corpus entry recorded. ✅ **`features/01
+  -e`: 79.8 MB at `--jobs 1`, 82.8 at 8, 90.3 at 16.** **The baseline moved** —
   [T1a.7.1.7](s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)
-  took `features/01 -e` from 684–708 MB to 85–91 MB at `--jobs 1`, so what this
-  measures is now a fork's delta rather than an arena nobody reclaimed.
+  took that file from 684–708 MB to 85–91 MB at `--jobs 1`, so what this
+  measures is a fork's delta rather than an arena nobody reclaimed. It is also
+  the item that **found a bug**: with a whole layer in flight the same file
+  peaked at **1.9 GB**, which is why the batch is bounded
+  ([scaling.md §8](scaling.md#the-batch-is-a-memory-decision-before-it-is-a-scheduling-one)).
 
 ## Tasks
 
@@ -353,7 +368,63 @@ saves. If it does, the flatten is per-layer-conditional on `depth()` rather
 than unconditional — and that is a threshold with a measurement behind it, not
 a constant.
 
-### Task T1a.7.2.1 — Snapshot and fan out
+### Task T1a.7.2.1 — Snapshot and fan out ✅
+
+**Shipped 2026-08-22, in two commits: the seam, then the threads.**
+`SolveOptions::jobs`, `ein solve --jobs N`, a `rayon` pool built once per solve
+behind `ein-infer`'s `parallel` feature, and `Run::fan_out` /
+`Run::speculate` / `Run::commit_entering` — the split the whole stage is
+about. Numbers: [scaling.md §7](scaling.md#7-t1a721--the-seam-and-what-it-costs)
+(the seam) and [§8](scaling.md#8-t1a721--the-fan-out-and-the-three-things-it-costs)
+(the fan-out).
+
+**It is the same computation, and three instruments say so.** All 47 non-slow
+corpus entries that reach a `solve -e` verdict agree at `--jobs 1` and
+`--jobs 8` on exit code, stdout and every `--json-summary` field — 0
+divergences; the `--events --events-level verbose` stream is **byte-identical**
+at both job counts, `branching/06 -e`'s 2 200 561 lines included; and
+`search_invariants.rs` compares the whole `MonotonicStats` over 16 files at
+`--jobs {2,4,8}`.
+
+**It is 2.19–2.89× on 8 P-cores, against a ≥ 6× target.** That is the stage's
+honest number and the gap has two named causes, neither of them the design: a
+**26 % serial fraction** of which the ordered commit is the larger half (20 ms
+of `branching/06 -e`'s 79 ms at `--jobs 8`), and a fan-out that is **5.2× on 8
+cores** rather than 8×. Both are this stage's — S1a.7.3 and S1a.7.4
+parallelise Phase 1, which is not in this denominator — and
+[scaling.md §8 § Where the other 3× is](scaling.md#where-the-other-3-is) is
+where they are measured.
+
+Five things are worth carrying forward.
+
+- **The `&mut Terms` question was answered by lending, not by rewriting 99
+  signatures.** `ein_core::terms::Table<T>` is `Own(T)` until `Terms::share`
+  and `Shared(Arc<T>)` until `Terms::reclaim`; a lent table answers a lookup
+  and refuses an assignment. The alternative spelling — `Arc<T>` in both states
+  — was built first and is **4 % slower**, because `Arc::get_mut` proves
+  uniqueness with a locked read-modify-write on a path that runs 2 318 815
+  times to assign 417 ids.
+- **The corpus does hand enterings back**, and it is a correction to
+  [shared_state.md §2a](shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it):
+  that table measured `try_commitment_set` only, and the `complete()` probe's
+  blind enumerator *numbers the candidates it walks*.
+  `lattice/02_genuine_3set_death` hands three back per run, the committing
+  thread re-runs them, and every counter still matches.
+- **The batch is a memory decision.** A whole layer in flight is **1.9 GB** on
+  `features/01 -e` against 84 MB sequential — every speculated result holds a
+  fork's KB and its record region until the commit reaches it — and it was
+  *slower* than `--jobs 1`. Bounded at `jobs × 32` it is 89 MB and 2.4×, and
+  peak RSS at `--jobs 16` is 90.3 MB against 79.8 sequential.
+- **A bounded batch makes the barrier's cost the thing to watch**, and
+  `std::thread::scope` fails it: ~96 000 spawns on `features/01 -e` and a 3×
+  slowdown at `--jobs 2`. The threads have to live between batches, which is
+  what the pool is for.
+- **The event ordinal is assigned at the commit.** A worker builds its line
+  with a hole where `n` goes; `Events::replay` fills it in commit order. That
+  is what makes the byte-identical stream above possible, and merging raw bytes
+  would not have.
+
+What follows is the task as written.
 
 At layer start, take `R0 = Arc::clone(root_core)` — free
 ([design/03](../design/03_data_model.md) §5) — and run
@@ -369,19 +440,29 @@ This needs [S1a.4.4](../p1a.4_search_layer/s1a.4.4_commitment_primitive.md)
 T1a.4.4.5's seam: the primitive takes `&Arc<KbCore>` and returns everything,
 writing nothing to root.
 
-### Task T1a.7.2.2 — Ordered commit
+### Task T1a.7.2.2 — Ordered commit ✅
 
-Walk candidates in canonical order and commit each result: bump the
-stats counters, emit the no-good, call the dumper hooks, record solution nodes,
-check `stop_after`. Counters and events therefore appear in exactly the
-sequential order.
+**Shipped with T1a.7.2.1**, because the fan-out is not testable without it.
+`Run::commit_entering` walks candidates in canonical order and commits each
+result: bumps the stats counters, emits the no-good, calls the dumper hooks,
+records solution nodes, checks `stop_after`. Counters and events therefore
+appear in exactly the sequential order, and the check is the byte-identical
+event stream above.
 
 There is no `W` to accumulate here — a fanned-out layer has no singleton
-writeback by construction. What the commit still owns is the **event sink**:
-`events::Buffer` is `Rc<RefCell<Vec<u8>>>` and a worker cannot hold one
-([T1a.7.1.4](s1a.7.1_sync_shared_state.md#task-t1a714--kbcore--program-audit)),
-so it needs the shape the counters already have — a per-worker buffer merged
-here, in commit order, so the stream a reader sees is the sequential one.
+writeback by construction. What the commit does own besides the counters is the
+**event sink** and the **record region**:
+
+- `events::Buffer` was `Rc<RefCell<Vec<u8>>>` and a worker could not hold one
+  ([T1a.7.1.4](s1a.7.1_sync_shared_state.md#task-t1a714--kbcore--program-audit)).
+  It now has the shape the counters have — a per-worker buffer replayed here —
+  and the piece that made it exact is that the **ordinal is assigned at the
+  replay**: `n` belongs to the stream, not to the thread.
+- A fork's provenance region **travels with its result** and is installed
+  around that result's commit (`ProvArena::swap_fork`). Keeping the base with
+  the records is what makes it safe: an id issued inside a fork means something
+  only against the region that issued it, and there is no way to install one
+  entering's records and read another's.
 
 ### ~~Task T1a.7.2.3 — Validation~~ — deleted, not deferred
 

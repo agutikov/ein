@@ -93,18 +93,34 @@ impl Events {
         }
     }
 
+    /// What a worker needs in order to narrate like this stream, and nothing
+    /// else: the level, or `None` when the run is not recording.
+    ///
+    /// `Events` is `Send` and **not** `Sync` — a sink two threads could write
+    /// at once is the shared queue design/08 §3 refuses — so a fan-out cannot
+    /// hand its workers a `&Events`. It hands them this instead, which is
+    /// `Copy`.
+    pub fn narration(&self) -> Option<Level> {
+        self.on().then_some(self.level)
+    }
+
     /// A worker's narration: the same level, its own buffer, no ordinals.
     ///
     /// `Events::off()` when the run is not recording, so a worker on the
     /// common path builds nothing at all.
     pub fn worker(&self) -> Events {
-        if !self.on() {
-            return Events::off();
-        }
-        Events {
-            sink: Sink::Deferred(Vec::new()),
-            seq: 0,
-            level: self.level,
+        Events::worker_for(self.narration())
+    }
+
+    /// [`Events::worker`] from a [`Events::narration`] descriptor.
+    pub fn worker_for(narration: Option<Level>) -> Events {
+        match narration {
+            None => Events::off(),
+            Some(level) => Events {
+                sink: Sink::Deferred(Vec::new()),
+                seq: 0,
+                level,
+            },
         }
     }
 
