@@ -188,7 +188,7 @@ Design: [design/08](../design/08_parallelism.md).
 | stage | title | est. |
 |---|---|---|
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
-| [S1a.7.1](s1a.7.1_sync_shared_state.md) ◑ | Making the shared state `Sync` — **T1a.7.1.0/.1/.3 done**, [shared_state.md](shared_state.md) | 3 d |
+| [S1a.7.1](s1a.7.1_sync_shared_state.md) ◑ | Making the shared state `Sync` — **T1a.7.1.0/.1/.3/.4 done**, [shared_state.md](shared_state.md) | 3 d |
 | [S1a.7.2](s1a.7.2_parallel_enterings.md) | Level 1: parallel enterings | 4 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) | Level 3: the parallel boundary round | 2 d |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) | Level 2: the parallel enqueue pass | 2 d |

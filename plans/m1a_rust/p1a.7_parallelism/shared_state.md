@@ -157,7 +157,13 @@ the committing thread, which
    to 417 appends per search, contention is not a thing that can happen.
 3. **The plan memo is already done** — `Arc<Mutex<PlanMemo>>` since S1a.6.8,
    for the unrelated reason that a memo shared across forks needed one owner.
-4. **`&mut Terms` is still threaded through 99 signatures**, and that is what
+4. **The event sink is not `Send`.** `events::Buffer` is
+   `Rc<RefCell<Vec<u8>>>`, so a worker cannot hold one — which design/08 §3's
+   "no shared queue" hid, because a sink is not a queue. It wants the shape the
+   counters already have: a per-worker buffer merged at the ordered commit, so
+   the stream a reader sees is the sequential one. `ein-infer/tests/shareable.rs`
+   pins it, in both directions.
+5. **`&mut Terms` is still threaded through 99 signatures**, and that is what
    is left of this stage. The refactor is now a question about *those*
    signatures rather than about concurrency: what a worker needs is a `&Terms`
    plus a way to append, and the measurement says the second half is small.
@@ -171,8 +177,8 @@ the committing thread, which
 cd ein.rs
 cargo run --release -p ein-infer --features counters --example shared_state_probe
 
-# §3's assertion, over the whole corpus
-cargo test -p ein-infer --test interning
+# §3's assertion, over the whole corpus, and §4's audit
+cargo test -p ein-infer --test interning --test shareable
 
 # the machine state every number above was taken under
 utils/bench_env.sh --report

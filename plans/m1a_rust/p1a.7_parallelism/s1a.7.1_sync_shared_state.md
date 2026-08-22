@@ -1,8 +1,8 @@
 # S1a.7.1 — Making the shared state `Sync`
 
 **Phase:** P1a.7 (Parallelism)
-**Estimate:** 3 days — **1 d spent, and the remaining 2 are smaller than they
-were**
+**Estimate:** 3 days — **1 d spent; four of the seven tasks are done and the
+remaining three are smaller than they were**
 **Depends on:** [P1a.6](../p1a.6_performance/README.md)
 **Implements:** [design/08](../design/08_parallelism.md) §6
 **Measures:** what a worker actually shares —
@@ -186,17 +186,30 @@ What is left is the assertion, not the structure: a counter in debug builds
 saying how often the memo is entered under contention, so "compiles are rare"
 stays measured rather than remembered.
 
-### Task T1a.7.1.4 — `KbCore` / `Program` audit
+### Task T1a.7.1.4 — `KbCore` / `Program` audit ✅
 
-Confirm nothing mutates a published `KbCore` — including lazily-computed
-caches, which must be either absent or behind `OnceLock`. Any `Cell` /
-`RefCell` in the engine crates is a bug at this point; a lint catches
-them. **Two are known and neither is one**: `counters.rs`'s thread-local
-`RefCell` (compiled out unless `--features counters`, and per-thread by
-construction) and `events::Buffer`'s `Rc<RefCell<Vec<u8>>>` — which is *not*
-`Send`, and is therefore this task's one real finding to date. A worker that
-emits events needs a per-worker sink merged in commit order, which is the same
-shape T1a.7.2.2 already imposes on the counters.
+**Shipped 2026-08-22** as `ein-infer/tests/shareable.rs`, because the compiler
+already knew the answer and what was missing was somebody asking it in a file
+that fails when it changes.
+
+Nine types a fan-out would hand a worker are `Send + Sync` today — `Terms`,
+`Kb`, `Program`, `Ast`, `Engine`, `SharedMemo`, `SolveOptions`,
+`SolverConfig`, `CommitmentSetResult` — so no lazily-computed cache, `Cell` or
+`Rc` is hiding in any of them.
+
+**One thing is not, and it is the audit's real finding**: `events::Buffer` is
+`Rc<RefCell<Vec<u8>>>`, so a worker cannot hold an event sink.
+[design/08](../design/08_parallelism.md) §3's "no shared queue" hid it, because
+a sink is not a queue. The fix is not a lock — it is the shape the counters
+already have, a per-worker buffer merged at the **ordered commit**
+(T1a.7.2.2), and it belongs to that stage. Until then the test pins the state
+of affairs in the negative direction too, so the day `Buffer` becomes `Send`
+is a day somebody notices.
+
+The other interior mutability in the engine crates is `counters.rs`'s
+thread-local `RefCell`, which is compiled out unless `--features counters` and
+is per-thread by construction — and which is *why* a per-worker counter merge
+is the established pattern rather than a new idea.
 
 ### Task T1a.7.1.5 — Ordering audit under concurrency
 
