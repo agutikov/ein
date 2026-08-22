@@ -79,8 +79,12 @@ constrained-reasoning research.
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
   ([corpus_cost.md](plans/m1a_rust/p1a.9_release/corpus_cost.md) is the
-  measurement, `utils/corpus_cost.py` re-takes it). Three entries are slow,
-  where seventeen were; `EIN_CORPUS_SLOW=1` is 19 s rather than four minutes;
+  measurement, `utils/corpus_cost.py` re-takes it). **Two** entries are slow,
+  where seventeen were — three until M1a T1a.7.2.0 made
+  `branching/07_lookahead_off` 2.8× cheaper and the re-take took its flag off,
+  which is the mechanism working ([corpus_cost.md
+  §7](plans/m1a_rust/p1a.9_release/corpus_cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry));
+  `EIN_CORPUS_SLOW=1` is 20 s of `cargo test` rather than four minutes;
   and **a run is dropped from a `runs` column only when it does not ask the
   fixture's question**, never for costing too much.
 - **`ein.rs/`** — the Rust port ([M1a](plans/m1a_rust/README.md)), a

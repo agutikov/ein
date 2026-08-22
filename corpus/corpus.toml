@@ -7,9 +7,11 @@
 #
 # `slow = true` keeps an entry out of the default sweep, and since S1a.9.0 it
 # is a claim with a threshold behind it: an entry is slow when its declared
-# runs cost **1 s or more together**, which is what `cost_ms` records. Three
-# entries are. The rule, and why the sum rather than the slowest run, is
-# corpus/README.md § `slow`; the measurement is
+# runs cost **1 s or more together**, which is what `cost_ms` records. **Two
+# entries are**, where three were until M1a T1a.7.2.0 made
+# `branching/07_lookahead_off.ein` 2.8x cheaper and the flag stopped being
+# true — which is what a measured flag is for. The rule, and why the sum
+# rather than the slowest run, is corpus/README.md § `slow`; the measurement is
 # plans/m1a_rust/p1a.9_release/corpus_cost.md and
 # `utils/bench_env.sh python3 utils/corpus_cost.py` re-takes it.
 #
@@ -63,15 +65,14 @@ path   = "examples/branching/06_lookahead_on.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 cost_ms = 377
-note   = "the lookahead A/B's on side, and the corpus's most expensive cell that is not slow: `solve -e` is 245 ms against its sibling 07's 916 ms, for the same bytes. Was slow = true until S1a.9.0 measured it."
+note   = "the lookahead A/B's on side. `solve -e` is 214 ms against its sibling 07's 315 ms, for the same bytes — it was 245 against 916 until M1a T1a.7.2.0 took 07's layer stack apart, which is what stopped 07 being the corpus's slow entry and left this one the most expensive cell that is not slow. Was slow = true until S1a.9.0 measured it."
 
 [[entry]]
 path   = "examples/branching/07_lookahead_off.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
-cost_ms = 2116
-note   = "the lookahead A/B's off side: 11 501 enterings where 06 needs 67, and that cost is the finding (docs/kernel/inference/features.md). solve and solve -e are the same 0.92 s because with the lookahead off no node is ever complete, so the fast path has nothing to stop early at — the runs stay for the same reason the cost does."
+cost_ms = 754
+note   = "the lookahead A/B's off side: 11 501 enterings where 06 needs 67, and that cost is the finding (docs/kernel/inference/features.md). solve and solve -e are the same 0.32 s because with the lookahead off no node is ever complete, so the fast path has nothing to stop early at — the runs stay for the same reason the cost does. Was slow = true at 2.12 s until M1a T1a.7.2.0 coalesced root's layer stack at the layer barrier: its 162 mid-layer writebacks put root at depth 164 and all 11 501 forks walked it, which was 2.8x of this entry."
 
 [[entry]]
 path   = "examples/branching/08_hypothesis_relation_whitelist.ein"
@@ -148,8 +149,8 @@ path   = "examples/features/01_not_and_absent.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 4059
-note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide. solve and solve -e cost the same 1.97 s — no node is complete, so the search walks to the -m cap and calls it Contradiction (Q-M1d.6). The runs stay: this is the cheapest fixture where NAF meets the blind enumerator, and it is e2e_baseline.py's `features/01 -e` row."
+cost_ms = 3459
+note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide. solve and solve -e cost the same 1.67 s — no node is complete, so the search walks to the -m cap and calls it Contradiction (Q-M1d.6). The runs stay: this is the cheapest fixture where NAF meets the blind enumerator, and it is e2e_baseline.py's `features/01 -e` row."
 
 [[entry]]
 path   = "examples/features/02_star_in_identifiers.ein"
@@ -167,7 +168,7 @@ path   = "examples/features/04_open.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 10213
+cost_ms = 9740
 note   = "a feature demo of `open`, not of search — nothing bounds the hypothesis space, so `solve` measures the blind enumerator. no solve, solve -e: at the default -m 5 neither run ends in a verdict, they end in the OOM killer (14.3 GB of anonymous memory, 78 s), which is a property of an open domain and not of a budget. `render lattice` is the same search at -m 3, and its 10.2 s is the slowest thing in the corpus."
 
 [[entry]]

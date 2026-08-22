@@ -255,7 +255,7 @@ firing once, and `saturate` shows it in 3.5 ms.
 Sixteen cells left the corpus and eighty joined the default selection: it now
 sweeps **fourteen entries that used to be nightly's**, `zebra2` and the six
 `square-*` demos among them, while the nightly tier is 19 s rather than four
-minutes.
+minutes. (§ 7 is the first re-take, and it moved a fifteenth.)
 
 ## 5. The 10.2 s line
 
@@ -298,6 +298,50 @@ the way the flag did. Three things carry it forward:
 
 `utils/corpus_cost.py --check` is the same claim outside the gate, with an
 exit code.
+
+## 7. The first re-take — 2026-08-22, and it moved an entry
+
+**`branching/07_lookahead_off.ein` is not slow any more**, and finding that out
+cost one command. M1a
+[T1a.7.2.0](../p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a720--the-layer-stack-coalesced-at-the-barrier)
+coalesces root's layer stack at the search's layer barrier; that entry's 162
+mid-layer writebacks put root at depth 164 and all 11 501 forks walked it, so
+it is **2.8×** cheaper as a whole entry and its `slow` flag stopped being true.
+
+Same machine, same instrument, `--runs 5`:
+
+| entry | cost, S1a.9.0 | cost, 2026-08-22 | | flag |
+|---|---:|---:|---:|---|
+| `branching/07_lookahead_off` | 2.12 s | **754 ms** | 2.8× | `slow` **removed** |
+| `features/01_not_and_absent` | 4.06 s | 3.46 s | 1.17× | stays |
+| `features/04_open` | 10.21 s | 9.74 s | 1.05× | stays |
+
+Two entries are slow where three were, twelve cells where nineteen were. The
+default selection is 629 cells and **5.3 s** of `cargo test` where it was 622
+and 3.6 s — it absorbed the seven cells — and `EIN_CORPUS_SLOW=1` is **19.8 s**
+where it was 21.1 s. Both green.
+
+Three things are worth taking from it beyond the number.
+
+- **The flag came off by measurement, not by opinion**, which is the thing
+  S1a.9.0 built and this is its first exercise. Nothing was dropped from a
+  `runs` column and nothing was tuned to fit; the entry got cheaper and the
+  claim beside it stopped being true, so it went.
+- **`features/01`'s 1.17× is not this stage's**, and it is the reason to
+  re-take *all* the flagged entries rather than the one that changed. Almost
+  all of that 600 ms is
+  [T1a.7.1.7](../p1a.7_parallelism/s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)'s
+  per-worker provenance region, which landed a day earlier and took that file's
+  `solve -e` from 1.97 s to 1.68 s without anyone re-taking its cost. A number
+  that only gets re-taken when someone suspects it is a number that goes stale
+  between suspicions.
+- **The margin below the line is now the tight one.** § 2's distribution had
+  the slow entries at 2.1 / 4.1 / 10.2 s and the most expensive unflagged one
+  at 0.38 s — room on both sides. The 2.1 s entry is now the 0.75 s entry and
+  is the nearest thing to the line from below: a machine 1.3× slower than this
+  one would put it back. That is a fact about one fixture rather than a reason
+  to move the threshold, and it is written down here so the next re-take knows
+  which entry to look at first.
 
 ## Reproducing this file
 

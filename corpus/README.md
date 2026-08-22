@@ -60,7 +60,7 @@ group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "render rules"]
 levers = ["-L", "-K"]              # each makes one more `solve <lever>` run
 slow   = true                      # excluded from the default sweep — see § `slow`
-cost_ms = 2116                     # what its runs cost, together, measured
+cost_ms = 3459                     # what its runs cost, together, measured
 note   = "why this entry is interesting, when it is not obvious"
 ```
 
@@ -157,8 +157,8 @@ each says so in its `note`. Every reason is about the **puzzle**:
 *asks the fixture's question* — `features/05_stdlib_domain_elim` solves in
 3.0 s today and is still not declared, because three seconds of blind
 enumeration is not three seconds of coverage; `branching/07_lookahead_off`
-costs 0.92 s per run and keeps both, because on that fixture the cost **is**
-the finding. And where a run is dropped the note says which and why: a `runs`
+costs 0.32 s per run — 0.92 s until T1a.7.2.0 — and keeps both, because on that
+fixture the cost **is** the finding. And where a run is dropped the note says which and why: a `runs`
 column that shrinks without a reason is how coverage disappears.
 
 **These notes used to blame CPython** — *"outlives a 150 s budget under
@@ -183,24 +183,35 @@ the build and machine
 `corpus_cli`'s `the_slow_flag_still_describes_the_sweep` (the wall clock of
 the sweep it has just run, at a 4× tolerance).
 
-Three entries are slow — `branching/07_lookahead_off`,
-`features/01_not_and_absent`, `features/04_open` — 19 cells and 16.4 s of
-engine. The default selection is **622 cells**, 3.0 s of engine and 3.6 s of
-`cargo test`; with `EIN_CORPUS_SLOW=1` the whole 641 take 21 s, where before
-S1a.9.0 they took **307 s**.
+**Two** entries are slow — `features/01_not_and_absent` and
+`features/04_open` — 12 cells and 13.2 s of engine. The default selection is
+**629 cells** and 5.3 s of `cargo test`; with `EIN_CORPUS_SLOW=1` the whole 641
+take **19.8 s**, where before S1a.9.0 they took **307 s**.
+
+> **Three, until M1a T1a.7.2.0.** `branching/07_lookahead_off`'s seven cells
+> cost 2.12 s when S1a.9.0 measured them and cost **754 ms** now: coalescing
+> root's layer stack at the search's layer barrier is 2.8× on that entry, and
+> the flag stopped being true. Nothing was dropped and nothing was tuned — a
+> re-take found it, which is the whole reason `slow` carries a number
+> ([scaling.md §6](../plans/m1a_rust/p1a.7_parallelism/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+> The same pass re-priced the other two: `features/01` 4.06 → 3.46 s, most of
+> it T1a.7.1.7's per-worker provenance region, and `features/04` 10.21 →
+> 9.74 s.
 
 Three decisions are worth knowing before editing the column:
 
 - **The sum, not the slowest run.** The flag's job is the sweep's budget, and
-  the sum is what an entry costs it. The two rules choose the same entries
-  today except `branching/07_lookahead_off`, whose two 0.92 s runs are under a
-  per-run line and over the sum's.
+  the sum is what an entry costs it. The one entry the two rules used to
+  disagree about was `branching/07_lookahead_off`, whose two 0.92 s runs were
+  under a per-run line and over the sum's — and it is now under both.
 - **One second**, because the whole default selection is under three seconds:
   past that an entry stops being part of the sweep and becomes the reason it
   is slow. The measured distribution leaves room on both sides — the slow
-  entries cost 2.1 s, 4.1 s and 10.2 s, and the most expensive unflagged one
-  0.38 s — so a machine would have to be 2.1× faster or 2.7× slower before the
-  line moved.
+  entries cost 3.5 s and 9.7 s, and the most expensive unflagged one 0.75 s —
+  so a machine would have to be 3.5× faster or 1.3× slower before the line
+  moved. It was 2.1 s / 4.1 s / 10.2 s against 0.38 s until T1a.7.2.0 took the
+  2.1 s entry to 0.75 s, and that entry is now the one nearest the line from
+  below: the room on the *slow* side grew, the room below it shrank.
 - **`cost_ms` is recorded only where something checks it**: on a `slow` entry,
   or on one within 4× of the threshold. Below that the sweep's own tolerance
   swallows it and it would be a number nobody verifies — which is exactly what

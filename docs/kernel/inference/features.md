@@ -258,10 +258,25 @@ same bytes with the lever off, so this is the corpus's own A/B. Best of 3:
 
 | | verdict | enterings | ein.py s | ×base | ein.rs ms | ×base |
 |---|---|---:|---:|---:|---:|---:|
-| **fast**, lookahead on | Solution k=1 | 67 | 0.41 | 1.0× | 2 | 1.0× |
-| **fast**, lookahead off | **Contradiction k=0** | **11 501** | 7.92 | **19.2×** | 896 | **448×** |
-| **exhaustive**, on | Ambiguity k=22 | 5 173 | 14.63 | 1.0× | 197 | 1.0× |
-| **exhaustive**, off | **Contradiction k=0** | **11 501** | 7.97 | 0.5× | 890 | 4.5× |
+| **fast**, lookahead on | Solution k=1 | 67 | 0.41 | 1.0× | 3.6 | 1.0× |
+| **fast**, lookahead off | **Contradiction k=0** | **11 501** | 7.92 | **19.2×** | 278 | **77×** |
+| **exhaustive**, on | Ambiguity k=22 | 5 173 | 14.63 | 1.0× | 199 | 1.0× |
+| **exhaustive**, off | **Contradiction k=0** | **11 501** | 7.97 | 0.5× | 277 | 1.4× |
+
+> **The `ein.rs` column was re-taken 2026-08-22 and the two lookahead-*off*
+> cells moved 3.2×** — 896 → 278 and 890 → 277. Not a change to the lookahead:
+> M1a [T1a.7.2.0](../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a720--the-layer-stack-coalesced-at-the-barrier)
+> coalesces root's layer stack at the search's layer barrier, and with the
+> lever off this fixture makes 162 mid-layer writebacks, so all 11 501 of its
+> forks were walking a 164-layer root. The enterings, the verdicts and the
+> counts are unchanged; only the wall clock moved, which is what says the
+> lookahead's *finding* is a count and not a timing. The `ein.py` column is a
+> frozen constant — that engine left the tree at
+> [S1a.10.5](../../../plans/m1a_rust/p1a.10_single_implementation/README.md) —
+> so its ×base ratios are the ones taken with it. All four `ein.rs` cells are
+> process wall, best of 3, pinned to one P-core; the two lookahead-*on* cells
+> are unchanged within noise and differ from the earlier reading only by the
+> process overhead this instrument includes.
 
 **`examples/lattice/02_genuine_3set_death.ein`** — the depth-3 fixture, five
 forms of puzzle, too small to time (2 ms of process, 0 ms of engine). The
