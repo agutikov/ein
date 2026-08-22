@@ -188,7 +188,7 @@ Design: [design/08](../design/08_parallelism.md).
 | stage | title | est. |
 |---|---|---|
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
-| [S1a.7.1](s1a.7.1_sync_shared_state.md) ◑ | Making the shared state `Sync` — **T1a.7.1.0/.1/.3/.4 done**, [shared_state.md](shared_state.md) | 3 d |
+| [S1a.7.1](s1a.7.1_sync_shared_state.md) ◑ | Making the shared state `Sync` — **T1a.7.1.0–.4 done, .7 added**, [shared_state.md](shared_state.md) | 3 d |
 | [S1a.7.2](s1a.7.2_parallel_enterings.md) | Level 1: parallel enterings | 4 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) | Level 3: the parallel boundary round | 2 d |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) | Level 2: the parallel enqueue pass | 2 d |
@@ -231,9 +231,12 @@ stays readable.
 - **The shared state carries no lock the measurement did not ask for.**
   [shared_state.md](shared_state.md): the interner and the integer pool are
   shared by `&` because they do not grow during a search
-  (`ein-infer/tests/interning.rs`), and the fact store assigns **41 to 417 ids
-  per search** against 5.8–26 M reads, so whatever it gets must leave the read
-  path alone.
+  (`ein-infer/tests/interning.rs`); the fact store is shared by `&` too,
+  because **zero enterings append to it on four of the six workloads** and 7
+  of 111 on the worst, all in the head of a layer. What is left is the
+  **provenance arena**, written by 100 % of enterings and holding 205 MB on
+  `features/01 -e` — the structure design/08 §6 has no row for, and the one
+  the phase's "memory scales with jobs" risk is actually about.
 - **Layers ≥ 2 run with no validator, and the engine asserts why** — no root
   write may occur between a layer opening and closing above layer 1. Today
   that is true because the writeback is singleton-only; it is an invariant the

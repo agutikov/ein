@@ -20,7 +20,17 @@
 //! - **and how does the fact store's read rate compare to its write rate?**
 //!   `reads` is the borrow-returning path (`rel`/`args`/`row`/`get`),
 //!   `intern` is every interning call and `new` the ids they assigned. It is
-//!   the *ratio* that chooses the strategy.
+//!   the *ratio* that chooses the strategy. `provs` is the same question of
+//!   the provenance arena, which design/08 §6 does not list and which has the
+//!   same borrow-returning read.
+//!
+//! And, because a total does not answer it, the same two questions **per
+//! entering**: `e/fact` and `e/prov` are the share of enterings that appended
+//! at least one fact id and at least one provenance record. An entering is
+//! what a worker runs, so those two columns are the rate at which a worker
+//! forbidden to append would have to hand its work back to the committing
+//! thread — 417 ids spread one per entering is a design, and 417 inside one
+//! entering is another.
 //!
 //! The counters need `--features counters`; without it the fact-store columns
 //! read zero and the interner ones still work, since those are `len()` and not
@@ -64,8 +74,20 @@ fn main() {
         eprintln!("note: built without --features counters; the fact-store columns are zero");
     }
     println!(
-        "{:<44} {:>7} {:>7} {:>5} {:>5} {:>12} {:>11} {:>9} {:>7}",
-        "workload", "enter", "facts", "syms+", "ints+", "reads", "intern", "probe", "new"
+        "{:<40} {:>7} {:>5} {:>5} {:>12} {:>11} {:>9} {:>6} {:>10} {:>8} {:>16} {:>17} {:>6}",
+        "workload",
+        "enter",
+        "syms+",
+        "ints+",
+        "reads",
+        "intern",
+        "probe",
+        "new",
+        "provs",
+        "provMB",
+        "e/fact",
+        "e/prov",
+        "max i"
     );
     for rel in &files {
         let mut ast = Ast::new();
@@ -86,17 +108,32 @@ fn main() {
         let solved =
             solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts).expect("solves");
         let c = counters::snapshot();
+        let pct = |n: u64| {
+            if c.entering == 0 {
+                "n/a".to_string()
+            } else {
+                format!("{n} ({:.2}%)", 100.0 * n as f64 / c.entering as f64)
+            }
+        };
+        let _ = facts;
         println!(
-            "{:<44} {:>7} {:>7} {:>5} {:>5} {:>12} {:>11} {:>9} {:>7}",
+            "{:<40} {:>7} {:>5} {:>5} {:>12} {:>11} {:>9} {:>6} {:>10} {:>8} {:>16} {:>17} {:>6}",
             rel,
             solved.stats.base.enterings_total,
-            terms.facts.len() - facts,
             terms.syms.len() - syms,
             terms.ints.len() - ints,
             c.fact_read,
             c.fact_intern,
             c.fact_probe,
             c.fact_new,
+            c.prov_push,
+            format!(
+                "{:.0}",
+                (terms.provs.len() * std::mem::size_of::<ein_core::Prov>()) as f64 / 1e6
+            ),
+            pct(c.entering_fact_new),
+            pct(c.entering_prov_new),
+            c.entering_fact_new_max_i,
         );
         for i in syms..terms.syms.len() {
             println!(
@@ -105,4 +142,25 @@ fn main() {
             );
         }
     }
+    eprintln!(
+        "peak RSS over the whole probe: {} MB  (one process, six solves, nothing freed between them)",
+        peak_rss_mb()
+    );
+}
+
+/// `VmHWM` from `/proc/self/status`, in MB — Linux only, and this probe is a
+/// dev instrument on one machine. Zero where it cannot be read.
+fn peak_rss_mb() -> u64 {
+    std::fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|s| {
+            s.lines()
+                .find(|l| l.starts_with("VmHWM:"))?
+                .split_whitespace()
+                .nth(1)?
+                .parse::<u64>()
+                .ok()
+        })
+        .map(|kb| kb / 1024)
+        .unwrap_or(0)
 }

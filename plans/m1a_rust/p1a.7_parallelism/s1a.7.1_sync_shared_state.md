@@ -1,8 +1,9 @@
 # S1a.7.1 — Making the shared state `Sync`
 
 **Phase:** P1a.7 (Parallelism)
-**Estimate:** 3 days — **1 d spent; four of the seven tasks are done and the
-remaining three are smaller than they were**
+**Estimate:** 3 days — **1.5 d spent; five of the eight tasks are done, one
+was added by the measurement (T1a.7.1.7), and the three that remain are
+smaller than they were**
 **Depends on:** [P1a.6](../p1a.6_performance/README.md)
 **Implements:** [design/08](../design/08_parallelism.md) §6
 **Measures:** what a worker actually shares —
@@ -43,8 +44,15 @@ of root saturation, and counted what the **search** does to each shared table.
   384 167 enterings, 26.1 M borrow-returning reads, 3.4 M interning calls —
   and **41** new fact ids. `branching/06 -e`, the densest of the six, is 417 in
   2.3 M. design/08 §6's lock-free segmented vec is built for an append that
-  fires tens of times per second; it fires tens of times per *solve*. The
-  append may take a mutex.
+  fires tens of times per second; it fires tens of times per *solve*.
+- **And counted per entering — which is what a worker runs — it does not
+  happen at all.** Four of the six workloads have **zero** enterings that
+  append a fact id; the other two have 7 of 111 and 1 of 101. Every one of the
+  417 ids `branching/06 -e` assigns is assigned by the committing thread, and
+  every appending entering anywhere in the corpus is in the **head** of its
+  layer (largest within-layer index: 6, 21, 83). So the store needs no
+  concurrent-append design — it needs workers to be *unable* to append, which
+  `&FactStore` already is. T1a.7.1.2 is decided rather than benched.
 - **The hard part is the read path, and design/08 does not mention it.**
   `FactStore::args` returns a `&[Value]` into the argument arena and `row`
   returns a `&Row`. No lock returns a borrow outliving its guard, and a `Vec`
@@ -68,11 +76,18 @@ of root saturation, and counted what the **search** does to each shared table.
 - **The plan memo was already done.** `Arc<Mutex<PlanMemo>>` since
   [S1a.6.8](../p1a.6_performance/s1a.6.8_compile_cache_and_extents.md), for the
   unrelated reason that a memo shared across forks needed one owner.
+- **The structure that does have a write rate has no row in design/08 §6.**
+  The **provenance arena** is written by 100 % of enterings — 39 records per
+  entering on `branching/06 -e`, **2 135 093 records and 205 MB** on
+  `features/01 -e` — and has the same borrow-returning read. It is also where
+  the phase's memory risk lives: that file peaks at 724 MB at `--jobs 1` and
+  ~28 % of it is an arena nothing reclaims until the run ends. New task,
+  T1a.7.1.7.
 
 What is left of the stage is therefore one question, and it is not a
 concurrency question: **`&mut Terms` is threaded through 99 signatures**, and a
-worker needs a `&Terms` plus somewhere to append. The measurement says the
-second half is small.
+worker needs a `&Terms`. The measurement says it needs nothing else — except
+for provenance, which is T1a.7.1.7's.
 
 ## Acceptance
 
@@ -103,16 +118,20 @@ second half is small.
   concurrently) shows: interning is idempotent across threads, a
   `FactId` means the same proposition in every thread, and no thread sees
   another's presence bits.
-- TSan clean; `loom` model checks pass for whatever protocol the fact store
-  ends up with. **If it ends up with none** — the snapshot route below — the
-  criterion is met by there being nothing to model, and the stage says so
-  rather than shipping a `loom` test of a `Mutex`.
+- TSan clean; `loom` model checks pass for whatever protocol the shared
+  structures end up with. **The fact store ends up with none** (T1a.7.1.2:
+  workers hold `&FactStore` and `intern` is `&mut`), so this criterion now
+  points at whatever T1a.7.1.7 gives the provenance arena — and if that is
+  also a per-worker structure with no cross-thread protocol, the criterion is
+  met by there being nothing to model and the stage says so rather than
+  shipping a `loom` test of a `Mutex`.
 - The determinism lint (no hash-map iteration at an observable site) is
   green with an explicitly reviewed allow-list.
 - **The read path is not slower.** `cargo bench` on the eight-bench M1a
   measurement set, `--features parallel` against the default build, within
   noise. The 26 M reads are the reason this is an acceptance item and not a
-  note.
+  note — and after T1a.7.1.2 the expected answer is *identical*, not *within
+  noise*, because no read site is changed at all.
 
 ## Tasks
 
@@ -142,38 +161,55 @@ The **rank table** stays derived state and is already `OnceLock`, which is the
 right primitive: built on demand, and — now that the table is frozen after
 load — built exactly once.
 
-### Task T1a.7.1.2 — Fact store
+### Task T1a.7.1.2 — Fact store ✅
 
-**Re-aimed by T1a.7.1.0.** The task was a segmented vec plus a sharded lookup
-map; what the numbers ask for is a lock-free *read* and an append that may
-cost anything. Three routes, and the stage picks one **with a bench**, not by
-argument:
+**Decided 2026-08-22, and the answer is that it needs nothing** — by
+measurement, not by the bench this task asked for,
+because the bench would have compared three ways of making an append cheap,
+and [shared_state.md §2a](shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+found the append does not happen.
 
-- **(a) `Arc<Core>` snapshot + overlay.** Take the store as an immutable
-  `Arc` at layer start; workers read it by `&`, lock-free and with the borrow
-  signatures unchanged. A worker that assigns an id takes a mutex on a small
-  overlay; a worker that *reads* an overlay id copies the row into a
-  worker-local vec on first sight, which is sound because a row is immutable
-  once written. The overlay folds into the core at the layer barrier — tens to
-  hundreds of rows. No new dependency, no `unsafe`, and no read-site change.
-- **(b) a lock-free segmented vec** (`boxcar`-style), as design/08 §6 has it.
-  It solves the borrow problem properly, and it costs a dependency the policy
-  table does not list — [design/12 §2](../design/12_toolchain_and_layout.md#2-dependency-policy)
-  names `rayon` for this phase and nothing else — for a write rate of 41 per
-  solve.
-- **(c) per-worker id space with promotion at commit.** Assigns global ids in
-  candidate order, so `FactId` assignment stays *deterministic* under
-  `--jobs N`, which (b) and (a) do not. That is worth something real — but it
-  renumbers a fork's delta, provenance, no-good clause and state keys at the
-  boundary, and the KB's presence bitsets are indexed by `FactId`, so a
-  reserved high band is not free either. **Do not take this route for
-  determinism's sake without checking whether determinism needs it**: the
-  observables that could move under a permuted id space are already measured
-  at 51 of 3 160 permuted pairs, all of them narration, and every search
-  counter is held exactly ([`ein-parity`](../../../ein.rs/crates/ein-parity/src/lib.rs)).
+A **total** is the wrong shape of number here: 417 ids spread one per entering
+is a design and 417 inside one entering is another. Counted per entering —
+which is what a worker runs —
 
-(a) is the one to beat, and the reason is the read column: it is the only one
-of the three that leaves 26 M borrow-returning reads exactly as they are.
+| workload | enterings | that append a fact id | largest within-layer index of one |
+|---|---:|---:|---:|
+| `zebra -e` | 111 | 7 | 21 |
+| `zebra2 -e` | 101 | 1 | 6 |
+| `branching/06 -e` | 5 173 | **0** | — |
+| `branching/07 -e` | 11 501 | 1 | 83 |
+| `sq-bwd/houses -e` | 21 699 | **0** | — |
+| `features/01 -e` | 384 167 | **0** | — |
+
+`branching/06 -e` assigns 417 fact ids and **not one of them from inside an
+entering**: they are the hypothesis generator interning a layer's candidates,
+the singleton writeback and the forced-positive cascade — all on the
+committing thread. A fork derives propositions that already have numbers.
+
+**So the decision is that workers do not append.** `FactStore::intern` takes
+`&mut self`; a worker holds `&FactStore` and therefore cannot call it, which
+makes the type system the enforcement and leaves no protocol to model. An
+entering that would have appended hands itself back and is re-run on the
+committing thread. What that buys over the three routes below is not only
+simplicity: **fact-id assignment stays deterministic**, because every
+assignment happens on one thread in candidate order.
+
+The three routes are rejected in
+[shared_state.md §5](shared_state.md#5-what-this-rejects-and-what-it-would-have-cost)
+with what each would have cost — a branch on 26 M reads, a dependency
+[design/12 §2](../design/12_toolchain_and_layout.md#2-dependency-policy) does
+not list, or a renumbering whose determinism benefit route 2 gets for free.
+
+**The bound this hands to [S1a.7.2](s1a.7.2_parallel_enterings.md).** The rate
+above is *sequential*: entering 1 appends and 2…n then find the id. A batch of
+`jobs` workers forks one snapshot, so wasted work is bounded by
+`appending enterings × jobs` — ≤ 56 of 111 on `zebra -e` at `--jobs 8`, and
+≤ 8 of 11 501 on `branching/07 -e`. The `max i` column is why that bound does
+not bite: every appending entering is in the **head** of its layer, so running
+the first ~100 sequentially leaves the corpus with none in the fanned-out
+tail. Measuring it with threads is S1a.7.2's; deciding whether it needed a
+mechanism was this task's, and it did not.
 
 ### Task T1a.7.1.3 — Plan memo ✅
 
@@ -235,6 +271,57 @@ Two halves, and one of them exists.
   concurrently against one `Terms`, asserting idempotence, `FactId` agreement
   and delta isolation. It is the only test in this stage that needs a thread,
   and it is the one that decides whether T1a.7.1.2's route (a) is right.
+
+### Task T1a.7.1.7 — The provenance arena
+
+**Added 2026-08-22 by T1a.7.1.0**, which found the shared structure
+[design/08 §6](../design/08_parallelism.md#6-what-must-be-sync-and-how) has no
+row for. It has exactly the fact store's borrow-returning read
+(`ProvArena::get` → `&Prov`) and, unlike the fact store, a real write rate:
+**100 % of enterings push a record**, `branching/06 -e` at 39 per entering,
+`features/01 -e` at **2 135 093 records and 205 MB** of `Vec<Prov>` alone
+([shared_state.md §2b](shared_state.md#2b-the-structure-with-a-real-write-rate-is-the-one-design08-6-left-out)).
+
+It is also the phase's own memory risk, now attributable rather than
+suspected: `features/01 -e` peaks at 724 MB at `--jobs 1`
+([S1a.6.4](../p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)) and ~28 % of
+that is an arena whose module doc already says *"a dead fork's records are not
+reclaimed until the run ends"*. A job count multiplies live forks and every
+one of them writes here, so this is the row where "memory scales with jobs"
+actually happens.
+
+**The obvious answer, and the measurement that kills it.** A fork's records
+are its own — it writes them and reads them back for its unsat core, and no
+*sibling* ever names one — so a **per-worker arena dropped at join** needs no
+lock, changes no read site, and fixes the leak as a side effect. What stops it
+is that `CommitmentSetResult` hands the fork's **`Kb` back**: an entering that
+*lives* keeps a justification table pointing into the arena, so only a dying
+fork's records are certainly garbage, and the survivors' would have to be
+promoted and remapped at the ordered commit.
+
+That would be free if survivors were rare. **They are not**, and this was
+worth ten seconds of `--json-summary` before it went into a plan:
+
+| workload | enterings | alive |
+|---|---:|---:|
+| `branching/06 -e` | 5 173 | 4 774 (92.3 %) |
+| `sq-bwd/houses -e` | 21 699 | **21 699 (100 %)** |
+| `features/01 -e` | 384 167 | **384 167 (100 %)** |
+
+So "promote the survivors" promotes essentially everything, and the leak that
+per-worker arenas would have fixed is not a leak of *dead* forks' records —
+those are the minority. Which leaves the task genuinely open, and with a
+sharper question than it started with: **how many of the records a fork
+pushes does its own KB go on to record?** `ProvArena::push` creates one;
+`Kb::record_justification` decides whether any KB keeps it, and
+`accepts_justification` is the pre-check `prov.rs` credits with keeping the
+arena bounded. If the recorded fraction is small, the promotion is small and
+per-worker arenas stand. If it is not, the arena stays global — and then the
+question is whether a `push` can be made not to need `&mut`, on a path that
+fires 2.1 M times, which is the one thing §2's numbers say not to do casually.
+
+Measure that fraction first, as T1a.7.1.0 did. Nothing else about this task
+should be decided before it exists.
 
 ## Notes
 

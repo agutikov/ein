@@ -594,6 +594,12 @@ impl Run<'_> {
                 }
                 self.check_budget(dumper)?;
                 self.stats.base.enterings_total += 1;
+                // T1a.7.1.2 — what this entering appends to the *shared*
+                // tables, which is what decides whether a worker can be
+                // handed a `&Terms` and nothing else. Compiled out with the
+                // `counters` feature; `snapshot()` is a thread-local read.
+                #[cfg(feature = "counters")]
+                let before = ein_core::counters::snapshot();
                 let result = try_commitment_set(
                     root,
                     terms,
@@ -604,6 +610,22 @@ impl Run<'_> {
                     None,
                     self.root_snapshot.as_deref(),
                 )?;
+                #[cfg(feature = "counters")]
+                {
+                    let after = ein_core::counters::snapshot();
+                    let (facts, provs) = (
+                        after.fact_new > before.fact_new,
+                        after.prov_push > before.prov_push,
+                    );
+                    ein_core::counters::bump(|c| {
+                        c.entering += 1;
+                        c.entering_fact_new += u64::from(facts);
+                        c.entering_prov_new += u64::from(provs);
+                        if facts {
+                            c.entering_fact_new_max_i = c.entering_fact_new_max_i.max(i as u64 + 1);
+                        }
+                    });
+                }
                 // Before the commit step, which is what grows `W`.
                 #[cfg(feature = "spec-audit")]
                 if let Some(a) = audit.as_mut() {

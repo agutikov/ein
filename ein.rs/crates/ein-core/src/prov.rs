@@ -190,6 +190,7 @@ impl ProvArena {
     /// records, and the dedup that matters happens in
     /// `record_justification`, where ein.py does it too.
     pub fn push(&mut self, prov: Prov) -> ProvId {
+        crate::counters::bump(|c| c.prov_push += 1);
         let id = ProvId(self.records.len() as u32);
         self.records.push(prov);
         id

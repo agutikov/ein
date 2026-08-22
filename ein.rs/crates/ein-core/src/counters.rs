@@ -151,6 +151,35 @@ pub struct Counters {
     /// ([shared_state.md](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md) §2).
     pub fact_intern: u64,
     pub fact_new: u64,
+    /// Provenance records created — [`crate::prov::ProvArena::push`]. The
+    /// arena is shared for the same reason the fact store is (see
+    /// [`crate::prov`]) and has the same borrow-returning read, but
+    /// [design/08 §6](../../../../plans/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
+    /// does not list it, so nobody had asked how hard it is written.
+    pub prov_push: u64,
+
+    // ── and the same two questions, *per entering* ─────────────────
+    /// Enterings measured by the two counters below — a denominator that
+    /// lives in the same snapshot as its numerators, so a partial run cannot
+    /// produce a ratio against a total taken somewhere else. Equal to
+    /// `MonotonicStats::enterings_total` on a run that finishes.
+    pub entering: u64,
+    /// …of which assigned at least one **fact id**, and at least one
+    /// **provenance record**. This is the rate at which a worker forbidden to
+    /// append would have to hand its entering back
+    /// ([shared_state.md §5](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md)),
+    /// and it is a different question from the totals: 417 ids spread one per
+    /// entering is a design and 417 in one entering is another.
+    pub entering_fact_new: u64,
+    pub entering_prov_new: u64,
+    /// The largest **within-layer index** of an entering that assigned a fact
+    /// id, plus one — so `0` means no entering did.
+    ///
+    /// The bail-out rate above is a *count*; this is where the count sits. If
+    /// every interning entering is near the head of its layer, "run the first
+    /// K sequentially, fan out the rest" removes them all, and the bound on
+    /// wasted work stops being `count × jobs`.
+    pub entering_fact_new_max_i: u64,
 
     // ── negation at the boundary ───────────────────────────────────
     /// Guard sub-plan evaluations — one per guard, so ein.py's comparable site
@@ -321,6 +350,11 @@ impl Counters {
             fact_probe: 0,
             fact_intern: 0,
             fact_new: 0,
+            prov_push: 0,
+            entering: 0,
+            entering_fact_new: 0,
+            entering_prov_new: 0,
+            entering_fact_new_max_i: 0,
             guard_query: 0,
             watch_stamp: 0,
             watch_stamp_rel: 0,
@@ -344,7 +378,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 43] {
+    pub fn rows(&self) -> [(&'static str, u64); 48] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -371,6 +405,11 @@ impl Counters {
             ("fact_probe", self.fact_probe),
             ("fact_intern", self.fact_intern),
             ("fact_new", self.fact_new),
+            ("prov_push", self.prov_push),
+            ("entering", self.entering),
+            ("entering_fact_new", self.entering_fact_new),
+            ("entering_prov_new", self.entering_prov_new),
+            ("entering_fact_new_max_i", self.entering_fact_new_max_i),
             ("guard_query", self.guard_query),
             ("watch_stamp", self.watch_stamp),
             ("watch_stamp_rel", self.watch_stamp_rel),
@@ -443,6 +482,11 @@ mod tests {
         c.fact_probe = 1;
         c.fact_intern = 1;
         c.fact_new = 1;
+        c.prov_push = 1;
+        c.entering = 1;
+        c.entering_fact_new = 1;
+        c.entering_prov_new = 1;
+        c.entering_fact_new_max_i = 1;
         c.guard_query = 1;
         c.watch_stamp = 1;
         c.watch_stamp_rel = 1;
@@ -465,6 +509,6 @@ mod tests {
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 42);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 47);
     }
 }
