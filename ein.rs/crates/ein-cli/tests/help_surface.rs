@@ -17,6 +17,9 @@
 //! `corpus_shapes.md5` makes about every other rendering and the strongest one
 //! available with a single implementation.
 
+// Both are the golden test's, and the golden is of the *default* surface —
+// see `the_argument_surface_is_stable`.
+#[cfg(feature = "einb")]
 use ein_corpus::{golden, golden_path};
 
 /// The surface, counted from the parsers themselves — 39 options across 8

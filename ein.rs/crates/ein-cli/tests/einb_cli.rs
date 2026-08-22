@@ -9,6 +9,16 @@
 //! the same command, and compares what came out — 378 facts, a verdict, a
 //! table, an exit code — none of which the container has any way to influence
 //! except by having restored the KB exactly.
+//!
+//! **Gated on the feature it tests.** `einb` is a default feature and `ein kb`
+//! is registered only with it ([design/12](../../../../plans/m1a_rust/design/12_toolchain_and_layout.md)
+//! §3), so without it every case below asks a binary that has no `kb`
+//! subcommand and gets exit 2 — eight failures that say nothing about the
+//! container. `help_surface.rs` already holds the *other* direction, that a
+//! build without the feature renders a smaller surface on purpose, which is
+//! why this file can simply not exist there.
+
+#![cfg(feature = "einb")]
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
