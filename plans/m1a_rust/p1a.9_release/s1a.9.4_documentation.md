@@ -143,7 +143,8 @@ does not use and
 [design/04](../design/04_ir_frontend.md) rules out — the working tree already
 carries a `TODO: What lark in Rust?` against that line, and the answer is that
 the symbol does not survive. And `inference.md`'s `SolverConfig` table has no
-`--jobs`, because [P1a.7](../p1a.7_parallelism/README.md) is paused; the Rust
+`--jobs`, because [P1a.7](../p1a.7_parallelism/README.md) has not built it yet
+(resumed 2026-08-22, two stages in); the Rust
 page states the parallelism surface as it actually is on the day it ships.
 
 ### Task T1a.9.4.4 — Update the quoted numbers
@@ -207,7 +208,8 @@ expensive to rediscover.
   change in this milestone — that is the whole point of invariant I1 —
   and editing it would suggest otherwise.
 - **`--jobs` is not a new user-facing concept yet.**
-  [P1a.7](../p1a.7_parallelism/README.md) is paused after one stage, so the
+  [P1a.7](../p1a.7_parallelism/README.md) is two stages in and `--jobs` does
+  not exist yet, so the
   documentation states what ships — and if `--jobs` is not in the released
   binary, the honest page says the engine is single-threaded and links the
   paused phase. A documented flag that does not exist is the failure mode this

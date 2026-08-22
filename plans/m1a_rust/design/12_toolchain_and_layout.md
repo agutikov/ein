@@ -106,6 +106,7 @@ if that ever matters.
 | `include_dir` | ir | embedded stdlib |
 | `memchr` | ir | lexer scanning |
 | `rayon` | infer | [P1a.7](../p1a.7_parallelism/README.md) only, behind a `parallel` feature |
+| `boxcar` (or another lock-free append-only vec) | core | **considered, not taken up.** [design/08 §6](08_parallelism.md#6-what-must-be-sync-and-how) sketches the fact store as one, and it would solve the real problem — `FactStore::args` returns a `&[Value]` into an arena a `Vec` push can move, which is what `#![forbid(unsafe_code)]` leaves no in-crate way to fix. What it would not buy is throughput: [S1a.7.1](../p1a.7_parallelism/s1a.7.1_sync_shared_state.md) measured a search assigning **41 to 417** fact ids against 5.8–26 M reads, so the append it makes lock-free fires tens of times per *solve*. [T1a.7.1.2](../p1a.7_parallelism/s1a.7.1_sync_shared_state.md#task-t1a712--fact-store) picks between it and a per-layer `Arc` snapshot **with a bench**; this row exists so the dependency is a decision on the record rather than one that arrives inside a commit |
 | `clap` (derive) | cli | 37 options across 8 parsers; [Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity) took help and usage-error *text* off the byte gate on 2026-08-18, so nothing has to reproduce `argparse`'s formatter |
 | `serde` + `serde_json` | conformance, cli(`--events`) | the event protocol |
 | `zstd` | ein-einb | optional section compression. **Not taken up**: P1a.8 shipped the per-section `flags` word that would select it and no compressor, because a saturated `zebra2` is 56 KB uncompressed against a 64 KB budget and a compressed section forfeits the `mmap` the layout exists for. A reader refuses a non-zero `flags` rather than guessing |
@@ -130,7 +131,7 @@ crate).
 
 | feature | default | effect |
 |---|---|---|
-| `parallel` | off during P1a.0–6, on from P1a.7 | pulls `rayon`, enables `--jobs > 1` |
+| `parallel` | off during P1a.0–6, on from P1a.7 | pulls `rayon`, enables `--jobs > 1`. **Not yet added** — S1a.7.1 is two tasks from needing it, and the two it has shipped ([`ENGINE`](../p1a.7_parallelism/shared_state.md) and the load-time name closure) are unconditional, because a table that does not grow is better single-threaded too |
 | `einb` | on (`ein-cli`) | `.einb` read/write. Off, `ein kb` is not registered and a `.einb` argument is refused by the loader that would have opened it |
 | `events` | on | `--events FILE` emission (compiled out entirely when off, for a zero-overhead measurement build) |
 | `python` | off | PyO3 bindings. Reserved; nothing builds it (see the `pyo3` row) |

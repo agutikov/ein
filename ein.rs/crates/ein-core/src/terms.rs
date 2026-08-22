@@ -75,6 +75,60 @@ pub fn is_reserved(name: &str) -> bool {
     RESERVED.contains(&name)
 }
 
+/// The engine's **own** names — the ones it writes into a KB rather than reads
+/// out of a program.
+///
+/// Four are provenance rule-names for a derivation no rule performed
+/// ([`crate::prov`]), one marks a relation the kernel closes under arg-swap,
+/// one names the synthetic rule a `(query …)` goal compiles to, one is the
+/// `(__closed__ R)` marker, and the last two are the mirror firing's binding
+/// variables. Not a style list: together with
+/// `ein_ir::from_ir::intern_program_names` — which closes a *rule's* argument
+/// constants at load — **these eight are why nothing interns a name during a
+/// search**, measured over the whole corpus by
+/// `ein-infer/tests/interning.rs`.
+///
+/// Why that matters is [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)'s
+/// [S1a.7.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md):
+/// [`Interner::text`](crate::Interner::text) hands out a `&str` borrowed from
+/// the arena, which no lock can do, so a shareable interner is one that does
+/// not **grow** while it is shared, and the search is where it would be
+/// shared. Three of the eight were growing it there
+/// ([shared_state.md](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md) §3);
+/// the other five arrive during root saturation, which is single-threaded —
+/// they are here because `__symmetric__` was interned by every
+/// `Saturator::new` and [`MIRROR_A`] / [`MIRROR_B`] by every mirror firing,
+/// which is a hash lookup for a constant.
+pub const ENGINE: [&str; 8] = [
+    FORCED_POSITIVE,
+    LOOKAHEAD_DIES,
+    MONOTONIC_UNCONDITIONAL,
+    QUERY_RULE,
+    CLOSED,
+    SYMMETRIC,
+    MIRROR_A,
+    MIRROR_B,
+];
+
+/// The forced-positive cascade's promotion — a fact root writes because every
+/// other value of its slot is excluded.
+pub const FORCED_POSITIVE: &str = "<forced-positive>";
+/// The kill-cache `(not h)` a candidate that dies under one-step lookahead
+/// leaves behind.
+pub const LOOKAHEAD_DIES: &str = "<lookahead-dies-immediately>";
+/// The singleton writeback's `(not h)` — a layer-1 death, generalised.
+pub const MONOTONIC_UNCONDITIONAL: &str = "<monotonic-unconditional>";
+/// The synthetic rule a `(query :goal …)` compiles to, so a goal binding has a
+/// rule name to be reported under.
+pub const QUERY_RULE: &str = "<query>";
+/// `(__closed__ R)` — R is a relation no rule can positively conclude.
+pub const CLOSED: &str = "__closed__";
+/// `(__symmetric__ R)` — R's extension is closed under arg-swap by the kernel.
+pub const SYMMETRIC: &str = "__symmetric__";
+/// The two binding-variable names the native mirror reports its firing under.
+pub const MIRROR_A: &str = "a";
+pub const MIRROR_B: &str = "b";
+
 /// The names the kernel itself knows. Interning them first costs nothing:
 /// symbol ids are never observable, so their assignment order is free.
 #[derive(Clone, Copy, Debug)]
@@ -103,6 +157,15 @@ pub struct Kernel {
     /// The synthetic heads the parser gives `()` and a parameter list.
     pub empty: Symbol,
     pub params: Symbol,
+    /// [`ENGINE`] — the names the engine writes rather than reads.
+    pub forced_positive: Symbol,
+    pub lookahead_dies: Symbol,
+    pub monotonic_unconditional: Symbol,
+    pub query_rule: Symbol,
+    pub closed: Symbol,
+    pub symmetric: Symbol,
+    pub mirror_a: Symbol,
+    pub mirror_b: Symbol,
 }
 
 impl Terms {
@@ -128,6 +191,14 @@ impl Terms {
             equals: intern("="),
             empty: intern("@empty"),
             params: intern("@params"),
+            forced_positive: intern(FORCED_POSITIVE),
+            lookahead_dies: intern(LOOKAHEAD_DIES),
+            monotonic_unconditional: intern(MONOTONIC_UNCONDITIONAL),
+            query_rule: intern(QUERY_RULE),
+            closed: intern(CLOSED),
+            symmetric: intern(SYMMETRIC),
+            mirror_a: intern(MIRROR_A),
+            mirror_b: intern(MIRROR_B),
         };
         Terms {
             syms,

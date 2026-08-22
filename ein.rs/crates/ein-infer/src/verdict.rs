@@ -132,13 +132,7 @@ pub fn goal_bindings(
         }
     };
     let rule = Rule {
-        name: match terms.syms.get("<query>") {
-            Some(s) => s,
-            None => match terms.intern_text("<query>") {
-                Ok(s) => s,
-                Err(_) => return Vec::new(),
-            },
-        },
+        name: terms.kernel.query_rule,
         params: Box::new([]),
         match_: Some(Pattern {
             expr: ExprRef(goal.0),
@@ -197,10 +191,7 @@ pub fn goal_plan_error(
         None => query_value(ast, kb.program().query.as_ref()?, "goal")?,
     };
     let rule = Rule {
-        name: terms
-            .syms
-            .get("<query>")
-            .or_else(|| terms.intern_text("<query>").ok())?,
+        name: terms.kernel.query_rule,
         params: Box::new([]),
         match_: Some(Pattern {
             expr: ExprRef(goal.0),

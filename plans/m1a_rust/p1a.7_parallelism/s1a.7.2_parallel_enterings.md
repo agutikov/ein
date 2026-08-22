@@ -5,8 +5,8 @@
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md),
 [S1a.7.0](s1a.7.0_speculation_audit.md)
 **Implements:** [design/08](../design/08_parallelism.md) §2
-**Decides:** whether `--jobs N` keeps T3 through layer 1, and how
-`enable_fail_fast_fork` interacts with a continued fork
+**Decides:** whether `--jobs N` stays the same computation through layer 1,
+and how `enable_fail_fast_fork` interacts with a continued fork
 
 > **Re-shaped 2026-08-20 by [S1a.7.0](s1a.7.0_speculation_audit.md)**, which
 > measured this stage's premise before the stage started. Read
@@ -24,7 +24,9 @@ singleton `(not h)` writeback, and a later entering in the same layer
 forks a root that now contains that negative.
 
 So the naive parallel layer changes `enterings_dead_pre` /
-`enterings_dead_post` — a T1 failure. The fix is speculate-and-validate,
+`enterings_dead_post` — and a search counter is the one thing
+[`ein-parity`](../../../ein.rs/crates/ein-parity/src/lib.rs)'s cut does **not**
+admit, in either direction. The fix is speculate-and-validate,
 and its correctness rests on an identity the engine already depends on:
 
 > `sat(base ∪ W ∪ c) = sat(sat(base ∪ c) ∪ W)`
@@ -91,7 +93,17 @@ at the fixpoint".
 
 ## Acceptance
 
-- `--jobs {2,4,8,16}` T3-identical to `--jobs 1` on the whole corpus.
+> **Restated 2026-08-22.** Every "T*n*-identical" below named
+> `ein-conformance`, which [P1a.10](../p1a.10_single_implementation/README.md)
+> retired with the second engine. The successor per half is the phase
+> [README § The acceptance, restated](README.md#the-acceptance-restated); the
+> promise is unchanged and in one place stronger, because the cut names which
+> differences are admitted where a byte diff could only say that there was one.
+
+- `--jobs {2,4,8,16}` is **the same computation as `--jobs 1`** on the whole
+  corpus: `jobs_invariance` over `corpus_ops`, exact on the verdict, the model,
+  the unsat core and every search counter, and no wider in narration than
+  `id_order_invariance` already measures.
 - **Layers ≥ 2 take the no-validator path, and a debug assertion holds the
   invariant that lets them** — no root write between a layer opening and
   closing, above layer 1.
@@ -170,8 +182,10 @@ rate is invisible.
 
 ### Task T1a.7.2.6 — The stress test
 
-10 000 randomised `--jobs 8` runs across the corpus, T3-diffed against
-`--jobs 1`, run nightly. Include the `enable_singleton_writeback=false`
+10 000 randomised `--jobs 8` runs across the corpus, diffed against
+`--jobs 1` through `ein-parity`'s cut — a **sixth property** of
+[`utils/fuzz_ein.py`](../../../utils/fuzz_ein.py), beside the five one engine
+can already check, rather than a harness run. Include the `enable_singleton_writeback=false`
 entry — that is where `W` is largest and case 3 is most likely.
 
 ## Notes

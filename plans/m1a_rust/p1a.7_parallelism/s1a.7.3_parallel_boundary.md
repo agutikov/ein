@@ -22,9 +22,22 @@ first is irrelevant.
 
 ## Acceptance
 
+> **Restated 2026-08-22.** Every "T*n*-identical" below named
+> `ein-conformance`, which [P1a.10](../p1a.10_single_implementation/README.md)
+> retired with the second engine. The successor per half is the phase
+> [README § The acceptance, restated](README.md#the-acceptance-restated); the
+> promise is unchanged and in one place stronger, because the cut names which
+> differences are admitted where a byte diff could only say that there was one.
+
 - `park` / `admit` / `retire` event sequences identical to `--jobs 1` on
-  the whole corpus.
-- `naf_rounds` / `naf_admitted` / `naf_retired` identical.
+  the whole corpus — `corpus_ops`' `Op::Saturate` is the whole verbose stream
+  and is compared **byte for byte** (`ein-parity` does not cut it: design/01
+  §5's relaxation never touched the event stream), so this half needs no new
+  instrument beyond the `--jobs` axis.
+- `naf_rounds` / `naf_admitted` / `naf_retired` identical — the four NAF
+  counters are already row 1.4 of the [oracle
+  ledger](../p1a.10_single_implementation/oracle_ledger.md) and already
+  asserted by `summary_properties.rs`.
 - Speedup measured on the boundary specifically (the `boundary` criterion
   bench), not just on end-to-end wall-clock.
 - Wasted evaluations (candidates judged after the eventual winner)

@@ -11,14 +11,27 @@ Linux 7.1.8 / Manjaro. Single-core cells are pinned to `cpu4` through
 [`utils/bench_env.sh`](../../../utils/bench_env.sh), best-of-N, as P1a.6's
 were.
 
-> **The measurement policy this phase needs, and does not yet have.**
-> `bench_env.sh` pins to *one* P-core hyperthread, which is exactly right for
+> **The measurement policy this phase needs — and now has.**
+> `bench_env.sh` pinned to *one* P-core hyperthread, which is exactly right for
 > P1a.6 and exactly wrong here. On a hybrid CPU "8 cores" is three different
 > machines — 8 P-cores, 8 P-core *threads* on 4 physical cores, or 8 E-cores —
 > and a scaling table that does not say which is not a measurement. Every
-> `--jobs N` number in this file must name its core set;
-> [S1a.7.5](s1a.7.5_jobs_contract.md) T1a.7.5.5's scaling table needs a
-> `bench_env.sh --cores` mode before it can be published.
+> `--jobs N` number in this file must name its core set.
+>
+> **`bench_env.sh --cores` shipped at [S1a.7.1](s1a.7.1_sync_shared_state.md)**
+> (2026-08-22). `P:N` takes one thread per physical P-core, `PT:N` takes P-core
+> threads in cpu order, `E:N` / `ET:N` the same for the E-cores, and a literal
+> list is passed through with each core classified. The fingerprint prints the
+> resolved list *and* the number of distinct physical cores it covers — the two
+> lines below are the same "8 cores" and are not the same machine —
+>
+> ```text
+>   pinned to       cpu0,2,4,6,8,10,12,14 — 8 cpu(s), 8 physical core(s), all P
+>   pinned to       cpu0,1,2,3,4,5,6,7    — 8 cpu(s), 4 physical core(s), all P
+> ```
+>
+> and a spec the machine cannot fill is refused rather than quietly reduced.
+> [S1a.7.5](s1a.7.5_jobs_contract.md) T1a.7.5.5's scaling table is unblocked.
 
 ---
 
@@ -297,6 +310,12 @@ not covered by the tests above and is not claimed here.
    `features/01`, 0.2–1.9 s and ≥ 98 % of enterings past layer 1 — are the
    phase's measurement set, and the two zebras stay as the *parity* cells they
    have always been.
+
+> **A sibling file.** This one is about the *search* — where the enterings are
+> and what a speculation costs. [shared_state.md](shared_state.md) is
+> [S1a.7.1](s1a.7.1_sync_shared_state.md)'s, in the same shape, and is about
+> the four structures a worker shares: how hard each is read, how rarely each
+> is written, and which of design/08 §6's strategies survived being measured.
 
 ## 6. Reproducing
 

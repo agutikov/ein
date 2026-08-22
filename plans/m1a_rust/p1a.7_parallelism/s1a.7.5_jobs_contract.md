@@ -20,18 +20,33 @@ different computation, and because the whole parity apparatus assumes it.
 
 ## Acceptance
 
-- `--jobs N` (deterministic) is **T3-identical** to `--jobs 1` for
+> **Restated 2026-08-22.** Every "T*n*-identical" below named
+> `ein-conformance`, which [P1a.10](../p1a.10_single_implementation/README.md)
+> retired with the second engine. The successor per half is the phase
+> [README § The acceptance, restated](README.md#the-acceptance-restated); the
+> promise is unchanged and in one place stronger, because the cut names which
+> differences are admitted where a byte diff could only say that there was one.
+
+- `--jobs N` (deterministic) is **the same computation** as `--jobs 1` for
   N ∈ {1, 2, 4, 8, 16} across the whole corpus, with only wall-clock
   fields normalised.
-- `--unordered` is T0-identical (same verdict, same model set) and
-  documented as *not* counter-identical, with a fixture demonstrating a
-  counter difference so the distinction is visible rather than theoretical.
+- `--unordered` keeps the **answer** — same verdict, same model set, which is
+  what the ledger's row 1.1 covers — and is documented as *not*
+  counter-identical, with a fixture demonstrating a counter difference so the
+  distinction is visible rather than theoretical. It is therefore the one mode
+  that must **fail** `jobs_invariance`, and the test has to say so on purpose
+  rather than by not being run.
 - The CLI surface and the `SolverConfig` interaction agree on the same
-  semantics, and the embedding API ([P1a.9](../p1a.9_release/README.md))
-  exposes the same knob under the same name.
-- `docs/api/inference.md` gains the flag with its guarantees; the
-  guarantee table from [design/08](../design/08_parallelism.md) §1 lands
-  in user-facing documentation, not only in the plan.
+  semantics, and **the crate API exposes the same knob under the same name** —
+  restated 2026-08-22: this read "the embedding API (P1a.9)", and
+  [P1a.9 deferred the PyO3 binding](../p1a.9_release/README.md) on 2026-08-21
+  for want of a consumer. The embedding surface that is real is the crates,
+  and [S1a.9.4](../p1a.9_release/s1a.9.4_documentation.md) is where it is
+  written down.
+- The guarantee table from [design/08](../design/08_parallelism.md) §1 lands in
+  user-facing documentation, not only in the plan. **Not `docs/api/`** — that
+  tree describes an engine that no longer exists and is kept in reserve; the
+  flag belongs wherever S1a.9.4 puts the CLI's contract.
 - Q-M1a.7 closed with the measured re-validation rate.
 
 ## Tasks
@@ -62,17 +77,31 @@ One `ExecPolicy { jobs, ordered }` threaded to the three levels, with
 one-worker pool — the sequential path must stay the reference
 implementation and must not bit-rot).
 
-### Task T1a.7.5.3 — The cross-jobs conformance matrix
+### Task T1a.7.5.3 — The cross-jobs matrix
 
-Extend the harness: every corpus entry × every `jobs` value, T3-diffed
-against `--jobs 1`. Nightly tier. This is the mechanism that keeps the
-promise; without it, "deterministic parallel" decays within a month.
+**Re-aimed 2026-08-22.** "Extend the harness" named `ein-conformance`; what
+this builds instead is `ein-render/tests/jobs_invariance.rs` — the third sweep
+over [`corpus_ops`](../../../ein.rs/crates/ein-render/tests/corpus_ops/mod.rs),
+beside `corpus_shapes` (digest once) and `id_order_invariance` (twice, ids
+permuted). Every corpus file × every op × every `jobs` value, in one process,
+cut by `ein-parity`. This is the mechanism that keeps the promise; without it,
+"deterministic parallel" decays within a month.
+
+**Nightly may not be needed.** The tier was nightly because two processes per
+corpus cell cost 738 s; `id_order_invariance` does the whole corpus twice in
+seconds. If the `jobs` axis lands in the same envelope it belongs in
+`cargo test --workspace`, and a gate that runs is worth more than a tier that
+is read on Mondays.
 
 ### Task T1a.7.5.4 — `--unordered`
 
 Relax the ordered commit (level 1) to commit-on-completion, keeping only
 solution-node recording and no-good emission (both order-insensitive in
-their *effect*, if not in their counters). Verify T0 holds — and be
+their *effect*, if not in their counters). Verify **the answer** holds —
+verdict, `k`, `exhausted`, the model as a fact set, the goal bindings and the
+unsat core, which is [oracle ledger](../p1a.10_single_implementation/oracle_ledger.md)
+row 1.1 and is asserted by `ein-infer/tests/acceptance.rs` and
+`ein-cli/tests/summary_properties.rs` — and be
 explicit in the docs that entering counts, nogood counts and traversal
 order may differ, so nobody benchmarks with it by accident.
 
@@ -81,8 +110,12 @@ order may differ, so nobody benchmarks with it by accident.
 A `--stats` addition (or a sibling flag) reporting: workers used,
 speculative vs committed enterings, case-2/case-3 validation counts,
 boundary chunk stats, and parallel-pass fraction. Publish a scaling
-table (1/2/4/8/16 cores × both puzzles) in
-[design/README.md § Measured](../design/README.md#measured).
+table (1/2/4/8/16 cores × the phase's measurement set) in
+[design/README.md § Measured](../design/README.md#measured) — **through
+[`utils/bench_env.sh`](../../../utils/bench_env.sh) `--cores`**, which shipped
+at S1a.7.1 and is what makes the table's "8 cores" mean one machine rather
+than three (`P:8`, `PT:8` and `E:8` are all "8 cores" and none of them is the
+others). "both puzzles" was the pre-S1a.7.0 target set and is superseded.
 
 ### Task T1a.7.5.6 — Failure modes
 

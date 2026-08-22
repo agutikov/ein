@@ -60,10 +60,7 @@ pub fn producible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Co
 /// targets anyway.
 pub fn emit_closed(s: &mut Session<'_>) -> Result<Vec<Symbol>, CompileError> {
     let producible = producible_relations(s)?;
-    let closed = s
-        .terms
-        .intern_text(CLOSED)
-        .expect("room for a reserved engine string");
+    let closed = s.terms.kernel.closed;
     let already: FxHashSet<Symbol> =
         s.kb.facts_of(closed)
             .filter_map(|f| s.terms.facts.args(f).first().and_then(|v| v.as_sym()))

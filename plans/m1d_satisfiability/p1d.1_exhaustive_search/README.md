@@ -5,10 +5,12 @@
 **Depends on:** [M1a](../../m1a_rust/README.md)'s
 [P1a.7](../../m1a_rust/p1a.7_parallelism/README.md) — cores change the
 constant, not the exponent, and this phase is about the exponent. Knowing
-which is which needs the parallel numbers first. **P1a.7 is paused after one
-stage**, so this is now a decision rather than a wait: either it resumes
-first, or this phase starts without the parallel numbers and says so where a
-reading would have used them.
+which is which needs the parallel numbers first. **P1a.7 resumed 2026-08-22
+and is two stages in**, neither of which produces a `--jobs` number — so this
+is still a decision rather than a wait: either P1a.7 reaches
+[S1a.7.5](../../m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)'s scaling
+table first, or this phase starts without the parallel numbers and says so
+where a reading would have used them.
 **Was P1a.12; moved here 2026-08-21** at the user's direction, together with
 the note that is the other half of its question ([`ideas.md`](../ideas.md),
 ex-F14).

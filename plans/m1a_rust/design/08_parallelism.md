@@ -389,18 +389,32 @@ from the engine beyond `Send + Sync` on the shared `Arc<KbCore>` /
 
 ## 6. What must be `Sync`, and how
 
-| shared state | strategy |
-|---|---|
-| `KbCore`, `Program` (relations/rules/macros/query/config) | immutable after publication; `Arc`, no lock |
-| `Interner` | sharded `RwLock` (read-mostly; writes are rare after load) — or per-thread staging with a merge at join, if contention shows |
-| `FactStore` | append-only; a lock-free segmented vec (`boxcar`-style) plus a sharded `RwLock` on the lookup map |
-| `PlanMemo` | append-only, keyed by `(rule, activator)`; `RwLock` with double-checked insert (compiles are rare — see [06](06_saturation.md) § Win A) |
-| `_nogoods` on root | written only at commit time, on the committing thread — no sharing needed |
-| stats | accumulated at commit time — no atomics, no contention |
+> **Corrected 2026-08-22 by measurement**
+> ([S1a.7.1](../p1a.7_parallelism/s1a.7.1_sync_shared_state.md) T1a.7.1.0,
+> [shared_state.md](../p1a.7_parallelism/shared_state.md)). Three of the six
+> rows below were *write* strategies, and the write rate had never been taken.
+> Two of the three are wrong, and the table now carries what was measured
+> beside what was assumed. The corrections are struck through rather than
+> deleted, because the reason a design was wrong is worth more than the design.
+
+| shared state | strategy | measured |
+|---|---|---|
+| `KbCore`, `Program` (relations/rules/macros/query/config) | immutable after publication; `Arc`, no lock | ✅ true by construction |
+| `Interner` | ~~sharded `RwLock` (read-mostly; writes are rare after load)~~ | **no lock.** Writes during a *search* are not rare, they are removable: four distinct names arrived after root saturation across the whole corpus, three of them the engine's own (now `ein_core::terms::ENGINE`) and one a rule's argument constant (now interned at load). The integer pool never grew at all. `&Interner` is `Sync`, `text` keeps returning a borrow, and no read site changes. `ein-infer/tests/interning.rs`, 0 of the 90 corpus files that solve |
+| `FactStore` | ~~append-only; a lock-free segmented vec (`boxcar`-style) plus a sharded `RwLock` on the lookup map~~ | **the append is not the problem; the read is.** A search assigns **41 to 417** fact ids — `features/01 -e` is 41 across 384 167 enterings — against 5.8–26 M borrow-returning reads. A mutex on the append is free. What no lock can do is return the `&[Value]` that `args` returns and the `&Row` that `row` returns, on the path carrying the 26 M |
+| `PlanMemo` | append-only, keyed by `(rule, activator)`; `RwLock` with double-checked insert (compiles are rare — see [06](06_saturation.md) § Win A) | ✅ shipped as `Arc<Mutex<PlanMemo>>` at [S1a.6.8](../p1a.6_performance/s1a.6.8_compile_cache_and_extents.md), for an unrelated reason |
+| `_nogoods` on root | written only at commit time, on the committing thread — no sharing needed | — |
+| stats | accumulated at commit time — no atomics, no contention | — |
 
 Note what is *not* on this list: no shared mutable KB, no shared queue,
 no shared `_seen`/`_fired`. Each fork owns its saturator state
 outright. That is what makes the design safe rather than merely fast.
+
+**And one thing that was on it and should not have been.** The event sink is
+`Rc<RefCell<Vec<u8>>>` (`ein-infer/src/events.rs`), which is not `Send` — a
+worker cannot hold one. It needs the same treatment as the stats: a per-worker
+buffer merged in commit order, so the stream a reader sees is the sequential
+one. §3's "no shared queue" hid it, because a sink is not a queue.
 
 ---
 

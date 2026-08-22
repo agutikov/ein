@@ -100,6 +100,7 @@ impl FactStore {
     /// hypothesis generator reject a candidate before creating anything
     /// ([design/07](../../../../plans/m1a_rust/design/07_search_layer.md) §2).
     pub fn probe(&self, rel: Symbol, args: &[Value]) -> Option<FactId> {
+        crate::counters::bump(|c| c.fact_probe += 1);
         if self.table.is_empty() {
             return None;
         }
@@ -109,6 +110,7 @@ impl FactStore {
     /// The number this `(rel, args)` proposition has, assigning one if it is
     /// new.
     pub fn intern(&mut self, rel: Symbol, args: &[Value]) -> Result<FactId, Overflow> {
+        crate::counters::bump(|c| c.fact_intern += 1);
         if (self.rows.len() + 1) * 4 >= self.table.len() * 3 {
             self.grow();
         }
@@ -120,6 +122,7 @@ impl FactStore {
         if self.rows.len() as u32 >= CAPACITY {
             return Err(Overflow::Facts);
         }
+        crate::counters::bump(|c| c.fact_new += 1);
         let id = FactId(self.rows.len() as u32);
         let mut row = Row {
             rel,
@@ -139,10 +142,12 @@ impl FactStore {
     }
 
     pub fn rel(&self, id: FactId) -> Symbol {
+        crate::counters::bump(|c| c.fact_read += 1);
         self.rows[id.0 as usize].rel
     }
 
     pub fn args(&self, id: FactId) -> &[Value] {
+        crate::counters::bump(|c| c.fact_read += 1);
         self.args_of(&self.rows[id.0 as usize])
     }
 
@@ -151,6 +156,7 @@ impl FactStore {
     }
 
     pub fn get(&self, id: FactId) -> (Symbol, &[Value]) {
+        crate::counters::bump(|c| c.fact_read += 1);
         let row = &self.rows[id.0 as usize];
         (row.rel, self.args_of(row))
     }
@@ -165,6 +171,7 @@ impl FactStore {
     /// twice — measured at −8.2 % on one puzzle and +0 % on the other, each
     /// way round (T1a.6.2.2). One load, then the branch.
     pub fn row(&self, id: FactId) -> &Row {
+        crate::counters::bump(|c| c.fact_read += 1);
         &self.rows[id.0 as usize]
     }
 

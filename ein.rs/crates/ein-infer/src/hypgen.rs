@@ -178,7 +178,7 @@ const SKIPS: [Skip; 4] = [
 /// `(__closed__ R)` — the kernel's closed-relation marker (S1.7.25). A closed
 /// relation contributes zero candidates; the generator does not care whether
 /// the fact was authored, auto-emitted, or derived by `std.closure`.
-pub const CLOSED: &str = "__closed__";
+pub const CLOSED: &str = ein_core::terms::CLOSED;
 
 // ── The generator ──────────────────────────────────────────────────
 
@@ -337,10 +337,7 @@ fn write_negated(s: &mut Session<'_>, hypothesis: FactId) {
     {
         return;
     }
-    let rule = s
-        .terms
-        .intern_text("<lookahead-dies-immediately>")
-        .expect("room for a reserved engine string");
+    let rule = s.terms.kernel.lookahead_dies;
     let prov = s
         .terms
         .provs

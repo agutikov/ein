@@ -180,7 +180,7 @@ Stage files have a stable shape:
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
-| [M1a](m1a_rust/README.md)               | **full** — 11 design docs + 11 phases + 54 stage files | **in progress** — Rust port (ein.rs): 1:1 surface parity + internal rewrite; P1a.0–P1a.6 shipped, P1a.7 paused, P1a.10 under way | ~7 months |
+| [M1a](m1a_rust/README.md)               | **full** — 11 design docs + 11 phases + 54 stage files | **in progress** — Rust port (ein.rs): 1:1 surface parity + internal rewrite; P1a.0–P1a.6, P1a.8 and P1a.10 shipped; P1a.7 resumed 2026-08-22, P1a.9 under way | ~7 months |
 | [M1b](m1b_gui/README.md)                | README + stack decision | parked — slots between M1a and M2; Tauri stack settled 2026-08-18 | TBD |
 | [M1c](m1c_external_validation/README.md) | **full** — 2 phases + 10 stage files | queued behind M1a — stdlib expectations (`ein test`) + benchmarks against the field | ~1 month |
 | [M1d](m1d_satisfiability/README.md)     | mixed — P1d.1 at stage depth, P1d.2 / P1d.3 phase READMEs | queued behind M1a — exhaustive search over many models + existence obligations | ~2 months |

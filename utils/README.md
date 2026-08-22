@@ -66,7 +66,7 @@ ratio between two machines.
 
 | | |
 |---|---|
-| [`bench_env.sh`](bench_env.sh) | the fingerprint — CPU, governor, turbo, current MHz, loadavg, `perf_event_paranoid`, the commit — then `taskset` onto a P-core and the command. `--report` for the fingerprint alone |
+| [`bench_env.sh`](bench_env.sh) | the fingerprint — CPU, governor, turbo, current MHz, loadavg, `perf_event_paranoid`, the commit — then `taskset` onto a P-core and the command. `--report` for the fingerprint alone. **`--cores P:8` / `PT:8` / `E:8`** (M1a S1a.7.1) is the multi-core form a `--jobs N` number needs: on a hybrid CPU "8 cores" names three different machines, and this one resolves the set, reports how many *physical* cores it covers, and refuses a spec the machine cannot fill |
 | [`e2e_baseline.py`](e2e_baseline.py) | the milestone's workloads as **processes**: best, median, spread and peak RSS. `--bin LABEL=PATH` compares two *builds* of one engine, which is what it is for now — allocator arms, feature flags, `--profile`s. Three row sets: the milestone six, `--blind` (the enumerator the six never reach), `--startup` |
 | [`profile_ein_rs.py`](profile_ein_rs.py) | `perf record --call-graph lbr` over a `--profile profiling` build, as self time **by symbol** and **by subsystem** — bucketed by the innermost enclosing engine frame, not the leaf, because `FactStore::get` has two callers and a leaf-only rule is wrong about half of them |
 | [`criterion_table.py`](criterion_table.py) | criterion's `estimates.json` as one table — mean, sd, relative sd, CI — with `--max-rsd` as an **exit code**. The console output scrolls and buries the one column a "3× faster" claim needs |

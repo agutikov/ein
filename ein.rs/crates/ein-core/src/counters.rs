@@ -134,6 +134,24 @@ pub struct Counters {
     /// Facts written and indexed — ein.py `store.add_and_index_fact`.
     pub fact_insert: u64,
 
+    // ── the intern tables, as *shared* state ───────────────────────
+    /// The four reads on [`crate::facts::FactStore`] that hand out a borrow —
+    /// `rel`, `args`, `row`, `get`. **No ein.py counterpart**: this counts the
+    /// thing that decides whether the store can be shared at all, because a
+    /// `&[Value]` into the argument arena is what no lock can return
+    /// (T1a.7.1.0).
+    pub fact_read: u64,
+    /// Lookups that create nothing — `FactStore::probe`, the hypothesis
+    /// generator's "does this proposition already have a number".
+    pub fact_probe: u64,
+    /// Calls to `FactStore::intern`, hits included, against `fact_new` — the
+    /// ids it actually assigned. The **ratio** is the measurement: on
+    /// `branching/06 -e` it is 2 318 949 to 505, so the store is a read
+    /// structure with a rare append rather than a write structure
+    /// ([shared_state.md](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md) §2).
+    pub fact_intern: u64,
+    pub fact_new: u64,
+
     // ── negation at the boundary ───────────────────────────────────
     /// Guard sub-plan evaluations — one per guard, so ein.py's comparable site
     /// is `World.absent` and not the `first_failing` that loops over it. 33 113
@@ -299,6 +317,10 @@ impl Counters {
             binding_key: 0,
             plan_compile: 0,
             fact_insert: 0,
+            fact_read: 0,
+            fact_probe: 0,
+            fact_intern: 0,
+            fact_new: 0,
             guard_query: 0,
             watch_stamp: 0,
             watch_stamp_rel: 0,
@@ -322,7 +344,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 39] {
+    pub fn rows(&self) -> [(&'static str, u64); 43] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -345,6 +367,10 @@ impl Counters {
             ("binding_key", self.binding_key),
             ("plan_compile", self.plan_compile),
             ("fact_insert", self.fact_insert),
+            ("fact_read", self.fact_read),
+            ("fact_probe", self.fact_probe),
+            ("fact_intern", self.fact_intern),
+            ("fact_new", self.fact_new),
             ("guard_query", self.guard_query),
             ("watch_stamp", self.watch_stamp),
             ("watch_stamp_rel", self.watch_stamp_rel),
@@ -413,6 +439,10 @@ mod tests {
         c.binding_key = 1;
         c.plan_compile = 1;
         c.fact_insert = 1;
+        c.fact_read = 1;
+        c.fact_probe = 1;
+        c.fact_intern = 1;
+        c.fact_new = 1;
         c.guard_query = 1;
         c.watch_stamp = 1;
         c.watch_stamp_rel = 1;
@@ -435,6 +465,6 @@ mod tests {
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 38);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 42);
     }
 }

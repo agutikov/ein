@@ -828,9 +828,7 @@ impl Run<'_> {
             let h = *alive.iter().next().expect("len 1");
             let (rel, args) = terms.facts.get(h);
             let args = args.to_vec();
-            let rule = terms
-                .intern_text(FORCED_POSITIVE)
-                .expect("room for a reserved engine string");
+            let rule = terms.kernel.forced_positive;
             let prov = terms.provs.push(Prov::from_rule(rule, Box::new([]), None));
             root.add_and_index_fact(terms, rel, &args, Some(prov))
                 .expect("room for a promotion");
@@ -1142,9 +1140,9 @@ const ROOT_SAT_PROGRESS_EVERY: usize = 50;
 
 /// A reserved engine string whose empty premises make provenance walks ground
 /// out on it.
-pub const FORCED_POSITIVE: &str = "<forced-positive>";
+pub const FORCED_POSITIVE: &str = ein_core::terms::FORCED_POSITIVE;
 /// The singleton-death writeback's rule name — same contract.
-pub const MONOTONIC_UNCONDITIONAL: &str = "<monotonic-unconditional>";
+pub const MONOTONIC_UNCONDITIONAL: &str = ein_core::terms::MONOTONIC_UNCONDITIONAL;
 
 /// The unsat core for a contradiction already present in `kb`.
 ///
@@ -1179,9 +1177,7 @@ fn write_negation(root: &mut Kb, terms: &mut Terms, events: &mut Events, h: Fact
         .probe_fact(not, &arg)
         .is_some_and(|id| root.contains(id));
     if !already {
-        let rule: Symbol = terms
-            .intern_text(MONOTONIC_UNCONDITIONAL)
-            .expect("room for a reserved engine string");
+        let rule: Symbol = terms.kernel.monotonic_unconditional;
         let prov = terms.provs.push(Prov::from_rule(rule, Box::new([]), None));
         root.add_and_index_fact(terms, not, &arg, Some(prov))
             .expect("room for a writeback");

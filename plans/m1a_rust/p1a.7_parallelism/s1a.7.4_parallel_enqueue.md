@@ -24,8 +24,16 @@ result.
 
 ## Acceptance
 
+> **Restated 2026-08-22.** Every "T*n*-identical" below named
+> `ein-conformance`, which [P1a.10](../p1a.10_single_implementation/README.md)
+> retired with the second engine. The successor per half is the phase
+> [README § The acceptance, restated](README.md#the-acceptance-restated); the
+> promise is unchanged and in one place stronger, because the cut names which
+> differences are admitted where a byte diff could only say that there was one.
+
 - `enqueue` event sequence identical to `--jobs 1` (same order, same
-  tiebreakers, same park/queue routing).
+  tiebreakers, same park/queue routing) — as [S1a.7.3](s1a.7.3_parallel_boundary.md),
+  through `Op::Saturate`'s uncut stream.
 - A measured threshold above which the parallel pass wins, with the
   numbers; below it, the sequential path runs.
 - No change to `_seen` semantics: the same candidates are deduped, and

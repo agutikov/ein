@@ -149,6 +149,8 @@ pub fn load(
         &Resolver::new().stdlib_macro_names(),
     ));
 
+    intern_program_names(ast, terms, &kb);
+
     kb.rebuild_indexes(terms);
 
     // User-authored `:using` chains can be circular, which would break every
@@ -163,6 +165,76 @@ pub fn load(
         Ok(kb)
     } else {
         Err(KbLoadError(errors.join("; ")))
+    }
+}
+
+/// Intern every name a **rule** or the `(query …)` block mentions, so that
+/// nothing is left for the compiler to intern later.
+///
+/// The compiler resolves a pattern's leaves against `Terms` the first time it
+/// builds a plan for a rule, and a constant that appears only inside a rule —
+/// `Ann` in `(hrule guess … :assert (seat Ann ?v))`, which no fact mentions —
+/// is therefore first seen *during the search*. That is one symbol on one
+/// corpus file, and it would be a curiosity except for what
+/// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) needs:
+/// [`Interner::text`](ein_core::Interner::text) hands out a `&str` borrowed
+/// from the arena, so an interner that is *shared* must be one that does not
+/// **grow**, and the search is exactly where it would be shared
+/// ([S1a.7.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md)).
+///
+/// Deliberately a **superset** of what the compiler asks for, walked off the
+/// registered rules rather than the raw forms so macro expansion has already
+/// happened. Interning a name nothing goes on to use costs a span and a map
+/// entry and is invisible: symbol ids are never observable, and
+/// [`Interner::rank`](ein_core::Interner::rank) is content-ordered, so adding
+/// an entry cannot reorder the ones already there. Mirroring the compiler's
+/// exact leaf set instead would be a second opinion about which leaves it
+/// reads, kept in a different file.
+///
+/// What it does not close is a *seeded* head — `(?rel ?a ?b)` where `?rel`
+/// binds to an integer, whose decimal text the compiler interns as a symbol.
+/// That needs a run to know, and `ein-infer/tests/interning.rs` is where the
+/// residue is measured rather than assumed.
+fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
+    fn walk(ast: &Ast, terms: &mut Terms, node: NodeId) {
+        match ast.node(node) {
+            Node::Atom(s) | Node::Var(s) | Node::Str(s) => {
+                let _ = terms.intern_text(ast.sym(s));
+            }
+            Node::Int(s) => {
+                let _ = terms.value_int(ast.sym(s));
+            }
+            Node::Keyword(_) | Node::Wildcard | Node::Range { .. } => {}
+            Node::KwPair { key, value } => {
+                walk(ast, terms, key);
+                walk(ast, terms, value);
+            }
+            Node::SForm { head, args } => {
+                walk(ast, terms, head);
+                for &a in ast.args(args) {
+                    walk(ast, terms, a);
+                }
+            }
+        }
+    }
+
+    let program = kb.program();
+    let mut roots: Vec<NodeId> = Vec::new();
+    for registry in [&program.rules, &program.hrules] {
+        for (_, rule) in registry.iter() {
+            roots.extend(
+                [rule.match_.as_ref(), rule.assert_.as_ref()]
+                    .into_iter()
+                    .flatten()
+                    .map(|p| NodeId(p.expr.0)),
+            );
+        }
+    }
+    if let Some(q) = program.query.as_ref() {
+        roots.extend(q.kw_pairs.iter().map(|e| NodeId(e.0)));
+    }
+    for root in roots {
+        walk(ast, terms, root);
     }
 }
 

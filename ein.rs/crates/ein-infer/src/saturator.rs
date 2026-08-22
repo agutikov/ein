@@ -47,7 +47,7 @@ pub const DEFAULT_PRIORITY: i64 = 1000;
 /// The kernel-native symmetric mirror trigger. A relation marked
 /// `(__symmetric__ R)` has its extension closed under arg-swap directly by the
 /// saturator — no plan, no matcher.
-pub const SYMMETRIC: &str = "__symmetric__";
+pub const SYMMETRIC: &str = ein_core::terms::SYMMETRIC;
 
 /// Everything a saturation step reads and writes outside the saturator.
 pub struct Session<'a> {
@@ -372,10 +372,7 @@ impl Snapshot {
 impl Saturator {
     pub fn new(s: &mut Session<'_>) -> Result<Saturator, SaturateError> {
         let cfg = s.kb.program().config.clone().unwrap_or_default();
-        let sym_sym = s
-            .terms
-            .intern_text(SYMMETRIC)
-            .expect("room for the mirror marker");
+        let sym_sym = s.terms.kernel.symmetric;
         let mut sat = Saturator {
             engine: Engine::with_memo(s.memo.clone()),
             matcher: Matcher::new(),
@@ -483,10 +480,7 @@ impl Saturator {
         delta: Vec<FactId>,
     ) -> Result<Saturator, SaturateError> {
         let cfg = s.kb.program().config.clone().unwrap_or_default();
-        let sym_sym = s
-            .terms
-            .intern_text(SYMMETRIC)
-            .expect("room for the mirror marker");
+        let sym_sym = s.terms.kernel.symmetric;
         let mut sat = Saturator {
             engine: snapshot.engine.clone(),
             matcher: Matcher::new(),
@@ -1442,10 +1436,7 @@ impl Saturator {
                     l.str("derived", &derived_s);
                 });
             }
-            let (a_sym, b_sym) = (
-                s.terms.intern_text("a").expect("room"),
-                s.terms.intern_text("b").expect("room"),
-            );
+            let (a_sym, b_sym) = (s.terms.kernel.mirror_a, s.terms.kernel.mirror_b);
             return Ok(Some(Firing {
                 rule: self.sym_sym,
                 activator: Box::new([rel]),
