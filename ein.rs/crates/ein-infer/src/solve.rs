@@ -609,6 +609,16 @@ impl Run<'_> {
             #[cfg(feature = "spec-audit")]
             let mut audit = crate::spec_audit::LayerAudit::start(root, layer);
 
+            // T1a.7.2.8 — the invariant the whole fan-out decision rests on.
+            // A layer this predicate calls fanned-out must not see root grow
+            // under it, because a worker forks root once at the layer's open
+            // and every later fork of the same layer has to be the same KB.
+            // Root's fact count is the exact statement of that: `depth()` is
+            // not, because the layer's *first* fork seals root's top whether or
+            // not anything was written.
+            let fanned_out = self.fan_out_this_layer(layer);
+            let facts_at_open = root.n_facts();
+
             let mut a_layer: Vec<CanonicalSetId> = Vec::new();
             for (i, c) in candidates.iter().enumerate() {
                 // The batch barrier, at the *top* of the iteration so every
@@ -800,6 +810,17 @@ impl Run<'_> {
                 a_layer.push(c.clone());
             }
 
+            debug_assert!(
+                !fanned_out || root.n_facts() == facts_at_open,
+                "layer {layer} was fanned out and root grew from {} to {} \
+                 facts while it ran — see Run::fan_out_this_layer. \
+                 Whatever wrote is a `W` the parallel path does not repair, \
+                 and design/08 §2's validator is the design that was \
+                 measured for it",
+                facts_at_open,
+                root.n_facts()
+            );
+
             // The layer barrier. With `integrate_every = Some(usize::MAX)`
             // this is the *only* one, which is the "one KB per layer" mode.
             self.integrate(root, terms, events);
@@ -853,6 +874,47 @@ impl Run<'_> {
     }
 
     // ── Helpers ────────────────────────────────────────────────
+
+    /// May this layer's enterings be evaluated against **one** root, and
+    /// therefore on many cores?
+    ///
+    /// > A layer is fanned out **iff it cannot write a fact to root.**
+    ///
+    /// That is [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+    /// § The decision, and it is the whole reason this port needs no
+    /// speculate-and-validate. A worker forks root when the layer opens, so
+    /// the question a parallel layer has to answer is not "can the repair be
+    /// made cheap" but "is there anything to repair".
+    ///
+    /// **Why layer 1 is the only layer that can write.** The search is a
+    /// cardinality BFS — layer *L* enters commitment *sets of size L* — so a
+    /// dead commitment `{h_1 … h_L}` licenses `¬(h_1 ∧ … ∧ h_L)`, a clause of
+    /// width *L*. A clause is not a fact, and only at *L = 1* does it collapse
+    /// to something root can hold: the singleton `(not h)` writeback
+    /// ([`write_negation`]). Everything else a dead entering produces is a
+    /// no-good clause, and that lands in a store no fork reads while it
+    /// saturates — [`crate::apriori::filter_candidate`] is the only reader and
+    /// it runs at the layer's open.
+    ///
+    /// **And it is measured, not only argued**: **248 of 248** writebacks
+    /// corpus-wide are in layer 1, over 8 158 205 enterings spanning five
+    /// layers, and layer 1 is **0.016 %** of those enterings
+    /// ([scaling.md §3a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)).
+    /// The other direction of the same measurement is what makes this a
+    /// predicate rather than `layer > 1`: with `enable_singleton_writeback`
+    /// off nothing writes back at any depth, so layer 1 is fanned out too —
+    /// and that is the regime an exhaustive `zebra2` grows from 101 enterings
+    /// to 3 336+ in, which is the one that most wants the cores.
+    ///
+    /// The caller **asserts** the predicate rather than trusting it: `phase2`
+    /// compares root's fact count across a fanned-out layer, because a
+    /// mechanism that started writing to root mid-layer above the first would
+    /// change nothing visible until a fork happened to read it. Should that
+    /// day come, design/08 §2's validator is a design that was measured and
+    /// costed — deleted from the build, not from the record.
+    fn fan_out_this_layer(&self, layer: u32) -> bool {
+        layer > 1 || !self.cfg.enable_singleton_writeback
+    }
 
     /// Keep `sat`'s fixpoint for the next entering to resume from.
     fn snapshot_root(&mut self, sat: &Saturator, kb: &Kb) {

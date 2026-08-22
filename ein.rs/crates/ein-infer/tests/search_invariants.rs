@@ -406,3 +406,127 @@ fn a_deep_search_is_answer_identical_under_deferral() {
         );
     }
 }
+
+// ── T1a.7.2.8 — the predicate, from the outside ───────────────────────────
+
+/// Root's fact count at each layer's open and close.
+///
+/// The window is exact: `layer_end` fires after the layer's integration
+/// barrier and **before** `compute_alive`, the forced-positive cascade and the
+/// lookahead kill cache, all of which write root between layers and none of
+/// which a fanned-out layer's fork could observe. So a non-zero delta here is
+/// a *mid-layer* root write and nothing else.
+#[derive(Default)]
+struct WatchRoot {
+    /// `(layer, facts at open, facts at close)`, one per layer entered.
+    layers: Vec<(u32, usize, usize)>,
+}
+
+impl ein_infer::solve::Dumper for WatchRoot {
+    fn layer_start(&mut self, layer: u32, kb: &Kb, _terms: &Terms, _n_alive: usize) {
+        self.layers.push((layer, kb.n_facts(), 0));
+    }
+    fn layer_end(&mut self, layer: u32, kb: &Kb, _terms: &Terms, _alive: usize, _next: usize) {
+        let last = self.layers.last_mut().expect("a layer opened first");
+        assert_eq!(last.0, layer, "layer_end without its layer_start");
+        last.2 = kb.n_facts();
+    }
+}
+
+/// Solve `rel` under `tweak` and report where root grew.
+fn watch(
+    rel: &str,
+    tweak: impl FnOnce(&mut SolveOptions, &mut ein_core::SolverConfig),
+) -> WatchRoot {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = load_file(&mut ast, &mut terms, &repo_root().join(rel)).expect("loads");
+    let mut cfg = kb.program().config.clone().unwrap_or_default();
+    let mut opts = SolveOptions {
+        stop_after: None,
+        ..SolveOptions::default()
+    };
+    tweak(&mut opts, &mut cfg);
+    opts.config = Some(cfg);
+    let mut events = Events::off();
+    let mut watcher = WatchRoot::default();
+    solve(&mut kb, &mut terms, &ast, &mut events, &mut watcher, &opts)
+        .unwrap_or_else(|e| panic!("{rel} solves: {e:?}"));
+    watcher
+}
+
+/// **T1a.7.2.8 — a layer above the first never writes a fact to root.**
+///
+/// This is the invariant `Run::fan_out_this_layer` rests on, asked from
+/// outside the engine. `phase2` holds the same claim as a `debug_assert!` on
+/// root's fact count, which is the form that catches a *future* writer; this
+/// is the form that says the claim is not vacuous today — the four files that
+/// write back are here, and layer 1 is asserted to grow on each of them.
+///
+/// [scaling.md §3a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)
+/// is the corpus-wide form of the same measurement: **248 of 248** writebacks
+/// in layer 1, over 8 158 205 enterings spanning five layers.
+#[test]
+fn only_layer_one_writes_a_fact_to_root_mid_layer() {
+    // The four corpus files whose layer 1 writes back — the same four
+    // `coalesce_root_at`'s threshold sweep found, and the reason this test
+    // cannot pass by nothing ever happening.
+    const WRITES_BACK: &[&str] = &[
+        "examples/zebra.ein",
+        "examples/zebra2.ein",
+        "examples/zebra2-hints.ein",
+        "examples/branching/07_lookahead_off.ein",
+    ];
+
+    for rel in FILES.iter().chain(WRITES_BACK) {
+        let watched = watch(rel, |_, _| {});
+        for &(layer, open, close) in &watched.layers {
+            if layer > 1 {
+                assert_eq!(
+                    open, close,
+                    "{rel}: layer {layer} grew root from {open} to {close} \
+                     facts while it ran. Only a *singleton* commitment's death \
+                     licenses a fact, so a layer of {layer}-element sets must \
+                     not have one — and `Run::fan_out_this_layer` hands this \
+                     layer to the workers on the strength of that"
+                );
+            }
+        }
+    }
+
+    for rel in WRITES_BACK {
+        let watched = watch(rel, |_, _| {});
+        let (layer, open, close) = watched.layers[0];
+        assert_eq!(layer, 1);
+        assert!(
+            close > open,
+            "{rel}: chosen because its layer 1 writes back, and it grew root \
+             from {open} to {close} facts — if the writebacks have gone, the \
+             loop above is asserting something about a search that no longer \
+             happens"
+        );
+    }
+}
+
+/// **The predicate's other branch.** With `enable_singleton_writeback` off
+/// nothing writes to root at any depth, so layer 1 is fanned out too — and
+/// that is the regime an exhaustive `zebra2` grows from 101 enterings to
+/// 3 336+ in, which is the one that most wants the cores.
+#[test]
+fn with_the_writeback_off_no_layer_writes_to_root() {
+    for rel in [
+        "examples/zebra2-hints.ein",
+        "examples/branching/07_lookahead_off.ein",
+    ] {
+        let watched = watch(rel, |_, cfg| cfg.enable_singleton_writeback = false);
+        assert!(!watched.layers.is_empty(), "{rel}: no layer ran");
+        for &(layer, open, close) in &watched.layers {
+            assert_eq!(
+                open, close,
+                "{rel}: layer {layer} grew root from {open} to {close} facts \
+                 with the singleton writeback off — the only mid-layer root \
+                 writer the engine has is `write_negation`, and it is disabled"
+            );
+        }
+    }
+}

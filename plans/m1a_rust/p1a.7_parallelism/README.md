@@ -19,8 +19,9 @@ them declined, each of them removed by a number.
 **Nothing is half-built.** No engine code is in an intermediate state and no
 scaffolding is waiting to be removed. What has shipped is three instruments
 (`spec_audit`, `shared_state_probe`, `flatten_probe`), two measurement
-documents, five invariance tests, a batch-synchronous integration mode that is
-worth 2.8× at `--jobs 1` on its own, a core-set-aware bench harness — and
+documents, seven invariance tests, a batch-synchronous integration mode that is
+worth 2.8× at `--jobs 1` on its own, a core-set-aware bench harness, the
+fan-out predicate and the assertion that holds it — and
 **four** engine changes that are unconditional improvements rather than
 parallel scaffolding: the engine's own names interned once instead of per
 firing, a load pass that does what the compiler would otherwise do mid-search,
@@ -28,11 +29,13 @@ the per-worker provenance region (`features/01 -e` from 684–708 MB to
 85–91 MB), and the layer barrier's root coalesce (`branching/07 -e` **3.17×**).
 
 **Not one thread yet, and that is deliberate.** Everything above is either a
-measurement or a sequential improvement the measurements found on the way. The
-first `std::thread::spawn` in the repo will be
+measurement, a sequential improvement the measurements found on the way, or an
+invariant the parallel path will depend on and that is cheaper to establish
+while nothing depends on it. The first `std::thread::spawn` in the repo will be
 [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.1's, against a baseline two
 stages of measurement have already made 3.17× faster on the workload the
-scaling target is quoted against.
+scaling target is quoted against — and against a predicate that already says,
+in the code and in the gate, which layers it may have.
 
 ## Resumed — what the interval changed
 
@@ -237,7 +240,7 @@ Design: [design/08](../design/08_parallelism.md).
 |---|---|---|
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
 | [S1a.7.1](s1a.7.1_sync_shared_state.md) ✅ | Making the shared state `Sync` — **closed 2026-08-22**, three of eight tasks deleted by measurement and no lock built, [shared_state.md](shared_state.md) | 3 d → 4.5 d |
-| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22, on paper: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items; **T1a.7.2.0 shipped**, 3.17× at `--jobs 1` | 4 d → 3 d |
+| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22, on paper: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items; **T1a.7.2.0 shipped**, 3.17× at `--jobs 1`, and **T1a.7.2.8** with it — the predicate now exists, and asserts | 4 d → 3 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) | Level 3: the parallel boundary round | 2 d |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) | Level 2: the parallel enqueue pass | 2 d |
 | [S1a.7.5](s1a.7.5_jobs_contract.md) | The `--jobs` contract | 2 d |
@@ -292,6 +295,13 @@ stays readable.
   write may occur between a layer opening and closing above layer 1. Today
   that is true because the writeback is singleton-only; it is an invariant the
   parallel path depends on and therefore one a debug assertion has to hold.
+  ✅ **T1a.7.2.8, 2026-08-22**: `Run::fan_out_this_layer` is the predicate and
+  carries the argument, `phase2` holds root's fact count across a fanned-out
+  layer, and `search_invariants`'s
+  `only_layer_one_writes_a_fact_to_root_mid_layer` asks the same question from
+  outside the engine over 20 files — including the four that write back, which
+  it asserts **do** grow in layer 1, so the claim cannot pass by nothing
+  happening.
 - TSan and `loom` clean on the shared structures. **`loom` has nothing to
   model**, and that is [S1a.7.1](s1a.7.1_sync_shared_state.md)'s finding rather
   than an evasion: every structure design/08 §6 named ends up `&`-shared or

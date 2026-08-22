@@ -4,8 +4,9 @@
 **Estimate:** 4 days → **3 d.** The layer-1 question was decided on paper
 before any of the mechanism was built (§ The decision), which deleted the
 validator, the fail-fast ruling and two acceptance items; **T1a.7.2.0 is
-shipped** and is worth 3.17× at `--jobs 1` on the phase's deepest workload.
-What is left is the fan-out itself — .1, .2, .4, .5, .6 and .8 — and none of it
+shipped** and is worth 3.17× at `--jobs 1` on the phase's deepest workload,
+and so is **T1a.7.2.8**, the assertion the decision rests on.
+What is left is the fan-out itself — .1, .2, .4, .5 and .6 — and none of it
 has a thread yet.
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md),
 [S1a.7.0](s1a.7.0_speculation_audit.md)
@@ -243,7 +244,10 @@ now cheap rather than merely preferred.
   root fact write happens between a fanned-out layer opening and closing —
   which is the invariant the whole decision rests on, and which
   [scaling.md §3a](scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)
-  measured at 248 of 248 rather than argued. T1a.7.2.8.
+  measured at 248 of 248 rather than argued. T1a.7.2.8. ✅ **shipped
+  2026-08-22**, on root's fact count rather than on `depth()`, with the
+  assertion verified to fire and the same claim asked from outside the engine
+  by two `search_invariants` tests.
 - **The sequential path is bit-identical to today's.** Layer 1 with the
   writeback on is not re-implemented, it is not entered — `corpus_shapes.rs`'s
   renderings and the goldens are the check, and no `EIN_BLESS` may be needed.
@@ -429,27 +433,49 @@ can already check, rather than a harness run. Include the
 fanned out too, so that entry is the one that exercises the predicate's *other*
 branch — where the old plan wanted it for having the largest `W`.
 
-### Task T1a.7.2.8 — The predicate, asserted
+### Task T1a.7.2.8 — The predicate, asserted ✅
 
-A debug assertion that no root fact write happens between a fanned-out layer
-opening and closing. It is the invariant the decision rests on, and the one
-thing between a future `W` writer and a silently wrong parallel search: a
-mechanism that started writing to root inside a layer above the first would
-change nothing visible until a fork happened to read it.
+**Shipped 2026-08-22, and before the fan-out rather than with it** — the
+invariant the decision rests on is worth having under the sequential engine,
+where nothing depends on it yet and a violation is therefore a *finding* rather
+than a bug report.
 
-Cheap to state — root's fact count and its `depth()` at layer start against the
-same at layer end — and it is where the reasoning goes in the code, next to the
-predicate, with
-[scaling.md §3a](scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)'s
-248-of-248 as the evidence that it holds today.
+`Run::fan_out_this_layer(layer)` is the predicate — `layer > 1 ||
+!enable_singleton_writeback` — and it carries the reasoning the Notes below ask
+for: why a dead commitment of width *L* licenses a fact only at *L = 1*, the
+248-of-248 that makes it a measurement, and why the escape hatch is a
+`SolverConfig` lever rather than `layer > 1`. `phase2` compares **root's fact
+count** across a fanned-out layer in a `debug_assert!`.
+
+Three things are worth carrying forward.
+
+- **It is the fact count and not `depth()`.** The task asked for both. `depth()`
+  moves by one whether or not anything was written, because the layer's *first*
+  fork seals root's top — so an assertion on it would have had to admit a
+  slack of one, and an assertion with slack is not the one you want between a
+  future `W` writer and a silently wrong search.
+- **The assertion is live, and that was checked rather than assumed.** With the
+  predicate temporarily forced to `true` it fires on the first corpus file:
+  *layer 1 was fanned out and root grew from 378 to 410 facts while it ran*. A
+  debug assertion that can only ever hold is indistinguishable from a comment
+  until somebody makes it fail on purpose.
+- **The outside-the-engine form is a test, and it is the one that says the
+  claim is not vacuous.** `search_invariants.rs`'s
+  `only_layer_one_writes_a_fact_to_root_mid_layer` watches root's fact count at
+  every `layer_start` / `layer_end` — a window that closes *before*
+  `compute_alive`, the forced-positive cascade and the lookahead kill cache, so
+  a non-zero delta is a mid-layer write and nothing else — over the 16 search
+  files plus the four that write back, and then asserts that those four **do**
+  grow in layer 1. `with_the_writeback_off_no_layer_writes_to_root` is the
+  predicate's other branch.
 
 ## Notes
 
-- **Write the reasoning next to the predicate, not in this file.** A parallel
-  scheme whose correctness lives only in a plan document decays. What goes
-  beside `fan_out_this_layer` is why layer 1 is the only layer that can write —
-  the clause a dead commitment of width *L* licenses is a *fact* only at
-  *L = 1* — with 248-of-248 as what makes it a measurement rather than an
+- **Write the reasoning next to the predicate, not in this file.** ✅ A
+  parallel scheme whose correctness lives only in a plan document decays. What
+  is beside `Run::fan_out_this_layer` is why layer 1 is the only layer that can
+  write — the clause a dead commitment of width *L* licenses is a *fact* only
+  at *L = 1* — with 248-of-248 as what makes it a measurement rather than an
   argument, and T1a.7.2.8's assertion as what makes it fail loudly.
 - ~~If the re-validation rate is high, the first refinement is a per-fork
   read-set of relations touched during saturation.~~ **Not reachable now**, and
