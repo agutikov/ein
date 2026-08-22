@@ -104,9 +104,10 @@ tail, which is where the parallelism is.
 **That kills all three of the routes the stage was going to bench.** A worker
 does not need to append to the fact store; it needs to be *told* when it
 would have to, and to hand that entering back. `FactStore::intern` takes
-`&mut self`, so a worker holding `&FactStore` cannot call it — the type system
-is the enforcement, and there is no protocol to model in `loom` because there
-is no protocol. See [§4](#4-what-this-chooses).
+`&mut self` and a worker's copy of the store is a `Table::Shared`, which has no
+`&mut` to give — the type system is the enforcement, and there is no protocol
+to model in `loom` because there is no protocol. See
+[§4](#4-what-this-chooses).
 
 ---
 
@@ -318,8 +319,9 @@ the committing thread, which
    no read-site change. The invariant that licenses it is a test, not a
    comment.
 2. **The fact store is shared by `&` too, and workers do not append to it.**
-   `intern` takes `&mut self` and therefore stays on the committing thread; an
-   entering that would have appended hands itself back and is re-run there.
+   `intern` needs a `&mut` that a lent table has none of, so it stays on the
+   committing thread; an entering that would have appended gets
+   `Overflow::Shared`, hands itself back and is re-run there.
    Sequentially that is 0 to 7 enterings out of 111 to 384 167, and all of
    them in the head of a layer, so "run the head, fan out the tail" removes
    them. The read path — 5.8 to 26 M borrow-returning calls — is **not
@@ -346,13 +348,29 @@ the committing thread, which
    counters already have: a per-worker buffer merged at the ordered commit, so
    the stream a reader sees is the sequential one. `ein-infer/tests/shareable.rs`
    pins it, in both directions.
-6. **`&mut Terms` is still threaded through 99 signatures**, and it is the one
-   thing the stage hands on rather than settles. The refactor is a question
-   about *those signatures* rather than about concurrency: what a worker needs
-   is a `&Terms`, and the measurement says it needs nothing else. It belongs to
-   [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.1, because that is the
-   first code that needs one and therefore the first place a compile error
-   means something.
+6. ~~**`&mut Terms` is still threaded through 99 signatures**~~ — **settled
+   2026-08-22 at [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.1, and not
+   by touching one of them.** The refactor this row expected — `&mut Terms` →
+   `&Terms` at 99 signatures, with a second type carrying what a worker writes
+   — is not what shipped. What shipped is a **`Terms` that lends its tables**:
+   `ein_core::terms::Table<T>` is `Own(T)` until a fanned-out layer calls
+   `Terms::share`, `Shared(Arc<T>)` while workers hold views, and `Own` again
+   after `Terms::reclaim`. A worker gets a whole `Terms` of its own —
+   `Terms::worker()` — whose three intern tables are the same tables and whose
+   record region is not, so **every signature stays `&mut Terms`** and the
+   thing that changes is what a `Terms` can *do*: a lent table answers a
+   lookup and refuses an assignment ([`Overflow::Shared`]), which is the
+   hand-back this section's §4.2 asks for.
+
+   **Sharing is what forbids growing**, which is the same invariant this
+   document measured, expressed in the type rather than in a rule. And it is
+   cost-neutral: `Table`'s branch on the read path, against `try_commitment_set`
+   losing its `&mut Kb`, measures **−1.7 % to +0.6 %** over the six workloads —
+   inside the ±2 % floor. The route this row assumed, `Arc<T>` in both states,
+   was built first and measured **4 % slower** on `branching/06 -e`, because
+   growing an `Arc`'s contents means `Arc::get_mut` and its uniqueness test is a
+   locked read-modify-write on a path that runs 2 318 815 times to assign 417
+   ids.
 7. **Nothing this phase builds can perturb an id**, which is the corollary of
    1 and 2 and which retired a task. The ordering audit
    ([T1a.7.1.5](s1a.7.1_sync_shared_state.md#task-t1a715--ordering-audit))

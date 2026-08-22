@@ -469,11 +469,21 @@ Note what is *not* on this list: no shared mutable KB, no shared queue,
 no shared `_seen`/`_fired`. Each fork owns its saturator state
 outright. That is what makes the design safe rather than merely fast.
 
-**And one thing that was on it and should not have been.** The event sink is
+**And one thing that was on it and should not have been.** The event sink was
 `Rc<RefCell<Vec<u8>>>` (`ein-infer/src/events.rs`), which is not `Send` — a
-worker cannot hold one. It needs the same treatment as the stats: a per-worker
-buffer merged in commit order, so the stream a reader sees is the sequential
-one. §3's "no shared queue" hid it, because a sink is not a queue.
+worker could not hold one. It needed the same treatment as the stats, and got
+it at [T1a.7.2.1](../p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out):
+a per-worker buffer replayed in commit order, so the stream a reader sees is
+the sequential one. §3's "no shared queue" hid it, because a sink is not a
+queue.
+
+**What the fix turned on is where the *ordinal* is assigned.** An event's `n`
+is a property of the stream, not of the thread that emitted it, so a worker
+builds its line with a hole where `n` goes and `Events::replay` fills it at the
+commit. Merging raw bytes would have carried the worker's own numbering into
+the file. `Events` is therefore `Send` and deliberately **not** `Sync`: a sink
+two threads could write at once is exactly the shared queue this section
+refuses, and `ein-infer/tests/shareable.rs` asserts both halves.
 
 ---
 

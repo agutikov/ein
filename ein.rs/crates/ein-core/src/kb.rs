@@ -628,8 +628,45 @@ impl Kb {
     /// top layer is what makes the two histories diverge — the parent's later
     /// appends land in a *new* top the child never sees.
     pub fn fork(&mut self) -> Kb {
-        crate::counters::bump(|c| c.fork += 1);
         self.seal();
+        self.branch()
+    }
+
+    /// Seal the top layer, so later appends land in a new one — the half of
+    /// [`Kb::fork`] that mutates, and the only half a *layer* has to do once.
+    ///
+    /// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) is why
+    /// the two are separable: a fanned-out layer's workers all branch from one
+    /// root and none of them may write to it, so the seal happens once when the
+    /// layer opens and every worker then calls [`Kb::branch`] through a `&`.
+    pub fn seal_top(&mut self) {
+        self.seal();
+    }
+
+    /// Seal the top layer and hand back a shared view of the result — the
+    /// idiom every [`Kb::branch`] caller wants, in one call.
+    ///
+    /// `try_commitment_set(kb.sealed(), …)` is the sequential shape; a
+    /// fanned-out layer calls [`Kb::seal_top`] once and then [`Kb::branch`]
+    /// from many threads.
+    pub fn sealed(&mut self) -> &Kb {
+        self.seal();
+        self
+    }
+
+    /// Branch from an already-sealed KB, touching nothing.
+    ///
+    /// Cheap and shareable: three `Arc` clones and two small maps. What makes
+    /// it sound to take by `&` is the seal — a KB with facts still in its top
+    /// layer would hand the branch a view that does not contain them — so it
+    /// asserts rather than trusting, in every build, because the failure is a
+    /// fork that silently believes less than its parent.
+    pub fn branch(&self) -> Kb {
+        crate::counters::bump(|c| c.fork += 1);
+        assert!(
+            self.top.is_empty(),
+            "Kb::branch on an unsealed KB — call Kb::seal_top first"
+        );
         Kb {
             program: Arc::clone(&self.program),
             sealed: self.sealed.clone(),

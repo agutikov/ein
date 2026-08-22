@@ -89,7 +89,7 @@ pub fn read_symbols(body: &[u8], terms: &mut Terms, maps: &mut Maps) -> Result<(
     maps.sym = Vec::with_capacity(offsets.len().saturating_sub(1));
     for i in 0..offsets.len() - 1 {
         maps.sym
-            .push(terms.syms.intern(nth_str(&offsets, blob, i)?)?);
+            .push(terms.intern_text(nth_str(&offsets, blob, i)?)?);
     }
     Ok(())
 }
@@ -108,7 +108,7 @@ pub fn read_ints(body: &[u8], terms: &mut Terms, maps: &mut Maps) -> Result<()> 
     maps.int = Vec::with_capacity(offsets.len().saturating_sub(1));
     for i in 0..offsets.len() - 1 {
         maps.int
-            .push(terms.ints.intern(nth_str(&offsets, blob, i)?)?);
+            .push(terms.intern_int(nth_str(&offsets, blob, i)?)?);
     }
     Ok(())
 }

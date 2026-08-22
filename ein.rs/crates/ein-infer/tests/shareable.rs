@@ -35,11 +35,18 @@ fn shareable<T: Send + Sync>() {}
 /// The type has to be concrete where the method is resolved.
 macro_rules! is_send {
     ($t:ty) => {
-        Probe::<$t>(PhantomData).answer()
+        SendProbe::<$t>(PhantomData).answer()
     };
 }
 
-struct Probe<T>(PhantomData<T>);
+macro_rules! is_sync {
+    ($t:ty) => {
+        SyncProbe::<$t>(PhantomData).answer()
+    };
+}
+
+struct SendProbe<T>(PhantomData<T>);
+struct SyncProbe<T>(PhantomData<T>);
 
 trait Fallback {
     fn answer(&self) -> bool {
@@ -47,9 +54,16 @@ trait Fallback {
     }
 }
 
-impl<T> Fallback for Probe<T> {}
+impl<T> Fallback for SendProbe<T> {}
+impl<T> Fallback for SyncProbe<T> {}
 
-impl<T: Send> Probe<T> {
+impl<T: Send> SendProbe<T> {
+    fn answer(&self) -> bool {
+        true
+    }
+}
+
+impl<T: Sync> SyncProbe<T> {
     fn answer(&self) -> bool {
         true
     }
@@ -74,23 +88,76 @@ fn every_structure_a_worker_touches_is_send_and_sync() {
     shareable::<ein_infer::commitment::CommitmentSetResult>();
 }
 
-/// **The finding.** `events::Buffer` is `Rc<RefCell<Vec<u8>>>`, so it is not
-/// `Send` — a worker cannot hold an event sink, and design/08 §3's "no shared
-/// queue" hid that, because a sink is not a queue.
+/// **The finding, and its fix.** `events::Buffer` was `Rc<RefCell<Vec<u8>>>`
+/// when [T1a.7.1.4](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md#task-t1a714--kbcore--program-audit)
+/// asked this question, so `Events` was the one thing on a worker's list that
+/// could not cross a thread — which design/08 §3's "no shared queue" hid,
+/// because a sink is not a queue.
 ///
-/// The fix is not a lock. It is the shape the counters already have: a
-/// per-worker buffer merged at the **ordered commit**, so the stream a reader
+/// The fix was not a lock. It is the shape the counters already have: a
+/// per-worker buffer replayed at the **ordered commit**, so the stream a reader
 /// sees is the sequential one
-/// ([T1a.7.2.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)).
-/// Until that exists this test pins the state of affairs, so the day `Buffer`
-/// becomes `Send` is a day somebody notices.
+/// ([T1a.7.2.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)).
+/// `Events::worker` is that buffer and `Events::replay` is the merge, and the
+/// **ordinal is assigned at replay**: what a worker records is what happened,
+/// and where it belongs in the run is the committing thread's to say.
+///
+/// So the assertion is inverted from what it was, and the two halves are both
+/// load-bearing. `Send` is what a worker needs, because an `Events` is *moved*
+/// into one. Not `Sync` is the other half and is not an omission: a sink two
+/// threads could write at once is exactly the shared queue the design refuses.
 #[test]
-fn the_event_sink_is_the_one_thing_that_is_not() {
+fn a_worker_can_hold_an_event_sink_and_two_cannot_share_one() {
     assert!(
-        !is_send!(ein_infer::events::Buffer),
-        "`events::Buffer` became `Send` — if that was deliberate, this test \
-         and S1a.7.1 T1a.7.1.4's note in the stage doc both want deleting"
+        is_send!(ein_infer::events::Events),
+        "`Events` stopped being `Send` — a worker cannot narrate without it"
     );
-    // The control: the shim answers `true` for something that is.
-    assert!(is_send!(ein_core::Terms));
+    assert!(is_send!(ein_infer::events::Buffer));
+    assert!(
+        !is_sync!(ein_infer::events::Events),
+        "`Events` became `Sync`, so two threads could write one stream — \
+         the design says a worker gets its own and the commit merges them"
+    );
+    // The control, and it is not decoration: a shim that answered `false` for
+    // everything would pass the line above for the wrong reason.
+    assert!(is_sync!(ein_core::Terms));
+}
+
+/// A worker's narration is the run's, in the run's order, with the run's
+/// ordinals — the property `Events::replay` exists for.
+#[test]
+fn a_replayed_worker_narrates_into_the_streams_own_ordinals() {
+    use ein_infer::events::{Buffer, Events, Level};
+
+    let buf = Buffer::new();
+    let mut run = Events::to(Box::new(buf.clone()), Level::Verbose);
+    // The `run` event took ordinal 0.
+    run.emit("a", |l| l.str("who", "committer"));
+
+    let mut worker = run.worker();
+    worker.emit("b", |l| l.str("who", "worker"));
+    worker.emit("c", |l| l.str("who", "worker"));
+    assert_eq!(worker.deferred(), 2, "a worker holds its lines");
+
+    run.replay(worker);
+    run.emit("d", |l| l.str("who", "committer"));
+
+    let lines: Vec<String> = buf.to_string_lossy().lines().map(str::to_owned).collect();
+    let kinds: Vec<String> = lines
+        .iter()
+        .map(|l| l.split('"').nth(3).expect("an \"e\" field").to_owned())
+        .collect();
+    assert_eq!(
+        kinds,
+        ["run", "a", "b", "c", "d"],
+        "the worker's lines land where the commit put them, not where they ran"
+    );
+    for (i, line) in lines.iter().enumerate() {
+        assert!(
+            line.contains(&format!(r#""n": {i}"#)),
+            "line {i} is not numbered {i}: {line}"
+        );
+    }
+    // A worker whose run is not recording builds nothing at all.
+    assert!(!Events::off().worker().on());
 }

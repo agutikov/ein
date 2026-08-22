@@ -1,6 +1,6 @@
 //! The commitment primitive — fork, write, detect, saturate, detect.
 //!
-//! `try_commitment_set(root, C)` is the one operation the whole search layer
+//! `try_commitment_set(root.sealed(), C)` is the one operation the whole search layer
 //! is built on, and it is **pure with respect to root**: every consequence
 //! stays in the fork (P1.21 R2). That is not a nicety — it is the unit
 //! [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
@@ -68,7 +68,16 @@ pub struct CommitmentSetResult {
     pub hypothesis_facts: Vec<FactId>,
 }
 
-/// Fork root, write every hypothesis in `commitment`, saturate, detect.
+/// Branch root, write every hypothesis in `commitment`, saturate, detect.
+///
+/// **Root is `&`**, which is the seam
+/// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) runs on:
+/// what the module note above claims — that this is pure with respect to root
+/// — becomes the signature rather than a promise, and a layer's workers can
+/// therefore hold one root at once. Sealing root's top layer is the caller's,
+/// because it is the half of [`Kb::fork`] that mutates and a fanned-out layer
+/// does it **once** where the sequential path does it per entering;
+/// [`Kb::sealed`] is the one-call form.
 ///
 /// `saturator_steps` caps the fork's firings; `None` runs to the fixpoint,
 /// which terminates because the M1 rule set is monotone. It is `None` on the
@@ -93,7 +102,7 @@ pub struct CommitmentSetResult {
 // Q-M1a.18. It stays a parameter until that is decided.
 #[allow(clippy::too_many_arguments)]
 pub fn try_commitment_set(
-    root: &mut Kb,
+    root: &Kb,
     terms: &mut Terms,
     ast: &Ast,
     events: &mut Events,
@@ -103,7 +112,7 @@ pub fn try_commitment_set(
     resume: Option<&Snapshot>,
 ) -> Result<CommitmentSetResult, SaturateError> {
     let cfg = root.program().config.clone().unwrap_or_default();
-    let mut fork = root.fork();
+    let mut fork = root.branch();
     let mut hypothesis_facts = Vec::with_capacity(commitment.len());
     for &h in commitment {
         let (rel, args) = terms.facts.get(h);
@@ -277,9 +286,17 @@ mod tests {
         // enterings share no *mutable* state, and an append-only plan cache is
         // the one thing they do share.
         let memo = SharedMemo::default();
-        let mut first =
-            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[h], None, None)
-                .expect("enters");
+        let mut first = try_commitment_set(
+            kb.sealed(),
+            &mut terms,
+            &ast,
+            &mut ev,
+            &memo,
+            &[h],
+            None,
+            None,
+        )
+        .expect("enters");
         let root_facts = kb.n_facts();
         let first_facts = first.kb.n_facts();
 
@@ -290,9 +307,17 @@ mod tests {
             .add_and_index_fact(&mut terms, junk, &[], None)
             .expect("room");
 
-        let second =
-            try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[h], None, None)
-                .expect("enters");
+        let second = try_commitment_set(
+            kb.sealed(),
+            &mut terms,
+            &ast,
+            &mut ev,
+            &memo,
+            &[h],
+            None,
+            None,
+        )
+        .expect("enters");
         assert_eq!(second.kb.n_facts(), first_facts, "the forks are not shared");
         assert_eq!(second.kind, first.kind);
         assert_eq!(kb.n_facts(), root_facts, "root was written to");
@@ -316,7 +341,7 @@ mod tests {
             .intern_fact(r, &[Value::sym(c), Value::sym(d)])
             .expect("room");
         let result = try_commitment_set(
-            &mut kb,
+            kb.sealed(),
             &mut terms,
             &ast,
             &mut ev,

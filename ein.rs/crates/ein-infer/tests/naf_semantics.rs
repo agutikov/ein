@@ -244,7 +244,7 @@ fn a_naf_derived_fork_fact_never_reaches_root() {
     let h = intern_fact(&mut terms, "g", &["b"]);
     let mut ev = Events::off();
     let r = try_commitment_set(
-        &mut kb,
+        kb.sealed(),
         &mut terms,
         &ast,
         &mut ev,
@@ -280,7 +280,7 @@ fn an_absent_derived_fact_is_not_a_truth_of_root() {
     let h = intern_fact(&mut terms, "x", &["a"]);
     let mut ev = Events::off();
     let r = try_commitment_set(
-        &mut kb,
+        kb.sealed(),
         &mut terms,
         &ast,
         &mut ev,
@@ -323,7 +323,7 @@ fn merging_a_fork_fact_into_root_kills_a_consistent_world() {
     let h = intern_fact(&mut terms, "x", &["a"]);
     let mut ev = Events::off();
     let r = try_commitment_set(
-        &mut kb,
+        kb.sealed(),
         &mut terms,
         &ast,
         &mut ev,
@@ -419,14 +419,32 @@ fn a_naf_search_never_writes_a_fork_fact_to_root() {
     // and the h-world derives its NAF fact fork-locally.
     let x = intern_fact(&mut terms, "x", &["a", "s"]);
     let memo = SharedMemo::default();
-    let rx = try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[x], None, None)
-        .expect("enters");
+    let rx = try_commitment_set(
+        kb.sealed(),
+        &mut terms,
+        &ast,
+        &mut ev,
+        &memo,
+        &[x],
+        None,
+        None,
+    )
+    .expect("enters");
     assert_eq!(rx.kind, Kind::Alive);
     assert!(extent_of(&rx.kb, &terms, "y").is_empty());
 
     let h = intern_fact(&mut terms, "h", &["a", "s"]);
-    let rh = try_commitment_set(&mut kb, &mut terms, &ast, &mut ev, &memo, &[h], None, None)
-        .expect("enters");
+    let rh = try_commitment_set(
+        kb.sealed(),
+        &mut terms,
+        &ast,
+        &mut ev,
+        &memo,
+        &[h],
+        None,
+        None,
+    )
+    .expect("enters");
     assert_eq!(rh.kind, Kind::Alive);
     assert_eq!(extent_of(&rh.kb, &terms, "y"), ["(y a s)"]);
     assert!(
@@ -531,7 +549,7 @@ fn absent_answers_differently_in_a_fork_than_at_root() {
     let h = intern_fact(&mut terms, "r", &["A", "B"]);
     let mut ev = Events::off();
     let fork = try_commitment_set(
-        &mut kb,
+        kb.sealed(),
         &mut terms,
         &ast,
         &mut ev,

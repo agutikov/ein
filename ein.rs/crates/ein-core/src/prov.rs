@@ -54,6 +54,7 @@ use crate::entities::Loc;
 use crate::facts::FactId;
 use crate::intern::Symbol;
 use crate::value::Value;
+use std::sync::Arc;
 
 /// Index into [`ProvArena`].
 ///
@@ -230,22 +231,51 @@ impl Prov {
     }
 }
 
+/// One entering's records, and the sequence number its ids are relative to.
+///
+/// A region travels with the entering that produced it: a worker builds one,
+/// hands it back with its result, and the ordered commit installs it while
+/// that result is being read
+/// ([T1a.7.2.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)).
+/// Keeping the base *with* the records is what makes that safe: an id means
+/// something only against the region it was issued from, and the two cannot be
+/// separated.
+#[derive(Default, Debug)]
+pub struct Region {
+    records: Vec<Prov>,
+    /// The fork sequence number of `records[0]`.
+    base: u32,
+}
+
+impl Region {
+    pub fn is_empty(&self) -> bool {
+        self.records.is_empty()
+    }
+
+    pub fn len(&self) -> usize {
+        self.records.len()
+    }
+}
+
 /// The append-only record arena, plus the region of it that is not.
 ///
 /// `records` is the arena proper: pushed to at load, at root saturation and at
-/// every commit step, and never reclaimed. `fork` is the region the search
-/// opens around one entering — see the module note.
+/// every commit step, and never reclaimed. It is shared by `Arc` for the same
+/// reason the fact store is — a fork reads root's derivations when it explains
+/// a contradiction — and grown only where nothing else holds it. `fork` is the
+/// region the search opens around one entering; see the module note.
 #[derive(Default, Debug)]
 pub struct ProvArena {
-    records: Vec<Prov>,
-    /// The fork in hand's own records. Cleared by
-    /// [`ProvArena::discard_fork`], which is 100 % of enterings on four of the
-    /// six measured workloads and 99.9 % on the other two.
-    fork: Vec<Prov>,
-    /// The fork sequence number of `fork[0]`. **Monotone across enterings**:
-    /// discarding a region advances it past the ids that region issued, so a
-    /// stale id is below the base and cannot address a live record.
-    fork_base: u32,
+    records: Arc<Vec<Prov>>,
+    /// The fork in hand's own records, and the sequence they are numbered
+    /// from. Cleared by [`ProvArena::discard_fork`], which is 100 % of
+    /// enterings on four of the six measured workloads and 99.9 % on the other
+    /// two.
+    ///
+    /// The base is **monotone across enterings**: discarding a region advances
+    /// it past the ids that region issued, so a stale id is below the base and
+    /// cannot address a live record.
+    fork: Region,
     /// How many records [`ProvArena::promote`] has copied out of a region,
     /// for the whole run.
     ///
@@ -306,12 +336,65 @@ impl ProvArena {
         self.forking = false;
         // Monotone, so the ids just freed can never be issued again — which is
         // what makes [`ProvArena::get`] able to reject one.
-        self.fork_base = self
-            .fork_base
-            .checked_add(self.fork.len() as u32)
+        self.fork.base = self
+            .fork
+            .base
+            .checked_add(self.fork.records.len() as u32)
             .filter(|&n| n < ProvId::FORK)
             .expect("the fork sequence overflowed 2^31 records");
-        self.fork.clear();
+        self.fork.records.clear();
+    }
+
+    /// Hand the region in hand to its caller, leaving the arena with an empty
+    /// one numbered from where this one ended.
+    ///
+    /// A worker calls this to send its records back with its result; the base
+    /// travels with them, so the ids in the result's KB keep meaning what they
+    /// meant. Numbering the *next* region from the end of this one is the same
+    /// monotone step [`ProvArena::discard_fork`] takes, which is what keeps a
+    /// worker's own stale ids from resolving against its next entering.
+    pub fn take_fork(&mut self) -> Region {
+        self.forking = false;
+        let base = self
+            .fork
+            .base
+            .checked_add(self.fork.records.len() as u32)
+            .filter(|&n| n < ProvId::FORK)
+            .expect("the fork sequence overflowed 2^31 records");
+        std::mem::replace(
+            &mut self.fork,
+            Region {
+                records: Vec::new(),
+                base,
+            },
+        )
+    }
+
+    /// Install a region handed back by a worker, returning the one it
+    /// displaces.
+    ///
+    /// The caller is the ordered commit, and the pairing is strict: install,
+    /// read the result the region belongs to, then put back what came out.
+    /// Nothing else may read a fork id in between, which is why the region
+    /// lives on the result rather than in a side table — there is no way to
+    /// install one result's records and read another's.
+    pub fn swap_fork(&mut self, region: Region) -> Region {
+        std::mem::replace(&mut self.fork, region)
+    }
+
+    /// A worker's arena: the same records by `Arc`, and a region of its own
+    /// numbered from zero.
+    ///
+    /// The base can start over because a region only ever means anything
+    /// against itself — [`ProvArena::swap_fork`] carries the two together, and
+    /// nothing reads a worker's ids except through the result that owns them.
+    pub fn share(&self) -> ProvArena {
+        ProvArena {
+            records: Arc::clone(&self.records),
+            fork: Region::default(),
+            promoted: 0,
+            forking: false,
+        }
     }
 
     /// Copy the cited fork records into the arena proper, in the fork's own
@@ -332,14 +415,16 @@ impl ProvArena {
     ) -> rustc_hash::FxHashMap<ProvId, ProvId> {
         let mut map =
             rustc_hash::FxHashMap::with_capacity_and_hasher(cited.len(), Default::default());
-        for (i, record) in self.fork.iter().enumerate() {
-            let old = ProvId(ProvId::FORK | (self.fork_base + i as u32));
+        let records = Arc::get_mut(&mut self.records)
+            .expect("a worker may not promote out of a region — see ProvArena::share");
+        for (i, record) in self.fork.records.iter().enumerate() {
+            let old = ProvId(ProvId::FORK | (self.fork.base + i as u32));
             if !cited.contains(&old) {
                 continue;
             }
-            let new = ProvId(self.records.len() as u32);
+            let new = ProvId(records.len() as u32);
             debug_assert!(!new.is_fork(), "the arena overflowed 2^31 records");
-            self.records.push(record.clone());
+            records.push(record.clone());
             self.promoted += 1;
             map.insert(old, new);
         }
@@ -354,7 +439,7 @@ impl ProvArena {
 
     /// Is the fork region empty — is there nothing a promotion could move?
     pub fn fork_is_empty(&self) -> bool {
-        self.fork.is_empty()
+        self.fork.records.is_empty()
     }
 
     // ── Records ────────────────────────────────────────────────────
@@ -365,13 +450,19 @@ impl ProvArena {
     pub fn push(&mut self, prov: Prov) -> ProvId {
         crate::counters::bump(|c| c.prov_push += 1);
         if self.forking {
-            let id = ProvId(ProvId::FORK | (self.fork_base + self.fork.len() as u32));
-            self.fork.push(prov);
+            let id = ProvId(ProvId::FORK | (self.fork.base + self.fork.records.len() as u32));
+            self.fork.records.push(prov);
             return id;
         }
-        let id = ProvId(self.records.len() as u32);
+        // The arena proper. A worker never reaches here — its region stays
+        // open for the whole entering, and root's own writes (the no-good, the
+        // `(not h)` writeback, the forced positive) happen on the committing
+        // thread after the region has closed.
+        let records = Arc::get_mut(&mut self.records)
+            .expect("a worker may not push to the arena proper — see ProvArena::share");
+        let id = ProvId(records.len() as u32);
         debug_assert!(!id.is_fork(), "the arena overflowed 2^31 records");
-        self.records.push(prov);
+        records.push(prov);
         id
     }
 
@@ -380,8 +471,8 @@ impl ProvArena {
         if id.is_fork() {
             let seq = id.0 & !ProvId::FORK;
             return match seq
-                .checked_sub(self.fork_base)
-                .and_then(|i| self.fork.get(i as usize))
+                .checked_sub(self.fork.base)
+                .and_then(|i| self.fork.records.get(i as usize))
             {
                 Some(record) => record,
                 None => panic!(

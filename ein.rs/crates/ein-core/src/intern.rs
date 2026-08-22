@@ -31,15 +31,28 @@ use std::sync::OnceLock;
 /// somebody can read rather than a silent wrap into another value's identity.
 pub const CAPACITY: u32 = 1 << 30;
 
-/// The 30-bit payload is full.
+/// Why an id could not be assigned.
 ///
-/// A puzzle that reaches this is a research finding, not a crash — so it is a
-/// [`Result`] at the three sites that assign ids, and not a panic.
+/// Three of the four are the 30-bit payload filling up. A puzzle that reaches
+/// one is a research finding, not a crash — so it is a [`Result`] at the three
+/// sites that assign ids, and not a panic.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Overflow {
     Symbols,
     Ints,
     Facts,
+    /// **Not a capacity condition.** The intern tables are shared with a
+    /// worker, so nobody may grow them — [`crate::Terms::share`].
+    ///
+    /// This is the whole of what a worker cannot do, and it is why
+    /// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) needs
+    /// no lock on the interner or the fact store: the tables are read by `&`
+    /// and grown only where nothing else holds them. An entering that hits it
+    /// hands itself back and is re-run on the committing thread — which
+    /// [shared_state.md §2a](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+    /// measured at **zero** enterings on four of six workloads and 7 of 111 on
+    /// the worst, all of them in the head of a layer.
+    Shared,
 }
 
 impl std::fmt::Display for Overflow {
@@ -48,6 +61,13 @@ impl std::fmt::Display for Overflow {
             Overflow::Symbols => "distinct symbols",
             Overflow::Ints => "distinct integer literals",
             Overflow::Facts => "distinct facts",
+            Overflow::Shared => {
+                return f.write_str(
+                    "the intern tables are shared with a worker and cannot \
+                     grow — this entering has to be re-run on the committing \
+                     thread",
+                );
+            }
         };
         write!(f, "too many {what} — the limit is {CAPACITY}")
     }

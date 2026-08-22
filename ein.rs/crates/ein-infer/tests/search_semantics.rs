@@ -380,7 +380,7 @@ fn an_alive_entering_keeps_its_consequences_fork_local() {
     let derived = fact(&mut terms, "other", &["d", "c"]);
     let mut ev = Events::off();
     let r = try_commitment_set(
-        &mut kb,
+        kb.sealed(),
         &mut terms,
         &ast,
         &mut ev,
@@ -422,7 +422,7 @@ fn a_dead_entering_names_a_committed_hypothesis_in_its_core() {
     let h = fact(&mut terms, "target", &["c", "d"]);
     let mut ev = Events::off();
     let pre = try_commitment_set(
-        &mut kb,
+        kb.sealed(),
         &mut terms,
         &ast,
         &mut ev,
@@ -443,7 +443,7 @@ fn a_dead_entering_names_a_committed_hypothesis_in_its_core() {
     let h2 = fact(&mut terms, "h2", &["a"]);
     let mut ev = Events::off();
     let post = try_commitment_set(
-        &mut kb,
+        kb.sealed(),
         &mut terms,
         &ast,
         &mut ev,
@@ -466,7 +466,7 @@ fn a_dead_entering_names_a_committed_hypothesis_in_its_core() {
     );
 }
 
-/// `try_commitment_set(root, [])` is the layer-zero sentinel: alive, nothing
+/// `try_commitment_set(root.sealed(), [])` is the layer-zero sentinel: alive, nothing
 /// written, and over an already-saturated root the fork is root.
 ///
 /// The empty set is not a degenerate input to be rejected — the search asks
@@ -484,7 +484,7 @@ fn the_empty_commitment_is_the_layer_zero_sentinel() {
 
     let mut ev = Events::off();
     let r = try_commitment_set(
-        &mut kb,
+        kb.sealed(),
         &mut terms,
         &ast,
         &mut ev,
@@ -535,7 +535,7 @@ fn ladder_entering(fail_fast: bool, names: &[&str]) -> (Terms, ein_infer::Commit
     let commitment: Vec<FactId> = names.iter().map(|n| fact(&mut terms, n, &["a"])).collect();
     let mut ev = Events::off();
     let r = try_commitment_set(
-        &mut kb,
+        kb.sealed(),
         &mut terms,
         &ast,
         &mut ev,
@@ -631,7 +631,7 @@ fn fail_fast_cannot_reach_a_dead_pre() {
         let h1 = fact(&mut terms, "h1", &["a"]);
         let mut ev = Events::off();
         let r = try_commitment_set(
-            &mut kb,
+            kb.sealed(),
             &mut terms,
             &ast,
             &mut ev,
@@ -761,7 +761,7 @@ fn a_nested_positive_pairs_through_structural_identity() {
 fn a_malformed_negation_is_tolerated_rather_than_crashing() {
     let (_ast, mut terms, mut kb) = kb_of("(relation r T T)\n(r A B :source \"(1)\")\n");
     let not = terms.kernel.not;
-    let five = Value::int(terms.ints.intern("5").expect("room"));
+    let five = Value::int(terms.intern_int("5").expect("room"));
     let malformed = terms.intern_fact(not, &[five]).expect("room");
     kb.add_and_index_fact(&mut terms, not, &[five], None)
         .expect("room");

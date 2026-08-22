@@ -543,7 +543,7 @@ fn ingest_rules(
         let priority = match kw_get(&pairs, "priority").map(|n| ast.node(n)) {
             Some(Node::Int(s)) => {
                 let text = ast.sym(s).to_string();
-                Some(terms.ints.intern(&text)?)
+                Some(terms.intern_int(&text)?)
             }
             _ => None,
         };

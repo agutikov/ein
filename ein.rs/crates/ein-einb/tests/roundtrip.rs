@@ -43,7 +43,7 @@ fn crowded() -> Terms {
     for i in 0..37 {
         let rel = terms.intern_text(&format!("crowd-{i}")).expect("room");
         let arg = terms.intern_text(&format!("other-{i}")).expect("room");
-        terms.ints.intern(&format!("{}", 1_000 + i)).expect("room");
+        terms.intern_int(&format!("{}", 1_000 + i)).expect("room");
         terms
             .intern_fact(rel, &[ein_core::Value::sym(arg)])
             .expect("room");

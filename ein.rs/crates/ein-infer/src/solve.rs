@@ -648,7 +648,7 @@ impl Run<'_> {
                 #[cfg(feature = "counters")]
                 let before = ein_core::counters::snapshot();
                 let result = try_commitment_set(
-                    root,
+                    root.sealed(),
                     terms,
                     ast,
                     events,

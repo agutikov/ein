@@ -178,6 +178,12 @@ impl IntPool {
         Ok(id)
     }
 
+    /// The [`IntId`] `text` already has, if any — [`IntPool::intern`] without
+    /// the `&mut`, for a reader that may not grow the pool.
+    pub fn get(&self, text: &str) -> Option<IntId> {
+        self.lookup.get(canonical_int(text).as_str()).copied()
+    }
+
     /// The canonical decimal text — what `str(v)` prints for this integer,
     /// which is what provenance bindings and the dumper's `_compact` render.
     pub fn text(&self, id: IntId) -> &str {

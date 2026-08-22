@@ -50,10 +50,30 @@ impl Level {
     }
 }
 
-/// The event writer. `None` sink ⇒ recording is off and every emit is one
-/// branch.
+/// Where an [`Events`] puts what it narrates.
+///
+/// The third state is [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)'s.
+/// A worker cannot hold the run's sink — writes from many threads would
+/// interleave, and the ordinal an event carries is a property of the *stream*
+/// rather than of the worker — so it narrates into one of these and the
+/// ordered commit replays it ([`Events::replay`]). That is the same shape the
+/// counters have, which is what
+/// [design/08 §6](../../../../plans/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
+/// says a sink needs and §3's "no shared queue" hid, because a sink is not a
+/// queue.
+enum Sink {
+    /// Recording is off, and every emit is one branch.
+    Off,
+    /// The run's own — a file, or a test's buffer.
+    Out(Box<dyn Write + Send>),
+    /// A worker's: whole lines, each with the offset where its ordinal goes,
+    /// waiting for the thread that owns the stream to number them.
+    Deferred(Vec<(String, usize)>),
+}
+
+/// The event writer.
 pub struct Events {
-    sink: Option<Box<dyn Write>>,
+    sink: Sink,
     seq: u64,
     level: Level,
 }
@@ -67,16 +87,65 @@ impl Default for Events {
 impl Events {
     pub fn off() -> Events {
         Events {
-            sink: None,
+            sink: Sink::Off,
             seq: 0,
             level: Level::Normal,
+        }
+    }
+
+    /// A worker's narration: the same level, its own buffer, no ordinals.
+    ///
+    /// `Events::off()` when the run is not recording, so a worker on the
+    /// common path builds nothing at all.
+    pub fn worker(&self) -> Events {
+        if !self.on() {
+            return Events::off();
+        }
+        Events {
+            sink: Sink::Deferred(Vec::new()),
+            seq: 0,
+            level: self.level,
+        }
+    }
+
+    /// Replay a worker's narration into this stream, numbering it here.
+    ///
+    /// The ordinal is assigned at replay and not at emit, which is the whole
+    /// of what makes `--jobs N`'s stream the sequential one: what a worker
+    /// records is *what happened*, and where it belongs in the run is the
+    /// committing thread's to say.
+    pub fn replay(&mut self, worker: Events) {
+        let Sink::Deferred(lines) = worker.sink else {
+            debug_assert!(
+                matches!(worker.sink, Sink::Off),
+                "only a worker's narration can be replayed"
+            );
+            return;
+        };
+        let Sink::Out(sink) = &mut self.sink else {
+            return;
+        };
+        for (mut line, at) in lines {
+            line.insert_str(at, &format!(", \"n\": {}", self.seq));
+            self.seq += 1;
+            let _ = writeln!(sink, "{line}");
+        }
+        let _ = sink.flush();
+    }
+
+    /// How many lines a worker is holding — the diagnostic half of
+    /// [`Events::replay`], and `0` on every run that is not recording.
+    pub fn deferred(&self) -> usize {
+        match &self.sink {
+            Sink::Deferred(lines) => lines.len(),
+            _ => 0,
         }
     }
 
     /// Start recording, emitting the `run` event the schema requires first —
     /// so a consumer can reject a file it does not understand before reading
     /// further, and so a truncated file still identifies itself.
-    pub fn to(sink: Box<dyn Write>, level: Level) -> Events {
+    pub fn to(sink: Box<dyn Write + Send>, level: Level) -> Events {
         Events::to_with(sink, level, |_| {})
     }
 
@@ -84,9 +153,13 @@ impl Events {
     /// `file`, `argv` and the resolved config, which
     /// [`events.md`](../../../../docs/kernel/inference/events.md) lists after `version`
     /// and `level`. The engine has no argv, so the caller supplies them.
-    pub fn to_with(sink: Box<dyn Write>, level: Level, extra: impl FnOnce(&mut Line)) -> Events {
+    pub fn to_with(
+        sink: Box<dyn Write + Send>,
+        level: Level,
+        extra: impl FnOnce(&mut Line),
+    ) -> Events {
         let mut e = Events {
-            sink: Some(sink),
+            sink: Sink::Out(sink),
             seq: 0,
             level,
         };
@@ -99,7 +172,7 @@ impl Events {
     }
 
     pub fn on(&self) -> bool {
-        self.sink.is_some()
+        !matches!(self.sink, Sink::Off)
     }
 
     pub fn verbose(&self) -> bool {
@@ -112,20 +185,32 @@ impl Events {
 
     /// Write one event. `fields` runs only when recording.
     pub fn emit(&mut self, kind: &str, fields: impl FnOnce(&mut Line)) {
-        let Some(sink) = self.sink.as_mut() else {
+        if !self.on() {
             return;
-        };
+        }
         let mut line = Line {
             out: String::with_capacity(96),
         };
         line.out.push('{');
         line.str("e", kind);
-        line.num("n", self.seq as i64);
+        // Where the ordinal goes. On the run's own sink it goes in now; a
+        // worker leaves the hole and [`Events::replay`] fills it, because the
+        // ordinal belongs to the stream and not to the thread.
+        let at = line.out.len();
+        if matches!(self.sink, Sink::Out(_)) {
+            line.num("n", self.seq as i64);
+        }
         fields(&mut line);
         line.out.push('}');
-        self.seq += 1;
-        let _ = writeln!(sink, "{}", line.out);
-        let _ = sink.flush();
+        match &mut self.sink {
+            Sink::Off => unreachable!("checked above"),
+            Sink::Deferred(lines) => lines.push((line.out, at)),
+            Sink::Out(sink) => {
+                self.seq += 1;
+                let _ = writeln!(sink, "{}", line.out);
+                let _ = sink.flush();
+            }
+        }
     }
 }
 
@@ -266,7 +351,7 @@ pub fn push_json_str(out: &mut String, s: &str) {
 /// The differential tests want the whole log as a `String`; the CLI wants a
 /// file. `Events` takes a `Box<dyn Write>` so it does not have to know which.
 #[derive(Clone, Default)]
-pub struct Buffer(std::rc::Rc<std::cell::RefCell<Vec<u8>>>);
+pub struct Buffer(std::sync::Arc<std::sync::Mutex<Vec<u8>>>);
 
 impl Buffer {
     pub fn new() -> Buffer {
@@ -274,13 +359,16 @@ impl Buffer {
     }
 
     pub fn to_string_lossy(&self) -> String {
-        String::from_utf8_lossy(&self.0.borrow()).into_owned()
+        String::from_utf8_lossy(&self.0.lock().expect("no writer panicked")).into_owned()
     }
 }
 
 impl Write for Buffer {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        self.0.borrow_mut().extend_from_slice(buf);
+        self.0
+            .lock()
+            .expect("no writer panicked")
+            .extend_from_slice(buf);
         Ok(buf.len())
     }
 

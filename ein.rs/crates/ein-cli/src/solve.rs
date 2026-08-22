@@ -294,7 +294,7 @@ fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Events {
         Some("verbose") => Level::Verbose,
         _ => Level::Normal,
     };
-    let sink: Box<dyn Write> = match std::fs::File::create(path) {
+    let sink: Box<dyn Write + Send> = match std::fs::File::create(path) {
         Ok(f) => Box::new(std::io::BufWriter::new(f)),
         Err(e) => {
             eprintln!("{e}");

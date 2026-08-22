@@ -513,7 +513,61 @@ leaves 204 of 11 501 forks walking a stack that is still growing under them and
 puts 11 297 on a stack of one — which is the same 98/2 split every other number
 in this file has, arriving for the third time and from a third direction.
 
-## 7. Reproducing
+## 7. T1a.7.2.1 — the seam, and what it costs
+
+Before a thread there is a question of *types*: what does a worker hold? Four
+things had to change, and the interesting number is that together they cost
+nothing.
+
+| what a worker holds | before | after |
+|---|---|---|
+| root | `&mut Kb` — `fork()` seals the parent's top layer | `&Kb`. `Kb::fork` splits into `seal_top` (mutates, once per fanned-out layer) and `branch` (shared, once per worker) |
+| the intern tables | `Interner` / `IntPool` / `FactStore` owned by `Terms` | `Table<T>`: `Own(T)`, or `Shared(Arc<T>)` between `Terms::share` and `Terms::reclaim`. A lent table answers a lookup and refuses an assignment |
+| the record arena | one fork region on the shared `ProvArena` | `records` shared, the **region per worker** and carried back on the result (`ProvArena::share` / `take_fork` / `swap_fork`) |
+| the event sink | `Rc<RefCell<Vec<u8>>>`, not `Send` | `Events::worker()` buffers whole lines with a hole where the ordinal goes; `Events::replay` numbers them at the commit |
+
+### What it costs
+
+`solve -e` through the CLI, best of 13, the two binaries **alternated** run by
+run. `taskset -c 0` on an i9-14900HX, governor `powersave`.
+
+| workload | before | after | |
+|---|---:|---:|---:|
+| `branching/06 -e` | 197 835 µs | 199 089 µs | +0.63 % |
+| `branching/07 -e` | 276 220 µs | 273 996 µs | **−0.81 %** |
+| `features/01 -e` | 1 671 766 µs | 1 643 684 µs | **−1.68 %** |
+| `sq-bwd/houses -e` | 253 692 µs | 251 343 µs | −0.93 % |
+| `zebra2 -e` | 30 739 µs | 30 801 µs | +0.20 % |
+| `zebra -e` | 46 146 µs | 46 050 µs | −0.21 % |
+
+Inside the ±2 % floor §6 established, and signed both ways — which is what
+"free" looks like when it is measured rather than asserted. Two effects cancel:
+`Table`'s branch on the fact store's 5.8–26 M reads costs, and
+`try_commitment_set` losing its `&mut Kb` pays it back.
+
+### The route that was not free, and why it is worth writing down
+
+The obvious spelling is `Arc<T>` in **both** states — read through the `Arc`,
+grow through `Arc::get_mut`. It was built first, and it is **4 % slower on
+`branching/06 -e`**:
+
+| workload | `Arc` in both states | `Table` (shipping) |
+|---|---:|---:|
+| `branching/06 -e` | −4.0 % | +0.6 % |
+| `features/01 -e` | −1.9 % | −1.7 % |
+| `branching/07 -e` | −1.7 % | −0.8 % |
+
+`Arc::get_mut` has to *prove* uniqueness, and its proof is a locked
+read-modify-write on the weak count. §2's table says why that is the wrong
+place to spend it: `branching/06 -e` makes **2 318 815** interning calls to
+assign **417** ids, so the atomic is paid 5 561 times per assignment it
+enables. The two-state enum pays a branch instead — on more calls, but a branch
+whose outcome is constant for the whole of a layer.
+
+The general form is worth keeping: *when a structure is read far more often
+than it is grown, put the sharing in the type and not in the pointer.*
+
+## 8. Reproducing
 
 ```sh
 # §1
@@ -547,6 +601,10 @@ EOF
 cd ein.rs
 cargo run --release -p ein-infer --example defer_probe
 cargo test --release -p ein-infer --test search_invariants
+
+# §7 — the seam is types, so the gate is the check; the cost is a bench
+cargo test -p ein-infer --test worker_view --test shareable
+cargo build --release -p ein-cli   # …and time it against the parent commit
 
 # §6 — the cost/benefit columns, and the corpus sweep behind the threshold
 cargo run --release --features counters -p ein-infer --example flatten_probe

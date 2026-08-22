@@ -135,7 +135,7 @@ impl LayerAudit {
         };
 
         let spec = try_commitment_set(
-            &mut self.r0,
+            self.r0.sealed(),
             terms,
             ast,
             &mut self.off,

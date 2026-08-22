@@ -21,14 +21,112 @@ use crate::prov::ProvArena;
 use crate::pyrepr::{self, PyValue};
 use crate::value::{IntId, IntPool, Tag, Value};
 use std::cmp::Ordering;
+use std::sync::Arc;
+
+/// A table the committing thread owns outright and lends to workers for the
+/// duration of a fanned-out layer.
+///
+/// Two states and one rule: **a table that is lent cannot grow.** That is the
+/// whole of what [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+/// needs from the interner and the fact store, and it is why neither takes a
+/// lock — [shared_state.md §4](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#4-what-this-chooses).
+///
+/// **Why not simply `Arc<T>` in both states.** Growing an `Arc`'s contents
+/// means [`Arc::get_mut`], whose uniqueness test is a locked read-modify-write
+/// on the weak count. Interning is not rare — `branching/06 -e` makes 2 318 815
+/// calls, of which 417 assign — so paying an atomic per call to discover that
+/// nobody is sharing costs **4 %** of that file's solve, measured against the
+/// `Arc`-in-both-states version this replaced. Two states pay a branch
+/// instead, and it is perfectly predicted because the state is constant for
+/// the whole of a layer.
+#[derive(Debug)]
+pub enum Table<T> {
+    /// Nobody else holds it: read it, and grow it.
+    Own(T),
+    /// Lent to workers: read it by `&` from any thread, grow it nowhere.
+    Shared(Arc<T>),
+}
+
+impl<T> std::ops::Deref for Table<T> {
+    type Target = T;
+
+    fn deref(&self) -> &T {
+        match self {
+            Table::Own(t) => t,
+            Table::Shared(t) => t,
+        }
+    }
+}
+
+impl<T: Default> Table<T> {
+    /// The growable half, or `None` while the table is lent.
+    pub fn own_mut(&mut self) -> Option<&mut T> {
+        match self {
+            Table::Own(t) => Some(t),
+            Table::Shared(_) => None,
+        }
+    }
+
+    /// Lend it — idempotent, so a layer can ask without knowing whether an
+    /// earlier one already did.
+    fn share(&mut self) {
+        if let Table::Own(t) = self {
+            *self = Table::Shared(Arc::new(std::mem::take(t)));
+        }
+    }
+
+    /// A second holder. Only a lent table has one to give, and asking an owned
+    /// one is a fan-out that forgot to lend.
+    fn holder(&self) -> Table<T> {
+        match self {
+            Table::Own(_) => panic!("a worker view was asked for before Terms::share"),
+            Table::Shared(t) => Table::Shared(Arc::clone(t)),
+        }
+    }
+
+    /// Take it back, or say why it cannot be taken.
+    ///
+    /// `false` means a worker's view is still alive. That is a bug in the
+    /// fan-out rather than a condition to recover from — the alternative is a
+    /// table that has silently stopped growing — so the caller panics; this
+    /// returns rather than panicking so the message can name all three tables
+    /// at once.
+    fn reclaim(&mut self) -> bool {
+        let Table::Shared(t) = self else {
+            return true;
+        };
+        let t = std::mem::take(t);
+        match Arc::try_unwrap(t) {
+            Ok(t) => {
+                *self = Table::Own(t);
+                true
+            }
+            Err(t) => {
+                *self = Table::Shared(t);
+                false
+            }
+        }
+    }
+}
 
 #[derive(Debug)]
 pub struct Terms {
-    pub syms: Interner,
-    pub ints: IntPool,
-    pub facts: FactStore,
+    /// The three intern tables, each [`Table::Own`] until a fanned-out layer
+    /// lends it ([`Terms::share`]) and [`Table::Own`] again when the layer
+    /// takes it back.
+    ///
+    /// A lent table is readable from every thread and growable from none, so
+    /// *sharing is what forbids growing* — no lock, no shard, and the
+    /// invariant that makes it affordable is the one
+    /// [shared_state.md §3](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#3-the-interner-does-not-grow-during-a-search--now)
+    /// measured and `ein-infer/tests/interning.rs` keeps: nothing interns a
+    /// name during a search.
+    pub syms: Table<Interner>,
+    pub ints: Table<IntPool>,
+    pub facts: Table<FactStore>,
     /// Derivation records. Global for the same reason the fact store is —
-    /// see [`crate::prov`].
+    /// see [`crate::prov`] — except for the fork region, which is **not**
+    /// shared, because it is the one structure a worker really writes.
     pub provs: ProvArena,
     /// The kernel vocabulary, interned up front so a comparison against it is
     /// an integer compare and no hot path needs a `&mut Terms` to ask.
@@ -201,18 +299,96 @@ impl Terms {
             mirror_b: intern(MIRROR_B),
         };
         Terms {
-            syms,
-            ints: IntPool::new(),
-            facts: FactStore::new(),
+            syms: Table::Own(syms),
+            ints: Table::Own(IntPool::new()),
+            facts: Table::Own(FactStore::new()),
             provs: ProvArena::new(),
             kernel,
         }
     }
 
+    // ── Sharing ────────────────────────────────────────────────────
+
+    /// A worker's view of these tables: the same three interners, lent, and a
+    /// **record region of its own**.
+    ///
+    /// This is the whole of what
+    /// [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+    /// T1a.7.2.1 hands a worker, and the shape is
+    /// [shared_state.md §4](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#4-what-this-chooses)'s
+    /// four decisions in one type:
+    ///
+    /// - the **interner and the integer pool** are shared by `&`, because they
+    ///   do not grow during a search — 0 of the 90 corpus files that solve;
+    /// - the **fact store** is shared by `&` too, because a search assigns 41
+    ///   to 417 ids against 5.8–26 M borrow-returning reads, and *per
+    ///   entering* four of six workloads assign none at all. A worker that
+    ///   would have assigned one gets [`Overflow::Shared`] and hands the
+    ///   entering back;
+    /// - the **provenance arena** is per-worker, because it is the one with a
+    ///   real write rate — 100 % of enterings, 2 135 093 records on
+    ///   `features/01 -e` — and because a fork's records die with the fork;
+    /// - and there is **no lock**, so there is no protocol to model.
+    ///
+    /// The view borrows nothing, so it is `Send` and can cross into a worker;
+    /// what stops the committing thread interning while a view is alive is
+    /// that the tables are [`Table::Shared`], not a borrow. Reads see the
+    /// tables as they stood when they were lent, which is the same thing as
+    /// saying they see them as they are: nothing may write them meanwhile.
+    /// Lend the three intern tables out, so [`Terms::worker`] can hand a view
+    /// to each worker. Idempotent, and the point at which this `Terms` stops
+    /// being able to intern.
+    pub fn share(&mut self) {
+        self.syms.share();
+        self.ints.share();
+        self.facts.share();
+    }
+
+    /// Take the tables back, and be able to intern again.
+    ///
+    /// Panics if a worker view is still alive: what a leaked view would cost
+    /// is not a crash but a table that has silently stopped growing, and an
+    /// entering that then hands itself back **for ever**.
+    pub fn reclaim(&mut self) {
+        let ok = self.syms.reclaim() & self.ints.reclaim() & self.facts.reclaim();
+        assert!(
+            ok,
+            "Terms::reclaim while a worker still holds a view — every \
+             Terms::worker has to be dropped before the layer closes"
+        );
+    }
+
+    /// Is this `Terms` lending its tables — would an interning call have to
+    /// hand its entering back?
+    pub fn is_shared(&self) -> bool {
+        matches!(self.facts, Table::Shared(_))
+    }
+
+    /// One worker's view — call [`Terms::share`] first.
+    pub fn worker(&self) -> Terms {
+        Terms {
+            syms: self.syms.holder(),
+            ints: self.ints.holder(),
+            facts: self.facts.holder(),
+            provs: self.provs.share(),
+            kernel: self.kernel,
+        }
+    }
+
     // ── Interning ──────────────────────────────────────────────────
 
+    /// Assign `s` a [`Symbol`], or return the one it already has.
+    ///
+    /// On a [shared](Terms::share) view the assignment half is unavailable, so
+    /// this is a lookup that can fail with [`Overflow::Shared`]. The *hit*
+    /// path is unchanged and needs nothing but `&`, which is why a worker
+    /// compiling a plan still works: `intern_program_names` interns every name
+    /// a rule can name at load, so the compiler asks and never assigns.
     pub fn intern_text(&mut self, s: &str) -> Result<Symbol, Overflow> {
-        self.syms.intern(s)
+        match self.syms.own_mut() {
+            Some(syms) => syms.intern(s),
+            None => self.syms.get(s).ok_or(Overflow::Shared),
+        }
     }
 
     /// A textual argument — what ein.py's `_atomic_value` produces for an
@@ -222,7 +398,7 @@ impl Terms {
     /// not an implementation detail: `(likes A "foo")` and `(likes A foo)` are
     /// the same fact today, and interning must keep them so.
     pub fn value_text(&mut self, s: &str) -> Result<Value, Overflow> {
-        Ok(Value::sym(self.syms.intern(s)?))
+        Ok(Value::sym(self.intern_text(s)?))
     }
 
     /// A `Var` in argument position — `?name`, as `_atomic_value` renders it.
@@ -240,17 +416,34 @@ impl Terms {
 
     /// An integer literal, at any width. `text` need not be canonical.
     pub fn value_int(&mut self, text: &str) -> Result<Value, Overflow> {
-        Ok(Value::int(self.ints.intern(text)?))
+        Ok(Value::int(self.intern_int(text)?))
     }
 
+    /// See [`Terms::intern_text`] for what a shared view can and cannot do.
+    pub fn intern_int(&mut self, text: &str) -> Result<IntId, Overflow> {
+        match self.ints.own_mut() {
+            Some(ints) => ints.intern(text),
+            None => self.ints.get(text).ok_or(Overflow::Shared),
+        }
+    }
+
+    /// See [`Terms::intern_text`] for what a shared view can and cannot do.
+    ///
+    /// This is the one that matters: a fork *derives* propositions, and the
+    /// handful a search numbers for the first time are numbered here. Four of
+    /// the six measured workloads never reach the assigning branch from inside
+    /// an entering at all.
     pub fn intern_fact(&mut self, rel: Symbol, args: &[Value]) -> Result<FactId, Overflow> {
-        self.facts.intern(rel, args)
+        match self.facts.own_mut() {
+            Some(facts) => facts.intern(rel, args),
+            None => self.facts.probe(rel, args).ok_or(Overflow::Shared),
+        }
     }
 
     /// The nested-fact argument for `(not X)` and friends: intern `X`, then
     /// tag its id.
     pub fn value_fact(&mut self, rel: Symbol, args: &[Value]) -> Result<Value, Overflow> {
-        Ok(Value::fact(self.facts.intern(rel, args)?))
+        Ok(Value::fact(self.intern_fact(rel, args)?))
     }
 
     // ── Reading ────────────────────────────────────────────────────
