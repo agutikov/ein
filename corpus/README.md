@@ -23,8 +23,8 @@ Everything is `cargo test`; nothing shells out to a second engine.
 
 | reader | what it does with the manifest |
 |---|---|
-| [`ein-cli/tests/corpus_cli.rs`](../ein.rs/crates/ein-cli/tests/corpus_cli.rs) | **the sweep** — runs every entry under every declared run, as a process, and holds each cell's exit code to a banked golden |
-| [`ein-corpus/src/manifest.rs`](../ein.rs/crates/ein-corpus/src/manifest.rs) | the completeness check and the manifest's own invariants — nine tests |
+| [`ein-cli/tests/corpus_cli.rs`](../ein.rs/crates/ein-cli/tests/corpus_cli.rs) | **the sweep** — runs every entry under every declared run, as a process, holds each cell's exit code to a banked golden, and times them: it is what holds `cost_ms` and `slow` to the wall clock |
+| [`ein-corpus/src/manifest.rs`](../ein.rs/crates/ein-corpus/src/manifest.rs) | the completeness check and the manifest's own invariants — ten tests |
 | [`ein-render/tests/corpus_shapes.rs`](../ein.rs/crates/ein-render/tests/corpus_shapes.rs) | digests every observable surface of every corpus *file* (4 228 renderings), which is a superset of what the runs reach |
 | [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | runs the same sweep twice under a permuted id space |
 | [`ein-cli/tests/summary_properties.rs`](../ein.rs/crates/ein-cli/tests/summary_properties.rs) | the counter identities, over every `solve` cell |
@@ -32,6 +32,16 @@ Everything is `cargo test`; nothing shells out to a second engine.
 The last three walk the *files* (`ein_corpus::corpus_files`) rather than the
 manifest's rows, because their subject is a surface rather than an invocation.
 The completeness check is what keeps the two views the same set.
+
+**That difference is what a dropped run does and does not cost**, and it is
+worth knowing before reading the `runs` columns below. `corpus_shapes` solves
+every corpus *file* three ways and `summary_properties` five, both under an
+entering budget, so removing `solve` from an entry's `runs` removes **no
+surface**: what it removes is the *process* — the argv the CLI must still
+accept, the exit code, the diagnostic on stderr, the `--json-summary` file —
+and the fact that the run was **unbudgeted**. On a fixture with no hypothesis
+structure, that last one is the only thing a `solve` cell was contributing,
+and it contributes it in the form of a blind enumeration nobody reads.
 
 ```sh
 cargo test --manifest-path ein.rs/Cargo.toml -p ein-cli --test corpus_cli
@@ -49,7 +59,8 @@ path   = "examples/zebra2.ein"     # repo-root-relative
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "render rules"]
 levers = ["-L", "-K"]              # each makes one more `solve <lever>` run
-slow   = true                      # excluded from the default sweep
+slow   = true                      # excluded from the default sweep — see § `slow`
+cost_ms = 2116                     # what its runs cost, together, measured
 note   = "why this entry is interesting, when it is not obvious"
 ```
 
@@ -114,28 +125,94 @@ neither group is here.
 
 ## Dropped runs
 
-A handful of entries carry a `note` saying which runs they do *not* have,
-because the run outlived a 150 s budget under CPython. Two shapes:
+Some entries do not declare `solve`, or `solve -e`, or `render lattice`, and
+each says so in its `note`. Every reason is about the **puzzle**:
 
-- **`saturation/**`** demos exist to show ONE rule firing, and none of them
-  bounds a hypothesis space. Where `solve` does not finish there, it is
-  measuring the blind enumerator against a domain the demo never set — the
-  same trap `features/04_open` and `features/05_stdlib_domain_elim` fall into.
-- **`zebra2-minus-15`** is the honest case: genuinely under-determined, so its
-  exhaustive search is large rather than pathological.
+- **A demo that closes no domain.** The `saturation/**` demos exist to show ONE
+  rule firing; `features/02_star_in_identifiers` is a lexer demo;
+  `features/04_open` demonstrates the `open` macro and
+  `features/05_stdlib_domain_elim` the stdlib's elimination rules. None of them
+  states a domain, so `solve` on one is not solving the demo — it is
+  enumerating everything that could be built out of the demo's objects, to the
+  `-m` cap, and calling the result `Contradiction`
+  ([Q-M1d.6](../plans/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)).
+  `saturate` is the run that asks the demo's question and it costs 3.5 ms.
+- **`zebra2-minus-15`** is the honest case: genuinely under-determined at 32
+  models, so its exhaustive search is large rather than pathological. Its `-e`
+  is [M1d](../plans/m1d_satisfiability/README.md)'s subject and arrives with
+  that milestone.
+- **`render lattice` is `solve -e` with a DOT writer** (`-m 3` rather than 5 —
+  `render.rs::cmd_lattice`), so it inherits the same question and the same
+  answer. On `zebra2.ein` it draws **26.8 KB and 210 lines**, which is a view;
+  on `square-unique/cul-de-sac` it draws **49.2 MB and 480 934 lines** after
+  94 s, which is the enumerator's shadow. Four entries do without it —
+  `square-unique/{corner-house,cul-de-sac,terminus}` and `zebra2-minus-15` —
+  and **one keeps it**: `features/04_open`, because that fixture's subject *is*
+  what an open domain does to a search
+  ([Q-M1d.3](../plans/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)).
+  The corpus pays for exactly one unbounded lattice, and it is the one that
+  demonstrates something.
 
-A run nobody can finish is not coverage. **The budget these were dropped
-against was CPython's**, and ein.rs is 30–200× faster on the same workloads
-([baseline.md](../plans/m1a_rust/p1a.6_performance/baseline.md)), so some of
-them are now affordable. Re-measuring them is a corpus growth item, not a
-deletion: the notes stay until a run replaces them.
+**Do not drop a run merely because it is slow.** The test is whether the run
+*asks the fixture's question* — `features/05_stdlib_domain_elim` solves in
+3.0 s today and is still not declared, because three seconds of blind
+enumeration is not three seconds of coverage; `branching/07_lookahead_off`
+costs 0.92 s per run and keeps both, because on that fixture the cost **is**
+the finding. And where a run is dropped the note says which and why: a `runs`
+column that shrinks without a reason is how coverage disappears.
+
+**These notes used to blame CPython** — *"outlives a 150 s budget under
+CPython, and a run nobody can finish is not coverage"*, on six entries. That
+reason was wrong even where its conclusion was right, and
+[S1a.9.0](../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md) re-priced
+every one of them against ein.rs. Three of the excluded runs finish —
+`features/05_stdlib_domain_elim`'s two at 3.0 s and `zebra2-minus-15 :: render
+lattice` at 27.8 s — and the eight `solve` / `solve -e` cells that do not are
+not waiting on a budget at all: at the default `-m 5` they are killed by the
+**OOM killer**, at 14 GB and between one and three minutes. An unbounded
+hypothesis space is unbounded in memory first, and that would have been true of
+any engine.
 
 ## `slow`
 
-17 entries, 118 cells, excluded from the sweep unless `EIN_CORPUS_SLOW=1`. The
-whole default sweep is **542 cells in ~3 s**; the slow entries alone are two
-minutes of it, and a gate that takes two minutes to say the same thing is a
-gate people learn to skip.
+**An entry is `slow` when its declared runs cost 1 s or more, together**, on
+the build and machine
+[`corpus_cost.md`](../plans/m1a_rust/p1a.9_release/corpus_cost.md) names.
+`cost_ms` records that sum, and two tests hold the flag to it: `ein-corpus`'s
+`slow_matches_the_recorded_cost` (exact, arithmetic, never flakes) and
+`corpus_cli`'s `the_slow_flag_still_describes_the_sweep` (the wall clock of
+the sweep it has just run, at a 4× tolerance).
+
+Three entries are slow — `branching/07_lookahead_off`,
+`features/01_not_and_absent`, `features/04_open` — 19 cells and 16.4 s of
+engine. The default selection is **622 cells**, 3.0 s of engine and 3.6 s of
+`cargo test`; with `EIN_CORPUS_SLOW=1` the whole 641 take 21 s, where before
+S1a.9.0 they took **307 s**.
+
+Three decisions are worth knowing before editing the column:
+
+- **The sum, not the slowest run.** The flag's job is the sweep's budget, and
+  the sum is what an entry costs it. The two rules choose the same entries
+  today except `branching/07_lookahead_off`, whose two 0.92 s runs are under a
+  per-run line and over the sum's.
+- **One second**, because the whole default selection is under three seconds:
+  past that an entry stops being part of the sweep and becomes the reason it
+  is slow. The measured distribution leaves room on both sides — the slow
+  entries cost 2.1 s, 4.1 s and 10.2 s, and the most expensive unflagged one
+  0.38 s — so a machine would have to be 2.1× faster or 2.7× slower before the
+  line moved.
+- **`cost_ms` is recorded only where something checks it**: on a `slow` entry,
+  or on one within 4× of the threshold. Below that the sweep's own tolerance
+  swallows it and it would be a number nobody verifies — which is exactly what
+  the flag was between 2026-08-17 and S1a.9.0.
+
+Before that stage the flag meant *"one of its runs took 3 s or more under
+CPython in the T1a.0.1.1 probe"* and covered 17 entries and 118 cells, four
+minutes of sweep. Measured against the engine that ships, **twelve of the
+seventeen cost under a second all told** — `zebra2.ein`, the corpus's
+flagship, at 16 ms — and two more were flagged only for the 94 and 125 seconds
+they spent drawing a commitment lattice for a demo of one rule firing. The
+three that stay are slow for reasons their fixtures are about.
 
 ## Levers
 

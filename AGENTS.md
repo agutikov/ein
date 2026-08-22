@@ -75,6 +75,14 @@ constrained-reasoning research.
   table of readers. It was `conformance/` until M1a S1a.10.3, and the
   `--events` protocol it also held is now
   [`docs/kernel/inference/events.md`](docs/kernel/inference/events.md).
+  Since [S1a.9.0](plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md)
+  **`slow = true` is a measured claim** — an entry whose declared runs cost
+  1 s or more together, recorded in `cost_ms` and checked in both directions
+  ([corpus_cost.md](plans/m1a_rust/p1a.9_release/corpus_cost.md) is the
+  measurement, `utils/corpus_cost.py` re-takes it). Three entries are slow,
+  where seventeen were; `EIN_CORPUS_SLOW=1` is 19 s rather than four minutes;
+  and **a run is dropped from a `runs` column only when it does not ask the
+  fixture's question**, never for costing too much.
 - **`ein.rs/`** — the Rust port ([M1a](plans/m1a_rust/README.md)), a
   drop-in replacement for `ein`, and since
   [P1a.10](plans/m1a_rust/p1a.10_single_implementation/README.md) the only
@@ -108,10 +116,12 @@ constrained-reasoning research.
   in the repo — the divergence list, and
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
-- **`utils/`** — **seventeen scripts, all of them driving `ein.rs`** since M1a
+- **`utils/`** — **eighteen scripts, all of them driving `ein.rs`** since M1a
   [S1a.10.4](plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md),
   which deleted the eleven that compared two engines or measured the Python
-  one. Every script that runs the engine names the binary — **`$EIN_BIN`** or
+  one, plus `corpus_cost.py` from
+  [S1a.9.0](plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md).
+  Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the three that
   want a build of their own (`fork_delta_verify.py` → `target-fd`,
   `spec_audit.py` → `target-sa`, `profile_ein_rs.py` → `--profile profiling`,
@@ -142,7 +152,7 @@ constrained-reasoning research.
 
 ```sh
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the whole gate
-EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 17 slow entries
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 3 slow entries
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 ```

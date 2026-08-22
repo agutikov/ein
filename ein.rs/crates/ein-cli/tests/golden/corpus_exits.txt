@@ -302,8 +302,6 @@
 0    examples/features/02_star_in_identifiers.ein :: render rules
 0    examples/features/02_star_in_identifiers.ein :: saturate
 0    examples/features/02_star_in_identifiers.ein :: saturate --dump
-0    examples/features/02_star_in_identifiers.ein :: solve
-0    examples/features/02_star_in_identifiers.ein :: solve -e
 0    examples/features/03_forall.ein :: render constraints
 0    examples/features/03_forall.ein :: render lattice
 0    examples/features/03_forall.ein :: render rules
@@ -444,50 +442,36 @@
 0    examples/saturation/square-bwd/floors.ein :: render rules
 0    examples/saturation/square-bwd/floors.ein :: saturate
 0    examples/saturation/square-bwd/floors.ein :: saturate --dump
-0    examples/saturation/square-bwd/floors.ein :: solve
-0    examples/saturation/square-bwd/floors.ein :: solve -e
 0    examples/saturation/square-bwd/houses.ein :: render constraints
 0    examples/saturation/square-bwd/houses.ein :: render lattice
 0    examples/saturation/square-bwd/houses.ein :: render rules
 0    examples/saturation/square-bwd/houses.ein :: saturate
 0    examples/saturation/square-bwd/houses.ein :: saturate --dump
-0    examples/saturation/square-bwd/houses.ein :: solve
-0    examples/saturation/square-bwd/houses.ein :: solve -e
 0    examples/saturation/square-bwd/meetings.ein :: render constraints
 0    examples/saturation/square-bwd/meetings.ein :: render lattice
 0    examples/saturation/square-bwd/meetings.ein :: render rules
 0    examples/saturation/square-bwd/meetings.ein :: saturate
 0    examples/saturation/square-bwd/meetings.ein :: saturate --dump
-0    examples/saturation/square-bwd/meetings.ein :: solve
-0    examples/saturation/square-bwd/meetings.ein :: solve -e
 0    examples/saturation/square-fwd/floors.ein :: render constraints
 0    examples/saturation/square-fwd/floors.ein :: render lattice
 0    examples/saturation/square-fwd/floors.ein :: render rules
 0    examples/saturation/square-fwd/floors.ein :: saturate
 0    examples/saturation/square-fwd/floors.ein :: saturate --dump
-0    examples/saturation/square-fwd/floors.ein :: solve
-0    examples/saturation/square-fwd/floors.ein :: solve -e
 0    examples/saturation/square-fwd/houses.ein :: render constraints
 0    examples/saturation/square-fwd/houses.ein :: render lattice
 0    examples/saturation/square-fwd/houses.ein :: render rules
 0    examples/saturation/square-fwd/houses.ein :: saturate
 0    examples/saturation/square-fwd/houses.ein :: saturate --dump
-0    examples/saturation/square-fwd/houses.ein :: solve
-0    examples/saturation/square-fwd/houses.ein :: solve -e
 0    examples/saturation/square-fwd/meetings.ein :: render constraints
 0    examples/saturation/square-fwd/meetings.ein :: render lattice
 0    examples/saturation/square-fwd/meetings.ein :: render rules
 0    examples/saturation/square-fwd/meetings.ein :: saturate
 0    examples/saturation/square-fwd/meetings.ein :: saturate --dump
-0    examples/saturation/square-fwd/meetings.ein :: solve
-0    examples/saturation/square-fwd/meetings.ein :: solve -e
 0    examples/saturation/square-unique/corner-house.ein :: render constraints
-0    examples/saturation/square-unique/corner-house.ein :: render lattice
 0    examples/saturation/square-unique/corner-house.ein :: render rules
 0    examples/saturation/square-unique/corner-house.ein :: saturate
 0    examples/saturation/square-unique/corner-house.ein :: saturate --dump
 0    examples/saturation/square-unique/cul-de-sac.ein :: render constraints
-0    examples/saturation/square-unique/cul-de-sac.ein :: render lattice
 0    examples/saturation/square-unique/cul-de-sac.ein :: render rules
 0    examples/saturation/square-unique/cul-de-sac.ein :: saturate
 0    examples/saturation/square-unique/cul-de-sac.ein :: saturate --dump

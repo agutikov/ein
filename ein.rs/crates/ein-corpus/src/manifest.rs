@@ -44,9 +44,27 @@ pub struct Entry {
     /// express today (Q-M1a.16).
     #[serde(default)]
     pub levers: Vec<String>,
-    /// Nightly tier only.
+    /// Nightly tier only — see [`SLOW_MS`], which is the threshold it is a
+    /// claim about, and [`Entry::cost_ms`], which is the measurement.
     #[serde(default)]
     pub slow: bool,
+    /// **What this entry's declared runs cost, together, in milliseconds** —
+    /// the evidence behind [`Entry::slow`], measured rather than guessed.
+    ///
+    /// The sum rather than the slowest run, because the flag's job is the
+    /// *sweep's* budget and the sum is what an entry costs it. On today's
+    /// corpus the two rules choose the same entries except one —
+    /// [`branching/07_lookahead_off`](../../../../examples/branching/07_lookahead_off.ein),
+    /// whose two 925 ms runs are under a per-run line and over the sum's — and
+    /// `corpus/README.md` § `slow` is where the choice is written down.
+    ///
+    /// Recorded for the tail and omitted where it would be noise: an entry
+    /// with no `cost_ms` is one the default sweep runs in milliseconds, and
+    /// the sweep itself is what holds that claim up
+    /// (`corpus_cli::the_slow_flag_still_describes_the_sweep`). Re-take it
+    /// with `utils/bench_env.sh python3 utils/corpus_cost.py`.
+    #[serde(default)]
+    pub cost_ms: Option<u64>,
     /// Free-text; why this entry is interesting, when that is not obvious.
     #[serde(default)]
     pub note: Option<String>,
@@ -109,6 +127,27 @@ impl Corpus {
 /// otherwise reach [`Corpus::load`]'s vocabulary check as a typo, and the
 /// reader should say which of the two it is.
 pub const SCHEMA: &str = "ein-corpus/2";
+
+/// **The `slow` threshold**, in milliseconds of an entry's declared runs
+/// summed — S1a.9.0.
+///
+/// Until that stage `slow` had no threshold at all: it was set from a probe of
+/// the whole matrix under CPython in 2026-08-17 ("3 s or more on any run") and
+/// never re-taken, so by the time ein.rs was the only engine the flag was
+/// two engines out of date and false on `zebra2.ein`, which it marked slow at
+/// **16 ms**.
+/// A flag with a number behind it can rot; a flag with no number cannot even
+/// be checked.
+///
+/// One second is where a single entry stops being part of a default sweep and
+/// starts being the reason it is slow — the whole default selection is under
+/// three seconds of engine time. The measured distribution leaves the line
+/// alone: the entries above it cost 2.1 s, 4.1 s and 10.2 s, the ones below it
+/// 0.38 s and less, so a machine would have to be 2.1× faster or 2.7× slower
+/// before the answer changed.
+/// [`corpus_cost.md`](../../../../plans/m1a_rust/p1a.9_release/corpus_cost.md)
+/// is the measurement and `corpus/README.md` § `slow` is the rule.
+pub const SLOW_MS: u64 = 1000;
 
 /// The group vocabulary — `corpus/README.md`.
 ///
@@ -202,6 +241,53 @@ mod tests {
                 e.group
             );
         }
+    }
+
+    /// **S1a.9.0 — `slow` is a measured claim, and this is what measures it
+    /// against the threshold.**
+    ///
+    /// The flag drifted for exactly one reason: nothing anywhere related it to
+    /// a number. It was set under an engine that left the tree, on a budget
+    /// set for that engine, and the only way to find out that `zebra2.ein` was
+    /// flagged slow at 16 ms was to time it by hand. So the manifest now
+    /// carries the measurement beside the flag and this holds the two
+    /// together — no engine run, no wall clock, no flake: [`SLOW_MS`] against
+    /// a recorded [`Entry::cost_ms`], in both directions.
+    ///
+    /// The half this cannot see is whether `cost_ms` is still *true*, and
+    /// that half is `corpus_cli::the_slow_flag_still_describes_the_sweep`,
+    /// which compares it against the sweep it has just run. Two checks, one
+    /// claim: this one is exact and always runs, that one measures and needs
+    /// a tolerance.
+    #[test]
+    fn slow_matches_the_recorded_cost() {
+        let mut bad: Vec<String> = Vec::new();
+        for e in &corpus().entry {
+            match (e.slow, e.cost_ms) {
+                (true, None) => bad.push(format!(
+                    "{}: slow = true with no cost_ms — the flag has no measurement behind it",
+                    e.path
+                )),
+                (true, Some(ms)) if ms < SLOW_MS => bad.push(format!(
+                    "{}: slow = true, but cost_ms = {ms} is under the {SLOW_MS} ms threshold",
+                    e.path
+                )),
+                (false, Some(ms)) if ms >= SLOW_MS => bad.push(format!(
+                    "{}: cost_ms = {ms} is at or over the {SLOW_MS} ms threshold, but slow is unset",
+                    e.path
+                )),
+                _ => {}
+            }
+            if e.cost_ms == Some(0) {
+                bad.push(format!("{}: cost_ms = 0 — no run costs nothing", e.path));
+            }
+        }
+        assert!(
+            bad.is_empty(),
+            "the `slow` flag and the recorded cost disagree \
+             (re-take with `utils/bench_env.sh python3 utils/corpus_cost.py`):\n  {}",
+            bad.join("\n  ")
+        );
     }
 
     #[test]
@@ -337,6 +423,7 @@ mod tests {
             runs: vec!["solve".into()],
             levers: vec!["-L".into(), "-o score-sum".into()],
             slow: false,
+            cost_ms: None,
             note: None,
         };
         assert_eq!(e.all_runs(), ["solve", "solve -L", "solve -o score-sum"]);

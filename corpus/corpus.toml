@@ -5,11 +5,18 @@
 # convention: corpus/README.md. A file under examples/ or stdlib/ with no entry
 # here fails a completeness check, so the corpus cannot silently miss one.
 #
-# `slow = true` keeps an entry out of the default sweep. It is measured, not
-# guessed: an entry is slow when any of its runs took 3s or more in the
-# T1a.0.1.1 probe of the whole matrix (CPython 3.14, dev machine, 2026-08-17).
-# That budget is now two engines out of date — ein.rs runs the whole default
-# sweep in ~3 s — and re-measuring it is a growth item, not a deletion.
+# `slow = true` keeps an entry out of the default sweep, and since S1a.9.0 it
+# is a claim with a threshold behind it: an entry is slow when its declared
+# runs cost **1 s or more together**, which is what `cost_ms` records. Three
+# entries are. The rule, and why the sum rather than the slowest run, is
+# corpus/README.md § `slow`; the measurement is
+# plans/m1a_rust/p1a.9_release/corpus_cost.md and
+# `utils/bench_env.sh python3 utils/corpus_cost.py` re-takes it.
+#
+# It used to say "any of its runs took 3 s or more in the T1a.0.1.1 probe of
+# the whole matrix (CPython 3.14, 2026-08-17)" — a budget two engines out of
+# date, which is how seventeen entries came to be flagged for costs between
+# 11 ms and two minutes, `zebra2.ein` among them.
 #
 # Generated once from the tree; maintained by hand from here.
 #
@@ -55,13 +62,16 @@ levers = ["-L", "-K", "-y", "-o score-sum"]
 path   = "examples/branching/06_lookahead_on.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
+cost_ms = 377
+note   = "the lookahead A/B's on side, and the corpus's most expensive cell that is not slow: `solve -e` is 245 ms against its sibling 07's 916 ms, for the same bytes. Was slow = true until S1a.9.0 measured it."
 
 [[entry]]
 path   = "examples/branching/07_lookahead_off.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
+cost_ms = 2116
+note   = "the lookahead A/B's off side: 11 501 enterings where 06 needs 67, and that cost is the finding (docs/kernel/inference/features.md). solve and solve -e are the same 0.92 s because with the lookahead off no node is ever complete, so the fast path has nothing to stop early at — the runs stay for the same reason the cost does."
 
 [[entry]]
 path   = "examples/branching/08_hypothesis_relation_whitelist.ein"
@@ -138,13 +148,14 @@ path   = "examples/features/01_not_and_absent.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide."
+cost_ms = 4059
+note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide. solve and solve -e cost the same 1.97 s — no node is complete, so the search walks to the -m cap and calls it Contradiction (Q-M1d.6). The runs stay: this is the cheapest fixture where NAF meets the blind enumerator, and it is e2e_baseline.py's `features/01 -e` row."
 
 [[entry]]
 path   = "examples/features/02_star_in_identifiers.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "no solve, solve -e: a lexer demo — `*` in an identifier tail, wired into the `is-a*` closure idiom — with no hypothesis structure to search. The runs enumerated a wide empty space to the -m cap for 214 / 265 ms and a Contradiction (Q-M1d.6); `saturate --dump` lists the ten `is-a*` edges the demo's header predicts, in 3.7 ms, which is the demo's question."
 
 [[entry]]
 path   = "examples/features/03_forall.ein"
@@ -156,14 +167,14 @@ path   = "examples/features/04_open.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-note   = "a feature demo of `open`, not of search — nothing bounds the hypothesis space, so `solve` measures the blind enumerator. no solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+cost_ms = 10213
+note   = "a feature demo of `open`, not of search — nothing bounds the hypothesis space, so `solve` measures the blind enumerator. no solve, solve -e: at the default -m 5 neither run ends in a verdict, they end in the OOM killer (14.3 GB of anonymous memory, 78 s), which is a property of an open domain and not of a budget. `render lattice` is the same search at -m 3, and its 10.2 s is the slowest thing in the corpus."
 
 [[entry]]
 path   = "examples/features/05_stdlib_domain_elim.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
-note   = "same shape as 04: the demo is the stdlib elimination rules, and the unbounded hypothesis space is incidental to it. no solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+note   = "same shape as 04: the demo is the stdlib elimination rules, and the unbounded hypothesis space is incidental to it. no solve, solve -e: the runs do finish now — 3.0 s each — and they still measure the blind enumerator rather than the elimination rules, which `saturate` shows in 3.5 ms. Affordable is not the test; asking the fixture's question is."
 
 [[entry]]
 path   = "examples/features/06_symmetric_native.ein"
@@ -241,58 +252,56 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 [[entry]]
 path   = "examples/saturation/square-bwd/floors.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "no solve, solve -e: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
 
 [[entry]]
 path   = "examples/saturation/square-bwd/houses.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "no solve, solve -e: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
 
 [[entry]]
 path   = "examples/saturation/square-bwd/meetings.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "no solve, solve -e: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
 
 [[entry]]
 path   = "examples/saturation/square-fwd/floors.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
 
 [[entry]]
 path   = "examples/saturation/square-fwd/houses.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
 
 [[entry]]
 path   = "examples/saturation/square-fwd/meetings.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
 
 [[entry]]
 path   = "examples/saturation/square-unique/corner-house.ein"
 group  = "positive"
-runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
-note   = "no solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints"]
+note   = "no solve, solve -e, render lattice: a per-rule demo of `square-unique` — one rule, one firing — over a street it never closes, so all three run the blind enumerator instead of the rule. solve and solve -e end in the OOM killer at ~60 s; `render lattice` is the same search at -m 3 and did finish, in 125 s and 58.6 MB of DOT nobody reads — against 26.8 KB for zebra2's, which is what a lattice view looks like when there is one. Those two cells were 90 % of the old slow tier. Same runs column as its sibling terminus, now for the same stated reason."
 
 [[entry]]
 path   = "examples/saturation/square-unique/cul-de-sac.ein"
 group  = "positive"
-runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
-note   = "no solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+runs   = ["saturate", "saturate --dump", "render rules", "render constraints"]
+note   = "no solve, solve -e, render lattice: a per-rule demo of `square-unique` — one rule, one firing — over a street it never closes, so all three run the blind enumerator instead of the rule. solve and solve -e end in the OOM killer at ~60 s; `render lattice` is the same search at -m 3 and did finish, in 94 s and 49.2 MB of DOT nobody reads — against 26.8 KB for zebra2's, which is what a lattice view looks like when there is one. Those two cells were 90 % of the old slow tier. Same runs column as its sibling terminus, now for the same stated reason."
 
 [[entry]]
 path   = "examples/saturation/square-unique/terminus.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints"]
-note   = "no render lattice, solve, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+note   = "no render lattice, solve, solve -e: as corner-house and cul-de-sac — the demo is one `square-unique` firing, and the three missing runs are the blind enumerator over a street the demo never closes. The biggest of the three streets, and it shows: solve and solve -e are OOM-killed at ~151 s where its siblings go at ~60, and `render lattice` outlives 300 s where theirs take 94 and 125."
 
 [[entry]]
 path   = "examples/saturation/symmetric/couple.ein"
@@ -343,7 +352,6 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 path   = "examples/zebra.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
 note   = "the second ontology: one generic `co-located` where zebra2 has five typed projections. The pair agreeing is the check that the engine's reasoning is not an artefact of one encoding."
 
 [[entry]]
@@ -355,15 +363,15 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 path   = "examples/zebra2-minus-15.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
-slow   = true
-note   = "zebra2 with condition (15) removed — genuinely under-determined, so the exhaustive search is large rather than pathological. no render lattice, solve -e: outlives a 150s budget under CPython, and a run nobody can finish is not coverage."
+note   = "zebra2 with condition (15) removed — genuinely under-determined at 32 models, so the exhaustive search is large rather than pathological. no solve -e: every model is found by depth 3 and depths 4-5 exist only to prove there are no more (M1d P1d.1), so the run outlives a 5 min ceiling here and was killed at 30 min there; `solve` is 32 ms and stays. no render lattice: the same search at -m 3, which does finish — 27.8 s — and writes 11.6 MB of DOT that is the enumerator rather than a view. These are the exclusions M1d lifts."
 
 [[entry]]
 path   = "examples/zebra2.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
 levers = ["-L", "-K", "-y", "-o score-sum"]
-slow   = true
+cost_ms = 260
+note   = "the flagship, and what a stale flag looks like: `slow = true` on a file that solves in 16 ms and whose sixteen cells cost 260 ms together. Removed at S1a.9.0."
 
 
 # ── regression: examples/ein-bugs/ ──────────────────────────

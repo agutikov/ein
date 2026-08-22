@@ -228,9 +228,24 @@ written when the milestone starts.
 
 [`open_questions.md`](open_questions.md) — `Q-M1d.<n>`. **Q-M1d.1** (ex
 Q-M1a.21, arrived with P1d.1) asks whether the search may stop before the
-lattice is exhausted; the rest come from the note — where a requirement lives
-(kernel or stdlib), what closes a domain, and whether an obligation-driven
-generator changes the answer or only the path.
+lattice is exhausted; Q-M1d.2 to Q-M1d.5 come from the note — where a
+requirement lives (kernel or stdlib), what closes a domain, and whether an
+obligation-driven generator changes the answer or only the path.
+
+**[Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+arrived 2026-08-22, from a release chore.** M1a
+[S1a.9.0](../m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md) re-priced the
+corpus's slow tail and found ten entries that cost the same exhaustively as on
+the fast path, all of them reporting `Contradiction k=0` with
+`exhausted=False` and `layers_explored == -m`: the search runs out of
+commitment-set depth and says *"the constraints are contradictory"* anyway,
+where the same engine answers `Aborted` — "budget cut, not proven" — for a
+`-T` or `-E` budget. It is Q-M1d.1's neighbour: that one asks whether the
+search may stop early, this one asks **what it is allowed to say when it
+does**. [P1d.2](p1d.2_obligations/README.md) may dissolve it — a state that
+knows what it owes can report *incomplete*, which is
+[`ideas.md`](ideas.md)'s middle outcome and the word those ten entries
+actually want.
 
 ## Cross-links
 

@@ -3,7 +3,7 @@
 # run_tests.sh — the gate.
 #
 #     ./run_tests.sh                 # cargo test --workspace
-#     ./run_tests.sh --slow          # + the 118 slow corpus cells, + 8 id seeds
+#     ./run_tests.sh --slow          # + the 19 slow corpus cells, + 8 id seeds
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **This was a three-phase runner until M1a S1a.10.5**, and each phase went
@@ -38,13 +38,15 @@
 # line `cargo test` captures for a passing test, so CI had been reporting a
 # pass over 5 209 renderings nothing checked.
 #
-# Budget: **542 tests in ~1 m 05 s**. It was 312 in 9 m 13 s before S1a.10.2,
+# Budget: **577 tests in ~1 m 16 s** (re-measured 2026-08-22, S1a.9.0; the
+# default corpus sweep grew from 542 cells to 622 when fourteen entries stopped
+# being `slow`). It was 312 in 9 m 13 s before S1a.10.2,
 # of which nine minutes were 42 integration tests starting a `python3` per
 # corpus file. No test is marked slow; the two that dominate are
 # `dot_wellformed` (~40 s) and `id_order_invariance` (~11 s).
 #
 #   EIN_BLESS=1 ./run_tests.sh          # re-bank every golden
-#   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the 17 slow corpus entries
+#   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the 3 slow corpus entries (+16 s)
 #   EIN_ID_SEEDS=8    ./run_tests.sh    # more id-space permutations
 
 set -euo pipefail

@@ -5,7 +5,10 @@
 //! both implementations, and diffed everything the two processes produced.
 //! [S1a.10.3](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)
 //! retires the second operand. What replaces the harness is not a diff, it is
-//! a **sweep**: the same 660 cells, one engine, run to see that they run.
+//! a **sweep**: the same cells, one engine, run to see that they run — 641 of
+//! them since [S1a.9.0](../../../../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md)
+//! re-priced the tail and sixteen runs turned out to be asking their fixtures
+//! nothing.
 //!
 //! ## Why a sweep is not nothing
 //!
@@ -38,8 +41,8 @@
 //! correct engine and do not have to be looked up.
 //!
 //! ```text
-//! cargo test -p ein-cli --test corpus_cli                    # 542 cells, ~3 s
-//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test corpus_cli  # 660 cells, ~4 min
+//! cargo test -p ein-cli --test corpus_cli                    # 622 cells, ~3.5 s
+//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test corpus_cli  # 641 cells, ~24 s
 //! EIN_BLESS=1       cargo test -p ein-cli --test corpus_cli  # re-bank (implies SLOW)
 //! ```
 //!
@@ -52,9 +55,13 @@
 //! **hung** one, with no output and no name — and this file is the only test
 //! in the workspace that runs unbounded search from a process it did not
 //! write the arguments for. The slowest cell today is
-//! `square-unique/cul-de-sac.ein :: render lattice` at 83 s, which is a blind
+//! `features/04_open.ein :: render lattice` at **10.2 s**, which is a blind
 //! enumerator over a domain the demo never bounds; it is why that entry is
-//! `slow`.
+//! `slow`. It used to be `square-unique/cul-de-sac.ein :: render lattice` at
+//! **94 s** — 125 s for its sibling `corner-house` — and those two cells were
+//! 90 % of the whole sweep until S1a.9.0 asked what they were for. A cell at
+//! 125 s against a 300 s timeout is also a red gate waiting for a slower
+//! machine.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -72,6 +79,9 @@ struct Cell {
     code: i32,
     stderr: String,
     out: PathBuf,
+    /// Wall clock, child included — the only measurement this file takes, and
+    /// [`the_slow_flag_still_describes_the_sweep`]'s operand.
+    took: Duration,
 }
 
 impl Cell {
@@ -84,12 +94,16 @@ impl Cell {
     }
 }
 
-/// `EIN_CORPUS_SLOW=1` — the 17 entries whose runs took 3 s or more under
-/// CPython at T1a.0.1.1. They cost ~2 minutes of the sweep's ~3 seconds, so
-/// they are nightly's.
+/// `EIN_CORPUS_SLOW=1` — the entries whose declared runs cost
+/// `ein_corpus::manifest::SLOW_MS` or more together. **Three** of them since
+/// [S1a.9.0](../../../../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md);
+/// there were seventeen, flagged under CPython at T1a.0.1.1 against a budget
+/// two engines out of date, and one of them was `zebra2.ein` at 16 ms. Those
+/// three add 16 s to a default selection that costs 3.5, so they are still
+/// nightly's.
 ///
 /// `EIN_BLESS=1` implies it: a golden blessed from the default selection
-/// would silently *shrink* by 118 lines, which is the one way a table like
+/// would silently *shrink* by 19 lines, which is the one way a table like
 /// this can be wrong without anyone noticing.
 fn include_slow() -> bool {
     let on = |k: &str| std::env::var(k).as_deref() == Ok("1");
@@ -112,7 +126,7 @@ fn timeout() -> Duration {
 /// to pipes: a bounded run has to poll for completion, and a child that is
 /// filling a 64 KB pipe nobody is draining would deadlock instead of finishing
 /// — `render lattice` on a large puzzle writes far more than that.
-fn run_cell(bin: &str, argv: &[String], repo: &Path, dir: &Path) -> (i32, String) {
+fn run_cell(bin: &str, argv: &[String], repo: &Path, dir: &Path) -> (i32, String, Duration) {
     let file = |name: &str| {
         std::fs::File::create(dir.join(name)).unwrap_or_else(|e| panic!("{name}: {e}"))
     };
@@ -124,7 +138,8 @@ fn run_cell(bin: &str, argv: &[String], repo: &Path, dir: &Path) -> (i32, String
         .stderr(Stdio::from(file("stderr")))
         .spawn()
         .unwrap_or_else(|e| panic!("{bin} {argv:?}: {e}"));
-    let deadline = Instant::now() + timeout();
+    let started = Instant::now();
+    let deadline = started + timeout();
     let mut polls = 0u32;
     let code = loop {
         match child.try_wait().expect("try_wait") {
@@ -148,8 +163,9 @@ fn run_cell(bin: &str, argv: &[String], repo: &Path, dir: &Path) -> (i32, String
             }
         }
     };
+    let took = started.elapsed();
     let stderr = std::fs::read_to_string(dir.join("stderr")).unwrap_or_default();
-    (code, stderr)
+    (code, stderr, took)
 }
 
 /// Run every declared cell, once.
@@ -179,13 +195,14 @@ fn sweep() -> Vec<Cell> {
         let dir = root.join(format!("{i:04}"));
         std::fs::create_dir_all(&dir).expect("cell output directory");
         let argv = plan::argv(&run, &path, &dir);
-        let (code, stderr) = run_cell(bin, &argv, &repo, &dir);
+        let (code, stderr, took) = run_cell(bin, &argv, &repo, &dir);
         out.push(Cell {
             path,
             run,
             code,
             stderr,
             out: dir,
+            took,
         });
     }
     out
@@ -313,6 +330,85 @@ fn no_cell_crashes() {
         })
         .collect();
     assert!(bad.is_empty(), "{} cells:\n{}", bad.len(), bad.join("\n"));
+}
+
+/// How far the wall clock may be from the manifest before this file says so.
+///
+/// Wide on purpose, and for three reasons at once. The claim being checked is
+/// *which side of the threshold an entry is on*, and that claim survives a
+/// machine four times slower than the one the numbers were taken on — where a
+/// tighter tolerance would only teach people that a red corpus test means "CI
+/// was busy". This sweep also runs the **`dev`** binary (`opt-level = 1`)
+/// while `cost_ms` is measured on `release`, which is 1.09× over the whole
+/// sweep and more than that on some cells. And the drift it exists to catch
+/// was **165×**: the flag was set under CPython in 2026-08-17 and was still
+/// there, unexamined, two engines later
+/// ([S1a.9.0](../../../../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md)).
+/// Nothing that big hides inside 4×.
+const COST_FACTOR: u32 = 4;
+
+/// **The `slow` flag still describes the sweep it has just run** — S1a.9.0.
+///
+/// `ein-corpus`'s `slow_matches_the_recorded_cost` holds the flag against the
+/// number recorded beside it, exactly and without running anything. It cannot
+/// tell whether that number is still *true*; this can, because the cells were
+/// timed on the way past. Two tests, one claim, and the split is the usual
+/// one: the exact half never flakes, the measuring half needs a tolerance.
+///
+/// Only entries in **this** selection are judged — the default one has no
+/// `slow` entries in it at all, so the "no longer slow" direction is
+/// `EIN_CORPUS_SLOW=1`'s to check and the "slow now" direction is the default
+/// sweep's, which is the selection that would suffer from it.
+#[test]
+fn the_slow_flag_still_describes_the_sweep() {
+    let manifest = corpus();
+    let mut total: BTreeMap<&str, Duration> = BTreeMap::new();
+    for c in cells() {
+        *total.entry(&c.path).or_default() += c.took;
+    }
+    let ceiling = (ein_corpus::manifest::SLOW_MS * COST_FACTOR as u64) as u128;
+    let floor = (ein_corpus::manifest::SLOW_MS / COST_FACTOR as u64) as u128;
+    let mut bad: Vec<String> = Vec::new();
+    for e in &manifest.entry {
+        let Some(took) = total.get(e.path.as_str()) else {
+            continue; // not in this selection.
+        };
+        let ms = took.as_millis();
+        if !e.slow && ms >= ceiling {
+            bad.push(format!(
+                "  {}: {ms} ms of cells and no `slow` flag (threshold {} ms)",
+                e.path,
+                ein_corpus::manifest::SLOW_MS
+            ));
+        }
+        if e.slow && ms <= floor {
+            bad.push(format!(
+                "  {}: `slow = true`, but its cells cost {ms} ms — the flag is what \
+                 keeps it out of the default sweep, for nothing",
+                e.path
+            ));
+        }
+        // The recorded number, where it is near enough to the threshold to be
+        // deciding anything. Below that it is documentation: a 40 ms entry
+        // reading 120 ms says the machine is busy, not that the corpus moved.
+        if let Some(c) = e.cost_ms.filter(|c| *c as u128 >= floor) {
+            let (c, f) = (c as u128, COST_FACTOR as u128);
+            if ms > c * f || ms * f < c {
+                bad.push(format!(
+                    "  {}: recorded cost_ms = {c}, swept in {ms} ms — outside {f}×",
+                    e.path
+                ));
+            }
+        }
+    }
+    assert!(
+        bad.is_empty(),
+        "{} entry(s) whose cost and whose flag disagree — re-take with \
+         `utils/bench_env.sh python3 utils/corpus_cost.py` and edit \
+         `corpus/corpus.toml`:\n{}",
+        bad.len(),
+        bad.join("\n")
+    );
 }
 
 /// **Every entry that is supposed to work, works** — the liveness check's

@@ -67,23 +67,36 @@ one. And, first, the measurement the phase would otherwise ship without: what
 the corpus's seventeen `slow = true` entries actually cost, on the engine that
 is being released.
 
+> **That measurement is taken** —
+> [`corpus_cost.md`](corpus_cost.md), 2026-08-22. **Twelve of the seventeen
+> were never slow** by any threshold worth stating — the flagship `zebra2.ein`
+> among them, at 16 ms — two more stopped being slow when a run that asked the
+> fixture nothing was dropped, and the runs excluded for "outliving a 150 s
+> budget under CPython" turn out to end in the **OOM killer** on any engine.
+> What the release gate now sweeps is 641 cells in 19.4 s, where it was 660 in
+> 242.6 s.
+> [Q-M1d.6](../../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+> is what the stage found and did not fix.
+
 ## Stages
 
-| stage | title | est. |
-|---|---|---|
-| [S1a.9.0](s1a.9.0_slow_corpus.md) | The slow corpus, re-priced | 3 d |
-| [S1a.9.3](s1a.9.3_packaging.md) | Packaging and release | 2 d |
-| [S1a.9.4](s1a.9.4_documentation.md) | Documentation | 1 d |
+| stage | title | est. | |
+|---|---|---|---|
+| [S1a.9.0](s1a.9.0_slow_corpus.md) | The slow corpus, re-priced | 3 d | ✅ **shipped 2026-08-22** — 17 slow entries → 3, and the nightly tier from four minutes to 19 s |
+| [S1a.9.3](s1a.9.3_packaging.md) | Packaging and release | 2 d | |
+| [S1a.9.4](s1a.9.4_documentation.md) | Documentation | 1 d | |
 
 **S1a.9.1 and S1a.9.2 do not exist.** See the scope change above; the gap is
 deliberate.
 
 ## Acceptance for the phase
 
-- The seventeen slow entries carry a **measured** cost against ein.rs, every
+- ✅ The seventeen slow entries carry a **measured** cost against ein.rs, every
   `slow` flag and every `no solve -e` exclusion is either re-justified on that
   measurement or removed, and no surviving note explains a cost by naming
-  CPython ([S1a.9.0](s1a.9.0_slow_corpus.md)).
+  CPython ([S1a.9.0](s1a.9.0_slow_corpus.md), record:
+  [`corpus_cost.md`](corpus_cost.md)). Three entries are slow, `cost_ms` is
+  what says so, and two tests hold the flag to it.
 - `ein` binaries for Linux (x86_64 + aarch64), macOS (universal2) and Windows
   (x86_64), each sweeping the corpus on its own platform.
 - `ein --version` reports engine version, protocol version, feature flags and

@@ -8,6 +8,25 @@
 premise before spending the phase. That stage inverted `design/08` §2 in one
 day of measurement; this one starts with the measurement already taken.
 
+**Status: shipped 2026-08-22.** The record is
+[`corpus_cost.md`](corpus_cost.md); the instrument that produced it is
+[`utils/corpus_cost.py`](../../../utils/corpus_cost.py), the eighteenth script
+in `utils/` and the ninth in the M1a measurement set.
+
+| finding | number |
+|---|---|
+| entries flagged `slow`, before → after | **17 → 3** — twelve were never slow by the new rule, two stopped being when a run that asked nothing was dropped |
+| the flagship, `zebra2.ein`, flagged slow at | **16 ms** (260 ms for all sixteen of its cells) |
+| `EIN_CORPUS_SLOW=1`, before → after | **307.2 s → 21.1 s** of `cargo test`, 660 → 641 cells, green both times |
+| the default sweep, before → after | 1.70 s → **2.97 s**, 542 → **622** cells — thirteen entries came back |
+| share of the old slow tier spent on **two** cells | **90 %** — `square-unique/{corner-house,cul-de-sac} :: render lattice`, 219 s of lattice DOT for two demos of one rule firing |
+| entries whose `solve` and `solve -e` cost the same | **ten**, ratio 0.98–1.24× — no node is ever complete, so the fast path has nothing to stop at |
+| what the three "cannot finish" cells actually do | **not a timeout — the OOM killer**, at 14.3 GB and 57–152 s. The note that blamed CPython was wrong about the reason as well as the engine |
+| runs dropped / restored | **16 cells dropped**, 0 restored — `features/05_stdlib_domain_elim` finishes in 3.0 s now and keeps its exclusion, because affordable is not the test |
+| notes naming CPython | **6 → 0** |
+| the corpus's worst case | `features/04_open :: render lattice`, **10.2 s** — 640× `zebra2`'s whole `solve`, and 18.3 MB of DOT |
+| handed to M1d | [Q-M1d.6](../../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false) — `Contradiction` said with `exhausted=False`, and the `-m` sweep that shows it |
+
 ## Context
 
 [`corpus/corpus.toml`](../../../corpus/corpus.toml) marks **17 of 128** entries
