@@ -59,6 +59,30 @@ of *post*, or die at all.
 So a naive parallel layer changes `enterings_dead_pre` /
 `enterings_dead_post` — a T1 failure.
 
+> **Not built — decided 2026-08-22 at
+> [S1a.7.2](../p1a.7_parallelism/s1a.7.2_parallel_enterings.md) § The
+> decision.** The scheme below is correct and was costed; it is simply not
+> needed, and the measurement that showed that is one more pass over the event
+> stream. A layer is fanned out **iff it cannot write a fact to root** — every
+> layer ≥ 2, and layer 1 when `enable_singleton_writeback` is off — so no
+> fanned-out layer ever has a `W`, and the three cases below reduce to case 1
+> *by construction*. Layer 1 with the writeback on runs sequentially: 248 of
+> 248 writebacks corpus-wide are in it, it holds **0.016 %** of the corpus's
+> 8 158 205 enterings, and serialising it costs **0.24 %** of
+> `branching/07 -e`'s Phase-2 firings and nothing at all on the other three
+> workloads of the measurement set, which never write back
+> ([scaling.md §3a](../p1a.7_parallelism/scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)).
+>
+> The route that looked most promising and is *not* available: run layer 1's
+> head sequentially and fan out its tail. `W` grows until candidate 55 of 56 on
+> both zebras and **204 of 204** on `branching/07 -e`, so the exact tail is one
+> candidate.
+>
+> This section stays because the predicate is "can this layer write a fact to
+> root", not "is this layer 1". A future `W` writer at any depth trips
+> S1a.7.2's assertion, and this is then the design that was measured and
+> costed rather than one to invent under pressure.
+
 ### Speculate, then validate by continuation
 
 ```
@@ -319,6 +343,28 @@ Three readings, and the third was not expected:
    the same answer. That is a P1a.6-shaped finding that fell out of a P1a.7
    correctness experiment, and it is pinned by
    `deferring_collapses_roots_layer_stack`.
+
+### Not the parallelism mechanism — and the part of it that is
+
+> **Decided 2026-08-22 at
+> [S1a.7.2](../p1a.7_parallelism/s1a.7.2_parallel_enterings.md).** Deferral is
+> not how `--jobs N` gets its layers, for a reason orthogonal to everything
+> above: it moves `enterings_total` — 101 → 617 whole-layer, 111 at batch 20 on
+> `zebra2 -e` — and a search counter that differs between `--jobs 1` and
+> `--jobs N` is exactly what the phase's acceptance does not admit. Applying one
+> batch policy at *every* job count would satisfy invariance, but that is a
+> traversal change to the sequential engine and costs 6.1× the enterings at
+> batch = ∞. So claim 4's re-check obligation is not incurred either: under
+> immediate integration no alive verdict is provisional.
+>
+> **Reading 3 survives, and outlives the mechanism.** The 2.8× on
+> `branching/07 -e` comes with an *identical* entering count, so all of it is
+> the depth column and none of it is deferral. Coalescing root's layer stack at
+> the layer barrier — `Kb::flatten()`, integration still immediate — takes the
+> same win with no prune deferred and no counter moved, for every layer above
+> the first. It is S1a.7.2's **first** task rather than a later one, because a
+> stage that lands its parallelism first would be measuring speedup against a
+> baseline it could have fixed.
 
 ### Order
 

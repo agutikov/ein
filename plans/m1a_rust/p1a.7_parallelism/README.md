@@ -124,7 +124,10 @@ is re-shaped by the middle two:
   with `enable_fail_fast_fork` **off**, `core`-moved collapses exactly onto
   `kind`-moved (35 = 35), which names a question design/08 never asked —
   fail-fast × speculation — and hands it to
-  [S1a.7.2](s1a.7.2_parallel_enterings.md).
+  [S1a.7.2](s1a.7.2_parallel_enterings.md). **Answered 2026-08-22 by removal**:
+  a layer that can write to root is not fanned out, so there are no continued
+  forks for fail-fast to interact with. The 35 keep their value as the evidence
+  that no read-set filter would have been sound.
 
 And one thing the plan had right for the wrong workload: the entries with a
 search big enough to need cores put **98.2–99.9 % of their enterings past
@@ -152,7 +155,10 @@ with the commutation identity `sat(B ∪ W ∪ c) = sat(sat(B ∪ c) ∪ W)` and
 asymmetry that matters: `dead` is monotone, so **a death found under deferred
 integration is a real death and a *solution* is provisional**. The barrier
 re-check that turns the measured model-set equality into a constructed one is
-one re-entry per recorded solution node, and it is S1a.7.2's to build.
+one re-entry per recorded solution node — **and it is not built, because the
+mode it protects is not taken**: deferral moves `enterings_total` (101 → 617
+here), and a search counter differing by job count is what the acceptance
+forbids. Under immediate integration nothing is provisional.
 
 What it costs, all cells answer-identical:
 
@@ -168,14 +174,24 @@ layer's writes takes `branching/07 -e` from 1 135 ms to 406 ms **at
 `--jobs 1`**, for the same enterings and the same answer. The mode is not a tax
 on the workloads that want cores; on the deepest of them it is a 2.8× discount.
 
+**And the discount outlived the mode.** The entering count is identical there,
+so all 2.8× is the depth column and none of it is the deferral. S1a.7.2 takes
+it by flattening root at the layer barrier — integration still immediate, no
+prune deferred, no counter moved — as its **first** task, T1a.7.2.0.
+
 ## Goal
 
 Use the cores without giving up the gate. `--jobs 1` stays the default;
 `--jobs N` is **the same computation** — same verdict, same models, same
 unsat core, same counters, and the same renderings up to the narration
-[`ein-parity`](../../../ein.rs/crates/ein-parity/src/lib.rs) already admits —
-via speculate-and-validate; and `--unordered` is an explicit opt-out for
-throughput.
+[`ein-parity`](../../../ein.rs/crates/ein-parity/src/lib.rs) already admits.
+`--unordered` is an explicit opt-out for throughput.
+
+> It read "via speculate-and-validate" until 2026-08-22. There is no
+> validation: [S1a.7.2](s1a.7.2_parallel_enterings.md) fans out **only layers
+> that cannot write to root**, which is every layer above the first, and runs
+> layer 1 sequentially — 0.016 % of the corpus's enterings, and 0.24 % of the
+> firings of the one measurement-set workload that writes back at all.
 
 > Until 2026-08-22 this read "stays T3 … is **also** T3". The tier is gone with
 > the harness; the promise is § The acceptance, restated, and it is the same
@@ -189,7 +205,7 @@ Design: [design/08](../design/08_parallelism.md).
 |---|---|---|
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
 | [S1a.7.1](s1a.7.1_sync_shared_state.md) ◑ | Making the shared state `Sync` — **T1a.7.1.0–.4 done, .7 built**; the ordering audit and the threaded stress are what is left, [shared_state.md](shared_state.md) | 3 d → 4.5 d |
-| [S1a.7.2](s1a.7.2_parallel_enterings.md) | Level 1: parallel enterings | 4 d |
+| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22, on paper: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items | 4 d → 3 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) | Level 3: the parallel boundary round | 2 d |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) | Level 2: the parallel enqueue pass | 2 d |
 | [S1a.7.5](s1a.7.5_jobs_contract.md) | The `--jobs` contract | 2 d |
@@ -248,19 +264,28 @@ stays readable.
 
 ## Risks
 
-- **The validation argument is the whole phase.** `sat(base ∪ W ∪ c) =
-  sat(sat(base ∪ c) ∪ W)` holds because the KB is append-only and
-  saturation is a least fixpoint. Write it down next to the code, with
-  the fixture that would break if it were false (a layer-2 commitment
-  whose fork reads a `(not h)` written mid-layer).
-  **S1a.7.0 sharpened this and found the fixture is a layer-*1* one.** A
-  layer-2 commitment cannot read a mid-layer write, because there are none
-  above layer 1; the case-3 fixture is a layer-1 candidate that survives
-  without `W` and dies with it, and 35 of them already exist in the corpus.
-  The identity is also not the whole argument: it is about *fixpoints*, and
-  `enable_fail_fast_fork` means a dying fork never reaches one — so the
-  continuation recovers `kind` but recovers `core` only where the fork ran to
-  quiescence ([scaling.md §3](scaling.md#3-the-audit)).
+- ~~**The validation argument is the whole phase.**~~ **Retired 2026-08-22 —
+  there is no validation.** It was going to be: `sat(base ∪ W ∪ c) =
+  sat(sat(base ∪ c) ∪ W)`, written next to the code with the fixture that
+  would break if it were false. S1a.7.0 sharpened it and found the fixture is
+  a layer-*1* one — 35 already exist in the corpus — and that the identity is
+  about *fixpoints*, which `enable_fail_fast_fork` means a dying fork never
+  reaches. [S1a.7.2](s1a.7.2_parallel_enterings.md) then removed the question
+  instead of answering it: **a layer is fanned out iff it cannot write a fact
+  to root**, so no fanned-out layer has a `W` and nothing is repaired. What
+  replaces this risk is a narrower one — **the predicate could stop being
+  true**, and a mechanism that wrote to root mid-layer above layer 1 would
+  change nothing visible until a fork read it. That is why T1a.7.2.8 is a debug
+  assertion and not a comment
+  ([scaling.md §3a](scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there):
+  248 of 248 writebacks in layer 1, over 8 158 205 enterings and five layers).
+- **Amdahl on the zebra family, and only there.** Serialising layer 1 costs
+  0.24 % of `branching/07 -e`'s Phase-2 firings and nothing at all on the
+  other three workloads of the measurement set — but **40–94 %** on the zebras,
+  whose layer 1 holds half their firings. No job count makes an exhaustive
+  zebra fast, which [scaling.md §5.4](scaling.md#5-what-this-chooses) had
+  already concluded from the other side when it moved the scaling target. The
+  risk is not the number; it is quoting a zebra speedup as the phase's.
 - **Memory scales with jobs.** N live forks = N deltas over one shared
   base; measure peak RSS at `--jobs 16` on the worst corpus entry
   (`enable_singleton_writeback=false`, 3 336+ enterings). **And the base is

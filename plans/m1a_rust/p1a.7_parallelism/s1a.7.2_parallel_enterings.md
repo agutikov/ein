@@ -6,7 +6,9 @@
 [S1a.7.0](s1a.7.0_speculation_audit.md)
 **Implements:** [design/08](../design/08_parallelism.md) §2
 **Decides:** whether `--jobs N` stays the same computation through layer 1,
-and how `enable_fail_fast_fork` interacts with a continued fork
+and how `enable_fail_fast_fork` interacts with a continued fork —
+**both settled 2026-08-22**, before any of the mechanism was built: it does,
+and there are no continued forks (§ The decision)
 
 > **Re-shaped 2026-08-20 by [S1a.7.0](s1a.7.0_speculation_audit.md)**, which
 > measured this stage's premise before the stage started. Read
@@ -38,6 +40,11 @@ writes and behind fail-fast's "inconsistent at firing *n* ⇒ inconsistent
 at the fixpoint".
 
 ## What the audit changed
+
+> **These are [S1a.7.0](s1a.7.0_speculation_audit.md)'s findings, taken
+> 2026-08-20 before any mechanism existed, and they stand.** What has moved is
+> the *options* the last two open — settled below in § The decision, by one
+> more measurement over the same event stream.
 
 **The stage splits at the layer boundary.**
 
@@ -71,7 +78,8 @@ at the fixpoint".
   accepted one for the fork, with a ledger entry and goldens; (c) run layer 1
   sequentially, which is exact and costs 42–53 % of a zebra's firings and
   0.1–1.8 % of everything else's; or (d) **batch-synchronous integration**,
-  below.
+  below. → **(c)**, and the question dissolves with it: there are no continued
+  forks, so nothing interacts with fail-fast.
 - **(d) is the measured option, and it is the one to beat.**
   `SolveOptions::integrate_every` already exists
   ([S1a.7.0](s1a.7.0_speculation_audit.md) T1a.7.0.5): test a batch of
@@ -89,116 +97,319 @@ at the fixpoint".
   solution node. **Re-check those at the barrier** — one re-entry per solution,
   and the model set is exact by construction rather than by measurement.
   `stop_after` is the case that needs it most, and the case the tests do not
-  cover.
+  cover. → **Not taken**, because it moves `enterings_total` and the acceptance
+  does not admit a search counter differing by job count. Its 2.8×, which is
+  the layer stack rather than the deferral, is taken another way — T1a.7.2.0.
+
+## The decision — a layer is fanned out iff it cannot write to root
+
+> **Decided 2026-08-22**, before any of the mechanism was built, by
+> [scaling.md §3a](scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there).
+> The four routes above were (a) continue-and-validate, (b) a `--jobs`-scoped
+> divergence, (c) sequential layer 1, (d) batch-synchronous integration. **It is
+> (c)** — and the measurement that chose it also deleted the question the other
+> three existed to answer.
+
+> A layer is fanned out **iff it cannot write a fact to root**: every layer
+> ≥ 2, always; and layer 1 when `enable_singleton_writeback` is off. Layer 1
+> with the writeback on runs sequentially, exactly as it does today.
+
+Three numbers make it, and the third is the one nobody had:
+
+1. **Only layer 1 writes** — **248 of 248** writebacks corpus-wide, over
+   8 158 205 enterings spanning five layers. design/08 §2 argues it from the
+   clause width; this is it counted, on every `.ein` that produces events.
+2. **Layer 1 is 0.016 % of those enterings** — 1 343 of 8 158 205.
+3. **And there is no split inside it.** `W` grows until candidate **55 of 56**
+   on both zebras, 35 of 36 on the hints fixture, and **204 of 204** on
+   `branching/07 -e`. The tail a fan-out could take exactly is one candidate,
+   one, one and zero.
+
+That third one is the finding, because the expectation was the opposite.
+[T1a.7.1.2](s1a.7.1_sync_shared_state.md#task-t1a712--fact-store) found a
+layer's *fact-id* appends clustered in its head — largest within-layer index 6,
+21, 83 — and "run the head, fan out the tail" is exactly what that licensed for
+the fact store. It does not transfer, and the two are not one quantity seen
+twice: an appending entering interns a proposition **inside**
+`try_commitment_set`, while the singleton writeback is a **commit-time root
+write** that happens after the entering returns. Their distributions are
+opposite. Only the measurement says so, and it cost one pass over an event
+stream the engine already emits.
+
+**What (c) costs**, on the phase's own measurement set: `branching/07 -e`, 203
+sequential enterings — **1.8 % of enterings and 0.24 % of Phase-2 firings**;
+`branching/06 -e`, `sq-bwd/houses -e` and `features/01 -e`, **nothing at all**,
+because none of the three writes back and their layer 1 is therefore fanned out
+too. A 0.24 % serial fraction admits **417×** by Amdahl — against a **6×**
+phase target, and the bound is not close to binding. It is a bound on *Phase 2*
+only: root saturation is serial too and is not in this denominator, which is
+what [S1a.7.3](s1a.7.3_parallel_boundary.md) and
+[S1a.7.4](s1a.7.4_parallel_enqueue.md) are for. The zebra family pays 40–94 %
+of its Phase-2 firings and is the *parity* cell set rather than the measurement
+set — which [scaling.md §5.4](scaling.md#5-what-this-chooses) had already
+concluded from the other side, before this question was asked.
+
+### What the decision deletes
+
+- **The validator, all three cases.** Case 1 *is* a fanned-out layer, by
+  construction rather than by check; case 2 has **0** occurrences in 1 078 704
+  and no path to one; and **case 3 cannot arise**, because no fanned-out layer
+  has a `W`. T1a.7.2.3 is deleted rather than deferred, and with it the case-3
+  fixture, the continuation's live-saturator memory — design/08 §2 calls it
+  "the main cost of the scheme" — and the read-set refinement in the Notes.
+- **The fail-fast question, which was the phase's hardest.** It was a question
+  about *continued* forks: the identity `sat(B ∪ W ∪ c) = sat(sat(B ∪ c) ∪ W)`
+  is about fixpoints, and `enable_fail_fast_fork` means a dying fork never
+  reaches one. With no continuations there is nothing for it to interact with.
+  Fail-fast keeps its 1.9–2.4× untouched, no fork's `core` is read off a
+  different firing than the sequential engine's, and
+  [Q-M1a.7](../open_questions.md#q-m1a7--may---jobs--1-move-counters)'s fourth
+  point is answered **by removal** rather than by a ruling.
+- **The re-validation rate as a per-run diagnostic.** It is 0 by construction.
+  What replaces it is an assertion (T1a.7.2.8), not a counter — a number that
+  can only be zero is not a measurement.
+- **The barrier re-check of recorded solution nodes.** That obligation was
+  (d)'s: under deferral an alive verdict is provisional, and a recorded
+  solution is the one provisional verdict that reaches the answer. Under (c) no
+  fanned-out fork ever sees a smaller root than the sequential engine would
+  give it, so nothing is provisional and `stop_after` needs only the ordered
+  commit it needed anyway.
+
+### What it does not take — and what survives of it
+
+**(d) is rejected as the parallelism mechanism**, and for a reason that has
+nothing to do with its merits: it moves `enterings_total` — 101 → 617 under a
+whole-layer barrier, 111 at batch 20, on `zebra2 -e` — and a search counter
+that differs between `--jobs 1` and `--jobs N` is precisely what the restated
+acceptance does not admit. Applying one batch policy at *every* job count
+would satisfy invariance, but that is a **traversal change to the sequential
+engine**: not this phase's to take, and 6.1× the enterings at batch = ∞.
+
+**Its finding survives, and is worth more than the mechanism was.** Depth
+164 → 3 is **2.8×** on `branching/07 -e` at `--jobs 1` *with an identical
+entering count* — so all of it is the layer stack and none of it is deferral.
+The route that takes the depth win without deferring a single prune is to
+**flatten root at the layer barrier**:
+
+- answer-neutral, and not on anyone's word — `Kb::depth()` reaches
+  `defer_probe`, `layout_shape`, `alloc_cost` and `search_invariants` and
+  never an output, and `Kb::check_layering` is the standing invariant that a
+  flattened KB and a layered one hold the same thing;
+- integration stays **immediate**, so every writeback prunes exactly when it
+  does today and no entering count moves;
+- it covers every layer above the first — 11 297 of `branching/07 -e`'s
+  11 501 forks — leaving only layer 1's own 204 walking a stack that is still
+  growing under them.
+
+It is two lines, it is worth 2.8× at `--jobs 1`, and it is now **T1a.7.2.0** —
+the stage's first act, before any fan-out, because a stage that lands its
+parallelism first would be measuring speedup against a baseline it could have
+fixed.
+
+**(b) is not needed and therefore not taken.** Q-M1a.7's recommendation — no
+counter movement, `--unordered` as the opt-in escape — stands unchanged, and is
+now cheap rather than merely preferred.
 
 ## Acceptance
 
-> **Restated 2026-08-22.** Every "T*n*-identical" below named
-> `ein-conformance`, which [P1a.10](../p1a.10_single_implementation/README.md)
-> retired with the second engine. The successor per half is the phase
-> [README § The acceptance, restated](README.md#the-acceptance-restated); the
-> promise is unchanged and in one place stronger, because the cut names which
-> differences are admitted where a byte diff could only say that there was one.
+> **Restated 2026-08-22, twice.** Once because every "T*n*-identical" below
+> named `ein-conformance`, which
+> [P1a.10](../p1a.10_single_implementation/README.md) retired with the second
+> engine — the successor per half is the phase
+> [README § The acceptance, restated](README.md#the-acceptance-restated). And
+> once because § The decision removed four of these items rather than meeting
+> them. A criterion for a mechanism that is not built is not a weaker
+> criterion; it is a category error, and it is struck through rather than
+> deleted so the reason survives.
 
 - `--jobs {2,4,8,16}` is **the same computation as `--jobs 1`** on the whole
   corpus: `jobs_invariance` over `corpus_ops`, exact on the verdict, the model,
   the unsat core and every search counter, and no wider in narration than
-  `id_order_invariance` already measures.
-- **Layers ≥ 2 take the no-validator path, and a debug assertion holds the
-  invariant that lets them** — no root write between a layer opening and
-  closing, above layer 1.
-- The three validation cases each have a fixture that exercises them, and
-  the fixture for case 3 is *constructed*, not hoped for. **It is a layer-1
-  fixture** (S1a.7.0: a layer-2 commitment cannot read a mid-layer write,
-  because there are none), and 35 real ones already exist in the corpus —
-  `solve -e examples/zebra.ein` layer 1 entering 11 is the worked example in
+  `id_order_invariance` already measures. **Unchanged, and now the cheap
+  criterion rather than the hard one** — a fanned-out layer computes against
+  exactly the root the sequential engine gives it, so there is no repair that
+  could be subtly wrong.
+- **The fan-out predicate is asserted, not assumed.** A debug assertion that no
+  root fact write happens between a fanned-out layer opening and closing —
+  which is the invariant the whole decision rests on, and which
+  [scaling.md §3a](scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)
+  measured at 248 of 248 rather than argued. T1a.7.2.8.
+- **The sequential path is bit-identical to today's.** Layer 1 with the
+  writeback on is not re-implemented, it is not entered — `corpus_shapes.rs`'s
+  renderings and the goldens are the check, and no `EIN_BLESS` may be needed.
+- ~~The three validation cases each have a fixture that exercises them, and the
+  fixture for case 3 is *constructed*, not hoped for.~~ **There are no
+  validation cases.** Case 1 is a fanned-out layer by construction, case 2 has
+  0 occurrences in 1 078 704 and no path to one, and case 3 cannot arise. The
+  35 real case-3 enterings in the corpus keep their value as the *evidence* for
+  the decision — they are why no read-set filter would have been sound — and
+  `solve -e examples/zebra.ein` layer 1 entering 11 stays the worked example in
   [scaling.md §3](scaling.md#the-speculation-is-wrong-not-merely-stale).
-- Re-validation rate reported **per run**, against S1a.7.0's numbers as the
-  before-column, so a mechanism that changes it is visible (Q-M1a.7).
-- The fail-fast interaction is **decided in writing** with its cost measured,
-  not left to the implementation.
-- If the batch-synchronous route is taken: the **barrier re-check of recorded
-  solution nodes** is implemented, and `stop_after` is covered by a test — the
-  one case [S1a.7.0](s1a.7.0_speculation_audit.md)'s invariance tests
-  deliberately do not claim.
-- Speculative waste at `stop_after` bounded by the job count and
-  measured.
-- Peak RSS at `--jobs 16` on the worst corpus entry recorded.
+- ~~Re-validation rate reported **per run**, against S1a.7.0's numbers as the
+  before-column.~~ **It is 0 by construction.** A counter that can only read
+  zero is not a measurement; the assertion above is what would catch the day it
+  could not.
+- **The fail-fast interaction is decided in writing with its cost measured.**
+  ✅ — and the decision is that it **does not arise**: the interaction was
+  between fail-fast and a *continued* fork, and there are no continuations.
+  Route (a) would have paid ~88 % of a dying fork's saturation to restore the
+  fixpoint the identity needs; (c) pays nothing and keeps fail-fast's 1.9–2.4×
+  whole. [Q-M1a.7](../open_questions.md#q-m1a7--may---jobs--1-move-counters).
+- ~~If the batch-synchronous route is taken: the barrier re-check of recorded
+  solution nodes is implemented.~~ **It is not taken**, and under immediate
+  integration no alive verdict is provisional, so there is nothing to re-check.
+  `stop_after` is still covered by a test, because the ordered commit's cut is
+  the one thing the fan-out could get wrong (T1a.7.2.4).
+- **The layer-stack flatten is answer-neutral, or it is not taken.**
+  `corpus_shapes` and `search_invariants` are the check, and the entering count
+  of every corpus file is unchanged — that is what separates it from deferral,
+  which changes both. T1a.7.2.0.
+- Speculative waste at `stop_after` bounded by the job count and measured.
+- Peak RSS at `--jobs 16` on the worst corpus entry recorded. **The baseline
+  moved** —
+  [T1a.7.1.7](s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)
+  took `features/01 -e` from 684–708 MB to 85–91 MB at `--jobs 1`, so what this
+  measures is now a fork's delta rather than an arena nobody reclaimed.
 
 ## Tasks
+
+### Task T1a.7.2.0 — The layer stack, coalesced at the barrier
+
+**First, and before any thread.** Every root write seals a layer and every fork
+inherits the whole stack: `branching/07 -e`'s 162 mid-layer writebacks put root
+at depth 164 and all 11 501 forks walk it. S1a.7.0's `defer_probe` measured
+depth 164 → 3 as **1 135 → 406 ms** for the *same* 11 501 enterings and the
+same answer — so the 2.8× is the stack, not the deferral that produced it.
+
+Flatten root at the layer barrier — `Kb::flatten()` in `Run::integrate`, or at
+`layer_end` — and the same collapse happens with integration still immediate:
+every writeback prunes when it does today, no entering count moves, and the
+zebras' 35 → 3 and 34 → 3 come along.
+
+Answer-neutrality is not an assumption here: `Kb::depth()` reaches
+`defer_probe`, `layout_shape`, `alloc_cost` and `search_invariants` and never
+an output, and `Kb::check_layering` is the standing invariant that a flattened
+KB and a layered one hold the same thing. The check is `corpus_shapes` plus
+`search_invariants` with no re-bless.
+
+Measure the cost as well as the win: `materialise()` is O(facts) per layer, and
+a search whose layers are cheap and whose root is large could pay more than it
+saves. If it does, the flatten is per-layer-conditional on `depth()` rather
+than unconditional — and that is a threshold with a measurement behind it, not
+a constant.
 
 ### Task T1a.7.2.1 — Snapshot and fan out
 
 At layer start, take `R0 = Arc::clone(root_core)` — free
-([design/03](../design/03_data_model.md) §5). Run
-`try_commitment_set(R0, c)` for every candidate on the pool, collecting
-into an **index-ordered** vector (`collect_into_vec`, not an unordered
-reduce).
+([design/03](../design/03_data_model.md) §5) — and run
+`try_commitment_set(R0, c)` for every candidate on the pool, collecting into an
+**index-ordered** vector (`collect_into_vec`, not an unordered reduce).
+
+**Only for a layer that cannot write to root**: layers ≥ 2 always, and layer 1
+when `enable_singleton_writeback` is off. Layer 1 with the writeback on takes
+today's loop unchanged — which is 203 of 11 501 enterings on `branching/07 -e`
+and none at all on the other three workloads of the measurement set.
 
 This needs [S1a.4.4](../p1a.4_search_layer/s1a.4.4_commitment_primitive.md)
-T1a.4.4.5's seam: the primitive takes `&Arc<KbCore>` and returns
-everything, writing nothing to root.
+T1a.4.4.5's seam: the primitive takes `&Arc<KbCore>` and returns everything,
+writing nothing to root.
 
 ### Task T1a.7.2.2 — Ordered commit
 
 Walk candidates in canonical order and commit each result: bump the
-stats counters, emit the no-good, apply the singleton writeback (adding
-to the write set `W`), call the dumper hooks, record solution nodes,
+stats counters, emit the no-good, call the dumper hooks, record solution nodes,
 check `stop_after`. Counters and events therefore appear in exactly the
 sequential order.
 
-### Task T1a.7.2.3 — Validation
+There is no `W` to accumulate here — a fanned-out layer has no singleton
+writeback by construction. What the commit still owns is the **event sink**:
+`events::Buffer` is `Rc<RefCell<Vec<u8>>>` and a worker cannot hold one
+([T1a.7.1.4](s1a.7.1_sync_shared_state.md#task-t1a714--kbcore--program-audit)),
+so it needs the shape the counters already have — a per-worker buffer merged
+here, in commit order, so the stream a reader sees is the sequential one.
 
-Per [design/08](../design/08_parallelism.md) §2:
+### ~~Task T1a.7.2.3 — Validation~~ — deleted, not deferred
 
-1. `W = ∅` → accept as computed. *This is all of layer 1*, where a
-   learned clause can only concern the candidate that just died.
-2. `c` intersects `{h : (not h) ∈ W}` → emit `dead-pre` directly with the
-   frontier from the clash, exactly as the primitive's pre-check would.
-3. otherwise → **continue** the fork's saturation with `W` as the delta
-   (semi-naive seeding, [design/06](../design/06_saturation.md)). If
-   nothing new is derived and no contradiction appears, the speculative
-   result stands; if something is derived, the continuation *is* the
-   corrected result.
+design/08 §2's three cases were the price of fanning out a layer that writes to
+root. No layer that writes to root is fanned out, so the price is not paid:
+case 1 is the whole of a fanned-out layer *by construction*, case 2 was 0 in
+1 078 704 enterings and cannot occur where there is no `W`, and case 3 needs a
+`W` to continue against. The continuation's live saturator — design/08 §2's
+"main cost of the scheme" — is not built, and neither is the read-set
+refinement the Notes below reserved.
 
-Case 3 requires keeping the fork's saturator alive (queues, `_seen`,
-`_fired`) until its result is committed. Budget that memory: it is the
-main cost of the scheme.
+The **identity** survives the deletion and is worth keeping written down, since
+two shipped mechanisms rest on it: `sat(B ∪ W ∪ c) = sat(sat(B ∪ c) ∪ W)` is
+what licenses `is_stalled()`'s re-enqueue after an external write and
+`Saturator::resume`'s fork-entry delta. It is stated with its proof in
+[design/08 §2a](../design/08_parallelism.md#2a-deferred-integration--the-batch-synchronous-layer)
+claim 3.
 
 ### Task T1a.7.2.4 — Early stop
 
-`stop_after` must cut at the same candidate. Commit in order, break
-there, and cancel outstanding speculative work. Measure the waste: a
-`-n 1` solve that speculates `jobs` enterings to use one is fine; one
-that speculates a whole layer is not — chunk the fan-out when
-`stop_after` is small.
+`stop_after` must cut at the same candidate. Commit in order, break there, and
+cancel outstanding speculative work. Measure the waste: a `-n 1` solve that
+speculates `jobs` enterings to use one is fine; one that speculates a whole
+layer is not — chunk the fan-out when `stop_after` is small.
+
+This is now the **only** place the fan-out can differ from the sequential
+engine, which is why it keeps its own test rather than leaning on
+`jobs_invariance`: an early stop is the one case S1a.7.0's invariance tests
+deliberately do not claim.
 
 ### Task T1a.7.2.5 — Diagnostics
 
 Report, under the existing `--stats`-adjacent surface: worker count,
-speculative enterings computed vs committed, case-2 and case-3 counts,
-and continuation firings. Without these, a regression in the validation
-rate is invisible.
+speculative enterings computed vs committed, and how many enterings ran on the
+sequential path because their layer could write to root.
+
+The case-2 / case-3 / continuation-firing counters this task used to name have
+nothing to count. What replaced them is the last column: it is 0 on three of
+the four measurement-set workloads and 203 on the fourth, and a build where it
+grew would be a build where the fan-out predicate had changed.
 
 ### Task T1a.7.2.6 — The stress test
 
 10 000 randomised `--jobs 8` runs across the corpus, diffed against
 `--jobs 1` through `ein-parity`'s cut — a **sixth property** of
 [`utils/fuzz_ein.py`](../../../utils/fuzz_ein.py), beside the five one engine
-can already check, rather than a harness run. Include the `enable_singleton_writeback=false`
-entry — that is where `W` is largest and case 3 is most likely.
+can already check, rather than a harness run. Include the
+`enable_singleton_writeback=false` entry: with the writeback off, layer 1 is
+fanned out too, so that entry is the one that exercises the predicate's *other*
+branch — where the old plan wanted it for having the largest `W`.
+
+### Task T1a.7.2.8 — The predicate, asserted
+
+A debug assertion that no root fact write happens between a fanned-out layer
+opening and closing. It is the invariant the decision rests on, and the one
+thing between a future `W` writer and a silently wrong parallel search: a
+mechanism that started writing to root inside a layer above the first would
+change nothing visible until a fork happened to read it.
+
+Cheap to state — root's fact count and its `depth()` at layer start against the
+same at layer end — and it is where the reasoning goes in the code, next to the
+predicate, with
+[scaling.md §3a](scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)'s
+248-of-248 as the evidence that it holds today.
 
 ## Notes
 
-- Write the `sat(base ∪ W ∪ c) = sat(sat(base ∪ c) ∪ W)` argument in the
-  code next to the validator, with the fixture that would break if it
-  were false. A parallel scheme whose correctness lives only in a plan
-  document decays.
-- If the re-validation rate is high, the *first* refinement is a
-  per-fork read-set of relations touched during saturation (cheap to
-  record in the matcher's candidate lookup), not a finer-grained fact
-  read-set. **S1a.7.0 makes this unpromising**: `W`'s facts are all
-  `(not …)`, every zebra-family rule set reads `not`, and the 35 wrong
-  speculations are wrong *because* their forks would have consumed a `W`
-  fact. A relation-level read-set would clear almost none of them, and one
-  that cleared any of the 35 would be unsound.
+- **Write the reasoning next to the predicate, not in this file.** A parallel
+  scheme whose correctness lives only in a plan document decays. What goes
+  beside `fan_out_this_layer` is why layer 1 is the only layer that can write —
+  the clause a dead commitment of width *L* licenses is a *fact* only at
+  *L = 1* — with 248-of-248 as what makes it a measurement rather than an
+  argument, and T1a.7.2.8's assertion as what makes it fail loudly.
+- ~~If the re-validation rate is high, the first refinement is a per-fork
+  read-set of relations touched during saturation.~~ **Not reachable now**, and
+  it would not have worked: `W`'s facts are all `(not …)`, every zebra-family
+  rule set reads `not`, and the 35 wrong speculations are wrong *because* their
+  forks would have consumed a `W` fact. A relation-level read-set would have
+  cleared almost none of them, and one that cleared any of the 35 would have
+  been unsound. Kept because it is the refinement a reader will think of first.
+- **The one thing to re-open this decision for** is a `W` that is not the
+  singleton writeback. The predicate is "can this layer write a fact to root",
+  not "is this layer 1"; if a future mechanism writes to root mid-layer at any
+  depth, T1a.7.2.8 fires, and *then* design/08 §2's validator is the design
+  that was measured and costed. It is deleted from the build, not from the
+  record.

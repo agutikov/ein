@@ -329,6 +329,49 @@ as the opt-in escape. What changed is that its price is now a number rather
 than a hope — see
 [scaling.md §3](p1a.7_parallelism/scaling.md#3-the-audit).
 
+### Decided 2026-08-22 — no, and validation is not what buys that
+
+[S1a.7.2](p1a.7_parallelism/s1a.7.2_parallel_enterings.md) § The decision,
+taken before any of the mechanism was built, on one more measurement over the
+same event stream:
+
+> A layer is fanned out **iff it cannot write a fact to root** — every layer
+> ≥ 2, and layer 1 when `enable_singleton_writeback` is off. Layer 1 with the
+> writeback on runs sequentially.
+
+So `--jobs > 1` moves **no** counter, and it does not need a validator to
+manage that: a fanned-out layer computes against exactly the root the
+sequential engine would give it. The four points above resolve as follows.
+
+1. **The bimodal rate stops mattering.** It was the cost of *repairing*
+   speculations, and nothing is repaired. The rate on a fanned-out layer is 0
+   by construction; the workloads with a high one are the ones whose layer 1
+   is now serial.
+2. **Confirmed and widened.** 248 of 248 writebacks corpus-wide are in layer 1,
+   over 8 158 205 enterings spanning five layers — and layer 1 is **0.016 %**
+   of them. Serialising it costs 0.24 % of `branching/07 -e`'s Phase-2 firings
+   and *nothing* on the other three workloads of the measurement set.
+3. **Still true, and now moot.** The 35 wrong speculations are why no read-set
+   filter would have been sound; they are the evidence for the decision rather
+   than a problem it has to solve.
+4. **Answered by removal.** The interaction was between `enable_fail_fast_fork`
+   and a *continued* fork, and there are no continuations. Fail-fast keeps its
+   1.9–2.4× whole, no fork's `core` is read off a different firing than the
+   sequential engine's, and no `--jobs`-scoped divergence is taken — so this
+   question does **not** join
+   [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) in the
+   ledger.
+
+The one route that would have moved a counter is **batch-synchronous
+integration**, and it is rejected for that: 101 → 617 enterings on `zebra2 -e`
+under a whole-layer barrier. Its 2.8× on `branching/07 -e` is the layer-stack
+depth rather than the deferral — identical entering count — and is taken
+separately by flattening root at the barrier.
+
+**What would re-open this**: a mechanism that writes a fact to root mid-layer
+at any depth. The predicate is about *writing*, not about layer 1, and
+S1a.7.2's debug assertion is what would notice.
+
 ## Q-M1a.8 — `_binding_key` drops non-string activator args
 
 > **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §3.2](../../docs/kernel/defined_behaviour.md) (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)). This entry is the *decision*; that page is what the engine now promises.

@@ -212,6 +212,74 @@ are what let either fire. A validator that decided this fork was unaffected woul
 `enterings_alive`, `enterings_dead_post`, the no-goods emitted, the writeback
 set and the next layer's candidate list.
 
+## 3a. Where the writebacks are *inside* layer 1 — and the split that is not there
+
+§3 says case 3 lives only in layer 1. It does not say where in layer 1, and
+[S1a.7.2](s1a.7.2_parallel_enterings.md)'s decision turns on that: if `W`
+stopped growing early, a layer could run its head sequentially and fan out its
+tail with no validator at all — exact, for free. The instrument is the event
+stream, so this needed nothing built:
+
+| workload | enterings | layer 1 | writebacks | first | **last** | sequential span | of enterings | of Phase-2 firings |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `zebra -e` | 111 | 56 | 31 | 7 | **55** | 49 | 44.1 % | 40.4 % |
+| `zebra2 -e` | 101 | 56 | 32 | 6 | **55** | 50 | 49.5 % | 49.2 % |
+| `zebra2-hints -e` | 36 | 36 | 23 | 1 | **35** | 35 | 97.2 % | 93.7 % |
+| `branching/07 -e` | 11 501 | 204 | 162 | 2 | **204** | 203 | 1.8 % | **0.24 %** |
+| `branching/06 -e` | 5 173 | 42 | **0** | — | — | 0 | 0 % | 0 % |
+| `sq-bwd/houses -e` | 21 699 | 20 | **0** | — | — | 0 | 0 % | 0 % |
+| `features/01 -e` | 384 167 | 35 | **0** | — | — | 0 | 0 % | 0 % |
+
+*first* / *last* are the layer-1 candidate indices at which `W` first and last
+**grew** — a re-issued `(not h)` emits the event without adding a fact and is
+not counted. The *sequential span* is `last − first + 1`: the candidates that
+can neither be accepted as computed (because `W` is non-empty) nor skipped.
+
+**There is no head/tail split.** `W` grows until candidate 55 of 56, 55 of 56,
+35 of 36 and **204 of 204**. The tail a fan-out could take exactly is one
+candidate, one, one and zero. Whatever else layer 1 is, it is not
+front-loaded — the deaths that write back are spread over the whole of it, and
+on `branching/07 -e` the very last candidate of the layer still writes one.
+
+This is worth stating because the opposite was the expectation.
+[T1a.7.1.2](s1a.7.1_sync_shared_state.md#task-t1a712--fact-store) found the
+*fact-id* appends of a layer clustered in its head — largest within-layer index
+6, 21, 83 — and "run the head, fan out the tail" is exactly the mechanism that
+finding licensed for the fact store. It does not transfer. The two quantities
+are not the same one seen twice: an appending entering interns a proposition
+*inside* `try_commitment_set`, and the singleton writeback is a **commit-time
+root write** that happens after the entering returns. They have opposite
+distributions, and only the measurement says so.
+
+### And the layer that has to be sequential is 0.016 % of the corpus
+
+Every `.ein` under `examples/` and `stdlib/` that produces events, `solve -e`,
+20 s per file (5 hit the cap and are counted up to the cut):
+
+| layer | enterings | writebacks |
+|---:|---:|---:|
+| **1** | **1 343** | **248** |
+| 2 | 38 009 | 0 |
+| 3 | 1 213 248 | 0 |
+| 4 | 5 351 172 | 0 |
+| 5 | 1 554 433 | 0 |
+| | **8 158 205** | **248** |
+
+design/08 §2 argues from the clause width that only layer 1 can add a fact to
+root mid-layer, and S1a.7.0 counted `writeback` events by layer on three files.
+This is the same claim over the whole corpus and five layers deep: **248 of 248
+writebacks are in layer 1**, and layer 1 holds **0.016 %** of the enterings.
+
+So the question "what happens to layer 1" has a cost attached to every answer
+now, and the cheapest answer is affordable: making layer 1 sequential costs
+**0.24 % of `branching/07 -e`'s Phase-2 firings and nothing at all on the other
+three workloads of the measurement set**, because those three never write back.
+By Amdahl a 0.24 % sequential fraction admits 417×, against a phase target of
+6×. What it costs the zebra family is 40–94 % — and the zebra family is the
+*parity* cell set, not the measurement set (§5.4).
+
+---
+
 ## 4. Deferred integration — the shape a parallel layer actually has
 
 §3 audits [design/08](../design/08_parallelism.md) §2's *speculate and repair*.
@@ -282,6 +350,22 @@ changes the traversal, so it is a `--jobs`-scoped or `--unordered`-scoped
 decision, not a free optimisation. It is recorded here so
 [S1a.7.2](s1a.7.2_parallel_enterings.md) chooses with it in hand.
 
+> **What it chose** (2026-08-22): not deferral, and not nothing. Deferral is
+> rejected as the *parallelism* mechanism because it moves `enterings_total`
+> — 101 → 617 whole-layer, 111 at batch 20 on `zebra2 -e` — and a search
+> counter that differs between `--jobs 1` and `--jobs N` is the one thing the
+> restated acceptance does not admit. But the 2.8× above is **not** a
+> deferral result: the entering count is identical on `branching/07 -e`, so
+> all of it is the depth column. The route that takes the depth win without
+> deferring a single prune is to **flatten root at the layer barrier**, which
+> is answer-neutral for a reason that already has a test — `Kb::depth()`
+> reaches instruments only, never output, and `check_layering` is the
+> standing invariant that a flattened KB and a layered one agree. It recovers
+> the win for every layer above the first (11 297 of `branching/07 -e`'s
+> 11 501 forks) and leaves layer 1's own 204 paying a growing stack.
+> [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.1 measures it first,
+> because it is two lines and it is worth 2.8× at `--jobs 1`.
+
 ### The `stop_after` caveat
 
 Every number above is exhaustive. Under `stop_after`, a deferred layer records
@@ -298,10 +382,15 @@ not covered by the tests above and is not claimed here.
    validator, exact — and 98–100 % of the work on every workload that needs
    cores. Layer 1: a real dependency chain, a writeback every ~1.8 enterings on
    the zebras, and a speculation that is wrong 1 time in 8.
-3. **Layer 1 needs a decision**, and it is now between measured options —
-   continue-and-validate (recovers the verdict, moves the narration, needs the
-   fail-fast ruling above), sequential (exact, and costs 42–53 % of a zebra's
-   firings), or `--unordered` only.
+3. **Layer 1 runs sequentially**, decided 2026-08-22 at
+   [S1a.7.2](s1a.7.2_parallel_enterings.md) § The decision. §3a is why: `W`
+   grows to the second-to-last candidate of the layer, so there is no exact
+   head/tail split to take, and the layer that has to be serial is 0.016 % of
+   the corpus's enterings and 0.24 % of `branching/07 -e`'s firings — nothing
+   at all on the other three workloads of the measurement set, which never
+   write back. Continue-and-validate is not built: with no fanned-out layer
+   ever seeing a `W`, design/08 §2's three cases reduce to case 1 and the
+   fail-fast interaction above **does not arise**.
 4. **The scaling target moves.** `zebra2 -e`'s Phase 2 is 26.8 ms and 42.3 %
    of its firings are in the exactly-parallel part — ~11 ms, if firings price
    time, which is the proxy §2 has and a per-layer clock would replace. No
@@ -330,6 +419,22 @@ ein.rs/target/release/ein solve examples/zebra2.ein -e --events /tmp/ev.jsonl
 cd ein.rs && cargo build --release --features spec-audit --target-dir target-sa
 python3 utils/spec_audit.py --timeout 90 --json /tmp/sweep.json
 python3 utils/spec_audit.py -k zebra --no-fail-fast --timeout 300
+
+# §3a — no instrument but the event stream: walk it, index the enterings
+# within their layer, and note where a *new* (not h) lands.
+ein.rs/target/release/ein solve -e examples/zebra.ein --events /tmp/ev.jsonl
+python3 - <<'EOF'
+import json, collections
+layer, idx, seen, at = None, collections.Counter(), set(), []
+for line in open('/tmp/ev.jsonl'):
+    e = json.loads(line)
+    if e['e'] == 'enter':
+        layer = e['layer']; idx[layer] += 1
+    elif e['e'] == 'writeback' and e['reason'] == 'singleton-dead-clause':
+        if e['fact'] not in seen:
+            seen.add(e['fact']); at.append((layer, idx[layer]))
+print('layer 1 candidates:', idx[1], ' W grew at:', at[:3], '…', at[-1])
+EOF
 
 # §4
 cd ein.rs
