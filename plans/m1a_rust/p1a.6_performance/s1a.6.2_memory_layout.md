@@ -221,7 +221,7 @@ reach an observable. T3 still runs, as the standard.
 
 Ship it as a default-on feature with an escape hatch, since a distro build
 may want the system allocator, and note the binary-size delta —
-[P1a.9](../p1a.9_bindings_release/README.md) ships one binary.
+[P1a.9](../p1a.9_release/README.md) ships one binary.
 
 ### Task T1a.6.2.8 — A per-entering region
 

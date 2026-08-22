@@ -6,7 +6,7 @@
 dependencies, and running it *first* is the whole point of the gate below.
 
 > It was recorded as depending on
-> [P1a.9](../p1a.9_bindings_release/README.md) "for the deletion, not for
+> [P1a.9](../p1a.9_release/README.md) "for the deletion, not for
 > this stage", because `docs/api/` loses its subject at
 > [S1a.10.5](s1a.10.5_removal.md)/[.6](s1a.10.6_docs.md). **That dependency
 > was reversed on 2026-08-21** — P1a.9 releases ein.rs alone and runs after

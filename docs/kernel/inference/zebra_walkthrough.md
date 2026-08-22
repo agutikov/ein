@@ -18,7 +18,7 @@ To reproduce this solve, run
 the embedding contract in [`docs/api/ein.md`](../../api/ein.md), whose worked
 example produces exactly the answer this trace derives; that contract's
 implementation lands in
-[P1a.9](../../../plans/m1a_rust/p1a.9_bindings_release/README.md).
+[P1a.9](../../../plans/m1a_rust/p1a.9_release/README.md).
 
 > **The other encoding.** [`zebra.ein`](../../../examples/zebra.ein) solves
 > the same puzzle over one generic `co-located` equivalence instead of five

@@ -1,6 +1,6 @@
 # M1a — Rust port (ein.rs)
 
-**Estimate:** ~7 months focused — 54 stages, ~32 weeks of stage
+**Estimate:** ~7 months focused — 53 stages, ~31 weeks of stage
 estimates (parity gate at ~week 17).
 **Status:** **in progress** — promoted from placeholder 2026-08-17 with the
 scope decision made (see § The decision); [P1a.0](p1a.0_conformance_harness/README.md)
@@ -14,9 +14,12 @@ branching, no-good learning, the set-indexed lattice engine.
 that ships*; landing ein.rs first means M1b binds once, and after M1b's
 2026-08-18 stack decision it binds by linking these crates into a Tauri
 backend rather than talking to a process.
-[M2](../m2_nl_to_ir/README.md)'s NL frontend is unaffected (it stays
-CPython for llama.cpp) but talks to ein.rs across a binding boundary
-(P1a.9).
+[M2](../m2_nl_to_ir/README.md)'s NL frontend has **no settled boundary**:
+"it stays CPython for llama.cpp" was this document's claim until 2026-08-21,
+when P1a.9's census found llama.cpp is reached over HTTP and CPython is not
+forced. The binding is deferred
+([Q-M1a.23](open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding))
+and the frontend's language is M2's own decision.
 ---
 
 > **Instruments (M1a [S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md)).** This document names `profile_solve.py`, `ein-conformance` and `ein-oracle`. They are gone — deleted with the second engine at S1a.10.3–S1a.10.5 — so the numbers here are a **record**, not something you can re-run. What answers each one's question now is the census in [`utils/README.md`](../../utils/README.md#the-census).
@@ -27,7 +30,8 @@ The placeholder deferred "**Boundary A** (full port) vs **Boundary B**
 (hot-loop port behind PyO3)". **Resolved 2026-08-17: Boundary A.** ein.rs
 re-implements the whole stack — IR parser, KB, engine, renderers, CLI —
 as a standalone binary. PyO3 becomes an *output* of the port (P1a.9), not
-its boundary.
+its boundary — and P1a.9 then **deferred the output too**, on 2026-08-21, no
+consumer having asked for it.
 
 Two invariants govern every stage, and they pull in opposite directions
 on purpose:
@@ -188,7 +192,7 @@ Full contract: [design/11](design/11_shared_assets.md).
 | [P1a.6](p1a.6_performance/README.md) ✅ | Performance — the optimisation programme | 12 | 3.5 w | **shipped 2026-08-20** — **all four targets met 2026-08-19** (S1a.6.8, S1a.6.9) and held with **88 % of headroom** after S1a.6.12 — `solve zebra -e` **585.8 → 47.5 ms** across the phase, `zebra2 -e` → 28.9 ms, both ~**165× PyPy**. Parity is no longer *byte*-unbroken and that is a decision: a fork resuming root's saturation narrates a quarter as much ([D3](divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it), [Q-M1a.18](open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)), so S1a.6.10 moved the contract to *what a fork derives* — **T3 and T2 clean apart from [D2](divergences.md), whose *two* shapes are the only differing cells** — and S1a.6.11 replaced the elided bytes with twelve ein.rs goldens. The phase closes on its two instruments: a lever matrix that drives **both** engines and carries a **control** row pricing each column (1.2× PyPy, 1.0× ein.rs), and a **differential fuzzer** that found **four parity bugs in its first twenty minutes** — all fixed — plus D2's second shape and two D3 reaches recorded in the ledger. Five of six acceptance items met; the sixth is ≥ 24 h of fuzzing, which is calendar time |
 | [P1a.7](p1a.7_parallelism/README.md) ⏸ | Parallelism — deterministic multi-core search + match | 6 | 2.5 w | **paused 2026-08-20** after one stage, at the user's direction — see the phase README's § Paused. [S1a.7.0](p1a.7_parallelism/s1a.7.0_speculation_audit.md) shipped, and measured the phase's central risk before building any of it: **1 078 704 enterings speculated against layer-start root**, the control clean on all 1 078 154 case-1 ones, and the re-validation rate **0.1 % corpus-wide but 36–50 % on the zebra family** — where **35** speculations return `alive` for an entering the sequential engine kills. Every one is in layer 1, which is the only layer that writes to root mid-layer, so [design/08](design/08_parallelism.md) §2's "case 1 is the whole of layer 1" is **inverted** and the layers where 98–100 % of a real search lives need no validator at all. Gate unchanged — `--jobs N` verdict- **and** counter-identical — but its scaling target moved off a 31 ms `zebra2 -e` and onto the entries that have a search ([scaling.md](p1a.7_parallelism/scaling.md)). **On resume its acceptance needs restating**: it is written in T0–T3 terms and [P1a.10](p1a.10_single_implementation/README.md) retires the harness those name |
 | [P1a.8](p1a.8_binary_container/README.md) ✅ | Binary KB container — `.einb`, mmap, solution store | 1 | 0.5 w | **shipped 2026-08-21** — one stage, one crate. `ein-einb` is the **eighth** workspace member and the only one that is not `#![forbid(unsafe_code)]`: design/12 §2 allows `unsafe` in exactly one audited module and `forbid` cannot be lifted per-module, so the crate boundary is what makes "exactly one" a fact. A saturated `zebra2` is **57 688 bytes** and opens cold in **0.614 ms**, and `ein solve x.einb` is byte-identical to `ein solve x.ein` across four puzzles and five diagnostic flags with **two** lines normalised — the path `solve` echoes and `--stats`'s wall clock. Two design questions were answered by measurement rather than by argument: `PROGRAM` is **canonical text** and not the AST arenas, because the arenas for a resolved `zebra2` are past 60 KB against a 64 KB budget while `dump_canonical` of the same forms is 11 KB; and there is **no `INDEXES` section**, because `rebuild_indexes` *is* the projection that defines them. That second decision found the stage's one real bug: `rules_by_relation` is **not** a projection — it is taken once at the end of `load` and shared by reference, so rebuilding it from a saturated fact set produces a larger map than the KB ever had (`Kb::rebuild_indexes_from`). The bit-flip sweep found the other: the digest covers everything *after* the header, so the header's reserved words are now required to be zero. `SOLUTIONS` ships with a library API and **no CLI producer** — [F9](../followups/f9_e_catalog.md)'s measurement hazard handled structurally, with a test that keeps the solve path unable to read one |
-| [P1a.9](p1a.9_bindings_release/README.md) | Bindings + release — PyO3, packaging, docs | 4 | 1.5 w | M2 imports the engine and gets ein.rs. **Depends on P1a.10 since 2026-08-21** — the dependency ran the other way, and reversing it means this phase releases ein.rs and *only* ein.rs: no second package to name, no second exception hierarchy to keep in step, no test suite parameterised over two modules. Its four stages are amended; `docs/api/` changes subject here rather than gaining a footnote, and [S1a.9.4](p1a.9_bindings_release/s1a.9.4_documentation.md) is the milestone's last documentation stage |
+| [P1a.9](p1a.9_release/README.md) | **Release** — the slow corpus, packaging, docs | 3 | 1.2 w | **Re-topiced 2026-08-21 from "Bindings + release".** It was four stages and two of them were PyO3; the census killed both. [M1b](../m1b_gui/README.md) links the crates, [M1c](../m1c_external_validation/README.md)'s runner **must** shell out to be a fair measurement ("`cargo build` never needs Z3"), `utils/` names its binary on purpose — and M2, the sole remaining consumer, does not force CPython: its llama.cpp is a `llama-server` container reached over HTTP, and the acva pattern it mirrors has a **C++** client. Worse for the binding, the one thing that wanted it — a validator that needs *why* a load failed, as data — is exactly what a Rust frontend gets for free by linking `ein-ir`. Deferred with three named trip-wires ([Q-M1a.23](open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)), the likeliest being [M2b](../m2b_presentation/README.md)'s artifact reviewers; `docs/api/`'s 1 051 lines are kept intact as the specification a trip-wire would restore. In their place, the stage the phase would have shipped without: **[S1a.9.0](p1a.9_release/s1a.9.0_slow_corpus.md)**, because the corpus's 17 `slow = true` entries are priced against CPython — the exclusion notes say so in words — and re-measuring found `zebra2` at **11 ms** still flagged slow, `features/04_open` at **136 s** still unfinishable on an engine 165× PyPy, and **ten entries where `solve` costs exactly what `solve -e` costs** because all ten return `Contradiction` / `exhausted=False` at `layers == max_set_size`: the search is running out of commitment depth, not proving unsat. An `-m 2…7` sweep confirms it (layers tracks `-m`, enterings 120 → 16 383, verdict never changes) and the verdict-word question goes to [M1d](../m1d_satisfiability/README.md) |
 | [P1a.10](p1a.10_single_implementation/README.md) ✅ | One implementation — port the suite, retire ein.py, the harness and the submodules | 6 | 3 w | `cargo test --workspace` is the whole gate, and coverage did not drop. **[S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md) shipped 2026-08-20** — run ahead of P1a.8/P1a.9 because the dependency is the *deletion*'s, and it found that the gate is already half differential: **42 of `cargo test --workspace`'s 91 integration tests start a Python process**, and skip invisibly when one will not start. The [ledger](p1a.10_single_implementation/oracle_ledger.md) banks the rest in three instruments — 4 228 renderings as digests, 13 counter identities, and a determinism sweep that permutes the **id space** instead of a hash seed and prices it at **0 answers and 66 renderings**, all of them [D3](divergences.md)'s. **[S1a.10.2](p1a.10_single_implementation/s1a.10.2_port_the_suite.md) shipped the same day**: the Python suite's 1 538 tests reduce to **275 behaviours** in fifteen new Rust files ([dispositions](p1a.10_single_implementation/suite_dispositions.md), per file, with the 96 dying subjects named), and all 42 differential tests are un-differential. `cargo test --workspace` is **566 tests in 1 m 07 s** where it was 312 in 9 m 13 s, and `PATH=<a python3 that exits 127>` now leaves all 566 passing where the same experiment found 41 silent skips. **[S1a.10.3](p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md) shipped 2026-08-21**: the harness itself — `ein-conformance`, `ein-oracle`, T0–T3, 2 164 lines — retires, and the corpus it read becomes [`corpus/`](../../corpus/README.md) with a runner that is a **sweep** rather than a diff (`ein-cli/tests/corpus_cli.rs`, 542 cells as processes in 2.5 s, a 660-line exit table, and a per-cell timeout so a non-terminating program fails the gate instead of hanging it). The exit table is banked rather than ruled because the corpus does not obey a group rule: `render rules` never loads the KB, so **10 of 30 load-negatives exit 0**. **[S1a.10.4](p1a.10_single_implementation/s1a.10.4_utils.md) shipped 2026-08-21**: `utils/` is **17 scripts** rather than 28, all of them driving ein.rs, and every CPython/PyPy number in `baseline.md` and `features.md` is now labelled a frozen constant because its instrument is gone. The fuzzer keeps its generator and loses its differ — five properties one engine can check, the strongest being `id_order_invariance` pointed at generated input through a new `EIN_ID_FILES` seam — and **found three things in twenty minutes**: a `debug_assert!` an ordinary `(hrule …)` reading `not` trips, an **unsat core** whose contents depend on interning order, and the same for the goal-binding row the solve table prints, which re-derived a finding filed in August against [D3](divergences.md) and showed that **D3 perturbs that row rather than being why it is perturbable** — it moves inside one engine too. **[S1a.10.5](p1a.10_single_implementation/s1a.10.5_removal.md) shipped 2026-08-21**: `ein.py/` is gone, 183 files, tagged `two-implementations` at the parent. The Lark grammar became EBNF *first* (`01_grammar.md` §3, the user's own precondition promoted to T1a.10.5.0), and T1a.10.5.1's acceptance was **amended on evidence** — `nlp/` and `smt/` have named dependents in M1c and M2, so the two *submodules* are deinitialised and the directories stay. **[S1a.10.6](p1a.10_single_implementation/s1a.10.6_docs.md) shipped 2026-08-21 and closes the phase**: the removal's 224 dangling links resolved into ~150 module pointers with a 1:1 counterpart, ~60 `.py`-named link texts, **46 symbols ein.rs does not have** and **~20 claims that only made sense with two engines** — and that last 9 % is what the stage was for. Its output is [`docs/kernel/defined_behaviour.md`](../../docs/kernel/defined_behaviour.md), **thirteen behaviours whose only statement was a Python source file**, now normative — and enumerating them found two that are *bugs* rather than quirks: the binding key that drops non-string activator args ([Q-M1a.8](open_questions.md#q-m1a8--binding_key-drops-non-string-activator-args) — a puzzle with integer rule parameters can lose a firing, silently) and the six Python exception classes the CLI prints, which are now a name with no referent. `python_impl.md` was **renamed and re-aimed** rather than deleted, because `docs/kernel/README.md`'s dev path is the only orientation into the code and ein.rs has no README; 24 plan documents gained a one-line instrument marker; `AGENTS.md` lost its `ein.py/` bullet. **Phase acceptance: all met** — `cargo test --workspace` is 542 tests over 58 targets, 0 failures, no Python process in any of them |
 
 **54 stages** (S1a.6.8 added by S1a.6.1's profile, S1a.6.5 shortened by it,
@@ -197,7 +201,9 @@ S1a.6.3, and S1a.7.0 added at P1a.7's start by the same reflex that added
 S1a.6.1 — measure the premise before spending four days on it; **P1a.10–12
 added 2026-08-20** at the user's direction, 16 stages and 8.5 weeks, of which
 **P1a.11 and P1a.12 left the next evening** for M1c and M1d, 10 stages and
-5.5 weeks), 158 days of stage estimates ≈ 32 weeks. The count is a correction
+5.5 weeks; and **P1a.9 net −1 on 2026-08-21** — two binding stages cut, one
+added by the same reflex that produced S1a.6.1 and S1a.7.0, which is now
+three for three), 156 days of stage estimates ≈ 31 weeks. The count is a correction
 as well as a subtraction: the header read 45 and the table summed to 64, and
 after the P1a.10–12 batch neither was right. The **parity gate**
 (end of P1a.5) is at ~week 17; everything after it is speed, scale and
@@ -222,7 +228,10 @@ distribution on an engine that is already a drop-in replacement.
 > --server`. Dropped: nothing downstream needs a resident process.
 > [M1b](../m1b_gui/README.md) settled on Tauri, whose backend *is* a Rust
 > process linking these crates directly; [M2](../m2_nl_to_ir/README.md)
-> crosses into CPython through PyO3 (P1a.9); the CLI is the only other
+> crosses into CPython through PyO3 (P1a.9) — **that half is superseded**:
+> the binding was deferred 2026-08-21 and M2's boundary is open, which
+> strengthens rather than weakens the argument, since the alternative it
+> gained is *linking the crates* and not a socket; the CLI is the only other
 > consumer. The one deliverable that was never about the daemon — the
 > `.einb` container — stays as a single stage. The seven server stages and
 > `design/09` are in git history.
@@ -265,9 +274,12 @@ Doing it the other way round means every regression is ambiguous.
   carries has a checked-in owner. **I1's "ein.py stays permanently as the
   oracle" is amended the same way and for the same reason.**
 - ~~**Dropping PyPy support.**~~ **Reversed 2026-08-20 with the above** —
-  there is no Python engine left to run under PyPy. Python stays a supported
-  *consumer* through [P1a.9](p1a.9_bindings_release/README.md)'s PyO3 module,
-  which is the opposite of what P1a.10 removes.
+  there is no Python engine left to run under PyPy. Python was to stay a
+  supported *consumer* through [P1a.9](p1a.9_release/README.md)'s PyO3
+  module — **and that is deferred too**, 2026-08-21, for want of a consumer
+  ([Q-M1a.23](open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
+  What ships is a binary and a set of crates; Python reaches the engine the
+  way every other language does, by running it.
 - **A resident server.** Dropped 2026-08-18 (see the phase table).
   ein.rs ships a **library and a CLI**; an embedder that wants
   load-once/ask-many holds the engine in its own process — which is
@@ -346,7 +358,9 @@ entry through a seeded `solve` regime.
   ein.rs implements. `inference/architecture_and_algorithms.md` §O1–O9 is
   the operation-by-operation map every design doc here refers back to.
 - [`docs/api/ein.md`](../../docs/api/ein.md) — the Python embedding
-  contract P1a.9's PyO3 surface must keep.
+  contract, now **a record held in reserve**: the surface that was to keep it
+  is deferred
+  ([Q-M1a.23](open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
 - [F11 — deductive-layer perf](../followups/f11_deductive_layer_perf.md)
   — D1 (beta-memories) and D2 (WCOJ); this milestone is their promotion
   trigger. Absorbed by [P1a.6](p1a.6_performance/README.md).

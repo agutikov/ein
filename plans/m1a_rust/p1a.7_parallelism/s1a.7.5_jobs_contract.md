@@ -27,7 +27,7 @@ different computation, and because the whole parity apparatus assumes it.
   documented as *not* counter-identical, with a fixture demonstrating a
   counter difference so the distinction is visible rather than theoretical.
 - The CLI surface and the `SolverConfig` interaction agree on the same
-  semantics, and the embedding API ([P1a.9](../p1a.9_bindings_release/README.md))
+  semantics, and the embedding API ([P1a.9](../p1a.9_release/README.md))
   exposes the same knob under the same name.
 - `docs/api/inference.md` gains the flag with its guarantees; the
   guarantee table from [design/08](../design/08_parallelism.md) §1 lands

@@ -29,7 +29,7 @@ ein/
 │       ├── ein-einb/           the `.einb` container            [P1a.8]
 │       ├── ein-render/         DOT renderers, markdown trace, solution table
 │       ├── ein-cli/            the `ein` binary
-│       ├── ein-py/             PyO3 bindings (maturin)             [P1a.9]
+│       ├── ein-py/             PyO3 bindings (maturin)     [reserved, deferred]
 │       ├── ein-oracle/         ein.py + CPython as test oracles (dev-only)
 │       ├── ein-parity/         the normalisation list, executable (dev-only) [S1a.6.10]
 │       └── ein-conformance/    corpus runner, event differ
@@ -109,7 +109,7 @@ if that ever matters.
 | `clap` (derive) | cli | 37 options across 8 parsers; [Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity) took help and usage-error *text* off the byte gate on 2026-08-18, so nothing has to reproduce `argparse`'s formatter |
 | `serde` + `serde_json` | conformance, cli(`--events`) | the event protocol |
 | `zstd` | ein-einb | optional section compression. **Not taken up**: P1a.8 shipped the per-section `flags` word that would select it and no compressor, because a saturated `zebra2` is 56 KB uncompressed against a 64 KB budget and a compressed section forfeits the `mmap` the layout exists for. A reader refuses a non-zero `flags` rather than guessing |
-| `pyo3` / `maturin` | ein-py | [P1a.9](../p1a.9_bindings_release/README.md) only |
+| `pyo3` / `maturin` | ein-py | **reserved, not taken up.** P1a.9 was to build the binding and [deferred it 2026-08-21](../p1a.9_release/README.md) for want of a consumer — M1b links the crates, M1c's runner must shell out to be a fair measurement, and M2's CPython premise (llama.cpp) turned out to be an HTTP server. The crate, this row and the `python` feature stay reserved so the trip-wires in [Q-M1a.23](../open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding) are cheap to answer |
 | `criterion`, `proptest`, `arbitrary` | dev-dependencies | benches and property tests |
 | `snmalloc-rs` | cli (binary only), conformance (bench) | the global allocator — [T1a.6.2.7](../p1a.6_performance/s1a.6.2_memory_layout.md), added 2026-08-19. glibc `malloc` was **20.0 %** of an exhaustive `zebra2`'s self time; measured against `mimalloc` and `tikv-jemallocator`, this one is the fastest *and* the only fast one that does not cost peak RSS. On the **binary**, never on an engine crate: a library that installs a global allocator makes the choice for everything that links it. Build-time it pulls `cc` + `cmake` |
 
@@ -133,7 +133,7 @@ crate).
 | `parallel` | off during P1a.0–6, on from P1a.7 | pulls `rayon`, enables `--jobs > 1` |
 | `einb` | on (`ein-cli`) | `.einb` read/write. Off, `ein kb` is not registered and a `.einb` argument is refused by the loader that would have opened it |
 | `events` | on | `--events FILE` emission (compiled out entirely when off, for a zero-overhead measurement build) |
-| `python` | off | PyO3 bindings |
+| `python` | off | PyO3 bindings. Reserved; nothing builds it (see the `pyo3` row) |
 | `snmalloc` | **on** (`ein-cli`) | the global allocator (T1a.6.2.7). `--no-default-features` builds against the system allocator, which is what a distro package that would rather not vendor a C++ allocator wants — and costs 15.9 % of `solve zebra2 -e` |
 | `fork-delta` | off | [D3](../divergences.md)'s fixture: compiles the pre-[S1a.6.9](../p1a.6_performance/s1a.6.9_fork_entry_delta.md) fresh-fork saturator back in, reachable with `EIN_FORK_DELTA=0` |
 | `counters` | off | the work counters ([S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md) T1a.6.1.3), compiled out entirely when off |
@@ -177,7 +177,7 @@ Three tiers.
 
 - Everything nightly, plus `--jobs {1,2,4,8}` cross-diff, thread
   sanitizer, a `--no-default-features` build, and the packaging matrix
-  (Linux/macOS/Windows binaries, `maturin` wheels once P1a.9 lands).
+  (Linux/macOS/Windows binaries; **no wheels** — see the `pyo3` row).
 
 ### Benchmarks
 

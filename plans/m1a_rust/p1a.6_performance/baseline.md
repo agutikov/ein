@@ -1258,7 +1258,7 @@ within 0.5 ms on the fourth; `mimalloc` matches it and then costs **7.2 MB of
 peak RSS** on `zebra -e`, which the stage's acceptance names as the one thing
 that may not get worse; `jemalloc` keeps the RSS, returns a third less of the
 win, and gates itself on `cfg(not(target_env = "msvc"))` by its own README,
-where [P1a.9](../p1a.9_bindings_release/README.md) ships a Windows binary.
+where [P1a.9](../p1a.9_release/README.md) ships a Windows binary.
 
 **snmalloc is not free of that charge either**, and the number is here rather
 than in a footnote: it costs **+1.2 MB (+6.9 %)** on `zebra -e` and nothing on

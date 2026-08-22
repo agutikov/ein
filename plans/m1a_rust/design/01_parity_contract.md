@@ -126,7 +126,7 @@ gate.
 | [P1a.3](../p1a.3_deductive_core/README.md) | T2 on saturation-only fixtures (`examples/saturation/**`, `features/**`) |
 | [P1a.4](../p1a.4_search_layer/README.md) | T1 corpus-wide, T2 on `branching/**` + `lattice/**` + `domain_elim/**` |
 | [P1a.5](../p1a.5_presentation/README.md) | **T3 corpus-wide** |
-| [P1a.6](../p1a.6_performance/README.md)–[P1a.9](../p1a.9_bindings_release/README.md) | T3 stays green; regressions are release blockers |
+| [P1a.6](../p1a.6_performance/README.md)–[P1a.9](../p1a.9_release/README.md) | T3 stays green; regressions are release blockers |
 
 ---
 

@@ -109,8 +109,10 @@ ein.rs/target/release/ein --help
 Needs a Rust toolchain, and — for the default build — `cmake` and a C++
 compiler, because the binary links `snmalloc` (worth 8–16 % of a solve).
 `cargo build --release -p ein-cli --no-default-features` builds against the
-system allocator and needs neither. Wheels, signed binaries and
-`pip install` are [P1a.9](plans/m1a_rust/p1a.9_bindings_release/README.md)'s.
+system allocator and needs neither. Signed binaries for three platforms are
+[P1a.9](plans/m1a_rust/p1a.9_release/README.md)'s; **`pip install` is not a
+channel** — the Python binding was deferred on 2026-08-21 for want of a
+consumer ([Q-M1a.23](plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
 
 > **There was a Python implementation** — `ein.py/`, `./venv_install.sh`, a
 > console script on a venv's PATH — and it was the reference for five phases

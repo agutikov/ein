@@ -1,0 +1,140 @@
+# P1a.9 — Release
+
+**Milestone:** [M1a — Rust port](../README.md)
+**Estimate:** 1.2 weeks (6 days of stages)
+**Depends on:** nothing outstanding.
+[P1a.10](../p1a.10_single_implementation/README.md) **shipped 2026-08-21**
+and this phase closes the milestone behind it.
+
+> **Scope change 2026-08-21 — the bindings are deferred and the phase is
+> re-topiced.** This was **Bindings and release** (4 stages, 8 days): a PyO3
+> module, an API contract suite over it, packaging, documentation. The two
+> binding stages — S1a.9.1 (the PyO3 surface) and S1a.9.2 (API parity tests) —
+> are **cut**, and the stage numbers are left as a gap rather than reused, so
+> a link that meant "the PyO3 stage" does not silently come to mean something
+> else. Both files are in git history.
+>
+> **Why.** The phase justified PyO3 with one consumer, and the census does not
+> support it. [M1b](../../m1b_gui/README.md) links the crates into a Tauri
+> backend; [M1c](../../m1c_external_validation/README.md)'s benchmark runner is
+> `ein-bench`, Rust, and
+> [S1c.2.2](../../m1c_external_validation/p1c.2_external_benchmarks/s1c.2.2_systems_and_install.md)
+> requires that it *shell out* — "`cargo build` never needs Z3" — because a
+> linked rival and a subprocess rival are not comparable measurements;
+> `utils/`'s seventeen scripts drive the binary by `$EIN_BIN` precisely so a
+> number says which build produced it. That leaves
+> [M2](../../m2_nl_to_ir/README.md), and M2's reason does not survive contact
+> with M2's own plan:
+>
+> - **The llama.cpp argument was never true.**
+>   [P2.2](../../m2_nl_to_ir/p2.2_llm_infra/README.md) is a `llama-server`
+>   container and a thin HTTP client — no llama.cpp bindings anywhere. The
+>   pattern it mirrors is [acva](../../../../acva/), and acva's client is
+>   **C++**; P2.2's own README says "same pattern, Python client *this time*
+>   instead of C++". The *this time* was because ein was Python, and
+>   [S1a.10.5](../p1a.10_single_implementation/s1a.10.5_removal.md) ended that.
+> - **The one thing that wanted a binding is the thing that argues against
+>   it.** M2's validator/repair loop
+>   ([S2.4.2](../../m2_nl_to_ir/p2.4_nl_to_ir_pipeline/s2.4.2_validator_reprompt.md))
+>   is written as `validate(facts: list[IRNode], ontology: IRNode)` and needs
+>   *why* a load failed, not the message text — a structured-diagnostics
+>   surface the engine does not have and the CLI cannot grow, because
+>   [`defined_behaviour.md` §1/§4](../../../docs/kernel/defined_behaviour.md)
+>   pins those diagnostics as **strings**. A Rust frontend links `ein-ir` and
+>   `ein-infer` and has all of it with no boundary, no mirrored data model and
+>   no exception hierarchy to design. The strongest argument for building the
+>   binding is the strongest argument for not needing it.
+>
+> **What replaces the two stages** is one that was never in the plan and is
+> the milestone's own reflex — measure before building
+> ([S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md),
+> [S1a.7.0](../p1a.7_parallelism/s1a.7.0_speculation_audit.md)):
+> [S1a.9.0](s1a.9.0_slow_corpus.md), the corpus's slow tail, whose seventeen
+> entries are still priced against an engine that left the tree.
+>
+> **This is a deferral with a trip-wire, not a cancellation** —
+> [Q-M1a.23](../open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+> records the three conditions that would bring it back, and the likeliest one
+> ([M2b](../../m2b_presentation/README.md): a paper whose artifact reviewers
+> expect `pip install`) is a milestone away, not a phase.
+
+## Goal
+
+Ship it. Static binaries for three platforms, a version string that says
+exactly what is in them, a release process that cannot publish a red gate, and
+the documentation that makes ein.rs the engine of record — by now the only
+one. And, first, the measurement the phase would otherwise ship without: what
+the corpus's seventeen `slow = true` entries actually cost, on the engine that
+is being released.
+
+## Stages
+
+| stage | title | est. |
+|---|---|---|
+| [S1a.9.0](s1a.9.0_slow_corpus.md) | The slow corpus, re-priced | 3 d |
+| [S1a.9.3](s1a.9.3_packaging.md) | Packaging and release | 2 d |
+| [S1a.9.4](s1a.9.4_documentation.md) | Documentation | 1 d |
+
+**S1a.9.1 and S1a.9.2 do not exist.** See the scope change above; the gap is
+deliberate.
+
+## Acceptance for the phase
+
+- The seventeen slow entries carry a **measured** cost against ein.rs, every
+  `slow` flag and every `no solve -e` exclusion is either re-justified on that
+  measurement or removed, and no surviving note explains a cost by naming
+  CPython ([S1a.9.0](s1a.9.0_slow_corpus.md)).
+- `ein` binaries for Linux (x86_64 + aarch64), macOS (universal2) and Windows
+  (x86_64), each sweeping the corpus on its own platform.
+- `ein --version` reports engine version, protocol version, feature flags and
+  the stdlib manifest hash.
+- Release artefacts carry checksums; the release job refuses to publish if
+  `cargo test --workspace`, the slow corpus sweep or the acceptance gate is
+  red.
+- A `--no-default-features` build still compiles and passes the unit suite.
+- `docs/api/` describes a surface that **exists** — the Rust embedding one —
+  and the Python contract it used to specify is filed as history rather than
+  left as a promise ([S1a.9.4](s1a.9.4_documentation.md)).
+- `plans/README.md`'s status table records M1a as shipped, with its date and
+  its measured outcome.
+
+## Notes
+
+- **`docs/api/`'s subject changes, and it is no longer the PyO3 module.** Six
+  pages and 1 051 lines specify a Python embedding API whose implementation
+  this phase was going to build. With the binding deferred, the honest move is
+  the one [S1a.9.4](s1a.9.4_documentation.md) T1a.9.4.3 already half-wanted: a
+  **Rust** embedding page, which is the surface [M1b](../../m1b_gui/README.md)
+  binds against and which nothing documents today, with the Python pages moved
+  to history beside
+  [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md)'s
+  treatment of the engine that used to implement them. They are not deleted:
+  if [Q-M1a.23](../open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+  trips, they are the specification again, unchanged.
+- **The ex-S1a.9.5 note is folded into
+  [S1a.9.4](s1a.9.4_documentation.md).** It read *"forget about removed
+  ein.py — find all occurrences, analyze, if it is a reference to removed
+  ein.py then reword for ein.rs or delete"*, and S1a.9.4's acceptance already
+  carries it as the standing requirement it is: `git grep -i 'ein\.py'`
+  returns only history. A stage whose whole content is another stage's
+  acceptance item is a duplicate, not a stage.
+- **Do not install the `ein` binary onto `$PATH` in developer setups by
+  default.** `utils/` names its binary (`$EIN_BIN` / `--bin`) so that a
+  measurement says which build it measured, and an ambiguous `ein` on `$PATH`
+  has burned every project that allowed it.
+- **The Python *package* name is free** and stays free. Nothing in this phase
+  claims a name on PyPI; a name claimed before there is something to publish
+  under it is a name that has to be renamed.
+
+## Cross-links
+
+- [design/12 — Toolchain](../design/12_toolchain_and_layout.md) — §1's
+  reserved `ein-py` crate, §2's `pyo3`/`maturin` row and §3's `python`
+  feature, all now marked deferred rather than upcoming
+- [Q-M1a.23](../open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+  — the trip-wire
+- [M1d](../../m1d_satisfiability/README.md) — where
+  [S1a.9.0](s1a.9.0_slow_corpus.md)'s findings go if they are about the search
+  rather than about the manifest
+- [M2 — NL → IR](../../m2_nl_to_ir/README.md) — the frontend-language question
+  this phase hands it

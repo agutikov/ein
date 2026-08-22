@@ -3,7 +3,7 @@
 **Milestone:** [M1a — Rust port](../README.md)
 **Estimate:** 3 weeks (16 days of stages)
 **Depends on:** nothing outstanding. It was
-[P1a.9](../p1a.9_bindings_release/README.md), **and that is reversed —
+[P1a.9](../p1a.9_release/README.md), **and that is reversed —
 2026-08-21**: P1a.9 depends on *this* phase and releases ein.rs alone.
 
 > The argument for the old order was that `docs/api/` documents the Python
@@ -18,7 +18,7 @@
 > hierarchies in step, publish two packages, and parameterise its test suite
 > over both — all of it work that exists only because the other engine does.
 > [S1a.10.6](s1a.10.6_docs.md) states the gap;
-> [S1a.9.4](../p1a.9_bindings_release/s1a.9.4_documentation.md) closes it,
+> [S1a.9.4](../p1a.9_release/s1a.9.4_documentation.md) closes it,
 > and is the milestone's last documentation stage. The P1a.9 stages are
 > amended to match.
 **Decides:** [Q-M1a.2](../open_questions.md#q-m1a2--does-einpy-have-a-sunset)
@@ -28,7 +28,7 @@
 [S1a.10.2](s1a.10.2_port_the_suite.md) shipped 2026-08-20; the ledger is
 [`oracle_ledger.md`](oracle_ledger.md) and the suite's file-by-file record is
 [`suite_dispositions.md`](suite_dispositions.md). They ran before
-[P1a.9](../p1a.9_bindings_release/README.md) on purpose: the dependency is the
+[P1a.9](../p1a.9_release/README.md) on purpose: the dependency is the
 *deletion*'s, and an inventory that deletes nothing — followed by a port that
 banks its answers while the oracle can still be asked — is exactly what should
 happen while both engines still run.
@@ -226,14 +226,18 @@ Three consequences, all recorded in the
   *submodules*, which had none and made every recursive clone fetch two large
   upstream repositories for work that has not started.
 - **Neither [P1a.8](../p1a.8_binary_container/README.md)'s `.einb` container
-  nor [P1a.9](../p1a.9_bindings_release/README.md)'s PyO3 module has started**,
+  nor [P1a.9](../p1a.9_release/README.md)'s PyO3 module has started**,
   so this criterion — "they still pass their own gates" — has nothing to
   check and is **retired** rather than quietly met. What it was guarding is
   real and moves to those phases: both are surfaces that would have been
   checked against the Python engine and now cannot be, so each has to state
-  what it is checked against instead. P1a.9 answers *the CLI, and the
-  contract in `docs/api/`*
-  ([S1a.9.2](../p1a.9_bindings_release/s1a.9.2_api_parity_tests.md));
+  what it is checked against instead. P1a.9 answered *the CLI, and the
+  contract in `docs/api/`*, via S1a.9.2 — **superseded 2026-08-21**: the
+  binding and its contract suite are deferred
+  ([Q-M1a.23](../open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)),
+  so the surface that needed an answer no longer exists and
+  [S1a.9.4](../p1a.9_release/s1a.9.4_documentation.md) makes the Rust
+  embedding page's examples compile under the gate instead.
   P1a.8's answer is
   [Q-M1a.22](../open_questions.md#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate)'s.
 
@@ -265,7 +269,7 @@ Three consequences, all recorded in the
   hard; **the order is reversed instead** (see the amendment above), so the
   risk is accepted rather than avoided: for the interval between
   [S1a.10.6](s1a.10.6_docs.md) and
-  [S1a.9.4](../p1a.9_bindings_release/s1a.9.4_documentation.md), five pages
+  [S1a.9.4](../p1a.9_release/s1a.9.4_documentation.md), five pages
   describe a contract nothing implements. S1a.10.6 must say so **on the
   pages themselves** — a documented API that quietly names a dead module is
   the failure mode; one that says "the implementation lands in S1a.9.1" is a

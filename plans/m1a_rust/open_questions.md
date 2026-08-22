@@ -31,6 +31,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | **moved 2026-08-21 with P1a.11 → [Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)** |
 | [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | **moved 2026-08-21 with P1a.12 → [Q-M1d.1](../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)** |
 | [Q-M1a.22](#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate) | Is `.einb`'s id remap order-preserving enough for its own gate? | open — **measured 2026-08-20** at [S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md): a permuted id space moves 0 answers and 66 renderings |
+| [Q-M1a.23](#q-m1a23--when-does-the-engine-need-a-python-binding) | When does the engine need a Python binding? | **deferred 2026-08-21** — no consumer today; three named trip-wires |
 
 ---
 
@@ -38,7 +39,7 @@ the two namespaces cannot collide. A closed id is never reused.
 
 **Resolved 2026-08-17: A.** The placeholder deferred this; the milestone
 brief settles it — ein.rs re-implements the whole stack with a 1:1
-surface, and PyO3 becomes an *output* ([P1a.9](p1a.9_bindings_release/README.md))
+surface, and PyO3 becomes an *output* ([P1a.9](p1a.9_release/README.md))
 rather than the boundary. Boundary B's advantage was preserving M1's
 tooling without re-implementation; the parity harness
 ([design/01](design/01_parity_contract.md)) buys that back more cheaply
@@ -412,7 +413,7 @@ and that is exactly what dissolved it. M1b picked Tauri
 process linking `ein-core`/`ein-ir`/`ein-infer` directly; a wire protocol
 between the GUI and the engine would have been a serialisation boundary
 inside one process. With M2 crossing into CPython through PyO3
-([P1a.9](p1a.9_bindings_release/README.md)) and the CLI running in-process,
+([P1a.9](p1a.9_release/README.md)) and the CLI running in-process,
 no consumer was left. The JSON-RPC recommendation and the rest of
 `design/09` are in git history if a hosted use case ever revives them.
 
@@ -1004,3 +1005,91 @@ Two things follow, and neither is decided here.
 measurement it rests on, and the answer-level invariance — which is what a user
 of a container cares about — asserted for `.einb` directly at
 [S1a.8.1](p1a.8_binary_container/README.md).
+
+## Q-M1a.23 — When does the engine need a Python binding?
+
+**Deferred 2026-08-21**, with the two binding stages cut from
+[P1a.9](p1a.9_release/README.md). Not cancelled: this entry is the trip-wire,
+so that "later" is a condition rather than a shrug.
+
+### Why there is nothing to bind for
+
+The phase justified PyO3 with one consumer and the census does not support it.
+[M1b](../m1b_gui/README.md) links the crates into a Tauri backend.
+[M1c](../m1c_external_validation/README.md)'s runner is `ein-bench`, Rust, and
+[S1c.2.2](../m1c_external_validation/p1c.2_external_benchmarks/s1c.2.2_systems_and_install.md)
+*requires* it to shell out — "`cargo build` never needs Z3" — because a linked
+rival and a subprocess rival are not comparable measurements. `utils/`'s
+seventeen scripts name their binary on purpose. That leaves
+[M2](../m2_nl_to_ir/README.md), whose two stated reasons both fail:
+
+- **llama.cpp does not pull CPython.**
+  [P2.2](../m2_nl_to_ir/p2.2_llm_infra/README.md) is a `llama-server` container
+  plus a thin HTTP client, mirroring [acva](../../../acva/) — whose client is
+  **C++**. P2.2's own README says "same pattern, Python client *this time*
+  instead of C++"; the *this time* was that ein was Python.
+- **The one thing that wanted the binding argues against it.** M2's
+  validator/repair loop needs *why* a load failed, as data. The CLI cannot
+  supply that — [`defined_behaviour.md` §1/§4](../../docs/kernel/defined_behaviour.md)
+  pins those diagnostics as strings — so a binding would have had to grow a
+  structured-diagnostics surface the engine does not have. A Rust frontend
+  links `ein-ir` and has it with no boundary at all.
+
+What remains genuinely Python in M2 is
+[P2.5](../m2_nl_to_ir/p2.5_link_grammar_experiment/README.md)'s link-grammar
+binding — an experiment whose default deployment is *off* unless it measures a
+win ([Q11](../m2_nl_to_ir/open_questions.md)), and whose subject has a C API if
+it ever graduates. An experiment harness that writes `.ein` files is not a
+reason to bind an engine.
+
+### The measurement the deferral rests on
+
+Cold process, this machine, 2026-08-21:
+
+| | |
+|---|---:|
+| `ein --help` — process startup floor | **1.68 ms** |
+| `ein solve examples/zebra2.ein` | 11 ms |
+
+At a 1.7 ms floor, the TPTP library's ~25 k problems cost **~40 s of process
+overhead in total** — against per-problem solve times that will be seconds or
+timeouts. No planned workload is startup-bound.
+
+### The trip-wires
+
+Bring it back when **any** of these is true. Each is checkable, and none is
+true today.
+
+1. **A per-item loop where startup dominates** — N in the millions, or a
+   per-item cost near 1.7 ms. Every planned batch (the benchmark corpus, TPTP,
+   a BBH sweep) is process-shaped and orders of magnitude above it.
+2. **State that must persist across items** — an incremental KB answering many
+   small queries, where re-loading rather than re-starting is the cost. Note
+   `.einb` ([P1a.8](p1a.8_binary_container/README.md)) already answers a large
+   part of this from outside the process: a saturated `zebra2` opens cold in
+   0.614 ms.
+3. **A Python consumer the project does not control** — a notebook, a
+   downstream library, or a paper's artifact package.
+   **This is the one most likely to arrive**, with
+   [M2b](../m2b_presentation/README.md), whose reviewers will expect
+   `pip install`. It is a milestone away, not a phase.
+
+### What is held in reserve
+
+`docs/api/`'s five Python pages — the five-step contract, the worked example,
+the per-symbol tables — are filed as history by
+[S1a.9.4](p1a.9_release/s1a.9.4_documentation.md) rather than deleted, which is
+what makes this deferral cheap to reverse: on the day a trip-wire fires, the
+specification already exists. [design/12](design/12_toolchain_and_layout.md)
+§1's `ein-py` crate, §2's `pyo3`/`maturin` row and §3's `python` feature stay
+reserved for the same reason.
+
+Two things that were *forced* and are now free, and should be decided with a
+module in hand rather than in advance: the **published name** (the `ein` PyPI
+name came free at
+[S1a.10.5](p1a.10_single_implementation/s1a.10.5_removal.md) and nothing claims
+it), and the **exception hierarchy** — S1a.9.1 was going to keep
+`IRParseError(SyntaxError)` "because consumers were written against it", and
+those consumers left with `ein.py/`.
+[`defined_behaviour.md` §4](../../docs/kernel/defined_behaviour.md) already
+calls the six Python class names "a name without a referent".

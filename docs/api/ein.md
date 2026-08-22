@@ -1,21 +1,28 @@
 # `ein` — the embedding contract
 
-> ### ⚠ This contract has no implementation right now
+> ### ⚠ This contract has no implementation, and none is scheduled
 >
 > **`import ein` does not work in this repo.** The Python package these pages
 > describe was deleted at M1a
 > [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
 > (2026-08-21), when `ein.rs` became the only engine.
 >
-> The contract is not obsolete — it is the **specification** the PyO3 module
-> [S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md)
-> builds has to satisfy. What checks it is
-> [S1a.9.2](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.2_api_parity_tests.md);
-> what re-verifies these pages against the real module, sample by sample, is
-> [S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md).
-> Until those land, read every code block here as a contract rather than as a
-> runnable snippet. The surface that *does* run today is the CLI:
-> `ein solve <file>` · `ein saturate` · `ein render`.
+> A PyO3 module was to succeed it in
+> [P1a.9](../../plans/m1a_rust/p1a.9_release/README.md). **That is deferred as
+> of 2026-08-21** — the census found no consumer that needs it, and
+> [Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+> records the three conditions that would bring it back.
+>
+> So these pages are **history, held in reserve**: the embedding contract of
+> the engine that was, kept whole rather than deleted, because on the day a
+> trip-wire fires this is a specification instead of a blank page. Read every
+> code block as a record, not as a runnable snippet — and do not "fix" one to
+> match ein.rs's internals; they describe something that no longer exists.
+>
+> **The surfaces that do run** are the CLI — `ein solve <file>` ·
+> `ein saturate` · `ein render` — and the crates, whose embedding page
+> [S1a.9.4](../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md)
+> writes.
 
 The Python surface for embedding Ein in another project: **parse** a
 `.ein` source → **load** it into a `KnowledgeBase` → (optionally
@@ -32,7 +39,7 @@ The Python surface for embedding Ein in another project: **parse** a
 engine, which no longer exists**. The worked example below was run end-to-end
 against [`examples/zebra2.ein`](../../examples/zebra2.ein) then; re-running it
 against the PyO3 module is
-[S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md)'s
+[S1a.9.4](../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md)'s
 first task, and any signature this page and that module disagree on is a bug in
 one of them rather than a stale doc.*
 
@@ -199,12 +206,16 @@ subset-minimal MUS. See [`inference.md`](inference.md).
 
 ## Worked example — solving `zebra2.ein`
 
-The script the contract has to make work. **It does not run today** — the
-module it imports lands at
-[S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md),
-and [S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md)
-is the stage that runs it and re-verifies the output below. The CLI equivalent,
-which does run, is `ein solve examples/zebra2.ein --trace out.md`.
+The script the contract was written to make work. **It does not run, and no
+stage is scheduled to make it run** — the module it imports was deferred with
+the rest of the binding
+([Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
+The numbers below were real, against the Python engine, at `60c192b`.
+
+The CLI equivalent **does** run and produces the same answer:
+`ein solve examples/zebra2.ein --trace out.md`, or
+`--json-summary out.json` for the same verdict as data — `verdict.type`, `k`,
+`exhausted`, `unsat_core`, the model as a fact set, and `goal_bindings`.
 
 ```python
 import time

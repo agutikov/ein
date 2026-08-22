@@ -28,11 +28,16 @@ constrained-reasoning research.
   how to drive Ein *as a library* (`parse` → `KnowledgeBase` → `solve` →
   read verdict/trace). `ein.md` is the contract + worked example; per-module
   pages for `ir`/`kb`/`inference`/`trace`. Distinct from `docs/kernel/`
-  (the IR *language*) and the engine internals. **Nothing implements it right
-  now** — every page says so in a banner: the module is P1a.9's PyO3 one, so
-  until [S1a.9.1](plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md)
-  these pages are a *specification*, not a description. Do not "fix" them to
-  match ein.rs's internals; a disagreement is a defect for S1a.9.2 to catch.
+  (the IR *language*) and the engine internals. **Nothing implements it and
+  nothing is scheduled to** — every page says so in a banner. The PyO3
+  successor was deferred on 2026-08-21 for want of a consumer
+  ([Q-M1a.23](plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+  holds the three trip-wires that revive it), so these pages are a **record
+  kept in reserve**, not a specification anyone is building against. Do not
+  "fix" them to match ein.rs's internals — they describe an engine that no
+  longer exists. The embedding surface that *is* real is the **crates**, and
+  [S1a.9.4](plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md) is the
+  stage that documents it.
 - **`docs/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
   Zebra puzzle"): objects/relations/facts → rules → the full solve, four
   chapters (P1.20 Theme K). User-facing; references `docs/kernel/` +

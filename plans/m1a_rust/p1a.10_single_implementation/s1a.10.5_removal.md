@@ -6,13 +6,13 @@
 [S1a.10.4](s1a.10.4_utils.md), and **T1a.10.5.0 below** — which is a
 precondition, not a step of the removal.
 
-> **The phase's dependency on [P1a.9](../p1a.9_bindings_release/README.md) is
+> **The phase's dependency on [P1a.9](../p1a.9_release/README.md) is
 > reversed, 2026-08-21.** It was hard — "if P1a.9 has not landed, this phase
 > deletes the only implementation of a documented contract" — and the answer
 > is that P1a.9 now runs *after* this phase and releases ein.rs alone. The
 > cost is one interval in which `docs/api/` documents an unimplemented
 > surface; [S1a.10.6](s1a.10.6_docs.md) states it on the pages and
-> [S1a.9.4](../p1a.9_bindings_release/s1a.9.4_documentation.md) closes it.
+> [S1a.9.4](../p1a.9_release/s1a.9.4_documentation.md) closes it.
 > The full argument is in [the phase README](README.md).
 
 ## Context
@@ -230,7 +230,7 @@ keeps the binary matrix — the stdlib copy that job existed to check is
 **Python linting left with the tree.** `ruff check ein.py` was the `oracle`
 job's last step and its config lived in `ein.py/pyproject.toml`. Nothing lints
 `utils/` today; it comes back with
-[P1a.9](../p1a.9_bindings_release/README.md)'s binding suite, which is the
+[P1a.9](../p1a.9_release/README.md)'s binding suite, which is the
 next Python in the repo, and which also has to answer where a pytest suite
 lives now.
 

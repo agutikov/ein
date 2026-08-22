@@ -1,21 +1,28 @@
 # `ein.kb` — the knowledge base
 
-> ### ⚠ This contract has no implementation right now
+> ### ⚠ This contract has no implementation, and none is scheduled
 >
 > **`import ein` does not work in this repo.** The Python package these pages
 > describe was deleted at M1a
 > [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
 > (2026-08-21), when `ein.rs` became the only engine.
 >
-> The contract is not obsolete — it is the **specification** the PyO3 module
-> [S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md)
-> builds has to satisfy. What checks it is
-> [S1a.9.2](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.2_api_parity_tests.md);
-> what re-verifies these pages against the real module, sample by sample, is
-> [S1a.9.4](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.4_documentation.md).
-> Until those land, read every code block here as a contract rather than as a
-> runnable snippet. The surface that *does* run today is the CLI:
-> `ein solve <file>` · `ein saturate` · `ein render`.
+> A PyO3 module was to succeed it in
+> [P1a.9](../../plans/m1a_rust/p1a.9_release/README.md). **That is deferred as
+> of 2026-08-21** — the census found no consumer that needs it, and
+> [Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+> records the three conditions that would bring it back.
+>
+> So these pages are **history, held in reserve**: the embedding contract of
+> the engine that was, kept whole rather than deleted, because on the day a
+> trip-wire fires this is a specification instead of a blank page. Read every
+> code block as a record, not as a runnable snippet — and do not "fix" one to
+> match ein.rs's internals; they describe something that no longer exists.
+>
+> **The surfaces that do run** are the CLI — `ein solve <file>` ·
+> `ein saturate` · `ein render` — and the crates, whose embedding page
+> [S1a.9.4](../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md)
+> writes.
 
 The in-memory graph the engine reasons over: a `KnowledgeBase` registry
 of entities + indexes, the entity kinds, and per-fact provenance. The engine
@@ -27,7 +34,7 @@ behind it is [`ein-core`](../../ein.rs/crates/ein-core/src/).
 > code-level internals are
 > [`02-data-model/03_implementation.md`](../kernel/ir/02-data-model/03_implementation.md).
 
-*Verified against commit `60c192b` (2026-06-16) — **against the Python engine, which no longer exists**. The signatures are the contract [S1a.9.1](../../plans/m1a_rust/p1a.9_bindings_release/s1a.9.1_pyo3_surface.md) implements, not a description of something in the tree.*
+*Verified against commit `60c192b` (2026-06-16) — **against the Python engine, which no longer exists**. These signatures are a record of what that engine offered, not a description of anything in the tree and no longer a contract anything is scheduled to implement ([Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).*
 
 ## Construction
 
