@@ -13,7 +13,7 @@
 # failed" before anything else:
 #
 #   ein.rs/    the Rust workspace — eight crates; `ein` is the binary
-#   zebra.c    the plain-C Zebra baseline -> build/zebra
+#   c/         three plain-C Zebra baselines -> build/zebra-{levels,oracles,blackbox}
 #
 # **Prerequisites.** A Rust toolchain (`ein.rs/rust-toolchain.toml` pins it),
 # a C compiler, and — unless `--no-snmalloc` — `cmake` and a C++ compiler,
@@ -82,15 +82,26 @@ fi
 # ── the C baseline ─────────────────────────────────────────────────
 
 if [ "$DO_C" = 1 ]; then
-    step "zebra.c — the plain-C baseline"
+    step "c/ — the plain-C baselines"
     CC="${CC:-cc}"
     need "$CC" "set CC to a C compiler"
     mkdir -p build
-    CFLAGS_DEFAULT="-O2"
-    [ "$PROFILE" = dev ] && CFLAGS_DEFAULT="-O0 -g"
-    # shellcheck disable=SC2086
-    $CC $CFLAGS_DEFAULT -std=c11 -Wall -Wextra -pedantic -o build/zebra zebra.c
-    echo "   cc $CFLAGS_DEFAULT -std=c11 -Wall -Wextra -pedantic -o build/zebra zebra.c"
+    CFLAGS="-std=c11 -Wall -Wextra -pedantic"
+    [ "$PROFILE" = dev ] && CFLAGS="-O0 -g $CFLAGS" || CFLAGS="-O2 $CFLAGS"
+
+    # One line per binary: output name, then its translation units. The third
+    # is two, and that is the point of it — `blackbox.c` cannot see inside
+    # `zebra_module.c` (c/README.md).
+    build_c() {
+        local out="$1"
+        shift
+        # shellcheck disable=SC2086
+        $CC $CFLAGS -o "build/$out" "$@"
+        echo "   build/$out  <-  $*"
+    }
+    build_c zebra-levels   c/zebra_levels.c
+    build_c zebra-oracles  c/zebra_oracles.c
+    build_c zebra-blackbox c/blackbox.c c/zebra_module.c
 fi
 
 # ── what came out ──────────────────────────────────────────────────
@@ -99,12 +110,15 @@ step "built"
 TARGET_DIR="ein.rs/target/$([ "$PROFILE" = release ] && echo release || echo debug)"
 ARTEFACTS=()
 [ "$DO_ENGINE" = 1 ] && ARTEFACTS+=("$TARGET_DIR/ein")
-[ "$DO_C" = 1 ] && ARTEFACTS+=(build/zebra)
+[ "$DO_C" = 1 ] && ARTEFACTS+=(build/zebra-levels build/zebra-oracles build/zebra-blackbox)
 for artefact in "${ARTEFACTS[@]}"; do
     printf '   %-28s %s\n' "$artefact" "$(du -h "$artefact" | cut -f1)"
 done
 echo
 [ "$DO_ENGINE" = 1 ] &&
     echo "   the engine:    $TARGET_DIR/ein solve examples/zebra.ein"
-[ "$DO_C" = 1 ] && echo "   the baseline:  build/zebra"
+[ "$DO_C" = 1 ] &&
+    echo "   the baselines: build/zebra-levels   (milliseconds)" &&
+    echo "                  build/zebra-oracles  (minutes — c/README.md says why)" &&
+    echo "                  build/zebra-blackbox (minutes)"
 echo "   the gate:      ./run_tests.sh"

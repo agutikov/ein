@@ -142,29 +142,43 @@ constrained-reasoning research.
   and PyPy columns are frozen constants**, because the instruments that
   produced them left with the engine they measured.
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
-  workspace (`--release` by default, into `ein.rs/target/`) and then `zebra.c`
-  (into the gitignored `build/`). `--debug`, `--no-snmalloc` (the system
-  allocator, for a machine without `cmake` and a C++ compiler), `--all-targets`
-  (tests, benches and the measurement examples), `--engine` / `--c` for one of
-  the two. It builds and does not run: `./run_tests.sh` is the gate.
-- **`zebra.c`** — the **plain-C baseline**: the same Zebra puzzle
-  `examples/zebra.ein` encodes, solved by brute-force enumeration over five
-  arrays, one per attribute, indexed by house. The fourteen stated conditions
-  are an **array of function pointers** — one `int (*)(void)` per condition,
-  each tagged with the level at which every value it names is bound — so
-  `search()` itself has nothing puzzle-specific in it and the per-clue
-  rejection table falls out. One translation unit, no dependencies, clean at
-  `-Wall -Wextra -pedantic -Wconversion -Wshadow` under gcc and clang.
+  workspace (`--release` by default, into `ein.rs/target/`) and then the three
+  C baselines in `c/` (into the gitignored `build/`). `--debug`,
+  `--no-snmalloc` (the system allocator, for a machine without `cmake` and a
+  C++ compiler), `--all-targets` (tests, benches and the measurement
+  examples), `--engine` / `--c` for one of the two. It builds and does not
+  run: `./run_tests.sh` is the gate.
+- **`c/`** — **three plain-C Zebra baselines**, solving the puzzle
+  `examples/zebra.ein` encodes with the same value names and the same answer,
+  and with exactly one thing varying: **how much the search is told about the
+  constraints**. [`c/README.md`](c/README.md) is the catalogue and carries the
+  argument; the table is
 
-  It is a reading aid rather than a component — nothing depends on it and the
-  gate does not run it — and it earns its place by being the thing `ein solve
-  examples/zebra.ein` is *not*: same answer (Norwegian/water, Japanese/zebra),
-  6 840 assignments tested against a 24.9-billion space, and not one line of it
-  transferable to a puzzle it was not written for. The clues are *data* there,
-  which is one step towards what ein does with facts and no further: they are
-  still compiled code that only answers this puzzle, nothing derives a new
-  condition, nothing explains why a house got its colour, and a fifteenth
-  condition is an edit and a rebuild.
+  | | what the search knows | assignments | wall |
+  |---|---|---:|---:|
+  | `zebra_levels.c` | every clue, and the level at which each becomes testable | **6 840** | 0.003 s |
+  | `zebra_oracles.c` | fourteen opaque yes/no functions, in the puzzle's order | 25 092 302 520 | 158 s |
+  | `blackbox.c` + `zebra_module.c` | a grid size and one function pointer | 25 092 302 520 | 388 s |
+
+  **3 668 465×**, and the difference is not an algorithm — it is one integer
+  per clue, the level at which every attribute it names is bound. The third
+  pair is two translation units on purpose: "the search knows nothing" is then
+  checkable rather than stylistic, since `blackbox.c`'s object file holds no
+  symbol from the puzzle beyond `PROBLEM`. § Circular dependencies between
+  levels answers the question the level tag invites: the puzzle's constraint
+  graph is K₅ minus two edges — four independent cycles — and the scheme does
+  not notice, because a level is a `max` over an order chosen before any clue
+  is read and because tests have no data flow between them to be circular in.
+  What the cycles cost is the *schedule*: on a tree-shaped graph a DFS order
+  would be optimal by construction, and it is only because of them that the
+  level order had to be swept rather than derived.
+
+  Nothing here is wired into anything — the gate does not run them and no
+  crate depends on them. They earn their place by being what `ein solve
+  examples/zebra.ein` is *not*, and `c/README.md` § What none of them do is
+  where that is spelled out: no propagation, no domains, nothing learned from
+  a dead subtree, and every condition compiled code that only answers this one
+  puzzle.
 - **`nlp/`, `smt/`** — scratch areas, 56 KB, wired into nothing. `smt/` holds
   three hand-written `.smt` encodings of the Zebra puzzle and 4-queens, which
   [M1c P1c.2](plans/m1c_external_validation/p1c.2_external_benchmarks/README.md)

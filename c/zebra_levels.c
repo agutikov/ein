@@ -1,13 +1,18 @@
 /*
  * zebra.c — the Zebra puzzle, solved by brute-force enumeration in plain C11.
  *
- *     ./build.sh && build/zebra
+ *     ./build.sh && build/zebra-levels
  *
  * This is the *baseline*, deliberately: the same puzzle `examples/zebra.ein`
  * encodes, with the same value names, but with the fifteen clues hardcoded as
  * C predicates over five arrays instead of stated as facts a solver reasons
  * from. It is here to be read next to `ein solve examples/zebra.ein` — same
  * answer, and the two get there in completely different ways.
+ *
+ * It is also the **best informed** of the three in `c/`: it is told, for every
+ * clue, the level at which the clue becomes testable. `zebra_oracles.c` is the
+ * same puzzle with that one integer per clue taken away, and it costs 3.6
+ * million times more. See c/README.md.
  *
  * The model is as simple as it can be. Five houses in a row, numbered 0..4
  * left to right, and five arrays indexed by house:
