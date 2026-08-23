@@ -9,10 +9,10 @@
 Runs **one** binary twice over the whole parity corpus — `EIN_FORK_DELTA=0`,
 then unset — so the only difference between the arms is `Saturator::new`
 against `Saturator::resume`
-([S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)).
+([S1a.6.9](../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)).
 The resumed saturator is the shipping path; a `fork-delta` build compiles in
 the way back to the old one, and this script is
-[D3](../plans/m1a_rust/divergences.md)'s fixture — the divergence stays
+[D3](../docs/history/m1a_rust/divergences.md)'s fixture — the divergence stays
 measured, so it cannot silently widen.
 
 The point is to compare artefacts that are **not** firing lists, because the
@@ -36,7 +36,7 @@ the query bindings, and for an unsat puzzle the core — the **answer**),
 publishes, with only the clock normalised out) and the `--dump-states` tree
 (the lattice, the no-good clauses). Wall-clock fields and firing counts are normalised out of both and
 reported separately — those are the narration, which is
-[T1a.6.9.3](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)'s
+[T1a.6.9.3](../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)'s
 number rather than an invariant.
 
 `--no-fail-fast` re-runs each entry with `(config :enable-fail-fast-fork

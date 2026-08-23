@@ -1,7 +1,7 @@
 //! The argument surface — `ein`, `render`, `solve`, and `saturate`'s own.
 //!
 //! One module so the whole surface can be *introspected* rather than scraped:
-//! [Q-M1a.13](../../../../plans/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
+//! [Q-M1a.13](../../../../docs/history/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
 //! resolved `--help` layout and usage-error text onto the normalisation list,
 //! and what replaces the byte diff is a structural comparison of exactly these
 //! builders against `argparse`'s parser objects. Layout is `clap`'s business;
@@ -29,7 +29,7 @@ fn py_int(s: &str) -> Result<i64, String> {
 /// `available_parallelism` counts logical CPUs, and on a hybrid CPU that
 /// includes SMT siblings and E-cores. P1a.7's measurements say more threads
 /// than physical P-cores is not faster
-/// ([scaling.md](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)), so
+/// ([scaling.md](../../../../docs/history/m1a_rust/measurements/scaling.md)), so
 /// `auto` is a convenience and `--jobs N` is what a measurement uses.
 fn jobs_spec(s: &str) -> Result<i64, String> {
     if s.eq_ignore_ascii_case("auto") {

@@ -2,7 +2,7 @@
 ;;;
 ;;; `mixed-type-hypothesis.ein` is the str-vs-int reproducer Q-M1a.4 was
 ;;; written about. This is the *other* half of the same hazard, which
-;;; [design/02](../../plans/m1a_rust/design/02_determinism_and_order.md) §5 H2
+;;; [design/02](../../docs/history/m1a_rust/design/02_determinism_and_order.md) §5 H2
 ;;; named in one clause — "and a `Fact` has no `__lt__` at all" — and which no
 ;;; fixture covered until the S1a.6.6 fuzzer produced it:
 ;;;

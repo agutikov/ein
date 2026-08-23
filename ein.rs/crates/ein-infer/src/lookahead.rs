@@ -32,9 +32,9 @@
 //! `enable_pre_branch_lookahead` measures *slightly negative* today (0.9× on
 //! exhaustive `zebra2`): it pays a simulation to avoid forks that S1.9.E23's
 //! fail-fast already made cheap. Because it runs the matcher it inherits
-//! [design/05](../../../../plans/m1a_rust/design/05_matcher.md)'s speedup
+//! [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md)'s speedup
 //! wholesale, which may flip that sign — a
-//! [P1a.6](../../../../plans/m1a_rust/p1a.6_performance/README.md)
+//! [P1a.6](../../../../docs/history/m1a_rust/README.md#p1a6--performance)
 //! measurement, not a decision to take here. The default does not move
 //! without it.
 

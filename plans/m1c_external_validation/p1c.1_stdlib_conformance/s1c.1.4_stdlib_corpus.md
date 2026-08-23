@@ -27,7 +27,7 @@ its zero-firing set is the priority.
   what this program does to it, and what the expected result *means*.
   `examples/features/` is the model.
 - Registered in `corpus/corpus.toml` (or its successor from
-  [S1a.10.3](../../m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md))
+  [S1a.10.3](../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine))
   and catalogued in the examples README, like every other fixture.
 
 ## Tasks

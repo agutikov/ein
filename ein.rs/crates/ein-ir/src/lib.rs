@@ -6,12 +6,12 @@
 //!
 //! The frontend is a **pure function** (source → forms) with no engine state,
 //! which is why it is the first phase of the port
-//! ([P1a.1](../../../plans/m1a_rust/p1a.1_ir_frontend/README.md)): every
+//! ([P1a.1](../../../../docs/history/m1a_rust/README.md#p1a1--ir-frontend)): every
 //! artefact it produces is text a golden file already pins, so it can be
 //! brought to byte parity in isolation.
 //!
 //! [`stdlib`] landed at
-//! [S1a.0.3](../../../plans/m1a_rust/p1a.0_conformance_harness/s1a.0.3_shared_stdlib_and_examples.md).
+//! [S1a.0.3](../../../../docs/history/m1a_rust/README.md#s1a03--shared-stdlib-and-examples).
 
 #![forbid(unsafe_code)]
 

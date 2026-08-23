@@ -7,9 +7,9 @@ holding the exact message.
 
 Sibling `../*.ein` fail at parse and `../load/*.ein` at load. The split is by
 **where** a file stops being usable, and it is what lets a port gate on one
-layer at a time — [P1a.1](../../../plans/m1a_rust/p1a.1_ir_frontend/README.md)
-on parse, [P1a.2](../../../plans/m1a_rust/p1a.2_kb_core/README.md) on load,
-[S1a.3.1](../../../plans/m1a_rust/p1a.3_deductive_core/s1a.3.1_compiler.md) on
+layer at a time — [P1a.1](../../../docs/history/m1a_rust/README.md#p1a1--ir-frontend)
+on parse, [P1a.2](../../../docs/history/m1a_rust/README.md#p1a2--kb-core) on load,
+[S1a.3.1](../../../docs/history/m1a_rust/README.md#s1a31--the-pattern-compiler) on
 these.
 
 ## Why the four exist at all

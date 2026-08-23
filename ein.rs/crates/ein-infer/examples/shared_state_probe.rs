@@ -4,7 +4,7 @@
 //! cargo run --release -p ein-infer --features counters --example shared_state_probe
 //! ```
 //!
-//! [design/08 §6](../../../../plans/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
+//! [design/08 §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
 //! names four structures a worker shares and a strategy for each — a sharded
 //! `RwLock` interner, a lock-free segmented fact store, a locked plan memo,
 //! an immutable `KbCore`. Three of those are *write* strategies, and nobody
@@ -46,7 +46,7 @@
 //! point of this probe is the counts.
 //!
 //! Numbers:
-//! [shared_state.md](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md).
+//! [shared_state.md](../../../../docs/history/m1a_rust/measurements/shared_state.md).
 
 use ein_core::{Symbol, Terms, counters};
 use ein_infer::Events;

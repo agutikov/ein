@@ -10,7 +10,7 @@ than for the graph engine. [M10](../plans/m10_external_benchmarks/README.md)
 counts them as three of its benchmark corpus's encodings, already written.
 
 > **The `CVC4` submodule was deinitialised at M1a
-> [S1a.10.5](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md).**
+> [S1a.10.5](../docs/history/m1a_rust/README.md#s1a105--the-removal).**
 > It pointed at `CVC4/CVC4` at version 1.8 (2021) and was never built by
 > anything here; what it cost was a `git clone --recurse-submodules` fetching
 > a large repository for a dropped milestone. Nothing that *reads* these files

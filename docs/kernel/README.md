@@ -10,7 +10,7 @@ self-modifying constraint language (followup F2) — *consumes* the
 kernel. Below it there is one implementation, [`ein.rs`](../../ein.rs/)
 (M1a). This tree is the contract between them.
 
-> **Since M1a [P1a.10](../../plans/m1a_rust/p1a.10_single_implementation/README.md)
+> **Since M1a [P1a.10](../history/m1a_rust/README.md#p1a10--one-implementation)
 > this tree is the only statement of intent that is not also the
 > implementation.** It was written when there were two engines and a harness
 > that checked they agreed; now a claim here is checked by
@@ -84,7 +84,7 @@ explicit audience banner.
 | **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`); `ir/02-data-model/{01_entities,02_store}` (the abstract model) |
 | **dev**  | `ir/02-data-model/03_implementation.md`; `inference/implementation.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
-| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../api/rust.md`](../api/rust.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary` / [`--events`](inference/events.md). The five *Python* pages under [`../api/`](../api/) are **history** — the contract of the engine that was, kept whole because [Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)'s trip-wires would restore it; there is no module to import. |
+| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../api/rust.md`](../api/rust.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary` / [`--events`](inference/events.md). The five *Python* pages under [`../api/`](../api/) are **history** — the contract of the engine that was, kept whole because [Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)'s trip-wires would restore it; there is no module to import. |
 | **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs |
 
 - **Newcomer path** (never seen Ein): the [guide](../guide/) end-to-end
@@ -111,8 +111,10 @@ explicit audience banner.
 - **Architecture**: [`architecture.md`](architecture.md) — the
   structural "where does X live?" map: data-flow, crate
   dependencies, milestone boundaries, and a change cookbook.
-- Plans roadmap: [`plans/README.md`](../../plans/README.md) (M1 shipped
-  2026-06-17; its plan folder was removed at P1.22 — see git history).
+- Plans roadmap: [`plans/README.md`](../../plans/README.md) — what has **not**
+  been built yet. Two milestones have shipped and left it: M1 (2026-06-17,
+  plan folder removed at P1.22, in git history) and M1a (2026-08-23, whose
+  record is [`docs/history/m1a_rust/`](../history/m1a_rust/README.md)).
 - Ideas (the user's framing of the project's *goals*): [`plans/ideas/`](../../plans/ideas).
 - External tech index: [`docs/lib/`](../lib/).
 - Source of truth for parsing: [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md)

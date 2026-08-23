@@ -3,7 +3,7 @@
 //!
 //! The claim design/03 §5 makes is not "forking got faster" — ein.py's fork is
 //! already 0.003 s over 206 calls. It is that a fork stops being *proportional
-//! to the KB*, because [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+//! to the KB*, because [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 //! wants hundreds live at once and design/05's beta-memories are only
 //! affordable if a fork does not copy them. A counting allocator is how that
 //! claim is checked rather than asserted: it measures both the number of

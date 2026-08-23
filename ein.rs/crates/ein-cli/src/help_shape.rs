@@ -1,6 +1,6 @@
 //! `help-shape` — the argument surface as one comparable text.
 //!
-//! What [Q-M1a.13](../../../../plans/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
+//! What [Q-M1a.13](../../../../docs/history/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
 //! owes. `--help` *layout* is on the normalisation list, so a byte diff of it
 //! is gone — and a byte diff was the only thing checking that ein.rs had not
 //! silently lost an option. It is replaced, not dropped: both parsers are

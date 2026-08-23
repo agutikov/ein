@@ -1,6 +1,6 @@
 //! What this build of the engine has compiled in — the half of `ein
 //! --version` that the binary cannot work out for itself
-//! ([S1a.9.3](../../../../plans/m1a_rust/p1a.9_release/s1a.9.3_packaging.md)
+//! ([S1a.9.3](../../../../docs/history/m1a_rust/README.md#s1a93--packaging-and-release)
 //! T1a.9.3.4).
 //!
 //! `cfg!(feature = "parallel")` in `ein-cli` reads **`ein-cli`'s** feature
@@ -10,7 +10,7 @@
 //! Only features that change what the engine *is* are listed. `parallel` is
 //! the one a user can observe without reading a profile: without it `--jobs
 //! N` is accepted and inert, every layer running on the committing thread
-//! ([design/12 §3](../../../../plans/m1a_rust/design/12_toolchain_and_layout.md#3-feature-flags)),
+//! ([design/12 §3](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md#3-feature-flags)),
 //! and a version line that did not say so would leave "I passed `--jobs 8`
 //! and nothing happened" undiagnosable.
 

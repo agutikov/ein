@@ -253,7 +253,7 @@ impl BindingKey {
 /// what the trace prints. Kept as a function rather than done at record time,
 /// because not doing it is the whole point: the redundant-firing path is the
 /// hottest in the engine and stringifying there is the most expensive part of
-/// recording ([design/03](../../../../plans/m1a_rust/design/03_data_model.md) §7).
+/// recording ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §7).
 pub fn rendered_bindings(terms: &Terms, bindings: &[(Symbol, Value)]) -> Vec<(String, String)> {
     bindings
         .iter()

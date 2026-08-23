@@ -5,7 +5,7 @@
 //! thousand variables costs a thousand dict entries and compiles fine. ein.rs
 //! resolves every variable to a register in a fixed-size file, because that is
 //! what makes the matcher's inner loop allocation-free
-//! ([design/05](../../../../plans/m1a_rust/design/05_matcher.md) §3) — so the
+//! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §3) — so the
 //! count has to stop somewhere, and where it stops is observable.
 //!
 //! This is therefore a **divergence**, ledger entry D1, and it gets the

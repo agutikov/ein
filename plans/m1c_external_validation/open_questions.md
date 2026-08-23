@@ -1,7 +1,7 @@
 # Open Questions — M1c (External validation)
 
 Milestone-scoped questions. Ids are **sticky** — `Q-M1c.<n>`, in the style
-[M1a](../m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
+[M1a](../../docs/history/m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
 global `Q<n>` sequence in [`plans/open_questions.md`](../open_questions.md),
 so the namespaces cannot collide. A closed id is never reused.
 

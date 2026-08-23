@@ -3,7 +3,7 @@
 //! Symbols, integers and facts are interned together because they are asked
 //! together: a fact's argument is a `Value` whose tag says which of the three
 //! tables to read, and rendering or ordering one needs all three
-//! ([design/03](../../../../plans/m1a_rust/design/03_data_model.md) §§2–4).
+//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §§2–4).
 //!
 //! ein.py reaches the same information through a `_kb` back-pointer on every
 //! entity. This port has none: an accessor takes `&Terms` (and, where belief
@@ -28,9 +28,9 @@ use std::sync::atomic::{AtomicBool, Ordering as Atomics};
 /// duration of a fanned-out layer.
 ///
 /// Two states and one rule: **a table that is lent cannot grow.** That is the
-/// whole of what [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+/// whole of what [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 /// needs from the interner and the fact store, and it is why neither takes a
-/// lock — [shared_state.md §4](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#4-what-this-chooses).
+/// lock — [shared_state.md §4](../../../../docs/history/m1a_rust/measurements/shared_state.md#4-what-this-chooses).
 ///
 /// **Why not simply `Arc<T>` in both states.** Growing an `Arc`'s contents
 /// means [`Arc::get_mut`], whose uniqueness test is a locked read-modify-write
@@ -119,7 +119,7 @@ pub struct Terms {
     /// A lent table is readable from every thread and growable from none, so
     /// *sharing is what forbids growing* — no lock, no shard, and the
     /// invariant that makes it affordable is the one
-    /// [shared_state.md §3](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#3-the-interner-does-not-grow-during-a-search--now)
+    /// [shared_state.md §3](../../../../docs/history/m1a_rust/measurements/shared_state.md#3-the-interner-does-not-grow-during-a-search--now)
     /// measured and `ein-infer/tests/interning.rs` keeps: nothing interns a
     /// name during a search.
     pub syms: Table<Interner>,
@@ -142,7 +142,7 @@ pub struct Terms {
     /// doing and this says so: whatever the entering produced afterwards is
     /// **not** the entering the sequential engine would have run, so the
     /// fan-out discards it and re-runs it on the committing thread
-    /// ([shared_state.md §4.2](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#4-what-this-chooses)).
+    /// ([shared_state.md §4.2](../../../../docs/history/m1a_rust/measurements/shared_state.md#4-what-this-chooses)).
     ///
     /// Atomic only because [`Terms`] is `Sync`; it is written and read by the
     /// one thread that owns this `Terms`, so `Relaxed` is the whole ordering
@@ -203,13 +203,13 @@ pub fn is_reserved(name: &str) -> bool {
 /// search**, measured over the whole corpus by
 /// `ein-infer/tests/interning.rs`.
 ///
-/// Why that matters is [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)'s
-/// [S1a.7.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md):
+/// Why that matters is [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)'s
+/// [S1a.7.1](../../../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync):
 /// [`Interner::text`](crate::Interner::text) hands out a `&str` borrowed from
 /// the arena, which no lock can do, so a shareable interner is one that does
 /// not **grow** while it is shared, and the search is where it would be
 /// shared. Three of the eight were growing it there
-/// ([shared_state.md](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md) §3);
+/// ([shared_state.md](../../../../docs/history/m1a_rust/measurements/shared_state.md) §3);
 /// the other five arrive during root saturation, which is single-threaded —
 /// they are here because `__symmetric__` was interned by every
 /// `Saturator::new` and [`MIRROR_A`] / [`MIRROR_B`] by every mirror firing,
@@ -331,9 +331,9 @@ impl Terms {
     /// **record region of its own**.
     ///
     /// This is the whole of what
-    /// [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+    /// [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
     /// T1a.7.2.1 hands a worker, and the shape is
-    /// [shared_state.md §4](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#4-what-this-chooses)'s
+    /// [shared_state.md §4](../../../../docs/history/m1a_rust/measurements/shared_state.md#4-what-this-chooses)'s
     /// four decisions in one type:
     ///
     /// - the **interner and the integer pool** are shared by `&`, because they
@@ -393,7 +393,7 @@ impl Terms {
     /// from the other side: not a crash, but a `Terms` that has silently
     /// stopped growing and an entering that hands itself back for ever. The
     /// pairing is structural here rather than a rule someone has to keep
-    /// ([S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+    /// ([S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
     /// T1a.7.5.6).
     pub fn lend(&mut self) -> Lent<'_> {
         self.share();
@@ -535,7 +535,7 @@ impl Terms {
     /// `TypeError`, and a `Fact` has no `__lt__` at all. `Value` is totally
     /// ordered by construction, so ein.rs answers where ein.py raises — the
     /// accepted divergence in
-    /// [design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §5 H2,
+    /// [design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §5 H2,
     /// which fixes the cross-tag order as `Int < Sym < Fact`.
     pub fn cmp_semantic(&self, a: Value, b: Value) -> Ordering {
         match (a.tag(), b.tag()) {
@@ -561,7 +561,7 @@ impl Terms {
     /// by arity.
     ///
     /// This is the comparator `apriori.layer_1`'s `sorted(alive)` needs
-    /// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §3b).
+    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §3b).
     pub fn cmp_fact_semantic(&self, a: FactId, b: FactId) -> Ordering {
         let (a_rel, a_args) = self.facts.get(a);
         let (b_rel, b_args) = self.facts.get(b);
@@ -582,7 +582,7 @@ impl Terms {
     // ── Rendering ──────────────────────────────────────────────────
 
     /// The value as CPython would hold it, for the `repr()`-shaped output
-    /// sites ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §7).
+    /// sites ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7).
     pub fn py_value(&self, v: Value) -> PyValue {
         match v.tag() {
             Tag::Sym => PyValue::Str(self.sym(v.as_sym().expect("tagged Sym")).to_string()),
@@ -674,7 +674,7 @@ mod tests {
 
     /// P1a.2–6 are single-threaded, but retrofitting `Send + Sync` onto the
     /// intern tables under
-    /// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) would
+    /// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) would
     /// touch every call site, so the property is asserted from the start —
     /// which is what rules out an `Rc` or a `RefCell` creeping in later.
     #[test]

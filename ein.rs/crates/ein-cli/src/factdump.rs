@@ -2,7 +2,7 @@
 //!
 //! The Rust half of `ein/cli/_factdump.py`. `fact_sexpr` is *not* re-written
 //! here: it is the event protocol's fact renderer, ported at
-//! [P1a.0](../../../../plans/m1a_rust/p1a.0_conformance_harness/README.md) as
+//! [P1a.0](../../../../docs/history/m1a_rust/README.md#p1a0--conformance-harness-and-shared-assets) as
 //! `ein_infer::events::sexpr`, and the stage plan says reuse rather than
 //! duplicate.
 

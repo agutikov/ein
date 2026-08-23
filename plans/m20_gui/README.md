@@ -3,11 +3,11 @@
 **Estimate:** TBD.
 **Status:** **placeholder with the stack decided** — renumbered from **M1b**
 2026-08-23, which is also when it stopped claiming a slot: it depends on
-[M1a](../m1a_rust/README.md) and blocks nothing, so it runs when someone
+[M1a](../../docs/history/m1a_rust/README.md) and blocks nothing, so it runs when someone
 wants it rather than at a fixed point in the sequence. The views below are
 the 2026-05 sketch; § Stack is the 2026-08-18 decision (merged from this
 directory's `tauri.md`, now folded in here).
-**Depends on:** [M1a](../m1a_rust/README.md) — the GUI binds to *the
+**Depends on:** [M1a](../../docs/history/m1a_rust/README.md) — the GUI binds to *the
 engine that ships*, and after the port that engine is a set of Rust
 crates. M1's kernel, IR parser, search-tree artefact and DOT rendering
 hooks are the semantics it displays.
@@ -102,7 +102,7 @@ Linux/Windows/macOS testing is a real line item, not a formality.
 ### Consequence for the engine
 
 **The surface it calls now has a page**: [`docs/api/rust.md`](../../docs/api/rust.md)
-(M1a [S1a.9.4](../m1a_rust/p1a.9_release/s1a.9.4_documentation.md)) — the five
+(M1a [S1a.9.4](../../docs/history/m1a_rust/README.md#s1a94--documentation)) — the five
 steps, which crate owns each, and a worked example that is a test the gate
 runs. It is written for exactly this consumer, and M20 is the first of its
 three.
@@ -110,10 +110,10 @@ three.
 The Tauri backend calls the engine's public Rust API in-process. That is
 the reason M1a **dropped server mode** (2026-08-18): the GUI was the
 server's first real client, and it turned out not to want one. See
-[M1a § Non-goals](../m1a_rust/README.md#non-goals) and
-[Q-M1a.11](../m1a_rust/open_questions.md#q-m1a11--server-wire-protocol).
+[M1a § what was declined](../../docs/history/m1a_rust/README.md#what-was-declined-and-on-what-number) and
+[Q-M1a.11](../../docs/history/m1a_rust/open_questions.md#q-m1a11--server-wire-protocol).
 For saved sessions the GUI can use `.einb`
-([P1a.8](../m1a_rust/p1a.8_binary_container/README.md)) instead of
+([P1a.8](../../docs/history/m1a_rust/README.md#p1a8--binary-kb-container)) instead of
 re-parsing.
 
 ---
@@ -254,7 +254,7 @@ Both modes support **collapse branches** (hide dead sub-trees) and
 ## Workspace layout
 
 The GUI is a sibling of the CLI in the same Rust workspace, depending on
-the same crates ([design/12](../m1a_rust/design/12_toolchain_and_layout.md) §2):
+the same crates ([design/12](../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §2):
 
 ```text
 ein.rs/
@@ -342,9 +342,9 @@ Stack-specific:
 
 ## Cross-links
 
-- [M1a — Rust port](../m1a_rust/README.md) — the engine this binds to;
-  [design/12 § workspace](../m1a_rust/design/12_toolchain_and_layout.md)
-  for the crate layout, [P1a.8](../m1a_rust/p1a.8_binary_container/README.md)
+- [M1a — Rust port](../../docs/history/m1a_rust/README.md) — the engine this binds to;
+  [design/12 § workspace](../../docs/history/m1a_rust/design/12_toolchain_and_layout.md)
+  for the crate layout, [P1a.8](../../docs/history/m1a_rust/README.md#p1a8--binary-kb-container)
   for `.einb` saved sessions.
 - [`docs/kernel/`](../../docs/kernel/README.md) — the semantics the views
   render; [ein model §3](../../docs/kernel/ir/01-ein-graph/03_ein_model.md#3-two-flavours-of-node)

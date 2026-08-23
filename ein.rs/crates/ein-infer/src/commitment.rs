@@ -3,10 +3,10 @@
 //! `try_commitment_set(root.sealed(), C)` is the one operation the whole search layer
 //! is built on, and it is **pure with respect to root**: every consequence
 //! stays in the fork (P1.21 R2). That is not a nicety — it is the unit
-//! [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+//! [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 //! parallelises, and the reason nothing here writes a no-good, a `(not h)`
 //! writeback or a counter. Those are the caller's commit step
-//! ([design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2).
+//! ([design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §2).
 //!
 //! ### Fail-fast
 //!
@@ -71,7 +71,7 @@ pub struct CommitmentSetResult {
 /// Branch root, write every hypothesis in `commitment`, saturate, detect.
 ///
 /// **Root is `&`**, which is the seam
-/// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) runs on:
+/// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) runs on:
 /// what the module note above claims — that this is pure with respect to root
 /// — becomes the signature rather than a promise, and a layer's workers can
 /// therefore hold one root at once. Sealing root's top layer is the caller's,
@@ -87,7 +87,7 @@ pub struct CommitmentSetResult {
 /// whose forks share no mutable state. `memo` is the exception and is not
 /// mutable state in the sense that matters — it is an append-only cache of a
 /// pure function of `(rule, activator)`, so what a fork finds in it is what it
-/// would have compiled ([design/06](../../../../plans/m1a_rust/design/06_saturation.md)
+/// would have compiled ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md)
 /// § Win A). The *order* plans enter an engine's list stays per-engine, which
 /// is the part the trace can see.
 ///
@@ -95,7 +95,7 @@ pub struct CommitmentSetResult {
 /// root's saturation from the delta instead of re-deriving root's fixpoint
 /// ([`Snapshot`], S1a.6.9). It is reachable only from a `fork-delta` build,
 /// because dropping those re-derivations changes what the engine narrates and
-/// that is [Q-M1a.18](../../../../plans/m1a_rust/open_questions.md)'s to
+/// that is [Q-M1a.18](../../../../docs/history/m1a_rust/open_questions.md)'s to
 /// decide, not this function's.
 // The eighth argument is `resume`, and bundling it with `memo` into a "run
 // state" struct would be the tidy fix for a parameter that may not survive
@@ -262,7 +262,7 @@ mod tests {
 
     /// Two calls on the same root are independent, and mutating one fork does
     /// not reach the other — the property
-    /// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) runs on.
+    /// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) runs on.
     ///
     /// The `REPEAT` line of the parity diff already says the two calls *agree*;
     /// what it cannot say is that they agree because they are isolated rather

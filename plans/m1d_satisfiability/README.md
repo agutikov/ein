@@ -8,10 +8,10 @@ that were already in the repo and had never been put next to each other:
 M1a's ex-P1a.12, now [P1d.10](p1d.10_exhaustive_search/README.md), and the
 "saturation vs satisfiability" note that was followup F14, now
 [`ideas.md`](ideas.md).
-**Depends on:** [M1a](../m1a_rust/README.md) — the engine. Specifically the
-search layer ([design/07](../m1a_rust/design/07_search_layer.md)) and the
+**Depends on:** [M1a](../../docs/history/m1a_rust/README.md) — the engine. Specifically the
+search layer ([design/07](../../docs/history/m1a_rust/design/07_search_layer.md)) and the
 speed P1a.6 bought, without which every experiment here costs a coffee break.
-P1d.10 was written against [P1a.7](../m1a_rust/p1a.7_parallelism/README.md),
+P1d.10 was written against [P1a.7](../../docs/history/m1a_rust/README.md#p1a7--parallelism),
 which is **paused after one stage**, so that dependency is now a decision
 rather than a wait — see the phase.
 **Blocks:** nothing on the critical path. [M20](../m20_gui/README.md) displays
@@ -101,7 +101,7 @@ witness — and the middle, `≥ 2`, is where nothing is recorded at all. That
 middle is precisely where a search happens.
 
 The consequence shows up in one line of
-[design/07](../m1a_rust/design/07_search_layer.md): the engine's completeness
+[design/07](../../docs/history/m1a_rust/design/07_search_layer.md): the engine's completeness
 test is `complete(kb)` — *"does the generator propose anything?"*.
 Completeness by **exhaustion of candidates**, never by **discharge of
 requirements**. The two coincide when prohibitions alone pin every arrow; they
@@ -110,7 +110,7 @@ diverge exactly where a lower bound is the only thing that would force one.
 ## What that means for this engine
 
 The engine's search is a **powerset ordered by cardinality**
-([design/07](../m1a_rust/design/07_search_layer.md) §1): layer 1 is the
+([design/07](../../docs/history/m1a_rust/design/07_search_layer.md) §1): layer 1 is the
 singletons of `alive`, layer *k* is an Apriori prefix-join over layer *k−1*,
 filtered by the no-good store. A commitment is an arbitrary *set* of
 hypothesis facts, because an arbitrary set is the only thing the engine knows
@@ -143,9 +143,9 @@ Written down now, so the phases test it rather than assume it:
    [S1d.10.1](p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)'s
    census is what measures it.
 2. **Branching on obligations changes the traversal, therefore the counters.**
-   [design/08](../m1a_rust/design/08_parallelism.md) §7 rejected parallel
+   [design/08](../../docs/history/m1a_rust/design/08_parallelism.md) §7 rejected parallel
    depth-first on exactly that ground, and
-   [Q-M1a.18](../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+   [Q-M1a.18](../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
    is the shape of the decision it takes to change one anyway. Nothing here
    ships on-by-default without that decision being taken explicitly.
 
@@ -168,8 +168,8 @@ that is the note's thesis measured in someone else's language.
 order, not id order** — the census phase was P1d.1 until 2026-08-23, when it
 was renumbered P1d.10 at the user's direction; the id moved and the sequence
 did not. **That order is deliberate**: P1d.10 measures before P1d.2 designs, for
-[S1a.6.1](../m1a_rust/p1a.6_performance/s1a.6.1_profile_baseline.md)'s and
-[S1a.7.0](../m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md)'s
+[S1a.6.1](../../docs/history/m1a_rust/README.md#s1a61--fresh-profile-and-bench-baseline)'s and
+[S1a.7.0](../../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)'s
 reason — both phases found that the premise they were built on was wrong, and
 found it in a stage that cost days rather than weeks. P1d.10's stopping-criterion
 stage ([S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md)) may
@@ -236,7 +236,7 @@ obligation-driven generator changes the answer or only the path.
 
 **[Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 arrived 2026-08-22, from a release chore.** M1a
-[S1a.9.0](../m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md) re-priced the
+[S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) re-priced the
 corpus's slow tail and found ten entries that cost the same exhaustively as on
 the fast path, all of them reporting `Contradiction k=0` with
 `exhausted=False` and `layers_explored == -m`: the search runs out of
@@ -255,8 +255,8 @@ actually want.
 - [`stdlib/algebra.ein`](../../stdlib/algebra.ein),
   [`bijection.ein`](../../stdlib/bijection.ein),
   [`elim.ein`](../../stdlib/elim.ein) — where the halves that exist today live
-- [design/06](../m1a_rust/design/06_saturation.md) ·
-  [design/07](../m1a_rust/design/07_search_layer.md) — the loop and the search
+- [design/06](../../docs/history/m1a_rust/design/06_saturation.md) ·
+  [design/07](../../docs/history/m1a_rust/design/07_search_layer.md) — the loop and the search
   this milestone changes
 - [M1c](../m1c_external_validation/README.md) — the sibling created the same
   day: [S1c.1.1](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)'s

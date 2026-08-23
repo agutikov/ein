@@ -32,7 +32,7 @@ matter:
   *what* is found — same verdict, same 101 enterings, same 67 deaths — so its
   whole effect is price per branch. The ratio grew because everything around
   it got cheaper: what it removes is the saturation of forks that are already
-  dead, and after [P1a.6](../../../plans/m1a_rust/p1a.6_performance/README.md)
+  dead, and after [P1a.6](../../history/m1a_rust/README.md#p1a6--performance)
   that is **86 %** of an exhaustive run without it.
 - Every other lever is **1.0×** in ein.rs — exactly, not approximately — and
   two are inert on this puzzle by construction (`enable_forced_positive` never
@@ -281,14 +281,14 @@ same bytes with the lever off, so this is the corpus's own A/B. Best of 3:
 
 > **The `ein.rs` column was re-taken 2026-08-22 and the two lookahead-*off*
 > cells moved 3.2×** — 896 → 278 and 890 → 277. Not a change to the lookahead:
-> M1a [T1a.7.2.0](../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a720--the-layer-stack-coalesced-at-the-barrier)
+> M1a [T1a.7.2.0](../../history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
 > coalesces root's layer stack at the search's layer barrier, and with the
 > lever off this fixture makes 162 mid-layer writebacks, so all 11 501 of its
 > forks were walking a 164-layer root. The enterings, the verdicts and the
 > counts are unchanged; only the wall clock moved, which is what says the
 > lookahead's *finding* is a count and not a timing. The `ein.py` column is a
 > frozen constant — that engine left the tree at
-> [S1a.10.5](../../../plans/m1a_rust/p1a.10_single_implementation/README.md) —
+> [S1a.10.5](../../history/m1a_rust/README.md#p1a10--one-implementation) —
 > so its ×base ratios are the ones taken with it. All four `ein.rs` cells are
 > process wall, best of 3, pinned to one P-core; the two lookahead-*on* cells
 > are unchanged within noise and differ from the earlier reading only by the
@@ -344,7 +344,7 @@ design question, not a measurement, and it is parked as
 ## Two corrections (2026-08-23)
 
 The `ein.rs` half of this page was re-taken at M1a
-[S1a.9.4](../../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md)
+[S1a.9.4](../../history/m1a_rust/README.md#s1a94--documentation)
 T1a.9.4.4 — same instrument, same machine, 5 runs, `d433a4f`. Ten of the
 twelve `zebra2` exhaustive cells reproduced to the millisecond. **Two did
 not**, and the difference between "the engine moved" and "the table was
@@ -383,14 +383,14 @@ Two things follow that are worth more than the corrected digits:
   `zebra2` score-sum row now carries `101 ‡` rather than one number for two
   engines: `ein.rs` is measured, and what `ein.py` did there is no longer
   recoverable, because the second engine left the tree at
-  [S1a.10.5](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md).
+  [S1a.10.5](../../history/m1a_rust/README.md#s1a105--the-removal).
   That is the cost of a frozen column meeting an error: the freeze preserves
   whatever was true *and* whatever was mistyped.
 - **The one thing that did move is memory, and it moved 20×.** `zebra2 -e`
   with `enable_singleton_writeback` off — the page's largest cell — peaks at
   **184.1 MB** on the `42c99d9` build and **9.2 MB** today (child `ru_maxrss`,
   same script, same file, both binaries). That is
-  [S1a.7.1](../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md)'s
+  [S1a.7.1](../../history/m1a_rust/README.md#s1a71--making-the-shared-state-sync)'s
   per-worker provenance arena with promotion on the solution path, working at
   `--jobs 1` — the same effect P1a.7 measured as 684–708 → 85–91 MB on
   `features/01 -e`, seen on a second workload. It was never in this table
@@ -414,7 +414,7 @@ flag.
 
 > **Only the ein.rs column can be refreshed.** The runner drove both engines
 > as processes and cross-checked them cell by cell until
-> [S1a.10.4](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md);
+> [S1a.10.4](../../history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine);
 > the `ein.py s` columns below — and the `control` row's `1.2× under ein.py`,
 > which is what states that column's resolution — are **frozen** at the
 > 2026-08-20 measurement. A re-run rewrites the ein.rs figures beside them and
@@ -442,7 +442,7 @@ control: the 0.9× rows were inside the method's own noise, and the lookahead
 is a **wash** on `zebra2` in both engines rather than a slight negative. The
 two conclusions that did survive are the two levers named in the takeaway.
 
-**2026-08-18, ein.rs at [P1a.4](../../../plans/m1a_rust/p1a.4_search_layer/README.md)**,
+**2026-08-18, ein.rs at [P1a.4](../../history/m1a_rust/README.md#p1a4--search-layer)**,
 in-process, before the phase optimised anything: every entering count
 reproduced exactly, `enable_singleton_writeback` still the one runaway lever —
 and the runaway cell *finished*, at 3 831 enterings in 11.3 s. It is 1.53 s

@@ -12,7 +12,7 @@ build of their own — `fork_delta_verify.py` → `target-fd`, `spec_audit.py` �
 `target-sa`, `profile_ein_rs.py` → `--profile profiling`, which it builds.
 **None takes an `--impl`**: a flag with one value invites a reader to look for
 the operand that is gone
-([S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)).
+([S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)).
 
 ---
 
@@ -72,13 +72,13 @@ ratio between two machines.
 | [`criterion_table.py`](criterion_table.py) | criterion's `estimates.json` as one table — mean, sd, relative sd, CI — with `--max-rsd` as an **exit code**. The console output scrolls and buries the one column a "3× faster" claim needs |
 | [`feature_matrix.py`](feature_matrix.py) | the `features.md` lever matrix: flip exactly one `SolverConfig` knob off the puzzle's own resolved config and re-solve. Round-robin over the cells, and a `control` cell byte-identical to the baseline — which is what prices the method now that no second column can disagree with it |
 | [`fork_split.py`](fork_split.py) | what a run does at root versus per entering, split out of the `--events` stream at its `enter` events. The instrument behind `baseline.md` §9 |
-| [`fork_delta_verify.py`](fork_delta_verify.py) | does the **resumed** fork saturator reach the same fixpoint? One binary, twice, `EIN_FORK_DELTA=0` and unset — [D3](../plans/m1a_rust/divergences.md)'s fixture |
-| [`corpus_cost.py`](corpus_cost.py) | what every corpus cell costs, on the engine that ships — mean, sd, relative sd, n, per cell and summed per entry, with `--also` for a run the manifest does not declare and `--check` as an exit code. [S1a.9.0](../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md)'s instrument: it is what re-took the `slow` flag after two engines, and what `corpus/corpus.toml`'s `cost_ms` is regenerated with |
-| [`spec_audit.py`](spec_audit.py) | how often a *speculated* entering would have been wrong. [S1a.7.0](../plans/m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md)'s instrument, which measured the parallelism phase's central risk before any of it was built — 1 078 704 enterings speculated against layer-start root |
+| [`fork_delta_verify.py`](fork_delta_verify.py) | does the **resumed** fork saturator reach the same fixpoint? One binary, twice, `EIN_FORK_DELTA=0` and unset — [D3](../docs/history/m1a_rust/divergences.md)'s fixture |
+| [`corpus_cost.py`](corpus_cost.py) | what every corpus cell costs, on the engine that ships — mean, sd, relative sd, n, per cell and summed per entry, with `--also` for a run the manifest does not declare and `--check` as an exit code. [S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)'s instrument: it is what re-took the `slow` flag after two engines, and what `corpus/corpus.toml`'s `cost_ms` is regenerated with |
+| [`spec_audit.py`](spec_audit.py) | how often a *speculated* entering would have been wrong. [S1a.7.0](../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)'s instrument, which measured the parallelism phase's central risk before any of it was built — 1 078 704 enterings speculated against layer-start root |
 
-Results: [`baseline.md`](../plans/m1a_rust/p1a.6_performance/baseline.md),
-[`scaling.md`](../plans/m1a_rust/p1a.7_parallelism/scaling.md) and
-[`corpus_cost.md`](../plans/m1a_rust/p1a.9_release/corpus_cost.md).
+Results: [`baseline.md`](../docs/history/m1a_rust/measurements/baseline.md),
+[`scaling.md`](../docs/history/m1a_rust/measurements/scaling.md) and
+[`corpus_cost.md`](../docs/history/m1a_rust/measurements/corpus_cost.md).
 
 > **The CPython and PyPy columns in those documents are frozen constants.**
 > Nothing here can re-measure one: `bench_baseline.py`, `count_work.py` and
@@ -99,7 +99,7 @@ Results: [`baseline.md`](../plans/m1a_rust/p1a.6_performance/baseline.md),
 ## The census
 
 `utils/` was **28 scripts** until M1a
-[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md).
+[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine).
 Nineteen of them named `ein.py`, `pypy`, a venv or `PYTHONPATH`. Eleven went;
 every one had a successor or a dead subject, and the table is here so that a
 plan document citing one of them can be read.
@@ -123,8 +123,8 @@ Two more things left this directory rather than the repo:
 - **The corpus runner.** `ein-conformance run --tier T0…T3` swept the corpus
   over two engines; the sweep is `ein-cli/tests/corpus_cli.rs` now — 622 cells
   as processes in 3.6 s, inside `cargo test`
-  ([S1a.10.3](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md);
-  542 cells until [S1a.9.0](../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md)
+  ([S1a.10.3](../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine);
+  542 cells until [S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
   un-flagged fourteen entries, 641 with `EIN_CORPUS_SLOW=1`).
 - **The determinism sweep.** Two `PYTHONHASHSEED`s over one engine became
   `ein-render/tests/id_order_invariance.rs`, which permutes the **id space**

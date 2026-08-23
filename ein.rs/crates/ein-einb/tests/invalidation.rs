@@ -1,5 +1,5 @@
 //! When not to believe a file — T1a.8.1.5, [design/10
-//! §4](../../../../plans/m1a_rust/design/10_binary_format.md#4-versioning-and-invalidation).
+//! §4](../../../../docs/history/m1a_rust/design/10_binary_format.md#4-versioning-and-invalidation).
 //!
 //! The rule the tests here pin is that **a stale cache can never change a
 //! verdict**. Two ways that could happen and neither is allowed: believing

@@ -176,11 +176,11 @@ pub fn load(
 /// `Ann` in `(hrule guess … :assert (seat Ann ?v))`, which no fact mentions —
 /// is therefore first seen *during the search*. That is one symbol on one
 /// corpus file, and it would be a curiosity except for what
-/// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) needs:
+/// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) needs:
 /// [`Interner::text`](ein_core::Interner::text) hands out a `&str` borrowed
 /// from the arena, so an interner that is *shared* must be one that does not
 /// **grow**, and the search is exactly where it would be shared
-/// ([S1a.7.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md)).
+/// ([S1a.7.1](../../../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync)).
 ///
 /// Deliberately a **superset** of what the compiler asks for, walked off the
 /// registered rules rather than the raw forms so macro expansion has already

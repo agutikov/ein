@@ -4,10 +4,10 @@
 >
 > **This page describes a Python package that no longer exists**, and it is
 > filed as a record rather than as a promise. `ein.py/` was deleted at M1a
-> [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+> [S1a.10.5](../history/m1a_rust/README.md#s1a105--the-removal)
 > (2026-08-21); the PyO3 module that was to succeed it was **deferred the same
 > day** for want of a consumer, with three trip-wires recorded in
-> [Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding).
+> [Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding).
 >
 > It is kept **whole and unedited** for one reason: a deferral is cheap to
 > reverse only while the specification survives it. On the day a trip-wire
@@ -37,7 +37,7 @@ The Python surface for embedding Ein in another project: **parse** a
 engine, which no longer exists**. The worked example below was run end-to-end
 against [`examples/zebra2.ein`](../../examples/zebra2.ein) then; re-running it
 against the PyO3 module is
-[S1a.9.4](../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md)'s
+[S1a.9.4](../history/m1a_rust/README.md#s1a94--documentation)'s
 first task, and any signature this page and that module disagree on is a bug in
 one of them rather than a stale doc.*
 
@@ -207,7 +207,7 @@ subset-minimal MUS. See [`inference.md`](inference.md).
 The script the contract was written to make work. **It does not run, and no
 stage is scheduled to make it run** — the module it imports was deferred with
 the rest of the binding
-([Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
+([Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
 The numbers below were real, against the Python engine, at `60c192b`.
 
 The CLI equivalent **does** run and produces the same answer:
@@ -303,6 +303,6 @@ releases. To understand them, read
   through the module. The two in-process Python runners that used to be named
   here, `profile_solve.py` and `symmetric_bench.py`, left with the engine they
   imported at
-  [S1a.10.4](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md);
+  [S1a.10.4](../history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine);
   their successors are `profile_ein_rs.py` and `feature_matrix.py`'s
   `no-symmetric-mirror` cell.

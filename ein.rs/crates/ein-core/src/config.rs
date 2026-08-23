@@ -3,9 +3,9 @@
 //! Each field maps 1:1 to a `:kebab-flag`, and the field *list with its
 //! declaration order* is observable twice over: `--dump-config` prints it in
 //! declaration order, and an unknown flag is rejected with the valid names
-//! **sorted** ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §3c).
+//! **sorted** ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §3c).
 //! [`FIELDS`] is that list, and the loader
-//! ([S1a.2.3](../../../../plans/m1a_rust/p1a.2_kb_core/s1a.2.3_loader.md))
+//! ([S1a.2.3](../../../../docs/history/m1a_rust/README.md#s1a23--the-loader-from_ir))
 //! parses through it.
 //!
 //! It lives here rather than beside the engine because the KB holds one and

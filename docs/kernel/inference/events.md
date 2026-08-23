@@ -14,12 +14,12 @@ trace viewer, a benchmark harness, an embedder,
 stream.
 
 > **Where it came from.** The protocol was built at
-> [S1a.0.2](../../../plans/m1a_rust/p1a.0_conformance_harness/s1a.0.2_oracle_event_protocol.md)
+> [S1a.0.2](../../history/m1a_rust/README.md#s1a02--the-oracle-event-protocol)
 > as the operand of the Rust port's **T2 parity tier** — "the two engines took
 > the same steps" — and its design rationale is
-> [`design/01`](../../../plans/m1a_rust/design/01_parity_contract.md) §3. The
+> [`design/01`](../../history/m1a_rust/design/01_parity_contract.md) §3. The
 > second engine left the tree at
-> [P1a.10](../../../plans/m1a_rust/p1a.10_single_implementation/README.md) and
+> [P1a.10](../../history/m1a_rust/README.md#p1a10--one-implementation) and
 > the tier went with it; the *format* did not, because nothing about it was
 > ever about there being two engines. What reads it now is named in
 > [§ Comparison](#comparison).
@@ -75,19 +75,19 @@ streams runs at `verbose`**: a dropped redundant firing is exactly the kind of
 difference a port or an optimisation introduces.
 
 > Not every difference at `verbose` is one. Since M1a
-> [S1a.6.9](../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+> [S1a.6.9](../../history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
 > a fork *resumes* root's saturation rather than re-deriving it, so two runs
 > that reach the same answer can narrate different amounts of the same
 > derivation —
-> [D3](../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it),
-> which [S1a.10.1 §5](../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#5-what-the-successor-found)
+> [D3](../../history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it),
+> which [S1a.10.1 §5](../../history/m1a_rust/oracle_ledger.md#5-what-the-successor-found)
 > then reproduced *inside one engine* by permuting the id space. The difference
 > worth catching is a dropped **productive** firing, and since
-> [S1a.6.10](../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
+> [S1a.6.10](../../history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
 > that is what the comparison is narrowed to — see § Comparison. `verbose` is
 > still what it reads: the redundant firings are what the *elided-count* report
 > counts, and an ein.rs golden
-> ([S1a.6.11](../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md))
+> ([S1a.6.11](../../history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing))
 > is what pins them.
 
 ## Events
@@ -125,7 +125,7 @@ one premise, so a re-derived *source* fact records nothing and emits nothing.
 
 `enqueue`'s `tiebreaker` is the value `Saturator._tiebreaker` took for that
 entry. It is the engine's own total order over queue entries
-([design/02](../../../plans/m1a_rust/design/02_determinism_and_order.md) §2), so
+([design/02](../../history/m1a_rust/design/02_determinism_and_order.md) §2), so
 carrying it makes the heap's pop order checkable rather than inferred.
 
 ### Search layer
@@ -157,7 +157,7 @@ Two streams are compared by
 library function rather than a command: `split` cuts a log into segments and
 `diff` reports the first segment that disagrees. The `ein-conformance diff`
 subcommand that used to front it was retired with the second engine
-([S1a.10.3](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md));
+([S1a.10.3](../../history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine));
 what calls it now is
 [`ein-infer/tests/event_cut_control.rs`](../../../ein.rs/crates/ein-infer/tests/event_cut_control.rs),
 which mutates a real stream and checks that the cut below still reports the
@@ -186,7 +186,7 @@ A **`dead-post`** segment's derivation is not compared at all: fail-fast stops
 a dying fork at the firing that kills it, so its firing list is a prefix by
 construction. Its `kind` and its position still are.
 
-That is [design/01 §5](../../../plans/m1a_rust/design/01_parity_contract.md#the-fork-row-stated-once)'s
+That is [design/01 §5](../../history/m1a_rust/design/01_parity_contract.md#the-fork-row-stated-once)'s
 fork row, implemented in `ein.rs/crates/ein-parity`, whose module doc carries
 the measurement that chose it (six candidate cuts over the same 240 cells;
 this one is the strongest that leaves D2 as the only differing cell).

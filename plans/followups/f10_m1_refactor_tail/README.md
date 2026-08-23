@@ -25,7 +25,7 @@ the two latent correctness bugs the review surfaced and the axis map from
 
 ## Trigger — spent
 
-**Before the [M1a Rust port](../../m1a_rust/README.md)** was the trigger:
+**Before the [M1a Rust port](../../../docs/history/m1a_rust/README.md)** was the trigger:
 `ein.rs` should transcribe the clean reference implementation, not the
 remaining scar tissue. That condition is now satisfied in advance — the
 port inherits the drained tree, so F10 imposes nothing on it. What the port
@@ -262,7 +262,7 @@ detail and are gone; the register is the parked *evidence* and stays.
 
 ## Connections
 
-- [M1a Rust port](../../m1a_rust/README.md) — the (now spent) trigger
+- [M1a Rust port](../../../docs/history/m1a_rust/README.md) — the (now spent) trigger
   above; the port inherits a drained tree.
 - [F9 — hypothesis-loop E-catalog](../f9_e_catalog.md) (closed) — the other
   body relocated out of the M1 plans, and closed the same way: measure,

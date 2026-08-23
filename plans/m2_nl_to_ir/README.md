@@ -84,7 +84,7 @@ See [`open_questions.md`](open_questions.md) for the M2-scoped set
 > turned out to be an HTTP server — so the two live options are a **Rust**
 > frontend linking the crates and a **Python** one driving the CLI.
 > [P2.1](p2.1_investigations/README.md) decides; M1a
-> [S1a.9.4](../m1a_rust/p1a.9_release/s1a.9.4_documentation.md) only stopped
+> [S1a.9.4](../../docs/history/m1a_rust/README.md#s1a94--documentation) only stopped
 > the plan from asserting an answer.
 
 ## Connections

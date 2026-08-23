@@ -17,9 +17,9 @@
 //! search, and that was worth knowing before any speed claim was made about
 //! either — it is the argument this example was built for. The script left with
 //! its subject at
-//! [S1a.10.4](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md);
+//! [S1a.10.4](../../../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine);
 //! its column is frozen in
-//! [baseline.md §4](../../../../plans/m1a_rust/p1a.6_performance/baseline.md#4-what-the-engine-did--the-work-counters).
+//! [baseline.md §4](../../../../docs/history/m1a_rust/measurements/baseline.md#4-what-the-engine-did--the-work-counters).
 //! What this half is for now is the same question asked across *commits*:
 //! whether an optimisation moved the work or only the clock.
 

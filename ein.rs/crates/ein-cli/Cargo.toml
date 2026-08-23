@@ -16,7 +16,7 @@ spec-audit = ["ein-infer/spec-audit"]
 # drops all three rather than two: no vendored C++ allocator, no container, no
 # work-stealing pool. It costs a measured **+25.2 % of `solve zebra2 -e`** and
 # **+36.2 % of `solve zebra -e`** — the allocator's share, re-taken 2026-08-23
-# in plans/m1a_rust/p1a.9_release/feature_cost.md. (It read 15.9 % / 7.5 %
+# in docs/history/m1a_rust/measurements/feature_cost.md. (It read 15.9 % / 7.5 %
 # here, which is the 2026-08-19 figure: nothing about the allocator changed,
 # the engine got faster and did not get faster at allocating.)
 default  = ["snmalloc", "einb", "parallel"]

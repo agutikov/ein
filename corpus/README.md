@@ -9,13 +9,13 @@ invocations each one is exercised under.
 - **`fuzz_findings/`** — minimised inputs a fuzzer found something on.
 
 This directory was `conformance/` until M1a
-[S1a.10.3](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md).
+[S1a.10.3](../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine).
 The name went with the thing it named: `conformance/` meant *two
 implementations agreeing*, and the manifest is what survived the second engine
-leaving the tree ([P1a.10](../plans/m1a_rust/p1a.10_single_implementation/README.md)).
+leaving the tree ([P1a.10](../docs/history/m1a_rust/README.md#p1a10--one-implementation)).
 The `--tier T0…T3` vocabulary, the `ein-conformance` runner and the
 `--impl-a` / `--impl-b` pair went with it too; nothing below defines a tier,
-and a plan document that mentions one is describing 2026.
+and a document that mentions one is describing 2026.
 
 ## Who reads it
 
@@ -99,7 +99,7 @@ the pass boundary is; the exit golden records it per cell.
 
 `regression` is the group with no rule, and deliberately. It holds the inputs
 that once broke an implementation — a `sorted()` over mixed types
-([D2](../plans/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)),
+([D2](../docs/history/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)),
 a goal binding that was a JSON number, an `(or …)` whose arms bind different
 variables — and what "correct" means for one of them is whatever it does now.
 Seven of its ten entries answer on every run, one answers under `saturate` and
@@ -108,10 +108,10 @@ only statement of which. It was called `crash-parity` until S1a.10.3, when the
 claim it encoded (*ein.py raises here*) lost its subject.
 
 **Six groups, and no empty ones.** There were two: `golden` until
-[Q-M1a.9](../plans/m1a_rust/open_questions.md#q-m1a9--where-do-goldens-live)
+[Q-M1a.9](../docs/history/m1a_rust/open_questions.md#q-m1a9--where-do-goldens-live)
 was answered (goldens live in `ein.rs/crates/<crate>/tests/golden/`), and
 `generated` until
-[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md).
+[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine).
 `generated` named the throwaway manifest `utils/fuzz_ein.py` wrote to hand a
 batch to the parity harness; the rewritten fuzzer drives the `ein` binary
 directly and writes no manifest, so the name has no referent. **A corpus entry
@@ -165,7 +165,7 @@ column that shrinks without a reason is how coverage disappears.
 **These notes used to blame CPython** — *"outlives a 150 s budget under
 CPython, and a run nobody can finish is not coverage"*, on six entries. That
 reason was wrong even where its conclusion was right, and
-[S1a.9.0](../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md) re-priced
+[S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) re-priced
 every one of them against ein.rs. Three of the excluded runs finish —
 `features/05_stdlib_domain_elim`'s two at 3.0 s and `zebra2-minus-15 :: render
 lattice` at 27.8 s — and the eight `solve` / `solve -e` cells that do not are
@@ -178,7 +178,7 @@ any engine.
 
 **An entry is `slow` when its declared runs cost 1 s or more, together**, on
 the build and machine
-[`corpus_cost.md`](../plans/m1a_rust/p1a.9_release/corpus_cost.md) names.
+[`corpus_cost.md`](../docs/history/m1a_rust/measurements/corpus_cost.md) names.
 `cost_ms` records that sum, and two tests hold the flag to it: `ein-corpus`'s
 `slow_matches_the_recorded_cost` (exact, arithmetic, never flakes) and
 `corpus_cli`'s `the_slow_flag_still_describes_the_sweep` (the wall clock of
@@ -194,7 +194,7 @@ take **19.8 s**, where before S1a.9.0 they took **307 s**.
 > root's layer stack at the search's layer barrier is 2.8× on that entry, and
 > the flag stopped being true. Nothing was dropped and nothing was tuned — a
 > re-take found it, which is the whole reason `slow` carries a number
-> ([scaling.md §6](../plans/m1a_rust/p1a.7_parallelism/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+> ([scaling.md §6](../docs/history/m1a_rust/measurements/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
 > The same pass re-priced the other two: `features/01` 4.06 → 3.46 s, most of
 > it T1a.7.1.7's per-worker provenance region, and `features/04` 10.21 →
 > 9.74 s.
@@ -234,7 +234,7 @@ CLI can express: `-L` (no lookahead), `-K` (no kill cache), `-y` (lattice
 sanity check), `-o score-sum` (lattice order). The other six levers that matrix
 drives are reachable only through the library API or a puzzle's own
 `(config …)` block, so the sweep — which runs a process — cannot flip them.
-Tracked as [Q-M1a.16](../plans/m1a_rust/open_questions.md#q-m1a16--how-does-the-harness-drive-the-lever-matrix).
+Tracked as [Q-M1a.16](../docs/history/m1a_rust/open_questions.md#q-m1a16--how-does-the-harness-drive-the-lever-matrix).
 
 ## Growth rule
 

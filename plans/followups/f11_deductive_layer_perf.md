@@ -9,20 +9,20 @@ beta-memories) and D2 (worst-case-optimal joins).
 on it, and the margin has widened by two orders of magnitude. `zebra2` solved
 in ~1.3 s fast / ~3.9 s exhaustive **under PyPy** (frozen — that engine left
 the tree at
-[S1a.10.5](../m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)); it
+[S1a.10.5](../../docs/history/m1a_rust/README.md#s1a105--the-removal)); it
 is **6.3 ms / 26.8 ms** on ein.rs at `--jobs 1`
 ([features.md](../../docs/kernel/inference/features.md), 2026-08-23), and a
 fanned-out exhaustive run is 3.17–4.40× faster again on 8 cores. Both readings
 are inside every ergonomic envelope the project has. This is the file to
 promote when one isn't.
 
-> **Status after [M1a P1a.6](../m1a_rust/p1a.6_performance/README.md), which
+> **Status after [M1a P1a.6](../../docs/history/m1a_rust/README.md#p1a6--performance), which
 > was this file's own most likely promotion trigger (2026-08-20):** the phase
 > ran, the port reached the matcher, and **neither entry landed**. D1 was
 > gated, measured and declined twice — the second time at *0.45 candidates per
 > step entered*; D2's shape trigger fired and its cost trigger moved further
 > out of reach. What the phase shipped instead is in
-> [baseline.md](../m1a_rust/p1a.6_performance/baseline.md): an alpha-memory
+> [baseline.md](../../docs/history/m1a_rust/measurements/baseline.md): an alpha-memory
 > keyed one level inside a nested argument, a ground-premise lookup, a resumed
 > fork saturator, a per-round watch stamp, and an allocator. Both entries stay
 > open with sharper triggers than they had; the sections below carry them.
@@ -50,7 +50,7 @@ status box above first, then this for the arc:
   and, unlike before, the *only* one with a clear ceiling story.
 
 **Both measurements above are ein.py's, and
-[S1a.6.1](../m1a_rust/p1a.6_performance/s1a.6.1_profile_baseline.md) (2026-08-18)
+[S1a.6.1](../../docs/history/m1a_rust/README.md#s1a61--fresh-profile-and-bench-baseline) (2026-08-18)
 re-took them on ein.rs, where D1 will actually land.** What changed:
 
 - **The 95 % split does not carry over.** On the parity build an exhaustive
@@ -61,10 +61,10 @@ re-took them on ein.rs, where D1 will actually land.** What changed:
 - **D1's catch dissolved, as this file predicted it would.** "A memory that
   must be copied per fork can lose more than it saves" was the parking reason;
   a fork's whole delta in ein.rs is **3.6 KB mean, 9 KB worst case** over 101
-  enterings ([baseline.md §5](../m1a_rust/p1a.6_performance/baseline.md#5-memory)),
+  enterings ([baseline.md §5](../../docs/history/m1a_rust/measurements/baseline.md#5-memory)),
   so per-fork memories are affordable outright and the read-only-share
   design is an optimisation rather than a precondition.
-- The gate on [S1a.6.3](../m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md)
+- The gate on [S1a.6.3](../../docs/history/m1a_rust/README.md#s1a63--beta-memories-f11-d1)
   is therefore **open**. It runs fourth in the phase, behind two cheaper wins
   the profile found first.
 
@@ -83,20 +83,20 @@ utils/bench_env.sh python3 utils/feature_matrix.py --runs 5        # the lever m
 wall-clock one, and `feature_matrix.py` — which **drove both engines** until
 S1a.10.4 and now drives the one binary `$EIN_BIN` names — the lever matrix.
 The whole set is listed in
-[baseline.md § Reproducing all of it](../m1a_rust/p1a.6_performance/baseline.md#reproducing-all-of-it).
+[baseline.md § Reproducing all of it](../../docs/history/m1a_rust/measurements/baseline.md#reproducing-all-of-it).
 
 ## D1 — RETE beta-memories
 
 **Effort:** M. **Value:** H (perf) — the named next rung.
 
 > **Measured and declined, 2026-08-19
-> ([S1a.6.3](../m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md)).** The
+> ([S1a.6.3](../../docs/history/m1a_rust/README.md#s1a63--beta-memories-f11-d1)).** The
 > gated stage ran and the gate said no — not because the memory would not work,
 > but because two cheaper changes removed what it was for.
 >
 > - **The intermediate is 2.2 tuples wide.** An exhaustive `zebra` offers
 >   1 171 385 candidates over 530 405 steps entered, where before
->   [T1a.6.3.0](../m1a_rust/p1a.6_performance/baseline.md#14-s1a63--the-alpha-memory-and-the-gate-the-beta-memory-did-not-pass)
+>   [T1a.6.3.0](../../docs/history/m1a_rust/measurements/baseline.md#14-s1a63--the-alpha-memory-and-the-gate-the-beta-memory-did-not-pass)
 >   it offered 25 160 149 — **47.4 per step down to 2.21**. What T1a.6.3.0 did
 >   was key the participation index *one level inside a nested argument*, so a
 >   `(not (R ?b ?i))` premise probes a bucket instead of walking a 368-fact
@@ -104,14 +104,14 @@ The whole set is listed in
 >   replaces 2.2 is a constant factor with a per-fork table attached.
 > - **The catch came back, with a measurement this time.** This file recorded
 >   in August that the catch had "dissolved" because a fork's delta is only
->   3.6 KB. [T1a.6.2.5](../m1a_rust/p1a.6_performance/s1a.6.2_memory_layout.md)
+>   3.6 KB. [T1a.6.2.5](../../docs/history/m1a_rust/README.md#s1a62--memory-layout)
 >   then built the exact shape design/05 §7 calls the *root memory* — a flat
 >   per-relation table — and **cloning it per fork cost 7.6 %** while making the
 >   fork-free bench 8 % faster. Affordable in bytes is not the same as free in
 >   cache: a fork *shares* the layered index by `Arc`, and a materialised table
 >   gives every live fork its own copy.
 > - **The re-derivation it would have replayed is gone.**
->   [S1a.6.9](../m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md) made a
+>   [S1a.6.9](../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator) made a
 >   fork resume root's saturation rather than re-derive it, which was the
 >   "root memories" task's whole purpose.
 >
@@ -121,15 +121,15 @@ The whole set is listed in
 > or a puzzle whose premises the index cannot key.
 >
 > **Re-priced again at the close of P1a.6, 2026-08-20
-> ([S1a.6.7](../m1a_rust/p1a.6_performance/s1a.6.7_relever_matrix.md)
+> ([S1a.6.7](../../docs/history/m1a_rust/README.md#s1a67--re-measure-the-lever-matrix)
 > T1a.6.7.5), and the number moved the same way twice more.** The intermediate
 > a beta-memory would materialise is now **below one tuple per step entered**:
 >
 > | when | candidates | steps entered (`walk`) | per step |
 > |---|---:|---:|---:|
-> | before [T1a.6.3.0](../m1a_rust/p1a.6_performance/baseline.md#14-s1a63--the-alpha-memory-and-the-gate-the-beta-memory-did-not-pass) | 25 160 149 | 530 405 | **47.4** |
+> | before [T1a.6.3.0](../../docs/history/m1a_rust/measurements/baseline.md#14-s1a63--the-alpha-memory-and-the-gate-the-beta-memory-did-not-pass) | 25 160 149 | 530 405 | **47.4** |
 > | after it (S1a.6.3) | 1 171 385 | 530 405 | **2.21** |
-> | after [S1a.6.12](../m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md) | **238 567** | 532 115 | **0.45** |
+> | after [S1a.6.12](../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot) | **238 567** | 532 115 | **0.45** |
 >
 > `solve zebra -e`, `--features counters`. The step count is flat to 0.3 %
 > across all three rows, which is what makes them comparable: the *decisions*
@@ -216,7 +216,7 @@ Promote into a perf phase (not into this file) when **any** holds:
 - a user-facing workload — M2's NL output, M20's GUI turnaround, a bigger
   puzzle corpus — exceeds its ergonomic time envelope *and* a fresh profile
   puts the matcher back on top;
-- the [M1a Rust port](../m1a_rust/) reaches the matcher and wants the
+- the [M1a Rust port](../../docs/history/m1a_rust/README.md) reaches the matcher and wants the
   final algorithm rather than a transcription of the Python one (the port
   is the most likely trigger, and the reason this file exists rather than
   being dropped);

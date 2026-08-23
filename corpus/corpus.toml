@@ -12,7 +12,7 @@
 # `branching/07_lookahead_off.ein` 2.8x cheaper and the flag stopped being
 # true — which is what a measured flag is for. The rule, and why the sum
 # rather than the slowest run, is corpus/README.md § `slow`; the measurement is
-# plans/m1a_rust/p1a.9_release/corpus_cost.md and
+# docs/history/m1a_rust/measurements/corpus_cost.md and
 # `utils/bench_env.sh python3 utils/corpus_cost.py` re-takes it.
 #
 # It used to say "any of its runs took 3 s or more in the T1a.0.1.1 probe of

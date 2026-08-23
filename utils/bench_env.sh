@@ -22,7 +22,7 @@
 # three different machines — 8 physical P-cores, 8 P-core *threads* on 4
 # physical cores, or 8 E-cores — which differ by more than the speedup being
 # measured, so a `--jobs N` number that does not say which is not a
-# measurement (plans/m1a_rust/p1a.7_parallelism/scaling.md, preamble). The
+# measurement (docs/history/m1a_rust/measurements/scaling.md, preamble). The
 # spec is `P:N` / `PT:N` / `E:N` / `ET:N`, or a literal taskset list:
 #
 #   P:8    8 physical P-cores  — one thread per core, no SMT sibling shared

@@ -3,14 +3,14 @@
 //! ein.py's `fork()` shallow-copies the fact list and six index dicts, and
 //! `snapshot()` does the same plus a `_nogoods` copy. That is cheap today
 //! (0.003 s over 206 calls on an exhaustive `zebra2`) because there are only
-//! 101 enterings — but [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
-//! wants hundreds live at once, and [design/05](../../../../plans/m1a_rust/design/05_matcher.md)'s
+//! 101 enterings — but [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
+//! wants hundreds live at once, and [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md)'s
 //! beta-memories are only affordable if a fork does not copy them, which is
 //! the exact objection [F11](../../../../plans/followups/f11_deductive_layer_perf.md)
 //! parks them on.
 //!
 //! So a `Kb` is `Vec<Arc<Layer>>` plus a writable [`Layer`]
-//! ([design/03](../../../../plans/m1a_rust/design/03_data_model.md) §5):
+//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §5):
 //!
 //! - **Read** = walk the layers oldest-first. For every ordered list that
 //!   means *concatenated* iteration, which is exactly the order "copy the
@@ -50,7 +50,7 @@ pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 
 /// A key of the participation index (S1.8.B-idx): relation, argument
 /// position, and the value in it — or, since
-/// [T1a.6.3.0](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md),
+/// [T1a.6.3.0](../../../../docs/history/m1a_rust/README.md#s1a63--beta-memories-f11-d1),
 /// a position *inside* the fact in that argument.
 ///
 /// 12 bytes with padding. design/03 §6 notes that packing it into a `u64`
@@ -62,7 +62,7 @@ pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 /// `Fact`-valued argument is not indexed, so a `(not (R ?a ?b))` premise
 /// scans `not`'s whole extent. On an exhaustive `zebra` that is **99.1 %** of
 /// 25.16 M candidates walking a 368-fact extent to reject all but a handful
-/// ([baseline.md § 13](../../../../plans/m1a_rust/p1a.6_performance/baseline.md)).
+/// ([baseline.md § 13](../../../../docs/history/m1a_rust/measurements/baseline.md)).
 /// Keying one level in turns that scan into a bucket lookup. It is a
 /// *narrowing* — the matcher re-checks every slot regardless — so it changes
 /// which facts are offered and not which ones match, and buckets are appended
@@ -109,7 +109,7 @@ pub struct NameEntry {
 /// A *hit* is never reported as a miss, so the filter can only skip a layer
 /// that provably lacks the key; what the size buys is how often a miss is
 /// recognised as one. [T1a.6.3.0's
-/// profile](../../../../plans/m1a_rust/p1a.6_performance/baseline.md) put
+/// profile](../../../../docs/history/m1a_rust/measurements/baseline.md) put
 /// **15.6 %** of an exhaustive `zebra` in the layer walk of `facts_with` —
 /// a fork 24 layers deep hashing its key 24 times to find the one or two
 /// layers that have it — and this takes 6–7 % of the run off.
@@ -117,7 +117,7 @@ pub struct NameEntry {
 /// Sized by sweep rather than by arithmetic: 512 bits is −6.0 %, 2048 is
 /// **−7.3 %**, and 8192 is −7.2 %, so the curve is flat past here and the
 /// extra 768 bytes a layer would buy nothing. A fork's layer is ~6 KB, which
-/// is what [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+/// is what [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 /// sizes `--jobs` by, so 256 bytes is 4 % of it.
 const BLOOM_BITS: usize = 2048;
 const BLOOM_WORDS: usize = BLOOM_BITS / 64;
@@ -143,7 +143,7 @@ pub struct Layer {
     /// `Engine.compile_all` walks `rules × activators` on every enqueue pass
     /// and the walk is only *worth* repeating when a rule gained an activator
     /// — which happens exactly when this grows
-    /// ([design/06](../../../../plans/m1a_rust/design/06_saturation.md) § Win A).
+    /// ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) § Win A).
     /// Counting it per layer keeps the question O(layers) instead of
     /// O(rules × activators), which is the size of the walk being skipped.
     rule_apps: u32,
@@ -243,7 +243,7 @@ impl Layer {
     }
 
     /// Heap bytes this layer holds — the **delta** a fork owns, which is the
-    /// number [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+    /// number [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
     /// sizes `--jobs` by: a machine can hold `RAM / mean-delta` searches at
     /// once, and design/03 §5's claim that a fork is O(1) is a claim about
     /// exactly this quantity not growing with the KB.
@@ -522,7 +522,7 @@ pub struct Kb {
     /// watched relation per parked boundary entry — and folding it over the
     /// layer stack made it O(depth) where ein.py's flat index answers in O(1).
     /// The search reaches depth 35, and that cost was 9.5 % of the run
-    /// ([baseline.md §7](../../../../plans/m1a_rust/p1a.6_performance/baseline.md)
+    /// ([baseline.md §7](../../../../docs/history/m1a_rust/measurements/baseline.md)
     /// item 2). Maintained wherever `by_rel` is, and cloned per fork: a map of
     /// one `u32` per *declared relation* — 17 on the zebra puzzles — against a
     /// delta that is already kilobytes.
@@ -565,7 +565,7 @@ impl Kb {
     /// A KB over registries someone else already built.
     ///
     /// The `.einb` reader's, and only its ([design/10
-    /// §2](../../../../plans/m1a_rust/design/10_binary_format.md)): it rebuilds
+    /// §2](../../../../docs/history/m1a_rust/design/10_binary_format.md)): it rebuilds
     /// the program by re-loading the file's `PROGRAM` section and then installs
     /// the file's *own* fact state on top of those registries rather than the
     /// loader's. Sharing the `Arc` is what makes that two KBs over one program
@@ -635,7 +635,7 @@ impl Kb {
     /// Seal the top layer, so later appends land in a new one — the half of
     /// [`Kb::fork`] that mutates, and the only half a *layer* has to do once.
     ///
-    /// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) is why
+    /// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) is why
     /// the two are separable: a fanned-out layer's workers all branch from one
     /// root and none of them may write to it, so the seal happens once when the
     /// layer opens and every worker then calls [`Kb::branch`] through a `&`.
@@ -692,7 +692,7 @@ impl Kb {
     /// Collapse the layer stack into one — the operation design/03 §5 calls
     /// flatten, used when a branch is promoted to a root, as the check that
     /// layering changed nothing, and — since
-    /// [T1a.7.2.0](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a720--the-layer-stack-coalesced-at-the-barrier)
+    /// [T1a.7.2.0](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
     /// — at the search's layer barrier, because every fork inherits the whole
     /// stack and a mid-layer root write seals another one.
     ///
@@ -803,7 +803,7 @@ impl Kb {
     /// A relation's extent size — **one** map lookup, whatever the depth.
     ///
     /// The counter is the acceptance instrument for that claim
-    /// ([S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)):
+    /// ([S1a.6.8](../../../../docs/history/m1a_rust/README.md#s1a68--the-compile-cache-and-the-extent-counts)):
     /// it counts probes, and a fold over the layers would make it grow with
     /// `depth()`.
     pub fn n_facts_of(&self, rel: Symbol) -> usize {
@@ -1227,7 +1227,7 @@ impl Kb {
 
     /// `n_by_rel` against a full walk of the layer stack — the invariant the
     /// O(1) [`Kb::n_facts_of`] rests on, checked rather than argued
-    /// ([S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)
+    /// ([S1a.6.8](../../../../docs/history/m1a_rust/README.md#s1a68--the-compile-cache-and-the-extent-counts)
     /// T1a.6.8.2). Part of `check_layering` because that is where every
     /// KB-shape fixture already asks whether the layer stack still adds up.
     pub fn check_extent_counts(&self) -> Result<(), String> {
@@ -1407,7 +1407,7 @@ impl Kb {
 
     /// Field-by-field comparison against another KB — what "T1-identical"
     /// means when a round trip has to prove it
-    /// ([design/10 §6](../../../../plans/m1a_rust/design/10_binary_format.md)).
+    /// ([design/10 §6](../../../../docs/history/m1a_rust/design/10_binary_format.md)).
     ///
     /// Both sides are materialised first, so the answer is about *content* and
     /// not about how many forks each one has been through — which is the same

@@ -1,15 +1,15 @@
 //! The `--events` stream at `verbose`, against ein.rs's own goldens —
-//! [T1a.6.11.4](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
+//! [T1a.6.11.4](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
 //!
 //! **What these are for is the half T2 stopped reading.** Since
-//! [S1a.6.10](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
+//! [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
 //! the cross-engine comparison reads a segment's *derivation* — the facts its
 //! non-redundant firings produced and the rules that produced them — and
 //! elides the scheduling traffic that got it there: `enqueue`, `park`,
 //! `admit`, `retire`, `quiesce`, `alt`, `compile`, and every redundant firing.
 //! That is the right cut between two engines that deliberately narrate
 //! differently
-//! ([D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
+//! ([D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
 //! and it means nothing else would notice ein.rs's own scheduling changing.
 //! These goldens are what notices.
 //!

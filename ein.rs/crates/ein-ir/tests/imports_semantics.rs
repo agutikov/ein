@@ -6,7 +6,7 @@
 //! dropping one declaration too many or too few is a T1/T2 failure several
 //! phases later, on a fixture that will look unrelated.
 //!
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 //! removes the second resolver:
 //!
 //! | was | now |

@@ -21,7 +21,7 @@
 //! positive-chain walk misread it as root-true. The only root writes during
 //! Phase 2 are the singleton `(not h)` writeback and the forced-positive
 //! promotions — both sound, both flagged by config, and both the thing
-//! [design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2 has to
+//! [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §2 has to
 //! validate against.
 
 use std::sync::Arc;
@@ -120,7 +120,7 @@ pub struct LatticeProof {
     ///
     /// Collected only under `store_lattice`, which is what `--trace` and
     /// `--dump-states` set. Before
-    /// [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+    /// [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
     /// a trace did not need this: every fork re-derived root's fixpoint, so
     /// the solution node's own firing list happened to contain root's whole
     /// closure. A fork that *resumes* root's saturation does not, so the
@@ -154,7 +154,7 @@ pub struct SolveOptions {
     pub store_lattice: bool,
     pub on_budget: OnBudget,
     /// **Deferred integration** — how many enterings share one root
-    /// ([S1a.7.0](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md)
+    /// ([S1a.7.0](../../../../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)
     /// T1a.7.0.5).
     ///
     /// `None` is the sequential engine and the only shipping value: an
@@ -169,16 +169,16 @@ pub struct SolveOptions {
     /// This is an **execution** knob, not a semantics one, which is why it
     /// lives here and not in [`SolverConfig`] — a `(config …)` block in a
     /// puzzle file must not be able to set it
-    /// ([S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+    /// ([S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
     /// T1a.7.5.1 makes the same call for `--jobs`). It changes the
     /// **traversal** and therefore the counters; what it must *not* change is
     /// the answer, which is what `tests/search_invariants.rs` asserts and what
-    /// [design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2a
+    /// [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §2a
     /// proves.
     pub integrate_every: Option<usize>,
     /// **Coalesce root's layer stack** at the layer barrier once it is this
     /// deep, or `None` never
-    /// ([T1a.7.2.0](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+    /// ([T1a.7.2.0](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)).
     ///
     /// Every mid-layer root write seals another layer — [`Kb::fork`] seals the
     /// top so the parent's later appends land in a new one — and **every fork
@@ -200,11 +200,11 @@ pub struct SolveOptions {
     /// stack walk loses. `Some(3)` is "something was written during the
     /// layer": a barrier with no mid-layer write leaves root at depth 2, so 3
     /// is the first depth a writeback can produce
-    /// ([scaling.md §6](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+    /// ([scaling.md §6](../../../../docs/history/m1a_rust/measurements/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
     pub coalesce_root_at: Option<usize>,
     /// How many threads evaluate a layer's enterings. `1` is the default and
     /// is the sequential engine, line for line
-    /// ([T1a.7.2.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)).
+    /// ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)).
     ///
     /// **`--jobs N` is the same computation as `--jobs 1`** — the same
     /// verdict, the same models, the same unsat core and *the same counters* —
@@ -244,7 +244,7 @@ pub enum SolveError {
     Saturate(SaturateError),
     Compile(CompileError),
     /// `lattice_order_seed` is set and the traversal shuffle is not ported —
-    /// see [`Q-M1a.5`](../../../../plans/m1a_rust/open_questions.md).
+    /// see [`Q-M1a.5`](../../../../docs/history/m1a_rust/open_questions.md).
     Unsupported(String),
     /// `-y` found two lattice paths to one commitment that saturate to
     /// different KBs. Fatal in ein.py too — `check_commutativity` raises.
@@ -295,7 +295,7 @@ pub struct EnteringInfo<'a> {
 
 /// One entering, at the point where the committing thread takes over.
 ///
-/// The split is [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)'s
+/// The split is [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)'s
 /// and it is where a fanned-out layer cuts: [`Run::speculate`] produces one of
 /// these against a root nobody may write to, and [`Run::commit_entering`]
 /// turns it into counters, clauses, events and nodes **in candidate order**.
@@ -318,7 +318,7 @@ struct Entered {
     /// memory some *other* thread allocated, which every modern allocator makes
     /// the slow path, and it was **192 ms of `features/01 -e`'s 269 ms commit
     /// loop** at `--jobs 8`
-    /// ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#the-commits-real-cost-and-it-is-not-the-commit)).
+    /// ([scaling.md §8](../../../../docs/history/m1a_rust/measurements/scaling.md#the-commits-real-cost-and-it-is-not-the-commit)).
     kb: Option<Kb>,
     /// Alive **and** complete: a solution node.
     solved: bool,
@@ -341,7 +341,7 @@ struct Speculated {
 }
 
 /// The lifecycle hooks a state dumper receives — implemented in
-/// [S1a.5.3](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.3_state_dumps.md)
+/// [S1a.5.3](../../../../docs/history/m1a_rust/README.md#s1a53--state-dumps)
 /// by `ein-render`, which is where formatting lives.
 ///
 /// Every hook that shows a fact takes `&Terms` as well, because a `FactId`
@@ -368,7 +368,7 @@ pub trait Dumper {
     /// and a wrong `false` would hand it `None`. Answering `false` lets a
     /// fanned-out layer's worker **drop the fork where it allocated it**, which
     /// is worth 192 ms of `features/01 -e`'s 269 ms commit loop at `--jobs 8`
-    /// ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#the-commits-real-cost-and-it-is-not-the-commit)) —
+    /// ([scaling.md §8](../../../../docs/history/m1a_rust/measurements/scaling.md#the-commits-real-cost-and-it-is-not-the-commit)) —
     /// so it is a claim about the hook, and [`NoDumper`] is the one that can
     /// make it.
     fn reads_forks(&self) -> bool {
@@ -413,7 +413,7 @@ struct LoopState {
 /// Every counter in `MonotonicStats` is compared exactly between `--jobs 1`
 /// and `--jobs N`, so a number that *must* differ by job count cannot live
 /// there. These are the numbers
-/// [T1a.7.2.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+/// [T1a.7.2.5](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
 /// asks for, in the one place where differing is the point.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
 pub struct JobStats {
@@ -427,7 +427,7 @@ pub struct JobStats {
     /// Enterings a worker could not finish because it would have had to number
     /// a proposition, and which the committing thread therefore re-ran
     /// ([`ein_core::Overflow::Shared`]). The claim
-    /// [shared_state.md §2a](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+    /// [shared_state.md §2a](../../../../docs/history/m1a_rust/measurements/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
     /// rests on, as a running count rather than as a sweep.
     pub handed_back: u64,
     /// Enterings that ran on the sequential path because their layer could
@@ -533,7 +533,7 @@ pub fn solve(
 ///
 /// These are the only two things an entering writes to root — everything else
 /// it produces is fork-local or lives in `LoopState`
-/// ([design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2a). So
+/// ([design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §2a). So
 /// buffering exactly these two is what makes a batch of enterings share one
 /// KB.
 enum Deferred {
@@ -549,13 +549,13 @@ struct Run<'o> {
     /// The run's compiled plans, shared by the root saturation, every
     /// entering, every `complete` / `open_hypotheses` probe and every
     /// `lookahead` — design/06 § Win A, and the whole of
-    /// [S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md).
+    /// [S1a.6.8](../../../../docs/history/m1a_rust/README.md#s1a68--the-compile-cache-and-the-extent-counts).
     /// Each engine still keeps its own ordered plan list, which is the part
     /// that reaches the trace.
     memo: SharedMemo,
     /// The root saturator at its fixpoint, for a fork that **resumes** it
     /// instead of re-deriving it
-    /// ([S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)).
+    /// ([S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)).
     ///
     /// Refreshed after every root *re*-saturation (a forced positive), and
     /// otherwise left alone: root's other writers — the singleton `(not h)`
@@ -581,7 +581,7 @@ struct Run<'o> {
     /// watch: spawning `jobs` threads per batch cost 96 000 spawns and a 3×
     /// **slowdown** at `--jobs 2` on `features/01 -e`, which is why this is a
     /// pool and not a `std::thread::scope`
-    /// ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)).
+    /// ([scaling.md §8](../../../../docs/history/m1a_rust/measurements/scaling.md)).
     ///
     /// `None` at `--jobs 1`, which is the default: a sequential solve builds no
     /// threads at all.
@@ -608,9 +608,9 @@ fn batch_per_worker() -> usize {
 const BATCH_PER_WORKER: usize = 512;
 
 /// Does a fork **resume** root's saturation? Yes, since
-/// [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+/// [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
 /// — this is the shipping path, and
-/// [D3](../../../../plans/m1a_rust/divergences.md) is what it costs.
+/// [D3](../../../../docs/history/m1a_rust/divergences.md) is what it costs.
 ///
 /// The one way to get the old fresh-saturator path back is a `fork-delta`
 /// build with `EIN_FORK_DELTA=0`, and that exists for one reason: D3's rule 2
@@ -792,7 +792,7 @@ impl Run<'_> {
             // `features/01 -e` — 384 167 enterings in one layer — that is 84 MB
             // against **1.9 GB**, measured, which is also why it was *slower*
             // at `--jobs 2` than at `--jobs 1`
-            // ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)).
+            // ([scaling.md §8](../../../../docs/history/m1a_rust/measurements/scaling.md)).
             //
             // A bounded batch fixes both. It stays a multiple of `jobs` because
             // the shared cursor needs slack to balance a layer whose enterings
@@ -821,7 +821,7 @@ impl Run<'_> {
             // barrier every `jobs` enterings for a search that cut nothing.
             // That is `houses -n 1` at 2.72× where `houses -e` is 4.38×, for
             // the same 21 699 enterings
-            // ([scaling.md §8a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#8a-t1a724--the-early-stop-and-the-batch-that-was-flat)).
+            // ([scaling.md §8a](../../../../docs/history/m1a_rust/measurements/scaling.md#8a-t1a724--the-early-stop-and-the-batch-that-was-flat)).
             #[cfg(feature = "parallel")]
             let full_batch = jobs.saturating_mul(batch_per_worker());
             #[cfg(feature = "parallel")]
@@ -1083,7 +1083,7 @@ impl Run<'_> {
     /// `candidates × clauses` — **47.7 ms of `branching/07 -e`'s 109 ms** at
     /// `--jobs 8`, which is what made it the largest serial term in Phase 2
     /// once the ordered commit stopped freeing the workers' memory
-    /// ([scaling.md §8](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#t1a727--and-the-layers-own-serial-work-turned-out-to-be-three-things)).
+    /// ([scaling.md §8](../../../../docs/history/m1a_rust/measurements/scaling.md#t1a727--and-the-layers-own-serial-work-turned-out-to-be-three-things)).
     ///
     /// It parallelises for the same reason the enterings do and with less to
     /// argue about: the predicate reads `alive` and the clause store by `&` and
@@ -1425,7 +1425,7 @@ impl Run<'_> {
     ///
     /// > A layer is fanned out **iff it cannot write a fact to root.**
     ///
-    /// That is [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+    /// That is [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
     /// § The decision, and it is the whole reason this port needs no
     /// speculate-and-validate. A worker forks root when the layer opens, so
     /// the question a parallel layer has to answer is not "can the repair be
@@ -1444,7 +1444,7 @@ impl Run<'_> {
     /// **And it is measured, not only argued**: **248 of 248** writebacks
     /// corpus-wide are in layer 1, over 8 158 205 enterings spanning five
     /// layers, and layer 1 is **0.016 %** of those enterings
-    /// ([scaling.md §3a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)).
+    /// ([scaling.md §3a](../../../../docs/history/m1a_rust/measurements/scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)).
     /// The other direction of the same measurement is what makes this a
     /// predicate rather than `layer > 1`: with `enable_singleton_writeback`
     /// off nothing writes back at any depth, so layer 1 is fanned out too —

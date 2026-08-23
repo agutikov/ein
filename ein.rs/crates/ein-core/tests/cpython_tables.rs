@@ -5,7 +5,7 @@
 //! quote choice and escape table, and `format()`'s sign/pad/align
 //! interaction. A differential test was the only kind that could be wrong in
 //! the direction that mattered, and
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 //! could not keep one. What it kept instead is the **corpus** — every
 //! generator below is unchanged, and every one is deterministic — with
 //! CPython's answers checked in beside it:
@@ -21,7 +21,7 @@
 //! Python changes `repr`'s escape set — as 3.0 did, and as a Unicode revision
 //! could again — these tables keep the old answer and nothing notices. They
 //! are a **regression** gate for ein.rs, not a parity gate against Python, and
-//! that is [accepted loss L2](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss)
+//! that is [accepted loss L2](../../../../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss)
 //! taking effect. What they still do is exactly what the sweeps did on every
 //! ordinary day: notice when this engine's answer moves.
 //!

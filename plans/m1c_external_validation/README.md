@@ -10,7 +10,7 @@ the wrong milestone rewritten. The second phase, P1c.2, was **promoted to
 [M10](../m10_external_benchmarks/README.md) on 2026-08-23** and took its five
 stages and its three method questions with it; what stays here is the half
 that runs with no external tool installed.
-**Depends on:** [M1a](../m1a_rust/README.md) — [P1a.10](../m1a_rust/p1a.10_single_implementation/README.md)
+**Depends on:** [M1a](../../docs/history/m1a_rust/README.md) — [P1a.10](../../docs/history/m1a_rust/README.md#p1a10--one-implementation)
 for P1c.1: a new surface form is written once when there is one
 implementation and twice when there are two.
 **Blocks:** nothing on the critical path. [M5](../m5_presentation/README.md)
@@ -24,7 +24,7 @@ for the first time.
 
 **Every check this repo has is relative.** The conformance tiers compared two
 engines; the goldens compare ein.rs to its own past; after
-[P1a.10](../m1a_rust/p1a.10_single_implementation/README.md) the second engine
+[P1a.10](../../docs/history/m1a_rust/README.md#p1a10--one-implementation) the second engine
 is gone, so what is left compares ein.rs to yesterday's ein.rs. All of it
 answers *did this change?* None of it answers *is this right?*
 
@@ -80,7 +80,7 @@ depend on the two sharing a directory.
   [M10](../m10_external_benchmarks/README.md) — survives the absence of
   whatever produced it.
 - **A missing tool is reported, never skipped past.**
-  [S1a.10.1](../m1a_rust/p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md)
+  [S1a.10.1](../../docs/history/m1a_rust/README.md#s1a101--bank-what-only-the-oracle-proves)
   found 42 tests that started a Python process and skipped invisibly when one
   would not start; `ein test` has the same failure mode available to it and
   must not take it.

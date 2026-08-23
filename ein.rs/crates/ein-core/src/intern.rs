@@ -3,7 +3,7 @@
 //! Relation names, object names, rule names, variable names, keyword names,
 //! and every `String` / `Range` / `Var` literal that reaches a fact argument
 //! intern here
-//! ([design/03](../../../../plans/m1a_rust/design/03_data_model.md) §2). What
+//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §2). What
 //! ein.py holds as a `str` object per occurrence — 50 B each, shared only when
 //! CPython happened to intern it, which for a `"House-1"` read from a file it
 //! has not — becomes a 4-byte [`Symbol`], and every identity comparison
@@ -15,7 +15,7 @@
 //!   its numeric order is first-seen order, and using it as a sort key would
 //!   make the output depend on the order the *loader* happened to walk the
 //!   file. Observable sorts go through [`Interner::rank`]
-//!   ([design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §1).
+//!   ([design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §1).
 //! - **Interning is not belief.** This table says a name exists; whether a
 //!   proposition built out of it holds is a per-KB bit
 //!   ([`crate::facts`]).
@@ -45,11 +45,11 @@ pub enum Overflow {
     /// worker, so nobody may grow them — [`crate::Terms::share`].
     ///
     /// This is the whole of what a worker cannot do, and it is why
-    /// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) needs
+    /// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) needs
     /// no lock on the interner or the fact store: the tables are read by `&`
     /// and grown only where nothing else holds them. An entering that hits it
     /// hands itself back and is re-run on the committing thread — which
-    /// [shared_state.md §2a](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+    /// [shared_state.md §2a](../../../../docs/history/m1a_rust/measurements/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
     /// measured at **zero** enterings on four of six workloads and 7 of 111 on
     /// the worst, all of them in the head of a layer.
     Shared,
@@ -83,7 +83,7 @@ pub struct Symbol(pub u32);
 /// Text arena + span table + lookup, with a lazily-built lexicographic rank.
 ///
 /// One per process. `.einb`
-/// ([design/10](../../../../plans/m1a_rust/design/10_binary_format.md) §3) is
+/// ([design/10](../../../../docs/history/m1a_rust/design/10_binary_format.md) §3) is
 /// the only thing that crosses interner boundaries, and it remaps on open.
 #[derive(Default, Debug)]
 pub struct Interner {
@@ -152,7 +152,7 @@ impl Interner {
     /// This is what an observable sort by name uses: ein.py's `sorted(names)`
     /// compares Unicode code points and Rust's `Ord for str` compares UTF-8
     /// bytes, which agree for all inputs
-    /// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §1),
+    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §1),
     /// so ranking once turns every later name-sort into a `u32` sort.
     ///
     /// Cheap to maintain because the symbol table is effectively frozen after

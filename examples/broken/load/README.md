@@ -6,9 +6,9 @@ Files that **parse** and then fail to **load**. Each `<name>.ein` sits beside a
 Sibling `../*.ein` are the *parse*-negative fixtures — they never reach the
 loader. Everything here does.
 
-Extracted from inline test strings in [S1a.0.1](../../../plans/m1a_rust/p1a.0_conformance_harness/s1a.0.1_parity_contract_and_corpus.md)
+Extracted from inline test strings in [S1a.0.1](../../../docs/history/m1a_rust/README.md#s1a01--parity-contract-corpus-manifest-divergence-ledger)
 T1a.0.1.2 so that both implementations can be held to the same text: the Rust
-port's [P1a.2](../../../plans/m1a_rust/p1a.2_kb_core/README.md) gate is
+port's [P1a.2](../../../docs/history/m1a_rust/README.md#p1a2--kb-core) gate is
 byte-identical load errors, and a `pytest.raises(match=…)` fragment is not
 something a second implementation can be held to.
 
@@ -66,5 +66,5 @@ where it belongs.
 ## Growth rule
 
 Any load error found outside this set becomes a fixture in the same commit that
-fixes it ([design/01](../../../plans/m1a_rust/design/01_parity_contract.md) §4).
+fixes it ([design/01](../../../docs/history/m1a_rust/design/01_parity_contract.md) §4).
 The set only grows.

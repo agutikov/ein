@@ -10,8 +10,8 @@ estimates and their dependencies are as written, `S1c.2.<n>` became
 **Depends on:** [M1c P1c.1](../m1c_external_validation/p1c.1_stdlib_conformance/README.md)
 — not to run, but to *keep*: the answers this milestone establishes are
 written back into the `.ein` files as `:expect`, and that form is P1c.1's.
-Also on [M1a](../m1a_rust/README.md) having shipped its
-[performance phase](../m1a_rust/p1a.6_performance/README.md): a
+Also on [M1a](../../docs/history/m1a_rust/README.md) having shipped its
+[performance phase](../../docs/history/m1a_rust/README.md#p1a6--performance): a
 comparison run against the pre-S1a.6 engine measures a version nobody ships.
 **Blocks:** nothing on the critical path. [M5](../m5_presentation/README.md)
 Track A is the consumer: its "head-to-head numbers where applicable" are this
@@ -23,7 +23,7 @@ the first time.
 ## Why this exists: every check the repo has is relative
 
 The conformance tiers compared two engines; the goldens compare ein.rs to its
-own past; after [P1a.10](../m1a_rust/p1a.10_single_implementation/README.md)
+own past; after [P1a.10](../../docs/history/m1a_rust/README.md#p1a10--one-implementation)
 the second engine is gone, so what is left compares ein.rs to yesterday's
 ein.rs. All of it answers *did this change?* None of it answers *is this
 right?* — and the precedent is specific, recent and expensive:
@@ -63,7 +63,7 @@ sharpening it added is the reason to run the benchmarks at all:
 > than removing it: **the graph engine has to stand on its own numbers.**
 
 There are no such numbers today. The engine's entire performance record
-([baseline.md](../m1a_rust/p1a.6_performance/baseline.md)) is Ein against
+([baseline.md](../../docs/history/m1a_rust/measurements/baseline.md)) is Ein against
 Ein: ein.rs against ein.py, against PyPy, against its own previous commit.
 165× a Python implementation of the same algorithm says nothing about how the
 algorithm compares to a CDCL solver on the same puzzle.
@@ -150,7 +150,7 @@ algorithm compares to a CDCL solver on the same puzzle.
   dropped, and never checked out by anything. CVC5 is a different program
   with a different name, and this benchmark uses **CVC5** — so the submodule
   had no consumer here, and M1a
-  [S1a.10.5](../m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+  [S1a.10.5](../../docs/history/m1a_rust/README.md#s1a105--the-removal)
   deinitialised it rather than making every clone fetch it. The three
   hand-written `.smt` files it sat beside **stay**, and are named below.
   `smt/README.md` has the one command that re-adds it if a stage ever wants
@@ -171,7 +171,7 @@ algorithm compares to a CDCL solver on the same puzzle.
   ProofWriter, LogiQA — is [F13](../followups/f13_puzzles_beyond_zebra/ideas.md)'s
   territory and needs [M2](../m2_nl_to_ir/README.md)'s NL frontend to be
   interesting.
-- **Ein's own performance work.** [P1a.6](../m1a_rust/p1a.6_performance/README.md)
+- **Ein's own performance work.** [P1a.6](../../docs/history/m1a_rust/README.md#p1a6--performance)
   owns that and closed on its targets. A comparison that shows Ein slow
   somewhere is a *finding*; acting on it is a milestone somewhere else.
 - **Winning.** A benchmark built to be won gets tuned until it is. The

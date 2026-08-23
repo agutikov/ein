@@ -1,0 +1,193 @@
+# M1a design docs — ein.rs
+
+The *how* of the [M1a Rust port](../README.md). The milestone README
+carries scope, phases and status; these eleven documents carry the
+decisions. (`09 — Server mode` was **deleted 2026-08-18** when the server
+was dropped; the numbering keeps its gap, like a closed question id. It
+is in git history.)
+
+## Reading order
+
+Three groups, and they are worth reading in this order because each
+constrains the next:
+
+1. **The contract** — what may not change.
+   [01 Parity contract](01_parity_contract.md) →
+   [02 Determinism & order](02_determinism_and_order.md) →
+   [11 Shared assets](11_shared_assets.md)
+
+2. **The machine** — what changes underneath.
+   [03 Data model](03_data_model.md) →
+   [04 IR frontend](04_ir_frontend.md) →
+   [05 Matcher](05_matcher.md) →
+   [06 Saturation](06_saturation.md) →
+   [07 Search layer](07_search_layer.md)
+
+3. **The scale-out** — what the port unlocks.
+   [08 Parallelism](08_parallelism.md) →
+   [10 Binary format](10_binary_format.md) →
+   [12 Toolchain & layout](12_toolchain_and_layout.md)
+
+Group 1 is not optional preamble. Every optimisation in group 2 is
+justified *only* because group 1 can prove it changed nothing; a reader
+who skips to [05](05_matcher.md) will find claims like "this preserves
+match order" whose enforcement lives in [02](02_determinism_and_order.md).
+
+## What each doc settles
+
+| doc | settles | phase |
+|---|---|---|
+| [01 Parity contract](01_parity_contract.md) | the four parity tiers, the JSONL oracle event protocol, the corpus, the divergence ledger | [P1a.0](../README.md#p1a0--conformance-harness-and-shared-assets) |
+| [02 Determinism & order](02_determinism_and_order.md) | the audited list of order-sensitive sites in ein.py and the Rust structure that reproduces each | [P1a.0](../README.md#p1a0--conformance-harness-and-shared-assets)–[P1a.5](../README.md#p1a5--presentation-and-cli) |
+| [03 Data model](03_data_model.md) | `Symbol`/`Value`/`FactId` as `u32`, the fact row store, the seven indexes, the layered COW KB, arenas | [P1a.2](../README.md#p1a2--kb-core) |
+| [04 IR frontend](04_ir_frontend.md) | hand-written lexer + recursive-descent parser, AST arena, dumper, macro expansion, import resolution | [P1a.1](../README.md#p1a1--ir-frontend) |
+| [05 Matcher](05_matcher.md) | plan bytecode, slot registers + backtrack trail, candidate selection, beta-memories, WCOJ trigger | [P1a.3](../README.md#p1a3--deductive-core), [P1a.6](../README.md#p1a6--performance) |
+| [06 Saturation](06_saturation.md) | the two-phase closure/boundary loop, semi-naive delta, the two heaps, incremental NAF invalidation, the native mirror | [P1a.3](../README.md#p1a3--deductive-core) |
+| [07 Search layer](07_search_layer.md) | hypgen enumeration, lookahead, apriori generation, no-good store, the layer loop, verdict synthesis | [P1a.4](../README.md#p1a4--search-layer) |
+| [08 Parallelism](08_parallelism.md) | four parallel levels — **two built, two declined by measurement**; ~~speculate-and-validate with read-set tracking~~ (a layer is fanned out iff it cannot write to root, so there is nothing to validate); the `--jobs` contract | [P1a.7](../README.md#p1a7--parallelism) |
+| [10 Binary format](10_binary_format.md) | `.einb` container layout, mmap-ability, versioning, content addressing, the solution store | [P1a.8](../README.md#p1a8--binary-kb-container) |
+| [11 Shared assets](11_shared_assets.md) | repo-root `stdlib/`, resolution order in both impls, drift detection, the shared corpus | [P1a.0](../README.md#p1a0--conformance-harness-and-shared-assets) |
+| [12 Toolchain & layout](12_toolchain_and_layout.md) | the `ein.rs/` workspace, crate split, dependency policy, MSRV, CI, benches | [P1a.0](../README.md#p1a0--conformance-harness-and-shared-assets) |
+
+## Measured
+
+Kept here so the milestone's claims stay falsifiable. Filled in per
+phase; the baseline row is the promotion-time measurement from the
+[milestone README](../README.md#what-shipped).
+
+Refreshed by one command (§4 of [12](12_toolchain_and_layout.md)):
+
+```sh
+cd ein.rs && cargo bench                              # from P1a.6
+```
+
+**The Python column is frozen.** `utils/bench_baseline.py` produced the same
+eight bench names from ein.py, so that the two columns were comparable rather
+than merely adjacent; with one implementation it collapsed into `cargo bench`
+and left the tree at
+[S1a.10.4](../README.md#s1a104--utils-re-aimed-at-one-engine). Every CPython
+and PyPy figure below, and every ratio against one, is a **historical
+constant** dated where it stands.
+
+[S1a.6.1](../README.md#s1a61--fresh-profile-and-bench-baseline) added five more,
+because a wall-clock pair cannot say *why* or *whether the two engines did
+the same work* — every one of them runs under `utils/bench_env.sh`, which
+prints the machine state the numbers were taken under and pins to a P-core:
+
+```sh
+utils/bench_env.sh python3 utils/e2e_baseline.py     # processes, not calls
+utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 solve examples/zebra2.ein -e
+python3 utils/criterion_table.py --max-rsd 3         # criterion's sd, gated
+cd ein.rs
+cargo run --release --features counters -p ein-infer --example counter_cost
+cargo run --release -p ein-infer --example alloc_cost
+```
+
+[S1a.6.4](../README.md#s1a64--hypgen-and-lattice-hot-paths) added two more,
+because the six workloads above are all `(hrule …)`-driven and therefore never
+run the blind enumerator the rest of the corpus uses:
+
+```sh
+cargo run --release -p ein-infer --example hypgen_calls   # cost per call, by caller
+utils/bench_env.sh python3 utils/e2e_baseline.py --blind
+```
+
+[S1a.6.5](../README.md#s1a65--frontend-and-load-path) added two more — the load
+path split into its phases with an allocation count beside each, and the
+start-up floor, which no workload with work in it can see:
+
+```sh
+cargo run --release -p ein-infer --example frontend_cost  # per phase, + allocations
+utils/bench_env.sh python3 utils/e2e_baseline.py --startup --runs 15
+```
+
+[S1a.6.12](../README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot) added no new
+command and seven counter fields, because the question it could not answer was
+*who* the existing totals belonged to: `scan_bucket` / `scan_extent` /
+`cand_bucket` / `cand_extent` now have a `_guard` twin each, and `scan_ground` /
+`scan_ground_guard` / `cand_ground` count the premises that never scan at all.
+The same `counter_cost` run prints them.
+
+```sh
+utils/bench_env.sh cargo run --release --features counters -p ein-infer \
+    --example counter_cost -- examples/features/05_stdlib_domain_elim.ein
+```
+
+The tables they produce live in
+[p1a.6_performance/baseline.md](../measurements/baseline.md); the raw
+artefacts go to `ein.rs/bench-out/` (git-ignored, machine-specific — the same
+split `utils/feature_matrix_results.json` uses).
+
+| date | build | `zebra2 -e` e2e | `zebra -e` e2e | acceptance gate | note |
+|---|---|---|---|---|---|
+| 2026-08-17 | ein.py, CPython 3.14 | 5.69 s | — | — | baseline |
+| 2026-08-17 | ein.py, PyPy 3.11 | 4.07 s | 8.15 s | **43.7 s** ‡ | baseline |
+| 2026-08-18 | ein.rs P1a.1 (frontend only) | — | — | — | `parse`: **758 µs** vs 760.6 ms CPython / 230.9 ms PyPy (1 003× / 305×). zebra2 parse + resolve + expand: **824 µs** vs 618.9 ms / 193.7 ms |
+| 2026-08-18 | ein.rs P1a.2 (KB core) | — | — | — | `load` zebra2 (parse + imports + macros + index build): **1.03 ms** vs 625.6 ms CPython (607×). `fork` + first delta write: **248 ns** vs 17.3 µs (70×). Peak RSS on `load(zebra2)`: **3.1 MB** vs 46.6 MB (15×); the load itself adds **0.73 MB** vs 16.2 MB (22×) |
+| 2026-08-18 | ein.rs P1a.3 (deductive core) | — | — | — | root saturation of zebra2 (load excluded): **2.89 ms** vs 90 ms CPython (31×). `match_hot`, every plan over the saturated zebra2 root: **38.6 µs** vs 2 110 µs (55×), over the same 2 075 premises. Compiling zebra2's 19 plans: **21.8 µs**. `boundary`, a zebra root saturation: 7.10 ms, of which **80 %** is the boundary |
+| 2026-08-18 | ein.rs P1a.4 (search layer) | **194 ms** § | **587 ms** § | **0.87 s** ¶ | `solve_fast` zebra2 (11 enterings): **43.0 ms** vs 1.22 s CPython (28×). `solve_exhaustive` (101): **194 ms** vs 5.00 s (26×). `solve zebra` fast (13): **119 ms** vs 6.99 s (59×); exhaustive (111): **587 ms** vs 30.4 s (52×). One hypgen pass, zebra2 hrule + lookahead: **656 µs** vs 18.3 ms (28×) |
+| 2026-08-18 | ein.rs P1a.5 (parity, unoptimised) | **198.8 ms** | **585.8 ms** | **1.27 s** ◊ | the S1a.6.1 baseline, *process* measurements: 24.8× and 15.0× against the same day's PyPy (4.94 s / 8.79 s). Peak RSS 17.4 MB vs 223.1 MB. `boundary` zebra2 **2.79 ms** vs 66.2 ms PyPy (23.7×); `solve_exhaustive` 198.14 ms ± 1.41 %, and every one of the 11 criterion cases under the 3 % gate. Attribution, `zebra2 -e`: saturate 59.7 %, match/bind 29.0 %, hypgen 7.3 % — but `zebra -e` is match/bind **66.9 %**. Work counters agree with ein.py **exactly** on `plan_compile` / `fact_insert` / `guard_query` / `watch_stamp` / `watch_stamp_rel` and within 1.6 % on `unify_slot` / `candidates` / `walk` |
+| 2026-08-18 | ein.rs P1a.6 / S1a.6.8 | **138.1 ms** | **539.9 ms** | **1.02 s** | design/06 § Win A finally built — the plan memo is per **run**, not per fork: `plan_compile` 17 430 → **305**, `ein_infer::compile` 21.1 % → **2.4 %** cumulative, and half the run's allocations went with it (2 536 702 → 1 344 404). `Kb::n_facts_of` maintains a per-relation count instead of folding over the layer stack: 9.5 % → **1.2 %** self, off `zebra -e`'s top-20 entirely. `boundary` zebra2 2.79 → **2.71 ms**, zebra 7.32 → **7.25 ms**; `saturate_root` 2.76 → **2.70 ms**; `solve_exhaustive` 198.14 → **133.10 ms**; **`fork` 257 → 268.9 ns**, the price of cloning the count map per fork. The two halves move different puzzles — the memo is 18.3 % of `zebra2 -e` and 0.1 % of `zebra -e`, the extent count 13.9 % and 7.3 % — so they were built and measured separately. T3 472/473, D2 only; the verbose event stream byte-identical |
+| 2026-08-19 | ein.rs P1a.6 / S1a.6.9 | **99.1 ms** | **397.2 ms** | — | **all four targets met.** The fork resumes root's saturation instead of re-deriving it (`Saturator::resume`): fork firings 38 136 → **9 834** on `zebra2 -e` and 113 746 → **26 656** on `zebra -e`, fork compiles → **0**, and `solve zebra.ein -e` 539.9 → **397.2 ms** against a ≤ 400 ms target — the milestone's last unmet one. Verified over **3 228 853** enterings of the whole corpus, compared fact by fact and justification by justification: the verdict, `k`, the models, the printed unsat core, the entering count, each entering's `kind`, every alive fork's fixpoint and **all 85 `summary.json` fields — T0 and T1 in full** — are identical. What is not: T2 (−62.5 % / −75.9 % at `verbose`, and −58.8 % / −74.2 % at `normal`), T3's firing lists on the seven entries that render one, and the **primary justification of 267 529 facts**, which pick a different equally valid derivation because a resumed fork inherits root's parked candidates with root's tiebreakers. ein.py is unchanged; [D3](../divergences.md) records the divergence and [Q-M1a.18](../open_questions.md) the decision. `--trace` gained a *Before any assumption* section, without which the solution's proof silently lost every rule that fires only at root. The `Arc`-layered snapshot was **not** built: `perf` puts the deep copy at 0.6 %, and the matcher at **80.5 %** |
+| 2026-08-19 | ein.rs P1a.6 / S1a.6.2 T1a.6.2.7 | **83.0 ms** | **366.1 ms** | 0.58 s | the global allocator, chosen by measuring three: `snmalloc` −15.9 % / −7.5 % end-to-end against glibc `malloc`, at **+1.2 MB** peak RSS where `mimalloc` matched the speed and cost **+7.2 MB** (+42 %) and `tikv-jemallocator` returned two thirds of the win and does not build on MSVC. In process: `solve_exhaustive` 95.36 → **79.89 ms**, `saturate_root` and `boundary/zebra2` **−22 %**, `load` −12.5 %, **`match_hot` −0.6 %** — the control, a bench that allocates nothing on its timed path — and **`fork` +11.7 %**, a fresh arena's slow path. Allocator self time 20.0 → **9.0 %** on `zebra2 -e` and 9.4 → **3.0 %** on `zebra -e`, which is now **86.5 % match/bind**, 83.3 % of it in five functions. Allocation counts, every work counter, T3 472/473 and the acceptance gate all unchanged — `alloc_cost` counts through `System` on purpose, so it measures the program. `--no-default-features` is the escape hatch. Caught in passing: `debug = 1` on the `profiling` profile made `cmake`-rs build the vendored allocator as `RelWithDebInfo`, and the profiling binary ran **+49.6 %** slower than release until two package-scoped overrides fixed it |
+| 2026-08-19 | ein.rs P1a.6 / S1a.6.2 | **75.8 ms** | **349.1 ms** | 0.58 s | the layout stage, and **five of its eight tasks were closed by measurement rather than by code**. What shipped: a 20-byte `Row` holding two arguments inline (−8.5 % / −4.7 %) — the row got *bigger*, because the store is 22 KB and has never left L1, so the cost was a two-load dependency chain and not cache footprint. It only pays with the caller change next to it: `FactStore::row` + `args_of` read the row once, where `rel`-then-`args` loads it twice and `get` resolves arguments **79 %** of `zebra2`'s candidates never read. What did not: bucket-major storage and the index key, because **99.1 %** of `zebra -e`'s candidates come from a full extent scan and 0.9 % from a bucket; `SmallVec` sizing, because the hot path allocates nothing; and the delta-flatten threshold, which was **built and reverted at +7.6 %** — a flat extent index is 8 % *faster* on `match_hot` and 7.6 % slower on the search, because a fork shares its parent's index behind an `Arc` and flattening gives each of 24 live KBs a private copy. In process: `solve_exhaustive` 79.89 → **73.51 ms**, `solve_fast` 20.12 → **18.21 ms**, `match_hot` 38.1 → **35.3 µs**, `boundary/zebra` 6.69 → **6.37 ms**. Every work counter identical; T3 472/473, D2 only |
+| 2026-08-19 | ein.rs P1a.6 / S1a.6.3 | **44.0 ms** | **78.1 ms** | **0.28 s** | the stage that was going to build beta-memories fixed the **alpha**-memory instead and then closed its own gate. `index_fact` keyed only non-nested arguments, so a `(not (R ?b ?i))` premise — `stdlib/slots.ein`'s, and **99.1 %** of an exhaustive `zebra`'s candidates — walked a 368-fact extent; the key now reaches one level *inside* a nested argument. `candidates` 25 160 149 → **1 171 385**, `unify_slot` 51.5 M → **3.5 M**, and **every counter that measures a decision — `walk`, `plan_run`, `binding_key`, `fact_insert`, `guard_query`, `watch_stamp`, `fork`, enterings — identical to the digit**, which is what a narrowing means. T2 **239/240**, T3 **472/473**, D2 the only cell. Then a 2048-bit Bloom filter per layer, because with the lookup now the common case a fork 24 layers deep spent 15.6 % of the run hashing one key per layer: −7.3 %, sized by sweep (512 → −6.0 %, 8192 → −7.2 %). In process: `solve_exhaustive` 73.51 → **40.17 ms**, `boundary/zebra` 6.37 → **1.65 ms (3.9×)**, `match_hot` 35.3 → **24.4 µs**, `solve_fast` 18.21 → **8.41 ms**. **The beta-memory was not built**: the intermediate it materialises is now **2.2 tuples per step entered** (47.4 before), and T1a.6.2.5 measured a per-fork copy of that shape at +7.6 % — F11 D1 re-priced, Q-M1a.10 answered *no*, D2's cyclic body found in `std.slots` with its cost half still unmet. Per-fork delta 3.9 → 6.2 KB |
+| 2026-08-19 | ein.rs P1a.6 / S1a.6.4 | **41.7 ms** | **77.1 ms** | **0.20 s** ⁋ | the stage aimed at hypgen, re-aimed by its own instrument. A pass offers **125** raw candidates, not design/07's 18 k — that is ein.py's *blind* arm, and zebra/zebra2 are hrule-driven — while a `complete()` call spent **71 %** of itself on setup: a fresh `Lookahead` walking `rules × activators`, **219 compile-cache keys per call**. `plan_key` now takes a symbol activator argument as its own key instead of rendering it to a `String` and interning the text back, and `compile_all` stopped cloning every `Rule` and allocating a `Vec` per rule: `complete()` 61.5 → **38.4 µs** on zebra2, and — unaimed — `saturate_root/zebra2` and `boundary/zebra2` **−16 %**, because root saturation runs that same walk per enqueue pass. Then the finding the stage is really about: **no milestone workload runs the blind enumerator at all**, and the corpus's slowest solves are the ones that do. `candidate_objects` was **10.7 %** of `solve examples/features/05_stdlib_domain_elim.ein -e` (4.2 s, 46× `zebra -e`) and is **3.1 %**; `features/05 -e` **−14.9 %**, `features/01 -e` **−15.1 %**, `branching/07 -e` −9.5 %. **Three planned tasks closed against numbers**: intern-on-probe (probe *is* intern here — 0.69 %), the ≤ 64 no-good bitmask (**0.3 %** in the `enable_singleton_writeback=false` regime design/07 §4 said it would dominate — 3 831 enterings, 354 clauses), incremental alive (`open_hypotheses` runs **6 times** a solve). Four new counters — `hypgen_call`, `hypgen_complete`, `lookahead_probe`, `plan_key` — and `examples/hypgen_calls.rs`; every other counter identical to the digit, T3 472/473, T2 239/240, D2 only |
+| 2026-08-19 | ein.rs P1a.6 / S1a.6.5 | **40.8 ms** | **76.9 ms** | **0.20 s** ⁋ | the one-day confirmation of a path already 8× inside its acceptance, and it found a load parsing **3.30× the bytes on disk**: import resolution parsed a module once per *edge*, and `zebra2`'s tree is a diamond (`std.algebra` twice, `std.macro` four times, 8 `parse()` calls over 85 412 bytes for a 25 919-byte puzzle). One cache per resolution — `NodeId`s into the arena that resolution is building, so it cannot outlive it — gives **5 calls, 59 757 bytes**, `load/zebra2` −19.8 %. Then the lexer: `skip_trivia` was **26.3 %** of a `parse/zebra2` profile because a `Cursor` counts characters and the scan decoded UTF-8 one at a time; bytes instead, `memchr` for a comment, and an inlined one-byte fast exit for the calls that have nothing to skip — −21.7 % over three changes, **one of them built vectorised and reverted at +14 %** (the spans are one space). And the interner's index was a SipHash `HashMap` for 157 entries, **7 %** of a parse: `FxHashMap`, −10.5 %. Net: `parse/zebra2_resolve` 745.0 → **509.5 µs**, `load/zebra2` 891.4 → **664.1 µs (−25.5 %)**, `parse/corpus` −15.0 % — **0.23 ms off every invocation**, which is 6–8 % of `saturate zebra2` / `render rules zebra2` and 0.3 % of a search. **Two of the six tasks proposed pre-sizing and both lost** (+1.2…+3.0 % on the AST arenas, −0.7 % on the index maps): at 1 111 nodes and 157 symbols the doubling is cheaper than the estimate. Start-up, the sixth task, is **1.02 ms** for `ein --help` against ein.py's 97.6 ms — and **0.59 ms of it is snmalloc's arena set-up**, §13's "0.5 ms" measured on a workload that does no engine work at all. Six frontend counters, `examples/frontend_cost.rs`, and `e2e_baseline.py --startup`; T3 472/473, T2 239/240, D2 only |
+| 2026-08-20 | ein.rs P1a.6 / S1a.6.12 | **28.9 ms** | **47.5 ms** | **0.127 s** ⁋ | the stage the profile had named since S1a.6.3 — the NAF boundary (37.7 % cumulative) and the per-entering snapshot (10.3 %) — and **two of its four landed tasks went somewhere else entirely**. What went as planned: the watch stamp became **one epoch per guard set** (sizes are a property of the world, so they are taken once per round, not once per parked candidate: 494 566 → **12 864** extent probes), and the fork stopped deep-copying the candidate arena (two layers behind an `Arc`, which T1a.6.12.1a unblocked by moving `judged_at` off the row — `Saturator::resume` 10.3 % → **5.5 %**, and −4.3 % even on `branching/07 -e`, which has no boundary and forks 11 501 times). What did not: design/06 § Win B refinement 3's **index was built twice and reverted twice**, at +1.5 % and +18 %, because the round's cost is not the visits — `zebra -e` runs 3 216 rounds over **947 758 parked slots and visits 248 043**, stopping at the first admission a quarter of the way in, so *not copying the set* is worth 8 % and knowing which quarter to walk costs more than it saves. And T1a.6.12.3, four counter fields meant only to check whether guard sub-plans reach S1a.6.3's index (they do — `scan_extent_guard` is **0**), found that **85.7 %** of `zebra -e`'s candidates are theirs and **71.8 % of guard premises have every slot bound**: a question the interned fact store answers in one lookup where the matcher fetched a 9.96-deep bucket and unified all of it. `candidates` **1 172 870 → 238 567**, instructions 1 019.7 → **533.0 M**, `solve zebra` −22.3 %. Also: the per-round guard memo **removed** (0–1.2 % hit rate, −4.3 % instructions), and Q-M1a.17 **closed** — the semi-naive mechanism is declined at a measured 1.4–2.2 % ceiling, `features/01 -e` being the cell with 100 % monotone guards *and* a 2.9 % boundary. `boundary/zebra` 1.60 → **1.22 ms**, `solve_exhaustive` 38.65 → **26.59 ms**; the join path pays **+0.9 %** for the ground check where it has no ground premise. T3 479/480, T2 243/244, D2 only, and `examples/features/08_disjunct_guard_sets.ein` added — the first fixture in the corpus that parks a candidate another entry has already fired |
+| 2026-08-20 | ein.rs P1a.6 / S1a.6.7 + S1a.6.6 | **29.0 ms** | **47.2 ms** | **0.127 s** ⁋ | the phase's two instruments, and **no engine change between them** — so the row is a confirmation of the four targets and the numbers are what the instruments *said*. The lever matrix now drives **both engines as processes**, delivering each lever through a generated `(config …)` block (five of ten have no CLI flag) and cross-checking the verdict, `k`, the goal bindings and twelve counters on all 72 cells before comparing a millisecond. Two method changes, both forced: **round-robin over the cells** (measured cell-by-cell, PyPy's baseline — the divisor of every ratio — runs first and reads 20 % fast, which came out as a uniform 1.2× tax on eight levers ein.rs measured at exactly 1.0×) and a **`control` cell**, byte-identical to the baseline, which reads **1.2× under PyPy and 1.0× under ein.rs** and thereby retires four of the old table's ten conclusions. What survives: `enable_singleton_writeback` at 101 → **3 831** commitments (ein.py does not finish in 90 s; ein.rs pays 56.6× and does) and `enable_fail_fast_fork`, whose ratio **grew** as the engine got faster — 1.9× → 2.4× (ein.py) → **7.1×** (ein.rs), because what it removes is a fixed quantity of dead-fork saturation. Two levers read differently on a deeper puzzle: `score-sum` **0.6× on `zebra`** against 1.2× on `zebra2`, and `enable_pre_branch_lookahead`, which is **not a prune** — `complete()` asks the hypothesis generator and the generator is lookahead-filtered, so turning it off turns `Ambiguity k=22` into `Contradiction k=0` on `branching/06`, in both engines (F4 Q40). Then the fuzzer: ~700 cases/min, **86 %** loading, and **four parity bugs in twenty minutes** on a surface five phases of byte parity had signed off — an integer goal binding written as a string by ein.rs, a nested-fact one that made ein.py's `json.dumps` **raise and write no summary**, a `KeyError` ein.rs printed without its class, and `(query :goal (?R Rex Animal))`, which ein.py rejects and ein.rs ran. All four fixed with fixtures; plus **D2's second shape** (`Fact` vs `Fact`, needing no mixed types) and two **D3** reaches recorded rather than fixed — the printed unsat core (6 facts vs 4, `EIN_FORK_DELTA=0` reproducing ein.py's exactly) and which binding row the answer table shows. F11's D1 re-priced at **0.45 candidates per step entered** |
+| — | ein.rs P1a.6 (optimised, `--jobs 1`) | — | — | — | target ≤ 0.2 s / ≤ 0.4 s / ≤ 5 s — **all four met**, with **86 %** of headroom on the tightest and the two `-e` cells at **156×** and **176×** PyPy. No block of `zebra -e` is above 8 % of self time any more |
+| 2026-08-23 | ein.rs P1a.7 (`--jobs 8`) | **23.6 ms** | **31.2 ms** | — | the phase, on **8 physical P-cores** (`utils/bench_env.sh --cores P:8` — on a hybrid CPU "8 cores" names three different machines, and a `--jobs` number that does not say which is not a measurement). The two zebras are the *parity* cells and their 1.23× / 1.43× is the point rather than a disappointment: their layer 1 holds 42–53 % of their firings and layer 1 is the one layer that cannot be fanned out. The **measurement set** is `branching/06 -e` **4.40×** (194.2 → 44.1 ms), `sq-bwd/houses -e` **4.39×** (254.7 → 58.0), `branching/07 -e` **4.22×** (280.5 → 66.4) and `features/01 -e` **3.17×** (1 646.5 → 518.7), against a **≥ 6×** target, and the shortfall is measured rather than guessed: the serial terms are 8–17 % and what is left is the fan-out's own ~5× on 8 cores, which the profile puts on **memory rather than contention** — no lock in it, 11 % allocator — so reducing what a fork allocates is P1a.6-shaped. **The same computation, and three instruments say so**: `jobs_invariance` over 20 712 (file, op, jobs) cells at `--jobs {2,4,8,16}` with **0** moved, the verbose event stream byte-identical at both job counts under `-e` *and* `-n 1`, and 10 000 paired `--jobs 8` fuzz runs with zero findings. **Two of design/08's four levels were declined by measurement**: the boundary round is 0.0 % of three of the four measurement-set workloads (they never park a candidate) and the enqueue pass fans out **1.4–3.1 tasks** against a barrier that costs ~10 µs — P1a.6 had already taken both by making them incremental. Peak RSS at `--jobs 16` on the worst entry: **90.3 MB** against 79.8 sequential |
+
+⁋ **Measured differently from the rows above it**, and so is the 0.199 s
+S1a.6.4 measured for its own predecessor: the three fixtures timed from their
+own test binary, unpinned, best of three, at both ends of one A/B (0.199 →
+0.196 s, and 0.135 / 0.131 / **0.127** s at S1a.6.12). The delta is the claim;
+the absolute is the method.
+
+† The `zebra2 -e` / `zebra -e` figures were measured 2026-08-17 on the
+dev machine.
+
+§ **Search only, not end-to-end** — the baseline rows are whole runs, and
+the milestone's own attribution puts 200 ms of parse and 430 ms of load
+inside `solve zebra2 -e`'s 5.69 s. Those have their own rows above, at
+1 003× and 607×, so folding them in here would flatter this one with two
+others' results. End-to-end the port is ~195 ms against PyPy's 4.07 s —
+**21×**, the ≥ 20× target met.
+
+¶ **Not the same acceptance gate as the rows above it.** ein.py's is 21
+tests, 43.7 s under PyPy; this is the three P1a.4 fixtures
+(`test_zebra_two_ontologies` / `test_zebra_three_classes` /
+`test_mode_consistency`) re-expressed as
+`ein.rs/crates/ein-infer/tests/acceptance.rs`. The rest of that gate is
+CLI and trace surface, which is
+[P1a.5](../README.md#p1a5--presentation-and-cli)'s; this row will grow to the
+whole thing there.
+
+◊ **The three fixtures, not the 21-test gate** — see ¶. ein.py's three
+fixtures are 36.0 s under PyPy on the same day, so 28×; the whole
+`acceptance/` gate is 49.3 s, the *third* recorded value of that number after
+~91 s (S1.21.8) and 43.7 s (P1a.0), with nothing in ein.py changed between
+them.
+
+‡ **Re-measured at P1a.0, and it moved.** The milestone README carried
+~91 s from S1.21.8; `./run_tests.sh --acceptance-only` on the dev machine
+is 43.7 s for the 21 acceptance tests. Machine differences account for
+some of it and S1.9.E23's fail-fast fork saturation — which landed after
+that recording and removed ~64 % of dead-fork saturation time — for the
+rest. Recorded rather than reconciled: what the target is measured
+against has to be a number someone took, not one someone remembered.
+
+## Conventions used in these docs
+
+- **Rust snippets are sketches, not committed API.** They exist to pin
+  a *shape* (how many bytes, how many indirections, what is copied on a
+  fork). Names will drift; the byte counts must not.
+- **Every "faster" claim names the ein.py site it replaces**, so the
+  parity harness knows what to watch.
+- **`§Ox`** refers to the operation numbering in
+  [`docs/kernel/inference/architecture_and_algorithms.md`](../../../kernel/inference/architecture_and_algorithms.md)
+  §4–§6 (O1 join, O2 saturation, O3 NAF, O4 equality, O5 clash,
+  O6 provenance, O7 lattice, O8 pruning, O9 canonicalisation). That
+  document is the shared vocabulary between ein.py and ein.rs; these
+  docs extend it rather than restate it.

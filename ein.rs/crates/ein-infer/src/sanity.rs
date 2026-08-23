@@ -1,6 +1,6 @@
 //! S1.5b.27 — the saturation-commutativity sanity check.
 //!
-//! Deferred out of [S1a.4.5](../../../../plans/m1a_rust/p1a.4_search_layer/s1a.4.5_solve_loop.md)
+//! Deferred out of [S1a.4.5](../../../../docs/history/m1a_rust/README.md#s1a45--the-solve-loop-and-verdict-synthesis)
 //! ("moves to P1a.5") and landed here: it is off by default, costs `k+1`
 //! saturations per checked commitment, and has no bearing on a shipping
 //! verdict — but `ein solve -y` turns it on, and a flag whose *effect* is

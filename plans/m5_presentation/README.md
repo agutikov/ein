@@ -215,7 +215,7 @@ known unknowns rather than aspirational.
 ## Cross-links
 
 - M1 — core graph reasoning,
-  [M1a — Rust port](../m1a_rust/README.md),
+  [M1a — Rust port](../../docs/history/m1a_rust/README.md),
   [M2 — NL → IR](../m2_nl_to_ir/README.md) — the results the write-up
   reports on.
 - [docs/lib/](../../docs/lib/) — the structured comparison

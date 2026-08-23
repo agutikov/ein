@@ -1,22 +1,22 @@
 //! **The D3 event cut's negative control** — T1a.10.3.3.
 //!
-//! [S1a.6.10](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
+//! [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
 //! narrowed the event comparison from "the whole stream" to "what each segment
 //! derived", because a fork resumes root's saturation rather than re-deriving
 //! it and the two engines therefore narrated different amounts of the same
 //! derivation
-//! ([D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)).
+//! ([D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)).
 //! **A relaxation that cannot be shown to still catch the thing it was relaxed
 //! around is a hole rather than a decision**, so the cut has always had a
 //! control: `utils/mutant_ein.py`, a wrapper that ran the shipping binary and
 //! then deleted one event from the log it wrote, which the gate had to
 //! report. The script was deleted at
-//! [S1a.10.4](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+//! [S1a.10.4](../../../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
 //! once this file had its three mutations.
 //!
 //! That wrapper needed two processes and a harness to be the second operand.
 //! Both are gone
-//! ([S1a.10.3](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)),
+//! ([S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)),
 //! and the control does not need either: the mutation was always applied to
 //! the *artefact*, so the only thing the processes bought was a way to produce
 //! one. Here the stream is produced in-process and mutated in memory, and the
@@ -34,7 +34,7 @@
 //! rather than asserted.
 //!
 //! This is the ledger's
-//! [§3.7](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#3-the-instruments-that-are-not-tiers)
+//! [§3.7](../../../../docs/history/m1a_rust/oracle_ledger.md#3-the-instruments-that-are-not-tiers)
 //! row, which is why `ein-parity`'s `events` module survives a phase that
 //! retired the harness it was written for.
 

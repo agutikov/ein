@@ -1,10 +1,10 @@
 //! The `slice` provenance cone, against ein.rs's own goldens —
-//! [T1a.6.11.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
+//! [T1a.6.11.3](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
 //!
 //! `dot_parity.rs` compares seventeen DOT views of every corpus entry byte for
 //! byte against ein.py. One of them — `slice` — renders a **derivation**, so
 //! it moved with
-//! [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
+//! [D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
 //! on sixteen entries and is on `ein-parity`'s narration list: still run on
 //! both sides, both still have to answer, no longer byte-compared. This is
 //! what replaces the byte check.

@@ -4,7 +4,7 @@
 //! Five modes per corpus entry. The tree has no line protocol to diff over, so
 //! it is *rendered* as one text — every file, sorted by path, with its bytes —
 //! and until
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 //! that text was diffed against ein.py's. The bytes are now
 //! `corpus_shapes.md5`'s (5 modes × 107 files) plus `golden_dump.rs`'s two
 //! whole trees, which is strictly more than the diff covered: the manifest

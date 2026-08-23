@@ -43,7 +43,7 @@ rather than against its `:why`. Seven modules; `std.algebra` and
 A sweep over the corpus with `--events`, counting `fire` by `rule`. Cheap:
 ein.rs runs the whole corpus in seconds. Report per rule and per module.
 
-Watch for the trap the [S1a.7.0](../../m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md)
+Watch for the trap the [S1a.7.0](../../../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)
 audit hit: **`normal` event level elides redundant firings**, so a rule that
 only ever re-derives an existing fact reads as zero. Run at `verbose` and
 report both counts — the difference is itself interesting, since a rule whose

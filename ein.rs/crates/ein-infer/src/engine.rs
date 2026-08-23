@@ -12,7 +12,7 @@
 //!    rule. Sharing one cache across forks and appending would be a different
 //!    order, which is why the process-wide memo holds the **plans** and each
 //!    engine keeps its own ordered list
-//!    ([design/06](../../../../plans/m1a_rust/design/06_saturation.md) § Win A).
+//!    ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) § Win A).
 //! 2. **`_fired` is the canonical "already applied" record**, guard-free: once
 //!    the conclusion is derived, every other disjunct for those bindings is
 //!    redundant, which is what it already meant.
@@ -109,7 +109,7 @@ impl Engine {
     }
 
     /// How many plans this run has compiled, across every engine sharing the
-    /// memo — the number [S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)
+    /// memo — the number [S1a.6.8](../../../../docs/history/m1a_rust/README.md#s1a68--the-compile-cache-and-the-extent-counts)
     /// reports in place of a prediction.
     pub fn n_memoised(&self) -> usize {
         self.memo.lock().expect("no compiler panicked").len()
@@ -144,7 +144,7 @@ impl Engine {
         // touches `self`, `terms` and `events`, so the two borrows never meet,
         // and one buffer serves every rule. The engine a `Lookahead` throws
         // away after one pass makes this walk ~120 pairs of pure setup, ~40
-        // times per solve ([S1a.6.4](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)).
+        // times per solve ([S1a.6.4](../../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)).
         let mut acts: Vec<Option<FactId>> = Vec::new();
         for rule in kb.program().rules.values() {
             activators_into(kb, terms, rule, &mut acts);

@@ -11,7 +11,7 @@
 //! - **The filter order.** It decides which counter a drop is attributed to,
 //!   and the counters are compared. A reordering that looks like an
 //!   optimisation is a parity failure
-//!   ([S1a.4.1](../../../../plans/m1a_rust/p1a.4_search_layer/s1a.4.1_hypothesis_generation.md)).
+//!   ([S1a.4.1](../../../../docs/history/m1a_rust/README.md#s1a41--hypothesis-generation)).
 //! - **The candidate order.** It becomes `layer_1`'s singleton order and
 //!   therefore the whole traversal.
 //! - **The kernel imposes no type system** (S1.7.23). The enumerator proposes
@@ -27,7 +27,7 @@
 //! is the identity*, so a candidate costs one intern — a hash lookup that
 //! returns the same `FactId` every later call — and the two filters that
 //! reject almost all of them are single bit tests on it
-//! ([design/07](../../../../plans/m1a_rust/design/07_search_layer.md) §2).
+//! ([design/07](../../../../docs/history/m1a_rust/design/07_search_layer.md) §2).
 //!
 //! design/07 calls this "intern-on-demand: probe, and only materialise on
 //! survival". The probe and the intern turned out to be *the same hash
@@ -190,7 +190,7 @@ pub const CLOSED: &str = ein_core::terms::CLOSED;
 /// into the KB and later candidates in the *same call* observe it through the
 /// `negated_fact` filter. A `ControlFlow::Break` stops the walk, which is what
 /// keeps `complete`'s short-circuit (S1.9.E16) — and the feed-forward is why
-/// [design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §7 refuses
+/// [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §7 refuses
 /// to parallelise this pipeline.
 pub fn generate(
     s: &mut Session<'_>,

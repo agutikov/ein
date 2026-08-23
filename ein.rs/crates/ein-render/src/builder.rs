@@ -18,7 +18,7 @@ pub struct Builder {
     /// Ids in first-declaration order, with their current attribute string.
     nodes: Vec<(String, String)>,
     /// Id → its index in `nodes`. Lookups only, so its own order is not
-    /// observable ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §9).
+    /// observable ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §9).
     index: HashMap<String, usize>,
     edges: Vec<String>,
     hcount: u32,

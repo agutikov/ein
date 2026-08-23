@@ -3,7 +3,7 @@
 //! The Rust half of `ein/cli/render.py`. Every body is the same three steps:
 //! load, call one renderer, write it with a trailing newline. The renderers
 //! themselves reached byte parity at
-//! [S1a.5.1](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.1_dot_renderers.md);
+//! [S1a.5.1](../../../../docs/history/m1a_rust/README.md#s1a51--dot-renderers);
 //! what this adds is the surface around them.
 
 use std::path::Path;

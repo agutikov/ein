@@ -8,14 +8,14 @@ file. This page is where they are *stated*.
 
 ## Why this page exists
 
-For five phases of [M1a](../../plans/m1a_rust/README.md) the port had an
+For five phases of [M1a](../history/m1a_rust/README.md) the port had an
 **oracle**: `ein.py` ran beside `ein.rs` over the whole corpus and the two were
 compared byte for byte. That made a whole class of question cheap to answer —
 "what *should* the engine print here?" was "whatever the other one prints" —
 and it let the specification stay silent about things the implementation had
 already decided.
 
-[P1a.10](../../plans/m1a_rust/p1a.10_single_implementation/README.md) removed
+[P1a.10](../history/m1a_rust/README.md#p1a10--one-implementation) removed
 the second engine, and with it that answer. A behaviour defined as *whatever
 ein.py did* became **undefined** the moment ein.py left the tree, and
 undefined behaviour in a specification repo is worse than a quirk: nobody can
@@ -31,12 +31,12 @@ being explicit about:
 - **"Because CPython did" is not a reason any more — but it was a good one.**
   Several of these are strange in isolation and were kept because reproducing
   them exactly is what made the port *measurable*
-  ([design/01](../../plans/m1a_rust/design/01_parity_contract.md)). The
+  ([design/01](../history/m1a_rust/design/01_parity_contract.md)). The
   argument for keeping them now is different and weaker: they are what every
   checked-in fixture, golden and example output in the repo was baselined
   against. Where a better behaviour is known, it is named below.
 - **This is not the divergence ledger.**
-  [`divergences.md`](../../plans/m1a_rust/divergences.md) records where the
+  [`divergences.md`](../history/m1a_rust/divergences.md) records where the
   two engines *differed*; this page records where they agreed and only one
   of them said why.
 
@@ -62,7 +62,7 @@ $ ein solve /tmp/t.ein          # file is: (relation r T
 negative slicing turns that into "everything but the last character" and "the
 last character onward" — which renders as the tail of the file. It is a bad
 message and it is the one every `examples/broken/` fixture is baselined
-against. [Q-M1a.3](../../plans/m1a_rust/open_questions.md#q-m1a3--parse-error-message-parity)
+against. [Q-M1a.3](../history/m1a_rust/open_questions.md#q-m1a3--parse-error-message-parity)
 option (c) — improve it — was deferred past the byte gate and is still open.
 
 ### 1.2 The context window is ±40 characters, applied before the line is trimmed
@@ -137,7 +137,7 @@ that *has* a location, or nowhere that has one at all:
 real `Loc(file=…, line=6, col=20)`), the two `config_*`, the two `import_*`,
 `unimported_std_macro`, and `derivation_cycle`.
 
-*Why.* [Q-M1a.6](../../plans/m1a_rust/open_questions.md#q-m1a6--at-none-in-loader-messages)
+*Why.* [Q-M1a.6](../history/m1a_rust/open_questions.md#q-m1a6--at-none-in-loader-messages)
 — a genuine usability bug, reproduced deliberately so that fixing it would be
 one visible re-baseline rather than noise during the port. It is the clearest
 candidate on this page for being **fixed** rather than documented; what it
@@ -160,7 +160,7 @@ mixed-type arguments in one relation slot, or with an `(hrule … :assert (not
 …))` head, used to crash. `Terms::cmp_semantic` agrees with `sorted()` on
 every pair Python could compare, and the cross-tag order is consulted exactly
 where Python raised —
-[D2](../../plans/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers).
+[D2](../history/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers).
 
 ### 2.2 Where a value is *printed* or sorted for display, it is printed as CPython's `repr()`
 
@@ -226,7 +226,7 @@ cache key stringifies all of them. Two activators differing only in an integer
 argument therefore share an identity, and can suppress each other's firings.
 
 *Why it is here rather than fixed.* This is
-[Q-M1a.8](../../plans/m1a_rust/open_questions.md#q-m1a8--binding_key-drops-non-string-activator-args),
+[Q-M1a.8](../history/m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args),
 and it is almost certainly unintended. It was reproduced because it was
 current behaviour and the byte gate would have flagged any change; it stays
 because nothing in the corpus reaches it and changing it moves firing counts
@@ -258,7 +258,7 @@ code and the stream**, which is what a script can depend on.
 
 *Why a Rust binary names Python classes.* Because these strings were the
 oracle's observable and reproducing them is what
-[Q-M1a.14](../../plans/m1a_rust/open_questions.md#q-m1a14--crash-parity) asked
+[Q-M1a.14](../history/m1a_rust/open_questions.md#q-m1a14--crash-parity) asked
 for; each is pinned by a `crash-parity` corpus entry. **Now that there is no
 Python, they are a name without a referent** — the strongest candidate on this
 page for deliberate change, and the reason nothing has changed yet is that
@@ -280,7 +280,7 @@ which stream each byte goes to.
 headings, ordering within a section, and the wording of a usage diagnosis.
 `clap` cannot be configured into `argparse`'s layout and hand-rolling one was
 priced and declined
-([Q-M1a.13](../../plans/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)).
+([Q-M1a.13](../history/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)).
 The structure — `{subcommand → {option → short, metavar, arity, default,
 choices, group, help}}` — is what the gate checks, which catches a lost option
 on its own line rather than inside an 89-line text blob.
@@ -294,7 +294,7 @@ so is the point of listing it here:
   …)` more than once, the table prints the first row of an *unsorted* match,
   and which row that is depends on the order facts entered the KB. It moves
   under a permuted id space in a single engine, one build — so it is a
-  [design/02](../../plans/m1a_rust/design/02_determinism_and_order.md)
+  [design/02](../history/m1a_rust/design/02_determinism_and_order.md)
   violation in its own right and not a consequence of anything else.
   `summary.json`'s `goal_bindings` carries **all** rows and sorts them, which
   is why no counter and no JSON field can see this. The fix is available and
@@ -304,9 +304,9 @@ so is the point of listing it here:
 
 ## See also
 
-- [`../../plans/m1a_rust/divergences.md`](../../plans/m1a_rust/divergences.md)
+- [`../../docs/history/m1a_rust/divergences.md`](../history/m1a_rust/divergences.md)
   — where the two engines differed, and why each difference was accepted.
-- [`../../plans/m1a_rust/open_questions.md`](../../plans/m1a_rust/open_questions.md)
+- [`../../docs/history/m1a_rust/open_questions.md`](../history/m1a_rust/open_questions.md)
   — Q-M1a.3 / .4 / .5 / .6 / .8 / .13 / .14 / .15, the resolutions this page
   restates.
 - [`inference/reserved_engine_strings.md`](inference/reserved_engine_strings.md)

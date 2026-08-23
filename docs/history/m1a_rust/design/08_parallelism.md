@@ -1,0 +1,587 @@
+# 08 — Parallelism: four levels, all deterministic
+
+**Settles:** where ein.rs uses multiple cores, and how each site keeps
+the sequential engine's observable behaviour.
+**Phase:** [P1a.7](../README.md#p1a7--parallelism) (after parity, after
+the single-threaded optimisation programme).
+
+> **Two of the four levels are built. 2026-08-23.** Level 1 is `--jobs N` and
+> is **3.16–4.30× on 8 P-cores** with every counter and every rendered byte
+> unchanged ([S1a.7.2](../README.md#s1a72--level-1-parallel-enterings)),
+> though §2's speculate-and-validate is *not* how — a layer is fanned out iff
+> it cannot write a fact to root, so there is nothing to validate. Level 4 is
+> free and always was. **Levels 2 and 3 are declined**, each with its premise
+> measured before anything was built, and each section below carries the
+> number that declined it. What they have in common is the finding:
+> **incrementality and parallelism compete for the same work**, and
+> [P1a.6](../README.md#p1a6--performance) got there first.
+
+---
+
+## 1. The contract first
+
+Parallelism is the one part of the port that can break
+[01](01_parity_contract.md) by accident, because "same answer" and "same
+counters" are different promises. So the contract is explicit and
+user-visible:
+
+| mode | flag | guarantees |
+|---|---|---|
+| **sequential** | `--jobs 1` (**default**) | T3 — byte-identical to ein.py. This is what the conformance harness runs. |
+| **deterministic parallel** | `--jobs N` | T3 as well: same verdict, same models, same dead set, **same counters**, same stdout. Only wall-clock differs. |
+| ~~**unordered parallel**~~ | ~~`--jobs N --unordered`~~ | **Declined 2026-08-23** — see below. |
+
+The default being `--jobs 1` is deliberate: a benchmark or a golden run
+must never silently become a different computation.
+
+> **The third mode is not built, and the reason is that there is nothing to
+> buy back.** `--unordered` existed here "because there are workloads where the
+> last 20 % of determinism costs 2 %, and the user should be able to buy it
+> back knowingly". In the fan-out §2 actually shipped it costs **0 %**:
+> `Run::fan_out` is a barrier, so by the time the ordered commit runs every
+> worker in the batch is already finished, and consuming the results in
+> completion order rather than in candidate order changes *which* order serial
+> work happens in and not *when* it happens.
+>
+> The version that would be worth something — overlapping the commit with
+> speculation — needs `&mut Terms` (the provenance arena, `record_node`'s
+> promotion) while a worker holds `&Terms`, which is a **concurrent interner**;
+> [S1a.7.1](../README.md#s1a71--making-the-shared-state-sync) measured that
+> spelling at **4 % slower** and chose lending instead. Its ceiling is the
+> ordered commit's share, **3.6–9.8 %** at `--jobs 8`, and only if the overlap
+> were free.
+>
+> So the contract is **two modes, and both are the same computation**. What
+> `--unordered` would have cost is the whole apparatus that says so:
+> `jobs_invariance`'s 20 712 cells, `summary_properties`' thirteen identities
+> and the fuzzer's `jobs` property are all written against it, and a flag that
+> exempts itself from every one of them for a speedup it cannot collect is a
+> promise nobody should be able to opt into by accident.
+> [S1a.7.5](../README.md#s1a75--the---jobs-contract) T1a.7.5.4.
+
+### The invariant that makes determinism affordable
+
+> **No observable ordering may depend on interner assignment order.**
+
+`Symbol` and `FactId` ids are assigned in first-seen order, and under
+parallelism that order is nondeterministic. Every observable sort must
+therefore be **content-based** — by name rank, by `Value` semantics, by
+`python_repr` — never by raw id. Identity uses (hash keys, set
+membership, `state_key` equality) may use ids freely, because they never
+leak an order. This is the same rule [02](02_determinism_and_order.md)
+§3 and [03](03_data_model.md) §3 already state; parallelism is what makes
+violating it *visible*, and the lint that forbids raw-id sorts at
+observable sites is what keeps it true.
+
+---
+
+## 2. Level 1 — commitment enterings (the big one)
+
+Phase 2 evaluates 101 independent enterings on exhaustive zebra2 and
+3 336+ with `enable_singleton_writeback` off. Each is
+`try_commitment_set(root, C)`: fork, write hypotheses, saturate, detect.
+Root is never mutated by the entering itself (P1.21 R2), so the work is
+embarrassingly parallel.
+
+Except for one thing. The sequential loop **does** write to root
+mid-layer: `_handle_dead` calls `_emit_negated_fact_writeback`, which
+adds `(not h)` to root when a dead commitment's learned clause is a
+singleton. A later entering in the same layer forks a root that now
+contains that negative — and can therefore die *pre*-saturation instead
+of *post*, or die at all.
+
+So a naive parallel layer changes `enterings_dead_pre` /
+`enterings_dead_post` — a T1 failure.
+
+> **Not built — decided 2026-08-22 at
+> [S1a.7.2](../README.md#s1a72--level-1-parallel-enterings) § The
+> decision.** The scheme below is correct and was costed; it is simply not
+> needed, and the measurement that showed that is one more pass over the event
+> stream. A layer is fanned out **iff it cannot write a fact to root** — every
+> layer ≥ 2, and layer 1 when `enable_singleton_writeback` is off — so no
+> fanned-out layer ever has a `W`, and the three cases below reduce to case 1
+> *by construction*. Layer 1 with the writeback on runs sequentially: 248 of
+> 248 writebacks corpus-wide are in it, it holds **0.016 %** of the corpus's
+> 8 158 205 enterings, and serialising it costs **0.24 %** of
+> `branching/07 -e`'s Phase-2 firings and nothing at all on the other three
+> workloads of the measurement set, which never write back
+> ([scaling.md §3a](../measurements/scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)).
+>
+> The route that looked most promising and is *not* available: run layer 1's
+> head sequentially and fan out its tail. `W` grows until candidate 55 of 56 on
+> both zebras and **204 of 204** on `branching/07 -e`, so the exact tail is one
+> candidate.
+>
+> This section stays because the predicate is "can this layer write a fact to
+> root", not "is this layer 1". A future `W` writer at any depth trips
+> S1a.7.2's assertion, and this is then the design that was measured and
+> costed rather than one to invent under pressure.
+
+### Speculate, then validate by continuation
+
+```
+R0 = Arc::clone(root_core)              // snapshot: free (03 §5)
+results = candidates.par_iter().map(|c| try_commitment_set(R0, c)).collect()  // index-ordered
+W = {}                                  // root writes committed so far
+for (i, c) in candidates.enumerate() {
+    r = validate(results[i], c, W)      // see below
+    commit(r)                           // stats, nogood emit, writeback -> W
+    if stop_after reached { break }     // identical early stop
+}
+```
+
+`validate(result_i, c, W)` — three cases, and each is decided without a
+re-run in the common one:
+
+1. **`W = ∅`** (nothing was written back yet this layer). `result_i` was
+   computed against exactly the root the sequential engine would have
+   used. Accept. *This is the whole of every layer above the first* —
+   see § Which layers have a `W` at all.
+2. **`c ∩ {h : (not h) ∈ W} ≠ ∅`.** The sequential engine would have
+   found the pre-saturation contradiction immediately. Emit `dead-pre`
+   with the frontier computed from the clash, no saturation needed —
+   which is precisely what `try_commitment_set`'s pre-check does.
+   [S1a.7.0](../README.md#s1a70--the-speculation-audit) measured
+   this case at **0 occurrences in 1 078 704 enterings**: layer 1's
+   candidates are distinct singletons, so a `(not h_j)` written by an
+   earlier death cannot name a later candidate, and no layer above has a
+   `W`. It stays in the design because a future `W` writer need not have
+   that shape; it is not a case to optimise for.
+3. **Otherwise** — `W` is non-empty but disjoint from `c`. The only way
+   `W` changes the outcome is if fork *i*'s saturation could have
+   *consumed* one of those `(not h)` facts. Rather than re-running, take
+   the fork's saturator (still alive, with its queues) and **continue it
+   with `W` as the delta** — the same semi-naive seeding the closure
+   already uses ([06](06_saturation.md)). If nothing new is derived and
+   no contradiction appears, `result_i` stands and the continuation cost
+   is one delta pass; if something is derived, the continuation *is* the
+   corrected result.
+
+### Which layers have a `W` at all
+
+The search is a cardinality BFS: layer *L* enters commitment **sets of
+size L**. A dead commitment `{h_1 … h_L}` licenses `¬(h_1 ∧ … ∧ h_L)` — a
+clause of width *L*, and a clause is not a fact. It goes into the no-good
+store, where it prunes later candidate *generation*.
+
+At *L = 1*, and only there, that clause is a **unit**: `¬h_1`, which *is*
+a fact, and root gains `(not h_1)`. That is the writeback, and it is why
+both engines guard it on the **commitment's length** rather than on
+anything about the clause — `c.len() == 1` in `solve.rs`'s `handle_dead`,
+`len(c) == 1` in `_helpers.py`'s `_handle_dead`. Neither minimises a
+learned clause below the commitment (`learned_clause = frozenset(c)`), so
+"the learned clause is a singleton" and "the commitment is a singleton"
+are the same condition.
+
+Nothing else adds a **fact** to root inside a layer: `try_commitment_set`
+is pure with respect to root (P1.21 R2) and only forks it; `complete`,
+`record_node` and `check_commutativity` write into the *fork*;
+`order_candidates` and `emit_nogood` take `&Kb`; and `compute_alive` /
+`promote_forced_positives` run **between** layers. So:
+
+> **Layer 1 is the only layer that adds a fact to root mid-layer. Every
+> layer above it is case 1 by construction, and its validator is dead
+> code.**
+
+The one thing that *is* mutated mid-layer at every level is the **no-good
+store**, which forks share by `Arc` rather than copy. It is harmless here
+for a reason worth stating rather than assuming: **no fork reads it while
+saturating.** Its only readers are `generate_layer`, at layer start, and
+`emit_nogood`'s own subsumption check, at commit time on the committing
+thread. A no-good emitted mid-layer therefore cannot change what any fork
+of that layer derives — it changes the *next* layer's candidate list, and
+the ordered commit already serialises that.
+
+Measured rather than argued —
+[S1a.7.0](../README.md#s1a70--the-speculation-audit) counts
+`writeback` events by layer (`{1: 32}` on `zebra2 -e`, `{1: 31}` on
+`zebra -e`, `{1: 162}` on `branching/07 -e`) and finds every case 3 in
+layer 1. This is the inverse of what an earlier draft of case 1 above
+said, and the difference matters twice over: the parallel path needs a
+*debug assertion* that no root write reaches a layer above the first, and
+the workloads with a search big enough to want cores put **98.2–99.9 % of
+their enterings past layer 1**
+([scaling.md §2](../measurements/scaling.md#2-the-layer-profile--where-the-enterings-and-the-firings-are)).
+
+### What case 3 costs — measured before it was built
+
+The rate is **0.1 % corpus-wide and 36–50 % on the zebra family**, and on
+**35** enterings the speculation returns `alive` where the sequential
+engine returns `dead-post`: a mid-layer `(not h)` is a *premise* of
+`std.elim`, whose `domain-elimination` asserts a **positive** once every
+other value is excluded and whose `no-room-left` asserts `(false)` once
+every value is. A fork without the accumulated writebacks fires neither. Case 3's continuation is therefore load-bearing, not
+a formality.
+
+And the identity below is about **fixpoints**, which
+`enable_fail_fast_fork` means a dying fork never reaches. With fail-fast
+off, the speculation's `core` errors collapse exactly onto its `kind`
+errors (35 = 35); with it on, 40 further cores differ purely because the
+two forks stopped at different firings of the same death. So a
+continuation recovers `kind` — a fork inconsistent at firing *n* is
+inconsistent at the fixpoint, and `W` only adds facts — but recovers
+`core` only where the fork ran to quiescence.
+[S1a.7.2](../README.md#s1a72--level-1-parallel-enterings) has to
+settle that interaction before `--jobs N` can claim T1.
+
+Case 3 is exact because the KB is append-only and saturation is a least
+fixpoint: `sat(base ∪ W ∪ c) = sat(sat(base ∪ c) ∪ W)`. The engine
+already relies on that identity — it is the same argument behind
+`is_stalled()` re-enqueueing after external writes, and behind
+fail-fast's "inconsistent at firing *n* ⇒ inconsistent at the fixpoint".
+
+**Cost.** Case 1 is free and covers every layer above the first. Case 2
+is a bitset test. Case 3 costs a delta pass over a handful of facts
+(`|W| ≤ 32` on the zebras, ≤ 161 corpus-wide) and fires only where a
+singleton writeback happened earlier *in the same layer*, which means
+layer 1 and only layer 1. Measured re-validation rate is a
+[P1a.7](../README.md#p1a7--parallelism) acceptance number, and
+[S1a.7.0](../README.md#s1a70--the-speculation-audit) took it
+before the mechanism was built.
+
+**Memory.** N concurrent forks hold N deltas over one shared `Arc<KbCore>`.
+Per-fork delta on zebra2 is tens of facts, so `--jobs 16` costs kilobytes
+— the whole reason [03](03_data_model.md) §5 exists.
+
+**Early stop.** `stop_after` must cut at the same candidate the
+sequential engine would. Committing in candidate order and breaking there
+does that; speculative work past the cut is discarded (a bounded waste,
+capped by the job count).
+
+---
+
+## 2a. Deferred integration — the batch-synchronous layer
+
+§2 speculates and then *repairs*. There is a second shape, and it is the one a
+parallel layer has whether or not anybody designs it: **test a batch of
+candidates against one KB, then integrate what the whole batch learned.**
+S1a.7.0 built it (`SolveOptions::integrate_every`) and measured it, because it
+is cheaper to answer "does the answer survive this?" with a test than with an
+argument.
+
+### The objects
+
+| symbol | what |
+|---|---|
+| `B` | root's fact set when the layer opens; already a fixpoint, `sat(B) = B` |
+| `C = (c_1 … c_m)` | the layer's candidates, in canonical order; `c_i` a set of hypothesis facts |
+| `sat(X)` | the engine's rule fixpoint over `X` — **monotone**, **inflationary** (`X ⊆ sat(X)`), **idempotent** |
+| `dead(X)` | `X` holds a contradiction. **Monotone**: `X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the KB is append-only and nothing retracts |
+| `W_i` | `{ ¬h : c_j = {h} for some j < i that died }` — the writebacks a candidate can see |
+
+Under **immediate** integration candidate *i* is entered against `B ∪ W_i`.
+Under **deferred** integration with barriers at `β`, it is entered against
+`B ∪ W_{β(i)}`, and `W_{β(i)} ⊆ W_i`.
+
+### Four claims
+
+**(1) A writeback prunes; it does not decide.** If `sat(B ∪ {h})` is dead then
+for every `c ⊇ {h}`, `sat(B ∪ c) ⊇ sat(B ∪ {h})` by monotonicity, so `c` dies
+whether or not `¬h` is at root. The writeback makes that death *cheaper* and
+*earlier*, never *possible*.
+
+**(2) …but it also derives.** `¬h` is a fact, and rules read it: `std.elim`'s
+`domain-elimination` matches `(forall ?v_other … (not (?R ?a ?v_other)))` and
+**asserts a positive**; `no-room-left` asserts `(false)`. So
+
+> `sat(B ∪ c) ⊆ sat(B ∪ W ∪ c)`, and the inclusion is **strict** in general.
+
+Which gives the asymmetry the whole section turns on:
+
+> - `dead(sat(B ∪ c))` **⇒** `dead(sat(B ∪ W ∪ c))` — a death under a
+>   *smaller* root is a real death;
+> - `dead(sat(B ∪ W ∪ c))` **⇏** `dead(sat(B ∪ c))` — an **alive** verdict
+>   under a smaller root is *provisional*.
+
+S1a.7.0 measured the second line on the corpus: **35 enterings** come back
+`alive` from `B ∪ c` where `B ∪ W ∪ c` says `dead-post`.
+
+**(3) The commutation identity.** For `W` a set of facts (never a retraction):
+
+> **`sat(B ∪ W ∪ c) = sat( sat(B ∪ c) ∪ W )`**
+
+*⊇*: `B ∪ c ⊆ B ∪ W ∪ c` gives `sat(B ∪ c) ⊆ sat(B ∪ W ∪ c)`, and
+`W ⊆ sat(B ∪ W ∪ c)`; so `sat(B ∪ c) ∪ W ⊆ sat(B ∪ W ∪ c)`, and applying
+`sat` with idempotence gives `sat(sat(B ∪ c) ∪ W) ⊆ sat(B ∪ W ∪ c)`.
+*⊆*: `B ∪ W ∪ c ⊆ sat(B ∪ c) ∪ W` because `B ∪ c ⊆ sat(B ∪ c)`; apply `sat`. ∎
+
+This is what licenses §2's case 3 — feed the quiesced fork `W` as a delta and
+it lands on exactly the fork the sequential engine had. It is the same
+identity behind `is_stalled()`'s re-enqueue after an external write, and the
+mechanism is the one [S1a.6.9](../README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
+already built (`Saturator::resume`).
+
+**It is an identity about *fixpoints*, and `enable_fail_fast_fork` means a
+dying fork never reaches one.** So the continuation recovers `kind` (claim 1)
+and recovers the *fixpoint* (claim 3), but the **unsat core** it computes is
+read off wherever fail-fast stopped, and that is a different firing in the two
+runs. Measured: with fail-fast off, the speculation's `core` errors collapse
+exactly onto its `kind` errors (35 = 35); with it on, 40 further cores differ.
+
+**(4) What deferral does to the answer.** By claim 2, the deferred alive set is
+a **superset** of the sequential one. Three things happen to the extra members,
+and only one of them is not automatic:
+
+- **alive ∧ incomplete** → expanded to the next layer. By then the barrier has
+  run, `compute_alive` has dropped every refuted element and the no-good store
+  filters their supersets, so the branch dies out. **Cost: enterings. Effect on
+  the answer: none.**
+- **dead** → a real death, by the first line of claim 2's asymmetry: what
+  died under the smaller root dies under the bigger one. **Sound as
+  recorded.**
+- **alive ∧ complete** → recorded as a **solution node**, and that is the one
+  provisional verdict that reaches the answer — through `k`, through the
+  printed models, and through `stop_after`'s cut.
+
+So the rule is one line:
+
+> **A death found under deferral needs no re-check. A *solution* does.**
+
+`integrate_every` as it stands does **not** re-check, and the model set is
+therefore *measured* equal rather than equal by construction:
+`ein-infer/tests/search_invariants.rs` compares verdict + model set over **16
+files under 4 candidate orders and 3 integration policies**, plus two
+five-layer searches (5 173 and 11 501 enterings) under a whole-layer barrier,
+plus the composition of a shuffled order with a whole-layer barrier. Making it a theorem costs
+one re-entry per recorded solution node at the barrier — solutions are rare,
+so this is cheap — and it is [S1a.7.2](../README.md#s1a72--level-1-parallel-enterings)'s
+to build.
+
+### What it costs, measured
+
+Whole-layer deferral, exhaustive, against the sequential engine — same answer
+in every cell:
+
+| workload | enterings | root depth at exit | wall |
+|---|---:|---:|---:|
+| `zebra2 -e` sequential | 101 | 35 | 37 ms |
+| `zebra2 -e` batch 20 | 111 | 5 | 40 ms |
+| `zebra2 -e` whole layer | **521** | 3 | 163 ms |
+| `zebra -e` sequential → whole layer | 111 → **617** | 34 → 3 | 62 → 273 ms |
+| `branching/06 -e` (0 writebacks) | 5 173 → **5 173** | 2 → 2 | 263 → 259 ms |
+| `branching/07 -e` (162 writebacks) | 11 501 → **11 501** | **164 → 3** | **1 135 → 406 ms** |
+
+Three readings, and the third was not expected:
+
+1. **The cost of deferring is exactly the prune it defers.** On the zebras the
+   singleton writeback is doing enormous work in layer 1 — 5.2× the enterings
+   without it — and batching at 20 recovers almost all of it.
+2. **On the workloads that want cores it costs nothing.** `branching/06` has no
+   writebacks at all and `branching/07`'s prune nothing: same entering count to
+   the unit.
+3. **On `branching/07` deferral is 2.8× *faster*, single-threaded.** Every root
+   write seals another layer (`Kb::fork` seals the top so the parent's later
+   appends land in a new one) and **every fork inherits the whole stack**: 162
+   mid-layer writebacks put root at **depth 164**, and all 11 501 forks walk
+   it. A barrier coalesces them — depth 164 → 3 — for the same enterings and
+   the same answer. That is a P1a.6-shaped finding that fell out of a P1a.7
+   correctness experiment, and it is pinned by
+   `coalescing_at_the_barrier_collapses_roots_layer_stack` — which since
+   T1a.7.2.0 pins it against the *flatten* rather than the deferral, because
+   that is what took the win.
+
+### Not the parallelism mechanism — and the part of it that is
+
+> **Decided 2026-08-22 at
+> [S1a.7.2](../README.md#s1a72--level-1-parallel-enterings).** Deferral is
+> not how `--jobs N` gets its layers, for a reason orthogonal to everything
+> above: it moves `enterings_total` — 101 → 521 whole-layer, 111 at batch 20 on
+> `zebra2 -e` — and a search counter that differs between `--jobs 1` and
+> `--jobs N` is exactly what the phase's acceptance does not admit. Applying one
+> batch policy at *every* job count would satisfy invariance, but that is a
+> traversal change to the sequential engine and costs 5.2× the enterings at
+> batch = ∞. So claim 4's re-check obligation is not incurred either: under
+> immediate integration no alive verdict is provisional.
+>
+> **Reading 3 survives, and outlives the mechanism.** The 2.8× on
+> `branching/07 -e` comes with an *identical* entering count, so all of it is
+> the depth column and none of it is deferral. Coalescing root's layer stack at
+> the layer barrier — `Kb::flatten()`, integration still immediate — takes the
+> same win with no prune deferred and no counter moved, for every layer above
+> the first. It is S1a.7.2's **first** task rather than a later one, because a
+> stage that lands its parallelism first would be measuring speedup against a
+> baseline it could have fixed.
+>
+> **Shipped 2026-08-22 as T1a.7.2.0, and it is 3.17×** —
+> `SolveOptions::coalesce_root_at`, defaulting to a flatten once root is three
+> layers deep, which over the 49 non-slow corpus files that reach a `solve -e`
+> verdict fires on exactly the four that write back, once each. Above the
+> prediction because the barrier also takes `compute_alive`'s probes and
+> `promote_forced_positives`' re-saturation off the deep stack — work the
+> deferral experiment could not separate from the deferral. Entering counts
+> identical in every setting on all 49; the gate green with no re-bless
+> ([scaling.md §6](../measurements/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+
+### Order
+
+The other half of what a parallel layer needs is that the *order* of the
+candidates does not reach the answer. That is not new — it is what `--shuffle`
+has always claimed (Q-M1a.5) — but the claim was only ever exercised through
+the traversal-parity sweep, which compares two runs of the *same* engine
+against ein.py. `the_answer_does_not_depend_on_the_entering_order` asserts the
+invariant directly: `lex`, `score-sum` and two seeded shuffles, same verdict
+and same model set.
+
+Order-invariance and integration-invariance **compose**, which is the property
+a parallel layer actually uses: it enters a batch in whatever order the workers
+finish and integrates at the barrier.
+
+---
+
+## 3. Level 2 — the enqueue pass — **not built**
+
+> **Declined 2026-08-23** ([S1a.7.4](../README.md#s1a74--level-2-the-parallel-enqueue-pass),
+> [scaling.md §9](../measurements/scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
+> The analysis below is sound and the mechanism would work; what fails is the
+> *premise*. The pass holds **10.6–31.2 %** of a solve, so the share is there —
+> but the fan-out it describes has **1.4 to 3.1 tasks** on the phase's
+> measurement set, and a pass costs 0.26–0.91 µs against a ~10 µs pool barrier.
+> The reason is [06](06_saturation.md)'s own success: semi-naive delta seeding
+> already removed the "91 % of matcher output that was re-discovery", which is
+> exactly the bulk a full pass would have spread over cores. **Incrementality
+> and parallelism compete for the same work.** The predicate that would re-open
+> it is `tasks per pass ≥ jobs` — the two zebras reach 10.9 and 45.7 — not a
+> share threshold.
+
+`_enqueue_pass` is **read-only over the KB**: it runs matchers and pushes
+onto the queue. Two parallel shapes:
+
+- **full pass** (cold start, `is_stalled`) — one task per plan;
+- **delta pass** — one task per `(delta fact, plan)` pair from
+  `pos_index`.
+
+Determinism comes from the merge, not the execution: each task collects
+its matches into its own buffer, buffers are concatenated in the
+canonical order (`cache` order for a full pass; delta-fact order then
+plan order for a delta pass), and **tiebreakers are assigned during the
+merge**. Since `_tiebreaker` is just a monotone counter, assigning it
+after the fact reproduces the sequential sequence exactly.
+
+Worth doing only above a work threshold (root saturation of a large KB);
+a threshold changes nothing observable, so it can be tuned freely.
+
+## 4. Level 3 — the boundary round — **not built**
+
+> **Declined 2026-08-23** ([S1a.7.3](../README.md#s1a73--level-3-the-parallel-boundary-round),
+> [scaling.md §9](../measurements/scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
+> The "72 % of an exhaustive solve" below is ein.py's number and is the part
+> that did not survive: `admit_from_boundary` is **0.0 %** of three of the four
+> workloads in P1a.7's measurement set, which never park a single candidate at
+> all, and **3.2 %** of the fourth, where a round judges a **median of one**.
+> The chunk of `jobs` this section's last paragraph describes would hold one
+> candidate. [S1a.6.12](../README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)'s
+> epoch invalidation is why — a round now re-judges only the candidates whose
+> watched relations moved. The predicate that would re-open it is "a round has
+> `jobs` candidates to judge", not "the boundary is expensive".
+
+`_admit_from_boundary` evaluates parked candidates' guards against a
+quiesced world — read-only, and 72 % of an exhaustive solve's time
+([06](06_saturation.md) §2). Parallel shape: evaluate the guards of all
+*dirty* parked candidates concurrently, then scan the results in
+priority/FIFO order and admit the first whose guards pass.
+
+Identical to sequential because:
+
+- the world does not change during a round (at most one admission, and
+  it ends the round);
+- `first_failing` is per-candidate and per-guard-order, so each result is
+  independent;
+- the *choice* is made by the ordered scan afterwards, not by which task
+  finished first.
+
+The only waste is evaluating candidates after the eventual winner; bound
+it by evaluating in chunks of `jobs` in priority order and stopping at
+the first chunk that contains a pass.
+
+## 5. Level 4 — process level
+
+Independent work with no shared mutable state: the conformance corpus
+runner, the fuzzer, `feature_matrix`, and any embedder that drives
+several engines at once — [M20](../../../../plans/m20_gui/README.md)'s GUI holding
+one session per open puzzle is the concrete one. Level 4 needs nothing
+from the engine beyond `Send + Sync` on the shared `Arc<KbCore>` /
+`Arc<Program>` / `Arc<PlanMemo>`, which levels 1–3 already require.
+
+---
+
+## 6. What must be `Sync`, and how
+
+> **Corrected 2026-08-22 by measurement**
+> ([S1a.7.1](../README.md#s1a71--making-the-shared-state-sync) T1a.7.1.0,
+> [shared_state.md](../measurements/shared_state.md)). Three of the six
+> rows below were *write* strategies, and the write rate had never been taken.
+> Two of the three are wrong, and the table now carries what was measured
+> beside what was assumed. The corrections are struck through rather than
+> deleted, because the reason a design was wrong is worth more than the design.
+
+| shared state | strategy | measured |
+|---|---|---|
+| `KbCore`, `Program` (relations/rules/macros/query/config) | immutable after publication; `Arc`, no lock | ✅ true by construction |
+| `Interner` | ~~sharded `RwLock` (read-mostly; writes are rare after load)~~ | **no lock.** Writes during a *search* are not rare, they are removable: four distinct names arrived after root saturation across the whole corpus, three of them the engine's own (now `ein_core::terms::ENGINE`) and one a rule's argument constant (now interned at load). The integer pool never grew at all. `&Interner` is `Sync`, `text` keeps returning a borrow, and no read site changes. `ein-infer/tests/interning.rs`, 0 of the 90 corpus files that solve |
+| `FactStore` | ~~append-only; a lock-free segmented vec (`boxcar`-style) plus a sharded `RwLock` on the lookup map~~ | **`&FactStore`, and workers do not append.** A search assigns 41 to 417 fact ids against 5.8–26 M borrow-returning reads — and counted *per entering*, which is what a worker runs, **four of six workloads have none at all**, the worst has 7 of 111, and every one is in the head of its layer. `intern` takes `&mut self`, so a worker holding `&FactStore` cannot call it and the type system is the enforcement; an entering that would have appended is re-run on the committing thread. Fact-id assignment therefore stays deterministic under `--jobs N`, which the segmented vec would not have been ([T1a.7.1.2](../README.md#s1a71--making-the-shared-state-sync)) |
+| **`ProvArena`** — *missing from this table until 2026-08-22* | — | **per-worker; nothing shared — and built the same day.** It is the one with a real write rate — 100 % of enterings push a record, `features/01 -e` **2 135 093 of them / 205 MB** — and it is barely read (15 reads against those 2.1 M), so a second arena costs nothing. **Almost none of it survives**: an alive entering's fork is dropped after the `complete()` probe and the dumper hook, a dying one keeps only `FactId`s, and the sole retainer is `record_node`'s snapshot of a solution — so `features/01 -e` ends with **nothing** referencing any of the 2 135 093. What shipped is a **fork region** the search opens per entering and discards when the fork dies, with `Kb::promote_provenance` copying out what a solution keeps; a worker's arena is that region, so nothing is shared and there is no protocol to model. Sequentially it is already worth **684–708 MB → 85–91 MB** of peak RSS on `features/01 -e`, and 1.97 s → 1.68 s. Asserted in both directions: the region's base is monotone, so a stale id panics in *every* build rather than aliasing a live record (`ProvArena::get`), and `ein-infer/tests/provenance.rs` asks the holding-side question of root **and of every recorded solution**, which is where promotion could be incomplete. [T1a.7.1.7](../README.md#s1a71--making-the-shared-state-sync) |
+| `PlanMemo` | append-only, keyed by `(rule, activator)`; `RwLock` with double-checked insert (compiles are rare — see [06](06_saturation.md) § Win A) | ✅ shipped as `Arc<Mutex<PlanMemo>>` at [S1a.6.8](../README.md#s1a68--the-compile-cache-and-the-extent-counts), for an unrelated reason |
+| `_nogoods` on root | written only at commit time, on the committing thread — no sharing needed | — |
+| stats | accumulated at commit time — no atomics, no contention | — |
+
+Note what is *not* on this list: no shared mutable KB, no shared queue,
+no shared `_seen`/`_fired`. Each fork owns its saturator state
+outright. That is what makes the design safe rather than merely fast.
+
+**And one thing that was on it and should not have been.** The event sink was
+`Rc<RefCell<Vec<u8>>>` (`ein-infer/src/events.rs`), which is not `Send` — a
+worker could not hold one. It needed the same treatment as the stats, and got
+it at [T1a.7.2.1](../README.md#s1a72--level-1-parallel-enterings):
+a per-worker buffer replayed in commit order, so the stream a reader sees is
+the sequential one. §3's "no shared queue" hid it, because a sink is not a
+queue.
+
+**What the fix turned on is where the *ordinal* is assigned.** An event's `n`
+is a property of the stream, not of the thread that emitted it, so a worker
+builds its line with a hole where `n` goes and `Events::replay` fills it at the
+commit. Merging raw bytes would have carried the worker's own numbering into
+the file. `Events` is therefore `Send` and deliberately **not** `Sync`: a sink
+two threads could write at once is exactly the shared queue this section
+refuses, and `ein-infer/tests/shareable.rs` asserts both halves.
+
+---
+
+## 7. Rejected designs
+
+| idea | why not |
+|---|---|
+| parallel **depth-first** search with work stealing across layers | the engine's search is a cardinality-BFS by construction; going depth-first changes which no-goods exist when, i.e. the pruning, i.e. the counters |
+| batching boundary admissions across threads | unsound, and for the same reason it is unsound sequentially (`p ← absent q; q ← absent p`) — see [06](06_saturation.md) §1 |
+| parallelising the hypgen filter pipeline | `enable_lookahead_kill_cache` makes filtering feed forward: a killed candidate writes `(not h)` that later candidates in the *same call* observe ([07](07_search_layer.md) §2). Parallelising it changes `HypGenStats` attribution. Could be revisited with the cache disabled, which is a different computation. |
+| SIMD unification | the inner loop is pointer-chasing over candidate buckets, not a dense array scan. Revisit only if a bucket-major layout lands in [P1a.6](../README.md#p1a6--performance). |
+| GPU offload | no. |
+
+---
+
+## 8. Acceptance for this design
+
+- `--jobs {1,2,4,8,16}` on the whole corpus: T3-identical output for
+  every N (with `--timing`/wall-clock normalised).
+- A stress test: 10 000 randomised `--jobs 8` runs of the corpus, diffed
+  against the `--jobs 1` run, with no divergence.
+- Scaling: ≥ 6× on 8 cores for exhaustive zebra2's Phase 2, measured as
+  layer-2 wall-clock (layer 1 is 34 alive + 67 dead — enough to scale).
+- Re-validation rate (case 3 in §2) reported per run under
+  `--stats`-adjacent diagnostics; if it exceeds a few percent, the
+  read-set tracking gets refined before the mode ships.
+- ~~Thread-sanitizer and `loom`-style model checks on the interner /
+  fact-store shards.~~ **The operands are gone** (S1a.7.1, 2026-08-22): the
+  interner has no lock, the fact store has no shards, and the provenance arena
+  is per-worker. TSan still applies to whatever the fan-out itself uses; there
+  is no shared data structure left in §6 for `loom` to model, and a stage that
+  shipped a `loom` test of a `Mutex` nobody holds would be testing its own
+  scaffolding.
+
+## Cross-links
+
+- [03 — Data model](03_data_model.md) §5 — `Arc<KbCore> + Delta`, the
+  precondition for all of this.
+- [06 — Saturation](06_saturation.md) — levels 2 and 3 live here.
+- [07 — Search layer](07_search_layer.md) — level 1 lives here.
+- [12 — Toolchain & layout](12_toolchain_and_layout.md) §2 — the crate
+  boundaries level 4's consumers link against.

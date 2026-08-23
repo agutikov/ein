@@ -3,7 +3,7 @@
 //! The KB has no CLI surface, so `ein-conformance` never saw any of this:
 //! `ein_core::shape` renders the registries, the fact list and the seven
 //! indexes as one deterministic text, and until
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 //! this file diffed that text against `utils/ir_oracle.py`'s `kb-shape` op on
 //! every corpus file. What replaced each half:
 //!

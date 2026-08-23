@@ -1,7 +1,7 @@
 # cargo-deny — licences, advisories, and the dependency budget.
 #
 # The engine's runtime dependency list is deliberately tiny
-# (plans/m1a_rust/design/12_toolchain_and_layout.md §2): every crate has to
+# (docs/history/m1a_rust/design/12_toolchain_and_layout.md §2): every crate has to
 # earn its place, and a new runtime dependency needs a line of justification
 # in the commit that adds it. This file is the mechanical half of that rule —
 # it cannot judge whether a dependency is *warranted*, but it can refuse the

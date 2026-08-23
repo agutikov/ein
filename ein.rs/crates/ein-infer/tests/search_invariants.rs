@@ -1,6 +1,6 @@
 //! What the search's **answer** does not depend on — S1a.7.0 T1a.7.0.4/5.
 //!
-//! [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) wants to
+//! [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) wants to
 //! evaluate a layer's enterings on many cores. Two properties have to hold
 //! before that is even a design, and neither is about threads:
 //!
@@ -18,7 +18,7 @@
 //! purpose: a later integration prunes less, so the engine enters more
 //! commitments to reach the same models. That is the trade the parallel mode
 //! makes, and
-//! [design/08 §2a](../../../../plans/m1a_rust/design/08_parallelism.md)
+//! [design/08 §2a](../../../../docs/history/m1a_rust/design/08_parallelism.md)
 //! is where the argument for it is written.
 //!
 //! These are cheap here and were not cheap in ein.py — an exhaustive `zebra`
@@ -299,7 +299,7 @@ fn what_late_integration_costs_is_the_prune_it_defers() {
 /// barrier takes the run from 899 ms to 278 ms on the dev machine at
 /// `--jobs 1` (wall clock is not asserted here — a test must not depend on a
 /// machine — and the numbers are
-/// [scaling.md §6](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)'s).
+/// [scaling.md §6](../../../../docs/history/m1a_rust/measurements/scaling.md)'s).
 ///
 /// This test was `deferring_collapses_roots_layer_stack` until T1a.7.2.0, and
 /// the re-pointing **is** the finding. The depth collapse was first measured
@@ -478,7 +478,7 @@ fn watch(
 /// is the form that says the claim is not vacuous today — the four files that
 /// write back are here, and layer 1 is asserted to grow on each of them.
 ///
-/// [scaling.md §3a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)
+/// [scaling.md §3a](../../../../docs/history/m1a_rust/measurements/scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)
 /// is the corpus-wide form of the same measurement: **248 of 248** writebacks
 /// in layer 1, over 8 158 205 enterings spanning five layers.
 #[test]
@@ -555,7 +555,7 @@ fn with_the_writeback_off_no_layer_writes_to_root() {
 /// every result is committed in candidate order. A parallel engine that moved
 /// `enterings_dead_pre` would be a different search wearing a performance
 /// change's clothes, which is the whole reason
-/// [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+/// [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
 /// fans out only layers that cannot write to root.
 ///
 /// The corpus-wide form of this — every file × every op, through
@@ -585,7 +585,7 @@ fn jobs_does_not_move_the_answer_or_a_counter() {
         }
     }
     // **The hand-back path is exercised, and that is a finding rather than a
-    // detail.** [shared_state.md §2a](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+    // detail.** [shared_state.md §2a](../../../../docs/history/m1a_rust/measurements/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
     // measured *zero* enterings appending a fact id on four of six workloads —
     // but it measured `try_commitment_set` only, and a fork stays alive through
     // the `complete()` probe, whose blind enumerator numbers the candidates it
@@ -638,7 +638,7 @@ fn a_deep_search_is_counter_identical_under_jobs() {
 /// test in this file leaves alone, because the default config takes the other
 /// one.
 ///
-/// [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+/// [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
 /// T1a.7.2.6 asks for it in the fuzzer as well, and gets it there for free:
 /// `:enable-singleton-writeback` is one of the seven levers the generator
 /// flips, so a share of every session runs in this regime. What that cannot do
@@ -744,7 +744,7 @@ fn an_early_stop_cuts_at_the_same_candidate() {
 /// the wrong trade: `-n 1` is the CLI's default and most searches under it
 /// never reach a solution at all, so the common invocation paid a barrier
 /// every `jobs` enterings to bound a waste it was never going to incur
-/// ([scaling.md §8a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)).
+/// ([scaling.md §8a](../../../../docs/history/m1a_rust/measurements/scaling.md)).
 #[test]
 fn speculative_waste_is_bounded_by_the_work_and_absent_without_a_cut() {
     let waste = |r: &Ran| {
@@ -795,7 +795,7 @@ fn speculative_waste_is_bounded_by_the_work_and_absent_without_a_cut() {
 
 /// The predicate, from the fan-out's side: layer 1 runs sequentially exactly
 /// when it can write to root, and the count is the Amdahl numerator
-/// [scaling.md §3a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)
+/// [scaling.md §3a](../../../../docs/history/m1a_rust/measurements/scaling.md)
 /// quotes.
 #[test]
 fn only_a_layer_that_could_write_to_root_runs_sequentially() {

@@ -4,14 +4,14 @@
 //! This is the third sweep over [`corpus_ops`](corpus_ops), beside
 //! `corpus_shapes` (digest once) and `id_order_invariance` (twice, ids
 //! permuted). It is what
-//! [P1a.7's acceptance](../../../../plans/m1a_rust/p1a.7_parallelism/README.md#the-acceptance-restated)
+//! [P1a.7's acceptance](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 //! names in place of `ein-conformance --tier T3`, which ran two *processes*
 //! per corpus cell and left with the second engine at
-//! [P1a.10](../../../../plans/m1a_rust/p1a.10_single_implementation/README.md).
+//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation).
 //!
 //! ## What it claims, and it is stronger than the contract
 //!
-//! The contract ([design/08](../../../../plans/m1a_rust/design/08_parallelism.md)
+//! The contract ([design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md)
 //! §1) is that `--jobs N` is *the same computation* as `--jobs 1` — same
 //! verdict, same models, same unsat core, same counters — and no wider in
 //! narration than a permuted id space already is, which is
@@ -20,7 +20,7 @@
 //! **Today it is wider than that in neither direction: nothing moves at all.**
 //! A worker builds its narration into its own buffer with a hole where the
 //! event ordinal goes, and `Events::replay` fills it in at the ordered commit
-//! ([S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+//! ([S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
 //! T1a.7.2.2), so the bytes are the bytes. This test therefore asserts **byte
 //! equality** and reports any difference *through the cut*, so that the day
 //! one appears the failure says which half it is:

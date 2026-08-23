@@ -28,7 +28,7 @@
 # which is why it wanted `PYTHONPATH` as well as an engine.
 #
 # The Python engine left the tree at
-# [P1a.10](../plans/m1a_rust/p1a.10_single_implementation/README.md) and the
+# [P1a.10](../docs/history/m1a_rust/README.md#p1a10--one-implementation) and the
 # workaround left with it. Both renderers are **ported and alive** —
 # `ein_render::ir_dot` and `ein_render::kb_dot`, seventeen views between them,
 # rendered over the whole corpus by `ein-render/tests/dot_wellformed.rs` — but

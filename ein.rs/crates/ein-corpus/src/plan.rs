@@ -19,7 +19,7 @@
 //! `--events {out}/events.jsonl --events-level verbose` to every `solve` and
 //! `saturate` cell, because the event log was the tier's operand. The tiers
 //! were retired with the second engine at
-//! [S1a.10.3](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)
+//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)
 //! and the substitution went with them — `--events` is not unowned, it is
 //! `ein-cli/tests/cli_semantics.rs`'s through the CLI and
 //! `ein-infer/tests/golden_events.rs`'s as three whole verbose streams, and

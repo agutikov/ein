@@ -839,7 +839,7 @@ fn permuted(after: &Terms) -> Terms {
 /// This is what replaces `load_parity.rs`'s oracle sweep once ein.py is gone.
 /// The oracle answered "is the shape right"; nothing in a single-implementation
 /// repo can answer that, and pretending otherwise is the trap
-/// [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+/// [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 /// names. What survives is the half that is still falsifiable and is the half
 /// that actually catches bugs: **nothing in that text may depend on which
 /// integer a name happened to be assigned.** `Symbol` has no `Ord` and every

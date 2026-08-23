@@ -29,7 +29,7 @@ C2.
 | `solve --exhaustive` | Solution, k=1, exhausted — **46.9 ms** | Solution, k=1, exhausted — **31.1 ms** |
 
 *(End-to-end, release build, one pinned P-core —
-[scaling.md §1](../plans/m1a_rust/p1a.7_parallelism/scaling.md). These were
+[scaling.md §1](../docs/history/m1a_rust/measurements/scaling.md). These were
 ~21 s and ~9 s under PyPy before the port.)*
 
 `zebra2.ein` remains the **primary M1 acceptance target** (it also carries the

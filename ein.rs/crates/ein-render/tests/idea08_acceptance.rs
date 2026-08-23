@@ -1,5 +1,5 @@
 //! idea-08 trace fidelity, on the engine that ships —
-//! [T1a.6.11.2](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
+//! [T1a.6.11.2](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
 //!
 //! Every named move in the human zebra walkthrough must correspond to a named
 //! rule firing in the engine, and the proof a user is handed must *exhibit*
@@ -8,13 +8,13 @@
 //! how nearly the port lost it.
 //!
 //! **The near-miss.** `--trace` renders one node's firings, and until
-//! [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+//! [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
 //! every fork re-derived root's whole closure into them — so the trace was
 //! getting root's proof *by accident*. Take the re-derivation away and the
 //! solution node's trace covered 12 distinct rules instead of 24, with
 //! `symmetric` — which closes `next-to` at root and nowhere else — missing
 //! entirely. The Python test is what caught it. Since
-//! [S1a.6.10](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
+//! [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
 //! no cross-engine diff compares a rendered trace at all, so without this file
 //! the same regression would be silent on the shipping engine.
 //!

@@ -7,7 +7,7 @@
 //! `trace_to_ir(parse_trace_steps(trace_to_ir(steps)))` reproduced its input.
 //! That property needs no oracle — it is a claim about one engine's two
 //! directions agreeing — and
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 //! keeps it while the byte comparison goes to `corpus_shapes.md5` (107 files ×
 //! `trace[trace]` / `trace[answer]` / `trace[no-proof]`) and to
 //! `golden_trace.rs`'s five whole documents.

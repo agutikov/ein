@@ -2,11 +2,11 @@
 //!
 //! Everything that formats lives here, so the T3 surface is one crate and can
 //! be diffed as a unit
-//! ([design/12](../../../plans/m1a_rust/design/12_toolchain_and_layout.md) §1).
+//! ([design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §1).
 //! The bulk lands at
-//! [P1a.5](../../../plans/m1a_rust/p1a.5_presentation/README.md); the
+//! [P1a.5](../../../../docs/history/m1a_rust/README.md#p1a5--presentation-and-cli); the
 //! derivation DAG comes early, with the provenance it renders
-//! ([S1a.2.4](../../../plans/m1a_rust/p1a.2_kb_core/s1a.2.4_provenance.md)),
+//! ([S1a.2.4](../../../../docs/history/m1a_rust/README.md#s1a24--provenance-and-derivation-walks)),
 //! because a walk whose output nobody can read is a walk nobody can check.
 
 #![forbid(unsafe_code)]

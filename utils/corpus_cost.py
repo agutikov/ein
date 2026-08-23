@@ -2,7 +2,7 @@
 """What every corpus cell costs, on the engine that ships — S1a.9.0's instrument.
 
 `corpus/corpus.toml` marks entries `slow = true`, and until
-[S1a.9.0](../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md) that flag had
+[S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) that flag had
 no threshold and no measurement behind it: it was set from a CPython probe in
 2026-08-17 and never re-taken. This is what re-takes it, and what a reader runs
 when they doubt a flag.

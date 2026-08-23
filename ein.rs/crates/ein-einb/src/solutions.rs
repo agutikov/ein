@@ -1,13 +1,13 @@
 //! `SOLUTIONS` — what a search found, as a delta against the KB in the same
 //! file (T1a.8.1.6, [design/10
-//! §5](../../../../plans/m1a_rust/design/10_binary_format.md#5-the-solution-store)).
+//! §5](../../../../docs/history/m1a_rust/design/10_binary_format.md#5-the-solution-store)).
 //!
 //! A model is a `Kb`, and a `Kb` is a stack of layers over a base. Storing one
 //! whole would store the base again per solution; storing the **delta** — the
 //! facts the branch added — stores what makes it a different model, and
 //! reconstituting it is `base.fork()` plus that delta, which is the structure
 //! the engine already runs on ([design/03
-//! §5](../../../../plans/m1a_rust/design/03_data_model.md)).
+//! §5](../../../../docs/history/m1a_rust/design/03_data_model.md)).
 //!
 //! ## The measurement hazard, and what is done about it
 //!

@@ -181,7 +181,7 @@ pub fn goal_bindings(
 /// report it — ein.py raises out of the same call and ein.rs has no exceptions
 /// — so the CLI asks this before it renders, and prints the line CPython's
 /// traceback would end with. Found by
-/// [S1a.6.6](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
+/// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-differential-fuzzer)'s
 /// fuzzer on a two-line program; `examples/ein-bugs/query-goal-free-head.ein`
 /// is the fixture.
 pub fn goal_plan_error(

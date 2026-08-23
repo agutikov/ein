@@ -389,7 +389,7 @@ fn sorted_model(terms: &Terms, kb: &Kb) -> Vec<String> {
 
 /// `--jobs N`, or `--jobs auto` — which the parser gives us as `0`.
 ///
-/// **The default is 1 and stays 1** ([S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// **The default is 1 and stays 1** ([S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.1): a benchmark, a golden run and the corpus sweep must never
 /// silently become a different computation, even one that is provably the
 /// same. `auto` is what a user opts into, and it is the *machine's* number:

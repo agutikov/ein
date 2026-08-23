@@ -1,5 +1,5 @@
-# ein.rs — the Rust port of the ein engine (M1a), and since
-# plans/m1a_rust/p1a.10_single_implementation/ the only implementation.
+# ein.rs — the Rust port of the ein engine (M1a), and since P1a.10 the only
+# implementation (docs/history/m1a_rust/README.md#p1a10--one-implementation).
 #
 # Six engine crates and two dev-only ones. Five of the six were in place and
 # empty at P1a.0 and filled in over P1a.1–P1a.5, so that a stage added code
@@ -27,7 +27,7 @@
 # on 2026-08-18 — the engine ships as a library plus this CLI.)
 #
 # Layout and the dependency policy:
-# plans/m1a_rust/design/12_toolchain_and_layout.md.
+# docs/history/m1a_rust/design/12_toolchain_and_layout.md.
 
 [workspace]
 resolver = "3"
@@ -80,7 +80,7 @@ blake3      = { version = "1", default-features = false, features = ["std"] }
 # batches so that the results in flight cannot grow with the layer, and
 # spawning `jobs` threads per batch cost more than the parallelism returned —
 # 96 000 spawns and a 3x *slowdown* at `--jobs 2` on `features/01 -e`,
-# measured (plans/m1a_rust/p1a.7_parallelism/scaling.md §8).
+# measured (docs/history/m1a_rust/measurements/scaling.md §8).
 rayon       = "1"
 criterion   = { version = "0.7", default-features = false, features = ["cargo_bench_support"] }
 # The global allocator, default-on for the binary and the bench (T1a.6.2.7).
@@ -93,7 +93,7 @@ criterion   = { version = "0.7", default-features = false, features = ["cargo_be
 # `cfg(not(target_env = "msvc"))` by its own README). `--no-default-features`
 # on `ein-cli` puts the system allocator back for a distro build that would
 # rather not have a vendored C++ one.
-# plans/m1a_rust/p1a.6_performance/baseline.md § 13.
+# docs/history/m1a_rust/measurements/baseline.md § 13.
 snmalloc-rs = "0.7"
 # The CLI's argument parser. Q-M1a.13 (resolved 2026-08-18) put `--help`
 # layout and usage-error text on the normalisation list, so this does not have

@@ -5,7 +5,7 @@
 //! `parse(dump(parse(x))) == parse(x)` holds. ein.rs reproduces that by
 //! keeping positions in a **side table**: [`Node`] carries no `Loc`, so
 //! structural equality ([`Ast::eq_nodes`]) cannot see one
-//! ([design/04](../../../../plans/m1a_rust/design/04_ir_frontend.md) §3).
+//! ([design/04](../../../../docs/history/m1a_rust/design/04_ir_frontend.md) §3).
 //!
 //! Everything is `u32`-indexed into three parallel arenas — nodes, their
 //! locations, and a flat argument list. No `Rc`, no recursive `Drop`, and a
@@ -90,7 +90,7 @@ pub enum Node {
     /// An integer, stored as its *canonical decimal text* — `007` and `7`
     /// intern to the same symbol, exactly as `Int(value=int(tok))` collapses
     /// them, and the width is unbounded as Python's is
-    /// ([design/03](../../../../plans/m1a_rust/design/03_data_model.md) §3).
+    /// ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3).
     Int(SymId),
     /// `low..high`, or `low..*` when `high` is `None`. Both bounds are
     /// canonical decimal text, for the same reason as [`Node::Int`].
@@ -105,7 +105,7 @@ pub enum Node {
 
 /// String interner. Never iterated — only `intern` and index lookups — so the
 /// hash map's order cannot reach an observable
-/// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §9),
+/// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §9),
 /// and it may therefore be hashed by whatever is fastest. SipHash was **7 %**
 /// of a `parse/zebra2` profile for a table of 157 entries (T1a.6.5.2).
 #[derive(Default, Debug)]

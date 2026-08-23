@@ -6,7 +6,7 @@
 //! `init_by_array` seeding, `getrandbits`, `_randbelow_with_getrandbits` and
 //! `shuffle`'s exact Fisher–Yates direction.
 //!
-//! This is [Q-M1a.5](../../../../plans/m1a_rust/open_questions.md) resolved as
+//! This is [Q-M1a.5](../../../../docs/history/m1a_rust/open_questions.md) resolved as
 //! its option (a). The alternative was to declare shuffled runs T0-only, and
 //! the argument against it is what `--shuffle` is *for*: it exists to probe
 //! whether the verdict depends on traversal order, so a silent ordering

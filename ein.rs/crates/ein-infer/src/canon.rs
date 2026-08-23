@@ -13,11 +13,11 @@
 //! ein.py sorts with `key=repr`, because a `FactId` tuple whose args mix `str`
 //! and `int` is not orderable and `repr` is a total order over anything. For
 //! **identity** any total order is equivalent
-//! ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §6),
+//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §6),
 //! so this sorts by `FactId` — a `u32` sort and a `memcmp` equality instead of
 //! building a string per fact. The `repr` order is still needed where the key
 //! is *displayed* (`--dump-states` sorts nodes by it), and that is
-//! [P1a.5](../../../../plans/m1a_rust/p1a.5_presentation/README.md)'s.
+//! [P1a.5](../../../../docs/history/m1a_rust/README.md#p1a5--presentation-and-cli)'s.
 
 use ein_core::{FactId, Kb};
 
@@ -50,7 +50,7 @@ pub fn state_key(kb: &Kb) -> Box<[FactId]> {
 /// Never use a digest as identity: distinct states may share one. ein.py's is
 /// CPython's `hash(tuple)`, which is not stable across runs, so the two
 /// implementations do not agree on the number and are not asked to
-/// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §8).
+/// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §8).
 pub fn state_digest(key: &[FactId]) -> u64 {
     use std::hash::{Hash, Hasher};
     let mut h = rustc_hash::FxHasher::default();

@@ -3,10 +3,10 @@
 //! `ein-conformance run --impl-a … --impl-b … --tier T3` took every entry of
 //! `corpus/corpus.toml`, ran it under every declared run as a *process* on
 //! both implementations, and diffed everything the two processes produced.
-//! [S1a.10.3](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)
+//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)
 //! retires the second operand. What replaces the harness is not a diff, it is
 //! a **sweep**: the same cells, one engine, run to see that they run — 641 of
-//! them since [S1a.9.0](../../../../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md)
+//! them since [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
 //! re-priced the tail and sixteen runs turned out to be asking their fixtures
 //! nothing.
 //!
@@ -96,7 +96,7 @@ impl Cell {
 
 /// `EIN_CORPUS_SLOW=1` — the entries whose declared runs cost
 /// `ein_corpus::manifest::SLOW_MS` or more together. **Three** of them since
-/// [S1a.9.0](../../../../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md);
+/// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced);
 /// there were seventeen, flagged under CPython at T1a.0.1.1 against a budget
 /// two engines out of date, and one of them was `zebra2.ein` at 16 ms. Those
 /// three add 16 s to a default selection that costs 3.5, so they are still
@@ -343,7 +343,7 @@ fn no_cell_crashes() {
 /// sweep and more than that on some cells. And the drift it exists to catch
 /// was **165×**: the flag was set under CPython in 2026-08-17 and was still
 /// there, unexamined, two engines later
-/// ([S1a.9.0](../../../../plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md)).
+/// ([S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)).
 /// Nothing that big hides inside 4×.
 const COST_FACTOR: u32 = 4;
 
@@ -416,7 +416,7 @@ fn the_slow_flag_still_describes_the_sweep() {
 ///
 /// The harness asked "did either implementation ever exit 0?", because two
 /// engines that both fail to start agree on every cell
-/// ([found at S1a.1.3](../../../../plans/m1a_rust/p1a.1_ir_frontend/s1a.1.3_macros_and_imports.md):
+/// ([found at S1a.1.3](../../../../docs/history/m1a_rust/README.md#s1a13--macro-expansion-and-import-resolution):
 /// 438 cells, 0 DIFF, both sides `ModuleNotFoundError`). With one engine that
 /// question is sharper and per-entry rather than per-run: every `positive` and
 /// `stdlib` entry must answer under at least one of its runs. Not *all* of

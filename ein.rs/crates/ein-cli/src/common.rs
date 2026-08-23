@@ -13,7 +13,7 @@ use ein_ir::{Ast, NodeId};
 ///
 /// ein.py calls it unguarded, so a missing file is not an argument error but a
 /// `FileNotFoundError` traceback and exit 1: the `crash-parity` group of
-/// [Q-M1a.14](../../../../plans/m1a_rust/open_questions.md#q-m1a14--crash-parity).
+/// [Q-M1a.14](../../../../docs/history/m1a_rust/open_questions.md#q-m1a14--crash-parity).
 /// The harness compares the exception class off the last stderr line
 /// (`tier::exception_class`), so the class is named, with CPython's `OSError`
 /// text for the errnos a CLI actually meets.
@@ -178,7 +178,7 @@ pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
 /// prints a traceback whose last line is
 /// `ein.inference.compile.CompileError: <message>`. The `crash-parity` group
 /// compares the exit code plus the class off that line
-/// ([Q-M1a.14](../../../../plans/m1a_rust/open_questions.md#q-m1a14--crash-parity)),
+/// ([Q-M1a.14](../../../../docs/history/m1a_rust/open_questions.md#q-m1a14--crash-parity)),
 /// and P1a.3 already brought the message body to parity — so naming the class
 /// is what makes the whole line match.
 pub fn compile_error_line(msg: impl std::fmt::Display) -> String {
@@ -192,9 +192,9 @@ pub fn compile_error_line(msg: impl std::fmt::Display) -> String {
 /// an unbound `:assert` variable ends a traceback as
 /// `KeyError: "unbound var ?v1 in :assert — bindings: {…}"`, quotes and all.
 /// ein.rs printed the message alone until 2026-08-20, when
-/// [S1a.6.6](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
+/// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-differential-fuzzer)'s
 /// fuzzer produced the first input that reaches it —
-/// [Q-M1a.14](../../../../plans/m1a_rust/open_questions.md#q-m1a14--crash-parity)
+/// [Q-M1a.14](../../../../docs/history/m1a_rust/open_questions.md#q-m1a14--crash-parity)
 /// named this exact case ("a `KeyError` from an unbound `:assert` var is
 /// caught nowhere") and no corpus file had ever hit it.
 /// `examples/ein-bugs/unbound-assert-var.ein` is the fixture.

@@ -11,11 +11,11 @@
 //! 1. *What does a solve allocate?* The profile puts ~21 % of an exhaustive
 //!    `zebra2`'s self time in `malloc` / `free` / unsymbolised libc, so the
 //!    count and the churn are what
-//!    [S1a.6.2](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.2_memory_layout.md)
+//!    [S1a.6.2](../../../../docs/history/m1a_rust/README.md#s1a62--memory-layout)
 //!    starts from.
 //! 2. *What does it hold?* Peak live bytes and peak RSS — the second including
 //!    the allocator's own fragmentation, which the first cannot see.
-//! 3. *What does one fork cost?* [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+//! 3. *What does one fork cost?* [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 //!    sizes `--jobs` by how many searches fit in RAM at once, and that is the
 //!    *distribution* of fork deltas, not their mean: a mean hides the one
 //!    entering whose saturation derives four times what the others do.

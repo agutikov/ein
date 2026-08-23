@@ -1,7 +1,7 @@
 //! S1a.7.0 — the speculation audit: **does an entering's outcome depend on
 //! the root writes that preceded it inside its own layer?**
 //!
-//! [design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2 fans a
+//! [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §2 fans a
 //! layer out from `R0 = Arc::clone(root_core)` — root as it stood when the
 //! layer began — and then commits the results in candidate order, validating
 //! each against the write set `W` that the commits before it produced. Three
@@ -9,7 +9,7 @@
 //! *could* have consumed a `(not h)` that landed mid-layer has to have its
 //! saturation continued with `W` as the delta before its result may stand.
 //!
-//! The rate at which case 3 fires is [Q-M1a.7](../../../../plans/m1a_rust/open_questions.md)'s
+//! The rate at which case 3 fires is [Q-M1a.7](../../../../docs/history/m1a_rust/open_questions.md)'s
 //! open half, and the phase's acceptance asks for "≤ a few percent". That
 //! number is measurable **without a single thread**: run the sequential engine,
 //! and beside every entering run the same entering against `R0`. Where the two
@@ -25,7 +25,7 @@
 //! `W` here is **every fact root gained since the layer began**, computed as a
 //! set difference rather than recorded at the one site that was expected to
 //! produce it. The singleton `(not h)` writeback is the write
-//! [design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2 names;
+//! [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §2 names;
 //! an instrument that only counted *that* one could not report a write nobody
 //! predicted, which is the failure mode a speculation scheme cannot afford.
 //!

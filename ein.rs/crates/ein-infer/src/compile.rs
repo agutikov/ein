@@ -6,7 +6,7 @@
 //! names into the program. This is
 //! ein.py's `ein/inference/compile.py`
 //! with the slots lowered to [`Slot`]s and the variables numbered
-//! ([design/05](../../../../plans/m1a_rust/design/05_matcher.md) §2); the
+//! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2); the
 //! semantics are ported, not revisited.
 //!
 //! The compiler is small and its **edge cases are semantics**. S1.22.0 turned
@@ -142,7 +142,7 @@ pub fn plan_key(terms: &mut Terms, rule: &Rule, activator: Option<FactId>) -> Pl
 }
 
 /// The **process-wide** `(rule, activator) → PlanId` memo
-/// ([design/06](../../../../plans/m1a_rust/design/06_saturation.md) § Win A).
+/// ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) § Win A).
 ///
 /// A plan is a pure function of its key, so compiling it twice is waste: an
 /// exhaustive `zebra2` makes 253 440 `compile_for` calls of which all but 19
@@ -152,13 +152,13 @@ pub fn plan_key(terms: &mut Terms, rule: &Rule, activator: Option<FactId>) -> Pl
 /// `_enqueue_pass`'s full pass walks — so each engine keeps its own ordered
 /// `Vec<PlanId>` (S1a.3.3) and this holds only the plans.
 ///
-/// Append-only, which is what will let [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+/// Append-only, which is what will let [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 /// put it behind a shared lock without any invalidation story.
 #[derive(Default, Debug)]
 pub struct PlanMemo {
     /// `Arc` because a plan outlives the borrow of the memo that produced it:
     /// the saturator holds one while it mutates the engine around it, and
-    /// [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md) will
+    /// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) will
     /// share the same plans across threads without copying them.
     plans: Vec<Arc<Plan>>,
     by_key: FxHashMap<PlanKey, PlanId>,
@@ -208,7 +208,7 @@ impl PlanMemo {
     /// to probe its own cache first, and `plan_key` renders and re-interns
     /// every activator argument — so recomputing it here would allocate a
     /// `Vec<String>` per compile for an answer already in hand
-    /// ([baseline.md §7](../../../../plans/m1a_rust/p1a.6_performance/baseline.md)
+    /// ([baseline.md §7](../../../../docs/history/m1a_rust/measurements/baseline.md)
     /// item 4 names `plan_key` among the top allocators).
     pub fn intern_keyed(
         &mut self,

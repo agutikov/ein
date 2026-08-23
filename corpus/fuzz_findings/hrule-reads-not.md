@@ -2,7 +2,7 @@
 
 - found: 2026-08-21, `utils/fuzz_ein.py --seed 11 --iters 100`, mode `mixed`,
   the session that re-opened the fuzzer after
-  [S1a.10.4](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+  [S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
   T1a.10.4.2 rewrote it around single-engine properties
 - property: **no-crash** — a generated program exits 0, 1 or 2, never a panic
 - minimised: 19 → 1 form (a second and a third minimum with different
@@ -52,7 +52,7 @@ ordinary ein-lang — `examples/features/01_not_and_absent.ein` is a fixture for
 them — so this is a **legal program the engine asserts against in a debug
 build and answers in a release build**, and nobody has said which answer is
 right. That is a semantics question, not a `utils/` clean-up, and it is
-exactly the shape [accepted loss L1](../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss)
+exactly the shape [accepted loss L1](../../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss)
 names: a wrong answer on a program shape nobody wrote a fixture for. The
 difference is that this one has a fixture now.
 

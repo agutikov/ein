@@ -1,5 +1,5 @@
 //! Where `std.*` comes from — the Rust half of the shared stdlib
-//! (M1a S1a.0.3, [design/11](../../../../plans/m1a_rust/design/11_shared_assets.md)).
+//! (M1a S1a.0.3, [design/11](../../../../docs/history/m1a_rust/design/11_shared_assets.md)).
 //!
 //! The stdlib is checked in **once**, at repo-root `stdlib/`, and both
 //! implementations read those bytes. It is not test data: 1 231 lines of
@@ -83,7 +83,7 @@ impl Source {
 
     /// Every module name in this source, sorted. Sorted because the caller
     /// may report them and iteration order must not reach an observable
-    /// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md)).
+    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md)).
     pub fn modules(&self) -> Vec<String> {
         let mut out: Vec<String> = match self {
             Source::Override(root) | Source::Checkout(root) => std::fs::read_dir(root)

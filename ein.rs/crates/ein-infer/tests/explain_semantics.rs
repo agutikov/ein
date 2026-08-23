@@ -17,7 +17,7 @@
 //! serve — [`Kb::justifications`], the fact's OR-node, and what the search
 //! makes of it.
 //!
-//! **A fork means two different things.** [D3](../../../../plans/m1a_rust/divergences.md)
+//! **A fork means two different things.** [D3](../../../../docs/history/m1a_rust/divergences.md)
 //! is about `try_commitment_set` forking a *saturated* root, where ein.rs
 //! **resumes** the parent's saturation instead of re-deriving its closure — so
 //! "the fork derived everything root did" is deliberately false there, and the
@@ -925,7 +925,7 @@ fn priority_bands_order_the_firing_sequence() {
 /// activators are exactly that shape.
 ///
 /// The fork here is of an **unsaturated** KB with a fresh saturator, so
-/// [D3](../../../../plans/m1a_rust/divergences.md) — a fork *resuming* a
+/// [D3](../../../../docs/history/m1a_rust/divergences.md) — a fork *resuming* a
 /// saturated root's snapshot, where the re-derivation is deliberately skipped —
 /// does not apply, and the firing counts are required to match exactly.
 #[test]

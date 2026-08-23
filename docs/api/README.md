@@ -23,7 +23,7 @@ a surface that exists; five are history.
 
 `import ein` does not work in this repository and nothing is scheduled to make
 it work. The package was deleted at M1a
-[S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+[S1a.10.5](../history/m1a_rust/README.md#s1a105--the-removal)
 (2026-08-21); the PyO3 module that was to succeed it was **deferred the same
 day** for want of a consumer —
 [M20](../../plans/m20_gui/README.md) links the crates,
@@ -31,7 +31,7 @@ day** for want of a consumer —
 shell out to be a fair measurement, and
 [M2](../../plans/m2_nl_to_ir/README.md)'s premise turned out to be an HTTP
 server rather than a C library.
-[Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+[Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
 holds the three trip-wires that would revive it.
 
 To drive ein from Python **today**, run the binary and read its output:

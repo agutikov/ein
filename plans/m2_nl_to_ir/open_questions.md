@@ -97,7 +97,7 @@ focus the LLM. Decided in P2.3.
 
 ## Q25 — What language is the frontend written in?
 
-**Raised 2026-08-23 by M1a [S1a.9.4](../m1a_rust/p1a.9_release/s1a.9.4_documentation.md)
+**Raised 2026-08-23 by M1a [S1a.9.4](../../docs/history/m1a_rust/README.md#s1a94--documentation)
 T1a.9.4.6**, which found this milestone's plan asserting a boundary that had
 been deferred out from under it.
 
@@ -106,10 +106,10 @@ so "the frontend is Python, calling the engine in-process" needed no argument.
 Both halves of that are now open:
 
 - `ein.py/` was deleted at M1a
-  [S1a.10.5](../m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md).
+  [S1a.10.5](../../docs/history/m1a_rust/README.md#s1a105--the-removal).
 - **PyO3 is not the boundary**: the binding was deferred 2026-08-21 for want
   of a consumer
-  ([Q-M1a.23](../m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)),
+  ([Q-M1a.23](../../docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)),
   and *this milestone was the last candidate*. There is also **no socket** —
   the server was dropped 2026-08-18; the engine ships as a library plus a CLI.
 - **The llama.cpp argument was never a CPython argument.**

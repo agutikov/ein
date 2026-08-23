@@ -34,9 +34,9 @@ the diving half that is missing.
    would not be.
 3. **The counters move.** Enterings performed by the dive are enterings, and
    the clauses change which later candidates are filtered.
-   [design/08](../../m1a_rust/design/08_parallelism.md) §7 rejected parallel depth-first on
+   [design/08](../../../docs/history/m1a_rust/design/08_parallelism.md) §7 rejected parallel depth-first on
    exactly this ground. So the dive is a flag, and default-on requires the
-   [Q-M1a.18](../../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped
+   [Q-M1a.18](../../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped
    decision, taken explicitly.
 4. **F9's E10 must be answered, not ignored** — "cardinality layering already
    *is* breadth-first deepening; there is no DFS depth bound to raise". True,
@@ -60,10 +60,10 @@ the diving half that is missing.
 - **Wasted-dive accounting.** A dive that finds nothing is pure cost; report
   dives attempted, clauses harvested, and candidates those clauses filtered.
   Without that third number this is unfalsifiable.
-- Interaction with [P1a.7](../../m1a_rust/p1a.7_parallelism/README.md) stated: a dive is
+- Interaction with [P1a.7](../../../docs/history/m1a_rust/README.md#p1a7--parallelism) stated: a dive is
   independent work and an obvious thing to run on a spare core, but it writes
   clauses to the shared store, which is exactly the mid-layer root mutation
-  [S1a.7.0](../../m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md) found to be the
+  [S1a.7.0](../../../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit) found to be the
   hard case. Do not discover that twice.
 
 ## Tasks

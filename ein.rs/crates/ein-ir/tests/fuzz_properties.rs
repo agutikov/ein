@@ -2,11 +2,11 @@
 //! generator, after its oracle.
 //!
 //! Earley explores tokenizations; recursive descent commits. That is the one
-//! structural risk in replacing Lark ([design/04](../../../../plans/m1a_rust/design/04_ir_frontend.md) §1),
+//! structural risk in replacing Lark ([design/04](../../../../docs/history/m1a_rust/design/04_ir_frontend.md) §1),
 //! and the fuzzer settled it by generating malformed and nearly-well-formed
 //! inputs and asserting the two parsers agreed on accept/reject **and on the
 //! message**. That arm is
-//! [accepted loss L1](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss):
+//! [accepted loss L1](../../../../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss):
 //! the input space no fixture covers had exactly one owner and it is gone.
 //!
 //! What survives is the generator, the minimiser, the seed corpus, and three

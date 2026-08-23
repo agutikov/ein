@@ -6,7 +6,7 @@
 //! records a given KB has recorded is a per-KB table in [`crate::kb`], and the
 //! policy that decides what may be recorded is
 //! [`crate::kb::Kb::record_justification`]
-//! ([design/03](../../../../plans/m1a_rust/design/03_data_model.md) §7).
+//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §7).
 //!
 //! **The arena is global, like the fact store** — all but one region of it.
 //! design/03 §5 sketches it inside `KbCore`; putting it beside the other
@@ -23,7 +23,7 @@
 //! **2 135 093** of them — 205 MB — to keep the twelve anything still pointed
 //! at, and it made the arena the one shared structure on a worker's write path
 //! that
-//! [design/08 §6](../../../../plans/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
+//! [design/08 §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
 //! has no row for. They no longer do. The search opens a **fork region** around
 //! each entering ([`ProvArena::open_fork`]); every record the fork derives
 //! lands there; and the region is discarded when the fork is
@@ -32,7 +32,7 @@
 //! still cites into the arena proper first.
 //!
 //! Two properties make that safe, and both are asserted rather than assumed
-//! ([T1a.7.1.7](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)):
+//! ([T1a.7.1.7](../../../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync)):
 //!
 //! - **A fork's records die with the fork.** Measured — ≥ 33.7 % of all pushes
 //!   happen inside one, and four of the six workloads reference *none* of them
@@ -147,7 +147,7 @@ pub struct Prov {
     /// Positive premises, in plan-step order.
     pub premises: Box<[FactId]>,
     /// Variable bindings in **bind order**, which is the order they land in
-    /// the trace ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §2).
+    /// the trace ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §2).
     ///
     /// ein.py stringifies these at record time (`(k, str(v))`); keeping the
     /// `Value` and rendering at display time is the same information with the
@@ -236,7 +236,7 @@ impl Prov {
 /// A region travels with the entering that produced it: a worker builds one,
 /// hands it back with its result, and the ordered commit installs it while
 /// that result is being read
-/// ([T1a.7.2.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)).
+/// ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)).
 /// Keeping the base *with* the records is what makes that safe: an id means
 /// something only against the region it was issued from, and the two cannot be
 /// separated.
@@ -404,7 +404,7 @@ impl ProvArena {
     /// justification tables are hash maps: which ids a promotion assigns has
     /// to be a function of what the fork derived, not of where a `FactId`
     /// happened to hash — that is
-    /// [design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md)
+    /// [design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md)
     /// §3's rule, and `id_order_invariance` is the instrument that would find
     /// it broken.
     ///

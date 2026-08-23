@@ -1,15 +1,15 @@
 //! The CLI's argument surface — S1a.5.4's acceptance, without `argparse`.
 //!
-//! [Q-M1a.13](../../../../plans/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
+//! [Q-M1a.13](../../../../docs/history/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
 //! took `--help` *layout* off the byte gate. What replaced it was a
 //! comparison of *structure*: both parsers rendered as `{command → {option →
 //! short, metavar, arity, default, choices, group, help}}`, and the texts
 //! diffed, so a renamed short key, a changed default, a dropped option or a
 //! new one failed on its own line.
 //!
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 //! removes the second parser. The
-//! [ledger](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md)
+//! [ledger](../../../../docs/history/m1a_rust/oracle_ledger.md)
 //! calls the row **retired**, and the two oracle-free floors below are what it
 //! keeps — but a count is a weak successor to a diff, so the rendering itself
 //! is checked in as a golden. That is not "the surface is right"; it is "the
@@ -28,7 +28,7 @@ use ein_corpus::{golden, golden_path};
 /// diff; it does not pass this.
 ///
 /// **39 of them are ein.py's**, and the fortieth is `solve --jobs`
-/// ([T1a.7.2.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)),
+/// ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
 /// which has no counterpart there for the same reason `ein kb save` does not:
 /// it is a knob for something ein.py never had. The split is kept in the sum
 /// below rather than folded away, because "the surface has not moved" is a

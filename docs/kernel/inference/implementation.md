@@ -16,7 +16,7 @@ the data model in `ein-core` and the renderers in `ein-render`.
 > stated by the code, it is stated here instead:
 > [`../defined_behaviour.md`](../defined_behaviour.md). This file was a map of
 > `ein.py/src/ein/inference/` until M1a
-> [S1a.10.6](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.6_docs.md);
+> [S1a.10.6](../../history/m1a_rust/README.md#s1a106--the-docs-after-the-oracle);
 > the module *roles* are unchanged, because ein.rs is a behaviour-exact port
 > and the two layouts differ in five places, each flagged **⤳** below.
 
@@ -34,7 +34,7 @@ places.
 |---|---|---|
 | **Integers, not objects** | every name is a `u32` `Symbol`; a fact argument is a 4-byte `Value` (`[tag:2][payload:30]`); a proposition is an interned row with a `FactId`, and identity *is* the id — `probe` is O(1) where a tuple compare was O(arity) recursing into string equality | [`../ir/02-data-model/03_implementation.md`](../ir/02-data-model/03_implementation.md) |
 | **A layered, copy-on-write KB** | `Kb` is a stack of immutable `Arc<Layer>`s plus one writable top, so a fork is a push and not a copy, and the search's inner loop stops paying for the branch it is about to abandon | same |
-| **A register matcher** | `compile.rs` lowers each (rule, activator) to a `Plan` of `Scan` / `Join` / `Guard` opcodes over a fixed 256-register file, and `match_.rs` executes a step span against it. [design/05](../../../plans/m1a_rust/design/05_matcher.md) §1 is the reason: 46 % of an exhaustive solve's self time was unification the old data model made impossible to do quickly. The 256 is [D1](../../../plans/m1a_rust/divergences.md#d1--a-rule-may-not-bind-more-than-256-variables) | the *Saturation core* table below, and design/05 |
+| **A register matcher** | `compile.rs` lowers each (rule, activator) to a `Plan` of `Scan` / `Join` / `Guard` opcodes over a fixed 256-register file, and `match_.rs` executes a step span against it. [design/05](../../history/m1a_rust/design/05_matcher.md) §1 is the reason: 46 % of an exhaustive solve's self time was unification the old data model made impossible to do quickly. The 256 is [D1](../../history/m1a_rust/divergences.md#d1--a-rule-may-not-bind-more-than-256-variables) | the *Saturation core* table below, and design/05 |
 | **A fanned-out lattice layer** | `--jobs N` evaluates a layer's enterings on a `rayon` pool and commits them in order | § The fan-out, below |
 
 ## Data flow
@@ -61,10 +61,10 @@ KB ─▶ Engine::compile_all ─▶ Plan ─▶ Saturator::saturate ─▶ reas
 | [`match_.rs`](../../../ein.rs/crates/ein-infer/src/match_.rs) | runtime matcher: executes a step span over a fixed register file, `Emit` yields each match. The closure plans it runs are **purely positive**; `Matcher::holds` is the existential query the boundary asks a guard with, evaluated as one unit including any nested guard. There is no fire-time NAF re-check — that evaluation point is gone, not bypassed |
 | **⤳** the boundary itself | [`saturator.rs`](../../../ein.rs/crates/ein-infer/src/saturator.rs) — `admit_from_boundary`, `first_failing`, `negative_premises` | **the closure/world boundary**, the one place NAF is evaluated. ein.py had this as a `World` type wrapping the KB at quiescence; ein.rs asks the same three questions of the KB directly, because the boundary phase is the only code that can run there and a read-only wrapper bought nothing the borrow checker was not already giving. The questions are unchanged: does the guard's query hold (`W ⊨ ∃x̄·`), which guard is the first to fail, and which `(relation, args)` patterns had to fail |
 | [`firing.rs`](../../../ein.rs/crates/ein-infer/src/firing.rs) | `Firing` record; `fire()` substitutes `:assert`, builds the derived fact with its `Prov` — including the boundary queries the firing was admitted under. `resolve` is leaf resolution in bindings |
-| [`saturator.rs`](../../../ein.rs/crates/ein-infer/src/saturator.rs) | the **two-phase** fixpoint loop. `closure_step` runs purely positive plans to quiescence (priority-banded heap, delta-driven semi-naive re-enqueue, `__symmetric__` mirror); a guarded match is routed to `parked` instead of the queue; at quiescence `admit_from_boundary` judges parked candidates against that fixpoint and admits **one**, then the closure re-runs. A watch stamp skips re-asking a guard none of whose `watched` relations grew; a failing `monotone` guard retires its candidate. Observables: `naf_dropped` (structurally **0**), `naf_rounds`, `naf_admitted`, `naf_retired`. Also owns `Snapshot` / `resume` — the fork-entry delta ([D3](../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)) — and records a re-derivation as an alternative justification, from the `__symmetric__` mirror too |
+| [`saturator.rs`](../../../ein.rs/crates/ein-infer/src/saturator.rs) | the **two-phase** fixpoint loop. `closure_step` runs purely positive plans to quiescence (priority-banded heap, delta-driven semi-naive re-enqueue, `__symmetric__` mirror); a guarded match is routed to `parked` instead of the queue; at quiescence `admit_from_boundary` judges parked candidates against that fixpoint and admits **one**, then the closure re-runs. A watch stamp skips re-asking a guard none of whose `watched` relations grew; a failing `monotone` guard retires its candidate. Observables: `naf_dropped` (structurally **0**), `naf_rounds`, `naf_admitted`, `naf_retired`. Also owns `Snapshot` / `resume` — the fork-entry delta ([D3](../../history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)) — and records a re-derivation as an alternative justification, from the `__symmetric__` mirror too |
 | **⤳** [`terms.rs`](../../../ein.rs/crates/ein-core/src/terms.rs) | the structural reserved atoms (`not` / `and` / `or` / `absent` / `false`) — `STRUCTURAL`, in `ein-core` beside the interner rather than in the engine, because the lexer needs them too |
 | [`predicates.rs`](../../../ein.rs/crates/ein-infer/src/predicates.rs) | computed-predicate registry (`eq` / `neq`) — the `Guard` evaluators |
-| [`plan.rs`](../../../ein.rs/crates/ein-infer/src/plan.rs) | the compiled-plan representation the two above share: `Plan`, `Disjunct`, `Step`, `NafGuard`, `Probe`, and the `MAX_REGS` = 256 register file that [D1](../../../plans/m1a_rust/divergences.md#d1--a-rule-may-not-bind-more-than-256-variables) is about |
+| [`plan.rs`](../../../ein.rs/crates/ein-infer/src/plan.rs) | the compiled-plan representation the two above share: `Plan`, `Disjunct`, `Step`, `NafGuard`, `Probe`, and the `MAX_REGS` = 256 register file that [D1](../../history/m1a_rust/divergences.md#d1--a-rule-may-not-bind-more-than-256-variables) is about |
 
 ## Hypothesis generation & commitment-lattice search — the non-monotone layer
 
@@ -73,7 +73,7 @@ KB ─▶ Engine::compile_all ─▶ Plan ─▶ Saturator::saturate ─▶ reas
 | [`hypgen.rs`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) | candidate enumeration (type-blind, S1.7.23); the filter pipeline (negated-facts / already-exists / lookahead / seen); `score_hypothesis`; `HypGenStats`. **⤳** also `complete` / `open_hypotheses` / `is_solution_node`, which were `hypgen.rs`: solution-node tracking is three predicates over what hypgen would propose, and separating them from it was a file boundary, not a seam |
 | [`hrule.rs`](../../../ein.rs/crates/ein-infer/src/hrule.rs) | hypothesis-rule registry (`Hrules` drive generation, never the saturator) |
 | [`lookahead.rs`](../../../ein.rs/crates/ein-infer/src/lookahead.rs) | pre-branch one-step death simulator (`enable_pre_branch_lookahead`); walks each disjunct and evaluates its guards in the world **with** the candidate `h` — no match in the KB *and* none created by `h`. A guard with a nested absent is non-monotone and cannot be decided that cheaply, so the disjunct is skipped rather than guessed — losing a kill keeps the "never reports a live hypothesis as dead" contract |
-| [`apriori.rs`](../../../ein.rs/crates/ein-infer/src/apriori.rs) | commitment-lattice layer generation by set-size (prefix-join + no-good prune); `order_candidates` / `canonicalise` — the deterministic candidate ordering, and where [D2](../../../plans/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)'s cross-tag order is consulted |
+| [`apriori.rs`](../../../ein.rs/crates/ein-infer/src/apriori.rs) | commitment-lattice layer generation by set-size (prefix-join + no-good prune); `order_candidates` / `canonicalise` — the deterministic candidate ordering, and where [D2](../../history/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)'s cross-tag order is consulted |
 | [`commitment.rs`](../../../ein.rs/crates/ein-infer/src/commitment.rs) | `try_commitment_set`: fork + write hypotheses + saturate + detect — the saturation stops at the killing firing when `enable_fail_fast_fork` (default on), and resumes root's rather than re-deriving it when given a snapshot |
 | [`nogoods.rs`](../../../ein.rs/crates/ein-infer/src/nogoods.rs) | no-good learning: dead set → the root KB's no-good store; singletons → negated facts |
 | **⤳** [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs) | **the main loop**: BFS over the commitment lattice; the root phase, the layer phase, dedup by canonical `state_key`; `LatticeProof`, `SolutionRecord`, `DeadCommitment`, `LatticeStats`; `compute_alive` / `promote_forced_positives` / `record_node` / the dead-handling path. This is ein.py's whole `monotonic/` package — solver, lattice, `_state`, `_helpers` — in one module, minus the dumps |
@@ -96,7 +96,7 @@ KB ─▶ Engine::compile_all ─▶ Plan ─▶ Saturator::saturate ─▶ reas
 
 ## The fan-out — `--jobs N`
 
-[P1a.7](../../../plans/m1a_rust/p1a.7_parallelism/README.md), closed
+[P1a.7](../../history/m1a_rust/README.md#p1a7--parallelism), closed
 2026-08-23 at **3.17–4.40× on 8 cores**. It is the one part of the engine with
 no counterpart in the ported design, so it is described here rather than
 mapped.
@@ -119,7 +119,7 @@ worker may not write a fact to root, and the only enterings that do are the
 size-1 singleton writebacks: **248 of 248 of them, across 8 158 205 enterings
 and five layers, are in layer 1**, which is 0.016 % of the search. So layer 1
 runs sequentially and everything above it fans out with no validator at all —
-[design/08](../../../plans/m1a_rust/design/08_parallelism.md) §2's speculation
+[design/08](../../history/m1a_rust/design/08_parallelism.md) §2's speculation
 validator was measured, costed and then **deleted**, because case 1 is a
 fanned-out layer by construction, case 2 was 0 in 1 078 704 audited enterings,
 and case 3 needs a writeback there is none of.
@@ -149,7 +149,7 @@ So the verbose event stream is byte-identical at `--jobs 1` and `--jobs 8`,
 [`jobs_invariance.rs`](../../../ein.rs/crates/ein-render/tests/jobs_invariance.rs)
 (20 712 (file, op, jobs) cells, byte equality, 0 moved), the event stream under
 both stop policies, and the fuzzer's `jobs` property (10 000 paired runs, zero
-findings). [Q-M1a.7](../../../plans/m1a_rust/open_questions.md#q-m1a7--may---jobs--1-move-counters)
+findings). [Q-M1a.7](../../history/m1a_rust/open_questions.md#q-m1a7--may---jobs--1-move-counters)
 is decided: **no counter moves**, and validation is not what buys that.
 
 **Inert without the feature.** `parallel` is default-on and forwarded from the
@@ -160,7 +160,7 @@ committing thread. `ein --version` is what says which build you have.
 
 - **Append-only KB** — the saturator only adds facts; the one retracting flow
   is a fork for a hypothesis branch, which takes a fresh saturator (or resumes
-  root's — [D3](../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)).
+  root's — [D3](../../history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)).
 - **The closure is purely positive; negation happens only at the boundary** —
   every top-level `(absent …)` is lifted out of its plan at compile time, so
   the plans the matcher runs to quiescence consult no negation whatsoever, and

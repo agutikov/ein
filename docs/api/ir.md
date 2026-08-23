@@ -4,10 +4,10 @@
 >
 > **This page describes a Python package that no longer exists**, and it is
 > filed as a record rather than as a promise. `ein.py/` was deleted at M1a
-> [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+> [S1a.10.5](../history/m1a_rust/README.md#s1a105--the-removal)
 > (2026-08-21); the PyO3 module that was to succeed it was **deferred the same
 > day** for want of a consumer, with three trip-wires recorded in
-> [Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding).
+> [Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding).
 >
 > It is kept **whole and unedited** for one reason: a deferral is cheap to
 > reverse only while the specification survives it. On the day a trip-wire
@@ -31,7 +31,7 @@ behind it is [`ein-ir`](../../ein.rs/crates/ein-ir/src/); the grammar is
 > + `IRParseError`. The node types matter if you build IR
 > programmatically or post-process it.
 
-*Verified against commit `60c192b` (2026-06-16) — **against the Python engine, which no longer exists**. These signatures are a record of what that engine offered, not a description of anything in the tree and no longer a contract anything is scheduled to implement ([Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).*
+*Verified against commit `60c192b` (2026-06-16) — **against the Python engine, which no longer exists**. These signatures are a record of what that engine offered, not a description of anything in the tree and no longer a contract anything is scheduled to implement ([Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).*
 
 ## Parsing
 
@@ -55,7 +55,7 @@ Internal/diagnostic — embedders want `parse`.
 > **This symbol does not survive**, and the working tree carried a
 > `TODO: What lark in Rust?` here until S1a.9.4 answered it: there is no
 > answer, because there is no parser generator.
-> [design/04 §1](../../plans/m1a_rust/design/04_ir_frontend.md) rules one out
+> [design/04 §1](../history/m1a_rust/design/04_ir_frontend.md) rules one out
 > — `ein-ir` is a hand-written lexer and recursive-descent parser, and its
 > only exposed tree is the AST `parse` returns. A PyO3 successor would not
 > reintroduce a Lark tree to have something to put here; it would drop the

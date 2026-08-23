@@ -52,7 +52,7 @@ corpus/out/
 # `regression` entry with a name.
 # Bench and profile artefacts (S1a.6.1): raw JSON + perf data, machine-specific
 # and per-run. The committed record is the tables in
-# plans/m1a_rust/p1a.6_performance/baseline.md — the same split
+# docs/history/m1a_rust/measurements/baseline.md — the same split
 # utils/feature_matrix_results.json uses. NOT wiped between runs: the next
 # re-measure wants a diff, not a fresh start.
 ein.rs/bench-out/

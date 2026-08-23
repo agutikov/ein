@@ -11,7 +11,7 @@
 //! ```
 //!
 //! One pass is timed rather than a whole solve: the search loop that calls it
-//! ~100 times is [S1a.4.5](../../../../plans/m1a_rust/p1a.4_search_layer/s1a.4.5_solve_loop.md)'s.
+//! ~100 times is [S1a.4.5](../../../../docs/history/m1a_rust/README.md#s1a45--the-solve-loop-and-verdict-synthesis)'s.
 //! Rounds after the first do identical work — the only state a pass leaves
 //! behind is the kill cache's `(not h)` facts, and writing one is idempotent —
 //! so the mean over `ROUNDS` is the steady-state cost.

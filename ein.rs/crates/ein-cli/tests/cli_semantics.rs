@@ -276,7 +276,7 @@ fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
         // situation as no `python3`, and it must not be reported as a stale
         // fixture. This is the one place in the workspace where a Python
         // process still runs, and after
-        // [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+        // [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
         // it is the *only* one: `PATH=<a python3 that exits 127> cargo test
         // --workspace` is 566 passed, and this line is why the count does not
         // drop by one.
@@ -553,7 +553,7 @@ fn the_stop_policy_is_honoured() {
 }
 
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
-/// else** — [S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.1.
 ///
 /// `auto` is [`std::thread::available_parallelism`], so the test cannot assert

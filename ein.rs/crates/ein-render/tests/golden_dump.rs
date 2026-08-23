@@ -1,9 +1,9 @@
 //! The two halves of a `--dump-states` tree the cross-engine diff stopped
-//! reading — [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
+//! reading — [S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
 //!
 //! `dump_parity.rs` compares the whole tree against ein.py byte for byte,
 //! with two exceptions, both
-//! [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it):
+//! [D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it):
 //!
 //! - the **`enterings/` subtree** — a fork's own firing list, its state dump
 //!   in the fork's derivation order with the fork's `:rule` annotations, and,

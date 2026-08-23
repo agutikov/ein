@@ -14,7 +14,7 @@
 //! suite; it is a page whose example is compiled and run by
 //! `cargo test --workspace` and whose text is diffed against what ran.
 //!
-//! [S1a.9.2]: ../../../../plans/m1a_rust/p1a.9_release/README.md
+//! [S1a.9.2]: ../../../../docs/history/m1a_rust/README.md#p1a9--release
 //!
 //! Three tests, three different failures:
 //!

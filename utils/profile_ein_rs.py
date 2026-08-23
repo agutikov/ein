@@ -14,7 +14,7 @@ sample. Directly comparable to cProfile's `tottime` column.
 `profile_solve.py`'s eight categories, which is what let the Python and Rust
 profiles be read side by side. That script (cProfile around one ein.py
 `solve()`) left with its subject at
-[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md);
+[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine);
 **the eight buckets stay**, because `baseline.md` §3 is written in them and a
 re-bucketing would silently rewrite every attribution in the file. Bucketing is
 by the **innermost enclosing engine frame**, not by the leaf, and the
@@ -44,7 +44,7 @@ Unwinding is **LBR** (`--call-graph lbr`), and that choice is load-bearing.
 `fp` loses the stack the moment a sample lands inside glibc, which is compiled
 without frame pointers: 18 % of an exhaustive `zebra2` profile arrived as
 `[libc.so.6]` with no caller, i.e. exactly the allocator cost
-[S1a.6.2](../plans/m1a_rust/p1a.6_performance/s1a.6.2_memory_layout.md) needs
+[S1a.6.2](../docs/history/m1a_rust/README.md#s1a62--memory-layout) needs
 attributed. `dwarf,8192` truncated at two frames on this tree. LBR recovers
 `malloc ← Vec::from_iter ← compile::plan_key ← Engine::compile_for ← …` in full,
 and its known weakness — stale branch history in the *outer* frames — does not

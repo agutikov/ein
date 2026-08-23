@@ -33,7 +33,7 @@ result a status code.
 - `--events` / `--json-summary` still work under `test`, because a failing
   expectation is exactly when someone wants the trace.
 - The help surface grows one subcommand and stays in the shape
-  [Q-M1a.13](../../m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity) settled.
+  [Q-M1a.13](../../../docs/history/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity) settled.
 
 ## Tasks
 
@@ -59,7 +59,7 @@ fact that should not have been there. `explain` already computes that.
 A test runner that reports success on a broken expectation is the worst
 possible outcome here, so: fixtures that must fail, checked for *failing*,
 with the right exit code and the right message. The
-[S1a.6.6](../../m1a_rust/p1a.6_performance/s1a.6.6_differential_fuzzer.md) lesson — "the
+[S1a.6.6](../../../docs/history/m1a_rust/README.md#s1a66--the-differential-fuzzer) lesson — "the
 fuzzer's own three controls each failed once first" — is the precedent.
 
 ## Notes

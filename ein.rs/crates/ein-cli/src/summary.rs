@@ -39,7 +39,7 @@ fn facts(terms: &Terms, kb: &Kb) -> Json {
 /// binding used to go through `sexpr_value`, which made it a string, and
 /// `summary.json` is T0: `(query :goal (r1 ?x ?y))` over `(r1 o3 8)` was a
 /// verdict-level difference on a two-line program. Found by
-/// [S1a.6.6](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.6_differential_fuzzer.md)'s
+/// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-differential-fuzzer)'s
 /// fuzzer, 2026-08-20; `examples/ein-bugs/int-goal-binding.ein` is the
 /// fixture. A symbol stays a string and a nested fact its s-expression.
 fn binding_value(terms: &Terms, v: Value) -> Json {

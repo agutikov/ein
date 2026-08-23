@@ -204,7 +204,7 @@ fn unary(terms: &mut Terms, rel: &str, arg: &str) -> FactId {
 
 /// What one corpus sweep did — and, as importantly, what it did **not** do.
 ///
-/// [S1a.10.1](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)
+/// [S1a.10.1](../../../../docs/history/m1a_rust/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)
 /// found 41 tests passing on a `SKIP` line nobody read. A sweep that dropped a
 /// file on the floor would be that finding repeated inside its own repair, so
 /// every file lands in exactly one of these four buckets and each caller

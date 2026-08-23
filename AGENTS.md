@@ -37,7 +37,7 @@ constrained-reasoning research.
   the **Python** embedding contract, filed as **history** with a 🏛 banner:
   kept whole because a deferral is cheap to reverse only while the
   specification survives it
-  ([Q-M1a.23](plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+  ([Q-M1a.23](docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
   holds the three trip-wires). Do not "fix" them to match ein.rs — a page
   rewritten to describe the current engine is neither history nor a
   specification. Distinct from `docs/kernel/` (the IR *language*) and from the
@@ -51,6 +51,23 @@ constrained-reasoning research.
   chapters (P1.20 Theme K). User-facing; references `docs/kernel/` +
   `docs/api/`, never explains internals; complements
   `inference/zebra_walkthrough.md`.
+- **`docs/history/`** — **shipped milestones, kept as record.** Its first and
+  only entry is [`m1a_rust/`](docs/history/m1a_rust/README.md), the Rust port
+  (2026-08-17 → 2026-08-23): one README carrying all eleven phases and 53
+  stages, plus what is still *read* rather than merely intended — the eleven
+  [`design/`](docs/history/m1a_rust/design/README.md) contracts the crates cite
+  as their specification, six
+  [`measurements/`](docs/history/m1a_rust/measurements/) documents whose
+  CPython and PyPy columns nothing can re-take, the
+  [divergence ledger](docs/history/m1a_rust/divergences.md), twenty-three
+  [questions](docs/history/m1a_rust/open_questions.md) (two still open on
+  purpose), the [oracle ledger](docs/history/m1a_rust/oracle_ledger.md) and the
+  [suite dispositions](docs/history/m1a_rust/suite_dispositions.md).
+  **`plans/m1a_rust/` is gone** — deleted 2026-08-23, 65 files and 13 950 lines
+  of milestone, phase and stage documents, and it is in git history
+  (`git log --diff-filter=D -- plans/m1a_rust`). The rule that put a document here rather than leaving it in
+  git: it is still read, as a specification, as evidence, or as the reason
+  something is the way it is.
 - **`docs/lib/`** — catalogue of external tech relevant to the rewrite
   (LLM constrained generation, CSP/SAT/SMT, theorem proving, category
   theory, graphs & rewrite systems, reasoning benchmarks, …). 12
@@ -83,31 +100,31 @@ constrained-reasoning research.
   table of readers. It was `conformance/` until M1a S1a.10.3, and the
   `--events` protocol it also held is now
   [`docs/kernel/inference/events.md`](docs/kernel/inference/events.md).
-  Since [S1a.9.0](plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md)
+  Since [S1a.9.0](docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
-  ([corpus_cost.md](plans/m1a_rust/p1a.9_release/corpus_cost.md) is the
+  ([corpus_cost.md](docs/history/m1a_rust/measurements/corpus_cost.md) is the
   measurement, `utils/corpus_cost.py` re-takes it). **Two** entries are slow,
   where seventeen were — three until M1a T1a.7.2.0 made
   `branching/07_lookahead_off` 2.8× cheaper and the re-take took its flag off,
   which is the mechanism working ([corpus_cost.md
-  §7](plans/m1a_rust/p1a.9_release/corpus_cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry));
+  §7](docs/history/m1a_rust/measurements/corpus_cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry));
   `EIN_CORPUS_SLOW=1` is 20 s of `cargo test` rather than four minutes;
   and **a run is dropped from a `runs` column only when it does not ask the
   fixture's question**, never for costing too much.
-- **`ein.rs/`** — the Rust port ([M1a](plans/m1a_rust/README.md)), a
+- **`ein.rs/`** — the Rust port ([M1a](docs/history/m1a_rust/README.md)), a
   drop-in replacement for `ein`, and since
-  [P1a.10](plans/m1a_rust/p1a.10_single_implementation/README.md) the only
+  [P1a.10](docs/history/m1a_rust/README.md#p1a10--one-implementation) the only
   implementation. Two of its eight crates are dev-only: `ein-corpus` (the
   manifest, the fixture helpers, the bench set) and `ein-parity` (the one
   implementation of what counts as a derivation's *narration* rather than
   its content — [design/01
-  §5](plans/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list);
+  §5](docs/history/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list);
   `EIN_PARITY_STRICT=1` turns it off). The six that ship are `ein-core`
   (interning, `Value`/`FactId`, the layered COW KB, provenance), `ein-ir`
   (lex → parse → macros → imports → load), `ein-infer` (compile → match →
   saturate → the NAF boundary → the hypothesis loop), **`ein-einb`** (the
-  `.einb` binary KB container — [P1a.8](plans/m1a_rust/p1a.8_binary_container/README.md),
+  `.einb` binary KB container — [P1a.8](docs/history/m1a_rust/README.md#p1a8--binary-kb-container),
   and the **only crate that is not `#![forbid(unsafe_code)]`**: its `cast.rs`
   is the one audited module design/12 §2 permits `unsafe` in, which is why it
   is a crate at all), `ein-render` (DOT views, the markdown trace, the
@@ -129,10 +146,10 @@ constrained-reasoning research.
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
 - **`utils/`** — **eighteen scripts, all of them driving `ein.rs`** since M1a
-  [S1a.10.4](plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md),
+  [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
   which deleted the eleven that compared two engines or measured the Python
   one, plus `corpus_cost.py` from
-  [S1a.9.0](plans/m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md).
+  [S1a.9.0](docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced).
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the three that
   want a build of their own (`fork_delta_verify.py` → `target-fd`,
@@ -145,8 +162,8 @@ constrained-reasoning research.
   Two things worth knowing without opening it: run every measurement through
   **`bench_env.sh`**, which prints the machine state the numbers were taken
   under; and in
-  [`baseline.md`](plans/m1a_rust/p1a.6_performance/baseline.md) /
-  [`scaling.md`](plans/m1a_rust/p1a.7_parallelism/scaling.md) **the CPython
+  [`baseline.md`](docs/history/m1a_rust/measurements/baseline.md) /
+  [`scaling.md`](docs/history/m1a_rust/measurements/scaling.md) **the CPython
   and PyPy columns are frozen constants**, because the instruments that
   produced them left with the engine they measured.
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
@@ -224,7 +241,7 @@ system allocator and needs neither.
 **The parity harness is gone** (M1a S1a.10.3). `ein-conformance run --impl-a …
 --impl-b … --tier T0…T3` ran two implementations over the corpus and diffed
 them; there is no second operand. What each tier proved and who owns it now is
-[the oracle ledger](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md).
+[the oracle ledger](docs/history/m1a_rust/oracle_ledger.md).
 
 ## Regenerating the knowledge graph
 

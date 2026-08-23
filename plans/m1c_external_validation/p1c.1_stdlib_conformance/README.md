@@ -2,8 +2,8 @@
 
 **Milestone:** [M1c — External validation](../README.md)
 **Estimate:** 2.5 weeks (13 days of stages)
-**Depends on:** [M1a](../../m1a_rust/README.md)'s
-[P1a.10](../../m1a_rust/p1a.10_single_implementation/README.md) — a new
+**Depends on:** [M1a](../../../docs/history/m1a_rust/README.md)'s
+[P1a.10](../../../docs/history/m1a_rust/README.md#p1a10--one-implementation) — a new
 surface form is cheap to add to one implementation and expensive to add to two
 in step. Landing it before the oracle leaves means writing it twice.
 **Was P1a.11; moved here 2026-08-21** at the user's direction. Nothing in the
@@ -109,6 +109,6 @@ that gets **stronger** when the oracle leaves.
 - [`stdlib/`](../../../stdlib/) — the seven modules under test
 - [`docs/kernel/ir/03-ein-lang/`](../../../docs/kernel/ir/03-ein-lang/) — the
   surface language the new form joins
-- [P1a.10](../../m1a_rust/p1a.10_single_implementation/README.md) —
-  [S1a.10.1](../../m1a_rust/p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md)'s
+- [P1a.10](../../../docs/history/m1a_rust/README.md#p1a10--one-implementation) —
+  [S1a.10.1](../../../docs/history/m1a_rust/README.md#s1a101--bank-what-only-the-oracle-proves)'s
   accepted-loss list is this phase's first input

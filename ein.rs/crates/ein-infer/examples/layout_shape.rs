@@ -1,4 +1,4 @@
-//! The distributions [S1a.6.2](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.2_memory_layout.md)
+//! The distributions [S1a.6.2](../../../../docs/history/m1a_rust/README.md#s1a62--memory-layout)
 //! sizes its inline capacities from — T1a.6.2.3, and the evidence T1a.6.2.6
 //! and T1a.6.2.2 are decided by.
 //!

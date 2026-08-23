@@ -28,15 +28,15 @@
 //! ≤ 64. It is **not here**: its stated payoff is the
 //! `enable_singleton_writeback=false` regime, where exhaustive `zebra2` grows
 //! from 101 enterings to 3 336+, and nothing can run an exhaustive solve until
-//! [S1a.4.5](../../../../plans/m1a_rust/p1a.4_search_layer/s1a.4.5_solve_loop.md).
+//! [S1a.4.5](../../../../docs/history/m1a_rust/README.md#s1a45--the-solve-loop-and-verdict-synthesis).
 //! Landing a second representation before the measurement that justifies it is
 //! the mistake Win B already made once
-//! ([Q-M1a.17](../../../../plans/m1a_rust/open_questions.md)), so it carries
+//! ([Q-M1a.17](../../../../docs/history/m1a_rust/open_questions.md)), so it carries
 //! its trigger condition into
-//! [P1a.6](../../../../plans/m1a_rust/p1a.6_performance/README.md) instead.
+//! [P1a.6](../../../../docs/history/m1a_rust/README.md#p1a6--performance) instead.
 //!
 //! **The trigger was pulled and the answer was no**
-//! ([S1a.6.4](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)
+//! ([S1a.6.4](../../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)
 //! T1a.6.4.4). That regime is 3 831 enterings and 2.38 s — and **354 clauses**,
 //! because the subsumption above is what keeps the two numbers apart. The whole
 //! apriori/no-good machinery is **0.3 %** of it (`filter_candidate` 0.3 %,

@@ -20,7 +20,7 @@
 ;;; `left`.
 ;;;
 ;;; Status: **not fixed, pinned.** This is M1a hazard H2
-;;; (`plans/m1a_rust/design/02_determinism_and_order.md` §5) and open question
+;;; (`docs/history/m1a_rust/design/02_determinism_and_order.md` §5) and open question
 ;;; Q-M1a.4. ein.rs's `Value` is totally ordered by construction and cannot
 ;;; raise, so on this input the two implementations must differ: one crashes,
 ;;; one answers. Fixing ein.py to sort by `repr` here would change the

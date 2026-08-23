@@ -3,7 +3,7 @@
 //! The renderers *do* have a CLI surface, but not all of it and not in every
 //! combination: `ein render` reaches four of them, `kb.to_dot`'s keyword
 //! surface is library-only, and the slice cones are reachable only through a
-//! `--trace` that [S1a.5.2](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.2_trace_and_answer.md)
+//! `--trace` that [S1a.5.2](../../../../docs/history/m1a_rust/README.md#s1a52--trace-and-answer-rendering)
 //! has not built yet. So the renderers are compared the way the loader and
 //! the compiler were: both implementations render the same views over the
 //! same corpus and the texts are diffed (`utils/ir_oracle.py`'s `dot-shape`
@@ -52,10 +52,10 @@ pub const KB_VIEWS: [&str; 6] = [
 pub const SOLVE_VIEWS: [&str; 3] = ["lattice", "lattice-full", "slice"];
 
 /// The modes of the `--dump-states` diff —
-/// [S1a.5.3](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.3_state_dumps.md).
+/// [S1a.5.3](../../../../docs/history/m1a_rust/README.md#s1a53--state-dumps).
 pub const DUMP_MODES: [&str; 5] = ["monotonic", "lattice", "progress", "abort", "snapshot"];
 
-/// The modes of the trace / answer diff — [S1a.5.2](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.2_trace_and_answer.md).
+/// The modes of the trace / answer diff — [S1a.5.2](../../../../docs/history/m1a_rust/README.md#s1a52--trace-and-answer-rendering).
 pub const TRACE_MODES: [&str; 3] = ["trace", "answer", "no-proof"];
 
 pub fn all_views() -> Vec<&'static str> {
@@ -277,7 +277,7 @@ fn solve_view(
 
 /// Render one view of a parsed program.
 ///
-/// `jobs` is [S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// `jobs` is [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.3's axis and the reason it is a parameter rather than a default:
 /// `jobs_invariance` runs every op at `--jobs 1` and again at `--jobs N` in one
 /// process, and a knob it could not set per call would have to be a global.
@@ -373,7 +373,7 @@ fn trace_markdown(
 }
 
 /// Render one mode of the trace / answer surface.///
-/// `jobs` is [S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// `jobs` is [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.3's axis — see [`dot_shape`].
 pub fn trace_shape(
     ast: &mut Ast,
@@ -527,7 +527,7 @@ fn render_tree(root: &Path) -> String {
             // That exception is measured, not assumed: `zebra2-hints` writes
             // **6.6 MiB** of per-entering dumps against 84 KiB for the rest of
             // the tree, so rendering them into a shape that
-            // [S1a.6.10](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)'s
+            // [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)'s
             // normalisation immediately throws away would push hundreds of
             // megabytes through the oracle's JSON-Lines pipe, twice, to
             // compare nothing. `dump_parity` re-checks that this marker is
@@ -544,7 +544,7 @@ fn render_tree(root: &Path) -> String {
             // too. What replaces the byte check is `utils/fork_delta_verify.py`
             // — every fork's fact set, fact by fact, across 3.2 M enterings —
             // and an ein.rs golden
-            // ([S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md)).
+            // ([S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing)).
             out.push("=== <narrated>".to_string());
             continue;
         }
@@ -574,10 +574,10 @@ fn collect_files(dir: &Path, out: &mut Vec<PathBuf>) {
 /// `ts_ms` still fails.
 ///
 /// The clocks, and only the clocks: they are on the
-/// [normalisation list](../../../../plans/m1a_rust/design/01_parity_contract.md) §5
+/// [normalisation list](../../../../docs/history/m1a_rust/design/01_parity_contract.md) §5
 /// because no two runs can agree on them. The per-entering `firings` count
 /// used to be blanked here too and is not any more — it is
-/// [D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it),
+/// [D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it),
 /// which is a *comparison* decision and now lives with the rest of them in
 /// `ein-parity`. A renderer that decides what a diff will look at is a
 /// renderer with an opinion about the contract.
@@ -641,7 +641,7 @@ fn temp_dir(tag: &str) -> PathBuf {
 }
 
 /// Render one mode of the state-dump surface.///
-/// `jobs` is [S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// `jobs` is [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.3's axis — see [`dot_shape`].
 pub fn dump_shape(
     ast: &mut Ast,

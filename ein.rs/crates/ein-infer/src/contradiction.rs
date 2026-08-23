@@ -17,7 +17,7 @@
 //! puzzle was accepted in silence.
 //!
 //! The port's change is the *lookup*, not the algorithm
-//! ([design/06](../../../../plans/m1a_rust/design/06_saturation.md) §6):
+//! ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) §6):
 //! ein.py's `(rn, args) in kb._negated_facts` and `_fact_by_id(X)` become two
 //! bit tests. The result **order** is preserved — direct ⊥ first, then pairs
 //! in extent order — because it reaches the unsat core and the trace.

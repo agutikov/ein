@@ -1,4 +1,4 @@
-# Tier 3 of three — plans/m1a_rust/design/12_toolchain_and_layout.md §4.
+# Tier 3 of three — docs/history/m1a_rust/design/12_toolchain_and_layout.md §4.
 #
 # Everything nightly, plus the checks that only matter when something is about
 # to be handed to someone: does the parallel engine agree with the serial one,
@@ -20,7 +20,7 @@
 # `no-default-features` exercises a platform this repository has never built
 # on: the workspace is developed on x86_64 Linux and the first tag is what
 # runs macOS, Windows and aarch64 for the first time. The plan record
-# (plans/m1a_rust/p1a.9_release/s1a.9.3_packaging.md § What CI has not yet
+# (docs/history/m1a_rust/README.md § What CI has not yet
 # proved) says so in as many words, so that a green badge here is read as
 # "the first tag passed" rather than as "this was always going to pass".
 
@@ -66,7 +66,7 @@ jobs:
       # The two `slow = true` entries the per-commit sweep skips. `cost_ms`
       # in corpus/corpus.toml is what says they are slow, measured, and both
       # directions of that claim are checked here
-      # (plans/m1a_rust/p1a.9_release/corpus_cost.md).
+      # (docs/history/m1a_rust/measurements/corpus_cost.md).
       - run: cargo test -p ein-cli --release --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
       # The determinism sweep at nightly's depth, not the per-commit one.
@@ -262,7 +262,7 @@ jobs:
   # cannot build there and this leg is `--no-default-features` — the system
   # allocator, which musl's is, and which costs a measured **+25 % on `solve
   # zebra2 -e` and +36 % on `solve zebra -e`**
-  # (plans/m1a_rust/p1a.9_release/feature_cost.md). That is the wrong default
+  # (docs/history/m1a_rust/measurements/feature_cost.md). That is the wrong default
   # for the four required artefacts and the right trade for the one case they
   # do not cover: an old or minimal distribution where a glibc-linked binary
   # will not start at all. If it fails, the release still ships and the notes
@@ -347,7 +347,7 @@ jobs:
             if [ -e staged/ein-linux-x86_64-musl ]; then
               echo "The musl build is statically linked and uses the **system allocator**:"
               echo "it costs +25 % on \`solve zebra2.ein -e\` against the default binary"
-              echo "(plans/m1a_rust/p1a.9_release/feature_cost.md). Prefer"
+              echo "(docs/history/m1a_rust/measurements/feature_cost.md). Prefer"
               echo "\`ein-linux-x86_64\` unless glibc is the problem."
             else
               echo "**No static musl binary in this release** — that leg is best-effort"

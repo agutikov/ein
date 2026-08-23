@@ -7,10 +7,10 @@
 //! on the data?* — and it asked it of ein.py, because ein.py is the engine
 //! whose `hash()` is salted. ein.rs is not: `FxHashMap` hashes the same way
 //! every run
-//! ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §9),
+//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §9),
 //! so re-running it proves nothing and re-running it against a second engine
 //! is not available after
-//! [P1a.10](../../../../plans/m1a_rust/p1a.10_single_implementation/README.md).
+//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation).
 //!
 //! What *is* available is the same question in this engine's own terms. Ids
 //! here are **assignment-ordered**: a [`Symbol`] is "how many distinct names
@@ -19,7 +19,7 @@
 //! `Symbol` deliberately has no `Ord`, observable sorts go through
 //! `Interner::rank`, and iterating an `FxHashMap` keyed on one is the thing
 //! `utils/check_hashmap_iteration.py` greps for
-//! ([design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §1).
+//! ([design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §1).
 //! Every one of those claims is falsified by the same experiment: **assign the
 //! ids in a different order and see whether anything moves.**
 //!
@@ -42,7 +42,7 @@
 //!
 //! `EIN_ID_FILES=<dir>` sweeps every `.ein` under `<dir>` instead of the
 //! corpus. One caller: `utils/fuzz_ein.py`, whose third property is
-//! [the ledger's L1](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss)
+//! [the ledger's L1](../../../../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss)
 //! item 3 — *the same program under a permuted interner answers the same way*,
 //! **applied to generated input rather than to the corpus**. The instrument
 //! for that is this file and there is no second copy of it, so the fuzzer

@@ -1,4 +1,4 @@
-# Tier 2 of three — plans/m1a_rust/design/12_toolchain_and_layout.md §4.
+# Tier 2 of three — docs/history/m1a_rust/design/12_toolchain_and_layout.md §4.
 #
 # Budget: an hour. Everything the per-commit tier cannot afford, plus the check
 # that only makes sense over time: does anything the corpus does not cover
@@ -98,7 +98,7 @@ jobs:
     # The Python half (`utils/bench_baseline.py --json bench-python.json`, and
     # the `pip install -e ein.py` it needed) went with the second engine at
     # S1a.10.4. What it produced is a frozen column in
-    # plans/m1a_rust/p1a.6_performance/baseline.md §2; `cargo bench` is the
+    # docs/history/m1a_rust/measurements/baseline.md §2; `cargo bench` is the
     # whole set now. A shared runner is nobody's quiet machine, so this job
     # exists to prove the benches still *run*, not to publish a timing —
     # `--test` is one iteration per case, which is exactly that check.

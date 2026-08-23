@@ -4,8 +4,8 @@ Minimised inputs a fuzzer found something on, written by the two fuzzers
 (`cargo test -p ein-ir --test fuzz_properties` for the frontend,
 [`utils/fuzz_ein.py`](../../utils/fuzz_ein.py) for whole programs). "Something"
 was *a disagreement between the two implementations* until
-[S1a.10.2](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
-and [S1a.10.4](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+[S1a.10.2](../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
+and [S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
 retired the two oracle arms; for both fuzzers it is now **a violated
 property**, named in the finding. Every file here is also one of the frontend
 fuzzer's seeds — `every_seed_and_finding_parses_the_way_it_was_recorded` reads
@@ -14,12 +14,12 @@ and that is deliberate: a find that nothing re-parses is a souvenir.
 
 **Empty is the steady state**: a find is either fixed — and promoted to a
 corpus fixture in the same commit — or accepted, and then it belongs to
-[`divergences.md`](../../plans/m1a_rust/divergences.md) or to an open
+[`divergences.md`](../../docs/history/m1a_rust/divergences.md) or to an open
 question.
 
 ### 2026-08-21 — the rewritten engine fuzzer's first sessions
 
-[S1a.10.4](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+[S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
 re-aimed `utils/fuzz_ein.py` at five properties one engine can check, the
 strongest of them being *the same program under a permuted interner answers
 the same way* — `ein-render`'s `id_order_invariance`, pointed at a generated
@@ -33,13 +33,13 @@ questions rather than fixes**, so they are here.
 | [`d3-goal-row-order.ein`](d3-goal-row-order.md) | `id-order` | already here since 2026-08-20 as a cross-engine diff — **re-derived from a different seed to the identical seven forms**, and then shown to move inside one engine with D3 held fixed. See below: D3 perturbs the row, it is not why the row is perturbable |
 
 The two `id-order` rows are the class
-[design/02](../../plans/m1a_rust/design/02_determinism_and_order.md) forbids,
+[design/02](../../docs/history/m1a_rust/design/02_determinism_and_order.md) forbids,
 and they are the first the id-space sweep has found that the corpus does not
 reach — which is the argument for running it over generated input.
 
 ### 2026-08-23 — the `jobs` property's first session
 
-[T1a.7.2.6](../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+[T1a.7.2.6](../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
 added a sixth property — *the same program at `--jobs 8` answers as it does at
 `--jobs 1`* — and ran the phase's acceptance stress through it: **5 000 cases
 and 25 000 runs, of which 10 000 `solve` runs each paired against a `--jobs 8`
@@ -54,7 +54,7 @@ them. What the session found was one thing, and it is about the DOT renderer:
 ### `d3-*.ein` — 2026-08-20, S1a.6.6's first session
 
 Both were filed as
-**[D3](../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)**
+**[D3](../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)**
 reaching further than its entry recorded, and both kept because the decision
 they need is the user's rather than a fix. **One of the two turned out not to
 be D3**, which S1a.10.4's fuzzer found by re-deriving the identical seven-form

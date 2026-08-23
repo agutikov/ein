@@ -6,7 +6,7 @@
 > known algorithms** for each. It is a map from this puzzle reasoner to the
 > broader literature — written to orient optimization work
 > (P1.8a,
-> the [M1a Rust port](../../../plans/m1a_rust/)) and to make the engine's
+> the [M1a Rust port](../../history/m1a_rust/README.md)) and to make the engine's
 > design choices legible against the state of the art.
 >
 > Source of truth for the code:
@@ -284,7 +284,7 @@ the fork-state design problem a beta-memory has to answer first.
 > **1.17 M**, `solve zebra.ein -e` **349 → 78 ms**, with the firing sequence
 > unchanged. The partial-join product a beta-memory would cache is
 > consequently **2.2 tuples per step entered**, down from 47.4, which is why
-> [S1a.6.3](../../../plans/m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md)
+> [S1a.6.3](../../history/m1a_rust/README.md#s1a63--beta-memories-f11-d1)
 > ran its gate and declined to build one. And WCOJ's "only if cyclic joins
 > appear" needs correcting: they have appeared —
 > `slot-adjacent-fwd` contains the triangle `p1 — PT — p2 — p1` — but over
@@ -299,7 +299,7 @@ the fork-state design problem a beta-memory has to answer first.
 > whether one proposition is in the KB, and an interned fact store answers
 > that in one lookup where the alpha-memory hands back a 9.96-fact bucket to
 > unify. `candidates` **1.17 M → 239 k**, `solve zebra.ein -e` **60 → 48 ms**
-> ([S1a.6.12](../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md)).
+> ([S1a.6.12](../../history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)).
 > The RETE ladder has no rung for this because RETE's alpha network *is* the
 > proposition store; a system that keeps the two apart has to remember to ask.
 >
@@ -578,7 +578,7 @@ re-architecture (O7) would bring.
 > **60.2 %** for the NAF boundary. The watched-literals / bitmask family of
 > optimisations is therefore not the lever here either — the pruning is
 > already cheap; what costs is the *deduction* each surviving branch performs.
-> [S1a.6.4](../../../plans/m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)
+> [S1a.6.4](../../history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)
 > has the profile, and the same stage measured the enumerator next door: one
 > hypothesis-generation pass offers ~125 candidates on the zebra puzzles, not
 > the ~18 k a blind combinatorial enumerator would, because an `(hrule …)`
@@ -612,8 +612,8 @@ the S1.7.24 symmetric-removal made fully generic (no hard-coded symmetry). **Ade
 > **ein.py** is a **frozen constant** — the instruments that produced them
 > (`profile_ein.py`, `bench_solve.py`, the two-engine feature matrix) left with
 > the engine they measured at M1a
-> [S1a.10.4](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
-> / [S1a.10.5](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md).
+> [S1a.10.4](../../history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
+> / [S1a.10.5](../../history/m1a_rust/README.md#s1a105--the-removal).
 > They are kept because the *arc* is the argument — a claim about where a
 > reasoner's time goes is worth more with two implementations behind it than
 > one — and they are not a live gate.
@@ -631,7 +631,7 @@ saturating forks already known to be dead, and is now ~0 — so what remains is
 saturation of forks that genuinely live, i.e. the matcher again.
 
 **That 95 % is a property of the implementation, not of the algorithm, and the
-Rust port is what showed it.** [M1a P1a.6](../../../plans/m1a_rust/p1a.6_performance/README.md)
+Rust port is what showed it.** [M1a P1a.6](../../history/m1a_rust/README.md#p1a6--performance)
 re-took every measurement here on an engine 150–175× faster end-to-end, and
 the answer to "where are the bodies" moved three times inside one phase:
 
@@ -660,7 +660,7 @@ table above seen from the other side: what fail-fast removes is a fixed
 quantity of dead-fork saturation, and everything around it shrank.
 
 **And one axis that is not an algorithm at all — cores.**
-[P1a.7](../../../plans/m1a_rust/p1a.7_parallelism/README.md) (closed
+[P1a.7](../../history/m1a_rust/README.md#p1a7--parallelism) (closed
 2026-08-23) fans each commitment-lattice layer out over a thread pool:
 `--jobs N`, **3.17–4.40× on 8 cores**, with the verdict, the models and every
 counter identical by construction — 20 712 (file, op, jobs) cells moved

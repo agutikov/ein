@@ -1,11 +1,11 @@
 //! T1a.7.1.0 — **what a run interns, and when.**
 //!
-//! [S1a.7.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md)
+//! [S1a.7.1](../../../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync)
 //! has to make [`Terms`] shareable across workers, and the interner is the
 //! part of it that cannot simply be wrapped: [`Interner::text`] hands out a
 //! `&str` borrowed from the arena, and no lock returns a borrow that outlives
 //! its guard. A sharded `RwLock` — [design/08
-//! §6](../../../../plans/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)'s
+//! §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)'s
 //! sketch — would therefore have to change every read site in the port, not
 //! the write sites.
 //!
@@ -42,7 +42,7 @@
 //! interns as a symbol. Nothing in the corpus has one. What makes that
 //! survivable is that the consequence of being wrong is not a race but a
 //! *missing name*: a worker that cannot intern can only fall back, which is
-//! [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)'s
+//! [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)'s
 //! to build and this file's to keep honest.
 
 use ein_core::Terms;

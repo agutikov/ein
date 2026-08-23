@@ -5,13 +5,13 @@
 **Id:** **P1d.10** since 2026-08-23 — P1d.1 before that, and M1a's P1a.12
 before that. Nothing but the number changed either time; it still runs first
 of M1d's three phases ([§ Phases](../README.md#phases)).
-**Depends on:** [M1a](../../m1a_rust/README.md)'s
-[P1a.7](../../m1a_rust/p1a.7_parallelism/README.md) — cores change the
+**Depends on:** [M1a](../../../docs/history/m1a_rust/README.md)'s
+[P1a.7](../../../docs/history/m1a_rust/README.md#p1a7--parallelism) — cores change the
 constant, not the exponent, and this phase is about the exponent. Knowing
 which is which needs the parallel numbers first. **P1a.7 resumed 2026-08-22
 and is two stages in**, neither of which produces a `--jobs` number — so this
 is still a decision rather than a wait: either P1a.7 reaches
-[S1a.7.5](../../m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)'s scaling
+[S1a.7.5](../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)'s scaling
 table first, or this phase starts without the parallel numbers and says so
 where a reading would have used them.
 **Was P1a.12; moved here 2026-08-21** at the user's direction, together with
@@ -84,7 +84,7 @@ candidates and the pruning is what makes the search tractable; on
 zebra2-minus-15 layer 1 kills nothing at all. Those are different regimes, and
 F9 measured one of them.
 
-This is [S1a.6.4](../../m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)'s lesson
+This is [S1a.6.4](../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)'s lesson
 a third time — the phase had been measuring one shape of workload — so the
 first stage here is a census, not a proposal.
 
@@ -104,7 +104,7 @@ first stage here is a census, not a proposal.
   a stated exhaustion claim — or the phase records, with numbers, why it
   cannot and what the honest verdict is instead.
 - The under-determined regime is a **named part of the measurement set**, the
-  way [P1a.7](../../m1a_rust/p1a.7_parallelism/README.md) had to re-aim its scaling target.
+  way [P1a.7](../../../docs/history/m1a_rust/README.md#p1a7--parallelism) had to re-aim its scaling target.
   One under-determined entry in the corpus is not a regime, it is an anecdote.
 - **Nothing changes what the engine proves.** A sound criterion makes the same
   proof cheaper; an unsound one changes the answer. Anything in the second
@@ -118,11 +118,11 @@ first stage here is a census, not a proposal.
 ## Risks
 
 - **Changing the traversal changes the counters.**
-  [design/08](../../m1a_rust/design/08_parallelism.md) §7 rejected parallel depth-first for
+  [design/08](../../../docs/history/m1a_rust/design/08_parallelism.md) §7 rejected parallel depth-first for
   exactly this: "going depth-first changes which no-goods exist when, i.e. the
   pruning, i.e. the counters". The same is true of a sequential dive. This
   phase therefore needs the decision P1a.7 needed —
-  [Q-M1a.18](../../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)'s
+  [Q-M1a.18](../../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)'s
   shape — before anything ships on by default.
 - **An unsound stopping rule is worse than a slow search.** "No new model for
   k layers, so stop" is a heuristic wearing a proof's clothes. If it ships it
@@ -139,12 +139,12 @@ first stage here is a census, not a proposal.
   still means the lattice was exhausted.
 - **Memory before time.** An uncapped
   `saturation/square-unique/terminus.ein -e` reached 12.3 GB before being
-  OOM-killed ([baseline.md §15](../../m1a_rust/p1a.6_performance/baseline.md)).
+  OOM-killed ([baseline.md §15](../../../docs/history/m1a_rust/measurements/baseline.md)).
   A deeper search may not get the chance to be slow. **The companion figure
   moved and this one has not been re-taken**:
   `features/01_not_and_absent -e` peaked at 724 MB and now peaks at
   **85–91 MB**, because
-  [T1a.7.1.7](../../m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)
+  [T1a.7.1.7](../../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync)
   found most of it was a provenance arena nothing reclaimed until the run
   ended. Whether `terminus.ein`'s ~1 KB per entering was the same structure is
   unmeasured, so this bullet's *shape* survives its numbers — but re-measure
@@ -152,7 +152,7 @@ first stage here is a census, not a proposal.
 
 ## Cross-links
 
-- [design/07 — Search layer](../../m1a_rust/design/07_search_layer.md)
+- [design/07 — Search layer](../../../docs/history/m1a_rust/design/07_search_layer.md)
 - [F9 — the rejected search optimisations](../../followups/f9_e_catalog.md) —
   read before proposing anything here
 - [`examples/zebra2-minus-15.ein`](../../../examples/zebra2-minus-15.ein) —

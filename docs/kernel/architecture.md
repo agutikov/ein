@@ -41,12 +41,12 @@ is read from the model count `k` — never chosen by a flag (see
 > **Driving this pipeline from another program** means one of two things.
 > From **Rust**, link the crates — the surface M20's Tauri backend and M10's
 > `ein-bench` use, documented by
-> [S1a.9.4](../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md).
+> [S1a.9.4](../history/m1a_rust/README.md#s1a94--documentation).
 > From **anything else**, run the `ein` binary and read
 > `--json-summary` / [`--events`](inference/events.md). The Python embedding
 > contract in [`docs/api/`](../api/) is **a record, not a live surface**: its
 > PyO3 successor was deferred on 2026-08-21
-> ([Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
+> ([Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
 
 ## Crate dependency map
 
@@ -360,6 +360,6 @@ The per-module detail behind these is
 - [`defined_behaviour.md`](defined_behaviour.md) — the thirteen behaviours the
   Python source used to be the only statement of.
 - [`../api/`](../api/) — the Python embedding contract (this pipeline as a
-  library API; **implemented by [P1a.9](../../plans/m1a_rust/p1a.9_release/README.md)**, not yet by anything).
+  library API; **implemented by [P1a.9](../history/m1a_rust/README.md#p1a9--release)**, not yet by anything).
 - [`glossary.md`](glossary.md) — kernel vocabulary.
 - [`plans/README.md`](../../plans/README.md) — the milestone roadmap.

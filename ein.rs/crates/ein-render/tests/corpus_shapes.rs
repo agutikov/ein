@@ -3,7 +3,7 @@
 //! `ein-conformance --tier T3` compared every artefact of every corpus cell
 //! between two engines: stdout, stderr, the exit code, the `--trace`
 //! markdown, the `--dump-states` tree, every DOT view.
-//! [P1a.10](../../../../plans/m1a_rust/p1a.10_single_implementation/README.md)
+//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation)
 //! removes the other engine, and this is what takes over: the same sweep,
 //! against a checked-in digest of what ein.rs produced **while the oracle was
 //! still there and still agreeing**. That timing is the whole provenance
@@ -39,7 +39,7 @@
 //! ## The two ops that arrived with floors
 //!
 //! `load` and `saturate` were added by
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md),
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite),
 //! and they are the only two surfaces whose sole owner had been a differential
 //! sweep: `ein-ir/tests/load_parity.rs` diffed `ein_core::shape` against
 //! `ir_oracle.py`'s `kb-shape`, and `ein-infer/tests/saturate_parity.rs`
@@ -49,7 +49,7 @@
 //! those floors move here with the ops rather than dying with the tests.
 //!
 //! Twelve renderings *are* checked in whole
-//! ([S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md),
+//! ([S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing),
 //! `tests/golden/`), chosen because they are the ones the parity contract
 //! stopped comparing. This manifest is the other 4 216, and the split is on
 //! the ledger rather than in a comment.

@@ -1,5 +1,5 @@
 //! The remap — [design/10
-//! §3](../../../../plans/m1a_rust/design/10_binary_format.md#3-ids-across-the-boundary),
+//! §3](../../../../docs/history/m1a_rust/design/10_binary_format.md#3-ids-across-the-boundary),
 //! task T1a.8.1.3.
 //!
 //! `Symbol`, `IntId`, `FactId` and `ProvId` are process-local integers, so a

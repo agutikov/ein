@@ -5,7 +5,7 @@
 > what parses.
 >
 > It was `ein.py/src/ein/ir/grammar.lark` until M1a
-> [S1a.10.5](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md),
+> [S1a.10.5](../../../history/m1a_rust/README.md#s1a105--the-removal),
 > and the engine that is left parses by recursive descent — an implementation,
 > not a specification — so the grammar was transcribed before the file went.
 

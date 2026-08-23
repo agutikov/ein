@@ -2,7 +2,7 @@
 
 - found: 2026-08-23, `utils/fuzz_ein.py --seed 20260823 --iters 5000
   --no-id-order --jobs 8`, mode `mixed` — the
-  [T1a.7.2.6](../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+  [T1a.7.2.6](../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
   stress session, whose subject was the `jobs` property. This is the only
   thing 25 000 runs turned up, and it is not about `--jobs`
 - property: **no-crash** — a generated program exits 0, 1 or 2, never a panic
@@ -55,7 +55,7 @@ pairs, and the recursion reaches them with nothing between.
 Because there are two defensible answers and nothing has chosen one.
 `value_label` says it panics "as ein.py's `TypeError` does" — a rationale
 whose subject was deleted at
-[S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/README.md), so
+[S1a.10.5](../../docs/history/m1a_rust/README.md#p1a10--one-implementation), so
 what used to be parity is now just an abort. The two candidates are:
 
 - **render it** — `ir_dot.rs:339` already spells a keyword pair as

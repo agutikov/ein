@@ -1,9 +1,9 @@
 //! What a derivation's **narration** is, executable —
-//! [design/01 §5](../../../../plans/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list).
+//! [design/01 §5](../../../../docs/history/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list).
 //!
 //! **Not part of the engine.** `publish = false`, and nothing outside a test
 //! depends on it. It exists because
-//! [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+//! [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
 //! left the same decision implemented six times — in the parity harness, in
 //! three `tests/` files, in `ein-render`'s `shape.rs` and in its
 //! `utils/ir_oracle.py` twin (gone since S1a.10.4) — each cut made one at a
@@ -18,7 +18,7 @@
 //! > point, is narration.**
 //!
 //! Since S1a.6.9 a fork *resumes* root's saturation rather than re-deriving it
-//! ([D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
+//! ([D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
 //! so two runs can reach the same answer while narrating different amounts of
 //! the same derivation: a quarter of the firings, a different one of each
 //! fact's equally valid justifications recorded first, and — with
@@ -29,9 +29,9 @@
 //! # Why it outlived the harness
 //!
 //! The rule was written for two engines, and
-//! [S1a.10.3](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md)
+//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)
 //! retired the harness that compared them. This crate survived, because
-//! [S1a.10.1 §5](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#5-what-the-successor-found)
+//! [S1a.10.1 §5](../../../../docs/history/m1a_rust/oracle_ledger.md#5-what-the-successor-found)
 //! showed the same three observables move **inside one engine**: run the
 //! corpus twice with the id space permuted and 66 renderings move, all of them
 //! a dying fork's stopping point, a firing count, or which of a fact's equally
@@ -59,7 +59,7 @@
 //!    `slice` provenance cone, a fork's own `enterings/` dump, and the lattice
 //!    DOT a snapshot draws from dead state keys. Compared for presence; the
 //!    regression coverage that replaces the byte diff is the ein.rs goldens of
-//!    [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md).
+//!    [S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
 //!    [`is_narration`], [`blank_blocks`].
 //! 3. **A dying fork's stopping point is narration** — a `dead-post`
 //!    entering's unsat core and the state keys derived from it. The run's own

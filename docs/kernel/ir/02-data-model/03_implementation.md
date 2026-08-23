@@ -14,7 +14,7 @@ abstractly — is [`01_entities.md`](01_entities.md) (entities) and
 >
 > **This page is a map, not a specification.** It was a map of
 > `ein.py/src/ein/kb/` until M1a
-> [S1a.10.6](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.6_docs.md),
+> [S1a.10.6](../../../history/m1a_rust/README.md#s1a106--the-docs-after-the-oracle),
 > and unlike the engine's map it is not a rename: the *abstract* store is the
 > same store, but almost none of §2 and §3 survived the port, because they
 > described CPython mechanics (frozen dataclasses, `object.__setattr__`, dict
@@ -27,7 +27,7 @@ with the loader in `ein-ir` and the DOT view in `ein-render`.
 
 | module | role |
 |--------|------|
-| [`intern.rs`](../../../../ein.rs/crates/ein-core/src/intern.rs) | the symbol table — every name in a program as a `u32` `Symbol`. Ids are assignment-ordered and `Symbol` deliberately has no `Ord`, so id order cannot reach an output by accident ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md)) |
+| [`intern.rs`](../../../../ein.rs/crates/ein-core/src/intern.rs) | the symbol table — every name in a program as a `u32` `Symbol`. Ids are assignment-ordered and `Symbol` deliberately has no `Ord`, so id order cannot reach an output by accident ([design/02](../../../history/m1a_rust/design/02_determinism_and_order.md)) |
 | [`value.rs`](../../../../ein.rs/crates/ein-core/src/value.rs) | `Value` — a fact argument in 4 bytes: `[tag:2][payload:30]`, `Sym` / `Int` / `Fact`. The int pool behind `Int` lives here too |
 | [`facts.rs`](../../../../ein.rs/crates/ein-core/src/facts.rs) | the fact store — interned rows, and the `FactId` every proposition gets. Identity is the id: `probe` is O(1) where a tuple compare was O(arity) recursing into string equality |
 | [`terms.rs`](../../../../ein.rs/crates/ein-core/src/terms.rs) | `Terms` — the three intern tables (symbols, integers, facts) held together, because a `Value`'s tag says which one to read. `cmp_semantic` is the total order over arguments; `STRUCTURAL` / `RESERVED` / `PREDICATES` are here because the lexer needs them as well as the engine |
@@ -103,5 +103,5 @@ entity-view; named-type projection is a user-space rule.
   engine's module map (same treatment for the inference layer).
 - [`../../architecture.md`](../../architecture.md) — where the data model sits
   in the crate dependency map.
-- [design/03](../../../../plans/m1a_rust/design/03_data_model.md) — why each
+- [design/03](../../../history/m1a_rust/design/03_data_model.md) — why each
   representation is the one it is, with the measurements that chose it.

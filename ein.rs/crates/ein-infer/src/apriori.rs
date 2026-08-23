@@ -14,11 +14,11 @@
 //! order and therefore a different traversal on every puzzle.
 //! [`Terms::cmp_fact_semantic`] is the comparator that agrees with Python's,
 //! and it exists for this call site
-//! ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §3b).
+//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §3b).
 //!
 //! Where the two *cannot* agree is a mixed-type argument: Python raises
 //! `TypeError` comparing a `str` to an `int`, and `Value` is totally ordered
-//! by construction. That is [D2](../../../../plans/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
+//! by construction. That is [D2](../../../../docs/history/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
 //! with `examples/ein-bugs/mixed-type-hypothesis.ein` pinning both halves.
 //!
 //! ### Where no-goods are *not* consulted
@@ -26,7 +26,7 @@
 //! [`filter_candidate`] runs at layer-generation time, so a clause emitted
 //! part-way through a layer does not prune the rest of that layer. The
 //! asymmetry is deliberate and load-bearing downstream: it is what makes
-//! [design/08](../../../../plans/m1a_rust/design/08_parallelism.md) §2's case 1
+//! [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §2's case 1
 //! free.
 
 use ein_core::{FactId, Kb, Terms};
@@ -67,7 +67,7 @@ pub fn cmp_set(terms: &Terms, a: &[FactId], b: &[FactId]) -> std::cmp::Ordering 
 ///
 /// The **break** on the first prefix mismatch is a cost win and *only* a cost
 /// win, which is worth saying because
-/// [S1a.4.3](../../../../plans/m1a_rust/p1a.4_search_layer/s1a.4.3_apriori_and_nogoods.md)
+/// [S1a.4.3](../../../../docs/history/m1a_rust/README.md#s1a43--apriori-candidate-generation-and-the-no-good-store)
 /// calls it "load-bearing for both cost and order". It cannot move the order:
 /// every set in a layer has the same size, so sorting by the full tuple sorts
 /// by the prefix as its primary key, and once a prefix differs no later entry

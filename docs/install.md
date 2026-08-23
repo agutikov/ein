@@ -11,7 +11,7 @@ solves `zebra2.ein` on a machine with nothing else on it — which is what
 differ between a binary and a checkout beside it is *which* stdlib a run
 reads, and `ein --version` answers that in one line.
 
-> **Written at M1a [S1a.9.3](../plans/m1a_rust/p1a.9_release/s1a.9.3_packaging.md).**
+> **Written at M1a [S1a.9.3](history/m1a_rust/README.md#s1a93--packaging-and-release).**
 > The release workflow that produces the artefacts below
 > ([`.github/workflows/release.yml`](../.github/workflows/release.yml)) is
 > written and reviewed; **the first tag is what runs it**. Until one is
@@ -44,7 +44,7 @@ C++ toolchain targeting musl, which the release runner does not have, so that
 artefact is `--no-default-features`: the system allocator, no `.einb`
 container, no `--jobs` fan-out. It costs a measured **+25 % on `solve
 zebra2.ein -e`** and **+36 % on `solve zebra.ein -e`**
-([`feature_cost.md` §2](../plans/m1a_rust/p1a.9_release/feature_cost.md#2---no-default-features--what-a-packager-is-buying)).
+([`feature_cost.md` §2](history/m1a_rust/measurements/feature_cost.md#2---no-default-features--what-a-packager-is-buying)).
 Take the glibc binary unless glibc is the problem.
 
 ## `cargo install`
@@ -66,7 +66,7 @@ This builds with default features, which needs **`cmake` and a C++ compiler**
 cargo install --path ein/ein.rs/crates/ein-cli --locked --no-default-features
 ```
 
-— and read [`feature_cost.md`](../plans/m1a_rust/p1a.9_release/feature_cost.md)
+— and read [`feature_cost.md`](history/m1a_rust/measurements/feature_cost.md)
 first, because that build also drops `ein kb` and `--jobs`.
 
 `cargo install` puts `ein` on `$PATH`. That is right for using ein as a tool
@@ -144,7 +144,7 @@ PyO3 binding was **deferred on 2026-08-21** for want of a consumer —
 [M20](../plans/m20_gui/README.md) links the crates, [M10](../plans/m10_external_benchmarks/README.md)'s
 benchmark runner must shell out to be a fair measurement, and
 [M2](../plans/m2_nl_to_ir/README.md)'s reason turned out to be an HTTP server.
-[Q-M1a.23](../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+[Q-M1a.23](history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
 holds the three conditions that would revive it.
 
 To drive ein from Python today, run the binary and read its output: `ein solve
@@ -172,5 +172,5 @@ EIN_BIN=ein.rs/target/release/ein utils/bench_env.sh python3 utils/e2e_baseline.
 - [`README.md`](../README.md) — what ein is, and the quickstart
 - [`docs/guide/`](guide/) — the tutorial: learn ein by solving the Zebra puzzle
 - [`stdlib/README.md`](../stdlib/README.md) — what `std.*` contains
-- [`plans/m1a_rust/p1a.9_release/`](../plans/m1a_rust/p1a.9_release/README.md) —
-  the release phase: what is measured, and what only a tag can prove
+- [M1a § P1a.9 — Release](history/m1a_rust/README.md#p1a9--release) — the
+  release phase as history: what is measured, and what only a tag can prove

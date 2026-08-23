@@ -15,7 +15,7 @@ at S1a.10.4, and what remains is
 `ein-core/tests/golden/repr_escapes.txt` — 4 561 code points with CPython's
 answer beside each, frozen on the day it was captured. A `repr` that differs
 because *CPython* changed is
-[accepted loss L2](../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss);
+[accepted loss L2](../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss);
 re-running this script and re-blessing that golden together is the manual
 step that closes it.
 

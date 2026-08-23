@@ -1,5 +1,5 @@
 //! The rendered trace, against checked-in fixtures — S1a.5.2's synthetic one
-//! and [S1a.6.11](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.11_fixture_goldens.md)'s
+//! and [S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing)'s
 //! real solves.
 //!
 //! **Two kinds of golden, and the difference is the point.**
@@ -13,9 +13,9 @@
 //! - `tests/golden/trace_*.md` are **ein.rs's own**, and they exist because
 //!   the synthetic one is not enough: it locks the *renderer* and says nothing
 //!   about what a solve produces, which is why it kept passing through
-//!   [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+//!   [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
 //!   while the rendered trace lost half its rules. Since
-//!   [S1a.6.10](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)
+//!   [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
 //!   nothing compares a rendered trace against ein.py any more — the two
 //!   engines narrate different amounts of the same derivation on purpose — so
 //!   this is the whole of its regression coverage.

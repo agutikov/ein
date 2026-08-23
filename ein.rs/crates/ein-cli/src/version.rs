@@ -1,5 +1,5 @@
 //! `ein --version` — what this binary *is*, in five lines
-//! ([S1a.9.3](../../../../plans/m1a_rust/p1a.9_release/s1a.9.3_packaging.md)
+//! ([S1a.9.3](../../../../docs/history/m1a_rust/README.md#s1a93--packaging-and-release)
 //! T1a.9.3.4).
 //!
 //! A version number alone answers almost nothing about this program. Three of
@@ -30,7 +30,7 @@
 //! **Not the same digest `.einb` carries.** [`ein_einb::meta::stdlib_digest`]
 //! hashes the same bytes with BLAKE3 because it is a field of a binary
 //! container — content addressing, frozen into the format
-//! ([design/10](../../../../plans/m1a_rust/design/10_binary_format.md) §2).
+//! ([design/10](../../../../docs/history/m1a_rust/design/10_binary_format.md) §2).
 //! This one is for a human with `sha256sum`, and the manifest it hashes is
 //! itself a list of SHA-256 digests, so a second algorithm here would make
 //! the file describe itself in two ways.

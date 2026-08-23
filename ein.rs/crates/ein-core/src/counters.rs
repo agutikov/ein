@@ -24,7 +24,7 @@
 //! hottest path in the engine — 6.0 M of them on an exhaustive `zebra2`, 60 M
 //! on `zebra` — and would perturb the very profile it exists to explain.
 //!
-//! Thread-local, because [P1a.7](../../../../plans/m1a_rust/p1a.7_parallelism/README.md)
+//! Thread-local, because [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 //! will run several searches at once and a shared counter would either race or
 //! serialise. [`snapshot`] reads the calling thread's; a parallel run sums them
 //! at the join.
@@ -53,7 +53,7 @@ pub struct Counters {
     /// bucket, or by walking the relation's whole extent. **No ein.py
     /// counterpart** — this is a question about *this* implementation's data
     /// layout, and it is the one that chose
-    /// [S1a.6.2](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.2_memory_layout.md)'s
+    /// [S1a.6.2](../../../../docs/history/m1a_rust/README.md#s1a62--memory-layout)'s
     /// remaining tasks: on an exhaustive `zebra` **99.1 %** of candidates come
     /// from an extent scan and only 0.9 % from a bucket, because the index does
     /// not key a nested-fact argument and `(not (R …))` is most of the corpus.
@@ -71,12 +71,12 @@ pub struct Counters {
     /// The same four again, restricted to the **guard sub-plans** the NAF
     /// boundary runs — `join = total − guard`.
     ///
-    /// [S1a.6.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.3_beta_memories.md)
+    /// [S1a.6.3](../../../../docs/history/m1a_rust/README.md#s1a63--beta-memories-f11-d1)
     /// made the join 4.5× faster by keying the index one level inside a nested
     /// argument, and guard sub-plans go through the same `Matcher::walk`
     /// driver, so they should have got it too. Whole-run totals cannot say
     /// whether they did: they are dominated by whichever caller runs more.
-    /// [T1a.6.12.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6123--what-the-guard-queries-scan)
+    /// [T1a.6.12.3](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)
     /// splits them, because a guard that *could* key on a bound argument and
     /// does not is a bug with a 30 % price tag, and one that offers nothing to
     /// key on is a fact about the query.
@@ -87,7 +87,7 @@ pub struct Counters {
     /// Premises answered by **one interned lookup** rather than by a scan —
     /// a step every one of whose slots was already bound, which asks whether
     /// one exact proposition is in the KB
-    /// ([T1a.6.12.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6123--what-the-guard-queries-scan)).
+    /// ([T1a.6.12.3](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)).
     /// `scan_ground` counts the questions and `cand_ground` the ones that
     /// found their fact; `scan_bucket + scan_extent + scan_ground` is every
     /// premise the matcher resolved.
@@ -122,7 +122,7 @@ pub struct Counters {
     /// Rule plans compiled. ein.py caches per `Engine` and builds one engine
     /// per saturation, so it compiles the same plan many times over — **17 430**
     /// on an exhaustive `zebra2`, which is what ein.rs did too until
-    /// [S1a.6.8](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.8_compile_cache_and_extents.md)
+    /// [S1a.6.8](../../../../docs/history/m1a_rust/README.md#s1a68--the-compile-cache-and-the-extent-counts)
     /// built design/06 § Win A's per-run memo. **This is the one counter the
     /// two implementations are expected to disagree on**: 305 here against
     /// 17 430 in the oracle on that run, and 305 is the number of distinct
@@ -148,13 +148,13 @@ pub struct Counters {
     /// ids it actually assigned. The **ratio** is the measurement: on
     /// `branching/06 -e` it is 2 318 949 to 505, so the store is a read
     /// structure with a rare append rather than a write structure
-    /// ([shared_state.md](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md) §2).
+    /// ([shared_state.md](../../../../docs/history/m1a_rust/measurements/shared_state.md) §2).
     pub fact_intern: u64,
     pub fact_new: u64,
     /// Provenance records created — [`crate::prov::ProvArena::push`]. The
     /// arena is shared for the same reason the fact store is (see
     /// [`crate::prov`]) and has the same borrow-returning read, but
-    /// [design/08 §6](../../../../plans/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
+    /// [design/08 §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
     /// does not list it, so nobody had asked how hard it is written.
     pub prov_push: u64,
     /// Records **read** — `ProvArena::get`, which returns a `&Prov`. The
@@ -172,7 +172,7 @@ pub struct Counters {
     /// …of which assigned at least one **fact id**, and at least one
     /// **provenance record**. This is the rate at which a worker forbidden to
     /// append would have to hand its entering back
-    /// ([shared_state.md §5](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md)),
+    /// ([shared_state.md §5](../../../../docs/history/m1a_rust/measurements/shared_state.md)),
     /// and it is a different question from the totals: 417 ids spread one per
     /// entering is a design and 417 in one entering is another.
     pub entering_fact_new: u64,
@@ -194,7 +194,7 @@ pub struct Counters {
     // ── the enqueue pass ───────────────────────────────────────────
     /// Enqueue passes run — one full pass at saturation start, then one delta
     /// pass per firing. **No ein.py counterpart**; it exists because
-    /// [S1a.7.4](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.4_parallel_enqueue.md)
+    /// [S1a.7.4](../../../../docs/history/m1a_rust/README.md#s1a74--level-2-the-parallel-enqueue-pass)
     /// proposes to fan a pass out and the question that decides it is not how
     /// much the passes cost in total but how much *one* of them has to hand out.
     pub enqueue_pass: u64,
@@ -238,7 +238,7 @@ pub struct Counters {
     pub fork: u64,
     /// [`crate::kb::Kb::flatten`] calls and the facts each one copied — the
     /// **cost** column of the layer-barrier coalesce
-    /// ([T1a.7.2.0](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+    /// ([T1a.7.2.0](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)).
     /// `materialise` is O(facts) per layer and a fork's saving is one stack
     /// walk, so the pair is what says whether the threshold is right: a search
     /// with a large root and cheap layers pays `flatten_facts` to save
@@ -255,7 +255,7 @@ pub struct Counters {
     /// — ein.py `hypgen.generate_hypotheses` calls, split by caller. The two
     /// have very different costs per call and the same cost per *candidate*,
     /// which is the split
-    /// [S1a.6.4](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)
+    /// [S1a.6.4](../../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)
     /// exists to measure.
     pub hypgen_call: u64,
     pub hypgen_complete: u64,
@@ -266,7 +266,7 @@ pub struct Counters {
     /// Guard sub-plan queries actually **run**, and the monotone half of them.
     ///
     /// Equal to `guard_query` since
-    /// [T1a.6.12.2](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md#task-t1a6122--the-per-round-guard-memo-priced)
+    /// [T1a.6.12.2](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)
     /// removed the per-round memo that used to sit between them: its hit rate
     /// was 0–1.2 %, because the watch stamp had already filtered out the
     /// candidates that would have shared a question. The two counters are kept
@@ -276,7 +276,7 @@ pub struct Counters {
     /// The `Saturator` counts both per saturation
     /// (`guard_evals` / `guard_evals_monotone`); these are the same two summed
     /// over every fork of a whole solve, which is what
-    /// [Q-M1a.17](../../../../plans/m1a_rust/open_questions.md#q-m1a17--win-bs-80--assumed-monotone-guards-dominate)
+    /// [Q-M1a.17](../../../../docs/history/m1a_rust/open_questions.md#q-m1a17--win-bs--80--assumed-monotone-guards-dominate)
     /// asks for and no per-saturation field can answer: design/06 § Win B's
     /// mechanism only reaches a *monotone* guard, its projection is ≥ 80 %, and
     /// at root scale the measured mix was 11–30 % the other way.

@@ -4,7 +4,7 @@
 //! stopped being an allocation: ein.py's `_bind_arg` returns
 //! `{**bindings, name: arg}` on every successful bind, which is a fresh dict
 //! per bound variable per candidate fact at every level of the join
-//! ([design/05](../../../../plans/m1a_rust/design/05_matcher.md) §1). A
+//! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §1). A
 //! counting allocator is how that is checked rather than asserted: run the same
 //! plan over a KB twice the size, and the allocation count must not move.
 

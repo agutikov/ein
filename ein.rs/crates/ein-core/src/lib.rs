@@ -1,17 +1,17 @@
 //! `ein-core` — the data model.
 //!
 //! No I/O and no engine: interning, `Value` / `FactId` as integers, row
-//! storage, the layered COW KB ([design/03](../../../plans/m1a_rust/design/03_data_model.md)),
+//! storage, the layered COW KB ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md)),
 //! and the `python_repr` compatibility renderer
-//! ([design/02](../../../plans/m1a_rust/design/02_determinism_and_order.md) §7).
+//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7).
 //! Everything depends on this crate; it depends on nothing.
 //!
 //! The data model lands at
-//! [P1a.2](../../../plans/m1a_rust/p1a.2_kb_core/README.md); the two
+//! [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core); the two
 //! compatibility renderers land early, at
-//! [S1a.1.2](../../../plans/m1a_rust/p1a.1_ir_frontend/s1a.1.2_ast_and_dumper.md),
+//! [S1a.1.2](../../../../docs/history/m1a_rust/README.md#s1a12--ast-arena-compatibility-renderers-dumper),
 //! because they are trivial to write and expensive to discover missing at
-//! [P1a.5](../../../plans/m1a_rust/p1a.5_presentation/README.md).
+//! [P1a.5](../../../../docs/history/m1a_rust/README.md#p1a5--presentation-and-cli).
 
 #![forbid(unsafe_code)]
 

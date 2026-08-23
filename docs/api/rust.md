@@ -18,7 +18,7 @@ between its two `page` markers, and one of that file's three tests compares
 the two texts. So the example compiles, runs, and produces the output printed
 here — checked by `cargo test --workspace`, which is the gate. It is the
 substitute for the contract suite the deferred
-[S1a.9.2](../../plans/m1a_rust/p1a.9_release/README.md) would have been, and it
+[S1a.9.2](../history/m1a_rust/README.md#p1a9--release) would have been, and it
 is stronger on the one axis that matters: it cannot rot without the gate going
 red. The five Python pages beside it went stale precisely because nothing ran
 them.
@@ -76,7 +76,7 @@ inside `solve`.
 values. Both outlive the KB and are threaded through by `&mut`, because
 loading *and* solving intern. A `Kb` is meaningless without the `Terms` it was
 built against — the data model is integers
-([design/03](../../plans/m1a_rust/design/03_data_model.md)), and a fact is a
+([design/03](../history/m1a_rust/design/03_data_model.md)), and a fact is a
 row of `Value`s whose text lives in the interner.
 
 ### 2 — Load
@@ -119,7 +119,7 @@ is the idiom. The fields an embedder actually sets:
 | `max_set_size` | commitment-set depth, default 5 |
 | `max_time`, `max_enterings` | budgets. What happens when one trips is `on_budget` |
 | `store_lattice` | keep the proof, which step 5's trace needs and nothing else |
-| `jobs` | `> 1` fans each lattice layer out over threads. **Same verdict, same models, same counters** — 20 712 corpus cells at `--jobs {2,4,8,16}` move nothing ([P1a.7](../../plans/m1a_rust/p1a.7_parallelism/README.md)). Inert without the `parallel` feature |
+| `jobs` | `> 1` fans each lattice layer out over threads. **Same verdict, same models, same counters** — 20 712 corpus cells at `--jobs {2,4,8,16}` move nothing ([P1a.7](../history/m1a_rust/README.md#p1a7--parallelism)). Inert without the `parallel` feature |
 | `config` | the `SolverConfig` knobs; `None` takes the puzzle's own `(config …)` block |
 
 `Events::off()` is the do-nothing narrator; `Events::to(sink, level)` writes
@@ -275,7 +275,7 @@ major.minor this build reads.
 
 A crate that forwards a job count forwards `parallel`; the measured cost of
 turning the defaults off is
-[`feature_cost.md`](../../plans/m1a_rust/p1a.9_release/feature_cost.md).
+[`feature_cost.md`](../history/m1a_rust/measurements/feature_cost.md).
 
 ## What is *not* the contract
 

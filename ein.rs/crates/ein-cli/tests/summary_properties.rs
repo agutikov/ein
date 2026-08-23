@@ -2,7 +2,7 @@
 //!
 //! `ein-conformance --tier T1` compared `summary.json` between two engines:
 //! every counter the engine reports about its own work, on every `solve` cell
-//! of the corpus. [P1a.10](../../../../plans/m1a_rust/p1a.10_single_implementation/README.md)
+//! of the corpus. [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation)
 //! retires the second operand, and the obvious replacement — check the numbers
 //! in against a golden — banks the *value* and loses the *reason*. A counter
 //! golden rots into "whatever it was last time"; two engines agreeing on 22

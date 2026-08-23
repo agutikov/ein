@@ -43,7 +43,7 @@ const DECLARATORS: [&str; 4] = ["rule", "hrule", "relation", "macro"];
 /// `std.macro` (S1.5.9).
 ///
 /// A literal list because the registries it mirrors are Python objects;
-/// [P1a.3](../../../../plans/m1a_rust/p1a.3_deductive_core/README.md) brings
+/// [P1a.3](../../../../docs/history/m1a_rust/README.md#p1a3--deductive-core) brings
 /// the primitive and predicate registries over and this becomes a query
 /// against them.
 const RESERVED_NAMES: [&str; 8] = [
@@ -71,7 +71,7 @@ impl From<ParseError> for LoadError {
     }
 }
 
-/// Parsed module forms, by resolved path — [T1a.6.5.3](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.5_frontend.md).
+/// Parsed module forms, by resolved path — [T1a.6.5.3](../../../../docs/history/m1a_rust/README.md#s1a65--frontend-and-load-path).
 ///
 /// A resolution is a *tree*, and the corpus's trees are diamonds: `zebra2`
 /// imports `std.algebra` and `std.bijection`, `std.bijection` imports

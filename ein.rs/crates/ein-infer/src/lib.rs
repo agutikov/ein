@@ -1,17 +1,17 @@
 //! `ein-infer` — Compile, match, saturate, world, search, verdict, explain.
 //!
 //! The engine proper. It lands over
-//! [P1a.3](../../../plans/m1a_rust/p1a.3_deductive_core/README.md) (compile →
+//! [P1a.3](../../../../docs/history/m1a_rust/README.md#p1a3--deductive-core) (compile →
 //! match → saturate → the NAF boundary) and
-//! [P1a.4](../../../plans/m1a_rust/p1a.4_search_layer/README.md) (the
+//! [P1a.4](../../../../docs/history/m1a_rust/README.md#p1a4--search-layer) (the
 //! hypothesis loop above it).
 //!
 //! Everything here is a **port**, not a redesign: `ein.py` is the oracle, so
 //! the shape of a plan, the order of a firing sequence and the text of an
 //! error are all fixed by what the Python implementation does
-//! ([design/01](../../../plans/m1a_rust/design/01_parity_contract.md)). What
+//! ([design/01](../../../../docs/history/m1a_rust/design/01_parity_contract.md)). What
 //! is free is the encoding, and that is where the whole win lives —
-//! [design/05](../../../plans/m1a_rust/design/05_matcher.md) §1 attributes 46 %
+//! [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §1 attributes 46 %
 //! of an exhaustive solve's self time to unification the data model made
 //! impossible to do quickly.
 

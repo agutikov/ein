@@ -127,7 +127,7 @@ fn write(out: &mut String, value: &Json, indent: Option<usize>, depth: usize, so
 /// notation (|x| ≥ 1e16, or 0 < |x| < 1e-4) and Rust does not. Every float
 /// that reaches this writer is a `round(_, 3)` of a clock reading in seconds
 /// or milliseconds, so neither bound is in range — and those fields are on the
-/// [normalisation list](../../../../plans/m1a_rust/design/01_parity_contract.md) §5
+/// [normalisation list](../../../../../docs/history/m1a_rust/design/01_parity_contract.md) §5
 /// anyway, because ein.py is not stable there either.
 fn float_repr(f: f64) -> String {
     if f.is_nan() {

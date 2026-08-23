@@ -13,7 +13,7 @@ Run a *measured* experiment to answer the user's open question:
 quality?** If yes, integrate. If no, leave it deprecated.
 
 > **The submodule is not registered.** M1a
-> [S1a.10.5](../../m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+> [S1a.10.5](../../../docs/history/m1a_rust/README.md#s1a105--the-removal)
 > deinitialised `nlp/link-grammar` — it had never been checked out, and every
 > `git clone --recurse-submodules` was fetching it for an experiment that has
 > not run. Registering it is this phase's first act:

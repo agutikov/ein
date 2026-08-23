@@ -29,7 +29,7 @@
 //! **It fails rather than skips when Graphviz is missing.** It used to skip —
 //! on a stderr line `cargo test` captures for a passing test, which is the
 //! shape the ledger's
-//! [§2](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)
+//! [§2](../../../../docs/history/m1a_rust/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)
 //! found 41 more of and S1a.10.3 removed the helper for. A check that reports
 //! a pass because its tool is absent is not a check, and "loudly" was the word
 //! doing the lying.

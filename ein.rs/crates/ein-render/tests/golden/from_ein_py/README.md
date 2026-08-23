@@ -2,7 +2,7 @@
 
 Seventeen renderings **ein.py produced**, checked in years before the port and
 carried across by `git mv` in
-[S1a.10.2](../../../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+[S1a.10.2](../../../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 — never regenerated.
 
 That distinction is the whole point of the directory. Every other golden in
@@ -11,7 +11,7 @@ rendered", which catches a regression and proves nothing about correctness.
 These say something ein.rs cannot say about itself — **a second
 implementation, written independently, produced these bytes** — and that is
 the last independent provenance the repo has after
-[P1a.10](../../../../../../plans/m1a_rust/p1a.10_single_implementation/README.md).
+[P1a.10](../../../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation).
 Blessing one of them from ein.rs would turn it into a self-golden with a
 misleading name, so:
 
@@ -21,7 +21,7 @@ misleading name, so:
 > provenance was spent — or it is a regression.
 
 They were `ein.py/tests/golden/**` until S1a.10.2. The move is
-[ledger §4](../../../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#4-what-the-removal-must-relocate)'s
+[ledger §4](../../../../../../docs/history/m1a_rust/oracle_ledger.md#4-what-the-removal-must-relocate)'s
 recommendation, done a stage early: five ein.rs tests read these files without
 running Python, so they would have stayed green until the commit that deleted
 the tree and failed there, which is exactly the kind of defect a phase should

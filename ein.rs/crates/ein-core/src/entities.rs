@@ -19,7 +19,7 @@ use rustc_hash::FxHashMap;
 /// The frontend's own `Loc` names its file through a `FileId` into the AST's
 /// file table; this is the same three numbers with the table left behind, so
 /// the data model does not depend on the parser
-/// ([design/12](../../../../plans/m1a_rust/design/12_toolchain_and_layout.md) §1
+/// ([design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §1
 /// — everything depends on `ein-core`, and `ein-core` depends on nothing).
 ///
 /// In practice almost every one of these is `None`: ein.py's `_topform` builds
@@ -35,7 +35,7 @@ pub struct Loc {
 /// A node in the program's syntax arena, opaque here.
 ///
 /// A rule's `:match` / `:assert` clause stays as parsed until the compiler
-/// lowers it to plan bytecode ([design/05](../../../../plans/m1a_rust/design/05_matcher.md) §2),
+/// lowers it to plan bytecode ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2),
 /// so the KB has to *hold* syntax without *knowing* it. It holds this
 /// instead: the loader converts from the frontend's `NodeId` and the compiler
 /// converts back, and neither direction costs anything.
@@ -135,7 +135,7 @@ pub struct Query {
 /// An insertion-ordered map from [`Symbol`] to `V` — a Python `dict`, whose
 /// order is a language guarantee and is observable through
 /// `hypgen._raw_candidates` and `Engine.compile_all`
-/// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §2).
+/// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §2).
 #[derive(Clone, Debug)]
 pub struct Registry<V> {
     entries: Vec<(Symbol, V)>,

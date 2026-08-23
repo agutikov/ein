@@ -10,7 +10,7 @@
 > [`corpus_cli.rs`](../../../ein.rs/crates/ein-cli/tests/corpus_cli.rs).
 >
 > **Every wall-clock number on this page is a frozen constant** (M1a
-> [S1a.10.6](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.6_docs.md)):
+> [S1a.10.6](../../history/m1a_rust/README.md#s1a106--the-docs-after-the-oracle)):
 > both instruments that produced them — `bench_solve.py` and
 > `bench_monotonic.py`, under PyPy — went with the engine they measured. What
 > is still re-measurable is the *verdict* column, and that is what the sweep

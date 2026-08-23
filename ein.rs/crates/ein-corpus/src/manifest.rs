@@ -9,7 +9,7 @@
 //!
 //! The reader survived `ein-conformance`, which was retired with the second
 //! engine at
-//! [S1a.10.3](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md).
+//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine).
 //! What changed with it is what a `runs` entry *means*: an invocation the file
 //! is **exercised** under, not one two implementations are **compared** under.
 //! [`crate::plan::argv`] turns one into an argv and
@@ -145,14 +145,14 @@ pub const SCHEMA: &str = "ein-corpus/2";
 /// alone: the entries above it cost 2.1 s, 4.1 s and 10.2 s, the ones below it
 /// 0.38 s and less, so a machine would have to be 2.1× faster or 2.7× slower
 /// before the answer changed.
-/// [`corpus_cost.md`](../../../../plans/m1a_rust/p1a.9_release/corpus_cost.md)
+/// [`corpus_cost.md`](../../../../docs/history/m1a_rust/measurements/corpus_cost.md)
 /// is the measurement and `corpus/README.md` § `slow` is the rule.
 pub const SLOW_MS: u64 = 1000;
 
 /// The group vocabulary — `corpus/README.md`.
 ///
 /// `generated` was the seventh until
-/// [S1a.10.4](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md).
+/// [S1a.10.4](../../../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine).
 /// It named the throwaway manifest `utils/fuzz_ein.py` wrote to hand a batch
 /// to the parity harness; the rewritten fuzzer runs the binary directly and
 /// writes no manifest, and a corpus entry is a file the engine is
@@ -326,7 +326,7 @@ mod tests {
     /// That last group was `crash-parity` until S1a.10.3, and its membership
     /// rule was "ein.py raises an unhandled exception here", which is neither
     /// a directory nor a fact about the language. Two of its ten members
-    /// answer in ein.rs ([D2](../../../plans/m1a_rust/divergences.md)), which
+    /// answer in ein.rs ([D2](../../../../docs/history/m1a_rust/divergences.md)), which
     /// is why the group no longer predicts an exit code and the sweep's
     /// golden does.
     #[test]

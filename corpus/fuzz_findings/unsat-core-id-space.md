@@ -2,7 +2,7 @@
 
 - found: 2026-08-21, `utils/fuzz_ein.py --seed 20260821 --minutes 4`, mode
   `mixed`, by the rewritten fuzzer
-  ([S1a.10.4](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md))
+  ([S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine))
 - property: **id-order** — the same answer under a permuted interner
 - minimised: 19 → 4 forms
 
@@ -45,7 +45,7 @@ EIN_ID_FILES=/tmp/unsat-core cargo test --manifest-path ein.rs/Cargo.toml \
 ## Why it is here rather than fixed
 
 It is the class
-[design/02](../../plans/m1a_rust/design/02_determinism_and_order.md) forbids —
+[design/02](../../docs/history/m1a_rust/design/02_determinism_and_order.md) forbids —
 an observable that depends on the order ids were assigned in — and it is the
 second one the id-space sweep has found that the corpus does not reach (the
 first is [`d3-goal-row-order`](d3-goal-row-order.md)). Both arrived within

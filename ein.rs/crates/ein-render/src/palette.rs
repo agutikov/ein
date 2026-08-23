@@ -4,7 +4,7 @@
 //! drawn in the same colour in every view and the eye groups by relation
 //! across diagrams.
 //!
-//! [S1a.5.1](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.1_dot_renderers.md)
+//! [S1a.5.1](../../../../docs/history/m1a_rust/README.md#s1a51--dot-renderers)
 //! T1 asked whether `hash_color` hashes with a stable digest or with Python's
 //! salted `hash()` — the latter would be a ein.py bug on the same footing as
 //! `state_digest`, to fix before the port copied it. **It is `hashlib.sha1`**,

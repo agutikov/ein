@@ -13,7 +13,7 @@ But `FxHashMap`'s iteration order, while stable run-to-run, is still an
 artefact of hash values and insertion history rather than of the data, where
 the observables this port had to reproduce came from *insertion-ordered*
 `dict`s and explicit `sorted()`
-([design/02](../plans/m1a_rust/design/02_determinism_and_order.md) §2). So the
+([design/02](../docs/history/m1a_rust/design/02_determinism_and_order.md) §2). So the
 rule is stronger than "don't use RandomState": **do not iterate a hash map at
 all** where the order can reach an output.
 

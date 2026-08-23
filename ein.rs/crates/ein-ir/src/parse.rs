@@ -19,7 +19,7 @@
 //! the failure of the last alternative tried. Reaching the end of the input
 //! is `UnexpectedEOF`, which Lark stamps `-1:-1` with `pos_in_stream = -1`;
 //! [`get_context`] reproduces the caret that quirk produces
-//! ([design/04](../../../../plans/m1a_rust/design/04_ir_frontend.md) §4,
+//! ([design/04](../../../../docs/history/m1a_rust/design/04_ir_frontend.md) §4,
 //! Q-M1a.3).
 
 use crate::ast::{Ast, FileId, Loc, Node, NodeId, canonical_int};

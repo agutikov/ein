@@ -1,7 +1,7 @@
 # Open Questions — M10 (External benchmarks)
 
 Milestone-scoped questions. Ids are **sticky** — `Q-M10.<n>`, in the style
-[M1a](../m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
+[M1a](../../docs/history/m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
 global `Q<n>` sequence in [`plans/open_questions.md`](../open_questions.md),
 so the namespaces cannot collide. A closed id is never reused.
 
@@ -82,7 +82,7 @@ worth more than a number, and it is the corpus's only link to
 - **(c) In-tree tests**, run by `cargo test --workspace`.
 
 **Recommendation: (a) for the code, and (c) for the answer half only.** After
-[P1a.10](../m1a_rust/p1a.10_single_implementation/README.md) `cargo test
+[P1a.10](../../docs/history/m1a_rust/README.md#p1a10--one-implementation) `cargo test
 --workspace` is the whole gate and a shell script is where a check goes to
 die — but a per-commit gate that depends on six external programs fails for
 reasons that have nothing to do with the commit. So: the harness is a crate;

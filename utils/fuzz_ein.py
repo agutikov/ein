@@ -12,10 +12,10 @@ differed. It found four real parity bugs in its first twenty minutes, on a
 surface five phases had signed off. **None of the four was a crash — all four
 were wrong answers** — so the arm that found them is the one that cannot be
 kept, and this header does not get to claim its predecessor's headline.
-It is [accepted loss L1](../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#6-accepted-loss),
-the single largest in [P1a.10](../plans/m1a_rust/p1a.10_single_implementation/README.md),
+It is [accepted loss L1](../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss),
+the single largest in [P1a.10](../docs/history/m1a_rust/README.md#p1a10--one-implementation),
 and the rewrite is
-[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
 T1a.10.4.2.
 
 The generator and the minimiser are untouched. What changed is what a case is
@@ -51,9 +51,9 @@ of the corpus, and it compares **45 rendering ops** per file rather than what
 a CLI prints. It is also the only one that needs `cargo`, so `--no-id-order`
 turns it off — explicitly, because a property that skips itself when a tool is
 missing is how the workspace ended up reporting 41 passing tests that asserted
-nothing ([the ledger §2](../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)).
+nothing ([the ledger §2](../docs/history/m1a_rust/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)).
 
-`jobs` is [M1a P1a.7](../plans/m1a_rust/p1a.7_parallelism/README.md)'s, and it
+`jobs` is [M1a P1a.7](../docs/history/m1a_rust/README.md#p1a7--parallelism)'s, and it
 is the one property whose *subject* is the engine's execution rather than its
 input: `--jobs N` fans a layer's enterings out across a `rayon` pool and
 commits them in candidate order, and the promise is that the run is **the same

@@ -4,7 +4,7 @@
 //! `canon.state_key`'s `key=repr`, the explanation tie-breaks, the DOT
 //! labels. ein.rs has no Python, so it needs a faithful renderer for exactly
 //! `str`, `int`, `tuple` and `Fact`
-//! ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §7).
+//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7).
 //!
 //! The alternative — rewriting those `key=repr` sorts in ein.py as explicit
 //! comparators — was considered and rejected: it re-baselines existing goldens
@@ -19,7 +19,7 @@ use crate::printable::is_printable;
 
 /// The value shapes reachable from a fact argument. `Fact` is spelled out
 /// rather than referenced because [`crate`]'s fact store lands in
-/// [P1a.2](../../../../plans/m1a_rust/p1a.2_kb_core/README.md); the renderer
+/// [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core); the renderer
 /// only ever needed the two fields that survive `repr=False`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PyValue {
@@ -124,9 +124,9 @@ pub fn repr_str(s: &str) -> String {
 ///
 /// Lives here rather than beside the lexer because it is the same question
 /// [`PyValue::Int`] answers — what Python would have printed — and because
-/// [P1a.2](../../../../plans/m1a_rust/p1a.2_kb_core/README.md)'s int pool
+/// [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core)'s int pool
 /// stores exactly this form
-/// ([design/03](../../../../plans/m1a_rust/design/03_data_model.md) §3).
+/// ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3).
 pub fn canonical_int(text: &str) -> String {
     let (neg, digits) = match text.strip_prefix('-') {
         Some(rest) => (true, rest),

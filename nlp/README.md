@@ -9,7 +9,7 @@ link-grammar output to the LLM improves NL → IR quality, with these two files
 as the starting point ([S2.5.1](../plans/m2_nl_to_ir/p2.5_link_grammar_experiment/s2.5.1_runner.md)).
 
 > **The `link-grammar` submodule was deinitialised at M1a
-> [S1a.10.5](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md).**
+> [S1a.10.5](../docs/history/m1a_rust/README.md#s1a105--the-removal).**
 > It pointed at `opencog/link-grammar` and was never checked out, so what it
 > cost was a `git clone --recurse-submodules` fetching it for an experiment
 > that has not run. P2.5 re-adds it in one command when it does — and P2.5's

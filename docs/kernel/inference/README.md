@@ -326,8 +326,8 @@ and the park stamps all start empty and no boundary verdict crosses a
 world — corollary C6 made structural.
 
 > **ein.rs does this differently, on purpose** (M1a
-> [S1a.6.9](../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md),
-> ledgered as [D3](../../../plans/m1a_rust/divergences.md)). A fork there
+> [S1a.6.9](../../history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator),
+> ledgered as [D3](../../history/m1a_rust/divergences.md)). A fork there
 > *resumes* the parent's saturation — the plan list, `fired`, `seen` and the
 > parked set with their stamps are inherited, and the delta is the commitment
 > — because a fresh saturator's first pass re-derives the parent's entire
@@ -1028,7 +1028,7 @@ the abort suffice for diagnostic).
 > against the removed tree solver; neither instrument exists. What is live is
 > the same solve on ein.rs — milliseconds, re-measurable through
 > [`e2e_baseline.py`](../../../utils/e2e_baseline.py) and recorded in
-> [`baseline.md`](../../../plans/m1a_rust/p1a.6_performance/baseline.md).
+> [`baseline.md`](../../history/m1a_rust/measurements/baseline.md).
 
 - `examples/zebra2.ein`: Solution in ~1.9 s under PyPy (CPython ~2.8 s),
   1 alive entering, 0 nogoods — single-shot solve via fork-side

@@ -4,7 +4,7 @@
 //! frozen dataclass holding tuples of `Scan` / `Join` / `Guard` /
 //! `AbsentGuard` opcodes whose slots are **raw IR nodes**, dispatched by
 //! `isinstance` at every unification. This is the same shape with the encoding
-//! changed ([design/05](../../../../plans/m1a_rust/design/05_matcher.md) §2):
+//! changed ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2):
 //! flat arenas indexed by [`Span`], a slot that is one of four `u32`-sized
 //! things, and every variable resolved to a **register** at compile time.
 //!
@@ -136,7 +136,7 @@ pub struct RelStep {
 ///
 /// The first skip is static and is applied here — an opaque or nested slot
 /// never produces a `Probe`. The other two conditions are **not** static, and
-/// [design/05](../../../../plans/m1a_rust/design/05_matcher.md) §2's claim that
+/// [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2's claim that
 /// they are is the one thing in that section this stage had to correct:
 ///
 /// - whether a register is bound at this step depends on the *entry point* —

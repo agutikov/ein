@@ -82,7 +82,7 @@ and whether new objects may appear. Ein has `is-a` extents and the `open`
 macro; the stdlib is deliberately **is-a-free in rule bodies** — the hierarchy
 relation arrives as an activator parameter (`?isa`) — and an obligation has to
 arrive the same way or it drags a type system into the kernel that
-[S1.7.23](../../m1a_rust/README.md) said would not exist.
+[S1.7.23](../../../docs/history/m1a_rust/README.md) said would not exist.
 
 **S1d.2.3** decides whether an obligation is a *fact* (a derived marker the
 rules read), a *kernel object* (tracked by the saturator alongside the fact
@@ -94,7 +94,7 @@ carry the candidate set.
 **S1d.2.4** is the engine work: the candidate set per open obligation,
 narrowed as negatives arrive, closed at one, refuted at zero, and reported at
 quiescence. The invalidation problem is the one
-[design/06](../../m1a_rust/design/06_saturation.md)'s boundary already has —
+[design/06](../../../docs/history/m1a_rust/design/06_saturation.md)'s boundary already has —
 `_admit_from_boundary`'s re-query cost was 72 % of an exhaustive `zebra2` run
 before P1a.6 — so an obligation index that has to be rebuilt at every
 quiescence is a mechanism that pays for itself in the same coin.
@@ -103,7 +103,7 @@ quiescence is a mechanism that pays for itself in the same coin.
 obligation's candidate set instead of from `alive`. Mutually exclusive,
 jointly exhaustive branches — and a different traversal, therefore different
 counters, therefore the decision
-[Q-M1a.18](../../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+[Q-M1a.18](../../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
 had to take before a fork was allowed to narrate less.
 
 ## Acceptance for the phase
@@ -122,7 +122,7 @@ had to take before a fork was allowed to narrate less.
   written the way it is because a naive one "would fire false on every
   empty-yet state"; an unmet lower bound is a *contradiction* only when it has
   become unreachable, and that boundary is the same one
-  [S1.21.8](../../m1a_rust/README.md) drew for negation-as-failure.
+  [S1.21.8](../../../docs/history/m1a_rust/README.md) drew for negation-as-failure.
 - **Every existing verdict is unchanged**, on every corpus entry. Counters may
   move; the stage that moves them says which and re-baselines with an
   argument.
@@ -162,7 +162,7 @@ had to take before a fork was allowed to narrate less.
 - [`stdlib/algebra.ein`](../../../stdlib/algebra.ein) ·
   [`bijection.ein`](../../../stdlib/bijection.ein) ·
   [`elim.ein`](../../../stdlib/elim.ein)
-- [design/06 — Saturation](../../m1a_rust/design/06_saturation.md) ·
-  [design/07 — Search layer](../../m1a_rust/design/07_search_layer.md)
+- [design/06 — Saturation](../../../docs/history/m1a_rust/design/06_saturation.md) ·
+  [design/07 — Search layer](../../../docs/history/m1a_rust/design/07_search_layer.md)
 - [P1c.1](../../m1c_external_validation/p1c.1_stdlib_conformance/README.md) —
   the expectation form every new mechanism here gets tested through

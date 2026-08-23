@@ -1,7 +1,7 @@
 # Open Questions — M1d (From saturation to satisfiability)
 
 Milestone-scoped questions. Ids are **sticky** — `Q-M1d.<n>`, in the style
-[M1a](../m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
+[M1a](../../docs/history/m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
 global `Q<n>` sequence in [`plans/open_questions.md`](../open_questions.md).
 A closed id is never reused.
 
@@ -10,7 +10,7 @@ A closed id is never reused.
 to Q-M1d.5 come from [`ideas.md`](ideas.md), the note that is the milestone's
 other half, and they are the questions the note leaves open rather than the
 ones it answers. **Q-M1d.6 came from neither**: it was found by measuring, in
-M1a [S1a.9.0](../m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md), and it is
+M1a [S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced), and it is
 about a word the engine already says.
 
 ## Index
@@ -20,9 +20,9 @@ about a word the engine already says.
 | [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md); `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | open — the note says **first-class obligation**; the cost is a kernel concept |
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | open — no answer, no lower bound; `is-a` extents and `open` are what exists |
-| [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | open — [Q-M1a.18](../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped; the answer moves every counter |
+| [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | open — [Q-M1a.18](../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped; the answer moves every counter |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); "enumerate, and say so" is an acceptable answer |
-| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; arrived from M1a [S1a.9.0](../m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md) |
+| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; arrived from M1a [S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) |
 
 ---
 
@@ -97,7 +97,7 @@ the `open` macro, and a corpus entry
 point is that an open domain makes the search unbounded.
 
 **What that costs, measured** (M1a
-[S1a.9.0](../m1a_rust/p1a.9_release/corpus_cost.md)): `render lattice` on that
+[S1a.9.0](../../docs/history/m1a_rust/measurements/corpus_cost.md)): `render lattice` on that
 one file — an exhaustive solve at `-m 3` with the lattice stored — is **10.2 s,
 the slowest cell in the corpus and 640× `zebra2`'s entire `solve`**. At the
 `solve` default of `-m 5` the same file has no answer at all: it reaches
@@ -115,7 +115,7 @@ engine has to say which at load time rather than at quiescence.
 Related: the stdlib is deliberately **is-a-free in rule bodies** — the
 hierarchy relation arrives as an activator parameter. An obligation that
 hard-codes `is-a` would put a type system in the kernel, which
-[S1.7.23](../m1a_rust/README.md) settled it would not have.
+[S1.7.23](../../docs/history/m1a_rust/README.md) settled it would not have.
 
 ## Q-M1d.4 — May an obligation-driven generator change the traversal?
 
@@ -126,14 +126,14 @@ different `layers_explored`, and a different order of discovery for the models
 themselves.
 
 This is exactly the shape of
-[Q-M1a.18](../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint),
+[Q-M1a.18](../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint),
 which had to be decided before a fork was allowed to narrate less, and of
-[design/08](../m1a_rust/design/08_parallelism.md) §7, which rejected parallel
+[design/08](../../docs/history/m1a_rust/design/08_parallelism.md) §7, which rejected parallel
 depth-first because "going depth-first changes which no-goods exist when, i.e.
 the pruning, i.e. the counters".
 
 The invariants that survive any answer are the ones
-[S1a.7.0](../m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md) already
+[S1a.7.0](../../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit) already
 pinned as tests: the *answer* depends on neither the entering order nor the
 integration time. What is negotiable is everything that is not the answer, and
 the phase has to say so explicitly rather than discover it in a golden diff.
@@ -153,12 +153,12 @@ the engine can read.
 ## Q-M1d.6 — May `Contradiction` be said with `exhausted = False`?
 
 **Arrived 2026-08-22 from M1a
-[S1a.9.0](../m1a_rust/p1a.9_release/s1a.9.0_slow_corpus.md)**, which re-priced
+[S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)**, which re-priced
 the corpus's slow tail and found ten entries costing the *same* exhaustively as
 on the fast path — `solve` and `solve -e` within 2 % of each other on nine of
 them and 1.24× on the tenth, where the two paths should differ by the whole of
 the search
-([corpus_cost.md § 2B](../m1a_rust/p1a.9_release/corpus_cost.md)). Every one of
+([corpus_cost.md § 2B](../../docs/history/m1a_rust/measurements/corpus_cost.md)). Every one of
 them ends the same way:
 
 ```text
@@ -184,7 +184,7 @@ what is happening:
 layer. Wall is one cold process each, so the first two rows are mostly
 start-up (1.3 ms of it). **No depth changes the verdict, and the reason is
 structural**: `complete(kb)` asks whether the generator proposes anything
-([design/07](../m1a_rust/design/07_search_layer.md)), and on a fixture that
+([design/07](../../docs/history/m1a_rust/design/07_search_layer.md)), and on a fixture that
 closes no domain it always does — so no node is ever a solution node, at any
 cap, and `k` is 0 all the way down.
 
@@ -271,7 +271,7 @@ prints *"(a solution — pass `--exhaustive` to certify uniqueness)"*, and a
   *"`0` → `Contradiction` — unsat (**when exhausted**)"*. That parenthetical is
   the only statement in the tree that ties the word to the cap — and it is on a
   page specifying a Python embedding API that
-  [Q-M1a.23](../m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+  [Q-M1a.23](../../docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
   deferred and nobody is building.
 
 So this is not a doc-versus-code defect anybody can just fix. It is a

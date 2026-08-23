@@ -4,7 +4,7 @@
 //! *processes* could not see one: nothing either of them printed exposed a
 //! step sequence, a guard's scope, or a `watched` set. So the compiler was
 //! compared the way the loader was at
-//! [S1a.2.3](../../../../plans/m1a_rust/p1a.2_kb_core/s1a.2.3_loader_and_provenance.md)
+//! [S1a.2.3](../../../../docs/history/m1a_rust/README.md#s1a23--the-loader-from_ir)
 //! — both implementations render the same text and the texts are diffed
 //! (`utils/ir_oracle.py`'s `plan-shape` op was the other half, and left with
 //! the second engine at S1a.10.4) — and since

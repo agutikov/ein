@@ -4,7 +4,7 @@
 //! ...])` with identity on exactly those two fields, which makes every
 //! identity comparison a tuple compare recursing into `str.__eq__` and every
 //! hash a tuple hash over string hashes. Here a proposition is a `u32`
-//! ([design/03](../../../../plans/m1a_rust/design/03_data_model.md) §4):
+//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §4):
 //!
 //! | ein.py | ein.rs |
 //! |---|---|
@@ -29,7 +29,7 @@ use std::hash::Hasher;
 /// `Ord` is derived and is **assignment order** — first-interned first. That
 /// is a legitimate sort key only where any total order is equivalent (a
 /// `state_key`'s sorted vector, a no-good clause's canonical form —
-/// [design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §6),
+/// [design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §6),
 /// never where a reader sees the result.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct FactId(pub u32);
@@ -41,7 +41,7 @@ pub struct FactId(pub u32);
 /// dependent ones — which is what T1a.6.2.6 turned out to be about. The store
 /// is 18 KB for an exhaustive `zebra` and lives in L1 entirely, so this was
 /// never a cache-footprint question ([baseline.md
-/// §13](../../../../plans/m1a_rust/p1a.6_performance/baseline.md)); it is a
+/// §13](../../../../docs/history/m1a_rust/measurements/baseline.md)); it is a
 /// question about the *dependency chain* on the matcher's hot path, where
 /// every candidate resolves two argument lists — the premise's and, for a
 /// nested pattern, the fact inside it — before it can be rejected.
@@ -98,7 +98,7 @@ impl FactStore {
     ///
     /// Computes the key without materialising a row, which is what lets the
     /// hypothesis generator reject a candidate before creating anything
-    /// ([design/07](../../../../plans/m1a_rust/design/07_search_layer.md) §2).
+    /// ([design/07](../../../../docs/history/m1a_rust/design/07_search_layer.md) §2).
     pub fn probe(&self, rel: Symbol, args: &[Value]) -> Option<FactId> {
         crate::counters::bump(|c| c.fact_probe += 1);
         if self.table.is_empty() {

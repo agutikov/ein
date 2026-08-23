@@ -14,7 +14,7 @@
 #
 #   Phase 1  the pytest unit/integration suite (`ein.py/tests`). Its 1 538
 #            tests reduce to **275 behaviours** in fifteen Rust files —
-#            plans/m1a_rust/p1a.10_single_implementation/suite_dispositions.md
+#            docs/history/m1a_rust/suite_dispositions.md
 #            has the file-by-file record, including the 96 subjects that died
 #            with their code. Ported at S1a.10.2.
 #   Phase 2  the P1.7a acceptance gate (`ein.py/acceptance`) — the three

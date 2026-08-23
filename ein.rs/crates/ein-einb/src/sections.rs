@@ -650,7 +650,7 @@ pub fn load_program(section: &ProgramSection<'_>, ast: &mut Ast, terms: &mut Ter
 /// `Nogoods` is a hash set and its iteration order is not reproducible, so the
 /// clauses are sorted before they are written — by length then by id, a total
 /// order over data that already sorts its own elements
-/// ([design/02 §6](../../../../plans/m1a_rust/design/02_determinism_and_order.md)).
+/// ([design/02 §6](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md)).
 /// Two runs that learn the same clauses therefore write the same bytes.
 pub fn write_nogoods(kb: &Kb) -> Vec<u8> {
     // determinism-ok: collected and then sorted, which is what makes the bytes

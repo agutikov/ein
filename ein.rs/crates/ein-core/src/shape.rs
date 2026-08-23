@@ -1,6 +1,6 @@
 //! The KB-shape dump — a test instrument, not engine output.
 //!
-//! [P1a.2](../../../../plans/m1a_rust/p1a.2_kb_core/README.md)'s gate was
+//! [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core)'s gate was
 //! "every corpus file loads to the same KB", and a KB has no CLI surface of
 //! its own: the registries, the seven indexes and the participation counts
 //! were exactly the things a harness comparing two `ein` *processes* could not

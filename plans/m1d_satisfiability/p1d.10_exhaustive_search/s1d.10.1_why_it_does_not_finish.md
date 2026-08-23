@@ -36,7 +36,7 @@ none of it?"**
   zebra2-minus-15 the answer at layer 2 appears to be "nothing"; that should be
   a number.
 - The memory profile alongside the time, because
-  [baseline.md §15](../../m1a_rust/p1a.6_performance/baseline.md) says the wall is likely
+  [baseline.md §15](../../../docs/history/m1a_rust/measurements/baseline.md) says the wall is likely
   to be RAM.
 
 ## Tasks
@@ -65,7 +65,7 @@ because [S1d.10.5](s1d.10.5_contract.md) may want to *report* it.
 
 A profile of `zebra2-minus-15 -m 3`, bucketed like
 [`profile_ein_rs.py`](../../../utils/profile_ein_rs.py) does, against the
-determinate profile in [baseline.md §3](../../m1a_rust/p1a.6_performance/baseline.md). The
+determinate profile in [baseline.md §3](../../../docs/history/m1a_rust/measurements/baseline.md). The
 question is whether the under-determined regime is the *same* engine costs at
 a larger count or a different mix — if `generate_layer` and `filter_candidate`
 dominate where the determinate profile has the matcher and the boundary, the

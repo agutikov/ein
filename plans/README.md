@@ -46,16 +46,17 @@ Two adjacent secondary milestones surface Ein externally, plus a Rust port
 that came before both and the three milestones that came out of it — one
 created from its last phases, two by promotion since:
 
-- **M1a — Rust port (ein.rs)** ([m1a_rust/](m1a_rust/README.md)) —
-  **shipped 2026-08-23**, between M1 and M2; the engine that ships from M2
-  onward. Two invariants held the whole way: a **1:1 observable surface**
+- **M1a — Rust port (ein.rs)** — **shipped 2026-08-23**, between M1 and M2; the
+  engine that ships from M2 onward. Its plan folder is gone and the record is
+  [`docs/history/m1a_rust/`](../docs/history/m1a_rust/README.md). Two invariants
+  held the whole way: a **1:1 observable surface**
   (same language, same CLI, same bytes, with `ein.py` as the parity oracle
   until it had banked everything it could prove) and a **free hand inside**
   (integer-encoded atoms and facts, a register matcher, copy-on-write forks,
   multi-core search). All four landed. It ships a **library and a CLI**;
   server mode was dropped 2026-08-18 and the PyO3 binding deferred 2026-08-21
   for want of a consumer
-  ([Q-M1a.23](m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
+  ([Q-M1a.23](../docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
 - **M20 — GUI** ([m20_gui/](m20_gui/README.md)) after M1a —
   **Tauri 2 + React + Monaco + Cytoscape.js**, linking the ein.rs crates
   directly (stack decided 2026-08-18). Renumbered from M1b 2026-08-23.
@@ -126,12 +127,9 @@ plans/
 ├── open_questions.md                 cross-milestone questions; sticky Q ids
 ├── ideas.md                          rolling scratchpad
 ├── m1_core_graph_reasoning/          (deleted at P1.22 — M1 shipped; see git history)
-├── m1a_rust/                         the Rust port — design docs + 11 phases
-│   ├── README.md
-│   ├── open_questions.md
-│   ├── divergences.md
-│   ├── design/ …                     11 numbered design docs
-│   └── p1a.0_conformance_harness/ …
+├── m1a_rust/                         (deleted 2026-08-23 — M1a shipped; the record
+│                                     is docs/history/m1a_rust/, the plan tree is
+│                                     in git history)
 ├── m1c_external_validation/          the check that is not relative to Ein
 │   ├── README.md
 │   ├── open_questions.md
@@ -191,7 +189,7 @@ Stage files have a stable shape:
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
-| [M1a](m1a_rust/README.md)               | **full** — 11 design docs + 11 phases + 54 stage files | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
+| [M1a](../docs/history/m1a_rust/README.md)               | *(plans removed 2026-08-23 — the record is `docs/history/m1a_rust/`)* | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
 | [M1c](m1c_external_validation/README.md) | **full** — 1 phase + 5 stage files | queued behind M1a — stdlib expectations (`ein test`); its benchmark phase left for M10 2026-08-23 | ~2.5 weeks |
 | [M1d](m1d_satisfiability/README.md)     | mixed — P1d.10 at stage depth, P1d.2 / P1d.3 phase READMEs | queued behind M1a — exhaustive search over many models + existence obligations | ~2 months |
 | [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |

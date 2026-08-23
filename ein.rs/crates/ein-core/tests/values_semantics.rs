@@ -7,7 +7,7 @@
 //! literal). Unit tests can only check the cases somebody thought of; these
 //! check a generated corpus against a **specification of the imitated
 //! behaviour**, which is what
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 //! substituted for asking the interpreter:
 //!
 //! - `sorted()` on `str` is code-point order, and so is Rust's `Ord` on

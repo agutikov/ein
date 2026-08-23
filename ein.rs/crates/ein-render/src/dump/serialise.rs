@@ -212,7 +212,7 @@ pub struct Timeline {
     file: Option<File>,
     seq: u64,
     /// Seconds since the run started, for the timestamp fields — which are on
-    /// the [normalisation list](../../../../plans/m1a_rust/design/01_parity_contract.md) §5,
+    /// the [normalisation list](../../../../../docs/history/m1a_rust/design/01_parity_contract.md) §5,
     /// so what has to match is that they are *there* and well-shaped.
     started_at: std::time::Instant,
 }

@@ -16,7 +16,7 @@ the first two were written, and it is the recommendation.
 Expectations in `corpus.toml`, or a `.expect` file beside the `.ein`. No
 grammar change at all. Rejected on one argument: an expectation keyed by path
 is a second thing to keep in step with the program, and this milestone has
-just spent a phase ([P1a.10](../../m1a_rust/p1a.10_single_implementation/README.md))
+just spent a phase ([P1a.10](../../../docs/history/m1a_rust/README.md#p1a10--one-implementation))
 removing the last one.
 
 ### (b) A `(test …)` head replacing `(query …)`
@@ -127,7 +127,7 @@ config is a *setting*, queries are *content*, and the two want opposite rules.
   message says which fact was unexpected.
 - `(or …)` compares model **sets**, not sequences — the order the search
   happens to find models in is exactly what
-  [S1a.7.0](../../m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md)'s invariance
+  [S1a.7.0](../../../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)'s invariance
   tests assert is not observable.
 - The `Contradiction` spelling is decided and is not `:expect ()` if that could
   be read as "expect the empty model". `:expect none` reads better; the stage

@@ -9,7 +9,7 @@
 //! written so that the wrong picture fails rather than a different one.
 //!
 //! Replaces the semantic half of five Python files, all deleted with ein.py at
-//! [P1a.10](../../../../plans/m1a_rust/p1a.10_single_implementation/README.md):
+//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation):
 //!
 //! | Python | subject kept here |
 //! |---|---|

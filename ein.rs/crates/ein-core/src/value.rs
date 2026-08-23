@@ -4,7 +4,7 @@
 //! ein.py's fact arguments are `str | int | Fact`, and 31.9 M `isinstance`
 //! calls in an exhaustive `zebra2` solve are the type dispatch that unifying
 //! them needs. Here the discriminant is two bits
-//! ([design/03](../../../../plans/m1a_rust/design/03_data_model.md) §3):
+//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3):
 //!
 //! ```text
 //! [tag:2][payload:30]
@@ -81,7 +81,7 @@ impl Value {
 
     /// The inverse of [`Value::bits`], for the one caller that has a stored
     /// word and no other way to say what it meant: `.einb`'s remap
-    /// ([design/10 §3](../../../../plans/m1a_rust/design/10_binary_format.md)),
+    /// ([design/10 §3](../../../../docs/history/m1a_rust/design/10_binary_format.md)),
     /// which reads the tag to decide *which* table the payload moves through
     /// and re-packs the result. Not a general constructor — a value assembled
     /// from a number nobody interned names an id that may not exist, which is
@@ -123,7 +123,7 @@ impl Value {
     ///
     /// Correct wherever any total order would do — a `state_key`'s sorted
     /// vector, a no-good clause's canonical form
-    /// ([design/02](../../../../plans/m1a_rust/design/02_determinism_and_order.md) §6)
+    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §6)
     /// — and wrong everywhere a name or a number is what the reader sees.
     pub fn cmp_identity(self, other: Value) -> Ordering {
         self.0.cmp(&other.0)

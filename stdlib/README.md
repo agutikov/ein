@@ -17,7 +17,7 @@ S1a.10.5:
    distribution promises were kept, and one of them now has no package.
 
 `MANIFEST.sha256` is what makes a fork detectable. Two readers, since M1a
-[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md):
+[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine):
 step 2 above tests only that the file is *present* (that is what identifies a
 directory as the stdlib), and `ein-ir`'s
 `the_embedded_copy_matches_the_manifest` digests the embedded tree against it
@@ -30,7 +30,7 @@ This matters more than tidiness: the stdlib is not test data but part of the
 semantics under test, so a second, drifting copy would make every result
 meaningless — a diff would report "the engines disagree" when in fact the
 *programs* differ
-([design/11](../plans/m1a_rust/design/11_shared_assets.md)).
+([design/11](../docs/history/m1a_rust/design/11_shared_assets.md)).
 
 ## Location decision (S1.8.A4 — closes [Q30](../plans/open_questions.md#q30--universal-rule-library--import-mechanism))
 

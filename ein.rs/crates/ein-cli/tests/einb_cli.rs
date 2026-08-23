@@ -11,7 +11,7 @@
 //! except by having restored the KB exactly.
 //!
 //! **Gated on the feature it tests.** `einb` is a default feature and `ein kb`
-//! is registered only with it ([design/12](../../../../plans/m1a_rust/design/12_toolchain_and_layout.md)
+//! is registered only with it ([design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md)
 //! §3), so without it every case below asks a binary that has no `kb`
 //! subcommand and gets exit 2 — eight failures that say nothing about the
 //! container. `help_surface.rs` already holds the *other* direction, that a

@@ -20,7 +20,7 @@
 //! below and took the depth directly — `Kb::flatten` at the layer barrier,
 //! integration still immediate — so with the shipping default on, all three
 //! columns are shallow and the probe measures nothing. Switching it off is
-//! what keeps [scaling.md §4](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)
+//! what keeps [scaling.md §4](../../../../docs/history/m1a_rust/measurements/scaling.md)
 //! reproducible; the flatten's own numbers are `flatten_probe` and §6.
 //!
 //! That the *answer* is unchanged is not checked here: it is
@@ -28,7 +28,7 @@
 //! this probe times.
 //!
 //! Numbers:
-//! [scaling.md §4](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md).
+//! [scaling.md §4](../../../../docs/history/m1a_rust/measurements/scaling.md).
 
 use ein_core::Terms;
 use ein_infer::Events;

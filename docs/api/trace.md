@@ -4,10 +4,10 @@
 >
 > **This page describes a Python package that no longer exists**, and it is
 > filed as a record rather than as a promise. `ein.py/` was deleted at M1a
-> [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+> [S1a.10.5](../history/m1a_rust/README.md#s1a105--the-removal)
 > (2026-08-21); the PyO3 module that was to succeed it was **deferred the same
 > day** for want of a consumer, with three trip-wires recorded in
-> [Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding).
+> [Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding).
 >
 > It is kept **whole and unedited** for one reason: a deferral is cheap to
 > reverse only while the specification survives it. On the day a trip-wire
@@ -29,7 +29,7 @@ behind it is [`ein-render/trace/`](../../ein.rs/crates/ein-render/src/trace/).
 > **Audience: embedders.** Use this to surface *why* the engine reached its
 > answer. The rendered output is what a downstream UI shows the user.
 
-*Verified against commit `60c192b` (2026-06-16) — **against the Python engine, which no longer exists**. These signatures are a record of what that engine offered, not a description of anything in the tree and no longer a contract anything is scheduled to implement ([Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).*
+*Verified against commit `60c192b` (2026-06-16) — **against the Python engine, which no longer exists**. These signatures are a record of what that engine offered, not a description of anything in the tree and no longer a contract anything is scheduled to implement ([Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).*
 
 ## The two-step render
 

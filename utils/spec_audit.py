@@ -6,11 +6,11 @@
     python3 utils/spec_audit.py -k zebra --json out.json
     python3 utils/spec_audit.py --no-fail-fast     # compare dead fixpoints too
 
-[design/08](../plans/m1a_rust/design/08_parallelism.md) §2 evaluates a whole
+[design/08](../docs/history/m1a_rust/design/08_parallelism.md) §2 evaluates a whole
 layer's enterings against `R0` — root as it stood when the layer opened — and
 then commits them in candidate order, validating each against the write set `W`
 that the earlier commits produced. Three cases; only the third costs anything,
-and [Q-M1a.7](../plans/m1a_rust/open_questions.md) asks how often it fires.
+and [Q-M1a.7](../docs/history/m1a_rust/open_questions.md) asks how often it fires.
 The phase's acceptance says "≤ a few percent".
 
 That is measurable **before any of it is built**, and this measures it: one

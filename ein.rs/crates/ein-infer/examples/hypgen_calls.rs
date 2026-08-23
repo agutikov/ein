@@ -1,5 +1,5 @@
 //! What one hypothesis-generation *call* costs, split by what it is for —
-//! [S1a.6.4](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.4_hypgen_and_lattice.md)'s
+//! [S1a.6.4](../../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)'s
 //! acceptance number.
 //!
 //! ```sh

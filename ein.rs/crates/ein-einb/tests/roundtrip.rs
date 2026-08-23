@@ -1,5 +1,5 @@
 //! The round trip — [design/10
-//! §6](../../../../plans/m1a_rust/design/10_binary_format.md#6-acceptance-for-this-design),
+//! §6](../../../../docs/history/m1a_rust/design/10_binary_format.md#6-acceptance-for-this-design),
 //! P1a.8's acceptance.
 //!
 //! `save(kb) → open()` has to be **T1-identical**: the same facts in the same

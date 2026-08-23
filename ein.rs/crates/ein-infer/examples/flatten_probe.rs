@@ -26,7 +26,7 @@
 //! pay more than it saves.
 //!
 //! Numbers:
-//! [scaling.md §6](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md).
+//! [scaling.md §6](../../../../docs/history/m1a_rust/measurements/scaling.md).
 
 use ein_core::Terms;
 use ein_infer::Events;

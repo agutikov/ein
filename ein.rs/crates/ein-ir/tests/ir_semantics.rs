@@ -1,7 +1,7 @@
 //! The IR contract — what ein-lang *is*, asserted without an oracle.
 //!
 //! Stage **T1a.10.2.2** of
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md).
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite).
 //! This file replaces the semantics half of three Python test files, which are
 //! deleted with `ein.py`:
 //!

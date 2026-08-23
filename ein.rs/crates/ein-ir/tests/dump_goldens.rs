@@ -5,8 +5,8 @@
 //! as **ein.py wrote it**, checked in years before the port: 293 lines of deep
 //! nesting, long `:why` templates and non-ASCII. That makes it the last
 //! independent provenance the repo has, which is why
-//! [the ledger §4](../../../../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#4-what-the-removal-must-relocate)
-//! lists it among the files [S1a.10.5](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
+//! [the ledger §4](../../../../docs/history/m1a_rust/oracle_ledger.md#4-what-the-removal-must-relocate)
+//! lists it among the files [S1a.10.5](../../../../docs/history/m1a_rust/README.md#s1a105--the-removal)
 //! must `git mv` rather than re-bless — a golden regenerated from ein.rs would
 //! say "ein.rs reproduces itself".
 //!

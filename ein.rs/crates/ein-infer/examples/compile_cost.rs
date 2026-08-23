@@ -12,7 +12,7 @@
 //! ```
 //!
 //! The Python column, for comparison, comes from the exhaustive-`zebra2`
-//! profile in [design/06](../../../../plans/m1a_rust/design/06_saturation.md) §3:
+//! profile in [design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) §3:
 //! **253 440 `compile_for` calls costing 1.45 s**, of which all but 19 are
 //! cache hits — the waste Win A removes. What is measured here is the 19: one
 //! cold compile of every distinct `(rule, activator)` pair.

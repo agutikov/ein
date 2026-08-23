@@ -3,7 +3,7 @@
 //! Two [`--events`](../../../../docs/kernel/inference/events.md) logs in,
 //! a list of differences out. The tier that used to call it (T2, "the two
 //! engines took the same steps") was retired with the second engine at
-//! [S1a.10.3](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.3_corpus_without_an_oracle.md);
+//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine);
 //! what calls it now is `ein-infer/tests/event_cut_control.rs`, which mutates
 //! one real stream and checks the cut still reports the mutation. That test is
 //! not decoration: **a relaxation nothing exercises is a hole rather than a
@@ -12,9 +12,9 @@
 //!
 //! # 1. Why the stream cannot simply be filtered
 //!
-//! [T2](../../../../plans/m1a_rust/design/01_parity_contract.md#t2--event-trace-parity)
+//! [T2](../../../../docs/history/m1a_rust/design/01_parity_contract.md#t2--event-trace-parity)
 //! was the tier that pinned *the algorithm*, and since
-//! [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+//! [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
 //! the two engines ran a deliberately different one at the fork boundary:
 //! ein.rs resumes root's saturation, ein.py re-derived it. 97 of T2's 240
 //! cells reported that as a difference, and eliding the firing traffic
@@ -42,7 +42,7 @@
 //! two different prefixes. Its `kind`, its position and the fact that it died
 //! are still compared exactly, and with fail-fast off the prefixes agree —
 //! which is what says this is the stopping point and not a different conflict
-//! ([D3](../../../../plans/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)).
+//! ([D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)).
 //!
 //! # 2. Why *that* cut, measured
 //!
@@ -59,7 +59,7 @@
 //! | … as a **multiset** of `(rule, premises, derived)`, per segment, `dead-post` excluded | 232 / 240 |
 //! | **… as a multiset of derived facts + the set of rules, per segment, `dead-post` excluded** | **239 / 240** |
 //!
-//! 239 / 240 is [D2](../../../../plans/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
+//! 239 / 240 is [D2](../../../../docs/history/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
 //! and nothing else — the same standard T3 is held to. The row above it is
 //! the 7 cells where a fork records a *different one of a fact's equally valid
 //! derivations* first, which D3 measures at 267 529 facts corpus-wide and
@@ -69,7 +69,7 @@
 //! green.
 //!
 //! `compile` is on the elided list and was not on
-//! [S1a.6.10](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.10_parity_contract.md)'s
+//! [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)'s
 //! predicted list: a `compile` is emitted on a plan-memo **miss**, and how
 //! many times a rule misses depends on how many enqueue passes ran, so it is
 //! downstream of the boundary like everything else here. The *distinct*

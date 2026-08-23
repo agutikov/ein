@@ -2,10 +2,10 @@
 //! not.**
 //!
 //! The provenance arena is the shared structure
-//! [design/08 §6](../../../../plans/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
+//! [design/08 §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
 //! has no row for, and the one with a real write rate: 100 % of enterings push
 //! a record, and `features/01 -e` pushed **2 135 093** of them —
-//! [shared_state.md §2b](../../../../plans/m1a_rust/p1a.7_parallelism/shared_state.md).
+//! [shared_state.md §2b](../../../../docs/history/m1a_rust/measurements/shared_state.md).
 //! Whether a worker can hold its own arena instead of sharing one turns on a
 //! single claim:
 //!

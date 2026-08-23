@@ -17,10 +17,10 @@ So this measures processes, one `ein` binary per series against the same argv:
         --bin snmalloc=ein.rs/target/release/ein          # two builds, one series
 
 **One engine, still worth a process timing.** Until
-[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
 the rows were three implementations — CPython, PyPy, ein.rs — and the ratio
 between them was the point. The PyPy and CPython columns in
-[baseline.md](../plans/m1a_rust/p1a.6_performance/baseline.md) are frozen
+[baseline.md](../docs/history/m1a_rust/measurements/baseline.md) are frozen
 constants now: nothing can re-measure them. What this still answers is the
 question `--bin` was added for and the one every P1a.6 stage asked — *did this
 change make the shipping binary faster?* — across builds (allocator arms,

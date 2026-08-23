@@ -10,7 +10,7 @@
 //! trace renderer prefers a partial render over a hard failure.
 //!
 //! This is nominally
-//! [S1a.5.2](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.2_trace_and_answer.md)
+//! [S1a.5.2](../../../../docs/history/m1a_rust/README.md#s1a52--trace-and-answer-rendering)
 //! T6, landed here because [`crate::slice`] labels every rule node with a
 //! rendered `:why` and cannot be checked without one.
 

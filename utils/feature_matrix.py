@@ -9,7 +9,7 @@ engine's own solve time, the whole process's wall clock and its peak RSS.
 Was S1.20.I3, which drove ein.py in-process. S1a.6.7 made it drive both engines
 as **processes**, so that the ein.rs column of `features.md` was measured the
 way the ein.py column had been and the two could be cross-checked cell by cell.
-[S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
 takes the second column out: the cross-check went with the engine it compared,
 the ein.py numbers in `features.md` are frozen where they stand, and what is
 left is the measurement itself — one engine, one lever at a time.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """`stdlib/MANIFEST.sha256` — generate or verify (M1a S1a.0.3, narrowed
-at [S1a.10.4](../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)).
+at [S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)).
 
 The stdlib is 1 231 lines of ein-lang across seven modules, three of which
 `zebra2.ein` imports. It is *not* test data: it is program text the engine

@@ -1,0 +1,1208 @@
+# P1a.7 — the scaling measurements
+
+What the phase is chosen by, in the shape
+[baseline.md](baseline.md) established for P1a.6: the
+numbers first, the argument after, and every section reproducible from one
+command.
+
+**Machine.** Intel i9-14900HX — **8 P-cores** (`cpu0–15`, SMT, 5.6–5.8 GHz)
+and **16 E-cores** (`cpu16–31`, 4.1 GHz, no SMT); `powersave`, turbo on;
+Linux 7.1.8 / Manjaro. Single-core cells are pinned to `cpu4` through
+[`utils/bench_env.sh`](../../../../utils/bench_env.sh), best-of-N, as P1a.6's
+were.
+
+> **The measurement policy this phase needs — and now has.**
+> `bench_env.sh` pinned to *one* P-core hyperthread, which is exactly right for
+> P1a.6 and exactly wrong here. On a hybrid CPU "8 cores" is three different
+> machines — 8 P-cores, 8 P-core *threads* on 4 physical cores, or 8 E-cores —
+> and a scaling table that does not say which is not a measurement. Every
+> `--jobs N` number in this file must name its core set.
+>
+> **`bench_env.sh --cores` shipped at [S1a.7.1](../README.md#s1a71--making-the-shared-state-sync)**
+> (2026-08-22). `P:N` takes one thread per physical P-core, `PT:N` takes P-core
+> threads in cpu order, `E:N` / `ET:N` the same for the E-cores, and a literal
+> list is passed through with each core classified. The fingerprint prints the
+> resolved list *and* the number of distinct physical cores it covers — the two
+> lines below are the same "8 cores" and are not the same machine —
+>
+> ```text
+>   pinned to       cpu0,2,4,6,8,10,12,14 — 8 cpu(s), 8 physical core(s), all P
+>   pinned to       cpu0,1,2,3,4,5,6,7    — 8 cpu(s), 4 physical core(s), all P
+> ```
+>
+> and a spec the machine cannot fill is refused rather than quietly reduced.
+> [S1a.7.5](../README.md#s1a75--the---jobs-contract) T1a.7.5.5's scaling table is unblocked.
+
+---
+
+## 1. Amdahl — what a solve spends its time on
+
+`ein solve <file> -e -t`, release + snmalloc, `taskset -c 4`, 2026-08-20,
+`master` @ `2cbcef1`. "hypothesis search" is Phase 2 — everything levels 1–3
+could touch; the rest is the serial residue no `--jobs` can move.
+
+| workload | parse | kb load | root sat | **hyp search** | end-to-end | search share |
+|---|---:|---:|---:|---:|---:|---:|
+| `zebra2.ein -e` | 0.61 ms | 1.06 ms | 2.57 ms | **26.82 ms** | 31.06 ms | 86.3 % |
+| `zebra.ein -e` | 0.11 | 0.72 | 1.46 | **44.56** | 46.85 | 95.1 % |
+| `branching/06_lookahead_on -e` | — | — | — | **211.25** | 211.65 | 99.8 % |
+| `saturation/square-bwd/houses -e` | — | — | — | **271.17** | 271.27 | 100.0 % |
+| `branching/07_lookahead_off -e` | — | — | — | **906.39** | 906.58 | 100.0 % |
+| `features/01_not_and_absent -e` | — | — | — | **1 856.06** | 1 856.19 | 100.0 % |
+
+Two readings:
+
+- **The serial residue is small everywhere and negligible on the big
+  workloads.** Amdahl is not what bounds this phase.
+- **The two zebras are 29 and 47 ms.** After P1a.6 took them 165× off PyPy
+  — a ratio whose denominator is a [frozen
+  constant](baseline.md), the Python engine being gone —
+  the absolute room left in them is a few tens of milliseconds — and §2 shows
+  that less than half of it is in the part that parallelises exactly. The
+  phase's stated scaling target (`≥ 6× on 8 cores for exhaustive zebra2's
+  Phase 2`) was written when that run was 4.5 s.
+
+## 2. The layer profile — where the enterings and the firings are
+
+`--events`, `e == "enter"` counted by `layer`, and `e == "writeback"` likewise.
+
+| workload | enterings | layers | layer 1 | layer ≥ 2, enterings | layer ≥ 2, firings | writebacks |
+|---|---:|---:|---:|---:|---:|---:|
+| `zebra2 -e` | 101 | 2 | 56 (5 672 firings) | **44.6 %** | **42.3 %** | 32, all layer 1 |
+| `zebra -e` | 111 | 2 | 56 (12 471) | **49.5 %** | **53.2 %** | 31, all layer 1 |
+| `branching/06 -e` | 5 173 | 5 | 42 (340) | **99.2 %** | **99.6 %** | 0 |
+| `branching/07 -e` | 11 501 | 5 | 204 (542) | **98.2 %** | **99.8 %** | 162, all layer 1 |
+| `sq-bwd/houses -e` | 21 699 | 5 | 20 (5) | **99.9 %** | **100.0 %** | 0 |
+
+This table is the phase's most important one, and it says two things at once.
+
+**Every mid-layer root *fact* write is in layer 1**, and the reason is the
+shape of a learned clause rather than anything about layers. The search is a
+cardinality BFS — layer *L* enters commitment **sets of size L** — so a dead
+commitment `{h_1 … h_L}` licenses `¬(h_1 ∧ … ∧ h_L)`, a clause of width *L*.
+A clause is not a fact; it goes to the no-good store, where it prunes later
+candidate *generation*. At *L = 1*, and only there, that clause is a **unit**:
+`¬h_1` *is* a fact, and root gains `(not h_1)`. Both engines guard the
+writeback on the **commitment's length** for exactly that reason —
+`solve.rs:908` `c.len() == 1`, `_helpers.py:454` `len(c) == 1` — and neither
+minimises a learned clause below the commitment (`learned_clause =
+frozenset(c)`), so "the learned clause is a singleton" and "the commitment is
+a singleton" are one condition.
+
+So layers ≥ 2 gain no fact between the layer opening and closing, which makes
+every entering there **case 1** of
+[design/08](../design/08_parallelism.md) §2: parallel, exact, and needing no
+validator at all. The `writeback` column is the empirical half of the same
+claim, and §3's case column is its consequence.
+
+**What *is* mutated mid-layer at every level is the no-good store** — shared
+across forks by `Arc`, not copied. It is harmless because **no fork reads it
+while saturating**: its only readers are `generate_layer`, at layer start, and
+`emit_nogood`'s subsumption check, at commit time — and `emit_nogood` takes
+`&Kb`, so it structurally cannot add a fact. Everything else in the loop is
+fork-local (`complete`, `record_node`, `check_commutativity`) or between
+layers (`compute_alive`, `promote_forced_positives`).
+
+**And layers ≥ 2 are where the work is** — on everything except the two
+zebras, which are also the only two workloads fast enough not to need cores.
+`branching/07 -e` puts 99.8 % of its firings past layer 1; `zebra2 -e` puts
+42.3 %.
+
+## 3. The audit
+
+[S1a.7.0](../README.md#s1a70--the-speculation-audit)'s instrument: the sequential engine,
+and beside every entering the same entering re-run against `R0` — root as it
+stood when the layer opened. `utils/spec_audit.py`, `spec-audit` build.
+
+### Corpus-wide
+
+73 runs over 69 `positive` / `stdlib` entries, `solve` and `solve -e`,
+fail-fast on, 90 s per cell:
+
+| | count | rate |
+|---|---:|---:|
+| enterings speculated and compared | 1 078 704 | |
+| case 1 — `W` empty (**the control**) | 1 078 154 | 99.9 % |
+| case 2 — `c` meets `¬W` | **0** | 0 % |
+| case 3 — `W` disjoint from `c` | 550 | **0.1 %** |
+| `kind` moved | 35 | 0.003 % |
+| `core` moved | 115 | 0.011 % |
+| alive fork's state moved | 107 | 0.010 % |
+| **control failures** | **0** | |
+
+**The control is the strongest line in the table.** 1 078 154 speculations that
+fork the same root as the sequential arm, and not one of them differed — which
+is the corpus-scale form of the property level 1's whole safety argument rests
+on: `try_commitment_set` is pure with respect to root. `commitment.rs` asserted
+it on one fixture; this asserts it on every entering the corpus has.
+
+**Case 2 never happened.** Layer 1's candidates are distinct singletons, so a
+`(not h_j)` written back by an earlier death can never name a later candidate;
+and layers ≥ 2 have no `W` at all. The design's cheapest case is dead code on
+this corpus, which is worth knowing before it is written.
+
+### Per run — and why the corpus average is the wrong number
+
+| run | case 3 | rate | `kind` moved |
+|---|---:|---:|---:|
+| `solve -e examples/zebra2-hints.ein` | 35 / 36 | **97.2 %** | 7 |
+| `solve -e examples/zebra2.ein` | 50 / 101 | **49.5 %** | 14 |
+| `solve -e examples/zebra.ein` | 49 / 111 | **44.1 %** | 13 |
+| `solve examples/zebra.ein` | 6 / 13 | 46.2 % | 1 |
+| `solve examples/zebra2.ein` | 5 / 11 | 45.5 % | 0 |
+| `solve -e examples/branching/07_lookahead_off.ein` | 202 / 11 501 | 1.8 % | 0 |
+| the other 65 runs | 0 | 0 % | 0 |
+
+The phase's acceptance says the re-validation rate must be "≤ a few percent".
+Corpus-wide it is **0.1 %** and the criterion passes; on every workload a
+reader of the milestone would recognise it is **36–50 %**. A criterion that an
+average can satisfy while the puzzles it was written for fail it is not a
+criterion, and the phase README restates it per workload.
+
+### What moves, and how much of it is fail-fast
+
+The zebra family (7 entries, 9 runs, 399 enterings), both arms, 300 s cells:
+
+| | fail-fast **on** | fail-fast **off** |
+|---|---:|---:|
+| case 3 | 146 (36.6 %) | 146 (36.6 %) |
+| `kind` moved | **35 (8.8 %)** | **35 (8.8 %)** |
+| `core` moved | 75 (18.8 %) | **35 (8.8 %)** |
+| alive fork's state moved | 25 (11.2 % of 223) | 25 (11.2 %) |
+| state moved past `W` | 106 (26.6 %) | 60 (15.0 %) |
+| firing count moved | 109 (27.3 %) | 60 (15.0 %) |
+
+With fail-fast off, **`core` moved collapses exactly onto `kind` moved**. That
+decomposition is the finding: 40 of the 75 core divergences are not
+disagreements about the answer at all, they are the two forks stopping at
+different firings of the same one — `enable_fail_fast_fork` halts a dying fork
+at the firing that killed it, and a fork that already holds `W` dies sooner.
+
+The consequence for [S1a.7.2](../README.md#s1a72--level-1-parallel-enterings) is sharper than
+design/08 §2 anticipated:
+
+- the case-3 **continuation recovers `kind`** for exactly the reason fail-fast
+  is sound — a fork inconsistent at firing *n* is inconsistent at the fixpoint,
+  and `W` only adds facts;
+- it recovers **`core` only where the fork runs to its fixpoint**, because a
+  continued fork's firing order is not the sequential one and fail-fast reads
+  the order;
+- so **`enable_fail_fast_fork` × speculation is the phase's real correctness
+  question**, and it appears nowhere in design/08. S1a.7.2 has to answer it
+  before `--jobs N` can claim T1.
+
+### The speculation is wrong, not merely stale
+
+`solve -e examples/zebra.ein`, layer 1, entering 11, `|W| = 2`:
+
+```
+commitment    (co-located Englishman House-5)
+sequential    dead-post, 603 facts, 382 firings
+speculative   alive,     590 facts, 370 firings
+derived only by the sequential fork
+    (co-located Dog House-4)  (co-located House-3 Japanese)
+    (co-located House-3 Parliament)  …and 34 more
+```
+
+The mid-layer `(not h)` is a **premise** of `std.elim`, not bookkeeping:
+`domain-elimination` matches `(forall ?v_other … (not (?R ?a ?v_other)))` and
+*asserts a positive* when every other value is excluded (priority 400), and
+`no-room-left` asserts `(false)` when every value is. Accumulated writebacks
+are what let either fire. A validator that decided this fork was unaffected would move
+`enterings_alive`, `enterings_dead_post`, the no-goods emitted, the writeback
+set and the next layer's candidate list.
+
+## 3a. Where the writebacks are *inside* layer 1 — and the split that is not there
+
+§3 says case 3 lives only in layer 1. It does not say where in layer 1, and
+[S1a.7.2](../README.md#s1a72--level-1-parallel-enterings)'s decision turns on that: if `W`
+stopped growing early, a layer could run its head sequentially and fan out its
+tail with no validator at all — exact, for free. The instrument is the event
+stream, so this needed nothing built:
+
+| workload | enterings | layer 1 | writebacks | first | **last** | sequential span | of enterings | of Phase-2 firings |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `zebra -e` | 111 | 56 | 31 | 7 | **55** | 49 | 44.1 % | 40.4 % |
+| `zebra2 -e` | 101 | 56 | 32 | 6 | **55** | 50 | 49.5 % | 49.2 % |
+| `zebra2-hints -e` | 36 | 36 | 23 | 1 | **35** | 35 | 97.2 % | 93.7 % |
+| `branching/07 -e` | 11 501 | 204 | 162 | 2 | **204** | 203 | 1.8 % | **0.24 %** |
+| `branching/06 -e` | 5 173 | 42 | **0** | — | — | 0 | 0 % | 0 % |
+| `sq-bwd/houses -e` | 21 699 | 20 | **0** | — | — | 0 | 0 % | 0 % |
+| `features/01 -e` | 384 167 | 35 | **0** | — | — | 0 | 0 % | 0 % |
+
+*first* / *last* are the layer-1 candidate indices at which `W` first and last
+**grew** — a re-issued `(not h)` emits the event without adding a fact and is
+not counted. The *sequential span* is `last − first + 1`: the candidates that
+can neither be accepted as computed (because `W` is non-empty) nor skipped.
+
+**There is no head/tail split.** `W` grows until candidate 55 of 56, 55 of 56,
+35 of 36 and **204 of 204**. The tail a fan-out could take exactly is one
+candidate, one, one and zero. Whatever else layer 1 is, it is not
+front-loaded — the deaths that write back are spread over the whole of it, and
+on `branching/07 -e` the very last candidate of the layer still writes one.
+
+This is worth stating because the opposite was the expectation.
+[T1a.7.1.2](../README.md#s1a71--making-the-shared-state-sync) found the
+*fact-id* appends of a layer clustered in its head — largest within-layer index
+6, 21, 83 — and "run the head, fan out the tail" is exactly the mechanism that
+finding licensed for the fact store. It does not transfer. The two quantities
+are not the same one seen twice: an appending entering interns a proposition
+*inside* `try_commitment_set`, and the singleton writeback is a **commit-time
+root write** that happens after the entering returns. They have opposite
+distributions, and only the measurement says so.
+
+### And the layer that has to be sequential is 0.016 % of the corpus
+
+Every `.ein` under `examples/` and `stdlib/` that produces events, `solve -e`,
+20 s per file (5 hit the cap and are counted up to the cut):
+
+| layer | enterings | writebacks |
+|---:|---:|---:|
+| **1** | **1 343** | **248** |
+| 2 | 38 009 | 0 |
+| 3 | 1 213 248 | 0 |
+| 4 | 5 351 172 | 0 |
+| 5 | 1 554 433 | 0 |
+| | **8 158 205** | **248** |
+
+design/08 §2 argues from the clause width that only layer 1 can add a fact to
+root mid-layer, and S1a.7.0 counted `writeback` events by layer on three files.
+This is the same claim over the whole corpus and five layers deep: **248 of 248
+writebacks are in layer 1**, and layer 1 holds **0.016 %** of the enterings.
+
+So the question "what happens to layer 1" has a cost attached to every answer
+now, and the cheapest answer is affordable: making layer 1 sequential costs
+**0.24 % of `branching/07 -e`'s Phase-2 firings and nothing at all on the other
+three workloads of the measurement set**, because those three never write back.
+By Amdahl a 0.24 % sequential fraction admits 417×, against a phase target of
+6×. What it costs the zebra family is 40–94 % — and the zebra family is the
+*parity* cell set, not the measurement set (§5.4).
+
+---
+
+## 4. Deferred integration — the shape a parallel layer actually has
+
+§3 audits [design/08](../design/08_parallelism.md) §2's *speculate and repair*.
+There is a second shape, and it is the one a parallel layer has whether or not
+anybody designs it: **test a batch of candidates against one KB, then integrate
+what the whole batch learned.** `SolveOptions::integrate_every` is that mode —
+`None` is the sequential engine, `Some(n)` puts a barrier every *n* enterings,
+`Some(usize::MAX)` puts one at each layer end.
+
+The argument, with the commutation identity and the one case that needs a
+re-check, is [design/08 §2a](../design/08_parallelism.md#2a-deferred-integration--the-batch-synchronous-layer).
+The numbers are here. Every cell below produced the **same verdict and the same
+model set** as the sequential run — that is
+`ein-infer/tests/search_invariants.rs`: **16 files under 4 candidate orders and
+3 integration policies**, plus two five-layer searches under a whole-layer
+barrier, plus the composition of the two.
+
+`ein-infer/examples/defer_probe.rs` is the instrument and this is its output.
+"depth" is `Kb::depth()` at exit — root's layer stack, one sealed layer per
+write burst.
+
+| workload | sequential | | | barrier every 20 | | | one barrier per layer | | |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| | ent. | depth | wall | ent. | depth | wall | ent. | depth | wall |
+| `zebra2 -e` | 101 | 35 | 37 ms | 111 | 5 | 40 ms | **521** | 3 | 163 ms |
+| `zebra -e` | 111 | 34 | 62 ms | 192 | 5 | 101 ms | **617** | 3 | 273 ms |
+| `zebra2-hints -e` | 36 | 25 | 13 ms | 42 | 4 | 16 ms | **57** | 3 | 21 ms |
+| `branching/04 -e` | 36 | 2 | 1 ms | 36 | 2 | 1 ms | 36 | 2 | 1 ms |
+| `branching/06 -e` | 5 173 | 2 | 263 ms | 5 173 | 2 | 262 ms | **5 173** | 2 | 259 ms |
+| `sq-bwd/houses -e` | 21 699 | 2 | 349 ms | 21 699 | 2 | 349 ms | **21 699** | 2 | 348 ms |
+| `branching/07 -e` | 11 501 | **164** | **1 135 ms** | 11 501 | 13 | 447 ms | **11 501** | **3** | **406 ms** |
+
+Three readings, and the third is a finding rather than a confirmation.
+
+**1. What deferral costs is exactly the prune it defers.** On the zebras the
+singleton writeback is doing enormous work in layer 1 — 5.2× and 5.6× the
+enterings without it — and batching at 20 recovers almost all of it (1.1× and
+1.7×). So batch size is the knob that trades pruning for parallelism, and it is
+a per-workload knob, not a constant.
+
+> **Three of the entering cells above were wrong until 2026-08-22**, and this
+> is what a measurement document owes: `zebra2 -e` read 617 whole-layer where
+> the instrument says **521** — the row below's number, copied one line up —
+> and `zebra2-hints -e` read 46/72 where it says **42/57**. Found by re-running
+> `defer_probe` before writing §6 next to it. Nothing drifted: the same probe
+> on the pre-[S1a.7.1](../README.md#s1a71--making-the-shared-state-sync) build prints today's
+> numbers, so these were transcription slips on the day, not an engine change.
+> The wall-clock and depth columns reproduce, the reading above is 5.2× rather
+> than 6.1×, and the conclusion — deferral is rejected because it moves a
+> search counter at all — never depended on which multiple it was.
+
+**2. On the workloads that want cores it costs nothing.** `branching/06 -e` has
+no singleton writeback at all; `branching/07 -e` has 162 and they prune
+nothing. Both are entering-identical to the unit under a whole-layer barrier.
+That is the same split §2 found from the other side: the deep searches put
+98–100 % of their enterings in layers that never write to root, so there is
+nothing there for a barrier to delay.
+
+**3. Deferral is 2.8× *faster* on `branching/07 -e`, single-threaded — and the
+depth column is why.** Every root write seals another layer: `Kb::fork` seals
+the top so the parent's later appends land in a new one, and **every fork
+inherits the whole stack**. 162 mid-layer writebacks put root at **depth 164**,
+and all 11 501 forks walk it. A whole-layer barrier coalesces them into one
+write burst — **depth 164 → 3** — for the same 11 501 enterings and the same
+answer, and the run goes 1 135 → 406 ms. Batching at 20 lands between:
+depth 13, 447 ms. The zebras collapse the same way (35 → 3, 34 → 3) from a
+starting depth an eighth the size, which is why nothing was visible there.
+
+That last one is a P1a.6-shaped result found by a P1a.7 correctness experiment,
+and it is worth stating as its own claim, because it does not need parallelism
+to be useful:
+
+> **A root write costs every later fork a layer.** Coalescing the writes of a
+> layer is worth 2.8× on the corpus's deepest writeback-heavy search, at
+> `--jobs 1`.
+
+Whether the *sequential* engine should coalesce is not this phase's call — it
+changes the traversal, so it is a `--jobs`-scoped or `--unordered`-scoped
+decision, not a free optimisation. It is recorded here so
+[S1a.7.2](../README.md#s1a72--level-1-parallel-enterings) chooses with it in hand.
+
+> **What it chose** (2026-08-22): not deferral, and not nothing. Deferral is
+> rejected as the *parallelism* mechanism because it moves `enterings_total`
+> — 101 → 521 whole-layer, 111 at batch 20 on `zebra2 -e` — and a search
+> counter that differs between `--jobs 1` and `--jobs N` is the one thing the
+> restated acceptance does not admit. But the 2.8× above is **not** a
+> deferral result: the entering count is identical on `branching/07 -e`, so
+> all of it is the depth column. The route that takes the depth win without
+> deferring a single prune is to **flatten root at the layer barrier**, which
+> is answer-neutral for a reason that already has a test — `Kb::depth()`
+> reaches instruments only, never output, and `check_layering` is the
+> standing invariant that a flattened KB and a layered one agree. It recovers
+> the win for every layer above the first (11 297 of `branching/07 -e`'s
+> 11 501 forks) and leaves layer 1's own 204 paying a growing stack.
+> [S1a.7.2](../README.md#s1a72--level-1-parallel-enterings) T1a.7.2.0 measures it first,
+> because it is two lines and it is worth 2.8× at `--jobs 1`. **It is 3.2×**,
+> and § 6 is where it went.
+
+### The `stop_after` caveat
+
+Every number above is exhaustive. Under `stop_after`, a deferred layer records
+a solution node from a *provisional* alive verdict, which is the one case
+design/08 §2a says needs a barrier re-check — so a `-n 1` run under deferral is
+not covered by the tests above and is not claimed here.
+
+## 5. What this chooses
+
+1. **Levels 2 and 3 are unaffected** — they live inside one fork's saturation
+   and have no cross-entering dependency. [S1a.7.3](../README.md#s1a73--level-3-the-parallel-boundary-round)
+   and [S1a.7.4](../README.md#s1a74--level-2-the-parallel-enqueue-pass) stand as written.
+2. **Level 1 splits at the layer boundary.** Layers ≥ 2: parallel, no
+   validator, exact — and 98–100 % of the work on every workload that needs
+   cores. Layer 1: a real dependency chain, a writeback every ~1.8 enterings on
+   the zebras, and a speculation that is wrong 1 time in 8.
+3. **Layer 1 runs sequentially**, decided 2026-08-22 at
+   [S1a.7.2](../README.md#s1a72--level-1-parallel-enterings) § The decision. §3a is why: `W`
+   grows to the second-to-last candidate of the layer, so there is no exact
+   head/tail split to take, and the layer that has to be serial is 0.016 % of
+   the corpus's enterings and 0.24 % of `branching/07 -e`'s firings — nothing
+   at all on the other three workloads of the measurement set, which never
+   write back. Continue-and-validate is not built: with no fanned-out layer
+   ever seeing a `W`, design/08 §2's three cases reduce to case 1 and the
+   fail-fast interaction above **does not arise**.
+4. **The scaling target moves.** `zebra2 -e`'s Phase 2 is 26.8 ms and 42.3 %
+   of its firings are in the exactly-parallel part — ~11 ms, if firings price
+   time, which is the proxy §2 has and a per-layer clock would replace. No
+   engine change shows 6× on that. The
+   entries with a search — `branching/06`, `branching/07`, `sq-bwd/houses`,
+   `features/01`, 0.2–1.9 s and ≥ 98 % of enterings past layer 1 — are the
+   phase's measurement set, and the two zebras stay as the *parity* cells they
+   have always been.
+
+> **A sibling file.** This one is about the *search* — where the enterings are
+> and what a speculation costs. [shared_state.md](shared_state.md) is
+> [S1a.7.1](../README.md#s1a71--making-the-shared-state-sync)'s, in the same shape, and is about
+> the four structures a worker shares: how hard each is read, how rarely each
+> is written, and which of design/08 §6's strategies survived being measured.
+
+## 6. T1a.7.2.0 — the layer stack, coalesced at the barrier
+
+§4's third reading found a 2.8× that had nothing to do with the mode it was
+found in: `branching/07 -e` runs 1 135 ms at root depth 164 and 406 ms at depth
+3, **for the same 11 501 enterings**. Deferring is one way to get the depth. It
+is not the cheap one, because it also postpones every prune. Flattening root at
+the layer barrier is: integration stays immediate, no writeback moves, and only
+root's *representation* is rebuilt.
+
+That is `Kb::flatten()` at the end of each layer, gated on
+`SolveOptions::coalesce_root_at` — the depth at which a barrier is worth an
+O(facts) rebuild. `ein-infer/examples/flatten_probe.rs` is the instrument.
+
+### What it is worth
+
+`solve -e` through the CLI, best of five, the two binaries interleaved so a
+thermal drift cannot land on one column. `--cores P:1` on cpu0 of an i9-14900HX,
+governor `powersave`, turbo on.
+
+| workload | before | after | | peak RSS before → after |
+|---|---:|---:|---:|---|
+| `branching/07 -e` | 882 ms | **278 ms** | **3.17×** | 16.4 → 16.7 MB |
+| `zebra -e` | 48.8 ms | 45.2 ms | 1.08× | 16.6 → 16.7 MB |
+| `zebra2 -e` | 31.2 ms | 29.8 ms | 1.05× | 16.6 → 16.7 MB |
+| `zebra2-hints -e` | 13.0 ms | 13.1 ms | 0.99× | 14.6 → 14.6 MB |
+| `branching/06 -e` | 196 ms | 199 ms | 0.98× | 26.6 → 26.7 MB |
+| `sq-bwd/houses -e` | 252 ms | 250 ms | 1.01× | 16.4 → 16.7 MB |
+| `features/01 -e` | 1 680 ms | 1 636 ms | 1.03× | 94.4 → 94.7 MB |
+
+**3.17×, above the 2.8× §4 predicted**, and the last three rows are the reason
+to trust it rather than a reason to doubt it: those three workloads **flatten
+zero times** — their barriers leave root at depth 2, below the threshold — so
+their columns are the measurement's own noise floor, and it is ±2 %. The
+0.98× on `branching/06 -e` reproduces at nine repetitions and is not work: the
+only difference on that file's path is five `depth()` comparisons.
+
+### What it costs
+
+`materialise()` is O(facts) per layer, so the setting is a threshold and not a
+`bool`. The probe's cost columns, over all 49 non-slow corpus files that reach
+a `solve -e` verdict:
+
+| threshold | files that flatten | flattens | facts copied, worst file |
+|---|---:|---:|---:|
+| `None` — off | 0 | 0 | — |
+| `Some(2)` — every barrier | 33 | 1–5 each | 1 160 |
+| **`Some(3)` — shipping** | **4** | **1 each** | **533** |
+| `Some(20)` | 4 | 1 each | 533 |
+
+Three is "a mid-layer write happened": a fork seals root's top, so a layer with
+no writeback leaves depth 2, and 3 is the first depth a writeback can produce.
+The four files that reach it are exactly the four that write back — the two
+zebras, the hints fixture and `branching/07 -e` — and each flattens **once**,
+after layer 1, which is where §3a found all 248 of the corpus's writebacks.
+`Some(20)` behaves identically because no corpus layer stack lands between 3
+and 20; `Some(2)` costs 5× the copying for no measurable time, on files that
+were already at the depth it flattens.
+
+The cost case the threshold exists for — a large root, cheap layers, a
+writeback every layer — **is not in this corpus**: the worst `flatten_facts` in
+the sweep is 1 160, and 533 in the shipping configuration. If one arrives, the
+counter pair (`flatten`, `flatten_facts`, behind `--features counters`) is what
+prices it, and the threshold is where the answer goes.
+
+### What makes it safe
+
+Not an argument — three things that fail loudly.
+
+- **The entering count is identical in every column, on every one of the 49
+  files.** That is what separates this from deferral, which moves it by 5.2× on
+  `zebra2 -e`, and it is the property `--jobs N` will need later in the phase:
+  a knob that rebuilt a representation *and* moved a counter would be a
+  traversal change wearing a performance change's clothes.
+- **`cargo test --workspace` is green with no `EIN_BLESS`.** `corpus_shapes`'s
+  5 178 renderings of 128 files, the four golden sets, `summary_properties`'s
+  thirteen identities over every `solve` cell — a re-bless here would have been
+  the flatten announcing that it changed an observable, and there was none.
+- **Two tests hold the reason rather than the result.**
+  `search_invariants.rs`'s `coalescing_at_the_barrier_collapses_roots_layer_stack`
+  asserts that with the barrier *off* root still ends deeper than 100 on
+  `branching/07 -e` — so the day the writebacks go, the test says so rather than
+  passing vacuously — and that with it on the depth collapses **and the
+  enterings do not move**. `coalescing_costs_no_prune_where_deferring_costs_many`
+  is the same claim on the two zebras, where the deferral's price is visible and
+  the flatten's is zero. `Kb::depth()` reaches four probes and no renderer,
+  which is why this needs a test and not a golden.
+
+### Where the win is *not*
+
+Layer 1 keeps its growing stack: the barrier is a layer boundary, and the
+writebacks are all inside layer 1 (§3a, 248 of 248). On `branching/07 -e` that
+leaves 204 of 11 501 forks walking a stack that is still growing under them and
+puts 11 297 on a stack of one — which is the same 98/2 split every other number
+in this file has, arriving for the third time and from a third direction.
+
+## 7. T1a.7.2.1 — the seam, and what it costs
+
+Before a thread there is a question of *types*: what does a worker hold? Four
+things had to change, and the interesting number is that together they cost
+nothing.
+
+| what a worker holds | before | after |
+|---|---|---|
+| root | `&mut Kb` — `fork()` seals the parent's top layer | `&Kb`. `Kb::fork` splits into `seal_top` (mutates, once per fanned-out layer) and `branch` (shared, once per worker) |
+| the intern tables | `Interner` / `IntPool` / `FactStore` owned by `Terms` | `Table<T>`: `Own(T)`, or `Shared(Arc<T>)` between `Terms::share` and `Terms::reclaim`. A lent table answers a lookup and refuses an assignment |
+| the record arena | one fork region on the shared `ProvArena` | `records` shared, the **region per worker** and carried back on the result (`ProvArena::share` / `take_fork` / `swap_fork`) |
+| the event sink | `Rc<RefCell<Vec<u8>>>`, not `Send` | `Events::worker()` buffers whole lines with a hole where the ordinal goes; `Events::replay` numbers them at the commit |
+
+### What it costs
+
+`solve -e` through the CLI, best of 13, the two binaries **alternated** run by
+run. `taskset -c 0` on an i9-14900HX, governor `powersave`.
+
+| workload | before | after | |
+|---|---:|---:|---:|
+| `branching/06 -e` | 197 835 µs | 199 089 µs | +0.63 % |
+| `branching/07 -e` | 276 220 µs | 273 996 µs | **−0.81 %** |
+| `features/01 -e` | 1 671 766 µs | 1 643 684 µs | **−1.68 %** |
+| `sq-bwd/houses -e` | 253 692 µs | 251 343 µs | −0.93 % |
+| `zebra2 -e` | 30 739 µs | 30 801 µs | +0.20 % |
+| `zebra -e` | 46 146 µs | 46 050 µs | −0.21 % |
+
+Inside the ±2 % floor §6 established, and signed both ways — which is what
+"free" looks like when it is measured rather than asserted. Two effects cancel:
+`Table`'s branch on the fact store's 5.8–26 M reads costs, and
+`try_commitment_set` losing its `&mut Kb` pays it back.
+
+### The route that was not free, and why it is worth writing down
+
+The obvious spelling is `Arc<T>` in **both** states — read through the `Arc`,
+grow through `Arc::get_mut`. It was built first, and it is **4 % slower on
+`branching/06 -e`**:
+
+| workload | `Arc` in both states | `Table` (shipping) |
+|---|---:|---:|
+| `branching/06 -e` | −4.0 % | +0.6 % |
+| `features/01 -e` | −1.9 % | −1.7 % |
+| `branching/07 -e` | −1.7 % | −0.8 % |
+
+`Arc::get_mut` has to *prove* uniqueness, and its proof is a locked
+read-modify-write on the weak count. §2's table says why that is the wrong
+place to spend it: `branching/06 -e` makes **2 318 815** interning calls to
+assign **417** ids, so the atomic is paid 5 561 times per assignment it
+enables. The two-state enum pays a branch instead — on more calls, but a branch
+whose outcome is constant for the whole of a layer.
+
+The general form is worth keeping: *when a structure is read far more often
+than it is grown, put the sharing in the type and not in the pointer.*
+
+## 8. T1a.7.2.1 — the fan-out, and the three things it costs
+
+**The first threads in the repo**, and the first numbers. `--jobs N` on 8
+physical P-cores (`cpu0,2,4,6,8,10,12,14`), best of five, `solve -e` through
+the CLI.
+
+| workload | `-j 1` | `-j 2` | `-j 4` | `-j 8` | |
+|---|---:|---:|---:|---:|---:|
+| `sq-bwd/houses -e` | 257.6 ms | 168.6 | 95.2 | **59.9** | **4.30×** |
+| `branching/07 -e` | 280.0 ms | 193.1 | 111.0 | **69.0** | **4.06×** |
+| `branching/06 -e` | 198.2 ms | 136.9 | 81.7 | **53.3** | **3.72×** |
+| `features/01 -e` | 1 696.4 ms | 1 191.9 | 768.6 | **537.4** | **3.16×** |
+| `zebra -e` | 46.3 ms | 41.3 | 36.1 | 34.7 | 1.34× |
+| `zebra2 -e` | 31.2 ms | 29.2 | 27.4 | 27.5 | 1.13× |
+
+**3.16–4.30× on the measurement set against a ≥ 6× target**, and the zebras at
+1.1–1.3× exactly as §5.4 said they would be — their layer 1 holds half their
+firings and layer 1 is the one that cannot be fanned out.
+
+> **Re-taken 2026-08-23 after the batch knee moved** (§ The batch is a memory
+> decision, below): `BATCH_PER_WORKER` 32 → 512, best of seven, same `P:8`.
+>
+> | workload | `-j 1` | `-j 2` | `-j 4` | `-j 8` | |
+> |---|---:|---:|---:|---:|---:|
+> | `branching/06 -e` | 194.2 ms | 114.5 | 68.6 | **44.1** | **4.40×** |
+> | `sq-bwd/houses -e` | 254.7 ms | 153.0 | 87.5 | **58.0** | **4.39×** |
+> | `branching/07 -e` | 280.5 ms | 163.0 | 97.0 | **66.4** | **4.22×** |
+> | `features/01 -e` | 1 646.5 ms | 1 191.9 | 749.7 | **518.7** | **3.17×** |
+> | `zebra -e` | 44.5 ms | 38.2 | 33.8 | 31.2 | 1.43× |
+> | `zebra2 -e` | 29.2 ms | 26.5 | 25.1 | 23.6 | 1.23× |
+>
+> **3.17–4.40×**, and the honest reading is that the batch is worth **0–9 % of
+> the `--jobs 8` column and nothing at `--jobs 1`**, part of it inside this
+> machine's session-to-session spread. The `-j 1` column does not move at all
+> and cannot: at one job there is no fan-out and no batch. The headline range
+> is quoted as 3.16–4.30× throughout this file because that is the number the
+> stage shipped; this row is what it reads today.
+
+> **The first fan-out was 2.19–2.89×**, and the three sections that follow are
+> what took it here — all three found by measuring the parallel run rather than
+> by designing for it, and all three *sequential* improvements as well. The
+> before-columns are kept because they are the finding.
+
+### It is the same computation, and that is checked three ways
+
+- **The whole corpus.** All 47 non-slow entries that reach a `solve -e`
+  verdict, at `--jobs 1` and `--jobs 8`: same exit code, byte-identical stdout,
+  and **every field of `--json-summary`** — which is every engine counter —
+  equal. 0 divergences.
+- **The event stream, byte for byte.** `--events --events-level verbose` at
+  both job counts on four files, `run` line excluded because it echoes argv:
+  identical, including `branching/06 -e`'s **2 200 561** lines. That is the
+  ordered commit and the narration replay checked together, and it is the
+  strongest form the promise has — an event's ordinal is assigned at the
+  commit, not by the thread that emitted it.
+- **The counters, as a unit test.** `search_invariants.rs`'s
+  `jobs_does_not_move_the_answer_or_a_counter` compares the whole
+  `MonotonicStats` at `--jobs {2,4,8}` over 16 files, and
+  `a_deep_search_is_counter_identical_under_jobs` does it on the two five-layer
+  searches.
+
+### …and one entering in the corpus cannot be done on a worker
+
+`lattice/02_genuine_3set_death.ein` hands **three** enterings back per run, and
+that is a correction to
+[shared_state.md §2a](shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+rather than a surprise about it. That table measured `try_commitment_set` only,
+and a fork stays alive through the `complete()` probe — whose blind enumerator
+*numbers the candidates it walks*. Those are the ones that come back.
+
+What happens then is the mechanism working: `Terms::refused` is set at the
+single point where a lent table declines, everything the worker produced after
+it is discarded — its narration included — and the committing thread re-runs
+the entering where the tables can grow. Every counter still matches, which is
+the point: the fallback is not an approximation, it is the same entering
+computed where it can be. `JobStats::handed_back` is the running count.
+
+### The commit's real cost, and it is not the commit
+
+The first fan-out was **2.19–2.89×**, and CPU utilisation said why: 382 % of
+800 % at `--jobs 8`, with total CPU time up only 29 % — the threads were idle,
+not doing extra work. Timing the two halves of each batch on `branching/06 -e`
+put 20 ms of a 79 ms run in the ordered commit, which is a 26 % serial fraction
+and an Amdahl ceiling of 3.8× before the fan-out's own efficiency is counted.
+
+Timing the commit's *parts* found what it was, and it was not the learned
+clause, the subsumption or the `state_key`:
+
+| `features/01 -e`, `--jobs 8` | ms |
+|---|---:|
+| the commit loop | 269 |
+| …of which `drop(result)` on the alive path | **156.7** |
+| …of which `discard_fork` — the region's records | **35.3** |
+| …of which `handle_dead` | 0.0 |
+
+**192 of 269 ms is freeing memory another thread allocated.** A fork's KB, its
+firings and its provenance region are built on a worker and returned on the
+committing thread, and every modern allocator makes a cross-thread free its
+slow path — `snmalloc` posts it to the owning thread's message queue, which is
+why `sn_rust_dealloc` and `handle_message_queue_slow` were 6 % of the profile.
+
+The fix is to free it where it was allocated, and the only question is *when
+that is allowed*. It is allowed whenever nothing at the commit will read the
+fork, which is: not a solution node (`record_node` snapshots one and promotes
+what it cites), no `store_lattice` (the proof reads dead forks' state keys),
+and a dumper that says it does not look (`Dumper::reads_forks`, `true` by
+default and `false` for `NoDumper`). The worker then drops the KB, the firings
+and the region, and does it **in parallel**.
+
+| workload | before | after | |
+|---|---:|---:|---:|
+| `sq-bwd/houses -e` | 2.89× | **4.25×** | +47 % |
+| `features/01 -e` | 2.40× | **3.02×** | +26 % |
+| `branching/07 -e` | 2.19× | **2.60×** | +19 % |
+| `branching/06 -e` | 2.66× | **2.89×** | +9 % |
+
+The general form: **in a fan-out, freeing is work too, and it belongs to
+whoever allocated.** A result that crosses a thread boundary should carry only
+what the far side reads.
+
+The hypothesis this replaced is worth recording as rejected. The dead
+commitment's `state_key` is a sort of the whole fork's fact list, computed on
+every death for a `LatticeProof` that a solve without `--trace` never builds —
+so it looked like the answer. Making it conditional measures **±2 %**, which is
+the noise floor: the corpus's forks are small enough that sorting their fact
+lists costs nothing. It is now conditional anyway, because `Entered::kb` is
+`None` where the worker dropped the fork, but that is a consequence and not a
+win.
+
+### T1a.7.2.7 — and the layer's own serial work turned out to be three things
+
+With the commit's frees moved to the workers, the largest serial term in Phase 2
+was **candidate generation**: 39.5 ms of `branching/07 -e`'s 109 at `--jobs 8`.
+Timing its parts split it, and the split is why the fix is three fixes:
+
+| ms at `--jobs 8` | `branching/07` | `branching/06` | `features/01` |
+|---|---:|---:|---:|
+| `apriori_prefix_join` | 1.0 | 0.4 | **20.6** |
+| **`filter_candidate`, the whole layer** | **47.7** | **11.3** | 9.1 |
+| `order_candidates` | 0.9 | 0.2 | **26.0** |
+
+1. **The filter fans out**, and it is the easiest fan-out in the engine:
+   `filter_candidate` asks whether every element is still alive and whether any
+   learned clause is a subset, reads `alive` and the clause store by `&`, and
+   writes nothing. What it costs is `candidates × clauses`, which is why the
+   file with the lookahead *off* — and therefore the largest no-good store —
+   pays 47.7 ms of it. Order is kept by computing a **mask** through an indexed
+   `collect_into_vec` and filtering with it, rather than by trusting a filtered
+   collect to be ordered: a layer's candidate order *is* the traversal, and it
+   is worth a `Vec<bool>` to make that structural. → 47.7 ms becomes **8.3**.
+2. **`order_candidates` took `&[CanonicalSetId]` and cloned it.** A layer
+   arrives in the join's emission order, which is already `cmp_set` order, so
+   the sort is a linear scan over already-sorted runs — and the 26 ms was the
+   *copy* the sort needed somewhere to put. Taking the vector by value is a
+   sequential win with no parallelism in it at all. → **18.5 ms**, and the rest
+   is the sort of a layer that really is 100 000 sets long.
+3. **`record_node` promoted a fork's provenance before asking whether the node
+   was a duplicate.** `branching/06 -e` calls it **1 221 times to keep 22
+   nodes** — the search reaches the same model down many commitment paths — and
+   each call was doing `Kb::promote_provenance` and `Kb::snapshot` for a record
+   the dedup then threw away, 7.3 ms of a 15 ms commit. `state_key` reads the
+   fact list and the promotion rewrites justification tables, so the key is the
+   same whichever runs first; computing it first makes a losing node cost a
+   sort. The comment that put the promotion first said it was cheaper than
+   *threading the fork region's lifetime through the decision* — and the region
+   now travels with the entering, so there is nothing to thread. → `branching/06
+   -e` 3.13× → **3.72×**.
+
+Together with the commit's frees: **2.19–2.89× → 3.16–4.30×**, and `--jobs 1`
+got faster too, by 2–3 % on the two files that (2) and (3) touch.
+
+### Where the other 1.5× is
+
+Phase 2 at `--jobs 8`, after all four fixes, by timing each region:
+
+| | `branching/06` | `branching/07` | `features/01` | `houses` |
+|---|---:|---:|---:|---:|
+| **the fan-out** | **41.3 ms** | **59.0** | **455.2** | **52.0** |
+| the ordered commit | 4.0 | 2.7 | 53.6 | 3.2 |
+| candidate generation | 2.6 | 8.3 | 22.2 | 1.4 |
+| the ordering | 0.2 | 0.4 | 18.4 | 1.0 |
+| layer 1, sequential | 0.9 | 5.1 | 0.1 | 0.1 |
+
+**The serial terms are down to 8–17 %** and what is left is the fan-out's own
+efficiency. On `sq-bwd/houses -e` it is 52 ms of a 60 ms run against 258 ms
+sequential — the fan is **~5× on 8 cores**, and Amdahl on 8 ms of serial would
+allow 7.5×.
+
+That last 1.5× is a different kind of question, and the profile says which:
+there is **no lock in it** — the engine's one `Arc<Mutex<PlanMemo>>` does not
+appear — and 11 % is the allocator and libc. So it reads as memory rather than
+contention: a fork allocates and frees a KB delta and a saturator, and eight of
+them at once is a bandwidth question. Reducing what a fork allocates is a
+[P1a.6](../README.md#p1a6--performance)-shaped answer, not a P1a.7 one, and it
+is the honest statement of where the ≥ 6× target now stands.
+
+None of the four is S1a.7.3's or S1a.7.4's either — those parallelise root
+saturation and the boundary round, which are Phase *1* and are not in this
+denominator at all.
+
+### The batch is a memory decision before it is a scheduling one
+
+The first fan-out ran a whole layer at once, and on `features/01 -e` — 384 167
+enterings in one layer — that meant **1.9 GB** of peak RSS against 84 MB
+sequential, because every speculated result holds a fork's KB and its record
+region until the commit reaches it. It was also *slower* than `--jobs 1`:
+
+| | `-j 1` | `-j 2` | `-j 8` | peak RSS |
+|---|---:|---:|---:|---:|
+| whole layer in flight | 1 704 ms | **1 833 ms** | 1 173 ms | **1.9 GB** |
+| batch = `jobs` × 32 | 1 746 ms | 1 413 ms | **727 ms** | **89 MB** |
+
+So the batch is bounded, and `BATCH_PER_WORKER` is a measured constant rather
+than a chosen one. The sweep, on `features/01 -e` at `--jobs 8` with the pool:
+
+| enterings in flight per worker | 8 | 32 | 128 | 512 |
+|---|---:|---:|---:|---:|
+| wall | 831 ms | **740 ms** | 730 ms | 856 ms |
+| peak RSS | 86 MB | **89 MB** | 93 MB | 122 MB |
+
+32 was the knee. A **cut** narrows it further — `stop_after`, `max_enterings`
+and `max_time` stop mid-layer and everything past the cut is waste — so the
+batch ramps from one round of workers instead (T1a.7.2.4, §8a).
+
+> **Re-taken 2026-08-23, and the knee moved to 512** — because a *measured*
+> constant has to be re-measured when what it measures changes, which is the
+> same rule [`slow = true`](corpus_cost.md) lives under. Three
+> things landed after the sweep above and all three reduce what one speculated
+> result holds: T1a.7.1.7's per-worker provenance region, T1a.7.2.1's
+> "free it on the worker that allocated it", and `Entered::kb = None` for a
+> result nobody at the commit will read. So the memory column that priced 512
+> out is gone:
+>
+> | per worker | 32 | 128 | 512 | 1024 | 2048 | 4096 |
+> |---|---:|---:|---:|---:|---:|---:|
+> | `features/01 -e` | 545 ms / 69 MB | 550 / 65 | **524 / 68** | 515 / 68 | 509 / 80 | 506 / 111 |
+> | `sq-bwd/houses -e` | 57 / 21 | 57 / 18 | **56 / 19** | 56 / 26 | 57 / 30 | 58 / 34 |
+> | `branching/07 -e` | 67 / 17 | 66 / 19 | **65 / 21** | 66 / 22 | 65 / 23 | 65 / 24 |
+> | `branching/06 -e` | 48 / 21 | 45 / 27 | **44 / 30** | 44 / 31 | 44 / 30 | 44 / 31 |
+>
+> `features/01 -e` — the file the bound exists for — is **flat at 68 MB from 32
+> to 1024** and only starts climbing at 2048. 512 buys 0–9 % for at most 9 MB;
+> 4096 buys another 3 % for 111 MB, which is the trade the bound is there to
+> refuse. At `--jobs 16` on the same file 512 is 74.3 MB against 32's 67.3 —
+> still an eighth of what that file cost before
+> [S1a.7.1](../README.md#s1a71--making-the-shared-state-sync).
+>
+> Answer- and counter-neutral, checked the same way everything else in this
+> phase is: 142 corpus cells at `--jobs 1` vs `--jobs 8`, 0 divergences, and
+> `search_invariants`' fifteen.
+
+Peak RSS with the bound in place, which is [README § Risks](../README.md#p1a7--parallelism)'s
+"memory scales with jobs" answered:
+
+| workload | `-j 1` | `-j 8` | `-j 16` |
+|---|---:|---:|---:|
+| `features/01 -e` | 79.8 MB | 82.8 MB | **90.3 MB** |
+| `branching/06 -e` | 20.0 MB | 28.6 MB | 36.3 MB |
+| `sq-bwd/houses -e` | 11.6 MB | 19.0 MB | 24.8 MB |
+
+### And the pool is a measurement, not a dependency preference
+
+A bounded batch means many barriers per layer, which makes *the cost of a
+barrier* the thing to watch. The first implementation used
+`std::thread::scope`, spawning `jobs` threads per batch: on `features/01 -e`
+that is ~96 000 spawns, and at `--jobs 2` it was a **3× slowdown** —
+
+| batch/worker | `-j 2` with `std::thread::scope` | `-j 2` with a pool |
+|---|---:|---:|
+| 4 | 5 426 ms | — |
+| 16 | 3 543 ms | — |
+| 32 | 3 794 ms | **1 413 ms** |
+
+— so the threads have to stay alive between batches, which is what `rayon`'s
+pool is for. It is built **once per solve** and only when `jobs > 1`, so a
+default `--jobs 1` run creates no thread at all; it lives behind `ein-infer`'s
+`parallel` feature, on by default, per
+[design/12 §2](../design/12_toolchain_and_layout.md#2-dependency-policy).
+`collect_into_vec` over an *indexed* parallel iterator is what keeps the
+results in candidate order whatever order the workers finished in.
+
+## 8a. T1a.7.2.4 — the early stop, and the batch that was flat
+
+**The batch that bounds a cut's waste was bounding it on every run**, and the
+CLI's default run is a run with a cut. `-n 1` is what `ein solve <file>` means
+without `-e`, and the rule §8 shipped read *any* `stop_after` or
+`max_enterings` as "cut soon" and dropped the batch to one round of workers.
+On three of the four workloads of the measurement set `-n 1` never reaches a
+solution at all — the depth cap ends the search first — so the common
+invocation paid a barrier every `jobs` enterings for a cut that never came:
+
+| `--jobs 8`, best of five, `P:8` | flat `batch = jobs` | ramped | `-e` control |
+|---|---:|---:|---:|
+| `features/01 -n 1` | 994.9 ms — **1.69×** | **527.3 ms — 3.13×** | 3.17× |
+| `sq-bwd/houses -n 1` | 94.9 ms — 2.72× | **56.7 ms — 4.46×** | 4.38× |
+| `branching/07 -n 1` | 89.4 ms — 3.07× | **65.9 ms — 4.30×** | 4.20× |
+| `branching/06 -n 1` | 3.9 ms | 5.0 ms — *see below* | 4.28× |
+
+`features/01 -n 1` is the whole finding in one row: **384 167 enterings in one
+layer, 48 021 barriers**, and at `--jobs 2` the flat batch was *slower than
+`--jobs 1`* (1 842.6 ms against 1 677.3) — the same signature the whole-layer
+batch had in §8, arrived at from the opposite direction. One is too much memory
+in flight and the other is too little work between barriers, and the knee
+between them is the same 32 enterings per worker.
+
+**The last row is below the instrument's resolution**, and it is in the table
+to say so rather than to claim a direction. `branching/06 -n 1` finds its
+solution in ~3 ms — the same file's exhaustive run is 195 — and at that size a
+process's wall clock is startup and page faults. Best of five said 3.9 flat and
+5.0 ramped; best of **twenty-five** says `-j 1` 3.4, `-j 2` 5.7, `-j 4` 6.0,
+`-j 8` 3.2, which is not a curve. What can be said exactly is what the counters
+say: the larger batch speculates 42 enterings to commit 25 where the flat one
+speculated 32, so the ramp trades 10 more discarded enterings for the
+throughput the rows above. On a 3 ms run neither number is worth a thread pool,
+and that is what `--jobs 1` being the default is for.
+
+### The rule, and why it is a bound rather than a constant
+
+    batch = clamp(enterings committed so far, jobs, jobs × 32)     if a cut is configured
+          = jobs × 32                                              otherwise
+
+A cut discards at most the enterings in flight, and a batch is at most what has
+already been committed — so **speculative waste at an early stop is bounded by
+the work already done**, and a cut can at worst double a run's work. The
+geometric growth reaches full width after ~`jobs × 32` enterings, which is why
+the `-n 1` column above now tracks its `-e` control to within noise while the
+bound still holds.
+
+"A cut is configured" is `stop_after`, `max_enterings` or `max_time` — the
+three things that stop the loop mid-layer. An exhaustive run with no budget
+takes the full batch from its first entering and is **byte-for-byte the run §8
+measured** — no code on that path changed — which is why the table's last
+column is a *control* rather than a result. It is this session's reading of
+§8's cells (3.17 / 4.38 / 4.20 / 4.28 against §8's 3.16 / 4.30 / 4.06 / 3.72),
+and the spread between the two is what a `powersave` governor and a different
+hour cost. Read the `-n 1` columns against that control, not against §8's
+table.
+
+### What it costs, measured rather than argued
+
+`JobStats::speculated − committed − handed_back`, which the `--stats` block
+prints under `--jobs N` (T1a.7.2.5):
+
+| `--jobs 8` | committed | wasted | sequential |
+|---|---:|---:|---:|
+| `branching/06 -n 1` | 25 | **17** | 42 |
+| `branching/07 -n 1` | 11 297 | 0 | 204 |
+| `sq-bwd/houses -n 1` | 21 678 | 0 | 20 |
+| `features/01 -n 1` | 384 132 | 0 | 35 |
+
+Three of the four waste nothing because they never cut. The one that does
+wastes 17 against 25 committed — inside the bound, and the reason the bound is
+`max(jobs, committed)` rather than `committed`: the very first batch of a run
+has no committed work to be bounded by.
+
+Peak RSS is unmoved, which is the other half of the batch's job: `features/01`
+reads 67–79 MB at `--jobs {1, 8, 16}` under both `-n 1` and `-e`, against the
+same file's **1.9 GB** with a whole layer in flight.
+
+### And it is still the same computation
+
+The batch is a scheduling decision and may not be anything else, so the three
+instruments §8 used were re-run with the ramp in and the `-n 1` arm added:
+
+- **142 corpus cells** — every non-slow entry's `solve` and `solve -e` runs —
+  at `--jobs 1` and `--jobs 8`: same exit code, byte-identical stdout, every
+  `--json-summary` field equal. **0 divergences.**
+- **The verbose event stream, byte for byte**, at both job counts and in both
+  modes: `branching/06 -e`'s 2 200 561 lines, `07`'s 827 167 under `-e` *and*
+  under `-n 1`, `houses`' 598 381 in both, `zebra2 -n 1`'s 17 086.
+- `search_invariants.rs`, now fifteen tests, including the two below.
+
+### And both halves are tests rather than numbers
+
+`search_invariants.rs`:
+
+- `an_early_stop_cuts_at_the_same_candidate` — every file × `-n {1,2,3}` ×
+  `--jobs {2,4,8}`, comparing the answer, the models **in recording order** and
+  every counter. `enterings_total` *is* the cut's position, so a fan-out that
+  cut one candidate early would move it. Verified live: made to cut at batch
+  granularity instead of candidate granularity, it fails on the first file with
+  29 enterings against 36.
+- `speculative_waste_is_bounded_by_the_work_and_absent_without_a_cut` — the
+  bound above, plus *zero* waste on every run with no cut configured. Verified
+  live: with the batch un-ramped it fails on the first file with 53 discarded
+  against a bound of 29.
+
+Both were written to fail loudly rather than vacuously: the first asserts that
+at least four of its runs really did stop early, the second that at least one
+really did waste something.
+
+## 9. Levels 2 and 3, measured before they are built
+
+**[S1a.7.3](../README.md#s1a73--level-3-the-parallel-boundary-round) and
+[S1a.7.4](../README.md#s1a74--level-2-the-parallel-enqueue-pass) are the phase's remaining engine
+stages, and their premises are from a deleted engine.** S1a.7.3 opens with
+"`_admit_from_boundary` is 72 % of an exhaustive solve under ein.py"; S1a.7.4
+calls itself "the smallest of the three engine-level parallel wins". Both
+sentences predate [P1a.6](../README.md#p1a6--performance), which spent a stage
+on each of the two sites, and the port has run without a Python engine since
+[S1a.10.5](../README.md#p1a10--one-implementation). So the same thing was
+done here that [S1a.7.0](../README.md#s1a70--the-speculation-audit) did to S1a.7.2 and
+[S1a.7.1](../README.md#s1a71--making-the-shared-state-sync) did to itself: measure first.
+
+Three instruments, none of them new: `utils/profile_ein_rs.py --cum-of` for
+the share, the `--events` stream for the per-round width, and two counters
+added here — `enqueue_pass` / `enqueue_task` / `enqueue_task_full`, which are
+what a fan-out over the enqueue pass would schedule.
+
+### The share of a solve each site holds
+
+`--cum-of`, samples whose stack passes through the frame, `profiling` build,
+`cpu4`:
+
+| workload | `admit_from_boundary` | `enqueue_pass` |
+|---|---:|---:|
+| `zebra2 -e` | **30.2 %** | 25.3 % |
+| `zebra -e` | **18.9 %** | 31.2 % |
+| `features/01 -e` | 3.2 % | 10.6 % |
+| `branching/06 -e` | **0.0 %** | 12.8 % |
+| `branching/07 -e` | **0.0 %** | 20.7 % |
+| `sq-bwd/houses -e` | **0.0 %** | 30.2 % |
+
+Read alone this says S1a.7.4 has a target everywhere and S1a.7.3 has one only
+on the two zebras — which §5.4 already excluded from the scaling set, because
+they are 30 and 47 ms runs whose layer 1 cannot be fanned out. That would be
+enough to re-order the two stages. It is not enough to decide either, because
+**a share is not a fan-out.** What matters for a chunked fan-out is how much
+*one* invocation has to hand out.
+
+### …and what one invocation has to hand out
+
+**The boundary round.** T1a.7.3.1 fans out the `first_failing` queries of one
+round in chunks of `jobs`. One `first_failing` call emits exactly one
+`park` / `retire` / `admit` event, and a round is bracketed by `quiesce`, so
+the event stream counts the chunk directly:
+
+| workload | rounds | with anything to judge | median | p90 | max | rounds ≥ 8 |
+|---|---:|---:|---:|---:|---:|---:|
+| `zebra2 -e` | 1 891 | 1 868 | **6** | 51 | 244 | 37 % |
+| `zebra -e` | 3 216 | 3 216 | **3** | 17 | 165 | 22 % |
+| `features/01 -e` | 665 800 | 287 650 | **1** | 1 | 5 | **0 %** |
+| `branching/06 -e` | 4 775 | **0** | — | — | — | — |
+| `branching/07 -e` | 10 932 | **0** | — | — | — | — |
+| `sq-bwd/houses -e` | 21 700 | **0** | — | — | — | — |
+
+**Three of the four workloads of the phase's measurement set never park a
+single candidate**, so their boundary rounds return at the `parked.is_empty()`
+line and there is nothing to parallelise — the 0.0 % above is structural and
+not a sampling artefact. The fourth judges a **median of one** candidate per
+round and never more than five. Even on the two zebras the median round cannot
+fill one chunk at `--jobs 8`.
+
+**The enqueue pass.** T1a.7.4.1 fans out one task per plan (full pass) or per
+`(delta fact, plan)` pair (delta pass) — which is exactly `enqueue_task`:
+
+| workload | passes | tasks | of which full | **tasks per pass** |
+|---|---:|---:|---:|---:|
+| `zebra2 -e` | 1 945 | 89 042 | 125 | **45.7** |
+| `zebra -e` | 6 587 | 71 695 | 32 | **10.9** |
+| `branching/07 -e` | 66 946 | 204 220 | 4 | **3.1** |
+| `branching/06 -e` | 27 481 | 80 480 | 4 | **2.9** |
+| `sq-bwd/houses -e` | 118 790 | 197 811 | 1 | **1.7** |
+| `features/01 -e` | 665 801 | 900 254 | 2 | **1.4** |
+
+The `full` column is why the split was worth counting: a full pass is
+`engine.len()` tasks and a delta pass is one per plan that reads the new fact,
+so a mean over both would have been a different number about neither. It is 1–4
+outside the zebras — one per compiled plan, once — so the means above *are* the
+delta-pass width. **1.4 to 3.1 on the measurement set.**
+
+### And an invocation is shorter than a barrier
+
+Multiply the share by the wall clock and divide by the count:
+
+| workload | one boundary round | one enqueue pass |
+|---|---:|---:|
+| `features/01 -e` | **0.18 µs** | **0.26 µs** |
+| `sq-bwd/houses -e` | — (never parks) | 0.64 µs |
+| `branching/07 -e` | — | 0.87 µs |
+| `branching/06 -e` | — | 0.91 µs |
+| `zebra -e` | 2.8 µs | 2.2 µs |
+| `zebra2 -e` | 4.8 µs | 3.9 µs |
+
+**And a barrier on the pool costs about 10 µs**, which §8a priced by accident
+rather than by design: `features/01 -e` at `--jobs 8` with a flat `batch = jobs`
+runs 48 021 barriers in 994.9 ms and with the ramped batch 1 501 in 527.3 ms —
+467.6 ms for 46 520 barriers, load imbalance included, so 10 µs is an upper
+bound and the right order. Against 0.18 and 0.26 µs that is **40–60×**.
+
+### What this says about the two stages
+
+Level 1 fans out **enterings**, which arrive thousands to a layer and cost tens
+of microseconds each; that is why it is 3.16–4.30×. Levels 2 and 3 fan out
+units that arrive **one to three at a time** and cost a fraction of a
+microsecond, inside a loop that runs hundreds of thousands of times.
+
+The reason is not that the plan was wrong when it was written. It is that
+**P1a.6 already took this work by making it incremental, and incrementality and
+parallelism are competing for the same bulk.**
+[S1a.6.12](../README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot) gave the
+boundary its epoch invalidation, so a round now re-judges only the candidates
+whose watched relations moved — 3 216 rounds of `zebra -e` visit 248 043 of the
+947 758 candidates they would have copied, and stop early on the admission that
+ends each one.
+[S1a.3.4](../README.md#s1a34--the-naf-boundary)'s
+semi-naive re-evaluation gave the enqueue pass its delta seeding, so a pass now
+seeds only the plans that read the one new fact — "91 % of matcher output was
+re-discovery a full re-match would recompute", and that 91 % is exactly the
+bulk T1a.7.4.1 proposed to spread over cores.
+
+A stage that fans out what an earlier stage already deleted measures the
+overhead and nothing else. **Both are declined on these numbers, 2026-08-23**,
+in [S1a.7.1](../README.md#s1a71--making-the-shared-state-sync)'s form — tasks removed by a
+measurement rather than by a preference — and the phase's remaining budget goes
+to [S1a.7.5](../README.md#s1a75--the---jobs-contract), which owes the contract,
+`jobs_invariance` and `--unordered`. S1a.7.3's Notes pre-authorised the softer
+half of this — "if this stage does not show a speedup … the stage should then
+be gated off by default with the number recorded" — and the numbers say the
+gate would never open, so what would have been built is a mechanism with tests,
+a config field and no caller.
+
+**The phase's missing 1.5× is not here either**, and that is worth saying in
+the same breath: it is the fan-out's own ~5× on 8 cores, which the profile puts
+on memory rather than on contention
+([§ Where the other 1.5× is](#where-the-other-15-is)). Reducing what a fork
+allocates is [P1a.6](../README.md#p1a6--performance)-shaped, and declining these
+two stages does not move it closer or further away.
+
+## 10. Reproducing
+
+```sh
+# §1
+utils/bench_env.sh ein.rs/target/release/ein solve examples/zebra2.ein -e -t
+
+# §2
+ein.rs/target/release/ein solve examples/zebra2.ein -e --events /tmp/ev.jsonl
+
+# §3
+cd ein.rs && cargo build --release --features spec-audit --target-dir target-sa
+python3 utils/spec_audit.py --timeout 90 --json /tmp/sweep.json
+python3 utils/spec_audit.py -k zebra --no-fail-fast --timeout 300
+
+# §3a — no instrument but the event stream: walk it, index the enterings
+# within their layer, and note where a *new* (not h) lands.
+ein.rs/target/release/ein solve -e examples/zebra.ein --events /tmp/ev.jsonl
+python3 - <<'EOF'
+import json, collections
+layer, idx, seen, at = None, collections.Counter(), set(), []
+for line in open('/tmp/ev.jsonl'):
+    e = json.loads(line)
+    if e['e'] == 'enter':
+        layer = e['layer']; idx[layer] += 1
+    elif e['e'] == 'writeback' and e['reason'] == 'singleton-dead-clause':
+        if e['fact'] not in seen:
+            seen.add(e['fact']); at.append((layer, idx[layer]))
+print('layer 1 candidates:', idx[1], ' W grew at:', at[:3], '…', at[-1])
+EOF
+
+# §4
+cd ein.rs
+cargo run --release -p ein-infer --example defer_probe
+cargo test --release -p ein-infer --test search_invariants
+
+# §7 — the seam is types, so the gate is the check; the cost is a bench
+cargo test -p ein-infer --test worker_view --test shareable
+cargo build --release -p ein-cli   # …and time it against the parent commit
+
+# §8 — the scaling table, one row
+for j in 1 2 4 8; do
+  utils/bench_env.sh --cores P:8 ein.rs/target/release/ein \
+      solve -e examples/branching/06_lookahead_on.ein -j $j
+done
+# …the batch sweep
+EIN_BATCH_PER_WORKER=128 ein.rs/target/release/ein \
+    solve -e examples/features/01_not_and_absent.ein -j 8
+# …and the invariance, which is what the numbers are only worth having with
+cargo test -p ein-infer --test search_invariants
+ein.rs/target/release/ein solve -e examples/branching/06_lookahead_on.ein \
+    -j 1 --events /tmp/a.jsonl --events-level verbose
+ein.rs/target/release/ein solve -e examples/branching/06_lookahead_on.ein \
+    -j 8 --events /tmp/b.jsonl --events-level verbose
+diff <(tail -n +2 /tmp/a.jsonl) <(tail -n +2 /tmp/b.jsonl) && echo identical
+
+# §8a — the default run, which is the one with a cut in it, and its sweep
+for j in 1 2 4 8; do
+  utils/bench_env.sh --cores P:8 ein.rs/target/release/ein \
+      solve examples/saturation/square-bwd/houses.ein -j $j
+done
+# …and what it threw away, which is the `--stats` block `--jobs N` adds
+ein.rs/target/release/ein solve examples/branching/06_lookahead_on.ein \
+    -j 8 --stats            # speculated=42 (committed=25 … wasted=17)
+cargo test -p ein-infer --test search_invariants an_early_stop
+cargo test -p ein-infer --test search_invariants speculative_waste
+# …and the same-computation sweep, both arms: every non-slow corpus entry's
+# `solve` and `solve -e` at -j 1 and -j 8, compared on exit, stdout and every
+# --json-summary field.
+
+# §9 — the two premises, three instruments
+python3 utils/profile_ein_rs.py --top 0 --repeat 8 \
+    --cum-of admit_from_boundary --cum-of enqueue_pass solve examples/zebra2.ein -e
+cd ein.rs && cargo run --release --features counters -p ein-infer \
+    --example counter_cost -- examples/branching/06_lookahead_on.ein \
+    examples/branching/07_lookahead_off.ein \
+    examples/saturation/square-bwd/houses.ein \
+    examples/features/01_not_and_absent.ein     # enqueue_pass / _task / _task_full
+# …and the per-round width, off the event stream: a round is bracketed by
+# `quiesce`, and one `first_failing` call emits one park / retire / admit.
+ein.rs/target/release/ein solve examples/zebra2.ein -e --events /tmp/ev.jsonl \
+    --events-level verbose
+python3 - <<'EOF'
+import json
+sizes, cur = [], None
+for line in open('/tmp/ev.jsonl'):
+    k = json.loads(line)['e']
+    if k == 'quiesce':
+        if cur is not None: sizes.append(cur)
+        cur = 0
+    elif k in ('park', 'retire', 'admit') and cur is not None:
+        cur += 1
+if cur is not None: sizes.append(cur)
+nz = sorted(s for s in sizes if s)
+print(f'rounds={len(sizes)} non-empty={len(nz)} median={nz[len(nz)//2]} max={nz[-1]}')
+EOF
+
+# §6 — the cost/benefit columns, and the corpus sweep behind the threshold
+cargo run --release --features counters -p ein-infer --example flatten_probe
+cargo run --release --features counters -p ein-infer --example flatten_probe -- \
+    $(python3 - <<'EOF'
+import re
+s = open('../corpus/corpus.toml').read()
+for b in s.split('[[entry]]')[1:]:
+    m, r = re.search(r'path\s*=\s*"([^"]+)"', b), re.search(r'runs\s*=\s*\[(.*?)\]', b, re.S)
+    if m and r and '"solve -e"' in r.group(1) and 'slow' not in b \
+       and m.group(1).startswith('examples/'):
+        print(m.group(1))
+EOF
+)
+```

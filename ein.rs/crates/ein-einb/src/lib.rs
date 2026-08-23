@@ -1,6 +1,6 @@
 //! `.einb` — the binary knowledge-base container
-//! ([P1a.8](../../../../plans/m1a_rust/p1a.8_binary_container/README.md),
-//! [design/10](../../../../plans/m1a_rust/design/10_binary_format.md)).
+//! ([P1a.8](../../../../docs/history/m1a_rust/README.md#p1a8--binary-kb-container),
+//! [design/10](../../../../docs/history/m1a_rust/design/10_binary_format.md)).
 //!
 //! A loaded — and optionally saturated — KB on disk, in a form the engine
 //! opens with no import resolution, no macro expansion and no filesystem walk.

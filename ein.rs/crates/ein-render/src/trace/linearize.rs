@@ -52,7 +52,7 @@ pub struct Trace {
     /// Root's own derivations — everything true *before* the hypothesis, in
     /// order. Rendered as its own section ahead of `Assuming …`.
     ///
-    /// Empty before [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+    /// Empty before [S1a.6.9](../../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
     /// and not because there was nothing to say: a fork re-derived root's
     /// whole closure, so `steps` carried it by accident. A fork that resumes
     /// root's saturation does not, so the givens are told first — which is

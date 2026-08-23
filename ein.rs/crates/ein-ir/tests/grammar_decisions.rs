@@ -4,7 +4,7 @@
 //! one that pinned the port, because the harness diffs stderr and a "better"
 //! diagnostic is a T3 failure (design/04 §4, Q-M1a.3).
 //!
-//! [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md)
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
 //! keeps both halves and loses the second parser:
 //!
 //! | was | now |

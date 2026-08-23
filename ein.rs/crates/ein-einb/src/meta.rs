@@ -1,6 +1,6 @@
 //! `META` — what the file was made from, and therefore when to disbelieve it
 //! (T1a.8.1.5, [design/10
-//! §4](../../../../plans/m1a_rust/design/10_binary_format.md#4-versioning-and-invalidation)).
+//! §4](../../../../docs/history/m1a_rust/design/10_binary_format.md#4-versioning-and-invalidation)).
 //!
 //! Two different questions live here and they have different answers.
 //!
@@ -97,7 +97,7 @@ pub struct Meta {
     pub sources: Vec<Source>,
     /// BLAKE3 of `stdlib/MANIFEST.sha256`, which is the one input whose
     /// divergence nothing else would notice ([design/11
-    /// §3](../../../../plans/m1a_rust/design/11_shared_assets.md)).
+    /// §3](../../../../docs/history/m1a_rust/design/11_shared_assets.md)).
     pub stdlib: [u8; 32],
 }
 

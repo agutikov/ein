@@ -1,11 +1,11 @@
 //! The M1a benchmark set (T1a.0.4.5) —
-//! [design/12](../../../../plans/m1a_rust/design/12_toolchain_and_layout.md) §4.
+//! [design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §4.
 //!
 //! Eight benches. They match `utils/bench_baseline.py` name for name, so that
 //! `design/README.md` § Measured could put the two implementations in adjacent
 //! columns and have the comparison mean something. That script left with its
 //! engine at
-//! [S1a.10.4](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.4_utils.md)
+//! [S1a.10.4](../../../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
 //! and this is the whole set now; the names are kept because every table in
 //! `baseline.md` is written against them.
 //!

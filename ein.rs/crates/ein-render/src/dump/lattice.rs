@@ -25,7 +25,7 @@
 //! gap: `LatticeProof.kb_index` is written only by a DAG builder via
 //! `_record_setnode`, and nothing on the shipping path calls one — the same
 //! fact that makes `render lattice --view full` always take its fallback
-//! ([S1a.5.1](../../../../plans/m1a_rust/p1a.5_presentation/s1a.5.1_dot_renderers.md)).
+//! ([S1a.5.1](../../../../../docs/history/m1a_rust/README.md#s1a51--dot-renderers)).
 //! So `proof_summary.json` carries an empty `kb_index` list, which is exactly
 //! what ein.py writes.
 

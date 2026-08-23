@@ -8,7 +8,7 @@
     python3 utils/fork_split.py --bin /path/to/ein -- solve examples/zebra.ein -e
 
 The named instrument behind
-[baseline.md §9](../plans/m1a_rust/p1a.6_performance/baseline.md#9-the-fork-entry-re-derivation),
+[baseline.md §9](../docs/history/m1a_rust/measurements/baseline.md#9-the-fork-entry-re-derivation),
 promoted from the inline script that section was first written with
 (T1a.6.9.1). Re-run it at the end of every P1a.6 stage: S1a.6.8 removed the
 compile share of this cost and S1a.6.3 is aimed at the match share, so the
@@ -22,9 +22,9 @@ the per-entering suffixes separate exactly.
 fresh `Saturator` there — empty `seen` / `fired` / `parked` and `delta = None`,
 a FULL enqueue pass — so a fork's first act was to re-derive the parent's whole
 deductive closure as `redundant` firings, 94.6 % of them on `zebra -e`. Since
-[S1a.6.9](../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)
+[S1a.6.9](../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
 ein.rs **resumes** root's saturation instead
-([D3](../plans/m1a_rust/divergences.md)), and this is the instrument that says
+([D3](../docs/history/m1a_rust/divergences.md)), and this is the instrument that says
 by how much: point `--bin` at a `--features fork-delta` build and set
 `EIN_FORK_DELTA=0` for the old shape.
 

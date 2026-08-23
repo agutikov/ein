@@ -31,7 +31,7 @@ use std::path::Path;
 /// here reaches nothing a user can see.
 ///
 /// `Load` and `Saturate` were added by
-/// [S1a.10.2](../../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.2_port_the_suite.md).
+/// [S1a.10.2](../../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite).
 /// They are the two surfaces whose *only* owner was a differential sweep —
 /// `load_parity`'s `kb-shape` and `saturate_parity`'s verbose event stream —
 /// and the ledger's answer to "and then what asserts it" was this manifest.
@@ -158,7 +158,7 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
     run_with(terms, path, op, 1)
 }
 
-/// The same, at a chosen job count — [S1a.7.5](../../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// The same, at a chosen job count — [S1a.7.5](../../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.3's axis.
 ///
 /// It is a parameter and not a global because `jobs_invariance` runs the same

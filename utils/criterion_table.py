@@ -8,7 +8,7 @@
 `cargo bench`'s console output is per-bench and scrolls; the numbers stay in
 `ein.rs/target/criterion/<group>/<case>/new/estimates.json` and include the
 one column a "3x faster" claim needs and the console line buries — the
-**standard deviation**. [S1a.6.1](../plans/m1a_rust/p1a.6_performance/s1a.6.1_profile_baseline.md)
+**standard deviation**. [S1a.6.1](../docs/history/m1a_rust/README.md#s1a61--fresh-profile-and-bench-baseline)
 requires every bench under 3 % relative standard deviation on the bench
 machine before any result from it is believed, and this is how that is
 checked rather than asserted; the exit code is 1 if any bench misses, so it

@@ -1,6 +1,6 @@
 //! T1a.7.2.1 — **the seam a worker crosses**, without a thread yet.
 //!
-//! [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+//! [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
 //! fans a layer out by handing every worker the same root and letting each run
 //! [`try_commitment_set`] against it. Four things have to be true before that
 //! is a design, and all four are properties of *types* rather than of threads,
