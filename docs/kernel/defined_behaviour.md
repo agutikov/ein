@@ -278,7 +278,7 @@ It is a `kb load error:` like any other loader message, in ein's own words.
 | input | message | exit |
 |---|---|---|
 | a `(query …)` keyword outside the allow-list | `(query …): unknown keyword :<k> — one of :goal :goal-text :hrules :hypothesis-relations :no-hypothesis :expect :mode` | 1 |
-| `:expect` that is not `none` / `(model …)` / `(or (model …) …)` | ``:expect <what> — expected `none`, `(model …)` or `(or (model …) …)` `` | 1 |
+| `:expect` that is not `(false)` / `(model …)` / `(or (model …) …)` | ``:expect <what> — expected `(false)`, `(model …)` or `(or (model …) …)` `` | 1 |
 | `:expect` naming a relation the program does not have | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
 | `:expect` omitting a relation the `:goal` asks about | `:expect does not name <r>, which the query's :goal asks about` | 1 |
 | a `?var` or `_` inside an `:expect` | ``:expect — `?v` is a variable; an expectation is an answer, not a pattern`` | 1 |

@@ -45,13 +45,23 @@ const DETERMINATE: &str = r#"
 /// Load `body` plus one query, solve exhaustively, and check the query's
 /// `:expect` — the whole pipeline, since half the rules are the loader's.
 fn check(body: &str, query: &str) -> Result<expect::Report, String> {
+    check_stopping(body, query, None)
+}
+
+/// The same, with a `-n` cap — the only way to reach a *non-exhausted* answer,
+/// which is the state a verdict claim cannot be checked against.
+fn check_stopping(
+    body: &str,
+    query: &str,
+    stop_after: Option<u64>,
+) -> Result<expect::Report, String> {
     let src = format!("{body}\n{query}\n");
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = ein_ir::parse(&mut ast, &src, None).map_err(|e| e.to_string())?;
     let mut kb: Kb = ein_ir::load(&mut ast, &mut terms, &forms, None).map_err(|e| e.0)?;
     let opts = SolveOptions {
-        stop_after: None,
+        stop_after,
         ..SolveOptions::default()
     };
     let mut events = Events::off();
@@ -66,7 +76,13 @@ fn check(body: &str, query: &str) -> Result<expect::Report, String> {
     .map_err(|e| e.to_string())?;
     let node = expect_node(&ast, &kb).expect("the query carries an :expect");
     let expectation = ein_ir::expect::parse(&ast, node)?;
-    Ok(expect::check(&ast, &terms, &expectation, &solved.answer))
+    Ok(expect::check(
+        &ast,
+        &terms,
+        &expectation,
+        &solved.answer,
+        solved.stats.exhausted,
+    ))
 }
 
 fn expect_node(ast: &Ast, kb: &Kb) -> Option<NodeId> {
@@ -83,12 +99,12 @@ fn expect_node(ast: &Ast, kb: &Kb) -> Option<NodeId> {
 }
 
 fn holds(body: &str, query: &str) -> bool {
-    check(body, query).expect("loads and solves").passed
+    check(body, query).expect("loads and solves").passed()
 }
 
 fn why(body: &str, query: &str) -> Vec<String> {
     let report = check(body, query).expect("loads and solves");
-    assert!(!report.passed, "expected a failure, and it held");
+    assert!(!report.passed(), "expected a failure, and it held");
     report.lines
 }
 
@@ -176,25 +192,25 @@ fn stored_negatives_are_checked_for_presence_and_not_for_extent() {
 // ── The verdict, implied ───────────────────────────────────────────
 
 #[test]
-fn none_is_the_contradiction_spelling() {
+fn bottom_is_the_contradiction_spelling() {
     let body = "(relation p Thing Place)\n(p A H1)\n\
                 (rule no (?R) :match (?R ?a ?b) :assert (false) :priority 250 :why \"no\")\n\
                 (no p)\n";
     assert!(holds(
         body,
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect none)"
+        "(query :goal (p A ?h) :no-hypothesis (p) :expect (false))"
     ));
     let lines = why(
         DETERMINATE,
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect none)",
+        "(query :goal (p A ?h) :no-hypothesis (p) :expect (false))",
     );
-    assert!(lines[0].contains("expected none (Contradiction)"), "{lines:?}");
+    assert!(lines[0].contains("expected (false)"), "{lines:?}");
     // …and the other direction, with the message that says what to write.
     let lines = why(
         body,
         "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1)))",
     );
-    assert!(lines[0].contains("`:expect none`"), "{lines:?}");
+    assert!(lines[0].contains("`:expect (false)`"), "{lines:?}");
 }
 
 #[test]
@@ -319,4 +335,54 @@ fn rendering_agrees_with_the_fact_dump() {
             "{want} is not among the fact dump {dumped:?}"
         );
     }
+}
+
+// ── An expectation is a claim about the *exhausted* answer ─────────
+
+const TWO_MODELS: &str = "(query :goal (seat ?w ?s) \
+     :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
+     :expect (or (model (seat Ann S1) (seat Bob S2)) \
+                 (model (seat Ann S2) (seat Bob S1))))";
+
+/// The hole this outcome exists to close. Stopped at two models, the run has
+/// found both of the listed ones — and has proved only that there are *at
+/// least* two. Reporting that as a pass would be a green result for the half
+/// of the claim ("and no third") that nobody checked.
+#[test]
+fn an_unexhausted_search_does_not_confirm_a_verdict() {
+    let stopped = check_stopping(AMBIGUOUS, TWO_MODELS, Some(2)).expect("solves");
+    assert_eq!(stopped.outcome, expect::Outcome::NotChecked);
+    assert!(!stopped.passed(), "NotChecked is not success");
+    assert!(
+        stopped.lines[0].contains("not exhausted") && stopped.lines[0].contains("lower bound"),
+        "{:?}",
+        stopped.lines
+    );
+
+    let exhausted = check_stopping(AMBIGUOUS, TWO_MODELS, None).expect("solves");
+    assert_eq!(exhausted.outcome, expect::Outcome::Held, "the same claim, proved");
+}
+
+/// …and it bites only where more searching could have changed the answer.
+/// Finding **more** models than were claimed is a refutation whatever the
+/// search did next, so it stays a failure rather than becoming "not checked".
+#[test]
+fn too_many_models_is_a_failure_not_an_unchecked_one() {
+    let one = "(query :goal (seat ?w ?s) \
+         :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
+         :expect (model (seat Ann S1) (seat Bob S2)))";
+    let r = check_stopping(AMBIGUOUS, one, Some(2)).expect("solves");
+    assert_eq!(r.outcome, expect::Outcome::Failed, "{:?}", r.lines);
+}
+
+/// A model that disagrees with the expectation it was matched to is a
+/// disagreement about *content*, and no amount of further search unfinds it.
+#[test]
+fn a_wrong_model_is_a_failure_even_unexhausted() {
+    let wrong = "(query :goal (seat ?w ?s) \
+         :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
+         :expect (or (model (seat Ann S1) (seat Bob S1)) \
+                     (model (seat Ann S2) (seat Bob S2))))";
+    let r = check_stopping(AMBIGUOUS, wrong, Some(2)).expect("solves");
+    assert_eq!(r.outcome, expect::Outcome::Failed, "{:?}", r.lines);
 }

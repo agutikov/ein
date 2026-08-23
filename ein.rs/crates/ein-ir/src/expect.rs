@@ -16,7 +16,7 @@
 //!        :expect (or (model (seat Ann 1) (seat Bob 2))
 //!                    (model (seat Ann 2) (seat Bob 1))))
 //!
-//! (query :goal (p A ?h) :expect none)
+//! (query :goal (p A ?h) :expect (false))
 //! ```
 //!
 //! **Why a `(model …)` head.** The proposed shape was a bare list of facts —
@@ -32,10 +32,21 @@
 //!
 //! **The verdict is implied, never asserted.** One `(model …)` means
 //! `Solution`; `(or …)` means `Ambiguity` with `k` equal to the number of
-//! disjuncts, or `Solution` when there is one; `none` means `Contradiction`.
-//! There is no `:verdict` keyword to disagree with the models beside it.
+//! disjuncts, or `Solution` when there is one; `(false)` means
+//! `Contradiction`. There is no `:verdict` keyword to disagree with the models
+//! beside it.
+//!
+//! **Why `(false)` and not an invented word.** `false` is already the kernel's
+//! ⊥ — one of the five `STRUCTURAL` names, and what every refutation rule in
+//! the stdlib asserts (`std.elim`'s `no-room-left`, `std.algebra`'s `total`,
+//! `std.slots`' `slot-no-room`, …). A form that spelled contradiction any
+//! other way would be introducing a second word for something the language
+//! already says. It was `none` until the day it shipped.
 
 use crate::ast::{Ast, Node, NodeId};
+
+const SHAPE_TAIL: &str = "expected `(false)`, `(model …)` or `(or (model …) …)`";
+const SHAPE: &str = ":expect — expected `(false)`, `(model …)` or `(or (model …) …)`";
 
 /// One expected model — the facts it lists, in source order.
 #[derive(Clone, Debug)]
@@ -46,10 +57,11 @@ pub struct Model {
 /// A parsed `:expect` value.
 #[derive(Clone, Debug)]
 pub enum Expectation {
-    /// `none` — the search is expected to refute.
+    /// `(false)` — the search is expected to refute.
     ///
-    /// Spelled `none` and not `()` because an empty list reads as *the empty
-    /// model*, which is a different claim and one `(model)` can already make.
+    /// Spelled with the kernel's own ⊥ rather than an invented word, and not
+    /// as `()`, because an empty list reads as *the empty model* — a different
+    /// claim, and one `(model)` already makes.
     Contradiction,
     /// `(model …)` — one model.
     One(Model),
@@ -58,7 +70,7 @@ pub enum Expectation {
 }
 
 impl Expectation {
-    /// The models this expectation lists; empty for `none`.
+    /// The models this expectation lists; empty for `(false)`.
     pub fn models(&self) -> &[Model] {
         match self {
             Expectation::Contradiction => &[],
@@ -96,20 +108,27 @@ pub struct ExpectFact<'a> {
 /// name the form rather than a node id.
 pub fn parse(ast: &Ast, node: NodeId) -> Result<Expectation, String> {
     if let Node::Atom(s) = ast.node(node) {
-        return match ast.sym(s) {
-            "none" => Ok(Expectation::Contradiction),
-            other => Err(format!(
-                ":expect {other} — expected `none`, `(model …)` or `(or (model …) …)`"
-            )),
-        };
+        // A bare atom is never an expectation. `false` gets its own line
+        // because writing it unparenthesised is the likely slip, and ⊥ is
+        // spelled `(false)` everywhere else in the language.
+        return Err(match ast.sym(s) {
+            "false" => {
+                ":expect false — ⊥ is spelled `(false)`, as it is in every `:assert`".to_string()
+            }
+            other => format!(
+                ":expect {other} — expected `(false)`, `(model …)` or `(or (model …) …)`"
+            ),
+        });
     }
     let Node::SForm { head, args } = ast.node(node) else {
-        return Err(":expect — expected `none`, `(model …)` or `(or (model …) …)`".into());
+        return Err(SHAPE.into());
     };
     let Some(name) = ast.atom_name(head) else {
-        return Err(":expect — expected `none`, `(model …)` or `(or (model …) …)`".into());
+        return Err(SHAPE.into());
     };
     match name {
+        "false" if ast.args(args).is_empty() => Ok(Expectation::Contradiction),
+        "false" => Err(":expect (false …) — ⊥ takes no arguments".into()),
         "model" => Ok(Expectation::One(model(ast, ast.args(args))?)),
         "or" => {
             let items = ast.args(args);
@@ -132,9 +151,14 @@ pub fn parse(ast: &Ast, node: NodeId) -> Result<Expectation, String> {
             }
             Ok(Expectation::Any(out))
         }
-        other => Err(format!(
-            ":expect ({other} …) — expected `none`, `(model …)` or `(or (model …) …)`"
-        )),
+        // `and` / `or` / `not` land here when they are used as a model
+        // wrapper, and the message says what they are missing rather than
+        // reporting them as an unknown relation two checks later.
+        "and" => Err(":expect (and …) — a model is `(model …)`; `and` is a \
+                     connective and would not say that the listed facts are a \
+                     relation's *complete* extent"
+            .into()),
+        other => Err(format!(":expect ({other} …) — {SHAPE_TAIL}")),
     }
 }
 
@@ -276,9 +300,9 @@ mod tests {
 
     #[test]
     fn the_three_shapes() {
-        let none = parsed("(query :goal (p ?x) :expect none)").expect("none");
-        assert!(matches!(none, Expectation::Contradiction));
-        assert_eq!(none.verdict_name(), "Contradiction");
+        let bottom = parsed("(query :goal (p ?x) :expect (false))").expect("(false)");
+        assert!(matches!(bottom, Expectation::Contradiction));
+        assert_eq!(bottom.verdict_name(), "Contradiction");
 
         let one = parsed("(query :goal (p ?x) :expect (model (p A) (not (p B))))").expect("model");
         assert_eq!(one.models().len(), 1);
@@ -300,14 +324,14 @@ mod tests {
     }
 
     #[test]
-    fn the_empty_model_is_not_none() {
+    fn the_empty_model_is_not_false() {
         let empty = parsed("(query :goal (p ?x) :expect (model))").expect("model");
         assert_eq!(empty.models()[0].facts.len(), 0);
         assert_eq!(
             empty.verdict_name(),
             "Solution",
             "`(model)` expects a model with nothing in the relations it names — \
-             which is no relations. `none` is the contradiction."
+             which is no relations. `(false)` is the contradiction."
         );
     }
 
@@ -324,6 +348,10 @@ mod tests {
     fn the_shape_errors_name_what_was_expected() {
         for src in [
             "(query :goal (p ?x) :expect all)",
+            "(query :goal (p ?x) :expect none)",
+            "(query :goal (p ?x) :expect false)",
+            "(query :goal (p ?x) :expect (false A))",
+            "(query :goal (p ?x) :expect (and (p A) (p B)))",
             "(query :goal (p ?x) :expect (models (p A)))",
             "(query :goal (p ?x) :expect (or (p A)))",
             "(query :goal (p ?x) :expect (model 3))",
@@ -349,6 +377,17 @@ mod tests {
             let mut ast = Ast::new();
             assert!(parse_ein(&mut ast, src, None).is_err(), "{src}");
         }
+    }
+
+    /// ⊥ is `(false)`, the kernel's own word — and the two ways a reader is
+    /// likely to reach for it instead each get a message that says so.
+    #[test]
+    fn bottom_is_spelled_with_the_kernels_own_word() {
+        let e = parsed("(query :goal (p ?x) :expect false)").expect_err("unparenthesised");
+        assert!(e.contains("`(false)`"), "{e}");
+        assert!(e.contains(":assert"), "and says where that spelling comes from: {e}");
+        let e = parsed("(query :goal (p ?x) :expect (and (p A)))").expect_err("a connective");
+        assert!(e.contains("complete* extent"), "{e}");
     }
 
     #[test]

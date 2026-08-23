@@ -17,7 +17,7 @@ constrained-reasoning research.
   "what does Ein reason about / how" question. See
   [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
   **Since M1c S1c.1.2 a `(query …)` can state its own answer** — `:expect
-  (model …)` / `(or (model …) …)` / `none`, where *naming a relation closes
+  (model …)` / `(or (model …) …)` / `(false)`, where *naming a relation closes
   it*, and `ein solve` exits 1 when the claim is false
   ([`ir/03-ein-lang/01_grammar.md` § Query](docs/kernel/ir/03-ein-lang/01_grammar.md#query)).
   A file may carry several `(query …)` blocks and each is run; the last one no

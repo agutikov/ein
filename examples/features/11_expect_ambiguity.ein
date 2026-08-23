@@ -1,0 +1,58 @@
+;;; `:expect (or …)` — an **under-determined** puzzle stating its own answer.
+;;;
+;;; `k = 0`, `k = 1` and `k > 1` are peers in ein: the verdict is read off the
+;;; result, never chosen by a flag, and an under-determined puzzle is an answer
+;;; rather than a failure. So `:expect` has to be able to say all three, and
+;;; this is the middle one — the companion of `10_expect.ein` (k = 1) and
+;;; `12_expect_false.ein` (k = 0).
+;;;
+;;;   :expect (or (model …) (model …))     that SET of models; k is the count
+;;;
+;;; Two things the `(or …)` form means, and both are load-bearing:
+;;;
+;;;   * `k` is **implied by the number of disjuncts** — there is no `:k` to
+;;;     disagree with the models beside it, so "says k=2 and lists three" is
+;;;     not writeable.
+;;;   * the disjuncts compare as a **set**, never a sequence. The order the
+;;;     search finds models in is exactly what M1a S1a.7.0's invariance tests
+;;;     assert is not observable, so swapping the two `(model …)` blocks below
+;;;     leaves this file passing.
+;;;
+;;; Two people, two seats, all-different in both directions: Ann and Bob can
+;;; swap, and nothing in the puzzle prefers either arrangement.
+
+(relation instance Thing Type)
+(relation seat     Person Slot :why "{1} sits in {2}")
+
+(instance Ann Person) (instance Bob Person)
+(instance S1 Slot)    (instance S2 Slot)
+
+;; One person per seat, one seat per person — the two halves of a bijection,
+;; written out because this file is about `:expect` and not about `std.bijection`.
+(rule one-seat-each (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :priority 250
+  :why    "{?a} cannot sit in both {?b} and {?c}")
+
+(rule one-person-each (?R)
+  :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+  :assert (false)
+  :priority 250
+  :why    "{?c} cannot seat both {?a} and {?b}")
+
+(one-seat-each   seat)
+(one-person-each seat)
+
+;; The hypothesis generator's entry point: every (person, slot) pair is a
+;; candidate commitment, and the two rules above kill the ones that collide.
+(hrule guess (?p ?s)
+  :match  (instance ?p Person)
+  :assert (seat ?p ?s)
+  :why    "suppose {?p} sits in {?s}")
+
+(query
+  :goal   (seat ?who ?slot)
+  :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))
+  :expect (or (model (seat Ann S1) (seat Bob S2))
+              (model (seat Ann S2) (seat Bob S1))))

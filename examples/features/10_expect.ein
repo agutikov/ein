@@ -10,7 +10,8 @@
 ;;;
 ;;;   :expect (model <fact>*)         exactly one model, matching these facts
 ;;;   :expect (or (model …) (model …))  that SET of models; k is the count
-;;;   :expect none                    a Contradiction
+;;;   :expect (false)                 a Contradiction — the kernel's own ⊥,
+;;;                                   the same word every refutation rule asserts
 ;;;
 ;;; and the rule that gives it teeth: **naming a relation closes it**. The
 ;;; `next-to` facts below are `next-to`'s *complete* extent in the model, not a

@@ -1219,8 +1219,9 @@ mod tests {
     #[test]
     fn a_malformed_expect_is_a_load_error() {
         for (src, want) in [
-            ("(query :goal (a ?x) :expect all)", "expected `none`"),
-            ("(query :goal (a ?x) :expect (models (a b)))", "expected `none`"),
+            ("(query :goal (a ?x) :expect all)", "expected `(false)`"),
+            ("(query :goal (a ?x) :expect (models (a b)))", "expected `(false)`"),
+            ("(query :goal (a ?x) :expect none)", "expected `(false)`"),
             ("(query :goal (a ?x) :expect (model (a ?x)))", "not a pattern"),
         ] {
             let e = err(src);

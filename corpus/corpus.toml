@@ -208,6 +208,18 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 note   = "M1c S1c.1.2 — the `:expect` form. The only entry in the corpus whose `solve` runs check a claim the *file* makes rather than one a golden makes: exit 1 if the model is not the one it names. Relation-closure is what it demonstrates — `next-to`'s listed extent is complete, so a surplus mirrored edge fails it, which is the case a per-fact assertion cannot catch."
 
 [[entry]]
+path   = "examples/features/11_expect_ambiguity.ein"
+group  = "positive"
+runs   = ["solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "M1c S1c.1.2 — `:expect (or …)`, the k>1 verdict. **No plain `solve`**: it stops at the first model and reports k=1, which is correct and is not this fixture's question — an `(or …)` expectation is a claim about the *exhausted* search. The failure says so rather than leaving a bare count mismatch. Swapping the two `(model …)` blocks leaves it passing: the disjuncts compare as a set."
+
+[[entry]]
+path   = "examples/features/12_expect_false.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "M1c S1c.1.2 — `:expect (false)`, the k=0 verdict, spelled with the kernel's own ⊥ rather than an invented word. Three pigeons, two holes, and the chain forced rather than searched, for two reasons its header carries: the blind version is Ambiguity k=6 rather than a contradiction, because a state leaving one pigeon nowhere is *complete* in an open world (M1d's subject), and it also has several equally small unsat cores, which is corpus/fuzz_findings/unsat-core-id-space.md reached from the corpus for the first time."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]

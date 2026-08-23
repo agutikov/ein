@@ -658,14 +658,23 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     // the trace above it: the query's own claim about its answer, checked. A
     // `:expect` that `solve` merely ignored would be worse than no `:expect`,
     // which is the whole reason the keyword is not a comment.
-    (check_expectation(&ast, &terms, &kb, &solved.answer), n_queries)
+    (
+        check_expectation(&ast, &terms, &kb, &solved.answer, solved.stats.exhausted),
+        n_queries,
+    )
 }
 
 /// Evaluate the active query's `:expect`, printing what disagreed.
 ///
 /// Exit 1 on a failure, which is §4's code for "the engine says no": a false
 /// claim by the program is a result, not a usage error.
-fn check_expectation(ast: &Ast, terms: &Terms, kb: &Kb, answer: &Answer) -> i32 {
+fn check_expectation(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    answer: &Answer,
+    exhausted: bool,
+) -> i32 {
     let Some(query) = kb.program().query() else {
         return 0;
     };
@@ -678,14 +687,22 @@ fn check_expectation(ast: &Ast, terms: &Terms, kb: &Kb, answer: &Answer) -> i32 
         eprintln!("internal error: :expect passed the loader and did not parse");
         return 1;
     };
-    let report = ein_infer::expect::check(ast, terms, &expectation, answer);
-    if report.passed {
-        println!("\n  :expect        holds");
-        return 0;
-    }
-    println!("\n  :expect        FAILED");
+    let report = ein_infer::expect::check(ast, terms, &expectation, answer, exhausted);
+    // Three labels, because there are three outcomes. `NOT CHECKED` is not a
+    // pass — an expectation is a claim about the exhausted answer, and a
+    // stopped search establishes a lower bound on `k` rather than a verdict —
+    // so it takes the same exit code a false claim does. A green line for a
+    // claim nobody checked is the failure this whole form exists to prevent.
+    println!(
+        "\n  :expect        {}",
+        match report.outcome {
+            ein_infer::expect::Outcome::Held => "holds",
+            ein_infer::expect::Outcome::Failed => "FAILED",
+            ein_infer::expect::Outcome::NotChecked => "NOT CHECKED",
+        }
+    );
     for line in &report.lines {
         println!("    {line}");
     }
-    1
+    i32::from(!report.passed())
 }

@@ -1,8 +1,13 @@
 # M1d — From saturation to satisfiability
 
-**Estimate:** ~2 months focused — 3 phases, 14 stages, ~8 weeks of stage
+**Estimate:** ~2.5 months focused — 4 phases, 17 stages, ~9.5 weeks of stage
 estimates. Only [P1d.10](p1d.10_exhaustive_search/README.md) is written to stage
 depth; see § How deep this plan is.
+**P1d.4 arrived 2026-08-24**, from M1c: building
+[`:expect`](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+produced a form that can *state* "these are all the models" and can only
+*verify* it by exhausting a search that does not finish — which is this
+milestone's opening measurement, met from the other side.
 **Status:** **created 2026-08-21** at the user's direction, out of two pieces
 that were already in the repo and had never been put next to each other:
 M1a's ex-P1a.12, now [P1d.10](p1d.10_exhaustive_search/README.md), and the
@@ -163,8 +168,9 @@ that is the note's thesis measured in someone else's language.
 | [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 | 3.5 w | a saturated state can report what it still owes, and a puzzle can state a requirement |
 | [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
+| [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
 
-14 stages, 40 days of stage estimates ≈ 8 weeks. **The table is in work
+17 stages, 47 days of stage estimates ≈ 9.5 weeks. **The table is in work
 order, not id order** — the census phase was P1d.1 until 2026-08-23, when it
 was renumbered P1d.10 at the user's direction; the id moved and the sequence
 did not. **That order is deliberate**: P1d.10 measures before P1d.2 designs, for
@@ -179,7 +185,8 @@ legitimate outcome and it is why the census comes first.
 ## How deep this plan is
 
 **P1d.10 is at stage depth** — five stage files, written when it was P1a.12,
-moved unchanged then and renumbered (not rewritten) on 2026-08-23. **P1d.2 and P1d.3 are phase READMEs only.** That is on
+moved unchanged then and renumbered (not rewritten) on 2026-08-23. **P1d.2,
+P1d.3 and P1d.4 are phase READMEs only.** That is on
 purpose: the note they come from opens with *"no code, no changes — here we
 only read and discuss ideas"*, and turning a discussion into fifteen task ids
 would put decisions in the plan that the user has not made. What is written is

@@ -200,7 +200,7 @@ different messages, and the corpus has a fixture directory for each
   load error rather than an ignored pair — the grammar still admits any
   `KEYWORD Value`.
 - **The shape of a `:expect` value.** `(model <fact>*)`,
-  `(or (model …) …)` and `none` are read structurally by the loader; to the
+  `(or (model …) …)` and `(false)` are read structurally by the loader; to the
   grammar they are an ordinary `GenericList` with a `SYMBOL` head and an
   `OrForm`, which is exactly why they cost no production here. The shape the
   form was first proposed with — a bare list of facts, `:expect ((p A) (q B))`

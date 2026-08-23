@@ -23,6 +23,7 @@ about a word the engine already says.
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | open — [Q-M1a.18](../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped; the answer moves every counter |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); "enumerate, and say so" is an acceptable answer |
 | [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; arrived from M1a [S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) |
+| [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | open — [P1d.4](p1d.4_model_set_closure/README.md); arrived from M1c [S1c.1.2](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md) on 2026-08-24 |
 
 ---
 
@@ -333,3 +334,46 @@ The ten entries are `branching/07_lookahead_off`, `features/01_not_and_absent`,
 at S1a.9.0 — the fixtures are saturation demos and the run asked nothing of
 them — so the reproducer above is the record of what those cells did.
 
+
+## Q-M1d.7 — May a program require its own model count?
+
+**Opened 2026-08-24**, from M1c
+[S1c.1.2](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md).
+[P1d.4](p1d.4_model_set_closure/README.md) is the phase.
+
+`:expect (or M₁ … M_k)` says *the model set is exactly these k*. A **test** may
+say that. May a **puzzle**?
+
+The two are not the same question and the difference is the phase. `(or A B)`
+in a `:match` is a disjunction over premises — it says this world satisfies A
+or B, and any world that does satisfies it. Nothing in the rule language
+quantifies over models, so "and there are no others" is not a sentence a
+program can contain. The same s-expression therefore means satisfaction in one
+keyword and enumeration-closure in another, which is either a defect to fix or
+a boundary to state.
+
+**The prior is that it is a boundary**, and shared: an ASP program's aggregates
+count within an answer set, never over answer sets, and projected model
+counting is an operation *on* a program rather than a sentence *in* one. If
+that is the answer here too, then the meta level is where the claim belongs and
+`:expect` is already the right home for it — but the reason should be written
+once rather than rediscovered per keyword, which is the same treatment
+[Q-M1d.2](#q-m1d2--where-does-a-requirement-live) gives obligations.
+
+**What makes it urgent rather than academic** is affordability, not taste.
+Closure is verified by exhausting the lattice, and
+[the milestone's opening measurement](README.md#the-two-halves-of-one-question)
+is that `zebra2-minus-15`'s 32 models are all found by depth 3 while depths 4
+and 5 exist only to prove there are no more. So the one puzzle M1c's pipeline
+names — *Clingo establishes 32, the answer is checked in as an `:expect`, and
+`ein test` re-checks it with no solver installed* — has a claim that can be
+written and not verified. `Outcome::NotChecked` is that state made honest; it
+is not that state resolved.
+
+Three shapes if the answer is "no, a program may not, and here is what a test
+does instead", none of them free and all of them P1d.4's to weigh: a vocabulary
+that separates *at least these* from *exactly these*; a **certificate** naming
+who established the count, which is the sidecar Q-M1c.1 rejected arriving by
+another door; or a bound from [P1d.2](p1d.2_obligations/README.md)'s
+obligations, where a state that owes nothing may know its own count without
+enumerating.

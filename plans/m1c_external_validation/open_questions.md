@@ -18,7 +18,7 @@ as Q-M10.1–3 and the rows below say so.
 | Q | title | status |
 |---|---|---|
 | [Q-M1c.1](#q-m1c1--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | **closed 2026-08-23 → (c)**, `:expect` on `query`, several queries per file *(was Q-M1a.19)* |
-| [Q-M1c.2](#q-m1c2--what-may-an-expectation-say) | What may an expectation say? | **closed 2026-08-23** — a `(model …)` of ground facts, relation-closed; `(or …)` a set; `none` for ⊥; route parked *(was Q-M1a.20)* |
+| [Q-M1c.2](#q-m1c2--what-may-an-expectation-say) | What may an expectation say? | **closed 2026-08-23** — a `(model …)` of ground facts, relation-closed; `(or …)` a set; `(false)` for ⊥; route parked *(was Q-M1a.20)* |
 | [Q-M1c.6](#q-m1c6--how-does-an-expectation-say-a-relation-is-empty) | How does an expectation say a relation is *empty*? | **open**, and found by building S1c.1.2 |
 | ~~Q-M1c.3~~ | What makes a benchmark encoding fair? | **moved 2026-08-23 with P1c.2 → [Q-M10.1](../m10_external_benchmarks/open_questions.md#q-m101--what-makes-an-encoding-fair)** |
 | ~~Q-M1c.4~~ | Does a proof assistant belong in a timing table? | **moved 2026-08-23 with P1c.2 → [Q-M10.2](../m10_external_benchmarks/open_questions.md#q-m102--does-a-proof-assistant-belong-in-a-timing-table)** |
@@ -140,9 +140,14 @@ the residue:
   for presence — so a test can pin one deliberately without dragging in the
   negative-completion rules' whole output, which on a Zebra puzzle is most of
   the model.
-- **`Contradiction` is spelled `:expect none`.** `(model)` is a legal
-  expectation and means *the empty model*, which is a different claim; the two
-  needed different spellings and this is the pair.
+- **`Contradiction` is spelled `:expect (false)`** — corrected 2026-08-24, a
+  day after it shipped as `:expect none`. The recommendation said "not
+  `:expect ()` if that reads as the empty model, and `none` is clearer", and it
+  was right about the first half and reaching for an invented word in the
+  second: **`false` is already ein's ⊥** — one of the five `STRUCTURAL` names,
+  and what every refutation rule in the stdlib asserts. `(model)` remains a
+  legal expectation meaning *the empty model*, which is why `()` was never the
+  answer; the pair is `(false)` and `(model)`.
 - **Route stays out**, and
   [`stdlib_census.md` §8](p1c.1_stdlib_conformance/stdlib_census.md#8-four-declarations-are-two-rules)
   is why: the pairs that raise the question — `converse` ≡ `imply2-reverse`,
@@ -170,7 +175,7 @@ uninteresting. It matters in exactly one place: rule 1 makes the goal's
 relations mandatory, so a query whose goal relation is *legitimately* empty in
 a `Solution` cannot be given a valid `:expect` at all — the loader refuses it.
 
-Whether such a query exists in practice is the open part. `:expect none`
+Whether such a query exists in practice is the open part. `:expect (false)`
 covers the `Contradiction` case, which is the usual reason a goal projects
 nothing. Three shapes if one turns up, cheapest first: allow a bare relation
 name as a model item (`(model p (q A))` — "`p` is empty, `q` is exactly

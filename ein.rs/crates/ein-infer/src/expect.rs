@@ -36,10 +36,31 @@
 //!
 //! # The verdict is implied
 //!
-//! `(model …)` expects one model, `(or …)` expects that many, `none` expects
-//! `Contradiction`. There is no separate `:verdict` or `:k` to disagree with
-//! the models beside it, so "says `Solution` and lists two models" is not a
-//! test one can write.
+//! `(model …)` expects one model, `(or …)` expects that many, `(false)`
+//! expects `Contradiction`. There is no separate `:verdict` or `:k` to
+//! disagree with the models beside it, so "says `Solution` and lists two
+//! models" is not a test one can write.
+//!
+//! The three are peers, because the three verdicts are: `k = 0`, `k = 1` and
+//! `k > 1` are all answers in ein, read off the result rather than chosen by a
+//! flag ([`01_grammar.md` § Query](../../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query)).
+//! An expectation that could only state one of them would be a form for
+//! *solvable* puzzles, which is a third of what the engine is for.
+//!
+//! # What this form can state and cannot verify
+//!
+//! `(or M₁ … M_k)` is two claims: every `Mᵢ` is a model — found by searching —
+//! and there is no `M_{k+1}`, which is established only by **exhausting the
+//! lattice**. [`Outcome::NotChecked`] is the second half made honest, not
+//! solved: `zebra2-minus-15`'s 32 models are all found by depth 3 and depths 4
+//! and 5 exist only to prove there are no more, so its answer can be written
+//! here and verified on no machine. And a *puzzle* cannot state the claim at
+//! all — `(or A B)` in a `:match` is a disjunction over premises, and nothing
+//! in the rule language quantifies over models.
+//!
+//! That is [P1d.4](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/README.md)
+//! / [Q-M1d.7](../../../../plans/m1d_satisfiability/open_questions.md#q-m1d7--may-a-program-require-its-own-model-count),
+//! and it is deliberately not decided here.
 
 use ein_core::{Kb, Symbol, Terms};
 use ein_ir::Ast;
@@ -49,28 +70,76 @@ use rustc_hash::{FxHashMap, FxHashSet};
 use crate::events::sexpr;
 use crate::verdict::{Answer, Solution, Verdict};
 
-/// What the check found. `lines` is empty exactly when `passed`.
+/// Three outcomes, not two.
+///
+/// **An expectation is a claim about the *exhausted* answer**, because the
+/// verdict it names is: `Solution` means one model and no other, `(or …)` with
+/// k disjuncts means k and no k+1-th, `(false)` means every branch died. A
+/// search that stopped early establishes a *lower bound* on k, which confirms
+/// none of those — so "the counts happen to agree" is not a pass, and calling
+/// it one would be a green result for a claim nobody checked.
+///
+/// It only bites where more searching could have changed the answer.
+/// `found > claimed` is a genuine failure whether or not the lattice was
+/// exhausted, and so is a model that disagrees with the expectation it was
+/// matched to: no amount of further search unfinds them.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Outcome {
+    /// The claim holds, and the search that established it was exhausted.
+    Held,
+    /// The claim is false, and more searching would not rescue it.
+    Failed,
+    /// The search stopped early; the claim was neither confirmed nor refuted.
+    NotChecked,
+}
+
+/// What the check found. `lines` is empty exactly when [`Outcome::Held`].
 #[derive(Debug)]
 pub struct Report {
-    pub passed: bool,
+    pub outcome: Outcome,
     /// One line per disagreement, in the order they were found — the loader's
     /// convention, and what a person debugging a rule reads.
     pub lines: Vec<String>,
 }
 
 impl Report {
+    /// Held — and *only* held. A caller that treats `NotChecked` as success is
+    /// the failure mode this enum exists to prevent, so the question has one
+    /// spelling.
+    pub fn passed(&self) -> bool {
+        self.outcome == Outcome::Held
+    }
+
     fn ok() -> Self {
         Report {
-            passed: true,
+            outcome: Outcome::Held,
             lines: Vec::new(),
         }
     }
 
     fn failed(lines: Vec<String>) -> Self {
         Report {
-            passed: false,
+            outcome: Outcome::Failed,
             lines,
         }
+    }
+
+    fn unchecked(lines: Vec<String>) -> Self {
+        Report {
+            outcome: Outcome::NotChecked,
+            lines,
+        }
+    }
+
+    /// The verdict-shaped claims: held only if the search was exhausted.
+    fn ok_if_exhausted(exhausted: bool, what: &str) -> Self {
+        if exhausted {
+            return Report::ok();
+        }
+        Report::unchecked(vec![format!(
+            "{what} matches, but the search was not exhausted — k is a lower \
+             bound, so nothing here is established. Pass --exhaustive."
+        )])
     }
 }
 
@@ -103,7 +172,20 @@ impl Actual {
 }
 
 /// Check one query's expectation against the answer it got.
-pub fn check(ast: &Ast, terms: &Terms, expectation: &Expectation, answer: &Answer) -> Report {
+///
+/// `exhausted` is the run's own `MonotonicStats::exhausted`. It is not part of
+/// the comparison — an expectation whose models are exactly the ones found
+/// holds either way — but it is what turns the *disagreement* into something
+/// actionable: `k` from a stopped search is a lower bound, so "expected 2, got
+/// 1" usually means `--exhaustive` was not passed rather than that the puzzle
+/// is wrong.
+pub fn check(
+    ast: &Ast,
+    terms: &Terms,
+    expectation: &Expectation,
+    answer: &Answer,
+    exhausted: bool,
+) -> Report {
     let verdict = match answer {
         Answer::Verdict(v) => v,
         Answer::Aborted { reason } => {
@@ -121,10 +203,13 @@ pub fn check(ast: &Ast, terms: &Terms, expectation: &Expectation, answer: &Answe
     };
     if matches!(expectation, Expectation::Contradiction) {
         return if matches!(verdict, Verdict::Contradiction { .. }) {
-            Report::ok()
+            // A `Contradiction` from a stopped search is Q-M1d.6's open
+            // question — ten corpus entries already say it — so this does not
+            // take a position on it: it declines to call the claim checked.
+            Report::ok_if_exhausted(exhausted, "Contradiction")
         } else {
             Report::failed(vec![format!(
-                "expected none (Contradiction), got {} with {} model{}",
+                "expected (false) — Contradiction — got {} with {} model{}",
                 verdict.as_str(),
                 models.len(),
                 if models.len() == 1 { "" } else { "s" }
@@ -133,9 +218,10 @@ pub fn check(ast: &Ast, terms: &Terms, expectation: &Expectation, answer: &Answe
     }
     if matches!(verdict, Verdict::Contradiction { .. }) {
         return Report::failed(vec![format!(
-            "expected {want}, got Contradiction — write `:expect none` if that is the answer"
+            "expected {want}, got Contradiction — write `:expect (false)` if that is the answer"
         )]);
     }
+    let _ = exhausted;
 
     // Models are compared as a **set**: the order a search happens to find
     // them in is exactly what S1a.7.0's invariance tests assert is not
@@ -144,18 +230,31 @@ pub fn check(ast: &Ast, terms: &Terms, expectation: &Expectation, answer: &Answe
     let distinct = distinct_models(terms, &models);
     let wanted = expectation.models();
     if distinct.len() != wanted.len() {
-        return Report::failed(vec![format!(
+        let mut lines = vec![format!(
             "expected {want} with k = {}, got {} with k = {}",
             wanted.len(),
             verdict.as_str(),
             distinct.len()
-        )]);
+        )];
+        // Too FEW models is the one shortfall a longer search could fix; too
+        // many is a refutation whatever the search did next.
+        if distinct.len() < wanted.len() && !exhausted {
+            lines.push(
+                "…and the search was not exhausted, so that k is a lower bound — \
+                 pass --exhaustive (or -n) before believing it"
+                    .into(),
+            );
+            return Report::unchecked(lines);
+        }
+        return Report::failed(lines);
     }
 
     let mut lines = Vec::new();
     if matching(ast, &wanted.iter().collect::<Vec<_>>(), &distinct, &mut lines) {
-        Report::ok()
+        Report::ok_if_exhausted(exhausted, "every listed model")
     } else {
+        // A model that matches no expectation is a disagreement about content,
+        // not about how far the search got.
         Report::failed(lines)
     }
 }

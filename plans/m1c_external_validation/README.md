@@ -107,7 +107,7 @@ last-one-silently-wins discard gone:
 relation's complete extent, so a *surplus* fact fails, which is the case a
 per-fact assertion cannot catch and the shape of the bug this milestone is
 written around. `(or (model …) …)` compares model **sets** with `k` implied by
-the count; `none` is `Contradiction`. `ein solve` exits 1 when the claim is
+the count; `(false)` is `Contradiction`. `ein solve` exits 1 when the claim is
 false, so a file carrying one is a test with no harness around it —
 [`examples/features/10_expect.ein`](../../examples/features/10_expect.ein) is
 the worked fixture. What it cost: **0** new grammar productions, **0** goldens

@@ -64,3 +64,41 @@ choice (smallest, then `Interner::rank`-least) or reporting every core is a
 decision nobody has taken, which is why this is a fixture and a question. When
 it settles it becomes a `regression` entry in the same commit and this file
 goes.
+
+## 2026-08-24 — the corpus reaches it now
+
+The paragraph above says this is one of two findings *"the corpus does not
+reach"*, and that was true for three days. Writing M1c
+[S1c.1.2](../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)'s
+`k = 0` fixture reached it on the first try, with no fuzzer and no generated
+input — the blind pigeonhole, three pigeons and two holes:
+
+```lisp
+(instance P1 Pigeon) (instance P2 Pigeon) (instance P3 Pigeon)
+(instance H1 Hole)   (instance H2 Hole)
+;; one pigeon per hole, a pigeon in one hole is in no other,
+;; a pigeon with every hole excluded is ⊥ — then guess placements
+(hrule guess (?p ?h) :match (instance ?p Pigeon) :assert (in ?p ?h) :why "…")
+```
+
+`id_order_invariance` moved **6 of 5 437 (file, op) pairs**, all of them this
+file, on seed 1:
+
+```text
+plain:    CORE 8 [(in P1 H2) (in P2 H1) (in P2 H2) (in P3 H1) (in P3 H2) …]
+permuted: CORE 8 [(in P1 H1) (in P1 H2) (in P2 H1) (in P2 H2) (in P3 H1) …]
+```
+
+Same size, different facts — the eight-fact version of the 1-vs-2 above. **What
+this changes about the finding is its reachability, not its cause**: the fuzzer
+found it in generated input because nothing in the corpus was symmetric enough,
+and a pigeonhole is symmetric enough. Any puzzle whose contradiction has an
+automorphism group will do it, which is a much larger class than "an input a
+fuzzer minimised to four forms" suggests, and it raises the cost of leaving the
+choice uncanonicalised.
+
+`examples/features/12_expect_false.ein` **forces its chain instead of searching
+it** — two givens, survivor forcing, one core — precisely so that a fixture
+about `:expect (false)` is not also a symmetry stress test. Its header says so
+and points here. The blind version is not checked in: it belongs to this
+finding, and it will be the `regression` entry when the question settles.

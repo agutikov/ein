@@ -502,7 +502,7 @@ verdict is *implied* by which one is used rather than asserted beside it:
 ```lisp
 :expect (model <fact>*)                 ; exactly one model — Solution
 :expect (or (model …) (model …) …)      ; that SET of models — k is the count
-:expect none                            ; Contradiction
+:expect (false)                         ; Contradiction — the kernel's own ⊥
 ```
 
 Three rules, and the third is the one that gives the form its teeth:

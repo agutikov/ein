@@ -65,7 +65,7 @@ pub use compile::{
 pub use contradiction::{Contradiction, contradicts, detect, has_contradiction};
 pub use engine::Engine;
 pub use events::{Events, Level};
-pub use expect::{Report, check};
+pub use expect::{Outcome, Report, check};
 pub use explain::{
     Explanation, ExplanationBudget, explain, minimal_contradiction_frontier,
     smallest_contradiction_frontier,

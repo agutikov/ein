@@ -1,0 +1,97 @@
+;;; `:expect (false)` — a puzzle that states it has **no** solution.
+;;;
+;;; The third of the three verdicts, and the reason `:expect` spells ⊥ with the
+;;; kernel's own word rather than an invented one: `false` is what every
+;;; refutation rule in the stdlib asserts — `std.elim`'s `no-room-left`,
+;;; `std.algebra`'s `total` and `surjective`, `std.slots`' `slot-no-room` — and
+;;; a form that said `none` here would be a second word for something the
+;;; language already says.
+;;;
+;;;   :expect (false)      Contradiction — k = 0
+;;;
+;;; `(false)` is not the same claim as `(model)`, which is a legal expectation
+;;; meaning *the empty model*: one answer that happens to close no relation.
+;;; `()` would have been ambiguous between the two, which is why it is neither.
+;;;
+;;; ── The puzzle ─────────────────────────────────────────────────────────────
+;;;
+;;; Three pigeons, two holes, one pigeon per hole, and enough given to force
+;;; the outcome without guessing: P1 is in H1, and P2 is not. The chain is
+;;;
+;;;   occupied   H1 holds P1, so it holds neither P2 nor P3
+;;;   forced     P2's only remaining hole is H2 — take it
+;;;   occupied   H2 holds P2, so it does not hold P3
+;;;   no-room    P3 has every hole excluded — ⊥
+;;;
+;;; **Why it is forced rather than searched.** The blind three-pigeons-two-holes
+;;; version — no givens, an `(hrule …)` guessing placements — reports
+;;; **Ambiguity k = 6**, not a contradiction, because a state that places two
+;;; pigeons and leaves the third nowhere is *complete* as far as saturation is
+;;; concerned: nothing in an open world obliges a pigeon to be anywhere.
+;;; `no-room` is a refutation at the extreme, never an existence requirement —
+;;; it fires only once the stored negatives happen to cover a pigeon's whole
+;;; range. Turning `total` into a first-class obligation instead is exactly
+;;; what M1d is for: plans/m1d_satisfiability/p1d.2_obligations/.
+;;;
+;;; The searched version also has **several equally small unsat cores**, and
+;;; which one the engine reports moves with the id space — the open finding
+;;; corpus/fuzz_findings/unsat-core-id-space.md, which until this fixture was
+;;; reachable only from generated input. Forcing the chain leaves one core, so
+;;; this file demonstrates `(false)` without also being a symmetry stress test.
+
+(relation instance Thing Type)
+(relation in       Pigeon Hole :why "{1} is in {2}")
+
+(instance P1 Pigeon) (instance P2 Pigeon) (instance P3 Pigeon)
+(instance H1 Hole)   (instance H2 Hole)
+
+(import std.macro :symbols (forall))
+
+;; A hole with an occupant admits no other pigeon.
+(rule occupied (?R ?isa)
+  :match  (and (?R ?a ?h) (?isa ?b Pigeon) (neq ?b ?a))
+  :assert (not (?R ?b ?h))
+  :priority 240
+  :why    "{?h} is taken by {?a}, so not by {?b}")
+
+;; A pigeon in one hole is in no other.
+(rule elsewhere (?R ?isa)
+  :match  (and (?R ?a ?h) (?isa ?h_other Hole) (neq ?h_other ?h))
+  :assert (not (?R ?a ?h_other))
+  :priority 240
+  :why    "{?a} is in {?h}, so not in {?h_other}")
+
+;; Survivor forcing: every hole but one excluded for a pigeon ⟹ it is in that
+;; one. This is what makes the chain deterministic — without it the puzzle
+;; needs the hypothesis search, and then it is not a contradiction at all.
+(rule forced (?R ?isa)
+  :match  (and (?isa ?a Pigeon)
+               (?isa ?h Hole)
+               (forall ?h_other
+                 (and (?isa ?h_other Hole) (neq ?h_other ?h))
+                 (not (?R ?a ?h_other))))
+  :assert (?R ?a ?h)
+  :priority 400
+  :why    "every hole but {?h} is excluded for {?a}")
+
+;; …and a pigeon with every hole excluded has nowhere to go.
+(rule no-room (?R ?isa)
+  :match  (and (?isa ?a Pigeon)
+               (forall ?h (?isa ?h Hole) (not (?R ?a ?h))))
+  :assert (false)
+  :priority 250
+  :why    "{?a} has every hole excluded")
+
+(occupied  in instance)
+(elsewhere in instance)
+(forced    in instance)
+(no-room   in instance)
+
+;; The two givens. Between them they leave P3 nowhere.
+(in P1 H1)
+(not (in P2 H1))
+
+(query
+  :goal   (in ?who ?hole)
+  :no-hypothesis (in)
+  :expect (false))

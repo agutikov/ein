@@ -11,7 +11,7 @@ recommendation could not have known about and two costs it did not price.
 
 | finding | number |
 |---|---|
-| the form | **`:expect (model …)` / `(or (model …) …)` / `none`** — one keyword, as (c) promised |
+| the form | **`:expect (model …)` / `(or (model …) …)` / `(false)`** — one keyword, as (c) promised |
 | why `(model …)` and not the proposed bare list | `ListHead ::= SYMBOL \| VAR \| WILDCARD \| EQ` — **a list head does not parse**, and widening it would change the grammar of every form |
 | grammar productions added | **0** — the shape is loader-checked, not parsed |
 | call sites touched by `Program.query` → `queries` | **14** |
@@ -22,6 +22,25 @@ recommendation could not have known about and two costs it did not price.
 | the cost nobody predicted | an artefact flag names **one** path, so `--events` / `--trace` / `--json-summary` / `--dump-states` are refused (exit 2) on a file that asks more than one question |
 | tests added | **31** — 8 shape, 7 loader, 12 comparison, 7 CLI (minus the two grammar-level cases that never reach the loader) |
 | opened | [Q-M1c.6](../open_questions.md#q-m1c6--how-does-an-expectation-say-a-relation-is-empty) — closure cannot say a relation is *empty*, and rule 1 makes that reachable |
+| …and handed on | [P1d.4](../../m1d_satisfiability/p1d.4_model_set_closure/README.md) / [Q-M1d.7](../../m1d_satisfiability/open_questions.md#q-m1d7--may-a-program-require-its-own-model-count) — `(or …)` states *these are all the models*, which no `:match` can require and only an exhausted search can verify |
+
+**Corrected 2026-08-24, the day after it shipped.** Two things, both found by
+the user reading the form back:
+
+- **⊥ is `(false)`, not `none`.** `false` is already ein's contradiction — one
+  of the five `STRUCTURAL` names, and what every refutation rule in the stdlib
+  asserts. Shipping an invented word for it was the mistake, and the
+  recommendation that suggested `none` had been right only about rejecting
+  `()`.
+- **A non-exhausted search cannot confirm a verdict**, and the checker was
+  calling it a pass. `:expect` names a `k`; a stopped run establishes a lower
+  bound on `k`; the two happening to agree is not evidence. There is now a
+  third outcome — `Outcome::NotChecked`, exit 1, `NOT CHECKED` on the line —
+  and it bites only where more searching could have changed the answer: finding
+  *more* models than claimed, or a model that disagrees with the expectation it
+  matched, stays a plain failure. Three fixtures now carry the three verdicts,
+  and `11_expect_ambiguity.ein` declares `solve -e` and no plain `solve`
+  because a k>1 claim is not this corpus's to check at `-n 1`.
 
 **Where the spec of record went.** This stage doc and the phase README both say
 the form must land in `grammar.lark`. That file left with `ein.py` at M1a
