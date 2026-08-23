@@ -1,10 +1,26 @@
-# Ein
+# EinAf
 
 [![per-commit](https://github.com/agutikov/ein/actions/workflows/per-commit.yml/badge.svg)](https://github.com/agutikov/ein/actions/workflows/per-commit.yml)
 [![nightly](https://github.com/agutikov/ein/actions/workflows/nightly.yml/badge.svg)](https://github.com/agutikov/ein/actions/workflows/nightly.yml)
 
-Graph-based relation algebra solver — a prototype now being
-modernised in light of neuro-symbolic and constrained-reasoning research.
+EinAf — a Neuro-Symbolic Automated Reasoning Framework for Iterative Autoformalization and Theory Synthesis.
+
+TODO: format as table
+Autoformalization — translates natural-language or otherwise informal problem statements into formal Ein representations: entities, relations, facts, constraints, rules, and goals.
+Theory Library — maintains reusable formal theories, relation properties, reasoning patterns, and domain-specific knowledge that can be instantiated and composed for particular problems.
+Theory Selection — identifies and retrieves existing theories, rules, and reasoning patterns relevant to a given problem and its current formalization.
+Theory Synthesis — constructs new relations, constraints, rules, and theories when existing knowledge is insufficient, including specialization and composition of existing theories.
+Theory Transformation and Specialization — adapts general theories to a particular problem context, derives specialized subtheories, and transforms representations into forms better suited for reasoning.
+Symbolic Reasoning Kernel — executes formal reasoning over Ein representations, including saturation, deduction, rule application, constraint propagation, and fixed-point computation.
+Hypothesis Search — explores alternative assumptions and candidate models through structured backtracking over the hypothesis lattice.
+Constraint and Satisfiability Reasoning — enforces structural and semantic constraints, detects incompatible assignments, and searches for models satisfying the formalized theory.
+Contradiction Detection and Analysis — identifies inconsistent states and traces contradictions back to the rules, facts, and hypotheses responsible for them.
+Formal Verification — mechanically checks neural-generated formalizations, rules, theories, and candidate solutions against the symbolic semantics of Ein.
+Solution and Model Generation — produces satisfying models, solutions, derived facts, proofs, or counterexamples depending on the problem.
+Reasoning Introspection — exposes derivation traces, rule dependencies, relation dependencies, hypothesis branches, unsatisfiable cores, and other reasoning artifacts.
+Neuro-Symbolic Feedback Loop — feeds symbolic results—solutions, contradictions, incomplete derivations, failed hypotheses, and structural information—back into the neural component to refine the formalization or synthesize/select better theories.
+
+---
 
 Ein loads a puzzle as a **typed hypergraph** of relations, facts and
 rules (written in [ein-lang](docs/kernel/ir/03-ein-lang/), an
