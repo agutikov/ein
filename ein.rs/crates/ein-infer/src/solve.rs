@@ -605,7 +605,7 @@ fn batch_per_worker() -> usize {
 }
 
 #[cfg(feature = "parallel")]
-const BATCH_PER_WORKER: usize = 32;
+const BATCH_PER_WORKER: usize = 512;
 
 /// Does a fork **resume** root's saturation? Yes, since
 /// [S1a.6.9](../../../../plans/m1a_rust/p1a.6_performance/s1a.6.9_fork_entry_delta.md)

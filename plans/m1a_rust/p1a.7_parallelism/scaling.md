@@ -586,6 +586,25 @@ the CLI.
 1.1–1.3× exactly as §5.4 said they would be — their layer 1 holds half their
 firings and layer 1 is the one that cannot be fanned out.
 
+> **Re-taken 2026-08-23 after the batch knee moved** (§ The batch is a memory
+> decision, below): `BATCH_PER_WORKER` 32 → 512, best of seven, same `P:8`.
+>
+> | workload | `-j 1` | `-j 2` | `-j 4` | `-j 8` | |
+> |---|---:|---:|---:|---:|---:|
+> | `branching/06 -e` | 194.2 ms | 114.5 | 68.6 | **44.1** | **4.40×** |
+> | `sq-bwd/houses -e` | 254.7 ms | 153.0 | 87.5 | **58.0** | **4.39×** |
+> | `branching/07 -e` | 280.5 ms | 163.0 | 97.0 | **66.4** | **4.22×** |
+> | `features/01 -e` | 1 646.5 ms | 1 191.9 | 749.7 | **518.7** | **3.17×** |
+> | `zebra -e` | 44.5 ms | 38.2 | 33.8 | 31.2 | 1.43× |
+> | `zebra2 -e` | 29.2 ms | 26.5 | 25.1 | 23.6 | 1.23× |
+>
+> **3.17–4.40×**, and the honest reading is that the batch is worth **0–9 % of
+> the `--jobs 8` column and nothing at `--jobs 1`**, part of it inside this
+> machine's session-to-session spread. The `-j 1` column does not move at all
+> and cannot: at one job there is no fan-out and no batch. The headline range
+> is quoted as 3.16–4.30× throughout this file because that is the number the
+> stage shipped; this row is what it reads today.
+
 > **The first fan-out was 2.19–2.89×**, and the three sections that follow are
 > what took it here — all three found by measuring the parallel run rather than
 > by designing for it, and all three *sequential* improvements as well. The
@@ -768,9 +787,36 @@ than a chosen one. The sweep, on `features/01 -e` at `--jobs 8` with the pool:
 | wall | 831 ms | **740 ms** | 730 ms | 856 ms |
 | peak RSS | 86 MB | **89 MB** | 93 MB | 122 MB |
 
-32 is the knee. A **cut** narrows it further — `stop_after` and
-`max_enterings` stop mid-layer and everything past the cut is waste — so the
-batch is one round of workers then (T1a.7.2.4).
+32 was the knee. A **cut** narrows it further — `stop_after`, `max_enterings`
+and `max_time` stop mid-layer and everything past the cut is waste — so the
+batch ramps from one round of workers instead (T1a.7.2.4, §8a).
+
+> **Re-taken 2026-08-23, and the knee moved to 512** — because a *measured*
+> constant has to be re-measured when what it measures changes, which is the
+> same rule [`slow = true`](../p1a.9_release/corpus_cost.md) lives under. Three
+> things landed after the sweep above and all three reduce what one speculated
+> result holds: T1a.7.1.7's per-worker provenance region, T1a.7.2.1's
+> "free it on the worker that allocated it", and `Entered::kb = None` for a
+> result nobody at the commit will read. So the memory column that priced 512
+> out is gone:
+>
+> | per worker | 32 | 128 | 512 | 1024 | 2048 | 4096 |
+> |---|---:|---:|---:|---:|---:|---:|
+> | `features/01 -e` | 545 ms / 69 MB | 550 / 65 | **524 / 68** | 515 / 68 | 509 / 80 | 506 / 111 |
+> | `sq-bwd/houses -e` | 57 / 21 | 57 / 18 | **56 / 19** | 56 / 26 | 57 / 30 | 58 / 34 |
+> | `branching/07 -e` | 67 / 17 | 66 / 19 | **65 / 21** | 66 / 22 | 65 / 23 | 65 / 24 |
+> | `branching/06 -e` | 48 / 21 | 45 / 27 | **44 / 30** | 44 / 31 | 44 / 30 | 44 / 31 |
+>
+> `features/01 -e` — the file the bound exists for — is **flat at 68 MB from 32
+> to 1024** and only starts climbing at 2048. 512 buys 0–9 % for at most 9 MB;
+> 4096 buys another 3 % for 111 MB, which is the trade the bound is there to
+> refuse. At `--jobs 16` on the same file 512 is 74.3 MB against 32's 67.3 —
+> still an eighth of what that file cost before
+> [S1a.7.1](s1a.7.1_sync_shared_state.md).
+>
+> Answer- and counter-neutral, checked the same way everything else in this
+> phase is: 142 corpus cells at `--jobs 1` vs `--jobs 8`, 0 divergences, and
+> `search_invariants`' fifteen.
 
 Peak RSS with the bound in place, which is [README § Risks](README.md#risks)'s
 "memory scales with jobs" answered:
