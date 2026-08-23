@@ -1,12 +1,16 @@
 # M1c — External validation
 
-**Estimate:** ~2.5 weeks — 1 phase, 5 stages, 12 days of stage estimates.
-**Status:** **created 2026-08-21** at the user's direction — one evening after
+**Estimate:** ~3 weeks — 1 phase, 5 stages, 15 days of stage estimates
+(13 until [S1c.1.1](p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)
+measured what S1c.1.4 is actually up against).
+**Status:** **started 2026-08-23** — S1c.1.1 shipped, four stages to go.
+**Created 2026-08-21** at the user's direction — one evening after
 the same batch put P1a.10–12 into M1a — out of one phase that was never the
 Rust port and one that had nowhere to live.
-[P1c.1](p1c.1_stdlib_conformance/README.md) is M1a's ex-P1a.11 — stages,
-estimates and dependencies unchanged, with only the two paragraphs that named
-the wrong milestone rewritten. The second phase, P1c.2, was **promoted to
+[P1c.1](p1c.1_stdlib_conformance/README.md) is M1a's ex-P1a.11 — stages and
+dependencies unchanged, with only the two paragraphs that named the wrong
+milestone rewritten; the estimates were unchanged too, until S1c.1.1 measured
+S1c.1.4's work list and moved it from 4 days to 6. The second phase, P1c.2, was **promoted to
 [M10](../m10_external_benchmarks/README.md) on 2026-08-23** and took its five
 stages and its three method questions with it; what stays here is the half
 that runs with no external tool installed.
@@ -65,10 +69,26 @@ depend on the two sharing a directory.
 
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
-| [P1c.1](p1c.1_stdlib_conformance/README.md) | stdlib conformance — `:expect` on `query`, `ein test`, a corpus per rule | 5 | 2.5 w | every stdlib rule has a program that activates it and states what it derives |
+| [P1c.1](p1c.1_stdlib_conformance/README.md) | stdlib conformance — `:expect` on `query`, `ein test`, a corpus per rule | 5 (1 shipped) | 3 w | every stdlib rule has a program that activates it and states what it derives |
 
-5 stages, 12 days of stage estimates ≈ 2.5 weeks. The other five went to
+5 stages, 15 days of stage estimates ≈ 3 weeks. The other five went to
 [M10](../m10_external_benchmarks/README.md) on 2026-08-23.
+
+### The gap, measured — S1c.1.1, 2026-08-23
+
+The thesis above was an argument. The first stage turned it into a number, and
+the number is worse than the argument assumed:
+[**38 of the stdlib's 73 rules never fire**](p1c.1_stdlib_conformance/stdlib_census.md)
+in any of 128 corpus entries × 400 inference runs — 33 of them never even
+loaded — and 23 more are activated by exactly one entry, `examples/zebra.ein`
+being that entry for 20. Two modules, `std.typing` and `std.closure`, have
+never executed a rule at all. **84 % of the standard library is either untested
+or resting on a single file**, and the whole relative and Boolean layer of the
+relation algebra — composition, meet, join, complement, top, identity,
+difference, and every equational lemma — has never been run.
+
+That is what "not contradicted" means in practice, and it is why the rest of
+this milestone is worth its three weeks.
 
 ## Acceptance for the milestone
 
@@ -113,6 +133,9 @@ and the index here keeps their old ids as redirects.
 
 ## Cross-links
 
+- [`p1c.1_stdlib_conformance/stdlib_census.md`](p1c.1_stdlib_conformance/stdlib_census.md)
+  — the milestone's first output: what 73 rules promise, and what the corpus
+  activates. Re-taken by [`utils/stdlib_census.py`](../../utils/stdlib_census.py)
 - [`stdlib/`](../../stdlib/) — the seven modules P1c.1 puts under test
 - [`docs/lib/02`](../../docs/lib/02-solvers-csp-sat-smt.md) — the solver
   catalogue M10's system list is drawn from; [`03`](../../docs/lib/03-theorem-proving-formal-methods.md)

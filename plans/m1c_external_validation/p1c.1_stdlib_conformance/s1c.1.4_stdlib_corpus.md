@@ -1,15 +1,23 @@
 # S1c.1.4 — The stdlib corpus
 
 **Phase:** P1c.1 (stdlib conformance)
-**Estimate:** 4 days
+**Estimate:** ~~4 days~~ **6 days** — re-estimated 2026-08-23 against
+[S1c.1.1](s1c.1.1_what_the_stdlib_promises.md)'s census, which the stage doc
+asked to decide this ("if the zero-firing set is large, say so before
+committing to four days"). It is large — **38 of 73 rules never fire** — but
+that is not where the two extra days go: the zero set is cheap, and the
+expensive item is `std.slots`, at 100 % rule coverage and *one* activating
+file. [`stdlib_census.md` §10](stdlib_census.md#10-what-this-does-to-s1c14).
 **Depends on:** [S1c.1.3](s1c.1.3_test_subcommand.md)
 
 ## Context
 
 The programs themselves — one per rule or tight family, each the smallest
 thing that activates it, each stating what it should and should not derive.
-[S1c.1.1](s1c.1.1_what_the_stdlib_promises.md)'s table is the work list and
-its zero-firing set is the priority.
+[S1c.1.1](s1c.1.1_what_the_stdlib_promises.md)'s table is the work list, its
+zero-firing set is the priority, and
+[`stdlib_census.md` §6](stdlib_census.md#6-what-would-activate-a-rule-that-nothing-activates--t1c113)
+already carries the smallest activating program for each of the 38.
 
 ## Acceptance
 
@@ -55,9 +63,22 @@ Macro expansion, so the expectations are about the *expanded* program. Whether
 `(test …)` sees pre- or post-expansion state is a decision
 [S1c.1.2](s1c.1.2_test_form.md) has to have made.
 
+### Task T1c.1.4.7 — A second `std.slots` program — **added 2026-08-23**
+
+Not in the original task list, and the census's main finding for this stage:
+all eighteen `std.slots` rules are activated by `examples/zebra.ein` and by
+nothing else, so the module's whole test is one puzzle's accident. The program
+wants a slot structure whose spatial relation is **asymmetric and not
+functional on positions** — which is also the only state that separates
+`slot-prune-fwd` from `slot-prune-bwd`, the pair the corpus currently cannot
+tell apart ([§5](stdlib_census.md#5-fires-derives-nothing--3-rules)).
+
 ### Task T1c.1.4.6 — The census, re-run
 
-The acceptance number. Report per module: rules, covered, still zero.
+The acceptance number, and it is
+[`utils/stdlib_census.py`](../../../utils/stdlib_census.py) — the same
+instrument S1c.1.1 used, so the before and after are comparable by
+construction. Report per module: rules, covered, still zero.
 
 ## Notes
 

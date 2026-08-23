@@ -145,7 +145,7 @@ constrained-reasoning research.
   in the repo — the divergence list, and
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
-- **`utils/`** — **eighteen scripts, all of them driving `ein.rs`** since M1a
+- **`utils/`** — **nineteen scripts, all of them driving `ein.rs`** since M1a
   [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
   which deleted the eleven that compared two engines or measured the Python
   one, plus `corpus_cost.py` from
@@ -165,7 +165,14 @@ constrained-reasoning research.
   [`baseline.md`](docs/history/m1a_rust/measurements/baseline.md) /
   [`scaling.md`](docs/history/m1a_rust/measurements/scaling.md) **the CPython
   and PyPy columns are frozen constants**, because the instruments that
-  produced them left with the engine they measured.
+  produced them left with the engine they measured. The nineteenth,
+  **`stdlib_census.py`**, is [M1c](plans/m1c_external_validation/README.md)'s
+  and the first check aimed at the *stdlib* rather than the engine: 73 rules
+  parsed out of `stdlib/*.ein`, then 128 corpus entries × 400 inference runs
+  under `--events`, `fire` counted by rule. Its answer —
+  [**38 of 73 rules never fire**](plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md),
+  and `examples/zebra.ein` is the sole activator of 20 more — is what M1c
+  exists to close.
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,

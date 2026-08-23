@@ -1,6 +1,6 @@
 # `utils/` — the scripts that are not the engine
 
-**Eighteen scripts, 4 933 lines, all of them driving `ein.rs`.** Nothing here
+**Nineteen scripts, 5 592 lines, all of them driving `ein.rs`.** Nothing here
 is built, shipped or imported by the engine; everything here *runs* it, *reads*
 it, or *renders* what it produced. If a check belongs in the gate it belongs in
 `cargo test`, and several things that used to live here moved there —
@@ -40,12 +40,13 @@ are.
 
 ## Checks
 
-Three things the gate cannot do from inside `cargo test` — **write** a file
-it also checks, **grep** the source tree, and **search unboundedly** — and one
-generator.
+Four things the gate cannot do from inside `cargo test` — **write** a file
+it also checks, **grep** the source tree, **search unboundedly**, and **sweep
+the whole corpus under `--events`** — and one generator.
 
 | | | |
 |---|---|---|
+| [`stdlib_census.py`](stdlib_census.py) | what the seven `std.*` modules declare against what the corpus actually activates: 73 rules parsed for module / parameters / priority / guard shapes, then 128 corpus entries × 400 inference runs under `--events`, `fire` counted by rule and split productive vs redundant. Two things it must get right — a file that declares its own `symmetric` is not exercising `std.algebra`'s, and `normal` elides redundant firings, so three rules read as zero there and fire at `verbose`. `--check` exits 1 while any rule is at zero, which is [S1c.1.5](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.5_gate.md)'s coverage gate before it is a test. The measurement: [`stdlib_census.md`](../plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md) — **38 of 73 rules never fire**, and `examples/zebra.ein` is the sole activator of 20 more | `ein`, 36 s |
 | [`stdlib_manifest.py`](stdlib_manifest.py) | **writes** `stdlib/MANIFEST.sha256`, and verifies it per module without a toolchain. The writing is the half no test can do — a test that rewrote the file it checks would check nothing. What *is* a test: `ein-ir`'s `the_embedded_copy_matches_the_manifest`, which is not stale-able because `include_dir!` makes each module a build dependency | per-commit CI |
 | [`check_hashmap_iteration.py`](check_hashmap_iteration.py) | the determinism grep — no iteration over a hash map at a site whose order could reach an output, `// determinism-ok: <reason>` the only escape. 152 files, 21 annotated | per-commit CI |
 | [`fuzz_ein.py`](fuzz_ein.py) | the engine fuzzer: generate or mutate ein programs, then check the **six** properties one engine can check — `no-crash`, `diagnosed`, `terminates`, `deterministic`, `id-order` and, since M1a T1a.7.2.6, `jobs` (the same program at `--jobs 8` answers as at `--jobs 1`; `--jobs 1` turns it off). Findings land in [`corpus/fuzz_findings/`](../corpus/fuzz_findings/README.md) | `ein`, and `cargo` for `id-order` |
