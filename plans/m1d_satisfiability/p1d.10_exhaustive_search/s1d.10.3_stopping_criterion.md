@@ -1,8 +1,8 @@
-# S1d.1.3 — Is there a stopping criterion?
+# S1d.10.3 — Is there a stopping criterion?
 
-**Phase:** P1d.1 (Exhaustive search over many models)
+**Phase:** P1d.10 (Exhaustive search over many models)
 **Estimate:** 4 days
-**Depends on:** [S1d.1.2](s1d.1.2_depth_required.md)
+**Depends on:** [S1d.10.2](s1d.10.2_depth_required.md)
 
 ## Context
 
@@ -34,7 +34,7 @@ The search is complete when no unexplored commitment can yield a new model.
 `alive` is the set of hypothesis facts still live, and on this puzzle it never
 shrinks — 96 at every layer, because nothing is refuted. **A criterion that
 depends on `alive` shrinking is inert in exactly the regime that needs it**,
-which S1d.1.1's census should confirm before anyone builds one.
+which S1d.10.1's census should confirm before anyone builds one.
 
 ### (c) Quiescence as a *reported* heuristic
 
@@ -60,20 +60,20 @@ which S1d.1.1's census should confirm before anyone builds one.
 
 ## Tasks
 
-### Task T1d.1.3.1 — (a), argued to a conclusion
-### Task T1d.1.3.2 — (b), tested against the census first
+### Task T1d.10.3.1 — (a), argued to a conclusion
+### Task T1d.10.3.2 — (b), tested against the census first
 
 Cheap, and in the right order: if `alive` never shrinks in the regime, the
 mechanism is dead before it is designed.
 
-### Task T1d.1.3.3 — (c), as a mode with an honest verdict
-### Task T1d.1.3.4 — Anything the census suggests
+### Task T1d.10.3.3 — (c), as a mode with an honest verdict
+### Task T1d.10.3.4 — Anything the census suggests
 
-S1d.1.1 and S1d.1.2 may name a fourth. Leave room for it — the three above
+S1d.10.1 and S1d.10.2 may name a fourth. Leave room for it — the three above
 were written from one puzzle's numbers, which is exactly the position this
 phase exists to get out of.
 
-### Task T1d.1.3.5 — The ledger
+### Task T1d.10.3.5 — The ledger
 
 Whatever the outcome, the catalogue: idea, argument, measurement, disposition.
 It belongs beside F9's, and it is the deliverable even if nothing ships.

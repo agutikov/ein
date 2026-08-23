@@ -1,7 +1,10 @@
-# P1d.1 — Exhaustive search over many models
+# P1d.10 — Exhaustive search over many models
 
 **Milestone:** [M1d — From saturation to satisfiability](../README.md)
 **Estimate:** 3 weeks (15 days of stages)
+**Id:** **P1d.10** since 2026-08-23 — P1d.1 before that, and M1a's P1a.12
+before that. Nothing but the number changed either time; it still runs first
+of M1d's three phases ([§ Phases](../README.md#phases)).
 **Depends on:** [M1a](../../m1a_rust/README.md)'s
 [P1a.7](../../m1a_rust/p1a.7_parallelism/README.md) — cores change the
 constant, not the exponent, and this phase is about the exponent. Knowing
@@ -89,11 +92,11 @@ first stage here is a census, not a proposal.
 
 | stage | title | est. |
 |---|---|---|
-| [S1d.1.1](s1d.1.1_why_it_does_not_finish.md) | Why it does not finish | 3 d |
-| [S1d.1.2](s1d.1.2_depth_required.md) | What depth is required, and for what | 2 d |
-| [S1d.1.3](s1d.1.3_stopping_criterion.md) | Is there a stopping criterion? | 4 d |
-| [S1d.1.4](s1d.1.4_conflict_mining.md) | Conflict mining when a layer is barren | 4 d |
-| [S1d.1.5](s1d.1.5_contract.md) | What `exhausted` means | 2 d |
+| [S1d.10.1](s1d.10.1_why_it_does_not_finish.md) | Why it does not finish | 3 d |
+| [S1d.10.2](s1d.10.2_depth_required.md) | What depth is required, and for what | 2 d |
+| [S1d.10.3](s1d.10.3_stopping_criterion.md) | Is there a stopping criterion? | 4 d |
+| [S1d.10.4](s1d.10.4_conflict_mining.md) | Conflict mining when a layer is barren | 4 d |
+| [S1d.10.5](s1d.10.5_contract.md) | What `exhausted` means | 2 d |
 
 ## Acceptance for the phase
 
@@ -132,7 +135,7 @@ first stage here is a census, not a proposal.
   heuristic that changes the answer ships behind a flag with a different
   verdict word, or goes to [F4](../../followups/f4_cross_cutting.md). What the
   move does **not** relax is the second half —
-  [S1d.1.5](s1d.1.5_contract.md) still owns the vocabulary, and `exhausted`
+  [S1d.10.5](s1d.10.5_contract.md) still owns the vocabulary, and `exhausted`
   still means the lattice was exhausted.
 - **Memory before time.** An uncapped
   `saturation/square-unique/terminus.ein -e` reached 12.3 GB before being

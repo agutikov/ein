@@ -364,7 +364,7 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 path   = "examples/zebra2-minus-15.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
-note   = "zebra2 with condition (15) removed — genuinely under-determined at 32 models, so the exhaustive search is large rather than pathological. no solve -e: every model is found by depth 3 and depths 4-5 exist only to prove there are no more (M1d P1d.1), so the run outlives a 5 min ceiling here and was killed at 30 min there; `solve` is 32 ms and stays. no render lattice: the same search at -m 3, which does finish — 27.8 s — and writes 11.6 MB of DOT that is the enumerator rather than a view. These are the exclusions M1d lifts."
+note   = "zebra2 with condition (15) removed — genuinely under-determined at 32 models, so the exhaustive search is large rather than pathological. no solve -e: every model is found by depth 3 and depths 4-5 exist only to prove there are no more (M1d P1d.10), so the run outlives a 5 min ceiling here and was killed at 30 min there; `solve` is 32 ms and stays. no render lattice: the same search at -m 3, which does finish — 27.8 s — and writes 11.6 MB of DOT that is the enumerator rather than a view. These are the exclusions M1d lifts."
 
 [[entry]]
 path   = "examples/zebra2.ein"

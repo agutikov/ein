@@ -5,7 +5,7 @@ Milestone-scoped questions. Ids are **sticky** — `Q-M1d.<n>`, in the style
 global `Q<n>` sequence in [`plans/open_questions.md`](../open_questions.md).
 A closed id is never reused.
 
-**Q-M1d.1 arrived with [P1d.1](p1d.1_exhaustive_search/README.md)** on
+**Q-M1d.1 arrived with [P1d.10](p1d.10_exhaustive_search/README.md)** on
 2026-08-21, where it was Q-M1a.21; the M1a entry stays as a redirect. Q-M1d.2
 to Q-M1d.5 come from [`ideas.md`](ideas.md), the note that is the milestone's
 other half, and they are the questions the note leaves open rather than the
@@ -17,7 +17,7 @@ about a word the engine already says.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.1](p1d.1_exhaustive_search/README.md); `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
+| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md); `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | open — the note says **first-class obligation**; the cost is a kernel concept |
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | open — no answer, no lower bound; `is-a` extents and `open` are what exists |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | open — [Q-M1a.18](../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped; the answer moves every counter |
@@ -28,7 +28,7 @@ about a word the engine already says.
 
 ## Q-M1d.1 — May the search stop before the lattice is exhausted?
 
-[P1d.1](p1d.1_exhaustive_search/README.md)'s question, and the measurement
+[P1d.10](p1d.10_exhaustive_search/README.md)'s question, and the measurement
 that raises it: on `examples/zebra2-minus-15.ein` **every one of the 32 models
 is found by depth 3, and depths 4–5 exist only to prove there are no more** —
 which is where the run stops finishing.
@@ -44,7 +44,7 @@ So: is there an argument that lets the search stop early?
   a second guarantee needs a second word.
 
 The candidates and their obligations are in
-[S1d.1.3](p1d.1_exhaustive_search/s1d.1.3_stopping_criterion.md), and a
+[S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md), and a
 written refutation is as good an outcome as a proof — that is the discipline
 [F9](../followups/f9_e_catalog.md) established for this exact area, and F9's
 own judgements were all measured on puzzles with a unique model, which is the
@@ -56,7 +56,7 @@ framing did not have — a state that knows what it still owes can recognise a
 model *locally*, and an enumeration that branches on requirements is complete
 at a depth bounded by the number of requirements rather than by
 `max_set_size`. That is not yet a stopping criterion for the *model set*, and
-[S1d.1.3](p1d.1_exhaustive_search/s1d.1.3_stopping_criterion.md) should say so
+[S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md) should say so
 carefully; it is, however, the first candidate that attacks the exponent
 instead of the constant.
 

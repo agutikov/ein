@@ -140,7 +140,7 @@ plans/
 │   ├── README.md
 │   ├── open_questions.md
 │   ├── ideas.md                      the user's note (was followups/f14_*)
-│   ├── p1d.1_exhaustive_search/      (was m1a_rust/p1a.12_*)
+│   ├── p1d.10_exhaustive_search/     (was m1a_rust/p1a.12_*, then p1d.1)
 │   ├── p1d.2_obligations/
 │   └── p1d.3_model_sets/
 ├── m2_nl_to_ir/                      NL → IR — link-grammar / GBNF / llama.cpp
@@ -193,7 +193,7 @@ Stage files have a stable shape:
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
 | [M1a](m1a_rust/README.md)               | **full** — 11 design docs + 11 phases + 54 stage files | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
 | [M1c](m1c_external_validation/README.md) | **full** — 1 phase + 5 stage files | queued behind M1a — stdlib expectations (`ein test`); its benchmark phase left for M10 2026-08-23 | ~2.5 weeks |
-| [M1d](m1d_satisfiability/README.md)     | mixed — P1d.1 at stage depth, P1d.2 / P1d.3 phase READMEs | queued behind M1a — exhaustive search over many models + existence obligations | ~2 months |
+| [M1d](m1d_satisfiability/README.md)     | mixed — P1d.10 at stage depth, P1d.2 / P1d.3 phase READMEs | queued behind M1a — exhaustive search over many models + existence obligations | ~2 months |
 | [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |

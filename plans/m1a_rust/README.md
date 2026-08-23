@@ -241,7 +241,7 @@ distribution on an engine that is already a drop-in replacement.
 > milestone on the 20th, re-homed the next evening at the user's direction,
 > with their stage files, estimates and dependencies unchanged
 > ([P1c.1](../m1c_external_validation/p1c.1_stdlib_conformance/README.md),
-> [P1d.1](../m1d_satisfiability/p1d.1_exhaustive_search/README.md)). Neither
+> [P1d.10](../m1d_satisfiability/p1d.10_exhaustive_search/README.md)). Neither
 > was the port. P1a.11 adds *language surface* — `:expect`, and `query`
 > becoming plural — and P1a.12 changes *when the search may stop*; both stood
 > in § Non-goals as named exceptions to the two rules that define this

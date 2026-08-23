@@ -2,7 +2,7 @@
 
 **Milestone:** [M1d — From saturation to satisfiability](../README.md)
 **Estimate:** 3.5 weeks (18 days of stages)
-**Depends on:** [P1d.1](../p1d.1_exhaustive_search/README.md)'s census — which
+**Depends on:** [P1d.10](../p1d.10_exhaustive_search/README.md)'s census — which
 measures whether the corpus needs this at all — and
 [S1c.1.1](../../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)'s
 promise inventory, which is the same audit this phase's first stage would
@@ -151,7 +151,7 @@ had to take before a fork was allowed to narrate less.
 - **The census may say the corpus does not need it.** If negative-completion
   and `domain-elimination` already collapse candidate sets before hypotheses
   are raised, this phase buys structure nothing uses — a real possible
-  outcome, and the reason P1d.1 runs first. Recording that finding and
+  outcome, and the reason P1d.10 runs first. Recording that finding and
   stopping is a successful phase.
 
 ## Cross-links

@@ -1,17 +1,17 @@
 # M1d — From saturation to satisfiability
 
 **Estimate:** ~2 months focused — 3 phases, 14 stages, ~8 weeks of stage
-estimates. Only [P1d.1](p1d.1_exhaustive_search/README.md) is written to stage
+estimates. Only [P1d.10](p1d.10_exhaustive_search/README.md) is written to stage
 depth; see § How deep this plan is.
 **Status:** **created 2026-08-21** at the user's direction, out of two pieces
 that were already in the repo and had never been put next to each other:
-M1a's ex-P1a.12, now [P1d.1](p1d.1_exhaustive_search/README.md), and the
+M1a's ex-P1a.12, now [P1d.10](p1d.10_exhaustive_search/README.md), and the
 "saturation vs satisfiability" note that was followup F14, now
 [`ideas.md`](ideas.md).
 **Depends on:** [M1a](../m1a_rust/README.md) — the engine. Specifically the
 search layer ([design/07](../m1a_rust/design/07_search_layer.md)) and the
 speed P1a.6 bought, without which every experiment here costs a coffee break.
-P1d.1 was written against [P1a.7](../m1a_rust/p1a.7_parallelism/README.md),
+P1d.10 was written against [P1a.7](../m1a_rust/p1a.7_parallelism/README.md),
 which is **paused after one stage**, so that dependency is now a decision
 rather than a wait — see the phase.
 **Blocks:** nothing on the critical path. [M20](../m20_gui/README.md) displays
@@ -22,7 +22,7 @@ follows this rather than the other way round.
 
 ## The two halves of one question
 
-**Operationally**, from [P1d.1](p1d.1_exhaustive_search/README.md): `examples/zebra2-minus-15.ein`
+**Operationally**, from [P1d.10](p1d.10_exhaustive_search/README.md): `examples/zebra2-minus-15.ein`
 has 32 models, **every one of them is found by depth 3**, and the run does not
 finish — because depths 4 and 5 exist only to prove there are no more.
 
@@ -123,8 +123,8 @@ five ways and is complete by construction at that node; a search over subsets
 has to reach cardinality *k* before it can say the same thing, and on
 `zebra2-minus-15` reaching cardinality *k* means generating from `C(96, k)`.
 
-That is why the two halves are one milestone: **the exponent P1d.1 measures is
-what the missing vocabulary costs.** It also explains the shape of P1d.1's
+That is why the two halves are one milestone: **the exponent P1d.10 measures is
+what the missing vocabulary costs.** It also explains the shape of P1d.10's
 first finding — a layer that kills nothing learns nothing — because a
 subset-lattice only prunes through death, whereas a choice point prunes by
 construction: committing to one alternative excludes its four siblings without
@@ -140,7 +140,7 @@ Written down now, so the phases test it rather than assume it:
    already collapse most candidate sets to singletons before any hypothesis is
    raised, then obligations would buy structure the corpus does not need, and
    the win is much smaller than the arithmetic above suggests.
-   [S1d.1.1](p1d.1_exhaustive_search/s1d.1.1_why_it_does_not_finish.md)'s
+   [S1d.10.1](p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)'s
    census is what measures it.
 2. **Branching on obligations changes the traversal, therefore the counters.**
    [design/08](../m1a_rust/design/08_parallelism.md) §7 rejected parallel
@@ -160,24 +160,26 @@ that is the note's thesis measured in someone else's language.
 
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
-| [P1d.1](p1d.1_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
+| [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 | 3.5 w | a saturated state can report what it still owes, and a puzzle can state a requirement |
 | [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
 
-14 stages, 40 days of stage estimates ≈ 8 weeks. **Order is not obvious and is
-deliberate**: P1d.1 measures before P1d.2 designs, for
+14 stages, 40 days of stage estimates ≈ 8 weeks. **The table is in work
+order, not id order** — the census phase was P1d.1 until 2026-08-23, when it
+was renumbered P1d.10 at the user's direction; the id moved and the sequence
+did not. **That order is deliberate**: P1d.10 measures before P1d.2 designs, for
 [S1a.6.1](../m1a_rust/p1a.6_performance/s1a.6.1_profile_baseline.md)'s and
 [S1a.7.0](../m1a_rust/p1a.7_parallelism/s1a.7.0_speculation_audit.md)'s
 reason — both phases found that the premise they were built on was wrong, and
-found it in a stage that cost days rather than weeks. P1d.1's stopping-criterion
-stage ([S1d.1.3](p1d.1_exhaustive_search/s1d.1.3_stopping_criterion.md)) may
+found it in a stage that cost days rather than weeks. P1d.10's stopping-criterion
+stage ([S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md)) may
 well hand its answer forward to P1d.2 rather than finding one itself; that is a
 legitimate outcome and it is why the census comes first.
 
 ## How deep this plan is
 
-**P1d.1 is at stage depth** — five stage files, written when it was P1a.12,
-moved unchanged. **P1d.2 and P1d.3 are phase READMEs only.** That is on
+**P1d.10 is at stage depth** — five stage files, written when it was P1a.12,
+moved unchanged then and renumbered (not rewritten) on 2026-08-23. **P1d.2 and P1d.3 are phase READMEs only.** That is on
 purpose: the note they come from opens with *"no code, no changes — here we
 only read and discuss ideas"*, and turning a discussion into fifteen task ids
 would put decisions in the plan that the user has not made. What is written is
@@ -227,7 +229,7 @@ written when the milestone starts.
 ## Open questions
 
 [`open_questions.md`](open_questions.md) — `Q-M1d.<n>`. **Q-M1d.1** (ex
-Q-M1a.21, arrived with P1d.1) asks whether the search may stop before the
+Q-M1a.21, arrived with P1d.10) asks whether the search may stop before the
 lattice is exhausted; Q-M1d.2 to Q-M1d.5 come from the note — where a
 requirement lives (kernel or stdlib), what closes a domain, and whether an
 obligation-driven generator changes the answer or only the path.

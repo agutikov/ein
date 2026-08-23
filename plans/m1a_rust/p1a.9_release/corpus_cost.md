@@ -181,7 +181,7 @@ entries whose notes dropped a run.
 | `zebra2-minus-15 :: solve -e` | killed at the **300 s** ceiling ⁴ |
 | `zebra2-minus-15 :: render lattice` | **27.82 s** ± 29 ms (n=3) |
 
-⁴ [P1d.1](../../m1d_satisfiability/p1d.1_exhaustive_search/README.md) has the
+⁴ [P1d.10](../../m1d_satisfiability/p1d.10_exhaustive_search/README.md) has the
 same cell **killed at 30 minutes**; the ceiling here is the sweep's, not the
 run's.
 
@@ -189,7 +189,7 @@ run's.
 `features/05_stdlib_domain_elim` is a demo of the stdlib's elimination rules,
 and three seconds of blind enumeration is not three seconds of coverage;
 `zebra2-minus-15 :: render lattice` finishes because `-m 3` is where all 32 of
-its models live (P1d.1) — and writes 11.6 MB of DOT to say so. **Affordable is
+its models live (P1d.10) — and writes 11.6 MB of DOT to say so. **Affordable is
 not the test.** Whether the run asks the fixture's question is, and
 `corpus/README.md` § Dropped runs now says so in as many words.
 

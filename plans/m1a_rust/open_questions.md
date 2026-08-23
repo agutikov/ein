@@ -1019,7 +1019,7 @@ still settles both.
 
 **Moved 2026-08-21 to [Q-M1d.1](../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)**,
 with P1a.12, which is now
-[P1d.1](../m1d_satisfiability/p1d.1_exhaustive_search/README.md) in
+[P1d.10](../m1d_satisfiability/p1d.10_exhaustive_search/README.md) in
 [M1d](../m1d_satisfiability/README.md) — the milestone that exists to answer
 it. What the move adds is a fourth candidate this framing did not have: a
 state that can report what it still *owes*
