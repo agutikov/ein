@@ -192,8 +192,8 @@ This is the stage's honest edge, and it is stated here rather than left for a
 reader to infer from a badge.
 
 **Verified on this machine** (2026-08-23, x86_64 Linux): `ein --version` and
-its ten tests; `cargo test --workspace` at 616 tests; the
-`--no-default-features` build, its 607-test suite and both dependency-graph
+its ten tests; `cargo test --workspace` at 619 tests; the
+`--no-default-features` build, its 610-test suite and both dependency-graph
 assertions; `cargo install --path ein.rs/crates/ein-cli` producing a binary
 that solves `zebra2.ein` outside the checkout off its embedded stdlib;
 [`feature_cost.md`](feature_cost.md)'s three arms.

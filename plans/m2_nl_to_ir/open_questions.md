@@ -94,3 +94,49 @@ in P2.2 S2.2.2 with a benchmark on the gold IR set.
 extraction, fact extraction, ambiguity-flag, definite description
 resolution). Smaller grammars decode faster and let the prompt
 focus the LLM. Decided in P2.3.
+
+## Q25 — What language is the frontend written in?
+
+**Raised 2026-08-23 by M1a [S1a.9.4](../m1a_rust/p1a.9_release/s1a.9.4_documentation.md)
+T1a.9.4.6**, which found this milestone's plan asserting a boundary that had
+been deferred out from under it.
+
+**The premise that is gone.** M2's documents were written when ein was Python,
+so "the frontend is Python, calling the engine in-process" needed no argument.
+Both halves of that are now open:
+
+- `ein.py/` was deleted at M1a
+  [S1a.10.5](../m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md).
+- **PyO3 is not the boundary**: the binding was deferred 2026-08-21 for want
+  of a consumer
+  ([Q-M1a.23](../m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)),
+  and *this milestone was the last candidate*. There is also **no socket** —
+  the server was dropped 2026-08-18; the engine ships as a library plus a CLI.
+- **The llama.cpp argument was never a CPython argument.**
+  [P2.2](p2.2_llm_infra/README.md) is a `llama-server` container and a thin
+  HTTP client. The pattern it mirrors is acva's, and acva's client is **C++**.
+
+**The two live options.**
+
+| | how it reaches the engine | what it gets |
+|---|---|---|
+| **Rust** | links `ein-ir` / `ein-infer` as crates ([`docs/api/rust.md`](../../docs/api/rust.md)) | structured diagnostics as *values* — `ParseError` with its location, `KbLoadError` with the accumulated problems. No boundary, no mirrored data model, no exception hierarchy to design |
+| **Python** | drives the `ein` binary — `--json-summary` for the verdict and counters, `--events` for the narration | the ecosystem, and a frontend that can be rewritten without touching the engine. Diagnostics are **strings**: [`defined_behaviour.md` §1/§4](../../docs/kernel/defined_behaviour.md) pins them as such, and the CLI cannot grow a structured surface without breaking that |
+
+**Why it is not decided here.** The strongest argument for one option is
+[S2.4.2](p2.4_nl_to_ir_pipeline/s2.4.2_validator_reprompt.md)'s
+validator/repair loop, written as `validate(facts, ontology)` and needing
+*why* a load failed rather than the message text — which is the Rust column,
+exactly. The strongest argument for the other is that everything *around* the
+engine in this milestone is HTTP, JSON and prompt templates, where Python is
+the shorter road. That is a trade this milestone owns, and
+[P2.1](p2.1_investigations/README.md) is where it is made. **What S1a.9.4 fixed
+is only that the plan no longer asserts an answer.**
+
+**Also settled while passing through, because it is cheap to write down and
+expensive to rediscover:** `ollama` is **not** an alternative to
+`llama-server` for this milestone. GBNF is the mechanism
+([P2.3](p2.3_gbnf_for_ir/README.md),
+[idea 01](../ideas/01-self-modifying-constraint-language.md)); llama.cpp's
+server takes a `grammar` field, and ollama's API exposes only JSON-schema
+`format`.

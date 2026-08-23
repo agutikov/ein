@@ -24,20 +24,28 @@ constrained-reasoning research.
   `python_impl.md`. **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else.
-- **`docs/api/`** — the **Python embedding API** reference (P1.20 Theme J):
-  how to drive Ein *as a library* (`parse` → `KnowledgeBase` → `solve` →
-  read verdict/trace). `ein.md` is the contract + worked example; per-module
-  pages for `ir`/`kb`/`inference`/`trace`. Distinct from `docs/kernel/`
-  (the IR *language*) and the engine internals. **Nothing implements it and
-  nothing is scheduled to** — every page says so in a banner. The PyO3
-  successor was deferred on 2026-08-21 for want of a consumer
+- **`docs/api/`** — **how to drive Ein as a library.** Since M1a S1a.9.4 its
+  subject is [`rust.md`](docs/api/rust.md): the **crates** — `ein-ir` to load,
+  `ein-infer` to solve, `ein-render` to explain, `ein-einb` to cache — which
+  is what [M1b](plans/m1b_gui/README.md) binds against and what nothing
+  documented before. **Its worked example is a test.** The page's `rust` block
+  is the marked region of
+  [`ein-cli/tests/embedding.rs`](ein.rs/crates/ein-cli/tests/embedding.rs) and
+  a test in that file diffs the two, so `cargo test --workspace` keeps the
+  page true — *edit the test, run it, paste; never edit the block by hand*.
+  The other five pages (`ein`/`ir`/`kb`/`inference`/`trace`, 1 019 lines) are
+  the **Python** embedding contract, filed as **history** with a 🏛 banner:
+  kept whole because a deferral is cheap to reverse only while the
+  specification survives it
   ([Q-M1a.23](plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
-  holds the three trip-wires that revive it), so these pages are a **record
-  kept in reserve**, not a specification anyone is building against. Do not
-  "fix" them to match ein.rs's internals — they describe an engine that no
-  longer exists. The embedding surface that *is* real is the **crates**, and
-  [S1a.9.4](plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md) is the
-  stage that documents it.
+  holds the three trip-wires). Do not "fix" them to match ein.rs — a page
+  rewritten to describe the current engine is neither history nor a
+  specification. Distinct from `docs/kernel/` (the IR *language*) and from the
+  engine internals.
+- **`docs/install.md`** — the install page (M1a S1a.9.3): the two channels
+  (a release binary, `cargo install --path`), what `ein --version`'s five
+  lines mean, how to check a binary's stdlib against the checkout's manifest,
+  and `$EIN_STDLIB`. **`pip install` is not a channel.**
 - **`docs/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
   Zebra puzzle"): objects/relations/facts → rules → the full solve, four
   chapters (P1.20 Theme K). User-facing; references `docs/kernel/` +

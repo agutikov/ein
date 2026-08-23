@@ -6,8 +6,14 @@ by the Datalog/RETE literature rather than invented here — D1 (RETE
 beta-memories) and D2 (worst-case-optimal joins).
 
 **Why it's a followup and not a phase.** No workload is currently blocked
-on it. `zebra2` solves in ~1.3 s fast / ~3.9 s exhaustive under PyPy, which
-is inside every ergonomic envelope the project has. This is the file to
+on it, and the margin has widened by two orders of magnitude. `zebra2` solved
+in ~1.3 s fast / ~3.9 s exhaustive **under PyPy** (frozen — that engine left
+the tree at
+[S1a.10.5](../m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)); it
+is **6.3 ms / 26.8 ms** on ein.rs at `--jobs 1`
+([features.md](../../docs/kernel/inference/features.md), 2026-08-23), and a
+fanned-out exhaustive run is 3.17–4.40× faster again on 8 cores. Both readings
+are inside every ergonomic envelope the project has. This is the file to
 promote when one isn't.
 
 > **Status after [M1a P1a.6](../m1a_rust/p1a.6_performance/README.md), which
@@ -66,17 +72,17 @@ Re-run the baseline before starting either entry — this has moved twice, and
 four times counting the two above:
 
 ```sh
-# Both lines below ran `utils/profile_solve.py`, which imported ein.py and
-# left with it at M1a S1a.10.4. The successor is one command, on the engine
-# that is left:
+# The two commands this block used to carry both ran `utils/profile_solve.py`
+# under a PyPy venv on `PYTHONPATH=ein.py/src`. Both are gone with the engine
+# they imported (M1a S1a.10.4/.10.5). These are the successors, and they run:
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 solve examples/zebra2.ein -e
-PYTHONPATH=ein.py/src .venv-pypy/bin/python utils/feature_matrix.py                    # the lever matrix
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 5        # the lever matrix
 ```
 
-For ein.rs the equivalents are `utils/profile_ein_rs.py` (attribution),
-`utils/e2e_baseline.py` (wall-clock) and — since S1a.6.7 — the *same*
-`utils/feature_matrix.py`, which drives either implementation and cross-checks
-them; the whole set is listed in
+`utils/profile_ein_rs.py` is the attribution half, `utils/e2e_baseline.py` the
+wall-clock one, and `feature_matrix.py` — which **drove both engines** until
+S1a.10.4 and now drives the one binary `$EIN_BIN` names — the lever matrix.
+The whole set is listed in
 [baseline.md § Reproducing all of it](../m1a_rust/p1a.6_performance/baseline.md#reproducing-all-of-it).
 
 ## D1 — RETE beta-memories

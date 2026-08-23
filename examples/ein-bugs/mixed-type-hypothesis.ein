@@ -35,7 +35,11 @@
 ;;; `'str' and 'int'` and `'int' and 'str'`. A crash is therefore compared by
 ;;; exit code and exception *class*, never by its message.
 ;;;
-;;; Pinned by `ein.py/tests/inference/test_mixed_type_hypothesis.py`.
+;;; Pinned by `corpus/corpus.toml` (the sweep runs it under every declared
+;;; run, against a banked exit golden) and by `ein-infer/tests/interning.rs`,
+;;; which uses it for a second thing: `Ann` is a name only the compiler ever
+;;; sees. It was `ein.py/tests/inference/test_mixed_type_hypothesis.py` until
+;;; M1a S1a.10.2.
 
 (relation slotval T T)
 (relation seat    T T)

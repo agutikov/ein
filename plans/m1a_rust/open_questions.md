@@ -5,6 +5,29 @@ the `Q-S1.5a.6.B` style used inside M1 stages rather than the global
 `Q<n>` sequence in [`plans/open_questions.md`](../open_questions.md), so
 the two namespaces cannot collide. A closed id is never reused.
 
+> ### Closed with the milestone — 2026-08-23 (S1a.9.4 T1a.9.4.5)
+>
+> **Twenty-three questions, twenty-one settled.** Eighteen were resolved,
+> decided, answered or closed moot inside M1a; three
+> ([Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects),
+> [.20](#q-m1a20--what-may-an-expectation-say),
+> [.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted)) moved
+> with the phases that owned them into M1c and M1d, keeping their text; and
+> [Q-M1a.23](#q-m1a23--when-does-the-engine-need-a-python-binding) is a
+> **deferral with three trip-wires**, which is a decision about when to
+> decide.
+>
+> **Two are still open and are meant to be**, so the milestone does not close
+> over them silently: [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) (a
+> loader message that says `at None`) and
+> [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) (the
+> binding key that drops non-string activator args — **a bug**). Both are
+> things invariant **I1** forbade fixing: they are what ein.py did, and while
+> an oracle existed "improve it" and "diverge from it" were the same act.
+> With one implementation that constraint is gone and only the cost of
+> re-blessing the corpus goldens remains, which is a decision for whoever
+> next has a reason.
+
 ## Index
 
 | Q | title | status |
@@ -14,9 +37,9 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.3](#q-m1a3--parse-error-message-parity) | Parse-error message parity, including `-1:-1` at EOF | **resolved 2026-08-18 — (a)** |
 | [Q-M1a.4](#q-m1a4--sorted-over-mixed-type-fact-args) | `sorted()` over mixed-type fact args raises in ein.py | **resolved 2026-08-18 — (a), [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)** |
 | [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | **resolved 2026-08-18 — (a), ported** |
-| [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | open — post-parity fix; reproduced at P1a.1 |
-| [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | open — recommendation stands; **measured 2026-08-20** at S1a.7.0: 0.1 % corpus-wide, 36–50 % where it matters |
-| [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | open — port as-is, flag upstream |
+| [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | **open, and outlives the milestone** — a diagnostic-quality fix that I1 forbade while there was an oracle. Owner: whoever needs it; [M2 Q25](../m2_nl_to_ir/open_questions.md#q25--what-language-is-the-frontend-written-in)'s validator is the likeliest |
+| [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | **decided 2026-08-22 — no, and validation is not what buys it.** Held by `jobs_invariance` at 20 712 cells, byte equality, 0 moved |
+| [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | **open, and outlives the milestone — it is a bug, not a quirk.** A puzzle with integer rule parameters can lose a firing, silently. Ported as-is under I1; with no oracle left, the reason to keep it is gone and only the corpus-golden churn remains |
 | [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | **answered 2026-08-21 — `ein.rs/crates/<crate>/tests/golden/`** |
 | [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | **answered no** 2026-08-19 — an index key was the lever, not a memory |
 | [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | **closed moot 2026-08-18 — no server** |
@@ -24,13 +47,13 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.13](#q-m1a13--argparse-surface-parity) | Reproducing `argparse` `--help` and error text | **resolved 2026-08-18 — (b): behaviour exact, presentation normalised** |
 | [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | **mostly resolved 2026-08-18 — ein.rs names the class** |
 | [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
-| [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | open — found at S1a.0.1 |
+| [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | **closed moot 2026-08-23 — no harness.** `utils/feature_matrix.py` writes the knob into a copy of the puzzle's `(config …)` block and drives the binary, so all ten levers are reachable and none needs an import |
 | [Q-M1a.17](#q-m1a17--win-bs-80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — they are 7–16 % | **closed 2026-08-20: the mechanism is declined at a measured 1.4–2.2 % ceiling**, in [S1a.6.12](p1a.6_performance/s1a.6.12_boundary_and_snapshot.md), which took 38 % off `zebra -e` without it |
 | [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
 | [Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | **moved 2026-08-21 with P1a.11 → [Q-M1c.1](../m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)** |
 | [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | **moved 2026-08-21 with P1a.11 → [Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)** |
 | [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | **moved 2026-08-21 with P1a.12 → [Q-M1d.1](../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)** |
-| [Q-M1a.22](#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate) | Is `.einb`'s id remap order-preserving enough for its own gate? | open — **measured 2026-08-20** at [S1a.10.1](p1a.10_single_implementation/s1a.10.1_bank_the_oracle.md): a permuted id space moves 0 answers and 66 renderings |
+| [Q-M1a.22](#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate) | Is `.einb`'s id remap order-preserving enough for its own gate? | **resolved 2026-08-23 — (a)**, the recommendation, as [P1a.8](p1a.8_binary_container/README.md) shipped it: byte-identity is promised on the fast path and answer-identity always. `ein solve x.einb` is byte-identical to `ein solve x.ein`, and `id_order_invariance` is the measurement it rests on |
 | [Q-M1a.23](#q-m1a23--when-does-the-engine-need-a-python-binding) | When does the engine need a Python binding? | **deferred 2026-08-21** — no consumer today; three named trip-wires |
 
 ---

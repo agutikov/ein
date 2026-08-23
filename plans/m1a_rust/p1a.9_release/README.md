@@ -1,6 +1,13 @@
 # P1a.9 — Release
 
 **Milestone:** [M1a — Rust port](../README.md)
+**Status:** ✅ **shipped 2026-08-23** — three stages, and **all three found
+something the plan had assumed**. S1a.9.0 found twelve of seventeen `slow`
+entries were never slow; S1a.9.3 found two of three feature flags gating
+nothing and one that does not exist; S1a.9.4 found two published measurements
+that were wrong rather than stale. That is not a run of luck — it is what
+happens when a release phase is made to *re-measure* the claims it is about to
+ship instead of collecting them.
 **Estimate:** 1.2 weeks (6 days of stages)
 **Depends on:** nothing outstanding.
 [P1a.10](../p1a.10_single_implementation/README.md) **shipped 2026-08-21**
@@ -91,7 +98,7 @@ is being released.
 |---|---|---|---|
 | [S1a.9.0](s1a.9.0_slow_corpus.md) | The slow corpus, re-priced | 3 d | ✅ **shipped 2026-08-22** — 17 slow entries → 3, and the nightly tier from four minutes to 19 s |
 | [S1a.9.3](s1a.9.3_packaging.md) | Packaging and release | 2 d | ✅ **shipped 2026-08-23** — `ein --version`, a six-job release workflow, and two feature flags that were not gating what they said |
-| [S1a.9.4](s1a.9.4_documentation.md) | Documentation | 1 d | |
+| [S1a.9.4](s1a.9.4_documentation.md) | Documentation | 1 d | ✅ **shipped 2026-08-23** — `docs/api/`'s subject changed to the crates, with a worked example the gate runs; two published measurements corrected; the milestone closed |
 
 **S1a.9.1 and S1a.9.2 do not exist.** See the scope change above; the gap is
 deliberate.
@@ -124,17 +131,25 @@ deliberate.
   the `--jobs` cross-diff and the dependency-light build, so a red gate cannot
   ship a binary.
 - ✅ A `--no-default-features` build still compiles and passes the unit suite
-  (607 of 616) — **and now drops what it claimed to.** It did not:
+  (610 of 619) — **and now drops what it claimed to.** It did not:
   [`feature_cost.md`](feature_cost.md) found `rayon` linked into the
   dependency-light binary, an `events` feature that never existed, and a
   documented allocator cost four days stale (15.9 % → +25.2 %). The gating is
   asserted as a dependency-graph check in both directions, because compiling
   without a feature was never the claim.
-- `docs/api/` describes a surface that **exists** — the Rust embedding one —
-  and the Python contract it used to specify is filed as history rather than
-  left as a promise ([S1a.9.4](s1a.9.4_documentation.md)).
-- `plans/README.md`'s status table records M1a as shipped, with its date and
-  its measured outcome.
+- ✅ `docs/api/` describes a surface that **exists** — the Rust embedding one,
+  [`rust.md`](../../../docs/api/rust.md) — and the Python contract it used to
+  specify is filed as history rather than left as a promise
+  ([S1a.9.4](s1a.9.4_documentation.md)). The page's worked example is the
+  marked region of `ein-cli/tests/embedding.rs`, diffed against the page by a
+  test in that file: the substitute for the deferred S1a.9.2's contract suite,
+  and stronger on the one axis that matters — it cannot rot without the gate
+  going red. Which is exactly how the five Python pages went stale: they were
+  verified once, with a date on it.
+- ✅ `plans/README.md`'s status table records M1a as **shipped 2026-08-23**,
+  with its date and its measured outcome; `m1a_rust/README.md` carries the
+  closing paragraph, `divergences.md` its final state and `open_questions.md`
+  each question's resolution — including the two that stay open on purpose.
 
 ## Notes
 

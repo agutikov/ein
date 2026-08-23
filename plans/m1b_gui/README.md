@@ -99,6 +99,12 @@ Linux/Windows/macOS testing is a real line item, not a formality.
 
 ### Consequence for the engine
 
+**The surface it calls now has a page**: [`docs/api/rust.md`](../../docs/api/rust.md)
+(M1a [S1a.9.4](../m1a_rust/p1a.9_release/s1a.9.4_documentation.md)) — the five
+steps, which crate owns each, and a worked example that is a test the gate
+runs. It is written for exactly this consumer, and M1b is the first of its
+three.
+
 The Tauri backend calls the engine's public Rust API in-process. That is
 the reason M1a **dropped server mode** (2026-08-18): the GUI was the
 server's first real client, and it turned out not to want one. See

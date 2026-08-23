@@ -10,7 +10,7 @@ rules, then the whole puzzle solved end to end.
 > reference docs when you want depth:
 > - the language reference — [`docs/kernel/ir/03-ein-lang/`](../kernel/ir/03-ein-lang/)
 > - what Ein reasons over (the graph) — [`docs/kernel/ir/01-ein-graph/`](../kernel/ir/01-ein-graph/)
-> - driving Ein from Python — [`docs/api/`](../api/)
+> - driving Ein from your own program — [`docs/api/rust.md`](../api/rust.md)
 > - how the engine searches — [`docs/kernel/inference/`](../kernel/inference/)
 
 ## Chapters

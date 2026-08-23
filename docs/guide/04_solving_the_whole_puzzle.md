@@ -101,8 +101,11 @@ inline graphs.
   This guide taught the pieces; the walkthrough shows all of them firing on
   the real puzzle, line by line against the Wikipedia solution. **Read it
   now** — it's the natural sequel to this chapter.
-- **Drive Ein from your own Python** — [`docs/api/`](../api/) (load a
-  `.ein`, call `solve`, read the verdict and trace).
+- **Drive Ein from your own program** — [`docs/api/rust.md`](../api/rust.md)
+  (load a `.ein`, call `solve`, read the verdict and trace, in about thirty
+  lines). From a language that is not Rust, run the binary and read
+  `--json-summary` / `--events`; there is no Python module, and
+  [`docs/api/README.md`](../api/README.md) says why.
 - **How the engine actually searches** (saturation, the hypothesis loop,
   the commitment lattice) — [`docs/kernel/inference/`](../kernel/inference/).
   This guide deliberately never opened that box; the reference docs do.

@@ -72,8 +72,20 @@ M2 ships when:
 ## Open questions
 
 See [`open_questions.md`](open_questions.md) for the M2-scoped set
-(Q7-Q11). Cross-milestone questions live in
+(Q7-Q11, Q23-Q25). Cross-milestone questions live in
 [`../open_questions.md`](../open_questions.md).
+
+> **The frontend's language is one of them, and was not always
+> ([Q25](open_questions.md#q25--what-language-is-the-frontend-written-in)).**
+> This milestone's documents were written when ein was Python and three of
+> them still name modules in a package that no longer exists (`python -m
+> ein.llm.smoke`, `python -m ein.ir.to_gbnf`, `src/ein/nl/*.py`). The engine
+> is Rust, there is no PyO3 binding and no socket, and the llama.cpp premise
+> turned out to be an HTTP server — so the two live options are a **Rust**
+> frontend linking the crates and a **Python** one driving the CLI.
+> [P2.1](p2.1_investigations/README.md) decides; M1a
+> [S1a.9.4](../m1a_rust/p1a.9_release/s1a.9.4_documentation.md) only stopped
+> the plan from asserting an answer.
 
 ## Connections
 
@@ -83,4 +95,10 @@ See [`open_questions.md`](open_questions.md) for the M2-scoped set
   GBNF; the *self-modifying* loop is deferred to
   [followup F2](../followups/f2_self_modifying_language.md).
 - [`/home/user/work/acva/`](../../../acva/) — runtime pattern;
-  P2.2 mirrors its `llama-server` container layout.
+  P2.2 mirrors its `llama-server` container layout. **Its client is C++**,
+  which is why P2.2's "same pattern, Python client this time" was a statement
+  about ein rather than about acva — see
+  [Q25](open_questions.md#q25--what-language-is-the-frontend-written-in).
+- [`docs/api/rust.md`](../../docs/api/rust.md) — what a Rust frontend would
+  link, if P2.1 goes that way; [`docs/install.md`](../../docs/install.md) and
+  `--json-summary` / `--events` are what a Python one would drive.

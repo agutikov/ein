@@ -84,7 +84,7 @@ explicit audience banner.
 | **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`); `ir/02-data-model/{01_entities,02_store}` (the abstract model) |
 | **dev**  | `ir/02-data-model/03_implementation.md`; `inference/implementation.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
-| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — the page is [S1a.9.4](../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md)'s. From anywhere else: the `ein` binary plus `--json-summary` / [`--events`](inference/events.md). [`../api/`](../api/) — the *Python* embedding contract ([`ein.md`](../api/ein.md) + per-module pages) — **has no implementation and none is scheduled**; its PyO3 successor was deferred 2026-08-21 ([Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)), so read it as a record held in reserve. |
+| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../api/rust.md`](../api/rust.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary` / [`--events`](inference/events.md). The five *Python* pages under [`../api/`](../api/) are **history** — the contract of the engine that was, kept whole because [Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)'s trip-wires would restore it; there is no module to import. |
 | **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs |
 
 - **Newcomer path** (never seen Ein): the [guide](../guide/) end-to-end
@@ -96,11 +96,12 @@ explicit audience banner.
   `architecture.md` → `02-data-model/03_implementation` → `inference/`
   (`architecture_and_algorithms` → `implementation` → the README
   invariants), and `defined_behaviour.md` before you change any output.
-- **Embedder path** (call Ein from Python): [`../api/ein.md`](../api/ein.md)
-  (the five-step flow + worked example), then the per-module pages as
-  needed; `01-ein-graph` + `03-ein-lang` for the puzzles you load. Read the
-  banner first — the module those pages describe is P1a.9's, and it is not
-  built yet.
+- **Embedder path** (call Ein from another program):
+  [`../api/rust.md`](../api/rust.md) (the five steps, one worked example,
+  then per-area detail), then `01-ein-graph` + `03-ein-lang` for the puzzles
+  you load. From a non-Rust program the surface is the binary —
+  `--json-summary` and [`--events`](inference/events.md). The Python pages
+  beside it are history; read their banner before anything else in them.
 
 ## Cross-references
 

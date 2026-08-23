@@ -38,7 +38,7 @@
 # line `cargo test` captures for a passing test, so CI had been reporting a
 # pass over 5 209 renderings nothing checked.
 #
-# Budget: **616 tests in ~1 m 51 s** (re-measured 2026-08-23, S1a.9.3, warm
+# Budget: **619 tests in ~1 m 51 s** (re-measured 2026-08-23, S1a.9.3/.9.4, warm
 # build, twice within 0.3 s). It was 577 in ~1 m 16 s at S1a.9.0 the day
 # before, and the 35 s between them is not the eleven tests S1a.9.3 added:
 # P1a.7 closed in between and put `jobs_invariance` — 20 712 (file, op, jobs)

@@ -604,9 +604,11 @@ the S1.7.24 symmetric-removal made fully generic (no hard-coded symmetry). **Ade
 ## 7. Summary — where the bodies are, and the levers
 
 > **Which numbers below are still re-measurable.** Every figure attributed to
-> **ein.rs** is: `utils/profile_ein_rs.py`, `criterion_table.py` and
-> `e2e_baseline.py` all still run, through
-> [`bench_env.sh`](../../../utils/bench_env.sh). Every figure attributed to
+> **ein.rs** is: `utils/profile_ein_rs.py`, `criterion_table.py`,
+> `e2e_baseline.py` and `feature_matrix.py` all still run, through
+> [`bench_env.sh`](../../../utils/bench_env.sh) — whose `--cores P:8` form is
+> what a `--jobs N` number needs, since on a hybrid CPU "8 cores" names three
+> different machines. Every figure attributed to
 > **ein.py** is a **frozen constant** — the instruments that produced them
 > (`profile_ein.py`, `bench_solve.py`, the two-engine feature matrix) left with
 > the engine they measured at M1a
@@ -656,6 +658,33 @@ without it an exhaustive `zebra2` explores **3 831** commitments instead of
 read 1.9×. Its ratio *grew* as the engine got faster, which is the profile
 table above seen from the other side: what fail-fast removes is a fixed
 quantity of dead-fork saturation, and everything around it shrank.
+
+**And one axis that is not an algorithm at all — cores.**
+[P1a.7](../../../plans/m1a_rust/p1a.7_parallelism/README.md) (closed
+2026-08-23) fans each commitment-lattice layer out over a thread pool:
+`--jobs N`, **3.17–4.40× on 8 cores**, with the verdict, the models and every
+counter identical by construction — 20 712 (file, op, jobs) cells moved
+nothing, and the verbose event stream is byte-identical because a worker
+narrates into its own buffer and the ordered commit numbers the lines. Three
+things about it belong in an algorithm summary rather than in a changelog:
+
+- **The safe layers are free to find.** A worker may not write a fact to root,
+  and the only enterings that do are the size-1 singleton writebacks — **248
+  of 248 of them, across 8 158 205 enterings, are in layer 1**, which is
+  0.016 % of the search. So the rule is one line (`layer > 1 || no singleton
+  writeback`), and the speculation validator the design specified was measured,
+  costed and then deleted rather than built.
+- **The shortfall is memory, not contention.** 4.40× against a ≥ 6× target,
+  with serial terms at 8–17 % (Amdahl would allow 7.5×) and no lock anywhere in
+  the profile — 11 % allocator. So the remaining question is what a fork
+  *allocates*, which is a §7-shaped question and not a request for more
+  threads.
+- **A parallel run is an instrument.** Four of the wins that took the first
+  fan-out from 2.19× to 4.40× are **sequential** wins it found — 192 of 269 ms
+  of the commit loop was freeing memory another thread had allocated; the
+  downward-closure filter was 47.7 ms; `order_candidates` cloned its input;
+  `record_node` promoted a fork's provenance *before* asking whether the node
+  was a duplicate. A serial millisecond can hide; a parallel one cannot.
 
 The remaining named levers map onto the literature precisely:
 

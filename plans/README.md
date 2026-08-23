@@ -45,13 +45,16 @@ NL paragraphs the README cites.
 Two adjacent secondary milestones surface Ein externally, plus a Rust
 port slotted before the GUI and the two milestones that came out of it:
 
-- **M1a — Rust port (ein.rs)** ([m1a_rust/](m1a_rust/README.md))
-  between M1 and M1b — the engine that ships from M2 onward. Two
-  invariants: a **1:1 observable surface** (same language, same CLI,
-  same bytes, with `ein.py` kept as the parity oracle) and a **free
-  hand inside** (integer-encoded atoms and facts, a register matcher,
-  copy-on-write forks, multi-core search). It ships a **library and a
-  CLI**; server mode was dropped 2026-08-18.
+- **M1a — Rust port (ein.rs)** ([m1a_rust/](m1a_rust/README.md)) —
+  **shipped 2026-08-23**, between M1 and M1b; the engine that ships from M2
+  onward. Two invariants held the whole way: a **1:1 observable surface**
+  (same language, same CLI, same bytes, with `ein.py` as the parity oracle
+  until it had banked everything it could prove) and a **free hand inside**
+  (integer-encoded atoms and facts, a register matcher, copy-on-write forks,
+  multi-core search). All four landed. It ships a **library and a CLI**;
+  server mode was dropped 2026-08-18 and the PyO3 binding deferred 2026-08-21
+  for want of a consumer
+  ([Q-M1a.23](m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
 - **M1b — GUI** ([m1b_gui/](m1b_gui/README.md)) between M1a
   and M2 — **Tauri 2 + React + Monaco + Cytoscape.js**, linking the
   ein.rs crates directly (stack decided 2026-08-18).
@@ -180,7 +183,7 @@ Stage files have a stable shape:
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
-| [M1a](m1a_rust/README.md)               | **full** — 11 design docs + 11 phases + 54 stage files | **in progress** — Rust port (ein.rs): 1:1 surface parity + internal rewrite; P1a.0–P1a.6, P1a.8 and P1a.10 shipped; P1a.7 resumed 2026-08-22, P1a.9 under way | ~7 months |
+| [M1a](m1a_rust/README.md)               | **full** — 11 design docs + 11 phases + 54 stage files | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
 | [M1b](m1b_gui/README.md)                | README + stack decision | parked — slots between M1a and M2; Tauri stack settled 2026-08-18 | TBD |
 | [M1c](m1c_external_validation/README.md) | **full** — 2 phases + 10 stage files | queued behind M1a — stdlib expectations (`ein test`) + benchmarks against the field | ~1 month |
 | [M1d](m1d_satisfiability/README.md)     | mixed — P1d.1 at stage depth, P1d.2 / P1d.3 phase READMEs | queued behind M1a — exhaustive search over many models + existence obligations | ~2 months |

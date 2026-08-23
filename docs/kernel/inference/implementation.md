@@ -20,6 +20,23 @@ the data model in `ein-core` and the renderers in `ein-render`.
 > the module *roles* are unchanged, because ein.rs is a behaviour-exact port
 > and the two layouts differ in five places, each flagged **⤳** below.
 
+## What the port was free to change, and where each is written down
+
+M1a's two invariants pull in opposite directions on purpose: **I1** froze
+every observable — same language, same stdout bytes, same exit codes, same
+verdicts, same counters — and **I2** put everything inside on the table. Four
+things took I2 up, and they are what make this a different engine rather than
+a transliteration. Only one of them is documented on this page; the others say
+where they live, because a map that repeats another map goes stale in two
+places.
+
+| | | where |
+|---|---|---|
+| **Integers, not objects** | every name is a `u32` `Symbol`; a fact argument is a 4-byte `Value` (`[tag:2][payload:30]`); a proposition is an interned row with a `FactId`, and identity *is* the id — `probe` is O(1) where a tuple compare was O(arity) recursing into string equality | [`../ir/02-data-model/03_implementation.md`](../ir/02-data-model/03_implementation.md) |
+| **A layered, copy-on-write KB** | `Kb` is a stack of immutable `Arc<Layer>`s plus one writable top, so a fork is a push and not a copy, and the search's inner loop stops paying for the branch it is about to abandon | same |
+| **A register matcher** | `compile.rs` lowers each (rule, activator) to a `Plan` of `Scan` / `Join` / `Guard` opcodes over a fixed 256-register file, and `match_.rs` executes a step span against it. [design/05](../../../plans/m1a_rust/design/05_matcher.md) §1 is the reason: 46 % of an exhaustive solve's self time was unification the old data model made impossible to do quickly. The 256 is [D1](../../../plans/m1a_rust/divergences.md#d1--a-rule-may-not-bind-more-than-256-variables) | the *Saturation core* table below, and design/05 |
+| **A fanned-out lattice layer** | `--jobs N` evaluates a layer's enterings on a `rayon` pool and commits them in order | § The fan-out, below |
+
 ## Data flow
 
 ```text
@@ -76,6 +93,68 @@ KB ─▶ Engine::compile_all ─▶ Plan ─▶ Saturator::saturate ─▶ reas
 | **⤳** [`ein-render/src/why.rs`](../../../ein.rs/crates/ein-render/src/why.rs) | `:why` / `:goal-text` template rendering — text, so it moved to the renderer |
 | **⤳** [`ein-core/src/config.rs`](../../../ein.rs/crates/ein-core/src/config.rs) | `SolverConfig` — the live solver flags (`enable_pre_branch_lookahead`, `enable_lookahead_kill_cache`, `record_alternative_justifications`, `hypgen_scoring`, `candidate_order_seed`, `lattice_order`, …). In `ein-core` because the KB reads some of them |
 | [`events.rs`](../../../ein.rs/crates/ein-infer/src/events.rs) | the **event protocol** — `--events FILE`, one JSON object per line narrating every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence, alternative justification, hypothesis verdict, entering, no-good and writeback. Off by default and free when off. Schema: [`events.md`](events.md). It was built for the port's T2 parity tier — "the two engines took the same steps" — which retired with the second engine at M1a S1a.10.3; the format did not, and `ein-parity` is its one consumer |
+
+## The fan-out — `--jobs N`
+
+[P1a.7](../../../plans/m1a_rust/p1a.7_parallelism/README.md), closed
+2026-08-23 at **3.17–4.40× on 8 cores**. It is the one part of the engine with
+no counterpart in the ported design, so it is described here rather than
+mapped.
+
+**Where the threads are.** `solve.rs` builds one `rayon::ThreadPool` per solve
+and **only when `jobs > 1`** — a default run creates no thread at all. A
+fanned-out layer runs in **bounded batches**, so the results in flight cannot
+grow with the layer: `jobs × BATCH_PER_WORKER` (512), and when a cut is
+possible at all — `stop_after` or a budget — clamped down to *the enterings
+already committed*, so the work thrown away by a cut is at most the work
+already done. The flat `batch = jobs` this replaces was right about the cut
+and wrong about the common case, since `-n 1` is the CLI's default and three
+of four measured workloads never reach a solution under it. `jobs` lives in
+`SolveOptions` and deliberately **not** in `SolverConfig`: a puzzle file must
+not be able to set a thread count.
+
+**Which layers.** `Run::fan_out_this_layer` is one line — `layer > 1 ||
+!cfg.enable_singleton_writeback` — and it is the whole safety argument. A
+worker may not write a fact to root, and the only enterings that do are the
+size-1 singleton writebacks: **248 of 248 of them, across 8 158 205 enterings
+and five layers, are in layer 1**, which is 0.016 % of the search. So layer 1
+runs sequentially and everything above it fans out with no validator at all —
+[design/08](../../../plans/m1a_rust/design/08_parallelism.md) §2's speculation
+validator was measured, costed and then **deleted**, because case 1 is a
+fanned-out layer by construction, case 2 was 0 in 1 078 704 audited enterings,
+and case 3 needs a writeback there is none of.
+
+**What a worker may touch.** Everything shared is `&`-shared or per-worker,
+which is why there is no protocol and nothing for `loom` to model:
+
+- `&FactStore` — read-only. A search assigns 41 to 417 fact ids *per solve*,
+  and per *entering* four of six measured workloads assign zero, so a worker
+  that would have to number a proposition hands the entering back
+  (`Overflow::Shared`) and the committing thread re-runs it. `JobStats::handed_back`
+  counts that, and it is a running number rather than a claim.
+- `Terms` is **lent** for the layer (`Terms::lend`): a lent table is readable
+  from every thread and growable from none, so sharing is what forbids growing
+  — no lock, no shard. `intern` stays `&mut` and therefore stays on the
+  committing thread.
+- The **provenance arena is per worker**, with promotion only on the solution
+  path (`Kb::promote_provenance`). That was a memory fix before it was a
+  parallelism one: `features/01 -e` went from 684–708 MB peak RSS to 85–91 MB
+  *at `--jobs 1`*.
+
+**Why the answer cannot move.** The commit is **ordered**, and narration is
+ordered with it: a worker builds its event lines into its own buffer with a
+hole where the ordinal goes, and `Events::replay` fills them in at the commit.
+So the verbose event stream is byte-identical at `--jobs 1` and `--jobs 8`,
+`branching/06 -e`'s 2 200 561 lines included. Three instruments hold that —
+[`jobs_invariance.rs`](../../../ein.rs/crates/ein-render/tests/jobs_invariance.rs)
+(20 712 (file, op, jobs) cells, byte equality, 0 moved), the event stream under
+both stop policies, and the fuzzer's `jobs` property (10 000 paired runs, zero
+findings). [Q-M1a.7](../../../plans/m1a_rust/open_questions.md#q-m1a7--may---jobs--1-move-counters)
+is decided: **no counter moves**, and validation is not what buys that.
+
+**Inert without the feature.** `parallel` is default-on and forwarded from the
+binary; without it `SolveOptions::jobs` is accepted and every layer runs on the
+committing thread. `ein --version` is what says which build you have.
 
 ## Cross-cutting invariants
 

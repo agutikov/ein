@@ -16,19 +16,19 @@ each feature works).
 **On `zebra2`, the shipped fast path is robust — keep the defaults and
 don't worry about these knobs.** With `stop_after=1` (the default solve),
 disabling *any single* lever still finds the correct unique answer, in 1.3 s
-under ein.py and 6 ms under ein.rs. The levers earn their keep in
+under ein.py and 6.3 ms under ein.rs. The levers earn their keep in
 **exhaustive** search (proving uniqueness / unsatisfiability), where two
 matter:
 
 - **`enable_singleton_writeback` is the largest lever in either engine, and
   what its absence costs is engine-relative.** Without it, exhaustive
-  `zebra2` explores **3 831** commitments instead of 101. ein.py does not
-  finish that inside a 90 s budget; **ein.rs finishes it in 1.53 s — 56.6×
+  `zebra2` explores **3 557** commitments instead of 101. ein.py does not
+  finish that inside a 90 s budget; **ein.rs finishes it in 1.46 s — 54.5×
   its own baseline.** The lever's job is identical; only the wall it puts you
   into is a property of the engine. Keep it on.
 - **`enable_fail_fast_fork` is the one plain speed knob**, and it is worth
   *more* now than when it shipped (S1.9.E23): **2.4× on ein.py and 7.1× on
-  ein.rs** exhaustive, 1.3× / 1.8× on the fast path. It changes nothing about
+  ein.rs** exhaustive, 1.3× / 1.9× on the fast path. It changes nothing about
   *what* is found — same verdict, same 101 enterings, same 67 deaths — so its
   whole effect is price per branch. The ratio grew because everything around
   it got cheaper: what it removes is the saturation of forks that are already
@@ -37,8 +37,13 @@ matter:
 - Every other lever is **1.0×** in ein.rs — exactly, not approximately — and
   two are inert on this puzzle by construction (`enable_forced_positive` never
   fires; `enable_symmetric_mirror` has a transparent rule fallback). The one
-  exception is `lattice_order="score-sum"`, which is 1.2× because it explores
-  33 more commitments (134 vs 101).
+  exception is `lattice_order="score-sum"` at **1.1×**, and it is not a
+  commitment count: score-sum explores the same **101**, kills three fewer of
+  them, and pays for the scoring. *This bullet read "1.2× because it explores
+  33 more commitments (134 vs 101)" until 2026-08-23; the 134 was a
+  transcription error, found by re-measuring and verified against a build of
+  the commit it was published from —
+  [§ Two corrections](#two-corrections-2026-08-23).*
 
 **No single lever is *correctness*-load-bearing on `zebra2`**: every
 flag-off run that terminated returned the identical solution, in both
@@ -93,10 +98,12 @@ A cell exceeding its budget returns an `Aborted` verdict — the
 "won't-finish-if-off" sentinel (`∞`). Counts are `MonotonicStats` enterings;
 `×base` is the engine's own solve time against its own baseline.
 
-*Provenance: measured 2026-08-20 on `ein` at `42c99d9`, both engines, same
-machine, same run. ein.py under PyPy 7.3.23 (`.venv-pypy`); ein.rs
-`target/release` (snmalloc), the P1a.6 build after
-[S1a.6.12](../../../plans/m1a_rust/p1a.6_performance/s1a.6.12_boundary_and_snapshot.md).
+*Provenance: the **`ein.py` columns** were measured 2026-08-20 on `ein` at
+`42c99d9`, both engines, same machine, same run, under PyPy 7.3.23
+(`.venv-pypy`) — and they are frozen there. The **`ein.rs` columns** were
+re-taken **2026-08-23** at `d433a4f` (`target/release`, snmalloc, best of 5),
+after P1a.7 closed; two published cells were corrected rather than refreshed
+([§ Two corrections](#two-corrections-2026-08-23)).
 Intel i9-14900HX, pinned to one P-core by `utils/bench_env.sh`, `powersave`
 governor — read the **factors**, not the absolute seconds, and read them
 against the `control` row.*
@@ -113,17 +120,17 @@ answer, 11 enterings**. Both engines agree on all of it.
 
 | lever off | enterings | ein.py s | ×base | ein.rs ms | ×base |
 |---|---:|---:|---:|---:|---:|
-| *(baseline — all on)* | 11 | 1.30 | 1.0× | 6 | 1.0× |
-| `enable_fail_fast_fork` | 11 | 1.66 | **1.3×** | 11 | **1.8×** |
-| `enable_singleton_writeback` | 11 | 1.31 | 1.0× | 6 | 1.0× |
-| `enable_symmetric_mirror` | 11 | 1.28 | 1.0× | 6 | 1.0× |
-| `enable_forced_positive` | 11 | 1.28 | 1.0× | 6 | 1.0× |
-| `enable_path_nogoods` | 11 | 1.26 | 1.0× | 6 | 1.0× |
-| `hypgen_scoring="most-constrained"` | 11 | 1.21 | 0.9× | 6 | 1.0× |
-| `lattice_order="score-sum"` | 13 | 1.20 | 0.9× | 6 | 1.0× |
-| `enable_pre_branch_lookahead` | 11 | 1.16 | 0.9× | 6 | 1.0× |
-| `enable_lookahead_kill_cache` | 11 | 1.14 | 0.9× | 6 | 1.0× |
-| *(control — the baseline again, last)* | 11 | 1.29 | 1.0× | 6 | 1.0× |
+| *(baseline — all on)* | 11 | 1.30 | 1.0× | 6.3 | 1.0× |
+| `enable_fail_fast_fork` | 11 | 1.66 | **1.3×** | 11.8 | **1.9×** |
+| `enable_singleton_writeback` | 11 | 1.31 | 1.0× | 6.3 | 1.0× |
+| `enable_symmetric_mirror` | 11 | 1.28 | 1.0× | 6.3 | 1.0× |
+| `enable_forced_positive` | 11 | 1.28 | 1.0× | 6.3 | 1.0× |
+| `enable_path_nogoods` | 11 | 1.26 | 1.0× | 6.3 | 1.0× |
+| `hypgen_scoring="most-constrained"` | 11 | 1.21 | 0.9× | 6.3 | 1.0× |
+| `lattice_order="score-sum"` | 13 | 1.20 | 0.9× | 7.2 | **1.1×** |
+| `enable_pre_branch_lookahead` | 11 | 1.16 | 0.9× | 5.8 | 0.9× |
+| `enable_lookahead_kill_cache` | 11 | 1.14 | 0.9× | 6.3 | 1.0× |
+| *(control — the baseline again, last)* | 11 | 1.29 | 1.0× | 6.3 | 1.0× |
 
 The fast path enters 2 dead forks before it stops, so `enable_fail_fast_fork`
 is the only lever with anything to save — and in ein.rs it is the only row
@@ -132,24 +139,27 @@ that is not exactly the baseline.
 ## Exhaustive (`stop_after=None`) — where the levers bite
 
 Baseline: Solution, k=1, **101 enterings (67 dead)** — 3.18 s (ein.py) /
-27 ms (ein.rs).
+26.8 ms (ein.rs).
 
 | lever off | verdict | enterings | ein.py s | ×base | ein.rs ms | ×base |
 |---|---|---:|---:|---:|---:|---:|
-| `enable_singleton_writeback` | **Aborted** (ein.py) / Solution | 3 358 † / **3 831** | **≥90 (∞)** | **∞** | **1 527** | **56.6×** |
-| `enable_fail_fast_fork` | Solution | 101 | 7.68 | **2.4×** | **193** | **7.1×** |
-| `lattice_order="score-sum"` | Solution | **134** | 3.10 | 1.0× | 33 | **1.2×** |
-| `enable_lookahead_kill_cache` | Solution | 101 | 3.44 | 1.1× | 27 | 1.0× |
-| `enable_path_nogoods` | Solution | 101 | 3.42 | 1.1× | 27 | 1.0× |
-| `enable_forced_positive` | Solution | 101 | 3.37 | 1.1× | 27 | 1.0× |
-| `hypgen_scoring="most-constrained"` | Solution | 101 | 3.33 | 1.0× | 27 | 1.0× |
-| `enable_symmetric_mirror` | Solution | 101 | 3.14 | 1.0× | 27 | 1.0× |
-| `enable_pre_branch_lookahead` | Solution | **111** | 3.14 | 1.0× | 27 | 1.0× |
-| *(control — the baseline again, last)* | Solution | 101 | 3.85 | **1.2×** | 27 | 1.0× |
+| `enable_singleton_writeback` | **Aborted** (ein.py) / Solution | 3 358 † / **3 557** | **≥90 (∞)** | **∞** | **1 460** | **54.5×** |
+| `enable_fail_fast_fork` | Solution | 101 | 7.68 | **2.4×** | **189** | **7.1×** |
+| `lattice_order="score-sum"` | Solution | 101 ‡ | 3.10 | 1.0× | 28.2 | 1.1× |
+| `enable_lookahead_kill_cache` | Solution | 101 | 3.44 | 1.1× | 26.8 | 1.0× |
+| `enable_path_nogoods` | Solution | 101 | 3.42 | 1.1× | 26.7 | 1.0× |
+| `enable_forced_positive` | Solution | 101 | 3.37 | 1.1× | 26.9 | 1.0× |
+| `hypgen_scoring="most-constrained"` | Solution | 101 | 3.33 | 1.0× | 26.8 | 1.0× |
+| `enable_symmetric_mirror` | Solution | 101 | 3.14 | 1.0× | 26.8 | 1.0× |
+| `enable_pre_branch_lookahead` | Solution | **111** | 3.14 | 1.0× | 26.2 | 1.0× |
+| *(control — the baseline again, last)* | Solution | 101 | 3.85 | **1.2×** | 26.9 | 1.0× |
 
 † ein.py's 3 358 is where its 90 s budget cut the search, not a total; ein.rs
-runs the same search to the end at **3 831**, which is what the 2026-08-17
+runs the same search to the end at **3 557**, which is what the 2026-08-17
 table could only record as `3336+`.
+
+‡ **Corrected 2026-08-23, and it was wrong rather than stale** — see
+[§ Two corrections](#two-corrections-2026-08-23).
 
 **Read the control row before any other.** Four rows in the ein.py column sit
 between 1.0× and 1.1×, and the control — the same puzzle, the same
@@ -201,24 +211,24 @@ branches past depth 1. `zebra` encodes the same problem over **one** generic
 corpus's stress case for hypothesis filtering — and two levers read
 differently there. Best of 3, same day, same machine, same method.
 
-**Exhaustive** — baseline 111 enterings (71 dead), 7.39 s / 46 ms:
+**Exhaustive** — baseline 111 enterings (71 dead), 7.39 s / 42.9 ms:
 
 | lever off | enterings | ein.py s | ×base | ein.rs ms | ×base |
 |---|---:|---:|---:|---:|---:|
-| `enable_singleton_writeback` | 1 277 † / **3 834** | **≥90 (∞)** | **∞** | **2 014** | **43.8×** |
-| `enable_fail_fast_fork` | 111 | 21.21 | **2.9×** | **322** | **7.0×** |
-| `enable_pre_branch_lookahead` | **134** | 7.91 | **1.1×** | 49 | **1.1×** |
-| `enable_lookahead_kill_cache` | 111 | 7.28 | 1.0× | 46 | 1.0× |
-| `enable_path_nogoods` | 111 | 7.35 | 1.0× | 46 | 1.0× |
-| `enable_symmetric_mirror` | 111 | 7.33 | 1.0× | 46 | 1.0× |
-| `enable_forced_positive` | 111 | 7.34 | 1.0× | 45 | 1.0× |
-| `hypgen_scoring="most-constrained"` | 111 | 7.37 | 1.0× | 46 | 1.0× |
-| `lattice_order="score-sum"` | **62** | **4.80** | **0.6×** | **28** | **0.6×** |
-| *(control)* | 111 | 7.46 | 1.0× | 46 | 1.0× |
+| `enable_singleton_writeback` | 1 277 † / **3 834** | **≥90 (∞)** | **∞** | **2 055** | **47.9×** |
+| `enable_fail_fast_fork` | 111 | 21.21 | **2.9×** | **323** | **7.5×** |
+| `enable_pre_branch_lookahead` | **134** | 7.91 | **1.1×** | 45.8 | **1.1×** |
+| `enable_lookahead_kill_cache` | 111 | 7.28 | 1.0× | 42.8 | 1.0× |
+| `enable_path_nogoods` | 111 | 7.35 | 1.0× | 42.8 | 1.0× |
+| `enable_symmetric_mirror` | 111 | 7.33 | 1.0× | 42.9 | 1.0× |
+| `enable_forced_positive` | 111 | 7.34 | 1.0× | 43.0 | 1.0× |
+| `hypgen_scoring="most-constrained"` | 111 | 7.37 | 1.0× | 42.8 | 1.0× |
+| `lattice_order="score-sum"` | **62** | **4.80** | **0.6×** | **27.6** | **0.6×** |
+| *(control)* | 111 | 7.46 | 1.0× | 42.9 | 1.0× |
 
-**Fast** — baseline 13 enterings (3 dead), 2.04 s / 7 ms. Every row is the
-control (1.0×/1.1×) except two: `enable_fail_fast_fork` at 1.3× / **2.6×**,
-and `enable_singleton_writeback` at 1.4× / **1.9×** — on `zebra` the
+**Fast** — baseline 13 enterings (3 dead), 2.04 s / 7.8 ms. Every row is the
+control (1.0×/0.9–1.0×) except two: `enable_fail_fast_fork` at 1.3× / **2.6×**,
+and `enable_singleton_writeback` at 1.4× / **1.6×** — on `zebra` the
 writeback is load-bearing on the *fast* path too, at **24 enterings instead
 of 13**, where on `zebra2` it was free until the search went exhaustive.
 
@@ -234,15 +244,21 @@ completed 3 834.
    negative, a shape to re-measure on a deeper puzzle" is answered: it was
    inside the noise, and on the deeper encoding the sign is positive. Both
    `zebra` and `zebra2` set it explicitly, so no default moves.
-2. **`lattice_order="score-sum"` is 0.6× on `zebra` and 1.2× on `zebra2`**,
-   and in both engines to the digit — 62 enterings against 111, and 134
-   against 101. That is a **candidate default change with a real number
-   behind it and a real counter-example beside it**, so it is recorded here
-   and left as a decision rather than applied: the two puzzles disagree, `lex`
-   is the order every trace and golden in the corpus was recorded under, and
-   the lever costs nothing to set per puzzle. What would settle it is the
-   blind-enumerator corpus — the cells `zebra`/`zebra2` never reach — measured
-   the same way.
+2. **`lattice_order="score-sum"` is 0.6× on `zebra` and 1.1× on `zebra2`**
+   — 62 enterings against 111, and **101 against 101**. *This entry read
+   "1.2× … 134 against 101" until 2026-08-23, and the 134 was wrong: see
+   [§ Two corrections](#two-corrections-2026-08-23).* Corrected, the
+   counter-example is weaker than it looked — on `zebra2` score-sum explores
+   exactly as many commitments as `lex` and costs 1.1× in wall clock for the
+   three fewer deaths it finds along the way, rather than exploring 33 % more
+   — so what the two puzzles disagree about is *how much* score-sum wins, not
+   whether. It is still recorded rather than applied, and now for one reason
+   instead of three: `lex` is the order every trace and golden in the corpus
+   was recorded under. What would settle it is the blind-enumerator corpus —
+   the cells `zebra`/`zebra2` never reach — measured the same way, and
+   `branching/06` is a warning that it might not go score-sum's way there:
+   the lever costs **11.9×** on that fixture's fast path (799 enterings
+   against 67).
 
 ## The lookahead on a deeper puzzle — and the lever that is not a prune
 
@@ -309,9 +325,13 @@ agree to the digit on every cell above:
    negative. It stays true as written for `zebra2`; it is false in general.
 2. The 0.9× that made it look like a bad trade was **inside the method's own
    noise** (the control row now shows what that noise is). On the puzzles
-   where it has anything to prune it is worth 1.1× (`zebra`), 4.5× (an
-   exhaustive `branching/06`) and **448×** (the fast path of the same file,
-   in ein.rs, where the pruned run is 2 ms and the unpruned one 896).
+   where it has anything to prune it is worth 1.1× (`zebra`), 1.4× (an
+   exhaustive `branching/06`) and **77×** (the fast path of the same file, in
+   ein.rs — 3.6 ms pruned against 278 unpruned). *This read "4.5× … and 448×
+   … the unpruned one 896" until 2026-08-23: both were the pre-T1a.7.2.0
+   numbers the banner above this table had already replaced, left behind in
+   the prose when the table was re-taken. The table is the measurement; this
+   sentence now quotes it.*
 3. It is not confirmable by `enable_lookahead_kill_cache`: with the cache off
    the verdicts are unchanged (`branching/06 -e` is still Ambiguity k=22, at
    5 192 enterings instead of 5 173). The write-back is an optimisation; the
@@ -320,6 +340,62 @@ agree to the digit on every cell above:
 Whether a performance lever should decide what counts as a complete model is a
 design question, not a measurement, and it is parked as
 [F4 Q40](../../../plans/followups/f4_cross_cutting.md).
+
+## Two corrections (2026-08-23)
+
+The `ein.rs` half of this page was re-taken at M1a
+[S1a.9.4](../../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md)
+T1a.9.4.4 — same instrument, same machine, 5 runs, `d433a4f`. Ten of the
+twelve `zebra2` exhaustive cells reproduced to the millisecond. **Two did
+not**, and the difference between "the engine moved" and "the table was
+wrong" is not a judgement call, so it was measured: a worktree at `42c99d9`
+— the commit the 2026-08-20 provenance line names — was built and the two
+cells re-run against it.
+
+| cell | published | `42c99d9`, re-run | today |
+|---|---:|---:|---:|
+| `enable_singleton_writeback` off, enterings | 3 831 | **3 557** | 3 557 |
+| `lattice_order="score-sum"`, enterings | 134 | **101** | 101 |
+
+**The engine did not move between the two dates.** What the two published
+figures *are* is visible on this page: **3 831** is the
+[2026-08-18, P1a.4, in-process](#history--the-same-table-before-the-port)
+reading, and **134** is the
+[2026-08-17, ein.py-only](#history--the-same-table-before-the-port) one. The
+2026-08-20 re-take carried both forward instead of re-reading them — the cells
+it did not expect to have moved are exactly the cells it did not check.
+
+Whether the *P1a.4* reading of 3 831 was itself right is not answerable from
+here, and the reason is worth a line: `ein-cli` at that commit is a stub
+(`ein.rs: not implemented yet — the engine lands over P1a.1–P1a.5`), so the
+2026-08-18 numbers were taken **in-process** and `feature_matrix.py`, which
+drives the binary, cannot reproduce them. Two takes with two instruments, one
+of which no longer runs.
+
+The corrected cells are in the tables above, and the two conclusions that
+rested on them are amended where they stand.
+
+Two things follow that are worth more than the corrected digits:
+
+- **A shared `enterings` column was the enabling condition.** One column
+  served both engines because they were expected to agree, so a cell copied
+  from the wrong row could not be caught by disagreeing with anything. The
+  `zebra2` score-sum row now carries `101 ‡` rather than one number for two
+  engines: `ein.rs` is measured, and what `ein.py` did there is no longer
+  recoverable, because the second engine left the tree at
+  [S1a.10.5](../../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md).
+  That is the cost of a frozen column meeting an error: the freeze preserves
+  whatever was true *and* whatever was mistyped.
+- **The one thing that did move is memory, and it moved 20×.** `zebra2 -e`
+  with `enable_singleton_writeback` off — the page's largest cell — peaks at
+  **184.1 MB** on the `42c99d9` build and **9.2 MB** today (child `ru_maxrss`,
+  same script, same file, both binaries). That is
+  [S1a.7.1](../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.1_sync_shared_state.md)'s
+  per-worker provenance arena with promotion on the solution path, working at
+  `--jobs 1` — the same effect P1a.7 measured as 684–708 → 85–91 MB on
+  `features/01 -e`, seen on a second workload. It was never in this table
+  because this table has no memory column; the wall clock for that cell moved
+  by 4 %.
 
 ## Refresh
 

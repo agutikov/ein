@@ -5,6 +5,14 @@
 **Depends on:** [S1a.9.3](s1a.9.3_packaging.md)
 **Implements:** the milestone's closing obligation
 
+> **Shipped 2026-08-23, and it closes M1a.** What the stage was for —
+> `docs/api/` documenting a surface that exists — is done by *changing its
+> subject*: [`rust.md`](../../../docs/api/rust.md) is the crates, and its
+> worked example is the marked region of
+> [`ein-cli/tests/embedding.rs`](../../../ein.rs/crates/ein-cli/tests/embedding.rs),
+> diffed against the page by a test in that file. The five Python pages are
+> filed as history, whole. See [§ What shipped](#what-shipped).
+>
 > **Amended twice on 2026-08-21.** First for
 > [P1a.10](../p1a.10_single_implementation/README.md): the stage was written
 > for a tree with two implementations and would have said "ein.py is the
@@ -201,6 +209,69 @@ expensive to rediscover.
 
 [F11](../../followups/f11_deductive_layer_perf.md): closed or updated by
 [S1a.6.7](../p1a.6_performance/s1a.6.7_relever_matrix.md).
+
+## What shipped
+
+| task | | |
+|---|---|---|
+| T1a.9.4.1 | Orientation | `AGENTS.md`'s `docs/api/` bullet re-pointed; a `docs/install.md` bullet added. `README.md`'s install section was S1a.9.3's |
+| T1a.9.4.2 | Engine internals | `inference/implementation.md` gains the two things it lacked — *what the port was free to change* (a four-row table pointing at where each is documented, so no map repeats another) and **§ The fan-out**, which had no counterpart in the ported design and so is described rather than mapped |
+| T1a.9.4.3 | Embedding docs | [`docs/api/rust.md`](../../../docs/api/rust.md), 300 lines, example-as-test; the five Python pages re-bannered 🏛; `docs/api/README.md` rewritten to route |
+| T1a.9.4.4 | The quoted numbers | `features.md`'s `ein.rs` half re-taken over four puzzles — **and two published cells corrected**; `architecture_and_algorithms.md` §7 gains the axis that is not an algorithm |
+| T1a.9.4.5 | Close the milestone | `plans/README.md`, `m1a_rust/README.md`, `divergences.md`, `open_questions.md` |
+| T1a.9.4.6 | Downstream | M1b, [M2 Q25](../../m2_nl_to_ir/open_questions.md#q25--what-language-is-the-frontend-written-in), F11 |
+
+### T1a.9.4.3 — the page's example is a test, and that is the whole design
+
+The deferred S1a.9.2 would have been a contract suite over a PyO3 module.
+There is no module, so the substitute had to be something else — and the five
+Python pages are the argument for what. They were a *good* contract, and they
+were **verified**: "against commit `60c192b` (2026-06-16)". Then the engine
+moved and nothing noticed, because nothing ran them. **Verification with a
+date on it is a claim about the past.**
+
+So `rust.md`'s worked example is the region of `tests/embedding.rs` between
+two markers, and three tests in that file give three different failures: the
+example does not compile → the file does not build; its numbers move →
+`the_worked_example_runs`; the page and the example drift → the two texts are
+compared. The rule that falls out is one line, and it is in `AGENTS.md`:
+**edit the test, run it, paste.** Two further tests keep it honest — the other
+two verdict arms are exercised, so the `match` in the page is not three arms of
+which one has ever run.
+
+### T1a.9.4.4 — the re-take found an error, not drift
+
+`features.md`'s `ein.rs` half was re-taken over all four puzzles it covers.
+Ten of the twelve `zebra2` exhaustive cells reproduced to the millisecond;
+**two did not**, and rather than assume, a worktree at `42c99d9` — the commit
+the page's provenance line names — was built and the two cells re-run against
+it. It produces today's numbers. **The engine did not move; the table was
+wrong**, and what the two figures are is visible on the page itself: one is
+its own 2026-08-18 in-process reading, the other its 2026-08-17 ein.py-only
+one. *The 2026-08-20 re-take carried forward the cells it did not expect to
+have moved.*
+
+That has a consequence worth more than the digits: a **conclusion** rested on
+one of them (`score-sum` "explores 33 more commitments") and is amended, and
+a second sentence was quoting pre-T1a.7.2.0 figures the table above it had
+already replaced. Both are corrected in place with the old reading labelled.
+The one thing that *did* move is memory: the page's largest cell peaks at
+**184.1 MB** on the old build and **9.2 MB** today — S1a.7.1's provenance
+reclamation, at `--jobs 1`, on a workload P1a.7 never measured.
+
+### The `ein.py` sweep
+
+`git grep -i 'ein\.py'` is 264 files and the acceptance is not "zero" — it is
+**only history**. Four hits described it as something a reader can run, and
+all four are gone: `docs/kernel/inference/lattice_dump.md`'s `python -m
+ein.cli solve …`, the same command in two `examples/branching/` fixture
+comments (naming a `search` subcommand that never existed in ein.rs), and
+F11's `PYTHONPATH=ein.py/src .venv-pypy/bin/python …` reproduction line. A
+fifth named a Python test as a fixture's *current* pin and now names the two
+that actually pin it. Everything else is the divergence ledger, the phase
+records, source comments explaining why a line is the way it is, and
+`baseline.md`'s per-section reproduction blocks — which that file already
+labels as records, keeping exactly one block runnable.
 
 ## Notes
 

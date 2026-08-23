@@ -37,7 +37,7 @@ the lattice DAG):
 
 ```sh
 # Exhaustive sweep, both views written into the markdown trace:
-python -m ein.cli solve examples/branching/04_two_levels.ein \
+ein solve examples/branching/04_two_levels.ein \
     --exhaustive --trace ./trace.md
 ```
 

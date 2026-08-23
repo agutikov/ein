@@ -70,7 +70,7 @@ of their properties; after that, formal inference is cheap.*
 ## The thirteen components — built, scheduled, open
 
 **Built** means in [`ein.rs/`](ein.rs/), asserted by `cargo test --workspace`
-(**616 tests over 70 targets, 0 failures**, 2026-08-23) and, where a number is
+(**619 tests over 71 targets, 0 failures**, 2026-08-23) and, where a number is
 given, recorded in a measurement document under
 [`plans/m1a_rust/`](plans/m1a_rust/README.md) that names the machine state it
 was taken under. **Scheduled** means a milestone with phase and stage files.
@@ -217,7 +217,7 @@ are **frozen constants**, because the engine they measured left the tree.
 | `--jobs N` is the same computation | 20 712 (file, op, jobs) cells, **0 moved**, 30 s; the verbose event stream byte-identical at both job counts, 2 200 561 lines included; 10 000 paired fuzz runs, zero findings | [P1a.7 § acceptance](plans/m1a_rust/p1a.7_parallelism/README.md#the-acceptance-restated) |
 | memory under parallelism | per-worker provenance: `features/01 -e` 684–708 MB → **85–91 MB**; peak RSS 79.8 / 90.3 MB at `--jobs 1 / 16` | [design/README § Measured](plans/m1a_rust/design/README.md#measured) |
 | `.einb`, the binary KB container | a saturated `zebra2` is 57 688 bytes and opens cold in **0.614 ms**; `solve x.einb` byte-identical to `solve x.ein`; 20 000 fuzzed inputs and 3 348 bit-flips rejected by the digest | [P1a.8](plans/m1a_rust/p1a.8_binary_container/README.md#acceptance-for-the-phase--all-met) |
-| the gate | 312 tests in 9 m 13 s with a Python process in 42 of them → **616 tests, 0 failures, 1 m 51 s**, no Python | [oracle ledger](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md), [`run_tests.sh`](run_tests.sh) |
+| the gate | 312 tests in 9 m 13 s with a Python process in 42 of them → **619 tests, 0 failures, 1 m 51 s**, no Python | [oracle ledger](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md), [`run_tests.sh`](run_tests.sh) |
 | what replaced the two-engine oracle | 4 228 renderings banked as digests, 13 counter identities over every solve cell, an id-space permutation sweep: **0 answers moved**, 66 renderings (all narration); four accepted losses, named | [oracle ledger § 5–6](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#5-what-the-successor-found) |
 | the corpus | 128 entries in six groups, 629 cells as processes in 5.3 s; the slow tier 641 cells in **19.4 s** where it was 660 in 242.6 s; **two** entries are slow and `cost_ms` says so | [corpus_cost.md](plans/m1a_rust/p1a.9_release/corpus_cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry), [`corpus/`](corpus/README.md#slow) |
 | determinism | every order-sensitive site reproduces ein.py's; `--shuffle` is MT19937 exactly; a permuted id space moves 51 of 3 160 renderings and 0 answers | [design/02](plans/m1a_rust/design/02_determinism_and_order.md), [ledger](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#5-what-the-successor-found) |
@@ -408,7 +408,7 @@ sub-language, the reserved names and the stdlib API are the rest of
 ### Development loop
 
 ```sh
-./run_tests.sh             # the gate: cargo test --workspace — 616 tests, ~1 m 51 s
+./run_tests.sh             # the gate: cargo test --workspace — 619 tests, ~1 m 51 s
 ./run_tests.sh --slow      # + the two slow corpus entries, + 8 id-space seeds (the nightly tier)
 cd ein.rs && cargo fmt && cargo clippy --workspace --all-targets -- -D warnings
 EIN_BLESS=1 ./run_tests.sh # re-bank the goldens, deliberately

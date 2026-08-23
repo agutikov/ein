@@ -109,7 +109,7 @@ jobs:
         with: { workspaces: ein.rs }
       - run: sudo apt-get update && sudo apt-get install -y graphviz
       - run: cargo build --workspace --no-default-features
-      # 607 of the 616 the default build runs; the nine that go are the
+      # 610 of the 619 the default build runs; the nine that go are the
       # `.einb` tests and the help-surface golden, which is of the default
       # surface on purpose.
       - run: cargo test --workspace --no-default-features

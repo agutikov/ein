@@ -1,28 +1,26 @@
 # `ein.inference` — saturate, solve, verdicts, config
 
-> ### ⚠ This contract has no implementation, and none is scheduled
+> ### 🏛 History — the embedding contract of the engine that was
 >
-> **`import ein` does not work in this repo.** The Python package these pages
-> describe was deleted at M1a
+> **This page describes a Python package that no longer exists**, and it is
+> filed as a record rather than as a promise. `ein.py/` was deleted at M1a
 > [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
-> (2026-08-21), when `ein.rs` became the only engine.
+> (2026-08-21); the PyO3 module that was to succeed it was **deferred the same
+> day** for want of a consumer, with three trip-wires recorded in
+> [Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding).
 >
-> A PyO3 module was to succeed it in
-> [P1a.9](../../plans/m1a_rust/p1a.9_release/README.md). **That is deferred as
-> of 2026-08-21** — the census found no consumer that needs it, and
-> [Q-M1a.23](../../plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
-> records the three conditions that would bring it back.
+> It is kept **whole and unedited** for one reason: a deferral is cheap to
+> reverse only while the specification survives it. On the day a trip-wire
+> fires, this is a contract to implement instead of a blank page. So read
+> every code block as a record — and **do not "fix" one to match `ein.rs`'s
+> internals.** A page rewritten to describe the current engine would be
+> neither history nor a specification.
 >
-> So these pages are **history, held in reserve**: the embedding contract of
-> the engine that was, kept whole rather than deleted, because on the day a
-> trip-wire fires this is a specification instead of a blank page. Read every
-> code block as a record, not as a runnable snippet — and do not "fix" one to
-> match ein.rs's internals; they describe something that no longer exists.
->
-> **The surfaces that do run** are the CLI — `ein solve <file>` ·
-> `ein saturate` · `ein render` — and the crates, whose embedding page
-> [S1a.9.4](../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md)
-> writes.
+> **The embedding surface that exists is Rust**, and it is
+> [`rust.md`](rust.md) — the crates, whose worked example is a test the gate
+> runs. The other surface that runs is the CLI: `ein solve <file>` ·
+> `ein saturate` · `ein render` · `ein kb` (`ein --help`,
+> [`docs/install.md`](../install.md)).
 
 The engine surface: forward-chaining saturation, the one solve entry, the
 verdict types it returns, and the `SolverConfig` knobs. The engine behind it is
@@ -237,6 +235,14 @@ features that were previously always-on, so P1.20 Theme I can measure each;
 
 `SolverConfig.from_kw_pairs(kw_pairs)` builds one from a parsed `(config
 …)` body (the loader uses this; unknown flags raise `ValueError`).
+
+> **There is no `jobs` row here, and there should not be.** This table is the
+> engine that was, and it had no fan-out. `ein.rs` grew one at
+> [P1a.7](../../plans/m1a_rust/p1a.7_parallelism/README.md) (closed
+> 2026-08-23, 3.17–4.40× on 8 cores) — and it is deliberately **not** a
+> `SolverConfig` field but a `SolveOptions` one, because a puzzle file must
+> not be able to set a thread count. The Rust page states the parallelism
+> surface as it actually is: [`rust.md` § 4](rust.md#4--solve).
 
 > The *measured* impact of these knobs against `zebra2` (which is
 > load-bearing, which is perf-only) is in

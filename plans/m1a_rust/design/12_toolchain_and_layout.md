@@ -140,7 +140,7 @@ crate).
 | `counters` | off | the work counters ([S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md) T1a.6.1.3), compiled out entirely when off |
 
 **What CI checks about all this, since S1a.9.3.** The release tier builds
-`--no-default-features` and runs the suite (607 of 616 tests; the nine that go
+`--no-default-features` and runs the suite (607 of 619 tests; the nine that go
 are `.einb`'s and the help-surface golden, which is of the default surface on
 purpose) — and then asserts the *dependency graph* in both directions, because
 "it compiles without them" was true for two years while "it links none of

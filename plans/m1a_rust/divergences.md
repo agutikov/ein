@@ -1,9 +1,35 @@
 # M1a — divergence ledger
 
 Differences between `ein` (Python, the oracle) and `ein.rs` that are
-**accepted** rather than fixed. Empty is the goal at the
-[P1a.5](p1a.5_presentation/README.md) byte gate; a non-empty ledger is
-allowed only with a written reason per entry.
+**accepted** rather than fixed.
+
+> ### Final state — 2026-08-23 (S1a.9.4 T1a.9.4.5)
+>
+> **Three entries, all accepted, and this file is history that stays.**
+> "Empty is the goal" was the bar while two implementations were being held
+> to each other; there is one implementation, so the goal is no longer
+> reachable *or* meaningful — D1–D3 record where the port and its oracle
+> differed, and the oracle left the tree at
+> [S1a.10.5](p1a.10_single_implementation/s1a.10.5_removal.md). The phase's
+> own non-goal said as much. Nothing here is a defect awaiting a fix.
+>
+> **What a new entry would mean has changed.** It can no longer be "the two
+> engines disagree", because there is one; it would have to be **two surfaces
+> of one engine disagreeing** — a `.einb` reload against the `.ein` it was
+> written from, a `--jobs 8` run against `--jobs 1`, a permuted id space
+> against the unpermuted one. All three are swept by tests today
+> (`einb_cli`, `jobs_invariance`, `id_order_invariance`), and all three are
+> **green**, which is why the file has gained no fourth entry. Rule 2 still
+> applies and is now easy to satisfy: the sweep that would find such an entry
+> already exists.
+>
+> D3 is the one to read first if you read one: it is the only entry that is
+> still *live* in the sense that it describes something the shipping engine
+> does, and [`ein-parity`](../../ein.rs/crates/ein-parity/src/lib.rs) is its
+> executable form.
+
+Empty was the goal at the [P1a.5](p1a.5_presentation/README.md) byte gate; a
+non-empty ledger was allowed only with a written reason per entry.
 The precedent for this shape is
 [`docs/kernel/inference/parity_baselines.md`](../../docs/kernel/inference/parity_baselines.md),
 which recorded the tree-vs-monotonic divergences explicitly rather than
