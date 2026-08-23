@@ -5,6 +5,17 @@ the sequential engine's observable behaviour.
 **Phase:** [P1a.7](../p1a.7_parallelism/README.md) (after parity, after
 the single-threaded optimisation programme).
 
+> **Two of the four levels are built. 2026-08-23.** Level 1 is `--jobs N` and
+> is **3.16–4.30× on 8 P-cores** with every counter and every rendered byte
+> unchanged ([S1a.7.2](../p1a.7_parallelism/s1a.7.2_parallel_enterings.md)),
+> though §2's speculate-and-validate is *not* how — a layer is fanned out iff
+> it cannot write a fact to root, so there is nothing to validate. Level 4 is
+> free and always was. **Levels 2 and 3 are declined**, each with its premise
+> measured before anything was built, and each section below carries the
+> number that declined it. What they have in common is the finding:
+> **incrementality and parallelism compete for the same work**, and
+> [P1a.6](../p1a.6_performance/README.md) got there first.
+
 ---
 
 ## 1. The contract first
@@ -394,7 +405,20 @@ finish and integrates at the barrier.
 
 ---
 
-## 3. Level 2 — the enqueue pass
+## 3. Level 2 — the enqueue pass — **not built**
+
+> **Declined 2026-08-23** ([S1a.7.4](../p1a.7_parallelism/s1a.7.4_parallel_enqueue.md),
+> [scaling.md §9](../p1a.7_parallelism/scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
+> The analysis below is sound and the mechanism would work; what fails is the
+> *premise*. The pass holds **10.6–31.2 %** of a solve, so the share is there —
+> but the fan-out it describes has **1.4 to 3.1 tasks** on the phase's
+> measurement set, and a pass costs 0.26–0.91 µs against a ~10 µs pool barrier.
+> The reason is [06](06_saturation.md)'s own success: semi-naive delta seeding
+> already removed the "91 % of matcher output that was re-discovery", which is
+> exactly the bulk a full pass would have spread over cores. **Incrementality
+> and parallelism compete for the same work.** The predicate that would re-open
+> it is `tasks per pass ≥ jobs` — the two zebras reach 10.9 and 45.7 — not a
+> share threshold.
 
 `_enqueue_pass` is **read-only over the KB**: it runs matchers and pushes
 onto the queue. Two parallel shapes:
@@ -413,7 +437,19 @@ after the fact reproduces the sequential sequence exactly.
 Worth doing only above a work threshold (root saturation of a large KB);
 a threshold changes nothing observable, so it can be tuned freely.
 
-## 4. Level 3 — the boundary round
+## 4. Level 3 — the boundary round — **not built**
+
+> **Declined 2026-08-23** ([S1a.7.3](../p1a.7_parallelism/s1a.7.3_parallel_boundary.md),
+> [scaling.md §9](../p1a.7_parallelism/scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
+> The "72 % of an exhaustive solve" below is ein.py's number and is the part
+> that did not survive: `admit_from_boundary` is **0.0 %** of three of the four
+> workloads in P1a.7's measurement set, which never park a single candidate at
+> all, and **3.2 %** of the fourth, where a round judges a **median of one**.
+> The chunk of `jobs` this section's last paragraph describes would hold one
+> candidate. [S1a.6.12](../p1a.6_performance/s1a.6.12_boundary_and_snapshot.md)'s
+> epoch invalidation is why — a round now re-judges only the candidates whose
+> watched relations moved. The predicate that would re-open it is "a round has
+> `jobs` candidates to judge", not "the boundary is expensive".
 
 `_admit_from_boundary` evaluates parked candidates' guards against a
 quiesced world — read-only, and 72 % of an exhaustive solve's time

@@ -1033,16 +1033,22 @@ re-discovery a full re-match would recompute", and that 91 % is exactly the
 bulk T1a.7.4.1 proposed to spread over cores.
 
 A stage that fans out what an earlier stage already deleted measures the
-overhead and nothing else. **The recommendation is to decline both with these
-numbers**, in [S1a.7.1](s1a.7.1_sync_shared_state.md)'s form — the tasks
-removed by a measurement rather than by a preference — and to spend the
-remaining budget on [S1a.7.5](s1a.7.5_jobs_contract.md), which owes the
-contract, `jobs_invariance` and `--unordered`, and on the fan-out's own
-efficiency, which is where the phase's missing 1.5× actually is
-([§ Where the other 1.5× is](#where-the-other-15-is)). S1a.7.3's Notes
-pre-authorised half of this — "if this stage does not show a speedup … the
-stage should then be gated off by default with the number recorded" — and the
-numbers say the gate would never open.
+overhead and nothing else. **Both are declined on these numbers, 2026-08-23**,
+in [S1a.7.1](s1a.7.1_sync_shared_state.md)'s form — tasks removed by a
+measurement rather than by a preference — and the phase's remaining budget goes
+to [S1a.7.5](s1a.7.5_jobs_contract.md), which owes the contract,
+`jobs_invariance` and `--unordered`. S1a.7.3's Notes pre-authorised the softer
+half of this — "if this stage does not show a speedup … the stage should then
+be gated off by default with the number recorded" — and the numbers say the
+gate would never open, so what would have been built is a mechanism with tests,
+a config field and no caller.
+
+**The phase's missing 1.5× is not here either**, and that is worth saying in
+the same breath: it is the fan-out's own ~5× on 8 cores, which the profile puts
+on memory rather than on contention
+([§ Where the other 1.5× is](#where-the-other-15-is)). Reducing what a fork
+allocates is [P1a.6](../p1a.6_performance/README.md)-shaped, and declining these
+two stages does not move it closer or further away.
 
 ## 10. Reproducing
 

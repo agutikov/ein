@@ -2,9 +2,11 @@
 
 **Phase:** P1a.7 (Parallelism)
 **Estimate:** 2 days
-**Status:** **premise measured 2026-08-23 — right about the share, wrong about
-the width** — awaiting a decision on whether to decline the stage
+**Status:** ✗ **DECLINED 2026-08-23** — the premise was measured before the
+stage was built: right about the share, wrong about the width
 ([scaling.md §9](scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
+Nothing here is deferred; the document is kept for the reasoning and for the
+predicate that would re-open it.
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md)
 **Implements:** [design/08](../design/08_parallelism.md) §3
 
@@ -55,8 +57,7 @@ and that 91 % is exactly the bulk T1a.7.4.1 proposed to spread over cores.
 **Incrementality and parallelism compete for the same work**, and here the
 incremental version shipped three phases ago.
 
-**The recommendation is to decline the stage with these numbers**, beside
-S1a.7.3's. What would re-open it is a program whose delta passes are wide — the
+**Declined on these numbers** (2026-08-23), beside S1a.7.3's. What would re-open it is a program whose delta passes are wide — the
 zebras' 45.7 shows the shape exists — and the predicate to re-take is `tasks
 per pass ≥ jobs`, not `share ≥ x %`.
 

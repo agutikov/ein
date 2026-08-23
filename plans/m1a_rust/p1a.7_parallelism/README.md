@@ -4,9 +4,10 @@
 **Status:** **resumed 2026-08-22**, three stages in —
 [S1a.7.1](s1a.7.1_sync_shared_state.md) and
 [S1a.7.2](s1a.7.2_parallel_enterings.md) are both **closed**, threads
-included. **The premises of the two remaining engine stages were then measured
-and neither holds** — [scaling.md §9](scaling.md#9-levels-2-and-3-measured-before-they-are-built),
-and § What is left, below, is the decision that is open.
+included. **The premises of the two remaining engine stages were then measured,
+neither held, and both are declined** —
+[scaling.md §9](scaling.md#9-levels-2-and-3-measured-before-they-are-built).
+What is left is [S1a.7.5](s1a.7.5_jobs_contract.md), the contract.
 [S1a.7.0](s1a.7.0_speculation_audit.md) shipped 2026-08-20 — a stage the plan
 did not have, because the phase's central risk was measurable *before* any of
 it was built. The phase then **paused for two days** at the user's direction
@@ -283,20 +284,22 @@ Design: [design/08](../design/08_parallelism.md).
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
 | [S1a.7.1](s1a.7.1_sync_shared_state.md) ✅ | Making the shared state `Sync` — **closed 2026-08-22**, three of eight tasks deleted by measurement and no lock built, [shared_state.md](shared_state.md) | 3 d → 4.5 d |
 | [S1a.7.2](s1a.7.2_parallel_enterings.md) ✅ | Level 1: parallel enterings — **closed 2026-08-23**. Its layer-1 question was decided on paper (a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items. The layer stack coalesced (3.17× at `--jobs 1`), the predicate asserted, the seam, the fan-out, the layer's own serial work — **3.16–4.30× on 8 P-cores**, same computation on all 47 corpus entries, byte-identical event streams — then the diagnostics, the early stop (**1.69 → 3.13×** on the CLI's *default* `-n 1` run) and the stress, 10 000 paired `--jobs 8` runs with zero findings | 4 d → 3 d |
-| [S1a.7.3](s1a.7.3_parallel_boundary.md) ⚠ | Level 3: the parallel boundary round — **premise measured 2026-08-23 and it does not hold**: three of the four measurement-set workloads never park a candidate, the fourth judges a median of one per round, and a round is 0.18 µs against a ~10 µs barrier. Recommended for **decline**, decision open | 2 d |
-| [S1a.7.4](s1a.7.4_parallel_enqueue.md) ⚠ | Level 2: the parallel enqueue pass — **premise measured 2026-08-23**: right about the share (10.6–31.2 % everywhere, more than S1a.7.3's on every measurement-set cell) and wrong about the width — **1.4–3.1 tasks per pass** against a fan-out of 8, and a pass is 0.26 µs. Recommended for **decline**, decision open | 2 d |
+| [S1a.7.3](s1a.7.3_parallel_boundary.md) ✗ | Level 3: the parallel boundary round — **declined 2026-08-23**, premise measured before the build: three of the four measurement-set workloads never park a candidate, the fourth judges a median of one per round, and a round is 0.18 µs against a ~10 µs barrier | ~~2 d~~ |
+| [S1a.7.4](s1a.7.4_parallel_enqueue.md) ✗ | Level 2: the parallel enqueue pass — **declined 2026-08-23**: right about the share (10.6–31.2 % everywhere, more than S1a.7.3's on every measurement-set cell) and wrong about the width — **1.4–3.1 tasks per pass** against a fan-out of 8, and a pass is 0.26 µs | ~~2 d~~ |
 | [S1a.7.5](s1a.7.5_jobs_contract.md) | The `--jobs` contract | 2 d |
 
-## What is left, and the one decision that is open
+## What is left, and what was declined
 
-**Three stages are closed and two are recommended for decline**, which leaves
+**Three stages are closed and two are declined**, which leaves
 [S1a.7.5](s1a.7.5_jobs_contract.md) — the contract, `jobs_invariance`,
-`--unordered` — as the phase's remaining work, plus whatever is spent on the
-fan-out's own efficiency, which is where the missing 1.5× is
+`--unordered`, the failure-mode rulings — as the phase's remaining work. The
+phase will close at **3.16–4.30×** against a ≥ 6× target, with the shortfall
+named rather than papered over: it is the fan-out's own ~5× on 8 cores, the
+profile puts it on memory rather than contention, and reducing what a fork
+allocates is [P1a.6](../p1a.6_performance/README.md)-shaped
 ([scaling.md § Where the other 1.5× is](scaling.md#where-the-other-15-is)).
 
-The decline is a recommendation and not a decision, because deleting two
-planned stages is the plan's owner's call. What it rests on is one sentence:
+**The decline rests on one sentence:**
 **levels 2 and 3 fan out units that arrive one to three at a time and cost a
 fraction of a microsecond, inside loops that run hundreds of thousands of
 times.** Level 1 fans out *enterings*, which arrive thousands to a layer and

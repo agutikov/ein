@@ -2,9 +2,13 @@
 
 **Phase:** P1a.7 (Parallelism)
 **Estimate:** 2 days
-**Status:** **premise measured 2026-08-23, and it does not hold** — awaiting a
-decision on whether to decline the stage
+**Status:** ✗ **DECLINED 2026-08-23** — the premise was measured before the
+stage was built and does not hold
 ([scaling.md §9](scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
+Nothing here is deferred: the mechanism is not built, not gated off, and not
+half-present. The document is kept because **the reasoning is the deliverable**
+— what would re-open it is named below, and it is a workload rather than an
+argument.
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md)
 **Implements:** [design/08](../design/08_parallelism.md) §4
 
@@ -48,7 +52,7 @@ admission that ends each one. **That is the bulk this stage proposed to spread
 over cores, and an earlier stage already deleted it** — incrementality and
 parallelism compete for the same work.
 
-**The recommendation is to decline the stage with these numbers**, the way
+**Declined on these numbers** (2026-08-23), the way
 [S1a.7.1](s1a.7.1_sync_shared_state.md) lost three of its eight tasks: removed
 by a measurement, not by a preference. § Notes below pre-authorised the softer
 half of this ("gated off by default with the number recorded"); the numbers say
