@@ -616,7 +616,7 @@ fn closed_relations(kb: &Kb, terms: &Terms) -> FxHashSet<Symbol> {
 /// back into unrestricted too. The **first** matching keyword wins, not the
 /// last: ein.py returns out of the loop.
 fn query_relations(s: &Session<'_>, keyword: &str) -> Option<FxHashSet<Symbol>> {
-    let query = s.kb.program().query.as_ref()?;
+    let query = s.kb.program().query()?;
     for &pair in query.kw_pairs.iter() {
         let ein_ir::Node::KwPair { key, value } = s.ast.node(ein_ir::NodeId(pair.0)) else {
             continue;

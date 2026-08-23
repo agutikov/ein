@@ -7,6 +7,16 @@
 corpus entries, **400 inference runs**, `--events-level verbose`, 35.6 s wall
 **Re-take:** `python3 utils/stdlib_census.py --json census.json`
 
+> **Since the take.** [S1c.1.2](s1c.1.2_test_form.md) added five fixtures to
+> the corpus on the same day. Re-taken against them, exactly one cell moves:
+> `std.algebra`'s `symmetric` goes from **7 entries to 8** and 1 084 → 1 092
+> productive firings, because
+> [`examples/features/10_expect.ein`](../../../examples/features/10_expect.ein)
+> imports it. **The zero-firing set is unchanged at 38** and every module's
+> covered/zero pair is identical, so nothing below is stale. The numbers in the
+> tables are the 2026-08-23 `114835d` take, and the command above is what
+> re-takes them.
+
 | finding | number |
 |---|---|
 | stdlib rules declared | **73**, over six modules (`std.macro` declares two macros and no rule) |

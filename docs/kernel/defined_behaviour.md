@@ -1,7 +1,9 @@
 # Ein — defined behaviour
 
 Thirteen behaviours whose only statement, until 2026-08-21, was a Python source
-file. This page is where they are *stated*.
+file. This page is where they are *stated* — and, since M1c S1c.1.2, where the
+first diagnostics that never had a Python counterpart are stated too
+([§4.1](#41-the-first-errors-with-no-python-counterpart--m1c-s1c12)).
 
 > **Audience: both.** §1 and §4 are what you meet when a program is wrong;
 > §2 and §3 are what a reimplementer needs and a puzzle author can skip.
@@ -262,9 +264,35 @@ oracle's observable and reproducing them is what
 for; each is pinned by a `crash-parity` corpus entry. **Now that there is no
 Python, they are a name without a referent** — the strongest candidate on this
 page for deliberate change, and the reason nothing has changed yet is that
-every one of them is a checked-in expected output. A future ein.rs-only error
-with no Python counterpart has no rule to follow and would decide this
-question by arriving; none exists in the corpus.
+every one of them is a checked-in expected output.
+
+### 4.1 The first errors with no Python counterpart — M1c S1c.1.2
+
+The paragraph above used to end *"a future ein.rs-only error with no Python
+counterpart has no rule to follow and would decide this question by arriving;
+none exists in the corpus."* Five arrived on 2026-08-23 with
+[`:expect`](ir/03-ein-lang/01_grammar.md#query), and what they decided is:
+**a diagnostic that never had a Python counterpart names no exception class.**
+It is a `kb load error:` like any other loader message, in ein's own words.
+
+| input | message | exit |
+|---|---|---|
+| a `(query …)` keyword outside the allow-list | `(query …): unknown keyword :<k> — one of :goal :goal-text :hrules :hypothesis-relations :no-hypothesis :expect :mode` | 1 |
+| `:expect` that is not `none` / `(model …)` / `(or (model …) …)` | ``:expect <what> — expected `none`, `(model …)` or `(or (model …) …)` `` | 1 |
+| `:expect` naming a relation the program does not have | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
+| `:expect` omitting a relation the `:goal` asks about | `:expect does not name <r>, which the query's :goal asks about` | 1 |
+| a `?var` or `_` inside an `:expect` | ``:expect — `?v` is a variable; an expectation is an answer, not a pattern`` | 1 |
+
+They accumulate and `; `-join with every other loader error, as §1.5's do, and
+each is pinned by a fixture in
+[`examples/broken/load/`](../../examples/broken/load/).
+
+**And one non-error that is also new**: a query whose `:expect` is *false*
+prints `:expect FAILED` with the disagreement and exits **1** — a result, not a
+usage error, so it takes §4's code rather than §5's. `ein solve` on a file with
+several `(query …)` blocks runs each and exits non-zero if any expectation
+fails; the flags that name a single output path are refused on such a file with
+exit **2**, which is §5's code because that one *is* a usage error.
 
 ## 5. The CLI surface
 

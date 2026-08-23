@@ -194,7 +194,21 @@ different messages, and the corpus has a fixture directory for each
 > `.expected` file under `examples/broken/` is baselined against them.
 
 - **Which keywords each form requires** — `:match` / `:assert` in a rule,
-  `:goal` in a query, `:rule` / `:using` / `:derives` in a step.
+  `:goal` in a query, `:rule` / `:using` / `:derives` in a step. Since M1c
+  [S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+  a `(query …)` also has a keyword **allow-list**, so an unrecognised one is a
+  load error rather than an ignored pair — the grammar still admits any
+  `KEYWORD Value`.
+- **The shape of a `:expect` value.** `(model <fact>*)`,
+  `(or (model …) …)` and `none` are read structurally by the loader; to the
+  grammar they are an ordinary `GenericList` with a `SYMBOL` head and an
+  `OrForm`, which is exactly why they cost no production here. The shape the
+  form was first proposed with — a bare list of facts, `:expect ((p A) (q B))`
+  — is **not** in this grammar: `ListHead` is a `SYMBOL`, `VAR`, `WILDCARD` or
+  `EQ` and never a list, so admitting it would have changed the shape of every
+  form to buy one keyword its ergonomics. Also loader-checked: that an
+  expectation's facts are **ground**, that the relations it names exist, and
+  that it names the goal's.
 - **Arity, ground-vs-pattern, and type-checking** of a fact's arguments
   against its `(relation …)` signature.
 - **Unbound variables**: a `:assert` variable that no `:match` premise binds.

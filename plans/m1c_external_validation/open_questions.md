@@ -17,8 +17,9 @@ as Q-M10.1–3 and the rows below say so.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1c.1](#q-m1c1--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | open — recommendation: **`:expect` on `query`, several queries per file**; [S1c.1.2](p1c.1_stdlib_conformance/s1c.1.2_test_form.md) decides *(was Q-M1a.19)* |
-| [Q-M1c.2](#q-m1c2--what-may-an-expectation-say) | What may a `(test …)` expectation say? | open — recommendation: four keys, each demanded by a rule *(was Q-M1a.20)* |
+| [Q-M1c.1](#q-m1c1--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | **closed 2026-08-23 → (c)**, `:expect` on `query`, several queries per file *(was Q-M1a.19)* |
+| [Q-M1c.2](#q-m1c2--what-may-an-expectation-say) | What may an expectation say? | **closed 2026-08-23** — a `(model …)` of ground facts, relation-closed; `(or …)` a set; `none` for ⊥; route parked *(was Q-M1a.20)* |
+| [Q-M1c.6](#q-m1c6--how-does-an-expectation-say-a-relation-is-empty) | How does an expectation say a relation is *empty*? | **open**, and found by building S1c.1.2 |
 | ~~Q-M1c.3~~ | What makes a benchmark encoding fair? | **moved 2026-08-23 with P1c.2 → [Q-M10.1](../m10_external_benchmarks/open_questions.md#q-m101--what-makes-an-encoding-fair)** |
 | ~~Q-M1c.4~~ | Does a proof assistant belong in a timing table? | **moved 2026-08-23 with P1c.2 → [Q-M10.2](../m10_external_benchmarks/open_questions.md#q-m102--does-a-proof-assistant-belong-in-a-timing-table)** |
 | ~~Q-M1c.5~~ | Where does the benchmark live, and is any of it a gate? | **moved 2026-08-23 with P1c.2 → [Q-M10.3](../m10_external_benchmarks/open_questions.md#q-m103--where-does-the-benchmark-live-and-is-any-of-it-a-gate)** |
@@ -64,7 +65,39 @@ second check is silently discarded is worse than no test file, so
 `config`'s last-wins stays: a config is a setting, a query is content, and the
 two want opposite rules.
 
-Decided in [S1c.1.2](p1c.1_stdlib_conformance/s1c.1.2_test_form.md).
+### Closed 2026-08-23 — (c), as recommended
+
+Built in [S1c.1.2](p1c.1_stdlib_conformance/s1c.1.2_test_form.md). What the
+build changed about the recommendation, and what it cost:
+
+- **The value needs a head.** The proposed shape — a bare list of facts,
+  `:expect ((p A H1) (q B H2))` — **does not parse**, and the reason is
+  structural rather than incidental: `ListHead ::= SYMBOL | VAR | WILDCARD |
+  EQ` and never a list
+  ([`00_ebnf.md` §2](../../docs/kernel/ir/03-ein-lang/00_ebnf.md)). Widening
+  `ListHead` would change the grammar of *every* form to buy one keyword its
+  ergonomics. The shape is therefore `(model <fact>*)`, whose `SYMBOL` head
+  costs nothing: it parses, dumps and round-trips today, `(or (model …)
+  (model …))` falls out of `OrForm` with no further work, and `model` needs no
+  reservation because it is read structurally under `:expect` and nowhere else.
+  **The keyword count is still one**, which is what the row that decided this
+  was about.
+- **`Program.query` became `Program.queries` + an active index**, and the CLI
+  loads once per query rather than sharing a `Kb` — not a concession but the
+  honest shape, since `:hypothesis-relations` and `:hrules` are per-query and
+  two queries over one KB are two genuinely different searches. Fourteen call
+  sites; the goldens did not move, because **no file in the 128-entry corpus
+  had a second `(query …)` to discard**. The trap was real and had never been
+  sprung.
+- **One thing the recommendation did not anticipate**: an artefact flag names
+  *one* path. `--events`, `--trace`, `--json-summary` and `--dump-states` are
+  refused (exit 2) on a file that asks more than one question, because
+  overwriting quietly is the last-wins discard again under another name.
+- **And the keyword vocabulary became an allow-list**, which row 1 of the table
+  above did not price. It is the same argument one level up: a mistyped
+  `:expect` that parsed, loaded and checked nothing would be exactly the
+  failure the keyword exists to prevent. Six keywords plus the obsolete
+  `:mode`; anything else is a load error.
 
 ## Q-M1c.2 — What may an expectation say?
 
@@ -96,3 +129,51 @@ cut** and let [S1c.1.1](p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promise
 table say whether a rule needs it. Under (c) it arrives as one more keyword on
 the same query, which is the other way (c) beats (b): the vocabulary grows a
 key at a time instead of arriving whole.
+
+### Closed 2026-08-23
+
+Both sub-questions went the way they were recommended, and the census settled
+the residue:
+
+- **Stored negatives do not count.** Closing `pet-loc` asserts its *positive*
+  extent only. A `(not …)` is listable as an ordinary fact and is then checked
+  for presence — so a test can pin one deliberately without dragging in the
+  negative-completion rules' whole output, which on a Zebra puzzle is most of
+  the model.
+- **`Contradiction` is spelled `:expect none`.** `(model)` is a legal
+  expectation and means *the empty model*, which is a different claim; the two
+  needed different spellings and this is the pair.
+- **Route stays out**, and
+  [`stdlib_census.md` §8](p1c.1_stdlib_conformance/stdlib_census.md#8-four-declarations-are-two-rules)
+  is why: the pairs that raise the question — `converse` ≡ `imply2-reverse`,
+  `imply2-fwd` ≡ `includes` — are alpha-identical bodies under two names, so
+  one test covers both and there is nothing a `:fires` would distinguish.
+  `domain-elimination` and `range-elimination`, the case that motivated the
+  residue, have *different* bodies and an `:expect` naming the relation tells
+  their results apart.
+
+What the build added to the vocabulary beyond the recommendation: nothing. What
+it added to the *rules*: expectations are **ground** — a `?var` or `_` in an
+expectation is a load error, because an expectation is an answer and a pattern
+there would match whatever the engine happened to derive, which is a test that
+cannot fail.
+
+## Q-M1c.6 — How does an expectation say a relation is *empty*?
+
+**Opened 2026-08-23**, by building [S1c.1.2](p1c.1_stdlib_conformance/s1c.1.2_test_form.md).
+
+Relation-closure has one state it cannot express. Naming a relation closes it,
+and the only way to name one is to list a fact in it — so **"relation `r` is
+empty in this model" is unsayable**. Usually that does not matter, because a
+relation nobody mentions is unconstrained and an empty one is normally
+uninteresting. It matters in exactly one place: rule 1 makes the goal's
+relations mandatory, so a query whose goal relation is *legitimately* empty in
+a `Solution` cannot be given a valid `:expect` at all — the loader refuses it.
+
+Whether such a query exists in practice is the open part. `:expect none`
+covers the `Contradiction` case, which is the usual reason a goal projects
+nothing. Three shapes if one turns up, cheapest first: allow a bare relation
+name as a model item (`(model p (q A))` — "`p` is empty, `q` is exactly
+`(q A)`"); relax rule 1 to "names, or the model is `(model)`"; or a keyword.
+**Deliberately not decided while no fixture needs it** — the residue-parking
+discipline Q-M1c.2 used for route.

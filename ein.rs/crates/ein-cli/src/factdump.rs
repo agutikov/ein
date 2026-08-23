@@ -16,7 +16,7 @@ use ein_ir::{Ast, Node, NodeId};
 /// relations*, so type/object atoms drop out position-independently. Every
 /// `:hrules` pair contributes, not just the first — ein.py accumulates.
 pub fn hypothesis_target_relations(ast: &Ast, terms: &Terms, kb: &Kb) -> Vec<Symbol> {
-    let Some(query) = kb.program().query.as_ref() else {
+    let Some(query) = kb.program().query() else {
         return Vec::new();
     };
     let mut names: Vec<String> = Vec::new();

@@ -143,6 +143,18 @@
 1    examples/broken/load/derivation_cycle.ein :: render rules
 1    examples/broken/load/derivation_cycle.ein :: saturate
 1    examples/broken/load/derivation_cycle.ein :: solve
+1    examples/broken/load/expect_is_a_pattern.ein :: render rules
+1    examples/broken/load/expect_is_a_pattern.ein :: saturate
+1    examples/broken/load/expect_is_a_pattern.ein :: solve
+1    examples/broken/load/expect_omits_the_goal.ein :: render rules
+1    examples/broken/load/expect_omits_the_goal.ein :: saturate
+1    examples/broken/load/expect_omits_the_goal.ein :: solve
+1    examples/broken/load/expect_unknown_keyword.ein :: render rules
+1    examples/broken/load/expect_unknown_keyword.ein :: saturate
+1    examples/broken/load/expect_unknown_keyword.ein :: solve
+1    examples/broken/load/expect_unknown_relation.ein :: render rules
+1    examples/broken/load/expect_unknown_relation.ein :: saturate
+1    examples/broken/load/expect_unknown_relation.ein :: solve
 0    examples/broken/load/hrule_duplicate_name.ein :: render rules
 1    examples/broken/load/hrule_duplicate_name.ein :: saturate
 1    examples/broken/load/hrule_duplicate_name.ein :: solve
@@ -347,6 +359,13 @@
 0    examples/features/09_adjacent_via_same_house.ein :: saturate --dump
 0    examples/features/09_adjacent_via_same_house.ein :: solve
 0    examples/features/09_adjacent_via_same_house.ein :: solve -e
+0    examples/features/10_expect.ein :: render constraints
+0    examples/features/10_expect.ein :: render lattice
+1    examples/features/10_expect.ein :: render rules
+0    examples/features/10_expect.ein :: saturate
+0    examples/features/10_expect.ein :: saturate --dump
+0    examples/features/10_expect.ein :: solve
+0    examples/features/10_expect.ein :: solve -e
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules

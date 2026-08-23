@@ -6,6 +6,33 @@
 **Decides:** [Q-M1c.1](../open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects),
 [Q-M1c.2](../open_questions.md#q-m1c2--what-may-an-expectation-say)
 
+**Status: shipped 2026-08-23.** (c) as recommended, with one change the
+recommendation could not have known about and two costs it did not price.
+
+| finding | number |
+|---|---|
+| the form | **`:expect (model …)` / `(or (model …) …)` / `none`** — one keyword, as (c) promised |
+| why `(model …)` and not the proposed bare list | `ListHead ::= SYMBOL \| VAR \| WILDCARD \| EQ` — **a list head does not parse**, and widening it would change the grammar of every form |
+| grammar productions added | **0** — the shape is loader-checked, not parsed |
+| call sites touched by `Program.query` → `queries` | **14** |
+| corpus files that relied on the last-query-wins discard | **0 of 128** — the trap was real and had never been sprung |
+| goldens that moved | **0** — 188 golden lines added, all of them cells for the new fixtures, none changed |
+| load-time refusals added | **5**, each with a `broken/load/` fixture: unknown keyword, malformed shape, unknown relation, omits the goal, not ground |
+| …and they are the **first ein.rs-only diagnostics** | which decided a question [`defined_behaviour.md` §4](../../../docs/kernel/defined_behaviour.md) left open: a message with no Python counterpart names **no exception class** |
+| the cost nobody predicted | an artefact flag names **one** path, so `--events` / `--trace` / `--json-summary` / `--dump-states` are refused (exit 2) on a file that asks more than one question |
+| tests added | **31** — 8 shape, 7 loader, 12 comparison, 7 CLI (minus the two grammar-level cases that never reach the loader) |
+| opened | [Q-M1c.6](../open_questions.md#q-m1c6--how-does-an-expectation-say-a-relation-is-empty) — closure cannot say a relation is *empty*, and rule 1 makes that reachable |
+
+**Where the spec of record went.** This stage doc and the phase README both say
+the form must land in `grammar.lark`. That file left with `ein.py` at M1a
+S1a.10.5 and its successor is
+[`docs/kernel/ir/03-ein-lang/00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md),
+which is what carries it — and it carries it as **§4, what the grammar
+deliberately does not enforce**, because `KwPair ::= KEYWORD Value` already
+admits every shape `:expect` uses. The cross-milestone edit M2's GBNF lift
+reads is therefore smaller than the stage expected: no new production, one
+paragraph about what the loader checks.
+
 ## Context
 
 Three shapes are on the table. The third is the user's, added 2026-08-20 after

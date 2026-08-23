@@ -125,7 +125,7 @@ pub fn goal_bindings(
     let goal = match goal {
         Some(g) => g,
         None => {
-            let query = match kb.program().query.as_ref() {
+            let query = match kb.program().query() {
                 Some(q) => q,
                 None => return Vec::new(),
             };
@@ -192,7 +192,7 @@ pub fn goal_plan_error(
 ) -> Option<crate::compile::CompileError> {
     let goal = match goal {
         Some(g) => g,
-        None => query_value(ast, kb.program().query.as_ref()?, "goal")?,
+        None => query_value(ast, kb.program().query()?, "goal")?,
     };
     let rule = Rule {
         name: terms.kernel.query_rule,

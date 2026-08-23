@@ -995,8 +995,7 @@ fn each_demo_carries_a_query_goal() {
         let kb = load_file(&mut ast, &mut terms, &path).expect("the demo loads");
         let query = kb
             .program()
-            .query
-            .as_ref()
+            .query()
             .unwrap_or_else(|| panic!("{}: no (query …) block", demo_id(&path)));
         assert!(
             ein_infer::query_value(&ast, query, "goal").is_some(),

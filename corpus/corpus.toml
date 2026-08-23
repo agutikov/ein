@@ -202,6 +202,12 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 note   = "2026-08-20 — an `adjacent-via` over an irreflexive `?S` is not satisfied from the SAME house. `disjunctive-prune-{fwd,bwd}` used to exempt `h_other = h1` with a `(neq …)` premise the following `(absent (?S …))` already decided, and the determinate zebras never showed it; `zebra2-minus-15.ein` reported 55 models against 32 real ones. Contradiction at root, 0 enterings; with the guard back it answers Ambiguity k=4."
 
 [[entry]]
+path   = "examples/features/10_expect.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "M1c S1c.1.2 — the `:expect` form. The only entry in the corpus whose `solve` runs check a claim the *file* makes rather than one a golden makes: exit 1 if the model is not the one it names. Relation-closure is what it demonstrates — `next-to`'s listed extent is complete, so a surplus mirrored edge fails it, which is the case a per-fact assertion cannot catch."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
@@ -492,6 +498,30 @@ runs   = ["solve", "saturate", "render rules"]
 path   = "examples/broken/load/config_bad_value.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/expect_unknown_keyword.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1c S1c.1.2 — `(query …)`'s keywords are an allow-list. A mistyped `:expect` used to parse, load, check nothing and say nothing."
+
+[[entry]]
+path   = "examples/broken/load/expect_unknown_relation.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1c S1c.1.2 — `:expect` closes every relation it names, so a name the program does not have would close nothing and pass for ever."
+
+[[entry]]
+path   = "examples/broken/load/expect_omits_the_goal.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1c S1c.1.2 rule 1 — the goal's relations are mandatory; naming a relation is what closes it."
+
+[[entry]]
+path   = "examples/broken/load/expect_is_a_pattern.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1c S1c.1.2 — an expectation is an answer, so it is ground. A `?var` is a test that cannot fail."
 
 [[entry]]
 path   = "examples/broken/load/config_unknown_flag.ein"

@@ -1,0 +1,9 @@
+;; Rule 1: the goal's relations are mandatory. An expectation that does not pin
+;; what the query asked is not an expectation — and since naming a relation is
+;; what closes it, "pins" and "names" are the same word here.
+
+(relation p Thing Place)
+(relation q Thing Place)
+(p A H1)
+(q A H1)
+(query :goal (p A ?h) :expect (model (q A H1)))

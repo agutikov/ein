@@ -12,6 +12,24 @@ port's [P1a.2](../../../docs/history/m1a_rust/README.md#p1a2--kb-core) gate is
 byte-identical load errors, and a `pytest.raises(match=…)` fragment is not
 something a second implementation can be held to.
 
+## The `:expect` refusals — M1c S1c.1.2
+
+Four of the fixtures here are newer than the rest and share a reason. `:expect`
+lets a query state its own answer, so a `(query …)` can now carry a *test* —
+and a test that silently checks nothing is worse than no test at all. Each of
+these four is a way to write one:
+
+| fixture | what it would have checked |
+|---|---|
+| `expect_unknown_keyword.ein` | nothing — `:expct` parsed, loaded and was ignored |
+| `expect_unknown_relation.ein` | the extent of a relation that does not exist, which is empty for ever |
+| `expect_omits_the_goal.ein` | something other than what the query asked |
+| `expect_is_a_pattern.ein` | whatever the engine derived — a `?var` matches it |
+
+They are also the first loader messages in the repo with no Python counterpart,
+which is what [`defined_behaviour.md`
+§4.1](../../../docs/kernel/defined_behaviour.md) is about.
+
 ## Format
 
 ```

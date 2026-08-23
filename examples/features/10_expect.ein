@@ -1,0 +1,51 @@
+;;; `:expect` — a query that states its own answer (M1c S1c.1.2).
+;;;
+;;; Every other check in this repo is *relative*: the goldens compare ein.rs to
+;;; its own past, and after P1a.10 there is no second engine to compare it to.
+;;; `:expect` is the one kind that is not — the program says what it should
+;;; derive, and the engine checks it. `ein solve` exits 1 when the claim is
+;;; false, so this file is a test that needs no harness to be one.
+;;;
+;;; ── What the form means ────────────────────────────────────────────────────
+;;;
+;;;   :expect (model <fact>*)         exactly one model, matching these facts
+;;;   :expect (or (model …) (model …))  that SET of models; k is the count
+;;;   :expect none                    a Contradiction
+;;;
+;;; and the rule that gives it teeth: **naming a relation closes it**. The
+;;; `next-to` facts below are `next-to`'s *complete* extent in the model, not a
+;;; subset — so a surplus edge fails this file, which is exactly what a
+;;; per-fact assertion cannot catch. Relations the expectation never mentions
+;;; (`instance`, `relation`, `is-a`) are unconstrained and stay out of it.
+;;;
+;;; Stored negatives are *not* closed: `(not (next-to A C))` below is checked
+;;; for presence like any other fact, and the negatives it does not list are
+;;; nobody's business. Otherwise every expectation would drag in the whole
+;;; output of the negative-completion rules.
+
+(import std.algebra :symbols (symmetric))
+
+(relation instance Thing Type)
+(relation next-to  Seat Seat :why "{1} is next to {2}")
+
+(instance A Seat) (instance B Seat) (instance C Seat)
+
+;; One authored edge each; `symmetric` mirrors both, which is the derivation
+;; the expectation is really about — the mirrored edges are not in the source.
+(symmetric next-to)
+(next-to A B)
+(next-to B C)
+
+;; The ends of a three-seat row are not neighbours, and nothing derives that:
+;; it is authored, and listed below to show a `(not …)` being pinned.
+(not (next-to A C))
+
+(query
+  :goal (next-to A ?s)
+  ;; No hypothesis generation: this is a saturation demo, and the model is the
+  ;; saturated root. Without it the search speculates `next-to` edges and the
+  ;; closed extent below would be a different (and much larger) claim.
+  :no-hypothesis (next-to instance)
+  :expect (model (next-to A B) (next-to B A)
+                 (next-to B C) (next-to C B)
+                 (not (next-to A C))))

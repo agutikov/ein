@@ -27,7 +27,7 @@ use rustc_hash::FxHashSet;
 /// `:hrules` targets. Empty when there is no query.
 fn solution_relations(ast: &Ast, kb: &Kb, terms: &Terms) -> FxHashSet<ein_core::Symbol> {
     let mut rels: FxHashSet<ein_core::Symbol> = FxHashSet::default();
-    let Some(query) = kb.program().query.as_ref() else {
+    let Some(query) = kb.program().query() else {
         return rels;
     };
     let mut names: Vec<String> = Vec::new();

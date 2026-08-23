@@ -221,7 +221,7 @@ fn shape_of(rel: &str) -> Shape {
         given,
         background,
         rules_total: p.rules.len(),
-        has_query: p.query.is_some(),
+        has_query: p.query().is_some(),
     }
 }
 

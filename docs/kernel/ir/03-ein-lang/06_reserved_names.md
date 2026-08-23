@@ -145,8 +145,21 @@ candidate stays parked and is re-judged at every later quiescence
 | `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror) | `ein-infer/saturator.rs` (`SYMMETRIC`) |
 | `hypothesis-relations` | `(query … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(query … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
+| `expect` | `(query … :expect (model …) \| (or (model …) …) \| none)` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein-ir/expect.rs` (shape, at load) + `ein-infer/expect.rs` (the comparison) |
+
+**A `(query …)` keyword outside this set is a load error** since M1c S1c.1.2 —
+the six above plus `:goal`, `:goal-text`, `:hrules` and the obsolete, ignored
+`:mode`. It was a silent no-op, which stopped being survivable when a keyword
+could carry a *test*.
 
 ## Not reserved (removed)
+
+- **`model`** — the head of an `:expect` value, and *not* reserved. It is read
+  structurally in that one position and nowhere else, so a relation, rule or
+  atom called `model` is unaffected and needs no SYMBOL exclusion. That is
+  most of why the shape is `(model …)` rather than a new form: the grammar
+  did not have to learn anything
+  ([`01_grammar.md` § Query](01_grammar.md#query)).
 
 - **`closed`** (bare) — no longer a kernel trigger since the 2026-06-15 dunder
   split; the kernel keys on `__closed__` (above) and the bare `closed` is free

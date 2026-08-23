@@ -171,7 +171,7 @@ fn reads_negation(plan: &Plan, terms: &ein_core::Terms) -> bool {
 /// contributes — ein.py accumulates rather than returning at the first.
 fn hrule_activators(s: &Session<'_>) -> FxHashMap<Symbol, Vec<Vec<Symbol>>> {
     let mut out: FxHashMap<Symbol, Vec<Vec<Symbol>>> = FxHashMap::default();
-    let Some(query) = s.kb.program().query.as_ref() else {
+    let Some(query) = s.kb.program().query() else {
         return out;
     };
     for &pair in query.kw_pairs.iter() {

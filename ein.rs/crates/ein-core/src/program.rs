@@ -24,13 +24,32 @@ pub struct Program {
     /// only consumer. Rules and hrules share **one** name-space.
     pub hrules: Registry<Rule>,
     pub macros: Registry<Macro>,
-    pub query: Option<Query>,
+    /// **Every** `(query …)` block, in source order — plural since M1c
+    /// [S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md).
+    ///
+    /// It was `Option<Query>` filled by *the last block, silently*, which is
+    /// the one failure mode a file carrying `:expect` must not have: a second
+    /// check that loads, is discarded, and says nothing. `config` keeps
+    /// last-wins on purpose — a config is a setting and a query is content,
+    /// and the two want opposite rules.
+    pub queries: Vec<Query>,
+    /// Which of `queries` this load is *about*. One run answers one query
+    /// (`:hypothesis-relations` and `:hrules` are per-query, so two queries
+    /// over one KB are two genuinely different searches); the CLI loads once
+    /// per query and every consumer reads [`Program::query`], so nothing
+    /// downstream has to know there were others.
+    pub active_query: usize,
     pub config: Option<SolverConfig>,
 }
 
 impl Program {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// The query this load is about — `queries[active_query]`.
+    pub fn query(&self) -> Option<&Query> {
+        self.queries.get(self.active_query)
     }
 
     /// Register a relation; the *declared* flag wins over open-world.

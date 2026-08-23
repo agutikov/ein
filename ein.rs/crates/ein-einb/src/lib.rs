@@ -274,6 +274,13 @@ pub struct OpenOptions {
     pub verify_digest: bool,
     /// The engine asking. Defaults to this build's.
     pub engine: String,
+    /// Which `(query …)` block the rebuilt program is *about* — M1c S1c.1.2.
+    ///
+    /// A container stores its program as canonical text and re-parses it, so
+    /// every query in the source is in the file; without this the reader would
+    /// always rebuild about the first one, and `ein solve x.einb` would answer
+    /// question 1 while saying it answered question 2.
+    pub query: usize,
 }
 
 impl Default for OpenOptions {
@@ -282,6 +289,7 @@ impl Default for OpenOptions {
             sources: Vec::new(),
             verify_digest: true,
             engine: engine_version().to_string(),
+            query: 0,
         }
     }
 }
@@ -355,7 +363,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
     let program =
         sections::read_program_names(want(Kind::Program, "PROGRAM")?, &mut ast, &mut maps)?;
     let provs = sections::read_prov(want(Kind::Prov, "PROV")?, terms, &mut maps)?;
-    let loaded = sections::load_program(&program, &mut ast, terms)?;
+    let loaded = sections::load_program(&program, &mut ast, terms, opts.query)?;
 
     if meta.state.is_derived() && !freshness.keeps_derived() {
         return Ok(Opened {

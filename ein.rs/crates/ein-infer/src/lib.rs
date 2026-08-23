@@ -27,6 +27,7 @@ pub mod compile;
 pub mod contradiction;
 pub mod engine;
 pub mod events;
+pub mod expect;
 pub mod explain;
 pub mod firing;
 /// The T1a.6.9.2 verification instrument — off unless the build asked for it.
@@ -64,6 +65,7 @@ pub use compile::{
 pub use contradiction::{Contradiction, contradicts, detect, has_contradiction};
 pub use engine::Engine;
 pub use events::{Events, Level};
+pub use expect::{Report, check};
 pub use explain::{
     Explanation, ExplanationBudget, explain, minimal_contradiction_frontier,
     smallest_contradiction_frontier,

@@ -78,10 +78,17 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
             params.join(" ")
         ));
     }
-    out.push(match &program.query {
-        Some(q) => format!("QUERY {}", q.kw_pairs.len()),
-        None => "QUERY None".to_string(),
-    });
+    // One line per `(query …)` block, in source order. Identical to the
+    // pre-M1c single line for the 0- and 1-query files that are the whole
+    // corpus; a second block used to be discarded at load and so could not
+    // reach a digest at all.
+    if program.queries.is_empty() {
+        out.push("QUERY None".to_string());
+    } else {
+        for q in &program.queries {
+            out.push(format!("QUERY {}", q.kw_pairs.len()));
+        }
+    }
     match &program.config {
         None => out.push("CONFIG None".to_string()),
         Some(c) => {

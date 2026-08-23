@@ -637,10 +637,15 @@ pub fn read_program_names<'a>(
 /// the ones the file stored; a reader that has decided not to believe the
 /// derived sections keeps this one, because re-loading `PROGRAM` is exactly
 /// what reading the `.ein` would have done (design/10 §4).
-pub fn load_program(section: &ProgramSection<'_>, ast: &mut Ast, terms: &mut Terms) -> Result<Kb> {
+pub fn load_program(
+    section: &ProgramSection<'_>,
+    ast: &mut Ast,
+    terms: &mut Terms,
+    query: usize,
+) -> Result<Kb> {
     let forms = ein_ir::parse(ast, section.text, section.root.as_deref())
         .map_err(|e| EinbError::Program(e.to_string()))?;
-    ein_ir::load(ast, terms, &forms, None).map_err(|e| EinbError::Program(e.0))
+    ein_ir::load_query(ast, terms, &forms, None, query).map_err(|e| EinbError::Program(e.0))
 }
 
 // ── NOGOODS ────────────────────────────────────────────────────────

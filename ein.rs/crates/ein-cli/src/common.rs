@@ -86,10 +86,22 @@ pub fn parse_or_exit(ast: &mut Ast, path: &Path) -> Option<Vec<NodeId>> {
 /// not the `.ein`, so "re-parse the source" (design/10 §4) is not available to
 /// it — and the one thing that must not happen is believing it silently.
 pub fn load_any_or_exit(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Option<Kb> {
+    load_any_query_or_exit(ast, terms, path, 0)
+}
+
+/// [`load_any_or_exit`], about query number `query` — M1c S1c.1.2's plural
+/// `(query …)`, in both formats, because a container stores its program as
+/// text and therefore carries every query the source had.
+pub fn load_any_query_or_exit(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    path: &Path,
+    query: usize,
+) -> Option<Kb> {
     let bytes = read_bytes_or_crash(path);
     #[cfg(feature = "einb")]
     if ein_einb::is_einb(&bytes) {
-        return open_einb(ast, terms, path, &bytes);
+        return open_einb(ast, terms, path, &bytes, query);
     }
     #[cfg(not(feature = "einb"))]
     if bytes.starts_with(b"EINB\0") {
@@ -114,7 +126,7 @@ pub fn load_any_or_exit(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Option
             return None;
         }
     };
-    match ein_ir::load(ast, terms, &forms, path.parent()) {
+    match ein_ir::load_query(ast, terms, &forms, path.parent(), query) {
         Ok(kb) => Some(kb),
         Err(e) => {
             eprintln!("kb load error: {e}");
@@ -124,7 +136,13 @@ pub fn load_any_or_exit(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Option
 }
 
 #[cfg(feature = "einb")]
-fn open_einb(ast: &mut Ast, terms: &mut Terms, path: &Path, bytes: &[u8]) -> Option<Kb> {
+fn open_einb(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    path: &Path,
+    bytes: &[u8],
+    query: usize,
+) -> Option<Kb> {
     let opts = ein_einb::OpenOptions {
         // The paths the file names, re-hashed where they still exist. One that
         // does not claims nothing: a container shipped without its source is
@@ -137,6 +155,7 @@ fn open_einb(ast: &mut Ast, terms: &mut Terms, path: &Path, bytes: &[u8]) -> Opt
                     .collect()
             })
             .unwrap_or_default(),
+        query,
         ..ein_einb::OpenOptions::default()
     };
     match ein_einb::open_bytes(bytes, terms, &opts) {

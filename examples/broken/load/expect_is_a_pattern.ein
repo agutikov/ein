@@ -1,0 +1,6 @@
+;; An expectation is an *answer*, so it is ground. A `?var` here would match
+;; whatever the engine happened to derive, which is a test that cannot fail.
+
+(relation p Thing Place)
+(p A H1)
+(query :goal (p A ?h) :expect (model (p A ?h)))

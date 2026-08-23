@@ -553,7 +553,7 @@ fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb) {
         }
     }
 
-    if let Some(query) = p.query.as_ref() {
+    if let Some(query) = p.query() {
         println!();
         println!(";; Query");
         for &pair in query.kw_pairs.iter() {

@@ -3,7 +3,7 @@
 **Estimate:** ~3 weeks — 1 phase, 5 stages, 15 days of stage estimates
 (13 until [S1c.1.1](p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)
 measured what S1c.1.4 is actually up against).
-**Status:** **started 2026-08-23** — S1c.1.1 shipped, four stages to go.
+**Status:** **started 2026-08-23** — S1c.1.1 and S1c.1.2 shipped, three stages to go.
 **Created 2026-08-21** at the user's direction — one evening after
 the same batch put P1a.10–12 into M1a — out of one phase that was never the
 Rust port and one that had nowhere to live.
@@ -69,7 +69,7 @@ depend on the two sharing a directory.
 
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
-| [P1c.1](p1c.1_stdlib_conformance/README.md) | stdlib conformance — `:expect` on `query`, `ein test`, a corpus per rule | 5 (1 shipped) | 3 w | every stdlib rule has a program that activates it and states what it derives |
+| [P1c.1](p1c.1_stdlib_conformance/README.md) | stdlib conformance — `:expect` on `query`, `ein test`, a corpus per rule | 5 (2 shipped) | 3 w | every stdlib rule has a program that activates it and states what it derives |
 
 5 stages, 15 days of stage estimates ≈ 3 weeks. The other five went to
 [M10](../m10_external_benchmarks/README.md) on 2026-08-23.
@@ -89,6 +89,30 @@ difference, and every equational lemma — has never been run.
 
 That is what "not contradicted" means in practice, and it is why the rest of
 this milestone is worth its three weeks.
+
+### The form, built — S1c.1.2, 2026-08-23
+
+`:expect` on `query`
+([Q-M1c.1](open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)
+closed to option (c)), with several `(query …)` blocks per file and the
+last-one-silently-wins discard gone:
+
+```lisp
+(query :goal   (pet-loc Zebra ?h)
+       :expect (model (pet-loc Zebra House-5) (pet-loc Fox House-1)
+                      (not (pet-loc Zebra House-1))))
+```
+
+**Naming a relation closes it** — the listed `pet-loc` facts are that
+relation's complete extent, so a *surplus* fact fails, which is the case a
+per-fact assertion cannot catch and the shape of the bug this milestone is
+written around. `(or (model …) …)` compares model **sets** with `k` implied by
+the count; `none` is `Contradiction`. `ein solve` exits 1 when the claim is
+false, so a file carrying one is a test with no harness around it —
+[`examples/features/10_expect.ein`](../../examples/features/10_expect.ein) is
+the worked fixture. What it cost: **0** new grammar productions, **0** goldens
+moved, 14 call sites, and five new load-time refusals which are the repo's
+first diagnostics with no Python counterpart.
 
 ## Acceptance for the milestone
 

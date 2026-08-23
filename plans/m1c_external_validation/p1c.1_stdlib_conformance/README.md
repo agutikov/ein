@@ -46,10 +46,30 @@ that gets **stronger** when the oracle leaves.
 | stage | title | est. | status |
 |---|---|---|---|
 | [S1c.1.1](s1c.1.1_what_the_stdlib_promises.md) | What the stdlib promises, and what is exercised | 3 d | **shipped 2026-08-23** — [`stdlib_census.md`](stdlib_census.md) |
-| [S1c.1.2](s1c.1.2_test_form.md) | How a program states what it expects | 3 d | next |
-| [S1c.1.3](s1c.1.3_test_subcommand.md) | `ein test` | 2 d | |
+| [S1c.1.2](s1c.1.2_test_form.md) | How a program states what it expects | 3 d | **shipped 2026-08-23** — `:expect`, and `Program.queries` |
+| [S1c.1.3](s1c.1.3_test_subcommand.md) | `ein test` | 2 d | next |
 | [S1c.1.4](s1c.1.4_stdlib_corpus.md) | The stdlib corpus | ~~4~~ **6 d** | re-estimated against the census |
 | [S1c.1.5](s1c.1.5_gate.md) | In the gate | 1 d | |
+
+### What S1c.1.2 built
+
+`:expect` on `query`, [Q-M1c.1](../open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)'s
+option (c), with several `(query …)` blocks per file. Three things are worth
+knowing without opening the stage:
+
+- **The value is `(model <fact>*)`, not the bare list of facts the option was
+  proposed with**, because a list cannot be a list's head in this grammar and
+  widening `ListHead` would have changed every form. It is still one keyword,
+  and it cost **zero** new grammar productions — the shape is checked by the
+  loader.
+- **The last-query-wins discard is gone**, and the corpus proved the trap had
+  never been sprung: 0 of 128 entries had a second `(query …)`, and 0 goldens
+  moved. What it costs is that an artefact flag naming one path — `--events`,
+  `--trace`, `--json-summary`, `--dump-states` — is refused on a file that asks
+  more than one question.
+- **Five load-time refusals**, and they are the first diagnostics in the repo
+  with no Python counterpart, which settled a question `defined_behaviour.md`
+  had left for whichever error arrived first.
 
 ### What the census settled
 
@@ -91,9 +111,13 @@ Three findings change what the later stages do:
 - A **negative** case per rule wherever one is meaningful: not only "this fires
   and derives X" but "this does *not* fire", which is where a guard bug lives.
   `disjunctive-prune`'s was exactly that shape.
-- The form is in `grammar.lark` — the spec of record — and
-  [M2](../../m2_nl_to_ir/README.md)'s GBNF lift reads it, so the grammar change
-  is a deliberate cross-milestone edit and not a local convenience.
+- ~~The form is in `grammar.lark`~~ — the spec of record is
+  [`00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md) since M1a
+  S1a.10.5, and **it needed no new production**: `KwPair ::= KEYWORD Value`
+  already admits `:expect`'s shape, so what it carries is a §4 paragraph about
+  what the *loader* checks. [M2](../../m2_nl_to_ir/README.md)'s GBNF lift reads
+  that file, so the edit is still the deliberate cross-milestone one — it is
+  just one paragraph rather than a grammar change.
 - Adding a rule to the stdlib without a test fails the gate, the same way a
   file without a corpus entry does today.
 

@@ -54,7 +54,7 @@ key on it).
 | `relation` | declare a relation-type + its arg-type signature | `(relation <name> <T1> <T2> [<T3> …] [:kw v]*)` |
 | `rule` | a saturation rewrite rule | `(rule <name> (<param-vars>*) :match … :assert … …)` |
 | `hrule` | a hypothesis-generation rule (drives the blind enumerator) | same shape as `rule` |
-| `query` | what to ask the engine | `(query :goal … [:goal-text …] [:hrules …])` |
+| `query` | what to ask the engine — and, with `:expect`, what the answer should be | `(query :goal … [:goal-text …] [:hrules …] [:expect …])`; several per file |
 | `config` | solver knobs | `(config [:flag v]*)` |
 | `trace` | **engine output** — derivation log (engine-emitted, not authored) | `(trace <step\|branch-open\|…>*)` |
 | *anything else* | **a fact** | `(= …)` · `(not …)` · generic `(<NAME> <args>* [:kw v]*)` |
@@ -459,8 +459,29 @@ mean "for this `?x`".
 (query
   :goal <expr>                             ; what to find / verify
   [:goal-text <STRING>]                    ; NL headline template (optional)
-  [:hrules (<activator> …)])               ; hypothesis-generator activators
+  [:hrules (<activator> …)]                ; hypothesis-generator activators
+  [:hypothesis-relations (<rel> …)]        ; speculate only these
+  [:no-hypothesis (<rel> …)]               ; …or never these
+  [:expect <expectation>])                 ; what the answer should be (M1c)
 ```
+
+**The keywords are an allow-list.** Those six, plus the obsolete `:mode`, are
+what a `(query …)` may carry; anything else is a **load error**. It used to be
+a silent no-op, which was survivable while a query only asked a question and
+became untenable the moment one could carry a *test*: a mistyped `:expect`
+that loaded, checked nothing and said nothing is the exact failure the keyword
+exists to prevent.
+
+**A file may carry several `(query …)` blocks**, each an independent question
+over the same ontology, rules and facts. Before M1c
+[S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+the **last** one silently won and the rest were discarded at load. `ein solve`
+now runs every one of them in order, printing `query <i> of <n>` above each;
+the flags that name a single output path — `--events`, `--trace`,
+`--json-summary`, `--dump-states` — are refused on a file that asks more than
+one question, because one path cannot hold two runs and overwriting quietly is
+the discard again under another name. `(config …)` keeps last-wins: a config is
+a *setting*, a query is *content*, and the two want opposite rules.
 
 The engine answers idea 03's three task classes —
 [`docs/ideas/03-three-task-classes.md`](../../../../plans/ideas/03-three-task-classes.md)
@@ -471,6 +492,43 @@ models: `k = 1` / `k > 1` / `k = 0`) — **not** chosen up front. There is one
 `ein solve`, no `--mode` flag, and the engine's goal test is hardwired to
 SOLVE. A `:mode` keyword on the query is **obsolete** (vestigial; the engine
 ignores it) — omit it.
+
+**`:expect` — what the answer should be (M1c
+[S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)).**
+A query may state its own answer, and the engine checks it: `ein solve` exits
+**1** when the claim is false, and prints what disagreed. Three shapes, and the
+verdict is *implied* by which one is used rather than asserted beside it:
+
+```lisp
+:expect (model <fact>*)                 ; exactly one model — Solution
+:expect (or (model …) (model …) …)      ; that SET of models — k is the count
+:expect none                            ; Contradiction
+```
+
+Three rules, and the third is the one that gives the form its teeth:
+
+1. **The goal's relations are mandatory.** An expectation that does not pin
+   what the query asked is not an expectation, and does not load.
+2. **More is allowed.** Any ground fact may be listed, including a `(not …)`,
+   so a test can pin the consequence at a distance rather than restating the
+   rule it is about.
+3. **Naming a relation closes it.** If `:expect` mentions `pet-loc` at all,
+   the listed `pet-loc` facts are that relation's *complete* extent in the
+   model. Relations it never mentions are unconstrained.
+
+Rule 3 sits between the two useless extremes: a per-fact assertion cannot
+catch a **surplus** fact, and a whole-state golden pins 250 facts of `is-a*`
+and activator noise that no test means to assert. Two clarifications it needs:
+**stored negatives are not closed** — closing `pet-loc` says nothing about the
+extent of `(not (pet-loc …))`, and a listed `(not …)` is checked for presence
+like any other fact — and `(or …)` compares model **sets**, never sequences,
+because the order a search finds models in is not observable.
+
+The value is checked at *load*: an expectation that is not one of the three
+shapes, that names a relation no declaration or fact makes, that omits the
+goal's relations, or that contains a `?var` (an expectation is an answer, not
+a pattern) is a load error. `examples/features/10_expect.ein` is the worked
+fixture and `examples/broken/load/expect_*.ein` are the four refusals.
 
 **`:goal-text` headline template (optional).** A `:goal-text "<tmpl>"` string
 renders the one-line natural-language answer for `ein solve`'s result table,

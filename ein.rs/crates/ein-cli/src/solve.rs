@@ -26,13 +26,18 @@ use crate::printers::{self, Phases, TimingDumper};
 /// Replaces the shared loader so `--timing` can split parse from kb-load
 /// without re-doing the work. `n_forms` counts the *parsed* top-level forms,
 /// before import resolution flattens them.
-fn timed_load(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Option<(Kb, f64, f64, usize)> {
+fn timed_load(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    path: &Path,
+    query: usize,
+) -> Option<(Kb, f64, f64, usize)> {
     // A `.einb` has no parse phase to time and no top-level forms to count:
     // its whole open is the load, which is the point of it (T1a.8.1.7).
     #[cfg(feature = "einb")]
     if ein_einb::is_einb(&crate::common::read_bytes_or_crash(path)) {
         let t = Instant::now();
-        let kb = crate::common::load_any_or_exit(ast, terms, path)?;
+        let kb = crate::common::load_any_query_or_exit(ast, terms, path, query)?;
         return Some((kb, 0.0, t.elapsed().as_secs_f64() * 1000.0, 0));
     }
     let text = read_text_or_crash(path);
@@ -46,7 +51,7 @@ fn timed_load(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Option<(Kb, f64,
     };
     let parse_ms = t.elapsed().as_secs_f64() * 1000.0;
     let t = Instant::now();
-    match ein_ir::load(ast, terms, &forms, path.parent()) {
+    match ein_ir::load_query(ast, terms, &forms, path.parent(), query) {
         Ok(kb) => {
             let load_ms = t.elapsed().as_secs_f64() * 1000.0;
             Some((kb, parse_ms, load_ms, forms.len()))
@@ -410,15 +415,56 @@ fn resolve_jobs(n: i64) -> usize {
     n.max(1) as usize
 }
 
+/// The artefact flags: each names **one** path, so each is incompatible with a
+/// file that asks more than one question.
+const ONE_PATH_FLAGS: [&str; 4] = ["events", "trace", "json-summary", "dump-states"];
+
 pub fn run(m: &ArgMatches) -> i32 {
     let file = m.get_one::<String>("file").expect("required").clone();
+    let (mut rc, mut index) = (0, 0usize);
+    loop {
+        let (code, n_queries) = run_query(m, &file, index);
+        rc = rc.max(code);
+        index += 1;
+        // A load failure reports `n_queries = 0` and stops the loop: the next
+        // query would fail to load in exactly the same way, and saying so
+        // twice is not a second finding.
+        if code == 1 && n_queries == 0 || index >= n_queries {
+            break;
+        }
+    }
+    rc
+}
+
+/// One query of the file: load it, solve it, print it, check its `:expect`.
+///
+/// Returns the exit code and **how many** `(query …)` blocks the file has, so
+/// [`run`] can come back for the rest. Loading once per query is not a
+/// concession: `:hypothesis-relations` and `:hrules` are per-query, so two
+/// queries over one KB are two genuinely different searches, and sharing a
+/// loaded `Kb` between them would be an optimisation rather than a semantics.
+fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let Some((mut kb, parse_ms, load_ms, n_forms)) =
-        timed_load(&mut ast, &mut terms, Path::new(&file))
+        timed_load(&mut ast, &mut terms, Path::new(file), index)
     else {
-        return 1;
+        return (1, 0);
     };
+    let n_queries = kb.program().queries.len();
+    if n_queries > 1 {
+        if let Some(flag) = ONE_PATH_FLAGS
+            .iter()
+            .find(|f| m.get_one::<String>(f).is_some())
+        {
+            eprintln!(
+                "error: --{flag} names one path and this file asks {n_queries} \
+                 questions — split the queries, or drop the flag"
+            );
+            return (2, 0);
+        }
+        println!("query {} of {n_queries}", index + 1);
+    }
 
     // --shuffle randomises the within-layer commitment order. Traversal-only —
     // the verdict is shuffle-invariant (S1.5b.31); a fresh seed each run
@@ -440,7 +486,7 @@ pub fn run(m: &ArgMatches) -> i32 {
         && let Err(e) = printers::print_root_hyp_preview(&ast, &mut terms, &mut kb)
     {
         eprintln!("{e}");
-        return 1;
+        return (1, n_queries);
     }
 
     // --timing: isolate the (rule, activator) plan-compilation cost — the real
@@ -454,7 +500,7 @@ pub fn run(m: &ArgMatches) -> i32 {
         let mut eng = ein_infer::Engine::new();
         if let Err(e) = eng.compile_all(&ast, &mut terms, &kb, &mut off) {
             eprintln!("{}", crate::common::compile_error_line(e));
-            return 1;
+            return (1, n_queries);
         }
         compile_ms = t.elapsed().as_secs_f64() * 1000.0;
         n_plans = eng.len();
@@ -470,7 +516,7 @@ pub fn run(m: &ArgMatches) -> i32 {
         Ok(d) => d,
         Err(e) => {
             eprintln!("{e}");
-            return 1;
+            return (1, n_queries);
         }
     };
     let stop_after = if m.get_flag("exhaustive") {
@@ -523,19 +569,19 @@ pub fn run(m: &ArgMatches) -> i32 {
                     Err(e) => eprintln!("{e}"),
                 }
             }
-            return 2;
+            return (2, n_queries);
         }
         Err(SolveError::Compile(e)) => {
             eprintln!("{}", crate::common::compile_error_line(e));
-            return 1;
+            return (1, n_queries);
         }
         Err(SolveError::Saturate(e)) => {
             eprintln!("{}", crate::common::saturate_error_line(&e));
-            return 1;
+            return (1, n_queries);
         }
         Err(e) => {
             eprintln!("{e}");
-            return 1;
+            return (1, n_queries);
         }
     };
     let elapsed_ms = t0.elapsed().as_secs_f64() * 1000.0;
@@ -558,7 +604,7 @@ pub fn run(m: &ArgMatches) -> i32 {
         Ok(t) => t,
         Err(line) => {
             eprintln!("{line}");
-            return 1;
+            return (1, n_queries);
         }
     };
     println!("{table}");
@@ -608,5 +654,38 @@ pub fn run(m: &ArgMatches) -> i32 {
             Err(e) => eprintln!("{e}"),
         }
     }
-    0
+    // Last of all, because a failing expectation is exactly when someone wants
+    // the trace above it: the query's own claim about its answer, checked. A
+    // `:expect` that `solve` merely ignored would be worse than no `:expect`,
+    // which is the whole reason the keyword is not a comment.
+    (check_expectation(&ast, &terms, &kb, &solved.answer), n_queries)
+}
+
+/// Evaluate the active query's `:expect`, printing what disagreed.
+///
+/// Exit 1 on a failure, which is §4's code for "the engine says no": a false
+/// claim by the program is a result, not a usage error.
+fn check_expectation(ast: &Ast, terms: &Terms, kb: &Kb, answer: &Answer) -> i32 {
+    let Some(query) = kb.program().query() else {
+        return 0;
+    };
+    let Some(node) = ein_infer::query_value(ast, query, "expect") else {
+        return 0;
+    };
+    // The loader rejected every shape this can refuse, so the `Err` arm is
+    // unreachable from a program and says so rather than inventing a message.
+    let Ok(expectation) = ein_ir::expect::parse(ast, node) else {
+        eprintln!("internal error: :expect passed the loader and did not parse");
+        return 1;
+    };
+    let report = ein_infer::expect::check(ast, terms, &expectation, answer);
+    if report.passed {
+        println!("\n  :expect        holds");
+        return 0;
+    }
+    println!("\n  :expect        FAILED");
+    for line in &report.lines {
+        println!("    {line}");
+    }
+    1
 }

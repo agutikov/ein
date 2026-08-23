@@ -107,7 +107,7 @@ fn render_fact(kb: Option<&Kb>, terms: &Terms, relation_name: &str, args: &[Stri
 
 /// The query's `:goal-text` template rendered under `b`.
 fn goal_text(ast: &Ast, kb: Option<&Kb>, b: &Row) -> Option<String> {
-    let query = kb?.program().query.as_ref()?;
+    let query = kb?.program().query()?;
     let node = query_value(ast, query, "goal-text")?;
     let Node::Str(s) = ast.node(node) else {
         return None;
@@ -116,7 +116,7 @@ fn goal_text(ast: &Ast, kb: Option<&Kb>, b: &Row) -> Option<String> {
 }
 
 fn query_goal(ast: &Ast, kb: Option<&Kb>) -> Option<NodeId> {
-    let query = kb?.program().query.as_ref()?;
+    let query = kb?.program().query()?;
     query_value(ast, query, "goal")
 }
 
