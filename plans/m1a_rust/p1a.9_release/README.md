@@ -77,13 +77,20 @@ is being released.
 > 242.6 s.
 > [Q-M1d.6](../../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 > is what the stage found and did not fix.
+>
+> **And the second one is taken** — [`feature_cost.md`](feature_cost.md),
+> 2026-08-23. S1a.9.3's `--no-default-features` task was written as a
+> compile check; run as a measurement it found that two of the three features
+> that build was documented to drop were not being dropped, one of them
+> because it does not exist. The phase's reflex held twice: **measure the
+> thing the plan assumed.**
 
 ## Stages
 
 | stage | title | est. | |
 |---|---|---|---|
 | [S1a.9.0](s1a.9.0_slow_corpus.md) | The slow corpus, re-priced | 3 d | ✅ **shipped 2026-08-22** — 17 slow entries → 3, and the nightly tier from four minutes to 19 s |
-| [S1a.9.3](s1a.9.3_packaging.md) | Packaging and release | 2 d | |
+| [S1a.9.3](s1a.9.3_packaging.md) | Packaging and release | 2 d | ✅ **shipped 2026-08-23** — `ein --version`, a six-job release workflow, and two feature flags that were not gating what they said |
 | [S1a.9.4](s1a.9.4_documentation.md) | Documentation | 1 d | |
 
 **S1a.9.1 and S1a.9.2 do not exist.** See the scope change above; the gap is
@@ -97,14 +104,32 @@ deliberate.
   CPython ([S1a.9.0](s1a.9.0_slow_corpus.md), record:
   [`corpus_cost.md`](corpus_cost.md)). Three entries are slow, `cost_ms` is
   what says so, and two tests hold the flag to it.
-- `ein` binaries for Linux (x86_64 + aarch64), macOS (universal2) and Windows
-  (x86_64), each sweeping the corpus on its own platform.
-- `ein --version` reports engine version, protocol version, feature flags and
-  the stdlib manifest hash.
-- Release artefacts carry checksums; the release job refuses to publish if
-  `cargo test --workspace`, the slow corpus sweep or the acceptance gate is
-  red.
-- A `--no-default-features` build still compiles and passes the unit suite.
+- **Written, unrun** — `ein` binaries for Linux (x86_64 + aarch64), macOS
+  (universal2) and Windows (x86_64), each sweeping the corpus on its own
+  platform. **The matrix is written and reviewed; the first `v*` tag is what
+  runs it** — this
+  repository has never been built for any of those three platforms, and a
+  cross-build without a runner proves the linker was willing rather than that
+  the corpus sweeps
+  ([S1a.9.3 § What CI has not yet proved](s1a.9.3_packaging.md#what-ci-has-not-yet-proved)).
+  What the stage *could* do from here it did: `.gitattributes`, so Windows
+  fails for Windows reasons; a T3 sweep before every upload, so a failure
+  names a cell; a musl leg that cannot block a release.
+- ✅ `ein --version` reports engine version, protocol version, feature flags
+  and the stdlib manifest hash — the last of those as SHA-256 of the manifest
+  **as resolved**, naming which of the three resolution steps answered, so an
+  installed binary and a checkout can be told apart in one line. Ten tests.
+- ✅ Release artefacts carry checksums — one per leg plus a set-wide
+  `SHA256SUMS` cross-checked against them — and `publish` `needs:` the gate,
+  the `--jobs` cross-diff and the dependency-light build, so a red gate cannot
+  ship a binary.
+- ✅ A `--no-default-features` build still compiles and passes the unit suite
+  (607 of 616) — **and now drops what it claimed to.** It did not:
+  [`feature_cost.md`](feature_cost.md) found `rayon` linked into the
+  dependency-light binary, an `events` feature that never existed, and a
+  documented allocator cost four days stale (15.9 % → +25.2 %). The gating is
+  asserted as a dependency-graph check in both directions, because compiling
+  without a feature was never the claim.
 - `docs/api/` describes a surface that **exists** — the Rust embedding one —
   and the Python contract it used to specify is filed as history rather than
   left as a promise ([S1a.9.4](s1a.9.4_documentation.md)).

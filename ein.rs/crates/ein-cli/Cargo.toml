@@ -12,24 +12,39 @@ repository.workspace = true
 fork-delta = ["ein-infer/fork-delta"]
 # Same forwarding, for S1a.7.0's instrument.
 spec-audit = ["ein-infer/spec-audit"]
-# T1a.6.2.7 — the global allocator, on by default. `--no-default-features`
-# is the escape hatch: it builds against the system allocator and costs
-# 15.9 % of `solve zebra2 -e` and 7.5 % of `solve zebra -e`.
-default  = ["snmalloc", "einb"]
+# `--no-default-features` is the escape hatch, and since S1a.9.3 T1a.9.3.2 it
+# drops all three rather than two: no vendored C++ allocator, no container, no
+# work-stealing pool. It costs a measured **+25.2 % of `solve zebra2 -e`** and
+# **+36.2 % of `solve zebra -e`** — the allocator's share, re-taken 2026-08-23
+# in plans/m1a_rust/p1a.9_release/feature_cost.md. (It read 15.9 % / 7.5 %
+# here, which is the 2026-08-19 figure: nothing about the allocator changed,
+# the engine got faster and did not get faster at allocating.)
+default  = ["snmalloc", "einb", "parallel"]
+# T1a.6.2.7 — the global allocator.
 snmalloc = ["dep:snmalloc-rs"]
-# P1a.8 — `.einb` read/write, on by default (design/12 §3). Off, `ein kb` is
-# not registered and a `.einb` argument is refused by the loader that would
-# have opened it, which is what a build with no container in it should say.
+# P1a.8 — `.einb` read/write (design/12 §3). Off, `ein kb` is not registered
+# and a `.einb` argument is refused by the loader that would have opened it,
+# which is what a build with no container in it should say.
 einb     = ["dep:ein-einb"]
+# P1a.7's fan-out, forwarded so the *binary* can drop `rayon`. It could not
+# until S1a.9.3 T1a.9.3.2: `ein-infer` was taken with its defaults below, so
+# the dependency-light build linked a pool it had no flag to reach — the
+# feature was real in the engine and fiction in the artefact. Off, `--jobs N`
+# parses and is inert, which `ein --version` says by not listing `parallel`.
+parallel = ["ein-infer/parallel", "ein-render/parallel"]
 
 [dependencies]
 ein-core   = { path = "../ein-core" }
 ein-ir     = { path = "../ein-ir" }
-ein-infer  = { path = "../ein-infer" }
-ein-render = { path = "../ein-render" }
+ein-infer  = { path = "../ein-infer", default-features = false }
+ein-render = { path = "../ein-render", default-features = false }
 ein-einb   = { path = "../ein-einb", optional = true }
 clap.workspace = true
 snmalloc-rs = { workspace = true, optional = true }
+# `--version`'s stdlib line (T1a.9.3.4). On the *binary*, not on `ein-ir`,
+# which keeps the digest out of the engine crates' dependency budget for the
+# same reason the allocator is here: this is the program, not the library.
+sha2.workspace = true
 
 [lib]
 name = "ein_cli"

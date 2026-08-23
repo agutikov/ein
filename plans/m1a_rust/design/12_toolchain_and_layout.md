@@ -131,17 +131,29 @@ crate).
 
 | feature | default | effect |
 |---|---|---|
-| `parallel` | off during P1a.0–6, on from P1a.7 | pulls `rayon`, enables `--jobs > 1`. **Not yet added** — S1a.7.1 is two tasks from needing it, and the two it has shipped ([`ENGINE`](../p1a.7_parallelism/shared_state.md) and the load-time name closure) are unconditional, because a table that does not grow is better single-threaded too |
+| `parallel` | **on** (`ein-infer`, forwarded by `ein-cli`) | pulls `rayon`, enables `--jobs > 1`. Taken up at T1a.7.2.1. **Forwarded to the binary at S1a.9.3 T1a.9.3.2**, which is when it became droppable at all: `ein-cli` took `ein-infer` with its defaults, so `--no-default-features` on the binary still linked the pool — the feature was real in the engine and fiction in the artefact. The rule the fix settled on is one sentence — **a crate that forwards `jobs` forwards `parallel`**: `ein-render`'s `shape.rs` hands a job count to `SolveOptions`, so it gets its own default-on `parallel` row and `ein-cli` takes it without defaults and forwards both halves; `ein-einb` needs no row, because it never forwards a job count. `ein-render` additionally takes `ein-infer/parallel` as an unconditional **dev**-dependency, since `cargo test --workspace --no-default-features` would otherwise build `jobs_invariance` without a pool and let it compare `--jobs 1` against itself across 20 712 cells; `the_sweep_is_not_vacuous` makes that a failure rather than a green. Off, `--jobs N` parses and is inert — which `ein --version` says by not listing the feature |
 | `einb` | on (`ein-cli`) | `.einb` read/write. Off, `ein kb` is not registered and a `.einb` argument is refused by the loader that would have opened it |
-| `events` | on | `--events FILE` emission (compiled out entirely when off, for a zero-overhead measurement build) |
+| `events` | — | **Not taken up, and measured before it was dropped (S1a.9.3 T1a.9.3.2).** The row reserved a flag that would compile the `--events` emitter out "for a zero-overhead measurement build"; nothing ever added it, and the emitter is unconditional. What it would have removed is one discriminant compare per emit site — `if events.on()`, guarding a closure that is never entered when the sink is `Off`. Priced with the strongest possible version of the feature (`Events::on()` replaced by `false`, so LLVM folds every guard): `solve zebra2 -e` **+3.9 %**, `solve zebra -e` **+1.8 %** — *slower*, at two sample counts, because dead-code elimination moved the layout of a hot function. There is no win here to reserve a flag for ([feature_cost.md §1](../p1a.9_release/feature_cost.md#1-the-events-guard--not-worth-a-feature)) |
 | `python` | off | PyO3 bindings. Reserved; nothing builds it (see the `pyo3` row) |
-| `snmalloc` | **on** (`ein-cli`) | the global allocator (T1a.6.2.7). `--no-default-features` builds against the system allocator, which is what a distro package that would rather not vendor a C++ allocator wants — and costs 15.9 % of `solve zebra2 -e` |
+| `snmalloc` | **on** (`ein-cli`) | the global allocator (T1a.6.2.7). `--no-default-features` builds against the system allocator, which is what a distro package that would rather not vendor a C++ allocator wants — and costs **+25.2 % of `solve zebra2 -e` and +36.2 % of `solve zebra -e`**, re-taken 2026-08-23 ([feature_cost.md §2](../p1a.9_release/feature_cost.md#2---no-default-features--what-a-packager-is-buying)). It read *15.9 % of `solve zebra2 -e`* here until then, which is the 2026-08-19 figure and still true of that engine: nothing about the allocator changed, the engine got 3–8× faster and did not get faster at allocating, so the share grew while the absolute cost fell. The one cell the system allocator wins is `render rules` (−34 %), which is process start-up and snmalloc's arena set-up |
 | `fork-delta` | off | [D3](../divergences.md)'s fixture: compiles the pre-[S1a.6.9](../p1a.6_performance/s1a.6.9_fork_entry_delta.md) fresh-fork saturator back in, reachable with `EIN_FORK_DELTA=0` |
 | `counters` | off | the work counters ([S1a.6.1](../p1a.6_performance/s1a.6.1_profile_baseline.md) T1a.6.1.3), compiled out entirely when off |
 
-The `events` flag matters: benchmarks build with `--no-default-features
---features einb` so no branch on the hot path exists at all, and the
-conformance runs build with it on. Both are checked in CI.
+**What CI checks about all this, since S1a.9.3.** The release tier builds
+`--no-default-features` and runs the suite (607 of 616 tests; the nine that go
+are `.einb`'s and the help-surface golden, which is of the default surface on
+purpose) — and then asserts the *dependency graph* in both directions, because
+"it compiles without them" was true for two years while "it links none of
+them" was not. `cargo tree -p ein-cli --no-default-features` must contain no
+`snmalloc-rs`, no `ein-einb`, no `blake3` and no `rayon`; the default build
+must contain all four. A build that still links a work-stealing pool it cannot
+reach compiles perfectly well, which is exactly why compiling is not the
+claim.
+
+The paragraph that stood here said benchmarks build `--no-default-features
+--features einb` "so no branch on the hot path exists at all". They do not,
+they never did, and §3's `events` row now records why they should not: the
+branch costs nothing measurable.
 
 ---
 
@@ -174,11 +186,42 @@ Three tiers.
   an sdist that omits the in-tree backend ([11](11_shared_assets.md)
   § Packaging) is unbuildable and nothing else would notice
 
-**Release**
+**Release** — [`.github/workflows/release.yml`](../../../.github/workflows/release.yml),
+written at S1a.9.3 (2026-08-23). Six jobs on a `v*` tag:
 
-- Everything nightly, plus `--jobs {1,2,4,8}` cross-diff, thread
-  sanitizer, a `--no-default-features` build, and the packaging matrix
-  (Linux/macOS/Windows binaries; **no wheels** — see the `pyo3` row).
+- `gate` — the whole per-commit gate plus `EIN_CORPUS_SLOW=1` and
+  `EIN_ID_SEEDS=8`, i.e. nightly's depth in one job.
+- `jobs-cross-diff` — `EIN_JOBS_SWEEP=2,4,8,16` over
+  `ein-render/tests/jobs_invariance.rs`, which is P1a.7's acceptance and the
+  successor to `ein-conformance --tier T3`. It replaces a stub that had sat
+  `if: false` since this file was written; the phase it was waiting for
+  shipped 2026-08-22.
+- `no-default-features` — build, test, and the two dependency-graph
+  assertions above.
+- `build` — four required legs: `x86_64`/`aarch64` Linux (glibc, on the
+  *oldest* runner image, because the glibc a binary links is the floor of the
+  systems it runs on), macOS universal2 (two slices, `lipo`), Windows MSVC.
+  Each **sweeps the corpus at T3 on its own platform** — that is the check
+  that would otherwise be silent, since line endings, filesystem
+  case-sensitivity and locale formatting are properties of the platform and
+  not of the target triple — then runs the artefact's own `--version` and a
+  solve, and writes a SHA-256 beside it.
+- `static-linux` — one musl `--no-default-features` binary, `continue-on-error`
+  and **not** in `publish`'s `needs:`. musl has no C++ toolchain on the runner,
+  so snmalloc cannot build there; the release notes quote what that costs
+  rather than letting a reader pick the static binary blind.
+- `publish` — `needs: [gate, jobs-cross-diff, no-default-features, build]`, so
+  a red gate cannot ship a binary. It writes one `SHA256SUMS` over the set,
+  cross-checks it against each leg's own attestation, generates notes that say
+  what is *in* the release (including a missing static binary), and calls `gh
+  release create`.
+
+**No wheels** (see the `pyo3` row), and no thread sanitizer: the workspace is
+`#![forbid(unsafe_code)]` outside `ein-einb::cast`, the fan-out shares
+`&FactStore` and nothing else
+([design/08 §6](08_parallelism.md#6-what-must-be-sync-and-how)), and the
+question TSan would answer — *do the threads agree?* — is answered directly by
+`jobs-cross-diff` over 20 712 corpus cells.
 
 ### Benchmarks
 

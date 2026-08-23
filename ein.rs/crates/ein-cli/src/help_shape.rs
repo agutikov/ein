@@ -41,6 +41,13 @@ fn render(out: &mut String, path: &str, cmd: &Command) {
 
     let mut rows: Vec<String> = Vec::new();
     for arg in cmd.get_arguments() {
+        // Parser furniture, not surface. `help` is `clap`'s own, matching the
+        // `-h` `argparse` also generated; `version` was `clap`'s too until
+        // S1a.9.3 T1a.9.3.4 registered one by hand — registered for the help
+        // listing only, since `run` answers it before the parser. The skip
+        // means the golden did not move when `-V` was added, which is right:
+        // what the golden is for is the *ported* surface, and `--version`'s
+        // content has ten tests of its own (`tests/version.rs`).
         if arg.get_id() == "help" || arg.get_id() == "version" {
             continue;
         }

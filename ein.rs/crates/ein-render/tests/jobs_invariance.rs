@@ -91,6 +91,21 @@ fn solves(op: Op) -> bool {
     )
 }
 
+/// **The sweep is not vacuous.** Without `ein-infer/parallel` every layer runs
+/// on the committing thread whatever `--jobs` says, so `--jobs 8` and `--jobs
+/// 1` are the same code and the whole sweep below passes by construction —
+/// 20 712 cells of nothing. S1a.9.3 T1a.9.3.2 made that reachable by accident
+/// (`ein-render` stopped taking `ein-infer`'s defaults), so it is a failure
+/// here rather than a silent green, the way `dot_wellformed` fails without
+/// Graphviz.
+#[test]
+fn the_sweep_is_not_vacuous() {
+    assert!(
+        ein_infer::build::features().contains(&"parallel"),
+        "this build has no fan-out: `--jobs N` is inert, so the sweep below          compares --jobs 1 against itself. Enable `ein-infer/parallel`."
+    );
+}
+
 #[test]
 fn jobs_does_not_move_any_observable() {
     let ops = ops();

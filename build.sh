@@ -116,7 +116,8 @@ for artefact in "${ARTEFACTS[@]}"; do
 done
 echo
 [ "$DO_ENGINE" = 1 ] &&
-    echo "   the engine:    $TARGET_DIR/ein solve examples/zebra.ein"
+    echo "   the engine:    $TARGET_DIR/ein solve examples/zebra.ein" &&
+    echo "   what it is:    $TARGET_DIR/ein --version   (features, and the stdlib it resolves)"
 [ "$DO_C" = 1 ] &&
     echo "   the baselines: build/zebra-levels   (milliseconds)" &&
     echo "                  build/zebra-oracles  (minutes — c/README.md says why)" &&

@@ -1,6 +1,7 @@
 # Python. The engine left at M1a S1a.10.5; what is left that is Python is
-# `utils/`, `examples/gen_zebra2_variants.py`, and — from P1a.9 — the PyO3
-# module's own build tree and its pytest suite.
+# `utils/` and `examples/gen_zebra2_variants.py`. The PyO3 module these
+# patterns were also held for was deferred at P1a.9 (Q-M1a.23) and is not
+# being built; they cost nothing and stay.
 *.pyc
 __pycache__/
 *.egg-info/
@@ -18,7 +19,7 @@ dist/
 
 # Virtualenvs. `.venv-pypy` was the project's PyPy interpreter, created by
 # `venv_install.sh pypy3`; both the script and the reason for it went with the
-# Python engine. The patterns stay: P1a.9's binding tests want a clean venv.
+# Python engine. Nothing in the tree makes one now.
 .venv/
 venv/
 .venv*

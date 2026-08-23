@@ -466,9 +466,18 @@ pub fn command() -> Command {
         .about("Graph-based relation algebra solver for Zebra-style logic puzzles.")
         .subcommand_required(true)
         .arg_required_else_help(false)
+        // `clap`'s own is disabled: the flag is registered below and handled
+        // in `run` before the parser, because this command requires a
+        // subcommand and `--version` has none. ein.py had neither.
         .disable_version_flag(true)
-        // ein.py has no `help` subcommand and no `--version`.
         .disable_help_subcommand(true)
+        .arg(
+            Arg::new("version")
+                .long("version")
+                .short('V')
+                .action(ArgAction::SetTrue)
+                .help("engine version, event protocol, features, stdlib hash"),
+        )
         .subcommand(render_command())
         .subcommand(solve_command())
         .subcommand(

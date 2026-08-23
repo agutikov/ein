@@ -18,7 +18,9 @@ ein-core  = { path = "../ein-core" }
 ein-ir    = { path = "../ein-ir" }
 # `SOLUTIONS` stores what a solve produced — `Answer`, `MonotonicStats`, the
 # unsat core. Nothing else here needs the engine.
-ein-infer = { path = "../ein-infer" }
+# The container never fans out — `default-features = false` for the reason
+# `ein-render` gives (S1a.9.3 T1a.9.3.2).
+ein-infer = { path = "../ein-infer", default-features = false }
 blake3.workspace = true
 
 [dev-dependencies]

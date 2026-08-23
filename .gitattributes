@@ -1,0 +1,23 @@
+# Line endings — S1a.9.3 T1a.9.3.3.
+#
+# The gate compares **bytes**: 37 `.expected` files, the DOT and trace goldens,
+# `corpus_shapes.md5`, and `stdlib/MANIFEST.sha256`, which is a SHA-256 over
+# every `std.*` module's contents. A checkout that rewrote LF to CRLF would
+# change every one of those digests, and the failure would be a Windows-only
+# wall of red that says nothing about Windows.
+#
+# Git for Windows installs with `core.autocrlf=true`, so this is the difference
+# between the corpus sweep meaning something on a Windows runner and it being
+# a checkout artefact. Nothing in this repository is CRLF-sensitive in the
+# other direction: there is no `.bat`, no `.ps1`, and no file git detects as
+# binary.
+* text=auto eol=lf
+
+# Named rather than left to detection, because these are the ones a byte
+# comparison reads and a mis-detection would be silent.
+*.ein       text eol=lf
+*.expected  text eol=lf
+*.dot       text eol=lf
+*.md5       text eol=lf
+*.sha256    text eol=lf
+*.jsonl     text eol=lf

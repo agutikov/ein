@@ -70,7 +70,7 @@ of their properties; after that, formal inference is cheap.*
 ## The thirteen components — built, scheduled, open
 
 **Built** means in [`ein.rs/`](ein.rs/), asserted by `cargo test --workspace`
-(**604 tests over 69 targets, 0 failures**, 2026-08-23) and, where a number is
+(**616 tests over 70 targets, 0 failures**, 2026-08-23) and, where a number is
 given, recorded in a measurement document under
 [`plans/m1a_rust/`](plans/m1a_rust/README.md) that names the machine state it
 was taken under. **Scheduled** means a milestone with phase and stage files.
@@ -85,7 +85,7 @@ authoritative on intent.
 | **Theory Selection** | Identifies and retrieves existing theories, rules and reasoning patterns relevant to a given problem and its current formalization. | By hand: `(import std.bijection)` and `(bijective pet-loc)`; the compile unit is *rule × activator*. Two selections for one puzzle — [`zebra.ein`](examples/zebra.ein) via `std.slots`, [`zebra2.ein`](examples/zebra2.ein) via `std.bijection` — reach the same model. | [M2 Q9](plans/m2_nl_to_ir/open_questions.md) — a library of standard ontologies with override (S2.1.3). | [F12 `ideas.md`](plans/followups/f12_rules_and_relations/ideas.md) *select* a theory, do not invent properties — the LLM writes rules only as the last fallback · [F7 C](plans/followups/f7_rule_induction.md#sub-track-c--rule-set-sufficiency) rule-set sufficiency · [F16](plans/followups/f16_autoformalization/ideas.md) queens → knights keeps `T_placement + T_board` |
 | **Theory Synthesis** | Constructs new relations, constraints, rules and theories when existing knowledge is insufficient, including specialization and composition of existing theories. | — | — ([F7 B](plans/followups/f7_rule_induction.md#connection-to-m2) is flagged *on the M2 critical path*; M2's plan does not carry it yet.) | [F7](plans/followups/f7_rule_induction.md) rule induction from relations and facts, companion-rule synthesis · [F5](plans/followups/f5_rules_as_data.md) rules as data — induce `(transitive R)` from `(R a b) (R b c) (R a c)` · [F4 Q37](plans/followups/f4_cross_cutting.md#induction--rules-from-facts-q37) · [F12](plans/followups/f12_rules_and_relations/) predicate invention (every match pattern is an unnamed relation), law discovery in a higher-order relation algebra · [F13](plans/followups/f13_puzzles_beyond_zebra/ideas.md) synthesis to a semantic fixed point |
 | **Theory Transformation and Specialization** | Adapts general theories to a particular problem context, derives specialized subtheories, and transforms representations into forms better suited for reasoning. | The mechanical half: macro expansion and imports ([`ein-ir`](ein.rs/crates/ein-ir/)), activator binding of generic rules to relations, and [`.einb`](plans/m1a_rust/p1a.8_binary_container/README.md) — a loaded, optionally saturated, KB as a file. | — | [F12 `ideas3`/`ideas4`](plans/followups/f12_rules_and_relations/) `Specialize(T, C, O)`: chess → queen placement → independent set → permutation CSP, eleven transformations, partial deduction / supercompilation / theory morphisms as prior art · [F15](plans/followups/f15_math_formulae/ideas.md) theory projection into formulae · [F7 A](plans/followups/f7_rule_induction.md#sub-track-a--generalisation-automation) · [F1](plans/followups/f1_categorical_formulation.md) / [F1b](plans/followups/f1b_logical_formulation.md) the categorical and FOL readings |
-| **Symbolic Reasoning Kernel** | Executes formal reasoning over Ein representations, including saturation, deduction, rule application, constraint propagation and fixed-point computation. | [`ein-core`](ein.rs/crates/ein-core/) + [`ein-ir`](ein.rs/crates/ein-ir/) + [`ein-infer`](ein.rs/crates/ein-infer/): a register matcher (O1), semi-naive saturation (O2), NAF at the closure/world boundary (O3), contradiction (O5), provenance (O6). Parse + load `zebra2` **0.67 ms**; `solve zebra2 -e` **29 ms**, 157× the PyPy engine; all four P1a.6 targets met, the tightest with 88 % headroom. | [M1a P1a.9](plans/m1a_rust/p1a.9_release/README.md) — packaging (binaries for three platforms, `--version`) and the Rust embedding page close the port. | [F11](plans/followups/f11_deductive_layer_perf.md) beta-memories and WCOJ — measured, declined · [F5](plans/followups/f5_rules_as_data.md#kernel-minimisation--which-inference-features-belong-in-ein-lang-vs-kernel-code) kernel minimisation · [Q-M1a.8](plans/m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args) the binding key drops non-string activator args — a known bug |
+| **Symbolic Reasoning Kernel** | Executes formal reasoning over Ein representations, including saturation, deduction, rule application, constraint propagation and fixed-point computation. | [`ein-core`](ein.rs/crates/ein-core/) + [`ein-ir`](ein.rs/crates/ein-ir/) + [`ein-infer`](ein.rs/crates/ein-infer/): a register matcher (O1), semi-naive saturation (O2), NAF at the closure/world boundary (O3), contradiction (O5), provenance (O6). Parse + load `zebra2` **0.67 ms**; `solve zebra2 -e` **29 ms**, 157× the PyPy engine; all four P1a.6 targets met, the tightest with 88 % headroom. | [M1a P1a.9](plans/m1a_rust/p1a.9_release/README.md) — packaging shipped 2026-08-23 (`ein --version`, a release that cannot ship a red gate, a four-platform matrix awaiting its first tag); the Rust embedding page closes the port. | [F11](plans/followups/f11_deductive_layer_perf.md) beta-memories and WCOJ — measured, declined · [F5](plans/followups/f5_rules_as_data.md#kernel-minimisation--which-inference-features-belong-in-ein-lang-vs-kernel-code) kernel minimisation · [Q-M1a.8](plans/m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args) the binding key drops non-string activator args — a known bug |
 | **Hypothesis Search** | Explores alternative assumptions and candidate models through structured backtracking over the hypothesis lattice. | The commitment lattice (O7/O8): layer *k* holds the size-*k* commitment sets, generated by Apriori prefix-join, pruned by lookahead, no-goods and downward closure. `--jobs N` fans a layer out over threads — **same verdict, same models, same counters** on 20 712 corpus cells; **3.17–4.40×** on 8 cores. | [M1d P1d.1](plans/m1d_satisfiability/p1d.1_exhaustive_search/README.md) — why `zebra2-minus-15` does not finish: 32 models, all found by depth 3, `-e` killed at 30 min. | [F9](plans/followups/f9_e_catalog.md#what-the-catalog-taught) the closed ledger — every branch-count optimisation measured inert · [F4 Q31](plans/followups/f4_cross_cutting.md#llm-as-policy-in-search-tree-q31) the LLM as search policy · [Q-M1d.1](plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) may the search stop early |
 | **Constraint and Satisfiability Reasoning** | Enforces structural and semantic constraints, detects incompatible assignments, and searches for models satisfying the formalized theory. | Upper bounds with force — `functional` / `injective` as `(false)` rules, domain and range elimination, negative completion. Lower bounds (`total` / `surjective`) in **refutation form only**. Models are found by search, not by a decision procedure. | [M1d P1d.2](plans/m1d_satisfiability/p1d.2_obligations/README.md) obligations `L ≤ #{…} ≤ U` and three fixpoint outcomes; [P1d.3](plans/m1d_satisfiability/p1d.3_model_sets/README.md) model sets without enumeration · [M1c P1c.2](plans/m1c_external_validation/p1c.2_external_benchmarks/README.md) the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean | [`m1d/ideas.md`](plans/m1d_satisfiability/ideas.md) what saturation lacks to be satisfiability · [F12 `ideas3`](plans/followups/f12_rules_and_relations/ideas3.md) choice → saturation → conflict → backtrack · [F4 Q40](plans/followups/f4_cross_cutting.md#may-a-performance-lever-decide-what-a-complete-model-is-q40) a performance lever currently decides the verdict on two fixtures — unresolved |
 | **Contradiction Detection and Analysis** | Identifies inconsistent states and traces contradictions back to the rules, facts and hypotheses responsible for them. | `(X, ¬X)` / `(false)` detection; an AND/OR provenance DAG; the **unsat core** — the smallest set of given facts from which one recorded contradiction follows (not a subset-minimal MUS); one learned no-good per dead commitment. Fixture: [`ein-bugs/zebra2-bad.ein`](examples/ein-bugs/zebra2-bad.ein). | [Q-M1d.6](plans/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false) — ten corpus entries say *Contradiction* at the depth cap with `exhausted = false`; *incomplete* is the word they want. | [F3](plans/followups/f3_three_task_classes_first_class.md) `ein why-not` / `explain` · [F12 `ideas5`](plans/followups/f12_rules_and_relations/ideas5.md) `emit false` as a forbidden pattern, `T⁺ ∩ T⁻ = ∅` · [F9](plans/followups/f9_e_catalog.md) E7 / E19: MUS minimisation is unsound under NAF |
@@ -217,7 +217,7 @@ are **frozen constants**, because the engine they measured left the tree.
 | `--jobs N` is the same computation | 20 712 (file, op, jobs) cells, **0 moved**, 30 s; the verbose event stream byte-identical at both job counts, 2 200 561 lines included; 10 000 paired fuzz runs, zero findings | [P1a.7 § acceptance](plans/m1a_rust/p1a.7_parallelism/README.md#the-acceptance-restated) |
 | memory under parallelism | per-worker provenance: `features/01 -e` 684–708 MB → **85–91 MB**; peak RSS 79.8 / 90.3 MB at `--jobs 1 / 16` | [design/README § Measured](plans/m1a_rust/design/README.md#measured) |
 | `.einb`, the binary KB container | a saturated `zebra2` is 57 688 bytes and opens cold in **0.614 ms**; `solve x.einb` byte-identical to `solve x.ein`; 20 000 fuzzed inputs and 3 348 bit-flips rejected by the digest | [P1a.8](plans/m1a_rust/p1a.8_binary_container/README.md#acceptance-for-the-phase--all-met) |
-| the gate | 312 tests in 9 m 13 s with a Python process in 42 of them → **604 tests, 0 failures, under two minutes**, no Python | [oracle ledger](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md), [`run_tests.sh`](run_tests.sh) |
+| the gate | 312 tests in 9 m 13 s with a Python process in 42 of them → **616 tests, 0 failures, 1 m 51 s**, no Python | [oracle ledger](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md), [`run_tests.sh`](run_tests.sh) |
 | what replaced the two-engine oracle | 4 228 renderings banked as digests, 13 counter identities over every solve cell, an id-space permutation sweep: **0 answers moved**, 66 renderings (all narration); four accepted losses, named | [oracle ledger § 5–6](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#5-what-the-successor-found) |
 | the corpus | 128 entries in six groups, 629 cells as processes in 5.3 s; the slow tier 641 cells in **19.4 s** where it was 660 in 242.6 s; **two** entries are slow and `cost_ms` says so | [corpus_cost.md](plans/m1a_rust/p1a.9_release/corpus_cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry), [`corpus/`](corpus/README.md#slow) |
 | determinism | every order-sensitive site reproduces ein.py's; `--shuffle` is MT19937 exactly; a permuted id space moves 51 of 3 160 renderings and 0 answers | [design/02](plans/m1a_rust/design/02_determinism_and_order.md), [ledger](plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#5-what-the-successor-found) |
@@ -312,19 +312,28 @@ full solve — then come back here.
 ### Install
 
 ```sh
-./build.sh                       # the Rust workspace (release) + the three C baselines
-ein.rs/target/release/ein --help
+./build.sh                          # the Rust workspace (release) + the three C baselines
+ein.rs/target/release/ein --version
 ```
 
-`build.sh` needs a Rust toolchain (pinned by `ein.rs/rust-toolchain.toml`), a C
-compiler, and — for the default build — `cmake` and a C++ compiler, because
-`ein` links `snmalloc` (worth 8–16 % of a solve). `./build.sh --no-snmalloc`
-(or `cargo build --release -p ein-cli --no-default-features`) builds against the
-system allocator and needs neither. Binaries for Linux, macOS and Windows are
-[S1a.9.3](plans/m1a_rust/p1a.9_release/s1a.9.3_packaging.md)'s deliverable and
-**do not exist yet**; there is no `--version` yet either. **`pip install` is
-not a channel** — the Python binding was deferred on 2026-08-21 for want of a
-consumer ([Q-M1a.23](plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
+**[`docs/install.md`](docs/install.md) is the install page** — the two
+channels (a release binary, `cargo install --path`), how to verify a binary
+against the stdlib manifest, and what `EIN_STDLIB` does. In brief: `build.sh`
+needs a Rust toolchain (pinned by `ein.rs/rust-toolchain.toml`), a C compiler,
+and — for the default build — `cmake` and a C++ compiler, because `ein` links
+`snmalloc`. `./build.sh --no-snmalloc` (or `cargo build --release -p ein-cli
+--no-default-features`) needs neither and costs a measured **+25 % on `solve
+zebra2.ein -e`**, along with `ein kb` and `--jobs`
+([feature_cost.md](plans/m1a_rust/p1a.9_release/feature_cost.md)).
+
+`ein --version` names the build: engine version, `--events` protocol, the
+features compiled in, and the SHA-256 of the `std.*` manifest **this binary
+will load** — the one input that can differ between a binary and the checkout
+beside it. Release binaries for Linux (x86_64 + aarch64), macOS (universal2)
+and Windows are [S1a.9.3](plans/m1a_rust/p1a.9_release/s1a.9.3_packaging.md)'s
+matrix, written and reviewed; the first tag is what runs it. **`pip install`
+is not a channel** — the Python binding was deferred on 2026-08-21 for want of
+a consumer ([Q-M1a.23](plans/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
 
 > **There was a Python implementation** — `ein.py/` — and it was the reference
 > for five phases of the port. It left the tree at M1a
@@ -399,7 +408,7 @@ sub-language, the reserved names and the stdlib API are the rest of
 ### Development loop
 
 ```sh
-./run_tests.sh             # the gate: cargo test --workspace — 604 tests, under two minutes
+./run_tests.sh             # the gate: cargo test --workspace — 616 tests, ~1 m 51 s
 ./run_tests.sh --slow      # + the two slow corpus entries, + 8 id-space seeds (the nightly tier)
 cd ein.rs && cargo fmt && cargo clippy --workspace --all-targets -- -D warnings
 EIN_BLESS=1 ./run_tests.sh # re-bank the goldens, deliberately
@@ -420,7 +429,7 @@ of 2026-08-23:
 | milestone | what | status |
 |---|---|---|
 | **M1** — core graph reasoning | the IR, the KB, saturation, contradiction, the hypothesis loop, the trace, the Zebra solve | **shipped 2026-06-17**; its plan folder is in git history |
-| [**M1a**](plans/m1a_rust/README.md) — the Rust port | a 1:1 observable surface outside, a free hand inside; parity first, speed second, scale third | **P1a.0–P1a.8 and P1a.10 shipped**; P1a.7 closed 2026-08-23 at 3.17–4.40× against ≥ 6×; [P1a.9](plans/m1a_rust/p1a.9_release/README.md) has two stages open — packaging (binaries, `--version`, a release that cannot ship a red gate) and the Rust embedding page |
+| [**M1a**](plans/m1a_rust/README.md) — the Rust port | a 1:1 observable surface outside, a free hand inside; parity first, speed second, scale third | **P1a.0–P1a.8 and P1a.10 shipped**; P1a.7 closed 2026-08-23 at 3.17–4.40× against ≥ 6×; [P1a.9](plans/m1a_rust/p1a.9_release/README.md) has **one stage open** — the Rust embedding page. Packaging shipped 2026-08-23: `ein --version`, a six-job release workflow, and the finding that two of the three features `--no-default-features` was documented to drop were not being dropped ([feature_cost.md](plans/m1a_rust/p1a.9_release/feature_cost.md)) |
 | [**M1b**](plans/m1b_gui/README.md) — GUI | Tauri 2 + React + Monaco + Cytoscape, linking the crates in-process; three views (code, graph, branches) joined by one `StateId`; the Rust `Session` owns the semantics | parked; stack decided 2026-08-18 |
 | [**M1c**](plans/m1c_external_validation/README.md) — external validation | the two checks that are not relative to Ein's own past: `:expect` on `query` + `ein test` for every stdlib rule; the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean, answers first, times second | queued behind M1a; 2 phases, 10 stages |
 | [**M1d**](plans/m1d_satisfiability/README.md) — from saturation to satisfiability | why an under-determined puzzle does not finish; existence requirements as first-class **obligations**; model sets without enumeration | queued behind M1a; 3 phases, 14 stages, P1d.1 at stage depth |

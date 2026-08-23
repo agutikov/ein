@@ -259,6 +259,7 @@ dependencies = [
  "ein-ir",
  "ein-render",
  "serde_json",
+ "sha2",
  "snmalloc-rs",
 ]
 

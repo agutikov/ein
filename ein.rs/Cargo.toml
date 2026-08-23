@@ -46,7 +46,10 @@ members = [
 version    = "0.1.0"
 edition    = "2024"
 license    = "MIT"
-repository = "https://github.com/gutikoff/ein"
+# The remote, and what `cargo install` / crates.io metadata point at. It read
+# `gutikoff/ein` until S1a.9.3 — a repository that does not exist, unnoticed
+# because nothing had yet followed the link.
+repository = "https://github.com/agutikov/ein"
 
 [workspace.dependencies]
 # Deterministic, fast, non-DoS-resistant hashing. The engine's maps are keyed

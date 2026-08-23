@@ -37,8 +37,11 @@ on:
 #                inside the per-commit tier — it was nightly's because it took
 #                ~40 s and it takes 0.26 s.
 #   packaging    the sdist and wheel build, and install from them. There is no
-#                Python package; the wheel that replaces it is P1a.9's PyO3
-#                module and S1a.9.3 builds its own matrix.
+#                Python package and no wheel replacing it — P1a.9 deferred the
+#                PyO3 module on 2026-08-21 (Q-M1a.23). What S1a.9.3 built
+#                instead is a four-platform *binary* matrix, in the release
+#                tier, where a packaging check belongs once there is nothing
+#                interpreted to install.
 
 jobs:
   deep-corpus:
@@ -51,8 +54,12 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
       - run: sudo apt-get update && sudo apt-get install -y graphviz
-      # The 17 `slow` entries — 118 cells the per-commit sweep skips, two
-      # minutes of exhaustive search including `zebra2` and `zebra2-minus-15`.
+      # The `slow` entries the per-commit sweep skips. **Two** of them since
+      # S1a.9.0 re-priced the tier and T1a.7.2.0 took a third off by making it
+      # 2.8x cheaper — `features/01_not_and_absent` and `features/04_open`, 12
+      # cells and 13.2 s of engine, where this line once meant 17 entries and
+      # four minutes. `cost_ms` in corpus/corpus.toml is the measurement and
+      # two tests hold the flag to it in both directions.
       - run: cargo test -p ein-cli --release --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
       # Eight id-space permutations rather than one. The successor to the

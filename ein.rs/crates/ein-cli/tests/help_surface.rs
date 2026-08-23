@@ -23,8 +23,9 @@
 use ein_corpus::{golden, golden_path};
 
 /// The surface, counted from the parsers themselves — 40 options across 8
-/// parsers, `-h` excluded. An extractor that silently returned nothing would
-/// pass an empty diff; it does not pass this.
+/// parsers, `-h` and `-V` excluded as parser furniture (see `help_shape`'s
+/// skip). An extractor that silently returned nothing would pass an empty
+/// diff; it does not pass this.
 ///
 /// **39 of them are ein.py's**, and the fortieth is `solve --jobs`
 /// ([T1a.7.2.1](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md#task-t1a721--snapshot-and-fan-out)),

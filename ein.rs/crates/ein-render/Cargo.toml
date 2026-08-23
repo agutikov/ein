@@ -6,10 +6,21 @@ edition.workspace    = true
 license.workspace    = true
 repository.workspace = true
 
+[features]
+# **A crate that forwards `jobs` forwards `parallel`** (S1a.9.3 T1a.9.3.2).
+# `shape.rs` takes a `jobs` argument and hands it to `SolveOptions`, so a build
+# of this crate without the pool would accept the argument and silently ignore
+# it. Default-on, so `ein-render` alone behaves as it always has; `ein-cli`
+# takes it without defaults and forwards, which is what lets
+# `--no-default-features` on the *binary* actually drop `rayon`. `ein-einb`
+# needs no such row: it never forwards a job count.
+default  = ["parallel"]
+parallel = ["ein-infer/parallel"]
+
 [dependencies]
 ein-core  = { path = "../ein-core" }
 ein-ir    = { path = "../ein-ir" }
-ein-infer = { path = "../ein-infer" }
+ein-infer = { path = "../ein-infer", default-features = false }
 md-5.workspace = true
 # The relevance prune's `needed` / `conditional` / `seen` sets: membership
 # only, so their order never reaches the output — which is exactly the case
@@ -21,6 +32,13 @@ rustc-hash.workspace = true
 sha1.workspace = true
 
 [dev-dependencies]
+# Unconditional, and that is the point: `cargo test --workspace
+# --no-default-features` — which the release tier runs — would otherwise build
+# this crate without `parallel`, and `jobs_invariance` would compare `--jobs 1`
+# against itself across 20 712 cells and stay green. A *dev*-dependency is not
+# a default feature, so it survives that flag. `the_sweep_is_not_vacuous`
+# fails if this row is ever dropped.
+ein-infer = { path = "../ein-infer", features = ["parallel"] }
 # The DOT goldens under `ein-render/tests/golden/from_ein_py/dot/` are the fixture; reading
 # them needs nothing, but building the KB a golden was captured from does.
 ein-corpus = { path = "../ein-corpus" }

@@ -23,6 +23,7 @@ mod render;
 pub mod saturate;
 pub mod solve;
 pub mod summary;
+pub mod version;
 
 use std::process::ExitCode;
 
@@ -34,6 +35,15 @@ pub fn run() -> ExitCode {
     // The delegated subcommand owns its own flag parsing.
     if argv.first().map(String::as_str) == Some("saturate") {
         return code(saturate::main(&argv[1..]));
+    }
+    // `--version` is intercepted for the same reason `saturate` is, and only
+    // in first position: the top-level parser requires a subcommand, so
+    // `clap` would reject `ein --version` before ever reaching the flag.
+    // Anywhere else it is not this flag — `ein solve x.ein --version` is a
+    // usage error, and staying out of the way is how it keeps being one.
+    if matches!(argv.first().map(String::as_str), Some("--version" | "-V")) {
+        print!("{}", version::report());
+        return ExitCode::SUCCESS;
     }
     let m = cmdline::command().get_matches_from(std::iter::once("ein".to_string()).chain(argv));
     code(dispatch(&m))

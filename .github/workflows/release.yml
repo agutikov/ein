@@ -3,11 +3,26 @@
 # Everything nightly, plus the checks that only matter when something is about
 # to be handed to someone: does the parallel engine agree with the serial one,
 # does the build work without its default features, and do the artefacts
-# actually build on the platforms they claim.
+# actually build — and sweep the corpus — on the platforms they claim.
 #
-# Most of this is inert until the phase that gives it something to check, and
-# says so rather than being added later — a release checklist assembled at
-# release time is a checklist nobody reviewed.
+# Filled in at M1a S1a.9.3 (2026-08-23). Until then this file was three stub
+# jobs, one of them `if: false`, and it said so rather than being written at
+# release time — a release checklist assembled at release time is a checklist
+# nobody reviewed.
+#
+# **The ordering is the point.** Artefacts are built first, in parallel with
+# the gate, so a build failure is diagnosable on its own; nothing is published
+# until `gate`, `jobs-cross-diff`, `no-default-features` and every required
+# `build` leg are green. `publish` needs all of them, so a red gate cannot
+# ship a binary — that is this stage's acceptance, expressed as a `needs:`.
+#
+# **What has never run.** Every job below except `gate` and
+# `no-default-features` exercises a platform this repository has never built
+# on: the workspace is developed on x86_64 Linux and the first tag is what
+# runs macOS, Windows and aarch64 for the first time. The plan record
+# (plans/m1a_rust/p1a.9_release/s1a.9.3_packaging.md § What CI has not yet
+# proved) says so in as many words, so that a green badge here is read as
+# "the first tag passed" rather than as "this was always going to pass".
 
 name: release
 
@@ -16,49 +31,338 @@ on:
     tags: ["v*"]
   workflow_dispatch:
 
-jobs:
-  jobs-cross-diff:
-    name: --jobs {1,2,4,8} agree (P1a.7)
-    runs-on: ubuntu-latest
-    if: false   # enable with the `parallel` feature at P1a.7
-    steps:
-      - uses: actions/checkout@v4
-      - run: echo "cross-diff the same corpus at four --jobs values"
+permissions:
+  contents: write   # `publish` creates the GitHub release
 
-  no-default-features:
-    name: builds without default features
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # ── the gate, whole ────────────────────────────────────────────────
+  gate:
+    name: the gate — fmt, clippy, cargo test --workspace, the slow corpus
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      # The `events` feature compiles the event emitter out entirely, so a
-      # measurement build has no branch on the hot path at all. Both shapes
-      # are built, because "off" is a configuration nobody exercises by
-      # accident.
-      - run: cargo build --workspace --no-default-features
-      - run: cargo test --workspace --no-default-features
+        with: { components: "rustfmt, clippy" }
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: ein.rs }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      # `dot_wellformed.rs` fails rather than skips without Graphviz, which is
+      # the only authority the DOT views have on being well-formed.
+      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      - run: cargo fmt --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      # The whole gate — the corpus sweep through the CLI, the shape digests,
+      # the goldens, the manifest's own invariants. **The acceptance gate is
+      # in here**, not a separate step: P1.7a's three zebra2 task-class
+      # fixtures are `ein-infer/tests/acceptance.rs` (16) and
+      # `ein-cli/tests/acceptance_cli.rs` (5) since S1a.10.2, where the same
+      # work takes 0.26 s instead of the ~40 s that once made it its own tier.
+      - run: cargo test --workspace
+      # The two `slow = true` entries the per-commit sweep skips. `cost_ms`
+      # in corpus/corpus.toml is what says they are slow, measured, and both
+      # directions of that claim are checked here
+      # (plans/m1a_rust/p1a.9_release/corpus_cost.md).
+      - run: cargo test -p ein-cli --release --test corpus_cli
+        env: { EIN_CORPUS_SLOW: "1" }
+      # The determinism sweep at nightly's depth, not the per-commit one.
+      - run: cargo test -p ein-render --release --test id_order_invariance
+        env: { EIN_ID_SEEDS: "8" }
+      # The stdlib is the one input whose divergence no test inside the
+      # workspace can diagnose, because the engine would be *correct* about a
+      # different program. `ein --version` reports the digest this checks.
+      - run: python3 ../utils/stdlib_manifest.py
+      - run: python3 ../utils/check_hashmap_iteration.py
 
-  packaging:
-    name: binaries
-    strategy:
-      fail-fast: false
-      matrix: { os: [ubuntu-latest, macos-latest, windows-latest] }
-    runs-on: ${{ matrix.os }}
+  # ── --jobs {1,2,4,8,16} agree (P1a.7) ──────────────────────────────
+  jobs-cross-diff:
+    name: --jobs {2,4,8,16} move nothing
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ein.rs } }
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo build --release --bin ein
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: ein.rs }
+      # P1a.7's acceptance in one command, and the successor to
+      # `ein-conformance --tier T3`, which ran two processes per corpus cell
+      # and left with the second engine at S1a.10.3. The sweep's own
+      # `the_sweep_is_not_vacuous` fails if this build has no fan-out, so a
+      # feature-resolution accident cannot turn 20 712 cells into 20 712
+      # comparisons of `--jobs 1` against itself.
+      - run: cargo test -p ein-render --release --test jobs_invariance
+        env: { EIN_JOBS_SWEEP: "2,4,8,16" }
+
+  # ── the dependency-light build ─────────────────────────────────────
+  no-default-features:
+    name: builds, tests and stays light without default features
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ein.rs } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: ein.rs }
+      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      - run: cargo build --workspace --no-default-features
+      # 607 of the 616 the default build runs; the nine that go are the
+      # `.einb` tests and the help-surface golden, which is of the default
+      # surface on purpose.
+      - run: cargo test --workspace --no-default-features
+      # **The gating, asserted rather than described.** Compiling is not the
+      # claim — a build that still links a work-stealing pool it cannot reach
+      # compiles fine, and did until S1a.9.3 T1a.9.3.2. What a distro package
+      # is buying is the *absence* of the three, so the absence is what this
+      # checks.
+      - name: the light build links no allocator, no container, no pool
+        run: |
+          tree=$(cargo tree -p ein-cli --no-default-features -e normal --prefix none)
+          echo "$tree" | sort -u
+          for dep in snmalloc-rs ein-einb rayon blake3; do
+            if echo "$tree" | grep -qE "^${dep} "; then
+              echo "::error::--no-default-features still links ${dep}"
+              exit 1
+            fi
+          done
+      # …and the mirror: a default build has all four, so the check above
+      # cannot pass by looking at the wrong thing.
+      - name: the default build does link them
+        run: |
+          tree=$(cargo tree -p ein-cli -e normal --prefix none)
+          for dep in snmalloc-rs ein-einb rayon blake3; do
+            echo "$tree" | grep -qE "^${dep} " || { echo "::error::default build lost ${dep}"; exit 1; }
+          done
+
+  # ── the artefacts ──────────────────────────────────────────────────
+  build:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Built on the oldest image offered rather than `-latest`: the
+          # glibc a binary is linked against is the *floor* of the systems it
+          # runs on, and `-latest` silently raises that floor whenever GitHub
+          # rolls the image.
+          - name: linux-x86_64
+            os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - name: linux-aarch64
+            os: ubuntu-22.04-arm
+            target: aarch64-unknown-linux-gnu
+          # macos-14 is arm64; the x86_64 slice is cross-compiled beside it
+          # and `lipo` joins them, so the artefact is one file for both Macs.
+          - name: macos-universal2
+            os: macos-14
+            target: aarch64-apple-darwin
+          - name: windows-x86_64
+            os: windows-2022
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    # **Every leg is host == target**, on purpose: an aarch64 Linux runner
+    # rather than a cross-build, an arm64 Mac rather than a cross-build. The
+    # one exception is universal2's x86_64 slice, which is a first-class
+    # Apple arrangement. That is what lets each leg *run* the corpus sweep
+    # instead of only linking, and it is also why T1a.9.3.1's named hazard —
+    # `include_dir!` losing the embedded stdlib under a cross build — does not
+    # arise on three of the four.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: ein.rs, key: "${{ matrix.name }}" }
+      # From inside `ein.rs`, so the target lands on the toolchain
+      # `rust-toolchain.toml` pins (1.97.1) rather than on the `stable` the
+      # action installed. The action's `targets:` input adds it to the wrong
+      # one, silently, and the build then fails on a missing std.
+      - name: the target, on the pinned toolchain
         working-directory: ein.rs
+        run: rustup target add ${{ matrix.target }}
+
+      # snmalloc is default-on and pulls `cc` + `cmake` (design/12 §2). All
+      # three runner images ship both today; this is insurance on the one
+      # platform where it is a one-liner, because `snmalloc-sys` fails deep
+      # inside a build script and the error does not say "no cmake".
+      - if: startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get update && sudo apt-get install -y cmake
+
+      - name: build
+        working-directory: ein.rs
+        run: cargo build --release --bin ein --target ${{ matrix.target }}
+
+      - name: the second slice, and lipo
+        if: matrix.name == 'macos-universal2'
+        working-directory: ein.rs
+        run: |
+          rustup target add x86_64-apple-darwin
+          cargo build --release --bin ein --target x86_64-apple-darwin
+          mkdir -p target/universal2
+          lipo -create -output target/universal2/ein \
+            target/aarch64-apple-darwin/release/ein \
+            target/x86_64-apple-darwin/release/ein
+          lipo -info target/universal2/ein
+
+      # **T1a.9.3.3 — the corpus at T3, on this platform.** The host build,
+      # not the artefact: what this is looking for is line endings, filesystem
+      # case-sensitivity and locale-dependent formatting, which are properties
+      # of the platform and not of the target triple. `EIN_CORPUS_SLOW=1` is
+      # what "the corpus at T3" means after S1a.10.3.
+      - name: the corpus, swept here
+        working-directory: ein.rs
+        run: cargo test -p ein-cli --release --test corpus_cli
+        env: { EIN_CORPUS_SLOW: "1" }
+
+      # The artefact answers for itself, on the machine that built it: the
+      # version tuple, and a solve whose answer the corpus sweep above has
+      # already agreed with.
+      - name: the binary reports itself
+        working-directory: ein.rs
+        shell: bash
+        run: |
+          bin=$([ "${{ matrix.name }}" = "macos-universal2" ] \
+                  && echo target/universal2/ein \
+                  || echo target/${{ matrix.target }}/release/ein)
+          [ "${{ runner.os }}" = "Windows" ] && bin="${bin}.exe"
+          "$bin" --version
+          "$bin" solve ../examples/zebra2.ein > /dev/null
+
+      # `sha256sum` on Linux and in Git Bash, `shasum -a 256` on macOS: no one
+      # command is on all three, and `certutil` prints upper-case hex that
+      # would not match the set-wide `SHA256SUMS` the publish job cross-checks
+      # against. One helper, one casing, one format.
+      - name: stage and checksum
+        working-directory: ein.rs
+        shell: bash
+        run: |
+          sha() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$@"; else shasum -a 256 "$@"; fi; }
+          bin=$([ "${{ matrix.name }}" = "macos-universal2" ] \
+                  && echo target/universal2/ein \
+                  || echo target/${{ matrix.target }}/release/ein)
+          out="ein-${{ matrix.name }}"
+          [ "${{ runner.os }}" = "Windows" ] && { bin="${bin}.exe"; out="${out}.exe"; }
+          mkdir -p ../dist
+          cp "$bin" "../dist/${out}"
+          (cd ../dist && sha "${out}" > "${out}.sha256")
+          cat ../dist/*.sha256
+
       - uses: actions/upload-artifact@v4
         with:
-          name: dist-${{ matrix.os }}
-          path: ein.rs/target/release/ein*
+          name: dist-${{ matrix.name }}
+          path: dist/
           retention-days: 30
-      # The **wheel** half of this job built ein.py's sdist/wheel, which
-      # carried a build-time copy of the shared stdlib and was where a broken
-      # copy surfaced. Both went at S1a.10.5. The wheel that replaces it is
-      # P1a.9's PyO3 module, built by `maturin` over the same matrix
-      # (S1a.9.3), and the stdlib copy it carries is `include_dir!`'s —
-      # already checked against `stdlib/MANIFEST.sha256` by
-      # `ein-ir`'s `the_embedded_copy_matches_the_manifest`, in the gate.
+
+  # ── best effort: one statically linked Linux binary ────────────────
+  #
+  # `continue-on-error` and **not** in `publish`'s `needs:`, deliberately.
+  # A musl target has no C++ toolchain on the runner image, so `snmalloc`
+  # cannot build there and this leg is `--no-default-features` — the system
+  # allocator, which musl's is, and which costs a measured **+25 % on `solve
+  # zebra2 -e` and +36 % on `solve zebra -e`**
+  # (plans/m1a_rust/p1a.9_release/feature_cost.md). That is the wrong default
+  # for the four required artefacts and the right trade for the one case they
+  # do not cover: an old or minimal distribution where a glibc-linked binary
+  # will not start at all. If it fails, the release still ships and the notes
+  # say the static binary is absent.
+  static-linux:
+    name: linux-x86_64-musl (static, system allocator) — best effort
+    runs-on: ubuntu-22.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - working-directory: ein.rs
+        run: rustup target add x86_64-unknown-linux-musl
+      - working-directory: ein.rs
+        run: |
+          cargo build --release --bin ein --no-default-features \
+            --target x86_64-unknown-linux-musl
+          file target/x86_64-unknown-linux-musl/release/ein
+          ldd  target/x86_64-unknown-linux-musl/release/ein || true
+      - working-directory: ein.rs
+        run: |
+          bin=target/x86_64-unknown-linux-musl/release/ein
+          "$bin" --version
+          "$bin" solve ../examples/zebra2.ein > /dev/null
+          mkdir -p ../dist
+          cp "$bin" ../dist/ein-linux-x86_64-musl
+          (cd ../dist && sha256sum ein-linux-x86_64-musl > ein-linux-x86_64-musl.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-linux-x86_64-musl
+          path: dist/
+          retention-days: 30
+
+  # ── publish ────────────────────────────────────────────────────────
+  publish:
+    name: sign the set and publish
+    needs: [gate, jobs-cross-diff, no-default-features, build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: staged, pattern: "dist-*", merge-multiple: true }
+      # One `SHA256SUMS` over the set, beside the per-artefact files each
+      # platform wrote. Both are kept: the per-artefact file is what the
+      # runner that built it attested, and this one is what a reader verifies
+      # the whole download against.
+      - name: one SHA256SUMS for the set
+        run: |
+          cd staged
+          rm -f SHA256SUMS
+          sha256sum $(ls | grep -v '\.sha256$') | tee SHA256SUMS
+          # Every per-artefact file must agree with it, or two attestations
+          # disagree and neither means anything.
+          for f in *.sha256; do
+            grep -qFf "$f" SHA256SUMS || { echo "::error::$f disagrees"; exit 1; }
+          done
+      # The notes say what is *in* the release, including the leg that is
+      # allowed to fail — a missing static binary must be a stated absence
+      # rather than something a reader has to notice.
+      - name: release notes
+        run: |
+          {
+            echo "## \`ein\` ${GITHUB_REF_NAME}"
+            echo
+            echo "Verify: \`sha256sum -c SHA256SUMS --ignore-missing\`"
+            echo "(\`shasum -a 256 -c\` on macOS) — \`--ignore-missing\` because you"
+            echo "downloaded one artefact and this file covers them all."
+            echo "Identify: \`ein --version\` reports the engine version, the"
+            echo "\`--events\` protocol, the features compiled in, and the SHA-256 of"
+            echo "the \`std.*\` manifest it will load. See"
+            echo "[docs/install.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/docs/install.md)."
+            echo
+            echo "### Artefacts"
+            echo
+            for f in staged/*; do
+              case "$f" in *.sha256|*SHA256SUMS) continue;; esac
+              echo "- \`$(basename "$f")\`"
+            done
+            echo
+            if [ -e staged/ein-linux-x86_64-musl ]; then
+              echo "The musl build is statically linked and uses the **system allocator**:"
+              echo "it costs +25 % on \`solve zebra2.ein -e\` against the default binary"
+              echo "(plans/m1a_rust/p1a.9_release/feature_cost.md). Prefer"
+              echo "\`ein-linux-x86_64\` unless glibc is the problem."
+            else
+              echo "**No static musl binary in this release** — that leg is best-effort"
+              echo "and did not produce one."
+            fi
+          } > NOTES.md
+          cat NOTES.md
+      # `gh`, which is on the runner, rather than a third-party action: this
+      # is the step with `contents: write`, and the dependency policy that
+      # governs the engine is not worth abandoning at the one job that can
+      # publish.
+      - name: publish
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "ein ${GITHUB_REF_NAME}" \
+            --notes-file NOTES.md \
+            staged/*
