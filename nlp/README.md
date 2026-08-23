@@ -3,18 +3,21 @@
 Reading and two throwaway scripts (`xxx.py`, `xxx-link.py`) from the 2021
 prototype's look at dependency parsing. Not wired into the engine.
 
-[M2 P2.5](../plans/m2_nl_to_ir/p2.5_link_grammar_experiment/README.md) is the
-phase that gives this directory a purpose: a *measured* A/B on whether feeding
-link-grammar output to the LLM improves NL → IR quality, with these two files
-as the starting point ([S2.5.1](../plans/m2_nl_to_ir/p2.5_link_grammar_experiment/s2.5.1_runner.md)).
+[M2 S2.6.4](../plans/m2_nl_to_ir/p2.6_ablations/s2.6.4_representation_ablations.md)
+is the stage that gives this directory a purpose: a *measured* A/B on whether
+feeding link-grammar output to the LLM improves the formalization, with these
+two files as the starting point. It was a phase of its own (P2.5) until the
+2026-08-23 reshape of M2 around [`EinAf.md`](../plans/m2_nl_to_ir/EinAf.md)
+made it one arm of the representation ablation; nothing about the experiment
+changed.
 
 > **The `link-grammar` submodule was deinitialised at M1a
 > [S1a.10.5](../docs/history/m1a_rust/README.md#s1a105--the-removal).**
 > It pointed at `opencog/link-grammar` and was never checked out, so what it
 > cost was a `git clone --recurse-submodules` fetching it for an experiment
-> that has not run. P2.5 re-adds it in one command when it does — and P2.5's
+> that has not run. S2.6.4 re-adds it in one command when it does — and its
 > possible outcome is "deprecate the submodule", so registering it now would
-> pre-empt the decision the phase exists to take:
+> pre-empt the decision the stage exists to take:
 >
 > ```sh
 > git submodule add https://github.com/opencog/link-grammar.git nlp/link-grammar

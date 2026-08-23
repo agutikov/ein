@@ -1090,7 +1090,7 @@ seventeen scripts name their binary on purpose. That leaves
 [M2](../../../plans/m2_nl_to_ir/README.md), whose two stated reasons both fail:
 
 - **llama.cpp does not pull CPython.**
-  [P2.2](../../../plans/m2_nl_to_ir/p2.2_llm_infra/README.md) is a `llama-server` container
+  [P2.2](../../../plans/m2_nl_to_ir/p2.2_formalizer/README.md) is a `llama-server` container
   plus a thin HTTP client, mirroring [acva](../../../../acva) — whose client is
   **C++**. P2.2's own README says "same pattern, Python client *this time*
   instead of C++"; the *this time* was that ein was Python.
@@ -1102,7 +1102,7 @@ seventeen scripts name their binary on purpose. That leaves
   links `ein-ir` and has it with no boundary at all.
 
 What remains genuinely Python in M2 is
-[P2.5](../../../plans/m2_nl_to_ir/p2.5_link_grammar_experiment/README.md)'s link-grammar
+[P2.5](../../../plans/m2_nl_to_ir/p2.6_ablations/s2.6.4_representation_ablations.md)'s link-grammar
 binding — an experiment whose default deployment is *off* unless it measures a
 win ([Q11](../../../plans/m2_nl_to_ir/open_questions.md)), and whose subject has a C API if
 it ever graduates. An experiment harness that writes `.ein` files is not a

@@ -4,9 +4,14 @@
 **Status:** **placeholder** — after M2, which is a dependency and not a
 slot. (It used to read "between M2 and M3, or after M3"; M3 was dropped
 2026-08-18, and the milestone was renumbered from **M2b** 2026-08-23.)
-**Depends on:** [M2](../m2_nl_to_ir/README.md) — needs the NL → IR
-pipeline working on at least one benchmark suite to have a
-concrete result to write up.
+**Depends on:** [M2](../m2_nl_to_ir/README.md) — this milestone is
+**Stage P** of the research plan [`EinAf.md`](../m2_nl_to_ir/EinAf.md),
+which was filed here on 2026-08-23 and moved to M2 the same evening when M2
+was reshaped around it; M2's [P2.10](../m2_nl_to_ir/p2.10_result_artifact_demo/README.md)
+hands this milestone the central result (Stage O) and the artifact's other
+six layers (Stage Q), and [P2.9](../m2_nl_to_ir/p2.9_formal_account/README.md)
+the formal account § 4–5 are written from. The paper's twelve-section
+outline is [`EinAf.md` § Stage P](../m2_nl_to_ir/EinAf.md#stage-p--research-paper).
 **Blocks:** nothing on the critical path; this is the
 "share what we built" milestone.
 
@@ -216,8 +221,9 @@ known unknowns rather than aspirational.
 
 - M1 — core graph reasoning,
   [M1a — Rust port](../../docs/history/m1a_rust/README.md),
-  [M2 — NL → IR](../m2_nl_to_ir/README.md) — the results the write-up
-  reports on.
+  [M2 — EinAf](../m2_nl_to_ir/README.md) — the results the write-up
+  reports on; [`EinAf.md` § Stage P](../m2_nl_to_ir/EinAf.md#stage-p--research-paper)
+  is the outline.
 - [docs/lib/](../../docs/lib/) — the structured comparison
   axis (12 thematic files + knowledge graph).
 - [docs/ideas/](../ideas) — the user's framing of the

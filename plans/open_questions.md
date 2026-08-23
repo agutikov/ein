@@ -88,7 +88,7 @@ solver call, and they are the honest limitations paragraph
 Decided in M1.P1.1 S1.1.1. The leading candidate is a small
 S-expression dialect with named atoms carrying most of the semantic
 load (per [idea 01 §Open questions point 3](ideas/01-self-modifying-constraint-language.md)
-recommendation), so a future GBNF grammar (M2.P2.3) is trivial.
+recommendation), so a future GBNF grammar (M2 [S2.2.3](m2_nl_to_ir/p2.2_formalizer/s2.2.3_gbnf.md)) is trivial.
 Counter-arguments and richer-DSL alternatives are listed there.
 
 ---

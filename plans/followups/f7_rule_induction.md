@@ -239,3 +239,16 @@ not a later followup. Without it, the NL pipeline produces
 relations + facts but no activators; the engine sits idle. M2's
 plan should call out F7 sub-track B as a deliverable, not a
 parking-lot item.
+
+**Taken up 2026-08-23**, with M2's reshape around
+[`EinAf.md`](../m2_nl_to_ir/EinAf.md): the formalizer's **theory pass**
+([S2.2.4](../m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md)) is sub-track B
+as a deliverable — the activators are *selected* from the stdlib catalogue
+first ([F12](f12_rules_and_relations/ideas.md): do not invent properties)
+and a rule is *synthesised* only when the pass names a property the
+catalogue lacks, with the synthesis logged as one of the three neural
+actions. Two of the benchmark's eight families have no stdlib theory on
+purpose ([P2.3](../m2_nl_to_ir/p2.3_benchmark/README.md)), so the
+synthesis path is exercised and measured rather than assumed. The
+*statistical* half of B — inferring a property from sample facts — and
+B′ stay here.

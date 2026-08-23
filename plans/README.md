@@ -18,17 +18,24 @@ framing 2026-05-24):
   graph-native engine. This is what the existing
   M1 core graph reasoning
   delivers; the Zebra puzzle is the acceptance gate.
-- **M2 — convert NL problem statements into IR facts.** The
-  second step: drop the *human encodes the puzzle* assumption.
-  M2 ships the NL → IR pipeline so the engine can be fed
-  problem text directly. [M2 NL → IR](m2_nl_to_ir/README.md).
-- **M2+ — ontology + rules induction from facts** (covered by
-  [F4](followups/f4_cross_cutting.md) /
-  [F7](followups/f7_rule_induction.md)). Beyond M2: induce the
-  ontology + rule activators *that the puzzle implicitly
-  assumes*, so the engine (a) actually *can* solve the puzzle
-  rather than sitting on a half-typed KB and (b) reflects the
-  common-sense implicits an NL statement leans on.
+- **M2 — EinAf: iterative autoformalization, through Level D.** The
+  second step, and since 2026-08-23 the whole of the research programme:
+  drop the *human encodes the puzzle* assumption, then ask whether the
+  kernel's feedback makes the model that replaces the human *better*.
+  Level B is the old *NL → IR* — a one-shot formalizer on a benchmark it
+  has not seen; Level C is the loop, the baselines and the ablations;
+  Level D is the formal account, the frozen benchmark, the released
+  records and (with M5) the paper. [M2](m2_nl_to_ir/README.md), reshaped
+  around the research plan [`EinAf.md`](m2_nl_to_ir/EinAf.md).
+- **M2's theory pass — ontology + rules induction from facts** (the thread
+  [F4](followups/f4_cross_cutting.md) / [F7](followups/f7_rule_induction.md)
+  carried as "M2+"). No longer beyond M2: the formalizer's theory pass
+  ([S2.2.4](m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md)) selects the
+  activators *that the puzzle implicitly assumes* from the stdlib catalogue
+  and synthesises a rule only when the catalogue lacks the property, so the
+  engine (a) actually *can* solve the puzzle rather than sitting on a
+  half-typed KB and (b) reflects the common-sense implicits an NL statement
+  leans on. Induction *from facts* (F7 B′, F5) stays a followup.
 
 The end-to-end target the milestone stack converges on is the
 worked solution in [`examples/README.md`](../docs/kernel/inference/zebra_walkthrough.md): the
@@ -141,10 +148,20 @@ plans/
 │   ├── p1d.10_exhaustive_search/     (was m1a_rust/p1a.12_*, then p1d.1)
 │   ├── p1d.2_obligations/
 │   └── p1d.3_model_sets/
-├── m2_nl_to_ir/                      NL → IR — link-grammar / GBNF / llama.cpp
-│   ├── README.md
-│   ├── open_questions.md
-│   └── p2.1_investigations/ …
+├── m2_nl_to_ir/                      EinAf — iterative autoformalization, Levels B → D
+│   ├── README.md                     (the folder keeps its NL → IR name; Level B is that)
+│   ├── open_questions.md             Q7–Q11, Q23–Q25 + Q-M2.1–4
+│   ├── EinAf.md                      the research plan, verbatim (the m1d/ideas.md precedent)
+│   ├── p2.1_kernel_as_instrumentation/   Stage A   (3 stage files)
+│   ├── p2.2_formalizer/                  Stage B   (5)
+│   ├── p2.3_benchmark/                   Stage C   (4)
+│   ├── p2.4_loop/                        Stages E, F   (5)
+│   ├── p2.5_harness/                     Stages D, H, N   (4)
+│   ├── p2.6_ablations/                   Stage G   (1 — the link-grammar arm)
+│   ├── p2.7_failure_scaling_generalization/   Stages I, J, K   (README)
+│   ├── p2.8_representations/             Stage L   (README)
+│   ├── p2.9_formal_account/              Stage M   (README)
+│   └── p2.10_result_artifact_demo/       Stages O, Q   (README; P is M5's)
 ├── m5_presentation/                  paper + talk after M2 (was m2b_presentation)
 │   └── README.md
 ├── m10_external_benchmarks/          Z3 / CVC5 / Prolog / Soufflé / Clingo / Lean
@@ -192,7 +209,7 @@ Stage files have a stable shape:
 | [M1a](../docs/history/m1a_rust/README.md)               | *(plans removed 2026-08-23 — the record is `docs/history/m1a_rust/`)* | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
 | [M1c](m1c_external_validation/README.md) | **full** — 1 phase + 5 stage files | queued behind M1a — stdlib expectations (`ein test`); its benchmark phase left for M10 2026-08-23 | ~2.5 weeks |
 | [M1d](m1d_satisfiability/README.md)     | mixed — P1d.10 at stage depth, P1d.2 / P1d.3 phase READMEs | queued behind M1a — exhaustive search over many models + existence obligations | ~2 months |
-| [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |
+| [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | next — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |
 | [M20](m20_gui/README.md)                | README + stack decision | parked — depends on M1a, blocks nothing; Tauri stack settled 2026-08-18 (was M1b) | TBD |

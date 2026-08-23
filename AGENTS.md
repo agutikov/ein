@@ -209,8 +209,9 @@ constrained-reasoning research.
   [M10](plans/m10_external_benchmarks/README.md)
   counts as part of its benchmark corpus; `nlp/` holds two throwaway
   dependency-parsing scripts that
-  [M2 P2.5](plans/m2_nl_to_ir/p2.5_link_grammar_experiment/README.md) starts
-  from. **The two submodules they used to carry** (`opencog/link-grammar`,
+  [M2 S2.6.4](plans/m2_nl_to_ir/p2.6_ablations/s2.6.4_representation_ablations.md)
+  starts from — the link-grammar A/B, one arm of M2's representation
+  ablation since the 2026-08-23 reshape. **The two submodules they used to carry** (`opencog/link-grammar`,
   `CVC4/CVC4`) were deinitialised at M1a S1a.10.5 — never checked out here,
   and a cost on every recursive clone. Each README has the one
   `git submodule add` that restores it.

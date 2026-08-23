@@ -145,7 +145,7 @@ arguments. If the narrowing collapses to a unique type — assign it;
 if multiple types remain — branch (the ambiguity-detection
 sub-machinery from idea 03 / idea 05).
 
-**Implementation hint (M2 P2.4)**: the NL frontend emits *typed*
+**Implementation hint (M2 [S2.2.4](../m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md))**: the NL frontend emits *typed*
 JSON per sentence with the type filled by the predicate signature:
 
 ```json

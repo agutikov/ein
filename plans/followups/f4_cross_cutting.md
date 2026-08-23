@@ -479,9 +479,11 @@ The output is a structured stream of `(type …)`, `(instance …)`,
 `(relation …)`, `(rel …)`, `(rule …)` IR forms — a constrained
 generation problem (cf. [idea 01](../ideas/01-self-modifying-constraint-language.md)).
 
-This is the M2 territory ([NL → IR](../m2_nl_to_ir/README.md)) — at
+This is the M2 territory ([EinAf](../m2_nl_to_ir/README.md)) — at
 F4 here only as the *cross-cutting research question*. The concrete
-implementation lands in [M2 P2.4 (NL → IR pipeline)](../m2_nl_to_ir/p2.4_nl_to_ir_pipeline/);
+implementation lands in [M2 P2.2 (the formalizer)](../m2_nl_to_ir/p2.2_formalizer/README.md),
+whose [S2.2.4](../m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md) is the
+ontology / theory / instance / query passes;
 the *schema of question lists per word-class / per-role* is the
 parked design problem.
 
@@ -491,7 +493,7 @@ prior to picking an LLM or a GBNF — and outlives any specific
 M2 implementation choice. It is the *rosetta stone* between the
 two surfaces.
 
-Connection: [M2 P2.4](../m2_nl_to_ir/p2.4_nl_to_ir_pipeline/),
+Connection: [M2 P2.2](../m2_nl_to_ir/p2.2_formalizer/README.md),
 [idea 01](../ideas/01-self-modifying-constraint-language.md),
 [docs/lib/10 NLP & semantic parsing](../../docs/lib/10-nlp-semantic-parsing.md).
 
