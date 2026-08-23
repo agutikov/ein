@@ -150,7 +150,7 @@ Written down now, so the phases test it rather than assume it:
    ships on-by-default without that decision being taken explicitly.
 
 There is also a piece of external evidence available cheaply, and
-[M1c](../m1c_external_validation/README.md) is already going to collect it:
+[M10](../m10_external_benchmarks/README.md) is already going to collect it:
 ASP states this vocabulary natively — `1 { p(X) : q(X) } 1` *is* the note's
 `L ≤ # ≤ U` — and Datalog does not. If Clingo expresses the zebra family
 directly while Soufflé needs an extension or a generate-and-test encoding,
@@ -207,7 +207,7 @@ written when the milestone starts.
 - **A solver back-end.** The answer to "saturation is missing existence
   constraints" is not "call Z3". M3 was dropped 2026-08-18 and this milestone
   does not reopen it; what it borrows from ASP and CP is *vocabulary*, not a
-  process boundary. [M1c](../m1c_external_validation/README.md) measures the
+  process boundary. [M10](../m10_external_benchmarks/README.md) measures the
   rivals; it does not invite them in.
 - **A new search engine.** The cardinality-BFS stays until something measured
   replaces it, and [F9](../followups/f9_e_catalog.md)'s discipline applies to
@@ -259,7 +259,7 @@ actually want.
 - [M1c](../m1c_external_validation/README.md) — the sibling created the same
   day: [S1c.1.1](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)'s
   promise inventory is P1d.2's first input, and the ASP/Datalog cells of
-  [P1c.2](../m1c_external_validation/p1c.2_external_benchmarks/README.md) are
+  [M10](../m10_external_benchmarks/README.md) are
   external evidence for its premise
 - [F9](../followups/f9_e_catalog.md) — the rejected search optimisations;
   read before proposing one

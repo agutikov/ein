@@ -31,7 +31,7 @@ motivation strikes.
 index was written and not yet worked into one-page themes: rules and relations,
 puzzles beyond zebra, math formulae, autoformalization, formal verification.
 They are directories holding the user's notes and nothing else. F13 is the one
-[P1c.2](../m1c_external_validation/p1c.2_external_benchmarks/README.md)
+[M10](../m10_external_benchmarks/README.md)
 cross-links — it is the *other* benchmark direction, NL-shaped and M2-gated —
 and F14 is the one that has left.
 

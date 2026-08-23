@@ -343,7 +343,7 @@ work twice.
 with `jobs` candidates to judge, or a delta pass with `jobs` plans to seed. The
 zebras show both shapes exist (median 6, and 45.7 tasks per pass) at a scale
 too small to matter;
-[M1c P1c.2](../../m1c_external_validation/p1c.2_external_benchmarks/README.md)'s
+[M10](../../m10_external_benchmarks/README.md)'s
 external corpus is where a large one would come from, and re-taking the tables
 is a morning's work.
 

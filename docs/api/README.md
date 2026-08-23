@@ -27,7 +27,7 @@ it work. The package was deleted at M1a
 (2026-08-21); the PyO3 module that was to succeed it was **deferred the same
 day** for want of a consumer —
 [M20](../../plans/m20_gui/README.md) links the crates,
-[M1c](../../plans/m1c_external_validation/README.md)'s benchmark runner must
+[M10](../../plans/m10_external_benchmarks/README.md)'s benchmark runner must
 shell out to be a fair measurement, and
 [M2](../../plans/m2_nl_to_ir/README.md)'s premise turned out to be an HTTP
 server rather than a C library.

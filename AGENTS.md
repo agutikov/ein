@@ -189,7 +189,7 @@ constrained-reasoning research.
   puzzle.
 - **`nlp/`, `smt/`** — scratch areas, 56 KB, wired into nothing. `smt/` holds
   three hand-written `.smt` encodings of the Zebra puzzle and 4-queens, which
-  [M1c P1c.2](plans/m1c_external_validation/p1c.2_external_benchmarks/README.md)
+  [M10](plans/m10_external_benchmarks/README.md)
   counts as part of its benchmark corpus; `nlp/` holds two throwaway
   dependency-parsing scripts that
   [M2 P2.5](plans/m2_nl_to_ir/p2.5_link_grammar_experiment/README.md) starts

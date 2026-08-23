@@ -53,10 +53,10 @@ unrecoverable mistake.
   >
   > | | |
   > |---|---|
-  > | `smt/{4-queens,einstain-problem,einstain-problem-minus-15}.smt` | [P1c.2 S1c.2.1](../../m1c_external_validation/p1c.2_external_benchmarks/s1c.2.1_problem_corpus.md) links all three as encodings its benchmark corpus already has |
+  > | `smt/{4-queens,einstain-problem,einstain-problem-minus-15}.smt` | [M10 S10.1](../../m10_external_benchmarks/s10.1_problem_corpus.md) links all three as encodings its benchmark corpus already has |
   > | `nlp/{xxx.py,xxx-link.py}` + the reading list | [M2 S2.5.1](../../m2_nl_to_ir/p2.5_link_grammar_experiment/s2.5.1_runner.md) names them as its starting point |
   > | `nlp/link-grammar` | [M2 P2.5](../../m2_nl_to_ir/p2.5_link_grammar_experiment/README.md) **depends on** it, and exists to decide whether to deprecate it |
-  > | `smt/CVC4` | P1c.2 said "the benchmark uses CVC5 and the submodule stays where it is" |
+  > | `smt/CVC4` | M10 said "the benchmark uses CVC5 and the submodule stays where it is" |
   >
   > What the submodules actually cost is **a `git clone --recurse-submodules`
   > fetching `opencog/link-grammar` and `CVC4/CVC4`** for work that has not
@@ -186,7 +186,7 @@ running partially.
 
 Written above, in the amendment. The short version: "nothing in the active
 tree imports either" is true and is the wrong test. `smt/*.smt` is three of
-[P1c.2](../../m1c_external_validation/p1c.2_external_benchmarks/README.md)'s
+[M10](../../m10_external_benchmarks/README.md)'s
 benchmark encodings; `nlp/xxx*.py` is
 [M2 S2.5.1](../../m2_nl_to_ir/p2.5_link_grammar_experiment/s2.5.1_runner.md)'s
 starting point; and `nlp/link-grammar` is depended on by the phase whose

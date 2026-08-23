@@ -50,7 +50,7 @@ holding it goes — ran first and is
 [§3 of `01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md).
 And **T1a.10.5.1's acceptance was wrong**: "`nlp/` and `smt/` gone, nothing in
 the active tree imports either" is true of the active tree and is the wrong
-test, because every file in them has a named dependent in M1c P1c.2 or M2
+test, because every file in them has a named dependent in M10 or M2
 P2.5. The two *submodules* are deinitialised — that is what they actually
 cost, a recursive clone fetching two large upstream repositories — and four
 plan documents were amended to match.
@@ -222,7 +222,7 @@ Three consequences, all recorded in the
   the top-level files, **and `nlp/` + `smt/`** — 56 KB of scratch that
   S1a.10.5 was written to delete and that
   [it keeps, amended](s1a.10.5_removal.md#acceptance): every file in them has
-  a named dependent in M1c P1c.2 or M2 P2.5. What goes is the two
+  a named dependent in M10 or M2 P2.5. What goes is the two
   *submodules*, which had none and made every recursive clone fetch two large
   upstream repositories for work that has not started.
 - **Neither [P1a.8](../p1a.8_binary_container/README.md)'s `.einb` container

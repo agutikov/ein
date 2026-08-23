@@ -61,7 +61,7 @@ mechanism with tests, a config field and no caller.
 
 **What would re-open it** is a workload that parks in bulk — the predicate is
 "does a boundary round have `jobs` candidates to judge", not "is the boundary
-expensive". [M1c P1c.2](../../m1c_external_validation/p1c.2_external_benchmarks/README.md)'s
+expensive". [M10](../../m10_external_benchmarks/README.md)'s
 external benchmark corpus is where one would come from, and re-taking the two
 tables above is a morning's work at that point.
 

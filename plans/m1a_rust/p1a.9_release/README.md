@@ -25,7 +25,7 @@ and this phase closes the milestone behind it.
 > support it. [M20](../../m20_gui/README.md) links the crates into a Tauri
 > backend; [M1c](../../m1c_external_validation/README.md)'s benchmark runner is
 > `ein-bench`, Rust, and
-> [S1c.2.2](../../m1c_external_validation/p1c.2_external_benchmarks/s1c.2.2_systems_and_install.md)
+> [S10.2](../../m10_external_benchmarks/s10.2_systems_and_install.md)
 > requires that it *shell out* — "`cargo build` never needs Z3" — because a
 > linked rival and a subprocess rival are not comparable measurements;
 > `utils/`'s seventeen scripts drive the binary by `$EIN_BIN` precisely so a

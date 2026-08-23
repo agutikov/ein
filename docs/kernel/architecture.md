@@ -39,7 +39,7 @@ is read from the model count `k` — never chosen by a flag (see
 [`README.md`](README.md)).
 
 > **Driving this pipeline from another program** means one of two things.
-> From **Rust**, link the crates — the surface M20's Tauri backend and M1c's
+> From **Rust**, link the crates — the surface M20's Tauri backend and M10's
 > `ein-bench` use, documented by
 > [S1a.9.4](../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md).
 > From **anything else**, run the `ein` binary and read

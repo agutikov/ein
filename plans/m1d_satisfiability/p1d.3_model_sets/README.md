@@ -46,7 +46,7 @@ nobody can read is worse than a list.
 
 **S1d.3.1** is the measurement that decides the rest, and it is cheap: take
 the 32 models of `zebra2-minus-15` (established independently in
-[P1c.2](../../m1c_external_validation/p1c.2_external_benchmarks/README.md)),
+[M10](../../m10_external_benchmarks/README.md)),
 and ask whether they factor. Independent choices mean the compact form is a
 by-product of P1d.2; coupled ones mean this phase has real work.
 
